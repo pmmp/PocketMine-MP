@@ -32,6 +32,8 @@ class AddPlayerPacket extends DataPacket{
 	public static $pool = [];
 	public static $next = 0;
 
+
+
 	public $clientID;
 	public $username;
 	public $eid;
@@ -43,6 +45,9 @@ class AddPlayerPacket extends DataPacket{
 	public $item;
 	public $meta;
 	public $metadata;
+
+	public $slim = false;
+	public $skin = null;
 
 	public function pid(){
 		return Info::ADD_PLAYER_PACKET;
@@ -61,9 +66,12 @@ class AddPlayerPacket extends DataPacket{
 		$this->putFloat($this->y);
 		$this->putFloat($this->z);
 		$this->putFloat($this->yaw);
+		$this->putFloat($this->yaw); //TODO headrot
 		$this->putFloat($this->pitch);
 		$this->putShort($this->item);
 		$this->putShort($this->meta);
+		$this->putByte($this->slim ? 1 : 0);
+		$this->putString($this->skin);
 		$this->put(Binary::writeMetadata($this->metadata));
 	}
 

@@ -23,26 +23,17 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
-#ifndef COMPILE
-use pocketmine\utils\Binary;
 
-#endif
-
-class AddMobPacket extends DataPacket{
+class SetEntityLinkPacket extends DataPacket{
 	public static $pool = [];
 	public static $next = 0;
 
-	public $eid;
+	public $from;
+	public $to;
 	public $type;
-	public $x;
-	public $y;
-	public $z;
-	public $pitch;
-	public $yaw;
-	public $metadata;
 
 	public function pid(){
-		return Info::ADD_MOB_PACKET;
+		return Info::SET_ENTITY_LINK_PACKET;
 	}
 
 	public function decode(){
@@ -51,14 +42,9 @@ class AddMobPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putLong($this->eid);
-		$this->putInt($this->type);
-		$this->putFloat($this->x);
-		$this->putFloat($this->y);
-		$this->putFloat($this->z);
-		$this->putFloat($this->yaw);
-		$this->putFloat($this->pitch);
-		$this->put(Binary::writeMetadata($this->metadata));
+		$this->putLong($this->from);
+		$this->putLong($this->to);
+		$this->putByte($this->type);
 	}
 
 }

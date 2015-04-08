@@ -22,15 +22,9 @@
 namespace pocketmine\level\particle;
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\Wolf;
 use pocketmine\math\Vector3;
-use pocketmine\network\protocol\AddEntityPacket;
-use pocketmine\network\protocol\AddMobPacket;
 use pocketmine\network\protocol\AddPlayerPacket;
-use pocketmine\network\protocol\EntityEventPacket;
-use pocketmine\network\protocol\RemoveEntityPacket;
 use pocketmine\network\protocol\RemovePlayerPacket;
-use pocketmine\network\protocol\SetEntityDataPacket;
 
 class FloatingTextParticle extends Particle{
 	//TODO: HACK!
@@ -98,6 +92,6 @@ class FloatingTextParticle extends Particle{
 			$p[] = $pk;
 		}
 		
-		return $pk;
+		return $p;
 	}
 }

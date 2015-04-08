@@ -24,7 +24,6 @@ namespace pocketmine\entity;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\Item as ItemItem;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
@@ -52,6 +51,32 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public $length = 0.6;
 	public $height = 1.8;
 	public $eyeHeight = 1.62;
+
+	protected $skin;
+	protected $isSlim = false;
+
+	/**
+	 * @param string $str
+	 * @param bool   $isSlim
+	 */
+	public function setSkin($str, $isSlim = false){
+		$this->skin = $str;
+		$this->isSlim = (bool) $isSlim;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getNameTag(){
+		return $this->nameTag;
+	}
+
+	/**
+	 * @param string $name
+	 */
+	public function setNameTag($name){
+		$this->nameTag = $name;
+	}
 
 	public function getInventory(){
 		return $this->inventory;
@@ -163,11 +188,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 			$pk = new AddPlayerPacket();
 			$pk->clientID = 0;
-			if($player->getRemoveFormat()){
-				$pk->username = TextFormat::clean($this->nameTag);
-			}else{
-				$pk->username = $this->nameTag;
-			}
+			$pk->username = $this->nameTag;
 			$pk->eid = $this->getId();
 			$pk->x = $this->x;
 			$pk->y = $this->y;
@@ -177,6 +198,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$item = $this->getInventory()->getItemInHand();
 			$pk->item = $item->getId();
 			$pk->meta = $item->getDamage();
+			$pk->skin = $this->skin;
+			$pk->slim = $this->isSlim;
 			$pk->metadata = $this->dataProperties;
 			$player->dataPacket($pk);
 

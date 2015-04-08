@@ -38,6 +38,8 @@ use pocketmine\Player;
 class FallingSand extends Entity{
 	const NETWORK_ID = 66;
 
+	const DATA_BLOCK_INFO = 20;
+
 	public $width = 0.98;
 	public $length = 0.98;
 	public $height = 0.98;
@@ -64,7 +66,10 @@ class FallingSand extends Entity{
 
 		if($this->blockId === 0){
 			$this->close();
+			return;
 		}
+
+		$this->setDataProperty(self::DATA_BLOCK_INFO, self::DATA_TYPE_INT, ($this->getBlock() << 8) | $this->getDamage());
 	}
 
 	public function canCollideWith(Entity $entity){
@@ -151,10 +156,11 @@ class FallingSand extends Entity{
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
-		$pk->did = -($this->getBlock() | $this->getDamage() << 0x10);
+		$pk->speedX = $this->motionX;
+		$pk->speedY = $this->motionY;
+		$pk->speedZ = $this->motionZ;
+		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
-
-		$player->addEntityMotion($this->getId(), $this->motionX, $this->motionY, $this->motionZ);
 
 		parent::spawnTo($player);
 	}

@@ -38,8 +38,7 @@ class Snowball extends Projectile{
 	protected $drag = 0.01;
 
 	public function __construct(FullChunk $chunk, Compound $nbt, Entity $shootingEntity = null){
-		$this->shootingEntity = $shootingEntity;
-		parent::__construct($chunk, $nbt);
+		parent::__construct($chunk, $nbt, $shootingEntity);
 	}
 
 	public function onUpdate($currentTick){
@@ -68,10 +67,11 @@ class Snowball extends Projectile{
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
-		$pk->did = 0; //TODO: send motion here
+		$pk->speedX = $this->motionX;
+		$pk->speedY = $this->motionY;
+		$pk->speedZ = $this->motionZ;
+		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
-
-		$player->addEntityMotion($this->getId(), $this->motionX, $this->motionY, $this->motionZ);
 
 		parent::spawnTo($player);
 	}

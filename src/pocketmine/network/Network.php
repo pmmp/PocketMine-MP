@@ -26,7 +26,6 @@ namespace pocketmine\network;
 
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\network\protocol\AddItemEntityPacket;
-use pocketmine\network\protocol\AddMobPacket;
 use pocketmine\network\protocol\AddPaintingPacket;
 use pocketmine\network\protocol\AddPlayerPacket;
 use pocketmine\network\protocol\AdventureSettingsPacket;
@@ -39,6 +38,8 @@ use pocketmine\network\protocol\ContainerSetDataPacket;
 use pocketmine\network\protocol\ContainerSetSlotPacket;
 use pocketmine\network\protocol\DataPacket;
 use pocketmine\network\protocol\DropItemPacket;
+use pocketmine\network\protocol\Info;
+use pocketmine\network\protocol\SetEntityLinkPacket;
 use pocketmine\network\protocol\TileEntityDataPacket;
 use pocketmine\network\protocol\EntityEventPacket;
 use pocketmine\network\protocol\ExplodePacket;
@@ -72,6 +73,7 @@ use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\network\protocol\UseItemPacket;
 use pocketmine\Player;
 use pocketmine\Server;
+use pocketmine\utils\MainLogger;
 
 class Network{
 
@@ -129,7 +131,20 @@ class Network{
 
 	public function processInterfaces(){
 		foreach($this->interfaces as $interface){
-			$interface->process();
+			try {
+				$interface->process();
+			}catch(\Exception $e){
+				$logger = $this->server->getLogger();
+				if(\pocketmine\DEBUG > 1){
+					if($logger instanceof MainLogger){
+						$logger->logException($e);
+					}
+				}
+
+				$interface->emergencyShutdown();
+				$this->unregisterInterface($interface);
+				$logger->critical("[Network] Stopped interface ". get_class($interface) ." due to ". $e->getMessage());
+			}
 		}
 	}
 
@@ -186,10 +201,17 @@ class Network{
 		$len = strlen($str);
 		$offset = 0;
 		while($offset < $len){
-			if(($packetId = $this->getPacket(ord($str{$offset++}))) !== null){
-				$packetId->buffer = $str;
-				$packet->decode();
-				$p->handleDataPacket($packet);
+			if(($pk = $this->getPacket(ord($str{$offset++}))) !== null){
+				if($pk->pid() === Info::BATCH_PACKET){
+					return;
+				}
+				$pk->setBuffer(substr($str, $offset));
+				$pk->decode();
+				$p->handleDataPacket($pk);
+				$offset += $pk->getOffset();
+				if($pk->getOffset() <= 0){
+					return;
+				}
 			}
 		}
 	}
@@ -241,7 +263,6 @@ class Network{
 		$this->registerPacket(ProtocolInfo::TEXT_PACKET, TextPacket::class);
 		$this->registerPacket(ProtocolInfo::SET_TIME_PACKET, SetTimePacket::class);
 		$this->registerPacket(ProtocolInfo::START_GAME_PACKET, StartGamePacket::class);
-		$this->registerPacket(ProtocolInfo::ADD_MOB_PACKET, AddMobPacket::class);
 		$this->registerPacket(ProtocolInfo::ADD_PLAYER_PACKET, AddPlayerPacket::class);
 		$this->registerPacket(ProtocolInfo::REMOVE_PLAYER_PACKET, RemovePlayerPacket::class);
 		$this->registerPacket(ProtocolInfo::ADD_ENTITY_PACKET, AddEntityPacket::class);
@@ -265,6 +286,7 @@ class Network{
 		$this->registerPacket(ProtocolInfo::HURT_ARMOR_PACKET, HurtArmorPacket::class);
 		$this->registerPacket(ProtocolInfo::SET_ENTITY_DATA_PACKET, SetEntityDataPacket::class);
 		$this->registerPacket(ProtocolInfo::SET_ENTITY_MOTION_PACKET, SetEntityMotionPacket::class);
+		$this->registerPacket(ProtocolInfo::SET_ENTITY_LINK_PACKET, SetEntityLinkPacket::class);
 		$this->registerPacket(ProtocolInfo::SET_HEALTH_PACKET, SetHealthPacket::class);
 		$this->registerPacket(ProtocolInfo::SET_SPAWN_POSITION_PACKET, SetSpawnPositionPacket::class);
 		$this->registerPacket(ProtocolInfo::ANIMATE_PACKET, AnimatePacket::class);

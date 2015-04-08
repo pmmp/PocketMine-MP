@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\utils\Binary;
+
 class AddEntityPacket extends DataPacket{
 	public static $pool = [];
 	public static $next = 0;
@@ -33,10 +35,13 @@ class AddEntityPacket extends DataPacket{
 	public $x;
 	public $y;
 	public $z;
-	public $did;
 	public $speedX;
 	public $speedY;
 	public $speedZ;
+	public $yaw;
+	public $pitch;
+	public $metadata;
+	public $links = [];
 
 	public function pid(){
 		return Info::ADD_ENTITY_PACKET;
@@ -53,11 +58,17 @@ class AddEntityPacket extends DataPacket{
 		$this->putFloat($this->x);
 		$this->putFloat($this->y);
 		$this->putFloat($this->z);
-		$this->putLong($this->did);
-		if($this->did > 0){
-			$this->putFloat($this->speedX);
-			$this->putFloat($this->speedY);
-			$this->putFloat($this->speedZ);
+		$this->putFloat($this->speedX);
+		$this->putFloat($this->speedY);
+		$this->putFloat($this->speedZ);
+		$this->putFloat($this->yaw);
+		$this->putFloat($this->pitch);
+		$this->put(Binary::writeMetadata($this->metadata));
+		$this->putShort(count($this->links));
+		foreach($this->links as $link){
+			$this->putLong($link[0]);
+			$this->putLong($link[1]);
+			$this->putByte($link[2]);
 		}
 	}
 

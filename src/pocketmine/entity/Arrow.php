@@ -42,9 +42,8 @@ class Arrow extends Projectile{
 	protected $isCritical;
 
 	public function __construct(FullChunk $chunk, Compound $nbt, Entity $shootingEntity = null, $critical = false){
-		$this->shootingEntity = $shootingEntity;
 		$this->isCritical = (bool) $critical;
-		parent::__construct($chunk, $nbt);
+		parent::__construct($chunk, $nbt, $shootingEntity);
 	}
 
 	public function onUpdate($currentTick){
@@ -82,10 +81,10 @@ class Arrow extends Projectile{
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
-		$pk->did = $this->shootingEntity !== null ? $this->shootingEntity->getId() : 1;
 		$pk->speedX = $this->motionX;
 		$pk->speedY = $this->motionY;
 		$pk->speedZ = $this->motionZ;
+		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
 
 		parent::spawnTo($player);

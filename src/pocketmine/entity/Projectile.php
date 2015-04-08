@@ -28,16 +28,29 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
+use pocketmine\level\format\FullChunk;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Short;
 
 abstract class Projectile extends Entity{
+
+	const DATA_SHOOTER_ID = 17;
+
 	/** @var Entity */
 	public $shootingEntity = null;
 	protected $damage = 0;
 
 	public $hadCollision = false;
+
+	public function __construct(FullChunk $chunk, Compound $nbt, Entity $shootingEntity = null){
+		$this->shootingEntity = $shootingEntity;
+		if($shootingEntity !== null){
+			$this->setDataProperty(self::DATA_SHOOTER_ID, self::DATA_TYPE_LONG, $shootingEntity->getId());
+		}
+		parent::__construct($chunk, $nbt);
+	}
 
 
 	public function attack($damage, EntityDamageEvent $source){

@@ -22,53 +22,9 @@
 namespace pocketmine\network;
 
 use pocketmine\event\player\PlayerCreationEvent;
-use pocketmine\network\protocol\AddEntityPacket;
-use pocketmine\network\protocol\AddItemEntityPacket;
-use pocketmine\network\protocol\AddMobPacket;
-use pocketmine\network\protocol\AddPaintingPacket;
-use pocketmine\network\protocol\AddPlayerPacket;
-use pocketmine\network\protocol\AdventureSettingsPacket;
-use pocketmine\network\protocol\AnimatePacket;
-use pocketmine\network\protocol\BatchPacket;
-use pocketmine\network\protocol\ContainerClosePacket;
-use pocketmine\network\protocol\ContainerOpenPacket;
-use pocketmine\network\protocol\ContainerSetContentPacket;
-use pocketmine\network\protocol\ContainerSetDataPacket;
-use pocketmine\network\protocol\ContainerSetSlotPacket;
 use pocketmine\network\protocol\DataPacket;
-use pocketmine\network\protocol\DropItemPacket;
-use pocketmine\network\protocol\TileEntityDataPacket;
-use pocketmine\network\protocol\EntityEventPacket;
-use pocketmine\network\protocol\ExplodePacket;
-use pocketmine\network\protocol\HurtArmorPacket;
 use pocketmine\network\protocol\Info as ProtocolInfo;
-use pocketmine\network\protocol\InteractPacket;
-use pocketmine\network\protocol\LevelEventPacket;
-use pocketmine\network\protocol\DisconnectPacket;
-use pocketmine\network\protocol\LoginPacket;
-use pocketmine\network\protocol\PlayStatusPacket;
-use pocketmine\network\protocol\TextPacket;
-use pocketmine\network\protocol\MoveEntityPacket;
-use pocketmine\network\protocol\MovePlayerPacket;
-use pocketmine\network\protocol\PlayerActionPacket;
-use pocketmine\network\protocol\PlayerArmorEquipmentPacket;
-use pocketmine\network\protocol\PlayerEquipmentPacket;
-use pocketmine\network\protocol\RemoveBlockPacket;
-use pocketmine\network\protocol\RemoveEntityPacket;
-use pocketmine\network\protocol\RemovePlayerPacket;
-use pocketmine\network\protocol\RespawnPacket;
-use pocketmine\network\protocol\SetDifficultyPacket;
-use pocketmine\network\protocol\SetEntityDataPacket;
-use pocketmine\network\protocol\SetEntityMotionPacket;
-use pocketmine\network\protocol\SetHealthPacket;
-use pocketmine\network\protocol\SetSpawnPositionPacket;
-use pocketmine\network\protocol\SetTimePacket;
-use pocketmine\network\protocol\StartGamePacket;
-use pocketmine\network\protocol\TakeItemEntityPacket;
-use pocketmine\network\protocol\TileEventPacket;
 use pocketmine\network\protocol\UnknownPacket;
-use pocketmine\network\protocol\UpdateBlockPacket;
-use pocketmine\network\protocol\UseItemPacket;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\MainLogger;
@@ -269,7 +225,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 				and Network::$BATCH_THRESHOLD >= 0
 				and strlen($packet->buffer) >= Network::$BATCH_THRESHOLD){
 				$this->batchedPackets[$this->identifiers[$player]] .= $packet->buffer;
-				return;
+				return null;
 			}
 
 			if($pk === null){

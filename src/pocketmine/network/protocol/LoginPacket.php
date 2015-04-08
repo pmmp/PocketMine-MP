@@ -32,7 +32,9 @@ class LoginPacket extends DataPacket{
 	public $protocol1;
 	public $protocol2;
 	public $clientId;
-	public $loginData;
+
+	public $slim = false;
+	public $skin = null;
 
 	public function pid(){
 		return Info::LOGIN_PACKET;
@@ -42,8 +44,12 @@ class LoginPacket extends DataPacket{
 		$this->username = $this->getString();
 		$this->protocol1 = $this->getInt();
 		$this->protocol2 = $this->getInt();
+		if(Info::CURRENT_PROTOCOL != $this->protocol1){
+			return;
+		}
 		$this->clientId = $this->getInt();
-		$this->loginData = $this->getString();
+		$this->slim = $this->getByte() > 0;
+		$this->skin = $this->getString();
 	}
 
 	public function encode(){
