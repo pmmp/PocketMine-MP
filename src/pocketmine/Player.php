@@ -626,10 +626,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->sendData($this);
 			$this->inventory->sendContents($this);
 			$this->inventory->sendArmorContents($this);
-			
-			$pk = new PlayStatusPacket();
-			$pk->status = PlayStatusPacket::PLAYER_SPAWN;
-			$this->dataPacket($pk);
 
 			$pk = new SetTimePacket();
 			$pk->time = $this->level->getTime();
@@ -641,6 +637,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $pos));
 
 			$this->teleport($ev->getRespawnPosition());
+
+			$pk = new PlayStatusPacket();
+			$pk->status = PlayStatusPacket::PLAYER_SPAWN;
+			$this->dataPacket($pk);
 
 			$this->server->getPluginManager()->callEvent($ev = new PlayerJoinEvent($this, TextFormat::YELLOW . $this->getName() . " joined the game"));
 			if(strlen(trim($ev->getJoinMessage())) > 0){
@@ -1074,13 +1074,15 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$dy = $this->newPosition->y - $this->y;
 			$dz = $this->newPosition->z - $this->z;
 
-			$this->fastMove($dx, $dy, $dz);
+			$this->move($dx, $dy, $dz);
 
 			$diffX = $this->x - $this->newPosition->x;
-			$diffZ = $this->z - $this->newPosition->z;
 			$diffY = $this->y - $this->newPosition->y;
-			if($diffY >= -0.5 or $diffY <= 0.5){
-                $diffY = 0;
+			$diffZ = $this->z - $this->newPosition->z;
+
+			$yS = 0.5 + $this->ySize;
+			if($diffY >= -$yS or $diffY <= $yS){
+				$diffY = 0;
 			}
 
 			$diff = $diffX ** 2 + $diffY ** 2 + $diffZ ** 2;
@@ -1097,7 +1099,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->y = $this->newPosition->y;
 				$this->z = $this->newPosition->z;
 				$radius = $this->width / 2;
-				$this->boundingBox->setBounds($this->x - $radius, $this->y + $this->ySize, $this->z - $radius, $this->x + $radius, $this->y + $this->height + $this->ySize, $this->z + $radius);
+				$this->boundingBox->setBounds($this->x - $radius, $this->y, $this->z - $radius, $this->x + $radius, $this->y + $this->height, $this->z + $radius);
 			}
 		}
 
@@ -1128,7 +1130,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$this->teleport($ev->getTo());
 					}else{
 						foreach($this->hasSpawned as $player){
-							$player->addEntityMovement($this->id, $this->x, $this->y + $this->getEyeHeight(), $this->z, $this->yaw, $this->pitch, $this->yaw);
+							$player->addEntityMovement($this->id, $this->x, $this->y + $this->height, $this->z, $this->yaw, $this->pitch, $this->yaw);
 						}
 					}
 				}
@@ -1151,11 +1153,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$pk = new MovePlayerPacket();
 			$pk->eid = $this->getId();
 			$pk->x = $from->x;
-			$pk->y = $from->y + $this->getEyeHeight();
+			$pk->y = $from->y + $this->height;
 			$pk->z = $from->z;
 			$pk->bodyYaw = $from->yaw;
 			$pk->pitch = $from->pitch;
 			$pk->yaw = $from->yaw;
+			$pk->mode = 1;
 			$this->directDataPacket($pk);
 			$this->forceMovement = new Vector3($from->x, $from->y, $from->z);
 		}else{
@@ -1186,8 +1189,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 
 		$this->timings->startTiming();
-
-		$this->lastUpdate = $currentTick;
 
 		if($this->spawned){
 			$this->processMovement($currentTick);
@@ -1294,6 +1295,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->dataPacket($pk);
 			$this->motionToSend = [];
 		}
+
+
+		$this->lastUpdate = $currentTick;
 
 		$this->timings->stopTiming();
 
@@ -1523,11 +1527,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$pk = new MovePlayerPacket();
 					$pk->eid = $this->getId();
 					$pk->x = $this->forceMovement->x;
-					$pk->y = $this->forceMovement->y + $this->getEyeHeight();
+					$pk->y = $this->forceMovement->y + $this->height;
 					$pk->z = $this->forceMovement->z;
 					$pk->bodyYaw = $packet->bodyYaw;
 					$pk->pitch = $packet->pitch;
 					$pk->yaw = $packet->yaw;
+					$pk->mode = 1;
 					$this->directDataPacket($pk);
 				}else{
 					$packet->yaw %= 360;
@@ -2660,7 +2665,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$pk = new MovePlayerPacket();
 			$pk->eid = $this->getId();
 			$pk->x = $this->x;
-			$pk->y = $this->y + $this->getEyeHeight();
+			$pk->y = $this->y + $this->height;
 			$pk->z = $this->z;
 			$pk->bodyYaw = $this->yaw;
 			$pk->pitch = $this->pitch;

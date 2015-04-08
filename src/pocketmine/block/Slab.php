@@ -48,7 +48,7 @@ class Slab extends Transparent{
 			6 => "Quartz",
 			7 => "",
 		];
-		return (($this->meta & 0x08) === 0x08 ? "Upper " : "") . $names[$this->meta & 0x07] . " Slab";
+		return (($this->meta & 0x08) > 0 ? "Upper " : "") . $names[$this->meta & 0x07] . " Slab";
 	}
 
 	protected function recalculateBoundingBox(){

@@ -53,7 +53,6 @@ use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 use pocketmine\Network;
 use pocketmine\network\protocol\MobEffectPacket;
-use pocketmine\network\protocol\MovePlayerPacket;
 use pocketmine\network\protocol\RemoveEntityPacket;
 use pocketmine\network\protocol\SetEntityDataPacket;
 use pocketmine\network\protocol\SetTimePacket;
@@ -796,7 +795,7 @@ abstract class Entity extends Location implements Metadatable{
 
 			if(!($this instanceof Player)){
 				foreach($this->hasSpawned as $player){
-					$player->addEntityMovement($this->id, $this->x, $this->y + $this->getEyeHeight(), $this->z, $this->yaw, $this->pitch, $this->yaw);
+					$player->addEntityMovement($this->id, $this->x, $this->y + $this->height, $this->z, $this->yaw, $this->pitch, $this->yaw);
 				}
 			}
 		}
@@ -1013,7 +1012,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		$newBB = $this->boundingBox->getOffsetBoundingBox($dx, $dy, $dz);
 
-		$list = $this->level->getCollisionCubes($this, $newBB->expand(-0.01, -0.01, -0.01), false);
+		$list = $this->level->getCollisionCubes($this, $newBB->grow(-0.01, -0.01, -0.01), false);
 
 		if(count($list) === 0){
 			$this->boundingBox = $newBB;
@@ -1021,7 +1020,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		$pos = new Vector3(
 			($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
-			$this->boundingBox->minY + $this->ySize,
+			$this->boundingBox->minY,
 			($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2
 		);
 
@@ -1118,12 +1117,6 @@ abstract class Entity extends Location implements Metadatable{
 
 			$this->boundingBox->offset(0, $dy, 0);
 
-			if($movY != $dy){
-				$dx = 0;
-				$dy = 0;
-				$dz = 0;
-			}
-
 			$fallingFlag = ($this->onGround or ($dy != $movY and $movY < 0));
 
 			foreach($list as $bb){
@@ -1132,23 +1125,11 @@ abstract class Entity extends Location implements Metadatable{
 
 			$this->boundingBox->offset($dx, 0, 0);
 
-			if($movX != $dx){
-				$dx = 0;
-				$dy = 0;
-				$dz = 0;
-			}
-
 			foreach($list as $bb){
 				$dz = $bb->calculateZOffset($this->boundingBox, $dz);
 			}
 
 			$this->boundingBox->offset(0, 0, $dz);
-
-			if($movZ != $dz){
-				$dx = 0;
-				$dy = 0;
-				$dz = 0;
-			}
 
 
 			if($this->stepHeight > 0 and $fallingFlag and $this->ySize < 0.05 and ($movX != $dx or $movZ != $dz)){
@@ -1176,34 +1157,12 @@ abstract class Entity extends Location implements Metadatable{
 				}
 
 				$this->boundingBox->offset($dx, 0, 0);
-				if($movX != $dx){
-					$dx = 0;
-					$dy = 0;
-					$dz = 0;
-				}
 
 				foreach($list as $bb){
 					$dz = $bb->calculateZOffset($this->boundingBox, $dz);
 				}
 
 				$this->boundingBox->offset(0, 0, $dz);
-				if($movZ != $dz){
-					$dx = 0;
-					$dy = 0;
-					$dz = 0;
-				}
-
-				if($dy == 0){
-					$dx = 0;
-					$dy = 0;
-					$dz = 0;
-				}else{
-					$dy = -$this->stepHeight;
-					foreach($list as $bb){
-						$dy = $bb->calculateYOffset($this->boundingBox, $dy);
-					}
-					$this->boundingBox->offset(0, $dy, 0);
-				}
 
 				if(($cx ** 2 + $cz ** 2) >= ($dx ** 2 + $dz ** 2)){
 					$dx = $cx;
@@ -1211,11 +1170,7 @@ abstract class Entity extends Location implements Metadatable{
 					$dz = $cz;
 					$this->boundingBox->setBB($axisalignedbb1);
 				}else{
-					$diff = $this->boundingBox->minY - (int) $this->boundingBox->minY;
-
-					if($diff > 0){
-						$this->ySize += $diff + 0.01;
-					}
+					$this->ySize += 0.5;
 				}
 
 			}
@@ -1444,7 +1399,7 @@ abstract class Entity extends Location implements Metadatable{
 			$this->lastPitch = $this->pitch;
 
 			foreach($this->hasSpawned as $player){
-				$player->addEntityMovement($this->getId(), $this->x, $this->y, $this->z, $this->yaw, $this->pitch, $this->yaw);
+				$player->addEntityMovement($this->getId(), $this->x, $this->y + $this->height, $this->z, $this->yaw, $this->pitch, $this->yaw);
 			}
 
 			return true;

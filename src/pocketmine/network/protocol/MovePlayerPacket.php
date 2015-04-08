@@ -33,8 +33,8 @@ class MovePlayerPacket extends DataPacket{
 	public $y;
 	public $z;
 	public $yaw;
-	public $pitch;
 	public $bodyYaw;
+	public $pitch;
 	public $mode = 0;
 
 	public function pid(){
