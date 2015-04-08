@@ -73,6 +73,15 @@ abstract class Living extends Entity implements Damageable{
 		//return $this->getLevel()->rayTraceBlocks(Vector3::createVector($this->x, $this->y + $this->height, $this->z), Vector3::createVector($entity->x, $entity->y + $entity->height, $entity->z)) === null;
 	}
 
+	public function heal($amount, EntityRegainHealthEvent $source){
+		parent::heal($amount, $source);
+		if($source->isCancelled()){
+			return;
+		}
+
+		$this->attackTime = 0;
+	}
+
 	public function attack($damage, EntityDamageEvent $source){
 		if($this->attackTime > 0 or $this->noDamageTicks > 0){
 			$lastCause = $this->getLastDamageCause();

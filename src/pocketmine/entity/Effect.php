@@ -180,17 +180,17 @@ class Effect{
 	public function canTick(){
 		switch($this->id){
 			case Effect::POISON:
-				if(($interval = 25 >> $this->amplifier) > 0){
+				if(($interval = (25 >> $this->amplifier)) > 0){
 					return ($this->duration % $interval) === 0;
 				}
 				return true;
 			case Effect::WITHER:
-				if(($interval = 50 >> $this->amplifier) > 0){
+				if(($interval = (50 >> $this->amplifier)) > 0){
 					return ($this->duration % $interval) === 0;
 				}
 				return true;
 			case Effect::REGENERATION:
-				if(($interval = 40 >> $this->amplifier) > 0){
+				if(($interval = (40 >> $this->amplifier)) > 0){
 					return ($this->duration % $interval) === 0;
 				}
 				return true;

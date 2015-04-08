@@ -25,19 +25,8 @@ use pocketmine\Worker;
 
 class AsyncWorker extends Worker{
 
-	public $loader;
-	
-	public function __construct(\ClassLoader $loader){
-		$this->loader = $loader;
-	}
-	
 	public function run(){
-		if(!interface_exists("ClassLoader", false)){
-			require(\pocketmine\PATH . "src/spl/ClassLoader.php");
-			require(\pocketmine\PATH . "src/spl/BaseClassLoader.php");
-			require(\pocketmine\PATH . "src/pocketmine/CompatibleClassLoader.php");
-		}
-		$this->loader->register(true);
+		$this->registerClassLoader();
 
 		global $store;
 		$store = [];

@@ -273,7 +273,7 @@ class CraftingManager{
 			Item::IRON_BLOCK => Item::IRON_INGOT,
 			Item::DIAMOND_BLOCK => Item::DIAMOND,
 			Item::EMERALD_BLOCK => Item::EMERALD,
-			//Item::REDSTONE_BLOCK => Item::REDSTONE_DUST,
+			Item::REDSTONE_BLOCK => Item::REDSTONE_DUST,
 			Item::COAL_BLOCK => Item::COAL,
 			Item::HAY_BALE => Item::WHEAT,
 		];
