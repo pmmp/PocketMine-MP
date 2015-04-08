@@ -2048,9 +2048,17 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							Item::CARROT => 4,
 							Item::POTATO => 1,
 							Item::BAKED_POTATO => 6,
-							//Item::COOKIE => 2,
-							//Item::COOKED_FISH => 5,
-							//Item::RAW_FISH => 2,
+							Item::COOKIE => 2,
+							Item::COOKED_FISH => [
+								0 => 5,
+								1 => 6
+							],
+							Item::RAW_FISH => [
+								0 => 2,
+								1 => 2,
+								2 => 1,
+								3 => 1
+							],
 						];
 						$slot = $this->inventory->getItemInHand();
 						if($this->getHealth() < 20 and isset($items[$slot->getId()])){
@@ -2068,6 +2076,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							Server::broadcastPacket($this->getViewers(), $pk);
 
 							$amount = $items[$slot->getId()];
+							if(is_array($amount)){
+								$amount = isset($amount[$slot->getDamage()]) ? $amount[$slot->getDamage()] : 0;
+							}
                             $ev = new EntityRegainHealthEvent($this, $amount, EntityRegainHealthEvent::CAUSE_EATING);
 							$this->heal($ev->getAmount(), $ev);
 
@@ -2075,6 +2086,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							$this->inventory->setItemInHand($slot, $this);
 							if($slot->getId() === Item::MUSHROOM_STEW or $slot->getId() === Item::BEETROOT_SOUP){
 								$this->inventory->addItem(Item::get(Item::BOWL, 0, 1));
+							}elseif($slot->getId() === Item::RAW_FISH and $slot->getDamage() === 3){ //Pufferfish
+								//$this->addEffect(Effect::getEffect(Effect::HUNGER)->setAmplifier(2)->setDuration(15 * 20));
+								$this->addEffect(Effect::getEffect(Effect::NAUSEA)->setAmplifier(1)->setDuration(15 * 20));
+								$this->addEffect(Effect::getEffect(Effect::POISON)->setAmplifier(3)->setDuration(60 * 20));
 							}
 						}
 						break;

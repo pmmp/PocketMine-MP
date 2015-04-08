@@ -104,7 +104,7 @@ class EffectCommand extends VanillaCommand{
 			$effect->setDuration($duration)->setAmplifier($amplification);
 
 			$player->addEffect($effect);
-			self::broadcastCommandMessage($sender, "Given ". $effect->getName() ." (ID ". $effect->getId()." ) * ". $effect->getAmplifier()." to ". $player->getDisplayName() ." for ". ($effect->getDuration() / 20) ." seconds");
+			self::broadcastCommandMessage($sender, "Given ". $effect->getName() ." (ID ". $effect->getId().") * ". $effect->getAmplifier()." to ". $player->getDisplayName() ." for ". ($effect->getDuration() / 20) ." seconds");
 		}
 
 
