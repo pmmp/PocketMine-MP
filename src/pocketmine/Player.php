@@ -1843,6 +1843,40 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->startAction = -1;
 				$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
 				break;
+
+			case ProtocolInfo::RESPAWN_PACKET:
+				//TODO: Remove
+				if($this->spawned === false or $this->dead === false){
+					break;
+				}
+
+				$this->craftingType = 0;
+
+				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
+
+				$this->teleport($ev->getRespawnPosition());
+
+				$this->extinguish();
+				$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 300);
+				$this->deadTicks = 0;
+				$this->noDamageTicks = 60;
+
+				$this->setHealth(20);
+				$this->dead = false;
+
+				$this->removeAllEffects();
+				$this->sendData($this);
+
+				$this->sendSettings();
+				$this->inventory->sendContents($this);
+				$this->inventory->sendArmorContents($this);
+
+				$this->blocked = false;
+
+				$this->spawnToAll();
+				$this->scheduleUpdate();
+				break;
+
 			case ProtocolInfo::REMOVE_BLOCK_PACKET:
 				if($this->spawned === false or $this->blocked === true or $this->dead === true){
 					break;
