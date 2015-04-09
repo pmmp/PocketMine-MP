@@ -196,34 +196,11 @@ abstract class Entity extends Location implements Metadatable{
 	/** @var \pocketmine\event\TimingsHandler */
 	protected $timings;
 
-	protected $MASK = 0;
-
 
 	public function __construct(FullChunk $chunk, Compound $nbt){
 		if($chunk === null or $chunk->getProvider() === null){
 			throw new ChunkException("Invalid garbage Chunk given to Entity");
 		}
-
-		$PF = 0x200;
-		if($this instanceof Living){
-			$this->MASK |= 0x100 | $PF;
-		}
-		if($this instanceof Ageable){
-			$this->MASK |= 0x400;
-		}
-		if($this instanceof Monster){
-			$this->MASK |= 0x800;
-		}
-		if($this instanceof Animal){
-			$this->MASK |= 0x1000;
-		}
-		if($this instanceof WaterAnimal){
-			$this->MASK |= 0x2000;
-		}
-		if($this instanceof Tameable){
-			$this->MASK |= 0x4000;
-		}
-		//AMBIENT = 0x100 | 0x8000;
 
 		$this->timings = Timings::getEntityTimings($this);
 
