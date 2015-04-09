@@ -49,6 +49,7 @@ class PlayerActionPacket extends DataPacket{
 	}
 
 	public function encode(){
+		$this->reset();
 		$this->putLong($this->eid);
 		$this->putInt($this->action);
 		$this->putInt($this->x);
