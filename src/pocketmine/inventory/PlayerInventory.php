@@ -88,12 +88,11 @@ class PlayerInventory extends BaseInventory{
 
 	/**
 	 * @param Item $item
-	 * @param      $source
 	 *
 	 * @return bool
 	 */
-	public function setItemInHand(Item $item, $source = null){
-		return $this->setItem($this->getHeldItemSlot(), $item, $source);
+	public function setItemInHand(Item $item){
+		return $this->setItem($this->getHeldItemSlot(), $item);
 	}
 
 	public function getHeldItemSlot(){
@@ -146,20 +145,23 @@ class PlayerInventory extends BaseInventory{
 
 		foreach($target as $player){
 			if($player === $this->getHolder()){
-				//TODO: Check if Mojang enabled sending a single slot this
-				//$this->sendSlot($this->getHeldItemSlot());
-				$this->sendContents($player);
+				$this->sendSlot($this->getHeldItemSlot(), $player);
 			}else{
 				$player->dataPacket($pk);
 			}
 		}
 	}
 
-	public function onSlotChange($index, $before, $source = null){
-		parent::onSlotChange($index, $before, $source);
+	public function onSlotChange($index, $before){
+		$holder = $this->getHolder();
+		if($holder instanceof Player and !$holder->spawned){
+			return;
+		}
+
+		parent::onSlotChange($index, $before);
 
 		if($index >= $this->getSize()){
-			$this->sendArmorSlot($index, $this->getViewers($source));
+			$this->sendArmorSlot($index, $this->getViewers());
 			$this->sendArmorSlot($index, $this->getHolder()->getViewers());
 		}
 	}
@@ -172,8 +174,8 @@ class PlayerInventory extends BaseInventory{
 		return $this->getItem($this->getSize() + $index);
 	}
 
-	public function setArmorItem($index, Item $item, $source = null){
-		return $this->setItem($this->getSize() + $index, $item, $source);
+	public function setArmorItem($index, Item $item){
+		return $this->setItem($this->getSize() + $index, $item);
 	}
 
 	public function getHelmet(){
@@ -208,11 +210,11 @@ class PlayerInventory extends BaseInventory{
 		return $this->setItem($this->getSize() + 3, $boots);
 	}
 
-	public function setItem($index, Item $item, $source = null){
+	public function setItem($index, Item $item){
 		if($index < 0 or $index >= $this->size){
 			return false;
 		}elseif($item->getId() === 0 or $item->getCount() <= 0){
-			return $this->clear($index, $source);
+			return $this->clear($index);
 		}
 
 		if($index >= $this->getSize()){ //Armor change
@@ -242,12 +244,12 @@ class PlayerInventory extends BaseInventory{
 
 		$old = $this->getItem($index);
 		$this->slots[$index] = clone $item;
-		$this->onSlotChange($index, $old, $source);
+		$this->onSlotChange($index, $old);
 
 		return true;
 	}
 
-	public function clear($index, $source = null){
+	public function clear($index){
 		if(isset($this->slots[$index])){
 			$item = Item::get(Item::AIR, null, 0);
 			$old = $this->slots[$index];
@@ -280,7 +282,7 @@ class PlayerInventory extends BaseInventory{
 				unset($this->slots[$index]);
 			}
 
-			$this->onSlotChange($index, $old, $source);
+			$this->onSlotChange($index, $old);
 		}
 
 		return true;
@@ -393,9 +395,6 @@ class PlayerInventory extends BaseInventory{
 		foreach($target as $player){
 			if($player === $this->getHolder()){
 				/** @var Player $player */
-				//$pk2 = clone $pk;
-				//$pk2->eid = 0;
-
 				$pk2 = new ContainerSetSlotPacket();
 				$pk2->windowid = 0x78; //Armor window id constant
 				$pk2->slot = $index;
@@ -454,7 +453,8 @@ class PlayerInventory extends BaseInventory{
 		foreach($target as $player){
 			if($player === $this->getHolder()){
 				/** @var Player $player */
-				$this->sendContents($player); //#blamemojang
+				$pk->windowid = 0;
+				$player->dataPacket(clone $pk);
 			}else{
 				if(($id = $player->getWindowId($this)) === -1){
 					$this->close($player);

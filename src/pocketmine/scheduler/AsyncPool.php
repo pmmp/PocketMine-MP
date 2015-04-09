@@ -14,7 +14,7 @@
  * (at your option) any later version.
  *
  * @author PocketMine Team
-
+ * @link http://www.pocketmine.net/
  *
  *
 */
@@ -46,9 +46,14 @@ class AsyncPool{
 
 		for($i = 0; $i < $this->size; ++$i){
 			$this->workerUsage[$i] = 0;
-			$this->workers[$i] = new AsyncWorker($server->getLoader());
+			$this->workers[$i] = new AsyncWorker;
+			$this->workers[$i]->setClassLoader($server->getLoader());
 			$this->workers[$i]->start();
 		}
+	}
+
+	public function getSize(){
+		return $this->size;
 	}
 
 	public function submitTask(AsyncTask $task){

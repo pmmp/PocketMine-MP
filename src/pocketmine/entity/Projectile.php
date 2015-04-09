@@ -28,18 +28,38 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
+use pocketmine\level\format\FullChunk;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Short;
 
 abstract class Projectile extends Entity{
+
+	const DATA_SHOOTER_ID = 17;
+
 	/** @var Entity */
 	public $shootingEntity = null;
 	protected $damage = 0;
 
-	private $hadCollision = false;
+	public $hadCollision = false;
+
+	public function __construct(FullChunk $chunk, Compound $nbt, Entity $shootingEntity = null){
+		$this->shootingEntity = $shootingEntity;
+		if($shootingEntity !== null){
+			$this->setDataProperty(self::DATA_SHOOTER_ID, self::DATA_TYPE_LONG, $shootingEntity->getId());
+		}
+		parent::__construct($chunk, $nbt);
+	}
+
+
+	public function attack($damage, EntityDamageEvent $source){
+
+	}
 
 	protected function initEntity(){
+		parent::initEntity();
+
 		$this->setMaxHealth(1);
 		$this->setHealth(1);
 		if(isset($this->namedtag->Age)){
@@ -52,28 +72,9 @@ abstract class Projectile extends Entity{
 		return $entity instanceof Living and !$this->onGround;
 	}
 
-	public function getData(){
-		$flags = 0;
-		$flags |= $this->fireTicks > 0 ? 1 : 0;
-
-		return [
-			0 => ["type" => 0, "value" => $flags],
-			1 => ["type" => 1, "value" => $this->airTicks],
-			16 => ["type" => 0, "value" => 0] //Is critical
-		];
-	}
-
 	public function saveNBT(){
 		parent::saveNBT();
 		$this->namedtag->Age = new Short("Age", $this->age);
-	}
-
-	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
-
-	}
-
-	public function heal($amount, $source = EntityRegainHealthEvent::CAUSE_MAGIC){
-
 	}
 
 	public function onUpdate($currentTick){
@@ -94,8 +95,6 @@ abstract class Projectile extends Entity{
 			if(!$this->isCollided){
 				$this->motionY -= $this->gravity;
 			}
-
-			$this->keepMovement = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
 
 			$moveVector = new Vector3($this->x + $this->motionX, $this->y + $this->motionY, $this->z + $this->motionZ);
 
@@ -138,6 +137,10 @@ abstract class Projectile extends Entity{
 					$motion = sqrt($this->motionX ** 2 + $this->motionY ** 2 + $this->motionZ ** 2);
 					$damage = ceil($motion * $this->damage);
 
+					if($this instanceof Arrow and $this->isCritical){
+						$damage += mt_rand(0, (int) ($damage / 2) + 1);
+					}
+
 					if($this->shootingEntity === null){
 						$ev = new EntityDamageByEntityEvent($this, $movingObjectPosition->entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
 					}else{
@@ -146,6 +149,7 @@ abstract class Projectile extends Entity{
 
 					$movingObjectPosition->entityHit->attack($ev->getFinalDamage(), $ev);
 
+					$this->hadCollision = true;
 
 					if($this->fireTicks > 0){
 						$ev = new EntityCombustByEntityEvent($this, $movingObjectPosition->entityHit, 5);
@@ -170,7 +174,7 @@ abstract class Projectile extends Entity{
 				$this->motionZ = 0;
 
 				$this->server->getPluginManager()->callEvent(new ProjectileHitEvent($this));
-			}elseif(!$this->isCollided and !$this->hadCollision){
+			}elseif(!$this->isCollided and $this->hadCollision){
 				$this->hadCollision = false;
 			}
 

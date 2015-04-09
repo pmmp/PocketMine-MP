@@ -21,6 +21,10 @@
 
 namespace pocketmine\utils;
 
+
+/**
+ * @deprecated
+ */
 abstract class TextWrapper{
 
 	private static $characterWidths = [
@@ -47,6 +51,13 @@ abstract class TextWrapper{
 		}
 	}
 
+	/**
+	 * @deprecated
+	 *
+	 * @param $text
+	 *
+	 * @return string
+	 */
 	public static function wrap($text){
 		$result = "";
 		$len = strlen($text);

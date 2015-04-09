@@ -92,10 +92,10 @@ class Cake extends Transparent{
 	public function onActivate(Item $item, Player $player = null){
 		if($player instanceof Player and $player->getHealth() < 20){
 			++$this->meta;
-			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityRegainHealthEvent($player, 3, EntityRegainHealthEvent::CAUSE_EATING));
-			if(!$ev->isCancelled()){
-				$player->heal($ev->getAmount(), $ev);
-			}
+
+			$ev = new EntityRegainHealthEvent($player, 3, EntityRegainHealthEvent::CAUSE_EATING);
+			$player->heal($ev->getAmount(), $ev);
+
 			if($this->meta >= 0x06){
 				$this->getLevel()->setBlock($this, new Air(), true);
 			}else{

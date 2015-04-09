@@ -52,6 +52,8 @@ class Item extends Entity{
 	public $canCollide = false;
 
 	protected function initEntity(){
+		parent::initEntity();
+
 		$this->setMaxHealth(5);
 		$this->setHealth($this->namedtag["Health"]);
 		if(isset($this->namedtag->Age)){
@@ -70,6 +72,13 @@ class Item extends Entity{
 
 
 		$this->server->getPluginManager()->callEvent(new ItemSpawnEvent($this));
+	}
+
+
+	public function attack($damage, EntityDamageEvent $source){
+		if($source->getCause() === EntityDamageEvent::CAUSE_FIRE_TICK){
+			parent::attack($damage, $source);
+		}
 	}
 
 	public function onUpdate($currentTick){
@@ -92,7 +101,7 @@ class Item extends Entity{
 
 			$this->motionY -= $this->gravity;
 
-			$this->keepMovement = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
+			$this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
 			$this->move($this->motionX, $this->motionY, $this->motionZ);
 
 			$friction = 1 - $this->drag;
@@ -128,22 +137,6 @@ class Item extends Entity{
 		return $hasUpdate or !$this->onGround or $this->motionX != 0 or $this->motionY != 0 or $this->motionZ != 0;
 	}
 
-	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
-		if($source instanceof EntityDamageEvent){
-			$this->server->getPluginManager()->callEvent($source);
-			$damage = $source->getFinalDamage();
-			if($source->isCancelled()){
-				return;
-			}
-		}
-		$this->setLastDamageCause($source);
-		$this->setHealth($this->getHealth() - $damage);
-	}
-
-	public function heal($amount, $source = EntityRegainHealthEvent::CAUSE_MAGIC){
-
-	}
-
 	public function saveNBT(){
 		parent::saveNBT();
 		$this->namedtag->Item = new Compound("Item", [
@@ -160,15 +153,6 @@ class Item extends Entity{
 		if($this->thrower !== null){
 			$this->namedtag->Thrower = new String("Thrower", $this->thrower);
 		}
-	}
-
-	public function getData(){
-		$flags = 0;
-		$flags |= $this->fireTicks > 0 ? 1 : 0;
-
-		return [
-			0 => ["type" => 0, "value" => $flags]
-		];
 	}
 
 	/**
@@ -230,13 +214,11 @@ class Item extends Entity{
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->roll = 0;
+		$pk->speedX = $this->motionX;
+		$pk->speedY = $this->motionY;
+		$pk->speedZ = $this->motionZ;
 		$pk->item = $this->getItem();
 		$player->dataPacket($pk);
-
-		$player->addEntityMotion($this->getId(), $this->motionX, $this->motionY, $this->motionZ);
 
 		parent::spawnTo($player);
 	}

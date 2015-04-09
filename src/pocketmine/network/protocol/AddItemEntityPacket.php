@@ -33,9 +33,9 @@ class AddItemEntityPacket extends DataPacket{
 	public $x;
 	public $y;
 	public $z;
-	public $yaw;
-	public $pitch;
-	public $roll;
+	public $speedX;
+	public $speedY;
+	public $speedZ;
 
 	public function pid(){
 		return Info::ADD_ITEM_ENTITY_PACKET;
@@ -47,14 +47,14 @@ class AddItemEntityPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putInt($this->eid);
+		$this->putLong($this->eid);
 		$this->putSlot($this->item);
 		$this->putFloat($this->x);
 		$this->putFloat($this->y);
 		$this->putFloat($this->z);
-		$this->putByte($this->yaw);
-		$this->putByte($this->pitch);
-		$this->putByte($this->roll);
+		$this->putFloat($this->speedX);
+		$this->putFloat($this->speedY);
+		$this->putFloat($this->speedZ);
 	}
 
 }

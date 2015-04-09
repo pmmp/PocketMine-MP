@@ -63,8 +63,8 @@ class Simplex extends Perlin{
 	protected $offsetW;
 
 
-	public function __construct(Random $random, $octaves, $frequency, $amplitude){
-		parent::__construct($random, $octaves, $frequency, $amplitude);
+	public function __construct(Random $random, $octaves, $frequency, $amplitude, $lacunarity){
+		parent::__construct($random, $octaves, $frequency, $amplitude, $lacunarity);
 		$this->offsetW = $random->nextFloat() * 256;
 		self::$SQRT_3 = sqrt(3);
 		self::$SQRT_5 = sqrt(5);
@@ -99,16 +99,14 @@ class Simplex extends Perlin{
 
 		// Skew the input space to determine which simplex cell we're in
 		$s = ($x + $y + $z) * self::$F3; // Very nice and simple skew factor for 3D
-		$i = (int) floor($x + $s);
-		$j = (int) floor($y + $s);
-		$k = (int) floor($z + $s);
+		$i = (int) ($x + $s);
+		$j = (int) ($y + $s);
+		$k = (int) ($z + $s);
 		$t = ($i + $j + $k) * self::$G3;
-		$X0 = $i - $t; // Unskew the cell origin back to (x,y,z) space
-		$Y0 = $j - $t;
-		$Z0 = $k - $t;
-		$x0 = $x - $X0; // The x,y,z distances from the cell origin
-		$y0 = $y - $Y0;
-		$z0 = $z - $Z0;
+		// Unskew the cell origin back to (x,y,z) space
+		$x0 = $x - ($i - $t); // The x,y,z distances from the cell origin
+		$y0 = $y - ($j - $t);
+		$z0 = $z - ($k - $t);
 
 		// For the 3D case, the simplex shape is a slightly irregular tetrahedron.
 
@@ -185,47 +183,37 @@ class Simplex extends Perlin{
 		$ii = $i & 255;
 		$jj = $j & 255;
 		$kk = $k & 255;
-		$gi0 = $this->perm[$ii + $this->perm[$jj + $this->perm[$kk]]] % 12;
-		$gi1 = $this->perm[$ii + $i1 + $this->perm[$jj + $j1 + $this->perm[$kk + $k1]]] % 12;
-		$gi2 = $this->perm[$ii + $i2 + $this->perm[$jj + $j2 + $this->perm[$kk + $k2]]] % 12;
-		$gi3 = $this->perm[$ii + 1 + $this->perm[$jj + 1 + $this->perm[$kk + 1]]] % 12;
+
+		$n = 0;
 
 		// Calculate the contribution from the four corners
 		$t0 = 0.6 - $x0 ** 2 - $y0 ** 2 - $z0 ** 2;
-		if($t0 < 0){
-			$n0 = 0.0;
-		}else{
-			$t0 **= 2;
-			$n0 = $t0 ** 2 * self::dot3D(self::$grad3[$gi0], $x0, $y0, $z0);
+		if($t0 > 0){
+			$gi0 = self::$grad3[$this->perm[$ii + $this->perm[$jj + $this->perm[$kk]]] % 12];
+			$n += $t0 ** 4 * ($gi0[0] * $x0 + $gi0[1] * $y0 + $gi0[2] * $z0);
 		}
 
 		$t1 = 0.6 - $x1 ** 2 - $y1 ** 2 - $z1 ** 2;
-		if($t1 < 0){
-			$n1 = 0.0;
-		}else{
-			$t1 **= 2;
-			$n1 = $t1 ** 2 * self::dot3D(self::$grad3[$gi1], $x1, $y1, $z1);
+		if($t1 > 0){
+			$gi1 = self::$grad3[$this->perm[$ii + $i1 + $this->perm[$jj + $j1 + $this->perm[$kk + $k1]]] % 12];
+			$n += $t1 ** 4 * ($gi1[0] * $x1 + $gi1[1] * $y1 + $gi1[2] * $z1);
 		}
 
 		$t2 = 0.6 - $x2 ** 2 - $y2 ** 2 - $z2 ** 2;
-		if($t2 < 0){
-			$n2 = 0.0;
-		}else{
-			$t2 **= 2;
-			$n2 = $t2 ** 2 * self::dot3D(self::$grad3[$gi2], $x2, $y2, $z2);
+		if($t2 > 0){
+			$gi2 = self::$grad3[$this->perm[$ii + $i2 + $this->perm[$jj + $j2 + $this->perm[$kk + $k2]]] % 12];
+			$n += $t2 ** 4 * ($gi2[0] * $x2 + $gi2[1] * $y2 + $gi2[2] * $z2);
 		}
 
 		$t3 = 0.6 - $x3 ** 2 - $y3 ** 2 - $z3 ** 2;
-		if($t3 < 0){
-			$n3 = 0.0;
-		}else{
-			$t3 **= 2;
-			$n3 = $t3 ** 2 * self::dot3D(self::$grad3[$gi3], $x3, $y3, $z3);
+		if($t3 > 0){
+			$gi3 = self::$grad3[$this->perm[$ii + 1 + $this->perm[$jj + 1 + $this->perm[$kk + 1]]] % 12];
+			$n += $t3 ** 4 * ($gi3[0] * $x3 + $gi3[1] * $y3 + $gi3[2] * $z3);
 		}
 
 		// Add contributions from each corner to get the noise value.
 		// The result is scaled to stay just inside [-1,1]
-		return 32.0 * ($n0 + $n1 + $n2 + $n3);
+		return 32.0 * $n;
 	}
 
 	public function getNoise2D($x, $y){
@@ -234,13 +222,12 @@ class Simplex extends Perlin{
 
 		// Skew the input space to determine which simplex cell we're in
 		$s = ($x + $y) * self::$F2; // Hairy factor for 2D
-		$i = (int) floor($x + $s);
-		$j = (int) floor($y + $s);
+		$i = (int) ($x + $s);
+		$j = (int) ($y + $s);
 		$t = ($i + $j) * self::$G2;
-		$X0 = $i - $t; // Unskew the cell origin back to (x,y) space
-		$Y0 = $j - $t;
-		$x0 = $x - $X0; // The x,y distances from the cell origin
-		$y0 = $y - $Y0;
+		// Unskew the cell origin back to (x,y) space
+		$x0 = $x - ($i - $t); // The x,y distances from the cell origin
+		$y0 = $y - ($j - $t);
 
 		// For the 2D case, the simplex shape is an equilateral triangle.
 
@@ -267,26 +254,26 @@ class Simplex extends Perlin{
 		// Work out the hashed gradient indices of the three simplex corners
 		$ii = $i & 255;
 		$jj = $j & 255;
-		$gi0 = $this->perm[$ii + $this->perm[$jj]] % 12;
-		$gi1 = $this->perm[$ii + $i1 + $this->perm[$jj + $j1]] % 12;
-		$gi2 = $this->perm[$ii + 1 + $this->perm[$jj + 1]] % 12;
 
 		$n = 0;
 
 		// Calculate the contribution from the three corners
-		$t = 0.5 - $x0 ** 2 - $y0 ** 2;
-		if($t > 0){
-			$n += $t ** 4 * self::dot2D(self::$grad3[$gi0], $x0, $y0); // (x,y) of grad3 used for 2D gradient
+		$t0 = 0.5 - $x0 ** 2 - $y0 ** 2;
+		if($t0 > 0){
+			$gi0 = self::$grad3[$this->perm[$ii + $this->perm[$jj]] % 12];
+			$n += $t0 ** 4 * ($gi0[0] * $x0 + $gi0[1] * $y0); // (x,y) of grad3 used for 2D gradient
 		}
 
-		$t = 0.5 - $x1 ** 2 - $y1 ** 2;
-		if($t > 0){
-			$n += $t ** 4 * self::dot2D(self::$grad3[$gi1], $x1, $y1);
+		$t1 = 0.5 - $x1 ** 2 - $y1 ** 2;
+		if($t1 > 0){
+			$gi1 = self::$grad3[$this->perm[$ii + $i1 + $this->perm[$jj + $j1]] % 12];
+			$n += $t1 ** 4 * ($gi1[0] * $x1 + $gi1[1] * $y1);
 		}
 
-		$t = 0.5 - $x2 ** 2 - $y2 ** 2;
-		if($t > 0){
-			$n += $t ** 4 * self::dot2D(self::$grad3[$gi2], $x2, $y2);
+		$t2 = 0.5 - $x2 ** 2 - $y2 ** 2;
+		if($t2 > 0){
+			$gi2 = self::$grad3[$this->perm[$ii + 1 + $this->perm[$jj + 1]] % 12];
+			$n += $t2 ** 4 * ($gi2[0] * $x2 + $gi2[1] * $y2);
 		}
 
 		// Add contributions from each corner to get the noise value.

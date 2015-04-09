@@ -53,7 +53,7 @@ class UseItemPacket extends DataPacket{
 		$this->face = $this->getByte();
 		$this->item = $this->getShort();
 		$this->meta = $this->getShort();
-		$this->eid = $this->getInt();
+		$this->eid = $this->getLong();
 		$this->fx = $this->getFloat();
 		$this->fy = $this->getFloat();
 		$this->fz = $this->getFloat();

@@ -41,7 +41,7 @@ class RemovePlayerPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putInt($this->eid);
+		$this->putLong($this->eid);
 		$this->putLong($this->clientID);
 	}
 

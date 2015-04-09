@@ -128,7 +128,8 @@ class CraftingManager{
 		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::NETHER_BRICK, 0, 1), Item::get(Item::NETHERRACK, 0, 1)));
 		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::COOKED_PORKCHOP, 0, 1), Item::get(Item::RAW_PORKCHOP, 0, 1)));
 		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::BRICK, 0, 1), Item::get(Item::CLAY, 0, 1)));
-		//$this->registerRecipe(new FurnaceRecipe(Item::get(Item::COOKED_FISH, 0, 1), Item::get(Item::RAW_FISH, 0, 1)));
+		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::COOKED_FISH, 0, 1), Item::get(Item::RAW_FISH, 0, 1)));
+		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::COOKED_FISH, 1, 1), Item::get(Item::RAW_FISH, 1, 1)));
 		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::DYE, 2, 1), Item::get(Item::CACTUS, 0, 1)));
 		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::DYE, 1, 1), Item::get(Item::RED_MUSHROOM, 0, 1)));
 		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::STEAK, 0, 1), Item::get(Item::RAW_BEEF, 0, 1)));
@@ -272,7 +273,7 @@ class CraftingManager{
 			Item::IRON_BLOCK => Item::IRON_INGOT,
 			Item::DIAMOND_BLOCK => Item::DIAMOND,
 			Item::EMERALD_BLOCK => Item::EMERALD,
-			//Item::REDSTONE_BLOCK => Item::REDSTONE_DUST,
+			Item::REDSTONE_BLOCK => Item::REDSTONE_DUST,
 			Item::COAL_BLOCK => Item::COAL,
 			Item::HAY_BALE => Item::WHEAT,
 		];

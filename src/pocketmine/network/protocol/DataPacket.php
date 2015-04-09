@@ -52,6 +52,10 @@ abstract class DataPacket extends \stdClass{
 		$this->offset = 0;
 	}
 
+	public function getOffset(){
+		return $this->offset;
+	}
+
 	public function getBuffer(){
 		return $this->buffer;
 	}

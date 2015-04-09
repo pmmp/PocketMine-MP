@@ -23,7 +23,7 @@ namespace pocketmine\level\generator\noise;
 
 use pocketmine\utils\Random;
 
-class Perlin extends Generator{
+class Perlin extends Noise{
 	public static $grad3 = [
 		[1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0],
 		[1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1],
@@ -31,9 +31,10 @@ class Perlin extends Generator{
 	];
 
 
-	public function __construct(Random $random, $octaves, $frequency, $amplitude){
+	public function __construct(Random $random, $octaves, $frequency, $amplitude, $lacunarity){
 		$this->octaves = $octaves;
 		$this->frequency = $frequency;
+		$this->lacunarity = $lacunarity;
 		$this->amplitude = $amplitude;
 		$this->offsetX = $random->nextFloat() * 256;
 		$this->offsetY = $random->nextFloat() * 256;
@@ -44,11 +45,11 @@ class Perlin extends Generator{
 		}
 
 		for($i = 0; $i < 256; ++$i){
-			$this->perm[$i] = $random->nextRange(0, 255);
+			$this->perm[$i] = $random->nextBoundedInt(256);
 		}
 
 		for($i = 0; $i < 256; ++$i){
-			$pos = $random->nextRange(0, 255 - $i) + $i;
+			$pos = $random->nextBoundedInt(256 - $i) + $i;
 			$old = $this->perm[$i];
 
 			$this->perm[$i] = $this->perm[$pos];
@@ -63,9 +64,9 @@ class Perlin extends Generator{
 		$y += $this->offsetY;
 		$z += $this->offsetZ;
 
-		$floorX = (int) floor($x);
-		$floorY = (int) floor($y);
-		$floorZ = (int) floor($z);
+		$floorX = (int) $x;
+		$floorY = (int) $y;
+		$floorZ = (int) $z;
 
 		$X = $floorX & 0xFF;
 		$Y = $floorY & 0xFF;
@@ -76,26 +77,70 @@ class Perlin extends Generator{
 		$z -= $floorZ;
 
 		//Fade curves
-		$fX = self::fade($x);
-		$fY = self::fade($y);
-		$fZ = self::fade($z);
+		//$fX = self::fade($x);
+		//$fY = self::fade($y);
+		//$fZ = self::fade($z);
+		$fX = $x ** 3 * ($x * ($x * 6 - 15) + 10);
+		$fY = $y ** 3 * ($y * ($y * 6 - 15) + 10);
+		$fZ = $z ** 3 * ($z * ($z * 6 - 15) + 10);
 
 		//Cube corners
 		$A = $this->perm[$X] + $Y;
+		$B = $this->perm[$X + 1] + $Y;
+
 		$AA = $this->perm[$A] + $Z;
 		$AB = $this->perm[$A + 1] + $Z;
-		$B = $this->perm[$X + 1] + $Y;
 		$BA = $this->perm[$B] + $Z;
 		$BB = $this->perm[$B + 1] + $Z;
 
-		return self::lerp($fZ, self::lerp($fY, self::lerp($fX, self::grad($this->perm[$AA], $x, $y, $z),
-					self::grad($this->perm[$BA], $x - 1, $y, $z)),
-				self::lerp($fX, self::grad($this->perm[$AB], $x, $y - 1, $z),
-					self::grad($this->perm[$BB], $x - 1, $y - 1, $z))),
-			self::lerp($fY, self::lerp($fX, self::grad($this->perm[$AA + 1], $x, $y, $z - 1),
-					self::grad($this->perm[$BA + 1], $x - 1, $y, $z - 1)),
-				self::lerp($fX, self::grad($this->perm[$AB + 1], $x, $y - 1, $z - 1),
-					self::grad($this->perm[$BB + 1], $x - 1, $y - 1, $z - 1))));
+		$AA1 = self::grad($this->perm[$AA], $x, $y, $z);
+		$BA1 = self::grad($this->perm[$BA], $x - 1, $y, $z);
+		$AB1 = self::grad($this->perm[$AB], $x, $y - 1, $z);
+		$BB1 = self::grad($this->perm[$BB], $x - 1, $y - 1, $z);
+		$AA2 = self::grad($this->perm[$AA + 1], $x, $y, $z - 1);
+		$BA2 = self::grad($this->perm[$BA + 1], $x - 1, $y, $z - 1);
+		$AB2 = self::grad($this->perm[$AB + 1], $x, $y - 1, $z - 1);
+		$BB2 = self::grad($this->perm[$BB + 1], $x - 1, $y - 1, $z - 1);
+
+		$xLerp11 = $AA1 + $fX * ($BA1 - $AA1);
+
+		$zLerp1 = $xLerp11 + $fY * ($AB1 + $fX * ($BB1 - $AB1) - $xLerp11);
+
+		$xLerp21 = $AA2 + $fX * ($BA2 - $AA2);
+
+		return $zLerp1 + $fZ * ($xLerp21 + $fY * ($AB2 + $fX * ($BB2 - $AB2) - $xLerp21) - $zLerp1);
+
+		/*
+		return self::lerp(
+			$fZ,
+			self::lerp(
+				$fY,
+				self::lerp(
+					$fX,
+					self::grad($this->perm[$AA], $x, $y, $z),
+					self::grad($this->perm[$BA], $x - 1, $y, $z)
+				),
+				self::lerp(
+					$fX,
+					self::grad($this->perm[$AB], $x, $y - 1, $z),
+					self::grad($this->perm[$BB], $x - 1, $y - 1, $z)
+				)
+			),
+			self::lerp(
+				$fY,
+				self::lerp(
+					$fX,
+					self::grad($this->perm[$AA + 1], $x, $y, $z - 1),
+					self::grad($this->perm[$BA + 1], $x - 1, $y, $z - 1)
+				),
+				self::lerp(
+					$fX,
+					self::grad($this->perm[$AB + 1], $x, $y - 1, $z - 1),
+					self::grad($this->perm[$BB + 1], $x - 1, $y - 1, $z - 1)
+				)
+			)
+		);
+		*/
 	}
 
 	public function getNoise2D($x, $y){

@@ -31,7 +31,7 @@ use pocketmine\utils\PluginException;
 use pocketmine\utils\ReversePriorityQueue;
 
 class ServerScheduler{
-	public static $WORKERS = 1;
+	public static $WORKERS = 2;
 	/**
 	 * @var ReversePriorityQueue<Task>
 	 */

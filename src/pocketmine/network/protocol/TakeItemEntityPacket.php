@@ -41,8 +41,8 @@ class TakeItemEntityPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putInt($this->target);
-		$this->putInt($this->eid);
+		$this->putLong($this->target);
+		$this->putLong($this->eid);
 	}
 
 }

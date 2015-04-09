@@ -33,7 +33,7 @@ class Pond extends Populator{
 	public function populate(ChunkManager $level, $chunkX, $chunkZ, Random $random){
 		if($random->nextRange(0, $this->waterOdd) === 0){
 			$x = $random->nextRange($chunkX << 4, ($chunkX << 4) + 16);
-			$y = $random->nextRange(0, 128);
+			$y = $random->nextBoundedInt(128);
 			$z = $random->nextRange($chunkZ << 4, ($chunkZ << 4) + 16);
 			$pond = new \pocketmine\level\generator\object\Pond($random, new Water());
 			if($pond->canPlaceObject($level, $x, $y, $z)){

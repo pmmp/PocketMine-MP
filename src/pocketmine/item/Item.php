@@ -192,6 +192,8 @@ class Item{
 	const CARROT_BLOCK = 141;
 	const POTATO_BLOCK = 142;
 
+	const REDSTONE_BLOCK = 152;
+
 	const QUARTZ_BLOCK = 155;
 	const QUARTZ_STAIRS = 156;
 	const DOUBLE_WOOD_SLAB = 157;
@@ -339,8 +341,8 @@ class Item{
 
 	const CLOCK = 347;
 	const GLOWSTONE_DUST = 348;
-	//const RAW_FISH = 349;
-	//const COOKED_FISH = 350;
+	const RAW_FISH = 349;
+	const COOKED_FISH = 350;
 	const DYE = 351;
 	const BONE = 352;
 	const SUGAR = 353;
@@ -348,7 +350,7 @@ class Item{
 	const BED = 355;
 
 
-	//const COOKIE = 357;
+	const COOKIE = 357;
 
 
 	const SHEARS = 359;
@@ -478,6 +480,9 @@ class Item{
 			self::$list[self::FLINT_STEEL] = FlintSteel::class;
 			self::$list[self::SHEARS] = Shears::class;
 			self::$list[self::BOW] = Bow::class;
+
+			self::$list[self::RAW_FISH] = Fish::class;
+			self::$list[self::COOKED_FISH] = CookedFish::class;
 
 			for($i = 0; $i < 256; ++$i){
 				if(Block::$list[$i] !== null){

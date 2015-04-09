@@ -52,7 +52,7 @@ class StartGamePacket extends DataPacket{
 		$this->putInt($this->seed);
 		$this->putInt($this->generator);
 		$this->putInt($this->gamemode);
-		$this->putInt($this->eid);
+		$this->putLong($this->eid);
 		$this->putInt($this->spawnX);
 		$this->putInt($this->spawnY);
 		$this->putInt($this->spawnZ);

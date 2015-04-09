@@ -33,9 +33,9 @@ class MovePlayerPacket extends DataPacket{
 	public $y;
 	public $z;
 	public $yaw;
-	public $pitch;
 	public $bodyYaw;
-	public $teleport = false;
+	public $pitch;
+	public $mode = 0;
 
 	public function pid(){
 		return Info::MOVE_PLAYER_PACKET;
@@ -47,27 +47,26 @@ class MovePlayerPacket extends DataPacket{
 	}
 
 	public function decode(){
-		$this->eid = $this->getInt();
+		$this->eid = $this->getLong();
 		$this->x = $this->getFloat();
 		$this->y = $this->getFloat();
 		$this->z = $this->getFloat();
 		$this->yaw = $this->getFloat();
-		$this->pitch = $this->getFloat();
 		$this->bodyYaw = $this->getFloat();
-		$flags = $this->getByte();
-		$this->teleport = (($flags & 0x80) > 0);
+		$this->pitch = $this->getFloat();
+		$this->mode = $this->getByte();
 	}
 
 	public function encode(){
 		$this->reset();
-		$this->putInt($this->eid);
+		$this->putLong($this->eid);
 		$this->putFloat($this->x);
 		$this->putFloat($this->y);
 		$this->putFloat($this->z);
 		$this->putFloat($this->yaw);
+		$this->putFloat($this->bodyYaw); //TODO
 		$this->putFloat($this->pitch);
-		$this->putFloat($this->bodyYaw);
-		$this->putByte($this->teleport == true ? 0x80 : 0x00);
+		$this->putByte($this->mode);
 	}
 
 }

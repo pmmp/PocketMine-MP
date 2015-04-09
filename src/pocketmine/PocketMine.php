@@ -67,13 +67,14 @@ namespace {
 namespace pocketmine {
 	use pocketmine\utils\Binary;
 	use pocketmine\utils\MainLogger;
+	use pocketmine\utils\Terminal;
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\Installer;
 
-	const VERSION = "1.4.1";
-	const API_VERSION = "1.11.0";
-	const CODENAME = "絶好(Zekkou)ケーキ(Cake)";
-	const MINECRAFT_VERSION = "v0.10.5 alpha";
+	const VERSION = "1.5dev";
+	const API_VERSION = "1.12.0";
+	const CODENAME = "活発(Kappatsu)フグ(Fugu)";
+	const MINECRAFT_VERSION = "v0.11.0 alpha build 1";
 
 	/*
 	 * Startup code. Do not look at it, it may harm you.
@@ -119,13 +120,14 @@ namespace pocketmine {
 	ini_set("memory_limit", -1);
 	define("pocketmine\\START_TIME", microtime(true));
 
-	$opts = getopt("", ["enable-ansi", "disable-ansi", "data:", "plugins:", "no-wizard", "enable-profiler"]);
+	$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-profiler"]);
 
 	define("pocketmine\\DATA", isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR);
 	define("pocketmine\\PLUGIN_PATH", isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);
 
-	define("pocketmine\\ANSI", (Utils::getOS() !== "win" or isset($opts["enable-ansi"])) and !isset($opts["disable-ansi"]));
+	Terminal::init();
 
+	define("pocketmine\\ANSI", Terminal::hasFormattingCodes());
 
 	if(!file_exists(\pocketmine\DATA)){
 		mkdir(\pocketmine\DATA, 0777, true);
@@ -467,6 +469,8 @@ namespace pocketmine {
 
 	$logger->shutdown();
 	$logger->join();
+
+	echo Terminal::$FORMAT_RESET . "\n";
 
 	exit(0);
 

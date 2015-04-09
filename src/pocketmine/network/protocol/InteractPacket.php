@@ -38,15 +38,13 @@ class InteractPacket extends DataPacket{
 
 	public function decode(){
 		$this->action = $this->getByte();
-		$this->eid = $this->getInt();
-		$this->target = $this->getInt();
+		$this->target = $this->getLong();
 	}
 
 	public function encode(){
 		$this->reset();
 		$this->putByte($this->action);
-		$this->putInt($this->eid);
-		$this->putInt($this->target);
+		$this->putLong($this->target);
 	}
 
 }

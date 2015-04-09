@@ -23,9 +23,7 @@ namespace pocketmine\utils;
 
 
 /**
- * Unsecure Random Number Generator, used for fast seeded values
- * WARNING: This class is available on the PocketMine-MP Zephir project.
- * If this class is modified, remember to modify the PHP C extension.
+ * Unsecure Random Number Noise, used for fast seeded values
  */
 class Random{
 
@@ -64,14 +62,13 @@ class Random{
 	 * @return int
 	 */
 	public function nextSignedInt(){
-		$t = crc32(pack("N", $this->seed));
+		$t = ((($this->seed * 65535) + 31337) >> 8) + 1337;
+		if(PHP_INT_SIZE === 8){
+			$t = $t << 32 >> 32;
+		}
 		$this->seed ^= $t;
 
-		if(PHP_INT_SIZE === 8){
-			return $t << 32 >> 32;
-		}else{
-			return $t;
-		}
+		return $t;
 	}
 
 	/**
@@ -111,6 +108,10 @@ class Random{
 	 */
 	public function nextRange($start = 0, $end = 0x7fffffff){
 		return $start + ($this->nextInt() % ($end + 1 - $start));
+	}
+
+	public function nextBoundedInt($bound){
+		return $this->nextInt() % $bound;
 	}
 
 }

@@ -21,7 +21,9 @@
 
 namespace pocketmine\utils;
 
-
+/**
+ * @deprecated
+ */
 class Cache{
 	public static $cached = [];
 

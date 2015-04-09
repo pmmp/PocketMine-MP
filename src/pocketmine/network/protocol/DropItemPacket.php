@@ -37,7 +37,7 @@ class DropItemPacket extends DataPacket{
 	}
 
 	public function decode(){
-		$this->eid = $this->getInt();
+		$this->eid = $this->getLong();
 		$this->unknown = $this->getByte();
 		$this->item = $this->getSlot();
 	}

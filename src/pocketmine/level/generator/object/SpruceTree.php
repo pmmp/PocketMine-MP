@@ -22,64 +22,56 @@
 namespace pocketmine\level\generator\object;
 
 use pocketmine\block\Block;
+use pocketmine\block\Wood;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
 
 class SpruceTree extends Tree{
-	var $type = 1;
-	private $totalHeight = 8;
-	private $leavesBottomY = -1;
-	private $leavesMaxRadius = -1;
 
-	public function canPlaceObject(ChunkManager $level, $x, $y, $z, Random $random){
-		$this->findRandomLeavesSize($random);
-		$checkRadius = 0;
-		for($yy = 0; $yy < $this->totalHeight + 2; ++$yy){
-			if($yy === $this->leavesBottomY){
-				$checkRadius = $this->leavesMaxRadius;
-			}
-			for($xx = -$checkRadius; $xx < ($checkRadius + 1); ++$xx){
-				for($zz = -$checkRadius; $zz < ($checkRadius + 1); ++$zz){
-					if(!isset($this->overridable[$level->getBlockIdAt($x + $xx, $y + $yy, $z + $zz)])){
-						return false;
-					}
-				}
-			}
-		}
-
-		return true;
-	}
-
-	private function findRandomLeavesSize(Random $random){
-		$this->totalHeight += $random->nextRange(-1, 2);
-		$this->leavesBottomY = (int) ($this->totalHeight - $random->nextRange(1, 2) - 3);
-		$this->leavesMaxRadius = 1 + $random->nextRange(0, 1);
+	public function __construct(){
+		$this->trunkBlock = Block::LOG;
+		$this->leafBlock = Block::LEAVES;
+		$this->type = Wood::SPRUCE;
+		$this->treeHeight = 10;
 	}
 
 	public function placeObject(ChunkManager $level, $x, $y, $z, Random $random){
-		if($this->leavesBottomY === -1 or $this->leavesMaxRadius === -1){
-			$this->findRandomLeavesSize($random);
-		}
-		$level->setBlockIdAt($x, $y - 1, $z, Block::DIRT);
-		$leavesRadius = 0;
-		for($yy = $this->totalHeight; $yy >= $this->leavesBottomY; --$yy){
-			for($xx = -$leavesRadius; $xx <= $leavesRadius; ++$xx){
-				for($zz = -$leavesRadius; $zz <= $leavesRadius; ++$zz){
-					if(abs($xx) != $leavesRadius or abs($zz) != $leavesRadius or $leavesRadius <= 0){
-						$level->setBlockIdAt($x + $xx, $y + $yy, $z + $zz, Block::LEAVES);
-						$level->setBlockDataAt($x + $xx, $y + $yy, $z + $zz, $this->type);
+		$this->treeHeight = $random->nextBoundedInt(4) + 6;
+
+		$topSize = $this->treeHeight - (1 + $random->nextBoundedInt(2));
+        $lRadius = 2 + $random->nextBoundedInt(2);
+
+		$this->placeTrunk($level, $x, $y, $z, $random, $this->treeHeight - $random->nextBoundedInt(3));
+
+		$radius = $random->nextBoundedInt(2);
+		$maxR = 1;
+		$minR = 0;
+
+		for($yy = 0; $yy <= $topSize; ++$yy){
+			$yyy = $y + $this->treeHeight - $yy;
+
+			for($xx = $x - $radius; $xx <= $x + $radius; ++$xx){
+				$xOff = $xx - $x;
+				for($zz = $z - $radius; $zz <= $z + $radius; ++$zz){
+					$zOff = $zz - $z;
+                    if(abs($xOff) === $radius and abs($zOff) === $radius and $radius > 0){
+						continue;
 					}
+
+					$level->setBlockIdAt($xx, $yyy, $zz, $this->leafBlock);
+					$level->setBlockDataAt($xx, $yyy, $zz, $this->type);
+                }
+            }
+
+            if($radius >= $maxR){
+				$radius = $minR;
+				$minR = 1;
+				if(++$maxR > $lRadius){
+					$maxR = $lRadius;
 				}
+			}else{
+				++$radius;
 			}
-			if($leavesRadius > 0 and $yy === ($y + $this->leavesBottomY + 1)){
-				--$leavesRadius;
-			}elseif($leavesRadius < $this->leavesMaxRadius){
-				++$leavesRadius;
-			}
-		}
-		for($yy = 0; $yy < ($this->totalHeight - 1); ++$yy){
-			$level->setBlockIdAt($x, $y + $yy, $z, Block::TRUNK);
-			$level->setBlockDataAt($x, $y + $yy, $z, $this->type);
 		}
 	}
 

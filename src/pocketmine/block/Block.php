@@ -25,6 +25,7 @@
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\Squid;
 use pocketmine\entity\Villager;
 use pocketmine\entity\Zombie;
 use pocketmine\item\Item;
@@ -200,6 +201,8 @@ class Block extends Position implements Metadatable{
 	const CARROT_BLOCK = 141;
 	const POTATO_BLOCK = 142;
 
+	const REDSTONE_BLOCK = 152;
+
 	const QUARTZ_BLOCK = 155;
 	const QUARTZ_STAIRS = 156;
 	const DOUBLE_WOOD_SLAB = 157;
@@ -351,6 +354,7 @@ class Block extends Position implements Metadatable{
 		[Item::LAPIS_BLOCK, 0],
 		[Item::COAL_BLOCK, 0],
 		[Item::EMERALD_BLOCK, 0],
+		[Item::REDSTONE_BLOCK, 0],
 		[Item::SNOW_LAYER, 0],
 		[Item::GLASS, 0],
 		[Item::GLOWSTONE_BLOCK, 0],
@@ -491,7 +495,7 @@ class Block extends Position implements Metadatable{
 		//TODO: Slime
 		[Item::SPAWN_EGG, Zombie::NETWORK_ID],
 		//TODO: PigZombie
-		//TODO: Replace with Entity constants
+		[Item::SPAWN_EGG, Squid::NETWORK_ID],
 
 
 		//Seeds
@@ -504,6 +508,12 @@ class Block extends Position implements Metadatable{
 		[Item::POTATO, 0],
 		[Item::BEETROOT_SEEDS, 0],
 		[Item::EGG, 0],
+		[Item::RAW_FISH, 0],
+		[Item::RAW_FISH, 1],
+		[Item::RAW_FISH, 2],
+		[Item::RAW_FISH, 3],
+		[Item::COOKED_FISH, 0],
+		[Item::COOKED_FISH, 1],
 		[Item::DYE, 0],
 		[Item::DYE, 7],
 		[Item::DYE, 6],

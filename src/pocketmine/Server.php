@@ -32,12 +32,14 @@ use pocketmine\command\ConsoleCommandSender;
 use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\command\SimpleCommandMap;
 use pocketmine\entity\Arrow;
+use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\entity\FallingSand;
 use pocketmine\entity\Human;
 use pocketmine\entity\Item as DroppedItem;
 use pocketmine\entity\PrimedTNT;
 use pocketmine\entity\Snowball;
+use pocketmine\entity\Squid;
 use pocketmine\entity\Villager;
 use pocketmine\entity\Zombie;
 use pocketmine\event\HandlerList;
@@ -54,11 +56,12 @@ use pocketmine\level\format\anvil\Anvil;
 use pocketmine\level\format\leveldb\LevelDB;
 use pocketmine\level\format\LevelProviderManager;
 use pocketmine\level\format\mcregion\McRegion;
+use pocketmine\level\generator\biome\Biome;
 use pocketmine\level\generator\Flat;
 use pocketmine\level\generator\GenerationInstanceManager;
 use pocketmine\level\generator\GenerationRequestManager;
 use pocketmine\level\generator\Generator;
-use pocketmine\level\generator\Normal;
+use pocketmine\level\generator\normal\Normal;
 use pocketmine\level\Level;
 use pocketmine\metadata\EntityMetadataStore;
 use pocketmine\metadata\LevelMetadataStore;
@@ -73,6 +76,9 @@ use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\Long;
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
+use pocketmine\network\CompressBatchedTask;
+use pocketmine\network\Network;
+use pocketmine\network\protocol\BatchPacket;
 use pocketmine\network\protocol\DataPacket;
 use pocketmine\network\query\QueryHandler;
 use pocketmine\network\RakLibInterface;
@@ -86,7 +92,6 @@ use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
 use pocketmine\scheduler\CallbackTask;
-use pocketmine\scheduler\GarbageCollectionTask;
 use pocketmine\scheduler\SendUsageTask;
 use pocketmine\scheduler\ServerScheduler;
 use pocketmine\tile\Chest;
@@ -95,11 +100,11 @@ use pocketmine\tile\Sign;
 use pocketmine\tile\Tile;
 use pocketmine\updater\AutoUpdater;
 use pocketmine\utils\Binary;
-use pocketmine\utils\Cache;
 use pocketmine\utils\Config;
 use pocketmine\utils\LevelException;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\ServerException;
+use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\TextWrapper;
 use pocketmine\utils\Utils;
@@ -140,9 +145,6 @@ class Server{
 
 	/** @var ServerScheduler */
 	private $scheduler = null;
-
-	/** @var GenerationRequestManager */
-	private $generationManager = null;
 
 	/**
 	 * Counts the ticks since the server start
@@ -188,10 +190,11 @@ class Server{
 	/** @var LevelMetadataStore */
 	private $levelMetadata;
 
-	/** @var SourceInterface[] */
-	private $interfaces = [];
-	/** @var RakLibInterface */
-	private $mainInterface;
+	/** @var Network */
+	private $network;
+
+	private $networkCompressionAsync = true;
+	private $networkCompressionLevel = 7;
 
 	private $serverID;
 
@@ -214,8 +217,12 @@ class Server{
 	/** @var Player[] */
 	private $players = [];
 
+	private $identifiers = [];
+
 	/** @var Level[] */
 	private $levels = [];
+	private $offendingLevels = [];
+	private $offendingTicks = [];
 
 	/** @var Level */
 	private $levelDefault = null;
@@ -312,7 +319,7 @@ class Server{
 	}
 
 	/**
-	 * @return string
+	 * @deprecated
 	 */
 	public function getServerName(){
 		return $this->getConfigString("motd", "Minecraft: PE Server");
@@ -561,13 +568,6 @@ class Server{
 	}
 
 	/**
-	 * @return GenerationRequestManager
-	 */
-	public function getGenerationManager(){
-		return $this->generationManager;
-	}
-
-	/**
 	 * @return int
 	 */
 	public function getTick(){
@@ -592,67 +592,54 @@ class Server{
 		return round((array_sum($this->useAverage) / count($this->useAverage)) * 100, 2);
 	}
 
+
 	/**
+	 * @deprecated
+	 *
+	 * @param     $address
+	 * @param int $timeout
+	 */
+	public function blockAddress($address, $timeout = 300){
+		$this->network->blockAddress($address, $timeout);
+	}
+
+	/**
+	 * @deprecated
+	 *
+	 * @param $address
+	 * @param $port
+	 * @param $payload
+	 */
+	public function sendPacket($address, $port, $payload){
+		$this->network->sendPacket($address, $port, $payload);
+	}
+
+	/**
+	 * @deprecated
+	 *
 	 * @return SourceInterface[]
 	 */
 	public function getInterfaces(){
-		return $this->interfaces;
+		return $this->network->getInterfaces();
 	}
 
 	/**
+	 * @deprecated
+	 *
 	 * @param SourceInterface $interface
 	 */
 	public function addInterface(SourceInterface $interface){
-		$this->interfaces[spl_object_hash($interface)] = $interface;
+		$this->network->registerInterface($interface);
 	}
 
 	/**
+	 * @deprecated
+	 *
 	 * @param SourceInterface $interface
 	 */
 	public function removeInterface(SourceInterface $interface){
 		$interface->shutdown();
-		unset($this->interfaces[spl_object_hash($interface)]);
-	}
-
-	/**
-	 * @param string $address
-	 * @param int    $port
-	 * @param string $payload
-	 */
-	public function sendPacket($address, $port, $payload){
-		$this->mainInterface->putRaw($address, $port, $payload);
-	}
-
-	/**
-	 * Blocks an IP address from the main interface. Setting timeout to -1 will block it forever
-	 *
-	 * @param string $address
-	 * @param int    $timeout
-	 */
-	public function blockAddress($address, $timeout = 300){
-		$this->mainInterface->blockAddress($address, $timeout);
-	}
-
-	/**
-	 * @param string $address
-	 * @param int    $port
-	 * @param string $payload
-	 */
-	public function handlePacket($address, $port, $payload){
-		try{
-			if(strlen($payload) > 2 and substr($payload, 0, 2) === "\xfe\xfd" and $this->queryHandler instanceof QueryHandler){
-				$this->queryHandler->handle($address, $port, $payload);
-			}
-		}catch(\Exception $e){
-			if(\pocketmine\DEBUG > 1){
-				if($this->logger instanceof MainLogger){
-					$this->logger->logException($e);
-				}
-			}
-
-			$this->blockAddress($address, 600);
-		}
-		//TODO: add raw packet events
+		$this->network->unregisterInterface($interface);
 	}
 
 	/**
@@ -890,6 +877,7 @@ class Server{
 		foreach($this->players as $identifier => $p){
 			if($player === $p){
 				unset($this->players[$identifier]);
+				unset($this->identifiers[spl_object_hash($player)]);
 				break;
 			}
 		}
@@ -1127,7 +1115,7 @@ class Server{
 	 *
 	 * @param string $name
 	 * @param int    $seed
-	 * @param string $generator Class name that extends pocketmine\level\generator\Generator
+	 * @param string $generator Class name that extends pocketmine\level\generator\Noise
 	 * @param array  $options
 	 *
 	 * @return bool
@@ -1174,21 +1162,14 @@ class Server{
 
 		$this->getLogger()->notice("Spawn terrain for level \"$name\" is being generated in the background");
 
-
-		$radiusSquared = ($this->getViewDistance() + 1) / M_PI;
-		$radius = ceil(sqrt($radiusSquared));
-
 		$centerX = $level->getSpawnLocation()->getX() >> 4;
 		$centerZ = $level->getSpawnLocation()->getZ() >> 4;
 
 		$order = [];
 
-		for($X = -$radius; $X <= $radius; ++$X){
-			for($Z = -$radius; $Z <= $radius; ++$Z){
+		for($X = -4; $X <= 4; ++$X){
+			for($Z = -4; $Z <= 4; ++$Z){
 				$distance = $X ** 2 + $Z ** 2;
-				if($distance > $radiusSquared){
-					continue;
-				}
 				$chunkX = $X + $centerX;
 				$chunkZ = $Z + $centerZ;
 				$index = Level::chunkHash($chunkX, $chunkZ);
@@ -1202,7 +1183,7 @@ class Server{
 
 		foreach($order as $index => $distance){
 			Level::getXZ($index, $chunkX, $chunkZ);
-			$level->generateChunk($chunkX, $chunkZ);
+			$level->generateChunk($chunkX, $chunkZ, true);
 		}
 
 		return true;
@@ -1509,7 +1490,6 @@ class Server{
 		$this->properties = new Config($this->dataPath . "server.properties", Config::PROPERTIES, [
 			"motd" => "Minecraft: PE Server",
 			"server-port" => 19132,
-			"memory-limit" => -1,
 			"white-list" => false,
 			"announce-player-achievements" => true,
 			"spawn-protection" => 16,
@@ -1533,6 +1513,14 @@ class Server{
 		]);
 
 		ServerScheduler::$WORKERS = $this->getProperty("settings.async-workers", ServerScheduler::$WORKERS);
+
+		if($this->getProperty("network.batch-threshold", 256) >= 0){
+			Network::$BATCH_THRESHOLD = (int) $this->getProperty("network.batch-threshold", 256);
+		}else{
+			Network::$BATCH_THRESHOLD = -1;
+		}
+		$this->networkCompressionLevel = $this->getProperty("network.compression-level", 7);
+		$this->networkCompressionAsync = $this->getProperty("network.async-compression", true);
 
 		$this->scheduler = new ServerScheduler();
 
@@ -1563,11 +1551,11 @@ class Server{
 			$value = ["M" => 1, "G" => 1024];
 			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
 			if($real < 128){
-				$this->logger->warning($this->getName() . " may not work right with less than 128MB of RAM");
+				$this->logger->warning($this->getName() . " may not work right with less than 128MB of memory");
 			}
 			@ini_set("memory_limit", $memory);
-		}else{
-			$this->setConfigString("memory-limit", -1);
+			$this->logger->notice("The memory limit will only affect the main thread, and it's unreliable.");
+			$this->logger->notice("To control the memory usage, reduce the amount of threads and chunks loaded");
 		}
 
 		if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < 3){
@@ -1578,14 +1566,8 @@ class Server{
 		if($this->logger instanceof MainLogger){
 			$this->logger->setLogDebug(\pocketmine\DEBUG > 1);
 		}
-		define("ADVANCED_CACHE", $this->getProperty("settings.advanced-cache", false));
-		if(ADVANCED_CACHE == true){
-			$this->logger->info("Advanced cache enabled");
-		}
 
-		Level::$COMPRESSION_LEVEL = $this->getProperty("chunk-sending.compression-level", 8);
-
-		if(defined("pocketmine\\DEBUG") and \pocketmine\DEBUG >= 0){
+		if(\pocketmine\DEBUG >= 0){
 			@cli_set_process_title($this->getName() . " " . $this->getPocketMineVersion());
 		}
 
@@ -1593,7 +1575,10 @@ class Server{
 		define("BOOTUP_RANDOM", @Utils::getRandomBytes(16));
 		$this->serverID = Binary::readLong(substr(Utils::getUniqueID(true, $this->getIp() . $this->getPort()), 0, 8));
 
-		$this->addInterface($this->mainInterface = new RakLibInterface($this));
+		$this->network = new Network($this);
+		$this->network->setName($this->getMotd());
+		$this->network->registerInterface(new RakLibInterface($this));
+
 
 		$this->logger->info("This server is running " . $this->getName() . " version " . ($version->isDev() ? TextFormat::YELLOW : "") . $version->get(true) . TextFormat::WHITE . " \"" . $this->getCodename() . "\" (API " . $this->getApiVersion() . ")");
 		$this->logger->info($this->getName() . " is distributed under the LGPL License");
@@ -1610,6 +1595,9 @@ class Server{
 		InventoryType::init();
 		Block::init();
 		Item::init();
+		Biome::init();
+		Effect::init();
+		/** TODO: @deprecated */
 		TextWrapper::init();
 		$this->craftingManager = new CraftingManager();
 
@@ -1626,12 +1614,6 @@ class Server{
 		$this->updater = new AutoUpdater($this, $this->getProperty("auto-updater.host", "www.pocketmine.net"));
 
 		$this->enablePlugins(PluginLoadOrder::STARTUP);
-
-		if($this->getProperty("chunk-generation.use-async", true)){
-			$this->generationManager = new GenerationRequestManager($this);
-		}else{
-			$this->generationManager = new GenerationInstanceManager($this);
-		}
 
 		LevelProviderManager::addProvider($this, Anvil::class);
 		LevelProviderManager::addProvider($this, McRegion::class);
@@ -1687,7 +1669,6 @@ class Server{
 			return;
 		}
 
-		$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask([Cache::class, "cleanup"]), $this->getProperty("ticks-per.cache-cleanup", 900), $this->getProperty("ticks-per.cache-cleanup", 900));
 		if($this->getAutoSave() and $this->getProperty("ticks-per.autosave", 6000) > 0){
 			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask([$this, "doAutoSave"]), $this->getProperty("ticks-per.autosave", 6000), $this->getProperty("ticks-per.autosave", 6000));
 		}
@@ -1695,8 +1676,6 @@ class Server{
 		if($this->getProperty("chunk-gc.period-in-ticks", 600) > 0){
 			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask([$this, "doLevelGC"]), $this->getProperty("chunk-gc.period-in-ticks", 600), $this->getProperty("chunk-gc.period-in-ticks", 600));
 		}
-
-		$this->scheduler->scheduleRepeatingTask(new GarbageCollectionTask(), 900);
 
 		$this->enablePlugins(PluginLoadOrder::POSTWORLD);
 
@@ -1753,11 +1732,63 @@ class Server{
 	public static function broadcastPacket(array $players, DataPacket $packet){
 		$packet->encode();
 		$packet->isEncoded = true;
+		if(Network::$BATCH_THRESHOLD >= 0 and strlen($packet->buffer) >= Network::$BATCH_THRESHOLD){
+			Server::getInstance()->batchPackets($players, [$packet->buffer]);
+			return;
+		}
+
 		foreach($players as $player){
 			$player->dataPacket($packet);
 		}
 		if(isset($packet->__encapsulatedPacket)){
 			unset($packet->__encapsulatedPacket);
+		}
+	}
+
+	/**
+	 * Broadcasts a list of packets in a batch to a list of players
+	 *
+	 * @param Player[]            $players
+	 * @param DataPacket[]|string $packets
+	 */
+	public function batchPackets(array $players, array $packets){
+		$str = "";
+
+		foreach($packets as $p){
+			if(is_object($p)){
+				$p->encode();
+				$str .= $p->buffer;
+			}else{
+				$str .= $p;
+			}
+		}
+
+		$targets = [];
+		foreach($players as $p){
+			$targets[] = $this->identifiers[spl_object_hash($p)];
+		}
+
+		if($this->networkCompressionAsync){
+			$task = new CompressBatchedTask();
+			$task->targets = $targets;
+			$task->data = $str;
+			$task->level = $this->networkCompressionLevel;
+			$this->getScheduler()->scheduleAsyncTask($task);
+		}else{
+			$this->broadcastPacketsCallback(zlib_encode($str, ZLIB_ENCODING_DEFLATE, $this->networkCompressionLevel), $targets);
+		}
+	}
+
+	public function broadcastPacketsCallback($data, array $identifiers){
+		$pk = new BatchPacket();
+		$pk->payload = $data;
+		$pk->encode();
+		$pk->isEncoded = true;
+
+		foreach($identifiers as $i){
+			if(isset($this->players[$i])){
+				$this->players[$i]->dataPacket($pk);
+			}
 		}
 	}
 
@@ -1856,11 +1887,11 @@ class Server{
 			$value = ["M" => 1, "G" => 1024];
 			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
 			if($real < 256){
-				$this->logger->warning($this->getName() . " may not work right with less than 256MB of RAM", true, true, 0);
+				$this->logger->warning($this->getName() . " may not work right with less than 256MB of memory", true, true, 0);
 			}
 			@ini_set("memory_limit", $memory);
-		}else{
-			$this->setConfigString("memory-limit", -1);
+			$this->logger->notice("The memory limit will only affect the main thread, and it's unreliable.");
+			$this->logger->notice("To control the memory usage, reduce the amount of threads and chunks loaded");
 		}
 
 		if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < 3){
@@ -1904,7 +1935,7 @@ class Server{
 				$this->rcon->stop();
 			}
 
-			if($this->getProperty("settings.upnp-forwarding", false) === true){
+			if($this->getProperty("network.upnp-forwarding", false) === true){
 				$this->logger->info("[UPnP] Removing port forward...");
 				UPnP::RemovePortForward($this->getPort());
 			}
@@ -1919,10 +1950,6 @@ class Server{
 				$this->unloadLevel($level, true);
 			}
 
-			if($this->generationManager instanceof GenerationRequestManager){
-				$this->generationManager->shutdown();
-			}
-
 			HandlerList::unregisterAll();
 
 			$this->scheduler->cancelAllTasks();
@@ -1932,8 +1959,9 @@ class Server{
 
 			$this->console->kill();
 
-			foreach($this->interfaces as $interface){
+			foreach($this->network->getInterfaces() as $interface){
 				$interface->shutdown();
+				$this->network->unregisterInterface($interface);
 			}
 		}catch(\Exception $e){
 			$this->logger->emergency("Crashed while crashing, killing process");
@@ -1946,14 +1974,12 @@ class Server{
 	 * Starts the PocketMine-MP server and starts processing ticks and packets
 	 */
 	public function start(){
-
 		if($this->getConfigBoolean("enable-query", true) === true){
 			$this->queryHandler = new QueryHandler();
-
 		}
 
 		foreach($this->getIPBans()->getEntries() as $entry){
-			$this->blockAddress($entry->getName(), -1);
+			$this->network->blockAddress($entry->getName(), -1);
 		}
 
 		if($this->getProperty("settings.send-usage", true) !== false){
@@ -1962,7 +1988,7 @@ class Server{
 		}
 
 
-		if($this->getProperty("settings.upnp-forwarding", false) == true){
+		if($this->getProperty("network.upnp-forwarding", false) == true){
 			$this->logger->info("[UPnP] Trying to port forward...");
 			UPnP::PortForward($this->getPort());
 		}
@@ -2114,14 +2140,33 @@ class Server{
 
 	public function addPlayer($identifier, Player $player){
 		$this->players[$identifier] = $player;
+		$this->identifiers[spl_object_hash($player)] = $identifier;
 	}
 
 	private function checkTickUpdates($currentTick){
 
+		$tickLimit = 50 / count($this->levels);
+		$levelTimes = [];
+
+		$startTime = microtime(true);
 		//Do level ticks
 		foreach($this->getLevels() as $level){
+			if(isset($this->offendingLevels[$level->getId()]) and $this->offendingTicks[$level->getId()]-- > 0){
+				continue;
+			}
 			try{
+				$levelTime = microtime(true);
 				$level->doTick($currentTick);
+				$levelMs = (microtime(true) - $levelTime) * 1000;
+				$levelTimes[$level->getId()] = $levelMs;
+				if(isset($this->offendingLevels[$level->getId()])){
+					if($levelMs < $tickLimit and --$this->offendingLevels[$level->getId()] <= 0){
+						unset($this->offendingLevels[$level->getId()]);
+						unset($this->offendingTicks[$level->getId()]);
+					}else{
+						$this->offendingTicks[$level->getId()] = $this->offendingLevels[$level->getId()];
+					}
+				}
 			}catch(\Exception $e){
 				$this->logger->critical("Could not tick level " . $level->getName() . ": " . $e->getMessage());
 				if(\pocketmine\DEBUG > 1 and $this->logger instanceof MainLogger){
@@ -2129,6 +2174,26 @@ class Server{
 				}
 			}
 		}
+
+		$totalTime = (microtime(true) - $startTime) * 1000;
+
+		if($totalTime > 50){
+			arsort($levelTimes);
+			foreach($levelTimes as $levelId => $t){
+				$totalTime -= $t;
+				if(!isset($this->offendingLevels[$levelId])){
+					$this->offendingLevels[$levelId] = max(1, min(10, floor($t / 50)));
+				}elseif($this->offendingLevels[$levelId] < 10){ //Limit?
+					++$this->offendingLevels[$levelId];
+				}
+				$this->offendingTicks[$levelId] = $this->offendingLevels[$levelId];
+
+				if($totalTime <= 50){
+					break;
+				}
+			}
+		}
+
 	}
 
 	public function doAutoSave(){
@@ -2139,6 +2204,7 @@ class Server{
 					$player->save();
 				}elseif(!$player->isConnected()){
 					unset($this->players[$index]);
+					unset($this->identifiers[spl_object_hash($player)]);
 				}
 			}
 
@@ -2175,12 +2241,12 @@ class Server{
 			"os" => Utils::getOS(),
 			"name" => $this->getName(),
 			"memory_total" => $this->getConfigString("memory-limit"),
-			"memory_usage" => memory_get_usage(),
+			"memory_usage" => $this->getMemoryUsage(),
 			"php_version" => PHP_VERSION,
 			"version" => $version->get(true),
 			"build" => $version->getBuild(),
 			"mc_version" => \pocketmine\MINECRAFT_VERSION,
-			"protocol" => network\protocol\Info::CURRENT_PROTOCOL,
+			"protocol" => \pocketmine\network\protocol\Info::CURRENT_PROTOCOL,
 			"online" => count($this->players),
 			"max" => $this->getMaxPlayers(),
 			"plugins" => $plist,
@@ -2188,11 +2254,94 @@ class Server{
 
 		$this->scheduler->scheduleAsyncTask($this->lastSendUsage);
 	}
+	
+	public function getNetwork(){
+		return $this->network;
+	}
 
 	private function titleTick(){
-		if(defined("pocketmine\\DEBUG") and \pocketmine\DEBUG >= 0 and \pocketmine\ANSI === true){
-			echo "\x1b]0;" . $this->getName() . " " . $this->getPocketMineVersion() . " | Online " . count($this->players) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "/" . round((memory_get_usage(true) / 1024) / 1024, 2) . " MB | U " . round($this->mainInterface->getUploadUsage() / 1024, 2) . " D " . round($this->mainInterface->getDownloadUsage() / 1024, 2) . " kB/s | TPS " . $this->getTicksPerSecond() . " | Load " . $this->getTickUsage() . "%\x07";
+		if(!Terminal::hasFormattingCodes()){
+			return;
 		}
+		
+		$u = $this->getMemoryUsage(true);
+		$usage = round(($u[0] / 1024) / 1024, 2) . "/".round(($u[1] / 1024) / 1024, 2)." MB @ " . $this->getThreadCount() . " threads";
+
+		echo "\x1b]0;" . $this->getName() . " " .
+			$this->getPocketMineVersion() .
+			" | Online " . count($this->players) . "/" . $this->getMaxPlayers() .
+			" | Memory " . $usage .
+			" | U " . round($this->network->getUpload() / 1024, 2) .
+			" D " . round($this->network->getDownload() / 1024, 2) .
+			" kB/s | TPS " . $this->getTicksPerSecond() .
+			" | Load " . $this->getTickUsage() . "%\x07";
+
+		$this->network->resetStatistics();
+	}
+	
+	public function getMemoryUsage($advanced = false){
+		$VmSize = null;
+		$VmRSS = null;
+		if(Utils::getOS() === "linux" or Utils::getOS() === "bsd"){
+			$status = file_get_contents("/proc/self/status");
+			if(preg_match("/VmRSS:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
+				$VmRSS = $matches[1] * 1024;
+			}
+
+			if(preg_match("/VmSize:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
+				$VmSize = $matches[1] * 1024;
+			}
+		}
+
+		if($VmRSS === null){
+			$VmRSS = memory_get_usage();
+		}
+
+		if(!$advanced){
+			return $VmRSS;
+		}
+
+		if($VmSize === null){
+			$VmSize = memory_get_usage(true);
+		}
+
+		return [$VmRSS, $VmSize];
+	}
+	
+	public function getThreadCount(){
+		if(Utils::getOS() === "linux" or Utils::getOS() === "bsd"){
+			
+			if(preg_match("/Threads:[ \t]+([0-9]+)/", file_get_contents("/proc/self/status"), $matches) > 0){
+				return (int) $matches[1];
+			}
+		}
+		
+		return count(ThreadManager::getInstance()->getAll()) + 3; //RakLib + MainLogger + Main Thread
+	}
+
+
+	/**
+	 * @param string $address
+	 * @param int    $port
+	 * @param string $payload
+	 *
+	 * TODO: move this to Network
+	 */
+	public function handlePacket($address, $port, $payload){
+		try{
+			if(strlen($payload) > 2 and substr($payload, 0, 2) === "\xfe\xfd" and $this->queryHandler instanceof QueryHandler){
+				$this->queryHandler->handle($address, $port, $payload);
+			}
+		}catch(\Exception $e){
+			if(\pocketmine\DEBUG > 1){
+				if($this->logger instanceof MainLogger){
+					$this->logger->logException($e);
+				}
+			}
+
+			$this->blockAddress($address, 600);
+		}
+		//TODO: add raw packet events
 	}
 
 
@@ -2212,9 +2361,7 @@ class Server{
 		$this->checkConsole();
 
 		Timings::$connectionTimer->startTiming();
-		foreach($this->interfaces as $interface){
-			$interface->process();
-		}
+		$this->network->processInterfaces();
 		Timings::$connectionTimer->stopTiming();
 
 		Timings::$schedulerTimer->startTiming();
@@ -2235,16 +2382,6 @@ class Server{
 				}
 			}
 		}
-
-		Timings::$generationTimer->startTiming();
-		try{
-			$this->generationManager->process();
-		}catch(\Exception $e){
-			if($this->logger instanceof MainLogger){
-				$this->logger->logException($e);
-			}
-		}
-		Timings::$generationTimer->stopTiming();
 
 		if(($this->tickCounter % 100) === 0){
 			foreach($this->levels as $level){
@@ -2279,6 +2416,7 @@ class Server{
 		Entity::registerEntity(Snowball::class);
 		Entity::registerEntity(Villager::class);
 		Entity::registerEntity(Zombie::class);
+		Entity::registerEntity(Squid::class);
 
 		Entity::registerEntity(Human::class, true);
 	}

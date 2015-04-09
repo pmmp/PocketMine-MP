@@ -28,7 +28,6 @@ class RespawnPacket extends DataPacket{
 	public static $pool = [];
 	public static $next = 0;
 
-	public $eid;
 	public $x;
 	public $y;
 	public $z;
@@ -38,7 +37,7 @@ class RespawnPacket extends DataPacket{
 	}
 
 	public function decode(){
-		$this->eid = $this->getInt();
+		$this->getLong(); //TODO: remove
 		$this->x = $this->getFloat();
 		$this->y = $this->getFloat();
 		$this->z = $this->getFloat();
@@ -46,7 +45,7 @@ class RespawnPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putInt($this->eid);
+		$this->putLong(0); //TODO: remove
 		$this->putFloat($this->x);
 		$this->putFloat($this->y);
 		$this->putFloat($this->z);

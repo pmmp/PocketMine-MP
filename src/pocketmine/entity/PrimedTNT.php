@@ -44,7 +44,14 @@ class PrimedTNT extends Entity implements Explosive{
 
 	public $canCollide = false;
 
+
+	public function attack($damage, EntityDamageEvent $source){
+
+	}
+
 	protected function initEntity(){
+		parent::initEntity();
+
 		if(isset($this->namedtag->Fuse)){
 			$this->fuse = $this->namedtag["Fuse"];
 		}else{
@@ -55,12 +62,6 @@ class PrimedTNT extends Entity implements Explosive{
 
 	public function canCollideWith(Entity $entity){
 		return false;
-	}
-
-	public function getData(){
-		return [
-			16 => ["type" => 0, "value" => $this->fuse],
-		];
 	}
 
 	public function saveNBT(){
@@ -106,22 +107,12 @@ class PrimedTNT extends Entity implements Explosive{
 			if($this->fuse <= 0){
 				$this->kill();
 				$this->explode();
-			}else{
-				$this->sendMetadata($this->getViewers());
 			}
 
 		}
 
 
 		return $hasUpdate or $this->fuse >= 0 or $this->motionX != 0 or $this->motionY != 0 or $this->motionZ != 0;
-	}
-
-	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
-
-	}
-
-	public function heal($amount, $source = EntityRegainHealthEvent::CAUSE_MAGIC){
-
 	}
 
 	public function explode(){
@@ -143,10 +134,11 @@ class PrimedTNT extends Entity implements Explosive{
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
-		$pk->did = 0;
+		$pk->speedX = $this->motionX;
+		$pk->speedY = $this->motionY;
+		$pk->speedZ = $this->motionZ;
+		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
-
-		$player->addEntityMotion($this->getId(), $this->motionX, $this->motionY, $this->motionZ);
 
 		parent::spawnTo($player);
 	}

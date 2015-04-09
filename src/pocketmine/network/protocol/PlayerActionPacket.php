@@ -28,28 +28,33 @@ class PlayerActionPacket extends DataPacket{
 	public static $pool = [];
 	public static $next = 0;
 
+	public $eid;
 	public $action;
 	public $x;
 	public $y;
 	public $z;
 	public $face;
-	public $eid;
 
 	public function pid(){
 		return Info::PLAYER_ACTION_PACKET;
 	}
 
 	public function decode(){
+		$this->eid = $this->getLong();
 		$this->action = $this->getInt();
 		$this->x = $this->getInt();
 		$this->y = $this->getInt();
 		$this->z = $this->getInt();
 		$this->face = $this->getInt();
-		$this->eid = $this->getInt();
 	}
 
 	public function encode(){
-
+		$this->putLong($this->eid);
+		$this->putInt($this->action);
+		$this->putInt($this->x);
+		$this->putInt($this->y);
+		$this->putInt($this->z);
+		$this->putInt($this->face);
 	}
 
 }

@@ -75,7 +75,7 @@ class BanIpCommand extends VanillaCommand{
 			}
 		}
 
-		$sender->getServer()->blockAddress($ip, -1);
+		$sender->getServer()->getNetwork()->blockAddress($ip, -1);
 
 		Command::broadcastCommandMessage($sender, "Banned IP Address " . $ip);
 	}

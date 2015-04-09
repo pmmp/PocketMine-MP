@@ -114,6 +114,9 @@ class NBT{
 		$this->read(zlib_decode($buffer));
 	}
 
+	/**
+	 * @return string|bool
+	 */
 	public function write(){
 		$this->offset = 0;
 		if($this->data instanceof Compound){

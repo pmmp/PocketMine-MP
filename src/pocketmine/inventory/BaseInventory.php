@@ -122,12 +122,12 @@ abstract class BaseInventory implements Inventory{
 		}
 	}
 
-	public function setItem($index, Item $item, $source = null){
+	public function setItem($index, Item $item){
 		$item = clone $item;
 		if($index < 0 or $index >= $this->size){
 			return false;
 		}elseif($item->getId() === 0 or $item->getCount() <= 0){
-			return $this->clear($index, $source);
+			return $this->clear($index);
 		}
 
 		$holder = $this->getHolder();
@@ -142,7 +142,7 @@ abstract class BaseInventory implements Inventory{
 
 		$old = $this->getItem($index);
 		$this->slots[$index] = clone $item;
-		$this->onSlotChange($index, $old, $source);
+		$this->onSlotChange($index, $old);
 
 		return true;
 	}
@@ -227,14 +227,6 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function addItem(...$slots){
-		if(isset($slots[$end = count($slots) - 1]) and $slots[$end] instanceof Player){
-			/** @var Player $source */
-			$source = $slots[$end];
-			unset($slots[$end]);
-		}else{
-			$source = null;
-		}
-
 		/** @var Item[] $itemSlots */
 		/** @var Item[] $slots */
 		$itemSlots = [];
@@ -258,7 +250,7 @@ abstract class BaseInventory implements Inventory{
 					if($amount > 0){
 						$slot->setCount($slot->getCount() - $amount);
 						$item->setCount($item->getCount() + $amount);
-						$this->setItem($i, $item, $source);
+						$this->setItem($i, $item);
 						if($slot->getCount() <= 0){
 							unset($itemSlots[$index]);
 						}
@@ -273,12 +265,13 @@ abstract class BaseInventory implements Inventory{
 
 		if(count($itemSlots) > 0 and count($emptySlots) > 0){
 			foreach($emptySlots as $slotIndex){
+				//This loop only gets the first item, then goes to the next empty slot
 				foreach($itemSlots as $index => $slot){
 					$amount = min($slot->getMaxStackSize(), $slot->getCount(), $this->getMaxStackSize());
 					$slot->setCount($slot->getCount() - $amount);
 					$item = clone $slot;
 					$item->setCount($amount);
-					$this->setItem($slotIndex, $item, $source);
+					$this->setItem($slotIndex, $item);
 					if($slot->getCount() <= 0){
 						unset($itemSlots[$index]);
 					}
@@ -291,14 +284,6 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function removeItem(...$slots){
-		if(isset($slots[$end = count($slots) - 1]) and $slots[$end] instanceof Player){
-			/** @var Player $source */
-			$source = $slots[$end];
-			unset($slots[$end]);
-		}else{
-			$source = null;
-		}
-
 		/** @var Item[] $itemSlots */
 		/** @var Item[] $slots */
 		$itemSlots = [];
@@ -319,7 +304,7 @@ abstract class BaseInventory implements Inventory{
 					$amount = min($item->getCount(), $slot->getCount());
 					$slot->setCount($slot->getCount() - $amount);
 					$item->setCount($item->getCount() - $amount);
-					$this->setItem($i, $item, $source);
+					$this->setItem($i, $item);
 					if($slot->getCount() <= 0){
 						unset($itemSlots[$index]);
 					}
@@ -334,7 +319,7 @@ abstract class BaseInventory implements Inventory{
 		return $itemSlots;
 	}
 
-	public function clear($index, $source = null){
+	public function clear($index){
 		if(isset($this->slots[$index])){
 			$item = Item::get(Item::AIR, null, 0);
 			$old = $this->slots[$index];
@@ -353,7 +338,7 @@ abstract class BaseInventory implements Inventory{
 				unset($this->slots[$index]);
 			}
 
-			$this->onSlotChange($index, $old, $source);
+			$this->onSlotChange($index, $old);
 		}
 
 		return true;
@@ -366,20 +351,10 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	/**
-	 * @param Player $source
-	 *
 	 * @return Player[]
 	 */
-	public function getViewers($source = null){
-		$viewers = [];
-		foreach($this->viewers as $viewer){
-			if($viewer === $source){
-				continue;
-			}
-			$viewers[] = $viewer;
-		}
-
-		return $viewers;
+	public function getViewers(){
+		return $this->viewers;
 	}
 
 	public function getHolder(){
@@ -412,8 +387,8 @@ abstract class BaseInventory implements Inventory{
 		unset($this->viewers[spl_object_hash($who)]);
 	}
 
-	public function onSlotChange($index, $before, $source = null){
-		$this->sendSlot($index, $this->getViewers($source));
+	public function onSlotChange($index, $before){
+		$this->sendSlot($index, $this->getViewers());
 	}
 
 

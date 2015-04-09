@@ -129,16 +129,13 @@ class McRegion extends BaseLevelProvider{
 
 		$biomeColors = pack("N*", ...$chunk->getBiomeColorArray());
 
-		$ordered = zlib_encode(
-			Binary::writeLInt($x) . Binary::writeLInt($z) .
-			$chunk->getBlockIdArray() .
+		$ordered = $chunk->getBlockIdArray() .
 			$chunk->getBlockDataArray() .
 			$chunk->getBlockSkyLightArray() .
 			$chunk->getBlockLightArray() .
 			$chunk->getBiomeIdArray() .
 			$biomeColors .
-			$tiles
-			, ZLIB_ENCODING_DEFLATE, Level::$COMPRESSION_LEVEL);
+			$tiles;
 
 		$this->getLevel()->chunkRequestCallback($x, $z, $ordered);
 
@@ -295,13 +292,9 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	protected function loadRegion($x, $z){
-		if(isset($this->regions[$index = Level::chunkHash($x, $z)])){
-			return true;
+		if(!isset($this->regions[$index = Level::chunkHash($x, $z)])){
+			$this->regions[$index] = new RegionLoader($this, $x, $z);
 		}
-
-		$this->regions[$index] = new RegionLoader($this, $x, $z);
-
-		return true;
 	}
 
 	public function close(){

@@ -27,7 +27,6 @@ class MainLogger extends \AttachableThreadedLogger{
 	protected $logFile;
 	protected $logStream;
 	protected $shutdown;
-	protected $hasANSI;
 	protected $logDebug;
 	private $logResource;
 	/** @var MainLogger */
@@ -35,22 +34,20 @@ class MainLogger extends \AttachableThreadedLogger{
 
 	/**
 	 * @param string $logFile
-	 * @param bool   $hasANSI
 	 * @param bool   $logDebug
 	 *
 	 * @throws \RuntimeException
 	 */
-	public function __construct($logFile, $hasANSI = false, $logDebug = false){
+	public function __construct($logFile, $logDebug = false){
 		if(static::$logger instanceof MainLogger){
 			throw new \RuntimeException("MainLogger has been already created");
 		}
 		static::$logger = $this;
 		touch($logFile);
 		$this->logFile = $logFile;
-		$this->hasANSI = (bool) $hasANSI;
 		$this->logDebug = (bool) $logDebug;
 		$this->logStream = "";
-		$this->start(PTHREADS_INHERIT_NONE);
+		$this->start();
 	}
 
 	/**
@@ -180,20 +177,24 @@ class MainLogger extends \AttachableThreadedLogger{
 
 	protected function send($message, $level = -1){
 		$now = time();
-		$message = TextFormat::toANSI(TextFormat::AQUA . date("H:i:s", $now) . TextFormat::RESET . " " . $message . TextFormat::RESET . PHP_EOL);
-		$cleanMessage = TextFormat::clean(preg_replace('/\x1b\[[0-9;]*m/', "", $message));
+		$message = TextFormat::toANSI(TextFormat::AQUA . date("H:i:s", $now) . TextFormat::RESET . " " . $message . TextFormat::RESET);
+		$cleanMessage = TextFormat::clean($message);
 
-		if(!$this->hasANSI){
-			echo $cleanMessage;
+		if(!Terminal::hasFormattingCodes()){
+			echo $cleanMessage . PHP_EOL;
 		}else{
-			echo $message;
+			echo $message . PHP_EOL;
 		}
 
 		if($this->attachment instanceof \ThreadedLoggerAttachment){
 			$this->attachment->call($level, $message);
 		}
 
-		$this->logStream .= date("Y-m-d", $now) . " " . $cleanMessage;
+		$str = date("Y-m-d", $now) . " " . $cleanMessage . "\n";
+		$this->synchronized(function($str){
+			$this->logStream .= $str;
+			$this->notify();
+		}, $str);
 	}
 
 	public function run(){
@@ -204,15 +205,15 @@ class MainLogger extends \AttachableThreadedLogger{
 		}
 
 		while($this->shutdown === false){
-			if(strlen($this->logStream) > 0){
-				$this->lock();
-				$chunk = $this->logStream;
-				$this->logStream = "";
-				$this->unlock();
-				fwrite($this->logResource, $chunk);
-			}else{
-				usleep(250000);
-			}
+			$this->synchronized(function(){
+				if(strlen($this->logStream) > 0){
+					$chunk = $this->logStream;
+					$this->logStream = "";
+					fwrite($this->logResource, $chunk);
+				}else{
+					$this->wait(250000);
+				}
+			});
 		}
 
 		if(strlen($this->logStream) > 0){

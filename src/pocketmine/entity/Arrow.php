@@ -22,6 +22,7 @@
 namespace pocketmine\entity;
 
 use pocketmine\level\format\FullChunk;
+use pocketmine\level\particle\CriticalParticle;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
@@ -36,11 +37,13 @@ class Arrow extends Projectile{
 	protected $gravity = 0.05;
 	protected $drag = 0.01;
 
-	protected $damage = 6;
+	protected $damage = 2;
 
-	public function __construct(FullChunk $chunk, Compound $nbt, Entity $shootingEntity = null){
-		$this->shootingEntity = $shootingEntity;
-		parent::__construct($chunk, $nbt);
+	protected $isCritical;
+
+	public function __construct(FullChunk $chunk, Compound $nbt, Entity $shootingEntity = null, $critical = false){
+		$this->isCritical = (bool) $critical;
+		parent::__construct($chunk, $nbt, $shootingEntity);
 	}
 
 	public function onUpdate($currentTick){
@@ -51,6 +54,15 @@ class Arrow extends Projectile{
 		$this->timings->startTiming();
 
 		$hasUpdate = parent::onUpdate($currentTick);
+
+		if(!$this->hadCollision and $this->isCritical){
+			$this->level->addParticle(new CriticalParticle($this->add(
+				$this->width / 2 + mt_rand(-100, 100) / 500,
+				$this->height / 2 + mt_rand(-100, 100) / 500,
+				$this->width / 2 + mt_rand(-100, 100) / 500)));
+		}elseif($this->onGround){
+			$this->isCritical = false;
+		}
 
 		if($this->age > 1200){
 			$this->kill();
@@ -69,10 +81,11 @@ class Arrow extends Projectile{
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
-		$pk->did = 0; //TODO: send motion here
+		$pk->speedX = $this->motionX;
+		$pk->speedY = $this->motionY;
+		$pk->speedZ = $this->motionZ;
+		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
-
-		$player->addEntityMotion($this->getId(), $this->motionX, $this->motionY, $this->motionZ);
 
 		parent::spawnTo($player);
 	}

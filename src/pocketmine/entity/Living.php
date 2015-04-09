@@ -42,8 +42,12 @@ abstract class Living extends Entity implements Damageable{
 	protected $drag = 0.02;
 
 	protected $attackTime = 0;
+	
+	protected $invisible = false;
 
 	protected function initEntity(){
+		parent::initEntity();
+
 		if(isset($this->namedtag->HealF)){
 			$this->namedtag->Health = new Short("Health", (int) $this->namedtag["HealF"]);
 			unset($this->namedtag->HealF);
@@ -69,32 +73,28 @@ abstract class Living extends Entity implements Damageable{
 		//return $this->getLevel()->rayTraceBlocks(Vector3::createVector($this->x, $this->y + $this->height, $this->z), Vector3::createVector($entity->x, $entity->y + $entity->height, $entity->z)) === null;
 	}
 
-	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
+	public function heal($amount, EntityRegainHealthEvent $source){
+		parent::heal($amount, $source);
+		if($source->isCancelled()){
+			return;
+		}
+
+		$this->attackTime = 0;
+	}
+
+	public function attack($damage, EntityDamageEvent $source){
 		if($this->attackTime > 0 or $this->noDamageTicks > 0){
 			$lastCause = $this->getLastDamageCause();
-			if($lastCause instanceof EntityDamageEvent and $lastCause->getDamage() >= $damage){
-				if($source instanceof EntityDamageEvent){
-					$source->setCancelled();
-					$this->server->getPluginManager()->callEvent($source);
-					$damage = $source->getFinalDamage();
-					if($source->isCancelled()){
-						return;
-					}
-				}else{
-					return;
-				}
-			}else{
-				return;
-			}
-		}elseif($source instanceof EntityDamageEvent){
-			$this->server->getPluginManager()->callEvent($source);
-			$damage = $source->getFinalDamage();
-			if($source->isCancelled()){
-				return;
+			if($lastCause !== null and $lastCause->getDamage() >= $damage){
+                $source->setCancelled();
 			}
 		}
 
-		$this->setLastDamageCause($source);
+        parent::attack($damage, $source);
+
+        if($source->isCancelled()){
+            return;
+        }
 
 		if($source instanceof EntityDamageByEntityEvent){
 			$e = $source->getDamager();
@@ -103,8 +103,6 @@ abstract class Living extends Entity implements Damageable{
 			$yaw = atan2($deltaX, $deltaZ);
 			$this->knockBack($e, $damage, sin($yaw), cos($yaw), $source->getKnockBack());
 		}
-
-		$this->setHealth($this->getHealth() - $damage);
 
 		$pk = new EntityEventPacket();
 		$pk->eid = $this->getId();
@@ -131,10 +129,6 @@ abstract class Living extends Entity implements Damageable{
 		}
 
 		$this->setMotion($motion);
-	}
-
-	public function heal($amount, $source = EntityRegainHealthEvent::CAUSE_MAGIC){
-		$this->setHealth($this->getHealth() + $amount);
 	}
 
 	public function kill(){
@@ -172,17 +166,34 @@ abstract class Living extends Entity implements Damageable{
 			$this->attack($ev->getFinalDamage(), $ev);
 		}
 
-		if($this->dead !== true and $this->isInsideOfWater()){
-			$hasUpdate = true;
-			$this->airTicks -= $tickDiff;
-			if($this->airTicks <= -20){
-				$this->airTicks = 0;
+		if($this->dead !== true and !$this->hasEffect(Effect::WATER_BREATHING) and $this->isInsideOfWater()){
+			if($this instanceof WaterAnimal){
+				$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 300);
+			}else{
+				$hasUpdate = true;
+				$airTicks = $this->getDataProperty(self::DATA_AIR) - $tickDiff;
+				if($airTicks <= -20){
+					$airTicks = 0;
 
-				$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
-				$this->attack($ev->getFinalDamage(), $ev);
+					$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
+					$this->attack($ev->getFinalDamage(), $ev);
+				}
+				$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $airTicks);
 			}
 		}else{
-			$this->airTicks = 300;
+			if($this instanceof WaterAnimal){
+				$hasUpdate = true;
+				$airTicks = $this->getDataProperty(self::DATA_AIR) - $tickDiff;
+				if($airTicks <= -20){
+					$airTicks = 0;
+
+					$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 2);
+					$this->attack($ev->getFinalDamage(), $ev);
+				}
+				$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $airTicks);
+			}else{
+				$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 300);
+			}
 		}
 
 		if($this->attackTime > 0){

@@ -38,6 +38,8 @@ use pocketmine\Player;
 class FallingSand extends Entity{
 	const NETWORK_ID = 66;
 
+	const DATA_BLOCK_INFO = 20;
+
 	public $width = 0.98;
 	public $length = 0.98;
 	public $height = 0.98;
@@ -50,6 +52,7 @@ class FallingSand extends Entity{
 	public $canCollide = false;
 
 	protected function initEntity(){
+		parent::initEntity();
 		if(isset($this->namedtag->TileID)){
 			$this->blockId = $this->namedtag["TileID"];
 		}elseif(isset($this->namedtag->Tile)){
@@ -63,15 +66,18 @@ class FallingSand extends Entity{
 
 		if($this->blockId === 0){
 			$this->close();
+			return;
 		}
+
+		$this->setDataProperty(self::DATA_BLOCK_INFO, self::DATA_TYPE_INT, ($this->getBlock() << 8) | $this->getDamage());
 	}
 
 	public function canCollideWith(Entity $entity){
 		return false;
 	}
 
-	public function getData(){
-		return [];
+	public function attack($damage, EntityDamageEvent $source){
+
 	}
 
 	public function onUpdate($currentTick){
@@ -143,14 +149,6 @@ class FallingSand extends Entity{
 		$this->namedtag->Data = new Byte("Data", $this->damage);
 	}
 
-	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
-
-	}
-
-	public function heal($amount, $source = EntityRegainHealthEvent::CAUSE_MAGIC){
-
-	}
-
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
 		$pk->type = FallingSand::NETWORK_ID;
@@ -158,10 +156,11 @@ class FallingSand extends Entity{
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
-		$pk->did = -($this->getBlock() | $this->getDamage() << 0x10);
+		$pk->speedX = $this->motionX;
+		$pk->speedY = $this->motionY;
+		$pk->speedZ = $this->motionZ;
+		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
-
-		$player->addEntityMotion($this->getId(), $this->motionX, $this->motionY, $this->motionZ);
 
 		parent::spawnTo($player);
 	}

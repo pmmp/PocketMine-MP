@@ -64,11 +64,15 @@ abstract class TextFormat{
 	 * Cleans the string from Minecraft codes and ANSI Escape Codes
 	 *
 	 * @param string $string
+	 * @param bool   $removeFormat
 	 *
 	 * @return mixed
 	 */
-	public static function clean($string){
-		return preg_replace(["/§[0123456789abcdefklmnor]/", "/\\x1b*/"], "", $string);
+	public static function clean($string, $removeFormat = true){
+		if($removeFormat){
+			return preg_replace(["/§[0123456789abcdefklmnor]/", "/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/"], "", $string);
+		}
+		return preg_replace("/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/", "", $string);
 	}
 
 	/**
@@ -386,75 +390,77 @@ abstract class TextFormat{
 		if(!is_array($string)){
 			$string = self::tokenize($string);
 		}
+
 		$newString = "";
 		foreach($string as $token){
 			switch($token){
 				case TextFormat::BOLD:
+					$newString .= Terminal::$FORMAT_BOLD;
 					break;
 				case TextFormat::OBFUSCATED:
-					$newString .= "\x1b[8m";
+					$newString .= Terminal::$FORMAT_OBFUSCATED;
 					break;
 				case TextFormat::ITALIC:
-					$newString .= "\x1b[3m";
+					$newString .= Terminal::$FORMAT_ITALIC;
 					break;
 				case TextFormat::UNDERLINE:
-					$newString .= "\x1b[4m";
+					$newString .= Terminal::$FORMAT_UNDERLINE;
 					break;
 				case TextFormat::STRIKETHROUGH:
-					$newString .= "\x1b[9m";
+					$newString .= Terminal::$FORMAT_STRIKETHROUGH;
 					break;
 				case TextFormat::RESET:
-					$newString .= "\x1b[0m";
+					$newString .= Terminal::$FORMAT_RESET;
 					break;
 
 				//Colors
 				case TextFormat::BLACK:
-					$newString .= "\x1b[0;30m";
+					$newString .= Terminal::$COLOR_BLACK;
 					break;
 				case TextFormat::DARK_BLUE:
-					$newString .= "\x1b[0;34m";
+					$newString .= Terminal::$COLOR_DARK_BLUE;
 					break;
 				case TextFormat::DARK_GREEN:
-					$newString .= "\x1b[0;32m";
+					$newString .= Terminal::$COLOR_DARK_GREEN;
 					break;
 				case TextFormat::DARK_AQUA:
-					$newString .= "\x1b[0;36m";
+					$newString .= Terminal::$COLOR_DARK_AQUA;
 					break;
 				case TextFormat::DARK_RED:
-					$newString .= "\x1b[0;31m";
+					$newString .= Terminal::$COLOR_DARK_RED;
 					break;
 				case TextFormat::DARK_PURPLE:
-					$newString .= "\x1b[0;35m";
+					$newString .= Terminal::$COLOR_PURPLE;
 					break;
 				case TextFormat::GOLD:
-					$newString .= "\x1b[0;33m";
+					$newString .= Terminal::$COLOR_GOLD;
 					break;
 				case TextFormat::GRAY:
-					$newString .= "\x1b[0;37m";
+					$newString .= Terminal::$COLOR_GRAY;
 					break;
 				case TextFormat::DARK_GRAY:
-					$newString .= "\x1b[30;1m";
+					$newString .= Terminal::$COLOR_DARK_GRAY;
 					break;
 				case TextFormat::BLUE:
-					$newString .= "\x1b[34;1m";
+					$newString .= Terminal::$COLOR_BLUE;
 					break;
 				case TextFormat::GREEN:
-					$newString .= "\x1b[32;1m";
+					$newString .= Terminal::$COLOR_GREEN;
 					break;
 				case TextFormat::AQUA:
-					$newString .= "\x1b[36;1m";
+					$newString .= Terminal::$COLOR_AQUA;
 					break;
 				case TextFormat::RED:
-					$newString .= "\x1b[31;1m";
+					$newString .= Terminal::$COLOR_RED;
 					break;
 				case TextFormat::LIGHT_PURPLE:
-					$newString .= "\x1b[35;1m";
+					$newString .= Terminal::$COLOR_LIGHT_PURPLE;
 					break;
 				case TextFormat::YELLOW:
-					$newString .= "\x1b[33;1m";
+					$newString .= Terminal::$COLOR_YELLOW;
 					break;
 				case TextFormat::WHITE:
-					$newString .= "\x1b[37;1m";
+					$newString .= Terminal::$COLOR_WHITE;
 					break;
 				default:
 					$newString .= $token;
