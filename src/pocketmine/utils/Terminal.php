@@ -53,7 +53,7 @@ abstract class Terminal{
 		if(self::$formattingCodes === null){
 			$opts = getopt("", ["enable-ansi", "disable-ansi"]);
 			if(isset($opts["disable-ansi"])){
-				self::$hasFormattingCodes = false;
+				self::$formattingCodes = false;
 			}
 			self::$formattingCodes = ((Utils::getOS() !== "win" and getenv("TERM") !== "") or isset($opts["enable-ansi"]));
 		}
