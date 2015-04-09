@@ -45,7 +45,7 @@ class AddPaintingPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putLevel($this->eid);
+		$this->putLong($this->eid);
 		$this->putInt($this->x);
 		$this->putInt($this->y);
 		$this->putInt($this->z);
