@@ -34,14 +34,13 @@ You must follow these guidelines if you wish to contribute to the PocketMine-MP 
 It is mainly [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md) with a few exceptions.
 * Opening braces MUST go on the same line, and MUST NOT have spaces before.
 * `else if` MUST be written as `elseif`. _(It is in PSR-2, but using a SHOULD)_
-* Control structure keywords or opening braces MUST NOT have one space after them.
+* Control structure keywords or opening braces MUST NOT have one space before or after them.
 * Code MUST use tabs for indenting.
 * Long arrays MAY be split across multiple lines, where each subsequent line is indented once. 
 * Files MUST use only the `<?php` tag.
 * Files MUST NOT have an ending `?>` tag.
 * Code MUST use namespaces.
 * Strings SHOULD use the double quote `"` except when the single quote is required.
-* Argument lists MAY NOT be split across multiple lines, except long arrays.
 
 ```php
 <?php 
