@@ -33,7 +33,6 @@ use pocketmine\Network;
 use pocketmine\network\protocol\AddPlayerPacket;
 use pocketmine\network\protocol\RemovePlayerPacket;
 use pocketmine\Player;
-use pocketmine\utils\TextFormat;
 
 class Human extends Creature implements ProjectileSource, InventoryHolder{
 
@@ -185,6 +184,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public function spawnTo(Player $player){
 		if($player !== $this and !isset($this->hasSpawned[$player->getId()])){
 			$this->hasSpawned[$player->getId()] = $player;
+
+			if(strlen($this->skin) < 64 * 32 * 4){
+				throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
+			}
 
 			$pk = new AddPlayerPacket();
 			$pk->clientID = 0;

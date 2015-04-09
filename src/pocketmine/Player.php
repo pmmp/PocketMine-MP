@@ -1340,6 +1340,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->nameTag = $this->username;
 				$this->iusername = strtolower($this->username);
 				$this->randomClientId = $packet->clientId;
+				if(strlen($packet->skin) < 64 * 32 * 4){
+					$this->close("", "Invalid skin", false);
+					return;
+				}
+				
 				$this->setSkin($packet->skin, $packet->slim);
 				$this->loginData = ["clientId" => $packet->clientId, "loginData" => null];
 
