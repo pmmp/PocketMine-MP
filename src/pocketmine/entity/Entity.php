@@ -795,7 +795,7 @@ abstract class Entity extends Location implements Metadatable{
 
 			if(!($this instanceof Player)){
 				foreach($this->hasSpawned as $player){
-					$player->addEntityMovement($this->id, $this->x, $this->y + $this->height, $this->z, $this->yaw, $this->pitch, $this->yaw);
+					$player->addEntityMovement($this->id, $this->x, $this->y + $this->getEyeHeight(), $this->z, $this->yaw, $this->pitch, $this->yaw);
 				}
 			}
 		}
@@ -1396,7 +1396,7 @@ abstract class Entity extends Location implements Metadatable{
 			$this->lastPitch = $this->pitch;
 
 			foreach($this->hasSpawned as $player){
-				$player->addEntityMovement($this->getId(), $this->x, $this->y + $this->height, $this->z, $this->yaw, $this->pitch, $this->yaw);
+				$player->addEntityMovement($this->getId(), $this->x, $this->y + $this->getEyeHeight(), $this->z, $this->yaw, $this->pitch, $this->yaw);
 			}
 
 			return true;

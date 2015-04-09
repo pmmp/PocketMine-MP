@@ -1130,7 +1130,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$this->teleport($ev->getTo());
 					}else{
 						foreach($this->hasSpawned as $player){
-							$player->addEntityMovement($this->id, $this->x, $this->y + $this->height, $this->z, $this->yaw, $this->pitch, $this->yaw);
+							$player->addEntityMovement($this->id, $this->x, $this->y + $this->getEyeHeight(), $this->z, $this->yaw, $this->pitch, $this->yaw);
 						}
 					}
 				}
@@ -1153,7 +1153,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$pk = new MovePlayerPacket();
 			$pk->eid = $this->getId();
 			$pk->x = $from->x;
-			$pk->y = $from->y + $this->height;
+			$pk->y = $from->y + $this->getEyeHeight();
 			$pk->z = $from->z;
 			$pk->bodyYaw = $from->yaw;
 			$pk->pitch = $from->pitch;
@@ -1527,7 +1527,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$pk = new MovePlayerPacket();
 					$pk->eid = $this->getId();
 					$pk->x = $this->forceMovement->x;
-					$pk->y = $this->forceMovement->y + $this->height;
+					$pk->y = $this->forceMovement->y + $this->getEyeHeight();
 					$pk->z = $this->forceMovement->z;
 					$pk->bodyYaw = $packet->bodyYaw;
 					$pk->pitch = $packet->pitch;
@@ -2699,7 +2699,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$pk = new MovePlayerPacket();
 			$pk->eid = $this->getId();
 			$pk->x = $this->x;
-			$pk->y = $this->y + $this->height;
+			$pk->y = $this->y + $this->getEyeHeight();
 			$pk->z = $this->z;
 			$pk->bodyYaw = $this->yaw;
 			$pk->pitch = $this->pitch;

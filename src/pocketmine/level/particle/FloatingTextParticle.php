@@ -82,6 +82,8 @@ class FloatingTextParticle extends Particle{
 			$pk->pitch = 0;
 			$pk->item = 0;
 			$pk->meta = 0;
+			$pk->slim = false;
+			$pk->skin = str_repeat("\x00", 64 * 32 * 4);
 			$pk->metadata = [
 				Entity::DATA_FLAGS => [Entity::DATA_TYPE_BYTE, 1 << Entity::DATA_FLAG_INVISIBLE],
 				Entity::DATA_AIR => [Entity::DATA_TYPE_SHORT, 300],
