@@ -2427,7 +2427,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->tasks = [];
 
 		if($this->connected and !$this->closed){
-			if($message != ""){
+			if($reason != ""){
 				$pk = new DisconnectPacket;
 				$pk->message = $reason;
 				$this->directDataPacket($pk);
