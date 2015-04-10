@@ -1340,12 +1340,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->nameTag = $this->username;
 				$this->iusername = strtolower($this->username);
 				$this->randomClientId = $packet->clientId;
-				if(strlen($packet->skin) < 64 * 32 * 4){
-					$this->close("", "Invalid skin", false);
-					return;
-				}
-
-				$this->setSkin($packet->skin, $packet->slim);
 				$this->loginData = ["clientId" => $packet->clientId, "loginData" => null];
 
 				if(count($this->server->getOnlinePlayers()) > $this->server->getMaxPlayers() and $this->kick("server full")){
@@ -1365,11 +1359,19 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 					return;
 				}
+
 				if(strpos($packet->username, "\x00") !== false or preg_match('#^[a-zA-Z0-9_]{3,16}$#', $packet->username) == 0 or $this->username === "" or $this->iusername === "rcon" or $this->iusername === "console" or strlen($packet->username) > 16 or strlen($packet->username) < 3){
 					$this->close("", "Bad username");
 
 					return;
 				}
+				
+				if(strlen($packet->skin) < 64 * 32 * 4){
+					$this->close("", "Invalid skin", false);
+					return;
+				}
+
+				$this->setSkin($packet->skin, $packet->slim);
 
 				$this->server->getPluginManager()->callEvent($ev = new PlayerPreLoginEvent($this, "Plugin reason"));
 				if($ev->isCancelled()){
