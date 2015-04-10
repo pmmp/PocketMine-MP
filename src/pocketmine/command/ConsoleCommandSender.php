@@ -21,6 +21,7 @@
 
 namespace pocketmine\command;
 
+use pocketmine\event\TextContainer;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
 use pocketmine\plugin\Plugin;
@@ -102,6 +103,10 @@ class ConsoleCommandSender implements CommandSender{
 	 * @param string $message
 	 */
 	public function sendMessage($message){
+		if($message instanceof TextContainer){
+			$message = $this->getServer()->getLanguage()->translate($message);
+		}
+
 		foreach(explode("\n", trim($message)) as $line){
 			MainLogger::getLogger()->info($line);
 		}

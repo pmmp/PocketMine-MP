@@ -14,42 +14,43 @@
  * (at your option) any later version.
  *
  * @author PocketMine Team
- * @link   http://www.pocketmine.net/
+ * @link http://www.pocketmine.net/
  *
  *
- */
+*/
 
-namespace pocketmine\event\player;
+namespace pocketmine\event;
 
-use pocketmine\event\TextContainer;
 use pocketmine\Player;
 
-/**
- * Called when a player joins the server, after sending all the spawn packets
- */
-class PlayerJoinEvent extends PlayerEvent{
-	public static $handlerList = null;
+class TextContainer{
 
-	/** @var string|TextContainer */
-	protected $joinMessage;
+	/** @var string $text */
+	protected $text;
 
-	public function __construct(Player $player, $joinMessage){
-		$this->player = $player;
-		$this->joinMessage = $joinMessage;
+	public function __construct($text){
+		$this->text = $text;
+	}
+
+	public function setText($text){
+		$this->text = $text;
 	}
 
 	/**
-	 * @param string|TextContainer $joinMessage
+	 * @return string
 	 */
-	public function setJoinMessage($joinMessage){
-		$this->joinMessage = $joinMessage;
+	public function getText(){
+		return $this->text;
+	}
+
+	public function send(Player $p){
+		$p->sendMessage($this->getText());
 	}
 
 	/**
-	 * @return string|TextContainer
+	 * @return string
 	 */
-	public function getJoinMessage(){
-		return $this->joinMessage;
+	public function __toString(){
+		return $this->getText();
 	}
-
 }

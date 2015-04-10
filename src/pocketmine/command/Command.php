@@ -24,7 +24,9 @@
  */
 namespace pocketmine\command;
 
+use pocketmine\event\TextContainer;
 use pocketmine\event\TimingsHandler;
+use pocketmine\event\TranslationContainer;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 
@@ -124,7 +126,7 @@ abstract class Command{
 		}
 
 		if($this->permissionMessage === null){
-			$target->sendMessage(TextFormat::RED . "You don't have permissions to use this command.");
+			$target->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.permission"));
 		}elseif($this->permissionMessage !== ""){
 			$target->sendMessage(str_replace("<permission>", $this->permission, $this->permissionMessage));
 		}
@@ -285,12 +287,25 @@ abstract class Command{
 	 * @param bool          $sendToSource
 	 */
 	public static function broadcastCommandMessage(CommandSender $source, $message, $sendToSource = true){
-		$result = $source->getName() . ": " . $message;
+		if($message instanceof TextContainer){
+			$m = clone $message;
+			$result = $source->getName() . ": " . $m->getText();
 
-		//Command minecarts or command blocks are not implemented
+			$users = Server::getInstance()->getPluginManager()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
+			$colored = TextFormat::GRAY . TextFormat::ITALIC . "[$result" . TextFormat::GRAY . TextFormat::ITALIC . "]";
 
-		$users = Server::getInstance()->getPluginManager()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
-		$colored = TextFormat::GRAY . TextFormat::ITALIC . "[$result" . TextFormat::GRAY . TextFormat::ITALIC . "]";
+			$m->setText($result);
+			$result = clone $m;
+			$m->setText($colored);
+			$colored = clone $m;
+		}else{
+			$result = $source->getName() . ": " . $message;
+
+			//Command minecarts or command blocks are not implemented
+
+			$users = Server::getInstance()->getPluginManager()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
+			$colored = TextFormat::GRAY . TextFormat::ITALIC . "[$result" . TextFormat::GRAY . TextFormat::ITALIC . "]";
+		}
 		if($sendToSource === true and !($source instanceof ConsoleCommandSender)){
 			$source->sendMessage($message);
 		}

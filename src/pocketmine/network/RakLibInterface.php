@@ -117,7 +117,9 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			unset($this->players[$identifier]);
 			unset($this->batchedPackets[$identifier]);
 			unset($this->identifiersACK[$identifier]);
-			$player->close(TextFormat::YELLOW . $player->getName() . " has left the game", $reason);
+			if(!$player->closed){
+				$player->close($player->getLeaveMessage(), $reason);
+			}
 		}
 	}
 

@@ -587,7 +587,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	/**
-	 * @return int|EntityDamageEvent|null
+	 * @return EntityDamageEvent|null
 	 */
 	public function getLastDamageCause(){
 		return $this->lastDamageCause;

@@ -48,18 +48,18 @@ use pocketmine\event\level\LevelLoadEvent;
 use pocketmine\event\server\ServerCommandEvent;
 use pocketmine\event\Timings;
 use pocketmine\event\TimingsHandler;
+use pocketmine\event\TranslationContainer;
 use pocketmine\inventory\CraftingManager;
 use pocketmine\inventory\InventoryType;
 use pocketmine\inventory\Recipe;
 use pocketmine\item\Item;
+use pocketmine\lang\BaseLang;
 use pocketmine\level\format\anvil\Anvil;
 use pocketmine\level\format\leveldb\LevelDB;
 use pocketmine\level\format\LevelProviderManager;
 use pocketmine\level\format\mcregion\McRegion;
 use pocketmine\level\generator\biome\Biome;
 use pocketmine\level\generator\Flat;
-use pocketmine\level\generator\GenerationInstanceManager;
-use pocketmine\level\generator\GenerationRequestManager;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\normal\Normal;
 use pocketmine\level\Level;
@@ -195,6 +195,9 @@ class Server{
 
 	private $networkCompressionAsync = true;
 	private $networkCompressionLevel = 7;
+
+	/** @var BaseLang */
+	private $baseLang;
 
 	private $serverID;
 
@@ -380,13 +383,13 @@ class Server{
 	public static function getGamemodeString($mode){
 		switch((int) $mode){
 			case Player::SURVIVAL:
-				return "SURVIVAL";
+				return "%gameMode.survival";
 			case Player::CREATIVE:
-				return "CREATIVE";
+				return "%gameMode.creative";
 			case Player::ADVENTURE:
-				return "ADVENTURE";
+				return "%gameMode.adventure";
 			case Player::SPECTATOR:
-				return "SPECTATOR";
+				return "%gameMode.spectator";
 		}
 
 		return "UNKNOWN";
@@ -404,22 +407,26 @@ class Server{
 			case (string) Player::SURVIVAL:
 			case "survival":
 			case "s":
+			case strtolower(Server::getInstance()->getLanguage()->get("gameMode.survival")):
 				return Player::SURVIVAL;
 
 			case (string) Player::CREATIVE:
 			case "creative":
 			case "c":
+			case strtolower(Server::getInstance()->getLanguage()->get("gameMode.creative")):
 				return Player::CREATIVE;
 
 			case (string) Player::ADVENTURE:
 			case "adventure":
 			case "a":
+			case strtolower(Server::getInstance()->getLanguage()->get("gameMode.adventure")):
 				return Player::ADVENTURE;
 
 			case (string) Player::SPECTATOR:
 			case "spectator":
 			case "view":
 			case "v":
+			case strtolower(Server::getInstance()->getLanguage()->get("gameMode.spectator")):
 				return Player::SPECTATOR;
 		}
 		return -1;
@@ -1512,6 +1519,8 @@ class Server{
 			"auto-save" => true,
 		]);
 
+		$this->baseLang = new BaseLang($this->getProperty("settings.settings.language", "en"));
+
 		ServerScheduler::$WORKERS = $this->getProperty("settings.async-workers", ServerScheduler::$WORKERS);
 
 		if($this->getProperty("network.batch-threshold", 256) >= 0){
@@ -1859,11 +1868,8 @@ class Server{
 			return true;
 		}
 
-		if($sender instanceof Player){
-			$sender->sendMessage("Unknown command. Type \"/help\" for help.");
-		}else{
-			$sender->sendMessage("Unknown command. Type \"help\" for help.");
-		}
+
+		$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.notFound"));
 
 		return false;
 	}
@@ -1943,7 +1949,7 @@ class Server{
 			$this->pluginManager->disablePlugins();
 
 			foreach($this->players as $player){
-				$player->close(TextFormat::YELLOW . $player->getName() . " has left the game", $this->getProperty("settings.shutdown-message", "Server closed"));
+				$player->close($player->getLeaveMessage(), $this->getProperty("settings.shutdown-message", "Server closed"));
 			}
 
 			foreach($this->getLevels() as $level){
@@ -2005,7 +2011,7 @@ class Server{
 
 		$this->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this, "checkTicks"]), 20 * 5);
 
-		$this->logger->info("Default game type: " . self::getGamemodeString($this->getGamemode()));
+		$this->logger->info("Default game type: " . $this->getLanguage()->get(self::getGamemodeString($this->getGamemode())));
 
 		$this->logger->info("Done (" . round(microtime(true) - \pocketmine\START_TIME, 3) . 's)! For help, type "help" or "?"');
 
@@ -2254,7 +2260,18 @@ class Server{
 
 		$this->scheduler->scheduleAsyncTask($this->lastSendUsage);
 	}
-	
+
+
+	/**
+	 * @return BaseLang
+	 */
+	public function getLanguage(){
+		return $this->baseLang;
+	}
+
+	/**
+	 * @return Network
+	 */
 	public function getNetwork(){
 		return $this->network;
 	}

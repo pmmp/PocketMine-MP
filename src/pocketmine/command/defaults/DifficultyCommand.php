@@ -22,6 +22,7 @@
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\event\TranslationContainer;
 use pocketmine\network\protocol\SetDifficultyPacket;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
@@ -43,7 +44,7 @@ class DifficultyCommand extends VanillaCommand{
 		}
 
 		if(count($args) !== 1){
-			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 
 			return false;
 		}

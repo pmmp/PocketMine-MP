@@ -31,6 +31,7 @@ use pocketmine\entity\Item as DroppedItem;
 use pocketmine\entity\Living;
 use pocketmine\entity\Projectile;
 use pocketmine\event\block\SignChangeEvent;
+use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
@@ -59,7 +60,9 @@ use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\player\PlayerRespawnEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
+use pocketmine\event\TextContainer;
 use pocketmine\event\Timings;
+use pocketmine\event\TranslationContainer;
 use pocketmine\inventory\BaseTransaction;
 use pocketmine\inventory\BigShapelessRecipe;
 use pocketmine\inventory\CraftingTransactionGroup;
@@ -217,6 +220,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	/** @var PermissibleBase */
 	private $perm = null;
+
+	public function getLeaveMessage(){
+		return new TranslationContainer(TextFormat::YELLOW . "%multiplayer.player.leave", [
+			$this->getDisplayName()
+		]);
+	}
 
 	public function getClientId(){
 		return $this->randomClientId;
@@ -642,7 +651,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$pk->status = PlayStatusPacket::PLAYER_SPAWN;
 			$this->dataPacket($pk);
 
-			$this->server->getPluginManager()->callEvent($ev = new PlayerJoinEvent($this, TextFormat::YELLOW . $this->getName() . " joined the game"));
+			$this->server->getPluginManager()->callEvent($ev = new PlayerJoinEvent($this,
+				new TranslationContainer(TextFormat::YELLOW . "%multiplayer.player.joined", [
+					$this->getDisplayName()
+				])
+			));
 			if(strlen(trim($ev->getJoinMessage())) > 0){
 				$this->server->broadcastMessage($ev->getJoinMessage());
 			}
@@ -916,10 +929,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		if(($this->gamemode & 0x01) === ($gm & 0x01)){
 			$this->gamemode = $gm;
-			$this->sendMessage("Your gamemode has been changed to " . Server::getGamemodeString($this->getGamemode()) . ".\n");
+			$this->sendMessage(new TranslationContainer("gameMode.changed"));
 		}else{
 			$this->gamemode = $gm;
-			$this->sendMessage("Your gamemode has been changed to " . Server::getGamemodeString($this->getGamemode()) . ".\n");
+			$this->sendMessage(new TranslationContainer("gameMode.changed"));
 			$this->inventory->clearAll();
 			$this->inventory->sendContents($this);
 			$this->inventory->sendContents($this->getViewers());
@@ -1381,11 +1394,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 
 				if(!$this->server->isWhitelisted(strtolower($this->getName()))){
-					$this->close(TextFormat::YELLOW . $this->username . " has left the game", "Server is white-listed");
+					$this->close($this->getLeaveMessage(), "Server is white-listed");
 
 					return;
 				}elseif($this->server->getNameBans()->isBanned(strtolower($this->getName())) or $this->server->getIPBans()->isBanned($this->getAddress())){
-					$this->close(TextFormat::YELLOW . $this->username . " has left the game", "You are banned");
+					$this->close($this->getLeaveMessage(), "You are banned");
 
 					return;
 				}
@@ -1400,7 +1413,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				foreach($this->server->getOnlinePlayers() as $p){
 					if($p !== $this and strtolower($p->getName()) === strtolower($this->getName())){
 						if($p->kick("logged in from another location") === false){
-							$this->close(TextFormat::YELLOW . $this->getName() . " has left the game", "Logged in from another location");
+							$this->close($this->getLeaveMessage(), "Logged in from another location");
 
 							return;
 						}else{
@@ -1431,7 +1444,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 
 				if(!($nbt instanceof Compound)){
-					$this->close(TextFormat::YELLOW . $this->username . " has left the game", "Invalid data");
+					$this->close($this->getLeaveMessage(), "Invalid data");
 
 					return;
 				}
@@ -1450,7 +1463,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$this->server->getPluginManager()->callEvent($ev = new PlayerLoginEvent($this, "Plugin reason"));
 				if($ev->isCancelled()){
-					$this->close(TextFormat::YELLOW . $this->username . " has left the game", $ev->getKickMessage());
+					$this->close($this->getLeaveMessage(), $ev->getKickMessage());
 
 					return;
 				}
@@ -2372,7 +2385,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * @return bool
 	 */
 	public function kick($reason = ""){
-		$this->server->getPluginManager()->callEvent($ev = new PlayerKickEvent($this, $reason, TextFormat::YELLOW . $this->username . " has left the game"));
+		$this->server->getPluginManager()->callEvent($ev = new PlayerKickEvent($this, $reason, $this->getLeaveMessage()));
 		if(!$ev->isCancelled()){
 			$message = "Kicked by admin." . ($reason !== "" ? " Reason: " . $reason : "");
 			$this->close($ev->getQuitMessage(), $message);
@@ -2386,9 +2399,17 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	/**
 	 * Sends a direct chat message to a player
 	 *
-	 * @param string $message
+	 * @param string|TextContainer $message
 	 */
 	public function sendMessage($message){
+		if($message instanceof TextContainer){
+			if($message instanceof TranslationContainer){
+				$this->sendTranslation($message->getText(), $message->getParameters());
+				return;
+			}
+			$message = $message->getText();
+		}
+
 		$mes = explode("\n", $message);
 		foreach($mes as $m){
 			if($m !== ""){
@@ -2534,84 +2555,104 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return;
 		}
 
-		$message = $this->getName() . " died";
-		$cause = $this->getLastDamageCause();
-		$ev = null;
-		if($cause instanceof EntityDamageEvent){
-			$ev = $cause;
-			$cause = $ev->getCause();
-		}
+		$message = "death.attack.generic";
 
-		switch($cause){
+		$params = [
+			$this->getName()
+		];
+
+		$cause = $this->getLastDamageCause();
+
+		switch($cause->getCause()){
 			case EntityDamageEvent::CAUSE_ENTITY_ATTACK:
-				if($ev instanceof EntityDamageByEntityEvent){
-					$e = $ev->getDamager();
+				if($cause instanceof EntityDamageByEntityEvent){
+					$e = $cause->getDamager();
 					if($e instanceof Player){
-						$message = $this->getName() . " was killed by " . $e->getName();
+						$message = "death.attack.player";
+						$params[] = $e->getName();
 						break;
 					}elseif($e instanceof Living){
-						$message = $this->getName() . " was slain by " . $e->getName();
+						$message = "death.attack.mob";
+						$params[] = $e->getName();
 						break;
+					}else{
+						$params[] = "Unknown";
 					}
 				}
-				$message = $this->getName() . " was killed";
 				break;
 			case EntityDamageEvent::CAUSE_PROJECTILE:
-				if($ev instanceof EntityDamageByEntityEvent){
-					$e = $ev->getDamager();
+				if($cause instanceof EntityDamageByEntityEvent){
+					$e = $cause->getDamager();
 					if($e instanceof Living){
-						$message = $this->getName() . " was shot by " . $e->getName();
+						$message = "death.attack.arrow";
+						$params[] = $e->getName();
 						break;
+					}else{
+						$params[] = "Unknown";
 					}
 				}
-				$message = $this->getName() . " was shot by arrow";
 				break;
 			case EntityDamageEvent::CAUSE_SUICIDE:
-				$message = $this->getName() . " died";
+				$message = "death.attack.generic";
 				break;
 			case EntityDamageEvent::CAUSE_VOID:
-				$message = $this->getName() . " fell out of the world";
+				$message = "death.attack.outOfWorld";
 				break;
 			case EntityDamageEvent::CAUSE_FALL:
-				if($ev instanceof EntityDamageEvent){
-					if($ev->getFinalDamage() > 2){
-						$message = $this->getName() . " fell from a high place";
+				if($cause instanceof EntityDamageEvent){
+					if($cause->getFinalDamage() > 2){
+						$message = "death.fell.accident.generic";
 						break;
 					}
 				}
-				$message = $this->getName() . " hit the ground too hard";
+				$message = "death.attack.fall";
 				break;
 
 			case EntityDamageEvent::CAUSE_SUFFOCATION:
-				$message = $this->getName() . " suffocated in a wall";
+				$message = "death.attack.inWall";
 				break;
 
 			case EntityDamageEvent::CAUSE_LAVA:
-				$message = $this->getName() . " tried to swim in lava";
+				$message = "death.attack.lava";
 				break;
 
 			case EntityDamageEvent::CAUSE_FIRE:
-				$message = $this->getName() . " went up in flames";
+				$message = "death.attack.onFire";
 				break;
 
 			case EntityDamageEvent::CAUSE_FIRE_TICK:
-				$message = $this->getName() . " burned to death";
+				$message = "death.attack.inFire";
 				break;
 
 			case EntityDamageEvent::CAUSE_DROWNING:
-				$message = $this->getName() . " drowned";
+				$message = "death.attack.drown";
 				break;
 
 			case EntityDamageEvent::CAUSE_CONTACT:
-				$message = $this->getName() . " was pricked to death";
+				if($cause instanceof EntityDamageByBlockEvent){
+					if($cause->getDamager()->getId() === Block::CACTUS){
+						$message = "death.attack.cactus";
+					}
+				}
 				break;
 
 			case EntityDamageEvent::CAUSE_BLOCK_EXPLOSION:
 			case EntityDamageEvent::CAUSE_ENTITY_EXPLOSION:
-				$message = $this->getName() . " blew up";
+				if($cause instanceof EntityDamageByEntityEvent){
+					$e = $cause->getDamager();
+					if($e instanceof Living){
+						$message = "death.attack.explosion.player";
+						$params[] = $e->getName();
+					}
+				}else{
+					$message = "death.attack.explosion";
+				}
 				break;
 
 			case EntityDamageEvent::CAUSE_MAGIC:
+				$message = "death.attack.magic";
+				break;
+
 			case EntityDamageEvent::CAUSE_CUSTOM:
 
 			default:
@@ -2624,7 +2665,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		Entity::kill();
 
-		$this->server->getPluginManager()->callEvent($ev = new PlayerDeathEvent($this, $this->getDrops(), $message));
+		$this->server->getPluginManager()->callEvent($ev = new PlayerDeathEvent($this, $this->getDrops(), new TranslationContainer($message, $params)));
 
 		if(!$ev->getKeepInventory()){
 			foreach($ev->getDrops() as $item){

@@ -23,6 +23,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\block\Block;
 use pocketmine\command\CommandSender;
+use pocketmine\event\TranslationContainer;
 use pocketmine\item\Item;
 use pocketmine\level\particle\BubbleParticle;
 use pocketmine\level\particle\CriticalParticle;
@@ -55,7 +56,7 @@ class ParticleCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Adds particles to a world",
-			"/particle <name> <x> <y> <z> <xd> <yd> <zd> [count] [data]"
+			"/particle <name> <x> <y> <z> <xd> <yd> <zd> [count] [data]" //No translation, different!
 		);
 		$this->setPermission("pocketmine.command.particle");
 	}
@@ -66,7 +67,7 @@ class ParticleCommand extends VanillaCommand{
 		}
 
 		if(count($args) < 7){
-			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 
 			return true;
 		}
@@ -92,12 +93,12 @@ class ParticleCommand extends VanillaCommand{
 		$particle = $this->getParticle($name, $pos, $xd, $yd, $zd, $data);
 
 		if($particle === null){
-			$sender->sendMessage(TextFormat::RED . "Unknown particle name (" . $name . ")");
+			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.particle.notFound", [$name]));
 			return true;
 		}
 
 
-		$sender->sendMessage("Playing particle ". $name ." for ". $count ." times");
+		$sender->sendMessage(new TranslationContainer("commands.particle.success", [$name, $count]));
 
 		$random = new Random((int) (microtime(true) * 1000) + mt_rand());
 

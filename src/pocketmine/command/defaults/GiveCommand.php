@@ -23,6 +23,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\event\TranslationContainer;
 use pocketmine\item\Item;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
@@ -33,7 +34,7 @@ class GiveCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Gives the specified player a certain amount of items",
-			"/give <player> <item[:damage]> [amount]"
+			"/give <player> <item[:damage]> [amount]" //No translation :(
 		);
 		$this->setPermission("pocketmine.command.give");
 	}
@@ -44,7 +45,7 @@ class GiveCommand extends VanillaCommand{
 		}
 
 		if(count($args) < 2){
-			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 
 			return true;
 		}
@@ -59,13 +60,8 @@ class GiveCommand extends VanillaCommand{
 		}
 
 		if($player instanceof Player){
-			if(($player->getGamemode() & 0x01) === 0x01){
-				$sender->sendMessage(TextFormat::RED . "Player is in creative mode");
-
-				return true;
-			}
-			if($item->getId() == 0){
-				$sender->sendMessage(TextFormat::RED . "There is no item called " . $args[1] . ".");
+			if($item->getId() === 0){
+				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.give.item.notFound", [$args[1]]));
 
 				return true;
 			}
@@ -78,8 +74,11 @@ class GiveCommand extends VanillaCommand{
 			return true;
 		}
 
-		Command::broadcastCommandMessage($sender, "Gave " . $player->getName() . " " . $item->getCount() . " of " . $item->getName() . " (" . $item->getId() . ":" . $item->getDamage() . ")");
-
+		Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.give.success", [
+			$item->getName() . " (" . $item->getId() . ":" . $item->getDamage() . ")",
+			(string) $item->getCount(),
+			$player->getName()
+		]));
 		return true;
 	}
 }

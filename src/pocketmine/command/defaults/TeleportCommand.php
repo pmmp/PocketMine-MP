@@ -23,6 +23,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\event\TranslationContainer;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
@@ -44,7 +45,7 @@ class TeleportCommand extends VanillaCommand{
 		}
 
 		if(count($args) < 1 or count($args) > 4){
-			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 
 			return true;
 		}
@@ -102,7 +103,7 @@ class TeleportCommand extends VanillaCommand{
 			return true;
 		}
 
-		$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+		$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 
 		return true;
 	}

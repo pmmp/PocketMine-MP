@@ -23,6 +23,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\event\TranslationContainer;
 use pocketmine\level\Position;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
@@ -89,7 +90,7 @@ class SpawnpointCommand extends VanillaCommand{
 			}
 		}
 
-		$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+		$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 
 		return true;
 	}

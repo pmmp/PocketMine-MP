@@ -443,7 +443,7 @@ class Level implements ChunkManager, Metadatable{
 		$defaultLevel = $this->server->getDefaultLevel();
 		foreach($this->getPlayers() as $player){
 			if($this === $defaultLevel or $defaultLevel === null){
-				$player->close(TextFormat::YELLOW . $player->getName() . " has left the game", "Forced default level unload");
+				$player->close($player->getLeaveMessage(), "Forced default level unload");
 			}elseif($defaultLevel instanceof Level){
 				$player->teleport($this->server->getDefaultLevel()->getSafeSpawn());
 			}

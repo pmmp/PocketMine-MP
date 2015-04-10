@@ -23,6 +23,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\event\TimingsHandler;
+use pocketmine\event\TranslationContainer;
 use pocketmine\utils\TextFormat;
 
 class TimingsCommand extends VanillaCommand{
@@ -44,7 +45,7 @@ class TimingsCommand extends VanillaCommand{
 		}
 
 		if(count($args) !== 1){
-			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 
 			return true;
 		}

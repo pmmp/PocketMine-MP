@@ -23,6 +23,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\event\TranslationContainer;
 use pocketmine\level\Level;
 use pocketmine\utils\TextFormat;
 
@@ -39,7 +40,7 @@ class TimeCommand extends VanillaCommand{
 
 	public function execute(CommandSender $sender, $currentAlias, array $args){
 		if(count($args) < 1){
-			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 
 			return false;
 		}
@@ -74,7 +75,7 @@ class TimeCommand extends VanillaCommand{
 
 
 		if(count($args) < 2){
-			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 
 			return false;
 		}
@@ -115,7 +116,7 @@ class TimeCommand extends VanillaCommand{
 			}
 			Command::broadcastCommandMessage($sender, "Added " . $value . " to time");
 		}else{
-			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 		}
 
 		return true;

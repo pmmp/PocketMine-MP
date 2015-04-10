@@ -25,6 +25,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\Effect;
 use pocketmine\entity\InstantEffect;
+use pocketmine\event\TranslationContainer;
 use pocketmine\utils\TextFormat;
 
 class EffectCommand extends VanillaCommand{
@@ -33,7 +34,7 @@ class EffectCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Adds/Removes effects on players",
-			"/effect <player> <effect|clear> [seconds] [amplifier]"
+			"%commands.effect.usage"
 		);
 		$this->setPermission("pocketmine.command.effect");
 	}
@@ -44,7 +45,7 @@ class EffectCommand extends VanillaCommand{
 		}
 
 		if(count($args) < 2){
-			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 
 			return true;
 		}
@@ -61,7 +62,7 @@ class EffectCommand extends VanillaCommand{
 				$player->removeEffect($effect->getId());
 			}
 
-			$sender->sendMessage("Took all effects from " . $player->getDisplayName());
+			$sender->sendMessage(new TranslationContainer("commands.effect.success.removed.all", [$player->getDisplayName()]));
 			return true;
 		}
 
@@ -72,7 +73,7 @@ class EffectCommand extends VanillaCommand{
 		}
 
 		if($effect === null){
-			$sender->sendMessage(TextFormat::RED . "Effect {$args[1]} not found");
+			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.effect.notFound", [(string) $args[1]]));
 			return true;
 		}
 
@@ -92,19 +93,30 @@ class EffectCommand extends VanillaCommand{
 			$amplification = (int) $args[3];
 		}
 
+		if(count($args) >= 5){
+			$v = strtolower($args[4]);
+			if($v === "on" or $v === "true" or $v === "t" or $v === "1"){
+				$effect->setVisible(false);
+			}
+		}
+
 		if($duration === 0){
 			if(!$player->hasEffect($effect->getId())){
-				$sender->sendMessage("Couldn't take ". $effect->getName() ." from ". $player->getDisplayName());
+				if(count($player->getEffects()) === 0){
+					$sender->sendMessage(new TranslationContainer("commands.effect.failure.notActive.all", [$player->getDisplayName()]));
+				}else{
+					$sender->sendMessage(new TranslationContainer("commands.effect.failure.notActive", [$effect->getName(), $player->getDisplayName()]));
+				}
 				return true;
 			}
 
 			$player->removeEffect($effect->getId());
-			$sender->sendMessage("Took ". $effect->getName() ." from ". $player->getDisplayName());
+			$sender->sendMessage(new TranslationContainer("commands.effect.success.removed", [$effect->getName(), $player->getDisplayName()]));
 		}else{
 			$effect->setDuration($duration)->setAmplifier($amplification);
 
 			$player->addEffect($effect);
-			self::broadcastCommandMessage($sender, "Given ". $effect->getName() ." (ID ". $effect->getId().") * ". $effect->getAmplifier()." to ". $player->getDisplayName() ." for ". ($effect->getDuration() / 20) ." seconds");
+			self::broadcastCommandMessage($sender, new TranslationContainer("%commands.effect.success", [$effect->getName(), $effect->getId(), $effect->getAmplifier(), $player->getDisplayName(), $effect->getDuration() / 20]));
 		}
 
 
