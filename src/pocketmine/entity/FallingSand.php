@@ -69,7 +69,7 @@ class FallingSand extends Entity{
 			return;
 		}
 
-		$this->setDataProperty(self::DATA_BLOCK_INFO, self::DATA_TYPE_INT, ($this->getBlock() << 8) | $this->getDamage());
+		$this->setDataProperty(self::DATA_BLOCK_INFO, self::DATA_TYPE_INT, $this->getBlock() | ($this->getDamage() << 8));
 	}
 
 	public function canCollideWith(Entity $entity){
@@ -159,6 +159,8 @@ class FallingSand extends Entity{
 		$pk->speedX = $this->motionX;
 		$pk->speedY = $this->motionY;
 		$pk->speedZ = $this->motionZ;
+		$pk->yaw = $this->yaw;
+		$pk->pitch = $this->pitch;
 		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
 
