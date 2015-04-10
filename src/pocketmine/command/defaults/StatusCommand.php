@@ -44,8 +44,8 @@ class StatusCommand extends VanillaCommand{
 		$sender->sendMessage(TextFormat::GREEN . "---- " . TextFormat::WHITE . "Server status" . TextFormat::GREEN . " ----");
 		$sender->sendMessage(TextFormat::GOLD . "TPS: " . TextFormat::WHITE . $server->getTicksPerSecond());
 		$sender->sendMessage(TextFormat::GOLD . "TPS Load: " . TextFormat::WHITE . $server->getTickUsage() . "%");
-		$sender->sendMessage(TextFormat::GOLD . "Upload: " . TextFormat::WHITE . round($server->getNetwork()->getUploadUsage() / 1024, 2) . " kB/s");
-		$sender->sendMessage(TextFormat::GOLD . "Download: " . TextFormat::WHITE . round($server->getNetwork()->getDownloadUsage() / 1024, 2) . " kB/s");
+		$sender->sendMessage(TextFormat::GOLD . "Upload: " . TextFormat::WHITE . round($server->getNetwork()->getUpload() / 1024, 2) . " kB/s");
+		$sender->sendMessage(TextFormat::GOLD . "Download: " . TextFormat::WHITE . round($server->getNetwork()->getDownload() / 1024, 2) . " kB/s");
 		$sender->sendMessage(TextFormat::GOLD . "Memory: " . TextFormat::WHITE . round(($server->getMemoryUsage() / 1024) / 1024, 2) . " MB");
 		$sender->sendMessage(TextFormat::GOLD . "Threads: " . TextFormat::WHITE . $server->getThreadCount());		
 
