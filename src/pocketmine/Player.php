@@ -1155,9 +1155,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$pk->x = $from->x;
 			$pk->y = $from->y + $this->getEyeHeight();
 			$pk->z = $from->z;
+			$pk->yaw = $from->yaw;
 			$pk->bodyYaw = $from->yaw;
 			$pk->pitch = $from->pitch;
-			$pk->yaw = $from->yaw;
 			$pk->mode = 1;
 			$this->directDataPacket($pk);
 			$this->forceMovement = new Vector3($from->x, $from->y, $from->z);
@@ -1344,7 +1344,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->close("", "Invalid skin", false);
 					return;
 				}
-				
+
 				$this->setSkin($packet->skin, $packet->slim);
 				$this->loginData = ["clientId" => $packet->clientId, "loginData" => null];
 

@@ -61,7 +61,7 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 			$this->touchVector = new Vector3(0, 0, 0);
 		}else{
 			$this->touchVector = $block;
-			Block::get(0, 0, new Position(0, 0, 0, $player->level));
+			$this->blockTouched = Block::get(0, 0, new Position(0, 0, 0, $player->level));
 		}
 		$this->player = $player;
 		$this->item = $item;
