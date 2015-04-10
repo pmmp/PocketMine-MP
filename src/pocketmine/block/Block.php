@@ -474,6 +474,7 @@ class Block extends Position implements Metadatable{
 		[Item::BUCKET, 10],
 		[Item::TNT, 0],
 		[Item::IRON_HOE, 0],
+		[Item::IRON_SHOVEL,0],
 		[Item::IRON_SWORD, 0],
 		[Item::BOW, 0],
 		[Item::SHEARS, 0],
