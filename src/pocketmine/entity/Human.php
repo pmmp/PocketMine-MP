@@ -54,6 +54,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	protected $skin;
 	protected $isSlim = false;
 
+	public function getSkinData(){
+		return $this->skin;
+	}
+
+	public function isSkinSlim(){
+		return $this->isSlim;
+	}
+
 	/**
 	 * @param string $str
 	 * @param bool   $isSlim
