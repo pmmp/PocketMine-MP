@@ -21,6 +21,7 @@
 
 namespace pocketmine\command;
 
+use pocketmine\event\TranslationContainer;
 use pocketmine\Server;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\TextFormat;
@@ -49,7 +50,7 @@ class FormattedCommandAlias extends Command{
 				if($e instanceof \InvalidArgumentException){
 					$sender->sendMessage(TextFormat::RED . $e->getMessage());
 				}else{
-					$sender->sendMessage(TextFormat::RED . "An internal error occurred while attempting to perform this command");
+					$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.exception"));
 					$logger = $sender->getServer()->getLogger();
 					if($logger instanceof MainLogger){
 						$logger->logException($e);

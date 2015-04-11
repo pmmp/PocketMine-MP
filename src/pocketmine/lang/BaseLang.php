@@ -89,7 +89,7 @@ class BaseLang{
 		$baseText = $this->parseTranslation( $baseText !== null ? $baseText : $str);
 
 		foreach($params as $i => $p){
-			$baseText = str_replace("{%$i}", $this->parseTranslation($p), $baseText);
+			$baseText = str_replace("{%$i}", $this->parseTranslation((string) $p), $baseText);
 		}
 
 		return $baseText;

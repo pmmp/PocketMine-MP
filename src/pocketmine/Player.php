@@ -1104,7 +1104,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if(!$revert and !$this->isSleeping()){
 					if($diff > 0.0625){
 						$revert = true;
-						$this->server->getLogger()->warning($this->getName()." moved wrongly!");
+						$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidMove", [$this->getName()]));
 					}
 				}
 			}elseif($diff > 0){
@@ -1533,7 +1533,16 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$pk->difficulty = $this->server->getDifficulty();
 				$this->dataPacket($pk);
 
-				$this->server->getLogger()->info(TextFormat::AQUA . $this->username . TextFormat::WHITE . "[/" . $this->ip . ":" . $this->port . "] logged in with entity id " . $this->id . " at (" . $this->level->getName() . ", " . round($this->x, 4) . ", " . round($this->y, 4) . ", " . round($this->z, 4) . ")");
+				$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logIn", [
+					TextFormat::AQUA . $this->username . TextFormat::WHITE,
+					$this->ip,
+					$this->port,
+					$this->id,
+					$this->level->getName(),
+					round($this->x, 4),
+					round($this->y, 4),
+					round($this->z, 4)
+				]));
 
 
 				$this->orderChunks();
@@ -1968,7 +1977,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($target instanceof Entity and $this->getGamemode() !== Player::VIEW and $this->dead !== true and $target->dead !== true){
 					if($target instanceof DroppedItem or $target instanceof Arrow){
 						$this->kick("Attempting to attack an invalid entity");
-						$this->server->getLogger()->warning("Player " . $this->getName() . " tried to attack an invalid entity");
+						$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidEntity", [$this->getName()]));
 						return;
 					}
 
@@ -2507,7 +2516,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
 			$this->spawned = false;
-			$this->server->getLogger()->info(TextFormat::AQUA . $this->getName() . TextFormat::WHITE . "[/" . $this->ip . ":" . $this->port . "] logged out due to " . str_replace(["\n", "\r"], [" ", ""], $this->getServer()->getLanguage()->translateString($reason)));
+			$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logOut", [
+				TextFormat::AQUA . $this->getName() . TextFormat::WHITE,
+				$this->ip,
+				$this->port,
+				$this->getServer()->getLanguage()->translateString($reason)
+			]));
 			$this->windows = new \SplObjectStorage();
 			$this->windowIndex = [];
 			$this->usedChunks = [];

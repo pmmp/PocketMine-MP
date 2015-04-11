@@ -201,14 +201,14 @@ class PluginManager{
 						if($description instanceof PluginDescription){
 							$name = $description->getName();
 							if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
-								$this->server->getLogger()->error("Could not load plugin '" . $name . "': restricted name");
+								$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.restrictedName"]));
 								continue;
 							}elseif(strpos($name, " ") !== false){
-								$this->server->getLogger()->warning("Plugin '" . $name . "' uses spaces in its name, this is discouraged");
+								$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.plugin.spacesDiscouraged", [$name]));
 							}
 
 							if(isset($plugins[$name]) or $this->getPlugin($name) instanceof Plugin){
-								$this->server->getLogger()->error("Could not load duplicate plugin '" . $name . "': plugin exists");
+								$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.duplicateError", [$name]));
 								continue;
 							}
 
@@ -232,7 +232,7 @@ class PluginManager{
 							}
 
 							if($compatible === false){
-								$this->server->getLogger()->error("Could not load plugin '" . $name . "': API version not compatible");
+								$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.incompatibleAPI"]));
 								continue;
 							}
 
@@ -250,7 +250,7 @@ class PluginManager{
 							}
 						}
 					}catch(\Exception $e){
-						$this->server->getLogger()->error("Could not load '" . $file . "' in folder '" . $directory . "': " . $e->getMessage());
+						$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.fileError", [$file, $directory, $e->getMessage()]));
 						$logger = $this->server->getLogger();
 						if($logger instanceof MainLogger){
 							$logger->logException($e);
@@ -268,7 +268,7 @@ class PluginManager{
 							if(isset($loadedPlugins[$dependency]) or $this->getPlugin($dependency) instanceof Plugin){
 								unset($dependencies[$name][$key]);
 							}elseif(!isset($plugins[$dependency])){
-								$this->server->getLogger()->critical("Could not load plugin '" . $name . "': Unknown dependency");
+								$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.unknownDependency"]));
 								break;
 							}
 						}
@@ -296,7 +296,7 @@ class PluginManager{
 						if($plugin = $this->loadPlugin($file, $loaders) and $plugin instanceof Plugin){
 							$loadedPlugins[$name] = $plugin;
 						}else{
-							$this->server->getLogger()->critical("Could not load plugin '" . $name . "'");
+							$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.genericLoadError", [$name]));
 						}
 					}
 				}
@@ -310,7 +310,7 @@ class PluginManager{
 							if($plugin = $this->loadPlugin($file, $loaders) and $plugin instanceof Plugin){
 								$loadedPlugins[$name] = $plugin;
 							}else{
-								$this->server->getLogger()->critical("Could not load plugin '" . $name . "'");
+								$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.genericLoadError", [$name]));
 							}
 						}
 					}
@@ -318,7 +318,7 @@ class PluginManager{
 					//No plugins loaded :(
 					if($missingDependency === true){
 						foreach($plugins as $name => $file){
-							$this->server->getLogger()->critical("Could not load plugin '" . $name . "': circular dependency detected");
+							$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.circularDependency"]));
 						}
 						$plugins = [];
 					}
@@ -577,7 +577,7 @@ class PluginManager{
 
 		foreach($plugin->getDescription()->getCommands() as $key => $data){
 			if(strpos($key, ":") !== false){
-				$this->server->getLogger()->critical("Could not load command " . $key . " for plugin " . $plugin->getDescription()->getName());
+				$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.commandError", [$key, $plugin->getDescription()->getFullName()]));
 				continue;
 			}
 			if(is_array($data)){
@@ -594,7 +594,7 @@ class PluginManager{
 					$aliasList = [];
 					foreach($data["aliases"] as $alias){
 						if(strpos($alias, ":") !== false){
-							$this->server->getLogger()->critical("Could not load alias " . $alias . " for plugin " . $plugin->getDescription()->getName());
+							$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.aliasError", [$alias, $plugin->getDescription()->getFullName()]));
 							continue;
 						}
 						$aliasList[] = $alias;
@@ -669,7 +669,13 @@ class PluginManager{
 			try{
 				$registration->callEvent($event);
 			}catch(\Exception $e){
-				$this->server->getLogger()->critical("Could not pass event " . $event->getEventName() . " to " . $registration->getPlugin()->getDescription()->getFullName() . ": " . $e->getMessage() . " on " . get_class($registration->getListener()));
+				$this->server->getLogger()->critical(
+					$this->server->getLanguage()->translateString("pocketmine.plugin.eventError", [
+						$event->getEventName(),
+						$registration->getPlugin()->getDescription()->getFullName(),
+						$e->getMessage(),
+						get_class($registration->getListener())
+					]));
 				$logger = $this->server->getLogger();
 				if($logger instanceof MainLogger){
 					$logger->logException($e);
@@ -716,7 +722,11 @@ class PluginManager{
 					$class = $parameters[0]->getClass()->getName();
 					$reflection = new \ReflectionClass($class);
 					if(strpos((string) $reflection->getDocComment(), "@deprecated") !== false and $this->server->getProperty("settings.deprecated-verbose", true)){
-						$this->server->getLogger()->warning('Plugin ' . $plugin->getName() . ' has registered a listener for ' . $class . ' on method ' . get_class($listener) . '->' . $method->getName() . '(), but the event is Deprecated.');
+						$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.plugin.deprecatedEvent", [
+							$plugin->getName(),
+							$class,
+							get_class($listener) . "->" . $method->getName() . "()"
+						]));
 					}
 					$this->registerEvent($class, $listener, $priority, new MethodEventExecutor($method->getName()), $plugin, $ignoreCancelled);
 				}

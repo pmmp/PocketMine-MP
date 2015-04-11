@@ -296,7 +296,7 @@ class Level implements ChunkManager, Metadatable{
 		}else{
 			throw new LevelException("Provider is not a subclass of LevelProvider");
 		}
-		$this->server->getLogger()->info("Preparing level \"" . $this->provider->getName() . "\"");
+		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.preparing", [$this->provider->getName()]));
 		$this->generator = Generator::getGenerator($this->provider->getGenerator());
 
 		$this->blockOrder = $provider::getProviderOrder();
@@ -439,7 +439,7 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		$this->server->getLogger()->info("Unloading level \"" . $this->getName() . "\"");
+		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.unloading", [$this->getName()]));
 		$defaultLevel = $this->server->getDefaultLevel();
 		foreach($this->getPlayers() as $player){
 			if($this === $defaultLevel or $defaultLevel === null){
@@ -2133,7 +2133,7 @@ class Level implements ChunkManager, Metadatable{
 			$this->provider->unloadChunk($x, $z, $safe);
 		}catch(\Exception $e){
 			$logger = $this->server->getLogger();
-			$logger->error("Error when unloading a chunk: " . $e->getMessage());
+			$logger->error($this->server->getLanguage()->translateString("pocketmine.level.chunkUnloadError", [$e->getMessage()]));
 			if($logger instanceof MainLogger){
 				$logger->logException($e);
 			}

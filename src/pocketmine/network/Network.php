@@ -144,7 +144,7 @@ class Network{
 
 				$interface->emergencyShutdown();
 				$this->unregisterInterface($interface);
-				$logger->critical("[Network] Stopped interface ". get_class($interface) ." due to ". $e->getMessage());
+				$logger->critical($this->server->getLanguage()->translateString("pocketmine.server.networkError", [get_class($interface), $e->getMessage()]));
 			}
 		}
 	}

@@ -38,10 +38,10 @@ class QueryHandler{
 
 	public function __construct(){
 		$this->server = Server::getInstance();
-		$this->server->getLogger()->info("Starting GS4 status listener");
+		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.server.query.start"));
 		$addr = ($ip = $this->server->getIp()) != "" ? $ip : "0.0.0.0";
 		$port = $this->server->getPort();
-		$this->server->getLogger()->info("Setting query port to $port");
+		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.server.query.info", [$port]));
 		/*
 		The Query protocol is built on top of the existing Minecraft PE UDP network stack.
 		Because the 0xFE packet does not exist in the MCPE protocol,
@@ -54,7 +54,7 @@ class QueryHandler{
 		$this->regenerateToken();
 		$this->lastToken = $this->token;
 		$this->regenerateInfo();
-		$this->server->getLogger()->info("Query running on $addr:$port");
+		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.server.query.running", [$addr, $port]));
 	}
 
 	public function regenerateInfo(){
@@ -86,7 +86,7 @@ class QueryHandler{
 				$reply .= Binary::writeInt($sessionID);
 				$reply .= self::getTokenString($this->token, $address) . "\x00";
 
-				$this->server->sendPacket($address, $port, $reply);
+				$this->server->getNetwork()->sendPacket($address, $port, $reply);
 				break;
 			case self::STATISTICS: //Stat
 				$token = Binary::readInt(substr($payload, 0, 4));
@@ -105,7 +105,7 @@ class QueryHandler{
 				}else{
 					$reply .= $this->shortData;
 				}
-				$this->server->sendPacket($address, $port, $reply);
+				$this->server->getNetwork()->sendPacket($address, $port, $reply);
 				break;
 		}
 	}
