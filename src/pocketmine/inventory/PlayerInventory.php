@@ -115,7 +115,7 @@ class PlayerInventory extends BaseInventory{
 			if($this->getHolder() instanceof Player){
 				Server::getInstance()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $item, $slot, $itemIndex));
 				if($ev->isCancelled()){
-					$this->sendHeldItem($this->getHolder());
+					$this->sendContents($this->getHolder());
 					return;
 				}
 			}
