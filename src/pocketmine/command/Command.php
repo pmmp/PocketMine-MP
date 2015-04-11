@@ -289,23 +289,21 @@ abstract class Command{
 	public static function broadcastCommandMessage(CommandSender $source, $message, $sendToSource = true){
 		if($message instanceof TextContainer){
 			$m = clone $message;
-			$result = $source->getName() . ": " . $m->getText();
+			$result = "[".$source->getName().": ".$m->getText()."]";
 
 			$users = Server::getInstance()->getPluginManager()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
-			$colored = TextFormat::GRAY . TextFormat::ITALIC . "[$result" . TextFormat::GRAY . TextFormat::ITALIC . "]";
+			$colored = TextFormat::GRAY . TextFormat::ITALIC . $result;
 
 			$m->setText($result);
 			$result = clone $m;
 			$m->setText($colored);
 			$colored = clone $m;
 		}else{
-			$result = $source->getName() . ": " . $message;
-
-			//Command minecarts or command blocks are not implemented
-
 			$users = Server::getInstance()->getPluginManager()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
-			$colored = TextFormat::GRAY . TextFormat::ITALIC . "[$result" . TextFormat::GRAY . TextFormat::ITALIC . "]";
+			$result = new TranslationContainer("chat.type.admin", [$source->getName(), $message]);
+			$colored = new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . "%chat.type.admin", [$source->getName(), $message]);
 		}
+
 		if($sendToSource === true and !($source instanceof ConsoleCommandSender)){
 			$source->sendMessage($message);
 		}

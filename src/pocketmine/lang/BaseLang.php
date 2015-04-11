@@ -78,6 +78,23 @@ class BaseLang{
 		}
 	}
 
+	/**
+	 * @param string   $str
+	 * @param string[] $params
+	 *
+	 * @return string
+	 */
+	public function translateString($str, array $params = []){
+		$baseText = $this->get($str);
+		$baseText = $this->parseTranslation( $baseText !== null ? $baseText : $str);
+
+		foreach($params as $i => $p){
+			$baseText = str_replace("{%$i}", $this->parseTranslation($p), $baseText);
+		}
+
+		return $baseText;
+	}
+
 	public function translate(TextContainer $c){
 		if($c instanceof TranslationContainer){
 			$baseText = $this->get($c->getText());

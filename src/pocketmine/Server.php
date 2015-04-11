@@ -407,26 +407,22 @@ class Server{
 			case (string) Player::SURVIVAL:
 			case "survival":
 			case "s":
-			case strtolower(Server::getInstance()->getLanguage()->get("gameMode.survival")):
 				return Player::SURVIVAL;
 
 			case (string) Player::CREATIVE:
 			case "creative":
 			case "c":
-			case strtolower(Server::getInstance()->getLanguage()->get("gameMode.creative")):
 				return Player::CREATIVE;
 
 			case (string) Player::ADVENTURE:
 			case "adventure":
 			case "a":
-			case strtolower(Server::getInstance()->getLanguage()->get("gameMode.adventure")):
 				return Player::ADVENTURE;
 
 			case (string) Player::SPECTATOR:
 			case "spectator":
 			case "view":
 			case "v":
-			case strtolower(Server::getInstance()->getLanguage()->get("gameMode.spectator")):
 				return Player::SPECTATOR;
 		}
 		return -1;
