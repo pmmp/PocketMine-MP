@@ -21,6 +21,7 @@
 
 namespace pocketmine;
 
+use pocketmine\event\TranslationContainer;
 use pocketmine\utils\TextFormat;
 
 /**
@@ -106,10 +107,11 @@ abstract class Achievement{
 
 	public static function broadcast(Player $player, $achievementId){
 		if(isset(Achievement::$list[$achievementId])){
+			$translation = new TranslationContainer("chat.type.achievement", [$player->getDisplayName(), TextFormat::GREEN . Achievement::$list[$achievementId]["name"]]);
 			if(Server::getInstance()->getConfigString("announce-player-achievements", true) === true){
-				Server::getInstance()->broadcastMessage($player->getDisplayName() . " has just earned the achievement " . TextFormat::GREEN . Achievement::$list[$achievementId]["name"]);
+				Server::getInstance()->broadcastMessage($translation);
 			}else{
-				$player->sendMessage("You have just earned the achievement " . TextFormat::GREEN . Achievement::$list[$achievementId]["name"]);
+				$player->sendMessage($translation);
 			}
 
 			return true;

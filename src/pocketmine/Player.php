@@ -1355,20 +1355,26 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->randomClientId = $packet->clientId;
 				$this->loginData = ["clientId" => $packet->clientId, "loginData" => null];
 
-				if(count($this->server->getOnlinePlayers()) > $this->server->getMaxPlayers() and $this->kick("server full")){
+				if(count($this->server->getOnlinePlayers()) > $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)){
 					return;
 				}
+
 				if($packet->protocol1 !== ProtocolInfo::CURRENT_PROTOCOL){
+					$message = "";
 					if($packet->protocol1 < ProtocolInfo::CURRENT_PROTOCOL){
+						$message = "disconnectionScreen.outdatedClient";
+
 						$pk = new PlayStatusPacket();
 						$pk->status = PlayStatusPacket::LOGIN_FAILED_CLIENT;
 						$this->dataPacket($pk);
 					}else{
+						$message = "disconnectionScreen.outdatedServer";
+
 						$pk = new PlayStatusPacket();
 						$pk->status = PlayStatusPacket::LOGIN_FAILED_SERVER;
 						$this->dataPacket($pk);
 					}
-					$this->close("", "Incorrect protocol #" . $packet->protocol1, false);
+					$this->close("", $message, false);
 
 					return;
 				}
@@ -1380,7 +1386,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 				
 				if(strlen($packet->skin) < 64 * 32 * 4){
-					$this->close("", "Invalid skin", false);
+					$this->close("", "disconnectionScreen.invalidSkin", false);
 					return;
 				}
 
@@ -2381,13 +2387,22 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * Kicks a player from the server
 	 *
 	 * @param string $reason
+	 * @param bool   $isAdmin
 	 *
 	 * @return bool
 	 */
-	public function kick($reason = ""){
+	public function kick($reason = "", $isAdmin = true){
 		$this->server->getPluginManager()->callEvent($ev = new PlayerKickEvent($this, $reason, $this->getLeaveMessage()));
 		if(!$ev->isCancelled()){
-			$message = "Kicked by admin." . ($reason !== "" ? " Reason: " . $reason : "");
+			if($isAdmin){
+				$message = "Kicked by admin." . ($reason !== "" ? " Reason: " . $reason : "");
+			}else{
+				if($reason === ""){
+					$message = "disconnectionScreen.noReason";
+				}else{
+					$message = $reason;
+				}
+			}
 			$this->close($ev->getQuitMessage(), $message);
 
 			return true;
@@ -2492,7 +2507,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
 			$this->spawned = false;
-			$this->server->getLogger()->info(TextFormat::AQUA . $this->username . TextFormat::WHITE . "[/" . $this->ip . ":" . $this->port . "] logged out due to " . str_replace(["\n", "\r"], [" ", ""], $reason));
+			$this->server->getLogger()->info(TextFormat::AQUA . $this->getName() . TextFormat::WHITE . "[/" . $this->ip . ":" . $this->port . "] logged out due to " . str_replace(["\n", "\r"], [" ", ""], $this->getServer()->getLanguage()->translateString($reason)));
 			$this->windows = new \SplObjectStorage();
 			$this->windowIndex = [];
 			$this->usedChunks = [];
