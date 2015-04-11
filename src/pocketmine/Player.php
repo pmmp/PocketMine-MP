@@ -1685,12 +1685,16 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							break;
 						}
 					}
+
+					$this->inventory->sendHeldItem($this);
+
+					if($blockVector->distanceSquared($this) > 10000){
+						break;
+					}
 					$target = $this->level->getBlock($blockVector);
 					$block = $target->getSide($packet->face);
 
 					$this->level->sendBlocks([$this], [$target, $block], UpdateBlockPacket::FLAG_ALL_PRIORITY);
-
-                    $this->inventory->sendHeldItem($this);
 					break;
 				}elseif($packet->face === 0xff){
 					$aimPos = (new Vector3($packet->x / 32768, $packet->y / 32768, $packet->z / 32768))->normalize();
@@ -1762,10 +1766,14 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$this->craftingType = 0;
 				$packet->eid = $this->id;
+				$pos = new Vector3($packet->x, $packet->y, $packet->z);
 
 				switch($packet->action){
 					case 0: //Start break
-						$target = $this->level->getBlock(new Vector3($packet->x, $packet->y, $packet->z));
+						if($pos->distanceSquared($this) > 10000){
+							break;
+						}
+						$target = $this->level->getBlock($pos);
 						$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $target, $packet->face, $target->getId() === 0 ? PlayerInteractEvent::LEFT_CLICK_AIR : PlayerInteractEvent::LEFT_CLICK_BLOCK);
 						$this->getServer()->getPluginManager()->callEvent($ev);
 						if($ev->isCancelled()){
@@ -2361,7 +2369,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 				$this->craftingType = 0;
 
-				$t = $this->level->getTile(new Vector3($packet->x, $packet->y, $packet->z));
+				$pos = new Vector3($packet->x, $packet->y, $packet->z);
+				if($pos->distanceSquared($this) > 10000){
+					break;
+				}
+
+				$t = $this->level->getTile($pos);
 				if($t instanceof Sign){
 					$nbt = new NBT(NBT::LITTLE_ENDIAN);
 					$nbt->read($packet->namedtag);
