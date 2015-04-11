@@ -58,7 +58,7 @@ class BanCommand extends VanillaCommand{
 			$player->kick($reason !== "" ? "Banned by admin. Reason: " . $reason : "Banned by admin.");
 		}
 
-		Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.ban.success", [$player->getName()]));
+		Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.ban.success", [$player !== null ? $player->getName() : $name]));
 
 		return true;
 	}
