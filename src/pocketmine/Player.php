@@ -2592,7 +2592,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		$cause = $this->getLastDamageCause();
 
-		switch($cause->getCause()){
+		switch($cause === null ? EntityDamageEvent::CAUSE_CUSTOM : $cause->getCause()){
 			case EntityDamageEvent::CAUSE_ENTITY_ATTACK:
 				if($cause instanceof EntityDamageByEntityEvent){
 					$e = $cause->getDamager();
