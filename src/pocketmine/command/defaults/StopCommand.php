@@ -31,7 +31,7 @@ class StopCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Stops the server, with optional reason",
+			"%pocketmine.command.stop.description",
 			"%commands.stop.usage"
 		);
 		$this->setPermission("pocketmine.command.stop");

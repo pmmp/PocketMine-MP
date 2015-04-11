@@ -32,7 +32,7 @@ class OpCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Gives the specified player operator status",
+			"%pocketmine.command.op.description",
 			"%commands.op.usage"
 		);
 		$this->setPermission("pocketmine.command.op.give");

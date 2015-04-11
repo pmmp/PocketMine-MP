@@ -32,7 +32,7 @@ class KickCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Removes the specified player from the server",
+			"%pocketmine.command.kick.description",
 			"%commands.kick.usage"
 		);
 		$this->setPermission("pocketmine.command.kick");

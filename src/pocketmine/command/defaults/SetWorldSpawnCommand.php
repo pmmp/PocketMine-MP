@@ -33,7 +33,7 @@ class SetWorldSpawnCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Sets a worlds's spawn point. If no coordinates are specified, the player's coordinates will be used.",
+			"%pocketmine.command.setworldspawn.description",
 			"%commands.setworldspawn.usage"
 		);
 		$this->setPermission("pocketmine.command.setworldspawn");

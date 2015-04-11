@@ -31,7 +31,7 @@ class TellCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Sends a private message to the given player",
+			"%pocketmine.command.tell.description",
 			"%commands.message.usage",
 			["w", "msg"]
 		);

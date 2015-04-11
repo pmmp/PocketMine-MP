@@ -2447,7 +2447,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$message = $message->getText();
 		}
 
-		$mes = explode("\n", $message);
+		$mes = explode("\n", $this->server->getLanguage()->translateString($message, [], "pocketmine."));
 		foreach($mes as $m){
 			if($m !== ""){
 				$pk = new TextPacket();
@@ -2461,7 +2461,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	public function sendTranslation($message, array $parameters = []){
 		$pk = new TextPacket();
 		$pk->type = TextPacket::TYPE_TRANSLATION;
-		$pk->message = $message;
+		$pk->message = $this->server->getLanguage()->translateString($message, [], "pocketmine.");
+		foreach($parameters as $i => $p){
+			$parameters[$i] = $this->server->getLanguage()->translateString($p, [], "pocketmine.");
+		}
 		$pk->parameters = $parameters;
 		$this->dataPacket($pk);
 	}

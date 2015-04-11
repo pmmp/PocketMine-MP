@@ -23,6 +23,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\event\TranslationContainer;
 use pocketmine\utils\TextFormat;
 
 class ReloadCommand extends VanillaCommand{
@@ -30,8 +31,8 @@ class ReloadCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Reloads the server configuration and plugins",
-			"/reload"
+			"%pocketmine.command.reload.description",
+			"%pocketmine.command.reload.usage"
 		);
 		$this->setPermission("pocketmine.command.reload");
 	}
@@ -41,10 +42,10 @@ class ReloadCommand extends VanillaCommand{
 			return true;
 		}
 
-		Command::broadcastCommandMessage($sender, TextFormat::YELLOW . "Reloading server...");
+		Command::broadcastCommandMessage($sender, new TranslationContainer(TextFormat::YELLOW . "%pocketmine.command.reload.reloading"));
 
 		$sender->getServer()->reload();
-		Command::broadcastCommandMessage($sender, TextFormat::YELLOW . "Reload complete.");
+		Command::broadcastCommandMessage($sender, new TranslationContainer(TextFormat::YELLOW . "%pocketmine.command.reload.reloaded"));
 
 		return true;
 	}

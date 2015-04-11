@@ -31,7 +31,7 @@ class SeedCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Shows the world seed",
+			"%pocketmine.command.seed.description",
 			"%commands.seed.usage"
 		);
 		$this->setPermission("pocketmine.command.seed");

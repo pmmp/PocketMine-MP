@@ -29,8 +29,8 @@ class StatusCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Reads back the server's performance.",
-			"/status"
+			"%pocketmine.command.status.description",
+			"%pocketmine.command.status.usage"
 		);
 		$this->setPermission("pocketmine.command.status");
 	}

@@ -22,6 +22,7 @@
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\event\TranslationContainer;
 use pocketmine\network\protocol\Info;
 use pocketmine\plugin\Plugin;
 use pocketmine\utils\TextFormat;
@@ -31,8 +32,8 @@ class VersionCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Gets the version of this server including any plugins in use",
-			"/version [plugin name]",
+			"%pocketmine.command.version.description",
+			"%pocketmine.command.version.usage",
 			["ver", "about"]
 		);
 		$this->setPermission("pocketmine.command.version");
@@ -44,11 +45,14 @@ class VersionCommand extends VanillaCommand{
 		}
 
 		if(count($args) === 0){
-			$output = "This server is running " . $sender->getServer()->getName() . " version " . $sender->getServer()->getPocketMineVersion() . " 「" . $sender->getServer()->getCodename() . "」 (Implementing API version " . $sender->getServer()->getApiVersion() . " for Minecraft: PE " . $sender->getServer()->getVersion() . " protocol version " . Info::CURRENT_PROTOCOL . ")";
-			if(\pocketmine\GIT_COMMIT !== str_repeat("00", 20)){
-				$output .= " [git " . \pocketmine\GIT_COMMIT . "]";
-			}
-			$sender->sendMessage($output);
+			$sender->sendMessage(new TranslationContainer("pocketmine.server.info.extended", [
+				$sender->getServer()->getName(),
+				$sender->getServer()->getPocketMineVersion(),
+				$sender->getServer()->getCodename(),
+				$sender->getServer()->getApiVersion(),
+				$sender->getServer()->getVersion(),
+				Info::CURRENT_PROTOCOL
+			]));
 		}else{
 			$pluginName = implode(" ", $args);
 			$exactPlugin = $sender->getServer()->getPluginManager()->getPlugin($pluginName);
@@ -69,7 +73,7 @@ class VersionCommand extends VanillaCommand{
 			}
 
 			if(!$found){
-				$sender->sendMessage("This server is not running any plugin by that name.\nUse /plugins to get a list of plugins.");
+				$sender->sendMessage(new TranslationContainer("pocketmine.command.version.noSuchPlugin"));
 			}
 		}
 

@@ -31,7 +31,7 @@ class WhitelistCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Manages the list of players allowed to use this server",
+			"%pocketmine.command.whitelist.description",
 			"%commands.whitelist.usage"
 		);
 		$this->setPermission("pocketmine.command.whitelist.reload;pocketmine.command.whitelist.enable;pocketmine.command.whitelist.disable;pocketmine.command.whitelist.list;pocketmine.command.whitelist.add;pocketmine.command.whitelist.remove");

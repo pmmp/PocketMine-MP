@@ -32,7 +32,7 @@ class BanCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Prevents the specified player from using this server",
+			"%pocketmine.command.ban.player.description",
 			"%commands.ban.usage"
 		);
 		$this->setPermission("pocketmine.command.ban.player");

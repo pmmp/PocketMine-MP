@@ -31,7 +31,7 @@ class ListCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Lists all online players",
+			"%pocketmine.command.list.description",
 			"%command.players.usage"
 		);
 		$this->setPermission("pocketmine.command.list");

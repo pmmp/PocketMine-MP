@@ -31,7 +31,7 @@ class SaveCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Saves the server to disk",
+			"%pocketmine.command.save.description",
 			"%commands.save.usage"
 		);
 		$this->setPermission("pocketmine.command.save.perform");

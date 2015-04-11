@@ -5,6 +5,7 @@
 
 settings:
  #Three-letter language code for server-side localization
+ #Check your language code on https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes
  language: "eng"
  shutdown-message: "Server closed"
  #Allow listing plugins via Query

@@ -55,8 +55,8 @@ class ParticleCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Adds particles to a world",
-			"/particle <name> <x> <y> <z> <xd> <yd> <zd> [count] [data]" //No translation, different!
+			"%pocketmine.command.particle.description",
+			"%pocketmine.command.particle.usage"
 		);
 		$this->setPermission("pocketmine.command.particle");
 	}

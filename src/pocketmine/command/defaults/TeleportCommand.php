@@ -33,7 +33,7 @@ class TeleportCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Teleports the given player (or yourself) to another player or coordinates",
+			"%pocketmine.command.tp.description",
 			"%commands.tp.usage"
 		);
 		$this->setPermission("pocketmine.command.teleport");

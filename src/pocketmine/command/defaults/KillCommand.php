@@ -33,8 +33,8 @@ class KillCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Commits suicide, only usable as a player",
-			"/kill [player]",
+			"%pocketmine.command.kill.description",
+			"%pocketmine.command.kill.usage",
 			["suicide"]
 		);
 		$this->setPermission("pocketmine.command.kill.self;pocketmine.command.kill.other");

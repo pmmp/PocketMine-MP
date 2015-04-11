@@ -33,7 +33,7 @@ class SpawnpointCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Sets a player's spawn point",
+			"%pocketmine.command.spawnpoint.description",
 			"%commands.spawnpoint.usage"
 		);
 		$this->setPermission("pocketmine.command.spawnpoint");

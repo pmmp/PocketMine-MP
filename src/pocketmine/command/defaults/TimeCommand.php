@@ -33,8 +33,8 @@ class TimeCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Changes the time on each world",
-			"/time <set|add> <value> OR /time <start|stop|query>" //No translation, different!
+			"%pocketmine.command.time.description",
+			"%pocketmine.command.time.usage"
 		);
 		$this->setPermission("pocketmine.command.time.add;pocketmine.command.time.set;pocketmine.command.time.start;pocketmine.command.time.stop");
 	}

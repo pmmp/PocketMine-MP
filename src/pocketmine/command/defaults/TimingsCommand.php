@@ -33,8 +33,8 @@ class TimingsCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Records timings to see performance of the server.",
-			"/timings <reset|report|on|off|paste>"
+			"%pocketmine.command.timings.description",
+			"%pocketmine.command.timings.usage"
 		);
 		$this->setPermission("pocketmine.command.timings");
 	}
@@ -55,17 +55,17 @@ class TimingsCommand extends VanillaCommand{
 		if($mode === "on"){
 			$sender->getServer()->getPluginManager()->setUseTimings(true);
 			TimingsHandler::reload();
-			$sender->sendMessage("Enabled Timings & Reset");
+			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.enable"));
 
 			return true;
 		}elseif($mode === "off"){
 			$sender->getServer()->getPluginManager()->setUseTimings(false);
-			$sender->sendMessage("Disabled Timings");
+			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.disable"));
 			return true;
 		}
 
 		if(!$sender->getServer()->getPluginManager()->useTimings()){
-			$sender->sendMessage("Please enable timings by typing /timings on");
+			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsDisabled"));
 
 			return true;
 		}
@@ -74,7 +74,7 @@ class TimingsCommand extends VanillaCommand{
 
 		if($mode === "reset"){
 			TimingsHandler::reload();
-			$sender->sendMessage("Timings reset");
+			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.reset"));
 		}elseif($mode === "merged" or $mode === "report" or $paste){
 
 			$sampleTime = microtime(true) - self::$timingStart;
@@ -118,18 +118,18 @@ class TimingsCommand extends VanillaCommand{
 				$data = curl_exec($ch);
 				curl_close($ch);
 				if(preg_match('#^Location: http://paste\\.ubuntu\\.com/([0-9]{1,})/#m', $data, $matches) == 0){
-					$sender->sendMessage("An error happened while pasting the report");
+					$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.pasteError"));
 
 					return true;
 				}
 
 
-				$sender->sendMessage("Timings uploaded to http://paste.ubuntu.com/" . $matches[1] . "/");
-				$sender->sendMessage("You can read the results at http://timings.aikar.co/?url=" . $matches[1]);
+				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsUpload", ["http://paste.ubuntu.com/" . $matches[1] . "/"]));
+				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsRead", ["http://timings.aikar.co/?url=" . $matches[1]]));
 				fclose($fileTimings);
 			}else{
 				fclose($fileTimings);
-				$sender->sendMessage("Timings written to " . $timings);
+				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsWrite", [$timings]));
 			}
 		}
 

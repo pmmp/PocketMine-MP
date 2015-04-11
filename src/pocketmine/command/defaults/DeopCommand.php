@@ -32,7 +32,7 @@ class DeopCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Takes the specified player's operator status",
+			"%pocketmine.command.deop.description",
 			"%commands.deop.usage"
 		);
 		$this->setPermission("pocketmine.command.op.take");

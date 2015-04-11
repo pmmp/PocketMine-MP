@@ -33,7 +33,7 @@ class EffectCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Adds/Removes effects on players",
+			"%pocketmine.command.effect.description",
 			"%commands.effect.usage"
 		);
 		$this->setPermission("pocketmine.command.effect");

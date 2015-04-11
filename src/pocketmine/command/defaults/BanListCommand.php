@@ -30,7 +30,7 @@ class BanListCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"View all players banned from this server",
+			"%pocketmine.command.banlist.description",
 			"%commands.banlist.usage"
 		);
 		$this->setPermission("pocketmine.command.ban.list");

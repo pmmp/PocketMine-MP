@@ -32,7 +32,7 @@ class HelpCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Shows the help menu",
+			"%pocketmine.command.help.description",
 			"%commands.help.usage",
 			["?"]
 		);

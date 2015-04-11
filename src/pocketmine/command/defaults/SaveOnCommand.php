@@ -31,7 +31,7 @@ class SaveOnCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Enables server autosaving",
+			"%pocketmine.command.saveon.description",
 			"%commands.save-on.usage"
 		);
 		$this->setPermission("pocketmine.command.save.enable");

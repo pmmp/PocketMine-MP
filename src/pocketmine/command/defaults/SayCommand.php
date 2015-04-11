@@ -32,7 +32,7 @@ class SayCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Broadcasts the given message as the sender",
+			"%pocketmine.command.say.description",
 			"%commands.say.usage"
 		);
 		$this->setPermission("pocketmine.command.say");

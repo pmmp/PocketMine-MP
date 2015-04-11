@@ -33,8 +33,8 @@ class GiveCommand extends VanillaCommand{
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Gives the specified player a certain amount of items",
-			"/give <player> <item[:damage]> [amount]" //No translation :(
+			"%pocketmine.command.give.description",
+			"%pocketmine.command.give.usage"
 		);
 		$this->setPermission("pocketmine.command.give");
 	}

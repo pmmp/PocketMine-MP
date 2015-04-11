@@ -105,6 +105,8 @@ class ConsoleCommandSender implements CommandSender{
 	public function sendMessage($message){
 		if($message instanceof TextContainer){
 			$message = $this->getServer()->getLanguage()->translate($message);
+		}else{
+			$message = $this->getServer()->getLanguage()->translateString($message);
 		}
 
 		foreach(explode("\n", trim($message)) as $line){
