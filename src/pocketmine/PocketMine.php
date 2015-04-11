@@ -34,7 +34,7 @@ namespace {
 					}
 					echo str_repeat("  ", $cnt) . "}" . PHP_EOL;
 					break;
-				case is_integer($var):
+				case is_int($var):
 					echo str_repeat("  ", $cnt) . "int(" . $var . ")" . PHP_EOL;
 					break;
 				case is_float($var):
@@ -74,7 +74,7 @@ namespace pocketmine {
 	const VERSION = "1.5dev";
 	const API_VERSION = "1.12.0";
 	const CODENAME = "活発(Kappatsu)フグ(Fugu)";
-	const MINECRAFT_VERSION = "v0.11.0 alpha build 1";
+	const MINECRAFT_VERSION = "v0.11.0 alpha build 2";
 
 	/*
 	 * Startup code. Do not look at it, it may harm you.

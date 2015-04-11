@@ -23,6 +23,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\event\TranslationContainer;
 
 
 class StopCommand extends VanillaCommand{
@@ -31,7 +32,7 @@ class StopCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Stops the server, with optional reason",
-			"/stop [reason]"
+			"%commands.stop.usage"
 		);
 		$this->setPermission("pocketmine.command.stop");
 	}
@@ -41,14 +42,7 @@ class StopCommand extends VanillaCommand{
 			return true;
 		}
 
-		Command::broadcastCommandMessage($sender, "Stopping the server...");
-
-		$reason = implode(" ", $args);
-		if($reason !== ""){
-			foreach($sender->getServer()->getOnlinePlayers() as $player){
-				$player->kick($reason);
-			}
-		}
+		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.stop.start"));
 
 		$sender->getServer()->shutdown();
 

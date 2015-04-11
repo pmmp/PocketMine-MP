@@ -22,6 +22,7 @@
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\event\TranslationContainer;
 
 
 class BanListCommand extends VanillaCommand{
@@ -30,7 +31,7 @@ class BanListCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"View all players banned from this server",
-			"/banlist [ips|players]"
+			"%commands.banlist.usage"
 		);
 		$this->setPermission("pocketmine.command.ban.list");
 	}
@@ -46,6 +47,10 @@ class BanListCommand extends VanillaCommand{
 				$list = $sender->getServer()->getIPBans();
 			}elseif($args[0] === "players"){
 				$list = $sender->getServer()->getNameBans();
+			}else{
+				$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+
+				return false;
 			}
 		}
 
@@ -55,7 +60,12 @@ class BanListCommand extends VanillaCommand{
 			$message .= $entry->getName() . ", ";
 		}
 
-		$sender->sendMessage("There are " . count($list) . " total banned players:");
+		if($args[0] === "ips"){
+			$sender->sendMessage("commands.banlist.ips", [count($list)]);
+		}else{
+			$sender->sendMessage("commands.banlist.players", [count($list)]);
+		}
+
 		$sender->sendMessage(substr($message, 0, -2));
 
 		return true;

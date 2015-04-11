@@ -33,7 +33,7 @@ class KickCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Removes the specified player from the server",
-			"/kick <player> [reason...]"
+			"%commands.kick.usage"
 		);
 		$this->setPermission("pocketmine.command.kick");
 	}
@@ -55,12 +55,12 @@ class KickCommand extends VanillaCommand{
 		if(($player = $sender->getServer()->getPlayer($name)) instanceof Player){
 			$player->kick($reason);
 			if(strlen($reason) >= 1){
-				Command::broadcastCommandMessage($sender, "Kicked " . $player->getName() . " from the game: '{$reason}'");
+				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.kick.success.reason", [$player->getName(), $reason]));
 			}else{
-				Command::broadcastCommandMessage($sender, "Kicked " . $player->getName() . " from the game.");
+				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.kick.success", [$player->getName()]));
 			}
 		}else{
-			$sender->sendMessage($name . " not found.");
+			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
 		}
 
 

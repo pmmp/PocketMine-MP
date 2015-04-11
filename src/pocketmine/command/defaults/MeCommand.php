@@ -32,7 +32,7 @@ class MeCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Performs the specified action in chat",
-			"/me <action...>"
+			"%commands.me.usage"
 		);
 		$this->setPermission("pocketmine.command.me");
 	}

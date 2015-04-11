@@ -34,7 +34,7 @@ class TeleportCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Teleports the given player (or yourself) to another player or coordinates",
-			"/tp [player] <target> and/or <x> <y> <z>"
+			"%commands.tp.usage"
 		);
 		$this->setPermission("pocketmine.command.teleport");
 	}
@@ -44,7 +44,7 @@ class TeleportCommand extends VanillaCommand{
 			return true;
 		}
 
-		if(count($args) < 1 or count($args) > 4){
+		if(count($args) < 1 or count($args) > 6){
 			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 
 			return true;
@@ -89,16 +89,29 @@ class TeleportCommand extends VanillaCommand{
 
 		if(count($args) < 3){
 			$origin->teleport($target);
-			Command::broadcastCommandMessage($sender, "Teleported " . $origin->getDisplayName() . " to " . $target->getDisplayName());
+			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.tp.success", [$origin->getName(), $target->getName()]));
 
 			return true;
 		}elseif($target->getLevel() !== null){
-			$pos = count($args) === 4 ? 1 : 0;
+			if(count($args) === 4 or count($args) === 6){
+				$pos = 1;
+			}else{
+				$pos = 0;
+			}
+
 			$x = $this->getRelativeDouble($target->x, $sender, $args[$pos++]);
 			$y = $this->getRelativeDouble($target->y, $sender, $args[$pos++], 0, 128);
-			$z = $this->getRelativeDouble($target->z, $sender, $args[$pos]);
-			$target->teleport(new Vector3($x, $y, $z));
-			Command::broadcastCommandMessage($sender, "Teleported " . $target->getDisplayName() . " to " . round($x, 2) . ", " . round($y, 2) . ", " . round($z, 2));
+			$z = $this->getRelativeDouble($target->z, $sender, $args[$pos++]);
+			$yaw = $target->getYaw();
+			$pitch = $target->getPitch();
+
+			if(count($args) === 6 or (count($args) === 5 and $pos === 3)){
+				$yaw = $args[$pos++];
+				$pitch = $args[$pos++];
+			}
+
+			$target->teleport(new Vector3($x, $y, $z), $yaw, $pitch);
+			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.tp.success.coordinates", [$target->getName(), round($x, 2), round($y, 2), round($z, 2)]));
 
 			return true;
 		}

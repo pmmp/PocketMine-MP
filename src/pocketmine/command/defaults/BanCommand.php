@@ -33,7 +33,7 @@ class BanCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Prevents the specified player from using this server",
-			"/ban <player> [reason...]"
+			"%commands.ban.usage"
 		);
 		$this->setPermission("pocketmine.command.ban.player");
 	}
@@ -55,10 +55,10 @@ class BanCommand extends VanillaCommand{
 		$sender->getServer()->getNameBans()->addBan($name, $reason, null, $sender->getName());
 
 		if(($player = $sender->getServer()->getPlayerExact($name)) instanceof Player){
-			$player->kick("Banned by admin.");
+			$player->kick($reason !== "" ? "Banned by admin. Reason: " . $reason : "Banned by admin.");
 		}
 
-		Command::broadcastCommandMessage($sender, "Banned player " . $name);
+		Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.ban.success", [$player->getName()]));
 
 		return true;
 	}

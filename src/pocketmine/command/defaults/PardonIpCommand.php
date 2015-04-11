@@ -32,7 +32,7 @@ class PardonIpCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Allows the specified IP address to use this server",
-			"/pardon-ip <address>"
+			"%commands.unbanip.usage"
 		);
 		$this->setPermission("pocketmine.command.unban.ip");
 	}
@@ -50,9 +50,9 @@ class PardonIpCommand extends VanillaCommand{
 
 		if(preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $args[0])){
 			$sender->getServer()->getIPBans()->remove($args[0]);
-			Command::broadcastCommandMessage($sender, "Pardoned IP " . $args[0]);
+			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.unbanip.success", $args[0]));
 		}else{
-			$sender->sendMessage("Invalid IP");
+			$sender->sendMessage(new TranslationContainer("commands.unbanip.invalid"));
 		}
 
 		return true;

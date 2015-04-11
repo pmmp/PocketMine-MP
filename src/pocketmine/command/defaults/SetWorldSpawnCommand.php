@@ -34,7 +34,7 @@ class SetWorldSpawnCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Sets a worlds's spawn point. If no coordinates are specified, the player's coordinates will be used.",
-			"/setworldspawn OR /setworldspawn <x> <y> <z>"
+			"%commands.setworldspawn.usage"
 		);
 		$this->setPermission("pocketmine.command.setworldspawn");
 	}
@@ -64,7 +64,7 @@ class SetWorldSpawnCommand extends VanillaCommand{
 
 		$level->setSpawnLocation($pos);
 
-		Command::broadcastCommandMessage($sender, "Set world " . $level->getName() . "'s spawnpoint to " . $pos->x . ", " . $pos->y . ", " . $pos->z);
+		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.setworldspawn.success", [round($pos->x, 2), round($pos->y, 2), round($pos->z, 2)]));
 
 		return true;
 	}

@@ -32,7 +32,7 @@ class DefaultGamemodeCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Set the default gamemode",
-			"/defaultgamemode <mode>"
+			"%commands.defaultgamemode.usage"
 		);
 		$this->setPermission("pocketmine.command.defaultgamemode");
 	}

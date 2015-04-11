@@ -33,7 +33,7 @@ class DeopCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Takes the specified player's operator status",
-			"/deop <player>"
+			"%commands.deop.usage"
 		);
 		$this->setPermission("pocketmine.command.op.take");
 	}
@@ -54,9 +54,9 @@ class DeopCommand extends VanillaCommand{
 		$player = $sender->getServer()->getOfflinePlayer($name);
 		$player->setOp(false);
 		if($player instanceof Player){
-			$player->sendMessage(TextFormat::YELLOW . "You are no longer op!");
+			$player->sendMessage(TextFormat::GRAY . "You are no longer op!");
 		}
-		Command::broadcastCommandMessage($sender, "De-opped " . $player->getName());
+		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.deop.success", [$player->getName()]));
 
 		return true;
 	}

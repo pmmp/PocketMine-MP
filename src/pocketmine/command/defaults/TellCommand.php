@@ -32,7 +32,7 @@ class TellCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Sends a private message to the given player",
-			"/tell <player> <message>",
+			"%commands.message.usage",
 			["w", "msg"]
 		);
 		$this->setPermission("pocketmine.command.tell");
@@ -53,11 +53,16 @@ class TellCommand extends VanillaCommand{
 
 		$player = $sender->getServer()->getPlayer($name);
 
+		if($player === $sender){
+			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.message.sameTarget"));
+			return true;
+		}
+
 		if($player instanceof Player){
-			$sender->sendMessage("[me -> " . $player->getName() . "] " . implode(" ", $args));
-			$player->sendMessage("[" . $sender->getName() . " -> me] " . implode(" ", $args));
+			$sender->sendMessage("[".$this->getName()." -> " . $player->getDisplayName() . "] " . implode(" ", $args));
+			$player->sendMessage("[" . ($sender instanceof Player ? $sender->getDisplayName() : $sender->getName()) . " -> ".$this->getName()."] " . implode(" ", $args));
 		}else{
-			$sender->sendMessage("There's no player by that name online.");
+			$sender->sendMessage(new TranslationContainer("commands.generic.player.notFound"));
 		}
 
 		return true;

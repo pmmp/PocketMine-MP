@@ -53,7 +53,7 @@ class EffectCommand extends VanillaCommand{
 		$player = $sender->getServer()->getPlayer($args[0]);
 
 		if($player === null){
-			$sender->sendMessage(TextFormat::RED . "Player {$args[0]} not found");
+			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
 			return true;
 		}
 

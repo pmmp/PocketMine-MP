@@ -69,7 +69,7 @@ class GiveCommand extends VanillaCommand{
 			//TODO: overflow
 			$player->getInventory()->addItem(clone $item);
 		}else{
-			$sender->sendMessage(TextFormat::RED . "Can't find player " . $args[0]);
+			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
 
 			return true;
 		}

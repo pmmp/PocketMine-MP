@@ -33,7 +33,7 @@ class OpCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Gives the specified player operator status",
-			"/op <player>"
+			"%commands.op.usage"
 		);
 		$this->setPermission("pocketmine.command.op.give");
 	}
@@ -52,12 +52,11 @@ class OpCommand extends VanillaCommand{
 		$name = array_shift($args);
 
 		$player = $sender->getServer()->getOfflinePlayer($name);
-		Command::broadcastCommandMessage($sender, "Opped " . $player->getName());
+		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.op.success", [$player->getName()]));
 		if($player instanceof Player){
-			$player->sendMessage("You are now op!");
+			$player->sendMessage(TextFormat::GRAY . "You are now op!");
 		}
 		$player->setOp(true);
-
 		return true;
 	}
 }

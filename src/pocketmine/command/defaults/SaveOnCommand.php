@@ -23,6 +23,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\event\TranslationContainer;
 
 
 class SaveOnCommand extends VanillaCommand{
@@ -31,7 +32,7 @@ class SaveOnCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Enables server autosaving",
-			"/save-on"
+			"%commands.save-on.usage"
 		);
 		$this->setPermission("pocketmine.command.save.enable");
 	}
@@ -43,7 +44,7 @@ class SaveOnCommand extends VanillaCommand{
 
 		$sender->getServer()->setAutoSave(true);
 
-		Command::broadcastCommandMessage($sender, "Enabled level saving");
+		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.save.enabled"));
 
 		return true;
 	}

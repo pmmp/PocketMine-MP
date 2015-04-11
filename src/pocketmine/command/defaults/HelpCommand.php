@@ -24,6 +24,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
+use pocketmine\event\TranslationContainer;
 use pocketmine\utils\TextFormat;
 
 class HelpCommand extends VanillaCommand{
@@ -32,7 +33,7 @@ class HelpCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Shows the help menu",
-			"/help [pageNumber]\n/help <topic> [pageNumber]",
+			"%commands.help.usage",
 			["?"]
 		);
 		$this->setPermission("pocketmine.command.help");
@@ -77,13 +78,12 @@ class HelpCommand extends VanillaCommand{
 			if($pageNumber < 1){
 				$pageNumber = 1;
 			}
-			$message = TextFormat::RED . "-" . TextFormat::RESET . " Showing help page " . $pageNumber . " of " . count($commands) . " (/help <pageNumber>) " . TextFormat::RED . "-" . TextFormat::RESET . "\n";
+			$sender->sendMessage(new TranslationContainer("commands.help.header", [$pageNumber, count($commands)]));
 			if(isset($commands[$pageNumber - 1])){
 				foreach($commands[$pageNumber - 1] as $command){
-					$message .= TextFormat::DARK_GREEN . "/" . $command->getName() . ": " . TextFormat::WHITE . $command->getDescription() . "\n";
+					$sender->sendMessage(TextFormat::DARK_GREEN . "/" . $command->getName() . ": " . TextFormat::WHITE . $command->getDescription());
 				}
 			}
-			$sender->sendMessage($message);
 
 			return true;
 		}else{

@@ -33,7 +33,7 @@ class BanIpCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Prevents the specified IP address from using this server",
-			"/ban-ip <address|player> [reason...]"
+			"%commands.banip.usage"
 		);
 		$this->setPermission("pocketmine.command.ban.ip");
 	}
@@ -54,11 +54,15 @@ class BanIpCommand extends VanillaCommand{
 
 		if(preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $value)){
 			$this->processIPBan($value, $sender, $reason);
+
+			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.banip.success", [$value]));
 		}else{
 			if(($player = $sender->getServer()->getPlayer($value)) instanceof Player){
 				$this->processIPBan($player->getAddress(), $sender, $reason);
+
+				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.banip.success.players", [$player->getAddress(), $player->getName()]));
 			}else{
-				$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+				$sender->sendMessage(new TranslationContainer("commands.banip.invalid"));
 
 				return false;
 			}
@@ -72,12 +76,10 @@ class BanIpCommand extends VanillaCommand{
 
 		foreach($sender->getServer()->getOnlinePlayers() as $player){
 			if($player->getAddress() === $ip){
-				$player->kick("You have been IP banned.");
+				$player->kick($reason !== "" ? $reason : "IP banned.");
 			}
 		}
 
 		$sender->getServer()->getNetwork()->blockAddress($ip, -1);
-
-		Command::broadcastCommandMessage($sender, "Banned IP Address " . $ip);
 	}
 }

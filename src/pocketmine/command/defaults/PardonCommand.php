@@ -32,7 +32,7 @@ class PardonCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Allows the specified player to use this server",
-			"/pardon <player>"
+			"%commands.unban.usage"
 		);
 		$this->setPermission("pocketmine.command.unban.player");
 	}
@@ -50,7 +50,7 @@ class PardonCommand extends VanillaCommand{
 
 		$sender->getServer()->getNameBans()->remove($args[0]);
 
-		Command::broadcastCommandMessage($sender, "Pardoned " . $args[0]);
+		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.unban.success", $args[0]));
 
 		return true;
 	}

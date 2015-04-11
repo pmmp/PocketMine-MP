@@ -22,6 +22,7 @@
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\event\TranslationContainer;
 use pocketmine\Player;
 
 
@@ -31,7 +32,7 @@ class SeedCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Shows the world seed",
-			"/seed"
+			"%commands.seed.usage"
 		);
 		$this->setPermission("pocketmine.command.seed");
 	}
@@ -46,7 +47,7 @@ class SeedCommand extends VanillaCommand{
 		}else{
 			$seed = $sender->getServer()->getDefaultLevel()->getSeed();
 		}
-		$sender->sendMessage("Seed: " . $seed);
+		$sender->sendMessage(new TranslationContainer("commands.seed.success", [$seed]));
 
 		return true;
 	}
