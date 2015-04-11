@@ -117,11 +117,6 @@ abstract class Entity extends Location implements Metadatable{
 	public $passenger = null;
 	public $vehicle = null;
 
-	/** @var int */
-	public $chunkX;
-	/** @var int */
-	public $chunkZ;
-
 	/** @var Chunk */
 	public $chunk;
 
@@ -1294,14 +1289,12 @@ abstract class Entity extends Location implements Metadatable{
 		$this->boundingBox->setBounds($pos->x - $radius, $pos->y, $pos->z - $radius, $pos->x + $radius, $pos->y + $this->height, $pos->z + $radius);
 
 
-		if($this->chunk === null or ($this->chunkX !== ($this->x >> 4) and $this->chunkZ !== ($this->z >> 4))){
+		if($this->chunk === null or ($this->chunk->getX() !== ($this->x >> 4) or $this->chunk->getZ() !== ($this->z >> 4))){
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
 			}
 			$this->level->loadChunk($this->x >> 4, $this->z >> 4);
 			$this->chunk = $this->level->getChunk($this->x >> 4, $this->z >> 4, true);
-			$this->chunkX = $this->chunk->getX();
-			$this->chunkZ = $this->chunk->getZ();
 
 			if(!$this->justCreated){
 				$newChunk = $this->level->getUsingChunk($this->x >> 4, $this->z >> 4);
@@ -1410,7 +1403,10 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function spawnToAll(){
-		foreach($this->level->getUsingChunk($this->chunkX, $this->chunkZ) as $player){
+		if($this->chunk === null){
+			return;
+		}
+		foreach($this->level->getUsingChunk($this->chunk->getX(), $this->chunk->getZ()) as $player){
 			if($player->loggedIn === true){
 				$this->spawnTo($player);
 			}

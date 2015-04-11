@@ -323,4 +323,8 @@ class AxisAlignedBB{
 
 		return MovingObjectPosition::fromBlock(0, 0, 0, $f, $vector);
 	}
+
+	public function __toString(){
+		return "AxisAlignedBB({$this->minX}, {$this->minY}, {$this->minZ}, {$this->maxX}, {$this->maxY}, {$this->maxZ})";
+	}
 }
