@@ -2683,6 +2683,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				break;
 
 			case EntityDamageEvent::CAUSE_CUSTOM:
+				break;
 
 			default:
 

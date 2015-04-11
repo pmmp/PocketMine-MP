@@ -4,8 +4,8 @@
 # New settings/defaults won't appear automatically on this file when upgrading.
 
 settings:
- #Language code for server-side localization
- language: "en"
+ #Three-letter language code for server-side localization
+ language: "eng"
  shutdown-message: "Server closed"
  #Allow listing plugins via Query
  query-plugins: true

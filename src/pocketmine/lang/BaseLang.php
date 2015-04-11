@@ -26,7 +26,7 @@ use pocketmine\event\TranslationContainer;
 
 class BaseLang{
 
-	const FALLBACK_LANGUAGE = "en";
+	const FALLBACK_LANGUAGE = "eng";
 
 	protected $langName;
 
@@ -38,7 +38,7 @@ class BaseLang{
 		$this->langName = strtolower($lang);
 
 		if($path === null){
-			$path = \pocketmine\PATH . "src/pocketmine/lang/base/";
+			$path = \pocketmine\PATH . "src/pocketmine/lang/locale/";
 		}
 
 		$this->loadLang($path . $this->langName . ".ini", $this->lang);
