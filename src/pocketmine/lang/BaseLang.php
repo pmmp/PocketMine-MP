@@ -97,7 +97,7 @@ class BaseLang{
 
 	public function translate(TextContainer $c){
 		if($c instanceof TranslationContainer){
-			$baseText = $this->get($c->getText());
+			$baseText = $this->internalGet($c->getText());
 			$baseText = $this->parseTranslation( $baseText !== null ? $baseText : $c->getText());
 
 			foreach($c->getParameters() as $i => $p){

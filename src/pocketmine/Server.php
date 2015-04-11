@@ -1515,7 +1515,7 @@ class Server{
 			"auto-save" => true,
 		]);
 
-		$this->baseLang = new BaseLang($this->getProperty("settings.settings.language", BaseLang::FALLBACK_LANGUAGE));
+		$this->baseLang = new BaseLang($this->getProperty("settings.language", BaseLang::FALLBACK_LANGUAGE));
 		$this->logger->info($this->getLanguage()->translateString("language.selected", [$this->getLanguage()->getName(), $this->getLanguage()->getLang()]));
 
 		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.start", [TextFormat::AQUA . $this->getVersion()]));
