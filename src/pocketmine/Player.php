@@ -222,7 +222,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	private $perm = null;
 
 	public function getLeaveMessage(){
-		return new TranslationContainer(TextFormat::YELLOW . "%multiplayer.player.leave", [
+		return new TranslationContainer(TextFormat::YELLOW . "%multiplayer.player.left", [
 			$this->getDisplayName()
 		]);
 	}
