@@ -198,7 +198,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			}
 
 			$pk = new AddPlayerPacket();
-			$pk->clientID = 0;
+			$pk->clientID = $this->getId();
 			$pk->username = $this->nameTag;
 			$pk->eid = $this->getId();
 			$pk->x = $this->x;
@@ -224,7 +224,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if(isset($this->hasSpawned[$player->getId()])){
 			$pk = new RemovePlayerPacket();
 			$pk->eid = $this->id;
-			$pk->clientID = 0;
+			$pk->clientID = $this->id;
 			$player->dataPacket($pk);
 			unset($this->hasSpawned[$player->getId()]);
 		}

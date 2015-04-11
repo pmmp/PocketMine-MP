@@ -1229,9 +1229,9 @@ abstract class Entity extends Location implements Metadatable{
 		$minX = Math::floorFloat($this->boundingBox->minX + 0.001);
 		$minY = Math::floorFloat($this->boundingBox->minY + 0.001);
 		$minZ = Math::floorFloat($this->boundingBox->minZ + 0.001);
-		$maxX = Math::floorFloat($this->boundingBox->maxX - 0.001);
-		$maxY = Math::floorFloat($this->boundingBox->maxY - 0.001);
-		$maxZ = Math::floorFloat($this->boundingBox->maxZ - 0.001);
+		$maxX = Math::ceilFloat($this->boundingBox->maxX - 0.001);
+		$maxY = Math::ceilFloat($this->boundingBox->maxY - 0.001);
+		$maxZ = Math::ceilFloat($this->boundingBox->maxZ - 0.001);
 
 		$vector = new Vector3(0, 0, 0);
 		$v = new Vector3(0, 0, 0);
