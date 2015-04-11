@@ -33,7 +33,7 @@ class BaseLang{
 	protected $lang = [];
 	protected $fallbackLang = [];
 
-	public function __construct($lang, $path = null){
+	public function __construct($lang, $path = null, $fallback = self::FALLBACK_LANGUAGE){
 
 		$this->langName = strtolower($lang);
 
@@ -42,7 +42,7 @@ class BaseLang{
 		}
 
 		$this->loadLang($path . $this->langName . ".ini", $this->lang);
-		$this->loadLang($path . self::FALLBACK_LANGUAGE . ".ini", $this->fallbackLang);
+		$this->loadLang($path . $fallback . ".ini", $this->fallbackLang);
 	}
 
 	public function getName(){
