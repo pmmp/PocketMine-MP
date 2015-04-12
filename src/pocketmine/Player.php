@@ -512,16 +512,16 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	public function setSkin($str, $isSlim = false){
 		parent::setSkin($str, $isSlim);
-		$this->despawnFromAll();
 		if($this->spawned === true){
+			$this->despawnFromAll();
 			$this->spawnToAll();
 		}
 	}
 
 	public function setNameTag($name){
 		parent::setNameTag($name);
-		$this->despawnFromAll();
 		if($this->spawned === true){
+			$this->despawnFromAll();
 			$this->spawnToAll();
 		}
 	}
@@ -1423,7 +1423,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 							return;
 						}else{
-							break;
+							return;
 						}
 					}
 				}
