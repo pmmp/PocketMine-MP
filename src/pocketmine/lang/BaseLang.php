@@ -121,7 +121,6 @@ class BaseLang{
 	}
 
 	public function get($id){
-		$id = trim($id, "%");
 		if(isset($this->lang[$id])){
 			return $this->lang[$id];
 		}elseif(isset($this->fallbackLang[$id])){
