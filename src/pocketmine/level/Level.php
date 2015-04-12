@@ -125,37 +125,37 @@ class Level implements ChunkManager, Metadatable{
 	const TIME_FULL = 24000;
 
 	/** @var Tile[] */
-	protected $tiles = [];
+	private $tiles = [];
 
 	/** @var Player[] */
-	protected $players = [];
+	private $players = [];
 
 	/** @var Entity[] */
-	protected $entities = [];
+	private $entities = [];
 
 	/** @var Entity[] */
 	public $updateEntities = [];
 	/** @var Tile[] */
 	public $updateTiles = [];
 
-	protected $blockCache = [];
+	private $blockCache = [];
 
 	/** @var Server */
-	protected $server;
+	private $server;
 
 	/** @var int */
-	protected $levelId;
+	private $levelId;
 
 	/** @var LevelProvider */
-	protected $provider;
+	private $provider;
 
 	/** @var Player[][] */
-	protected $usedChunks = [];
+	private $usedChunks = [];
 
 	/** @var FullChunk[]|Chunk[] */
-	protected $unloadQueue;
+	private $unloadQueue;
 
-	protected $time;
+	private $time;
 	public $stopTime;
 
 	private $folderName;
@@ -164,7 +164,7 @@ class Level implements ChunkManager, Metadatable{
 	private $chunks = [];
 
 	/** @var Vector3[][] */
-	protected $changedBlocks = [];
+	private $changedBlocks = [];
 
 	/** @var ReversePriorityQueue */
 	private $updateQueue;
@@ -196,11 +196,11 @@ class Level implements ChunkManager, Metadatable{
 	/** @var \SplFixedArray */
 	private $blockStates;
 
-	protected $chunkTickRadius;
-	protected $chunkTickList = [];
-	protected $chunksPerTick;
-	protected $clearChunksOnTick;
-	protected $randomTickBlocks = [
+	private $chunkTickRadius;
+	private $chunkTickList = [];
+	private $chunksPerTick;
+	private $clearChunksOnTick;
+	private $randomTickBlocks = [
 		Block::GRASS => Grass::class,
 		Block::SAPLING => Sapling::class,
 		Block::LEAVES => Leaves::class,
@@ -227,10 +227,13 @@ class Level implements ChunkManager, Metadatable{
 	/** @var LevelTimings */
 	public $timings;
 
+	private $tickRate;
+	public $tickRateCounter = 0;
+
 	/** @var Generator */
-	protected $generator;
+	private $generator;
 	/** @var Generator */
-	protected $generatorInstance;
+	private $generatorInstance;
 
 	/**
 	 * Returns the chunk unique hash/key
@@ -317,6 +320,15 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings = new LevelTimings($this);
 		$this->temporalPosition = new Position(0, 0, 0, $this);
 		$this->temporalVector = new Vector3(0, 0, 0);
+		$this->tickRate = 1;
+	}
+
+	public function getTickRate(){
+		return $this->tickRate;
+	}
+
+	public function setTickRate($tickRate){
+		$this->tickRate = (int) $tickRate;
 	}
 
 	public function initLevel(){
@@ -1935,7 +1947,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->chunkSendQueue[$index][spl_object_hash($player)] = $player;
 	}
 
-	protected function processChunkRequest(){
+	private function processChunkRequest(){
 		if(count($this->chunkSendQueue) > 0){
 			$this->timings->syncChunkSendTimer->startTiming();
 
@@ -2088,7 +2100,7 @@ class Level implements ChunkManager, Metadatable{
 		return true;
 	}
 
-	protected function queueUnloadChunk($x, $z){
+	private function queueUnloadChunk($x, $z){
 		$this->unloadQueue[$index = Level::chunkHash($x, $z)] = microtime(true);
 		unset($this->chunkTickList[$index]);
 	}
@@ -2384,7 +2396,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->doChunkGC->stopTiming();
 	}
 
-	protected function unloadChunks(){
+	private function unloadChunks(){
 		if(count($this->unloadQueue) > 0){
 			$X = null;
 			$Z = null;

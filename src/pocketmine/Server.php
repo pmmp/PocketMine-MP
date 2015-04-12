@@ -196,6 +196,8 @@ class Server{
 	private $networkCompressionAsync = true;
 	private $networkCompressionLevel = 7;
 
+	private $autoTickRate = true;
+
 	/** @var BaseLang */
 	private $baseLang;
 
@@ -224,8 +226,6 @@ class Server{
 
 	/** @var Level[] */
 	private $levels = [];
-	private $offendingLevels = [];
-	private $offendingTicks = [];
 
 	/** @var Level */
 	private $levelDefault = null;
@@ -1530,6 +1530,8 @@ class Server{
 		$this->networkCompressionLevel = $this->getProperty("network.compression-level", 7);
 		$this->networkCompressionAsync = $this->getProperty("network.async-compression", true);
 
+		$this->autoTickRate = $this->getProperty("level-settings.auto-tick-rate", true);
+
 		$this->scheduler = new ServerScheduler();
 
 		if($this->getConfigBoolean("enable-rcon", false) === true){
@@ -2154,27 +2156,34 @@ class Server{
 	}
 
 	private function checkTickUpdates($currentTick){
-
-		$tickLimit = 50 / count($this->levels);
-		$levelTimes = [];
-
-		$startTime = microtime(true);
 		//Do level ticks
 		foreach($this->getLevels() as $level){
-			if(isset($this->offendingLevels[$level->getId()]) and $this->offendingTicks[$level->getId()]-- > 0){
+			if($level->getTickRate() > 1 and --$level->tickRateCounter > 0){
 				continue;
 			}
 			try{
 				$levelTime = microtime(true);
 				$level->doTick($currentTick);
-				$levelMs = (microtime(true) - $levelTime) * 1000;
-				$levelTimes[$level->getId()] = $levelMs;
-				if(isset($this->offendingLevels[$level->getId()])){
-					if($levelMs < $tickLimit and --$this->offendingLevels[$level->getId()] <= 0){
-						unset($this->offendingLevels[$level->getId()]);
-						unset($this->offendingTicks[$level->getId()]);
-					}else{
-						$this->offendingTicks[$level->getId()] = $this->offendingLevels[$level->getId()];
+				$tickMs = (microtime(true) - $levelTime) * 1000;
+
+				if($this->autoTickRate){
+					if($tickMs < 50 and $level->getTickRate() > 1){
+						if($level->getTickRate() > 1){
+							$level->setTickRate($r = $level->getTickRate() - 1);
+							if($r > 1){
+								$level->tickRateCounter = $level->getTickRate();
+							}
+							$this->getLogger()->debug("Raising level \"".$level->getName()."\" tick rate to ".$level->getTickRate()." ticks");
+						}
+					}elseif($tickMs >= 50){
+						if($level->getTickRate() === 1){
+							$level->setTickRate(max(2, min(10, floor($tickMs / 50))));
+							$this->getLogger()->debug("Set level \"".$level->getName()."\" tick rate to ".$level->getTickRate()." ticks");
+						}elseif(($tickMs / $level->getTickRate()) >= 50 and $level->getTickRate() < 10){ //Limit?
+							$level->setTickRate($level->getTickRate() + 1);
+							$this->getLogger()->debug("Set level \"".$level->getName()."\" tick rate to ".$level->getTickRate()." ticks");
+						}
+						$level->tickRateCounter = $level->getTickRate();
 					}
 				}
 			}catch(\Exception $e){
@@ -2184,26 +2193,6 @@ class Server{
 				}
 			}
 		}
-
-		$totalTime = (microtime(true) - $startTime) * 1000;
-
-		if($totalTime > 50){
-			arsort($levelTimes);
-			foreach($levelTimes as $levelId => $t){
-				$totalTime -= $t;
-				if(!isset($this->offendingLevels[$levelId])){
-					$this->offendingLevels[$levelId] = max(1, min(10, floor($t / 50)));
-				}elseif($this->offendingLevels[$levelId] < 10){ //Limit?
-					++$this->offendingLevels[$levelId];
-				}
-				$this->offendingTicks[$levelId] = $this->offendingLevels[$levelId];
-
-				if($totalTime <= 50){
-					break;
-				}
-			}
-		}
-
 	}
 
 	public function doAutoSave(){
