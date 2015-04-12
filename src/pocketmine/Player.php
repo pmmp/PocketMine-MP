@@ -2447,7 +2447,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$message = $message->getText();
 		}
 
-		$mes = explode("\n", $this->server->getLanguage()->translateString($message, [], "pocketmine."));
+		$mes = explode("\n", $this->server->getLanguage()->translateString($message));
 		foreach($mes as $m){
 			if($m !== ""){
 				$pk = new TextPacket();

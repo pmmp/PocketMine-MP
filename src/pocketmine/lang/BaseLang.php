@@ -86,7 +86,7 @@ class BaseLang{
 	 */
 	public function translateString($str, array $params = [], $onlyPrefix = null){
 		$baseText = $this->get($str);
-		$baseText = $this->parseTranslation( $baseText !== null ? $baseText : $str, $onlyPrefix);
+		$baseText = $this->parseTranslation( ($baseText !== null and ($onlyPrefix === null or strpos($str, $onlyPrefix) === 0)) ? $baseText : $str, $onlyPrefix);
 
 		foreach($params as $i => $p){
 			$baseText = str_replace("{%$i}", $this->parseTranslation((string) $p), $baseText, $onlyPrefix);
@@ -164,7 +164,7 @@ class BaseLang{
 		}
 
 		if($replaceString !== null){
-			if(($t = $this->internalGet(substr($replaceString, 1)))){
+			if(($t = $this->internalGet(substr($replaceString, 1))) !== null and ($onlyPrefix === null or strpos($replaceString, $onlyPrefix) === 1)){
 				$newString .= $t;
 			}else{
 				$newString .= $replaceString;
