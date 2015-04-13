@@ -1544,6 +1544,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					round($this->z, 4)
 				]));
 
+				if($this->isOp()){
+					$this->setRemoveFormat(false);
+				}
 
 				$this->orderChunks();
 				$this->sendNextChunk();
@@ -2383,7 +2386,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$t->spawnTo($this);
 					}else{
 						$ev = new SignChangeEvent($t->getBlock(), $this, [
-							$nbt["Text1"], $nbt["Text2"], $nbt["Text3"], $nbt["Text4"]
+							TextFormat::clean($nbt["Text1"], $this->removeFormat), TextFormat::clean($nbt["Text2"], $this->removeFormat), TextFormat::clean($nbt["Text3"], $this->removeFormat), TextFormat::clean($nbt["Text4"], $this->removeFormat)
 						]);
 
 						if(!isset($t->namedtag->Creator) or $t->namedtag["Creator"] !== $this->username){
