@@ -2181,10 +2181,10 @@ class Server{
 					}elseif($tickMs >= 50){
 						if($level->getTickRate() === 1){
 							$level->setTickRate(max(2, min(10, floor($tickMs / 50))));
-							$this->getLogger()->debug("Set level \"".$level->getName()."\" tick rate to ".$level->getTickRate()." ticks");
+							$this->getLogger()->debug("Level \"".$level->getName()."\" took ".round($tickMs, 2)."ms, setting tick rate to ".$level->getTickRate()." ticks");
 						}elseif(($tickMs / $level->getTickRate()) >= 50 and $level->getTickRate() < 10){ //Limit?
 							$level->setTickRate($level->getTickRate() + 1);
-							$this->getLogger()->debug("Set level \"".$level->getName()."\" tick rate to ".$level->getTickRate()." ticks");
+							$this->getLogger()->debug("Level \"".$level->getName()."\" took ".round($tickMs, 2)."ms, setting tick rate to ".$level->getTickRate()." ticks");
 						}
 						$level->tickRateCounter = $level->getTickRate();
 					}
