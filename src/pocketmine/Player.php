@@ -2440,11 +2440,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 */
 	public function sendMessage($message){
 		if($message instanceof TextContainer){
-			if($message instanceof TranslationContainer){
-				$this->sendTranslation($message->getText(), $message->getParameters());
-				return;
-			}
-			$message = $message->getText();
+				if ($message instanceof TranslationContainer) {
+					$this->sendTranslation($message->getText(), $message->getParameters());
+					return;
+				}
+				$message = $message->getText();
+
 		}
 
 		$mes = explode("\n", $this->server->getLanguage()->translateString($message));
@@ -2460,12 +2461,17 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	public function sendTranslation($message, array $parameters = []){
 		$pk = new TextPacket();
-		$pk->type = TextPacket::TYPE_TRANSLATION;
-		$pk->message = $this->server->getLanguage()->translateString($message, [], "pocketmine.");
-		foreach($parameters as $i => $p){
-			$parameters[$i] = $this->server->getLanguage()->translateString($p, [], "pocketmine.");
+		if(!$this->server->isLanguageForced()){
+			$pk->type = TextPacket::TYPE_TRANSLATION;
+			$pk->message = $this->server->getLanguage()->translateString($message, [], "pocketmine.");
+			foreach($parameters as $i => $p){
+				$parameters[$i] = $this->server->getLanguage()->translateString($p, [], "pocketmine.");
+			}
+			$pk->parameters = $parameters;
+		}else{
+			$pk->type = TextPacket::TYPE_RAW;
+			$pk->message = $this->server->getLanguage()->translateString($message, $parameters);
 		}
-		$pk->parameters = $parameters;
 		$this->dataPacket($pk);
 	}
 	

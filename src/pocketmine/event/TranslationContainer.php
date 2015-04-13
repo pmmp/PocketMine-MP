@@ -21,8 +21,6 @@
 
 namespace pocketmine\event;
 
-use pocketmine\Player;
-
 class TranslationContainer extends TextContainer{
 
 	/** @var string[] $params */
@@ -76,9 +74,5 @@ class TranslationContainer extends TextContainer{
 
 			++$i;
 		}
-	}
-
-	public function send(Player $p){
-		$p->sendTranslation($this->getText(), $this->getParameters());
 	}
 }

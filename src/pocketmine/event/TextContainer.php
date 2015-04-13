@@ -21,8 +21,6 @@
 
 namespace pocketmine\event;
 
-use pocketmine\Player;
-
 class TextContainer{
 
 	/** @var string $text */
@@ -41,10 +39,6 @@ class TextContainer{
 	 */
 	public function getText(){
 		return $this->text;
-	}
-
-	public function send(Player $p){
-		$p->sendMessage($this->getText());
 	}
 
 	/**

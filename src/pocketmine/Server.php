@@ -201,6 +201,8 @@ class Server{
 	/** @var BaseLang */
 	private $baseLang;
 
+	private $forceLanguage = false;
+
 	private $serverID;
 
 	private $autoloader;
@@ -1515,6 +1517,7 @@ class Server{
 			"auto-save" => true,
 		]);
 
+		$this->forceLanguage = $this->getProperty("settings.force-language", false);
 		$this->baseLang = new BaseLang($this->getProperty("settings.language", BaseLang::FALLBACK_LANGUAGE));
 		$this->logger->info($this->getLanguage()->translateString("language.selected", [$this->getLanguage()->getName(), $this->getLanguage()->getLang()]));
 
@@ -2260,6 +2263,13 @@ class Server{
 	 */
 	public function getLanguage(){
 		return $this->baseLang;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isLanguageForced(){
+		return $this->forceLanguage;
 	}
 
 	/**
