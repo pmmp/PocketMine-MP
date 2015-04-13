@@ -276,7 +276,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * @param Player $player
 	 */
 	public function spawnTo(Player $player){
-		if($this->spawned === true and $this->dead !== true and $player->dead !== true and $player->getLevel() === $this->level and $player->canSee($this)){
+		if($this->spawned === true and $player->spawned === true and $this->dead !== true and $player->dead !== true and $player->getLevel() === $this->level and $player->canSee($this)){
 			parent::spawnTo($player);
 		}
 	}
@@ -591,9 +591,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$pk->data = $payload;
 		$this->dataPacket($pk);
 
-		foreach($this->level->getChunkEntities($x, $z) as $entity){
-			if($entity !== $this and !$entity->closed and !$entity->dead){
-				$entity->spawnTo($this);
+		if($this->spawned){
+			foreach($this->level->getChunkEntities($x, $z) as $entity){
+				if($entity !== $this and !$entity->closed and !$entity->dead){
+					$entity->spawnTo($this);
+				}
 			}
 		}
 	}
@@ -661,6 +663,15 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 
 			$this->noDamageTicks = 60;
+			
+			foreach($this->usedChunks as $index => $c){
+				Level::getXZ($index, $chunkX, $chunkZ);
+				foreach($this->level->getChunkEntities($chunkX, $chunkZ) as $entity){
+					if($entity !== $this and !$entity->closed and !$entity->dead){
+						$entity->spawnTo($this);
+					}
+				}
+			}
 
 			$this->spawnToAll();
 
