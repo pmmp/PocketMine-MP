@@ -1970,11 +1970,11 @@ class Level implements ChunkManager, Metadatable{
 					continue;
 				}
 				Level::getXZ($index, $x, $z);
+				$this->chunkSendTasks[$index] = true;
 				if(isset($this->chunkCache[$index])){
 					$this->chunkRequestCallback($x, $z, $this->chunkCache[$index]);
 					continue;
 				}
-				$this->chunkSendTasks[$index] = true;
 				$this->timings->syncChunkSendPrepareTimer->startTiming();
 				$task = $this->provider->requestChunkTask($x, $z);
 				if($task instanceof AsyncTask){
