@@ -23,6 +23,7 @@ namespace pocketmine\entity;
 
 
 use pocketmine\nbt\tag\Int;
+use pocketmine\network\Network;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
@@ -64,7 +65,7 @@ class Villager extends Creature implements NPC, Ageable{
 		$pk->yaw = $this->yaw;
 		$pk->pitch = $this->pitch;
 		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
+		$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
 
 		parent::spawnTo($player);
 	}

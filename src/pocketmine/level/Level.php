@@ -84,6 +84,7 @@ use pocketmine\nbt\tag\Float;
 use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
+use pocketmine\network\Network;
 use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\Player;
@@ -393,9 +394,9 @@ class Level implements ChunkManager, Metadatable{
 
 		if($pk !== null){
 			if(!is_array($pk)){
-				Server::broadcastPacket($players, $pk);
+				Server::broadcastPacket($players, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 			}else{
-				$this->server->batchPackets($players, $pk);
+				$this->server->batchPackets($players, $pk, false, Network::CHANNEL_WORLD_EVENTS);
 			}
 		}
 	}
@@ -409,9 +410,9 @@ class Level implements ChunkManager, Metadatable{
 
 		if($pk !== null){
 			if(!is_array($pk)){
-				Server::broadcastPacket($players, $pk);
+				Server::broadcastPacket($players, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 			}else{
-				$this->server->batchPackets($players, $pk);
+				$this->server->batchPackets($players, $pk, false, Network::CHANNEL_WORLD_EVENTS);
 			}
 		}
 	}
@@ -530,7 +531,7 @@ class Level implements ChunkManager, Metadatable{
 		$pk->time = (int) $this->time;
 		$pk->started = $this->stopTime == false;
 
-		Server::broadcastPacket($this->players, $pk);
+		Server::broadcastPacket($this->players, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 	}
 
 	/**
@@ -634,7 +635,7 @@ class Level implements ChunkManager, Metadatable{
                 $pk->records[] = [$b->x, $b->z, $b->y, $fullBlock >> 4, $fullBlock & 0xf, $flags];
             }
 		}
-		Server::broadcastPacket($target, $pk);
+		Server::broadcastPacket($target, $pk->setChannel(Network::CHANNEL_BLOCKS));
 	}
 
 	public function clearCache(){

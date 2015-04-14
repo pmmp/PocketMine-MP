@@ -31,6 +31,7 @@ use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
+use pocketmine\network\Network;
 use pocketmine\network\protocol\AddItemEntityPacket;
 use pocketmine\Player;
 
@@ -218,7 +219,7 @@ class Item extends Entity{
 		$pk->speedY = $this->motionY;
 		$pk->speedZ = $this->motionZ;
 		$pk->item = $this->getItem();
-		$player->dataPacket($pk);
+		$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
 
 		parent::spawnTo($player);
 	}

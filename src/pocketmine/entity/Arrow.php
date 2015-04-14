@@ -24,6 +24,7 @@ namespace pocketmine\entity;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\particle\CriticalParticle;
 use pocketmine\nbt\tag\Compound;
+use pocketmine\network\Network;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
@@ -85,7 +86,7 @@ class Arrow extends Projectile{
 		$pk->speedY = $this->motionY;
 		$pk->speedZ = $this->motionZ;
 		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
+		$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
 
 		parent::spawnTo($player);
 	}

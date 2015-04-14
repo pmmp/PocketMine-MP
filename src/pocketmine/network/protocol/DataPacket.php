@@ -35,6 +35,7 @@ abstract class DataPacket extends \stdClass{
 	private $offset = 0;
 	public $buffer = "";
 	public $isEncoded = false;
+	private $channel = 0;
 
 	abstract public function pid();
 
@@ -45,6 +46,15 @@ abstract class DataPacket extends \stdClass{
 	protected function reset(){
 		$this->buffer = chr($this->pid());
 		$this->offset = 0;
+	}
+
+	public function setChannel($channel){
+		$this->channel = (int) $channel;
+		return $this;
+	}
+
+	public function getChannel(){
+		return $this->channel;
 	}
 
 	public function setBuffer($buffer = ""){

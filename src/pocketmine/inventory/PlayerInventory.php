@@ -26,6 +26,7 @@ use pocketmine\event\entity\EntityArmorChangeEvent;
 use pocketmine\event\entity\EntityInventoryChangeEvent;
 use pocketmine\event\player\PlayerItemHeldEvent;
 use pocketmine\item\Item;
+use pocketmine\network\Network;
 use pocketmine\network\protocol\ContainerSetContentPacket;
 use pocketmine\network\protocol\ContainerSetSlotPacket;
 use pocketmine\network\protocol\PlayerArmorEquipmentPacket;
@@ -73,7 +74,7 @@ class PlayerInventory extends BaseInventory{
 			$pk->meta = $item->getDamage();
 			$pk->slot = $this->getHeldItemIndex();
 
-			Server::broadcastPacket($this->getHolder()->getViewers(), $pk);
+			Server::broadcastPacket($this->getHolder()->getViewers(), $pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
 		}
 	}
 
@@ -147,7 +148,7 @@ class PlayerInventory extends BaseInventory{
 			if($player === $this->getHolder()){
 				$this->sendSlot($this->getHeldItemSlot(), $player);
 			}else{
-				$player->dataPacket($pk);
+				$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
 			}
 		}
 	}
@@ -343,7 +344,7 @@ class PlayerInventory extends BaseInventory{
 				$pk2->slots = $armor;
 				$player->dataPacket($pk2);
 			}else{
-				$player->dataPacket($pk);
+				$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
 			}
 		}
 	}
@@ -401,7 +402,7 @@ class PlayerInventory extends BaseInventory{
 				$pk2->item = $this->getItem($index);
 				$player->dataPacket($pk2);
 			}else{
-				$player->dataPacket($pk);
+				$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
 			}
 		}
 	}
@@ -415,6 +416,7 @@ class PlayerInventory extends BaseInventory{
 		}
 
 		$pk = new ContainerSetContentPacket();
+		$pk->setChannel(Network::CHANNEL_WORLD_EVENTS);
 		$pk->slots = [];
 		for($i = 0; $i < $this->getSize(); ++$i){ //Do not send armor by error here
 			$pk->slots[$i] = $this->getItem($i);
@@ -447,6 +449,7 @@ class PlayerInventory extends BaseInventory{
 		}
 
 		$pk = new ContainerSetSlotPacket();
+		$pk->setChannel(Network::CHANNEL_WORLD_EVENTS);
 		$pk->slot = $index;
 		$pk->item = clone $this->getItem($index);
 

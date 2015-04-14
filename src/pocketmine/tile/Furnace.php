@@ -34,6 +34,7 @@ use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Short;
+use pocketmine\network\Network;
 use pocketmine\network\protocol\ContainerSetDataPacket;
 
 class Furnace extends Tile implements InventoryHolder, Container{
@@ -255,13 +256,13 @@ class Furnace extends Tile implements InventoryHolder, Container{
 				$pk->windowid = $windowId;
 				$pk->property = 0; //Smelting
 				$pk->value = floor($this->namedtag["CookTime"]);
-				$player->dataPacket($pk);
+				$player->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 
 				$pk = new ContainerSetDataPacket();
 				$pk->windowid = $windowId;
 				$pk->property = 1; //Fire icon
 				$pk->value = $this->namedtag["BurnTicks"];
-				$player->dataPacket($pk);
+				$player->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 			}
 
 		}

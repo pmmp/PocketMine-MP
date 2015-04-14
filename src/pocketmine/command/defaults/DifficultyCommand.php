@@ -24,6 +24,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
+use pocketmine\network\Network;
 use pocketmine\network\protocol\SetDifficultyPacket;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
@@ -61,7 +62,7 @@ class DifficultyCommand extends VanillaCommand{
 
 			$pk = new SetDifficultyPacket();
 			$pk->difficulty = $sender->getServer()->getDifficulty();
-			Server::broadcastPacket($sender->getServer()->getOnlinePlayers(), $pk);
+			Server::broadcastPacket($sender->getServer()->getOnlinePlayers(), $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.difficulty.success", [$difficulty]));
 		}else{

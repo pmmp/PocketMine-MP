@@ -29,7 +29,7 @@ use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Short;
-use pocketmine\Network;
+use pocketmine\network\Network;
 use pocketmine\network\protocol\AddPlayerPacket;
 use pocketmine\network\protocol\RemovePlayerPacket;
 use pocketmine\Player;
@@ -212,7 +212,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$pk->skin = $this->skin;
 			$pk->slim = $this->isSlim;
 			$pk->metadata = $this->dataProperties;
-			$player->dataPacket($pk);
+			$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
 
 			$player->addEntityMotion($this->getId(), $this->motionX, $this->motionY, $this->motionZ);
 
@@ -225,7 +225,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$pk = new RemovePlayerPacket();
 			$pk->eid = $this->id;
 			$pk->clientID = $this->id;
-			$player->dataPacket($pk);
+			$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
 			unset($this->hasSpawned[$player->getId()]);
 		}
 	}

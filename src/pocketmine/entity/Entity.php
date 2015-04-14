@@ -51,7 +51,7 @@ use pocketmine\nbt\tag\Float;
 use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
-use pocketmine\Network;
+use pocketmine\network\Network;
 use pocketmine\network\protocol\MobEffectPacket;
 use pocketmine\network\protocol\RemoveEntityPacket;
 use pocketmine\network\protocol\SetEntityDataPacket;
@@ -470,7 +470,7 @@ abstract class Entity extends Location implements Metadatable{
 			$pk->duration = $effect->getDuration();
 			$pk->eventId = MobEffectPacket::EVENT_ADD;
 
-			$player->dataPacket($pk);
+			$player->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 		}
 	}
 
@@ -493,7 +493,7 @@ abstract class Entity extends Location implements Metadatable{
 		$pk = new SetEntityDataPacket();
 		$pk->eid = $this->id;
 		$pk->metadata = $data === null ? $this->dataProperties : $data;
-		Server::broadcastPacket($player, $pk);
+		Server::broadcastPacket($player, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 	}
 
 	/**
@@ -503,7 +503,7 @@ abstract class Entity extends Location implements Metadatable{
 		if(isset($this->hasSpawned[$player->getId()])){
 			$pk = new RemoveEntityPacket();
 			$pk->eid = $this->id;
-			$player->dataPacket($pk);
+			$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
 			unset($this->hasSpawned[$player->getId()]);
 		}
 	}
@@ -956,7 +956,7 @@ abstract class Entity extends Location implements Metadatable{
 			$pk = new SetTimePacket();
 			$pk->time = $this->level->getTime();
 			$pk->started = $this->level->stopTime == false;
-			$this->dataPacket($pk);
+			$this->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 		}
 		$this->chunk = null;
 

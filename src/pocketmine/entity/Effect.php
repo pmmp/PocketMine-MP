@@ -23,6 +23,7 @@ namespace pocketmine\entity;
 
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
+use pocketmine\network\Network;
 use pocketmine\network\protocol\MobEffectPacket;
 use pocketmine\Player;
 use pocketmine\Server;
@@ -234,21 +235,20 @@ class Effect{
 	}
 
 	public function add(Entity $entity, $modify = false){
-		$pk = new MobEffectPacket();
-		$pk->eid = $entity->getId();
-		$pk->effectId = $this->getId();
-		$pk->amplifier = $this->getAmplifier();
-		$pk->particles = $this->isVisible();
-		$pk->duration = $this->getDuration();
-		if($modify){
-			$pk->eventId = MobEffectPacket::EVENT_MODIFY;
-		}else{
-			$pk->eventId = MobEffectPacket::EVENT_ADD;
-		}
-
-		Server::broadcastPacket($entity->getViewers(), $pk);
 		if($entity instanceof Player){
-			$entity->dataPacket($pk);
+			$pk = new MobEffectPacket();
+			$pk->eid = $entity->getId();
+			$pk->effectId = $this->getId();
+			$pk->amplifier = $this->getAmplifier();
+			$pk->particles = $this->isVisible();
+			$pk->duration = $this->getDuration();
+			if($modify){
+				$pk->eventId = MobEffectPacket::EVENT_MODIFY;
+			}else{
+				$pk->eventId = MobEffectPacket::EVENT_ADD;
+			}
+
+			$entity->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 		}
 
 		if($this->id === Effect::INVISIBILITY){
@@ -258,13 +258,13 @@ class Effect{
 	}
 
 	public function remove(Entity $entity){
-		$pk = new MobEffectPacket();
-		$pk->eid = $entity->getId();
-		$pk->eventId = MobEffectPacket::EVENT_REMOVE;
-		$pk->effectId = $this->getId();
-		Server::broadcastPacket($entity->getViewers(), $pk);
 		if($entity instanceof Player){
-			$entity->dataPacket($pk);
+			$pk = new MobEffectPacket();
+			$pk->eid = $entity->getId();
+			$pk->eventId = MobEffectPacket::EVENT_REMOVE;
+			$pk->effectId = $this->getId();
+
+			$entity->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 		}
 
 		if($this->id === Effect::INVISIBILITY){

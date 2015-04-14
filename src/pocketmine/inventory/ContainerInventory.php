@@ -22,6 +22,7 @@
 namespace pocketmine\inventory;
 
 use pocketmine\math\Vector3;
+use pocketmine\network\Network;
 use pocketmine\network\protocol\ContainerClosePacket;
 use pocketmine\network\protocol\ContainerOpenPacket;
 use pocketmine\Player;
@@ -42,7 +43,7 @@ abstract class ContainerInventory extends BaseInventory{
 			$pk->x = $pk->y = $pk->z = 0;
 		}
 
-		$who->dataPacket($pk);
+		$who->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 
 		$this->sendContents($who);
 	}
@@ -50,7 +51,7 @@ abstract class ContainerInventory extends BaseInventory{
 	public function onClose(Player $who){
 		$pk = new ContainerClosePacket();
 		$pk->windowid = $who->getWindowId($this);
-		$who->dataPacket($pk);
+		$who->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 		parent::onClose($who);
 	}
 }

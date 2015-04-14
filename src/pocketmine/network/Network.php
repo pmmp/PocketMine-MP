@@ -80,6 +80,16 @@ class Network{
 
 	public static $BATCH_THRESHOLD = 512;
 
+	const CHANNEL_NONE = 0;
+	const CHANNEL_PRIORITY = 1; //Priority channel, only to be used when it matters
+	const CHANNEL_WORLD_CHUNKS = 2; //Chunk sending
+	const CHANNEL_MOVEMENT = 3; //Movement sending
+	const CHANNEL_BLOCKS = 4; //Block updates or explosions
+	const CHANNEL_WORLD_EVENTS = 5; //Entity, level or tile entity events
+	const CHANNEL_ENTITY_SPAWNING = 6; //Entity spawn/despawn channel
+	const CHANNEL_TEXT = 7; //Chat and other text stuff
+	const CHANNEL_END = 31;
+
 	/** @var \SplFixedArray */
 	private $packetPool;
 

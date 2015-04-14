@@ -31,6 +31,7 @@ use pocketmine\event\Timings;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Short;
+use pocketmine\network\Network;
 use pocketmine\network\protocol\EntityEventPacket;
 use pocketmine\Player;
 use pocketmine\Server;
@@ -107,7 +108,7 @@ abstract class Living extends Entity implements Damageable{
 		$pk = new EntityEventPacket();
 		$pk->eid = $this->getId();
 		$pk->event = $this->getHealth() <= 0 ? 3 : 2; //Ouch!
-		Server::broadcastPacket($this->hasSpawned, $pk);
+		Server::broadcastPacket($this->hasSpawned, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 
 		$this->attackTime = 10; //0.5 seconds cooldown
 	}
