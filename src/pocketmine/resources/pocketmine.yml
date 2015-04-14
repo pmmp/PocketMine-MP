@@ -56,6 +56,9 @@ chunk-sending:
  max-chunks: 256
  #Amount of chunks that need to be sent before spawning the player
  spawn-threshold: 56
+ #Save a serialized copy of the chunk in memory for faster sending
+ #Useful in mostly-static worlds where lots of players join at the same time
+ cache-chunks: false
 
 chunk-ticking:
  #Max amount of chunks processed each tick

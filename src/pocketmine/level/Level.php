@@ -141,6 +141,10 @@ class Level implements ChunkManager, Metadatable{
 
 	private $blockCache = [];
 
+	private $chunkCache = [];
+
+	private $cacheChunks = false;
+
 	/** @var Server */
 	private $server;
 
@@ -317,6 +321,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->chunkPopulationQueueSize = (int) $this->server->getProperty("chunk-generation.population-queue-size", 2);
 		$this->chunkTickList = [];
 		$this->clearChunksOnTick = (bool) $this->server->getProperty("chunk-ticking.clear-tick-list", false);
+		$this->cacheChunks = (bool) $this->server->getProperty("chunk-sending.cache-chunks", false);
 
 		$this->timings = new LevelTimings($this);
 		$this->temporalPosition = new Position(0, 0, 0, $this);
@@ -597,6 +602,7 @@ class Level implements ChunkManager, Metadatable{
 		if(count($this->changedBlocks) > 0){
 			if(count($this->players) > 0){
 				foreach($this->changedBlocks as $index => $blocks){
+					unset($this->chunkCache[$index]);
 					Level::getXZ($index, $X, $Z);
 					if(count($blocks) > 512){
 						foreach($this->getUsingChunk($X, $Z) as $p){
@@ -606,6 +612,8 @@ class Level implements ChunkManager, Metadatable{
 						$this->sendBlocks($this->getUsingChunk($X, $Z), $blocks, UpdateBlockPacket::FLAG_ALL);
 					}
 				}
+			}else{
+				$this->chunkCache = [];
 			}
 
 			$this->changedBlocks = [];
@@ -1156,17 +1164,19 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		unset($this->blockCache[$index = Level::blockHash($pos->x, $pos->y, $pos->z)]);
-
 		if($this->getChunk($pos->x >> 4, $pos->z >> 4, true)->setBlock($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f, $block->getId(), $block->getDamage())){
 			if(!($pos instanceof Position)){
 				$pos = $this->temporalPosition->setComponents($pos->x, $pos->y, $pos->z);
 			}
+
 			$block->position($pos);
+			unset($this->blockCache[Level::blockHash($pos->x, $pos->y, $pos->z)]);
+
 			$index = Level::chunkHash($pos->x >> 4, $pos->z >> 4);
 
 			if($direct === true){
 				$this->sendBlocks($this->getUsingChunk($pos->x >> 4, $pos->z >> 4), [$block], UpdateBlockPacket::FLAG_ALL_PRIORITY);
+				unset($this->chunkCache[$index]);
 			}else{
 				if(!($pos instanceof Position)){
 					$pos = $this->temporalPosition->setComponents($pos->x, $pos->y, $pos->z);
@@ -1872,6 +1882,7 @@ class Level implements ChunkManager, Metadatable{
 			$this->chunks[$index] = $chunk;
 		}
 
+		unset($this->chunkCache[$index]);
 		$chunk->setChanged();
 	}
 
@@ -1959,6 +1970,10 @@ class Level implements ChunkManager, Metadatable{
 					continue;
 				}
 				Level::getXZ($index, $x, $z);
+				if(isset($this->chunkCache[$index])){
+					$this->chunkRequestCallback($x, $z, $this->chunkCache[$index]);
+					continue;
+				}
 				$this->chunkSendTasks[$index] = true;
 				$this->timings->syncChunkSendPrepareTimer->startTiming();
 				$task = $this->provider->requestChunkTask($x, $z);
@@ -1974,6 +1989,11 @@ class Level implements ChunkManager, Metadatable{
 
 	public function chunkRequestCallback($x, $z, $payload){
 		$index = Level::chunkHash($x, $z);
+
+		if(!isset($this->chunkCache[$index]) and $this->cacheChunks){
+			$this->chunkCache[$index] = $payload;
+		}
+
 		if(isset($this->chunkSendTasks[$index])){
 			foreach($this->chunkSendQueue[$index] as $player){
 				/** @var Player $player */
@@ -2139,7 +2159,16 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		try{
-			if($chunk !== null and $this->getAutoSave()){
+			$entities = 0;
+			foreach($chunk->getEntities() as $e){
+				if($e instanceof Player){
+					continue;
+				}
+				++$entities;
+			}
+
+			$save = ($chunk->hasChanged() or count($chunk->getTiles()) > 0 or $entities > 0);
+			if($chunk !== null and $this->getAutoSave() and $save){
 				$this->provider->setChunk($x, $z, $chunk);
 				$this->provider->saveChunk($x, $z);
 			}
@@ -2155,6 +2184,7 @@ class Level implements ChunkManager, Metadatable{
 		unset($this->chunks[$index]);
 		unset($this->usedChunks[$index]);
 		unset($this->chunkTickList[$index]);
+		unset($this->chunkCache[$index]);
 
 		$this->timings->doChunkUnload->stopTiming();
 
