@@ -214,6 +214,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	private $needACK = [];
 
+	private $batchedPackets = [];
+
 	/**
 	 * @var \pocketmine\scheduler\TaskHandler[]
 	 */
@@ -590,7 +592,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$pk->chunkX = $x;
 		$pk->chunkZ = $z;
 		$pk->data = $payload;
-		$this->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_CHUNKS));
+		$this->batchDataPacket($pk->setChannel(Network::CHANNEL_WORLD_CHUNKS));
 
 		if($this->spawned){
 			foreach($this->level->getChunkEntities($x, $z) as $entity){
@@ -747,6 +749,31 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	}
 
 	/**
+	 * Batch a Data packet into the channel list to send at the end of the tick
+	 *
+	 * @param DataPacket $packet
+	 *
+	 * @return bool
+	 */
+	public function batchDataPacket(DataPacket $packet){
+		if($this->connected === false){
+			return false;
+		}
+		$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
+		if($ev->isCancelled()){
+			return false;
+		}
+
+		if(!isset($this->batchedPackets[$packet->getChannel()])){
+			$this->batchedPackets[$packet->getChannel()] = [];
+		}
+
+		$this->batchedPackets[$packet->getChannel()][] = clone $packet;
+
+		return true;
+	}
+
+	/**
 	 * Sends an ordered DataPacket to the send buffer
 	 *
 	 * @param DataPacket $packet
@@ -758,6 +785,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if($this->connected === false){
 			return false;
 		}
+
 		$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
 		if($ev->isCancelled()){
 			return false;
@@ -1309,7 +1337,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if(count($this->moveToSend) > 0){
 			$pk = new MoveEntityPacket();
 			$pk->entities = $this->moveToSend;
-			$this->dataPacket($pk->setChannel(Network::CHANNEL_MOVEMENT));
+			$this->batchDataPacket($pk->setChannel(Network::CHANNEL_MOVEMENT));
 			$this->moveToSend = [];
 		}
 
@@ -1317,10 +1345,16 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if(count($this->motionToSend) > 0){
 			$pk = new SetEntityMotionPacket();
 			$pk->entities = $this->motionToSend;
-			$this->dataPacket($pk->setChannel(Network::CHANNEL_MOVEMENT));
+			$this->batchDataPacket($pk->setChannel(Network::CHANNEL_MOVEMENT));
 			$this->motionToSend = [];
 		}
 
+		if(count($this->batchedPackets) > 0){
+			foreach($this->batchedPackets as $channel => $list){
+				$this->server->batchPackets([$this], $list, false, $channel);
+			}
+			$this->batchedPackets = [];
+		}
 
 		$this->lastUpdate = $currentTick;
 
