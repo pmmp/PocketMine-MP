@@ -1832,68 +1832,94 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$this->lastBreak = microtime(true);
 						break;
 					case 5: //Shot arrow
-						if($this->startAction > -1 and $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION) and $this->inventory->getItemInHand()->getId() === Item::BOW){
-							$bow = $this->inventory->getItemInHand();
-							if($this->isSurvival() and !$this->inventory->contains(Item::get(Item::ARROW, 0, 1))){
+						if($this->startAction > -1 and $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION)){
+							if($this->inventory->getItemInHand()->getId() === Item::BOW) {
+								$bow = $this->inventory->getItemInHand();
+								if ($this->isSurvival() and !$this->inventory->contains(Item::get(Item::ARROW, 0, 1))) {
+									$this->inventory->sendContents($this);
+									break;
+								}
+
+
+								$nbt = new Compound("", [
+									"Pos" => new Enum("Pos", [
+										new Double("", $this->x),
+										new Double("", $this->y + $this->getEyeHeight()),
+										new Double("", $this->z)
+									]),
+									"Motion" => new Enum("Motion", [
+										new Double("", -sin($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI)),
+										new Double("", -sin($this->pitch / 180 * M_PI)),
+										new Double("", cos($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI))
+									]),
+									"Rotation" => new Enum("Rotation", [
+										new Float("", $this->yaw),
+										new Float("", $this->pitch)
+									]),
+								]);
+
+								$diff = ($this->server->getTick() - $this->startAction);
+								$p = $diff / 20;
+								$f = min((($p ** 2) + $p * 2) / 3, 1) * 2;
+								$ev = new EntityShootBowEvent($this, $bow, Entity::createEntity("Arrow", $this->chunk, $nbt, $this, $f == 2 ? true : false), $f);
+
+								if ($f < 0.1 or $diff < 5) {
+									$ev->setCancelled();
+								}
+
+								$this->server->getPluginManager()->callEvent($ev);
+
+								if ($ev->isCancelled()) {
+									$ev->getProjectile()->kill();
+									$this->inventory->sendContents($this);
+								} else {
+									$ev->getProjectile()->setMotion($ev->getProjectile()->getMotion()->multiply($ev->getForce()));
+									if($this->isSurvival()){
+										$this->inventory->removeItem(Item::get(Item::ARROW, 0, 1));
+										$bow->setDamage($bow->getDamage() + 1);
+										if ($bow->getDamage() >= 385) {
+											$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 0));
+										} else {
+											$this->inventory->setItemInHand($bow);
+										}
+									}
+									if ($ev->getProjectile() instanceof Projectile) {
+										$this->server->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($ev->getProjectile()));
+										if ($projectileEv->isCancelled()) {
+											$ev->getProjectile()->kill();
+										} else {
+											$ev->getProjectile()->spawnToAll();
+											$this->level->addSound(new LaunchSound($this), $this->getViewers());
+										}
+									} else {
+										$ev->getProjectile()->spawnToAll();
+									}
+								}
+							}
+						}elseif($this->inventory->getItemInHand()->getId() === Item::BUCKET and $this->inventory->getItemInHand()->getDamage() === 1){ //Milk!
+							$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $this->inventory->getItemInHand()));
+							if($ev->isCancelled()){
 								$this->inventory->sendContents($this);
 								break;
 							}
 
+							$pk = new EntityEventPacket();
+							$pk->eid = $this->getId();
+							$pk->event = 9;
+							$pk->setChannel(Network::CHANNEL_WORLD_EVENTS);
+							$this->dataPacket($pk);
+							Server::broadcastPacket($this->getViewers(), $pk);
 
-							$nbt = new Compound("", [
-								"Pos" => new Enum("Pos", [
-									new Double("", $this->x),
-									new Double("", $this->y + $this->getEyeHeight()),
-									new Double("", $this->z)
-								]),
-								"Motion" => new Enum("Motion", [
-									new Double("", -sin($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI)),
-									new Double("", -sin($this->pitch / 180 * M_PI)),
-									new Double("", cos($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI))
-								]),
-								"Rotation" => new Enum("Rotation", [
-									new Float("", $this->yaw),
-									new Float("", $this->pitch)
-								]),
-							]);
-
-							$diff = ($this->server->getTick() - $this->startAction);
-							$p = $diff / 20;
-							$f = min((($p ** 2) + $p * 2) / 3, 1) * 2;
-							$ev = new EntityShootBowEvent($this, $bow, Entity::createEntity("Arrow", $this->chunk, $nbt, $this, $f == 2 ? true : false), $f);
-
-							if($f < 0.1 or $diff < 5){
-								$ev->setCancelled();
+							if ($this->isSurvival()) {
+								$slot = $this->inventory->getItemInHand();
+								--$slot->count;
+								$this->inventory->setItemInHand($slot, $this);
+								$this->inventory->addItem(Item::get(Item::BUCKET, 0, 1));
 							}
 
-							$this->server->getPluginManager()->callEvent($ev);
-
-							if($ev->isCancelled()){
-								$ev->getProjectile()->kill();
-								$this->inventory->sendContents($this);
-							}else{
-								$ev->getProjectile()->setMotion($ev->getProjectile()->getMotion()->multiply($ev->getForce()));
-								if($this->isSurvival()){
-									$this->inventory->removeItem(Item::get(Item::ARROW, 0, 1));
-									$bow->setDamage($bow->getDamage() + 1);
-									if($bow->getDamage() >= 385){
-										$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 0));
-									}else{
-										$this->inventory->setItemInHand($bow);
-									}
-								}
-								if($ev->getProjectile() instanceof Projectile){
-									$this->server->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($ev->getProjectile()));
-									if($projectileEv->isCancelled()){
-										$ev->getProjectile()->kill();
-									}else{
-										$ev->getProjectile()->spawnToAll();
-										$this->level->addSound(new LaunchSound($this), $this->getViewers());
-									}
-								}else{
-									$ev->getProjectile()->spawnToAll();
-								}
-							}
+							$this->removeAllEffects();
+						}else{
+							$this->inventory->sendContents($this);
 						}
 						break;
 					case 6: //get out of the bed
@@ -2222,25 +2248,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 								$this->addEffect(Effect::getEffect(Effect::NAUSEA)->setAmplifier(1)->setDuration(15 * 20));
 								$this->addEffect(Effect::getEffect(Effect::POISON)->setAmplifier(3)->setDuration(60 * 20));
 							}
-						}elseif($slot->getId() === Item::BUCKET and $slot->getId() === 1){ //Milk!
-							$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $slot));
-							if($ev->isCancelled()){
-								$this->inventory->sendContents($this);
-								break;
-							}
-
-							$pk = new EntityEventPacket();
-							$pk->eid = $this->getId();
-							$pk->event = 9;
-							$pk->setChannel(Network::CHANNEL_WORLD_EVENTS);
-							$this->dataPacket($pk);
-							Server::broadcastPacket($this->getViewers(), $pk);
-
-							--$slot->count;
-							$this->inventory->setItemInHand($slot, $this);
-							$this->inventory->addItem(Item::get(Item::BUCKET, 0, 1));
-
-							$this->removeAllEffects();
 						}
 						break;
 				}

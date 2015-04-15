@@ -472,6 +472,7 @@ class Block extends Position implements Metadatable{
 		//TODO [Item::POWERED_RAILS, 0],
 		[Item::TORCH, 0],
 		[Item::BUCKET, 0],
+		[Item::BUCKET, 1],
 		[Item::BUCKET, 8],
 		[Item::BUCKET, 10],
 		[Item::TNT, 0],
