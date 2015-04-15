@@ -35,12 +35,12 @@ class SetHealthPacket extends DataPacket{
 	}
 
 	public function decode(){
-		$this->health = $this->getByte();
+		$this->health = $this->getInt();
 	}
 
 	public function encode(){
 		$this->reset();
-		$this->putByte($this->health);
+		$this->putInt($this->health);
 	}
 
 }
