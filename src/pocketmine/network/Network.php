@@ -211,17 +211,27 @@ class Network{
 		$str = zlib_decode($packet->payload, 1024 * 1024 * 64); //Max 64MB
 		$len = strlen($str);
 		$offset = 0;
-		while($offset < $len){
-			if(($pk = $this->getPacket(ord($str{$offset++}))) !== null){
-				if($pk->pid() === Info::BATCH_PACKET){
-					return;
+		try{
+			while($offset < $len){
+				if(($pk = $this->getPacket(ord($str{$offset++}))) !== null){
+					if($pk->pid() === Info::BATCH_PACKET){
+						throw new \InvalidStateException("Invalid BatchPacket inside BatchPacket");
+					}
+					$pk->setBuffer(substr($str, $offset));
+					$pk->decode();
+					$p->handleDataPacket($pk);
+					$offset += $pk->getOffset();
+					if($pk->getOffset() <= 0){
+						return;
+					}
 				}
-				$pk->setBuffer(substr($str, $offset));
-				$pk->decode();
-				$p->handleDataPacket($pk);
-				$offset += $pk->getOffset();
-				if($pk->getOffset() <= 0){
-					return;
+			}
+		}catch(\Exception $e){
+			if(\pocketmine\DEBUG > 1){
+				$logger = $this->server->getLogger();
+				if($logger instanceof MainLogger){
+					$logger->debug("BatchPacket " . " 0x" . bin2hex($packet->payload));
+					$logger->logException($e);
 				}
 			}
 		}

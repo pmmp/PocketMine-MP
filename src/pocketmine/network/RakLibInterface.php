@@ -157,7 +157,9 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 					}
 				}
 
-				$this->interface->blockAddress($this->players[$identifier]->getAddress(), 5);
+				if(isset($this->players[$identifier])){
+					$this->interface->blockAddress($this->players[$identifier]->getAddress(), 5);
+				}
 			}
 		}
 	}

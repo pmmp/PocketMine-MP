@@ -44,7 +44,7 @@ class LoginPacket extends DataPacket{
 		$this->username = $this->getString();
 		$this->protocol1 = $this->getInt();
 		$this->protocol2 = $this->getInt();
-		if(Info::CURRENT_PROTOCOL != $this->protocol1){
+		if($this->protocol1 < 21){ //New fields!
 			return;
 		}
 		$this->clientId = $this->getInt();
