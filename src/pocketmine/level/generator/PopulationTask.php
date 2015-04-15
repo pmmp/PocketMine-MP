@@ -127,12 +127,13 @@ class PopulationTask extends AsyncTask{
 				if(!$c->hasChanged()){
 					$chunks[$i] = null;
 				}
-				$manager->setChunk($c->getX(), $c->getZ(), null);
 			}else{
 				//This way non-changed chunks are not set
 				$chunks[$i] = null;
 			}
 		}
+
+		$manager->cleanChunks();
 
 		$this->chunk00 = $chunks[0] !== null ? $chunks[0]->toFastBinary() : null;
 		$this->chunk01 = $chunks[1] !== null ? $chunks[1]->toFastBinary() : null;
