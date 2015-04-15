@@ -294,8 +294,8 @@ abstract class Entity extends Location implements Metadatable{
 		if(isset($this->effects[$effect->getId()])){
 			$oldEffect = $this->effects[$effect->getId()];
 			if(
-				$effect->getAmplifier() <= $oldEffect->getAmplifier()
-				or ($effect->getAmplifier() === $oldEffect->getAmplifier()
+				abs($effect->getAmplifier()) <= ($oldEffect->getAmplifier())
+				or (abs($effect->getAmplifier()) === abs($oldEffect->getAmplifier())
 					and $effect->getDuration() < $oldEffect->getDuration())
 			){
 				return;
@@ -602,7 +602,6 @@ abstract class Entity extends Location implements Metadatable{
 	 */
 	public function setMaxHealth($amount){
 		$this->maxHealth = (int) $amount;
-		$this->health = (int) min($this->health, $this->maxHealth);
 	}
 
 	public function canCollideWith(Entity $entity){
