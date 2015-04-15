@@ -571,9 +571,7 @@ abstract class Entity extends Location implements Metadatable{
 			if($this->dead !== true){
 				$this->kill();
 			}
-		}elseif($amount > $this->getMaxHealth()){
-			$this->health = $this->getMaxHealth();
-		}else{
+		}elseif($amount <= $this->getMaxHealth() or $amount < $this->health){
 			$this->health = (int) $amount;
 		}
 	}
