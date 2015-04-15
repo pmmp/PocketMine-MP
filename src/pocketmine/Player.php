@@ -2527,6 +2527,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$pk = new TextPacket();
 				$pk->type = TextPacket::TYPE_RAW;
 				$pk->message = $m;
+				$pk->message .= str_repeat(" ", substr_count($pk->message, "§"));
 				$this->dataPacket($pk->setChannel(Network::CHANNEL_TEXT));
 			}
 		}
@@ -2544,6 +2545,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}else{
 			$pk->type = TextPacket::TYPE_RAW;
 			$pk->message = $this->server->getLanguage()->translateString($message, $parameters);
+			$pk->message .= str_repeat(" ", substr_count($pk->message, "§"));
 		}
 		$this->dataPacket($pk->setChannel(Network::CHANNEL_TEXT));
 	}
