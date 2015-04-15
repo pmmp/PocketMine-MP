@@ -2159,18 +2159,19 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		try{
-			$entities = 0;
-			foreach($chunk->getEntities() as $e){
-				if($e instanceof Player){
-					continue;
+			if($chunk !== null and $this->getAutoSave()){
+				$entities = 0;
+				foreach($chunk->getEntities() as $e){
+					if($e instanceof Player){
+						continue;
+					}
+					++$entities;
 				}
-				++$entities;
-			}
 
-			$save = ($chunk->hasChanged() or count($chunk->getTiles()) > 0 or $entities > 0);
-			if($chunk !== null and $this->getAutoSave() and $save){
-				$this->provider->setChunk($x, $z, $chunk);
-				$this->provider->saveChunk($x, $z);
+				if($chunk->hasChanged() or count($chunk->getTiles()) > 0 or $entities > 0){
+					$this->provider->setChunk($x, $z, $chunk);
+					$this->provider->saveChunk($x, $z);
+				}
 			}
 			$this->provider->unloadChunk($x, $z, $safe);
 		}catch(\Exception $e){
