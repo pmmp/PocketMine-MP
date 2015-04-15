@@ -31,6 +31,7 @@ use pocketmine\Server;
 class Effect{
 	const SPEED = 1;
 	const SLOWNESS = 2;
+	const HASTE = 3;
 	const SWIFTNESS = 3;
 	const FATIGUE = 4;
 	const MINING_FATIGUE = 4;
