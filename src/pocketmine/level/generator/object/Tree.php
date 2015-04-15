@@ -102,11 +102,13 @@ abstract class Tree{
 				$xOff = abs($xx - $x);
 				for($zz = $z - $mid; $zz <= $z + $mid; ++$zz){
 					$zOff = abs($zz - $z);
-					if(($xOff === 0 and $zOff === 0) or ($xOff === $mid and $zOff === $mid and ($yOff === 0 or $random->nextBoundedInt(2) === 0))){
+					if($xOff === $mid and $zOff === $mid and ($yOff === 0 or $random->nextBoundedInt(2) === 0)){
 						continue;
 					}
-					$level->setBlockIdAt($xx, $yy, $zz, $this->leafBlock);
-					$level->setBlockDataAt($xx, $yy, $zz, $this->type);
+					if(!Block::$solid[$level->getBlockIdAt($xx, $yy, $zz)]){
+						$level->setBlockIdAt($xx, $yy, $zz, $this->leafBlock);
+						$level->setBlockDataAt($xx, $yy, $zz, $this->type);
+					}
 				}
 			}
 		}
@@ -116,7 +118,7 @@ abstract class Tree{
 		// The base dirt block
 		$level->setBlockIdAt($x, $y - 1, $z, Block::DIRT);
 
-		for($yy = 0; $yy <= $trunkHeight; ++$yy){
+		for($yy = 0; $yy < $trunkHeight; ++$yy){
 			$blockId = $level->getBlockIdAt($x, $y + $yy, $z);
 			if(isset($this->overridable[$blockId])){
 				$level->setBlockIdAt($x, $y + $yy, $z, $this->trunkBlock);
