@@ -99,10 +99,10 @@ abstract class Tree{
 			$yOff = $yy - ($y + $this->treeHeight);
 			$mid = (int) (1 - $yOff / 2);
 			for($xx = $x - $mid; $xx <= $x + $mid; ++$xx){
-				$xOff = $xx - $x;
+				$xOff = abs($xx - $x);
 				for($zz = $z - $mid; $zz <= $z + $mid; ++$zz){
-					$zOff = $zz - $z;
-					if(abs($xOff) === $mid and abs($zOff) === $mid and ($yOff === 0 or $random->nextBoundedInt(2) === 0)){
+					$zOff = abs($zz - $z);
+					if(($xOff === 0 and $zOff === 0) or ($xOff === $mid and $zOff === $mid and ($yOff === 0 or $random->nextBoundedInt(2) === 0))){
 						continue;
 					}
 					$level->setBlockIdAt($xx, $yy, $zz, $this->leafBlock);

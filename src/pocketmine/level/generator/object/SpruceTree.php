@@ -51,10 +51,10 @@ class SpruceTree extends Tree{
 			$yyy = $y + $this->treeHeight - $yy;
 
 			for($xx = $x - $radius; $xx <= $x + $radius; ++$xx){
-				$xOff = $xx - $x;
+				$xOff = abs($xx - $x);
 				for($zz = $z - $radius; $zz <= $z + $radius; ++$zz){
-					$zOff = $zz - $z;
-                    if(abs($xOff) === $radius and abs($zOff) === $radius and $radius > 0){
+					$zOff = abs($zz - $z);
+                    if(($xOff === 0 and $zOff === 0) or ($xOff === $radius and $zOff === $radius and $radius > 0)){
 						continue;
 					}
 
