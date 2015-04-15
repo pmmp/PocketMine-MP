@@ -32,6 +32,7 @@ class TextPacket extends DataPacket{
 	const TYPE_CHAT = 1;
 	const TYPE_TRANSLATION = 2;
 	const TYPE_POPUP = 3;
+	const TYPE_TIP = 4;
 
 	public $type;
 	public $source;
@@ -49,6 +50,7 @@ class TextPacket extends DataPacket{
 				$this->source = $this->getString();
 			case self::TYPE_RAW:
 			case self::TYPE_POPUP:
+			case self::TYPE_TIP:
 				$this->message = $this->getString();
 				break;
 
@@ -69,6 +71,7 @@ class TextPacket extends DataPacket{
 				$this->putString($this->source);
 			case self::TYPE_RAW:
 			case self::TYPE_POPUP:
+			case self::TYPE_TIP:
 				$this->putString($this->message);
 				break;
 

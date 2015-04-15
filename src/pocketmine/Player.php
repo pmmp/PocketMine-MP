@@ -2531,6 +2531,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->dataPacket($pk->setChannel(Network::CHANNEL_TEXT));
 	}
 
+	public function sendTip($message){
+		$pk = new TextPacket();
+		$pk->type = TextPacket::TYPE_TIP;
+		$pk->message = $message;
+		$this->dataPacket($pk->setChannel(Network::CHANNEL_TEXT));
+	}
+
 	/**
 	 * @param string $message Message to be broadcasted
 	 * @param string $reason  Reason showed in console
