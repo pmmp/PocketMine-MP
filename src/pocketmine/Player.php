@@ -2162,7 +2162,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				switch($packet->event){
 					case 9: //Eating
-						$items = [
+						$items = [ //TODO: move this to item classes
 							Item::APPLE => 4,
 							Item::MUSHROOM_STEW => 10,
 							Item::BEETROOT_SOUP => 10,
@@ -2192,7 +2192,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							],
 						];
 						$slot = $this->inventory->getItemInHand();
-						if($this->getHealth() < 20 and isset($items[$slot->getId()])){
+						if($this->getHealth() < $this->getMaxHealth() and isset($items[$slot->getId()])){
 							$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $slot));
 							if($ev->isCancelled()){
 								$this->inventory->sendContents($this);
@@ -2222,6 +2222,25 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 								$this->addEffect(Effect::getEffect(Effect::NAUSEA)->setAmplifier(1)->setDuration(15 * 20));
 								$this->addEffect(Effect::getEffect(Effect::POISON)->setAmplifier(3)->setDuration(60 * 20));
 							}
+						}elseif($slot->getId() === Item::BUCKET and $slot->getId() === 1){ //Milk!
+							$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $slot));
+							if($ev->isCancelled()){
+								$this->inventory->sendContents($this);
+								break;
+							}
+
+							$pk = new EntityEventPacket();
+							$pk->eid = $this->getId();
+							$pk->event = 9;
+							$pk->setChannel(Network::CHANNEL_WORLD_EVENTS);
+							$this->dataPacket($pk);
+							Server::broadcastPacket($this->getViewers(), $pk);
+
+							--$slot->count;
+							$this->inventory->setItemInHand($slot, $this);
+							$this->inventory->addItem(Item::get(Item::BUCKET, 0, 1));
+
+							$this->removeAllEffects();
 						}
 						break;
 				}
