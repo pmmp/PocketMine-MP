@@ -27,6 +27,7 @@ class AsyncWorker extends Worker{
 
 	public function run(){
 		$this->registerClassLoader();
+		gc_enable();
 
 		global $store;
 		$store = [];
