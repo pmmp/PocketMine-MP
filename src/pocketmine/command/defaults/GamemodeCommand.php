@@ -79,6 +79,7 @@ class GamemodeCommand extends VanillaCommand{
 			if($target === $sender){
 				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.gamemode.success.self", [Server::getGamemodeString($gameMode)]));
 			}else{
+				$target->sendMessage(new TranslationContainer("gameMode.changed"));
 				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.gamemode.success.other", [$target->getName(), Server::getGamemodeString($gameMode)]));
 			}
 		}

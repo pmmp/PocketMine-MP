@@ -969,10 +969,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		if(($this->gamemode & 0x01) === ($gm & 0x01)){
 			$this->gamemode = $gm;
-			$this->sendMessage(new TranslationContainer("gameMode.changed"));
 		}else{
 			$this->gamemode = $gm;
-			$this->sendMessage(new TranslationContainer("gameMode.changed"));
 			$this->inventory->clearAll();
 			$this->inventory->sendContents($this);
 			$this->inventory->sendContents($this->getViewers());
