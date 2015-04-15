@@ -204,6 +204,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$pk->x = $this->x;
 			$pk->y = $this->y;
 			$pk->z = $this->z;
+			$pk->speedX = $this->motionX;
+			$pk->speedY = $this->motionY;
+			$pk->speedZ = $this->motionZ;
 			$pk->yaw = $this->yaw;
 			$pk->pitch = $this->pitch;
 			$item = $this->getInventory()->getItemInHand();
@@ -213,8 +216,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$pk->slim = $this->isSlim;
 			$pk->metadata = $this->dataProperties;
 			$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
-
-			$player->addEntityMotion($this->getId(), $this->motionX, $this->motionY, $this->motionZ);
 
 			$this->inventory->sendArmorContents($player);
 		}

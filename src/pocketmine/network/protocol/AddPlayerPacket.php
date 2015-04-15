@@ -40,6 +40,9 @@ class AddPlayerPacket extends DataPacket{
 	public $x;
 	public $y;
 	public $z;
+	public $speedX;
+	public $speedY;
+	public $speedZ;
 	public $pitch;
 	public $yaw;
 	public $item;
@@ -65,6 +68,9 @@ class AddPlayerPacket extends DataPacket{
 		$this->putFloat($this->x);
 		$this->putFloat($this->y);
 		$this->putFloat($this->z);
+		$this->putFloat($this->speedX);
+		$this->putFloat($this->speedY);
+		$this->putFloat($this->speedZ);
 		$this->putFloat($this->yaw);
 		$this->putFloat($this->yaw); //TODO headrot
 		$this->putFloat($this->pitch);

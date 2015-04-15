@@ -78,6 +78,9 @@ class FloatingTextParticle extends Particle{
 			$pk->x = $this->x;
 			$pk->y = $this->y - 2.5;
 			$pk->z = $this->z;
+			$pk->speedX = 0;
+			$pk->speedY = 0;
+			$pk->speedZ = 0;
 			$pk->yaw = 0;
 			$pk->pitch = 0;
 			$pk->item = 0;
