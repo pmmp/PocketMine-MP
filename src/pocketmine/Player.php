@@ -1003,8 +1003,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}else{
 			$pk = new ContainerSetContentPacket();
 			$pk->windowid = ContainerSetContentPacket::SPECIAL_CREATIVE;
-			foreach(Block::$creative as $item){
-				$pk->slots[] = Item::get($item[0], $item[1]); //TODO: change this for plugins
+			foreach(Item::getCreativeItems() as $item){
+				$pk->slots[] = clone $item;
 			}
 			$this->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 		}
@@ -1088,16 +1088,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 
 		return [];
-	}
-
-	protected function getCreativeBlock(Item $item){
-		foreach(Block::$creative as $i => $d){
-			if($d[0] === $item->getId() and ($item->isTool() or $d[1] === $item->getDamage())){
-				return $i;
-			}
-		}
-
-		return -1;
 	}
 
 	public function addEntityMotion($entityId, $x, $y, $z){
@@ -1613,8 +1603,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}else{
 					$pk = new ContainerSetContentPacket();
 					$pk->windowid = ContainerSetContentPacket::SPECIAL_CREATIVE;
-					foreach(Block::$creative as $item){
-						$pk->slots[] = Item::get($item[0], $item[1]); //TODO: change this for plugins
+					foreach(Item::getCreativeItems() as $item){
+						$pk->slots[] = clone $item;
 					}
 					$this->dataPacket($pk->setChannel(Network::CHANNEL_PRIORITY));
 				}
@@ -1670,7 +1660,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				if($this->isCreative()){ //Creative mode match
 					$item = Item::get($packet->item, $packet->meta, 1);
-					$slot = $this->getCreativeBlock($item);
+					$slot = Item::getCreativeItemIndex($item);
 				}else{
 					$item = $this->inventory->getItem($packet->slot);
 					$slot = $packet->slot;
@@ -1704,11 +1694,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->inventory->sendContents($this);
 					break;
 				}elseif($this->isCreative()){
-					$item = Item::get(
-						Block::$creative[$slot][0],
-						Block::$creative[$slot][1],
-						1
-					);
 					$this->inventory->setHeldItemIndex($packet->slot);
 				}else{
                     if($packet->selectedSlot >= 0 and $packet->selectedSlot < 9){
@@ -2350,7 +2335,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						break;
 					}
 					if($this->isCreative()){
-						if($this->getCreativeBlock($packet->item) !== -1){
+						if(Item::getCreativeItemIndex($packet->item) !== -1){
 							$this->inventory->setItem($packet->slot, $packet->item);
 							$this->inventory->setHotbarSlotIndex($packet->slot, $packet->slot); //links $hotbar[$packet->slot] to $slots[$packet->slot]
 						}
