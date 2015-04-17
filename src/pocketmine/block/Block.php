@@ -247,7 +247,7 @@ class Block extends Position implements Metadatable{
 	const GLOWING_OBSIDIAN = 246;
 	const NETHER_REACTOR = 247;
 
-	public static $creative = [
+	public static $creative = [ //TODO: make this available to plugins
 		//Building
 		[Item::COBBLESTONE, 0],
 		[Item::STONE_BRICKS, 0],

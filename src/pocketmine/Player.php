@@ -94,6 +94,7 @@ use pocketmine\network\Network;
 use pocketmine\network\protocol\AdventureSettingsPacket;
 use pocketmine\network\protocol\AnimatePacket;
 use pocketmine\network\protocol\BatchPacket;
+use pocketmine\network\protocol\ContainerSetContentPacket;
 use pocketmine\network\protocol\DataPacket;
 use pocketmine\network\protocol\DisconnectPacket;
 use pocketmine\network\protocol\EntityEventPacket;
@@ -995,6 +996,19 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 		$this->sendSettings();
 
+		if($this->gamemode === Player::SPECTATOR){
+			$pk = new ContainerSetContentPacket();
+			$pk->windowid = ContainerSetContentPacket::SPECIAL_CREATIVE;
+			$this->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+		}else{
+			$pk = new ContainerSetContentPacket();
+			$pk->windowid = ContainerSetContentPacket::SPECIAL_CREATIVE;
+			foreach(Block::$creative as $item){
+				$pk->slots[] = Item::get($item[0], $item[1]); //TODO: change this for plugins
+			}
+			$this->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+		}
+
 		return true;
 	}
 
@@ -1592,6 +1606,19 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->setRemoveFormat(false);
 				}
 
+				if($this->gamemode === Player::SPECTATOR){
+					$pk = new ContainerSetContentPacket();
+					$pk->windowid = ContainerSetContentPacket::SPECIAL_CREATIVE;
+					$this->dataPacket($pk->setChannel(Network::CHANNEL_PRIORITY));
+				}else{
+					$pk = new ContainerSetContentPacket();
+					$pk->windowid = ContainerSetContentPacket::SPECIAL_CREATIVE;
+					foreach(Block::$creative as $item){
+						$pk->slots[] = Item::get($item[0], $item[1]); //TODO: change this for plugins
+					}
+					$this->dataPacket($pk->setChannel(Network::CHANNEL_PRIORITY));
+				}
+
 				$this->orderChunks();
 				$this->sendNextChunk();
 				break;
@@ -1711,7 +1738,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($packet->face >= 0 and $packet->face <= 5){ //Use Block, place
 					$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
 
-					if($blockVector->distance($this) > 10){
+					if($blockVector->distance($this) > 10 or ($this->isCreative() and $this->isAdventure())){
 
 					}elseif($this->isCreative()){
 						$item = $this->inventory->getItemInHand();
@@ -2329,7 +2356,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						}
 					}
 					$transaction = new BaseTransaction($this->inventory, $packet->slot, $this->inventory->getItem($packet->slot), $packet->item);
-				}elseif($packet->windowid === 0x78){ //Our armor
+				}elseif($packet->windowid === ContainerSetContentPacket::SPECIAL_ARMOR){ //Our armor
 					if($packet->slot >= 4){
 						break;
 					}
@@ -2527,7 +2554,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$pk = new TextPacket();
 				$pk->type = TextPacket::TYPE_RAW;
 				$pk->message = $m;
-				$pk->message .= str_repeat(" ", substr_count($pk->message, "§"));
 				$this->dataPacket($pk->setChannel(Network::CHANNEL_TEXT));
 			}
 		}
@@ -2545,7 +2571,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}else{
 			$pk->type = TextPacket::TYPE_RAW;
 			$pk->message = $this->server->getLanguage()->translateString($message, $parameters);
-			$pk->message .= str_repeat(" ", substr_count($pk->message, "§"));
 		}
 		$this->dataPacket($pk->setChannel(Network::CHANNEL_TEXT));
 	}

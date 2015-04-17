@@ -28,6 +28,10 @@ class ContainerSetContentPacket extends DataPacket{
 	public static $pool = [];
 	public static $next = 0;
 
+	const SPECIAL_INVENTORY = 0;
+	const SPECIAL_ARMOR = 0x78;
+	const SPECIAL_CREATIVE = 0x79;
+
 	public $windowid;
 	public $slots = [];
 	public $hotbar = [];
@@ -48,7 +52,7 @@ class ContainerSetContentPacket extends DataPacket{
 		for($s = 0; $s < $count and !$this->feof(); ++$s){
 			$this->slots[$s] = $this->getSlot();
 		}
-		if($this->windowid === 0){
+		if($this->windowid === self::SPECIAL_INVENTORY){
 			$count = $this->getShort();
 			for($s = 0; $s < $count and !$this->feof(); ++$s){
 				$this->hotbar[$s] = $this->getInt();
@@ -63,7 +67,7 @@ class ContainerSetContentPacket extends DataPacket{
 		foreach($this->slots as $slot){
 			$this->putSlot($slot);
 		}
-		if($this->windowid === 0 and count($this->hotbar) > 0){
+		if($this->windowid === self::SPECIAL_INVENTORY and count($this->hotbar) > 0){
 			$this->putShort(count($this->hotbar));
 			foreach($this->hotbar as $slot){
 				$this->putInt($slot);

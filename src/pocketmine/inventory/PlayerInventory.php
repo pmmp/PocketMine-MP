@@ -340,7 +340,7 @@ class PlayerInventory extends BaseInventory{
 				//$pk2->eid = 0;
 
 				$pk2 = new ContainerSetContentPacket();
-				$pk2->windowid = 0x78; //Armor window id constant
+				$pk2->windowid = ContainerSetContentPacket::SPECIAL_ARMOR;
 				$pk2->slots = $armor;
 				$player->dataPacket($pk2);
 			}else{
@@ -397,7 +397,7 @@ class PlayerInventory extends BaseInventory{
 			if($player === $this->getHolder()){
 				/** @var Player $player */
 				$pk2 = new ContainerSetSlotPacket();
-				$pk2->windowid = 0x78; //Armor window id constant
+				$pk2->windowid = ContainerSetContentPacket::SPECIAL_ARMOR;
 				$pk2->slot = $index;
 				$pk2->item = $this->getItem($index);
 				$player->dataPacket($pk2);
