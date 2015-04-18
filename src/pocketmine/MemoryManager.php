@@ -116,21 +116,21 @@ class MemoryManager{
 			$memory = Utils::getMemoryUsage(true);
 			$trigger = false;
 			if($this->memoryLimit > 0 and $memory[0] > $this->memoryLimit){
-				$trigger = true;
+				$trigger = 0;
 			}elseif($this->globalMemoryLimit > 0 and $memory[1] > $this->globalMemoryLimit){
-				$trigger = true;
+				$trigger = 1;
 			}
 
-			if($trigger){
+			if($trigger !== false){
 				if($this->lowMemory and $this->continuousTrigger){
 					if(++$this->continuousTriggerTicker >= $this->continuousTriggerRate){
 						$this->continuousTriggerTicker = 0;
-						$this->trigger($memory, $this->memoryLimit, ++$this->continuousTriggerCount);
+						$this->trigger($memory[$trigger], $this->memoryLimit, ++$this->continuousTriggerCount);
 					}
 				}else{
 					$this->lowMemory = true;
 					$this->continuousTriggerCount = 0;
-					$this->trigger($memory, $this->memoryLimit);
+					$this->trigger($memory[$trigger], $this->memoryLimit);
 				}
 			}else{
 				$this->lowMemory = false;

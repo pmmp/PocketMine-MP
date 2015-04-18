@@ -357,8 +357,8 @@ abstract class BaseFullChunk implements FullChunk{
 		$this->hasChanged = (bool) $changed;
 	}
 
-	public static function &fromFastBinary(&$data, LevelProvider $provider = null){
-		static::fromBinary($data, $provider);
+	public static function fromFastBinary(&$data, LevelProvider $provider = null){
+		return static::fromBinary($data, $provider);
 	}
 
 	public function &toFastBinary(){

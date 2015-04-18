@@ -308,9 +308,9 @@ interface FullChunk{
 
 	public function &getBlockLightArray();
 
-	public function toBinary();
+	public function &toBinary();
 
-	public function toFastBinary();
+	public function &toFastBinary();
 
 	/**
 	 * @return boolean

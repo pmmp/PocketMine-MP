@@ -58,7 +58,7 @@ abstract class DataPacket extends \stdClass{
 	}
 
 	public function setBuffer($buffer = ""){
-		$this->buffer = $buffer;
+		$this->buffer =& $buffer;
 		$this->offset = 0;
 	}
 
@@ -66,7 +66,7 @@ abstract class DataPacket extends \stdClass{
 		return $this->offset;
 	}
 
-	public function getBuffer(){
+	public function &getBuffer(){
 		return $this->buffer;
 	}
 
