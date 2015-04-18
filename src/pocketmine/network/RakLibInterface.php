@@ -141,14 +141,16 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	public function handleEncapsulated($identifier, EncapsulatedPacket $packet, $flags){
 		if(isset($this->players[$identifier])){
 			try{
-				$pk = &$this->getPacket($packet->buffer);
-				$pk->decode();
-				$this->players[$identifier]->handleDataPacket($pk);
+				if($packet->buffer !== ""){
+					$pk = $this->getPacket($packet->buffer);
+					$pk->decode();
+					$this->players[$identifier]->handleDataPacket($pk);
+				}
 			}catch(\Exception $e){
 				if(\pocketmine\DEBUG > 1){
 					$logger = $this->server->getLogger();
 					if($logger instanceof MainLogger){
-						$logger->debug("Packet " . get_class($pk) . " 0x" . bin2hex($packet->buffer));
+						//$logger->debug("Packet " . get_class($pk) . " 0x" . bin2hex($packet->buffer));
 						$logger->logException($e);
 					}
 				}
