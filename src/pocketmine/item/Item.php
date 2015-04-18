@@ -78,8 +78,7 @@ class Item{
 	const DEAD_BUSH = 32;
 	const WOOL = 35;
 	const DANDELION = 37;
-	const ROSE = 38;
-	const POPPY = 38;
+	const RED_FLOWER = 38;
 	const BROWN_MUSHROOM = 39;
 	const RED_MUSHROOM = 40;
 	const GOLD_BLOCK = 41;
@@ -499,7 +498,6 @@ class Item{
 		self::initCreativeItems();
 	}
 
-
 	private static $creative = [];
 
 	private static function initCreativeItems(){
@@ -645,15 +643,15 @@ class Item{
 		self::addCreativeItem(Item::get(Item::FURNACE, 0));
 		self::addCreativeItem(Item::get(Item::END_PORTAL, 0));
 		self::addCreativeItem(Item::get(Item::DANDELION, 0));
-		self::addCreativeItem(Item::get(Item::POPPY, 0));
-		//TODO: blue orchid
-		//TODO: Allium
-		//TODO: Azure Bluet
-		//TODO: Red Tulip
-		//TODO: Orange Tulip
-		//TODO: White Tulip
-		//TODO: Pink Tulip
-		//TODO: Oxeye Daisy
+		self::addCreativeItem(Item::get(Item::RED_FLOWER, 0));
+		self::addCreativeItem(Item::get(Item::RED_FLOWER, 1));
+		self::addCreativeItem(Item::get(Item::RED_FLOWER, 2));
+		self::addCreativeItem(Item::get(Item::RED_FLOWER, 3));
+		self::addCreativeItem(Item::get(Item::RED_FLOWER, 4));
+		self::addCreativeItem(Item::get(Item::RED_FLOWER, 5));
+		self::addCreativeItem(Item::get(Item::RED_FLOWER, 6));
+		self::addCreativeItem(Item::get(Item::RED_FLOWER, 7));
+		self::addCreativeItem(Item::get(Item::RED_FLOWER, 8));
 		//TODO: Lilac
 		//TODO: Double Tallgrass
 		//TODO: Large Fern

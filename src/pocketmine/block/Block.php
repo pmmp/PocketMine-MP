@@ -84,8 +84,7 @@ class Block extends Position implements Metadatable{
 	const DEAD_BUSH = 32;
 	const WOOL = 35;
 	const DANDELION = 37;
-	const ROSE = 38;
-	const POPPY = 38;
+	const RED_FLOWER = 38;
 	const BROWN_MUSHROOM = 39;
 	const RED_MUSHROOM = 40;
 	const GOLD_BLOCK = 41;
@@ -334,7 +333,7 @@ class Block extends Position implements Metadatable{
 			self::$list[self::DEAD_BUSH] = DeadBush::class;
 			self::$list[self::WOOL] = Wool::class;
 			self::$list[self::DANDELION] = Dandelion::class;
-			self::$list[self::POPPY] = Poppy::class;
+			self::$list[self::RED_FLOWER] = Flower::class;
 			self::$list[self::BROWN_MUSHROOM] = BrownMushroom::class;
 			self::$list[self::RED_MUSHROOM] = RedMushroom::class;
 			self::$list[self::GOLD_BLOCK] = Gold::class;
