@@ -125,12 +125,12 @@ class MemoryManager{
 				if($this->lowMemory and $this->continuousTrigger){
 					if(++$this->continuousTriggerTicker >= $this->continuousTriggerRate){
 						$this->continuousTriggerTicker = 0;
-						$this->trigger($memory[$trigger], $this->memoryLimit, ++$this->continuousTriggerCount);
+						$this->trigger($memory[$trigger], $this->memoryLimit, $trigger > 0, ++$this->continuousTriggerCount);
 					}
 				}else{
 					$this->lowMemory = true;
 					$this->continuousTriggerCount = 0;
-					$this->trigger($memory[$trigger], $this->memoryLimit);
+					$this->trigger($memory[$trigger], $this->memoryLimit, $trigger > 0);
 				}
 			}else{
 				$this->lowMemory = false;
