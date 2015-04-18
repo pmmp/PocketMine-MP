@@ -52,6 +52,9 @@ class BanListCommand extends VanillaCommand{
 
 				return false;
 			}
+		}else{
+			$list = $sender->getServer()->getNameBans();
+			$args[0] = "players";
 		}
 
 		$message = "";

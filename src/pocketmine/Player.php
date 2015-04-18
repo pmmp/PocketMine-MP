@@ -581,7 +581,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 	}
 
-	public function sendChunk($x, $z, $payload){
+	public function sendChunk($x, $z, &$payload){
 		if($this->connected === false){
 			return;
 		}
@@ -592,7 +592,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$pk = new FullChunkDataPacket();
 		$pk->chunkX = $x;
 		$pk->chunkZ = $z;
-		$pk->data = $payload;
+		$pk->data =& $payload;
 		$this->batchDataPacket($pk->setChannel(Network::CHANNEL_WORLD_CHUNKS));
 
 		if($this->spawned){
@@ -692,8 +692,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		$this->nextChunkOrderRun = 200;
 
-		$radiusSquared = $this->viewDistance;
-		$radius = ceil(sqrt($radiusSquared));
+		$viewDistance = $this->server->getMemoryManager()->getViewDistance($this->viewDistance);
+		$radius = ceil(sqrt($viewDistance));
 		$side = ceil($radius / 2);
 
 		$newOrder = [];
@@ -716,7 +716,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		asort($currentQueue);
 
 
-		$limit = $this->viewDistance;
+		$limit = $viewDistance;
 		foreach($currentQueue as $index => $distance){
 			if($limit-- <= 0){
 				break;
@@ -733,11 +733,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		$loadedChunks = count($this->usedChunks);
 
-		if((count($newOrder) + $loadedChunks) > $this->viewDistance){
+
+		if((count($newOrder) + $loadedChunks) > $viewDistance){
 			$count = $loadedChunks;
 			$this->loadQueue = [];
 			foreach($newOrder as $k => $distance){
-				if(++$count > $this->viewDistance){
+				if(++$count > $viewDistance){
 					break;
 				}
 				$this->loadQueue[$k] = $distance;
@@ -1107,7 +1108,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		$revert = false;
 
-		if($distanceSquared > 100){
+		if(($distanceSquared / $this->level->getTickRate()) > 100){
 			$revert = true;
 		}else{
 			if($this->chunk === null or !$this->chunk->isGenerated()){
@@ -2863,7 +2864,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		if($source->isCancelled()){
 			return;
-		}elseif($this->getLastDamageCause() === $source){
+		}elseif($this->getLastDamageCause() === $source and $this->spawned){
 			$pk = new EntityEventPacket();
 			$pk->eid = $this->getId();
 			$pk->event = 2;

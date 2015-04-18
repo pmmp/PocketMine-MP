@@ -23,6 +23,7 @@
  * Various Utilities used around the code
  */
 namespace pocketmine\utils;
+use pocketmine\ThreadManager;
 
 /**
  * Big collection of functions
@@ -175,6 +176,76 @@ class Utils{
 		}
 		
 		return self::$os;
+	}
+
+
+	public static function getMemoryUsage($advanced = false){
+		$reserved = memory_get_usage();
+		$VmSize = null;
+		$VmRSS = null;
+		if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
+			$status = file_get_contents("/proc/self/status");
+			if(preg_match("/VmRSS:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
+				$VmRSS = $matches[1] * 1024;
+			}
+
+			if(preg_match("/VmSize:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
+				$VmSize = $matches[1] * 1024;
+			}
+		}
+
+		//TODO: more OS
+
+		if($VmRSS === null){
+			$VmRSS = memory_get_usage();
+		}
+
+		if(!$advanced){
+			return $VmRSS;
+		}
+
+		if($VmSize === null){
+			$VmSize = memory_get_usage(true);
+		}
+
+		return [$reserved, $VmRSS, $VmSize];
+	}
+
+	public static function getThreadCount(){
+		if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
+			if(preg_match("/Threads:[ \t]+([0-9]+)/", file_get_contents("/proc/self/status"), $matches) > 0){
+				return (int) $matches[1];
+			}
+		}
+		//TODO: more OS
+
+		return count(ThreadManager::getInstance()->getAll()) + 3; //RakLib + MainLogger + Main Thread
+	}
+
+	public static function getCoreCount(){
+		$processors = 0;
+		switch(Utils::getOS()){
+			case "linux":
+			case "android":
+				if(file_exists("/proc/cpuinfo")){
+					foreach(file("/proc/cpuinfo") as $l){
+						if(preg_match('/^processor[ \t]*:[ \t]*[0-9]+$/m', $l) > 0){
+							++$processors;
+						}
+					}
+				}
+				break;
+			case "bsd":
+				$processors = (int) `sysctl hw.ncpu | awk '{ print $2+1 }'`;
+				break;
+			case "mac":
+				$processors = (int) `sysctl hw.availcpu | awk '{ print $2+1 }'`;
+				break;
+			case "win":
+				$processors = (int) getenv("NUMBER_OF_PROCESSORS");
+				break;
+		}
+		return $processors;
 	}
 
 	/**

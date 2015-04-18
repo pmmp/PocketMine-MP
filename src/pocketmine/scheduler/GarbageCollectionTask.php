@@ -14,28 +14,17 @@
  * (at your option) any later version.
  *
  * @author PocketMine Team
- * @link http://www.pocketmine.net/
+
  *
  *
 */
 
 namespace pocketmine\scheduler;
 
-use pocketmine\Worker;
+class GarbageCollectionTask extends AsyncTask{
 
-class AsyncWorker extends Worker{
-
-	public function run(){
-		$this->registerClassLoader();
+	public function onRun(){
 		gc_enable();
-		ini_set("memory_limit", -1);
-
-		global $store;
-		$store = [];
-
-	}
-
-	public function start($options = PTHREADS_INHERIT_NONE){
-		parent::start(PTHREADS_INHERIT_CONSTANTS | PTHREADS_INHERIT_FUNCTIONS);
+		gc_collect_cycles();
 	}
 }

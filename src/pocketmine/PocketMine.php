@@ -314,6 +314,24 @@ namespace pocketmine {
 		}
 	}
 
+	/**
+	 * @param object $value
+	 * @param bool   $includeCurrent
+	 *
+	 * @return int
+	 */
+	function getReferenceCount($value, $includeCurrent = true){
+		ob_start();
+		debug_zval_dump($value);
+		$ret = explode("\n", ob_get_contents());
+		ob_end_clean();
+
+		if(count($ret) >= 1 and preg_match('/^.* refcount\\(([0-9]+)\\)\\{$/', trim($ret[0]), $m) > 0){
+			return ((int) $m[1]) - ($includeCurrent ? 3 : 4); //$value + zval call + extra call
+		}
+		return -1;
+	}
+
 	function getTrace($start = 1, $trace = null){
 		if($trace === null){
 			if(function_exists("xdebug_get_function_stack")){

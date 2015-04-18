@@ -79,6 +79,28 @@ class ServerScheduler{
 	}
 
 	/**
+	 * Submits an asynchronous task to a specific Worker in the Pool
+	 *
+	 * @param AsyncTask $task
+	 * @param int       $worker
+	 *
+	 * @return void
+	 */
+	public function scheduleAsyncTaskToWorker(AsyncTask $task, $worker){
+		$id = $this->nextId();
+		$task->setTaskId($id);
+		$this->asyncPool->submitTaskToWorker($task, $worker);
+	}
+
+	public function getAsyncTaskPoolSize(){
+		return $this->asyncPool->getSize();
+	}
+
+	public function increaseAsyncTaskPoolSize($newSize){
+		$this->asyncPool->increaseSize($newSize);
+	}
+
+	/**
 	 * @param Task $task
 	 * @param int  $delay
 	 *

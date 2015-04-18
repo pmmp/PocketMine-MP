@@ -93,12 +93,10 @@ use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 use pocketmine\tile\Chest;
 use pocketmine\tile\Tile;
-use pocketmine\utils\Cache;
 use pocketmine\utils\LevelException;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\Random;
 use pocketmine\utils\ReversePriorityQueue;
-use pocketmine\utils\TextFormat;
 use pocketmine\level\particle\Particle;
 use pocketmine\level\sound\Sound;
 use pocketmine\entity\Effect;
@@ -144,6 +142,8 @@ class Level implements ChunkManager, Metadatable{
 	private $chunkCache = [];
 
 	private $cacheChunks = false;
+
+	private $sendTimeTicker = 0;
 
 	/** @var Server */
 	private $server;
@@ -512,6 +512,7 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function freeChunk($X, $Z, Player $player){
 		unset($this->usedChunks[$index = Level::chunkHash($X, $Z)][$player->getId()]);
+
 		$this->unloadChunkRequest($X, $Z, true);
 	}
 
@@ -553,8 +554,9 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->checkTime();
 
-		if(($currentTick % 200) === 0){
+		if(++$this->sendTimeTicker === 200){
 			$this->sendTime();
+			$this->sendTimeTicker = 0;
 		}
 
 		$this->unloadChunks();
@@ -646,7 +648,11 @@ class Level implements ChunkManager, Metadatable{
 		Server::broadcastPacket($target, $pk->setChannel(Network::CHANNEL_BLOCKS));
 	}
 
-	public function clearCache(){
+	public function clearCache($full = false){
+		if($full){
+			$this->chunkCache = [];
+		}
+
 		$this->blockCache = [];
 	}
 
@@ -1987,11 +1993,11 @@ class Level implements ChunkManager, Metadatable{
 		}
 	}
 
-	public function chunkRequestCallback($x, $z, $payload){
+	public function chunkRequestCallback($x, $z, &$payload){
 		$index = Level::chunkHash($x, $z);
 
-		if(!isset($this->chunkCache[$index]) and $this->cacheChunks){
-			$this->chunkCache[$index] = $payload;
+		if(!isset($this->chunkCache[$index]) and $this->cacheChunks and $this->server->getMemoryManager()->canUseChunkCache()){
+			$this->chunkCache[$index] =& $payload;
 		}
 
 		if(isset($this->chunkSendTasks[$index])){
@@ -2077,7 +2083,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function isChunkInUse($x, $z){
-		return isset($this->usedChunks[Level::chunkHash($x, $z)]) and count($this->usedChunks[Level::chunkHash($x, $z)]) > 0;
+		return isset($this->usedChunks[$index = Level::chunkHash($x, $z)]) and count($this->usedChunks[$index]) > 0;
 	}
 
 	/**
@@ -2118,6 +2124,8 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
+		$chunk->setChanged(false);
+
 		return true;
 	}
 
@@ -2145,6 +2153,10 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
+		if(!$this->isChunkLoaded($x, $z)){
+			return true;
+		}
+
 		$this->timings->doChunkUnload->startTiming();
 
 		$index = Level::chunkHash($x, $z);
@@ -2154,6 +2166,7 @@ class Level implements ChunkManager, Metadatable{
 		if($chunk !== null and $chunk->getProvider() !== null){
 			$this->server->getPluginManager()->callEvent($ev = new ChunkUnloadEvent($chunk));
 			if($ev->isCancelled()){
+				$this->timings->doChunkUnload->stopTiming();
 				return false;
 			}
 		}
@@ -2186,6 +2199,10 @@ class Level implements ChunkManager, Metadatable{
 		unset($this->usedChunks[$index]);
 		unset($this->chunkTickList[$index]);
 		unset($this->chunkCache[$index]);
+
+		$refs = \pocketmine\getReferenceCount($chunk);
+
+		//$this->server->getLogger()->debug("Unloaded $x $z (".count($this->getChunks()).") [refs $refs]");
 
 		$this->timings->doChunkUnload->stopTiming();
 

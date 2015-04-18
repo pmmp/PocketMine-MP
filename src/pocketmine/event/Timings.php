@@ -33,6 +33,8 @@ abstract class Timings{
 	/** @var TimingsHandler */
 	public static $serverTickTimer;
 	/** @var TimingsHandler */
+	public static $garbageCollectorTimer;
+	/** @var TimingsHandler */
 	public static $playerListTimer;
 	/** @var TimingsHandler */
 	public static $connectionTimer;
@@ -96,6 +98,7 @@ abstract class Timings{
 		}
 
 		self::$serverTickTimer = new TimingsHandler("** Full Server Tick");
+		self::$garbageCollectorTimer = new TimingsHandler("Garbage Collector");
 		self::$playerListTimer = new TimingsHandler("Player List");
 		self::$connectionTimer = new TimingsHandler("Connection Handler");
 		self::$tickablesTimer = new TimingsHandler("Tickables");

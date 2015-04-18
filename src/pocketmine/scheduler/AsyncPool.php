@@ -47,7 +47,7 @@ class AsyncPool{
 		for($i = 0; $i < $this->size; ++$i){
 			$this->workerUsage[$i] = 0;
 			$this->workers[$i] = new AsyncWorker;
-			$this->workers[$i]->setClassLoader($server->getLoader());
+			$this->workers[$i]->setClassLoader($this->server->getLoader());
 			$this->workers[$i]->start();
 		}
 	}
@@ -56,12 +56,40 @@ class AsyncPool{
 		return $this->size;
 	}
 
-	public function submitTask(AsyncTask $task){
+	public function increaseSize($newSize){
+		$newSize = (int) $newSize;
+		if($newSize > $this->size){
+			$this->size = $newSize;
+			for($i = $this->size; $i < $newSize; ++$i){
+				$this->workerUsage[$i] = 0;
+				$this->workers[$i] = new AsyncWorker;
+				$this->workers[$i]->setClassLoader($this->server->getLoader());
+				$this->workers[$i]->start();
+			}
+		}
+	}
+
+	public function submitTaskToWorker(AsyncTask $task, $worker){
 		if(isset($this->tasks[$task->getTaskId()]) or $task->isGarbage()){
 			return;
 		}
 
+		$worker = (int) $worker;
+		if($worker < 0 or $worker >= $this->size){
+			throw new \InvalidArgumentException("Invalid worker $worker");
+		}
+
 		$this->tasks[$task->getTaskId()] = $task;
+
+		$this->workers[$worker]->stack($task);
+		$this->workerUsage[$worker]++;
+		$this->taskWorkers[$task->getTaskId()] = $worker;
+	}
+
+	public function submitTask(AsyncTask $task){
+		if(isset($this->tasks[$task->getTaskId()]) or $task->isGarbage()){
+			return;
+		}
 
 		$selectedWorker = mt_rand(0, $this->size - 1);
 		$selectedTasks = $this->workerUsage[$selectedWorker];
@@ -72,9 +100,7 @@ class AsyncPool{
 			}
 		}
 
-		$this->workers[$selectedWorker]->stack($task);
-		$this->workerUsage[$selectedWorker]++;
-		$this->taskWorkers[$task->getTaskId()] = $selectedWorker;
+		$this->submitTaskToWorker($task, $selectedWorker);
 	}
 
 	private function removeTask(AsyncTask $task){
@@ -85,6 +111,8 @@ class AsyncPool{
 
 		unset($this->tasks[$task->getTaskId()]);
 		unset($this->taskWorkers[$task->getTaskId()]);
+
+		$task->cleanObject();
 	}
 
 	public function removeTasks(){

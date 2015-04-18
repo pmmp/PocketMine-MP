@@ -27,6 +27,13 @@ use pocketmine\nbt\NBT;
 
 class ByteArray extends NamedTag{
 
+	public function __construct($name = "", &$value = null){
+		$this->name = $name;
+		if($value !== null){
+			$this->value =& $value;
+		}
+	}
+
 	public function getType(){
 		return NBT::TAG_ByteArray;
 	}

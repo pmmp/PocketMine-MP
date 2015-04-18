@@ -159,6 +159,9 @@ class Server{
 	/** @var \AttachableThreadedLogger */
 	private $logger;
 
+	/** @var MemoryManager */
+	private $memoryManager;
+
 	/** @var CommandReader */
 	private $console = null;
 	private $consoleThreaded;
@@ -879,6 +882,13 @@ class Server{
 	 * @param Player $player
 	 */
 	public function removePlayer(Player $player){
+		if(isset($this->identifiers[$hash = spl_object_hash($player)])){
+			$identifier = $this->identifiers[$hash];
+			unset($this->players[$identifier]);
+			unset($this->identifiers[$hash]);
+			return;
+		}
+
 		foreach($this->players as $identifier => $p){
 			if($player === $p){
 				unset($this->players[$identifier]);
@@ -1521,9 +1531,20 @@ class Server{
 		$this->baseLang = new BaseLang($this->getProperty("settings.language", BaseLang::FALLBACK_LANGUAGE));
 		$this->logger->info($this->getLanguage()->translateString("language.selected", [$this->getLanguage()->getName(), $this->getLanguage()->getLang()]));
 
+		$this->memoryManager = new MemoryManager($this);
+
 		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.start", [TextFormat::AQUA . $this->getVersion()]));
 
-		ServerScheduler::$WORKERS = $this->getProperty("settings.async-workers", ServerScheduler::$WORKERS);
+		if(($poolSize = $this->getProperty("settings.async-workers", "auto")) === "auto"){
+			$poolSize = ServerScheduler::$WORKERS;
+			$processors = Utils::getCoreCount();
+
+			if($processors > 0){
+				$poolSize = max(2, $processors);
+			}
+		}
+
+		ServerScheduler::$WORKERS = $poolSize;
 
 		if($this->getProperty("network.batch-threshold", 256) >= 0){
 			Network::$BATCH_THRESHOLD = (int) $this->getProperty("network.batch-threshold", 256);
@@ -1560,15 +1581,10 @@ class Server{
 		$this->maxPlayers = $this->getConfigInt("max-players", 20);
 		$this->setAutoSave($this->getConfigBoolean("auto-save", true));
 
-		if(($memory = str_replace("B", "", strtoupper($this->getConfigString("memory-limit", -1)))) !== false and $memory > 1){
-			$value = ["M" => 1, "G" => 1024];
-			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
-			if($real < 128){
-				$this->logger->warning($this->getName() . " may not work right with less than 128MB of memory");
-			}
-			@ini_set("memory_limit", $memory);
-			$this->logger->notice("The memory limit will only affect the main thread, and it's unreliable.");
-			$this->logger->notice("To control the memory usage, reduce the amount of threads and chunks loaded");
+		if($this->getConfigString("memory-limit", -1) !== false){
+			$this->logger->notice("The memory-limit setting has been deprecated.");
+			$this->logger->notice("There are new memory settings on pocketmine.yml to tune memory and events.");
+			$this->logger->notice("You can also reduce the amount of threads and chunks loaded control the memory usage.");
 		}
 
 		if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < 3){
@@ -1791,11 +1807,7 @@ class Server{
 		}
 
 		if(!$forceSync and $this->networkCompressionAsync){
-			$task = new CompressBatchedTask();
-			$task->targets = $targets;
-			$task->data = $str;
-			$task->channel = $channel;
-			$task->level = $this->networkCompressionLevel;
+			$task = new CompressBatchedTask($str, $targets, $this->networkCompressionLevel, $channel);
 			$this->getScheduler()->scheduleAsyncTask($task);
 		}else{
 			$this->broadcastPacketsCallback(zlib_encode($str, ZLIB_ENCODING_DEFLATE, $this->networkCompressionLevel), $targets, $channel);
@@ -1903,17 +1915,6 @@ class Server{
 		$this->logger->info("Reloading properties...");
 		$this->properties->reload();
 		$this->maxPlayers = $this->getConfigInt("max-players", 20);
-
-		if(($memory = str_replace("B", "", strtoupper($this->getConfigString("memory-limit", -1)))) !== false and $memory > 1){
-			$value = ["M" => 1, "G" => 1024];
-			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
-			if($real < 256){
-				$this->logger->warning($this->getName() . " may not work right with less than 256MB of memory", true, true, 0);
-			}
-			@ini_set("memory_limit", $memory);
-			$this->logger->notice("The memory limit will only affect the main thread, and it's unreliable.");
-			$this->logger->notice("To control the memory usage, reduce the amount of threads and chunks loaded");
-		}
 
 		if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < 3){
 			$this->setConfigInt("difficulty", 3);
@@ -2211,8 +2212,7 @@ class Server{
 				if($player->isOnline()){
 					$player->save();
 				}elseif(!$player->isConnected()){
-					unset($this->players[$index]);
-					unset($this->identifiers[spl_object_hash($player)]);
+					$this->removePlayer($player);
 				}
 			}
 
@@ -2248,8 +2248,8 @@ class Server{
 			"port" => $this->getPort(),
 			"os" => Utils::getOS(),
 			"name" => $this->getName(),
-			"memory_total" => $this->getConfigString("memory-limit"),
-			"memory_usage" => $this->getMemoryUsage(),
+			"memory_total" => $this->getConfigString("memory-limit"), //TODO
+			"memory_usage" => Utils::getMemoryUsage(),
 			"php_version" => PHP_VERSION,
 			"version" => $version->get(true),
 			"build" => $version->getBuild(),
@@ -2285,13 +2285,20 @@ class Server{
 		return $this->network;
 	}
 
+	/**
+	 * @return MemoryManager
+	 */
+	public function getMemoryManager(){
+		return $this->memoryManager;
+	}
+
 	private function titleTick(){
 		if(!Terminal::hasFormattingCodes()){
 			return;
 		}
 		
-		$u = $this->getMemoryUsage(true);
-		$usage = round(($u[0] / 1024) / 1024, 2) . "/".round(($u[1] / 1024) / 1024, 2)." MB @ " . $this->getThreadCount() . " threads";
+		$u = Utils::getMemoryUsage(true);
+		$usage = round(($u[0] / 1024) / 1024, 2) . "/" . round(($u[1] / 1024) / 1024, 2) . "/".round(($u[2] / 1024) / 1024, 2)." MB @ " . Utils::getThreadCount() . " threads";
 
 		echo "\x1b]0;" . $this->getName() . " " .
 			$this->getPocketMineVersion() .
@@ -2304,47 +2311,6 @@ class Server{
 
 		$this->network->resetStatistics();
 	}
-	
-	public function getMemoryUsage($advanced = false){
-		$VmSize = null;
-		$VmRSS = null;
-		if(Utils::getOS() === "linux" or Utils::getOS() === "bsd"){
-			$status = file_get_contents("/proc/self/status");
-			if(preg_match("/VmRSS:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
-				$VmRSS = $matches[1] * 1024;
-			}
-
-			if(preg_match("/VmSize:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
-				$VmSize = $matches[1] * 1024;
-			}
-		}
-
-		if($VmRSS === null){
-			$VmRSS = memory_get_usage();
-		}
-
-		if(!$advanced){
-			return $VmRSS;
-		}
-
-		if($VmSize === null){
-			$VmSize = memory_get_usage(true);
-		}
-
-		return [$VmRSS, $VmSize];
-	}
-	
-	public function getThreadCount(){
-		if(Utils::getOS() === "linux" or Utils::getOS() === "bsd"){
-			
-			if(preg_match("/Threads:[ \t]+([0-9]+)/", file_get_contents("/proc/self/status"), $matches) > 0){
-				return (int) $matches[1];
-			}
-		}
-		
-		return count(ThreadManager::getInstance()->getAll()) + 3; //RakLib + MainLogger + Main Thread
-	}
-
 
 	/**
 	 * @param string $address
@@ -2365,7 +2331,7 @@ class Server{
 				}
 			}
 
-			$this->blockAddress($address, 600);
+			$this->getNetwork()->blockAddress($address, 600);
 		}
 		//TODO: add raw packet events
 	}
@@ -2398,7 +2364,7 @@ class Server{
 
 		if(($this->tickCounter & 0b1111) === 0){
 			$this->titleTick();
-			if(isset($this->queryHandler) and ($this->tickCounter & 0b111111111) === 0){
+			if($this->queryHandler !== null and ($this->tickCounter & 0b111111111) === 0){
 				try{
 					$this->queryHandler->regenerateInfo();
 				}catch(\Exception $e){
@@ -2415,6 +2381,7 @@ class Server{
 			}
 		}
 
+		$this->getMemoryManager()->check();
 
 		Timings::$serverTickTimer->stopTiming();
 

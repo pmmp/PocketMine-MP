@@ -28,7 +28,6 @@ use pocketmine\network\protocol\UnknownPacket;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\MainLogger;
-use pocketmine\utils\TextFormat;
 use raklib\protocol\EncapsulatedPacket;
 use raklib\RakLib;
 use raklib\server\RakLibServer;
@@ -36,9 +35,6 @@ use raklib\server\ServerHandler;
 use raklib\server\ServerInstance;
 
 class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
-
-	/** @var \SplFixedArray */
-	private $packetPool;
 
 	/** @var Server */
 	private $server;
@@ -145,7 +141,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	public function handleEncapsulated($identifier, EncapsulatedPacket $packet, $flags){
 		if(isset($this->players[$identifier])){
 			try{
-				$pk = $this->getPacket($packet->buffer);
+				$pk = &$this->getPacket($packet->buffer);
 				$pk->decode();
 				$this->players[$identifier]->handleDataPacket($pk);
 			}catch(\Exception $e){
@@ -250,7 +246,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		return null;
 	}
 
-	private function getPacket($buffer){
+	private function &getPacket(&$buffer){
 		$pid = ord($buffer{0});
 
 		if(($data = $this->network->getPacket($pid)) === null){

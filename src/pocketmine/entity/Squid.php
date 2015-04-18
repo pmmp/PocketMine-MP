@@ -43,6 +43,8 @@ class Squid extends WaterAnimal implements Ageable{
 	public $swimDirection = null;
 	public $swimSpeed = 0.1;
 
+	private $switchDirectionTicker = 0;
+
 	public function initEntity(){
 		$this->setMaxHealth(5);
 		parent::initEntity();
@@ -80,8 +82,11 @@ class Squid extends WaterAnimal implements Ageable{
 			return false;
 		}
 
-		if($currentTick % 20 === 0 and mt_rand(0, 100) < 5){
-			$this->swimDirection = null;
+		if(++$this->switchDirectionTicker === 100){
+			$this->switchDirectionTicker = 0;
+			if(mt_rand(0, 100) < 50){
+				$this->swimDirection = null;
+			}
 		}
 
 		$this->lastUpdate = $currentTick;
