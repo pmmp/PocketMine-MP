@@ -185,7 +185,7 @@ class RegionLoader{
 		}
 	}
 
-	protected function saveChunk($x, $z, &$chunkData){
+	protected function saveChunk($x, $z, $chunkData){
 		$length = strlen($chunkData) + 1;
 		if($length + 4 > self::MAX_SECTOR_LENGTH){
 			throw new ChunkException("Chunk is too big! ".($length + 4)." > ".self::MAX_SECTOR_LENGTH);
@@ -212,7 +212,7 @@ class RegionLoader{
 
 	public function writeChunk(FullChunk $chunk){
 		$this->lastUsed = time();
-		$chunkData = &$chunk->toBinary();
+		$chunkData = $chunk->toBinary();
 		if($chunkData !== false){
 			$this->saveChunk($chunk->getX() - ($this->getX() * 32), $chunk->getZ() - ($this->getZ() * 32), $chunkData);
 		}

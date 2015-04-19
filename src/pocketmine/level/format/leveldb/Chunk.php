@@ -32,7 +32,7 @@ class Chunk extends BaseFullChunk{
 	protected $isPopulated = false;
 	protected $isGenerated = false;
 
-	public function __construct($level, $chunkX, $chunkZ, &$terrain, array $entityData = null, array $tileData = null){
+	public function __construct($level, $chunkX, $chunkZ, $terrain, array $entityData = null, array $tileData = null){
 		$heightMap = array_fill(0, 256, 127);
 
 		$offset = 0;
@@ -221,7 +221,7 @@ class Chunk extends BaseFullChunk{
 		$this->isGenerated = (bool) $value;
 	}
 
-	public static function fromFastBinary(&$data, LevelProvider $provider = null){
+	public static function fromFastBinary($data, LevelProvider $provider = null){
 		return self::fromBinary($data, $provider);
 	}
 
@@ -231,7 +231,7 @@ class Chunk extends BaseFullChunk{
 	 *
 	 * @return Chunk
 	 */
-	public static function fromBinary(&$data, LevelProvider $provider = null){
+	public static function fromBinary($data, LevelProvider $provider = null){
 		try{
 			$chunkX = Binary::readLInt(substr($data, 0, 4));
 			$chunkZ = Binary::readLInt(substr($data, 4, 4));

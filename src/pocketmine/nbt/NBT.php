@@ -84,7 +84,7 @@ class NBT{
 		return $len === 1 ? $this->buffer{$this->offset++} : substr($this->buffer, ($this->offset += $len) - $len, $len);
 	}
 
-	public function put(&$v){
+	public function put($v){
 		$this->buffer .= $v;
 	}
 
@@ -99,7 +99,7 @@ class NBT{
 
 	public function read($buffer, $doMultiple = false){
 		$this->offset = 0;
-		$this->buffer =& $buffer;
+		$this->buffer = $buffer;
 		$this->data = $this->readTag();
 		if($doMultiple and $this->offset < strlen($this->buffer)){
 			$this->data = [$this->data];
@@ -117,24 +117,24 @@ class NBT{
 	/**
 	 * @return string|bool
 	 */
-	public function &write(){
+	public function write(){
 		$this->offset = 0;
 		$data = false;
 		if($this->data instanceof Compound){
 			$this->writeTag($this->data);
 
-			$data =& $this->buffer;
+			$data = $this->buffer;
 		}elseif(is_array($this->data)){
 			foreach($this->data as $tag){
 				$this->writeTag($tag);
 			}
-			$data =& $this->buffer;
+			$data = $this->buffer;
 		}
 
 		return $data;
 	}
 
-	public function &writeCompressed($compression = ZLIB_ENCODING_GZIP, $level = 7){
+	public function writeCompressed($compression = ZLIB_ENCODING_GZIP, $level = 7){
 		$data = false;
 		if(($write = $this->write()) !== false){
 			$data = zlib_encode($write, $compression, $level);
@@ -258,7 +258,7 @@ class NBT{
 		return $this->get($this->getShort());
 	}
 
-	public function putString(&$v){
+	public function putString($v){
 		$this->putShort(strlen($v));
 		$this->buffer .= $v;
 	}

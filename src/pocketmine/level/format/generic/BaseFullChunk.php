@@ -82,18 +82,18 @@ abstract class BaseFullChunk implements FullChunk{
 	 * @param Compound[]    $entities
 	 * @param Compound[]    $tiles
 	 */
-	protected function __construct($provider, $x, $z, &$blocks, &$data, &$skyLight, &$blockLight, &$biomeIds = null, array $biomeColors = [], array $heightMap = [], array $entities = [], array $tiles = []){
+	protected function __construct($provider, $x, $z, $blocks, $data, $skyLight, $blockLight, $biomeIds = null, array $biomeColors = [], array $heightMap = [], array $entities = [], array $tiles = []){
 		$this->provider = $provider;
 		$this->x = (int) $x;
 		$this->z = (int) $z;
 
-		$this->blocks =& $blocks;
-		$this->data =& $data;
-		$this->skyLight =& $skyLight;
-		$this->blockLight =& $blockLight;
+		$this->blocks = $blocks;
+		$this->data = $data;
+		$this->skyLight = $skyLight;
+		$this->blockLight = $blockLight;
 
 		if(strlen($biomeIds) === 256){
-			$this->biomeIds =& $biomeIds;
+			$this->biomeIds = $biomeIds;
 		}else{
 			$this->biomeIds = str_repeat("\x01", 256);
 		}
@@ -321,31 +321,31 @@ abstract class BaseFullChunk implements FullChunk{
 		return true;
 	}
 
-	public function &getBlockIdArray(){
+	public function getBlockIdArray(){
 		return $this->blocks;
 	}
 
-	public function &getBlockDataArray(){
+	public function getBlockDataArray(){
 		return $this->data;
 	}
 
-	public function &getBlockSkyLightArray(){
+	public function getBlockSkyLightArray(){
 		return $this->skyLight;
 	}
 
-	public function &getBlockLightArray(){
+	public function getBlockLightArray(){
 		return $this->blockLight;
 	}
 
-	public function &getBiomeIdArray(){
+	public function getBiomeIdArray(){
 		return $this->biomeIds;
 	}
 
-	public function &getBiomeColorArray(){
+	public function getBiomeColorArray(){
 		return $this->biomeColors;
 	}
 
-	public function &getHeightMapArray(){
+	public function getHeightMapArray(){
 		return $this->heightMap;
 	}
 
@@ -357,11 +357,11 @@ abstract class BaseFullChunk implements FullChunk{
 		$this->hasChanged = (bool) $changed;
 	}
 
-	public static function fromFastBinary(&$data, LevelProvider $provider = null){
+	public static function fromFastBinary($data, LevelProvider $provider = null){
 		return static::fromBinary($data, $provider);
 	}
 
-	public function &toFastBinary(){
+	public function toFastBinary(){
 		return $this->toBinary();
 	}
 

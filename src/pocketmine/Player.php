@@ -592,7 +592,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$pk = new FullChunkDataPacket();
 		$pk->chunkX = $x;
 		$pk->chunkZ = $z;
-		$pk->data =& $payload;
+		$pk->data = $payload;
 		$this->batchDataPacket($pk->setChannel(Network::CHANNEL_WORLD_CHUNKS));
 
 		if($this->spawned){

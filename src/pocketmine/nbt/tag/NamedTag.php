@@ -37,7 +37,7 @@ abstract class NamedTag extends Tag{
 		}
 	}
 
-	public function &getName(){
+	public function getName(){
 		return $this->name;
 	}
 

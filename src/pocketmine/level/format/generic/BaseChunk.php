@@ -165,7 +165,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		}
 	}
 
-	public function &getBlockIdColumn($x, $z){
+	public function getBlockIdColumn($x, $z){
 		$column = "";
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
 			$column .= $this->sections[$y]->getBlockIdColumn($x, $z);
@@ -174,7 +174,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		return $column;
 	}
 
-	public function &getBlockDataColumn($x, $z){
+	public function getBlockDataColumn($x, $z){
 		$column = "";
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
 			$column .= $this->sections[$y]->getBlockDataColumn($x, $z);
@@ -183,7 +183,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		return $column;
 	}
 
-	public function &getBlockSkyLightColumn($x, $z){
+	public function getBlockSkyLightColumn($x, $z){
 		$column = "";
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
 			$column .= $this->sections[$y]->getBlockSkyLightColumn($x, $z);
@@ -192,7 +192,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		return $column;
 	}
 
-	public function &getBlockLightColumn($x, $z){
+	public function getBlockLightColumn($x, $z){
 		$column = "";
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
 			$column .= $this->sections[$y]->getBlockLightColumn($x, $z);
@@ -227,7 +227,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		return $this->getProvider() === null ? false : $this->getProvider()->getChunk($this->getX(), $this->getZ(), true) instanceof Chunk;
 	}
 
-	public function &getBlockIdArray(){
+	public function getBlockIdArray(){
 		$blocks = "";
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
 			$blocks .= $this->sections[$y]->getIdArray();
@@ -236,7 +236,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		return $blocks;
 	}
 
-	public function &getBlockDataArray(){
+	public function getBlockDataArray(){
 		$data = "";
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
 			$data .= $this->sections[$y]->getDataArray();
@@ -245,7 +245,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		return $data;
 	}
 
-	public function &getBlockSkyLightArray(){
+	public function getBlockSkyLightArray(){
 		$skyLight = "";
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
 			$skyLight .= $this->sections[$y]->getSkyLightArray();
@@ -254,7 +254,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		return $skyLight;
 	}
 
-	public function &getBlockLightArray(){
+	public function getBlockLightArray(){
 		$blockLight = "";
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
 			$blockLight .= $this->sections[$y]->getLightArray();

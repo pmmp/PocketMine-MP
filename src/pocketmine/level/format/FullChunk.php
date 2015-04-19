@@ -288,29 +288,29 @@ interface FullChunk{
 	/**
 	 * @return string[]
 	 */
-	public function &getBiomeIdArray();
+	public function getBiomeIdArray();
 
 	/**
 	 * @return int[]
 	 */
-	public function &getBiomeColorArray();
+	public function getBiomeColorArray();
 
 	/**
 	 * @return int[]
 	 */
-	public function &getHeightMapArray();
+	public function getHeightMapArray();
 
-	public function &getBlockIdArray();
+	public function getBlockIdArray();
 
-	public function &getBlockDataArray();
+	public function getBlockDataArray();
 
-	public function &getBlockSkyLightArray();
+	public function getBlockSkyLightArray();
 
-	public function &getBlockLightArray();
+	public function getBlockLightArray();
 
-	public function &toBinary();
+	public function toBinary();
 
-	public function &toFastBinary();
+	public function toFastBinary();
 
 	/**
 	 * @return boolean
@@ -328,7 +328,7 @@ interface FullChunk{
 	 *
 	 * @return FullChunk
 	 */
-	public static function fromBinary(&$data, LevelProvider $provider = null);
+	public static function fromBinary($data, LevelProvider $provider = null);
 
 	/**
 	 * @param string        $data
@@ -336,6 +336,6 @@ interface FullChunk{
 	 *
 	 * @return FullChunk
 	 */
-	public static function fromFastBinary(&$data, LevelProvider $provider = null);
+	public static function fromFastBinary($data, LevelProvider $provider = null);
 
 }

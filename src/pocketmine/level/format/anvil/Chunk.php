@@ -135,7 +135,7 @@ class Chunk extends BaseChunk{
 	 *
 	 * @return Chunk
 	 */
-	public static function fromBinary(&$data, LevelProvider $provider = null){
+	public static function fromBinary($data, LevelProvider $provider = null){
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 
 		try{
@@ -152,7 +152,7 @@ class Chunk extends BaseChunk{
 		}
 	}
 
-	public function &toBinary(){
+	public function toBinary(){
 		$nbt = clone $this->getNBT();
 
 		$nbt->xPos = new Int("xPos", $this->x);

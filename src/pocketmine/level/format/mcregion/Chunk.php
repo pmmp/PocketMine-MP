@@ -276,7 +276,7 @@ class Chunk extends BaseFullChunk{
 	 *
 	 * @return Chunk
 	 */
-	public static function fromBinary(&$data, LevelProvider $provider = null){
+	public static function fromBinary($data, LevelProvider $provider = null){
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 
 		try{
@@ -293,7 +293,7 @@ class Chunk extends BaseFullChunk{
 		}
 	}
 	
-	public static function fromFastBinary(&$data, LevelProvider $provider = null){
+	public static function fromFastBinary($data, LevelProvider $provider = null){
 
 		try{
 			$offset = 0;
@@ -340,7 +340,7 @@ class Chunk extends BaseFullChunk{
 		}
 	}
 	
-	public function &toFastBinary(){
+	public function toFastBinary(){
 		$biomeColors = pack("N*", ...$this->getBiomeColorArray());
 		$heightMap = pack("N*", ...$this->getHeightMapArray());
 
@@ -358,7 +358,7 @@ class Chunk extends BaseFullChunk{
 		return $data;
 	}
 
-	public function &toBinary(){
+	public function toBinary(){
 		$nbt = clone $this->getNBT();
 
 		$nbt->xPos = new Int("xPos", $this->x);
@@ -401,8 +401,7 @@ class Chunk extends BaseFullChunk{
 		$nbt->setName("Level");
 		$writer->setData(new Compound("", ["Level" => $nbt]));
 
-		$data =& $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
-		return $data;
+		return $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
 	}
 
 	/**
