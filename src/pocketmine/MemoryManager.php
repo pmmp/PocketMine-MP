@@ -112,6 +112,8 @@ class MemoryManager{
 	}
 
 	public function check(){
+		Timings::$memoryManagerTimer->startTiming();
+
 		if(($this->memoryLimit > 0 or $this->globalMemoryLimit > 0) and ++$this->checkTicker >= $this->checkRate){
 			$this->checkTicker = 0;
 			$memory = Utils::getMemoryUsage(true);
@@ -142,6 +144,8 @@ class MemoryManager{
 			$this->garbageCollectionTicker = 0;
 			$this->triggerGarbageCollector();
 		}
+
+		Timings::$memoryManagerTimer->stopTiming();
 	}
 
 	public function triggerGarbageCollector(){
