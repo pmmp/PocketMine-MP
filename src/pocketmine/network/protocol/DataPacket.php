@@ -57,9 +57,9 @@ abstract class DataPacket extends \stdClass{
 		return $this->channel;
 	}
 
-	public function setBuffer($buffer = ""){
+	public function setBuffer(&$buffer = null, $offset = 0){
 		$this->buffer =& $buffer;
-		$this->offset = 0;
+		$this->offset = (int) $offset;
 	}
 
 	public function getOffset(){
@@ -81,7 +81,7 @@ abstract class DataPacket extends \stdClass{
 		return $len === 1 ? $this->buffer{$this->offset++} : substr($this->buffer, ($this->offset += $len) - $len, $len);
 	}
 
-	protected function put($str){
+	protected function put(&$str){
 		$this->buffer .= $str;
 	}
 
@@ -179,7 +179,7 @@ abstract class DataPacket extends \stdClass{
 		return $this->get($this->getShort());
 	}
 
-	protected function putString($v){
+	protected function putString(&$v){
 		$this->putShort(strlen($v));
 		$this->put($v);
 	}

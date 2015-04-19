@@ -155,7 +155,7 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 		}
 	}
 
-	public function getBlockIdColumn($x, $z){
+	public function &getBlockIdColumn($x, $z){
 		$i = ($z << 4) + $x;
 		$column = "";
 		for($y = 0; $y < 16; ++$y){
@@ -165,7 +165,7 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 		return $column;
 	}
 
-	public function getBlockDataColumn($x, $z){
+	public function &getBlockDataColumn($x, $z){
 		$i = ($z << 3) + ($x >> 1);
 		$column = "";
 		if(($x & 1) === 0){
@@ -181,7 +181,7 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 		return $column;
 	}
 
-	public function getBlockSkyLightColumn($x, $z){
+	public function &getBlockSkyLightColumn($x, $z){
 		$i = ($z << 3) + ($x >> 1);
 		$column = "";
 		if(($x & 1) === 0){
@@ -197,7 +197,7 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 		return $column;
 	}
 
-	public function getBlockLightColumn($x, $z){
+	public function &getBlockLightColumn($x, $z){
 		$i = ($z << 3) + ($x >> 1);
 		$column = "";
 		if(($x & 1) === 0){
@@ -213,19 +213,19 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 		return $column;
 	}
 
-	public function getIdArray(){
+	public function &getIdArray(){
 		return $this->blocks;
 	}
 
-	public function getDataArray(){
+	public function &getDataArray(){
 		return $this->data;
 	}
 
-	public function getSkyLightArray(){
+	public function &getSkyLightArray(){
 		return $this->skyLight;
 	}
 
-	public function getLightArray(){
+	public function &getLightArray(){
 		return $this->blockLight;
 	}
 

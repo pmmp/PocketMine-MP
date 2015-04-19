@@ -147,10 +147,10 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 					$this->players[$identifier]->handleDataPacket($pk);
 				}
 			}catch(\Exception $e){
-				if(\pocketmine\DEBUG > 1){
+				if(\pocketmine\DEBUG > 1 and isset($pk)){
 					$logger = $this->server->getLogger();
 					if($logger instanceof MainLogger){
-						//$logger->debug("Packet " . get_class($pk) . " 0x" . bin2hex($packet->buffer));
+						$logger->debug("Packet " . get_class($pk) . " 0x" . bin2hex($packet->buffer));
 						$logger->logException($e);
 					}
 				}
@@ -255,7 +255,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			$data = new UnknownPacket();
 			$data->packetID = $pid;
 		}
-		$data->setBuffer(substr($buffer, 1));
+		$data->setBuffer($buffer, 1);
 
 		return $data;
 	}

@@ -62,9 +62,9 @@ class MemoryManager{
 	private function init(){
 		$this->memoryLimit = ((int) $this->server->getProperty("memory.main-limit", 320)) * 1024 * 1024;
 		$this->globalMemoryLimit = ((int) $this->server->getProperty("memory.global-limit", 512)) * 1024 * 1024;
-		$this->checkRate = ((int) $this->server->getProperty("memory.check-rate", 20));
+		$this->checkRate = (int) $this->server->getProperty("memory.check-rate", 20);
 		$this->continuousTrigger = (bool) $this->server->getProperty("memory.continuous-trigger", true);
-		$this->continuousTriggerRate = (int) $this->server->getProperty("memory.continuous-trigger-rate", 600);
+		$this->continuousTriggerRate = (int) $this->server->getProperty("memory.continuous-trigger-rate", 30);
 
 		$this->garbageCollectionPeriod = (int) $this->server->getProperty("memory.garbage-collection.period", 12000);
 		$this->garbageCollectionTrigger = (bool) $this->server->getProperty("memory.garbage-collection.low-memory-trigger", true);
@@ -100,14 +100,15 @@ class MemoryManager{
 			}
 		}
 
-		$ev = new LowMemoryEvent($memory, $limit, $triggerCount);
+		$ev = new LowMemoryEvent($memory, $limit, $global, $triggerCount);
 		$this->server->getPluginManager()->callEvent($ev);
 
+		$cycles = 0;
 		if($this->garbageCollectionTrigger){
-			$this->triggerGarbageCollector();
+			$cycles = $this->triggerGarbageCollector();
 		}
 
-		$this->server->getLogger()->debug("[Memory Manager] Freed " . round(($ev->getMemoryFreed() / 1024) / 1024, 2)."MB");
+		$this->server->getLogger()->debug("[Memory Manager] Freed " . round(($ev->getMemoryFreed() / 1024) / 1024, 2)."MB, $cycles cycles");
 	}
 
 	public function check(){
@@ -145,7 +146,6 @@ class MemoryManager{
 
 	public function triggerGarbageCollector(){
 		Timings::$garbageCollectorTimer->startTiming();
-		gc_collect_cycles();
 
 		if($this->garbageCollectionAsync){
 			$size = $this->server->getScheduler()->getAsyncTaskPoolSize();
@@ -154,6 +154,10 @@ class MemoryManager{
 			}
 		}
 
+		$cycles = gc_collect_cycles();
+
 		Timings::$garbageCollectorTimer->stopTiming();
+
+		return $cycles;
 	}
 }

@@ -65,7 +65,8 @@ class AddEntityPacket extends DataPacket{
 		$this->putFloat($this->speedZ);
 		$this->putFloat($this->yaw);
 		$this->putFloat($this->pitch);
-		$this->put(Binary::writeMetadata($this->metadata));
+		$meta = Binary::writeMetadata($this->metadata);
+		$this->put($meta);
 		$this->putShort(count($this->links));
 		foreach($this->links as $link){
 			$this->putLong($link[0]);

@@ -78,7 +78,8 @@ class AddPlayerPacket extends DataPacket{
 		$this->putShort($this->meta);
 		$this->putByte($this->slim ? 1 : 0);
 		$this->putString($this->skin);
-		$this->put(Binary::writeMetadata($this->metadata));
+		$meta = Binary::writeMetadata($this->metadata);
+		$this->put($meta);
 	}
 
 }

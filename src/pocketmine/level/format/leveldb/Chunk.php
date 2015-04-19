@@ -32,7 +32,7 @@ class Chunk extends BaseFullChunk{
 	protected $isPopulated = false;
 	protected $isGenerated = false;
 
-	public function __construct($level, $chunkX, $chunkZ, $terrain, array $entityData = null, array $tileData = null){
+	public function __construct($level, $chunkX, $chunkZ, &$terrain, array $entityData = null, array $tileData = null){
 		$heightMap = array_fill(0, 256, 127);
 
 		$offset = 0;

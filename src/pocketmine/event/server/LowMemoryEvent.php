@@ -33,10 +33,12 @@ class LowMemoryEvent extends ServerEvent{
 	private $memory;
 	private $memoryLimit;
 	private $triggerCount;
+	private $global;
 
-	public function __construct($memory, $memoryLimit, $triggerCount = 0){
+	public function __construct($memory, $memoryLimit, $isGlobal = false, $triggerCount = 0){
 		$this->memory = $memory;
 		$this->memoryLimit = $memoryLimit;
+		$this->global = (bool) $isGlobal;
 		$this->triggerCount = (int) $triggerCount;
 	}
 
@@ -68,12 +70,19 @@ class LowMemoryEvent extends ServerEvent{
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function isGlobal(){
+		return $this->global;
+	}
+
+	/**
 	 * Amount of memory already freed
 	 *
 	 * @return int
 	 */
 	public function getMemoryFreed(){
-		return $this->getMemory() - Utils::getMemoryUsage();
+		return $this->getMemory() - ($this->isGlobal() ? Utils::getMemoryUsage(true)[1] : Utils::getMemoryUsage(true)[0]);
 	}
 
 }

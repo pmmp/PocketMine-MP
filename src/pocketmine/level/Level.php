@@ -2200,10 +2200,6 @@ class Level implements ChunkManager, Metadatable{
 		unset($this->chunkTickList[$index]);
 		unset($this->chunkCache[$index]);
 
-		$refs = \pocketmine\getReferenceCount($chunk);
-
-		//$this->server->getLogger()->debug("Unloaded $x $z (".count($this->getChunks()).") [refs $refs]");
-
 		$this->timings->doChunkUnload->stopTiming();
 
 		return true;

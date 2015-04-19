@@ -217,7 +217,7 @@ class Network{
 					if($pk->pid() === Info::BATCH_PACKET){
 						throw new \InvalidStateException("Invalid BatchPacket inside BatchPacket");
 					}
-					$pk->setBuffer(substr($str, $offset));
+					$pk->setBuffer($str, $offset);
 					$pk->decode();
 					$p->handleDataPacket($pk);
 					$offset += $pk->getOffset();
