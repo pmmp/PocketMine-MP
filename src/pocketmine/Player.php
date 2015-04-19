@@ -581,7 +581,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 	}
 
-	public function sendChunk($x, $z, &$payload){
+	public function sendChunk($x, $z, $payload){
 		if($this->connected === false){
 			return;
 		}

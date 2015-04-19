@@ -344,7 +344,7 @@ class Chunk extends BaseFullChunk{
 		$biomeColors = pack("N*", ...$this->getBiomeColorArray());
 		$heightMap = pack("N*", ...$this->getHeightMapArray());
 
-		$data =
+		return
 			Binary::writeInt($this->x) .
 			Binary::writeInt($this->z) .
 			$this->getBlockIdArray() .
@@ -355,7 +355,6 @@ class Chunk extends BaseFullChunk{
 			$biomeColors .
 			$heightMap .
 			chr(($this->isPopulated() ? 1 << 1 : 0) + ($this->isGenerated() ? 1 : 0));
-		return $data;
 	}
 
 	public function toBinary(){

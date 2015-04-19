@@ -130,8 +130,7 @@ class RegionLoader{
 			return null;
 		}
 
-		$data = fread($this->filePointer, $length - 1);
-		$chunk = Chunk::fromBinary($data, $this->levelProvider);
+		$chunk = $this->unserializeChunk(fread($this->filePointer, $length - 1));
 		if($chunk instanceof Chunk){
 			return $chunk;
 		}elseif($forward === false){
@@ -142,6 +141,10 @@ class RegionLoader{
 		}else{
 			return null;
 		}
+	}
+
+	protected function unserializeChunk($data){
+		return Chunk::fromBinary($data, $this->levelProvider);
 	}
 
 	public function chunkExists($x, $z){

@@ -1993,11 +1993,11 @@ class Level implements ChunkManager, Metadatable{
 		}
 	}
 
-	public function chunkRequestCallback($x, $z, &$payload){
+	public function chunkRequestCallback($x, $z, $payload){
 		$index = Level::chunkHash($x, $z);
 
 		if(!isset($this->chunkCache[$index]) and $this->cacheChunks and $this->server->getMemoryManager()->canUseChunkCache()){
-			$this->chunkCache[$index] =& $payload;
+			$this->chunkCache[$index] = $payload;
 		}
 
 		if(isset($this->chunkSendTasks[$index])){

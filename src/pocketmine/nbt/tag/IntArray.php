@@ -42,7 +42,6 @@ class IntArray extends NamedTag{
 
 	public function write(NBT $nbt){
 		$nbt->putInt(count($this->value));
-		$data = pack($nbt->endianness === NBT::LITTLE_ENDIAN ? "V*" : "N*", ...$this->value);
-		$nbt->put($data);
+		$nbt->put(pack($nbt->endianness === NBT::LITTLE_ENDIAN ? "V*" : "N*", ...$this->value));
 	}
 }
