@@ -1707,10 +1707,6 @@ class Server{
 			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask([$this, "doAutoSave"]), $this->getProperty("ticks-per.autosave", 6000), $this->getProperty("ticks-per.autosave", 6000));
 		}
 
-		if($this->getProperty("chunk-gc.period-in-ticks", 600) > 0){
-			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask([$this, "doLevelGC"]), $this->getProperty("chunk-gc.period-in-ticks", 600), $this->getProperty("chunk-gc.period-in-ticks", 600));
-		}
-
 		$this->enablePlugins(PluginLoadOrder::POSTWORLD);
 
 		$this->start();
@@ -2220,12 +2216,6 @@ class Server{
 				$level->save(false);
 			}
 			Timings::$worldSaveTimer->stopTiming();
-		}
-	}
-
-	public function doLevelGC(){
-		foreach($this->getLevels() as $level){
-			$level->doChunkGarbageCollection();
 		}
 	}
 

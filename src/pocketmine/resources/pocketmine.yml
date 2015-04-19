@@ -56,6 +56,10 @@ memory:
  max-chunks:
   #Limit of chunks to load per player, overrides chunk-sending.max-chunks
   trigger-limit: 96
+
+  #Do chunk garbage collection on trigger
+  trigger-chunk-collect: true
+
   #Trigger on low memory
   low-memory-trigger: true
 
@@ -116,9 +120,6 @@ chunk-generation:
  queue-size: 8
  #Max. amount of chunks in the waiting queue to be populated
  population-queue-size: 2
-
-chunk-gc:
- period-in-ticks: 600
 
 ticks-per:
  animal-spawns: 400

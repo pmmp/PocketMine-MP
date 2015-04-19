@@ -48,6 +48,7 @@ class MemoryManager{
 	private $garbageCollectionAsync;
 
 	private $chunkLimit;
+	private $chunkCollect;
 	private $chunkTrigger;
 
 	private $chunkCache;
@@ -71,6 +72,7 @@ class MemoryManager{
 		$this->garbageCollectionAsync = (bool) $this->server->getProperty("memory.garbage-collection.collect-async-worker", true);
 
 		$this->chunkLimit = (int) $this->server->getProperty("memory.max-chunks.trigger-limit", 12000);
+		$this->chunkCollect = (bool) $this->server->getProperty("memory.max-chunks.trigger-chunk-collect", true);
 		$this->chunkTrigger = (bool) $this->server->getProperty("memory.max-chunks.low-memory-trigger", true);
 
 		$this->chunkCache = (bool) $this->server->getProperty("memory.world-caches.disable-chunk-cache", true);
@@ -98,6 +100,12 @@ class MemoryManager{
 			foreach($this->server->getLevels() as $level){
 				$level->clearCache(true);
 			}
+		}
+
+		if($this->chunkTrigger and $this->chunkCollect){
+			foreach($this->server->getLevels() as $level){
+				$level->doChunkGarbageCollection();
+			}	
 		}
 
 		$ev = new LowMemoryEvent($memory, $limit, $global, $triggerCount);
