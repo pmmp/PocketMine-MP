@@ -43,9 +43,9 @@ memory:
  continuous-trigger-rate: 30
 
  garbage-collection:
-  #Period in ticks to fire the garbage collector manually (default 10 minutes), set to 0 to disable
+  #Period in ticks to fire the garbage collector manually (default 30 minutes), set to 0 to disable
   #This only affect the main thread. Other threads should fire their own collections
-  period: 12000
+  period: 36000
 
   #Fire asynchronous tasks to collect garbage from workers
   collect-async-worker: true

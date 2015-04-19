@@ -105,7 +105,7 @@ class MemoryManager{
 		if($this->chunkTrigger and $this->chunkCollect){
 			foreach($this->server->getLevels() as $level){
 				$level->doChunkGarbageCollection();
-			}	
+			}
 		}
 
 		$ev = new LowMemoryEvent($memory, $limit, $global, $triggerCount);
