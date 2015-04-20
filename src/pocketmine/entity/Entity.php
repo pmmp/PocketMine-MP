@@ -1313,6 +1313,10 @@ abstract class Entity extends Location implements Metadatable{
 				}
 			}
 
+			if($this->chunk === null){
+				return true;
+			}
+
 			$this->chunk->addEntity($this);
 		}
 
