@@ -64,12 +64,12 @@ abstract class Terminal{
 
 	protected static function getFallbackEscapeCodes(){
 		self::$FORMAT_BOLD = "\x1b[1m";
-		self::$FORMAT_OBFUSCATED = "\x1b(0";
+		self::$FORMAT_OBFUSCATED = "";
 		self::$FORMAT_ITALIC = "\x1b[3m";
 		self::$FORMAT_UNDERLINE = "\x1b[4m";
 		self::$FORMAT_STRIKETHROUGH = "\x1b[9m";
 
-		self::$FORMAT_RESET = "\x1b(B\x1b[m";
+		self::$FORMAT_RESET = "\x1b[m";
 
 		self::$COLOR_BLACK = "\x1b[38;5;16m";
 		self::$COLOR_DARK_BLUE = "\x1b[38;5;19m";
@@ -136,7 +136,7 @@ abstract class Terminal{
 				self::getEscapeCodes();
 				return;
 
-			case "windows":
+			case "win":
 			case "android":
 				if(self::hasFormattingCodes()){
 					self::getFallbackEscapeCodes();
