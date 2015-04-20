@@ -90,7 +90,7 @@ class Cake extends Transparent{
 	}
 
 	public function onActivate(Item $item, Player $player = null){
-		if($player instanceof Player and $player->getHealth() < 20){
+		if($player instanceof Player and $player->getHealth() < $player->getMaxHealth()){
 			++$this->meta;
 
 			$ev = new EntityRegainHealthEvent($player, 3, EntityRegainHealthEvent::CAUSE_EATING);

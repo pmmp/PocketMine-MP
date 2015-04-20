@@ -224,8 +224,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public function despawnFrom(Player $player){
 		if(isset($this->hasSpawned[$player->getId()])){
 			$pk = new RemovePlayerPacket();
-			$pk->eid = $this->id;
-			$pk->clientID = $this->id;
+			$pk->eid = $this->getId();
+			$pk->clientID = $this->getId();
 			$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
 			unset($this->hasSpawned[$player->getId()]);
 		}
