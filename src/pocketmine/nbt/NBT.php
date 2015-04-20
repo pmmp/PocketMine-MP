@@ -119,28 +119,26 @@ class NBT{
 	 */
 	public function write(){
 		$this->offset = 0;
-		$data = false;
 		if($this->data instanceof Compound){
 			$this->writeTag($this->data);
 
-			$data = $this->buffer;
+			return $this->buffer;
 		}elseif(is_array($this->data)){
 			foreach($this->data as $tag){
 				$this->writeTag($tag);
 			}
-			$data = $this->buffer;
+			return $this->buffer;
 		}
 
-		return $data;
+		return false;
 	}
 
 	public function writeCompressed($compression = ZLIB_ENCODING_GZIP, $level = 7){
-		$data = false;
 		if(($write = $this->write()) !== false){
-			$data = zlib_encode($write, $compression, $level);
+			return zlib_encode($write, $compression, $level);
 		}
 
-		return $data;
+		return false;
 	}
 
 	public function readTag(){
@@ -312,7 +310,7 @@ class NBT{
 	}
 
 	public function setArray(array $data){
-		$this->data = new Compound(null, []);
+		$this->data = new Compound("", []);
 		$this->fromArray($this->data, $data);
 	}
 

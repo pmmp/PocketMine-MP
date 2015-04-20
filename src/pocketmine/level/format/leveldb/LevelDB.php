@@ -96,7 +96,7 @@ class LevelDB extends BaseLevelProvider{
 			mkdir($path . "/db", 0777, true);
 		}
 		//TODO, add extra details
-		$levelData = new Compound(null, [
+		$levelData = new Compound("", [
 			"hardcore" => new Byte("hardcore", 0),
 			"initialized" => new Byte("initialized", 1),
 			"GameType" => new Int("GameType", 0),

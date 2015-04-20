@@ -110,57 +110,57 @@ class Enum extends NamedTag implements \ArrayAccess, \Countable{
 		for($i = 0; $i < $size and !$nbt->feof(); ++$i){
 			switch($this->tagType){
 				case NBT::TAG_Byte:
-					$tag = new Byte(false);
+					$tag = new Byte("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_Short:
-					$tag = new Short(false);
+					$tag = new Short("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_Int:
-					$tag = new Int(false);
+					$tag = new Int("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_Long:
-					$tag = new Long(false);
+					$tag = new Long("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_Float:
-					$tag = new Float(false);
+					$tag = new Float("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_Double:
-					$tag = new Double(false);
+					$tag = new Double("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_ByteArray:
-					$tag = new ByteArray(false);
+					$tag = new ByteArray("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_String:
-					$tag = new String(false);
+					$tag = new String("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_Enum:
-					$tag = new TagEnum(false);
+					$tag = new TagEnum("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_Compound:
-					$tag = new Compound(false);
+					$tag = new Compound("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_IntArray:
-					$tag = new IntArray(false);
+					$tag = new IntArray("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;

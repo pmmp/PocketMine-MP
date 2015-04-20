@@ -135,7 +135,7 @@ class Furnace extends Tile implements InventoryHolder, Container{
 	public function setItem($index, Item $item){
 		$i = $this->getSlotIndex($index);
 
-		$d = new Compound(false, [
+		$d = new Compound("", [
 			new Byte("Count", $item->getCount()),
 			new Byte("Slot", $index),
 			new Short("id", $item->getId()),

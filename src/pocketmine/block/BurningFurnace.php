@@ -64,7 +64,7 @@ class BurningFurnace extends Solid{
 		];
 		$this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0];
 		$this->getLevel()->setBlock($block, $this, true, true);
-		$nbt = new Compound(false, [
+		$nbt = new Compound("", [
 			new Enum("Items", []),
 			new String("id", Tile::FURNACE),
 			new Int("x", $this->x),
@@ -90,7 +90,7 @@ class BurningFurnace extends Solid{
 			if($t instanceof Furnace){
 				$furnace = $t;
 			}else{
-				$nbt = new Compound(false, [
+				$nbt = new Compound("", [
 					new Enum("Items", []),
 					new String("id", Tile::FURNACE),
 					new Int("x", $this->x),

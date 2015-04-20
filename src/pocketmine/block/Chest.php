@@ -91,7 +91,7 @@ class Chest extends Transparent{
 		}
 
 		$this->getLevel()->setBlock($block, $this, true, true);
-		$nbt = new Compound(false, [
+		$nbt = new Compound("", [
 			new Enum("Items", []),
 			new String("id", Tile::CHEST),
 			new Int("x", $this->x),
@@ -131,7 +131,7 @@ class Chest extends Transparent{
 			if($t instanceof TileChest){
 				$chest = $t;
 			}else{
-				$nbt = new Compound(false, [
+				$nbt = new Compound("", [
 					new Enum("Items", []),
 					new String("id", Tile::CHEST),
 					new Int("x", $this->x),

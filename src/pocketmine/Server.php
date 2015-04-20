@@ -706,7 +706,7 @@ class Server{
 			$this->logger->notice($this->getLanguage()->translateString("pocketmine.data.playerNotFound", [$name]));
 		}
 		$spawn = $this->getDefaultLevel()->getSafeSpawn();
-		$nbt = new Compound(false, [
+		$nbt = new Compound("", [
 			new Long("firstPlayed", floor(microtime(true) * 1000)),
 			new Long("lastPlayed", floor(microtime(true) * 1000)),
 			new Enum("Pos", [
@@ -758,7 +758,7 @@ class Server{
 			$this->logger->notice($this->getLanguage()->translateString("pocketmine.data.playerOld", [$name]));
 			foreach($data->get("inventory") as $slot => $item){
 				if(count($item) === 3){
-					$nbt->Inventory[$slot + 9] = new Compound(false, [
+					$nbt->Inventory[$slot + 9] = new Compound("", [
 						new Short("id", $item[0]),
 						new Short("Damage", $item[1]),
 						new Byte("Count", $item[2]),
@@ -770,7 +770,7 @@ class Server{
 			foreach($data->get("hotbar") as $slot => $itemSlot){
 				if(isset($nbt->Inventory[$itemSlot + 9])){
 					$item = $nbt->Inventory[$itemSlot + 9];
-					$nbt->Inventory[$slot] = new Compound(false, [
+					$nbt->Inventory[$slot] = new Compound("", [
 						new Short("id", $item["id"]),
 						new Short("Damage", $item["Damage"]),
 						new Byte("Count", $item["Count"]),
@@ -781,7 +781,7 @@ class Server{
 			}
 			foreach($data->get("armor") as $slot => $item){
 				if(count($item) === 2){
-					$nbt->Inventory[$slot + 100] = new Compound(false, [
+					$nbt->Inventory[$slot + 100] = new Compound("", [
 						new Short("id", $item[0]),
 						new Short("Damage", $item[1]),
 						new Byte("Count", 1),

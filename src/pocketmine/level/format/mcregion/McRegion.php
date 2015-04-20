@@ -100,7 +100,7 @@ class McRegion extends BaseLevelProvider{
 			"GameRules" => new Compound("GameRules", [])
 		]);
 		$nbt = new NBT(NBT::BIG_ENDIAN);
-		$nbt->setData(new Compound(null, [
+		$nbt->setData(new Compound("", [
 			"Data" => $levelData
 		]));
 		$buffer = $nbt->writeCompressed();

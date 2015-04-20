@@ -118,7 +118,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 
 	public function saveLevelData(){
 		$nbt = new NBT(NBT::BIG_ENDIAN);
-		$nbt->setData(new Compound(null, [
+		$nbt->setData(new Compound("", [
 			"Data" => $this->levelData
 		]));
 		$buffer = $nbt->writeCompressed();
