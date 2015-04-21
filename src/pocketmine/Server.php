@@ -1602,7 +1602,7 @@ class Server{
 
 		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.networkStart", [$this->getIp() === "" ? "*" : $this->getIp(), $this->getPort()]));
 		define("BOOTUP_RANDOM", @Utils::getRandomBytes(16));
-		$this->serverID = Binary::readLong(substr(Utils::getUniqueID(true, $this->getIp() . $this->getPort()), 0, 8));
+		$this->serverID = Utils::getServerUniqueId($this->getIp() . $this->getPort());
 
 		$this->network = new Network($this);
 		$this->network->setName($this->getMotd());
@@ -2234,7 +2234,7 @@ class Server{
 
 		$version = new VersionString();
 		$this->lastSendUsage = new SendUsageTask("https://stats.pocketmine.net/usage.php", [
-			"serverid" => $this->serverID,
+			"serverid" => Binary::readLong(substr(hex2bin(str_replace("-", "", $this->serverID)), 0, 8)),
 			"port" => $this->getPort(),
 			"os" => Utils::getOS(),
 			"name" => $this->getName(),

@@ -480,8 +480,13 @@ namespace pocketmine {
 				}
 			}
 		}elseif(!$thread->isJoined()){
-			$logger->debug("Joining " . (new \ReflectionClass($thread))->getShortName() . " thread");
-			$thread->join();
+			if(!$thread->isTerminated()){
+				$logger->debug("Joining " . (new \ReflectionClass($thread))->getShortName() . " thread");
+				$thread->join();
+			}else{
+				$logger->debug("Killing " . (new \ReflectionClass($thread))->getShortName() . " thread");
+				$thread->kill();
+			}
 		}
 	}
 

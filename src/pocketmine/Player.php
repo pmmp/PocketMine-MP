@@ -122,6 +122,7 @@ use pocketmine\tile\Sign;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\utils\TextFormat;
+use pocketmine\utils\Utils;
 
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
@@ -175,6 +176,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	public $loginData = [];
 
 	protected $randomClientId;
+	protected $uuid;
 
 	protected $lastMovement = 0;
 	/** @var Vector3 */
@@ -233,6 +235,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	public function getClientId(){
 		return $this->randomClientId;
+	}
+
+	public function getUniqueId(){
+		return $this->uuid;
 	}
 
 	public function isBanned(){
@@ -461,6 +467,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->viewDistance = $this->server->getViewDistance();
 		$this->newPosition = new Vector3(0, 0, 0);
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
+
+		$this->uuid = Utils::dataToUUID($ip, $port, $clientID);
 	}
 
 	/**
@@ -1099,6 +1107,66 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->moveToSend[$entityId] = [$entityId, $x, $y, $z, $yaw, $headYaw === null ? $yaw : $headYaw, $pitch];
 	}
 
+	protected function checkNearEntities($currentTick){
+		foreach($this->level->getNearbyEntities($this->boundingBox->grow(1, 0.5, 1), $this) as $entity){
+			if(($currentTick - $entity->lastUpdate) > 1){
+				$entity->scheduleUpdate();
+			}
+
+			if($entity instanceof Arrow and $entity->hadCollision){
+				if($entity->dead !== true){
+					$item = Item::get(Item::ARROW, 0, 1);
+					if($this->isSurvival() and !$this->inventory->canAddItem($item)){
+						continue;
+					}
+
+					$this->server->getPluginManager()->callEvent($ev = new InventoryPickupArrowEvent($this->inventory, $entity));
+					if($ev->isCancelled()){
+						continue;
+					}
+
+					$pk = new TakeItemEntityPacket();
+					$pk->eid = $this->getId();
+					$pk->target = $entity->getId();
+					Server::broadcastPacket($entity->getViewers(), $pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+					$this->inventory->addItem(clone $item);
+					$entity->kill();
+				}
+			}elseif($entity instanceof DroppedItem){
+				if($entity->dead !== true and $entity->getPickupDelay() <= 0){
+					$item = $entity->getItem();
+
+					if($item instanceof Item){
+						if($this->isSurvival() and !$this->inventory->canAddItem($item)){
+							continue;
+						}
+
+						$this->server->getPluginManager()->callEvent($ev = new InventoryPickupItemEvent($this->inventory, $entity));
+						if($ev->isCancelled()){
+							continue;
+						}
+
+						switch($item->getId()){
+							case Item::WOOD:
+								$this->awardAchievement("mineWood");
+								break;
+							case Item::DIAMOND:
+								$this->awardAchievement("diamond");
+								break;
+						}
+
+						$pk = new TakeItemEntityPacket();
+						$pk->eid = $this->getId();
+						$pk->target = $entity->getId();
+						Server::broadcastPacket($entity->getViewers(), $pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+						$this->inventory->addItem(clone $item);
+						$entity->kill();
+					}
+				}
+			}
+		}
+	}
+
 	protected function processMovement($currentTick){
 		if($this->dead or !$this->spawned or !($this->newPosition instanceof Vector3)){
 			return;
@@ -1192,6 +1260,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 
+			$this->checkNearEntities($currentTick);
+
 			$this->speed = $from->subtract($to);
 		}elseif($distanceSquared == 0){
 			$this->speed = new Vector3(0, 0, 0);
@@ -1268,64 +1338,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 
 				++$this->inAirTicks;
-			}
-
-			foreach($this->level->getNearbyEntities($this->boundingBox->grow(1, 0.5, 1), $this) as $entity){
-				if(($currentTick - $entity->lastUpdate) > 1){
-					$entity->scheduleUpdate();
-				}
-
-				if($entity instanceof Arrow and $entity->hadCollision){
-					if($entity->dead !== true){
-						$item = Item::get(Item::ARROW, 0, 1);
-						if($this->isSurvival() and !$this->inventory->canAddItem($item)){
-							continue;
-						}
-
-						$this->server->getPluginManager()->callEvent($ev = new InventoryPickupArrowEvent($this->inventory, $entity));
-						if($ev->isCancelled()){
-							continue;
-						}
-
-						$pk = new TakeItemEntityPacket();
-						$pk->eid = $this->getId();
-						$pk->target = $entity->getId();
-						Server::broadcastPacket($entity->getViewers(), $pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
-						$this->inventory->addItem(clone $item);
-						$entity->kill();
-					}
-				}elseif($entity instanceof DroppedItem){
-					if($entity->dead !== true and $entity->getPickupDelay() <= 0){
-						$item = $entity->getItem();
-
-						if($item instanceof Item){
-							if($this->isSurvival() and !$this->inventory->canAddItem($item)){
-								continue;
-							}
-
-							$this->server->getPluginManager()->callEvent($ev = new InventoryPickupItemEvent($this->inventory, $entity));
-							if($ev->isCancelled()){
-								continue;
-							}
-
-							switch($item->getId()){
-								case Item::WOOD:
-									$this->awardAchievement("mineWood");
-									break;
-								case Item::DIAMOND:
-									$this->awardAchievement("diamond");
-									break;
-							}
-
-							$pk = new TakeItemEntityPacket();
-							$pk->eid = $this->getId();
-							$pk->target = $entity->getId();
-							Server::broadcastPacket($entity->getViewers(), $pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
-							$this->inventory->addItem(clone $item);
-							$entity->kill();
-						}
-					}
-				}
 			}
 		}
 
@@ -1440,6 +1452,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 
 				$this->setSkin($packet->skin, $packet->slim);
+
+
+				$this->uuid = Utils::dataToUUID($this->getClientId(), $this->iusername, $this->getAddress());
 
 				$this->server->getPluginManager()->callEvent($ev = new PlayerPreLoginEvent($this, "Plugin reason"));
 				if($ev->isCancelled()){
@@ -2578,8 +2593,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	/**
 	 * @param string $message Message to be broadcasted
 	 * @param string $reason  Reason showed in console
+	 * @param bool $notify
 	 */
-	public function close($message = "", $reason = "generic reason"){
+	public function close($message = "", $reason = "generic reason", $notify = true){
 
 		foreach($this->tasks as $task){
 			$task->cancel();
@@ -2587,7 +2603,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->tasks = [];
 
 		if($this->connected and !$this->closed){
-			if($reason != ""){
+			if($notify and $reason != ""){
 				$pk = new DisconnectPacket;
 				$pk->message = $reason;
 				$this->directDataPacket($pk->setChannel(Network::CHANNEL_PRIORITY));
@@ -2612,7 +2628,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->removeWindow($window);
 			}
 			
-			$this->interface->close($this, $reason);
+			$this->interface->close($this, $notify ? $reason : "");
 
 			$chunkX = $chunkZ = null;
 			foreach($this->usedChunks as $index => $d){

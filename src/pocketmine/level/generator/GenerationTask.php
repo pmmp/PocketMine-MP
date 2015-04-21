@@ -32,17 +32,13 @@ use pocketmine\utils\Random;
 
 class GenerationTask extends AsyncTask{
 
-	public $generator;
-	public $settings;
-	public $seed;
+	public $state;
 	public $levelId;
 	public $chunk;
 	public $chunkClass;
 
-	public function __construct(Level $level, Generator $generator, FullChunk $chunk){
-		$this->generator = get_class($generator);
-		$this->settings = $generator->getSettings();
-		$this->seed = $level->getSeed();
+	public function __construct(Level $level, FullChunk $chunk){
+		$this->state = true;
 		$this->levelId = $level->getId();
 		$this->chunk = $chunk->toFastBinary();
 		$this->chunkClass = get_class($chunk);
@@ -50,19 +46,12 @@ class GenerationTask extends AsyncTask{
 
 	public function onRun(){
 		/** @var SimpleChunkManager $manager */
-		$manager = $this->getFromThreadStore($key = "generation.level{$this->levelId}.manager");
+		$manager = $this->getFromThreadStore("generation.level{$this->levelId}.manager");
 		/** @var Generator $generator */
-		$generator = $this->getFromThreadStore($gKey = "generation.level{$this->levelId}.generator");
+		$generator = $this->getFromThreadStore("generation.level{$this->levelId}.generator");
 		if($manager === null or $generator === null){
-			Block::init();
-			Biome::init();
-			$manager = new SimpleChunkManager($this->seed);
-			$this->saveToThreadStore($key, $manager);
-			/** @var Generator $generator */
-			$generator = $this->generator;
-			$generator = new $generator($this->settings);
-			$generator->init($manager, new Random($manager->getSeed()));
-			$this->saveToThreadStore($gKey, $generator);
+			$this->state = false;
+			return;
 		}
 
 		/** @var FullChunk $chunk */
@@ -87,6 +76,10 @@ class GenerationTask extends AsyncTask{
 	public function onCompletion(Server $server){
 		$level = $server->getLevel($this->levelId);
 		if($level !== null){
+			if($this->state === false){
+				$level->registerGenerator();
+				return;
+			}
 			/** @var FullChunk $chunk */
 			$chunk = $this->chunkClass;
 			$chunk = $chunk::fromFastBinary($this->chunk, $level->getProvider());

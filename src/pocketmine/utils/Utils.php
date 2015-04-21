@@ -48,18 +48,36 @@ class Utils{
 		}
 	}
 
+	public static function randomUUID(){
+		return Utils::toUUID(Binary::writeInt(time()) . Binary::writeShort(getmypid()) . Binary::writeShort(getmyuid()) . Binary::writeInt(mt_rand(-0x7fffffff, 0x7fffffff)) . Binary::writeInt(mt_rand(-0x7fffffff, 0x7fffffff)), 2);
+	}
+
+	public static function dataToUUID(...$params){
+		return Utils::toUUID(hash("md5", implode($params), true), 3);
+	}
+
+	public static function toUUID($data, $version = 2, $fixed = "8"){
+		if(strlen($data) !== 16){
+			throw new \InvalidArgumentException("Data bust be 16 bytes");
+		}
+
+		$hex = bin2hex($data);
+
+		//xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx 8-4-4-12
+		return substr($hex, 0, 8) . "-" . substr($hex, 8, 4) . "-" . hexdec($version) . substr($hex, 13, 3) . "-" . $fixed{0} . substr($hex, 17, 3) . "-" . substr($hex, 20, 12);
+	}
+
 	/**
 	 * Gets this machine / server instance unique ID
 	 * Returns a hash, the first 32 characters (or 16 if raw)
 	 * will be an identifier that won't change frequently.
 	 * The rest of the hash will change depending on other factors.
 	 *
-	 * @param bool   $raw   default false, if true, returns the raw identifier, not hexadecimal
 	 * @param string $extra optional, additional data to identify the machine
 	 *
 	 * @return string
 	 */
-	public static function getUniqueID($raw = false, $extra = ""){
+	public static function getServerUniqueId($extra = ""){
 		$machine = php_uname("a");
 		$machine .= file_exists("/proc/cpuinfo") ? implode(preg_grep("/model name/", file("/proc/cpuinfo"))) : "";
 		$machine .= sys_get_temp_dir();
@@ -96,7 +114,7 @@ class Utils{
 			$data .= $ext . ":" . phpversion($ext);
 		}
 
-		return hash("md5", $machine, $raw) . hash("sha512", $data, $raw);
+		return Utils::dataToUUID($machine, $data);
 	}
 
 	/**

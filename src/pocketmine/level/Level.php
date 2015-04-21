@@ -68,6 +68,8 @@ use pocketmine\level\format\generic\EmptyChunkSection;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\level\generator\GenerationTask;
 use pocketmine\level\generator\Generator;
+use pocketmine\level\generator\GeneratorRegisterTask;
+use pocketmine\level\generator\GeneratorUnregisterTask;
 use pocketmine\level\generator\PopulationTask;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Math;
@@ -341,6 +343,22 @@ class Level implements ChunkManager, Metadatable{
 		$generator = $this->generator;
 		$this->generatorInstance = new $generator($this->provider->getGeneratorOptions());
 		$this->generatorInstance->init($this, new Random($this->getSeed()));
+
+		$this->registerGenerator();
+	}
+
+	public function registerGenerator(){
+		$size = $this->server->getScheduler()->getAsyncTaskPoolSize();
+		for($i = 0; $i < $size; ++$i){
+			$this->server->getScheduler()->scheduleAsyncTaskToWorker(new GeneratorRegisterTask($this,  $this->generatorInstance), $i);
+		}
+	}
+
+	public function unregisterGenerator(){
+		$size = $this->server->getScheduler()->getAsyncTaskPoolSize();
+		for($i = 0; $i < $size; ++$i){
+			$this->server->getScheduler()->scheduleAsyncTaskToWorker(new GeneratorUnregisterTask($this,  $this->generatorInstance), $i);
+		}
 	}
 
 	/**
@@ -382,6 +400,8 @@ class Level implements ChunkManager, Metadatable{
 		foreach($this->chunks as $chunk){
 			$this->unloadChunk($chunk->getX(), $chunk->getZ(), false);
 		}
+
+		$this->unregisterGenerator();
 
 		$this->provider->close();
 		$this->provider = null;
@@ -2378,7 +2398,7 @@ class Level implements ChunkManager, Metadatable{
 							$this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)] = true;
 						}
 					}
-					$task = new PopulationTask($this, $this->generatorInstance, $this->getChunk($x, $z, true));
+					$task = new PopulationTask($this, $this->getChunk($x, $z, true));
 					$this->server->getScheduler()->scheduleAsyncTask($task);
 				}
 				Timings::$generationTimer->stopTiming();
@@ -2400,7 +2420,7 @@ class Level implements ChunkManager, Metadatable{
 		if(!isset($this->chunkGenerationQueue[$index = Level::chunkHash($x, $z)])){
 			Timings::$generationTimer->startTiming();
 			$this->chunkGenerationQueue[$index] = true;
-			$task = new GenerationTask($this, $this->generatorInstance, $this->getChunk($x, $z, true));
+			$task = new GenerationTask($this, $this->getChunk($x, $z, true));
 			$this->server->getScheduler()->scheduleAsyncTask($task);
 			Timings::$generationTimer->stopTiming();
 		}
