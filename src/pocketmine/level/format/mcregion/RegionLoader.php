@@ -131,7 +131,7 @@ class RegionLoader{
 		}
 
 		$chunk = $this->unserializeChunk(fread($this->filePointer, $length - 1));
-		if($chunk instanceof Chunk){
+		if($chunk instanceof FullChunk){
 			return $chunk;
 		}elseif($forward === false){
 			MainLogger::getLogger()->error("Corrupted chunk detected");
