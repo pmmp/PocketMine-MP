@@ -25,7 +25,7 @@ namespace pocketmine\utils;
  * Class used to handle Minecraft chat format, and convert it to other formats like ANSI or HTML
  */
 abstract class TextFormat{
-	const ESCAPE = "§";
+	const ESCAPE = "\xc2\xa7"; //§
 	
 	const BLACK = TextFormat::ESCAPE . "0";
 	const DARK_BLUE = TextFormat::ESCAPE . "1";
@@ -59,7 +59,7 @@ abstract class TextFormat{
 	 * @return array
 	 */
 	public static function tokenize($string){
-		return preg_split("/(§[0123456789abcdefklmnor])/", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+		return preg_split("/(". TextFormat::ESCAPE ."[0123456789abcdefklmnor])/", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 	}
 
 	/**
@@ -72,7 +72,7 @@ abstract class TextFormat{
 	 */
 	public static function clean($string, $removeFormat = true){
 		if($removeFormat){
-			return str_replace("§", "", preg_replace(["/§[0123456789abcdefklmnor]/", "/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/"], "", $string));
+			return str_replace(TextFormat::ESCAPE, "", preg_replace(["/". TextFormat::ESCAPE ."[0123456789abcdefklmnor]/", "/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/"], "", $string));
 		}
 		return str_replace("\x1b", "", preg_replace("/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/", "", $string));
 	}

@@ -175,9 +175,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	}
 
 	public function notifyACK($identifier, $identifierACK){
-		if(isset($this->players[$identifier])){
-			$this->players[$identifier]->handleACK($identifierACK);
-		}
+
 	}
 
 	public function setName($name){
