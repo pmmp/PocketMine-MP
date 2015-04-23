@@ -233,6 +233,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		]);
 	}
 
+	/**
+	 * This might disappear in the future.
+	 * Please use getUniqueId() instead (IP + clientId + name combo, in the future it'll change to real UUID for online auth)
+	 *
+	 * @deprecated
+	 *
+	 */
 	public function getClientId(){
 		return $this->randomClientId;
 	}
@@ -1423,12 +1430,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->randomClientId = $packet->clientId;
 				$this->loginData = ["clientId" => $packet->clientId, "loginData" => null];
 
+				$this->uuid = Utils::dataToUUID($this->getClientId(), $this->iusername, $this->getAddress());
+
 				if(count($this->server->getOnlinePlayers()) > $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)){
 					return;
 				}
 
 				if($packet->protocol1 !== ProtocolInfo::CURRENT_PROTOCOL){
-					$message = "";
 					if($packet->protocol1 < ProtocolInfo::CURRENT_PROTOCOL){
 						$message = "disconnectionScreen.outdatedClient";
 
@@ -1459,9 +1467,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 
 				$this->setSkin($packet->skin, $packet->slim);
-
-
-				$this->uuid = Utils::dataToUUID($this->getClientId(), $this->iusername, $this->getAddress());
 
 				$this->server->getPluginManager()->callEvent($ev = new PlayerPreLoginEvent($this, "Plugin reason"));
 				if($ev->isCancelled()){
