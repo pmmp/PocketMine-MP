@@ -1107,9 +1107,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->moveToSend[$entityId] = [$entityId, $x, $y, $z, $yaw, $headYaw === null ? $yaw : $headYaw, $pitch];
 	}
 
-	protected function checkNearEntities($currentTick){
+	protected function checkNearEntities($tickDiff){
 		foreach($this->level->getNearbyEntities($this->boundingBox->grow(1, 0.5, 1), $this) as $entity){
-			if(($currentTick - $entity->lastUpdate) > 1){
+			if($tickDiff > 1){
 				$entity->scheduleUpdate();
 			}
 
@@ -1167,7 +1167,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 	}
 
-	protected function processMovement($currentTick){
+	protected function processMovement($tickDiff){
 		if($this->dead or !$this->spawned or !($this->newPosition instanceof Vector3)){
 			return;
 		}
@@ -1176,7 +1176,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		$revert = false;
 
-		if(($distanceSquared / $this->level->getTickRate()) > 100){
+		if(($distanceSquared / ($tickDiff ** 2)) > 100){
 			$revert = true;
 		}else{
 			if($this->chunk === null or !$this->chunk->isGenerated()){
@@ -1209,7 +1209,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$diffY = 0;
 			}
 
-			$diff = $diffX ** 2 + $diffY ** 2 + $diffZ ** 2;
+			$diff = ($diffX ** 2 + $diffY ** 2 + $diffZ ** 2) / ($tickDiff ** 2);
 
 			if($this->isSurvival()){
 				if(!$revert and !$this->isSleeping()){
@@ -1260,7 +1260,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 
-			$this->checkNearEntities($currentTick);
+			$this->checkNearEntities($tickDiff);
 
 			$this->speed = $from->subtract($to);
 		}elseif($distanceSquared == 0){
@@ -1317,9 +1317,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->timings->startTiming();
 
 		if($this->spawned){
-			$this->processMovement($currentTick);
+			$tickDiff = $currentTick - $this->lastUpdate;
 
-			$this->entityBaseTick(1);
+			$this->processMovement($tickDiff);
+
+			$this->entityBaseTick($tickDiff);
 
 			if($this->onGround){
 				$this->inAirTicks = 0;
