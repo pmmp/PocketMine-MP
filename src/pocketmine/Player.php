@@ -1430,7 +1430,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->randomClientId = $packet->clientId;
 				$this->loginData = ["clientId" => $packet->clientId, "loginData" => null];
 
-				$this->uuid = Utils::dataToUUID($this->getClientId(), $this->iusername, $this->getAddress());
+				$this->uuid = Utils::dataToUUID($this->randomClientId, $this->iusername, $this->getAddress());
 
 				if(count($this->server->getOnlinePlayers()) > $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)){
 					return;

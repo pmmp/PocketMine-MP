@@ -155,6 +155,8 @@ class Server{
 	private $nextTick = 0;
 	private $tickAverage = [20, 20, 20, 20, 20];
 	private $useAverage = [20, 20, 20, 20, 20];
+	private $maxTick = 20;
+	private $maxUse = 0;
 
 	/** @var \AttachableThreadedLogger */
 	private $logger;
@@ -591,6 +593,15 @@ class Server{
 	 * @return float
 	 */
 	public function getTicksPerSecond(){
+		return round($this->maxTick, 2);
+	}
+
+	/**
+	 * Returns the last server TPS average measure
+	 *
+	 * @return float
+	 */
+	public function getTicksPerSecondAverage(){
 		return round(array_sum($this->tickAverage) / count($this->tickAverage), 2);
 	}
 
@@ -600,6 +611,15 @@ class Server{
 	 * @return float
 	 */
 	public function getTickUsage(){
+		return round($this->maxUse * 100, 2);
+	}
+
+	/**
+	 * Returns the TPS usage/load average in %
+	 *
+	 * @return float
+	 */
+	public function getTickUsageAverage(){
 		return round((array_sum($this->useAverage) / count($this->useAverage)) * 100, 2);
 	}
 
@@ -2367,6 +2387,9 @@ class Server{
 
 		if(($this->tickCounter & 0b1111) === 0){
 			$this->titleTick();
+			$this->maxTick = 20;
+			$this->maxUse = 0;
+
 			if($this->queryHandler !== null and ($this->tickCounter & 0b111111111) === 0){
 				try{
 					$this->queryHandler->regenerateInfo();
@@ -2391,10 +2414,21 @@ class Server{
 		TimingsHandler::tick();
 
 		$now = microtime(true);
+		$tick = min(20, 1 / max(0.001, $now - $tickTime));
+		$use = min(1, ($now - $tickTime) / 0.05);
+
+		if($this->maxTick > $tick){
+			$this->maxTick = $tick;
+		}
+
+		if($this->maxUse < $use){
+			$this->maxUse = $use;
+		}
+
 		array_shift($this->tickAverage);
-		$this->tickAverage[] = min(20, 1 / max(0.001, $now - $tickTime));
+		$this->tickAverage[] = $tick;
 		array_shift($this->useAverage);
-		$this->useAverage[] = min(1, ($now - $tickTime) / 0.05);
+		$this->useAverage[] = $use;
 
 		if(($this->nextTick - $tickTime) < -1){
 			$this->nextTick = $tickTime;
