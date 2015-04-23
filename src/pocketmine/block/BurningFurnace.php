@@ -101,7 +101,7 @@ class BurningFurnace extends Solid{
 				$furnace = Tile::createTile("Furnace", $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
 			}
 
-			if(($player->getGamemode() & 0x01) === 0x01){
+			if($player->isCreative()){
 				return true;
 			}
 
