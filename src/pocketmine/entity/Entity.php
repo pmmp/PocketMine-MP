@@ -832,7 +832,11 @@ abstract class Entity extends Location implements Metadatable{
 			return false;
 		}
 
-		$tickDiff = max(1, $currentTick - $this->lastUpdate);
+		$tickDiff = $currentTick - $this->lastUpdate;
+		if($tickDiff <= 0){
+			return false;
+		}
+
 		$this->lastUpdate = $currentTick;
 
 		$this->timings->startTiming();

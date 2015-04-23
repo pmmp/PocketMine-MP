@@ -1306,18 +1306,23 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return false;
 		}
 
+		$tickDiff = $currentTick - $this->lastUpdate;
+
+		if($tickDiff <= 0){
+			return true;
+		}
+
 		if($this->dead === true and $this->spawned){
 			++$this->deadTicks;
 			if($this->deadTicks >= 10){
 				$this->despawnFromAll();
 			}
-			return $this->deadTicks < 10;
+			return true;
 		}
 
 		$this->timings->startTiming();
 
 		if($this->spawned){
-			$tickDiff = $currentTick - $this->lastUpdate;
 
 			$this->processMovement($tickDiff);
 

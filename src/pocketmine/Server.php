@@ -200,6 +200,9 @@ class Server{
 	private $networkCompressionLevel = 7;
 
 	private $autoTickRate = true;
+	private $autoTickRateLimit = 20;
+	private $alwaysTickPlayers = false;
+	private $baseTickRate = 1;
 
 	/** @var BaseLang */
 	private $baseLang;
@@ -1030,6 +1033,8 @@ class Server{
 
 		$this->getPluginManager()->callEvent(new LevelLoadEvent($level));
 
+		$level->setTickRate($this->baseTickRate);
+
 		/*foreach($entities->getAll() as $entity){
 			if(!isset($entity["id"])){
 				break;
@@ -1164,6 +1169,8 @@ class Server{
 			$this->levels[$level->getId()] = $level;
 
 			$level->initLevel();
+
+			$level->setTickRate($this->baseTickRate);
 		}catch(\Exception $e){
 			$this->logger->error($this->getLanguage()->translateString("pocketmine.level.generateError", [$name, $e->getMessage()]));
 			if($this->logger instanceof MainLogger){
@@ -1554,7 +1561,10 @@ class Server{
 		$this->networkCompressionLevel = $this->getProperty("network.compression-level", 7);
 		$this->networkCompressionAsync = $this->getProperty("network.async-compression", true);
 
-		$this->autoTickRate = $this->getProperty("level-settings.auto-tick-rate", true);
+		$this->autoTickRate = (bool) $this->getProperty("level-settings.auto-tick-rate", true);
+		$this->autoTickRateLimit = (int) $this->getProperty("level-settings.auto-tick-rate-limit", 20);
+		$this->alwaysTickPlayers = (int) $this->getProperty("level-settings.always-tick-players", false);
+		$this->baseTickRate = (int) $this->getProperty("level-settings.base-tick-rate", 1);
 
 		$this->scheduler = new ServerScheduler();
 
@@ -2164,7 +2174,12 @@ class Server{
 	private function checkTickUpdates($currentTick){
 		//Do level ticks
 		foreach($this->getLevels() as $level){
-			if($level->getTickRate() > 1 and --$level->tickRateCounter > 0){
+			if($level->getTickRate() > $this->baseTickRate and --$level->tickRateCounter > 0){
+				if($this->alwaysTickPlayers){
+					foreach($level->getPlayers() as $p){
+						$p->onUpdate($currentTick);
+					}
+				}
 				continue;
 			}
 			try{
@@ -2173,19 +2188,17 @@ class Server{
 				$tickMs = (microtime(true) - $levelTime) * 1000;
 
 				if($this->autoTickRate){
-					if($tickMs < 50 and $level->getTickRate() > 1){
-						if($level->getTickRate() > 1){
-							$level->setTickRate($r = $level->getTickRate() - 1);
-							if($r > 1){
-								$level->tickRateCounter = $level->getTickRate();
-							}
-							$this->getLogger()->debug("Raising level \"".$level->getName()."\" tick rate to ".$level->getTickRate()." ticks");
+					if($tickMs < 50 and $level->getTickRate() > $this->baseTickRate){
+						$level->setTickRate($r = $level->getTickRate() - 1);
+						if($r > $this->baseTickRate){
+							$level->tickRateCounter = $level->getTickRate();
 						}
+						$this->getLogger()->debug("Raising level \"".$level->getName()."\" tick rate to ".$level->getTickRate()." ticks");
 					}elseif($tickMs >= 50){
-						if($level->getTickRate() === 1){
-							$level->setTickRate(max(2, min(10, floor($tickMs / 50))));
+						if($level->getTickRate() === $this->baseTickRate){
+							$level->setTickRate(max($this->baseTickRate + 1, min($this->autoTickRateLimit, floor($tickMs / 50))));
 							$this->getLogger()->debug("Level \"".$level->getName()."\" took ".round($tickMs, 2)."ms, setting tick rate to ".$level->getTickRate()." ticks");
-						}elseif(($tickMs / $level->getTickRate()) >= 50 and $level->getTickRate() < 10){ //Limit?
+						}elseif(($tickMs / $level->getTickRate()) >= 50 and $level->getTickRate() < $this->autoTickRateLimit){
 							$level->setTickRate($level->getTickRate() + 1);
 							$this->getLogger()->debug("Level \"".$level->getName()."\" took ".round($tickMs, 2)."ms, setting tick rate to ".$level->getTickRate()." ticks");
 						}
