@@ -49,6 +49,11 @@ class PlayerInventory extends BaseInventory{
 		return parent::getSize() - 4; //Remove armor slots
 	}
 
+	public function setSize($size){
+		parent::setSize($size + 4);
+		$this->sendContents($this->getViewers());
+	}
+
 	public function getHotbarSlotIndex($index){
 		return ($index >= 0 and $index < $this->getHotbarSize()) ? $this->hotbar[$index] : -1;
 	}

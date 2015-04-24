@@ -446,6 +446,8 @@ abstract class Entity extends Location implements Metadatable{
 				$this->addEffect($effect);
 			}
 		}
+
+		$this->scheduleUpdate();
 	}
 
 	/**
@@ -832,6 +834,17 @@ abstract class Entity extends Location implements Metadatable{
 			return false;
 		}
 
+		if($this->dead === true){
+			++$this->deadTicks;
+			if($this->deadTicks >= 10){
+				$this->despawnFromAll();
+				if(!($this instanceof Player)){
+					$this->close();
+				}
+			}
+			return $this->deadTicks < 10;
+		}
+
 		$tickDiff = $currentTick - $this->lastUpdate;
 		if($tickDiff <= 0){
 			return false;
@@ -914,7 +927,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function fall($fallDistance){
-		$damage = floor($fallDistance - 3);
+		$damage = floor($fallDistance - 3 - ($this->hasEffect(Effect::JUMP) ? $this->getEffect(Effect::JUMP)->getAmplifier() + 1 : 0));
 		if($damage > 0){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FALL, $damage);
 			$this->attack($ev->getFinalDamage(), $ev);

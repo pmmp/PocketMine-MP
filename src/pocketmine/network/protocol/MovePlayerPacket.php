@@ -36,6 +36,7 @@ class MovePlayerPacket extends DataPacket{
 	public $bodyYaw;
 	public $pitch;
 	public $mode = 0;
+	public $onGround;
 
 	public function pid(){
 		return Info::MOVE_PLAYER_PACKET;
@@ -55,6 +56,7 @@ class MovePlayerPacket extends DataPacket{
 		$this->bodyYaw = $this->getFloat();
 		$this->pitch = $this->getFloat();
 		$this->mode = $this->getByte();
+		$this->onGround = $this->getByte() > 0;
 	}
 
 	public function encode(){
@@ -67,6 +69,7 @@ class MovePlayerPacket extends DataPacket{
 		$this->putFloat($this->bodyYaw); //TODO
 		$this->putFloat($this->pitch);
 		$this->putByte($this->mode);
+		$this->putByte($this->onGround > 0);
 	}
 
 }

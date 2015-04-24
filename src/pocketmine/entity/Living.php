@@ -146,54 +146,43 @@ abstract class Living extends Entity implements Damageable{
 	public function entityBaseTick($tickDiff = 1){
 		Timings::$timerEntityBaseTick->startTiming();
 
-		if($this->dead === true){
-			++$this->deadTicks;
-			if($this->deadTicks >= 10){
-				$this->despawnFromAll();
-				if(!($this instanceof Player)){
-					$this->close();
-				}
-			}
-
-			Timings::$timerEntityBaseTick->stopTiming();
-			return $this->deadTicks < 10;
-		}
-
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		if($this->dead !== true and $this->isInsideOfSolid()){
-			$hasUpdate = true;
-			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 1);
-			$this->attack($ev->getFinalDamage(), $ev);
-		}
-
-		if($this->dead !== true and !$this->hasEffect(Effect::WATER_BREATHING) and $this->isInsideOfWater()){
-			if($this instanceof WaterAnimal){
-				$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 300);
-			}else{
+		if($this->dead !== true){
+			if($this->isInsideOfSolid()){
 				$hasUpdate = true;
-				$airTicks = $this->getDataProperty(self::DATA_AIR) - $tickDiff;
-				if($airTicks <= -20){
-					$airTicks = 0;
-
-					$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
-					$this->attack($ev->getFinalDamage(), $ev);
-				}
-				$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $airTicks);
+				$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 1);
+				$this->attack($ev->getFinalDamage(), $ev);
 			}
-		}else{
-			if($this instanceof WaterAnimal){
-				$hasUpdate = true;
-				$airTicks = $this->getDataProperty(self::DATA_AIR) - $tickDiff;
-				if($airTicks <= -20){
-					$airTicks = 0;
 
-					$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 2);
-					$this->attack($ev->getFinalDamage(), $ev);
+			if(!$this->hasEffect(Effect::WATER_BREATHING) and $this->isInsideOfWater()){
+				if($this instanceof WaterAnimal){
+					$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 300);
+				}else{
+					$hasUpdate = true;
+					$airTicks = $this->getDataProperty(self::DATA_AIR) - $tickDiff;
+					if($airTicks <= -20){
+						$airTicks = 0;
+
+						$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
+						$this->attack($ev->getFinalDamage(), $ev);
+					}
+					$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $airTicks);
 				}
-				$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $airTicks);
 			}else{
-				$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 300);
+				if($this instanceof WaterAnimal){
+					$hasUpdate = true;
+					$airTicks = $this->getDataProperty(self::DATA_AIR) - $tickDiff;
+					if($airTicks <= -20){
+						$airTicks = 0;
+
+						$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 2);
+						$this->attack($ev->getFinalDamage(), $ev);
+					}
+					$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $airTicks);
+				}else{
+					$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 300);
+				}
 			}
 		}
 
