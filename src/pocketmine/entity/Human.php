@@ -29,6 +29,7 @@ use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Short;
+use pocketmine\nbt\tag\String;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\AddPlayerPacket;
 use pocketmine\network\protocol\RemovePlayerPacket;
@@ -114,6 +115,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			}
 		}
 
+		if(isset($this->namedtag->Skin) and $this->namedtag->Skin instanceof Compound){
+			$this->setSkin($this->namedtag->Skin["Data"], $this->namedtag->Skin["Slim"] > 0);
+		}
+
 		parent::initEntity();
 	}
 
@@ -187,6 +192,12 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				}
 			}
 		}
+
+
+		$this->namedtag->Skin = new Compound("Inventory", [
+			"Data" => new String("Data", $this->getSkinData()),
+			"Slim" => new Byte("Slim", $this->isSkinSlim() ? 1 : 0)
+		]);
 	}
 
 	public function spawnTo(Player $player){
