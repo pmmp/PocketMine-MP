@@ -2014,6 +2014,8 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function chunkRequestCallback($x, $z, $payload){
+		$this->timings->syncChunkSendTimer->startTiming();
+
 		$index = Level::chunkHash($x, $z);
 
 		if(!isset($this->chunkCache[$index]) and $this->cacheChunks and $this->server->getMemoryManager()->canUseChunkCache()){
@@ -2030,6 +2032,7 @@ class Level implements ChunkManager, Metadatable{
 			unset($this->chunkSendQueue[$index]);
 			unset($this->chunkSendTasks[$index]);
 		}
+		$this->timings->syncChunkSendTimer->stopTiming();
 	}
 
 	/**
