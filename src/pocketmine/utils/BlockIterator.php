@@ -273,7 +273,7 @@ class BlockIterator implements \Iterator{
 		if($this->secondError > 0 and $this->thirdError > 0){
 			$this->blockQueue[2] = $this->blockQueue[0]->getSide($this->mainFace);
 
-			if($this->secondStep * $this->thirdError < $this->thirdStep * $this->secondError){
+			if(($this->secondStep * $this->thirdError) < ($this->thirdStep * $this->secondError)){
 				$this->blockQueue[1] = $this->blockQueue[2]->getSide($this->secondFace);
 				$this->blockQueue[0] = $this->blockQueue[1]->getSide($this->thirdFace);
 			}else{
@@ -286,12 +286,12 @@ class BlockIterator implements \Iterator{
 			$this->currentBlock = 2;
 		}elseif($this->secondError > 0){
 			$this->blockQueue[1] = $this->blockQueue[0]->getSide($this->mainFace);
-			$this->blockQueue[0] = $this->blockQueue[1]->getSide($this->thirdFace);
+			$this->blockQueue[0] = $this->blockQueue[1]->getSide($this->secondFace);
 			$this->secondError -= self::$gridSize;
 			$this->currentBlock = 1;
 		}elseif($this->thirdError > 0){
 			$this->blockQueue[1] = $this->blockQueue[0]->getSide($this->mainFace);
-			$this->blockQueue[0] = $this->blockQueue[1]->getSide($this->secondFace);
+			$this->blockQueue[0] = $this->blockQueue[1]->getSide($this->thirdFace);
 			$this->thirdError -= self::$gridSize;
 			$this->currentBlock = 1;
 		}else{
