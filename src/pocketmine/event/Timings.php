@@ -83,6 +83,8 @@ abstract class Timings{
 	public static $processQueueTimer;
 	/** @var TimingsHandler */
 	public static $schedulerSyncTimer;
+	/** @var TimingsHandler */
+	public static $schedulerAsyncTimer;
 
 	/** @var TimingsHandler */
 	public static $playerCommandTimer;
@@ -127,6 +129,7 @@ abstract class Timings{
 
 		self::$processQueueTimer = new TimingsHandler("processQueue");
 		self::$schedulerSyncTimer = new TimingsHandler("** Scheduler - Sync Tasks", PluginManager::$pluginParentTimer);
+		self::$schedulerAsyncTimer = new TimingsHandler("** Scheduler - Async Tasks");
 
 		self::$playerCommandTimer = new TimingsHandler("** playerCommand");
 

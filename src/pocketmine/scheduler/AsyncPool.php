@@ -21,6 +21,7 @@
 
 namespace pocketmine\scheduler;
 
+use pocketmine\event\Timings;
 use pocketmine\Server;
 
 class AsyncPool{
@@ -113,6 +114,8 @@ class AsyncPool{
 		unset($this->taskWorkers[$task->getTaskId()]);
 
 		$task->cleanObject();
+
+		unset($task);
 	}
 
 	public function removeTasks(){
@@ -129,6 +132,8 @@ class AsyncPool{
 	}
 
 	public function collectTasks(){
+		Timings::$schedulerAsyncTimer->startTiming();
+
 		foreach($this->tasks as $task){
 			if($task->isGarbage()){
 
@@ -142,5 +147,7 @@ class AsyncPool{
 				$this->server->getLogger()->critical("On ".$info["scope"].", line ".$info["line"] .", ".$info["function"]."()");
 			}
 		}
+
+		Timings::$schedulerAsyncTimer->stopTiming();
 	}
 }
