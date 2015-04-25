@@ -1994,25 +1994,32 @@ class Server{
 				UPnP::RemovePortForward($this->getPort());
 			}
 
+			$this->getLogger()->debug("Disabling all plugins");
 			$this->pluginManager->disablePlugins();
 
 			foreach($this->players as $player){
 				$player->close($player->getLeaveMessage(), $this->getProperty("settings.shutdown-message", "Server closed"));
 			}
 
+			$this->getLogger()->debug("Unloading all levels");
 			foreach($this->getLevels() as $level){
 				$this->unloadLevel($level, true);
 			}
 
+			$this->getLogger()->debug("Removing event handlers");
 			HandlerList::unregisterAll();
 
+			$this->getLogger()->debug("Stopping all tasks");
 			$this->scheduler->cancelAllTasks();
 			$this->scheduler->mainThreadHeartbeat(PHP_INT_MAX);
 
+			$this->getLogger()->debug("Saving properties");
 			$this->properties->save();
 
+			$this->getLogger()->debug("Closing console");
 			$this->console->kill();
 
+			$this->getLogger()->debug("Stopping network interfaces");
 			foreach($this->network->getInterfaces() as $interface){
 				$interface->shutdown();
 				$this->network->unregisterInterface($interface);

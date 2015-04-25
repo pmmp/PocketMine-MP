@@ -106,6 +106,9 @@ class AsyncPool{
 
 	private function removeTask(AsyncTask $task){
 		if(isset($this->taskWorkers[$task->getTaskId()])){
+			if($task->isRunning() or !$task->isGarbage()){
+				return;
+			}
 			$this->workers[$w = $this->taskWorkers[$task->getTaskId()]]->unstack($task);
 			$this->workerUsage[$w]--;
 		}
@@ -119,9 +122,15 @@ class AsyncPool{
 	}
 
 	public function removeTasks(){
-		foreach($this->tasks as $task){
-			$this->removeTask($task);
-		}
+		do{
+			foreach($this->tasks as $task){
+				$this->removeTask($task);
+			}
+
+			if(count($this->tasks) > 0){
+				usleep(25000);
+			}
+		}while(count($this->tasks) > 0);
 
 		for($i = 0; $i < $this->size; ++$i){
 			$this->workerUsage[$i] = 0;
@@ -135,7 +144,7 @@ class AsyncPool{
 		Timings::$schedulerAsyncTimer->startTiming();
 
 		foreach($this->tasks as $task){
-			if($task->isGarbage()){
+			if($task->isGarbage() and !$task->isRunning()){
 
 				$task->onCompletion($this->server);
 
