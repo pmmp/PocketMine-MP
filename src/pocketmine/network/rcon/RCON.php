@@ -27,7 +27,6 @@ namespace pocketmine\network\rcon;
 
 use pocketmine\command\RemoteConsoleCommandSender;
 use pocketmine\event\server\RemoteServerCommandEvent;
-use pocketmine\scheduler\CallbackTask;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 
@@ -66,7 +65,6 @@ class RCON{
 		}
 		socket_getsockname($this->socket, $addr, $port);
 		$this->server->getLogger()->info("RCON running on $addr:$port");
-		$this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this, "check"]), 3);
 	}
 
 	public function stop(){

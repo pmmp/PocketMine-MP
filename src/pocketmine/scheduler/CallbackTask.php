@@ -26,6 +26,9 @@ namespace pocketmine\scheduler;
  * The last parameter in the callback will be this object
  *
  * If you want to do a task in a Plugin, consider extending PluginTask to your needs
+ *
+ * @deprecated
+ *
  */
 class CallbackTask extends Task{
 

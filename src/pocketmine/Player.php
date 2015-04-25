@@ -117,7 +117,6 @@ use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
 use pocketmine\plugin\Plugin;
-use pocketmine\scheduler\CallbackTask;
 use pocketmine\tile\Sign;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
@@ -218,11 +217,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	private $needACK = [];
 
 	private $batchedPackets = [];
-
-	/**
-	 * @var \pocketmine\scheduler\TaskHandler[]
-	 */
-	protected $tasks = [];
 
 	/** @var PermissibleBase */
 	private $perm = null;
@@ -871,7 +865,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->setDataFlag(self::DATA_PLAYER_FLAGS, self::DATA_PLAYER_FLAG_SLEEP, true);
 
 		$this->setSpawn($pos);
-		$this->tasks[] = $this->server->getScheduler()->scheduleDelayedTask(new CallbackTask([$this, "checkSleep"]), 60);
+
+		$this->level->sleepTicks = 60;
 
 
 		return true;
@@ -903,34 +898,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->sleeping = null;
 			$this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [0, 0, 0]);
 			$this->setDataFlag(self::DATA_PLAYER_FLAGS, self::DATA_PLAYER_FLAG_SLEEP, false);
+
+
+			$this->level->sleepTicks = 0;
 		}
 
-	}
-
-	/**
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
-	 */
-	public function checkSleep(){
-		if($this->sleeping instanceof Vector3){
-			//TODO: Move to Level
-
-			$time = $this->level->getTime() % Level::TIME_FULL;
-
-			if($time >= Level::TIME_NIGHT and $time < Level::TIME_SUNRISE){
-				foreach($this->level->getPlayers() as $p){
-					if($p->sleeping === null){
-						return;
-					}
-				}
-
-				$this->level->setTime($this->level->getTime() + Level::TIME_FULL - $time);
-
-				foreach($this->level->getPlayers() as $p){
-					$p->stopSleep();
-				}
-			}
-		}
 	}
 
 	/**
@@ -2608,11 +2580,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * @param bool $notify
 	 */
 	public function close($message = "", $reason = "generic reason", $notify = true){
-
-		foreach($this->tasks as $task){
-			$task->cancel();
-		}
-		$this->tasks = [];
 
 		if($this->connected and !$this->closed){
 			if($notify and $reason != ""){

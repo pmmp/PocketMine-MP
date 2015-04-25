@@ -203,6 +203,8 @@ class Level implements ChunkManager, Metadatable{
 	/** @var \SplFixedArray */
 	private $blockStates;
 
+	public $sleepTicks = 0;
+
 	private $chunkTickRadius;
 	private $chunkTickList = [];
 	private $chunksPerTick;
@@ -644,7 +646,33 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->processChunkRequest();
 
+		if($this->sleepTicks > 0 and --$this->sleepTicks <= 0){
+			$this->checkSleep();
+		}
+
 		$this->timings->doTick->stopTiming();
+	}
+
+	public function checkSleep(){
+		$resetTime = true;
+		foreach($this->getPlayers() as $p){
+			if(!$p->isSleeping()){
+				$resetTime = false;
+				break;
+			}
+		}
+
+		if($resetTime){
+			$time = $this->getTime() % Level::TIME_FULL;
+
+			if($time >= Level::TIME_NIGHT and $time < Level::TIME_SUNRISE){
+				$this->setTime($this->getTime() + Level::TIME_FULL - $time);
+
+				foreach($this->getPlayers() as $p){
+					$p->stopSleep();
+				}
+			}
+		}
 	}
 
 	/**

@@ -189,6 +189,18 @@ class ServerScheduler{
 			}elseif(!$task->getOwner()->isEnabled()){
 				throw new PluginException("Plugin '" . $task->getOwner()->getName() . "' attempted to register a task while disabled");
 			}
+		}elseif($task instanceof CallbackTask and Server::getInstance()->getProperty("settings.deprecated-verbose", true)){
+			$callable = $task->getCallable();
+			if(is_array($callable)){
+				if(is_object($callable[0])){
+					$taskName = "Callback#" . get_class($callable[0]) . "::" . $callable[1];
+				}else{
+					$taskName = "Callback#" . $callable[0] . "::" . $callable[1];
+				}
+			}else{
+				$taskName = "Callback#" . $callable;
+			}
+			Server::getInstance()->getLogger()->warning("A plugin attempted to register a deprecated CallbackTask ($taskName)");
 		}
 
 		if($delay <= 0){
@@ -201,22 +213,7 @@ class ServerScheduler{
 			$period = 1;
 		}
 
-		if($task instanceof CallbackTask){
-			$callable = $task->getCallable();
-			if(is_array($callable)){
-				if(is_object($callable[0])){
-					$taskName = "Callback#" . get_class($callable[0]) . "::" . $callable[1];
-				}else{
-					$taskName = "Callback#" . $callable[0] . "::" . $callable[1];
-				}
-			}else{
-				$taskName = "Callback#" . $callable;
-			}
-		}else{
-			$taskName = get_class($task);
-		}
-
-		return $this->handle(new TaskHandler($taskName, $task, $this->nextId(), $delay, $period));
+		return $this->handle(new TaskHandler(get_class($task), $task, $this->nextId(), $delay, $period));
 	}
 
 	private function handle(TaskHandler $handler){

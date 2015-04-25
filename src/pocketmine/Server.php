@@ -91,7 +91,6 @@ use pocketmine\plugin\PharPluginLoader;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
-use pocketmine\scheduler\CallbackTask;
 use pocketmine\scheduler\SendUsageTask;
 use pocketmine\scheduler\ServerScheduler;
 use pocketmine\tile\Chest;
@@ -153,10 +152,14 @@ class Server{
 	 */
 	private $tickCounter;
 	private $nextTick = 0;
-	private $tickAverage = [20, 20, 20, 20, 20];
-	private $useAverage = [20, 20, 20, 20, 20];
+	private $tickAverage = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20];
+	private $useAverage = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 	private $maxTick = 20;
 	private $maxUse = 0;
+
+	private $sendUsageTicker = 0;
+
+	private $dispatchSignals = false;
 
 	/** @var \AttachableThreadedLogger */
 	private $logger;
@@ -205,6 +208,9 @@ class Server{
 	private $autoTickRateLimit = 20;
 	private $alwaysTickPlayers = false;
 	private $baseTickRate = 1;
+
+	private $autoSaveTicker = 0;
+	private $autoSaveTicks = 0;
 
 	/** @var BaseLang */
 	private $baseLang;
@@ -1734,7 +1740,7 @@ class Server{
 		}
 
 		if($this->getAutoSave() and $this->getProperty("ticks-per.autosave", 6000) > 0){
-			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask([$this, "doAutoSave"]), $this->getProperty("ticks-per.autosave", 6000), $this->getProperty("ticks-per.autosave", 6000));
+			$this->autoSaveTicks = (int) $this->getProperty("ticks-per.autosave", 6000);
 		}
 
 		$this->enablePlugins(PluginLoadOrder::POSTWORLD);
@@ -2031,7 +2037,7 @@ class Server{
 		}
 
 		if($this->getProperty("settings.send-usage", true) !== false){
-			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask([$this, "sendUsage"]), 6000, 6000);
+			$this->sendUsageTicker = 6000;
 			$this->sendUsage();
 		}
 
@@ -2047,11 +2053,8 @@ class Server{
 			pcntl_signal(SIGTERM, [$this, "handleSignal"]);
 			pcntl_signal(SIGINT, [$this, "handleSignal"]);
 			pcntl_signal(SIGHUP, [$this, "handleSignal"]);
-			$this->getScheduler()->scheduleRepeatingTask(new CallbackTask("pcntl_signal_dispatch"), 5);
+			$this->dispatchSignals = true;
 		}
-
-
-		$this->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this, "checkTicks"]), 20 * 5);
 
 		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.defaultGameMode", [self::getGamemodeString($this->getGamemode())]));
 
@@ -2066,12 +2069,6 @@ class Server{
 	public function handleSignal($signo){
 		if($signo === SIGTERM or $signo === SIGINT or $signo === SIGHUP){
 			$this->shutdown();
-		}
-	}
-
-	public function checkTicks(){
-		if($this->getTicksPerSecond() < 12){
-			$this->logger->warning($this->getLanguage()->translateString("pocketmine.server.tickOverload"));
 		}
 	}
 
@@ -2377,6 +2374,11 @@ class Server{
 
 		Timings::$connectionTimer->startTiming();
 		$this->network->processInterfaces();
+
+		if($this->rcon !== null){
+			$this->rcon->check();
+		}
+
 		Timings::$connectionTimer->stopTiming();
 
 		Timings::$schedulerTimer->startTiming();
@@ -2401,10 +2403,28 @@ class Server{
 			}
 		}
 
+		if($this->autoSave and ++$this->autoSaveTicker >= $this->autoSaveTicks){
+			$this->autoSaveTicker = 0;
+			$this->doAutoSave();
+		}
+
+		if($this->sendUsageTicker > 0 and --$this->sendUsageTicker === 0){
+			$this->sendUsageTicker = 6000;
+			$this->sendUsage();
+		}
+
 		if(($this->tickCounter % 100) === 0){
 			foreach($this->levels as $level){
 				$level->clearCache();
 			}
+
+			if($this->getTicksPerSecondAverage() < 12){
+				$this->logger->warning($this->getLanguage()->translateString("pocketmine.server.tickOverload"));
+			}
+		}
+
+		if($this->dispatchSignals and $this->tickCounter % 5 === 0){
+			pcntl_signal_dispatch();
 		}
 
 		$this->getMemoryManager()->check();
