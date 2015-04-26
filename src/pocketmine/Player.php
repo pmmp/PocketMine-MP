@@ -2886,7 +2886,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 
-			$this->sendPosition($this, null, null, 1);
+			$this->sendPosition($this, null, null, 1, Network::CHANNEL_WORLD_CHUNKS);
 			$this->forceMovement = $this->teleportPosition;
 			$this->teleportPosition = null;
 
