@@ -104,9 +104,9 @@ class AsyncPool{
 		$this->submitTaskToWorker($task, $selectedWorker);
 	}
 
-	private function removeTask(AsyncTask $task){
+	private function removeTask(AsyncTask $task, $force = false){
 		if(isset($this->taskWorkers[$task->getTaskId()])){
-			if($task->isRunning() or !$task->isGarbage()){
+			if(!$force and ($task->isRunning() or !$task->isGarbage())){
 				return;
 			}
 			$this->workers[$w = $this->taskWorkers[$task->getTaskId()]]->unstack($task);
@@ -151,7 +151,7 @@ class AsyncPool{
 				$this->removeTask($task);
 			}elseif($task->isTerminated()){
 				$info = $task->getTerminationInfo();
-				$this->removeTask($task);
+				$this->removeTask($task, true);
 				$this->server->getLogger()->critical("Could not execute asynchronous task " . (new \ReflectionClass($task))->getShortName() . ": " . $info["message"]);
 				$this->server->getLogger()->critical("On ".$info["scope"].", line ".$info["line"] .", ".$info["function"]."()");
 			}

@@ -180,6 +180,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	protected $lastMovement = 0;
 	/** @var Vector3 */
 	protected $forceMovement = null;
+	/** @var Vector3 */
+	protected $teleportPosition = null;
 	protected $connected = true;
 	protected $ip;
 	protected $removeFormat = true;
@@ -629,7 +631,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			Level::getXZ($index, $X, $Z);
 
 			if(!$this->level->populateChunk($X, $Z)){
-				continue;
+				if($this->teleportPosition === null){
+					continue;
+				}else{
+					break;
+				}
 			}
 
 
@@ -1255,16 +1261,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->lastYaw = $from->yaw;
 			$this->lastPitch = $from->pitch;
 
-			$pk = new MovePlayerPacket();
-			$pk->eid = $this->getId();
-			$pk->x = $from->x;
-			$pk->y = $from->y + $this->getEyeHeight();
-			$pk->z = $from->z;
-			$pk->yaw = $from->yaw;
-			$pk->bodyYaw = $from->yaw;
-			$pk->pitch = $from->pitch;
-			$pk->mode = 1;
-			$this->directDataPacket($pk->setChannel(Network::CHANNEL_PRIORITY));
+			$this->sendPosition($from, $from->yaw, $from->pitch, 1);
 			$this->forceMovement = new Vector3($from->x, $from->y, $from->z);
 		}else{
 			$this->forceMovement = null;
@@ -1334,6 +1331,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if(count($this->loadQueue) > 0 or !$this->spawned){
 			$this->sendNextChunk();
 		}
+
+		$this->checkTeleportPosition();
 
 		if(count($this->moveToSend) > 0){
 			$pk = new MoveEntityPacket();
@@ -1622,17 +1621,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->forceMovement = new Vector3($this->x, $this->y, $this->z);
 				}
 
-				if($this->forceMovement instanceof Vector3 and (($dist = $newPos->distanceSquared($this->forceMovement)) > 0.1 or $revert)){
-					$pk = new MovePlayerPacket();
-					$pk->eid = $this->getId();
-					$pk->x = $this->forceMovement->x;
-					$pk->y = $this->forceMovement->y + $this->getEyeHeight();
-					$pk->z = $this->forceMovement->z;
-					$pk->bodyYaw = $packet->bodyYaw;
-					$pk->pitch = $packet->pitch;
-					$pk->yaw = $packet->yaw;
-					$pk->mode = 1;
-					$this->directDataPacket($pk->setChannel(Network::CHANNEL_PRIORITY));
+				if($this->teleportPosition !== null or ($this->forceMovement instanceof Vector3 and (($dist = $newPos->distanceSquared($this->forceMovement)) > 0.1 or $revert))){
+					$this->sendPosition($this->forceMovement, $packet->yaw, $packet->pitch);
 				}else{
 					$packet->yaw %= 360;
 					$packet->pitch %= 360;
@@ -2867,7 +2857,47 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 	}
 
+	public function sendPosition(Vector3 $pos, $yaw = null, $pitch = null, $mode = 0, $channel = Network::CHANNEL_PRIORITY){
+		$yaw = $yaw === null ? $pos->yaw : $yaw;
+		$pitch = $pitch === null ? $pos->pitch : $pitch;
+
+		$pk = new MovePlayerPacket();
+		$pk->eid = $this->getId();
+		$pk->x = $pos->x;
+		$pk->y = $pos->y + $this->getEyeHeight();
+		$pk->z = $pos->z;
+		$pk->bodyYaw = $yaw;
+		$pk->pitch = $pitch;
+		$pk->yaw = $yaw;
+		$pk->mode = $mode;
+		$this->dataPacket($pk->setChannel($channel));
+	}
+
+	protected function checkTeleportPosition(){
+		if($this->teleportPosition !== null){
+			$chunkX = $this->teleportPosition->x >> 4;
+			$chunkZ = $this->teleportPosition->z >> 4;
+
+			for($X = -1; $X <= 1; ++$X){
+				for($Z = -1; $Z <= 1; ++$Z){
+					if(!isset($this->usedChunks[$index = Level::chunkHash($chunkX + $X, $chunkZ + $Z)]) or $this->usedChunks[$index] === false){
+						return false;
+					}
+				}
+			}
+
+			$this->sendPosition($this, null, null, 1);
+			$this->forceMovement = $this->teleportPosition;
+			$this->teleportPosition = null;
+
+			return true;
+		}
+
+		return true;
+	}
+
 	public function teleport(Vector3 $pos, $yaw = null, $pitch = null){
+		$oldPos = $this->getPosition();
 		if(parent::teleport($pos, $yaw, $pitch)){
 
 			foreach($this->windowIndex as $window){
@@ -2877,23 +2907,17 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->removeWindow($window);
 			}
 
-			$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 300);
+			$this->teleportPosition = new Vector3($this->x, $this->y, $this->z);
+
+			if(!$this->checkTeleportPosition()){
+				$this->forceMovement = $oldPos;
+			}
+
+
 			$this->resetFallDistance();
 			$this->orderChunks();
 			$this->nextChunkOrderRun = 0;
-			$this->forceMovement = new Vector3($this->x, $this->y, $this->z);
 			$this->newPosition = null;
-
-			$pk = new MovePlayerPacket();
-			$pk->eid = $this->getId();
-			$pk->x = $this->x;
-			$pk->y = $this->y + $this->getEyeHeight();
-			$pk->z = $this->z;
-			$pk->bodyYaw = $this->yaw;
-			$pk->pitch = $this->pitch;
-			$pk->yaw = $this->yaw;
-			$pk->mode = 1;
-			$this->directDataPacket($pk->setChannel(Network::CHANNEL_PRIORITY));
 		}
 	}
 
