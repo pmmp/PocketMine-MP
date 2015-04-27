@@ -32,30 +32,19 @@ use pocketmine\utils\ChunkException;
 class ChunkRequestTask extends AsyncTask{
 
 	protected $levelId;
+
+	protected $chunk;
 	protected $chunkX;
 	protected $chunkZ;
 
-	/** @var \pocketmine\level\format\ChunkSection[] */
-	protected $sections;
-	/** @var string[256] */
-	protected $biomeIds;
-	/** @var int[] */
-	protected $biomeColors;
-
 	protected $tiles;
 
-	public function __construct(Anvil $level, $levelId, $chunkX, $chunkZ){
-		$this->levelId = $levelId;
-		$this->chunkX = $chunkX;
-		$this->chunkZ = $chunkZ;
-		$chunk = $level->getChunk($chunkX, $chunkZ, false);
-		if(!($chunk instanceof Chunk)){
-			throw new ChunkException("Invalid Chunk sent");
-		}
-		$this->biomeIds = $chunk->getBiomeIdArray();
-		$this->biomeColors = $chunk->getBiomeColorArray();
+	public function __construct(Level $level, Chunk $chunk){
+		$this->levelId = $level->getId();
 
-		$this->sections = $chunk->getSections();
+		$this->chunk = $chunk->toFastBinary();
+		$this->chunkX = $chunk->getX();
+		$this->chunkZ = $chunk->getZ();
 
 		$tiles = "";
 		$nbt = new NBT(NBT::LITTLE_ENDIAN);
@@ -67,26 +56,22 @@ class ChunkRequestTask extends AsyncTask{
 		}
 
 		$this->tiles = $tiles;
-
 	}
 
 	public function onRun(){
+
+		$chunk = Chunk::fromFastBinary($this->chunk);
+		$ids = $chunk->getBlockIdArray();
+		$meta = $chunk->getBlockDataArray();
+		$blockLight = $chunk->getBlockLightArray();
+		$skyLight = $chunk->getBlockSkyLightArray();
+
+
 		$orderedIds = "";
 		$orderedData = "";
 		$orderedSkyLight = "";
 		$orderedLight = "";
 
-		$ids = "";
-		$meta = "";
-		$blockLight = "";
-		$skyLight = "";
-
-		foreach($this->sections as $section){
-			$ids .= $section->getIdArray();
-			$meta .= $section->getDataArray();
-			$blockLight .= $section->getLightArray();
-			$skyLight .= $section->getSkyLightArray();
-		}
 
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
@@ -97,16 +82,16 @@ class ChunkRequestTask extends AsyncTask{
 			}
 		}
 
-		$biomeColors = pack("N*", ...$this->biomeColors);
+		$biomeColors = pack("N*", ...$chunk->getBiomeColorArray());
 
-		$ordered = $orderedIds . $orderedData . $orderedSkyLight . $orderedLight . $this->biomeIds . $biomeColors . $this->tiles;
+		$ordered = $orderedIds . $orderedData . $orderedSkyLight . $orderedLight . $chunk->getBiomeIdArray() . $biomeColors . $this->tiles;
 
 		$this->setResult($ordered, false);
 	}
 
-	public function getColumn(&$data, $x, $z){
-		$i = ($z << 4) + $x;
+	public function getColumn($data, $x, $z){
 		$column = "";
+		$i = ($z << 4) + $x;
 		for($y = 0; $y < 128; ++$y){
 			$column .= $data{($y << 8) + $i};
 		}
@@ -114,9 +99,9 @@ class ChunkRequestTask extends AsyncTask{
 		return $column;
 	}
 
-	public function getHalfColumn(&$data, $x, $z){
-		$i = ($z << 3) + ($x >> 1);
+	public function getHalfColumn($data, $x, $z){
 		$column = "";
+		$i = ($z << 3) + ($x >> 1);
 		if(($x & 1) === 0){
 			for($y = 0; $y < 128; $y += 2){
 				$column .= ($data{($y << 7) + $i} & "\x0f") | chr((ord($data{(($y + 1) << 7) + $i}) & 0x0f) << 4);

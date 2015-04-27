@@ -66,7 +66,7 @@ class Anvil extends McRegion{
 	}
 
 	public function requestChunkTask($x, $z){
-		return new ChunkRequestTask($this, $this->getLevel()->getId(), $x, $z);
+		return new ChunkRequestTask($this->getLevel(), $this->getChunk($x, $z, true));
 	}
 
 	/**
