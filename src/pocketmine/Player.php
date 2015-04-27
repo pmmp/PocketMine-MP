@@ -648,7 +648,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->level->requestChunk($X, $Z, $this, LevelProvider::ORDER_ZXY);
 		}
 
-		if($this->chunkLoadCount >= $this->spawnThreshold and $this->spawned === false){
+		if($this->chunkLoadCount >= $this->spawnThreshold and $this->spawned === false and $this->teleportPosition === null){
 			$this->spawned = true;
 
 			$this->sendSettings();
@@ -1607,6 +1607,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					}
 					$this->dataPacket($pk->setChannel(Network::CHANNEL_PRIORITY));
 				}
+
+				$this->teleportPosition = $this->getPosition();
 
 				$this->orderChunks();
 				$this->sendNextChunk();

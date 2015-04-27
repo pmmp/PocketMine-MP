@@ -67,11 +67,11 @@ class MemoryManager{
 		$this->continuousTrigger = (bool) $this->server->getProperty("memory.continuous-trigger", true);
 		$this->continuousTriggerRate = (int) $this->server->getProperty("memory.continuous-trigger-rate", 30);
 
-		$this->garbageCollectionPeriod = (int) $this->server->getProperty("memory.garbage-collection.period", 12000);
+		$this->garbageCollectionPeriod = (int) $this->server->getProperty("memory.garbage-collection.period", 36000);
 		$this->garbageCollectionTrigger = (bool) $this->server->getProperty("memory.garbage-collection.low-memory-trigger", true);
 		$this->garbageCollectionAsync = (bool) $this->server->getProperty("memory.garbage-collection.collect-async-worker", true);
 
-		$this->chunkLimit = (int) $this->server->getProperty("memory.max-chunks.trigger-limit", 12000);
+		$this->chunkLimit = (int) $this->server->getProperty("memory.max-chunks.trigger-limit", 96);
 		$this->chunkCollect = (bool) $this->server->getProperty("memory.max-chunks.trigger-chunk-collect", true);
 		$this->chunkTrigger = (bool) $this->server->getProperty("memory.max-chunks.low-memory-trigger", true);
 
