@@ -961,8 +961,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	}
 
 	/**
-	 * Sets the gamemode, and if needed, kicks the player
-	 * TODO: Check if Mojang adds the ability to change gamemode without kicking players
+	 * Sets the gamemode, and if needed, kicks the Player.
 	 *
 	 * @param int $gm
 	 *
