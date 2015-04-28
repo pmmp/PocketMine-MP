@@ -24,6 +24,7 @@ namespace pocketmine\network;
 use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\network\protocol\DataPacket;
 use pocketmine\network\protocol\Info as ProtocolInfo;
+use pocketmine\network\protocol\Info;
 use pocketmine\network\protocol\UnknownPacket;
 use pocketmine\Player;
 use pocketmine\Server;
@@ -179,7 +180,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	}
 
 	public function setName($name){
-		$this->interface->sendOption("name", "MCCPP;Demo;$name");
+		$this->interface->sendOption("name", "MCPE;".addcslashes($name, ";").";".Info::CURRENT_PROTOCOL.";".\pocketmine\MINECRAFT_VERSION_NETWORK);
 	}
 
 	public function setPortCheck($name){

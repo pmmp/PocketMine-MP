@@ -152,7 +152,6 @@ class LevelDB extends BaseLevelProvider{
 			$chunk->getBlockDataArray() .
 			$chunk->getBlockSkyLightArray() .
 			$chunk->getBlockLightArray() .
-			$chunk->getBiomeIdArray() .
 			$biomeColors .
 			$tiles;
 

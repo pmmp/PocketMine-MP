@@ -84,7 +84,7 @@ class ChunkRequestTask extends AsyncTask{
 
 		$biomeColors = pack("N*", ...$chunk->getBiomeColorArray());
 
-		$ordered = $orderedIds . $orderedData . $orderedSkyLight . $orderedLight . $chunk->getBiomeIdArray() . $biomeColors . $this->tiles;
+		$ordered = $orderedIds . $orderedData . $orderedSkyLight . $orderedLight . $biomeColors . $this->tiles;
 
 		$this->setResult($ordered, false);
 	}
