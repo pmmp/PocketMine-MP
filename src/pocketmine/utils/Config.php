@@ -93,7 +93,7 @@ class Config{
 	 * @return mixed
 	 */
 	public static function fixYAMLIndexes($str){
-		return preg_replace("#^([ ]*)([a-zA-Z_]{1}[^\:]*)\:#m", "$1\"$2\":", $str);
+		return preg_replace("#^([ ]*)([a-zA-Z_]{1}[ ]*)$\\:#m", "$1\"$2\":", $str);
 	}
 
 	/**
