@@ -215,6 +215,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	protected $inAirTicks = 0;
 
+	protected $autoJump = true;
+
 
 	private $needACK = [];
 
@@ -283,6 +285,15 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	public function hasPlayedBefore(){
 		return $this->namedtag instanceof Compound;
+	}
+
+	public function setAutoJump($value){
+		$this->autoJump = $value;
+		$this->sendSettings();
+	}
+
+	public function hasAutoJump(){
+		return $this->autoJump;
 	}
 
 	/**
@@ -458,7 +469,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->perm = new PermissibleBase($this);
 		$this->namedtag = new Compound();
 		$this->server = Server::getInstance();
-		$this->lastBreak = microtime(true);
+		$this->lastBreak = PHP_INT_MAX;
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->clientID = $clientID;
@@ -907,6 +918,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 
 			$this->level->sleepTicks = 0;
+
+			$pk = new AnimatePacket();
+			$pk->eid = $this->getId();
+			$pk->action = 3; //Wake up
+			$this->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 		}
 
 	}
@@ -1008,22 +1024,17 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	/**
 	 * Sends all the option flags
-	 *
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
-	 *
-	 * @param bool $nametags
 	 */
-	public function sendSettings($nametags = true){
+	public function sendSettings(){
 		/*
 		 bit mask | flag name
 		0x00000001 world_inmutable
-		0x00000002 -
-		0x00000004 -
-		0x00000008 - (autojump)
-		0x00000010 -
+		0x00000002 no_pvp
+		0x00000004 no_pvm
+		0x00000008 no_mvp
+		0x00000010 static_time
 		0x00000020 nametags_visible
-		0x00000040 ?
+		0x00000040 auto_jump
 		0x00000080 ?
 		0x00000100 ?
 		0x00000200 ?
@@ -1055,8 +1066,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$flags |= 0x01; //Do not allow placing/breaking blocks, adventure mode
 		}
 
-		if($nametags !== false){
+		/*if($nametags !== false){
 			$flags |= 0x20; //Show Nametags
+		}*/
+
+		if($this->autoJump){
+			$flags |= 0x40;
 		}
 
 		$pk = new AdventureSettingsPacket();
@@ -1686,9 +1701,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->inventory->sendContents($this);
 					break;
 				}elseif($this->isCreative()){
-					$this->inventory->setHeldItemIndex($packet->slot);
+					$this->inventory->setHeldItemIndex($packet->selectedSlot);
+					$this->inventory->setHeldItemSlot($slot);
 				}else{
-                    if($packet->selectedSlot >= 0 and $packet->selectedSlot < 9){
+                    if($packet->selectedSlot >= 0 and $packet->selectedSlot < $this->inventory->getHotbarSize()){
                         $this->inventory->setHeldItemIndex($packet->selectedSlot);
                         $this->inventory->setHeldItemSlot($slot);
                     }else{
@@ -1728,7 +1744,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$item = $this->inventory->getItemInHand();
 						$oldItem = clone $item;
 						//TODO: Implement adventure mode checks
-						if($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
+						if($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this)){
 							if(!$item->equals($oldItem, true) or $item->getCount() !== $oldItem->getCount()){
 								$this->inventory->setItemInHand($item, $this);
 								$this->inventory->sendHeldItem($this->hasSpawned);

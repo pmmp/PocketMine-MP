@@ -599,6 +599,13 @@ class Block extends Position implements Metadatable{
 	}
 
 	/**
+	 * @return int
+	 */
+	public function getResistance(){
+		return 1;
+	}
+
+	/**
 	 * @return float
 	 */
 	public function getFrictionFactor(){

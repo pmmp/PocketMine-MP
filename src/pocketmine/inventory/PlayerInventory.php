@@ -71,15 +71,12 @@ class PlayerInventory extends BaseInventory{
 	public function setHeldItemIndex($index){
 		if($index >= 0 and $index < $this->getHotbarSize()){
 			$this->itemInHandIndex = $index;
-			$item = $this->getItemInHand();
 
-			$pk = new PlayerEquipmentPacket();
-			$pk->eid = $this->getHolder()->getId();
-			$pk->item = $item->getId();
-			$pk->meta = $item->getDamage();
-			$pk->slot = $this->getHeldItemIndex();
-
-			Server::broadcastPacket($this->getHolder()->getViewers(), $pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+			if($this->getHolder() instanceof Player){
+				$this->sendHeldItem($this->getHolder()->getViewers() + [$this->getHolder()]);
+			}else{
+				$this->sendHeldItem($this->getHolder()->getViewers());
+			}
 		}
 	}
 
@@ -145,15 +142,16 @@ class PlayerInventory extends BaseInventory{
 		$pk->eid = $this->getHolder()->getId();
 		$pk->item = $item->getId();
 		$pk->meta = $item->getDamage();
-		$pk->slot = 0;
+		$pk->slot = $this->getHeldItemSlot();
+		$pk->selectedSlot = $this->getHeldItemIndex();
 		$pk->isEncoded = true;
-		$pk->encode();
+
+		Server::broadcastPacket($target, $pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
 
 		foreach($target as $player){
 			if($player === $this->getHolder()){
 				$this->sendSlot($this->getHeldItemSlot(), $player);
-			}else{
-				$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+				break;
 			}
 		}
 	}
