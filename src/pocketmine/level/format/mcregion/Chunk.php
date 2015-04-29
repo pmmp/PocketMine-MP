@@ -67,12 +67,8 @@ class Chunk extends BaseFullChunk{
 			$this->nbt->TileTicks->setTagType(NBT::TAG_Compound);
 		}
 
-		if(!isset($this->nbt->Biomes) or !($this->nbt->Biomes instanceof ByteArray)){
-			$this->nbt->Biomes = new ByteArray("Biomes", str_repeat("\x01", 256));
-		}
-
 		if(!isset($this->nbt->BiomeColors) or !($this->nbt->BiomeColors instanceof IntArray)){
-			$this->nbt->BiomeColors = new IntArray("BiomeColors", array_fill(0, 256, Binary::readInt("\x00\x85\xb2\x4a")));
+			$this->nbt->BiomeColors = new IntArray("BiomeColors", array_fill(0, 256, Binary::readInt("\x01\x85\xb2\x4a")));
 		}
 
 		if(!isset($this->nbt->HeightMap) or !($this->nbt->HeightMap instanceof IntArray)){
@@ -89,7 +85,7 @@ class Chunk extends BaseFullChunk{
 			$this->nbt->BlockLight = new ByteArray("BlockLight", $half);
 		}
 
-		parent::__construct($level, $this->nbt["xPos"], $this->nbt["zPos"], $this->nbt->Blocks->getValue(), $this->nbt->Data->getValue(), $this->nbt->SkyLight->getValue(), $this->nbt->BlockLight->getValue(), $this->nbt->Biomes->getValue(), $this->nbt->BiomeColors->getValue(), $this->nbt->HeightMap->getValue(), $this->nbt->Entities->getValue(), $this->nbt->TileEntities->getValue());
+		parent::__construct($level, $this->nbt["xPos"], $this->nbt["zPos"], $this->nbt->Blocks->getValue(), $this->nbt->Data->getValue(), $this->nbt->SkyLight->getValue(), $this->nbt->BlockLight->getValue(), $this->nbt->BiomeColors->getValue(), $this->nbt->HeightMap->getValue(), $this->nbt->Entities->getValue(), $this->nbt->TileEntities->getValue());
 		unset($this->nbt->Blocks);
 		unset($this->nbt->Data);
 		unset($this->nbt->SkyLight);
@@ -314,14 +310,11 @@ class Chunk extends BaseFullChunk{
 			$chunk->blockLight = substr($data, $offset, 16384);
 			$offset += 16384;
 
-			$chunk->biomeIds = substr($data, $offset, 256);
-			$offset += 256;
-
-			$chunk->biomeColors = [];
 			$chunk->heightMap = [];
+			$chunk->biomeColors = [];
+			$hm = unpack("C*", substr($data, $offset, 256));
+			$offset += 256;
 			$bc = unpack("N*", substr($data, $offset, 1024));
-			$offset += 1024;
-			$hm = unpack("N*", substr($data, $offset, 1024));
 			$offset += 1024;
 
 			for($i = 0; $i < 256; ++$i){
@@ -341,8 +334,8 @@ class Chunk extends BaseFullChunk{
 	}
 	
 	public function toFastBinary(){
+		$heightMap = pack("C*", ...$this->getHeightMapArray());
 		$biomeColors = pack("N*", ...$this->getBiomeColorArray());
-		$heightMap = pack("N*", ...$this->getHeightMapArray());
 
 		return
 			Binary::writeInt($this->x) .
@@ -351,9 +344,8 @@ class Chunk extends BaseFullChunk{
 			$this->getBlockDataArray() .
 			$this->getBlockSkyLightArray() .
 			$this->getBlockLightArray() .
-			$this->getBiomeIdArray() .
-			$biomeColors .
 			$heightMap .
+			$biomeColors .
 			chr(($this->isPopulated() ? 1 << 1 : 0) + ($this->isGenerated() ? 1 : 0));
 	}
 
@@ -369,7 +361,6 @@ class Chunk extends BaseFullChunk{
 			$nbt->SkyLight = new ByteArray("SkyLight", $this->getBlockSkyLightArray());
 			$nbt->BlockLight = new ByteArray("BlockLight", $this->getBlockLightArray());
 
-			$nbt->Biomes = new ByteArray("Biomes", $this->getBiomeIdArray());
 			$nbt->BiomeColors = new IntArray("BiomeColors", $this->getBiomeColorArray());
 
 			$nbt->HeightMap = new IntArray("HeightMap", $this->getHeightMapArray());

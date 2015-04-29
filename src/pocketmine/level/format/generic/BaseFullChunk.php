@@ -73,13 +73,12 @@ abstract class BaseFullChunk implements FullChunk{
 	 * @param string        $data
 	 * @param string        $skyLight
 	 * @param string        $blockLight
-	 * @param string        $biomeIds
 	 * @param int[]         $biomeColors
 	 * @param int[]         $heightMap
 	 * @param Compound[]    $entities
 	 * @param Compound[]    $tiles
 	 */
-	protected function __construct($provider, $x, $z, $blocks, $data, $skyLight, $blockLight, $biomeIds = null, array $biomeColors = [], array $heightMap = [], array $entities = [], array $tiles = []){
+	protected function __construct($provider, $x, $z, $blocks, $data, $skyLight, $blockLight, array $biomeColors = [], array $heightMap = [], array $entities = [], array $tiles = []){
 		$this->provider = $provider;
 		$this->x = (int) $x;
 		$this->z = (int) $z;
@@ -92,15 +91,7 @@ abstract class BaseFullChunk implements FullChunk{
 		if(count($biomeColors) === 256){
 			$this->biomeColors = $biomeColors;
 		}else{
-			$this->biomeColors = array_fill(0, 256, Binary::readInt("\x00\x85\xb2\x4a"));
-		}
-
-		if(strlen($biomeIds) !== 256){
-			$biomeIds = str_repeat("\x01", 256);
-		}
-
-		for($i = 0; $i < 256; ++$i){
-			$this->biomeColors[$i] = ($this->biomeColors[$i] & 0xFFFFFF) | (ord($biomeIds{$i}) << 24);
+			$this->biomeColors = array_fill(0, 256, Binary::readInt("\x01\x85\xb2\x4a"));
 		}
 
 		if(count($heightMap) === 256){

@@ -33,8 +33,6 @@ class Chunk extends BaseFullChunk{
 	protected $isGenerated = false;
 
 	public function __construct($level, $chunkX, $chunkZ, $terrain, array $entityData = null, array $tileData = null){
-		$heightMap = array_fill(0, 256, 127);
-
 		$offset = 0;
 
 		$blocks = substr($terrain, $offset, 32768);
@@ -45,7 +43,11 @@ class Chunk extends BaseFullChunk{
 		$offset += 16384;
 		$blockLight = substr($terrain, $offset, 16384);
 		$offset += 16384;
-		$biomes = substr($terrain, $offset, 256);
+
+		$heightMap = [];
+		foreach(unpack("C*", substr($terrain, $offset, 256)) as $c){
+			$heightMap[] = $c;
+		}
 		$offset += 256;
 
 		$biomeColors = [];
@@ -54,7 +56,7 @@ class Chunk extends BaseFullChunk{
 		}
 		$offset += 1024;
 
-		parent::__construct($level, $chunkX, $chunkZ, $blocks, $data, $skyLight, $blockLight, $biomes, $biomeColors, $heightMap, $entityData === null ? [] : $entityData, $tileData === null ? [] : $tileData);
+		parent::__construct($level, $chunkX, $chunkZ, $blocks, $data, $skyLight, $blockLight, $biomeColors, $heightMap, $entityData === null ? [] : $entityData, $tileData === null ? [] : $tileData);
 	}
 
 	public function getBlockId($x, $y, $z){
@@ -321,6 +323,7 @@ class Chunk extends BaseFullChunk{
 
 		}
 
+		$heighmap = pack("C*", ...$this->getHeightMapArray());
 		$biomeColors = pack("N*", ...$this->getBiomeColorArray());
 
 		return $chunkIndex .
@@ -328,7 +331,7 @@ class Chunk extends BaseFullChunk{
 			$this->getBlockDataArray() .
 			$this->getBlockSkyLightArray() .
 			$this->getBlockLightArray() .
-			$this->getBiomeIdArray() .
+			$heighmap .
 			$biomeColors . chr(
 				($this->isPopulated() ? 0x02 : 0) | ($this->isGenerated() ? 0x01 : 0)
 			);

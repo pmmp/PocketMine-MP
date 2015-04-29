@@ -2408,13 +2408,13 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		Timings::$generationTimer->startTiming();
-		if(!$this->isChunkPopulated($x, $z)){
+		if(!$this->getChunk($x, $z, true)->isPopulated()){
 			$populate = true;
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
 					if(isset($this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)])){
 						$populate = false;
-					}elseif(!$this->isChunkGenerated($x + $xx, $z + $zz)){
+					}elseif(!$this->getChunk($x + $xx, $z + $zz, true)->isGenerated()){
 						$populate = false;
 						$this->generateChunk($x + $xx, $z + $zz, $force);
 					}

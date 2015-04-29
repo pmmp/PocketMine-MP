@@ -651,6 +651,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$Z = null;
 			Level::getXZ($index, $X, $Z);
 
+			++$count;
+
 			if(!$this->level->populateChunk($X, $Z)){
 				if($this->teleportPosition === null){
 					continue;
@@ -659,8 +661,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 
-
-			++$count;
 
 			unset($this->loadQueue[$index]);
 			$this->usedChunks[$index] = false;
@@ -687,7 +687,15 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $pos));
 
-			$this->teleport($ev->getRespawnPosition());
+			$pos = $ev->getRespawnPosition();
+
+			$pk = new RespawnPacket();
+			$pk->x = $pos->x;
+			$pk->y = $pos->y;
+			$pk->z = $pos->z;
+			$this->dataPacket($pk->setChannel(Network::CHANNEL_PRIORITY));
+
+			$this->teleport($pos);
 
 			$pk = new PlayStatusPacket();
 			$pk->status = PlayStatusPacket::PLAYER_SPAWN;
@@ -1604,12 +1612,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$pk->eid = $this->getId(); //Always use EntityID as zero for the actual player
 				$this->dataPacket($pk->setChannel(Network::CHANNEL_PRIORITY));
 
-				$pk = new RespawnPacket();
-				$pk->x = $this->x;
-				$pk->y = $this->y;
-				$pk->z = $this->z;
-				$this->dataPacket($pk->setChannel(Network::CHANNEL_PRIORITY));
-
 				$pk = new SetTimePacket();
 				$pk->time = $this->level->getTime();
 				$pk->started = $this->level->stopTime == false;
@@ -1985,6 +1987,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							break;
 						}
 
+						if($this->server->isHardcore()){
+							$this->setBanned(true);
+							break;
+						}
+
 						$this->craftingType = 0;
 
 						$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
@@ -2015,39 +2022,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$this->startAction = -1;
 				$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
-				break;
-
-			case ProtocolInfo::RESPAWN_PACKET:
-				//TODO: Remove
-				if($this->spawned === false or $this->dead === false){
-					break;
-				}
-
-				$this->craftingType = 0;
-
-				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
-
-				$this->teleport($ev->getRespawnPosition());
-
-				$this->extinguish();
-				$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 300);
-				$this->deadTicks = 0;
-				$this->noDamageTicks = 60;
-
-				$this->setHealth(20);
-				$this->dead = false;
-
-				$this->removeAllEffects();
-				$this->sendData($this);
-
-				$this->sendSettings();
-				$this->inventory->sendContents($this);
-				$this->inventory->sendArmorContents($this);
-
-				$this->blocked = false;
-
-				$this->spawnToAll();
-				$this->scheduleUpdate();
 				break;
 
 			case ProtocolInfo::REMOVE_BLOCK_PACKET:
@@ -2866,16 +2840,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->server->broadcast($ev->getDeathMessage(), Server::BROADCAST_CHANNEL_USERS);
 		}
 
-		if($this->server->isHardcore()){
-			$this->setBanned(true);
-		}else{
-			$pk = new RespawnPacket();
-			$pos = $this->getSpawn();
-			$pk->x = $pos->x;
-			$pk->y = $pos->y;
-			$pk->z = $pos->z;
-			$this->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
-		}
+
+		$pk = new RespawnPacket();
+		$pos = $this->getSpawn();
+		$pk->x = $pos->x;
+		$pk->y = $pos->y;
+		$pk->z = $pos->z;
+		$this->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 	}
 
 	public function setHealth($amount){
