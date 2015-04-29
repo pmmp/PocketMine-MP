@@ -62,16 +62,20 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 			}
 		}
 
-		if(strlen($biomeIds) === 256){
-			$this->biomeIds = $biomeIds;
-		}else{
-			$this->biomeIds = str_repeat("\x01", 256);
-		}
-
 		if(count($biomeColors) === 256){
 			$this->biomeColors = $biomeColors;
 		}else{
 			$this->biomeColors = array_fill(0, 256, Binary::readInt("\x00\x85\xb2\x4a"));
+		}
+
+
+
+		if(strlen($biomeIds) !== 256){
+			$biomeIds = str_repeat("\x01", 256);
+		}
+
+		for($i = 0; $i < 256; ++$i){
+			$this->biomeColors[$i] = ($this->biomeColors[$i] & 0xFFFFFF) | (ord($biomeIds{$i}) << 24);
 		}
 
 		if(count($heightMap) === 256){

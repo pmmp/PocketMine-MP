@@ -219,7 +219,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	protected $allowFlight = false;
 
-
 	private $needACK = [];
 
 	private $batchedPackets = [];
@@ -311,7 +310,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * @param Player $player
 	 */
 	public function spawnTo(Player $player){
-		if($this->spawned === true and $player->spawned === true and $this->dead !== true and $player->dead !== true and $player->getLevel() === $this->level and $player->canSee($this)){
+		if($this->spawned === true and $player->spawned === true and $this->dead !== true and $player->dead !== true and $player->getLevel() === $this->level and $player->canSee($this) and !$this->isSpectator()){
 			parent::spawnTo($player);
 		}
 	}
@@ -1000,6 +999,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		$this->allowFlight = $this->isCreative();
 
+		if($this->isSpectator()){
+			$this->despawnFromAll();
+		}else{
+			$this->spawnToAll();
+		}
+
 		$this->namedtag->playerGameType = new Int("playerGameType", $this->gamemode);
 
 		$spawnPosition = $this->getSpawn();
@@ -1048,7 +1053,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		0x00000020 nametags_visible
 		0x00000040 auto_jump
 		0x00000080 allow_fly
-		0x00000100 ?
+		0x00000100 noclip
 		0x00000200 ?
 		0x00000400 ?
 		0x00000800 ?
@@ -1090,6 +1095,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$flags |= 0x80;
 		}
 
+		if($this->isSpectator()){
+			$flags |= 0x100;
+		}
+
 		$pk = new AdventureSettingsPacket();
 		$pk->flags = $flags;
 		$this->dataPacket($pk->setChannel(Network::CHANNEL_PRIORITY));
@@ -1101,6 +1110,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	public function isCreative(){
 		return ($this->gamemode & 0x01) > 0;
+	}
+
+	public function isSpectator(){
+		return $this->gamemode === 3;
 	}
 
 	public function isAdventure(){
@@ -1276,7 +1289,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 
-			$this->checkNearEntities($tickDiff);
+			if(!$this->isSpectator()){
+				$this->checkNearEntities($tickDiff);
+			}
 
 			$this->speed = $from->subtract($to);
 		}elseif($distanceSquared == 0){
@@ -1333,25 +1348,27 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			$this->processMovement($tickDiff);
 
-			$this->entityBaseTick($tickDiff);
+			if(!$this->isSpectator()){
+				$this->entityBaseTick($tickDiff);
 
-			if($this->onGround){
-				$this->inAirTicks = 0;
-			}else{
-				if(!$this->allowFlight and $this->inAirTicks > 10 and !$this->isSleeping() and $this->getDataProperty(self::DATA_NO_AI) !== 1){
-					$expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - 5));
-					$diff = sqrt(abs($this->speed->y - $expectedVelocity));
+				if($this->onGround){
+					$this->inAirTicks = 0;
+				}else{
+					if(!$this->allowFlight and $this->inAirTicks > 10 and !$this->isSleeping() and $this->getDataProperty(self::DATA_NO_AI) !== 1){
+						$expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - 5));
+						$diff = sqrt(abs($this->speed->y - $expectedVelocity));
 
-					if(!$this->hasEffect(Effect::JUMP) and $diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()){
-						if($this->inAirTicks < 100){
-							$this->setMotion(new Vector3(0, $expectedVelocity, 0));
-						}elseif($this->kick("Flying is not enabled on this server")){
-							return false;
+						if(!$this->hasEffect(Effect::JUMP) and $diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()){
+							if($this->inAirTicks < 100){
+								$this->setMotion(new Vector3(0, $expectedVelocity, 0));
+							}elseif($this->kick("Flying is not enabled on this server")){
+								return false;
+							}
 						}
 					}
-				}
 
-				++$this->inAirTicks;
+					++$this->inAirTicks;
+				}
 			}
 		}
 
@@ -1517,7 +1534,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->gamemode = $this->server->getGamemode();
 					$nbt->playerGameType = new Int("playerGameType", $this->gamemode);
 				}
-				
+
 				$this->allowFlight = $this->isCreative();
 
 
