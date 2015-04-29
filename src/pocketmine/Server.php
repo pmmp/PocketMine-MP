@@ -2186,7 +2186,7 @@ class Server{
 	private function tickProcessor(){
 		while($this->isRunning){
 			$this->tick();
-			usleep((int) max(1, ($this->nextTick - microtime(true)) * 1000000));
+			usleep((int) max(1, ($this->nextTick - microtime(true)) * 1000000 - 2000));
 		}
 	}
 
@@ -2369,7 +2369,7 @@ class Server{
 	 */
 	private function tick(){
 		$tickTime = microtime(true);
-		if($tickTime < $this->nextTick){
+		if(($tickTime - $this->nextTick) < -0.025){ //Allow half a tick of diff
 			return false;
 		}
 

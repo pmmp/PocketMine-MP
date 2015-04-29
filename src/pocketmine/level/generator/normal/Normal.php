@@ -251,7 +251,7 @@ class Normal extends Generator{
 
 					if($noiseValue >= 0){
 						$chunk->setBlockId($x, $y, $z, Block::STONE);
-					}else{
+					}/*else{
 						if($y <= $this->waterHeight){
 							$chunk->setBlockId($x, $y, $z, Block::STILL_WATER);
 							$lightValue = 15 - ($this->waterHeight - $y) * 2;
@@ -261,7 +261,7 @@ class Normal extends Generator{
 						}else{
 							$chunk->setBlockSkyLight($x, $y, $z, 15);
 						}
-					}
+					}*/
 				}
 			}
 		}

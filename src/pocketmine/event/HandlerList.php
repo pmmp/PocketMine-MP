@@ -151,7 +151,7 @@ class HandlerList{
 	 * @return RegisteredListener[]
 	 */
 	public function getRegisteredListeners($plugin = null){
-		if($plugin instanceof Plugin){
+		if($plugin !== null){
 			$listeners = [];
 			foreach($this->getRegisteredListeners(null) as $hash => $listener){
 				if($listener->getPlugin() === $plugin){

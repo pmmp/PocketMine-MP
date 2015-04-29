@@ -176,6 +176,8 @@ interface FullChunk{
 	 */
 	public function setHeightMap($x, $z, $value);
 
+	public function recalculateHeightMap();
+
 	/**
 	 * @param int $x 0-15
 	 * @param int $z 0-15

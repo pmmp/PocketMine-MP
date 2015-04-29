@@ -151,12 +151,6 @@ abstract class BaseFullChunk implements FullChunk{
 
 			$this->getProvider()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
 
-			for($z = 0; $z < 16; ++$z){
-				for($x = 0; $x < 16; ++$x){
-					$this->setHeightMap($x, $z, $this->getHighestBlockAt($x, $z));
-				}
-			}
-
 			$this->NBTentities = null;
 			$this->NBTtiles = null;
 			$this->hasChanged = false;
@@ -228,10 +222,27 @@ abstract class BaseFullChunk implements FullChunk{
 		$this->heightMap[($z << 4) + $x] = $value;
 	}
 
-	public function getHighestBlockAt($x, $z){
+	public function recalculateHeightMap(){
+		for($z = 0; $z < 16; ++$z){
+			for($x = 0; $x < 16; ++$x){
+				$this->setHeightMap($x, $z, $this->getHighestBlockAt($x, $z, false));
+			}
+		}
+	}
+
+	public function getHighestBlockAt($x, $z, $cache = true){
+		if($cache){
+			$h = $this->getHeightMap($x, $z);
+
+			if($h !== 0 and $h !== 127){
+				return $h;
+			}
+		}
+
 		$column = $this->getBlockIdColumn($x, $z);
 		for($y = 127; $y >= 0; --$y){
 			if($column{$y} !== "\x00"){
+				$this->setHeightMap($x, $z, $y);
 				return $y;
 			}
 		}
