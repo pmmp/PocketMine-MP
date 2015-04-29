@@ -217,6 +217,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	protected $autoJump = true;
 
+	protected $allowFlight = false;
+
 
 	private $needACK = [];
 
@@ -285,6 +287,15 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	public function hasPlayedBefore(){
 		return $this->namedtag instanceof Compound;
+	}
+
+	public function setAllowFlight($value){
+		$this->allowFlight = (bool) $value;
+		$this->sendSettings();
+	}
+
+	public function getAllowFlight(){
+		return $this->allowFlight;
 	}
 
 	public function setAutoJump($value){
@@ -987,6 +998,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->inventory->sendHeldItem($this->hasSpawned);
 		}
 
+		$this->allowFlight = $this->isCreative();
+
 		$this->namedtag->playerGameType = new Int("playerGameType", $this->gamemode);
 
 		$spawnPosition = $this->getSpawn();
@@ -1034,7 +1047,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		0x00000010 static_time
 		0x00000020 nametags_visible
 		0x00000040 auto_jump
-		0x00000080 ?
+		0x00000080 allow_fly
 		0x00000100 ?
 		0x00000200 ?
 		0x00000400 ?
@@ -1071,6 +1084,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		if($this->autoJump){
 			$flags |= 0x40;
+		}
+
+		if($this->allowFlight){
+			$flags |= 0x80;
 		}
 
 		$pk = new AdventureSettingsPacket();
@@ -1321,7 +1338,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			if($this->onGround){
 				$this->inAirTicks = 0;
 			}else{
-				if($this->inAirTicks > 10 and $this->isSurvival() and !$this->isSleeping() and $this->getDataProperty(self::DATA_NO_AI) === 0){
+				if(!$this->allowFlight and $this->inAirTicks > 10 and !$this->isSleeping() and $this->getDataProperty(self::DATA_NO_AI) !== 1){
 					$expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - 5));
 					$diff = sqrt(abs($this->speed->y - $expectedVelocity));
 
@@ -1500,6 +1517,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->gamemode = $this->server->getGamemode();
 					$nbt->playerGameType = new Int("playerGameType", $this->gamemode);
 				}
+				
+				$this->allowFlight = $this->isCreative();
+
+
 				if(($level = $this->server->getLevelByName($nbt["Level"])) === null){
 					$this->setLevel($this->server->getDefaultLevel(), true);
 					$nbt["Level"] = $this->level->getName();
@@ -2860,7 +2881,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
             and $source->getCause() !== EntityDamageEvent::CAUSE_VOID
         ){
             $source->setCancelled();
-        }
+        }elseif($this->allowFlight and $source->getCause() === EntityDamageEvent::CAUSE_FALL){
+			$source->setCancelled();
+		}
 
 		parent::attack($damage, $source);
 
