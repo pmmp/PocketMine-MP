@@ -108,13 +108,6 @@ class PlayerInventory extends BaseInventory{
 
 			$itemIndex = $this->getHeldItemIndex();
 
-			for($i = 0; $i < $this->getHotbarSize(); ++$i){
-				if($this->getHotbarSlotIndex($i) === $slot){
-					$itemIndex = $i;
-					break;
-				}
-			}
-
 			if($this->getHolder() instanceof Player){
 				Server::getInstance()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $item, $slot, $itemIndex));
 				if($ev->isCancelled()){
@@ -124,7 +117,6 @@ class PlayerInventory extends BaseInventory{
 			}
 
 			$this->setHotbarSlotIndex($itemIndex, $slot);
-			$this->setHeldItemIndex($itemIndex);
 		}
 	}
 
