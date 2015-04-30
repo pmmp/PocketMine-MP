@@ -323,7 +323,7 @@ class Chunk extends BaseFullChunk{
 
 		}
 
-		$heighmap = pack("C*", ...$this->getHeightMapArray());
+		$heightmap = pack("C*", ...$this->getHeightMapArray());
 		$biomeColors = pack("N*", ...$this->getBiomeColorArray());
 
 		return $chunkIndex .
@@ -331,7 +331,7 @@ class Chunk extends BaseFullChunk{
 			$this->getBlockDataArray() .
 			$this->getBlockSkyLightArray() .
 			$this->getBlockLightArray() .
-			$heighmap .
+			$heightmap .
 			$biomeColors . chr(
 				($this->isPopulated() ? 0x02 : 0) | ($this->isGenerated() ? 0x01 : 0)
 			);
