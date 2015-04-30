@@ -869,6 +869,10 @@ abstract class Entity extends Location implements Metadatable{
 		$this->level->updateEntities[$this->id] = $this;
 	}
 
+	public function isOnFire(){
+		return $this->fireTicks > 0;
+	}
+
 	public function setOnFire($seconds){
 		$ticks = $seconds * 20;
 		if($ticks > $this->fireTicks){

@@ -23,6 +23,7 @@ namespace pocketmine\entity;
 
 
 use pocketmine\block\Block;
+use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
@@ -99,6 +100,15 @@ abstract class Living extends Entity implements Damageable{
 
 		if($source instanceof EntityDamageByEntityEvent){
 			$e = $source->getDamager();
+			$t = null;
+			if($source instanceof EntityDamageByChildEntityEvent){
+				$t = $source->getChild();
+			}
+
+			if($e->isOnFire() > 0 or ($t !== null and $t->isOnFire() > 0)){
+				$this->setOnFire(2 * $this->server->getDifficulty());
+			}
+
 			$deltaX = $this->x - $e->x;
 			$deltaZ = $this->z - $e->z;
 			$yaw = atan2($deltaX, $deltaZ);

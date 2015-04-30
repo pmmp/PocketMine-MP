@@ -89,6 +89,7 @@ use pocketmine\nbt\tag\Double;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Float;
 use pocketmine\nbt\tag\Int;
+use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\AdventureSettingsPacket;
@@ -1356,9 +1357,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			$this->processMovement($tickDiff);
 
-			if(!$this->isSpectator()){
-				$this->entityBaseTick($tickDiff);
 
+			$this->entityBaseTick($tickDiff);
+
+			if(!$this->isSpectator()){
 				if($this->onGround){
 					$this->inAirTicks = 0;
 				}else{
@@ -1388,8 +1390,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->sendNextChunk();
 		}
 
-		$this->checkTeleportPosition();
-
 		if(count($this->moveToSend) > 0){
 			$pk = new MoveEntityPacket();
 			$pk->entities = $this->moveToSend;
@@ -1411,6 +1411,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 			$this->batchedPackets = [];
 		}
+
+		$this->checkTeleportPosition();
 
 		$this->lastUpdate = $currentTick;
 
@@ -1913,6 +1915,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 										new Float("", $this->yaw),
 										new Float("", $this->pitch)
 									]),
+									"Fire" => new Short("Fire", $this->isOnFire() ? 45 * 60 : 0)
 								]);
 
 								$diff = ($this->server->getTick() - $this->startAction);
