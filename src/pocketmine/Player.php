@@ -1206,11 +1206,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	}
 
 	protected function processMovement($tickDiff){
-		if($this->dead or !$this->spawned or !($this->newPosition instanceof Vector3)){
+		if($this->dead or !$this->spawned or $this->newPosition === null or $this->teleportPosition !== null){
 			return;
 		}
 
-		$distanceSquared = $this->newPosition->distanceSquared($this);
+		$newPos = $this->newPosition;
+		$distanceSquared = $newPos->distanceSquared($this);
 
 		$revert = false;
 
@@ -1218,7 +1219,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$revert = true;
 		}else{
 			if($this->chunk === null or !$this->chunk->isGenerated()){
-				$chunk = $this->level->getChunk($this->newPosition->x >> 4, $this->newPosition->z >> 4);
+				$chunk = $this->level->getChunk($newPos->x >> 4, $newPos->z >> 4);
 				if(!($chunk instanceof FullChunk) or !$chunk->isGenerated()){
 					$revert = true;
 					$this->nextChunkOrderRun = 0;
@@ -1232,15 +1233,19 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 
 		if(!$revert and $distanceSquared != 0){
-			$dx = $this->newPosition->x - $this->x;
-			$dy = $this->newPosition->y - $this->y;
-			$dz = $this->newPosition->z - $this->z;
+			$dx = $newPos->x - $this->x;
+			$dy = $newPos->y - $this->y;
+			$dz = $newPos->z - $this->z;
 
 			$this->move($dx, $dy, $dz);
 
-			$diffX = $this->x - $this->newPosition->x;
-			$diffY = $this->y - $this->newPosition->y;
-			$diffZ = $this->z - $this->newPosition->z;
+			if($newPos !== null){
+
+			}
+
+			$diffX = $this->x - $newPos->x;
+			$diffY = $this->y - $newPos->y;
+			$diffZ = $this->z - $newPos->z;
 
 			$yS = 0.5 + $this->ySize;
 			if($diffY >= -$yS or $diffY <= $yS){
@@ -1257,9 +1262,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					}
 				}
 			}elseif($diff > 0){
-				$this->x = $this->newPosition->x;
-				$this->y = $this->newPosition->y;
-				$this->z = $this->newPosition->z;
+				$this->x = $newPos->x;
+				$this->y = $newPos->y;
+				$this->z = $newPos->z;
 				$radius = $this->width / 2;
 				$this->boundingBox->setBounds($this->x - $radius, $this->y, $this->z - $radius, $this->x + $radius, $this->y + $this->height, $this->z + $radius);
 			}
@@ -1343,6 +1348,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return true;
 		}
 
+		$this->lastUpdate = $currentTick;
+
 		if($this->dead === true and $this->spawned){
 			++$this->deadTicks;
 			if($this->deadTicks >= 10){
@@ -1413,8 +1420,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 
 		$this->checkTeleportPosition();
-
-		$this->lastUpdate = $currentTick;
 
 		$this->timings->stopTiming();
 
