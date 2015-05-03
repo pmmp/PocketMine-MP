@@ -466,20 +466,10 @@ namespace pocketmine {
 
 	foreach(ThreadManager::getInstance()->getAll() as $id => $thread){
 		if($thread->isRunning()){
-			$logger->debug("Stopping " . (new \ReflectionClass($thread))->getShortName() . " thread");
-			if($thread instanceof Thread){
-				$thread->kill();
-				sleep(1);
-				if($thread->isRunning()){
-					$thread->detach();
-				}
-			}elseif($thread instanceof Worker){
-				$thread->kill();
-				sleep(1);
-				if($thread->isRunning()){
-					$thread->detach();
-				}
-			}
+			$logger->debug("Killing " . (new \ReflectionClass($thread))->getShortName() . " thread");
+			$thread->kill();
+			sleep(1);
+			$thread->detach();
 		}elseif(!$thread->isJoined()){
 			if(!$thread->isTerminated()){
 				$logger->debug("Joining " . (new \ReflectionClass($thread))->getShortName() . " thread");
@@ -487,6 +477,7 @@ namespace pocketmine {
 			}else{
 				$logger->debug("Killing " . (new \ReflectionClass($thread))->getShortName() . " thread");
 				$thread->kill();
+				$thread->detach();
 			}
 		}
 	}
