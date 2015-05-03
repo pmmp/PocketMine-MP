@@ -96,13 +96,12 @@ class FallingSand extends Entity{
 
 		if(!$this->dead){
 			if($this->ticksLived === 1){
-				$block = $this->level->getBlock($pos = (new Vector3($this->x, $this->y, $this->z))->floor());
-				if($block->getId() != $this->blockId){
+				$block = $this->level->getBlock($pos = (new Vector3($this->x - 0.5, $this->y - 0.5, $this->z - 0.5))->floor());
+				if($block->getId() !== $this->blockId){
 					$this->kill();
 					return true;
 				}
 				$this->level->setBlock($pos, Block::get(0), true);
-
 			}
 
 			$this->motionY -= $this->gravity;

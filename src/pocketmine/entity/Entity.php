@@ -161,11 +161,11 @@ abstract class Entity extends Location implements Metadatable{
 	protected $stepHeight = 0;
 	public $keepMovement = false;
 
-	public $fallDistance;
-	public $ticksLived;
+	public $fallDistance = 0;
+	public $ticksLived = 0;
 	public $lastUpdate;
 	public $maxFireTicks;
-	public $fireTicks;
+	public $fireTicks = 0;
 	public $namedtag;
 	public $canCollide = true;
 
@@ -784,8 +784,13 @@ abstract class Entity extends Location implements Metadatable{
 		return $hasUpdate;
 	}
 
-	public function updateMovement(){
-		if($this->x !== $this->lastX or $this->y !== $this->lastY or $this->z !== $this->lastZ or $this->yaw !== $this->lastYaw or $this->pitch !== $this->lastPitch){
+	protected function updateMovement(){
+		$diffPosition = ($this->x - $this->lastX) ** 2 + ($this->y - $this->lastY) ** 2 + ($this->z - $this->lastZ) ** 2;
+		$diffRotation = ($this->yaw - $this->lastYaw) ** 2 + ($this->pitch - $this->lastPitch) ** 2;
+
+		$diffMotion = ($this->motionX - $this->lastMotionX) ** 2 + ($this->motionY - $this->lastMotionY) ** 2 + ($this->motionZ - $this->lastMotionZ) ** 2;
+
+		if($diffPosition > 0.04 or $diffRotation > 2.25){ //0.2 ** 2, 1.5 ** 2
 			$this->lastX = $this->x;
 			$this->lastY = $this->y;
 			$this->lastZ = $this->z;
@@ -800,7 +805,7 @@ abstract class Entity extends Location implements Metadatable{
 			}
 		}
 
-		if(($this->lastMotionX != $this->motionX or $this->lastMotionY != $this->motionY or $this->lastMotionZ != $this->motionZ)){
+		if($diffMotion > 0.0025){ //0.05 ** 2
 			$this->lastMotionX = $this->motionX;
 			$this->lastMotionY = $this->motionY;
 			$this->lastMotionZ = $this->motionZ;
@@ -1361,9 +1366,6 @@ abstract class Entity extends Location implements Metadatable{
 		$this->motionZ = $motion->z;
 
 		if(!$this->justCreated){
-			if($this instanceof Player){
-				$this->addEntityMotion($this->getId(), $this->motionX, $this->motionY, $this->motionZ);
-			}
 			$this->updateMovement();
 		}
 

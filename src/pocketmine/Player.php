@@ -215,6 +215,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	private $spawnPosition = null;
 
 	protected $inAirTicks = 0;
+	protected $startAirTicks = 5;
 
 	protected $autoJump = true;
 
@@ -376,6 +377,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	public function resetFallDistance(){
 		parent::resetFallDistance();
+		if($this->inAirTicks !== 0){
+			$this->startAirTicks = 5;
+		}
 		$this->inAirTicks = 0;
 	}
 
@@ -1333,7 +1337,19 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->newPosition = null;
 	}
 
-	public function updateMovement(){
+	public function setMotion(Vector3 $mot){
+		if(parent::setMotion($mot)){
+			if($this->motionY > 0){
+				$this->addEntityMotion($this->getId(), $this->motionX, $this->motionY, $this->motionZ);
+				$this->startAirTicks = (-(log($this->gravity / ($this->gravity + $this->drag * $this->motionY))) / $this->drag) * 2 + 5;
+			}
+
+			return true;
+		}
+		return false;
+	}
+
+	protected function updateMovement(){
 
 	}
 
@@ -1369,10 +1385,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			if(!$this->isSpectator()){
 				if($this->onGround){
+					if($this->inAirTicks !== 0){
+						$this->startAirTicks = 5;
+					}
 					$this->inAirTicks = 0;
 				}else{
 					if(!$this->allowFlight and $this->inAirTicks > 10 and !$this->isSleeping() and $this->getDataProperty(self::DATA_NO_AI) !== 1){
-						$expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - 5));
+						$expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - $this->startAirTicks));
 						$diff = sqrt(abs($this->speed->y - $expectedVelocity));
 
 						if(!$this->hasEffect(Effect::JUMP) and $diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()){

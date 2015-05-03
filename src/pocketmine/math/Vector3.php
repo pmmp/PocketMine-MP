@@ -127,13 +127,11 @@ class Vector3{
 	}
 
 	public function floor(){
-		$x = (int) $this->x;
-		$z = (int) $this->z;
-		return new Vector3($this->x >= $x ? $x : $x - 1, (int) round($this->y), $this->z >= $z ? $z : $z - 1);
+		return new Vector3((int) $this->x, (int) $this->y, (int) $this->z);
 	}
 
 	public function round(){
-		return new Vector3(round($this->x), round($this->y), round($this->z));
+		return new Vector3((int) round($this->x), (int) round($this->y), (int) round($this->z));
 	}
 
 	public function abs(){
