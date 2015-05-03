@@ -2186,7 +2186,10 @@ class Server{
 	private function tickProcessor(){
 		while($this->isRunning){
 			$this->tick();
-			time_sleep_until($this->nextTick - 0.001);
+			$next = $this->nextTick - 0.001;
+			if($next > microtime(true)){
+				time_sleep_until($next);
+			}
 		}
 	}
 
