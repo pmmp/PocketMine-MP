@@ -2188,7 +2188,11 @@ class Server{
 			$this->tick();
 			$next = $this->nextTick - 0.001;
 			if($next > microtime(true)){
-				time_sleep_until($next);
+				try{
+					time_sleep_until($next);
+				}catch(\Exception $e){
+					//Sometimes $next is less than the current time. High load?
+				}
 			}
 		}
 	}
