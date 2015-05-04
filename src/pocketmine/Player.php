@@ -698,9 +698,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$pk->x = $pos->x;
 			$pk->y = $pos->y;
 			$pk->z = $pos->z;
-			$this->dataPacket($pk->setChannel(Network::CHANNEL_PRIORITY));
-
-			$this->teleport($pos);
+			$this->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_CHUNKS));
 
 			$pk = new PlayStatusPacket();
 			$pk->status = PlayStatusPacket::PLAYER_SPAWN;
@@ -725,6 +723,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					}
 				}
 			}
+
+			$this->teleport($pos);
 
 			$this->spawnToAll();
 
@@ -1454,6 +1454,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		return true;
 	}
 
+	public function canInteract(Vector3 $pos, $maxDistance, $maxDiff = 0.5){
+		$dV = $this->getDirectionVector();
+		$dot = $dV->dot($this);
+		$dot1 = $dV->dot($pos);
+		return ($dot1 - $dot) >= -$maxDiff or $this->distanceSquared($pos) > $maxDistance ** 2;
+	}
+
 	/**
 	 * Handles a Minecraft packet
 	 * TODO: Separate all of this in handlers
@@ -1806,7 +1813,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($packet->face >= 0 and $packet->face <= 5){ //Use Block, place
 					$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
 
-					if($blockVector->distance($this) > 10 or ($this->isCreative() and $this->isAdventure())){
+					if(!$this->canInteract($blockVector->add(0.5, 0.5, 0.5), 10) or $this->isSpectator()){
 
 					}elseif($this->isCreative()){
 						$item = $this->inventory->getItemInHand();
@@ -2078,7 +2085,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$oldItem = clone $item;
 
-				if($this->level->useBreakOn($vector, $item, $this) === true){
+				if($this->canInteract($vector->add(0.5, 0.5, 0.5), 10) and $this->level->useBreakOn($vector, $item, $this) === true){
 					if($this->isSurvival()){
 						if(!$item->equals($oldItem, true) or $item->getCount() !== $oldItem->getCount()){
 							$this->inventory->setItemInHand($item, $this);
@@ -2161,7 +2168,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						EntityDamageEvent::MODIFIER_BASE => isset($damageTable[$item->getId()]) ? $damageTable[$item->getId()] : 1,
 					];
 
-					if($this->distance($target) > 8){
+					if(!$this->canInteract($target, 8)){
 						$cancelled = true;
 					}elseif($target instanceof Player){
 						if(($target->getGamemode() & 0x01) > 0){
