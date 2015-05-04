@@ -1458,7 +1458,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$dV = $this->getDirectionVector();
 		$dot = $dV->dot($this);
 		$dot1 = $dV->dot($pos);
-		return ($dot1 - $dot) >= -$maxDiff or $this->distanceSquared($pos) > $maxDistance ** 2;
+		return ($dot1 - $dot) >= -$maxDiff and $this->distanceSquared($pos) <= $maxDistance ** 2;
 	}
 
 	/**
