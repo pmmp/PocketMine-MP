@@ -2218,6 +2218,7 @@ class Server{
 				$levelTime = microtime(true);
 				$level->doTick($currentTick);
 				$tickMs = (microtime(true) - $levelTime) * 1000;
+				$level->tickRateTime = $tickMs;
 
 				if($this->autoTickRate){
 					if($tickMs < 50 and $level->getTickRate() > $this->baseTickRate){

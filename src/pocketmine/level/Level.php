@@ -237,6 +237,7 @@ class Level implements ChunkManager, Metadatable{
 	public $timings;
 
 	private $tickRate;
+	public $tickRateTime = 0;
 	public $tickRateCounter = 0;
 
 	/** @var Generator */
@@ -335,6 +336,10 @@ class Level implements ChunkManager, Metadatable{
 
 	public function getTickRate(){
 		return $this->tickRate;
+	}
+
+	public function getTickRateTime(){
+		return $this->tickRateTime;
 	}
 
 	public function setTickRate($tickRate){
