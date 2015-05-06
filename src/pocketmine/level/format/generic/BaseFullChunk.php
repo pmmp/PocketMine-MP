@@ -21,6 +21,7 @@
 
 namespace pocketmine\level\format\generic;
 
+use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\LevelProvider;
@@ -156,6 +157,12 @@ abstract class BaseFullChunk implements FullChunk{
 			$this->hasChanged = false;
 
 		}
+
+		if(!$this->isLightPopulated()){
+			$this->recalculateHeightMap();
+			$this->populateSkyLight();
+			$this->setLightPopulated();
+		}
 	}
 
 	public function getX(){
@@ -225,6 +232,27 @@ abstract class BaseFullChunk implements FullChunk{
 	public function recalculateHeightMap(){
 		for($z = 0; $z < 16; ++$z){
 			for($x = 0; $x < 16; ++$x){
+				$this->setHeightMap($x, $z, $this->getHighestBlockAt($x, $z, false));
+			}
+		}
+	}
+
+	public function populateSkyLight(){
+		for($z = 0; $z < 16; ++$z){
+			for($x = 0; $x < 16; ++$x){
+				$top = $this->getHeightMap($x, $z);
+				for($y = 127; $y > $top; --$y){
+					$this->setBlockSkyLight($x, $y, $z, 15);
+				}
+
+				for($y = $top; $y >= 0; --$y){
+					if(Block::$solid[$this->getBlockId($x, $y, $z)]){
+						break;
+					}
+
+					$this->setBlockSkyLight($x, $y, $z, 15);
+				}
+
 				$this->setHeightMap($x, $z, $this->getHighestBlockAt($x, $z, false));
 			}
 		}
@@ -375,6 +403,14 @@ abstract class BaseFullChunk implements FullChunk{
 
 	public function toFastBinary(){
 		return $this->toBinary();
+	}
+
+	public function isLightPopulated(){
+		return true;
+	}
+
+	public function setLightPopulated($value = 1){
+
 	}
 
 }

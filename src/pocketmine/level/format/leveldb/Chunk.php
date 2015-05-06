@@ -272,6 +272,9 @@ class Chunk extends BaseFullChunk{
 			if($flags & 0x02){
 				$chunk->setPopulated();
 			}
+			if($flags & 0x04){
+				$chunk->setLightPopulated();
+			}
 			return $chunk;
 		}catch(\Exception $e){
 			return null;
@@ -333,7 +336,7 @@ class Chunk extends BaseFullChunk{
 			$this->getBlockLightArray() .
 			$heightmap .
 			$biomeColors . chr(
-				($this->isPopulated() ? 0x02 : 0) | ($this->isGenerated() ? 0x01 : 0)
+				($this->isLightPopulated() ? 0x04 : 0) | ($this->isPopulated() ? 0x02 : 0) | ($this->isGenerated() ? 0x01 : 0)
 			);
 	}
 }

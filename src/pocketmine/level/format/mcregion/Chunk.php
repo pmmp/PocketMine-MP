@@ -231,6 +231,15 @@ class Chunk extends BaseFullChunk{
 		return substr($this->blockLight, ($x << 10) + ($z << 6), 64);
 	}
 
+	public function isLightPopulated(){
+		return $this->nbt["LightPopulated"] > 0;
+	}
+
+	public function setLightPopulated($value = 1){
+		$this->nbt->LightPopulated = new Byte("LightPopulated", $value);
+		$this->hasChanged = true;
+	}
+
 	/**
 	 * @return bool
 	 */
@@ -325,7 +334,8 @@ class Chunk extends BaseFullChunk{
 			$flags = ord($data{$offset++});
 
 			$chunk->nbt->TerrainGenerated = new Byte("TerrainGenerated", $flags & 0b1);
-			$chunk->nbt->TerrainPopulated = new Byte("TerrainPopulated", $flags >> 1);
+			$chunk->nbt->TerrainPopulated = new Byte("TerrainPopulated", ($flags >> 1) & 0b1);
+			$chunk->nbt->LightPopulated = new Byte("LightPopulated", ($flags >> 2) & 0b1);
 
 			return $chunk;
 		}catch(\Exception $e){
@@ -346,7 +356,7 @@ class Chunk extends BaseFullChunk{
 			$this->getBlockLightArray() .
 			$heightMap .
 			$biomeColors .
-			chr(($this->isPopulated() ? 1 << 1 : 0) + ($this->isGenerated() ? 1 : 0));
+			chr(($this->isLightPopulated() ? 1 << 2 : 0) + ($this->isPopulated() ? 1 << 1 : 0) + ($this->isGenerated() ? 1 : 0));
 	}
 
 	public function toBinary(){

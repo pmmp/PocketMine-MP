@@ -178,6 +178,8 @@ interface FullChunk{
 
 	public function recalculateHeightMap();
 
+	public function populateSkyLight();
+
 	/**
 	 * @param int $x 0-15
 	 * @param int $z 0-15
@@ -217,6 +219,10 @@ interface FullChunk{
 	 * @param int $B 0-255
 	 */
 	public function setBiomeColor($x, $z, $R, $G, $B);
+
+	public function isLightPopulated();
+
+	public function setLightPopulated($value = 1);
 
 	public function isPopulated();
 

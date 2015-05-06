@@ -107,7 +107,9 @@ class PopulationTask extends AsyncTask{
 
 		$chunk = $manager->getChunk($chunk->getX(), $chunk->getZ());
 		$chunk->recalculateHeightMap();
-		$chunk->setPopulated(true);
+		$chunk->populateSkyLight();
+		$chunk->setLightPopulated();
+		$chunk->setPopulated();
 		$this->chunk = $chunk->toFastBinary();
 
 		$manager->setChunk($chunk->getX(), $chunk->getZ(), null);

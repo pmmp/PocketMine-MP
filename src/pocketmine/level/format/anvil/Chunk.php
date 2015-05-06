@@ -90,6 +90,15 @@ class Chunk extends BaseChunk{
 		unset($this->nbt->Sections);
 	}
 
+	public function isLightPopulated(){
+		return $this->nbt["LightPopulated"] > 0;
+	}
+
+	public function setLightPopulated($value = 1){
+		$this->nbt->LightPopulated = new Byte("LightPopulated", $value);
+		$this->hasChanged = true;
+	}
+
 	/**
 	 * @return bool
 	 */
@@ -102,6 +111,7 @@ class Chunk extends BaseChunk{
 	 */
 	public function setPopulated($value = 1){
 		$this->nbt->TerrainPopulated = new Byte("TerrainPopulated", $value);
+		$this->hasChanged = true;
 	}
 
 	/**
@@ -116,6 +126,7 @@ class Chunk extends BaseChunk{
 	 */
 	public function setGenerated($value = 1){
 		$this->nbt->TerrainGenerated = new Byte("TerrainGenerated", $value);
+		$this->hasChanged = true;
 	}
 
 	/**
