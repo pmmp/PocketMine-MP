@@ -95,7 +95,7 @@ class Squid extends WaterAnimal implements Ageable{
 
 		$hasUpdate = parent::onUpdate($currentTick);
 
-		if(!$this->dead){
+		if($this->isAlive()){
 
 			if($this->y > 62 and $this->swimDirection !== null){
 				$this->swimDirection->y = -0.5;

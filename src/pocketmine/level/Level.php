@@ -607,16 +607,17 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->entityTick->stopTiming();
 
 		$this->timings->tileEntityTick->startTiming();
+		Timings::$tickTileEntityTimer->startTiming();
+
 		//Update tiles that need update
 		if(count($this->updateTiles) > 0){
-			//Timings::$tickTileEntityTimer->startTiming();
 			foreach($this->updateTiles as $id => $tile){
 				if($tile->onUpdate() !== true){
 					unset($this->updateTiles[$id]);
 				}
 			}
-			//Timings::$tickTileEntityTimer->stopTiming();
 		}
+		Timings::$tickTileEntityTimer->stopTiming();
 		$this->timings->tileEntityTick->stopTiming();
 
 		$this->timings->doTickTiles->startTiming();

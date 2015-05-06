@@ -88,7 +88,7 @@ abstract class Projectile extends Entity{
 
 		$hasUpdate = $this->entityBaseTick($tickDiff);
 
-		if(!$this->dead){
+		if($this->isAlive()){
 
 			$movingObjectPosition = null;
 

@@ -143,7 +143,7 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	public function kill(){
-		if($this->dead){
+		if(!$this->isAlive()){
 			return;
 		}
 		parent::kill();
@@ -154,11 +154,11 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	public function entityBaseTick($tickDiff = 1){
-		Timings::$timerEntityBaseTick->startTiming();
+		Timings::$timerLivingEntityBaseTick->startTiming();
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		if($this->dead !== true){
+		if($this->isAlive()){
 			if($this->isInsideOfSolid()){
 				$hasUpdate = true;
 				$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 1);
@@ -200,7 +200,7 @@ abstract class Living extends Entity implements Damageable{
 			$this->attackTime -= $tickDiff;
 		}
 
-		Timings::$timerEntityBaseTick->stopTiming();
+		Timings::$timerLivingEntityBaseTick->stopTiming();
 
 		return $hasUpdate;
 	}

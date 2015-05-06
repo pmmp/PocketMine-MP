@@ -83,7 +83,7 @@ class PrimedTNT extends Entity implements Explosive{
 
 		$hasUpdate = $this->entityBaseTick($tickDiff);
 
-		if(!$this->dead){
+		if($this->isAlive()){
 
 			$this->motionY -= $this->gravity;
 

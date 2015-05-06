@@ -94,7 +94,7 @@ class Item extends Entity{
 
 		$hasUpdate = $this->entityBaseTick($tickDiff);
 
-		if(!$this->dead){
+		if($this->isAlive()){
 
 			if($this->pickupDelay > 0 and $this->pickupDelay < 32767){ //Infinite delay
 				$this->pickupDelay -= $tickDiff;

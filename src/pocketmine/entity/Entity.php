@@ -142,7 +142,6 @@ abstract class Entity extends Location implements Metadatable{
 	public $inBlock = false;
 	public $positionChanged;
 	public $motionChanged;
-	public $dead;
 	public $deadTicks = 0;
 	protected $age = 0;
 
@@ -558,6 +557,10 @@ abstract class Entity extends Location implements Metadatable{
 		return $this->health;
 	}
 
+	public function isAlive(){
+		return $this->health > 0;
+	}
+
 	/**
 	 * Sets the health of the Entity. This won't send any update to the players
 	 *
@@ -570,7 +573,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		if($amount <= 0){
 			$this->health = 0;
-			if($this->dead !== true){
+			if(!$this->isAlive()){
 				$this->kill();
 			}
 		}elseif($amount <= $this->getMaxHealth() or $amount < $this->health){
@@ -708,20 +711,20 @@ abstract class Entity extends Location implements Metadatable{
 
 	public function entityBaseTick($tickDiff = 1){
 
-		Timings::$tickEntityTimer->startTiming();
+		Timings::$timerEntityBaseTick->startTiming();
 		//TODO: check vehicles
 
 		$this->justCreated = false;
 		$isPlayer = $this instanceof Player;
 
-		if($this->dead === true){
+		if(!$this->isAlive()){
 			$this->removeAllEffects();
 			$this->despawnFromAll();
 			if(!$isPlayer){
 				$this->close();
 			}
 
-			Timings::$tickEntityTimer->stopTiming();
+			Timings::$timerEntityBaseTick->stopTiming();
 			return false;
 		}
 
@@ -741,7 +744,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->checkBlockCollision();
 
-		if($this->y < 0 and $this->dead !== true){
+		if($this->y < 0 and !$this->isAlive()){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_VOID, 10);
 			$this->attack($ev->getFinalDamage(), $ev);
 			$hasUpdate = true;
@@ -779,7 +782,7 @@ abstract class Entity extends Location implements Metadatable{
 		$this->age += $tickDiff;
 		$this->ticksLived += $tickDiff;
 
-		Timings::$tickEntityTimer->stopTiming();
+		Timings::$timerEntityBaseTick->stopTiming();
 
 		return $hasUpdate;
 	}
@@ -790,7 +793,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		$diffMotion = ($this->motionX - $this->lastMotionX) ** 2 + ($this->motionY - $this->lastMotionY) ** 2 + ($this->motionZ - $this->lastMotionZ) ** 2;
 
-		if($diffPosition > 0.04 or $diffRotation > 2.25){ //0.2 ** 2, 1.5 ** 2
+		if($diffPosition > 0.04 or $diffRotation > 2.25 or ($diffMotion > 0 and $this->getMotion()->lengthSquared() <= 0.0001)){ //0.2 ** 2, 1.5 ** 2
 			$this->lastX = $this->x;
 			$this->lastY = $this->y;
 			$this->lastZ = $this->z;
@@ -805,7 +808,7 @@ abstract class Entity extends Location implements Metadatable{
 			}
 		}
 
-		if($diffMotion > 0.0025){ //0.05 ** 2
+		if($diffMotion > 0.0025 or ($diffMotion > 0 and $this->getMotion()->lengthSquared() <= 0.0001)){ //0.05 ** 2
 			$this->lastMotionX = $this->motionX;
 			$this->lastMotionY = $this->motionY;
 			$this->lastMotionZ = $this->motionZ;
@@ -839,7 +842,7 @@ abstract class Entity extends Location implements Metadatable{
 			return false;
 		}
 
-		if($this->dead === true){
+		if(!$this->isAlive()){
 			++$this->deadTicks;
 			if($this->deadTicks >= 10){
 				$this->despawnFromAll();
@@ -1377,10 +1380,9 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function kill(){
-		if($this->dead){
+		if(!$this->isAlive()){
 			return;
 		}
-		$this->dead = true;
 		$this->setHealth(0);
 		$this->scheduleUpdate();
 	}

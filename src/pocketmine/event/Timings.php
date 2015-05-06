@@ -71,6 +71,8 @@ abstract class Timings{
 	/** @var TimingsHandler */
 	public static $timerEntityBaseTick;
 	/** @var TimingsHandler */
+	public static $timerLivingEntityBaseTick;
+	/** @var TimingsHandler */
 	public static $timerEntityAI;
 	/** @var TimingsHandler */
 	public static $timerEntityAICollision;
@@ -121,7 +123,8 @@ abstract class Timings{
 		self::$activatedEntityTimer = new TimingsHandler("** activatedTickEntity");
 		self::$tickTileEntityTimer = new TimingsHandler("** tickTileEntity");
 
-		self::$timerEntityBaseTick = new TimingsHandler("** livingEntityBaseTick");
+		self::$timerEntityBaseTick = new TimingsHandler("** entityBaseTick");
+		self::$timerLivingEntityBaseTick = new TimingsHandler("** livingEntityBaseTick");
 		self::$timerEntityAI = new TimingsHandler("** livingEntityAI");
 		self::$timerEntityAICollision = new TimingsHandler("** livingEntityAICollision");
 		self::$timerEntityAIMove = new TimingsHandler("** livingEntityAIMove");
