@@ -40,6 +40,7 @@ use pocketmine\level\Location;
 use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Math;
+use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
@@ -834,7 +835,11 @@ abstract class Entity extends Location implements Metadatable{
 		$x = -$xz * sin(deg2rad($this->yaw));
 		$z = $xz * cos(deg2rad($this->yaw));
 
-		return new Vector3($x, $y, $z);
+		return (new Vector3($x, $y, $z))->normalize();
+	}
+
+	public function getDirectionPlane(){
+		return (new Vector2(-cos(deg2rad($this->yaw) - M_PI_2), -sin(deg2rad($this->yaw) - M_PI_2)))->normalize();
 	}
 
 	public function onUpdate($currentTick){

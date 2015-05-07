@@ -80,6 +80,7 @@ use pocketmine\level\Location;
 use pocketmine\level\Position;
 use pocketmine\level\sound\LaunchSound;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\NBT;
@@ -1455,10 +1456,14 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	}
 
 	public function canInteract(Vector3 $pos, $maxDistance, $maxDiff = 0.5){
-		$dV = $this->getDirectionVector();
-		$dot = $dV->dot($this);
-		$dot1 = $dV->dot($pos);
-		return ($dot1 - $dot) >= -$maxDiff and $this->distanceSquared($pos) <= $maxDistance ** 2;
+		if($this->distanceSquared($pos) > $maxDistance ** 2){
+			return false;
+		}
+
+		$dV = $this->getDirectionPlane();
+		$dot = $dV->dot(new Vector2($this->x, $this->z));
+		$dot1 = $dV->dot(new Vector2($pos->x, $pos->z));
+		return ($dot1 - $dot) >= -$maxDiff;
 	}
 
 	/**

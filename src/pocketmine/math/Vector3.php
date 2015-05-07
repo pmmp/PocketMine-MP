@@ -206,9 +206,9 @@ class Vector3{
 	 * @return Vector3
 	 */
 	public function normalize(){
-		$len = $this->length();
+		$len = $this->lengthSquared();
 		if($len != 0){
-			return $this->divide($len);
+			return $this->divide(sqrt($len));
 		}
 
 		return new Vector3(0, 0, 0);
