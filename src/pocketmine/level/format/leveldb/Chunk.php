@@ -339,4 +339,19 @@ class Chunk extends BaseFullChunk{
 				($this->isLightPopulated() ? 0x04 : 0) | ($this->isPopulated() ? 0x02 : 0) | ($this->isGenerated() ? 0x01 : 0)
 			);
 	}
+
+	/**
+	 * @param int           $chunkX
+	 * @param int           $chunkZ
+	 * @param LevelProvider $provider
+	 *
+	 * @return Chunk
+	 */
+	public static function getEmptyChunk($chunkX, $chunkZ, LevelProvider $provider = null){
+		try{
+			return new Chunk($provider instanceof LevelProvider ? $provider : LevelDB::class, $chunkX, $chunkZ, str_repeat("\x00", 16384 * (2 + 1 + 1 + 1) + 256 + 1024));
+		}catch(\Exception $e){
+			return null;
+		}
+	}
 }

@@ -57,33 +57,4 @@ class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 	protected function unserializeChunk($data){
 		return Chunk::fromBinary($data, $this->levelProvider);
 	}
-
-	public function generateChunk($x, $z){
-		$nbt = new Compound("Level", []);
-		$nbt->xPos = new Int("xPos", ($this->getX() * 32) + $x);
-		$nbt->zPos = new Int("zPos", ($this->getZ() * 32) + $z);
-		$nbt->LastUpdate = new Long("LastUpdate", 0);
-		$nbt->LightPopulated = new Byte("LightPopulated", 0);
-		$nbt->TerrainPopulated = new Byte("TerrainPopulated", 0);
-		$nbt->V = new Byte("V", self::VERSION);
-		$nbt->InhabitedTime = new Long("InhabitedTime", 0);
-		$biomes = str_repeat(Binary::writeByte(-1), 256);
-		$nbt->Biomes = new ByteArray("Biomes", $biomes);
-		$nbt->BiomeColors = new IntArray("BiomeColors", array_fill(0, 156, Binary::readInt("\x00\x85\xb2\x4a")));
-		$nbt->HeightMap = new IntArray("HeightMap", array_fill(0, 256, 127));
-		$nbt->Sections = new Enum("Sections", []);
-		$nbt->Sections->setTagType(NBT::TAG_Compound);
-		$nbt->Entities = new Enum("Entities", []);
-		$nbt->Entities->setTagType(NBT::TAG_Compound);
-		$nbt->TileEntities = new Enum("TileEntities", []);
-		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
-		$nbt->TileTicks = new Enum("TileTicks", []);
-		$nbt->TileTicks->setTagType(NBT::TAG_Compound);
-		$writer = new NBT(NBT::BIG_ENDIAN);
-		$nbt->setName("Level");
-		$writer->setData(new Compound("", ["Level" => $nbt]));
-		$chunkData = $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
-		$this->saveChunk($x, $z, $chunkData);
-	}
-
 }

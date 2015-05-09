@@ -612,16 +612,16 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->entityTick->stopTiming();
 
 		$this->timings->tileEntityTick->startTiming();
+		Timings::$tickTileEntityTimer->startTiming();
 		//Update tiles that need update
 		if(count($this->updateTiles) > 0){
-			//Timings::$tickTileEntityTimer->startTiming();
 			foreach($this->updateTiles as $id => $tile){
 				if($tile->onUpdate() !== true){
 					unset($this->updateTiles[$id]);
 				}
 			}
-			//Timings::$tickTileEntityTimer->stopTiming();
 		}
+		Timings::$tickTileEntityTimer->stopTiming();
 		$this->timings->tileEntityTick->stopTiming();
 
 		$this->timings->doTickTiles->startTiming();
@@ -1897,7 +1897,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function generateChunkCallback($x, $z, FullChunk $chunk){
-		Timings::$generationTimer->startTiming();
+		Timings::$generationCallbackTimer->startTiming();
 		if(isset($this->chunkPopulationQueue[$index = Level::chunkHash($x, $z)])){
 			$oldChunk = $this->getChunk($x, $z, false);
 			for($xx = -1; $xx <= 1; ++$xx){
@@ -1918,7 +1918,7 @@ class Level implements ChunkManager, Metadatable{
 			$chunk->setProvider($this->provider);
 			$this->setChunk($x, $z, $chunk);
 		}
-		Timings::$generationTimer->stopTiming();
+		Timings::$generationCallbackTimer->stopTiming();
 	}
 
 	public function setChunk($x, $z, FullChunk $chunk = null, $unload = true){
@@ -2150,6 +2150,8 @@ class Level implements ChunkManager, Metadatable{
 			return true;
 		}
 
+		$this->timings->syncChunkLoadTimer->startTiming();
+
 		$this->cancelUnloadChunkRequest($x, $z);
 
 		$chunk = $this->provider->getChunk($x, $z, $generate);
@@ -2157,14 +2159,13 @@ class Level implements ChunkManager, Metadatable{
 			$this->chunks[$index] = $chunk;
 			$chunk->initChunk();
 		}else{
-			$this->timings->syncChunkLoadTimer->startTiming();
 			$this->provider->loadChunk($x, $z, $generate);
-			$this->timings->syncChunkLoadTimer->stopTiming();
 
 			if(($chunk = $this->provider->getChunk($x, $z)) !== null){
 				$this->chunks[$index] = $chunk;
 				$chunk->initChunk();
 			}else{
+				$this->timings->syncChunkLoadTimer->stopTiming();
 				return false;
 			}
 		}
@@ -2173,10 +2174,13 @@ class Level implements ChunkManager, Metadatable{
 			$this->server->getPluginManager()->callEvent(new ChunkLoadEvent($chunk, !$chunk->isGenerated()));
 		}else{
 			$this->unloadChunk($x, $z, false);
+			$this->timings->syncChunkLoadTimer->stopTiming();
 			return false;
 		}
 
 		$chunk->setChanged(false);
+
+		$this->timings->syncChunkLoadTimer->stopTiming();
 
 		return true;
 	}
@@ -2408,16 +2412,15 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		Timings::$generationTimer->startTiming();
-		if(!$this->getChunk($x, $z, true)->isPopulated()){
+		Timings::$populationTimer->startTiming();
+		$chunk = $this->getChunk($x, $z, false);
+		if($chunk === null or !$chunk->isPopulated()){
 			$populate = true;
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
 					if(isset($this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)])){
 						$populate = false;
-					}elseif(!$this->getChunk($x + $xx, $z + $zz, true)->isGenerated()){
-						$populate = false;
-						$this->generateChunk($x + $xx, $z + $zz, $force);
+						break;
 					}
 				}
 			}
@@ -2430,17 +2433,17 @@ class Level implements ChunkManager, Metadatable{
 							$this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)] = true;
 						}
 					}
-					$task = new PopulationTask($this, $this->getChunk($x, $z, true));
+					$task = new PopulationTask($this, $x, $z, $chunk);
 					$this->server->getScheduler()->scheduleAsyncTask($task);
 				}
-				Timings::$generationTimer->stopTiming();
+				Timings::$populationTimer->stopTiming();
 				return false;
 			}
 
-			Timings::$generationTimer->stopTiming();
+			Timings::$populationTimer->stopTiming();
 			return false;
 		}
-		Timings::$generationTimer->stopTiming();
+		Timings::$populationTimer->stopTiming();
 		return true;
 	}
 

@@ -40,7 +40,11 @@ class Chunk extends BaseChunk{
 	protected $nbt;
 
 	public function __construct($level, Compound $nbt){
-		$this->nbt = $nbt;
+		if($nbt === null){
+			$this->provider = $level;
+			$this->nbt = new Compound("Level", []);
+			return;
+		}
 
 		if(!isset($this->nbt->Entities) or !($this->nbt->Entities instanceof Enum)){
 			$this->nbt->Entities = new Enum("Entities", []);
@@ -63,11 +67,11 @@ class Chunk extends BaseChunk{
 		}
 
 		if(!isset($this->nbt->BiomeColors) or !($this->nbt->BiomeColors instanceof IntArray)){
-			$this->nbt->BiomeColors = new IntArray("BiomeColors", array_fill(0, 256, Binary::readInt("\x00\x85\xb2\x4a")));
+			$this->nbt->BiomeColors = new IntArray("BiomeColors", array_fill(0, 256, 0));
 		}
 
 		if(!isset($this->nbt->HeightMap) or !($this->nbt->HeightMap instanceof IntArray)){
-			$this->nbt->HeightMap = new IntArray("HeightMap", array_fill(0, 256, 127));
+			$this->nbt->HeightMap = new IntArray("HeightMap", array_fill(0, 256, 0));
 		}
 
 		$sections = [];
@@ -286,5 +290,33 @@ class Chunk extends BaseChunk{
 		$writer->setData(new Compound("", ["Level" => $nbt]));
 
 		return $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
+	}
+
+	/**
+	 * @param int           $chunkX
+	 * @param int           $chunkZ
+	 * @param LevelProvider $provider
+	 *
+	 * @return Chunk
+	 */
+	public static function getEmptyChunk($chunkX, $chunkZ, LevelProvider $provider = null){
+		try{
+			$chunk = new Chunk($provider instanceof LevelProvider ? $provider : Anvil::class, null);
+			$chunk->x = $chunkX;
+			$chunk->z = $chunkZ;
+
+			$chunk->heightMap = array_fill(0, 256, 0);
+			$chunk->biomeColors = array_fill(0, 256, 0);
+
+			$chunk->nbt->V = new Byte("V", 1);
+			$chunk->nbt->InhabitedTime = new Long("InhabitedTime", 0);
+			$chunk->nbt->TerrainGenerated = new Byte("TerrainGenerated", 0);
+			$chunk->nbt->TerrainPopulated = new Byte("TerrainPopulated", 0);
+			$chunk->nbt->LightPopulated = new Byte("LightPopulated", 0);
+
+			return $chunk;
+		}catch(\Exception $e){
+			return null;
+		}
 	}
 }

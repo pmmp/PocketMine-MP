@@ -83,7 +83,7 @@ class RegionLoader{
 		return !($this->locationTable[$index][0] === 0 or $this->locationTable[$index][1] === 0);
 	}
 
-	public function readChunk($x, $z, $generate = true, $forward = false){
+	public function readChunk($x, $z){
 		$index = self::getChunkOffset($x, $z);
 		if($index < 0 or $index >= 4096){
 			return null;
@@ -92,16 +92,7 @@ class RegionLoader{
 		$this->lastUsed = time();
 
 		if(!$this->isChunkGenerated($index)){
-			if($generate === true){
-				//Allocate space
-				$this->locationTable[$index][0] = ++$this->lastSector;
-				$this->locationTable[$index][1] = 1;
-				fseek($this->filePointer, $this->locationTable[$index][0] << 12);
-				fwrite($this->filePointer, str_pad(Binary::writeInt(0) . chr(self::COMPRESSION_ZLIB), 4096, "\x00", STR_PAD_RIGHT));
-				$this->writeLocationIndex($index);
-			}else{
-				return null;
-			}
+			return null;
 		}
 
 		fseek($this->filePointer, $this->locationTable[$index][0] << 12);
@@ -114,10 +105,7 @@ class RegionLoader{
 				$this->locationTable[$index][1] = 1;
 				MainLogger::getLogger()->error("Corrupted chunk header detected");
 			}
-			$this->generateChunk($x, $z);
-			fseek($this->filePointer, $this->locationTable[$index][0] << 12);
-			$length = Binary::readInt(fread($this->filePointer, 4));
-			$compression = ord(fgetc($this->filePointer));
+			return null;
 		}
 
 		if($length > ($this->locationTable[$index][1] << 12)){ //Invalid chunk, bigger than defined number of sectors
@@ -126,19 +114,14 @@ class RegionLoader{
 			$this->writeLocationIndex($index);
 		}elseif($compression !== self::COMPRESSION_ZLIB and $compression !== self::COMPRESSION_GZIP){
 			MainLogger::getLogger()->error("Invalid compression type");
-
 			return null;
 		}
 
 		$chunk = $this->unserializeChunk(fread($this->filePointer, $length - 1));
 		if($chunk instanceof FullChunk){
 			return $chunk;
-		}elseif($forward === false){
-			MainLogger::getLogger()->error("Corrupted chunk detected");
-			$this->generateChunk($x, $z);
-
-			return $this->readChunk($x, $z, $generate, true);
 		}else{
+			MainLogger::getLogger()->error("Corrupted chunk detected");
 			return null;
 		}
 	}
@@ -149,43 +132,6 @@ class RegionLoader{
 
 	public function chunkExists($x, $z){
 		return $this->isChunkGenerated(self::getChunkOffset($x, $z));
-	}
-
-	public function generateChunk($x, $z){
-		$nbt = new Compound("Level", []);
-		$nbt->xPos = new Int("xPos", ($this->getX() * 32) + $x);
-		$nbt->zPos = new Int("zPos", ($this->getZ() * 32) + $z);
-		$nbt->LastUpdate = new Long("LastUpdate", 0);
-		$nbt->LightPopulated = new Byte("LightPopulated", 0);
-		$nbt->TerrainPopulated = new Byte("TerrainPopulated", 0);
-		$nbt->V = new Byte("V", self::VERSION);
-		$nbt->InhabitedTime = new Long("InhabitedTime", 0);
-		$biomes = str_repeat(Binary::writeByte(-1), 256);
-		$nbt->Biomes = new ByteArray("Biomes", $biomes);
-		$nbt->HeightMap = new IntArray("HeightMap", array_fill(0, 256, 127));
-		$nbt->BiomeColors = new IntArray("BiomeColors", array_fill(0, 256, Binary::readInt("\x00\x85\xb2\x4a")));
-
-		$half = str_repeat("\x00", 16384);
-		$full = $half . $half;
-		$nbt->Blocks = new ByteArray("Blocks", $full);
-		$nbt->Data = new ByteArray("Data", $half);
-		$nbt->SkyLight = new ByteArray("SkyLight", str_repeat("\xff", 16384));
-		$nbt->BlockLight = new ByteArray("BlockLight", $half);
-
-		$nbt->Entities = new Enum("Entities", []);
-		$nbt->Entities->setTagType(NBT::TAG_Compound);
-		$nbt->TileEntities = new Enum("TileEntities", []);
-		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
-		$nbt->TileTicks = new Enum("TileTicks", []);
-		$nbt->TileTicks->setTagType(NBT::TAG_Compound);
-		$writer = new NBT(NBT::BIG_ENDIAN);
-		$nbt->setName("Level");
-		$writer->setData(new Compound("", ["Level" => $nbt]));
-		$chunkData = $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, self::$COMPRESSION_LEVEL);
-
-		if($chunkData !== false){
-			$this->saveChunk($x, $z, $chunkData);
-		}
 	}
 
 	protected function saveChunk($x, $z, $chunkData){

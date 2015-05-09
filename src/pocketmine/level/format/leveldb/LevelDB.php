@@ -197,10 +197,13 @@ class LevelDB extends BaseLevelProvider{
 		}
 
 		$this->level->timings->syncChunkLoadDataTimer->startTiming();
-		$chunk = $this->readChunk($chunkX, $chunkZ, $create); //generate empty chunk if not loaded
+		$chunk = $this->readChunk($chunkX, $chunkZ, $create);
+		if($chunk === null and $create){
+			$chunk = Chunk::getEmptyChunk($chunkX, $chunkZ, $this);
+		}
 		$this->level->timings->syncChunkLoadDataTimer->stopTiming();
 
-		if($chunk instanceof Chunk){
+		if($chunk !== null){
 			$this->chunks[$index] = $chunk;
 			return true;
 		}else{
@@ -211,15 +214,14 @@ class LevelDB extends BaseLevelProvider{
 	/**
 	 * @param      $chunkX
 	 * @param      $chunkZ
-	 * @param bool $create
 	 *
 	 * @return Chunk
 	 */
-	private function readChunk($chunkX, $chunkZ, $create = false){
+	private function readChunk($chunkX, $chunkZ){
 		$index = LevelDB::chunkIndex($chunkX, $chunkZ);
 
 		if(!$this->chunkExists($chunkX, $chunkZ) or ($data = $this->db->get($index . "\x30")) === false){
-			return $create ? $this->generateChunk($chunkX, $chunkZ) : null;
+			return null;
 		}
 
 		$flags = $this->db->get($index . "f");

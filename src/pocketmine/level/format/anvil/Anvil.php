@@ -105,6 +105,10 @@ class Anvil extends McRegion{
 		$this->chunks[Level::chunkHash($chunkX, $chunkZ)] = $chunk;
 	}
 
+	public function getEmptyChunk($chunkX, $chunkZ){
+		return Chunk::getEmptyChunk($chunkX, $chunkZ, $this);
+	}
+
 	public static function createChunkSection($Y){
 		return new ChunkSection(new Compound("", [
 			"Y" => new Byte("Y", $Y),

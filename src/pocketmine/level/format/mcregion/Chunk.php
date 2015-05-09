@@ -30,6 +30,7 @@ use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\IntArray;
+use pocketmine\nbt\tag\Long;
 use pocketmine\Player;
 use pocketmine\utils\Binary;
 
@@ -40,6 +41,7 @@ class Chunk extends BaseFullChunk{
 
 	public function __construct($level, Compound $nbt = null){
 		if($nbt === null){
+			$this->provider = $level;
 			$this->nbt = new Compound("Level", []);
 			return;
 		}
@@ -68,11 +70,11 @@ class Chunk extends BaseFullChunk{
 		}
 
 		if(!isset($this->nbt->BiomeColors) or !($this->nbt->BiomeColors instanceof IntArray)){
-			$this->nbt->BiomeColors = new IntArray("BiomeColors", array_fill(0, 256, Binary::readInt("\x01\x85\xb2\x4a")));
+			$this->nbt->BiomeColors = new IntArray("BiomeColors", array_fill(0, 256, 0));
 		}
 
 		if(!isset($this->nbt->HeightMap) or !($this->nbt->HeightMap instanceof IntArray)){
-			$this->nbt->HeightMap = new IntArray("HeightMap", array_fill(0, 256, 127));
+			$this->nbt->HeightMap = new IntArray("HeightMap", array_fill(0, 256, 0));
 		}
 
 		if(!isset($this->nbt->Blocks)){
@@ -409,5 +411,38 @@ class Chunk extends BaseFullChunk{
 	 */
 	public function getNBT(){
 		return $this->nbt;
+	}
+
+	/**
+	 * @param int           $chunkX
+	 * @param int           $chunkZ
+	 * @param LevelProvider $provider
+	 *
+	 * @return Chunk
+	 */
+	public static function getEmptyChunk($chunkX, $chunkZ, LevelProvider $provider = null){
+		try{
+			$chunk = new Chunk($provider instanceof LevelProvider ? $provider : McRegion::class, null);
+			$chunk->x = $chunkX;
+			$chunk->z = $chunkZ;
+
+			$chunk->data = str_repeat("\x00", 16384);
+			$chunk->blocks = $chunk->data . $chunk->data;
+			$chunk->skyLight = $chunk->data;
+			$chunk->blockLight = $chunk->data;
+
+			$chunk->heightMap = array_fill(0, 256, 0);
+			$chunk->biomeColors = array_fill(0, 256, 0);
+
+			$chunk->nbt->V = new Byte("V", 1);
+			$chunk->nbt->InhabitedTime = new Long("InhabitedTime", 0);
+			$chunk->nbt->TerrainGenerated = new Byte("TerrainGenerated", 0);
+			$chunk->nbt->TerrainPopulated = new Byte("TerrainPopulated", 0);
+			$chunk->nbt->LightPopulated = new Byte("LightPopulated", 0);
+
+			return $chunk;
+		}catch(\Exception $e){
+			return null;
+		}
 	}
 }

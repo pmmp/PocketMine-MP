@@ -664,7 +664,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			++$count;
 
 			if(!$this->level->populateChunk($X, $Z)){
-				if($this->teleportPosition === null){
+				if($this->spawned and $this->teleportPosition === null){
 					continue;
 				}else{
 					break;
@@ -1391,9 +1391,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->timings->startTiming();
 
 		if($this->spawned){
-
 			$this->processMovement($tickDiff);
-
 
 			$this->entityBaseTick($tickDiff);
 
@@ -1575,8 +1573,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						if($p->kick("logged in from another location") === false){
 							$this->close($this->getLeaveMessage(), "Logged in from another location");
 
-							return;
-						}else{
 							return;
 						}
 					}

@@ -1228,8 +1228,6 @@ class Server{
 
 		asort($order);
 
-		$chunkX = $chunkZ = null;
-
 		foreach($order as $index => $distance){
 			Level::getXZ($index, $chunkX, $chunkZ);
 			$level->generateChunk($chunkX, $chunkZ, true);

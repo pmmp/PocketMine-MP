@@ -55,6 +55,10 @@ abstract class Timings{
 	/** @var TimingsHandler */
 	public static $generationTimer;
 	/** @var TimingsHandler */
+	public static $populationTimer;
+	/** @var TimingsHandler */
+	public static $generationCallbackTimer;
+	/** @var TimingsHandler */
 	public static $permissibleCalculationTimer;
 	/** @var TimingsHandler */
 	public static $permissionDefaultTimer;
@@ -81,8 +85,6 @@ abstract class Timings{
 	/** @var TimingsHandler */
 	public static $timerEntityTickRest;
 
-	/** @var TimingsHandler */
-	public static $processQueueTimer;
 	/** @var TimingsHandler */
 	public static $schedulerSyncTimer;
 	/** @var TimingsHandler */
@@ -115,6 +117,8 @@ abstract class Timings{
 		self::$serverCommandTimer = new TimingsHandler("Server Command");
 		self::$worldSaveTimer = new TimingsHandler("World Save");
 		self::$generationTimer = new TimingsHandler("World Generation");
+		self::$populationTimer = new TimingsHandler("World Population");
+		self::$generationCallbackTimer = new TimingsHandler("World Generation Callback");
 		self::$permissibleCalculationTimer = new TimingsHandler("Permissible Calculation");
 		self::$permissionDefaultTimer = new TimingsHandler("Default Permission Calculation");
 
@@ -130,7 +134,6 @@ abstract class Timings{
 		self::$timerEntityAIMove = new TimingsHandler("** livingEntityAIMove");
 		self::$timerEntityTickRest = new TimingsHandler("** livingEntityTickRest");
 
-		self::$processQueueTimer = new TimingsHandler("processQueue");
 		self::$schedulerSyncTimer = new TimingsHandler("** Scheduler - Sync Tasks", PluginManager::$pluginParentTimer);
 		self::$schedulerAsyncTimer = new TimingsHandler("** Scheduler - Async Tasks");
 
