@@ -117,8 +117,6 @@ class AsyncPool{
 		unset($this->taskWorkers[$task->getTaskId()]);
 
 		$task->cleanObject();
-
-		unset($task);
 	}
 
 	public function removeTasks(){

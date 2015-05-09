@@ -465,21 +465,8 @@ namespace pocketmine {
 	$logger->info("Stopping other threads");
 
 	foreach(ThreadManager::getInstance()->getAll() as $id => $thread){
-		if($thread->isRunning()){
-			$logger->debug("Killing " . (new \ReflectionClass($thread))->getShortName() . " thread");
-			$thread->kill();
-			sleep(1);
-			$thread->detach();
-		}elseif(!$thread->isJoined()){
-			if(!$thread->isTerminated()){
-				$logger->debug("Joining " . (new \ReflectionClass($thread))->getShortName() . " thread");
-				$thread->join();
-			}else{
-				$logger->debug("Killing " . (new \ReflectionClass($thread))->getShortName() . " thread");
-				$thread->kill();
-				$thread->detach();
-			}
-		}
+		$logger->debug("Stopping " . (new \ReflectionClass($thread))->getShortName() . " thread");
+		$thread->quit();
 	}
 
 	$logger->shutdown();

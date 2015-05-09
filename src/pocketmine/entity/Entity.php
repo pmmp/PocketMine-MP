@@ -82,7 +82,7 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_AIR = 1;
 	const DATA_SHOW_NAMETAG = 3;
 	const DATA_POTION_COLOR = 7;
-	const DATA_POTION_VISIBLE = 8;
+	const DATA_POTION_AMBIENT = 8;
     const DATA_NO_AI = 15;
 
 
@@ -337,10 +337,10 @@ abstract class Entity extends Location implements Metadatable{
 			$b = ($color[2] / $count) & 0xff;
 
 			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, ($r << 16) + ($g << 8) + $b);
-			$this->setDataProperty(Entity::DATA_POTION_VISIBLE, Entity::DATA_TYPE_BYTE, $ambient ? 1 : 0);
+			$this->setDataProperty(Entity::DATA_POTION_AMBIENT, Entity::DATA_TYPE_BYTE, $ambient ? 1 : 0);
 		}else{
 			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, 0);
-			$this->setDataProperty(Entity::DATA_POTION_VISIBLE, Entity::DATA_TYPE_BYTE, 0);
+			$this->setDataProperty(Entity::DATA_POTION_AMBIENT, Entity::DATA_TYPE_BYTE, 0);
 		}
 	}
 

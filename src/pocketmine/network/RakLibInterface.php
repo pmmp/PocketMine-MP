@@ -98,9 +98,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			$this->identifiers->detach($player);
 			unset($this->players[$identifier]);
 			unset($this->identifiersACK[$identifier]);
-			if(!$player->closed){
-				$player->close($player->getLeaveMessage(), $reason);
-			}
+			$player->close($player->getLeaveMessage(), $reason);
 		}
 	}
 

@@ -1570,10 +1570,10 @@ class Server{
 
 		if(($poolSize = $this->getProperty("settings.async-workers", "auto")) === "auto"){
 			$poolSize = ServerScheduler::$WORKERS;
-			$processors = Utils::getCoreCount();
+			$processors = Utils::getCoreCount() - 2;
 
 			if($processors > 0){
-				$poolSize = max(2, $processors);
+				$poolSize = max(1, $processors);
 			}
 		}
 
@@ -1957,8 +1957,10 @@ class Server{
 		$this->reloadWhitelist();
 		$this->operators->reload();
 
+		$this->memoryManager->doObjectCleanup();
+
 		foreach($this->getIPBans()->getEntries() as $entry){
-			$this->blockAddress($entry->getName(), -1);
+			$this->getNetwork()->blockAddress($entry->getName(), -1);
 		}
 
 		$this->pluginManager->registerInterface(PharPluginLoader::class);
@@ -2024,6 +2026,8 @@ class Server{
 				$interface->shutdown();
 				$this->network->unregisterInterface($interface);
 			}
+
+			$this->memoryManager->doObjectCleanup();
 		}catch(\Exception $e){
 			$this->logger->emergency("Crashed while crashing, killing process");
 			@kill(getmypid());

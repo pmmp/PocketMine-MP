@@ -63,4 +63,26 @@ abstract class Worker extends \Worker{
 
 		return false;
 	}
+
+	/**
+	 * Stops the thread using the best way possible. Try to stop it yourself before calling this.
+	 */
+	public function quit(){
+		if($this->isRunning()){
+			$this->unstack();
+			$this->kill();
+			$this->detach();
+		}elseif(!$this->isJoined()){
+			if(!$this->isTerminated()){
+				$this->join();
+			}else{
+				$this->kill();
+				$this->detach();
+			}
+		}else{
+			$this->detach();
+		}
+
+		ThreadManager::getInstance()->remove($this);
+	}
 }

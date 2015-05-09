@@ -176,6 +176,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 */
 	public $loginData = [];
 
+	public $creationTime = 0;
+
 	protected $randomClientId;
 	protected $uuid;
 
@@ -499,6 +501,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 
 		$this->uuid = Utils::dataToUUID($ip, $port, $clientID);
+
+		$this->creationTime = microtime(true);
 	}
 
 	/**
@@ -2703,7 +2707,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			unset($this->buffer);
 		}
 
-		$this->perm->clearPermissions();
+		if($this->perm !== null){
+			$this->perm->clearPermissions();
+		}
+
 		$this->server->removePlayer($this);
 	}
 
