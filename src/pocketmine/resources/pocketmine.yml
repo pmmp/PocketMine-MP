@@ -121,7 +121,6 @@ chunk-ticking:
 
 chunk-generation:
  #Max. amount of chunks in the waiting queue to be generated
- #It's recommended to set this to 4 * settings.async-workers
  queue-size: 8
  #Max. amount of chunks in the waiting queue to be populated
  population-queue-size: 2
