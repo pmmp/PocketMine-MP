@@ -1833,7 +1833,9 @@ class Server{
 
 		$targets = [];
 		foreach($players as $p){
-			$targets[] = $this->identifiers[spl_object_hash($p)];
+			if($p->isConnected()){
+				$targets[] = $this->identifiers[spl_object_hash($p)];
+			}
 		}
 
 		if(!$forceSync and $this->networkCompressionAsync){

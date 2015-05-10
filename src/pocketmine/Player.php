@@ -2668,10 +2668,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			foreach($this->windowIndex as $window){
 				$this->removeWindow($window);
 			}
-			
-			$this->interface->close($this, $notify ? $reason : "");
 
-			$chunkX = $chunkZ = null;
 			foreach($this->usedChunks as $index => $d){
 				Level::getXZ($index, $chunkX, $chunkZ);
 				$this->level->freeChunk($chunkX, $chunkZ, $this);
@@ -2679,6 +2676,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 
 			parent::close();
+
+			$this->interface->close($this, $notify ? $reason : "");
 
 			$this->loggedIn = false;
 

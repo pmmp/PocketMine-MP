@@ -659,6 +659,10 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function checkSleep(){
+		if(count($this->players) === 0){
+			return;
+		}
+
 		$resetTime = true;
 		foreach($this->getPlayers() as $p){
 			if(!$p->isSleeping()){
@@ -2078,7 +2082,7 @@ class Level implements ChunkManager, Metadatable{
 
 		if($entity instanceof Player){
 			unset($this->players[$entity->getId()]);
-			//$this->everyoneSleeping();
+			$this->checkSleep();
 		}else{
 			$entity->kill();
 		}
