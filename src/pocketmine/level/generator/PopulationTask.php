@@ -36,8 +36,6 @@ class PopulationTask extends AsyncTask{
 	public $state;
 	public $levelId;
 	public $chunk;
-	public $chunkX;
-	public $chunkZ;
 	public $chunkClass;
 
 	public $chunk0;
@@ -50,12 +48,10 @@ class PopulationTask extends AsyncTask{
 	public $chunk7;
 	public $chunk8;
 
-	public function __construct(Level $level, $chunkX, $chunkZ, FullChunk $chunk = null){
+	public function __construct(Level $level, FullChunk $chunk){
 		$this->state = true;
 		$this->levelId = $level->getId();
-		$this->chunk = $chunk !== null ? $chunk->toFastBinary() : null;
-		$this->chunkX = $chunkX;
-		$this->chunkZ = $chunkZ;
+		$this->chunk = $chunk->toFastBinary();
 		$this->chunkClass = get_class($chunk);
 
 		for($i = 0; $i < 9; ++$i){
@@ -64,7 +60,7 @@ class PopulationTask extends AsyncTask{
 			}
 			$xx = -1 + $i % 3;
 			$zz = -1 + (int) ($i / 3);
-			$ck = $level->getChunk($chunkX + $xx, $chunkZ + $zz, false);
+			$ck = $level->getChunk($chunk->getX() + $xx, $chunk->getZ() + $zz, false);
 			$this->{"chunk$i"} = $ck !== null ? $ck->toFastBinary() : null;
 		}
 	}
@@ -79,15 +75,12 @@ class PopulationTask extends AsyncTask{
 			return;
 		}
 
-		$chunkX = $this->chunkX;
-		$chunkZ = $this->chunkZ;
-
 		/** @var FullChunk[] $chunks */
 		$chunks = [];
 		/** @var FullChunk $chunkC */
 		$chunkC = $this->chunkClass;
 
-		$chunk = $this->chunk !== null ? $chunkC::fromFastBinary($this->chunk) : $chunkC::getEmptyChunk($chunkX, $chunkZ);
+		$chunk = $chunkC::fromFastBinary($this->chunk);
 
 		for($i = 0; $i < 9; ++$i){
 			if($i === 4){
@@ -97,7 +90,7 @@ class PopulationTask extends AsyncTask{
 			$zz = -1 + (int) ($i / 3);
 			$ck = $this->{"chunk$i"};
 			if($ck === null){
-				$chunks[$i] = $chunkC::getEmptyChunk($chunkX + $xx, $chunkZ + $zz);
+				$chunks[$i] = $chunkC::getEmptyChunk($chunk->getX() + $xx, $chunk->getZ() + $zz);
 			}else{
 				$chunks[$i] = $chunkC::fromFastBinary($ck);
 			}

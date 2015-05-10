@@ -2413,8 +2413,8 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		Timings::$populationTimer->startTiming();
-		$chunk = $this->getChunk($x, $z, false);
-		if($chunk === null or !$chunk->isPopulated()){
+		$chunk = $this->getChunk($x, $z, true);
+		if(!$chunk->isPopulated()){
 			$populate = true;
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
@@ -2433,7 +2433,7 @@ class Level implements ChunkManager, Metadatable{
 							$this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)] = true;
 						}
 					}
-					$task = new PopulationTask($this, $x, $z, $chunk);
+					$task = new PopulationTask($this, $chunk);
 					$this->server->getScheduler()->scheduleAsyncTask($task);
 				}
 				Timings::$populationTimer->stopTiming();

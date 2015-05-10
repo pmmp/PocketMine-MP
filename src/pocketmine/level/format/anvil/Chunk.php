@@ -305,6 +305,10 @@ class Chunk extends BaseChunk{
 			$chunk->x = $chunkX;
 			$chunk->z = $chunkZ;
 
+			for($y = 0; $y < 8; ++$y){
+				$chunk->sections[$y] = new EmptyChunkSection($y);
+			}
+
 			$chunk->heightMap = array_fill(0, 256, 0);
 			$chunk->biomeColors = array_fill(0, 256, 0);
 
