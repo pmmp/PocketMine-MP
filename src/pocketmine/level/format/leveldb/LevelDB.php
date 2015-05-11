@@ -38,6 +38,13 @@ use pocketmine\utils\LevelException;
 
 class LevelDB extends BaseLevelProvider{
 
+	const ENTRY_VERSION = "v";
+	const ENTRY_FLAGS = "f";
+	const ENTRY_TICKS = "3";
+	const ENTRY_ENTITIES = "2";
+	const ENTRY_TILES = "1";
+	const ENTRY_TERRAIN = "0";
+
 	/** @var Chunk[] */
 	protected $chunks = [];
 
@@ -220,11 +227,11 @@ class LevelDB extends BaseLevelProvider{
 	private function readChunk($chunkX, $chunkZ){
 		$index = LevelDB::chunkIndex($chunkX, $chunkZ);
 
-		if(!$this->chunkExists($chunkX, $chunkZ) or ($data = $this->db->get($index . "\x30")) === false){
+		if(!$this->chunkExists($chunkX, $chunkZ) or ($data = $this->db->get($index . self::ENTRY_TERRAIN)) === false){
 			return null;
 		}
 
-		$flags = $this->db->get($index . "f");
+		$flags = $this->db->get($index . self::ENTRY_FLAGS);
 		if($flags === false){
 			$flags = "\x03";
 		}
@@ -232,19 +239,12 @@ class LevelDB extends BaseLevelProvider{
 		return Chunk::fromBinary($index . $data . $flags, $this);
 	}
 
-	private function generateChunk($chunkX, $chunkZ){
-		return new Chunk($this, $chunkX, $chunkZ, str_repeat("\x00", 32768) .
-			str_repeat("\x00", 16384) . str_repeat("\xff", 16384) . str_repeat("\x00", 16384) .
-			str_repeat("\x01", 256) .
-			str_repeat("\x00\x85\xb2\x4a", 256));
-	}
-
 	private function writeChunk(Chunk $chunk){
 		$binary = $chunk->toBinary(true);
 		$index = LevelDB::chunkIndex($chunk->getX(), $chunk->getZ());
-		$this->db->put($index . "\x30", substr($binary, 8, -1));
-		$this->db->put($index . "f", substr($binary, -1));
-		$this->db->put($index . "v", "\x02");
+		$this->db->put($index . self::ENTRY_TERRAIN, substr($binary, 8, -1));
+		$this->db->put($index . self::ENTRY_FLAGS, substr($binary, -1));
+		$this->db->put($index . self::ENTRY_VERSION, "\x02");
 	}
 
 	public function unloadChunk($x, $z, $safe = true){
@@ -318,7 +318,7 @@ class LevelDB extends BaseLevelProvider{
 	}
 
 	private function chunkExists($chunkX, $chunkZ){
-		return $this->db->get(LevelDB::chunkIndex($chunkX, $chunkZ) . "v") !== false;
+		return $this->db->get(LevelDB::chunkIndex($chunkX, $chunkZ) . self::ENTRY_VERSION) !== false;
 	}
 
 	public function isChunkGenerated($chunkX, $chunkZ){
