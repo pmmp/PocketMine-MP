@@ -67,7 +67,7 @@ class GenerationTask extends AsyncTask{
 		$generator->generateChunk($chunk->getX(), $chunk->getZ());
 
 		$chunk = $manager->getChunk($chunk->getX(), $chunk->getZ());
-		$chunk->setGenerated(true);
+		$chunk->setGenerated();
 		$this->chunk = $chunk->toFastBinary();
 
 		$manager->setChunk($chunk->getX(), $chunk->getZ(), null);

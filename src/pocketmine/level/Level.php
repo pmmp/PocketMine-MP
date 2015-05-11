@@ -1880,7 +1880,7 @@ class Level implements ChunkManager, Metadatable{
 	public function getChunk($x, $z, $create = false){
 		if(isset($this->chunks[$index = Level::chunkHash($x, $z)])){
 			return $this->chunks[$index];
-		}elseif($this->loadChunk($x, $z, $create) and $this->chunks[$index] !== null){
+		}elseif($this->loadChunk($x, $z, $create)){
 			return $this->chunks[$index];
 		}
 
@@ -2159,20 +2159,15 @@ class Level implements ChunkManager, Metadatable{
 		$this->cancelUnloadChunkRequest($x, $z);
 
 		$chunk = $this->provider->getChunk($x, $z, $generate);
-		if($chunk !== null){
-			$this->chunks[$index] = $chunk;
-			$chunk->initChunk();
-		}else{
-			$this->provider->loadChunk($x, $z, $generate);
-
-			if(($chunk = $this->provider->getChunk($x, $z)) !== null){
-				$this->chunks[$index] = $chunk;
-				$chunk->initChunk();
-			}else{
-				$this->timings->syncChunkLoadTimer->stopTiming();
-				return false;
+		if($chunk === null){
+			if($generate){
+				throw new \InvalidStateException("Could not create new Chunk");
 			}
+			return false;
 		}
+
+		$this->chunks[$index] = $chunk;
+		$chunk->initChunk();
 
 		if($chunk->getProvider() !== null){
 			$this->server->getPluginManager()->callEvent(new ChunkLoadEvent($chunk, !$chunk->isGenerated()));

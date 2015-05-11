@@ -112,6 +112,7 @@ class PopulationTask extends AsyncTask{
 				$manager->setChunk($c->getX(), $c->getZ(), $c);
 				if(!$c->isGenerated()){
 					$generator->generateChunk($c->getX(), $c->getZ());
+					$c = $manager->getChunk($c->getX(), $c->getZ());
 					$c->setGenerated();
 				}
 			}
@@ -175,7 +176,7 @@ class PopulationTask extends AsyncTask{
 				}
 				$c = $this->{"chunk$i"};
 				if($c !== null){
-					$c = $chunkC::fromFastBinary($c);
+					$c = $chunkC::fromFastBinary($c, $level->getProvider());
 					$level->generateChunkCallback($c->getX(), $c->getZ(), $c);
 				}
 			}
