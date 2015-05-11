@@ -2931,8 +2931,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	}
 
 	public function sendPosition(Vector3 $pos, $yaw = null, $pitch = null, $mode = 0, $channel = Network::CHANNEL_PRIORITY){
-		$yaw = $yaw === null ? $pos->yaw : $yaw;
-		$pitch = $pitch === null ? $pos->pitch : $pitch;
+		$yaw = $yaw === null ? $this->yaw : $yaw;
+		$pitch = $pitch === null ? $this->pitch : $pitch;
 
 		$pk = new MovePlayerPacket();
 		$pk->eid = $this->getId();
@@ -2985,6 +2985,35 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			if(!$this->checkTeleportPosition()){
 				$this->forceMovement = $oldPos;
 			}
+
+
+			$this->resetFallDistance();
+			$this->orderChunks();
+			$this->nextChunkOrderRun = 0;
+			$this->newPosition = null;
+		}
+	}
+
+	/**
+	 * This method may not be reliable. Clients don't like to be moved into unloaded chunks.
+	 * Use teleport() for a delayed teleport after chunks have been sent.
+	 *
+	 * @param Vector3 $pos
+	 * @param float   $yaw
+	 * @param float   $pitch
+	 */
+	public function teleportImmediate(Vector3 $pos, $yaw = null, $pitch = null){
+		if(parent::teleport($pos, $yaw, $pitch)){
+
+			foreach($this->windowIndex as $window){
+				if($window === $this->inventory){
+					continue;
+				}
+				$this->removeWindow($window);
+			}
+
+			$this->forceMovement = new Vector3($this->x, $this->y, $this->z);
+			$this->sendPosition($this, $this->yaw, $this->pitch, 1, Network::CHANNEL_WORLD_EVENTS);
 
 
 			$this->resetFallDistance();
