@@ -46,6 +46,8 @@ class Chunk extends BaseChunk{
 			return;
 		}
 
+		$this->nbt = $nbt;
+
 		if(!isset($this->nbt->Entities) or !($this->nbt->Entities instanceof Enum)){
 			$this->nbt->Entities = new Enum("Entities", []);
 			$this->nbt->Entities->setTagType(NBT::TAG_Compound);
