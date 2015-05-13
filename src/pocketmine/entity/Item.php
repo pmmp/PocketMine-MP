@@ -83,7 +83,7 @@ class Item extends Entity{
 	}
 
 	public function onUpdate($currentTick){
-		if($this->closed !== false){
+		if($this->closed){
 			return false;
 		}
 
@@ -102,7 +102,7 @@ class Item extends Entity{
 
 			$this->motionY -= $this->gravity;
 
-			$this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
+			$this->checkObstruction($this->x, $this->y, $this->z);
 			$this->move($this->motionX, $this->motionY, $this->motionZ);
 
 			$friction = 1 - $this->drag;

@@ -247,7 +247,7 @@ class Chunk extends BaseFullChunk{
 			if($provider instanceof LevelDB){
 				$nbt = new NBT(NBT::LITTLE_ENDIAN);
 
-				$entityData = $provider->getDatabase()->get(substr($data, 0, 8) . "\x32");
+				$entityData = $provider->getDatabase()->get(substr($data, 0, 8) . LevelDB::ENTRY_ENTITIES);
 				if($entityData !== false and strlen($entityData) > 0){
 					$nbt->read($entityData, true);
 					$entities = $nbt->getData();
@@ -255,7 +255,7 @@ class Chunk extends BaseFullChunk{
 						$entities = [$entities];
 					}
 				}
-				$tileData = $provider->getDatabase()->get(substr($data, 0, 8) . "\x31");
+				$tileData = $provider->getDatabase()->get(substr($data, 0, 8) . LevelDB::ENTRY_TILES);
 				if($tileData !== false and strlen($tileData) > 0){
 					$nbt->read($tileData, true);
 					$tiles = $nbt->getData();
@@ -302,9 +302,9 @@ class Chunk extends BaseFullChunk{
 			}
 
 			if(count($entities) > 0){
-				$provider->getDatabase()->put($chunkIndex . "\x32", implode($entities));
+				$provider->getDatabase()->put($chunkIndex . LevelDB::ENTRY_ENTITIES, implode($entities));
 			}else{
-				$provider->getDatabase()->delete($chunkIndex . "\x32");
+				$provider->getDatabase()->delete($chunkIndex . LevelDB::ENTRY_ENTITIES);
 			}
 
 
@@ -318,9 +318,9 @@ class Chunk extends BaseFullChunk{
 			}
 
 			if(count($tiles) > 0){
-				$provider->getDatabase()->put($chunkIndex . "\x31", implode($tiles));
+				$provider->getDatabase()->put($chunkIndex . LevelDB::ENTRY_TILES, implode($tiles));
 			}else{
-				$provider->getDatabase()->delete($chunkIndex . "\x31");
+				$provider->getDatabase()->delete($chunkIndex . LevelDB::ENTRY_TILES);
 			}
 
 

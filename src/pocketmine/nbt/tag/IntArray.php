@@ -44,4 +44,10 @@ class IntArray extends NamedTag{
 		$nbt->putInt(count($this->value));
 		$nbt->put(pack($nbt->endianness === NBT::LITTLE_ENDIAN ? "V*" : "N*", ...$this->value));
 	}
+
+	public function __toString(){
+		$str = get_class($this) . "{\n";
+		$str .= implode(", ", $this->value);
+		return $str . "}";
+	}
 }

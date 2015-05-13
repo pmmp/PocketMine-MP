@@ -47,7 +47,7 @@ abstract class Fallable extends Solid{
 				$fall = Entity::createEntity("FallingSand", $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), new Compound("", [
 					"Pos" => new Enum("Pos", [
 						new Double("", $this->x + 0.5),
-						new Double("", $this->y + 0.5),
+						new Double("", $this->y),
 						new Double("", $this->z + 0.5)
 					]),
 					"Motion" => new Enum("Motion", [

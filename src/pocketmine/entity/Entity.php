@@ -24,6 +24,7 @@
  */
 namespace pocketmine\entity;
 
+use pocketmine\block\Block;
 use pocketmine\block\Water;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDespawnEvent;
@@ -568,13 +569,14 @@ abstract class Entity extends Location implements Metadatable{
 	 * @param int $amount
 	 */
 	public function setHealth($amount){
+		$amount = (int) $amount;
 		if($amount === $this->health){
 			return;
 		}
 
 		if($amount <= 0){
-			$this->health = 0;
-			if(!$this->isAlive()){
+			if($this->isAlive()){
+				$this->health = 0;
 				$this->kill();
 			}
 		}elseif($amount <= $this->getMaxHealth() or $amount < $this->health){
@@ -617,23 +619,21 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	protected function checkObstruction($x, $y, $z){
-		$i = Math::floorFloat($x);
-		$j = Math::floorFloat($y);
-		$k = Math::floorFloat($z);
+		$i = (int) $x;
+		$j = (int) $y;
+		$k = (int) $z;
 
 		$diffX = $x - $i;
 		$diffY = $y - $j;
 		$diffZ = $z - $k;
 
-		$v = new Vector3($i, $j, $k);
-
-		if($this->level->isFullBlock($v)){
-			$flag = !$this->level->isFullBlock($v->setComponents($i - 1, $j, $k));
-			$flag1 = !$this->level->isFullBlock($v->setComponents($i + 1, $j, $k));
-			$flag2 = !$this->level->isFullBlock($v->setComponents($i, $j - 1, $k));
-			$flag3 = !$this->level->isFullBlock($v->setComponents($i, $j + 1, $k));
-			$flag4 = !$this->level->isFullBlock($v->setComponents($i, $j, $k - 1));
-			$flag5 = !$this->level->isFullBlock($v->setComponents($i, $j, $k + 1));
+		if(Block::$solid[$this->level->getBlockIdAt($i, $j, $k)]){
+			$flag = !Block::$solid[$this->level->getBlockIdAt($i - 1, $j, $k)];
+			$flag1 = !Block::$solid[$this->level->getBlockIdAt($i + 1, $j, $k)];
+			$flag2 = !Block::$solid[$this->level->getBlockIdAt($i, $j - 1, $k)];
+			$flag3 = !Block::$solid[$this->level->getBlockIdAt($i, $j + 1, $k)];
+			$flag4 = !Block::$solid[$this->level->getBlockIdAt($i, $j, $k - 1)];
+			$flag5 = !Block::$solid[$this->level->getBlockIdAt($i, $j, $k + 1)];
 
 			$direction = -1;
 			$limit = 9999;
@@ -701,10 +701,9 @@ abstract class Entity extends Location implements Metadatable{
 
 			if($direction === 5){
 				$this->motionY = $force;
+
+				return true;
 			}
-
-			return true;
-
 		}
 
 		return false;
@@ -1385,9 +1384,6 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function kill(){
-		if(!$this->isAlive()){
-			return;
-		}
 		$this->setHealth(0);
 		$this->scheduleUpdate();
 	}

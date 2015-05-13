@@ -88,4 +88,14 @@ class Compound extends NamedTag implements \ArrayAccess{
 		}
 		$nbt->writeTag(new End);
 	}
+
+	public function __toString(){
+		$str = get_class($this) . "{\n";
+		foreach($this as $tag){
+			if($tag instanceof Tag){
+				$str .= get_class($tag) . ":" . $tag->__toString() . "\n";
+			}
+		}
+		return $str . "}";
+	}
 }

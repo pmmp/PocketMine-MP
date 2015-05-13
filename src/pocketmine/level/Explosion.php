@@ -130,7 +130,7 @@ class Explosion{
 
 	public function explodeB(){
 		$send = [];
-		$source = (new Vector3($this->source->x, $this->source->y, $this->source->z))->round();
+		$source = (new Vector3($this->source->x, $this->source->y, $this->source->z))->floor();
 		$yield = (1 / $this->size) * 100;
 
 		if($this->what instanceof Entity){

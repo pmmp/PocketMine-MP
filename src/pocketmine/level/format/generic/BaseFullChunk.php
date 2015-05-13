@@ -66,6 +66,8 @@ abstract class BaseFullChunk implements FullChunk{
 
 	protected $hasChanged = false;
 
+	private $isInit = false;
+
 	/**
 	 * @param LevelProvider $provider
 	 * @param int           $x
@@ -106,7 +108,7 @@ abstract class BaseFullChunk implements FullChunk{
 	}
 
 	public function initChunk(){
-		if($this->getProvider() instanceof LevelProvider and $this->NBTentities !== null){
+		if($this->getProvider() instanceof LevelProvider and !$this->isInit and $this->NBTentities !== null){
 			$this->getProvider()->getLevel()->timings->syncChunkLoadEntitiesTimer->startTiming();
 			foreach($this->NBTentities as $nbt){
 				if($nbt instanceof Compound){
@@ -154,8 +156,8 @@ abstract class BaseFullChunk implements FullChunk{
 
 			$this->NBTentities = null;
 			$this->NBTtiles = null;
-			$this->hasChanged = false;
 
+			$this->isInit = true;
 		}
 
 		if(!$this->isLightPopulated() and $this->isPopulated()){
@@ -280,14 +282,14 @@ abstract class BaseFullChunk implements FullChunk{
 
 	public function addEntity(Entity $entity){
 		$this->entities[$entity->getId()] = $entity;
-		if(!($entity instanceof Player)){
+		if(!($entity instanceof Player) and $this->isInit){
 			$this->hasChanged = true;
 		}
 	}
 
 	public function removeEntity(Entity $entity){
 		unset($this->entities[$entity->getId()]);
-		if(!($entity instanceof Player)){
+		if(!($entity instanceof Player) and $this->isInit){
 			$this->hasChanged = true;
 		}
 	}
@@ -298,13 +300,17 @@ abstract class BaseFullChunk implements FullChunk{
 			$this->tileList[$index]->close();
 		}
 		$this->tileList[$index] = $tile;
-		$this->hasChanged = true;
+		if($this->isInit){
+			$this->hasChanged = true;
+		}
 	}
 
 	public function removeTile(Tile $tile){
 		unset($this->tiles[$tile->getId()]);
 		unset($this->tileList[(($tile->z & 0x0f) << 12) | (($tile->x & 0x0f) << 8) | ($tile->y & 0xff)]);
-		$this->hasChanged = true;
+		if($this->isInit){
+			$this->hasChanged = true;
+		}
 	}
 
 	public function getEntities(){

@@ -197,4 +197,14 @@ class Enum extends NamedTag implements \ArrayAccess, \Countable{
 			$tag->write($nbt);
 		}
 	}
+
+	public function __toString(){
+		$str = get_class($this) . "{\n";
+		foreach($this as $tag){
+			if($tag instanceof Tag){
+				$str .= get_class($tag) . ":" . $tag->__toString() . "\n";
+			}
+		}
+		return $str . "}";
+	}
 }

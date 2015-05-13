@@ -1813,7 +1813,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($packet->face >= 0 and $packet->face <= 5){ //Use Block, place
 					$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
 
-					if(!$this->canInteract($blockVector->add(0.5, 0.5, 0.5), 10) or $this->isSpectator()){
+					if(!$this->canInteract($blockVector->add(0.5, 0.5, 0.5), 13) or $this->isSpectator()){
 
 					}elseif($this->isCreative()){
 						$item = $this->inventory->getItemInHand();
@@ -2084,7 +2084,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$oldItem = clone $item;
 
-				if($this->canInteract($vector->add(0.5, 0.5, 0.5), 10) and $this->level->useBreakOn($vector, $item, $this) === true){
+				if($this->canInteract($vector->add(0.5, 0.5, 0.5), 13) and $this->level->useBreakOn($vector, $item, $this) === true){
 					if($this->isSurvival()){
 						if(!$item->equals($oldItem, true) or $item->getCount() !== $oldItem->getCount()){
 							$this->inventory->setItemInHand($item, $this);
@@ -2754,7 +2754,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	}
 
 	public function kill(){
-		if(!$this->isAlive() or $this->spawned === false){
+		if(!$this->spawned){
 			return;
 		}
 
@@ -2861,10 +2861,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			default:
 
-		}
-
-		if(!$this->isAlive()){
-			return;
 		}
 
 		Entity::kill();

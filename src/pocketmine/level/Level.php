@@ -953,12 +953,12 @@ class Level implements ChunkManager, Metadatable{
 	 * @return AxisAlignedBB[]
 	 */
 	public function getCollisionCubes(Entity $entity, AxisAlignedBB $bb, $entities = true){
-		$minX = Math::floorFloat($bb->minX);
-		$minY = Math::floorFloat($bb->minY);
-		$minZ = Math::floorFloat($bb->minZ);
-		$maxX = Math::ceilFloat($bb->maxX);
-		$maxY = Math::ceilFloat($bb->maxY);
-		$maxZ = Math::ceilFloat($bb->maxZ);
+		$minX = (int) $bb->minX;
+		$minY = (int) $bb->minY;
+		$minZ = (int) $bb->minZ;
+		$maxX = (int) ($bb->maxX + 1);
+		$maxY = (int) ($bb->maxY + 1);
+		$maxZ = (int) ($bb->maxZ + 1);
 
 		$collides = [];
 		$v = $this->temporalVector;

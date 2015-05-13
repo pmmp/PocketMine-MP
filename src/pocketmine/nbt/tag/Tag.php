@@ -44,7 +44,7 @@ abstract class Tag extends \stdClass{
 
 	abstract public function read(NBT $nbt);
 
-	public final function __toString(){
+	public function __toString(){
 		return (string) $this->value;
 	}
 }
