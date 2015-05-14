@@ -2207,15 +2207,18 @@ class Server{
 		$this->identifiers[spl_object_hash($player)] = $identifier;
 	}
 
-	private function checkTickUpdates($currentTick){
+	private function checkTickUpdates($currentTick, $tickTime){
+		foreach($this->players as $p){
+			if(!$p->loggedIn and ($tickTime - $p->creationTime) >= 10){
+				$p->close("", "Login timeout");
+			}elseif($this->alwaysTickPlayers){
+				$p->onUpdate($currentTick);
+			}
+		}
+
 		//Do level ticks
 		foreach($this->getLevels() as $level){
 			if($level->getTickRate() > $this->baseTickRate and --$level->tickRateCounter > 0){
-				if($this->alwaysTickPlayers){
-					foreach($level->getPlayers() as $p){
-						$p->onUpdate($currentTick);
-					}
-				}
 				continue;
 			}
 			try{
@@ -2405,7 +2408,7 @@ class Server{
 		$this->scheduler->mainThreadHeartbeat($this->tickCounter);
 		Timings::$schedulerTimer->stopTiming();
 
-		$this->checkTickUpdates($this->tickCounter);
+		$this->checkTickUpdates($this->tickCounter, $tickTime);
 
 		if(($this->tickCounter & 0b1111) === 0){
 			$this->titleTick();

@@ -1495,7 +1495,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		switch($packet->pid()){
 			case ProtocolInfo::LOGIN_PACKET:
-				if($this->loggedIn === true){
+				if($this->loggedIn){
 					break;
 				}
 
