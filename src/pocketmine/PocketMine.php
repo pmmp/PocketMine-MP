@@ -74,8 +74,8 @@ namespace pocketmine {
 	const VERSION = "1.5dev";
 	const API_VERSION = "1.12.0";
 	const CODENAME = "活発(Kappatsu)フグ(Fugu)";
-	const MINECRAFT_VERSION = "v0.11.0 alpha build 10";
-	const MINECRAFT_VERSION_NETWORK = "0.11.0.10";
+	const MINECRAFT_VERSION = "v0.11.0 alpha build 11";
+	const MINECRAFT_VERSION_NETWORK = "0.11.0.11";
 
 	/*
 	 * Startup code. Do not look at it, it may harm you.

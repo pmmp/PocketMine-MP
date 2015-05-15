@@ -78,12 +78,12 @@ class CraftingManager{
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE, Planks::JUNGLE, 3)))->addIngredient(Item::get(Item::STICK, 0, 2))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::JUNGLE, 4)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE, Planks::ACACIA, 3)))->addIngredient(Item::get(Item::STICK, 0, 2))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::ACACIA, 4)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE, Planks::DARK_OAK, 3)))->addIngredient(Item::get(Item::STICK, 0, 2))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::DARK_OAK, 4)));
-		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_GATE, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::OAK, 2))->addIngredient(Item::get(Item::STICK, 0, 4)));
-		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_GATE_SPRUCE, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::SPRUCE, 2))->addIngredient(Item::get(Item::STICK, 0, 4)));
-		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_GATE_BIRCH, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::BIRCH, 2))->addIngredient(Item::get(Item::STICK, 0, 4)));
-		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_GATE_JUNGLE, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::JUNGLE, 2))->addIngredient(Item::get(Item::STICK, 0, 4)));
-		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_GATE_DARK_OAK, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::DARK_OAK, 2))->addIngredient(Item::get(Item::STICK, 0, 4)));
-		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_GATE_ACACIA, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::ACACIA, 2))->addIngredient(Item::get(Item::STICK, 0, 4)));
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_GATE, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::OAK, 2)));
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_GATE_SPRUCE, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::SPRUCE, 2)));
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_GATE_BIRCH, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::BIRCH, 2)));
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_GATE_JUNGLE, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::JUNGLE, 2)));
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_GATE_DARK_OAK, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::DARK_OAK, 2)));
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_GATE_ACACIA, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::ACACIA, 2)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FURNACE, 0, 1)))->addIngredient(Item::get(Item::COBBLESTONE, 0, 8)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::GLASS_PANE, 0, 16)))->addIngredient(Item::get(Item::GLASS, 0, 6)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::LADDER, 0, 2)))->addIngredient(Item::get(Item::STICK, 0, 7)));
@@ -368,6 +368,25 @@ class CraftingManager{
 	public function registerFurnaceRecipe(FurnaceRecipe $recipe){
 		$input = $recipe->getInput();
 		$this->furnaceRecipes[$input->getId() . ":" . ($input->getDamage() === null ? "?" : $input->getDamage())] = $recipe;
+	}
+
+	/**
+	 * @param ShapelessRecipe $recipe
+	 * @return bool
+	 */
+	public function matchRecipe(ShapelessRecipe $recipe){
+		if(!isset($this->recipeLookup[$idx = $recipe->getResult()->getId() . ":" . $recipe->getResult()->getDamage()])){
+			return false;
+		}
+
+		$hash = "";
+		$ingredients = $recipe->getIngredientList();
+		usort($ingredients, [$this, "sort"]);
+		foreach($ingredients as $item){
+			$hash .= $item->getId() . ":" . ($item->getDamage() === null ? "?" : $item->getDamage()) . "x" . $item->getCount() . ",";
+		}
+
+		return isset($this->recipeLookup[$idx][$hash]);
 	}
 
 	/**

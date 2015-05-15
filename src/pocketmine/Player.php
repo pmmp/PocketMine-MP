@@ -70,6 +70,7 @@ use pocketmine\inventory\FurnaceInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
+use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\inventory\SimpleTransactionGroup;
 use pocketmine\inventory\StonecutterShapelessRecipe;
 use pocketmine\item\Item;
@@ -2383,6 +2384,139 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					unset($this->windowIndex[$packet->windowid]);
 				}
 				break;
+
+			case ProtocolInfo::CONTAINER_SET_CONTENT_PACKET:
+				if($packet->windowid === ContainerSetContentPacket::SPECIAL_CRAFTING){
+					if(count($packet->slots) < 9){
+						$this->inventory->sendContents($this);
+						break;
+					}
+
+					foreach($packet->slots as $i => $item){
+						/** @var Item $item */
+						if($item->getDamage() === -1 or $item->getDamage() === 0xffff){
+							$item->setDamage(null);
+						}
+
+						if($i < 9 and $item->getId() > 0){
+							$item->setCount(1);
+						}
+					}
+
+					$result = $packet->slots[9];
+
+					if($this->craftingType === 1 or $this->craftingType === 2){
+						$recipe = new BigShapelessRecipe($result);
+					}else{
+						$recipe = new ShapelessRecipe($result);
+					}
+
+					/** @var Item[] $ingredients */
+					$ingredients = [];
+					for($x = 0; $x < 3; ++$x){
+						for($y = 0; $y < 3; ++$y){
+							$item = $packet->slots[$x * 3 + $y];
+							if($item->getCount() > 0 and $item->getId() > 0){
+								//TODO shaped
+								$recipe->addIngredient($item);
+								$ingredients[$x * 3 + $y] = $item;
+							}
+						}
+					}
+
+					if(!Server::getInstance()->getCraftingManager()->matchRecipe($recipe)){
+						$this->server->getLogger()->debug("Unmatched recipe from player ". $this->getName() .": " . $recipe->getResult().", using: " . implode(", ", $recipe->getIngredientList()));
+						$this->inventory->sendContents($this);
+						break;
+					}
+
+					$canCraft = true;
+
+					$used = array_fill(0, $this->inventory->getSize(), 0);
+
+					foreach($ingredients as $ingredient){
+						$slot = -1;
+						$checkDamage = $ingredient->getDamage() === null ? false : true;
+						foreach($this->inventory->getContents() as $index => $i){
+							if($ingredient->equals($i, $checkDamage) and ($i->getCount() - $used[$index]) >= 1){
+								$slot = $index;
+								$used[$index]++;
+								break;
+							}
+						}
+
+						if($slot === -1){
+							$canCraft = false;
+							break;
+						}
+					}
+
+					if(!$canCraft){
+						$this->inventory->sendContents($this);
+						break;
+					}
+
+					foreach($used as $slot => $count){
+						if($count === 0){
+							continue;
+						}
+
+						$item = $this->inventory->getItem($slot);
+
+						if($item->getCount() > $count){
+							$newItem = clone $item;
+							$newItem->setCount($item->getCount() - $count);
+						}else{
+							$newItem = Item::get(Item::AIR, 0, 0);
+						}
+
+						$this->inventory->setItem($slot, $newItem);
+					}
+
+					$extraItem = $this->inventory->addItem($recipe->getResult());
+					if(count($extraItem) > 0){
+						foreach($extraItem as $item){
+							$this->level->dropItem($this, $item);
+						}
+					}
+
+					switch($recipe->getResult()->getId()){
+						case Item::WORKBENCH:
+							$this->awardAchievement("buildWorkBench");
+							break;
+						case Item::WOODEN_PICKAXE:
+							$this->awardAchievement("buildPickaxe");
+							break;
+						case Item::FURNACE:
+							$this->awardAchievement("buildFurnace");
+							break;
+						case Item::WOODEN_HOE:
+							$this->awardAchievement("buildHoe");
+							break;
+						case Item::BREAD:
+							$this->awardAchievement("makeBread");
+							break;
+						case Item::CAKE:
+							//TODO: detect complex recipes like cake that leave remains
+							$this->awardAchievement("bakeCake");
+							$this->inventory->addItem(Item::get(Item::BUCKET, 0, 3));
+							break;
+						case Item::STONE_PICKAXE:
+						case Item::GOLD_PICKAXE:
+						case Item::IRON_PICKAXE:
+						case Item::DIAMOND_PICKAXE:
+							$this->awardAchievement("buildBetterPickaxe");
+							break;
+						case Item::WOODEN_SWORD:
+							$this->awardAchievement("buildSword");
+							break;
+						case Item::DIAMOND:
+							$this->awardAchievement("diamond");
+							break;
+					}
+				}
+				break;
+
 			case ProtocolInfo::CONTAINER_SET_SLOT_PACKET:
 				if($this->spawned === false or $this->blocked === true or !$this->isAlive()){
 					break;
@@ -2424,7 +2558,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 
 				if($this->currentTransaction === null or $this->currentTransaction->getCreationTime() < (microtime(true) - 8)){
-					if($this->currentTransaction instanceof SimpleTransactionGroup){
+					if($this->currentTransaction !== null){
 						foreach($this->currentTransaction->getInventories() as $inventory){
 							if($inventory instanceof PlayerInventory){
 								$inventory->sendArmorContents($this);
@@ -2438,76 +2572,28 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->currentTransaction->addTransaction($transaction);
 
 				if($this->currentTransaction->canExecute()){
-					if($this->currentTransaction->execute()){
-						foreach($this->currentTransaction->getTransactions() as $ts){
-							$inv = $ts->getInventory();
-							if($inv instanceof FurnaceInventory){
-								if($ts->getSlot() === 2){
-									switch($inv->getResult()->getId()){
-										case Item::IRON_INGOT:
-											$this->awardAchievement("acquireIron");
-											break;
-									}
+					$achievements = [];
+					foreach($this->currentTransaction->getTransactions() as $ts){
+						$inv = $ts->getInventory();
+						if($inv instanceof FurnaceInventory){
+							if($ts->getSlot() === 2){
+								switch($inv->getResult()->getId()){
+									case Item::IRON_INGOT:
+										$achievements[] = "acquireIron";
+										break;
 								}
 							}
 						}
 					}
 
-					$this->currentTransaction = null;
-				}elseif($packet->windowid == 0){ //Try crafting
-					$craftingGroup = new CraftingTransactionGroup($this->currentTransaction);
-					if($craftingGroup->canExecute()){ //We can craft!
-						$recipe = $craftingGroup->getMatchingRecipe();
-						if($recipe instanceof BigShapelessRecipe and $this->craftingType !== 1){
-							break;
-						}elseif($recipe instanceof StonecutterShapelessRecipe and $this->craftingType !== 2){
-							break;
+					if($this->currentTransaction->execute()){
+						foreach($achievements as $a){
+							$this->awardAchievement($a);
 						}
-
-						if($craftingGroup->execute()){
-							switch($craftingGroup->getResult()->getId()){
-								case Item::WORKBENCH:
-									$this->awardAchievement("buildWorkBench");
-									break;
-								case Item::WOODEN_PICKAXE:
-									$this->awardAchievement("buildPickaxe");
-									break;
-								case Item::FURNACE:
-									$this->awardAchievement("buildFurnace");
-									break;
-								case Item::WOODEN_HOE:
-									$this->awardAchievement("buildHoe");
-									break;
-								case Item::BREAD:
-									$this->awardAchievement("makeBread");
-									break;
-								case Item::CAKE:
-									//TODO: detect complex recipes like cake that leave remains
-									$this->awardAchievement("bakeCake");
-									$this->inventory->addItem(Item::get(Item::BUCKET, 0, 3));
-									break;
-								case Item::STONE_PICKAXE:
-								case Item::GOLD_PICKAXE:
-								case Item::IRON_PICKAXE:
-								case Item::DIAMOND_PICKAXE:
-									$this->awardAchievement("buildBetterPickaxe");
-									break;
-								case Item::WOODEN_SWORD:
-									$this->awardAchievement("buildSword");
-									break;
-								case Item::DIAMOND:
-									$this->awardAchievement("diamond");
-									break;
-							}
-						}
-
-
-						$this->currentTransaction = null;
 					}
 
-
+					$this->currentTransaction = null;
 				}
-
 
 				break;
 			case ProtocolInfo::TILE_ENTITY_DATA_PACKET:
