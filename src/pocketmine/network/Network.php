@@ -195,6 +195,12 @@ class Network{
 		return $this->name;
 	}
 
+	public function updateName(){
+		foreach($this->interfaces as $interface){
+			$interface->setName($this->name);
+		}
+	}
+
 	/**
 	 * @param int        $id 0-255
 	 * @param DataPacket $class

@@ -2424,6 +2424,8 @@ class Server{
 					}
 				}
 			}
+
+			$this->getNetwork()->updateName();
 		}
 
 		if($this->autoSave and ++$this->autoSaveTicker >= $this->autoSaveTicks){
