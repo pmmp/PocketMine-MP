@@ -87,6 +87,7 @@ use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\Network;
+use pocketmine\network\protocol\LevelEventPacket;
 use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\Player;
@@ -548,7 +549,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function registerChunkLoader(ChunkLoader $loader, $chunkX, $chunkZ, $autoLoad = true){
-		$hash = spl_object_hash($loader);
+		$hash = $loader->getLoaderId();
 
 		if(!isset($this->chunkLoaders[$index = Level::chunkHash($chunkX, $chunkZ)])){
 			$this->chunkLoaders[$index] = [];
@@ -576,8 +577,8 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function unregisterChunkLoader(ChunkLoader $loader, $chunkX, $chunkZ){
-		if(isset($this->chunkLoaders[$index = Level::chunkHash($chunkX, $chunkZ)][$hash = spl_object_hash($loader)])){
-			unset($this->chunkLoaders[$index][$hash = spl_object_hash($loader)]);
+		if(isset($this->chunkLoaders[$index = Level::chunkHash($chunkX, $chunkZ)][$hash = $loader->getLoaderId()])){
+			unset($this->chunkLoaders[$index][$hash]);
 			unset($this->playerLoaders[$index][$hash]);
 			if(count($this->chunkLoaders[$index]) === 0){
 				unset($this->chunkLoaders[$index]);
@@ -1445,11 +1446,18 @@ class Level implements ChunkManager, Metadatable{
 		}
 		$drops = $target->getDrops($item); //Fixes tile entities being deleted before getting drops
 
-		$players = $this->getUsingChunk($target->x >> 4, $target->z >> 4);
+		$players = $this->getChunkPlayers($target->x >> 4, $target->z >> 4);
 		if($player !== null){
-			unset($players[$player->getId()]);
-			$this->addParticle(new DestroyBlockParticle($target->add(0.5, 0.5, 0.5), $target), $players);
+			unset($players[$player->getLoaderId()]);
 		}
+
+		$pk = new LevelEventPacket();
+		$pk->evid = 2001;
+		$pk->x = $target->x + 0.5;
+		$pk->y = $target->y + 0.5;
+		$pk->z = $target->z + 0.5;
+		$pk->data = $target->getId() + ($target->getDamage() << 12);
+		Server::broadcastPacket($players, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 		
 		$target->onBreak($item);
 		
@@ -2125,7 +2133,7 @@ class Level implements ChunkManager, Metadatable{
 			$this->chunkSendQueue[$index] = [];
 		}
 
-		$this->chunkSendQueue[$index][spl_object_hash($player)] = $player;
+		$this->chunkSendQueue[$index][$player->getLoaderId()] = $player;
 	}
 
 	private function processChunkRequest(){

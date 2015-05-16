@@ -69,11 +69,11 @@ abstract class Tool extends Item{
 	public function getMaxDurability(){
 
 		$levels = [
-			2 => 33,
-			1 => 60,
-			3 => 132,
-			4 => 251,
-			5 => 1562,
+			Tool::TIER_GOLD => 33,
+			Tool::TIER_WOODEN => 60,
+			Tool::TIER_STONE => 132,
+			Tool::TIER_IRON => 251,
+			Tool::TIER_DIAMOND => 1562,
 			self::FLINT_STEEL => 65,
 			self::SHEARS => 239,
 			self::BOW => 385,
