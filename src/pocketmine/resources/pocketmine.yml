@@ -82,7 +82,7 @@ network:
 debug:
  #If > 1, it will show debug messages in the console
  level: 1
- #Enables /status
+ #Enables /status, /gc
  commands: false
 
 level-settings:

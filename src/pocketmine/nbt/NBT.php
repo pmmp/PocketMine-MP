@@ -314,11 +314,17 @@ class NBT{
 		$this->fromArray($this->data, $data);
 	}
 
+	/**
+	 * @return Compound|array
+	 */
 	public function getData(){
 		return $this->data;
 	}
 
-	public function setData(Compound $data){
+	/**
+	 * @param Compound|array $data
+	 */
+	public function setData($data){
 		$this->data = $data;
 	}
 

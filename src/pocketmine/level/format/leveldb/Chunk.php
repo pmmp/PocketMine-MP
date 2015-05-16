@@ -296,29 +296,30 @@ class Chunk extends BaseFullChunk{
 			foreach($this->getEntities() as $entity){
 				if(!($entity instanceof Player) and !$entity->closed){
 					$entity->saveNBT();
-					$nbt->setData($entity->namedtag);
-					$entities[] = $nbt->write();
+					$entities[] = $entity->namedtag;
 				}
 			}
 
 			if(count($entities) > 0){
-				$provider->getDatabase()->put($chunkIndex . LevelDB::ENTRY_ENTITIES, implode($entities));
+				$nbt->setData($entities);
+				$provider->getDatabase()->put($chunkIndex . LevelDB::ENTRY_ENTITIES, $nbt->write());
 			}else{
 				$provider->getDatabase()->delete($chunkIndex . LevelDB::ENTRY_ENTITIES);
 			}
 
 
 			$tiles = [];
+
 			foreach($this->getTiles() as $tile){
 				if(!$tile->closed){
 					$tile->saveNBT();
-					$nbt->setData($tile->namedtag);
-					$tiles[] = $nbt->write();
+					$tiles[] = $tile->namedtag;
 				}
 			}
 
 			if(count($tiles) > 0){
-				$provider->getDatabase()->put($chunkIndex . LevelDB::ENTRY_TILES, implode($tiles));
+				$nbt->setData($tiles);
+				$provider->getDatabase()->put($chunkIndex . LevelDB::ENTRY_TILES, $nbt->write());
 			}else{
 				$provider->getDatabase()->delete($chunkIndex . LevelDB::ENTRY_TILES);
 			}

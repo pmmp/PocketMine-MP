@@ -29,6 +29,7 @@ use pocketmine\command\defaults\DeopCommand;
 use pocketmine\command\defaults\DifficultyCommand;
 use pocketmine\command\defaults\EffectCommand;
 use pocketmine\command\defaults\GamemodeCommand;
+use pocketmine\command\defaults\GarbageCollectorCommand;
 use pocketmine\command\defaults\GiveCommand;
 use pocketmine\command\defaults\HelpCommand;
 use pocketmine\command\defaults\KickCommand;
@@ -115,6 +116,7 @@ class SimpleCommandMap implements CommandMap{
 
 		if($this->server->getProperty("debug.commands", false) === true){
 			$this->register("pocketmine", new StatusCommand("status"));
+			$this->register("pocketmine", new GarbageCollectorCommand("gc"));
 		}
 	}
 

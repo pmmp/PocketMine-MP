@@ -74,6 +74,7 @@ use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\inventory\SimpleTransactionGroup;
 use pocketmine\inventory\StonecutterShapelessRecipe;
 use pocketmine\item\Item;
+use pocketmine\level\ChunkLoader;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\level\Level;
@@ -129,7 +130,7 @@ use pocketmine\utils\Utils;
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
  */
-class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
+class Player extends Human implements CommandSender, InventoryHolder, ChunkLoader, IPlayer{
 
 	const SURVIVAL = 0;
 	const CREATIVE = 1;
@@ -198,6 +199,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	/** @var Vector3 */
 	protected $sleeping = null;
 	protected $clientID = null;
+
+	private $loaderId = null;
 
 	protected $stepHeight = 0.6;
 
@@ -492,6 +495,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->clientID = $clientID;
+		$this->loaderId = Level::generateChunkLoaderId($this);
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
         $this->spawnThreshold = (int) $this->server->getProperty("chunk-sending.spawn-threshold", 56);
 		$this->spawnPosition = null;
@@ -527,11 +531,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return false;
 		}
 
-		if(!isset($this->achievements[$achievementId]) or $this->achievements[$achievementId] == false){
-			return false;
-		}
-
-		return true;
+		return isset($this->achievements[$achievementId]) and $this->achievements[$achievementId] != false;
 	}
 
 	/**
@@ -596,10 +596,21 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		return $this->sleeping !== null;
 	}
 
-	public function unloadChunk($x, $z){
+	protected function switchLevel(Level $targetLevel){
+		$oldLevel = $this->level;
+		if(parent::switchLevel($targetLevel)){
+			foreach($this->usedChunks as $index => $d){
+				Level::getXZ($index, $X, $Z);
+				$this->unloadChunk($X, $Z, $oldLevel);
+			}
+		}
+	}
+
+	private function unloadChunk($x, $z, Level $level = null){
+		$level = $level === null ? $this->level : $level;
 		$index = Level::chunkHash($x, $z);
 		if(isset($this->usedChunks[$index])){
-			foreach($this->level->getChunkEntities($x, $z) as $entity){
+			foreach($level->getChunkEntities($x, $z) as $entity){
 				if($entity !== $this){
 					$entity->despawnFrom($this);
 				}
@@ -607,7 +618,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			unset($this->usedChunks[$index]);
 		}
-		$this->level->freeChunk($x, $z, $this);
+		$level->unregisterChunkLoader($this, $x, $z);
 		unset($this->loadQueue[$index]);
 	}
 
@@ -672,11 +683,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 
-
 			unset($this->loadQueue[$index]);
 			$this->usedChunks[$index] = false;
 
-			$this->level->useChunk($X, $Z, $this);
+			$this->level->registerChunkLoader($this, $X, $Z);
 			$this->level->requestChunk($X, $Z, $this, LevelProvider::ORDER_ZXY);
 		}
 
@@ -2757,7 +2767,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			foreach($this->usedChunks as $index => $d){
 				Level::getXZ($index, $chunkX, $chunkZ);
-				$this->level->freeChunk($chunkX, $chunkZ, $this);
+				$this->level->unregisterChunkLoader($this, $chunkX, $chunkZ);
 				unset($this->usedChunks[$index]);
 			}
 
@@ -3173,5 +3183,33 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->server->getPlayerMetadata()->removeMetadata($this, $metadataKey, $plugin);
 	}
 
+
+	public function onChunkChanged(FullChunk $chunk){
+		$this->loadQueue[Level::chunkHash($chunk->getX(), $chunk->getZ())] = abs(($this->x >> 4) - $chunk->getX()) + abs(($this->z >> 4) - $chunk->getZ());
+	}
+
+	public function onChunkLoaded(FullChunk $chunk){
+
+	}
+
+	public function onChunkPopulated(FullChunk $chunk){
+
+	}
+
+	public function onChunkUnloaded(FullChunk $chunk){
+
+	}
+
+	public function onBlockChanged(Vector3 $block){
+
+	}
+
+	public function getLoaderId(){
+		return $this->loaderId;
+	}
+
+	public function isLoaderActive(){
+		return $this->isConnected();
+	}
 
 }
