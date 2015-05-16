@@ -36,6 +36,7 @@ class TimingsHandler{
 	private $parent = null;
 
 	private $count = 0;
+	private $curCount = 0;
 	private $start = 0;
 	private $timingDepth = 0;
 	private $totalTime = 0;
@@ -97,14 +98,26 @@ class TimingsHandler{
 		}
 	}
 
-	public static function tick(){
+	public static function tick($measure = true){
 		if(PluginManager::$useTimings){
-			foreach(self::$HANDLERS as $timings){
-				if($timings->curTickTotal > 0.05){
-					$timings->violations += round($timings->curTickTotal / 0.05);
+			if($measure){
+				foreach(self::$HANDLERS as $timings){
+					if($timings->curTickTotal > 0.05){
+						$timings->violations += round($timings->curTickTotal / 0.05);
+					}
+					$timings->curTickTotal = 0;
+					$timings->curCount = 0;
+					$timings->timingDepth = 0;
 				}
-				$timings->curTickTotal = 0;
-				$timings->timingDepth = 0;
+			}else{
+				foreach(self::$HANDLERS as $timings){
+					$timings->totalTime -= $timings->curTickTotal;
+					$timings->count -= $timings->curCount;
+
+					$timings->curTickTotal = 0;
+					$timings->curCount = 0;
+					$timings->timingDepth = 0;
+				}
 			}
 		}
 	}
@@ -127,7 +140,8 @@ class TimingsHandler{
 			$diff = microtime(true) - $this->start;
 			$this->totalTime += $diff;
 			$this->curTickTotal += $diff;
-			$this->count++;
+			++$this->curCount;
+			++$this->count;
 			$this->start = 0;
 			if($this->parent instanceof TimingsHandler){
 				$this->parent->stopTiming();
@@ -137,6 +151,7 @@ class TimingsHandler{
 
 	public function reset(){
 		$this->count = 0;
+		$this->curCount = 0;
 		$this->violations = 0;
 		$this->curTickTotal = 0;
 		$this->totalTime = 0;

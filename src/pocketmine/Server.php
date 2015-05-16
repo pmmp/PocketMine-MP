@@ -139,6 +139,8 @@ class Server{
 	/** @var PluginManager */
 	private $pluginManager = null;
 
+	private $profilingTickRate = 20;
+
 	/** @var AutoUpdater */
 	private $updater = null;
 
@@ -1672,6 +1674,7 @@ class Server{
 		$this->pluginManager = new PluginManager($this, $this->commandMap);
 		$this->pluginManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
 		$this->pluginManager->setUseTimings($this->getProperty("settings.enable-profiling", false));
+		$this->profilingTickRate = (float) $this->getProperty("settings.profile-report-trigger", 20);
 		$this->pluginManager->registerInterface(PharPluginLoader::class);
 
 		set_exception_handler([$this, "exceptionHandler"]);
@@ -2456,11 +2459,11 @@ class Server{
 
 		Timings::$serverTickTimer->stopTiming();
 
-		TimingsHandler::tick();
-
 		$now = microtime(true);
 		$tick = min(20, 1 / max(0.001, $now - $tickTime));
 		$use = min(1, ($now - $tickTime) / 0.05);
+
+		TimingsHandler::tick($tick <= $this->profilingTickRate);
 
 		if($this->maxTick > $tick){
 			$this->maxTick = $tick;

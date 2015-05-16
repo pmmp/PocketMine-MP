@@ -16,6 +16,8 @@ settings:
  deprecated-verbose: true
  #Enable plugin and core profiling by default
  enable-profiling: false
+ #Will only add results when tick measurement is below or equal to given value (default 20)
+ profile-report-trigger: 20
  #Sends anonymous statistics to create usage reports
  send-usage: true
  #Number of AsyncTask workers.
