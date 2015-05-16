@@ -568,6 +568,8 @@ class Level implements ChunkManager, Metadatable{
 			++$this->loaders[$hash];
 		}
 
+		$this->cancelUnloadChunkRequest($chunkX, $chunkZ);
+
 		if($autoLoad){
 			$this->loadChunk($chunkX, $chunkZ);
 		}
@@ -633,9 +635,6 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		$this->unloadChunks();
-
-		$X = null;
-		$Z = null;
 
 		//Do block updates
 		$this->timings->doTickPending->startTiming();
@@ -2047,8 +2046,12 @@ class Level implements ChunkManager, Metadatable{
 		unset($this->chunkCache[$index]);
 		$chunk->setChanged();
 
-		foreach($this->getChunkLoaders($chunkX, $chunkZ) as $loader){
-			$loader->onChunkChanged($chunk);
+		if(!$this->isChunkInUse($chunkX, $chunkZ)){
+			$this->unloadChunkRequest($chunkX, $chunkZ);
+		}else{
+			foreach($this->getChunkLoaders($chunkX, $chunkZ) as $loader){
+				$loader->onChunkChanged($chunk);
+			}
 		}
 	}
 
@@ -2286,8 +2289,12 @@ class Level implements ChunkManager, Metadatable{
 
 		$chunk->setChanged(false);
 
-		foreach($this->getChunkLoaders($x, $z) as $loader){
-			$loader->onChunkLoaded($chunk);
+		if($this->isChunkInUse($x, $z)){
+			foreach($this->getChunkLoaders($x, $z) as $loader){
+				$loader->onChunkLoaded($chunk);
+			}
+		}else{
+			$this->unloadChunkRequest($x, $z);
 		}
 
 		$this->timings->syncChunkLoadTimer->stopTiming();
