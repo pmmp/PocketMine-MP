@@ -103,6 +103,7 @@ class Item extends Entity{
 			$this->motionY -= $this->gravity;
 
 			$this->checkObstruction($this->x, $this->y, $this->z);
+
 			$this->move($this->motionX, $this->motionY, $this->motionZ);
 
 			$friction = 1 - $this->drag;
@@ -115,11 +116,11 @@ class Item extends Entity{
 			$this->motionY *= 1 - $this->drag;
 			$this->motionZ *= $friction;
 
-			$this->updateMovement();
-
 			if($this->onGround){
 				$this->motionY *= -0.5;
 			}
+
+			$this->updateMovement();
 
 			if($this->age > 6000){
 				$this->server->getPluginManager()->callEvent($ev = new ItemDespawnEvent($this));
