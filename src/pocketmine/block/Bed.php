@@ -40,7 +40,7 @@ class Bed extends Transparent{
 	}
 
 	public function getHardness(){
-		return 1;
+		return 0.2;
 	}
 
 	public function getName(){

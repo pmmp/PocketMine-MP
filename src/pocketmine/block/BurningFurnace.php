@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
@@ -48,7 +49,11 @@ class BurningFurnace extends Solid{
 	}
 
 	public function getHardness(){
-		return 17.5;
+		return 3.5;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getLightLevel(){

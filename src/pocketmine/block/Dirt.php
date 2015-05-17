@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 use pocketmine\Player;
 
 class Dirt extends Solid{
@@ -37,7 +38,11 @@ class Dirt extends Solid{
 	}
 
 	public function getHardness(){
-		return 2.5;
+		return 0.5;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_SHOVEL;
 	}
 
 	public function getName(){

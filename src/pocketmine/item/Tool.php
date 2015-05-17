@@ -32,6 +32,13 @@ abstract class Tool extends Item{
 	const TIER_IRON = 4;
 	const TIER_DIAMOND = 5;
 
+	const TYPE_NONE = 0;
+	const TYPE_SWORD = 1;
+	const TYPE_SHOVEL = 2;
+	const TYPE_PICKAXE = 3;
+	const TYPE_AXE = 4;
+	const TYPE_SHEARS = 5;
+
 	public function __construct($id, $meta = 0, $count = 1, $name = "Unknown"){
 		parent::__construct($id, $meta, $count, $name);
 	}

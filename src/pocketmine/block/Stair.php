@@ -27,10 +27,6 @@ use pocketmine\Player;
 
 abstract class Stair extends Transparent{
 
-	public function getHardness(){
-		return 30;
-	}
-
 	/*
 	public function collidesWithBB(AxisAlignedBB $bb, &$list = []){
 		$damage = $this->getDamage();

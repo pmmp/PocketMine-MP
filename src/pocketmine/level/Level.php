@@ -1513,10 +1513,16 @@ class Level implements ChunkManager, Metadatable{
 
 			$breakTime = $player->isCreative() ? 0.15 : $target->getBreakTime($item);
 			if($player->hasEffect(Effect::SWIFTNESS)){
-				$breakTime *= 0.80 * ($player->getEffect(Effect::SWIFTNESS)->getAmplifier() + 1);
+				$breakTime *= 1 - (0.2 * ($player->getEffect(Effect::SWIFTNESS)->getAmplifier() + 1));
 			}
 
-			if(!$ev->getInstaBreak() and ($player->lastBreak + $breakTime) >= microtime(true)){
+			if($player->hasEffect(Effect::MINING_FATIGUE)){
+				$breakTime *= 1 + (0.3 * ($player->getEffect(Effect::MINING_FATIGUE)->getAmplifier() + 1));
+			}
+
+			$breakTime -= 0.05; //1 tick compensation
+
+			if(!$ev->getInstaBreak() and ($player->lastBreak + $breakTime) > microtime(true)){
 				return false;
 			}
 
@@ -1532,7 +1538,7 @@ class Level implements ChunkManager, Metadatable{
 				$drops[$k] = Item::get($i[0], $i[1], $i[2]);
 			}
 		}
-
+		
 		$above = $this->getBlock(new Vector3($target->x, $target->y + 1, $target->z));
 		if($above !== null){
 			if($above->getId() === Item::FIRE){

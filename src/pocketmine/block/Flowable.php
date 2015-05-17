@@ -30,7 +30,11 @@ abstract class Flowable extends Transparent{
 		return true;
 	}
 
-	public function getBreakTime(Item $item){
+	public function getHardness(){
+		return 0;
+	}
+
+	public function getResistance(){
 		return 0;
 	}
 
@@ -40,9 +44,5 @@ abstract class Flowable extends Transparent{
 
 	public function getBoundingBox(){
 		return null;
-	}
-
-	public function getHardness(){
-		return 0;
 	}
 }

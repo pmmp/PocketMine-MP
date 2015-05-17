@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
 class AcaciaWoodStairs extends Stair{
 
@@ -39,5 +40,17 @@ class AcaciaWoodStairs extends Stair{
 		return [
 			[$this->id, 0, 1],
 		];
+	}
+
+	public function getHardness(){
+		return 2;
+	}
+
+	public function getResistance(){
+		return 15;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_AXE;
 	}
 }

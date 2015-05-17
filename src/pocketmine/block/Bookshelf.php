@@ -22,6 +22,8 @@
 namespace pocketmine\block;
 
 
+use pocketmine\item\Tool;
+
 class Bookshelf extends Solid{
 
 	protected $id = self::BOOKSHELF;
@@ -35,7 +37,11 @@ class Bookshelf extends Solid{
 	}
 
 	public function getHardness(){
-		return 7.5;
+		return 1.5;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_AXE;
 	}
 
 }
