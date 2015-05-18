@@ -565,14 +565,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 	}
 
-	public function setNameTag($name){
-		parent::setNameTag($name);
-		if($this->spawned === true){
-			$this->despawnFromAll();
-			$this->spawnToAll();
-		}
-	}
-
 	/**
 	 * Gets the player IP address
 	 *
@@ -1512,7 +1504,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 				$this->username = TextFormat::clean($packet->username);
 				$this->displayName = $this->username;
-				$this->nameTag = $this->username;
+				$this->setNameTag($this->username);
 				$this->iusername = strtolower($this->username);
 				$this->randomClientId = $packet->clientId;
 				$this->loginData = ["clientId" => $packet->clientId, "loginData" => null];

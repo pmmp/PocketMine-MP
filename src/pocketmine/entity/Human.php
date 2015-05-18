@@ -43,7 +43,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	const DATA_PLAYER_FLAGS = 16;
 	const DATA_PLAYER_BED_POSITION = 17;
 
-	protected $nameTag = "TESTIFICATE";
 	/** @var PlayerInventory */
 	protected $inventory;
 
@@ -76,14 +75,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * @return string
 	 */
 	public function getNameTag(){
-		return $this->nameTag;
+		return $this->getDataProperty(self::DATA_NAMETAG);
 	}
 
 	/**
 	 * @param string $name
 	 */
 	public function setNameTag($name){
-		$this->nameTag = $name;
+		$this->setDataProperty(self::DATA_NAMETAG, self::DATA_TYPE_STRING, $name);
 	}
 
 	public function getInventory(){
@@ -102,7 +101,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 
 		if(isset($this->namedtag->NameTag)){
-			$this->nameTag = $this->namedtag["NameTag"];
+			$this->setNameTag($this->namedtag["NameTag"]);
 		}
 
 		if(isset($this->namedtag->Inventory) and $this->namedtag->Inventory instanceof Enum){
@@ -125,7 +124,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	public function getName(){
-		return $this->nameTag;
+		return $this->getNameTag();
 	}
 
 	public function getDrops(){
@@ -212,7 +211,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 			$pk = new AddPlayerPacket();
 			$pk->clientID = $this->getId();
-			$pk->username = $this->nameTag;
+			$pk->username = $this->getName();
 			$pk->eid = $this->getId();
 			$pk->x = $this->x;
 			$pk->y = $this->y;

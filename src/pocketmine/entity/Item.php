@@ -222,6 +222,8 @@ class Item extends Entity{
 		$pk->item = $this->getItem();
 		$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
 
+		$this->sendData($player);
+
 		parent::spawnTo($player);
 	}
 }

@@ -2220,6 +2220,9 @@ class Level implements ChunkManager, Metadatable{
 		}
 		if($entity instanceof Player){
 			$this->players[$entity->getId()] = $entity;
+		}else{
+			$entity->setDataProperty(Entity::DATA_NAMETAG, Entity::DATA_TYPE_STRING, (new \ReflectionObject($entity))->getShortName());
+			$entity->setDataProperty(Entity::DATA_SHOW_NAMETAG, Entity::DATA_TYPE_BYTE, 1);
 		}
 		$this->entities[$entity->getId()] = $entity;
 	}
