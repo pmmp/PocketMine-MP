@@ -51,7 +51,7 @@ class ChestInventory extends ContainerInventory{
 			$pk->case1 = 1;
 			$pk->case2 = 2;
 			if(($level = $this->getHolder()->getLevel()) instanceof Level){
-				Server::broadcastPacket($level->getUsingChunk($this->getHolder()->getX() >> 4, $this->getHolder()->getZ() >> 4), $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+				Server::broadcastPacket($level->getChunkPlayers($this->getHolder()->getX() >> 4, $this->getHolder()->getZ() >> 4), $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 			}
 		}
 	}
@@ -65,7 +65,7 @@ class ChestInventory extends ContainerInventory{
 			$pk->case1 = 1;
 			$pk->case2 = 0;
 			if(($level = $this->getHolder()->getLevel()) instanceof Level){
-				Server::broadcastPacket($level->getUsingChunk($this->getHolder()->getX() >> 4, $this->getHolder()->getZ() >> 4), $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+				Server::broadcastPacket($level->getChunkPlayers($this->getHolder()->getX() >> 4, $this->getHolder()->getZ() >> 4), $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 			}
 		}
 		parent::onClose($who);

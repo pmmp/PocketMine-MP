@@ -106,7 +106,7 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 			$pk->case1 = 1;
 			$pk->case2 = 2;
 			if(($level = $this->right->getHolder()->getLevel()) instanceof Level){
-				Server::broadcastPacket($level->getUsingChunk($this->right->getHolder()->getX() >> 4, $this->right->getHolder()->getZ() >> 4), $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+				Server::broadcastPacket($level->getChunkPlayers($this->right->getHolder()->getX() >> 4, $this->right->getHolder()->getZ() >> 4), $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 			}
 		}
 	}
@@ -120,7 +120,7 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 			$pk->case1 = 1;
 			$pk->case2 = 0;
 			if(($level = $this->right->getHolder()->getLevel()) instanceof Level){
-				Server::broadcastPacket($level->getUsingChunk($this->right->getHolder()->getX() >> 4, $this->right->getHolder()->getZ() >> 4), $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+				Server::broadcastPacket($level->getChunkPlayers($this->right->getHolder()->getX() >> 4, $this->right->getHolder()->getZ() >> 4), $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 			}
 		}
 		parent::onClose($who);

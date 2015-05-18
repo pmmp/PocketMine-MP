@@ -3044,6 +3044,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			}
 
 			$this->sendPosition($this, null, null, 1, Network::CHANNEL_WORLD_CHUNKS);
+			$this->spawnToAll();
 			$this->forceMovement = $this->teleportPosition;
 			$this->teleportPosition = null;
 
@@ -3068,6 +3069,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 			if(!$this->checkTeleportPosition()){
 				$this->forceMovement = $oldPos;
+			}else{
+				$this->spawnToAll();
 			}
 
 

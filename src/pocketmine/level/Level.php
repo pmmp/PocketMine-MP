@@ -435,7 +435,7 @@ class Level implements ChunkManager, Metadatable{
 		$pk = $sound->encode();
 
 		if($players === null){
-			$players = $this->getUsingChunk($sound->x >> 4, $sound->z >> 4);
+			$players = $this->getChunkPlayers($sound->x >> 4, $sound->z >> 4);
 		}
 
 		if($pk !== null){
@@ -451,7 +451,7 @@ class Level implements ChunkManager, Metadatable{
 		$pk = $particle->encode();
 
 		if($players === null){
-			$players = $this->getUsingChunk($particle->x >> 4, $particle->z >> 4);
+			$players = $this->getChunkPlayers($particle->x >> 4, $particle->z >> 4);
 		}
 
 		if($pk !== null){
