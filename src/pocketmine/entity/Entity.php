@@ -269,10 +269,24 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function isNameTagVisible(){
+		return $this->getDataProperty(self::DATA_SHOW_NAMETAG) > 0;
+	}
+
+	/**
 	 * @param string $name
 	 */
 	public function setNameTag($name){
 		$this->setDataProperty(self::DATA_NAMETAG, self::DATA_TYPE_STRING, $name);
+	}
+
+	/**
+	 * @param bool $value
+	 */
+	public function setNameTagVisible($value = true){
+		$this->setDataProperty(self::DATA_SHOW_NAMETAG, self::DATA_TYPE_BYTE, $value ? 1 : 0);
 	}
 
 	/**
@@ -406,6 +420,8 @@ abstract class Entity extends Location implements Metadatable{
 	public function saveNBT(){
 		if(!($this instanceof Player)){
 			$this->namedtag->id = new String("id", $this->getSaveId());
+			$this->namedtag->CustomName = new String("CustomName", $this->getNameTag());
+			$this->namedtag->CustomNameVisible = new String("CustomNameVisible", $this->isNameTagVisible());
 		}
 
 		$this->namedtag->Pos = new Enum("Pos", [
@@ -461,6 +477,12 @@ abstract class Entity extends Location implements Metadatable{
 
 				$this->addEffect($effect);
 			}
+		}
+
+
+		if(isset($this->namedtag->CustomName)){
+			$this->setNameTag($this->namedtag["CustomName"]);
+			$this->setNameTagVisible($this->namedtag["CustomNameVisible"] > 0);
 		}
 
 		$this->scheduleUpdate();
