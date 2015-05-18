@@ -71,20 +71,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->isSlim = (bool) $isSlim;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getNameTag(){
-		return $this->getDataProperty(self::DATA_NAMETAG);
-	}
-
-	/**
-	 * @param string $name
-	 */
-	public function setNameTag($name){
-		$this->setDataProperty(self::DATA_NAMETAG, self::DATA_TYPE_STRING, $name);
-	}
-
 	public function getInventory(){
 		return $this->inventory;
 	}
