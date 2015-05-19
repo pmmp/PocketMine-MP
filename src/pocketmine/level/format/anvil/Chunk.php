@@ -39,7 +39,7 @@ class Chunk extends BaseChunk{
 	/** @var Compound */
 	protected $nbt;
 
-	public function __construct($level, Compound $nbt){
+	public function __construct($level, Compound $nbt = null){
 		if($nbt === null){
 			$this->provider = $level;
 			$this->nbt = new Compound("Level", []);
