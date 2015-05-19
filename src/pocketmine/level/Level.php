@@ -2299,8 +2299,6 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		$chunk->setChanged(false);
-
 		if($this->isChunkInUse($x, $z)){
 			foreach($this->getChunkLoaders($x, $z) as $loader){
 				$loader->onChunkLoaded($chunk);

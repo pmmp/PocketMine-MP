@@ -108,54 +108,59 @@ abstract class BaseFullChunk implements FullChunk{
 	}
 
 	public function initChunk(){
-		if($this->getProvider() instanceof LevelProvider and !$this->isInit and $this->NBTentities !== null){
-			$this->getProvider()->getLevel()->timings->syncChunkLoadEntitiesTimer->startTiming();
-			foreach($this->NBTentities as $nbt){
-				if($nbt instanceof Compound){
-					if(!isset($nbt->id)){
-						$this->setChanged();
-						continue;
-					}
+		if($this->getProvider() instanceof LevelProvider and !$this->isInit){
+			$changed = false;
+			if($this->NBTentities !== null){
+				$this->getProvider()->getLevel()->timings->syncChunkLoadEntitiesTimer->startTiming();
+				foreach($this->NBTentities as $nbt){
+					if($nbt instanceof Compound){
+						if(!isset($nbt->id)){
+							$this->setChanged();
+							continue;
+						}
 
-					if(($nbt["Pos"][0] >> 4) !== $this->x or ($nbt["Pos"][2] >> 4) !== $this->z){
-						$this->setChanged();
-						continue; //Fixes entities allocated in wrong chunks.
-					}
+						if(($nbt["Pos"][0] >> 4) !== $this->x or ($nbt["Pos"][2] >> 4) !== $this->z){
+							$changed = true;
+							continue; //Fixes entities allocated in wrong chunks.
+						}
 
-					if(($entity = Entity::createEntity($nbt["id"], $this, $nbt)) instanceof Entity){
-						$entity->spawnToAll();
-					}else{
-						$this->setChanged();
-						continue;
-					}
-				}
-			}
-			$this->getProvider()->getLevel()->timings->syncChunkLoadEntitiesTimer->stopTiming();
-
-			$this->getProvider()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->startTiming();
-			foreach($this->NBTtiles as $nbt){
-				if($nbt instanceof Compound){
-					if(!isset($nbt->id)){
-						$this->setChanged();
-						continue;
-					}
-
-					if(($nbt["x"] >> 4) !== $this->x or ($nbt["z"] >> 4) !== $this->z){
-						$this->setChanged();
-						continue; //Fixes tiles allocated in wrong chunks.
-					}
-
-					if(Tile::createTile($nbt["id"], $this, $nbt) === null){
-						$this->setChanged();
-						continue;
+						if(($entity = Entity::createEntity($nbt["id"], $this, $nbt)) instanceof Entity){
+							$entity->spawnToAll();
+						}else{
+							$changed = true;
+							continue;
+						}
 					}
 				}
+				$this->getProvider()->getLevel()->timings->syncChunkLoadEntitiesTimer->stopTiming();
+
+				$this->getProvider()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->startTiming();
+				foreach($this->NBTtiles as $nbt){
+					if($nbt instanceof Compound){
+						if(!isset($nbt->id)){
+							$changed = true;
+							continue;
+						}
+
+						if(($nbt["x"] >> 4) !== $this->x or ($nbt["z"] >> 4) !== $this->z){
+							$changed = true;
+							continue; //Fixes tiles allocated in wrong chunks.
+						}
+
+						if(Tile::createTile($nbt["id"], $this, $nbt) === null){
+							$changed = true;
+							continue;
+						}
+					}
+				}
+
+				$this->getProvider()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
+
+				$this->NBTentities = null;
+				$this->NBTtiles = null;
+
+				$this->setChanged($changed);
 			}
-
-			$this->getProvider()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
-
-			$this->NBTentities = null;
-			$this->NBTtiles = null;
 
 			$this->isInit = true;
 		}
