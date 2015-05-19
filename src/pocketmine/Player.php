@@ -667,6 +667,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 			++$count;
 
+			$this->usedChunks[$index] = false;
+			$this->level->registerChunkLoader($this, $X, $Z);
+
 			if(!$this->level->populateChunk($X, $Z)){
 				if($this->spawned and $this->teleportPosition === null){
 					continue;
@@ -676,9 +679,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			}
 
 			unset($this->loadQueue[$index]);
-			$this->usedChunks[$index] = false;
-
-			$this->level->registerChunkLoader($this, $X, $Z);
 			$this->level->requestChunk($X, $Z, $this, LevelProvider::ORDER_ZXY);
 		}
 
@@ -1398,7 +1398,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 			$this->entityBaseTick($tickDiff);
 
-			if(!$this->isSpectator()){
+			if(!$this->isSpectator() and $this->speed !== null){
 				if($this->onGround){
 					if($this->inAirTicks !== 0){
 						$this->startAirTicks = 5;

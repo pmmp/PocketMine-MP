@@ -145,11 +145,11 @@ class Explosion{
 
 		$explosionSize = $this->size * 2;
 		$minX = Math::floorFloat($this->source->x - $explosionSize - 1);
-		$maxX = Math::floorFloat($this->source->x + $explosionSize + 1);
+		$maxX = Math::ceilFloat($this->source->x + $explosionSize + 1);
 		$minY = Math::floorFloat($this->source->y - $explosionSize - 1);
-		$maxY = Math::floorFloat($this->source->y + $explosionSize + 1);
+		$maxY = Math::ceilFloat($this->source->y + $explosionSize + 1);
 		$minZ = Math::floorFloat($this->source->z - $explosionSize - 1);
-		$maxZ = Math::floorFloat($this->source->z + $explosionSize + 1);
+		$maxZ = Math::ceilFloat($this->source->z + $explosionSize + 1);
 
 		$explosionBB = new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
 
