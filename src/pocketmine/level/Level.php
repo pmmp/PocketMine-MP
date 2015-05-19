@@ -810,7 +810,7 @@ class Level implements ChunkManager, Metadatable{
 			for($chunk = 0; $chunk < $chunksPerLoader; ++$chunk){
 				$dx = mt_rand(-$randRange, $randRange);
 				$dz = mt_rand(-$randRange, $randRange);
-				$hash = Level::chunkHash($dx + $x, $dz + $z);
+				$hash = Level::chunkHash($dx + $chunkX, $dz + $chunkZ);
 				if(!isset($this->chunkTickList[$hash]) and isset($this->chunks[$hash])){
 					$this->chunkTickList[$hash] = -1;
 				}
