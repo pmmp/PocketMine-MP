@@ -160,6 +160,8 @@ class Level implements ChunkManager, Metadatable{
 
 	/** @var ChunkLoader[] */
 	private $loaders = [];
+	/** @var int[] */
+	private $loaderCounter = [];
 	/** @var ChunkLoader[][] */
 	private $chunkLoaders = [];
 	/** @var Player[][] */
@@ -564,9 +566,10 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if(!isset($this->loaders[$hash])){
-			$this->loaders[$hash] = 1;
+			$this->loaderCounter[$hash] = 1;
+			$this->loaders[$hash] = $loader;
 		}else{
-			++$this->loaders[$hash];
+			++$this->loaderCounter[$hash];
 		}
 
 		$this->cancelUnloadChunkRequest($chunkX, $chunkZ);
@@ -586,7 +589,8 @@ class Level implements ChunkManager, Metadatable{
 				$this->unloadChunkRequest($chunkX, $chunkZ, true);
 			}
 
-			if(--$this->loaders[$hash] === 0){
+			if(--$this->loaderCounter[$hash] === 0){
+				unset($this->loaderCounter[$hash]);
 				unset($this->loaders[$hash]);
 			}
 		}
@@ -800,7 +804,7 @@ class Level implements ChunkManager, Metadatable{
 			$chunkX = $loader->getX() >> 4;
 			$chunkZ = $loader->getZ() >> 4;
 
-			$index = Level::chunkHash($x, $z);
+			$index = Level::chunkHash($chunkX, $chunkZ);
 			$existingLoaders = max(0, isset($this->chunkTickList[$index]) ? $this->chunkTickList[$index] : 0);
 			$this->chunkTickList[$index] = $existingLoaders + 1;
 			for($chunk = 0; $chunk < $chunksPerLoader; ++$chunk){

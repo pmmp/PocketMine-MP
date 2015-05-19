@@ -326,6 +326,7 @@ class PlayerInventory extends BaseInventory{
 		$pk->eid = $this->getHolder()->getId();
 		$pk->slots = $slots;
 		$pk->encode();
+		$pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING);
 		$pk->isEncoded = true;
 
 		foreach($target as $player){
@@ -339,7 +340,7 @@ class PlayerInventory extends BaseInventory{
 				$pk2->slots = $armor;
 				$player->dataPacket($pk2);
 			}else{
-				$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+				$player->dataPacket($pk);
 			}
 		}
 	}
