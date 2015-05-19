@@ -180,11 +180,12 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			}
 		}
 
-
-		$this->namedtag->Skin = new Compound("Skin", [
-			"Data" => new String("Data", $this->getSkinData()),
-			"Slim" => new Byte("Slim", $this->isSkinSlim() ? 1 : 0)
-		]);
+		if(strlen($this->getSkinData()) > 0){
+			$this->namedtag->Skin = new Compound("Skin", [
+				"Data" => new String("Data", $this->getSkinData()),
+				"Slim" => new Byte("Slim", $this->isSkinSlim() ? 1 : 0)
+			]);
+		}
 	}
 
 	public function spawnTo(Player $player){
