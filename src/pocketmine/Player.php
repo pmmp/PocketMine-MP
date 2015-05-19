@@ -1711,6 +1711,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 				$this->orderChunks();
 				$this->sendNextChunk();
+
+				$this->server->onPlayerLogin($this);
+
 				break;
 			case ProtocolInfo::MOVE_PLAYER_PACKET:
 

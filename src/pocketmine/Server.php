@@ -226,7 +226,7 @@ class Server{
 	private $dataPath;
 	private $pluginPath;
 
-	private $lastSendUsage = null;
+	private $uniquePlayers = [];
 
 	/** @var QueryHandler */
 	private $queryHandler;
@@ -1978,7 +1978,6 @@ class Server{
 	 */
 	public function shutdown(){
 		$this->isRunning = false;
-		gc_collect_cycles();
 	}
 
 	public function forceShutdown(){
@@ -1987,6 +1986,10 @@ class Server{
 		}
 
 		try{
+			if(!$this->isRunning()){
+				$this->sendUsage(SendUsageTask::TYPE_CLOSE);
+			}
+
 			$this->hasStopped = true;
 
 			$this->shutdown();
@@ -2031,6 +2034,8 @@ class Server{
 			}
 
 			$this->memoryManager->doObjectCleanup();
+
+			gc_collect_cycles();
 		}catch(\Exception $e){
 			$this->logger->emergency("Crashed while crashing, killing process");
 			@kill(getmypid());
@@ -2052,7 +2057,7 @@ class Server{
 
 		if($this->getProperty("settings.send-usage", true) !== false){
 			$this->sendUsageTicker = 6000;
-			$this->sendUsage();
+			$this->sendUsage(SendUsageTask::TYPE_OPEN);
 		}
 
 
@@ -2131,7 +2136,7 @@ class Server{
 		if($this->isRunning === false){
 			return;
 		}
-		$this->isRunning = false;
+		$this->sendUsage(SendUsageTask::TYPE_CLOSE);
 		$this->hasStopped = false;
 
 		ini_set("error_reporting", 0);
@@ -2182,6 +2187,7 @@ class Server{
 		//$dump .= "Memory Usage Tracking: \r\n" . chunk_split(base64_encode(gzdeflate(implode(";", $this->memoryStats), 9))) . "\r\n";
 
 		$this->forceShutdown();
+		$this->isRunning = false;
 		@kill(getmypid());
 		exit(1);
 	}
@@ -2202,6 +2208,12 @@ class Server{
 					//Sometimes $next is less than the current time. High load?
 				}
 			}
+		}
+	}
+
+	public function onPlayerLogin(Player $player){
+		if($this->sendUsageTicker > 0){
+			$this->uniquePlayers[$player->getUniqueId()] = $player->getUniqueId();
 		}
 	}
 
@@ -2275,38 +2287,9 @@ class Server{
 		}
 	}
 
-	public function sendUsage(){
-		if($this->lastSendUsage instanceof SendUsageTask){
-			if(!$this->lastSendUsage->isGarbage()){ //do not call multiple times
-				return;
-			}
-		}
-
-		$plist = "";
-		foreach($this->getPluginManager()->getPlugins() as $p){
-			$d = $p->getDescription();
-			$plist .= str_replace([";", ":"], "", $d->getName()) . ":" . str_replace([";", ":"], "", $d->getVersion()) . ";";
-		}
-
-		$version = new VersionString();
-		$this->lastSendUsage = new SendUsageTask("https://stats.pocketmine.net/usage.php", [
-			"serverid" => Binary::readLong(substr(hex2bin(str_replace("-", "", $this->serverID)), 0, 8)),
-			"port" => $this->getPort(),
-			"os" => Utils::getOS(),
-			"name" => $this->getName(),
-			"memory_total" => $this->getConfigString("memory-limit"), //TODO
-			"memory_usage" => Utils::getMemoryUsage(),
-			"php_version" => PHP_VERSION,
-			"version" => $version->get(true),
-			"build" => $version->getBuild(),
-			"mc_version" => \pocketmine\MINECRAFT_VERSION,
-			"protocol" => \pocketmine\network\protocol\Info::CURRENT_PROTOCOL,
-			"online" => count($this->players),
-			"max" => $this->getMaxPlayers(),
-			"plugins" => $plist,
-		]);
-
-		$this->scheduler->scheduleAsyncTask($this->lastSendUsage);
+	public function sendUsage($type = SendUsageTask::TYPE_STATUS){
+		$this->scheduler->scheduleAsyncTask(new SendUsageTask($this, $type, $this->uniquePlayers));
+		$this->uniquePlayers = [];
 	}
 
 
@@ -2438,7 +2421,7 @@ class Server{
 
 		if($this->sendUsageTicker > 0 and --$this->sendUsageTicker === 0){
 			$this->sendUsageTicker = 6000;
-			$this->sendUsage();
+			$this->sendUsage(SendUsageTask::TYPE_STATUS);
 		}
 
 		if(($this->tickCounter % 100) === 0){

@@ -32,6 +32,7 @@ class Utils{
 	public static $online = true;
 	public static $ip = false;
 	public static $os;
+	private static $serverUniqueId = null;
 
 	/**
 	 * Generates an unique identifier to a callable
@@ -78,6 +79,10 @@ class Utils{
 	 * @return string
 	 */
 	public static function getServerUniqueId($extra = ""){
+		if(self::$serverUniqueId !== null){
+			return self::$serverUniqueId;
+		}
+
 		$machine = php_uname("a");
 		$machine .= file_exists("/proc/cpuinfo") ? implode(preg_grep("/model name/", file("/proc/cpuinfo"))) : "";
 		$machine .= sys_get_temp_dir();
@@ -114,7 +119,7 @@ class Utils{
 			$data .= $ext . ":" . phpversion($ext);
 		}
 
-		return Utils::dataToUUID($machine, $data);
+		return self::$serverUniqueId = Utils::dataToUUID($machine, $data);
 	}
 
 	/**
@@ -434,16 +439,17 @@ class Utils{
 	 *
 	 * @param     $page
 	 * @param int $timeout default 10
+	 * @param array $extraHeaders
 	 *
 	 * @return bool|mixed
 	 */
-	public static function getURL($page, $timeout = 10){
+	public static function getURL($page, $timeout = 10, array $extraHeaders = []){
 		if(Utils::$online === false){
 			return false;
 		}
 
 		$ch = curl_init($page);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, ["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 PocketMine-MP"]);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array_merge(["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 PocketMine-MP"], $extraHeaders));
 		curl_setopt($ch, CURLOPT_AUTOREFERER, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
@@ -464,10 +470,11 @@ class Utils{
 	 * @param              $page
 	 * @param array|string $args
 	 * @param int          $timeout
+	 * @param array $extraHeaders
 	 *
 	 * @return bool|mixed
 	 */
-	public static function postURL($page, $args, $timeout = 10){
+	public static function postURL($page, $args, $timeout = 10, array $extraHeaders = []){
 		if(Utils::$online === false){
 			return false;
 		}
@@ -481,7 +488,7 @@ class Utils{
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
 		curl_setopt($ch, CURLOPT_AUTOREFERER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, ["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 PocketMine-MP"]);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array_merge(["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 PocketMine-MP"], $extraHeaders));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, (int) $timeout);
 		$ret = curl_exec($ch);
