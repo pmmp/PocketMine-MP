@@ -48,7 +48,7 @@ class GarbageCollectorCommand extends VanillaCommand{
 		foreach($sender->getServer()->getLevels() as $level){
 			$diff = [count($level->getChunks()), count($level->getEntities()), count($level->getTiles())];
 			$level->doChunkGarbageCollection();
-			$level->unloadChunks();
+			$level->unloadChunks(true);
 			$chunksCollected += $diff[0] - count($level->getChunks());
 			$entitiesCollected += $diff[1] - count($level->getEntities());
 			$tilesCollected += $diff[2] - count($level->getTiles());

@@ -158,9 +158,9 @@ abstract class BaseFullChunk implements FullChunk{
 
 				$this->NBTentities = null;
 				$this->NBTtiles = null;
-
-				$this->setChanged($changed);
 			}
+
+			$this->setChanged($changed);
 
 			$this->isInit = true;
 		}

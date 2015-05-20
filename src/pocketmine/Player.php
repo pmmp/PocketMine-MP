@@ -771,7 +771,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			for($Z = -$side; $Z <= $side; ++$Z){
 				$chunkX = $X + $centerX;
 				$chunkZ = $Z + $centerZ;
-				if(!isset($this->usedChunks[$index = Level::chunkHash($chunkX, $chunkZ)])){
+				if(!isset($this->usedChunks[$index = Level::chunkHash($chunkX, $chunkZ)]) or $this->usedChunks[$index] === false){
 					$newOrder[$index] = abs($X) + abs($Z);
 				}else{
 					$currentQueue[$index] = abs($X) + abs($Z);

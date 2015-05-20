@@ -167,7 +167,7 @@ class Level implements ChunkManager, Metadatable{
 	/** @var Player[][] */
 	private $playerLoaders = [];
 
-	/** @var FullChunk[]|Chunk[] */
+	/** @var float[] */
 	private $unloadQueue;
 
 	private $time;
@@ -2629,16 +2629,25 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->doChunkGC->stopTiming();
 	}
 
-	public function unloadChunks(){
+	public function unloadChunks($force = false){
 		if(count($this->unloadQueue) > 0){
-			$X = null;
-			$Z = null;
+			$maxUnload = 96;
+			$now = microtime(true);
 			foreach($this->unloadQueue as $index => $time){
 				Level::getXZ($index, $X, $Z);
+
+				if(!$force){
+					if($maxUnload <= 0){
+						break;
+					}elseif($time > ($now - 30)){
+						continue;
+					}
+				}
 
 				//If the chunk can't be unloaded, it stays on the queue
 				if($this->unloadChunk($X, $Z, true)){
 					unset($this->unloadQueue[$index]);
+					--$maxUnload;
 				}
 			}
 		}
