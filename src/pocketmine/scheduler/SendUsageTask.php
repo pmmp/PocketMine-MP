@@ -37,7 +37,6 @@ class SendUsageTask extends AsyncTask{
 
 	public function __construct(Server $server, $type, $playerList = []){
 		$endpoint = "http://" . $server->getProperty("anonymous-statistics.host", "stats.pocketmine.net") . "/";
-		$path = "post";
 
 		$data = [];
 		$data["uniqueServerId"] = $server->getServerUniqueId();
@@ -46,7 +45,6 @@ class SendUsageTask extends AsyncTask{
 
 		switch($type){
 			case self::TYPE_OPEN:
-				$path = "open";
 				$data["event"] = "open";
 
 				$version = new VersionString();
@@ -92,7 +90,6 @@ class SendUsageTask extends AsyncTask{
 
 				break;
 			case self::TYPE_STATUS:
-				$path = "status";
 				$data["event"] = "status";
 
 				$data["server"] = [
@@ -131,13 +128,12 @@ class SendUsageTask extends AsyncTask{
 
 				break;
 			case self::TYPE_CLOSE:
-				$path = "close";
 				$data["event"] = "close";
 				$data["crashing"] = $server->isRunning();
 				break;
 		}
 
-		$this->endpoint = $endpoint . $path;
+		$this->endpoint = $endpoint . "api/post";
 		$this->data = json_encode($data/*, JSON_PRETTY_PRINT*/);
 	}
 
