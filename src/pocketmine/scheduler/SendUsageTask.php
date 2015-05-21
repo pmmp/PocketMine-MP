@@ -40,8 +40,9 @@ class SendUsageTask extends AsyncTask{
 		$path = "post";
 
 		$data = [];
-		$data["uniqueServerId"] = Utils::getServerUniqueId();
-		$data["uniqueRequestId"] = Utils::dataToUUID(Utils::getServerUniqueId(), microtime(true));
+		$data["uniqueServerId"] = $server->getServerUniqueId();
+		$data["uniqueMachineId"] = Utils::getMachineUniqueId();
+		$data["uniqueRequestId"] = Utils::dataToUUID($server->getServerUniqueId(), microtime(true));
 
 		switch($type){
 			case self::TYPE_OPEN:

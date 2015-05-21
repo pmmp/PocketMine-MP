@@ -346,6 +346,10 @@ class Server{
 		return $this->getConfigString("motd", "Minecraft: PE Server");
 	}
 
+	public function getServerUniqueId(){
+		return $this->serverID;
+	}
+
 	/**
 	 * @return bool
 	 */
@@ -1638,7 +1642,10 @@ class Server{
 
 		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.networkStart", [$this->getIp() === "" ? "*" : $this->getIp(), $this->getPort()]));
 		define("BOOTUP_RANDOM", @Utils::getRandomBytes(16));
-		$this->serverID = Utils::getServerUniqueId($this->getIp() . $this->getPort());
+		$this->serverID = Utils::getMachineUniqueId($this->getIp() . $this->getPort());
+
+		$this->getLogger()->debug("Server unique id: " . $this->getServerUniqueId());
+		$this->getLogger()->debug("Machine unique id: " . Utils::getMachineUniqueId());
 
 		$this->network = new Network($this);
 		$this->network->setName($this->getMotd());

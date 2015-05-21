@@ -78,13 +78,13 @@ class Utils{
 	 *
 	 * @return string
 	 */
-	public static function getServerUniqueId($extra = ""){
-		if(self::$serverUniqueId !== null){
+	public static function getMachineUniqueId($extra = ""){
+		if(self::$serverUniqueId !== null and $extra === ""){
 			return self::$serverUniqueId;
 		}
 
 		$machine = php_uname("a");
-		$machine .= file_exists("/proc/cpuinfo") ? implode(preg_grep("/model name/", file("/proc/cpuinfo"))) : "";
+		$machine .= file_exists("/proc/cpuinfo") ? implode(preg_grep("/(model name|Processor|Serial)/", file("/proc/cpuinfo"))) : "";
 		$machine .= sys_get_temp_dir();
 		$machine .= $extra;
 		$os = Utils::getOS();
@@ -110,6 +110,11 @@ class Utils{
 				}
 				$machine .= implode(" ", $matches[1]); //Mac Addresses
 			}
+			$machine .= file_exists("/etc/machine-id") ? file_get_contents("/etc/machine-id") : "";
+		}elseif($os === "android"){
+			$machine .= @file_get_contents("/system/build.prop");
+		}elseif($os === "mac"){
+			$machine .= `system_profiler SPHardwareDataType | grep UUID`;
 		}
 		$data = $machine . PHP_MAXPATHLEN;
 		$data .= PHP_INT_MAX;
@@ -119,7 +124,13 @@ class Utils{
 			$data .= $ext . ":" . phpversion($ext);
 		}
 
-		return self::$serverUniqueId = Utils::dataToUUID($machine, $data);
+		$uuid = Utils::dataToUUID($machine, $data);
+
+		if($extra === ""){
+			self::$serverUniqueId = $uuid;
+		}
+
+		return $uuid;
 	}
 
 	/**
@@ -245,8 +256,15 @@ class Utils{
 		return count(ThreadManager::getInstance()->getAll()) + 3; //RakLib + MainLogger + Main Thread
 	}
 
-	public static function getCoreCount(){
-		$processors = 0;
+	public static function getCoreCount($recalculate = false){
+		static $processors = 0;
+
+		if($processors > 0 and !$recalculate){
+			return $processors;
+		}else{
+			$processors = 0;
+		}
+
 		switch(Utils::getOS()){
 			case "linux":
 			case "android":
@@ -256,13 +274,16 @@ class Utils{
 							++$processors;
 						}
 					}
+				}else{
+					if(preg_match("/^([0-9]+)\\-([0-9]+)$/", trim(@file_get_contents("/sys/devices/system/cpu/present")), $matches) > 0){
+						$processors = (int) ($matches[2] - $matches[1]);
+					}
 				}
 				break;
 			case "bsd":
-				$processors = (int) `sysctl hw.ncpu | awk '{ print $2+1 }'`;
-				break;
 			case "mac":
-				$processors = (int) `sysctl hw.availcpu | awk '{ print $2+1 }'`;
+				$processors = (int) `sysctl -n hw.ncpu`;
+				$processors = (int) `sysctl -n hw.ncpu`;
 				break;
 			case "win":
 				$processors = (int) getenv("NUMBER_OF_PROCESSORS");

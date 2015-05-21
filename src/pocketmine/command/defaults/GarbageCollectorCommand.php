@@ -45,6 +45,8 @@ class GarbageCollectorCommand extends VanillaCommand{
 		$entitiesCollected = 0;
 		$tilesCollected = 0;
 
+		$memory = memory_get_usage();
+
 		foreach($sender->getServer()->getLevels() as $level){
 			$diff = [count($level->getChunks()), count($level->getEntities()), count($level->getTiles())];
 			$level->doChunkGarbageCollection();
@@ -62,6 +64,7 @@ class GarbageCollectorCommand extends VanillaCommand{
 		$sender->sendMessage(TextFormat::GOLD . "Tiles: " . TextFormat::RED . number_format($tilesCollected));
 
 		$sender->sendMessage(TextFormat::GOLD . "Cycles: " . TextFormat::RED . number_format($cyclesCollected));
+		$sender->sendMessage(TextFormat::GOLD . "Memory freed: " . TextFormat::RED . number_format(round((($memory - memory_get_usage()) / 1024) / 1024, 2))." MB");
 		return true;
 	}
 }
