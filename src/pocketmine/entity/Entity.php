@@ -83,6 +83,7 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_AIR = 1;
 	const DATA_NAMETAG = 2;
 	const DATA_SHOW_NAMETAG = 3;
+	const DATA_SILENT = 4;
 	const DATA_POTION_COLOR = 7;
 	const DATA_POTION_AMBIENT = 8;
     const DATA_NO_AI = 15;
@@ -113,8 +114,11 @@ abstract class Entity extends Location implements Metadatable{
 	protected $dataFlags = 0;
 	protected $dataProperties = [
 		self::DATA_FLAGS => [self::DATA_TYPE_BYTE, 0],
+		self::DATA_AIR => [self::DATA_TYPE_SHORT, 300],
+		self::DATA_NAMETAG => [self::DATA_TYPE_STRING, ""],
 		self::DATA_SHOW_NAMETAG => [self::DATA_TYPE_BYTE, 1],
-		self::DATA_AIR => [self::DATA_TYPE_SHORT, 300]
+		self::DATA_SILENT => [self::DATA_TYPE_BYTE, 0],
+		self::DATA_NO_AI => [self::DATA_TYPE_BYTE, 0],
 	];
 
 	public $passenger = null;
