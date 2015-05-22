@@ -20,6 +20,7 @@
 */
 
 namespace pocketmine\utils;
+use pocketmine\scheduler\FileWriteTask;
 use pocketmine\Server;
 
 
@@ -170,9 +171,11 @@ class Config{
 	}
 
 	/**
+	 * @param bool $async
+	 *
 	 * @return boolean
 	 */
-	public function save(){
+	public function save($async = false){
 		if($this->correct === true){
 			try{
 				$content = null;
@@ -194,7 +197,12 @@ class Config{
 						$content = implode("\r\n", array_keys($this->config));
 						break;
 				}
-				file_put_contents($this->file, $content);
+
+				if($async){
+					Server::getInstance()->getScheduler()->scheduleAsyncTask(new FileWriteTask($this->file, $content));
+				}else{
+					file_put_contents($this->file, $content);
+				}
 			}catch(\Exception $e){
 				$logger = Server::getInstance()->getLogger();
 				$logger->critical("Could not save Config " . $this->file . ": " . $e->getMessage());

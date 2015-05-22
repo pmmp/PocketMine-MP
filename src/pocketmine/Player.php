@@ -351,7 +351,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @return bool
 	 */
 	public function canSee(Player $player){
-		return !isset($this->hiddenPlayers[$player->getName()]);
+		return !isset($this->hiddenPlayers[$player->getUniqueId()]);
 	}
 
 	/**
@@ -361,7 +361,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if($player === $this){
 			return;
 		}
-		$this->hiddenPlayers[$player->getName()] = $player;
+		$this->hiddenPlayers[$player->getUniqueId()] = $player;
 		$player->despawnFrom($this);
 	}
 
@@ -372,7 +372,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if($player === $this){
 			return;
 		}
-		unset($this->hiddenPlayers[$player->getName()]);
+		unset($this->hiddenPlayers[$player->getUniqueId()]);
 		if($player->isOnline()){
 			$player->spawnTo($this);
 		}
@@ -2735,14 +2735,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public function close($message = "", $reason = "generic reason", $notify = true){
 
 		if($this->connected and !$this->closed){
-			if($notify and $reason != ""){
+			if($notify and strlen((string) $reason) > 0){
 				$pk = new DisconnectPacket;
 				$pk->message = $reason;
 				$this->directDataPacket($pk->setChannel(Network::CHANNEL_PRIORITY));
 			}
 			
 			$this->connected = false;
-			if($this->username != ""){
+			if(strlen($this->getName()) > 0){
 				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message));
 				if($this->server->getAutoSave() and $this->loggedIn === true){
 					$this->save();
