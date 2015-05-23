@@ -641,7 +641,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->chunkX = $x;
 		$pk->chunkZ = $z;
 		$pk->data = $payload;
-		$this->batchDataPacket($pk->setChannel(Network::CHANNEL_WORLD_CHUNKS));
+		$this->batchDataPacket($pk->setChannel($this->spawned ? Network::CHANNEL_WORLD_CHUNKS : Network::CHANNEL_PRIORITY));
 
 		if($this->spawned){
 			foreach($this->level->getChunkEntities($x, $z) as $entity){
