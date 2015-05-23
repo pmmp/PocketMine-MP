@@ -52,8 +52,6 @@ class Explosion{
 	 * @var Block[]
 	 */
 	public $affectedBlocks = [];
-	/** @var bool[] */
-	public $updatedHashes = [];
 	public $stepLen = 0.3;
 	/** @var Entity|Block */
 	private $what;
@@ -133,6 +131,8 @@ class Explosion{
 
 	public function explodeB(){
 		$send = [];
+		$updateBlocks = [];
+
 		$source = (new Vector3($this->source->x, $this->source->y, $this->source->z))->floor();
 		$yield = (1 / $this->size) * 100;
 
@@ -209,19 +209,24 @@ class Explosion{
 					$this->level->dropItem($block->add(0.5, 0.5, 0.5), Item::get(...$drop));
 				}
 			}
+
 			$this->level->setBlockIdAt($block->x, $block->y, $block->z, 0);
-			for($side = 0; $side <= 6; $side++){
-				$sideBlock = $block->getSide($side);
-				if($sideBlock instanceof Block and !isset($this->affectedBlocks[$index = Level::blockHash($sideBlock->x, $sideBlock->y, $sideBlock->z)]) and !isset($this->updatedHashes[$index])){
-					$this->updatedHashes[$index] = true;
-					$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockUpdateEvent($sideBlock));
+
+			$pos = new Vector3($block->x, $block->y, $block->z);
+
+			for($side = 0; $side < 5; $side++){
+				$sideBlock = $pos->getSide($side);
+				if(!isset($this->affectedBlocks[$index = Level::blockHash($sideBlock->x, $sideBlock->y, $sideBlock->z)]) and !isset($updateBlocks[$index])){
+					$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->level->getBlock($sideBlock)));
 					if(!$ev->isCancelled()){
 						$ev->getBlock()->onUpdate(Level::BLOCK_UPDATE_NORMAL);
 					}
+					$updateBlocks[$index] = true;
 				}
 			}
 			$send[] = new Vector3($block->x - $source->x, $block->y - $source->y, $block->z - $source->z);
 		}
+
 		$pk = new ExplodePacket();
 		$pk->x = $this->source->x;
 		$pk->y = $this->source->y;
