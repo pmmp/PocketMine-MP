@@ -155,6 +155,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/** @var Inventory[] */
 	protected $windowIndex = [];
 
+	protected $messageCounter = 2;
+
 	protected $sendIndex = 0;
 
 	protected $moveToSend = [];
@@ -1381,6 +1383,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return true;
 		}
 
+		$this->messageCounter = 2;
+
 		$this->lastUpdate = $currentTick;
 
 		if(!$this->isAlive() and $this->spawned){
@@ -2358,7 +2362,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				if($packet->type === TextPacket::TYPE_CHAT){
 					$packet->message = TextFormat::clean($packet->message, $this->removeFormat);
 					foreach(explode("\n", $packet->message) as $message){
-						if(trim($message) != "" and strlen($message) <= 255){
+						if(trim($message) != "" and strlen($message) <= 255 and $this->messageCounter-- > 0){
 							$this->server->getPluginManager()->callEvent($ev = new PlayerCommandPreprocessEvent($this, $message));
 							if($ev->isCancelled()){
 								break;
