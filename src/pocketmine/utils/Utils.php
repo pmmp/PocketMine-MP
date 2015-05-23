@@ -100,17 +100,20 @@ class Utils{
 				$machine .= implode(" ", $matches[1]); //Mac Addresses
 			}
 		}elseif($os === "linux"){
-			@exec("ifconfig", $mac);
-			$mac = implode("\n", $mac);
-			if(preg_match_all("#HWaddr[ \t]{1,}([0-9a-f:]{17})#", $mac, $matches)){
-				foreach($matches[1] as $i => $v){
-					if($v == "00:00:00:00:00:00"){
-						unset($matches[1][$i]);
+			if(file_exists("/etc/machine-id")){
+				$machine .= file_get_contents("/etc/machine-id");
+			}else{
+				@exec("ifconfig", $mac);
+				$mac = implode("\n", $mac);
+				if(preg_match_all("#HWaddr[ \t]{1,}([0-9a-f:]{17})#", $mac, $matches)){
+					foreach($matches[1] as $i => $v){
+						if($v == "00:00:00:00:00:00"){
+							unset($matches[1][$i]);
+						}
 					}
+					$machine .= implode(" ", $matches[1]); //Mac Addresses
 				}
-				$machine .= implode(" ", $matches[1]); //Mac Addresses
 			}
-			$machine .= file_exists("/etc/machine-id") ? file_get_contents("/etc/machine-id") : "";
 		}elseif($os === "android"){
 			$machine .= @file_get_contents("/system/build.prop");
 		}elseif($os === "mac"){
