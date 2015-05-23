@@ -1764,8 +1764,8 @@ class Server{
 	}
 
 	/**
-	 * @param                    $message
-	 * @param Player[]|null      $recipients
+	 * @param string        $message
+	 * @param Player[]|null $recipients
 	 *
 	 * @return int
 	 */
@@ -1778,11 +1778,13 @@ class Server{
 		foreach($recipients as $recipient){
 			$recipient->sendMessage($message);
 		}
+
+		return count($recipients);
 	}
 
 	/**
-	 * @param                    $tip
-	 * @param Player[]|null      $recipients
+	 * @param string        $tip
+	 * @param Player[]|null $recipients
 	 *
 	 * @return int
 	 */
@@ -1795,11 +1797,13 @@ class Server{
 		foreach($recipients as $recipient){
 			$recipient->sendTip($tip);
 		}
+
+		return count($recipients);
 	}
 	
 	/**
-	 * @param                    $popup
-	 * @param Player[]|null      $recipients
+	 * @param string        $popup
+	 * @param Player[]|null $recipients
 	 *
 	 * @return int
 	 */
@@ -1812,6 +1816,8 @@ class Server{
 		foreach($recipients as $recipient){
 			$recipient->sendPopup($popup);
 		}
+
+		return count($recipients);
 	}
 
 	/**
