@@ -25,6 +25,7 @@
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\Flower;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Squid;
 use pocketmine\entity\Villager;
@@ -78,6 +79,8 @@ class Item{
 	const DEAD_BUSH = 32;
 	const WOOL = 35;
 	const DANDELION = 37;
+	const POPPY = 38;
+	const ROSE = 38;
 	const RED_FLOWER = 38;
 	const BROWN_MUSHROOM = 39;
 	const RED_MUSHROOM = 40;
@@ -643,15 +646,15 @@ class Item{
 		self::addCreativeItem(Item::get(Item::FURNACE, 0));
 		self::addCreativeItem(Item::get(Item::END_PORTAL, 0));
 		self::addCreativeItem(Item::get(Item::DANDELION, 0));
-		self::addCreativeItem(Item::get(Item::RED_FLOWER, 0));
-		self::addCreativeItem(Item::get(Item::RED_FLOWER, 1));
-		self::addCreativeItem(Item::get(Item::RED_FLOWER, 2));
-		self::addCreativeItem(Item::get(Item::RED_FLOWER, 3));
-		self::addCreativeItem(Item::get(Item::RED_FLOWER, 4));
-		self::addCreativeItem(Item::get(Item::RED_FLOWER, 5));
-		self::addCreativeItem(Item::get(Item::RED_FLOWER, 6));
-		self::addCreativeItem(Item::get(Item::RED_FLOWER, 7));
-		self::addCreativeItem(Item::get(Item::RED_FLOWER, 8));
+		self::addCreativeItem(Item::get(Item::RED_FLOWER, Flower::TYPE_POPPY));
+		self::addCreativeItem(Item::get(Item::RED_FLOWER, Flower::TYPE_BLUE_ORCHID));
+		self::addCreativeItem(Item::get(Item::RED_FLOWER, Flower::TYPE_ALLIUM));
+		self::addCreativeItem(Item::get(Item::RED_FLOWER, Flower::TYPE_AZURE_BLUET));
+		self::addCreativeItem(Item::get(Item::RED_FLOWER, Flower::TYPE_RED_TULIP));
+		self::addCreativeItem(Item::get(Item::RED_FLOWER, Flower::TYPE_ORANGE_TULIP));
+		self::addCreativeItem(Item::get(Item::RED_FLOWER, Flower::TYPE_WHITE_TULIP));
+		self::addCreativeItem(Item::get(Item::RED_FLOWER, Flower::TYPE_PINK_TULIP));
+		self::addCreativeItem(Item::get(Item::RED_FLOWER, Flower::TYPE_OXEYE_DAISY));
 		//TODO: Lilac
 		//TODO: Double Tallgrass
 		//TODO: Large Fern
