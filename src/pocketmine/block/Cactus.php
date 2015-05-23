@@ -56,10 +56,10 @@ class Cactus extends Transparent{
 
 		return new AxisAlignedBB(
 			$this->x + 0.0625,
-			$this->y,
+			$this->y + 0.0625,
 			$this->z + 0.0625,
 			$this->x + 0.9375,
-			$this->y + 1,
+			$this->y + 0.9375,
 			$this->z + 0.9375
 		);
 	}

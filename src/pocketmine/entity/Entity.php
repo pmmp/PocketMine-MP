@@ -1317,7 +1317,7 @@ abstract class Entity extends Location implements Metadatable{
 			}
 		}
 
-		if(!($this instanceof Player) and $vector->length() > 0){
+		if(!($this instanceof Player) and $vector->lengthSquared() > 0){
 			$vector = $vector->normalize();
 			$d = 0.014;
 			$this->motionX += $vector->x * $d;
