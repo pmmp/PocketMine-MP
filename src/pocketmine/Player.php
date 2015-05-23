@@ -2357,20 +2357,21 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->craftingType = 0;
 				if($packet->type === TextPacket::TYPE_CHAT){
 					$packet->message = TextFormat::clean($packet->message, $this->removeFormat);
-					if(trim($packet->message) != "" and strlen($packet->message) <= 255){
-						$message = $packet->message;
-						$this->server->getPluginManager()->callEvent($ev = new PlayerCommandPreprocessEvent($this, $message));
-						if($ev->isCancelled()){
-							break;
-						}
-						if(substr($ev->getMessage(), 0, 1) === "/"){ //Command
-							Timings::$playerCommandTimer->startTiming();
-							$this->server->dispatchCommand($ev->getPlayer(), substr($ev->getMessage(), 1));
-							Timings::$playerCommandTimer->stopTiming();
-						}else{
-							$this->server->getPluginManager()->callEvent($ev = new PlayerChatEvent($this, $ev->getMessage()));
-							if(!$ev->isCancelled()){
-								$this->server->broadcastMessage($this->getServer()->getLanguage()->translateString($ev->getFormat(), [$ev->getPlayer()->getDisplayName(), $ev->getMessage()]), $ev->getRecipients());
+					foreach(explode("\n", $packet->message) as $message){
+						if(trim($message) != "" and strlen($message) <= 255){
+							$this->server->getPluginManager()->callEvent($ev = new PlayerCommandPreprocessEvent($this, $message));
+							if($ev->isCancelled()){
+								break;
+							}
+							if(substr($ev->getMessage(), 0, 1) === "/"){ //Command
+								Timings::$playerCommandTimer->startTiming();
+								$this->server->dispatchCommand($ev->getPlayer(), substr($ev->getMessage(), 1));
+								Timings::$playerCommandTimer->stopTiming();
+							}else{
+								$this->server->getPluginManager()->callEvent($ev = new PlayerChatEvent($this, $ev->getMessage()));
+								if(!$ev->isCancelled()){
+									$this->server->broadcastMessage($this->getServer()->getLanguage()->translateString($ev->getFormat(), [$ev->getPlayer()->getDisplayName(), $ev->getMessage()]), $ev->getRecipients());
+								}
 							}
 						}
 					}
