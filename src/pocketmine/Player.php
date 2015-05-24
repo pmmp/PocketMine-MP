@@ -2706,9 +2706,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk = new TextPacket();
 		if(!$this->server->isLanguageForced()){
 			$pk->type = TextPacket::TYPE_TRANSLATION;
-			$pk->message = $this->server->getLanguage()->translateString($message, [], "pocketmine.");
+			$pk->message = $this->server->getLanguage()->translateString($message, $parameters, "pocketmine.");
 			foreach($parameters as $i => $p){
-				$parameters[$i] = $this->server->getLanguage()->translateString($p, [], "pocketmine.");
+				$parameters[$i] = $this->server->getLanguage()->translateString($p, $parameters, "pocketmine.");
 			}
 			$pk->parameters = $parameters;
 		}else{

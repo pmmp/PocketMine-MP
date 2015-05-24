@@ -2204,7 +2204,9 @@ class Server{
 		if($this->isRunning === false){
 			return;
 		}
-		$this->sendUsage(SendUsageTask::TYPE_CLOSE);
+		if($this->sendUsageTicker > 0){
+			$this->sendUsage(SendUsageTask::TYPE_CLOSE);
+		}
 		$this->hasStopped = false;
 
 		ini_set("error_reporting", 0);

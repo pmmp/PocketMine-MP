@@ -1008,6 +1008,10 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	protected function switchLevel(Level $targetLevel){
+		if($this->closed){
+			return false;
+		}
+
 		if($this->isValid()){
 			$this->server->getPluginManager()->callEvent($ev = new EntityLevelChangeEvent($this, $this->level, $targetLevel));
 			if($ev->isCancelled()){
@@ -1496,7 +1500,7 @@ abstract class Entity extends Location implements Metadatable{
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
 			}
-			if($this->level instanceof Level){
+			if($this->level !== null){
 				$this->level->removeEntity($this);
 			}
 		}
