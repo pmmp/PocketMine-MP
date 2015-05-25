@@ -58,7 +58,7 @@ class QueryRegenerateEvent extends ServerEvent{
 		$this->plugins = $server->getPluginManager()->getPlugins();
 		$this->players = [];
 		foreach($server->getOnlinePlayers() as $player){
-			if($player->getName() != "" and $player->isConnected()){
+			if($player->isOnline()){
 				$this->players[] = $player;
 			}
 		}

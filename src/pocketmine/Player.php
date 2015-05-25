@@ -2733,6 +2733,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	/**
+	 * Note for plugin developers: use kick() with the isAdmin
+	 * flag set to kick without the "Kicked by admin" part instead of this method.
+	 *
 	 * @param string $message Message to be broadcasted
 	 * @param string $reason  Reason showed in console
 	 * @param bool $notify
