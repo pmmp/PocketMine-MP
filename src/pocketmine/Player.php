@@ -1519,19 +1519,19 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					return;
 				}
 
-				if($packet->protocol1 !== ProtocolInfo::CURRENT_PROTOCOL){
+				if(true or $packet->protocol1 !== ProtocolInfo::CURRENT_PROTOCOL){
 					if($packet->protocol1 < ProtocolInfo::CURRENT_PROTOCOL){
 						$message = "disconnectionScreen.outdatedClient";
 
 						$pk = new PlayStatusPacket();
 						$pk->status = PlayStatusPacket::LOGIN_FAILED_CLIENT;
-						$this->dataPacket($pk->setChannel(Network::CHANNEL_PRIORITY));
+						$this->directDataPacket($pk->setChannel(Network::CHANNEL_PRIORITY));
 					}else{
 						$message = "disconnectionScreen.outdatedServer";
 
 						$pk = new PlayStatusPacket();
 						$pk->status = PlayStatusPacket::LOGIN_FAILED_SERVER;
-						$this->dataPacket($pk->setChannel(Network::CHANNEL_PRIORITY));
+						$this->directDataPacket($pk->setChannel(Network::CHANNEL_PRIORITY));
 					}
 					$this->close("", $message, false);
 
@@ -1545,7 +1545,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 				
 				if(strlen($packet->skin) < 64 * 32 * 4){
-					$this->close("", "disconnectionScreen.invalidSkin", false);
+					$this->close("", "disconnectionScreen.invalidSkin");
 					return;
 				}
 
@@ -2740,7 +2740,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @param string $reason  Reason showed in console
 	 * @param bool $notify
 	 */
-	public function close($message = "", $reason = "generic reason", $notify = true){
+	public final function close($message = "", $reason = "generic reason", $notify = true){
 
 		if($this->connected and !$this->closed){
 			if($notify and strlen((string) $reason) > 0){
