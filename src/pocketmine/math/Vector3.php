@@ -123,11 +123,11 @@ class Vector3{
 	}
 
 	public function ceil(){
-		return new Vector3((int) ($this->x + 1), (int) ($this->y + 1), (int) ($this->z + 1));
+		return new Vector3((int) ceil($this->x), (int) ceil($this->y), (int) ceil($this->z));
 	}
 
 	public function floor(){
-		return new Vector3((int) $this->x, (int) $this->y, (int) $this->z);
+		return new Vector3((int) floor($this->x), (int) floor($this->y), (int) floor($this->z));
 	}
 
 	public function round(){
