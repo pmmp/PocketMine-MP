@@ -1519,7 +1519,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					return;
 				}
 
-				if(true or $packet->protocol1 !== ProtocolInfo::CURRENT_PROTOCOL){
+				if($packet->protocol1 !== ProtocolInfo::CURRENT_PROTOCOL){
 					if($packet->protocol1 < ProtocolInfo::CURRENT_PROTOCOL){
 						$message = "disconnectionScreen.outdatedClient";
 
