@@ -2300,7 +2300,7 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		if(!$chunk->isLightPopulated() and $chunk->isPopulated()){
+		if(!$chunk->isLightPopulated() and $chunk->isPopulated() and $this->getServer()->getProperty("chunk-ticking.light-updates", false)){
 			$this->getServer()->getScheduler()->scheduleAsyncTask(new LightPopulationTask($this, $chunk));
 		}
 

@@ -42,6 +42,9 @@ class Config{
 
 	/** @var array */
 	private $config = [];
+
+	private $nestedCache = [];
+
 	/** @var string */
 	private $file;
 	/** @var boolean */
@@ -83,6 +86,7 @@ class Config{
 	 */
 	public function reload(){
 		$this->config = [];
+		$this->nestedCache = [];
 		$this->correct = false;
 		$this->load($this->file);
 		$this->load($this->file, $this->type);
@@ -273,6 +277,7 @@ class Config{
 		}
 
 		$base = $value;
+		$this->nestedCache[$key] = $value;
 	}
 
 	/**
@@ -282,6 +287,10 @@ class Config{
 	 * @return mixed
 	 */
 	public function getNested($key, $default = null){
+		if(isset($this->nestedCache[$key])){
+			return $this->nestedCache[$key];
+		}
+
 		$vars = explode(".", $key);
 		$base = array_shift($vars);
 		if(isset($this->config[$base])){
@@ -299,7 +308,7 @@ class Config{
 			}
 		}
 
-		return $base;
+		return $this->nestedCache[$key] = $base;
 	}
 
 	/**

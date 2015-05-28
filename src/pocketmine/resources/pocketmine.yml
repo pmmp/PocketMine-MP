@@ -115,7 +115,6 @@ chunk-ticking:
  per-tick: 40
  #Radius of chunks around a player to tick
  tick-radius: 3
- #NOTE: This is currently not implemented
  light-updates: false
  clear-tick-list: false
 
