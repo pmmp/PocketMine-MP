@@ -877,7 +877,7 @@ abstract class Entity extends Location implements Metadatable{
 		$x = -$xz * sin(deg2rad($this->yaw));
 		$z = $xz * cos(deg2rad($this->yaw));
 
-		return (new Vector3($x, $y, $z))->normalize();
+		return $this->temporalVector->setComponents($x, $y, $z)->normalize();
 	}
 
 	public function getDirectionPlane(){
@@ -1048,7 +1048,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function isInsideOfWater(){
-		$block = $this->level->getBlock(new Vector3(Math::floorFloat($this->x), Math::floorFloat($y = ($this->y + $this->getEyeHeight())), Math::floorFloat($this->z)));
+		$block = $this->level->getBlock($this->temporalVector->setComponents(Math::floorFloat($this->x), Math::floorFloat($y = ($this->y + $this->getEyeHeight())), Math::floorFloat($this->z)));
 
 		if($block instanceof Water){
 			$f = ($block->y + 1) - ($block->getFluidHeightPercent() - 0.1111111);
@@ -1059,7 +1059,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function isInsideOfSolid(){
-		$block = $this->level->getBlock(new Vector3(Math::floorFloat($this->x), Math::floorFloat($y = ($this->y + $this->getEyeHeight())), Math::floorFloat($this->z)));
+		$block = $this->level->getBlock($this->temporalVector->setComponents(Math::floorFloat($this->x), Math::floorFloat($y = ($this->y + $this->getEyeHeight())), Math::floorFloat($this->z)));
 
 		$bb = $block->getBoundingBox();
 
@@ -1086,34 +1086,28 @@ abstract class Entity extends Location implements Metadatable{
 			$this->boundingBox = $newBB;
 		}
 
-		$pos = new Vector3(
-			($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
-			$this->boundingBox->minY,
-			($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2
-		);
+		$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
+		$this->y = $this->boundingBox->minY - $this->ySize;
+		$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
 
-		$result = true;
+		$this->checkChunks();
 
-		if(!$this->setPosition($pos)){
-			$this->boundingBox->setBB($axisalignedbb);
-			$result = false;
-		}else{
-			if(!$this->onGround or $dy != 0){
-				$bb = clone $this->boundingBox;
-				$bb->minY -= 0.75;
-				$this->onGround = false;
+		if(!$this->onGround or $dy != 0){
+			$bb = clone $this->boundingBox;
+			$bb->minY -= 0.75;
+			$this->onGround = false;
 
-				if(count($this->level->getCollisionBlocks($bb)) > 0){
-					$this->onGround = true;
-				}
+			if(count($this->level->getCollisionBlocks($bb)) > 0){
+				$this->onGround = true;
 			}
-			$this->isCollided = $this->onGround;
-			$this->updateFallState($dy, $this->onGround);
 		}
+		$this->isCollided = $this->onGround;
+		$this->updateFallState($dy, $this->onGround);
+
 
 		Timings::$entityMoveTimer->stopTiming();
 
-		return $result;
+		return true;
 	}
 
 	public function move($dx, $dy, $dz){
@@ -1124,7 +1118,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		if($this->keepMovement){
 			$this->boundingBox->offset($dx, $dy, $dz);
-			$this->setPosition(new Vector3(($this->boundingBox->minX + $this->boundingBox->maxX) / 2, $this->boundingBox->minY, ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2));
+			$this->setPosition($this->temporalVector->setComponents(($this->boundingBox->minX + $this->boundingBox->maxX) / 2, $this->boundingBox->minY, ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2));
 			$this->onGround = $this instanceof Player ? true : false;
 			return true;
 		}else{
@@ -1247,6 +1241,8 @@ abstract class Entity extends Location implements Metadatable{
 			$this->y = $this->boundingBox->minY - $this->ySize;
 			$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
 
+			$this->checkChunks();
+
 			if($this instanceof Player){
 				if(!$this->onGround or $movY != 0){
 					$bb = clone $this->boundingBox;
@@ -1295,7 +1291,7 @@ abstract class Entity extends Location implements Metadatable{
 		$maxY = Math::ceilFloat($this->boundingBox->maxY - 0.001);
 		$maxZ = Math::ceilFloat($this->boundingBox->maxZ - 0.001);
 
-		$vector = new Vector3(0, 0, 0);
+		$vector = $this->temporalVector;
 		$v = new Vector3(0, 0, 0);
 
 		for($v->z = $minZ; $v->z <= $maxZ; ++$v->z){
@@ -1443,8 +1439,8 @@ abstract class Entity extends Location implements Metadatable{
 		$this->ySize = 0;
 		$pos = $ev->getTo();
 
-		$this->setMotion(new Vector3(0, 0, 0));
-		if($this->setPositionAndRotation($pos, $yaw === null ? $this->yaw : $yaw, $pitch === null ? $this->pitch : $pitch, true) !== false){
+		$this->setMotion($this->temporalVector->setComponents(0, 0, 0));
+		if($this->setPositionAndRotation($pos, $yaw === null ? $this->yaw : $yaw, $pitch === null ? $this->pitch : $pitch) !== false){
 			$this->resetFallDistance();
 			$this->onGround = true;
 

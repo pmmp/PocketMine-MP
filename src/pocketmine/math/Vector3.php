@@ -207,7 +207,7 @@ class Vector3{
 	 */
 	public function normalize(){
 		$len = $this->lengthSquared();
-		if($len != 0){
+		if($len > 0){
 			return $this->divide(sqrt($len));
 		}
 
