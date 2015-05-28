@@ -761,59 +761,63 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->nextChunkOrderRun = 200;
 
 		$viewDistance = $this->server->getMemoryManager()->getViewDistance($this->viewDistance);
-		$radius = ceil(sqrt($viewDistance));
-		$side = ceil($radius / 2);
 
 		$newOrder = [];
 		$lastChunk = $this->usedChunks;
-		$currentQueue = [];
+
 		$centerX = $this->x >> 4;
 		$centerZ = $this->z >> 4;
-		for($X = -$side; $X <= $side; ++$X){
-			for($Z = -$side; $Z <= $side; ++$Z){
-				$chunkX = $X + $centerX;
-				$chunkZ = $Z + $centerZ;
-				if(!isset($this->usedChunks[$index = Level::chunkHash($chunkX, $chunkZ)]) or $this->usedChunks[$index] === false){
-					$newOrder[$index] = abs($X) + abs($Z);
-				}else{
-					$currentQueue[$index] = abs($X) + abs($Z);
-				}
-			}
-		}
-		asort($newOrder);
-		asort($currentQueue);
 
+		$layer = 1;
+		$leg = 0;
+		$x = 0;
+		$z = 0;
 
-		$limit = $viewDistance;
-		foreach($currentQueue as $index => $distance){
-			if($limit-- <= 0){
-				break;
+		for($i = 0; $i < $viewDistance; ++$i){
+
+			$chunkX = $x + $centerX;
+			$chunkZ = $z + $centerZ;
+
+			if(!isset($this->usedChunks[$index = Level::chunkHash($chunkX, $chunkZ)]) or $this->usedChunks[$index] === false){
+				$newOrder[$index] = true;
 			}
 			unset($lastChunk[$index]);
+
+			switch($leg){
+				case 0:
+					++$x;
+					if($x === $layer){
+						++$leg;
+					}
+					break;
+				case 1:
+					++$z;
+					if($z === $layer){
+						++$leg;
+					}
+					break;
+				case 2:
+					--$x;
+					if(-$x === $layer){
+						++$leg;
+					}
+					break;
+				case 3:
+					--$z;
+					if(-$z === $layer){
+						$leg = 0;
+						++$layer;
+					}
+					break;
+			}
 		}
 
-		foreach($lastChunk as $index => $Yndex){
-			$X = null;
-			$Z = null;
+		foreach($lastChunk as $index => $bool){
 			Level::getXZ($index, $X, $Z);
 			$this->unloadChunk($X, $Z);
 		}
 
-		$loadedChunks = count($this->usedChunks);
-
-
-		if((count($newOrder) + $loadedChunks) > $viewDistance){
-			$count = $loadedChunks;
-			$this->loadQueue = [];
-			foreach($newOrder as $k => $distance){
-				if(++$count > $viewDistance){
-					break;
-				}
-				$this->loadQueue[$k] = $distance;
-			}
-		}else{
-			$this->loadQueue = $newOrder;
-		}
+		$this->loadQueue = $newOrder;
 
 		return true;
 	}
