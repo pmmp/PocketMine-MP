@@ -1621,7 +1621,7 @@ class Level implements ChunkManager, Metadatable{
 				"Text4" => new String("Text4", "")
 			]));
 			if($player instanceof Player){
-				$tile->namedtag->Creator = new String("Creator", $player->getName());
+				$tile->namedtag->Creator = new String("Creator", $player->getUniqueId());
 			}
 		}
 		$item->setCount($item->getCount() - 1);

@@ -2629,7 +2629,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 							TextFormat::clean($nbt["Text1"], $this->removeFormat), TextFormat::clean($nbt["Text2"], $this->removeFormat), TextFormat::clean($nbt["Text3"], $this->removeFormat), TextFormat::clean($nbt["Text4"], $this->removeFormat)
 						]);
 
-						if(!isset($t->namedtag->Creator) or $t->namedtag["Creator"] !== $this->username){
+						if(!isset($t->namedtag->Creator) or $t->namedtag["Creator"] !== $this->getUniqueId()){
 							$ev->setCancelled(true);
 						}
 
