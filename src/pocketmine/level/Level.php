@@ -2042,18 +2042,28 @@ class Level implements ChunkManager, Metadatable{
 			return;
 		}
 		$index = Level::chunkHash($chunkX, $chunkZ);
-		if($unload){
-			if($this->isChunkLoaded($chunkX, $chunkZ) and ($oldChunk = $this->getChunk($chunkX, $chunkZ, false)) !== false){
-				foreach($this->getChunkLoaders($chunkX, $chunkZ) as $loader){
-					$loader->onChunkUnloaded($oldChunk);
-				}
-			}
+		$oldChunk = $this->getChunk($chunkX, $chunkZ, false);
+		if($unload and $oldChunk !== null){
+			$this->unloadChunk($chunkX, $chunkZ, false);
 
 			$this->provider->setChunk($chunkX, $chunkZ, $chunk);
 			$this->chunks[$index] = $chunk;
 		}else{
+			$oldEntities = $oldChunk !== null ? $oldChunk->getEntities() : [];
+			$oldTiles = $oldChunk !== null ? $oldChunk->getTiles() : [];
+
 			$this->provider->setChunk($chunkX, $chunkZ, $chunk);
 			$this->chunks[$index] = $chunk;
+
+			foreach($oldEntities as $entity){
+				$chunk->addEntity($entity);
+				$entity->chunk = $chunk;
+			}
+
+			foreach($oldTiles as $tile){
+				$chunk->addTile($tile);
+				$tile->chunk = $chunk;
+			}
 		}
 
 		unset($this->chunkCache[$index]);

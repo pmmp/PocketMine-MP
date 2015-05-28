@@ -1291,7 +1291,7 @@ abstract class Entity extends Location implements Metadatable{
 		$maxY = Math::ceilFloat($this->boundingBox->maxY - 0.001);
 		$maxZ = Math::ceilFloat($this->boundingBox->maxZ - 0.001);
 
-		$vector = $this->temporalVector;
+		$vector = new Vector3(0, 0, 0);
 		$v = new Vector3(0, 0, 0);
 
 		for($v->z = $minZ; $v->z <= $maxZ; ++$v->z){
