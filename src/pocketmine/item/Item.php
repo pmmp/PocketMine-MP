@@ -758,6 +758,8 @@ class Item{
 		//TODO: PigZombie
 		self::addCreativeItem(Item::get(Item::SPAWN_EGG, Squid::NETWORK_ID));
 
+		self::addCreativeItem(Item::get(Item::SNOWBALL));
+
 
 		//Seeds
 		self::addCreativeItem(Item::get(Item::SUGARCANE, 0));
