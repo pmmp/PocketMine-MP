@@ -184,7 +184,7 @@ abstract class Entity extends Location implements Metadatable{
 	public $isCollidedVertically = false;
 
 	public $noDamageTicks;
-	private $justCreated;
+	protected $justCreated;
 	protected $fireProof;
 	private $invulnerable;
 
@@ -223,16 +223,15 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 		$this->setPositionAndRotation(
-			new Vector3(
+			$this->temporalVector->setComponents(
 				$this->namedtag["Pos"][0],
 				$this->namedtag["Pos"][1],
 				$this->namedtag["Pos"][2]
 			),
 			$this->namedtag->Rotation[0],
-			$this->namedtag->Rotation[1],
-			true
+			$this->namedtag->Rotation[1]
 		);
-		$this->setMotion(new Vector3($this->namedtag["Motion"][0], $this->namedtag["Motion"][1], $this->namedtag["Motion"][2]));
+		$this->setMotion($this->temporalVector->setComponents($this->namedtag["Motion"][0], $this->namedtag["Motion"][1], $this->namedtag["Motion"][2]));
 
 		if(!isset($this->namedtag->FallDistance)){
 			$this->namedtag->FallDistance = new Float("FallDistance", 0);
@@ -971,10 +970,8 @@ abstract class Entity extends Location implements Metadatable{
 		if($onGround === true){
 			if($this->fallDistance > 0){
 				if($this instanceof Living){
-					//TODO
+					$this->fall($this->fallDistance);
 				}
-
-				$this->fall($this->fallDistance);
 				$this->resetFallDistance();
 			}
 		}elseif($distanceThisTick < 0){
@@ -1246,56 +1243,47 @@ abstract class Entity extends Location implements Metadatable{
 
 			}
 
-			$pos = new Vector3(
-				($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
-				$this->boundingBox->minY + $this->ySize,
-				($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2
-			);
+			$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
+			$this->y = $this->boundingBox->minY - $this->ySize;
+			$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
 
-			$result = true;
-
-			if(!$this->setPosition($pos)){
-				$this->boundingBox->setBB($axisalignedbb);
-				$result = false;
-			}else{
-
-				if($this instanceof Player){
-					if(!$this->onGround or $movY != 0){
-						$bb = clone $this->boundingBox;
-						$bb->minY -= 1;
-						if(count($this->level->getCollisionBlocks($bb)) > 0){
-							$this->onGround = true;
-						}else{
-							$this->onGround = false;
-						}
+			if($this instanceof Player){
+				if(!$this->onGround or $movY != 0){
+					$bb = clone $this->boundingBox;
+					$bb->minY -= 1;
+					if(count($this->level->getCollisionBlocks($bb)) > 0){
+						$this->onGround = true;
+					}else{
+						$this->onGround = false;
 					}
-					$this->isCollided = $this->onGround;
-				}else{
-					$this->isCollidedVertically = $movY != $dy;
-					$this->isCollidedHorizontally = ($movX != $dx or $movZ != $dz);
-					$this->isCollided = ($this->isCollidedHorizontally or $this->isCollidedVertically);
-					$this->onGround = ($movY != $dy and $movY < 0);
 				}
-				$this->updateFallState($dy, $this->onGround);
-
-				if($movX != $dx){
-					$this->motionX = 0;
-				}
-
-				if($movY != $dy){
-					$this->motionY = 0;
-				}
-
-				if($movZ != $dz){
-					$this->motionZ = 0;
-				}
+				$this->isCollided = $this->onGround;
+			}else{
+				$this->isCollidedVertically = $movY != $dy;
+				$this->isCollidedHorizontally = ($movX != $dx or $movZ != $dz);
+				$this->isCollided = ($this->isCollidedHorizontally or $this->isCollidedVertically);
+				$this->onGround = ($movY != $dy and $movY < 0);
 			}
+			$this->updateFallState($dy, $this->onGround);
+
+			if($movX != $dx){
+				$this->motionX = 0;
+			}
+
+			if($movY != $dy){
+				$this->motionY = 0;
+			}
+
+			if($movZ != $dz){
+				$this->motionZ = 0;
+			}
+
 
 			//TODO: vehicle collision events (first we need to spawn them!)
 
 			Timings::$entityMoveTimer->stopTiming();
 
-			return $result;
+			return true;
 		}
 	}
 
@@ -1349,25 +1337,7 @@ abstract class Entity extends Location implements Metadatable{
 		$this->scheduleUpdate();
 	}
 
-	public function setPosition(Vector3 $pos){
-		if($this->closed){
-			return false;
-		}
-
-		if($pos instanceof Position and $pos->level !== null and $pos->level !== $this->level){
-			if($this->switchLevel($pos->getLevel()) === false){
-				return false;
-			}
-		}
-
-		$this->x = $pos->x;
-		$this->y = $pos->y;
-		$this->z = $pos->z;
-
-		$radius = $this->width / 2;
-		$this->boundingBox->setBounds($pos->x - $radius, $pos->y, $pos->z - $radius, $pos->x + $radius, $pos->y + $this->height, $pos->z + $radius);
-
-
+	protected function checkChunks(){
 		if($this->chunk === null or ($this->chunk->getX() !== ($this->x >> 4) or $this->chunk->getZ() !== ($this->z >> 4))){
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
@@ -1390,11 +1360,32 @@ abstract class Entity extends Location implements Metadatable{
 			}
 
 			if($this->chunk === null){
-				return true;
+				return;
 			}
 
 			$this->chunk->addEntity($this);
 		}
+	}
+
+	public function setPosition(Vector3 $pos){
+		if($this->closed){
+			return false;
+		}
+
+		if($pos instanceof Position and $pos->level !== null and $pos->level !== $this->level){
+			if($this->switchLevel($pos->getLevel()) === false){
+				return false;
+			}
+		}
+
+		$this->x = $pos->x;
+		$this->y = $pos->y;
+		$this->z = $pos->z;
+
+		$radius = $this->width / 2;
+		$this->boundingBox->setBounds($pos->x - $radius, $pos->y, $pos->z - $radius, $pos->x + $radius, $pos->y + $this->height, $pos->z + $radius);
+
+		$this->checkChunks();
 
 		return true;
 	}

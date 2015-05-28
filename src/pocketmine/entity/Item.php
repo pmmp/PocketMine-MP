@@ -81,8 +81,8 @@ class Item extends Entity{
 		}
 
 		$tickDiff = $currentTick - $this->lastUpdate;
-		if($tickDiff <= 0){
-			return false;
+		if($tickDiff <= 0 and !$this->justCreated){
+			return true;
 		}
 
 		$this->lastUpdate = $currentTick;
@@ -102,7 +102,9 @@ class Item extends Entity{
 
 			$this->motionY -= $this->gravity;
 
-			$this->checkObstruction($this->x, $this->y, $this->z);
+			if($this->checkObstruction($this->x, $this->y, $this->z)){
+				$hasUpdate = true;
+			}
 
 			$this->move($this->motionX, $this->motionY, $this->motionZ);
 

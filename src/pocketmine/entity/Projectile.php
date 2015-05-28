@@ -83,7 +83,10 @@ abstract class Projectile extends Entity{
 		}
 
 
-		$tickDiff = max(1, $currentTick - $this->lastUpdate);
+		$tickDiff = $currentTick - $this->lastUpdate;
+		if($tickDiff <= 0 and !$this->justCreated){
+			return true;
+		}
 		$this->lastUpdate = $currentTick;
 
 		$hasUpdate = $this->entityBaseTick($tickDiff);
