@@ -136,6 +136,8 @@ abstract class Entity extends Location implements Metadatable{
 	public $motionX;
 	public $motionY;
 	public $motionZ;
+	/** @var Vector3 */
+	public $temporalVector;
 	public $lastMotionX;
 	public $lastMotionY;
 	public $lastMotionZ;
@@ -204,6 +206,8 @@ abstract class Entity extends Location implements Metadatable{
 		}
 
 		$this->timings = Timings::getEntityTimings($this);
+
+		$this->temporalVector = new Vector3();
 
 		if($this->eyeHeight === null){
 			$this->eyeHeight = $this->height / 2 + 0.1;

@@ -2281,7 +2281,7 @@ class Server{
 		$this->nextTick = microtime(true);
 		while($this->isRunning){
 			$this->tick();
-			$next = $this->nextTick - 0.001;
+			$next = $this->nextTick - 0.0001;
 			if($next > microtime(true)){
 				try{
 					time_sleep_until($next);
@@ -2547,8 +2547,9 @@ class Server{
 
 		if(($this->nextTick - $tickTime) < -1){
 			$this->nextTick = $tickTime;
+		}else{
+			$this->nextTick += 0.05;
 		}
-		$this->nextTick += 0.05;
 
 		return true;
 	}

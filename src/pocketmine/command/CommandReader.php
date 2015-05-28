@@ -57,9 +57,7 @@ class CommandReader extends Thread{
 	 */
 	public function getLine(){
 		if($this->buffer->count() !== 0){
-			return $this->buffer->synchronized(function (){
-				return $this->buffer->shift();
-			});
+			return $this->buffer->shift();
 		}
 
 		return null;
@@ -76,9 +74,7 @@ class CommandReader extends Thread{
 		$lastLine = microtime(true);
 		while(true){
 			if(($line = $this->readLine()) !== ""){
-				$this->buffer->synchronized(function (\Threaded $buffer, $line){
-					$buffer[] = preg_replace("#\\x1b\\x5b([^\\x1b]*\\x7e|[\\x40-\\x50])#", "", $line);
-				}, $this->buffer, $line);
+				$this->buffer[] = preg_replace("#\\x1b\\x5b([^\\x1b]*\\x7e|[\\x40-\\x50])#", "", $line);
 			}elseif((microtime(true) - $lastLine) <= 0.1){ //Non blocking! Sleep to save CPU
 				usleep(40000);
 			}

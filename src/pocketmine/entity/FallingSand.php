@@ -135,7 +135,7 @@ class FallingSand extends Entity{
 			$this->updateMovement();
 		}
 
-		return $hasUpdate or !$this->onGround or $this->motionX != 0 or $this->motionY != 0 or $this->motionZ != 0;
+		return $hasUpdate or !$this->onGround or abs($this->motionX) > 0.00001 or abs($this->motionY) > 0.00001 or abs($this->motionZ) > 0.00001;
 	}
 
 	public function getBlock(){

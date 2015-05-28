@@ -46,7 +46,7 @@ class MainLogger extends \AttachableThreadedLogger{
 		touch($logFile);
 		$this->logFile = $logFile;
 		$this->logDebug = (bool) $logDebug;
-		$this->logStream = "";
+		$this->logStream = \ThreadedFactory::create();
 		$this->start();
 	}
 
@@ -190,11 +190,12 @@ class MainLogger extends \AttachableThreadedLogger{
 			$this->attachment->call($level, $message);
 		}
 
-		$str = date("Y-m-d", $now) . " " . $cleanMessage . "\n";
-		$this->synchronized(function($str){
-			$this->logStream .= $str;
-			$this->notify();
-		}, $str);
+		$this->logStream[] = date("Y-m-d", $now) . " " . $cleanMessage . "\n";
+		if($this->logStream->count() === 1){
+			$this->synchronized(function(){
+				$this->notify();
+			});
+		}
 	}
 
 	public function run(){
@@ -206,13 +207,12 @@ class MainLogger extends \AttachableThreadedLogger{
 
 		while($this->shutdown === false){
 			$this->synchronized(function(){
-				if(strlen($this->logStream) > 0){
-					$chunk = $this->logStream;
-					$this->logStream = "";
+				while($this->logStream->count() > 0){
+					$chunk = $this->logStream->shift();
 					fwrite($this->logResource, $chunk);
-				}else{
-					$this->wait(250000);
 				}
+
+				$this->wait(25000);
 			});
 		}
 
