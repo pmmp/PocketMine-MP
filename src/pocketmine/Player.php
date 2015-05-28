@@ -2016,7 +2016,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 							$pk = new EntityEventPacket();
 							$pk->eid = $this->getId();
-							$pk->event = 9;
+							$pk->event = EntityEventPacket::USE_ITEM;
 							$pk->setChannel(Network::CHANNEL_WORLD_EVENTS);
 							$this->dataPacket($pk);
 							Server::broadcastPacket($this->getViewers(), $pk);
@@ -2309,7 +2309,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 							$pk = new EntityEventPacket();
 							$pk->eid = $this->getId();
-							$pk->event = 9;
+							$pk->event = EntityEventPacket::USE_ITEM;
 							$pk->setChannel(Network::CHANNEL_WORLD_EVENTS);
 							$this->dataPacket($pk);
 							Server::broadcastPacket($this->getViewers(), $pk);
@@ -3020,7 +3020,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}elseif($this->getLastDamageCause() === $source and $this->spawned){
 			$pk = new EntityEventPacket();
 			$pk->eid = $this->getId();
-			$pk->event = 2;
+			$pk->event = EntityEventPacket::HURT_ANIMATION;
 			$this->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 		}
 	}

@@ -62,6 +62,17 @@ abstract class Living extends Entity implements Damageable{
 		$this->setHealth($this->namedtag["Health"]);
 	}
 
+	public function setHealth($amount){
+		$wasAlive = $this->isAlive();
+		parent::setHealth($amount);
+		if($this->isAlive() and !$wasAlive){
+			$pk = new EntityEventPacket();
+			$pk->eid = $this->getId();
+			$pk->event = EntityEventPacket::RESPAWN;
+			Server::broadcastPacket($this->hasSpawned, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+		}
+	}
+
 	public function saveNBT(){
 		parent::saveNBT();
 		$this->namedtag->Health = new Short("Health", $this->getHealth());
@@ -117,7 +128,7 @@ abstract class Living extends Entity implements Damageable{
 
 		$pk = new EntityEventPacket();
 		$pk->eid = $this->getId();
-		$pk->event = $this->getHealth() <= 0 ? 3 : 2; //Ouch!
+		$pk->event = $this->getHealth() <= 0 ? EntityEventPacket::DEATH_ANIMATION : EntityEventPacket::HURT_ANIMATION; //Ouch!
 		Server::broadcastPacket($this->hasSpawned, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 
 		$this->attackTime = 10; //0.5 seconds cooldown

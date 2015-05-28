@@ -67,7 +67,7 @@ class Squid extends WaterAnimal implements Ageable{
 
 			$pk = new EntityEventPacket();
 			$pk->eid = $this->getId();
-			$pk->event = 15;
+			$pk->event = EntityEventPacket::SQUID_INK_CLOUD;
 			Server::broadcastPacket($this->hasSpawned, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 		}
 	}
