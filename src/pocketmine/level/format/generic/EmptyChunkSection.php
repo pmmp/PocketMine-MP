@@ -109,7 +109,7 @@ class EmptyChunkSection implements ChunkSection{
 	}
 
 	final public function getBlockSkyLight($x, $y, $z){
-		return 0;
+		return 15;
 	}
 
 	final public function setBlockSkyLight($x, $y, $z, $level){

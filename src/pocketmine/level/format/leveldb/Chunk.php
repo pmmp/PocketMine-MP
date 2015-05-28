@@ -29,6 +29,9 @@ use pocketmine\utils\Binary;
 
 class Chunk extends BaseFullChunk{
 
+	const DATA_LENGTH = 16384 * (2 + 1 + 1 + 1) + 256 + 1024;
+
+	protected $isLightPopulated = false;
 	protected $isPopulated = false;
 	protected $isGenerated = false;
 
@@ -198,6 +201,20 @@ class Chunk extends BaseFullChunk{
 	/**
 	 * @return bool
 	 */
+	public function isLightPopulated(){
+		return $this->isLightPopulated;
+	}
+
+	/**
+	 * @param int $value
+	 */
+	public function setLightPopulated($value = 1){
+		$this->isLightPopulated = (bool) $value;
+	}
+
+	/**
+	 * @return bool
+	 */
 	public function isPopulated(){
 		return $this->isPopulated;
 	}
@@ -350,7 +367,9 @@ class Chunk extends BaseFullChunk{
 	 */
 	public static function getEmptyChunk($chunkX, $chunkZ, LevelProvider $provider = null){
 		try{
-			return new Chunk($provider instanceof LevelProvider ? $provider : LevelDB::class, $chunkX, $chunkZ, str_repeat("\x00", 16384 * (2 + 1 + 1 + 1) + 256 + 1024));
+			$chunk = new Chunk($provider instanceof LevelProvider ? $provider : LevelDB::class, $chunkX, $chunkZ, str_repeat("\x00", self::DATA_LENGTH));
+			$chunk->skyLight = str_repeat("\xff", 16384);
+			return $chunk;
 		}catch(\Exception $e){
 			return null;
 		}

@@ -70,6 +70,7 @@ use pocketmine\level\generator\GenerationTask;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\GeneratorRegisterTask;
 use pocketmine\level\generator\GeneratorUnregisterTask;
+use pocketmine\level\generator\LightPopulationTask;
 use pocketmine\level\generator\PopulationTask;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Math;
@@ -2297,6 +2298,10 @@ class Level implements ChunkManager, Metadatable{
 			$this->unloadChunk($x, $z, false);
 			$this->timings->syncChunkLoadTimer->stopTiming();
 			return false;
+		}
+
+		if(!$chunk->isLightPopulated() and $chunk->isPopulated()){
+			$this->getServer()->getScheduler()->scheduleAsyncTask(new LightPopulationTask($this, $chunk));
 		}
 
 		if($this->isChunkInUse($x, $z)){

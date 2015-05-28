@@ -164,12 +164,6 @@ abstract class BaseFullChunk implements FullChunk{
 
 			$this->isInit = true;
 		}
-
-		if(!$this->isLightPopulated() and $this->isPopulated()){
-			$this->recalculateHeightMap();
-			$this->populateSkyLight();
-			$this->setLightPopulated();
-		}
 	}
 
 	public function getX(){
