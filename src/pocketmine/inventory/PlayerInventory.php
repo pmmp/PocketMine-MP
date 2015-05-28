@@ -215,23 +215,15 @@ class PlayerInventory extends BaseInventory{
 
 		if($index >= $this->getSize()){ //Armor change
 			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $this->getItem($index), $item, $index));
-			if($ev->isCancelled() and $this->getHolder() instanceof Player){
-				if($index >= $this->size){
-					$this->sendArmorSlot($index, $this->getViewers());
-				}else{
-					$this->sendSlot($index, $this->getViewers());
-				}
+			if($ev->isCancelled() and $this->getHolder() instanceof Human){
+				$this->sendArmorSlot($index, $this->getViewers());
 				return false;
 			}
 			$item = $ev->getNewItem();
 		}else{
 			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($this->getHolder(), $this->getItem($index), $item, $index));
 			if($ev->isCancelled()){
-				if($index >= $this->size){
-					$this->sendArmorSlot($index, $this->getViewers());
-				}else{
-					$this->sendSlot($index, $this->getViewers());
-				}
+				$this->sendSlot($index, $this->getViewers());
 				return false;
 			}
 			$item = $ev->getNewItem();
@@ -394,7 +386,7 @@ class PlayerInventory extends BaseInventory{
 				/** @var Player $player */
 				$pk2 = new ContainerSetSlotPacket();
 				$pk2->windowid = ContainerSetContentPacket::SPECIAL_ARMOR;
-				$pk2->slot = $index;
+				$pk2->slot = $index - $this->getSize();
 				$pk2->item = $this->getItem($index);
 				$player->dataPacket($pk2);
 			}else{
