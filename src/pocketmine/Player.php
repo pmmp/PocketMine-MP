@@ -907,6 +907,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @return boolean
 	 */
 	public function sleepOn(Vector3 $pos){
+		if(!$this->isOnline()){
+			return false;
+		}
+
 		foreach($this->level->getNearbyEntities($this->boundingBox->grow(2, 1, 2), $this) as $p){
 			if($p instanceof Player){
 				if($p->sleeping !== null and $pos->distance($p->sleeping) <= 0.1){
@@ -2040,7 +2044,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						$this->stopSleep();
 						break;
 					case 7: //Respawn
-						if($this->spawned === false or $this->isAlive()){
+						if($this->spawned === false or $this->isAlive() or !$this->isOnline()){
 							break;
 						}
 
@@ -3069,6 +3073,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function teleport(Vector3 $pos, $yaw = null, $pitch = null){
+		if(!$this->isOnline()){
+			return;
+		}
+
 		$oldPos = $this->getPosition();
 		if(parent::teleport($pos, $yaw, $pitch)){
 
