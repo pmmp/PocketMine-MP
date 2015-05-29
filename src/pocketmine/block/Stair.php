@@ -149,7 +149,7 @@ abstract class Stair extends Transparent{
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= 1){
 			return [
-				[$this->id, 0, 1],
+				[$this->getId(), 0, 1],
 			];
 		}else{
 			return [];

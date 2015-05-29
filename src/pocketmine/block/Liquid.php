@@ -310,7 +310,7 @@ abstract class Liquid extends Transparent{
 				$this->getLevel()->useBreakOn($block);
 			}
 
-			$this->getLevel()->setBlock($block, Block::get($this->id, $newFlowDecay), true);
+			$this->getLevel()->setBlock($block, Block::get($this->getId(), $newFlowDecay), true);
 			$this->getLevel()->scheduleUpdate($block, $this->tickRate());
 		}
 	}

@@ -236,13 +236,13 @@ abstract class Door extends Transparent{
 			$next = $this->getSide($face[(($direction + 2) % 4)]);
 			$next2 = $this->getSide($face[$direction]);
 			$metaUp = 0x08;
-			if($next->getId() === $this->id or ($next2->isTransparent() === false and $next->isTransparent() === true)){ //Door hinge
+			if($next->getId() === $this->getId() or ($next2->isTransparent() === false and $next->isTransparent() === true)){ //Door hinge
 				$metaUp |= 0x01;
 			}
 
-			$this->meta = $player->getDirection() & 0x03;
+			$this->setDamage($player->getDirection() & 0x03);
 			$this->getLevel()->setBlock($block, $this, true, true); //Bottom
-			$this->getLevel()->setBlock($blockUp, $b = Block::get($this->id, $metaUp), true); //Top
+			$this->getLevel()->setBlock($blockUp, $b = Block::get($this->getId(), $metaUp), true); //Top
 			return true;
 		}
 
@@ -250,14 +250,14 @@ abstract class Door extends Transparent{
 	}
 
 	public function onBreak(Item $item){
-		if(($this->meta & 0x08) === 0x08){
+		if(($this->getDamage() & 0x08) === 0x08){
 			$down = $this->getSide(0);
-			if($down->getId() === $this->id){
+			if($down->getId() === $this->getId()){
 				$this->getLevel()->setBlock($down, new Air(), true);
 			}
 		}else{
 			$up = $this->getSide(1);
-			if($up->getId() === $this->id){
+			if($up->getId() === $this->getId()){
 				$this->getLevel()->setBlock($up, new Air(), true);
 			}
 		}
@@ -267,11 +267,11 @@ abstract class Door extends Transparent{
 	}
 
 	public function onActivate(Item $item, Player $player = null){
-		if(($this->meta & 0x08) === 0x08){ //Top
+		if(($this->getDamage() & 0x08) === 0x08){ //Top
 			$down = $this->getSide(0);
-			if($down->getId() === $this->id){
+			if($down->getId() === $this->getId()){
 				$meta = $down->getDamage() ^ 0x04;
-				$this->getLevel()->setBlock($down, Block::get($this->id, $meta), true);
+				$this->getLevel()->setBlock($down, Block::get($this->getId(), $meta), true);
 				$players = $this->getLevel()->getChunkPlayers($this->x >> 4, $this->z >> 4);
 				if($player instanceof Player){
 					unset($players[$player->getLoaderId()]);

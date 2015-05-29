@@ -786,9 +786,18 @@ class Level implements ChunkManager, Metadatable{
 	public function clearCache($full = false){
 		if($full){
 			$this->chunkCache = [];
+			$this->blockCache = [];
+		}else{
+			if(count($this->chunkCache) > 1024){
+				$this->chunkCache = [];
+			}
+
+			if(count($this->blockCache) > 65535){
+				$this->chunkCache = [];
+			}
+
 		}
 
-		$this->blockCache = [];
 	}
 
 	private function tickChunks(){
@@ -992,14 +1001,12 @@ class Level implements ChunkManager, Metadatable{
 		
 		$collides = [];
 
-		$v = $this->temporalVector;
-
-		for($v->z = $minZ; $v->z <= $maxZ; ++$v->z){
-			for($v->x = $minX; $v->x <= $maxX; ++$v->x){
-				for($v->y = $minY - 1; $v->y <= $maxY; ++$v->y){
-					$block = $this->getBlock($v);
-					if($block->getId() !== 0){
-						$block->collidesWithBB($bb, $collides);
+		for($z = $minZ; $z <= $maxZ; ++$z){
+			for($x = $minX; $x <= $maxX; ++$x){
+				for($y = $minY; $y <= $maxY; ++$y){
+					$block = $this->getBlock($this->temporalVector->setComponents($x, $y, $z));
+					if($block->getId() !== 0 and $block->collidesWithBB($bb)){
+						$collides[] = $block;
 					}
 				}
 			}
@@ -1039,14 +1046,13 @@ class Level implements ChunkManager, Metadatable{
 		$maxZ = Math::ceilFloat($bb->maxZ);
 
 		$collides = [];
-		$v = $this->temporalVector;
 
-		for($v->z = $minZ; $v->z <= $maxZ; ++$v->z){
-			for($v->x = $minX; $v->x <= $maxX; ++$v->x){
-				for($v->y = $minY - 1; $v->y < $maxY; ++$v->y){
-					$block = $this->getBlock($v);
-					if($block->getId() !== 0){
-						$block->collidesWithBB($bb, $collides);
+		for($z = $minZ; $z <= $maxZ; ++$z){
+			for($x = $minX; $x <= $maxX; ++$x){
+				for($y = $minY; $y <= $maxY; ++$y){
+					$block = $this->getBlock($this->temporalVector->setComponents($x, $y, $z));
+					if($block->getId() !== 0 and $block->collidesWithBB($bb)){
+						$collides[] = $block->getBoundingBox();
 					}
 				}
 			}

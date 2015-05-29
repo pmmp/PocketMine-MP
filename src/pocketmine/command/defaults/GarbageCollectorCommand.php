@@ -54,6 +54,7 @@ class GarbageCollectorCommand extends VanillaCommand{
 			$chunksCollected += $diff[0] - count($level->getChunks());
 			$entitiesCollected += $diff[1] - count($level->getEntities());
 			$tilesCollected += $diff[2] - count($level->getTiles());
+			$level->clearCache(true);
 		}
 
 		$cyclesCollected = $sender->getServer()->getMemoryManager()->triggerGarbageCollector();
