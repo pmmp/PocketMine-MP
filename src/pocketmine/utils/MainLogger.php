@@ -216,8 +216,11 @@ class MainLogger extends \AttachableThreadedLogger{
 			});
 		}
 
-		if(strlen($this->logStream) > 0){
-			fwrite($this->logResource, $this->logStream);
+		if($this->logStream->count() > 0){
+			while($this->logStream->count() > 0){
+				$chunk = $this->logStream->shift();
+				fwrite($this->logResource, $chunk);
+			}
 		}
 
 		fclose($this->logResource);
