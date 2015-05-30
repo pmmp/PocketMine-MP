@@ -25,15 +25,10 @@ namespace pocketmine\network\protocol;
 
 
 class PlayerArmorEquipmentPacket extends DataPacket{
-	public static $pool = [];
-	public static $next = 0;
+	const NETWORK_ID = Info::PLAYER_ARMOR_EQUIPMENT_PACKET;
 
 	public $eid;
 	public $slots = [];
-
-	public function pid(){
-		return Info::PLAYER_ARMOR_EQUIPMENT_PACKET;
-	}
 
 	public function decode(){
 		$this->eid = $this->getLong();

@@ -25,8 +25,7 @@ namespace pocketmine\network\protocol;
 
 
 class StartGamePacket extends DataPacket{
-	public static $pool = [];
-	public static $next = 0;
+	const NETWORK_ID = Info::START_GAME_PACKET;
 
 	public $seed;
 	public $generator;
@@ -38,10 +37,6 @@ class StartGamePacket extends DataPacket{
 	public $x;
 	public $y;
 	public $z;
-
-	public function pid(){
-		return Info::START_GAME_PACKET;
-	}
 
 	public function decode(){
 

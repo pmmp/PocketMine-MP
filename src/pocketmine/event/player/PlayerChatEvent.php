@@ -76,9 +76,7 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 	 * @param Player $player
 	 */
 	public function setPlayer(Player $player){
-		if($player instanceof Player){
-			$this->player = $player;
-		}
+		$this->player = $player;
 	}
 
 	public function getFormat(){

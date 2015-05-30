@@ -32,19 +32,23 @@ use pocketmine\item\Item;
 
 abstract class DataPacket extends \stdClass{
 
-	private $offset = 0;
+	const NETWORK_ID = 0;
+
+	public $offset = 0;
 	public $buffer = "";
 	public $isEncoded = false;
 	private $channel = 0;
 
-	abstract public function pid();
+	public function pid(){
+		return $this::NETWORK_ID;
+	}
 
 	abstract public function encode();
 
 	abstract public function decode();
 
 	protected function reset(){
-		$this->buffer = chr($this->pid());
+		$this->buffer = chr($this::NETWORK_ID);
 		$this->offset = 0;
 	}
 

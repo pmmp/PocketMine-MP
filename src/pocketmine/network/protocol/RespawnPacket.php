@@ -25,16 +25,11 @@ namespace pocketmine\network\protocol;
 
 
 class RespawnPacket extends DataPacket{
-	public static $pool = [];
-	public static $next = 0;
+	const NETWORK_ID = Info::RESPAWN_PACKET;
 
 	public $x;
 	public $y;
 	public $z;
-
-	public function pid(){
-		return Info::RESPAWN_PACKET;
-	}
 
 	public function decode(){
 		$this->x = $this->getFloat();

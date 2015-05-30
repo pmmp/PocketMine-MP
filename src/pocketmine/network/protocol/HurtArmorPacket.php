@@ -25,14 +25,9 @@ namespace pocketmine\network\protocol;
 
 
 class HurtArmorPacket extends DataPacket{
-	public static $pool = [];
-	public static $next = 0;
+	const NETWORK_ID = Info::HURT_ARMOR_PACKET;
 
 	public $health;
-
-	public function pid(){
-		return Info::HURT_ARMOR_PACKET;
-	}
 
 	public function decode(){
 

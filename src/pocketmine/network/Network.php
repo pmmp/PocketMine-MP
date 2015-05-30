@@ -220,7 +220,7 @@ class Network{
 		try{
 			while($offset < $len){
 				if(($pk = $this->getPacket(ord($str{$offset++}))) !== null){
-					if($pk->pid() === Info::BATCH_PACKET){
+					if($pk::NETWORK_ID === Info::BATCH_PACKET){
 						throw new \InvalidStateException("Invalid BatchPacket inside BatchPacket");
 					}
 					$pk->setBuffer($str, $offset);

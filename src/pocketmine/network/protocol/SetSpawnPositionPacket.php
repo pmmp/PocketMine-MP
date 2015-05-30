@@ -25,16 +25,11 @@ namespace pocketmine\network\protocol;
 
 
 class SetSpawnPositionPacket extends DataPacket{
-	public static $pool = [];
-	public static $next = 0;
+	const NETWORK_ID = Info::SET_SPAWN_POSITION_PACKET;
 
 	public $x;
 	public $z;
 	public $y;
-
-	public function pid(){
-		return Info::SET_SPAWN_POSITION_PACKET;
-	}
 
 	public function decode(){
 

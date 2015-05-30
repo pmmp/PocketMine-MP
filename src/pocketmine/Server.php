@@ -1408,7 +1408,7 @@ class Server{
 	public function addOp($name){
 		$this->operators->set(strtolower($name), true);
 
-		if(($player = $this->getPlayerExact($name)) instanceof Player){
+		if(($player = $this->getPlayerExact($name)) !== null){
 			$player->recalculatePermissions();
 		}
 		$this->operators->save(true);
@@ -1420,7 +1420,7 @@ class Server{
 	public function removeOp($name){
 		$this->operators->remove(strtolower($name));
 
-		if(($player = $this->getPlayerExact($name)) instanceof Player){
+		if(($player = $this->getPlayerExact($name)) !== null){
 			$player->recalculatePermissions();
 		}
 		$this->operators->save();

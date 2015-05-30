@@ -159,8 +159,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	protected $sendIndex = 0;
 
-	protected $moveToSend = [];
-	protected $motionToSend = [];
+	protected $moveToSend;
+	protected $motionToSend;
 
 	/** @var Vector3 */
 	public $speed = null;
@@ -502,10 +502,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $this->spawnThreshold = (int) $this->server->getProperty("chunk-sending.spawn-threshold", 56);
 		$this->spawnPosition = null;
 		$this->gamemode = $this->server->getGamemode();
-		$this->setLevel($this->server->getDefaultLevel(), true);
+		$this->setLevel($this->server->getDefaultLevel());
 		$this->viewDistance = $this->server->getViewDistance();
 		$this->newPosition = new Vector3(0, 0, 0);
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
+
+		$this->motionToSend = new SetEntityMotionPacket();
+		$this->moveToSend = new MoveEntityPacket();
+		$this->motionToSend->setChannel(Network::CHANNEL_MOVEMENT);
+		$this->moveToSend->setChannel(Network::CHANNEL_MOVEMENT);
 
 		$this->uuid = Utils::dataToUUID($ip, $port, $clientID);
 
@@ -1168,11 +1173,40 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function addEntityMotion($entityId, $x, $y, $z){
-		$this->motionToSend[$entityId] = [$entityId, $x, $y, $z];
+		$this->motionToSend->entities[$entityId] = [$entityId, $x, $y, $z];
 	}
 
 	public function addEntityMovement($entityId, $x, $y, $z, $yaw, $pitch, $headYaw = null){
-		$this->moveToSend[$entityId] = [$entityId, $x, $y, $z, $yaw, $headYaw === null ? $yaw : $headYaw, $pitch];
+		$this->moveToSend->entities[$entityId] = [$entityId, $x, $y, $z, $yaw, $headYaw === null ? $yaw : $headYaw, $pitch];
+	}
+
+	public function setDataProperty($id, $type, $value){
+		if(parent::setDataProperty($id, $type, $value)){
+			$this->sendData([$this], [$id => $this->dataProperties[$id]]);
+			return true;
+		}
+
+		return false;
+	}
+
+	protected function checkGroundState($movX, $movY, $movZ, $dx, $dy, $dz){
+		if(!$this->onGround or $movY != 0){
+			$bb = clone $this->boundingBox;
+			$bb->maxY = $bb->minY + 0.5;
+			$bb->minY -= 1;
+			if(count($this->level->getCollisionBlocks($bb, true)) > 0){
+				$this->onGround = true;
+			}else{
+				$this->onGround = false;
+			}
+		}
+		$this->isCollided = $this->onGround;
+	}
+
+	protected function checkBlockCollision(){
+		foreach($this->getBlocksAround() as $block){
+			$block->onEntityCollide($this);
+		}
 	}
 
 	protected function checkNearEntities($tickDiff){
@@ -1418,7 +1452,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}else{
 					if(!$this->allowFlight and $this->inAirTicks > 10 and !$this->isSleeping() and $this->getDataProperty(self::DATA_NO_AI) !== 1){
 						$expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - $this->startAirTicks));
-						$diff = sqrt(abs($this->speed->y - $expectedVelocity));
+						$diff = ($this->speed->y - $expectedVelocity) ** 2;
 
 						if(!$this->hasEffect(Effect::JUMP) and $diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()){
 							if($this->inAirTicks < 100){
@@ -1442,19 +1476,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->sendNextChunk();
 		}
 
-		if(count($this->moveToSend) > 0){
-			$pk = new MoveEntityPacket();
-			$pk->entities = $this->moveToSend;
-			$this->batchDataPacket($pk->setChannel(Network::CHANNEL_MOVEMENT));
-			$this->moveToSend = [];
+		if(count($this->moveToSend->entities) > 0){
+			$this->dataPacket($this->moveToSend);
+			$this->moveToSend->entities = [];
+			$this->moveToSend->isEncoded = false;
 		}
 
 
-		if(count($this->motionToSend) > 0){
-			$pk = new SetEntityMotionPacket();
-			$pk->entities = $this->motionToSend;
-			$this->batchDataPacket($pk->setChannel(Network::CHANNEL_MOVEMENT));
-			$this->motionToSend = [];
+		if(count($this->motionToSend->entities) > 0){
+			$this->dataPacket($this->motionToSend);
+			$this->motionToSend->entities = [];
+			$this->motionToSend->isEncoded = false;
 		}
 
 		if(count($this->batchedPackets) > 0){
@@ -1496,7 +1528,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return;
 		}
 
-		if($packet->pid() === ProtocolInfo::BATCH_PACKET){
+		if($packet::NETWORK_ID === ProtocolInfo::BATCH_PACKET){
 			/** @var BatchPacket $packet */
 			$this->server->getNetwork()->processBatch($packet, $this);
 			return;
@@ -1507,7 +1539,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return;
 		}
 
-		switch($packet->pid()){
+		switch($packet::NETWORK_ID){
 			case ProtocolInfo::LOGIN_PACKET:
 				if($this->loggedIn){
 					break;
@@ -3097,7 +3129,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 
 			$this->resetFallDistance();
-			$this->orderChunks();
 			$this->nextChunkOrderRun = 0;
 			$this->newPosition = null;
 		}

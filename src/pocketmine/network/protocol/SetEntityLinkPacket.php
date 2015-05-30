@@ -25,16 +25,11 @@ namespace pocketmine\network\protocol;
 
 
 class SetEntityLinkPacket extends DataPacket{
-	public static $pool = [];
-	public static $next = 0;
+	const NETWORK_ID = Info::SET_ENTITY_LINK_PACKET;
 
 	public $from;
 	public $to;
 	public $type;
-
-	public function pid(){
-		return Info::SET_ENTITY_LINK_PACKET;
-	}
 
 	public function decode(){
 

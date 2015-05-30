@@ -25,8 +25,7 @@ namespace pocketmine\network\protocol;
 
 
 class PlayerActionPacket extends DataPacket{
-	public static $pool = [];
-	public static $next = 0;
+	const NETWORK_ID = Info::PLAYER_ACTION_PACKET;
 
 	public $eid;
 	public $action;
@@ -34,10 +33,6 @@ class PlayerActionPacket extends DataPacket{
 	public $y;
 	public $z;
 	public $face;
-
-	public function pid(){
-		return Info::PLAYER_ACTION_PACKET;
-	}
 
 	public function decode(){
 		$this->eid = $this->getLong();

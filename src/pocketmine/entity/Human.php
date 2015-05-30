@@ -115,7 +115,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	public function getDrops(){
 		$drops = [];
-		if($this->inventory instanceof PlayerInventory){
+		if($this->inventory !== null){
 			foreach($this->inventory->getContents() as $item){
 				$drops[] = $item;
 			}
@@ -128,7 +128,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		parent::saveNBT();
 		$this->namedtag->Inventory = new Enum("Inventory", []);
 		$this->namedtag->Inventory->setTagType(NBT::TAG_Compound);
-		if($this->inventory instanceof PlayerInventory){
+		if($this->inventory !== null){
 			for($slot = 0; $slot < 9; ++$slot){
 				$hotbarSlot = $this->inventory->getHotbarSlotIndex($slot);
 				if($hotbarSlot !== -1){

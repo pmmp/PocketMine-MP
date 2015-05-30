@@ -25,18 +25,13 @@ namespace pocketmine\network\protocol;
 
 
 class LevelEventPacket extends DataPacket{
-	public static $pool = [];
-	public static $next = 0;
+	const NETWORK_ID = Info::LEVEL_EVENT_PACKET;
 
 	public $evid;
 	public $x;
 	public $y;
 	public $z;
 	public $data;
-
-	public function pid(){
-		return Info::LEVEL_EVENT_PACKET;
-	}
 
 	public function decode(){
 

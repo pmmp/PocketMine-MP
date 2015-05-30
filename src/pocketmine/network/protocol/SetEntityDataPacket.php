@@ -29,15 +29,10 @@ use pocketmine\utils\Binary;
 #endif
 
 class SetEntityDataPacket extends DataPacket{
-	public static $pool = [];
-	public static $next = 0;
+	const NETWORK_ID = Info::SET_ENTITY_DATA_PACKET;
 
 	public $eid;
 	public $metadata;
-
-	public function pid(){
-		return Info::SET_ENTITY_DATA_PACKET;
-	}
 
 	public function decode(){
 

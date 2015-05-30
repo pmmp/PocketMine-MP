@@ -25,8 +25,7 @@ namespace pocketmine\network\protocol;
 
 
 class AddPaintingPacket extends DataPacket{
-	public static $pool = [];
-	public static $next = 0;
+	const NETWORK_ID = Info::ADD_PAINTING_PACKET;
 
 	public $eid;
 	public $x;
@@ -34,10 +33,6 @@ class AddPaintingPacket extends DataPacket{
 	public $z;
 	public $direction;
 	public $title;
-
-	public function pid(){
-		return Info::ADD_PAINTING_PACKET;
-	}
 
 	public function decode(){
 

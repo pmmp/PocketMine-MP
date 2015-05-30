@@ -129,6 +129,9 @@ abstract class Entity extends Location implements Metadatable{
 
 	protected $lastDamageCause = null;
 
+	/** @var Block[] */
+	private $blocksAround = [];
+
 	public $lastX = null;
 	public $lastY = null;
 	public $lastZ = null;
@@ -198,6 +201,7 @@ abstract class Entity extends Location implements Metadatable{
 
 	/** @var \pocketmine\event\TimingsHandler */
 	protected $timings;
+	protected $isPlayer = false;
 
 
 	public function __construct(FullChunk $chunk, Compound $nbt){
@@ -206,6 +210,8 @@ abstract class Entity extends Location implements Metadatable{
 		}
 
 		$this->timings = Timings::getEntityTimings($this);
+
+		$this->isPlayer = $this instanceof Player;
 
 		$this->temporalVector = new Vector3();
 
@@ -537,7 +543,7 @@ abstract class Entity extends Location implements Metadatable{
 	 * @param array $data Properly formatted entity data, defaults to everything
 	 */
 	public function sendData($player, array $data = null){
-		if($player instanceof Player){
+		if(!is_array($player)){
 			$player = [$player];
 		}
 
@@ -757,13 +763,13 @@ abstract class Entity extends Location implements Metadatable{
 		Timings::$timerEntityBaseTick->startTiming();
 		//TODO: check vehicles
 
+		$this->blocksAround = null;
 		$this->justCreated = false;
-		$isPlayer = $this instanceof Player;
 
 		if(!$this->isAlive()){
 			$this->removeAllEffects();
 			$this->despawnFromAll();
-			if(!$isPlayer){
+			if(!$this->isPlayer){
 				$this->close();
 			}
 
@@ -844,10 +850,8 @@ abstract class Entity extends Location implements Metadatable{
 			$this->lastYaw = $this->yaw;
 			$this->lastPitch = $this->pitch;
 
-			if(!($this instanceof Player)){
-				foreach($this->hasSpawned as $player){
-					$player->addEntityMovement($this->id, $this->x, $this->y + $this->getEyeHeight(), $this->z, $this->yaw, $this->pitch, $this->yaw);
-				}
+			foreach($this->hasSpawned as $player){
+				$player->addEntityMovement($this->id, $this->x, $this->y + $this->getEyeHeight(), $this->z, $this->yaw, $this->pitch, $this->yaw);
 			}
 		}
 
@@ -858,12 +862,6 @@ abstract class Entity extends Location implements Metadatable{
 
 			foreach($this->hasSpawned as $player){
 				$player->addEntityMotion($this->id, $this->motionX, $this->motionY, $this->motionZ);
-			}
-
-			if($this instanceof Player){
-				$this->motionX = 0;
-				$this->motionY = 0;
-				$this->motionZ = 0;
 			}
 		}
 	}
@@ -893,7 +891,7 @@ abstract class Entity extends Location implements Metadatable{
 			++$this->deadTicks;
 			if($this->deadTicks >= 10){
 				$this->despawnFromAll();
-				if(!($this instanceof Player)){
+				if(!$this->isPlayer){
 					$this->close();
 				}
 			}
@@ -1076,11 +1074,9 @@ abstract class Entity extends Location implements Metadatable{
 
 		Timings::$entityMoveTimer->startTiming();
 
-		$axisalignedbb = clone $this->boundingBox;
-
 		$newBB = $this->boundingBox->getOffsetBoundingBox($dx, $dy, $dz);
 
-		$list = $this->level->getCollisionCubes($this, $newBB->grow(-0.01, -0.01, -0.01), false);
+		$list = $this->level->getCollisionCubes($this, $newBB, false);
 
 		if(count($list) === 0){
 			$this->boundingBox = $newBB;
@@ -1119,7 +1115,7 @@ abstract class Entity extends Location implements Metadatable{
 		if($this->keepMovement){
 			$this->boundingBox->offset($dx, $dy, $dz);
 			$this->setPosition($this->temporalVector->setComponents(($this->boundingBox->minX + $this->boundingBox->maxX) / 2, $this->boundingBox->minY, ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2));
-			$this->onGround = $this instanceof Player ? true : false;
+			$this->onGround = $this->isPlayer ? true : false;
 			return true;
 		}else{
 
@@ -1243,24 +1239,7 @@ abstract class Entity extends Location implements Metadatable{
 
 			$this->checkChunks();
 
-			if($this instanceof Player){
-				if(!$this->onGround or $movY != 0){
-					$bb = clone $this->boundingBox;
-					$bb->maxY = $bb->minY + 0.5;
-					$bb->minY -= 1;
-					if(count($this->level->getCollisionBlocks($bb)) > 0){
-						$this->onGround = true;
-					}else{
-						$this->onGround = false;
-					}
-				}
-				$this->isCollided = $this->onGround;
-			}else{
-				$this->isCollidedVertically = $movY != $dy;
-				$this->isCollidedHorizontally = ($movX != $dx or $movZ != $dz);
-				$this->isCollided = ($this->isCollidedHorizontally or $this->isCollidedVertically);
-				$this->onGround = ($movY != $dy and $movY < 0);
-			}
+			$this->checkGroundState($movX, $movY, $movZ, $dx, $dy, $dz);
 			$this->updateFallState($dy, $this->onGround);
 
 			if($movX != $dx){
@@ -1284,32 +1263,48 @@ abstract class Entity extends Location implements Metadatable{
 		}
 	}
 
-	protected function checkBlockCollision(){
-		$minX = Math::floorFloat($this->boundingBox->minX + 0.001);
-		$minY = Math::floorFloat($this->boundingBox->minY + 0.001);
-		$minZ = Math::floorFloat($this->boundingBox->minZ + 0.001);
-		$maxX = Math::ceilFloat($this->boundingBox->maxX - 0.001);
-		$maxY = Math::ceilFloat($this->boundingBox->maxY - 0.001);
-		$maxZ = Math::ceilFloat($this->boundingBox->maxZ - 0.001);
+	protected function checkGroundState($movX, $movY, $movZ, $dx, $dy, $dz){
+		$this->isCollidedVertically = $movY != $dy;
+		$this->isCollidedHorizontally = ($movX != $dx or $movZ != $dz);
+		$this->isCollided = ($this->isCollidedHorizontally or $this->isCollidedVertically);
+		$this->onGround = ($movY != $dy and $movY < 0);
+	}
 
-		$vector = new Vector3(0, 0, 0);
-		$v = new Vector3(0, 0, 0);
+	public function getBlocksAround(){
+		if($this->blocksAround === null){
+			$minX = Math::floorFloat($this->boundingBox->minX);
+			$minY = Math::floorFloat($this->boundingBox->minY);
+			$minZ = Math::floorFloat($this->boundingBox->minZ);
+			$maxX = Math::ceilFloat($this->boundingBox->maxX);
+			$maxY = Math::ceilFloat($this->boundingBox->maxY);
+			$maxZ = Math::ceilFloat($this->boundingBox->maxZ);
 
-		for($v->z = $minZ; $v->z <= $maxZ; ++$v->z){
-			for($v->x = $minX; $v->x <= $maxX; ++$v->x){
-				for($v->y = $minY; $v->y <= $maxY; ++$v->y){
-					$block = $this->level->getBlock($v);
-					if($block->hasEntityCollision()){
-						$block->onEntityCollide($this);
-						if(!($this instanceof Player)){
-							$block->addVelocityToEntity($this, $vector);
+			$this->blocksAround = [];
+
+			for($z = $minZ; $z <= $maxZ; ++$z){
+				for($x = $minX; $x <= $maxX; ++$x){
+					for($y = $minY; $y <= $maxY; ++$y){
+						$block = $this->level->getBlock($this->temporalVector->setComponents($x, $y, $z));
+						if($block->hasEntityCollision()){
+							$this->blocksAround[] = $block;
 						}
 					}
 				}
 			}
 		}
 
-		if(!($this instanceof Player) and $vector->lengthSquared() > 0){
+		return $this->blocksAround;
+	}
+
+	protected function checkBlockCollision(){
+		$vector = new Vector3(0, 0, 0);
+
+		foreach($this->getBlocksAround() as $block){
+			$block->onEntityCollide($this);
+			$block->addVelocityToEntity($this, $vector);
+		}
+
+		if($vector->lengthSquared() > 0){
 			$vector = $vector->normalize();
 			$d = 0.014;
 			$this->motionX += $vector->x * $d;
@@ -1508,21 +1503,19 @@ abstract class Entity extends Location implements Metadatable{
 	 * @param int   $id
 	 * @param int   $type
 	 * @param mixed $value
+	 *
+	 * @return bool
 	 */
 	public function setDataProperty($id, $type, $value){
-        if($this->getDataProperty($id) !== $value){
-            $this->dataProperties[$id] = [$type, $value];
+		if($this->getDataProperty($id) !== $value){
+			$this->dataProperties[$id] = [$type, $value];
 
-            $targets = $this->hasSpawned;
-            if($this instanceof Player){
-				if(!$this->spawned){
-					return;
-				}
-                $targets[] = $this;
-            }
+			$this->sendData($this->hasSpawned, [$id => $this->dataProperties[$id]]);
 
-            $this->sendData($targets, [$id => $this->dataProperties[$id]]);
-        }
+			return true;
+		}
+
+		return false;
 	}
 
 	/**

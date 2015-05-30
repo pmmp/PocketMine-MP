@@ -988,10 +988,11 @@ class Level implements ChunkManager, Metadatable{
 
 	/**
 	 * @param AxisAlignedBB $bb
+	 * @param bool          $targetFirst
 	 *
 	 * @return Block[]
 	 */
-	public function getCollisionBlocks(AxisAlignedBB $bb){
+	public function getCollisionBlocks(AxisAlignedBB $bb, $targetFirst = false){
 		$minX = Math::floorFloat($bb->minX);
 		$minY = Math::floorFloat($bb->minY);
 		$minZ = Math::floorFloat($bb->minZ);
@@ -1001,16 +1002,30 @@ class Level implements ChunkManager, Metadatable{
 		
 		$collides = [];
 
-		for($z = $minZ; $z <= $maxZ; ++$z){
-			for($x = $minX; $x <= $maxX; ++$x){
-				for($y = $minY; $y <= $maxY; ++$y){
-					$block = $this->getBlock($this->temporalVector->setComponents($x, $y, $z));
-					if($block->getId() !== 0 and $block->collidesWithBB($bb)){
-						$collides[] = $block;
+		if($targetFirst){
+			for($z = $minZ; $z <= $maxZ; ++$z){
+				for($x = $minX; $x <= $maxX; ++$x){
+					for($y = $minY; $y <= $maxY; ++$y){
+						$block = $this->getBlock($this->temporalVector->setComponents($x, $y, $z));
+						if($block->getId() !== 0 and $block->collidesWithBB($bb)){
+							return [$block];
+						}
+					}
+				}
+			}
+		}else{
+			for($z = $minZ; $z <= $maxZ; ++$z){
+				for($x = $minX; $x <= $maxX; ++$x){
+					for($y = $minY; $y <= $maxY; ++$y){
+						$block = $this->getBlock($this->temporalVector->setComponents($x, $y, $z));
+						if($block->getId() !== 0 and $block->collidesWithBB($bb)){
+							$collides[] = $block;
+						}
 					}
 				}
 			}
 		}
+
 
 		return $collides;
 	}

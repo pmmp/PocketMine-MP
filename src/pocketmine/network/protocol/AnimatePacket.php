@@ -25,15 +25,10 @@ namespace pocketmine\network\protocol;
 
 
 class AnimatePacket extends DataPacket{
-	public static $pool = [];
-	public static $next = 0;
+	const NETWORK_ID = Info::ANIMATE_PACKET;
 
 	public $action;
 	public $eid;
-
-	public function pid(){
-		return Info::ANIMATE_PACKET;
-	}
 
 	public function decode(){
 		$this->action = $this->getByte();

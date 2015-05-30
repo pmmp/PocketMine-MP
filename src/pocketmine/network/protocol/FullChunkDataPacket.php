@@ -25,16 +25,11 @@ namespace pocketmine\network\protocol;
 
 
 class FullChunkDataPacket extends DataPacket{
-	public static $pool = [];
-	public static $next = 0;
+	const NETWORK_ID = Info::FULL_CHUNK_DATA_PACKET;
 
 	public $chunkX;
 	public $chunkZ;
 	public $data;
-
-	public function pid(){
-		return Info::FULL_CHUNK_DATA_PACKET;
-	}
 
 	public function decode(){
 

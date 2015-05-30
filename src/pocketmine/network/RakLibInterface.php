@@ -25,7 +25,6 @@ use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\network\protocol\DataPacket;
 use pocketmine\network\protocol\Info as ProtocolInfo;
 use pocketmine\network\protocol\Info;
-use pocketmine\network\protocol\UnknownPacket;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\MainLogger;
@@ -136,8 +135,10 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			try{
 				if($packet->buffer !== ""){
 					$pk = $this->getPacket($packet->buffer);
-					$pk->decode();
-					$this->players[$identifier]->handleDataPacket($pk);
+					if($pk !== null){
+						$pk->decode();
+						$this->players[$identifier]->handleDataPacket($pk);
+					}
 				}
 			}catch(\Exception $e){
 				if(\pocketmine\DEBUG > 1 and isset($pk)){
@@ -216,7 +217,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 				$pk = $packet->__encapsulatedPacket;
 			}
 
-			if(!$immediate and !$needACK and $packet->pid() !== ProtocolInfo::BATCH_PACKET
+			if(!$immediate and !$needACK and $packet::NETWORK_ID !== ProtocolInfo::BATCH_PACKET
 				and Network::$BATCH_THRESHOLD >= 0
 				and strlen($packet->buffer) >= Network::$BATCH_THRESHOLD){
 				$this->server->batchPackets([$player], [$packet], true, $packet->getChannel());
@@ -251,8 +252,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		$pid = ord($buffer{0});
 
 		if(($data = $this->network->getPacket($pid)) === null){
-			$data = new UnknownPacket();
-			$data->packetID = $pid;
+			return null;
 		}
 		$data->setBuffer($buffer, 1);
 

@@ -25,16 +25,11 @@ namespace pocketmine\network\protocol;
 
 
 class InteractPacket extends DataPacket{
-	public static $pool = [];
-	public static $next = 0;
+	const NETWORK_ID = Info::INTERACT_PACKET;
 
 	public $action;
 	public $eid;
 	public $target;
-
-	public function pid(){
-		return Info::INTERACT_PACKET;
-	}
 
 	public function decode(){
 		$this->action = $this->getByte();

@@ -25,20 +25,14 @@ namespace pocketmine\network\protocol;
 
 
 class PlayStatusPacket extends DataPacket{
+	const NETWORK_ID = Info::PLAY_STATUS_PACKET;
 	
 	const LOGIN_SUCCESS = 0;
 	const LOGIN_FAILED_CLIENT = 1;
 	const LOGIN_FAILED_SERVER = 2;
 	const PLAYER_SPAWN = 3;
-	
-	public static $pool = [];
-	public static $next = 0;
 
 	public $status;
-
-	public function pid(){
-		return Info::PLAY_STATUS_PACKET;
-	}
 
 	public function decode(){
 

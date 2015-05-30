@@ -25,14 +25,9 @@ namespace pocketmine\network\protocol;
 
 
 class SetDifficultyPacket extends DataPacket{
-	public static $pool = [];
-	public static $next = 0;
+	const NETWORK_ID = Info::SET_DIFFICULTY_PACKET;
 
 	public $difficulty;
-
-	public function pid(){
-		return Info::SET_DIFFICULTY_PACKET;
-	}
 
 	public function decode(){
 		$this->difficulty = $this->getInt();

@@ -25,14 +25,9 @@ namespace pocketmine\network\protocol;
 
 
 class SetHealthPacket extends DataPacket{
-	public static $pool = [];
-	public static $next = 0;
+	const NETWORK_ID = Info::SET_HEALTH_PACKET;
 
 	public $health;
-
-	public function pid(){
-		return Info::SET_HEALTH_PACKET;
-	}
 
 	public function decode(){
 		$this->health = $this->getInt();
