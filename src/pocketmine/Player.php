@@ -1365,8 +1365,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	public function setMotion(Vector3 $mot){
 		if(parent::setMotion($mot)){
-			if($this->motionY > 0){
-				$this->addEntityMotion($this->getId(), $this->motionX, $this->motionY, $this->motionZ);
+			$this->addEntityMotion($this->getId(), $this->motionX, $this->motionY, $this->motionZ);
+			if($this->motionY > 0)
 				$this->startAirTicks = (-(log($this->gravity / ($this->gravity + $this->drag * $this->motionY))) / $this->drag) * 2 + 5;
 			}
 
