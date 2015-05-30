@@ -1413,7 +1413,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if($player !== null){
-			$ev = new BlockBreakEvent($player, $target, $item, ($player->getGamemode() & 0x01) === 1 ? true : false);
+			$ev = new BlockBreakEvent($player, $target, $item, $player->isCreative() ? true : false);
 
 			if($player->isSurvival() and $item instanceof Item and !$target->isBreakable($item)){
 				$ev->setCancelled();
@@ -1439,21 +1439,24 @@ class Level implements ChunkManager, Metadatable{
 			}
 
 			$player->lastBreak = PHP_INT_MAX;
+
+			$drops = $ev->getDrops();
+
 		}elseif($item !== null and !$target->isBreakable($item)){
 			return false;
-		}
-
-		$level = $target->getLevel();
-
-		if($level !== null){
-			$above = $level->getBlock(new Vector3($target->x, $target->y + 1, $target->z));
-			if($above !== null){
-				if($above->getId() === Item::FIRE){
-					$level->setBlock($above, new Air(), true);
-				}
+		}else{
+			$drops = $target->getDrops($item); //Fixes tile entities being deleted before getting drops
+			foreach($drops as $k => $i){
+				$drops[$k] = Item::get($i[0], $i[1], $i[2]);
 			}
 		}
-		$drops = $target->getDrops($item); //Fixes tile entities being deleted before getting drops
+
+		$above = $this->getBlock(new Vector3($target->x, $target->y + 1, $target->z));
+		if($above !== null){
+			if($above->getId() === Item::FIRE){
+				$this->setBlock($above, new Air(), true);
+			}
+		}
 
 		$players = $this->getChunkPlayers($target->x >> 4, $target->z >> 4);
 		if($player !== null){
@@ -1494,8 +1497,8 @@ class Level implements ChunkManager, Metadatable{
 
 		if($player === null or $player->isSurvival()){
 			foreach($drops as $drop){
-				if($drop[2] > 0){
-					$this->dropItem($vector->add(0.5, 0.5, 0.5), Item::get(...$drop));
+				if($drop->getCount() > 0){
+					$this->dropItem($vector->add(0.5, 0.5, 0.5), $drop);
 				}
 			}
 		}
