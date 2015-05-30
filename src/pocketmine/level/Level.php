@@ -1417,9 +1417,7 @@ class Level implements ChunkManager, Metadatable{
 
 			if($player->isSurvival() and $item instanceof Item and !$target->isBreakable($item)){
 				$ev->setCancelled();
-			}
-
-			if(!$player->isOp() and ($distance = $this->server->getSpawnRadius()) > -1){
+			}elseif(!$player->isOp() and ($distance = $this->server->getSpawnRadius()) > -1){
 				$t = new Vector2($target->x, $target->z);
 				$s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);
 				if(count($this->server->getOps()->getAll()) > 0 and $t->distance($s) <= $distance){ //set it to cancelled so plugins can bypass this
