@@ -52,9 +52,10 @@ abstract class Projectile extends Entity{
 		parent::__construct($chunk, $nbt);
 	}
 
-
 	public function attack($damage, EntityDamageEvent $source){
-
+		if($source->getCause() === EntityDamageEvent::CAUSE_VOID){
+			parent::attack($damage, $source);
+		}
 	}
 
 	protected function initEntity(){

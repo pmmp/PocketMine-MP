@@ -78,7 +78,9 @@ class FallingSand extends Entity{
 	}
 
 	public function attack($damage, EntityDamageEvent $source){
-
+		if($source->getCause() === EntityDamageEvent::CAUSE_VOID){
+			parent::attack($damage, $source);
+		}
 	}
 
 	public function onUpdate($currentTick){
