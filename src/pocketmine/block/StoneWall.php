@@ -38,7 +38,7 @@ class StoneWall extends Transparent{
 	}
 
 	public function getHardness(){
-		return 30;
+		return 2;
 	}
 
 	public function getName(){

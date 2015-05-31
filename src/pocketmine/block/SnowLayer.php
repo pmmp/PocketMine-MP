@@ -42,7 +42,7 @@ class SnowLayer extends Flowable{
 	}
 
 	public function getHardness(){
-		return 0.5;
+		return 0.1;
 	}
 
 

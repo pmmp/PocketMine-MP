@@ -41,7 +41,11 @@ class Stone extends Solid{
 	}
 
 	public function getHardness(){
-		return 30;
+		return 1.5;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getName(){
@@ -56,23 +60,6 @@ class Stone extends Solid{
 			7 => "Unknown Stone",
 		];
 		return $names[$this->meta & 0x07];
-	}
-
-	public function getBreakTime(Item $item){
-		switch($item->isPickaxe()){
-			case 5:
-				return 0.4;
-			case 4:
-				return 0.5;
-			case 3:
-				return 0.75;
-			case 2:
-				return 0.25;
-			case 1:
-				return 1.5;
-			default:
-				return 7.5;
-		}
 	}
 
 	public function getDrops(Item $item){

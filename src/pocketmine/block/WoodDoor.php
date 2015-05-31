@@ -40,7 +40,7 @@ class WoodDoor extends Door{
 	}
 
 	public function getHardness(){
-		return 15;
+		return 3;
 	}
 
 	public function getDrops(Item $item){

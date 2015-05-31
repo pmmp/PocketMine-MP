@@ -33,7 +33,7 @@ class Fence extends Transparent{
 	}
 
 	public function getHardness(){
-		return 15;
+		return 2;
 	}
 
 

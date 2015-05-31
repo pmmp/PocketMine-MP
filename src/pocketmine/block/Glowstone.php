@@ -36,7 +36,7 @@ class Glowstone extends Transparent{
 	}
 
 	public function getHardness(){
-		return 1.5;
+		return 0.3;
 	}
 
 	public function getLightLevel(){

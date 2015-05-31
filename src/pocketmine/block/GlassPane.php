@@ -37,7 +37,7 @@ class GlassPane extends Thin{
 	}
 
 	public function getHardness(){
-		return 1.5;
+		return 0.3;
 	}
 
 	public function getDrops(Item $item){

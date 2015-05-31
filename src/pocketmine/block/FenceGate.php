@@ -38,7 +38,7 @@ class FenceGate extends Transparent{
 	}
 
 	public function getHardness(){
-		return 15;
+		return 2;
 	}
 
 	public function canBeActivated(){

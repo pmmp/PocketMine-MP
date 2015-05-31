@@ -48,7 +48,7 @@ class Ladder extends Transparent{
 	}
 
 	public function getHardness(){
-		return 2;
+		return 0.4;
 	}
 
 	public function onEntityCollide(Entity $entity){

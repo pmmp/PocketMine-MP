@@ -37,7 +37,7 @@ class Farmland extends Solid{
 	}
 
 	public function getHardness(){
-		return 3;
+		return 0.6;
 	}
 
 	protected function recalculateBoundingBox(){

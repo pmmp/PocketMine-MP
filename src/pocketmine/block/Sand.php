@@ -31,7 +31,7 @@ class Sand extends Fallable{
 	}
 
 	public function getHardness(){
-		return 2.5;
+		return 0.5;
 	}
 
 	public function getName(){

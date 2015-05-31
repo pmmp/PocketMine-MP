@@ -363,6 +363,10 @@ abstract class Liquid extends Transparent{
 		return $cost;
 	}
 
+	public function getHardness(){
+		return 100;
+	}
+
 	private function getOptimalFlowDirections(){
 		if($this->temporalVector === null){
 			$this->temporalVector = new Vector3(0, 0, 0);

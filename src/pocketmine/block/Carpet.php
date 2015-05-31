@@ -34,6 +34,10 @@ class Carpet extends Flowable{
 		$this->meta = $meta;
 	}
 
+	public function getHardness(){
+		return 0.1;
+	}
+
 	public function isSolid(){
 		return true;
 	}

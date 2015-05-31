@@ -36,16 +36,7 @@ class Obsidian extends Solid{
 	}
 
 	public function getHardness(){
-		return 6000;
-	}
-
-	public function getBreakTime(Item $item){
-
-		if($item->isPickaxe() >= 5){
-			return 9.4;
-		}else{
-			return 250;
-		}
+		return 50;
 	}
 
 	public function getDrops(Item $item){

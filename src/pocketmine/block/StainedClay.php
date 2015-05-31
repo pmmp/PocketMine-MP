@@ -32,7 +32,7 @@ class StainedClay extends Solid{
 	}
 
 	public function getHardness(){
-		return 30;
+		return 1.25;
 	}
 
 	public function getName(){
@@ -55,23 +55,6 @@ class StainedClay extends Solid{
 			15 => "Black Stained Clay",
 		];
 		return $names[$this->meta & 0x0f];
-	}
-
-	public function getBreakTime(Item $item){
-		switch($item->isPickaxe()){
-			case 5:
-				return 0.25;
-			case 4:
-				return 0.35;
-			case 3:
-				return 0.5;
-			case 2:
-				return 0.2;
-			case 1:
-				return 0.95;
-			default:
-				return 6.25;
-		}
 	}
 
 }

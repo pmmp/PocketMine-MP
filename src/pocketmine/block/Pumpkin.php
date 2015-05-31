@@ -33,7 +33,7 @@ class Pumpkin extends Solid{
 	}
 
 	public function getHardness(){
-		return 5;
+		return 1;
 	}
 
 	public function getName(){

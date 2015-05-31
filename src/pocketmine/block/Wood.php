@@ -39,7 +39,7 @@ class Wood extends Solid{
 	}
 
 	public function getHardness(){
-		return 10;
+		return 2;
 	}
 
 	public function getName(){

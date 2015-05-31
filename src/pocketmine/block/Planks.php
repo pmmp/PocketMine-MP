@@ -37,7 +37,7 @@ class Planks extends Solid{
 	}
 
 	public function getHardness(){
-		return 15;
+		return 2;
 	}
 
 	public function getName(){

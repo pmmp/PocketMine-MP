@@ -30,6 +30,10 @@ class NetherBrickStairs extends Stair{
 		return "Nether Bricks Stairs";
 	}
 
+	public function getHardness(){
+		return 2;
+	}
+
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}

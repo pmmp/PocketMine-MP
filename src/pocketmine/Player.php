@@ -1083,15 +1083,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return false;
 		}
 
-		if(($this->gamemode & 0x01) === ($gm & 0x01)){
-			$this->gamemode = $gm;
-		}else{
-			$this->gamemode = $gm;
-			$this->inventory->clearAll();
-			$this->inventory->sendContents($this);
-			$this->inventory->sendContents($this->getViewers());
-			$this->inventory->sendHeldItem($this->hasSpawned);
-		}
+
+		$this->gamemode = $gm;
 
 		$this->allowFlight = $this->isCreative();
 
@@ -1131,6 +1124,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			}
 			$this->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 		}
+
+		$this->inventory->sendContents($this);
+		$this->inventory->sendContents($this->getViewers());
+		$this->inventory->sendHeldItem($this->hasSpawned);
 
 		return true;
 	}

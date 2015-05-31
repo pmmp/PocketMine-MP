@@ -159,6 +159,8 @@ class Block extends Position implements Metadatable{
 	const CAKE_BLOCK = 92;
 
 	const TRAPDOOR = 96;
+	const WOODEN_TRAPDOOR = 96;
+	const WOOD_TRAPDOOR = 96;
 
 	const STONE_BRICKS = 98;
 	const STONE_BRICK = 98;

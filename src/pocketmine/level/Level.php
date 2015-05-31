@@ -1538,7 +1538,7 @@ class Level implements ChunkManager, Metadatable{
 				$drops[$k] = Item::get($i[0], $i[1], $i[2]);
 			}
 		}
-		
+
 		$above = $this->getBlock(new Vector3($target->x, $target->y + 1, $target->z));
 		if($above !== null){
 			if($above->getId() === Item::FIRE){

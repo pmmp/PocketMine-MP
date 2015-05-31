@@ -30,6 +30,10 @@ class CobblestoneStairs extends Stair{
 		$this->meta = $meta;
 	}
 
+	public function getHardness(){
+		return 2;
+	}
+
 	public function getName(){
 		return "Cobblestone Stairs";
 	}

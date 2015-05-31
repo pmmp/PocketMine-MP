@@ -40,7 +40,7 @@ class Mycelium extends Solid{
 	}
 
 	public function getHardness(){
-		return 2.5;
+		return 0.6;
 	}
 
 	public function getDrops(Item $item){

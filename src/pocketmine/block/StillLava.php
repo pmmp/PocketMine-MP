@@ -29,8 +29,4 @@ class StillLava extends Lava{
 		return "Still Lava";
 	}
 
-	public function getHardness(){
-		return 500;
-	}
-
 }

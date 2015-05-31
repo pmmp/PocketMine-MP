@@ -46,10 +46,6 @@ class Lava extends Liquid{
 		return "Lava";
 	}
 
-	public function getHardness(){
-		return 0;
-	}
-
 	public function onEntityCollide(Entity $entity){
 		$entity->fallDistance *= 0.5;
 		if(!$entity->hasEffect(Effect::FIRE_RESISTANCE)){

@@ -34,11 +34,11 @@ class Trapdoor extends Transparent{
 	}
 
 	public function getName(){
-		return "Trapdoor";
+		return "Wooden Trapdoor";
 	}
 
 	public function getHardness(){
-		return 15;
+		return 3;
 	}
 
 	public function canBeActivated(){

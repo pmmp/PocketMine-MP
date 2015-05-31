@@ -37,7 +37,7 @@ class HayBale extends Solid{
 	}
 
 	public function getHardness(){
-		return 10;
+		return 0.5;
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){

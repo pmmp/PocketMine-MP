@@ -31,7 +31,7 @@ class Snow extends Solid{
 	}
 
 	public function getHardness(){
-		return 1;
+		return 0.2;
 	}
 
 	public function getName(){

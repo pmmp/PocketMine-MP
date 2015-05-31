@@ -41,7 +41,7 @@ class Cobweb extends Flowable{
 	}
 
 	public function getHardness(){
-		return 25;
+		return 4;
 	}
 
 	public function onEntityCollide(Entity $entity){

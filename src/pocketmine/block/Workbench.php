@@ -38,7 +38,7 @@ class Workbench extends Solid{
 	}
 
 	public function getHardness(){
-		return 15;
+		return 2.5;
 	}
 
 	public function getName(){

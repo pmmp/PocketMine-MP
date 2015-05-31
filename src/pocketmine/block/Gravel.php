@@ -36,7 +36,7 @@ class Gravel extends Fallable{
 	}
 
 	public function getHardness(){
-		return 3;
+		return 0.6;
 	}
 
 	public function getDrops(Item $item){

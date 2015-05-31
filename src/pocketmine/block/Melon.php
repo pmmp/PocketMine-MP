@@ -36,7 +36,7 @@ class Melon extends Transparent{
 	}
 
 	public function getHardness(){
-		return 5;
+		return 1;
 	}
 
 	public function getDrops(Item $item){

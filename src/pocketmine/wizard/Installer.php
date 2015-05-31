@@ -116,9 +116,9 @@ LICENSE;
 			}
 		}while($port <= 0 or $port > 65535);
 		$config->set("server-port", $port);
-		echo "[*] " . $this->lang->ram_warning . "\n";
+		/*echo "[*] " . $this->lang->ram_warning . "\n";
 		echo "[?] " . $this->lang->server_ram . " (" . self::DEFAULT_MEMORY . "): ";
-		$config->set("memory-limit", ((int) $this->getInput(self::DEFAULT_MEMORY)) . "M");
+		$config->set("memory-limit", ((int) $this->getInput(self::DEFAULT_MEMORY)) . "M");*/
 		echo "[*] " . $this->lang->gamemode_info . "\n";
 		do{
 			echo "[?] " . $this->lang->default_gamemode . ": (" . self::DEFAULT_GAMEMODE . "): ";

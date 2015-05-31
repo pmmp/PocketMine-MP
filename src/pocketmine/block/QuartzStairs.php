@@ -30,6 +30,10 @@ class QuartzStairs extends Stair{
 		$this->meta = $meta;
 	}
 
+	public function getHardness(){
+		return 0.8;
+	}
+
 	public function getName(){
 		return "Quartz Stairs";
 	}

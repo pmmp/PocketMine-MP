@@ -45,7 +45,7 @@ class Chest extends Transparent{
 	}
 
 	public function getHardness(){
-		return 15;
+		return 2.5;
 	}
 
 	public function getName(){

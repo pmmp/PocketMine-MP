@@ -45,7 +45,7 @@ class Vine extends Transparent{
 	}
 
 	public function getHardness(){
-		return 1;
+		return 0.2;
 	}
 
 	public function canPassThrough(){
@@ -140,29 +140,6 @@ class Vine extends Transparent{
 		}
 
 		return false;
-	}
-
-	public function getBreakTime(Item $item){
-		if($item->isShears()){
-			return 0.02;
-		}elseif($item->isSword()){
-			return 0.2;
-		}elseif($item->isAxe()){
-			switch($item->isAxe()){
-				case Tool::TIER_WOODEN:
-					return 0.15;
-				case Tool::TIER_STONE:
-					return 0.075;
-				case Tool::TIER_IRON:
-					return 0.05;
-				case Tool::TIER_DIAMOND:
-					return 0.0375;
-				case Tool::TIER_GOLD:
-					return 0.025;
-			}
-		}
-
-		return 0.3;
 	}
 
 	public function onUpdate($type){
