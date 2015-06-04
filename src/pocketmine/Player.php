@@ -1750,7 +1750,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					$this->dataPacket($pk->setChannel(Network::CHANNEL_PRIORITY));
 				}
 
-				$this->teleportPosition = $this->getPosition();
+				$this->forceMovement = $this->teleportPosition = $this->getPosition();
 
 				$this->orderChunks();
 				$this->sendNextChunk();

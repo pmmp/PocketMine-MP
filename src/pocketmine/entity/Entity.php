@@ -1334,16 +1334,15 @@ abstract class Entity extends Location implements Metadatable{
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
 			}
-			$this->level->loadChunk($this->x >> 4, $this->z >> 4);
 			$this->chunk = $this->level->getChunk($this->x >> 4, $this->z >> 4, true);
 
 			if(!$this->justCreated){
 				$newChunk = $this->level->getChunkPlayers($this->x >> 4, $this->z >> 4);
 				foreach($this->hasSpawned as $player){
-					if(!isset($newChunk[$player->getId()])){
+					if(!isset($newChunk[$player->getLoaderId()])){
 						$this->despawnFrom($player);
 					}else{
-						unset($newChunk[$player->getId()]);
+						unset($newChunk[$player->getLoaderId()]);
 					}
 				}
 				foreach($newChunk as $player){
@@ -1473,7 +1472,7 @@ abstract class Entity extends Location implements Metadatable{
 			return;
 		}
 		foreach($this->level->getChunkPlayers($this->chunk->getX(), $this->chunk->getZ()) as $player){
-			if($player->loggedIn === true){
+			if($player->isOnline()){
 				$this->spawnTo($player);
 			}
 		}
