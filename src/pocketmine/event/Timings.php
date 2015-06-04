@@ -39,6 +39,12 @@ abstract class Timings{
 	/** @var TimingsHandler */
 	public static $playerListTimer;
 	/** @var TimingsHandler */
+	public static $playerNetworkTimer;
+	/** @var TimingsHandler */
+	public static $playerChunkOrderTimer;
+	/** @var TimingsHandler */
+	public static $playerChunkSendTimer;
+	/** @var TimingsHandler */
 	public static $connectionTimer;
 	/** @var TimingsHandler */
 	public static $tickablesTimer;
@@ -109,6 +115,9 @@ abstract class Timings{
 		self::$memoryManagerTimer = new TimingsHandler("Memory Manager");
 		self::$garbageCollectorTimer = new TimingsHandler("Garbage Collector", self::$memoryManagerTimer);
 		self::$playerListTimer = new TimingsHandler("Player List");
+		self::$playerNetworkTimer = new TimingsHandler("Player Network");
+		self::$playerChunkOrderTimer = new TimingsHandler("Player Order Chunks");
+		self::$playerChunkSendTimer = new TimingsHandler("Player Send Chunks");
 		self::$connectionTimer = new TimingsHandler("Connection Handler");
 		self::$tickablesTimer = new TimingsHandler("Tickables");
 		self::$schedulerTimer = new TimingsHandler("Scheduler");

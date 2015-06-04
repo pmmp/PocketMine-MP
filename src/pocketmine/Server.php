@@ -1895,6 +1895,7 @@ class Server{
 	 * @param int                 $channel
 	 */
 	public function batchPackets(array $players, array $packets, $forceSync = false, $channel = 0){
+		Timings::$playerNetworkTimer->startTiming();
 		$str = "";
 
 		foreach($packets as $p){
@@ -1921,6 +1922,8 @@ class Server{
 		}else{
 			$this->broadcastPacketsCallback(zlib_encode($str, ZLIB_ENCODING_DEFLATE, $this->networkCompressionLevel), $targets, $channel);
 		}
+
+		Timings::$playerNetworkTimer->stopTiming();
 	}
 
 	public function broadcastPacketsCallback($data, array $identifiers, $channel = 0){

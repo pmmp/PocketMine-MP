@@ -662,6 +662,10 @@ class Level implements ChunkManager, Metadatable{
 		Timings::$tickEntityTimer->stopTiming();
 		$this->timings->entityTick->stopTiming();
 
+		foreach($this->players as $player){
+			$player->checkNetwork();
+		}
+
 		$this->timings->tileEntityTick->startTiming();
 		Timings::$tickTileEntityTimer->startTiming();
 		//Update tiles that need update
@@ -1697,7 +1701,7 @@ class Level implements ChunkManager, Metadatable{
 			for($x = $minX; $x <= $maxX; ++$x){
 				for($z = $minZ; $z <= $maxZ; ++$z){
 					foreach($this->getChunkEntities($x, $z) as $ent){
-						if($ent !== $entity and ($entity === null or $entity->canCollideWith($ent)) and $ent->boundingBox->intersectsWith($bb)){
+						if(($entity === null or ($ent !== $entity and $ent->canCollideWith($entity))) and $ent->boundingBox->intersectsWith($bb)){
 							$nearby[] = $ent;
 						}
 					}
