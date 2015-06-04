@@ -49,7 +49,7 @@ class TimingsHandler{
 	 */
 	public function __construct($name, TimingsHandler $parent = null){
 		$this->name = $name;
-		if($parent instanceof TimingsHandler){
+		if($parent !== null){
 			$this->parent = $parent;
 		}
 
@@ -125,7 +125,7 @@ class TimingsHandler{
 	public function startTiming(){
 		if(PluginManager::$useTimings and ++$this->timingDepth === 1){
 			$this->start = microtime(true);
-			if($this->parent instanceof TimingsHandler and ++$this->parent->timingDepth === 1){
+			if($this->parent !== null and ++$this->parent->timingDepth === 1){
 				$this->parent->start = $this->start;
 			}
 		}
@@ -143,7 +143,7 @@ class TimingsHandler{
 			++$this->curCount;
 			++$this->count;
 			$this->start = 0;
-			if($this->parent instanceof TimingsHandler){
+			if($this->parent !== null){
 				$this->parent->stopTiming();
 			}
 		}

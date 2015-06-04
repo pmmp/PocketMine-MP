@@ -2191,7 +2191,7 @@ class Level implements ChunkManager, Metadatable{
 				}
 				$this->timings->syncChunkSendPrepareTimer->startTiming();
 				$task = $this->provider->requestChunkTask($x, $z);
-				if($task instanceof AsyncTask){
+				if($task !== null){
 					$this->server->getScheduler()->scheduleAsyncTask($task);
 				}
 				$this->timings->syncChunkSendPrepareTimer->stopTiming();
@@ -2582,9 +2582,9 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		Timings::$populationTimer->startTiming();
 		$chunk = $this->getChunk($x, $z, true);
 		if(!$chunk->isPopulated()){
+			Timings::$populationTimer->startTiming();
 			$populate = true;
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
@@ -2606,14 +2606,12 @@ class Level implements ChunkManager, Metadatable{
 					$task = new PopulationTask($this, $chunk);
 					$this->server->getScheduler()->scheduleAsyncTask($task);
 				}
-				Timings::$populationTimer->stopTiming();
-				return false;
 			}
 
 			Timings::$populationTimer->stopTiming();
 			return false;
 		}
-		Timings::$populationTimer->stopTiming();
+
 		return true;
 	}
 

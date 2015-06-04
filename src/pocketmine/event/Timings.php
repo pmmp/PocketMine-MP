@@ -134,6 +134,9 @@ abstract class Timings{
 		self::$timerEntityAIMove = new TimingsHandler("** livingEntityAIMove");
 		self::$timerEntityTickRest = new TimingsHandler("** livingEntityTickRest");
 
+
+		PluginManager::$pluginParentTimer = new TimingsHandler("** Plugins");
+
 		self::$schedulerSyncTimer = new TimingsHandler("** Scheduler - Sync Tasks", PluginManager::$pluginParentTimer);
 		self::$schedulerAsyncTimer = new TimingsHandler("** Scheduler - Async Tasks");
 

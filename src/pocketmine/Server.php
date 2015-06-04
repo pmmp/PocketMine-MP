@@ -1670,7 +1670,6 @@ class Server{
 		]));
 		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.license", [$this->getName()]));
 
-		PluginManager::$pluginParentTimer = new TimingsHandler("** Plugins");
 		Timings::init();
 
 		$this->consoleSender = new ConsoleCommandSender();

@@ -512,8 +512,8 @@ abstract class Entity extends Location implements Metadatable{
 	 * @param Player $player
 	 */
 	public function spawnTo(Player $player){
-		if(!isset($this->hasSpawned[$player->getId()]) and isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])){
-			$this->hasSpawned[$player->getId()] = $player;
+		if(!isset($this->hasSpawned[$player->getLoaderId()]) and isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])){
+			$this->hasSpawned[$player->getLoaderId()] = $player;
 		}
 	}
 
@@ -557,11 +557,11 @@ abstract class Entity extends Location implements Metadatable{
 	 * @param Player $player
 	 */
 	public function despawnFrom(Player $player){
-		if(isset($this->hasSpawned[$player->getId()])){
+		if(isset($this->hasSpawned[$player->getLoaderId()])){
 			$pk = new RemoveEntityPacket();
 			$pk->eid = $this->id;
 			$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
-			unset($this->hasSpawned[$player->getId()]);
+			unset($this->hasSpawned[$player->getLoaderId()]);
 		}
 	}
 

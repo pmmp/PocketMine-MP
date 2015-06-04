@@ -47,6 +47,9 @@ abstract class Spawnable extends Tile{
 		return true;
 	}
 
+	/**
+	 * @return Compound
+	 */
 	public abstract function getSpawnCompound();
 
 	public function __construct(FullChunk $chunk, Compound $nbt){

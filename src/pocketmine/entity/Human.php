@@ -189,8 +189,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	public function spawnTo(Player $player){
-		if($player !== $this and !isset($this->hasSpawned[$player->getId()])){
-			$this->hasSpawned[$player->getId()] = $player;
+		if($player !== $this and !isset($this->hasSpawned[$player->getLoaderId()])){
+			$this->hasSpawned[$player->getLoaderId()] = $player;
 
 			if(strlen($this->skin) < 64 * 32 * 4){
 				throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
@@ -221,12 +221,12 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	public function despawnFrom(Player $player){
-		if(isset($this->hasSpawned[$player->getId()])){
+		if(isset($this->hasSpawned[$player->getLoaderId()])){
 			$pk = new RemovePlayerPacket();
 			$pk->eid = $this->getId();
 			$pk->clientID = $this->getId();
 			$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
-			unset($this->hasSpawned[$player->getId()]);
+			unset($this->hasSpawned[$player->getLoaderId()]);
 		}
 	}
 

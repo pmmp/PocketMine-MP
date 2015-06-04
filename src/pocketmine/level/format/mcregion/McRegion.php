@@ -120,13 +120,20 @@ class McRegion extends BaseLevelProvider{
 		}
 
 		$tiles = "";
-		$nbt = new NBT(NBT::LITTLE_ENDIAN);
-		foreach($chunk->getTiles() as $tile){
-			if($tile instanceof Spawnable){
-				$nbt->setData($tile->getSpawnCompound());
-				$tiles .= $nbt->write();
+
+		if(count($chunk->getTiles()) > 0){
+			$nbt = new NBT(NBT::LITTLE_ENDIAN);
+			$list = [];
+			foreach($chunk->getTiles() as $tile){
+				if($tile instanceof Spawnable){
+					$list[] = $tile->getSpawnCompound();
+				}
 			}
+			$nbt->setData($list);
+			$tiles = $nbt->write();
 		}
+
+
 
 		$heightmap = pack("C*", ...$chunk->getHeightMapArray());
 		$biomeColors = pack("N*", ...$chunk->getBiomeColorArray());
