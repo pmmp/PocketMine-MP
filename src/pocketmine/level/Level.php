@@ -800,6 +800,10 @@ class Level implements ChunkManager, Metadatable{
 
 	}
 
+	public function clearChunkCache($chunkX, $chunkZ){
+		unset($this->chunkCache[Level::chunkHash($chunkX, $chunkZ)]);
+	}
+
 	private function tickChunks(){
 		if($this->chunksPerTick <= 0 or count($this->players) === 0){
 			$this->chunkTickList = [];
@@ -2271,6 +2275,7 @@ class Level implements ChunkManager, Metadatable{
 			throw new LevelException("Invalid Tile level");
 		}
 		$this->tiles[$tile->getId()] = $tile;
+		$this->clearChunkCache($tile->getX() >> 4, $tile->getZ() >> 4);
 	}
 
 	/**
@@ -2285,6 +2290,7 @@ class Level implements ChunkManager, Metadatable{
 
 		unset($this->tiles[$tile->getId()]);
 		unset($this->updateTiles[$tile->getId()]);
+		$this->clearChunkCache($tile->getX() >> 4, $tile->getZ() >> 4);
 	}
 
 	/**

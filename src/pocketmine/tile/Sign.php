@@ -57,6 +57,11 @@ class Sign extends Spawnable{
 		$this->namedtag->Text4 = new String("Text4", $line4);
 		$this->spawnToAll();
 
+		if($this->chunk){
+			$this->chunk->setChanged();
+			$this->level->clearChunkCache($this->chunk->getX(), $this->chunk->getZ());
+		}
+
 		return true;
 	}
 
