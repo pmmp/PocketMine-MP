@@ -3113,6 +3113,46 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->dataPacket($pk->setChannel($channel));
 	}
 
+	protected function checkChunks(){
+		if($this->chunk === null or ($this->chunk->getX() !== ($this->x >> 4) or $this->chunk->getZ() !== ($this->z >> 4))){
+			if($this->chunk !== null){
+				$this->chunk->removeEntity($this);
+			}
+			$this->chunk = $this->level->getChunk($this->x >> 4, $this->z >> 4, true);
+
+			if(!$this->justCreated){
+				$newChunk = $this->level->getChunkPlayers($this->x >> 4, $this->z >> 4);
+				/** @var Player[] $reload */
+				$reload = [];
+				foreach($this->hasSpawned as $player){
+					if(!isset($newChunk[$player->getLoaderId()])){
+						$this->despawnFrom($player);
+					}else{
+						unset($newChunk[$player->getLoaderId()]);
+						$reload[] = $player;
+					}
+				}
+
+				//TODO HACK: Minecraft: PE does not like moving a player from old chunks.
+				//Player entities get stuck in unloaded chunks and the client does not accept position updates.
+				foreach($reload as $player){
+					$player->despawnFrom($player);
+					$player->spawnTo($player);
+				}
+
+				foreach($newChunk as $player){
+					$this->spawnTo($player);
+				}
+			}
+
+			if($this->chunk === null){
+				return;
+			}
+
+			$this->chunk->addEntity($this);
+		}
+	}
+
 	protected function checkTeleportPosition(){
 		if($this->teleportPosition !== null){
 			$chunkX = $this->teleportPosition->x >> 4;
