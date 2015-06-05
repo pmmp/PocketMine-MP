@@ -175,7 +175,8 @@ class Block extends Position implements Metadatable{
 	const BRICK_STAIRS = 108;
 	const STONE_BRICK_STAIRS = 109;
 	const MYCELIUM = 110;
-
+	const WATER_LILY = 111;
+	const LILY_PAD = 111;
 	const NETHER_BRICKS = 112;
 	const NETHER_BRICK_BLOCK = 112;
 
@@ -402,6 +403,7 @@ class Block extends Position implements Metadatable{
 			self::$list[self::STONE_BRICK_STAIRS] = StoneBrickStairs::class;
 
 			self::$list[self::MYCELIUM] = Mycelium::class;
+			self::$list[self::WATER_LILY] = WaterLily::class;
 			self::$list[self::NETHER_BRICKS] = NetherBrick::class;
 
 			self::$list[self::NETHER_BRICKS_STAIRS] = NetherBrickStairs::class;
@@ -668,6 +670,10 @@ class Block extends Position implements Metadatable{
 	}
 
 	public function hasEntityCollision(){
+		return false;
+	}
+
+	public function canPassThrough(){
 		return false;
 	}
 

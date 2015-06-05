@@ -40,6 +40,10 @@ class Air extends Transparent{
 		return "Air";
 	}
 
+	public function canPassThrough(){
+		return true;
+	}
+
 	public function isBreakable(Item $item){
 		return false;
 	}

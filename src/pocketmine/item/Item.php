@@ -170,7 +170,8 @@ class Item{
 	const BRICK_STAIRS = 108;
 	const STONE_BRICK_STAIRS = 109;
 	const MYCELIUM = 110;
-
+	const WATER_LILY = 111;
+	const LILY_PAD = 111;
 	const NETHER_BRICKS = 112;
 	const NETHER_BRICK_BLOCK = 112;
 
@@ -606,7 +607,7 @@ class Item{
 		//Decoration
 		self::addCreativeItem(Item::get(Item::COBBLESTONE_WALL, 0));
 		self::addCreativeItem(Item::get(Item::COBBLESTONE_WALL, 1));
-		//TODO: Lilly Pad
+		self::addCreativeItem(Item::get(Item::WATER_LILY, 0));
 		self::addCreativeItem(Item::get(Item::GOLD_BLOCK, 0));
 		self::addCreativeItem(Item::get(Item::IRON_BLOCK, 0));
 		self::addCreativeItem(Item::get(Item::DIAMOND_BLOCK, 0));

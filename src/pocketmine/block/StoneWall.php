@@ -23,6 +23,7 @@ namespace pocketmine\block;
 
 
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 
 class StoneWall extends Transparent{
 
@@ -50,36 +51,36 @@ class StoneWall extends Transparent{
 
 	protected function recalculateBoundingBox(){
 
-		$flag = $this->canConnect($this->getSide(2));
-		$flag1 = $this->canConnect($this->getSide(3));
-		$flag2 = $this->canConnect($this->getSide(4));
-		$flag3 = $this->canConnect($this->getSide(5));
+		$north = $this->canConnect($this->getSide(Vector3::SIDE_NORTH));
+		$south = $this->canConnect($this->getSide(Vector3::SIDE_SOUTH));
+		$west = $this->canConnect($this->getSide(Vector3::SIDE_WEST));
+		$east = $this->canConnect($this->getSide(Vector3::SIDE_EAST));
 
-		$f = $flag2 ? 0 : 0.25;
-		$f1 = $flag3 ? 1 : 0.75;
-		$f2 = $flag ? 0 : 0.25;
-		$f3 = $flag1 ? 1 : 0.75;
+		$n = $north ? 0 : 0.25;
+		$s = $south ? 1 : 0.75;
+		$w = $west ? 0 : 0.25;
+		$e = $east ? 1 : 0.75;
 
-		if($flag and $flag1 and !$flag2 and !$flag3){
-			$f = 0.3125;
-			$f1 = 0.6875;
-		}elseif(!$flag and !$flag1 and $flag2 and $flag3){
-			$f2 = 0.3125;
-			$f3 = 0.6875;
+		if($north and $south and !$west and !$east){
+			$w = 0.3125;
+			$e = 0.6875;
+		}elseif(!$north and !$south and $west and $east){
+			$n = 0.3125;
+			$s = 0.6875;
 		}
 
 		return new AxisAlignedBB(
-			$this->x + $f,
+			$this->x + $w,
 			$this->y,
-			$this->z + $f2,
-			$this->x + $f1,
+			$this->z + $n,
+			$this->x + $e,
 			$this->y + 1.5,
-			$this->z + $f3
+			$this->z + $s
 		);
 	}
 
 	public function canConnect(Block $block){
-		return ($block->getId() !== self::COBBLE_WALL and $block->getId() !== self::FENCE_GATE) ? $block->isSolid() : true;
+		return ($block->getId() !== self::COBBLE_WALL and $block->getId() !== self::FENCE_GATE) ? $block->isSolid() and !$block->isTransparent() : true;
 	}
 
 }

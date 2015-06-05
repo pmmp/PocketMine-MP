@@ -48,6 +48,10 @@ class Vine extends Transparent{
 		return 1;
 	}
 
+	public function canPassThrough(){
+		return true;
+	}
+
 	public function hasEntityCollision(){
 		return true;
 	}
@@ -118,7 +122,7 @@ class Vine extends Transparent{
 
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		if($target->isSolid()){
+		if(!$target->isTransparent() and $target->isSolid()){
 			$faces = [
 				0 => 0,
 				1 => 0,
