@@ -141,16 +141,24 @@ class RegionLoader{
 		}
 		$sectors = (int) ceil(($length + 4) / 4096);
 		$index = self::getChunkOffset($x, $z);
+		$indexChanged = false;
 		if($this->locationTable[$index][1] < $sectors){
 			$this->locationTable[$index][0] = $this->lastSector + 1;
 			$this->lastSector += $sectors; //The GC will clean this shift "later"
+			$indexChanged = true;
+		}elseif($this->locationTable[$index][1] != $sectors){
+			$indexChanged = true;
 		}
+
 		$this->locationTable[$index][1] = $sectors;
 		$this->locationTable[$index][2] = time();
 
 		fseek($this->filePointer, $this->locationTable[$index][0] << 12);
 		fwrite($this->filePointer, str_pad(Binary::writeInt($length) . chr(self::COMPRESSION_ZLIB) . $chunkData, $sectors << 12, "\x00", STR_PAD_RIGHT));
-		$this->writeLocationIndex($index);
+
+		if($indexChanged){
+			$this->writeLocationIndex($index);
+		}
 	}
 
 	public function removeChunk($x, $z){

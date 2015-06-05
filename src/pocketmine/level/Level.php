@@ -470,7 +470,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function getAutoSave(){
-		return $this->autoSave === true;
+		return $this->autoSave;
 	}
 
 	/**
@@ -922,7 +922,7 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function save($force = false){
 
-		if($this->getAutoSave() === false and $force === false){
+		if(!$this->getAutoSave() and !$force){
 			return false;
 		}
 
@@ -2043,7 +2043,7 @@ class Level implements ChunkManager, Metadatable{
 			}
 			unset($this->chunkPopulationQueue[$index]);
 			$chunk->setProvider($this->provider);
-			$this->setChunk($x, $z, $chunk);
+			$this->setChunk($x, $z, $chunk, false);
 			$chunk = $this->getChunk($x, $z, false);
 			if($chunk !== null and ($oldChunk === null or $oldChunk->isPopulated() === false) and $chunk->isPopulated() and $chunk->getProvider() !== null){
 				$this->server->getPluginManager()->callEvent(new ChunkPopulateEvent($chunk));
@@ -2056,7 +2056,10 @@ class Level implements ChunkManager, Metadatable{
 			unset($this->chunkGenerationQueue[$index]);
 			unset($this->chunkPopulationLock[$index]);
 			$chunk->setProvider($this->provider);
-			$this->setChunk($x, $z, $chunk);
+			$this->setChunk($x, $z, $chunk, false);
+		}else{
+			$chunk->setProvider($this->provider);
+			$this->setChunk($x, $z, $chunk, false);
 		}
 		Timings::$generationCallbackTimer->stopTiming();
 	}
@@ -2074,7 +2077,7 @@ class Level implements ChunkManager, Metadatable{
 		$index = Level::chunkHash($chunkX, $chunkZ);
 		$oldChunk = $this->getChunk($chunkX, $chunkZ, false);
 		if($unload and $oldChunk !== null){
-			$this->unloadChunk($chunkX, $chunkZ, false);
+			$this->unloadChunk($chunkX, $chunkZ, false, false);
 
 			$this->provider->setChunk($chunkX, $chunkZ, $chunk);
 			$this->chunks[$index] = $chunk;
@@ -2378,7 +2381,7 @@ class Level implements ChunkManager, Metadatable{
 		unset($this->unloadQueue[Level::chunkHash($x, $z)]);
 	}
 
-	public function unloadChunk($x, $z, $safe = true){
+	public function unloadChunk($x, $z, $safe = true, $trySave = true){
 		if(($safe === true and $this->isChunkInUse($x, $z))){
 			return false;
 		}
@@ -2403,7 +2406,7 @@ class Level implements ChunkManager, Metadatable{
 
 		try{
 			if($chunk !== null){
-				if($this->getAutoSave()){
+				if($trySave and $this->getAutoSave()){
 					$entities = 0;
 					foreach($chunk->getEntities() as $e){
 						if($e instanceof Player){
@@ -2432,7 +2435,6 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		unset($this->chunks[$index]);
-		unset($this->usedChunks[$index]);
 		unset($this->chunkTickList[$index]);
 		unset($this->chunkCache[$index]);
 
