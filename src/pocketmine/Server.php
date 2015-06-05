@@ -2479,6 +2479,10 @@ class Server{
 
 		$this->checkTickUpdates($this->tickCounter, $tickTime);
 
+		foreach($this->players as $player){
+			$player->checkNetwork();
+		}
+
 		if(($this->tickCounter & 0b1111) === 0){
 			$this->titleTick();
 			$this->maxTick = 20;

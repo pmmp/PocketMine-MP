@@ -662,10 +662,6 @@ class Level implements ChunkManager, Metadatable{
 		Timings::$tickEntityTimer->stopTiming();
 		$this->timings->entityTick->stopTiming();
 
-		foreach($this->players as $player){
-			$player->checkNetwork();
-		}
-
 		$this->timings->tileEntityTick->startTiming();
 		Timings::$tickTileEntityTimer->startTiming();
 		//Update tiles that need update

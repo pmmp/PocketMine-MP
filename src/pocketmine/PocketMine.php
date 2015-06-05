@@ -67,6 +67,7 @@ namespace {
 namespace pocketmine {
 	use pocketmine\utils\Binary;
 	use pocketmine\utils\MainLogger;
+	use pocketmine\utils\ServerKiller;
 	use pocketmine\utils\Terminal;
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\Installer;
@@ -468,6 +469,10 @@ namespace pocketmine {
 		$logger->debug("Stopping " . (new \ReflectionClass($thread))->getShortName() . " thread");
 		$thread->quit();
 	}
+
+	$killer = new ServerKiller();
+	$killer->start();
+	$killer->detach();
 
 	$logger->shutdown();
 	$logger->join();
