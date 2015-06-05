@@ -2435,7 +2435,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					$packet->message = TextFormat::clean($packet->message, $this->removeFormat);
 					foreach(explode("\n", $packet->message) as $message){
 						if(trim($message) != "" and strlen($message) <= 255 and $this->messageCounter-- > 0){
-							$this->server->getPluginManager()->callEvent($ev = new PlayerCommandPreprocessEvent($this, $message));
+							$ev = new PlayerCommandPreprocessEvent($this, $message);
+
+							if(mb_strlen($ev->getMessage(), "UTF-8") > 320){
+								$ev->setCancelled();
+							}
+							$this->server->getPluginManager()->callEvent($ev);
+
 							if($ev->isCancelled()){
 								break;
 							}
@@ -2702,7 +2708,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						]);
 
 						if(!isset($t->namedtag->Creator) or $t->namedtag["Creator"] !== $this->getUniqueId()){
-							$ev->setCancelled(true);
+							$ev->setCancelled();
+						}else{
+							foreach($ev->getLines() as $line){
+								if(mb_strlen($line, "UTF-8") > 16){
+									$ev->setCancelled();
+								}
+							}
 						}
 
 						$this->server->getPluginManager()->callEvent($ev);
