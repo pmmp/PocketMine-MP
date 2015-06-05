@@ -67,6 +67,7 @@ class CraftingManager{
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::WOODEN_PLANK, Planks::DARK_OAK, 4)))->addIngredient(Item::get(Item::WOOD2, Wood2::DARK_OAK, 1)));
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::WOOL, 0, 1)))->addIngredient(Item::get(Item::STRING, 0, 4)));
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::TORCH, 0, 4)))->addIngredient(Item::get(Item::COAL, 0, 1))->addIngredient(Item::get(Item::STICK, 0, 1)));
+		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::TORCH, 0, 4)))->addIngredient(Item::get(Item::COAL, 1, 1))->addIngredient(Item::get(Item::STICK, 0, 1)));
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::SUGAR, 0, 1)))->addIngredient(Item::get(Item::SUGARCANE, 0, 1)));
 
 
@@ -386,7 +387,46 @@ class CraftingManager{
 			$hash .= $item->getId() . ":" . ($item->getDamage() === null ? "?" : $item->getDamage()) . "x" . $item->getCount() . ",";
 		}
 
-		return isset($this->recipeLookup[$idx][$hash]);
+		if(isset($this->recipeLookup[$idx][$hash])){
+			return true;
+		}
+
+		$hasRecipe = null;
+		foreach($this->recipeLookup[$idx] as $recipe){
+			if($recipe instanceof ShapelessRecipe){
+				if($recipe->getIngredientCount() !== count($ingredients)){
+					continue;
+				}
+				$checkInput = $recipe->getIngredientList();
+				foreach($ingredients as $item){
+					$amount = $item->getCount();
+					foreach($checkInput as $k => $checkItem){
+						if($checkItem->equals($item, $checkItem->getDamage() === null ? false : true)){
+							$remove = min($checkItem->getCount(), $amount);
+							$checkItem->setCount($checkItem->getCount() - $remove);
+							if($checkItem->getCount() === 0){
+								unset($checkInput[$k]);
+							}
+							$amount -= $remove;
+							if($amount === 0){
+								break;
+							}
+						}
+					}
+				}
+
+				if(count($checkInput) === 0){
+					$hasRecipe = $recipe;
+					break;
+				}
+			}
+			if($hasRecipe instanceof Recipe){
+				break;
+			}
+		}
+
+		return $hasRecipe !== null;
+
 	}
 
 	/**
