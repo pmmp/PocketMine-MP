@@ -55,7 +55,7 @@ abstract class Terminal{
 			if(isset($opts["disable-ansi"])){
 				self::$formattingCodes = false;
 			}else{
-				self::$formattingCodes = ((Utils::getOS() !== "win" and getenv("TERM") !== "") or isset($opts["enable-ansi"]));
+				self::$formattingCodes = ((Utils::getOS() !== "win" and getenv("TERM") != "" and (!function_exists("posix_ttyname") or posix_ttyname(STDOUT) !== false)) or isset($opts["enable-ansi"]));
 			}
 		}
 
@@ -129,6 +129,10 @@ abstract class Terminal{
 	}
 
 	public static function init(){
+		if(!self::hasFormattingCodes()){
+			return;
+		}
+
 		switch(Utils::getOS()){
 			case "linux":
 			case "mac":
@@ -138,9 +142,7 @@ abstract class Terminal{
 
 			case "win":
 			case "android":
-				if(self::hasFormattingCodes()){
-					self::getFallbackEscapeCodes();
-				}
+				self::getFallbackEscapeCodes();
 				return;
 		}
 
