@@ -206,7 +206,7 @@ class Server{
 	private $network;
 
 	private $networkCompressionAsync = true;
-	private $networkCompressionLevel = 7;
+	public $networkCompressionLevel = 7;
 
 	private $autoTickRate = true;
 	private $autoTickRateLimit = 20;

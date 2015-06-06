@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 
 class Fence extends Transparent{
 
@@ -52,28 +53,28 @@ class Fence extends Transparent{
 
 	protected function recalculateBoundingBox(){
 
-		$flag = $this->canConnect($this->getSide(2));
-		$flag1 = $this->canConnect($this->getSide(3));
-		$flag2 = $this->canConnect($this->getSide(4));
-		$flag3 = $this->canConnect($this->getSide(5));
+		$north = $this->canConnect($this->getSide(Vector3::SIDE_NORTH));
+		$south = $this->canConnect($this->getSide(Vector3::SIDE_SOUTH));
+		$west = $this->canConnect($this->getSide(Vector3::SIDE_WEST));
+		$east = $this->canConnect($this->getSide(Vector3::SIDE_EAST));
 
-		$f = $flag2 ? 0 : 0.375;
-		$f1 = $flag3 ? 1 : 0.625;
-		$f2 = $flag ? 0 : 0.375;
-		$f3 = $flag1 ? 1 : 0.625;
+		$n = $north ? 0 : 0.375;
+		$s = $south ? 1 : 0.625;
+		$w = $west ? 0 : 0.375;
+		$e = $east ? 1 : 0.625;
 
 		return new AxisAlignedBB(
-			$this->x + $f,
+			$this->x + $w,
 			$this->y,
-			$this->z + $f2,
-			$this->x + $f1,
+			$this->z + $n,
+			$this->x + $e,
 			$this->y + 1.5,
-			$this->z + $f3
+			$this->z + $s
 		);
 	}
 
 	public function canConnect(Block $block){
-		return (!($block instanceof Fence) and !($block instanceof FenceGate)) ? $block->isSolid() : true;
+		return ($block instanceof Fence or $block instanceof FenceGate) ? true : $block->isSolid() and !$block->isTransparent();
 	}
 
 }

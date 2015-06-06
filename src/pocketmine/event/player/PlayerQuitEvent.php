@@ -48,7 +48,7 @@ class PlayerQuitEvent extends PlayerEvent{
 	}
 
 	public function getAutoSave(){
-
+		return $this->autoSave;
 	}
 
 	public function setAutoSave($value = true){

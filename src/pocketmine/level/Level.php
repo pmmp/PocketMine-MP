@@ -88,6 +88,7 @@ use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\Network;
+use pocketmine\network\protocol\DataPacket;
 use pocketmine\network\protocol\LevelEventPacket;
 use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
@@ -144,6 +145,7 @@ class Level implements ChunkManager, Metadatable{
 
 	private $blockCache = [];
 
+	/** @var DataPacket[] */
 	private $chunkCache = [];
 
 	private $cacheChunks = false;
@@ -788,11 +790,11 @@ class Level implements ChunkManager, Metadatable{
 			$this->chunkCache = [];
 			$this->blockCache = [];
 		}else{
-			if(count($this->chunkCache) > 1024){
+			if(count($this->chunkCache) > 768){
 				$this->chunkCache = [];
 			}
 
-			if(count($this->blockCache) > 65535){
+			if(count($this->blockCache) > 2048){
 				$this->chunkCache = [];
 			}
 
@@ -2180,6 +2182,19 @@ class Level implements ChunkManager, Metadatable{
 		$this->chunkSendQueue[$index][$player->getLoaderId()] = $player;
 	}
 
+	private function sendChunkFromCache($x, $z){
+		if(isset($this->chunkSendTasks[$index = Level::chunkHash($x, $z)])){
+			foreach($this->chunkSendQueue[$index] as $player){
+				/** @var Player $player */
+				if($player->isConnected() and isset($player->usedChunks[$index])){
+					$player->sendChunk($x, $z, $this->chunkCache[$index]);
+				}
+			}
+			unset($this->chunkSendQueue[$index]);
+			unset($this->chunkSendTasks[$index]);
+		}
+	}
+
 	private function processChunkRequest(){
 		if(count($this->chunkSendQueue) > 0){
 			$this->timings->syncChunkSendTimer->startTiming();
@@ -2193,7 +2208,7 @@ class Level implements ChunkManager, Metadatable{
 				Level::getXZ($index, $x, $z);
 				$this->chunkSendTasks[$index] = true;
 				if(isset($this->chunkCache[$index])){
-					$this->chunkRequestCallback($x, $z, $this->chunkCache[$index]);
+					$this->sendChunkFromCache($x, $z);
 					continue;
 				}
 				$this->timings->syncChunkSendPrepareTimer->startTiming();
@@ -2214,7 +2229,10 @@ class Level implements ChunkManager, Metadatable{
 		$index = Level::chunkHash($x, $z);
 
 		if(!isset($this->chunkCache[$index]) and $this->cacheChunks and $this->server->getMemoryManager()->canUseChunkCache()){
-			$this->chunkCache[$index] = $payload;
+			$this->chunkCache[$index] = Player::getChunkCacheFromData($x, $z, $payload);
+			$this->sendChunkFromCache($x, $z);
+			$this->timings->syncChunkSendTimer->stopTiming();
+			return;
 		}
 
 		if(isset($this->chunkSendTasks[$index])){

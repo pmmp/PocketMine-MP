@@ -642,11 +642,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->usedChunks[Level::chunkHash($x, $z)] = true;
 		$this->chunkLoadCount++;
 
-		$pk = new FullChunkDataPacket();
-		$pk->chunkX = $x;
-		$pk->chunkZ = $z;
-		$pk->data = $payload;
-		$this->batchDataPacket($pk->setChannel($this->spawned ? Network::CHANNEL_WORLD_CHUNKS : Network::CHANNEL_PRIORITY));
+		if($payload instanceof DataPacket){
+			$this->dataPacket($payload);
+		}else{
+			$pk = new FullChunkDataPacket();
+			$pk->chunkX = $x;
+			$pk->chunkZ = $z;
+			$pk->data = $payload;
+			$this->batchDataPacket($pk->setChannel($this->spawned ? Network::CHANNEL_WORLD_CHUNKS : Network::CHANNEL_PRIORITY));
+		}
 
 		if($this->spawned){
 			foreach($this->level->getChunkEntities($x, $z) as $entity){
@@ -1333,10 +1337,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 			$this->move($dx, $dy, $dz);
 
-			if($newPos !== null){
-
-			}
-
 			$diffX = $this->x - $newPos->x;
 			$diffY = $this->y - $newPos->y;
 			$diffZ = $this->z - $newPos->z;
@@ -1355,7 +1355,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidMove", [$this->getName()]));
 					}
 				}
-			}elseif($diff > 0){
+			}
+
+			if($diff > 0){
 				$this->x = $newPos->x;
 				$this->y = $newPos->y;
 				$this->z = $newPos->z;
@@ -3374,6 +3376,29 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	public function isLoaderActive(){
 		return $this->isConnected();
+	}
+
+	/**
+	 * @param $chunkX
+	 * @param $chunkZ
+	 * @param $payload
+	 *
+	 * @return DataPacket
+	 */
+	public static function getChunkCacheFromData($chunkX, $chunkZ, $payload){
+		$pk = new FullChunkDataPacket();
+		$pk->chunkX = $chunkX;
+		$pk->chunkZ = $chunkZ;
+		$pk->data = $payload;
+		$pk->encode();
+
+		$batch = new BatchPacket();
+		$batch->payload = zlib_encode($pk->getBuffer(), ZLIB_ENCODING_DEFLATE, Server::getInstance()->networkCompressionLevel);
+
+		$batch->setChannel(Network::CHANNEL_WORLD_CHUNKS);
+		$batch->encode();
+		$batch->isEncoded = true;
+		return $batch;
 	}
 
 }
