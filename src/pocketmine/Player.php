@@ -1629,7 +1629,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				for($i = 0; $i < $len and $valid; ++$i){
 					$c = ord($packet->username{$i});
 					if(($c >= ord("a") and $c <= ord("z")) or
-						($c >= ord("Z") and $c <= ord("Z")) or
+						($c >= ord("A") and $c <= ord("Z")) or
 						($c >= ord("0") and $c <= ord("9")) or $c === "_"
 					){
 						continue;
