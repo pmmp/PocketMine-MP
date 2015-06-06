@@ -92,6 +92,7 @@ use pocketmine\nbt\tag\Double;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Float;
 use pocketmine\nbt\tag\Int;
+use pocketmine\nbt\tag\Long;
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\Network;
@@ -1620,13 +1621,31 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					break;
 				}
 
-				if(strpos($packet->username, "\x00") !== false or preg_match('#^[a-zA-Z0-9_]{3,16}$#', $packet->username) == 0 or $this->username === "" or $this->iusername === "rcon" or $this->iusername === "console" or strlen($packet->username) > 16 or strlen($packet->username) < 3){
+				$valid = true;
+				$len = strlen($packet->username);
+				if($len > 16 or $len < 3){
+					$valid = false;
+				}
+				for($i = 0; $i < $len and $valid; ++$i){
+					$c = ord($packet->username{$i});
+					if(($c >= ord("a") and $c <= ord("z")) or
+						($c >= ord("Z") and $c <= ord("Z")) or
+						($c >= ord("0") and $c <= ord("9")) or $c === "_"
+					){
+						continue;
+					}
+
+					$valid = false;
+					break;
+				}
+
+				if(!$valid or $this->iusername === "rcon" or $this->iusername === "console"){
 					$this->close("", "disconnectionScreen.invalidName");
 
 					break;
 				}
 				
-				if(strlen($packet->skin) < 64 * 32 * 4){
+				if(strlen($packet->skin) !== 64 * 32 * 4 and strlen($packet->skin) !== 64 * 64 * 4){
 					$this->close("", "disconnectionScreen.invalidSkin");
 					break;
 				}
@@ -1684,13 +1703,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 
 				if(($level = $this->server->getLevelByName($nbt["Level"])) === null){
-					$this->setLevel($this->server->getDefaultLevel(), true);
+					$this->setLevel($this->server->getDefaultLevel());
 					$nbt["Level"] = $this->level->getName();
 					$nbt["Pos"][0] = $this->level->getSpawnLocation()->x;
 					$nbt["Pos"][1] = $this->level->getSpawnLocation()->y;
 					$nbt["Pos"][2] = $this->level->getSpawnLocation()->z;
 				}else{
-					$this->setLevel($level, true);
+					$this->setLevel($level);
 				}
 
 				if(!($nbt instanceof Compound)){
@@ -1706,8 +1725,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					$this->achievements[$achievement->getName()] = $achievement->getValue() > 0 ? true : false;
 				}
 
-				$nbt["lastPlayed"] = floor(microtime(true) * 1000);
-				$this->server->saveOfflinePlayerData($this->username, $nbt);
+				$nbt->lastPlayed = new Long(floor(microtime(true) * 1000));
+				$this->server->saveOfflinePlayerData($this->username, $nbt, true);
 				parent::__construct($this->level->getChunk($nbt["Pos"][0] >> 4, $nbt["Pos"][2] >> 4, true), $nbt);
 				$this->loggedIn = true;
 
@@ -1795,9 +1814,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 
 				$this->forceMovement = $this->teleportPosition = $this->getPosition();
-
-				$this->orderChunks();
-				$this->sendNextChunk();
 
 				$this->server->onPlayerLogin($this);
 
