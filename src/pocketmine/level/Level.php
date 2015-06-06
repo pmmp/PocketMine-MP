@@ -805,7 +805,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	private function tickChunks(){
-		if($this->chunksPerTick <= 0 or count($this->players) === 0){
+		if($this->chunksPerTick <= 0 or count($this->loaders) === 0){
 			$this->chunkTickList = [];
 			return;
 		}
