@@ -45,10 +45,10 @@ class PluginDescription{
 	private $permissions = [];
 
 	/**
-	 * @param string $yamlString
+	 * @param string|array $yamlString
 	 */
 	public function __construct($yamlString){
-		$this->loadMap(\yaml_parse($yamlString));
+		$this->loadMap(!is_array($yamlString) ? \yaml_parse($yamlString) : $yamlString);
 	}
 
 	/**
