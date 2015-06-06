@@ -1726,7 +1726,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 
 				$nbt->lastPlayed = new Long(floor(microtime(true) * 1000));
-				$this->server->saveOfflinePlayerData($this->username, $nbt, true);
+				if($this->server->getAutoSave()){
+					$this->server->saveOfflinePlayerData($this->username, $nbt, true);
+				}
 				parent::__construct($this->level->getChunk($nbt["Pos"][0] >> 4, $nbt["Pos"][2] >> 4, true), $nbt);
 				$this->loggedIn = true;
 
@@ -2864,8 +2866,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			
 			$this->connected = false;
 			if(strlen($this->getName()) > 0){
-				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message));
-				if($this->server->getAutoSave() and $this->loggedIn === true){
+				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message, true));
+				if($this->loggedIn === true and $ev->getAutoSave()){
 					$this->save();
 				}
 			}
@@ -2948,7 +2950,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			}
 
 			$this->namedtag["playerGameType"] = $this->gamemode;
-			$this->namedtag["lastPlayed"] = floor(microtime(true) * 1000);
+			$this->namedtag["lastPlayed"] = new Long(floor(microtime(true) * 1000));
 
 			if($this->username != "" and $this->namedtag instanceof Compound){
 				$this->server->saveOfflinePlayerData($this->username, $this->namedtag, $async);
