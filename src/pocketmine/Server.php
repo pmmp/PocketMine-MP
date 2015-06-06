@@ -214,7 +214,7 @@ class Server{
 	private $baseTickRate = 1;
 
 	private $autoSaveTicker = 0;
-	private $autoSaveTicks = 0;
+	private $autoSaveTicks = 6000;
 
 	/** @var BaseLang */
 	private $baseLang;
@@ -1763,7 +1763,7 @@ class Server{
 			return;
 		}
 
-		if($this->getAutoSave() and $this->getProperty("ticks-per.autosave", 6000) > 0){
+		if($this->getProperty("ticks-per.autosave", 6000) > 0){
 			$this->autoSaveTicks = (int) $this->getProperty("ticks-per.autosave", 6000);
 		}
 
