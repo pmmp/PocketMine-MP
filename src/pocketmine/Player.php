@@ -851,10 +851,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return false;
 		}
 
-		Timings::$playerNetworkTimer->startTiming();
+		$timings = Timings::getSendDataPacketTimings($packet);
+		$timings->startTiming();
 		$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
 		if($ev->isCancelled()){
-			Timings::$playerNetworkTimer->stopTiming();
+			$timings->stopTiming();
 			return false;
 		}
 
@@ -863,7 +864,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		$this->batchedPackets[$packet->getChannel()][] = clone $packet;
-		Timings::$playerNetworkTimer->stopTiming();
+		$timings->stopTiming();
 		return true;
 	}
 
@@ -879,11 +880,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if($this->connected === false){
 			return false;
 		}
-		Timings::$playerNetworkTimer->startTiming();
+
+		$timings = Timings::getSendDataPacketTimings($packet);
+		$timings->startTiming();
 
 		$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
 		if($ev->isCancelled()){
-			Timings::$playerNetworkTimer->stopTiming();
+			$timings->stopTiming();
 			return false;
 		}
 
@@ -892,11 +895,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if($needACK and $identifier !== null){
 			$this->needACK[$identifier] = false;
 
-			Timings::$playerNetworkTimer->stopTiming();
+			$timings->stopTiming();
 			return $identifier;
 		}
 
-		Timings::$playerNetworkTimer->stopTiming();
+		$timings->stopTiming();
 		return true;
 	}
 
@@ -911,10 +914,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return false;
 		}
 
-		Timings::$playerNetworkTimer->startTiming();
+		$timings = Timings::getSendDataPacketTimings($packet);
+		$timings->startTiming();
 		$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
 		if($ev->isCancelled()){
-			Timings::$playerNetworkTimer->stopTiming();
+			$timings->stopTiming();
 			return false;
 		}
 
@@ -923,11 +927,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if($needACK and $identifier !== null){
 			$this->needACK[$identifier] = false;
 
-			Timings::$playerNetworkTimer->stopTiming();
+			$timings->stopTiming();
 			return $identifier;
 		}
 
-		Timings::$playerNetworkTimer->stopTiming();
+		$timings->stopTiming();
 		return true;
 	}
 
@@ -1567,8 +1571,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return;
 		}
 
+
+		$timings = Timings::getReceiveDataPacketTimings($packet);
+
+		$timings->startTiming();
+
 		$this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this, $packet));
 		if($ev->isCancelled()){
+			$timings->stopTiming();
 			return;
 		}
 
@@ -1588,7 +1598,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->uuid = Utils::dataToUUID($this->randomClientId, $this->iusername, $this->getAddress());
 
 				if(count($this->server->getOnlinePlayers()) > $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)){
-					return;
+					break;
 				}
 
 				if($packet->protocol1 !== ProtocolInfo::CURRENT_PROTOCOL){
@@ -1607,18 +1617,18 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					}
 					$this->close("", $message, false);
 
-					return;
+					break;
 				}
 
 				if(strpos($packet->username, "\x00") !== false or preg_match('#^[a-zA-Z0-9_]{3,16}$#', $packet->username) == 0 or $this->username === "" or $this->iusername === "rcon" or $this->iusername === "console" or strlen($packet->username) > 16 or strlen($packet->username) < 3){
 					$this->close("", "disconnectionScreen.invalidName");
 
-					return;
+					break;
 				}
 				
 				if(strlen($packet->skin) < 64 * 32 * 4){
 					$this->close("", "disconnectionScreen.invalidSkin");
-					return;
+					break;
 				}
 
 				$this->setSkin($packet->skin, $packet->slim);
@@ -1627,17 +1637,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				if($ev->isCancelled()){
 					$this->close("", $ev->getKickMessage());
 
-					return;
+					break;
 				}
 
 				if(!$this->server->isWhitelisted(strtolower($this->getName()))){
 					$this->close($this->getLeaveMessage(), "Server is white-listed");
 
-					return;
+					break;
 				}elseif($this->server->getNameBans()->isBanned(strtolower($this->getName())) or $this->server->getIPBans()->isBanned($this->getAddress())){
 					$this->close($this->getLeaveMessage(), "You are banned");
 
-					return;
+					break;
 				}
 
 				if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
@@ -1652,6 +1662,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						if($p->kick("logged in from another location") === false){
 							$this->close($this->getLeaveMessage(), "Logged in from another location");
 
+							$timings->stopTiming();
 							return;
 						}
 					}
@@ -1685,7 +1696,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				if(!($nbt instanceof Compound)){
 					$this->close($this->getLeaveMessage(), "Invalid data");
 
-					return;
+					break;
 				}
 
 				$this->achievements = [];
@@ -1704,7 +1715,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				if($ev->isCancelled()){
 					$this->close($this->getLeaveMessage(), $ev->getKickMessage());
 
-					return;
+					break;
 				}
 
 				if($this->isCreative()){
@@ -2215,7 +2226,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					if($target instanceof DroppedItem or $target instanceof Arrow){
 						$this->kick("Attempting to attack an invalid entity");
 						$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidEntity", [$this->getName()]));
-						return;
+						break;
 					}
 
 					$item = $this->inventory->getItemInHand();
@@ -2730,6 +2741,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			default:
 				break;
 		}
+
+		$timings->stopTiming();
 	}
 
 	/**
