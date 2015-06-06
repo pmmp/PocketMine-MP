@@ -32,6 +32,8 @@ use pocketmine\tile\Tile;
 abstract class Timings{
 
 	/** @var TimingsHandler */
+	public static $fullTickTimer;
+	/** @var TimingsHandler */
 	public static $serverTickTimer;
 	/** @var TimingsHandler */
 	public static $memoryManagerTimer;
@@ -118,7 +120,8 @@ abstract class Timings{
 			return;
 		}
 
-		self::$serverTickTimer = new TimingsHandler("** Full Server Tick");
+		self::$fullTickTimer = new TimingsHandler("Full Server Tick");
+		self::$serverTickTimer = new TimingsHandler("** Full Server Tick", self::$fullTickTimer);
 		self::$memoryManagerTimer = new TimingsHandler("Memory Manager");
 		self::$garbageCollectorTimer = new TimingsHandler("Garbage Collector", self::$memoryManagerTimer);
 		self::$playerListTimer = new TimingsHandler("Player List");
@@ -199,7 +202,7 @@ abstract class Timings{
 	public static function getEntityTimings(Entity $entity){
 		$entityType = (new \ReflectionClass($entity))->getShortName();
 		if(!isset(self::$entityTypeTimingMap[$entityType])){
-			self::$entityTypeTimingMap[$entityType] = new TimingsHandler("** tickEntity - " . $entityType, self::$activatedEntityTimer);
+			self::$entityTypeTimingMap[$entityType] = new TimingsHandler("** tickEntity - Entity" . $entityType, self::$tickEntityTimer);
 		}
 
 		return self::$entityTypeTimingMap[$entityType];
