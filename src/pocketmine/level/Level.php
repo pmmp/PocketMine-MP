@@ -1422,10 +1422,11 @@ class Level implements ChunkManager, Metadatable{
 	 * @param Vector3 $vector
 	 * @param Item    &$item (if null, can break anything)
 	 * @param Player  $player
+	 * @param bool    $createParticles
 	 *
 	 * @return boolean
 	 */
-	public function useBreakOn(Vector3 $vector, Item &$item = null, Player $player = null){
+	public function useBreakOn(Vector3 $vector, Item &$item = null, Player $player = null, $createParticles = false){
 		$target = $this->getBlock($vector);
 		//TODO: Adventure mode checks
 
@@ -1452,7 +1453,7 @@ class Level implements ChunkManager, Metadatable{
 
 			$breakTime = $player->isCreative() ? 0.15 : $target->getBreakTime($item);
 			if($player->hasEffect(Effect::SWIFTNESS)){
-				$breakTime *= pow(0.80, $player->getEffect(Effect::SWIFTNESS)->getAmplifier() + 1);
+				$breakTime *= 0.80 * ($player->getEffect(Effect::SWIFTNESS)->getAmplifier() + 1);
 			}
 
 			if(!$ev->getInstaBreak() and ($player->lastBreak + $breakTime) >= microtime(true)){
@@ -1479,18 +1480,20 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
-		$players = $this->getChunkPlayers($target->x >> 4, $target->z >> 4);
-		if($player !== null){
-			unset($players[$player->getLoaderId()]);
-		}
+		if($createParticles){
+			$players = $this->getChunkPlayers($target->x >> 4, $target->z >> 4);
+			if($player !== null){
+				unset($players[$player->getLoaderId()]);
+			}
 
-		$pk = new LevelEventPacket();
-		$pk->evid = 2001;
-		$pk->x = $target->x + 0.5;
-		$pk->y = $target->y + 0.5;
-		$pk->z = $target->z + 0.5;
-		$pk->data = $target->getId() + ($target->getDamage() << 12);
-		Server::broadcastPacket($players, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+			$pk = new LevelEventPacket();
+			$pk->evid = 2001;
+			$pk->x = $target->x + 0.5;
+			$pk->y = $target->y + 0.5;
+			$pk->z = $target->z + 0.5;
+			$pk->data = $target->getId() + ($target->getDamage() << 12);
+			Server::broadcastPacket($players, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+		}
 		
 		$target->onBreak($item);
 		
