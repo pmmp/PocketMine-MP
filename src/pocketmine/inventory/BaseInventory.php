@@ -236,6 +236,9 @@ abstract class BaseInventory implements Inventory{
 		/** @var Item[] $slots */
 		$itemSlots = [];
 		foreach($slots as $slot){
+			if(!($slot instanceof Item)){
+				throw new \InvalidArgumentException("Expected Item[], got ".gettype($slot));
+			}
 			if($slot->getId() !== 0 and $slot->getCount() > 0){
 				$itemSlots[] = clone $slot;
 			}
@@ -293,6 +296,9 @@ abstract class BaseInventory implements Inventory{
 		/** @var Item[] $slots */
 		$itemSlots = [];
 		foreach($slots as $slot){
+			if(!($slot instanceof Item)){
+				throw new \InvalidArgumentException("Expected Item[], got ".gettype($slot));
+			}
 			if($slot->getId() !== 0 and $slot->getCount() > 0){
 				$itemSlots[] = clone $slot;
 			}
