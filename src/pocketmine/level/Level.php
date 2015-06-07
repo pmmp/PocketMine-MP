@@ -90,6 +90,8 @@ use pocketmine\nbt\tag\String;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\DataPacket;
 use pocketmine\network\protocol\LevelEventPacket;
+use pocketmine\network\protocol\MoveEntityPacket;
+use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\Player;
@@ -131,6 +133,9 @@ class Level implements ChunkManager, Metadatable{
 
 	/** @var Tile[] */
 	private $tiles = [];
+
+	private $motionToSend = [];
+	private $moveToSend = [];
 
 	/** @var Player[] */
 	private $players = [];
@@ -708,6 +713,22 @@ class Level implements ChunkManager, Metadatable{
 		if($this->sleepTicks > 0 and --$this->sleepTicks <= 0){
 			$this->checkSleep();
 		}
+
+		foreach($this->moveToSend as $index => $entry){
+			Level::getXZ($index, $chunkX, $chunkZ);
+			$pk = new MoveEntityPacket();
+			$pk->entities = $entry;
+			Server::broadcastPacket($this->getChunkPlayers($chunkX, $chunkZ), $pk->setChannel(Network::CHANNEL_MOVEMENT));
+		}
+		$this->moveToSend = [];
+
+		foreach($this->motionToSend as $index => $entry){
+			Level::getXZ($index, $chunkX, $chunkZ);
+			$pk = new SetEntityMotionPacket();
+			$pk->entities = $entry;
+			Server::broadcastPacket($this->getChunkPlayers($chunkX, $chunkZ), $pk->setChannel(Network::CHANNEL_MOVEMENT));
+		}
+		$this->motionToSend = [];
 
 		$this->timings->doTick->stopTiming();
 	}
@@ -1699,7 +1720,7 @@ class Level implements ChunkManager, Metadatable{
 			for($x = $minX; $x <= $maxX; ++$x){
 				for($z = $minZ; $z <= $maxZ; ++$z){
 					foreach($this->getChunkEntities($x, $z) as $ent){
-						if(($entity === null or ($ent !== $entity and $ent->canCollideWith($entity))) and $ent->boundingBox->intersectsWith($bb)){
+						if(($entity === null or ($ent !== $entity and $entity->canCollideWith($ent))) and $ent->boundingBox->intersectsWith($bb)){
 							$nearby[] = $ent;
 						}
 					}
@@ -2728,5 +2749,19 @@ class Level implements ChunkManager, Metadatable{
 
 	public function removeMetadata($metadataKey, Plugin $plugin){
 		$this->server->getLevelMetadata()->removeMetadata($this, $metadataKey, $plugin);
+	}
+
+	public function addEntityMotion($chunkX, $chunkZ, $entityId, $x, $y, $z){
+		if(!isset($this->motionToSend[$index = Level::chunkHash($chunkX, $chunkZ)])){
+			$this->motionToSend[$index] = [];
+		}
+		$this->motionToSend[$index][$entityId] = [$entityId, $x, $y, $z];
+	}
+
+	public function addEntityMovement($chunkX, $chunkZ, $entityId, $x, $y, $z, $yaw, $pitch, $headYaw = null){
+		if(!isset($this->moveToSend[$index = Level::chunkHash($chunkX, $chunkZ)])){
+			$this->moveToSend[$index] = [];
+		}
+		$this->moveToSend[$index][$entityId] = [$entityId, $x, $y, $z, $yaw, $headYaw === null ? $yaw : $headYaw, $pitch];
 	}
 }

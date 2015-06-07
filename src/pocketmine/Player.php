@@ -160,9 +160,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	protected $sendIndex = 0;
 
-	protected $moveToSend;
-	protected $motionToSend;
-
 	/** @var Vector3 */
 	public $speed = null;
 
@@ -507,11 +504,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->viewDistance = $this->server->getViewDistance();
 		$this->newPosition = new Vector3(0, 0, 0);
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
-
-		$this->motionToSend = new SetEntityMotionPacket();
-		$this->moveToSend = new MoveEntityPacket();
-		$this->motionToSend->setChannel(Network::CHANNEL_MOVEMENT);
-		$this->moveToSend->setChannel(Network::CHANNEL_MOVEMENT);
 
 		$this->uuid = Utils::dataToUUID($ip, $port, $clientID);
 
@@ -1206,12 +1198,18 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return [];
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function addEntityMotion($entityId, $x, $y, $z){
-		$this->motionToSend->entities[$entityId] = [$entityId, $x, $y, $z];
+
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function addEntityMovement($entityId, $x, $y, $z, $yaw, $pitch, $headYaw = null){
-		$this->moveToSend->entities[$entityId] = [$entityId, $x, $y, $z, $yaw, $headYaw === null ? $yaw : $headYaw, $pitch];
+
 	}
 
 	public function setDataProperty($id, $type, $value){
@@ -1392,9 +1390,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					if($to->distanceSquared($ev->getTo()) > 0.01){ //If plugins modify the destination
 						$this->teleport($ev->getTo());
 					}else{
-						foreach($this->hasSpawned as $player){
-							$player->addEntityMovement($this->id, $this->x, $this->y + $this->getEyeHeight(), $this->z, $this->yaw, $this->pitch, $this->yaw);
-						}
+						$this->sendPosition($this, null, null, MovePlayerPacket::MODE_NORMAL, Network::CHANNEL_MOVEMENT, $this->hasSpawned);
 					}
 				}
 			}
@@ -1431,7 +1427,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	public function setMotion(Vector3 $mot){
 		if(parent::setMotion($mot)){
-			$this->addEntityMotion($this->getId(), $this->motionX, $this->motionY, $this->motionZ);
+			if($this->chunk !== null){
+				$this->level->addEntityMotion($this->chunk->getX(), $this->chunk->getZ(), $this->getId(), $this->motionX, $this->motionY, $this->motionZ);
+			}
+
 			if($this->motionY > 0){
 				$this->startAirTicks = (-(log($this->gravity / ($this->gravity + $this->drag * $this->motionY))) / $this->drag) * 2 + 5;
 			}
@@ -1519,19 +1518,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		if(count($this->loadQueue) > 0 or !$this->spawned){
 			$this->sendNextChunk();
-		}
-
-		if(count($this->moveToSend->entities) > 0){
-			$this->dataPacket($this->moveToSend);
-			$this->moveToSend->entities = [];
-			$this->moveToSend->isEncoded = false;
-		}
-
-
-		if(count($this->motionToSend->entities) > 0){
-			$this->dataPacket($this->motionToSend);
-			$this->motionToSend->entities = [];
-			$this->motionToSend->isEncoded = false;
 		}
 
 		if(count($this->batchedPackets) > 0){
@@ -3142,7 +3128,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 	}
 
-	public function sendPosition(Vector3 $pos, $yaw = null, $pitch = null, $mode = 0, $channel = Network::CHANNEL_PRIORITY){
+	public function sendPosition(Vector3 $pos, $yaw = null, $pitch = null, $mode = 0, $channel = Network::CHANNEL_PRIORITY, array $targets = null){
 		$yaw = $yaw === null ? $this->yaw : $yaw;
 		$pitch = $pitch === null ? $this->pitch : $pitch;
 
@@ -3155,7 +3141,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->pitch = $pitch;
 		$pk->yaw = $yaw;
 		$pk->mode = $mode;
-		$this->dataPacket($pk->setChannel($channel));
+
+		if($targets !== null){
+			Server::broadcastPacket($targets, $pk);
+		}else{
+			$this->dataPacket($pk->setChannel($channel));
+		}
 	}
 
 	protected function checkChunks(){
@@ -3180,10 +3171,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 				//TODO HACK: Minecraft: PE does not like moving a player from old chunks.
 				//Player entities get stuck in unloaded chunks and the client does not accept position updates.
-				foreach($reload as $player){
-					$player->despawnFrom($player);
-					$player->spawnTo($player);
-				}
+				$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET, Network::CHANNEL_MOVEMENT, $reload);
 
 				foreach($newChunk as $player){
 					$this->spawnTo($player);
