@@ -48,8 +48,4 @@ class TaigaBiome extends SnowyBiome{
 	public function getName(){
 		return "Taiga";
 	}
-
-	public function getColor(){
-		return 0x0b6659;
-	}
 }

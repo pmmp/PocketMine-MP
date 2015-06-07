@@ -42,8 +42,4 @@ class PlainBiome extends GrassyBiome{
 	public function getName(){
 		return "Plains";
 	}
-
-	public function getColor(){
-		return 0x8db360;
-	}
 }

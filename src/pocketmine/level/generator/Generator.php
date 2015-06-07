@@ -197,7 +197,7 @@ abstract class Generator{
 		for($xx = 0; $xx <= $xSize; $xx += $xSamplingRate){
 			for($zz = 0; $zz <= $zSize; $zz += $zSamplingRate){
 				for($yy = 0; $yy <= $ySize; $yy += $ySamplingRate){
-					$noiseArray[$xx][$zz][$yy] = $noise->noise3D($x + $xx, $y + $yy, $z + $zz);
+					$noiseArray[$xx][$zz][$yy] = $noise->noise3D($x + $xx, $y + $yy, $z + $zz, true);
 				}
 			}
 		}

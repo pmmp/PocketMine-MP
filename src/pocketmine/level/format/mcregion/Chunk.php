@@ -88,6 +88,12 @@ class Chunk extends BaseFullChunk{
 		}
 
 		parent::__construct($level, $this->nbt["xPos"], $this->nbt["zPos"], $this->nbt->Blocks->getValue(), $this->nbt->Data->getValue(), $this->nbt->SkyLight->getValue(), $this->nbt->BlockLight->getValue(), $this->nbt->BiomeColors->getValue(), $this->nbt->HeightMap->getValue(), $this->nbt->Entities->getValue(), $this->nbt->TileEntities->getValue());
+
+		if(isset($this->nbt->Biomes)){
+			$this->checkOldBiomes($this->nbt->Biomes->getValue());
+			unset($this->nbt->Biomes);
+		}
+
 		unset($this->nbt->Blocks);
 		unset($this->nbt->Data);
 		unset($this->nbt->SkyLight);

@@ -1237,8 +1237,8 @@ class Server{
 
 		$order = [];
 
-		for($X = -4; $X <= 4; ++$X){
-			for($Z = -4; $Z <= 4; ++$Z){
+		for($X = -3; $X <= 3; ++$X){
+			for($Z = -3; $Z <= 3; ++$Z){
 				$distance = $X ** 2 + $Z ** 2;
 				$chunkX = $X + $centerX;
 				$chunkZ = $Z + $centerZ;
@@ -1251,7 +1251,7 @@ class Server{
 
 		foreach($order as $index => $distance){
 			Level::getXZ($index, $chunkX, $chunkZ);
-			$level->generateChunk($chunkX, $chunkZ, true);
+			$level->populateChunk($chunkX, $chunkZ, true);
 		}
 
 		return true;

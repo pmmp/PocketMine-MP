@@ -121,21 +121,10 @@ class Normal extends Generator{
 		$this->level = $level;
 		$this->random = $random;
 		$this->random->setSeed($this->level->getSeed());
-		$this->noiseBase = new Simplex($this->random, 16, 0.01, 0.5, 2);
+		$this->noiseBase = new Simplex($this->random, 4, 1 / 4, 1 / 32);
 		$this->random->setSeed($this->level->getSeed());
 		$this->selector = new BiomeSelector($this->random, function($temperature, $rainfall){
-			$rainfall *= $temperature;
-			if($temperature < 0.10){
-				return Biome::ICE_PLAINS;
-			}elseif($rainfall < 0.20){
-				if($temperature < 0.50){
-					return Biome::ICE_PLAINS;
-				}elseif($temperature < 0.95){
-					return Biome::PLAINS;
-				}else{
-					return Biome::DESERT;
-				}
-			}elseif($rainfall > 0.5 and $temperature < 0.7){
+			if($rainfall < 0.25){
 				if($rainfall < 0.7){
 					return Biome::OCEAN;
 				}elseif($rainfall < 0.85){
@@ -143,23 +132,29 @@ class Normal extends Generator{
 				}else{
 					return Biome::SWAMP;
 				}
-			}elseif($temperature < 0.50){
-				return Biome::TAIGA;
-			}elseif($temperature < 0.97){
-				if($rainfall < 0.25){
-					return Biome::MOUNTAINS;
-				}elseif($rainfall < 0.35){
-					return Biome::SMALL_MOUNTAINS;
+			}elseif($rainfall < 0.60){
+				if($temperature < 0.25){
+					return Biome::ICE_PLAINS;
+				}elseif($temperature < 0.75){
+					return Biome::PLAINS;
 				}else{
-					return Biome::PLAINS;
+					return Biome::DESERT;
 				}
-			}else{
-				if($rainfall < 0.45){
-					return Biome::PLAINS;
-				}elseif($rainfall < 0.90){
+			}elseif($rainfall < 0.80){
+				if($temperature < 0.25){
+					return Biome::TAIGA;
+				}elseif($temperature < 0.75){
 					return Biome::FOREST;
 				}else{
 					return Biome::BIRCH_FOREST;
+				}
+			}else{
+				if($rainfall < 0.25){
+					return Biome::MOUNTAINS;
+				}elseif($rainfall < 0.70){
+					return Biome::SMALL_MOUNTAINS;
+				}else{
+					return Biome::RIVER;
 				}
 			}
 		}, Biome::getBiome(Biome::OCEAN));
@@ -212,8 +207,7 @@ class Normal extends Generator{
 
 				$biome = $this->pickBiome($chunkX * 16 + $x, $chunkZ * 16 + $z);
 				$chunk->setBiomeId($x, $z, $biome->getId());
-				$color = $biome->getColor();
-				$chunk->setBiomeColor($x, $z, $color >> 16, ($color >> 8) & 0xff, $color & 0xff);
+				$color = [0, 0, 0];
 
 				for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx){
 					for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz){
@@ -231,14 +225,21 @@ class Normal extends Generator{
 							}
 						}
 
-						$minSum += $adjacent->getMinElevation() * $weight;
+						$minSum += ($adjacent->getMinElevation() - 1) * $weight;
 						$maxSum += $adjacent->getMaxElevation() * $weight;
+						$bColor = $adjacent->getColor();
+						$color[0] += (($bColor >> 16) ** 2) * $weight;
+						$color[1] += ((($bColor >> 8) & 0xff) ** 2) * $weight;
+						$color[2] += (($bColor & 0xff) ** 2) * $weight;
+
 						$weightSum += $weight;
 					}
 				}
 
 				$minSum /= $weightSum;
 				$maxSum /= $weightSum;
+
+				$chunk->setBiomeColor($x, $z, sqrt($color[0] / $weightSum), sqrt($color[1] / $weightSum), sqrt($color[2] / $weightSum));
 
 				$smoothHeight = ($maxSum - $minSum) / 2;
 
@@ -249,19 +250,11 @@ class Normal extends Generator{
 					}
 					$noiseValue = $noise[$x][$z][$y] - 1 / $smoothHeight * ($y - $smoothHeight - $minSum);
 
-					if($noiseValue >= 0){
+					if($noiseValue > 0){
 						$chunk->setBlockId($x, $y, $z, Block::STONE);
-					}/*else{
-						if($y <= $this->waterHeight){
-							$chunk->setBlockId($x, $y, $z, Block::STILL_WATER);
-							$lightValue = 15 - ($this->waterHeight - $y) * 2;
-							if($lightValue > 0){
-								$chunk->setBlockSkyLight($x, $y, $z, $lightValue);
-							}
-						}else{
-							$chunk->setBlockSkyLight($x, $y, $z, 15);
-						}
-					}*/
+					}elseif($y <= $this->waterHeight){
+						$chunk->setBlockId($x, $y, $z, Block::STILL_WATER);
+					}
 				}
 			}
 		}

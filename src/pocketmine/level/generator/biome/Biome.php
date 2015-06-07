@@ -73,10 +73,12 @@ abstract class Biome{
 
 	protected $rainfall = 0.5;
 	protected $temperature = 0.5;
+	protected $grassColor = 0;
 
 	protected static function register($id, Biome $biome){
 		self::$biomes[(int) $id] = $biome;
 		$biome->setId((int) $id);
+		$biome->grassColor = self::generateBiomeColor($biome->getTemperature(), $biome->getRainfall());
 	}
 
 	public static function init(){
@@ -173,9 +175,29 @@ abstract class Biome{
 		return $this->rainfall;
 	}
 
+	private static function generateBiomeColor($temperature, $rainfall){
+		$x = (1 - $temperature) * 255;
+		$z = (1 - $rainfall * $temperature) * 255;
+		$c = self::interpolateColor(256, $x, $z, [0x47, 0xd0, 0x33], [0x6c, 0xb4, 0x93], [0xbf, 0xb6, 0x55], [0x80, 0xb4, 0x97]);
+		return ((int) ($c[0] << 16)) | (int) (($c[1] << 8)) | (int) ($c[2]);
+	}
+
+
+	private static function interpolateColor($size, $x, $z, $c1, $c2, $c3, $c4){
+		$l1 = self::lerpColor($c1, $c2, $x / $size);
+		$l2 = self::lerpColor($c3, $c4, $x / $size);
+
+		return self::lerpColor($l1, $l2, $z / $size);
+	}
+
+	private static function lerpColor($a, $b, $s){
+		$invs = 1 - $s;
+		return [$a[0] * $invs + $b[0] * $s, $a[1] * $invs + $b[1] * $s, $a[2] * $invs + $b[2] * $s];
+	}
+
 
 	/**
-	 * @return int (randomness|Red|Green|Blue)
+	 * @return int (Red|Green|Blue)
 	 */
 	abstract public function getColor();
 }

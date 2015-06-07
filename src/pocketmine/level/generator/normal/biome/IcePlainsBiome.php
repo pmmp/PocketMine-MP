@@ -42,8 +42,4 @@ class IcePlainsBiome extends SnowyBiome{
 	public function getName(){
 		return "Ice Plains";
 	}
-
-	public function getColor(){
-		return 0x163933;
-	}
 }

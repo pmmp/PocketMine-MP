@@ -42,8 +42,4 @@ class RiverBiome extends GrassyBiome{
 	public function getName(){
 		return "River";
 	}
-
-	public function getColor(){
-		return 0x8dc360;
-	}
 }

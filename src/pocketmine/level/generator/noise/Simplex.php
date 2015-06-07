@@ -63,8 +63,8 @@ class Simplex extends Perlin{
 	protected $offsetW;
 
 
-	public function __construct(Random $random, $octaves, $frequency, $amplitude, $lacunarity){
-		parent::__construct($random, $octaves, $frequency, $amplitude, $lacunarity);
+	public function __construct(Random $random, $octaves, $persistence, $expansion = 1){
+		parent::__construct($random, $octaves, $persistence, $expansion);
 		$this->offsetW = $random->nextFloat() * 256;
 		self::$SQRT_3 = sqrt(3);
 		self::$SQRT_5 = sqrt(5);
@@ -187,28 +187,28 @@ class Simplex extends Perlin{
 		$n = 0;
 
 		// Calculate the contribution from the four corners
-		$t0 = 0.6 - $x0 ** 2 - $y0 ** 2 - $z0 ** 2;
+		$t0 = 0.6 - $x0 * $x0 - $y0 * $y0 - $z0 * $z0;
 		if($t0 > 0){
 			$gi0 = self::$grad3[$this->perm[$ii + $this->perm[$jj + $this->perm[$kk]]] % 12];
-			$n += $t0 ** 4 * ($gi0[0] * $x0 + $gi0[1] * $y0 + $gi0[2] * $z0);
+			$n += $t0 * $t0 * $t0 * $t0 * ($gi0[0] * $x0 + $gi0[1] * $y0 + $gi0[2] * $z0);
 		}
 
-		$t1 = 0.6 - $x1 ** 2 - $y1 ** 2 - $z1 ** 2;
+		$t1 = 0.6 - $x1 * $x1 - $y1 * $y1 - $z1 * $z1;
 		if($t1 > 0){
 			$gi1 = self::$grad3[$this->perm[$ii + $i1 + $this->perm[$jj + $j1 + $this->perm[$kk + $k1]]] % 12];
-			$n += $t1 ** 4 * ($gi1[0] * $x1 + $gi1[1] * $y1 + $gi1[2] * $z1);
+			$n += $t1 * $t1 * $t1 * $t1 * ($gi1[0] * $x1 + $gi1[1] * $y1 + $gi1[2] * $z1);
 		}
 
-		$t2 = 0.6 - $x2 ** 2 - $y2 ** 2 - $z2 ** 2;
+		$t2 = 0.6 - $x2 * $x2 - $y2 * $y2 - $z2 * $z2;
 		if($t2 > 0){
 			$gi2 = self::$grad3[$this->perm[$ii + $i2 + $this->perm[$jj + $j2 + $this->perm[$kk + $k2]]] % 12];
-			$n += $t2 ** 4 * ($gi2[0] * $x2 + $gi2[1] * $y2 + $gi2[2] * $z2);
+			$n += $t2 * $t2 * $t2 * $t2 * ($gi2[0] * $x2 + $gi2[1] * $y2 + $gi2[2] * $z2);
 		}
 
-		$t3 = 0.6 - $x3 ** 2 - $y3 ** 2 - $z3 ** 2;
+		$t3 = 0.6 - $x3 * $x3 - $y3 * $y3 - $z3 * $z3;
 		if($t3 > 0){
 			$gi3 = self::$grad3[$this->perm[$ii + 1 + $this->perm[$jj + 1 + $this->perm[$kk + 1]]] % 12];
-			$n += $t3 ** 4 * ($gi3[0] * $x3 + $gi3[1] * $y3 + $gi3[2] * $z3);
+			$n += $t3 * $t3 * $t3 * $t3 * ($gi3[0] * $x3 + $gi3[1] * $y3 + $gi3[2] * $z3);
 		}
 
 		// Add contributions from each corner to get the noise value.
@@ -258,22 +258,22 @@ class Simplex extends Perlin{
 		$n = 0;
 
 		// Calculate the contribution from the three corners
-		$t0 = 0.5 - $x0 ** 2 - $y0 ** 2;
+		$t0 = 0.5 - $x0 * $x0 - $y0 * $y0;
 		if($t0 > 0){
 			$gi0 = self::$grad3[$this->perm[$ii + $this->perm[$jj]] % 12];
-			$n += $t0 ** 4 * ($gi0[0] * $x0 + $gi0[1] * $y0); // (x,y) of grad3 used for 2D gradient
+			$n += $t0 * $t0 * $t0 * $t0 * ($gi0[0] * $x0 + $gi0[1] * $y0); // (x,y) of grad3 used for 2D gradient
 		}
 
-		$t1 = 0.5 - $x1 ** 2 - $y1 ** 2;
+		$t1 = 0.5 - $x1 * $x1 - $y1 * $y1;
 		if($t1 > 0){
 			$gi1 = self::$grad3[$this->perm[$ii + $i1 + $this->perm[$jj + $j1]] % 12];
-			$n += $t1 ** 4 * ($gi1[0] * $x1 + $gi1[1] * $y1);
+			$n += $t1 * $t1 * $t1 * $t1 * ($gi1[0] * $x1 + $gi1[1] * $y1);
 		}
 
-		$t2 = 0.5 - $x2 ** 2 - $y2 ** 2;
+		$t2 = 0.5 - $x2 * $x2 - $y2 * $y2;
 		if($t2 > 0){
 			$gi2 = self::$grad3[$this->perm[$ii + 1 + $this->perm[$jj + 1]] % 12];
-			$n += $t2 ** 4 * ($gi2[0] * $x2 + $gi2[1] * $y2);
+			$n += $t2 * $t2 * $t2 * $t2 * ($gi2[0] * $x2 + $gi2[1] * $y2);
 		}
 
 		// Add contributions from each corner to get the noise value.

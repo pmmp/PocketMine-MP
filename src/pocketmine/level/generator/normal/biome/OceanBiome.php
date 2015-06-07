@@ -42,8 +42,4 @@ class OceanBiome extends GrassyBiome{
 	public function getName(){
 		return "Ocean";
 	}
-
-	public function getColor(){
-		return 0x8da360;
-	}
 }

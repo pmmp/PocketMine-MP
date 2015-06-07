@@ -31,11 +31,10 @@ class Perlin extends Noise{
 	];
 
 
-	public function __construct(Random $random, $octaves, $frequency, $amplitude, $lacunarity){
+	public function __construct(Random $random, $octaves, $persistence, $expansion = 1){
 		$this->octaves = $octaves;
-		$this->frequency = $frequency;
-		$this->lacunarity = $lacunarity;
-		$this->amplitude = $amplitude;
+		$this->persistence = $persistence;
+		$this->expansion = $expansion;
 		$this->offsetX = $random->nextFloat() * 256;
 		$this->offsetY = $random->nextFloat() * 256;
 		$this->offsetZ = $random->nextFloat() * 256;
@@ -80,9 +79,9 @@ class Perlin extends Noise{
 		//$fX = self::fade($x);
 		//$fY = self::fade($y);
 		//$fZ = self::fade($z);
-		$fX = $x ** 3 * ($x * ($x * 6 - 15) + 10);
-		$fY = $y ** 3 * ($y * ($y * 6 - 15) + 10);
-		$fZ = $z ** 3 * ($z * ($z * 6 - 15) + 10);
+		$fX = $x * $x * $x * ($x * ($x * 6 - 15) + 10);
+		$fY = $y * $y * $y * ($y * ($y * 6 - 15) + 10);
+		$fZ = $z * $z * $z * ($z * ($z * 6 - 15) + 10);
 
 		//Cube corners
 		$A = $this->perm[$X] + $Y;

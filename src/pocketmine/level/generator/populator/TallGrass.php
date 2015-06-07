@@ -62,7 +62,7 @@ class TallGrass extends Populator{
 	private function getHighestWorkableBlock($x, $z){
 		for($y = 127; $y >= 0; --$y){
 			$b = $this->level->getBlockIdAt($x, $y, $z);
-			if($b !== Block::AIR and $b !== Block::LEAVES and $b !== Block::SNOW_LAYER){
+			if($b !== Block::AIR and $b !== Block::LEAVES and $b !== Block::LEAVES2 and $b !== Block::SNOW_LAYER){
 				break;
 			}
 		}

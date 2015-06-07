@@ -67,17 +67,17 @@ class Ore{
 
 			for($x = $startX; $x <= $endX; ++$x){
 				$sizeX = ($x + 0.5 - $seedX) / $size;
-				$sizeX **= 2;
+				$sizeX *= $sizeX;
 
 				if($sizeX < 1){
 					for($y = $startY; $y <= $endY; ++$y){
 						$sizeY = ($y + 0.5 - $seedY) / $size;
-						$sizeY **= 2;
+						$sizeY *= $sizeY;
 
 						if($y > 0 and ($sizeX + $sizeY) < 1){
 							for($z = $startZ; $z <= $endZ; ++$z){
 								$sizeZ = ($z + 0.5 - $seedZ) / $size;
-								$sizeZ **= 2;
+								$sizeZ *= $sizeZ;
 
 								if(($sizeX + $sizeY + $sizeZ) < 1 and $level->getBlockIdAt($x, $y, $z) === 1){
 									$level->setBlockIdAt($x, $y, $z, $this->type->material->getId());

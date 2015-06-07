@@ -21,9 +21,6 @@
 
 /**
  * Different noise generators for level generation
- *
- * WARNING: This class is available on the PocketMine-MP Zephir project.
- * If this class is modified, remember to modify the PHP C extension.
  */
 namespace pocketmine\level\generator\noise;
 
@@ -34,16 +31,15 @@ abstract class Noise{
 	protected $offsetY = 0;
 	protected $offsetZ = 0;
 	protected $octaves = 8;
-	protected $frequency;
-	protected $lacunarity;
-	protected $amplitude;
+	protected $persistence;
+	protected $expansion;
 
 	public static function floor($x){
 		return $x >= 0 ? (int) $x : (int) ($x - 1);
 	}
 
 	public static function fade($x){
-		return $x ** 3 * ($x * ($x * 6 - 15) + 10);
+		return $x * $x * $x * ($x * ($x * 6 - 15) + 10);
 	}
 
 	public static function lerp($x, $y, $z){
@@ -101,18 +97,19 @@ abstract class Noise{
 	public function noise2D($x, $z, $normalized = false){
 		$result = 0;
 		$amp = 1;
-		$laq = 1;
+		$freq = 1;
 		$max = 0;
 
-		$x *= $this->frequency;
-		$z *= $this->frequency;
+		$x *= $this->expansion;
+		$z *= $this->expansion;
 
 		for($i = 0; $i < $this->octaves; ++$i){
-			$result += $this->getNoise2D($x * $laq, $z * $laq) * $amp;
+			$result += $this->getNoise2D($x * $freq, $z * $freq) * $amp;
 			$max += $amp;
-			$laq *= $this->lacunarity;
-			$amp *= $this->amplitude;
+			$freq *= 2;
+			$amp *= $this->persistence;
 		}
+
 		if($normalized === true){
 			$result /= $max;
 		}
@@ -123,19 +120,20 @@ abstract class Noise{
 	public function noise3D($x, $y, $z, $normalized = false){
 		$result = 0;
 		$amp = 1;
-		$laq = 1;
+		$freq = 1;
 		$max = 0;
 
-		$x *= $this->frequency;
-		$y *= $this->frequency;
-		$z *= $this->frequency;
+		$x *= $this->expansion;
+		$y *= $this->expansion;
+		$z *= $this->expansion;
 
 		for($i = 0; $i < $this->octaves; ++$i){
-			$result += $this->getNoise3D($x * $laq, $y * $laq, $z * $laq) * $amp;
+			$result += $this->getNoise3D($x * $freq, $y * $freq, $z * $freq) * $amp;
 			$max += $amp;
-			$laq *= $this->lacunarity;
-			$amp *= $this->amplitude;
+			$freq *= 2;
+			$amp *= $this->persistence;
 		}
+
 		if($normalized === true){
 			$result /= $max;
 		}
