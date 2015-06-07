@@ -567,7 +567,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	public function setSkin($str, $isSlim = false){
 		parent::setSkin($str, $isSlim);
-		if($this->spawned === true){
+		if($this->spawned){
 			$this->respawnToAll();
 		}
 	}

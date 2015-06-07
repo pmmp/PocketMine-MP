@@ -86,8 +86,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		}
 
 
-		if(isset($this->namedtag->NameTag)){
-			$this->setNameTag($this->namedtag["NameTag"]);
+		if(!($this instanceof Player)){
+			if(isset($this->namedtag->NameTag)){
+				$this->setNameTag($this->namedtag["NameTag"]);
+			}
+
+			if(isset($this->namedtag->Skin) and $this->namedtag->Skin instanceof Compound){
+				$this->setSkin($this->namedtag->Skin["Data"], $this->namedtag->Skin["Slim"] > 0);
+			}
 		}
 
 		if(isset($this->namedtag->Inventory) and $this->namedtag->Inventory instanceof Enum){
@@ -100,10 +106,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 					$this->inventory->setItem($item["Slot"] - 9, ItemItem::get($item["id"], $item["Damage"], $item["Count"]));
 				}
 			}
-		}
-
-		if(isset($this->namedtag->Skin) and $this->namedtag->Skin instanceof Compound){
-			$this->setSkin($this->namedtag->Skin["Data"], $this->namedtag->Skin["Slim"] > 0);
 		}
 
 		parent::initEntity();
