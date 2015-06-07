@@ -128,7 +128,7 @@ class TimeCommand extends VanillaCommand{
 				$level->setTime($level->getTime() + $value);
 				$level->checkTime();
 			}
-			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.time.add", [$value]));
+			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.time.added", [$value]));
 		}else{
 			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 		}

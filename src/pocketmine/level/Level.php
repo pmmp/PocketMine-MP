@@ -344,7 +344,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->chunkGenerationQueueSize = (int) $this->server->getProperty("chunk-generation.queue-size", 8);
 		$this->chunkPopulationQueueSize = (int) $this->server->getProperty("chunk-generation.population-queue-size", 2);
 		$this->chunkTickList = [];
-		$this->clearChunksOnTick = (bool) $this->server->getProperty("chunk-ticking.clear-tick-list", false);
+		$this->clearChunksOnTick = (bool) $this->server->getProperty("chunk-ticking.clear-tick-list", true);
 		$this->cacheChunks = (bool) $this->server->getProperty("chunk-sending.cache-chunks", false);
 
 		$this->timings = new LevelTimings($this);
@@ -846,9 +846,6 @@ class Level implements ChunkManager, Metadatable{
 			}elseif($loaders <= 0){
 				unset($this->chunkTickList[$index]);
 			}
-
-
-
 
 			foreach($chunk->getEntities() as $entity){
 				$entity->scheduleUpdate();

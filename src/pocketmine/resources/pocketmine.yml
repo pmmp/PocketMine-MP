@@ -116,7 +116,7 @@ chunk-ticking:
  #Radius of chunks around a player to tick
  tick-radius: 3
  light-updates: false
- clear-tick-list: false
+ clear-tick-list: true
 
 chunk-generation:
  #Max. amount of chunks in the waiting queue to be generated
