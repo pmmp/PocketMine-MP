@@ -59,7 +59,9 @@ class RegionLoader{
 		$this->levelProvider = $level;
 		$this->filePath = $this->levelProvider->getPath() . "region/r.$regionX.$regionZ.mcr";
 		$exists = file_exists($this->filePath);
-		touch($this->filePath);
+		if(!$exists){
+			touch($this->filePath);
+		}
 		$this->filePointer = fopen($this->filePath, "r+b");
 		stream_set_read_buffer($this->filePointer, 1024 * 16); //16KB
 		stream_set_write_buffer($this->filePointer, 1024 * 16); //16KB
@@ -263,10 +265,11 @@ class RegionLoader{
 	protected function loadLocationTable(){
 		fseek($this->filePointer, 0);
 		$this->lastSector = 1;
-		$table = fread($this->filePointer, 4 * 1024 * 2); //1024 records * 4 bytes * 2 times
+
+		$data = unpack("N*", fread($this->filePointer, 4 * 1024 * 2)); //1024 records * 4 bytes * 2 times
 		for($i = 0; $i < 1024; ++$i){
-			$index = unpack("N", substr($table, $i << 2, 4))[1];
-			$this->locationTable[$i] = [$index >> 8, $index & 0xff, unpack("N", substr($table, 4096 + ($i << 2), 4))[1]];
+			$index = $data[$i + 1];
+			$this->locationTable[$i] = [$index >> 8, $index & 0xff, $data[1024 + $i + 1]];
 			if(($this->locationTable[$i][0] + $this->locationTable[$i][1] - 1) > $this->lastSector){
 				$this->lastSector = $this->locationTable[$i][0] + $this->locationTable[$i][1] - 1;
 			}

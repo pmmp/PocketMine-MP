@@ -594,6 +594,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				Level::getXZ($index, $X, $Z);
 				$this->unloadChunk($X, $Z, $oldLevel);
 			}
+
+			$this->usedChunks = [];
+			$pk = new SetTimePacket();
+			$pk->time = $this->level->getTime();
+			$pk->started = $this->level->stopTime == false;
+			$this->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 		}
 	}
 
@@ -1717,6 +1723,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				if($this->server->getAutoSave()){
 					$this->server->saveOfflinePlayerData($this->username, $nbt, true);
 				}
+
 				parent::__construct($this->level->getChunk($nbt["Pos"][0] >> 4, $nbt["Pos"][2] >> 4, true), $nbt);
 				$this->loggedIn = true;
 
@@ -1797,9 +1804,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}else{
 					$pk = new ContainerSetContentPacket();
 					$pk->windowid = ContainerSetContentPacket::SPECIAL_CREATIVE;
-					foreach(Item::getCreativeItems() as $item){
-						$pk->slots[] = clone $item;
-					}
+					$pk->slots = Item::getCreativeItems();
 					$this->dataPacket($pk->setChannel(Network::CHANNEL_PRIORITY));
 				}
 
@@ -3158,6 +3163,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 			if(!$this->justCreated){
 				$newChunk = $this->level->getChunkPlayers($this->x >> 4, $this->z >> 4);
+				unset($newChunk[$this->getLoaderId()]);
+
 				/** @var Player[] $reload */
 				$reload = [];
 				foreach($this->hasSpawned as $player){
@@ -3169,9 +3176,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					}
 				}
 
-				//TODO HACK: Minecraft: PE does not like moving a player from old chunks.
-				//Player entities get stuck in unloaded chunks and the client does not accept position updates.
-				$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET, Network::CHANNEL_MOVEMENT, $reload);
+				if($this->chunk !== null and $this->spawned){
+					//TODO HACK: Minecraft: PE does not like moving a player from old chunks.
+					//Player entities get stuck in unloaded chunks and the client does not accept position updates.
+					$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET, Network::CHANNEL_MOVEMENT, $reload);
+				}
 
 				foreach($newChunk as $player){
 					$this->spawnTo($player);

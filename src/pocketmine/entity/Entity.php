@@ -1021,13 +1021,6 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->setLevel($targetLevel);
 		$this->level->addEntity($this);
-		if($this instanceof Player){
-			$this->usedChunks = [];
-			$pk = new SetTimePacket();
-			$pk->time = $this->level->getTime();
-			$pk->started = $this->level->stopTime == false;
-			$this->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
-		}
 		$this->chunk = null;
 
 		return true;
