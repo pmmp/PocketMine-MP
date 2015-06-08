@@ -1636,7 +1636,7 @@ class Server{
 		$this->maxPlayers = $this->getConfigInt("max-players", 20);
 		$this->setAutoSave($this->getConfigBoolean("auto-save", true));
 
-		if($this->getConfigString("memory-limit", -1) !== false){
+		if($this->getConfigString("memory-limit", false) !== false){
 			$this->logger->notice("The memory-limit setting has been deprecated.");
 			$this->logger->notice("There are new memory settings on pocketmine.yml to tune memory and events.");
 			$this->logger->notice("You can also reduce the amount of threads and chunks loaded control the memory usage.");
