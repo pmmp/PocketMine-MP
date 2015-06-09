@@ -52,7 +52,8 @@ class ListCommand extends VanillaCommand{
 			}
 		}
 
-		$sender->sendMessage(new TranslationContainer("%commands.players.list " . substr($online, 0, -2), [$onlineCount, $sender->getServer()->getMaxPlayers()]));
+		$sender->sendMessage(new TranslationContainer("commands.players.list", [$onlineCount, $sender->getServer()->getMaxPlayers()]));
+		$sender->sendMessage(substr($online, 0, -2));
 
 		return true;
 	}
