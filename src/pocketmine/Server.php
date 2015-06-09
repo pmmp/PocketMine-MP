@@ -240,6 +240,8 @@ class Server{
 	/** @var Config */
 	private $properties;
 
+	private $propertyCache = [];
+
 	/** @var Config */
 	private $config;
 
@@ -1307,9 +1309,16 @@ class Server{
 	 * @return mixed
 	 */
 	public function getProperty($variable, $defaultValue = null){
-		$value = $this->config->getNested($variable);
+		if(!array_key_exists($variable, $this->propertyCache)){
+			$v = getopt("", ["$variable::"]);
+			if(isset($v[$variable])){
+				$this->propertyCache[$variable] = $v[$variable];
+			}else{
+				$this->propertyCache[$variable] = $this->properties->getNested($variable);
+			}
+		}
 
-		return $value === null ? $defaultValue : $value;
+		return $this->propertyCache[$variable] === null ? $defaultValue : $this->propertyCache[$variable];
 	}
 
 	/**
