@@ -777,7 +777,7 @@ class Server{
 			]),
 			new Float("FallDistance", 0.0),
 			new Short("Fire", 0),
-			new Short("Air", 0),
+			new Short("Air", 300),
 			new Byte("OnGround", 1),
 			new Byte("Invulnerable", 0),
 			new String("NameTag", $name),
