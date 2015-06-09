@@ -178,4 +178,8 @@ class RCONInstance extends Thread{
 		unset($this->socket, $this->cmd, $this->response, $this->stop);
 		exit(0);
 	}
+
+	public function getThreadName(){
+		return "RCON";
+	}
 }

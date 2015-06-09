@@ -29,9 +29,6 @@ class CommandReader extends Thread{
 	/** @var \Threaded */
 	protected $buffer;
 
-	/**
-	 * @param \Threaded $threaded
-	 */
 	public function __construct(){
 		$this->buffer = \ThreadedFactory::create();
 		$this->start();
@@ -81,5 +78,9 @@ class CommandReader extends Thread{
 
 			$lastLine = microtime(true);
 		}
+	}
+
+	public function getThreadName(){
+		return "Console";
 	}
 }

@@ -38,4 +38,8 @@ class AsyncWorker extends Worker{
 	public function start($options = PTHREADS_INHERIT_NONE){
 		parent::start(PTHREADS_INHERIT_CONSTANTS | PTHREADS_INHERIT_FUNCTIONS);
 	}
+
+	public function getThreadName(){
+		return "Asynchronous Worker";
+	}
 }

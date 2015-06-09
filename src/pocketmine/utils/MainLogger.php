@@ -22,6 +22,8 @@
 namespace pocketmine\utils;
 
 use LogLevel;
+use pocketmine\Thread;
+use pocketmine\Worker;
 
 class MainLogger extends \AttachableThreadedLogger{
 	protected $logFile;
@@ -58,38 +60,38 @@ class MainLogger extends \AttachableThreadedLogger{
 	}
 
 	public function emergency($message){
-		$this->send(TextFormat::RED . "[EMERGENCY] " . $message, \LogLevel::EMERGENCY);
+		$this->send($message, \LogLevel::EMERGENCY, "EMERGENCY", TextFormat::RED);
 	}
 
 	public function alert($message){
-		$this->send(TextFormat::RED . "[ALERT] " . $message, \LogLevel::ALERT);
+		$this->send($message, \LogLevel::ALERT, "ALERT", TextFormat::RED);
 	}
 
 	public function critical($message){
-		$this->send(TextFormat::RED . "[CRITICAL] " . $message, \LogLevel::CRITICAL);
+		$this->send($message, \LogLevel::CRITICAL, "CRITICAL", TextFormat::RED);
 	}
 
 	public function error($message){
-		$this->send(TextFormat::DARK_RED . "[ERROR] " . $message, \LogLevel::ERROR);
+		$this->send($message, \LogLevel::ERROR, "ERROR", TextFormat::DARK_RED);
 	}
 
 	public function warning($message){
-		$this->send(TextFormat::YELLOW . "[WARNING] " . $message, \LogLevel::WARNING);
+		$this->send($message, \LogLevel::WARNING, "WARNING", TextFormat::YELLOW);
 	}
 
 	public function notice($message){
-		$this->send(TextFormat::AQUA . "[NOTICE] " . $message, \LogLevel::NOTICE);
+		$this->send($message, \LogLevel::NOTICE, "NOTICE", TextFormat::AQUA);
 	}
 
 	public function info($message){
-		$this->send(TextFormat::WHITE . "[INFO] " . $message, \LogLevel::INFO);
+		$this->send($message, \LogLevel::INFO, "INFO", TextFormat::WHITE);
 	}
 
 	public function debug($message){
 		if($this->logDebug === false){
 			return;
 		}
-		$this->send(TextFormat::GRAY . "[DEBUG] " . $message, \LogLevel::DEBUG);
+		$this->send($message, \LogLevel::DEBUG, "DEBUG", TextFormat::GRAY);
 	}
 
 	/**
@@ -175,9 +177,19 @@ class MainLogger extends \AttachableThreadedLogger{
 		$this->shutdown = true;
 	}
 
-	protected function send($message, $level = -1){
+	protected function send($message, $level, $prefix, $color){
 		$now = time();
-		$message = TextFormat::toANSI(TextFormat::AQUA . date("H:i:s", $now) . TextFormat::RESET . " " . $message . TextFormat::RESET);
+
+		$thread = \Thread::getCurrentThread();
+		if($thread === null){
+			$threadName = "Server thread";
+		}elseif($thread instanceof Thread or $thread instanceof Worker){
+			$threadName = $thread->getThreadName() . " thread";
+		}else{
+			$threadName = (new \ReflectionClass($thread))->getShortName() . " thread";
+		}
+
+		$message = TextFormat::toANSI(TextFormat::AQUA . "[" . date("H:i:s", $now) . "] ". TextFormat::RESET . $color ."[" . $threadName . "/" . $prefix . "]:" . " " . $message . TextFormat::RESET);
 		$cleanMessage = TextFormat::clean($message);
 
 		if(!Terminal::hasFormattingCodes()){

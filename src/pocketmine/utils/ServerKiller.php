@@ -30,4 +30,8 @@ class ServerKiller extends Thread{
 		echo "\nTook to long to stop, server was killed forcefully!\n";
 		@\pocketmine\kill(getmypid());
 	}
+
+	public function getThreadName(){
+		return "Server Killer";
+	}
 }

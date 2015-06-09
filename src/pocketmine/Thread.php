@@ -84,4 +84,8 @@ abstract class Thread extends \Thread{
 
 		ThreadManager::getInstance()->remove($this);
 	}
+
+	public function getThreadName(){
+		return (new \ReflectionClass($this))->getShortName();
+	}
 }

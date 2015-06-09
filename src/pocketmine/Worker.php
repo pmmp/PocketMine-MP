@@ -85,4 +85,8 @@ abstract class Worker extends \Worker{
 
 		ThreadManager::getInstance()->remove($this);
 	}
+
+	public function getThreadName(){
+		return (new \ReflectionClass($this))->getShortName();
+	}
 }
