@@ -1314,7 +1314,7 @@ class Server{
 			if(isset($v[$variable])){
 				$this->propertyCache[$variable] = $v[$variable];
 			}else{
-				$this->propertyCache[$variable] = $this->properties->getNested($variable);
+				$this->propertyCache[$variable] = $this->config->getNested($variable);
 			}
 		}
 
