@@ -470,7 +470,7 @@ namespace pocketmine {
 		$thread->quit();
 	}
 
-	$killer = new ServerKiller();
+	$killer = new ServerKiller(8);
 	$killer->start();
 	$killer->detach();
 

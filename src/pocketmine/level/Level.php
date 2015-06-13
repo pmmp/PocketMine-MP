@@ -2544,7 +2544,7 @@ class Level implements ChunkManager, Metadatable{
 						++$y;
 					}
 				}
-				
+
 				$v->y = $y;
 			}
 

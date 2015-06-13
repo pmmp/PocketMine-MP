@@ -106,6 +106,7 @@ use pocketmine\utils\Config;
 use pocketmine\utils\LevelException;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\ServerException;
+use pocketmine\utils\ServerKiller;
 use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\TextWrapper;
@@ -2069,6 +2070,11 @@ class Server{
 	 * Shutdowns the server correctly
 	 */
 	public function shutdown(){
+		if($this->isRunning){
+			$killer = new ServerKiller(90);
+			$killer->start();
+			$killer->detach();
+		}
 		$this->isRunning = false;
 	}
 
@@ -2423,9 +2429,11 @@ class Server{
 		if(!Terminal::hasFormattingCodes()){
 			return;
 		}
+
+		$d = Utils::getRealMemoryUsage();
 		
 		$u = Utils::getMemoryUsage(true);
-		$usage = round(($u[0] / 1024) / 1024, 2) . "/" . round(($u[1] / 1024) / 1024, 2) . "/".round(($u[2] / 1024) / 1024, 2)." MB @ " . Utils::getThreadCount() . " threads";
+		$usage = round(($u[0] / 1024) / 1024, 2) . "/" . round(($d[0] / 1024) / 1024, 2) . "/" . round(($u[1] / 1024) / 1024, 2) . "/".round(($u[2] / 1024) / 1024, 2)." MB @ " . Utils::getThreadCount() . " threads";
 
 		echo "\x1b]0;" . $this->getName() . " " .
 			$this->getPocketMineVersion() .

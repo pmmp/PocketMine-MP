@@ -216,6 +216,26 @@ class Utils{
 	}
 
 
+	public static function getRealMemoryUsage(){
+		$stack = 0;
+		$heap = 0;
+
+		if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
+			$mappings = file("/proc/self/maps");
+			foreach($mappings as $line){
+				if(preg_match("#([a-z0-9]+)\\-([a-z0-9]+) [rwxp\\-]{4} [a-z0-9]+ [^\\[]*\\[([a-zA-z0-9]+)\\]#", trim($line), $matches) > 0){
+					if(strpos($matches[3], "heap") === 0){
+						$heap += hexdec($matches[2]) - hexdec($matches[1]);
+					}elseif(strpos($matches[3], "stack") === 0){
+						$stack += hexdec($matches[2]) - hexdec($matches[1]);
+					}
+				}
+			}
+		}
+
+		return [$heap, $stack];
+	}
+
 	public static function getMemoryUsage($advanced = false){
 		$reserved = memory_get_usage();
 		$VmSize = null;
@@ -482,6 +502,7 @@ class Utils{
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, (int) $timeout);
+		curl_setopt($ch, CURLOPT_TIMEOUT, (int) $timeout);
 		$ret = curl_exec($ch);
 		curl_close($ch);
 
@@ -515,6 +536,7 @@ class Utils{
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array_merge(["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 PocketMine-MP"], $extraHeaders));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, (int) $timeout);
+		curl_setopt($ch, CURLOPT_TIMEOUT, (int) $timeout);
 		$ret = curl_exec($ch);
 		curl_close($ch);
 

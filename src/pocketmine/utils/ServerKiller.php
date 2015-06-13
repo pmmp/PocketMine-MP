@@ -25,8 +25,14 @@ use pocketmine\Thread;
 
 class ServerKiller extends Thread{
 
+	public $time;
+
+	public function __construct($time = 15){
+		$this->time = $time;
+	}
+
 	public function run(){
-		sleep(15);
+		sleep($this->time);
 		echo "\nTook to long to stop, server was killed forcefully!\n";
 		@\pocketmine\kill(getmypid());
 	}

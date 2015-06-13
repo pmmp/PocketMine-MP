@@ -122,6 +122,7 @@ class AsyncPool{
 	public function removeTasks(){
 		do{
 			foreach($this->tasks as $task){
+				$task->cancelRun();
 				$this->removeTask($task);
 			}
 
@@ -144,7 +145,9 @@ class AsyncPool{
 		foreach($this->tasks as $task){
 			if($task->isGarbage() and !$task->isRunning()){
 
-				$task->onCompletion($this->server);
+				if(!$task->hasCancelledRun()){
+					$task->onCompletion($this->server);
+				}
 
 				$this->removeTask($task);
 			}elseif($task->isTerminated()){

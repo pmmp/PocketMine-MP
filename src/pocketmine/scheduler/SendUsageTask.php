@@ -139,7 +139,7 @@ class SendUsageTask extends AsyncTask{
 
 	public function onRun(){
 		try{
-			Utils::postURL($this->endpoint, $this->data, 10, [
+			Utils::postURL($this->endpoint, $this->data, 5, [
 				"Content-Type: application/json",
 				"Content-Length: ". strlen($this->data)
 			]);

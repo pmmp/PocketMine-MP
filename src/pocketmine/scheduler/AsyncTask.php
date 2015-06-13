@@ -35,13 +35,16 @@ abstract class AsyncTask extends \Collectable{
 
 	private $result = null;
 	private $serialized = false;
+	private $cancelRun = false;
 	/** @var int */
 	private $taskId = null;
 
 	public function run(){
 		$this->result = null;
 
-		$this->onRun();
+		if($this->cancelRun !== true){
+			$this->onRun();
+		}
 
 		$this->setGarbage();
 	}
@@ -60,6 +63,14 @@ abstract class AsyncTask extends \Collectable{
 	 */
 	public function getResult(){
 		return $this->serialized ? unserialize($this->result) : $this->result;
+	}
+
+	public function cancelRun(){
+		$this->cancelRun = true;
+	}
+
+	public function hasCancelledRun(){
+		return $this->cancelRun === true;
 	}
 
 	/**
