@@ -1061,6 +1061,9 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function isFullBlock(Vector3 $pos){
 		if($pos instanceof Block){
+			if($pos->isSolid()){
+				return true;
+			}
 			$bb = $pos->getBoundingBox();
 		}else{
 			$bb = $this->getBlock($pos)->getBoundingBox();
@@ -2513,26 +2516,36 @@ class Level implements ChunkManager, Metadatable{
 			$spawn = $this->getSpawnLocation();
 		}
 		if($spawn instanceof Vector3){
-			$v = $spawn->round();
+			$v = $spawn->floor();
 			$chunk = $this->getChunk($v->x >> 4, $v->z >> 4, false);
 			$x = $v->x & 0x0f;
 			$z = $v->z & 0x0f;
 			if($chunk !== null){
-				for(; $v->y > 0; --$v->y){
-					if($v->y < 127 and Block::$solid[$chunk->getBlockId($x, $v->y & 0x7f, $z)]){
-						$v->y++;
+				$y = (int) min(127, $v->y);
+				for(; $y > 0; --$y){
+					$b = $chunk->getFullBlock($x, $y, $z);
+					$block = Block::get($b >> 4, $b & 0x0f);
+					if($this->isFullBlock($block)){
+						$y++;
 						break;
 					}
 				}
-				for(; $v->y >= 0 and $v->y < 128; ++$v->y){
-					if(!Block::$solid[$chunk->getBlockId($x, $v->y + 1, $z)]){
-						if(!Block::$solid[$chunk->getBlockId($x, $v->y, $z)]){
-							return new Position($spawn->x, $v->y === (int) $spawn->y ? $spawn->y : $v->y, $spawn->z, $this);
+
+				for(; $y >= 0 and $y < 128; ++$y){
+					$b = $chunk->getFullBlock($x, $y + 1, $z);
+					$block = Block::get($b >> 4, $b & 0x0f);
+					if(!$this->isFullBlock($block)){
+						$b = $chunk->getFullBlock($x, $y, $z);
+						$block = Block::get($b >> 4, $b & 0x0f);
+						if(!$this->isFullBlock($block)){
+							return new Position($spawn->x, $y === (int) $spawn->y ? $spawn->y : $y, $spawn->z, $this);
 						}
 					}else{
-						++$v->y;
+						++$y;
 					}
 				}
+				
+				$v->y = $y;
 			}
 
 			return new Position($spawn->x, $v->y, $spawn->z, $this);
