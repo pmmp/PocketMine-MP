@@ -260,4 +260,128 @@ class MemoryManager{
 			"object" => $includeObject ? $object : null
 		];
 	}
+
+	public function dumpServerMemory($outputFolder, $maxNesting, $maxStringSize){
+		gc_enable();
+		gc_collect_cycles(); //Cleanup counts
+
+		if(!file_exists($outputFolder)){
+			mkdir($outputFolder, 0777, true);
+		}
+
+		$this->server->getLogger()->notice("[Dump] After the memory dump is done, the server might crash");
+
+		$obData = fopen($outputFolder . "/objects.js", "wb+");
+
+		$staticProperties = [];
+
+		$data = [];
+
+		$objects = [];
+
+		$refCounts = [];
+
+		$this->continueDump($this->server, $data, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
+
+		do{
+			$continue = false;
+			foreach($objects as $hash => $object){
+				if(!is_object($object)){
+					continue;
+				}
+				$continue = true;
+
+				$className = get_class($object);
+
+				$objects[$hash] = true;
+
+				$reflection = new \ReflectionObject($object);
+
+				$info = [
+					"information" => "$hash@$className",
+					"properties" => []
+				];
+
+				if($reflection->getParentClass()){
+					$info["parent"] = $reflection->getParentClass()->getName();
+				}
+
+				if(count($reflection->getInterfaceNames()) > 0){
+					$info["implements"] = implode(", ", $reflection->getInterfaceNames());
+				}
+
+				foreach($reflection->getProperties() as $property){
+					if($property->isStatic()){
+						continue;
+					}
+
+					if(!$property->isPublic()){
+						$property->setAccessible(true);
+					}
+					$this->continueDump($property->getValue($object), $info["properties"][$property->getName()], $objects, $refCounts, 0, $maxNesting, $maxStringSize);
+				}
+
+				fwrite($obData, "$hash@$className: ". json_encode($info, JSON_UNESCAPED_SLASHES) . "\n");
+
+				if(!isset($objects["staticProperties"][$className])){
+					$staticProperties[$className] = [];
+					foreach($reflection->getProperties() as $property){
+						if(!$property->isStatic() or $property->getDeclaringClass()->getName() !== $className){
+							continue;
+						}
+
+						if(!$property->isPublic()){
+							$property->setAccessible(true);
+						}
+						$this->continueDump($property->getValue($object), $staticProperties[$className][$property->getName()], $objects, $refCounts, 0, $maxNesting, $maxStringSize);
+					}
+				}
+			}
+
+			echo "[Dump] Wrote " . count($objects) . " objects\n";
+		}while($continue);
+
+		file_put_contents($outputFolder . "/staticProperties.js", json_encode($staticProperties, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents($outputFolder . "/serverEntry.js", json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents($outputFolder . "/referenceCounts.js", json_encode($refCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+
+		echo "[Dump] Finished!\n";
+
+		$this->server->forceShutdown();
+	}
+
+	private function continueDump($from, &$data, &$objects, &$refCounts, $recursion, $maxNesting, $maxStringSize){
+		if($maxNesting <= 0){
+			$data = "(error) NESTING LIMIT REACHED";
+			return;
+		}
+
+		--$maxNesting;
+
+		if(is_object($from)){
+			if(!isset($objects[$hash = spl_object_hash($from)])){
+				$objects[$hash] = $from;
+				$refCounts[$hash] = 0;
+			}
+
+			++$refCounts[$hash];
+
+			$data = "(object) $hash@" . get_class($from);
+		}elseif(is_array($from)){
+			if($recursion >= 5){
+				$data = "(error) ARRAY RECURSION LIMIT REACHED";
+				return;
+			}
+			$data = [];
+			foreach($from as $key => $value){
+				$this->continueDump($value, $data[$key], $objects, $refCounts, $recursion + 1, $maxNesting, $maxStringSize);
+			}
+		}elseif(is_string($from)){
+			$data = "(string) len(".strlen($from).") " . substr(Utils::printable($from), 0, $maxStringSize);
+		}elseif(is_resource($from)){
+			$data = "(resource) " . print_r($from, true);
+		}else{
+			$data = $from;
+		}
+	}
 }

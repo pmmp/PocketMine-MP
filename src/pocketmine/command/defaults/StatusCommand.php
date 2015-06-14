@@ -41,7 +41,7 @@ class StatusCommand extends VanillaCommand{
 			return true;
 		}
 
-		$rUsage = Utils::getRealMemoryUsage(true);
+		$rUsage = Utils::getRealMemoryUsage();
 		$mUsage = Utils::getMemoryUsage(true);
 
 		$server = $sender->getServer();
