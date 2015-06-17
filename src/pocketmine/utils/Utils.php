@@ -59,7 +59,7 @@ class Utils{
 
 	public static function toUUID($data, $version = 2, $fixed = "8"){
 		if(strlen($data) !== 16){
-			throw new \InvalidArgumentException("Data bust be 16 bytes");
+			throw new \InvalidArgumentException("Data must be 16 bytes");
 		}
 
 		$hex = bin2hex($data);
