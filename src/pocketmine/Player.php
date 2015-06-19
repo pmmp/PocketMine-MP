@@ -2911,7 +2911,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		if($this->perm !== null){
 			$this->perm->clearPermissions();
+			$this->perm = null;
 		}
+
+		if($this->inventory !== null){
+			$this->inventory = null;
+			$this->currentTransaction = null;
+		}
+
+		$this->chunk = null;
 
 		$this->server->removePlayer($this);
 	}

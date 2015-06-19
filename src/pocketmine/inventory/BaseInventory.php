@@ -78,6 +78,11 @@ abstract class BaseInventory implements Inventory{
 		$this->setContents($items);
 	}
 
+	public function __destruct(){
+		$this->holder = null;
+		$this->slots = [];
+	}
+
 	public function getSize(){
 		return $this->size;
 	}

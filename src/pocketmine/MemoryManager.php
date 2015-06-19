@@ -262,8 +262,7 @@ class MemoryManager{
 	}
 
 	public function dumpServerMemory($outputFolder, $maxNesting, $maxStringSize){
-		gc_enable();
-		gc_collect_cycles(); //Cleanup counts
+		gc_disable();
 
 		if(!file_exists($outputFolder)){
 			mkdir($outputFolder, 0777, true);
@@ -346,6 +345,8 @@ class MemoryManager{
 		file_put_contents($outputFolder . "/referenceCounts.js", json_encode($refCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
 		echo "[Dump] Finished!\n";
+
+		gc_enable();
 
 		$this->server->forceShutdown();
 	}
