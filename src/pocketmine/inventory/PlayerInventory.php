@@ -73,10 +73,10 @@ class PlayerInventory extends BaseInventory{
 			$this->itemInHandIndex = $index;
 
 			if($this->getHolder() instanceof Player){
-				$this->sendHeldItem($this->getHolder()->getViewers() + [$this->getHolder()]);
-			}else{
-				$this->sendHeldItem($this->getHolder()->getViewers());
+				$this->sendHeldItem($this->getHolder());
 			}
+
+			$this->sendHeldItem($this->getHolder()->getViewers());
 		}
 	}
 
