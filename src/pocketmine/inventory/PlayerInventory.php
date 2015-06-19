@@ -124,26 +124,27 @@ class PlayerInventory extends BaseInventory{
 	 * @param Player|Player[] $target
 	 */
 	public function sendHeldItem($target){
-		if($target instanceof Player){
-			$target = [$target];
-		}
-
 		$item = $this->getItemInHand();
 
 		$pk = new PlayerEquipmentPacket();
-		$pk->eid = $this->getHolder()->getId();
+		$pk->eid = ($target === $this->getHolder() ? 0 : $this->getHolder()->getId());
 		$pk->item = $item->getId();
 		$pk->meta = $item->getDamage();
 		$pk->slot = $this->getHeldItemSlot();
 		$pk->selectedSlot = $this->getHeldItemIndex();
-		$pk->isEncoded = true;
 
-		Server::broadcastPacket($target, $pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
-
-		foreach($target as $player){
-			if($player === $this->getHolder()){
-				$this->sendSlot($this->getHeldItemSlot(), $player);
-				break;
+		if(!is_array($target)){
+			$target->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+			if($target === $this->getHolder()){
+				$this->sendSlot($this->getHeldItemSlot(), $target);
+			}
+		}else{
+			Server::broadcastPacket($target, $pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+			foreach($target as $player){
+				if($player === $this->getHolder()){
+					$this->sendSlot($this->getHeldItemSlot(), $player);
+					break;
+				}
 			}
 		}
 	}
@@ -323,10 +324,6 @@ class PlayerInventory extends BaseInventory{
 
 		foreach($target as $player){
 			if($player === $this->getHolder()){
-				/** @var Player $player */
-				//$pk2 = clone $pk;
-				//$pk2->eid = 0;
-
 				$pk2 = new ContainerSetContentPacket();
 				$pk2->windowid = ContainerSetContentPacket::SPECIAL_ARMOR;
 				$pk2->slots = $armor;

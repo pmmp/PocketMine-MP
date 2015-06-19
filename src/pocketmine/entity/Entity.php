@@ -520,7 +520,7 @@ abstract class Entity extends Location implements Metadatable{
 	public function sendPotionEffects(Player $player){
 		foreach($this->effects as $effect){
 			$pk = new MobEffectPacket();
-			$pk->eid = $this->getId();
+			$pk->eid = 0;
 			$pk->effectId = $effect->getId();
 			$pk->amplifier = $effect->getAmplifier();
 			$pk->particles = $effect->isVisible();
@@ -543,14 +543,15 @@ abstract class Entity extends Location implements Metadatable{
 	 * @param array $data Properly formatted entity data, defaults to everything
 	 */
 	public function sendData($player, array $data = null){
-		if(!is_array($player)){
-			$player = [$player];
-		}
-
 		$pk = new SetEntityDataPacket();
-		$pk->eid = $this->id;
+		$pk->eid = ($player === $this ? 0 : $this->getId());
 		$pk->metadata = $data === null ? $this->dataProperties : $data;
-		Server::broadcastPacket($player, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+
+		if(!is_array($player)){
+			$player->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+		}else{
+			Server::broadcastPacket($player, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+		}
 	}
 
 	/**
@@ -559,7 +560,7 @@ abstract class Entity extends Location implements Metadatable{
 	public function despawnFrom(Player $player){
 		if(isset($this->hasSpawned[$player->getLoaderId()])){
 			$pk = new RemoveEntityPacket();
-			$pk->eid = $this->id;
+			$pk->eid = $this->getId();
 			$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
 			unset($this->hasSpawned[$player->getLoaderId()]);
 		}
