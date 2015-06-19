@@ -1228,7 +1228,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	public function setDataProperty($id, $type, $value){
 		if(parent::setDataProperty($id, $type, $value)){
-			$this->sendData([$this], [$id => $this->dataProperties[$id]]);
+			$this->sendData($this, [$id => $this->dataProperties[$id]]);
 			return true;
 		}
 
