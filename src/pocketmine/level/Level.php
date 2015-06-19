@@ -1637,6 +1637,15 @@ class Level implements ChunkManager, Metadatable{
 				++$realCount;
 			}
 
+			if($player !== null){
+				if(($diff = $player->getNextPosition()->subtract($player->getPosition())) and $diff->lengthSquared() > 0.00001){
+					$bb = $player->getBoundingBox()->getOffsetBoundingBox($diff->x, $diff->y, $diff->z);
+					if($hand->getBoundingBox()->intersectsWith($bb)){
+						++$realCount;
+					}
+				}
+			}
+
 			if($realCount > 0){
 				return false; //Entity in block
 			}

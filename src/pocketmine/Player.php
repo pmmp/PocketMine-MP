@@ -580,6 +580,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return $this->port;
 	}
 
+	public function getNextPosition(){
+		return $this->newPosition !== null ? new Position($this->newPosition->x, $this->newPosition->y, $this->newPosition->z, $this->level) : $this->getPosition();
+	}
+
 	/**
 	 * @return bool
 	 */
