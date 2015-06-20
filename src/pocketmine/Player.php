@@ -620,6 +620,18 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					$entity->despawnFrom($this);
 				}
 			}
+			//TODO HACK: removes tile entities that linger whenever you teleport
+			// to a different world
+			$pk = new UpdateBlockPacket();
+			foreach($level->getChunkTiles($x, $z) as $tile){
+				if($tile instanceof Spawnable){
+					$pk->records[] = [$tile->x, $tile->z, $tile->y, 0, 0, UpdateBlockPacket::FLAG_NONE];
+				}
+			}
+			if(count($pk->records)){
+				$this->dataPacket($pk);
+			}
+			//----
 
 			unset($this->usedChunks[$index]);
 		}
