@@ -1912,9 +1912,9 @@ class Server{
 				if(!$p->isEncoded){
 					$p->encode();
 				}
-				$str .= $p->buffer;
+				$str .= Binary::writeInt(strlen($p->buffer)) . $p->buffer;
 			}else{
-				$str .= $p;
+				$str .= Binary::writeInt(strlen($p)) . $p;
 			}
 		}
 

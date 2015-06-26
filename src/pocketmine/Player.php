@@ -127,6 +127,7 @@ use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
+use raklib\Binary;
 
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
@@ -652,7 +653,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 	}
 
-	public function sendChunk($x, $z, $payload){
+	public function sendChunk($x, $z, $payload, $ordering = FullChunkDataPacket::ORDER_COLUMNS){
 		if($this->connected === false){
 			return;
 		}
@@ -666,6 +667,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$pk = new FullChunkDataPacket();
 			$pk->chunkX = $x;
 			$pk->chunkZ = $z;
+			$pk->order = $ordering;
 			$pk->data = $payload;
 			$this->batchDataPacket($pk->setChannel($this->spawned ? Network::CHANNEL_WORLD_CHUNKS : Network::CHANNEL_PRIORITY));
 		}
@@ -1944,8 +1946,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 				$this->craftingType = 0;
 
-				$packet->eid = $this->id;
-
 				if($packet->face >= 0 and $packet->face <= 5){ //Use Block, place
 					$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
 
@@ -1956,7 +1956,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						if($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
 							break;
 						}
-					}elseif($this->inventory->getItemInHand()->getId() !== $packet->item or (($damage = $this->inventory->getItemInHand()->getDamage()) !== $packet->meta and $damage !== null)){
+					}elseif(!$this->inventory->getItemInHand()->equals($packet->item, true)){
 						$this->inventory->sendHeldItem($this);
 					}else{
 						$item = $this->inventory->getItemInHand();
@@ -1986,7 +1986,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 					if($this->isCreative()){
 						$item = $this->inventory->getItemInHand();
-					}elseif($this->inventory->getItemInHand()->getId() !== $packet->item or (($damage = $this->inventory->getItemInHand()->getDamage()) !== $packet->meta and $damage !== null)){
+					}elseif(!$this->inventory->getItemInHand()->equals($packet->item, true)){
 						$this->inventory->sendHeldItem($this);
 						break;
 					}else{
@@ -3423,15 +3423,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 *
 	 * @return DataPacket
 	 */
-	public static function getChunkCacheFromData($chunkX, $chunkZ, $payload){
+	public static function getChunkCacheFromData($chunkX, $chunkZ, $payload, $ordering = FullChunkDataPacket::ORDER_COLUMNS){
 		$pk = new FullChunkDataPacket();
 		$pk->chunkX = $chunkX;
 		$pk->chunkZ = $chunkZ;
+		$pk->order = $ordering;
 		$pk->data = $payload;
 		$pk->encode();
 
 		$batch = new BatchPacket();
-		$batch->payload = zlib_encode($pk->getBuffer(), ZLIB_ENCODING_DEFLATE, Server::getInstance()->networkCompressionLevel);
+		$batch->payload = zlib_encode(Binary::writeInt(strlen($pk->getBuffer())) . $pk->getBuffer(), ZLIB_ENCODING_DEFLATE, Server::getInstance()->networkCompressionLevel);
 
 		$batch->setChannel(Network::CHANNEL_WORLD_CHUNKS);
 		$batch->encode();

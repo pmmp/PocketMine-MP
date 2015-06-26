@@ -163,20 +163,45 @@ abstract class DataPacket extends \stdClass{
 	}
 
 	protected function getSlot(){
-		$id = $this->getShort();
+		$id = $this->getShort(false);
+		
+		if($id == 0xffff){
+			return Item::get(0, 0, 0);
+		}
+		
 		$cnt = $this->getByte();
+		
+		$data = $this->getShort();
+		
+		$nbtLen = $this->getShort();
+		
+		$nbt = "";
+		
+		if($nbtLen > 0){
+			$nbt = $this->get($nbtLen);
+		}
 
 		return Item::get(
 			$id,
-			$this->getShort(),
-			$cnt
+			$data,
+			$cnt,
+			$nbt
 		);
 	}
 
 	protected function putSlot(Item $item){
+		if($item->getId() === 0){
+			$this->putShort(0xffff);
+			return;
+		}
+		
 		$this->putShort($item->getId());
 		$this->putByte($item->getCount());
 		$this->putShort($item->getDamage());
+		$nbt = $item->getCompoundTag();
+		$this->putShort(strlen($nbt));
+		$this->put($nbt);
+		
 	}
 
 	protected function getString(){

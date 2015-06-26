@@ -120,7 +120,11 @@ class Furnace extends Tile implements InventoryHolder, Container{
 		if($i < 0){
 			return Item::get(Item::AIR, 0, 0);
 		}else{
-			return Item::get($this->namedtag->Items[$i]["id"], $this->namedtag->Items[$i]["Damage"], $this->namedtag->Items[$i]["Count"]);
+			$item = Item::get($this->namedtag->Items[$i]["id"], $this->namedtag->Items[$i]["Damage"], $this->namedtag->Items[$i]["Count"]);
+			if(isset($this->namedtag->Items[$i]["tag"])){
+				$item->setNamedTag($this->namedtag->Items[$i]["tag"]);
+			}
+			return $item;
 		}
 	}
 
@@ -141,6 +145,11 @@ class Furnace extends Tile implements InventoryHolder, Container{
 			new Short("id", $item->getId()),
 			new Short("Damage", $item->getDamage()),
 		]);
+		
+		if($item->hasCompoundTag() and ($tag = $item->getNamedTag()) !== null){
+			$tag->setName("tag");
+			$d->tag = $tag;
+		}
 
 		if($item->getId() === Item::AIR or $item->getCount() <= 0){
 			if($i >= 0){

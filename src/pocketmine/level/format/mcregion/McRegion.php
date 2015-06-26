@@ -133,17 +133,12 @@ class McRegion extends BaseLevelProvider{
 			$tiles = $nbt->write();
 		}
 
-
-
-		$heightmap = pack("C*", ...$chunk->getHeightMapArray());
-		$biomeColors = pack("N*", ...$chunk->getBiomeColorArray());
-
 		$ordered = $chunk->getBlockIdArray() .
 			$chunk->getBlockDataArray() .
 			$chunk->getBlockSkyLightArray() .
 			$chunk->getBlockLightArray() .
-			$heightmap .
-			$biomeColors .
+			pack("C*", ...$chunk->getHeightMapArray()) .
+			pack("N*", ...$chunk->getBiomeColorArray()) .
 			$tiles;
 
 		$this->getLevel()->chunkRequestCallback($x, $z, $ordered);

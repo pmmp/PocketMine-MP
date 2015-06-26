@@ -28,8 +28,8 @@ class SetSpawnPositionPacket extends DataPacket{
 	const NETWORK_ID = Info::SET_SPAWN_POSITION_PACKET;
 
 	public $x;
-	public $z;
 	public $y;
+	public $z;
 
 	public function decode(){
 
@@ -38,8 +38,8 @@ class SetSpawnPositionPacket extends DataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->x);
+		$this->putInt($this->y);
 		$this->putInt($this->z);
-		$this->putByte($this->y);
 	}
 
 }

@@ -33,6 +33,8 @@ use pocketmine\entity\Zombie;
 use pocketmine\inventory\Fuel;
 use pocketmine\level\Level;
 use pocketmine\Player;
+use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\NBT;
 
 class Item{
 	//All Block IDs are here too
@@ -402,6 +404,7 @@ class Item{
 	protected $block;
 	protected $id;
 	protected $meta;
+	protected $nbt;
 	public $count;
 	protected $durability = 0;
 	protected $name;
@@ -846,18 +849,18 @@ class Item{
 		return -1;
 	}
 
-	public static function get($id, $meta = 0, $count = 1){
+	public static function get($id, $meta = 0, $count = 1, $nbt = ""){
 		try{
 			$class = self::$list[$id];
 			if($class === null){
-				return new Item($id, $meta, $count);
+				return (new Item($id, $meta, $count))->setCompoundTag($nbt);
 			}elseif($id < 256){
-				return new ItemBlock(new $class($meta), $meta, $count);
+				return (new ItemBlock(new $class($meta), $meta, $count))->setCompoundTag($nbt);
 			}else{
-				return new $class($meta, $count);
+				return (new $class($meta, $count))->setCompoundTag($nbt);
 			}
 		}catch(\RuntimeException $e){
-			return new Item($id, $meta, $count);
+			return (new Item($id, $meta, $count))->setCompoundTag($nbt);
 		}
 	}
 
@@ -900,7 +903,41 @@ class Item{
 			$this->name = $this->block->getName();
 		}
 	}
+	
+	public function setCompoundTag($nbt){
+		if($nbt instanceof Compound){
+			$this->setNamedTag($nbt);
+		}else{
+			$this->nbt = $nbt;
+		}
+		
+		return $this;
+	}
+	
+	public function getCompoundTag(){
+		return $this->nbt;
+	}
+	
+	public function hasCompoundTag(){
+		return $this->nbt !== "";
+	}
+	
+	public function getNamedTag(){
+		if($this->nbt === ""){
+			return null;
+		}
+		$nbt = new NBT(NBT::LITTLE_ENDIAN);
+		$nbt->read($this->nbt);
+		return $nbt->getData();
+	}
 
+	public function setNamedTag(Compound $tag){
+		$nbt = new NBT(NBT::LITTLE_ENDIAN);
+		$nbt->setData($tag);
+		$this->nbt = $nbt->write($this->nbt);
+		
+		return $this;
+	}
 
 	public function getCount(){
 		return $this->count;
