@@ -862,6 +862,12 @@ class Block extends Position implements Metadatable{
 		);
 	}
 
+	/**
+	 * @param Vector3 $pos1
+	 * @param Vector3 $pos2
+	 *
+	 * @return MovingObjectPosition
+	 */
 	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2){
 		$bb = $this->getBoundingBox();
 		if($bb === null){
@@ -952,8 +958,10 @@ class Block extends Position implements Metadatable{
 
 	public function getMetadata($metadataKey){
 		if($this->getLevel() instanceof Level){
-			$this->getLevel()->getBlockMetadata()->getMetadata($this, $metadataKey);
+			return $this->getLevel()->getBlockMetadata()->getMetadata($this, $metadataKey);
 		}
+
+		return null;
 	}
 
 	public function hasMetadata($metadataKey){

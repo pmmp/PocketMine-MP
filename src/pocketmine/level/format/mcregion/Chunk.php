@@ -327,17 +327,10 @@ class Chunk extends BaseFullChunk{
 			$chunk->blockLight = substr($data, $offset, 16384);
 			$offset += 16384;
 
-			$chunk->heightMap = [];
-			$chunk->biomeColors = [];
-			$hm = unpack("C*", substr($data, $offset, 256));
+			$chunk->heightMap = array_values(unpack("C*", substr($data, $offset, 256)));
 			$offset += 256;
-			$bc = unpack("N*", substr($data, $offset, 1024));
+			$chunk->biomeColors = array_values(unpack("N*", substr($data, $offset, 1024)));
 			$offset += 1024;
-
-			for($i = 0; $i < 256; ++$i){
-				$chunk->biomeColors[$i] = $bc[$i + 1];
-				$chunk->heightMap[$i] = $hm[$i + 1];
-			}
 
 			$flags = ord($data{$offset++});
 
@@ -352,9 +345,6 @@ class Chunk extends BaseFullChunk{
 	}
 	
 	public function toFastBinary(){
-		$heightMap = pack("C*", ...$this->getHeightMapArray());
-		$biomeColors = pack("N*", ...$this->getBiomeColorArray());
-
 		return
 			Binary::writeInt($this->x) .
 			Binary::writeInt($this->z) .
@@ -362,8 +352,8 @@ class Chunk extends BaseFullChunk{
 			$this->getBlockDataArray() .
 			$this->getBlockSkyLightArray() .
 			$this->getBlockLightArray() .
-			$heightMap .
-			$biomeColors .
+			pack("C*", ...$this->getHeightMapArray()) .
+			pack("N*", ...$this->getBiomeColorArray()) .
 			chr(($this->isLightPopulated() ? 1 << 2 : 0) + ($this->isPopulated() ? 1 << 1 : 0) + ($this->isGenerated() ? 1 : 0));
 	}
 

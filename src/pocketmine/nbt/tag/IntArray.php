@@ -32,12 +32,9 @@ class IntArray extends NamedTag{
 	}
 
 	public function read(NBT $nbt){
-		$this->value = [];
+		 [];
 		$size = $nbt->getInt();
-		$value = unpack($nbt->endianness === NBT::LITTLE_ENDIAN ? "V*" : "N*", $nbt->get($size * 4));
-		foreach($value as $i => $v){
-			$this->value[$i - 1] = $v;
-		}
+		$this->value = array_values(unpack($nbt->endianness === NBT::LITTLE_ENDIAN ? "V*" : "N*", $nbt->get($size * 4)));
 	}
 
 	public function write(NBT $nbt){
