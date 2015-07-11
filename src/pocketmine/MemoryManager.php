@@ -68,8 +68,41 @@ class MemoryManager{
 	}
 
 	private function init(){
-		$this->memoryLimit = ((int) $this->server->getProperty("memory.main-limit", 320)) * 1024 * 1024;
-		$this->globalMemoryLimit = ((int) $this->server->getProperty("memory.global-limit", 512)) * 1024 * 1024;
+		$this->memoryLimit = ((int) $this->server->getProperty("memory.main-limit", 0)) * 1024 * 1024;
+
+		$defaultMemory = 1024;
+
+		if(preg_match("/([0-9]+)([KMGkmg])/", $this->server->getConfigString("memory-limit", ""), $matches) > 0){
+			$m = (int) $matches[1];
+			if($m <= 0){
+				$defaultMemory = 0;
+			}else{
+				switch(strtoupper($matches[2])){
+					case "K":
+						$defaultMemory = $m / 1024;
+						break;
+					case "M":
+						$defaultMemory = $m;
+						break;
+					case "G":
+						$defaultMemory = $m * 1024;
+						break;
+					default:
+						$defaultMemory = $m;
+						break;
+				}
+			}
+		}
+
+		$hardLimit = ((int) $this->server->getProperty("memory.main-hard-limit", $defaultMemory));
+
+		if($hardLimit <= 0){
+			ini_set("memory_limit", -1);
+		}else{
+			ini_set("memory_limit", $hardLimit . "M");
+		}
+
+		$this->globalMemoryLimit = ((int) $this->server->getProperty("memory.global-limit", 0)) * 1024 * 1024;
 		$this->checkRate = (int) $this->server->getProperty("memory.check-rate", 20);
 		$this->continuousTrigger = (bool) $this->server->getProperty("memory.continuous-trigger", true);
 		$this->continuousTriggerRate = (int) $this->server->getProperty("memory.continuous-trigger-rate", 30);
