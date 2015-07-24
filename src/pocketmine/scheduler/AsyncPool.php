@@ -60,13 +60,13 @@ class AsyncPool{
 	public function increaseSize($newSize){
 		$newSize = (int) $newSize;
 		if($newSize > $this->size){
-			$this->size = $newSize;
 			for($i = $this->size; $i < $newSize; ++$i){
 				$this->workerUsage[$i] = 0;
 				$this->workers[$i] = new AsyncWorker;
 				$this->workers[$i]->setClassLoader($this->server->getLoader());
 				$this->workers[$i]->start();
 			}
+			$this->size = $newSize;
 		}
 	}
 
