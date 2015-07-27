@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 
+use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 
@@ -35,6 +36,10 @@ class StoneWall extends Transparent{
 
 	public function isSolid(){
 		return false;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getHardness(){

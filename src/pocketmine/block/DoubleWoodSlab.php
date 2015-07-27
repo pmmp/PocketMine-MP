@@ -35,6 +35,10 @@ class DoubleWoodSlab extends Solid{
 		return 2;
 	}
 
+	public function getToolType(){
+		return Tool::TYPE_AXE;
+	}
+
 	public function getName(){
 		static $names = [
 			0 => "Oak",

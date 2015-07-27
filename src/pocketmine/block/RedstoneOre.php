@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 use pocketmine\level\Level;
 
 class RedstoneOre extends Solid{
@@ -48,6 +49,12 @@ class RedstoneOre extends Solid{
 		}
 
 		return false;
+	}
+
+
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getDrops(Item $item){

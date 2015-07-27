@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 use pocketmine\Player;
 
 //TODO: check orientation
@@ -35,6 +36,10 @@ class Stonecutter extends Solid{
 
 	public function getName(){
 		return "Stonecutter";
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function canBeActivated(){

@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
 class LapisOre extends Solid{
 
@@ -33,6 +34,10 @@ class LapisOre extends Solid{
 
 	public function getHardness(){
 		return 3;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getName(){

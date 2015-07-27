@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 
@@ -147,5 +148,9 @@ class Trapdoor extends Transparent{
 		$this->getLevel()->setBlock($this, $this, true);
 
 		return true;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_AXE;
 	}
 }

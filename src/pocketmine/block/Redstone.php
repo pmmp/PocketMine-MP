@@ -22,8 +22,9 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
-class Redstone extends Transparent{
+class Redstone extends Solid{
 
 	protected $id = self::REDSTONE_BLOCK;
 
@@ -33,6 +34,10 @@ class Redstone extends Transparent{
 
 	public function getHardness(){
 		return 5;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getName(){

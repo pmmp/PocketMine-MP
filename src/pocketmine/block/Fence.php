@@ -21,6 +21,7 @@
 
 namespace pocketmine\block;
 
+use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 
@@ -34,6 +35,10 @@ class Fence extends Transparent{
 
 	public function getHardness(){
 		return 2;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 

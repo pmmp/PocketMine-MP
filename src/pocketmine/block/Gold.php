@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
 class Gold extends Solid{
 
@@ -37,6 +38,10 @@ class Gold extends Solid{
 
 	public function getHardness(){
 		return 3;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getDrops(Item $item){

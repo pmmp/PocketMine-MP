@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
 class MossStone extends Solid{
 
@@ -37,6 +38,10 @@ class MossStone extends Solid{
 
 	public function getHardness(){
 		return 2;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getDrops(Item $item){

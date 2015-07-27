@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
 class IronOre extends Solid{
 
@@ -33,6 +34,10 @@ class IronOre extends Solid{
 
 	public function getName(){
 		return "Iron Ore";
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getHardness(){

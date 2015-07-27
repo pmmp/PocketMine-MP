@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
 class WoodStairs extends Stair{
 
@@ -33,6 +34,10 @@ class WoodStairs extends Stair{
 
 	public function getName(){
 		return "Wood Stairs";
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_AXE;
 	}
 
 	public function getDrops(Item $item){

@@ -22,6 +22,8 @@
 namespace pocketmine\block;
 
 
+use pocketmine\item\Tool;
+
 class Wool extends Solid{
 
 	protected $id = self::WOOL;
@@ -32,6 +34,10 @@ class Wool extends Solid{
 
 	public function getHardness(){
 		return 0.8;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_SHEARS;
 	}
 
 	public function getName(){

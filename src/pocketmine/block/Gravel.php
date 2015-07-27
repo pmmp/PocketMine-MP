@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
 class Gravel extends Fallable{
 
@@ -37,6 +38,10 @@ class Gravel extends Fallable{
 
 	public function getHardness(){
 		return 0.6;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_SHOVEL;
 	}
 
 	public function getDrops(Item $item){

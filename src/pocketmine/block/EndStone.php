@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
 class EndStone extends Solid{
 
@@ -33,6 +34,10 @@ class EndStone extends Solid{
 
 	public function getName(){
 		return "End Stone";
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getHardness(){

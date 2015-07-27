@@ -22,6 +22,8 @@
 namespace pocketmine\block;
 
 
+use pocketmine\item\Tool;
+
 class SandstoneStairs extends Stair{
 
 	protected $id = self::SANDSTONE_STAIRS;
@@ -32,6 +34,10 @@ class SandstoneStairs extends Stair{
 
 	public function getHardness(){
 		return 0.8;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getName(){

@@ -22,6 +22,8 @@
 namespace pocketmine\block;
 
 
+use pocketmine\item\Tool;
+
 class Sand extends Fallable{
 
 	protected $id = self::SAND;
@@ -32,6 +34,10 @@ class Sand extends Fallable{
 
 	public function getHardness(){
 		return 0.5;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_SHOVEL;
 	}
 
 	public function getName(){

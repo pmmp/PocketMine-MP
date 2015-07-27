@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
 class NetherBrick extends Solid{
 
@@ -29,6 +30,10 @@ class NetherBrick extends Solid{
 
 	public function __construct(){
 
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getName(){

@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
 class StainedClay extends Solid{
 
@@ -33,6 +34,10 @@ class StainedClay extends Solid{
 
 	public function getHardness(){
 		return 1.25;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getName(){

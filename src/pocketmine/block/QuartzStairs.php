@@ -22,6 +22,8 @@
 namespace pocketmine\block;
 
 
+use pocketmine\item\Tool;
+
 class QuartzStairs extends Stair{
 
 	protected $id = self::QUARTZ_STAIRS;
@@ -32,6 +34,10 @@ class QuartzStairs extends Stair{
 
 	public function getHardness(){
 		return 0.8;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getName(){

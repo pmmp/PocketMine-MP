@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
 class Quartz extends Solid{
 
@@ -43,6 +44,10 @@ class Quartz extends Solid{
 			3 => "Quartz Pillar",
 		];
 		return $names[$this->meta & 0x03];
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getDrops(Item $item){

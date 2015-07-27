@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
 class Diamond extends Solid{
 
@@ -37,6 +38,10 @@ class Diamond extends Solid{
 
 	public function getName(){
 		return "Diamond Block";
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getDrops(Item $item){

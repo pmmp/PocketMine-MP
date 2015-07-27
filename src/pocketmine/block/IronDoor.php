@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
 class IronDoor extends Door{
 
@@ -33,6 +34,10 @@ class IronDoor extends Door{
 
 	public function getName(){
 		return "Iron Door Block";
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getHardness(){

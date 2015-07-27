@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Compound;
@@ -50,6 +51,10 @@ class Chest extends Transparent{
 
 	public function getName(){
 		return "Chest";
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_AXE;
 	}
 
 	protected function recalculateBoundingBox(){

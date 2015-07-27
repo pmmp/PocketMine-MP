@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
 class DoubleSlab extends Solid{
 
@@ -33,6 +34,10 @@ class DoubleSlab extends Solid{
 
 	public function getHardness(){
 		return 2;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getName(){

@@ -686,7 +686,6 @@ class Item{
 		self::addCreativeItem(Item::get(Item::LEAVES, 1));
 		self::addCreativeItem(Item::get(Item::LEAVES, 2));
 		self::addCreativeItem(Item::get(Item::LEAVES, 3));
-		self::addCreativeItem(Item::get(Item::LEAVES, 3));
 		self::addCreativeItem(Item::get(Item::LEAVES2, 0));
 		self::addCreativeItem(Item::get(Item::LEAVES2, 1));
 		self::addCreativeItem(Item::get(Item::CAKE, 0));

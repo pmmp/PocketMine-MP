@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 use pocketmine\level\Level;
 
 class GlowingRedstoneOre extends Solid{
@@ -38,6 +39,10 @@ class GlowingRedstoneOre extends Solid{
 
 	public function getName(){
 		return "Glowing Redstone Ore";
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getLightLevel(){

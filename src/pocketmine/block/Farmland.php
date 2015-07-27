@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
 
 class Farmland extends Solid{
@@ -38,6 +39,10 @@ class Farmland extends Solid{
 
 	public function getHardness(){
 		return 0.6;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_SHOVEL;
 	}
 
 	protected function recalculateBoundingBox(){

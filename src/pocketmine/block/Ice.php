@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
 class Ice extends Transparent{
 
@@ -37,6 +38,10 @@ class Ice extends Transparent{
 
 	public function getHardness(){
 		return 0.5;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function onBreak(Item $item){

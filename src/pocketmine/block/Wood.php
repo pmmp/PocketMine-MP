@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 use pocketmine\Player;
 
 class Wood extends Solid{
@@ -72,5 +73,9 @@ class Wood extends Solid{
 		return [
 			[$this->id, $this->meta & 0x03, 1],
 		];
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_AXE;
 	}
 }

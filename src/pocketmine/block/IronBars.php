@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
 class IronBars extends Thin{
 
@@ -34,8 +35,13 @@ class IronBars extends Thin{
 	public function getName(){
 		return "Iron Bars";
 	}
+
 	public function getHardness(){
 		return 5;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getDrops(Item $item){

@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 
@@ -131,5 +132,11 @@ class Slab extends Transparent{
 		}else{
 			return [];
 		}
+	}
+
+
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 }

@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\Player;
 
@@ -96,5 +97,9 @@ class SignPost extends Transparent{
 		return [
 			[Item::SIGN, 0, 1],
 		];
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_AXE;
 	}
 }

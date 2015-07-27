@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
 class Lapis extends Solid{
 
@@ -33,6 +34,10 @@ class Lapis extends Solid{
 
 	public function getName(){
 		return "Lapis Lazuli Block";
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getHardness(){
