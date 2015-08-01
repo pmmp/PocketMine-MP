@@ -1729,7 +1729,7 @@ class Level implements ChunkManager, Metadatable{
 				"Text4" => new String("Text4", "")
 			]));
 			if($player !== null){
-				$tile->namedtag->Creator = new String("Creator", $player->getUniqueId());
+				$tile->namedtag->Creator = new String("Creator", $player->getRawUniqueId());
 			}
 		}
 		$item->setCount($item->getCount() - 1);

@@ -43,6 +43,8 @@ class EntityEventPacket extends DataPacket{
 	const AMBIENT_SOUND = 16;
 	const RESPAWN = 17;
 
+	//TODO add new events
+
 	public $eid;
 	public $event;
 

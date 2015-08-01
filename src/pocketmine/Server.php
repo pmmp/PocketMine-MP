@@ -53,6 +53,8 @@ use pocketmine\event\TranslationContainer;
 use pocketmine\inventory\CraftingManager;
 use pocketmine\inventory\InventoryType;
 use pocketmine\inventory\Recipe;
+use pocketmine\inventory\ShapedRecipe;
+use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\item\Item;
 use pocketmine\lang\BaseLang;
 use pocketmine\level\format\anvil\Anvil;
@@ -80,7 +82,9 @@ use pocketmine\nbt\tag\String;
 use pocketmine\network\CompressBatchedTask;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\BatchPacket;
+use pocketmine\network\protocol\CraftingDataPacket;
 use pocketmine\network\protocol\DataPacket;
+use pocketmine\network\protocol\PlayerListPacket;
 use pocketmine\network\query\QueryHandler;
 use pocketmine\network\RakLibInterface;
 use pocketmine\network\rcon\RCON;
@@ -111,6 +115,7 @@ use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\TextWrapper;
 use pocketmine\utils\Utils;
+use pocketmine\utils\UUID;
 use pocketmine\utils\VersionString;
 
 /**
@@ -248,6 +253,9 @@ class Server{
 
 	/** @var Player[] */
 	private $players = [];
+
+	/** @var Player[] */
+	private $playerList = [];
 
 	private $identifiers = [];
 
@@ -705,7 +713,7 @@ class Server{
 	 * @return Player[]
 	 */
 	public function getOnlinePlayers(){
-		return $this->players;
+		return $this->playerList;
 	}
 
 	public function addRecipe(Recipe $recipe){
@@ -2311,13 +2319,76 @@ class Server{
 
 	public function onPlayerLogin(Player $player){
 		if($this->sendUsageTicker > 0){
-			$this->uniquePlayers[$player->getUniqueId()] = $player->getUniqueId();
+			$this->uniquePlayers[$player->getRawUniqueId()] = $player->getRawUniqueId();
 		}
+
+		$this->sendFullPlayerListData($player);
+		$this->sendRecipeList($player);
 	}
 
 	public function addPlayer($identifier, Player $player){
 		$this->players[$identifier] = $player;
 		$this->identifiers[spl_object_hash($player)] = $identifier;
+	}
+
+	public function addOnlinePlayer(Player $player){
+		$this->playerList[$player->getRawUniqueId()] = $player;
+
+		$this->updatePlayerListData($player->getUniqueId(), $player->getUniqueId(), $player->getDisplayName(), $player->isSkinSlim(), $player->getSkinData());
+	}
+
+	public function removeOnlinePlayer(Player $player){
+		if(isset($this->playerList[$player->getRawUniqueId()])){
+			unset($this->playerList[$player->getRawUniqueId()]);
+
+			$pk = new PlayerListPacket();
+			$pk->type = PlayerListPacket::TYPE_REMOVE;
+			$pk->entries[] = [$player->getUniqueId()];
+			Server::broadcastPacket($this->playerList, $pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+		}
+	}
+
+	public function updatePlayerListData(UUID $uuid, $entityId, $name, $isSlim, $skinData, array $players = null){
+		$pk = new PlayerListPacket();
+		$pk->type = PlayerListPacket::TYPE_ADD;
+		$pk->entries[] = [$uuid, $entityId, $name, $isSlim, $skinData];
+		Server::broadcastPacket($players === null ? $this->playerList : $players, $pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+	}
+
+	public function removePlayerListData(UUID $uuid, array $players = null){
+		$pk = new PlayerListPacket();
+		$pk->type = PlayerListPacket::TYPE_REMOVE;
+		$pk->entries[] = [$uuid];
+		Server::broadcastPacket($players === null ? $this->playerList : $players, $pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+	}
+
+	public function sendFullPlayerListData(Player $p){
+		$pk = new PlayerListPacket();
+		$pk->type = PlayerListPacket::TYPE_ADD;
+		foreach($this->playerList as $player){
+			$pk->entries[] = [$player->getUniqueId(), $player->getUniqueId(), $player->getDisplayName(), $player->isSkinSlim(), $player->getSkinData()];
+		}
+
+		$p->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+	}
+
+	public function sendRecipeList(Player $p){
+		$pk = new CraftingDataPacket();
+		$pk->cleanRecipes = true;
+
+		foreach($this->getCraftingManager()->getRecipes() as $recipe){
+			if($recipe instanceof ShapedRecipe){
+				$pk->addShapedRecipe($recipe);
+			}elseif($recipe instanceof ShapelessRecipe){
+				$pk->addShapelessRecipe($recipe);
+			}
+		}
+
+		foreach($this->getCraftingManager()->getFurnaceRecipes() as $recipe){
+			$pk->addFurnaceRecipe($recipe);
+		}
+
+		$p->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 	}
 
 	private function checkTickUpdates($currentTick, $tickTime){
@@ -2370,7 +2441,7 @@ class Server{
 	public function doAutoSave(){
 		if($this->getAutoSave()){
 			Timings::$worldSaveTimer->startTiming();
-			foreach($this->getOnlinePlayers() as $index => $player){
+			foreach($this->players as $index => $player){
 				if($player->isOnline()){
 					$player->save(true);
 				}elseif(!$player->isConnected()){

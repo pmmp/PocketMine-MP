@@ -24,6 +24,7 @@ namespace pocketmine\entity;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\Item as ItemItem;
+use pocketmine\utils\UUID;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
@@ -46,6 +47,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	/** @var PlayerInventory */
 	protected $inventory;
 
+
+	/** @var UUID */
+	protected $uuid;
+	protected $rawUUID;
+
 	public $width = 0.6;
 	public $length = 0.6;
 	public $height = 1.8;
@@ -60,6 +66,20 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	public function isSkinSlim(){
 		return $this->isSlim;
+	}
+
+	/**
+	 * @return UUID|null
+	 */
+	public function getUniqueId(){
+		return $this->uuid;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getRawUniqueId(){
+		return $this->rawUUID;
 	}
 
 	/**
@@ -94,6 +114,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			if(isset($this->namedtag->Skin) and $this->namedtag->Skin instanceof Compound){
 				$this->setSkin($this->namedtag->Skin["Data"], $this->namedtag->Skin["Slim"] > 0);
 			}
+
+			$this->uuid = UUID::fromData($this->getId(), $this->getSkinData(), $this->getNameTag());
 		}
 
 		if(isset($this->namedtag->Inventory) and $this->namedtag->Inventory instanceof Enum){
@@ -198,8 +220,13 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
 			}
 
+
+			if(!($this instanceof Player)){
+				$this->server->updatePlayerListData($this->getUniqueId(), $this->getId(), $this->getName(), $this->isSlim, $this->skin, $player);
+			}
+
 			$pk = new AddPlayerPacket();
-			$pk->clientID = $this->getId();
+			$pk->uuid = $this->getUniqueId();
 			$pk->username = $this->getName();
 			$pk->eid = $this->getId();
 			$pk->x = $this->x;
@@ -219,13 +246,18 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
 
 			$this->inventory->sendArmorContents($player);
+
+			if(!($this instanceof Player)){
+				$this->server->removePlayerListData($this->getUniqueId(), $player);
+			}
 		}
 	}
 
 	public function despawnFrom(Player $player){
 		if(isset($this->hasSpawned[$player->getLoaderId()])){
+
 			$pk = new RemovePlayerPacket();
-			$pk->eid = $this->getId();
+			$pk->eid = $this->getUniqueId();
 			$pk->clientID = $this->getId();
 			$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
 			unset($this->hasSpawned[$player->getLoaderId()]);

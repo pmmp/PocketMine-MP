@@ -24,27 +24,41 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
-class PlayerArmorEquipmentPacket extends DataPacket{
-	const NETWORK_ID = Info::PLAYER_ARMOR_EQUIPMENT_PACKET;
+class PlayerListPacket extends DataPacket{
+	const NETWORK_ID = Info::PLAYER_LIST_PACKET;
 
-	public $eid;
-	public $slots = [];
+	const TYPE_ADD = 0;
+	const TYPE_REMOVE = 1;
+
+	//REMOVE: UUID, ADD: UUID, entity id, name, isSlim, skin
+	/** @var array[] */
+	public $entries = [];
+	public $type;
+
+	public function clean(){
+		$this->entries = [];
+		return parent::clean();
+	}
 
 	public function decode(){
-		$this->eid = $this->getLong();
-		$this->slots[0] = $this->getByte();
-		$this->slots[1] = $this->getByte();
-		$this->slots[2] = $this->getByte();
-		$this->slots[3] = $this->getByte();
+
 	}
 
 	public function encode(){
 		$this->reset();
-		$this->putLong($this->eid);
-		$this->putByte($this->slots[0]);
-		$this->putByte($this->slots[1]);
-		$this->putByte($this->slots[2]);
-		$this->putByte($this->slots[3]);
+		$this->putByte($this->type);
+		$this->putInt(count($this->entries));
+		foreach($this->entries as $d){
+			if($this->type === self::TYPE_ADD){
+				$this->putUUID($d[0]);
+				$this->putLong($d[1]);
+				$this->putString($d[2]);
+				$this->putByte($d[3] ? 1 : 0);
+				$this->putString($d[4]);
+			}else{
+				$this->putUUID($d[0]);
+			}
+		}
 	}
 
 }

@@ -30,7 +30,6 @@ class ContainerSetContentPacket extends DataPacket{
 	const SPECIAL_INVENTORY = 0;
 	const SPECIAL_ARMOR = 0x78;
 	const SPECIAL_CREATIVE = 0x79;
-	const SPECIAL_CRAFTING = 0x7a;
 
 	public $windowid;
 	public $slots = [];

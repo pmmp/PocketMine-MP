@@ -26,6 +26,7 @@ use pocketmine\block\Stone;
 use pocketmine\block\Wood;
 use pocketmine\block\Wood2;
 use pocketmine\item\Item;
+use pocketmine\utils\UUID;
 
 class CraftingManager{
 
@@ -37,6 +38,8 @@ class CraftingManager{
 
 	/** @var FurnaceRecipe[] */
 	public $furnaceRecipes = [];
+
+	private static $RECIPE_COUNT = 0;
 
 	public function __construct(){
 
@@ -519,6 +522,8 @@ class CraftingManager{
 		}elseif($recipe instanceof FurnaceRecipe){
 			$this->registerFurnaceRecipe($recipe);
 		}
+
+		$recipe->setId(UUID::fromData(++self::$RECIPE_COUNT, $recipe->getResult()->getId(), $recipe->getResult()->getDamage(), $recipe->getResult()->getCount(), $recipe->getResult()->getCompoundTag()));
 	}
 
 }

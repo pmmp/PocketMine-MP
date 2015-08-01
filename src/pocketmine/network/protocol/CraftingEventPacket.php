@@ -24,20 +24,39 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
-class RemovePlayerPacket extends DataPacket{
-	const NETWORK_ID = Info::REMOVE_PLAYER_PACKET;
+class CraftingEventPacket extends DataPacket{
+	const NETWORK_ID = Info::CRAFTING_EVENT_PACKET;
 
-	public $eid;
-	public $clientId;
+	public $windowId;
+	public $type;
+	public $id;
+	public $input = [];
+	public $output = [];
+
+	public function clean(){
+		$this->input = [];
+		$this->output = [];
+		return parent::clean();
+	}
 
 	public function decode(){
+		$this->windowId = $this->getByte();
+		$this->type = $this->getInt();
+		$this->id = $this->getUUID();
 
+		$size = $this->getInt();
+		for($i = 0; $i < $size and $i < 128; ++$i){
+			$this->input[] = $this->getSlot();
+		}
+
+		$size = $this->getInt();
+		for($i = 0; $i < $size and $i < 128; ++$i){
+			$this->output[] = $this->getSlot();
+		}
 	}
 
 	public function encode(){
-		$this->reset();
-		$this->putLong($this->eid);
-		$this->putUUID($this->clientId);
+
 	}
 
 }

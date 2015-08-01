@@ -101,13 +101,13 @@ class SendUsageTask extends AsyncTask{
 
 				//This anonymizes the user ids so they cannot be reversed to the original
 				foreach($playerList as $k => $v){
-					$playerList[$k] = Utils::dataToUUID($v);
+					$playerList[$k] = md5($v);
 				}
 
 				$players = [];
 				foreach($server->getOnlinePlayers() as $p){
 					if($p->isOnline()){
-						$players[] = Utils::dataToUUID($p->getUniqueId());
+						$players[] = md5($p->getUniqueId()->toBinary());
 					}
 				}
 

@@ -29,8 +29,8 @@ use pocketmine\item\Item;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\ContainerSetContentPacket;
 use pocketmine\network\protocol\ContainerSetSlotPacket;
-use pocketmine\network\protocol\PlayerArmorEquipmentPacket;
-use pocketmine\network\protocol\PlayerEquipmentPacket;
+use pocketmine\network\protocol\MobArmorEquipmentPacket;
+use pocketmine\network\protocol\MobEquipmentPacket;
 use pocketmine\Player;
 use pocketmine\Server;
 
@@ -126,7 +126,7 @@ class PlayerInventory extends BaseInventory{
 	public function sendHeldItem($target){
 		$item = $this->getItemInHand();
 
-		$pk = new PlayerEquipmentPacket();
+		$pk = new MobEquipmentPacket();
 		$pk->eid = ($target === $this->getHolder() ? 0 : $this->getHolder()->getId());
 		$pk->item = $item->getId();
 		$pk->meta = $item->getDamage();
@@ -315,7 +315,7 @@ class PlayerInventory extends BaseInventory{
 			}
 		}
 
-		$pk = new PlayerArmorEquipmentPacket();
+		$pk = new MobArmorEquipmentPacket();
 		$pk->eid = $this->getHolder()->getId();
 		$pk->slots = $slots;
 		$pk->encode();
@@ -372,7 +372,7 @@ class PlayerInventory extends BaseInventory{
 			}
 		}
 
-		$pk = new PlayerArmorEquipmentPacket();
+		$pk = new MobArmorEquipmentPacket();
 		$pk->eid = $this->getHolder()->getId();
 		$pk->slots = $slots;
 		$pk->encode();

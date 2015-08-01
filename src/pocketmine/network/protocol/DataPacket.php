@@ -28,6 +28,7 @@ use pocketmine\utils\Binary;
 #endif
 
 use pocketmine\item\Item;
+use pocketmine\utils\UUID;
 
 
 abstract class DataPacket extends \stdClass{
@@ -162,10 +163,18 @@ abstract class DataPacket extends \stdClass{
 		}
 	}
 
+	protected function getUUID(){
+		return UUID::fromBinary($this->get(16));
+	}
+
+	protected function putUUID(UUID $uuid){
+		$this->put($uuid->toBinary());
+	}
+
 	protected function getSlot(){
-		$id = $this->getShort(false);
+		$id = $this->getShort(true);
 		
-		if($id == 0xffff){
+		if($id <= 0){
 			return Item::get(0, 0, 0);
 		}
 		
@@ -191,7 +200,7 @@ abstract class DataPacket extends \stdClass{
 
 	protected function putSlot(Item $item){
 		if($item->getId() === 0){
-			$this->putShort(0xffff);
+			$this->putShort(0);
 			return;
 		}
 		

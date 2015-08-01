@@ -32,6 +32,10 @@ class LoginPacket extends DataPacket{
 	public $protocol2;
 	public $clientId;
 
+	public $clientUUID;
+	public $serverAddress;
+	public $clientSecret;
+
 	public $slim = false;
 	public $skin = null;
 
@@ -39,11 +43,15 @@ class LoginPacket extends DataPacket{
 		$this->username = $this->getString();
 		$this->protocol1 = $this->getInt();
 		$this->protocol2 = $this->getInt();
-		if($this->protocol1 < 22){ //New fields!
+		if($this->protocol1 < Info::CURRENT_PROTOCOL){ //New fields!
 			$this->setBuffer(null, 0); //Skip batch packet handling
 			return;
 		}
 		$this->clientId = $this->getLong();
+		$this->clientUUID = $this->getUUID();
+		$this->serverAddress = $this->getString();
+		$this->clientSecret = $this->getString();
+
 		$this->slim = $this->getByte() > 0;
 		$this->skin = $this->getString();
 	}

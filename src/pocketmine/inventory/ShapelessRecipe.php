@@ -23,16 +23,31 @@ namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
 use pocketmine\Server;
+use pocketmine\utils\UUID;
 
 class ShapelessRecipe implements Recipe{
 	/** @var Item */
 	private $output;
+
+	private $id = null;
 
 	/** @var Item[] */
 	private $ingredients = [];
 
 	public function __construct(Item $result){
 		$this->output = clone $result;
+	}
+
+	public function getId(){
+		return $this->id;
+	}
+
+	public function setId(UUID $id){
+		if($this->id !== null){
+			throw new \InvalidStateException("Id is already set");
+		}
+
+		$this->id = $id;
 	}
 
 	public function getResult(){

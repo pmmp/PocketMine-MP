@@ -23,10 +23,13 @@ namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
 use pocketmine\Server;
+use pocketmine\utils\UUID;
 
 class ShapedRecipe implements Recipe{
 	/** @var Item */
 	private $output;
+
+	private $id = null;
 
 	/** @var string[] */
 	private $rows = [];
@@ -59,6 +62,22 @@ class ShapedRecipe implements Recipe{
 		}
 
 		$this->output = clone $result;
+	}
+
+	public function getResult(){
+		return $this->output;
+	}
+
+	public function getId(){
+		return $this->id;
+	}
+
+	public function setId(UUID $id){
+		if($this->id !== null){
+			throw new \InvalidStateException("Id is already set");
+		}
+
+		$this->id = $id;
 	}
 
 	/**
