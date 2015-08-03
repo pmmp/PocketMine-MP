@@ -31,6 +31,7 @@ use pocketmine\nbt\tag\Compound;
 use pocketmine\network\protocol\FullChunkDataPacket;
 use pocketmine\tile\Spawnable;
 use pocketmine\utils\ChunkException;
+use raklib\Binary;
 
 class Anvil extends McRegion{
 
@@ -94,6 +95,8 @@ class Anvil extends McRegion{
 			$chunk->getBlockLightArray() .
 			pack("C*", ...$chunk->getHeightMapArray()) .
 			pack("N*", ...$chunk->getBiomeColorArray()) .
+			//TODO extra data
+			Binary::writeInt(0) .
 			$tiles;
 
 		$this->getLevel()->chunkRequestCallback($x, $z, $ordered, FullChunkDataPacket::ORDER_LAYERED);

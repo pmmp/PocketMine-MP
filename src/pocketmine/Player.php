@@ -1910,8 +1910,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					$packet->slot -= 9; //Get real block slot
 				}
 
+				/** @var Item $item */
+				$item = null;
+
 				if($this->isCreative()){ //Creative mode match
-					$item = Item::get($packet->item, $packet->meta, 1);
+					$item = $packet->item;
 					$slot = Item::getCreativeItemIndex($item);
 				}else{
 					$item = $this->inventory->getItem($packet->slot);
@@ -1942,7 +1945,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                             break;
                         }
 					}
-				}elseif(!isset($item) or $slot === -1 or $item->getId() !== $packet->item or $item->getDamage() !== $packet->meta){ // packet error or not implemented
+				}elseif($item === null or $slot === -1 or $item->equals($packet->item, true)){ // packet error or not implemented
 					$this->inventory->sendContents($this);
 					break;
 				}elseif($this->isCreative()){

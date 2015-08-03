@@ -200,6 +200,8 @@ class Item{
 	const CARROT_BLOCK = 141;
 	const POTATO_BLOCK = 142;
 
+	const ANVIL = 145;
+
 	const REDSTONE_BLOCK = 152;
 
 	const QUARTZ_BLOCK = 155;
@@ -726,6 +728,11 @@ class Item{
 		self::addCreativeItem(Item::get(Item::CARPET, 10));
 		self::addCreativeItem(Item::get(Item::CARPET, 9));
 		self::addCreativeItem(Item::get(Item::CARPET, 8));
+
+
+		self::addCreativeItem(Item::get(Item::ANVIL, 0));
+		self::addCreativeItem(Item::get(Item::ANVIL, 4));
+		self::addCreativeItem(Item::get(Item::ANVIL, 8));
 
 		//Tools
 		//TODO self::addCreativeItem(Item::get(Item::RAILS, 0));
