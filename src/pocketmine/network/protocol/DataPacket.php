@@ -28,6 +28,7 @@ use pocketmine\utils\Binary;
 #endif
 
 use pocketmine\item\Item;
+use pocketmine\utils\Utils;
 use pocketmine\utils\UUID;
 
 
@@ -234,6 +235,17 @@ abstract class DataPacket extends \stdClass{
 	}
 
 	public function __debugInfo(){
-		return bin2hex($this->buffer);
+		$data = [];
+		foreach($this as $k => $v){
+			if($k === "buffer"){
+				$data[$k] = bin2hex($v);
+			}elseif(is_string($v) or (is_object($v) and method_exists($v, "__toString"))){
+				$data[$k] = Utils::printable((string) $v);
+			}else{
+				$data[$k] = $v;
+			}
+		}
+
+		return $data;
 	}
 }

@@ -1801,12 +1801,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->displayName = $this->username;
 				$this->setNameTag($this->username);
 				$this->iusername = strtolower($this->username);
-				$this->randomClientId = $packet->clientId;
-				$this->loginData = ["clientId" => $packet->clientId, "loginData" => null];
-
-				$this->uuid = $packet->clientUUID;
-				$this->clientSecret = $packet->clientSecret;
-				$this->rawUUID = $this->uuid->toBinary();
 
 				if(count($this->server->getOnlinePlayers()) > $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)){
 					break;
@@ -1830,6 +1824,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 					break;
 				}
+
+				$this->randomClientId = $packet->clientId;
+				$this->loginData = ["clientId" => $packet->clientId, "loginData" => null];
+
+				$this->uuid = $packet->clientUUID;
+				$this->rawUUID = $this->uuid->toBinary();
+				$this->clientSecret = $packet->clientSecret;
 
 				$valid = true;
 				$len = strlen($packet->username);

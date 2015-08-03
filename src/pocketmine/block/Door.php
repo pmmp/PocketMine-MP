@@ -26,7 +26,6 @@ use pocketmine\level\Level;
 use pocketmine\level\sound\DoorSound;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
-use pocketmine\network\protocol\LevelEventPacket;
 use pocketmine\Player;
 use pocketmine\Server;
 

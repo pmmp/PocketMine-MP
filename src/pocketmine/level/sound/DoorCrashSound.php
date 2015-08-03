@@ -24,8 +24,8 @@ namespace pocketmine\level\sound;
 use pocketmine\math\Vector3;
 use pocketmine\network\protocol\LevelEventPacket;
 
-class FizzSound extends GenericSound{
+class DoorCrashSound extends GenericSound{
 	public function __construct(Vector3 $pos, $pitch = 0){
-		parent::__construct($pos, LevelEventPacket::EVENT_SOUND_FIZZ, $pitch);
+		parent::__construct($pos, LevelEventPacket::EVENT_SOUND_DOOR_CRASH, $pitch);
 	}
 }

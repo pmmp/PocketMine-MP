@@ -90,7 +90,6 @@ use pocketmine\nbt\tag\String;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\DataPacket;
 use pocketmine\network\protocol\FullChunkDataPacket;
-use pocketmine\network\protocol\LevelEventPacket;
 use pocketmine\network\protocol\MoveEntityPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\network\protocol\SetTimePacket;
@@ -1553,13 +1552,7 @@ class Level implements ChunkManager, Metadatable{
 				unset($players[$player->getLoaderId()]);
 			}
 
-			$pk = new LevelEventPacket();
-			$pk->evid = 2001;
-			$pk->x = $target->x + 0.5;
-			$pk->y = $target->y + 0.5;
-			$pk->z = $target->z + 0.5;
-			$pk->data = $target->getId() + ($target->getDamage() << 12);
-			Server::broadcastPacket($players, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+			$this->addParticle(new DestroyBlockParticle($target->add(0.5), $target), $players);
 		}
 		
 		$target->onBreak($item);
