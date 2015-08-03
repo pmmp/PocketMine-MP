@@ -112,11 +112,12 @@ class CraftingDataPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putByte($this->type);
 		$this->putInt(count($this->entries));
 		foreach($this->entries as $d){
-
+			$this->writeEntry($d);
 		}
+
+		$this->putByte($this->cleanRecipes ? 1 : 0);
 	}
 
 }

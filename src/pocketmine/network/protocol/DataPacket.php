@@ -232,4 +232,8 @@ abstract class DataPacket extends \stdClass{
 		$this->offset = 0;
 		return $this;
 	}
+
+	public function __debugInfo(){
+		return bin2hex($this->buffer);
+	}
 }

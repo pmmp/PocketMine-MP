@@ -128,8 +128,7 @@ class PlayerInventory extends BaseInventory{
 
 		$pk = new MobEquipmentPacket();
 		$pk->eid = ($target === $this->getHolder() ? 0 : $this->getHolder()->getId());
-		$pk->item = $item->getId();
-		$pk->meta = $item->getDamage();
+		$pk->item = $item;
 		$pk->slot = $this->getHeldItemSlot();
 		$pk->selectedSlot = $this->getHeldItemIndex();
 
@@ -304,20 +303,12 @@ class PlayerInventory extends BaseInventory{
 		if($target instanceof Player){
 			$target = [$target];
 		}
-		$armor = $this->getArmorContents();
-		$slots = [];
 
-		foreach($armor as $i => $slot){
-			if($slot->getId() === Item::AIR){
-				$slots[$i] = 255;
-			}else{
-				$slots[$i] = $slot->getId();
-			}
-		}
+		$armor = $this->getArmorContents();
 
 		$pk = new MobArmorEquipmentPacket();
 		$pk->eid = $this->getHolder()->getId();
-		$pk->slots = $slots;
+		$pk->slots = $armor;
 		$pk->encode();
 		$pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING);
 		$pk->isEncoded = true;
@@ -362,19 +353,10 @@ class PlayerInventory extends BaseInventory{
 		}
 
 		$armor = $this->getArmorContents();
-		$slots = [];
-
-		foreach($armor as $i => $slot){
-			if($slot->getId() === Item::AIR){
-				$slots[$i] = 255;
-			}else{
-				$slots[$i] = $slot->getId();
-			}
-		}
 
 		$pk = new MobArmorEquipmentPacket();
 		$pk->eid = $this->getHolder()->getId();
-		$pk->slots = $slots;
+		$pk->slots = $armor;
 		$pk->encode();
 		$pk->isEncoded = true;
 
