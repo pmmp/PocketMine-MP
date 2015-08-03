@@ -127,7 +127,11 @@ namespace pocketmine {
 	define("pocketmine\\DATA", isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR);
 	define("pocketmine\\PLUGIN_PATH", isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);
 
+
+	echo "HAHA";
 	Terminal::init();
+
+	echo "HAHA";
 
 	define("pocketmine\\ANSI", Terminal::hasFormattingCodes());
 

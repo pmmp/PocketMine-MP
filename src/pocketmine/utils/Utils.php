@@ -220,7 +220,7 @@ class Utils{
 				self::$os = "other";
 			}
 		}
-		
+
 		return self::$os;
 	}
 

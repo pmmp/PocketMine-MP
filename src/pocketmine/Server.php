@@ -2039,7 +2039,8 @@ class Server{
 			$this->properties->save();
 
 			$this->getLogger()->debug("Closing console");
-			$this->console->kill();
+			$this->console->shutdown();
+			$this->console->detach();
 
 			$this->getLogger()->debug("Stopping network interfaces");
 			foreach($this->network->getInterfaces() as $interface){
