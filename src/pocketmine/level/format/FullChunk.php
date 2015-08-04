@@ -124,6 +124,23 @@ interface FullChunk{
 	 * @param int $y 0-127
 	 * @param int $z 0-15
 	 *
+	 * @return int (16-bit)
+	 */
+	public function getBlockExtraData($x, $y, $z);
+
+	/**
+	 * @param int $x    0-15
+	 * @param int $y    0-127
+	 * @param int $z    0-15
+	 * @param int $data (16-bit)
+	 */
+	public function setBlockExtraData($x, $y, $z, $data);
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $y 0-127
+	 * @param int $z 0-15
+	 *
 	 * @return int 0-15
 	 */
 	public function getBlockSkyLight($x, $y, $z);
@@ -311,6 +328,8 @@ interface FullChunk{
 	public function getBlockIdArray();
 
 	public function getBlockDataArray();
+
+	public function getBlockExtraDataArray();
 
 	public function getBlockSkyLightArray();
 

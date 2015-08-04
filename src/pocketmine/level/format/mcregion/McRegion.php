@@ -33,6 +33,7 @@ use pocketmine\nbt\tag\Long;
 use pocketmine\nbt\tag\String;
 use pocketmine\tile\Spawnable;
 use pocketmine\utils\Binary;
+use pocketmine\utils\BinaryStream;
 use pocketmine\utils\ChunkException;
 
 class McRegion extends BaseLevelProvider{
@@ -132,14 +133,20 @@ class McRegion extends BaseLevelProvider{
 			$tiles = $nbt->write();
 		}
 
+		$extraData = new BinaryStream();
+		$extraData->putLInt(count($chunk->getBlockExtraDataArray()));
+		foreach($chunk->getBlockExtraDataArray() as $key => $value){
+			$extraData->putLInt($key);
+			$extraData->putLShort($value);
+		}
+
 		$ordered = $chunk->getBlockIdArray() .
 			$chunk->getBlockDataArray() .
 			$chunk->getBlockSkyLightArray() .
 			$chunk->getBlockLightArray() .
 			pack("C*", ...$chunk->getHeightMapArray()) .
 			pack("N*", ...$chunk->getBiomeColorArray()) .
-			//TODO extra data
-			Binary::writeInt(0) .
+			$extraData->getBuffer() .
 			$tiles;
 
 		$this->getLevel()->chunkRequestCallback($x, $z, $ordered);

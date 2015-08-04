@@ -48,7 +48,7 @@ abstract class DataPacket extends BinaryStream{
 
 	abstract public function decode();
 
-	protected function reset(){
+	public function reset(){
 		$this->buffer = chr($this::NETWORK_ID);
 		$this->offset = 0;
 	}

@@ -26,6 +26,7 @@ use pocketmine\level\format\LevelProvider;
 use pocketmine\nbt\NBT;
 use pocketmine\Player;
 use pocketmine\utils\Binary;
+use pocketmine\utils\BinaryStream;
 
 class Chunk extends BaseFullChunk{
 
@@ -260,6 +261,7 @@ class Chunk extends BaseFullChunk{
 
 			$entities = null;
 			$tiles = null;
+			$extraData = [];
 
 			if($provider instanceof LevelDB){
 				$nbt = new NBT(NBT::LITTLE_ENDIAN);
@@ -278,6 +280,16 @@ class Chunk extends BaseFullChunk{
 					$tiles = $nbt->getData();
 					if(!is_array($tiles)){
 						$tiles = [$tiles];
+					}
+				}
+				$tileData = $provider->getDatabase()->get(substr($data, 0, 8) . LevelDB::ENTRY_EXTRA_DATA);
+				if($tileData !== false and strlen($tileData) > 0){
+					$stream = new BinaryStream($tileData);
+					$count = $stream->getInt();
+					for($i = 0; $i < $count; ++$i){
+						$key = $stream->getInt();
+						$value = $stream->getShort(false);
+						$extraData[$key] = $value;
 					}
 				}
 			}
@@ -341,6 +353,17 @@ class Chunk extends BaseFullChunk{
 				$provider->getDatabase()->delete($chunkIndex . LevelDB::ENTRY_TILES);
 			}
 
+			if(count($this->getBlockExtraDataArray()) > 0){
+				$extraData = new BinaryStream();
+				$extraData->putInt(count($this->getBlockExtraDataArray()));
+				foreach($this->getBlockExtraDataArray() as $key => $value){
+					$extraData->putInt($key);
+					$extraData->putShort($value);
+				}
+				$provider->getDatabase()->put($chunkIndex . LevelDB::ENTRY_EXTRA_DATA, $extraData->getBuffer());
+			}else{
+				$provider->getDatabase()->delete($chunkIndex . LevelDB::ENTRY_EXTRA_DATA);
+			}
 
 		}
 

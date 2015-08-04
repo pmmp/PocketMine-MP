@@ -90,6 +90,7 @@ use pocketmine\nbt\tag\String;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\DataPacket;
 use pocketmine\network\protocol\FullChunkDataPacket;
+use pocketmine\network\protocol\LevelEventPacket;
 use pocketmine\network\protocol\MoveEntityPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\network\protocol\SetTimePacket;
@@ -278,6 +279,10 @@ class Level implements ChunkManager, Metadatable{
 
 	public static function blockHash($x, $y, $z){
 		return PHP_INT_SIZE === 8 ? (($x & 0xFFFFFFF) << 35) | (($y & 0x7f) << 28) | ($z & 0xFFFFFFF) : $x . ":" . $y .":". $z;
+	}
+
+	public static function chunkBlockHash($x, $y, $z){
+		return ($x << 11) | ($z << 7) | $y;
 	}
 
 	public static function getBlockXYZ($hash, &$x, &$y, &$z){
@@ -796,6 +801,17 @@ class Level implements ChunkManager, Metadatable{
 				}
 			}
 		}
+	}
+
+	public function sendBlockExtraData($x, $y, $z, $id, $data, array $targets = null){
+		$pk = new LevelEventPacket;
+		$pk->evid = LevelEventPacket::EVENT_SET_DATA;
+		$pk->x = $x + 0.5;
+		$pk->y = $y + 0.5;
+		$pk->z = $z + 0.5;
+		$pk->data = ($data << 8) | $id;
+
+		Server::broadcastPacket($targets === null ? $this->getChunkPlayers($x >> 4, $z >> 4) : $targets, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
 	}
 
 	/**
@@ -1918,6 +1934,34 @@ class Level implements ChunkManager, Metadatable{
 		foreach($this->getChunkLoaders($x >> 4, $z >> 4) as $loader){
 			$loader->onBlockChanged($v);
 		}
+	}
+
+	/**
+	 * Gets the raw block extra data
+	 *
+	 * @param int $x
+	 * @param int $y
+	 * @param int $z
+	 *
+	 * @return int 16-bit
+	 */
+	public function getBlockExtraDataAt($x, $y, $z){
+		return $this->getChunk($x >> 4, $z >> 4, true)->getBlockExtraData($x & 0x0f, $y & 0x7f, $z & 0x0f);
+	}
+
+	/**
+	 * Sets the raw block metadata.
+	 *
+	 * @param int $x
+	 * @param int $y
+	 * @param int $z
+	 * @param int $id
+	 * @param int $data
+	 */
+	public function setBlockExtraDataAt($x, $y, $z, $id, $data){
+		$this->getChunk($x >> 4, $z >> 4, true)->setBlockExtraData($x & 0x0f, $y & 0x7f, $z & 0x0f, ($data << 8) | $id);
+
+		$this->sendBlockExtraData($x, $y, $z, $id, $data);
 	}
 
 	/**
