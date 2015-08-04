@@ -27,7 +27,6 @@ namespace pocketmine\network\protocol;
 use pocketmine\inventory\FurnaceRecipe;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
-use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
 
 class CraftingDataPacket extends DataPacket{
@@ -64,11 +63,26 @@ class CraftingDataPacket extends DataPacket{
 		$stream->putInt(1);
 		$stream->putSlot($recipe->getResult());
 
+		$stream->putUUID($recipe->getId());
+
 		return CraftingDataPacket::ENTRY_SHAPELESS;
 	}
 
 	private static function writeShapedRecipe(ShapedRecipe $recipe, BinaryStream $stream){
-		//TODO
+		$stream->putInt($recipe->getWidth());
+		$stream->putInt($recipe->getHeight());
+
+		for($z = 0; $z < $recipe->getWidth(); ++$z){
+			for($x = 0; $x < $recipe->getHeight(); ++$x){
+				$stream->putSlot($recipe->getIngredient($x, $z));
+			}
+		}
+
+		$stream->putInt(1);
+		$stream->putSlot($recipe->getResult());
+
+		$stream->putUUID($recipe->getId());
+
 		return CraftingDataPacket::ENTRY_SHAPED;
 	}
 
