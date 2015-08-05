@@ -222,7 +222,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 
 			if(!($this instanceof Player)){
-				$this->server->updatePlayerListData($this->getUniqueId(), $this->getId(), $this->getName(), $this->isSlim, $this->skin, $player);
+				$this->server->updatePlayerListData($this->getUniqueId(), $this->getId(), $this->getName(), $this->isSlim, $this->skin, [$player]);
 			}
 
 			$pk = new AddPlayerPacket();
@@ -237,18 +237,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$pk->speedZ = $this->motionZ;
 			$pk->yaw = $this->yaw;
 			$pk->pitch = $this->pitch;
-			$item = $this->getInventory()->getItemInHand();
-			$pk->item = $item->getId();
-			$pk->meta = $item->getDamage();
-			$pk->skin = $this->skin;
-			$pk->slim = $this->isSlim;
+			$pk->item = $this->getInventory()->getItemInHand();
 			$pk->metadata = $this->dataProperties;
 			$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
 
 			$this->inventory->sendArmorContents($player);
 
 			if(!($this instanceof Player)){
-				$this->server->removePlayerListData($this->getUniqueId(), $player);
+				$this->server->removePlayerListData($this->getUniqueId(), [$player]);
 			}
 		}
 	}
@@ -257,8 +253,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if(isset($this->hasSpawned[$player->getLoaderId()])){
 
 			$pk = new RemovePlayerPacket();
-			$pk->eid = $this->getUniqueId();
-			$pk->clientID = $this->getId();
+			$pk->eid = $this->getId();
+			$pk->clientId = $this->getUniqueId();
 			$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
 			unset($this->hasSpawned[$player->getLoaderId()]);
 		}
