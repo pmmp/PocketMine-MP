@@ -920,7 +920,10 @@ class Item{
 		
 		return $this;
 	}
-	
+
+	/**
+	 * @return string
+	 */
 	public function getCompoundTag(){
 		return $this->nbt;
 	}
@@ -1045,7 +1048,7 @@ class Item{
 	}
 
 	final public function __toString(){
-		return "Item " . $this->name . " (" . $this->id . ":" . ($this->meta === null ? "?" : $this->meta) . ")x" . $this->count;
+		return "Item " . $this->name . " (" . $this->id . ":" . ($this->meta === null ? "?" : $this->meta) . ")x" . $this->count . ($this->hasCompoundTag() ? " userData:0x".bin2hex($this->getCompoundTag()) : "");
 	}
 
 	public function getDestroySpeed(Block $block, Player $player){

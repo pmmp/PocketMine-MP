@@ -278,7 +278,7 @@ class NBT{
 		}
 	}
 
-	private function fromArray(Tag $tag, array $data){
+	private function fromArray(Tag $tag, array $data, $byteArray = false){
 		foreach($data as $key => $value){
 			if(is_array($value)){
 				$isNumeric = true;
@@ -298,7 +298,7 @@ class NBT{
 			}elseif(is_float($value)){
 				$tag{$key} = new Float($key, $value);
 			}elseif(is_string($value)){
-				if(Utils::printable($value) !== $value){
+				if($byteArray and Utils::printable($value) !== $value){
 					$tag{$key} = new ByteArray($key, $value);
 				}else{
 					$tag{$key} = new String($key, $value);
@@ -309,9 +309,9 @@ class NBT{
 		}
 	}
 
-	public function setArray(array $data){
+	public function setArray(array $data, $byteArray = false){
 		$this->data = new Compound("", []);
-		$this->fromArray($this->data, $data);
+		$this->fromArray($this->data, $data, $byteArray);
 	}
 
 	/**
