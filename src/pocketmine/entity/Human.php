@@ -123,9 +123,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				if($item["Slot"] >= 0 and $item["Slot"] < 9){ //Hotbar
 					$this->inventory->setHotbarSlotIndex($item["Slot"], isset($item["TrueSlot"]) ? $item["TrueSlot"] : -1);
 				}elseif($item["Slot"] >= 100 and $item["Slot"] < 104){ //Armor
-					$this->inventory->setItem($this->inventory->getSize() + $item["Slot"] - 100, ItemItem::get($item["id"], $item["Damage"], $item["Count"]));
+					$this->inventory->setItem($this->inventory->getSize() + $item["Slot"] - 100, NBT::getItemHelper($item));
 				}else{
-					$this->inventory->setItem($item["Slot"] - 9, ItemItem::get($item["id"], $item["Damage"], $item["Count"]));
+					$this->inventory->setItem($item["Slot"] - 9, NBT::getItemHelper($item));
 				}
 			}
 		}
@@ -158,16 +158,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				if($hotbarSlot !== -1){
 					$item = $this->inventory->getItem($hotbarSlot);
 					if($item->getId() !== 0 and $item->getCount() > 0){
-						$this->namedtag->Inventory[$slot] = new Compound("", [
-							new Byte("Count", $item->getCount()),
-							new Short("Damage", $item->getDamage()),
-							new Byte("Slot", $slot),
-							new Byte("TrueSlot", $hotbarSlot),
-							new Short("id", $item->getId()),
-						]);
+						$tag = NBT::putItemHelper($item, $slot);
+						$tag->TrueSlot = new Byte("TrueSlot", $hotbarSlot);
+						$this->namedtag->Inventory[$slot] = $tag;
+
 						continue;
 					}
 				}
+
 				$this->namedtag->Inventory[$slot] = new Compound("", [
 					new Byte("Count", 0),
 					new Short("Damage", 0),
@@ -182,24 +180,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			//$slotCount = (($this instanceof Player and ($this->gamemode & 0x01) === 1) ? Player::CREATIVE_SLOTS : Player::SURVIVAL_SLOTS) + 9;
 			for($slot = 9; $slot < $slotCount; ++$slot){
 				$item = $this->inventory->getItem($slot - 9);
-				$this->namedtag->Inventory[$slot] = new Compound("", [
-					new Byte("Count", $item->getCount()),
-					new Short("Damage", $item->getDamage()),
-					new Byte("Slot", $slot),
-					new Short("id", $item->getId()),
-				]);
+				$this->namedtag->Inventory[$slot] = NBT::putItemHelper($item, $slot);
 			}
 
 			//Armor
 			for($slot = 100; $slot < 104; ++$slot){
 				$item = $this->inventory->getItem($this->inventory->getSize() + $slot - 100);
 				if($item instanceof ItemItem and $item->getId() !== ItemItem::AIR){
-					$this->namedtag->Inventory[$slot] = new Compound("", [
-						new Byte("Count", $item->getCount()),
-						new Short("Damage", $item->getDamage()),
-						new Byte("Slot", $slot),
-						new Short("id", $item->getId()),
-					]);
+					$this->namedtag->Inventory[$slot] = NBT::putItemHelper($item, $slot);
 				}
 			}
 		}

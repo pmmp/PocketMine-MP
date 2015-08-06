@@ -24,6 +24,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
+use pocketmine\nbt\tag\Byte;
 
 abstract class Tool extends Item{
 	const TIER_WOODEN = 1;
@@ -55,6 +56,10 @@ abstract class Tool extends Item{
 	 * @return bool
 	 */
 	public function useOn($object){
+		if($this->isUnbreakable()){
+			return true;
+		}
+
 		if($this->isHoe()){
 			if(($object instanceof Block) and ($object->getId() === self::GRASS or $object->getId() === self::DIRT)){
 				$this->meta++;
@@ -99,6 +104,11 @@ abstract class Tool extends Item{
 		}
 
 		return $levels[$type];
+	}
+
+	public function isUnbreakable(){
+		$tag = $this->getNamedTagEntry("Unbreakable");
+		return $tag instanceof Byte and $tag->getValue() > 0;
 	}
 
 	public function isPickaxe(){

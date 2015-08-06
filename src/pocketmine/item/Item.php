@@ -1039,6 +1039,15 @@ class Item{
 
 		return $this;
 	}
+
+	public function getNamedTagEntry($name){
+		$tag = $this->getNamedTag();
+		if($tag !== null){
+			return isset($tag->{$name}) ? $tag->{$name} : null;
+		}
+
+		return null;
+	}
 	
 	public function getNamedTag(){
 		if(!$this->hasCompoundTag()){

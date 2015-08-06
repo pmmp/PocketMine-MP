@@ -24,6 +24,7 @@
  */
 namespace pocketmine\nbt;
 
+use pocketmine\item\Item;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\ByteArray;
 use pocketmine\nbt\tag\Compound;
@@ -72,6 +73,48 @@ class NBT{
 	private $offset;
 	public $endianness;
 	private $data;
+
+
+	/**
+	 * @param Item $item
+	 * @param int  $slot
+	 * @return Compound
+	 */
+	public static function putItemHelper(Item $item, $slot = null){
+		$tag = new Compound(null, [
+			"id" => new Short("id", $item->getId()),
+			"Count" => new Byte("Count", $item->getCount()),
+			"Damage" => new Short("Damage", $item->getDamage())
+		]);
+
+		if($slot !== null){
+			$tag->Slot = new Byte("Slot", (int) $slot);
+		}
+
+		if($item->hasCompoundTag()){
+			$tag->tag = clone $item->getNamedTag();
+			$tag->tag->setName("tag");
+		}
+
+		return $tag;
+	}
+
+	/**
+	 * @param Compound $item
+	 * @return Item
+	 */
+	public static function getItemHelper(Compound $item){
+		if(!isset($item->id) or !isset($item->Damage) or !isset($item->Count)){
+			return Item::get(0);
+		}
+
+		$item = Item::get($item->id->getValue(), $item->Damage->getValue(), $item->Count->getValue());
+		if(isset($item->tag)){
+			$item->setNamedTag($item->tag);
+		}
+
+		return $item;
+	}
 
 	public function get($len){
 		if($len < 0){

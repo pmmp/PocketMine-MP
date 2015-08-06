@@ -120,11 +120,7 @@ class Furnace extends Tile implements InventoryHolder, Container{
 		if($i < 0){
 			return Item::get(Item::AIR, 0, 0);
 		}else{
-			$item = Item::get($this->namedtag->Items[$i]["id"], $this->namedtag->Items[$i]["Damage"], $this->namedtag->Items[$i]["Count"]);
-			if(isset($this->namedtag->Items[$i]["tag"])){
-				$item->setNamedTag($this->namedtag->Items[$i]["tag"]);
-			}
-			return $item;
+			return NBT::getItemHelper($this->namedtag->Items[$i]);
 		}
 	}
 
@@ -139,17 +135,7 @@ class Furnace extends Tile implements InventoryHolder, Container{
 	public function setItem($index, Item $item){
 		$i = $this->getSlotIndex($index);
 
-		$d = new Compound("", [
-			new Byte("Count", $item->getCount()),
-			new Byte("Slot", $index),
-			new Short("id", $item->getId()),
-			new Short("Damage", $item->getDamage()),
-		]);
-		
-		if($item->hasCompoundTag() and ($tag = $item->getNamedTag()) !== null){
-			$tag->setName("tag");
-			$d->tag = $tag;
-		}
+		$d = NBT::putItemHelper($item, $index);
 
 		if($item->getId() === Item::AIR or $item->getCount() <= 0){
 			if($i >= 0){

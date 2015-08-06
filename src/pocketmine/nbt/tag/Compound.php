@@ -32,7 +32,7 @@ class Compound extends NamedTag implements \ArrayAccess{
 	 * @param NamedTag[] $value
 	 */
 	public function __construct($name = "", $value = []){
-		$this->name = $name;
+		$this->__name = $name;
 		foreach($value as $tag){
 			$this->{$tag->getName()} = $tag;
 		}
