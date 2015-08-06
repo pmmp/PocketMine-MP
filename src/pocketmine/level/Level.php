@@ -79,6 +79,7 @@ use pocketmine\math\Vector3;
 use pocketmine\metadata\BlockMetadataStore;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
+use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Double;
@@ -1461,6 +1462,9 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function dropItem(Vector3 $source, Item $item, Vector3 $motion = null, $delay = 10){
 		$motion = $motion === null ? new Vector3(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1) : $motion;
+		$itemTag = NBT::putItemHelper($item);
+		$itemTag->setName("Item");
+
 		if($item->getId() > 0 and $item->getCount() > 0){
 			$itemEntity = Entity::createEntity("Item", $this->getChunk($source->getX() >> 4, $source->getZ() >> 4, true), new Compound("", [
 				"Pos" => new Enum("Pos", [
@@ -1479,11 +1483,7 @@ class Level implements ChunkManager, Metadatable{
 					new Float("", 0)
 				]),
 				"Health" => new Short("Health", 5),
-				"Item" => new Compound("Item", [
-					"id" => new Short("id", $item->getId()),
-					"Damage" => new Short("Damage", $item->getDamage()),
-					"Count" => new Byte("Count", $item->getCount())
-				]),
+				"Item" => $itemTag,
 				"PickupDelay" => new Short("PickupDelay", $delay)
 			]));
 

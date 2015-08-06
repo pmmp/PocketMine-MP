@@ -50,7 +50,7 @@ class Compound extends NamedTag implements \ArrayAccess{
 	}
 
 	public function offsetExists($offset){
-		return isset($this->{$offset});
+		return isset($this->{$offset}) and $this->{$offset} instanceof Tag;
 	}
 
 	public function offsetGet($offset){
