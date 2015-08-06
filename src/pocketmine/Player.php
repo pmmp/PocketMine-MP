@@ -1945,7 +1945,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                             break;
                         }
 					}
-				}elseif($item === null or $slot === -1 or $item->equals($packet->item, true)){ // packet error or not implemented
+				}elseif($item === null or $slot === -1 or !$item->equals($packet->item, true)){ // packet error or not implemented
 					$this->inventory->sendContents($this);
 					break;
 				}elseif($this->isCreative()){
