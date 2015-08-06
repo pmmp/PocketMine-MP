@@ -406,7 +406,7 @@ class Item{
 	protected $block;
 	protected $id;
 	protected $meta;
-	protected $nbt;
+	protected $nbt = "";
 	public $count;
 	protected $durability = 0;
 	protected $name;
@@ -1048,7 +1048,7 @@ class Item{
 	}
 
 	final public function __toString(){
-		return "Item " . $this->name . " (" . $this->id . ":" . ($this->meta === null ? "?" : $this->meta) . ")x" . $this->count . ($this->hasCompoundTag() ? " userData:0x".bin2hex($this->getCompoundTag()) : "");
+		return "Item " . $this->name . " (" . $this->id . ":" . ($this->meta === null ? "?" : $this->meta) . ")x" . $this->count . ($this->hasCompoundTag() ? " tags:0x".bin2hex($this->getCompoundTag()) : "");
 	}
 
 	public function getDestroySpeed(Block $block, Player $player){
@@ -1059,8 +1059,8 @@ class Item{
 		return false;
 	}
 
-	public final function equals(Item $item, $checkDamage = false){
-		return $this->id === $item->getId() and ($checkDamage === false or $this->getDamage() === $item->getDamage());
+	public final function equals(Item $item, $checkDamage = true, $checkCompound = true){
+		return $this->id === $item->getId() and ($checkDamage === false or $this->getDamage() === $item->getDamage()) and ($checkCompound === false or $this->getCompoundTag() === $item->getCompoundTag());
 	}
 
 }

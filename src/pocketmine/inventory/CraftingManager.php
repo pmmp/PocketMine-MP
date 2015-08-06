@@ -443,7 +443,7 @@ class CraftingManager{
 				foreach($ingredients as $item){
 					$amount = $item->getCount();
 					foreach($checkInput as $k => $checkItem){
-						if($checkItem->equals($item, $checkItem->getDamage() === null ? false : true)){
+						if($checkItem->equals($item, $checkItem->getDamage() === null ? false : true, $checkItem->getCompoundTag() === null ? false : true)){
 							$remove = min($checkItem->getCount(), $amount);
 							$checkItem->setCount($checkItem->getCount() - $remove);
 							if($checkItem->getCount() === 0){
@@ -506,7 +506,7 @@ class CraftingManager{
 					foreach($input as $item){
 						$amount = $item->getCount();
 						foreach($checkInput as $k => $checkItem){
-							if($checkItem->equals($item, $checkItem->getDamage() === null ? false : true)){
+							if($checkItem->equals($item, $checkItem->getDamage() === null ? false : true, $checkItem->getCompoundTag() === null ? false : true)){
 								$remove = min($checkItem->getCount(), $amount);
 								$checkItem->setCount($checkItem->getCount() - $remove);
 								if($checkItem->getCount() === 0){
@@ -540,7 +540,7 @@ class CraftingManager{
 		}
 
 		$checkResult = $recipe->getResult();
-		if($checkResult->equals($result, true) and $checkResult->getCount() === $result->getCount()){
+		if($checkResult->equals($result) and $checkResult->getCount() === $result->getCount()){
 			return $recipe;
 		}
 

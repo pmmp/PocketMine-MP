@@ -1945,7 +1945,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                             break;
                         }
 					}
-				}elseif($item === null or $slot === -1 or !$item->equals($packet->item, true)){ // packet error or not implemented
+				}elseif($item === null or $slot === -1 or !$item->equals($packet->item)){ // packet error or not implemented
 					$this->inventory->sendContents($this);
 					break;
 				}elseif($this->isCreative()){
@@ -1985,7 +1985,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						if($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
 							break;
 						}
-					}elseif(!$this->inventory->getItemInHand()->equals($packet->item, true)){
+					}elseif(!$this->inventory->getItemInHand()->equals($packet->item)){
 						$this->inventory->sendHeldItem($this);
 					}else{
 						$item = $this->inventory->getItemInHand();
@@ -2015,7 +2015,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 					if($this->isCreative()){
 						$item = $this->inventory->getItemInHand();
-					}elseif(!$this->inventory->getItemInHand()->equals($packet->item, true)){
+					}elseif(!$this->inventory->getItemInHand()->equals($packet->item)){
 						$this->inventory->sendHeldItem($this);
 						break;
 					}else{
@@ -2723,7 +2723,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					break;
 				}
 
-				if($transaction->getSourceItem()->equals($transaction->getTargetItem(), true) and $transaction->getTargetItem()->getCount() === $transaction->getSourceItem()->getCount()){ //No changes!
+				if($transaction->getSourceItem()->equals($transaction->getTargetItem()) and $transaction->getTargetItem()->getCount() === $transaction->getSourceItem()->getCount()){ //No changes!
 					//No changes, just a local inventory update sent by the server
 					break;
 				}
