@@ -1661,7 +1661,7 @@ class Level implements ChunkManager, Metadatable{
 			return true;
 		}
 
-		if($item->isPlaceable()){
+		if($item->canBePlaced()){
 			$hand = $item->getBlock();
 			$hand->position($block);
 		}elseif($block->getId() === Item::FIRE){

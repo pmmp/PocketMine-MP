@@ -38,6 +38,17 @@ class Compound extends NamedTag implements \ArrayAccess{
 		}
 	}
 
+	public function getCount(){
+		$count = 0;
+		foreach($this as $tag){
+			if($tag instanceof Tag){
+				++$count;
+			}
+		}
+
+		return $count;
+	}
+
 	public function offsetExists($offset){
 		return isset($this->{$offset});
 	}
