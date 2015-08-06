@@ -56,6 +56,7 @@ class StartGamePacket extends DataPacket{
 		$this->putFloat($this->x);
 		$this->putFloat($this->y);
 		$this->putFloat($this->z);
+		$this->putByte(0);
 	}
 
 }

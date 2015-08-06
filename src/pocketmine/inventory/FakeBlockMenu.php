@@ -21,27 +21,25 @@
 
 namespace pocketmine\inventory;
 
+use pocketmine\level\Level;
 use pocketmine\level\Position;
+use pocketmine\math\Vector3;
+use pocketmine\network\Network;
+use pocketmine\network\protocol\TileEventPacket;
 use pocketmine\Player;
+use pocketmine\Server;
+use pocketmine\tile\Chest;
 
-class AnvilInventory extends ContainerInventory{
-	public function __construct(Position $pos){
-		parent::__construct(new FakeBlockMenu($this, $pos), InventoryType::get(InventoryType::ANVIL));
+class FakeBlockMenu extends Position implements InventoryHolder{
+
+	private $inventory;
+
+	public function __construct(Inventory $inventory, Position $pos){
+		$this->inventory = $inventory;
+		parent::__construct($pos->x, $pos->y, $pos->z, $pos->level);
 	}
 
-	/**
-	 * @return FakeBlockMenu
-	 */
-	public function getHolder(){
-		return $this->holder;
-	}
-
-	public function onClose(Player $who){
-		parent::onClose($who);
-
-		for($i = 0; $i < 2; ++$i){
-			$this->getHolder()->getLevel()->dropItem($this->getHolder()->add(0.5, 0.5, 0.5), $this->getItem($i));
-			$this->clear($i);
-		}
+	public function getInventory(){
+		return $this->inventory;
 	}
 }

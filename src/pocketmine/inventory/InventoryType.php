@@ -65,7 +65,7 @@ class InventoryType{
 		static::$default[static::STONECUTTER] = new InventoryType(10, "Crafting", 1); //9 CRAFTING slots, 1 RESULT
 		static::$default[static::ENCHANT_TABLE] = new InventoryType(1, "Enchant", 4); //1 INPUT/OUTPUT
 		static::$default[static::BREWING_STAND] = new InventoryType(4, "Brewing", 5); //1 INPUT, 3 POTION
-		static::$default[static::ANVIL] = new InventoryType(3, "Brewing", 6); //2 INPUT, 1 OUTPUT
+		static::$default[static::ANVIL] = new InventoryType(3, "Anvil", 6); //2 INPUT, 1 OUTPUT
 	}
 
 	/**
