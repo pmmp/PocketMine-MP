@@ -32,7 +32,7 @@ use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\Long;
 use pocketmine\nbt\tag\String;
 use pocketmine\tile\Spawnable;
-use pocketmine\utils\Binary;
+
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\ChunkException;
 

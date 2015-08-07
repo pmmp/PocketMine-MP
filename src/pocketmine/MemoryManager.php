@@ -25,7 +25,7 @@ use pocketmine\event\server\LowMemoryEvent;
 use pocketmine\event\Timings;
 use pocketmine\scheduler\GarbageCollectionTask;
 use pocketmine\utils\Utils;
-use pocketmine\utils\UUID;
+
 
 class MemoryManager{
 

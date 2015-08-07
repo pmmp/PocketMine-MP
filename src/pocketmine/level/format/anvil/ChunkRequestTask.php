@@ -26,8 +26,7 @@ use pocketmine\nbt\NBT;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 use pocketmine\tile\Spawnable;
-use pocketmine\utils\Binary;
-use pocketmine\utils\ChunkException;
+
 
 class ChunkRequestTask extends AsyncTask{
 

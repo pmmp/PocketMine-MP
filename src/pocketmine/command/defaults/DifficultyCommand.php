@@ -27,7 +27,7 @@ use pocketmine\event\TranslationContainer;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\SetDifficultyPacket;
 use pocketmine\Server;
-use pocketmine\utils\TextFormat;
+
 
 class DifficultyCommand extends VanillaCommand{
 

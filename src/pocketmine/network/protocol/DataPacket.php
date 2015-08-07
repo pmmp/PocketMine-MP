@@ -24,13 +24,12 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 #ifndef COMPILE
-use pocketmine\utils\Binary;
+
 #endif
 
-use pocketmine\item\Item;
+
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Utils;
-use pocketmine\utils\UUID;
 
 
 abstract class DataPacket extends BinaryStream{

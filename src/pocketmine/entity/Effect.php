@@ -26,7 +26,7 @@ use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\MobEffectPacket;
 use pocketmine\Player;
-use pocketmine\Server;
+
 
 class Effect{
 	const SPEED = 1;

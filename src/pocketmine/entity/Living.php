@@ -34,7 +34,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Short;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\EntityEventPacket;
-use pocketmine\Player;
+
 use pocketmine\Server;
 use pocketmine\utils\BlockIterator;
 

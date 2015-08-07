@@ -32,7 +32,7 @@ use pocketmine\network\protocol\FullChunkDataPacket;
 use pocketmine\tile\Spawnable;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\ChunkException;
-use raklib\Binary;
+
 
 class Anvil extends McRegion{
 

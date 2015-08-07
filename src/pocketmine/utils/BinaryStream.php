@@ -24,11 +24,10 @@ namespace pocketmine\utils;
 #include <rules/DataPacket.h>
 
 #ifndef COMPILE
-use pocketmine\utils\Binary;
+
 #endif
 
 use pocketmine\item\Item;
-use pocketmine\utils\UUID;
 
 
 class BinaryStream extends \stdClass{

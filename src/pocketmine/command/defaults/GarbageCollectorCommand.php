@@ -23,7 +23,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\utils\TextFormat;
-use pocketmine\utils\Utils;
+
 
 class GarbageCollectorCommand extends VanillaCommand{
 

@@ -30,7 +30,7 @@ use pocketmine\level\Level;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\Player;
 use pocketmine\tile\Tile;
-use pocketmine\utils\Binary;
+
 
 abstract class BaseFullChunk implements FullChunk{
 

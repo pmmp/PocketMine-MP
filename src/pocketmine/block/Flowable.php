@@ -22,7 +22,7 @@
 namespace pocketmine\block;
 
 
-use pocketmine\item\Item;
+
 
 abstract class Flowable extends Transparent{
 

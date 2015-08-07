@@ -24,7 +24,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\event\TimingsHandler;
 use pocketmine\event\TranslationContainer;
-use pocketmine\utils\TextFormat;
+
 
 class TimingsCommand extends VanillaCommand{
 

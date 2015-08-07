@@ -39,7 +39,7 @@ use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Float;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\ExplodePacket;
-use pocketmine\Server;
+
 use pocketmine\utils\Random;
 
 class Explosion{

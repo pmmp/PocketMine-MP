@@ -21,7 +21,7 @@
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
+
 use pocketmine\item\Tool;
 
 class StainedClay extends Solid{

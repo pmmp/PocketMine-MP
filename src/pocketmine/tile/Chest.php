@@ -28,11 +28,11 @@ use pocketmine\item\Item;
 use pocketmine\level\format\FullChunk;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\Byte;
+
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Int;
-use pocketmine\nbt\tag\Short;
+
 use pocketmine\nbt\tag\String;
 
 class Chest extends Spawnable implements InventoryHolder, Container, Nameable{

@@ -22,16 +22,7 @@
 namespace pocketmine\level\format\anvil;
 
 use pocketmine\level\format\LevelProvider;
-use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\Byte;
-use pocketmine\nbt\tag\ByteArray;
-use pocketmine\nbt\tag\Compound;
-use pocketmine\nbt\tag\Enum;
-use pocketmine\nbt\tag\Int;
-use pocketmine\nbt\tag\IntArray;
-use pocketmine\nbt\tag\Long;
-use pocketmine\utils\Binary;
-use pocketmine\utils\MainLogger;
+
 
 class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 

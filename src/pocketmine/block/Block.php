@@ -25,9 +25,8 @@
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\Squid;
-use pocketmine\entity\Villager;
-use pocketmine\entity\Zombie;
+
+
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
