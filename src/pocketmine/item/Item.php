@@ -209,6 +209,10 @@ class Item{
 
 	const NETHER_BRICKS_STAIRS = 114;
 
+	const ENCHANTING_TABLE = 116;
+	const ENCHANT_TABLE = 116;
+	const ENCHANTMENT_TABLE = 116;
+
 	const END_PORTAL = 120;
 	const END_STONE = 121;
 

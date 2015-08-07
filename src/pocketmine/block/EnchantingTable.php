@@ -21,21 +21,35 @@
 
 namespace pocketmine\block;
 
-use pocketmine\inventory\AnvilInventory;
+use pocketmine\inventory\EnchantInventory;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
+use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\Int;
+use pocketmine\nbt\tag\String;
 use pocketmine\Player;
+use pocketmine\tile\Tile;
 
-class Anvil extends Fallable{
+class EnchantingTable extends Transparent{
 
-	protected $id = self::ANVIL;
+	protected $id = self::ENCHANTING_TABLE;
 
-	public function isSolid(){
-		return false;
+	public function __construct(){
+
 	}
 
-	public function __construct($meta = 0){
-		$this->meta = $meta;
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+		$this->getLevel()->setBlock($block, $this, true, true);
+		$nbt = new Compound("", [
+			new String("id", Tile::ENCHANT_TABLE),
+			new Int("x", $this->x),
+			new Int("y", $this->y),
+			new Int("z", $this->z)
+		]);
+		Tile::createTile(Tile::ENCHANT_TABLE, $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
+
+		return true;
 	}
 
 	public function canBeActivated(){
@@ -51,7 +65,7 @@ class Anvil extends Fallable{
 	}
 
 	public function getName(){
-		return "Anvil";
+		return "Enchanting Table";
 	}
 
 	public function getToolType(){
@@ -64,7 +78,7 @@ class Anvil extends Fallable{
 				return true;
 			}
 
-			$player->addWindow(new AnvilInventory($this));
+			$player->addWindow(new EnchantInventory($this));
 		}
 
 		return true;
@@ -73,7 +87,7 @@ class Anvil extends Fallable{
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= 1){
 			return [
-				[$this->id, 0, 1], //TODO break level
+				[$this->id, 0, 1],
 			];
 		}else{
 			return [];

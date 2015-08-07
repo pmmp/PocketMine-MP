@@ -185,6 +185,10 @@ class Block extends Position implements Metadatable{
 
 	const NETHER_BRICKS_STAIRS = 114;
 
+	const ENCHANTING_TABLE = 116;
+	const ENCHANT_TABLE = 116;
+	const ENCHANTMENT_TABLE = 116;
+
 	const END_PORTAL_FRAME = 120;
 	const END_STONE = 121;
 
@@ -412,6 +416,8 @@ class Block extends Position implements Metadatable{
 			self::$list[self::NETHER_BRICKS] = NetherBrick::class;
 
 			self::$list[self::NETHER_BRICKS_STAIRS] = NetherBrickStairs::class;
+
+			self::$list[self::ENCHANTING_TABLE] = EnchantingTable::class;
 
 			self::$list[self::END_PORTAL_FRAME] = EndPortalFrame::class;
 			self::$list[self::END_STONE] = EndStone::class;
