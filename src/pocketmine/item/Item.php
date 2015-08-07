@@ -968,6 +968,62 @@ class Item{
 		return $this->tags !== "" and $this->tags !== null;
 	}
 
+	public function hasCustomBlockData(){
+		if(!$this->hasCompoundTag()){
+			return false;
+		}
+
+		$tag = $this->getNamedTag();
+		if(isset($tag->BlockEntityTag) and $tag->BlockEntityTag instanceof Compound){
+			return true;
+		}
+
+		return false;
+	}
+
+	public function clearCustomBlockData(){
+		if(!$this->hasCompoundTag()){
+			return $this;
+		}
+		$tag = $this->getNamedTag();
+
+		if(isset($tag->BlockEntityTag) and $tag->BlockEntityTag instanceof Compound){
+			unset($tag->display->BlockEntityTag);
+			$this->setNamedTag($tag);
+		}
+
+		return $this;
+	}
+
+	public function setCustomBlockData(Compound $compound){
+		$tags = clone $compound;
+		$tags->setName("BlockEntityTag");
+
+		if(!$this->hasCompoundTag()){
+			$tag = new Compound("", []);
+		}else{
+			$tag = $this->getNamedTag();
+		}
+
+		$tag->BlockEntityTag = $tags;
+		$this->setNamedTag($tag);
+
+		return $this;
+	}
+
+	public function getCustomBlockData(){
+		if(!$this->hasCompoundTag()){
+			return null;
+		}
+
+		$tag = $this->getNamedTag();
+		if(isset($tag->BlockEntityTag) and $tag->BlockEntityTag instanceof Compound){
+			return $tag->BlockEntityTag;
+		}
+
+		return null;
+	}
+
 	public function hasCustomName(){
 		if(!$this->hasCompoundTag()){
 			return false;
@@ -1189,6 +1245,16 @@ class Item{
 
 	public final function equals(Item $item, $checkDamage = true, $checkCompound = true){
 		return $this->id === $item->getId() and ($checkDamage === false or $this->getDamage() === $item->getDamage()) and ($checkCompound === false or $this->getCompoundTag() === $item->getCompoundTag());
+	}
+
+	public final function deepEquals(Item $item){
+		if($item->equals($item)){
+			return true;
+		}elseif($item->hasCompoundTag() or $this->hasCompoundTag()){
+			return NBT::matchTree($this->getNamedTag(), $item->getNamedTag());
+		}
+
+		return false;
 	}
 
 }

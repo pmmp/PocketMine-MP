@@ -104,17 +104,81 @@ class NBT{
 	 * @return Item
 	 */
 	public static function getItemHelper(Compound $tag){
-		if(!isset($tag->id) or !isset($tag->Damage) or !isset($tag->Count)){
+		if(!isset($tag->id) or !isset($tag->Count)){
 			return Item::get(0);
 		}
 
-		$item = Item::get($tag->id->getValue(), $tag->Damage->getValue(), $tag->Count->getValue());
+		$item = Item::get($tag->id->getValue(), !isset($tag->Damage) ? 0 : $tag->Damage->getValue(), $tag->Count->getValue());
 		
 		if(isset($tag->tag) and $tag->tag instanceof Compound){
 			$item->setNamedTag($tag->tag);
 		}
 
 		return $item;
+	}
+
+	public static function matchList(Enum $tag1, Enum $tag2){
+		if($tag1->getName() !== $tag2->getName() or $tag1->getCount() !== $tag2->getCount()){
+			return false;
+		}
+
+		foreach($tag1 as $k => $v){
+			if(!($v instanceof Tag)){
+				continue;
+			}
+
+			if(!isset($tag2->{$k}) or !($tag2->{$k} instanceof $v)){
+				return false;
+			}
+
+			if($v instanceof Compound){
+				if(!self::matchTree($v, $tag2->{$k})){
+					return false;
+				}
+			}elseif($v instanceof Enum){
+				if(!self::matchList($v, $tag2->{$k})){
+					return false;
+				}
+			}else{
+				if($v->getValue() !== $tag2->{$k}->getValue()){
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	public static function matchTree(Compound $tag1, Compound $tag2){
+		if($tag1->getName() !== $tag2->getName() or $tag1->getCount() !== $tag2->getCount()){
+			return false;
+		}
+
+		foreach($tag1 as $k => $v){
+			if(!($v instanceof Tag)){
+				continue;
+			}
+
+			if(!isset($tag2->{$k}) or !($tag2->{$k} instanceof $v)){
+				return false;
+			}
+
+			if($v instanceof Compound){
+				if(!self::matchTree($v, $tag2->{$k})){
+					return false;
+				}
+			}elseif($v instanceof Enum){
+				if(!self::matchList($v, $tag2->{$k})){
+					return false;
+				}
+			}else{
+				if($v->getValue() !== $tag2->{$k}->getValue()){
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 	public function get($len){

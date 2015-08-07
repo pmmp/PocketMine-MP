@@ -52,6 +52,12 @@ class EnchantingTable extends Transparent{
 			$nbt->CustomName = new String("CustomName", $item->getCustomName());
 		}
 
+		if($item->hasCustomBlockData()){
+			foreach($item->getCustomBlockData() as $key => $v){
+				$nbt->{$key} = $v;
+			}
+		}
+
 		Tile::createTile(Tile::ENCHANT_TABLE, $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
 
 		return true;

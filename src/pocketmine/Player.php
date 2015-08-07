@@ -1945,7 +1945,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                             break;
                         }
 					}
-				}elseif($item === null or $slot === -1 or !$item->equals($packet->item)){ // packet error or not implemented
+				}elseif($item === null or $slot === -1 or !$item->deepEquals($packet->item)){ // packet error or not implemented
 					$this->inventory->sendContents($this);
 					break;
 				}elseif($this->isCreative()){
@@ -1985,14 +1985,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						if($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
 							break;
 						}
-					}elseif(!$this->inventory->getItemInHand()->equals($packet->item)){
+					}elseif(!$this->inventory->getItemInHand()->deepEquals($packet->item)){
 						$this->inventory->sendHeldItem($this);
 					}else{
 						$item = $this->inventory->getItemInHand();
 						$oldItem = clone $item;
 						//TODO: Implement adventure mode checks
 						if($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this)){
-							if(!$item->equals($oldItem, true) or $item->getCount() !== $oldItem->getCount()){
+							if(!$item->deepEquals($oldItem) or $item->getCount() !== $oldItem->getCount()){
 								$this->inventory->setItemInHand($item, $this);
 								$this->inventory->sendHeldItem($this->hasSpawned);
 							}
@@ -2015,7 +2015,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 					if($this->isCreative()){
 						$item = $this->inventory->getItemInHand();
-					}elseif(!$this->inventory->getItemInHand()->equals($packet->item)){
+					}elseif(!$this->inventory->getItemInHand()->deepEquals($packet->item)){
 						$this->inventory->sendHeldItem($this);
 						break;
 					}else{
@@ -2251,7 +2251,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 				if($this->canInteract($vector->add(0.5, 0.5, 0.5), $this->isCreative() ? 13 : 6) and $this->level->useBreakOn($vector, $item, $this)){
 					if($this->isSurvival()){
-						if(!$item->equals($oldItem, true) or $item->getCount() !== $oldItem->getCount()){
+						if(!$item->deepEquals($oldItem) or $item->getCount() !== $oldItem->getCount()){
 							$this->inventory->setItemInHand($item, $this);
 							$this->inventory->sendHeldItem($this->hasSpawned);
 						}
@@ -2610,7 +2610,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					$slot = -1;
 					$checkDamage = $ingredient->getDamage() === null ? false : true;
 					foreach($this->inventory->getContents() as $index => $i){
-						if($ingredient->equals($i, $checkDamage) and ($i->getCount() - $used[$index]) >= 1){
+						if($ingredient->deepEquals($i, $checkDamage) and ($i->getCount() - $used[$index]) >= 1){
 							$slot = $index;
 							$used[$index]++;
 							break;
@@ -2723,7 +2723,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					break;
 				}
 
-				if($transaction->getSourceItem()->equals($transaction->getTargetItem()) and $transaction->getTargetItem()->getCount() === $transaction->getSourceItem()->getCount()){ //No changes!
+				if($transaction->getSourceItem()->deepEquals($transaction->getTargetItem()) and $transaction->getTargetItem()->getCount() === $transaction->getSourceItem()->getCount()){ //No changes!
 					//No changes, just a local inventory update sent by the server
 					break;
 				}

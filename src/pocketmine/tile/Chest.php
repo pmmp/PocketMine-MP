@@ -47,7 +47,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 		$this->inventory = new ChestInventory($this);
 
 		if(!isset($this->namedtag->Items) or !($this->namedtag->Items instanceof Enum)){
-			$this->namedtag->Items = new Enum("Inventory", []);
+			$this->namedtag->Items = new Enum("Items", []);
 			$this->namedtag->Items->setTagType(NBT::TAG_Compound);
 		}
 
@@ -91,8 +91,8 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	 */
 	protected function getSlotIndex($index){
 		foreach($this->namedtag->Items as $i => $slot){
-			if($slot["Slot"] === $index){
-				return $i;
+			if((int) $slot["Slot"] === (int) $index){
+				return (int) $i;
 			}
 		}
 

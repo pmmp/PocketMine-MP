@@ -109,6 +109,12 @@ class Chest extends Transparent{
 			$nbt->CustomName = new String("CustomName", $item->getCustomName());
 		}
 
+		if($item->hasCustomBlockData()){
+			foreach($item->getCustomBlockData() as $key => $v){
+				$nbt->{$key} = $v;
+			}
+		}
+
 		$tile = Tile::createTile("Chest", $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
 
 		if($chest instanceof TileChest and $tile instanceof TileChest){
