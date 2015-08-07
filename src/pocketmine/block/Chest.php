@@ -158,6 +158,11 @@ class Chest extends Transparent{
 				$chest = Tile::createTile("Chest", $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
 			}
 
+			if(isset($chest->namedtag->Lock) and $chest->namedtag->Lock instanceof String){
+				if($chest->namedtag->Lock->getValue() !== $item->getCustomName()){
+					return true;
+				}
+			}
 
 			if($player->isCreative()){
 				return true;

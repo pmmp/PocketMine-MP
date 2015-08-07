@@ -1562,6 +1562,24 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
+		$tag = $item->getNamedTagEntry("CanDestroy");
+		if($tag instanceof Enum){
+			$canBreak = false;
+			foreach($tag as $v){
+				if($v instanceof String){
+					$entry = Item::fromString($v->getValue());
+					if($entry->getId() > 0 and $entry->getBlock() !== null and $entry->getBlock()->getId() === $target->getId()){
+						$canBreak = true;
+						break;
+					}
+				}
+			}
+
+			if(!$canBreak){
+				return false;
+			}
+		}
+
 		if($createParticles){
 			$players = $this->getChunkPlayers($target->x >> 4, $target->z >> 4);
 			if($player !== null){

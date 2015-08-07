@@ -85,6 +85,7 @@ class EnchantingTable extends Transparent{
 
 	public function onActivate(Item $item, Player $player = null){
 		if($player instanceof Player){
+			//TODO lock
 			if($player->isCreative()){
 				return true;
 			}
