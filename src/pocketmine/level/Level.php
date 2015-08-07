@@ -1706,6 +1706,24 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
+		$tag = $item->getNamedTagEntry("CanPlaceOn");
+		if($tag instanceof Enum){
+			$canPlace = false;
+			foreach($tag as $v){
+				if($v instanceof String){
+					$entry = Item::fromString($v->getValue());
+					if($entry->getId() > 0 and $entry->getBlock() !== null and $entry->getBlock()->getId() === $target->getId()){
+						$canPlace = true;
+						break;
+					}
+				}
+			}
+
+			if(!$canPlace){
+				return false;
+			}
+		}
+
 
 		if($player !== null){
 			$ev = new BlockPlaceEvent($player, $hand, $block, $target, $item);

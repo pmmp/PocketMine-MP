@@ -918,7 +918,7 @@ class Item{
 
 			return $blocks;
 		}else{
-			$b = explode(":", str_replace(" ", "_", trim($str)));
+			$b = explode(":", str_replace([" ", "minecraft:"], ["_", ""], trim($str)));
 			if(!isset($b[1])){
 				$meta = 0;
 			}else{
