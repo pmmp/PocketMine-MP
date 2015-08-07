@@ -1527,7 +1527,12 @@ class Level implements ChunkManager, Metadatable{
 				return false;
 			}
 
-			$breakTime = $player->isCreative() ? 0.15 : $target->getBreakTime($item);
+			$breakTime = $target->getBreakTime($item);
+
+			if($player->isCreative() and $breakTime > 0.15){
+				$breakTime = 0.15;
+			}
+
 			if($player->hasEffect(Effect::SWIFTNESS)){
 				$breakTime *= 1 - (0.2 * ($player->getEffect(Effect::SWIFTNESS)->getAmplifier() + 1));
 			}
@@ -1542,7 +1547,7 @@ class Level implements ChunkManager, Metadatable{
 				return false;
 			}
 
-			$player->lastBreak = PHP_INT_MAX;
+			$player->lastBreak = microtime(true);
 
 			$drops = $ev->getDrops();
 

@@ -60,7 +60,19 @@ abstract class Tool extends Item{
 			return true;
 		}
 
-		if($this->isHoe()){
+		if($object instanceof Block){
+			if(
+				$object->getToolType() === Tool::TYPE_PICKAXE and $this->isPickaxe() or
+				$object->getToolType() === Tool::TYPE_SHOVEL and $this->isShovel() or
+				$object->getToolType() === Tool::TYPE_AXE and $this->isAxe() or
+				$object->getToolType() === Tool::TYPE_SWORD and $this->isSword() or
+				$object->getToolType() === Tool::TYPE_SHEARS and $this->isShears()
+			){
+				$this->meta++;
+			}elseif(!$this->isShears() and $object->getBreakTime($this) > 0){
+				$this->meta += 2;
+			}
+		}elseif($this->isHoe()){
 			if(($object instanceof Block) and ($object->getId() === self::GRASS or $object->getId() === self::DIRT)){
 				$this->meta++;
 			}
@@ -108,7 +120,7 @@ abstract class Tool extends Item{
 
 	public function isUnbreakable(){
 		$tag = $this->getNamedTagEntry("Unbreakable");
-		return $tag instanceof Byte and $tag->getValue() > 0;
+		return $tag !== null and $tag->getValue() > 0;
 	}
 
 	public function isPickaxe(){

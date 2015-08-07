@@ -796,6 +796,10 @@ class Block extends Position implements Metadatable{
 			$base *= 3.33;
 		}
 
+		if($item->isSword()){
+			$base *= 0.5;
+		}
+
 		return $base;
 	}
 

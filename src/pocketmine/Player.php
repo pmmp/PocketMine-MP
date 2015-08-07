@@ -2087,7 +2087,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 				switch($packet->action){
 					case 0: //Start break
-						if($pos->distanceSquared($this) > 10000){
+						if($this->lastBreak !== PHP_INT_MAX or $pos->distanceSquared($this) > 10000){
 							break;
 						}
 						$target = $this->level->getBlock($pos);
@@ -2098,6 +2098,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 							break;
 						}
 						$this->lastBreak = microtime(true);
+						break;
+					case 1: //Abort!
+						$this->lastBreak = PHP_INT_MAX;
 						break;
 					case 5: //Shot arrow
 						if($this->startAction > -1 and $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION)){
