@@ -340,6 +340,14 @@ class CraftingManager{
 		}
 	}
 
+	/**
+	 * @param UUID $id
+	 * @return Recipe
+	 */
+	public function getRecipe(UUID $id){
+		$index = $id->toBinary();
+		return isset($this->recipes[$index]) ? $this->recipes[$index] : null;
+	}
 
 	/**
 	 * @return Recipe[]
@@ -375,7 +383,7 @@ class CraftingManager{
 	 */
 	public function registerShapedRecipe(ShapedRecipe $recipe){
 		$result = $recipe->getResult();
-		$this->recipes[spl_object_hash($recipe)] = $recipe;
+		$this->recipes[$recipe->getId()->toBinary()] = $recipe;
 		$ingredients = $recipe->getIngredientMap();
 		$hash = "";
 		foreach($ingredients as $v){
@@ -395,7 +403,7 @@ class CraftingManager{
 	 */
 	public function registerShapelessRecipe(ShapelessRecipe $recipe){
 		$result = $recipe->getResult();
-		$this->recipes[spl_object_hash($recipe)] = $recipe;
+		$this->recipes[$recipe->getId()->toBinary()] = $recipe;
 		$hash = "";
 		$ingredients = $recipe->getIngredientList();
 		usort($ingredients, [$this, "sort"]);
@@ -472,85 +480,11 @@ class CraftingManager{
 	}
 
 	/**
-	 * @param CraftingTransactionGroup $ts
-	 *
-	 * @return Recipe
-	 */
-	public function matchTransaction(CraftingTransactionGroup $ts){
-		$result = $ts->getResult();
-
-		if(!($result instanceof Item)){
-			return false;
-		}
-		$k = $result->getId() . ":" . $result->getDamage();
-
-		if(!isset($this->recipeLookup[$k])){
-			return false;
-		}
-		$hash = "";
-		$input = $ts->getRecipe();
-		usort($input, [$this, "sort"]);
-		$inputCount = 0;
-		foreach($input as $item){
-			$inputCount += $item->getCount();
-			$hash .= $item->getId() . ":" . ($item->getDamage() === null ? "?" : $item->getDamage()) . "x" . $item->getCount() . ",";
-		}
-		if(!isset($this->recipeLookup[$k][$hash])){
-			$hasRecipe = null;
-			foreach($this->recipeLookup[$k] as $recipe){
-				if($recipe instanceof ShapelessRecipe){
-					if($recipe->getIngredientCount() !== $inputCount){
-						continue;
-					}
-					$checkInput = $recipe->getIngredientList();
-					foreach($input as $item){
-						$amount = $item->getCount();
-						foreach($checkInput as $k => $checkItem){
-							if($checkItem->equals($item, $checkItem->getDamage() === null ? false : true, $checkItem->getCompoundTag() === null ? false : true)){
-								$remove = min($checkItem->getCount(), $amount);
-								$checkItem->setCount($checkItem->getCount() - $remove);
-								if($checkItem->getCount() === 0){
-									unset($checkInput[$k]);
-								}
-								$amount -= $remove;
-								if($amount === 0){
-									break;
-								}
-							}
-						}
-					}
-
-					if(count($checkInput) === 0){
-						$hasRecipe = $recipe;
-						break;
-					}
-				}
-				if($hasRecipe instanceof Recipe){
-					break;
-				}
-			}
-
-			if($hasRecipe === null){
-				return false;
-			}
-
-			$recipe = $hasRecipe;
-		}else{
-			$recipe = $this->recipeLookup[$k][$hash];
-		}
-
-		$checkResult = $recipe->getResult();
-		if($checkResult->equals($result) and $checkResult->getCount() === $result->getCount()){
-			return $recipe;
-		}
-
-		return null;
-	}
-
-	/**
 	 * @param Recipe $recipe
 	 */
 	public function registerRecipe(Recipe $recipe){
+		$recipe->setId(UUID::fromData(++self::$RECIPE_COUNT, $recipe->getResult()->getId(), $recipe->getResult()->getDamage(), $recipe->getResult()->getCount(), $recipe->getResult()->getCompoundTag()));
+
 		if($recipe instanceof ShapedRecipe){
 			$this->registerShapedRecipe($recipe);
 		}elseif($recipe instanceof ShapelessRecipe){
@@ -558,8 +492,6 @@ class CraftingManager{
 		}elseif($recipe instanceof FurnaceRecipe){
 			$this->registerFurnaceRecipe($recipe);
 		}
-
-		$recipe->setId(UUID::fromData(++self::$RECIPE_COUNT, $recipe->getResult()->getId(), $recipe->getResult()->getDamage(), $recipe->getResult()->getCount(), $recipe->getResult()->getCompoundTag()));
 	}
 
 }

@@ -1456,7 +1456,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function spawnToAll(){
-		if($this->chunk === null){
+		if($this->chunk === null or $this->closed){
 			return;
 		}
 		foreach($this->level->getChunkPlayers($this->chunk->getX(), $this->chunk->getZ()) as $player){
