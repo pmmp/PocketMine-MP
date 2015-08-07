@@ -53,7 +53,7 @@ class ShapedRecipe implements Recipe{
 		if(count($shape) > 3){
 			throw new \InvalidStateException("Crafting recipes should be 1, 2, 3 rows, not " . count($shape));
 		}
-		foreach($shape as $z => $row){
+		foreach($shape as $y => $row){
 			if(strlen($row) === 0 or strlen($row) > 3){
 				throw new \InvalidStateException("Crafting rows should be 1, 2, 3 characters, not " . count($row));
 			}
@@ -63,9 +63,9 @@ class ShapedRecipe implements Recipe{
 				$this->shape[$row{$i}] = null;
 
 				if(!isset($this->shapeItems[$row{$i}])){
-					$this->shapeItems[$row{$i}] = [new Vector2($i, $z)];
+					$this->shapeItems[$row{$i}] = [new Vector2($i, $y)];
 				}else{
-					$this->shapeItems[$row{$i}][] = new Vector2($i, $z);
+					$this->shapeItems[$row{$i}][] = new Vector2($i, $y);
 				}
 			}
 		}
@@ -125,13 +125,13 @@ class ShapedRecipe implements Recipe{
 	 */
 	public function getIngredientMap(){
 		$ingredients = [];
-		foreach($this->ingredients as $z => $row){
-			$ingredients[$z] = [];
+		foreach($this->ingredients as $y => $row){
+			$ingredients[$y] = [];
 			foreach($row as $x => $ingredient){
 				if($ingredient !== null){
-					$ingredients[$z][$x] = clone $ingredient;
+					$ingredients[$y][$x] = clone $ingredient;
 				}else{
-					$ingredients[$z][$x] = null;
+					$ingredients[$y][$x] = Item::get(Item::AIR);
 				}
 			}
 		}
@@ -141,11 +141,11 @@ class ShapedRecipe implements Recipe{
 
 	/**
 	 * @param $x
-	 * @param $z
+	 * @param $y
 	 * @return null|Item
 	 */
-	public function getIngredient($x, $z){
-		return isset($this->ingredients[$z][$x]) ? $this->ingredients[$z][$x] : null;
+	public function getIngredient($x, $y){
+		return isset($this->ingredients[$y][$x]) ? $this->ingredients[$y][$x] : Item::get(Item::AIR);
 	}
 
 	/**

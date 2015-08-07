@@ -2082,7 +2082,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					break;
 				}
 
-				$this->craftingType = 0;
 				$packet->eid = $this->id;
 				$pos = new Vector3($packet->x, $packet->y, $packet->z);
 
@@ -2577,7 +2576,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					break;
 				}
 
-				/*foreach($packet->input as $i => $item){
+				foreach($packet->input as $i => $item){
 					if($item->getDamage() === -1 or $item->getDamage() === 0xffff){
 						$item->setDamage(null);
 					}
@@ -2585,7 +2584,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					if($i < 9 and $item->getId() > 0){
 						$item->setCount(1);
 					}
-				}*/
+				}
 
 				$canCraft = true;
 
@@ -2593,10 +2592,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				if($recipe instanceof ShapedRecipe){
 					for($x = 0; $x < 3 and $canCraft; ++$x){
 						for($y = 0; $y < 3; ++$y){
-							$item = $packet->input[$x * 3 + $y];
+							$item = $packet->input[$y * 3 + $x];
 							$ingredient = $recipe->getIngredient($x, $y);
 							if($item->getCount() > 0 and $item->getId() > 0){
-								if($ingredient === null or !$ingredient->deepEquals($item, $ingredient->getDamage() === null, $ingredient->getCompoundTag() === null)){
+								if($ingredient === null or !$ingredient->deepEquals($item, $ingredient->getDamage() !== null, $ingredient->getCompoundTag() !== null)){
 									$canCraft = false;
 									break;
 								}
@@ -2612,10 +2611,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 					for($x = 0; $x < 3 and $canCraft; ++$x){
 						for($y = 0; $y < 3; ++$y){
-							$item = clone $packet->input[$x * 3 + $y];
+							$item = clone $packet->input[$y * 3 + $x];
 
 							foreach($needed as $k => $n){
-								if($n->deepEquals($item, $n->getDamage() === null, $n->getCompoundTag() === null)){
+								if($n->deepEquals($item, $n->getDamage() !== null, $n->getCompoundTag() !== null)){
 									$remove = min($n->getCount(), $item->getCount());
 									$n->setCount($n->getCount() - $remove);
 									$item->setCount($item->getCount() - $remove);
@@ -2655,7 +2654,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				foreach($ingredients as $ingredient){
 					$slot = -1;
 					foreach($this->inventory->getContents() as $index => $i){
-						if($ingredient->getId() !== 0 and $ingredient->deepEquals($i) and ($i->getCount() - $used[$index]) >= 1){
+						if($ingredient->getId() !== 0 and $ingredient->deepEquals($i, $i->getDamage() !== null) and ($i->getCount() - $used[$index]) >= 1){
 							$slot = $index;
 							$used[$index]++;
 							break;

@@ -411,6 +411,9 @@ class Item{
 	const RAW_CHICKEN = 365;
 	const COOKED_CHICKEN = 366;
 
+	const GOLD_NUGGET = 371;
+	const GOLDEN_NUGGET = 371;
+
 	const SPAWN_EGG = 383;
 
 	const EMERALD = 388;
