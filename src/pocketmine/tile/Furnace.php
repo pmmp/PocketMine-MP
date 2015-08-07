@@ -34,10 +34,11 @@ use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Short;
+use pocketmine\nbt\tag\String;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\ContainerSetDataPacket;
 
-class Furnace extends Tile implements InventoryHolder, Container{
+class Furnace extends Tile implements InventoryHolder, Container, Nameable{
 	/** @var FurnaceInventory */
 	protected $inventory;
 
@@ -67,6 +68,23 @@ class Furnace extends Tile implements InventoryHolder, Container{
 		if($this->namedtag["BurnTime"] > 0){
 			$this->scheduleUpdate();
 		}
+	}
+
+	public function getName(){
+		return isset($this->namedtag->CustomName) ? $this->namedtag->CustomName->getValue() : "Chest";
+	}
+
+	public function hasName(){
+		return isset($this->namedtag->CustomName);
+	}
+
+	public function setName($str){
+		if($str === ""){
+			unset($this->namedtag->CustomName);
+			return;
+		}
+
+		$this->namedtag->CustomName = new String("CustomName", $str);
 	}
 
 	public function close(){

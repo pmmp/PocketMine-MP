@@ -100,17 +100,18 @@ class NBT{
 	}
 
 	/**
-	 * @param Compound $item
+	 * @param Compound $tag
 	 * @return Item
 	 */
-	public static function getItemHelper(Compound $item){
-		if(!isset($item->id) or !isset($item->Damage) or !isset($item->Count)){
+	public static function getItemHelper(Compound $tag){
+		if(!isset($tag->id) or !isset($tag->Damage) or !isset($tag->Count)){
 			return Item::get(0);
 		}
 
-		$item = Item::get($item->id->getValue(), $item->Damage->getValue(), $item->Count->getValue());
-		if(isset($item->tag)){
-			$item->setNamedTag($item->tag);
+		$item = Item::get($tag->id->getValue(), $tag->Damage->getValue(), $tag->Count->getValue());
+		
+		if(isset($tag->tag) and $tag->tag instanceof Compound){
+			$item->setNamedTag($tag->tag);
 		}
 
 		return $item;
@@ -162,6 +163,8 @@ class NBT{
 	 */
 	public function write(){
 		$this->offset = 0;
+		$this->buffer = "";
+
 		if($this->data instanceof Compound){
 			$this->writeTag($this->data);
 
@@ -306,22 +309,22 @@ class NBT{
 
 	public function getArray(){
 		$data = [];
-		$this->toArray($data, $this->data);
+		self::toArray($data, $this->data);
 	}
 
-	private function toArray(array &$data, Tag $tag){
+	private static function toArray(array &$data, Tag $tag){
 		/** @var Compound[]|Enum[]|IntArray[] $tag */
 		foreach($tag as $key => $value){
 			if($value instanceof Compound or $value instanceof Enum or $value instanceof IntArray){
 				$data[$key] = [];
-				$this->toArray($data[$key], $value);
+				self::toArray($data[$key], $value);
 			}else{
 				$data[$key] = $value->getValue();
 			}
 		}
 	}
 
-	private function fromArray(Tag $tag, array $data, $byteArray = false){
+	private static function fromArray(Tag $tag, array $data, $byteArray = false){
 		foreach($data as $key => $value){
 			if(is_array($value)){
 				$isNumeric = true;
@@ -335,7 +338,7 @@ class NBT{
 					}
 				}
 				$tag{$key} = $isNumeric ? ($isIntArray ? new IntArray($key, []) : new Enum($key, [])) : new Compound($key, []);
-				$this->fromArray($tag->{$key}, $value);
+				self::fromArray($tag->{$key}, $value);
 			}elseif(is_int($value)){
 				$tag{$key} = new Int($key, $value);
 			}elseif(is_float($value)){
@@ -354,7 +357,7 @@ class NBT{
 
 	public function setArray(array $data, $byteArray = false){
 		$this->data = new Compound("", []);
-		$this->fromArray($this->data, $data, $byteArray);
+		self::fromArray($this->data, $data, $byteArray);
 	}
 
 	/**

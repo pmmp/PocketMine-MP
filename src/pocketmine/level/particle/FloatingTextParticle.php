@@ -35,6 +35,11 @@ class FloatingTextParticle extends Particle{
 	protected $entityId;
 	protected $invisible = false;
 
+	/**
+	 * @param Vector3 $pos
+	 * @param int $text
+	 * @param string $title
+	 */
 	public function __construct(Vector3 $pos, $text, $title = ""){
 		parent::__construct($pos->x, $pos->y, $pos->z);
 		$this->text = $text;

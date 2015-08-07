@@ -41,10 +41,10 @@ class TextPacket extends DataPacket{
 	public function decode(){
 		$this->type = $this->getByte();
 		switch($this->type){
+			case self::TYPE_POPUP:
 			case self::TYPE_CHAT:
 				$this->source = $this->getString();
 			case self::TYPE_RAW:
-			case self::TYPE_POPUP:
 			case self::TYPE_TIP:
 				$this->message = $this->getString();
 				break;

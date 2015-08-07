@@ -104,6 +104,11 @@ class Chest extends Transparent{
 			new Int("z", $this->z)
 		]);
 		$nbt->Items->setTagType(NBT::TAG_Compound);
+
+		if($item->hasCustomName()){
+			$nbt->CustomName = new String("CustomName", $item->getCustomName());
+		}
+
 		$tile = Tile::createTile("Chest", $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
 
 		if($chest instanceof TileChest and $tile instanceof TileChest){

@@ -77,6 +77,11 @@ class BurningFurnace extends Solid{
 			new Int("z", $this->z)
 		]);
 		$nbt->Items->setTagType(NBT::TAG_Compound);
+
+		if($item->hasCustomName()){
+			$nbt->CustomName = new String("CustomName", $item->getCustomName());
+		}
+
 		Tile::createTile("Furnace", $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
 
 		return true;

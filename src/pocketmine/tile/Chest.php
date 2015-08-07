@@ -35,7 +35,7 @@ use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 
-class Chest extends Spawnable implements InventoryHolder, Container{
+class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 
 	/** @var ChestInventory */
 	protected $inventory;
@@ -182,6 +182,23 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 		}
 	}
 
+	public function getName(){
+		return isset($this->namedtag->CustomName) ? $this->namedtag->CustomName->getValue() : "Chest";
+	}
+
+	public function hasName(){
+		return isset($this->namedtag->CustomName);
+	}
+
+	public function setName($str){
+		if($str === ""){
+			unset($this->namedtag->CustomName);
+			return;
+		}
+
+		$this->namedtag->CustomName = new String("CustomName", $str);
+	}
+
 	public function isPaired(){
 		if(!isset($this->namedtag->pairx) or !isset($this->namedtag->pairz)){
 			return false;
@@ -248,7 +265,7 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 
 	public function getSpawnCompound(){
 		if($this->isPaired()){
-			return new Compound("", [
+			$c = new Compound("", [
 				new String("id", Tile::CHEST),
 				new Int("x", (int) $this->x),
 				new Int("y", (int) $this->y),
@@ -257,12 +274,18 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 				new Int("pairz", (int) $this->namedtag["pairz"])
 			]);
 		}else{
-			return new Compound("", [
+			$c = new Compound("", [
 				new String("id", Tile::CHEST),
 				new Int("x", (int) $this->x),
 				new Int("y", (int) $this->y),
 				new Int("z", (int) $this->z)
 			]);
 		}
+
+		if($this->hasName()){
+			$c->CustomName = $this->namedtag->CustomName;
+		}
+
+		return $c;
 	}
 }

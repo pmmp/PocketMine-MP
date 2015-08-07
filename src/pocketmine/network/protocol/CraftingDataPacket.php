@@ -100,8 +100,14 @@ class CraftingDataPacket extends DataPacket{
 		}
 	}
 
-	private static function writeEnchant(){
+	private static function writeEnchant($slot, $enchantmentId, $enchantmentLevel, $cost, $name, BinaryStream $stream){
 		//TODO
+
+		$stream->putInt($slot);
+		$stream->putInt($enchantmentId);
+		$stream->putInt($enchantmentLevel);
+		$stream->putInt($cost);
+		$stream->putString($name);
 
 		return CraftingDataPacket::ENTRY_ENCHANT;
 	}

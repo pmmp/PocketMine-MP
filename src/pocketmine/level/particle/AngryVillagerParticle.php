@@ -25,6 +25,6 @@ use pocketmine\math\Vector3;
 
 class AngryVillagerParticle extends GenericParticle{
 	public function __construct(Vector3 $pos){
-		parent::__construct($pos, 29);
+		parent::__construct($pos, Particle::TYPE_VILLAGER_ANGRY);
 	}
 }
