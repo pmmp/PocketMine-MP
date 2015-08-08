@@ -109,6 +109,7 @@ use pocketmine\network\protocol\DisconnectPacket;
 use pocketmine\network\protocol\EntityEventPacket;
 use pocketmine\network\protocol\FullChunkDataPacket;
 use pocketmine\network\protocol\Info as ProtocolInfo;
+use pocketmine\network\protocol\PlayerActionPacket;
 use pocketmine\network\protocol\PlayStatusPacket;
 use pocketmine\network\protocol\RespawnPacket;
 use pocketmine\network\protocol\TextPacket;
@@ -2078,7 +2079,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 				break;
 			case ProtocolInfo::PLAYER_ACTION_PACKET:
-				if($this->spawned === false or $this->blocked === true or (!$this->isAlive() and $packet->action !== 7)){
+				if($this->spawned === false or $this->blocked === true or (!$this->isAlive() and $packet->action !== PlayerActionPacket::ACTION_RESPAWN and $packet->action !== PlayerActionPacket::ACTION_DIMENSION_CHANGE)){
 					break;
 				}
 
@@ -2086,7 +2087,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$pos = new Vector3($packet->x, $packet->y, $packet->z);
 
 				switch($packet->action){
-					case 0: //Start break
+					case PlayerActionPacket::ACTION_START_BREAK:
 						if($this->lastBreak !== PHP_INT_MAX or $pos->distanceSquared($this) > 10000){
 							break;
 						}
@@ -2099,10 +2100,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						}
 						$this->lastBreak = microtime(true);
 						break;
-					case 1: //Abort!
+					case PlayerActionPacket::ACTION_ABORT_BREAK:
 						$this->lastBreak = PHP_INT_MAX;
 						break;
-					case 5: //Shot arrow
+					case PlayerActionPacket::ACTION_RELEASE_ITEM:
 						if($this->startAction > -1 and $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION)){
 							if($this->inventory->getItemInHand()->getId() === Item::BOW) {
 								$bow = $this->inventory->getItemInHand();
@@ -2194,10 +2195,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 							$this->inventory->sendContents($this);
 						}
 						break;
-					case 6: //get out of the bed
+					case PlayerActionPacket::ACTION_STOP_SLEEPING:
 						$this->stopSleep();
 						break;
-					case 7: //Respawn
+					case PlayerActionPacket::ACTION_RESPAWN:
 						if($this->spawned === false or $this->isAlive() or !$this->isOnline()){
 							break;
 						}
@@ -2231,6 +2232,18 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 						$this->spawnToAll();
 						$this->scheduleUpdate();
+						break;
+					case PlayerActionPacket::ACTION_START_SPRINT:
+						$this->setSprinting(true);
+						break;
+					case PlayerActionPacket::ACTION_STOP_SPRINT:
+						$this->setSprinting(false);
+						break;
+					case PlayerActionPacket::ACTION_START_SNEAK:
+						$this->setSneaking(true);
+						break;
+					case PlayerActionPacket::ACTION_STOP_SNEAK:
+						$this->setSneaking(false);
 						break;
 				}
 

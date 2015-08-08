@@ -29,6 +29,7 @@ use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Double;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Float;
+use pocketmine\nbt\tag\String;
 use pocketmine\Player;
 
 class SpawnEgg extends Item{
@@ -65,6 +66,10 @@ class SpawnEgg extends Item{
 			]),
 		]);
 
+		if($this->hasCustomName()){
+			$nbt->CustomName = new String("CustomName", $this->getCustomName());
+		}
+
 		$entity = Entity::createEntity($this->meta, $chunk, $nbt);
 
 		if($entity instanceof Entity){
@@ -72,7 +77,6 @@ class SpawnEgg extends Item{
 				--$this->count;
 			}
 			$entity->spawnToAll();
-
 			return true;
 		}
 
