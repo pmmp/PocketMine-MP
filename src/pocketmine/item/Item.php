@@ -1188,13 +1188,9 @@ class Item{
 			if($tag->display->getCount() === 0){
 				unset($tag->display);
 			}
-		}else{
-			$tag->display = new Compound("display", [
-				"Name" => new String("Name", $name)
-			]);
-		}
 
-		$this->setNamedTag($tag);
+			$this->setNamedTag($tag);
+		}
 
 		return $this;
 	}

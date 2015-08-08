@@ -181,6 +181,257 @@ class NBT{
 		return true;
 	}
 
+	public static function parseJSON($data, &$offset = 0){
+		$len = strlen($data);
+		for(; $offset < $len; ++$offset){
+			$c = $data{$offset};
+			if($c === "{"){
+				++$offset;
+				$data = self::parseCompound($data, $offset);
+				return new Compound("", $data);
+			}elseif($c !== " " and $c !== "\r" and $c !== "\n" and $c !== "\t"){
+				throw new \Exception("Syntax error: unexpected '$c' at offset $offset");
+			}
+		}
+
+		return null;
+	}
+
+	private static function parseList($str, &$offset = 0){
+		$len = strlen($str);
+
+
+		$key = 0;
+		$value = null;
+
+		$data = [];
+
+		for(; $offset < $len; ++$offset){
+			if($str{$offset - 1} === "]"){
+				break;
+			}elseif($str{$offset} === "]"){
+				++$offset;
+				break;
+			}
+
+			$value = self::readValue($str, $offset, $type);
+
+			switch($type){
+				case NBT::TAG_Byte:
+					$data[$key] = new Byte($key, $value);
+					break;
+				case NBT::TAG_Short:
+					$data[$key] = new Short($key, $value);
+					break;
+				case NBT::TAG_Int:
+					$data[$key] = new Int($key, $value);
+					break;
+				case NBT::TAG_Long:
+					$data[$key] = new Long($key, $value);
+					break;
+				case NBT::TAG_Float:
+					$data[$key] = new Float($key, $value);
+					break;
+				case NBT::TAG_Double:
+					$data[$key] = new Double($key, $value);
+					break;
+				case NBT::TAG_ByteArray:
+					$data[$key] = new ByteArray($key, $value);
+					break;
+				case NBT::TAG_String:
+					$data[$key] = new Byte($key, $value);
+					break;
+				case NBT::TAG_Enum:
+					$data[$key] = new Enum($key, $value);
+					break;
+				case NBT::TAG_Compound:
+					$data[$key] = new Compound($key, $value);
+					break;
+				case NBT::TAG_IntArray:
+					$data[$key] = new IntArray($key, $value);
+					break;
+			}
+
+			$key++;
+		}
+
+		return $data;
+	}
+
+	private static function parseCompound($str, &$offset = 0){
+		$len = strlen($str);
+
+		$data = [];
+
+		for(; $offset < $len; ++$offset){
+			if($str{$offset - 1} === "}"){
+				break;
+			}elseif($str{$offset} === "}"){
+				++$offset;
+				break;
+			}
+
+			$key = self::readKey($str, $offset);
+			$value = self::readValue($str, $offset, $type);
+
+			switch($type){
+				case NBT::TAG_Byte:
+					$data[$key] = new Byte($key, $value);
+					break;
+				case NBT::TAG_Short:
+					$data[$key] = new Short($key, $value);
+					break;
+				case NBT::TAG_Int:
+					$data[$key] = new Int($key, $value);
+					break;
+				case NBT::TAG_Long:
+					$data[$key] = new Long($key, $value);
+					break;
+				case NBT::TAG_Float:
+					$data[$key] = new Float($key, $value);
+					break;
+				case NBT::TAG_Double:
+					$data[$key] = new Double($key, $value);
+					break;
+				case NBT::TAG_ByteArray:
+					$data[$key] = new ByteArray($key, $value);
+					break;
+				case NBT::TAG_String:
+					$data[$key] = new Byte($key, $value);
+					break;
+				case NBT::TAG_Enum:
+					$data[$key] = new Enum($key, $value);
+					break;
+				case NBT::TAG_Compound:
+					$data[$key] = new Compound($key, $value);
+					break;
+				case NBT::TAG_IntArray:
+					$data[$key] = new IntArray($key, $value);
+					break;
+			}
+		}
+
+		return $data;
+	}
+
+	private static function readValue($data, &$offset, &$type = null){
+		$value = "";
+		$type = null;
+		$inQuotes = false;
+
+		$len = strlen($data);
+		for(; $offset < $len; ++$offset){
+			$c = $data{$offset};
+
+			if(!$inQuotes and ($c === " " or $c === "\r" or $c === "\n" or $c === "\t" or $c === "," or $c === "}" or $c === "]")){
+				if($c === "," or $c === "}" or $c === "]"){
+					break;
+				}
+			}elseif($c === '"'){
+				$inQuotes = !$inQuotes;
+				if($type === null){
+					$type = self::TAG_String;
+				}elseif($inQuotes){
+					throw new \Exception("Syntax error: invalid quote at offset $offset");
+				}
+			}elseif($c === "\\"){
+				$value .= "\\" . isset($data{$offset + 1}) ? $data{$offset + 1} : "";
+				++$offset;
+			}elseif($c === "{" and !$inQuotes){
+				if($value !== ""){
+					throw new \Exception("Syntax error: invalid compound start at offset $offset");
+				}
+				++$offset;
+				$value = self::parseCompound($data, $offset);
+				$type = self::TAG_Compound;
+				break;
+			}elseif($c === "[" and !$inQuotes){
+				if($value !== ""){
+					throw new \Exception("Syntax error: invalid list start at offset $offset");
+				}
+				++$offset;
+				$value = self::parseList($data, $offset);
+				$type = self::TAG_Enum;
+				break;
+			}else{
+				$value .= $c;
+			}
+		}
+
+		if($value === ""){
+			throw new \Exception("Syntax error: invalid empty value at offset $offset");
+		}
+
+		if($type === null and strlen($value) > 0){
+			$value = trim($value);
+			$last = strtolower(substr($value, -1));
+			$part = substr($value, 0, -1);
+
+			if($last !== "b" and $last !== "s" and $last !== "l" and $last !== "f" and $last !== "d"){
+				$part = $value;
+				$last = null;
+			}
+
+			if($last !== "f" and $last !== "d" and ((string) ((int) $part)) === $part){
+				if($last === "b"){
+					$type = self::TAG_Byte;
+				}elseif($last === "s"){
+					$type = self::TAG_Short;
+				}elseif($last === "l"){
+					$type = self::TAG_Long;
+				}else{
+					$type = self::TAG_Int;
+				}
+				$value = (int) $part;
+			}elseif(is_numeric($part)){
+				if($last === "f" or $last === "d" or strpos($part, ".") !== false){
+					if($last === "f"){
+						$type = self::TAG_Float;
+					}elseif($last === "d"){
+						$type = self::TAG_Double;
+					}else{
+						$type = self::TAG_Float;
+					}
+					$value = (float) $part;
+				}else{
+					if($last === "l"){
+						$type = self::TAG_Long;
+					}else{
+						$type = self::TAG_Int;
+					}
+
+					$value = $part;
+				}
+			}else{
+				$type = self::TAG_String;
+			}
+		}
+
+		return $value;
+	}
+
+	private static function readKey($data, &$offset){
+		$key = "";
+
+		$len = strlen($data);
+		for(; $offset < $len; ++$offset){
+			$c = $data{$offset};
+
+			if($c === ":"){
+				++$offset;
+				break;
+			}elseif($c !== " " and $c !== "\r" and $c !== "\n" and $c !== "\t"){
+				$key .= $c;
+			}
+		}
+
+		if($key === ""){
+			throw new \Exception("Syntax error: invalid empty key at offset $offset");
+		}
+
+		return $key;
+	}
+
 	public function get($len){
 		if($len < 0){
 			$this->offset = strlen($this->buffer) - 1;
@@ -388,7 +639,21 @@ class NBT{
 		}
 	}
 
-	private static function fromArray(Tag $tag, array $data, $byteArray = false){
+	private static function fromArrayGuesser($key, $value){
+		if(is_int($value)){
+			return new Int($key, $value);
+		}elseif(is_float($value)){
+			return new Float($key, $value);
+		}elseif(is_string($value)){
+			return new String($key, $value);
+		}elseif(is_bool($value)){
+			return new Byte($key, $value ? 1 : 0);
+		}
+
+		return null;
+	}
+
+	private static function fromArray(Tag $tag, array $data, callable $guesser){
 		foreach($data as $key => $value){
 			if(is_array($value)){
 				$isNumeric = true;
@@ -402,26 +667,19 @@ class NBT{
 					}
 				}
 				$tag{$key} = $isNumeric ? ($isIntArray ? new IntArray($key, []) : new Enum($key, [])) : new Compound($key, []);
-				self::fromArray($tag->{$key}, $value);
-			}elseif(is_int($value)){
-				$tag{$key} = new Int($key, $value);
-			}elseif(is_float($value)){
-				$tag{$key} = new Float($key, $value);
-			}elseif(is_string($value)){
-				if($byteArray and Utils::printable($value) !== $value){
-					$tag{$key} = new ByteArray($key, $value);
-				}else{
-					$tag{$key} = new String($key, $value);
+				self::fromArray($tag->{$key}, $value, $guesser);
+			}else{
+				$v = call_user_func($guesser, $key, $value);
+				if($v instanceof Tag){
+					$tag{$key} = $v;
 				}
-			}elseif(is_bool($value)){
-				$tag{$key} = new Byte($key, $value ? 1 : 0);
 			}
 		}
 	}
 
-	public function setArray(array $data, $byteArray = false){
+	public function setArray(array $data, callable $guesser = null){
 		$this->data = new Compound("", []);
-		self::fromArray($this->data, $data, $byteArray);
+		self::fromArray($this->data, $data, $guesser === null ? [self::class, "fromArrayGuesser"] : $guesser);
 	}
 
 	/**

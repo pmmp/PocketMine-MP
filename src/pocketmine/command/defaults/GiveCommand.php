@@ -62,24 +62,20 @@ class GiveCommand extends VanillaCommand{
 		}
 
 		if(isset($args[3])){
+			$tags = $exception = null;
 			$data = implode(" ", array_slice($args, 3));
-			$data = preg_replace("/([A-Za-z0-9_]+[ ]*):/", '"$1":', $data);
-			$tags = @json_decode($data, true);
-			if(!is_array($tags)){
-				$sender->sendMessage(new TranslationContainer("commands.give.tagError", [json_last_error_msg()]));
+			try{
+				$tags = NBT::parseJSON($data);
+			}catch (\Exception $ex){
+				$exception = $ex;
+			}
+
+			if(!($tags instanceof Compound) or $exception !== null){
+				$sender->sendMessage(new TranslationContainer("commands.give.tagError", [$exception !== null ? $exception->getMessage() : "Invalid tag conversion"]));
 				return true;
 			}
 
-			$nbt = new NBT();
-			$nbt->setArray($tags);
-			$tag = $nbt->getData();
-
-			if(!($tag instanceof Compound)){
-				$sender->sendMessage(new TranslationContainer("commands.give.tagError", ["Invalid tag conversion"]));
-				return true;
-			}
-
-			$item->setNamedTag($tag);
+			$item->setNamedTag($tags);
 		}
 
 		if($player instanceof Player){
