@@ -3140,7 +3140,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$message = "death.attack.generic";
 
 		$params = [
-			$this->getName()
+			$this->getDisplayName()
 		];
 
 		$cause = $this->getLastDamageCause();
@@ -3151,11 +3151,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					$e = $cause->getDamager();
 					if($e instanceof Player){
 						$message = "death.attack.player";
-						$params[] = $e->getName();
+						$params[] = $e->getDisplayName();
 						break;
 					}elseif($e instanceof Living){
 						$message = "death.attack.mob";
-						$params[] = $e->getName();
+						$params[] = $e->getNameTag() !== "" ? $e->getNameTag() : $e->getName();
 						break;
 					}else{
 						$params[] = "Unknown";
@@ -3165,9 +3165,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			case EntityDamageEvent::CAUSE_PROJECTILE:
 				if($cause instanceof EntityDamageByEntityEvent){
 					$e = $cause->getDamager();
-					if($e instanceof Living){
+					if($e instanceof Player){
 						$message = "death.attack.arrow";
-						$params[] = $e->getName();
+						$params[] = $e->getDisplayName();
+					}elseif($e instanceof Living){
+						$message = "death.attack.arrow";
+						$params[] = $e->getNameTag() !== "" ? $e->getNameTag() : $e->getName();
 						break;
 					}else{
 						$params[] = "Unknown";
@@ -3222,9 +3225,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			case EntityDamageEvent::CAUSE_ENTITY_EXPLOSION:
 				if($cause instanceof EntityDamageByEntityEvent){
 					$e = $cause->getDamager();
-					if($e instanceof Living){
+					if($e instanceof Player){
 						$message = "death.attack.explosion.player";
-						$params[] = $e->getName();
+						$params[] = $e->getDisplayName();
+					}elseif($e instanceof Living){
+						$message = "death.attack.explosion.player";
+						$params[] = $e->getNameTag() !== "" ? $e->getNameTag() : $e->getName();
+						break;
 					}
 				}else{
 					$message = "death.attack.explosion";
