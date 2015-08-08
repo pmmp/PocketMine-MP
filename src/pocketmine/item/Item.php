@@ -31,7 +31,10 @@ use pocketmine\entity\Squid;
 use pocketmine\entity\Villager;
 use pocketmine\entity\Zombie;
 use pocketmine\inventory\Fuel;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\level\Level;
+use pocketmine\nbt\tag\Enum;
+use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 use pocketmine\Player;
 use pocketmine\nbt\tag\Compound;
@@ -1025,6 +1028,99 @@ class Item{
 		}
 
 		return null;
+	}
+
+	public function hasEnchantments(){
+		if(!$this->hasCompoundTag()){
+			return false;
+		}
+
+		$tag = $this->getNamedTag();
+		if(isset($tag->ench)){
+			$tag = $tag->ench;
+			if($tag instanceof Enum){
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param $id
+	 * @return Enchantment|null
+	 */
+	public function getEnchantment($id){
+		if(!$this->hasEnchantments()){
+			return null;
+		}
+
+		foreach($this->getNamedTag()->ench as $entry){
+			if($entry["id"] === $id){
+				$e = Enchantment::getEnchantment($entry["id"]);
+				$e->setLevel($entry["lvl"]);
+				return $e;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * @param Enchantment $ench
+	 */
+	public function addEnchantment(Enchantment $ench){
+		if(!$this->hasCompoundTag()){
+			$tag = new Compound("", []);
+		}else{
+			$tag = $this->getNamedTag();
+		}
+
+		if(!isset($tag->ench)){
+			$tag->ench = new Enum("ench", []);
+			$tag->ench->setTagType(NBT::TAG_Compound);
+		}
+
+		$found = false;
+
+		foreach($tag->ench as $k => $entry){
+			if($entry["id"] === $ench->getId()){
+				$tag->ench->{$k} = new Compound("", [
+					"id" => new Short("id", $ench->getId()),
+					"lvl" => new Short("lvl", $ench->getLevel())
+				]);
+				$found = true;
+				break;
+			}
+		}
+
+		if(!$found){
+			$tag->ench->{count($tag->ench) + 1} = new Compound("", [
+				"id" => new Short("id", $ench->getId()),
+				"lvl" => new Short("lvl", $ench->getLevel())
+			]);
+		}
+
+		$this->setNamedTag($tag);
+	}
+
+	/**
+	 * @return Enchantment[]
+	 */
+	public function getEnchantments(){
+		if(!$this->hasEnchantments()){
+			return [];
+		}
+
+		$enchantments = [];
+
+		foreach($this->getNamedTag()->ench as $entry){
+			$e = Enchantment::getEnchantment($entry["id"]);
+			$e->setLevel($entry["lvl"]);
+			$enchantments[] = $e;
+		}
+
+		return $enchantments;
 	}
 
 	public function hasCustomName(){

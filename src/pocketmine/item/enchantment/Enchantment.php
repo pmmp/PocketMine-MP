@@ -24,6 +24,8 @@ namespace pocketmine\item\enchantment;
 
 class Enchantment{
 
+	const TYPE_INVALID = -1;
+
 	const TYPE_ARMOR_PROTECTION = 0;
 	const TYPE_ARMOR_FIRE_PROTECTION = 1;
 	const TYPE_ARMOR_FALL_PROTECTION = 2;
@@ -98,7 +100,7 @@ class Enchantment{
 		if(isset(self::$enchantments[$id])){
 			return clone self::$enchantments[(int) $id];
 		}
-		return null;
+		return new Enchantment(self::TYPE_INVALID, "unknown", 0, 0, 0);
 	}
 
 	public static function getEffectByName($name){
