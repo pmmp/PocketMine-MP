@@ -19,7 +19,7 @@
  *
 */
 
-namespace pocketmine\level\generator\normal;
+namespace pocketmine\level\generator\hell;
 
 use pocketmine\block\Block;
 use pocketmine\block\CoalOre;
@@ -47,7 +47,7 @@ use pocketmine\level\Level;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\utils\Random;
 
-class Normal extends Generator{
+class Nether extends Generator{
 
 	/** @var Populator[] */
 	private $populators = [];
@@ -55,7 +55,10 @@ class Normal extends Generator{
 	private $level;
 	/** @var Random */
 	private $random;
-	private $waterHeight = 62;
+	private $waterHeight = 32;
+	private $emptyHeight = 64;
+	private $emptyAmplitude = 1;
+	private $density = 0.5;
 	private $bedrockDepth = 5;
 
 	/** @var Populator[] */
@@ -100,81 +103,14 @@ class Normal extends Generator{
 		return [];
 	}
 
-	public function pickBiome($x, $z){
-		$hash = $x * 2345803 ^ $z * 9236449 ^ $this->level->getSeed();
-		$hash *= $hash + 223;
-		$xNoise = $hash >> 20 & 3;
-		$zNoise = $hash >> 22 & 3;
-		if ($xNoise == 3) {
-			$xNoise = 1;
-		}
-		if($zNoise == 3) {
-			$zNoise = 1;
-		}
-
-		return $this->selector->pickBiome($x + $xNoise - 1, $z + $zNoise - 1);
-	}
-
 	public function init(ChunkManager $level, Random $random){
 		$this->level = $level;
 		$this->random = $random;
 		$this->random->setSeed($this->level->getSeed());
-		$this->noiseBase = new Simplex($this->random, 4, 1 / 4, 1 / 32);
+		$this->noiseBase = new Simplex($this->random, 4, 1 / 4, 1 / 64);
 		$this->random->setSeed($this->level->getSeed());
-		$this->selector = new BiomeSelector($this->random, function($temperature, $rainfall){
-			if($rainfall < 0.25){
-				if($rainfall < 0.7){
-					return Biome::OCEAN;
-				}elseif($rainfall < 0.85){
-					return Biome::RIVER;
-				}else{
-					return Biome::SWAMP;
-				}
-			}elseif($rainfall < 0.60){
-				if($temperature < 0.25){
-					return Biome::ICE_PLAINS;
-				}elseif($temperature < 0.75){
-					return Biome::PLAINS;
-				}else{
-					return Biome::DESERT;
-				}
-			}elseif($rainfall < 0.80){
-				if($temperature < 0.25){
-					return Biome::TAIGA;
-				}elseif($temperature < 0.75){
-					return Biome::FOREST;
-				}else{
-					return Biome::BIRCH_FOREST;
-				}
-			}else{
-				if($rainfall < 0.25){
-					return Biome::MOUNTAINS;
-				}elseif($rainfall < 0.70){
-					return Biome::SMALL_MOUNTAINS;
-				}else{
-					return Biome::RIVER;
-				}
-			}
-		}, Biome::getBiome(Biome::OCEAN));
 
-		$this->selector->addBiome(Biome::getBiome(Biome::OCEAN));
-		$this->selector->addBiome(Biome::getBiome(Biome::PLAINS));
-		$this->selector->addBiome(Biome::getBiome(Biome::DESERT));
-		$this->selector->addBiome(Biome::getBiome(Biome::MOUNTAINS));
-		$this->selector->addBiome(Biome::getBiome(Biome::FOREST));
-		$this->selector->addBiome(Biome::getBiome(Biome::TAIGA));
-		$this->selector->addBiome(Biome::getBiome(Biome::SWAMP));
-		$this->selector->addBiome(Biome::getBiome(Biome::RIVER));
-		$this->selector->addBiome(Biome::getBiome(Biome::ICE_PLAINS));
-		$this->selector->addBiome(Biome::getBiome(Biome::SMALL_MOUNTAINS));
-		$this->selector->addBiome(Biome::getBiome(Biome::BIRCH_FOREST));
-
-		$this->selector->recalculate();
-
-		$cover = new GroundCover();
-		$this->generationPopulators[] = $cover;
-
-		$ores = new Ore();
+		/*$ores = new Ore();
 		$ores->setOreTypes([
 			new OreType(new CoalOre(), 20, 16, 0, 128),
 			new OreType(New IronOre(), 20, 8, 0, 64),
@@ -185,7 +121,7 @@ class Normal extends Generator{
 			new OreType(new Dirt(), 20, 32, 0, 128),
 			new OreType(new Gravel(), 10, 16, 0, 128)
 		]);
-		$this->populators[] = $ores;
+		$this->populators[] = $ores;*/
 	}
 
 	public function generateChunk($chunkX, $chunkZ){
@@ -195,63 +131,31 @@ class Normal extends Generator{
 
 		$chunk = $this->level->getChunk($chunkX, $chunkZ);
 
-		$biomeCache = [];
-
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
-				$minSum = 0;
-				$maxSum = 0;
-				$weightSum = 0;
 
-				$biome = $this->pickBiome($chunkX * 16 + $x, $chunkZ * 16 + $z);
+				$biome = Biome::getBiome(Biome::HELL);
 				$chunk->setBiomeId($x, $z, $biome->getId());
 				$color = [0, 0, 0];
+				$bColor = $biome->getColor();
+				$color[0] += (($bColor >> 16) ** 2);
+				$color[1] += ((($bColor >> 8) & 0xff) ** 2);
+				$color[2] += (($bColor & 0xff) ** 2);
 
-				for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx){
-					for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz){
-
-						$weight = self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE];
-
-						if($sx === 0 and $sz === 0){
-							$adjacent = $biome;
-						}else{
-							$index = Level::chunkHash($chunkX * 16 + $x + $sx, $chunkZ * 16 + $z + $sz);
-							if(isset($biomeCache[$index])){
-								$adjacent = $biomeCache[$index];
-							}else{
-								$biomeCache[$index] = $adjacent = $this->pickBiome($chunkX * 16 + $x + $sx, $chunkZ * 16 + $z + $sz);
-							}
-						}
-
-						$minSum += ($adjacent->getMinElevation() - 1) * $weight;
-						$maxSum += $adjacent->getMaxElevation() * $weight;
-						$bColor = $adjacent->getColor();
-						$color[0] += (($bColor >> 16) ** 2) * $weight;
-						$color[1] += ((($bColor >> 8) & 0xff) ** 2) * $weight;
-						$color[2] += (($bColor & 0xff) ** 2) * $weight;
-
-						$weightSum += $weight;
-					}
-				}
-
-				$minSum /= $weightSum;
-				$maxSum /= $weightSum;
-
-				$chunk->setBiomeColor($x, $z, sqrt($color[0] / $weightSum), sqrt($color[1] / $weightSum), sqrt($color[2] / $weightSum));
-
-				$smoothHeight = ($maxSum - $minSum) / 2;
+				$chunk->setBiomeColor($x, $z, $color[0], $color[1], $color[2]);
 
 				for($y = 0; $y < 128; ++$y){
-					if($y === 0){
+					if($y === 0 or $y === 127){
 						$chunk->setBlockId($x, $y, $z, Block::BEDROCK);
 						continue;
 					}
-					$noiseValue = $noise[$x][$z][$y] - 1 / $smoothHeight * ($y - $smoothHeight - $minSum);
+					$noiseValue = (abs($this->emptyHeight - $y) / $this->emptyHeight) * $this->emptyAmplitude - $noise[$x][$z][$y];
+					$noiseValue -= 1 - $this->density;
 
 					if($noiseValue > 0){
-						$chunk->setBlockId($x, $y, $z, Block::STONE);
+						$chunk->setBlockId($x, $y, $z, Block::NETHERRACK);
 					}elseif($y <= $this->waterHeight){
-						$chunk->setBlockId($x, $y, $z, Block::STILL_WATER);
+						$chunk->setBlockId($x, $y, $z, Block::STILL_LAVA);
 					}
 				}
 			}

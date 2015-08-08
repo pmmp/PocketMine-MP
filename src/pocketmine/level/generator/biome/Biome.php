@@ -47,6 +47,8 @@ abstract class Biome{
 	const SWAMP = 6;
 	const RIVER = 7;
 
+	const HELL = 8;
+
 	const ICE_PLAINS = 12;
 
 
@@ -88,12 +90,11 @@ abstract class Biome{
 		self::register(self::MOUNTAINS, new MountainsBiome());
 		self::register(self::FOREST, new ForestBiome());
 		self::register(self::TAIGA, new TaigaBiome());
-
+		self::register(self::SWAMP, new SwampBiome());
 		self::register(self::RIVER, new RiverBiome());
 
 		self::register(self::ICE_PLAINS, new IcePlainsBiome());
 
-		self::register(self::SWAMP, new SwampBiome());
 
 		self::register(self::SMALL_MOUNTAINS, new SmallMountainsBiome());
 

@@ -66,6 +66,7 @@ use pocketmine\level\format\mcregion\McRegion;
 use pocketmine\level\generator\biome\Biome;
 use pocketmine\level\generator\Flat;
 use pocketmine\level\generator\Generator;
+use pocketmine\level\generator\hell\Nether;
 use pocketmine\level\generator\normal\Normal;
 use pocketmine\level\Level;
 use pocketmine\metadata\EntityMetadataStore;
@@ -1646,6 +1647,8 @@ class Server{
 		Generator::addGenerator(Flat::class, "flat");
 		Generator::addGenerator(Normal::class, "normal");
 		Generator::addGenerator(Normal::class, "default");
+		Generator::addGenerator(Nether::class, "hell");
+		Generator::addGenerator(Nether::class, "nether");
 
 		foreach((array) $this->getProperty("worlds", []) as $name => $worldSetting){
 			if($this->loadLevel($name) === false){
