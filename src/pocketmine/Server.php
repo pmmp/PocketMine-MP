@@ -55,6 +55,7 @@ use pocketmine\inventory\InventoryType;
 use pocketmine\inventory\Recipe;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\lang\BaseLang;
 use pocketmine\level\format\anvil\Anvil;
@@ -1607,6 +1608,7 @@ class Server{
 		Item::init();
 		Biome::init();
 		Effect::init();
+		Enchantment::init();
 		/** TODO: @deprecated */
 		TextWrapper::init();
 		$this->craftingManager = new CraftingManager();
