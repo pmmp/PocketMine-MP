@@ -701,7 +701,7 @@ class PluginManager{
 		}
 
 		$reflection = new \ReflectionClass(get_class($listener));
-		foreach($reflection->getMethods() as $method){
+		foreach($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method){
 			if(!$method->isStatic()){
 				$priority = EventPriority::NORMAL;
 				$ignoreCancelled = false;
