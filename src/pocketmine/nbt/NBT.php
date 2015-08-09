@@ -335,7 +335,7 @@ class NBT{
 					throw new \Exception("Syntax error: invalid quote at offset $offset");
 				}
 			}elseif($c === "\\"){
-				$value .= "\\" . isset($data{$offset + 1}) ? $data{$offset + 1} : "";
+				$value .= isset($data{$offset + 1}) ? $data{$offset + 1} : "";
 				++$offset;
 			}elseif($c === "{" and !$inQuotes){
 				if($value !== ""){
