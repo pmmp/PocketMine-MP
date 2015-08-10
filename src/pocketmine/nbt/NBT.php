@@ -297,7 +297,7 @@ class NBT{
 					$data[$key] = new ByteArray($key, $value);
 					break;
 				case NBT::TAG_String:
-					$data[$key] = new Byte($key, $value);
+					$data[$key] = new String($key, $value);
 					break;
 				case NBT::TAG_Enum:
 					$data[$key] = new Enum($key, $value);
