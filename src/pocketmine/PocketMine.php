@@ -91,6 +91,12 @@ namespace pocketmine {
 		@define("pocketmine\\PATH", \getcwd() . DIRECTORY_SEPARATOR);
 	}
 
+	if(version_compare("7.0", PHP_VERSION) > 0){
+		echo "[CRITICAL] You must use PHP >= 7.0" . PHP_EOL;
+		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
+		exit(1);
+	}
+
 	if(!extension_loaded("pthreads")){
 		echo "[CRITICAL] Unable to find the pthreads extension." . PHP_EOL;
 		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
@@ -127,11 +133,7 @@ namespace pocketmine {
 	define("pocketmine\\DATA", isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR);
 	define("pocketmine\\PLUGIN_PATH", isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);
 
-
-	echo "HAHA";
 	Terminal::init();
-
-	echo "HAHA";
 
 	define("pocketmine\\ANSI", Terminal::hasFormattingCodes());
 
@@ -141,7 +143,9 @@ namespace pocketmine {
 
 	//Logger has a dependency on timezone, so we'll set it to UTC until we can get the actual timezone.
 	date_default_timezone_set("UTC");
+	var_dump("LOAD LOGGER");
 	$logger = new MainLogger(\pocketmine\DATA . "server.log", \pocketmine\ANSI);
+	var_dump("LOGGER LOADED");
 
 	if(!ini_get("date.timezone")){
 		if(($timezone = detect_system_timezone()) and date_default_timezone_set($timezone)){
@@ -375,11 +379,6 @@ namespace pocketmine {
 	set_error_handler([\ExceptionHandler::class, "handler"], -1);
 
 	$errors = 0;
-
-	if(version_compare("5.6.0", PHP_VERSION) > 0){
-		$logger->critical("You must use PHP >= 5.6");
-		++$errors;
-	}
 
 	if(php_sapi_name() !== "cli"){
 		$logger->critical("You must run PocketMine-MP using the CLI.");
