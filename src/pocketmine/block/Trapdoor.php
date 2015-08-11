@@ -146,7 +146,7 @@ class Trapdoor extends Transparent{
 	public function onActivate(Item $item, Player $player = null){
 		$this->meta ^= 0x04;
 		$this->getLevel()->setBlock($this, $this, true);
-
+		$this->level->addSound(new DoorSound($this));
 		return true;
 	}
 
