@@ -748,8 +748,15 @@ class PluginManager{
 	 * @throws PluginException
 	 */
 	public function registerEvent($event, Listener $listener, $priority, EventExecutor $executor, Plugin $plugin, $ignoreCancelled = false){
-		if(!is_subclass_of($event, Event::class) or (new \ReflectionClass($event))->isAbstract()){
-			throw new PluginException($event . " is not a valid Event");
+		if(!is_subclass_of($event, Event::class)){
+			throw new PluginException($event . " is not an Event");
+		}
+		$class = new \ReflectionClass($event);
+		if($class->isAbstract()){
+			throw new PluginException($event . " is an abstract Event");
+		}
+		if($class->getProperty("handlerList")->getDeclaringClass()->getName() !== $event){
+			throw new PluginException($event . " does not have a handler list");
 		}
 
 		if(!$plugin->isEnabled()){
