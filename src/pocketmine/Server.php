@@ -73,15 +73,15 @@ use pocketmine\metadata\EntityMetadataStore;
 use pocketmine\metadata\LevelMetadataStore;
 use pocketmine\metadata\PlayerMetadataStore;
 use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\Byte;
-use pocketmine\nbt\tag\Compound;
-use pocketmine\nbt\tag\Double;
-use pocketmine\nbt\tag\Enum;
-use pocketmine\nbt\tag\Float;
-use pocketmine\nbt\tag\Int;
-use pocketmine\nbt\tag\Long;
-use pocketmine\nbt\tag\Short;
-use pocketmine\nbt\tag\String;
+use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\DoubleTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\FloatTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\LongTag;
+use pocketmine\nbt\tag\ShortTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\CompressBatchedTask;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\BatchPacket;
@@ -743,7 +743,7 @@ class Server{
 	/**
 	 * @param string $name
 	 *
-	 * @return Compound
+	 * @return CompoundTag
 	 */
 	public function getOfflinePlayerData($name){
 		$name = strtolower($name);
@@ -762,38 +762,38 @@ class Server{
 			$this->logger->notice($this->getLanguage()->translateString("pocketmine.data.playerNotFound", [$name]));
 		}
 		$spawn = $this->getDefaultLevel()->getSafeSpawn();
-		$nbt = new Compound("", [
-			new Long("firstPlayed", floor(microtime(true) * 1000)),
-			new Long("lastPlayed", floor(microtime(true) * 1000)),
-			new Enum("Pos", [
-				new Double(0, $spawn->x),
-				new Double(1, $spawn->y),
-				new Double(2, $spawn->z)
+		$nbt = new CompoundTag("", [
+			new LongTag("firstPlayed", floor(microtime(true) * 1000)),
+			new LongTag("lastPlayed", floor(microtime(true) * 1000)),
+			new ListTag("Pos", [
+				new DoubleTag(0, $spawn->x),
+				new DoubleTag(1, $spawn->y),
+				new DoubleTag(2, $spawn->z)
 			]),
-			new String("Level", $this->getDefaultLevel()->getName()),
-			//new String("SpawnLevel", $this->getDefaultLevel()->getName()),
-			//new Int("SpawnX", (int) $spawn->x),
-			//new Int("SpawnY", (int) $spawn->y),
-			//new Int("SpawnZ", (int) $spawn->z),
-			//new Byte("SpawnForced", 1), //TODO
-			new Enum("Inventory", []),
-			new Compound("Achievements", []),
-			new Int("playerGameType", $this->getGamemode()),
-			new Enum("Motion", [
-				new Double(0, 0.0),
-				new Double(1, 0.0),
-				new Double(2, 0.0)
+			new StringTag("Level", $this->getDefaultLevel()->getName()),
+			//new StringTag("SpawnLevel", $this->getDefaultLevel()->getName()),
+			//new IntTag("SpawnX", (int) $spawn->x),
+			//new IntTag("SpawnY", (int) $spawn->y),
+			//new IntTag("SpawnZ", (int) $spawn->z),
+			//new ByteTag("SpawnForced", 1), //TODO
+			new ListTag("Inventory", []),
+			new CompoundTag("Achievements", []),
+			new IntTag("playerGameType", $this->getGamemode()),
+			new ListTag("Motion", [
+				new DoubleTag(0, 0.0),
+				new DoubleTag(1, 0.0),
+				new DoubleTag(2, 0.0)
 			]),
-			new Enum("Rotation", [
-				new Float(0, 0.0),
-				new Float(1, 0.0)
+			new ListTag("Rotation", [
+				new FloatTag(0, 0.0),
+				new FloatTag(1, 0.0)
 			]),
-			new Float("FallDistance", 0.0),
-			new Short("Fire", 0),
-			new Short("Air", 300),
-			new Byte("OnGround", 1),
-			new Byte("Invulnerable", 0),
-			new String("NameTag", $name),
+			new FloatTag("FallDistance", 0.0),
+			new ShortTag("Fire", 0),
+			new ShortTag("Air", 300),
+			new ByteTag("OnGround", 1),
+			new ByteTag("Invulnerable", 0),
+			new StringTag("NameTag", $name),
 		]);
 		$nbt->Pos->setTagType(NBT::TAG_Double);
 		$nbt->Inventory->setTagType(NBT::TAG_Compound);
@@ -814,39 +814,39 @@ class Server{
 			$this->logger->notice($this->getLanguage()->translateString("pocketmine.data.playerOld", [$name]));
 			foreach($data->get("inventory") as $slot => $item){
 				if(count($item) === 3){
-					$nbt->Inventory[$slot + 9] = new Compound("", [
-						new Short("id", $item[0]),
-						new Short("Damage", $item[1]),
-						new Byte("Count", $item[2]),
-						new Byte("Slot", $slot + 9),
-						new Byte("TrueSlot", $slot + 9)
+					$nbt->Inventory[$slot + 9] = new CompoundTag("", [
+						new ShortTag("id", $item[0]),
+						new ShortTag("Damage", $item[1]),
+						new ByteTag("Count", $item[2]),
+						new ByteTag("Slot", $slot + 9),
+						new ByteTag("TrueSlot", $slot + 9)
 					]);
 				}
 			}
 			foreach($data->get("hotbar") as $slot => $itemSlot){
 				if(isset($nbt->Inventory[$itemSlot + 9])){
 					$item = $nbt->Inventory[$itemSlot + 9];
-					$nbt->Inventory[$slot] = new Compound("", [
-						new Short("id", $item["id"]),
-						new Short("Damage", $item["Damage"]),
-						new Byte("Count", $item["Count"]),
-						new Byte("Slot", $slot),
-						new Byte("TrueSlot", $item["TrueSlot"])
+					$nbt->Inventory[$slot] = new CompoundTag("", [
+						new ShortTag("id", $item["id"]),
+						new ShortTag("Damage", $item["Damage"]),
+						new ByteTag("Count", $item["Count"]),
+						new ByteTag("Slot", $slot),
+						new ByteTag("TrueSlot", $item["TrueSlot"])
 					]);
 				}
 			}
 			foreach($data->get("armor") as $slot => $item){
 				if(count($item) === 2){
-					$nbt->Inventory[$slot + 100] = new Compound("", [
-						new Short("id", $item[0]),
-						new Short("Damage", $item[1]),
-						new Byte("Count", 1),
-						new Byte("Slot", $slot + 100)
+					$nbt->Inventory[$slot + 100] = new CompoundTag("", [
+						new ShortTag("id", $item[0]),
+						new ShortTag("Damage", $item[1]),
+						new ByteTag("Count", 1),
+						new ByteTag("Slot", $slot + 100)
 					]);
 				}
 			}
 			foreach($data->get("achievements") as $achievement => $status){
-				$nbt->Achievements[$achievement] = new Byte($achievement, $status == true ? 1 : 0);
+				$nbt->Achievements[$achievement] = new ByteTag($achievement, $status == true ? 1 : 0);
 			}
 			unlink($path . "$name.yml");
 		}
@@ -858,10 +858,10 @@ class Server{
 
 	/**
 	 * @param string   $name
-	 * @param Compound $nbtTag
+	 * @param CompoundTag $nbtTag
 	 * @param bool $async
 	 */
-	public function saveOfflinePlayerData($name, Compound $nbtTag, $async = false){
+	public function saveOfflinePlayerData($name, CompoundTag $nbtTag, $async = false){
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		try{
 			$nbt->setData($nbtTag);

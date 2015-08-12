@@ -25,9 +25,9 @@ use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\mcregion\McRegion;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\Byte;
-use pocketmine\nbt\tag\ByteArray;
-use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\ByteArrayTag;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\protocol\FullChunkDataPacket;
 use pocketmine\tile\Spawnable;
 use pocketmine\utils\BinaryStream;
@@ -152,12 +152,12 @@ class Anvil extends McRegion{
 	}
 
 	public static function createChunkSection($Y){
-		return new ChunkSection(new Compound("", [
-			"Y" => new Byte("Y", $Y),
-			"Blocks" => new ByteArray("Blocks", str_repeat("\x00", 4096)),
-			"Data" => new ByteArray("Data", str_repeat("\x00", 2048)),
-			"SkyLight" => new ByteArray("SkyLight", str_repeat("\xff", 2048)),
-			"BlockLight" => new ByteArray("BlockLight", str_repeat("\x00", 2048))
+		return new ChunkSection(new CompoundTag("", [
+			"Y" => new ByteTag("Y", $Y),
+			"Blocks" => new ByteArrayTag("Blocks", str_repeat("\x00", 4096)),
+			"Data" => new ByteArrayTag("Data", str_repeat("\x00", 2048)),
+			"SkyLight" => new ByteArrayTag("SkyLight", str_repeat("\xff", 2048)),
+			"BlockLight" => new ByteArrayTag("BlockLight", str_repeat("\x00", 2048))
 		]));
 	}
 

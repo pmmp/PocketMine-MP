@@ -26,9 +26,9 @@ use pocketmine\level\generator\Generator;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\Compound;
-use pocketmine\nbt\tag\Int;
-use pocketmine\nbt\tag\String;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\utils\LevelException;
 
 abstract class BaseLevelProvider implements LevelProvider{
@@ -36,7 +36,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 	protected $level;
 	/** @var string */
 	protected $path;
-	/** @var Compound */
+	/** @var CompoundTag */
 	protected $levelData;
 
 	public function __construct(Level $level, $path){
@@ -48,18 +48,18 @@ abstract class BaseLevelProvider implements LevelProvider{
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->readCompressed(file_get_contents($this->getPath() . "level.dat"));
 		$levelData = $nbt->getData();
-		if($levelData->Data instanceof Compound){
+		if($levelData->Data instanceof CompoundTag){
 			$this->levelData = $levelData->Data;
 		}else{
 			throw new LevelException("Invalid level.dat");
 		}
 
 		if(!isset($this->levelData->generatorName)){
-			$this->levelData->generatorName = new String("generatorName", Generator::getGenerator("DEFAULT"));
+			$this->levelData->generatorName = new StringTag("generatorName", Generator::getGenerator("DEFAULT"));
 		}
 
 		if(!isset($this->levelData->generatorOptions)){
-			$this->levelData->generatorOptions = new String("generatorOptions", "");
+			$this->levelData->generatorOptions = new StringTag("generatorOptions", "");
 		}
 	}
 
@@ -84,7 +84,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 	}
 
 	public function setTime($value){
-		$this->levelData->Time = new Int("Time", (int) $value);
+		$this->levelData->Time = new IntTag("Time", (int) $value);
 	}
 
 	public function getSeed(){
@@ -92,7 +92,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 	}
 
 	public function setSeed($value){
-		$this->levelData->RandomSeed = new Int("RandomSeed", (int) $value);
+		$this->levelData->RandomSeed = new IntTag("RandomSeed", (int) $value);
 	}
 
 	public function getSpawn(){
@@ -100,9 +100,9 @@ abstract class BaseLevelProvider implements LevelProvider{
 	}
 
 	public function setSpawn(Vector3 $pos){
-		$this->levelData->SpawnX = new Int("SpawnX", (int) $pos->x);
-		$this->levelData->SpawnY = new Int("SpawnY", (int) $pos->y);
-		$this->levelData->SpawnZ = new Int("SpawnZ", (int) $pos->z);
+		$this->levelData->SpawnX = new IntTag("SpawnX", (int) $pos->x);
+		$this->levelData->SpawnY = new IntTag("SpawnY", (int) $pos->y);
+		$this->levelData->SpawnZ = new IntTag("SpawnZ", (int) $pos->z);
 	}
 
 	public function doGarbageCollection(){
@@ -110,7 +110,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 	}
 
 	/**
-	 * @return Compound
+	 * @return CompoundTag
 	 */
 	public function getLevelData(){
 		return $this->levelData;
@@ -118,7 +118,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 
 	public function saveLevelData(){
 		$nbt = new NBT(NBT::BIG_ENDIAN);
-		$nbt->setData(new Compound("", [
+		$nbt->setData(new CompoundTag("", [
 			"Data" => $this->levelData
 		]));
 		$buffer = $nbt->writeCompressed();

@@ -26,7 +26,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 
 use pocketmine\event\entity\ExplosionPrimeEvent;
 use pocketmine\level\Explosion;
-use pocketmine\nbt\tag\Byte;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
@@ -69,7 +69,7 @@ class PrimedTNT extends Entity implements Explosive{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Fuse = new Byte("Fuse", $this->fuse);
+		$this->namedtag->Fuse = new ByteTag("Fuse", $this->fuse);
 	}
 
 	public function onUpdate($currentTick){

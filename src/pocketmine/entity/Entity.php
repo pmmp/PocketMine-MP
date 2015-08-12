@@ -45,14 +45,14 @@ use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
-use pocketmine\nbt\tag\Byte;
-use pocketmine\nbt\tag\Compound;
-use pocketmine\nbt\tag\Double;
-use pocketmine\nbt\tag\Enum;
-use pocketmine\nbt\tag\Float;
-use pocketmine\nbt\tag\Int;
-use pocketmine\nbt\tag\Short;
-use pocketmine\nbt\tag\String;
+use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\DoubleTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\FloatTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\ShortTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\MobEffectPacket;
 use pocketmine\network\protocol\RemoveEntityPacket;
@@ -205,7 +205,7 @@ abstract class Entity extends Location implements Metadatable{
 	protected $isPlayer = false;
 
 
-	public function __construct(FullChunk $chunk, Compound $nbt){
+	public function __construct(FullChunk $chunk, CompoundTag $nbt){
 		if($chunk === null or $chunk->getProvider() === null){
 			throw new ChunkException("Invalid garbage Chunk given to Entity");
 		}
@@ -241,27 +241,27 @@ abstract class Entity extends Location implements Metadatable{
 		$this->setMotion($this->temporalVector->setComponents($this->namedtag["Motion"][0], $this->namedtag["Motion"][1], $this->namedtag["Motion"][2]));
 
 		if(!isset($this->namedtag->FallDistance)){
-			$this->namedtag->FallDistance = new Float("FallDistance", 0);
+			$this->namedtag->FallDistance = new FloatTag("FallDistance", 0);
 		}
 		$this->fallDistance = $this->namedtag["FallDistance"];
 
 		if(!isset($this->namedtag->Fire)){
-			$this->namedtag->Fire = new Short("Fire", 0);
+			$this->namedtag->Fire = new ShortTag("Fire", 0);
 		}
 		$this->fireTicks = $this->namedtag["Fire"];
 
 		if(!isset($this->namedtag->Air)){
-			$this->namedtag->Air = new Short("Air", 300);
+			$this->namedtag->Air = new ShortTag("Air", 300);
 		}
 		$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $this->namedtag["Air"]);
 
 		if(!isset($this->namedtag->OnGround)){
-			$this->namedtag->OnGround = new Byte("OnGround", 0);
+			$this->namedtag->OnGround = new ByteTag("OnGround", 0);
 		}
 		$this->onGround = $this->namedtag["OnGround"] > 0 ? true : false;
 
 		if(!isset($this->namedtag->Invulnerable)){
-			$this->namedtag->Invulnerable = new Byte("Invulnerable", 0);
+			$this->namedtag->Invulnerable = new ByteTag("Invulnerable", 0);
 		}
 		$this->invulnerable = $this->namedtag["Invulnerable"] > 0 ? true : false;
 
@@ -407,12 +407,12 @@ abstract class Entity extends Location implements Metadatable{
 	/**
 	 * @param int|string $type
 	 * @param FullChunk  $chunk
-	 * @param Compound   $nbt
+	 * @param CompoundTag   $nbt
 	 * @param            $args
 	 *
 	 * @return Entity
 	 */
-	public static function createEntity($type, FullChunk $chunk, Compound $nbt, ...$args){
+	public static function createEntity($type, FullChunk $chunk, CompoundTag $nbt, ...$args){
 		if(isset(self::$knownEntities[$type])){
 			$class = self::$knownEntities[$type];
 			return new $class($chunk, $nbt, ...$args);
@@ -449,52 +449,52 @@ abstract class Entity extends Location implements Metadatable{
 
 	public function saveNBT(){
 		if(!($this instanceof Player)){
-			$this->namedtag->id = new String("id", $this->getSaveId());
+			$this->namedtag->id = new StringTag("id", $this->getSaveId());
 			if($this->getNameTag() !== ""){
-				$this->namedtag->CustomName = new String("CustomName", $this->getNameTag());
-				$this->namedtag->CustomNameVisible = new String("CustomNameVisible", $this->isNameTagVisible());
+				$this->namedtag->CustomName = new StringTag("CustomName", $this->getNameTag());
+				$this->namedtag->CustomNameVisible = new StringTag("CustomNameVisible", $this->isNameTagVisible());
 			}else{
 				unset($this->namedtag->CustomName);
 				unset($this->namedtag->CustomNameVisible);
 			}
 		}
 
-		$this->namedtag->Pos = new Enum("Pos", [
-			new Double(0, $this->x),
-			new Double(1, $this->y),
-			new Double(2, $this->z)
+		$this->namedtag->Pos = new ListTag("Pos", [
+			new DoubleTag(0, $this->x),
+			new DoubleTag(1, $this->y),
+			new DoubleTag(2, $this->z)
 		]);
 
-		$this->namedtag->Motion = new Enum("Motion", [
-			new Double(0, $this->motionX),
-			new Double(1, $this->motionY),
-			new Double(2, $this->motionZ)
+		$this->namedtag->Motion = new ListTag("Motion", [
+			new DoubleTag(0, $this->motionX),
+			new DoubleTag(1, $this->motionY),
+			new DoubleTag(2, $this->motionZ)
 		]);
 
-		$this->namedtag->Rotation = new Enum("Rotation", [
-			new Float(0, $this->yaw),
-			new Float(1, $this->pitch)
+		$this->namedtag->Rotation = new ListTag("Rotation", [
+			new FloatTag(0, $this->yaw),
+			new FloatTag(1, $this->pitch)
 		]);
 
-		$this->namedtag->FallDistance = new Float("FallDistance", $this->fallDistance);
-		$this->namedtag->Fire = new Short("Fire", $this->fireTicks);
-		$this->namedtag->Air = new Short("Air", $this->getDataProperty(self::DATA_AIR));
-		$this->namedtag->OnGround = new Byte("OnGround", $this->onGround == true ? 1 : 0);
-		$this->namedtag->Invulnerable = new Byte("Invulnerable", $this->invulnerable == true ? 1 : 0);
+		$this->namedtag->FallDistance = new FloatTag("FallDistance", $this->fallDistance);
+		$this->namedtag->Fire = new ShortTag("Fire", $this->fireTicks);
+		$this->namedtag->Air = new ShortTag("Air", $this->getDataProperty(self::DATA_AIR));
+		$this->namedtag->OnGround = new ByteTag("OnGround", $this->onGround == true ? 1 : 0);
+		$this->namedtag->Invulnerable = new ByteTag("Invulnerable", $this->invulnerable == true ? 1 : 0);
 
 		if(count($this->effects) > 0){
 			$effects = [];
 			foreach($this->effects as $effect){
-				$effects[$effect->getId()] = new Compound($effect->getId(), [
-					"Id" => new Byte("Id", $effect->getId()),
-					"Amplifier" => new Byte("Amplifier", $effect->getAmplifier()),
-					"Duration" => new Int("Duration", $effect->getDuration()),
-					"Ambient" => new Byte("Ambient", 0),
-					"ShowParticles" => new Byte("ShowParticles", $effect->isVisible() ? 1 : 0)
+				$effects[$effect->getId()] = new CompoundTag($effect->getId(), [
+					"Id" => new ByteTag("Id", $effect->getId()),
+					"Amplifier" => new ByteTag("Amplifier", $effect->getAmplifier()),
+					"Duration" => new IntTag("Duration", $effect->getDuration()),
+					"Ambient" => new ByteTag("Ambient", 0),
+					"ShowParticles" => new ByteTag("ShowParticles", $effect->isVisible() ? 1 : 0)
 				]);
 			}
 
-			$this->namedtag->ActiveEffects = new Enum("ActiveEffects", $effects);
+			$this->namedtag->ActiveEffects = new ListTag("ActiveEffects", $effects);
 		}else{
 			unset($this->namedtag->ActiveEffects);
 		}
