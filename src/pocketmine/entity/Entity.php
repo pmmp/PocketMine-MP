@@ -551,7 +551,7 @@ abstract class Entity extends Location implements Metadatable{
 			$pk->duration = $effect->getDuration();
 			$pk->eventId = MobEffectPacket::EVENT_ADD;
 
-			$player->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+			$player->dataPacket($pk);
 		}
 	}
 
@@ -572,9 +572,9 @@ abstract class Entity extends Location implements Metadatable{
 		$pk->metadata = $data === null ? $this->dataProperties : $data;
 
 		if(!is_array($player)){
-			$player->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+			$player->dataPacket($pk);
 		}else{
-			Server::broadcastPacket($player, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+			Server::broadcastPacket($player, $pk);
 		}
 	}
 
@@ -585,7 +585,7 @@ abstract class Entity extends Location implements Metadatable{
 		if(isset($this->hasSpawned[$player->getLoaderId()])){
 			$pk = new RemoveEntityPacket();
 			$pk->eid = $this->getId();
-			$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+			$player->dataPacket($pk);
 			unset($this->hasSpawned[$player->getLoaderId()]);
 		}
 	}

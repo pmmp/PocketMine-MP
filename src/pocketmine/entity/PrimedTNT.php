@@ -144,7 +144,7 @@ class PrimedTNT extends Entity implements Explosive{
 		$pk->speedY = $this->motionY;
 		$pk->speedZ = $this->motionZ;
 		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+		$player->dataPacket($pk);
 
 		parent::spawnTo($player);
 	}

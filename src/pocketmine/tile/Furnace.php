@@ -269,13 +269,13 @@ class Furnace extends Tile implements InventoryHolder, Container, Nameable{
 				$pk->windowid = $windowId;
 				$pk->property = 0; //Smelting
 				$pk->value = floor($this->namedtag["CookTime"]);
-				$player->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+				$player->dataPacket($pk);
 
 				$pk = new ContainerSetDataPacket();
 				$pk->windowid = $windowId;
 				$pk->property = 1; //Fire icon
 				$pk->value = $this->namedtag["BurnTicks"];
-				$player->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+				$player->dataPacket($pk);
 			}
 
 		}

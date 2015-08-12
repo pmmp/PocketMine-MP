@@ -639,7 +639,7 @@ class NBT{
 		}
 	}
 
-	private static function fromArrayGuesser($key, $value){
+	public static function fromArrayGuesser($key, $value){
 		if(is_int($value)){
 			return new Int($key, $value);
 		}elseif(is_float($value)){

@@ -52,6 +52,9 @@ abstract class DataPacket extends BinaryStream{
 		$this->offset = 0;
 	}
 
+	/**
+	 * @deprecated This adds extra overhead on the network, so its usage is now discouraged. It was a test for the viability of this.
+	 */
 	public function setChannel($channel){
 		$this->channel = (int) $channel;
 		return $this;

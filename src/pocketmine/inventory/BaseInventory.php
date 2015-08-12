@@ -435,7 +435,7 @@ abstract class BaseInventory implements Inventory{
 				continue;
 			}
 			$pk->windowid = $id;
-			$player->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+			$player->dataPacket($pk);
 		}
 	}
 
@@ -458,7 +458,7 @@ abstract class BaseInventory implements Inventory{
 				continue;
 			}
 			$pk->windowid = $id;
-			$player->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+			$player->dataPacket($pk);
 		}
 	}
 

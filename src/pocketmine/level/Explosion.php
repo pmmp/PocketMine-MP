@@ -233,7 +233,7 @@ class Explosion{
 		$pk->z = $this->source->z;
 		$pk->radius = $this->size;
 		$pk->records = $send;
-		$this->level->addChunkPacket($source->x >> 4, $source->z >> 4, $pk->setChannel(Network::CHANNEL_BLOCKS));
+		$this->level->addChunkPacket($source->x >> 4, $source->z >> 4, $pk);
 
 		return true;
 	}

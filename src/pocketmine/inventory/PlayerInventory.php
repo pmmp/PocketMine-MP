@@ -133,12 +133,12 @@ class PlayerInventory extends BaseInventory{
 		$pk->selectedSlot = $this->getHeldItemIndex();
 
 		if(!is_array($target)){
-			$target->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+			$target->dataPacket($pk);
 			if($target === $this->getHolder()){
 				$this->sendSlot($this->getHeldItemSlot(), $target);
 			}
 		}else{
-			Server::broadcastPacket($target, $pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+			Server::broadcastPacket($target, $pk);
 			foreach($target as $player){
 				if($player === $this->getHolder()){
 					$this->sendSlot($this->getHeldItemSlot(), $player);
@@ -310,7 +310,7 @@ class PlayerInventory extends BaseInventory{
 		$pk->eid = $this->getHolder()->getId();
 		$pk->slots = $armor;
 		$pk->encode();
-		$pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING);
+		$pk;
 		$pk->isEncoded = true;
 
 		foreach($target as $player){
@@ -369,7 +369,7 @@ class PlayerInventory extends BaseInventory{
 				$pk2->item = $this->getItem($index);
 				$player->dataPacket($pk2);
 			}else{
-				$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+				$player->dataPacket($pk);
 			}
 		}
 	}
@@ -383,7 +383,7 @@ class PlayerInventory extends BaseInventory{
 		}
 
 		$pk = new ContainerSetContentPacket();
-		$pk->setChannel(Network::CHANNEL_WORLD_EVENTS);
+		$pk;
 		$pk->slots = [];
 		for($i = 0; $i < $this->getSize(); ++$i){ //Do not send armor by error here
 			$pk->slots[$i] = $this->getItem($i);
@@ -416,7 +416,7 @@ class PlayerInventory extends BaseInventory{
 		}
 
 		$pk = new ContainerSetSlotPacket();
-		$pk->setChannel(Network::CHANNEL_WORLD_EVENTS);
+		$pk;
 		$pk->slot = $index;
 		$pk->item = clone $this->getItem($index);
 

@@ -466,9 +466,9 @@ class Level implements ChunkManager, Metadatable{
 		}else{
 			if($pk !== null){
 				if(!is_array($pk)){
-					Server::broadcastPacket($players, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+					Server::broadcastPacket($players, $pk);
 				}else{
-					$this->server->batchPackets($players, $pk, false, Network::CHANNEL_WORLD_EVENTS);
+					$this->server->batchPackets($players, $pk, false);
 				}
 			}	
 		}
@@ -490,9 +490,9 @@ class Level implements ChunkManager, Metadatable{
 		}else{
 			if($pk !== null){
 				if(!is_array($pk)){
-					Server::broadcastPacket($players, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+					Server::broadcastPacket($players, $pk);
 				}else{
-					$this->server->batchPackets($players, $pk, false, Network::CHANNEL_WORLD_EVENTS);
+					$this->server->batchPackets($players, $pk, false);
 				}
 			}
 		}
@@ -658,7 +658,7 @@ class Level implements ChunkManager, Metadatable{
 		$pk->time = (int) $this->time;
 		$pk->started = $this->stopTime == false;
 
-		Server::broadcastPacket($this->players, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+		Server::broadcastPacket($this->players, $pk);
 	}
 
 	/**
@@ -751,7 +751,7 @@ class Level implements ChunkManager, Metadatable{
 			Level::getXZ($index, $chunkX, $chunkZ);
 			$pk = new MoveEntityPacket();
 			$pk->entities = $entry;
-			$this->addChunkPacket($chunkX, $chunkZ, $pk->setChannel(Network::CHANNEL_MOVEMENT));
+			$this->addChunkPacket($chunkX, $chunkZ, $pk);
 		}
 		$this->moveToSend = [];
 
@@ -759,7 +759,7 @@ class Level implements ChunkManager, Metadatable{
 			Level::getXZ($index, $chunkX, $chunkZ);
 			$pk = new SetEntityMotionPacket();
 			$pk->entities = $entry;
-			$this->addChunkPacket($chunkX, $chunkZ, $pk->setChannel(Network::CHANNEL_MOVEMENT));
+			$this->addChunkPacket($chunkX, $chunkZ, $pk);
 		}
 		$this->motionToSend = [];
 
@@ -812,7 +812,7 @@ class Level implements ChunkManager, Metadatable{
 		$pk->z = $z + 0.5;
 		$pk->data = ($data << 8) | $id;
 
-		Server::broadcastPacket($targets === null ? $this->getChunkPlayers($x >> 4, $z >> 4) : $targets, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+		Server::broadcastPacket($targets === null ? $this->getChunkPlayers($x >> 4, $z >> 4) : $targets, $pk);
 	}
 
 	/**
@@ -859,7 +859,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 
-		Server::broadcastPacket($target, $pk->setChannel(Network::CHANNEL_BLOCKS));
+		Server::broadcastPacket($target, $pk);
 	}
 
 	public function clearCache($full = false){

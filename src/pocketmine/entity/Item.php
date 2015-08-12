@@ -234,7 +234,7 @@ class Item extends Entity{
 		$pk->speedY = $this->motionY;
 		$pk->speedZ = $this->motionZ;
 		$pk->item = $this->getItem();
-		$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+		$player->dataPacket($pk);
 
 		$this->sendData($player);
 

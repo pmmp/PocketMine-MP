@@ -1858,9 +1858,8 @@ class Server{
 		Timings::$playerNetworkTimer->stopTiming();
 	}
 
-	public function broadcastPacketsCallback($data, array $identifiers, $channel = 0){
+	public function broadcastPacketsCallback($data, array $identifiers){
 		$pk = new BatchPacket();
-		$pk->setChannel($channel);
 		$pk->payload = $data;
 		$pk->encode();
 		$pk->isEncoded = true;
@@ -2259,7 +2258,7 @@ class Server{
 			$pk = new PlayerListPacket();
 			$pk->type = PlayerListPacket::TYPE_REMOVE;
 			$pk->entries[] = [$player->getUniqueId()];
-			Server::broadcastPacket($this->playerList, $pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+			Server::broadcastPacket($this->playerList, $pk);
 		}
 	}
 
@@ -2267,14 +2266,14 @@ class Server{
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_ADD;
 		$pk->entries[] = [$uuid, $entityId, $name, $isSlim, $skinData];
-		Server::broadcastPacket($players === null ? $this->playerList : $players, $pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+		Server::broadcastPacket($players === null ? $this->playerList : $players, $pk);
 	}
 
 	public function removePlayerListData(UUID $uuid, array $players = null){
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_REMOVE;
 		$pk->entries[] = [$uuid];
-		Server::broadcastPacket($players === null ? $this->playerList : $players, $pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+		Server::broadcastPacket($players === null ? $this->playerList : $players, $pk);
 	}
 
 	public function sendFullPlayerListData(Player $p){
@@ -2284,7 +2283,7 @@ class Server{
 			$pk->entries[] = [$player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->isSkinSlim(), $player->getSkinData()];
 		}
 
-		$p->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+		$p->dataPacket($pk);
 	}
 
 	public function sendRecipeList(Player $p){
@@ -2303,7 +2302,7 @@ class Server{
 			$pk->addFurnaceRecipe($recipe);
 		}
 
-		$p->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+		$p->dataPacket($pk);
 	}
 
 	private function checkTickUpdates($currentTick, $tickTime){
