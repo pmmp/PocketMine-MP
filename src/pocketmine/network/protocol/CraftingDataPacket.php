@@ -27,6 +27,8 @@ namespace pocketmine\network\protocol;
 use pocketmine\inventory\FurnaceRecipe;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
+use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\EnchantmentList;
 use pocketmine\utils\BinaryStream;
 
 class CraftingDataPacket extends DataPacket{
@@ -36,7 +38,7 @@ class CraftingDataPacket extends DataPacket{
 	const ENTRY_SHAPED = 1;
 	const ENTRY_FURNACE = 2;
 	const ENTRY_FURNACE_DATA = 3;
-	const ENTRY_ENCHANT = 4;
+	const ENTRY_ENCHANT_LIST = 4;
 
 	/** @var object[] */
 	public $entries = [];
@@ -49,6 +51,8 @@ class CraftingDataPacket extends DataPacket{
 			return self::writeShapedRecipe($entry, $stream);
 		}elseif($entry instanceof FurnaceRecipe){
 			return self::writeFurnaceRecipe($entry, $stream);
+		}elseif($entry instanceof EnchantmentList){
+			return self::writeEnchantList($entry, $stream);
 		}
 
 		return -1;
@@ -100,16 +104,21 @@ class CraftingDataPacket extends DataPacket{
 		}
 	}
 
-	private static function writeEnchant($slot, $enchantmentId, $enchantmentLevel, $cost, $name, BinaryStream $stream){
-		//TODO
+	private static function writeEnchantList(EnchantmentList $list, BinaryStream $stream){
 
-		$stream->putInt($slot);
-		$stream->putInt($enchantmentId);
-		$stream->putInt($enchantmentLevel);
-		$stream->putInt($cost);
-		$stream->putString($name);
+		$stream->putByte($list->getSize());
+		for($i = 0; $i < $list->getSize(); ++$i){
+			$entry = $list->getSlot($i);
+			$stream->putInt($entry->getCost());
+			$stream->putByte(count($entry->getEnchantments()));
+			foreach($entry->getEnchantments() as $enchantment){
+				$stream->putInt($enchantment->getId());
+				$stream->putInt($enchantment->getLevel());
+			}
+			$stream->putString($entry->getRandomName());
+		}
 
-		return CraftingDataPacket::ENTRY_ENCHANT;
+		return CraftingDataPacket::ENTRY_ENCHANT_LIST;
 	}
 
 	public function addShapelessRecipe(ShapelessRecipe $recipe){
@@ -124,8 +133,8 @@ class CraftingDataPacket extends DataPacket{
 		$this->entries[] = $recipe;
 	}
 
-	public function addEnchant(){
-		//TODO
+	public function addEnchantList(EnchantmentList $list){
+		$this->entries[] = $list;
 	}
 
 	public function clean(){

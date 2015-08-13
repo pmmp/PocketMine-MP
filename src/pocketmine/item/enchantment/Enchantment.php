@@ -155,6 +155,8 @@ class Enchantment{
 
 	public function setLevel($level){
 		$this->level = (int) $level;
+
+		return $this;
 	}
 
 }

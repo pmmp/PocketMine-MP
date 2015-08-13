@@ -32,6 +32,10 @@ class Attribute{
 
 	const MAX_HEALTH = 0;
 
+
+	const EXPERIENCE = 1;
+	const EXPERIENCE_LEVEL = 2;
+
 	private $id;
 	protected $minValue;
 	protected $maxValue;
@@ -45,6 +49,8 @@ class Attribute{
 
 	public static function init(){
 		self::addAttribute(self::MAX_HEALTH, "generic.health", 0, 0x7fffffff, 20, true);
+		self::addAttribute(self::EXPERIENCE, "player.experience", 0, 1, 0, true);
+		self::addAttribute(self::EXPERIENCE_LEVEL, "player.level", 0, 24791, 0, true);
 	}
 
 	/**
