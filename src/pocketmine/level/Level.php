@@ -2251,7 +2251,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->server->getPluginManager()->callEvent(new SpawnChangeEvent($this, $previousSpawn));
 	}
 
-	public function requestChunk($x, $z, Player $player, $order = LevelProvider::ORDER_ZXY){
+	public function requestChunk($x, $z, Player $player){
 		$index = Level::chunkHash($x, $z);
 		if(!isset($this->chunkSendQueue[$index])){
 			$this->chunkSendQueue[$index] = [];
