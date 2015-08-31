@@ -132,18 +132,7 @@ abstract class Living extends Entity implements Damageable{
 		$this->attackTime = 10; //0.5 seconds cooldown
 	}
 
-	/**
-	 * Note: Variadic function is used to preserve BC
-	 * @param int $x
-	 * @param int $z
-	 * @param float $base Default 0.4
-	 */
-	public function knockBack($x, $z, $base = 0.4){
-		if(func_num_args() >= 4){
-			$args = func_get_args();
-			list(, , $x, $z) = $args;
-			$base = isset($args[4]) ? $args[4] : 0.4;
-		}
+	public function knockBack(Entity $attacker, $damage, $x, $z, $base = 0.4){
 		$f = sqrt($x * $x + $z * $z);
 		if($f <= 0){
 			return;
