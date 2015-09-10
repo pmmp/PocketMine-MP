@@ -143,9 +143,8 @@ namespace pocketmine {
 
 	//Logger has a dependency on timezone, so we'll set it to UTC until we can get the actual timezone.
 	date_default_timezone_set("UTC");
-	var_dump("LOAD LOGGER");
+
 	$logger = new MainLogger(\pocketmine\DATA . "server.log", \pocketmine\ANSI);
-	var_dump("LOGGER LOADED");
 
 	if(!ini_get("date.timezone")){
 		if(($timezone = detect_system_timezone()) and date_default_timezone_set($timezone)){
@@ -320,7 +319,11 @@ namespace pocketmine {
 			case "mac":
 			case "linux":
 			default:
-				exec("kill -9 " . ((int) $pid) . " > /dev/null 2>&1");
+				if(function_exists("posix_kill")){
+					posix_kill($pid, SIGKILL);
+				}else{
+					exec("kill -9 " . ((int)$pid) . " > /dev/null 2>&1");
+				}
 		}
 	}
 
@@ -394,8 +397,8 @@ namespace pocketmine {
 	if(substr_count($pthreads_version, ".") < 2){
 		$pthreads_version = "0.$pthreads_version";
 	}
-	if(version_compare($pthreads_version, "2.0.9") < 0){
-		$logger->critical("pthreads >= 2.0.9 is required, while you have $pthreads_version.");
+	if(version_compare($pthreads_version, "3.0.0") < 0){
+		$logger->critical("pthreads >= 3.0.0 is required, while you have $pthreads_version.");
 		++$errors;
 	}
 
@@ -418,13 +421,13 @@ namespace pocketmine {
 		++$errors;
 	}
 
-	if(!extension_loaded("sqlite3")){
-		$logger->critical("Unable to find the SQLite3 extension.");
+	if(!extension_loaded("yaml")){
+		$logger->critical("Unable to find the YAML extension.");
 		++$errors;
 	}
 
-	if(!extension_loaded("yaml")){
-		$logger->critical("Unable to find the YAML extension.");
+	if(!extension_loaded("sqlite3")){
+		$logger->critical("Unable to find the SQLite3 extension.");
 		++$errors;
 	}
 

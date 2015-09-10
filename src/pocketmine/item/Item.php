@@ -42,13 +42,10 @@ use pocketmine\nbt\NBT;
 
 class Item{
 
+	/** @var NBT */
 	private static $cachedParser = null;
 
-	/**
-	 * @param $tag
-	 * @return CompoundTag
-	 */
-	private static function parseCompoundTag($tag){
+	private static function parseCompoundTag(string $tag) : CompoundTag{
 		if(self::$cachedParser === null){
 			self::$cachedParser = new NBT(NBT::LITTLE_ENDIAN);
 		}
@@ -57,11 +54,7 @@ class Item{
 		return self::$cachedParser->getData();
 	}
 
-	/**
-	 * @param CompoundTag $tag
-	 * @return string
-	 */
-	private static function writeCompoundTag(CompoundTag $tag){
+	private static function writeCompoundTag(CompoundTag $tag) : string{
 		if(self::$cachedParser === null){
 			self::$cachedParser = new NBT(NBT::LITTLE_ENDIAN);
 		}
@@ -850,7 +843,7 @@ class Item{
 		Item::$creative = [];
 	}
 
-	public static function getCreativeItems(){
+	public static function getCreativeItems() : array{
 		return Item::$creative;
 	}
 
@@ -865,7 +858,7 @@ class Item{
 		}
 	}
 
-	public static function isCreativeItem(Item $item){
+	public static function isCreativeItem(Item $item) : bool{
 		foreach(Item::$creative as $i => $d){
 			if($item->equals($d, !$item->isTool())){
 				return true;
@@ -879,15 +872,11 @@ class Item{
 	 * @param $index
 	 * @return Item
 	 */
-	public static function getCreativeItem($index){
+	public static function getCreativeItem(int $index){
 		return isset(Item::$creative[$index]) ? Item::$creative[$index] : null;
 	}
 
-	/**
-	 * @param Item $item
-	 * @return int
-	 */
-	public static function getCreativeItemIndex(Item $item){
+	public static function getCreativeItemIndex(Item $item) : int{
 		foreach(Item::$creative as $i => $d){
 			if($item->equals($d, !$item->isTool())){
 				return $i;
@@ -897,7 +886,7 @@ class Item{
 		return -1;
 	}
 
-	public static function get($id, $meta = 0, $count = 1, $tags = ""){
+	public static function get(int $id, $meta = 0, int $count = 1, $tags = "") : Item{
 		try{
 			$class = self::$list[$id];
 			if($class === null){
@@ -912,7 +901,12 @@ class Item{
 		}
 	}
 
-	public static function fromString($str, $multiple = false){
+	/**
+	 * @param string $str
+	 * @param bool $multiple
+	 * @return Item[]|Item
+	 */
+	public static function fromString(string $str, bool $multiple = false){
 		if($multiple === true){
 			$blocks = [];
 			foreach(explode(",", $str) as $b){
@@ -941,10 +935,10 @@ class Item{
 		}
 	}
 
-	public function __construct($id, $meta = 0, $count = 1, $name = "Unknown"){
+	public function __construct(int $id, $meta = 0, int $count = 1, string $name = "Unknown"){
 		$this->id = $id & 0xffff;
 		$this->meta = $meta !== null ? $meta & 0xffff : null;
-		$this->count = (int) $count;
+		$this->count = $count;
 		$this->name = $name;
 		if(!isset($this->block) and $this->id <= 0xff and isset(Block::$list[$this->id])){
 			$this->block = Block::get($this->id, $this->meta);
@@ -970,11 +964,11 @@ class Item{
 		return $this->tags;
 	}
 	
-	public function hasCompoundTag(){
+	public function hasCompoundTag() : bool{
 		return $this->tags !== "" and $this->tags !== null;
 	}
 
-	public function hasCustomBlockData(){
+	public function hasCustomBlockData() : bool{
 		if(!$this->hasCompoundTag()){
 			return false;
 		}
@@ -1030,7 +1024,7 @@ class Item{
 		return null;
 	}
 
-	public function hasEnchantments(){
+	public function hasEnchantments() : bool{
 		if(!$this->hasCompoundTag()){
 			return false;
 		}
@@ -1050,7 +1044,7 @@ class Item{
 	 * @param $id
 	 * @return Enchantment|null
 	 */
-	public function getEnchantment($id){
+	public function getEnchantment(int $id){
 		if(!$this->hasEnchantments()){
 			return null;
 		}
@@ -1107,7 +1101,7 @@ class Item{
 	/**
 	 * @return Enchantment[]
 	 */
-	public function getEnchantments(){
+	public function getEnchantments() : array{
 		if(!$this->hasEnchantments()){
 			return [];
 		}
@@ -1123,7 +1117,7 @@ class Item{
 		return $enchantments;
 	}
 
-	public function hasCustomName(){
+	public function hasCustomName() : bool{
 		if(!$this->hasCompoundTag()){
 			return false;
 		}
@@ -1139,7 +1133,7 @@ class Item{
 		return false;
 	}
 
-	public function getCustomName(){
+	public function getCustomName() : string{
 		if(!$this->hasCompoundTag()){
 			return "";
 		}
@@ -1155,8 +1149,8 @@ class Item{
 		return "";
 	}
 
-	public function setCustomName($name){
-		if((string) $name === ""){
+	public function setCustomName(string $name){
+		if($name === ""){
 			$this->clearCustomName();
 		}
 
@@ -1228,23 +1222,23 @@ class Item{
 		return $this->setCompoundTag("");
 	}
 
-	public function getCount(){
+	public function getCount() : int{
 		return $this->count;
 	}
 
-	public function setCount($count){
-		$this->count = (int) $count;
+	public function setCount(int $count){
+		$this->count = $count;
 	}
 
-	final public function getName(){
+	final public function getName() : string{
 		return $this->hasCustomName() ? $this->getCustomName() : $this->name;
 	}
 
-	final public function canBePlaced(){
+	final public function canBePlaced() : bool{
 		return $this->block !== null and $this->block->canBePlaced();
 	}
 
-	public function getBlock(){
+	public function getBlock() : Block{
 		if($this->block instanceof Block){
 			return clone $this->block;
 		}else{
@@ -1252,7 +1246,7 @@ class Item{
 		}
 	}
 
-	final public function getId(){
+	final public function getId() : int{
 		return $this->id;
 	}
 
@@ -1326,7 +1320,7 @@ class Item{
 		return false;
 	}
 
-	final public function __toString(){
+	final public function __toString() : string{
 		return "Item " . $this->name . " (" . $this->id . ":" . ($this->meta === null ? "?" : $this->meta) . ")x" . $this->count . ($this->hasCompoundTag() ? " tags:0x".bin2hex($this->getCompoundTag()) : "");
 	}
 
@@ -1338,11 +1332,11 @@ class Item{
 		return false;
 	}
 
-	public final function equals(Item $item, $checkDamage = true, $checkCompound = true){
+	public final function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
 		return $this->id === $item->getId() and ($checkDamage === false or $this->getDamage() === $item->getDamage()) and ($checkCompound === false or $this->getCompoundTag() === $item->getCompoundTag());
 	}
 
-	public final function deepEquals(Item $item, $checkDamage = true, $checkCompound = true){
+	public final function deepEquals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
 		if($item->equals($item, $checkDamage, $checkCompound)){
 			return true;
 		}elseif($item->hasCompoundTag() or $this->hasCompoundTag()){

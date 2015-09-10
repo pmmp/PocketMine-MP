@@ -46,7 +46,7 @@ class FormattedCommandAlias extends Command{
 		foreach($this->formatStrings as $formatString){
 			try{
 				$commands[] = $this->buildCommand($formatString, $args);
-			}catch(\Exception $e){
+			}catch(\Throwable $e){
 				if($e instanceof \InvalidArgumentException){
 					$sender->sendMessage(TextFormat::RED . $e->getMessage());
 				}else{

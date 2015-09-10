@@ -315,7 +315,7 @@ class Chunk extends BaseFullChunk{
 			}
 
 			return new Chunk($provider instanceof LevelProvider ? $provider : McRegion::class, $chunk->Level);
-		}catch(\Exception $e){
+		}catch(\Throwable $e){
 			return null;
 		}
 	}
@@ -353,7 +353,7 @@ class Chunk extends BaseFullChunk{
 			$chunk->nbt->LightPopulated = new ByteTag("LightPopulated", ($flags >> 2) & 0b1);
 
 			return $chunk;
-		}catch(\Exception $e){
+		}catch(\Throwable $e){
 			return null;
 		}
 	}
@@ -461,7 +461,7 @@ class Chunk extends BaseFullChunk{
 			$chunk->nbt->LightPopulated = new ByteTag("LightPopulated", 0);
 
 			return $chunk;
-		}catch(\Exception $e){
+		}catch(\Throwable $e){
 			return null;
 		}
 	}

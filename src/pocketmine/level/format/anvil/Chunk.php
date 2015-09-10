@@ -180,7 +180,7 @@ class Chunk extends BaseChunk{
 			}
 
 			return new Chunk($provider instanceof LevelProvider ? $provider : Anvil::class, $chunk->Level);
-		}catch(\Exception $e){
+		}catch(\Throwable $e){
 			return null;
 		}
 	}
@@ -203,7 +203,7 @@ class Chunk extends BaseChunk{
 			}
 
 			return new Chunk($provider instanceof LevelProvider ? $provider : Anvil::class, $chunk->Level);
-		}catch(\Exception $e){
+		}catch(\Throwable $e){
 			return null;
 		}
 	}
@@ -361,7 +361,7 @@ class Chunk extends BaseChunk{
 			$chunk->nbt->LightPopulated = new ByteTag("LightPopulated", 0);
 
 			return $chunk;
-		}catch(\Exception $e){
+		}catch(\Throwable $e){
 			return null;
 		}
 	}

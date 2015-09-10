@@ -140,7 +140,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 						$this->players[$identifier]->handleDataPacket($pk);
 					}
 				}
-			}catch(\Exception $e){
+			}catch(\Throwable $e){
 				if(\pocketmine\DEBUG > 1 and isset($pk)){
 					$logger = $this->server->getLogger();
 					if($logger instanceof MainLogger){

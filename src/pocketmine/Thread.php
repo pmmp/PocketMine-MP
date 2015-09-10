@@ -51,7 +51,7 @@ abstract class Thread extends \Thread{
 		}
 	}
 
-	public function start($options = PTHREADS_INHERIT_ALL){
+	public function start(int $options = PTHREADS_INHERIT_ALL){
 		ThreadManager::getInstance()->add($this);
 
 		if(!$this->isRunning() and !$this->isJoined() and !$this->isTerminated()){
@@ -70,16 +70,14 @@ abstract class Thread extends \Thread{
 	public function quit(){
 		if($this->isRunning()){
 			$this->kill();
-			$this->detach();
 		}elseif(!$this->isJoined()){
 			if(!$this->isTerminated()){
 				$this->join();
 			}else{
 				$this->kill();
-				$this->detach();
 			}
 		}else{
-			$this->detach();
+			$this->kill();
 		}
 
 		ThreadManager::getInstance()->remove($this);

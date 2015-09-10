@@ -109,8 +109,7 @@ class AsyncPool{
 			if(!$force and ($task->isRunning() or !$task->isGarbage())){
 				return;
 			}
-			$this->workers[$w = $this->taskWorkers[$task->getTaskId()]]->unstack($task);
-			$this->workerUsage[$w]--;
+			$this->workerUsage[$this->taskWorkers[$task->getTaskId()]]--;
 		}
 
 		unset($this->tasks[$task->getTaskId()]);
@@ -127,7 +126,7 @@ class AsyncPool{
 			}
 
 			if(count($this->tasks) > 0){
-				usleep(25000);
+				Server::microSleep(25000);
 			}
 		}while(count($this->tasks) > 0);
 

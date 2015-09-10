@@ -132,6 +132,9 @@ class Server{
 	/** @var Server */
 	private static $instance = null;
 
+	/** @var \Threaded */
+	private static $sleeper = null;
+
 	/** @var BanList */
 	private $banByName = null;
 
@@ -754,7 +757,7 @@ class Server{
 				$nbt->readCompressed(file_get_contents($path . "$name.dat"));
 
 				return $nbt->getData();
-			}catch(\Exception $e){ //zlib decode error / corrupt data
+			}catch(\Throwable $e){ //zlib decode error / corrupt data
 				rename($path . "$name.dat", $path . "$name.dat.bak");
 				$this->logger->notice($this->getLanguage()->translateString("pocketmine.data.playerCorrupted", [$name]));
 			}
@@ -871,7 +874,7 @@ class Server{
 			}else{
 				file_put_contents($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed());
 			}
-		}catch(\Exception $e){
+		}catch(\Throwable $e){
 			$this->logger->critical($this->getLanguage()->translateString("pocketmine.data.saveError", [$name, $e->getMessage()]));
 			if(\pocketmine\DEBUG > 1 and $this->logger instanceof MainLogger){
 				$this->logger->logException($e);
@@ -1080,7 +1083,7 @@ class Server{
 
 		try{
 			$level = new Level($this, $name, $path, $provider);
-		}catch(\Exception $e){
+		}catch(\Throwable $e){
 
 			$this->logger->error($this->getLanguage()->translateString("pocketmine.level.loadError", [$name, $e->getMessage()]));
 			if($this->logger instanceof MainLogger){
@@ -1140,7 +1143,7 @@ class Server{
 			$level->initLevel();
 
 			$level->setTickRate($this->baseTickRate);
-		}catch(\Exception $e){
+		}catch(\Throwable $e){
 			$this->logger->error($this->getLanguage()->translateString("pocketmine.level.generateError", [$name, $e->getMessage()]));
 			if($this->logger instanceof MainLogger){
 				$this->logger->logException($e);
@@ -1436,8 +1439,16 @@ class Server{
 	/**
 	 * @return Server
 	 */
-	public static function getInstance(){
+	public static function getInstance() : Server{
 		return self::$instance;
+	}
+
+	public static function microSleep(int $microseconds){
+		Server::$sleeper->synchronized(function(int $ms){
+			var_dump("Sleeping $ms");
+			Server::$sleeper->wait($ms);
+			var_dump("Finished sleep $ms");
+		}, $microseconds);
 	}
 
 	/**
@@ -1449,6 +1460,7 @@ class Server{
 	 */
 	public function __construct(\ClassLoader $autoloader, \ThreadedLogger $logger, $filePath, $dataPath, $pluginPath){
 		self::$instance = $this;
+		self::$sleeper = \ThreadedFactory::create();
 
 		$this->autoloader = $autoloader;
 		$this->logger = $logger;
@@ -1627,7 +1639,6 @@ class Server{
 		register_shutdown_function([$this, "crashDump"]);
 
 		$this->queryRegenerateTask = new QueryRegenerateEvent($this, 5);
-
 		$this->network->registerInterface(new RakLibInterface($this));
 
 		$this->pluginManager->loadPlugins($this->pluginPath);
@@ -1986,11 +1997,6 @@ class Server{
 	 * Shutdowns the server correctly
 	 */
 	public function shutdown(){
-		if($this->isRunning){
-			$killer = new ServerKiller(90);
-			$killer->start();
-			$killer->detach();
-		}
 		$this->isRunning = false;
 	}
 
@@ -2040,7 +2046,7 @@ class Server{
 
 			$this->getLogger()->debug("Closing console");
 			$this->console->shutdown();
-			$this->console->detach();
+			$this->console->kill();
 
 			$this->getLogger()->debug("Stopping network interfaces");
 			foreach($this->network->getInterfaces() as $interface){
@@ -2051,8 +2057,9 @@ class Server{
 			$this->memoryManager->doObjectCleanup();
 
 			gc_collect_cycles();
-		}catch(\Exception $e){
+		}catch(\Throwable $e){
 			$this->logger->emergency("Crashed while crashing, killing process");
+			$this->logger->emergency(get_class($e) . ": ". $e->getMessage());
 			@kill(getmypid());
 		}
 
@@ -2110,7 +2117,7 @@ class Server{
 		}
 	}
 
-	public function exceptionHandler(\Exception $e, $trace = null){
+	public function exceptionHandler(\Throwable $e, $trace = null){
 		if($e === null){
 			return;
 		}
@@ -2165,7 +2172,7 @@ class Server{
 		$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.create"));
 		try{
 			$dump = new CrashDump($this);
-		}catch(\Exception $e){
+		}catch(\Throwable $e){
 			$this->logger->critical($this->getLanguage()->translateString("pocketmine.crash.error", $e->getMessage()));
 			return;
 		}
@@ -2225,7 +2232,7 @@ class Server{
 			if($next > microtime(true)){
 				try{
 					time_sleep_until($next);
-				}catch(\Exception $e){
+				}catch(\Throwable $e){
 					//Sometimes $next is less than the current time. High load?
 				}
 			}
@@ -2344,7 +2351,7 @@ class Server{
 						$level->tickRateCounter = $level->getTickRate();
 					}
 				}
-			}catch(\Exception $e){
+			}catch(\Throwable $e){
 				$this->logger->critical($this->getLanguage()->translateString("pocketmine.level.tickError", [$level->getName(), $e->getMessage()]));
 				if(\pocketmine\DEBUG > 1 and $this->logger instanceof MainLogger){
 					$this->logger->logException($e);
@@ -2439,7 +2446,7 @@ class Server{
 			if(strlen($payload) > 2 and substr($payload, 0, 2) === "\xfe\xfd" and $this->queryHandler instanceof QueryHandler){
 				$this->queryHandler->handle($address, $port, $payload);
 			}
-		}catch(\Exception $e){
+		}catch(\Throwable $e){
 			if(\pocketmine\DEBUG > 1){
 				if($this->logger instanceof MainLogger){
 					$this->logger->logException($e);
@@ -2497,7 +2504,7 @@ class Server{
 					if($this->queryHandler !== null){
 						$this->queryHandler->regenerateInfo();
 					}
-				}catch(\Exception $e){
+				}catch(\Throwable $e){
 					if($this->logger instanceof MainLogger){
 						$this->logger->logException($e);
 					}

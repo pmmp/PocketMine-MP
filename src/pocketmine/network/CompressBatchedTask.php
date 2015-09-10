@@ -43,12 +43,12 @@ class CompressBatchedTask extends AsyncTask{
 		try{
 			$this->final = zlib_encode($this->data, ZLIB_ENCODING_DEFLATE, $this->level);
 			$this->data = null;
-		}catch(\Exception $e){
+		}catch(\Throwable $e){
 
 		}
 	}
 
 	public function onCompletion(Server $server){
-		$server->broadcastPacketsCallback($this->final, $this->targets, $this->channel);
+		$server->broadcastPacketsCallback($this->final, $this->targets);
 	}
 }

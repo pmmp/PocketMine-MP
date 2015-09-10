@@ -305,7 +305,7 @@ class Chunk extends BaseFullChunk{
 				$chunk->setLightPopulated();
 			}
 			return $chunk;
-		}catch(\Exception $e){
+		}catch(\Throwable $e){
 			return null;
 		}
 	}
@@ -393,7 +393,7 @@ class Chunk extends BaseFullChunk{
 			$chunk = new Chunk($provider instanceof LevelProvider ? $provider : LevelDB::class, $chunkX, $chunkZ, str_repeat("\x00", self::DATA_LENGTH));
 			$chunk->skyLight = str_repeat("\xff", 16384);
 			return $chunk;
-		}catch(\Exception $e){
+		}catch(\Throwable $e){
 			return null;
 		}
 	}
