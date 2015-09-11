@@ -105,11 +105,19 @@ class BinaryStream extends \stdClass{
 		$this->buffer .= Binary::writeLInt($v);
 	}
 
-	public function getShort($signed = true){
-		return $signed ? Binary::readSignedShort($this->get(2)) : Binary::readShort($this->get(2));
+	public function getSignedShort(){
+		return Binary::readSignedShort($this->get(2));
 	}
 
 	public function putShort($v){
+		$this->buffer .= Binary::writeShort($v);
+	}
+
+	public function getShort(){
+		return Binary::readShort($this->get(2));
+	}
+
+	public function putSignedShort($v){
 		$this->buffer .= Binary::writeShort($v);
 	}
 
@@ -188,7 +196,7 @@ class BinaryStream extends \stdClass{
 	}
 
 	public function getSlot(){
-		$id = $this->getShort(true);
+		$id = $this->getSignedShort();
 		
 		if($id <= 0){
 			return Item::get(0, 0, 0);
