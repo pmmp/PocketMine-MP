@@ -263,7 +263,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function getClientSecret(){
-		return $this->clientSecretId;
+		return $this->clientSecret;
 	}
 
 	public function isBanned(){
