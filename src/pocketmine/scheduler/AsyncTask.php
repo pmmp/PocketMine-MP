@@ -50,15 +50,6 @@ abstract class AsyncTask extends \Collectable{
 	}
 
 	/**
-	 * @deprecated
-	 *
-	 * @return bool
-	 */
-	public function isFinished(){
-		return $this->isGarbage();
-	}
-
-	/**
 	 * @return mixed
 	 */
 	public function getResult(){

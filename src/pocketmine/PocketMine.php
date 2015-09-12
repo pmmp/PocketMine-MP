@@ -86,9 +86,9 @@ namespace pocketmine {
 	 */
 
 	if(\Phar::running(true) !== ""){
-		@define("pocketmine\\PATH", \Phar::running(true) . "/");
+		@define('pocketmine\PATH', \Phar::running(true) . "/");
 	}else{
-		@define("pocketmine\\PATH", \getcwd() . DIRECTORY_SEPARATOR);
+		@define('pocketmine\PATH', \getcwd() . DIRECTORY_SEPARATOR);
 	}
 
 	if(version_compare("7.0", PHP_VERSION) > 0){
@@ -126,16 +126,16 @@ namespace pocketmine {
 	ini_set("default_charset", "utf-8");
 
 	ini_set("memory_limit", -1);
-	define("pocketmine\\START_TIME", microtime(true));
+	define('pocketmine\START_TIME', microtime(true));
 
 	$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-profiler"]);
 
-	define("pocketmine\\DATA", isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR);
-	define("pocketmine\\PLUGIN_PATH", isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);
+	define('pocketmine\DATA', isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR);
+	define('pocketmine\PLUGIN_PATH', isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);
 
 	Terminal::init();
 
-	define("pocketmine\\ANSI", Terminal::hasFormattingCodes());
+	define('pocketmine\ANSI', Terminal::hasFormattingCodes());
 
 	if(!file_exists(\pocketmine\DATA)){
 		mkdir(\pocketmine\DATA, 0777, true);
@@ -379,8 +379,6 @@ namespace pocketmine {
 		return rtrim(str_replace(["\\", ".php", "phar://", rtrim(str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PATH), "/"), rtrim(str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PLUGIN_PATH), "/")], ["/", "", "", "", ""], $path), "/");
 	}
 
-	set_error_handler([\ExceptionHandler::class, "handler"], -1);
-
 	$errors = 0;
 
 	if(php_sapi_name() !== "cli"){
@@ -444,9 +442,9 @@ namespace pocketmine {
 	}
 
 	if(file_exists(\pocketmine\PATH . ".git/refs/heads/master")){ //Found Git information!
-		define("pocketmine\\GIT_COMMIT", strtolower(trim(file_get_contents(\pocketmine\PATH . ".git/refs/heads/master"))));
+		define('pocketmine\GIT_COMMIT', strtolower(trim(file_get_contents(\pocketmine\PATH . ".git/refs/heads/master"))));
 	}else{ //Unknown :(
-		define("pocketmine\\GIT_COMMIT", str_repeat("00", 20));
+		define('pocketmine\GIT_COMMIT', str_repeat("00", 20));
 	}
 
 	@define("ENDIANNESS", (pack("d", 1) === "\77\360\0\0\0\0\0\0" ? Binary::BIG_ENDIAN : Binary::LITTLE_ENDIAN));

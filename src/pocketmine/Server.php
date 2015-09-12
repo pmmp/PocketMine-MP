@@ -117,7 +117,6 @@ use pocketmine\utils\ServerException;
 use pocketmine\utils\ServerKiller;
 use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
-use pocketmine\utils\TextWrapper;
 use pocketmine\utils\Utils;
 use pocketmine\utils\UUID;
 use pocketmine\utils\VersionString;
@@ -361,13 +360,6 @@ class Server{
 	 */
 	public function getIp(){
 		return $this->getConfigString("server-ip", "0.0.0.0");
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function getServerName(){
-		return $this->getConfigString("motd", "Minecraft: PE Server");
 	}
 
 	public function getServerUniqueId(){
@@ -657,56 +649,6 @@ class Server{
 	 */
 	public function getTickUsageAverage(){
 		return round((array_sum($this->useAverage) / count($this->useAverage)) * 100, 2);
-	}
-
-
-	/**
-	 * @deprecated
-	 *
-	 * @param     $address
-	 * @param int $timeout
-	 */
-	public function blockAddress($address, $timeout = 300){
-		$this->network->blockAddress($address, $timeout);
-	}
-
-	/**
-	 * @deprecated
-	 *
-	 * @param $address
-	 * @param $port
-	 * @param $payload
-	 */
-	public function sendPacket($address, $port, $payload){
-		$this->network->sendPacket($address, $port, $payload);
-	}
-
-	/**
-	 * @deprecated
-	 *
-	 * @return SourceInterface[]
-	 */
-	public function getInterfaces(){
-		return $this->network->getInterfaces();
-	}
-
-	/**
-	 * @deprecated
-	 *
-	 * @param SourceInterface $interface
-	 */
-	public function addInterface(SourceInterface $interface){
-		$this->network->registerInterface($interface);
-	}
-
-	/**
-	 * @deprecated
-	 *
-	 * @param SourceInterface $interface
-	 */
-	public function removeInterface(SourceInterface $interface){
-		$interface->shutdown();
-		$this->network->unregisterInterface($interface);
 	}
 
 	/**
@@ -1581,7 +1523,7 @@ class Server{
 				$this->setConfigInt("difficulty", 3);
 			}
 
-			define("pocketmine\\DEBUG", (int) $this->getProperty("debug.level", 1));
+			define('pocketmine\DEBUG', (int) $this->getProperty("debug.level", 1));
 			if($this->logger instanceof MainLogger){
 				$this->logger->setLogDebug(\pocketmine\DEBUG > 1);
 			}
@@ -1624,8 +1566,6 @@ class Server{
 			Effect::init();
 			Enchantment::init();
 			Attribute::init();
-			/** TODO: @deprecated */
-			TextWrapper::init();
 			$this->craftingManager = new CraftingManager();
 
 			$this->pluginManager = new PluginManager($this, $this->commandMap);
@@ -1819,7 +1759,7 @@ class Server{
 		$packet->encode();
 		$packet->isEncoded = true;
 		if(Network::$BATCH_THRESHOLD >= 0 and strlen($packet->buffer) >= Network::$BATCH_THRESHOLD){
-			Server::getInstance()->batchPackets($players, [$packet->buffer], false, $packet->getChannel());
+			Server::getInstance()->batchPackets($players, [$packet->buffer], false);
 			return;
 		}
 
@@ -1837,9 +1777,8 @@ class Server{
 	 * @param Player[]            $players
 	 * @param DataPacket[]|string $packets
 	 * @param bool                 $forceSync
-	 * @param int                 $channel
 	 */
-	public function batchPackets(array $players, array $packets, $forceSync = false, $channel = 0){
+	public function batchPackets(array $players, array $packets, $forceSync = false){
 		Timings::$playerNetworkTimer->startTiming();
 		$str = "";
 
@@ -1862,10 +1801,10 @@ class Server{
 		}
 
 		if(!$forceSync and $this->networkCompressionAsync){
-			$task = new CompressBatchedTask($str, $targets, $this->networkCompressionLevel, $channel);
+			$task = new CompressBatchedTask($str, $targets, $this->networkCompressionLevel);
 			$this->getScheduler()->scheduleAsyncTask($task);
 		}else{
-			$this->broadcastPacketsCallback(zlib_encode($str, ZLIB_ENCODING_DEFLATE, $this->networkCompressionLevel), $targets, $channel);
+			$this->broadcastPacketsCallback(zlib_encode($str, ZLIB_ENCODING_DEFLATE, $this->networkCompressionLevel), $targets);
 		}
 
 		Timings::$playerNetworkTimer->stopTiming();
@@ -1906,15 +1845,6 @@ class Server{
 	 */
 	public function enablePlugin(Plugin $plugin){
 		$this->pluginManager->enablePlugin($plugin);
-	}
-
-	/**
-	 * @param Plugin $plugin
-	 *
-	 * @deprecated
-	 */
-	public function loadPlugin(Plugin $plugin){
-		$this->enablePlugin($plugin);
 	}
 
 	public function disablePlugins(){
@@ -1980,8 +1910,6 @@ class Server{
 		$this->banByName->load();
 		$this->reloadWhitelist();
 		$this->operators->reload();
-
-		$this->memoryManager->doObjectCleanup();
 
 		foreach($this->getIPBans()->getEntries() as $entry){
 			$this->getNetwork()->blockAddress($entry->getName(), -1);
@@ -2055,8 +1983,6 @@ class Server{
 				$interface->shutdown();
 				$this->network->unregisterInterface($interface);
 			}
-
-			$this->memoryManager->doObjectCleanup();
 
 			gc_collect_cycles();
 		}catch(\Throwable $e){

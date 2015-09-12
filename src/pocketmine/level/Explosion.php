@@ -64,18 +64,6 @@ class Explosion{
 	}
 
 	/**
-	 * @deprecated
-	 * @return bool
-	 */
-	public function explode(){
-		if($this->explodeA()){
-			return $this->explodeB();
-		}
-
-		return false;
-	}
-
-	/**
 	 * @return bool
 	 */
 	public function explodeA(){

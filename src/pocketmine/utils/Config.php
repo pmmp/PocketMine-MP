@@ -322,46 +322,6 @@ class Config{
 	}
 
 	/**
-	 * @param string $path
-	 *
-	 * @deprecated
-	 *
-	 * @return mixed
-	 */
-	public function getPath($path){
-		$currPath =& $this->config;
-		foreach(explode(".", $path) as $component){
-			if(isset($currPath[$component])){
-				$currPath =& $currPath[$component];
-			}else{
-				$currPath = null;
-			}
-		}
-
-		return $currPath;
-	}
-
-	/**
-	 *
-	 * @deprecated
-	 *
-	 * @param string $path
-	 * @param mixed  $value
-	 */
-	public function setPath($path, $value){
-		$currPath =& $this->config;
-		$components = explode(".", $path);
-		$final = array_pop($components);
-		foreach($components as $component){
-			if(!isset($currPath[$component])){
-				$currPath[$component] = [];
-			}
-			$currPath =& $currPath[$component];
-		}
-		$currPath[$final] = $value;
-	}
-
-	/**
 	 * @param string $k key to be set
 	 * @param mixed  $v value to set key
 	 */

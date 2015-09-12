@@ -183,12 +183,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	protected $isCrafting = false;
 
-	/**
-	 * @deprecated
-	 * @var array
-	 */
-	public $loginData = [];
-
 	public $creationTime = 0;
 
 	protected $randomClientId;
@@ -885,11 +879,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return false;
 		}
 
-		if(!isset($this->batchedPackets[$packet->getChannel()])){
-			$this->batchedPackets[$packet->getChannel()] = [];
-		}
-
-		$this->batchedPackets[$packet->getChannel()][] = clone $packet;
+		$this->batchedPackets[] = clone $packet;
 		$timings->stopTiming();
 		return true;
 	}
@@ -1224,20 +1214,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return [];
 	}
 
-	/**
-	 * @deprecated
-	 */
-	public function addEntityMotion($entityId, $x, $y, $z){
-
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function addEntityMovement($entityId, $x, $y, $z, $yaw, $pitch, $headYaw = null){
-
-	}
-
 	public function setDataProperty($id, $type, $value){
 		if(parent::setDataProperty($id, $type, $value)){
 			$this->sendData($this, [$id => $this->dataProperties[$id]]);
@@ -1562,9 +1538,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		if(count($this->batchedPackets) > 0){
-			foreach($this->batchedPackets as $channel => $list){
-				$this->server->batchPackets([$this], $list, false, $channel);
-			}
+			$this->server->batchPackets([$this], $this->batchedPackets, false);
 			$this->batchedPackets = [];
 		}
 
@@ -1833,7 +1807,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 
 				$this->randomClientId = $packet->clientId;
-				$this->loginData = ["clientId" => $packet->clientId, "loginData" => null];
 
 				$this->uuid = $packet->clientUUID;
 				$this->rawUUID = $this->uuid->toBinary();

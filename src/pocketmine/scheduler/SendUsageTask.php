@@ -24,6 +24,7 @@ namespace pocketmine\scheduler;
 use pocketmine\network\protocol\Info;
 use pocketmine\Server;
 use pocketmine\utils\Utils;
+use pocketmine\utils\UUID;
 use pocketmine\utils\VersionString;
 
 class SendUsageTask extends AsyncTask{
@@ -41,7 +42,7 @@ class SendUsageTask extends AsyncTask{
 		$data = [];
 		$data["uniqueServerId"] = $server->getServerUniqueId();
 		$data["uniqueMachineId"] = Utils::getMachineUniqueId();
-		$data["uniqueRequestId"] = Utils::dataToUUID($server->getServerUniqueId(), microtime(true));
+		$data["uniqueRequestId"] = UUID::fromData($server->getServerUniqueId(), microtime(true));
 
 		switch($type){
 			case self::TYPE_OPEN:

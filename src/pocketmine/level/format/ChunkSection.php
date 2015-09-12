@@ -63,19 +63,6 @@ interface ChunkSection{
 	public function setBlockData($x, $y, $z, $data);
 
 	/**
-	 * Modifies $blockId and $meta
-	 *
-	 * @deprecated
-	 *
-	 * @param int $x 0-15
-	 * @param int $y 0-15
-	 * @param int $z 0-15
-	 * @param int &$blockId
-	 * @param int &$meta
-	 */
-	public function getBlock($x, $y, $z, &$blockId, &$meta = null);
-
-	/**
 	 * Gets block and meta in one go
 	 *
 	 * @param int $x 0-15

@@ -54,13 +54,6 @@ class VersionString{
 		return (int) (($this->generation << 9) + ($this->major << 5) + $this->minor);
 	}
 
-	/**
-	 * @deprecated
-	 */
-	public function getStage(){
-		return "final";
-	}
-
 	public function getGeneration(){
 		return $this->generation;
 	}

@@ -556,13 +556,6 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	/**
-	 * @deprecated
-	 */
-	public function sendMetadata($player){
-		$this->sendData($player);
-	}
-
-	/**
 	 * @param Player[]|Player $player
 	 * @param array $data Properly formatted entity data, defaults to everything
 	 */
