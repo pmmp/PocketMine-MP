@@ -1624,7 +1624,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 				$this->uuid = Utils::dataToUUID($this->randomClientId, $this->iusername, $this->getAddress());
 
-				if(count($this->server->getOnlinePlayers()) > $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)){
+				if(count($this->server->getOnlinePlayers()) >= $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)){
 					break;
 				}
 
