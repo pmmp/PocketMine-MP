@@ -29,7 +29,7 @@ class EnchantTable extends Spawnable implements Nameable{
 
 
 	public function getName(){
-		return isset($this->namedtag->CustomName) ? $this->namedtag->CustomName->getValue() : "Chest";
+		return isset($this->namedtag->CustomName) ? $this->namedtag->CustomName->getValue() : "Enchanting Table";
 	}
 
 	public function hasName(){

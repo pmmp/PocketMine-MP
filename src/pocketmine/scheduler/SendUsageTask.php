@@ -26,6 +26,7 @@ use pocketmine\Server;
 use pocketmine\utils\Utils;
 use pocketmine\utils\UUID;
 use pocketmine\utils\VersionString;
+use pocketmine\utils\UUID;
 
 class SendUsageTask extends AsyncTask{
 
@@ -40,9 +41,9 @@ class SendUsageTask extends AsyncTask{
 		$endpoint = "http://" . $server->getProperty("anonymous-statistics.host", "stats.pocketmine.net") . "/";
 
 		$data = [];
-		$data["uniqueServerId"] = $server->getServerUniqueId();
-		$data["uniqueMachineId"] = Utils::getMachineUniqueId();
-		$data["uniqueRequestId"] = UUID::fromData($server->getServerUniqueId(), microtime(true));
+		$data["uniqueServerId"] = $server->getServerUniqueId()->toString();
+		$data["uniqueMachineId"] = Utils::getMachineUniqueId()->toString();
+		$data["uniqueRequestId"] = UUID::fromData($server->getServerUniqueId(), microtime(true))->toString();
 
 		switch($type){
 			case self::TYPE_OPEN:

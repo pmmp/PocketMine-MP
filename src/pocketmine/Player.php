@@ -1680,6 +1680,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$pk = new StartGamePacket();
 		$pk->seed = -1;
+		$pk->dimension = 0;
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
@@ -1783,7 +1784,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->setNameTag($this->username);
 				$this->iusername = strtolower($this->username);
 
-				if(count($this->server->getOnlinePlayers()) > $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)){
+				if(count($this->server->getOnlinePlayers()) >= $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)){
 					break;
 				}
 
