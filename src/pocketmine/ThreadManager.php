@@ -42,7 +42,7 @@ class ThreadManager extends \Volatile{
 	 */
 	public function add($thread){
 		if($thread instanceof Thread or $thread instanceof Worker){
-			$this->{spl_object_hash($thread)} = $thread;
+			$this->{$thread->getThreadId()} = $thread;
 		}
 	}
 
@@ -51,7 +51,7 @@ class ThreadManager extends \Volatile{
 	 */
 	public function remove($thread){
 		if($thread instanceof Thread or $thread instanceof Worker){
-			unset($this->{spl_object_hash($thread)});
+			unset($this->{$thread->getThreadId()});
 		}
 	}
 
