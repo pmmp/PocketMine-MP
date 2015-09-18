@@ -19,25 +19,13 @@
  *
 */
 
-namespace pocketmine\utils;
+namespace pocketmine\level\sound;
 
-use pocketmine\Thread;
+use pocketmine\math\Vector3;
+use pocketmine\network\protocol\LevelEventPacket;
 
-class ServerKiller extends Thread{
-
-	public $time;
-
-	public function __construct($time = 15){
-		$this->time = $time;
-	}
-
-	public function run(){
-		sleep($this->time);
-		echo "\nTook too long to stop, server was killed forcefully!\n";
-		@\pocketmine\kill(getmypid());
-	}
-
-	public function getThreadName(){
-		return "Server Killer";
+class EndermanTeleportSound extends GenericSound{
+	public function __construct(Vector3 $pos){
+		parent::__construct($pos, LevelEventPacket::EVENT_SOUND_ENDERMAN_TELEPORT);
 	}
 }
