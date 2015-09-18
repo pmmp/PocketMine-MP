@@ -251,10 +251,7 @@ class PluginManager{
 						}
 					}catch(\Throwable $e){
 						$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.fileError", [$file, $directory, $e->getMessage()]));
-						$logger = $this->server->getLogger();
-						if($logger instanceof MainLogger){
-							$logger->logException($e);
-						}
+						$this->server->getLogger()->logException($e);
 					}
 				}
 			}
@@ -564,10 +561,7 @@ class PluginManager{
 				}
 				$plugin->getPluginLoader()->enablePlugin($plugin);
 			}catch(\Throwable $e){
-				$logger = Server::getInstance()->getLogger();
-				if($logger instanceof MainLogger){
-					$logger->logException($e);
-				}
+				$this->server->getLogger()->logException($e);
 				$this->disablePlugin($plugin);
 			}
 		}
@@ -638,10 +632,7 @@ class PluginManager{
 			try{
 				$plugin->getPluginLoader()->disablePlugin($plugin);
 			}catch(\Throwable $e){
-				$logger = Server::getInstance()->getLogger();
-				if($logger instanceof MainLogger){
-					$logger->logException($e);
-				}
+				$this->server->getLogger()->logException($e);
 			}
 
 			$this->server->getScheduler()->cancelTasks($plugin);
@@ -682,10 +673,7 @@ class PluginManager{
 						$e->getMessage(),
 						get_class($registration->getListener())
 					]));
-				$logger = $this->server->getLogger();
-				if($logger instanceof MainLogger){
-					$logger->logException($e);
-				}
+				$this->server->getLogger()->logException($e);
 			}
 		}
 	}

@@ -141,9 +141,7 @@ class Network{
 			}catch(\Throwable $e){
 				$logger = $this->server->getLogger();
 				if(\pocketmine\DEBUG > 1){
-					if($logger instanceof MainLogger){
-						$logger->logException($e);
-					}
+					$logger->logException($e);
 				}
 
 				$interface->emergencyShutdown();
@@ -237,10 +235,8 @@ class Network{
 		}catch(\Throwable $e){
 			if(\pocketmine\DEBUG > 1){
 				$logger = $this->server->getLogger();
-				if($logger instanceof MainLogger){
-					$logger->debug("BatchPacket " . " 0x" . bin2hex($packet->payload));
-					$logger->logException($e);
-				}
+				$logger->debug("BatchPacket " . " 0x" . bin2hex($packet->payload));
+				$logger->logException($e);
 			}
 		}
 	}

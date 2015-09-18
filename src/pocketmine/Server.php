@@ -818,9 +818,7 @@ class Server{
 			}
 		}catch(\Throwable $e){
 			$this->logger->critical($this->getLanguage()->translateString("pocketmine.data.saveError", [$name, $e->getMessage()]));
-			if(\pocketmine\DEBUG > 1 and $this->logger instanceof MainLogger){
-				$this->logger->logException($e);
-			}
+			$this->logger->logException($e);
 		}
 	}
 
@@ -1028,9 +1026,7 @@ class Server{
 		}catch(\Throwable $e){
 
 			$this->logger->error($this->getLanguage()->translateString("pocketmine.level.loadError", [$name, $e->getMessage()]));
-			if($this->logger instanceof MainLogger){
-				$this->logger->logException($e);
-			}
+			$this->logger->logException($e);
 			return false;
 		}
 
@@ -1087,9 +1083,7 @@ class Server{
 			$level->setTickRate($this->baseTickRate);
 		}catch(\Throwable $e){
 			$this->logger->error($this->getLanguage()->translateString("pocketmine.level.generateError", [$name, $e->getMessage()]));
-			if($this->logger instanceof MainLogger){
-				$this->logger->logException($e);
-			}
+			$this->logger->logException($e);
 			return false;
 		}
 
@@ -2068,9 +2062,7 @@ class Server{
 
 		$errfile = cleanPath($errfile);
 
-		if($this->logger instanceof MainLogger){
-			$this->logger->logException($e, $trace);
-		}
+		$this->logger->logException($e, $trace);
 
 		$lastError = [
 			"type" => $type,
@@ -2281,9 +2273,7 @@ class Server{
 				}
 			}catch(\Throwable $e){
 				$this->logger->critical($this->getLanguage()->translateString("pocketmine.level.tickError", [$level->getName(), $e->getMessage()]));
-				if(\pocketmine\DEBUG > 1 and $this->logger instanceof MainLogger){
-					$this->logger->logException($e);
-				}
+				$this->logger->logException($e);
 			}
 		}
 	}
@@ -2376,9 +2366,7 @@ class Server{
 			}
 		}catch(\Throwable $e){
 			if(\pocketmine\DEBUG > 1){
-				if($this->logger instanceof MainLogger){
-					$this->logger->logException($e);
-				}
+				$this->logger->logException($e);
 			}
 
 			$this->getNetwork()->blockAddress($address, 600);
@@ -2433,9 +2421,7 @@ class Server{
 						$this->queryHandler->regenerateInfo();
 					}
 				}catch(\Throwable $e){
-					if($this->logger instanceof MainLogger){
-						$this->logger->logException($e);
-					}
+					$this->logger->logException($e);
 				}
 			}
 

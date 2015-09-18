@@ -51,10 +51,7 @@ class FormattedCommandAlias extends Command{
 					$sender->sendMessage(TextFormat::RED . $e->getMessage());
 				}else{
 					$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.exception"));
-					$logger = $sender->getServer()->getLogger();
-					if($logger instanceof MainLogger){
-						$logger->logException($e);
-					}
+					$sender->getServer()->getLogger()->logException($e);
 				}
 
 				return false;

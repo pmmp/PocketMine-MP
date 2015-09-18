@@ -39,14 +39,25 @@ abstract class AsyncTask extends \Collectable{
 	/** @var int */
 	private $taskId = null;
 
+	private $crashed = false;
+
 	public function run(){
 		$this->result = null;
 
 		if($this->cancelRun !== true){
-			$this->onRun();
+			try{
+				$this->onRun();
+			}catch(\Throwable $e){
+				$this->crashed = true;
+				$this->worker->handleException($e);
+			}
 		}
 
 		$this->setGarbage();
+	}
+
+	public function isCrashed(){
+		return $this->crashed;
 	}
 
 	/**

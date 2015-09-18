@@ -139,10 +139,8 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			}catch(\Throwable $e){
 				if(\pocketmine\DEBUG > 1 and isset($pk)){
 					$logger = $this->server->getLogger();
-					if($logger instanceof MainLogger){
-						$logger->debug("Packet " . get_class($pk) . " 0x" . bin2hex($packet->buffer));
-						$logger->logException($e);
-					}
+					$logger->debug("Packet " . get_class($pk) . " 0x" . bin2hex($packet->buffer));
+					$logger->logException($e);
 				}
 
 				if(isset($this->players[$identifier])){

@@ -47,7 +47,7 @@ class AsyncPool{
 
 		for($i = 0; $i < $this->size; ++$i){
 			$this->workerUsage[$i] = 0;
-			$this->workers[$i] = new AsyncWorker;
+			$this->workers[$i] = new AsyncWorker($this->server->getLogger(), $i);
 			$this->workers[$i]->setClassLoader($this->server->getLoader());
 			$this->workers[$i]->start();
 		}
@@ -62,7 +62,7 @@ class AsyncPool{
 		if($newSize > $this->size){
 			for($i = $this->size; $i < $newSize; ++$i){
 				$this->workerUsage[$i] = 0;
-				$this->workers[$i] = new AsyncWorker;
+				$this->workers[$i] = new AsyncWorker($this->server->getLogger(), $i);
 				$this->workers[$i]->setClassLoader($this->server->getLoader());
 				$this->workers[$i]->start();
 			}
@@ -142,16 +142,16 @@ class AsyncPool{
 		Timings::$schedulerAsyncTimer->startTiming();
 
 		foreach($this->tasks as $task){
-			if($task->isGarbage() and !$task->isRunning()){
+			if($task->isGarbage() and !$task->isRunning() and !$task->isCrashed()){
 
 				if(!$task->hasCancelledRun()){
 					$task->onCompletion($this->server);
 				}
 
 				$this->removeTask($task);
-			}elseif($task->isTerminated()){
-				$this->removeTask($task, true);
+			}elseif($task->isTerminated() or $task->isCrashed()){
 				$this->server->getLogger()->critical("Could not execute asynchronous task " . (new \ReflectionClass($task))->getShortName() . ": Task crashed");
+				$this->removeTask($task, true);
 			}
 		}
 

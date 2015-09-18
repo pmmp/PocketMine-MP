@@ -26,7 +26,6 @@ use pocketmine\Server;
 use pocketmine\utils\Utils;
 use pocketmine\utils\UUID;
 use pocketmine\utils\VersionString;
-use pocketmine\utils\UUID;
 
 class SendUsageTask extends AsyncTask{
 

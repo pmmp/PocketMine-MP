@@ -210,7 +210,7 @@ class Config{
 			}catch(\Throwable $e){
 				$logger = Server::getInstance()->getLogger();
 				$logger->critical("Could not save Config " . $this->file . ": " . $e->getMessage());
-				if(\pocketmine\DEBUG > 1 and $logger instanceof MainLogger){
+				if(\pocketmine\DEBUG > 1){
 					$logger->logException($e);
 				}
 			}
