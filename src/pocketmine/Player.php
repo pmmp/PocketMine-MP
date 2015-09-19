@@ -1863,7 +1863,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 					break;
 				}
-				
+
 				if(strlen($packet->skin) !== 64 * 32 * 4 and strlen($packet->skin) !== 64 * 64 * 4){
 					$this->close("", "disconnectionScreen.invalidSkin");
 					break;
@@ -2719,7 +2719,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					break;
 				}
 
-				$this->server->getPluginManager()->callEvent($ev = new CraftItemEvent($ingredients, $recipe));
+				$this->server->getPluginManager()->callEvent($ev = new CraftItemEvent($this, $ingredients, $recipe));
 
 				if($ev->isCancelled()){
 					$this->inventory->sendContents($this);
@@ -2985,7 +2985,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 		$this->dataPacket($pk);
 	}
-	
+
 	public function sendPopup($message, $subtitle = ""){
 		$pk = new TextPacket();
 		$pk->type = TextPacket::TYPE_POPUP;
@@ -3017,7 +3017,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$pk->message = $reason;
 				$this->directDataPacket($pk);
 			}
-			
+
 			$this->connected = false;
 			if(strlen($this->getName()) > 0){
 				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message, true));
