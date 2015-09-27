@@ -30,6 +30,7 @@ use pocketmine\item\Item as ItemItem;
 use pocketmine\nbt\NBT;
 
 
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\Network;
@@ -70,6 +71,9 @@ class Item extends Entity{
 		if(isset($this->namedtag->Thrower)){
 			$this->thrower = $this->namedtag["Thrower"];
 		}
+
+		assert($this->namedtag->Item instanceof CompoundTag);
+
 		if(!isset($this->namedtag->Item)){
 			$this->close();
 			return;

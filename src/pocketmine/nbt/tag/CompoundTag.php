@@ -62,6 +62,8 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 			}
 		}
 
+		assert(false, "Offset $offset not found");
+
 		return null;
 	}
 

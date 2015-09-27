@@ -111,9 +111,7 @@ abstract class Tile extends Position{
 	}
 
 	public function __construct(FullChunk $chunk, CompoundTag $nbt){
-		if($chunk === null or $chunk->getProvider() === null){
-			throw new ChunkException("Invalid garbage Chunk given to Tile");
-		}
+		assert($chunk !== null and $chunk->getProvider() !== null);
 
 		$this->timings = Timings::getTileEntityTimings($this);
 

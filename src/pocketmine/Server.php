@@ -1518,6 +1518,9 @@ class Server{
 			}
 
 			define('pocketmine\DEBUG', (int) $this->getProperty("debug.level", 1));
+
+			ini_set('assert.exception', 1);
+
 			if($this->logger instanceof MainLogger){
 				$this->logger->setLogDebug(\pocketmine\DEBUG > 1);
 			}
@@ -1867,10 +1870,6 @@ class Server{
 	 * @throws \Exception
 	 */
 	public function dispatchCommand(CommandSender $sender, $commandLine){
-		if(!($sender instanceof CommandSender)){
-			throw new ServerException("CommandSender is not valid");
-		}
-
 		if($this->commandMap->dispatch($sender, $commandLine)){
 			return true;
 		}

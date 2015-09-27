@@ -206,9 +206,8 @@ abstract class Entity extends Location implements Metadatable{
 
 
 	public function __construct(FullChunk $chunk, CompoundTag $nbt){
-		if($chunk === null or $chunk->getProvider() === null){
-			throw new ChunkException("Invalid garbage Chunk given to Entity");
-		}
+
+		assert($chunk !== null and $chunk->getProvider() !== null);
 
 		$this->timings = Timings::getEntityTimings($this);
 
@@ -239,6 +238,8 @@ abstract class Entity extends Location implements Metadatable{
 			$this->namedtag->Rotation[1]
 		);
 		$this->setMotion($this->temporalVector->setComponents($this->namedtag["Motion"][0], $this->namedtag["Motion"][1], $this->namedtag["Motion"][2]));
+
+		assert(!is_nan($this->x) and !is_infinite($this->x) and !is_nan($this->y) and !is_infinite($this->y) and !is_nan($this->z) and !is_infinite($this->z));
 
 		if(!isset($this->namedtag->FallDistance)){
 			$this->namedtag->FallDistance = new FloatTag("FallDistance", 0);
@@ -501,6 +502,8 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	protected function initEntity(){
+		assert($this->namedtag instanceof CompoundTag);
+
 		if(isset($this->namedtag->ActiveEffects)){
 			foreach($this->namedtag->ActiveEffects->getValue() as $e){
 				$effect = Effect::getEffect($e["Id"]);
