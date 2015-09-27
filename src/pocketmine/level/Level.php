@@ -365,7 +365,7 @@ class Level implements ChunkManager, Metadatable{
 		return $this->tickRate;
 	}
 
-	public function getTickRateTime() : int{
+	public function getTickRateTime() : float{
 		return $this->tickRateTime;
 	}
 
