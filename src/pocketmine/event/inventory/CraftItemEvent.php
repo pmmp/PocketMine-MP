@@ -25,6 +25,7 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
 use pocketmine\inventory\Recipe;
 use pocketmine\item\Item;
+use pocketmine\Player;
 
 class CraftItemEvent extends Event implements Cancellable{
 	public static $handlerList = null;
@@ -33,12 +34,17 @@ class CraftItemEvent extends Event implements Cancellable{
 	private $input = [];
 	/** @var Recipe */
 	private $recipe;
+	/** @var \pocketmine\Player */
+	private $player;
+
 
 	/**
+	 * @param \pocketmine\Player $player
 	 * @param Item[] $input
 	 * @param Recipe $recipe
 	 */
-	public function __construct(array $input, Recipe $recipe){
+	public function __construct(Player $player, array $input, Recipe $recipe){
+		$this->player = $player;
 		$this->input = $input;
 		$this->recipe = $recipe;
 	}
@@ -62,4 +68,10 @@ class CraftItemEvent extends Event implements Cancellable{
 		return $this->recipe;
 	}
 
+	/**
+	 * @return \pocktemine\Player
+	 */
+	public function getPlayer(){
+		return $this->player;
+	}
 }
