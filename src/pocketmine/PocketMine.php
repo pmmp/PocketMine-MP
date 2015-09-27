@@ -473,8 +473,6 @@ namespace pocketmine {
 
 	$logger->shutdown();
 	$logger->join();
-	
-	$killer->kill();
 
 	echo Terminal::$FORMAT_RESET . "\n";
 

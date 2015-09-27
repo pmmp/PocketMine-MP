@@ -32,11 +32,14 @@ class ServerKiller extends Thread{
 	}
 
 	public function run(){
+		$start = time() + 1;
 		$this->synchronized(function(){
 			$this->wait($this->time * 1000000);
 		});
-		echo "\nTook too long to stop, server was killed forcefully!\n";
-		@\pocketmine\kill(getmypid());
+		if(time() - $start >= $this->time){
+			echo "\nTook too long to stop, server was killed forcefully!\n";
+			@\pocketmine\kill(getmypid());
+		}
 	}
 
 	public function getThreadName(){

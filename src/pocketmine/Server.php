@@ -1970,7 +1970,7 @@ class Server{
 
 			$this->getLogger()->debug("Closing console");
 			$this->console->shutdown();
-			$this->console->kill();
+			$this->console->notify();
 
 			$this->getLogger()->debug("Stopping network interfaces");
 			foreach($this->network->getInterfaces() as $interface){
