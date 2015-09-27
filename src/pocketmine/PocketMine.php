@@ -394,8 +394,8 @@ namespace pocketmine {
 	if(substr_count($pthreads_version, ".") < 2){
 		$pthreads_version = "0.$pthreads_version";
 	}
-	if(version_compare($pthreads_version, "3.0.0") < 0){
-		$logger->critical("pthreads >= 3.0.0 is required, while you have $pthreads_version.");
+	if(version_compare($pthreads_version, "3.0.7") < 0){
+		$logger->critical("pthreads >= 3.0.7 is required, while you have $pthreads_version.");
 		++$errors;
 	}
 
