@@ -25,6 +25,7 @@
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\Fence;
 use pocketmine\block\Flower;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Squid;
@@ -209,7 +210,7 @@ class Item{
 	const LILY_PAD = 111;
 	const NETHER_BRICKS = 112;
 	const NETHER_BRICK_BLOCK = 112;
-
+	const NETHER_BRICK_FENCE = 113;
 	const NETHER_BRICKS_STAIRS = 114;
 
 	const ENCHANTING_TABLE = 116;
@@ -484,6 +485,7 @@ class Item{
 			self::$list[self::BOWL] = Bowl::class;
 			self::$list[self::FEATHER] = Feather::class;
 			self::$list[self::BRICK] = Brick::class;
+			self::$list[self::QUARTZ] = NetherQuartz::class;
 			self::$list[self::LEATHER_CAP] = LeatherCap::class;
 			self::$list[self::LEATHER_TUNIC] = LeatherTunic::class;
 			self::$list[self::LEATHER_PANTS] = LeatherPants::class;
@@ -649,6 +651,7 @@ class Item{
 		self::addCreativeItem(Item::get(Item::ICE, 0));
 		self::addCreativeItem(Item::get(Item::SNOW_BLOCK, 0));
 		self::addCreativeItem(Item::get(Item::END_STONE, 0));
+                self::addCreativeItem(Item::get(Item::QUARTZ, 0));
 
 		//Decoration
 		self::addCreativeItem(Item::get(Item::COBBLESTONE_WALL, 0));
@@ -671,12 +674,13 @@ class Item{
 		self::addCreativeItem(Item::get(Item::GLASS_PANE, 0));
 		self::addCreativeItem(Item::get(Item::WOODEN_DOOR, 0));
 		self::addCreativeItem(Item::get(Item::TRAPDOOR, 0));
-		self::addCreativeItem(Item::get(Item::FENCE, 0));
-		self::addCreativeItem(Item::get(Item::FENCE, 1));
-		self::addCreativeItem(Item::get(Item::FENCE, 2));
-		self::addCreativeItem(Item::get(Item::FENCE, 3));
-		self::addCreativeItem(Item::get(Item::FENCE, 4));
-		self::addCreativeItem(Item::get(Item::FENCE, 5));
+		self::addCreativeItem(Item::get(Item::FENCE, Fence::FENCE_OAK));
+		self::addCreativeItem(Item::get(Item::FENCE, Fence::FENCE_SPRUCE));
+		self::addCreativeItem(Item::get(Item::FENCE, Fence::FENCE_BIRCH));
+		self::addCreativeItem(Item::get(Item::FENCE, Fence::FENCE_JUNGLE));
+		self::addCreativeItem(Item::get(Item::FENCE, Fence::FENCE_ACACIA));
+		self::addCreativeItem(Item::get(Item::FENCE, Fence::FENCE_DARKOAK));
+		self::addCreativeItem(Item::get(Item::NETHER_BRICK_FENCE, 0));
 		self::addCreativeItem(Item::get(Item::FENCE_GATE, 0));
 		self::addCreativeItem(Item::get(Item::FENCE_GATE_BIRCH, 0));
 		self::addCreativeItem(Item::get(Item::FENCE_GATE_SPRUCE, 0));
