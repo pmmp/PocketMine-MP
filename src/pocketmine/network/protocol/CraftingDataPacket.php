@@ -76,8 +76,8 @@ class CraftingDataPacket extends DataPacket{
 		$stream->putInt($recipe->getWidth());
 		$stream->putInt($recipe->getHeight());
 
-		for($z = 0; $z < $recipe->getWidth(); ++$z){
-			for($x = 0; $x < $recipe->getHeight(); ++$x){
+		for($z = 0; $z < $recipe->getHeight(); ++$z){
+			for($x = 0; $x < $recipe->getWidth(); ++$x){
 				$stream->putSlot($recipe->getIngredient($x, $z));
 			}
 		}

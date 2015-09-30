@@ -181,7 +181,7 @@ class Block extends Position implements Metadatable{
 	const LILY_PAD = 111;
 	const NETHER_BRICKS = 112;
 	const NETHER_BRICK_BLOCK = 112;
-
+	const NETHER_BRICK_FENCE = 113;
 	const NETHER_BRICKS_STAIRS = 114;
 
 	const ENCHANTING_TABLE = 116;
@@ -413,7 +413,7 @@ class Block extends Position implements Metadatable{
 			self::$list[self::MYCELIUM] = Mycelium::class;
 			self::$list[self::WATER_LILY] = WaterLily::class;
 			self::$list[self::NETHER_BRICKS] = NetherBrick::class;
-
+			self::$list[self::NETHER_BRICK_FENCE] = NetherBrickFence::class;
 			self::$list[self::NETHER_BRICKS_STAIRS] = NetherBrickStairs::class;
 
 			self::$list[self::ENCHANTING_TABLE] = EnchantingTable::class;
