@@ -539,6 +539,43 @@ class Item{
 
 			self::$list[self::RAW_FISH] = Fish::class;
 			self::$list[self::COOKED_FISH] = CookedFish::class;
+			self::$list[self::ARROW] = Arrow::class;
+			self::$list[self::STRING] = String::class;
+			self::$list[self::GUNPOWDER] = Gunpowder::class;
+			self::$list[self::WHEAT] = Wheat::class;
+			self::$list[self::BREAD] = Bread::class;
+			self::$list[self::FLINT] = Flint::class;
+			self::$list[self::RAW_PORKCHOP] = RawPorkchop::class;
+			self::$list[self::COOKED_PORKCHOP] = CookedPorkchop::class;
+			self::$list[self::GOLDEN_APPLE] = GoldenApple::class;
+			self::$list[self::MINECART] = Minecart::class;
+			self::$list[self::REDSTONE] = Redstone::class;
+			self::$list[self::LEATHER] = Leather::class;
+			self::$list[self::CLAY] = Clay::class;
+			self::$list[self::PAPER] = Paper::class;
+			self::$list[self::BOOK] = Book::class;
+			self::$list[self::SLIMEBALL] = Slimeball::class;
+			self::$list[self::EGG] = Egg::class;
+			self::$list[self::COMPASS] = Compass::class;
+			self::$list[self::CLOCK] = Clock::class;
+			self::$list[self::GLOWSTONE_DUST] = GlowstoneDust::class;
+			self::$list[self::DYE] = Dye::class;
+			self::$list[self::BONE] = Bone::class;
+			self::$list[self::SUGAR] = Sugar::class;
+			self::$list[self::COOKIE] = Cookie::class;
+			self::$list[self::MELON] = Melon::class;
+			self::$list[self::RAW_BEEF] = RawBeef::class;
+			self::$list[self::STEAK] = Steak::class;
+			self::$list[self::RAW_CHICKEN] = RawChicken::class;
+			self::$list[self::COOKED_CHICKEN] = CookedChicken::class;
+			self::$list[self::GOLD_NUGGET] = GoldNugget::class;
+			self::$list[self::EMERALD] = Emerald::class;
+			self::$list[self::BAKED_POTATO] = BakedPotato::class;
+			self::$list[self::PUMPKIN_PIE] = PumpkinPie::class;
+			self::$list[self::NETHER_BRICK] = NetherBrick::class;
+			self::$list[self::QUARTZ] = Quartz::class;
+			self::$list[self::CAMERA] = Camera::class;
+			self::$list[self::BEETROOT] = Beetroot::class;
 
 			for($i = 0; $i < 256; ++$i){
 				if(Block::$list[$i] !== null){
