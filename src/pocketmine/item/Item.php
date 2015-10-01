@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -540,7 +540,7 @@ class Item{
 			self::$list[self::RAW_FISH] = Fish::class;
 			self::$list[self::COOKED_FISH] = CookedFish::class;
 			self::$list[self::ARROW] = Arrow::class;
-			self::$list[self::STRING] = String::class;
+			self::$list[self::STRING] = StringItem::class;
 			self::$list[self::GUNPOWDER] = Gunpowder::class;
 			self::$list[self::WHEAT] = Wheat::class;
 			self::$list[self::BREAD] = Bread::class;
@@ -583,7 +583,7 @@ class Item{
 				}
 			}
 		}
-		
+
 		self::initCreativeItems();
 	}
 
@@ -992,7 +992,7 @@ class Item{
 			$this->name = $this->block->getName();
 		}
 	}
-	
+
 	public function setCompoundTag($tags){
 		if($tags instanceof Compound){
 			$this->setNamedTag($tags);
@@ -1000,7 +1000,7 @@ class Item{
 			$this->tags = $tags;
 			$this->cachedNBT = null;
 		}
-		
+
 		return $this;
 	}
 
@@ -1010,7 +1010,7 @@ class Item{
 	public function getCompoundTag(){
 		return $this->tags;
 	}
-	
+
 	public function hasCompoundTag(){
 		return $this->tags !== "" and $this->tags !== null;
 	}
@@ -1244,7 +1244,7 @@ class Item{
 
 		return null;
 	}
-	
+
 	public function getNamedTag(){
 		if(!$this->hasCompoundTag()){
 			return null;
