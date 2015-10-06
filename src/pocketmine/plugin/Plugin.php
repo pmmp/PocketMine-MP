@@ -54,7 +54,8 @@ interface Plugin extends CommandExecutor{
 	public function isDisabled();
 
 	/**
-	 * Gets the plugin's data folder to save files and configuration
+	 * Gets the plugin's data folder to save files and configuration.
+	 * This directory name has a trailing slash.
 	 */
 	public function getDataFolder();
 
