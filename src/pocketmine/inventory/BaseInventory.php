@@ -378,7 +378,7 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function setMaxStackSize($size){
-		$this->setMaxStackSize($size);
+		$this->maxStackSize = (int) $size;
 	}
 
 	public function open(Player $who){
