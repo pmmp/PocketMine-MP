@@ -20,15 +20,15 @@
 */
 namespace pocketmine\block;
 
-use pocketmine\block\Block;
-use pocketmine\block\Fence;
 use pocketmine\item\Item;
-//use pocketmine\item\Tool;
+use pocketmine\item\Tool;
 
 class NetherBrickFence extends Transparent {
-       
-	public function __construct(){
-		parent::__construct(self::NETHER_BRICK_FENCE);
+
+	protected $id = self::NETHER_BRICK_FENCE;
+
+	public function __construct($meta = 0){
+		$this->meta = $meta;
 	}
 	
 	public function getBreakTime(Item $item){
@@ -61,9 +61,9 @@ class NetherBrickFence extends Transparent {
 	}
 
 	public function getDrops(Item $item){
-		if($item->isPickaxe()){
+		if($item->isPickaxe() >= Tool::TYPE_WOODEN){
 			return [
-				[Item::FENCE, Fence::FENCE_NETHER_BRICK, 1],
+				[Item::NETHER_BRICK_FENCE, $this->meta, 1],
 			];
 		}else{
 			return [];
