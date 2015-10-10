@@ -48,7 +48,7 @@ class Effect{
 	const INVISIBILITY = 14;
 	//const BLINDNESS = 15;
 	//const NIGHT_VISION = 16;
-	const HUNGER = 17;
+	//const HUNGER = 17;
 	const WEAKNESS = 18;
 	const POISON = 19;
 	const WITHER = 20;
