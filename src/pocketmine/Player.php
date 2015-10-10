@@ -69,7 +69,6 @@ use pocketmine\event\TranslationContainer;
 use pocketmine\inventory\BaseTransaction;
 use pocketmine\inventory\BigShapedRecipe;
 use pocketmine\inventory\BigShapelessRecipe;
-use pocketmine\inventory\CraftingTransactionGroup;
 use pocketmine\inventory\FurnaceInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\InventoryHolder;
@@ -713,7 +712,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			}
 
 			unset($this->loadQueue[$index]);
-			$this->level->requestChunk($X, $Z, $this, LevelProvider::ORDER_ZXY);
+			$this->level->requestChunk($X, $Z, $this);
 		}
 
 		if($this->chunkLoadCount >= $this->spawnThreshold and $this->spawned === false and $this->teleportPosition === null){
@@ -2001,7 +2000,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						//TODO: Implement adventure mode checks
 						if($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this)){
 							if(!$item->deepEquals($oldItem) or $item->getCount() !== $oldItem->getCount()){
-								$this->inventory->setItemInHand($item, $this);
+								$this->inventory->setItemInHand($item);
 								$this->inventory->sendHeldItem($this->hasSpawned);
 							}
 							break;
@@ -2182,7 +2181,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 							$pk = new EntityEventPacket();
 							$pk->eid = $this->getId();
 							$pk->event = EntityEventPacket::USE_ITEM;
-							$pk;
 							$this->dataPacket($pk);
 							Server::broadcastPacket($this->getViewers(), $pk);
 
@@ -2301,7 +2299,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				if($this->canInteract($vector->add(0.5, 0.5, 0.5), $this->isCreative() ? 13 : 6) and $this->level->useBreakOn($vector, $item, $this)){
 					if($this->isSurvival()){
 						if(!$item->deepEquals($oldItem) or $item->getCount() !== $oldItem->getCount()){
-							$this->inventory->setItemInHand($item, $this);
+							$this->inventory->setItemInHand($item);
 							$this->inventory->sendHeldItem($this->hasSpawned);
 						}
 					}
@@ -2514,7 +2512,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 							$pk = new EntityEventPacket();
 							$pk->eid = $this->getId();
 							$pk->event = EntityEventPacket::USE_ITEM;
-							$pk;
 							$this->dataPacket($pk);
 							Server::broadcastPacket($this->getViewers(), $pk);
 
@@ -2526,7 +2523,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 							$this->heal($ev->getAmount(), $ev);
 
 							--$slot->count;
-							$this->inventory->setItemInHand($slot, $this);
+							$this->inventory->setItemInHand($slot);
 							if($slot->getId() === Item::MUSHROOM_STEW or $slot->getId() === Item::BEETROOT_SOUP){
 								$this->inventory->addItem(Item::get(Item::BOWL, 0, 1));
 							}elseif($slot->getId() === Item::RAW_FISH and $slot->getDamage() === 3){ //Pufferfish
@@ -2550,7 +2547,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					break;
 				}
 
-				$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 1), $this);
+				$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 1));
 				$motion = $this->getDirectionVector()->multiply(0.4);
 
 				$this->level->dropItem($this->add(0, 1.3, 0), $item, $motion, 40);
@@ -3568,7 +3565,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$batch = new BatchPacket();
 		$batch->payload = zlib_encode(Binary::writeInt(strlen($pk->getBuffer())) . $pk->getBuffer(), ZLIB_ENCODING_DEFLATE, Server::getInstance()->networkCompressionLevel);
 
-		$batch;
 		$batch->encode();
 		$batch->isEncoded = true;
 		return $batch;
