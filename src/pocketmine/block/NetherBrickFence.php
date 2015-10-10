@@ -47,7 +47,6 @@ class NetherBrickFence extends Transparent {
 	}
         
 	public function getToolType(){
-		//Different then the woodfences
 		return Tool::TYPE_PICKAXE;
 	}
 	
@@ -61,9 +60,9 @@ class NetherBrickFence extends Transparent {
 	}
 
 	public function getDrops(Item $item){
-		if($item->isPickaxe() >= Tool::TYPE_WOODEN){
+		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
-				[Item::NETHER_BRICK_FENCE, $this->meta, 1],
+				[$this->id, $this->meta, 1],
 			];
 		}else{
 			return [];

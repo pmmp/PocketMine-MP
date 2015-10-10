@@ -55,7 +55,7 @@ class StoneBricks extends Solid{
 	}
 	
 	public function getDrops(Item $item){
-		if($item->isPickaxe() >= 1){
+		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
 				[Item::STONE_BRICKS, $this->meta & 0x03, 1],
 			];

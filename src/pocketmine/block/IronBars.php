@@ -45,7 +45,7 @@ class IronBars extends Thin{
 	}
 
 	public function getDrops(Item $item){
-		if($item->isPickaxe() >= 1){
+		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
 				[Item::IRON_BARS, 0, 1],
 			];

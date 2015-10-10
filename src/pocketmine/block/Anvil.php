@@ -71,7 +71,7 @@ class Anvil extends Fallable{
 	}
 
 	public function getDrops(Item $item){
-		if($item->isPickaxe() >= 1){
+		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
 				[$this->id, 0, 1], //TODO break level
 			];

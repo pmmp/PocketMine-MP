@@ -55,7 +55,7 @@ class Sandstone extends Solid{
 	}
 
 	public function getDrops(Item $item){
-		if($item->isPickaxe() >= 1){
+		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
 				[Item::SANDSTONE, $this->meta & 0x03, 1],
 			];
