@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -24,17 +24,19 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
-class TileEventPacket extends DataPacket{
-	const NETWORK_ID = Info::TILE_EVENT_PACKET;
+class BlockEntityDataPacket extends DataPacket{
+	const NETWORK_ID = Info::BLOCK_ENTITY_DATA_PACKET;
 
 	public $x;
 	public $y;
 	public $z;
-	public $case1;
-	public $case2;
+	public $namedtag;
 
 	public function decode(){
-
+		$this->x = $this->getInt();
+		$this->y = $this->getInt();
+		$this->z = $this->getInt();
+		$this->namedtag = $this->get(true);
 	}
 
 	public function encode(){
@@ -42,8 +44,7 @@ class TileEventPacket extends DataPacket{
 		$this->putInt($this->x);
 		$this->putInt($this->y);
 		$this->putInt($this->z);
-		$this->putInt($this->case1);
-		$this->putInt($this->case2);
+		$this->put($this->namedtag);
 	}
 
 }

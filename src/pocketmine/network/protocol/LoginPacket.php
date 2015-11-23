@@ -52,6 +52,7 @@ class LoginPacket extends DataPacket{
 		$this->serverAddress = $this->getString();
 		$this->clientSecret = $this->getString();
 
+		$this->getByte(); // TODO: skin transparency, experimental or not?
 		$this->slim = $this->getByte() > 0;
 		$this->skin = $this->getString();
 	}
