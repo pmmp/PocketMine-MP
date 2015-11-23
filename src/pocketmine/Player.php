@@ -2636,15 +2636,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						for($y = 0; $y < 3; ++$y){
 							$item = $packet->input[$y * 3 + $x];
 							$ingredient = $recipe->getIngredient($x, $y);
-							if($item->getCount() > 0 and $item->getId() > 0){
+							if($item->getCount() > 0){
 								if($ingredient === null or !$ingredient->deepEquals($item, $ingredient->getDamage() !== null, $ingredient->getCompoundTag() !== null)){
 									$canCraft = false;
 									break;
 								}
-
-							}elseif($ingredient !== null and $ingredient->getId() !== 0){
-								$canCraft = false;
-								break;
 							}
 						}
 					}
