@@ -255,7 +255,6 @@ class Block extends Position implements Metadatable{
 	const BEETROOT_BLOCK = 244;
 	const STONECUTTER = 245;
 	const GLOWING_OBSIDIAN = 246;
-	const NETHER_REACTOR = 247;
 
 	/** @var \SplFixedArray */
 	public static $list = null;
@@ -465,7 +464,6 @@ class Block extends Position implements Metadatable{
 			self::$list[self::BEETROOT_BLOCK] = Beetroot::class;
 			self::$list[self::STONECUTTER] = Stonecutter::class;
 			self::$list[self::GLOWING_OBSIDIAN] = GlowingObsidian::class;
-			self::$list[self::NETHER_REACTOR] = NetherReactor::class;
 
 			foreach(self::$list as $id => $class){
 				if($class !== null){

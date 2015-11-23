@@ -219,12 +219,6 @@ class CraftingManager{
 			"S S"
 		))->setIngredient("S", Item::get(Item::STICK, 0, 7)));
 
-		$this->registerRecipe((new BigShapedRecipe(Item::get(Item::NETHER_REACTOR, 0, 1),
-			"IDI",
-			"IDI",
-			"IDI"
-		))->setIngredient("D", Item::get(Item::DIAMOND, 0, 3))->setIngredient("I", Item::get(Item::IRON_INGOT, 0, 6)));
-
 		$this->registerRecipe((new BigShapedRecipe(Item::get(Item::TRAPDOOR, 0, 2),
 			"PPP",
 			"PPP"
