@@ -23,7 +23,7 @@ namespace pocketmine\inventory;
 
 use pocketmine\level\Level;
 use pocketmine\network\Network;
-use pocketmine\network\protocol\TileEventPacket;
+use pocketmine\network\protocol\BlockEventPacket;
 use pocketmine\Player;
 
 use pocketmine\tile\Chest;
@@ -44,7 +44,7 @@ class ChestInventory extends ContainerInventory{
 		parent::onOpen($who);
 
 		if(count($this->getViewers()) === 1){
-			$pk = new TileEventPacket();
+			$pk = new BlockEventPacket();
 			$pk->x = $this->getHolder()->getX();
 			$pk->y = $this->getHolder()->getY();
 			$pk->z = $this->getHolder()->getZ();
@@ -58,7 +58,7 @@ class ChestInventory extends ContainerInventory{
 
 	public function onClose(Player $who){
 		if(count($this->getViewers()) === 1){
-			$pk = new TileEventPacket();
+			$pk = new BlockEventPacket();
 			$pk->x = $this->getHolder()->getX();
 			$pk->y = $this->getHolder()->getY();
 			$pk->z = $this->getHolder()->getZ();
