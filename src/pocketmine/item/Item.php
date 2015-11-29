@@ -216,7 +216,7 @@ class Item{
 	const ENCHANTING_TABLE = 116;
 	const ENCHANT_TABLE = 116;
 	const ENCHANTMENT_TABLE = 116;
-
+	const BREWING_STAND = 117;
 	const END_PORTAL = 120;
 	const END_STONE = 121;
 
@@ -234,11 +234,12 @@ class Item{
 	const COBBLE_WALL = 139;
 	const STONE_WALL = 139;
 	const COBBLESTONE_WALL = 139;
-
+	const FLOWER_POT_BLOCK = 140;
 	const CARROT_BLOCK = 141;
 	const POTATO_BLOCK = 142;
 
 	const ANVIL = 145;
+	const TRAPPED_CHEST = 146;
 
 	const REDSTONE_BLOCK = 152;
 
@@ -265,11 +266,12 @@ class Item{
 	const DARK_OAK_WOOD_STAIRS = 164;
 	const DARK_OAK_WOODEN_STAIRS = 164;
 
+	const IRON_TRAPDOOR = 167;
 	const HAY_BALE = 170;
 	const CARPET = 171;
 	const HARDENED_CLAY = 172;
 	const COAL_BLOCK = 173;
-
+	const PACKED_ICE = 174;
 	const DOUBLE_PLANT = 175;
 
 	const FENCE_GATE_SPRUCE = 183;
@@ -387,7 +389,7 @@ class Item{
 
 	const EGG = 344;
 	const COMPASS = 345;
-
+	const FISHING_ROD = 346;
 	const CLOCK = 347;
 	const GLOWSTONE_DUST = 348;
 	const RAW_FISH = 349;
@@ -421,6 +423,7 @@ class Item{
 
 	const EMERALD = 388;
 
+	const FLOWER_POT = 390;
 	const CARROT = 391;
 	const CARROTS = 391;
 	const POTATO = 392;
@@ -563,6 +566,7 @@ class Item{
 			self::$list[self::GOLD_NUGGET] = GoldNugget::class;
 			self::$list[self::SPAWN_EGG] = SpawnEgg::class;
 			self::$list[self::EMERALD] = Emerald::class;
+			self::$list[self::FLOWER_POT] = FlowerPot::class;
 			self::$list[self::CARROT] = Carrot::class;
 			self::$list[self::POTATO] = Potato::class;
 			self::$list[self::BAKED_POTATO] = BakedPotato::class;
@@ -673,7 +677,7 @@ class Item{
 		self::addCreativeItem(Item::get(Item::SLAB, 4));
 		self::addCreativeItem(Item::get(Item::SLAB, 5));
 		self::addCreativeItem(Item::get(Item::SLAB, 6));
-		// TODO: Nether brick slab
+		self::addCreativeItem(Item::get(Item::SLAB, 7));
 		self::addCreativeItem(Item::get(Item::QUARTZ_BLOCK, 0));
 		self::addCreativeItem(Item::get(Item::QUARTZ_BLOCK, 1));
 		self::addCreativeItem(Item::get(Item::QUARTZ_BLOCK, 2));
@@ -686,7 +690,7 @@ class Item{
 		self::addCreativeItem(Item::get(Item::EMERALD_ORE, 0));
 		self::addCreativeItem(Item::get(Item::OBSIDIAN, 0));
 		self::addCreativeItem(Item::get(Item::ICE, 0));
-		// TODO: Packed ice
+		self::addCreativeItem(Item::get(Item::PACKED_ICE, 0));
 		self::addCreativeItem(Item::get(Item::SNOW_BLOCK, 0));
 		self::addCreativeItem(Item::get(Item::END_STONE, 0));
 
@@ -714,9 +718,9 @@ class Item{
 		self::addCreativeItem(Item::get(Item::WOODEN_DOOR, 3)); // Jungle
 		self::addCreativeItem(Item::get(Item::WOODEN_DOOR, 4)); // Acacia
 		self::addCreativeItem(Item::get(Item::WOODEN_DOOR, 5)); // Dark oak
-		// TODO: Iron door
+		self::addCreativeItem(Item::get(Item::IRON_DOOR, 0));
 		self::addCreativeItem(Item::get(Item::TRAPDOOR, 0));
-		// TODO: Iron trapdoor
+		self::addCreativeItem(Item::get(Item::IRON_TRAPDOOR, 0));
 		self::addCreativeItem(Item::get(Item::FENCE, Fence::FENCE_OAK));
 		self::addCreativeItem(Item::get(Item::FENCE, Fence::FENCE_SPRUCE));
 		self::addCreativeItem(Item::get(Item::FENCE, Fence::FENCE_BIRCH));
@@ -737,9 +741,9 @@ class Item{
 		self::addCreativeItem(Item::get(Item::WORKBENCH, 0));
 		self::addCreativeItem(Item::get(Item::STONECUTTER, 0));
 		self::addCreativeItem(Item::get(Item::CHEST, 0));
-		// TODO: Trapped chest
+		self::addCreativeItem(Item::get(Item::TRAPPED_CHEST, 0));
 		self::addCreativeItem(Item::get(Item::FURNACE, 0));
-		// TODO: Brewing stand
+		self::addCreativeItem(Item::get(Item::BREWING_STAND, 0));
 		// TODO: Note Block
 		self::addCreativeItem(Item::get(Item::END_PORTAL, 0));
 		self::addCreativeItem(Item::get(Item::ANVIL, 0));
@@ -795,7 +799,7 @@ class Item{
 		// TODO: Head
 		// TODO: Creeper head
 		self::addCreativeItem(Item::get(Item::SIGN, 0));
-		// TODO: flower pot
+		self::addCreativeItem(Item::get(Item::FLOWER_POT, 0));
 		self::addCreativeItem(Item::get(Item::MONSTER_SPAWNER, 0));
 		self::addCreativeItem(Item::get(Item::ENCHANTMENT_TABLE, 0));
 		self::addCreativeItem(Item::get(Item::WOOL, 0));
@@ -844,7 +848,7 @@ class Item{
 		self::addCreativeItem(Item::get(Item::TNT, 0));
 		self::addCreativeItem(Item::get(Item::REDSTONE, 0));
 		self::addCreativeItem(Item::get(Item::BOW, 0));
-		// TODO: fishing rod
+		self::addCreativeItem(Item::get(Item::FISHING_ROD, 0));
 		self::addCreativeItem(Item::get(Item::FLINT_AND_STEEL, 0));
 		self::addCreativeItem(Item::get(Item::SHEARS, 0));
 		self::addCreativeItem(Item::get(Item::CLOCK, 0));
