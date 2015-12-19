@@ -67,7 +67,7 @@ class Flat extends Generator{
 			$ores = new Ore();
 			$ores->setOreTypes([
 				new object\OreType(new CoalOre(), 20, 16, 0, 128),
-				new object\OreType(New IronOre(), 20, 8, 0, 64),
+				new object\OreType(new IronOre(), 20, 8, 0, 64),
 				new object\OreType(new RedstoneOre(), 8, 7, 0, 16),
 				new object\OreType(new LapisOre(), 1, 6, 0, 32),
 				new object\OreType(new GoldOre(), 2, 8, 0, 32),
