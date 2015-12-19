@@ -33,6 +33,7 @@ use pocketmine\nbt\tag\Long;
 use pocketmine\nbt\tag\String;
 use pocketmine\tile\Spawnable;
 use pocketmine\utils\Binary;
+use pocketmine\utils\BinaryStream;
 use pocketmine\utils\ChunkException;
 use pocketmine\utils\LevelException;
 
@@ -40,6 +41,7 @@ class LevelDB extends BaseLevelProvider{
 
 	const ENTRY_VERSION = "v";
 	const ENTRY_FLAGS = "f";
+	const ENTRY_EXTRA_DATA = "4";
 	const ENTRY_TICKS = "3";
 	const ENTRY_ENTITIES = "2";
 	const ENTRY_TILES = "1";
@@ -156,12 +158,20 @@ class LevelDB extends BaseLevelProvider{
 		$heightmap = pack("C*", ...$chunk->getHeightMapArray());
 		$biomeColors = pack("N*", ...$chunk->getBiomeColorArray());
 
+		$extraData = new BinaryStream();
+		$extraData->putLInt(count($chunk->getBlockExtraDataArray()));
+		foreach($chunk->getBlockExtraDataArray() as $key => $value){
+			$extraData->putLInt($key);
+			$extraData->putLShort($value);
+		}
+
 		$ordered = $chunk->getBlockIdArray() .
 			$chunk->getBlockDataArray() .
 			$chunk->getBlockSkyLightArray() .
 			$chunk->getBlockLightArray() .
 			$heightmap .
 			$biomeColors .
+			$extraData->getBuffer() .
 			$tiles;
 
 		$this->getLevel()->chunkRequestCallback($x, $z, $ordered);

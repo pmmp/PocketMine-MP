@@ -19,31 +19,12 @@
  *
 */
 
-namespace pocketmine\network\protocol;
+namespace pocketmine\item;
 
-#include <rules/DataPacket.h>
-
-
-class TileEventPacket extends DataPacket{
-	const NETWORK_ID = Info::TILE_EVENT_PACKET;
-
-	public $x;
-	public $y;
-	public $z;
-	public $case1;
-	public $case2;
-
-	public function decode(){
-
-	}
-
-	public function encode(){
-		$this->reset();
-		$this->putInt($this->x);
-		$this->putInt($this->y);
-		$this->putInt($this->z);
-		$this->putInt($this->case1);
-		$this->putInt($this->case2);
+class Minecart extends Item{
+	public function __construct($meta = 0, $count = 1){
+		parent::__construct(self::MINECART, $meta, $count, "Minecart");
 	}
 
 }
+

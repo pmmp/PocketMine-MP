@@ -88,7 +88,7 @@ class SignPost extends Transparent{
 	}
 
 	public function onBreak(Item $item){
-		$this->getLevel()->setBlock($this, new Air(), true, true, true);
+		$this->getLevel()->setBlock($this, new Air(), true, true);
 
 		return true;
 	}

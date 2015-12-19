@@ -25,6 +25,8 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
 use pocketmine\item\Item;
+use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\Compound;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
@@ -57,6 +59,23 @@ class GiveCommand extends VanillaCommand{
 			$item->setCount($item->getMaxStackSize());
 		}else{
 			$item->setCount((int) $args[2]);
+		}
+
+		if(isset($args[3])){
+			$tags = $exception = null;
+			$data = implode(" ", array_slice($args, 3));
+			try{
+				$tags = NBT::parseJSON($data);
+			}catch (\Exception $ex){
+				$exception = $ex;
+			}
+
+			if(!($tags instanceof Compound) or $exception !== null){
+				$sender->sendMessage(new TranslationContainer("commands.give.tagError", [$exception !== null ? $exception->getMessage() : "Invalid tag conversion"]));
+				return true;
+			}
+
+			$item->setNamedTag($tags);
 		}
 
 		if($player instanceof Player){

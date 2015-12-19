@@ -25,6 +25,7 @@ use pocketmine\network\protocol\Info;
 use pocketmine\Server;
 use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
+use pocketmine\utils\UUID;
 
 class SendUsageTask extends AsyncTask{
 
@@ -39,9 +40,9 @@ class SendUsageTask extends AsyncTask{
 		$endpoint = "http://" . $server->getProperty("anonymous-statistics.host", "stats.pocketmine.net") . "/";
 
 		$data = [];
-		$data["uniqueServerId"] = $server->getServerUniqueId();
-		$data["uniqueMachineId"] = Utils::getMachineUniqueId();
-		$data["uniqueRequestId"] = Utils::dataToUUID($server->getServerUniqueId(), microtime(true));
+		$data["uniqueServerId"] = $server->getServerUniqueId()->toString();
+		$data["uniqueMachineId"] = Utils::getMachineUniqueId()->toString();
+		$data["uniqueRequestId"] = UUID::fromData($server->getServerUniqueId(), microtime(true))->toString();
 
 		switch($type){
 			case self::TYPE_OPEN:
@@ -101,13 +102,13 @@ class SendUsageTask extends AsyncTask{
 
 				//This anonymizes the user ids so they cannot be reversed to the original
 				foreach($playerList as $k => $v){
-					$playerList[$k] = Utils::dataToUUID($v);
+					$playerList[$k] = md5($v);
 				}
 
 				$players = [];
 				foreach($server->getOnlinePlayers() as $p){
 					if($p->isOnline()){
-						$players[] = Utils::dataToUUID($p->getUniqueId());
+						$players[] = md5($p->getUniqueId()->toBinary());
 					}
 				}
 

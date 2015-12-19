@@ -34,6 +34,7 @@ use pocketmine\nbt\tag\IntArray;
 use pocketmine\nbt\tag\Long;
 use pocketmine\Player;
 use pocketmine\utils\Binary;
+use pocketmine\utils\BinaryStream;
 
 class Chunk extends BaseChunk{
 
@@ -92,14 +93,27 @@ class Chunk extends BaseChunk{
 			}
 		}
 
-		parent::__construct($level, (int) $this->nbt["xPos"], (int) $this->nbt["zPos"], $sections, $this->nbt->BiomeColors->getValue(), $this->nbt->HeightMap->getValue(), $this->nbt->Entities->getValue(), $this->nbt->TileEntities->getValue());
+		$extraData = [];
+
+		if(!isset($this->nbt->ExtraData) or !($this->nbt->ExtraData instanceof ByteArray)){
+			$this->nbt->ExtraData = new ByteArray("ExtraData", Binary::writeInt(0));
+		}else{
+			$stream = new BinaryStream($this->nbt->ExtraData->getValue());
+			$count = $stream->getInt();
+			for($i = 0; $i < $count; ++$i){
+				$key = $stream->getInt();
+				$extraData[$key] = $stream->getShort(false);
+			}
+		}
+
+		parent::__construct($level, (int) $this->nbt["xPos"], (int) $this->nbt["zPos"], $sections, $this->nbt->BiomeColors->getValue(), $this->nbt->HeightMap->getValue(), $this->nbt->Entities->getValue(), $this->nbt->TileEntities->getValue(), $extraData);
 
 		if(isset($this->nbt->Biomes)){
 			$this->checkOldBiomes($this->nbt->Biomes->getValue());
 			unset($this->nbt->Biomes);
 		}
 
-		unset($this->nbt->Sections);
+		unset($this->nbt->Sections, $this->nbt->ExtraData);
 	}
 
 	public function isLightPopulated(){
@@ -240,6 +254,16 @@ class Chunk extends BaseChunk{
 
 		$nbt->TileEntities = new Enum("TileEntities", $tiles);
 		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
+
+		$extraData = new BinaryStream();
+		$extraData->putInt(count($this->getBlockExtraDataArray()));
+		foreach($this->getBlockExtraDataArray() as $key => $value){
+			$extraData->putInt($key);
+			$extraData->putShort($value);
+		}
+
+		$nbt->ExtraData = new ByteArray("ExtraData", $extraData->getBuffer());
+
 		$writer = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setName("Level");
 		$writer->setData(new Compound("", ["Level" => $nbt]));
@@ -293,6 +317,16 @@ class Chunk extends BaseChunk{
 
 		$nbt->TileEntities = new Enum("TileEntities", $tiles);
 		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
+
+		$extraData = new BinaryStream();
+		$extraData->putInt(count($this->getBlockExtraDataArray()));
+		foreach($this->getBlockExtraDataArray() as $key => $value){
+			$extraData->putInt($key);
+			$extraData->putShort($value);
+		}
+
+		$nbt->ExtraData = new ByteArray("ExtraData", $extraData->getBuffer());
+
 		$writer = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setName("Level");
 		$writer->setData(new Compound("", ["Level" => $nbt]));

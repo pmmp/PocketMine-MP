@@ -22,13 +22,14 @@
 namespace pocketmine\entity;
 
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\entity\EntityRegainHealthEvent;
+
 use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\item\Item as ItemItem;
-use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\Byte;
-use pocketmine\nbt\tag\Compound;
+
+use pocketmine\nbt\NBT;
+
+
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\Network;
@@ -69,7 +70,11 @@ class Item extends Entity{
 		if(isset($this->namedtag->Thrower)){
 			$this->thrower = $this->namedtag["Thrower"];
 		}
-		$this->item = ItemItem::get($this->namedtag->Item["id"], $this->namedtag->Item["Damage"], $this->namedtag->Item["Count"]);
+		if(!isset($this->namedtag->Item)){
+			$this->close();
+			return;
+		}
+		$this->item = NBT::getItemHelper($this->namedtag->Item);
 
 
 		$this->server->getPluginManager()->callEvent(new ItemSpawnEvent($this));
@@ -154,11 +159,7 @@ class Item extends Entity{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Item = new Compound("Item", [
-			"id" => new Short("id", $this->item->getId()),
-			"Damage" => new Short("Damage", $this->item->getDamage()),
-			"Count" => new Byte("Count", $this->item->getCount())
-		]);
+		$this->namedtag->Item = NBT::putItemHelper($this->item);
 		$this->namedtag->Health = new Short("Health", $this->getHealth());
 		$this->namedtag->Age = new Short("Age", $this->age);
 		$this->namedtag->PickupDelay = new Short("PickupDelay", $this->pickupDelay);
@@ -233,7 +234,7 @@ class Item extends Entity{
 		$pk->speedY = $this->motionY;
 		$pk->speedZ = $this->motionZ;
 		$pk->item = $this->getItem();
-		$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+		$player->dataPacket($pk);
 
 		$this->sendData($player);
 

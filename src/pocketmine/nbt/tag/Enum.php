@@ -31,7 +31,7 @@ class Enum extends NamedTag implements \ArrayAccess, \Countable{
 	private $tagType;
 
 	public function __construct($name = "", $value = []){
-		$this->name = $name;
+		$this->__name = $name;
 		foreach($value as $k => $v){
 			$this->{$k} = $v;
 		}
@@ -46,6 +46,17 @@ class Enum extends NamedTag implements \ArrayAccess, \Countable{
 		}
 
 		return $value;
+	}
+
+	public function getCount(){
+		$count = 0;
+		foreach($this as $tag){
+			if($tag instanceof Tag){
+				++$count;
+			}
+		}
+
+		return $count;
 	}
 
 	public function offsetExists($offset){

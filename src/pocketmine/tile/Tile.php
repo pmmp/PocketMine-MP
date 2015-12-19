@@ -21,7 +21,6 @@
 
 /**
  * All the Tile classes and related classes
- * TODO: Add Nether Reactor tile
  */
 namespace pocketmine\tile;
 
@@ -39,6 +38,11 @@ abstract class Tile extends Position{
 	const SIGN = "Sign";
 	const CHEST = "Chest";
 	const FURNACE = "Furnace";
+	const FLOWER_POT = "FlowerPot";
+	const MOB_SPAWNER = "MobSpawner";
+	const SKULL = "Skull";
+	const BREWING_STAND = "Cauldron";
+	const ENCHANT_TABLE = "EnchantTable";
 
 	public static $tileCount = 1;
 

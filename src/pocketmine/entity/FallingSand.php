@@ -23,11 +23,11 @@ namespace pocketmine\entity;
 
 
 use pocketmine\block\Block;
-use pocketmine\block\Flowable;
+
 use pocketmine\block\Liquid;
 use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\entity\EntityRegainHealthEvent;
+
 use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Byte;
@@ -170,7 +170,7 @@ class FallingSand extends Entity{
 		$pk->yaw = $this->yaw;
 		$pk->pitch = $this->pitch;
 		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+		$player->dataPacket($pk);
 
 		parent::spawnTo($player);
 	}

@@ -45,7 +45,7 @@ class Netherrack extends Solid{
 	}
 
 	public function getDrops(Item $item){
-		if($item->isPickaxe() >= 1){
+		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
 				[Item::NETHERRACK, 0, 1],
 			];

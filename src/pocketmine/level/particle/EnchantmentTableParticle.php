@@ -19,8 +19,12 @@
  *
 */
 
-namespace pocketmine\inventory;
+namespace pocketmine\level\particle;
 
-class StonecutterShapelessRecipe extends ShapelessRecipe{
+use pocketmine\math\Vector3;
 
+class EnchantmentTableParticle extends GenericParticle{
+	public function __construct(Vector3 $pos){
+		parent::__construct($pos, Particle::TYPE_ENCHANTMENT_TABLE);
+	}
 }

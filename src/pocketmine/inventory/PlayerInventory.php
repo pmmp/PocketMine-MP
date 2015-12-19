@@ -29,8 +29,8 @@ use pocketmine\item\Item;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\ContainerSetContentPacket;
 use pocketmine\network\protocol\ContainerSetSlotPacket;
-use pocketmine\network\protocol\PlayerArmorEquipmentPacket;
-use pocketmine\network\protocol\PlayerEquipmentPacket;
+use pocketmine\network\protocol\MobArmorEquipmentPacket;
+use pocketmine\network\protocol\MobEquipmentPacket;
 use pocketmine\Player;
 use pocketmine\Server;
 
@@ -126,20 +126,19 @@ class PlayerInventory extends BaseInventory{
 	public function sendHeldItem($target){
 		$item = $this->getItemInHand();
 
-		$pk = new PlayerEquipmentPacket();
+		$pk = new MobEquipmentPacket();
 		$pk->eid = ($target === $this->getHolder() ? 0 : $this->getHolder()->getId());
-		$pk->item = $item->getId();
-		$pk->meta = $item->getDamage();
+		$pk->item = $item;
 		$pk->slot = $this->getHeldItemSlot();
 		$pk->selectedSlot = $this->getHeldItemIndex();
 
 		if(!is_array($target)){
-			$target->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+			$target->dataPacket($pk);
 			if($target === $this->getHolder()){
 				$this->sendSlot($this->getHeldItemSlot(), $target);
 			}
 		}else{
-			Server::broadcastPacket($target, $pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+			Server::broadcastPacket($target, $pk);
 			foreach($target as $player){
 				if($player === $this->getHolder()){
 					$this->sendSlot($this->getHeldItemSlot(), $player);
@@ -304,22 +303,14 @@ class PlayerInventory extends BaseInventory{
 		if($target instanceof Player){
 			$target = [$target];
 		}
+
 		$armor = $this->getArmorContents();
-		$slots = [];
 
-		foreach($armor as $i => $slot){
-			if($slot->getId() === Item::AIR){
-				$slots[$i] = 255;
-			}else{
-				$slots[$i] = $slot->getId();
-			}
-		}
-
-		$pk = new PlayerArmorEquipmentPacket();
+		$pk = new MobArmorEquipmentPacket();
 		$pk->eid = $this->getHolder()->getId();
-		$pk->slots = $slots;
+		$pk->slots = $armor;
 		$pk->encode();
-		$pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING);
+		$pk;
 		$pk->isEncoded = true;
 
 		foreach($target as $player){
@@ -362,19 +353,10 @@ class PlayerInventory extends BaseInventory{
 		}
 
 		$armor = $this->getArmorContents();
-		$slots = [];
 
-		foreach($armor as $i => $slot){
-			if($slot->getId() === Item::AIR){
-				$slots[$i] = 255;
-			}else{
-				$slots[$i] = $slot->getId();
-			}
-		}
-
-		$pk = new PlayerArmorEquipmentPacket();
+		$pk = new MobArmorEquipmentPacket();
 		$pk->eid = $this->getHolder()->getId();
-		$pk->slots = $slots;
+		$pk->slots = $armor;
 		$pk->encode();
 		$pk->isEncoded = true;
 
@@ -387,7 +369,7 @@ class PlayerInventory extends BaseInventory{
 				$pk2->item = $this->getItem($index);
 				$player->dataPacket($pk2);
 			}else{
-				$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+				$player->dataPacket($pk);
 			}
 		}
 	}
@@ -401,10 +383,17 @@ class PlayerInventory extends BaseInventory{
 		}
 
 		$pk = new ContainerSetContentPacket();
-		$pk->setChannel(Network::CHANNEL_WORLD_EVENTS);
 		$pk->slots = [];
-		for($i = 0; $i < $this->getSize(); ++$i){ //Do not send armor by error here
-			$pk->slots[$i] = $this->getItem($i);
+		$holder = $this->getHolder();
+		if($holder instanceof Player and $holder->isCreative()){
+			//TODO: Remove this workaround because of broken client
+			foreach(Item::getCreativeItems() as $i => $item){
+				$pk->slots[$i] = Item::getCreativeItem($i);
+			}
+		}else{
+			for($i = 0; $i < $this->getSize(); ++$i){ //Do not send armor by error here
+				$pk->slots[$i] = $this->getItem($i);
+			}
 		}
 
 		foreach($target as $player){
@@ -434,7 +423,6 @@ class PlayerInventory extends BaseInventory{
 		}
 
 		$pk = new ContainerSetSlotPacket();
-		$pk->setChannel(Network::CHANNEL_WORLD_EVENTS);
 		$pk->slot = $index;
 		$pk->item = clone $this->getItem($index);
 

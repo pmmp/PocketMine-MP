@@ -72,11 +72,11 @@ namespace pocketmine {
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\Installer;
 
-	const VERSION = "1.5dev";
-	const API_VERSION = "1.12.0";
-	const CODENAME = "活発(Kappatsu)フグ(Fugu)";
-	const MINECRAFT_VERSION = "v0.11.0 alpha";
-	const MINECRAFT_VERSION_NETWORK = "0.11.0";
+	const VERSION = "1.6dev";
+	const API_VERSION = "1.13.1";
+	const CODENAME = "[REDACTED]";
+	const MINECRAFT_VERSION = "v0.13.1 alpha";
+	const MINECRAFT_VERSION_NETWORK = "0.13.1";
 
 	/*
 	 * Startup code. Do not look at it, it may harm you.
@@ -355,10 +355,10 @@ namespace pocketmine {
 					$args = $trace[$i]["params"];
 				}
 				foreach($args as $name => $value){
-					$params .= (is_object($value) ? get_class($value) . " " . (method_exists($value, "__toString") ? $value->__toString() : "object") : gettype($value) . " " . (is_array($value) ? "Array()" : @strval($value))) . ", ";
+					$params .= (is_object($value) ? get_class($value) . " " . (method_exists($value, "__toString") ? $value->__toString() : "object") : gettype($value) . " " . (is_array($value) ? "Array()" : Utils::printable(@strval($value)))) . ", ";
 				}
 			}
-			$messages[] = "#$j " . (isset($trace[$i]["file"]) ? cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" or $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . substr($params, 0, -2) . ")";
+			$messages[] = "#$j " . (isset($trace[$i]["file"]) ? cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" or $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable(substr($params, 0, -2)) . ")";
 		}
 
 		return $messages;

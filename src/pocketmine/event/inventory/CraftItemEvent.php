@@ -23,31 +23,42 @@ namespace pocketmine\event\inventory;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
-use pocketmine\inventory\CraftingTransactionGroup;
 use pocketmine\inventory\Recipe;
+use pocketmine\item\Item;
+use pocketmine\Player;
 
 class CraftItemEvent extends Event implements Cancellable{
 	public static $handlerList = null;
 
-	/** @var CraftingTransactionGroup */
-	private $ts;
+	/** @var Item[] */
+	private $input = [];
 	/** @var Recipe */
 	private $recipe;
+	/** @var \pocketmine\Player */
+	private $player;
+
 
 	/**
-	 * @param CraftingTransactionGroup $ts
-	 * @param Recipe                   $recipe
+	 * @param \pocketmine\Player $player
+	 * @param Item[] $input
+	 * @param Recipe $recipe
 	 */
-	public function __construct(CraftingTransactionGroup $ts, Recipe $recipe){
-		$this->ts = $ts;
+	public function __construct(Player $player, array $input, Recipe $recipe){
+		$this->player = $player;
+		$this->input = $input;
 		$this->recipe = $recipe;
 	}
 
 	/**
-	 * @return CraftingTransactionGroup
+	 * @return Item[]
 	 */
-	public function getTransaction(){
-		return $this->ts;
+	public function getInput(){
+		$items = [];
+		foreach($items as $i => $item){
+			$items[$i] = clone $item;
+		}
+
+		return $items;
 	}
 
 	/**
@@ -57,4 +68,10 @@ class CraftItemEvent extends Event implements Cancellable{
 		return $this->recipe;
 	}
 
+	/**
+	 * @return \pocktemine\Player
+	 */
+	public function getPlayer(){
+		return $this->player;
+	}
 }

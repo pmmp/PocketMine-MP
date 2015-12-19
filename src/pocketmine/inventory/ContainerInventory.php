@@ -43,7 +43,7 @@ abstract class ContainerInventory extends BaseInventory{
 			$pk->x = $pk->y = $pk->z = 0;
 		}
 
-		$who->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+		$who->dataPacket($pk);
 
 		$this->sendContents($who);
 	}
@@ -51,7 +51,7 @@ abstract class ContainerInventory extends BaseInventory{
 	public function onClose(Player $who){
 		$pk = new ContainerClosePacket();
 		$pk->windowid = $who->getWindowId($this);
-		$who->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+		$who->dataPacket($pk);
 		parent::onClose($who);
 	}
 }

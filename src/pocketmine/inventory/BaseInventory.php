@@ -160,8 +160,9 @@ abstract class BaseInventory implements Inventory{
 	public function contains(Item $item){
 		$count = max(1, $item->getCount());
 		$checkDamage = $item->getDamage() === null ? false : true;
+		$checkTags = $item->getCompoundTag() === null ? false : true;
 		foreach($this->getContents() as $i){
-			if($item->equals($i, $checkDamage)){
+			if($item->equals($i, $checkDamage, $checkTags)){
 				$count -= $i->getCount();
 				if($count <= 0){
 					return true;
@@ -175,8 +176,9 @@ abstract class BaseInventory implements Inventory{
 	public function all(Item $item){
 		$slots = [];
 		$checkDamage = $item->getDamage() === null ? false : true;
+		$checkTags = $item->getCompoundTag() === null ? false : true;
 		foreach($this->getContents() as $index => $i){
-			if($item->equals($i, $checkDamage)){
+			if($item->equals($i, $checkDamage, $checkTags)){
 				$slots[$index] = $i;
 			}
 		}
@@ -186,8 +188,10 @@ abstract class BaseInventory implements Inventory{
 
 	public function remove(Item $item){
 		$checkDamage = $item->getDamage() === null ? false : true;
+		$checkTags = $item->getCompoundTag() === null ? false : true;
+
 		foreach($this->getContents() as $index => $i){
-			if($item->equals($i, $checkDamage)){
+			if($item->equals($i, $checkDamage, $checkTags)){
 				$this->clear($index);
 			}
 		}
@@ -196,8 +200,10 @@ abstract class BaseInventory implements Inventory{
 	public function first(Item $item){
 		$count = max(1, $item->getCount());
 		$checkDamage = $item->getDamage() === null ? false : true;
+		$checkTags = $item->getCompoundTag() === null ? false : true;
+
 		foreach($this->getContents() as $index => $i){
-			if($item->equals($i, $checkDamage) and $i->getCount() >= $count){
+			if($item->equals($i, $checkDamage, $checkTags) and $i->getCount() >= $count){
 				return $index;
 			}
 		}
@@ -218,9 +224,10 @@ abstract class BaseInventory implements Inventory{
 	public function canAddItem(Item $item){
 		$item = clone $item;
 		$checkDamage = $item->getDamage() === null ? false : true;
+		$checkTags = $item->getCompoundTag() === null ? false : true;
 		for($i = 0; $i < $this->getSize(); ++$i){
 			$slot = $this->getItem($i);
-			if($item->equals($slot, $checkDamage)){
+			if($item->equals($slot, $checkDamage, $checkTags)){
 				if(($diff = $slot->getMaxStackSize() - $slot->getCount()) > 0){
 					$item->setCount($item->getCount() - $diff);
 				}
@@ -258,7 +265,7 @@ abstract class BaseInventory implements Inventory{
 			}
 
 			foreach($itemSlots as $index => $slot){
-				if($slot->equals($item, true) and $item->getCount() < $item->getMaxStackSize()){
+				if($slot->equals($item) and $item->getCount() < $item->getMaxStackSize()){
 					$amount = min($item->getMaxStackSize() - $item->getCount(), $slot->getCount(), $this->getMaxStackSize());
 					if($amount > 0){
 						$slot->setCount($slot->getCount() - $amount);
@@ -316,7 +323,7 @@ abstract class BaseInventory implements Inventory{
 			}
 
 			foreach($itemSlots as $index => $slot){
-				if($slot->equals($item, $slot->getDamage() === null ? false : true)){
+				if($slot->equals($item, $slot->getDamage() === null ? false : true, $slot->getCompoundTag() === null ? false : true)){
 					$amount = min($item->getCount(), $slot->getCount());
 					$slot->setCount($slot->getCount() - $amount);
 					$item->setCount($item->getCount() - $amount);
@@ -428,7 +435,7 @@ abstract class BaseInventory implements Inventory{
 				continue;
 			}
 			$pk->windowid = $id;
-			$player->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+			$player->dataPacket($pk);
 		}
 	}
 
@@ -451,7 +458,7 @@ abstract class BaseInventory implements Inventory{
 				continue;
 			}
 			$pk->windowid = $id;
-			$player->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+			$player->dataPacket($pk);
 		}
 	}
 

@@ -57,7 +57,7 @@ use pocketmine\network\Network;
 use pocketmine\network\protocol\MobEffectPacket;
 use pocketmine\network\protocol\RemoveEntityPacket;
 use pocketmine\network\protocol\SetEntityDataPacket;
-use pocketmine\network\protocol\SetTimePacket;
+
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
@@ -92,6 +92,7 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_FLAG_ONFIRE = 0;
 	const DATA_FLAG_SNEAKING = 1;
 	const DATA_FLAG_RIDING = 2;
+	const DATA_FLAG_SPRINTING = 3;
 	const DATA_FLAG_ACTION = 4;
 	const DATA_FLAG_INVISIBLE = 5;
 
@@ -302,6 +303,22 @@ abstract class Entity extends Location implements Metadatable{
 		$this->setDataProperty(self::DATA_SHOW_NAMETAG, self::DATA_TYPE_BYTE, $value ? 1 : 0);
 	}
 
+	public function isSneaking(){
+		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_SNEAKING);
+	}
+
+	public function setSneaking($value = true){
+		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_SNEAKING, (bool) $value);
+	}
+
+	public function isSprinting(){
+		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_SPRINTING);
+	}
+
+	public function setSprinting($value = true){
+		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_SPRINTING, (bool) $value);
+	}
+
 	/**
 	 * @return Effect[]
 	 */
@@ -433,8 +450,13 @@ abstract class Entity extends Location implements Metadatable{
 	public function saveNBT(){
 		if(!($this instanceof Player)){
 			$this->namedtag->id = new String("id", $this->getSaveId());
-			$this->namedtag->CustomName = new String("CustomName", $this->getNameTag());
-			$this->namedtag->CustomNameVisible = new String("CustomNameVisible", $this->isNameTagVisible());
+			if($this->getNameTag() !== ""){
+				$this->namedtag->CustomName = new String("CustomName", $this->getNameTag());
+				$this->namedtag->CustomNameVisible = new String("CustomNameVisible", $this->isNameTagVisible());
+			}else{
+				unset($this->namedtag->CustomName);
+				unset($this->namedtag->CustomNameVisible);
+			}
 		}
 
 		$this->namedtag->Pos = new Enum("Pos", [
@@ -495,7 +517,9 @@ abstract class Entity extends Location implements Metadatable{
 
 		if(isset($this->namedtag->CustomName)){
 			$this->setNameTag($this->namedtag["CustomName"]);
-			$this->setNameTagVisible($this->namedtag["CustomNameVisible"] > 0);
+			if(isset($this->namedtag->CustomNameVisible)){
+				$this->setNameTagVisible($this->namedtag["CustomNameVisible"] > 0);
+			}
 		}
 
 		$this->scheduleUpdate();
@@ -527,7 +551,7 @@ abstract class Entity extends Location implements Metadatable{
 			$pk->duration = $effect->getDuration();
 			$pk->eventId = MobEffectPacket::EVENT_ADD;
 
-			$player->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+			$player->dataPacket($pk);
 		}
 	}
 
@@ -548,9 +572,9 @@ abstract class Entity extends Location implements Metadatable{
 		$pk->metadata = $data === null ? $this->dataProperties : $data;
 
 		if(!is_array($player)){
-			$player->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+			$player->dataPacket($pk);
 		}else{
-			Server::broadcastPacket($player, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+			Server::broadcastPacket($player, $pk);
 		}
 	}
 
@@ -561,7 +585,7 @@ abstract class Entity extends Location implements Metadatable{
 		if(isset($this->hasSpawned[$player->getLoaderId()])){
 			$pk = new RemoveEntityPacket();
 			$pk->eid = $this->getId();
-			$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+			$player->dataPacket($pk);
 			unset($this->hasSpawned[$player->getLoaderId()]);
 		}
 	}
@@ -1456,7 +1480,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function spawnToAll(){
-		if($this->chunk === null){
+		if($this->chunk === null or $this->closed){
 			return;
 		}
 		foreach($this->level->getChunkPlayers($this->chunk->getX(), $this->chunk->getZ()) as $player){

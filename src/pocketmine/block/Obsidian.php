@@ -45,7 +45,7 @@ class Obsidian extends Solid{
 	}
 
 	public function getDrops(Item $item){
-		if($item->isPickaxe() >= 5){
+		if($item->isPickaxe() >= Tool::TIER_DIAMOND){
 			return [
 				[Item::OBSIDIAN, 0, 1],
 			];

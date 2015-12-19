@@ -30,14 +30,15 @@ use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\level\format\FullChunk;
 use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\Byte;
+
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Short;
+use pocketmine\nbt\tag\String;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\ContainerSetDataPacket;
 
-class Furnace extends Tile implements InventoryHolder, Container{
+class Furnace extends Tile implements InventoryHolder, Container, Nameable{
 	/** @var FurnaceInventory */
 	protected $inventory;
 
@@ -67,6 +68,23 @@ class Furnace extends Tile implements InventoryHolder, Container{
 		if($this->namedtag["BurnTime"] > 0){
 			$this->scheduleUpdate();
 		}
+	}
+
+	public function getName(){
+		return isset($this->namedtag->CustomName) ? $this->namedtag->CustomName->getValue() : "Furnace";
+	}
+
+	public function hasName(){
+		return isset($this->namedtag->CustomName);
+	}
+
+	public function setName($str){
+		if($str === ""){
+			unset($this->namedtag->CustomName);
+			return;
+		}
+
+		$this->namedtag->CustomName = new String("CustomName", $str);
 	}
 
 	public function close(){
@@ -120,7 +138,7 @@ class Furnace extends Tile implements InventoryHolder, Container{
 		if($i < 0){
 			return Item::get(Item::AIR, 0, 0);
 		}else{
-			return Item::get($this->namedtag->Items[$i]["id"], $this->namedtag->Items[$i]["Damage"], $this->namedtag->Items[$i]["Count"]);
+			return NBT::getItemHelper($this->namedtag->Items[$i]);
 		}
 	}
 
@@ -135,12 +153,7 @@ class Furnace extends Tile implements InventoryHolder, Container{
 	public function setItem($index, Item $item){
 		$i = $this->getSlotIndex($index);
 
-		$d = new Compound("", [
-			new Byte("Count", $item->getCount()),
-			new Byte("Slot", $index),
-			new Short("id", $item->getId()),
-			new Short("Damage", $item->getDamage()),
-		]);
+		$d = NBT::putItemHelper($item, $index);
 
 		if($item->getId() === Item::AIR or $item->getCount() <= 0){
 			if($i >= 0){
@@ -203,7 +216,7 @@ class Furnace extends Tile implements InventoryHolder, Container{
 		$raw = $this->inventory->getSmelting();
 		$product = $this->inventory->getResult();
 		$smelt = $this->server->getCraftingManager()->matchFurnaceRecipe($raw);
-		$canSmelt = ($smelt instanceof FurnaceRecipe and $raw->getCount() > 0 and (($smelt->getResult()->equals($product, true) and $product->getCount() < $product->getMaxStackSize()) or $product->getId() === Item::AIR));
+		$canSmelt = ($smelt instanceof FurnaceRecipe and $raw->getCount() > 0 and (($smelt->getResult()->equals($product) and $product->getCount() < $product->getMaxStackSize()) or $product->getId() === Item::AIR));
 
 		if($this->namedtag["BurnTime"] <= 0 and $canSmelt and $fuel->getFuelTime() !== null and $fuel->getCount() > 0){
 			$this->checkFuel($fuel);
@@ -256,13 +269,13 @@ class Furnace extends Tile implements InventoryHolder, Container{
 				$pk->windowid = $windowId;
 				$pk->property = 0; //Smelting
 				$pk->value = floor($this->namedtag["CookTime"]);
-				$player->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+				$player->dataPacket($pk);
 
 				$pk = new ContainerSetDataPacket();
 				$pk->windowid = $windowId;
 				$pk->property = 1; //Fire icon
 				$pk->value = $this->namedtag["BurnTicks"];
-				$player->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+				$player->dataPacket($pk);
 			}
 
 		}

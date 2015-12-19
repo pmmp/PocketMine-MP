@@ -24,9 +24,9 @@ namespace pocketmine\inventory;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\network\Network;
-use pocketmine\network\protocol\TileEventPacket;
+use pocketmine\network\protocol\BlockEventPacket;
 use pocketmine\Player;
-use pocketmine\Server;
+
 use pocketmine\tile\Chest;
 
 class DoubleChestInventory extends ChestInventory implements InventoryHolder{
@@ -99,28 +99,28 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 		parent::onOpen($who);
 
 		if(count($this->getViewers()) === 1){
-			$pk = new TileEventPacket();
+			$pk = new BlockEventPacket();
 			$pk->x = $this->right->getHolder()->getX();
 			$pk->y = $this->right->getHolder()->getY();
 			$pk->z = $this->right->getHolder()->getZ();
 			$pk->case1 = 1;
 			$pk->case2 = 2;
 			if(($level = $this->right->getHolder()->getLevel()) instanceof Level){
-				$level->addChunkPacket($this->right->getHolder()->getX() >> 4, $this->right->getHolder()->getZ() >> 4, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+				$level->addChunkPacket($this->right->getHolder()->getX() >> 4, $this->right->getHolder()->getZ() >> 4, $pk);
 			}
 		}
 	}
 
 	public function onClose(Player $who){
 		if(count($this->getViewers()) === 1){
-			$pk = new TileEventPacket();
+			$pk = new BlockEventPacket();
 			$pk->x = $this->right->getHolder()->getX();
 			$pk->y = $this->right->getHolder()->getY();
 			$pk->z = $this->right->getHolder()->getZ();
 			$pk->case1 = 1;
 			$pk->case2 = 0;
 			if(($level = $this->right->getHolder()->getLevel()) instanceof Level){
-				$level->addChunkPacket($this->right->getHolder()->getX() >> 4, $this->right->getHolder()->getZ() >> 4, $pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+				$level->addChunkPacket($this->right->getHolder()->getX() >> 4, $this->right->getHolder()->getZ() >> 4, $pk);
 			}
 		}
 		parent::onClose($who);

@@ -39,7 +39,7 @@ class SetTimePacket extends DataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putInt((int) (($this->time / Level::TIME_FULL) * 19200));
-		$this->putByte($this->started == true ? 0x80 : 0x00);
+		$this->putByte($this->started ? 1 : 0);
 	}
 
 }

@@ -27,13 +27,11 @@ namespace pocketmine\network\protocol;
 class DropItemPacket extends DataPacket{
 	const NETWORK_ID = Info::DROP_ITEM_PACKET;
 
-	public $eid;
-	public $unknown;
+	public $type;
 	public $item;
 
 	public function decode(){
-		$this->eid = $this->getLong();
-		$this->unknown = $this->getByte();
+		$this->type = $this->getByte();
 		$this->item = $this->getSlot();
 	}
 

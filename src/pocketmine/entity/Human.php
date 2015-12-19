@@ -24,6 +24,7 @@ namespace pocketmine\entity;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\Item as ItemItem;
+use pocketmine\utils\UUID;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
@@ -46,29 +47,48 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	/** @var PlayerInventory */
 	protected $inventory;
 
+
+	/** @var UUID */
+	protected $uuid;
+	protected $rawUUID;
+
 	public $width = 0.6;
 	public $length = 0.6;
 	public $height = 1.8;
 	public $eyeHeight = 1.62;
 
+	protected $skinName;
 	protected $skin;
-	protected $isSlim = false;
 
 	public function getSkinData(){
 		return $this->skin;
 	}
 
-	public function isSkinSlim(){
-		return $this->isSlim;
+	public function getSkinName(){
+		return $this->skinName;
+	}
+
+	/**
+	 * @return UUID|null
+	 */
+	public function getUniqueId(){
+		return $this->uuid;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getRawUniqueId(){
+		return $this->rawUUID;
 	}
 
 	/**
 	 * @param string $str
-	 * @param bool   $isSlim
+	 * @param string $skinName
 	 */
-	public function setSkin($str, $isSlim = false){
+	public function setSkin($str, $skinName){
 		$this->skin = $str;
-		$this->isSlim = (bool) $isSlim;
+		$this->skinName = $skinName;
 	}
 
 	public function getInventory(){
@@ -92,8 +112,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			}
 
 			if(isset($this->namedtag->Skin) and $this->namedtag->Skin instanceof Compound){
-				$this->setSkin($this->namedtag->Skin["Data"], $this->namedtag->Skin["Slim"] > 0);
+				$this->setSkin($this->namedtag->Skin["Data"], $this->namedtag->Skin["Name"]);
 			}
+
+			$this->uuid = UUID::fromData($this->getId(), $this->getSkinData(), $this->getNameTag());
 		}
 
 		if(isset($this->namedtag->Inventory) and $this->namedtag->Inventory instanceof Enum){
@@ -101,9 +123,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				if($item["Slot"] >= 0 and $item["Slot"] < 9){ //Hotbar
 					$this->inventory->setHotbarSlotIndex($item["Slot"], isset($item["TrueSlot"]) ? $item["TrueSlot"] : -1);
 				}elseif($item["Slot"] >= 100 and $item["Slot"] < 104){ //Armor
-					$this->inventory->setItem($this->inventory->getSize() + $item["Slot"] - 100, ItemItem::get($item["id"], $item["Damage"], $item["Count"]));
+					$this->inventory->setItem($this->inventory->getSize() + $item["Slot"] - 100, NBT::getItemHelper($item));
 				}else{
-					$this->inventory->setItem($item["Slot"] - 9, ItemItem::get($item["id"], $item["Damage"], $item["Count"]));
+					$this->inventory->setItem($item["Slot"] - 9, NBT::getItemHelper($item));
 				}
 			}
 		}
@@ -136,16 +158,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				if($hotbarSlot !== -1){
 					$item = $this->inventory->getItem($hotbarSlot);
 					if($item->getId() !== 0 and $item->getCount() > 0){
-						$this->namedtag->Inventory[$slot] = new Compound("", [
-							new Byte("Count", $item->getCount()),
-							new Short("Damage", $item->getDamage()),
-							new Byte("Slot", $slot),
-							new Byte("TrueSlot", $hotbarSlot),
-							new Short("id", $item->getId()),
-						]);
+						$tag = NBT::putItemHelper($item, $slot);
+						$tag->TrueSlot = new Byte("TrueSlot", $hotbarSlot);
+						$this->namedtag->Inventory[$slot] = $tag;
+
 						continue;
 					}
 				}
+
 				$this->namedtag->Inventory[$slot] = new Compound("", [
 					new Byte("Count", 0),
 					new Short("Damage", 0),
@@ -160,24 +180,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			//$slotCount = (($this instanceof Player and ($this->gamemode & 0x01) === 1) ? Player::CREATIVE_SLOTS : Player::SURVIVAL_SLOTS) + 9;
 			for($slot = 9; $slot < $slotCount; ++$slot){
 				$item = $this->inventory->getItem($slot - 9);
-				$this->namedtag->Inventory[$slot] = new Compound("", [
-					new Byte("Count", $item->getCount()),
-					new Short("Damage", $item->getDamage()),
-					new Byte("Slot", $slot),
-					new Short("id", $item->getId()),
-				]);
+				$this->namedtag->Inventory[$slot] = NBT::putItemHelper($item, $slot);
 			}
 
 			//Armor
 			for($slot = 100; $slot < 104; ++$slot){
 				$item = $this->inventory->getItem($this->inventory->getSize() + $slot - 100);
 				if($item instanceof ItemItem and $item->getId() !== ItemItem::AIR){
-					$this->namedtag->Inventory[$slot] = new Compound("", [
-						new Byte("Count", $item->getCount()),
-						new Short("Damage", $item->getDamage()),
-						new Byte("Slot", $slot),
-						new Short("id", $item->getId()),
-					]);
+					$this->namedtag->Inventory[$slot] = NBT::putItemHelper($item, $slot);
 				}
 			}
 		}
@@ -185,7 +195,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if(strlen($this->getSkinData()) > 0){
 			$this->namedtag->Skin = new Compound("Skin", [
 				"Data" => new String("Data", $this->getSkinData()),
-				"Slim" => new Byte("Slim", $this->isSkinSlim() ? 1 : 0)
+				"Name" => new String("Name", $this->getSkinName())
 			]);
 		}
 	}
@@ -198,8 +208,13 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
 			}
 
+
+			if(!($this instanceof Player)){
+				$this->server->updatePlayerListData($this->getUniqueId(), $this->getId(), $this->getName(), $this->skinName, $this->skin, [$player]);
+			}
+
 			$pk = new AddPlayerPacket();
-			$pk->clientID = $this->getId();
+			$pk->uuid = $this->getUniqueId();
 			$pk->username = $this->getName();
 			$pk->eid = $this->getId();
 			$pk->x = $this->x;
@@ -210,24 +225,25 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$pk->speedZ = $this->motionZ;
 			$pk->yaw = $this->yaw;
 			$pk->pitch = $this->pitch;
-			$item = $this->getInventory()->getItemInHand();
-			$pk->item = $item->getId();
-			$pk->meta = $item->getDamage();
-			$pk->skin = $this->skin;
-			$pk->slim = $this->isSlim;
+			$pk->item = $this->getInventory()->getItemInHand();
 			$pk->metadata = $this->dataProperties;
-			$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+			$player->dataPacket($pk);
 
 			$this->inventory->sendArmorContents($player);
+
+			if(!($this instanceof Player)){
+				$this->server->removePlayerListData($this->getUniqueId(), [$player]);
+			}
 		}
 	}
 
 	public function despawnFrom(Player $player){
 		if(isset($this->hasSpawned[$player->getLoaderId()])){
+
 			$pk = new RemovePlayerPacket();
 			$pk->eid = $this->getId();
-			$pk->clientID = $this->getId();
-			$player->dataPacket($pk->setChannel(Network::CHANNEL_ENTITY_SPAWNING));
+			$pk->clientId = $this->getUniqueId();
+			$player->dataPacket($pk);
 			unset($this->hasSpawned[$player->getLoaderId()]);
 		}
 	}

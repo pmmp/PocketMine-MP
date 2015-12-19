@@ -25,19 +25,26 @@ use pocketmine\block\Block;
 use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
 use pocketmine\item\Item;
+use pocketmine\level\particle\AngryVillagerParticle;
 use pocketmine\level\particle\BubbleParticle;
 use pocketmine\level\particle\CriticalParticle;
 use pocketmine\level\particle\DustParticle;
+use pocketmine\level\particle\EnchantmentTableParticle;
 use pocketmine\level\particle\EnchantParticle;
 use pocketmine\level\particle\ExplodeParticle;
 use pocketmine\level\particle\FlameParticle;
+use pocketmine\level\particle\HappyVillagerParticle;
 use pocketmine\level\particle\HeartParticle;
+use pocketmine\level\particle\HugeExplodeParticle;
 use pocketmine\level\particle\InkParticle;
+use pocketmine\level\particle\InstantEnchantParticle;
 use pocketmine\level\particle\ItemBreakParticle;
+use pocketmine\level\particle\LargeExplodeParticle;
 use pocketmine\level\particle\LavaDripParticle;
 use pocketmine\level\particle\LavaParticle;
 use pocketmine\level\particle\Particle;
 use pocketmine\level\particle\PortalParticle;
+use pocketmine\level\particle\RainSplashParticle;
 use pocketmine\level\particle\RedstoneParticle;
 use pocketmine\level\particle\SmokeParticle;
 use pocketmine\level\particle\SplashParticle;
@@ -123,6 +130,10 @@ class ParticleCommand extends VanillaCommand{
 		switch($name){
 			case "explode":
 				return new ExplodeParticle($pos);
+			case "largeexplode":
+				return new LargeExplodeParticle($pos);
+			case "hugeexplosion":
+				return new HugeExplodeParticle($pos);
 			case "bubble":
 				return new BubbleParticle($pos);
 			case "splash":
@@ -136,6 +147,8 @@ class ParticleCommand extends VanillaCommand{
 				return new SmokeParticle($pos, $data !== null ? $data : 0);
 			case "spell":
 				return new EnchantParticle($pos);
+			case "instantspell":
+				return new InstantEnchantParticle($pos);
 			case "dripwater":
 				return new WaterDripParticle($pos);
 			case "driplava":
@@ -153,6 +166,8 @@ class ParticleCommand extends VanillaCommand{
 				return new RedstoneParticle($pos, $data !== null ? $data : 1);
 			case "snowballpoof":
 				return new ItemBreakParticle($pos, Item::get(Item::SNOWBALL));
+			case "slime":
+				return new ItemBreakParticle($pos, Item::get(Item::SLIMEBALL));
 			case "itembreak":
 				if($data !== null and $data !== 0){
 					return new ItemBreakParticle($pos, $data);
@@ -167,6 +182,14 @@ class ParticleCommand extends VanillaCommand{
 				return new HeartParticle($pos, $data !== null ? $data : 0);
 			case "ink":
 				return new InkParticle($pos, $data !== null ? $data : 0);
+			case "droplet":
+				return new RainSplashParticle($pos);
+			case "enchantmenttable":
+				return new EnchantmentTableParticle($pos);
+			case "happyvillager":
+				return new HappyVillagerParticle($pos);
+			case "angryvillager":
+				return new AngryVillagerParticle($pos);
 
 		}
 

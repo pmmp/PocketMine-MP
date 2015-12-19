@@ -26,7 +26,7 @@ use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\MobEffectPacket;
 use pocketmine\Player;
-use pocketmine\Server;
+
 
 class Effect{
 	const SPEED = 1;
@@ -249,7 +249,7 @@ class Effect{
 				$pk->eventId = MobEffectPacket::EVENT_ADD;
 			}
 
-			$entity->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+			$entity->dataPacket($pk);
 		}
 
 		if($this->id === Effect::INVISIBILITY){
@@ -265,7 +265,7 @@ class Effect{
 			$pk->eventId = MobEffectPacket::EVENT_REMOVE;
 			$pk->effectId = $this->getId();
 
-			$entity->dataPacket($pk->setChannel(Network::CHANNEL_WORLD_EVENTS));
+			$entity->dataPacket($pk);
 		}
 
 		if($this->id === Effect::INVISIBILITY){

@@ -19,35 +19,12 @@
  *
 */
 
-namespace pocketmine\network\protocol;
+namespace pocketmine\item;
 
-#include <rules/DataPacket.h>
-
-
-class PlayerEquipmentPacket extends DataPacket{
-	const NETWORK_ID = Info::PLAYER_EQUIPMENT_PACKET;
-
-	public $eid;
-	public $item;
-	public $meta;
-	public $slot;
-	public $selectedSlot;
-
-	public function decode(){
-		$this->eid = $this->getLong();
-		$this->item = $this->getShort();
-		$this->meta = $this->getShort();
-		$this->slot = $this->getByte();
-		$this->selectedSlot = $this->getByte();
-	}
-
-	public function encode(){
-		$this->reset();
-		$this->putLong($this->eid);
-		$this->putShort($this->item);
-		$this->putShort($this->meta);
-		$this->putByte($this->slot);
-		$this->putByte($this->selectedSlot);
+class Clock extends Item{
+	public function __construct($meta = 0, $count = 1){
+		parent::__construct(self::CLOCK, $meta, $count, "Clock");
 	}
 
 }
+

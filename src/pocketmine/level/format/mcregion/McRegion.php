@@ -31,9 +31,9 @@ use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\Long;
 use pocketmine\nbt\tag\String;
-use pocketmine\network\protocol\FullChunkDataPacket;
 use pocketmine\tile\Spawnable;
-use pocketmine\utils\Binary;
+
+use pocketmine\utils\BinaryStream;
 use pocketmine\utils\ChunkException;
 
 class McRegion extends BaseLevelProvider{
@@ -133,17 +133,20 @@ class McRegion extends BaseLevelProvider{
 			$tiles = $nbt->write();
 		}
 
-
-
-		$heightmap = pack("C*", ...$chunk->getHeightMapArray());
-		$biomeColors = pack("N*", ...$chunk->getBiomeColorArray());
+		$extraData = new BinaryStream();
+		$extraData->putLInt(count($chunk->getBlockExtraDataArray()));
+		foreach($chunk->getBlockExtraDataArray() as $key => $value){
+			$extraData->putLInt($key);
+			$extraData->putLShort($value);
+		}
 
 		$ordered = $chunk->getBlockIdArray() .
 			$chunk->getBlockDataArray() .
 			$chunk->getBlockSkyLightArray() .
 			$chunk->getBlockLightArray() .
-			$heightmap .
-			$biomeColors .
+			pack("C*", ...$chunk->getHeightMapArray()) .
+			pack("N*", ...$chunk->getBiomeColorArray()) .
+			$extraData->getBuffer() .
 			$tiles;
 
 		$this->getLevel()->chunkRequestCallback($x, $z, $ordered);

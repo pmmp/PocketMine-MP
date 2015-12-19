@@ -25,9 +25,8 @@
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\Squid;
-use pocketmine\entity\Villager;
-use pocketmine\entity\Zombie;
+
+
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
@@ -182,9 +181,13 @@ class Block extends Position implements Metadatable{
 	const LILY_PAD = 111;
 	const NETHER_BRICKS = 112;
 	const NETHER_BRICK_BLOCK = 112;
-
+	const NETHER_BRICK_FENCE = 113;
 	const NETHER_BRICKS_STAIRS = 114;
 
+	const ENCHANTING_TABLE = 116;
+	const ENCHANT_TABLE = 116;
+	const ENCHANTMENT_TABLE = 116;
+	const BREWING_STAND = 117;
 	const END_PORTAL_FRAME = 120;
 	const END_STONE = 121;
 
@@ -202,9 +205,12 @@ class Block extends Position implements Metadatable{
 	const COBBLE_WALL = 139;
 	const STONE_WALL = 139;
 	const COBBLESTONE_WALL = 139;
-
+	const FLOWER_POT_BLOCK = 140;
 	const CARROT_BLOCK = 141;
 	const POTATO_BLOCK = 142;
+
+	const ANVIL = 145;
+	const TRAPPED_CHEST = 146;
 
 	const REDSTONE_BLOCK = 152;
 
@@ -231,11 +237,12 @@ class Block extends Position implements Metadatable{
 	const DARK_OAK_WOOD_STAIRS = 164;
 	const DARK_OAK_WOODEN_STAIRS = 164;
 
+	const IRON_TRAPDOOR = 167;
 	const HAY_BALE = 170;
 	const CARPET = 171;
 	const HARDENED_CLAY = 172;
 	const COAL_BLOCK = 173;
-
+	const PACKED_ICE = 174;
 	const DOUBLE_PLANT = 175;
 
 	const FENCE_GATE_SPRUCE = 183;
@@ -250,7 +257,6 @@ class Block extends Position implements Metadatable{
 	const BEETROOT_BLOCK = 244;
 	const STONECUTTER = 245;
 	const GLOWING_OBSIDIAN = 246;
-	const NETHER_REACTOR = 247;
 
 	/** @var \SplFixedArray */
 	public static $list = null;
@@ -408,9 +414,11 @@ class Block extends Position implements Metadatable{
 			self::$list[self::MYCELIUM] = Mycelium::class;
 			self::$list[self::WATER_LILY] = WaterLily::class;
 			self::$list[self::NETHER_BRICKS] = NetherBrick::class;
-
+			self::$list[self::NETHER_BRICK_FENCE] = NetherBrickFence::class;
 			self::$list[self::NETHER_BRICKS_STAIRS] = NetherBrickStairs::class;
 
+			self::$list[self::ENCHANTING_TABLE] = EnchantingTable::class;
+			self::$list[self::BREWING_STAND] = BrewingStand::class;
 			self::$list[self::END_PORTAL_FRAME] = EndPortalFrame::class;
 			self::$list[self::END_STONE] = EndStone::class;
 			self::$list[self::SANDSTONE_STAIRS] = SandstoneStairs::class;
@@ -421,10 +429,11 @@ class Block extends Position implements Metadatable{
 			self::$list[self::BIRCH_WOOD_STAIRS] = BirchWoodStairs::class;
 			self::$list[self::JUNGLE_WOOD_STAIRS] = JungleWoodStairs::class;
 			self::$list[self::STONE_WALL] = StoneWall::class;
-
+			self::$list[self::FLOWER_POT_BLOCK] = FlowerPot::class;
 			self::$list[self::CARROT_BLOCK] = Carrot::class;
 			self::$list[self::POTATO_BLOCK] = Potato::class;
-
+			self::$list[self::ANVIL] = Anvil::class;
+			self::$list[self::TRAPPED_CHEST] = TrappedChest::class;
 			self::$list[self::REDSTONE_BLOCK] = Redstone::class;
 
 			self::$list[self::QUARTZ_BLOCK] = Quartz::class;
@@ -438,11 +447,12 @@ class Block extends Position implements Metadatable{
 			self::$list[self::ACACIA_WOOD_STAIRS] = AcaciaWoodStairs::class;
 			self::$list[self::DARK_OAK_WOOD_STAIRS] = DarkOakWoodStairs::class;
 
+			self::$list[self::IRON_TRAPDOOR] = IronTrapdoor::class;
 			self::$list[self::HAY_BALE] = HayBale::class;
 			self::$list[self::CARPET] = Carpet::class;
 			self::$list[self::HARDENED_CLAY] = HardenedClay::class;
 			self::$list[self::COAL_BLOCK] = Coal::class;
-
+			self::$list[self::PACKED_ICE] = PackedIce::class;
 			self::$list[self::DOUBLE_PLANT] = DoublePlant::class;
 
 			self::$list[self::FENCE_GATE_SPRUCE] = FenceGateSpruce::class;
@@ -457,7 +467,6 @@ class Block extends Position implements Metadatable{
 			self::$list[self::BEETROOT_BLOCK] = Beetroot::class;
 			self::$list[self::STONECUTTER] = Stonecutter::class;
 			self::$list[self::GLOWING_OBSIDIAN] = GlowingObsidian::class;
-			self::$list[self::NETHER_REACTOR] = NetherReactor::class;
 
 			foreach(self::$list as $id => $class){
 				if($class !== null){
@@ -786,6 +795,10 @@ class Block extends Position implements Metadatable{
 			}
 		}else{
 			$base *= 3.33;
+		}
+
+		if($item->isSword()){
+			$base *= 0.5;
 		}
 
 		return $base;

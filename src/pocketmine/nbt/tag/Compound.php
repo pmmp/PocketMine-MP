@@ -32,14 +32,25 @@ class Compound extends NamedTag implements \ArrayAccess{
 	 * @param NamedTag[] $value
 	 */
 	public function __construct($name = "", $value = []){
-		$this->name = $name;
+		$this->__name = $name;
 		foreach($value as $tag){
 			$this->{$tag->getName()} = $tag;
 		}
 	}
 
+	public function getCount(){
+		$count = 0;
+		foreach($this as $tag){
+			if($tag instanceof Tag){
+				++$count;
+			}
+		}
+
+		return $count;
+	}
+
 	public function offsetExists($offset){
-		return isset($this->{$offset});
+		return isset($this->{$offset}) and $this->{$offset} instanceof Tag;
 	}
 
 	public function offsetGet($offset){

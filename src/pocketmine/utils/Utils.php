@@ -49,14 +49,23 @@ class Utils{
 		}
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function randomUUID(){
 		return Utils::toUUID(Binary::writeInt(time()) . Binary::writeShort(getmypid()) . Binary::writeShort(getmyuid()) . Binary::writeInt(mt_rand(-0x7fffffff, 0x7fffffff)) . Binary::writeInt(mt_rand(-0x7fffffff, 0x7fffffff)), 2);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function dataToUUID(...$params){
 		return Utils::toUUID(hash("md5", implode($params), true), 3);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function toUUID($data, $version = 2, $fixed = "8"){
 		if(strlen($data) !== 16){
 			throw new \InvalidArgumentException("Data must be 16 bytes");
@@ -76,7 +85,7 @@ class Utils{
 	 *
 	 * @param string $extra optional, additional data to identify the machine
 	 *
-	 * @return string
+	 * @return UUID
 	 */
 	public static function getMachineUniqueId($extra = ""){
 		if(self::$serverUniqueId !== null and $extra === ""){
@@ -127,7 +136,7 @@ class Utils{
 			$data .= $ext . ":" . phpversion($ext);
 		}
 
-		$uuid = Utils::dataToUUID($machine, $data);
+		$uuid = UUID::fromData($machine, $data);
 
 		if($extra === ""){
 			self::$serverUniqueId = $uuid;

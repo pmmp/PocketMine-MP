@@ -45,7 +45,7 @@ class Diamond extends Solid{
 	}
 
 	public function getDrops(Item $item){
-		if($item->isPickaxe() >= 4){
+		if($item->isPickaxe() >= Tool::TIER_IRON){
 			return [
 				[Item::DIAMOND_BLOCK, 0, 1],
 			];

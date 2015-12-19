@@ -28,7 +28,7 @@ class RemovePlayerPacket extends DataPacket{
 	const NETWORK_ID = Info::REMOVE_PLAYER_PACKET;
 
 	public $eid;
-	public $clientID;
+	public $clientId;
 
 	public function decode(){
 
@@ -37,7 +37,7 @@ class RemovePlayerPacket extends DataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putLong($this->eid);
-		$this->putLong($this->clientID);
+		$this->putUUID($this->clientId);
 	}
 
 }

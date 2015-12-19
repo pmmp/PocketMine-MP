@@ -29,6 +29,7 @@ use pocketmine\command\defaults\DeopCommand;
 use pocketmine\command\defaults\DifficultyCommand;
 use pocketmine\command\defaults\DumpMemoryCommand;
 use pocketmine\command\defaults\EffectCommand;
+use pocketmine\command\defaults\EnchantCommand;
 use pocketmine\command\defaults\GamemodeCommand;
 use pocketmine\command\defaults\GarbageCollectorCommand;
 use pocketmine\command\defaults\GiveCommand;
@@ -105,6 +106,7 @@ class SimpleCommandMap implements CommandMap{
 		$this->register("pocketmine", new SaveCommand("save-all"));
 		$this->register("pocketmine", new GiveCommand("give"));
 		$this->register("pocketmine", new EffectCommand("effect"));
+		$this->register("pocketmine", new EnchantCommand("enchant"));
 		$this->register("pocketmine", new ParticleCommand("particle"));
 		$this->register("pocketmine", new GamemodeCommand("gamemode"));
 		$this->register("pocketmine", new KillCommand("kill"));

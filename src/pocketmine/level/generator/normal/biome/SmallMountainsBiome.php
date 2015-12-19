@@ -21,8 +21,6 @@
 
 namespace pocketmine\level\generator\normal\biome;
 
-use pocketmine\level\generator\populator\TallGrass;
-use pocketmine\level\generator\populator\Tree;
 
 class SmallMountainsBiome extends MountainsBiome{
 

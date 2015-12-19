@@ -26,6 +26,7 @@ use pocketmine\event\Timings;
 use pocketmine\scheduler\GarbageCollectionTask;
 use pocketmine\utils\Utils;
 
+
 class MemoryManager{
 
 	/** @var Server */
@@ -231,7 +232,7 @@ class MemoryManager{
 		}
 
 		$this->leakInfo[$identifier] = [
-			"id" => $id = Utils::dataToUUID($identifier . ":" . $this->leakSeed++),
+			"id" => $id = md5($identifier . ":" . $this->leakSeed++),
 			"class" => get_class($object),
 			"hash" => $identifier
 		];

@@ -25,9 +25,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Item as ItemEntity;
 use pocketmine\math\Vector3;
 use pocketmine\network\protocol\AddEntityPacket;
-use pocketmine\network\protocol\AddPlayerPacket;
 use pocketmine\network\protocol\RemoveEntityPacket;
-use pocketmine\network\protocol\RemovePlayerPacket;
 
 class FloatingTextParticle extends Particle{
 	//TODO: HACK!
@@ -37,6 +35,11 @@ class FloatingTextParticle extends Particle{
 	protected $entityId;
 	protected $invisible = false;
 
+	/**
+	 * @param Vector3 $pos
+	 * @param int $text
+	 * @param string $title
+	 */
 	public function __construct(Vector3 $pos, $text, $title = ""){
 		parent::__construct($pos->x, $pos->y, $pos->z);
 		$this->text = $text;
