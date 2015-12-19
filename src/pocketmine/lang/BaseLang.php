@@ -61,13 +61,13 @@ class BaseLang{
 					continue;
 				}
 
-				$t = explode("=", $line);
+				$t = explode("=", $line, 2);
 				if(count($t) < 2){
 					continue;
 				}
 
-				$key = trim(array_shift($t));
-				$value = trim(implode("=", $t));
+				$key = trim($t[0]);
+				$value = trim($t[1]);
 
 				if($value === ""){
 					continue;
