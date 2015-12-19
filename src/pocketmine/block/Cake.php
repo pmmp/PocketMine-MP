@@ -96,13 +96,15 @@ class Cake extends Transparent{
 			$ev = new EntityRegainHealthEvent($player, 3, EntityRegainHealthEvent::CAUSE_EATING);
 			$player->heal($ev->getAmount(), $ev);
 
-			if($this->meta >= 0x06){
-				$this->getLevel()->setBlock($this, new Air(), true);
-			}else{
-				$this->getLevel()->setBlock($this, $this, true);
+			if(!$ev->isCancelled()){
+				if($this->meta >= 0x06){
+					$this->getLevel()->setBlock($this, new Air(), true);
+				}else{
+					$this->getLevel()->setBlock($this, $this, true);
+				}
+				
+				return true;
 			}
-
-			return true;
 		}
 
 		return false;
