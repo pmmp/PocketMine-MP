@@ -3375,9 +3375,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return true;
 	}
 
+	/**
+	 * @param Vector3|Position|Location $pos
+	 * @param float $yaw
+	 * @param float $pitch
+	 *
+	 * @return bool
+     */
 	public function teleport(Vector3 $pos, $yaw = null, $pitch = null){
 		if(!$this->isOnline()){
-			return;
+			return false;
 		}
 
 		$oldPos = $this->getPosition();
@@ -3398,11 +3405,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->spawnToAll();
 			}
 
-
 			$this->resetFallDistance();
 			$this->nextChunkOrderRun = 0;
 			$this->newPosition = null;
+			return true;
 		}
+		return false;
 	}
 
 	/**

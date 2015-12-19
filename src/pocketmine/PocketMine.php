@@ -164,11 +164,13 @@ namespace pocketmine {
 		 * This is here so that people don't come to us complaining and fill up the issue tracker when they put
 		 * an incorrect timezone abbreviation in php.ini apparently.
 		 */
-		$default_timezone = date_default_timezone_get();
-		if(strpos($default_timezone, "/") === false){
-			$default_timezone = timezone_name_from_abbr($default_timezone);
+		$timezone = ini_get("date.timezone");
+		if(strpos($timezone, "/") === false){
+			$default_timezone = timezone_name_from_abbr($timezone);
 			ini_set("date.timezone", $default_timezone);
 			date_default_timezone_set($default_timezone);
+		} else {
+			date_default_timezone_set($timezone);
 		}
 	}
 
