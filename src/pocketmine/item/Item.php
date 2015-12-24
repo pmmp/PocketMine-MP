@@ -241,6 +241,7 @@ class Item{
 	const WOODEN_BUTTON = 143;
 	const MOB_HEAD_BLOCK = 144;
 	const ANVIL = 145;
+	const SKULL_BLOCK = 144;
 	const TRAPPED_CHEST = 146;
 	const WEIGHTED_PRESSURE_PLATE_LIGHT = 147;
 	const WEIGHTED_PRESSURE_PLATE_HEAVY = 148;
@@ -449,6 +450,8 @@ class Item{
 	const POISONOUS_POTATO = 394;
 	const GOLDEN_CARROT = 396;
 	const MOB_HEAD = 397;
+	const SKULL = 397;
+
 	const PUMPKIN_PIE = 400;
 
 	const ENCHANTED_BOOK = 403;
@@ -608,6 +611,7 @@ class Item{
 			self::$list[self::POTATO] = Potato::class;
 			self::$list[self::BAKED_POTATO] = BakedPotato::class;
 			self::$list[self::GOLDEN_CARROT] = GoldenCarrot::class;
+			self::$list[self::MOB_HEAD] = MobHead::class;
 			self::$list[self::PUMPKIN_PIE] = PumpkinPie::class;
 			self::$list[self::NETHER_BRICK] = NetherBrick::class;
 			self::$list[self::QUARTZ] = Quartz::class;
@@ -634,7 +638,7 @@ class Item{
 		self::clearCreativeItems();
 
 		$creativeItems = new Config(Server::getInstance()->getFilePath() . "src/pocketmine/resources/creativeitems.json", Config::JSON, []);
-
+		
 		foreach($creativeItems->getAll() as $item){
 			self::addCreativeItem(Item::get($item["ID"], $item["Damage"]));
 		}
