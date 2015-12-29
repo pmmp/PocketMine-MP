@@ -24,6 +24,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\level\sound\DoorSound;
 use pocketmine\Player;
 
 class IronTrapdoor extends Transparent{
