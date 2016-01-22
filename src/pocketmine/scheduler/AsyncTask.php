@@ -22,13 +22,14 @@
 namespace pocketmine\scheduler;
 
 use pocketmine\Server;
+use pocketmine\Collectable;
 
 /**
  * Class used to run async tasks in other threads.
  *
  * WARNING: Do not call PocketMine-MP API methods, or save objects from/on other Threads!!
  */
-abstract class AsyncTask extends \Collectable{
+abstract class AsyncTask extends Collectable{
 
 	/** @var AsyncWorker $worker */
 	public $worker = null;

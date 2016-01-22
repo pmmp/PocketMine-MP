@@ -45,7 +45,7 @@ class MossStone extends Solid{
 	}
 
 	public function getDrops(Item $item){
-		if($item->isPickaxe() >= 1){
+		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
 				[Item::MOSS_STONE, $this->meta, 1],
 			];

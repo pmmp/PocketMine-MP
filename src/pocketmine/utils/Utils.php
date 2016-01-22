@@ -84,7 +84,7 @@ class Utils{
 			if(file_exists("/etc/machine-id")){
 				$machine .= file_get_contents("/etc/machine-id");
 			}else{
-				@exec("ifconfig", $mac);
+				@exec("ifconfig 2>/dev/null", $mac);
 				$mac = implode("\n", $mac);
 				if(preg_match_all("#HWaddr[ \t]{1,}([0-9a-f:]{17})#", $mac, $matches)){
 					foreach($matches[1] as $i => $v){
