@@ -96,7 +96,7 @@ class FormattedCommandAlias extends Command{
 
 			$argStart = $index;
 
-			while($index < strlen($formatString) and self::inRange($formatString{$index} - 48, 0, 9)){
+			while($index < strlen($formatString) and self::inRange(ord($formatString{$index}) - 48, 0, 9)){
 				++$index;
 			}
 
