@@ -52,7 +52,7 @@ class CraftingManager{
 	private static $RECIPE_COUNT = 0;
 
 	public function __construct(){
-        // load recipes from src/pocketmine/recipes.json
+		// load recipes from src/pocketmine/recipes.json
 		$recipes = new Config(Server::getInstance()->getFilePath() . "src/pocketmine/resources/recipes.json", Config::JSON, []);
 
 		MainLogger::getLogger()->Info("Loading recipes...");
@@ -88,7 +88,7 @@ class CraftingManager{
 			case 2:
 				$result = $recipe["Result"];
 				$resultItem = Item::get($result["ID"], $result["Damage"], $result["Count"]);
-				$this->registerRecipe(new FurnaceRecipe($resultItem, Item::get($recipe["Ingredients"], 0,1)));
+				$this->registerRecipe(new FurnaceRecipe($resultItem, Item::get($recipe["Ingredients"], 0, 1)));
 				break;
 			case 3:
 				$result = $recipe["Result"];
