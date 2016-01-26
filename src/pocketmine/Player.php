@@ -2655,7 +2655,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				foreach($ingredients as $ingredient){
 					$slot = -1;
 					foreach($this->inventory->getContents() as $index => $i){
-						if($ingredient->getId() !== 0 and $ingredient->deepEquals($i, $i->getDamage() !== null) and ($i->getCount() - $used[$index]) >= 1){
+						if($ingredient->getId() !== 0 and $ingredient->deepEquals($i, $ingredient->getDamage() !== null) and ($i->getCount() - $used[$index]) >= 1){
 							$slot = $index;
 							$used[$index]++;
 							break;
