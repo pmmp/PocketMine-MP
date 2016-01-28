@@ -53,7 +53,7 @@ class Planks extends Solid{
 			self::BIRCH => "Birch Wood Planks",
 			self::JUNGLE => "Jungle Wood Planks",
 			self::ACACIA => "Acacia Wood Planks",
-			self::DARK_OAK => "Jungle Wood Planks",
+			self::DARK_OAK => "Dark Oak Wood Planks",
 			"",
 			""
 		];

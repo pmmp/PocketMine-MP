@@ -98,10 +98,10 @@ class Item{
 	const LAPIS_BLOCK = 22;
 
 	const SANDSTONE = 24;
-
+	const NOTEBLOCK = 25;
 	const BED_BLOCK = 26;
-
-
+	const POWERED_RAIL = 27;
+	const DETECTOR_RAIL = 28;
 	const COBWEB = 30;
 	const TALL_GRASS = 31;
 	const BUSH = 32;
@@ -134,7 +134,7 @@ class Item{
 	const OAK_WOOD_STAIRS = 53;
 	const OAK_WOODEN_STAIRS = 53;
 	const CHEST = 54;
-
+	const REDSTONE_WIRE = 55;
 	const DIAMOND_ORE = 56;
 	const DIAMOND_BLOCK = 57;
 	const CRAFTING_TABLE = 58;
@@ -149,17 +149,20 @@ class Item{
 	const WOODEN_DOOR_BLOCK = 64;
 	const WOOD_DOOR_BLOCK = 64;
 	const LADDER = 65;
-
+	const RAIL = 66;
 	const COBBLE_STAIRS = 67;
 	const COBBLESTONE_STAIRS = 67;
 	const WALL_SIGN = 68;
-
+	const LEVER = 69;
+	const STONE_PRESSURE_PLATE = 70;
 	const IRON_DOOR_BLOCK = 71;
-
+	const WOODEN_PRESSURE_PLATE = 72;
 	const REDSTONE_ORE = 73;
 	const GLOWING_REDSTONE_ORE = 74;
 	const LIT_REDSTONE_ORE = 74;
-
+	const REDSTONE_TORCH = 75;
+	const LIT_REDSTONE_TORCH = 76;
+	const STONE_BUTTON = 77;
 	const SNOW = 78;
 	const SNOW_LAYER = 78;
 	const ICE = 79;
@@ -176,16 +179,17 @@ class Item{
 	const GLOWSTONE = 89;
 	const GLOWSTONE_BLOCK = 89;
 
-
+	const PORTAL_BLOCK = 90;
 	const LIT_PUMPKIN = 91;
 	const JACK_O_LANTERN = 91;
 	const CAKE_BLOCK = 92;
 
 	const TRAPDOOR = 96;
-
+	const MONSTER_EGG_BLOCK = 97;
 	const STONE_BRICKS = 98;
 	const STONE_BRICK = 98;
-
+	const BROWN_MUSHROOM_BLOCK = 99;
+	const RED_MUSHROOM_BLOCK = 100;
 	const IRON_BAR = 101;
 	const IRON_BARS = 101;
 	const GLASS_PANE = 102;
@@ -205,17 +209,24 @@ class Item{
 	const NETHER_BRICK_BLOCK = 112;
 	const NETHER_BRICK_FENCE = 113;
 	const NETHER_BRICKS_STAIRS = 114;
-
+	const NETHER_WART_BLOCK = 115;
 	const ENCHANTING_TABLE = 116;
 	const ENCHANT_TABLE = 116;
 	const ENCHANTMENT_TABLE = 116;
-	const BREWING_STAND = 117;
+	const BREWING_STAND_BLOCK = 117;
+
 	const END_PORTAL = 120;
 	const END_STONE = 121;
+	const REDSTONE_LAMP = 122;
+	const LIT_REDSTONE_LAMP = 123;
 
+	const ACTIVATOR_RAIL = 126;
+	const COCOA_BLOCK = 127;
 	const SANDSTONE_STAIRS = 128;
 	const EMERALD_ORE = 129;
 
+	const TRIPWIRE_HOOK = 131;
+	const TRIPWIRE = 132;
 	const EMERALD_BLOCK = 133;
 	const SPRUCE_WOOD_STAIRS = 134;
 	const SPRUCE_WOODEN_STAIRS = 134;
@@ -230,11 +241,16 @@ class Item{
 	const FLOWER_POT_BLOCK = 140;
 	const CARROT_BLOCK = 141;
 	const POTATO_BLOCK = 142;
-
+	const WOODEN_BUTTON = 143;
+	const MOB_HEAD_BLOCK = 144;
 	const ANVIL = 145;
 	const TRAPPED_CHEST = 146;
+	const WEIGHTED_PRESSURE_PLATE_LIGHT = 147;
+	const WEIGHTED_PRESSURE_PLATE_HEAVY = 148;
 
+	const DAYLIGHT_SENSOR = 151;
 	const REDSTONE_BLOCK = 152;
+	const NETHER_QUARTZ_ORE = 153;
 
 	const QUARTZ_BLOCK = 155;
 	const QUARTZ_STAIRS = 156;
@@ -260,12 +276,15 @@ class Item{
 	const DARK_OAK_WOODEN_STAIRS = 164;
 
 	const IRON_TRAPDOOR = 167;
+
 	const HAY_BALE = 170;
 	const CARPET = 171;
 	const HARDENED_CLAY = 172;
 	const COAL_BLOCK = 173;
 	const PACKED_ICE = 174;
 	const DOUBLE_PLANT = 175;
+
+	const INVERTED_DAYLIGHT_SENSOR = 178;
 
 	const FENCE_GATE_SPRUCE = 183;
 	const FENCE_GATE_BIRCH = 184;
@@ -282,24 +301,23 @@ class Item{
 
 
 	//Normal Item IDs
-
-	const IRON_SHOVEL = 256; //
-	const IRON_PICKAXE = 257; //
-	const IRON_AXE = 258; //
-	const FLINT_STEEL = 259; //
-	const FLINT_AND_STEEL = 259; //
-	const APPLE = 260; //
+	const IRON_SHOVEL = 256;
+	const IRON_PICKAXE = 257;
+	const IRON_AXE = 258;
+	const FLINT_STEEL = 259;
+	const FLINT_AND_STEEL = 259;
+	const APPLE = 260;
 	const BOW = 261;
 	const ARROW = 262;
-	const COAL = 263; //
-	const DIAMOND = 264; //
-	const IRON_INGOT = 265; //
-	const GOLD_INGOT = 266; //
+	const COAL = 263;
+	const DIAMOND = 264;
+	const IRON_INGOT = 265;
+	const GOLD_INGOT = 266;
 	const IRON_SWORD = 267;
-	const WOODEN_SWORD = 268; //
-	const WOODEN_SHOVEL = 269; //
-	const WOODEN_PICKAXE = 270; //
-	const WOODEN_AXE = 271; //
+	const WOODEN_SWORD = 268;
+	const WOODEN_SHOVEL = 269;
+	const WOODEN_PICKAXE = 270;
+	const WOODEN_AXE = 271;
 	const STONE_SWORD = 272;
 	const STONE_SHOVEL = 273;
 	const STONE_PICKAXE = 274;
@@ -308,9 +326,9 @@ class Item{
 	const DIAMOND_SHOVEL = 277;
 	const DIAMOND_PICKAXE = 278;
 	const DIAMOND_AXE = 279;
-	const STICK = 280; //
+	const STICK = 280;
 	const STICKS = 280;
-	const BOWL = 281; //
+	const BOWL = 281;
 	const MUSHROOM_STEW = 282;
 	const GOLD_SWORD = 283;
 	const GOLD_SHOVEL = 284;
@@ -321,11 +339,11 @@ class Item{
 	const GOLDEN_PICKAXE = 285;
 	const GOLDEN_AXE = 286;
 	const STRING = 287;
-	const FEATHER = 288; //
+	const FEATHER = 288;
 	const GUNPOWDER = 289;
 	const WOODEN_HOE = 290;
 	const STONE_HOE = 291;
-	const IRON_HOE = 292; //
+	const IRON_HOE = 292;
 	const DIAMOND_HOE = 293;
 	const GOLD_HOE = 294;
 	const GOLDEN_HOE = 294;
@@ -363,12 +381,12 @@ class Item{
 	const BUCKET = 325;
 
 	const MINECART = 328;
-
+	const SADDLE = 329;
 	const IRON_DOOR = 330;
 	const REDSTONE = 331;
 	const REDSTONE_DUST = 331;
 	const SNOWBALL = 332;
-
+	const BOAT = 333;
 	const LEATHER = 334;
 
 	const BRICK = 336;
@@ -396,7 +414,6 @@ class Item{
 
 	const COOKIE = 357;
 
-
 	const SHEARS = 359;
 	const MELON = 360;
 	const MELON_SLICE = 360;
@@ -405,14 +422,25 @@ class Item{
 	const RAW_BEEF = 363;
 	const STEAK = 364;
 	const COOKED_BEEF = 364;
-
 	const RAW_CHICKEN = 365;
 	const COOKED_CHICKEN = 366;
+	const ROTTEN_FLESH = 367;
 
+	const BLAZE_ROD = 369;
+	const GHAST_TEAR = 370;
 	const GOLD_NUGGET = 371;
 	const GOLDEN_NUGGET = 371;
-
+	const NETHER_WART = 372;
+	const POTION = 373;
+	const GLASS_BOTTLE = 374;
+	const SPIDER_EYE = 375;
+	const FERMENTED_SPIDER_EYE = 376;
+	const BLAZE_POWDER = 377;
+	const MAGMA_CREAM = 378;
+	const BREWING_STAND = 379;
+	const GLISTERING_MELON = 382;
 	const SPAWN_EGG = 383;
+	const BOTTLE_O_ENCHANTING = 384;
 
 	const EMERALD = 388;
 
@@ -423,12 +451,23 @@ class Item{
 	const POTATOES = 392;
 	const BAKED_POTATO = 393;
 	const BAKED_POTATOES = 393;
-
+	const POISONOUS_POTATO = 394;
+	const GOLDEN_CARROT = 396;
+	const MOB_HEAD = 397;
 	const PUMPKIN_PIE = 400;
+
+	const ENCHANTED_BOOK = 403;
 
 	const NETHER_BRICK = 405;
 	const QUARTZ = 406;
 	const NETHER_QUARTZ = 406;
+
+	const RAW_RABBIT = 411;
+	const COOKED_RABBIT = 412;
+	const RABBIT_STEW = 413;
+	const RABIT_FOOT = 414;
+	const RABBIT_HIDE = 415;
+	const SPLASH_POTION = 438;
 
 	const CAMERA = 456;
 	const BEETROOT = 457;
@@ -529,6 +568,7 @@ class Item{
 			self::$list[self::IRON_DOOR] = IronDoor::class;
 			self::$list[self::REDSTONE] = Redstone::class;
 			self::$list[self::SNOWBALL] = Snowball::class;
+			self::$list[self::BOAT] = Boat::class;
 			self::$list[self::LEATHER] = Leather::class;
 			self::$list[self::BRICK] = Brick::class;
 			self::$list[self::CLAY] = Clay::class;
@@ -538,6 +578,7 @@ class Item{
 			self::$list[self::SLIMEBALL] = Slimeball::class;
 			self::$list[self::EGG] = Egg::class;
 			self::$list[self::COMPASS] = Compass::class;
+			self::$list[self::FISHING_ROD] = FishingRod::class;
 			self::$list[self::CLOCK] = Clock::class;
 			self::$list[self::GLOWSTONE_DUST] = GlowstoneDust::class;
 			self::$list[self::RAW_FISH] = Fish::class;
@@ -557,16 +598,27 @@ class Item{
 			self::$list[self::RAW_CHICKEN] = RawChicken::class;
 			self::$list[self::COOKED_CHICKEN] = CookedChicken::class;
 			self::$list[self::GOLD_NUGGET] = GoldNugget::class;
+			self::$list[self::NETHER_WART] = NetherWart::class;
+			self::$list[self::POTION] = Potion::class;
+			self::$list[self::GLASS_BOTTLE] = GlassBottle::class;
+			self::$list[self::SPIDER_EYE] = SpiderEye::class;
+			self::$list[self::FERMENTED_SPIDER_EYE] = FermentedSpiderEye::class;
+			self::$list[self::BLAZE_POWDER] = BlazePowder::class;
+			self::$list[self::MAGMA_CREAM] = MagmaCream::class;
+			self::$list[self::BREWING_STAND] = BrewingStand::class;
+			self::$list[self::GLISTERING_MELON] = GlisteringMelon::class;
 			self::$list[self::SPAWN_EGG] = SpawnEgg::class;
 			self::$list[self::EMERALD] = Emerald::class;
 			self::$list[self::FLOWER_POT] = FlowerPot::class;
 			self::$list[self::CARROT] = Carrot::class;
 			self::$list[self::POTATO] = Potato::class;
 			self::$list[self::BAKED_POTATO] = BakedPotato::class;
+			self::$list[self::GOLDEN_CARROT] = GoldenCarrot::class;
 			self::$list[self::PUMPKIN_PIE] = PumpkinPie::class;
 			self::$list[self::NETHER_BRICK] = NetherBrick::class;
 			self::$list[self::QUARTZ] = Quartz::class;
 			self::$list[self::QUARTZ] = NetherQuartz::class;
+			self::$list[self::COOKED_RABBIT] = CookedRabbit::class;
 			// self::$list[self::CAMERA] = Camera::class;
 			self::$list[self::BEETROOT] = Beetroot::class;
 			self::$list[self::BEETROOT_SEEDS] = BeetrootSeeds::class;
