@@ -37,7 +37,7 @@ class ContainerSetSlotPacket extends DataPacket{
 	public function decode(){
 		$this->windowid = $this->getByte();
 		$this->slot = $this->getShort();
-		$this->hotboarSlot = $this->getShort();
+		$this->hotbarSlot = $this->getShort();
 		$this->item = $this->getSlot();
 	}
 
