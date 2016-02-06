@@ -22,9 +22,9 @@
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
+use pocketmine\math\Vector2;
 use pocketmine\Server;
 use pocketmine\utils\UUID;
-use pocketmine\math\Vector2;
 
 class ShapedRecipe implements Recipe{
 	/** @var Item */
@@ -41,16 +41,16 @@ class ShapedRecipe implements Recipe{
 	private $shapeItems = [];
 
 	/**
-	 * @param Item     $result
-	 * @param int      $height
-	 * @param int      $width
+	 * @param Item $result
+	 * @param int  $height
+	 * @param int  $width
 	 *
 	 * @throws \Exception
 	 */
 	public function __construct(Item $result, $height, $width){
-		for($h =0; $h < $height; $h++){
-			if(strlen($width) === 0 or strlen($width) > 3){
-				throw new \InvalidStateException("Crafting rows should be 1, 2, 3 characters, not " . count($row));
+		for($h = 0; $h < $height; $h++){
+			if($width === 0 or $width > 3){
+				throw new \InvalidStateException("Crafting rows should be 1, 2, 3 wide, not $width");
 			}
 			$this->ingredients[] = array_fill(0, $width, null);
 		}
