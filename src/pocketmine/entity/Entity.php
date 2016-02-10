@@ -48,20 +48,17 @@ use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\Network;
 use pocketmine\network\protocol\MobEffectPacket;
 use pocketmine\network\protocol\RemoveEntityPacket;
 use pocketmine\network\protocol\SetEntityDataPacket;
-
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
-use pocketmine\utils\ChunkException;
 
 abstract class Entity extends Location implements Metadatable{
 
@@ -192,6 +189,9 @@ abstract class Entity extends Location implements Metadatable{
 	protected $fireProof;
 	private $invulnerable;
 
+	/** @var AttributeMap */
+	protected $attributeMap;
+
 	protected $gravity;
 	protected $drag;
 
@@ -265,6 +265,8 @@ abstract class Entity extends Location implements Metadatable{
 			$this->namedtag->Invulnerable = new ByteTag("Invulnerable", 0);
 		}
 		$this->invulnerable = $this->namedtag["Invulnerable"] > 0 ? true : false;
+
+		$this->attributeMap = new AttributeMap();
 
 		$this->chunk->addEntity($this);
 		$this->level->addEntity($this);
@@ -526,6 +528,8 @@ abstract class Entity extends Location implements Metadatable{
 		}
 
 		$this->scheduleUpdate();
+
+		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::KNOCKBACK_RESISTANCE));
 	}
 
 	/**
@@ -668,6 +672,10 @@ abstract class Entity extends Location implements Metadatable{
 	 */
 	public function getLastDamageCause(){
 		return $this->lastDamageCause;
+	}
+
+	public function getAttributeMap(){
+		return $this->attributeMap;
 	}
 
 	/**

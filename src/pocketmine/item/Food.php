@@ -21,8 +21,30 @@
 
 namespace pocketmine\item;
 
-class GlassBottle extends Item{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::GLASS_BOTTLE, $meta, $count, "Glass Bottle");
+use pocketmine\entity\Effect;
+use pocketmine\Player;
+
+abstract class Food extends Item{
+	public abstract function getFoodRestore() : int;
+
+	public abstract function getSaturationRestore() : float;
+
+	public function getResidue() : Item{
+		if($this->getCount() === 1){
+			return Item::get(0);
+		}else{
+			$this->count--;
+			return $this;
+		}
+	}
+
+	/**
+	 * @return Effect[]
+	 */
+	public function getAdditionEffects() : array{
+		return [];
+	}
+
+	public function onEat(Player $player){
 	}
 }

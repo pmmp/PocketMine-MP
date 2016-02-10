@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -24,17 +24,16 @@ namespace pocketmine\entity;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\Item as ItemItem;
-use pocketmine\utils\UUID;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\Network;
 use pocketmine\network\protocol\AddPlayerPacket;
 use pocketmine\network\protocol\RemovePlayerPacket;
 use pocketmine\Player;
+use pocketmine\utils\UUID;
 
 class Human extends Creature implements ProjectileSource, InventoryHolder{
 
@@ -46,7 +45,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/** @var PlayerInventory */
 	protected $inventory;
-
 
 	/** @var UUID */
 	protected $uuid;
@@ -91,6 +89,60 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->skinName = $skinName;
 	}
 
+	public function getFood() : float{
+		return (float) $this->attributeMap->getAttribute(Attribute::HUNGER)->getValue();
+	}
+
+	public function setFood(float $food){
+		$this->attributeMap->getAttribute(Attribute::HUNGER)->setValue($food);
+	}
+
+	public function addFood(float $amount){
+		$this->attributeMap->getAttribute(Attribute::HUNGER)->setValue($amount, true);
+	}
+
+	public function getSaturation() : float{
+		return $this->attributeMap->getAttribute(Attribute::HUNGER)->getValue();
+	}
+
+	public function setSaturation(float $saturation){
+		$this->attributeMap->getAttribute(Attribute::HUNGER)->setValue($saturation);
+	}
+
+	public function addSaturation(float $amount){
+		$this->attributeMap->getAttribute(Attribute::SATURATION)->setValue($amount, true);
+	}
+
+	public function getExhaustion() : float{
+		return $this->attributeMap->getAttribute(Attribute::EXHAUSTION)->getValue();
+	}
+
+	public function setExhaustion(float $exhaustion){
+		$this->attributeMap->getAttribute(Attribute::EXHAUSTION)->setValue($exhaustion);
+	}
+
+	public function exhaust(float $amount){
+		$exhaustion = $this->getExhaustion();
+		$exhaustion += $amount;
+
+		if($exhaustion >= 4.0){
+			$exhaustion -= 4.0;
+			$this->setExhaustion($exhaustion);
+
+			$saturation = $this->getSaturation();
+			if($saturation > 0){
+				$saturation = max(0, $saturation - 1.0);
+				$this->setSaturation($saturation);
+			}else{
+				$food = $this->getFood();
+				if($food > 0){
+					$food--;
+					$this->setFood($food);
+				}
+			}
+		}
+	}
+
 	public function getInventory(){
 		return $this->inventory;
 	}
@@ -104,7 +156,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if($this instanceof Player){
 			$this->addWindow($this->inventory, 0);
 		}
-
 
 		if(!($this instanceof Player)){
 			if(isset($this->namedtag->NameTag)){
@@ -129,6 +180,13 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				}
 			}
 		}
+
+		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::SATURATION));
+		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXHAUSTION));
+		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::HUNGER));
+		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::ATTACK_DAMAGE));
+		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXPERIENCE_LEVEL));
+		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXPERIENCE));
 
 		parent::initEntity();
 	}
@@ -208,7 +266,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
 			}
 
-
 			if(!($this instanceof Player)){
 				$this->server->updatePlayerListData($this->getUniqueId(), $this->getId(), $this->getName(), $this->skinName, $this->skin, [$player]);
 			}
@@ -258,5 +315,4 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			parent::close();
 		}
 	}
-
 }

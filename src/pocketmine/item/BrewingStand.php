@@ -21,8 +21,8 @@
 
 namespace pocketmine\item;
 
-class BrewingStand extends Item {
-    public function __construct($meta = 0, $count =1){
-        parent::__construct(self::BREWING_STAND, $meta, $count, "Brewing Stand");
-    }
+class BrewingStand extends Item{
+	public function __construct($meta = 0, $count = 1){
+		parent::__construct(self::BREWING_STAND, $meta, $count, "Brewing Stand");
+	}
 }

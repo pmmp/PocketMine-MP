@@ -94,7 +94,7 @@ class Cake extends Transparent{
 			++$this->meta;
 
 			$ev = new EntityRegainHealthEvent($player, 3, EntityRegainHealthEvent::CAUSE_EATING);
-			$player->heal($ev->getAmount(), $ev);
+			$player->heal($ev->getAmount(), $ev); // TODO hunger
 
 			if(!$ev->isCancelled()){
 				if($this->meta >= 0x06){

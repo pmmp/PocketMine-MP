@@ -19,10 +19,28 @@
  *
 */
 
-namespace pocketmine\item;
+namespace pocketmine\entity;
 
-class GlassBottle extends Item{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::GLASS_BOTTLE, $meta, $count, "Glass Bottle");
+class AttributeMap{
+	/** @var Attribute[] */
+	private $attributes = [];
+
+	public function addAttribute(Attribute $attribute){
+		$this->attributes[$attribute->getId()] = $attribute;
+	}
+
+	/**
+	 * @param int $id
+	 *
+	 * @return Attribute|null
+	 */
+	public function getAttribute(int $id){
+		return $this->attributes[$id] ?? null;
+	}
+
+	public function needSend() : array{
+		return array_filter($this->attributes, function (Attribute $attribute){
+			return $attribute->isSyncable() and $attribute->isDesynchronized();
+		});
 	}
 }
