@@ -201,6 +201,14 @@ class Effect{
 					return ($this->duration % $interval) === 0;
 				}
 				return true;
+			case Effect::HUNGER:
+				if($this->amplifier < 0){ // prevents hacking with amplifier -1
+					return false;
+				}
+				if(($interval = 20) > 0){
+					return ($this->duration % $interval) === 0;
+				}
+				return true;
 		}
 		return false;
 	}
@@ -225,6 +233,11 @@ class Effect{
 					$entity->heal($ev->getAmount(), $ev);
 				}
 				break;
+
+			case Effect::HUNGER:
+				if($entity instanceof Human){
+					$entity->exhaust(0.5 * $this->amplifier);
+				}
 		}
 	}
 

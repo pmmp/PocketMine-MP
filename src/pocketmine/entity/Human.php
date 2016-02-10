@@ -21,6 +21,8 @@
 
 namespace pocketmine\entity;
 
+use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\Item as ItemItem;
@@ -58,6 +60,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	protected $skinName;
 	protected $skin;
 
+	protected $foodTickTimer = 0;
+
 	public function getSkinData(){
 		return $this->skin;
 	}
@@ -93,18 +97,47 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return (float) $this->attributeMap->getAttribute(Attribute::HUNGER)->getValue();
 	}
 
-	public function setFood(float $food){
-		$this->attributeMap->getAttribute(Attribute::HUNGER)->setValue($food);
+	/**
+	 * WARNING: This method does not check if full and may throw an exception if out of bounds.
+	 * Use {@link Human::addFood()} for this purpose
+	 *
+	 * @param float $new
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public function setFood(float $new){
+		$attr = $this->attributeMap->getAttribute(Attribute::HUNGER);
+		$old = $attr->getValue();
+		$attr->setValue($new);
+		// ranges: 18-20 (regen), 7-17 (none), 1-6 (no sprint), 0 (health depletion)
+		foreach([17, 6, 0] as $bound){
+			if(($old > $bound) !== ($new > $bound)){
+				$reset = true;
+			}
+		}
+		if(isset($reset)){
+			$this->foodTickTimer = 0;
+		}
 	}
 
 	public function addFood(float $amount){
-		$this->attributeMap->getAttribute(Attribute::HUNGER)->setValue($amount, true);
+		$attr = $this->attributeMap->getAttribute(Attribute::HUNGER);
+		$amount = max(min($amount, $attr->getMaxValue()), $attr->getMinValue());
+		$this->setFood($amount);
 	}
 
 	public function getSaturation() : float{
 		return $this->attributeMap->getAttribute(Attribute::HUNGER)->getValue();
 	}
 
+	/**
+	 * WARNING: This method does not check if saturated and may throw an exception if out of bounds.
+	 * Use {@link Human::addSaturation()} for this purpose
+	 *
+	 * @param float $saturation
+	 *
+	 * @throws \InvalidArgumentException
+	 */
 	public function setSaturation(float $saturation){
 		$this->attributeMap->getAttribute(Attribute::HUNGER)->setValue($saturation);
 	}
@@ -117,15 +150,32 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return $this->attributeMap->getAttribute(Attribute::EXHAUSTION)->getValue();
 	}
 
+	/**
+	 * WARNING: This method does not check if exhausted and does not consume saturation/food.
+	 * Use {@link Human::exhaust()} for this purpose.
+	 *
+	 * @param float $exhaustion
+	 */
 	public function setExhaustion(float $exhaustion){
 		$this->attributeMap->getAttribute(Attribute::EXHAUSTION)->setValue($exhaustion);
 	}
 
+	/**
+	 * Increases a human's exhaustion level.
+	 * TODO walk per meter: 0.01
+	 * TODO sneak per meter: 0.005
+	 * TODO swim per meter: 0.015
+	 * TODO sprint per meter: 0.1
+	 * TODO jump: 0.2
+	 * TODO regen per halfheart | food >= 18: 4.0
+	 *
+	 * @param float $amount
+	 */
 	public function exhaust(float $amount){
 		$exhaustion = $this->getExhaustion();
 		$exhaustion += $amount;
 
-		if($exhaustion >= 4.0){
+		while($exhaustion >= 4.0){
 			$exhaustion -= 4.0;
 			$this->setExhaustion($exhaustion);
 
@@ -181,14 +231,52 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			}
 		}
 
+		parent::initEntity();
+
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::SATURATION));
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXHAUSTION));
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::HUNGER));
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::ATTACK_DAMAGE));
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXPERIENCE_LEVEL));
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXPERIENCE));
+	}
 
-		parent::initEntity();
+	public function entityBaseTick($tickDiff = 1){
+		$hasUpdate = parent::entityBaseTick($tickDiff);
+
+		$food = $this->getFood();
+		$health = $this->getHealth();
+		if($food >= 18){
+			$this->foodTickTimer++;
+			if($this->foodTickTimer >= 80){
+				$this->heal(1, new EntityRegainHealthEvent($this, 1, EntityRegainHealthEvent::CAUSE_SATURATION));
+				$this->exhaust(3.0);
+				$this->foodTickTimer = 0;
+			}
+		}elseif($food === 0){
+			$this->foodTickTimer++;
+			if($this->foodTickTimer >= 80){
+				$diff = $this->server->getDifficulty();
+				$can = false;
+				if($diff === 1){
+					$can = $health > 10;
+				}elseif($diff === 2){
+					$can = $health > 1;
+				}elseif($diff === 3){
+					$can = true;
+				}
+				if($can){
+					$this->attack(1, new EntityDamageEvent($this, EntityDamageEvent::CAUSE_STARVATION, 1));
+				}
+			}
+		}
+		if($food <= 6){
+			if($this->isSprinting()){
+				$this->setSprinting(false);
+			}
+		}
+
+		return $hasUpdate;
 	}
 
 	public function getName(){

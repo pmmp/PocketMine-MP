@@ -49,6 +49,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	const CAUSE_SUICIDE = 12;
 	const CAUSE_MAGIC = 13;
 	const CAUSE_CUSTOM = 14;
+	const CAUSE_STARVATION = 15;
 
 
 	private $cause;

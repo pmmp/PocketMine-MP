@@ -2260,6 +2260,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 							$this->inventory->setItemInHand($item);
 							$this->inventory->sendHeldItem($this->hasSpawned);
 						}
+
+						$this->exhaust(0.025);
 					}
 					break;
 				}
@@ -2294,7 +2296,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				if(
 					$target instanceof Player and
 					$this->server->getConfigBoolean("pvp", true) === false
-
 				){
 					$cancelled = true;
 				}
@@ -2392,12 +2393,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						break;
 					}
 
-					if($item->isTool() and $this->isSurvival()){
-						if($item->useOn($target) and $item->getDamage() >= $item->getMaxDurability()){
-							$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 1));
-						}else{
-							$this->inventory->setItemInHand($item);
+					if($this->isSurvival()){
+						if($item->isTool()){
+							if($item->useOn($target) and $item->getDamage() >= $item->getMaxDurability()){
+								$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 1));
+							}else{
+								$this->inventory->setItemInHand($item);
+							}
 						}
+
+						$this->exhaust(0.3);
 					}
 				}
 
@@ -3259,6 +3264,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$pk->eid = 0;
 			$pk->event = EntityEventPacket::HURT_ANIMATION;
 			$this->dataPacket($pk);
+			
+			if($this->isSurvival()){
+				$this->exhaust(0.3);
+			}
 		}
 	}
 
