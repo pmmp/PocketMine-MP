@@ -126,6 +126,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	public function addFood(float $amount){
 		$attr = $this->attributeMap->getAttribute(Attribute::HUNGER);
+		$amount += $attr->getValue();
 		$amount = max(min($amount, $attr->getMaxValue()), $attr->getMinValue());
 		$this->setFood($amount);
 	}
@@ -147,7 +148,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	public function addSaturation(float $amount){
-		$this->attributeMap->getAttribute(Attribute::SATURATION)->setValue($amount, true);
+		$attr = $this->attributeMap->getAttribute(Attribute::SATURATION);
+		$attr->setValue($attr->getValue() + $amount, true);
 	}
 
 	public function getExhaustion() : float{
@@ -175,7 +177,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 		while($exhaustion >= 4.0){
 			$exhaustion -= 4.0;
-			$this->setExhaustion($exhaustion);
 
 			$saturation = $this->getSaturation();
 			if($saturation > 0){
@@ -189,6 +190,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				}
 			}
 		}
+		$this->setExhaustion($exhaustion);
 	}
 
 	public function getInventory(){
@@ -230,6 +232,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		}
 
 		parent::initEntity();
+	}
+
+	protected function addAttributes(){
+		parent::addAttributes();
 
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::SATURATION));
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXHAUSTION));

@@ -73,7 +73,7 @@ class Attribute{
 	 *
 	 * @return Attribute
 	 */
-	public static function addAttribute($id, $name, $minValue, $maxValue, $defaultValue, $shouldSend = false){
+	public static function addAttribute($id, $name, $minValue, $maxValue, $defaultValue, $shouldSend = true){
 		if($minValue > $maxValue or $defaultValue > $maxValue or $defaultValue < $minValue){
 			throw new \InvalidArgumentException("Invalid ranges: min value: $minValue, max value: $maxValue, $defaultValue: $defaultValue");
 		}
@@ -105,7 +105,7 @@ class Attribute{
 		return null;
 	}
 
-	private function __construct($id, $name, $minValue, $maxValue, $defaultValue, $shouldSend = false){
+	private function __construct($id, $name, $minValue, $maxValue, $defaultValue, $shouldSend = true){
 		$this->id = (int) $id;
 		$this->name = (string) $name;
 		$this->minValue = (float) $minValue;

@@ -32,6 +32,7 @@ use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\protocol\EntityEventPacket;
+use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\BlockIterator;
 
@@ -47,6 +48,8 @@ abstract class Living extends Entity implements Damageable{
 	protected function initEntity(){
 		parent::initEntity();
 
+		$this->addAttributes();
+
 		if(isset($this->namedtag->HealF)){
 			$this->namedtag->Health = new ShortTag("Health", (int) $this->namedtag["HealF"]);
 			unset($this->namedtag->HealF);
@@ -57,7 +60,9 @@ abstract class Living extends Entity implements Damageable{
 		}
 
 		$this->setHealth($this->namedtag["Health"]);
+	}
 
+	protected function addAttributes(){
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::ABSORPTION));
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::HEALTH));
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::MOVEMENT_SPEED));

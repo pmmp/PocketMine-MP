@@ -34,7 +34,6 @@ use pocketmine\event\block\SignChangeEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\EntityShootBowEvent;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\event\inventory\CraftItemEvent;
@@ -1205,14 +1204,20 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function entityBaseTick($tickDiff = 1){
-		parent::entityBaseTick($tickDiff);
+		$hasUpdate = parent::entityBaseTick($tickDiff);
+
 		$entries = $this->attributeMap->needSend();
 		if(count($entries) > 0){
 			$pk = new UpdateAttributesPacket();
 			$pk->entityId = 0;
 			$pk->entries = $entries;
 			$this->dataPacket($pk);
+			foreach($entries as $entry){
+				$entry->markSynchronized();
+			}
 		}
+
+		return $hasUpdate;
 	}
 
 	protected function checkGroundState($movX, $movY, $movZ, $dx, $dy, $dz){
@@ -3189,9 +3194,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public function setHealth($amount){
 		parent::setHealth($amount);
 		if($this->spawned === true){
-			$pk = new SetHealthPacket();
-			$pk->health = $this->getHealth();
-			$this->dataPacket($pk);
+//			$pk = new SetHealthPacket();
+//			$pk->health = $this->getHealth();
+//			$this->dataPacket($pk);
 		}
 	}
 

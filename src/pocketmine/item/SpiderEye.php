@@ -37,6 +37,6 @@ class SpiderEye extends Food{
 	}
 
 	public function getAdditionEffects() : array{
-		return Effect::getEffect(Effect::POISON)->setDuration(80);
+		return [Effect::getEffect(Effect::POISON)->setDuration(80)];
 	}
 }
