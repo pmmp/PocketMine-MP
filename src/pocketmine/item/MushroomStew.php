@@ -38,7 +38,7 @@ class MushroomStew extends Food{
 		return 7.2;
 	}
 
-	public function getResidue() : Item{
+	public function getResidue(){
 		return Item::get(Item::BOWL);
 	}
 }

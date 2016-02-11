@@ -67,7 +67,7 @@ class Fish extends Food{
 		return 0;
 	}
 
-	public function getAdditionEffects() : array{
+	public function getAdditionalEffects() : array{
 		return $this->meta === self::FISH_PUFFERFISH ? [
 			Effect::getEffect(Effect::HUNGER)->setDuration(300)->setAmplifier(2),
 			Effect::getEffect(Effect::NAUSEA)->setDuration(300)->setAmplifier(1),

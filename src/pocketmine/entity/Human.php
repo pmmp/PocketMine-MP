@@ -23,6 +23,7 @@ namespace pocketmine\entity;
 
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
+use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\Item as ItemItem;
@@ -170,10 +171,18 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * Increases a human's exhaustion level.
 	 *
 	 * @param float $amount
+	 * @param int   $cause
+	 *
+	 * @return float the amount of exhaustion level increased
 	 */
-	public function exhaust(float $amount){
+	public function exhaust(float $amount, int $cause = PlayerExhaustEvent::CAUSE_CUSTOM) : float{
+		$this->server->getPluginManager()->callEvent($ev = new PlayerExhaustEvent($this, $amount, $cause));
+		if($ev->isCancelled()){
+			return 0.0;
+		}
+
 		$exhaustion = $this->getExhaustion();
-		$exhaustion += $amount;
+		$exhaustion += $ev->getAmount();
 
 		while($exhaustion >= 4.0){
 			$exhaustion -= 4.0;
@@ -191,6 +200,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			}
 		}
 		$this->setExhaustion($exhaustion);
+
+		return $ev->getAmount();
 	}
 
 	public function getInventory(){
@@ -254,7 +265,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$this->foodTickTimer++;
 			if($this->foodTickTimer >= 80){
 				$this->heal(1, new EntityRegainHealthEvent($this, 1, EntityRegainHealthEvent::CAUSE_SATURATION));
-				$this->exhaust(3.0);
+				$this->exhaust(3.0, PlayerExhaustEvent::CAUSE_HEALTH_REGEN);
 				$this->foodTickTimer = 0;
 			}
 		}elseif($food === 0){

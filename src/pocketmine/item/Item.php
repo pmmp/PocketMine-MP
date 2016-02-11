@@ -1042,6 +1042,17 @@ class Item{
 		return $this->block !== null and $this->block->canBePlaced();
 	}
 
+	public function canBeConsumed() : bool{
+		return false;
+	}
+
+	public function canBeConsumedBy(Entity $entity) : bool{
+		return $this->canBeConsumed();
+	}
+
+	public function onConsume(Entity $entity){
+	}
+
 	public function getBlock() : Block{
 		if($this->block instanceof Block){
 			return clone $this->block;

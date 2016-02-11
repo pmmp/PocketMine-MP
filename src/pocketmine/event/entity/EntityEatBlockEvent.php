@@ -19,24 +19,31 @@
  *
 */
 
-namespace pocketmine\item;
+namespace pocketmine\event\entity;
 
-use pocketmine\entity\Effect;
+use pocketmine\block\Block;
+use pocketmine\entity\Entity;
+use pocketmine\item\FoodSource;
 
-class SpiderEye extends Food{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::SPIDER_EYE, $meta, $count, "Spider Eye");
+class EntityEatBlockEvent extends EntityEatEvent{
+	public function __construct(Entity $entity, FoodSource $foodSource){
+		if(!($foodSource instanceof Block)){
+			throw new \InvalidArgumentException("Food source must be a block");
+		}
+		parent::__construct($entity, $foodSource);
 	}
 
-	public function getFoodRestore() : int{
-		return 2;
+	/**
+	 * @return Block
+	 */
+	public function getResidue(){
+		return parent::getResidue();
 	}
 
-	public function getSaturationRestore() : float{
-		return 3.2;
-	}
-
-	public function getAdditionalEffects() : array{
-		return [Effect::getEffect(Effect::POISON)->setDuration(80)];
+	public function setResidue($residue){
+		if(!($residue instanceof Block)){
+			throw new \InvalidArgumentException("Eating a Block can only result in a Block residue");
+		}
+		parent::setResidue($residue);
 	}
 }

@@ -48,6 +48,7 @@ use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerDropItemEvent;
+use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerGameModeChangeEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerItemConsumeEvent;
@@ -75,7 +76,6 @@ use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\inventory\SimpleTransactionGroup;
-use pocketmine\item\Food;
 use pocketmine\item\Item;
 use pocketmine\level\ChunkLoader;
 use pocketmine\level\format\FullChunk;
@@ -2267,7 +2267,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 							$this->inventory->sendHeldItem($this->hasSpawned);
 						}
 
-						$this->exhaust(0.025);
+						$this->exhaust(0.025, PlayerExhaustEvent::CAUSE_MINING);
 					}
 					break;
 				}
@@ -2408,7 +2408,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 							}
 						}
 
-						$this->exhaust(0.3);
+						$this->exhaust(0.3, PlayerExhaustEvent::CAUSE_ATTACK);
 					}
 				}
 
@@ -2442,14 +2442,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					case EntityEventPacket::USE_ITEM: //Eating
 						$slot = $this->inventory->getItemInHand();
 
-						if($slot instanceof Food){
+						if($slot->canBeConsumed()){
 							$ev = new PlayerItemConsumeEvent($this, $slot);
-							if($this->getFood() >= $this->getMaxFood()){
+							if(!$slot->canBeConsumedBy($this)){
 								$ev->setCancelled();
 							}
 							$this->server->getPluginManager()->callEvent($ev);
 							if(!$ev->isCancelled()){
-								$slot->onEat($this);
+								$slot->onConsume($this);
 							}else{
 								$this->inventory->sendContents($this);
 							}
@@ -3226,7 +3226,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->dataPacket($pk);
 
 			if($this->isSurvival()){
-				$this->exhaust(0.3);
+				$this->exhaust(0.3, PlayerExhaustEvent::CAUSE_DAMAGE);
 			}
 		}
 	}
