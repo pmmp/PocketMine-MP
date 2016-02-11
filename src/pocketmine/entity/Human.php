@@ -94,7 +94,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	public function getFood() : float{
-		return (float) $this->attributeMap->getAttribute(Attribute::HUNGER)->getValue();
+		return $this->attributeMap->getAttribute(Attribute::HUNGER)->getValue();
 	}
 
 	/**
@@ -118,6 +118,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if(isset($reset)){
 			$this->foodTickTimer = 0;
 		}
+	}
+
+	public function getMaxFood() : float{
+		return $this->attributeMap->getAttribute(Attribute::HUNGER)->getMaxValue();
 	}
 
 	public function addFood(float $amount){
@@ -162,12 +166,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * Increases a human's exhaustion level.
-	 * TODO walk per meter: 0.01
-	 * TODO sneak per meter: 0.005
-	 * TODO swim per meter: 0.015
-	 * TODO sprint per meter: 0.1
-	 * TODO jump: 0.2
-	 * TODO regen per halfheart | food >= 18: 4.0
 	 *
 	 * @param float $amount
 	 */

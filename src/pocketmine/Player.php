@@ -76,6 +76,7 @@ use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\inventory\SimpleTransactionGroup;
+use pocketmine\item\Food;
 use pocketmine\item\Item;
 use pocketmine\level\ChunkLoader;
 use pocketmine\level\format\FullChunk;
@@ -2433,65 +2434,19 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false); //TODO: check if this should be true
 
 				switch($packet->event){
-					case 9: //Eating
-						$items = [ //TODO: change to hunger; add RabbitStew and RawRabbit and RottenFlesh
-							Item::APPLE => 4,
-							Item::MUSHROOM_STEW => 10,
-							Item::BEETROOT_SOUP => 10,
-							Item::BREAD => 5,
-							Item::RAW_PORKCHOP => 3,
-							Item::COOKED_PORKCHOP => 8,
-							Item::RAW_BEEF => 3,
-							Item::STEAK => 8,
-							Item::COOKED_CHICKEN => 6,
-							Item::RAW_CHICKEN => 2,
-							Item::MELON_SLICE => 2,
-							Item::GOLDEN_APPLE => 10,
-							Item::PUMPKIN_PIE => 8,
-							Item::CARROT => 4,
-							Item::POTATO => 1,
-							Item::BAKED_POTATO => 6,
-							Item::COOKIE => 2,
-							Item::COOKED_FISH => [
-								0 => 5,
-								1 => 6
-							],
-							Item::RAW_FISH => [
-								0 => 2,
-								1 => 2,
-								2 => 1,
-								3 => 1
-							],
-						];
+					case EntityEventPacket::USE_ITEM: //Eating
 						$slot = $this->inventory->getItemInHand();
-						if($this->getHealth() < $this->getMaxHealth() and isset($items[$slot->getId()])){
-							$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $slot));
-							if($ev->isCancelled()){
+
+						if($slot instanceof Food){
+							$ev = new PlayerItemConsumeEvent($this, $slot);
+							if($this->getFood() >= $this->getMaxFood()){
+								$ev->setCancelled();
+							}
+							$this->server->getPluginManager()->callEvent($ev);
+							if(!$ev->isCancelled()){
+								$slot->onEat($this);
+							}else{
 								$this->inventory->sendContents($this);
-								break;
-							}
-
-							$pk = new EntityEventPacket();
-							$pk->eid = $this->getId();
-							$pk->event = EntityEventPacket::USE_ITEM;
-							$this->dataPacket($pk);
-							Server::broadcastPacket($this->getViewers(), $pk);
-
-							$amount = $items[$slot->getId()];
-							if(is_array($amount)){
-								$amount = isset($amount[$slot->getDamage()]) ? $amount[$slot->getDamage()] : 0;
-							}
-							$ev = new EntityRegainHealthEvent($this, $amount, EntityRegainHealthEvent::CAUSE_EATING);
-							$this->heal($ev->getAmount(), $ev);
-
-							--$slot->count;
-							$this->inventory->setItemInHand($slot);
-							if($slot->getId() === Item::MUSHROOM_STEW or $slot->getId() === Item::BEETROOT_SOUP){
-								$this->inventory->addItem(Item::get(Item::BOWL, 0, 1));
-							}elseif($slot->getId() === Item::RAW_FISH and $slot->getDamage() === 3){ //Pufferfish
-								//$this->addEffect(Effect::getEffect(Effect::HUNGER)->setAmplifier(2)->setDuration(15 * 20));
-								$this->addEffect(Effect::getEffect(Effect::NAUSEA)->setAmplifier(1)->setDuration(15 * 20));
-								$this->addEffect(Effect::getEffect(Effect::POISON)->setAmplifier(3)->setDuration(60 * 20));
 							}
 						}
 						break;
@@ -3264,7 +3219,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$pk->eid = 0;
 			$pk->event = EntityEventPacket::HURT_ANIMATION;
 			$this->dataPacket($pk);
-			
+
 			if($this->isSurvival()){
 				$this->exhaust(0.3);
 			}

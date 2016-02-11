@@ -22,7 +22,10 @@
 namespace pocketmine\item;
 
 use pocketmine\entity\Effect;
+use pocketmine\entity\Human;
+use pocketmine\network\protocol\EntityEventPacket;
 use pocketmine\Player;
+use pocketmine\Server;
 
 abstract class Food extends Item{
 	public abstract function getFoodRestore() : int;
@@ -33,8 +36,9 @@ abstract class Food extends Item{
 		if($this->getCount() === 1){
 			return Item::get(0);
 		}else{
-			$this->count--;
-			return $this;
+			$new = clone $this;
+			$new->count--;
+			return $new;
 		}
 	}
 
@@ -45,6 +49,20 @@ abstract class Food extends Item{
 		return [];
 	}
 
-	public function onEat(Player $player){
+	public function onEat(Human $human){
+		$pk = new EntityEventPacket();
+		$pk->eid = $human->getId();
+		$pk->event = EntityEventPacket::USE_ITEM;
+		if($human instanceof Player){
+			$human->dataPacket($pk);
+		}
+		Server::broadcastPacket($human->getViewers(), $pk);
+		
+		$human->addSaturation($this->getSaturationRestore());
+		$human->addFood($this->getFoodRestore());
+		foreach($this->getAdditionEffects() as $effect){
+			$human->addEffect($effect);
+		}
+		$human->getInventory()->setItemInHand($this->getResidue());
 	}
 }

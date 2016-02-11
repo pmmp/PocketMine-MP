@@ -30,7 +30,7 @@ class CookedFish extends Fish{
 		return $this->meta === self::FISH_SALMON ? 6 : 5;
 	}
 
-	public function getSaturationRestore() : int{
+	public function getSaturationRestore() : float{
 		return $this->meta === self::FISH_SALMON ? 9.6 : 6;
 	}
 }
