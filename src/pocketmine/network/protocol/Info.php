@@ -30,7 +30,7 @@ interface Info{
 	/**
 	 * Actual Minecraft: PE protocol version
 	 */
-	const CURRENT_PROTOCOL = 41;
+	const CURRENT_PROTOCOL = 45;
 
 	const LOGIN_PACKET = 0x8f;
 	const PLAY_STATUS_PACKET = 0x90;
@@ -91,6 +91,8 @@ interface Info{
 	// const MAP_INFO_REQUEST_PACKET = 0xc7;
 	// const REQUEST_CHUNK_RADIUS_PACKET = 0xc8;
 	// const CHUNK_RADIUS_UPDATE_PACKET = 0xc9;
+	// const ITEM_FRAME_DROP_ITEM_PACKET = 0xca;
+	// const REPLACE_SELECTED_ITEM_PACKET = 0xcb;
 }
 
 
