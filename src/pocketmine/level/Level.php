@@ -2497,6 +2497,8 @@ class Level implements ChunkManager, Metadatable{
 	 * @param bool $generate
 	 *
 	 * @return bool
+	 *
+	 * @throws \InvalidStateException
 	 */
 	public function loadChunk($x, $z, $generate = true){
 		if(isset($this->chunks[$index = Level::chunkHash($x, $z)])){
