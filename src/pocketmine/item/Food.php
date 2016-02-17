@@ -33,7 +33,7 @@ abstract class Food extends Item implements FoodSource{
 		return true;
 	}
 
-	public function canBeConsumedBy(Entity $entity){
+	public function canBeConsumedBy(Entity $entity) : bool{
 		return $entity instanceof Human and $entity->getFood() < $entity->getMaxFood();
 	}
 

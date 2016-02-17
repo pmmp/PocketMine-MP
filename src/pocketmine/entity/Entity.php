@@ -529,7 +529,10 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->scheduleUpdate();
 
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::KNOCKBACK_RESISTANCE));
+		$this->addAttributes();
+	}
+
+	protected function addAttributes(){
 	}
 
 	/**
