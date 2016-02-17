@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
 class DoubleWoodSlab extends Solid{
 
