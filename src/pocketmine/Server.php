@@ -1029,6 +1029,8 @@ class Server{
 	 * @param bool  $forceUnload
 	 *
 	 * @return bool
+	 *
+	 * @throws \InvalidStateException
 	 */
 	public function unloadLevel(Level $level, $forceUnload = false){
 		if($level === $this->getDefaultLevel() and !$forceUnload){
