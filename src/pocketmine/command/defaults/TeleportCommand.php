@@ -44,6 +44,7 @@ class TeleportCommand extends VanillaCommand{
 			return true;
 		}
 
+		$args = array_filter($args);
 		if(count($args) < 1 or count($args) > 6){
 			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 
