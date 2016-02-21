@@ -72,12 +72,14 @@ class Item extends Entity{
 			$this->thrower = $this->namedtag["Thrower"];
 		}
 
-		assert($this->namedtag->Item instanceof CompoundTag);
 
 		if(!isset($this->namedtag->Item)){
 			$this->close();
 			return;
 		}
+
+		assert($this->namedtag->Item instanceof CompoundTag);
+
 		$this->item = NBT::getItemHelper($this->namedtag->Item);
 
 
