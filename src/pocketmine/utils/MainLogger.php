@@ -48,7 +48,7 @@ class MainLogger extends \AttachableThreadedLogger{
 		touch($logFile);
 		$this->logFile = $logFile;
 		$this->logDebug = (bool) $logDebug;
-		$this->logStream = \ThreadedFactory::create();
+		$this->logStream = new \Threaded;
 		$this->start();
 	}
 
@@ -101,7 +101,7 @@ class MainLogger extends \AttachableThreadedLogger{
 		$this->logDebug = (bool) $logDebug;
 	}
 
-	public function logException(\Exception $e, $trace = null){
+	public function logException(\Throwable $e, $trace = null){
 		if($trace === null){
 			$trace = $e->getTrace();
 		}

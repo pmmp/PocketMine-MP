@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  *
  *  ____            _        _   __  __ _                  __  __ ____
  * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
@@ -14,35 +14,22 @@
  * (at your option) any later version.
  *
  * @author PocketMine Team
- * @link   http://www.pocketmine.net/
+ * @link http://www.pocketmine.net/
  *
  *
- */
+*/
 
-namespace pocketmine\event\entity;
+namespace pocketmine\block;
 
-use pocketmine\entity\Entity;
-use pocketmine\Event;
-use pocketmine\event\Cancellable;
-use pocketmine\math\Vector3;
+class RedstoneTorch extends Solid {
 
-/**
- * @deprecated
- */
-class EntityMoveEvent extends EntityEvent implements Cancellable{
-	public static $handlerList = null;
+    protected $id = self::REDSTONE_TORCH;
 
-	/** @var \pocketmine\math\Vector3 */
-	private $pos;
+    public function __construct($meta = 0){
+        $this->meta = $meta;
+    }
 
-	public function __construct(Entity $entity, Vector3 $pos){
-		$this->entity = $entity;
-		$this->pos = $pos;
-	}
-
-	public function getVector(){
-		return $this->pos;
-	}
-
-
+    public function getName(){
+        return "Redstone Torch";
+    }
 }

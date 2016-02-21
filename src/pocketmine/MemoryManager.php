@@ -55,13 +55,6 @@ class MemoryManager{
 	private $chunkCache;
 	private $cacheTrigger;
 
-	/** @var \WeakRef[] */
-	private $leakWatch = [];
-
-	private $leakInfo = [];
-
-	private $leakSeed = 0;
-
 	public function __construct(Server $server){
 		$this->server = $server;
 
@@ -212,87 +205,6 @@ class MemoryManager{
 		Timings::$garbageCollectorTimer->stopTiming();
 
 		return $cycles;
-	}
-
-	/**
-	 * @param object $object
-	 *
-	 * @return string Object identifier for future checks
-	 */
-	public function addObjectWatcher($object){
-		if(!is_object($object)){
-			throw new \InvalidArgumentException("Not an object!");
-		}
-
-
-		$identifier = spl_object_hash($object) . ":" . get_class($object);
-
-		if(isset($this->leakInfo[$identifier])){
-			return $this->leakInfo["id"];
-		}
-
-		$this->leakInfo[$identifier] = [
-			"id" => $id = md5($identifier . ":" . $this->leakSeed++),
-			"class" => get_class($object),
-			"hash" => $identifier
-		];
-		$this->leakInfo[$id] = $this->leakInfo[$identifier];
-
-		$this->leakWatch[$id] = new \WeakRef($object);
-
-		return $id;
-	}
-
-	public function isObjectAlive($id){
-		if(isset($this->leakWatch[$id])){
-			return $this->leakWatch[$id]->valid();
-		}
-
-		return false;
-	}
-
-	public function removeObjectWatch($id){
-		if(!isset($this->leakWatch[$id])){
-			return;
-		}
-		unset($this->leakInfo[$this->leakInfo[$id]["hash"]]);
-		unset($this->leakInfo[$id]);
-		unset($this->leakWatch[$id]);
-	}
-
-	public function doObjectCleanup(){
-		foreach($this->leakWatch as $id => $w){
-			if(!$w->valid()){
-				$this->removeObjectWatch($id);
-			}
-		}
-	}
-
-	public function getObjectInformation($id, $includeObject = false){
-		if(!isset($this->leakWatch[$id])){
-			return null;
-		}
-
-		$valid = false;
-		$references = 0;
-		$object = null;
-
-		if($this->leakWatch[$id]->acquire()){
-			$object = $this->leakWatch[$id]->get();
-			$this->leakWatch[$id]->release();
-
-			$valid = true;
-			$references = getReferenceCount($object, false);
-		}
-
-		return [
-			"id" => $id,
-			"class" => $this->leakInfo[$id]["class"],
-			"hash" => $this->leakInfo[$id]["hash"],
-			"valid" => $valid,
-			"references" => $references,
-			"object" => $includeObject ? $object : null
-		];
 	}
 
 	public function dumpServerMemory($outputFolder, $maxNesting, $maxStringSize){

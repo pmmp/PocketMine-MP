@@ -29,9 +29,9 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
-use pocketmine\nbt\tag\Compound;
-use pocketmine\nbt\tag\Int;
-use pocketmine\nbt\tag\String;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\utils\ChunkException;
 
 abstract class Tile extends Position{
@@ -70,12 +70,12 @@ abstract class Tile extends Position{
 	/**
 	 * @param string    $type
 	 * @param FullChunk $chunk
-	 * @param Compound  $nbt
+	 * @param CompoundTag  $nbt
 	 * @param           $args
 	 *
 	 * @return Tile
 	 */
-	public static function createTile($type, FullChunk $chunk, Compound $nbt, ...$args){
+	public static function createTile($type, FullChunk $chunk, CompoundTag $nbt, ...$args){
 		if(isset(self::$knownTiles[$type])){
 			$class = self::$knownTiles[$type];
 			return new $class($chunk, $nbt, ...$args);
@@ -109,10 +109,8 @@ abstract class Tile extends Position{
 		return self::$shortNames[static::class];
 	}
 
-	public function __construct(FullChunk $chunk, Compound $nbt){
-		if($chunk === null or $chunk->getProvider() === null){
-			throw new ChunkException("Invalid garbage Chunk given to Tile");
-		}
+	public function __construct(FullChunk $chunk, CompoundTag $nbt){
+		assert($chunk !== null and $chunk->getProvider() !== null);
 
 		$this->timings = Timings::getTileEntityTimings($this);
 
@@ -137,10 +135,10 @@ abstract class Tile extends Position{
 	}
 
 	public function saveNBT(){
-		$this->namedtag->id = new String("id", $this->getSaveId());
-		$this->namedtag->x = new Int("x", $this->x);
-		$this->namedtag->y = new Int("y", $this->y);
-		$this->namedtag->z = new Int("z", $this->z);
+		$this->namedtag->id = new StringTag("id", $this->getSaveId());
+		$this->namedtag->x = new IntTag("x", $this->x);
+		$this->namedtag->y = new IntTag("y", $this->y);
+		$this->namedtag->z = new IntTag("z", $this->z);
 	}
 
 	/**

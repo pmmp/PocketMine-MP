@@ -84,6 +84,7 @@ network:
  upnp-forwarding: false
 
 debug:
+ #To enable assertion execution, set zend.assertions in your php.ini to 1
  #If > 1, it will show debug messages in the console
  level: 1
  #Enables /status, /gc

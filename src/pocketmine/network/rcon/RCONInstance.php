@@ -31,6 +31,11 @@ class RCONInstance extends Thread{
 	private $socket;
 	private $password;
 	private $maxClients;
+	private $waiting;
+
+	public function isWaiting(){
+		return $this->waiting === true;
+	}
 
 
 	public function __construct($socket, $password, $maxClients = 50){
@@ -85,7 +90,9 @@ class RCONInstance extends Thread{
 	public function run(){
 
 		while($this->stop !== true){
-			usleep(2000);
+			$this->synchronized(function(){
+				$this->wait(2000);
+			});
 			$r = [$socket = $this->socket];
 			$w = null;
 			$e = null;
@@ -135,8 +142,10 @@ class RCONInstance extends Thread{
 									socket_getpeername($client, $addr, $port);
 									$this->response = "[INFO] Successful Rcon connection from: /$addr:$port";
 									$this->synchronized(function (){
+										$this->waiting = true;
 										$this->wait();
 									});
+									$this->waiting = false;
 									$this->response = "";
 									$this->writePacket($client, $requestID, 2, "");
 									$this->{"status" . $n} = 1;
@@ -154,15 +163,17 @@ class RCONInstance extends Thread{
 								if(strlen($payload) > 0){
 									$this->cmd = ltrim($payload);
 									$this->synchronized(function (){
+										$this->waiting = true;
 										$this->wait();
 									});
+									$this->waiting = false;
 									$this->writePacket($client, $requestID, 0, str_replace("\n", "\r\n", trim($this->response)));
 									$this->response = "";
 									$this->cmd = "";
 								}
 								break;
 						}
-						usleep(1);
+
 					}else{
 						@socket_set_option($client, SOL_SOCKET, SO_LINGER, ["l_onoff" => 1, "l_linger" => 1]);
 						@socket_shutdown($client, 2);

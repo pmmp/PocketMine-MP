@@ -22,7 +22,7 @@
 namespace pocketmine\entity;
 
 
-use pocketmine\nbt\tag\Int;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
@@ -76,7 +76,7 @@ class Villager extends Creature implements NPC, Ageable{
 	 * @param $profession
 	 */
 	public function setProfession($profession){
-		$this->namedtag->Profession = new Int("Profession", $profession);
+		$this->namedtag->Profession = new IntTag("Profession", $profession);
 	}
 
 	public function getProfession(){

@@ -25,26 +25,36 @@ use pocketmine\Thread;
 
 class CommandReader extends Thread{
 	private $readline;
-
 	/** @var \Threaded */
 	protected $buffer;
+	private $shutdown = false;
 
 	public function __construct(){
-		$this->buffer = \ThreadedFactory::create();
+		$this->buffer = new \Threaded;
 		$this->start();
+	}
+
+	public function shutdown(){
+		$this->shutdown = true;
 	}
 
 	private function readLine(){
 		if(!$this->readline){
-			$line = trim(fgets(fopen("php://stdin", "r")));
+			global $stdin;
+
+			if(!is_resource($stdin)){
+				return "";
+			}
+
+			return trim(fgets($stdin));
 		}else{
 			$line = trim(readline("> "));
 			if($line != ""){
 				readline_add_history($line);
 			}
-		}
 
-		return $line;
+			return $line;
+		}
 	}
 
 	/**
@@ -65,15 +75,20 @@ class CommandReader extends Thread{
 		if(extension_loaded("readline") and !isset($opts["disable-readline"])){
 			$this->readline = true;
 		}else{
+			global $stdin;
+			$stdin = fopen("php://stdin", "r");
+			stream_set_blocking($stdin, 0);
 			$this->readline = false;
 		}
 
 		$lastLine = microtime(true);
-		while(true){
+		while(!$this->shutdown){
 			if(($line = $this->readLine()) !== ""){
 				$this->buffer[] = preg_replace("#\\x1b\\x5b([^\\x1b]*\\x7e|[\\x40-\\x50])#", "", $line);
-			}elseif((microtime(true) - $lastLine) <= 0.1){ //Non blocking! Sleep to save CPU
-				usleep(40000);
+			}elseif(!$this->shutdown and (microtime(true) - $lastLine) <= 0.1){ //Non blocking! Sleep to save CPU
+				$this->synchronized(function(){
+					$this->wait(10000);
+				});
 			}
 
 			$lastLine = microtime(true);

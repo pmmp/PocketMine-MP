@@ -32,11 +32,11 @@ use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Math;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\Byte;
-use pocketmine\nbt\tag\Compound;
-use pocketmine\nbt\tag\Double;
-use pocketmine\nbt\tag\Enum;
-use pocketmine\nbt\tag\Float;
+use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\DoubleTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\FloatTag;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\ExplodePacket;
 
@@ -61,18 +61,6 @@ class Explosion{
 		$this->source = $center;
 		$this->size = max($size, 0);
 		$this->what = $what;
-	}
-
-	/**
-	 * @deprecated
-	 * @return bool
-	 */
-	public function explode(){
-		if($this->explodeA()){
-			return $this->explodeB();
-		}
-
-		return false;
 	}
 
 	/**
@@ -186,22 +174,22 @@ class Explosion{
 		foreach($this->affectedBlocks as $block){
 			if($block->getId() === Block::TNT){
 				$mot = (new Random())->nextSignedFloat() * M_PI * 2;
-				$tnt = Entity::createEntity("PrimedTNT", $this->level->getChunk($block->x >> 4, $block->z >> 4), new Compound("", [
-					"Pos" => new Enum("Pos", [
-						new Double("", $block->x + 0.5),
-						new Double("", $block->y),
-						new Double("", $block->z + 0.5)
+				$tnt = Entity::createEntity("PrimedTNT", $this->level->getChunk($block->x >> 4, $block->z >> 4), new CompoundTag("", [
+					"Pos" => new ListTag("Pos", [
+						new DoubleTag("", $block->x + 0.5),
+						new DoubleTag("", $block->y),
+						new DoubleTag("", $block->z + 0.5)
 					]),
-					"Motion" => new Enum("Motion", [
-						new Double("", -sin($mot) * 0.02),
-						new Double("", 0.2),
-						new Double("", -cos($mot) * 0.02)
+					"Motion" => new ListTag("Motion", [
+						new DoubleTag("", -sin($mot) * 0.02),
+						new DoubleTag("", 0.2),
+						new DoubleTag("", -cos($mot) * 0.02)
 					]),
-					"Rotation" => new Enum("Rotation", [
-						new Float("", 0),
-						new Float("", 0)
+					"Rotation" => new ListTag("Rotation", [
+						new FloatTag("", 0),
+						new FloatTag("", 0)
 					]),
-					"Fuse" => new Byte("Fuse", mt_rand(10, 30))
+					"Fuse" => new ByteTag("Fuse", mt_rand(10, 30))
 				]));
 				$tnt->spawnToAll();
 			}elseif(mt_rand(0, 100) < $yield){

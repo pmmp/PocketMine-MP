@@ -22,11 +22,11 @@
 namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\Enum as TagEnum;
+use pocketmine\nbt\tag\ListTag as TagEnum;
 
 #include <rules/NBT.h>
 
-class Enum extends NamedTag implements \ArrayAccess, \Countable{
+class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 
 	private $tagType;
 
@@ -103,7 +103,7 @@ class Enum extends NamedTag implements \ArrayAccess, \Countable{
 	}
 
 	public function getType(){
-		return NBT::TAG_Enum;
+		return NBT::TAG_List;
 	}
 
 	public function setTagType($type){
@@ -121,57 +121,57 @@ class Enum extends NamedTag implements \ArrayAccess, \Countable{
 		for($i = 0; $i < $size and !$nbt->feof(); ++$i){
 			switch($this->tagType){
 				case NBT::TAG_Byte:
-					$tag = new Byte("");
+					$tag = new ByteTag("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_Short:
-					$tag = new Short("");
+					$tag = new ShortTag("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_Int:
-					$tag = new Int("");
+					$tag = new IntTag("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_Long:
-					$tag = new Long("");
+					$tag = new LongTag("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_Float:
-					$tag = new Float("");
+					$tag = new FloatTag("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_Double:
-					$tag = new Double("");
+					$tag = new DoubleTag("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_ByteArray:
-					$tag = new ByteArray("");
+					$tag = new ByteArrayTag("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_String:
-					$tag = new String("");
+					$tag = new StringTag("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
-				case NBT::TAG_Enum:
+				case NBT::TAG_List:
 					$tag = new TagEnum("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_Compound:
-					$tag = new Compound("");
+					$tag = new CompoundTag("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_IntArray:
-					$tag = new IntArray("");
+					$tag = new IntArrayTag("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;

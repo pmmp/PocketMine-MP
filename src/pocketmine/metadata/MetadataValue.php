@@ -24,18 +24,18 @@ namespace pocketmine\metadata;
 use pocketmine\plugin\Plugin;
 
 abstract class MetadataValue{
-	/** @var \WeakRef<Plugin> */
-	protected $owningPlugin;
+	/** @var Plugin */
+	private $owningPlugin;
 
 	protected function __construct(Plugin $owningPlugin){
-		$this->owningPlugin = new \WeakRef($owningPlugin);
+		$this->owningPlugin = $owningPlugin;
 	}
 
 	/**
 	 * @return Plugin
 	 */
 	public function getOwningPlugin(){
-		return $this->owningPlugin->get();
+		return $this->owningPlugin;
 	}
 
 	/**

@@ -57,7 +57,7 @@ class InventoryType{
 		}
 
 		static::$default[static::CHEST] = new InventoryType(27, "Chest", 0);
-		static::$default[static::DOUBLE_CHEST] = new InventoryType(27 + 27, "Double Chest", 0);
+		static::$default[static::DOUBLE_CHEST] = new InventoryType(27 + 27, "DoubleTag Chest", 0);
 		static::$default[static::PLAYER] = new InventoryType(40, "Player", 0); //27 CONTAINER, 4 ARMOR (9 reference HOTBAR slots)
 		static::$default[static::FURNACE] = new InventoryType(3, "Furnace", 2);
 		static::$default[static::CRAFTING] = new InventoryType(5, "Crafting", 1); //4 CRAFTING slots, 1 RESULT

@@ -27,7 +27,7 @@ use pocketmine\block\Block;
  * Class used for Items that can be Blocks
  */
 class ItemBlock extends Item{
-	public function __construct(Block $block, $meta = 0, $count = 1){
+	public function __construct(Block $block, $meta = 0, int $count = 1){
 		$this->block = $block;
 		parent::__construct($block->getId(), $block->getDamage(), $count, $block->getName());
 	}
@@ -41,7 +41,7 @@ class ItemBlock extends Item{
 		$this->block = clone $this->block;
 	}
 
-	public function getBlock(){
+	public function getBlock() : Block{
 		return $this->block;
 	}
 

@@ -63,9 +63,9 @@ class Block extends Position implements Metadatable{
 	const GOLD_ORE = 14;
 	const IRON_ORE = 15;
 	const COAL_ORE = 16;
+	const LOG = 17;
 	const WOOD = 17;
 	const TRUNK = 17;
-	const LOG = 17;
 	const LEAVES = 18;
 	const LEAVE = 18;
 	const SPONGE = 19;
@@ -74,18 +74,18 @@ class Block extends Position implements Metadatable{
 	const LAPIS_BLOCK = 22;
 
 	const SANDSTONE = 24;
-
+	const NOTE_BLOCK = 25;
 	const BED_BLOCK = 26;
-
-
+	const POWERED_RAIL = 27;
+	const DETECTOR_RAIL = 28;
 	const COBWEB = 30;
 	const TALL_GRASS = 31;
 	const BUSH = 32;
 	const DEAD_BUSH = 32;
 	const WOOL = 35;
 	const DANDELION = 37;
-	const ROSE = 38;
 	const POPPY = 38;
+	const ROSE = 38;
 	const RED_FLOWER = 38;
 	const BROWN_MUSHROOM = 39;
 	const RED_MUSHROOM = 40;
@@ -110,7 +110,7 @@ class Block extends Position implements Metadatable{
 	const OAK_WOOD_STAIRS = 53;
 	const OAK_WOODEN_STAIRS = 53;
 	const CHEST = 54;
-
+	const REDSTONE_WIRE = 55;
 	const DIAMOND_ORE = 56;
 	const DIAMOND_BLOCK = 57;
 	const CRAFTING_TABLE = 58;
@@ -125,17 +125,20 @@ class Block extends Position implements Metadatable{
 	const WOODEN_DOOR_BLOCK = 64;
 	const WOOD_DOOR_BLOCK = 64;
 	const LADDER = 65;
-
+	const RAIL = 66;
 	const COBBLE_STAIRS = 67;
 	const COBBLESTONE_STAIRS = 67;
 	const WALL_SIGN = 68;
-
+	const LEVER = 69;
+	const STONE_PRESSURE_PLATE = 70;
 	const IRON_DOOR_BLOCK = 71;
-
+	const WOODEN_PRESSURE_PLATE = 72;
 	const REDSTONE_ORE = 73;
 	const GLOWING_REDSTONE_ORE = 74;
 	const LIT_REDSTONE_ORE = 74;
-
+	const REDSTONE_TORCH = 75;
+	const LIT_REDSTONE_TORCH = 76;
+	const STONE_BUTTON = 77;
 	const SNOW = 78;
 	const SNOW_LAYER = 78;
 	const ICE = 79;
@@ -152,18 +155,17 @@ class Block extends Position implements Metadatable{
 	const GLOWSTONE = 89;
 	const GLOWSTONE_BLOCK = 89;
 
-
+	const PORTAL_BLOCK = 90;
 	const LIT_PUMPKIN = 91;
 	const JACK_O_LANTERN = 91;
 	const CAKE_BLOCK = 92;
 
 	const TRAPDOOR = 96;
-	const WOODEN_TRAPDOOR = 96;
-	const WOOD_TRAPDOOR = 96;
-
+	const MONSTER_EGG_BLOCK = 97;
 	const STONE_BRICKS = 98;
 	const STONE_BRICK = 98;
-
+	const BROWN_MUSHROOM_BLOCK = 99;
+	const RED_MUSHROOM_BLOCK = 100;
 	const IRON_BAR = 101;
 	const IRON_BARS = 101;
 	const GLASS_PANE = 102;
@@ -183,17 +185,24 @@ class Block extends Position implements Metadatable{
 	const NETHER_BRICK_BLOCK = 112;
 	const NETHER_BRICK_FENCE = 113;
 	const NETHER_BRICKS_STAIRS = 114;
-
+	const NETHER_WART_BLOCK = 115;
 	const ENCHANTING_TABLE = 116;
 	const ENCHANT_TABLE = 116;
 	const ENCHANTMENT_TABLE = 116;
 	const BREWING_STAND = 117;
+
 	const END_PORTAL_FRAME = 120;
 	const END_STONE = 121;
+	const REDSTONE_LAMP = 122;
+	const LIT_REDSTONE_LAMP = 123;
 
+	const ACTIVATOR_RAIL = 126;
+	const COCOA_BLOCK = 127;
 	const SANDSTONE_STAIRS = 128;
 	const EMERALD_ORE = 129;
 
+	const TRIPWIRE_HOOK = 131;
+	const TRIPWIRE = 132;
 	const EMERALD_BLOCK = 133;
 	const SPRUCE_WOOD_STAIRS = 134;
 	const SPRUCE_WOODEN_STAIRS = 134;
@@ -208,11 +217,16 @@ class Block extends Position implements Metadatable{
 	const FLOWER_POT_BLOCK = 140;
 	const CARROT_BLOCK = 141;
 	const POTATO_BLOCK = 142;
-
+	const WOODEN_BUTTON = 143;
+	const MOB_HEAD_BLOCK = 144;
 	const ANVIL = 145;
 	const TRAPPED_CHEST = 146;
+	const WEIGHTED_PRESSURE_PLATE_LIGHT = 147;
+	const WEIGHTED_PRESSURE_PLATE_HEAVY = 148;
 
+	const DAYLIGHT_SENSOR = 151;
 	const REDSTONE_BLOCK = 152;
+	const NETHER_QUARTZ_ORE = 153;
 
 	const QUARTZ_BLOCK = 155;
 	const QUARTZ_STAIRS = 156;
@@ -238,12 +252,15 @@ class Block extends Position implements Metadatable{
 	const DARK_OAK_WOODEN_STAIRS = 164;
 
 	const IRON_TRAPDOOR = 167;
+
 	const HAY_BALE = 170;
 	const CARPET = 171;
 	const HARDENED_CLAY = 172;
 	const COAL_BLOCK = 173;
 	const PACKED_ICE = 174;
 	const DOUBLE_PLANT = 175;
+
+	const INVERTED_DAYLIGHT_SENSOR = 178;
 
 	const FENCE_GATE_SPRUCE = 183;
 	const FENCE_GATE_BIRCH = 184;
@@ -280,32 +297,6 @@ class Block extends Position implements Metadatable{
 	/** @var AxisAlignedBB */
 	public $boundingBox = null;
 
-	/**
-	 * Backwards-compatibility with old way to define block properties
-	 *
-	 * @deprecated
-	 *
-	 * @param string $key
-	 *
-	 * @return mixed
-	 */
-	public function __get($key){
-		static $map = [
-			"hardness" => "getHardness",
-			"lightLevel" => "getLightLevel",
-			"frictionFactor" => "getFrictionFactor",
-			"name" => "getName",
-			"isPlaceable" => "canBePlaced",
-			"isReplaceable" => "canBeReplaced",
-			"isTransparent" => "isTransparent",
-			"isSolid" => "isSolid",
-			"isFlowable" => "canBeFlowedInto",
-			"isActivable" => "canBeActivated",
-			"hasEntityCollision" => "hasEntityCollision"
-		];
-		return isset($map[$key]) ? $this->{$map[$key]}() : null;
-	}
-
 	public static function init(){
 		if(self::$list === null){
 			self::$list = new \SplFixedArray(256);
@@ -338,8 +329,13 @@ class Block extends Position implements Metadatable{
 			self::$list[self::GLASS] = Glass::class;
 			self::$list[self::LAPIS_ORE] = LapisOre::class;
 			self::$list[self::LAPIS_BLOCK] = Lapis::class;
+			self::$list[self::ACTIVATOR_RAIL] = ActivatorRail::class;
+			self::$list[self::COCOA_BLOCK] = CocoaBlock::class;
 			self::$list[self::SANDSTONE] = Sandstone::class;
+			self::$list[self::NOTE_BLOCK] = NoteBlock::class;
 			self::$list[self::BED_BLOCK] = Bed::class;
+			self::$list[self::POWERED_RAIL] = PoweredRail::class;
+			self::$list[self::DETECTOR_RAIL] = DetectorRail::class;
 			self::$list[self::COBWEB] = Cobweb::class;
 			self::$list[self::TALL_GRASS] = TallGrass::class;
 			self::$list[self::DEAD_BUSH] = DeadBush::class;
@@ -373,14 +369,20 @@ class Block extends Position implements Metadatable{
 			self::$list[self::SIGN_POST] = SignPost::class;
 			self::$list[self::WOOD_DOOR_BLOCK] = WoodDoor::class;
 			self::$list[self::LADDER] = Ladder::class;
+			self::$list[self::RAIL] = Rail::class;
 
 			self::$list[self::COBBLESTONE_STAIRS] = CobblestoneStairs::class;
 			self::$list[self::WALL_SIGN] = WallSign::class;
-
+			self::$list[self::LEVER] = Lever::class;
+			self::$list[self::STONE_PRESSURE_PLATE] = StonePressurePlate::class;
 			self::$list[self::IRON_DOOR_BLOCK] = IronDoor::class;
+			self::$list[self::WOODEN_PRESSURE_PLATE] = WoodenPressurePlate::class;
 			self::$list[self::REDSTONE_ORE] = RedstoneOre::class;
 			self::$list[self::GLOWING_REDSTONE_ORE] = GlowingRedstoneOre::class;
 
+			self::$list[self::REDSTONE_TORCH] = RedstoneTorch::class;
+			self::$list[self::LIT_REDSTONE_TORCH] = LitRedstoneTorch::class;
+			self::$list[self::STONE_BUTTON] = StoneButton::class;
 			self::$list[self::SNOW_LAYER] = SnowLayer::class;
 			self::$list[self::ICE] = Ice::class;
 			self::$list[self::SNOW_BLOCK] = Snow::class;
@@ -421,9 +423,12 @@ class Block extends Position implements Metadatable{
 			self::$list[self::BREWING_STAND] = BrewingStand::class;
 			self::$list[self::END_PORTAL_FRAME] = EndPortalFrame::class;
 			self::$list[self::END_STONE] = EndStone::class;
+			self::$list[self::REDSTONE_LAMP] = RedstoneLamp::class;
+			self::$list[self::LIT_REDSTONE_LAMP] = LitRedstoneLamp::class;
 			self::$list[self::SANDSTONE_STAIRS] = SandstoneStairs::class;
 			self::$list[self::EMERALD_ORE] = EmeraldOre::class;
-
+			self::$list[self::TRIPWIRE_HOOK] = TripwireHook::class;
+			self::$list[self::TRIPWIRE] = Tripwire::class;
 			self::$list[self::EMERALD_BLOCK] = Emerald::class;
 			self::$list[self::SPRUCE_WOOD_STAIRS] = SpruceWoodStairs::class;
 			self::$list[self::BIRCH_WOOD_STAIRS] = BirchWoodStairs::class;
@@ -432,8 +437,13 @@ class Block extends Position implements Metadatable{
 			self::$list[self::FLOWER_POT_BLOCK] = FlowerPot::class;
 			self::$list[self::CARROT_BLOCK] = Carrot::class;
 			self::$list[self::POTATO_BLOCK] = Potato::class;
+			self::$list[self::WOODEN_BUTTON] = WoodenButton::class;
 			self::$list[self::ANVIL] = Anvil::class;
 			self::$list[self::TRAPPED_CHEST] = TrappedChest::class;
+			self::$list[self::WEIGHTED_PRESSURE_PLATE_LIGHT] = WeightedPressurePlateLight::class;
+			self::$list[self::WEIGHTED_PRESSURE_PLATE_HEAVY] = WeightedPressurePlateHeavy::class;
+			
+			self::$list[self::DAYLIGHT_SENSOR] = DaylightSensor::class;
 			self::$list[self::REDSTONE_BLOCK] = Redstone::class;
 
 			self::$list[self::QUARTZ_BLOCK] = Quartz::class;

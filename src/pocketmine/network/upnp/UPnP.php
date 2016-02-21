@@ -42,7 +42,7 @@ abstract class UPnP{
 				return false;
 			}
 			$com->StaticPortMappingCollection->Add($port, "UDP", $port, $myLocalIP, true, "PocketMine-MP");
-		}catch(\Exception $e){
+		}catch(\Throwable $e){
 			return false;
 		}
 
@@ -63,7 +63,7 @@ abstract class UPnP{
 				return false;
 			}
 			$com->StaticPortMappingCollection->Remove($port, "UDP");
-		}catch(\Exception $e){
+		}catch(\Throwable $e){
 			return false;
 		}
 

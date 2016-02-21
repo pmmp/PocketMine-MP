@@ -193,13 +193,10 @@ class SimpleCommandMap implements CommandMap{
 		$target->timings->startTiming();
 		try{
 			$target->execute($sender, $sentCommandLabel, $args);
-		}catch(\Exception $e){
+		}catch(\Throwable $e){
 			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.exception"));
 			$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.command.exception", [$commandLine, (string) $target, $e->getMessage()]));
-			$logger = $sender->getServer()->getLogger();
-			if($logger instanceof MainLogger){
-				$logger->logException($e);
-			}
+			$sender->getServer()->getLogger()->logException($e);
 		}
 		$target->timings->stopTiming();
 

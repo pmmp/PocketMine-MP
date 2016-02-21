@@ -30,8 +30,9 @@ use pocketmine\item\Item as ItemItem;
 use pocketmine\nbt\NBT;
 
 
-use pocketmine\nbt\tag\Short;
-use pocketmine\nbt\tag\String;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ShortTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\AddItemEntityPacket;
 use pocketmine\Player;
@@ -70,6 +71,9 @@ class Item extends Entity{
 		if(isset($this->namedtag->Thrower)){
 			$this->thrower = $this->namedtag["Thrower"];
 		}
+
+		assert($this->namedtag->Item instanceof CompoundTag);
+
 		if(!isset($this->namedtag->Item)){
 			$this->close();
 			return;
@@ -160,14 +164,14 @@ class Item extends Entity{
 	public function saveNBT(){
 		parent::saveNBT();
 		$this->namedtag->Item = NBT::putItemHelper($this->item);
-		$this->namedtag->Health = new Short("Health", $this->getHealth());
-		$this->namedtag->Age = new Short("Age", $this->age);
-		$this->namedtag->PickupDelay = new Short("PickupDelay", $this->pickupDelay);
+		$this->namedtag->Health = new ShortTag("Health", $this->getHealth());
+		$this->namedtag->Age = new ShortTag("Age", $this->age);
+		$this->namedtag->PickupDelay = new ShortTag("PickupDelay", $this->pickupDelay);
 		if($this->owner !== null){
-			$this->namedtag->Owner = new String("Owner", $this->owner);
+			$this->namedtag->Owner = new StringTag("Owner", $this->owner);
 		}
 		if($this->thrower !== null){
-			$this->namedtag->Thrower = new String("Thrower", $this->thrower);
+			$this->namedtag->Thrower = new StringTag("Thrower", $this->thrower);
 		}
 	}
 

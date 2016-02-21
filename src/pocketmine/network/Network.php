@@ -85,25 +85,6 @@ class Network{
 
 	public static $BATCH_THRESHOLD = 512;
 
-	/** @deprecated */
-	const CHANNEL_NONE = 0;
-	/** @deprecated */
-	const CHANNEL_PRIORITY = 1; //Priority channel, only to be used when it matters
-	/** @deprecated */
-	const CHANNEL_WORLD_CHUNKS = 2; //Chunk sending
-	/** @deprecated */
-	const CHANNEL_MOVEMENT = 3; //Movement sending
-	/** @deprecated */
-	const CHANNEL_BLOCKS = 4; //Block updates or explosions
-	/** @deprecated */
-	const CHANNEL_WORLD_EVENTS = 5; //Entity, level or tile entity events
-	/** @deprecated */
-	const CHANNEL_ENTITY_SPAWNING = 6; //Entity spawn/despawn channel
-	/** @deprecated */
-	const CHANNEL_TEXT = 7; //Chat and other text stuff
-	/** @deprecated */
-	const CHANNEL_END = 31;
-
 	/** @var \SplFixedArray */
 	private $packetPool;
 
@@ -158,12 +139,10 @@ class Network{
 		foreach($this->interfaces as $interface){
 			try {
 				$interface->process();
-			}catch(\Exception $e){
+			}catch(\Throwable $e){
 				$logger = $this->server->getLogger();
 				if(\pocketmine\DEBUG > 1){
-					if($logger instanceof MainLogger){
-						$logger->logException($e);
-					}
+					$logger->logException($e);
 				}
 
 				$interface->emergencyShutdown();
@@ -239,12 +218,12 @@ class Network{
 				$buf = substr($str, $offset, $pkLen);
 				$offset += $pkLen;
 
-				if(($pk = $this->getPacket(ord($buf{0}))) !== null){
+				if(($pk = $this->getPacket(ord($buf{1}))) !== null){ // #blameshoghi
 					if($pk::NETWORK_ID === Info::BATCH_PACKET){
 						throw new \InvalidStateException("Invalid BatchPacket inside BatchPacket");
 					}
 
-					$pk->setBuffer($buf, 1);
+					$pk->setBuffer($buf, 2); // #blameshoghi
 
 					$pk->decode();
 					$p->handleDataPacket($pk);
@@ -254,13 +233,11 @@ class Network{
 					}
 				}
 			}
-		}catch(\Exception $e){
+		}catch(\Throwable $e){
 			if(\pocketmine\DEBUG > 1){
 				$logger = $this->server->getLogger();
-				if($logger instanceof MainLogger){
-					$logger->debug("BatchPacket " . " 0x" . bin2hex($packet->payload));
-					$logger->logException($e);
-				}
+				$logger->debug("BatchPacket " . " 0x" . bin2hex($packet->payload));
+				$logger->logException($e);
 			}
 		}
 	}
