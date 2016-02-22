@@ -92,7 +92,7 @@ class McRegion extends BaseLevelProvider{
 			"version" => new IntTag("version", 19133),
 			"DayTime" => new IntTag("DayTime", 0),
 			"LastPlayed" => new LongTag("LastPlayed", microtime(true) * 1000),
-			"RandomSeed" => new LongTag("RandomSeed", $seed),
+			"RandomSeed" => new LongTag("RandomSeed", (int) $seed),
 			"SizeOnDisk" => new LongTag("SizeOnDisk", 0),
 			"Time" => new LongTag("Time", 0),
 			"generatorName" => new StringTag("generatorName", Generator::getGeneratorName($generator)),
