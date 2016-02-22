@@ -50,6 +50,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 		$levelData = $nbt->getData();
 		if($levelData->Data instanceof CompoundTag){
 			$this->levelData = $levelData->Data;
+			assert(is_int($this->levelData["RandomSeed"]));
 		}else{
 			throw new LevelException("Invalid level.dat");
 		}

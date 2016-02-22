@@ -34,8 +34,8 @@ class PlayerDeathEvent extends EntityDeathEvent{
 	private $keepInventory = false;
 
 	/**
-	 * @param Player $entity
-	 * @param Item[] $drops
+	 * @param Player               $entity
+	 * @param Item[]               $drops
 	 * @param string|TextContainer $deathMessage
 	 */
 	public function __construct(Player $entity, array $drops, $deathMessage){
@@ -47,6 +47,13 @@ class PlayerDeathEvent extends EntityDeathEvent{
 	 * @return Player
 	 */
 	public function getEntity(){
+		return $this->entity;
+	}
+
+	/**
+	 * @return Player
+	 */
+	public function getPlayer(){
 		return $this->entity;
 	}
 

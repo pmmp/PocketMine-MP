@@ -22,21 +22,11 @@
 namespace pocketmine\inventory;
 
 
-use pocketmine\block\Planks;
-use pocketmine\block\Quartz;
-use pocketmine\block\Sandstone;
-use pocketmine\block\Slab;
-use pocketmine\block\Fence;
-use pocketmine\block\Stone;
-use pocketmine\block\StoneBricks;
-use pocketmine\block\StoneWall;
-use pocketmine\block\Wood;
-use pocketmine\block\Wood2;
 use pocketmine\item\Item;
-use pocketmine\utils\UUID;
 use pocketmine\Server;
-use pocketmine\utils\MainLogger;
 use pocketmine\utils\Config;
+use pocketmine\utils\MainLogger;
+use pocketmine\utils\UUID;
 
 class CraftingManager{
 
@@ -55,7 +45,7 @@ class CraftingManager{
 		// load recipes from src/pocketmine/recipes.json
 		$recipes = new Config(Server::getInstance()->getFilePath() . "src/pocketmine/resources/recipes.json", Config::JSON, []);
 
-		MainLogger::getLogger()->Info("Loading recipes...");
+		MainLogger::getLogger()->info("Loading recipes...");
 		foreach($recipes->getAll() as $recipe){
 			switch($recipe["Type"]){
 			case 0:

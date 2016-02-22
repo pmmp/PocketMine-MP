@@ -21,6 +21,7 @@
 
 namespace pocketmine;
 
+use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\Arrow;
@@ -131,6 +132,7 @@ use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\utils\TextFormat;
 use raklib\Binary;
+
 
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
@@ -596,6 +598,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 */
 	public function isSleeping(){
 		return $this->sleeping !== null;
+	}
+
+	public function getInAirTicks(){
+		return $this->inAirTicks;
 	}
 
 	protected function switchLevel(Level $targetLevel){
@@ -2066,6 +2072,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 							$this->inventory->sendHeldItem($this);
 							break;
 						}
+						$block = $target->getSide($packet->face);
+						if($block->getId() === Block::FIRE){
+							$this->level->setBlock($block, new Air());
+						}
 						$this->lastBreak = microtime(true);
 						break;
 					case PlayerActionPacket::ACTION_ABORT_BREAK:
@@ -3470,9 +3480,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	/**
-	 * @param $chunkX
-	 * @param $chunkZ
-	 * @param $payload
+	 * @param int    $chunkX
+	 * @param int    $chunkZ
+	 * @param string $payload
+	 * @param int    $ordering
 	 *
 	 * @return DataPacket
 	 */

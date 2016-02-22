@@ -81,6 +81,8 @@ abstract class Generator{
 	 * @param int   $z
 	 *
 	 * @return \SplFixedArray
+	 *
+	 * @throws \InvalidArgumentCountException
 	 */
 	public static function getFastNoise1D(Noise $noise, $xSize, $samplingRate, $x, $y, $z){
 		if($samplingRate === 0){
@@ -116,6 +118,9 @@ abstract class Generator{
 	 * @param int   $z
 	 *
 	 * @return \SplFixedArray
+	 *
+	 * @throws \InvalidArgumentException
+	 * @throws \InvalidArgumentCountException
 	 */
 	public static function getFastNoise2D(Noise $noise, $xSize, $zSize, $samplingRate, $x, $y, $z){
 		assert($samplingRate !== 0, new \InvalidArgumentException("samplingRate cannot be 0"));
@@ -166,6 +171,9 @@ abstract class Generator{
 	 * @param int   $z
 	 *
 	 * @return \SplFixedArray
+	 *
+	 * @throws \InvalidArgumentException
+	 * @throws \InvalidArgumentCountException
 	 */
 	public static function getFastNoise3D(Noise $noise, $xSize, $ySize, $zSize, $xSamplingRate, $ySamplingRate, $zSamplingRate, $x, $y, $z){
 

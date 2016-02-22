@@ -2453,6 +2453,8 @@ class Level implements ChunkManager, Metadatable{
 	 * @param bool $generate
 	 *
 	 * @return bool
+	 *
+	 * @throws \InvalidStateException
 	 */
 	public function loadChunk(int $x, int $z, bool $generate = true) : bool{
 		if(isset($this->chunks[$index = Level::chunkHash($x, $z)])){
@@ -2599,7 +2601,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool|Position
 	 */
 	public function getSafeSpawn($spawn = null){
-		if(!($spawn instanceof Vector3) or $spawn->y <= 0){
+		if(!($spawn instanceof Vector3) or $spawn->y < 1){
 			$spawn = $this->getSpawnLocation();
 		}
 		if($spawn instanceof Vector3){
