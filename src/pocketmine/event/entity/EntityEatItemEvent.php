@@ -23,7 +23,6 @@ namespace pocketmine\event\entity;
 
 use pocketmine\entity\Entity;
 use pocketmine\item\Food;
-use pocketmine\item\FoodSource;
 use pocketmine\item\Item;
 
 class EntityEatItemEvent extends EntityEatEvent{
@@ -38,7 +37,7 @@ class EntityEatItemEvent extends EntityEatEvent{
 		return parent::getResidue();
 	}
 
-	public function setResidue(FoodSource $residue){
+	public function setResidue($residue){
 		if(!($residue instanceof Item)){
 			throw new \InvalidArgumentException("Eating an Item can only result in an Item residue");
 		}
