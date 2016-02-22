@@ -334,7 +334,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	protected function addAttributes(){
 		parent::addAttributes();
 
-		echo "a", PHP_EOL;
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::SATURATION));
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXHAUSTION));
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::HUNGER));
