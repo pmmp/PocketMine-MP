@@ -25,23 +25,18 @@
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\block\Fence;
-use pocketmine\block\Flower;
 use pocketmine\entity\Entity;
-use pocketmine\entity\Squid;
-use pocketmine\entity\Villager;
-use pocketmine\entity\Zombie;
 use pocketmine\inventory\Fuel;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\level\Level;
+use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\NBT;
-use pocketmine\utils\Config;
 use pocketmine\Server;
+use pocketmine\utils\Config;
 
 class Item{
 
@@ -643,7 +638,7 @@ class Item{
 
 		$creativeItems = new Config(Server::getInstance()->getFilePath() . "src/pocketmine/resources/creativeitems.json", Config::JSON, []);
 
-		foreach($creativeItems->getAll() as $item) {
+		foreach($creativeItems->getAll() as $item){
 			self::addCreativeItem(Item::get($item["ID"], $item["Damage"]));
 		}
 	}
@@ -679,6 +674,7 @@ class Item{
 
 	/**
 	 * @param $index
+	 *
 	 * @return Item
 	 */
 	public static function getCreativeItem(int $index){
@@ -712,7 +708,8 @@ class Item{
 
 	/**
 	 * @param string $str
-	 * @param bool $multiple
+	 * @param bool   $multiple
+	 *
 	 * @return Item[]|Item
 	 */
 	public static function fromString(string $str, bool $multiple = false){
@@ -772,7 +769,7 @@ class Item{
 	public function getCompoundTag(){
 		return $this->tags;
 	}
-	
+
 	public function hasCompoundTag() : bool{
 		return $this->tags !== "" and $this->tags !== null;
 	}
@@ -851,6 +848,7 @@ class Item{
 
 	/**
 	 * @param $id
+	 *
 	 * @return Enchantment|null
 	 */
 	public function getEnchantment(int $id){
@@ -963,7 +961,7 @@ class Item{
 			$this->clearCustomName();
 		}
 
-		if(!$this->hasCompoundTag()){
+		if(!($hadCompoundTag = $this->hasCompoundTag())){
 			$tag = new CompoundTag("", []);
 		}else{
 			$tag = $this->getNamedTag();
@@ -975,6 +973,10 @@ class Item{
 			$tag->display = new CompoundTag("display", [
 				"Name" => new StringTag("Name", $name)
 			]);
+		}
+
+		if(!$hadCompoundTag){
+			$this->setCompoundTag($tag);
 		}
 
 		return $this;
@@ -1130,7 +1132,7 @@ class Item{
 	}
 
 	final public function __toString() : string{
-		return "Item " . $this->name . " (" . $this->id . ":" . ($this->meta === null ? "?" : $this->meta) . ")x" . $this->count . ($this->hasCompoundTag() ? " tags:0x".bin2hex($this->getCompoundTag()) : "");
+		return "Item " . $this->name . " (" . $this->id . ":" . ($this->meta === null ? "?" : $this->meta) . ")x" . $this->count . ($this->hasCompoundTag() ? " tags:0x" . bin2hex($this->getCompoundTag()) : "");
 	}
 
 	public function getDestroySpeed(Block $block, Player $player){
