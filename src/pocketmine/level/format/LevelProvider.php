@@ -194,7 +194,7 @@ interface LevelProvider{
 	public function setTime($value);
 
 	/**
-	 * @return int
+	 * @return int|string int, or the string numeric representation of a long in 32-bit systems
 	 */
 	public function getSeed();
 
