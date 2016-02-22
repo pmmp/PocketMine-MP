@@ -28,6 +28,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\LongTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\utils\LevelException;
 
@@ -93,7 +94,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 	}
 
 	public function setSeed($value){
-		$this->levelData->RandomSeed = new IntTag("RandomSeed", (int) $value);
+		$this->levelData->RandomSeed = new LongTag("RandomSeed", (int) $value);
 	}
 
 	public function getSpawn(){
