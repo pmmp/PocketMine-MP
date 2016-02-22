@@ -282,6 +282,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			}
 		}
 
+		parent::initEntity();
+
 		if(!isset($this->namedtag->foodLevel) or !($this->namedtag->foodLevel instanceof IntTag)){
 			$this->namedtag->foodLevel = new IntTag("foodLevel", $this->getFood());
 		}else{
@@ -327,13 +329,12 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		}else{
 			$this->xpSeed = $this->namedtag["XpSeed"];
 		}
-
-		parent::initEntity();
 	}
 
 	protected function addAttributes(){
 		parent::addAttributes();
 
+		echo "a", PHP_EOL;
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::SATURATION));
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXHAUSTION));
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::HUNGER));
@@ -348,10 +349,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$health = $this->getHealth();
 		if($food >= 18){
 			$this->foodTickTimer++;
-			if($this->foodTickTimer >= 80){
+			if($this->foodTickTimer >= 80 and $health < $this->getMaxHealth()){
 				$this->heal(1, new EntityRegainHealthEvent($this, 1, EntityRegainHealthEvent::CAUSE_SATURATION));
 				$this->exhaust(3.0, PlayerExhaustEvent::CAUSE_HEALTH_REGEN);
 				$this->foodTickTimer = 0;
+
 			}
 		}elseif($food === 0){
 			$this->foodTickTimer++;
