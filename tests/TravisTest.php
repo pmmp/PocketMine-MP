@@ -25,13 +25,17 @@ $server = proc_open(PHP_BINARY . " src/pocketmine/PocketMine.php --no-wizard --d
 	2 => ["pipe", "w"]
 ], $pipes);
 
+if(!is_resource($server)){
+	die('Failed to create process');
+}
+
 fwrite($pipes[0], "version\nmakeserver\nstop\n\n");
+fclose($pipes[0]);
 
 while(!feof($pipes[1])){
 	echo fgets($pipes[1]);
 }
 
-fclose($pipes[0]);
 fclose($pipes[1]);
 fclose($pipes[2]);
 
