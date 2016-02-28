@@ -329,7 +329,7 @@ class Config{
 		$this->config[$k] = $v;
 		foreach($this->nestedCache as $nestedKey => $nvalue){
 			if(substr($nestedKey, 0, strlen($k) + 1) === ($k . ".")){
-				unset($this->nestedCache($nestedKey));
+				unset($this->nestedCache[$nestedKey]);
 			}
 		}
 	}
