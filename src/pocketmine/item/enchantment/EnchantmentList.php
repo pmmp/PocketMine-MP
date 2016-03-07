@@ -32,7 +32,7 @@ class EnchantmentList{
 	}
 
 	/**
-	 * @param $slot
+	 * @param                  $slot
 	 * @param EnchantmentEntry $entry
 	 */
 	public function setSlot($slot, EnchantmentEntry $entry){

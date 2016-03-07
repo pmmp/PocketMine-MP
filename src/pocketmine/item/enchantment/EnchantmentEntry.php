@@ -31,8 +31,8 @@ class EnchantmentEntry{
 
 	/**
 	 * @param Enchantment[] $enchantments
-	 * @param $cost
-	 * @param $randomName
+	 * @param number        $cost
+	 * @param string        $randomName
 	 */
 	public function __construct(array $enchantments, $cost, $randomName){
 		$this->enchantments = $enchantments;

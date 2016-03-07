@@ -296,7 +296,6 @@ class Item{
 	const STONECUTTER = 245;
 	const GLOWING_OBSIDIAN = 246;
 
-
 	//Normal Item IDs
 	const IRON_SHOVEL = 256;
 	const IRON_PICKAXE = 257;
@@ -408,7 +407,6 @@ class Item{
 	const CAKE = 354;
 	const BED = 355;
 
-
 	const COOKIE = 357;
 
 	const SHEARS = 359;
@@ -471,7 +469,6 @@ class Item{
 	const BEETROOT_SEEDS = 458;
 	const BEETROOT_SEED = 458;
 	const BEETROOT_SOUP = 459;
-
 
 	/** @var \SplFixedArray */
 	public static $list = null;
@@ -1047,6 +1044,17 @@ class Item{
 
 	final public function canBePlaced() : bool{
 		return $this->block !== null and $this->block->canBePlaced();
+	}
+
+	public function canBeConsumed() : bool{
+		return false;
+	}
+
+	public function canBeConsumedBy(Entity $entity) : bool{
+		return $this->canBeConsumed();
+	}
+
+	public function onConsume(Entity $entity){
 	}
 
 	public function getBlock() : Block{
