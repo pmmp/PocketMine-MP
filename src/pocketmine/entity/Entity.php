@@ -319,7 +319,11 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function setSprinting($value = true){
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_SPRINTING, (bool) $value);
+		if($value !== $this->isSprinting()){
+			$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_SPRINTING, (bool) $value);
+			$attr = $this->attributeMap->getAttribute(Attribute::MOVEMENT_SPEED);
+			$attr->setValue($value ? ($attr->getValue() * 1.3) : ($attr->getValue() / 1.3));
+		}
 	}
 
 	/**
@@ -363,7 +367,7 @@ abstract class Entity extends Location implements Metadatable{
 			){
 				return;
 			}
-			$effect->add($this, true);
+			$effect->add($this, true, $oldEffect);
 		}else{
 			$effect->add($this, false);
 		}
@@ -408,10 +412,10 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	/**
-	 * @param int|string $type
-	 * @param FullChunk  $chunk
-	 * @param CompoundTag   $nbt
-	 * @param            $args
+	 * @param int|string  $type
+	 * @param FullChunk   $chunk
+	 * @param CompoundTag $nbt
+	 * @param             $args
 	 *
 	 * @return Entity
 	 */
@@ -506,6 +510,17 @@ abstract class Entity extends Location implements Metadatable{
 	protected function initEntity(){
 		assert($this->namedtag instanceof CompoundTag);
 
+		if(isset($this->namedtag->CustomName)){
+			$this->setNameTag($this->namedtag["CustomName"]);
+			if(isset($this->namedtag->CustomNameVisible)){
+				$this->setNameTagVisible($this->namedtag["CustomNameVisible"] > 0);
+			}
+		}
+
+		$this->scheduleUpdate();
+
+		$this->addAttributes();
+
 		if(isset($this->namedtag->ActiveEffects)){
 			foreach($this->namedtag->ActiveEffects->getValue() as $e){
 				$effect = Effect::getEffect($e["Id"]);
@@ -518,18 +533,6 @@ abstract class Entity extends Location implements Metadatable{
 				$this->addEffect($effect);
 			}
 		}
-
-
-		if(isset($this->namedtag->CustomName)){
-			$this->setNameTag($this->namedtag["CustomName"]);
-			if(isset($this->namedtag->CustomNameVisible)){
-				$this->setNameTagVisible($this->namedtag["CustomNameVisible"] > 0);
-			}
-		}
-
-		$this->scheduleUpdate();
-
-		$this->addAttributes();
 	}
 
 	protected function addAttributes(){
@@ -1559,6 +1562,7 @@ abstract class Entity extends Location implements Metadatable{
 	 * @param int  $propertyId
 	 * @param int  $id
 	 * @param bool $value
+	 * @param int  $type
 	 */
 	public function setDataFlag($propertyId, $id, $value = true, $type = self::DATA_TYPE_BYTE){
 		if($this->getDataFlag($propertyId, $id) !== $value){

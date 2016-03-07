@@ -1641,7 +1641,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->achievements = [];
 
-		/** @var Byte $achievement */
+		/** @var ByteTag $achievement */
 		foreach($nbt->Achievements as $achievement){
 			$this->achievements[$achievement->getName()] = $achievement->getValue() > 0 ? true : false;
 		}
