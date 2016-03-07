@@ -153,6 +153,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/** @var SourceInterface */
 	protected $interface;
 
+	/** @var bool */
+	public $playedBefore;
 	public $spawned = false;
 	public $loggedIn = false;
 	public $gamemode;
@@ -298,7 +300,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function hasPlayedBefore(){
-		return $this->namedtag instanceof CompoundTag;
+		return $this->playedBefore;
 	}
 
 	public function setAllowFlight($value){
@@ -1612,6 +1614,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		$nbt = $this->server->getOfflinePlayerData($this->username);
+		$this->playedBefore = ($nbt["lastPlayed"] - $nbt["firstPlayed"]) > 1; // microtime(true) - microtime(true) may have less than one millisecond difference
 		if(!isset($nbt->NameTag)){
 			$nbt->NameTag = new StringTag("NameTag", $this->username);
 		}else{
