@@ -24,4 +24,5 @@ namespace pocketmine\entity;
 
 class Slime extends Living{
 
+	const DATA_SIZE = 16;
 }
