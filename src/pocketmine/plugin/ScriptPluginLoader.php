@@ -98,6 +98,10 @@ class ScriptPluginLoader implements PluginLoader{
 				$key = $matches[1];
 				$content = trim($matches[2]);
 
+				if($key === "notscript"){
+					return null;
+				}
+
 				$data[$key] = $content;
 			}
 
