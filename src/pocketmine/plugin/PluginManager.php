@@ -68,7 +68,7 @@ class PluginManager{
 	protected $defaultPermsOp = [];
 
 	/**
-	 * @var Permissible[]
+	 * @var Permissible[][]
 	 */
 	protected $permSubs = [];
 
