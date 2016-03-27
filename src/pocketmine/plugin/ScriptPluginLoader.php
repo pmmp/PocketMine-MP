@@ -96,7 +96,7 @@ class ScriptPluginLoader implements PluginLoader{
 
 			if(preg_match("/^[ \t]+\\*[ \t]+@([a-zA-Z]+)([ \t]+(.*))?$/", $line, $matches) > 0){
 				$key = $matches[1];
-				$content = trim($matches[3]);
+				$content = trim($matches[3] ?? "");
 
 				if($key === "notscript"){
 					return null;
