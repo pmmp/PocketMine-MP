@@ -33,7 +33,6 @@ use pocketmine\event\TimingsHandler;
 use pocketmine\permission\Permissible;
 use pocketmine\permission\Permission;
 use pocketmine\Server;
-use pocketmine\utils\MainLogger;
 use pocketmine\utils\PluginException;
 
 /**
@@ -212,29 +211,75 @@ class PluginManager{
 								continue;
 							}
 
-							$compatible = false;
+//							$compatible = false;
+							// compatibility 1=outdated plugin, 2=outdated server, 4=minor, 8=normal
+							$compatibility = 0;
 							//Check multiple dependencies
-							foreach($description->getCompatibleApis() as $version){
+							foreach($description->getCompatibleApis() as $versionString){
 								//Format: majorVersion.minorVersion.patch
-								$version = array_map("intval", explode(".", $version));
+								$version = array_map("intval", explode(".", $versionString));
 								$apiVersion = array_map("intval", explode(".", $this->server->getApiVersion()));
-								//Completely different API version
-								if($version[0] !== $apiVersion[0]){
+								//Completely different API version: too old
+								if($version[0] < $apiVersion[0]){
+									$compatibility |= 1;
+									continue;
+								}
+								//Completely different API version: too new
+								if($version[0] > $apiVersion[0]){
+									$compatibility |= 2;
 									continue;
 								}
 								//If the plugin requires new API features, being backwards compatible
 								if($version[1] > $apiVersion[1]){
+									$compatibility |= 4;
 									continue;
 								}
 
-								$compatible = true;
+								$compatibility |= 8;
 								break;
 							}
 
-							if($compatible === false){
-								$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.incompatibleAPI"]));
-								continue;
+							if(($compatibility & 8) === 0){
+								$accept1 = $this->server->getProperty("settings.incompatible-plugins.plugin-too-old", false);
+								$accept2 = $this->server->getProperty("settings.incompatible-plugins.plugin-too-new.major", false);
+								$accept4 = $this->server->getProperty("settings.incompatible-plugins.plugin-too-new.minor", false);
+
+								if(!$accept1){
+									$compatibility &= ~1;
+								}
+								if(!$accept2){
+									$compatibility &= ~2;
+								}
+								if(!$accept4){
+									$compatibility &= ~4;
+								}
+
+								if($compatibility === 0){
+									if(($compatibility & 4) === 0){
+										$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError",
+											[$name, "%pocketmine.plugin.incompatibleAPI.minorTooNew"]));
+									}elseif(($compatibility & 2) === 0){
+										$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError",
+											[$name, "%pocketmine.plugin.incompatibleAPI.majortooNew"]));
+									}else{
+										$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError",
+											[$name, "%pocketmine.plugin.incompatibleAPI.majorTooOld"]));
+									}
+									continue;
+								}elseif($compatibility & 4){
+									$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.plugin.incompatibleAPIWarning.minorTooNew", [$name]));
+								}elseif($compatibility & 2){
+									$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.plugin.incompatibleAPIWarning.majorTooNew", [$name]));
+								}elseif($compatibility & 1){
+									$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.plugin.incompatibleAPIWarning.majorTooOld", [$name]));
+								}
 							}
+
+
+//							if($compatibility === false){
+//								$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.incompatibleAPI"]));
+//								continue;
+//							}
 
 							$plugins[$name] = $file;
 
