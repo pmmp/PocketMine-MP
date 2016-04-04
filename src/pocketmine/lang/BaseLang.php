@@ -139,7 +139,13 @@ class BaseLang{
 		for($i = 0; $i < $len; ++$i){
 			$c = $text{$i};
 			if($replaceString !== null){
-				if((ord($c) >= 0x30 and ord($c) <= 0x39) or (ord($c) >= 0x41 and ord($c) <= 0x5a) or (ord($c) >= 0x61 and ord($c) <= 0x7a) or $c === "."){
+				$ord = ord($c);
+				if(
+					($ord >= 0x30 and $ord <= 0x39) // 0-9
+					or ($ord >= 0x41 and $ord <= 0x5a) // A-Z
+					or ($ord >= 0x61 and $ord <= 0x7a) or // a-z
+					$c === "." or $c === "-"
+				){
 					$replaceString .= $c;
 				}else{
 					if(($t = $this->internalGet(substr($replaceString, 1))) !== null and ($onlyPrefix === null or strpos($replaceString, $onlyPrefix) === 1)){
