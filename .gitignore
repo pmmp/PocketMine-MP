@@ -7,7 +7,7 @@ timings/*
 *.txt
 *.phar
 server.properties
-pocketmine.yml
+/pocketmine.yml
 
 # Common IDEs
 .idea/*
