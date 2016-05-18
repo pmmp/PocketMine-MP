@@ -218,7 +218,8 @@ class Block extends Position implements Metadatable{
 	const CARROT_BLOCK = 141;
 	const POTATO_BLOCK = 142;
 	const WOODEN_BUTTON = 143;
-	const MOB_HEAD_BLOCK = 144;
+	const MOB_HEAD = 144;
+	const SKULL = 144;
 	const ANVIL = 145;
 	const TRAPPED_CHEST = 146;
 	const WEIGHTED_PRESSURE_PLATE_LIGHT = 147;
@@ -438,6 +439,7 @@ class Block extends Position implements Metadatable{
 			self::$list[self::CARROT_BLOCK] = Carrot::class;
 			self::$list[self::POTATO_BLOCK] = Potato::class;
 			self::$list[self::WOODEN_BUTTON] = WoodenButton::class;
+			self::$list[self::MOB_HEAD] = MobHead::class;
 			self::$list[self::ANVIL] = Anvil::class;
 			self::$list[self::TRAPPED_CHEST] = TrappedChest::class;
 			self::$list[self::WEIGHTED_PRESSURE_PLATE_LIGHT] = WeightedPressurePlateLight::class;
