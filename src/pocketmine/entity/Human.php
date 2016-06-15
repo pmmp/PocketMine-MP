@@ -36,7 +36,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\protocol\AddPlayerPacket;
-use pocketmine\network\protocol\RemovePlayerPacket;
+use pocketmine\network\protocol\RemoveEntityPacket;
 use pocketmine\Player;
 use pocketmine\utils\UUID;
 
@@ -487,9 +487,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public function despawnFrom(Player $player){
 		if(isset($this->hasSpawned[$player->getLoaderId()])){
 
-			$pk = new RemovePlayerPacket();
+			$pk = new RemoveEntityPacket();
 			$pk->eid = $this->getId();
-			$pk->clientId = $this->getUniqueId();
+
 			$player->dataPacket($pk);
 			unset($this->hasSpawned[$player->getLoaderId()]);
 		}
