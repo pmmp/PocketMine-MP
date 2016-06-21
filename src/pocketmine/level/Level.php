@@ -796,11 +796,10 @@ class Level implements ChunkManager, Metadatable{
 	 * @param bool     $optimizeRebuilds
 	 */
 	public function sendBlocks(array $target, array $blocks, $flags = UpdateBlockPacket::FLAG_NONE, bool $optimizeRebuilds = false){
-		$pk = new UpdateBlockPacket();
-
 		if($optimizeRebuilds){
 			$chunks = [];
 			foreach($blocks as $b){
+				$pk = new UpdateBlockPacket();
 				if($b === null){
 					continue;
 				}
@@ -812,28 +811,48 @@ class Level implements ChunkManager, Metadatable{
 				}
 
 				if($b instanceof Block){
-					$pk->records[] = [$b->x, $b->z, $b->y, $b->getId(), $b->getDamage(), $first ? $flags : UpdateBlockPacket::FLAG_NONE];
+					$pk->x = $b->x;
+					$pk->z = $b->z;
+					$pk->y = $b->y;
+					$pk->blockId = $b->getId();
+					$pk->blockData = $b->getDamage();
+					$pk->flags = $first ? $flags : UpdateBlockPacket::FLAG_NONE;
 				}else{
 					$fullBlock = $this->getFullBlock($b->x, $b->y, $b->z);
-					$pk->records[] = [$b->x, $b->z, $b->y, $fullBlock >> 4, $fullBlock & 0xf, $first ? $flags : UpdateBlockPacket::FLAG_NONE];
+					$pk->x = $b->x;
+					$pk->z = $b->z;
+					$pk->y = $b->y;
+					$pk->blockId = $fullBlock >> 4;
+					$pk->blockData = $fullBlock & 0xf;
+					$pk->flags = $first ? $flags : UpdateBlockPacket::FLAG_NONE;
 				}
+				Server::broadcastPacket($target, $pk);
 			}
 		}else{
 			foreach($blocks as $b){
+				$pk = new UpdateBlockPacket();
 				if($b === null){
 					continue;
 				}
 				if($b instanceof Block){
-					$pk->records[] = [$b->x, $b->z, $b->y, $b->getId(), $b->getDamage(), $flags];
+					$pk->x = $b->x;
+					$pk->z = $b->z;
+					$pk->y = $b->y;
+					$pk->blockId = $b->getId();
+					$pk->blockData = $b->getDamage();
+					$pk->flags = $flags;
 				}else{
 					$fullBlock = $this->getFullBlock($b->x, $b->y, $b->z);
-					$pk->records[] = [$b->x, $b->z, $b->y, $fullBlock >> 4, $fullBlock & 0xf, $flags];
+					$pk->x = $b->x;
+					$pk->z = $b->z;
+					$pk->y = $b->y;
+					$pk->blockId = $fullBlock >> 4;
+					$pk->blockData = $fullBlock & 0xf;
+					$pk->flags = $flags;
 				}
+				Server::broadcastPacket($target, $pk);
 			}
 		}
-
-
-		Server::broadcastPacket($target, $pk);
 	}
 
 	public function clearCache(bool $full = false){

@@ -35,7 +35,7 @@ class LoginPacket extends DataPacket{
 	public $identityPublicKey;
 	public $serverAddress;
 
-	public $skinID;
+	public $skinId;
 	public $skin = null;
 
 	public function decode(){

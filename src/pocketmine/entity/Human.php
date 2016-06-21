@@ -60,7 +60,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public $height = 1.8;
 	public $eyeHeight = 1.62;
 
-	protected $skinName;
+	protected $skinId;
 	protected $skin;
 
 	protected $foodTickTimer = 0;
@@ -72,8 +72,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return $this->skin;
 	}
 
-	public function getSkinName(){
-		return $this->skinName;
+	public function getSkinId(){
+		return $this->skinId;
 	}
 
 	/**
@@ -92,11 +92,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * @param string $str
-	 * @param string $skinName
+	 * @param string $skinId
 	 */
-	public function setSkin($str, $skinName){
+	public function setSkin($str, $skinId){
 		$this->skin = $str;
-		$this->skinName = $skinName;
+		$this->skinId = $skinId;
 	}
 
 	public function getFood() : float{
@@ -443,7 +443,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if(strlen($this->getSkinData()) > 0){
 			$this->namedtag->Skin = new CompoundTag("Skin", [
 				"Data" => new StringTag("Data", $this->getSkinData()),
-				"Name" => new StringTag("Name", $this->getSkinName())
+				"Name" => new StringTag("Name", $this->getSkinId())
 			]);
 		}
 	}
@@ -457,7 +457,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			}
 
 			if(!($this instanceof Player)){
-				$this->server->updatePlayerListData($this->getUniqueId(), $this->getId(), $this->getName(), $this->skinName, $this->skin, [$player]);
+				$this->server->updatePlayerListData($this->getUniqueId(), $this->getId(), $this->getName(), $this->skinId, $this->skin, [$player]);
 			}
 
 			$pk = new AddPlayerPacket();
