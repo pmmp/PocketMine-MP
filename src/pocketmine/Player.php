@@ -1207,9 +1207,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return [];
 	}
 
-	public function setDataProperty($id, $type, $value){
-		if(parent::setDataProperty($id, $type, $value)){
-			$this->sendData($this, [$id => $this->dataProperties[$id]]);
+	public function setDataProperty($id, $type, $value, $send = true){
+		if(parent::setDataProperty($id, $type, $value, $send)){
 			return true;
 		}
 
@@ -1618,7 +1617,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 			}
 		}
-		$this->setNameTag($this->username);
 		
 		$nbt = $this->server->getOfflinePlayerData($this->username);
 		$this->playedBefore = ($nbt["lastPlayed"] - $nbt["firstPlayed"]) > 1; // microtime(true) - microtime(true) may have less than one millisecond difference
@@ -1793,6 +1791,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->username = TextFormat::clean($packet->username);
 				$this->displayName = $this->username;
 				$this->iusername = strtolower($this->username);
+				$this->setDataProperty(self::DATA_NAMETAG, self::DATA_TYPE_STRING, $this->username, false);
 
 				if(count($this->server->getOnlinePlayers()) >= $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)){
 					break;
@@ -2204,7 +2203,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						$this->setSneaking(false);
 
 						$this->extinguish();
-						$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 300);
+						$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 300, false);
 						$this->deadTicks = 0;
 						$this->noDamageTicks = 60;
 

@@ -73,8 +73,7 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_TYPE_STRING = 4;
 	const DATA_TYPE_SLOT = 5;
 	const DATA_TYPE_POS = 6;
-	const DATA_TYPE_ROTATION = 7;
-	const DATA_TYPE_LONG = 8;
+	const DATA_TYPE_LONG = 7;
 
 	const DATA_FLAGS = 0;
 	const DATA_AIR = 1;
@@ -84,6 +83,7 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_POTION_COLOR = 7;
 	const DATA_POTION_AMBIENT = 8;
 	const DATA_NO_AI = 15;
+	const DATA_LINKED_EID = 23;
 
 
 	const DATA_FLAG_ONFIRE = 0;
@@ -117,6 +117,7 @@ abstract class Entity extends Location implements Metadatable{
 		self::DATA_SHOW_NAMETAG => [self::DATA_TYPE_BYTE, 1],
 		self::DATA_SILENT => [self::DATA_TYPE_BYTE, 0],
 		self::DATA_NO_AI => [self::DATA_TYPE_BYTE, 0],
+		self::DATA_LINKED_EID => [self::DATA_TYPE_LONG, -1],
 	];
 
 	public $passenger = null;
@@ -254,7 +255,7 @@ abstract class Entity extends Location implements Metadatable{
 		if(!isset($this->namedtag->Air)){
 			$this->namedtag->Air = new ShortTag("Air", 300);
 		}
-		$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $this->namedtag["Air"]);
+		$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $this->namedtag["Air"], false);
 
 		if(!isset($this->namedtag->OnGround)){
 			$this->namedtag->OnGround = new ByteTag("OnGround", 0);
@@ -1529,11 +1530,12 @@ abstract class Entity extends Location implements Metadatable{
 	 *
 	 * @return bool
 	 */
-	public function setDataProperty($id, $type, $value){
+	public function setDataProperty($id, $type, $value, $send = true){
 		if($this->getDataProperty($id) !== $value){
 			$this->dataProperties[$id] = [$type, $value];
-
-			$this->sendData($this->hasSpawned, [$id => $this->dataProperties[$id]]);
+			if($send === true) {
+				$this->sendData($this->hasSpawned, [$id => $this->dataProperties[$id]]);
+			}
 
 			return true;
 		}

@@ -74,7 +74,7 @@ namespace pocketmine {
 
 	const VERSION = "1.6dev";
 	const API_VERSION = "2.0.0";
-	const CODENAME = "[REDACTED]";
+	const CODENAME = "Unleashed";
 	const MINECRAFT_VERSION = "v0.15.0.0 alpha";
 	const MINECRAFT_VERSION_NETWORK = "0.15.0.0";
 
