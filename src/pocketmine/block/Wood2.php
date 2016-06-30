@@ -33,7 +33,8 @@ class Wood2 extends Wood{
 		static $names = [
 			0 => "Acacia Wood",
 			1 => "Dark Oak Wood",
-			2 => ""
+			2 => "Unknown",
+			3 => "Unknown"
 		];
 		return $names[$this->meta & 0x03];
 	}
