@@ -26,7 +26,7 @@ use pocketmine\item\Tool;
 
 class BrewingStand extends Transparent{
 
-	protected $id = self::BREWING_STAND;
+	protected $id = self::BREWING_STAND_BLOCK;
 
 	public function __construct(){
 

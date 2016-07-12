@@ -32,7 +32,9 @@ use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 
 class MobHead extends Solid{
-	protected $id = self::MOB_HEAD;
+
+	protected $id = self::MOB_HEAD_BLOCK;
+
 	protected $type;
 
 	public function __construct($meta = 0){
