@@ -22,7 +22,7 @@
 namespace pocketmine\block;
 
 
-class GlowingObsidian extends Solid{
+class GlowingObsidian extends Transparent{
 
 	protected $id = self::GLOWING_OBSIDIAN;
 
