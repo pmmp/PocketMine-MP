@@ -2812,12 +2812,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 						if(!isset($t->namedtag->Creator) or $t->namedtag["Creator"] !== $this->getRawUniqueId()){
 							$ev->setCancelled();
-						}else{
-							foreach($ev->getLines() as $line){
-								if(mb_strlen($line, "UTF-8") > 16){
-									$ev->setCancelled();
-								}
-							}
 						}
 
 						$this->server->getPluginManager()->callEvent($ev);
