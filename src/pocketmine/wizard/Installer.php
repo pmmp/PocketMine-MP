@@ -175,7 +175,7 @@ LICENSE;
 		echo "[?] " . $this->lang->rcon_enable . " (y/N): ";
 		if(strtolower($this->getInput("n")) === "y"){
 			$config->set("enable-rcon", true);
-			$password = substr(base64_encode(@Utils::getRandomBytes(20, false)), 3, 10);
+			$password = substr(base64_encode(random_bytes(20)), 3, 10);
 			$config->set("rcon.password", $password);
 			echo "[*] " . $this->lang->rcon_password . ": " . $password . "\n";
 		}else{

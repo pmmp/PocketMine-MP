@@ -65,7 +65,7 @@ class QueryHandler{
 
 	public function regenerateToken(){
 		$this->lastToken = $this->token;
-		$this->token = @Utils::getRandomBytes(16, false);
+		$this->token = random_bytes(16);
 	}
 
 	public static function getTokenString($token, $salt){
