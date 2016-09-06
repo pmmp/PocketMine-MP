@@ -1096,19 +1096,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->dataPacket($pk);
 		$this->sendSettings();
 
-		if($this->gamemode === Player::SPECTATOR){
-			$pk = new ContainerSetContentPacket();
-			$pk->windowid = ContainerSetContentPacket::SPECIAL_CREATIVE;
-			$this->dataPacket($pk);
-		}else{
-			$pk = new ContainerSetContentPacket();
-			$pk->windowid = ContainerSetContentPacket::SPECIAL_CREATIVE;
-			foreach(Item::getCreativeItems() as $item){
-				$pk->slots[] = clone $item;
-			}
-			$this->dataPacket($pk);
-		}
-
 		$this->inventory->sendContents($this);
 		$this->inventory->sendContents($this->getViewers());
 		$this->inventory->sendHeldItem($this->hasSpawned);
@@ -1183,20 +1170,29 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->dataPacket($pk);
 	}
 
-	public function isSurvival(){
+	/**
+	 * WARNING: This method does NOT return literal gamemode is survival, it will also return true for adventure mode players.
+	 */
+	public function isSurvival() : bool{
 		return ($this->gamemode & 0x01) === 0;
 	}
 
-	public function isCreative(){
-		return ($this->gamemode & 0x01) > 0;
+	/**
+	 * WARNING: This method does NOT return literal gamemode is creative, it will also return true for creative mode players.
+	 */
+	public function isCreative() : bool{
+		return ($this->gamemode & 0x01) === 1;
 	}
 
-	public function isSpectator(){
-		return $this->gamemode === 3;
-	}
-
-	public function isAdventure(){
+	/**
+	 * WARNING: This method does NOT return literal gamemode is adventure, it will also return true for spectator mode players.
+	 */
+	public function isAdventure() : bool{
 		return ($this->gamemode & 0x02) > 0;
+	}
+
+	public function isSpectator() : bool{
+		return $this->gamemode === 3;
 	}
 
 	public function getDrops(){
@@ -1632,7 +1628,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$nbt->playerGameType = new IntTag("playerGameType", $this->gamemode);
 		}
 
-		$this->allowFlight = $this->isCreative();
+		$this->allowFlight = (bool) $this->gamemode & 0x01;
 
 		if(($level = $this->server->getLevelByName($nbt["Level"])) === null){
 			$this->setLevel($this->server->getDefaultLevel());
@@ -1735,17 +1731,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		if($this->isOp()){
 			$this->setRemoveFormat(false);
-		}
-
-		if($this->gamemode === Player::SPECTATOR){
-			$pk = new ContainerSetContentPacket();
-			$pk->windowid = ContainerSetContentPacket::SPECIAL_CREATIVE;
-			$this->dataPacket($pk);
-		}else{
-			$pk = new ContainerSetContentPacket();
-			$pk->windowid = ContainerSetContentPacket::SPECIAL_CREATIVE;
-			$pk->slots = Item::getCreativeItems();
-			$this->dataPacket($pk);
 		}
 
 		$this->forceMovement = $this->teleportPosition = $this->getPosition();
