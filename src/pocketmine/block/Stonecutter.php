@@ -42,18 +42,6 @@ class Stonecutter extends Solid{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function canBeActivated(){
-		return true;
-	}
-
-	public function onActivate(Item $item, Player $player = null){
-		if($player instanceof Player){
-			$player->craftingType = 2;
-		}
-
-		return true;
-	}
-
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
