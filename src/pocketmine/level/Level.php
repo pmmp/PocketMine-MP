@@ -609,10 +609,10 @@ class Level implements ChunkManager, Metadatable{
 	 * Changes to this function won't be recorded on the version.
 	 */
 	public function checkTime(){
-		if($this->stopTime == true){
+		if($this->stopTime === true){
 			return;
 		}else{
-			$this->time += 1.25;
+			$this->time += 1;
 		}
 	}
 
