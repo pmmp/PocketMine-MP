@@ -86,7 +86,7 @@ class Chest extends Transparent{
 				continue;
 			}
 			$c = $this->getSide($side);
-			if($c instanceof Chest and $c->getDamage() === $this->meta){
+			if($c->getId() === $this->id and $c->getDamage() === $this->meta){
 				$tile = $this->getLevel()->getTile($c);
 				if($tile instanceof TileChest and !$tile->isPaired()){
 					$chest = $tile;
@@ -164,9 +164,6 @@ class Chest extends Transparent{
 				}
 			}
 
-			if($player->isCreative()){
-				return true;
-			}
 			$player->addWindow($chest->getInventory());
 		}
 

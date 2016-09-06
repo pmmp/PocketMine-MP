@@ -60,10 +60,6 @@ class Anvil extends Fallable{
 
 	public function onActivate(Item $item, Player $player = null){
 		if($player instanceof Player){
-			if($player->isCreative()){
-				return true;
-			}
-
 			$player->addWindow(new AnvilInventory($this));
 		}
 

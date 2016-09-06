@@ -123,10 +123,6 @@ class BurningFurnace extends Solid{
 				}
 			}
 
-			if($player->isCreative()){
-				return true;
-			}
-
 			$player->addWindow($furnace->getInventory());
 		}
 
