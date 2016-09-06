@@ -59,7 +59,7 @@ class FenceGate extends Transparent{
 		}
 
 		$i = ($this->getDamage() & 0x03);
-		if($i === 2 and $i === 0){
+		if($i === 2 or $i === 0){
 			return new AxisAlignedBB(
 				$this->x,
 				$this->y,
@@ -100,13 +100,9 @@ class FenceGate extends Transparent{
 	}
 
 	public function onActivate(Item $item, Player $player = null){
-		$faces = [
-			0 => 3,
-			1 => 0,
-			2 => 1,
-			3 => 2,
-		];
-		$this->meta = ($faces[$player instanceof Player ? $player->getDirection() : 0] & 0x03) | ((~$this->meta) & 0x04);
+		$this->meta ^= 0x04; //Flip open/close state
+		//TODO: Face player when opened
+
 		$this->getLevel()->setBlock($this, $this, true);
 		$this->level->addSound(new DoorSound($this));
 		return true;
