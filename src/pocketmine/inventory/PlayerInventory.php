@@ -310,7 +310,6 @@ class PlayerInventory extends BaseInventory{
 		$pk->eid = $this->getHolder()->getId();
 		$pk->slots = $armor;
 		$pk->encode();
-		$pk;
 		$pk->isEncoded = true;
 
 		foreach($target as $player){
