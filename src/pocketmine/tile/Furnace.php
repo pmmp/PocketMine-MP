@@ -32,13 +32,14 @@ use pocketmine\level\format\FullChunk;
 use pocketmine\nbt\NBT;
 
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\ContainerSetDataPacket;
 
-class Furnace extends Tile implements InventoryHolder, Container, Nameable{
+class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	/** @var FurnaceInventory */
 	protected $inventory;
 
@@ -285,5 +286,21 @@ class Furnace extends Tile implements InventoryHolder, Container, Nameable{
 		$this->timings->stopTiming();
 
 		return $ret;
+	}
+
+	public function getSpawnCompound(){
+		$nbt = new CompoundTag("", [
+			new StringTag("id", Tile::FURNACE),
+			new IntTag("x", (int) $this->x),
+			new IntTag("y", (int) $this->y),
+			new IntTag("z", (int) $this->z),
+			new ShortTag("BurnTime", $this->namedtag["BurnTime"]),
+			new ShortTag("CookTime", $this->namedtag["CookTime"])
+		]);
+		
+		if($this->hasName()){
+			$nbt->CustomName = $this->namedtag->CustomName;
+		}
+		return $nbt;
 	}
 }
