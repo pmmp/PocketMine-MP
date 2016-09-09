@@ -104,6 +104,7 @@ use pocketmine\scheduler\SendUsageTask;
 use pocketmine\scheduler\ServerScheduler;
 use pocketmine\tile\Chest;
 use pocketmine\tile\EnchantTable;
+use pocketmine\tile\FlowerPot;
 use pocketmine\tile\Furnace;
 use pocketmine\tile\Sign;
 use pocketmine\tile\Skull;
@@ -2503,10 +2504,11 @@ class Server{
 
 	private function registerTiles(){
 		Tile::registerTile(Chest::class);
+		Tile::registerTile(EnchantTable::class);
+		Tile::registerTile(FlowerPot::class);
 		Tile::registerTile(Furnace::class);
 		Tile::registerTile(Sign::class);
 		Tile::registerTile(Skull::class);
-		Tile::registerTile(EnchantTable::class);
 	}
 
 }

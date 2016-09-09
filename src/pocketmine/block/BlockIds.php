@@ -55,8 +55,7 @@ interface BlockIds{
 	const STICKY_PISTON = 29;
 	const COBWEB = 30;
 	const TALL_GRASS = 31;
-	const BUSH = 32;
-	const DEAD_BUSH = 32;
+	const BUSH = 32; const DEAD_BUSH = 32;
 	const PISTON = 33;
 	const PISTON_HEAD = 34;
 	const WOOL = 35;
