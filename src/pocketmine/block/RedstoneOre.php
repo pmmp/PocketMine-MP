@@ -24,6 +24,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
+use pocketmine\Player;
 
 class RedstoneOre extends Solid{
 
@@ -39,6 +40,10 @@ class RedstoneOre extends Solid{
 
 	public function getHardness(){
 		return 3;
+	}
+
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+		return $this->getLevel()->setBlock($this, $this, true, false);
 	}
 
 	public function onUpdate($type){
