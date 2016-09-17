@@ -36,6 +36,14 @@ class WoodStairs extends Stair{
 		return "Wood Stairs";
 	}
 
+	public function getHardness(){
+		return 2;
+	}
+
+	public function getResistance(){
+		return 15;
+	}
+
 	public function getToolType(){
 		return Tool::TYPE_AXE;
 	}
@@ -44,9 +52,5 @@ class WoodStairs extends Stair{
 		return [
 			[$this->id, 0, 1],
 		];
-	}
-
-	public function getHardness(){
-		return 2;
 	}
 }
