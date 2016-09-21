@@ -27,7 +27,7 @@ use pocketmine\Collectable;
 /**
  * Class used to run async tasks in other threads.
  *
- * WARNING: Do not call PocketMine-MP API methods, or save objects from/on other Threads!!
+ * WARNING: Do not call PocketMine-MP API methods, or save objects (and arrays cotaining objects) from/on other Threads!!
  */
 abstract class AsyncTask extends Collectable{
 
@@ -41,6 +41,22 @@ abstract class AsyncTask extends Collectable{
 	private $taskId = null;
 
 	private $crashed = false;
+
+	/**
+	 * Constructs a new instance of AsyncTask. Subclasses don't need to call this constructor unless an argument is to be passed.
+	 * <br>
+	 * If an argument is passed into this constructor, it will be stored in a thread-local storage, which MUST be retrieved through {@link #fetchLocal} when {@link #onCompletion} is called.
+	 * If null or no argument is passed, do <em>not</em> call {@link #fetchLocal}, or an exception will be thrown.
+	 *
+	 * @param object|array $complexData the data to store, pass null to store nothing
+	 */
+	public function __construct($complexData = null){
+		if($complexData === null){
+			return;
+		}
+
+		Server::getInstance()->getScheduler()->storeLocalComplex($this, $complexData);
+	}
 
 	public function run(){
 		$this->result = null;
@@ -145,6 +161,20 @@ abstract class AsyncTask extends Collectable{
 
 	}
 
+	/**
+	 * Call this method from {@link #onCompletion} to fetch the data stored in the constructor, if any.
+	 *
+	 * @throws \RuntimeException if no data were stored by this AsyncTask instance.
+	 */
+	protected function fetchLocal(Server $server = null){
+		if($server === null){
+			$server = Server::getInstance();
+			assert($server !== null, "Call this method only from the main thread!");
+		}
+
+		return $server->getScheduler()->fetchLocalComplex($this);
+	}
+
 	public function cleanObject(){
 		foreach($this as $p => $v){
 			if(!($v instanceof \Threaded)){
@@ -154,3 +184,4 @@ abstract class AsyncTask extends Collectable{
 	}
 
 }
+
