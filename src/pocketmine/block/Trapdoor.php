@@ -126,24 +126,20 @@ class Trapdoor extends Transparent{
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		if(($target->isTransparent() === false or $target->getId() === self::SLAB) and $face !== 0 and $face !== 1){
-			$faces = [
-				self::SIDE_SOUTH => self::MASK_SIDE_SOUTH,
-				self::SIDE_NORTH => self::MASK_SIDE_NORTH,
-				self::SIDE_EAST => self::MASK_SIDE_EAST,
-				self::SIDE_WEST => self::MASK_SIDE_WEST,
-			];
-			echo $face, PHP_EOL, $faces[$face], PHP_EOL;
-			$this->meta = $faces[$face] & self::MASK_SIDE;
-			if($fy > 0.5){
-				$this->meta |= self::MASK_UPPER;
-			}
-			$this->getLevel()->setBlock($block, $this, true, true);
-
-			return true;
+		$directions = [
+			0 => 1,
+			1 => 3,
+			2 => 0,
+			3 => 2
+		];
+		if($player !== null){
+			$this->meta = $directions[$player->getDirection() & 0x03];
 		}
-
-		return false;
+		if(($fy > 0.5 and $face !== self::SIDE_UP) or $face === self::SIDE_DOWN){
+			$this->meta |= self::MASK_UPPER; //top half of block
+		}
+		$this->getLevel()->setBlock($block, $this, true, true);
+		return true;
 	}
 
 	public function getDrops(Item $item){
