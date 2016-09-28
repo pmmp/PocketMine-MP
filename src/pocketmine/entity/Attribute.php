@@ -50,17 +50,18 @@ class Attribute{
 	protected static $attributes = [];
 
 	public static function init(){
-		self::addAttribute(self::ABSORPTION, "generic.absorption", 0.00, 340282346638528859811704183484516925440.00, 0.00);
-		self::addAttribute(self::SATURATION, "player.saturation", 0.00, 20.00, 5.00);
-		self::addAttribute(self::EXHAUSTION, "player.exhaustion", 0.00, 5.00, 0.41);
-		self::addAttribute(self::KNOCKBACK_RESISTANCE, "generic.knockbackResistance", 0.00, 1.00, 0.00);
-		self::addAttribute(self::HEALTH, "generic.health", 0.00, 20.00, 20.00);
-		self::addAttribute(self::MOVEMENT_SPEED, "generic.movementSpeed", 0.00, 340282346638528859811704183484516925440.00, 0.10);
-		self::addAttribute(self::FOLLOW_RANGE, "generic.followRange", 0.00, 2048.00, 16.00, false);
-		self::addAttribute(self::HUNGER, "player.hunger", 0.00, 20.00, 20.00);
-		self::addAttribute(self::ATTACK_DAMAGE, "generic.attackDamage", 0.00, 340282346638528859811704183484516925440.00, 1.00, false);
-		self::addAttribute(self::EXPERIENCE_LEVEL, "player.level", 0.00, 24791.00, 0.00);
-		self::addAttribute(self::EXPERIENCE, "player.experience", 0.00, 1.00, 0.00);
+		self::addAttribute(self::ABSORPTION, "minecraft:absorption", 0.00, 340282346638528859811704183484516925440.00, 0.00);
+		self::addAttribute(self::SATURATION, "minecraft:player.saturation", 0.00, 20.00, 5.00);
+		self::addAttribute(self::EXHAUSTION, "minecraft:player.exhaustion", 0.00, 5.00, 0.41);
+		self::addAttribute(self::KNOCKBACK_RESISTANCE, "minecraft:knockback_resistance", 0.00, 1.00, 0.00);
+		self::addAttribute(self::HEALTH, "minecraft:health", 0.00, 20.00, 20.00);
+		self::addAttribute(self::MOVEMENT_SPEED, "minecraft:movement", 0.00, 340282346638528859811704183484516925440.00, 0.10);
+		self::addAttribute(self::FOLLOW_RANGE, "minecraft:follow_range", 0.00, 2048.00, 16.00, false);
+		self::addAttribute(self::HUNGER, "minecraft:player.hunger", 0.00, 20.00, 20.00);
+		self::addAttribute(self::ATTACK_DAMAGE, "minecraft:attack_damage", 0.00, 340282346638528859811704183484516925440.00, 1.00, false);
+		self::addAttribute(self::EXPERIENCE_LEVEL, "minecraft:player.level", 0.00, 24791.00, 0.00);
+		self::addAttribute(self::EXPERIENCE, "minecraft:player.experience", 0.00, 1.00, 0.00);
+		//TODO: minecraft:luck (for fishing?)
 	}
 
 	/**
