@@ -254,7 +254,6 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 			}
 			$ret = true;
 		}else{
-			;
 			if($this->getBlock()->getId() === Item::BURNING_FURNACE){
 				$this->getLevel()->setBlock($this, Block::get(Item::FURNACE, $this->getBlock()->getDamage()), true);
 			}
