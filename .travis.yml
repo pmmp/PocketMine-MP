@@ -3,9 +3,6 @@ language: php
 php:
  - 7.0
 
-branches:
- - master
-
 before_script:
  - mkdir plugins
  - wget -O plugins/DevTools.phar https://github.com/PocketMine/DevTools/releases/download/v1.11.0/DevTools_v1.11.0.phar
