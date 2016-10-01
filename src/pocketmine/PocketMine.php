@@ -466,7 +466,7 @@ namespace pocketmine {
 	$logger->info("Stopping other threads");
 
 	foreach(ThreadManager::getInstance()->getAll() as $id => $thread){
-		$logger->debug("Stopping " . (new \ReflectionClass($thread))->getShortName() . " thread");
+		$logger->debug("Stopping " . $thread->getThreadName() . " thread");
 		$thread->quit();
 	}
 
