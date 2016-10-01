@@ -399,15 +399,6 @@ class PlayerInventory extends BaseInventory{
 					$index = $this->getHotbarSlotIndex($i);
 					$pk->hotbar[] = $index <= -1 ? -1 : $index + $this->getHotbarSize();
 				}
-
-				if($player->getGamemode() & 0x01 === 0x01){ //Send special inventory for creative or spectator
-					$pk2 = new ContainerSetContentPacket();
-					$pk2->windowid = ContainerSetContentPacket::SPECIAL_CREATIVE;
-					if($player->getGamemode() === Player::CREATIVE){
-						$pk2->slots = Item::getCreativeItems();
-					}
-					$player->dataPacket($pk2);
-				}
 			}
 			if(($id = $player->getWindowId($this)) === -1 or $player->spawned !== true){
 				$this->close($player);
@@ -416,6 +407,17 @@ class PlayerInventory extends BaseInventory{
 			$pk->windowid = $id;
 			$player->dataPacket(clone $pk);
 		}
+	}
+
+	public function sendCreativeContents(){
+		$pk = new ContainerSetContentPacket();
+		$pk->windowid = ContainerSetContentPacket::SPECIAL_CREATIVE;
+		if($this->getHolder()->getGamemode() === Player::CREATIVE){
+			foreach(Item::getCreativeItems() as $i => $item){
+				$pk->slots[$i] = clone $item;
+			}
+		}
+		$this->getHolder()->dataPacket($pk);
 	}
 
 	/**

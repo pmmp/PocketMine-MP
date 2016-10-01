@@ -1098,6 +1098,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->inventory->sendContents($this);
 		$this->inventory->sendContents($this->getViewers());
 		$this->inventory->sendHeldItem($this->hasSpawned);
+		if($this->isCreative()){
+			$this->inventory->sendCreativeContents();
+		}
 
 		return true;
 	}
@@ -1731,6 +1734,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		if($this->isOp()){
 			$this->setRemoveFormat(false);
+		}
+
+		if($this->isCreative()){
+			$this->inventory->sendCreativeContents();
 		}
 
 		$this->forceMovement = $this->teleportPosition = $this->getPosition();
