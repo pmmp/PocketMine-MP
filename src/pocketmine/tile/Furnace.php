@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -44,6 +44,17 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	protected $inventory;
 
 	public function __construct(FullChunk $chunk, CompoundTag $nbt){
+		if(!isset($nbt->BurnTime) or $nbt["BurnTime"] < 0){
+			$nbt->BurnTime = new ShortTag("BurnTime", 0);
+		}
+		if(!isset($nbt->CookTime) or $nbt["CookTime"] < 0 or ($nbt["BurnTime"] === 0 and $nbt["CookTime"] > 0)){
+			$nbt->CookTime = new ShortTag("CookTime", 0);
+		}
+		if(!isset($nbt->MaxTime)){
+			$nbt->MaxTime = new ShortTag("BurnTime", $nbt["BurnTime"]);
+			$nbt->BurnTicks = new ShortTag("BurnTicks", 0);
+		}
+
 		parent::__construct($chunk, $nbt);
 		$this->inventory = new FurnaceInventory($this);
 
@@ -56,16 +67,6 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 			$this->inventory->setItem($i, $this->getItem($i));
 		}
 
-		if(!isset($this->namedtag->BurnTime) or $this->namedtag["BurnTime"] < 0){
-			$this->namedtag->BurnTime = new ShortTag("BurnTime", 0);
-		}
-		if(!isset($this->namedtag->CookTime) or $this->namedtag["CookTime"] < 0 or ($this->namedtag["BurnTime"] === 0 and $this->namedtag["CookTime"] > 0)){
-			$this->namedtag->CookTime = new ShortTag("CookTime", 0);
-		}
-		if(!isset($this->namedtag->MaxTime)){
-			$this->namedtag->MaxTime = new ShortTag("BurnTime", $this->namedtag["BurnTime"]);
-			$this->namedtag->BurnTicks = new ShortTag("BurnTicks", 0);
-		}
 		if($this->namedtag["BurnTime"] > 0){
 			$this->scheduleUpdate();
 		}
@@ -296,7 +297,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 			new ShortTag("BurnTime", $this->namedtag["BurnTime"]),
 			new ShortTag("CookTime", $this->namedtag["CookTime"])
 		]);
-		
+
 		if($this->hasName()){
 			$nbt->CustomName = $this->namedtag->CustomName;
 		}
