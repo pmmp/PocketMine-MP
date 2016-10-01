@@ -37,10 +37,6 @@ class WaterLily extends Flowable{
 		$this->meta = $meta;
 	}
 
-	public function isSolid(){
-		return false;
-	}
-
 	public function getName(){
 		return "Lily Pad";
 	}
@@ -49,18 +45,14 @@ class WaterLily extends Flowable{
 		return 0.6;
 	}
 
-	public function canPassThrough(){
-		return true;
-	}
-
 	protected function recalculateBoundingBox(){
 		return new AxisAlignedBB(
-			$this->x,
+			$this->x + 0.0625,
 			$this->y,
-			$this->z,
-			$this->x,
-			$this->y + 0.0625,
-			$this->z
+			$this->z + 0.0625,
+			$this->x + 0.9375,
+			$this->y + 0.015625,
+			$this->z + 0.9375
 		);
 	}
 
