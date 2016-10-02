@@ -426,7 +426,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->blockCache = [];
 		$this->temporalPosition = null;
 	}
-	
+
 	public function addSound(Sound $sound, array $players = null){
 		$pk = $sound->encode();
 
@@ -450,7 +450,7 @@ class Level implements ChunkManager, Metadatable{
 			}	
 		}
 	}
-	
+
 	public function addParticle(Particle $particle, array $players = null){
 		$pk = $particle->encode();
 
@@ -1065,7 +1065,7 @@ class Level implements ChunkManager, Metadatable{
 		$maxX = Math::ceilFloat($bb->maxX);
 		$maxY = Math::ceilFloat($bb->maxY);
 		$maxZ = Math::ceilFloat($bb->maxZ);
-		
+
 		$collides = [];
 
 		if($targetFirst){
@@ -1581,9 +1581,9 @@ class Level implements ChunkManager, Metadatable{
 
 			$this->addParticle(new DestroyBlockParticle($target->add(0.5), $target), $players);
 		}
-		
+
 		$target->onBreak($item);
-		
+
 		$tile = $this->getTile($target);
 		if($tile !== null){
 			if($tile instanceof InventoryHolder){

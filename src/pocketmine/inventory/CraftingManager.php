@@ -52,7 +52,7 @@ class CraftingManager{
 				if(count($recipe["Result"]) == 1){
 					$first = $recipe["Result"][0];
 					$result = new ShapelessRecipe(Item::get($first["ID"], $first["Damage"], $first["Count"]));
-	
+
 					foreach($recipe["Ingredients"] as $ingredient){
 						$result->addIngredient(Item::get($ingredient["ID"], $ingredient["Damage"], $ingredient["Count"]));
 					}

@@ -30,7 +30,7 @@ class NetherBrickFence extends Transparent {
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
-	
+
 	public function getBreakTime(Item $item){
 		if ($item instanceof Air){
 			//Breaking by hand
@@ -45,15 +45,15 @@ class NetherBrickFence extends Transparent {
 	public function getHardness(){
 		return 2;
 	}
-        
+
 	public function getToolType(){
 		return Tool::TYPE_PICKAXE;
 	}
-	
+
 	public function getName(){
 		return "Nether Brick Fence";
 	}
-	
+
 	public function canConnect(Block $block){
 		//TODO: activate comments when the NetherBrickFenceGate class has been created.
 		return ($block instanceof NetherBrickFence /* or $block instanceof NetherBrickFenceGate */) ? true : $block->isSolid() and !$block->isTransparent();

@@ -207,7 +207,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$list[self::TRAPPED_CHEST] = TrappedChest::class;
 			self::$list[self::WEIGHTED_PRESSURE_PLATE_LIGHT] = WeightedPressurePlateLight::class;
 			self::$list[self::WEIGHTED_PRESSURE_PLATE_HEAVY] = WeightedPressurePlateHeavy::class;
-			
+
 			self::$list[self::DAYLIGHT_SENSOR] = DaylightSensor::class;
 			self::$list[self::REDSTONE_BLOCK] = Redstone::class;
 

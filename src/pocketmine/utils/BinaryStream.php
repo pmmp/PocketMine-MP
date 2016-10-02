@@ -33,7 +33,7 @@ class BinaryStream extends \stdClass{
 
 	public $offset;
 	public $buffer;
-	
+
 	public function __construct($buffer = "", $offset = 0){
 		$this->buffer = $buffer;
 		$this->offset = $offset;
@@ -196,19 +196,19 @@ class BinaryStream extends \stdClass{
 
 	public function getSlot(){
 		$id = $this->getSignedShort();
-		
+
 		if($id <= 0){
 			return Item::get(0, 0, 0);
 		}
-		
+
 		$cnt = $this->getByte();
-		
+
 		$data = $this->getShort();
-		
+
 		$nbtLen = $this->getLShort();
-		
+
 		$nbt = "";
-		
+
 		if($nbtLen > 0){
 			$nbt = $this->get($nbtLen);
 		}
@@ -226,14 +226,14 @@ class BinaryStream extends \stdClass{
 			$this->putShort(0);
 			return;
 		}
-		
+
 		$this->putShort($item->getId());
 		$this->putByte($item->getCount());
 		$this->putShort($item->getDamage() === null ? -1 : $item->getDamage());
 		$nbt = $item->getCompoundTag();
 		$this->putLShort(strlen($nbt));
 		$this->put($nbt);
-		
+
 	}
 
 	public function getString(){

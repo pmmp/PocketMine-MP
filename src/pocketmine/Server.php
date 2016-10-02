@@ -1701,7 +1701,7 @@ class Server{
 
 		return count($recipients);
 	}
-	
+
 	/**
 	 * @param string        $popup
 	 * @param Player[]|null $recipients
@@ -1719,7 +1719,7 @@ class Server{
 				}
 			}
 		}
-		
+
 		/** @var Player[] $recipients */
 		foreach($recipients as $recipient){
 			$recipient->sendPopup($popup);
@@ -2341,7 +2341,7 @@ class Server{
 		}
 
 		$d = Utils::getRealMemoryUsage();
-		
+
 		$u = Utils::getMemoryUsage(true);
 		$usage = round(($u[0] / 1024) / 1024, 2) . "/" . round(($d[0] / 1024) / 1024, 2) . "/" . round(($u[1] / 1024) / 1024, 2) . "/".round(($u[2] / 1024) / 1024, 2)." MB @ " . Utils::getThreadCount() . " threads";
 

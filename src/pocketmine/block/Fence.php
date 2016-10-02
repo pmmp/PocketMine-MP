@@ -32,7 +32,7 @@ class Fence extends Transparent{
 	const FENCE_JUNGLE = 3;
 	const FENCE_ACACIA = 4;
 	const FENCE_DARKOAK = 5;
-    
+
 	protected $id = self::FENCE;
 
 	public function __construct($meta = 0){

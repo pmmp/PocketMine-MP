@@ -399,7 +399,7 @@ class PlayerInventory extends BaseInventory{
 					$index = $this->getHotbarSlotIndex($i);
 					$pk->hotbar[] = $index <= -1 ? -1 : $index + $this->getHotbarSize();
 				}
-				
+
 				if($player->getGamemode() & 0x01 === 0x01){ //Send special inventory for creative or spectator
 					$pk2 = new ContainerSetContentPacket();
 					$pk2->windowid = ContainerSetContentPacket::SPECIAL_CREATIVE;

@@ -53,11 +53,11 @@ class FloatingTextParticle extends Particle{
 	public function setTitle($title){
 		$this->title = $title;
 	}
-	
+
 	public function isInvisible(){
 		return $this->invisible;
 	}
-	
+
 	public function setInvisible($value = true){
 		$this->invisible = (bool) $value;
 	}
@@ -75,7 +75,7 @@ class FloatingTextParticle extends Particle{
 		}
 
 		if(!$this->invisible){
-			
+
 			$pk = new AddEntityPacket();
 			$pk->eid = $this->entityId;
 			$pk->type = ItemEntity::NETWORK_ID;
@@ -94,11 +94,11 @@ class FloatingTextParticle extends Particle{
 				Entity::DATA_NAMETAG => [Entity::DATA_TYPE_STRING, $this->title . ($this->text !== "" ? "\n" . $this->text : "")],
 				Entity::DATA_SHOW_NAMETAG => [Entity::DATA_TYPE_BYTE, 1],
 				Entity::DATA_NO_AI => [Entity::DATA_TYPE_BYTE, 1]
-            ];
+		    ];
 
 			$p[] = $pk;
 		}
-		
+
 		return $p;
 	}
 }

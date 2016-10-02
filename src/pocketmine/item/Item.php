@@ -226,7 +226,7 @@ class Item implements ItemIds{
 		self::clearCreativeItems();
 
 		$creativeItems = new Config(Server::getInstance()->getFilePath() . "src/pocketmine/resources/creativeitems.json", Config::JSON, []);
-		
+
 		foreach($creativeItems->getAll() as $item){
 			self::addCreativeItem(Item::get($item["ID"], $item["Damage"]));
 		}
