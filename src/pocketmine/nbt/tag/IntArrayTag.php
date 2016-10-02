@@ -32,7 +32,6 @@ class IntArrayTag extends NamedTag{
 	}
 
 	public function read(NBT $nbt){
-		 [];
 		$size = $nbt->getInt();
 		$this->value = array_values(unpack($nbt->endianness === NBT::LITTLE_ENDIAN ? "V*" : "N*", $nbt->get($size * 4)));
 	}
