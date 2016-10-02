@@ -23,13 +23,13 @@ namespace pocketmine\block;
 
 class WoodenButton extends Solid {
 
-    protected $id = self::WOODEN_BUTTON;
+	protected $id = self::WOODEN_BUTTON;
 
-    public function __construct($meta = 0){
-        $this->meta = $meta;
-    }
+	public function __construct($meta = 0){
+		$this->meta = $meta;
+	}
 
-    public function getName(){
-        return "Wooden Button";
-    }
+	public function getName(){
+		return "Wooden Button";
+	}
 }

@@ -39,7 +39,7 @@ class FlowerPot extends Spawnable{
 		}
 		parent::__construct($chunk, $nbt);
 	}
-	
+
 	public function canAddItem(Item $item): bool{
 		if(!$this->isEmpty()){
 			return false;
@@ -61,11 +61,11 @@ class FlowerPot extends Spawnable{
 				return false;
 		}
 	}
-	
+
 	public function getItem(): Item{
 		return Item::get((int) ($this->namedtag["item"] ?? 0), (int) ($this->namedtag["mData"] ?? 0), 1);
 	}
-	
+
 	public function setItem(Item $item){
 		$this->namedtag["item"] = $item->getId();
 		$this->namedtag["mData"] = $item->getDamage();
@@ -76,15 +76,15 @@ class FlowerPot extends Spawnable{
 			$this->level->clearChunkCache($this->chunk->getX(), $this->chunk->getZ());
 		}
 	}
-	
+
 	public function removeItem(){
 		$this->setItem(Item::get(Item::AIR));
 	}
-	
+
 	public function isEmpty(): bool{
 		return $this->getItem()->getId() === Item::AIR;
 	}
-	
+
 	public function getSpawnCompound(): CompoundTag{
 		return new CompoundTag("", [
 			new StringTag("id", Tile::FLOWER_POT),

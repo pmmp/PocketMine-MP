@@ -58,7 +58,7 @@ abstract class Particle extends Vector3{
 	const TYPE_VILLAGER_ANGRY = 30;
 	const TYPE_VILLAGER_HAPPY = 31;
 	const TYPE_ENCHANTMENT_TABLE = 32;
-	
+
 	/**
 	 * @return DataPacket|DataPacket[]
 	 */

@@ -22,7 +22,7 @@
 namespace pocketmine\block;
 
 class WoodenPressurePlate extends Solid{
-	
+
 	protected $id = self::WOODEN_PRESSURE_PLATE;
 
 	public function __construct($meta = 0) {

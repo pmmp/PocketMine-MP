@@ -46,7 +46,7 @@ class Chunk extends BaseFullChunk{
 			$this->nbt = new CompoundTag("Level", []);
 			return;
 		}
-		
+
 		$this->nbt = $nbt;
 
 		if(isset($this->nbt->Entities) and $this->nbt->Entities instanceof ListTag){
@@ -313,7 +313,7 @@ class Chunk extends BaseFullChunk{
 			return null;
 		}
 	}
-	
+
 	public static function fromFastBinary($data, LevelProvider $provider = null){
 
 		try{
@@ -351,7 +351,7 @@ class Chunk extends BaseFullChunk{
 			return null;
 		}
 	}
-	
+
 	public function toFastBinary(){
 		return
 			Binary::writeInt($this->x) .
