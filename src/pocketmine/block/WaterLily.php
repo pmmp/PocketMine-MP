@@ -21,9 +21,7 @@
 
 namespace pocketmine\block;
 
-
 use pocketmine\item\Item;
-
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;

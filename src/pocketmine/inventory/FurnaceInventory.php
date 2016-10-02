@@ -21,7 +21,6 @@
 
 namespace pocketmine\inventory;
 
-
 use pocketmine\item\Item;
 use pocketmine\tile\Furnace;
 

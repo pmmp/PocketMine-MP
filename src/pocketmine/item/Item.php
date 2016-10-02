@@ -38,7 +38,6 @@ use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\Config;
 
-
 class Item implements ItemIds{
 
 	/** @var NBT */

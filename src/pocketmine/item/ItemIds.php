@@ -22,7 +22,7 @@
 namespace pocketmine\item;
  
 use pocketmine\block\BlockIds;
- 
+
 interface ItemIds extends BlockIds{
 	
 	//All BlockIds are also accessible through this interface.

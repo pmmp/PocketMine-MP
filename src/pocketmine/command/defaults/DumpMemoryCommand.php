@@ -23,7 +23,6 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 
-
 class DumpMemoryCommand extends VanillaCommand{
 
 	private static $executions = 0;

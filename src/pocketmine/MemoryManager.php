@@ -26,7 +26,6 @@ use pocketmine\event\Timings;
 use pocketmine\scheduler\GarbageCollectionTask;
 use pocketmine\utils\Utils;
 
-
 class MemoryManager{
 
 	/** @var Server */

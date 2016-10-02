@@ -21,7 +21,6 @@
 
 namespace pocketmine\entity;
 
-
 use pocketmine\inventory\InventoryHolder;
 
 class Enderman extends Monster implements InventoryHolder{

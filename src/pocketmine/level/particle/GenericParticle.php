@@ -21,8 +21,8 @@
 
 namespace pocketmine\level\particle;
 
-use pocketmine\network\protocol\LevelEventPacket;
 use pocketmine\math\Vector3;
+use pocketmine\network\protocol\LevelEventPacket;
 
 class GenericParticle extends Particle{
 	

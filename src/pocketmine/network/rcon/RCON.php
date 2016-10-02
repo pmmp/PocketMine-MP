@@ -30,7 +30,6 @@ use pocketmine\event\server\RemoteServerCommandEvent;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 
-
 class RCON{
 	/** @var Server */
 	private $server;

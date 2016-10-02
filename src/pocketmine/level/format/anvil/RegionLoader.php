@@ -23,7 +23,6 @@ namespace pocketmine\level\format\anvil;
 
 use pocketmine\level\format\LevelProvider;
 
-
 class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 
 	public function __construct(LevelProvider $level, $regionX, $regionZ){

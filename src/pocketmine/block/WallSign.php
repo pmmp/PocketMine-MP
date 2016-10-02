@@ -21,7 +21,6 @@
 
 namespace pocketmine\block;
 
-
 use pocketmine\level\Level;
 
 class WallSign extends SignPost{
