@@ -54,7 +54,7 @@ class SpruceTree extends Tree{
 				$xOff = abs($xx - $x);
 				for($zz = $z - $radius; $zz <= $z + $radius; ++$zz){
 					$zOff = abs($zz - $z);
-		            if($xOff === $radius and $zOff === $radius and $radius > 0){
+					if($xOff === $radius and $zOff === $radius and $radius > 0){
 						continue;
 					}
 
@@ -62,10 +62,10 @@ class SpruceTree extends Tree{
 						$level->setBlockIdAt($xx, $yyy, $zz, $this->leafBlock);
 						$level->setBlockDataAt($xx, $yyy, $zz, $this->type);
 					}
-		        }
-		    }
+				}
+			}
 
-		    if($radius >= $maxR){
+			if($radius >= $maxR){
 				$radius = $minR;
 				$minR = 1;
 				if(++$maxR > $lRadius){
