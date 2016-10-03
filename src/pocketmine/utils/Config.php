@@ -20,6 +20,7 @@
 */
 
 namespace pocketmine\utils;
+
 use pocketmine\scheduler\FileWriteTask;
 use pocketmine\Server;
 

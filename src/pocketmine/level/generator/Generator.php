@@ -88,7 +88,7 @@ abstract class Generator{
 		if($samplingRate === 0){
 			throw new \InvalidArgumentException("samplingRate cannot be 0");
 		}
-		if ($xSize % $samplingRate !== 0) {
+		if($xSize % $samplingRate !== 0){
 			throw new \InvalidArgumentCountException("xSize % samplingRate must return 0");
 		}
 

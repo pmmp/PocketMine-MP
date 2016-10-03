@@ -21,7 +21,7 @@
 
 namespace pocketmine\block;
 
-class WeightedPressurePlateHeavy extends Solid {
+class WeightedPressurePlateHeavy extends Solid{
 
 	protected $id = self::WEIGHTED_PRESSURE_PLATE_HEAVY;
 

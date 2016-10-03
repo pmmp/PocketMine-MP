@@ -25,7 +25,7 @@ class WoodenPressurePlate extends Solid{
 
 	protected $id = self::WOODEN_PRESSURE_PLATE;
 
-	public function __construct($meta = 0) {
+	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 

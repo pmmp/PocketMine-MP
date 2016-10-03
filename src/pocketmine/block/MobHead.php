@@ -61,7 +61,7 @@ class MobHead extends Solid{
 			$nbt = new CompoundTag("", [
 				new StringTag("id", Tile::SKULL),
 				new ByteTag("SkullType", $item->getDamage()),
-				new ByteTag("Rot",  $rot),
+				new ByteTag("Rot", $rot),
 				new IntTag("x", (int) $this->x),
 				new IntTag("y", (int) $this->y),
 				new IntTag("z", (int) $this->z)

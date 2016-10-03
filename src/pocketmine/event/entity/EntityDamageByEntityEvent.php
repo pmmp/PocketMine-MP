@@ -61,12 +61,14 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	public function getDamager(){
 		return $this->damager;
 	}
+
 	/**
 	 * @return float
 	 */
 	public function getKnockBack(){
 		return $this->knockBack;
 	}
+
 	/**
 	 * @param float $knockBack
 	 */

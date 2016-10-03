@@ -21,7 +21,7 @@
 
 namespace pocketmine\block;
 
-class CocoaBlock extends Solid {
+class CocoaBlock extends Solid{
 
 	protected $id = self::COCOA_BLOCK;
 

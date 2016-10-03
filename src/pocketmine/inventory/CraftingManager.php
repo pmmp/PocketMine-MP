@@ -47,45 +47,45 @@ class CraftingManager{
 		MainLogger::getLogger()->info("Loading recipes...");
 		foreach($recipes->getAll() as $recipe){
 			switch($recipe["Type"]){
-			case 0:
-				// TODO: handle multiple result items
-				if(count($recipe["Result"]) == 1){
-					$first = $recipe["Result"][0];
-					$result = new ShapelessRecipe(Item::get($first["ID"], $first["Damage"], $first["Count"]));
+				case 0:
+					// TODO: handle multiple result items
+					if(count($recipe["Result"]) == 1){
+						$first = $recipe["Result"][0];
+						$result = new ShapelessRecipe(Item::get($first["ID"], $first["Damage"], $first["Count"]));
 
-					foreach($recipe["Ingredients"] as $ingredient){
-						$result->addIngredient(Item::get($ingredient["ID"], $ingredient["Damage"], $ingredient["Count"]));
-					}
-					$this->registerRecipe($result);
-				}
-					break;
-			case 1:
-				// TODO: handle multiple result items
-				if(count($recipe["Result"]) == 1){
-					$first = $recipe["Result"][0];
-					$result = new ShapedRecipe(Item::get($first["ID"], $first["Damage"], $first["Count"]), $recipe["Height"], $recipe["Width"]);
-
-					$shape = array_chunk($recipe["Ingredients"], $recipe["Width"]);
-					foreach($shape as $y => $row){
-						foreach($row as $x => $ingredient){
-							$result->addIngredient($x, $y, Item::get($ingredient["ID"], ($ingredient["Damage"] < 0 ? null : $ingredient["Damage"]), $ingredient["Count"]));
+						foreach($recipe["Ingredients"] as $ingredient){
+							$result->addIngredient(Item::get($ingredient["ID"], $ingredient["Damage"], $ingredient["Count"]));
 						}
+						$this->registerRecipe($result);
 					}
-					$this->registerRecipe($result);
-				}
-				break;
-			case 2:
-				$result = $recipe["Result"];
-				$resultItem = Item::get($result["ID"], $result["Damage"], $result["Count"]);
-				$this->registerRecipe(new FurnaceRecipe($resultItem, Item::get($recipe["Ingredients"], 0, 1)));
-				break;
-			case 3:
-				$result = $recipe["Result"];
-				$resultItem = Item::get($result["ID"], $result["Damage"], $result["Count"]);
-				$this->registerRecipe(new FurnaceRecipe($resultItem, Item::get($recipe["Ingredients"]["ID"], $recipe["Ingredients"]["Damage"], 1)));
-				break;
-			default:
-				break;
+					break;
+				case 1:
+					// TODO: handle multiple result items
+					if(count($recipe["Result"]) == 1){
+						$first = $recipe["Result"][0];
+						$result = new ShapedRecipe(Item::get($first["ID"], $first["Damage"], $first["Count"]), $recipe["Height"], $recipe["Width"]);
+
+						$shape = array_chunk($recipe["Ingredients"], $recipe["Width"]);
+						foreach($shape as $y => $row){
+							foreach($row as $x => $ingredient){
+								$result->addIngredient($x, $y, Item::get($ingredient["ID"], ($ingredient["Damage"] < 0 ? null : $ingredient["Damage"]), $ingredient["Count"]));
+							}
+						}
+						$this->registerRecipe($result);
+					}
+					break;
+				case 2:
+					$result = $recipe["Result"];
+					$resultItem = Item::get($result["ID"], $result["Damage"], $result["Count"]);
+					$this->registerRecipe(new FurnaceRecipe($resultItem, Item::get($recipe["Ingredients"], 0, 1)));
+					break;
+				case 3:
+					$result = $recipe["Result"];
+					$resultItem = Item::get($result["ID"], $result["Damage"], $result["Count"]);
+					$this->registerRecipe(new FurnaceRecipe($resultItem, Item::get($recipe["Ingredients"]["ID"], $recipe["Ingredients"]["Damage"], 1)));
+					break;
+				default:
+					break;
 			}
 		}
 	}
