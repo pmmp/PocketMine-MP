@@ -21,7 +21,7 @@
 
 namespace pocketmine\block;
 
-class DaylightSensor extends Solid {
+class DaylightSensor extends Solid{
 
 	protected $id = self::DAYLIGHT_SENSOR;
 

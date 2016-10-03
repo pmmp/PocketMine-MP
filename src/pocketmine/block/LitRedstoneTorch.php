@@ -21,7 +21,7 @@
 
 namespace pocketmine\block;
 
-class LitRedstoneTorch extends Solid {
+class LitRedstoneTorch extends Solid{
 
 	protected $id = self::REDSTONE_TORCH;
 

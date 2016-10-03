@@ -40,9 +40,9 @@ class MoveEntityPacket extends DataPacket{
 		$this->x = $this->getFloat();
 		$this->y = $this->getFloat();
 		$this->z = $this->getFloat();
-		$this->pitch = $this->getByte()*(360.0/256);
-		$this->yaw = $this->getByte()*(360.0/256);
-		$this->headYaw = $this->getByte()*(360.0/256);
+		$this->pitch = $this->getByte() * (360.0 / 256);
+		$this->yaw = $this->getByte() * (360.0 / 256);
+		$this->headYaw = $this->getByte() * (360.0 / 256);
 	}
 
 	public function encode(){
@@ -51,9 +51,9 @@ class MoveEntityPacket extends DataPacket{
 		$this->putFloat($this->x);
 		$this->putFloat($this->y);
 		$this->putFloat($this->z);
-		$this->putByte($this->pitch/(360.0/256));
-		$this->putByte($this->yaw/(360.0/256));
-		$this->putByte($this->headYaw/(360.0/256));
+		$this->putByte($this->pitch / (360.0 / 256));
+		$this->putByte($this->yaw / (360.0 / 256));
+		$this->putByte($this->headYaw / (360.0 / 256));
 	}
 
 }

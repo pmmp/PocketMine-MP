@@ -169,10 +169,10 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		$info = $this->server->getQueryInformation();
 
 		$this->interface->sendOption("name",
-			"MCPE;".addcslashes($name, ";") .";".
-			Info::CURRENT_PROTOCOL.";".
-			\pocketmine\MINECRAFT_VERSION_NETWORK.";".
-			$info->getPlayerCount().";".
+			"MCPE;" . addcslashes($name, ";") . ";" .
+			Info::CURRENT_PROTOCOL . ";" .
+			\pocketmine\MINECRAFT_VERSION_NETWORK . ";" .
+			$info->getPlayerCount() . ";" .
 			$info->getMaxPlayerCount()
 		);
 	}
@@ -207,7 +207,8 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 
 			if(!$immediate and !$needACK and $packet::NETWORK_ID !== ProtocolInfo::BATCH_PACKET
 				and Network::$BATCH_THRESHOLD >= 0
-				and strlen($packet->buffer) >= Network::$BATCH_THRESHOLD){
+				and strlen($packet->buffer) >= Network::$BATCH_THRESHOLD
+			){
 				$this->server->batchPackets([$player], [$packet], true);
 				return null;
 			}

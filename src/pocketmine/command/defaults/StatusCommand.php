@@ -68,9 +68,9 @@ class StatusCommand extends VanillaCommand{
 				($hours !== null ?
 					($days !== null ?
 						"$days days "
-					: "") . "$hours hours "
+						: "") . "$hours hours "
 					: "") . "$minutes minutes "
-			: "") . "$seconds seconds";
+				: "") . "$seconds seconds";
 
 		$sender->sendMessage(TextFormat::GOLD . "Uptime: " . TextFormat::RED . $uptime);
 
@@ -81,7 +81,7 @@ class StatusCommand extends VanillaCommand{
 			$tpsColor = TextFormat::RED;
 		}
 
-		$sender->sendMessage(TextFormat::GOLD . "Current TPS: " . $tpsColor . $server->getTicksPerSecond() . " (".$server->getTickUsage()."%)");
+		$sender->sendMessage(TextFormat::GOLD . "Current TPS: " . $tpsColor . $server->getTicksPerSecond() . " (" . $server->getTickUsage() . "%)");
 
 		$sender->sendMessage(TextFormat::GOLD . "Network upload: " . TextFormat::RED . round($server->getNetwork()->getUpload() / 1024, 2) . " kB/s");
 		$sender->sendMessage(TextFormat::GOLD . "Network download: " . TextFormat::RED . round($server->getNetwork()->getDownload() / 1024, 2) . " kB/s");
@@ -99,11 +99,11 @@ class StatusCommand extends VanillaCommand{
 		}
 
 		foreach($server->getLevels() as $level){
-			$sender->sendMessage(TextFormat::GOLD . "World \"".$level->getFolderName()."\"".($level->getFolderName() !== $level->getName() ? " (".$level->getName().")" : "").": " .
-			TextFormat::RED . number_format(count($level->getChunks())) . TextFormat::GREEN . " chunks, " .
-			TextFormat::RED . number_format(count($level->getEntities())) . TextFormat::GREEN . " entities, " .
-			TextFormat::RED . number_format(count($level->getTiles())) . TextFormat::GREEN . " tiles. ".
-			"Time " . (($level->getTickRate() > 1 or $level->getTickRateTime() > 40) ? TextFormat::RED : TextFormat::YELLOW) . round($level->getTickRateTime(), 2)."ms" . ($level->getTickRate() > 1 ? " (tick rate ". $level->getTickRate() .")" : "")
+			$sender->sendMessage(TextFormat::GOLD . "World \"" . $level->getFolderName() . "\"" . ($level->getFolderName() !== $level->getName() ? " (" . $level->getName() . ")" : "") . ": " .
+				TextFormat::RED . number_format(count($level->getChunks())) . TextFormat::GREEN . " chunks, " .
+				TextFormat::RED . number_format(count($level->getEntities())) . TextFormat::GREEN . " entities, " .
+				TextFormat::RED . number_format(count($level->getTiles())) . TextFormat::GREEN . " tiles. " .
+				"Time " . (($level->getTickRate() > 1 or $level->getTickRateTime() > 40) ? TextFormat::RED : TextFormat::YELLOW) . round($level->getTickRateTime(), 2) . "ms" . ($level->getTickRate() > 1 ? " (tick rate " . $level->getTickRate() . ")" : "")
 			);
 		}
 

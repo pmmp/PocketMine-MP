@@ -138,7 +138,7 @@ class Network{
 
 	public function processInterfaces(){
 		foreach($this->interfaces as $interface){
-			try {
+			try{
 				$interface->process();
 			}catch(\Throwable $e){
 				$logger = $this->server->getLogger();

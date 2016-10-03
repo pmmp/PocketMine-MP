@@ -54,12 +54,12 @@ class FlowerPot extends Flowable{
 
 	public function getBoundingBox(){
 		return new AxisAlignedBB(
-			$this->x + (5/16),
+			$this->x + (5 / 16),
 			$this->y,
-			$this->z + (5/16),
-			$this->x + (11/16),
-			$this->y + (6/16),
-			$this->z + (11/16)
+			$this->z + (5 / 16),
+			$this->x + (11 / 16),
+			$this->y + (6 / 16),
+			$this->z + (11 / 16)
 		);
 	}
 

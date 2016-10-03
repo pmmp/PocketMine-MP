@@ -21,7 +21,7 @@
 
 namespace pocketmine\block;
 
-class Rail extends Solid {
+class Rail extends Solid{
 
 	protected $id = self::RAIL;
 

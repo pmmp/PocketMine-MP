@@ -159,7 +159,7 @@ class Flat extends Generator{
 	}
 
 	public function generateChunk($chunkX, $chunkZ){
-		if($this->chunk === null) {
+		if($this->chunk === null){
 			if(isset($this->options["preset"]) and $this->options["preset"] != ""){
 				$this->parsePreset($this->options["preset"], $chunkX, $chunkZ);
 			}else{

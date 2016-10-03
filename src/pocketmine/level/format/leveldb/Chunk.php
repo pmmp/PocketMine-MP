@@ -365,14 +365,14 @@ class Chunk extends BaseFullChunk{
 		$biomeColors = pack("N*", ...$this->getBiomeColorArray());
 
 		return $chunkIndex .
-			$this->getBlockIdArray() .
-			$this->getBlockDataArray() .
-			$this->getBlockSkyLightArray() .
-			$this->getBlockLightArray() .
-			$heightmap .
-			$biomeColors . chr(
-				($this->isLightPopulated() ? 0x04 : 0) | ($this->isPopulated() ? 0x02 : 0) | ($this->isGenerated() ? 0x01 : 0)
-			);
+		$this->getBlockIdArray() .
+		$this->getBlockDataArray() .
+		$this->getBlockSkyLightArray() .
+		$this->getBlockLightArray() .
+		$heightmap .
+		$biomeColors . chr(
+			($this->isLightPopulated() ? 0x04 : 0) | ($this->isPopulated() ? 0x02 : 0) | ($this->isGenerated() ? 0x01 : 0)
+		);
 	}
 
 	/**
