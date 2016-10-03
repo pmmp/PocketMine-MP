@@ -65,7 +65,6 @@ namespace {
 }
 
 namespace pocketmine {
-
 	use pocketmine\utils\Binary;
 	use pocketmine\utils\MainLogger;
 	use pocketmine\utils\ServerKiller;

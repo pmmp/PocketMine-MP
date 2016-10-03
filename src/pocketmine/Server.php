@@ -1381,7 +1381,7 @@ class Server{
 	}
 
 	public static function microSleep(int $microseconds){
-		Server::$sleeper->synchronized(function (int $ms){
+		Server::$sleeper->synchronized(function(int $ms){
 			Server::$sleeper->wait($ms);
 		}, $microseconds);
 	}

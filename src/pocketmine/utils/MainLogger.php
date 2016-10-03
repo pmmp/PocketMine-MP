@@ -204,7 +204,7 @@ class MainLogger extends \AttachableThreadedLogger{
 
 		$this->logStream[] = date("Y-m-d", $now) . " " . $cleanMessage . "\n";
 		if($this->logStream->count() === 1){
-			$this->synchronized(function (){
+			$this->synchronized(function(){
 				$this->notify();
 			});
 		}
@@ -218,7 +218,7 @@ class MainLogger extends \AttachableThreadedLogger{
 		}
 
 		while($this->shutdown === false){
-			$this->synchronized(function (){
+			$this->synchronized(function(){
 				while($this->logStream->count() > 0){
 					$chunk = $this->logStream->shift();
 					fwrite($this->logResource, $chunk);
