@@ -21,7 +21,7 @@
 
 namespace pocketmine\block;
 
-class NoteBlock extends Solid {
+class NoteBlock extends Solid{
 
 	protected $id = self::NOTE_BLOCK;
 

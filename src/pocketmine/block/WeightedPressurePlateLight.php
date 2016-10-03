@@ -21,7 +21,7 @@
 
 namespace pocketmine\block;
 
-class WeightedPressurePlateLight extends Solid {
+class WeightedPressurePlateLight extends Solid{
 
 	protected $id = self::WEIGHTED_PRESSURE_PLATE_LIGHT;
 

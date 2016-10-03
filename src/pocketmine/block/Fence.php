@@ -26,7 +26,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 
 class Fence extends Transparent{
-	const FENCE_OAK = 0;  
+	const FENCE_OAK = 0;
 	const FENCE_SPRUCE = 1;
 	const FENCE_BIRCH = 2;
 	const FENCE_JUNGLE = 3;

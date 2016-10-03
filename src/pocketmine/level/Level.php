@@ -19,7 +19,7 @@
  *
 */
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 /**
  * All Level related classes are here, like Generators, Populators, Noise, ...
@@ -267,7 +267,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public static function blockHash(int $x, int $y, int $z){
-		return PHP_INT_SIZE === 8 ? (($x & 0xFFFFFFF) << 35) | (($y & 0x7f) << 28) | ($z & 0xFFFFFFF) : $x . ":" . $y .":". $z;
+		return PHP_INT_SIZE === 8 ? (($x & 0xFFFFFFF) << 35) | (($y & 0x7f) << 28) | ($z & 0xFFFFFFF) : $x . ":" . $y . ":" . $z;
 	}
 
 	public static function chunkBlockHash(int $x, int $y, int $z) : int{
@@ -378,14 +378,14 @@ class Level implements ChunkManager, Metadatable{
 	public function registerGenerator(){
 		$size = $this->server->getScheduler()->getAsyncTaskPoolSize();
 		for($i = 0; $i < $size; ++$i){
-			$this->server->getScheduler()->scheduleAsyncTaskToWorker(new GeneratorRegisterTask($this,  $this->generatorInstance), $i);
+			$this->server->getScheduler()->scheduleAsyncTaskToWorker(new GeneratorRegisterTask($this, $this->generatorInstance), $i);
 		}
 	}
 
 	public function unregisterGenerator(){
 		$size = $this->server->getScheduler()->getAsyncTaskPoolSize();
 		for($i = 0; $i < $size; ++$i){
-			$this->server->getScheduler()->scheduleAsyncTaskToWorker(new GeneratorUnregisterTask($this,  $this->generatorInstance), $i);
+			$this->server->getScheduler()->scheduleAsyncTaskToWorker(new GeneratorUnregisterTask($this, $this->generatorInstance), $i);
 		}
 	}
 
@@ -447,7 +447,7 @@ class Level implements ChunkManager, Metadatable{
 				}else{
 					$this->server->batchPackets($players, $pk, false);
 				}
-			}	
+			}
 		}
 	}
 
@@ -707,7 +707,7 @@ class Level implements ChunkManager, Metadatable{
 
 		foreach($this->moveToSend as $index => $entry){
 			Level::getXZ($index, $chunkX, $chunkZ);
-			foreach($entry as $e) {
+			foreach($entry as $e){
 				$pk = new MoveEntityPacket();
 				$pk->eid = $e[0];
 				$pk->x = $e[1];
@@ -899,7 +899,6 @@ class Level implements ChunkManager, Metadatable{
 
 		foreach($this->chunkTickList as $index => $loaders){
 			Level::getXZ($index, $chunkX, $chunkZ);
-
 
 
 			if(!isset($this->chunks[$index]) or ($chunk = $this->getChunk($chunkX, $chunkZ, false)) === null){

@@ -67,10 +67,10 @@ abstract class Tile extends Position{
 	public $tickTimer;
 
 	/**
-	 * @param string    $type
-	 * @param FullChunk $chunk
-	 * @param CompoundTag  $nbt
-	 * @param           $args
+	 * @param string      $type
+	 * @param FullChunk   $chunk
+	 * @param CompoundTag $nbt
+	 * @param             $args
 	 *
 	 * @return Tile
 	 */

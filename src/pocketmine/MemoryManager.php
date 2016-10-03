@@ -127,8 +127,8 @@ class MemoryManager{
 	}
 
 	public function trigger($memory, $limit, $global = false, $triggerCount = 0){
-		$this->server->getLogger()->debug("[Memory Manager] ".($global ? "Global " : "") ."Low memory triggered, limit ". round(($limit / 1024) / 1024, 2)."MB, using ". round(($memory / 1024) / 1024, 2)."MB");
-
+		$this->server->getLogger()->debug(sprintf("[Memory Manager] %sLow memory triggered, limit %gMB, using %gMB",
+			$global ? "Global " : "", round(($limit / 1024) / 1024, 2), round(($memory / 1024) / 1024, 2)));
 		if($this->cacheTrigger){
 			foreach($this->server->getLevels() as $level){
 				$level->clearCache(true);
@@ -149,7 +149,7 @@ class MemoryManager{
 			$cycles = $this->triggerGarbageCollector();
 		}
 
-		$this->server->getLogger()->debug("[Memory Manager] Freed " . round(($ev->getMemoryFreed() / 1024) / 1024, 2)."MB, $cycles cycles");
+		$this->server->getLogger()->debug(sprintf("[Memory Manager] Freed %gMB, $cycles cycles", round(($ev->getMemoryFreed() / 1024) / 1024, 2)));
 	}
 
 	public function check(){
@@ -265,7 +265,7 @@ class MemoryManager{
 					$this->continueDump($property->getValue($object), $info["properties"][$property->getName()], $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 				}
 
-				fwrite($obData, "$hash@$className: ". json_encode($info, JSON_UNESCAPED_SLASHES) . "\n");
+				fwrite($obData, "$hash@$className: " . json_encode($info, JSON_UNESCAPED_SLASHES) . "\n");
 
 				if(!isset($objects["staticProperties"][$className])){
 					$staticProperties[$className] = [];
@@ -323,7 +323,7 @@ class MemoryManager{
 				$this->continueDump($value, $data[$key], $objects, $refCounts, $recursion + 1, $maxNesting, $maxStringSize);
 			}
 		}elseif(is_string($from)){
-			$data = "(string) len(".strlen($from).") " . substr(Utils::printable($from), 0, $maxStringSize);
+			$data = sprintf("(string) len(%d) " . substr(Utils::printable($from), 0, $maxStringSize), strlen($from));
 		}elseif(is_resource($from)){
 			$data = "(resource) " . print_r($from, true);
 		}else{

@@ -23,6 +23,7 @@
  * Various Utilities used around the code
  */
 namespace pocketmine\utils;
+
 use pocketmine\entity\Entity;
 
 class Binary{

@@ -23,7 +23,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 
-class NetherBrickFence extends Transparent {
+class NetherBrickFence extends Transparent{
 
 	protected $id = self::NETHER_BRICK_FENCE;
 
@@ -32,11 +32,10 @@ class NetherBrickFence extends Transparent {
 	}
 
 	public function getBreakTime(Item $item){
-		if ($item instanceof Air){
+		if($item instanceof Air){
 			//Breaking by hand
 			return 10;
-		}
-		else{
+		}else{
 			// Other breaktimes are equal to woodfences.
 			return parent::getBreakTime($item);
 		}
@@ -67,5 +66,5 @@ class NetherBrickFence extends Transparent {
 		}else{
 			return [];
 		}
-	}        
+	}
 }

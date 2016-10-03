@@ -21,7 +21,7 @@
 
 namespace pocketmine\block;
 
-class Tripwire extends Solid {
+class Tripwire extends Solid{
 
 	protected $id = self::TRIPWIRE;
 

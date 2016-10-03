@@ -801,9 +801,9 @@ class Server{
 	}
 
 	/**
-	 * @param string   $name
+	 * @param string      $name
 	 * @param CompoundTag $nbtTag
-	 * @param bool $async
+	 * @param bool        $async
 	 */
 	public function saveOfflinePlayerData($name, CompoundTag $nbtTag, $async = false){
 		$nbt = new NBT(NBT::BIG_ENDIAN);
@@ -1779,7 +1779,7 @@ class Server{
 	 *
 	 * @param Player[]            $players
 	 * @param DataPacket[]|string $packets
-	 * @param bool                 $forceSync
+	 * @param bool                $forceSync
 	 */
 	public function batchPackets(array $players, array $packets, $forceSync = false){
 		Timings::$playerNetworkTimer->startTiming();
@@ -1986,7 +1986,7 @@ class Server{
 			gc_collect_cycles();
 		}catch(\Throwable $e){
 			$this->logger->emergency("Crashed while crashing, killing process");
-			$this->logger->emergency(get_class($e) . ": ". $e->getMessage());
+			$this->logger->emergency(get_class($e) . ": " . $e->getMessage());
 			@kill(getmypid());
 		}
 
@@ -2264,14 +2264,14 @@ class Server{
 						if($r > $this->baseTickRate){
 							$level->tickRateCounter = $level->getTickRate();
 						}
-						$this->getLogger()->debug("Raising level \"".$level->getName()."\" tick rate to ".$level->getTickRate()." ticks");
+						$this->getLogger()->debug("Raising level \"{$level->getName()}\" tick rate to {$level->getTickRate()} ticks");
 					}elseif($tickMs >= 50){
 						if($level->getTickRate() === $this->baseTickRate){
 							$level->setTickRate(max($this->baseTickRate + 1, min($this->autoTickRateLimit, floor($tickMs / 50))));
-							$this->getLogger()->debug("Level \"".$level->getName()."\" took ".round($tickMs, 2)."ms, setting tick rate to ".$level->getTickRate()." ticks");
+							$this->getLogger()->debug(sprintf("Level \"%s\" took %gms, setting tick rate to %d ticks", $level->getName(), round($tickMs, 2), $level->getTickRate()));
 						}elseif(($tickMs / $level->getTickRate()) >= 50 and $level->getTickRate() < $this->autoTickRateLimit){
 							$level->setTickRate($level->getTickRate() + 1);
-							$this->getLogger()->debug("Level \"".$level->getName()."\" took ".round($tickMs, 2)."ms, setting tick rate to ".$level->getTickRate()." ticks");
+							$this->getLogger()->debug(sprintf("Level \"%s\" took %gms, setting tick rate to %d ticks", $level->getName(), round($tickMs, 2), $level->getTickRate()));
 						}
 						$level->tickRateCounter = $level->getTickRate();
 					}
@@ -2343,7 +2343,7 @@ class Server{
 		$d = Utils::getRealMemoryUsage();
 
 		$u = Utils::getMemoryUsage(true);
-		$usage = round(($u[0] / 1024) / 1024, 2) . "/" . round(($d[0] / 1024) / 1024, 2) . "/" . round(($u[1] / 1024) / 1024, 2) . "/".round(($u[2] / 1024) / 1024, 2)." MB @ " . Utils::getThreadCount() . " threads";
+		$usage = sprintf("%g/%g/%g/%g MB @ %d threads", round(($u[0] / 1024) / 1024, 2), round(($d[0] / 1024) / 1024, 2), round(($u[1] / 1024) / 1024, 2), round(($u[2] / 1024) / 1024, 2), Utils::getThreadCount());
 
 		echo "\x1b]0;" . $this->getName() . " " .
 			$this->getPocketMineVersion() .

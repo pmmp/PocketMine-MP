@@ -47,10 +47,10 @@ class EnchantTable extends Spawnable implements Nameable{
 
 	public function getSpawnCompound(){
 		$c = new CompoundTag("", [
-				new StringTag("id", Tile::ENCHANT_TABLE),
-				new IntTag("x", (int) $this->x),
-				new IntTag("y", (int) $this->y),
-				new IntTag("z", (int) $this->z)
+			new StringTag("id", Tile::ENCHANT_TABLE),
+			new IntTag("x", (int) $this->x),
+			new IntTag("y", (int) $this->y),
+			new IntTag("z", (int) $this->z)
 		]);
 
 		if($this->hasName()){

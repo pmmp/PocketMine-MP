@@ -101,10 +101,10 @@ class Normal extends Generator{
 		$hash *= $hash + 223;
 		$xNoise = $hash >> 20 & 3;
 		$zNoise = $hash >> 22 & 3;
-		if ($xNoise == 3) {
+		if($xNoise == 3){
 			$xNoise = 1;
 		}
-		if($zNoise == 3) {
+		if($zNoise == 3){
 			$zNoise = 1;
 		}
 

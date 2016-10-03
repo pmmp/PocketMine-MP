@@ -1533,7 +1533,7 @@ abstract class Entity extends Location implements Metadatable{
 	public function setDataProperty($id, $type, $value, $send = true){
 		if($this->getDataProperty($id) !== $value){
 			$this->dataProperties[$id] = [$type, $value];
-			if($send === true) {
+			if($send === true){
 				$this->sendData($this->hasSpawned, [$id => $this->dataProperties[$id]]);
 			}
 

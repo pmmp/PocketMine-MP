@@ -47,8 +47,8 @@ class PlayerCreationEvent extends Event{
 
 	/**
 	 * @param SourceInterface $interface
-	 * @param Player::class   $baseClass
-	 * @param Player::class   $playerClass
+	 * @param                 Player::class   $baseClass
+	 * @param                 Player::class   $playerClass
 	 * @param mixed           $clientId
 	 * @param string          $address
 	 * @param int             $port
