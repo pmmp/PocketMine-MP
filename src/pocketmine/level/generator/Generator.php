@@ -213,18 +213,18 @@ abstract class Generator{
 						$dy2 = (($yy - $ny) / ($nny - $ny));
 
 						$noiseArray[$xx][$zz][$yy] = (($nnz - $zz) / ($nnz - $nz)) * (
-								$dy1 * (
-									$dx1 * $noiseArray[$nx][$nz][$ny] + $dx2 * $noiseArray[$nnx][$nz][$ny]
-								) + $dy2 * (
-									$dx1 * $noiseArray[$nx][$nz][$nny] + $dx2 * $noiseArray[$nnx][$nz][$nny]
-								)
-							) + (($zz - $nz) / ($nnz - $nz)) * (
-								$dy1 * (
-									$dx1 * $noiseArray[$nx][$nnz][$ny] + $dx2 * $noiseArray[$nnx][$nnz][$ny]
-								) + $dy2 * (
-									$dx1 * $noiseArray[$nx][$nnz][$nny] + $dx2 * $noiseArray[$nnx][$nnz][$nny]
-								)
-							);
+							$dy1 * (
+								$dx1 * $noiseArray[$nx][$nz][$ny] + $dx2 * $noiseArray[$nnx][$nz][$ny]
+							) + $dy2 * (
+								$dx1 * $noiseArray[$nx][$nz][$nny] + $dx2 * $noiseArray[$nnx][$nz][$nny]
+							)
+						) + (($zz - $nz) / ($nnz - $nz)) * (
+							$dy1 * (
+								$dx1 * $noiseArray[$nx][$nnz][$ny] + $dx2 * $noiseArray[$nnx][$nnz][$ny]
+							) + $dy2 * (
+								$dx1 * $noiseArray[$nx][$nnz][$nny] + $dx2 * $noiseArray[$nnx][$nnz][$nny]
+							)
+						);
 					}
 				}
 			}
