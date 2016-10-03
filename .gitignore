@@ -8,6 +8,7 @@ timings/*
 *.phar
 server.properties
 /pocketmine.yml
+memoryDump_*/*
 
 # Common IDEs
 .idea/*
