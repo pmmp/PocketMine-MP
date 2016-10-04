@@ -238,7 +238,7 @@ class NBT{
 					$data[$key] = new ByteArrayTag($key, $value);
 					break;
 				case NBT::TAG_String:
-					$data[$key] = new ByteTag($key, $value);
+					$data[$key] = new StringTag($key, $value);
 					break;
 				case NBT::TAG_List:
 					$data[$key] = new ListTag($key, $value);
