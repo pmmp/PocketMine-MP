@@ -40,15 +40,13 @@ class UpdateAttributesPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-
-		$this->putLong($this->entityId);
-
-		$this->putShort(count($this->entries));
-
+		$this->putEntityId($this->entityId);
+		$this->putUnsignedVarInt(count($this->entries));
 		foreach($this->entries as $entry){
-			$this->putFloat($entry->getMinValue());
-			$this->putFloat($entry->getMaxValue());
-			$this->putFloat($entry->getValue());
+			$this->putLFloat($entry->getMinValue());
+			$this->putLFloat($entry->getMaxValue());
+			$this->putLFloat($entry->getValue());
+			$this->putLFloat($entry->getDefaultValue());
 			$this->putString($entry->getName());
 		}
 	}

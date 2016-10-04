@@ -23,29 +23,22 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
+class ItemFrameDropItemPacket extends DataPacket{
 
-class InteractPacket extends DataPacket{
-	const NETWORK_ID = Info::INTERACT_PACKET;
+	const NETWORK_ID = Info::ITEM_FRAME_DROP_ITEM_PACKET;
 
-	const ACTION_RIGHT_CLICK = 1;
-	const ACTION_LEFT_CLICK = 2;
-	const ACTION_LEAVE_VEHICLE = 3;
-	/** @deprecated Do NOT use this. This constant is misleading and will be removed in the future */
-	const ACTION_JUMP = 3;
-
-	public $action;
-	public $eid;
-	public $target;
+	public $x;
+	public $y;
+	public $z;
+	public $item;
 
 	public function decode(){
-		$this->action = $this->getByte();
-		$this->target = $this->getEntityId();
+		$this->getBlockCoords($this->x, $this->y, $this->z);
+		$this->item = $this->getSlot();
 	}
 
 	public function encode(){
-		$this->reset();
-		$this->putByte($this->action);
-		$this->putEntityId($this->target);
+
 	}
 
 }

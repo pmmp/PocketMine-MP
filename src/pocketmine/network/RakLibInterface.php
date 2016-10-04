@@ -132,6 +132,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 					$pk = $this->getPacket($packet->buffer);
 					if($pk !== null){
 						$pk->decode();
+						assert($pk->feof(), "Still " . strlen(substr($pk->buffer, $pk->offset)) . " bytes unread!");
 						$this->players[$identifier]->handleDataPacket($pk);
 					}
 				}

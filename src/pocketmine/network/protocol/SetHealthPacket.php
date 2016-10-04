@@ -35,7 +35,7 @@ class SetHealthPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putInt($this->health);
+		$this->putVarInt($this->health);
 	}
 
 }

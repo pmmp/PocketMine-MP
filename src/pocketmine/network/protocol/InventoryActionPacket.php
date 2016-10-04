@@ -23,29 +23,18 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
+class InventoryActionPacket extends DataPacket{
+	const NETWORK_ID = Info::INVENTORY_ACTION_PACKET;
 
-class InteractPacket extends DataPacket{
-	const NETWORK_ID = Info::INTERACT_PACKET;
-
-	const ACTION_RIGHT_CLICK = 1;
-	const ACTION_LEFT_CLICK = 2;
-	const ACTION_LEAVE_VEHICLE = 3;
-	/** @deprecated Do NOT use this. This constant is misleading and will be removed in the future */
-	const ACTION_JUMP = 3;
-
-	public $action;
-	public $eid;
-	public $target;
+	public $unknown;
+	public $item;
 
 	public function decode(){
-		$this->action = $this->getByte();
-		$this->target = $this->getEntityId();
-	}
 
+	}
+	
 	public function encode(){
-		$this->reset();
-		$this->putByte($this->action);
-		$this->putEntityId($this->target);
+		$this->putUnsignedVarInt($this->unknown);
+		$this->putSlot($this->item);
 	}
-
 }
