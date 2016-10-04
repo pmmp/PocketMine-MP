@@ -23,29 +23,28 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
-
-class InteractPacket extends DataPacket{
-	const NETWORK_ID = Info::INTERACT_PACKET;
-
-	const ACTION_RIGHT_CLICK = 1;
-	const ACTION_LEFT_CLICK = 2;
-	const ACTION_LEAVE_VEHICLE = 3;
-	/** @deprecated Do NOT use this. This constant is misleading and will be removed in the future */
-	const ACTION_JUMP = 3;
-
-	public $action;
-	public $eid;
-	public $target;
+class LevelSoundEventPacket extends DataPacket{
+	const NETWORK_ID = Info::LEVEL_SOUND_EVENT_PACKET;
+	
+	//TODO: find unknowns
+	public $unknownByte;
+	public $x;
+	public $y;
+	public $z;
+	public $unknownVarInt1;
+	public $unknownVarInt2;
+	public $unknownBool;
 
 	public function decode(){
-		$this->action = $this->getByte();
-		$this->target = $this->getEntityId();
+
 	}
 
 	public function encode(){
 		$this->reset();
-		$this->putByte($this->action);
-		$this->putEntityId($this->target);
+		$this->putByte($this->unknownByte);
+		$this->putVector3f($this->x, $this->y, $this->z);
+		$this->putVarInt($this->unknownVarInt1);
+		$this->putVarInt($this->unknownVarInt2);
+		$this->putByte($this->unknownBool);
 	}
-
 }

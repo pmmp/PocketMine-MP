@@ -35,7 +35,7 @@ class SetDifficultyPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putInt($this->difficulty);
+		$this->putUnsignedVarInt($this->difficulty);
 	}
 
 }
