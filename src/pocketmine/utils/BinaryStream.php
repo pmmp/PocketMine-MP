@@ -233,12 +233,74 @@ class BinaryStream extends \stdClass{
 	}
 
 	public function getString(){
-		return $this->get($this->getShort());
+		return $this->get($this->getUnsignedVarInt());
 	}
 
 	public function putString($v){
-		$this->putShort(strlen($v));
+		$this->putUnsignedVarInt(strlen($v));
 		$this->put($v);
+	}
+
+	//TODO: varint64
+
+	/**
+	 * Reads an unsigned varint32 from the stream.
+	 */
+	public function getUnsignedVarInt(){
+		return Binary::readUnsignedVarInt($this);
+	}
+
+	/**
+	 * Writes an unsigned varint32 to the stream.
+	 */
+	public function putUnsignedVarInt($v){
+		$this->put(Binary::writeUnsignedVarInt($v));
+	}
+
+	/**
+	 * Reads a signed varint32 from the stream.
+	 */
+	public function getVarInt(){
+		return Binary::readVarInt($this);
+	}
+
+	/**
+	 * Writes a signed varint32 to the stream.
+	 */
+	public function putVarInt($v){
+		$this->put(Binary::writeVarInt($v));
+	}
+
+	public function getEntityId(){
+		return $this->getVarInt();
+	}
+	
+	public function putEntityId($v){
+		$this->putVarInt($v);
+	}
+
+	public function getBlockCoords(&$x, &$y, &$z){
+		$x = $this->getVarInt();
+		$y = $this->getByte();
+		$z = $this->getVarInt();
+	}
+
+	public function putBlockCoords(int $x, int $y, int $z){
+		$this->putVarInt($x);
+		$this->putByte($y);
+		$this->putVarInt($z);
+	}
+	
+	public function getVector3f(&$x, &$y, &$z){
+		$x = $this->getLFloat();
+		$y = $this->getLFloat();
+		$z = $this->getLFloat();
+	}
+	
+	public function putVector3f(float $x, float $y, float $z){
+		$this->putLFloat($x);
+		$this->putLFloat($y);
+		$this->putLFloat($z);
 	}
 
 	public function feof(){

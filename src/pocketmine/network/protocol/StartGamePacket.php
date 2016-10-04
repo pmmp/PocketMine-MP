@@ -27,18 +27,27 @@ namespace pocketmine\network\protocol;
 class StartGamePacket extends DataPacket{
 	const NETWORK_ID = Info::START_GAME_PACKET;
 
-	public $seed;
-	public $dimension;
-	public $generator;
-	public $gamemode;
-	public $eid;
-	public $spawnX;
-	public $spawnY;
-	public $spawnZ;
+	public $entityUniqueId;
+	public $entityRuntimeId;
 	public $x;
 	public $y;
 	public $z;
+	public $seed;
+	public $dimension;
+	public $generator = 1; //default infinite - 0 old, 1 infinite, 2 flat
+	public $gamemode;
+	public $difficulty;
+	public $spawnX;
+	public $spawnY;
+	public $spawnZ;
+	public $hasBeenLoadedInCreative = 1;
+	public $dayCycleStopTime = -1; //-1 = not stopped, any positive value = stopped at that time
+	public $eduMode = 0;
+	public $rainLevel;
+	public $lightningLevel;
+	public $commandsEnabled;
 	public $unknown;
+	public $worldName;
 
 	public function decode(){
 
@@ -46,21 +55,25 @@ class StartGamePacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putInt($this->seed);
-		$this->putByte($this->dimension);
-		$this->putInt($this->generator);
-		$this->putInt($this->gamemode);
-		$this->putLong($this->eid);
-		$this->putInt($this->spawnX);
-		$this->putInt($this->spawnY);
-		$this->putInt($this->spawnZ);
-		$this->putFloat($this->x);
-		$this->putFloat($this->y);
-		$this->putFloat($this->z);
-		$this->putByte(1);
-		$this->putByte(1);
-		$this->putByte(0);
+		$this->putEntityId($this->entityUniqueId); //EntityUniqueID
+		$this->putEntityId($this->entityRuntimeId); //EntityRuntimeID
+		$this->putVector3f($this->x, $this->y, $this->z);
+		$this->putLFloat(0); //TODO: find out what these are (yaw/pitch?)
+		$this->putLFloat(0);
+		$this->putVarInt($this->seed);
+		$this->putVarInt($this->dimension);
+		$this->putVarInt($this->generator);
+		$this->putVarInt($this->gamemode);
+		$this->putVarInt($this->difficulty);
+		$this->putBlockCoords($this->spawnX, $this->spawnY, $this->spawnZ);
+		$this->putByte($this->hasBeenLoadedInCreative);
+		$this->putVarInt($this->dayCycleStopTime);
+		$this->putByte($this->eduMode);
+		$this->putLFloat($this->rainLevel);
+		$this->putLFloat($this->lightningLevel);
+		$this->putByte($this->commandsEnabled);
 		$this->putString($this->unknown);
+		$this->putString($this->worldName);
 	}
 
 }
