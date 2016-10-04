@@ -428,8 +428,45 @@ class Binary{
 		return self::readLong(strrev($str));
 	}
 
+	//TODO: varlong, length checks
+
 	public static function writeLLong($value){
 		return strrev(self::writeLong($value));
+	}
+
+	public static function readVarInt($stream){
+		$raw = self::readUnsignedVarInt($stream);
+		$temp = ((($raw << 31) >> 31) ^ $raw) >> 1;
+		return $temp ^ ($raw & (1 << 31));
+	}
+
+	public static function readUnsignedVarInt($stream){
+		$value = 0;
+		$i = 0;
+		do{
+			$value |= ((($b = $stream->getByte()) & 0x7f) << $i);
+			$i += 7;
+		}while($b & 0x80);
+
+		return $value;
+	}
+
+	public static function writeVarInt($v){
+		return self::writeUnsignedVarInt(($v << 1) ^ ($v >> 31));
+	}
+
+	public static function writeUnsignedVarInt($v){
+		$buf = "";
+		do{
+			$w = $v & 0x7f;
+			if(($v >> 7) !== 0){
+				$w = $v | 0x80;
+			}
+			$buf .= self::writeByte($w);
+			$v >>= 7;
+		}while($v);
+
+		return $buf;
 	}
 
 }
