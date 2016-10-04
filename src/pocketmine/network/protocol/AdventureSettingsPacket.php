@@ -32,14 +32,15 @@ class AdventureSettingsPacket extends DataPacket{
 	public $globalPermission;
 
 	public function decode(){
-
+		$this->flags = $this->getUnsignedVarInt();
+		$this->userPermission = $this->getUnsignedVarInt();
 	}
 
 	public function encode(){
 		$this->reset();
-		$this->putInt($this->flags);
-		$this->putInt($this->userPermission);
-		$this->putInt($this->globalPermission);
+		$this->putUnsignedVarInt($this->flags);
+		$this->putUnsignedVarInt($this->userPermission); //TODO: verify this
+		//$this->putInt($this->globalPermission);
 	}
 
 }
