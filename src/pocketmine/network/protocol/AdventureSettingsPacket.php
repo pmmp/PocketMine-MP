@@ -27,20 +27,65 @@ namespace pocketmine\network\protocol;
 class AdventureSettingsPacket extends DataPacket{
 	const NETWORK_ID = Info::ADVENTURE_SETTINGS_PACKET;
 
-	public $flags;
+	public $worldInmutable;
+	public $allowPvp;
+	public $allowPvm;
+	public $allowMvp;
+
+	public $autoJump;
+	public $allowFlight;
+	public $noClip;
+	public $isFlying;
+
+	/*
+	 bit mask | flag name
+	0x00000001 world_inmutable
+	0x00000002 no_pvp
+	0x00000004 no_pvm
+	0x00000008 no_mvp
+	0x00000010 ?
+	0x00000020 auto_jump
+	0x00000040 allow_fly
+	0x00000080 noclip
+	0x00000100 ?
+	0x00000200 is_flying
+	*/
+
+	public $flags = 0;
 	public $userPermission;
-	public $globalPermission;
 
 	public function decode(){
 		$this->flags = $this->getUnsignedVarInt();
 		$this->userPermission = $this->getUnsignedVarInt();
+
+		$this->worldInmutable = (bool) ($this->flags & 1);
+		$this->allowPvp       = (bool) ($this->flags & (1 << 1));
+		$this->allowPvm       = (bool) ($this->flags & (1 << 2));
+		$this->allowMvp       = (bool) ($this->flags & (1 << 3));
+
+		$this->autoJump       = (bool) ($this->flags & (1 << 5));
+		$this->allowFlight    = (bool) ($this->flags & (1 << 6));
+		$this->noClip         = (bool) ($this->flags & (1 << 7));
+
+		$this->isFlying       = (bool) ($this->flags & (1 << 9));
 	}
 
 	public function encode(){
 		$this->reset();
+
+		$this->flags |= ((int) $this->worldInmutable);
+		$this->flags |= ((int) $this->allowPvp)    << 1;
+		$this->flags |= ((int) $this->allowPvm)    << 2;
+		$this->flags |= ((int) $this->allowMvp)    << 3;
+
+		$this->flags |= ((int) $this->autoJump)    << 5;
+		$this->flags |= ((int) $this->allowFlight) << 6;
+		$this->flags |= ((int) $this->noClip)      << 7;
+
+		$this->flags |= ((int) $this->isFlying)    << 9;
+
 		$this->putUnsignedVarInt($this->flags);
 		$this->putUnsignedVarInt($this->userPermission); //TODO: verify this
-		//$this->putInt($this->globalPermission);
 	}
 
 }

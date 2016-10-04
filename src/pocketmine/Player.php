@@ -230,9 +230,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	protected $inAirTicks = 0;
 	protected $startAirTicks = 5;
 
+	//TODO: Abilities
 	protected $autoJump = true;
-
 	protected $allowFlight = false;
+	protected $isFlying = false;
 
 	private $needACK = [];
 
@@ -309,8 +310,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->sendSettings();
 	}
 
-	public function getAllowFlight(){
+	public function getAllowFlight() : bool{
 		return $this->allowFlight;
+	}
+
+	public function setFlying(bool $value){
+		$this->isFlying = $value;
+		$this->sendSettings();
+	}
+
+	public function getIsFlying() : bool{
+		return $this->isFlying;
 	}
 
 	public function setAutoJump($value){
@@ -1081,12 +1091,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->gamemode = $gm;
 
 		$this->allowFlight = $this->isCreative();
-
 		if($this->isSpectator()){
+			$this->isFlying = true;
 			$this->despawnFromAll();
 		}else{
+			if($this->isSurvival()){
+				$this->isFlying = false;
+			}
 			$this->spawnToAll();
 		}
+
+		$this->resetFallDistance();
 
 		$this->namedtag->playerGameType = new IntTag("playerGameType", $this->gamemode);
 
@@ -1109,66 +1124,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * Sends all the option flags
 	 */
 	public function sendSettings(){
-		/*
-		 bit mask | flag name
-		0x00000001 world_inmutable
-		0x00000002 no_pvp
-		0x00000004 no_pvm
-		0x00000008 no_mvp
-		0x00000010 static_time
-		0x00000020 nametags_visible
-		0x00000040 auto_jump
-		0x00000080 allow_fly
-		0x00000100 noclip
-		0x00000200 ?
-		0x00000400 ?
-		0x00000800 ?
-		0x00001000 ?
-		0x00002000 ?
-		0x00004000 ?
-		0x00008000 ?
-		0x00010000 ?
-		0x00020000 ?
-		0x00040000 ?
-		0x00080000 ?
-		0x00100000 ?
-		0x00200000 ?
-		0x00400000 ?
-		0x00800000 ?
-		0x01000000 ?
-		0x02000000 ?
-		0x04000000 ?
-		0x08000000 ?
-		0x10000000 ?
-		0x20000000 ?
-		0x40000000 ?
-		0x80000000 ?
-		*/
-		$flags = 0;
-		if($this->isAdventure()){
-			$flags |= 0x01; //Do not allow placing/breaking blocks, adventure mode
-		}
-
-		/*if($nametags !== false){
-			$flags |= 0x20; //Show Nametags
-		}*/
-
-		if($this->autoJump){
-			$flags |= 0x40;
-		}
-
-		if($this->allowFlight){
-			$flags |= 0x80;
-		}
-
-		if($this->isSpectator()){
-			$flags |= 0x100;
-		}
-
 		$pk = new AdventureSettingsPacket();
-		$pk->flags = $flags;
+		$pk->flags = 0;
+		$pk->worldInmutable = $this->isAdventure();
+		$pk->autoJump = $this->autoJump;
+		$pk->allowFlight = $this->allowFlight;
+		$pk->noClip = $this->isSpectator();
+		$pk->isFlying = $this->isFlying;
 		$pk->userPermission = 2;
-		$pk->globalPermission = 2;
 		$this->dataPacket($pk);
 	}
 
@@ -1879,6 +1842,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 				$this->forceMovement = null;
 
+				break;
+			case ProtocolInfo::ADVENTURE_SETTINGS_PACKET:
+				//TODO: player abilities, check for other changes
+				if($packet->isFlying and !$this->allowFlight){
+					$this->kick("Flying is not enabled on this server");
+					break;
+				}else{
+					$this->isFlying = $packet->isFlying;
+					break;
+				}
 				break;
 			case ProtocolInfo::MOB_EQUIPMENT_PACKET:
 				if($this->spawned === false or !$this->isAlive()){
