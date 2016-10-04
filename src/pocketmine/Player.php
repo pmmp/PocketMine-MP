@@ -2807,7 +2807,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$t = $this->level->getTile($pos);
 				if($t instanceof Sign){
 					$nbt = new NBT(NBT::LITTLE_ENDIAN);
-					$nbt->read($packet->namedtag);
+					$nbt->read($packet->namedtag, false, true);
 					$nbt = $nbt->getData();
 					if($nbt["id"] !== Tile::SIGN){
 						$t->spawnTo($this);
