@@ -31,11 +31,11 @@ class ShortTag extends NamedTag{
 		return NBT::TAG_Short;
 	}
 
-	public function read(NBT $nbt){
+	public function read(NBT $nbt, bool $network = false){
 		$this->value = $nbt->getShort();
 	}
 
-	public function write(NBT $nbt){
+	public function write(NBT $nbt, bool $network = false){
 		$nbt->putShort($this->value);
 	}
 }
