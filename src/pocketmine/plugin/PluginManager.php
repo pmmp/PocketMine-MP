@@ -211,8 +211,6 @@ class PluginManager{
 								continue;
 							}
 
-//							$compatible = false;
-							// compatibility 1=outdated plugin, 2=outdated server, 4=minor, 8=normal
 							$compatibility = 0;
 							//Check multiple dependencies
 							foreach($description->getCompatibleApis() as $versionString){
@@ -274,12 +272,6 @@ class PluginManager{
 									$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.plugin.incompatibleAPIWarning.majorTooOld", [$name]));
 								}
 							}
-
-
-//							if($compatibility === false){
-//								$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.incompatibleAPI"]));
-//								continue;
-//							}
 
 							$plugins[$name] = $file;
 
