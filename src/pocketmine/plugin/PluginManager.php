@@ -212,7 +212,7 @@ class PluginManager{
 							}
 
 							// compatibility 1=outdated plugin, 2=outdated server, 4=minor, 8=normal
-  							$compatibility = 0;
+							$compatibility = 0;
 							//Check multiple dependencies
 							foreach($description->getCompatibleApis() as $versionString){
 								//Format: majorVersion.minorVersion.patch
