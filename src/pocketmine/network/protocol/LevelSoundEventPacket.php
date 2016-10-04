@@ -25,14 +25,13 @@ namespace pocketmine\network\protocol;
 
 class LevelSoundEventPacket extends DataPacket{
 	const NETWORK_ID = Info::LEVEL_SOUND_EVENT_PACKET;
-	
-	//TODO: find unknowns
-	public $unknownByte;
+
+	public $sound;
 	public $x;
 	public $y;
 	public $z;
-	public $unknownVarInt1;
-	public $unknownVarInt2;
+	public $volume;
+	public $pitch;
 	public $unknownBool;
 
 	public function decode(){
@@ -41,10 +40,10 @@ class LevelSoundEventPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putByte($this->unknownByte);
+		$this->putByte($this->sound);
 		$this->putVector3f($this->x, $this->y, $this->z);
-		$this->putVarInt($this->unknownVarInt1);
-		$this->putVarInt($this->unknownVarInt2);
+		$this->putVarInt($this->volume);
+		$this->putVarInt($this->pitch);
 		$this->putByte($this->unknownBool);
 	}
 }
