@@ -27,6 +27,7 @@ namespace pocketmine\command;
 use pocketmine\event\TextContainer;
 use pocketmine\event\TimingsHandler;
 use pocketmine\event\TranslationContainer;
+use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 
@@ -85,6 +86,25 @@ abstract class Command{
 		$this->timings = new TimingsHandler("** Command: " . $name);
 	}
 
+	public function generateJsonData(Player $player) : array{
+		/*if(!$this->testPermissionSilent($player)){
+			return [];
+		}*/
+		$data = [
+			"versions" => [
+				[
+					"description" => $this->getDescription(),
+					"overloads" => $this->getOverloadData(),
+					"permission" => "any", //TODO: implement vanilla op API
+				]
+			]
+		];
+		if(count($aliases = $this->getAliases()) > 0){
+			$data["versions"][0]["aliases"] = $aliases;
+		}
+		return $data;
+	}
+
 	/**
 	 * @param CommandSender $sender
 	 * @param string        $commandLabel
@@ -99,6 +119,34 @@ abstract class Command{
 	 */
 	public function getName(){
 		return $this->name;
+	}
+
+	/**
+	 * Returns an array of overload data for generating JSON data for AvailableCommandsPacket
+	 * To show custom usages and command parameters, you MUST override this method and define
+	 * your own parameters and overloads. Omitting this method will cause the generic default
+	 * [args: string] message to be shown.
+	 *
+	 * @return array
+	 */
+	public function getOverloadData() : array{
+		$data = [
+			"default" => [
+				"input" => [
+					"parameters" => [
+						0 => [ //Default rawtext parameter for old plugins
+							"name" => "args",
+							"type" => "rawtext",
+							"optional" => true
+						]
+					]
+				],
+				"output" => [
+					"format_strings" => []
+				]
+			]
+		];
+		return $data;
 	}
 
 	/**
