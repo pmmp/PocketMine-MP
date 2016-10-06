@@ -102,6 +102,7 @@ use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\protocol\AdventureSettingsPacket;
 use pocketmine\network\protocol\AnimatePacket;
+use pocketmine\network\protocol\AvailableCommandsPacket;
 use pocketmine\network\protocol\BatchPacket;
 use pocketmine\network\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\protocol\ContainerClosePacket;
@@ -1686,7 +1687,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->eduMode = 0;
 		$pk->rainLevel = 0; //TODO: implement these properly
 		$pk->lightningLevel = 0;
-		$pk->commandsEnabled = 0;
+		$pk->commandsEnabled = 1;
 		$pk->unknown = "UNKNOWN";
 		$pk->worldName = $this->server->getMotd();
 		$this->dataPacket($pk);
@@ -1712,6 +1713,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if($this->isOp()){
 			$this->setRemoveFormat(false);
 		}
+		
+		$pk = new AvailableCommandsPacket();
+		$data = [];
+		foreach($this->server->getCommandMap()->getCommands() as $command){
+			$data[$command->getName()] = $command->generateJsonData($this);
+		}
+		$pk->commands = json_encode($data);
+		$this->dataPacket($pk);
 
 		if($this->isCreative()){
 			$this->inventory->sendCreativeContents();
@@ -2482,6 +2491,21 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->level->dropItem($this->add(0, 1.3, 0), $item, $motion, 40);
 
 				$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
+				break;
+			case ProtocolInfo::COMMAND_STEP_PACKET:
+				if($this->spawned === false or !$this->isAlive()){
+					break;
+				}
+				$this->craftingType = 0;
+				Timings::$playerCommandTimer->startTiming();
+				$commandText = $packet->command;
+				if($packet->args !== null){
+					foreach($packet->args as $arg){ //command ordering will be an issue
+						$commandText .= " " . $arg;
+					}
+				}
+				$this->server->dispatchCommand($this, $commandText);
+				Timings::$playerCommandTimer->stopTiming();
 				break;
 			case ProtocolInfo::TEXT_PACKET:
 				if($this->spawned === false or !$this->isAlive()){
