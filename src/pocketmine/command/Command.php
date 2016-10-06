@@ -87,9 +87,9 @@ abstract class Command{
 	}
 
 	public function generateJsonData(Player $player) : array{
-		/*if(!$this->testPermissionSilent($player)){
+		if(!$this->testPermissionSilent($player)){
 			return [];
-		}*/
+		}
 		$data = [
 			"versions" => [
 				[
