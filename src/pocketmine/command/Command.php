@@ -32,8 +32,13 @@ use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 
 abstract class Command{
+	/** @var \stdClass */
+	private static $defaultDataTemplate = null;
+
 	/** @var string */
 	private $name;
+	/** @var \stdClass */
+	protected $commandData = null;
 
 	/** @var string */
 	private $nextLabel;
@@ -76,33 +81,47 @@ abstract class Command{
 	 * @param string[] $aliases
 	 */
 	public function __construct($name, $description = "", $usageMessage = null, array $aliases = []){
-		$this->name = $name;
-		$this->nextLabel = $name;
-		$this->label = $name;
-		$this->description = $description;
+		$this->commandData = self::generateDefaultData();
+		$this->name = $this->nextLabel = $this->label = $name;
+		$this->setDescription($description);
 		$this->usageMessage = $usageMessage === null ? "/" . $name : $usageMessage;
-		$this->aliases = $aliases;
-		$this->activeAliases = (array) $aliases;
+		$this->setAliases($aliases);
 		$this->timings = new TimingsHandler("** Command: " . $name);
 	}
 
-	public function generateJsonData(Player $player) : array{
-		if(!$this->testPermissionSilent($player)){
-			return [];
+	/**
+	 * Returns an \stdClass containing command data
+	 *
+	 * @return \stdClass
+	 */
+	public function getDefaultCommandData() : \stdClass{
+		return $this->commandData;
+	}
+
+	/**
+	 * Generates modified command data for the specified player
+	 * for AvailableCommandsPacket.
+	 *
+	 * @param Player $player
+	 *
+	 * @return \stdClass|null
+	 */
+	public function generateCustomCommandData(Player $player){
+		if(!$this->testPermission($player)){
+			return null;
 		}
-		$data = [
-			"versions" => [
-				[
-					"description" => $this->getDescription(),
-					"overloads" => $this->getOverloadData(),
-					"permission" => "any", //TODO: implement vanilla op API
-				]
-			]
-		];
-		if(count($aliases = $this->getAliases()) > 0){
-			$data["versions"][0]["aliases"] = $aliases;
+		$customData = clone $this->commandData;
+		$customData->aliases = $this->getAliases();
+		foreach($customData->overloads as &$overload){
+			if(($p = @$overload->pocketminePermission) !== null and !$player->hasPermission($p)){
+				unset($overload);
+			}
 		}
-		return $data;
+		return $customData;
+	}
+
+	public function getOverloads(): \stdClass{
+		return $this->commandData->overloads;
 	}
 
 	/**
@@ -122,45 +141,22 @@ abstract class Command{
 	}
 
 	/**
-	 * Returns an array of overload data for generating JSON data for AvailableCommandsPacket
-	 * To show custom usages and command parameters, you MUST override this method and define
-	 * your own parameters and overloads. Omitting this method will cause the generic default
-	 * [args: string] message to be shown.
-	 *
-	 * @return array
-	 */
-	public function getOverloadData() : array{
-		$data = [
-			"default" => [
-				"input" => [
-					"parameters" => [
-						0 => [ //Default rawtext parameter for old plugins
-							"name" => "args",
-							"type" => "rawtext",
-							"optional" => true
-						]
-					]
-				],
-				"output" => [
-					"format_strings" => []
-				]
-			]
-		];
-		return $data;
-	}
-
-	/**
 	 * @return string
 	 */
 	public function getPermission(){
-		return $this->permission;
+		return $this->commandData->pocketminePermission ?? null;
 	}
+	
 
 	/**
 	 * @param string|null $permission
 	 */
 	public function setPermission($permission){
-		$this->permission = $permission;
+		if($permission !== null){
+			$this->commandData->pocketminePermission = $permission;
+		}else{
+			unset($this->commandData->pocketminePermission);
+		}
 	}
 
 	/**
@@ -176,7 +172,7 @@ abstract class Command{
 		if($this->permissionMessage === null){
 			$target->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.permission"));
 		}elseif($this->permissionMessage !== ""){
-			$target->sendMessage(str_replace("<permission>", $this->permission, $this->permissionMessage));
+			$target->sendMessage(str_replace("<permission>", $this->getPermission(), $this->permissionMessage));
 		}
 
 		return false;
@@ -188,11 +184,11 @@ abstract class Command{
 	 * @return bool
 	 */
 	public function testPermissionSilent(CommandSender $target){
-		if($this->permission === null or $this->permission === ""){
+		if(($perm = $this->getPermission()) === null or $perm === ""){
 			return true;
 		}
 
-		foreach(explode(";", $this->permission) as $permission){
+		foreach(explode(";", $perm) as $permission){
 			if($target->hasPermission($permission)){
 				return true;
 			}
@@ -245,7 +241,7 @@ abstract class Command{
 	public function unregister(CommandMap $commandMap){
 		if($this->allowChangesFrom($commandMap)){
 			$this->commandMap = null;
-			$this->activeAliases = $this->aliases;
+			$this->activeAliases = $this->commandData->aliases;
 			$this->label = $this->nextLabel;
 
 			return true;
@@ -288,7 +284,7 @@ abstract class Command{
 	 * @return string
 	 */
 	public function getDescription(){
-		return $this->description;
+		return $this->commandData->description;
 	}
 
 	/**
@@ -302,7 +298,7 @@ abstract class Command{
 	 * @param string[] $aliases
 	 */
 	public function setAliases(array $aliases){
-		$this->aliases = $aliases;
+		$this->commandData->aliases = $aliases;
 		if(!$this->isRegistered()){
 			$this->activeAliases = (array) $aliases;
 		}
@@ -312,7 +308,7 @@ abstract class Command{
 	 * @param string $description
 	 */
 	public function setDescription($description){
-		$this->description = $description;
+		$this->commandData->description = $description;
 	}
 
 	/**
@@ -327,6 +323,13 @@ abstract class Command{
 	 */
 	public function setUsage($usage){
 		$this->usageMessage = $usage;
+	}
+
+	public static final function generateDefaultData() : \stdClass{
+		if(self::$defaultDataTemplate === null){
+			self::$defaultDataTemplate = json_decode(file_get_contents(Server::getInstance()->getFilePath() . "src/pocketmine/resources/command_default.json"));
+		}
+		return clone self::$defaultDataTemplate;
 	}
 
 	/**
