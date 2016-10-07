@@ -89,6 +89,10 @@ debug:
  level: 1
  #Enables /status, /gc
  commands: false
+ 
+player:
+ #Choose whether to enable player data saving.
+ save-player-data: true
 
 level-settings:
  #The default format that levels will use when created
