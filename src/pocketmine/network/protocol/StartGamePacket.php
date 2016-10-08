@@ -40,12 +40,13 @@ class StartGamePacket extends DataPacket{
 	public $spawnX;
 	public $spawnY;
 	public $spawnZ;
-	public $hasBeenLoadedInCreative = 1;
+	public $hasAchievementsDisabled = 1;
 	public $dayCycleStopTime = -1; //-1 = not stopped, any positive value = stopped at that time
 	public $eduMode = 0;
 	public $rainLevel;
 	public $lightningLevel;
 	public $commandsEnabled;
+	public $isTexturePacksRequired = 0;
 	public $unknown;
 	public $worldName;
 
@@ -66,12 +67,13 @@ class StartGamePacket extends DataPacket{
 		$this->putVarInt($this->gamemode);
 		$this->putVarInt($this->difficulty);
 		$this->putBlockCoords($this->spawnX, $this->spawnY, $this->spawnZ);
-		$this->putByte($this->hasBeenLoadedInCreative);
+		$this->putByte($this->hasAchievementsDisabled);
 		$this->putVarInt($this->dayCycleStopTime);
 		$this->putByte($this->eduMode);
 		$this->putLFloat($this->rainLevel);
 		$this->putLFloat($this->lightningLevel);
 		$this->putByte($this->commandsEnabled);
+		$this->putByte($this->isTexturePacksRequired);
 		$this->putString($this->unknown);
 		$this->putString($this->worldName);
 	}
