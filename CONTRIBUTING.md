@@ -100,9 +100,7 @@ class ExampleClass{
 ### Labels
 To provide a concise bug tracking environment, prevent the issue tracker from over flowing and to keep support requests out of the bug tracker, PocketMine-MP uses a label scheme a bit different from the default GitHub Issues labels.
 
-PocketMine-MP uses GitHub Issues Labels. There are a total of 12 labels.
-
-Note: For future reference, labels must not be longer than 15 letters.
+PocketMine-MP uses Labels to identify the types and status of issues and pull requests.
 
 #### Categories
 Category labels are prefixed by `Related:`. Multiple category labels may be applied to a single issue(but try to keep this to a minimum and do not overuse category labels).
