@@ -22,18 +22,18 @@
 namespace pocketmine\resourcepacks;
 
 class ResourcePackInfoEntry{
-	protected $name;
+	protected $packId; //UUID
 	protected $version;
 	protected $uint64; // unknown
 
-	public function __construct(string $name, string $version, $uint64){
-		$this->name = $name;
+	public function __construct(string $packId, string $version, $uint64){
+		$this->packId = $packId;
 		$this->version = $version;
 		$this->uint64 = $uint64;
 	}
 
-	public function getName() : string{
-		return $this->name;
+	public function getPackId() : string{
+		return $this->packId;
 	}
 
 	public function getVersion() : string{
