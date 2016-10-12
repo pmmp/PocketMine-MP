@@ -67,13 +67,13 @@ class StartGamePacket extends DataPacket{
 		$this->putVarInt($this->gamemode);
 		$this->putVarInt($this->difficulty);
 		$this->putBlockCoords($this->spawnX, $this->spawnY, $this->spawnZ);
-		$this->putByte($this->hasAchievementsDisabled);
+		$this->putBool($this->hasAchievementsDisabled);
 		$this->putVarInt($this->dayCycleStopTime);
-		$this->putByte($this->eduMode);
+		$this->putBool($this->eduMode);
 		$this->putLFloat($this->rainLevel);
 		$this->putLFloat($this->lightningLevel);
-		$this->putByte($this->commandsEnabled);
-		$this->putByte($this->isTexturePacksRequired);
+		$this->putBool($this->commandsEnabled);
+		$this->putBool($this->isTexturePacksRequired);
 		$this->putString($this->unknown);
 		$this->putString($this->worldName);
 	}

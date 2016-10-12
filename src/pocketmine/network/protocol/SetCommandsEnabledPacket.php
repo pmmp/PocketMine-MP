@@ -35,7 +35,7 @@ class SetCommandsEnabledPacket extends DataPacket{
 	
 	public function encode(){
 		$this->reset();
-		$this->putByte($this->enabled);
+		$this->putBool($this->enabled);
 	}
 
 }

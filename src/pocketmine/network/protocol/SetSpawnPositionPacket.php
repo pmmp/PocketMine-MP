@@ -31,6 +31,7 @@ class SetSpawnPositionPacket extends DataPacket{
 	public $x;
 	public $y;
 	public $z;
+	public $unknownBool;
 
 	public function decode(){
 
@@ -40,6 +41,7 @@ class SetSpawnPositionPacket extends DataPacket{
 		$this->reset();
 		$this->putVarInt($this->unknown);
 		$this->putBlockCoords($this->x, $this->y, $this->z);
+		$this->putBool($this->unknownBool);
 	}
 
 }

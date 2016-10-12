@@ -44,6 +44,6 @@ class LevelSoundEventPacket extends DataPacket{
 		$this->putVector3f($this->x, $this->y, $this->z);
 		$this->putVarInt($this->volume);
 		$this->putVarInt($this->pitch);
-		$this->putByte($this->unknownBool);
+		$this->putBool($this->unknownBool);
 	}
 }
