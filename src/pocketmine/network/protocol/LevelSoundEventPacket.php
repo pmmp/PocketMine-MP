@@ -33,9 +33,15 @@ class LevelSoundEventPacket extends DataPacket{
 	public $volume;
 	public $pitch;
 	public $unknownBool;
+	public $unknownBool2;
 
 	public function decode(){
-
+		$this->sound = $this->getByte();
+		$this->getVector3f($this->x, $this->y, $this->z);
+		$this->volume = $this->getVarInt();
+		$this->pitch = $this->getVarInt();
+		$this->unknownBool = $this->getBool();
+		$this->unknownBool2 = $this->getBool();
 	}
 
 	public function encode(){
@@ -45,5 +51,6 @@ class LevelSoundEventPacket extends DataPacket{
 		$this->putVarInt($this->volume);
 		$this->putVarInt($this->pitch);
 		$this->putBool($this->unknownBool);
+		$this->putBool($this->unknownBool2);
 	}
 }
