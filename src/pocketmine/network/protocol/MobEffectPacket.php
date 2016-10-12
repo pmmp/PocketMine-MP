@@ -48,7 +48,7 @@ class MobEffectPacket extends DataPacket{
 		$this->putByte($this->eventId);
 		$this->putVarInt($this->effectId);
 		$this->putVarInt($this->amplifier);
-		$this->putByte($this->particles);
+		$this->putBool($this->particles);
 		$this->putVarInt($this->duration);
 	}
 

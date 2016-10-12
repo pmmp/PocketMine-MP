@@ -70,6 +70,14 @@ class BinaryStream extends \stdClass{
 		$this->buffer .= $str;
 	}
 
+	public function getBool() : bool{
+		return (bool) $this->getByte();
+	}
+
+	public function putBool($v){
+		$this->putByte((bool) $v);
+	}
+
 	public function getLong(){
 		return Binary::readLong($this->get(8));
 	}

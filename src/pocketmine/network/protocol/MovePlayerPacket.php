@@ -53,7 +53,7 @@ class MovePlayerPacket extends DataPacket{
 		$this->yaw = $this->getLFloat();
 		$this->bodyYaw = $this->getLFloat();
 		$this->mode = $this->getByte();
-		$this->onGround = $this->getByte() > 0;
+		$this->onGround = $this->getBool();
 	}
 
 	public function encode(){
@@ -64,7 +64,7 @@ class MovePlayerPacket extends DataPacket{
 		$this->putLFloat($this->yaw);
 		$this->putLFloat($this->bodyYaw); //TODO
 		$this->putByte($this->mode);
-		$this->putByte($this->onGround > 0);
+		$this->putBool($this->onGround);
 	}
 
 }

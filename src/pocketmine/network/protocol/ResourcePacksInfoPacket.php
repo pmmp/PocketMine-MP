@@ -40,7 +40,7 @@ class ResourcePacksInfoPacket extends DataPacket{
 	public function encode(){
 		$this->reset();
 
-		$this->putByte($this->mustAccept);
+		$this->putBool($this->mustAccept);
 		$this->putShort(count($this->behaviourPackEntries));
 		foreach($this->behaviourPackEntries as $entry){
 			$this->putString($entry->getPackId());

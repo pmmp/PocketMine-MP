@@ -44,7 +44,7 @@ class ChangeDimensionPacket extends DataPacket{
 		$this->reset();
 		$this->putVarInt($this->dimension);
 		$this->putVector3f($this->x, $this->y, $this->z);
-		$this->putByte($this->unknown);
+		$this->putBool($this->unknown);
 	}
 
 }
