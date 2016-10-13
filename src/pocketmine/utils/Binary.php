@@ -88,43 +88,45 @@ class Binary{
 	 * @return string
 	 */
 	public static function writeMetadata(array $data){
-		$m = "";
-		foreach($data as $bottom => $d){
-			$m .= chr(($d[0] << 5) | ($bottom & 0x1F));
+		$stream = new BinaryStream();
+		$stream->putUnsignedVarInt(count($data));
+		foreach($data as $key => $d){
+			$stream->putUnsignedVarInt($key); //data key
+			$stream->putUnsignedVarInt($d[0]); //data type
 			switch($d[0]){
 				case Entity::DATA_TYPE_BYTE:
-					$m .= self::writeByte($d[1]);
+					$stream->putByte($d[1]);
 					break;
 				case Entity::DATA_TYPE_SHORT:
-					$m .= self::writeLShort($d[1]);
+					$stream->putLShort($d[1]); //SIGNED short!
 					break;
 				case Entity::DATA_TYPE_INT:
-					$m .= self::writeLInt($d[1]);
+					$stream->putVarInt($d[1]);
 					break;
 				case Entity::DATA_TYPE_FLOAT:
-					$m .= self::writeLFloat($d[1]);
+					$stream->putLFloat($d[1]);
 					break;
 				case Entity::DATA_TYPE_STRING:
-					$m .= self::writeLShort(strlen($d[1])) . $d[1];
+					$stream->putString($d[1]);
 					break;
 				case Entity::DATA_TYPE_SLOT:
-					$m .= self::writeLShort($d[1][0]);
-					$m .= self::writeByte($d[1][1]);
-					$m .= self::writeLShort($d[1][2]);
+					//TODO: change this implementation (use objects)
+					$stream->putSlot(Item::get($d[1][0], $d[1][2], $d[1][1])); //ID, damage, count
 					break;
 				case Entity::DATA_TYPE_POS:
-					$m .= self::writeLInt($d[1][0]);
-					$m .= self::writeLInt($d[1][1]);
-					$m .= self::writeLInt($d[1][2]);
+					//TODO: change this implementation (use objects)
+					$stream->putBlockCoords($d[1][0], $d[1][1], $d[1][2]); //x, y, z
 					break;
 				case Entity::DATA_TYPE_LONG:
-					$m .= self::writeLLong($d[1]);
+					$stream->putVarInt($d[1]); //TODO: varint64 support
 					break;
+				case Entity::DATA_TYPE_VECTOR3F:
+					//TODO: change this implementation (use objects)
+					$stream->putVector3f($d[1][0], $d[1][1], $d[1][2]); //x, y, z
 			}
 		}
-		$m .= "\x7f";
 
-		return $m;
+		return $stream->getBuffer();
 	}
 
 	/**
@@ -136,70 +138,59 @@ class Binary{
 	 * @return array
 	 */
 	public static function readMetadata($value, $types = false){
-		$offset = 0;
-		$m = [];
-		$b = ord($value{$offset});
-		++$offset;
-		while($b !== 127 and isset($value{$offset})){
-			$bottom = $b & 0x1F;
-			$type = $b >> 5;
+		$stream = new BinaryStream();
+		$stream->setBuffer($value);
+		$count = $stream->getUnsignedVarInt();
+		$data = [];
+		for($i = 0; $i < $count; ++$i){
+			$key = $stream->getUnsignedVarInt();
+			$type = $stream->getUnsignedVarInt();
+			$value = null;
 			switch($type){
 				case Entity::DATA_TYPE_BYTE:
-					$r = self::readByte($value{$offset});
-					++$offset;
+					$value = $stream->getByte();
 					break;
 				case Entity::DATA_TYPE_SHORT:
-					$r = self::readLShort(substr($value, $offset, 2));
-					$offset += 2;
+					$value = $stream->getLShort(true); //signed
 					break;
 				case Entity::DATA_TYPE_INT:
-					$r = self::readLInt(substr($value, $offset, 4));
-					$offset += 4;
+					$value = $stream->getVarInt();
 					break;
 				case Entity::DATA_TYPE_FLOAT:
-					$r = self::readLFloat(substr($value, $offset, 4));
-					$offset += 4;
+					$value = $stream->getLFloat();
 					break;
 				case Entity::DATA_TYPE_STRING:
-					$len = self::readLShort(substr($value, $offset, 2));
-					$offset += 2;
-					$r = substr($value, $offset, $len);
-					$offset += $len;
+					$value = $stream->getString();
 					break;
 				case Entity::DATA_TYPE_SLOT:
-					$r = [];
-					$r[] = self::readLShort(substr($value, $offset, 2));
-					$offset += 2;
-					$r[] = ord($value{$offset});
-					++$offset;
-					$r[] = self::readLShort(substr($value, $offset, 2));
-					$offset += 2;
+					//TODO: use objects directly
+					$item = $stream->getSlot();
+					$value[0] = $item->getId();
+					$value[1] = $item->getCount();
+					$value[2] = $item->getDamage();
 					break;
 				case Entity::DATA_TYPE_POS:
-					$r = [];
-					for($i = 0; $i < 3; ++$i){
-						$r[] = self::readLInt(substr($value, $offset, 4));
-						$offset += 4;
-					}
+					$value = [0, 0, 0];
+					$stream->getBlockCoords($value[0], $value[1], $value[2]);
 					break;
 				case Entity::DATA_TYPE_LONG:
-					$r = self::readLLong(substr($value, $offset, 4));
-					$offset += 8;
+					$value = $stream->getVarInt(); //TODO: varint64 proper support
+					break;
+				case Entity::DATA_TYPE_VECTOR3F:
+					$value = [0.0, 0.0, 0.0];
+					$stream->getVector3f($value[0], $value[1], $value[2]);
 					break;
 				default:
-					return [];
-
+					$value = [];
 			}
 			if($types === true){
-				$m[$bottom] = [$r, $type];
+				$data[$key] = [$value, $type];
 			}else{
-				$m[$bottom] = $r;
+				$data[$key] = $value;
 			}
-			$b = ord($value{$offset});
-			++$offset;
 		}
 
-		return $m;
+		return $data;
 	}
 
 	/**
