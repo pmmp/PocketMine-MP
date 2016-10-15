@@ -452,9 +452,10 @@ class Binary{
 	}
 
 	public static function readVarInt($stream){
+		$shift = PHP_INT_SIZE === 8 ? 63 : 31;
 		$raw = self::readUnsignedVarInt($stream);
-		$temp = ((($raw << 31) >> 31) ^ $raw) >> 1;
-		return $temp ^ ($raw & (1 << 31));
+		$temp = ((($raw << $shift) >> $shift) ^ $raw) >> 1;
+		return $temp ^ ($raw & (1 << $shift));
 	}
 
 	public static function readUnsignedVarInt($stream){
@@ -469,7 +470,7 @@ class Binary{
 	}
 
 	public static function writeVarInt($v){
-		return self::writeUnsignedVarInt(($v << 1) ^ ($v >> 31));
+		return self::writeUnsignedVarInt(($v << 1) ^ ($v >> (PHP_INT_SIZE === 8 ? 63 : 31)));
 	}
 
 	public static function writeUnsignedVarInt($v){
