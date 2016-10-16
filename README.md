@@ -28,7 +28,7 @@ __PocketMine-MP is a free, open-source software that creates Minecraft: Pocket E
 
 <!--## [FAQ: Frequently Asked Questions](https://github.com/PocketMine/PocketMine-MP/wiki/Frequently-Asked-Questions)-->
 
-### [Official Jenkins server](http://jenkins.pocketmine.net/)
+### [Official Jenkins server](http://jenkins.pmmp.gq/)
 
 ### API Documentation
  * [Official Doxygen-generated documentation](http://docs.pocketmine.net/)
