@@ -39,9 +39,9 @@ use pocketmine\nbt\tag\NamedTAG;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
-use pocketmine\utils\Binary;
 
 #ifndef COMPILE
+use pocketmine\utils\Binary;
 
 #endif
 
