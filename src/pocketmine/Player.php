@@ -1356,16 +1356,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 			$this->move($dx, $dy, $dz);
 
-			$diffX = $this->x - $newPos->x;
-			$diffY = $this->y - $newPos->y;
-			$diffZ = $this->z - $newPos->z;
-
 			$yS = 0.5 + $this->ySize;
-			if($diffY >= -$yS or $diffY <= $yS){
-				$diffY = 0;
+			if(-$yS <= $dy and $dy <= $yS){
+				$dy = 0;
 			}
 
-			$diff = ($diffX ** 2 + $diffY ** 2 + $diffZ ** 2) / ($tickDiff ** 2);
+			$diff = ($dx ** 2 + $dy ** 2 + $dz ** 2) / ($tickDiff ** 2);
 
 			if($this->isSurvival()){
 				if(!$revert and !$this->isSleeping()){
