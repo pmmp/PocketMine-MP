@@ -22,7 +22,7 @@ __PocketMine-MP is a free, open-source software that creates Minecraft: Pocket E
 
 ### [Forums](http://forums.pocketmine.net/)
 
-### [Documentation](http://pocketmine-mp.readthedocs.org/)
+### [Documentation](http://pmmp.readthedocs.org/)
 
 ### [Plugin Repository](http://plugins.pocketmine.net/)
 
@@ -36,8 +36,8 @@ __PocketMine-MP is a free, open-source software that creates Minecraft: Pocket E
 
 ### [Twitter @PocketMine](https://twitter.com/PocketMine)
 
-### IRC Chat #pocketmine (or #mcpedevs) @ irc.freenode.net
-[#pocketmine + #mcpedevs channel WebIRC](http://webchat.freenode.net/?channels=pocketmine,mcpedevs)
+### IRC Chat #pmmp (or #pocketmine) @ irc.freenode.net
+[#pmmp + #pocketmine channel WebIRC](http://webchat.freenode.net/?channels=pmmp,pocketmine)
 
 ### Want to contribute?
 * Check the [Contributing Guidelines](CONTRIBUTING.md)
