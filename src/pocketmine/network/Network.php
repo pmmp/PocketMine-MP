@@ -220,12 +220,17 @@ class Network{
 	}
 
 	public function processBatch(BatchPacket $packet, Player $p){
-		$str = zlib_decode($packet->payload, 1024 * 1024 * 64); //Max 64MB
 		try{
+			if(strlen($packet->payload) === 0){
+				//prevent zlib_decode errors for incorrectly-decoded packets
+				throw new \InvalidArgumentException("BatchPacket payload is empty or packet decode error");
+			}
+
+			$str = zlib_decode($packet->payload, 1024 * 1024 * 64); //Max 64MB
 			$len = strlen($str);
 
 			if($len === 0){
-				throw new \InvalidStateException("Empty or invalid BatchPacket received");
+				throw new \InvalidStateException("Decoded BatchPacket payload is empty");
 			}
 
 			$stream = new BinaryStream($str);
