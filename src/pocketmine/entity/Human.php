@@ -41,12 +41,13 @@ use pocketmine\Player;
 use pocketmine\utils\UUID;
 
 class Human extends Creature implements ProjectileSource, InventoryHolder{
+	
+	const DATA_PLAYER_FLAG_SLEEP = 1; //TODO: CHECK
+	const DATA_PLAYER_FLAG_DEAD = 2; //TODO: CHECK
 
-	const DATA_PLAYER_FLAG_SLEEP = 1;
-	const DATA_PLAYER_FLAG_DEAD = 2;
+	const DATA_PLAYER_FLAGS = 16; //TODO: CHECK
 
-	const DATA_PLAYER_FLAGS = 16;
-	const DATA_PLAYER_BED_POSITION = 17;
+	const DATA_PLAYER_BED_POSITION = 29;
 
 	/** @var PlayerInventory */
 	protected $inventory;
