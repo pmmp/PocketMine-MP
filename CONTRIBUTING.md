@@ -100,48 +100,59 @@ class ExampleClass{
 ### Labels
 To provide a concise bug tracking environment, prevent the issue tracker from over flowing and to keep support requests out of the bug tracker, PocketMine-MP uses a label scheme a bit different from the default GitHub Issues labels.
 
-PocketMine-MP uses Labels to identify the types and status of issues and pull requests.
+Labels are used to identify the type and status of issues and pull requests.
 
 #### Categories
-Category labels are prefixed by `Related:`. Multiple category labels may be applied to a single issue(but try to keep this to a minimum and do not overuse category labels).
-
-* `Related: Core` - This label is applied when the bug results in a fatal crash, or is related to neither Gameplay nor Plugin API.
-* `Related: Gameplay` - This label is applied when the bug effects the gameplay.
-* `Related: Plugin API` - This label is applied when the bug effects the Plugin API.
+Multiple category labels may be applied to a single issue (but try to keep this to a minimum and do not overuse category labels).
+These labels may be applied to issues with bugs related to these, or pull requests that alter the behaviour of these or fix an issue with the same label applied.
+- `Category: Core` - Related to PocketMine-MP's core functionality, but not gameplay or API.
+- `Category: Gameplay` - Related to gameplay.
+- `Category: API` - Related to plugin API.
+- `Category: Client` - Related to client functionality or behaviour. This label may be applied to issues reporting client-related bugs, or PRs related to the client such as a protocol update. There are several sub-labels to account for the differences between supported clients.
+	- `all`: Related to all versions of the client.
+	- `W10`: Related only to Windows 10 Edition Beta.
+	- `PE`: Related only to the Pocket Edition
+	- `beta`: Related only to a beta version of the game.
+	- `other`: Related only to an uncommon PE-compatible version of the client, such as VR Edition.
+- `Category: PHP` - Applied to issues caused by the PHP interpreter or its extensions.
+- `Category: Other` - Applied to issues which cannot be categorized with any of the above labels.
 
 #### Pull Requests
-Pull Requests are prefixed by `PR:`. Only one label may be applied for a Pull Request.
-
-* PR: Bug Fix - This label is applied when the Pull Request fixes a bug. 
-* PR: Addition - This label is applied when the Pull Request contributes new features or improvements, but does not fix a bug, nor controversial enough to be an RFC.
-* PR: RFC - Request for Comments. Refer to [RFC and Voting](#rfc-and-voting).
+Pull Request labels are prefixed by `PR:`. Only one label may be applied for a Pull Request.
+- `PR: Bug Fix` - The Pull Request fixes a bug. 
+- `PR: Contribution` - The Pull Request contributes new features or improvements, but does not fix a bug, nor controversial enough to be an RFC.
+- `PR: RFC` - Request for Comments. Refer to [RFC and Voting](#rfc-and-voting).
 
 #### Status
 Status labels show the status of the issue. Multiple status labels may be applied.
 
-* `Status: Reproduced` - This label is applied when the bug has been reproduced, or multiple people are reporting the same issue and symptoms in which case it is automatically assumed that the bug has been reproduced in different environments.
-* `Status: Debugged` - This label is applied when the cause of the bug has been found.
-* `Status: High Priority` - This label is applied when the bug is easy to fix, or if the scale of the bug is global.
-* `Status: Insufficiently tested` - This label is applied for pull requests that have not undergone tests strict enough.
+*Issues*
+- `Status: Unconfirmed` - reported issues that have yet to be reproduced by a developer successfully.
+- `Status: Reproduced` - a bug that has been reproduced by a developer, or that multiple people are reporting the same issue and symptoms in which case it is automatically assumed that the bug has been reproduced in different environments.
+- `Status: Debugged` - the cause of the bug has been found, but has not yet been fixed.
+- `Status: Resolved` - applied to *valid* issues which have been fixed. *This label may only be applied to a closed issue.*
+
+*Pull requests*
+- `Status: Insufficiently tested` - applied for pull requests that have not undergone tests strict enough.
+
+#### Resolution
+Resolution labels show the resolution of an issue or pull request. These labels may only be applied to closed issues.
+- `Resolution: Invalid` - Applied to support request issues or issues not related to PocketMine.
+- `Resolution: Duplicate` - Applied to issues reporting the same problems as another issue.
+- `Resolution: Fixed` - Applied to an issue reporting a bug which has been fixed.
+- `Resolution: Works As Intended` - Applied to issues reporting false bugs which work the way they are intended to.
+- `Resolution: Won't Fix` - Applied to issues reporting bugs which will not be fixed, for example if the bug is beneficial.
+- `Resolution: Obsolete` - Applied to pull requests which are rendered unnecessary by other changes, such as another, similar pull request being merged.
 
 #### Miscellaneous
-Miscellaneous labels are labels that show status not related to debugging that bug. The To-Do label and the Mojang label may not be applied to a single issue at the same time.
-
-* `Affiliation: Mojang` - This label is applied when the issue is suspected of being caused by the Minecraft client, but has not been confirmed.
-* `Affiliation: MCPE` - Same as `Affiliated: Mojang`, but only applied if the issue is only specific to the Pocket Edition (but not the Windows 10 Edition)
-* `Affiliation: Windows 10` - Same as `Affiliated: Mojang`, but only applied if the issue is only specific to the Windows 10 Edition (but not the Pocket Edition)
-* `Affiliation: Meta` - This label is applied for issues or pull requests that are related to this GitHub repo. **Still, do not report bugs related to other parts of PocketMine-MP.**
-* `Category: Bug` - This label is applied to issues that are bugs, but not necessarily reproduced.
-* `Category: To-Do` - This label is applied when the issue is not a bug, but a feature request or a list of features to be implemented that count towards a milestone.
-* `Category: Protocol update` - This label is applied if the issue or pull request is related to client protocol updates.
-* `Category: Invalid` - This label is applied when the issue is reporting a false bug that works as intended, a support request, etc. *This label may only be applied to a closed issue.*
-* `Category: Won't fix` - This label is applied if the bug has been decided not be fixed for some reason. e.g. when the bug benefits gameplay. _This label may only be applied to a closed issue._
+- `Enhancement` - Applied to issues with viable feature requests or TODO lists.
+- `High priority` - Applied to issues or PRs related to critical bugs.
 
 ### Closing Issues
 To keep the bug tracker clear of non-related issues and to prevent it from overflowing, **issues must be closed as soon as possible** (This may sound unethical, but it is MUCH better than having the BUG TRACKER filled with SUPPORT REQUESTS and "I NEED HELP").
 
 If an issue does not conform to the "Creating an Issue" guidelines above, the issue should be closed.
-
+<!--
 ### Milestones
 PocketMine-MP uses GitHub Milestones to set a goal for a new release. A milestone is set on the following occasions.
 
@@ -150,9 +161,10 @@ PocketMine-MP uses GitHub Milestones to set a goal for a new release. A mileston
 
 A milestone must use the following format:
 ```
-Alpha_<version_number> [release_title][release_version]
+<version_number> [release_title][release_version]
 ```
 For example:
 ```
-Alpha_1.4 beta2
+1.6.1b1
 ```
+-->
