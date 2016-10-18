@@ -91,8 +91,8 @@ abstract class Entity extends Location implements Metadatable{
 	 * 29 (block coords) bed position */
 	const DATA_LEAD_HOLDER_EID = 38; //long
 	const DATA_SCALE = 39; //float
-	/* 40 (string)
-	 * 41 (long) */
+	const DATA_BUTTON_TEXT = 40; //string
+	/* 41 (long) */
 	const DATA_MAX_AIR = 44; //short
 	const DATA_MARK_VARIANT = 45; //int
 	/* 46 (byte)
@@ -142,13 +142,15 @@ abstract class Entity extends Location implements Metadatable{
 
 	protected $dataFlags = 0;
 	protected $dataProperties = [
-		self::DATA_FLAGS => [self::DATA_TYPE_BYTE, 0],
+		self::DATA_FLAGS => [self::DATA_TYPE_LONG, 0],
 		self::DATA_AIR => [self::DATA_TYPE_SHORT, 400],
+		self::DATA_MAX_AIR => [self::DATA_TYPE_SHORT, 400],
 		self::DATA_NAMETAG => [self::DATA_TYPE_STRING, ""],
 		//self::DATA_SHOW_NAMETAG => [self::DATA_TYPE_BYTE, 1],
 		//self::DATA_SILENT => [self::DATA_TYPE_BYTE, 0],
 		//self::DATA_NO_AI => [self::DATA_TYPE_BYTE, 0],
 		self::DATA_LEAD_HOLDER_EID => [self::DATA_TYPE_LONG, -1],
+		self::DATA_SCALE => [self::DATA_TYPE_FLOAT, 1],
 	];
 
 	public $passenger = null;
