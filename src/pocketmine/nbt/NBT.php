@@ -107,7 +107,7 @@ class NBT{
 			return Item::get(0);
 		}
 
-		if($tag->id instanceof IntTag){
+		if($tag->id instanceof ShortTag){
 			$item = Item::get($tag->id->getValue(), !isset($tag->Damage) ? 0 : $tag->Damage->getValue(), $tag->Count->getValue());
 		}elseif($tag->id instanceof StringTag){ //PC item save format
 			$item = Item::fromString($tag->id->getValue());
