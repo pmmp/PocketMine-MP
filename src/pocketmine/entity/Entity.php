@@ -77,14 +77,41 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_TYPE_VECTOR3F = 8;
 
 	const DATA_FLAGS = 0;
-	const DATA_AIR = 1;
-	const DATA_NAMETAG = 2;
+	//1 (int)
+	const DATA_VARIANT = 2; //int
+	const DATA_COLOUR = 3; //byte
+	const DATA_NAMETAG = 4; //string
+	const DATA_OWNER_EID = 5; //long
+
+	const DATA_AIR = 7; //short
+	/* 8 (int)
+	 * 9 (int)
+	 * 27 (byte) something to do with beds
+	 * 28 (int) 
+	 * 29 (block coords) bed position */
+	const DATA_LEAD_HOLDER_EID = 38; //long
+	const DATA_SCALE = 39; //float
+	/* 40 (string)
+	 * 41 (long) */
+	const DATA_MAX_AIR = 44; //short
+	const DATA_MARK_VARIANT = 45; //int
+	/* 46 (byte)
+	 * 47 (int) */
+	const DATA_BOUNDING_BOX_WIDTH = 53; //float
+	const DATA_BOUNDING_BOX_HEIGHT = 54; //float
+	/* 56 (vector3f)
+	 * 57 (byte)
+	 * 58 (float)
+	 * 59 (float) */
+	
+	 /*
 	const DATA_SHOW_NAMETAG = 3;
 	const DATA_SILENT = 4;
 	const DATA_POTION_COLOR = 7;
 	const DATA_POTION_AMBIENT = 8;
 	const DATA_NO_AI = 15;
 	const DATA_LINKED_EID = 23;
+	*/
 
 
 	const DATA_FLAG_ONFIRE = 0;
@@ -93,6 +120,9 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_FLAG_SPRINTING = 3;
 	const DATA_FLAG_ACTION = 4;
 	const DATA_FLAG_INVISIBLE = 5;
+	
+	const DATA_FLAG_CAN_SHOW_NAMETAG = 14;
+	const DATA_FLAG_ALWAYS_SHOW_NAMETAG = 15;
 
 
 	public static $entityCount = 1;
@@ -113,12 +143,12 @@ abstract class Entity extends Location implements Metadatable{
 	protected $dataFlags = 0;
 	protected $dataProperties = [
 		self::DATA_FLAGS => [self::DATA_TYPE_BYTE, 0],
-		self::DATA_AIR => [self::DATA_TYPE_SHORT, 300],
+		self::DATA_AIR => [self::DATA_TYPE_SHORT, 400],
 		self::DATA_NAMETAG => [self::DATA_TYPE_STRING, ""],
-		self::DATA_SHOW_NAMETAG => [self::DATA_TYPE_BYTE, 1],
-		self::DATA_SILENT => [self::DATA_TYPE_BYTE, 0],
-		self::DATA_NO_AI => [self::DATA_TYPE_BYTE, 0],
-		self::DATA_LINKED_EID => [self::DATA_TYPE_LONG, -1],
+		//self::DATA_SHOW_NAMETAG => [self::DATA_TYPE_BYTE, 1],
+		//self::DATA_SILENT => [self::DATA_TYPE_BYTE, 0],
+		//self::DATA_NO_AI => [self::DATA_TYPE_BYTE, 0],
+		self::DATA_LEAD_HOLDER_EID => [self::DATA_TYPE_LONG, -1],
 	];
 
 	public $passenger = null;
