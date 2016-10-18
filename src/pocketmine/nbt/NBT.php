@@ -114,7 +114,7 @@ class NBT{
 			$item->setDamage(!isset($tag->Damage) ? 0 : $tag->Damage->getValue());
 			$item->setCount($tag->Count->getValue());
 		}else{
-			throw new \InvalidArgumentException("Item CompoundTag ID must be an instance of StringTag or IntTag, " . get_class($tag->id) . " given");
+			throw new \InvalidArgumentException("Item CompoundTag ID must be an instance of StringTag or ShortTag, " . get_class($tag->id) . " given");
 		}
 
 		if(isset($tag->tag) and $tag->tag instanceof CompoundTag){
