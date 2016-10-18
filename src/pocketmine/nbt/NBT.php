@@ -109,10 +109,12 @@ class NBT{
 
 		if($tag->id instanceof IntTag){
 			$item = Item::get($tag->id->getValue(), !isset($tag->Damage) ? 0 : $tag->Damage->getValue(), $tag->Count->getValue());
-		}else{ //PC item save format
+		}elseif($tag->id instanceof StringTag){ //PC item save format
 			$item = Item::fromString($tag->id->getValue());
 			$item->setDamage(!isset($tag->Damage) ? 0 : $tag->Damage->getValue());
 			$item->setCount($tag->Count->getValue());
+		}else{
+			throw new \InvalidArgumentException("Item CompoundTag ID must be an instance of StringTag or IntTag, " . get_class($tag->id) . " given");
 		}
 
 		if(isset($tag->tag) and $tag->tag instanceof CompoundTag){
