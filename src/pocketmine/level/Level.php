@@ -1678,7 +1678,11 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		if(!($block->canBeReplaced() === true or ($hand->getId() === Item::SLAB and $block->getId() === Item::SLAB))){
+		if($face <= 1 and $hand->getId() === Item::WOOD_SLAB and $target->getId() === Item::WOOD_SLAB){
+			$block = $target;
+		}
+
+		if(!($block->canBeReplaced() === true or ($hand->getId() === Item::WOOD_SLAB and $block->getId() === Item::WOOD_SLAB))){
 			return false;
 		}
 
