@@ -32,7 +32,7 @@ class CommandReader extends Thread{
 	public function __construct(){
 		$this->buffer = new \Threaded;
 		$opts = getopt("", ["disable-readline"]);
-		$this->readline = extension_loaded("readline") and !isset($opts["disable-readline"]);
+		$this->readline = (extension_loaded("readline") and !isset($opts["disable-readline"]));
 		$this->start();
 	}
 
