@@ -2042,8 +2042,6 @@ class Server{
 
 		$this->tickProcessor();
 		$this->forceShutdown();
-
-		gc_collect_cycles();
 	}
 
 	public function handleSignal($signo){
