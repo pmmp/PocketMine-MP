@@ -1204,14 +1204,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return [];
 	}
 
-	public function setDataProperty($id, $type, $value, $send = true){
-		if(parent::setDataProperty($id, $type, $value, $send)){
-			return true;
-		}
-
-		return false;
-	}
-
 	protected function checkGroundState($movX, $movY, $movZ, $dx, $dy, $dz){
 		if(!$this->onGround or $movY != 0){
 			$bb = clone $this->boundingBox;
