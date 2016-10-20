@@ -481,7 +481,7 @@ class Binary{
 				$w = $v | 0x80;
 			}
 			$buf .= self::writeByte($w);
-			$v >>= 7;
+			$v = (($v >> 7) & (PHP_INT_MAX >> 6)); //PHP really needs a logical right-shift operator
 		}while($v);
 
 		return $buf;
