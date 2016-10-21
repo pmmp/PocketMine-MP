@@ -378,16 +378,24 @@ class Utils{
 	}
 
 	/**
-	 * @param Server|Plugin   $context
-	 * @param callable $function
-	 * @param mixed    ...$args
-	 * @return mixed
+	 * Avoid using this function. Consider using async tasks instead.
+	 *
+	 * This method executes a callable that requires Internet access <em>on the main thread</em>.
+	 *
+	 * Plugins that use this method are recommended to only include operations that transfer data with the Internet in
+	 * the callable so that a neat timings result can be produced.
+	 *
+	 * @param Server|Plugin $context  the context that is responsible for this API call (
+	 * @param callable      $function the function to execute
+	 * @param mixed         ...$args  arguments to pass to the function
+	 *
+	 * @return mixed any values returned by $function
 	 */
 	public static function syncInternetAccess($context, callable $function, ...$args){
 		Utils::$syncInternetAllowed = true;
 		// TODO timings on $context
 		if($context instanceof Plugin){
-			// TODO optionally show warnings on $context
+			Utils::warnSyncInternetAccess("suppressed");
 		}
 		try{
 			$result = $function(...$args);
@@ -422,6 +430,7 @@ class Utils{
 	 * @param array $extraHeaders
 	 *
 	 * @return bool|mixed
+	 * @throws \InvalidStateException if user
 	 */
 	public static function getURL($page, $timeout = 10, array $extraHeaders = []){
 		if(Utils::$online === false){

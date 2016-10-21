@@ -32,6 +32,9 @@ settings:
  sync-internet-access:
   #For HTTP requests
   curl: warn
+  #If the plugin wants to suppress the actions specified above
+  #"empty" is not allowed in this option
+  suppressed: allow
 
 
 memory:
