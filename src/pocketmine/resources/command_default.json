@@ -1,0 +1,19 @@
+{
+  "aliases": [],
+  "description": "insert_description_here",
+  "overloads": {
+    "default": {
+      "input": {
+        "parameters": [
+          {
+            "name": "args",
+            "type": "rawtext",
+            "optional": true
+          }
+        ]
+      },
+      "output": {}
+    }
+  },
+  "permission": "any"
+}
