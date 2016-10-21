@@ -415,6 +415,15 @@ namespace pocketmine {
 		}
 	}
 
+	if(extension_loaded("xdebug")){
+		$logger->warning("
+
+
+	You are running PocketMine with xdebug enabled. This has a major impact on performance.
+
+		");
+	}
+
 	if(!extension_loaded("curl")){
 		$logger->critical("Unable to find the cURL extension.");
 		++$errors;
