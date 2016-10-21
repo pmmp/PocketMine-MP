@@ -35,6 +35,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\tag\Tag;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\Config;
@@ -594,6 +595,10 @@ class Item implements ItemIds, \JsonSerializable{
 		return $this;
 	}
 
+	/**
+	 * @param $name
+	 * @return Tag|null
+	 */
 	public function getNamedTagEntry($name){
 		$tag = $this->getNamedTag();
 		if($tag !== null){

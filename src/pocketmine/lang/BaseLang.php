@@ -89,9 +89,10 @@ class BaseLang{
 	}
 
 	/**
-	 * @param string   $str
-	 * @param string[] $params
+	 * @param string      $str
+	 * @param string[]    $params
 	 *
+	 * @param string|null $onlyPrefix
 	 * @return string
 	 */
 	public function translateString($str, array $params = [], $onlyPrefix = null){
