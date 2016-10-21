@@ -436,11 +436,11 @@ class Binary{
 		return self::readLong(strrev($str));
 	}
 
-	//TODO: varlong, varint length checks
-
 	public static function writeLLong($value){
 		return strrev(self::writeLong($value));
 	}
+
+	//TODO: proper varlong support
 
 	public static function readVarInt($stream){
 		$shift = PHP_INT_SIZE === 8 ? 63 : 31;
@@ -453,6 +453,9 @@ class Binary{
 		$value = 0;
 		$i = 0;
 		do{
+			if($i > 63){
+				throw new \InvalidArgumentException("Varint did not terminate after 10 bytes!");
+			}
 			$value |= ((($b = $stream->getByte()) & 0x7f) << $i);
 			$i += 7;
 		}while($b & 0x80);
@@ -466,13 +469,18 @@ class Binary{
 
 	public static function writeUnsignedVarInt($v){
 		$buf = "";
+		$loops = 0;
 		do{
+			if($loops > 9){
+				throw new \InvalidArgumentException("Varint cannot be longer than 10 bytes!"); //for safety reasons
+			}
 			$w = $v & 0x7f;
 			if(($v >> 7) !== 0){
 				$w = $v | 0x80;
 			}
 			$buf .= self::writeByte($w);
 			$v = (($v >> 7) & (PHP_INT_MAX >> 6)); //PHP really needs a logical right-shift operator
+			++$loops;
 		}while($v);
 
 		return $buf;
