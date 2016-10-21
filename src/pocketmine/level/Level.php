@@ -287,6 +287,11 @@ class Level implements ChunkManager, Metadatable{
 		}
 	}
 
+	/**
+	 * @param string|int $hash
+	 * @param int|null   $x
+	 * @param int|null   $z
+	 */
 	public static function getXZ($hash, &$x, &$z){
 		if(PHP_INT_SIZE === 8){
 			$x = ($hash >> 32) << 32 >> 32;
@@ -1780,7 +1785,7 @@ class Level implements ChunkManager, Metadatable{
 	 * Returns the entities colliding the current one inside the AxisAlignedBB
 	 *
 	 * @param AxisAlignedBB $bb
-	 * @param Entity        $entity
+	 * @param Entity|null   $entity
 	 *
 	 * @return Entity[]
 	 */
@@ -2311,8 +2316,6 @@ class Level implements ChunkManager, Metadatable{
 		if(count($this->chunkSendQueue) > 0){
 			$this->timings->syncChunkSendTimer->startTiming();
 
-			$x = null;
-			$z = null;
 			foreach($this->chunkSendQueue as $index => $players){
 				if(isset($this->chunkSendTasks[$index])){
 					continue;
@@ -2772,9 +2775,6 @@ class Level implements ChunkManager, Metadatable{
 
 	public function doChunkGarbageCollection(){
 		$this->timings->doChunkGC->startTiming();
-
-		$X = null;
-		$Z = null;
 
 		foreach($this->chunks as $index => $chunk){
 			if(!isset($this->unloadQueue[$index]) and (!isset($this->usedChunks[$index]) or count($this->usedChunks[$index]) === 0)){

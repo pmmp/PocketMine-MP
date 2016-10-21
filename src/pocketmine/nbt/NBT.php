@@ -35,13 +35,13 @@ use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\LongTag;
-use pocketmine\nbt\tag\NamedTAG;
+use pocketmine\nbt\tag\NamedTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
+use pocketmine\utils\Binary;
 
 #ifndef COMPILE
-use pocketmine\utils\Binary;
 
 #endif
 
@@ -566,7 +566,7 @@ class NBT{
 
 	public function writeTag(Tag $tag){
 		$this->putByte($tag->getType());
-		if($tag instanceof NamedTAG){
+		if($tag instanceof NamedTag){
 			$this->putString($tag->getName());
 		}
 		$tag->write($this);
