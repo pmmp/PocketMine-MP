@@ -34,6 +34,7 @@ use pocketmine\permission\Permissible;
 use pocketmine\permission\Permission;
 use pocketmine\Server;
 use pocketmine\utils\PluginException;
+use pocketmine\utils\Utils;
 
 /**
  * Manages all the plugins, Permissions and Permissibles
@@ -148,7 +149,7 @@ class PluginManager{
 			if(preg_match($loader->getPluginFilters(), basename($path)) > 0){
 				$description = $loader->getPluginDescription($path);
 				if($description instanceof PluginDescription){
-					if(($plugin = $loader->loadPlugin($path)) instanceof Plugin){
+					if(($plugin = Utils::syncInternetAccess($this->server, [$loader, "loadPlugin"], $path)) instanceof Plugin){
 						$this->plugins[$plugin->getDescription()->getName()] = $plugin;
 
 						$pluginCommands = $this->parseYamlCommands($plugin);
@@ -558,7 +559,7 @@ class PluginManager{
 				foreach($plugin->getDescription()->getPermissions() as $perm){
 					$this->addPermission($perm);
 				}
-				$plugin->getPluginLoader()->enablePlugin($plugin);
+				Utils::syncInternetAccess($this->server, [$plugin->getPluginLoader(), "enablePlugin"], $plugin);
 			}catch(\Throwable $e){
 				$this->server->getLogger()->logException($e);
 				$this->disablePlugin($plugin);
@@ -629,7 +630,7 @@ class PluginManager{
 	public function disablePlugin(Plugin $plugin){
 		if($plugin->isEnabled()){
 			try{
-				$plugin->getPluginLoader()->disablePlugin($plugin);
+				Utils::syncInternetAccess($this->server, [$plugin->getPluginLoader(), "disablePlugin"], $plugin);
 			}catch(\Throwable $e){
 				$this->server->getLogger()->logException($e);
 			}

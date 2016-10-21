@@ -1404,6 +1404,7 @@ class Server{
 	public function __construct(\ClassLoader $autoloader, \ThreadedLogger $logger, $filePath, $dataPath, $pluginPath){
 		self::$instance = $this;
 		self::$sleeper = new \Threaded;
+		Utils::$mainThreadId = \Thread::getCurrentThreadId();
 		$this->autoloader = $autoloader;
 		$this->logger = $logger;
 
@@ -2040,7 +2041,9 @@ class Server{
 
 		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.startFinished", [round(microtime(true) - \pocketmine\START_TIME, 3)]));
 
+		Utils::$serverRunning = true;
 		$this->tickProcessor();
+		Utils::$serverRunning = false;
 		$this->forceShutdown();
 	}
 

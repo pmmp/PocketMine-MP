@@ -24,6 +24,8 @@
  */
 namespace pocketmine\utils;
 
+use pocketmine\plugin\Plugin;
+use pocketmine\Server;
 use pocketmine\ThreadManager;
 
 /**
@@ -31,6 +33,9 @@ use pocketmine\ThreadManager;
  */
 class Utils{
 	public static $online = true;
+	public static $mainThreadId;
+	private static $syncInternetAllowed = false;
+	public static $serverRunning = false;
 	public static $ip = false;
 	public static $os;
 	private static $serverUniqueId = null;
@@ -368,6 +373,47 @@ class Utils{
 		return array("yaw" => $hAngle, "pitch" => $vAngle);
 	}*/
 
+	public static function isMainThread() : bool{
+		return Utils::$mainThreadId === \Thread::getCurrentThreadId();
+	}
+
+	/**
+	 * @param Server|Plugin   $context
+	 * @param callable $function
+	 * @param mixed    ...$args
+	 * @return mixed
+	 */
+	public static function syncInternetAccess($context, callable $function, ...$args){
+		Utils::$syncInternetAllowed = true;
+		// TODO timings on $context
+		if($context instanceof Plugin){
+			// TODO optionally show warnings on $context
+		}
+		try{
+			$result = $function(...$args);
+		}finally{
+			Utils::$syncInternetAllowed = false;
+		}
+		return $result;
+	}
+
+	private static function warnSyncInternetAccess(string $type) : bool{
+		if(Utils::$mainThreadId === \Thread::getCurrentThreadId() and !Utils::$syncInternetAllowed and Utils::$serverRunning){
+			// safe to use Server::getInstance()
+			$action = Server::getInstance()->getProperty("settings.sync-internet-access.$type", "warn");
+			switch($action){
+				case "empty":
+					$empty = true;
+				case "warn":
+					MainLogger::getLogger()->warning(Server::getInstance()->getLanguage()->translateString("pocketmine.thread.useInternet.$type"));
+					return isset($empty);
+				case "deny":
+					throw new \InvalidStateException("Internet access (cURL) in main thread");
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * GETs an URL using cURL
 	 *
@@ -380,6 +426,10 @@ class Utils{
 	public static function getURL($page, $timeout = 10, array $extraHeaders = []){
 		if(Utils::$online === false){
 			return false;
+		}
+
+		if(self::warnSyncInternetAccess("curl")){
+			return "";
 		}
 
 		$ch = curl_init($page);
@@ -412,6 +462,10 @@ class Utils{
 	public static function postURL($page, $args, $timeout = 10, array $extraHeaders = []){
 		if(Utils::$online === false){
 			return false;
+		}
+
+		if(self::warnSyncInternetAccess("curl")){
+			return "";
 		}
 
 		$ch = curl_init($page);

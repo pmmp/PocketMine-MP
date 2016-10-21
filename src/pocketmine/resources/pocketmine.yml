@@ -23,6 +23,16 @@ settings:
  #Set this approximately to your number of cores.
  #If set to auto, it'll try to detect the number of cores (or use 2)
  async-workers: auto
+ #Allow plugins to access the Internet on the main thread (except during a plugin is loaded/unloaded).
+ #Plugins can still bypass this check if they specify that intentionally want to access the Internet on the main thread
+ #If set to deny, an exception will be thrown (you may see an error)
+ #If set to warn, a warning will be shown on console and Internet access continues
+ #If set to empty, a warning will be shown on console, and empty content is returned (will not download anything from the Internet).
+ #If set to allow, nothing will happen and Internet access continues
+ sync-internet-access:
+  #For HTTP requests
+  curl: warn
+
 
 memory:
  #Global soft memory limit in megabytes. Set to 0 to disable
