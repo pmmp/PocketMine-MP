@@ -110,11 +110,9 @@ abstract class Entity extends Location implements Metadatable{
 	 * 59 (float) */
 	
 	 /*
-	const DATA_SHOW_NAMETAG = 3;
 	const DATA_SILENT = 4;
 	const DATA_POTION_COLOR = 7;
 	const DATA_POTION_AMBIENT = 8;
-	const DATA_LINKED_EID = 23;
 	*/
 
 
@@ -465,11 +463,11 @@ abstract class Entity extends Location implements Metadatable{
 			$g = ($color[1] / $count) & 0xff;
 			$b = ($color[2] / $count) & 0xff;
 
-			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, ($r << 16) + ($g << 8) + $b);
-			$this->setDataProperty(Entity::DATA_POTION_AMBIENT, Entity::DATA_TYPE_BYTE, $ambient ? 1 : 0);
+			//$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, ($r << 16) + ($g << 8) + $b);
+			//$this->setDataProperty(Entity::DATA_POTION_AMBIENT, Entity::DATA_TYPE_BYTE, $ambient ? 1 : 0);
 		}else{
-			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, 0);
-			$this->setDataProperty(Entity::DATA_POTION_AMBIENT, Entity::DATA_TYPE_BYTE, 0);
+			//$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, 0);
+			//$this->setDataProperty(Entity::DATA_POTION_AMBIENT, Entity::DATA_TYPE_BYTE, 0);
 		}
 	}
 
