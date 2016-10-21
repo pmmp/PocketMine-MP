@@ -1527,8 +1527,8 @@ abstract class Entity extends Location implements Metadatable{
 	 * @param int   $id
 	 * @param int   $type
 	 * @param mixed $value
-	 *
 	 * @param bool  $send
+	 *
 	 * @return bool
 	 */
 	public function setDataProperty($id, $type, $value, $send = true){
