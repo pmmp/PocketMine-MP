@@ -406,7 +406,7 @@ class Utils{
 	}
 
 	private static function warnSyncInternetAccess(string $type) : bool{
-		if(Utils::$mainThreadId === \Thread::getCurrentThreadId() and !Utils::$syncInternetAllowed and Utils::$serverRunning){
+		if(Utils::isMainThread() and !Utils::$syncInternetAllowed and Utils::$serverRunning){
 			// safe to use Server::getInstance()
 			$action = Server::getInstance()->getProperty("settings.sync-internet-access.$type", "warn");
 			switch($action){
