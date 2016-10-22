@@ -180,7 +180,7 @@ class MainLogger extends \AttachableThreadedLogger{
 	protected function send($message, $level, $prefix, $color){
 		$now = time();
 
-		$thread = \Thread::getCurrentThread();
+		$thread = Thread::getCurrentThread();
 		if($thread === null){
 			$threadName = "Server thread";
 		}elseif($thread instanceof Thread or $thread instanceof Worker){
