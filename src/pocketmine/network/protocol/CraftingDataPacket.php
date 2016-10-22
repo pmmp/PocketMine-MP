@@ -58,12 +58,12 @@ class CraftingDataPacket extends DataPacket{
 	}
 
 	private static function writeShapelessRecipe(ShapelessRecipe $recipe, BinaryStream $stream){
-		$stream->putInt($recipe->getIngredientCount());
+		$stream->putUnsignedVarInt($recipe->getIngredientCount());
 		foreach($recipe->getIngredientList() as $item){
 			$stream->putSlot($item);
 		}
 
-		$stream->putInt(1);
+		$stream->putUnsignedVarInt(1);
 		$stream->putSlot($recipe->getResult());
 
 		$stream->putUUID($recipe->getId());
@@ -72,8 +72,8 @@ class CraftingDataPacket extends DataPacket{
 	}
 
 	private static function writeShapedRecipe(ShapedRecipe $recipe, BinaryStream $stream){
-		$stream->putInt($recipe->getWidth());
-		$stream->putInt($recipe->getHeight());
+		$stream->putVarInt($recipe->getWidth());
+		$stream->putVarInt($recipe->getHeight());
 
 		for($z = 0; $z < $recipe->getHeight(); ++$z){
 			for($x = 0; $x < $recipe->getWidth(); ++$x){
@@ -81,7 +81,7 @@ class CraftingDataPacket extends DataPacket{
 			}
 		}
 
-		$stream->putInt(1);
+		$stream->putUnsignedVarInt(1);
 		$stream->putSlot($recipe->getResult());
 
 		$stream->putUUID($recipe->getId());
@@ -91,12 +91,13 @@ class CraftingDataPacket extends DataPacket{
 
 	private static function writeFurnaceRecipe(FurnaceRecipe $recipe, BinaryStream $stream){
 		if($recipe->getInput()->getDamage() !== 0){ //Data recipe
-			$stream->putInt(($recipe->getInput()->getId() << 16) | ($recipe->getInput()->getDamage()));
+			$stream->putVarInt($recipe->getInput()->getDamage());
+			$stream->putVarInt($recipe->getInput()->getId());
 			$stream->putSlot($recipe->getResult());
 
 			return CraftingDataPacket::ENTRY_FURNACE_DATA;
 		}else{
-			$stream->putInt($recipe->getInput()->getId());
+			$stream->putVarInt($recipe->getInput()->getId());
 			$stream->putSlot($recipe->getResult());
 
 			return CraftingDataPacket::ENTRY_FURNACE;
@@ -104,15 +105,15 @@ class CraftingDataPacket extends DataPacket{
 	}
 
 	private static function writeEnchantList(EnchantmentList $list, BinaryStream $stream){
-
+		//TODO: check this works on 0.16 (cannot currently test)
 		$stream->putByte($list->getSize());
 		for($i = 0; $i < $list->getSize(); ++$i){
 			$entry = $list->getSlot($i);
-			$stream->putInt($entry->getCost());
-			$stream->putByte(count($entry->getEnchantments()));
+			$stream->putUnsignedVarInt($entry->getCost());
+			$stream->putUnsignedVarInt(count($entry->getEnchantments()));
 			foreach($entry->getEnchantments() as $enchantment){
-				$stream->putInt($enchantment->getId());
-				$stream->putInt($enchantment->getLevel());
+				$stream->putUnsignedVarInt($enchantment->getId());
+				$stream->putUnsignedVarInt($enchantment->getLevel());
 			}
 			$stream->putString($entry->getRandomName());
 		}
@@ -147,24 +148,22 @@ class CraftingDataPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putInt(count($this->entries));
+		$this->putUnsignedVarInt(count($this->entries));
 
 		$writer = new BinaryStream();
 		foreach($this->entries as $d){
 			$entryType = self::writeEntry($d, $writer);
 			if($entryType >= 0){
-				$this->putInt($entryType);
-				$this->putInt(strlen($writer->getBuffer()));
+				$this->putVarInt($entryType);
 				$this->put($writer->getBuffer());
 			}else{
-				$this->putInt(-1);
-				$this->putInt(0);
+				$this->putVarInt(-1);
 			}
 
 			$writer->reset();
 		}
 
-		$this->putByte($this->cleanRecipes ? 1 : 0);
+		$this->putBool($this->cleanRecipes);
 	}
 
 }

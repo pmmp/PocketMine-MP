@@ -21,36 +21,16 @@
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
-use pocketmine\item\Tool;
+class DaylightSensorInverted extends Solid{
 
-class WoodDoor extends Door{
-
-	protected $id = self::WOOD_DOOR_BLOCK;
+	protected $id = self::DAYLIGHT_SENSOR_INVERTED;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 
 	public function getName(){
-		return "Wood Door Block";
+        return "Daylight Sensor Inverted";
 	}
 
-	public function canBeActivated(){
-		return true;
-	}
-
-	public function getHardness(){
-		return 3;
-	}
-
-	public function getToolType(){
-		return Tool::TYPE_AXE;
-	}
-
-	public function getDrops(Item $item){
-		return [
-			[Item::WOODEN_DOOR, 0, 1],
-		];
-	}
 }
