@@ -26,6 +26,7 @@ namespace pocketmine\utils;
 
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
+use pocketmine\nbt\NBT;
 
 class Binary{
 	const BIG_ENDIAN = 0x00;
@@ -443,6 +444,10 @@ class Binary{
 
 	//TODO: proper varlong support
 
+	/**
+	 * @param NBT|BinaryStream $stream
+	 * @return int
+	 */
 	public static function readVarInt($stream){
 		$shift = PHP_INT_SIZE === 8 ? 63 : 31;
 		$raw = self::readUnsignedVarInt($stream);
@@ -450,6 +455,10 @@ class Binary{
 		return $temp ^ ($raw & (1 << $shift));
 	}
 
+	/**
+	 * @param NBT|BinaryStream $stream
+	 * @return int
+	 */
 	public static function readUnsignedVarInt($stream){
 		$value = 0;
 		$i = 0;

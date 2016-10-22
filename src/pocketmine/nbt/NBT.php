@@ -35,14 +35,13 @@ use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\LongTag;
-use pocketmine\nbt\tag\NamedTAG;
+use pocketmine\nbt\tag\NamedTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
 
 #ifndef COMPILE
 use pocketmine\utils\Binary;
-
 #endif
 
 
@@ -107,7 +106,15 @@ class NBT{
 			return Item::get(0);
 		}
 
-		$item = Item::get($tag->id->getValue(), !isset($tag->Damage) ? 0 : $tag->Damage->getValue(), $tag->Count->getValue());
+		if($tag->id instanceof ShortTag){
+			$item = Item::get($tag->id->getValue(), !isset($tag->Damage) ? 0 : $tag->Damage->getValue(), $tag->Count->getValue());
+		}elseif($tag->id instanceof StringTag){ //PC item save format
+			$item = Item::fromString($tag->id->getValue());
+			$item->setDamage(!isset($tag->Damage) ? 0 : $tag->Damage->getValue());
+			$item->setCount($tag->Count->getValue());
+		}else{
+			throw new \InvalidArgumentException("Item CompoundTag ID must be an instance of StringTag or ShortTag, " . get_class($tag->id) . " given");
+		}
 
 		if(isset($tag->tag) and $tag->tag instanceof CompoundTag){
 			$item->setNamedTag($tag->tag);
@@ -478,7 +485,8 @@ class NBT{
 
 
 	/**
-	 * @return string|bool
+	 * @param bool $network
+	 * @return bool|string
 	 */
 	public function write(bool $network = false){
 		$this->offset = 0;
@@ -576,9 +584,11 @@ class NBT{
 
 	public function writeTag(Tag $tag, bool $network = false){
 		$this->putByte($tag->getType());
-		if($tag instanceof NamedTAG){
+
+		if($tag instanceof NamedTag){
 			$this->putString($tag->getName(), $network);
 		}
+
 		$tag->write($this, $network);
 	}
 

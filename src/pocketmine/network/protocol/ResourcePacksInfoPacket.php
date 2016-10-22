@@ -23,14 +23,15 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\resourcepacks\ResourcePackInfoEntry;
 
 class ResourcePacksInfoPacket extends DataPacket{
 	const NETWORK_ID = Info::RESOURCE_PACKS_INFO_PACKET;
 
 	public $mustAccept = false; //force client to use selected resource packs
-	/** @var ResourcePackInfoEntry */
+	/** @var ResourcePackInfoEntry[] */
 	public $behaviourPackEntries = [];
-	/** @var ResourcePackInfoEntry */
+	/** @var ResourcePackInfoEntry[] */
 	public $resourcePackEntries = [];
 
 	public function decode(){

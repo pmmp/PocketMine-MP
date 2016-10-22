@@ -504,7 +504,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return $this->perm->getEffectivePermissions();
 	}
 
-	public function sendCommandData(){	
+	public function sendCommandData(){
 		$pk = new AvailableCommandsPacket();
 		$data = new \stdClass();
 		foreach($this->server->getCommandMap()->getCommands() as $command){
@@ -1096,7 +1096,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/**
 	 * Sets the gamemode, and if needed, kicks the Player.
 	 *
-	 * @param int $gm
+	 * @param int  $gm
+	 * @param bool $client default false
 	 *
 	 * @return bool
 	 */
@@ -2578,6 +2579,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					break;
 				}
 
+				/**
+				 * @var int  $i
+				 * @var Item $item
+				 */
 				foreach($packet->input as $i => $item){
 					if($item->getDamage() === -1 or $item->getDamage() === 0xffff){
 						$item->setDamage(null);
@@ -3062,6 +3067,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	/**
 	 * Handles player data saving
+	 *
+	 * @param bool $async
 	 */
 	public function save($async = false){
 		if($this->closed){
