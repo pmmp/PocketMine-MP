@@ -21,7 +21,9 @@
 
 namespace pocketmine\block;
 
-class AcaciaDoorBlock extends Solid{
+use pocketmine\item\Item;
+
+class AcaciaDoorBlock extends WoodenDoor{
 
 	protected $id = self::ACACIA_DOOR_BLOCK;
 
@@ -30,7 +32,13 @@ class AcaciaDoorBlock extends Solid{
 	}
 
 	public function getName(){
-        return "Acacia Door Block";
+		return "Acacia Door Block";
+	}
+
+	public function getDrops(Item $item){
+		return [
+			[Item::ACACIA_DOOR, 0, 1],
+		];
 	}
 
 }

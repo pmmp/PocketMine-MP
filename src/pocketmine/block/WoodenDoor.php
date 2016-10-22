@@ -21,24 +21,19 @@
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
-class SpruceDoorBlock extends WoodenDoor{
+abstract class WoodenDoor extends Door{
 
-	protected $id = self::SPRUCE_DOOR_BLOCK;
-
-	public function __construct($meta = 0){
-		$this->meta = $meta;
+	public function canBeActivated(){
+		return true;
 	}
 
-	public function getName(){
-		return "Spruce Door Block";
+	public function getHardness(){
+		return 3;
 	}
 
-	public function getDrops(Item $item){
-		return [
-			[Item::SPRUCE_DOOR, 0, 1],
-		];
+	public function getToolType(){
+		return Tool::TYPE_AXE;
 	}
-
 }

@@ -22,9 +22,8 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 
-class WoodDoor extends Door{
+class WoodDoorBlock extends WoodenDoor{
 
 	protected $id = self::WOOD_DOOR_BLOCK;
 
@@ -34,18 +33,6 @@ class WoodDoor extends Door{
 
 	public function getName(){
 		return "Wood Door Block";
-	}
-
-	public function canBeActivated(){
-		return true;
-	}
-
-	public function getHardness(){
-		return 3;
-	}
-
-	public function getToolType(){
-		return Tool::TYPE_AXE;
 	}
 
 	public function getDrops(Item $item){

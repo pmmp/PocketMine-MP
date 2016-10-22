@@ -21,7 +21,9 @@
 
 namespace pocketmine\block;
 
-class BirchDoorBlock extends Solid{
+use pocketmine\item\Item;
+
+class BirchDoorBlock extends WoodenDoor{
 
 	protected $id = self::BIRCH_DOOR_BLOCK;
 
@@ -30,7 +32,13 @@ class BirchDoorBlock extends Solid{
 	}
 
 	public function getName(){
-        return "Birch Door Block";
+		return "Birch Door Block";
+	}
+
+	public function getDrops(Item $item){
+		return [
+			[Item::BIRCH_DOOR, 0, 1],
+		];
 	}
 
 }
