@@ -237,7 +237,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	//TODO: Abilities
 	protected $autoJump = true;
 	protected $allowFlight = false;
-	protected $isFlying = false;
+	protected $flying = false;
 
 	private $needACK = [];
 
@@ -319,12 +319,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function setFlying(bool $value){
-		$this->isFlying = $value;
+		$this->flying = $value;
 		$this->sendSettings();
 	}
 
-	public function getIsFlying() : bool{
-		return $this->isFlying;
+	public function isFlying() : bool{
+		return $this->flying;
 	}
 
 	public function setAutoJump($value){
@@ -507,14 +507,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public function sendCommandData(){	
 		$pk = new AvailableCommandsPacket();
 		$data = new \stdClass();
+		$count = 0;
 		foreach($this->server->getCommandMap()->getCommands() as $command){
 			if(!$command->testPermissionSilent($this)){
 				continue;
 			}
+			++$count;
 			$data->{$command->getName()}->versions[0] = $command->generateCustomCommandData($this);
 		}
 
-		if(count($data) > 0){
+		if($count > 0){
 			//TODO: structure checking
 			$pk->commands = json_encode($data);
 			$this->dataPacket($pk);
@@ -1120,7 +1122,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->allowFlight = $this->isCreative();
 		if($this->isSpectator()){
-			$this->isFlying = true;
+			$this->flying = true;
 			$this->despawnFromAll();
 
 			// Client automatically turns off flight controls when on the ground.
@@ -1129,7 +1131,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->teleport($this->temporalVector->setComponents($this->x, $this->y + 0.1, $this->z));
 		}else{
 			if($this->isSurvival()){
-				$this->isFlying = false;
+				$this->flying = false;
 			}
 			$this->spawnToAll();
 		}
@@ -1166,7 +1168,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->autoJump = $this->autoJump;
 		$pk->allowFlight = $this->allowFlight;
 		$pk->noClip = $this->isSpectator();
-		$pk->isFlying = $this->isFlying;
+		$pk->isFlying = $this->flying;
 		$pk->userPermission = 2;
 		$this->dataPacket($pk);
 	}
@@ -1883,7 +1885,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					if($ev->isCancelled()){
 						$this->sendSettings();
 					}else{
-						$this->isFlying = $ev->isFlying();
+						$this->flying = $ev->isFlying();
 					}
 					break;
 				}
