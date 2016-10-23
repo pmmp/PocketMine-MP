@@ -23,10 +23,6 @@ namespace pocketmine\utils;
 
 #include <rules/DataPacket.h>
 
-#ifndef COMPILE
-
-#endif
-
 use pocketmine\item\Item;
 
 class BinaryStream extends \stdClass{

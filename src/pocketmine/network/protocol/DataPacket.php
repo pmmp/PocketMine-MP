@@ -23,11 +23,6 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
-#ifndef COMPILE
-
-#endif
-
-
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Utils;
 
