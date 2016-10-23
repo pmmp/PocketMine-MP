@@ -40,7 +40,7 @@ __PocketMine-MP is a free, open-source software that creates Minecraft: Pocket E
 [#pmmp + #pocketmine channel WebIRC](http://webchat.freenode.net/?channels=pmmp,pocketmine)
 
 ### Want to contribute?
-* Check the [Contributing Guidelines](CONTRIBUTING.md)
+* Check the [Contributing Guidelines](.github/CONTRIBUTING.md)
 
 
 ## Third-party Libraries/Protocols Used
