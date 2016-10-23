@@ -401,9 +401,9 @@ namespace pocketmine {
 		++$errors;
 	}
 
-	if(!extension_loaded("uopz")){
-		//$logger->notice("Couldn't find the uopz extension. Some functions may be limited");
-	}
+	/*if(!extension_loaded("uopz")){
+		$logger->notice("Couldn't find the uopz extension. Some functions may be limited");
+	}*/
 
 	if(extension_loaded("pocketmine")){
 		if(version_compare(phpversion("pocketmine"), "0.0.1") < 0){
