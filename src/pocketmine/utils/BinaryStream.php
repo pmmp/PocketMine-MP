@@ -293,7 +293,7 @@ class BinaryStream extends \stdClass{
 		$z = $this->getVarInt();
 	}
 
-	public function putBlockCoords(int $x, int $y, int $z){
+	public function putBlockCoords($x, $y, $z){
 		$this->putVarInt($x);
 		$this->putByte($y);
 		$this->putVarInt($z);
@@ -305,7 +305,7 @@ class BinaryStream extends \stdClass{
 		$z = $this->getLFloat();
 	}
 	
-	public function putVector3f(float $x, float $y, float $z){
+	public function putVector3f($x, $y, $z){
 		$this->putLFloat($x);
 		$this->putLFloat($y);
 		$this->putLFloat($z);
