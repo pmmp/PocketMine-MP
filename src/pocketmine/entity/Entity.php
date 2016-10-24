@@ -84,6 +84,8 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_OWNER_EID = 5; //long
 
 	const DATA_AIR = 7; //short
+	const DATA_POTION_COLOR = 8; //int (ARGB!)
+	const DATA_POTION_AMBIENT = 9; //byte
 	/* 8 (int)
 	 * 9 (int)
 	 * 27 (byte) player-specific flags
@@ -111,8 +113,6 @@ abstract class Entity extends Location implements Metadatable{
 	
 	 /*
 	const DATA_SILENT = 4;
-	const DATA_POTION_COLOR = 7;
-	const DATA_POTION_AMBIENT = 8;
 	*/
 
 
@@ -442,6 +442,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	protected function recalculateEffectColor(){
+		//TODO: add transparency values
 		$color = [0, 0, 0]; //RGB
 		$count = 0;
 		$ambient = true;
@@ -463,11 +464,11 @@ abstract class Entity extends Location implements Metadatable{
 			$g = ($color[1] / $count) & 0xff;
 			$b = ($color[2] / $count) & 0xff;
 
-			//$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, ($r << 16) + ($g << 8) + $b);
-			//$this->setDataProperty(Entity::DATA_POTION_AMBIENT, Entity::DATA_TYPE_BYTE, $ambient ? 1 : 0);
+			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, ($r << 16) + ($g << 8) + $b);
+			$this->setDataProperty(Entity::DATA_POTION_AMBIENT, Entity::DATA_TYPE_BYTE, $ambient ? 1 : 0);
 		}else{
-			//$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, 0);
-			//$this->setDataProperty(Entity::DATA_POTION_AMBIENT, Entity::DATA_TYPE_BYTE, 0);
+			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, 0);
+			$this->setDataProperty(Entity::DATA_POTION_AMBIENT, Entity::DATA_TYPE_BYTE, 0);
 		}
 	}
 
