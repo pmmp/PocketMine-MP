@@ -2000,7 +2000,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					$this->level->sendBlocks([$this], [$target, $block], UpdateBlockPacket::FLAG_ALL_PRIORITY);
 					break;
 				}elseif($packet->face === -1){
-					$aimPos = (new Vector3($packet->x / 32768, $packet->y / 32768, $packet->z / 32768))->normalize();
+					$aimPos = new Vector3(
+						-sin($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI),
+						-sin($this->pitch / 180 * M_PI),
+						cos($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI)
+					);
 
 					if($this->isCreative()){
 						$item = $this->inventory->getItemInHand();
