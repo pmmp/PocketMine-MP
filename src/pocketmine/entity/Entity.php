@@ -86,8 +86,8 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_AIR = 7; //short
 	/* 8 (int)
 	 * 9 (int)
-	 * 27 (byte) something to do with beds
-	 * 28 (int) 
+	 * 27 (byte) player-specific flags
+	 * 28 (int) player "index"? 
 	 * 29 (block coords) bed position */
 	const DATA_LEAD_HOLDER_EID = 38; //long
 	const DATA_SCALE = 39; //float
