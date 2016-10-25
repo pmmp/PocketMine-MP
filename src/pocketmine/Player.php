@@ -1165,7 +1165,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public function sendSettings(){
 		$pk = new AdventureSettingsPacket();
 		$pk->flags = 0;
-		$pk->worldInmutable = $this->isAdventure();
+		$pk->worldImmutable = $this->isAdventure();
 		$pk->autoJump = $this->autoJump;
 		$pk->allowFlight = $this->allowFlight;
 		$pk->noClip = $this->isSpectator();
