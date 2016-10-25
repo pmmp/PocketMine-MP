@@ -282,6 +282,32 @@ class Block extends Position implements BlockIds, Metadatable{
 			}
 		}
 	}
+	
+	//SkyBlockLight SPECIAL blocks:
+	//WATER,ICE => -3
+	//solid => -INF
+	//transparent => -0 (this includes Lava!) [WHY]
+	/**
+	 * @param int $blockID
+	 *
+	 * @return int
+	*/
+	public static function getSkyLightResistance($blockID){
+		$block = new self::$list[$blockID]();
+		if(self::$transparent[$blockID]){
+			if($blockID == self::WATER){
+				return 3;
+			}else{
+				return 0;
+			}
+		}elseif(self::$solid[$blockID] === false){
+			switch($blockID){
+				self::
+			}
+			return 0;
+		}
+		return -1;
+	}
 
 	/**
 	 * @param int      $id

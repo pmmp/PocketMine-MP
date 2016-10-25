@@ -1224,7 +1224,7 @@ class Level implements ChunkManager, Metadatable{
 		$level = 0;
 		if($chunk !== null){
 			$level = $chunk->getBlockSkyLight($pos->x & 0x0f, $pos->y & Level::Y_MASK, $pos->z & 0x0f);
-			//do not decrease skylightlvl over day. MCPC and MCPE don't do this either.
+			//Do not decrease skylightlvl over day. MCPC and MCPE don't do this either.
 			if($level < 15){
 				$level = max($chunk->getBlockLight($pos->x & 0x0f, $pos->y & Level::Y_MASK, $pos->z & 0x0f));
 			}
@@ -1279,31 +1279,31 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 
-	//NO CALCULATION FROM LIGHT COMING FROM DOWN
-	//SkyBlockLight SPECIAL blocks:
-	//WATER,ICE => -3
-	//solid => -INF
-	//transparent => -0 (this includes Lava!) [WHY]
 	/**
-	 * Calculates the sky light level for $x $y $z. (TODO::SURROUNDINGBLOCKS)
+	 * Calculates the sky light level for $x $y $z.
 	*/
 	public function updateBlockSkyLight($x, $y, $z){
 		$chunk = $this->getChunk($x >> 4, $z >> 4, true);
 		
-		for($i = $y; $i => MAX_WORLD_HEIGHT; $i++){
-			if(Level::lightResistance($chunk->getBlockId($x & 0x0f, ($y+$i) & 0x7f, $z & 0x0f)) == 0){
+		$directSkyLight = 15;
+		for($i = $y; $i => self::MAX_WORLD_HEIGHT; $i++){
+			$lightResistance = Block::getSkyLightResistance($chunk->getBlockId($x & 0x0f, ($y+$i) & 0x7f, $z & 0x0f));
+			$directSkyLight - $lighResistance;
+			if($directSkyLight <= 0){ //Skylight is 0 from above
 				$directSkyLight = false;
+				break;
 			}
 		}
-		if($directSkyLight && !$this->findLightWay($x, $y, $z)){
+		if($directSkyLight === 15){ //No need to continue calculation, we already have full skylight from above!
 			$this->setBlockSkyLightAt($x, $y, $z, 15);
-			return;
 		}
-		$this->findLightWay($x, $y, $z)
-	}
-	
-	public static function lightResistance($blockID){
-		
+		if($directSkyLight == false && $lightWays = $this->findLightWay($x, $y, $z) === false){ //No skylight at all (nothing from above && nothing from below)
+			$this->setBlockSkyLightAt($x, $y, $z, 0);
+		}else{
+			foreach($lightWays as $lightWay){
+				if(isDirectLight)
+			}
+		}
 	}
 	
 	private function findLightWay($x, $y, $z){
@@ -1311,8 +1311,8 @@ class Level implements ChunkManager, Metadatable{
 		$vec3 = new Vector3($x, $y, $z);
 		for($i = Vector3::SIDE_NORTH; $i <= Vector3::SIDE_EAST; $i++){
 			$newVec3 = $vec3->getSide($i);
-			if(self::lightResistance($this->getBlockIdAt($newVec3->x, $newVec3->y, $newVec3->z) > 0){
-				$lightWays[$i] =
+			if(Block::getSkyLightResistance($this->getBlockIdAt($newVec3->x, $newVec3->y, $newVec3->z) > 0){
+				$lightWays[$i] = [$newVec3->x, $newVec3->y, $newVec3->z];
 			}
 		}
 		return $lightWays === [] ? false : $lightWays;
