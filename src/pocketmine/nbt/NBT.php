@@ -427,7 +427,7 @@ class NBT{
 			if($c === ":"){
 				++$offset;
 				break;
-			}elseif($c !== " " and $c !== "\r" and $c !== "\n" and $c !== "\t"){
+			}elseif($c !== " " and $c !== "\r" and $c !== "\n" and $c !== "\t" and $c !== "\""){
 				$key .= $c;
 			}
 		}
