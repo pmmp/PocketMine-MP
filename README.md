@@ -18,7 +18,7 @@
 
 __PocketMine-MP is a free, open-source software that creates Minecraft: Pocket Edition servers and allows extending its functionalities__
 
-### [Homepage](http://www.pocketmine.net/)
+### [Homepage](https://pmmp.gq/)
 
 ### [Forums](http://forums.pocketmine.net/)
 
