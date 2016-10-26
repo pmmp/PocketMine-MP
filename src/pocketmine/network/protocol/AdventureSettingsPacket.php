@@ -27,6 +27,12 @@ namespace pocketmine\network\protocol;
 class AdventureSettingsPacket extends DataPacket{
 	const NETWORK_ID = Info::ADVENTURE_SETTINGS_PACKET;
 
+	const PERMISSION_NORMAL = 0;
+	const PERMISSION_OPERATOR = 1;
+	const PERMISSION_HOST = 2;
+	const PERMISSION_AUTOMATION = 3;
+	const PERMISSION_ADMIN = 4;
+
 	public $worldImmutable;
 	public $noPvp;
 	public $noPvm;
@@ -85,7 +91,7 @@ class AdventureSettingsPacket extends DataPacket{
 		$this->flags |= ((int) $this->isFlying)    << 9;
 
 		$this->putUnsignedVarInt($this->flags);
-		$this->putUnsignedVarInt($this->userPermission); //TODO: verify this
+		$this->putUnsignedVarInt($this->userPermission);
 	}
 
 }
