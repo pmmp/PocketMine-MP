@@ -33,6 +33,7 @@ class TextPacket extends DataPacket{
 	const TYPE_POPUP = 3;
 	const TYPE_TIP = 4;
 	const TYPE_SYSTEM = 5;
+	const TYPE_WHISPER = 6;
 
 	public $type;
 	public $source;
