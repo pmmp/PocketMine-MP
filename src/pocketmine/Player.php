@@ -2323,123 +2323,120 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$target = $this->level->getEntity($packet->target);
 
 				$cancelled = false;
-
-				if($packet->action !== InteractPacket::ACTION_LEFT_CLICK){
-					// TODO handle
-					break;
-				}
-
-				if(
-					$target instanceof Player and
-					$this->server->getConfigBoolean("pvp", true) === false
-				){
-					$cancelled = true;
-				}
-
-				if($target instanceof Entity and $this->getGamemode() !== Player::VIEW and $this->isAlive() and $target->isAlive()){
-					if($target instanceof DroppedItem or $target instanceof Arrow){
-						$this->kick("Attempting to attack an invalid entity");
-						$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidEntity", [$this->getName()]));
-						break;
-					}
-
-					$item = $this->inventory->getItemInHand();
-					$damageTable = [
-						Item::WOODEN_SWORD => 4,
-						Item::GOLD_SWORD => 4,
-						Item::STONE_SWORD => 5,
-						Item::IRON_SWORD => 6,
-						Item::DIAMOND_SWORD => 7,
-
-						Item::WOODEN_AXE => 3,
-						Item::GOLD_AXE => 3,
-						Item::STONE_AXE => 3,
-						Item::IRON_AXE => 5,
-						Item::DIAMOND_AXE => 6,
-
-						Item::WOODEN_PICKAXE => 2,
-						Item::GOLD_PICKAXE => 2,
-						Item::STONE_PICKAXE => 3,
-						Item::IRON_PICKAXE => 4,
-						Item::DIAMOND_PICKAXE => 5,
-
-						Item::WOODEN_SHOVEL => 1,
-						Item::GOLD_SHOVEL => 1,
-						Item::STONE_SHOVEL => 2,
-						Item::IRON_SHOVEL => 3,
-						Item::DIAMOND_SHOVEL => 4,
-					];
-
-					$damage = [
-						EntityDamageEvent::MODIFIER_BASE => isset($damageTable[$item->getId()]) ? $damageTable[$item->getId()] : 1,
-					];
-
-					if(!$this->canInteract($target, 8)){
-						$cancelled = true;
-					}elseif($target instanceof Player){
-						if(($target->getGamemode() & 0x01) > 0){
-							break;
-						}elseif($this->server->getConfigBoolean("pvp") !== true or $this->server->getDifficulty() === 0){
+				switch($packet->action){
+					case InteractPacket::ACTION_LEFT_CLICK: //Attack
+						if($target instanceof Player and $this->server->getConfigBoolean("pvp", true) === false){
 							$cancelled = true;
 						}
 
-						$armorValues = [
-							Item::LEATHER_CAP => 1,
-							Item::LEATHER_TUNIC => 3,
-							Item::LEATHER_PANTS => 2,
-							Item::LEATHER_BOOTS => 1,
-							Item::CHAIN_HELMET => 1,
-							Item::CHAIN_CHESTPLATE => 5,
-							Item::CHAIN_LEGGINGS => 4,
-							Item::CHAIN_BOOTS => 1,
-							Item::GOLD_HELMET => 1,
-							Item::GOLD_CHESTPLATE => 5,
-							Item::GOLD_LEGGINGS => 3,
-							Item::GOLD_BOOTS => 1,
-							Item::IRON_HELMET => 2,
-							Item::IRON_CHESTPLATE => 6,
-							Item::IRON_LEGGINGS => 5,
-							Item::IRON_BOOTS => 2,
-							Item::DIAMOND_HELMET => 3,
-							Item::DIAMOND_CHESTPLATE => 8,
-							Item::DIAMOND_LEGGINGS => 6,
-							Item::DIAMOND_BOOTS => 3,
-						];
-						$points = 0;
-						foreach($target->getInventory()->getArmorContents() as $index => $i){
-							if(isset($armorValues[$i->getId()])){
-								$points += $armorValues[$i->getId()];
+						if($target instanceof Entity and $this->getGamemode() !== Player::VIEW and $this->isAlive() and $target->isAlive()){
+							if($target instanceof DroppedItem or $target instanceof Arrow){
+								$this->kick("Attempting to attack an invalid entity");
+								$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidEntity", [$this->getName()]));
+								break;
 							}
-						}
 
-						$damage[EntityDamageEvent::MODIFIER_ARMOR] = -floor($damage[EntityDamageEvent::MODIFIER_BASE] * $points * 0.04);
-					}
+							$item = $this->inventory->getItemInHand();
+							$damageTable = [
+								Item::WOODEN_SWORD => 4,
+								Item::GOLD_SWORD => 4,
+								Item::STONE_SWORD => 5,
+								Item::IRON_SWORD => 6,
+								Item::DIAMOND_SWORD => 7,
 
-					$ev = new EntityDamageByEntityEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $damage);
-					if($cancelled){
-						$ev->setCancelled();
-					}
+								Item::WOODEN_AXE => 3,
+								Item::GOLD_AXE => 3,
+								Item::STONE_AXE => 3,
+								Item::IRON_AXE => 5,
+								Item::DIAMOND_AXE => 6,
 
-					$target->attack($ev->getFinalDamage(), $ev);
+								Item::WOODEN_PICKAXE => 2,
+								Item::GOLD_PICKAXE => 2,
+								Item::STONE_PICKAXE => 3,
+								Item::IRON_PICKAXE => 4,
+								Item::DIAMOND_PICKAXE => 5,
 
-					if($ev->isCancelled()){
-						if($item->isTool() and $this->isSurvival()){
-							$this->inventory->sendContents($this);
+								Item::WOODEN_SHOVEL => 1,
+								Item::GOLD_SHOVEL => 1,
+								Item::STONE_SHOVEL => 2,
+								Item::IRON_SHOVEL => 3,
+								Item::DIAMOND_SHOVEL => 4,
+							];
+
+							$damage = [
+								EntityDamageEvent::MODIFIER_BASE => isset($damageTable[$item->getId()]) ? $damageTable[$item->getId()] : 1,
+							];
+
+							if(!$this->canInteract($target, 8)){
+								$cancelled = true;
+							}elseif($target instanceof Player){
+								if(($target->getGamemode() & 0x01) > 0){
+									break;
+								}elseif($this->server->getConfigBoolean("pvp") !== true or $this->server->getDifficulty() === 0){
+									$cancelled = true;
+								}
+
+								$armorValues = [
+									Item::LEATHER_CAP => 1,
+									Item::LEATHER_TUNIC => 3,
+									Item::LEATHER_PANTS => 2,
+									Item::LEATHER_BOOTS => 1,
+									Item::CHAIN_HELMET => 1,
+									Item::CHAIN_CHESTPLATE => 5,
+									Item::CHAIN_LEGGINGS => 4,
+									Item::CHAIN_BOOTS => 1,
+									Item::GOLD_HELMET => 1,
+									Item::GOLD_CHESTPLATE => 5,
+									Item::GOLD_LEGGINGS => 3,
+									Item::GOLD_BOOTS => 1,
+									Item::IRON_HELMET => 2,
+									Item::IRON_CHESTPLATE => 6,
+									Item::IRON_LEGGINGS => 5,
+									Item::IRON_BOOTS => 2,
+									Item::DIAMOND_HELMET => 3,
+									Item::DIAMOND_CHESTPLATE => 8,
+									Item::DIAMOND_LEGGINGS => 6,
+									Item::DIAMOND_BOOTS => 3,
+								];
+								$points = 0;
+								foreach($target->getInventory()->getArmorContents() as $index => $i){
+									if(isset($armorValues[$i->getId()])){
+										$points += $armorValues[$i->getId()];
+									}
+								}
+
+								$damage[EntityDamageEvent::MODIFIER_ARMOR] = -floor($damage[EntityDamageEvent::MODIFIER_BASE] * $points * 0.04);
+							}
+
+							$ev = new EntityDamageByEntityEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $damage);
+							if($cancelled){
+								$ev->setCancelled();
+							}
+
+							$target->attack($ev->getFinalDamage(), $ev);
+
+							if($ev->isCancelled()){
+								if($item->isTool() and $this->isSurvival()){
+									$this->inventory->sendContents($this);
+								}
+								break;
+							}
+
+							if($this->isSurvival()){
+								if($item->isTool()){
+									if($item->useOn($target) and $item->getDamage() >= $item->getMaxDurability()){
+										$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 1));
+									}else{
+										$this->inventory->setItemInHand($item);
+									}
+								}
+
+								$this->exhaust(0.3, PlayerExhaustEvent::CAUSE_ATTACK);
+							}
 						}
 						break;
-					}
-
-					if($this->isSurvival()){
-						if($item->isTool()){
-							if($item->useOn($target) and $item->getDamage() >= $item->getMaxDurability()){
-								$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 1));
-							}else{
-								$this->inventory->setItemInHand($item);
-							}
-						}
-
-						$this->exhaust(0.3, PlayerExhaustEvent::CAUSE_ATTACK);
-					}
+					default:
+						break; //TODO: handle other actions
 				}
 
 				break;
