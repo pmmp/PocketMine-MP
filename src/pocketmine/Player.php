@@ -2508,14 +2508,19 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					break;
 				}
 				$this->craftingType = 0;
-				Timings::$playerCommandTimer->startTiming();
 				$commandText = $packet->command;
 				if($packet->args !== null){
 					foreach($packet->args as $arg){ //command ordering will be an issue
 						$commandText .= " " . $arg;
 					}
 				}
-				$this->server->dispatchCommand($this, $commandText);
+				$this->server->getPluginManager()->callEvent($ev = new PlayerCommandPreprocessEvent($this, $commandText));
+				if($ev->isCancelled()){
+					break;
+				}
+
+				Timings::$playerCommandTimer->startTiming();
+				$this->server->dispatchCommand($ev->getPlayer(), $ev->getMessage());
 				Timings::$playerCommandTimer->stopTiming();
 				break;
 			case ProtocolInfo::TEXT_PACKET:
