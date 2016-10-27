@@ -84,15 +84,15 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_AIR = 7; //short
 	const DATA_POTION_COLOR = 8; //int (ARGB!)
 	const DATA_POTION_AMBIENT = 9; //byte
-	/* 8 (int)
-	 * 9 (int)
-	 * 27 (byte) player-specific flags
+
+	/* 27 (byte) player-specific flags
 	 * 28 (int) player "index"? 
 	 * 29 (block coords) bed position */
 	const DATA_LEAD_HOLDER_EID = 38; //long
 	const DATA_SCALE = 39; //float
-	const DATA_BUTTON_TEXT = 40; //string
+	const DATA_INTERACTIVE_TAG = 40; //string (button text)
 	/* 41 (long) */
+	const DATA_URL_TAG = 43; //string
 	const DATA_MAX_AIR = 44; //short
 	const DATA_MARK_VARIANT = 45; //int
 	/* 46 (byte)
@@ -165,7 +165,6 @@ abstract class Entity extends Location implements Metadatable{
 		self::DATA_AIR => [self::DATA_TYPE_SHORT, 400],
 		self::DATA_MAX_AIR => [self::DATA_TYPE_SHORT, 400],
 		self::DATA_NAMETAG => [self::DATA_TYPE_STRING, ""],
-		//self::DATA_SILENT => [self::DATA_TYPE_BYTE, 0],
 		self::DATA_LEAD_HOLDER_EID => [self::DATA_TYPE_LONG, -1],
 		self::DATA_SCALE => [self::DATA_TYPE_FLOAT, 1],
 	];
