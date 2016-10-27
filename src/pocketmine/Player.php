@@ -2324,7 +2324,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 				$cancelled = false;
 
-				if($packet->action === InteractPacket::ACTION_RIGHT_CLICK){
+				if($packet->action !== InteractPacket::ACTION_LEFT_CLICK){
 					// TODO handle
 					break;
 				}
