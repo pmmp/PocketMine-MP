@@ -166,6 +166,9 @@ class Item implements ItemIds{
 			self::$list[self::FISHING_ROD] = FishingRod::class;
 			self::$list[self::CLOCK] = Clock::class;
 			self::$list[self::GLOWSTONE_DUST] = GlowstoneDust::class;
+
+			self::$list[self::PRISMARINE_CRYSTALS] = PrismarineCrystals::class;
+
 			self::$list[self::RAW_FISH] = Fish::class;
 			self::$list[self::COOKED_FISH] = CookedFish::class;
 			self::$list[self::DYE] = Dye::class;

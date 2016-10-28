@@ -1,5 +1,5 @@
 {
-	
+
 	  "Cobblestone":{"ID":4,"Damage":0},
 	  "Stone Bricks":{"ID":98,"Damage":0},
 	  "Mossy Stone Bricks":{"ID":98,"Damage":1},
@@ -84,7 +84,7 @@
 	  "Dark Oak Wooden Slab":{"ID":158,"Damage":5},
 	  "Bricks Slab":{"ID":44,"Damage":4},
 	  "Sandstone Slab":{"ID":44,"Damage":1},
-	  "Red Sandstone Slab":{"ID":182,"Damage":0},  
+	  "Red Sandstone Slab":{"ID":182,"Damage":0},
 	  "Stone Brick Slab":{"ID":44,"Damage":5},
 	  "Quartz Slab":{"ID":44,"Damage":6},
 	  "Nether Brick Slab":{"ID":44,"Damage":7},
@@ -118,6 +118,9 @@
 	  "Snow Layer":{"ID":78,"Damage":0},
 	  "Glass":{"ID":20,"Damage":0},
 	  "Glowstone":{"ID":89,"Damage":0},
+
+		"Sea lantern":{"ID":169,"Damage":0},
+
 	  "Vines":{"ID":106,"Damage":0},
 	  "Ladder":{"ID":65,"Damage":0},
 	  "Sponge":{"ID":19,"Damage":0},
@@ -380,7 +383,7 @@
 	  "Observer":{"ID":251,"Damage":0},
 	  "Hopper":{"ID":410,"Damage":0},
 	  "Snowball":{"ID":332,"Damage":0},
-	  
+
 	  "Coal":{"ID":263,"Damage":0},
 	  "Charcoal":{"ID":263,"Damage":1},
 	  "Diamond":{"ID":264,"Damage":0},
@@ -417,7 +420,7 @@
 	  "Arrow of Slowness (0:11)":{"ID":262,"Damage":18},
 	  "Arrow of Slowness (0:30)":{"ID":262,"Damage":19},
 	  "Arrow of Water Breathing (0:22)":{"ID":262,"Damage":20},
-	  "Arrow of Water Breathing (1:00)":{"ID":262,"Damage":21},	  
+	  "Arrow of Water Breathing (1:00)":{"ID":262,"Damage":21},
 	  "Arrow of Healing":{"ID":262,"Damage":22},
 	  "Arrow of Healing II":{"ID":262,"Damage":23},
 	  "Arrow of Harming":{"ID":262,"Damage":24},
@@ -432,7 +435,7 @@
 	  "Arrow of Strength (1:00)":{"ID":262,"Damage":33},
 	  "Arrow of Strength II (0:11)":{"ID":262,"Damage":34},
 	  "Arrow of Weakness (0:11)":{"ID":262,"Damage":35},
-	  "Arrow of Weakness (0:30)":{"ID":262,"Damage":36},	  
+	  "Arrow of Weakness (0:30)":{"ID":262,"Damage":36},
 	  "Wheat Seeds":{"ID":295,"Damage":0},
 	  "Pumpkin Seeds":{"ID":361,"Damage":0},
 	  "Melon Seeds":{"ID":362,"Damage":0},
@@ -455,7 +458,7 @@
 	  "Raw Chicken":{"ID":365,"Damage":0},
 	  "Cooked Chicken":{"ID":366,"Damage":0},
 	  "Raw Mutton":{"ID":423,"Damage":0},
-	  "Cooked Mutton":{"ID":424,"Damage":0},	  
+	  "Cooked Mutton":{"ID":424,"Damage":0},
 	  "Raw Beef":{"ID":363,"Damage":0},
 	  "Steak":{"ID":364,"Damage":0},
 	  "Melon":{"ID":360,"Damage":0},
@@ -475,17 +478,20 @@
 	  "Golden Carrot":{"ID":396,"Damage":0},
 	  "Glistering Melon":{"ID":382,"Damage":0},
 	  "Rabbit's Foot":{"ID":414,"Damage":0},
-	  "Ghast Tear":{"ID":370,"Damage":0},	  
+	  "Ghast Tear":{"ID":370,"Damage":0},
 	  "Slimeball":{"ID":341,"Damage":0},
 	  "Blaze Powder":{"ID":377,"Damage":0},
 	  "Nether Wart":{"ID":372,"Damage":0},
 	  "Gunpowder":{"ID":289,"Damage":0},
 	  "Glowstone Dust":{"ID":348,"Damage":0},
+
+		"Prismarine Crystals":{"ID":409,"Damage":0},
+
 	  "Spider Eye":{"ID":375,"Damage":0},
 	  "Fermented Spider Eye":{"ID":376,"Damage":0},
 	  "Carrot on a Stick":{"ID":398,"Damage":0},
 	  "Bottle o' Enchanting":{"ID":384,"Damage":0},
-	  
+
 	  "Inc Sac":{"ID":351,"Damage":0},
 	  "Grey Dye":{"ID":351,"Damage":8},
 	  "Light Grey Dye":{"ID":351,"Damage":7},
@@ -502,7 +508,7 @@
 	  "Lime Dye":{"ID":351,"Damage":10},
 	  "Cactus Green":{"ID":351,"Damage":2},
 	  "Cyan Dye":{"ID":351,"Damage":6},
-	  
+
 	  "Glass Bottle":{"ID":374,"Damage":0},
 	  "Water Bottle":{"ID":373,"Damage":0},
 	  "Mundane Potion":{"ID":373,"Damage":1},
@@ -524,7 +530,7 @@
 	  "Potion of Slowness (1:30)":{"ID":373,"Damage":17},
 	  "Potion of Slowness (4:00)":{"ID":373,"Damage":18},
 	  "Potion of Water Breathing (3:00)":{"ID":373,"Damage":19},
-	  "Potion of Water Breathing (8:00)":{"ID":373,"Damage":20},	  
+	  "Potion of Water Breathing (8:00)":{"ID":373,"Damage":20},
 	  "Potion of Healing":{"ID":373,"Damage":21},
 	  "Potion of Healing II":{"ID":373,"Damage":22},
 	  "Potion of Harming":{"ID":373,"Damage":23},
@@ -540,7 +546,7 @@
 	  "Potion of Strength II (1:30)":{"ID":373,"Damage":33},
 	  "Potion of Weakness (1:30)":{"ID":373,"Damage":34},
 	  "Potion of Weakness (4:00)":{"ID":373,"Damage":35},
-	  
+
 	  "Splash Potion of Night Vision (3:00)":{"ID":438,"Damage":5},
 	  "Splash Potion of Night Vision (8:00)":{"ID":438,"Damage":6},
 	  "Splash Potion of Invisibility (3:00)":{"ID":438,"Damage":7},
@@ -556,7 +562,7 @@
 	  "Splash Potion of Slowness (1:30)":{"ID":438,"Damage":17},
 	  "Splash Potion of Slowness (4:00)":{"ID":438,"Damage":18},
 	  "Splash Potion of Water Breathing (3:00)":{"ID":438,"Damage":19},
-	  "Splash Potion of Water Breathing (8:00)":{"ID":438,"Damage":20},	  
+	  "Splash Potion of Water Breathing (8:00)":{"ID":438,"Damage":20},
 	  "Splash Potion of Healing":{"ID":438,"Damage":21},
 	  "Splash Potion of Healing II":{"ID":438,"Damage":22},
 	  "Splash Potion of Harming":{"ID":438,"Damage":23},

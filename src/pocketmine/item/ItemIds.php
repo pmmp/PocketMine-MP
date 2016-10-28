@@ -177,6 +177,9 @@ interface ItemIds extends BlockIds{
 	const NETHER_QUARTZ = 406;
 	const MINECART_WITH_TNT = 407;
 	const MINECART_WITH_HOPPER = 408, HOPPER = 410;
+
+	const PRISMARINE_CRYSTALS = 409;
+
 	const RAW_RABBIT = 411;
 	const COOKED_RABBIT = 412;
 	const RABBIT_STEW = 413;

@@ -113,6 +113,9 @@ interface BlockIds{
 	const NETHERRACK = 87;
 	const SOUL_SAND = 88;
 	const GLOWSTONE = 89, GLOWSTONE_BLOCK = 89;
+
+	const SEA_LANTERN = 169;
+
 	const PORTAL_BLOCK = 90, PORTAL = 90;
 	const JACK_O_LANTERN = 91, LIT_PUMPKIN = 91;
 	const CAKE_BLOCK = 92;
