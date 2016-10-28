@@ -77,7 +77,7 @@ class CraftingManager{
 				case 2:
 					$result = $recipe["Result"];
 					$resultItem = Item::get($result["ID"], $result["Damage"], $result["Count"]);
-					$this->registerRecipe(new FurnaceRecipe($resultItem, Item::get($recipe["Ingredients"], 0, 1)));
+					$this->registerRecipe(new FurnaceRecipe($resultItem, Item::get($recipe["Ingredients"], null, 1)));
 					break;
 				case 3:
 					$result = $recipe["Result"];
