@@ -1180,7 +1180,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	/**
-	 * WARNING: This method does NOT return literal gamemode is creative, it will also return true for creative mode players.
+	 * WARNING: This method does NOT return literal gamemode is creative, it will also return true for spectator mode players.
 	 */
 	public function isCreative() : bool{
 		return ($this->gamemode & 0x01) === 1;
