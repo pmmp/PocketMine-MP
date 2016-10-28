@@ -90,7 +90,7 @@ class CraftingDataPacket extends DataPacket{
 	}
 
 	private static function writeFurnaceRecipe(FurnaceRecipe $recipe, BinaryStream $stream){
-		if($recipe->getInput()->getDamage() !== 0){ //Data recipe
+		if($recipe->getInput()->getDamage() !== null){ //Data recipe
 			$stream->putVarInt($recipe->getInput()->getDamage());
 			$stream->putVarInt($recipe->getInput()->getId());
 			$stream->putSlot($recipe->getResult());

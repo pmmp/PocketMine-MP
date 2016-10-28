@@ -233,7 +233,7 @@ class BinaryStream extends \stdClass{
 		}
 
 		$this->putVarInt($item->getId());
-		$auxValue = ($item->getDamage() << 8) | $item->getCount();
+		$auxValue = (($item->getDamage() ?? -1) << 8) | $item->getCount();
 		$this->putVarInt($auxValue);
 		$nbt = $item->getCompoundTag();
 		$this->putLShort(strlen($nbt));
