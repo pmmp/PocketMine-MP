@@ -2556,6 +2556,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					break;
 				}
 
+				/**
+				 * @var int  $i
+				 * @var Item $item
+				 */
 				foreach($packet->input as $i => $item){
 					if($item->getDamage() === -1 or $item->getDamage() === 0xffff){
 						$item->setDamage(null);
@@ -2628,8 +2632,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 				foreach($ingredients as $ingredient){
 					$slot = -1;
-					foreach($this->inventory->getContents() as $index => $i){
-						if($ingredient->getId() !== 0 and $ingredient->deepEquals($i, $ingredient->getDamage() !== null) and ($i->getCount() - $used[$index]) >= 1){
+					foreach($this->inventory->getContents() as $index => $item){
+						if($ingredient->getId() !== 0 and $ingredient->deepEquals($item, $ingredient->getDamage() !== null) and ($item->getCount() - $used[$index]) >= 1){
 							$slot = $index;
 							$used[$index]++;
 							break;
@@ -3028,6 +3032,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	/**
 	 * Handles player data saving
+	 *
+	 * @param bool $async
 	 */
 	public function save($async = false){
 		if($this->closed){

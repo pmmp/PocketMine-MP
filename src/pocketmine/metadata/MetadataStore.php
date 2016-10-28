@@ -28,7 +28,7 @@ use pocketmine\plugin\Plugin;
 use pocketmine\utils\PluginException;
 
 abstract class MetadataStore{
-	/** @var \WeakMap[] */
+	/** @var \SplObjectStorage[]|MetadataValue[][] */
 	private $metadataMap;
 
 	/**
@@ -49,7 +49,7 @@ abstract class MetadataStore{
 		$key = $this->disambiguate($subject, $metadataKey);
 		if(!isset($this->metadataMap[$key])){
 			//$entry = new \WeakMap();
-			$this->metadataMap[$key] = new \SplObjectStorage();//$entry;
+			$this->metadataMap[$key] = $entry = new \SplObjectStorage();//$entry;
 		}else{
 			$entry = $this->metadataMap[$key];
 		}
