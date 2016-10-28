@@ -2514,13 +2514,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						$commandText .= " " . $arg;
 					}
 				}
-				$this->server->getPluginManager()->callEvent($ev = new PlayerCommandPreprocessEvent($this, $commandText));
+				$this->server->getPluginManager()->callEvent($ev = new PlayerCommandPreprocessEvent($this, "/" . $commandText));
 				if($ev->isCancelled()){
 					break;
 				}
 
 				Timings::$playerCommandTimer->startTiming();
-				$this->server->dispatchCommand($ev->getPlayer(), $ev->getMessage());
+				$this->server->dispatchCommand($ev->getPlayer(), substr($ev->getMessage(), 1));
 				Timings::$playerCommandTimer->stopTiming();
 				break;
 			case ProtocolInfo::TEXT_PACKET:
