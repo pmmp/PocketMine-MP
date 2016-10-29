@@ -42,7 +42,7 @@ class AddEntityPacket extends DataPacket{
 	public $yaw;
 	public $pitch;
 	public $modifiers;
-	public $metadata;
+	public $metadata = [];
 	public $links = [];
 
 	public function decode(){
