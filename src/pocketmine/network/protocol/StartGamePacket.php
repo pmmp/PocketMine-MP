@@ -47,7 +47,7 @@ class StartGamePacket extends DataPacket{
 	public $lightningLevel;
 	public $commandsEnabled;
 	public $isTexturePacksRequired = 0;
-	public $unknown;
+	public $levelId = ""; //base64 string, usually the same as world folder name in vanilla
 	public $worldName;
 
 	public function decode(){
@@ -74,7 +74,7 @@ class StartGamePacket extends DataPacket{
 		$this->putLFloat($this->lightningLevel);
 		$this->putBool($this->commandsEnabled);
 		$this->putBool($this->isTexturePacksRequired);
-		$this->putString($this->unknown);
+		$this->putString($this->levelId);
 		$this->putString($this->worldName);
 	}
 

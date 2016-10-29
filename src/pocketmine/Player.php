@@ -1702,7 +1702,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->rainLevel = 0; //TODO: implement these properly
 		$pk->lightningLevel = 0;
 		$pk->commandsEnabled = 1;
-		$pk->unknown = "UNKNOWN";
+		$pk->levelId = "";
 		$pk->worldName = $this->server->getMotd();
 		$this->dataPacket($pk);
 
