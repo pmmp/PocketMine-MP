@@ -396,7 +396,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function setImmobile($value = true){
-		return $this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_IMMOBILE, $value);
+		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_IMMOBILE, $value);
 	}
 
 	/**
