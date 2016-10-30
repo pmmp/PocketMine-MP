@@ -31,12 +31,11 @@ class StringTag extends NamedTag{
 		return NBT::TAG_String;
 	}
 
-	public function read(NBT $nbt){
-		$this->value = $nbt->get($nbt->getShort());
+	public function read(NBT $nbt, bool $network = false){
+		$this->value = $nbt->getString($network);
 	}
 
-	public function write(NBT $nbt){
-		$nbt->putShort(strlen($this->value));
-		$nbt->put($this->value);
+	public function write(NBT $nbt, bool $network = false){
+		$nbt->putString($this->value, $network);
 	}
 }

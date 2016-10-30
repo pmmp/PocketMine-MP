@@ -1567,10 +1567,10 @@ class Server{
 
 			InventoryType::init();
 			Block::init();
+			Enchantment::init();
 			Item::init();
 			Biome::init();
 			Effect::init();
-			Enchantment::init();
 			Attribute::init();
 			$this->craftingManager = new CraftingManager();
 
@@ -1798,9 +1798,9 @@ class Server{
 				if(!$p->isEncoded){
 					$p->encode();
 				}
-				$str .= Binary::writeInt(strlen($p->buffer)) . $p->buffer;
+				$str .= Binary::writeUnsignedVarInt(strlen($p->buffer)) . $p->buffer;
 			}else{
-				$str .= Binary::writeInt(strlen($p)) . $p;
+				$str .= Binary::writeUnsignedVarInt(strlen($p)) . $p;
 			}
 		}
 
@@ -1889,7 +1889,7 @@ class Server{
 		}
 
 
-		$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.notFound"));
+		$sender->sendMessage(new TranslationContainer(TextFormat::GOLD . "%commands.generic.notFound"));
 
 		return false;
 	}
@@ -2219,6 +2219,9 @@ class Server{
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_ADD;
 		foreach($this->playerList as $player){
+			if($p === $player){
+				continue; //fixes duplicates
+			}
 			$pk->entries[] = [$player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkinId(), $player->getSkinData()];
 		}
 

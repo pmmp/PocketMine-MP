@@ -31,14 +31,14 @@ class AnimatePacket extends DataPacket{
 	public $eid;
 
 	public function decode(){
-		$this->action = $this->getByte();
-		$this->eid = $this->getLong();
+		$this->action = $this->getVarInt();
+		$this->eid = $this->getEntityId();
 	}
 
 	public function encode(){
 		$this->reset();
-		$this->putByte($this->action);
-		$this->putLong($this->eid);
+		$this->putVarInt($this->action);
+		$this->putEntityId($this->eid);
 	}
 
 }

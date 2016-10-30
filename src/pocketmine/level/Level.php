@@ -723,9 +723,14 @@ class Level implements ChunkManager, Metadatable{
 
 		foreach($this->motionToSend as $index => $entry){
 			Level::getXZ($index, $chunkX, $chunkZ);
-			$pk = new SetEntityMotionPacket();
-			$pk->entities = $entry;
-			$this->addChunkPacket($chunkX, $chunkZ, $pk);
+			foreach($entry as $entity){
+				$pk = new SetEntityMotionPacket();
+				$pk->eid = $entity[0];
+				$pk->motionX = $entity[1];
+				$pk->motionY = $entity[2];
+				$pk->motionZ = $entity[3];
+				$this->addChunkPacket($chunkX, $chunkZ, $pk);
+			}
 		}
 		$this->motionToSend = [];
 

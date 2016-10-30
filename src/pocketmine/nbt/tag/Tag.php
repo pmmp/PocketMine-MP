@@ -40,9 +40,9 @@ abstract class Tag extends \stdClass{
 		$this->value = $value;
 	}
 
-	abstract public function write(NBT $nbt);
+	abstract public function write(NBT $nbt, bool $network = false);
 
-	abstract public function read(NBT $nbt);
+	abstract public function read(NBT $nbt, bool $network = false);
 
 	public function __toString(){
 		return (string) $this->value;
