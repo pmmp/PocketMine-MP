@@ -86,6 +86,7 @@ use pocketmine\level\Level;
 use pocketmine\level\Location;
 use pocketmine\level\Position;
 use pocketmine\level\sound\LaunchSound;
+use pocketmine\level\WeakPosition;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
@@ -228,7 +229,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	protected $viewDistance;
 	protected $chunksPerTick;
 	protected $spawnThreshold;
-	/** @var null|Position */
+	/** @var null|WeakPosition */
 	private $spawnPosition = null;
 
 	protected $inAirTicks = 0;
@@ -1038,7 +1039,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}else{
 			$level = $pos->getLevel();
 		}
-		$this->spawnPosition = new Position($pos->x, $pos->y, $pos->z, $level);
+		$this->spawnPosition = new WeakPosition($pos->x, $pos->y, $pos->z, $level);
 		$pk = new SetSpawnPositionPacket();
 		$pk->x = (int) $this->spawnPosition->x;
 		$pk->y = (int) $this->spawnPosition->y;
@@ -1678,7 +1679,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->dataPacket(new ResourcePacksInfoPacket());
 
 		if($this->spawnPosition === null and isset($this->namedtag->SpawnLevel) and ($level = $this->server->getLevelByName($this->namedtag["SpawnLevel"])) instanceof Level){
-			$this->spawnPosition = new Position($this->namedtag["SpawnX"], $this->namedtag["SpawnY"], $this->namedtag["SpawnZ"], $level);
+			$this->spawnPosition = new WeakPosition($this->namedtag["SpawnX"], $this->namedtag["SpawnY"], $this->namedtag["SpawnZ"], $level);
 		}
 
 		$spawnPosition = $this->getSpawn();
@@ -3081,7 +3082,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		parent::saveNBT();
 		if($this->level instanceof Level){
 			$this->namedtag->Level = new StringTag("Level", $this->level->getName());
-			if($this->spawnPosition instanceof Position and $this->spawnPosition->getLevel() instanceof Level){
+			if($this->spawnPosition instanceof WeakPosition and $this->spawnPosition->isValid()){
 				$this->namedtag["SpawnLevel"] = $this->spawnPosition->getLevel()->getName();
 				$this->namedtag["SpawnX"] = (int) $this->spawnPosition->x;
 				$this->namedtag["SpawnY"] = (int) $this->spawnPosition->y;
