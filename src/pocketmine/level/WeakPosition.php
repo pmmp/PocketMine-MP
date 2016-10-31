@@ -45,7 +45,7 @@ class WeakPosition extends Position{
 	}
 
 	/**
-	 * @return Level
+	 * @return Level|null
 	 */
 	public function getLevel(){
 		return Server::getInstance()->getLevel($this->levelId);

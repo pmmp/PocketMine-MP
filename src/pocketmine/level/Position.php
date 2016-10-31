@@ -64,7 +64,7 @@ class Position extends Vector3{
 	 * @return bool
 	 */
 	public function isValid(){
-		return $this->getLevel() !== null;
+		return $this->getLevel() instanceof Level;
 	}
 
 	/**
