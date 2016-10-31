@@ -32,7 +32,7 @@ __PocketMine-MP is a free, open-source software that creates Minecraft: Pocket E
 
 ### API Documentation
  * [Official Doxygen-generated documentation](http://docs.pocketmine.net/)
- * [Latest Doxygen generated from development](http://jenkins.pocketmine.net/job/PocketMine-MP-doc/doxygen/)
+ * [Latest Doxygen generated from development](https://jenkins.pmmp.gq/job/PocketMine-MP%20Docs/doxygen/)
 
 ### [Twitter @PocketMine](https://twitter.com/PocketMine)
 
