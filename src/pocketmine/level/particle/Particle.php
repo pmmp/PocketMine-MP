@@ -35,9 +35,9 @@ abstract class Particle extends Vector3{
 	const TYPE_FLAME = 7;
 	const TYPE_LAVA = 8;
 	const TYPE_LARGE_SMOKE = 9; //TODO: verify
-	const TYPE_REDSTONE = 10; //TODO: verify
-	const TYPE_ITEM_BREAK = 11; //TODO: verify
-	//12 unknown
+	const TYPE_REDSTONE = 10;
+	//11 is some kind of blood particle?
+	const TYPE_ITEM_BREAK = 12;
 	const TYPE_SNOWBALL_POOF = 13;
 	const TYPE_HUGE_EXPLODE = 14, TYPE_LARGE_EXPLODE = 14; //TODO: fix this properly
 	const TYPE_HUGE_EXPLODE_SEED = 15;
@@ -61,9 +61,9 @@ abstract class Particle extends Vector3{
 	const TYPE_VILLAGER_HAPPY = 33;
 	const TYPE_ENCHANTMENT_TABLE = 34;
 	const TYPE_TRACKING_EMITTER = 35; //???
-	const TYPE_NOTE = 36; //for note blocks
+	const TYPE_NOTE = 36;
 	//37 yet another SpellParticle of some description
-	const TYPE_CARROT = 38; //?????
+	const TYPE_CARROT = 38;
 
 	/**
 	 * @return DataPacket|DataPacket[]
