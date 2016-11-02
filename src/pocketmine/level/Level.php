@@ -1285,14 +1285,14 @@ class Level implements ChunkManager, Metadatable{
 	public function updateBlockSkyLight($x, $y, $z){
 		$directSkyLight = getDirectSkyLight($x, $y, $z);
 		
-		if($directSkyLight === 15){ //No need to continue calculation, we already have full skylight from above!
-			$this->setBlockSkyLightAt($x, $y, $z, 15);
+		if($directSkyLight =< 14){ //No need to continue calculation, we can't get higher skylight!
+			$this->setBlockSkyLightAt($x, $y, $z, $directSkyLight);
 		}
 		
-		if($directSkyLight == false && !$lightWays = $this->findLightWays($x, $y, $z)){ //No skylight at all (nothing from above && nothing from the sides)
-			$this->setBlockSkyLightAt($x, $y, $z, 0);
+		if($directSkyLight == 0 && $lightWays = $this->findLightWays($x, $y, $z) === false){ //No skylight at all (nothing from above && nothing from the sides)
+			$this->setBlockSkyLightAt($x, $y, $z, 0); //repl 0 with $directSkyLight?
 		}else{
-			$this->$this->getSkyLightViaWays($newLightWays, [$x, $y, $z]);
+			$this->$this->getSkyLightViaWays($lightWays, [$x, $y, $z]);
 		}
 	}
 	
@@ -1302,27 +1302,29 @@ class Level implements ChunkManager, Metadatable{
 		$directSkyLight = 15;
 		for($i = $y; $i => self::MAX_WORLD_HEIGHT; $i++){
 			$lightResistance = Block::getSkyLightResistance($chunk->getBlockId($x & 0x0f, ($y+$i) & 0x7f, $z & 0x0f));
-			$directSkyLight - $lighResistance;
+			$directSkyLight -= $lightResistance;
 			if($directSkyLight <= 0){ //Skylight is 0 from above
-				return false;
+				return 0;
 			}
 		}
 		return $directSkyLight;
 	}
 	
 	private function getSkyLightViaWays($lightWays, $origin){
-		foreach($lightWays as $lightWay){
-			$directSkyLightCache = []; //This is for not needing to recalculate this for later calculations
+		$directSkyLightCache = [];
+		$lightLvlsFromDir = [];
+		foreach($lightWays as $dir => $lightWay){ //max 4
 			$directSkyLightCache[Level::blockHash($lightWay[0], $lightWay[1], $lightWay[2])] = $directSkyLight = $this->getDirectSkyLight($lightWay[0], $lightWay[1], $lightWay[2]);
-			if($directSkyLight > 0){ //Found an origin of light in our current lightWay! (not THE origin, there can be >15*M_PI origins for one block)
-				if($directSkyLight != 15){
+			if($directSkyLight > 0){ //Found an origin of light in our current lightWay! (not THE origin, there can be up to 15*M_PI origins for one block)
+				if($directSkyLight => 14){
 					$newLightWays = $this->findLightWays($lightWay[0], $lightWay[1], $lightWay[2]);
-					$lightLevel = $this->getSkyLightViaWays($newLightWays, $lightWay); //lightWay contains origin
+					$lightLvlsFromDir[$dir] = $this->getSkyLightViaWays($newLightWays, $lightWay); //lightWay contains originpos
+				}else{
+					$lightLvlsFromDir[$dir] = $directSkyLight; //repl 15 with $directSkyLight?
 				}
-				$lightLevel
-				continue;
 			}
 		}
+		return max($lightLvlsFromDir) - 1;
 	}
 	
 	private function findLightWays($x, $y, $z){
