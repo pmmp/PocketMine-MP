@@ -1311,18 +1311,23 @@ class Level implements ChunkManager, Metadatable{
 	}
 	
 	private function getSkyLightViaWays($lightWays, $origin){
-		$directSkyLightCache = [];
+		$origins = [];
 		$lightLvlsFromDir = [];
 		foreach($lightWays as $dir => $lightWay){ //max 4
-			$directSkyLightCache[Level::blockHash($lightWay[0], $lightWay[1], $lightWay[2])] = $directSkyLight = $this->getDirectSkyLight($lightWay[0], $lightWay[1], $lightWay[2]);
+			$directSkyLight = $this->getDirectSkyLight($lightWay[0], $lightWay[1], $lightWay[2]);
 			if($directSkyLight > 0){ //Found an origin of light in our current lightWay! (not THE origin, there can be up to 15*M_PI origins for one block)
-				if($directSkyLight => 14){
-					$newLightWays = $this->findLightWays($lightWay[0], $lightWay[1], $lightWay[2]);
-					$lightLvlsFromDir[$dir] = $this->getSkyLightViaWays($newLightWays, $lightWay); //lightWay contains originpos
-				}else{
-					$lightLvlsFromDir[$dir] = $directSkyLight; //repl 15 with $directSkyLight?
+				if($directSkyLight =< 14){
+					$lightLvlsFromDir[$dir] = $directSkyLight;
+					continue;
 				}
+				echo(" NOT YET CALCULATEABLE!!!! origin found, too low to assume only origin. "); 
+				return;
+				$origins[Level::blockHash($lightWay[0], $lightWay[1], $lightWay[2])] = $directSkyLight;
 			}
+			echo(" NOT YET CALCULATEABLE!!!! no origin found, must calculate further. ");
+			return;
+			$newLightWays = $this->findLightWays($lightWay[0], $lightWay[1], $lightWay[2]);
+			$lightLvlsFromDir[$dir] = $this->getSkyLightViaWays($newLightWays, $lightWay); //lightWay contains originpos
 		}
 		return max($lightLvlsFromDir) - 1;
 	}
