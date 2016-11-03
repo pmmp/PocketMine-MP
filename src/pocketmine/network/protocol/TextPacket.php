@@ -54,7 +54,7 @@ class TextPacket extends DataPacket{
 
 			case self::TYPE_TRANSLATION:
 				$this->message = $this->getString();
-				$count = $this->getByte();
+				$count = $this->getUnsignedVarInt();
 				for($i = 0; $i < $count; ++$i){
 					$this->parameters[] = $this->getString();
 				}
@@ -76,7 +76,7 @@ class TextPacket extends DataPacket{
 
 			case self::TYPE_TRANSLATION:
 				$this->putString($this->message);
-				$this->putByte(count($this->parameters));
+				$this->putUnsignedVarInt(count($this->parameters));
 				foreach($this->parameters as $p){
 					$this->putString($p);
 				}
