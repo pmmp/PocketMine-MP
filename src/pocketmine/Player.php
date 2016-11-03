@@ -439,7 +439,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->server->removeOp($this->getName());
 		}
 
-		$this->recalculatePermissions();
 		$this->sendSettings();
 	}
 
