@@ -441,7 +441,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->recalculatePermissions();
 		$this->sendSettings();
-		$this->sendCommandData();
 	}
 
 	/**
@@ -496,6 +495,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if($this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)){
 			$this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
 		}
+
+		$this->sendCommandData();
 	}
 
 	/**
@@ -505,7 +506,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return $this->perm->getEffectivePermissions();
 	}
 
-	public function sendCommandData(){	
+	public function sendCommandData(){
 		$pk = new AvailableCommandsPacket();
 		$data = new \stdClass();
 		$count = 0;
