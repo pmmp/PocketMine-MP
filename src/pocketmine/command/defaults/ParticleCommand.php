@@ -26,6 +26,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
 use pocketmine\item\Item;
 use pocketmine\level\particle\AngryVillagerParticle;
+use pocketmine\level\particle\BlockForceFieldParticle;
 use pocketmine\level\particle\BubbleParticle;
 use pocketmine\level\particle\CriticalParticle;
 use pocketmine\level\particle\DustParticle;
@@ -144,7 +145,7 @@ class ParticleCommand extends VanillaCommand{
 			case "crit":
 				return new CriticalParticle($pos);
 			case "smoke":
-				return new SmokeParticle($pos, $data !== null ? $data : 0);
+				return new SmokeParticle($pos, $data ?? 0);
 			case "spell":
 				return new EnchantParticle($pos);
 			case "instantspell":
@@ -163,7 +164,7 @@ class ParticleCommand extends VanillaCommand{
 			case "lava":
 				return new LavaParticle($pos);
 			case "reddust":
-				return new RedstoneParticle($pos, $data !== null ? $data : 1);
+				return new RedstoneParticle($pos, $data ?? 1);
 			case "snowballpoof":
 				return new ItemBreakParticle($pos, Item::get(Item::SNOWBALL));
 			case "slime":
@@ -179,9 +180,9 @@ class ParticleCommand extends VanillaCommand{
 				}
 				break;
 			case "heart":
-				return new HeartParticle($pos, $data !== null ? $data : 0);
+				return new HeartParticle($pos, $data ?? 0);
 			case "ink":
-				return new InkParticle($pos, $data !== null ? $data : 0);
+				return new InkParticle($pos, $data ?? 0);
 			case "droplet":
 				return new RainSplashParticle($pos);
 			case "enchantmenttable":
@@ -190,6 +191,8 @@ class ParticleCommand extends VanillaCommand{
 				return new HappyVillagerParticle($pos);
 			case "angryvillager":
 				return new AngryVillagerParticle($pos);
+			case "forcefield":
+				return new BlockForceFieldParticle($pos, $data ?? 0);
 
 		}
 
