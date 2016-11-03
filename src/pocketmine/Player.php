@@ -2989,6 +2989,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->message = $message;
 		$this->dataPacket($pk);
 	}
+	
+	public function whisper($from, $message){
+		$pk = new TextPacket();
+		$pk->type = TextPacket::TYPE_WHISPER;
+		$pk->source = $from instanceof Player ? $from->getDisplayName() : $from;
+		$pk->message = $message;
+		$this->dataPacket($pk);
+	}
 
 	/**
 	 * Note for plugin developers: use kick() with the isAdmin
