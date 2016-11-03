@@ -29,14 +29,14 @@ abstract class Particle extends Vector3{
 	const TYPE_BUBBLE = 1;
 	const TYPE_CRITICAL = 2;
 	const TYPE_BLOCK_FORCE_FIELD = 3;
-	const TYPE_SMOKE = 4; //TODO: verify
+	const TYPE_SMOKE = 4;
 	const TYPE_EXPLODE = 5; //TODO: verify
 	const TYPE_WHITE_SMOKE = 6; //TODO: verify
 	const TYPE_FLAME = 7;
 	const TYPE_LAVA = 8;
-	const TYPE_LARGE_SMOKE = 9; //TODO: verify
+	const TYPE_LARGE_SMOKE = 9;
 	const TYPE_REDSTONE = 10;
-	//11 is some kind of blood particle?
+	const TYPE_RISING_RED_DUST = 11;
 	const TYPE_ITEM_BREAK = 12;
 	const TYPE_SNOWBALL_POOF = 13;
 	const TYPE_HUGE_EXPLODE = 14, TYPE_LARGE_EXPLODE = 14; //TODO: fix this properly
@@ -50,11 +50,11 @@ abstract class Particle extends Vector3{
 	const TYPE_WATER_WAKE = 22;
 	const TYPE_DRIP_WATER = 23; //TODO: verify
 	const TYPE_DRIP_LAVA = 24; //TODO: verify
-	const TYPE_DUST = 25; //TODO: verify
+	const TYPE_FALLING_DUST = 25, TYPE_DUST = 25;
 	const TYPE_MOB_SPELL = 26; //TODO: verify
 	const TYPE_MOB_SPELL_AMBIENT = 27; //TODO: verify
 	const TYPE_MOB_SPELL_INSTANTANEOUS = 28; //TODO: verify
-	const TYPE_INK = 29; //TODO: verify
+	const TYPE_INK = 29;
 	const TYPE_SLIME = 30;
 	const TYPE_RAIN_SPLASH = 31;
 	const TYPE_VILLAGER_ANGRY = 32;
