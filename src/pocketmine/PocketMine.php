@@ -104,6 +104,11 @@ namespace pocketmine {
 	}
 
 	if(!class_exists("ClassLoader", false)){
+		if(!is_file(\pocketmine\PATH . "src/spl/ClassLoader.php")){
+			echo "[CRITICAL] Unable to find the PocketMine-SPL library." . PHP_EOL;
+			echo "[CRITICAL] Please use provided builds or clone the repository recursively." . PHP_EOL;
+			exit(1);
+		}
 		require_once(\pocketmine\PATH . "src/spl/ClassLoader.php");
 		require_once(\pocketmine\PATH . "src/spl/BaseClassLoader.php");
 		require_once(\pocketmine\PATH . "src/pocketmine/CompatibleClassLoader.php");
