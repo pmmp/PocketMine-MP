@@ -317,8 +317,6 @@ namespace pocketmine {
 			case "win":
 				exec("taskkill.exe /F /PID " . ((int) $pid) . " > NUL");
 				break;
-			case "mac":
-			case "linux":
 			default:
 				if(function_exists("posix_kill")){
 					posix_kill($pid, SIGKILL);
