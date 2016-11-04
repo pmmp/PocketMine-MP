@@ -71,6 +71,7 @@ namespace pocketmine {
 	use pocketmine\utils\Terminal;
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\Installer;
+	use raklib\RakLib;
 
 	const VERSION = "1.6.1dev";
 	const API_VERSION = "2.1.0";
@@ -119,6 +120,10 @@ namespace pocketmine {
 	$autoloader->addPath(\pocketmine\PATH . "src" . DIRECTORY_SEPARATOR . "spl");
 	$autoloader->register(true);
 
+	if(!class_exists(RakLib::class)){
+		echo "[CRITICAL] Unable to find the RakLib library." . PHP_EOL;
+		exit(1);
+	}
 
 	set_time_limit(0); //Who set it to 30 seconds?!?!
 
