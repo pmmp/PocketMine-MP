@@ -107,16 +107,17 @@ abstract class Command{
 	 * @return \stdClass|null
 	 */
 	public function generateCustomCommandData(Player $player){
-		if(!$this->testPermission($player)){
+		//TODO: fix command permission filtering on join
+		/*if(!$this->testPermission($player)){
 			return null;
-		}
+		}*/
 		$customData = clone $this->commandData;
 		$customData->aliases = $this->getAliases();
-		foreach($customData->overloads as &$overload){
+		/*foreach($customData->overloads as &$overload){
 			if(($p = @$overload->pocketminePermission) !== null and !$player->hasPermission($p)){
 				unset($overload);
 			}
-		}
+		}*/
 		return $customData;
 	}
 
