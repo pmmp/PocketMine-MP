@@ -30,8 +30,8 @@ abstract class Particle extends Vector3{
 	const TYPE_CRITICAL = 2;
 	const TYPE_BLOCK_FORCE_FIELD = 3;
 	const TYPE_SMOKE = 4;
-	const TYPE_EXPLODE = 5; //TODO: verify
-	const TYPE_WHITE_SMOKE = 6; //TODO: verify
+	const TYPE_EXPLODE = 5; //actually steam
+	const TYPE_WHITE_SMOKE = 6; //also steam, maybe bigger?
 	const TYPE_FLAME = 7;
 	const TYPE_LAVA = 8;
 	const TYPE_LARGE_SMOKE = 9;
@@ -40,7 +40,7 @@ abstract class Particle extends Vector3{
 	const TYPE_ITEM_BREAK = 12;
 	const TYPE_SNOWBALL_POOF = 13;
 	const TYPE_HUGE_EXPLODE = 14, TYPE_LARGE_EXPLODE = 14; //TODO: fix this properly
-	const TYPE_HUGE_EXPLODE_SEED = 15;
+	const TYPE_HUGE_EXPLODE_SEED = 15; //much bigger explosion particle
 	const TYPE_MOB_FLAME = 16;
 	const TYPE_HEART = 17;
 	const TYPE_TERRAIN = 18;
@@ -48,8 +48,8 @@ abstract class Particle extends Vector3{
 	const TYPE_PORTAL = 20;
 	const TYPE_SPLASH = 21, TYPE_WATER_SPLASH = 21;
 	const TYPE_WATER_WAKE = 22;
-	const TYPE_DRIP_WATER = 23; //TODO: verify
-	const TYPE_DRIP_LAVA = 24; //TODO: verify
+	const TYPE_DRIP_WATER = 23;
+	const TYPE_DRIP_LAVA = 24;
 	const TYPE_FALLING_DUST = 25, TYPE_DUST = 25;
 	const TYPE_MOB_SPELL = 26; //TODO: verify
 	const TYPE_MOB_SPELL_AMBIENT = 27; //TODO: verify
