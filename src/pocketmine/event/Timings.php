@@ -21,7 +21,6 @@
 
 namespace pocketmine\event;
 
-
 use pocketmine\entity\Entity;
 use pocketmine\network\protocol\DataPacket;
 use pocketmine\Player;

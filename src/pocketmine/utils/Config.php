@@ -20,6 +20,7 @@
 */
 
 namespace pocketmine\utils;
+
 use pocketmine\scheduler\FileWriteTask;
 use pocketmine\Server;
 
@@ -88,7 +89,6 @@ class Config{
 		$this->config = [];
 		$this->nestedCache = [];
 		$this->correct = false;
-		$this->load($this->file);
 		$this->load($this->file, $this->type);
 	}
 

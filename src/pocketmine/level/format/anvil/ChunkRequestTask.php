@@ -27,7 +27,6 @@ use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 use pocketmine\tile\Spawnable;
 
-
 class ChunkRequestTask extends AsyncTask{
 
 	protected $levelId;
@@ -50,7 +49,7 @@ class ChunkRequestTask extends AsyncTask{
 		foreach($chunk->getTiles() as $tile){
 			if($tile instanceof Spawnable){
 				$nbt->setData($tile->getSpawnCompound());
-				$tiles .= $nbt->write();
+				$tiles .= $nbt->write(true);
 			}
 		}
 

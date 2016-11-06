@@ -173,9 +173,9 @@ interface FullChunk{
 	public function getHeightMap($x, $z);
 
 	/**
-	 * @param int $x 0-15
-	 * @param int $z 0-15
-	 * @param $value 0-255
+	 * @param int $x     0-15
+	 * @param int $z     0-15
+	 * @param     $value 0-255
 	 */
 	public function setHeightMap($x, $z, $value);
 

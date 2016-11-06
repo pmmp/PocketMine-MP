@@ -30,7 +30,6 @@ use pocketmine\event\server\RemoteServerCommandEvent;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 
-
 class RCON{
 	/** @var Server */
 	private $server;
@@ -84,7 +83,7 @@ class RCON{
 			}elseif($this->workers[$n]->isWaiting()){
 				if($this->workers[$n]->response !== ""){
 					$this->server->getLogger()->info($this->workers[$n]->response);
-					$this->workers[$n]->synchronized(function (RCONInstance $thread){
+					$this->workers[$n]->synchronized(function(RCONInstance $thread){
 						$thread->notify();
 					}, $this->workers[$n]);
 				}else{
@@ -99,7 +98,7 @@ class RCON{
 					}
 
 					$this->workers[$n]->response = TextFormat::clean($response->getMessage());
-					$this->workers[$n]->synchronized(function (RCONInstance $thread){
+					$this->workers[$n]->synchronized(function(RCONInstance $thread){
 						$thread->notify();
 					}, $this->workers[$n]);
 				}

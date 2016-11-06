@@ -25,7 +25,7 @@ if [ "$PHP_BINARY" == "" ]; then
 	if [ -f ./bin/php7/bin/php ]; then
 		export PHPRC=""
 		PHP_BINARY="./bin/php7/bin/php"
-	elif [ type php 2>/dev/null ]; then
+	elif [[ ! -z $(type php) ]]; then
 		PHP_BINARY=$(type -p php)
 	else
 		echo "Couldn't find a working PHP 7 binary, please use the installer."

@@ -19,31 +19,30 @@
  *
 */
 
-$server = proc_open(PHP_BINARY . " src/pocketmine/PocketMine.php --no-wizard --disable-readline", [
-	0 => ["pipe", "r"],
-	1 => ["pipe", "w"],
-	2 => ["pipe", "w"]
-], $pipes);
+namespace pocketmine\network\protocol;
 
-if(!is_resource($server)){
-	die('Failed to create process');
-}
+#include <rules/DataPacket.h>
 
-fwrite($pipes[0], "version\nmakeserver\nstop\n\n");
-fclose($pipes[0]);
+class AddHangingEntityPacket extends DataPacket{
+	const NETWORK_ID = Info::ADD_HANGING_ENTITY_PACKET;
 
-while(!feof($pipes[1])){
-	echo fgets($pipes[1]);
-}
+	public $entityUniqueId;
+	public $entityRuntimeId;
+	public $x;
+	public $y;
+	public $z;
+	public $unknown;
 
-fclose($pipes[1]);
-fclose($pipes[2]);
+	public function decode(){
 
-echo "\n\nReturn value: ". proc_close($server) ."\n";
+	}
 
-if(count(glob("plugins/DevTools/PocketMine-MP*.phar")) === 0){
-	echo "No server Phar created!\n";
-	exit(1);
-}else{
-	exit(0);
+	public function encode(){
+		$this->reset();
+		$this->putEntityId($this->entityUniqueId);
+		$this->putEntityId($this->entityRuntimeId);
+		$this->putBlockCoords($this->x, $this->y, $this->z);
+		$this->putVarInt($this->unknown);
+	}
+
 }

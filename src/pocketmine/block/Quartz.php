@@ -30,7 +30,7 @@ class Quartz extends Solid{
 	const QUARTZ_CHISELED = 1;
 	const QUARTZ_PILLAR = 2;
 	const QUARTZ_PILLAR2 = 3;
-    
+
 	protected $id = self::QUARTZ_BLOCK;
 
 	public function __construct($meta = 0){

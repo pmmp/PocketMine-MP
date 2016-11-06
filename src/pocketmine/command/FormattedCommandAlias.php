@@ -23,7 +23,6 @@ namespace pocketmine\command;
 
 use pocketmine\event\TranslationContainer;
 use pocketmine\Server;
-use pocketmine\utils\MainLogger;
 use pocketmine\utils\TextFormat;
 
 class FormattedCommandAlias extends Command{

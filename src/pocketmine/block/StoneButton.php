@@ -21,15 +21,15 @@
 
 namespace pocketmine\block;
 
-class StoneButton extends Solid {
+class StoneButton extends Solid{
 
-    protected $id = self::STONE_BUTTON;
+	protected $id = self::STONE_BUTTON;
 
-    public function __construct($meta = 0){
-        $this->meta = $meta;
-    }
+	public function __construct($meta = 0){
+		$this->meta = $meta;
+	}
 
-    public function getName(){
-        return "Stone Button";
-    }
+	public function getName(){
+		return "Stone Button";
+	}
 }

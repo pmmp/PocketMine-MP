@@ -21,15 +21,15 @@
 
 namespace pocketmine\block;
 
-class CocoaBlock extends Solid {
+class CocoaBlock extends Solid{
 
-    protected $id = self::COCOA_BLOCK;
+	protected $id = self::COCOA_BLOCK;
 
-    public function __construct($meta = 0){
-        $this->meta = $meta;
-    }
+	public function __construct($meta = 0){
+		$this->meta = $meta;
+	}
 
-    public function getName(){
-        return "Cocoa Block";
-    }
+	public function getName(){
+		return "Cocoa Block";
+	}
 }

@@ -22,7 +22,7 @@
 namespace pocketmine\event\level;
 
 /**
- * Called when a Level is saved
+ * Called when a Level is loaded
  */
 class LevelLoadEvent extends LevelEvent{
 	public static $handlerList = null;

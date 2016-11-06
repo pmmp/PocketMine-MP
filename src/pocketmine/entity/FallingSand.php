@@ -21,25 +21,19 @@
 
 namespace pocketmine\entity;
 
-
 use pocketmine\block\Block;
-
 use pocketmine\block\Liquid;
 use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-
 use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\network\Network;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class FallingSand extends Entity{
 	const NETWORK_ID = 66;
-
-	const DATA_BLOCK_INFO = 20;
 
 	public $width = 0.98;
 	public $length = 0.98;
@@ -70,7 +64,7 @@ class FallingSand extends Entity{
 			return;
 		}
 
-		$this->setDataProperty(self::DATA_BLOCK_INFO, self::DATA_TYPE_INT, $this->getBlock() | ($this->getDamage() << 8));
+		$this->setDataProperty(self::DATA_VARIANT, self::DATA_TYPE_INT, $this->getBlock() | ($this->getDamage() << 8));
 	}
 
 	public function canCollideWith(Entity $entity){

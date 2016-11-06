@@ -21,7 +21,6 @@
 
 namespace pocketmine\block;
 
-
 use pocketmine\math\AxisAlignedBB;
 
 abstract class Thin extends Transparent{

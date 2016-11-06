@@ -21,7 +21,6 @@
 
 namespace pocketmine\command;
 
-
 use pocketmine\event\TextContainer;
 
 class RemoteConsoleCommandSender extends ConsoleCommandSender{

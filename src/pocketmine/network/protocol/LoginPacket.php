@@ -27,9 +27,11 @@ namespace pocketmine\network\protocol;
 class LoginPacket extends DataPacket{
 	const NETWORK_ID = Info::LOGIN_PACKET;
 
+	const EDITION_POCKET = 0;
+
 	public $username;
 	public $protocol;
-
+	public $gameEdition;
 	public $clientUUID;
 	public $clientId;
 	public $identityPublicKey;
@@ -44,12 +46,15 @@ class LoginPacket extends DataPacket{
 		if($this->protocol !== Info::CURRENT_PROTOCOL){
 			return; //Do not attempt to decode for non-accepted protocols
 		}
-		$str = zlib_decode($this->get($this->getInt()), 1024 * 1024 * 64);
+
+		$this->gameEdition = $this->getByte();
+
+		$str = zlib_decode($this->getString(), 1024 * 1024 * 64);
 
 		$this->setBuffer($str, 0);
 
 		$chainData = json_decode($this->get($this->getLInt()));
-		foreach ($chainData->{"chain"} as $chain){
+		foreach($chainData->{"chain"} as $chain){
 			$webtoken = $this->decodeToken($chain);
 			if(isset($webtoken["extraData"])){
 				if(isset($webtoken["extraData"]["displayName"])){

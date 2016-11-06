@@ -38,7 +38,6 @@ use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\Config;
 
-
 class Item implements ItemIds{
 
 	/** @var NBT */
@@ -227,9 +226,16 @@ class Item implements ItemIds{
 		self::clearCreativeItems();
 
 		$creativeItems = new Config(Server::getInstance()->getFilePath() . "src/pocketmine/resources/creativeitems.json", Config::JSON, []);
-		
-		foreach($creativeItems->getAll() as $item){
-			self::addCreativeItem(Item::get($item["ID"], $item["Damage"]));
+
+		foreach($creativeItems->getAll() as $data){
+			$item = Item::get($data["id"], $data["damage"]);
+			if($item->getName() === "Unknown"){
+				continue;
+			}
+			if(isset($data["nbt"])){
+				$item->setNamedTag(NBT::parseJson(json_encode($data["nbt"])));
+			}
+			self::addCreativeItem($item);
 		}
 	}
 
@@ -242,7 +248,7 @@ class Item implements ItemIds{
 	}
 
 	public static function addCreativeItem(Item $item){
-		Item::$creative[] = Item::get($item->getId(), $item->getDamage());
+		Item::$creative[] = clone $item;
 	}
 
 	public static function removeCreativeItem(Item $item){

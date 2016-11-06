@@ -21,11 +21,8 @@
 
 namespace pocketmine\level\generator;
 
-
 use pocketmine\level\Level;
-
 use pocketmine\scheduler\AsyncTask;
-
 
 class GeneratorUnregisterTask extends AsyncTask{
 

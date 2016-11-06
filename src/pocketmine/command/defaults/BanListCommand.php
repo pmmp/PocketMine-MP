@@ -24,7 +24,6 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
 
-
 class BanListCommand extends VanillaCommand{
 
 	public function __construct($name){

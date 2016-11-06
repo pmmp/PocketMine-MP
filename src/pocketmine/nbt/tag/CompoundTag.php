@@ -83,23 +83,23 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 		return NBT::TAG_Compound;
 	}
 
-	public function read(NBT $nbt){
+	public function read(NBT $nbt, bool $network = false){
 		$this->value = [];
 		do{
-			$tag = $nbt->readTag();
+			$tag = $nbt->readTag($network);
 			if($tag instanceof NamedTag and $tag->getName() !== ""){
 				$this->{$tag->getName()} = $tag;
 			}
 		}while(!($tag instanceof EndTag) and !$nbt->feof());
 	}
 
-	public function write(NBT $nbt){
+	public function write(NBT $nbt, bool $network = false){
 		foreach($this as $tag){
 			if($tag instanceof Tag and !($tag instanceof EndTag)){
-				$nbt->writeTag($tag);
+				$nbt->writeTag($tag, $network);
 			}
 		}
-		$nbt->writeTag(new EndTag);
+		$nbt->writeTag(new EndTag, $network);
 	}
 
 	public function __toString(){

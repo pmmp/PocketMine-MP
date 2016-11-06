@@ -20,6 +20,7 @@
  */
 
 namespace pocketmine\event\server;
+
 use pocketmine\utils\Utils;
 
 

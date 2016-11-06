@@ -29,9 +29,9 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\Player;
 use pocketmine\tile\FlowerPot as TileFlowerPot;
 use pocketmine\tile\Tile;
-use pocketmine\Player;
 
 class FlowerPot extends Flowable{
 
@@ -54,12 +54,12 @@ class FlowerPot extends Flowable{
 
 	public function getBoundingBox(){
 		return new AxisAlignedBB(
-			$this->x + (5/16),
+			$this->x + (5 / 16),
 			$this->y,
-			$this->z + (5/16),
-			$this->x + (11/16),
-			$this->y + (6/16),
-			$this->z + (11/16)
+			$this->z + (5 / 16),
+			$this->x + (11 / 16),
+			$this->y + (6 / 16),
+			$this->z + (11 / 16)
 		);
 	}
 
@@ -113,7 +113,7 @@ class FlowerPot extends Flowable{
 		$this->setDamage(self::STATE_FULL); //specific damage value is unnecessary, it just needs to be non-zero to show an item.
 		$this->getLevel()->setBlock($this, $this, true, false);
 		$pot->setItem($item);
-		
+
 		if($player instanceof Player){
 			if($player->isSurvival()){
 				$item->setCount($item->getCount() - 1);

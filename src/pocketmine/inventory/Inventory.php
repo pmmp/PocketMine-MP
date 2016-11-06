@@ -55,8 +55,8 @@ interface Inventory{
 	 * If a plugin refuses the update or $index is invalid, it'll return false
 	 * If a source Player is specified, it won't send a Inventory update to it
 	 *
-	 * @param int    $index
-	 * @param Item   $item
+	 * @param int  $index
+	 * @param Item $item
 	 *
 	 * @return bool
 	 */
@@ -161,7 +161,7 @@ interface Inventory{
 	/**
 	 * Will clear a specific slot
 	 *
-	 * @param int    $index
+	 * @param int $index
 	 *
 	 * @return bool
 	 */
@@ -212,8 +212,8 @@ interface Inventory{
 	public function onClose(Player $who);
 
 	/**
-	 * @param int    $index
-	 * @param Item   $before
+	 * @param int  $index
+	 * @param Item $before
 	 */
 	public function onSlotChange($index, $before);
 }

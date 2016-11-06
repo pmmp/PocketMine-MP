@@ -1,5 +1,5 @@
 # ![PocketMine-MP](http://cdn.pocketmine.net/img/PocketMine-MP-h.png)
-[![Build Status](https://travis-ci.org/PocketMine/PocketMine-MP.svg?branch=master)](https://travis-ci.org/PocketMine/PocketMine-MP)
+[![Build Status](https://travis-ci.org/pmmp/PocketMine-MP.svg?branch=master)](https://travis-ci.org/pmmp/PocketMine-MP)
 
 
 	This program is free software: you can redistribute it and/or modify
@@ -18,26 +18,26 @@
 
 __PocketMine-MP is a free, open-source software that creates Minecraft: Pocket Edition servers and allows extending its functionalities__
 
-### [Homepage](http://www.pocketmine.net/)
+### [Homepage](https://pmmp.gq/)
 
 ### [Forums](http://forums.pocketmine.net/)
 
-### [Documentation](http://pocketmine-mp.readthedocs.org/)
+### [Documentation](http://pmmp.readthedocs.org/)
 
 ### [Plugin Repository](http://plugins.pocketmine.net/)
 
 <!--## [FAQ: Frequently Asked Questions](https://github.com/PocketMine/PocketMine-MP/wiki/Frequently-Asked-Questions)-->
 
-### [Official Jenkins server](http://jenkins.pocketmine.net/)
+### [Official Jenkins server](https://jenkins.pmmp.gq/)
 
 ### API Documentation
  * [Official Doxygen-generated documentation](http://docs.pocketmine.net/)
- * [Latest Doxygen generated from development](http://jenkins.pocketmine.net/job/PocketMine-MP-doc/doxygen/)
+ * [Latest Doxygen generated from development](https://jenkins.pmmp.gq/job/PocketMine-MP%20Docs/doxygen/)
 
 ### [Twitter @PocketMine](https://twitter.com/PocketMine)
 
-### IRC Chat #pocketmine (or #mcpedevs) @ irc.freenode.net
-[#pocketmine + #mcpedevs channel WebIRC](http://webchat.freenode.net/?channels=pocketmine,mcpedevs)
+### IRC Chat #pmmp (or #pocketmine) @ irc.freenode.net
+[#pmmp + #pocketmine channel WebIRC](http://webchat.freenode.net/?channels=pmmp,pocketmine)
 
 ### Want to contribute?
 * Check the [Contributing Guidelines](CONTRIBUTING.md)

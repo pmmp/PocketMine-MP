@@ -25,7 +25,6 @@ use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
 use pocketmine\Server;
 
-
 class DefaultGamemodeCommand extends VanillaCommand{
 
 	public function __construct($name){

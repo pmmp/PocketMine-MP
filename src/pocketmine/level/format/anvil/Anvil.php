@@ -25,14 +25,13 @@ use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\mcregion\McRegion;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\ByteArrayTag;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\protocol\FullChunkDataPacket;
 use pocketmine\tile\Spawnable;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\ChunkException;
-
 
 class Anvil extends McRegion{
 
@@ -87,7 +86,7 @@ class Anvil extends McRegion{
 				}
 			}
 			$nbt->setData($list);
-			$tiles = $nbt->write();
+			$tiles = $nbt->write(true);
 		}
 
 		$extraData = new BinaryStream();

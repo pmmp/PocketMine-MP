@@ -21,15 +21,15 @@
 
 namespace pocketmine\block;
 
-class Rail extends Solid {
+class Rail extends Solid{
 
-    protected $id = self::RAIL;
+	protected $id = self::RAIL;
 
-    public function __construct($meta = 0){
-        $this->meta = $meta;
-    }
+	public function __construct($meta = 0){
+		$this->meta = $meta;
+	}
 
-    public function getName(){
-        return "Rail";
-    }
+	public function getName(){
+		return "Rail";
+	}
 }

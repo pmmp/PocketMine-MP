@@ -23,6 +23,7 @@ namespace pocketmine\lang;
 
 use pocketmine\event\TextContainer;
 use pocketmine\event\TranslationContainer;
+use pocketmine\Server;
 
 class BaseLang{
 
@@ -41,8 +42,12 @@ class BaseLang{
 			$path = \pocketmine\PATH . "src/pocketmine/lang/locale/";
 		}
 
-		$this->loadLang($path . $this->langName . ".ini", $this->lang);
-		$this->loadLang($path . $fallback . ".ini", $this->fallbackLang);
+		if(!$this->loadLang($file = $path . $this->langName . ".ini", $this->lang)){
+			Server::getInstance()->getLogger()->error("Missing required language file $file");
+		}
+		if(!$this->loadLang($file = $path . $fallback . ".ini", $this->fallbackLang)){
+			Server::getInstance()->getLogger()->error("Missing required language file $file");
+		}
 	}
 
 	public function getName(){
@@ -54,27 +59,32 @@ class BaseLang{
 	}
 
 	protected function loadLang($path, array &$d){
-		if(file_exists($path) and strlen($content = file_get_contents($path)) > 0){
-			foreach(explode("\n", $content) as $line){
-				$line = trim($line);
-				if($line === "" or $line{0} === "#"){
-					continue;
+		if(file_exists($path)){
+			if(strlen($content = file_get_contents($path)) > 0){
+				foreach(explode("\n", $content) as $line){
+					$line = trim($line);
+					if($line === "" or $line{0} === "#"){
+						continue;
+					}
+
+					$t = explode("=", $line, 2);
+					if(count($t) < 2){
+						continue;
+					}
+
+					$key = trim($t[0]);
+					$value = trim($t[1]);
+
+					if($value === ""){
+						continue;
+					}
+
+					$d[$key] = $value;
 				}
-
-				$t = explode("=", $line, 2);
-				if(count($t) < 2){
-					continue;
-				}
-
-				$key = trim($t[0]);
-				$value = trim($t[1]);
-
-				if($value === ""){
-					continue;
-				}
-
-				$d[$key] = $value;
 			}
+			return true;
+		}else{
+			return false;
 		}
 	}
 
@@ -86,7 +96,7 @@ class BaseLang{
 	 */
 	public function translateString($str, array $params = [], $onlyPrefix = null){
 		$baseText = $this->get($str);
-		$baseText = $this->parseTranslation( ($baseText !== null and ($onlyPrefix === null or strpos($str, $onlyPrefix) === 0)) ? $baseText : $str, $onlyPrefix);
+		$baseText = $this->parseTranslation(($baseText !== null and ($onlyPrefix === null or strpos($str, $onlyPrefix) === 0)) ? $baseText : $str, $onlyPrefix);
 
 		foreach($params as $i => $p){
 			$baseText = str_replace("{%$i}", $this->parseTranslation((string) $p), $baseText, $onlyPrefix);
@@ -98,7 +108,7 @@ class BaseLang{
 	public function translate(TextContainer $c){
 		if($c instanceof TranslationContainer){
 			$baseText = $this->internalGet($c->getText());
-			$baseText = $this->parseTranslation( $baseText !== null ? $baseText : $c->getText());
+			$baseText = $this->parseTranslation($baseText !== null ? $baseText : $c->getText());
 
 			foreach($c->getParameters() as $i => $p){
 				$baseText = str_replace("{%$i}", $this->parseTranslation($p), $baseText);

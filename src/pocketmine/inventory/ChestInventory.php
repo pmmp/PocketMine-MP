@@ -22,10 +22,8 @@
 namespace pocketmine\inventory;
 
 use pocketmine\level\Level;
-use pocketmine\network\Network;
 use pocketmine\network\protocol\BlockEventPacket;
 use pocketmine\Player;
-
 use pocketmine\tile\Chest;
 
 class ChestInventory extends ContainerInventory{
