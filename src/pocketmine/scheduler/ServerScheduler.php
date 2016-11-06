@@ -50,9 +50,13 @@ class ServerScheduler{
 	/** @var int */
 	protected $currentTick = 0;
 
+	/** @var \SplObjectStorage<AsyncTask> */
+	protected $objectStore;
+
 	public function __construct(){
 		$this->queue = new ReversePriorityQueue();
 		$this->asyncPool = new AsyncPool(Server::getInstance(), self::$WORKERS);
+		$this->objectStore = new \SplObjectStorage();
 	}
 
 	/**
@@ -89,6 +93,59 @@ class ServerScheduler{
 		$id = $this->nextId();
 		$task->setTaskId($id);
 		$this->asyncPool->submitTaskToWorker($task, $worker);
+	}
+
+	/**
+	 * Stores any data that must not be passed to other threads or be serialized
+	 *
+	 * @internal Only call from AsyncTask.php
+	 *
+	 * @param AsyncTask     $for
+	 * @param object|array $cmplx
+	 *
+	 * @throws \RuntimeException if this method is called twice for the same instance of AsyncTask
+	 */
+	public function storeLocalComplex(AsyncTask $for, $cmplx){
+		if(isset($this->objectStore[$for])){
+			throw new \RuntimeException("Already storing a complex for this AsyncTask");
+		}
+		$this->objectStore[$for] = $cmplx;
+	}
+
+	/**
+	 * Fetches data that must not be passed to other threads or be serialized, previously stored with {@link #storeLocalComplex}
+	 *
+	 * @internal Only call from AsyncTask.php
+	 *
+	 * @param AsyncTask $for
+	 *
+	 * @throws \RuntimException if no data associated with this AsyncTask can be found
+	 */	
+	public function fetchLocalComplex(AsyncTask $for){
+		if(!isset($this->objectStore[$for])){
+			throw new \RuntimeException("Attempt to fetch undefined complex");
+		}
+		$cmplx = $this->objectStore[$for];
+		unset($this->objectStore[$for]);
+		return $cmplx;
+	}
+
+	/**
+	 * Makes sure no data stored from {@link #storeLocalComplex} is left for a specific AsyncTask
+	 *
+	 * @internal Only call from AsyncTask.php
+	 *
+	 * @param AsyncTask $for
+	 *
+	 * @return bool returns false if any data are removed from this call, true otherwise
+	 */	
+	public function removeLocalComplex(AsyncTask $for) : bool{
+		if(isset($this->objectStore[$for])){
+			Server::getInstance()->getLogger()->notice("AsyncTask " . get_class($for) . " stored local complex data but did not remove them after completion");
+			unset($this->objectStore[$for]);
+			return false;
+		}
+		return true;
 	}
 
 	public function getAsyncTaskPoolSize(){
