@@ -120,7 +120,11 @@ namespace pocketmine {
 	$autoloader->addPath(\pocketmine\PATH . "src" . DIRECTORY_SEPARATOR . "spl");
 	$autoloader->register(true);
 
-	if(!class_exists(RakLib::class)){
+	try{
+		if(!class_exists(RakLib::class)){
+			throw new \Exception;
+		}
+	}catch(\Exception $e){
 		echo "[CRITICAL] Unable to find the RakLib library." . PHP_EOL;
 		exit(1);
 	}
