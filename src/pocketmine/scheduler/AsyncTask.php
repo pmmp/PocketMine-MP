@@ -46,7 +46,7 @@ abstract class AsyncTask extends Collectable{
 	 * Constructs a new instance of AsyncTask. Subclasses don't need to call this constructor unless an argument is to be passed. ONLY construct this class from the main thread.
 	 * <br>
 	 * If an argument is passed into this constructor, it will be stored in a thread-local storage (in ServerScheduler), which MUST be retrieved through {@link #fetchLocal} when {@link #onCompletion} is called.
-	 * Otherwise, a DEBUG level message will be raised and the reference will be removed after onCompletion exits.
+	 * Otherwise, a NOTICE level message will be raised and the reference will be removed after onCompletion exits.
 	 * <br>
 	 * If null or no argument is passed, do <em>not</em> call {@link #fetchLocal}, or an exception will be thrown.
 	 * <br>
