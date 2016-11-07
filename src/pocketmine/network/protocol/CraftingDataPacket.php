@@ -25,9 +25,11 @@ namespace pocketmine\network\protocol;
 
 
 use pocketmine\inventory\FurnaceRecipe;
+use pocketmine\inventory\MultiRecipe;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\item\enchantment\EnchantmentList;
+use pocketmine\item\Item;
 use pocketmine\utils\BinaryStream;
 
 class CraftingDataPacket extends DataPacket{
@@ -37,11 +39,82 @@ class CraftingDataPacket extends DataPacket{
 	const ENTRY_SHAPED = 1;
 	const ENTRY_FURNACE = 2;
 	const ENTRY_FURNACE_DATA = 3;
-	const ENTRY_ENCHANT_LIST = 4;
+	const ENTRY_ENCHANT_LIST = -1; //Deprecated
+	const ENTRY_MULTI = 4;
 
 	/** @var object[] */
 	public $entries = [];
 	public $cleanRecipes = false;
+
+	public function clean(){
+		$this->entries = [];
+		return parent::clean();
+	}
+
+	public function decode(){
+		$count = $this->getUnsignedVarInt();
+		for($i = 0; $i < $count; ++$i){
+			$recipeType = $this->getUnsignedVarInt();
+			switch($recipeType){
+				case self::ENTRY_SHAPELESS:
+					$ingredientCount = $this->getUnsignedVarInt();
+					/** @var Item */
+					$ingredients = [];
+					for($j = 0; $j < $ingredientCount; ++$j){
+						$ingredients[] = $this->getSlot();
+					}
+					$resultCount = $this->getUnsignedVarInt();
+					$results = [];
+					for($k = 0; $k < $resultCount; ++$k){
+						$results[] = $this->getSlot();
+					}
+					$uuid = $this->getUUID();
+					$recipe = new ShapelessRecipe($results[0]); //ouch...
+					$recipe->setId($uuid);
+					foreach($ingredients as $ingr){
+						$recipe->addIngredient($ingr);
+					}
+					break;
+				case self::ENTRY_SHAPED:
+					$width = $this->getVarInt();
+					$height = $this->getVarInt();
+					$count = $width * $height;
+					$ingredients = [];
+					for($j = 0; $j < $count; ++$j){
+						$ingredients[] = $this->getSlot();
+					}
+					$resultCount = $this->getUnsignedVarInt();
+					$results = [];
+					for($k = 0; $k < $resultCount; ++$k){
+						$results[] = $this->getSlot();
+					}
+					$uuid = $this->getUUID();
+					$recipe = new ShapedRecipe($results[0], $height, $width); //yes, blatant copy-paste...
+					$recipe->setId($uuid);
+					foreach($ingredients as $ingr){
+						$recipe->addIngredient($ingr);
+					}
+					break;
+				case self::ENTRY_FURNACE:
+				case self::ENTRY_FURNACE_DATA:
+					$inputId = $this->getVarInt();
+					if($recipeType === self::ENTRY_FURNACE_DATA){
+						$inputData = $this->getVarInt();
+					}
+					$result = $this->getSlot();
+					$recipe = new FurnaceRecipe(Item::get($inputId, $inputData ?? null), $result);
+					break;
+				case self::ENTRY_MULTI:
+					$uuid = $this->getUUID();
+					$recipe = new MultiRecipe($uuid);
+					break;
+				default:
+					throw new \UnexpectedValueException("Unhandled recipe type $recipeType!"); //do not continue attempting to decode
+			}
+			$this->entries[] = $recipe;
+		}
+		//TODO: serialize to json
+	}
 
 	private static function writeEntry($entry, BinaryStream $stream){
 		if($entry instanceof ShapelessRecipe){
@@ -138,15 +211,6 @@ class CraftingDataPacket extends DataPacket{
 
 	public function addEnchantList(EnchantmentList $list){
 		$this->entries[] = $list;
-	}
-
-	public function clean(){
-		$this->entries = [];
-		return parent::clean();
-	}
-
-	public function decode(){
-
 	}
 
 	public function encode(){
