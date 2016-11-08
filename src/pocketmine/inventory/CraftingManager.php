@@ -41,48 +41,44 @@ class CraftingManager{
 	private static $RECIPE_COUNT = 0;
 
 	public function __construct(){
-		// load recipes from src/pocketmine/recipes.json
+		// load recipes from src/pocketmine/resources/recipes.json
 		$recipes = new Config(Server::getInstance()->getFilePath() . "src/pocketmine/resources/recipes.json", Config::JSON, []);
 
 		MainLogger::getLogger()->info("Loading recipes...");
 		foreach($recipes->getAll() as $recipe){
-			switch($recipe["Type"]){
+			switch($recipe["type"]){
 				case 0:
 					// TODO: handle multiple result items
-					if(count($recipe["Result"]) == 1){
-						$first = $recipe["Result"][0];
-						$result = new ShapelessRecipe(Item::get($first["ID"], $first["Damage"], $first["Count"]));
+					if(count($recipe["output"]) === 1){
+						$first = $recipe["output"][0];
+						$result = new ShapelessRecipe(Item::get($first["id"], $first["damage"], $first["count"], $first["nbt"]));
 
-						foreach($recipe["Ingredients"] as $ingredient){
-							$result->addIngredient(Item::get($ingredient["ID"], $ingredient["Damage"], $ingredient["Count"]));
+						foreach($recipe["input"] as $ingredient){
+							$result->addIngredient(Item::get($ingredient["id"], $ingredient["damage"], $ingredient["count"], $first["nbt"]));
 						}
 						$this->registerRecipe($result);
 					}
 					break;
 				case 1:
 					// TODO: handle multiple result items
-					if(count($recipe["Result"]) == 1){
-						$first = $recipe["Result"][0];
-						$result = new ShapedRecipe(Item::get($first["ID"], $first["Damage"], $first["Count"]), $recipe["Height"], $recipe["Width"]);
+					if(count($recipe["output"]) === 1){
+						$first = $recipe["output"][0];
+						$result = new ShapedRecipe(Item::get($first["id"], $first["damage"], $first["count"], $first["nbt"]), $recipe["height"], $recipe["width"]);
 
-						$shape = array_chunk($recipe["Ingredients"], $recipe["Width"]);
+						$shape = array_chunk($recipe["input"], $recipe["width"]);
 						foreach($shape as $y => $row){
 							foreach($row as $x => $ingredient){
-								$result->addIngredient($x, $y, Item::get($ingredient["ID"], ($ingredient["Damage"] < 0 ? null : $ingredient["Damage"]), $ingredient["Count"]));
+								$result->addIngredient($x, $y, Item::get($ingredient["id"], ($ingredient["damage"] < 0 ? null : $ingredient["damage"]), $ingredient["count"], $ingredient["nbt"]));
 							}
 						}
 						$this->registerRecipe($result);
 					}
 					break;
 				case 2:
-					$result = $recipe["Result"];
-					$resultItem = Item::get($result["ID"], $result["Damage"], $result["Count"]);
-					$this->registerRecipe(new FurnaceRecipe($resultItem, Item::get($recipe["Ingredients"], null, 1)));
-					break;
 				case 3:
-					$result = $recipe["Result"];
-					$resultItem = Item::get($result["ID"], $result["Damage"], $result["Count"]);
-					$this->registerRecipe(new FurnaceRecipe($resultItem, Item::get($recipe["Ingredients"]["ID"], $recipe["Ingredients"]["Damage"], 1)));
+					$result = $recipe["output"];
+					$resultItem = Item::get($result["id"], $result["damage"], $result["count"], $result["nbt"]);
+					$this->registerRecipe(new FurnaceRecipe($resultItem, Item::get($recipe["inputId"], $recipe["inputDamage"] ?? null, 1)));
 					break;
 				default:
 					break;
