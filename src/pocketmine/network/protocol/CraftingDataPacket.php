@@ -28,7 +28,6 @@ use pocketmine\inventory\FurnaceRecipe;
 use pocketmine\inventory\MultiRecipe;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
-use pocketmine\item\enchantment\EnchantmentList;
 use pocketmine\item\Item;
 use pocketmine\utils\BinaryStream;
 
@@ -39,7 +38,6 @@ class CraftingDataPacket extends DataPacket{
 	const ENTRY_SHAPED = 1;
 	const ENTRY_FURNACE = 2;
 	const ENTRY_FURNACE_DATA = 3;
-	const ENTRY_ENCHANT_LIST = -1; //Deprecated
 	const ENTRY_MULTI = 4;
 
 	/** @var object[] */
@@ -115,9 +113,8 @@ class CraftingDataPacket extends DataPacket{
 			return self::writeShapedRecipe($entry, $stream);
 		}elseif($entry instanceof FurnaceRecipe){
 			return self::writeFurnaceRecipe($entry, $stream);
-		}elseif($entry instanceof EnchantmentList){
-			return self::writeEnchantList($entry, $stream);
 		}
+		//TODO: add MultiRecipe
 
 		return -1;
 	}
@@ -169,26 +166,6 @@ class CraftingDataPacket extends DataPacket{
 		}
 	}
 
-	private static function writeEnchantList(EnchantmentList $list, BinaryStream $stream){
-		//TODO: new recipe type 4 (not enchanting recipe anymore)
-		return -1;
-		/*
-		$stream->putByte($list->getSize());
-		for($i = 0; $i < $list->getSize(); ++$i){
-			$entry = $list->getSlot($i);
-			$stream->putUnsignedVarInt($entry->getCost());
-			$stream->putUnsignedVarInt(count($entry->getEnchantments()));
-			foreach($entry->getEnchantments() as $enchantment){
-				$stream->putUnsignedVarInt($enchantment->getId());
-				$stream->putUnsignedVarInt($enchantment->getLevel());
-			}
-			$stream->putString($entry->getRandomName());
-		}
-
-		return CraftingDataPacket::ENTRY_ENCHANT_LIST;
-		*/
-	}
-
 	public function addShapelessRecipe(ShapelessRecipe $recipe){
 		$this->entries[] = $recipe;
 	}
@@ -199,10 +176,6 @@ class CraftingDataPacket extends DataPacket{
 
 	public function addFurnaceRecipe(FurnaceRecipe $recipe){
 		$this->entries[] = $recipe;
-	}
-
-	public function addEnchantList(EnchantmentList $list){
-		$this->entries[] = $list;
 	}
 
 	public function encode(){
