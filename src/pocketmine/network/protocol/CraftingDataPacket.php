@@ -52,68 +52,60 @@ class CraftingDataPacket extends DataPacket{
 	}
 
 	public function decode(){
-		$count = $this->getUnsignedVarInt();
-		for($i = 0; $i < $count; ++$i){
-			$recipeType = $this->getUnsignedVarInt();
+		$entries = [];
+		$recipeCount = $this->getUnsignedVarInt();
+		for($i = 0; $i < $recipeCount; ++$i){
+			$entry = [];
+			$entry["type"] = $recipeType = $this->getVarInt();
+
 			switch($recipeType){
 				case self::ENTRY_SHAPELESS:
 					$ingredientCount = $this->getUnsignedVarInt();
 					/** @var Item */
-					$ingredients = [];
+					$entry["input"] = [];
 					for($j = 0; $j < $ingredientCount; ++$j){
-						$ingredients[] = $this->getSlot();
+						$entry["input"][] = $this->getSlot();
 					}
 					$resultCount = $this->getUnsignedVarInt();
-					$results = [];
+					$entry["output"] = [];
 					for($k = 0; $k < $resultCount; ++$k){
-						$results[] = $this->getSlot();
+						$entry["output"][] = $this->getSlot();
 					}
-					$uuid = $this->getUUID();
-					$recipe = new ShapelessRecipe($results[0]); //ouch...
-					$recipe->setId($uuid);
-					foreach($ingredients as $ingr){
-						$recipe->addIngredient($ingr);
-					}
+					$entry["uuid"] = $this->getUUID()->toString();
+
 					break;
 				case self::ENTRY_SHAPED:
-					$width = $this->getVarInt();
-					$height = $this->getVarInt();
-					$count = $width * $height;
-					$ingredients = [];
+					$entry["width"] = $this->getVarInt();
+					$entry["height"] = $this->getVarInt();
+					$count = $entry["width"] * $entry["height"];
+					$entry["input"] = [];
 					for($j = 0; $j < $count; ++$j){
-						$ingredients[] = $this->getSlot();
+						$entry["input"][] = $this->getSlot();
 					}
 					$resultCount = $this->getUnsignedVarInt();
-					$results = [];
+					$entry["output"] = [];
 					for($k = 0; $k < $resultCount; ++$k){
-						$results[] = $this->getSlot();
+						$entry["output"][] = $this->getSlot();
 					}
-					$uuid = $this->getUUID();
-					$recipe = new ShapedRecipe($results[0], $height, $width); //yes, blatant copy-paste...
-					$recipe->setId($uuid);
-					foreach($ingredients as $ingr){
-						$recipe->addIngredient($ingr);
-					}
+					$entry["uuid"] = $this->getUUID()->toString();
 					break;
 				case self::ENTRY_FURNACE:
 				case self::ENTRY_FURNACE_DATA:
-					$inputId = $this->getVarInt();
+					$entry["inputId"] = $this->getVarInt();
 					if($recipeType === self::ENTRY_FURNACE_DATA){
-						$inputData = $this->getVarInt();
+						$entry["inputDamage"] = $this->getVarInt();
 					}
-					$result = $this->getSlot();
-					$recipe = new FurnaceRecipe(Item::get($inputId, $inputData ?? null), $result);
+					$entry["output"] = $this->getSlot();
 					break;
 				case self::ENTRY_MULTI:
-					$uuid = $this->getUUID();
-					$recipe = new MultiRecipe($uuid);
+					$entry["uuid"] = $this->getUUID()->toString();
 					break;
 				default:
 					throw new \UnexpectedValueException("Unhandled recipe type $recipeType!"); //do not continue attempting to decode
 			}
-			$this->entries[] = $recipe;
+			$entries[] = $entry;
 		}
-		//TODO: serialize to json
+		$this->getBool(); //cleanRecipes
 	}
 
 	private static function writeEntry($entry, BinaryStream $stream){
