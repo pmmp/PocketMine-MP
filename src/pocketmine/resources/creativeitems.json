@@ -1,3330 +1,4046 @@
 [
     {
         "id": 138,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 66,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 27,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 28,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 126,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 4,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 98,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 98,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 98,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 98,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 48,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 5,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 5,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 5,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 5,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 5,
-        "damage": 4
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 5,
-        "damage": 5
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 45,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 1,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 1,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 1,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 1,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 1,
-        "damage": 4
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 1,
-        "damage": 5
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 1,
-        "damage": 6
+        "damage": 6,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 3,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 243,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 2,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 110,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 82,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 172,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 159,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 159,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 159,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 159,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 159,
-        "damage": 4
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 159,
-        "damage": 5
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 159,
-        "damage": 6
+        "damage": 6,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 159,
-        "damage": 7
+        "damage": 7,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 159,
-        "damage": 8
+        "damage": 8,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 159,
-        "damage": 9
+        "damage": 9,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 159,
-        "damage": 10
+        "damage": 10,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 159,
-        "damage": 11
+        "damage": 11,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 159,
-        "damage": 12
+        "damage": 12,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 159,
-        "damage": 13
+        "damage": 13,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 159,
-        "damage": 14
+        "damage": 14,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 159,
-        "damage": 15
+        "damage": 15,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 24,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 24,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 24,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 179,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 179,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 179,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 12,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 12,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 13,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 139,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 139,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 17,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 17,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 17,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 17,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 162,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 162,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 112,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 87,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 88,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 7,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 67,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 53,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 134,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 135,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 136,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 163,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 164,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 108,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 128,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 180,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 109,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 114,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 156,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 44,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 44,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 111,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 158,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 158,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 158,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 158,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 158,
-        "damage": 4
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 158,
-        "damage": 5
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 44,
-        "damage": 4
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 44,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 182,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 44,
-        "damage": 5
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 44,
-        "damage": 6
+        "damage": 6,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 44,
-        "damage": 7
+        "damage": 7,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 155,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 155,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 155,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 168,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 168,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 168,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 169,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 263,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 263,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 264,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 265,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 266,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 388,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 280,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 281,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 287,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 288,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 318,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 334,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 415,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 337,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 353,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 336,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 405,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 16,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 15,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 14,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 56,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 21,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 73,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 129,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 153,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 41,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 42,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 57,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 22,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 173,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 133,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 152,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 406,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 49,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 79,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 174,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 80,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 78,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 20,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 89,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 106,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 65,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 19,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 19,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 50,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 102,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 325,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 325,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 325,
-        "damage": 8
+        "damage": 8,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 325,
-        "damage": 10
+        "damage": 10,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 339,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 340,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 352,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 324,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 427,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 428,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 429,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 430,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 431,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 330,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 395,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 96,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 167,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 85,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 85,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 85,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 85,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 85,
-        "damage": 4
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 85,
-        "damage": 5
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 113,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 107,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 183,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 184,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 185,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 187,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 186,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 101,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 355,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 47,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 323,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 321,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 389,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 58,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 245,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 54,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 146,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 61,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 379,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 380,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 25,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 46,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 121,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 120,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 145,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 145,
-        "damage": 4
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 145,
-        "damage": 8
+        "damage": 8,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 37,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 38,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 38,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 38,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 38,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 38,
-        "damage": 4
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 38,
-        "damage": 5
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 38,
-        "damage": 6
+        "damage": 6,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 38,
-        "damage": 7
+        "damage": 7,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 38,
-        "damage": 8
+        "damage": 8,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 175,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 175,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 175,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 175,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 175,
-        "damage": 4
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 175,
-        "damage": 5
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 39,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 40,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 99,
-        "damage": 14
+        "damage": 14,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 100,
-        "damage": 14
+        "damage": 14,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 99,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 99,
-        "damage": 15
+        "damage": 15,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 81,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 103,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 86,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 91,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 30,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 170,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 338,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 296,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 31,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 31,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 32,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 6,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 6,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 6,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 6,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 6,
-        "damage": 4
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 6,
-        "damage": 5
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 18,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 18,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 18,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 18,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 161,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 161,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 6
+        "damage": 6,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 7
+        "damage": 7,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 8
+        "damage": 8,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 9
+        "damage": 9,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 10
+        "damage": 10,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 11
+        "damage": 11,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 12
+        "damage": 12,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 13
+        "damage": 13,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 14
+        "damage": 14,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 15
+        "damage": 15,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 16
+        "damage": 16,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 17
+        "damage": 17,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 18
+        "damage": 18,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 19
+        "damage": 19,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 20
+        "damage": 20,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 21
+        "damage": 21,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 22
+        "damage": 22,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 23
+        "damage": 23,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 24
+        "damage": 24,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 25
+        "damage": 25,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 26
+        "damage": 26,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 27
+        "damage": 27,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 28
+        "damage": 28,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 29
+        "damage": 29,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 30
+        "damage": 30,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 31
+        "damage": 31,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 32
+        "damage": 32,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 33
+        "damage": 33,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 34
+        "damage": 34,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 35
+        "damage": 35,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 36
+        "damage": 36,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 262,
-        "damage": 37
+        "damage": 37,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 295,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 361,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 362,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 458,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 344,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 260,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 322,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 466,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 349,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 460,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 461,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 462,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 350,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 463,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 367,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 282,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 297,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 319,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 320,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 365,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 366,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 423,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 424,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 363,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 364,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 360,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 391,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 392,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 393,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 394,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 457,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 354,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 357,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 400,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 411,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 412,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 413,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 399,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 420,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 421,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 378,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 369,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 371,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 396,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 382,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 414,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 370,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 341,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 377,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 372,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 289,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 331,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 348,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 375,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 376,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 397,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 397,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 397,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 397,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 397,
-        "damage": 4
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 261,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 346,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 259,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 359,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 347,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 345,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 398,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 328,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 342,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 408,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 407,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 333,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 333,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 333,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 333,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 333,
-        "damage": 4
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 333,
-        "damage": 5
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 329,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 416,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 417,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 418,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 419,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 390,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 15
+        "damage": 15,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 10
+        "damage": 10,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 11
+        "damage": 11,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 12
+        "damage": 12,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 13
+        "damage": 13,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 14
+        "damage": 14,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 22
+        "damage": 22,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 16
+        "damage": 16,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 19
+        "damage": 19,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 18
+        "damage": 18,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 23
+        "damage": 23,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 24
+        "damage": 24,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 25
+        "damage": 25,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 26
+        "damage": 26,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 27
+        "damage": 27,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 33
+        "damage": 33,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 38
+        "damage": 38,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 39
+        "damage": 39,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 34
+        "damage": 34,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 48
+        "damage": 48,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 46
+        "damage": 46,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 37
+        "damage": 37,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 35
+        "damage": 35,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 32
+        "damage": 32,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 36
+        "damage": 36,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 47
+        "damage": 47,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 17
+        "damage": 17,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 40
+        "damage": 40,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 45
+        "damage": 45,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 49
+        "damage": 49,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 50
+        "damage": 50,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 42
+        "damage": 42,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 41
+        "damage": 41,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 383,
-        "damage": 43
+        "damage": 43,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 97,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 97,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 97,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 97,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 97,
-        "damage": 4
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 97,
-        "damage": 5
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 384,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 385,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 268,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 290,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 269,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 270,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 271,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 272,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 291,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 273,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 274,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 275,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 267,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 292,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 256,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 257,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 258,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 276,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 293,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 277,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 278,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 279,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 283,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 294,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 284,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 285,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 286,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 298,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 299,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 300,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 301,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 302,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 303,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 304,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 305,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 306,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 307,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 308,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 309,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 310,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 311,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 312,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 313,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 314,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 315,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 316,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 317,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 69,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 123,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 76,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 72,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 70,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 147,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 148,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 143,
-        "damage": 5
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 77,
-        "damage": 5
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 151,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 131,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 356,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 404,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 23,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 125,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 33,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 29,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 251,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 410,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 332,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 409,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 422,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 52,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 116,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 165,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 0,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0000\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 0,
-                    "lvl": 2
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0000\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 0,
-                    "lvl": 3
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0000\u0000\u0002\u0003\u0000lvl\u0003\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 0,
-                    "lvl": 4
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0000\u0000\u0002\u0003\u0000lvl\u0004\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 1,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0001\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 1,
-                    "lvl": 2
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0001\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 1,
-                    "lvl": 3
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0001\u0000\u0002\u0003\u0000lvl\u0003\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 1,
-                    "lvl": 4
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0001\u0000\u0002\u0003\u0000lvl\u0004\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 2,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0002\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 2,
-                    "lvl": 2
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0002\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 2,
-                    "lvl": 3
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0002\u0000\u0002\u0003\u0000lvl\u0003\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 2,
-                    "lvl": 4
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0002\u0000\u0002\u0003\u0000lvl\u0004\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 3,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0003\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 3,
-                    "lvl": 2
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0003\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 3,
-                    "lvl": 3
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0003\u0000\u0002\u0003\u0000lvl\u0003\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 3,
-                    "lvl": 4
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0003\u0000\u0002\u0003\u0000lvl\u0004\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 4,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0004\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 4,
-                    "lvl": 2
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0004\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 4,
-                    "lvl": 3
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0004\u0000\u0002\u0003\u0000lvl\u0003\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 4,
-                    "lvl": 4
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0004\u0000\u0002\u0003\u0000lvl\u0004\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 5,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0005\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 5,
-                    "lvl": 2
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0005\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 5,
-                    "lvl": 3
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0005\u0000\u0002\u0003\u0000lvl\u0003\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 6,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0006\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 6,
-                    "lvl": 2
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0006\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 6,
-                    "lvl": 3
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0006\u0000\u0002\u0003\u0000lvl\u0003\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 7,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0007\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 7,
-                    "lvl": 2
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0007\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 7,
-                    "lvl": 3
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0007\u0000\u0002\u0003\u0000lvl\u0003\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 8,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\b\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 9,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\t\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 9,
-                    "lvl": 2
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\t\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 9,
-                    "lvl": 3
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\t\u0000\u0002\u0003\u0000lvl\u0003\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 9,
-                    "lvl": 4
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\t\u0000\u0002\u0003\u0000lvl\u0004\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 9,
-                    "lvl": 5
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\t\u0000\u0002\u0003\u0000lvl\u0005\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 10,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\n\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 10,
-                    "lvl": 2
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\n\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 10,
-                    "lvl": 3
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\n\u0000\u0002\u0003\u0000lvl\u0003\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 10,
-                    "lvl": 4
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\n\u0000\u0002\u0003\u0000lvl\u0004\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 10,
-                    "lvl": 5
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\n\u0000\u0002\u0003\u0000lvl\u0005\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 11,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u000b\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 11,
-                    "lvl": 2
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u000b\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 11,
-                    "lvl": 3
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u000b\u0000\u0002\u0003\u0000lvl\u0003\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 11,
-                    "lvl": 4
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u000b\u0000\u0002\u0003\u0000lvl\u0004\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 11,
-                    "lvl": 5
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u000b\u0000\u0002\u0003\u0000lvl\u0005\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 12,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\f\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 12,
-                    "lvl": 2
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\f\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 13,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\r\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 13,
-                    "lvl": 2
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\r\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 14,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u000e\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 14,
-                    "lvl": 2
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u000e\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 14,
-                    "lvl": 3
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u000e\u0000\u0002\u0003\u0000lvl\u0003\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 15,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u000f\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 15,
-                    "lvl": 2
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u000f\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 15,
-                    "lvl": 3
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u000f\u0000\u0002\u0003\u0000lvl\u0003\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 15,
-                    "lvl": 4
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u000f\u0000\u0002\u0003\u0000lvl\u0004\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 15,
-                    "lvl": 5
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u000f\u0000\u0002\u0003\u0000lvl\u0005\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 16,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0010\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 17,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0011\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 17,
-                    "lvl": 2
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0011\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 17,
-                    "lvl": 3
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0011\u0000\u0002\u0003\u0000lvl\u0003\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 18,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0012\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 18,
-                    "lvl": 2
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0012\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 18,
-                    "lvl": 3
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0012\u0000\u0002\u0003\u0000lvl\u0003\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 19,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0013\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 19,
-                    "lvl": 2
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0013\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 19,
-                    "lvl": 3
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0013\u0000\u0002\u0003\u0000lvl\u0003\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 19,
-                    "lvl": 4
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0013\u0000\u0002\u0003\u0000lvl\u0004\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 19,
-                    "lvl": 5
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0013\u0000\u0002\u0003\u0000lvl\u0005\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 20,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0014\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 20,
-                    "lvl": 2
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0014\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 21,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0015\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 22,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0016\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 23,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0017\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 23,
-                    "lvl": 2
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0017\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 23,
-                    "lvl": 3
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0017\u0000\u0002\u0003\u0000lvl\u0003\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 24,
-                    "lvl": 1
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0018\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 24,
-                    "lvl": 2
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0018\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
     },
     {
         "id": 403,
         "damage": 0,
-        "nbt": {
-            "ench": [
-                {
-                    "id": 24,
-                    "lvl": 3
-                }
-            ]
-        }
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0018\u0000\u0002\u0003\u0000lvl\u0003\u0000\u0000\u0000"
     },
     {
         "id": 35,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 35,
-        "damage": 8
+        "damage": 8,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 35,
-        "damage": 7
+        "damage": 7,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 35,
-        "damage": 15
+        "damage": 15,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 35,
-        "damage": 12
+        "damage": 12,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 35,
-        "damage": 14
+        "damage": 14,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 35,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 35,
-        "damage": 4
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 35,
-        "damage": 5
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 35,
-        "damage": 13
+        "damage": 13,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 35,
-        "damage": 9
+        "damage": 9,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 35,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 35,
-        "damage": 11
+        "damage": 11,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 35,
-        "damage": 10
+        "damage": 10,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 35,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 35,
-        "damage": 6
+        "damage": 6,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 171,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 171,
-        "damage": 8
+        "damage": 8,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 171,
-        "damage": 7
+        "damage": 7,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 171,
-        "damage": 15
+        "damage": 15,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 171,
-        "damage": 12
+        "damage": 12,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 171,
-        "damage": 14
+        "damage": 14,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 171,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 171,
-        "damage": 4
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 171,
-        "damage": 5
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 171,
-        "damage": 13
+        "damage": 13,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 171,
-        "damage": 9
+        "damage": 9,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 171,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 171,
-        "damage": 11
+        "damage": 11,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 171,
-        "damage": 10
+        "damage": 10,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 171,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 171,
-        "damage": 6
+        "damage": 6,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 351,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 351,
-        "damage": 8
+        "damage": 8,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 351,
-        "damage": 7
+        "damage": 7,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 351,
-        "damage": 15
+        "damage": 15,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 351,
-        "damage": 12
+        "damage": 12,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 351,
-        "damage": 14
+        "damage": 14,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 351,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 351,
-        "damage": 4
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 351,
-        "damage": 5
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 351,
-        "damage": 13
+        "damage": 13,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 351,
-        "damage": 9
+        "damage": 9,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 351,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 351,
-        "damage": 11
+        "damage": 11,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 351,
-        "damage": 10
+        "damage": 10,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 351,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 351,
-        "damage": 6
+        "damage": 6,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 374,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 4
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 5
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 6
+        "damage": 6,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 7
+        "damage": 7,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 8
+        "damage": 8,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 9
+        "damage": 9,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 10
+        "damage": 10,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 11
+        "damage": 11,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 12
+        "damage": 12,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 13
+        "damage": 13,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 14
+        "damage": 14,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 15
+        "damage": 15,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 16
+        "damage": 16,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 17
+        "damage": 17,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 18
+        "damage": 18,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 19
+        "damage": 19,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 20
+        "damage": 20,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 21
+        "damage": 21,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 22
+        "damage": 22,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 23
+        "damage": 23,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 24
+        "damage": 24,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 25
+        "damage": 25,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 26
+        "damage": 26,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 27
+        "damage": 27,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 28
+        "damage": 28,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 29
+        "damage": 29,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 30
+        "damage": 30,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 31
+        "damage": 31,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 32
+        "damage": 32,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 33
+        "damage": 33,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 34
+        "damage": 34,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 35
+        "damage": 35,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 373,
-        "damage": 36
+        "damage": 36,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 0
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 1
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 2
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 3
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 4
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 5
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 6
+        "damage": 6,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 7
+        "damage": 7,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 8
+        "damage": 8,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 9
+        "damage": 9,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 10
+        "damage": 10,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 11
+        "damage": 11,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 12
+        "damage": 12,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 13
+        "damage": 13,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 14
+        "damage": 14,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 15
+        "damage": 15,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 16
+        "damage": 16,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 17
+        "damage": 17,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 18
+        "damage": 18,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 19
+        "damage": 19,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 20
+        "damage": 20,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 21
+        "damage": 21,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 22
+        "damage": 22,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 23
+        "damage": 23,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 24
+        "damage": 24,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 25
+        "damage": 25,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 26
+        "damage": 26,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 27
+        "damage": 27,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 28
+        "damage": 28,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 29
+        "damage": 29,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 30
+        "damage": 30,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 31
+        "damage": 31,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 32
+        "damage": 32,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 33
+        "damage": 33,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 34
+        "damage": 34,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 35
+        "damage": 35,
+        "count": 1,
+        "nbt": ""
     },
     {
         "id": 438,
-        "damage": 36
+        "damage": 36,
+        "count": 1,
+        "nbt": ""
     }
 ]
