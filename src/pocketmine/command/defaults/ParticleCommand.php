@@ -37,10 +37,10 @@ use pocketmine\level\particle\FlameParticle;
 use pocketmine\level\particle\HappyVillagerParticle;
 use pocketmine\level\particle\HeartParticle;
 use pocketmine\level\particle\HugeExplodeParticle;
+use pocketmine\level\particle\HugeExplodeSeedParticle;
 use pocketmine\level\particle\InkParticle;
 use pocketmine\level\particle\InstantEnchantParticle;
 use pocketmine\level\particle\ItemBreakParticle;
-use pocketmine\level\particle\LargeExplodeParticle;
 use pocketmine\level\particle\LavaDripParticle;
 use pocketmine\level\particle\LavaParticle;
 use pocketmine\level\particle\Particle;
@@ -131,10 +131,10 @@ class ParticleCommand extends VanillaCommand{
 		switch($name){
 			case "explode":
 				return new ExplodeParticle($pos);
-			case "largeexplode":
-				return new LargeExplodeParticle($pos);
 			case "hugeexplosion":
 				return new HugeExplodeParticle($pos);
+			case "hugeexplosionseed":
+				return new HugeExplodeSeedParticle($pos);
 			case "bubble":
 				return new BubbleParticle($pos);
 			case "splash":

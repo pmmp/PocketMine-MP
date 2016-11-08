@@ -39,8 +39,8 @@ abstract class Particle extends Vector3{
 	const TYPE_RISING_RED_DUST = 11;
 	const TYPE_ITEM_BREAK = 12;
 	const TYPE_SNOWBALL_POOF = 13;
-	const TYPE_HUGE_EXPLODE = 14, TYPE_LARGE_EXPLODE = 14; //TODO: fix this properly
-	const TYPE_HUGE_EXPLODE_SEED = 15; //much bigger explosion particle
+	const TYPE_HUGE_EXPLODE = 14;
+	const TYPE_HUGE_EXPLODE_SEED = 15;
 	const TYPE_MOB_FLAME = 16;
 	const TYPE_HEART = 17;
 	const TYPE_TERRAIN = 18;
