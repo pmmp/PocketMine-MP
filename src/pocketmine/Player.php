@@ -511,9 +511,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$data = new \stdClass();
 		$count = 0;
 		foreach($this->server->getCommandMap()->getCommands() as $command){
-			if(!$command->testPermissionSilent($this)){
+			//TODO: fix command permission checks on join
+			/*if(!$command->testPermissionSilent($this)){
 				continue;
-			}
+			}*/
 			++$count;
 			$data->{$command->getName()}->versions[0] = $command->generateCustomCommandData($this);
 		}
