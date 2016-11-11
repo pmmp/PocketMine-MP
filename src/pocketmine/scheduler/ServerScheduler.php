@@ -76,6 +76,9 @@ class ServerScheduler{
 	 * @return void
 	 */
 	public function scheduleAsyncTask(AsyncTask $task){
+		if($task->getTaskId() !== null){
+			throw new \UnexpectedValueException("Attempt to schedule the same AsyncTask instance twice");
+		}
 		$id = $this->nextId();
 		$task->setTaskId($id);
 		$this->asyncPool->submitTask($task);
@@ -90,6 +93,9 @@ class ServerScheduler{
 	 * @return void
 	 */
 	public function scheduleAsyncTaskToWorker(AsyncTask $task, $worker){
+		if($task->getTaskId() !== null){
+			throw new \UnexpectedValueException("Attempt to schedule the same AsyncTask instance twice");
+		}
 		$id = $this->nextId();
 		$task->setTaskId($id);
 		$this->asyncPool->submitTaskToWorker($task, $worker);
