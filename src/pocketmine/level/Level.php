@@ -1273,6 +1273,13 @@ class Level implements ChunkManager, Metadatable{
 		return $this->blockCache[$index] = $block;
 	}
 
+	/**
+	 * @return Distance between $pos1 and $pos2
+	*/
+	public function getHorizontalBlockDistance(Vector3 $pos1, Vector3 $pos2){
+		return abs(($pos1->x - $pos2->x)) + abs(($pos1->z - $pos2->z));
+	}
+
 	public function updateAllLight(Vector3 $pos){
 		$this->updateBlockSkyLight($pos->x, $pos->y, $pos->z);
 		$this->updateBlockLight($pos->x, $pos->y, $pos->z);
@@ -1284,16 +1291,16 @@ class Level implements ChunkManager, Metadatable{
 	*/
 	public function updateBlockSkyLight($x, $y, $z){
 		$directSkyLight = $this->getDirectSkyLight($x, $y, $z);
-		echo($directSkyLight."\n");
+		$this->server->broadcastMessage("DirectSkyLightLvl:".$directSkyLight);
 		if($directSkyLight >= 14){ //No need to continue calculation, we can't get higher skylight!
 			$this->setBlockSkyLightAt($x, $y, $z, $directSkyLight);
 		}
 		
 		$lightWays = $this->findLightWays($x, $y, $z);
-		if($directSkyLight == 0 && $lightWays === false){ //No skylight at all (nothing from above && nothing from the sides)
-			$this->setBlockSkyLightAt($x, $y, $z, 0); //repl 0 with $directSkyLight?
+		if($lightWays === false){ //No horizontal ways for the skylight, set light from above.
+			$this->setBlockSkyLightAt($x, $y, $z, $directSkyLight);
 		}else{
-			$this->getSkyLightViaWays($lightWays, [$x, $y, $z]);
+			$this->setBlockSkyLightAt($x, $y, $z, $this->getSkyLightViaWays([$x, $y, $z], $lightWays, [$x, $y, $z, $directSkyLight]));
 		}
 	}
 	
@@ -1301,45 +1308,52 @@ class Level implements ChunkManager, Metadatable{
 		$chunk = $this->getChunk($x >> 4, $z >> 4, true);
 		
 		$directSkyLight = 15;
-		for($i = $y; $i >= 128; $i++){
-			$lightResistance = Block::getSkyLightResistance($chunk->getBlockId($x & 0x0f, ($y+$i) & 0x7f, $z & 0x0f));
+		for($i = $y; $i <= 127; $i++){
+			$lightResistance = Block::getSkyLightResistance($chunk->getBlockId($x & 0x0f, $i & 0x7f, $z & 0x0f));
+			echo("lightRes".$lightResistance); #DBG
 			$directSkyLight -= $lightResistance;
-			if($directSkyLight <= 0){ //Skylight is 0 from above
+			echo("currLight".$directSkyLight); #DBG
+			if($directSkyLight <= 0){ //Skylight is 0 from above (No need to continue calculating)
 				return 0;
 			}
 		}
+		echo("\n"); #DBG
 		return $directSkyLight;
 	}
 	
-	private function getSkyLightViaWays($lightWays, $origin){
-		$origins = [];
+	private function getSkyLightViaWays($calcBase, $lightWays, $origin, $origins = [], $lastOriginIndex = -1){ //NOTE! $origin is the block we're doing the calculations for, $origins[] should contain blocks with directSkyLight in range of the $origin
+		if(/* max Limit */ 15 <= $this->getHorizontalBlockDistance(new Vector3($origin[0], $origin[1], $origin[2]), new Vector3($origins[$lastOriginIndex][0], $origins[$lastOriginIndex][1], $origins[$lastOriginIndex][3])) /*|| @TODO: way resistance limit checking */ ){ //should be a complicated recursive call control
+			return -1; //No origins useful after this point
+		}
 		$lightLvlsFromDir = [];
+		$currResistance = 0;
+		var_dump($lightWays); #DBG
 		foreach($lightWays as $dir => $lightWay){ //max 4
 			$directSkyLight = $this->getDirectSkyLight($lightWay[0], $lightWay[1], $lightWay[2]);
-			if($directSkyLight > 0){ //Found an origin of light in our current lightWay! (not THE origin, there can be up to 15*M_PI origins for one block)
-				if($directSkyLight >= 14){
+			$this->server->broadcastMessage("LightWay '".$dir."' has ".$directSkyLight." directSkyLight"); #DBG
+			if($directSkyLight > 0){ //Found an origin of light in our current lightWay! (not THE origin, there can be many origins for one block)
+				if($directSkyLight >= 14){ //No need to continue calculation, we can't get higher skylight!
 					$lightLvlsFromDir[$dir] = $directSkyLight;
 					continue;
 				}
-				echo(" NOT YET CALCULATEABLE!!!! origin found, too low to assume only origin. "); 
-				return;
-				$origins[Level::blockHash($lightWay[0], $lightWay[1], $lightWay[2])] = $directSkyLight;
+				$origins[$lastOriginIndex = Level::blockHash($lightWay[0], $lightWay[1], $lightWay[2])] = $directSkyLight;
 			}
-			echo(" NOT YET CALCULATEABLE!!!! no origin found, must calculate further. ");
-			return;
+			$currResistance = Block::getSkyLightResistance($this->getBlockIdAt($calcBase[0], $calcBase[1], $calcBase[3]));
+			$this->server->broadcastMessage("No origin at '".$dir."'!"); #DBG
 			$newLightWays = $this->findLightWays($lightWay[0], $lightWay[1], $lightWay[2]);
-			$lightLvlsFromDir[$dir] = $this->getSkyLightViaWays($newLightWays, $lightWay); //lightWay contains originpos
+			$lightLvlsFromDir[$dir] = $this->getSkyLightViaWays($newLightWays, $origin, $origins, $lastOriginIndex);
 		}
-		return max($lightLvlsFromDir) - 1;
+		return max($lightLvlsFromDir) - $currResistance;
 	}
+		
 	
 	private function findLightWays($x, $y, $z){
 		$lightWays = [];
 		$vec3 = new Vector3($x, $y, $z);
 		for($i = Vector3::SIDE_NORTH; $i <= Vector3::SIDE_EAST; $i++){
 			$newVec3 = $vec3->getSide($i);
-			if(Block::getSkyLightResistance($this->getBlockIdAt($newVec3->x, $newVec3->y, $newVec3->z)) > 0){
-				$lightWays[$i] = [$newVec3->x, $newVec3->y, $newVec3->z];
+			if($blockResistance = Block::getSkyLightResistance($this->getBlockIdAt($newVec3->x, $newVec3->y, $newVec3->z)) < 15){
+				$lightWays[$i] = [$newVec3->x, $newVec3->y, $newVec3->z, $blockResistance];
 			}
 		}
 		return $lightWays === [] ? false : $lightWays;
