@@ -175,7 +175,7 @@ abstract class AsyncTask extends Collectable{
 	 * Call this method from {@link AsyncTask#onRun} (AsyncTask execution therad) to schedule a call to
 	 * {@link AsyncTask#onProgressUpdate} from the main thread with the given progress parameter.
 	 *
-	 * @param \Threaded|mixed $progress A Threaded object, or a value that can be safely serialize()'ed.
+	 * @param mixed $progress A value that can be safely serialize()'ed.
 	 */
 	public function publishProgress($progress){
 		$this->progressUpdates[] = $progress;
@@ -198,10 +198,9 @@ abstract class AsyncTask extends Collectable{
 	 * All {@link AsyncTask#publishProgress} calls should result in {@link AsyncTask#onProgressUpdate} calls before
 	 * {@link AsyncTask#onCompletion} is called.
 	 *
-	 * @param Server          $server
-	 * @param \Threaded|mixed $progress The parameter passed to {@link AsyncTask#publishProgress}. If it is not a
-	 *                                  Threaded object, it would be serialize()'ed and later unserialize()'ed, as if it
-	 *                                  has been cloned.
+	 * @param Server $server
+	 * @param mixed  $progress The parameter passed to {@link AsyncTask#publishProgress}. It is serialize()'ed
+	 *                         and then unserialize()'ed, as if it has been cloned.
 	 */
 	public function onProgressUpdate(Server $server, $progress){
 
