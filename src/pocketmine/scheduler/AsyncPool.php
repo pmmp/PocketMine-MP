@@ -142,7 +142,7 @@ class AsyncPool{
 		Timings::$schedulerAsyncTimer->startTiming();
 
 		foreach($this->tasks as $task){
-			if($task->progressUpdates !== null){
+			if(!$task->isGarbage() and $task->progressUpdates !== null){
 				if($task->progressUpdates->count() !== 0){
 					$progress = $task->progressUpdates->shift();
 					$task->onProgressUpdate($this->server, $progress);
