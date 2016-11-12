@@ -178,7 +178,7 @@ abstract class AsyncTask extends Collectable{
 	 * @param mixed $progress A value that can be safely serialize()'ed.
 	 */
 	public function publishProgress($progress){
-		$this->progressUpdates[] = $progress;
+		$this->progressUpdates[] = serialize($progress);
 	}
 
 	/**
@@ -187,9 +187,9 @@ abstract class AsyncTask extends Collectable{
 	 * @param Server $server
 	 */
 	public function checkProgressUpdates(Server $server){
-		if($this->progressUpdates->count() !== 0){
+		while($this->progressUpdates->count() !== 0){
 			$progress = $this->progressUpdates->shift();
-			$this->onProgressUpdate($server, $progress);
+			$this->onProgressUpdate($server, unserialize($progress));
 		}
 	}
 
