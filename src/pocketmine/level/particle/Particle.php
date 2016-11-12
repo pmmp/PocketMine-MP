@@ -51,16 +51,16 @@ abstract class Particle extends Vector3{
 	const TYPE_DRIP_WATER = 23;
 	const TYPE_DRIP_LAVA = 24;
 	const TYPE_FALLING_DUST = 25, TYPE_DUST = 25;
-	const TYPE_MOB_SPELL = 26; //TODO: verify
-	const TYPE_MOB_SPELL_AMBIENT = 27; //TODO: verify
-	const TYPE_MOB_SPELL_INSTANTANEOUS = 28; //TODO: verify
+	const TYPE_MOB_SPELL = 26;
+	const TYPE_MOB_SPELL_AMBIENT = 27;
+	const TYPE_MOB_SPELL_INSTANTANEOUS = 28;
 	const TYPE_INK = 29;
 	const TYPE_SLIME = 30;
 	const TYPE_RAIN_SPLASH = 31;
 	const TYPE_VILLAGER_ANGRY = 32;
 	const TYPE_VILLAGER_HAPPY = 33;
 	const TYPE_ENCHANTMENT_TABLE = 34;
-	const TYPE_TRACKING_EMITTER = 35; //???
+	const TYPE_TRACKING_EMITTER = 35;
 	const TYPE_NOTE = 36;
 	//37 yet another SpellParticle of some description
 	const TYPE_CARROT = 38;
