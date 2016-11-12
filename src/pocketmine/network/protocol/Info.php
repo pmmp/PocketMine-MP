@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -39,7 +39,7 @@ interface Info{
 	const DISCONNECT_PACKET = 0x05;
 	const BATCH_PACKET = 0x06;
 	const RESOURCE_PACKS_INFO_PACKET = 0x07;
-	const RESOURCE_PACK_STACK_PACKET = 0x08;
+	const RESOURCE_PACK_STACK_PACKET = 0x08; //ResourcePacksStackPacket
 	const RESOURCE_PACK_CLIENT_RESPONSE_PACKET = 0x09;
 	const TEXT_PACKET = 0x0a;
 	const SET_TIME_PACKET = 0x0b;
@@ -94,9 +94,9 @@ interface Info{
 	const CHANGE_DIMENSION_PACKET = 0x3c;
 	const SET_PLAYER_GAME_TYPE_PACKET = 0x3d;
 	const PLAYER_LIST_PACKET = 0x3e;
-	const EVENT_PACKET = 0x3f;
+	const EVENT_PACKET = 0x3f; //TelemetryEventPacket
 	const SPAWN_EXPERIENCE_ORB_PACKET = 0x40;
-	const CLIENTBOUND_MAP_ITEM_DATA_PACKET = 0x41;
+	const CLIENTBOUND_MAP_ITEM_DATA_PACKET = 0x41; //MapItemDataPacket
 	const MAP_INFO_REQUEST_PACKET = 0x42;
 	const REQUEST_CHUNK_RADIUS_PACKET = 0x43;
 	const CHUNK_RADIUS_UPDATED_PACKET = 0x44;
@@ -106,20 +106,11 @@ interface Info{
 	const CAMERA_PACKET = 0x48;
 	const ADD_ITEM_PACKET = 0x49;
 	const BOSS_EVENT_PACKET = 0x4a;
-	const AVAILABLE_COMMANDS_PACKET = 0x4b;
-	const COMMAND_STEP_PACKET = 0x4c;
-	const RESOURCE_PACK_DATA_INFO_PACKET = 0x4d;
-	const RESOURCE_PACK_CHUNK_DATA_PACKET = 0x4e;
-	const RESOURCE_PACK_CHUNK_REQUEST_PACKET = 0x4f;
+	const SHOW_CREDITS_PACKET = 0x4b;
+	const AVAILABLE_COMMANDS_PACKET = 0x4c;
+	const COMMAND_STEP_PACKET = 0x4d;
+	const RESOURCE_PACK_DATA_INFO_PACKET = 0x4e;
+	const RESOURCE_PACK_CHUNK_DATA_PACKET = 0x4f;
+	const RESOURCE_PACK_CHUNK_REQUEST_PACKET = 0x50;
+
 }
-
-
-
-
-
-
-
-
-
-
-
