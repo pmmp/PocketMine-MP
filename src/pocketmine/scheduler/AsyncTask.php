@@ -35,7 +35,7 @@ abstract class AsyncTask extends Collectable{
 	public $worker = null;
 
 	/** @var \Threaded */
-	public $progressUpdates = null;
+	public $progressUpdates;
 
 	private $result = null;
 	private $serialized = false;
@@ -69,7 +69,6 @@ abstract class AsyncTask extends Collectable{
 	}
 
 	public function run(){
-		$this->progressUpdates = new \Threaded; // Do not move this to __construct for backwards compatibility.
 		$this->result = null;
 
 		if($this->cancelRun !== true){
@@ -180,6 +179,18 @@ abstract class AsyncTask extends Collectable{
 	 */
 	public function publishProgress($progress){
 		$this->progressUpdates[] = $progress;
+	}
+
+	/**
+	 * @internal Only call from AsyncPool.php on the main thread
+	 *
+	 * @param Server $server
+	 */
+	public function checkProgressUpdates(Server $server){
+		if($this->progressUpdates->count() !== 0){
+			$progress = $this->progressUpdates->shift();
+			$this->onProgressUpdate($server, $progress);
+		}
 	}
 
 	/**
