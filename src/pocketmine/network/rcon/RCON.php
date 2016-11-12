@@ -70,7 +70,7 @@ class RCON{
 		for($n = 0; $n < $this->threads; ++$n){
 			$this->workers[$n]->close();
 			Server::microSleep(50000);
-			$this->workers[$n]->kill();
+			$this->workers[$n]->quit();
 		}
 		@socket_close($this->socket);
 		$this->threads = 0;
