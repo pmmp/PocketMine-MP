@@ -142,8 +142,13 @@ class AsyncPool{
 		Timings::$schedulerAsyncTimer->startTiming();
 
 		foreach($this->tasks as $task){
+			if($task->progressUpdates !== null){
+				if($task->progressUpdates->count() !== 0){
+					$progress = $task->progressUpdates->shift();
+					$task->onProgressUpdate($this->server, $progress);
+				}
+			}
 			if($task->isGarbage() and !$task->isRunning() and !$task->isCrashed()){
-
 				if(!$task->hasCancelledRun()){
 					$task->onCompletion($this->server);
 					$this->server->getScheduler()->removeLocalComplex($task);
