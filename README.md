@@ -20,7 +20,7 @@ __PocketMine-MP is a free, open-source software that creates Minecraft: Pocket E
 
 ### [Homepage](https://pmmp.gq/)
 
-### [Forums](http://forums.pocketmine.net/)
+### [Forums](http://forums.pmmp.gq/)
 
 ### [Documentation](http://pmmp.readthedocs.org/)
 
