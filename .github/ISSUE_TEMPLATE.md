@@ -11,6 +11,7 @@ Write a short description about the issue
 <!--- use the 'version' command in PocketMine-MP
 NOTE: LATEST is not a valid version. 
 PocketMine version should include Jenkins build number and/or git commit hash.
+ALSO NOTE: NO support whatsoever will be provided for forks or spoons of PocketMine. Issues relating to non-official distributions will be closed as spam. Please send such issues to whoever is responsible for the fork or spoon you are using.
 -->
 * PocketMine-MP:
 * PHP:
