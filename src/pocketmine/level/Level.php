@@ -1222,12 +1222,9 @@ class Level implements ChunkManager, Metadatable{
 	public function getFullLight(Vector3 $pos) : int{
 		$chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4, false);
 		$level = 0;
-		if($chunk !== null){
-			$level = $chunk->getBlockSkyLight($pos->x & 0x0f, $pos->y & Level::Y_MASK, $pos->z & 0x0f);
+		if($chunk instanceof Chunk){
 			//Do not decrease skylightlvl over day. MCPC and MCPE don't do this either.
-			if($level < 15){
-				$level = max($chunk->getBlockLight($pos->x & 0x0f, $pos->y & Level::Y_MASK, $pos->z & 0x0f));
-			}
+			$level = max($chunk->getBlockLight($pos->x & 0x0f, $pos->y & Level::Y_MASK, $pos->z & 0x0f), $chunk->getBlockSkyLight($pos->x & 0x0f, $pos->y & Level::Y_MASK, $pos->z & 0x0f));
 		}
 
 		return $level;
@@ -1273,13 +1270,6 @@ class Level implements ChunkManager, Metadatable{
 		return $this->blockCache[$index] = $block;
 	}
 
-	/**
-	 * @return Distance between $pos1 and $pos2
-	*/
-	public function getHorizontalBlockDistance(Vector3 $pos1, Vector3 $pos2){
-		return abs(($pos1->x - $pos2->x)) + abs(($pos1->z - $pos2->z));
-	}
-
 	public function updateAllLight(Vector3 $pos){
 		$this->updateBlockSkyLight($pos->x, $pos->y, $pos->z);
 		$this->updateBlockLight($pos->x, $pos->y, $pos->z);
@@ -1292,8 +1282,10 @@ class Level implements ChunkManager, Metadatable{
 	public function updateBlockSkyLight($x, $y, $z){
 		$directSkyLight = $this->getDirectSkyLight($x, $y, $z);
 		$this->server->broadcastMessage("DirectSkyLightLvl:".$directSkyLight);
+		
 		if($directSkyLight >= 14){ //No need to continue calculation, we can't get higher skylight!
 			$this->setBlockSkyLightAt($x, $y, $z, $directSkyLight);
+			return;
 		}
 		
 		$lightWays = $this->findLightWays($x, $y, $z);
@@ -1321,12 +1313,16 @@ class Level implements ChunkManager, Metadatable{
 		return $directSkyLight;
 	}
 	
-	private function getSkyLightViaWays($calcBase, $lightWays, $origin, $origins = [], $lastOriginIndex = -1){ //NOTE! $origin is the block we're doing the calculations for, $origins[] should contain blocks with directSkyLight in range of the $origin
-		if(/* max Limit */ 15 <= $this->getHorizontalBlockDistance(new Vector3($origin[0], $origin[1], $origin[2]), new Vector3($origins[$lastOriginIndex][0], $origins[$lastOriginIndex][1], $origins[$lastOriginIndex][3])) /*|| @TODO: way resistance limit checking */ ){ //should be a complicated recursive call control
-			return -1; //No origins useful after this point
+	private function getSkyLightViaWays($calcBase, $lightWays, $origin, $finalResistance = 0, $origins = [], $lastOriginIndex = -1){ //NOTE! $origin is the block we're doing the calculations for, $origins[] should contain blocks with directSkyLight in range of the $origin
+		$this->server->broadcastMessage("FinalResistance for ".implode($calcBase, "/")." is '".$finalResistance."'"); #DBG
+		if($finalResistance !== 0){
+			if($finalResistance >= 15 || ){
+				return 0; //No origins useful after this point
+			}
 		}
 		$lightLvlsFromDir = [];
-		$currResistance = 0;
+		$currResistance = Block::getVerticalSkyLightResistance($this->getBlockIdAt($calcBase[0], $calcBase[1], $calcBase[2]));
+		$this->server->broadcastMessage("LightResistance for ".implode($calcBase, "/")." is '".$currResistance."'"); #DBG
 		var_dump($lightWays); #DBG
 		foreach($lightWays as $dir => $lightWay){ //max 4
 			$directSkyLight = $this->getDirectSkyLight($lightWay[0], $lightWay[1], $lightWay[2]);
@@ -1338,12 +1334,12 @@ class Level implements ChunkManager, Metadatable{
 				}
 				$origins[$lastOriginIndex = Level::blockHash($lightWay[0], $lightWay[1], $lightWay[2])] = $directSkyLight;
 			}
-			$currResistance = Block::getSkyLightResistance($this->getBlockIdAt($calcBase[0], $calcBase[1], $calcBase[3]));
-			$this->server->broadcastMessage("No origin at '".$dir."'!"); #DBG
+			$this->server->broadcastMessage("Dir '".$dir."' has to be explored further!"); #DBG
 			$newLightWays = $this->findLightWays($lightWay[0], $lightWay[1], $lightWay[2]);
-			$lightLvlsFromDir[$dir] = $this->getSkyLightViaWays($newLightWays, $origin, $origins, $lastOriginIndex);
+			$finalResistance = $currResistance + $finalResistance;
+			$lightLvlsFromDir[$dir] = $this->getSkyLightViaWays($lightWay, $newLightWays, $origin, $finalResistance, $origins, $lastOriginIndex);
 		}
-		return max($lightLvlsFromDir) - $currResistance;
+		return max($origin[3], max($lightLvlsFromDir)) - $currResistance;
 	}
 		
 	

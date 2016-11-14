@@ -309,6 +309,18 @@ class Block extends Position implements BlockIds, Metadatable{
 		}
 		return -1;
 	}
+	
+	
+	/**
+	 * @param int $blockID
+	 *
+	 * This function does always need to return values in range of 1-15.
+	 *
+	 * @return int
+	*/
+	public static function getVerticalSkyLightResistance($blockID){
+		return max(self::getSkyLightResistance($blockID), 1);
+	}
 
 	/**
 	 * @param int      $id
