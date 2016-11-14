@@ -7,7 +7,7 @@ You must follow these guidelines if you wish to contribute to the PocketMine-MP 
 ## I have a question
 * For questions, please refer to the _#pmmp_ or _#pocketmine_ IRC channel on Freenode. There is a [WebIRC](http://webchat.freenode.net?channels=pmmp,pocketmine&uio=d4) if you do not want to install an IRC client.
 * You can ask directly to _[@PocketMine](https://twitter.com/PocketMine)_ in Twitter, but don't expect an immediate reply.
-* You may use our [Forum](http://forums.pocketmine.net) to ask questions.
+* You may use our [Forum](http://forums.pmmp.gq) to ask questions.
 * We do not accept questions or support requests in our issue tracker.
 
 ## Creating an Issue
@@ -83,6 +83,7 @@ class ExampleClass{
 }
 ```
 
+<!-- TODO: RFC and voting on the forums instead -->
 ### RFC and Voting
 * These are big Pull Requests or contributions that change important behavior.
 * RFCs will be tagged with the *PR: RFC* label
