@@ -105,7 +105,7 @@ class Anvil extends McRegion{
 			$extraData->getBuffer() .
 			$tiles;
 
-		$this->getLevel()->chunkRequestCallback($x, $z, $ordered, FullChunkDataPacket::ORDER_LAYERED);
+		$this->getLevel()->chunkRequestCallback($x, $z, $ordered);
 
 		return null;
 	}
