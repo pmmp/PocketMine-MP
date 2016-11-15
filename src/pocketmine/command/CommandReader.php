@@ -40,12 +40,18 @@ class CommandReader extends Thread{
 		$this->shutdown = true;
 	}
 
+	private function initStdin(){
+		global $stdin;
+		$stdin = fopen("php://stdin", "r");
+		stream_set_blocking($stdin, 0);
+	}
+
 	private function readLine(){
 		if(!$this->readline){
 			global $stdin;
 
 			if(!is_resource($stdin)){
-				return "";
+				$this->initStdin(); 
 			}
 
 			return trim(fgets($stdin));
@@ -74,9 +80,7 @@ class CommandReader extends Thread{
 
 	public function run(){
 		if(!$this->readline){
-			global $stdin;
-			$stdin = fopen("php://stdin", "r");
-			stream_set_blocking($stdin, 0);
+			$this->initStdin();
 		}
 
 		$lastLine = microtime(true);
@@ -91,6 +95,8 @@ class CommandReader extends Thread{
 
 			$lastLine = microtime(true);
 		}
+		global $stdin;
+		fclose($stdin);
 	}
 
 	public function getThreadName(){
