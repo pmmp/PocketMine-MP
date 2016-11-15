@@ -1,5 +1,5 @@
 ### Issue description
-<!--- use our forum https://forums.pocketmine.net for questions -->
+<!--- use our forum https://forums.pmmp.gq for questions -->
 Write a short description about the issue
 
 ### Steps to reproduce the issue
