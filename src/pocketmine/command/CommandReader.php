@@ -96,7 +96,9 @@ class CommandReader extends Thread{
 			$lastLine = microtime(true);
 		}
 		global $stdin;
-		fclose($stdin);
+		if(is_resource($stdin)){
+			fclose($stdin);
+		}
 	}
 
 	public function getThreadName(){
