@@ -21,14 +21,14 @@
 
 namespace pocketmine\level\format\leveldb;
 
-use pocketmine\level\format\generic\BaseFullChunk;
+use pocketmine\level\format\generic\BaseChunk;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\nbt\NBT;
 use pocketmine\Player;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
 
-class Chunk extends BaseFullChunk{
+class Chunk extends BaseChunk{
 
 	const DATA_LENGTH = 16384 * (2 + 1 + 1 + 1) + 256 + 1024;
 

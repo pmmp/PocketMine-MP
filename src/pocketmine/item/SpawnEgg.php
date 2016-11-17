@@ -24,7 +24,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
-use pocketmine\level\format\FullChunk;
+use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
@@ -46,7 +46,7 @@ class SpawnEgg extends Item{
 		$entity = null;
 		$chunk = $level->getChunk($block->getX() >> 4, $block->getZ() >> 4);
 
-		if(!($chunk instanceof FullChunk)){
+		if(!($chunk instanceof Chunk)){
 			return false;
 		}
 

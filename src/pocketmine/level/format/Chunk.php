@@ -21,36 +21,400 @@
 
 namespace pocketmine\level\format;
 
-interface Chunk extends FullChunk{
-	const SECTION_COUNT = 8;
+use pocketmine\entity\Entity;
+use pocketmine\level\format\generic\SubChunk;
+use pocketmine\tile\Tile;
+
+interface Chunk{
+	const MAX_SUBCHUNKS = 16;
+
+	const DATA_ORDER_XZY = 0;
+	const DATA_ORDER_YZX = 1;
 
 	/**
-	 * Tests whether a section (mini-chunk) is empty
+	 * @return int
+	 */
+	public function getX() : int;
+
+	/**
+	 * @return int
+	 */
+	public function getZ() : int;
+
+	public function setX(int $x);
+
+	public function setZ(int $z);
+
+	/**
+	 * @return LevelProvider|null
+	 */
+	public function getProvider();
+
+	/**
+	 * @param LevelProvider $provider
+	 */
+	public function setProvider(LevelProvider $provider);
+
+	/**
+	 * Returns the chunk height in subchunks
 	 *
-	 * @param $fY 0-7, (Y / 16)
+	 * @return int
+	 */
+	public function getHeight() : int;
+	/**
+	 * Gets block and meta in one go
+	 *
+	 * @param int $x 0-15
+	 * @param int $y 0-15
+	 * @param int $z 0-15
+	 *
+	 * @return int bitmap, (id << 4) | data
+	 */
+	public function getFullBlock(int $x, int $y, int $z) : int;
+
+	/**
+	 * @param int $x       0-15
+	 * @param int $y       0-255
+	 * @param int $z       0-15
+	 * @param int $blockId , if null, do not change
+	 * @param int $meta    0-15, if null, do not change
+	 *
+	 */
+	public function setBlock(int $x, int $y, int $z, $blockId = null, $meta = null);
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $y 0-255
+	 * @param int $z 0-15
+	 *
+	 * @return int 0-255
+	 */
+	public function getBlockId(int $x, int $y, int $z) : int;
+
+	/**
+	 * @param int $x  0-15
+	 * @param int $y  0-255
+	 * @param int $z  0-15
+	 * @param int $id 0-255
+	 */
+	public function setBlockId(int $x, int $y, int $z, int $id);
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $y 0-255
+	 * @param int $z 0-15
+	 *
+	 * @return int 0-15
+	 */
+	public function getBlockData(int $x, int $y, int $z) : int;
+
+	/**
+	 * @param int $x    0-15
+	 * @param int $y    0-255
+	 * @param int $z    0-15
+	 * @param int $data 0-15
+	 */
+	public function setBlockData(int $x, int $y, int $z, int $data);
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $y 0-255
+	 * @param int $z 0-15
+	 *
+	 * @return int (16-bit)
+	 */
+	public function getBlockExtraData(int $x, int $y, int $z) : int;
+
+	/**
+	 * @param int $x    0-15
+	 * @param int $y    0-255
+	 * @param int $z    0-15
+	 * @param int $data (16-bit)
+	 */
+	public function setBlockExtraData(int $x, int $y, int $z, int $data);
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $y 0-255
+	 * @param int $z 0-15
+	 *
+	 * @return int 0-15
+	 */
+	public function getBlockSkyLight(int $x, int $y, int $z) : int;
+
+	/**
+	 * @param int $x     0-15
+	 * @param int $y     0-255
+	 * @param int $z     0-15
+	 * @param int $level 0-15
+	 */
+	public function setBlockSkyLight(int $x, int $y, int $z, int $level);
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $y 0-255
+	 * @param int $z 0-15
+	 *
+	 * @return int 0-15
+	 */
+	public function getBlockLight(int $x, int $y, int $z) : int;
+
+	/**
+	 * @param int $x     0-15
+	 * @param int $y     0-255
+	 * @param int $z     0-15
+	 * @param int $level 0-15
+	 */
+	public function setBlockLight(int $x, int $y, int $z, int $level);
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $z 0-15
+	 *
+	 * @return int 0-255
+	 */
+	public function getHighestBlockAt(int $x, int $z) : int;
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $z 0-15
+	 *
+	 * @return int 0-255
+	 */
+	public function getHeightMap(int $x, int $z) : int;
+
+	/**
+	 * @param int $x     0-15
+	 * @param int $z     0-15
+	 * @param     $value 0-255
+	 */
+	public function setHeightMap(int $x, int $z, int $value);
+
+	public function recalculateHeightMap();
+
+	public function populateSkyLight();
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $z 0-15
+	 *
+	 * @return int 0-255
+	 */
+	public function getBiomeId(int $x, int $z) : int;
+
+	/**
+	 * @param int $x       0-15
+	 * @param int $z       0-15
+	 * @param int $biomeId 0-255
+	 */
+	public function setBiomeId(int $x, int $z, int $biomeId);
+
+	/**
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @return int[] RGB bytes
+	 */
+	public function getBiomeColor(int $x, int $z) : int;
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $z 0-15
+	 * @param int $R 0-255
+	 * @param int $G 0-255
+	 * @param int $B 0-255
+	 */
+	public function setBiomeColor(int $x, int $z, int $R, int $G, int $B);
+
+	public function getBlockIdColumn(int $x, int $z) : string;
+
+	public function getBlockDataColumn(int $x, int $z) : string;
+
+	public function getBlockSkyLightColumn(int $x, int $z) : string;
+
+	public function getBlockLightColumn(int $x, int $z) : string;
+
+	public function isLightPopulated() : bool;
+
+	public function setLightPopulated(bool $value = true);
+
+	public function isPopulated() : bool;
+
+	public function setPopulated(bool $value = true);
+
+	public function isGenerated() : bool;
+
+	public function setGenerated(bool $value = true);
+
+	/**
+	 * @param Entity $entity
+	 */
+	public function addEntity(Entity $entity);
+
+	/**
+	 * @param Entity $entity
+	 */
+	public function removeEntity(Entity $entity);
+
+	/**
+	 * @param Tile $tile
+	 */
+	public function addTile(Tile $tile);
+
+	/**
+	 * @param Tile $tile
+	 */
+	public function removeTile(Tile $tile);
+
+	/**
+	 * @return Entity[]
+	 */
+	public function getEntities() : array;
+
+	/**
+	 * @return Tile[]
+	 */
+	public function getTiles() : array;
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $y 0-255
+	 * @param int $z 0-15
+	 */
+	public function getTile(int $x, int $y, int $z);
+
+	/**
+	 * @return bool
+	 */
+	public function isLoaded() : bool;
+
+	/**
+	 * Loads the chunk
+	 *
+	 * @param bool $generate If the chunk does not exist, generate it
 	 *
 	 * @return bool
 	 */
-	public function isSectionEmpty($fY);
+	public function load(bool $generate = true) : bool;
 
 	/**
-	 * @param int $fY 0-7
+	 * @param bool $save
+	 * @param bool $safe If false, unload the chunk even if players are nearby
 	 *
-	 * @return ChunkSection
+	 * @return bool
 	 */
-	public function getSection($fY);
+	public function unload(bool $save = true, bool $safe = true) : bool;
+
+	public function initChunk();
 
 	/**
-	 * @param int          $fY 0-7
-	 * @param ChunkSection $section
+	 * @return string
+	 */
+	public function getBiomeIdArray() : string;
+
+	/**
+	 * @return int[]
+	 */
+	public function getBiomeColorArray() : array;
+
+	/**
+	 * @return int[]
+	 */
+	public function getHeightMapArray() : array;
+
+	public function getBlockIdArray() : string;
+
+	public function getBlockDataArray() : string;
+
+	public function getBlockExtraDataArray() : array;
+
+	public function getBlockSkyLightArray() : string;
+
+	public function getBlockLightArray() : string;
+
+	/**
+	 * @return bool
+	 */
+	public function hasChanged() : bool;
+
+	/**
+	 * @param bool $changed
+	 */
+	public function setChanged(bool $changed = true);
+
+	/**
+	 * @param int  $fY 0-15
+	 * @param bool $generateNew will set and return a modifiable subchunk
 	 *
-	 * @return boolean
+	 * @return SubChunk
 	 */
-	public function setSection($fY, ChunkSection $section);
+	public function getSubChunk(int $fY, bool $generateNew = false) : SubChunk;
+	
+	/**
+	 * @param int      $fY 0-15
+	 * @param SubChunk $subChunk
+	 *
+	 * @return bool
+	 */
+	public function setSubChunk(int $fY, SubChunk $subChunk = null, bool $allowEmpty = false) : bool;
 
 	/**
-	 * @return ChunkSection[]
+	 * @return SubChunk[]
 	 */
-	public function getSections();
+	public function getSubChunks() : array;
+
+	/**
+	 * Returns the index of the highest non-empty subchunk
+	 *
+	 * @return bool
+	 */
+	public function getHighestSubChunkIndex() : int;
+	
+	/**
+	 * Returns the number of subchunks that need sending
+	 *
+	 * @return int
+	 */
+	public function getSubChunkSendCount() : int;
+	
+	/**
+	 * Disposes of empty subchunks
+	 */
+	public function clearEmptySubChunks();
+	
+	/**
+	 * Serializes the chunk to network data
+	 *
+	 * @return string
+	 */
+	public function networkSerialize() : string;
+
+	/**
+	 * Serializes a chunk without compression for use in AsyncTasks.
+	 *
+	 * @return string
+	 */
+	public static function fastSerialize(Chunk $chunk) : string;
+
+	/**
+	 * Deserializes a chunk from fast serialization
+	 *
+	 * @param string        $data
+	 * @param LevelProvider $provider
+	 *
+	 * @return Chunk|null
+	 */
+	public static function fastDeserialize(string $data, LevelProvider $provider = null);
+
+	/**
+	 * Creates and returns an empty chunk
+	 *
+	 * @param int           $chunkX
+	 * @param int           $chunkZ
+	 * @param LevelProvider $provider
+	 *
+	 * @return Chunk
+	 */
+	public static function getEmptyChunk(int $chunkX, int $chunkZ, LevelProvider $provider = null) : Chunk;
 
 }

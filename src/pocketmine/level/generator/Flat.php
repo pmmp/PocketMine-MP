@@ -31,7 +31,7 @@ use pocketmine\block\LapisOre;
 use pocketmine\block\RedstoneOre;
 use pocketmine\item\Item;
 use pocketmine\level\ChunkManager;
-use pocketmine\level\format\FullChunk;
+use pocketmine\level\format\Chunk;
 use pocketmine\level\generator\biome\Biome;
 use pocketmine\level\generator\populator\Ore;
 use pocketmine\level\generator\populator\Populator;
@@ -41,7 +41,7 @@ use pocketmine\utils\Random;
 class Flat extends Generator{
 	/** @var ChunkManager */
 	private $level;
-	/** @var FullChunk */
+	/** @var Chunk */
 	private $chunk;
 	/** @var Random */
 	private $random;

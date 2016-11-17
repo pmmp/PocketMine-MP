@@ -21,6 +21,7 @@
 
 namespace pocketmine\level\format;
 
+use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 
@@ -48,9 +49,11 @@ interface LevelProvider{
 	public static function getProviderOrder();
 
 	/**
-	 * @return bool
+	 * Gets the build height limit of this world
+	 *
+	 * @return int
 	 */
-	public static function usesChunkSection();
+	public function getWorldHeight() : int;
 
 	/**
 	 * Requests a MC: PE network chunk to be sent
@@ -106,16 +109,9 @@ interface LevelProvider{
 	 * @param int  $Z      absolute Chunk Z value
 	 * @param bool $create Whether to generate the chunk if it does not exist
 	 *
-	 * @return FullChunk|Chunk
+	 * @return Chunk
 	 */
 	public function getChunk($X, $Z, $create = false);
-
-	/**
-	 * @param $Y 0-7
-	 *
-	 * @return ChunkSection
-	 */
-	public static function createChunkSection($Y);
 
 	public function saveChunks();
 
@@ -172,11 +168,11 @@ interface LevelProvider{
 	/**
 	 * @param int       $chunkX
 	 * @param int       $chunkZ
-	 * @param FullChunk $chunk
+	 * @param Chunk $chunk
 	 *
 	 * @return mixed
 	 */
-	public function setChunk($chunkX, $chunkZ, FullChunk $chunk);
+	public function setChunk($chunkX, $chunkZ, Chunk $chunk);
 
 	/**
 	 * @return string
@@ -214,7 +210,7 @@ interface LevelProvider{
 	public function setSpawn(Vector3 $pos);
 
 	/**
-	 * @return FullChunk|Chunk[]
+	 * @return Chunk[]
 	 */
 	public function getLoadedChunks();
 

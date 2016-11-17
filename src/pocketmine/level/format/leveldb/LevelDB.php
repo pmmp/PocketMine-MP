@@ -21,7 +21,7 @@
 
 namespace pocketmine\level\format\leveldb;
 
-use pocketmine\level\format\FullChunk;
+use pocketmine\level\format\Chunk;
 use pocketmine\level\format\generic\BaseLevelProvider;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\Level;
@@ -259,7 +259,7 @@ class LevelDB extends BaseLevelProvider{
 
 	public function unloadChunk($x, $z, $safe = true){
 		$chunk = isset($this->chunks[$index = Level::chunkHash($x, $z)]) ? $this->chunks[$index] : null;
-		if($chunk instanceof FullChunk and $chunk->unload(false, $safe)){
+		if($chunk instanceof Chunk and $chunk->unload(false, $safe)){
 			unset($this->chunks[$index]);
 			return true;
 		}
@@ -302,7 +302,7 @@ class LevelDB extends BaseLevelProvider{
 		return $this->db;
 	}
 
-	public function setChunk($chunkX, $chunkZ, FullChunk $chunk){
+	public function setChunk($chunkX, $chunkZ, Chunk $chunk){
 		if(!($chunk instanceof Chunk)){
 			throw new ChunkException("Invalid Chunk class");
 		}
@@ -341,7 +341,7 @@ class LevelDB extends BaseLevelProvider{
 
 	public function isChunkPopulated($chunkX, $chunkZ){
 		$chunk = $this->getChunk($chunkX, $chunkZ);
-		if($chunk instanceof FullChunk){
+		if($chunk instanceof Chunk){
 			return $chunk->isPopulated();
 		}else{
 			return false;

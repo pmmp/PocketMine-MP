@@ -28,7 +28,7 @@ use pocketmine\inventory\FurnaceInventory;
 use pocketmine\inventory\FurnaceRecipe;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
-use pocketmine\level\format\FullChunk;
+use pocketmine\level\format\Chunk;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -41,7 +41,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	/** @var FurnaceInventory */
 	protected $inventory;
 
-	public function __construct(FullChunk $chunk, CompoundTag $nbt){
+	public function __construct(Chunk $chunk, CompoundTag $nbt){
 		if(!isset($nbt->BurnTime) or $nbt["BurnTime"] < 0){
 			$nbt->BurnTime = new ShortTag("BurnTime", 0);
 		}

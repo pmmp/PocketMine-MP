@@ -66,7 +66,6 @@ use pocketmine\event\Timings;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
-use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\generic\BaseLevelProvider;
 use pocketmine\level\format\generic\EmptyChunkSection;
 use pocketmine\level\format\LevelProvider;
@@ -184,7 +183,7 @@ class Level implements ChunkManager, Metadatable{
 
 	private $folderName;
 
-	/** @var FullChunk[]|Chunk[] */
+	/** @var Chunk[] */
 	private $chunks = [];
 
 	/** @var Vector3[][] */
@@ -209,7 +208,6 @@ class Level implements ChunkManager, Metadatable{
 	/** @var BlockMetadataStore */
 	private $blockMetadata;
 
-	private $useSections;
 	private $blockOrder;
 
 	/** @var Position */
@@ -334,7 +332,6 @@ class Level implements ChunkManager, Metadatable{
 		$this->generator = Generator::getGenerator($this->provider->getGenerator());
 
 		$this->blockOrder = $provider::getProviderOrder();
-		$this->useSections = $provider::usesChunkSection();
 
 		$this->folderName = $name;
 		$this->updateQueue = new ReversePriorityQueue();
@@ -918,44 +915,20 @@ class Level implements ChunkManager, Metadatable{
 			}
 
 
-			if($this->useSections){
-				foreach($chunk->getSections() as $section){
-					if(!($section instanceof EmptyChunkSection)){
-						$Y = $section->getY();
-						$k = mt_rand(0, 0x7fffffff);
-						for($i = 0; $i < 3; ++$i, $k >>= 10){
-							$x = $k & 0x0f;
-							$y = ($k >> 8) & 0x0f;
-							$z = ($k >> 16) & 0x0f;
-
-							$blockId = $section->getBlockId($x, $y, $z);
-							if(isset($this->randomTickBlocks[$blockId])){
-								$class = $this->randomTickBlocks[$blockId];
-								/** @var Block $block */
-								$block = new $class($section->getBlockData($x, $y, $z));
-								$block->x = $chunkX * 16 + $x;
-								$block->y = ($Y << 4) + $y;
-								$block->z = $chunkZ * 16 + $z;
-								$block->level = $this;
-								$block->onUpdate(self::BLOCK_UPDATE_RANDOM);
-							}
-						}
-					}
-				}
-			}else{
-				for($Y = 0; $Y < 8 and ($Y < 3 or $blockTest !== 0); ++$Y){
-					$blockTest = 0;
+			foreach($chunk->getSubChunks() as $subChunk){
+				if(!$subChunk->isEmpty()){
+					$Y = $subChunk->getY();
 					$k = mt_rand(0, 0x7fffffff);
 					for($i = 0; $i < 3; ++$i, $k >>= 10){
 						$x = $k & 0x0f;
 						$y = ($k >> 8) & 0x0f;
 						$z = ($k >> 16) & 0x0f;
 
-						$blockTest |= $blockId = $chunk->getBlockId($x, $y + ($Y << 4), $z);
+						$blockId = $subChunk->getBlockId($x, $y, $z);
 						if(isset($this->randomTickBlocks[$blockId])){
 							$class = $this->randomTickBlocks[$blockId];
 							/** @var Block $block */
-							$block = new $class($chunk->getBlockData($x, $y + ($Y << 4), $z));
+							$block = new $class($subChunk->getBlockData($x, $y, $z));
 							$block->x = $chunkX * 16 + $x;
 							$block->y = ($Y << 4) + $y;
 							$block->z = $chunkZ * 16 + $z;
@@ -2122,7 +2095,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * @return FullChunk[]|Chunk[]
+	 * @return Chunk[]
 	 */
 	public function getChunks() : array{
 		return $this->chunks;
@@ -2135,7 +2108,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int  $z
 	 * @param bool $create Whether to generate the chunk if it does not exist
 	 *
-	 * @return FullChunk|Chunk
+	 * @return Chunk
 	 */
 	public function getChunk(int $x, int $z, bool $create = false){
 		if(isset($this->chunks[$index = Level::chunkHash($x, $z)])){
@@ -2147,7 +2120,7 @@ class Level implements ChunkManager, Metadatable{
 		return null;
 	}
 
-	public function generateChunkCallback(int $x, int $z, FullChunk $chunk){
+	public function generateChunkCallback(int $x, int $z, Chunk $chunk){
 		Timings::$generationCallbackTimer->startTiming();
 		if(isset($this->chunkPopulationQueue[$index = Level::chunkHash($x, $z)])){
 			$oldChunk = $this->getChunk($x, $z, false);
@@ -2182,10 +2155,10 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * @param int       $chunkX
 	 * @param int       $chunkZ
-	 * @param FullChunk $chunk
+	 * @param Chunk     $chunk
 	 * @param bool      $unload
 	 */
-	public function setChunk(int $chunkX, int $chunkZ, FullChunk $chunk = null, bool $unload = true){
+	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk = null, bool $unload = true){
 		if($chunk === null){
 			return;
 		}

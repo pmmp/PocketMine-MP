@@ -35,7 +35,6 @@ use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
 use pocketmine\event\Timings;
 use pocketmine\level\format\Chunk;
-use pocketmine\level\format\FullChunk;
 use pocketmine\level\Level;
 use pocketmine\level\Location;
 use pocketmine\level\Position;
@@ -255,7 +254,7 @@ abstract class Entity extends Location implements Metadatable{
 	protected $isPlayer = false;
 
 
-	public function __construct(FullChunk $chunk, CompoundTag $nbt){
+	public function __construct(Chunk $chunk, CompoundTag $nbt){
 
 		assert($chunk !== null and $chunk->getProvider() !== null);
 
@@ -487,13 +486,13 @@ abstract class Entity extends Location implements Metadatable{
 
 	/**
 	 * @param int|string  $type
-	 * @param FullChunk   $chunk
+	 * @param Chunk   $chunk
 	 * @param CompoundTag $nbt
 	 * @param             $args
 	 *
 	 * @return Entity
 	 */
-	public static function createEntity($type, FullChunk $chunk, CompoundTag $nbt, ...$args){
+	public static function createEntity($type, Chunk $chunk, CompoundTag $nbt, ...$args){
 		if(isset(self::$knownEntities[$type])){
 			$class = self::$knownEntities[$type];
 			return new $class($chunk, $nbt, ...$args);

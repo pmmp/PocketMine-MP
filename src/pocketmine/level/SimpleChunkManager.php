@@ -23,11 +23,11 @@ declare(strict_types = 1);
 
 namespace pocketmine\level;
 
-use pocketmine\level\format\FullChunk;
+use pocketmine\level\format\Chunk;
 
 class SimpleChunkManager implements ChunkManager{
 
-	/** @var FullChunk[] */
+	/** @var Chunk[] */
 	protected $chunks = [];
 
 	protected $seed;
@@ -100,7 +100,7 @@ class SimpleChunkManager implements ChunkManager{
 	 * @param int $chunkX
 	 * @param int $chunkZ
 	 *
-	 * @return FullChunk|null
+	 * @return Chunk|null
 	 */
 	public function getChunk(int $chunkX, int $chunkZ){
 		return isset($this->chunks[$index = Level::chunkHash($chunkX, $chunkZ)]) ? $this->chunks[$index] : null;
@@ -109,9 +109,9 @@ class SimpleChunkManager implements ChunkManager{
 	/**
 	 * @param int       $chunkX
 	 * @param int       $chunkZ
-	 * @param FullChunk $chunk
+	 * @param Chunk $chunk
 	 */
-	public function setChunk(int $chunkX, int $chunkZ, FullChunk $chunk = null){
+	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk = null){
 		if($chunk === null){
 			unset($this->chunks[Level::chunkHash($chunkX, $chunkZ)]);
 			return;

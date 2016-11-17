@@ -22,6 +22,7 @@
 namespace pocketmine\level\format\anvil;
 
 use pocketmine\level\format\LevelProvider;
+use pocketmine\level\format\generic\GenericChunk;
 
 class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 
@@ -45,6 +46,14 @@ class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 	}
 
 	protected function unserializeChunk($data){
-		return Chunk::fromBinary($data, $this->levelProvider);
+		return Anvil::nbtDeserialize($data, $this->levelProvider);
+	}
+	
+	public function writeChunk(GenericChunk $chunk){
+		$this->lastUsed = time();
+		$chunkData = Anvil::nbtSerialize($chunk);
+		if($chunkData !== false){
+			$this->saveChunk($chunk->getX() - ($this->getX() * 32), $chunk->getZ() - ($this->getZ() * 32), $chunkData);
+		}
 	}
 }

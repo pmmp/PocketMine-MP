@@ -21,7 +21,7 @@
 
 namespace pocketmine\tile;
 
-use pocketmine\level\format\FullChunk;
+use pocketmine\level\format\Chunk;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -34,7 +34,7 @@ class Skull extends Spawnable{
 	const TYPE_HUMAN = 3;
 	const TYPE_CREEPER = 4;
 
-	public function __construct(FullChunk $chunk, CompoundTag $nbt){
+	public function __construct(Chunk $chunk, CompoundTag $nbt){
 		if(!isset($nbt->SkullType)){
 			$nbt->SkullType = new ByteTag("SkullType", 0);
 		}
