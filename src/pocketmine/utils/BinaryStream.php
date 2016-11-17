@@ -289,13 +289,13 @@ class BinaryStream extends \stdClass{
 
 	public function getBlockCoords(&$x, &$y, &$z){
 		$x = $this->getVarInt();
-		$y = $this->getByte();
+		$y = $this->getUnsignedVarInt();
 		$z = $this->getVarInt();
 	}
 
 	public function putBlockCoords($x, $y, $z){
 		$this->putVarInt($x);
-		$this->putByte($y);
+		$this->putUnsignedVarInt($y);
 		$this->putVarInt($z);
 	}
 	
