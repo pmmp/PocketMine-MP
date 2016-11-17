@@ -195,11 +195,11 @@ class SubChunk{
 
 	public function getBlockLightArray() : string{
 		assert(strlen($this->blockLight) === 2048, "Wrong length of light array, expecting 2048 bytes, got " . strlen($this->blockLight));
-		return $this->data;
+		return $this->blockLight;
 	}
 
 	public function getSkyLightArray() : string{
 		assert(strlen($this->skyLight) === 2048, "Wrong length of skylight array, expecting 2048 bytes, got " . strlen($this->skyLight));
-		return $this->data;
+		return $this->skyLight;
 	}
 }
