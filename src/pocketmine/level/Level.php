@@ -1337,14 +1337,14 @@ class Level implements ChunkManager, Metadatable{
 		var_dump($lightWays); #DBG
 		
 		foreach($lightWays as $dir => $lightWay){ //max 4
-			if(isset($visitedBlocks[Level::blockHash($lightWay[0], $lightWay[1], $lightWay[2])])){
-				continue;
-			}
-			$visitedBlocks[Level::blockHash($lightWay[0], $lightWay[1], $lightWay[2])] = true;
 			if($currWayResistance === -1){ //base
 				$calcWayResistance = 0;
 				$visitedBlocks = [];
 			}
+			if(isset($visitedBlocks[Level::blockHash($lightWay[0], $lightWay[1], $lightWay[2])])){
+				continue;
+			}
+			$visitedBlocks[Level::blockHash($lightWay[0], $lightWay[1], $lightWay[2])] = true;
 			$directSkyLight = $this->getDirectSkyLight($lightWay[0], $lightWay[1], $lightWay[2]);
 			$this->server->broadcastMessage("LightWay '".$dir."' (recCallLvl:'".$fncId."') has ".$directSkyLight." directSkyLight"); #DBG
 			
@@ -1368,7 +1368,7 @@ class Level implements ChunkManager, Metadatable{
 			$newWayResistance = $calcWayResistance + $currResistance;
 			$lightLvlsFromDir[$dir] = $this->getSkyLightViaWays($lightWay, $newLightWays, $origin, $newWayResistance, $origins, $visitedBlocks, $fncId + 1); //$fncId : DEBUG ONLY
 		}
-		$this->server->broadcastMessage("lightLvlDir for (".implode($calcBase, "/").") is '".max($lightLvlsFromDir)."'"); #DBG
+		#$this->server->broadcastMessage("lightLvlDir for (".implode($calcBase, "/").") is '".max($lightLvlsFromDir)."'"); #DBG
 		return max($lightLvlsFromDir) - $currResistance;
 	}
 		
