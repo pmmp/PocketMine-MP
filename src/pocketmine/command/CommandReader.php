@@ -22,6 +22,7 @@
 namespace pocketmine\command;
 
 use pocketmine\Thread;
+use pocketmine\utils\Utils;
 
 class CommandReader extends Thread{
 	private $readline;
@@ -51,10 +52,16 @@ class CommandReader extends Thread{
 			global $stdin;
 
 			if(!is_resource($stdin)){
-				$this->initStdin(); 
+				$this->initStdin();
 			}
-
-			return trim(fgets($stdin));
+			
+			$fgets = fgets($stdin);
+			
+			if(Utils::getOS() == "win" && $fgets === false){ //windows sucks
+				$this->initStdin();
+			}
+			
+			return trim($fgets);
 		}else{
 			$line = trim(readline("> "));
 			if($line != ""){
@@ -83,6 +90,7 @@ class CommandReader extends Thread{
 			$this->initStdin();
 		}
 
+		$this->getClassLoader()->register(true);
 		$lastLine = microtime(true);
 		while(!$this->shutdown){
 			if(($line = $this->readLine()) !== ""){
@@ -96,7 +104,7 @@ class CommandReader extends Thread{
 			$lastLine = microtime(true);
 		}
 		global $stdin;
-		if(is_resource($stdin)){
+		if(!$this->readline && is_resource($stdin)){
 			fclose($stdin);
 		}
 	}
