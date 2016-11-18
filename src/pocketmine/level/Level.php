@@ -1280,19 +1280,28 @@ class Level implements ChunkManager, Metadatable{
 	 * Calculates the sky light level for $x $y $z.
 	*/
 	public function updateBlockSkyLight($x, $y, $z){
+		$this->server->broadcastMessage("-------Calc::'".$x."/".$y."/".$z."/"."'-------"); #DBG
+		if(Block::getSkyLightResistance($this->getBlockIdAt($x, $y, $z)) >= 14){
+			$this->setBlockSkyLightAt($x, $y, $z, 0);
+			$this->server->broadcastMessage("-------EndCalc::'".$x."/".$y."/".$z."/"."'::TOOHIGHBASERES-------"); #DBG
+			return;
+		}
 		$directSkyLight = $this->getDirectSkyLight($x, $y, $z);
-		$this->server->broadcastMessage("DirectSkyLightLvl:".$directSkyLight);
+		$this->server->broadcastMessage("DirectSkyLightLvl:".$directSkyLight); #DBG
 		
 		if($directSkyLight >= 14){ //No need to continue calculation, we can't get higher skylight!
 			$this->setBlockSkyLightAt($x, $y, $z, $directSkyLight);
+			$this->server->broadcastMessage("-------EndCalc::'".$x."/".$y."/".$z."/"."'::DIRLIGHT-------"); #DBG
 			return;
 		}
 		
 		$lightWays = $this->findLightWays($x, $y, $z);
 		if($lightWays === false){ //No horizontal ways for the skylight, set light from above.
 			$this->setBlockSkyLightAt($x, $y, $z, $directSkyLight);
+			$this->server->broadcastMessage("-------EndCalc::'".$x."/".$y."/".$z."/"."'::NOLIGHTWY-------"); #DBG
 		}else{
-			$this->setBlockSkyLightAt($x, $y, $z, $this->getSkyLightViaWays([$x, $y, $z], $lightWays, [$x, $y, $z, $directSkyLight]));
+			$this->setBlockSkyLightAt($x, $y, $z, max($this->getSkyLightViaWays([$x, $y, $z], $lightWays, [$x, $y, $z, $directSkyLight]), $directSkyLight));
+			$this->server->broadcastMessage("-------EndCalc::'".$x."/".$y."/".$z."/"."'::LIGHTWYDONE-------"); #DBG
 		}
 	}
 	
@@ -1300,46 +1309,67 @@ class Level implements ChunkManager, Metadatable{
 		$chunk = $this->getChunk($x >> 4, $z >> 4, true);
 		
 		$directSkyLight = 15;
-		for($i = $y; $i <= 127; $i++){
+		for($i = $y; $i <= 127; $i++){ //TODO:0.17
 			$lightResistance = Block::getSkyLightResistance($chunk->getBlockId($x & 0x0f, $i & 0x7f, $z & 0x0f));
-			echo("lightRes".$lightResistance); #DBG
+			#echo("lightRes".$lightResistance); #DBG
 			$directSkyLight -= $lightResistance;
-			echo("currLight".$directSkyLight); #DBG
+			#echo("currLight".$directSkyLight); #DBG
 			if($directSkyLight <= 0){ //Skylight is 0 from above (No need to continue calculating)
 				return 0;
 			}
 		}
-		echo("\n"); #DBG
+		#echo("\n"); #DBG
 		return $directSkyLight;
 	}
 	
-	private function getSkyLightViaWays($calcBase, $lightWays, $origin, $finalResistance = 0, $origins = [], $lastOriginIndex = -1){ //NOTE! $origin is the block we're doing the calculations for, $origins[] should contain blocks with directSkyLight in range of the $origin
-		$this->server->broadcastMessage("FinalResistance for ".implode($calcBase, "/")." is '".$finalResistance."'"); #DBG
-		if($finalResistance !== 0){
-			if($finalResistance >= 15 || ){
+	private function getSkyLightViaWays($calcBase, $lightWays, $origin, $currWayResistance = -1, $origins = [], &$visitedBlocks = [], $fncId = 0){ //NOTE! $origin is the block we're doing the calculations for, $origins[] should contain blocks with directSkyLight in range of the $origin
+		$this->server->broadcastMessage("CurrWayResistance (".implode($calcBase, "/").") is '".$currWayResistance."'"); #DBG
+		if($currWayResistance !== -1){ //not base
+			if($currWayResistance >= 15){
 				return 0; //No origins useful after this point
 			}
 		}
+		
 		$lightLvlsFromDir = [];
 		$currResistance = Block::getVerticalSkyLightResistance($this->getBlockIdAt($calcBase[0], $calcBase[1], $calcBase[2]));
+		$calcWayResistance = $currWayResistance;
 		$this->server->broadcastMessage("LightResistance for ".implode($calcBase, "/")." is '".$currResistance."'"); #DBG
 		var_dump($lightWays); #DBG
+		
 		foreach($lightWays as $dir => $lightWay){ //max 4
+			if(isset($visitedBlocks[Level::blockHash($lightWay[0], $lightWay[1], $lightWay[2])])){
+				continue;
+			}
+			$visitedBlocks[Level::blockHash($lightWay[0], $lightWay[1], $lightWay[2])] = true;
+			if($currWayResistance === -1){ //base
+				$calcWayResistance = 0;
+				$visitedBlocks = [];
+			}
 			$directSkyLight = $this->getDirectSkyLight($lightWay[0], $lightWay[1], $lightWay[2]);
-			$this->server->broadcastMessage("LightWay '".$dir."' has ".$directSkyLight." directSkyLight"); #DBG
+			$this->server->broadcastMessage("LightWay '".$dir."' (recCallLvl:'".$fncId."') has ".$directSkyLight." directSkyLight"); #DBG
+			
 			if($directSkyLight > 0){ //Found an origin of light in our current lightWay! (not THE origin, there can be many origins for one block)
 				if($directSkyLight >= 14){ //No need to continue calculation, we can't get higher skylight!
 					$lightLvlsFromDir[$dir] = $directSkyLight;
-					continue;
+					$this->server->broadcastMessage("End foreach at '".$dir."' because dirSkyLight ".$directSkyLight." >= 14. (".implode($calcBase, "/").")"); #DBG
+					break;
 				}
-				$origins[$lastOriginIndex = Level::blockHash($lightWay[0], $lightWay[1], $lightWay[2])] = $directSkyLight;
+				$origins[Level::blockHash($lightWay[0], $lightWay[1], $lightWay[2])] = $directSkyLight; //TODO:use for calc where to stop! calculation in one dir? (lightWay) (per light way return)
 			}
-			$this->server->broadcastMessage("Dir '".$dir."' has to be explored further!"); #DBG
+			
 			$newLightWays = $this->findLightWays($lightWay[0], $lightWay[1], $lightWay[2]);
-			$finalResistance = $currResistance + $finalResistance;
-			$lightLvlsFromDir[$dir] = $this->getSkyLightViaWays($lightWay, $newLightWays, $origin, $finalResistance, $origins, $lastOriginIndex);
+			
+			if($newLightWays === false){ //No further ways found
+				$this->server->broadcastMessage("Dir '".$dir."' is ended!"); #DBG
+				continue;
+			}
+			
+			$this->server->broadcastMessage("Dir '".$dir."' has to be explored further!"); #DBG
+			$newWayResistance = $calcWayResistance + $currResistance;
+			$lightLvlsFromDir[$dir] = $this->getSkyLightViaWays($lightWay, $newLightWays, $origin, $newWayResistance, $origins, $visitedBlocks, $fncId + 1); //$fncId : DEBUG ONLY
 		}
-		return max($origin[3], max($lightLvlsFromDir)) - $currResistance;
+		$this->server->broadcastMessage("lightLvlDir for (".implode($calcBase, "/").") is '".max($lightLvlsFromDir)."'"); #DBG
+		return max($lightLvlsFromDir) - $currResistance;
 	}
 		
 	

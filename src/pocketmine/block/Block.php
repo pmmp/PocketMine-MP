@@ -293,18 +293,15 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return int
 	*/
 	public static function getSkyLightResistance($blockID){
-		echo("CurrBlock:".$blockID);
+		#echo("CurrBlock:".$blockID); #DBG
 		#$block = new self::$list[$blockID]();
 		if(self::$transparent[$blockID]){
-			if($blockID == self::WATER){
+			if($blockID == self::WATER || $blockID == self::ICE){
 				return 3;
 			}
 			return 0;
 		}
 		if(self::$solid[$blockID]){
-			#switch($blockID){
-			#	self::
-			#}
 			return 15;
 		}
 		return -1;
