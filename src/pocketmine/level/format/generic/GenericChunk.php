@@ -709,8 +709,10 @@ class GenericChunk implements Chunk{
 		$result = str_repeat("\x00", 4096);
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
+				$xz = (($x << 8) | ($z << 4));
+				$zx = (($z << 4) | $x);
 				for($y = 0; $y < 16; ++$y){
-					$result{($x << 8) | ($z << 4) | $y} = $array{($y << 8) | ($z << 4) | $x};
+					$result{$xz | $y} = $array{($y << 8) | $zx};
 				}
 			}
 		}
@@ -728,9 +730,11 @@ class GenericChunk implements Chunk{
 		$result = str_repeat("\x00", 2048);
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
+				$xz = (($x << 7) | ($z << 3));
+				$zx = (($z << 3) | ($x >> 1));
 				for($y = 0; $y < 16; ++$y){
-					$inputIndex = (($y << 7) | ($z << 3) | ($x >> 1));
-					$outputIndex = (($x << 7) | ($z << 3) | ($y >> 1));
+					$inputIndex = (($y << 7) | $zx);
+					$outputIndex = ($xz | ($y >> 1));
 					$current = ord($result{$outputIndex});
 					$byte = ord($array{$inputIndex});
 
