@@ -50,7 +50,7 @@ class ServerScheduler{
 	/** @var int */
 	protected $currentTick = 0;
 
-	/** @var \SplObjectStorage<AsyncTask> */
+	/** @var \SplObjectStorage<AsyncTask, object|array> */
 	protected $objectStore;
 
 	public function __construct(){
@@ -78,6 +78,7 @@ class ServerScheduler{
 	public function scheduleAsyncTask(AsyncTask $task){
 		$id = $this->nextId();
 		$task->setTaskId($id);
+		$task->progressUpdates = new \Threaded;
 		$this->asyncPool->submitTask($task);
 	}
 
@@ -92,6 +93,7 @@ class ServerScheduler{
 	public function scheduleAsyncTaskToWorker(AsyncTask $task, $worker){
 		$id = $this->nextId();
 		$task->setTaskId($id);
+		$task->progressUpdates = new \Threaded;
 		$this->asyncPool->submitTaskToWorker($task, $worker);
 	}
 
@@ -100,7 +102,7 @@ class ServerScheduler{
 	 *
 	 * @internal Only call from AsyncTask.php
 	 *
-	 * @param AsyncTask     $for
+	 * @param AsyncTask    $for
 	 * @param object|array $cmplx
 	 *
 	 * @throws \RuntimeException if this method is called twice for the same instance of AsyncTask
@@ -113,17 +115,39 @@ class ServerScheduler{
 	}
 
 	/**
-	 * Fetches data that must not be passed to other threads or be serialized, previously stored with {@link #storeLocalComplex}
+	 * Fetches data that must not be passed to other threads or be serialized, previously stored with
+	 * {@link ServerScheduler#storeLocalComplex}, without deletion of the data.
 	 *
 	 * @internal Only call from AsyncTask.php
 	 *
 	 * @param AsyncTask $for
 	 *
-	 * @throws \RuntimException if no data associated with this AsyncTask can be found
-	 */	
+	 * @return object|array
+	 *
+	 * @throws \RuntimeException if no data associated with this AsyncTask can be found
+	 */
+	public function peekLocalComplex(AsyncTask $for){
+		if(!isset($this->objectStore[$for])){
+			throw new \RuntimeException("No local complex stored for this AsyncTask");
+		}
+		return $this->objectStore[$for];
+	}
+
+	/**
+	 * Fetches data that must not be passed to other threads or be serialized, previously stored with
+	 * {@link ServerScheduler#storeLocalComplex}, and delete the data from the storage.
+	 *
+	 * @internal Only call from AsyncTask.php
+	 *
+	 * @param AsyncTask $for
+	 *
+	 * @return object|array
+	 *
+	 * @throws \RuntimeException if no data associated with this AsyncTask can be found
+	 */
 	public function fetchLocalComplex(AsyncTask $for){
 		if(!isset($this->objectStore[$for])){
-			throw new \RuntimeException("Attempt to fetch undefined complex");
+			throw new \RuntimeException("No local complex stored for this AsyncTask");
 		}
 		$cmplx = $this->objectStore[$for];
 		unset($this->objectStore[$for]);
@@ -138,7 +162,7 @@ class ServerScheduler{
 	 * @param AsyncTask $for
 	 *
 	 * @return bool returns false if any data are removed from this call, true otherwise
-	 */	
+	 */
 	public function removeLocalComplex(AsyncTask $for) : bool{
 		if(isset($this->objectStore[$for])){
 			Server::getInstance()->getLogger()->notice("AsyncTask " . get_class($for) . " stored local complex data but did not remove them after completion");
