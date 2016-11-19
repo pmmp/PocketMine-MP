@@ -292,9 +292,7 @@ class RegionLoader{
         fseek($this->filePointer, 0);
         ftruncate($this->filePointer, 8192); // this fills the file with the null byte
         $this->lastSector = 1;
-        for($i = 0; $i < 1024; ++$i){
-            $this->locationTable[$i] = [0, 0, 0];
-        }
+        $this->locationTable = array_fill(0, 1024, [0, 0, 0]);
     }
 
 	public function getX(){
