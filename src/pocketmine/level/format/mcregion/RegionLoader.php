@@ -290,7 +290,7 @@ class RegionLoader{
 
 	protected function createBlank(){
 		fseek($this->filePointer, 0);
- 		ftruncate($this->filePointer, 8192); // this fills the file with the null byte
+		ftruncate($this->filePointer, 8192); // this fills the file with the null byte
 		$this->lastSector = 1;
 		$this->locationTable = array_fill(0, 1024, [0, 0, 0]);
 	}
