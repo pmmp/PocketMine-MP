@@ -288,12 +288,12 @@ class RegionLoader{
 		fwrite($this->filePointer, Binary::writeInt($this->locationTable[$index][2]), 4);
 	}
 
-    protected function createBlank(){
-        fseek($this->filePointer, 0);
-        ftruncate($this->filePointer, 8192); // this fills the file with the null byte
-        $this->lastSector = 1;
-        $this->locationTable = array_fill(0, 1024, [0, 0, 0]);
-    }
+	protected function createBlank(){
+		fseek($this->filePointer, 0);
+ 		ftruncate($this->filePointer, 8192); // this fills the file with the null byte
+		$this->lastSector = 1;
+		$this->locationTable = array_fill(0, 1024, [0, 0, 0]);
+	}
 
 	public function getX(){
 		return $this->x;
