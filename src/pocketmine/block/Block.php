@@ -283,17 +283,12 @@ class Block extends Position implements BlockIds, Metadatable{
 		}
 	}
 	
-	//SkyBlockLight SPECIAL blocks:
-	//WATER,ICE => -3
-	//solid => -INF
-	//transparent => -0 (this includes Lava!) [WHY]
 	/**
 	 * @param int $blockID
 	 *
-	 * @return int
+	 * @return int 0-15
 	*/
 	public static function getSkyLightResistance($blockID){
-		#echo("CurrBlock:".$blockID); #DBG
 		#$block = new self::$list[$blockID]();
 		if(self::$transparent[$blockID]){
 			if($blockID == self::WATER || $blockID == self::ICE){
@@ -311,11 +306,11 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @param int $blockID
 	 *
-	 * This function does always need to return values in range of 1-15.
+	 * This function must always return values in range of 1-15, otherwise it could lead to a freeze.
 	 *
-	 * @return int
+	 * @return int 1-15
 	*/
-	public static function getVerticalSkyLightResistance($blockID){
+	public static function getHorizontalSkyLightResistance($blockID){
 		return max(self::getSkyLightResistance($blockID), 1);
 	}
 

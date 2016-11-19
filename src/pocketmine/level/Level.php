@@ -1277,9 +1277,9 @@ class Level implements ChunkManager, Metadatable{
 
 
 	/**
-	 * Calculates the sky light level for $x $y $z.
+	 * Calculates and sets the sky light level for $x $y $z.
 	*/
-	public function updateBlockSkyLight($x, $y, $z){
+	public function updateBlockSkyLight(int $x, int $y, int $z){
 		$this->server->broadcastMessage("-------Calc::'".$x."/".$y."/".$z."/"."'-------"); #DBG
 		if(Block::getSkyLightResistance($this->getBlockIdAt($x, $y, $z)) >= 14){
 			$this->setBlockSkyLightAt($x, $y, $z, 0);
@@ -1296,7 +1296,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 		
 		$lightWays = $this->findLightWays($x, $y, $z);
-		if($lightWays === false){ //No horizontal ways for the skylight, set light from above.
+		if($lightWays === false){ //No horizontal ways for the skylight, set directSkyLight.
 			$this->setBlockSkyLightAt($x, $y, $z, $directSkyLight);
 			$this->server->broadcastMessage("-------EndCalc::'".$x."/".$y."/".$z."/"."'::NOLIGHTWY-------"); #DBG
 		}else{
@@ -1305,24 +1305,38 @@ class Level implements ChunkManager, Metadatable{
 		}
 	}
 	
+	/**
+	 * Gets the direct (vertical) sky light that shines onto $x $y $z
+	 *
+	 * @return int 0-15
+	*/
 	private function getDirectSkyLight($x, $y, $z){
 		$chunk = $this->getChunk($x >> 4, $z >> 4, true);
 		
 		$directSkyLight = 15;
 		for($i = $y; $i <= 127; $i++){ //TODO:0.17
 			$lightResistance = Block::getSkyLightResistance($chunk->getBlockId($x & 0x0f, $i & 0x7f, $z & 0x0f));
-			#echo("lightRes".$lightResistance); #DBG
 			$directSkyLight -= $lightResistance;
-			#echo("currLight".$directSkyLight); #DBG
 			if($directSkyLight <= 0){ //Skylight is 0 from above (No need to continue calculating)
 				return 0;
 			}
 		}
-		#echo("\n"); #DBG
 		return $directSkyLight;
 	}
 	
-	private function getSkyLightViaWays($calcBase, $lightWays, $origin, $currWayResistance = -1, $origins = [], &$visitedBlocks = [], $fncId = 0){ //NOTE! $origin is the block we're doing the calculations for, $origins[] should contain blocks with directSkyLight in range of the $origin
+	/**
+	 * Gets the horizontal skylight for $calcBase using $lightWays 
+	 *
+	 * @param $calcBase            The Block used for the current recursive call
+	 * @param $lightWays           Lightways for $calcBase
+	 * @param $origin              TODO::Probably remove! (NO! need of $directSkyLight (actually everything) to abort if (->Too low to reach point of origin??)) ->reason at $origins???
+	 * @param $currWayResistance   The horizontal resistance of the current root way
+	 * @param $origins             TODO::Probably remove! (was meant to be used for inefficent abort calculation, allthough it could improve performance for some blocks it probably would push the performance for all the other blocks unnecessarily)
+	 * @param &$visitedBlocks      Blocks visited in the current root way
+	 *
+	 * @return int 0-15
+	*/
+	private function getSkyLightViaWays(array $calcBase, array $lightWays, array $origin, int $currWayResistance = -1, array $origins = [], array &$visitedBlocks = [], $fncId = 0){ //NOTE! $origin is the block we're doing the calculations for, $origins[] should contain blocks with directSkyLight in range of the $origin
 		$this->server->broadcastMessage("CurrWayResistance (".implode($calcBase, "/").") is '".$currWayResistance."'"); #DBG
 		if($currWayResistance !== -1){ //not base
 			if($currWayResistance >= 15){
@@ -1331,7 +1345,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 		
 		$lightLvlsFromDir = [];
-		$currResistance = Block::getVerticalSkyLightResistance($this->getBlockIdAt($calcBase[0], $calcBase[1], $calcBase[2]));
+		$currResistance = Block::getHorizontalSkyLightResistance($this->getBlockIdAt($calcBase[0], $calcBase[1], $calcBase[2]));
 		$calcWayResistance = $currWayResistance;
 		$this->server->broadcastMessage("LightResistance for ".implode($calcBase, "/")." is '".$currResistance."'"); #DBG
 		var_dump($lightWays); #DBG
@@ -1341,10 +1355,12 @@ class Level implements ChunkManager, Metadatable{
 				$calcWayResistance = 0;
 				$visitedBlocks = [];
 			}
+			
 			if(isset($visitedBlocks[Level::blockHash($lightWay[0], $lightWay[1], $lightWay[2])])){
 				continue;
 			}
 			$visitedBlocks[Level::blockHash($lightWay[0], $lightWay[1], $lightWay[2])] = true;
+			
 			$directSkyLight = $this->getDirectSkyLight($lightWay[0], $lightWay[1], $lightWay[2]);
 			$this->server->broadcastMessage("LightWay '".$dir."' (recCallLvl:'".$fncId."') has ".$directSkyLight." directSkyLight"); #DBG
 			
@@ -1354,7 +1370,7 @@ class Level implements ChunkManager, Metadatable{
 					$this->server->broadcastMessage("End foreach at '".$dir."' because dirSkyLight ".$directSkyLight." >= 14. (".implode($calcBase, "/").")"); #DBG
 					break;
 				}
-				$origins[Level::blockHash($lightWay[0], $lightWay[1], $lightWay[2])] = $directSkyLight; //TODO:use for calc where to stop! calculation in one dir? (lightWay) (per light way return)
+				$origins[Level::blockHash($lightWay[0], $lightWay[1], $lightWay[2])] = $directSkyLight; //TODO:use for calc where to stop! calculation in one dir? (lightWay) (per light way return) TODO::probably remove
 			}
 			
 			$newLightWays = $this->findLightWays($lightWay[0], $lightWay[1], $lightWay[2]);
@@ -1368,18 +1384,22 @@ class Level implements ChunkManager, Metadatable{
 			$newWayResistance = $calcWayResistance + $currResistance;
 			$lightLvlsFromDir[$dir] = $this->getSkyLightViaWays($lightWay, $newLightWays, $origin, $newWayResistance, $origins, $visitedBlocks, $fncId + 1); //$fncId : DEBUG ONLY
 		}
-		#$this->server->broadcastMessage("lightLvlDir for (".implode($calcBase, "/").") is '".max($lightLvlsFromDir)."'"); #DBG
+		$this->server->broadcastMessage("lightLvlDir for (".implode($calcBase, "/").") is '".max($lightLvlsFromDir)."'"); #DBG
 		return max($lightLvlsFromDir) - $currResistance;
 	}
 		
-	
-	private function findLightWays($x, $y, $z){
+	/**
+	 * Finds horizontal ways for the light to get in to $x $y $z 
+	 *
+	 * @return array|false [Vector3::SIDE_?] => [x, y, z, blockResistance]@TODO Use or scrap blockResistance
+	*/
+	private function findLightWays(int $x, int $y, int $z){
 		$lightWays = [];
 		$vec3 = new Vector3($x, $y, $z);
 		for($i = Vector3::SIDE_NORTH; $i <= Vector3::SIDE_EAST; $i++){
 			$newVec3 = $vec3->getSide($i);
 			if($blockResistance = Block::getSkyLightResistance($this->getBlockIdAt($newVec3->x, $newVec3->y, $newVec3->z)) < 15){
-				$lightWays[$i] = [$newVec3->x, $newVec3->y, $newVec3->z, $blockResistance];
+				$lightWays[$i] = [$newVec3->x, $newVec3->y, $newVec3->z, $blockResistance]; //TODO::Use or scrap blockResistance
 			}
 		}
 		return $lightWays === [] ? false : $lightWays;
