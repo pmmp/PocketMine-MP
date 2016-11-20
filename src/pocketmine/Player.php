@@ -2991,13 +2991,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 	
 	/**
-	 * @param string|Player $sender
-	 * @param string        $message
+	 * @param string $sender
+	 * @param string $message
 	 */
 	public function sendWhisper($sender, $message){
 		$pk = new TextPacket();
 		$pk->type = TextPacket::TYPE_WHISPER;
-		$pk->source = $sender instanceof Player ? $sender->getDisplayName() : $sender;
+		$pk->source = $sender;
 		$pk->message = $message;
 		$this->dataPacket($pk);
 	}
