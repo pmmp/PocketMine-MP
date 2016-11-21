@@ -18,9 +18,9 @@
 
 __PocketMine-MP is a free, open-source software that creates Minecraft: Pocket Edition servers and allows extending its functionalities__
 
-### [Homepage](https://pmmp.gq/)
+### [Homepage](https://pmmp.io/)
 
-### [Forums](https://forums.pmmp.gq/)
+### [Forums](https://forums.pmmp.io/)
 
 ### [Documentation](http://pmmp.readthedocs.org/)
 
@@ -28,11 +28,11 @@ __PocketMine-MP is a free, open-source software that creates Minecraft: Pocket E
 
 <!--## [FAQ: Frequently Asked Questions](https://github.com/PocketMine/PocketMine-MP/wiki/Frequently-Asked-Questions)-->
 
-### [Official Jenkins server](https://jenkins.pmmp.gq/)
+### [Official Jenkins server](https://jenkins.pmmp.io/)
 
 ### API Documentation
  * [Official Doxygen-generated documentation](http://docs.pocketmine.net/)
- * [Latest Doxygen generated from development](https://jenkins.pmmp.gq/job/PocketMine-MP%20Docs/doxygen/)
+ * [Latest Doxygen generated from development](https://jenkins.pmmp.io/job/PocketMine-MP%20Docs/doxygen/)
 
 ### [Twitter @PocketMine](https://twitter.com/PocketMine)
 
