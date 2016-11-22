@@ -54,8 +54,7 @@ class NetherBrickFence extends Transparent{
 	}
 
 	public function canConnect(Block $block){
-		//TODO: activate comments when the NetherBrickFenceGate class has been created.
-		return ($block instanceof NetherBrickFence /* or $block instanceof NetherBrickFenceGate */) ? true : $block->isSolid() and !$block->isTransparent();
+		return ($block instanceof NetherBrickFence) or ($block->isSolid() and !$block->isTransparent());
 	}
 
 	public function getDrops(Item $item){
