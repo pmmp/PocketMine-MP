@@ -8,7 +8,7 @@ before_script:
  - wget -O plugins/DevTools.phar https://github.com/PocketMine/DevTools/releases/download/v1.11.0/DevTools_v1.11.0.phar
  - pecl install channel://pecl.php.net/pthreads-3.1.6
  - pecl install channel://pecl.php.net/weakref-0.3.2
- - echo | pecl install channel://pecl.php.net/yaml-2.0.0RC7
+ - echo | pecl install channel://pecl.php.net/yaml-2.0.0
 
 script:
  - ./tests/lint.sh && ./tests/run.sh
