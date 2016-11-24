@@ -484,13 +484,13 @@ namespace pocketmine {
 
 	$logger->info("Stopping other threads");
 
+	$killer = new ServerKiller(8);
+	$killer->start();
+
 	foreach(ThreadManager::getInstance()->getAll() as $id => $thread){
 		$logger->debug("Stopping " . $thread->getThreadName() . " thread");
 		$thread->quit();
 	}
-
-	$killer = new ServerKiller(8);
-	$killer->start();
 
 	$logger->shutdown();
 	$logger->join();
