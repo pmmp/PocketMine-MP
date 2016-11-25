@@ -75,7 +75,7 @@ class Item extends Entity{
 
 		assert($this->namedtag->Item instanceof CompoundTag);
 
-		$this->item = NBT::getItemHelper($this->namedtag->Item);
+		$this->item = ItemItem::nbtDeserialize($this->namedtag->Item);
 
 
 		$this->server->getPluginManager()->callEvent(new ItemSpawnEvent($this));
@@ -160,7 +160,7 @@ class Item extends Entity{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Item = NBT::putItemHelper($this->item);
+		$this->namedtag->Item = $this->item->nbtSerialize();
 		$this->namedtag->Health = new ShortTag("Health", $this->getHealth());
 		$this->namedtag->Age = new ShortTag("Age", $this->age);
 		$this->namedtag->PickupDelay = new ShortTag("PickupDelay", $this->pickupDelay);
