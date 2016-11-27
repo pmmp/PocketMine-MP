@@ -2504,6 +2504,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				if($this->spawned === false or $this->blocked === true or !$this->isAlive()){
 					break;
 				}
+
+				if($packet->item->getId() === Item::AIR){
+					// Windows 10 Edition drops the contents of the crafting grid on container close - including air.
+					break;
+				}
+
 				$item = $this->inventory->getItemInHand();
 				$ev = new PlayerDropItemEvent($this, $item);
 				$this->server->getPluginManager()->callEvent($ev);
