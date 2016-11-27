@@ -1870,7 +1870,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				if($newPos->distanceSquared($this) < 0.01 and ($packet->yaw % 360) === $this->yaw and ($packet->pitch % 360) === $this->pitch){ //player hasn't moved, just client spamming packets
 					break;
 				}
-				echo "not ignoring\n";
 
 				$revert = false;
 				if(!$this->isAlive() or $this->spawned !== true){
