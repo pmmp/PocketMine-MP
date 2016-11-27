@@ -47,12 +47,7 @@ class Skull extends Spawnable{
 	public function setType($type){
 		if($type >= 0 && $type <= 4){
 			$this->namedtag->SkullType = new ByteTag("SkullType", $type);
-			$this->spawnToAll();
-
-			if($this->chunk){
-				$this->chunk->setChanged();
-				$this->level->clearChunkCache($this->chunk->getX(), $this->chunk->getZ());
-			}
+			$this->onChanged();
 			return true;
 		}
 		return false;

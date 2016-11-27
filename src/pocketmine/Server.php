@@ -107,6 +107,7 @@ use pocketmine\tile\Chest;
 use pocketmine\tile\EnchantTable;
 use pocketmine\tile\FlowerPot;
 use pocketmine\tile\Furnace;
+use pocketmine\tile\ItemFrame;
 use pocketmine\tile\Sign;
 use pocketmine\tile\Skull;
 use pocketmine\tile\Tile;
@@ -2452,6 +2453,7 @@ class Server{
 		Tile::registerTile(EnchantTable::class);
 		Tile::registerTile(FlowerPot::class);
 		Tile::registerTile(Furnace::class);
+		Tile::registerTile(ItemFrame::class);
 		Tile::registerTile(Sign::class);
 		Tile::registerTile(Skull::class);
 	}
