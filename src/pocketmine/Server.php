@@ -103,13 +103,6 @@ use pocketmine\plugin\ScriptPluginLoader;
 use pocketmine\scheduler\FileWriteTask;
 use pocketmine\scheduler\SendUsageTask;
 use pocketmine\scheduler\ServerScheduler;
-use pocketmine\tile\Chest;
-use pocketmine\tile\EnchantTable;
-use pocketmine\tile\FlowerPot;
-use pocketmine\tile\Furnace;
-use pocketmine\tile\ItemFrame;
-use pocketmine\tile\Sign;
-use pocketmine\tile\Skull;
 use pocketmine\tile\Tile;
 use pocketmine\updater\AutoUpdater;
 use pocketmine\utils\Binary;
@@ -1502,8 +1495,8 @@ class Server{
 			$this->commandMap = new SimpleCommandMap($this);
 
 			$this->registerEntities();
-			$this->registerTiles();
 
+			Tile::init();
 			InventoryType::init();
 			Block::init();
 			Enchantment::init();
@@ -2447,15 +2440,4 @@ class Server{
 
 		Entity::registerEntity(Human::class, true);
 	}
-
-	private function registerTiles(){
-		Tile::registerTile(Chest::class);
-		Tile::registerTile(EnchantTable::class);
-		Tile::registerTile(FlowerPot::class);
-		Tile::registerTile(Furnace::class);
-		Tile::registerTile(ItemFrame::class);
-		Tile::registerTile(Sign::class);
-		Tile::registerTile(Skull::class);
-	}
-
 }
