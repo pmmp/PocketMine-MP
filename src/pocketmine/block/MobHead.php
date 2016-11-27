@@ -23,6 +23,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -31,7 +32,7 @@ use pocketmine\Player;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 
-class MobHead extends Solid{
+class MobHead extends Flowable{
 
 	protected $id = self::MOB_HEAD_BLOCK;
 
@@ -47,6 +48,17 @@ class MobHead extends Solid{
 
 	public function getName(){
 		return "Mob Head";
+	}
+
+	protected function recalculateBoundingBox(){
+		return new AxisAlignedBB(
+			$this->x + 0.25,
+			$this->y,
+			$this->z + 0.25,
+			$this->x + 0.75,
+			$this->y + 0.5,
+			$this->z + 0.75
+		);
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
