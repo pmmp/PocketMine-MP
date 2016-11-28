@@ -46,11 +46,6 @@ abstract class Spawnable extends Tile{
 		return true;
 	}
 
-	/**
-	 * @return CompoundTag
-	 */
-	public abstract function getSpawnCompound();
-
 	public function __construct(Chunk $chunk, CompoundTag $nbt){
 		parent::__construct($chunk, $nbt);
 		$this->spawnToAll();
@@ -75,5 +70,23 @@ abstract class Spawnable extends Tile{
 			$this->chunk->setChanged();
 			$this->level->clearChunkCache($this->chunk->getX(), $this->chunk->getZ());
 		}
+	}
+
+	/**
+	 * @return CompoundTag
+	 */
+	public abstract function getSpawnCompound();
+
+	/**
+	 * Called when a player updates a block entity's NBT data
+	 * for example when writing on a sign.
+	 *
+	 * @param CompoundTag $nbt
+	 * @param Player      $player
+	 *
+	 * @return bool indication of success, will respawn the tile to the player if false.
+	 */
+	public function updateCompoundTag(CompoundTag $nbt, Player $player) : bool{
+		return false;
 	}
 }
