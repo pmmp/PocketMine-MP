@@ -39,7 +39,7 @@ class EmptySubChunk extends SubChunk{
 	}
 
 	public function setBlockId(int $x, int $y, int $z, int $id){
-		throw new ChunkException("Tried to modify nonexistent subchunk");
+
 	}
 
 	public function getBlockData(int $x, int $y, int $z) : int{
@@ -47,7 +47,7 @@ class EmptySubChunk extends SubChunk{
 	}
 
 	public function setBlockData(int $x, int $y, int $z, int $data){
-		throw new ChunkException("Tried to modify nonexistent subchunk");
+
 	}
 
 	public function getFullBlock(int $x, int $y, int $z) : int{
@@ -55,7 +55,7 @@ class EmptySubChunk extends SubChunk{
 	}
 
 	public function setBlock(int $x, int $y, int $z, $id = null, $data = null) : bool{
-		throw new ChunkException("Tried to modify nonexistent subchunk");
+
 	}
 
 	public function getBlockSkyLight(int $x, int $y, int $z) : int{
@@ -63,7 +63,7 @@ class EmptySubChunk extends SubChunk{
 	}
 
 	public function setBlockSkyLight(int $x, int $y, int $z, int $level){
-		throw new ChunkException("Tried to modify nonexistent subchunk");
+
 	}
 
 	public function getBlockLight(int $x, int $y, int $z) : int{
@@ -71,7 +71,7 @@ class EmptySubChunk extends SubChunk{
 	}
 
 	public function setBlockLight(int $x, int $y, int $z, int $level){
-		throw new ChunkException("Tried to modify nonexistent subchunk");
+
 	}
 	
 	public function getBlockIdColumn(int $x, int $z) : string{

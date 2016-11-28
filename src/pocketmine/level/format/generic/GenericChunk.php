@@ -51,7 +51,7 @@ class GenericChunk implements Chunk{
 	protected $lightPopulated = false;
 	protected $terrainGenerated = false;
 	protected $terrainPopulated = false;
-	
+
 	protected $height = 16;
 
 	/** @var SubChunk[] */
@@ -180,7 +180,7 @@ class GenericChunk implements Chunk{
 	}
 
 	public function setBlockData(int $x, int $y, int $z, int $data){
-		$this->getSubChunk($y >> 4, true)->setBlockData($x, $y & 0x0f, $z, $data);
+		$this->getSubChunk($y >> 4)->setBlockData($x, $y & 0x0f, $z, $data);
 	}
 
 	public function getBlockExtraData(int $x, int $y, int $z) : int{
@@ -202,7 +202,7 @@ class GenericChunk implements Chunk{
 	}
 
 	public function setBlockSkyLight(int $x, int $y, int $z, int $level){
-		$this->getSubChunk($y >> 4, true)->setBlockSkyLight($x, $y & 0x0f, $z, $level);
+		$this->getSubChunk($y >> 4)->setBlockSkyLight($x, $y & 0x0f, $z, $level);
 	}
 
 	public function getBlockLight(int $x, int $y, int $z) : int{
@@ -210,7 +210,7 @@ class GenericChunk implements Chunk{
 	}
 
 	public function setBlockLight(int $x, int $y, int $z, int $level){
-		$this->getSubChunk($y >> 4, true)->setBlockLight($x, $y & 0x0f, $z, $level);
+		$this->getSubChunk($y >> 4)->setBlockLight($x, $y & 0x0f, $z, $level);
 	}
 
 	public function getHighestBlockAt(int $x, int $z, bool $useHeightMap = true) : int{
@@ -257,9 +257,12 @@ class GenericChunk implements Chunk{
 	}
 
 	public function populateSkyLight(){
-		for($x = 0; $x < 16; ++$x){
+		/*for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
 				$top = $this->getHeightMap($x, $z);
+
+
+				//$subChunk = $this->getSubChunk()
 				for($y = 127; $y > $top; --$y){
 					$this->setBlockSkyLight($x, $y, $z, 15);
 				}
@@ -274,7 +277,7 @@ class GenericChunk implements Chunk{
 
 				$this->setHeightMap($x, $z, $this->getHighestBlockAt($x, $z, false));
 			}
-		}
+		}*/
 	}
 
 	public function getBiomeId(int $x, int $z) : int{
@@ -569,7 +572,7 @@ class GenericChunk implements Chunk{
 			return false;
 		}
 		if($subChunk === null or ($subChunk->isEmpty() and !$allowEmpty)){
-			$this->subChunks[$fY] = new EmptySubChunk();
+			$this->subChunks[$fY] = new EmptySubChunk($fY);
 		}else{
 			$this->subChunks[$fY] = $subChunk;
 		}
@@ -583,7 +586,8 @@ class GenericChunk implements Chunk{
 
 	public function getHighestSubChunkIndex() : int{
 		for($y = count($this->subChunks) - 1; $y >= 0; --$y){
-			if($this->subChunks[$y] === null or $this->subChunks[$y]->isEmpty()){
+			if($this->subChunks[$y] === null or $this->subChunks[$y] instanceof EmptySubChunk){
+				//No need to thoroughly prune empties at runtime, this will just reduce performance.
 				continue;
 			}
 			break;
@@ -596,30 +600,19 @@ class GenericChunk implements Chunk{
 		return $this->getHighestSubChunkIndex() + 1;
 	}
 
-	public function getNonEmptySubChunkCount() : int{
-		$result = 0;
-		foreach($this->subChunks as $subChunk){
-			if($subChunk->isEmpty()){
-				continue;
-			}
-			++$result;
-		}
-		return $result;
-	}
-
-	public function clearEmptySubChunks(){
+	public function pruneEmptySubChunks(){
 		foreach($this->subChunks as $y => $subChunk){
-			if($subChunk->isEmpty()){
-				if($y < 0 or $y > self::MAX_SUBCHUNKS){
-					assert(false, "Invalid subchunk index");
-					unset($this->subChunks[$y]);
-				}elseif($subChunk instanceof EmptySubChunk){
-					continue;
-				}else{
-					$this->subChunks[$y] = new EmptySubChunk($y);
-				}
-				$this->hasChanged = true;
+			if($y < 0 or $y > self::MAX_SUBCHUNKS){
+				assert(false, "Invalid subchunk index");
+				unset($this->subChunks[$y]);
+			}elseif($subChunk instanceof EmptySubChunk){
+				continue;
+			}elseif($subChunk->isEmpty()){ //normal subchunk full of air, remove it and replace it with an empty stub
+				$this->subChunks[$y] = new EmptySubChunk($y);
+			}else{
+				continue; //do not set changed
 			}
+			$this->hasChanged = true;
 		}
 	}
 
@@ -632,7 +625,7 @@ class GenericChunk implements Chunk{
 			$result .= "\x00" //unknown byte!
 				. $subChunk->getBlockIdArray()
 				. $subChunk->getBlockDataArray()
-				. $subChunk->getSkyLightArray()
+				. str_repeat("\x00", 2048) //$subChunk->getSkyLightArray()
 				. $subChunk->getBlockLightArray();
 		}
 
@@ -718,7 +711,7 @@ class GenericChunk implements Chunk{
 		}
 		return $result;
 	}
-	
+
 	/**
 	 * Re-orders a nibble array (YZX -> XZY and vice versa)
 	 *

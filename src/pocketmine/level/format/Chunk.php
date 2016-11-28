@@ -381,7 +381,7 @@ interface Chunk{
 	/**
 	 * Disposes of empty subchunks
 	 */
-	public function clearEmptySubChunks();
+	public function pruneEmptySubChunks();
 	
 	/**
 	 * Serializes the chunk to network data
