@@ -621,12 +621,7 @@ class GenericChunk implements Chunk{
 		$subChunkCount = $this->getSubChunkSendCount();
 		$result .= chr($subChunkCount);
 		for($y = 0; $y < $subChunkCount; ++$y){
-			$subChunk = $this->subChunks[$y];
-			$result .= "\x00" //unknown byte!
-				. $subChunk->getBlockIdArray()
-				. $subChunk->getBlockDataArray()
-				. str_repeat("\x00", 2048) //$subChunk->getSkyLightArray()
-				. $subChunk->getBlockLightArray();
+			$result .= $this->subChunks[$y]->networkSerialize();
 		}
 
 		//TODO: heightmaps, tile data
@@ -644,11 +639,7 @@ class GenericChunk implements Chunk{
 				continue;
 			}
 			++$count;
-			$subChunks .= chr($subChunk->getY())
-				. $subChunk->getBlockIdArray()
-				. $subChunk->getBlockDataArray()
-				. $subChunk->getSkyLightArray()
-				. $subChunk->getBlockLightArray();
+			$subChunks .= $subChunk->fastSerialize();
 		}
 		$stream->putByte($count);
 		$stream->put($subChunks);
@@ -677,7 +668,7 @@ class GenericChunk implements Chunk{
 			);
 		}
 		$heightMap = array_values(unpack("C*", $stream->get(256)));
-		$biomeColors = array_values(unpack("N*", $stream->get(1024)));
+		$biomeColors = array_values(unpack("N*", $stream->get(1024))); //TODO: remove this
 
 		$chunk = new GenericChunk($provider, $x, $z, $subChunks, $heightMap, $biomeColors);
 		$flags = $stream->getByte();

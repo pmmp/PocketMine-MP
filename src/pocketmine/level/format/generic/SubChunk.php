@@ -202,4 +202,14 @@ class SubChunk{
 		assert(strlen($this->skyLight) === 2048, "Wrong length of skylight array, expecting 2048 bytes, got " . strlen($this->skyLight));
 		return $this->skyLight;
 	}
+
+	public function networkSerialize() : string{
+		// storage version, ids, data, skylight, blocklight
+		return "\x00" . $this->ids . $this->data . $this->skyLight . $this->blockLight;
+	}
+
+	public function fastSerialize() : string{
+		// y, ids, data, skylight, blocklight
+		return chr($this->y) . $this->ids . $this->data . $this->skyLight . $this->blockLight;
+	}
 }

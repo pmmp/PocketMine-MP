@@ -105,4 +105,12 @@ class EmptySubChunk extends SubChunk{
 	public function getSkyLightArray() : string{
 		return str_repeat("\xff", 2048);
 	}
+
+	public function networkSerialize() : string{
+		return "\x00" . str_repeat("\x00", 10240);
+	}
+
+	public function fastSerialize() : string{
+		return "";
+	}
 }
