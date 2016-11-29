@@ -691,12 +691,13 @@ class GenericChunk implements Chunk{
 	 */
 	public static final function reorderByteArray(string $array) : string{
 		$result = str_repeat("\x00", 4096);
+		$i = 0;
 		for($x = 0; $x < 16; ++$x){
-			for($z = 0; $z < 16; ++$z){
-				$xz = (($x << 8) | ($z << 4));
-				$zx = (($z << 4) | $x);
-				for($y = 0; $y < 16; ++$y){
-					$result{$xz | $y} = $array{($y << 8) | $zx};
+			for($z = 0; $z < 256; $z += 16){
+				$zx = ($z + $x);
+				for($y = 0; $y < 4096; $y += 256){
+					$result{$i} = $array{$y + $zx};
+					++$i;
 				}
 			}
 		}
