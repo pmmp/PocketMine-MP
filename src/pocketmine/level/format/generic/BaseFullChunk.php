@@ -355,8 +355,7 @@ abstract class BaseFullChunk implements FullChunk{
 	}
 
 	public function getTile($x, $y, $z){
-		$index = ($z << 12) | ($x << 8) | $y;
-		return isset($this->tileList[$index]) ? $this->tileList[$index] : null;
+		return $this->tileList[($z << 12) | ($x << 8) | $y] ?? null;
 	}
 
 	public function isLoaded(){

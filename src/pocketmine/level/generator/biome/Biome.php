@@ -107,7 +107,7 @@ abstract class Biome{
 	 * @return Biome
 	 */
 	public static function getBiome($id){
-		return isset(self::$biomes[$id]) ? self::$biomes[$id] : self::$biomes[self::OCEAN];
+		return self::$biomes[$id] ?? self::$biomes[self::OCEAN];
 	}
 
 	public function clearPopulators(){

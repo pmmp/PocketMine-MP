@@ -2381,7 +2381,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 							];
 
 							$damage = [
-								EntityDamageEvent::MODIFIER_BASE => isset($damageTable[$item->getId()]) ? $damageTable[$item->getId()] : 1,
+								EntityDamageEvent::MODIFIER_BASE => $damageTable[$item->getId()] ?? 1,
 							];
 
 							if(!$this->canInteract($target, 8)){
