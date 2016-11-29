@@ -714,24 +714,19 @@ class GenericChunk implements Chunk{
 	public static final function reorderNibbleArray(string $array) : string{
 		$result = str_repeat("\x00", 2048);
 		$i = 0;
-		for($x = 0; $x < 16; ++$x){
+		for($x = 0; $x < 8; ++$x){
 			for($z = 0; $z < 16; ++$z){
-				$zx = (($z << 3) | ($x >> 1));
+				$zx = (($z << 3) | $x);
 				for($y = 0; $y < 8; ++$y){
 					$j = (($y << 8) | $zx);
-					$byte = ord($array{$j});
-
-					if(($x & 1) === 0){
-						$current = ($byte & 0x0f);
-						$byte = ord($array{$j | 0x80});
-						$current |= ($byte << 4);
-					}else{
-						$current = ($byte >> 4);
-						$byte = ord($array{$j | 0x80});
-						$current |= ($byte & 0xf0);
-					}
-
-					$result{$i++} = chr($current);
+					$result{$i++} = chr((ord($array{$j}) & 0x0f) | (ord($array{$j | 0x80}) << 4));
+				}
+			}
+			for($z = 0; $z < 16; ++$z){
+				$zx = (($z << 3) | $x);
+				for($y = 0; $y < 8; ++$y){
+					$j = (($y << 8) | $zx);
+					$result{$i++} = chr((ord($array{$j}) >> 4) | (ord($array{$j | 0x80}) & 0xf0));
 				}
 			}
 		}
