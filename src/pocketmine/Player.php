@@ -2895,15 +2895,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->dataPacket($pk);
 				break;
 			case ProtocolInfo::SET_PLAYER_GAME_TYPE_PACKET:
-				if($packet->gamemode !== $this->gamemode){
-					if(!$this->hasPermission("pocketmine.command.gamemode")){
-						$pk = new SetPlayerGameTypePacket();
-						$pk->gamemode = $this->gamemode & 0x01;
-						$this->dataPacket($pk);
-						$this->sendSettings();
-						break;
-					}
-					$this->setGamemode($packet->gamemode, true);
+				if($packet->gamemode !== ($this->gamemode & 0x01)){
+					//GUI gamemode change, set it back to original for now (only possible through client bug or hack with current allowed client permissions)
+					$pk = new SetPlayerGameTypePacket();
+					$pk->gamemode = $this->gamemode & 0x01;
+					$this->dataPacket($pk);
+					$this->sendSettings();
 				}
 				break;
 			default:
