@@ -2107,6 +2107,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						$block = $target->getSide($packet->face);
 						if($block->getId() === Block::FIRE){
 							$this->level->setBlock($block, new Air());
+							break;
 						}
 						$this->lastBreak = microtime(true);
 						break;
