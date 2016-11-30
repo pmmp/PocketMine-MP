@@ -133,7 +133,7 @@ class MainLogger extends \AttachableThreadedLogger{
 		}else{
 			$type = ($errno === E_ERROR or $errno === E_USER_ERROR) ? LogLevel::ERROR : (($errno === E_USER_WARNING or $errno === E_WARNING) ? LogLevel::WARNING : LogLevel::NOTICE);
 		}
-		$errno = isset($errorConversion[$errno]) ? $errorConversion[$errno] : $errno;
+		$errno = $errorConversion[$errno] ?? $errno;
 		if(($pos = strpos($errstr, "\n")) !== false){
 			$errstr = substr($errstr, 0, $pos);
 		}

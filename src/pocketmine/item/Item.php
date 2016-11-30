@@ -272,7 +272,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return Item
 	 */
 	public static function getCreativeItem(int $index){
-		return isset(Item::$creative[$index]) ? Item::$creative[$index] : null;
+		return Item::$creative[$index] ?? null;
 	}
 
 	public static function getCreativeItemIndex(Item $item) : int{
@@ -597,7 +597,7 @@ class Item implements ItemIds, \JsonSerializable{
 	public function getNamedTagEntry($name){
 		$tag = $this->getNamedTag();
 		if($tag !== null){
-			return isset($tag->{$name}) ? $tag->{$name} : null;
+			return $tag->{$name} ?? null;
 		}
 
 		return null;

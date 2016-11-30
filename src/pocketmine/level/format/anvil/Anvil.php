@@ -117,7 +117,7 @@ class Anvil extends McRegion{
 	 * @return RegionLoader
 	 */
 	protected function getRegion($x, $z){
-		return isset($this->regions[$index = Level::chunkHash($x, $z)]) ? $this->regions[$index] : null;
+		return $this->regions[Level::chunkHash($x, $z)] ?? null;
 	}
 
 	/**

@@ -220,7 +220,7 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	public function unloadChunk($x, $z, $safe = true){
-		$chunk = isset($this->chunks[$index = Level::chunkHash($x, $z)]) ? $this->chunks[$index] : null;
+		$chunk = $this->chunks[$index = Level::chunkHash($x, $z)] ?? null;
 		if($chunk instanceof FullChunk and $chunk->unload(false, $safe)){
 			unset($this->chunks[$index]);
 			return true;
@@ -246,7 +246,7 @@ class McRegion extends BaseLevelProvider{
 	 * @return RegionLoader
 	 */
 	protected function getRegion($x, $z){
-		return isset($this->regions[$index = Level::chunkHash($x, $z)]) ? $this->regions[$index] : null;
+		return $this->regions[Level::chunkHash($x, $z)] ?? null;
 	}
 
 	/**
