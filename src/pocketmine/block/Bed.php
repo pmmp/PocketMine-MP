@@ -87,7 +87,7 @@ class Bed extends Transparent{
 				$b = $blockWest;
 			}else{
 				if($player instanceof Player){
-					$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%tile.bed.notValid"));
+					$player->sendMessage(TextFormat::GRAY . "This bed is incomplete");
 				}
 
 				return true;
