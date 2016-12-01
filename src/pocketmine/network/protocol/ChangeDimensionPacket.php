@@ -29,6 +29,7 @@ class ChangeDimensionPacket extends DataPacket{
 
 	const DIMENSION_OVERWORLD = 0;
 	const DIMENSION_NETHER = 1;
+	const DIMENSION_THE_END = 2;
 
 	public $dimension;
 	public $x;
