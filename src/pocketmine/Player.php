@@ -1153,10 +1153,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$pk = new SetPlayerGameTypePacket();
 			$pk->gamemode = $this->gamemode & 0x01;
 			$this->dataPacket($pk);
-			$this->sendSettings();
 		}else{
 			Command::broadcastCommandMessage($this, new TranslationContainer("commands.gamemode.success.self", [Server::getGamemodeString($gm)]));
 		}
+
+		$this->sendSettings();
 
 		$this->inventory->sendContents($this);
 		$this->inventory->sendContents($this->getViewers());
@@ -2105,6 +2106,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						$block = $target->getSide($packet->face);
 						if($block->getId() === Block::FIRE){
 							$this->level->setBlock($block, new Air());
+							break;
 						}
 						$this->lastBreak = microtime(true);
 						break;
@@ -2379,7 +2381,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 							];
 
 							$damage = [
-								EntityDamageEvent::MODIFIER_BASE => isset($damageTable[$item->getId()]) ? $damageTable[$item->getId()] : 1,
+								EntityDamageEvent::MODIFIER_BASE => $damageTable[$item->getId()] ?? 1,
 							];
 
 							if(!$this->canInteract($target, 8)){
@@ -2893,15 +2895,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->dataPacket($pk);
 				break;
 			case ProtocolInfo::SET_PLAYER_GAME_TYPE_PACKET:
-				if($packet->gamemode !== $this->gamemode){
-					if(!$this->hasPermission("pocketmine.command.gamemode")){
-						$pk = new SetPlayerGameTypePacket();
-						$pk->gamemode = $this->gamemode & 0x01;
-						$this->dataPacket($pk);
-						$this->sendSettings();
-						break;
-					}
-					$this->setGamemode($packet->gamemode, true);
+				if($packet->gamemode !== ($this->gamemode & 0x01)){
+					//GUI gamemode change, set it back to original for now (only possible through client bug or hack with current allowed client permissions)
+					$pk = new SetPlayerGameTypePacket();
+					$pk->gamemode = $this->gamemode & 0x01;
+					$this->dataPacket($pk);
+					$this->sendSettings();
 				}
 				break;
 			default:

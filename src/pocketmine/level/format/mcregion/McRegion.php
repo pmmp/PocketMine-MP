@@ -311,7 +311,7 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	public function unloadChunk($x, $z, $safe = true){
-		$chunk = isset($this->chunks[$index = Level::chunkHash($x, $z)]) ? $this->chunks[$index] : null;
+		$chunk = $this->chunks[$index = Level::chunkHash($x, $z)] ?? null;
 		if($chunk instanceof Chunk and $chunk->unload(false, $safe)){
 			unset($this->chunks[$index]);
 			return true;

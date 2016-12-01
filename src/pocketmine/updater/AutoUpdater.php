@@ -68,7 +68,7 @@ class AutoUpdater{
 			"api_version" => $response["api_version"],
 			"build" => $response["build"],
 			"date" => $response["date"],
-			"details_url" => isset($response["details_url"]) ? $response["details_url"] : null,
+			"details_url" => $response["details_url"] ?? null,
 			"download_url" => $response["download_url"]
 		];
 
