@@ -164,7 +164,11 @@ class GenericChunk implements Chunk{
 	}
 
 	public function setBlock(int $x, int $y, int $z, $blockId = null, $meta = null) : bool{
-		return $this->getSubChunk($y >> 4, true)->setBlock($x, $y & 0x0f, $z, $blockId !== null ? ($blockId & 0xff) : null, $meta !== null ? ($meta & 0x0f) : null);
+		if($this->getSubChunk($y >> 4, true)->setBlock($x, $y & 0x0f, $z, $blockId !== null ? ($blockId & 0xff) : null, $meta !== null ? ($meta & 0x0f) : null)){
+			$this->hasChanged = true;
+			return true;
+		}
+		return false;
 	}
 
 	public function getBlockId(int $x, int $y, int $z) : int{
@@ -172,7 +176,9 @@ class GenericChunk implements Chunk{
 	}
 
 	public function setBlockId(int $x, int $y, int $z, int $id){
-		$this->getSubChunk($y >> 4, true)->setBlockId($x, $y & 0x0f, $z, $id);
+		if($this->getSubChunk($y >> 4, true)->setBlockId($x, $y & 0x0f, $z, $id)){
+			$this->hasChanged = true;
+		}
 	}
 
 	public function getBlockData(int $x, int $y, int $z) : int{
@@ -180,7 +186,9 @@ class GenericChunk implements Chunk{
 	}
 
 	public function setBlockData(int $x, int $y, int $z, int $data){
-		$this->getSubChunk($y >> 4)->setBlockData($x, $y & 0x0f, $z, $data);
+		if($this->getSubChunk($y >> 4)->setBlockData($x, $y & 0x0f, $z, $data)){
+			$this->hasChanged = true;
+		}
 	}
 
 	public function getBlockExtraData(int $x, int $y, int $z) : int{
@@ -202,7 +210,9 @@ class GenericChunk implements Chunk{
 	}
 
 	public function setBlockSkyLight(int $x, int $y, int $z, int $level){
-		$this->getSubChunk($y >> 4)->setBlockSkyLight($x, $y & 0x0f, $z, $level);
+		if($this->getSubChunk($y >> 4)->setBlockSkyLight($x, $y & 0x0f, $z, $level)){
+			$this->hasChanged = true;
+		}
 	}
 
 	public function getBlockLight(int $x, int $y, int $z) : int{
@@ -210,7 +220,9 @@ class GenericChunk implements Chunk{
 	}
 
 	public function setBlockLight(int $x, int $y, int $z, int $level){
-		$this->getSubChunk($y >> 4)->setBlockLight($x, $y & 0x0f, $z, $level);
+		if($this->getSubChunk($y >> 4)->setBlockLight($x, $y & 0x0f, $z, $level)){
+			$this->hasChanged = true;
+		}
 	}
 
 	public function getHighestBlockAt(int $x, int $z, bool $useHeightMap = true) : int{

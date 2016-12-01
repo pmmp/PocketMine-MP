@@ -59,8 +59,9 @@ class SubChunk{
 		return ord($this->ids{($x << 8) | ($z << 4) | $y});
 	}
 
-	public function setBlockId(int $x, int $y, int $z, int $id){
+	public function setBlockId(int $x, int $y, int $z, int $id) : bool{
 		$this->ids{($x << 8) | ($z << 4) | $y} = chr($id);
+		return true;
 	}
 
 	public function getBlockData(int $x, int $y, int $z) : int{
@@ -72,15 +73,14 @@ class SubChunk{
 		}
 	}
 
-	public function setBlockData(int $x, int $y, int $z, int $data){
+	public function setBlockData(int $x, int $y, int $z, int $data) : bool{
 		$i = ($x << 7) | ($z << 3) | ($y >> 1);
-		$current = ord($this->data{$i});
 		if(($y & 1) === 0){
-			$this->data{$i} = chr(($current & 0xf0) | ($data & 0x0f));
+			$this->data{$i} = chr((ord($this->data{$i}) & 0xf0) | ($data & 0x0f));
 		}else{
-			$this->data{$i} = chr((($data & 0x0f) << 4) | ($current & 0x0f));
+			$this->data{$i} = chr((($data & 0x0f) << 4) | (ord($this->data{$i}) & 0x0f));
 		}
-		$this->hasChanged = true;
+		return true;
 	}
 
 	public function getFullBlock(int $x, int $y, int $z) : int{
@@ -128,7 +128,7 @@ class SubChunk{
 		}
 	}
 
-	public function setBlockSkyLight(int $x, int $y, int $z, int $level){
+	public function setBlockSkyLight(int $x, int $y, int $z, int $level) : bool{
 		$i = ($x << 7) + ($z << 3) + ($y >> 1);
 		$byte = ord($this->skyLight{$i});
 		if(($y & 1) === 0){
@@ -136,6 +136,7 @@ class SubChunk{
 		}else{
 			$this->skyLight{$i} = chr((($level & 0x0f) << 4) | ($byte & 0x0f));
 		}
+		return true;
 	}
 
 	public function getBlockLight(int $x, int $y, int $z) : int{
@@ -147,7 +148,7 @@ class SubChunk{
 		}
 	}
 
-	public function setBlockLight(int $x, int $y, int $z, int $level){
+	public function setBlockLight(int $x, int $y, int $z, int $level) : bool{
 		$i = ($x << 7) + ($z << 3) + ($y >> 1);
 		$byte = ord($this->blockLight{$i});
 		if(($y & 1) === 0){
@@ -155,6 +156,7 @@ class SubChunk{
 		}else{
 			$this->blockLight{$i} = chr((($level & 0x0f) << 4) | ($byte & 0x0f));
 		}
+		return true;
 	}
 
 	public function getHighestBlockAt(int $x, int $z) : int{

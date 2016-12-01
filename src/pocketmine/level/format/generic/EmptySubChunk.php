@@ -38,16 +38,16 @@ class EmptySubChunk extends SubChunk{
 		return 0;
 	}
 
-	public function setBlockId(int $x, int $y, int $z, int $id){
-
+	public function setBlockId(int $x, int $y, int $z, int $id) : bool{
+		return false;
 	}
 
 	public function getBlockData(int $x, int $y, int $z) : int{
 		return 0;
 	}
 
-	public function setBlockData(int $x, int $y, int $z, int $data){
-
+	public function setBlockData(int $x, int $y, int $z, int $data) : bool{
+		return false;
 	}
 
 	public function getFullBlock(int $x, int $y, int $z) : int{
@@ -55,23 +55,23 @@ class EmptySubChunk extends SubChunk{
 	}
 
 	public function setBlock(int $x, int $y, int $z, $id = null, $data = null) : bool{
-
+		return false;
 	}
 
 	public function getBlockSkyLight(int $x, int $y, int $z) : int{
 		return 15;
 	}
 
-	public function setBlockSkyLight(int $x, int $y, int $z, int $level){
-
+	public function setBlockSkyLight(int $x, int $y, int $z, int $level) : bool{
+		return false;
 	}
 
 	public function getBlockLight(int $x, int $y, int $z) : int{
 		return 0;
 	}
 
-	public function setBlockLight(int $x, int $y, int $z, int $level){
-
+	public function setBlockLight(int $x, int $y, int $z, int $level) : bool{
+		return false;
 	}
 	
 	public function getBlockIdColumn(int $x, int $z) : string{
