@@ -34,8 +34,6 @@ __PocketMine-MP is a free, open-source software that creates Minecraft: Pocket E
  * [Official Doxygen-generated documentation](http://docs.pocketmine.net/)
  * [Latest Doxygen generated from development](https://jenkins.pmmp.io/job/PocketMine-MP%20Docs/doxygen/)
 
-### [Twitter @PocketMine](https://twitter.com/PocketMine)
-
 ### IRC Chat #pmmp (or #pocketmine) @ irc.freenode.net
 [#pmmp + #pocketmine channel WebIRC](http://webchat.freenode.net/?channels=pmmp,pocketmine)
 
