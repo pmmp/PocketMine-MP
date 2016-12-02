@@ -43,7 +43,6 @@ class McRegion extends BaseLevelProvider{
 		$nbt->V = new ByteTag("V", 0); //guess
 		$nbt->LastUpdate = new LongTag("LastUpdate", 0); //TODO
 		$nbt->InhabitedTime = new LongTag("InhabitedTime", 0); //TODO
-		$nbt->TerrainGenerated = new ByteTag("TerrainGenerated", $chunk->isGenerated());
 		$nbt->TerrainPopulated = new ByteTag("TerrainPopulated", $chunk->isPopulated());
 		$nbt->LightPopulated = new ByteTag("LightPopulated", $chunk->isLightPopulated());
 
@@ -68,7 +67,7 @@ class McRegion extends BaseLevelProvider{
 		$nbt->SkyLight = new ByteArrayTag("SkyLight", $skyLight);
 		$nbt->BlockLight = new ByteArrayTag("BlockLight", $blockLight);
 
-		$nbt->BiomeColors = new IntArrayTag("BiomeColors", $chunk->getBiomeColorArray());
+		//$nbt->BiomeColors = new IntArrayTag("BiomeColors", $chunk->getBiomeColorArray());
 		$nbt->HeightMap = new IntArrayTag("HeightMap", $chunk->getHeightMapArray());
 
 		$entities = [];
@@ -155,12 +154,12 @@ class McRegion extends BaseLevelProvider{
 				$subChunks,
 				$chunk->Entities instanceof ListTag ? $chunk->Entities->getValue() : [],
 				$chunk->TileEntities instanceof ListTag ? $chunk->TileEntities->getValue() : [],
-				$chunk->BiomeColors instanceof IntArrayTag ? $chunk->BiomeColors->getValue() : [],
+				/*$chunk->BiomeColors instanceof IntArrayTag ? $chunk->BiomeColors->getValue() :*/ [],
 				$chunk->HeightMap instanceof IntArrayTag ? $chunk->HeightMap->getValue() : []
 			);
 			$result->setLightPopulated($chunk->LightPopulated instanceof ByteTag ? ((bool) $chunk->LightPopulated->getValue()) : false);
 			$result->setPopulated($chunk->TerrainPopulated instanceof ByteTag ? ((bool) $chunk->TerrainPopulated->getValue()) : false);
-			$result->setGenerated($chunk->TerrainGenerated instanceof ByteTag ? ((bool) $chunk->TerrainGenerated->getValue()) : false);
+			$result->setGenerated(true);
 			return $result;
 		}catch(\Throwable $e){
 			echo $e->getMessage();
