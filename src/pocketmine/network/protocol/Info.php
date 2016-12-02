@@ -30,7 +30,7 @@ interface Info{
 	/**
 	 * Actual Minecraft: PE protocol version
 	 */
-	const CURRENT_PROTOCOL = 91;
+	const CURRENT_PROTOCOL = 92;
 
 	const LOGIN_PACKET = 0x01;
 	const PLAY_STATUS_PACKET = 0x02;
@@ -101,7 +101,7 @@ interface Info{
 	const REQUEST_CHUNK_RADIUS_PACKET = 0x43;
 	const CHUNK_RADIUS_UPDATED_PACKET = 0x44;
 	const ITEM_FRAME_DROP_ITEM_PACKET = 0x45;
-	const REPLACE_SELECTED_ITEM_PACKET = 0x46;
+	const REPLACE_ITEM_IN_SLOT_PACKET = 0x46; //ReplaceSelectedItemPacket
 	const GAME_RULES_CHANGED_PACKET = 0x47;
 	const CAMERA_PACKET = 0x48;
 	const ADD_ITEM_PACKET = 0x49;
