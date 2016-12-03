@@ -32,6 +32,17 @@ You must follow these guidelines if you wish to contribute to the PocketMine-MP 
 * **Keep each pull request only contain one feature**. The only exception is when all features in the pull request are related to each other, and share the same core changes.
 * **Do not create pull requests that only bump the MCPE version**. If it is ready to be updated, the team will update the values directly. Do not change the MCPE version or protocol version in a pull request, unless you have updated the protocol (all packets) entirely.
 
+### Cosmetic pull requests
+To avoid creation of pull requests merely to add a name onto the contributor list, pull requests that only carry cosmetic changes from non-team-members are discouraged. Examples of cosmetic pull requests include but are not limited to:
+
+* Only editing files not related to code, espeically GitHub-/integration-related files, such as the README.md, this CONTRIBUTING.md, files in the .github/ directory, etc. These changes involve the team's policy, and is not included in the scope of pull requests, which should be about the software itself. This does not include changes to CI test scripts that help make the tests more inclusive.
+* Bumping submodule versions.
+* Some minor mistakes in human-readable string literals. Actually, such string literals should eventually be moved to our translator emgine.
+* Bumping protocol versions and MCPE version names without including actual protocol changes, even if the client protocol number bump does not involve actual protocol changes.
+* Formatting, unless it changes the behaviour of the code.
+
+It is understood that some sincere contributors only wish to improve the repository at every minor aspect. In case such problems are spotted, please [create an issue](#creating-an-issue), or [contact the team directly](#i-have-a-question), to prevent such issues to be resolved. This is to prevent the influx of unnecessary pull requests that distract code flow.
+
 **Thanks for contributing to PocketMine-MP!**
 
 ### Code Syntax
