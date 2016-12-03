@@ -37,7 +37,7 @@ To avoid creation of pull requests merely to add a name onto the contributor lis
 
 * Only editing files not related to code, espeically GitHub-/integration-related files, such as the README.md, this CONTRIBUTING.md, files in the .github/ directory, etc. These changes involve the team's policy, and is not included in the scope of pull requests, which should be about the software itself. This does not include changes to CI test scripts that help make the tests more inclusive.
 * Bumping submodule versions.
-* Some minor mistakes in human-readable string literals. Actually, such string literals should eventually be moved to our translator emgine.
+* Some minor mistakes in human-readable string literals. Actually, such string literals should eventually be moved to https://translate.pocketmine.net.
 * Bumping protocol versions and MCPE version names without including actual protocol changes, even if the client protocol number bump does not involve actual protocol changes.
 * Formatting, unless it changes the behaviour of the code.
 
