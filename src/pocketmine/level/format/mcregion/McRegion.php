@@ -32,6 +32,7 @@ use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\{ByteArrayTag, ByteTag, CompoundTag, IntArrayTag, IntTag, ListTag, LongTag, StringTag};
 use pocketmine\Player;
 use pocketmine\utils\ChunkException;
+use pocketmine\utils\MainLogger;
 
 class McRegion extends BaseLevelProvider{
 	
@@ -67,7 +68,7 @@ class McRegion extends BaseLevelProvider{
 		$nbt->SkyLight = new ByteArrayTag("SkyLight", $skyLight);
 		$nbt->BlockLight = new ByteArrayTag("BlockLight", $blockLight);
 
-		//$nbt->BiomeColors = new IntArrayTag("BiomeColors", $chunk->getBiomeColorArray());
+		$nbt->Biomes = new ByteArrayTag("Biomes", $chunk->getBiomeIdArray());
 		$nbt->HeightMap = new IntArrayTag("HeightMap", $chunk->getHeightMapArray());
 
 		$entities = [];
@@ -146,23 +147,31 @@ class McRegion extends BaseLevelProvider{
 				}
 				$subChunks[] = new SubChunk($y, $ids, $data, $blockLight, $skyLight);
 			}
+
+			if(isset($chunk->BiomeColors)){
+				$biomeIds = GenericChunk::convertBiomeColours($chunk->BiomeColors->getValue()); //Convert back to PC format (RIP colours D:)
+			}elseif(isset($chunk->Biomes)){
+				$biomeIds = $chunk->Biomes->getValue();
+			}else{
+				$biomeIds = "";
+			}
 			
 			$result = new GenericChunk(
 				$provider,
 				$chunk["xPos"],
 				$chunk["zPos"],
 				$subChunks,
-				$chunk->Entities instanceof ListTag ? $chunk->Entities->getValue() : [],
-				$chunk->TileEntities instanceof ListTag ? $chunk->TileEntities->getValue() : [],
-				/*$chunk->BiomeColors instanceof IntArrayTag ? $chunk->BiomeColors->getValue() :*/ [],
-				$chunk->HeightMap instanceof IntArrayTag ? $chunk->HeightMap->getValue() : []
+				$chunk->Entities->getValue(),
+				$chunk->TileEntities->getValue(),
+				$biomeIds,
+				$chunk->HeightMap->getValue()
 			);
-			$result->setLightPopulated($chunk->LightPopulated instanceof ByteTag ? ((bool) $chunk->LightPopulated->getValue()) : false);
-			$result->setPopulated($chunk->TerrainPopulated instanceof ByteTag ? ((bool) $chunk->TerrainPopulated->getValue()) : false);
+			$result->setLightPopulated(isset($chunk->LightPopulated) ? ((bool) $chunk->LightPopulated->getValue()) : false);
+			$result->setPopulated(isset($chunk->TerrainPopulated) ? ((bool) $chunk->TerrainPopulated->getValue()) : false);
 			$result->setGenerated(true);
 			return $result;
 		}catch(\Throwable $e){
-			echo $e->getMessage();
+			MainLogger::getLogger()->logException($e);
 			return null;
 		}
 	}

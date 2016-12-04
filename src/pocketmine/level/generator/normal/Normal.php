@@ -201,7 +201,6 @@ class Normal extends Generator{
 
 				$biome = $this->pickBiome($chunkX * 16 + $x, $chunkZ * 16 + $z);
 				$chunk->setBiomeId($x, $z, $biome->getId());
-				$color = [0, 0, 0];
 
 				for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx){
 					for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz){
@@ -221,10 +220,6 @@ class Normal extends Generator{
 
 						$minSum += ($adjacent->getMinElevation() - 1) * $weight;
 						$maxSum += $adjacent->getMaxElevation() * $weight;
-						$bColor = $adjacent->getColor();
-						$color[0] += (($bColor >> 16) ** 2) * $weight;
-						$color[1] += ((($bColor >> 8) & 0xff) ** 2) * $weight;
-						$color[2] += (($bColor & 0xff) ** 2) * $weight;
 
 						$weightSum += $weight;
 					}
@@ -232,8 +227,6 @@ class Normal extends Generator{
 
 				$minSum /= $weightSum;
 				$maxSum /= $weightSum;
-
-				$chunk->setBiomeColor($x, $z, sqrt($color[0] / $weightSum), sqrt($color[1] / $weightSum), sqrt($color[2] / $weightSum));
 
 				$smoothHeight = ($maxSum - $minSum) / 2;
 

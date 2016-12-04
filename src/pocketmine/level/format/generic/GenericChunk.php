@@ -67,8 +67,8 @@ class GenericChunk implements Chunk{
 	/** @var int[256] */
 	protected $heightMap = [];
 
-	/** @var int[256] */
-	protected $biomeColors = [];
+	/** @var string */
+	protected $biomeIds;
 
 	protected $extraData = [];
 
@@ -85,10 +85,10 @@ class GenericChunk implements Chunk{
 	 * @param SubChunk[]    $subChunks
 	 * @param CompoundTag[] $entities
 	 * @param CompoundTag[] $tiles
-	 * @param int[256]      $biomeColors
+	 * @param string        $biomeIds
 	 * @param int[256]      $heightMap
 	 */
-	public function __construct($provider, int $chunkX, int $chunkZ, array $subChunks = [], array $entities = [], array $tiles = [], array $biomeColors = [], array $heightMap = []){
+	public function __construct($provider, int $chunkX, int $chunkZ, array $subChunks = [], array $entities = [], array $tiles = [], string $biomeIds = "", array $heightMap = []){
 		$this->provider = $provider;
 		$this->x = $chunkX;
 		$this->z = $chunkZ;
@@ -120,11 +120,11 @@ class GenericChunk implements Chunk{
 			$this->heightMap = array_fill(0, 256, 0);
 		}
 
-		if(count($biomeColors) === 256){
-			$this->biomeColors = $biomeColors;
+		if(strlen($biomeIds) === 256){
+			$this->biomeIds = $biomeIds;
 		}else{
-			assert(count($biomeColors) === 0, "Wrong HeightMap value count, expected 256, got " . count($biomeColors));
-			$this->biomeColors = array_fill(0, 256, 0);
+			assert(strlen($biomeIds) === 0, "Wrong BiomeIds value count, expected 256, got " . strlen($biomeIds));
+			$this->biomeIds = str_repeat("\x00", 256);
 		}
 
 		$this->NBTtiles = $tiles;
@@ -293,23 +293,12 @@ class GenericChunk implements Chunk{
 	}
 
 	public function getBiomeId(int $x, int $z) : int{
-		return ($this->biomeColors[($z << 4) | $x] & 0xFF000000) >> 24;
+		return ord($this->biomeIds{($z << 4) | $x});
 	}
 
 	public function setBiomeId(int $x, int $z, int $biomeId){
 		$this->hasChanged = true;
-		$this->biomeColors[($z << 4) | $x] = ($this->biomeColors[($z << 4) | $x] & 0xFFFFFF) | ($biomeId << 24);
-	}
-
-	public function getBiomeColor(int $x, int $z) : int{
-		$color = $this->biomeColors[($z << 4) | $x] & 0xFFFFFF;
-
-		return [$color >> 16, ($color >> 8) & 0xFF, $color & 0xFF];
-	}
-
-	public function setBiomeColor(int $x, int $z, int $R, int $G, int $B){
-		$this->hasChanged = true;
-		$this->biomeColors[($z << 4) | $x] = ($this->biomeColors[($z << 4) | $x] & 0xFF000000) | (($R & 0xFF) << 16) | (($G & 0xFF) << 8) | ($B & 0xFF);
+		$this->biomeIds{($z << 4) | $x} = chr($biomeId & 0xff);
 	}
 
 	public function getBlockIdColumn(int $x, int $z) : string{
@@ -511,15 +500,7 @@ class GenericChunk implements Chunk{
 	}
 
 	public function getBiomeIdArray() : string{
-		$ids = str_repeat("\x00", 256);
-		foreach($this->biomeColors as $i => $d){
-			$ids{$i} = chr(($d & 0xFF000000) >> 24);
-		}
-		return $ids;
-	}
-
-	public function getBiomeColorArray() : array{
-		return $this->biomeColors;
+		return $this->biomeIds;
 	}
 
 	public function getHeightMapArray() : array{
@@ -635,7 +616,8 @@ class GenericChunk implements Chunk{
 		for($y = 0; $y < $subChunkCount; ++$y){
 			$result .= $this->subChunks[$y]->networkSerialize();
 		}
-
+		$result .= pack("v*", ...$this->heightMap)
+			. $this->biomeIds;
 		//TODO: heightmaps, tile data
 		return $result;
 	}
@@ -656,7 +638,7 @@ class GenericChunk implements Chunk{
 		$stream->putByte($count);
 		$stream->put($subChunks);
 		$stream->put(pack("C*", ...$chunk->getHeightMapArray()) .
-			pack("N*", ...$chunk->getBiomeColorArray()) .
+			$chunk->getBiomeIdArray() .
 			chr(($chunk->lightPopulated ? 1 << 2 : 0) | ($chunk->terrainPopulated ? 1 << 1 : 0) | ($chunk->terrainGenerated ? 1 : 0)));
 		//TODO: tiles and entities
 		return $stream->getBuffer();
@@ -680,9 +662,9 @@ class GenericChunk implements Chunk{
 			);
 		}
 		$heightMap = array_values(unpack("C*", $stream->get(256)));
-		$biomeColors = array_values(unpack("N*", $stream->get(1024))); //TODO: remove this
+		$biomeIds = $stream->get(256);
 
-		$chunk = new GenericChunk($provider, $x, $z, $subChunks, $heightMap, $biomeColors);
+		$chunk = new GenericChunk($provider, $x, $z, $subChunks, [], [], $biomeIds, $heightMap);
 		$flags = $stream->getByte();
 		$chunk->lightPopulated = (bool) ($flags & 4);
 		$chunk->terrainPopulated = (bool) ($flags & 2);
@@ -741,6 +723,14 @@ class GenericChunk implements Chunk{
 					$result{$i++} = chr((ord($array{$j}) >> 4) | (ord($array{$j | 0x80}) & 0xf0));
 				}
 			}
+		}
+		return $result;
+	}
+
+	public static function convertBiomeColours(array $array) : string{
+		$result = str_repeat("\x00", 256);
+		foreach($array as $i => $colour){
+			$result{$i} = chr(($array[$i] >> 24) & 0xff);
 		}
 		return $result;
 	}

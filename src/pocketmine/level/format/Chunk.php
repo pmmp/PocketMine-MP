@@ -210,23 +210,6 @@ interface Chunk{
 	 */
 	public function setBiomeId(int $x, int $z, int $biomeId);
 
-	/**
-	 * @param int $x
-	 * @param int $z
-	 *
-	 * @return int[] RGB bytes
-	 */
-	public function getBiomeColor(int $x, int $z) : int;
-
-	/**
-	 * @param int $x 0-15
-	 * @param int $z 0-15
-	 * @param int $R 0-255
-	 * @param int $G 0-255
-	 * @param int $B 0-255
-	 */
-	public function setBiomeColor(int $x, int $z, int $R, int $G, int $B);
-
 	public function getBlockIdColumn(int $x, int $z) : string;
 
 	public function getBlockDataColumn(int $x, int $z) : string;
@@ -312,11 +295,6 @@ interface Chunk{
 	 * @return string
 	 */
 	public function getBiomeIdArray() : string;
-
-	/**
-	 * @return int[]
-	 */
-	public function getBiomeColorArray() : array;
 
 	/**
 	 * @return int[]

@@ -33,6 +33,7 @@ use pocketmine\Player;
 use pocketmine\tile\Spawnable;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\ChunkException;
+use pocketmine\utils\MainLogger;
 
 class Anvil extends McRegion{
 
@@ -63,7 +64,7 @@ class Anvil extends McRegion{
 			]);
 		}
 
-		//$nbt->BiomeColors = new IntArrayTag("BiomeColors", $chunk->getBiomeColorArray());
+		$nbt->Biomes = new ByteArrayTag("Biomes", $chunk->getBiomeIdArray());
 		$nbt->HeightMap = new IntArrayTag("HeightMap", $chunk->getHeightMapArray());
 
 		$entities = [];
@@ -124,22 +125,30 @@ class Anvil extends McRegion{
 				}
 			}
 
+			if(isset($chunk->BiomeColors)){
+				$biomeIds = GenericChunk::convertBiomeColours($chunk->BiomeColors->getValue()); //Convert back to PC format (RIP colours D:)
+			}elseif(isset($chunk->Biomes)){
+				$biomeIds = $chunk->Biomes->getValue();
+			}else{
+				$biomeIds = "";
+			}
+
 			$result = new GenericChunk(
 				$provider,
 				$chunk["xPos"],
 				$chunk["zPos"],
 				$subChunks,
-				$chunk->Entities instanceof ListTag ? $chunk->Entities->getValue() : [],
-				$chunk->TileEntities instanceof ListTag ? $chunk->TileEntities->getValue() : [],
-				/*$chunk->BiomeColors instanceof IntArrayTag ? $chunk->BiomeColors->getValue() : */ [], //TODO: remove this and revert to the original PC Biomes array
-				$chunk->HeightMap instanceof IntArrayTag ? $chunk->HeightMap->getValue() : []
+				$chunk->Entities->getValue(),
+				$chunk->TileEntities->getValue(),
+				$biomeIds,
+				$chunk->HeightMap->getValue()
 			);
-			$result->setLightPopulated($chunk->LightPopulated instanceof ByteTag ? ((bool) $chunk->LightPopulated->getValue()) : false);
-			$result->setPopulated($chunk->TerrainPopulated instanceof ByteTag ? ((bool) $chunk->TerrainPopulated->getValue()) : false);
+			$result->setLightPopulated(isset($chunk->LightPopulated) ? ((bool) $chunk->LightPopulated->getValue()) : false);
+			$result->setPopulated(isset($chunk->TerrainPopulated) ? ((bool) $chunk->TerrainPopulated->getValue()) : false);
 			$result->setGenerated(true);
 			return $result;
 		}catch(\Throwable $e){
-			echo $e->getMessage();
+			MainLogger::getLogger()->logException($e);
 			return null;
 		}
 	}
