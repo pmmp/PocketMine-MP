@@ -619,9 +619,16 @@ class GenericChunk implements Chunk{
 			$result .= $this->subChunks[$y]->networkSerialize();
 		}
 		$result .= pack("v*", ...$this->heightMap)
-			. $this->biomeIds
-			. "\x00" //border block array count (TODO)
-			. "\x00\x00\x00\x00"; //extra data array (TODO)
+		        .  $this->biomeIds
+		        .  chr(0); //border block array count (TODO)
+
+		$extraData = new BinaryStream();
+		$extraData->putVarInt(count($this->extraData)); //WHY, Mojang, WHY
+		foreach($this->extraData as $key => $value){
+			$extraData->putVarInt($key);
+			$extraData->putLShort($value);
+		}
+		$result .= $extraData->getBuffer();
 
 		if(count($this->tiles) > 0){
 			$nbt = new NBT(NBT::LITTLE_ENDIAN);
