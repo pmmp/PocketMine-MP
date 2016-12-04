@@ -12,3 +12,6 @@ before_script:
 
 script:
  - ./tests/lint.sh && ./tests/run.sh
+
+notifications:
+ email: false
