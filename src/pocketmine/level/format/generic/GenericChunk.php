@@ -31,9 +31,11 @@ use pocketmine\entity\Entity;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\level\Level;
+use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 use pocketmine\tile\Tile;
+use pocketmine\tile\Spawnable;
 use pocketmine\utils\BinaryStream;
 
 class GenericChunk implements Chunk{
@@ -617,8 +619,22 @@ class GenericChunk implements Chunk{
 			$result .= $this->subChunks[$y]->networkSerialize();
 		}
 		$result .= pack("v*", ...$this->heightMap)
-			. $this->biomeIds;
-		//TODO: heightmaps, tile data
+			. $this->biomeIds
+			. "\x00" //border block array count (TODO)
+			. "\x00\x00\x00\x00"; //extra data array (TODO)
+
+		if(count($this->tiles) > 0){
+			$nbt = new NBT(NBT::LITTLE_ENDIAN);
+			$list = [];
+			foreach($this->tiles as $tile){
+				if($tile instanceof Spawnable){
+					$list[] = $tile->getSpawnCompound();
+				}
+			}
+			$nbt->setData($list);
+			$result .= $nbt->write(true);
+		}
+
 		return $result;
 	}
 
