@@ -132,38 +132,6 @@ abstract class BaseLevelProvider implements LevelProvider{
 			throw new ChunkException("Invalid Chunk sent");
 		}
 
-		/*
-		$tiles = "";
-
-		if(count($chunk->getTiles()) > 0){
-			$nbt = new NBT(NBT::LITTLE_ENDIAN);
-			$list = [];
-			foreach($chunk->getTiles() as $tile){
-				if($tile instanceof Spawnable){
-					$list[] = $tile->getSpawnCompound();
-				}
-			}
-			$nbt->setData($list);
-			$tiles = $nbt->write(true);
-		}
-
-		$extraData = new BinaryStream();
-		$extraData->putLInt(count($chunk->getBlockExtraDataArray()));
-		foreach($chunk->getBlockExtraDataArray() as $key => $value){
-			$extraData->putLInt($key);
-			$extraData->putLShort($value);
-		}
-
-		$ordered = $chunk->getBlockIdArray() .
-			$chunk->getBlockDataArray() .
-			$chunk->getBlockSkyLightArray() .
-			$chunk->getBlockLightArray() .
-			pack("C*", ...$chunk->getHeightMapArray()) .
-			pack("N*", ...$chunk->getBiomeColorArray()) .
-			$extraData->getBuffer() .
-			$tiles;
-		*/
-		
 		$this->getLevel()->chunkRequestCallback($x, $z, $chunk->networkSerialize());
 	}
 }
