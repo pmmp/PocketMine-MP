@@ -275,7 +275,7 @@ class Level implements ChunkManager, Metadatable{
 	public static function getBlockXYZ($hash, &$x, &$y, &$z){
 		if(PHP_INT_SIZE === 8){
 			$x = $hash >> 36;
-			$y = $hash >> 28; //it's always positive
+			$y = ($hash >> 28) & Level::Y_MASK; //it's always positive
 			$z = ($hash & 0xFFFFFFF) << 36 >> 36;
 		}else{
 			$hash = explode(":", $hash);
