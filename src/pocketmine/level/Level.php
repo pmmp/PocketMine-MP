@@ -210,8 +210,6 @@ class Level implements ChunkManager, Metadatable{
 	/** @var BlockMetadataStore */
 	private $blockMetadata;
 
-	private $blockOrder;
-
 	/** @var Position */
 	private $temporalPosition;
 	/** @var Vector3 */
@@ -332,8 +330,6 @@ class Level implements ChunkManager, Metadatable{
 		}
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.preparing", [$this->provider->getName()]));
 		$this->generator = Generator::getGenerator($this->provider->getGenerator());
-
-		$this->blockOrder = $provider::getProviderOrder();
 
 		$this->folderName = $name;
 		$this->updateQueue = new ReversePriorityQueue();
