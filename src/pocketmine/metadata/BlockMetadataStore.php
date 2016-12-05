@@ -48,7 +48,7 @@ class BlockMetadataStore extends MetadataStore{
 		if($block->getLevel() === $this->owningLevel){
 			return parent::getMetadata($block, $metadataKey);
 		}else{
-			throw new \InvalidStateException("Block does not belong to world " . $this->owningLevel->getName());
+			throw new \InvalidStateException("Block does not belong to world " . $this->owningLevel->getSavedName());
 		}
 	}
 
@@ -59,7 +59,7 @@ class BlockMetadataStore extends MetadataStore{
 		if($block->getLevel() === $this->owningLevel){
 			return parent::hasMetadata($block, $metadataKey);
 		}else{
-			throw new \InvalidStateException("Block does not belong to world " . $this->owningLevel->getName());
+			throw new \InvalidStateException("Block does not belong to world " . $this->owningLevel->getSavedName());
 		}
 	}
 
@@ -70,7 +70,7 @@ class BlockMetadataStore extends MetadataStore{
 		if($block->getLevel() === $this->owningLevel){
 			parent::hasMetadata($block, $metadataKey, $owningPlugin);
 		}else{
-			throw new \InvalidStateException("Block does not belong to world " . $this->owningLevel->getName());
+			throw new \InvalidStateException("Block does not belong to world " . $this->owningLevel->getSavedName());
 		}
 	}
 
@@ -81,7 +81,7 @@ class BlockMetadataStore extends MetadataStore{
 		if($block->getLevel() === $this->owningLevel){
 			parent::setMetadata($block, $metadataKey, $newMetadatavalue);
 		}else{
-			throw new \InvalidStateException("Block does not belong to world " . $this->owningLevel->getName());
+			throw new \InvalidStateException("Block does not belong to world " . $this->owningLevel->getSavedName());
 		}
 	}
 }

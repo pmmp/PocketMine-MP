@@ -1642,7 +1642,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		if(($level = $this->server->getLevelByName($nbt["Level"])) === null){
 			$this->setLevel($this->server->getDefaultLevel());
-			$nbt["Level"] = $this->level->getName();
+			$nbt["Level"] = $this->level->getSavedName();
 			$nbt["Pos"][0] = $this->level->getSpawnLocation()->x;
 			$nbt["Pos"][1] = $this->level->getSpawnLocation()->y;
 			$nbt["Pos"][2] = $this->level->getSpawnLocation()->z;
@@ -1730,7 +1730,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->ip,
 			$this->port,
 			$this->id,
-			$this->level->getName(),
+			$this->level->getSavedName(),
 			round($this->x, 4),
 			round($this->y, 4),
 			round($this->z, 4)
@@ -3118,9 +3118,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		parent::saveNBT();
 		if($this->level instanceof Level){
-			$this->namedtag->Level = new StringTag("Level", $this->level->getName());
+			$this->namedtag->Level = new StringTag("Level", $this->level->getSavedName());
 			if($this->hasValidSpawnPosition()){
-				$this->namedtag["SpawnLevel"] = $this->spawnPosition->getLevel()->getName();
+				$this->namedtag["SpawnLevel"] = $this->spawnPosition->getLevel()->getSavedName();
 				$this->namedtag["SpawnX"] = (int) $this->spawnPosition->x;
 				$this->namedtag["SpawnY"] = (int) $this->spawnPosition->y;
 				$this->namedtag["SpawnZ"] = (int) $this->spawnPosition->z;
