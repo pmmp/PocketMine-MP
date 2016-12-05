@@ -86,7 +86,6 @@ use pocketmine\math\Vector3;
 use pocketmine\metadata\BlockMetadataStore;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
@@ -504,7 +503,7 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.unloading", [$this->getName()]));
+		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.unloading", [$this->getSavedName()]));
 		$defaultLevel = $this->server->getDefaultLevel();
 		foreach($this->getPlayers() as $player){
 			if($this === $defaultLevel or $defaultLevel === null){
@@ -2652,11 +2651,24 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * Returns the Level name
+	 * Returns the level name saved in the world, such as level.dat (may duplicate with other loaded worlds)
+	 *
+	 * @deprecated As this method is often misunderstood as the getter for the unique name of the level,
+	 *             it has been renamed to {@link Level#getSavedName()}. If a more reliable level identifier is desired,
+	 *             consider using {@link Level#getId()} or {@link Level#getFolderName()} instead.
 	 *
 	 * @return string
 	 */
 	public function getName() : string{
+		return $this->provider->getName();
+	}
+
+	/**
+	 * Returns the level name saved in the world, such as level.dat (may duplicate with other loaded worlds)
+	 *
+	 * @return string
+	 */
+	public function getSavedName() : string{
 		return $this->provider->getName();
 	}
 

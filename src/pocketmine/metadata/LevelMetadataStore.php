@@ -30,6 +30,6 @@ class LevelMetadataStore extends MetadataStore{
 			throw new \InvalidArgumentException("Argument must be a Level instance");
 		}
 
-		return strtolower($level->getName()) . ":" . $metadataKey;
+		return strtolower($level->getSavedName()) . ":" . $metadataKey;
 	}
 }
