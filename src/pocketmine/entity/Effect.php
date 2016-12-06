@@ -22,6 +22,8 @@
 namespace pocketmine\entity;
 
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityEffectAddEvent;
+use pocketmine\event\entity\EntityEffectRemoveEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\network\protocol\MobEffectPacket;
@@ -251,6 +253,10 @@ class Effect{
 	}
 
 	public function add(Entity $entity, $modify = false, Effect $oldEffect = null){
+		$entity->getLevel()->getServer()->getPluginManager()->callEvent($ev = new EntityEffectAddEvent($entity, $this, $modify, $oldEffect));
+		if($ev->isCancelled()){
+			return;
+		}
 		if($entity instanceof Player){
 			$pk = new MobEffectPacket();
 			$pk->eid = 0;
@@ -258,7 +264,7 @@ class Effect{
 			$pk->amplifier = $this->getAmplifier();
 			$pk->particles = $this->isVisible();
 			$pk->duration = $this->getDuration();
-			if($modify){
+			if($ev->willModify()){
 				$pk->eventId = MobEffectPacket::EVENT_MODIFY;
 			}else{
 				$pk->eventId = MobEffectPacket::EVENT_ADD;
@@ -272,7 +278,7 @@ class Effect{
 			$entity->setNameTagVisible(false);
 		}elseif($this->id === Effect::SPEED){
 			$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
-			if($modify and $oldEffect !== null){
+			if($ev->willModify() and $oldEffect !== null){
 				$speed = $attr->getValue() / (1 + 0.2 * $oldEffect->getAmplifier());
 			}else{
 				$speed = $attr->getValue();
@@ -281,7 +287,7 @@ class Effect{
 			$attr->setValue($speed);
 		}elseif($this->id === Effect::SLOWNESS){
 			$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
-			if($modify and $oldEffect !== null){
+			if($ev->willModify() and $oldEffect !== null){
 				$speed = $attr->getValue() / (1 - 0.15 * $oldEffect->getAmplifier());
 			}else{
 				$speed = $attr->getValue();
@@ -292,6 +298,10 @@ class Effect{
 	}
 
 	public function remove(Entity $entity){
+		$entity->getLevel()->getServer()->getPluginManager()->callEvent($ev = new EntityEffectRemoveEvent($entity, $this));
+		if($ev->isCancelled()){
+			return;
+		}
 		if($entity instanceof Player){
 			$pk = new MobEffectPacket();
 			$pk->eid = 0;
