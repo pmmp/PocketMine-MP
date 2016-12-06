@@ -19,10 +19,9 @@
  *
 */
 
-namespace pocketmine\utils;
+namespace pocketmine\event\entity;
 
-class MonkeyPatch{
-	public function __construct(){
+class EntityEffectRemoveEvent extends EntityEffectEvent{
+	public static $handlerList = null;
 
-	}
 }

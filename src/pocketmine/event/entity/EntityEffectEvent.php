@@ -19,13 +19,23 @@
  *
 */
 
-namespace pocketmine\utils;
+namespace pocketmine\event\entity;
 
+use pocketmine\entity\Effect;
+use pocketmine\entity\Entity;
+use pocketmine\event\Cancellable;
 
-/**
- * All classes or interfaces (including plugins) that want to be able to be patched in runtime
- * need to implement this interface
- */
-interface Patchable{
+class EntityEffectEvent extends EntityEvent implements Cancellable{
 
+	/** @var Effect */
+	private $effect;
+
+	public function __construct(Entity $entity, Effect $effect){
+		$this->entity = $entity;
+		$this->effect = $effect;
+	}
+
+	public function getEffect() : Effect{
+		return $this->effect;
+	}
 }

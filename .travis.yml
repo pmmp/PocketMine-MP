@@ -12,7 +12,6 @@ before_script:
 
 script:
  - ./tests/lint.sh && ./tests/run.sh
- 
+
 notifications:
  email: false
- #webhooks: http://n.tkte.ch/h/214/wsNvmG43-ncxUVRrFPwSM-r0
