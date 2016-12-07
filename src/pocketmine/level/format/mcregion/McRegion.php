@@ -139,14 +139,31 @@ class McRegion extends BaseLevelProvider{
 			$extraData->putLShort($value);
 		}
 
-		$ordered = $chunk->getBlockIdArray() .
-			$chunk->getBlockDataArray() .
-			$chunk->getBlockSkyLightArray() .
-			$chunk->getBlockLightArray() .
-			pack("C*", ...$chunk->getHeightMapArray()) .
-			pack("N*", ...$chunk->getBiomeColorArray()) .
-			$extraData->getBuffer() .
-			$tiles;
+		$id = $chunk->getBlockIdArray();
+		$meta = $chunk->getBlockDataArray();
+
+		$ordered = "";
+		$orderedId = str_repeat("\x00", 4096);
+		$orderedMeta = str_repeat("\x00", 2048);
+
+		for($xx = 0; $xx < 16; $xx++){
+			for($yy = 0; $yy < 16; $yy++){
+				for($zz = 0; $zz < 16; $zz++){
+					$orderedId{($xx << 8) | ($zz << 4) | $yy} = $id{($xx << 11) | ($zz << 7) | $yy};
+					$orderedMeta{($xx << 7) | ($zz << 3) | ($yy >> 1)} = $meta{($xx << 10) | ($zz << 6) | ($yy >> 1)};
+				}
+			}
+		}
+
+		$ordered =
+			chr(1).// Section count
+			chr(0).// order??
+			$orderedId.
+			$orderedMeta.
+			str_repeat("\xff", 2048).// SkyLight
+			str_repeat("\xff", 2048).// Blocklight
+			pack("C*", ...array_fill(0, 512, 255)).// HeightMap
+			pack('N*', ...array_fill(0, 256, 0));// BiomeId
 
 		$this->getLevel()->chunkRequestCallback($x, $z, $ordered);
 

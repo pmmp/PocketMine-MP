@@ -712,7 +712,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$pk = new FullChunkDataPacket();
 			$pk->chunkX = $x;
 			$pk->chunkZ = $z;
-			$pk->order = $ordering;
+			//$pk->order = $ordering;
 			$pk->data = $payload;
 			$this->batchDataPacket($pk);
 		}
@@ -3581,7 +3581,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk = new FullChunkDataPacket();
 		$pk->chunkX = $chunkX;
 		$pk->chunkZ = $chunkZ;
-		$pk->order = $ordering;
+		//$pk->order = $ordering;
 		$pk->data = $payload;
 		$pk->encode();
 

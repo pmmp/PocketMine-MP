@@ -30,7 +30,7 @@ interface Info{
 	/**
 	 * Actual Minecraft: PE protocol version
 	 */
-	const CURRENT_PROTOCOL = 91;
+	const CURRENT_PROTOCOL = 92;
 
 	const LOGIN_PACKET = 0x01;
 	const PLAY_STATUS_PACKET = 0x02;
@@ -106,20 +106,9 @@ interface Info{
 	const CAMERA_PACKET = 0x48;
 	const ADD_ITEM_PACKET = 0x49;
 	const BOSS_EVENT_PACKET = 0x4a;
-	const AVAILABLE_COMMANDS_PACKET = 0x4b;
-	const COMMAND_STEP_PACKET = 0x4c;
-	const RESOURCE_PACK_DATA_INFO_PACKET = 0x4d;
-	const RESOURCE_PACK_CHUNK_DATA_PACKET = 0x4e;
-	const RESOURCE_PACK_CHUNK_REQUEST_PACKET = 0x4f;
+	const AVAILABLE_COMMANDS_PACKET = 0x4c;
+	const COMMAND_STEP_PACKET = 0x4d;
+	const RESOURCE_PACK_DATA_INFO_PACKET = 0x4e;
+	const RESOURCE_PACK_CHUNK_DATA_PACKET = 0x4f;
+	const RESOURCE_PACK_CHUNK_REQUEST_PACKET = 0x50;
 }
-
-
-
-
-
-
-
-
-
-
-

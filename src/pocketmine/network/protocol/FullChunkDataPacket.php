@@ -32,7 +32,7 @@ class FullChunkDataPacket extends DataPacket{
 
 	public $chunkX;
 	public $chunkZ;
-	public $order = self::ORDER_COLUMNS;
+	//public $order = self::ORDER_COLUMNS;
 	public $data;
 
 	public function decode(){
@@ -43,7 +43,7 @@ class FullChunkDataPacket extends DataPacket{
 		$this->reset();
 		$this->putVarInt($this->chunkX);
 		$this->putVarInt($this->chunkZ);
-		$this->putByte($this->order);
+		//$this->putByte($this->order);
 		$this->putString($this->data);
 	}
 

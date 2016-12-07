@@ -73,11 +73,11 @@ namespace pocketmine {
 	use pocketmine\wizard\Installer;
 	use raklib\RakLib;
 
-	const VERSION = "1.6.1dev";
+	const VERSION = "1.6.2dev";
 	const API_VERSION = "2.1.0";
 	const CODENAME = "Unleashed";
-	const MINECRAFT_VERSION = "v0.16.0.5 alpha";
-	const MINECRAFT_VERSION_NETWORK = "0.16.0.5";
+	const MINECRAFT_VERSION = "v1.0.0.0 alpha";
+	const MINECRAFT_VERSION_NETWORK = "1.0.0.0";
 
 	/*
 	 * Startup code. Do not look at it, it may harm you.
