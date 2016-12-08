@@ -44,15 +44,15 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 	}
 
 	public function getBlockId($x, $y, $z){
-		return ord($this->blocks{($y << 8) + ($z << 4) + $x});
+		return ord($this->blocks{($y << 8) | ($z << 4) | $x});
 	}
 
 	public function setBlockId($x, $y, $z, $id){
-		$this->blocks{($y << 8) + ($z << 4) + $x} = chr($id);
+		$this->blocks{($y << 8) | ($z << 4) | $x} = chr($id);
 	}
 
 	public function getBlockData($x, $y, $z){
-		$m = ord($this->data{($y << 7) + ($z << 3) + ($x >> 1)});
+		$m = ord($this->data{($y << 7) | ($z << 3) | ($x >> 1)});
 		if(($x & 1) === 0){
 			return $m & 0x0F;
 		}else{
@@ -61,7 +61,7 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 	}
 
 	public function setBlockData($x, $y, $z, $data){
-		$i = ($y << 7) + ($z << 3) + ($x >> 1);
+		$i = ($y << 7) | ($z << 3) | ($x >> 1);
 		$old_m = ord($this->data{$i});
 		if(($x & 1) === 0){
 			$this->data{$i} = chr(($old_m & 0xf0) | ($data & 0x0f));
@@ -71,7 +71,7 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 	}
 
 	public function getFullBlock($x, $y, $z){
-		$i = ($y << 8) + ($z << 4) + $x;
+		$i = ($y << 8) | ($z << 4) | $x;
 		if(($x & 1) === 0){
 			return (ord($this->blocks{$i}) << 4) | (ord($this->data{$i >> 1}) & 0x0F);
 		}else{
@@ -80,7 +80,7 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 	}
 
 	public function setBlock($x, $y, $z, $blockId = null, $meta = null){
-		$i = ($y << 8) + ($z << 4) + $x;
+		$i = ($y << 8) | ($z << 4) | $x;
 
 		$changed = false;
 
@@ -112,7 +112,7 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 	}
 
 	public function getBlockSkyLight($x, $y, $z){
-		$sl = ord($this->skyLight{($y << 7) + ($z << 3) + ($x >> 1)});
+		$sl = ord($this->skyLight{($y << 7) | ($z << 3) | ($x >> 1)});
 		if(($x & 1) === 0){
 			return $sl & 0x0F;
 		}else{
@@ -121,7 +121,7 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 	}
 
 	public function setBlockSkyLight($x, $y, $z, $level){
-		$i = ($y << 7) + ($z << 3) + ($x >> 1);
+		$i = ($y << 7) | ($z << 3) | ($x >> 1);
 		$old_sl = ord($this->skyLight{$i});
 		if(($x & 1) === 0){
 			$this->skyLight{$i} = chr(($old_sl & 0xf0) | ($level & 0x0f));
@@ -131,7 +131,7 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 	}
 
 	public function getBlockLight($x, $y, $z){
-		$l = ord($this->blockLight{($y << 7) + ($z << 3) + ($x >> 1)});
+		$l = ord($this->blockLight{($y << 7) | ($z << 3) | ($x >> 1)});
 		if(($x & 1) === 0){
 			return $l & 0x0F;
 		}else{
@@ -140,7 +140,7 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 	}
 
 	public function setBlockLight($x, $y, $z, $level){
-		$i = ($y << 7) + ($z << 3) + ($x >> 1);
+		$i = ($y << 7) | ($z << 3) | ($x >> 1);
 		$old_l = ord($this->blockLight{$i});
 		if(($x & 1) === 0){
 			$this->blockLight{$i} = chr(($old_l & 0xf0) | ($level & 0x0f));

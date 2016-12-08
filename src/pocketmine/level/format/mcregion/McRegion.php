@@ -140,28 +140,49 @@ class McRegion extends BaseLevelProvider{
 		}
 
 		$id = $chunk->getBlockIdArray();
-		$meta = $chunk->getBlockDataArray();
-
-		$ordered = "";
 		$orderedId = str_repeat("\x00", 4096);
+		$meta = $chunk->getBlockDataArray();
 		$orderedMeta = str_repeat("\x00", 2048);
 
-		for($xx = 0; $xx < 16; $xx++){
-			for($yy = 0; $yy < 16; $yy++){
-				for($zz = 0; $zz < 16; $zz++){
-					$orderedId{($xx << 8) | ($zz << 4) | $yy} = $id{($xx << 11) | ($zz << 7) | $yy};
-					$orderedMeta{($xx << 7) | ($zz << 3) | ($yy >> 1)} = $meta{($xx << 10) | ($zz << 6) | ($yy >> 1)};
+		$sections = [];
+		$sectionsCnt = 0;
+		$wasEmpty = true;
+
+		for($s = 7; $s >= 0; $s--){
+			if($wasEmpty === true)
+				$empty = true;
+			else
+				$empty = false;
+
+			for($xx = 0; $xx < 16; $xx++){
+				for($yy = 0; $yy < 16; $yy++){
+					for($zz = 0; $zz < 16; $zz++){
+						$ny = ($yy + 16 * $s);
+						$orderedId{($xx << 8) | ($zz << 4) | $yy} = $cid = $id{($xx << 11) | ($zz << 7) | $ny};
+						if($empty === true && $cid !== "\x00")
+							$empty = false;
+
+						$orderedMeta{($xx << 7) | ($zz << 3) | ($yy >> 1)} = $meta{($xx << 10) | ($zz << 6) | ($ny >> 1)};
+					}
 				}
 			}
+
+			if($empty === false){
+				$wasEmpty = false;
+				$sectionsCnt++;
+				$sections[] =
+					chr(0) .// ??
+					$orderedId .
+					$orderedMeta .
+					str_repeat("\xff", 2048) .// SkyLight
+					str_repeat("\xff", 2048);// Blocklight
+			}
+
 		}
 
 		$ordered =
-			chr(1).// Section count
-			chr(0).// order??
-			$orderedId.
-			$orderedMeta.
-			str_repeat("\xff", 2048).// SkyLight
-			str_repeat("\xff", 2048).// Blocklight
+			chr($sectionsCnt).
+			implode('', array_reverse($sections)).
 			pack("C*", ...array_fill(0, 512, 255)).// HeightMap
 			pack('N*', ...array_fill(0, 256, 0));// BiomeId
 

@@ -96,16 +96,63 @@ class Anvil extends McRegion{
 			$extraData->putLShort($value);
 		}
 
-		$ordered = $chunk->getBlockIdArray() .
-			$chunk->getBlockDataArray() .
-			$chunk->getBlockSkyLightArray() .
-			$chunk->getBlockLightArray() .
-			pack("C*", ...$chunk->getHeightMapArray()) .
-			pack("N*", ...$chunk->getBiomeColorArray()) .
-			$extraData->getBuffer() .
-			$tiles;
+		$csections = $chunk->getSections();
+		$orderedId = str_repeat("\x00", 4096);
+		$orderedMeta = str_repeat("\x00", 2048);
 
-		$this->getLevel()->chunkRequestCallback($x, $z, $ordered, FullChunkDataPacket::ORDER_LAYERED);
+		$sections = [];
+		$sectionsCnt = 0;
+		$wasEmpty = true;
+
+		for($s = 7; $s >= 0; $s--){
+			$id = $csections[$s]->getIdArray();
+			$meta = $csections[$s]->getDataArray();
+			if($wasEmpty === true)
+				$empty = true;
+			else
+				$empty = false;
+
+			for($xx = 0; $xx < 16; $xx++){
+				for($yy = 0; $yy < 16; $yy++){
+					for($zz = 0; $zz < 16; $zz++){
+						$orderedId{($xx << 8) | ($zz << 4) | $yy} = $cid = $id{($yy << 8) | ($zz << 4) | $xx};
+						if($empty === true && $cid !== "\x00")
+							$empty = false;
+
+						$m = ord($meta{($yy << 7) | ($zz << 3) | ($xx >> 1)});
+						if(($xx & 1) === 0)
+							$m &= 0x0f;
+						else
+							$m >>= 4;
+						$i = ($xx << 7) | ($zz << 3) | ($yy >> 1);
+						if(($yy & 1) === 0)
+							$orderedMeta{$i} = chr((ord($orderedMeta{$i}) & 0xf0) | $m);
+						else
+							$orderedMeta{$i} = chr($m << 4 | (ord($orderedMeta{$i}) & 0x0f));
+					}
+				}
+			}
+
+			if($empty === false){
+				$wasEmpty = false;
+				$sectionsCnt++;
+				$sections[] =
+					chr(0) .// ??
+					$orderedId .
+					$orderedMeta .
+					str_repeat("\xff", 2048) .// SkyLight
+					str_repeat("\xff", 2048);// Blocklight
+			}
+
+		}
+
+		$ordered =
+			chr($sectionsCnt).
+			implode('', array_reverse($sections)).
+			pack("C*", ...array_fill(0, 512, 255)).// HeightMap
+			pack('N*', ...array_fill(0, 256, 0));// BiomeId
+
+		$this->getLevel()->chunkRequestCallback($x, $z, $ordered);
 
 		return null;
 	}
