@@ -116,14 +116,17 @@ class Anvil extends McRegion{
 				for($yy = 0; $yy < 16; $yy++){
 					for($zz = 0; $zz < 16; $zz++){
 						$orderedId{($xx << 8) | ($zz << 4) | $yy} = $cid = $id{($yy << 8) | ($zz << 4) | $xx};
-						if($empty === true && $cid !== "\x00")
-							$empty = false;
+						$m = 0;
+						if($cid !== "\x00"){
+							if($empty === true)
+								$empty = false;
 
-						$m = ord($meta{($yy << 7) | ($zz << 3) | ($xx >> 1)});
-						if(($xx & 1) === 0)
-							$m &= 0x0f;
-						else
-							$m >>= 4;
+							$m = ord($meta{($yy << 7) | ($zz << 3) | ($xx >> 1)});
+							if(($xx & 1) === 0)
+								$m &= 0x0f;
+							else
+								$m >>= 4;
+						}
 						$i = ($xx << 7) | ($zz << 3) | ($yy >> 1);
 						if(($yy & 1) === 0)
 							$orderedMeta{$i} = chr((ord($orderedMeta{$i}) & 0xf0) | $m);

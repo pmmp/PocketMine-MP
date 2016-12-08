@@ -161,7 +161,6 @@ class McRegion extends BaseLevelProvider{
 						$orderedId{($xx << 8) | ($zz << 4) | $yy} = $cid = $id{($xx << 11) | ($zz << 7) | $ny};
 						if($empty === true && $cid !== "\x00")
 							$empty = false;
-
 						$orderedMeta{($xx << 7) | ($zz << 3) | ($yy >> 1)} = $meta{($xx << 10) | ($zz << 6) | ($ny >> 1)};
 					}
 				}
