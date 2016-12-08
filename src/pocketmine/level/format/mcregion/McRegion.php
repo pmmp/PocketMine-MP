@@ -182,8 +182,10 @@ class McRegion extends BaseLevelProvider{
 		$ordered =
 			chr($sectionsCnt).
 			implode('', array_reverse($sections)).
-			pack("C*", ...array_fill(0, 512, 255)).// HeightMap
-			pack('N*', ...array_fill(0, 256, 0));// BiomeId
+			pack("C*", ...array_fill(0, 512, 127)).// ??
+			pack('N*', ...array_fill(0, 256, 0)).// ??
+			$extraData->getBuffer().
+			$tiles;
 
 		$this->getLevel()->chunkRequestCallback($x, $z, $ordered);
 
