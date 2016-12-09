@@ -2908,6 +2908,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					$this->sendSettings();
 				}
 				break;
+			case ProtocolInfo::PLAYER_FALL_PACKET:
+				$this->fallDistance = $packet->fallDistance;
+				break;
 			default:
 				break;
 		}
