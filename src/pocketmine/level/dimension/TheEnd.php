@@ -28,7 +28,7 @@ use pocketmine\network\protocol\ChangeDimensionPacket;
 class TheEnd extends Dimension{
 
 	public function __construct(){
-		parent::__construct("The End", Dimension::TYPE_THE_END);
+		parent::__construct("The End", Dimension::SKY_COLOUR_PURPLE_STATIC);
 	}
 
 	public function getMaxBuildHeight() : int{
