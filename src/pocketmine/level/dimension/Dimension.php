@@ -78,10 +78,7 @@ abstract class Dimension{
 	 */
 	public function __construct(string $name, int $typeId = DimensionType::OVERWORLD){
 		$this->name = $name;
-		$this->dimensionType = DimensionType::get($typeId);
-		if($this->dimensionType === null){ //invalid dimension type
-			throw new \InvalidArgumentException("Invalid dimension type ID $typeId");
-		}
+		$this->setDimensionType($typeId);
 	}
 
 	/**
@@ -161,6 +158,128 @@ abstract class Dimension{
 	 */
 	public function getDimensionName() : string{
 		return $this->name;
+	}
+
+	/**
+	 * Returns all players in the dimension.
+	 *
+	 * @return Player[]
+	 */
+	public function getPlayers() : array{
+		return $this->players;
+	}
+
+	/**
+	 * Returns players in the specified chunk.
+	 *
+	 * @param int $chunkX
+	 * @param int $chunkZ
+	 *
+	 * @return Player[]
+	 */
+	public function getChunkPlayers(int $chunkX, int $chunkZ) : array{
+		return $this->playerLoaders[Level::chunkHash($chunkX, $chunkZ)] ?? [];
+	}
+
+	/**
+	 * Returns chunk loaders using the specified chunk
+	 *
+	 * @param int $chunkX
+	 * @param int $chunkZ
+	 *
+	 * @return ChunkLoader[]
+	 */
+	public function getChunkLoaders(int $chunkX, int $chunkZ) : array{
+		return $this->chunkLoaders[Level::chunkHash($chunkX, $chunkZ)] ?? [];
+	}
+
+	/**
+	 * Returns all entities in the dimension.
+	 *
+	 * @return Entity[]
+	 */
+	public function getEntities() : array{
+		return $this->entities;
+	}
+
+	/**
+	 * Returns the entity with the specified ID in this dimension, or null if it does not exist.
+	 *
+	 * @param int $entityId
+	 *
+	 * @return Entity|null
+	 */
+	public function getEntity(int $entityId){
+		return $this->entities[$entityId] ?? null;
+	}
+
+	/**
+	 * Returns a list of the entities in the specified chunk. Returns an empty array if the chunk is not loaded.
+	 *
+	 * @param int $X
+	 * @param int $Z
+	 *
+	 * @return Entity[]
+	 */
+	public function getChunkEntities(int $X, int $Z) : array{
+		return ($chunk = $this->getChunk($X, $Z)) !== null ? $chunk->getEntities() : [];
+	}
+
+	/**
+	 * Returns a list of the Tiles in this dimension
+	 *
+	 * @return Tile[]
+	 */
+	public function getTiles() : array{
+		return $this->tiles;
+	}
+
+	/**
+	 * Returns the tile with the specified ID in this dimension
+	 * @param $tileId
+	 *
+	 * @return Tile|null
+	 */
+	public function getTileById(int $tileId){
+		return $this->tiles[$tileId] ?? null;
+	}
+
+	/**
+	 * Returns the Tile at the specified position, or null if not found
+	 *
+	 * @param Vector3 $pos
+	 *
+	 * @return Tile|null
+	 */
+	public function getTile(Vector3 $pos){
+		$chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4, false);
+
+		if($chunk !== null){
+			return $chunk->getTile($pos->x & 0x0f, $pos->y & Level::Y_MASK, $pos->z & 0x0f);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Gives a list of the Tile entities in the specified chunk. Returns an empty array if the chunk is not loaded.
+	 *
+	 * @param int $X
+	 * @param int $Z
+	 *
+	 * @return Tile[]
+	 */
+	public function getChunkTiles(int $X, int $Z) : array{
+		return ($chunk = $this->getChunk($X, $Z)) !== null ? $chunk->getTiles() : [];
+	}
+
+	/**
+	 * Returns an array of currently loaded chunks.
+	 *
+	 * @return Chunk[]
+	 */
+	public function getChunks() : array{
+		return $this->chunks;
 	}
 
 	/**
