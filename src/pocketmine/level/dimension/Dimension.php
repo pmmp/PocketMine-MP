@@ -32,17 +32,16 @@ use pocketmine\tile\Tile;
 
 abstract class Dimension{
 
-	/** These are the Pocket Edition dimension IDs. Blame Mojang for making them different to PC. */
-	const TYPE_OVERWORLD = 0;
-	const TYPE_NETHER = 1;
-	const TYPE_THE_END = 2;
+	const SKY_COLOUR_BLUE = 0;
+	const SKY_COLOUR_RED = 1;
+	const SKY_COLOUR_PURPLE_STATIC = 2;
 
 	/** @var Level */
 	protected $level;
 	/** @var string */
 	protected $name;
-	/** @var int */
-	protected $type = Dimension::TYPE_OVERWORLD;
+	/** @var DimensionType */
+	protected $dimensionType;
 	/** @var int */
 	protected $saveId;
 
@@ -74,12 +73,15 @@ abstract class Dimension{
 	protected $moveToSend = [];
 
 	/**
-	 * @param string $name  the dimension's display name
-	 * @param int    $type  defaults to Overworld, must be one of the dimension type constants at the top of this file. This will affect sky colour (blue, red, black)
+	 * @param string $name   the dimension's display name
+	 * @param int    $typeId defaults to Overworld, used to initialise dimension properties. Must be a constant from {@link DimensionType}
 	 */
-	public function __construct(string $name, int $type = Dimension::TYPE_OVERWORLD){
+	public function __construct(string $name, int $typeId = DimensionType::OVERWORLD){
 		$this->name = $name;
-		$this->type = $type;
+		$this->dimensionType = DimensionType::get($typeId);
+		if($this->dimensionType === null){ //invalid dimension type
+			throw new \InvalidArgumentException("Invalid dimension type ID $typeId");
+		}
 	}
 
 	/**
@@ -115,14 +117,41 @@ abstract class Dimension{
 	}
 
 	/**
-	 * Returns the dimension's network type
-	 * See the top of this file for a list of available constant values
-	 * This value affects the sky colour seen by clients (blue, red, black)
+	 * Returns a DimensionType object containing immutable dimension properties
+	 *
+	 * @return DimensionType
+	 */
+	public function getDimensionType() : DimensionType{
+		return $this->dimensionType;
+	}
+
+	/**
+	 * Sets the dimension type of this dimension.
+	 *
+	 * @param int $typeId the ID of the dimension type. See {@link DimensionType} for a list of possible constant values.
+	 *
+	 * @throws \InvalidArgumentException if the specified dimension type ID was not recognised
+	 */
+	public function setDimensionType(int $typeId){
+		if(!(($type = DimensionType::get($typeId)) instanceof DimensionType)){
+			throw new \InvalidArgumentException("Invalid dimension type ID $typeId");
+		}
+		$this->dimensionType = $type;
+		//TODO: update sky colours seen by clients, remove skylight from chunks for The End and Nether
+	}
+
+	/**
+	 * Returns the dimension's ID. Unique within levels only.
+	 * This is used for world saves.
+	 *
+	 * NOTE: For vanilla dimensions, this will NOT match the folder name in Anvil/MCRegion formats due to inconsistencies in dimension
+	 * IDs between PC and PE. For example the Nether has saveID 1, but will be saved in the DIM-1 folder in the world save.
+	 * Custom dimensions will be consistent.
 	 *
 	 * @return int
 	 */
-	public function getDimensionType() : int{
-		return $this->type;
+	public function getSaveId() : int{
+		return $this->saveId;
 	}
 
 	/**
@@ -150,18 +179,6 @@ abstract class Dimension{
 	 * @param int $currentTick
 	 */
 	protected function doWeatherTick(int $currentTick){
-		
-	}
 
-	/**
-	 * Returns whether time ticking affects this Dimension. Used to decide whether
-	 * to bother sending time to clients in this dimension.
-	 *
-	 * @internal
-	 *
-	 * @return bool
-	 */
-	public function hasTimeTicks() : bool{
-		return true;
 	}
 }

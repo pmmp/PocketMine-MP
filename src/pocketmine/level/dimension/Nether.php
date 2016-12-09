@@ -28,7 +28,7 @@ use pocketmine\network\protocol\ChangeDimensionPacket;
 class Nether extends Dimension{
 
 	public function __construct(){
-		parent::__construct("Nether", Dimension::TYPE_NETHER);
+		parent::__construct("Nether", Dimension::SKY_COLOUR_RED);
 	}
 
 	public function getMaxBuildHeight() : int{
