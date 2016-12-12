@@ -24,17 +24,20 @@ declare(strict_types = 1);
 namespace pocketmine\level\dimension;
 
 use pocketmine\entity\Entity;
+use pocketmine\level\format\Chunk;
 use pocketmine\level\format\generic\GenericChunk;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\network\protocol\DataPacket;
 use pocketmine\Player;
+use pocketmine\Server;
 use pocketmine\tile\Tile;
 
 abstract class Dimension{
 
-	const SKY_COLOUR_BLUE = 0;
-	const SKY_COLOUR_RED = 1;
-	const SKY_COLOUR_PURPLE_STATIC = 2;
+	const SKY_COLOR_BLUE = 0;
+	const SKY_COLOR_RED = 1;
+	const SKY_COLOR_PURPLE_STATIC = 2;
 
 	/** @var Level */
 	protected $level;
@@ -45,15 +48,19 @@ abstract class Dimension{
 	/** @var int */
 	protected $saveId;
 
-	/** @var int */
-	protected $buildHeight = 256;
-
-	/** @var GenericChunk[] */
+	/** @var Chunk[] */
 	protected $chunks = [];
 
 	/** @var DataPacket[] */
 	protected $chunkCache = [];
 
+	/** @var DataPacket[] */
+	protected $chunkPackets = [];
+
+	/** @var GenericChunk */
+	public $emptyChunk;
+
+	/** @var Block */
 	protected $blockCache = [];
 
 	/** @var Player[] */
@@ -72,6 +79,10 @@ abstract class Dimension{
 	protected $motionToSend = [];
 	protected $moveToSend = [];
 
+	protected $rainLevel = 0;
+	protected $thunderLevel = 0;
+	protected $nextWeatherChange;
+
 	/**
 	 * @param string $name   the dimension's display name
 	 * @param int    $typeId defaults to Overworld, used to initialise dimension properties. Must be a constant from {@link DimensionType}
@@ -79,6 +90,7 @@ abstract class Dimension{
 	public function __construct(string $name, int $typeId = DimensionType::OVERWORLD){
 		$this->name = $name;
 		$this->setDimensionType($typeId);
+		$this->emptyChunk = new GenericChunk(null, 0, 0); //TODO: clone methods for chunks to get more performance creating new chunks.
 	}
 
 	/**
@@ -138,8 +150,7 @@ abstract class Dimension{
 	}
 
 	/**
-	 * Returns the dimension's ID. Unique within levels only.
-	 * This is used for world saves.
+	 * Returns the dimension's ID. Unique within levels only. This is used for world saves.
 	 *
 	 * NOTE: For vanilla dimensions, this will NOT match the folder name in Anvil/MCRegion formats due to inconsistencies in dimension
 	 * IDs between PC and PE. For example the Nether has saveID 1, but will be saved in the DIM-1 folder in the world save.
@@ -158,6 +169,24 @@ abstract class Dimension{
 	 */
 	public function getDimensionName() : string{
 		return $this->name;
+	}
+
+	/**
+	 * Returns the sky colour of this dimension based on the dimension type.
+	 *
+	 * @return int
+	 */
+	public function getSkyColor() : int{
+		return $this->dimensionType->getSkyColor();
+	}
+
+	/**
+	 * Returns the dimension max build height as per MCPE (because the Nether in PE annoyingly only has a build height of 128)
+	 *
+	 * @return int
+	 */
+	public function getMaxBuildHeight() : int{
+		return $this->dimensionType->getMaxBuildHeight();
 	}
 
 	/**
@@ -194,6 +223,34 @@ abstract class Dimension{
 	}
 
 	/**
+	 * Adds an entity to the dimension index.
+	 *
+	 * @param Entity $entity
+	 */
+	public function addEntity(Entity $entity){
+		if($entity instanceof Player){
+			$this->players[$entity->getId()] = $entity;
+		}
+		$this->entities[$entity->getId()] = $entity;
+	}
+
+	/**
+	 * Removes an entity from the dimension's entity index. We do NOT close the entity here as it may simply be getting transferred
+	 * to another dimension.
+	 *
+	 * @param Entity $entity
+	 */
+	public function removeEntity(Entity $entity){
+		if($entity instanceof Player){
+			unset($this->players[$entity->getId()]);
+			$this->checkSleep();
+		}
+
+		unset($this->entities[$entity->getId()]);
+		unset($this->updateEntities[$entity->getId()]);
+	}
+
+	/**
 	 * Returns all entities in the dimension.
 	 *
 	 * @return Entity[]
@@ -223,6 +280,36 @@ abstract class Dimension{
 	 */
 	public function getChunkEntities(int $X, int $Z) : array{
 		return ($chunk = $this->getChunk($X, $Z)) !== null ? $chunk->getEntities() : [];
+	}
+
+	/**
+	 * Adds a tile to the dimension index.
+	 * @param Tile $tile
+	 *
+	 * @throws LevelException
+	 */
+	public function addTile(Tile $tile){
+		/*if($tile->getLevel() !== $this){
+			throw new LevelException("Invalid Tile level");
+		}*/
+		$this->tiles[$tile->getId()] = $tile;
+		$this->clearChunkCache($tile->getX() >> 4, $tile->getZ() >> 4);
+	}
+
+	/**
+	 * Removes a tile from the dimension index.
+	 * @param Tile $tile
+	 *
+	 * @throws LevelException
+	 */
+	public function removeTile(Tile $tile){
+		/*if($tile->getLevel() !== $this){
+			throw new LevelException("Invalid Tile level");
+		}*/
+
+		unset($this->tiles[$tile->getId()]);
+		unset($this->updateTiles[$tile->getId()]);
+		$this->clearChunkCache($tile->getX() >> 4, $tile->getZ() >> 4);
 	}
 
 	/**
@@ -283,6 +370,26 @@ abstract class Dimension{
 	}
 
 	/**
+	 * Returns the chunk at the specified index, or null if it does not exist and has not been generated
+	 *
+	 * @param int  $chunkX
+	 * @param int  $chunkZ
+	 * @param bool $generate whether to generate the chunk if it does not exist.
+	 *
+	 * @return Chunk|null
+	 */
+	public function getChunk(int $x, int $z, bool $generate = false){
+		//TODO: alter this to handle asynchronous chunk loading
+		if(isset($this->chunks[$index = Level::chunkHash($x, $z)])){
+			return $this->chunks[$index];
+		}elseif($this->loadChunk($x, $z, $generate)){
+			return $this->chunks[$index];
+		}
+
+		return null;
+	}
+
+	/**
 	 * Executes ticks on this dimension
 	 *
 	 * @param int $currentTick
@@ -299,5 +406,69 @@ abstract class Dimension{
 	 */
 	protected function doWeatherTick(int $currentTick){
 
+	}
+
+	/**
+	 * Returns the current rain strength in this dimension
+	 *
+	 * @return int
+	 */
+	public function getRainLevel() : int{
+		return $this->rainLevel;
+	}
+
+	/**
+	 * Sets the rain level and sends changes to players.
+	 *
+	 * @param int $level
+	 */
+	public function setRainLevel(int $level){
+		//TODO
+	}
+
+	/**
+	 * Sends weather changes to the specified targets, or to all players in the dimension if not specified.
+	 *
+	 * @param Player $targets,...
+	 */
+	public function sendWeather(Player ...$targets){
+		$rain = new LevelEventPacket();
+		if($this->rainLevel > 0){
+			$rain->evid = LevelEventPacket::EVENT_START_RAIN;
+			$rain->data = $this->rainLevel;
+		}else{
+			$rain->evid = LevelEventPacket::EVENT_STOP_RAIN;
+		}
+
+		$thunder = new LevelEventPacket();
+		if($this->thunderLevel > 0){
+			$thunder->evid = LevelEventPacket::EVENT_START_THUNDER;
+			$thunder->data = $this->thunderLevel;
+		}else{
+			$thunder->evid = LevelEventPacket::EVENT_STOP_THUNDER;
+		}
+
+		if(count($targets) === 0){
+			Server::broadcastPacket($this->players, $rain);
+			Server::broadcastPacket($this->players, $thunder);
+		}else{
+			Server::broadcastPacket($targets, $rain);
+			Server::broadcastPacket($targets, $thunder);
+		}
+	}
+
+	/**
+	 * Queues a DataPacket(s) to be sent to all players using the specified chunk on the next tick.
+	 *
+	 * @param int        $chunkX
+	 * @param int        $chunkZ
+	 * @param DataPacket $packets,...
+	 */
+	public function addChunkPacket(int $x, int $z, ...$packets){
+		if(!isset($this->chunkPackets[$index = Level::chunkHash($chunkX, $chunkZ)])){
+			$this->chunkPackets[$index] = [$packet];
+		}else{
+			$this->chunkPackets[$index][] = $packet;
+		}
 	}
 }

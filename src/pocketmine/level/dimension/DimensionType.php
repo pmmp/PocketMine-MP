@@ -36,9 +36,9 @@ class DimensionType{
 
 	public static function init(){
 		self::$types = [];
-		self::$types[self::OVERWORLD] = new DimensionType(Dimension::SKY_COLOUR_BLUE, 256, true, true);
-		self::$types[self::NETHER] = new DimensionType(Dimension::SKY_COLOUR_RED, 128, false, false);
-		self::$types[self::THE_END] = new DimensionType(Dimension::SKY_COLOUR_PURPLE_STATIC, 256, false, false);
+		self::$types[self::OVERWORLD] = new DimensionType(Dimension::SKY_COLOR_BLUE, 256, true, true);
+		self::$types[self::NETHER] = new DimensionType(Dimension::SKY_COLOR_RED, 128, false, false);
+		self::$types[self::THE_END] = new DimensionType(Dimension::SKY_COLOR_PURPLE_STATIC, 256, false, false);
 	}
 
 	/**
@@ -50,20 +50,20 @@ class DimensionType{
 		return self::$types[$type] ?? null;
 	}
 
-	private $skyColour;
+	private $skyColor;
 	private $buildHeight;
 	private $hasSkyLight;
 	private $hasWeather;
 
-	private function __construct(int $skyColour, int $buildHeight, bool $hasSkyLight, bool $hasWeather){
-		$this->skyColour = $skyColour;
+	private function __construct(int $skyColor, int $buildHeight, bool $hasSkyLight, bool $hasWeather){
+		$this->skyColor = $skyColor;
 		$this->buildHeight = $buildHeight;
 		$this->hasSkyLight = $hasSkyLight;
 		$this->hasWeather = $hasWeather;
 	}
 
-	public function getSkyColour() : int{
-		return $this->skyColour;
+	public function getSkyColor() : int{
+		return $this->skyColor;
 	}
 
 	public function getMaxBuildHeight() : int{
