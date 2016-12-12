@@ -620,7 +620,8 @@ class GenericChunk implements Chunk{
 		}
 		$result .= pack("v*", ...$this->heightMap)
 		        .  $this->biomeIds
-		        .  chr(0); //border block array count (TODO)
+		        .  chr(0); //border block array count
+		//Border block entry format: 1 byte (4 bits X, 4 bits Z). These are however useless since they crash the regular client.
 
 		$extraData = new BinaryStream();
 		$extraData->putVarInt(count($this->extraData)); //WHY, Mojang, WHY
@@ -695,6 +696,7 @@ class GenericChunk implements Chunk{
 		return $chunk;
 	}
 
+	//TODO: get rid of this
 	public static function getEmptyChunk(int $x, int $z, LevelProvider $provider = null) : Chunk{
 		return new GenericChunk($provider, $x, $z);
 	}
@@ -750,6 +752,13 @@ class GenericChunk implements Chunk{
 		return $result;
 	}
 
+	/**
+	 * Converts pre-MCPE-1.0 biome colour array to biome ID array. RIP BiomeColors :(
+	 *
+	 * @param int[256] $array of biome colour values
+	 *
+	 * @return string
+	 */
 	public static function convertBiomeColours(array $array) : string{
 		$result = str_repeat("\x00", 256);
 		foreach($array as $i => $colour){

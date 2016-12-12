@@ -35,7 +35,7 @@ use pocketmine\utils\ChunkException;
 use pocketmine\utils\MainLogger;
 
 class McRegion extends BaseLevelProvider{
-	
+
 	public static function nbtSerialize(GenericChunk $chunk) : string{
 		$nbt = new CompoundTag("Level", []);
 		$nbt->xPos = new IntTag("xPos", $chunk->getX());
@@ -62,7 +62,7 @@ class McRegion extends BaseLevelProvider{
 				}
 			}
 		}
-		
+
 		$nbt->Blocks = new ByteArrayTag("Blocks", $ids);
 		$nbt->Data = new ByteArrayTag("Data", $data);
 		$nbt->SkyLight = new ByteArrayTag("SkyLight", $skyLight);
@@ -100,7 +100,7 @@ class McRegion extends BaseLevelProvider{
 
 		return $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
 	}
-	
+
 	public static function nbtDeserialize(string $data, LevelProvider $provider = null){
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		try{
@@ -111,9 +111,9 @@ class McRegion extends BaseLevelProvider{
 			if(!isset($chunk->Level) or !($chunk->Level instanceof CompoundTag)){
 				return null;
 			}
-			
+
 			$chunk = $chunk->Level;
-			
+
 			$subChunks = [];
 			$fullIds = $chunk->Blocks instanceof ByteArrayTag ? $chunk->Blocks->getValue() : str_repeat("\x00", 32768);
 			$fullData = $chunk->Data instanceof ByteArrayTag ? $chunk->Data->getValue() : ($half = str_repeat("\x00", 16384));
@@ -155,7 +155,7 @@ class McRegion extends BaseLevelProvider{
 			}else{
 				$biomeIds = "";
 			}
-			
+
 			$result = new GenericChunk(
 				$provider,
 				$chunk["xPos"],

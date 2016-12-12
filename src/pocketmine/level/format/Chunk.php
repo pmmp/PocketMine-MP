@@ -328,7 +328,7 @@ interface Chunk{
 	 * @return SubChunk
 	 */
 	public function getSubChunk(int $fY, bool $generateNew = false) : SubChunk;
-	
+
 	/**
 	 * @param int      $fY 0-15
 	 * @param SubChunk $subChunk
@@ -348,19 +348,19 @@ interface Chunk{
 	 * @return bool
 	 */
 	public function getHighestSubChunkIndex() : int;
-	
+
 	/**
 	 * Returns the number of subchunks that need sending
 	 *
 	 * @return int
 	 */
 	public function getSubChunkSendCount() : int;
-	
+
 	/**
 	 * Disposes of empty subchunks
 	 */
 	public function pruneEmptySubChunks();
-	
+
 	/**
 	 * Serializes the chunk to network data
 	 *

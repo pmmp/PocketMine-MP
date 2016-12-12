@@ -25,7 +25,7 @@ use pocketmine\utils\ChunkException;
 
 class EmptySubChunk extends SubChunk{
 	protected $y;
-	
+
 	public function __construct(int $y){
 		$this->y = $y;
 	}
@@ -73,19 +73,19 @@ class EmptySubChunk extends SubChunk{
 	public function setBlockLight(int $x, int $y, int $z, int $level) : bool{
 		return false;
 	}
-	
+
 	public function getBlockIdColumn(int $x, int $z) : string{
 		return "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 	}
-	
+
 	public function getBlockDataColumn(int $x, int $z) : string{
 		return "\x00\x00\x00\x00\x00\x00\x00\x00";
 	}
-	
+
 	public function getBlockLightColumn(int $x, int $z) : string{
 		return "\x00\x00\x00\x00\x00\x00\x00\x00";
 	}
-	
+
 	public function getSkyLightColumn(int $x, int $z) : string{
 		return "\xff\xff\xff\xff\xff\xff\xff\xff";
 	}

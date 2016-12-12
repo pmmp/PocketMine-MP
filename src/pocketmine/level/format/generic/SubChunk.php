@@ -45,7 +45,7 @@ class SubChunk{
 		self::assignData($this->blockLight, $blockLight, 2048);
 		self::assignData($this->skyLight, $skyLight, 2048);
 	}
-	
+
 	public function getY() : int{
 		return $this->y;
 	}
@@ -168,19 +168,19 @@ class SubChunk{
 
 		return -1; //highest block not in this subchunk
 	}
-	
+
 	public function getBlockIdColumn(int $x, int $z) : string{
 		return substr($this->ids, (($x << 8) | ($z << 4)), 16);
 	}
-	
+
 	public function getBlockDataColumn(int $x, int $z) : string{
 		return substr($this->data, (($x << 7) | ($z << 3)), 8);
 	}
-	
+
 	public function getBlockLightColumn(int $x, int $z) : string{
 		return substr($this->blockLight, (($x << 7) | ($z << 3)), 8);
 	}
-	
+
 	public function getSkyLightColumn(int $x, int $z) : string{
 		return substr($this->skyLight, (($x << 7) | ($z << 3)), 8);
 	}
