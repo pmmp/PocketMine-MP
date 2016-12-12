@@ -47,6 +47,8 @@ abstract class Dimension{
 	protected $dimensionType;
 	/** @var int */
 	protected $saveId;
+	/** @var float */
+	protected $distanceMultiplier = 1;
 
 	/** @var Chunk[] */
 	protected $chunks = [];
@@ -172,6 +174,17 @@ abstract class Dimension{
 	}
 
 	/**
+	 * Returns the horizontal (X/Z) of 1 block in this dimension compared to the Overworld.
+	 * This is used to calculate positions for entities transported between dimensions.
+	 * For example, 1 block in the Nether translates to 8 in the Overworld.
+	 *
+	 * @return float
+	 */
+	public function getDistanceMultiplier() : float{
+		return (float) $this->distanceMultiplier;
+	}
+
+	/**
 	 * Returns the sky colour of this dimension based on the dimension type.
 	 *
 	 * @return int
@@ -248,6 +261,15 @@ abstract class Dimension{
 
 		unset($this->entities[$entity->getId()]);
 		unset($this->updateEntities[$entity->getId()]);
+	}
+
+	/**
+	 * Transfers an entity to this dimension from a different one.
+	 *
+	 * @param Entity $entity
+	 */
+	public function transferEntity(Entity $entity){
+		//TODO
 	}
 
 	/**

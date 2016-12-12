@@ -23,11 +23,9 @@ declare(strict_types = 1);
 
 namespace pocketmine\level\dimension;
 
-use pocketmine\network\protocol\ChangeDimensionPacket;
+/**
+ * Custom dimensions added by plugins must implement this interface.
+ */
+interface CustomDimension{
 
-class TheEnd extends Dimension{
-
-	public function __construct(){
-		parent::__construct("The End", DimensionType::THE_END);
-	}
 }
