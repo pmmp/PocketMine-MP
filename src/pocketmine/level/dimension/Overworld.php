@@ -28,10 +28,6 @@ use pocketmine\network\protocol\ChangeDimensionPacket;
 class Overworld extends Dimension{
 
 	public function __construct(){
-		parent::__construct("Overworld", Dimension::SKY_COLOUR_BLUE);
-	}
-
-	public function getMaxBuildHeight() : int{
-		return 256;
+		parent::__construct("Overworld", DimensionType::OVERWORLD);
 	}
 }

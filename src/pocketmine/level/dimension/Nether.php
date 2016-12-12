@@ -28,10 +28,7 @@ use pocketmine\network\protocol\ChangeDimensionPacket;
 class Nether extends Dimension{
 
 	public function __construct(){
-		parent::__construct("Nether", Dimension::SKY_COLOUR_RED);
-	}
-
-	public function getMaxBuildHeight() : int{
-		return 128;
+		parent::__construct("Nether", DimensionType::NETHER);
+		$this->distanceMultiplier = 8; //1 Nether chunk for every 8 in the Overworld
 	}
 }
