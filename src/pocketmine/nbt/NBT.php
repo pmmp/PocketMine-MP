@@ -610,6 +610,7 @@ class NBT{
 	public function getArray(){
 		$data = [];
 		self::toArray($data, $this->data);
+		return $data;
 	}
 
 	private static function toArray(array &$data, Tag $tag){
