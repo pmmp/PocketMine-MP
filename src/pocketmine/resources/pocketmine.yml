@@ -131,6 +131,9 @@ chunk-ticking:
  tick-radius: 3
  light-updates: false
  clear-tick-list: true
+ #IDs of blocks not to perform random ticking on.
+ disable-block-ticking:
+  #- 2 # grass
 
 chunk-generation:
  #Max. amount of chunks in the waiting queue to be generated
