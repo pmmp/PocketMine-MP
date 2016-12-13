@@ -2113,6 +2113,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					case PlayerActionPacket::ACTION_ABORT_BREAK:
 						$this->lastBreak = PHP_INT_MAX;
 						break;
+					case PlayerActionPacket::ACTION_STOP_BREAK:
+						break;
 					case PlayerActionPacket::ACTION_RELEASE_ITEM:
 						if($this->startAction > -1 and $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION)){
 							if($this->inventory->getItemInHand()->getId() === Item::BOW){
@@ -2243,6 +2245,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 						$this->spawnToAll();
 						$this->scheduleUpdate();
+						break;
+					case PlayerActionPacket::ACTION_JUMP:
 						break;
 					case PlayerActionPacket::ACTION_START_SPRINT:
 						$ev = new PlayerToggleSprintEvent($this, true);
