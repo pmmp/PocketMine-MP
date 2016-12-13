@@ -23,11 +23,14 @@ declare(strict_types = 1);
 
 namespace pocketmine\level\dimension;
 
-use pocketmine\network\protocol\ChangeDimensionPacket;
 
 class Overworld extends Dimension{
 
 	public function __construct(){
-		parent::__construct("Overworld", DimensionType::OVERWORLD);
+		parent::__construct(DimensionType::OVERWORLD);
+	}
+
+	public function getDimensionName() : string{
+		return "Overworld";
 	}
 }

@@ -23,11 +23,14 @@ declare(strict_types = 1);
 
 namespace pocketmine\level\dimension;
 
-use pocketmine\network\protocol\ChangeDimensionPacket;
 
 class TheEnd extends Dimension{
 
 	public function __construct(){
-		parent::__construct("The End", DimensionType::THE_END);
+		parent::__construct(DimensionType::THE_END);
+	}
+
+	public function getDimensionName() : string{
+		return "The End";
 	}
 }
