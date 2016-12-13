@@ -23,12 +23,18 @@ declare(strict_types = 1);
 
 namespace pocketmine\level\dimension;
 
-use pocketmine\network\protocol\ChangeDimensionPacket;
 
 class Nether extends Dimension{
 
 	public function __construct(){
-		parent::__construct("Nether", DimensionType::NETHER);
-		$this->distanceMultiplier = 8; //1 Nether chunk for every 8 in the Overworld
+		parent::__construct(DimensionType::NETHER);
+	}
+
+	public function getDimensionName() : string{
+		return "Nether";
+	}
+
+	public function getDistanceMultiplier() : float{
+		return 8.0;
 	}
 }

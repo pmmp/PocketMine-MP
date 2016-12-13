@@ -35,9 +35,51 @@ use pocketmine\tile\Tile;
 
 abstract class Dimension{
 
+	const ID_RESERVED = -1;
+	const ID_OVERWORLD = 0;
+	const ID_NETHER = 1;
+	const ID_THE_END = 2;
+
 	const SKY_COLOR_BLUE = 0;
 	const SKY_COLOR_RED = 1;
 	const SKY_COLOR_PURPLE_STATIC = 2;
+
+	private static $registeredDimensions = [];
+	private static $dimensionIdCounter = 1000;
+
+	public static function init(){
+		self::$registeredDimensions = [];
+		self::$registeredDimensions[Dimension::ID_OVERWORLD] = Overworld::class;
+		self::$registeredDimensions[Dimension::ID_NETHER] = Nether::class;
+		self::$registeredDimensions[Dimension::ID_THE_END] = TheEnd::class;
+	}
+
+	/**
+	 * Registers a **custom** dimension class to an ID.
+	 *
+	 * @param string $dimension the fully qualified class name of the dimension class
+	 * @param int    $id the requested dimension ID. If not supplied, a new one will be automatically assigned.
+	 * @param bool   $overrideExisting whether to override the dimension registered to the ID above.
+	 *
+	 * @return int|bool the assigned ID if registration was successful, false if not.
+	 */
+	public static function registerDimension(string $dimension, int $id = Dimension::ID_RESERVED, bool $overrideExisting = false){
+		if($id !== null and isset(self::$registeredDimensions[$id]) and !$overrideExisting){
+			return false; //dimension id already assigned
+		}
+
+		if($id === Dimension::ID_RESERVED){
+			$id = self::$dimensionIdCounter++;
+		}
+
+		$class = new \ReflectionClass($dimension);
+		if($class->isSubclassOf(Dimension::class) and $class->implementsInterface(CustomDimension::class) and !$class->isAbstract()){
+			self::$registeredDimensions[$id] = $dimension;
+			return $id;
+		}
+
+		return false;
+	}
 
 	/** @var Level */
 	protected $level;
@@ -46,7 +88,7 @@ abstract class Dimension{
 	/** @var DimensionType */
 	protected $dimensionType;
 	/** @var int */
-	protected $saveId;
+	protected $dimensionId;
 	/** @var float */
 	protected $distanceMultiplier = 1;
 
@@ -58,9 +100,6 @@ abstract class Dimension{
 
 	/** @var DataPacket[] */
 	protected $chunkPackets = [];
-
-	/** @var GenericChunk */
-	public $emptyChunk;
 
 	/** @var Block */
 	protected $blockCache = [];
@@ -86,13 +125,10 @@ abstract class Dimension{
 	protected $nextWeatherChange;
 
 	/**
-	 * @param string $name   the dimension's display name
 	 * @param int    $typeId defaults to Overworld, used to initialise dimension properties. Must be a constant from {@link DimensionType}
 	 */
-	public function __construct(string $name, int $typeId = DimensionType::OVERWORLD){
-		$this->name = $name;
+	public function __construct(int $typeId = DimensionType::OVERWORLD){
 		$this->setDimensionType($typeId);
-		$this->emptyChunk = new GenericChunk(null, 0, 0); //TODO: clone methods for chunks to get more performance creating new chunks.
 	}
 
 	/**
@@ -118,9 +154,9 @@ abstract class Dimension{
 			return false;
 		}
 
-		if(($saveId = $level->addDimension($this)) !== false){
+		if(($dimensionId = $level->addDimension($this)) !== false){
 			$this->level = $level;
-			$this->saveId = $saveId;
+			$this->dimensionId = $dimensionId;
 			return true;
 		}
 
@@ -160,8 +196,8 @@ abstract class Dimension{
 	 *
 	 * @return int
 	 */
-	public function getSaveId() : int{
-		return $this->saveId;
+	final public function getId() : int{
+		return $this->dimensionId;
 	}
 
 	/**
@@ -169,9 +205,7 @@ abstract class Dimension{
 	 *
 	 * @return string
 	 */
-	public function getDimensionName() : string{
-		return $this->name;
-	}
+	abstract public function getDimensionName() : string;
 
 	/**
 	 * Returns the horizontal (X/Z) of 1 block in this dimension compared to the Overworld.
@@ -181,7 +215,7 @@ abstract class Dimension{
 	 * @return float
 	 */
 	public function getDistanceMultiplier() : float{
-		return (float) $this->distanceMultiplier;
+		return 1.0;
 	}
 
 	/**
@@ -189,7 +223,7 @@ abstract class Dimension{
 	 *
 	 * @return int
 	 */
-	public function getSkyColor() : int{
+	final public function getSkyColor() : int{
 		return $this->dimensionType->getSkyColor();
 	}
 
@@ -198,7 +232,7 @@ abstract class Dimension{
 	 *
 	 * @return int
 	 */
-	public function getMaxBuildHeight() : int{
+	final public function getMaxBuildHeight() : int{
 		return $this->dimensionType->getMaxBuildHeight();
 	}
 
@@ -427,7 +461,7 @@ abstract class Dimension{
 	 * @param int $currentTick
 	 */
 	protected function doWeatherTick(int $currentTick){
-
+		//TODO
 	}
 
 	/**
