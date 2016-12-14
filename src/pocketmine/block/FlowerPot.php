@@ -52,14 +52,14 @@ class FlowerPot extends Flowable{
 		return true;
 	}
 
-	public function getBoundingBox(){
+	protected function recalculateBoundingBox(){
 		return new AxisAlignedBB(
-			$this->x + (5 / 16),
+			$this->x + 0.3125,
 			$this->y,
-			$this->z + (5 / 16),
-			$this->x + (11 / 16),
-			$this->y + (6 / 16),
-			$this->z + (11 / 16)
+			$this->z + 0.3125,
+			$this->x + 0.6875,
+			$this->y + 0.375,
+			$this->z + 0.6875
 		);
 	}
 
@@ -107,7 +107,7 @@ class FlowerPot extends Flowable{
 			return false;
 		}
 		if(!$pot->canAddItem($item)){
-			return false;
+			return true;
 		}
 
 		$this->setDamage(self::STATE_FULL); //specific damage value is unnecessary, it just needs to be non-zero to show an item.
