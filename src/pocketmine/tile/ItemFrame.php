@@ -43,13 +43,6 @@ class ItemFrame extends Spawnable{
 		parent::__construct($chunk, $nbt);
 	}
 
-	public function dropItem(){
-		if(lcg_value() < $this->getDropChance() and $this->hasItem()){
-			$this->level->dropItem($this, $this->getItem());
-		}
-		$this->setItem(null);
-	}
-
 	public function hasItem() : bool{
 		return $this->getItem()->getId() !== Item::AIR;
 	}
@@ -103,4 +96,5 @@ class ItemFrame extends Spawnable{
 		}
 		return $tag;
 	}
+
 }
