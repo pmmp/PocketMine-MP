@@ -33,6 +33,7 @@ interface ItemIds extends BlockIds{
 	const APPLE = 260;
 	const BOW = 261;
 	const ARROW = 262;
+	const TIPPED_ARROW = 262;
 	const COAL = 263;
 	const DIAMOND = 264;
 	const IRON_INGOT = 265;
@@ -111,7 +112,7 @@ interface ItemIds extends BlockIds{
 	const PAPER = 339;
 	const BOOK = 340;
 	const SLIMEBALL = 341;
-	const MINECART_WITH_CHEST = 342;
+	const MINECART_WITH_CHEST = 342, CHEST_MINECART = 342;
 
 	const EGG = 344;
 	const COMPASS = 345;
@@ -137,7 +138,7 @@ interface ItemIds extends BlockIds{
 	const RAW_CHICKEN = 365;
 	const COOKED_CHICKEN = 366;
 	const ROTTEN_FLESH = 367;
-
+	//const ENDERPEARL = 368; //Confirmed
 	const BLAZE_ROD = 369;
 	const GHAST_TEAR = 370;
 	const GOLD_NUGGET = 371, GOLDEN_NUGGET = 371;
@@ -150,10 +151,10 @@ interface ItemIds extends BlockIds{
 	const MAGMA_CREAM = 378;
 	const BREWING_STAND = 379;
 	const CAULDRON = 380;
-
+	//const EYE_OF_ENDER = 380; //Confirmed
 	const GLISTERING_MELON = 382;
 	const SPAWN_EGG = 383;
-	const BOTTLE_O_ENCHANTING = 384, ENCHANTING_BOTTLE = 384;
+	const BOTTLE_O_ENCHANTING = 384, ENCHANTING_BOTTLE = 384, EXP_BOTTLE = 384;
 	const FIRE_CHARGE = 385;
 
 	const EMERALD = 388;
@@ -167,7 +168,7 @@ interface ItemIds extends BlockIds{
 	const GOLDEN_CARROT = 396;
 	const MOB_HEAD = 397, SKULL = 397;
 	const CARROT_ON_A_STICK = 398;
-
+	const NETHER_STAR = 399;
 	const PUMPKIN_PIE = 400;
 
 	const ENCHANTED_BOOK = 403;
@@ -175,31 +176,42 @@ interface ItemIds extends BlockIds{
 	const NETHER_BRICK = 405;
 	const QUARTZ = 406;
 	const NETHER_QUARTZ = 406;
-	const MINECART_WITH_TNT = 407;
-	const MINECART_WITH_HOPPER = 408, HOPPER = 410;
+	const MINECART_WITH_TNT = 407, TNT_MINECART = 407;
+	const MINECART_WITH_HOPPER = 408, HOPPER_MINECART = 408;
+	const PRISMARINE_SHARD = 409;
+	const HOPPER = 410;
 	const RAW_RABBIT = 411;
 	const COOKED_RABBIT = 412;
 	const RABBIT_STEW = 413;
 	const RABBIT_FOOT = 414;
 	const RABBIT_HIDE = 415;
-	const LEATHER_HORSE_ARMOR = 416; //I hate being forced to spell this wrong
+	const LEATHER_HORSE_ARMOR = 416;
 	const IRON_HORSE_ARMOR = 417;
-	const GOLD_HORSE_ARMOR = 418;
+	const GOLD_HORSE_ARMOR = 418, GOLDEN_HORSE_ARMOR = 418;
 	const DIAMOND_HORSE_ARMOR = 419;
 	const LEAD = 420, LEASH = 420;
-	const NAMETAG = 421;
-
+	const NAMETAG = 421, NAME_TAG = 421;
+	const PRISMARINE_CRYSTAL = 422;
+	const PRISMARINE_CRYSTALS = 422;
 	const RAW_MUTTON = 423;
 	const COOKED_MUTTON = 424;
-
+	//const END_CRYSTAL = 426; //Confirmed
 	const SPRUCE_DOOR = 427;
 	const BIRCH_DOOR = 428;
 	const JUNGLE_DOOR = 429;
 	const ACACIA_DOOR = 430;
 	const DARK_OAK_DOOR = 431;
-
+	//const CHORUS_FRUIT = 432; //Confirmed
+	//const POPPED_CHORUS_FRUIT = 433; //Confirmed
+	
+	//const DRAGON_BREATH = 437; //Confirmed
+	//const DRAGONS_BREATH = 437; //Confirmed
 	const SPLASH_POTION = 438;
-
+	
+	//const LINGERING_POTION = 441; //Confirmed
+	
+	//const ELYTRA = 444; //Confirmed
+	
 	const BEETROOT = 457;
 	const BEETROOT_SEEDS = 458, BEETROOT_SEED = 458;
 	const BEETROOT_SOUP = 459;
@@ -210,5 +222,5 @@ interface ItemIds extends BlockIds{
 
 	const ENCHANTED_GOLDEN_APPLE = 466;
 
-	const CAMERA = 498; #blamemojang
+	const CAMERA = 498;
 }
