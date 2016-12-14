@@ -271,27 +271,65 @@ class GenericChunk implements Chunk{
 	}
 
 	public function populateSkyLight(){
-		/*for($x = 0; $x < 16; ++$x){
+		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
 				$top = $this->getHeightMap($x, $z);
 
-
-				//$subChunk = $this->getSubChunk()
-				for($y = 127; $y > $top; --$y){
-					$this->setBlockSkyLight($x, $y, $z, 15);
-				}
-
-				for($y = $top; $y >= 0; --$y){
-					if(Block::$solid[$this->getBlockId($x, $y, $z)]){
+				$startFrom = $this->getHighestSubChunkIndex();
+				
+				$y = min($startFrom * 16, $top);
+				
+				$subChunkStop = -1;
+				
+				echo("TOP is ".$top."; startFrom is ".$startFrom." startY is ".$y."\n");
+				
+				for($currSubChunk = $startFrom; $currSubChunk >= 0; --$currSubChunk){
+					echo("I'm at ".$x."/".$z." and iterating through inital Visiting of upper blocks. SubChunkIndex:".$currSubChunk."\n");
+					if($y < $top){
+						echo("ABORT because y < top at MAIN"."\n");
 						break;
 					}
+					if(!isset($this->subChunks[$currSubChunk])){
+						continue;
+					}
+					$subChunk = $this->subChunks[$currSubChunk];
+					for($i = 16; $i >= 0; --$i){
+						echo("Found non-empty subchunk. Currently at y".$y." in ".$x."/".$y." at LoopPos ".$i." TOP is ".$top."\n");
+						if($y < $top){
+							echo("ABORT because y < top at LOW_main"."\n");
+							break;
+						}
+						$subChunk->setBlockSkyLight($x, $y & 0x0f, $z, 15);
+						--$y;
+					}
+					$subChunkStop = $currSubChunk;
+				}
+				
+				echo("TOP is ".$top." while y was ".$y.", now ".$top."\n");
+				$y = $top; //Is this needed? $y should already be top...
+				for($currSubChunk = $subChunkStop; $currSubChunk >= 0; --$currSubChunk){
+					echo("I'm at ".$x."/".$y." and iterating through checking of lower blocks. SubChunkIndex:".$currSubChunk."\n");
+					if(!isset($this->subChunks[$currSubChunk])){
+						continue;
+					}
+					$subChunk = $this->subChunks[$currSubChunk];
+					
+					for($i = 16; $i >= 0; --$i){
+						echo("Found non-empty subchunk. Currently at y".$y." in ".$x."/".$z." at LoopPos ".$i." TOP is ".$top."\n");
+						if(Block::$solid[$subChunk->getBlockId($x, $y & 0x0f, $z)]){
+							$currSubChunk = -1;
+							break;
+						}
 
-					$this->setBlockSkyLight($x, $y, $z, 15);
+						$this->setBlockSkyLight($x, $y & 0x0f, $z, 15);
+						
+						--$y;
+					}
 				}
 
 				$this->setHeightMap($x, $z, $this->getHighestBlockAt($x, $z, false));
 			}
-		}*/
+		}
 	}
 
 	public function getBiomeId(int $x, int $z) : int{
