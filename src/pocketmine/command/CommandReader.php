@@ -22,13 +22,13 @@
 namespace pocketmine\command;
 
 use pocketmine\Thread;
-use pocketmine\utils\Utils;
 
 class CommandReader extends Thread{
 	private $readline;
 	/** @var \Threaded */
 	protected $buffer;
 	private $shutdown = false;
+	private $streamBlocking = false;
 
 	public function __construct(){
 		$this->buffer = new \Threaded;
@@ -44,7 +44,7 @@ class CommandReader extends Thread{
 	private function initStdin(){
 		global $stdin;
 		$stdin = fopen("php://stdin", "r");
-		stream_set_blocking($stdin, 0);
+		$this->streamBlocking = (stream_set_blocking($stdin, 0) === false);
 	}
 
 	private function readLine(){
@@ -54,14 +54,15 @@ class CommandReader extends Thread{
 			if(!is_resource($stdin)){
 				$this->initStdin();
 			}
+
+			$line = fgets($stdin);
 			
-			$fgets = fgets($stdin);
-			
-			if(Utils::getOS() == "win" && $fgets === false){ //windows sucks
+			if($line === false and $this->streamBlocking === true){ //windows sucks
 				$this->initStdin();
+				$line = fgets($stdin);
 			}
 			
-			return trim($fgets);
+			return trim($line);
 		}else{
 			$line = trim(readline("> "));
 			if($line != ""){
@@ -90,7 +91,6 @@ class CommandReader extends Thread{
 			$this->initStdin();
 		}
 
-		$this->getClassLoader()->register(true);
 		$lastLine = microtime(true);
 		while(!$this->shutdown){
 			if(($line = $this->readLine()) !== ""){
@@ -103,8 +103,9 @@ class CommandReader extends Thread{
 
 			$lastLine = microtime(true);
 		}
+
 		global $stdin;
-		if(!$this->readline && is_resource($stdin)){
+		if(!$this->readline){
 			fclose($stdin);
 		}
 	}
