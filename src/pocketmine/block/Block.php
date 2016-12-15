@@ -296,7 +296,6 @@ class Block extends Position implements BlockIds, Metadatable{
 		}
 	}
 	
-	
 	/**
 	 * @param int $blockID
 	 *

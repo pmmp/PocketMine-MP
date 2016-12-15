@@ -1316,15 +1316,17 @@ class Level implements ChunkManager, Metadatable{
 			return 15;
 		}
 		
-		$diffusionBlocks = 0;
+		$diffused = false;
 		$directSkyLight = 15;
 		for($i = $y; $i <= $highestBlock; $i++){
 			$lightResistance = Block::getSkyLightResistance($chunk->getBlockId($x & 0x0f, $i & 0x7f, $z & 0x0f));
 			if($lightResistance == -1){ //diffusion
-				$diffusionBlocks++;
+				$diffused = true;
 				$lightResistance = 0;
 			}
-			$lightResiatance += $diffusionBlocks;
+			if($diffused){
+				$lightResiatance++;
+			}
 			$directSkyLight -= $lightResistance;
 			if($directSkyLight <= 0){ //Skylight is 0 from above (No need to continue calculating)
 				return 0;
