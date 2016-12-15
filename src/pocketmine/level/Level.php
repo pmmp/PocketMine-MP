@@ -1312,10 +1312,19 @@ class Level implements ChunkManager, Metadatable{
 	*/
 	private function getDirectSkyLight($x, $y, $z){
 		$chunk = $this->getChunk($x >> 4, $z >> 4, true);
+		if($highestBlock = $chunk->getHighestBlockAt($x & 0xf, $z & 0xf) < $y){
+			return 15;
+		}
 		
+		$diffusionBlocks = 0;
 		$directSkyLight = 15;
-		for($i = $y; $i <= 127; $i++){ //TODO:0.17
+		for($i = $y; $i <= $highestBlock; $i++){
 			$lightResistance = Block::getSkyLightResistance($chunk->getBlockId($x & 0x0f, $i & 0x7f, $z & 0x0f));
+			if($lightResistance == -1){ //diffusion
+				$diffusionBlocks++;
+				$lightResistance = 0;
+			}
+			$lightResiatance += $diffusionBlocks;
 			$directSkyLight -= $lightResistance;
 			if($directSkyLight <= 0){ //Skylight is 0 from above (No need to continue calculating)
 				return 0;

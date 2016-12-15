@@ -288,18 +288,12 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return int 0-15
 	*/
-	public static function getSkyLightResistance($blockID){
-		#$block = new self::$list[$blockID]();
-		if(self::$transparent[$blockID]){
-			if($blockID == self::WATER || $blockID == self::ICE){
-				return 3;
-			}
-			return 0;
+	public static function getSkyLightResistance($blockID): int{
+		if($blockID != self::COWEB || $blockID != self::LEAVES){
+			return self::$lightFilter[$blockID];
+		}else{ //Diffusion
+			return -1;
 		}
-		if(self::$solid[$blockID]){
-			return 15;
-		}
-		return -1;
 	}
 	
 	
@@ -310,8 +304,8 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return int 1-15
 	*/
-	public static function getHorizontalSkyLightResistance($blockID){
-		return max(self::getSkyLightResistance($blockID), 1);
+	public static function getHorizontalSkyLightResistance($blockID): int{
+		return max(self::$lightFilter($blockID), 1);
 	}
 
 	/**
