@@ -30,8 +30,8 @@ abstract class Particle extends Vector3{
 	const TYPE_CRITICAL = 2;
 	const TYPE_BLOCK_FORCE_FIELD = 3;
 	const TYPE_SMOKE = 4;
-	const TYPE_EXPLODE = 5; //actually steam
-	const TYPE_WHITE_SMOKE = 6; //also steam, maybe bigger?
+	const TYPE_EXPLODE = 5;
+	const TYPE_EVAPORATION = 6;
 	const TYPE_FLAME = 7;
 	const TYPE_LAVA = 8;
 	const TYPE_LARGE_SMOKE = 9;
@@ -62,7 +62,7 @@ abstract class Particle extends Vector3{
 	const TYPE_ENCHANTMENT_TABLE = 34;
 	const TYPE_TRACKING_EMITTER = 35;
 	const TYPE_NOTE = 36;
-	//37 yet another SpellParticle of some description
+	const TYPE_WITCH_SPELL = 37;
 	const TYPE_CARROT = 38;
 
 	/**
