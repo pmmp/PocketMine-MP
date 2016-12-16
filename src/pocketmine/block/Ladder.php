@@ -131,7 +131,7 @@ class Ladder extends Transparent{
 				5 => 4
 			];
 			if(!$this->getSide($sides[$this->meta])->isSolid()){ //Replace with common break method
-				$this->level->setBlock($this, new Air(), true, true);
+				$this->level->useBreakOn($this);
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
 		}
