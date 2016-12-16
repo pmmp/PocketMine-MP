@@ -22,7 +22,6 @@
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
-use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
@@ -31,7 +30,6 @@ use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\Player;
 
 abstract class Fallable extends Solid{
 
