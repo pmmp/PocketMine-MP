@@ -59,7 +59,7 @@ class Ladder extends Transparent{
 
 	protected function recalculateBoundingBox(){
 
-		$f = 0.125;
+		$f = 0.1875;
 
 		if($this->meta === 2){
 			return new AxisAlignedBB(
