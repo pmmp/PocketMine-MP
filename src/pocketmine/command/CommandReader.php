@@ -104,8 +104,8 @@ class CommandReader extends Thread{
 			$lastLine = microtime(true);
 		}
 
-		global $stdin;
 		if(!$this->readline){
+			global $stdin;
 			fclose($stdin);
 		}
 	}
