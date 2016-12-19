@@ -28,6 +28,7 @@ class CommandReader extends Thread{
 	/** @var \Threaded */
 	protected $buffer;
 	private $shutdown = false;
+	private $streamBlocking = false;
 
 	public function __construct(){
 		$this->buffer = new \Threaded;
@@ -40,15 +41,28 @@ class CommandReader extends Thread{
 		$this->shutdown = true;
 	}
 
+	private function initStdin(){
+		global $stdin;
+		$stdin = fopen("php://stdin", "r");
+		$this->streamBlocking = (stream_set_blocking($stdin, 0) === false);
+	}
+
 	private function readLine(){
 		if(!$this->readline){
 			global $stdin;
 
 			if(!is_resource($stdin)){
-				return "";
+				$this->initStdin();
 			}
 
-			return trim(fgets($stdin));
+			$line = fgets($stdin);
+			
+			if($line === false and $this->streamBlocking === true){ //windows sucks
+				$this->initStdin();
+				$line = fgets($stdin);
+			}
+			
+			return trim($line);
 		}else{
 			$line = trim(readline("> "));
 			if($line != ""){
@@ -74,9 +88,7 @@ class CommandReader extends Thread{
 
 	public function run(){
 		if(!$this->readline){
-			global $stdin;
-			$stdin = fopen("php://stdin", "r");
-			stream_set_blocking($stdin, 0);
+			$this->initStdin();
 		}
 
 		$lastLine = microtime(true);
@@ -90,6 +102,11 @@ class CommandReader extends Thread{
 			}
 
 			$lastLine = microtime(true);
+		}
+
+		if(!$this->readline){
+			global $stdin;
+			fclose($stdin);
 		}
 	}
 
