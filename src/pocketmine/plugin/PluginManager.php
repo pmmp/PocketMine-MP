@@ -220,14 +220,18 @@ class PluginManager{
 									$pluginApi = array_pad(explode("-", $version), 2, ""); //0 = version, 1 = suffix (optional)
 									$serverApi = array_pad(explode("-", $this->server->getApiVersion()), 2, "");
 
+									if($pluginApi[1] !== $serverApi[1]){ //Different release phase (alpha vs. beta) or phase build (alpha.1 vs alpha.2)
+										continue;
+									}
+
 									$pluginNumbers = array_map("intval", explode(".", $pluginApi[0]));
 									$serverNumbers = array_map("intval", explode(".", $serverApi[0]));
 
 									if($pluginNumbers[0] !== $serverNumbers[0]){ //Completely different API version
 										continue;
-									}elseif($pluginNumbers[1] > $serverNumbers[1]){ //If the plugin requires new API features, being backwards compatible
-										continue;
-									}elseif($pluginApi[1] !== $serverApi[1]){ //Different release phase (alpha vs. beta) or phase build (alpha.1 vs alpha.2)
+									}
+
+									if($pluginNumbers[1] > $serverNumbers[1]){ //If the plugin requires new API features, being backwards compatible
 										continue;
 									}
 								}
