@@ -105,7 +105,7 @@ class ScriptPluginLoader implements PluginLoader{
 				$data[$key] = $content;
 			}
 
-			if($insideHeader and strpos($line, "**/") !== false){
+			if($insideHeader and strpos($line, "*/") !== false){
 				break;
 			}
 		}

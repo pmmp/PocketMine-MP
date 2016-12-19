@@ -173,13 +173,13 @@ class Permission{
 	 * @param string|Permission $name
 	 * @param                   $value
 	 *
-	 * @return Permission|void Permission if $name is a string, void if it's a Permission
+	 * @return Permission|null Permission if $name is a string, null if it's a Permission
 	 */
 	public function addParent($name, $value){
 		if($name instanceof Permission){
 			$name->getChildren()[$this->getName()] = $value;
 			$name->recalculatePermissibles();
-			return;
+			return null;
 		}else{
 			$perm = Server::getInstance()->getPluginManager()->getPermission($name);
 			if($perm === null){

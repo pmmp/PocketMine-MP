@@ -214,16 +214,26 @@ class PluginManager{
 							$compatible = false;
 							//Check multiple dependencies
 							foreach($description->getCompatibleApis() as $version){
-								//Format: majorVersion.minorVersion.patch
-								$version = array_map("intval", explode(".", $version));
-								$apiVersion = array_map("intval", explode(".", $this->server->getApiVersion()));
-								//Completely different API version
-								if($version[0] !== $apiVersion[0]){
-									continue;
-								}
-								//If the plugin requires new API features, being backwards compatible
-								if($version[1] > $apiVersion[1]){
-									continue;
+								//Format: majorVersion.minorVersion.patch (3.0.0)
+								//    or: majorVersion.minorVersion.patch-devBuild (3.0.0-alpha1)
+								if($version !== $this->server->getApiVersion()){
+									$pluginApi = array_pad(explode("-", $version), 2, ""); //0 = version, 1 = suffix (optional)
+									$serverApi = array_pad(explode("-", $this->server->getApiVersion()), 2, "");
+
+									if($pluginApi[1] !== $serverApi[1]){ //Different release phase (alpha vs. beta) or phase build (alpha.1 vs alpha.2)
+										continue;
+									}
+
+									$pluginNumbers = array_map("intval", explode(".", $pluginApi[0]));
+									$serverNumbers = array_map("intval", explode(".", $serverApi[0]));
+
+									if($pluginNumbers[0] !== $serverNumbers[0]){ //Completely different API version
+										continue;
+									}
+
+									if($pluginNumbers[1] > $serverNumbers[1]){ //If the plugin requires new API features, being backwards compatible
+										continue;
+									}
 								}
 
 								$compatible = true;

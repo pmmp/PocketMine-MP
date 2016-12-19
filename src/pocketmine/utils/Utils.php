@@ -168,6 +168,8 @@ class Utils{
 	 * BSD => bsd
 	 * Other => other
 	 *
+	 * @param bool $recalculate
+	 *
 	 * @return string
 	 */
 	public static function getOS($recalculate = false){

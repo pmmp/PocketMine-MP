@@ -104,8 +104,8 @@ abstract class Entity extends Location implements Metadatable{
 	 * 53 (unknown) */
 	const DATA_BOUNDING_BOX_WIDTH = 54; //float
 	const DATA_BOUNDING_BOX_HEIGHT = 55; //float
-	/* 56 (unknown)
-	 * 57 (vector3f)
+	const DATA_FUSE_LENGTH = 56; //int
+	/* 57 (vector3f)
 	 * 58 (byte)
 	 * 59 (float)
 	 * 60 (float) */
@@ -1610,6 +1610,7 @@ abstract class Entity extends Location implements Metadatable{
 	 * @param int   $id
 	 * @param int   $type
 	 * @param mixed $value
+	 * @param bool  $send
 	 *
 	 * @return bool
 	 */

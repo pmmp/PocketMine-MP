@@ -87,6 +87,7 @@ use pocketmine\network\Network;
 use pocketmine\network\protocol\BatchPacket;
 use pocketmine\network\protocol\CraftingDataPacket;
 use pocketmine\network\protocol\DataPacket;
+use pocketmine\network\protocol\Info as ProtocolInfo;
 use pocketmine\network\protocol\PlayerListPacket;
 use pocketmine\network\query\QueryHandler;
 use pocketmine\network\RakLibInterface;
@@ -185,7 +186,6 @@ class Server{
 
 	/** @var CommandReader */
 	private $console = null;
-	private $consoleThreaded;
 
 	/** @var SimpleCommandMap */
 	private $commandMap = null;
@@ -302,7 +302,7 @@ class Server{
 	 * @return string
 	 */
 	public function getVersion(){
-		return \pocketmine\MINECRAFT_VERSION;
+		return ProtocolInfo::MINECRAFT_VERSION;
 	}
 
 	/**

@@ -112,7 +112,7 @@ class Leaves2 extends Leaves{
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if(($this->meta & 0b00001100) === 0){
 				$this->meta |= 0x08;
-				$this->getLevel()->setBlock($this, $this, false, false, true);
+				$this->getLevel()->setBlock($this, $this, true, false);
 			}
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
 			if(($this->meta & 0b00001100) === 0x08){
