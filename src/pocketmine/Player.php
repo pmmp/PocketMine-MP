@@ -32,7 +32,6 @@ use pocketmine\entity\Human;
 use pocketmine\entity\Item as DroppedItem;
 use pocketmine\entity\Living;
 use pocketmine\entity\Projectile;
-use pocketmine\event\block\SignChangeEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -134,6 +133,7 @@ use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
 use pocketmine\plugin\Plugin;
+use pocketmine\tile\ItemFrame;
 use pocketmine\tile\Sign;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
@@ -2906,28 +2906,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 
 				$t = $this->level->getTile($pos);
-				if($t instanceof Sign){
+				if($t instanceof Spawnable){
 					$nbt = new NBT(NBT::LITTLE_ENDIAN);
 					$nbt->read($packet->namedtag, false, true);
 					$nbt = $nbt->getData();
-					if($nbt["id"] !== Tile::SIGN){
+					if(!$t->updateCompoundTag($nbt, $this)){
 						$t->spawnTo($this);
-					}else{
-						$ev = new SignChangeEvent($t->getBlock(), $this, [
-							TextFormat::clean($nbt["Text1"], $this->removeFormat), TextFormat::clean($nbt["Text2"], $this->removeFormat), TextFormat::clean($nbt["Text3"], $this->removeFormat), TextFormat::clean($nbt["Text4"], $this->removeFormat)
-						]);
-
-						if(!isset($t->namedtag->Creator) or $t->namedtag["Creator"] !== $this->getRawUniqueId()){
-							$ev->setCancelled();
-						}
-
-						$this->server->getPluginManager()->callEvent($ev);
-
-						if(!$ev->isCancelled()){
-							$t->setText($ev->getLine(0), $ev->getLine(1), $ev->getLine(2), $ev->getLine(3));
-						}else{
-							$t->spawnTo($this);
-						}
 					}
 				}
 				break;
@@ -2947,6 +2931,25 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					$this->dataPacket($pk);
 					$this->sendSettings();
 				}
+				break;
+			case ProtocolInfo::ITEM_FRAME_DROP_ITEM_PACKET:
+				if($this->spawned === false or $this->blocked === true or !$this->isAlive()){
+					break;
+				}
+
+				if(($tile = $this->level->getTile($this->temporalVector->setComponents($packet->x, $packet->y, $packet->z))) instanceof ItemFrame){
+					if(!$tile->getItem()->equals($packet->item) and !$this->isCreative(true)){
+						$tile->spawnTo($this);
+						break;
+					}
+
+					if(lcg_value() <= $tile->getItemDropChance() and $packet->item->getId() !== Item::AIR){
+						$this->level->dropItem($tile->getBlock(), $packet->item); //Use the packet item to handle creative drops correctly
+					}
+					$tile->setItem(null);
+					$tile->setItemRotation(0);
+				}
+
 				break;
 			default:
 				break;
@@ -3042,7 +3045,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->message = $message;
 		$this->dataPacket($pk);
 	}
-	
+
 	/**
 	 * @param string $sender
 	 * @param string $message

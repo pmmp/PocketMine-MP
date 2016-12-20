@@ -56,8 +56,8 @@ class AddEntityPacket extends DataPacket{
 		$this->putUnsignedVarInt($this->type);
 		$this->putVector3f($this->x, $this->y, $this->z);
 		$this->putVector3f($this->speedX, $this->speedY, $this->speedZ);
-		$this->putLFloat($this->yaw * (256 / 360));
 		$this->putLFloat($this->pitch * (256 / 360));
+		$this->putLFloat($this->yaw * (256 / 360));
 		$this->putUnsignedVarInt($this->modifiers); //attributes?
 		$meta = Binary::writeMetadata($this->metadata);
 		$this->put($meta);

@@ -196,6 +196,7 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$list[self::GLISTERING_MELON] = GlisteringMelon::class;
 			self::$list[self::SPAWN_EGG] = SpawnEgg::class;
 			self::$list[self::EMERALD] = Emerald::class;
+			self::$list[self::ITEM_FRAME] = ItemFrame::class;
 			self::$list[self::FLOWER_POT] = FlowerPot::class;
 			self::$list[self::CARROT] = Carrot::class;
 			self::$list[self::POTATO] = Potato::class;

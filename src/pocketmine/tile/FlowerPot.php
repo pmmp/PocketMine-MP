@@ -31,10 +31,10 @@ use pocketmine\nbt\tag\StringTag;
 class FlowerPot extends Spawnable{
 
 	public function __construct(Chunk $chunk, CompoundTag $nbt){
-		if(!isset($nbt->Item)){
+		if(!isset($nbt->item)){
 			$nbt->item = new ShortTag("item", 0);
 		}
-		if(!isset($nbt->Data)){
+		if(!isset($nbt->mData)){
 			$nbt->mData = new IntTag("mData", 0);
 		}
 		parent::__construct($chunk, $nbt);
@@ -69,12 +69,7 @@ class FlowerPot extends Spawnable{
 	public function setItem(Item $item){
 		$this->namedtag["item"] = $item->getId();
 		$this->namedtag["mData"] = $item->getDamage();
-		$this->spawnToAll();
-
-		if($this->chunk){
-			$this->chunk->setChanged();
-			$this->level->clearChunkCache($this->chunk->getX(), $this->chunk->getZ());
-		}
+		$this->onChanged();
 	}
 
 	public function removeItem(){
@@ -91,8 +86,8 @@ class FlowerPot extends Spawnable{
 			new IntTag("x", (int) $this->x),
 			new IntTag("y", (int) $this->y),
 			new IntTag("z", (int) $this->z),
-			new ShortTag("item", (int) $this->namedtag["item"]),
-			new IntTag("mData", (int) $this->namedtag["mData"])
+			$this->namedtag->item,
+			$this->namedtag->mData
 		]);
 	}
 }

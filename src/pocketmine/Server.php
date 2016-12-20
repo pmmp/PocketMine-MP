@@ -103,12 +103,6 @@ use pocketmine\plugin\ScriptPluginLoader;
 use pocketmine\scheduler\FileWriteTask;
 use pocketmine\scheduler\SendUsageTask;
 use pocketmine\scheduler\ServerScheduler;
-use pocketmine\tile\Chest;
-use pocketmine\tile\EnchantTable;
-use pocketmine\tile\FlowerPot;
-use pocketmine\tile\Furnace;
-use pocketmine\tile\Sign;
-use pocketmine\tile\Skull;
 use pocketmine\tile\Tile;
 use pocketmine\updater\AutoUpdater;
 use pocketmine\utils\Binary;
@@ -1501,8 +1495,8 @@ class Server{
 			$this->commandMap = new SimpleCommandMap($this);
 
 			$this->registerEntities();
-			$this->registerTiles();
 
+			Tile::init();
 			InventoryType::init();
 			Block::init();
 			Enchantment::init();
@@ -1818,8 +1812,6 @@ class Server{
 	 * @param string        $commandLine
 	 *
 	 * @return bool
-	 *
-	 * @throws \Exception
 	 */
 	public function dispatchCommand(CommandSender $sender, $commandLine){
 		if($this->commandMap->dispatch($sender, $commandLine)){
@@ -2100,7 +2092,7 @@ class Server{
 			$next = $this->nextTick - 0.0001;
 			if($next > microtime(true)){
 				try{
-					time_sleep_until($next);
+					@time_sleep_until($next);
 				}catch(\Throwable $e){
 					//Sometimes $next is less than the current time. High load?
 				}
@@ -2448,14 +2440,4 @@ class Server{
 
 		Entity::registerEntity(Human::class, true);
 	}
-
-	private function registerTiles(){
-		Tile::registerTile(Chest::class);
-		Tile::registerTile(EnchantTable::class);
-		Tile::registerTile(FlowerPot::class);
-		Tile::registerTile(Furnace::class);
-		Tile::registerTile(Sign::class);
-		Tile::registerTile(Skull::class);
-	}
-
 }
