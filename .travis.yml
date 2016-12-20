@@ -5,7 +5,9 @@ php:
 
 before_script:
  - mkdir plugins
- - wget -O plugins/DevTools.phar https://github.com/PocketMine/DevTools/releases/download/v1.11.0/DevTools_v1.11.0.phar
+ - curl -o DevTools.zip "https://jenkins.pmmp.io/job/PocketMine-MP%20DevTools/lastSuccessfulBuild/artifact/*zip*/artifacts.zip"
+ - unzip DevTools.zip
+ - mv archive/*.phar plugins
  - pecl install channel://pecl.php.net/pthreads-3.1.6
  - pecl install channel://pecl.php.net/weakref-0.3.2
  - echo | pecl install channel://pecl.php.net/yaml-2.0.0
