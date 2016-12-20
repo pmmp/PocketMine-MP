@@ -83,14 +83,10 @@ abstract class Dimension{
 
 	/** @var Level */
 	protected $level;
-	/** @var string */
-	protected $name;
 	/** @var DimensionType */
 	protected $dimensionType;
 	/** @var int */
 	protected $dimensionId;
-	/** @var float */
-	protected $distanceMultiplier = 1;
 
 	/** @var Chunk[] */
 	protected $chunks = [];
@@ -125,7 +121,7 @@ abstract class Dimension{
 	protected $nextWeatherChange;
 
 	/**
-	 * @param int    $typeId defaults to Overworld, used to initialise dimension properties. Must be a constant from {@link DimensionType}
+	 * @param int $typeId defaults to Overworld, used to initialise dimension properties. Must be a constant from {@link DimensionType}
 	 */
 	public function __construct(int $typeId = DimensionType::OVERWORLD){
 		$this->setDimensionType($typeId);
