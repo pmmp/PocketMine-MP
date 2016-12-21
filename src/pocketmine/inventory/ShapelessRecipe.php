@@ -87,7 +87,7 @@ class ShapelessRecipe implements Recipe{
 			if($item->getCount() <= 0){
 				break;
 			}
-			if($ingredient->equals($item, $item->getDamage() === null ? false : true, $item->getCompoundTag() === null ? false : true)){
+			if($ingredient->equals($item, !$item->hasAnyDamageValue(), $item->hasCompoundTag())){
 				unset($this->ingredients[$index]);
 				$item->setCount($item->getCount() - 1);
 			}

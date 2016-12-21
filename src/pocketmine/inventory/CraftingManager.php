@@ -68,7 +68,7 @@ class CraftingManager{
 						$shape = array_chunk($recipe["input"], $recipe["width"]);
 						foreach($shape as $y => $row){
 							foreach($row as $x => $ingredient){
-								$result->addIngredient($x, $y, Item::get($ingredient["id"], ($ingredient["damage"] < 0 ? null : $ingredient["damage"]), $ingredient["count"], $ingredient["nbt"]));
+								$result->addIngredient($x, $y, Item::get($ingredient["id"], ($ingredient["damage"] < 0 ? -1 : $ingredient["damage"]), $ingredient["count"], $ingredient["nbt"]));
 							}
 						}
 						$this->registerRecipe($result);
@@ -78,7 +78,7 @@ class CraftingManager{
 				case 3:
 					$result = $recipe["output"];
 					$resultItem = Item::get($result["id"], $result["damage"], $result["count"], $result["nbt"]);
-					$this->registerRecipe(new FurnaceRecipe($resultItem, Item::get($recipe["inputId"], $recipe["inputDamage"] ?? null, 1)));
+					$this->registerRecipe(new FurnaceRecipe($resultItem, Item::get($recipe["inputId"], $recipe["inputDamage"] ?? -1, 1)));
 					break;
 				default:
 					break;
@@ -110,7 +110,7 @@ class CraftingManager{
 	 */
 	public function getRecipe(UUID $id){
 		$index = $id->toBinary();
-		return isset($this->recipes[$index]) ? $this->recipes[$index] : null;
+		return $this->recipes[$index] ?? null;
 	}
 
 	/**
@@ -154,7 +154,7 @@ class CraftingManager{
 			foreach($v as $item){
 				if($item !== null){
 					/** @var Item $item */
-					$hash .= $item->getId() . ":" . ($item->getDamage() === null ? "?" : $item->getDamage()) . "x" . $item->getCount() . ",";
+					$hash .= $item->getId() . ":" . ($item->hasAnyDamageValue() ? "?" : $item->getDamage()) . "x" . $item->getCount() . ",";
 				}
 			}
 
@@ -174,7 +174,7 @@ class CraftingManager{
 		$ingredients = $recipe->getIngredientList();
 		usort($ingredients, [$this, "sort"]);
 		foreach($ingredients as $item){
-			$hash .= $item->getId() . ":" . ($item->getDamage() === null ? "?" : $item->getDamage()) . "x" . $item->getCount() . ",";
+			$hash .= $item->getId() . ":" . ($item->hasAnyDamageValue() ? "?" : $item->getDamage()) . "x" . $item->getCount() . ",";
 		}
 		$this->recipeLookup[$result->getId() . ":" . $result->getDamage()][$hash] = $recipe;
 	}
@@ -184,7 +184,7 @@ class CraftingManager{
 	 */
 	public function registerFurnaceRecipe(FurnaceRecipe $recipe){
 		$input = $recipe->getInput();
-		$this->furnaceRecipes[$input->getId() . ":" . ($input->getDamage() === null ? "?" : $input->getDamage())] = $recipe;
+		$this->furnaceRecipes[$input->getId() . ":" . ($input->hasAnyDamageValue() ? "?" : $input->getDamage())] = $recipe;
 	}
 
 	/**
@@ -200,7 +200,7 @@ class CraftingManager{
 		$ingredients = $recipe->getIngredientList();
 		usort($ingredients, [$this, "sort"]);
 		foreach($ingredients as $item){
-			$hash .= $item->getId() . ":" . ($item->getDamage() === null ? "?" : $item->getDamage()) . "x" . $item->getCount() . ",";
+			$hash .= $item->getId() . ":" . ($item->hasAnyDamageValue() ? "?" : $item->getDamage()) . "x" . $item->getCount() . ",";
 		}
 
 		if(isset($this->recipeLookup[$idx][$hash])){
@@ -217,7 +217,7 @@ class CraftingManager{
 				foreach($ingredients as $item){
 					$amount = $item->getCount();
 					foreach($checkInput as $k => $checkItem){
-						if($checkItem->equals($item, $checkItem->getDamage() === null ? false : true, $checkItem->getCompoundTag() === null ? false : true)){
+						if($checkItem->equals($item, !$checkItem->hasAnyDamageValue(), $checkItem->hasCompoundTag())){
 							$remove = min($checkItem->getCount(), $amount);
 							$checkItem->setCount($checkItem->getCount() - $remove);
 							if($checkItem->getCount() === 0){
