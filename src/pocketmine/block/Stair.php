@@ -104,7 +104,7 @@ abstract class Stair extends Transparent{
 	}
 	*/
 
-	protected function recalculateBoundingBox() : AxisAlignedBB{
+	protected function recalculateBoundingBox(){
 
 		if(($this->getDamage() & 0x04) > 0){
 			return new AxisAlignedBB(

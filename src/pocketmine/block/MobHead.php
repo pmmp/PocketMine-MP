@@ -50,7 +50,7 @@ class MobHead extends Flowable{
 		return "Mob Head";
 	}
 
-	protected function recalculateBoundingBox() : AxisAlignedBB{
+	protected function recalculateBoundingBox(){
 		return new AxisAlignedBB(
 			$this->x + 0.25,
 			$this->y,

@@ -41,7 +41,7 @@ class GrassPath extends Transparent{
 		return Tool::TYPE_SHOVEL;
 	}
 
-	protected function recalculateBoundingBox() : AxisAlignedBB{
+	protected function recalculateBoundingBox(){
 		return new AxisAlignedBB(
 			$this->x,
 			$this->y,

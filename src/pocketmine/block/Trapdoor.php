@@ -54,7 +54,7 @@ class Trapdoor extends Transparent{
 		return true;
 	}
 
-	protected function recalculateBoundingBox() : AxisAlignedBB{
+	protected function recalculateBoundingBox(){
 
 		$damage = $this->getDamage();
 

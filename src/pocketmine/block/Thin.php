@@ -29,7 +29,7 @@ abstract class Thin extends Transparent{
 		return false;
 	}
 
-	protected function recalculateBoundingBox() : AxisAlignedBB{
+	protected function recalculateBoundingBox(){
 
 		$f = 0.4375;
 		$f1 = 0.5625;

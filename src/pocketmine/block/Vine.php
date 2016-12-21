@@ -60,7 +60,7 @@ class Vine extends Transparent{
 		$entity->resetFallDistance();
 	}
 
-	protected function recalculateBoundingBox() : AxisAlignedBB{
+	protected function recalculateBoundingBox(){
 
 		$f1 = 1;
 		$f2 = 1;
