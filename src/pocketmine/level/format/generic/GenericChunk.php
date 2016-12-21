@@ -554,7 +554,7 @@ class GenericChunk implements Chunk{
 	}
 
 	public function getSubChunk(int $fY, bool $generateNew = false) : SubChunk{
-		if($fY < 0 or $fY >= self::MAX_SUBCHUNKS){
+		if($fY < 0 or $fY >= $this->height){
 			return new EmptySubChunk($fY);
 		}elseif($generateNew and $this->subChunks[$fY] instanceof EmptySubChunk){
 			$this->subChunks[$fY] = new SubChunk($fY);
@@ -563,7 +563,7 @@ class GenericChunk implements Chunk{
 	}
 
 	public function setSubChunk(int $fY, SubChunk $subChunk = null, bool $allowEmpty = false) : bool{
-		if($fY < 0 or $fY >= self::MAX_SUBCHUNKS){
+		if($fY < 0 or $fY >= $this->height){
 			return false;
 		}
 		if($subChunk === null or ($subChunk->isEmpty() and !$allowEmpty)){
@@ -597,7 +597,7 @@ class GenericChunk implements Chunk{
 
 	public function pruneEmptySubChunks(){
 		foreach($this->subChunks as $y => $subChunk){
-			if($y < 0 or $y > self::MAX_SUBCHUNKS){
+			if($y < 0 or $y >= $this->height){
 				assert(false, "Invalid subchunk index");
 				unset($this->subChunks[$y]);
 			}elseif($subChunk instanceof EmptySubChunk){
