@@ -757,7 +757,7 @@ class Item implements ItemIds, \JsonSerializable{
 	public final function deepEquals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
 		if($this->equals($item, $checkDamage, $checkCompound)){
 			return true;
-		}elseif($item->hasCompoundTag() or $this->hasCompoundTag()){
+		}elseif($item->hasCompoundTag() and $this->hasCompoundTag()){
 			return NBT::matchTree($this->getNamedTag(), $item->getNamedTag());
 		}
 
