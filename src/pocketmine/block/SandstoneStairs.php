@@ -35,7 +35,7 @@ class SandstoneStairs extends Stair{
 		return 0.8;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 

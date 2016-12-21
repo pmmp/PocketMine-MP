@@ -36,7 +36,7 @@ class Redstone extends Solid{
 		return 5;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
@@ -44,7 +44,7 @@ class Redstone extends Solid{
 		return "Redstone Block";
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
 				[Item::REDSTONE_BLOCK, 0, 1],

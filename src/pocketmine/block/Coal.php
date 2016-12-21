@@ -36,7 +36,7 @@ class Coal extends Solid{
 		return 5;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
@@ -44,7 +44,7 @@ class Coal extends Solid{
 		return "Coal Block";
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
 				[Item::COAL_BLOCK, 0, 1],

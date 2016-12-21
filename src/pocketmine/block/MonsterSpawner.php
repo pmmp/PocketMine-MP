@@ -36,7 +36,7 @@ class MonsterSpawner extends Solid{
 		return 5;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
@@ -44,7 +44,7 @@ class MonsterSpawner extends Solid{
 		return "Monster Spawner";
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		return [];
 	}
 }

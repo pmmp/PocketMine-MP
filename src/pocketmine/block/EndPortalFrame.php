@@ -48,11 +48,11 @@ class EndPortalFrame extends Solid{
 		return 18000000;
 	}
 
-	public function isBreakable(Item $item){
+	public function isBreakable(Item $item) : bool{
 		return false;
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : AxisAlignedBB{
 
 		return new AxisAlignedBB(
 			$this->x,

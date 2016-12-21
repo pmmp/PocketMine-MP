@@ -43,7 +43,7 @@ class Bedrock extends Solid{
 		return 18000000;
 	}
 
-	public function isBreakable(Item $item){
+	public function isBreakable(Item $item) : bool{
 		return false;
 	}
 

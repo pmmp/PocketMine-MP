@@ -35,7 +35,7 @@ class EndStone extends Solid{
 		return "EndTag Stone";
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 

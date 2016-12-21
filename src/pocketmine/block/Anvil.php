@@ -34,7 +34,7 @@ class Anvil extends Fallable{
 
 	protected $id = self::ANVIL;
 
-	public function isSolid(){
+	public function isSolid() : bool{
 		return false;
 	}
 
@@ -42,7 +42,7 @@ class Anvil extends Fallable{
 		$this->meta = $meta;
 	}
 
-	public function canBeActivated(){
+	public function canBeActivated() : bool{
 		return true;
 	}
 
@@ -63,7 +63,7 @@ class Anvil extends Fallable{
 		return $names[$this->meta & 0x0c] ?? "Anvil";
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
@@ -81,7 +81,7 @@ class Anvil extends Fallable{
 		$this->getLevel()->setBlock($block, $this, true, true);
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
 				[$this->id, $this->meta & 0x0c, 1],

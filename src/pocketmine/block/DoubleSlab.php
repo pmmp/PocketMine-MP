@@ -36,7 +36,7 @@ class DoubleSlab extends Solid{
 		return 2;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
@@ -54,7 +54,7 @@ class DoubleSlab extends Solid{
 		return "DoubleTag " . $names[$this->meta & 0x07] . " Slab";
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
 				[Item::SLAB, $this->meta & 0x07, 2],

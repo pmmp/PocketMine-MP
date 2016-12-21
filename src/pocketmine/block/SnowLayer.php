@@ -38,7 +38,7 @@ class SnowLayer extends Flowable{
 		return "Snow Layer";
 	}
 
-	public function canBeReplaced(){
+	public function canBeReplaced() : bool{
 		return true;
 	}
 
@@ -46,7 +46,7 @@ class SnowLayer extends Flowable{
 		return 0.1;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_SHOVEL;
 	}
 
@@ -74,7 +74,7 @@ class SnowLayer extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($item->isShovel() !== false){
 			return [
 				[Item::SNOWBALL, 0, 1],

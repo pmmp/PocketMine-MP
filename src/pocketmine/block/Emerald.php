@@ -36,7 +36,7 @@ class Emerald extends Solid{
 		return 5;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
@@ -44,7 +44,7 @@ class Emerald extends Solid{
 		return "Emerald Block";
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= Tool::TIER_IRON){
 			return [
 				[Item::EMERALD_BLOCK, 0, 1],

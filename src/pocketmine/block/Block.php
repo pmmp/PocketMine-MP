@@ -345,7 +345,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return bool
 	 */
-	public function isBreakable(Item $item){
+	public function isBreakable(Item $item) : bool{
 		return true;
 	}
 
@@ -400,7 +400,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @return int
 	 */
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_NONE;
 	}
 
@@ -423,7 +423,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return bool
 	 */
-	public function canBePlaced(){
+	public function canBePlaced() : bool{
 		return true;
 	}
 
@@ -432,7 +432,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return bool
 	 */
-	public function canBeReplaced(){
+	public function canBeReplaced() : bool{
 		return false;
 	}
 
@@ -443,7 +443,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		return false;
 	}
 
-	public function isSolid(){
+	public function isSolid() : bool{
 		return true;
 	}
 
@@ -452,7 +452,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return bool
 	 */
-	public function canBeFlowedInto(){
+	public function canBeFlowedInto() : bool{
 		return false;
 	}
 
@@ -461,7 +461,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return bool
 	 */
-	public function canBeActivated(){
+	public function canBeActivated() : bool{
 		return false;
 	}
 
@@ -469,7 +469,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		return false;
 	}
 
-	public function canPassThrough(){
+	public function canPassThrough() : bool{
 		return false;
 	}
 
@@ -525,7 +525,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return array
 	 */
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if(!isset(self::$list[$this->getId()])){ //Unknown blocks
 			return [];
 		}else{
@@ -641,7 +641,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @return AxisAlignedBB
 	 */
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : AxisAlignedBB{
 		return new AxisAlignedBB(
 			$this->x,
 			$this->y,

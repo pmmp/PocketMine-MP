@@ -47,7 +47,7 @@ class TNT extends Solid{
 		return 0;
 	}
 
-	public function canBeActivated(){
+	public function canBeActivated() : bool{
 		return true;
 	}
 

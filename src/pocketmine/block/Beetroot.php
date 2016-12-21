@@ -35,7 +35,7 @@ class Beetroot extends Crops{
 		return "Beetroot Block";
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		$drops = [];
 		if($this->meta >= 0x07){
 			$drops[] = [Item::BEETROOT, 0, 1];

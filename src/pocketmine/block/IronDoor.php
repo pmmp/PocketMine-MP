@@ -36,7 +36,7 @@ class IronDoor extends Door{
 		return "Iron Door Block";
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
@@ -44,7 +44,7 @@ class IronDoor extends Door{
 		return 5;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
 				[Item::IRON_DOOR, 0, 1],

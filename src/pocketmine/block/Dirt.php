@@ -33,7 +33,7 @@ class Dirt extends Solid{
 
 	}
 
-	public function canBeActivated(){
+	public function canBeActivated() : bool{
 		return true;
 	}
 
@@ -41,7 +41,7 @@ class Dirt extends Solid{
 		return 0.5;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_SHOVEL;
 	}
 

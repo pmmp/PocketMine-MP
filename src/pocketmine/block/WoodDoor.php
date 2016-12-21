@@ -36,7 +36,7 @@ class WoodDoor extends Door{
 		return "Wood Door Block";
 	}
 
-	public function canBeActivated(){
+	public function canBeActivated() : bool{
 		return true;
 	}
 
@@ -44,11 +44,11 @@ class WoodDoor extends Door{
 		return 3;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_AXE;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		return [
 			[Item::WOODEN_DOOR, 0, 1],
 		];

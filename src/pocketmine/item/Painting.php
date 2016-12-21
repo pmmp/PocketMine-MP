@@ -30,7 +30,7 @@ class Painting extends Item{
 		parent::__construct(self::PAINTING, 0, $count, "Painting");
 	}
 
-	public function canBeActivated(){
+	public function canBeActivated() : bool{
 		return true;
 	}
 

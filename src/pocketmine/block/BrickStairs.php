@@ -39,7 +39,7 @@ class BrickStairs extends Stair{
 		return 30;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 

@@ -40,7 +40,7 @@ class Glowstone extends Transparent{
 		return 0.3;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
@@ -48,7 +48,7 @@ class Glowstone extends Transparent{
 		return 15;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		return [
 			[Item::GLOWSTONE_DUST, 0, mt_rand(2, 4)],
 		];

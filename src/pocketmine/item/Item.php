@@ -74,7 +74,7 @@ class Item implements ItemIds, \JsonSerializable{
 	protected $durability = 0;
 	protected $name;
 
-	public function canBeActivated(){
+	public function canBeActivated() : bool{
 		return false;
 	}
 

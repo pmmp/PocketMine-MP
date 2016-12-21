@@ -36,7 +36,7 @@ class DoubleWoodSlab extends Solid{
 		return 2;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_AXE;
 	}
 
@@ -54,7 +54,7 @@ class DoubleWoodSlab extends Solid{
 		return "DoubleTag " . $names[$this->meta & 0x07] . " Wooden Slab";
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		return [
 			[Item::WOOD_SLAB, $this->meta & 0x07, 2],
 		];

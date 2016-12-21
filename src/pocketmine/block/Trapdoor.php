@@ -50,11 +50,11 @@ class Trapdoor extends Transparent{
 		return 3;
 	}
 
-	public function canBeActivated(){
+	public function canBeActivated() : bool{
 		return true;
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : AxisAlignedBB{
 
 		$damage = $this->getDamage();
 
@@ -142,7 +142,7 @@ class Trapdoor extends Transparent{
 		return true;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		return [
 			[$this->id, 0, 1],
 		];
@@ -155,7 +155,7 @@ class Trapdoor extends Transparent{
 		return true;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_AXE;
 	}
 }

@@ -31,7 +31,7 @@ class StoneBrickStairs extends Stair{
 		$this->meta = $meta;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 

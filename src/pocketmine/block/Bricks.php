@@ -40,7 +40,7 @@ class Bricks extends Solid{
 		return 30;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
@@ -48,7 +48,7 @@ class Bricks extends Solid{
 		return "Bricks";
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
 				[Item::BRICKS_BLOCK, 0, 1],

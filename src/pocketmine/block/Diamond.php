@@ -40,11 +40,11 @@ class Diamond extends Solid{
 		return "Diamond Block";
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= Tool::TIER_IRON){
 			return [
 				[Item::DIAMOND_BLOCK, 0, 1],

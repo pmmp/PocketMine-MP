@@ -140,7 +140,7 @@ class Leaves2 extends Leaves{
 		$this->getLevel()->setBlock($this, $this, true);
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		$drops = [];
 		if($item->isShears()){
 			$drops[] = [Item::LEAVES2, $this->meta & 0x03, 1];

@@ -50,7 +50,7 @@ class MobHead extends Flowable{
 		return "Mob Head";
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : AxisAlignedBB{
 		return new AxisAlignedBB(
 			$this->x + 0.25,
 			$this->y,
@@ -108,7 +108,7 @@ class MobHead extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($this->meta === 3){
 			return [];
 		}

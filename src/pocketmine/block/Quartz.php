@@ -51,11 +51,11 @@ class Quartz extends Solid{
 		return $names[$this->meta & 0x03];
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
 				[Item::QUARTZ_BLOCK, $this->meta & 0x03, 1],

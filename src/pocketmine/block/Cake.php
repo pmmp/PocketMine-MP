@@ -37,7 +37,7 @@ class Cake extends Transparent implements FoodSource{
 		$this->meta = $meta;
 	}
 
-	public function canBeActivated(){
+	public function canBeActivated() : bool{
 		return true;
 	}
 
@@ -49,7 +49,7 @@ class Cake extends Transparent implements FoodSource{
 		return "Cake Block";
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : AxisAlignedBB{
 
 		$f = (1 + $this->getDamage() * 2) / 16;
 
@@ -86,7 +86,7 @@ class Cake extends Transparent implements FoodSource{
 		return false;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		return [];
 	}
 

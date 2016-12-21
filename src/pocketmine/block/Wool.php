@@ -35,7 +35,7 @@ class Wool extends Solid{
 		return 0.8;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_SHEARS;
 	}
 

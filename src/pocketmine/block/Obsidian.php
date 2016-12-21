@@ -36,7 +36,7 @@ class Obsidian extends Solid{
 		return "Obsidian";
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
@@ -44,7 +44,7 @@ class Obsidian extends Solid{
 		return 50;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= Tool::TIER_DIAMOND){
 			return [
 				[Item::OBSIDIAN, 0, 1],

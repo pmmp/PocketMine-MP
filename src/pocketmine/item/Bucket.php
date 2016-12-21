@@ -37,7 +37,7 @@ class Bucket extends Item{
 		return 1;
 	}
 
-	public function canBeActivated(){
+	public function canBeActivated() : bool{
 		return true;
 	}
 

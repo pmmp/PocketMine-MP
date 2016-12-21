@@ -33,7 +33,7 @@ class TallGrass extends Flowable{
 		$this->meta = $meta;
 	}
 
-	public function canBeReplaced(){
+	public function canBeReplaced() : bool{
 		return true;
 	}
 
@@ -71,7 +71,7 @@ class TallGrass extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if(mt_rand(0, 15) === 0){
 			return [
 				[Item::WHEAT_SEEDS, 0, 1]

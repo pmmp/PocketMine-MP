@@ -32,7 +32,7 @@ class DoublePlant extends Flowable{
 		$this->meta = $meta;
 	}
 
-	public function canBeReplaced(){
+	public function canBeReplaced() : bool{
 		return true;
 	}
 
@@ -61,7 +61,7 @@ class DoublePlant extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		//TODO
 
 		return [];
