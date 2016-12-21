@@ -33,7 +33,7 @@ class Bucket extends Item{
 		parent::__construct(self::BUCKET, $meta, $count, "Bucket");
 	}
 
-	public function getMaxStackSize(){
+	public function getMaxStackSize() : int{
 		return 1;
 	}
 

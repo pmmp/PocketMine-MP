@@ -684,7 +684,7 @@ class Item implements ItemIds, \JsonSerializable{
 		return $this->meta === -1;
 	}
 
-	public function getMaxStackSize(){
+	public function getMaxStackSize() : int{
 		return 64;
 	}
 
@@ -711,7 +711,7 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @return bool
 	 */
-	public function isTool(){
+	public function isTool() : bool{
 		return false;
 	}
 

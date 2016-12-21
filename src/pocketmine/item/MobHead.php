@@ -29,7 +29,7 @@ class MobHead extends Item{
 		parent::__construct(self::MOB_HEAD, $meta, $count, "Mob Head");
 	}
 
-	public function getMaxStackSize(){
+	public function getMaxStackSize() : int{
 		return 1;
 	}
 }

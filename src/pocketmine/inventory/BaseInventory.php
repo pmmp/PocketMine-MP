@@ -90,7 +90,7 @@ abstract class BaseInventory implements Inventory{
 		$this->size = (int) $size;
 	}
 
-	public function getMaxStackSize(){
+	public function getMaxStackSize() : int{
 		return $this->maxStackSize;
 	}
 

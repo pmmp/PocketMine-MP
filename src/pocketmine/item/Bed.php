@@ -29,7 +29,7 @@ class Bed extends Item{
 		parent::__construct(self::BED, 0, $count, "Bed");
 	}
 
-	public function getMaxStackSize(){
+	public function getMaxStackSize() : int{
 		return 1;
 	}
 }

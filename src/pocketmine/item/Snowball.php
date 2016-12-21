@@ -27,7 +27,7 @@ class Snowball extends Item{
 		parent::__construct(self::SNOWBALL, 0, $count, "Snowball");
 	}
 
-	public function getMaxStackSize(){
+	public function getMaxStackSize() : int{
 		return 16;
 	}
 
