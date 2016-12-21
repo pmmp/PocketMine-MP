@@ -864,7 +864,7 @@ class Server{
 	/**
 	 * @return Level
 	 */
-	public function getDefaultLevel() : Level{
+	public function getDefaultLevel(){
 		return $this->levelDefault;
 	}
 
