@@ -53,9 +53,9 @@ class ItemFrame extends Flowable{
 		if(!(($tile = $this->level->getTile($this)) instanceof TileItemFrame)){
 			$nbt = new CompoundTag("", [
 				new StringTag("id", Tile::ITEM_FRAME),
-				new IntTag("x", $block->x),
-				new IntTag("y", $block->y),
-				new IntTag("z", $block->z),
+				new IntTag("x", $this->x),
+				new IntTag("y", $this->y),
+				new IntTag("z", $this->z),
 				new FloatTag("ItemDropChance", 1.0),
 				new ByteTag("ItemRotation", 0)
 			]);
