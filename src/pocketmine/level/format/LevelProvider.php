@@ -19,6 +19,8 @@
  *
 */
 
+declare(strict_types = 1);
+
 namespace pocketmine\level\format;
 
 use pocketmine\level\format\Chunk;
@@ -27,26 +29,18 @@ use pocketmine\math\Vector3;
 
 interface LevelProvider{
 
-	const ORDER_YZX = 0;
-	const ORDER_ZXY = 1;
-
 	/**
 	 * @param Level  $level
 	 * @param string $path
 	 */
-	public function __construct(Level $level, $path);
+	public function __construct(Level $level, string $path);
 
 	/**
 	 * Returns the full provider name, like "anvil" or "mcregion", will be used to find the correct format.
 	 *
 	 * @return string
 	 */
-	public static function getProviderName();
-
-	/**
-	 * @return int
-	 */
-	public static function getProviderOrder();
+	public static function getProviderName() : string;
 
 	/**
 	 * Gets the build height limit of this world
@@ -56,17 +50,9 @@ interface LevelProvider{
 	public function getWorldHeight() : int;
 
 	/**
-	 * Requests a MC: PE network chunk to be sent
-	 *
-	 * @param int $x
-	 * @param int $z
-	 *
-	 * @return \pocketmine\scheduler\AsyncTask|null
+	 * @return string
 	 */
-	public function requestChunkTask($x, $z);
-
-	/** @return string */
-	public function getPath();
+	public function getPath() : string;
 
 	/**
 	 * Tells if the path is a valid level.
@@ -74,105 +60,113 @@ interface LevelProvider{
 	 *
 	 * @param string $path
 	 *
-	 * @return true
+	 * @return bool
 	 */
-	public static function isValid($path);
+	public static function isValid(string $path) : bool;
 
 	/**
 	 * Generate the needed files in the path given
 	 *
-	 * @param string  $path
-	 * @param string  $name
-	 * @param int     $seed
-	 * @param string  $generator
-	 * @param array[] $options
+	 * @param string     $path
+	 * @param string     $name
+	 * @param int|string $seed
+	 * @param string     $generator
+	 * @param array[]    $options
 	 */
-	public static function generate($path, $name, $seed, $generator, array $options = []);
+	public static function generate(string $path, string $name, $seed, string $generator, array $options = []);
 
 	/**
 	 * Returns the generator name
 	 *
 	 * @return string
 	 */
-	public function getGenerator();
+	public function getGenerator() : string;
 
 	/**
 	 * @return array
 	 */
-	public function getGeneratorOptions();
+	public function getGeneratorOptions() : array;
 
 	/**
 	 * Gets the Chunk object
 	 * This method must be implemented by all the level formats.
 	 *
-	 * @param int  $X      absolute Chunk X value
-	 * @param int  $Z      absolute Chunk Z value
-	 * @param bool $create Whether to generate the chunk if it does not exist
+	 * @param int  $chunkX
+	 * @param int  $chunkZ
+	 * @param bool $create
 	 *
-	 * @return Chunk
+	 * @return Chunk|null
 	 */
-	public function getChunk($X, $Z, $create = false);
+	public function getChunk(int $chunkX, int $chunkZ, bool $create = false);
+
+	/**
+	 * @param int   $chunkX
+	 * @param int   $chunkZ
+	 * @param Chunk $chunk
+	 */
+	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk);
+
+	/**
+	 * @param int $chunkX
+	 * @param int $chunkZ
+	 */
+	public function saveChunk(int $chunkX, int $chunkZ) : bool;
 
 	public function saveChunks();
 
 	/**
-	 * @param int $X
-	 * @param int $Z
-	 */
-	public function saveChunk($X, $Z);
-
-	public function unloadChunks();
-
-	/**
-	 * @param int  $X
-	 * @param int  $Z
+	 * @param int  $chunkX
+	 * @param int  $chunkZ
 	 * @param bool $create
 	 *
 	 * @return bool
 	 */
-	public function loadChunk($X, $Z, $create = false);
+	public function loadChunk(int $chunkX, int $chunkZ, bool $create = false) : bool;
 
 	/**
-	 * @param int  $X
-	 * @param int  $Z
+	 * @param int  $chunkX
+	 * @param int  $chunkZ
 	 * @param bool $safe
 	 *
 	 * @return bool
 	 */
-	public function unloadChunk($X, $Z, $safe = true);
+	public function unloadChunk(int $chunkX, int $chunkZ, bool $safe = true) : bool;
+
+	public function unloadChunks();
 
 	/**
-	 * @param int $X
-	 * @param int $Z
+	 * @param int $chunkX
+	 * @param int $chunkZ
 	 *
 	 * @return bool
 	 */
-	public function isChunkGenerated($X, $Z);
+	public function isChunkLoaded(int $chunkX, int $chunkZ) : bool;
 
 	/**
-	 * @param int $X
-	 * @param int $Z
+	 * @param int $chunkX
+	 * @param int $chunkZ
 	 *
 	 * @return bool
 	 */
-	public function isChunkPopulated($X, $Z);
+	public function isChunkGenerated(int $chunkX, int $chunkZ) : bool;
 
 	/**
-	 * @param int $X
-	 * @param int $Z
+	 * @param int $chunkX
+	 * @param int $chunkZ
 	 *
 	 * @return bool
 	 */
-	public function isChunkLoaded($X, $Z);
+	public function isChunkPopulated(int $chunkX, int $chunkZ) : bool;
 
 	/**
-	 * @param int       $chunkX
-	 * @param int       $chunkZ
-	 * @param Chunk $chunk
+	 * Requests a MC: PE network chunk to be sent
 	 *
-	 * @return mixed
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @return \pocketmine\scheduler\AsyncTask|null
 	 */
-	public function setChunk($chunkX, $chunkZ, Chunk $chunk);
+	public function requestChunkTask(int $x, int $z);
 
 	/**
 	 * @return string
@@ -187,7 +181,7 @@ interface LevelProvider{
 	/**
 	 * @param int $value
 	 */
-	public function setTime($value);
+	public function setTime(int $value);
 
 	/**
 	 * @return int|string int, or the string numeric representation of a long in 32-bit systems
@@ -195,14 +189,14 @@ interface LevelProvider{
 	public function getSeed();
 
 	/**
-	 * @param int $value
+	 * @param int|string $value
 	 */
 	public function setSeed($value);
 
 	/**
 	 * @return Vector3
 	 */
-	public function getSpawn();
+	public function getSpawn() : Vector3;
 
 	/**
 	 * @param Vector3 $pos
@@ -212,7 +206,7 @@ interface LevelProvider{
 	/**
 	 * @return Chunk[]
 	 */
-	public function getLoadedChunks();
+	public function getLoadedChunks() : array;
 
 	public function doGarbageCollection();
 

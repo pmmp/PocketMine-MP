@@ -19,6 +19,8 @@
  *
 */
 
+declare(strict_types = 1);
+
 namespace pocketmine\level\format\anvil;
 
 use pocketmine\level\format\Chunk;
@@ -156,18 +158,14 @@ class Anvil extends McRegion{
 	/** @var RegionLoader[] */
 	protected $regions = [];
 
-	/** @var AnvilChunk[] */
+	/** @var Chunk[] */
 	protected $chunks = [];
 
-	public static function getProviderName(){
+	public static function getProviderName() : string{
 		return "anvil";
 	}
 
-	public static function getProviderOrder(){
-		return self::ORDER_YZX;
-	}
-
-	public static function isValid($path){
+	public static function isValid(string $path) : bool{
 		$isValid = (file_exists($path . "/level.dat") and is_dir($path . "/region/"));
 
 		if($isValid){
@@ -189,16 +187,16 @@ class Anvil extends McRegion{
 	}
 
 	/**
-	 * @param $x
-	 * @param $z
+	 * @param int $x
+	 * @param int $z
 	 *
 	 * @return RegionLoader
 	 */
-	protected function getRegion($x, $z){
+	protected function getRegion(int $x, int $z){
 		return $this->regions[Level::chunkHash($x, $z)] ?? null;
 	}
 
-	protected function loadRegion($x, $z){
+	protected function loadRegion(int $x, int $z){
 		if(!isset($this->regions[$index = Level::chunkHash($x, $z)])){
 			$this->regions[$index] = new RegionLoader($this, $x, $z);
 		}
