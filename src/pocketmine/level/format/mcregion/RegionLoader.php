@@ -19,6 +19,8 @@
  *
 */
 
+declare(strict_types = 1);
+
 namespace pocketmine\level\format\mcregion;
 
 use pocketmine\level\format\generic\GenericChunk;
@@ -45,11 +47,11 @@ class RegionLoader{
 
 	public $lastUsed;
 
-	public function __construct(LevelProvider $level, $regionX, $regionZ){
+	public function __construct(LevelProvider $level, int $regionX, int $regionZ, string $fileExtension = "mcr"){
 		$this->x = $regionX;
 		$this->z = $regionZ;
 		$this->levelProvider = $level;
-		$this->filePath = $this->levelProvider->getPath() . "region/r.$regionX.$regionZ.mcr";
+		$this->filePath = $this->levelProvider->getPath() . "region/r.$regionX.$regionZ.$fileExtension";
 		$exists = file_exists($this->filePath);
 		if(!$exists){
 			touch($this->filePath);
@@ -73,11 +75,11 @@ class RegionLoader{
 		}
 	}
 
-	protected function isChunkGenerated($index){
+	protected function isChunkGenerated(int $index) : bool{
 		return !($this->locationTable[$index][0] === 0 or $this->locationTable[$index][1] === 0);
 	}
 
-	public function readChunk($x, $z){
+	public function readChunk(int $x, int $z){
 		$index = self::getChunkOffset($x, $z);
 		if($index < 0 or $index >= 4096){
 			return null;
@@ -111,7 +113,7 @@ class RegionLoader{
 			return null;
 		}
 
-		$chunk = $this->unserializeChunk(fread($this->filePointer, $length - 1));
+		$chunk = $this->levelProvider->nbtDeserialize(fread($this->filePointer, $length - 1));
 		if($chunk instanceof GenericChunk){
 			return $chunk;
 		}else{
@@ -120,15 +122,11 @@ class RegionLoader{
 		}
 	}
 
-	protected function unserializeChunk($data){
-		return McRegion::nbtDeserialize($data, $this->levelProvider);
-	}
-
-	public function chunkExists($x, $z){
+	public function chunkExists(int $x, int $z) : bool{
 		return $this->isChunkGenerated(self::getChunkOffset($x, $z));
 	}
 
-	protected function saveChunk($x, $z, $chunkData){
+	protected function saveChunk(int $x, int $z, string $chunkData){
 		$length = strlen($chunkData) + 1;
 		if($length + 4 > self::MAX_SECTOR_LENGTH){
 			throw new ChunkException("Chunk is too big! " . ($length + 4) . " > " . self::MAX_SECTOR_LENGTH);
@@ -155,7 +153,7 @@ class RegionLoader{
 		}
 	}
 
-	public function removeChunk($x, $z){
+	public function removeChunk(int $x, int $z){
 		$index = self::getChunkOffset($x, $z);
 		$this->locationTable[$index][0] = 0;
 		$this->locationTable[$index][1] = 0;
@@ -163,13 +161,13 @@ class RegionLoader{
 
 	public function writeChunk(GenericChunk $chunk){
 		$this->lastUsed = time();
-		$chunkData = McRegion::nbtSerialize($chunk);
+		$chunkData = $this->levelProvider->nbtSerialize($chunk);
 		if($chunkData !== false){
 			$this->saveChunk($chunk->getX() - ($this->getX() * 32), $chunk->getZ() - ($this->getZ() * 32), $chunkData);
 		}
 	}
 
-	protected static function getChunkOffset($x, $z){
+	protected static function getChunkOffset(int $x, int $z) : int{
 		return $x + ($z << 5);
 	}
 
@@ -179,7 +177,7 @@ class RegionLoader{
 		$this->levelProvider = null;
 	}
 
-	public function doSlowCleanUp(){
+	public function doSlowCleanUp() : int{
 		for($i = 0; $i < 1024; ++$i){
 			if($this->locationTable[$i][0] === 0 or $this->locationTable[$i][1] === 0){
 				continue;
@@ -215,7 +213,7 @@ class RegionLoader{
 		return $n;
 	}
 
-	private function cleanGarbage(){
+	private function cleanGarbage() : int{
 		$sectors = [];
 		foreach($this->locationTable as $index => $data){ //Calculate file usage
 			if($data[0] === 0 or $data[1] === 0){
@@ -295,11 +293,11 @@ class RegionLoader{
 		$this->locationTable = array_fill(0, 1024, [0, 0, 0]);
 	}
 
-	public function getX(){
+	public function getX() : int{
 		return $this->x;
 	}
 
-	public function getZ(){
+	public function getZ() : int{
 		return $this->z;
 	}
 
