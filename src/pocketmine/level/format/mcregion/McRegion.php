@@ -23,6 +23,7 @@ declare(strict_types = 1);
 
 namespace pocketmine\level\format\mcregion;
 
+use pocketmine\level\format\anvil\Anvil;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\level\format\generic\GenericChunk;
@@ -37,6 +38,14 @@ use pocketmine\utils\ChunkException;
 use pocketmine\utils\MainLogger;
 
 class McRegion extends BaseLevelProvider{
+
+	const REGION_FILE_EXTENSION = "mcr";
+
+	/** @var RegionLoader[] */
+	protected $regions = [];
+
+	/** @var GenericChunk[] */
+	protected $chunks = [];
 
 	/**
 	 * @param GenericChunk $chunk
@@ -188,12 +197,6 @@ class McRegion extends BaseLevelProvider{
 		}
 	}
 
-	/** @var RegionLoader[] */
-	protected $regions = [];
-
-	/** @var Chunk[] */
-	protected $chunks = [];
-
 	public static function getProviderName() : string{
 		return "mcregion";
 	}
@@ -209,7 +212,7 @@ class McRegion extends BaseLevelProvider{
 		if($isValid){
 			$files = glob($path . "/region/*.mc*");
 			foreach($files as $f){
-				if(strpos($f, ".mca") !== false){ //Anvil
+				if(strpos($f, "." . Anvil::REGION_FILE_EXTENSION) !== false){
 					$isValid = false;
 					break;
 				}
@@ -420,7 +423,7 @@ class McRegion extends BaseLevelProvider{
 	 */
 	protected function loadRegion(int $x, int $z){
 		if(!isset($this->regions[$index = Level::chunkHash($x, $z)])){
-			$this->regions[$index] = new RegionLoader($this, $x, $z);
+			$this->regions[$index] = new RegionLoader($this, $x, $z, static::REGION_FILE_EXTENSION);
 		}
 	}
 

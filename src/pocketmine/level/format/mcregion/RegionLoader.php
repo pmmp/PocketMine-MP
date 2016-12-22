@@ -47,7 +47,7 @@ class RegionLoader{
 
 	public $lastUsed;
 
-	public function __construct(LevelProvider $level, int $regionX, int $regionZ, string $fileExtension = "mcr"){
+	public function __construct(LevelProvider $level, int $regionX, int $regionZ, string $fileExtension = McRegion::REGION_FILE_EXTENSION){
 		$this->x = $regionX;
 		$this->z = $regionZ;
 		$this->levelProvider = $level;
