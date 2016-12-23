@@ -21,14 +21,12 @@
 
 declare(strict_types = 1);
 
-namespace pocketmine\level\format\anvil;
+namespace pocketmine\level\format\region;
 
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\level\format\generic\GenericChunk;
 use pocketmine\level\format\generic\SubChunk;
-use pocketmine\level\format\mcregion\McRegion;
-use pocketmine\level\format\mcregion\RegionLoader;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\{ByteArrayTag, ByteTag, CompoundTag, IntArrayTag, IntTag, ListTag, LongTag};

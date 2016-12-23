@@ -21,7 +21,7 @@
 
 declare(strict_types = 1);
 
-namespace pocketmine\level\format\mcregion;
+namespace pocketmine\level\format\region;
 
 use pocketmine\level\format\generic\GenericChunk;
 use pocketmine\level\format\LevelProvider;

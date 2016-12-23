@@ -21,9 +21,8 @@
 
 declare(strict_types = 1);
 
-namespace pocketmine\level\format\mcregion;
+namespace pocketmine\level\format\region;
 
-use pocketmine\level\format\anvil\Anvil;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\level\format\generic\GenericChunk;
