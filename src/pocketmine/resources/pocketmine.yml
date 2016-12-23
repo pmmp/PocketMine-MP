@@ -96,7 +96,7 @@ player:
 
 level-settings:
  #The default format that levels will use when created
- default-format: mcregion
+ default-format: pmcustomanvil
  #If true, converts from a format that is not the default to the default format on load
  #NOTE: This is currently not implemented
  convert-format: false
