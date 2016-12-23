@@ -211,7 +211,7 @@ class McRegion extends BaseLevelProvider{
 		if($isValid){
 			$files = glob($path . "/region/*.mc*");
 			foreach($files as $f){
-				if(strpos($f, "." . Anvil::REGION_FILE_EXTENSION) !== false){
+				if(strpos($f, "." . static::REGION_FILE_EXTENSION) === false){
 					$isValid = false;
 					break;
 				}

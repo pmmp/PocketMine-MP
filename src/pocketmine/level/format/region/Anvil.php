@@ -160,22 +160,6 @@ class Anvil extends McRegion{
 		return "anvil";
 	}
 
-	public static function isValid(string $path) : bool{
-		$isValid = (file_exists($path . "/level.dat") and is_dir($path . "/region/"));
-
-		if($isValid){
-			$files = glob($path . "/region/*.mc*");
-			foreach($files as $f){
-				if(strpos($f, "." . McRegion::REGION_FILE_EXTENSION) !== false){
-					$isValid = false;
-					break;
-				}
-			}
-		}
-
-		return $isValid;
-	}
-
 	public function getWorldHeight() : int{
 		//TODO: add world height options
 		return 256;
