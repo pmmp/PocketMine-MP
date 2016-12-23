@@ -63,6 +63,7 @@ use pocketmine\level\format\leveldb\LevelDB;
 use pocketmine\level\format\LevelProviderManager;
 use pocketmine\level\format\region\Anvil;
 use pocketmine\level\format\region\McRegion;
+use pocketmine\level\format\region\PMCustomAnvil;
 use pocketmine\level\generator\biome\Biome;
 use pocketmine\level\generator\Flat;
 use pocketmine\level\generator\Generator;
@@ -1524,11 +1525,12 @@ class Server{
 
 			$this->enablePlugins(PluginLoadOrder::STARTUP);
 
-			LevelProviderManager::addProvider($this, Anvil::class);
-			LevelProviderManager::addProvider($this, McRegion::class);
+			LevelProviderManager::addProvider(Anvil::class);
+			LevelProviderManager::addProvider(McRegion::class);
+			LevelProviderManager::addProvider(PMCustomAnvil::class);
 			if(extension_loaded("leveldb")){
 				$this->logger->debug($this->getLanguage()->translateString("pocketmine.debug.enable"));
-				LevelProviderManager::addProvider($this, LevelDB::class);
+				LevelProviderManager::addProvider(LevelDB::class);
 			}
 
 
