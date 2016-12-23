@@ -36,10 +36,10 @@ use pocketmine\utils\ChunkException;
 use pocketmine\utils\MainLogger;
 
 /**
- * This format is exactly the same as the PC Anvil format, with the only difference being that the stored data order is XZY instead of YZX for more performance loading and
- * saving worlds.
+ * This format is exactly the same as the PC Anvil format, with the only difference being that the stored data order
+ * is XZY instead of YZX for more performance loading and saving worlds.
  */
-class PMCustomAnvil extends Anvil{
+class PMAnvil extends Anvil{
 
 	const REGION_FILE_EXTENSION = "mcapm";
 
@@ -152,6 +152,6 @@ class PMCustomAnvil extends Anvil{
 	}
 
 	public static function getProviderName() : string{
-		return "pmcustomanvil";
+		return "pmanvil";
 	}
 }
