@@ -211,7 +211,7 @@ class McRegion extends BaseLevelProvider{
 		if($isValid){
 			$files = glob($path . "/region/*.mc*");
 			foreach($files as $f){
-				if(strpos($f, "." . static::REGION_FILE_EXTENSION) === false){
+				if(substr($f, strrpos($f, ".") + 1) !== static::REGION_FILE_EXTENSION){
 					$isValid = false;
 					break;
 				}
