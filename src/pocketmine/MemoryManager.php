@@ -323,7 +323,7 @@ class MemoryManager{
 				$this->continueDump($value, $data[$key], $objects, $refCounts, $recursion + 1, $maxNesting, $maxStringSize);
 			}
 		}elseif(is_string($from)){
-			$data = sprintf("(string) len(%d) " . substr(Utils::printable($from), 0, $maxStringSize), strlen($from));
+			$data = "(string) len(". strlen($from) .") " . substr(Utils::printable($from), 0, $maxStringSize);
 		}elseif(is_resource($from)){
 			$data = "(resource) " . print_r($from, true);
 		}else{
