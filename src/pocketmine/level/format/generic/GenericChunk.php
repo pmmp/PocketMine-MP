@@ -272,6 +272,7 @@ class GenericChunk implements Chunk{
 	}
 
 	public function populateSkyLight(){
+		//TODO: rewrite this, use block light filters and diffusion, actual proper sky light population
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
 				$heightMap = $this->getHeightMap($x, $z);
@@ -283,14 +284,14 @@ class GenericChunk implements Chunk{
 				}
 
 				for(; $y > 0; --$y){
-					if(Block::$solid[$this->getBlockId($x, $y, $z)]){
+					if($this->getBlockId($x, $y, $z) !== Block::AIR){
 						break;
 					}
 
 					$this->setBlockSkyLight($x, $y, $z, 15);
 				}
 
-				$this->setHeightMap($x, $z, $this->getHighestBlockAt($x, $z, false));
+				$this->setHeightMap($x, $z, $y);
 			}
 		}
 	}
