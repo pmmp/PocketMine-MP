@@ -75,7 +75,7 @@ abstract class Spawnable extends Tile{
 	/**
 	 * @return CompoundTag
 	 */
-	public abstract function getSpawnCompound();
+	public abstract function getSpawnCompound() : CompoundTag;
 
 	/**
 	 * Called when a player updates a block entity's NBT data

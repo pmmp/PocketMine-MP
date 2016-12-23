@@ -28,7 +28,7 @@ interface Nameable{
 	/**
 	 * @return string
 	 */
-	public function getName();
+	public function getName() : string;
 
 	/**
 	 * @param void $str
@@ -38,5 +38,5 @@ interface Nameable{
 	/**
 	 * @return bool
 	 */
-	public function hasName();
+	public function hasName() : bool;
 }

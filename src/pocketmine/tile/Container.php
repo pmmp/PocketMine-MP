@@ -30,7 +30,7 @@ interface Container{
 	 *
 	 * @return Item
 	 */
-	public function getItem($index);
+	public function getItem($index) : Item;
 
 	/**
 	 * @param int  $index
@@ -41,5 +41,5 @@ interface Container{
 	/**
 	 * @return int
 	 */
-	public function getSize();
+	public function getSize() : Int;
 }

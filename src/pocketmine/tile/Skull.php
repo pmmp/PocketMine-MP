@@ -57,7 +57,7 @@ class Skull extends Spawnable{
 		return $this->namedtag["SkullType"];
 	}
 
-	public function getSpawnCompound(){
+	public function getSpawnCompound() : CompoundTag{
 		return new CompoundTag("", [
 			new StringTag("id", Tile::SKULL),
 			$this->namedtag->SkullType,

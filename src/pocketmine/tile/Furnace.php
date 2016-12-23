@@ -70,11 +70,11 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		}
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return isset($this->namedtag->CustomName) ? $this->namedtag->CustomName->getValue() : "Furnace";
 	}
 
-	public function hasName(){
+	public function hasName() : bool{
 		return isset($this->namedtag->CustomName);
 	}
 
@@ -107,7 +107,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	/**
 	 * @return int
 	 */
-	public function getSize(){
+	public function getSize() : int{
 		return 3;
 	}
 
@@ -116,7 +116,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	 *
 	 * @return int
 	 */
-	protected function getSlotIndex($index){
+	protected function getSlotIndex($index) : int{
 		foreach($this->namedtag->Items as $i => $slot){
 			if($slot["Slot"] === $index){
 				return $i;
@@ -133,7 +133,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	 *
 	 * @return Item
 	 */
-	public function getItem($index){
+	public function getItem($index) : Item{
 		$i = $this->getSlotIndex($index);
 		if($i < 0){
 			return Item::get(Item::AIR, 0, 0);
@@ -150,7 +150,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	 *
 	 * @return bool
 	 */
-	public function setItem($index, Item $item){
+	public function setItem($index, Item $item) : bool{
 		$i = $this->getSlotIndex($index);
 
 		$d = $item->nbtSerialize($index);
@@ -176,7 +176,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	/**
 	 * @return FurnaceInventory
 	 */
-	public function getInventory(){
+	public function getInventory() : FurnaceInventory{
 		return $this->inventory;
 	}
 
@@ -286,7 +286,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		return $ret;
 	}
 
-	public function getSpawnCompound(){
+	public function getSpawnCompound() : CompoundTag{
 		$nbt = new CompoundTag("", [
 			new StringTag("id", Tile::FURNACE),
 			new IntTag("x", (int) $this->x),
