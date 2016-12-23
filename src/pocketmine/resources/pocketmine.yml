@@ -97,9 +97,6 @@ player:
 level-settings:
  #The default format that levels will use when created
  default-format: pmanvil
- #If true, converts from a format that is not the default to the default format on load
- #NOTE: This is currently not implemented
- convert-format: false
  #Automatically change levels tick rate to maintain 20 ticks per second
  auto-tick-rate: true
  auto-tick-rate-limit: 20
