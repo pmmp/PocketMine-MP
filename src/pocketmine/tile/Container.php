@@ -19,6 +19,8 @@
  *
 */
 
+declare(strict_types = 1);
+
 namespace pocketmine\tile;
 
 use pocketmine\item\Item;
@@ -41,5 +43,5 @@ interface Container{
 	/**
 	 * @return int
 	 */
-	public function getSize() : Int;
+	public function getSize() : int;
 }
