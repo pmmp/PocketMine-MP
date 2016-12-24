@@ -44,6 +44,10 @@ class Cobweb extends Flowable{
 	public function getHardness(){
 		return 4;
 	}
+	
+	public function isDiffusingSkyLight(): bool{
+		return true;
+	}
 
 	public function getToolType(){
 		return Tool::TYPE_SWORD;

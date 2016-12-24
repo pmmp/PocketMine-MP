@@ -1281,7 +1281,7 @@ class Level implements ChunkManager, Metadatable{
 	*/
 	public function updateBlockSkyLight(int $x, int $y, int $z){
 		$this->server->broadcastMessage("-------Calc::'".$x."/".$y."/".$z."/"."'-------"); #DBG
-		if(Block::getSkyLightResistance($this->getBlockIdAt($x, $y, $z)) >= 14){
+		if(Block::getSkyLightVerticalFilter($this->getBlockIdAt($x, $y, $z)) >= 14){
 			$this->setBlockSkyLightAt($x, $y, $z, 0);
 			$this->server->broadcastMessage("-------EndCalc::'".$x."/".$y."/".$z."/"."'::TOOHIGHBASERES-------"); #DBG
 			return;
@@ -1316,16 +1316,12 @@ class Level implements ChunkManager, Metadatable{
 			return 15;
 		}
 		
-		$diffused = false;
 		$directSkyLight = 15;
 		for($i = $y; $i <= $highestBlock; $i++){
-			$lightResistance = Block::getSkyLightResistance($chunk->getBlockId($x & 0x0f, $i & 0x7f, $z & 0x0f));
+			$lightResistance = Block::getSkyLightVerticalFilter($chunk->getBlockId($x & 0x0f, $i & 0x7f, $z & 0x0f));
 			if($lightResistance == -1){ //diffusion
-				$diffused = true;
-				$lightResistance = 0;
-			}
-			if($diffused){
-				$lightResiatance++;
+				$lightResistance = $i - $y;
+				$y = $i; //If another diffusion occurs, it will not do double diffusion
 			}
 			$directSkyLight -= $lightResistance;
 			if($directSkyLight <= 0){ //Skylight is 0 from above (No need to continue calculating)
@@ -1356,7 +1352,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 		
 		$lightLvlsFromDir = [];
-		$currResistance = Block::getHorizontalSkyLightResistance($this->getBlockIdAt($calcBase[0], $calcBase[1], $calcBase[2]));
+		$currResistance = Block::getHorizontalLightFilter($this->getBlockIdAt($calcBase[0], $calcBase[1], $calcBase[2]));
 		$calcWayResistance = $currWayResistance;
 		$this->server->broadcastMessage("LightResistance for ".implode($calcBase, "/")." is '".$currResistance."'"); #DBG
 		var_dump($lightWays); #DBG
@@ -1409,7 +1405,7 @@ class Level implements ChunkManager, Metadatable{
 		$vec3 = new Vector3($x, $y, $z);
 		for($i = Vector3::SIDE_NORTH; $i <= Vector3::SIDE_EAST; $i++){
 			$newVec3 = $vec3->getSide($i);
-			if($blockResistance = Block::getSkyLightResistance($this->getBlockIdAt($newVec3->x, $newVec3->y, $newVec3->z)) < 15){
+			if($blockResistance = Block::getSkyLightVerticalFilter($this->getBlockIdAt($newVec3->x, $newVec3->y, $newVec3->z)) < 15){
 				$lightWays[$i] = [$newVec3->x, $newVec3->y, $newVec3->z, $blockResistance]; //TODO::Use or scrap blockResistance
 			}
 		}

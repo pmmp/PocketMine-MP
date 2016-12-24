@@ -46,6 +46,10 @@ class Leaves extends Transparent{
 		return 0.2;
 	}
 
+	public function isDiffusingSkyLight(): bool{
+		return true;
+	}
+
 	public function getToolType(){
 		return Tool::TYPE_SHEARS;
 	}

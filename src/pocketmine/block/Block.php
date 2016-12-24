@@ -53,6 +53,8 @@ class Block extends Position implements BlockIds, Metadatable{
 	/** @var \SplFixedArray */
 	public static $hardness = null;
 	/** @var \SplFixedArray */
+	public static $diffusesSkyLight = null;
+	/** @var \SplFixedArray */
 	public static $transparent = null;
 
 	protected $id;
@@ -259,6 +261,7 @@ class Block extends Position implements BlockIds, Metadatable{
 					self::$transparent[$id] = $block->isTransparent();
 					self::$hardness[$id] = $block->getHardness();
 					self::$light[$id] = $block->getLightLevel();
+					self::$diffusesSkyLight[$id] = $block->isDiffusingSkyLight();
 
 					if($block->isSolid()){
 						if($block->isTransparent()){
@@ -288,8 +291,8 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return int 0-15
 	*/
-	public static function getSkyLightResistance($blockID): int{
-		if($blockID != self::COWEB || $blockID != self::LEAVES){
+	public static function getSkyLightVerticalFilter($blockID): int{
+		if(!self::$diffusesSkyLight[$blockID]){
 			return self::$lightFilter[$blockID];
 		}else{ //Diffusion
 			return -1;
@@ -303,7 +306,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return int 1-15
 	*/
-	public static function getHorizontalSkyLightResistance($blockID): int{
+	public static function getHorizontalLightFilter($blockID): int{
 		return max(self::$lightFilter($blockID), 1);
 	}
 
@@ -441,6 +444,13 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getLightLevel(){
 		return 0;
+	}
+	
+	/**
+	 * @return bool
+	 */
+	public function isDiffusingSkyLight(): bool{
+		return false;
 	}
 
 	/**
