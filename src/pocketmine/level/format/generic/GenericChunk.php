@@ -119,7 +119,7 @@ class GenericChunk implements Chunk{
 			$this->heightMap = $heightMap;
 		}else{
 			assert(count($heightMap) === 0, "Wrong HeightMap value count, expected 256, got " . count($heightMap));
-			$val = (Chunk::MAX_SUBCHUNKS * 16) - 1;
+			$val = ($this->height * 16) - 1;
 			$this->heightMap = array_fill(0, 256, $val);
 		}
 
