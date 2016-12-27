@@ -31,18 +31,9 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\command\SimpleCommandMap;
-use pocketmine\entity\Arrow;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
-use pocketmine\entity\FallingSand;
-use pocketmine\entity\Human;
-use pocketmine\entity\Item as DroppedItem;
-use pocketmine\entity\PrimedTNT;
-use pocketmine\entity\Snowball;
-use pocketmine\entity\Squid;
-use pocketmine\entity\Villager;
-use pocketmine\entity\Zombie;
 use pocketmine\event\HandlerList;
 use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\level\LevelLoadEvent;
@@ -1495,8 +1486,7 @@ class Server{
 			$this->consoleSender = new ConsoleCommandSender();
 			$this->commandMap = new SimpleCommandMap($this);
 
-			$this->registerEntities();
-
+			Entity::init();
 			Tile::init();
 			InventoryType::init();
 			Block::init();
@@ -2420,18 +2410,5 @@ class Server{
 		}
 
 		return true;
-	}
-
-	private function registerEntities(){
-		Entity::registerEntity(Arrow::class);
-		Entity::registerEntity(DroppedItem::class);
-		Entity::registerEntity(FallingSand::class);
-		Entity::registerEntity(PrimedTNT::class);
-		Entity::registerEntity(Snowball::class);
-		Entity::registerEntity(Villager::class);
-		Entity::registerEntity(Zombie::class);
-		Entity::registerEntity(Squid::class);
-
-		Entity::registerEntity(Human::class, true);
 	}
 }

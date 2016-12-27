@@ -85,7 +85,7 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_POTION_AMBIENT = 9; //byte
 
 	/* 27 (byte) player-specific flags
-	 * 28 (int) player "index"? 
+	 * 28 (int) player "index"?
 	 * 29 (block coords) bed position */
 	const DATA_LEAD_HOLDER_EID = 38; //long
 	const DATA_SCALE = 39; //float
@@ -150,6 +150,19 @@ abstract class Entity extends Location implements Metadatable{
 	/** @var Entity[] */
 	private static $knownEntities = [];
 	private static $shortNames = [];
+
+	public static function init(){
+		Entity::registerEntity(Arrow::class);
+		Entity::registerEntity(FallingSand::class);
+		Entity::registerEntity(Item::class);
+		Entity::registerEntity(PrimedTNT::class);
+		Entity::registerEntity(Snowball::class);
+		Entity::registerEntity(Squid::class);
+		Entity::registerEntity(Villager::class);
+		Entity::registerEntity(Zombie::class);
+
+		Entity::registerEntity(Human::class, true);
+	}
 
 	/**
 	 * @var Player[]
