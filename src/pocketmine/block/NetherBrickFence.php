@@ -31,16 +31,6 @@ class NetherBrickFence extends Transparent{
 		$this->meta = $meta;
 	}
 
-	public function getBreakTime(Item $item){
-		if($item instanceof Air){
-			//Breaking by hand
-			return 10;
-		}else{
-			// Other breaktimes are equal to woodfences.
-			return parent::getBreakTime($item);
-		}
-	}
-
 	public function getHardness(){
 		return 2;
 	}
