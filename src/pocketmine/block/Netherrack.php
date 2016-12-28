@@ -37,7 +37,7 @@ class Netherrack extends Solid{
 	}
 
 	public function getHardness(){
-		return 2;
+		return 0.4;
 	}
 
 	public function getToolType(){
