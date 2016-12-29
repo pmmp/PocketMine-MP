@@ -54,7 +54,7 @@ class GenericChunk implements Chunk{
 	protected $terrainGenerated = false;
 	protected $terrainPopulated = false;
 
-	protected $height = 16;
+	protected $height = Chunk::MAX_SUBCHUNKS;
 
 	/** @var SubChunk[] */
 	protected $subChunks = [];
@@ -119,7 +119,8 @@ class GenericChunk implements Chunk{
 			$this->heightMap = $heightMap;
 		}else{
 			assert(count($heightMap) === 0, "Wrong HeightMap value count, expected 256, got " . count($heightMap));
-			$this->heightMap = array_fill(0, 256, 0);
+			$val = ($this->height * 16) - 1;
+			$this->heightMap = array_fill(0, 256, $val);
 		}
 
 		if(strlen($biomeIds) === 256){
@@ -271,27 +272,28 @@ class GenericChunk implements Chunk{
 	}
 
 	public function populateSkyLight(){
-		/*for($x = 0; $x < 16; ++$x){
+		//TODO: rewrite this, use block light filters and diffusion, actual proper sky light population
+		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
-				$top = $this->getHeightMap($x, $z);
+				$heightMap = $this->getHeightMap($x, $z);
 
+				$y = min($this->getHighestSubChunkIndex() << 4, $heightMap);
 
-				//$subChunk = $this->getSubChunk()
-				for($y = 127; $y > $top; --$y){
+				for(; $y > $heightMap; --$y){
 					$this->setBlockSkyLight($x, $y, $z, 15);
 				}
 
-				for($y = $top; $y >= 0; --$y){
-					if(Block::$solid[$this->getBlockId($x, $y, $z)]){
+				for(; $y > 0; --$y){
+					if($this->getBlockId($x, $y, $z) !== Block::AIR){
 						break;
 					}
 
 					$this->setBlockSkyLight($x, $y, $z, 15);
 				}
 
-				$this->setHeightMap($x, $z, $this->getHighestBlockAt($x, $z, false));
+				$this->setHeightMap($x, $z, $y);
 			}
-		}*/
+		}
 	}
 
 	public function getBiomeId(int $x, int $z) : int{
