@@ -212,6 +212,9 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$list[self::BEETROOT] = Beetroot::class;
 			self::$list[self::BEETROOT_SEEDS] = BeetrootSeeds::class;
 			self::$list[self::BEETROOT_SOUP] = BeetrootSoup::class;
+			self::$list[self::PRISMARINE_CRYSTALS] = PrismarineCrystals::class;
+			self::$list[self::PRISMARINE_SHARD] = PrismarineShard::class;
+			self::$list[self::NETHER_STAR] = NetherStar::class;
 
 			for($i = 0; $i < 256; ++$i){
 				if(Block::$list[$i] !== null){
@@ -799,7 +802,7 @@ class Item implements ItemIds, \JsonSerializable{
 			$tag->tag = clone $this->getNamedTag();
 			$tag->tag->setName("tag");
 		}
-		
+
 		if($slot !== -1){
 			$tag->Slot = new ByteTag("Slot", $slot);
 		}

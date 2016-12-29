@@ -161,6 +161,7 @@ interface BlockIds{
 	const BIRCH_WOOD_STAIRS = 135, BIRCH_WOODEN_STAIRS = 135;
 	const JUNGLE_WOOD_STAIRS = 136, JUNGLE_WOODEN_STAIRS = 136;
 
+	const BEACON = 138;
 	const COBBLESTONE_WALL = 139, COBBLE_WALL = 139, STONE_WALL = 139;
 	const FLOWER_POT_BLOCK = 140;
 	const CARROT_BLOCK = 141;
@@ -190,7 +191,8 @@ interface BlockIds{
 	const SLIME_BLOCK = 165;
 
 	const IRON_TRAPDOOR = 167;
-
+	const PRISMARINE = 168;
+	const SEA_LANTERN = 169;
 	const HAY_BALE = 170;
 	const CARPET = 171;
 	const HARDENED_CLAY = 172;
