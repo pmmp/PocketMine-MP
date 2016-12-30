@@ -136,10 +136,10 @@ class PMAnvil extends Anvil{
 				$chunk["xPos"],
 				$chunk["zPos"],
 				$subChunks,
-				$chunk->Entities->getValue(),
-				$chunk->TileEntities->getValue(),
-				$chunk->Biomes->getValue(),
-				$chunk->HeightMap->getValue()
+				isset($chunk->Entities) ? $chunk->Entities->getValue() : [],
+				isset($chunk->TileEntities) ? $chunk->TileEntities->getValue() : [],
+				isset($chunk->Biomes) ? $chunk->Biomes->getValue() : "",
+				isset($chunk->HeightMap) ? $chunk->HeightMap->getValue() : []
 			);
 			$result->setLightPopulated(isset($chunk->LightPopulated) ? ((bool) $chunk->LightPopulated->getValue()) : false);
 			$result->setPopulated(isset($chunk->TerrainPopulated) ? ((bool) $chunk->TerrainPopulated->getValue()) : false);

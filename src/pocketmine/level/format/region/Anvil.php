@@ -140,10 +140,10 @@ class Anvil extends McRegion{
 				$chunk["xPos"],
 				$chunk["zPos"],
 				$subChunks,
-				$chunk->Entities->getValue(),
-				$chunk->TileEntities->getValue(),
+				isset($chunk->Entities) ? $chunk->Entities->getValue() : [],
+				isset($chunk->TileEntities) ? $chunk->TileEntities->getValue() : [],
 				$biomeIds,
-				$chunk->HeightMap->getValue()
+				isset($chunk->HeightMap) ? $chunk->HeightMap->getValue() : []
 			);
 			$result->setLightPopulated(isset($chunk->LightPopulated) ? ((bool) $chunk->LightPopulated->getValue()) : false);
 			$result->setPopulated(isset($chunk->TerrainPopulated) ? ((bool) $chunk->TerrainPopulated->getValue()) : false);
