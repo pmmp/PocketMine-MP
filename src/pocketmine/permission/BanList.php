@@ -106,7 +106,11 @@ class BanList{
 		$this->list[$entry->getName()] = $entry;
 		$this->save();
 		$player=$this->getServer()->getPlayer($target);
-		$player->kick("Kicked by admin. Reason: Banned by admin. Reason: ".$reason : "Kicked by admin. Reason: Banned by admin. ");
+		if(isset($reason)){
+			$player->kick("Kicked by admin. Reason: Banned by admin. Reason: ".$reason);
+		}else{
+			$player->kick("Kicked by admin. Reason: Banned by admin. ");
+		}
 
 		return $entry;
 	}
