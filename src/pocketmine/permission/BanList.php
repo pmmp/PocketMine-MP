@@ -105,6 +105,11 @@ class BanList{
 
 		$this->list[$entry->getName()] = $entry;
 		$this->save();
+		if(!$reason == null){
+			$target->kick($reason);
+		}else{
+			$target->kick("Kicked by admin.");
+		}
 
 		return $entry;
 	}
