@@ -22,6 +22,7 @@
 namespace pocketmine\permission;
 
 use pocketmine\Server;
+use pocketmine\Player;
 use pocketmine\utils\MainLogger;
 
 class BanList{
@@ -105,13 +106,13 @@ class BanList{
 
 		$this->list[$entry->getName()] = $entry;
 		$this->save();
-		$player=$this->getServer()->getPlayer($target);
-		if(isset($reason)){
-			$player->kick("Kicked by admin. Reason: Banned by admin. Reason: ".$reason);
-		}else{
-			$player->kick("Kicked by admin. Reason: Banned by admin. ");
-		}
-
+		if($player=$this->getServer()->getPlayerExact($target) instanceof Player){
+			if(isset($reason)){
+				$player->kick("Kicked by admin. Reason: Banned by admin. Reason: ".$reason);
+			}else{
+				$player->kick("Kicked by admin. Reason: Banned by admin. ");
+			}
+	}
 		return $entry;
 	}
 
