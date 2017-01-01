@@ -29,14 +29,13 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
+use pocketmine\tile\Skull as SkullTile;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 
 class MobHead extends Flowable{
 
 	protected $id = self::MOB_HEAD_BLOCK;
-
-	protected $type;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
@@ -89,7 +88,6 @@ class MobHead extends Flowable{
 	}
 
 	public function onUpdate($type){
-		parent::onUpdate($type);
 		$faces = [
 			1 => 0,
 			2 => 3,
@@ -105,15 +103,16 @@ class MobHead extends Flowable{
 			}
 		}
 
-		return false;
+		return parent::onUpdate($type);
 	}
 
 	public function getDrops(Item $item){
-		if($this->meta === 3){
-			return [];
+		if(($tile = $this->level->getTile($this)) instanceof SkullTile){
+			return [
+				[Item::MOB_HEAD, $tile->getType(), 1]
+			];
 		}
-		return [
-			[Item::MOB_HEAD, $this->type, 1]
-		];
+
+		return [];
 	}
 }

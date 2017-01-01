@@ -33,6 +33,7 @@ class Skull extends Spawnable{
 	const TYPE_ZOMBIE = 2;
 	const TYPE_HUMAN = 3;
 	const TYPE_CREEPER = 4;
+	const TYPE_DRAGON = 5;
 
 	public function __construct(Chunk $chunk, CompoundTag $nbt){
 		if(!isset($nbt->SkullType)){
@@ -44,13 +45,9 @@ class Skull extends Spawnable{
 		parent::__construct($chunk, $nbt);
 	}
 
-	public function setType($type){
-		if($type >= 0 && $type <= 4){
-			$this->namedtag->SkullType = new ByteTag("SkullType", $type);
-			$this->onChanged();
-			return true;
-		}
-		return false;
+	public function setType(int $type){
+		$this->namedtag->SkullType = new ByteTag("SkullType", $type);
+		$this->onChanged();
 	}
 
 	public function getType(){
