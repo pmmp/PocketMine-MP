@@ -59,6 +59,9 @@ class GenericChunk implements Chunk{
 	/** @var SubChunk[] */
 	protected $subChunks = [];
 
+	/** @var EmptySubChunk */
+	protected $emptySubChunk = null;
+
 	/** @var Tile[] */
 	protected $tiles = [];
 	protected $tileList = [];
@@ -97,12 +100,14 @@ class GenericChunk implements Chunk{
 
 		$this->height = $provider !== null ? ($provider->getWorldHeight() >> 4) : 16;
 
+		$this->emptySubChunk = new EmptySubChunk();
+
 		foreach($subChunks as $y => $subChunk){
 			if($y < 0 or $y >= $this->height){
 				throw new ChunkException("Invalid subchunk index $y!");
 			}
 			if($subChunk->isEmpty()){
-				$this->subChunks[$y] = new EmptySubChunk(); //TODO: point to a single object instead of creating many for each chunk
+				$this->subChunks[$y] = $this->emptySubChunk;
 			}else{
 				$this->subChunks[$y] = $subChunk;
 			}
@@ -110,7 +115,7 @@ class GenericChunk implements Chunk{
 
 		for($i = 0; $i < $this->height; ++$i){
 			if(!isset($this->subChunks[$i])){
-				$this->subChunks[$i] = new EmptySubChunk(); //TODO: todo above
+				$this->subChunks[$i] = $this->emptySubChunk;
 			}
 		}
 
@@ -524,21 +529,22 @@ class GenericChunk implements Chunk{
 
 	public function getSubChunk(int $y, bool $generateNew = false) : SubChunk{
 		if($y < 0 or $y >= $this->height){
-			return new EmptySubChunk();
+			return $this->emptySubChunk;
 		}elseif($generateNew and $this->subChunks[$y] instanceof EmptySubChunk){
 			$this->subChunks[$y] = new SubChunk();
 		}
+		assert($this->subChunks[$y] !== null, "Somehow something broke, no such subchunk at index $y");
 		return $this->subChunks[$y];
 	}
 
-	public function setSubChunk(int $fY, SubChunk $subChunk = null, bool $allowEmpty = false) : bool{
-		if($fY < 0 or $fY >= $this->height){
+	public function setSubChunk(int $y, SubChunk $subChunk = null, bool $allowEmpty = false) : bool{
+		if($y < 0 or $y >= $this->height){
 			return false;
 		}
 		if($subChunk === null or ($subChunk->isEmpty() and !$allowEmpty)){
-			$this->subChunks[$fY] = new EmptySubChunk($fY);
+			$this->subChunks[$y] = $this->emptySubChunk;
 		}else{
-			$this->subChunks[$fY] = $subChunk;
+			$this->subChunks[$y] = $subChunk;
 		}
 		$this->hasChanged = true;
 		return true;
@@ -572,7 +578,7 @@ class GenericChunk implements Chunk{
 			}elseif($subChunk instanceof EmptySubChunk){
 				continue;
 			}elseif($subChunk->isEmpty()){ //normal subchunk full of air, remove it and replace it with an empty stub
-				$this->subChunks[$y] = new EmptySubChunk($y);
+				$this->subChunks[$y] = $this->emptySubChunk;
 			}else{
 				continue; //do not set changed
 			}
