@@ -726,8 +726,10 @@ class GenericChunk implements Chunk{
 				$zx = (($z << 3) | $x);
 				for($y = 0; $y < 8; ++$y){
 					$j = (($y << 8) | $zx);
-					$result{$i} = chr((ord($array{$j}) & 0x0f) | (ord($array{$j | 0x80}) << 4));
-					$result{$i + 128} = chr((ord($array{$j}) >> 4) | (ord($array{$j | 0x80}) & 0xf0));
+					$i1 = ord($array{$j});
+					$i2 = ord($array{$j | 0x80});
+					$result{$i}        = chr(($i2 << 4) | ($i1 & 0x0f));
+					$result{$i | 0x80} = chr(($i1 >> 4) | ($i2 & 0xf0));
 					$i++;
 				}
 			}
