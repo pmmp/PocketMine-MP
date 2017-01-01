@@ -195,14 +195,14 @@ class GenericChunk implements Chunk{
 	}
 
 	public function getBlockExtraData(int $x, int $y, int $z) : int{
-		return $this->extraData[Level::chunkBlockHash($x, $y, $z)] ?? 0;
+		return $this->extraData[GenericChunk::chunkBlockHash($x, $y, $z)] ?? 0;
 	}
 
 	public function setBlockExtraData(int $x, int $y, int $z, int $data){
 		if($data === 0){
-			unset($this->extraData[Level::chunkBlockHash($x, $y, $z)]);
+			unset($this->extraData[GenericChunk::chunkBlockHash($x, $y, $z)]);
 		}else{
-			$this->extraData[Level::chunkBlockHash($x, $y, $z)] = $data;
+			$this->extraData[GenericChunk::chunkBlockHash($x, $y, $z)] = $data;
 		}
 
 		$this->hasChanged = true;
@@ -701,6 +701,20 @@ class GenericChunk implements Chunk{
 	//TODO: get rid of this
 	public static function getEmptyChunk(int $x, int $z, LevelProvider $provider = null) : Chunk{
 		return new GenericChunk($provider, $x, $z);
+	}
+
+	/**
+	 * Creates a block hash from chunk block coordinates. Used for extra data keys in chunk packets.
+	 * @internal
+	 *
+	 * @param int $x 0-15
+	 * @param int $y 0-255
+	 * @param int $z 0-15
+	 *
+	 * @return int
+	 */
+	public static function chunkBlockHash(int $x, int $y, int $z) : int{
+		return ($x << 12) | ($z << 8) | $y;
 	}
 
 	/**
