@@ -160,7 +160,7 @@ class Item extends Entity{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Item = $this->item->nbtSerialize();
+		$this->namedtag->Item = $this->item->nbtSerialize(-1, "Item");
 		$this->namedtag->Health = new ShortTag("Health", $this->getHealth());
 		$this->namedtag->Age = new ShortTag("Age", $this->age);
 		$this->namedtag->PickupDelay = new ShortTag("PickupDelay", $this->pickupDelay);
