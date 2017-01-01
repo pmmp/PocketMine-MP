@@ -53,12 +53,12 @@ class Anvil extends McRegion{
 		$nbt->Sections = new ListTag("Sections", []);
 		$nbt->Sections->setTagType(NBT::TAG_Compound);
 		$subChunks = -1;
-		foreach($chunk->getSubChunks() as $subChunk){
+		foreach($chunk->getSubChunks() as $y => $subChunk){
 			if($subChunk->isEmpty()){
 				continue;
 			}
 			$nbt->Sections[++$subChunks] = new CompoundTag(null, [
-				"Y"          => new ByteTag("Y", $subChunk->getY()),
+				"Y"          => new ByteTag("Y", $y),
 				"Blocks"     => new ByteArrayTag("Blocks",     GenericChunk::reorderByteArray($subChunk->getBlockIdArray())), //Generic in-memory chunks are currrently always XZY
 				"Data"       => new ByteArrayTag("Data",       GenericChunk::reorderNibbleArray($subChunk->getBlockDataArray())),
 				"BlockLight" => new ByteArrayTag("BlockLight", GenericChunk::reorderNibbleArray($subChunk->getBlockLightArray())),
@@ -116,8 +116,7 @@ class Anvil extends McRegion{
 			if($chunk->Sections instanceof ListTag){
 				foreach($chunk->Sections as $subChunk){
 					if($subChunk instanceof CompoundTag){
-						$subChunks[] = new SubChunk(
-							$subChunk->Y->getValue(),
+						$subChunks[$subChunk->Y->getValue()] = new SubChunk(
 							GenericChunk::reorderByteArray($subChunk->Blocks->getValue()),
 							GenericChunk::reorderNibbleArray($subChunk->Data->getValue()),
 							GenericChunk::reorderNibbleArray($subChunk->BlockLight->getValue()),

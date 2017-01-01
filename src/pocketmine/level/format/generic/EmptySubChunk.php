@@ -26,10 +26,9 @@ namespace pocketmine\level\format\generic;
 use pocketmine\utils\ChunkException;
 
 class EmptySubChunk extends SubChunk{
-	protected $y;
 
-	public function __construct(int $y){
-		$this->y = $y;
+	public function __construct(){
+
 	}
 
 	public function isEmpty() : bool{
@@ -109,7 +108,7 @@ class EmptySubChunk extends SubChunk{
 	}
 
 	public function networkSerialize() : string{
-		return "\x00" . str_repeat("\x00", 10240);
+		return str_repeat("\x00", 10240);
 	}
 
 	public function fastSerialize() : string{

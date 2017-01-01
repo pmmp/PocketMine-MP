@@ -97,13 +97,12 @@ class GenericChunk implements Chunk{
 
 		$this->height = $provider !== null ? ($provider->getWorldHeight() >> 4) : 16;
 
-		foreach($subChunks as $subChunk){
-			$y = $subChunk->getY();
+		foreach($subChunks as $y => $subChunk){
 			if($y < 0 or $y >= $this->height){
 				throw new ChunkException("Invalid subchunk index $y!");
 			}
 			if($subChunk->isEmpty()){
-				$this->subChunks[$y] = new EmptySubChunk($y);
+				$this->subChunks[$y] = new EmptySubChunk(); //TODO: point to a single object instead of creating many for each chunk
 			}else{
 				$this->subChunks[$y] = $subChunk;
 			}
@@ -111,7 +110,7 @@ class GenericChunk implements Chunk{
 
 		for($i = 0; $i < $this->height; ++$i){
 			if(!isset($this->subChunks[$i])){
-				$this->subChunks[$i] = new EmptySubChunk($i);
+				$this->subChunks[$i] = new EmptySubChunk(); //TODO: todo above
 			}
 		}
 
@@ -511,40 +510,8 @@ class GenericChunk implements Chunk{
 		return $this->heightMap;
 	}
 
-	public function getBlockIdArray() : string{
-		$result = "";
-		foreach($this->subChunks as $subChunk){
-			$result .= $subChunk->getBlockIdArray();
-		}
-		return $result;
-	}
-
-	public function getBlockDataArray() : string{
-		$result = "";
-		foreach($this->subChunks as $subChunk){
-			$result .= $subChunk->getBlockDataArray();
-		}
-		return $result;
-	}
-
 	public function getBlockExtraDataArray() : array{
 		return $this->extraData;
-	}
-
-	public function getBlockSkyLightArray() : string{
-		$result = "";
-		foreach($this->subChunks as $subChunk){
-			$result .= $subChunk->getSkyLightArray();
-		}
-		return $result;
-	}
-
-	public function getBlockLightArray() : string{
-		$result = "";
-		foreach($this->subChunks as $subChunk){
-			$result .= $subChunk->getBlockLightArray();
-		}
-		return $result;
 	}
 
 	public function hasChanged() : bool{
@@ -555,13 +522,13 @@ class GenericChunk implements Chunk{
 		$this->hasChanged = $value;
 	}
 
-	public function getSubChunk(int $fY, bool $generateNew = false) : SubChunk{
-		if($fY < 0 or $fY >= $this->height){
-			return new EmptySubChunk($fY);
-		}elseif($generateNew and $this->subChunks[$fY] instanceof EmptySubChunk){
-			$this->subChunks[$fY] = new SubChunk($fY);
+	public function getSubChunk(int $y, bool $generateNew = false) : SubChunk{
+		if($y < 0 or $y >= $this->height){
+			return new EmptySubChunk();
+		}elseif($generateNew and $this->subChunks[$y] instanceof EmptySubChunk){
+			$this->subChunks[$y] = new SubChunk();
 		}
-		return $this->subChunks[$fY];
+		return $this->subChunks[$y];
 	}
 
 	public function setSubChunk(int $fY, SubChunk $subChunk = null, bool $allowEmpty = false) : bool{
@@ -654,12 +621,12 @@ class GenericChunk implements Chunk{
 		$stream->putInt($chunk->z);
 		$count = 0;
 		$subChunks = "";
-		foreach($chunk->subChunks as $subChunk){
+		foreach($chunk->subChunks as $y => $subChunk){
 			if($subChunk->isEmpty()){
 				continue;
 			}
 			++$count;
-			$subChunks .= $subChunk->fastSerialize();
+			$subChunks .= chr($y) . $subChunk->fastSerialize();
 		}
 		$stream->putByte($count);
 		$stream->put($subChunks);
@@ -679,8 +646,7 @@ class GenericChunk implements Chunk{
 		$subChunks = [];
 		$count = $stream->getByte();
 		for($y = 0; $y < $count; ++$y){
-			$subChunks[] = new SubChunk(
-				$stream->getByte(), //y
+			$subChunks[$stream->getByte()] = new SubChunk(
 				$stream->get(4096), //blockIds
 				$stream->get(2048), //blockData
 				$stream->get(2048), //skyLight

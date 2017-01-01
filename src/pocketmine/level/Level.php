@@ -914,9 +914,8 @@ class Level implements ChunkManager, Metadatable{
 			}
 
 
-			foreach($chunk->getSubChunks() as $subChunk){
+			foreach($chunk->getSubChunks() as $Y => $subChunk){
 				if(!$subChunk->isEmpty()){
-					$Y = $subChunk->getY();
 					$k = mt_rand(0, 0x7fffffff);
 					for($i = 0; $i < 3; ++$i, $k >>= 10){
 						$x = $k & 0x0f;

@@ -66,10 +66,11 @@ class McRegion extends BaseLevelProvider{
 		$data = "";
 		$blockLight = "";
 		$skyLight = "";
+		$subChunks = $chunk->getSubChunks();
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
 				for($y = 0; $y < 8; ++$y){
-					$subChunk = $chunk->getSubChunk($y);
+					$subChunk = $subChunks[$y];
 					$ids .= $subChunk->getBlockIdColumn($x, $z);
 					$data .= $subChunk->getBlockDataColumn($x, $z);
 					$blockLight .= $subChunk->getBlockLightColumn($x, $z);
@@ -165,7 +166,7 @@ class McRegion extends BaseLevelProvider{
 					$skyLight .= substr($fullSkyLight, $offset, 8);
 					$offset += 64;
 				}
-				$subChunks[] = new SubChunk($y, $ids, $data, $blockLight, $skyLight);
+				$subChunks[$y] = new SubChunk($ids, $data, $blockLight, $skyLight);
 			}
 
 			if(isset($chunk->BiomeColors)){

@@ -57,12 +57,12 @@ class PMAnvil extends Anvil{
 		$nbt->Sections = new ListTag("Sections", []);
 		$nbt->Sections->setTagType(NBT::TAG_Compound);
 		$subChunks = -1;
-		foreach($chunk->getSubChunks() as $subChunk){
+		foreach($chunk->getSubChunks() as $y => $subChunk){
 			if($subChunk->isEmpty()){
 				continue;
 			}
 			$nbt->Sections[++$subChunks] = new CompoundTag(null, [
-				"Y"          => new ByteTag("Y", $subChunk->getY()),
+				"Y"          => new ByteTag("Y", $y),
 				"Blocks"     => new ByteArrayTag("Blocks",     $subChunk->getBlockIdArray()),
 				"Data"       => new ByteArrayTag("Data",       $subChunk->getBlockDataArray()),
 				"BlockLight" => new ByteArrayTag("BlockLight", $subChunk->getBlockLightArray()),
@@ -120,8 +120,7 @@ class PMAnvil extends Anvil{
 			if($chunk->Sections instanceof ListTag){
 				foreach($chunk->Sections as $subChunk){
 					if($subChunk instanceof CompoundTag){
-						$subChunks[] = new SubChunk(
-							$subChunk->Y->getValue(),
+						$subChunks[$subChunk->Y->getValue()] = new SubChunk(
 							$subChunk->Blocks->getValue(),
 							$subChunk->Data->getValue(),
 							$subChunk->BlockLight->getValue(),
