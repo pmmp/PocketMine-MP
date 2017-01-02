@@ -2133,10 +2133,10 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * @param int       $chunkX
-	 * @param int       $chunkZ
-	 * @param Chunk     $chunk
-	 * @param bool      $unload
+	 * @param int   $chunkX
+	 * @param int   $chunkZ
+	 * @param Chunk $chunk
+	 * @param bool  $unload
 	 */
 	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk = null, bool $unload = true){
 		if($chunk === null){
