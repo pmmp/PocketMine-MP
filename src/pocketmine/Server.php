@@ -1700,11 +1700,11 @@ class Server{
 	 * @param Player[]   $players
 	 * @param DataPacket $packet
 	 */
-	public static function broadcastPacket(array $players, DataPacket $packet){
+	public function broadcastPacket(array $players, DataPacket $packet){
 		$packet->encode();
 		$packet->isEncoded = true;
 		if(Network::$BATCH_THRESHOLD >= 0 and strlen($packet->buffer) >= Network::$BATCH_THRESHOLD){
-			Server::getInstance()->batchPackets($players, [$packet->buffer], false);
+			$this->batchPackets($players, [$packet->buffer], false);
 			return;
 		}
 
@@ -2129,7 +2129,7 @@ class Server{
 			$pk = new PlayerListPacket();
 			$pk->type = PlayerListPacket::TYPE_REMOVE;
 			$pk->entries[] = [$player->getUniqueId()];
-			Server::broadcastPacket($this->playerList, $pk);
+			$this->broadcastPacket($this->playerList, $pk);
 		}
 	}
 
@@ -2137,14 +2137,14 @@ class Server{
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_ADD;
 		$pk->entries[] = [$uuid, $entityId, $name, $skinId, $skinData];
-		Server::broadcastPacket($players === null ? $this->playerList : $players, $pk);
+		$this->broadcastPacket($players === null ? $this->playerList : $players, $pk);
 	}
 
 	public function removePlayerListData(UUID $uuid, array $players = null){
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_REMOVE;
 		$pk->entries[] = [$uuid];
-		Server::broadcastPacket($players === null ? $this->playerList : $players, $pk);
+		$this->broadcastPacket($players === null ? $this->playerList : $players, $pk);
 	}
 
 	public function sendFullPlayerListData(Player $p){

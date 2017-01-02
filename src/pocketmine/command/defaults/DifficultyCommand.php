@@ -60,7 +60,7 @@ class DifficultyCommand extends VanillaCommand{
 
 			$pk = new SetDifficultyPacket();
 			$pk->difficulty = $sender->getServer()->getDifficulty();
-			Server::broadcastPacket($sender->getServer()->getOnlinePlayers(), $pk);
+			$sender->getServer()->broadcastPacket($sender->getServer()->getOnlinePlayers(), $pk);
 
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.difficulty.success", [$difficulty]));
 		}else{
