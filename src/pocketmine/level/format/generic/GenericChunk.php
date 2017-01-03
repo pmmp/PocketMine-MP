@@ -628,7 +628,7 @@ class GenericChunk implements Chunk{
 		$count = 0;
 		$subChunks = "";
 		foreach($chunk->subChunks as $y => $subChunk){
-			if($subChunk->isEmpty()){
+			if($subChunk instanceof EmptySubChunk){
 				continue;
 			}
 			++$count;
