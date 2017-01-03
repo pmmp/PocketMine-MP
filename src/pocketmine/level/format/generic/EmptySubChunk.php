@@ -59,19 +59,19 @@ class EmptySubChunk extends SubChunk{
 		return false;
 	}
 
-	public function getBlockSkyLight(int $x, int $y, int $z) : int{
-		return 15;
-	}
-
-	public function setBlockSkyLight(int $x, int $y, int $z, int $level) : bool{
-		return false;
-	}
-
 	public function getBlockLight(int $x, int $y, int $z) : int{
 		return 0;
 	}
 
 	public function setBlockLight(int $x, int $y, int $z, int $level) : bool{
+		return false;
+	}
+
+	public function getBlockSkyLight(int $x, int $y, int $z) : int{
+		return 15;
+	}
+
+	public function setBlockSkyLight(int $x, int $y, int $z, int $level) : bool{
 		return false;
 	}
 

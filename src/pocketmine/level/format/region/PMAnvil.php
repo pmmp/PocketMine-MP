@@ -65,8 +65,8 @@ class PMAnvil extends Anvil{
 				"Y"          => new ByteTag("Y", $y),
 				"Blocks"     => new ByteArrayTag("Blocks",     $subChunk->getBlockIdArray()),
 				"Data"       => new ByteArrayTag("Data",       $subChunk->getBlockDataArray()),
-				"BlockLight" => new ByteArrayTag("BlockLight", $subChunk->getBlockLightArray()),
-				"SkyLight"   => new ByteArrayTag("SkyLight",   $subChunk->getSkyLightArray())
+				"SkyLight"   => new ByteArrayTag("SkyLight",   $subChunk->getSkyLightArray()),
+				"BlockLight" => new ByteArrayTag("BlockLight", $subChunk->getBlockLightArray())
 			]);
 		}
 
@@ -123,8 +123,8 @@ class PMAnvil extends Anvil{
 						$subChunks[$subChunk->Y->getValue()] = new SubChunk(
 							$subChunk->Blocks->getValue(),
 							$subChunk->Data->getValue(),
-							$subChunk->BlockLight->getValue(),
-							$subChunk->SkyLight->getValue()
+							$subChunk->SkyLight->getValue(),
+							$subChunk->BlockLight->getValue()
 						);
 					}
 				}

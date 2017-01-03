@@ -281,7 +281,7 @@ class GenericChunk implements Chunk{
 			for($z = 0; $z < 16; ++$z){
 				$heightMap = $this->getHeightMap($x, $z);
 
-				$y = min($this->getHighestSubChunkIndex() << 4, $heightMap);
+				$y = min(($this->getHighestSubChunkIndex() + 1) << 4, $heightMap);
 
 				for(; $y > $heightMap; --$y){
 					$this->setBlockSkyLight($x, $y, $z, 15);
@@ -652,12 +652,7 @@ class GenericChunk implements Chunk{
 		$subChunks = [];
 		$count = $stream->getByte();
 		for($y = 0; $y < $count; ++$y){
-			$subChunks[$stream->getByte()] = new SubChunk(
-				$stream->get(4096), //blockIds
-				$stream->get(2048), //blockData
-				$stream->get(2048), //skyLight
-				$stream->get(2048)  //blockLight
-			);
+			$subChunks[$stream->getByte()] = SubChunk::fastDeserialize($stream->get(10240));
 		}
 		$heightMap = array_values(unpack("C*", $stream->get(256)));
 		$biomeIds = $stream->get(256);

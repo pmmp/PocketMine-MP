@@ -39,11 +39,11 @@ class SubChunk{
 		}
 	}
 
-	public function __construct(string $ids = "", string $data = "", string $blockLight = "", string $skyLight = ""){
+	public function __construct(string $ids = "", string $data = "", string $skyLight = "", string $blockLight = ""){
 		self::assignData($this->ids, $ids, 4096);
 		self::assignData($this->data, $data, 2048);
-		self::assignData($this->blockLight, $blockLight, 2048);
 		self::assignData($this->skyLight, $skyLight, 2048);
+		self::assignData($this->blockLight, $blockLight, 2048);
 	}
 
 	public function isEmpty() : bool{
@@ -115,26 +115,6 @@ class SubChunk{
 		return $changed;
 	}
 
-	public function getBlockSkyLight(int $x, int $y, int $z) : int{
-		$byte = ord($this->skyLight{($x << 7) + ($z << 3) + ($y >> 1)});
-		if(($y & 1) === 0){
-			return $byte & 0x0f;
-		}else{
-			return $byte >> 4;
-		}
-	}
-
-	public function setBlockSkyLight(int $x, int $y, int $z, int $level) : bool{
-		$i = ($x << 7) + ($z << 3) + ($y >> 1);
-		$byte = ord($this->skyLight{$i});
-		if(($y & 1) === 0){
-			$this->skyLight{$i} = chr(($byte & 0xf0) | ($level & 0x0f));
-		}else{
-			$this->skyLight{$i} = chr((($level & 0x0f) << 4) | ($byte & 0x0f));
-		}
-		return true;
-	}
-
 	public function getBlockLight(int $x, int $y, int $z) : int{
 		$byte = ord($this->blockLight{($x << 7) + ($z << 3) + ($y >> 1)});
 		if(($y & 1) === 0){
@@ -151,6 +131,26 @@ class SubChunk{
 			$this->blockLight{$i} = chr(($byte & 0xf0) | ($level & 0x0f));
 		}else{
 			$this->blockLight{$i} = chr((($level & 0x0f) << 4) | ($byte & 0x0f));
+		}
+		return true;
+	}
+
+	public function getBlockSkyLight(int $x, int $y, int $z) : int{
+		$byte = ord($this->skyLight{($x << 7) + ($z << 3) + ($y >> 1)});
+		if(($y & 1) === 0){
+			return $byte & 0x0f;
+		}else{
+			return $byte >> 4;
+		}
+	}
+
+	public function setBlockSkyLight(int $x, int $y, int $z, int $level) : bool{
+		$i = ($x << 7) + ($z << 3) + ($y >> 1);
+		$byte = ord($this->skyLight{$i});
+		if(($y & 1) === 0){
+			$this->skyLight{$i} = chr(($byte & 0xf0) | ($level & 0x0f));
+		}else{
+			$this->skyLight{$i} = chr((($level & 0x0f) << 4) | ($byte & 0x0f));
 		}
 		return true;
 	}
@@ -191,14 +191,14 @@ class SubChunk{
 		return $this->data;
 	}
 
-	public function getBlockLightArray() : string{
-		assert(strlen($this->blockLight) === 2048, "Wrong length of light array, expecting 2048 bytes, got " . strlen($this->blockLight));
-		return $this->blockLight;
-	}
-
 	public function getSkyLightArray() : string{
 		assert(strlen($this->skyLight) === 2048, "Wrong length of skylight array, expecting 2048 bytes, got " . strlen($this->skyLight));
 		return $this->skyLight;
+	}
+
+	public function getBlockLightArray() : string{
+		assert(strlen($this->blockLight) === 2048, "Wrong length of light array, expecting 2048 bytes, got " . strlen($this->blockLight));
+		return $this->blockLight;
 	}
 
 	public function networkSerialize() : string{
@@ -207,7 +207,19 @@ class SubChunk{
 	}
 
 	public function fastSerialize() : string{
-		// ids, data, skylight, blocklight
-		return $this->ids . $this->data . $this->skyLight . $this->blockLight;
+		return
+			$this->ids .
+			$this->data .
+			$this->skyLight .
+			$this->blockLight;
+	}
+
+	public static function fastDeserialize(string $data) : SubChunk{
+		return new SubChunk(
+			substr($data,    0, 4096), //ids
+			substr($data, 4096, 2048), //data
+			substr($data, 6144, 2048), //sky light
+			substr($data, 8192, 2048)  //block light
+		);
 	}
 }
