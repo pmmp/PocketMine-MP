@@ -23,7 +23,6 @@ declare(strict_types = 1);
 
 namespace pocketmine\level\format;
 
-use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 

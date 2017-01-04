@@ -19,7 +19,7 @@
  *
 */
 
-namespace pocketmine\level\format;
+namespace pocketmine\level\format\generic;
 
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;

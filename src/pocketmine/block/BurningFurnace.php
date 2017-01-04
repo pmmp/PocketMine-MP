@@ -29,7 +29,7 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
-use pocketmine\tile\Furnace;
+use pocketmine\tile\Furnace as TileFurnace;
 use pocketmine\tile\Tile;
 
 class BurningFurnace extends Solid{
@@ -101,11 +101,7 @@ class BurningFurnace extends Solid{
 
 	public function onActivate(Item $item, Player $player = null){
 		if($player instanceof Player){
-			$t = $this->getLevel()->getTile($this);
-			$furnace = false;
-			if($t instanceof Furnace){
-				$furnace = $t;
-			}else{
+			if(!(($furnace = $this->getLevel()->getTile($this)) instanceof TileFurnace)){
 				$nbt = new CompoundTag("", [
 					new ListTag("Items", []),
 					new StringTag("id", Tile::FURNACE),

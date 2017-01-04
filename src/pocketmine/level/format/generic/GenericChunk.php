@@ -30,13 +30,13 @@ use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\LevelProvider;
-use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 use pocketmine\tile\Tile;
 use pocketmine\tile\Spawnable;
 use pocketmine\utils\BinaryStream;
+use pocketmine\utils\ChunkException;
 
 class GenericChunk implements Chunk{
 

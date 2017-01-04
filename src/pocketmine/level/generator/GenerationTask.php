@@ -53,7 +53,6 @@ class GenerationTask extends AsyncTask{
 		}
 
 		/** @var Chunk $chunk */
-		$chunk = $this->chunkClass;
 		$chunk = GenericChunk::fastDeserialize($this->chunk);
 		if($chunk === null){
 			//TODO error
@@ -79,7 +78,6 @@ class GenerationTask extends AsyncTask{
 				return;
 			}
 			/** @var Chunk $chunk */
-			$chunk = $this->chunkClass;
 			$chunk = GenericChunk::fastDeserialize($this->chunk, $level->getProvider());
 			if($chunk === null){
 				//TODO error

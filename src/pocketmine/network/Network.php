@@ -94,7 +94,6 @@ use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\network\protocol\UseItemPacket;
 use pocketmine\Player;
 use pocketmine\Server;
-use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
 
 class Network{

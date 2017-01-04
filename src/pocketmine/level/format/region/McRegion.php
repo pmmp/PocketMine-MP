@@ -24,16 +24,23 @@ declare(strict_types = 1);
 namespace pocketmine\level\format\region;
 
 use pocketmine\level\format\Chunk;
-use pocketmine\level\format\LevelProvider;
 use pocketmine\level\format\generic\GenericChunk;
 use pocketmine\level\format\generic\SubChunk;
 use pocketmine\level\format\generic\BaseLevelProvider;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\{ByteArrayTag, ByteTag, CompoundTag, IntArrayTag, IntTag, ListTag, LongTag, StringTag};
+use pocketmine\nbt\tag\{
+	ByteArrayTag,
+	ByteTag,
+	CompoundTag,
+	IntArrayTag,
+	IntTag,
+	ListTag,
+	LongTag,
+	StringTag
+};
 use pocketmine\Player;
-use pocketmine\utils\ChunkException;
 use pocketmine\utils\MainLogger;
 
 class McRegion extends BaseLevelProvider{
@@ -137,9 +144,9 @@ class McRegion extends BaseLevelProvider{
 
 			$subChunks = [];
 			$fullIds = isset($chunk->Blocks) ? $chunk->Blocks->getValue() : str_repeat("\x00", 32768);
-			$fullData = isset($chunk->Data) ? $chunk->Data->getValue() : ($half = str_repeat("\x00", 16384));
+			$fullData = isset($chunk->Data) ? $chunk->Data->getValue() : (str_repeat("\x00", 16384));
 			$fullSkyLight = isset($chunk->SkyLight) ? $chunk->SkyLight->getValue() : str_repeat("\xff", 16384);
-			$fullBlockLight = isset($chunk->BlockLight) ? $chunk->BlockLight->getValue() : $half;
+			$fullBlockLight = isset($chunk->BlockLight) ? $chunk->BlockLight->getValue() : (str_repeat("\x00", 16384));
 
 			for($y = 0; $y < 8; ++$y){
 				$offset = ($y << 4);

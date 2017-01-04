@@ -27,6 +27,8 @@ use pocketmine\utils\LevelException;
 
 class WeakPosition extends Position{
 
+	protected $levelId = -1;
+
 	/**
 	 * @param int   $x
 	 * @param int   $y
