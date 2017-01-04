@@ -23,6 +23,7 @@ namespace pocketmine\level;
 
 use pocketmine\math\Vector3;
 use pocketmine\utils\LevelException;
+use pocketmine\utils\MainLogger;
 
 class Position extends Vector3{
 
@@ -47,19 +48,40 @@ class Position extends Vector3{
 	}
 
 	/**
-	 * @return Level
+	 * Returns the target Level, or null if the target is not valid.
+	 * If a reference exists to a Level which is closed, the reference will be destroyed and null will be returned.
+	 *
+	 * @return Level|null
 	 */
 	public function getLevel(){
+		if($this->level !== null and $this->level->isClosed()){
+			MainLogger::getLogger()->debug("Position was holding a reference to an unloaded Level");
+			$this->level = null;
+		}
+
 		return $this->level;
 	}
 
-	public function setLevel(Level $level){
+	/**
+	 * Sets the target Level of the position.
+	 *
+	 * @param Level|null $level
+	 *
+	 * @return $this
+	 *
+	 * @throws \InvalidArgumentException if the specified Level has been closed
+	 */
+	public function setLevel(Level $level = null){
+		if($level !== null and $level->isClosed()){
+			throw new \InvalidArgumentException("Specified level has been unloaded and cannot be used");
+		}
+
 		$this->level = $level;
 		return $this;
 	}
 
 	/**
-	 * Checks if this object has a valid reference to a Level
+	 * Checks if this object has a valid reference to a loaded Level
 	 *
 	 * @return bool
 	 */
