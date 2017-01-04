@@ -2,69 +2,101 @@
 
 # PocketMine-MP Contribution Guidelines
 
-You must follow these guidelines if you wish to contribute to the PocketMine-MP code base, or participate in issue tracking.
-
-## I have a question
-* For questions, please refer to the _#pmmp_ or _#pocketmine_ IRC channel on Freenode. There is a [WebIRC](http://webchat.freenode.net?channels=pmmp,pocketmine&uio=d4) if you do not want to install an IRC client.
-* You can ask directly to _[@PocketMine](https://twitter.com/PocketMine)_ in Twitter, but don't expect an immediate reply.
-* You may use our [Forum](https://forums.pmmp.io) to ask questions.
-* We do not accept questions or support requests in our issue tracker.
 
 ## Creating an Issue
-* First, use the [Issue Search](https://github.com/pmmp/PocketMine-MP/search?ref=cmdform&type=Issues) to check if anyone has reported it. Check also closed issues, as an issue you think is valid may actually be invalid.
-  * If an issue has been _fixed_ and closed, create another issue.
-* If your issue is related to a plugin, do **not** report here. Contact the plugin's original author instead.
-* **Support requests are not bugs.** Issues such as "How do I do this" are not bugs and are closed as soon as a collaborator spots it. They are referred to our Forum to seek assistance. Please refer to the section [I have a quesetion](#i-have-a-question) instead.
-* **No generic titles** such as "Question", "Help", "Crash Report" etc.
-  * If you just got a crash report but you don't understand it, please look for a line starting with `Message`. It summarizes the bug.
-* Information must be provided in the issue body, not in the title. No tags like `[BUG]` are allowed in the title, including `[SOLVED]` for solved issues.
-* Similarly, no generic issue reports. For bugs, it is the issue author's responsibility to provide us an issue that is **trackable, debuggable, reproducible, reported professionally and is an actual bug**. If you do not provide us with a summary or instructions on how to reproduce the issue, it is a support request until the actual bug has been found and therefore the issue is closed.
-  * In simple words, if your issue does not appear to be a bug or a feature request, or if the issue cannot be properly confirmed to be valid, the issue will be closed until further information is provided.
-* To express appreciation, objection, confusion or other supported reactions on pull requests, issues or comments on them, use GitHub [reactions](https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments) rather than posting an individual comment with an emoji only. This helps keeping the issue/pull rqeuest conversation clean and readable.
-* If your issue is related to the Pocketmine-MP website, forums, etc., please [talk to a human directly](#i-have-a-question).
+- If you are reporting a bug, **make sure that you are using the latest supported version** before opening an issue.
+
+- [Search the issue tracker](https://github.com/pmmp/PocketMine-MP/issues?utf8=%E2%9C%93&q=is%3Aissue) to check if anyone has already reported it, to avoid needlessly creating duplicate issues. Make sure you also check closed issues, as an issue you think is valid may already have been resolved.
+
+- If your issue is related to a plugin, **do not report here, contact the plugin's original author** instead.
+
+- **Support requests are not bugs.** Issues such as "How do I do this" are not bugs and will be closed. If you need help, please see [here](README.md#discussion) and do not misuse our issue tracker.
+
+- **No generic titles** such as "Question", "Help", "Crash Report" etc. A good issue report provides a quick summary in the title. If you just got a crash report but you don't understand it, please look for a line starting with `Message`. It summarizes the bug.
+
+- Information must be provided in the issue body, not in the title. No tags like `[BUG]` are allowed in the title, including `[SOLVED]` for solved issues.
+
+- Similarly, no generic issue reports. For bugs, it is the issue author's responsibility to provide us an issue that is **trackable, debuggable, reproducible, reported professionally and is an actual bug**. If you do not provide us with a summary or instructions on how to reproduce the issue, it will be treated as spam and will therefore be closed. 
+<br>In simple words, if your issue does not appear to be a bug or a feature request, or if the issue cannot be properly confirmed to be valid, the issue will be closed until further information is provided.
+
+- To express appreciation, objection, confusion or other supported reactions on pull requests, issues or comments on them, use GitHub [reactions](https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments) rather than posting an individual comment with an emoji only. This helps keeping the issue/pull request conversation clean and readable.
+
+- If your issue is related to the PocketMine-MP website, forums, etc., please [talk to a human directly](README.md#discussion).
+
+
 
 ## Contributing Code
-* Use the [Pull Request](https://github.com/pmmp/PocketMine-MP/pull/new) system, your request will be checked and discussed.
-* Create each pull request on a new branch. Do not create a pull request on commits that exist in another pull request.
-* Code should use the same syntax as in PocketMine-MP. See below for an example.
-* The code must be clear and written in English, comments included.
-* Use descriptive commit titles
-* **Keep each pull request only contain one feature**. The only exception is when all features in the pull request are related to each other, and share the same core changes.
-* **Do not create pull requests that only bump the MCPE version**. If it is ready to be updated, the team will update the values directly. Do not change the MCPE version or protocol version in a pull request, unless you have updated the protocol (all packets) entirely.
+- To contribute code to the repository, [fork it on GitHub](https://github.com/pmmp/PocketMine-MP/fork), create a branch on your fork, and make your changes on your fork. You can then make a [pull request](https://github.com/pmmp/PocketMine-MP/pull/new) to the project to compare your branch to ours and propose your changes to our repository. We use the Pull Request system to allow members of the team to review changes before they are merged.
+
+- By proposing a pull request to the project, you agree to your code being distributed within PocketMine-MP under the [LGPL license](LICENSE).
+
+- At PocketMine, **we enforce a very high standard for contributions**. This is because PocketMine-MP and its related projects are used very widely in production. While this might seem like we are being mean at times, **our priority is what is best for PocketMine-MP itself**. We try to ensure that our project's codebase is as clean as possible and ensure that only top-quality material makes it through to PocketMine-MP itself. **If a contribution does not live up to our standards, changes may be requested or the pull request may be closed.**
+
+- **Your pull request will be checked and discussed in due time.** Since the team is scattered all around the world, your PR may not receive any attention for some time.
+
+- **Avoid using GitHub Web Editor**. The web editor lacks most useful GIT features and **should only be used for very minor changes**. It is immediately clear if the web editor has been used, and if so the PR is more likely to be rejected. If you want to make serious contributions, **please learn how to use [GIT version control](https://git-scm.com/)**.
+
+- **Do not copy-paste code**. There are potential license issues implicit with copy-pasting, and copy-paste usually indicates a lack of understanding of the actual code. Copy-pasted code is obvious a mile off and **any PR like this is likely to be closed**. If you want to use somebody else's code from a Git repository, **use [GIT's cherry-pick feature](https://git-scm.com/docs/git-cherry-pick)** to cherry-pick the commit. **Cherry-picking is the politer way to copy somebody's changes** and retains all the original accreditation, so there is no need for copy-pasted commits with descriptions like `Some code, thanks @exampleperson`.
+
+- In addition to the above, **make sure you can explain your changes**. If you can't provide a good explanation of changes, your PR may be rejected.
+
+- **Create a new branch for each pull request.** Do not create a pull request with commits that exist in another pull request.
+
+- **Code should use the same style as in PocketMine-MP.** See [below](#code-syntax) for an example.
+
+- **The code must be clear** and written in English, comments included.
+
+- **Use descriptive commit titles.** You can see an example [here](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
+
+- **Try to stick to one change per commit.** This ensures that if you create a PR with several changes, we can decide which ones we wish to include and which ones not to include.
+
+- **It is inadvisable to create pull requests with large commits** unless this has been discussed with the team beforehand. Large pull requests are difficult to review, and such pull requests may end up being closed. The only exception is when all features in the pull request are related to each other, and share the same core changes.
+
+- **You may be asked to rebase your pull request** if the branch becomes outdated and/or if possibly conflicting changes are made to the target branch. To see how to do this, read [this page](https://github.com/edx/edx-platform/wiki/How-to-Rebase-a-Pull-Request).
+
 
 **Thanks for contributing to PocketMine-MP!**
+
+
 
 ### Code Syntax
 
 It is mainly [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md) with a few exceptions.
 
-* Opening braces MUST go on the same line, and MUST NOT have spaces before.
-* `else if` MUST be written as `elseif`. _(It is in PSR-2, but using a SHOULD)_
-* Control structure keywords or opening braces MUST NOT have one space before or after them.
-* Code MUST use tabs for indenting.
-* Long arrays MAY be split across multiple lines, where each subsequent line is indented once. 
-* Files MUST use only the `<?php` tag.
-* Files MUST NOT have an ending `?>` tag.
-* Code MUST use namespaces.
-* Strings SHOULD use the double quote `"` except when the single quote is required.
+- Opening braces MUST go on the same line, and MUST NOT have spaces before.
+- `else if` MUST be written as `elseif`. _(It is in PSR-2, but using a SHOULD)_
+- Control structure keywords or opening braces MUST NOT have one space before or after them.
+- Code MUST use tabs for indenting.
+- Long arrays MAY be split across multiple lines, where each subsequent line is indented once.
+- Files MUST use only the `<?php` tag.
+- Files MUST NOT have an ending `?>` tag.
+- Code MUST use namespaces.
+- Strings SHOULD use the double quote `"` except when the single quote is required.
+- All code SHOULD have parameter and type declarations where possible.
+- Strict types SHOULD be enabled on new files where it is sensible to do so.
 
 ```php
-<?php 
+<?php
+
+declare(strict_types = 1);
 
 namespace pocketmine\example;
 
 class ExampleClass{
+
 	const EXAMPLE_CLASS_CONSTANT = 1;
+
 	public $examplePublicVariable = "defaultValue";
 	private $examplePrivateVariable;
-	
+
 	/**
 	 * Creates an instance of ExampleClass
+	 *
 	 * @param string      $firstArgument  the first argument
 	 * @param string|null $secondArgument default null
 	 */
-	public function __construct($firstArgument, &$secondArgument = null){
-		if($firstArgument === "exampleValue"){ //Remember to use === instead == when possible
+	public function __construct(string $firstArgument, &$secondArgument = null){
+		if($firstArgument === "exampleValue"){ //Remember to use === instead of == when possible
 			//do things
 		}elseif($firstArgument === "otherValue"){
 			$secondArgument = function(){
@@ -78,6 +110,10 @@ class ExampleClass{
 				];
 			};
 		}
+	}
+
+	public function doStuff(string $stuff) : string{
+		return $stuff;
 	}
 
 }
@@ -94,78 +130,3 @@ class ExampleClass{
 * An RFC will be rejected if less than 50% + 1 (simple majority) has voted Yes.
 * If the RFC is approved, Team Members have the final word on its implementation or rejection.
 * RFCs with complex voting options will specify the vote percentage or other details.
-
-
-## Bug Tracking for Collaborators
-
-### Labels
-To provide a concise bug tracking environment, prevent the issue tracker from over flowing and to keep support requests out of the bug tracker, PocketMine-MP uses a label scheme a bit different from the default GitHub Issues labels.
-
-Labels are used to identify the type and status of issues and pull requests.
-
-#### Categories
-Multiple category labels may be applied to a single issue (but try to keep this to a minimum and do not overuse category labels).
-These labels may be applied to issues with bugs related to these, or pull requests that alter the behaviour of these or fix an issue with the same label applied.
-- `Category: Core` - Related to PocketMine-MP's core functionality, but not gameplay or API.
-- `Category: Gameplay` - Related to gameplay.
-- `Category: API` - Related to plugin API.
-- `Category: Client` - Related to client functionality or behaviour. This label may be applied to issues reporting client-related bugs, or PRs related to the client such as a protocol update. There are several sub-labels to account for the differences between supported clients.
-	- `all`: Related to all versions of the client.
-	- `W10`: Related only to Windows 10 Edition Beta.
-	- `PE`: Related only to the Pocket Edition
-	- `beta`: Related only to a beta version of the game.
-	- `other`: Related only to an uncommon PE-compatible version of the client, such as VR Edition.
-- `Category: PHP` - Applied to issues caused by the PHP interpreter or its extensions.
-- `Category: Other` - Applied to issues which cannot be categorized with any of the above labels.
-
-#### Pull Requests
-Pull Request labels are prefixed by `PR:`. Only one label may be applied for a Pull Request.
-- `PR: Bug Fix` - The Pull Request fixes a bug. 
-- `PR: Contribution` - The Pull Request contributes new features or improvements, but does not fix a bug, nor controversial enough to be an RFC.
-- `PR: RFC` - Request for Comments. Refer to [RFC and Voting](#rfc-and-voting).
-
-#### Status
-Status labels show the status of the issue. Multiple status labels may be applied.
-
-*Issues*
-- `Status: Unconfirmed` - reported issues that have yet to be reproduced by a developer successfully.
-- `Status: Reproduced` - a bug that has been reproduced by a developer, or that multiple people are reporting the same issue and symptoms in which case it is automatically assumed that the bug has been reproduced in different environments.
-- `Status: Debugged` - the cause of the bug has been found, but has not yet been fixed.
-- `Status: Resolved` - applied to *valid* issues which have been fixed. *This label may only be applied to a closed issue.*
-
-*Pull requests*
-- `Status: Insufficiently tested` - applied for pull requests that have not undergone tests strict enough.
-
-#### Resolution
-Resolution labels show the resolution of an issue or pull request. These labels may only be applied to closed issues.
-- `Resolution: Invalid` - Applied to support request issues or issues not related to PocketMine.
-- `Resolution: Duplicate` - Applied to issues reporting the same problems as another issue.
-- `Resolution: Fixed` - Applied to an issue reporting a bug which has been fixed.
-- `Resolution: Works As Intended` - Applied to issues reporting false bugs which work the way they are intended to.
-- `Resolution: Won't Fix` - Applied to issues reporting bugs which will not be fixed, for example if the bug is beneficial.
-- `Resolution: Obsolete` - Applied to pull requests which are rendered unnecessary by other changes, such as another, similar pull request being merged.
-
-#### Miscellaneous
-- `Enhancement` - Applied to issues with viable feature requests or TODO lists.
-- `High priority` - Applied to issues or PRs related to critical bugs.
-
-### Closing Issues
-To keep the bug tracker clear of non-related issues and to prevent it from overflowing, **issues must be closed as soon as possible** (This may sound unethical, but it is MUCH better than having the BUG TRACKER filled with SUPPORT REQUESTS and "I NEED HELP").
-
-If an issue does not conform to the "Creating an Issue" guidelines above, the issue should be closed.
-<!--
-### Milestones
-PocketMine-MP uses GitHub Milestones to set a goal for a new release. A milestone is set on the following occasions.
-
-- A new Beta release
-- A new Stable release
-
-A milestone must use the following format:
-```
-<version_number> [release_title][release_version]
-```
-For example:
-```
-1.6.1b1
-```
--->
