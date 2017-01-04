@@ -363,13 +363,11 @@ interface Chunk{
 	public function networkSerialize() : string;
 
 	/**
-	 * Serializes a chunk without compression for use in AsyncTasks.
-	 *
-	 * @param Chunk $chunk
+	 * Serializes the chunk without compression for use in AsyncTasks.
 	 *
 	 * @return string
 	 */
-	public static function fastSerialize(Chunk $chunk) : string;
+	public function fastSerialize() : string;
 
 	/**
 	 * Deserializes a chunk from fast serialization

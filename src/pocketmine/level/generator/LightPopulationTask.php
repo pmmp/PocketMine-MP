@@ -31,12 +31,10 @@ class LightPopulationTask extends AsyncTask{
 
 	public $levelId;
 	public $chunk;
-	public $chunkClass;
 
 	public function __construct(Level $level, Chunk $chunk){
 		$this->levelId = $level->getId();
-		$this->chunk = GenericChunk::fastDeserialize($this->chunk);
-		$this->chunkClass = get_class($chunk);
+		$this->chunk = $chunk->fastSerialize();
 	}
 
 	public function onRun(){
@@ -51,7 +49,7 @@ class LightPopulationTask extends AsyncTask{
 		$chunk->populateSkyLight();
 		$chunk->setLightPopulated();
 
-		$this->chunk = GenericChunk::fastSerialize($chunk);
+		$this->chunk = $chunk->fastSerialize();
 	}
 
 	public function onCompletion(Server $server){

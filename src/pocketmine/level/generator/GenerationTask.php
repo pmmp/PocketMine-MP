@@ -33,13 +33,11 @@ class GenerationTask extends AsyncTask{
 	public $state;
 	public $levelId;
 	public $chunk;
-	public $chunkClass;
 
 	public function __construct(Level $level, Chunk $chunk){
 		$this->state = true;
 		$this->levelId = $level->getId();
-		$this->chunk = GenericChunk::fastSerialize($chunk);
-		$this->chunkClass = get_class($chunk);
+		$this->chunk = $chunk->fastSerialize();
 	}
 
 	public function onRun(){
@@ -65,7 +63,7 @@ class GenerationTask extends AsyncTask{
 
 		$chunk = $manager->getChunk($chunk->getX(), $chunk->getZ());
 		$chunk->setGenerated();
-		$this->chunk = GenericChunk::fastSerialize($chunk);
+		$this->chunk = $chunk->fastSerialize();
 
 		$manager->setChunk($chunk->getX(), $chunk->getZ(), null);
 	}

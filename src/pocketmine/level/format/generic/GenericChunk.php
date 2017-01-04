@@ -621,13 +621,13 @@ class GenericChunk implements Chunk{
 		return $result;
 	}
 
-	public static function fastSerialize(Chunk $chunk) : string{
+	public function fastSerialize() : string{
 		$stream = new BinaryStream();
-		$stream->putInt($chunk->x);
-		$stream->putInt($chunk->z);
+		$stream->putInt($this->x);
+		$stream->putInt($this->z);
 		$count = 0;
 		$subChunks = "";
-		foreach($chunk->subChunks as $y => $subChunk){
+		foreach($this->subChunks as $y => $subChunk){
 			if($subChunk instanceof EmptySubChunk){
 				continue;
 			}
@@ -636,9 +636,9 @@ class GenericChunk implements Chunk{
 		}
 		$stream->putByte($count);
 		$stream->put($subChunks);
-		$stream->put(pack("C*", ...$chunk->getHeightMapArray()) .
-			$chunk->getBiomeIdArray() .
-			chr(($chunk->lightPopulated ? 1 << 2 : 0) | ($chunk->terrainPopulated ? 1 << 1 : 0) | ($chunk->terrainGenerated ? 1 : 0)));
+		$stream->put(pack("C*", ...$this->heightMap) .
+			$this->biomeIds .
+			chr(($this->lightPopulated ? 1 << 2 : 0) | ($this->terrainPopulated ? 1 << 1 : 0) | ($this->terrainGenerated ? 1 : 0)));
 		//TODO: tiles and entities
 		return $stream->getBuffer();
 	}

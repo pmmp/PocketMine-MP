@@ -47,7 +47,7 @@ class PopulationTask extends AsyncTask{
 	public function __construct(Level $level, Chunk $chunk){
 		$this->state = true;
 		$this->levelId = $level->getId();
-		$this->chunk = GenericChunk::fastSerialize($chunk);
+		$this->chunk = $chunk->fastSerialize();
 
 		for($i = 0; $i < 9; ++$i){
 			if($i === 4){
@@ -56,7 +56,7 @@ class PopulationTask extends AsyncTask{
 			$xx = -1 + $i % 3;
 			$zz = -1 + (int) ($i / 3);
 			$ck = $level->getChunk($chunk->getX() + $xx, $chunk->getZ() + $zz, false);
-			$this->{"chunk$i"} = $ck !== null ? GenericChunk::fastSerialize($ck) : null;
+			$this->{"chunk$i"} = $ck !== null ? $ck->fastSerialize() : null;
 		}
 	}
 
@@ -118,7 +118,7 @@ class PopulationTask extends AsyncTask{
 		$chunk->populateSkyLight();
 		$chunk->setLightPopulated();
 		$chunk->setPopulated();
-		$this->chunk = GenericChunk::fastSerialize($chunk);
+		$this->chunk = $chunk->fastSerialize();
 
 		$manager->setChunk($chunk->getX(), $chunk->getZ(), null);
 
@@ -141,7 +141,7 @@ class PopulationTask extends AsyncTask{
 				continue;
 			}
 
-			$this->{"chunk$i"} = $chunks[$i] !== null ? GenericChunk::fastSerialize($chunks[$i]) : null;
+			$this->{"chunk$i"} = $chunks[$i] !== null ? $chunks[$i]->fastSerialize() : null;
 		}
 	}
 

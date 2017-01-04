@@ -21,6 +21,7 @@
 
 namespace pocketmine\level\format\generic;
 
+use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\scheduler\AsyncTask;
@@ -40,7 +41,7 @@ class ChunkRequestTask extends AsyncTask{
 	public function __construct(Level $level, Chunk $chunk){
 		$this->levelId = $level->getId();
 
-		$this->chunk = GenericChunk::fastSerialize($chunk);
+		$this->chunk = $chunk->fastSerialize();
 		$this->chunkX = $chunk->getX();
 		$this->chunkZ = $chunk->getZ();
 
