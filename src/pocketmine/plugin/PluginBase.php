@@ -217,7 +217,7 @@ abstract class PluginBase implements Plugin{
 	}
 
 	/**
-	 * Returns all the resources incrusted on the plugin
+	 * Returns all the resources packaged with the plugin
 	 *
 	 * @return string[]
 	 */

@@ -31,7 +31,7 @@ use pocketmine\Server;
  * with no AsyncTask running. Therefore, an AsyncTask SHOULD NOT execute for more than a few seconds. For tasks that
  * run for a long time or infinitely, start another {@link \pocketmine\Thread} instead.
  *
- * WARNING: Do not call PocketMine-MP API methods, or save objects (and arrays cotaining objects) from/on other Threads!!
+ * WARNING: Do not call PocketMine-MP API methods, or save objects (and arrays containing objects) from/on other Threads!!
  */
 abstract class AsyncTask extends Collectable{
 
@@ -176,7 +176,7 @@ abstract class AsyncTask extends Collectable{
 	}
 
 	/**
-	 * Call this method from {@link AsyncTask#onRun} (AsyncTask execution therad) to schedule a call to
+	 * Call this method from {@link AsyncTask#onRun} (AsyncTask execution thread) to schedule a call to
 	 * {@link AsyncTask#onProgressUpdate} from the main thread with the given progress parameter.
 	 *
 	 * @param mixed $progress A value that can be safely serialize()'ed.

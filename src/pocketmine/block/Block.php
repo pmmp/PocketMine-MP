@@ -366,10 +366,10 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @param int $type
 	 *
-	 * @return void
+	 * @return int|bool
 	 */
 	public function onUpdate($type){
-
+		return false;
 	}
 
 	/**

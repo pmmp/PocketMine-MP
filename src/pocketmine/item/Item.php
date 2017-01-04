@@ -787,7 +787,8 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * Serializes the item to an NBT CompoundTag
 	 *
-	 * @param int $slot optional, the inventory slot of the item
+	 * @param int    $slot optional, the inventory slot of the item
+	 * @param string $tagName the name to assign to the CompoundTag object
 	 *
 	 * @return CompoundTag
 	 */

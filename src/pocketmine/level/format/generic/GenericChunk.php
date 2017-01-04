@@ -91,7 +91,7 @@ class GenericChunk implements Chunk{
 	 * @param CompoundTag[] $entities
 	 * @param CompoundTag[] $tiles
 	 * @param string        $biomeIds
-	 * @param int[256]      $heightMap
+	 * @param int[]         $heightMap
 	 */
 	public function __construct($provider, int $chunkX, int $chunkZ, array $subChunks = [], array $entities = [], array $tiles = [], string $biomeIds = "", array $heightMap = []){
 		$this->provider = $provider;
@@ -736,7 +736,7 @@ class GenericChunk implements Chunk{
 	/**
 	 * Converts pre-MCPE-1.0 biome colour array to biome ID array. RIP BiomeColors :(
 	 *
-	 * @param int[256] $array of biome colour values
+	 * @param int[] $array of biome colour values
 	 *
 	 * @return string
 	 */

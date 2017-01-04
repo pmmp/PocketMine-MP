@@ -59,7 +59,7 @@ class Anvil extends McRegion{
 			}
 			$nbt->Sections[++$subChunks] = new CompoundTag(null, [
 				"Y"          => new ByteTag("Y", $y),
-				"Blocks"     => new ByteArrayTag("Blocks",     GenericChunk::reorderByteArray($subChunk->getBlockIdArray())), //Generic in-memory chunks are currrently always XZY
+				"Blocks"     => new ByteArrayTag("Blocks",     GenericChunk::reorderByteArray($subChunk->getBlockIdArray())), //Generic in-memory chunks are currently always XZY
 				"Data"       => new ByteArrayTag("Data",       GenericChunk::reorderNibbleArray($subChunk->getBlockDataArray())),
 				"SkyLight"   => new ByteArrayTag("SkyLight",   GenericChunk::reorderNibbleArray($subChunk->getSkyLightArray())),
 				"BlockLight" => new ByteArrayTag("BlockLight", GenericChunk::reorderNibbleArray($subChunk->getBlockLightArray()))

@@ -76,7 +76,7 @@ class ExampleClass{
 					4 => "value5",
 					5 => "value6",
 				];
-			}
+			};
 		}
 	}
 

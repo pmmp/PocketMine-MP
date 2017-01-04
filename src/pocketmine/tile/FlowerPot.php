@@ -45,6 +45,7 @@ class FlowerPot extends Spawnable{
 			return false;
 		}
 		switch($item->getId()){
+			/** @noinspection PhpMissingBreakStatementInspection */
 			case Item::TALL_GRASS:
 				if($item->getDamage() === 1){
 					return false;

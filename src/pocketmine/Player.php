@@ -1078,8 +1078,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 */
 	public function awardAchievement($achievementId){
 		if(isset(Achievement::$list[$achievementId]) and !$this->hasAchievement($achievementId)){
-			foreach(Achievement::$list[$achievementId]["requires"] as $requerimentId){
-				if(!$this->hasAchievement($requerimentId)){
+			foreach(Achievement::$list[$achievementId]["requires"] as $requirementId){
+				if(!$this->hasAchievement($requirementId)){
 					return false;
 				}
 			}

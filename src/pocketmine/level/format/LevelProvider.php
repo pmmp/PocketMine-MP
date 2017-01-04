@@ -109,6 +109,8 @@ interface LevelProvider{
 	/**
 	 * @param int $chunkX
 	 * @param int $chunkZ
+	 *
+	 * @return bool
 	 */
 	public function saveChunk(int $chunkX, int $chunkZ) : bool;
 

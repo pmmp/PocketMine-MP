@@ -61,6 +61,7 @@ interface Chunk{
 	 * @return int
 	 */
 	public function getHeight() : int;
+
 	/**
 	 * Gets block and meta in one go
 	 *
@@ -324,6 +325,7 @@ interface Chunk{
 	/**
 	 * @param int      $fY 0-15
 	 * @param SubChunk $subChunk
+	 * @param bool     $allowEmpty
 	 *
 	 * @return bool
 	 */
@@ -337,7 +339,7 @@ interface Chunk{
 	/**
 	 * Returns the index of the highest non-empty subchunk
 	 *
-	 * @return bool
+	 * @return int
 	 */
 	public function getHighestSubChunkIndex() : int;
 
@@ -362,6 +364,8 @@ interface Chunk{
 
 	/**
 	 * Serializes a chunk without compression for use in AsyncTasks.
+	 *
+	 * @param Chunk $chunk
 	 *
 	 * @return string
 	 */
