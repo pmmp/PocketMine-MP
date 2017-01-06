@@ -22,7 +22,6 @@
 namespace pocketmine\level\generator;
 
 use pocketmine\level\format\Chunk;
-use pocketmine\level\format\generic\GenericChunk;
 use pocketmine\level\Level;
 use pocketmine\level\SimpleChunkManager;
 use pocketmine\scheduler\AsyncTask;
@@ -73,7 +72,7 @@ class PopulationTask extends AsyncTask{
 		/** @var Chunk[] $chunks */
 		$chunks = [];
 
-		$chunk = GenericChunk::fastDeserialize($this->chunk);
+		$chunk = Chunk::fastDeserialize($this->chunk);
 
 		for($i = 0; $i < 9; ++$i){
 			if($i === 4){
@@ -83,9 +82,9 @@ class PopulationTask extends AsyncTask{
 			$zz = -1 + (int) ($i / 3);
 			$ck = $this->{"chunk$i"};
 			if($ck === null){
-				$chunks[$i] = GenericChunk::getEmptyChunk($chunk->getX() + $xx, $chunk->getZ() + $zz);
+				$chunks[$i] = Chunk::getEmptyChunk($chunk->getX() + $xx, $chunk->getZ() + $zz);
 			}else{
-				$chunks[$i] = GenericChunk::fastDeserialize($ck);
+				$chunks[$i] = Chunk::fastDeserialize($ck);
 			}
 		}
 
@@ -153,7 +152,7 @@ class PopulationTask extends AsyncTask{
 				return;
 			}
 
-			$chunk = GenericChunk::fastDeserialize($this->chunk, $level->getProvider());
+			$chunk = Chunk::fastDeserialize($this->chunk, $level->getProvider());
 
 			if($chunk === null){
 				//TODO error
@@ -166,7 +165,7 @@ class PopulationTask extends AsyncTask{
 				}
 				$c = $this->{"chunk$i"};
 				if($c !== null){
-					$c = GenericChunk::fastDeserialize($c, $level->getProvider());
+					$c = Chunk::fastDeserialize($c, $level->getProvider());
 					$level->generateChunkCallback($c->getX(), $c->getZ(), $c);
 				}
 			}

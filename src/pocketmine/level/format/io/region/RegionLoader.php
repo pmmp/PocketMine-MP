@@ -21,10 +21,10 @@
 
 declare(strict_types = 1);
 
-namespace pocketmine\level\format\region;
+namespace pocketmine\level\format\io\region;
 
-use pocketmine\level\format\generic\GenericChunk;
-use pocketmine\level\format\LevelProvider;
+use pocketmine\level\format\Chunk;
+use pocketmine\level\format\io\LevelProvider;
 use pocketmine\utils\Binary;
 use pocketmine\utils\ChunkException;
 use pocketmine\utils\MainLogger;
@@ -114,7 +114,7 @@ class RegionLoader{
 		}
 
 		$chunk = $this->levelProvider->nbtDeserialize(fread($this->filePointer, $length - 1));
-		if($chunk instanceof GenericChunk){
+		if($chunk instanceof Chunk){
 			return $chunk;
 		}else{
 			MainLogger::getLogger()->error("Corrupted chunk detected");
@@ -159,7 +159,7 @@ class RegionLoader{
 		$this->locationTable[$index][1] = 0;
 	}
 
-	public function writeChunk(GenericChunk $chunk){
+	public function writeChunk(Chunk $chunk){
 		$this->lastUsed = time();
 		$chunkData = $this->levelProvider->nbtSerialize($chunk);
 		if($chunkData !== false){

@@ -24,15 +24,11 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\{
-	ByteTag, 
-	CompoundTag, 
-	FloatTag, 
-	IntTag, 
-	StringTag
+	ByteTag, CompoundTag, FloatTag, IntTag, StringTag
 };
 use pocketmine\Player;
-use pocketmine\tile\Tile;
 use pocketmine\tile\ItemFrame as TileItemFrame;
+use pocketmine\tile\Tile;
 
 class ItemFrame extends Flowable{
 	protected $id = Block::ITEM_FRAME_BLOCK;

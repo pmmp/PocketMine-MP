@@ -21,9 +21,9 @@
 
 declare(strict_types = 1);
 
-namespace pocketmine\level\format\generic;
+namespace pocketmine\level\format\io;
 
-use pocketmine\level\format\LevelProvider;
+use pocketmine\level\format\Chunk;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
@@ -42,6 +42,8 @@ abstract class BaseLevelProvider implements LevelProvider{
 	protected $path;
 	/** @var CompoundTag */
 	protected $levelData;
+	/** @var bool */
+	protected $asyncChunkRequest = false;
 
 	public function __construct(Level $level, string $path){
 		$this->level = $level;
@@ -65,6 +67,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 		if(!isset($this->levelData->generatorOptions)){
 			$this->levelData->generatorOptions = new StringTag("generatorOptions", "");
 		}
+		$this->asyncChunkRequest = (bool) $this->level->getServer()->getProperty("chunk-sending.async-chunk-request", false);
 	}
 
 	public function getPath() : string{
@@ -131,10 +134,17 @@ abstract class BaseLevelProvider implements LevelProvider{
 
 	public function requestChunkTask(int $x, int $z){
 		$chunk = $this->getChunk($x, $z, false);
-		if(!($chunk instanceof GenericChunk)){
+		if(!($chunk instanceof Chunk)){
 			throw new ChunkException("Invalid Chunk sent");
 		}
 
+		if($this->asyncChunkRequest){
+			return new ChunkRequestTask($this->level, $chunk);
+		}
+
+		//non-async, call the callback directly with serialized data
 		$this->getLevel()->chunkRequestCallback($x, $z, $chunk->networkSerialize());
+
+		return null;
 	}
 }

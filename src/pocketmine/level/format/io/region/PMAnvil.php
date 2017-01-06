@@ -21,19 +21,13 @@
 
 declare(strict_types = 1);
 
-namespace pocketmine\level\format\region;
+namespace pocketmine\level\format\io\region;
 
-use pocketmine\level\format\generic\GenericChunk;
-use pocketmine\level\format\generic\SubChunk;
+use pocketmine\level\format\Chunk;
+use pocketmine\level\format\SubChunk;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\{
-	ByteArrayTag,
-	ByteTag,
-	CompoundTag,
-	IntArrayTag,
-	IntTag,
-	ListTag,
-	LongTag
+	ByteArrayTag, ByteTag, CompoundTag, IntArrayTag, IntTag, ListTag, LongTag
 };
 use pocketmine\Player;
 use pocketmine\utils\ChunkException;
@@ -47,7 +41,7 @@ class PMAnvil extends Anvil{
 
 	const REGION_FILE_EXTENSION = "mcapm";
 
-	public function nbtSerialize(GenericChunk $chunk) : string{
+	public function nbtSerialize(Chunk $chunk) : string{
 		$nbt = new CompoundTag("Level", []);
 		$nbt->xPos = new IntTag("xPos", $chunk->getX());
 		$nbt->zPos = new IntTag("zPos", $chunk->getZ());
@@ -134,7 +128,7 @@ class PMAnvil extends Anvil{
 				}
 			}
 
-			$result = new GenericChunk(
+			$result = new Chunk(
 				$this,
 				$chunk["xPos"],
 				$chunk["zPos"],
