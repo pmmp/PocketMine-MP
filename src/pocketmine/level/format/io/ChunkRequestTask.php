@@ -61,7 +61,7 @@ class ChunkRequestTask extends AsyncTask{
 	public function onRun(){
 		$chunk = Chunk::fastDeserialize($this->chunk);
 
-		$ordered = $chunk->networkSerialize();
+		$ordered = $chunk->networkSerialize() . $this->tiles;
 
 		$this->setResult($ordered, false);
 	}
