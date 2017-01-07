@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -496,16 +496,31 @@ namespace pocketmine {
 	$killer = new ServerKiller(8);
 	$killer->start();
 
+	$erroredThreads = 0;
+
 	foreach(ThreadManager::getInstance()->getAll() as $id => $thread){
 		$logger->debug("Stopping " . $thread->getThreadName() . " thread");
-		$thread->quit();
+		try{
+			$thread->quit();
+			$logger->debug($thread->getThreadName() . " thread stopped successfully.");
+		}catch(\ThreadException $e){
+			++$erroredThreads;
+			$logger->debug("Could not stop " . $thread->getThreadName() . " thread: " . $e->getMessage());
+		}
 	}
 
 	$logger->shutdown();
 	$logger->join();
 
-	echo Terminal::$FORMAT_RESET . "\n";
+	echo Terminal::$FORMAT_RESET . PHP_EOL;
 
-	exit(0);
+	if($erroredThreads > 0){
+		if(\pocketmine\DEBUG > 1){
+			echo "Some threads could not be stopped, performing a force-kill" . PHP_EOL . PHP_EOL;
+		}
+		kill(getmypid());
+	}else{
+		exit(0);
+	}
 
 }
