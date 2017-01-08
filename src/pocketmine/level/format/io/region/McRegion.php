@@ -84,7 +84,7 @@ class McRegion extends BaseLevelProvider{
 		$nbt->BlockLight = new ByteArrayTag("BlockLight", $blockLight);
 
 		$nbt->Biomes = new ByteArrayTag("Biomes", $chunk->getBiomeIdArray());
-		$nbt->HeightMap = new IntArrayTag("HeightMap", $chunk->getHeightMapArray());
+		$nbt->HeightMap = new ByteArrayTag("HeightMap", pack("C*", ...$chunk->getHeightMapArray()));
 
 		$entities = [];
 
@@ -176,6 +176,15 @@ class McRegion extends BaseLevelProvider{
 				$biomeIds = "";
 			}
 
+			$heightMap = [];
+			if(isset($chunk->HeightMap)){
+				if($chunk->HeightMap instanceof ByteArrayTag){
+					$heightMap = unpack("C*", $chunk->HeightMap->getValue());
+				}elseif($chunk->HeightMap instanceof IntArrayTag){
+					$heightMap = $chunk->HeightMap->getValue(); #blameshoghicp
+				}
+			}
+
 			$result = new Chunk(
 				$this,
 				$chunk["xPos"],
@@ -184,7 +193,7 @@ class McRegion extends BaseLevelProvider{
 				isset($chunk->Entities) ? $chunk->Entities->getValue() : [],
 				isset($chunk->TileEntities) ? $chunk->TileEntities->getValue() : [],
 				$biomeIds,
-				isset($chunk->HeightMap) ? $chunk->HeightMap->getValue() : [] //this shouldn't exist in normal mcregion worlds anyway...
+				$heightMap
 			);
 			$result->setLightPopulated(isset($chunk->LightPopulated) ? ((bool) $chunk->LightPopulated->getValue()) : false);
 			$result->setPopulated(isset($chunk->TerrainPopulated) ? ((bool) $chunk->TerrainPopulated->getValue()) : false);
