@@ -2578,7 +2578,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * Returns true if the spawn is part of the spawn
+	 * Returns whether the chunk at the specified coordinates is a spawn chunk
 	 *
 	 * @param int $X
 	 * @param int $Z
