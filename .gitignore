@@ -11,7 +11,7 @@ server.properties
 memoryDump_*/*
 
 # Common IDEs
-.idea/*
+.idea/
 nbproject/*
 
 # Windows image file caches
