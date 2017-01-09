@@ -347,36 +347,38 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public function entityBaseTick($tickDiff = 1){
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		$food = $this->getFood();
-		$health = $this->getHealth();
-		if($food >= 18){
-			$this->foodTickTimer++;
-			if($this->foodTickTimer >= 80 and $health < $this->getMaxHealth()){
-				$this->heal(1, new EntityRegainHealthEvent($this, 1, EntityRegainHealthEvent::CAUSE_SATURATION));
-				$this->exhaust(3.0, PlayerExhaustEvent::CAUSE_HEALTH_REGEN);
-				$this->foodTickTimer = 0;
+		if($this->isAlive()){
+			$food = $this->getFood();
+			$health = $this->getHealth();
+			if($food >= 18){
+				$this->foodTickTimer++;
+				if($this->foodTickTimer >= 80 and $health < $this->getMaxHealth()){
+					$this->heal(1, new EntityRegainHealthEvent($this, 1, EntityRegainHealthEvent::CAUSE_SATURATION));
+					$this->exhaust(3.0, PlayerExhaustEvent::CAUSE_HEALTH_REGEN);
+					$this->foodTickTimer = 0;
 
-			}
-		}elseif($food === 0){
-			$this->foodTickTimer++;
-			if($this->foodTickTimer >= 80){
-				$diff = $this->server->getDifficulty();
-				$can = false;
-				if($diff === 1){
-					$can = $health > 10;
-				}elseif($diff === 2){
-					$can = $health > 1;
-				}elseif($diff === 3){
-					$can = true;
 				}
-				if($can){
-					$this->attack(1, new EntityDamageEvent($this, EntityDamageEvent::CAUSE_STARVATION, 1));
+			}elseif($food === 0){
+				$this->foodTickTimer++;
+				if($this->foodTickTimer >= 80){
+					$diff = $this->server->getDifficulty();
+					$can = false;
+					if($diff === 1){
+						$can = $health > 10;
+					}elseif($diff === 2){
+						$can = $health > 1;
+					}elseif($diff === 3){
+						$can = true;
+					}
+					if($can){
+						$this->attack(1, new EntityDamageEvent($this, EntityDamageEvent::CAUSE_STARVATION, 1));
+					}
 				}
 			}
-		}
-		if($food <= 6){
-			if($this->isSprinting()){
-				$this->setSprinting(false);
+			if($food <= 6){
+				if($this->isSprinting()){
+					$this->setSprinting(false);
+				}
 			}
 		}
 
