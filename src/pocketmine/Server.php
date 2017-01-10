@@ -1453,7 +1453,11 @@ class Server{
 
 			define('pocketmine\DEBUG', (int) $this->getProperty("debug.level", 1));
 
-			ini_set('assert.exception', 1);
+			if(((int) ini_get('zend.assertions')) > 0 and ((bool) $this->getProperty("debug.assertions.warn-if-enabled", true)) !== false){
+				$this->logger->warning("Debugging assertions are enabled, this may impact on performance. To disable them, set `zend.assertions = -1` in php.ini.");
+			}
+
+			ini_set('assert.exception', (bool) $this->getProperty("debug.assertions.throw-exception", 0));
 
 			if($this->logger instanceof MainLogger){
 				$this->logger->setLogDebug(\pocketmine\DEBUG > 1);
