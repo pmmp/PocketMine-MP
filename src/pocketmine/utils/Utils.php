@@ -334,30 +334,6 @@ class Utils{
 		return preg_replace('#([^\x20-\x7E])#', '.', $str);
 	}
 
-	/**
-	 * This function tries to get all the entropy available in PHP, and distills it to get a good RNG.
-	 *
-	 * This function simply forwards to the PHP random_bytes function.
-	 *
-	 * @param int    $length       default 16, Number of bytes to generate
-	 * @param bool   $secure       default true, Generate secure distilled bytes, slower
-	 * @param bool   $raw          default true, returns a binary string if true, or an hexadecimal one
-	 * @param string $startEntropy default null, adds more initial entropy
-	 * @param int    &$rounds      Will be set to the number of rounds taken
-	 * @param int    &$drop        Will be set to the amount of dropped bytes
-	 *
-	 * @deprecated prefer PHP 7 random_bytes()
-	 * @return string
-	 */
-	public static function getRandomBytes($length = 16, $secure = true, $raw = true, $startEntropy = "", &$rounds = 0, &$drop = 0){
-		$raw_output = random_bytes($length);
-		if($raw){
-			return $raw_output;
-		}else{
-			return bin2hex($raw_output);
-		}
-	}
-
 	/*
 	public static function angle3D($pos1, $pos2){
 		$X = $pos1["x"] - $pos2["x"];
