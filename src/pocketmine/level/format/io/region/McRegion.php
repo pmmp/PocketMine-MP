@@ -273,7 +273,7 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	public function getGenerator() : string{
-		return $this->levelData["generatorName"];
+		return (string) $this->levelData["generatorName"];
 	}
 
 	public function getGeneratorOptions() : array{
@@ -332,8 +332,10 @@ class McRegion extends BaseLevelProvider{
 		}
 		$regionX = $regionZ = null;
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
+		/** @noinspection PhpStrictTypeCheckingInspection */
 		$this->loadRegion($regionX, $regionZ);
 		$this->level->timings->syncChunkLoadDataTimer->startTiming();
+		/** @noinspection PhpStrictTypeCheckingInspection */
 		$chunk = $this->getRegion($regionX, $regionZ)->readChunk($chunkX - $regionX * 32, $chunkZ - $regionZ * 32);
 		if($chunk === null and $create){
 			$chunk = $this->getEmptyChunk($chunkX, $chunkZ);
