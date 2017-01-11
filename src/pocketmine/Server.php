@@ -1523,10 +1523,10 @@ class Server{
 			LevelProviderManager::addProvider(Anvil::class);
 			LevelProviderManager::addProvider(McRegion::class);
 			LevelProviderManager::addProvider(PMAnvil::class);
-			/*if(extension_loaded("leveldb")){
+			if(extension_loaded("leveldb")){
 				$this->logger->debug($this->getLanguage()->translateString("pocketmine.debug.enable"));
-				LevelProviderManager::addProvider(LevelDB::class);
-			}*/
+				//LevelProviderManager::addProvider(LevelDB::class);
+			}
 
 
 			Generator::addGenerator(Flat::class, "flat");
