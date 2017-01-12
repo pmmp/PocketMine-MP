@@ -1015,4 +1015,5 @@ class Chunk{
 	public static function chunkBlockHash(int $x, int $y, int $z) : int{
 		return ($x << 12) | ($z << 8) | $y;
 	}
+
 }
