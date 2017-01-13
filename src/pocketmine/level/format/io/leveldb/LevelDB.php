@@ -142,8 +142,7 @@ class LevelDB extends BaseLevelProvider{
 			mkdir($path . "/db", 0777, true);
 		}
 
-		$generatorClass = Generator::getGenerator($generator);
-		switch($generatorClass){
+		switch($generator){
 			case Flat::class:
 				$generatorType = self::GENERATOR_FLAT;
 				break;
@@ -198,8 +197,9 @@ class LevelDB extends BaseLevelProvider{
 		$db = new \LevelDB($path . "/db", [
 			"compression" => LEVELDB_ZLIB_COMPRESSION
 		]);
+
 		if($generatorType === self::GENERATOR_FLAT and isset($options["preset"])){
-			$layers = explode(";", $options["preset"])[2] ?? "";
+			$layers = explode(";", $options["preset"])[1] ?? "";
 			if($layers !== ""){
 				$db->put(self::ENTRY_FLAT_WORLD_LAYERS, "[" . $layers . "]"); //Add vanilla flatworld layers to allow terrain generation by MCPE to continue seamlessly
 			}
