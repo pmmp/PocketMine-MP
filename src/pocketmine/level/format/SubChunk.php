@@ -30,10 +30,10 @@ class SubChunk{
 	protected $blockLight;
 	protected $skyLight;
 
-	private static function assignData(&$target, $data, $length){
+	private static function assignData(&$target, $data, $length, $value = "\x00"){
 		if(strlen($data) !== $length){
 			assert($data === "", "Invalid non-zero length given, expected $length, got " . strlen($data));
-			$target = str_repeat("\x00", $length);
+			$target = str_repeat($value, $length);
 		}else{
 			$target = $data;
 		}
@@ -42,7 +42,7 @@ class SubChunk{
 	public function __construct(string $ids = "", string $data = "", string $skyLight = "", string $blockLight = ""){
 		self::assignData($this->ids, $ids, 4096);
 		self::assignData($this->data, $data, 2048);
-		self::assignData($this->skyLight, $skyLight, 2048);
+		self::assignData($this->skyLight, $skyLight, 2048, "\xff");
 		self::assignData($this->blockLight, $blockLight, 2048);
 	}
 
