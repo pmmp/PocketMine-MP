@@ -159,7 +159,7 @@ class LevelDB extends BaseLevelProvider{
 			"ForceGameType" => new ByteTag("ForceGameType", 0),
 			"GameType" => new IntTag("GameType", 0),
 			"Generator" => new IntTag("Generator", $generatorType),
-			"LastPlayed" => new LongTag("LastPlayed", microtime(true) * 1000),
+			"LastPlayed" => new LongTag("LastPlayed", time()),
 			"LevelName" => new StringTag("LevelName", $name),
 			"NetworkVersion" => new IntTag("NetworkVersion", ProtocolInfo::CURRENT_PROTOCOL),
 			//"Platform" => new IntTag("Platform", 2), //TODO: find out what the possible values are for
