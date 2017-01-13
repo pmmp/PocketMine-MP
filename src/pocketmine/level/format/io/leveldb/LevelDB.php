@@ -166,7 +166,7 @@ class LevelDB extends BaseLevelProvider{
 			"SpawnX" => new IntTag("SpawnX", 0),
 			"SpawnY" => new IntTag("SpawnY", 32767),
 			"SpawnZ" => new IntTag("SpawnZ", 0),
-			"StorageVersion" => new IntTag("StorageVersion", 5), //MCPE 1.0.0, this must be updated if the level format changes in future updates.
+			"StorageVersion" => new IntTag("StorageVersion", self::CURRENT_STORAGE_VERSION),
 			"Time" => new LongTag("Time", 0),
 			"eduLevel" => new ByteTag("eduLevel", 0),
 			"falldamage" => new ByteTag("falldamage", 1),
@@ -201,7 +201,12 @@ class LevelDB extends BaseLevelProvider{
 		if($generatorType === self::GENERATOR_FLAT and isset($options["preset"])){
 			$layers = explode(";", $options["preset"])[1] ?? "";
 			if($layers !== ""){
-				$db->put(self::ENTRY_FLAT_WORLD_LAYERS, "[" . $layers . "]"); //Add vanilla flatworld layers to allow terrain generation by MCPE to continue seamlessly
+				$out = "[";
+				foreach(Flat::parseLayers($layers) as $result){
+					$out .= $result[0] . ","; //only id, meta will unfortunately not survive :(
+				}
+				$out = rtrim($out, ",") . "]"; //remove trailing comma
+				$db->put(self::ENTRY_FLAT_WORLD_LAYERS, $out); //Add vanilla flatworld layers to allow terrain generation by MCPE to continue seamlessly
 			}
 		}
 
