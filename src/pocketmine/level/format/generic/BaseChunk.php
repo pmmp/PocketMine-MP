@@ -78,27 +78,27 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 	}
 
 	public function getFullBlock($x, $y, $z){
-		return $this->sections[$y >> 4]->getFullBlock($x, $y & 0x0f, $z);
+		return $this->getSection($y >> 4)->getFullBlock($x, $y & 0x0f, $z);
 	}
 
 	public function setBlock($x, $y, $z, $blockId = null, $meta = null){
 		try{
 			$this->hasChanged = true;
-			return $this->sections[$y >> 4]->setBlock($x, $y & 0x0f, $z, $blockId & 0xff, $meta & 0x0f);
+			return $this->getSection($y >> 4)->setBlock($x, $y & 0x0f, $z, $blockId & 0xff, $meta & 0x0f);
 		}catch(ChunkException $e){
 			$level = $this->getProvider();
 			$this->setInternalSection($Y = $y >> 4, $level::createChunkSection($Y));
-			return $this->sections[$y >> 4]->setBlock($x, $y & 0x0f, $z, $blockId & 0xff, $meta & 0x0f);
+			return $this->getSection($y >> 4)->setBlock($x, $y & 0x0f, $z, $blockId & 0xff, $meta & 0x0f);
 		}
 	}
 
 	public function getBlockId($x, $y, $z){
-		return $this->sections[$y >> 4]->getBlockId($x, $y & 0x0f, $z);
+		return $this->getSection($y >> 4)->getBlockId($x, $y & 0x0f, $z);
 	}
 
 	public function setBlockId($x, $y, $z, $id){
 		try{
-			$this->sections[$y >> 4]->setBlockId($x, $y & 0x0f, $z, $id);
+			$this->getSection($y >> 4)->setBlockId($x, $y & 0x0f, $z, $id);
 			$this->hasChanged = true;
 		}catch(ChunkException $e){
 			$level = $this->getProvider();
@@ -108,12 +108,12 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 	}
 
 	public function getBlockData($x, $y, $z){
-		return $this->sections[$y >> 4]->getBlockData($x, $y & 0x0f, $z);
+		return $this->getSection($y >> 4)->getBlockData($x, $y & 0x0f, $z);
 	}
 
 	public function setBlockData($x, $y, $z, $data){
 		try{
-			$this->sections[$y >> 4]->setBlockData($x, $y & 0x0f, $z, $data);
+			$this->getSection($y >> 4)->setBlockData($x, $y & 0x0f, $z, $data);
 			$this->hasChanged = true;
 		}catch(ChunkException $e){
 			$level = $this->getProvider();
@@ -123,12 +123,12 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 	}
 
 	public function getBlockSkyLight($x, $y, $z){
-		return $this->sections[$y >> 4]->getBlockSkyLight($x, $y & 0x0f, $z);
+		return $this->getSection($y >> 4)->getBlockSkyLight($x, $y & 0x0f, $z);
 	}
 
 	public function setBlockSkyLight($x, $y, $z, $data){
 		try{
-			$this->sections[$y >> 4]->setBlockSkyLight($x, $y & 0x0f, $z, $data);
+			$this->getSection($y >> 4)->setBlockSkyLight($x, $y & 0x0f, $z, $data);
 			$this->hasChanged = true;
 		}catch(ChunkException $e){
 			$level = $this->getProvider();
@@ -138,12 +138,12 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 	}
 
 	public function getBlockLight($x, $y, $z){
-		return $this->sections[$y >> 4]->getBlockLight($x, $y & 0x0f, $z);
+		return $this->getSection($y >> 4)->getBlockLight($x, $y & 0x0f, $z);
 	}
 
 	public function setBlockLight($x, $y, $z, $data){
 		try{
-			$this->sections[$y >> 4]->setBlockLight($x, $y & 0x0f, $z, $data);
+			$this->getSection($y >> 4)->setBlockLight($x, $y & 0x0f, $z, $data);
 			$this->hasChanged = true;
 		}catch(ChunkException $e){
 			$level = $this->getProvider();
@@ -155,7 +155,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 	public function getBlockIdColumn($x, $z){
 		$column = "";
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
-			$column .= $this->sections[$y]->getBlockIdColumn($x, $z);
+			$column .= $this->getSection($y)->getBlockIdColumn($x, $z);
 		}
 
 		return $column;
@@ -164,7 +164,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 	public function getBlockDataColumn($x, $z){
 		$column = "";
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
-			$column .= $this->sections[$y]->getBlockDataColumn($x, $z);
+			$column .= $this->getSection($y)->getBlockDataColumn($x, $z);
 		}
 
 		return $column;
@@ -173,7 +173,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 	public function getBlockSkyLightColumn($x, $z){
 		$column = "";
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
-			$column .= $this->sections[$y]->getBlockSkyLightColumn($x, $z);
+			$column .= $this->getSection($y)->getBlockSkyLightColumn($x, $z);
 		}
 
 		return $column;
@@ -182,18 +182,18 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 	public function getBlockLightColumn($x, $z){
 		$column = "";
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
-			$column .= $this->sections[$y]->getBlockLightColumn($x, $z);
+			$column .= $this->getSection($y)->getBlockLightColumn($x, $z);
 		}
 
 		return $column;
 	}
 
 	public function isSectionEmpty($fY){
-		return $this->sections[(int) $fY] instanceof EmptyChunkSection;
+		return $this->getSection($fY) instanceof EmptyChunkSection;
 	}
 
 	public function getSection($fY){
-		return $this->sections[(int) $fY];
+		return $this->sections[(int) $fY] ?? new EmptyChunkSection((int) $fY);
 	}
 
 	public function setSection($fY, ChunkSection $section){
@@ -217,7 +217,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 	public function getBlockIdArray(){
 		$blocks = "";
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
-			$blocks .= $this->sections[$y]->getIdArray();
+			$blocks .= $this->getSection($y)->getIdArray();
 		}
 
 		return $blocks;
@@ -226,7 +226,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 	public function getBlockDataArray(){
 		$data = "";
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
-			$data .= $this->sections[$y]->getDataArray();
+			$data .= $this->getSection($y)->getDataArray();
 		}
 
 		return $data;
@@ -235,7 +235,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 	public function getBlockSkyLightArray(){
 		$skyLight = "";
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
-			$skyLight .= $this->sections[$y]->getSkyLightArray();
+			$skyLight .= $this->getSection($y)->getSkyLightArray();
 		}
 
 		return $skyLight;
@@ -244,7 +244,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 	public function getBlockLightArray(){
 		$blockLight = "";
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
-			$blockLight .= $this->sections[$y]->getLightArray();
+			$blockLight .= $this->getSection($y)->getLightArray();
 		}
 
 		return $blockLight;
