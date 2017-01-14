@@ -354,18 +354,28 @@ class Binary{
 		return pack("V", $value);
 	}
 
-	public static function readFloat($str){
+	public static function readFloat($str, int $accuracy = -1){
 		self::checkLength($str, 4);
-		return ENDIANNESS === self::BIG_ENDIAN ? unpack("f", $str)[1] : unpack("f", strrev($str))[1];
+		$value = ENDIANNESS === self::BIG_ENDIAN ? unpack("f", $str)[1] : unpack("f", strrev($str))[1];
+		if($accuracy > -1){
+			return round($value, $accuracy);
+		}else{
+			return $value;
+		}
 	}
 
 	public static function writeFloat($value){
 		return ENDIANNESS === self::BIG_ENDIAN ? pack("f", $value) : strrev(pack("f", $value));
 	}
 
-	public static function readLFloat($str){
+	public static function readLFloat($str, int $accuracy = -1){
 		self::checkLength($str, 4);
-		return ENDIANNESS === self::BIG_ENDIAN ? unpack("f", strrev($str))[1] : unpack("f", $str)[1];
+		$value = ENDIANNESS === self::BIG_ENDIAN ? unpack("f", strrev($str))[1] : unpack("f", $str)[1];
+		if($accuracy > -1){
+			return round($value, $accuracy);
+		}else{
+			return $value;
+		}
 	}
 
 	public static function writeLFloat($value){

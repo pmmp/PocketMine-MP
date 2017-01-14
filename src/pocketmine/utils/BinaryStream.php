@@ -126,8 +126,8 @@ class BinaryStream extends \stdClass{
 		$this->buffer .= Binary::writeShort($v);
 	}
 
-	public function getFloat(){
-		return Binary::readFloat($this->get(4));
+	public function getFloat(int $accuracy = -1){
+		return Binary::readFloat($this->get(4), $accuracy);
 	}
 
 	public function putFloat($v){
@@ -142,8 +142,8 @@ class BinaryStream extends \stdClass{
 		$this->buffer .= Binary::writeLShort($v);
 	}
 
-	public function getLFloat(){
-		return Binary::readLFloat($this->get(4));
+	public function getLFloat(int $accuracy = -1){
+		return Binary::readLFloat($this->get(4), $accuracy);
 	}
 
 	public function putLFloat($v){
@@ -300,9 +300,9 @@ class BinaryStream extends \stdClass{
 	}
 
 	public function getVector3f(&$x, &$y, &$z){
-		$x = $this->getLFloat();
-		$y = $this->getLFloat();
-		$z = $this->getLFloat();
+		$x = $this->getLFloat(4);
+		$y = $this->getLFloat(4);
+		$z = $this->getLFloat(4);
 	}
 
 	public function putVector3f($x, $y, $z){
