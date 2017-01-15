@@ -24,13 +24,14 @@ declare(strict_types = 1);
 namespace pocketmine\level\format\io\region;
 
 use pocketmine\level\format\Chunk;
+use pocketmine\level\format\io\ChunkException;
+use pocketmine\level\format\io\ChunkUtils;
 use pocketmine\level\format\SubChunk;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\{
 	ByteArrayTag, ByteTag, CompoundTag, IntArrayTag, IntTag, ListTag, LongTag
 };
 use pocketmine\Player;
-use pocketmine\utils\ChunkException;
 use pocketmine\utils\MainLogger;
 
 class Anvil extends McRegion{
@@ -57,10 +58,10 @@ class Anvil extends McRegion{
 			}
 			$nbt->Sections[++$subChunks] = new CompoundTag(null, [
 				"Y"          => new ByteTag("Y", $y),
-				"Blocks"     => new ByteArrayTag("Blocks", Chunk::reorderByteArray($subChunk->getBlockIdArray())), //Generic in-memory chunks are currently always XZY
-				"Data"       => new ByteArrayTag("Data", Chunk::reorderNibbleArray($subChunk->getBlockDataArray())),
-				"SkyLight"   => new ByteArrayTag("SkyLight", Chunk::reorderNibbleArray($subChunk->getSkyLightArray())),
-				"BlockLight" => new ByteArrayTag("BlockLight", Chunk::reorderNibbleArray($subChunk->getBlockLightArray()))
+				"Blocks"     => new ByteArrayTag("Blocks", ChunkUtils::reorderByteArray($subChunk->getBlockIdArray())), //Generic in-memory chunks are currently always XZY
+				"Data"       => new ByteArrayTag("Data", ChunkUtils::reorderNibbleArray($subChunk->getBlockDataArray())),
+				"SkyLight"   => new ByteArrayTag("SkyLight", ChunkUtils::reorderNibbleArray($subChunk->getSkyLightArray())),
+				"BlockLight" => new ByteArrayTag("BlockLight", ChunkUtils::reorderNibbleArray($subChunk->getBlockLightArray()))
 			]);
 		}
 
@@ -115,17 +116,17 @@ class Anvil extends McRegion{
 				foreach($chunk->Sections as $subChunk){
 					if($subChunk instanceof CompoundTag){
 						$subChunks[$subChunk->Y->getValue()] = new SubChunk(
-							Chunk::reorderByteArray($subChunk->Blocks->getValue()),
-							Chunk::reorderNibbleArray($subChunk->Data->getValue()),
-							Chunk::reorderNibbleArray($subChunk->SkyLight->getValue()),
-							Chunk::reorderNibbleArray($subChunk->BlockLight->getValue())
+							ChunkUtils::reorderByteArray($subChunk->Blocks->getValue()),
+							ChunkUtils::reorderNibbleArray($subChunk->Data->getValue()),
+							ChunkUtils::reorderNibbleArray($subChunk->SkyLight->getValue()),
+							ChunkUtils::reorderNibbleArray($subChunk->BlockLight->getValue())
 						);
 					}
 				}
 			}
 
 			if(isset($chunk->BiomeColors)){
-				$biomeIds = Chunk::convertBiomeColours($chunk->BiomeColors->getValue()); //Convert back to PC format (RIP colours D:)
+				$biomeIds = ChunkUtils::convertBiomeColors($chunk->BiomeColors->getValue()); //Convert back to original format
 			}elseif(isset($chunk->Biomes)){
 				$biomeIds = $chunk->Biomes->getValue();
 			}else{

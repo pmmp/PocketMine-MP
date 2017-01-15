@@ -24,7 +24,6 @@ namespace pocketmine\plugin;
 use pocketmine\event\plugin\PluginDisableEvent;
 use pocketmine\event\plugin\PluginEnableEvent;
 use pocketmine\Server;
-use pocketmine\utils\PluginException;
 
 /**
  * Simple script loader, not for plugin development

@@ -33,7 +33,6 @@ use pocketmine\event\TimingsHandler;
 use pocketmine\permission\Permissible;
 use pocketmine\permission\Permission;
 use pocketmine\Server;
-use pocketmine\utils\PluginException;
 
 /**
  * Manages all the plugins, Permissions and Permissibles

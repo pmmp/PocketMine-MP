@@ -25,8 +25,8 @@
 namespace pocketmine\scheduler;
 
 use pocketmine\plugin\Plugin;
+use pocketmine\plugin\PluginException;
 use pocketmine\Server;
-use pocketmine\utils\PluginException;
 use pocketmine\utils\ReversePriorityQueue;
 
 class ServerScheduler{

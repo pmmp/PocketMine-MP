@@ -25,6 +25,8 @@ namespace pocketmine\level\format\io\region;
 
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\io\BaseLevelProvider;
+use pocketmine\level\format\io\ChunkException;
+use pocketmine\level\format\io\ChunkUtils;
 use pocketmine\level\format\SubChunk;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\Level;
@@ -129,7 +131,7 @@ class McRegion extends BaseLevelProvider{
 			$chunk = $nbt->getData();
 
 			if(!isset($chunk->Level) or !($chunk->Level instanceof CompoundTag)){
-				return null;
+				throw new ChunkException("Invalid NBT format");
 			}
 
 			$chunk = $chunk->Level;
@@ -169,7 +171,7 @@ class McRegion extends BaseLevelProvider{
 			}
 
 			if(isset($chunk->BiomeColors)){
-				$biomeIds = Chunk::convertBiomeColours($chunk->BiomeColors->getValue()); //Convert back to PC format (RIP colours D:)
+				$biomeIds = ChunkUtils::convertBiomeColors($chunk->BiomeColors->getValue()); //Convert back to original format
 			}elseif(isset($chunk->Biomes)){
 				$biomeIds = $chunk->Biomes->getValue();
 			}else{

@@ -22,7 +22,6 @@
 namespace pocketmine\level;
 
 use pocketmine\math\Vector3;
-use pocketmine\utils\LevelException;
 use pocketmine\utils\MainLogger;
 
 class Position extends Vector3{

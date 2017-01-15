@@ -23,7 +23,6 @@ namespace pocketmine\level;
 
 use pocketmine\math\Vector3;
 use pocketmine\Server;
-use pocketmine\utils\LevelException;
 
 class WeakPosition extends Position{
 

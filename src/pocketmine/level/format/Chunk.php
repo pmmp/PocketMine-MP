@@ -28,6 +28,7 @@ namespace pocketmine\level\format;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
+use pocketmine\level\format\io\ChunkException;
 use pocketmine\level\format\io\LevelProvider;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
@@ -35,7 +36,6 @@ use pocketmine\Player;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\utils\BinaryStream;
-use pocketmine\utils\ChunkException;
 
 class Chunk{
 
@@ -1015,69 +1015,4 @@ class Chunk{
 	public static function chunkBlockHash(int $x, int $y, int $z) : int{
 		return ($x << 12) | ($z << 8) | $y;
 	}
-
-	/**
-	 * Re-orders a byte array (YZX -> XZY and vice versa)
-	 *
-	 * @param string $array length 4096
-	 *
-	 * @return string length 4096
-	 */
-	public static final function reorderByteArray(string $array) : string{
-		$result = str_repeat("\x00", 4096);
-		$i = 0;
-		for($x = 0; $x < 16; ++$x){
-			for($z = 0; $z < 256; $z += 16){
-				$zx = ($z + $x);
-				for($y = 0; $y < 4096; $y += 256){
-					$result{$i} = $array{$y + $zx};
-					++$i;
-				}
-			}
-		}
-		return $result;
-	}
-
-	/**
-	 * Re-orders a nibble array (YZX -> XZY and vice versa)
-	 *
-	 * @param string $array length 2048
-	 *
-	 * @return string length 2048
-	 */
-	public static final function reorderNibbleArray(string $array) : string{
-		$result = str_repeat("\x00", 2048);
-		$i = 0;
-		for($x = 0; $x < 8; ++$x){
-			for($z = 0; $z < 16; ++$z){
-				$zx = (($z << 3) | $x);
-				for($y = 0; $y < 8; ++$y){
-					$j = (($y << 8) | $zx);
-					$i1 = ord($array{$j});
-					$i2 = ord($array{$j | 0x80});
-					$result{$i}        = chr(($i2 << 4) | ($i1 & 0x0f));
-					$result{$i | 0x80} = chr(($i1 >> 4) | ($i2 & 0xf0));
-					$i++;
-				}
-			}
-			$i += 128;
-		}
-		return $result;
-	}
-
-	/**
-	 * Converts pre-MCPE-1.0 biome colour array to biome ID array. RIP BiomeColors :(
-	 *
-	 * @param int[] $array of biome colour values
-	 *
-	 * @return string
-	 */
-	public static function convertBiomeColours(array $array) : string{
-		$result = str_repeat("\x00", 256);
-		foreach($array as $i => $colour){
-			$result{$i} = chr(($array[$i] >> 24) & 0xff);
-		}
-		return $result;
-	}
-
 }

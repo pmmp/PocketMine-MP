@@ -25,7 +25,7 @@
 namespace pocketmine\metadata;
 
 use pocketmine\plugin\Plugin;
-use pocketmine\utils\PluginException;
+use pocketmine\plugin\PluginException;
 
 abstract class MetadataStore{
 	/** @var \WeakMap[] */
