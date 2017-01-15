@@ -40,6 +40,9 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	/** @var DoubleChestInventory */
 	protected $doubleInventory = null;
 
+	/** @var bool */
+	private $hasClosedPair = false;
+
 	public function __construct(Chunk $chunk, CompoundTag $nbt){
 		parent::__construct($chunk, $nbt);
 		$this->inventory = new ChestInventory($this);
@@ -56,6 +59,10 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 
 	public function close(){
 		if($this->closed === false){
+			if($this->isPaired()){
+				$this->getPair()->hasClosedPair = true;
+			}
+
 			foreach($this->getInventory()->getViewers() as $player){
 				$player->removeWindow($this->getInventory());
 			}
@@ -198,7 +205,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	}
 
 	public function isPaired(){
-		if(!isset($this->namedtag->pairx) or !isset($this->namedtag->pairz)){
+		if(!isset($this->namedtag->pairx) or !isset($this->namedtag->pairz) or $this->hasClosedPair){
 			return false;
 		}
 
