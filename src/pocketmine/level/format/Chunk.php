@@ -659,22 +659,6 @@ class Chunk{
 	}
 
 	/**
-	 * @return bool
-	 */
-	public function isLoaded() : bool{
-		return $this->getProvider() === null ? false : $this->getProvider()->isChunkLoaded($this->getX(), $this->getZ());
-	}
-
-	/**
-	 * @param bool $generate
-	 *
-	 * @return bool
-	 */
-	public function load(bool $generate = true) : bool{
-		return $this->getProvider() === null ? false : $this->getProvider()->getChunk($this->getX(), $this->getZ(), true) instanceof Chunk;
-	}
-
-	/**
 	 * Unloads the chunk, closing entities and tiles.
 	 *
 	 * @param bool $save
