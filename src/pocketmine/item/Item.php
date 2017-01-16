@@ -290,7 +290,7 @@ class Item implements ItemIds, \JsonSerializable{
 		return -1;
 	}
 
-	public static function get(int $id, $meta = 0, int $count = 1, $tags = "") : Item{
+	public static function get(int $id, int $meta = 0, int $count = 1, string $tags = "") : Item{
 		try{
 			$class = self::$list[$id];
 			if($class === null){
