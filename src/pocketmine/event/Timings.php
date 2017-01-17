@@ -104,6 +104,9 @@ abstract class Timings{
 	/** @var TimingsHandler */
 	public static $playerCommandTimer;
 
+	/** @var TimingsHandler */
+	public static $craftingDataCacheRebuildTimer;
+
 	/** @var TimingsHandler[] */
 	public static $entityTypeTimingMap = [];
 	/** @var TimingsHandler[] */
@@ -158,6 +161,7 @@ abstract class Timings{
 		self::$schedulerAsyncTimer = new TimingsHandler("** Scheduler - Async Tasks");
 
 		self::$playerCommandTimer = new TimingsHandler("** playerCommand");
+		self::$craftingDataCacheRebuildTimer = new TimingsHandler("** craftingDataCacheRebuild");
 
 	}
 
