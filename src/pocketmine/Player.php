@@ -236,6 +236,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	protected $allowFlight = false;
 	protected $flying = false;
 
+	protected $allowMovementCheats = false;
+	protected $allowInstaBreak = false;
+
 	private $needACK = [];
 
 	private $batchedPackets = [];
@@ -331,6 +334,22 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	public function hasAutoJump(){
 		return $this->autoJump;
+	}
+
+	public function allowMovementCheats() : bool{
+		return $this->allowMovementCheats;
+	}
+
+	public function setAllowMovementCheats(bool $value = false){
+		$this->allowMovementCheats = $value;
+	}
+
+	public function allowInstaBreak() : bool{
+		return $this->allowInstaBreak;
+	}
+
+	public function setAllowInstaBreak(bool $value = false){
+		$this->allowInstaBreak = $value;
 	}
 
 	/**
@@ -552,6 +571,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->rawUUID = null;
 
 		$this->creationTime = microtime(true);
+
+		$this->allowMovementCheats = (bool) $this->server->getProperty("player.anti-cheat.allow-movement-cheats", false);
+		$this->allowInstaBreak = (bool) $this->server->getProperty("player.anti-cheat.allow-instabreak", false);
 	}
 
 	/**
@@ -1358,7 +1380,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$revert = false;
 
-		if(($distanceSquared / ($tickDiff ** 2)) > 100){
+		if(($distanceSquared / ($tickDiff ** 2)) > 100 and !$this->allowMovementCheats){
 			$this->server->getLogger()->warning($this->getName() . " moved too fast, reverting movement");
 			$revert = true;
 		}else{
@@ -1389,7 +1411,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 			$diff = ($diffX ** 2 + $diffY ** 2 + $diffZ ** 2) / ($tickDiff ** 2);
 
-			if($this->isSurvival()){
+			//TODO: add events for anti-cheat triggered
+			if($this->isSurvival() and !$this->allowMovementCheats){
 				if(!$revert and !$this->isSleeping()){
 					if($diff > 0.0625){
 						$revert = true;
