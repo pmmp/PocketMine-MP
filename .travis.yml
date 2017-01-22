@@ -4,18 +4,12 @@ php:
  - 7.0
 
 before_script:
- - mkdir plugins
-# - curl -o DevTools.zip "https://jenkins.pmmp.io/job/PocketMine-MP%20DevTools/lastSuccessfulBuild/artifact/*zip*/artifacts.zip"
-# - unzip DevTools.zip
-# - mv *.phar plugins
  - pecl install channel://pecl.php.net/pthreads-3.1.6
  - pecl install channel://pecl.php.net/weakref-0.3.2
  - echo | pecl install channel://pecl.php.net/yaml-2.0.0
- - git clone https://github.com/pmmp/PocketMine-DevTools.git -b api3
- - php PocketMine-DevTools/src/DevTools/ConsoleScript.php --make "./PocketMine-DevTools" --relative "./PocketMine-DevTools" --out "./plugins/DevTools.phar"
 
 script:
- - ./tests/lint.sh && ./tests/run.sh
+ - ./tests/travis.sh
 
 notifications:
  email: false

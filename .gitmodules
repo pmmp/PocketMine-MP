@@ -11,3 +11,6 @@
 [submodule "tests/preprocessor"]
 	path = tests/preprocessor
 	url = https://github.com/pmmp/preprocessor.git
+[submodule "tests/plugins/PocketMine-DevTools"]
+	path = tests/plugins/PocketMine-DevTools
+	url = https://github.com/pmmp/PocketMine-DevTools.git
