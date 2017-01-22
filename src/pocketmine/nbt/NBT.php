@@ -593,13 +593,13 @@ class NBT{
 	}
 
 	public function getString(bool $network = false){
-		$len = $network ? $this->getByte() : $this->getShort();
+		$len = $network ? Binary::readUnsignedVarInt($this) : $this->getShort();
 		return $this->get($len);
 	}
 
 	public function putString($v, bool $network = false){
 		if($network === true){
-			$this->putByte(strlen($v));
+			$this->put(Binary::writeUnsignedVarInt(strlen($v)));
 		}else{
 			$this->putShort(strlen($v));
 		}
