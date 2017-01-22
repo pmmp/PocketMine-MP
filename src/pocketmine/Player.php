@@ -1958,7 +1958,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				break;
 			case ProtocolInfo::ADVENTURE_SETTINGS_PACKET:
 				//TODO: player abilities, check for other changes
-				if($packet->isFlying and !$this->allowFlight){
+				if($packet->isFlying and !$this->allowFlight and !$this->server->getAllowFlight()){
 					$this->kick("Flying is not enabled on this server");
 					break;
 				}else{
