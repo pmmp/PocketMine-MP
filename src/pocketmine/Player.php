@@ -41,6 +41,7 @@ use pocketmine\event\inventory\CraftItemEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\inventory\InventoryPickupArrowEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
+use pocketmine\event\player\cheat\PlayerIllegalMoveEvent;
 use pocketmine\event\player\PlayerAchievementAwardedEvent;
 use pocketmine\event\player\PlayerAnimationEvent;
 use pocketmine\event\player\PlayerBedEnterEvent;
@@ -1371,7 +1372,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	protected function processMovement($tickDiff){
-		if(!$this->isAlive() or !$this->spawned or $this->newPosition === null or $this->teleportPosition !== null){
+		if(!$this->isAlive() or !$this->spawned or $this->newPosition === null or $this->teleportPosition !== null or $this->isSleeping()){
 			return;
 		}
 
@@ -1411,13 +1412,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 			$diff = ($diffX ** 2 + $diffY ** 2 + $diffZ ** 2) / ($tickDiff ** 2);
 
-			//TODO: add events for anti-cheat triggered
-			if($this->isSurvival() and !$this->allowMovementCheats){
-				if(!$revert and !$this->isSleeping()){
-					if($diff > 0.0625){
-						$revert = true;
-						$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidMove", [$this->getName()]));
-					}
+			if($this->isSurvival() and !$revert and $diff > 0.0625){
+				$ev = new PlayerIllegalMoveEvent($this, $newPos);
+				$ev->setCancelled($this->allowMovementCheats);
+
+				$this->server->getPluginManager()->callEvent($ev);
+
+				if(!$ev->isCancelled()){
+					$revert = true;
+					$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidMove", [$this->getName()]));
 				}
 			}
 
@@ -1557,9 +1560,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->timings->startTiming();
 
 		if($this->spawned){
-			if(!$this->isSleeping()){
-				$this->processMovement($tickDiff);
-			}
+			$this->processMovement($tickDiff);
 			$this->entityBaseTick($tickDiff);
 
 			if(!$this->isSpectator() and $this->speed !== null){
