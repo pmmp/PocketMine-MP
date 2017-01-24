@@ -223,6 +223,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/** @var Player[] */
 	protected $hiddenPlayers = [];
 
+	/** @var string */
+	protected $lastPositionCache;
+
 	/** @var Vector3 */
 	protected $newPosition;
 
@@ -1896,11 +1899,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					break;
 				}
 
-				$newPos = new Vector3($packet->x, $packet->y - $this->getEyeHeight(), $packet->z);
-
-				if($newPos->distanceSquared($this) < 0.01 and ($packet->yaw % 360) === $this->yaw and ($packet->pitch % 360) === $this->pitch){ //player hasn't moved, just client spamming packets
+				if($packet->buffer === $this->lastPositionCache){ //player hasn't moved, just client spamming packets
 					break;
 				}
+				$this->lastPositionCache = $packet->buffer;
+
+				$newPos = new Vector3($packet->x, $packet->y - $this->getEyeHeight(), $packet->z);
 
 				$revert = false;
 				if(!$this->isAlive() or $this->spawned !== true){
