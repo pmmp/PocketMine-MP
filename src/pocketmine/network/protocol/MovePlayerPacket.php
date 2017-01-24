@@ -41,11 +41,6 @@ class MovePlayerPacket extends DataPacket{
 	public $mode = self::MODE_NORMAL;
 	public $onGround;
 
-	public function clean(){
-		$this->teleport = false;
-		return parent::clean();
-	}
-
 	public function decode(){
 		$this->eid = $this->getEntityId(); //EntityRuntimeID
 		$this->getVector3f($this->x, $this->y, $this->z);
