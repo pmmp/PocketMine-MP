@@ -2996,6 +2996,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$message = $message->getText();
 		}
 
+		$message = $this->server->getLanguage()->translateString($message);
+
+		$pk = new TextPacket();
+		$pk->type = TextPacket::TYPE_RAW;
+		$pk->message = $message;
+		$this->dataPacket($pk);
+		
+		/*
 		$mes = explode("\n", $this->server->getLanguage()->translateString($message));
 		foreach($mes as $m){
 			if($m !== ""){
@@ -3005,6 +3013,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->dataPacket($pk);
 			}
 		}
+		*/
 	}
 
 	public function sendTranslation($message, array $parameters = []){
