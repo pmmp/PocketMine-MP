@@ -41,6 +41,7 @@ use pocketmine\event\inventory\CraftItemEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\inventory\InventoryPickupArrowEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
+use pocketmine\event\player\cheat\PlayerIllegalMoveEvent;
 use pocketmine\event\player\PlayerAchievementAwardedEvent;
 use pocketmine\event\player\PlayerAnimationEvent;
 use pocketmine\event\player\PlayerBedEnterEvent;
@@ -236,6 +237,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	protected $allowFlight = false;
 	protected $flying = false;
 
+	protected $allowMovementCheats = false;
+	protected $allowInstaBreak = false;
+
 	private $needACK = [];
 
 	private $batchedPackets = [];
@@ -331,6 +335,22 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	public function hasAutoJump(){
 		return $this->autoJump;
+	}
+
+	public function allowMovementCheats() : bool{
+		return $this->allowMovementCheats;
+	}
+
+	public function setAllowMovementCheats(bool $value = false){
+		$this->allowMovementCheats = $value;
+	}
+
+	public function allowInstaBreak() : bool{
+		return $this->allowInstaBreak;
+	}
+
+	public function setAllowInstaBreak(bool $value = false){
+		$this->allowInstaBreak = $value;
 	}
 
 	/**
@@ -552,6 +572,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->rawUUID = null;
 
 		$this->creationTime = microtime(true);
+
+		$this->allowMovementCheats = (bool) $this->server->getProperty("player.anti-cheat.allow-movement-cheats", false);
+		$this->allowInstaBreak = (bool) $this->server->getProperty("player.anti-cheat.allow-instabreak", false);
 	}
 
 	/**
@@ -1349,7 +1372,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	protected function processMovement($tickDiff){
-		if(!$this->isAlive() or !$this->spawned or $this->newPosition === null or $this->teleportPosition !== null){
+		if(!$this->isAlive() or !$this->spawned or $this->newPosition === null or $this->teleportPosition !== null or $this->isSleeping()){
 			return;
 		}
 
@@ -1358,7 +1381,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$revert = false;
 
-		if(($distanceSquared / ($tickDiff ** 2)) > 100){
+		if(($distanceSquared / ($tickDiff ** 2)) > 100 and !$this->allowMovementCheats){
 			$this->server->getLogger()->warning($this->getName() . " moved too fast, reverting movement");
 			$revert = true;
 		}else{
@@ -1389,12 +1412,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 			$diff = ($diffX ** 2 + $diffY ** 2 + $diffZ ** 2) / ($tickDiff ** 2);
 
-			if($this->isSurvival()){
-				if(!$revert and !$this->isSleeping()){
-					if($diff > 0.0625){
-						$revert = true;
-						$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidMove", [$this->getName()]));
-					}
+			if($this->isSurvival() and !$revert and $diff > 0.0625){
+				$ev = new PlayerIllegalMoveEvent($this, $newPos);
+				$ev->setCancelled($this->allowMovementCheats);
+
+				$this->server->getPluginManager()->callEvent($ev);
+
+				if(!$ev->isCancelled()){
+					$revert = true;
+					$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidMove", [$this->getName()]));
 				}
 			}
 
@@ -1442,7 +1468,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->checkNearEntities($tickDiff);
 			}
 
-			$this->speed = $from->subtract($to);
+			$this->speed = ($to->subtract($from))->divide($tickDiff);
 		}elseif($distanceSquared == 0){
 			$this->speed = new Vector3(0, 0, 0);
 		}
@@ -1534,9 +1560,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->timings->startTiming();
 
 		if($this->spawned){
-			if(!$this->isSleeping()){
-				$this->processMovement($tickDiff);
-			}
+			$this->processMovement($tickDiff);
 			$this->entityBaseTick($tickDiff);
 
 			if(!$this->isSpectator() and $this->speed !== null){
@@ -1935,7 +1959,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				break;
 			case ProtocolInfo::ADVENTURE_SETTINGS_PACKET:
 				//TODO: player abilities, check for other changes
-				if($packet->isFlying and !$this->allowFlight){
+				if($packet->isFlying and !$this->allowFlight and !$this->server->getAllowFlight()){
 					$this->kick("Flying is not enabled on this server");
 					break;
 				}else{
