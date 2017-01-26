@@ -2374,9 +2374,15 @@ class Server{
 
 		Timings::$serverTickTimer->stopTiming();
 
-		$now = microtime(true);
-		$this->currentTPS = min(20, 1 / max(0.001, $now - $tickTime));
-		$this->currentUse = min(1, ($now - $tickTime) / 0.05);
+		$totalTime = round(microtime(true) - $tickTime, 4);
+		$this->currentTPS = min(20, 1 / max(0.001, $totalTime));
+		$this->currentUse = min(1, $totalTime / 0.05);
+
+		if($totalTime > 0.05){ //tick took too long to execute
+			$skipping = floor($totalTime / 0.05);
+			$this->getLogger()->debug("1 tick took $totalTime seconds to execute, skipping $skipping ticks");
+			$this->tickCounter += $skipping;
+		}
 
 		TimingsHandler::tick($this->currentTPS <= $this->profilingTickRate);
 
