@@ -108,13 +108,13 @@ abstract class Command{
 	 */
 	public function generateCustomCommandData(Player $player){
 		//TODO: fix command permission filtering on join
-		/*if(!$this->testPermission($player)){
+		/*if(!$this->testPermissionSilent($player)){
 			return null;
 		}*/
 		$customData = clone $this->commandData;
 		$customData->aliases = $this->getAliases();
 		/*foreach($customData->overloads as &$overload){
-			if(($p = @$overload->pocketminePermission) !== null and !$player->hasPermission($p)){
+			if(isset($overload->pocketminePermission) and !$player->hasPermission($overload->pocketminePermission)){
 				unset($overload);
 			}
 		}*/
