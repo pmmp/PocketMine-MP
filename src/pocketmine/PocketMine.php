@@ -470,7 +470,15 @@ namespace pocketmine {
 		exit(1); //Exit with error
 	}
 
-	if(file_exists(\pocketmine\PATH . ".git/refs/heads/master")){ //Found Git information!
+	$git_heads = scandir(\pocketmine\PATH . ".git/refs/heads"); //Get contents of Git heads folder
+	if(count($git_heads) > 3){ //If the user is using the master branch, $git_heads should only have 3 items: ".", ".." and "master"
+		foreach($git_heads as $branch){
+			if($branch !== "master" && $branch !== "." && $branch !== ".."){ //Find Git information of the branch other than master
+				define('pocketmine\GIT_COMMIT', strtolower(trim(file_get_contents(\pocketmine\PATH . ".git/refs/heads/" . $branch))));
+				break;
+			}
+		}
+	}elseif(file_exists(\pocketmine\PATH . ".git/refs/heads/master")){ //Found Git information!
 		define('pocketmine\GIT_COMMIT', strtolower(trim(file_get_contents(\pocketmine\PATH . ".git/refs/heads/master"))));
 	}else{ //Unknown :(
 		define('pocketmine\GIT_COMMIT', str_repeat("00", 20));
