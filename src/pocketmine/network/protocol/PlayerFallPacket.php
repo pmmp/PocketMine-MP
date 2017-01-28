@@ -27,10 +27,10 @@ namespace pocketmine\network\protocol;
 class PlayerFallPacket extends DataPacket{
 	const NETWORK_ID = Info::PLAYER_FALL_PACKET;
 
-	public $unknown; //betting this is fall distance, but let's make sure first
+	public $fallDistance;
 
 	public function decode(){
-		$this->unknown = $this->getLFloat();
+		$this->fallDistance = $this->getLFloat();
 	}
 
 	public function encode(){
