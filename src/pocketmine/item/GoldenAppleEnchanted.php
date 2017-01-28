@@ -32,7 +32,7 @@ class GoldenAppleEnchanted extends GoldenApple{
 	public function getAdditionalEffects() : array{
 		return [
 			Effect::getEffect(Effect::REGENERATION)->setDuration(600)->setAmplifier(4),
-			Effect::getEffect(Effect::ABSORPTION)->setDuration(2400),
+			Effect::getEffect(Effect::ABSORPTION)->setDuration(2400)->setAmplifier(3),
 			Effect::getEffect(Effect::DAMAGE_RESISTANCE)->setDuration(6000),
 			Effect::getEffect(Effect::FIRE_RESISTANCE)->setDuration(6000),
 		];
