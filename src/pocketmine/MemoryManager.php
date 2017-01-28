@@ -200,10 +200,7 @@ class MemoryManager{
 		$cycles = gc_collect_cycles();
 		
 		foreach($this->server->getLevels() as $level){
-			if($this->cacheTrigger){
-				$level->clearCache(true);
-			}
-			if($this->chunkTrigger and $this->chunkCollect){
+			if($this->chunkCollect){
 				$level->doChunkGarbageCollection();
 			}
 		}
