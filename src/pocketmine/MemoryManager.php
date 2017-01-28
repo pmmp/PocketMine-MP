@@ -182,6 +182,11 @@ class MemoryManager{
 		if($this->garbageCollectionPeriod > 0 and ++$this->garbageCollectionTicker >= $this->garbageCollectionPeriod){
 			$this->garbageCollectionTicker = 0;
 			$this->triggerGarbageCollector();
+			foreach($this->server->getLevels() as $level){
+				if($this->chunkCollect){
+					$level->doChunkGarbageCollection();
+				}
+			}
 		}
 
 		Timings::$memoryManagerTimer->stopTiming();
@@ -198,12 +203,6 @@ class MemoryManager{
 		}
 
 		$cycles = gc_collect_cycles();
-		
-		foreach($this->server->getLevels() as $level){
-			if($this->chunkCollect){
-				$level->doChunkGarbageCollection();
-			}
-		}
 
 		Timings::$garbageCollectorTimer->stopTiming();
 
