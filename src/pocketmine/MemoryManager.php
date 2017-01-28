@@ -129,14 +129,12 @@ class MemoryManager{
 	public function trigger($memory, $limit, $global = false, $triggerCount = 0){
 		$this->server->getLogger()->debug(sprintf("[Memory Manager] %sLow memory triggered, limit %gMB, using %gMB",
 			$global ? "Global " : "", round(($limit / 1024) / 1024, 2), round(($memory / 1024) / 1024, 2)));
-		if($this->cacheTrigger){
-			foreach($this->server->getLevels() as $level){
+		
+		foreach($this->server->getLevels() as $level){
+			if($this->cacheTrigger){
 				$level->clearCache(true);
 			}
-		}
-
-		if($this->chunkTrigger and $this->chunkCollect){
-			foreach($this->server->getLevels() as $level){
+			if($this->chunkTrigger and $this->chunkCollect){
 				$level->doChunkGarbageCollection();
 			}
 		}
@@ -200,6 +198,15 @@ class MemoryManager{
 		}
 
 		$cycles = gc_collect_cycles();
+		
+		foreach($this->server->getLevels() as $level){
+			if($this->cacheTrigger){
+				$level->clearCache(true);
+			}
+			if($this->chunkTrigger and $this->chunkCollect){
+				$level->doChunkGarbageCollection();
+			}
+		}
 
 		Timings::$garbageCollectorTimer->stopTiming();
 
