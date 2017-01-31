@@ -145,16 +145,6 @@ namespace pocketmine {
 	define('pocketmine\DATA', isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR);
 	define('pocketmine\PLUGIN_PATH', isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);
 
-	/**
-	 * @deprecated This constant has moved to {@link \pocketmine\network\protocol\Info} and will be removed from here in the future.
-	 */
-	const MINECRAFT_VERSION = ProtocolInfo::MINECRAFT_VERSION;
-	/**
-	 * @deprecated This constant has moved to {@link \pocketmine\network\protocol\Info} and will be removed from here in the future.
-	 */
-	const MINECRAFT_VERSION_NETWORK = ProtocolInfo::MINECRAFT_VERSION_NETWORK;
-
-
 	Terminal::init();
 
 	define('pocketmine\ANSI', Terminal::hasFormattingCodes());
