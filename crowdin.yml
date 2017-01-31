@@ -1,0 +1,3 @@
+files:
+  - source: src/pocketmine/lang/locale/fallback.ini
+    translation: /src/pocketmine/lang/locale/%locale%.ini
