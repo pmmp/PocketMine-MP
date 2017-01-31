@@ -23,7 +23,7 @@ namespace pocketmine\lang;
 
 use pocketmine\event\TextContainer;
 use pocketmine\event\TranslationContainer;
-use pocketmine\Server;
+use pocketmine\utils\MainLogger;
 
 class BaseLang{
 
@@ -43,10 +43,10 @@ class BaseLang{
 		}
 
 		if(!$this->loadLang($file = $path . $this->langName . ".ini", $this->lang)){
-			Server::getInstance()->getLogger()->error("Missing required language file $file");
+			MainLogger::getLogger()->error("Missing required language file $file");
 		}
 		if(!$this->loadLang($file = $path . $fallback . ".ini", $this->fallbackLang)){
-			Server::getInstance()->getLogger()->error("Missing required language file $file");
+			MainLogger::getLogger()->error("Missing required language file $file");
 		}
 	}
 
