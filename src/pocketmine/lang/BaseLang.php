@@ -29,6 +29,21 @@ class BaseLang{
 
 	const FALLBACK_LANGUAGE = "fallback";
 
+	public static function getLanguageList() : array{
+		$list = [];
+		foreach(new \DirectoryIterator(\pocketmine\PATH . "src/pocketmine/lang/locale/") as $file){
+			if($file->getExtension() === "ini"){
+				$strings = [];
+				static::loadLang($file->getRealPath(), $strings);
+				if(isset($strings["language.name"])){
+					$list[strtolower($file->getBasename(".ini"))] = $strings["language.name"];
+				}
+			}
+		}
+
+		return $list;
+	}
+
 	protected $langName;
 
 	protected $lang = [];
@@ -42,10 +57,10 @@ class BaseLang{
 			$path = \pocketmine\PATH . "src/pocketmine/lang/locale/";
 		}
 
-		if(!$this->loadLang($file = $path . $this->langName . ".ini", $this->lang)){
+		if(!static::loadLang($file = $path . $this->langName . ".ini", $this->lang)){
 			MainLogger::getLogger()->error("Missing required language file $file");
 		}
-		if(!$this->loadLang($file = $path . $fallback . ".ini", $this->fallbackLang)){
+		if(!static::loadLang($file = $path . $fallback . ".ini", $this->fallbackLang)){
 			MainLogger::getLogger()->error("Missing required language file $file");
 		}
 	}
@@ -58,7 +73,7 @@ class BaseLang{
 		return $this->langName;
 	}
 
-	protected function loadLang($path, array &$d){
+	protected static function loadLang($path, array &$d){
 		if(file_exists($path)){
 			if(strlen($content = file_get_contents($path)) > 0){
 				foreach(explode("\n", $content) as $line){
@@ -139,6 +154,10 @@ class BaseLang{
 		}
 
 		return $id;
+	}
+
+	public function __get($name){
+		return $this->get($name);
 	}
 
 	protected function parseTranslation($text, $onlyPrefix = null){

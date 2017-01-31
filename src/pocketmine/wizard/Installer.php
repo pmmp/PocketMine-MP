@@ -25,6 +25,7 @@
  */
 namespace pocketmine\wizard;
 
+use pocketmine\lang\BaseLang;
 use pocketmine\utils\Config;
 use pocketmine\utils\Utils;
 
@@ -44,18 +45,19 @@ class Installer{
 	public function run(){
 		echo "[*] PocketMine-MP set-up wizard\n";
 		echo "[*] Please select a language:\n";
-		foreach(InstallerLang::$languages as $short => $native){
+		$langs = BaseLang::getLanguageList();
+		foreach($langs as $short => $native){
 			echo " $native => $short\n";
 		}
 		do{
-			echo "[?] Language (en): ";
-			$lang = strtolower($this->getInput("en"));
-			if(!isset(InstallerLang::$languages[$lang])){
+			echo "[?] Language (fallback): ";
+			$lang = strtolower($this->getInput("fallback"));
+			if(!isset($langs[$lang])){
 				echo "[!] Couldn't find the language\n";
-				$lang = false;
+				$lang = null;
 			}
-		}while($lang == false);
-		$this->lang = new InstallerLang($lang);
+		}while($lang === null);
+		$this->lang = new BaseLang($lang);
 
 
 		echo "[*] " . $this->lang->language_has_been_selected . "\n";
