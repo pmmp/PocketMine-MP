@@ -38,6 +38,10 @@ class Installer{
 	private $lang;
 
 	public function __construct(){
+
+	}
+
+	public function run(){
 		echo "[*] PocketMine-MP set-up wizard\n";
 		echo "[*] Please select a language:\n";
 		foreach(InstallerLang::$languages as $short => $native){
@@ -57,13 +61,12 @@ class Installer{
 		echo "[*] " . $this->lang->language_has_been_selected . "\n";
 
 		if(!$this->showLicense()){
-			\pocketmine\kill(getmypid());
-			exit(-1);
+			return false;
 		}
 
 		echo "[?] " . $this->lang->skip_installer . " (y/N): ";
 		if(strtolower($this->getInput()) === "y"){
-			return;
+			return true;
 		}
 		echo "\n";
 		$this->welcome();
@@ -73,6 +76,7 @@ class Installer{
 		$this->networkFunctions();
 
 		$this->endWizard();
+		return true;
 	}
 
 	private function showLicense(){

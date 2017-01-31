@@ -479,9 +479,16 @@ namespace pocketmine {
 	@define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);
 	@ini_set("opcache.mmap_base", bin2hex(random_bytes(8))); //Fix OPCache address errors
 
+
 	if(!file_exists(\pocketmine\DATA . "server.properties") and !isset($opts["no-wizard"])){
-		new Installer();
+		$installer = new Installer();
+		if(!$installer->run()){
+			$logger->shutdown();
+			$logger->join();
+			exit(-1);
+		}
 	}
+
 
 	if(\Phar::running(true) === ""){
 		$logger->warning("Non-packaged PocketMine-MP installation detected, do not use on production.");
@@ -496,7 +503,6 @@ namespace pocketmine {
 	$killer->start();
 
 	$erroredThreads = 0;
-
 	foreach(ThreadManager::getInstance()->getAll() as $id => $thread){
 		$logger->debug("Stopping " . $thread->getThreadName() . " thread");
 		try{
