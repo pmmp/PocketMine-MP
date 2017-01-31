@@ -23,6 +23,7 @@ namespace pocketmine\wizard;
 
 
 class InstallerLang{
+	//TODO: remove this mess (why is it hardcoded -_-)
 	public static $languages = [
 		"en" => "English",
 		"es" => "Español",
@@ -49,12 +50,12 @@ class InstallerLang{
 	private $langfile;
 
 	public function __construct($lang = ""){
-		if(file_exists(\pocketmine\PATH . "src/pocketmine/lang/Installer/" . $lang . ".ini")){
+		if(file_exists(\pocketmine\PATH . "src/pocketmine/lang/installer/" . $lang . ".ini")){
 			$this->lang = $lang;
-			$this->langfile = \pocketmine\PATH . "src/pocketmine/lang/Installer/" . $lang . ".ini";
+			$this->langfile = \pocketmine\PATH . "src/pocketmine/lang/installer/" . $lang . ".ini";
 		}else{
 			$files = [];
-			foreach(new \DirectoryIterator(\pocketmine\PATH . "src/pocketmine/lang/Installer/") as $file){
+			foreach(new \DirectoryIterator(\pocketmine\PATH . "src/pocketmine/lang/installer/") as $file){
 				if($file->getExtension() === "ini" and substr($file->getFilename(), 0, 2) === $lang){
 					$files[$file->getFilename()] = $file->getSize();
 				}
@@ -66,14 +67,14 @@ class InstallerLang{
 				$l = key($files);
 				$l = substr($l, 0, -4);
 				$this->lang = isset(self::$languages[$l]) ? $l : $lang;
-				$this->langfile = \pocketmine\PATH . "src/pocketmine/lang/Installer/" . $l . ".ini";
+				$this->langfile = \pocketmine\PATH . "src/pocketmine/lang/installer/" . $l . ".ini";
 			}else{
 				$this->lang = "en";
-				$this->langfile = \pocketmine\PATH . "src/pocketmine/lang/Installer/en.ini";
+				$this->langfile = \pocketmine\PATH . "src/pocketmine/lang/installer/fallback.ini";
 			}
 		}
 
-		$this->loadLang(\pocketmine\PATH . "src/pocketmine/lang/Installer/en.ini", "en");
+		$this->loadLang(\pocketmine\PATH . "src/pocketmine/lang/installer/fallback.ini", "en");
 		if($this->lang !== "en"){
 			$this->loadLang($this->langfile, $this->lang);
 		}

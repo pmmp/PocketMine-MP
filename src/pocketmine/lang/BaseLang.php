@@ -27,7 +27,7 @@ use pocketmine\Server;
 
 class BaseLang{
 
-	const FALLBACK_LANGUAGE = "eng";
+	const FALLBACK_LANGUAGE = "fallback";
 
 	protected $langName;
 
@@ -39,7 +39,7 @@ class BaseLang{
 		$this->langName = strtolower($lang);
 
 		if($path === null){
-			$path = \pocketmine\PATH . "src/pocketmine/lang/locale/";
+			$path = \pocketmine\PATH . "src/pocketmine/lang/base/";
 		}
 
 		if(!$this->loadLang($file = $path . $this->langName . ".ini", $this->lang)){
