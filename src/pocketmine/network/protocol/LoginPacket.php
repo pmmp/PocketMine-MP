@@ -44,6 +44,7 @@ class LoginPacket extends DataPacket{
 		$this->protocol = $this->getInt();
 
 		if($this->protocol !== Info::CURRENT_PROTOCOL){
+			$this->buffer = null;
 			return; //Do not attempt to decode for non-accepted protocols
 		}
 
