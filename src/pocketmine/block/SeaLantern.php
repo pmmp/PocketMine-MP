@@ -23,7 +23,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 
-class SeaLantern extends Solid{
+class SeaLantern extends Transparent{
 
 	protected $id = self::SEA_LANTERN;
 
