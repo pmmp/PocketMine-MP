@@ -292,8 +292,6 @@ class MemoryManager{
 		echo "[Dump] Finished!\n";
 
 		gc_enable();
-
-		$this->server->forceShutdown();
 	}
 
 	private function continueDump($from, &$data, &$objects, &$refCounts, $recursion, $maxNesting, $maxStringSize){
