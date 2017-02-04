@@ -18,23 +18,25 @@ if [ $? -ne 0 ]; then
 fi
 
 rm server.log 2> /dev/null
-mkdir -p ./plugins
+rm PocketMine-MP.phar 2> /dev/null
 
-cp -r tests/plugins/PocketMine-DevTools ./plugins
+cd tests/plugins/PocketMine-DevTools
+"$PHP_BINARY" -dphar.readonly=0 ./src/DevTools/ConsoleScript.php --make ./ --relative ./ --out ../../../DevTools.phar
+cd ../../..
 
-"$PHP_BINARY" ./plugins/PocketMine-DevTools/src/DevTools/ConsoleScript.php --make ./plugins/PocketMine-DevTools --relative ./plugins/PocketMine-DevTools --out ./plugins/DevTools.phar
-rm -rf ./plugins/PocketMine-DevTools
-
-echo -e "version\nmakeserver\nstop\n" | "$PHP_BINARY" src/pocketmine/PocketMine.php --no-wizard --disable-ansi --disable-readline --debug.level=2
-if ls plugins/DevTools/PocketMine*.phar >/dev/null 2>&1; then
+"$PHP_BINARY" -dphar.readonly=0 DevTools.phar --make src --relative ./ --entry src/pocketmine/PocketMine.php --out PocketMine-MP.phar
+if [ -f PocketMine-MP.phar ]; then
 	echo Server phar created successfully.
 else
-	echo No phar created!
+	echo Server phar was not created!
 	exit 1
 fi
 
+
+mkdir plugins 2> /dev/null
+mv DevTools.phar plugins
 cp -r tests/plugins/PocketMine-TesterPlugin ./plugins
-echo -e "stop\n" | "$PHP_BINARY" src/pocketmine/PocketMine.php --no-wizard --disable-ansi --disable-readline --debug.level=2
+echo -e "stop\n" | "$PHP_BINARY" PocketMine-MP.phar --no-wizard --disable-ansi --disable-readline --debug.level=2
 
 output=$(grep '\[TesterPlugin\]' server.log)
 if [ "$output" == "" ]; then
@@ -46,6 +48,9 @@ result=$(echo "$output" | grep 'Finished' | grep -v 'PASS')
 if [ "$result" != "" ]; then
 	echo "$result"
 	echo Some tests did not complete successfully, changing build status to failed
+	exit 1
+elif [ $(grep -c "ERROR\|CRITICAL\|EMERGENCY" server.log) -ne 0 ]; then
+	echo Server log contains error messages, changing build status to failed
 	exit 1
 else
 	echo All tests passed
