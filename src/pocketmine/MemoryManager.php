@@ -284,6 +284,8 @@ class MemoryManager{
 
 			echo "[Dump] Wrote " . count($objects) . " objects\n";
 		}while($continue);
+		
+		fclose($obData);
 
 		file_put_contents($outputFolder . "/staticProperties.js", json_encode($staticProperties, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 		file_put_contents($outputFolder . "/serverEntry.js", json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
