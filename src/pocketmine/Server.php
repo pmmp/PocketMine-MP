@@ -1447,7 +1447,7 @@ class Server{
 				$this->setConfigInt("difficulty", 3);
 			}
 
-			define('pocketmine\DEBUG', (int) $this->getProperty("debug.level", 1));
+			define('pocketmine\DEBUG', (bool) $this->getProperty("debug.show-debug-messages", false));
 
 			if(((int) ini_get('zend.assertions')) > 0 and ((bool) $this->getProperty("debug.assertions.warn-if-enabled", true)) !== false){
 				$this->logger->warning("Debugging assertions are enabled, this may impact on performance. To disable them, set `zend.assertions = -1` in php.ini.");
@@ -1456,12 +1456,10 @@ class Server{
 			ini_set('assert.exception', (bool) $this->getProperty("debug.assertions.throw-exception", 0));
 
 			if($this->logger instanceof MainLogger){
-				$this->logger->setLogDebug(\pocketmine\DEBUG > 1);
+				$this->logger->setLogDebug(\pocketmine\DEBUG === true);
 			}
 
-			if(\pocketmine\DEBUG >= 0){
-				@cli_set_process_title($this->getName() . " " . $this->getPocketMineVersion());
-			}
+			@cli_set_process_title($this->getName() . " " . $this->getPocketMineVersion());
 
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.networkStart", [$this->getIp() === "" ? "*" : $this->getIp(), $this->getPort()]));
 			define("BOOTUP_RANDOM", random_bytes(16));
@@ -2283,7 +2281,7 @@ class Server{
 				$this->queryHandler->handle($address, $port, $payload);
 			}
 		}catch(\Throwable $e){
-			if(\pocketmine\DEBUG > 1){
+			if(\pocketmine\DEBUG === true){
 				$this->logger->logException($e);
 			}
 
