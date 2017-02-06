@@ -22,6 +22,8 @@
 namespace pocketmine\level;
 
 use pocketmine\math\Vector3;
+use pocketmine\network\protocol\LevelEventPacket;
+use pocketmine\level\Level;
 use pocketmine\level\format\io\LevelProvider;
 
 class WeatherManager{
@@ -31,8 +33,16 @@ class WeatherManager{
 	/** @var LevelProvider */
 	public $provider;
 
+	public $weatherEnabled;
+	public $tick;
+	public $nextUpdate;
+
+	const NORMAL = 0;
+	const RAIN = 1;
+	const THUNDER = 3;
+
 	/**
-	 * Init the default level data
+	 * Starts to manage level weather.
 	 *
 	 * @param Level $level
 	 * @param LevelProvider $provider
@@ -43,6 +53,35 @@ class WeatherManager{
 	}
 
 	public function tick(){
+		if(!$this->$weatherEnabled){
+			return;
+		}
+	}
 
+	public function setWeatherEnabled(Bool $value){
+		$this->weatherEnabled = $value;
+	}
+
+	public function toggleWeather(){
+
+	}
+
+	public function sendWeatherTo($players = null){
+		$players = $players !== null && is_array($players) ? $players : $this->getSevrer()->getOnlinePlayers();
+		foreach($players as $p){
+			//TODO send weather to players
+		}
+	}
+
+	public function strikeLighting(Vector3 $pos){
+
+	}
+
+	public function getServer(){
+		return $this->server;
+	}
+
+	public function getLevel(){
+		return $this->level;
 	}
 }
