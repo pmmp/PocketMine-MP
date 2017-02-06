@@ -77,6 +77,7 @@ use pocketmine\level\generator\PopulationTask;
 use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\level\particle\Particle;
 use pocketmine\level\sound\Sound;
+use pocketmine\level\WeatherManager;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Math;
 use pocketmine\math\Vector2;
@@ -259,6 +260,9 @@ class Level implements ChunkManager, Metadatable{
 	/** @var Generator */
 	private $generatorInstance;
 
+	/** @var WetaherManager */
+	private $weatherManager = null;
+
 	private $closed = false;
 
 	public static function chunkHash(int $x, int $z){
@@ -399,6 +403,10 @@ class Level implements ChunkManager, Metadatable{
 
 	public function getServer() : Server{
 		return $this->server;
+	}
+
+	public function getWeatherManager() : WeatherManager{
+		return $this->weatherManager;
 	}
 
 	final public function getProvider() : LevelProvider{
@@ -715,6 +723,8 @@ class Level implements ChunkManager, Metadatable{
 		if($this->sleepTicks > 0 and --$this->sleepTicks <= 0){
 			$this->checkSleep();
 		}
+
+		$this->getWeatherManager()->tick();
 
 		foreach($this->moveToSend as $index => $entry){
 			Level::getXZ($index, $chunkX, $chunkZ);
