@@ -260,7 +260,7 @@ class Level implements ChunkManager, Metadatable{
 	/** @var Generator */
 	private $generatorInstance;
 
-	/** @var WetaherManager */
+	/** @var WeatherManager */
 	private $weatherManager = null;
 
 	private $closed = false;
