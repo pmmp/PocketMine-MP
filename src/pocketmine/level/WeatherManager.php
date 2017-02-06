@@ -116,14 +116,14 @@ class WeatherManager{
 
 	}
 
-	public function saveWeatherToDisk(bool $force = false){
+	private function saveWeatherToDisk(bool $force = false){
 		if(!$force && !$this->getServer()->getAutoSave()){
 			return false;
 		}
 		//TODO save to level.dat
 	}
 
-	public function getWeatherFromDisk(){
+	private function getWeatherFromDisk(){
 		//TODO get weather from level.dat
 		return false; //Return false if weather can't be read from disk.
 	}
