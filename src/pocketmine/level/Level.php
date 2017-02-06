@@ -357,6 +357,7 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
+		$this->weatherManager = new WeatherManager($this, $this->getProvider());
 		$this->timings = new LevelTimings($this);
 		$this->temporalPosition = new Position(0, 0, 0, $this);
 		$this->temporalVector = new Vector3(0, 0, 0);

@@ -24,6 +24,7 @@ namespace pocketmine\level;
 use pocketmine\math\Vector3;
 use pocketmine\network\protocol\LevelEventPacket;
 use pocketmine\level\Level;
+use pocketmine\Server;
 use pocketmine\level\format\io\LevelProvider;
 
 class WeatherManager{
@@ -32,8 +33,11 @@ class WeatherManager{
 	public $level;
 	/** @var LevelProvider */
 	public $provider;
+	/** @var Server */
+	public $server;
 
 	public $weatherEnabled;
+	public $weather;
 	public $tick;
 	public $weatherDuration;
 
@@ -50,6 +54,7 @@ class WeatherManager{
 	 */
 	public function __construct(Level $level, LevelProvider $provider){
 		$this->level = $level;
+		$this->server = $level->getServer();
 		$this->provider = $provider;
 
 		if(!$this->getWeatherFromDisk()){ //Currupt weather or very old world?
@@ -60,7 +65,7 @@ class WeatherManager{
 
 	public function tick(){
 
-		if(!$this->$weatherEnabled){
+		if(!$this->weatherEnabled){
 			return;
 		}
 
@@ -74,8 +79,11 @@ class WeatherManager{
 	}
 
 	public function setWeather(Int $weatherId){
-		$this->weather = $weathId;
-		$this->sendWeatherToPlayers()
+		if($weatherId === $this->weather){
+			return;
+		}
+		$this->weather = $weatherId;
+		$this->sendWeatherToPlayers();
 	}
 
 	public function setWeatherEnabled(Bool $value){
@@ -91,7 +99,7 @@ class WeatherManager{
 	}
 
 	public function sendWeatherToPlayers($players = null){
-		$players = $players !== null && is_array($players) ? $players : $this->getSevrer()->getOnlinePlayers();
+		$players = $players !== null && is_array($players) ? $players : $this->getServer()->getOnlinePlayers();
 		foreach($players as $p){
 			//TODO send weather to players
 		}
