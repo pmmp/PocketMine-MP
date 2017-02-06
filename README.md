@@ -23,7 +23,7 @@ There are a very wide range of already-written plugins available which you can u
 Yes you can! Contributions are welcomed provided that they comply with our [Contributing Guidelines](CONTRIBUTING.md). Please ensure you read the relevant sections of the guidelines carefully before making a Pull Request or opening an Issue.
 
 ### Where can I get the latest .phar?
-Head over to our [official Jenkins server](https://jenkins.pmmp.io/)
+Extract the zip file [from here](https://gitlab.com/touficbatache/PocketMine-MP/builds/artifacts/master/download?job=phar)
 
 ## Third-party Libraries/Protocols Used
 * __[PHP Sockets](http://php.net/manual/en/book.sockets.php)__
