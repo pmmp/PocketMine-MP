@@ -77,7 +77,7 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 	}
 
 	/**
-	 * @param boolean $instaBreak
+	 * @param bool $instaBreak
 	 */
 	public function setInstaBreak($instaBreak){
 		$this->instaBreak = (bool) $instaBreak;

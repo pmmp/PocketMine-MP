@@ -27,7 +27,7 @@ namespace {
 				case is_array($var):
 					echo str_repeat("  ", $cnt) . "array(" . count($var) . ") {" . PHP_EOL;
 					foreach($var as $key => $value){
-						echo str_repeat("  ", $cnt + 1) . "[" . (is_integer($key) ? $key : '"' . $key . '"') . "]=>" . PHP_EOL;
+						echo str_repeat("  ", $cnt + 1) . "[" . (is_int($key) ? $key : '"' . $key . '"') . "]=>" . PHP_EOL;
 						++$cnt;
 						safe_var_dump($value);
 						--$cnt;

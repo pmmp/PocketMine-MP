@@ -115,7 +115,7 @@ class PluginManager{
 	/**
 	 * @param string $loaderName A PluginLoader class name
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function registerInterface($loaderName){
 		if(is_subclass_of($loaderName, PluginLoader::class)){
@@ -381,7 +381,7 @@ class PluginManager{
 	}
 
 	/**
-	 * @param boolean $op
+	 * @param bool $op
 	 *
 	 * @return Permission[]
 	 */
@@ -422,7 +422,7 @@ class PluginManager{
 	}
 
 	/**
-	 * @param boolean $op
+	 * @param bool $op
 	 */
 	private function dirtyPermissibles($op){
 		foreach($this->getDefaultPermSubscriptions($op) as $p){
@@ -480,7 +480,7 @@ class PluginManager{
 	}
 
 	/**
-	 * @param boolean     $op
+	 * @param bool        $op
 	 * @param Permissible $permissible
 	 */
 	public function subscribeToDefaultPerms($op, Permissible $permissible){
@@ -492,7 +492,7 @@ class PluginManager{
 	}
 
 	/**
-	 * @param boolean     $op
+	 * @param bool        $op
 	 * @param Permissible $permissible
 	 */
 	public function unsubscribeFromDefaultPerms($op, Permissible $permissible){
@@ -504,7 +504,7 @@ class PluginManager{
 	}
 
 	/**
-	 * @param boolean $op
+	 * @param bool $op
 	 *
 	 * @return Permissible[]
 	 */

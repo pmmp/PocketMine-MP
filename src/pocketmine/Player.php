@@ -537,7 +537,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @param SourceInterface $interface
 	 * @param null            $clientID
 	 * @param string          $ip
-	 * @param integer         $port
+	 * @param int             $port
 	 */
 	public function __construct(SourceInterface $interface, $clientID, $ip, $port){
 		$this->interface = $interface;
