@@ -35,10 +35,11 @@ class WeatherManager{
 
 	public $weatherEnabled;
 	public $tick;
-	public $nextUpdate;
+	public $weatherDuration;
 
 	const NORMAL = 0;
 	const RAIN = 1;
+	//TODO: Check #2
 	const THUNDER = 3;
 
 	/**
@@ -50,23 +51,46 @@ class WeatherManager{
 	public function __construct(Level $level, LevelProvider $provider){
 		$this->level = $level;
 		$this->provider = $provider;
+
+		if(!$this->getWeatherFromDisk()){ //Currupt weather or very old world?
+			$this->setWeather(self::NORMAL);
+			$this->setDuration(mt_rand(300, 6000)); //30sec - 5min
+		}
 	}
 
 	public function tick(){
+
 		if(!$this->$weatherEnabled){
 			return;
 		}
+
+		if($this->weatherDuration-- <= 0){
+			$this->toggleWeather();
+		}
+	}
+
+	public function setDuration(Int $value){
+		$this->weatherDuration = $value;
+	}
+
+	public function setWeather(Int $weatherId){
+		$this->weather = $weathId;
+		$this->sendWeatherToPlayers()
 	}
 
 	public function setWeatherEnabled(Bool $value){
 		$this->weatherEnabled = $value;
 	}
 
-	public function toggleWeather(){
-
+	public function isWeatherEnabled(){
+		return $this->weatherEnabled;
 	}
 
-	public function sendWeatherTo($players = null){
+	public function toggleWeather(){
+		$this->setDuration(mt_rand(300, 6000));
+	}
+
+	public function sendWeatherToPlayers($players = null){
 		$players = $players !== null && is_array($players) ? $players : $this->getSevrer()->getOnlinePlayers();
 		foreach($players as $p){
 			//TODO send weather to players
@@ -75,6 +99,18 @@ class WeatherManager{
 
 	public function strikeLighting(Vector3 $pos){
 
+	}
+
+	public function saveWeatherToDisk(Bool $force = false){
+		if(!$force && !$this->getServer()->getAutoSave()){
+			return false;
+		}
+		//TODO save to disk
+	}
+
+	public function getWeatherFromDisk(){
+		//TODO get weather from disk.
+		return false; //Return false if weather can't be read from disk.
 	}
 
 	public function getServer(){
