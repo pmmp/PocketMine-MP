@@ -86,7 +86,7 @@ class WeatherManager{
 		$this->sendWeatherToPlayers();
 	}
 
-	public function setWeatherEnabled(Bool $value){
+	public function setWeatherEnabled(bool $value){
 		$this->weatherEnabled = $value;
 	}
 
@@ -99,7 +99,7 @@ class WeatherManager{
 	}
 
 	public function sendWeatherToPlayers($players = null){
-		$players = $players !== null && is_array($players) ? $players : $this->getServer()->getOnlinePlayers();
+		$players = $players !== null && is_array($players) ? $players : $this->getLevel()->getPlayers();
 		foreach($players as $p){
 			//TODO send weather to players
 		}
@@ -109,7 +109,7 @@ class WeatherManager{
 
 	}
 
-	public function saveWeatherToDisk(Bool $force = false){
+	public function saveWeatherToDisk(bool $force = false){
 		if(!$force && !$this->getServer()->getAutoSave()){
 			return false;
 		}
