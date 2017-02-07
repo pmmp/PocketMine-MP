@@ -51,7 +51,7 @@ interface Metadatable{
 	 *
 	 * @param string $metadataKey
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function hasMetadata($metadataKey);
 

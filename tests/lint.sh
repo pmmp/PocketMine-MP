@@ -11,9 +11,12 @@ while getopts "p:" OPTION 2> /dev/null; do
 done
 
 echo Running PHP lint scans...
-shopt -s globstar
-for file in src/pocketmine/*.php src/pocketmine/**/*.php; do
-	OUTPUT=`"$PHP_BINARY" -l "$file"`
-	[ $? -ne 0 ] && echo -n "$OUTPUT" && exit 1
-done
+
+OUTPUT=`find ./src/pocketmine -name "*.php" -print0 | xargs -0 -n1 -P4 php -l`
+
+if [ $? -ne 0 ]; then
+	echo $OUTPUT | grep -v "No syntax errors"
+	exit 1
+fi
+
 echo Lint scan completed successfully.
