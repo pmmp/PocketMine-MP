@@ -115,6 +115,10 @@ class WeatherManager{
 	public function toggleWeather(){
 		switch($this->weather){
 			case self::NORMAL:
+				if(mt_rand(0, 100) > 95){ //Can't find exact chance. :/
+					$this->setWeather(self::THUNDER_STORM); //1⁄100,000 chance of an attempted lightning strike during a thunderstorm.
+					break;
+				}
 				$this->setWeather(self::RAIN);
 				break;
 			case self::RAIN:
