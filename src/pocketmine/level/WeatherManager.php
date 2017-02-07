@@ -45,8 +45,7 @@ class WeatherManager{
 
 	const NORMAL = 0;
 	const RAIN = 1;
-	//TODO: Check #2
-	const THUNDER = 3;
+	const THUNDER_STORM = 2;
 
 	/**
 	 * Starts to manage level weather.
