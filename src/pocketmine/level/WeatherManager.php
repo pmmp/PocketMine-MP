@@ -22,10 +22,12 @@
 namespace pocketmine\level;
 
 use pocketmine\math\Vector3;
-use pocketmine\network\protocol\LevelEventPacket;
 use pocketmine\level\Level;
-use pocketmine\Server;
+use pocketmine\network\protocol\AddEntityPacket;
+use pocketmine\network\protocol\LevelEventPacket;
 use pocketmine\level\format\io\LevelProvider;
+use pocketmine\entity\Entity;
+use pocketmine\Server;
 
 class WeatherManager{
 
@@ -112,8 +114,19 @@ class WeatherManager{
 		}
 	}
 
-	public function strikeLighting(Vector3 $pos){
-
+	public function strikeLighting(Vector3 $pos, $yaw, $pitch, $metadata = null){
+		$pk = new AddEntityPacket();
+		$pk->type = 93;
+		$pk->eid = Entity::$entityCount++;
+		$pk->x = $pos->z;
+		$pk->y = $pos->y;
+		$pk->z = $pos->z;
+		$pk->yaw = $yaw;
+        $pk->pitch = $pitch;
+		$pk->metadata = is_array($metadata) ? $metadata : []; //Not sure what defualt values should be.
+		foreach($this->getServer()->getOnlinePlayers() as $p){
+			$p->dataPacket($pk);
+		}
 	}
 
 	private function saveWeatherToDisk(bool $force = false){
