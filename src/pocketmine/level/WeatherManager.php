@@ -78,6 +78,8 @@ class WeatherManager{
 		if($this->getWeather === self::RAIN and mt_rand(0, 3000) === 0){ //No exact wiki chance value.
 			$this->setWeather(self::THUNDER_STORM); //Small chance rain storm can worsen into thunder storm.
 		}
+		
+		 //1⁄100,000 chance of an attempted lightning strike during a thunderstorm.
 	}
 
 	public function setDuration(Int $value){
@@ -122,7 +124,7 @@ class WeatherManager{
 		switch($this->weather){
 			case self::NORMAL:
 				if(mt_rand(0, 100) > 95){ //Can't find exact chance. :/
-					$this->setWeather(self::THUNDER_STORM); //1⁄100,000 chance of an attempted lightning strike during a thunderstorm.
+					$this->setWeather(self::THUNDER_STORM);
 					break;
 				}
 				$this->setWeather(self::RAIN);
@@ -145,7 +147,7 @@ class WeatherManager{
 		}
 	}
 
-	public function strikeLighting(Vector3 $pos, $yaw, $pitch, $metadata = null){
+	public function strikeLighting(Vector3 $pos, $yaw, $pitch, array $metadata = []){
 		$pk = new AddEntityPacket();
 		$pk->type = 93;
 		$pk->eid = Entity::$entityCount++;
@@ -154,7 +156,7 @@ class WeatherManager{
 		$pk->z = $pos->z;
 		$pk->yaw = $yaw;
         $pk->pitch = $pitch;
-		$pk->metadata = is_array($metadata) ? $metadata : []; //Not sure what defualt values should be.
+		$pk->metadata = $metadata;
 		foreach($this->getLevel()->getPlayers() as $p){
 			$p->dataPacket($pk);
 		}
@@ -172,7 +174,7 @@ class WeatherManager{
 		return false; //Return false if weather can't be read from disk.
 	}
 
-	public function getEvid($id){
+	public function getEvid(Int $id){
 		return $id === self::NORMAL ? 3003 : 3001;
 	}
 
