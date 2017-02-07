@@ -104,7 +104,7 @@ class WeatherManager{
 		}
 
 		$this->weather = $ev->getWeather();
-		$this->duration = $ev->getDuration();
+		$this->weatherDuration = $ev->getDuration();
 		$this->sendWeatherToPlayers();
 	}
 	
