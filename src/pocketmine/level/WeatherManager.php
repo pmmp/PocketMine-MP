@@ -28,6 +28,7 @@ use pocketmine\network\protocol\LevelEventPacket;
 use pocketmine\level\format\io\LevelProvider;
 use pocketmine\entity\Entity;
 use pocketmine\Server;
+use pocketmine\event\level\WeatherChangeEvent;
 
 class WeatherManager{
 
@@ -39,7 +40,7 @@ class WeatherManager{
 	public $server;
 
 	public $weatherEnabled;
-	public $weather;
+	public $weather = 0;
 	public $weatherDuration;
 
 	const NORMAL = 0;
@@ -60,7 +61,6 @@ class WeatherManager{
 
 		if(!$this->getWeatherFromDisk()){ //Currupt weather or very old world?
 			$this->setWeather(self::NORMAL);
-			$this->setDuration(mt_rand(300, 6000)); //30sec - 5min
 			
 			$this->saveWeatherToDisk();
 		}
@@ -83,11 +83,21 @@ class WeatherManager{
 		return $this->weatherDuration;
 	}
 
-	public function setWeather(Int $weatherId){
+	public function setWeather(Int $weatherId, Int $duration = null){
 		if($weatherId === $this->weather){
 			return;
 		}
+
+		$duration = $duration === null ? mt_rand(300, 6000) : $duration;
+
+		$this->getServer()->getPluginManager()->callEvent($ev = new WeatherChangeEvent($this->getLevel(), $this->weather, $duration));
+
+		if($ev->isCancelled()){
+			return;
+		}
+
 		$this->weather = $weatherId;
+		$this->duration = $duration;
 		$this->sendWeatherToPlayers();
 	}
 	
@@ -104,7 +114,6 @@ class WeatherManager{
 	}
 
 	public function toggleWeather(){
-		$this->setDuration(mt_rand(300, 6000));
 		switch($this->weather){
 			case self::NORMAL:
 				$this->setWeather(self::RAIN);
