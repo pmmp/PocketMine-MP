@@ -135,8 +135,8 @@ class WeatherManager{
 		}
 	}
 
-	public function sendWeatherToPlayers($players = null){
-		$players = is_array($players) ? $players : $this->getLevel()->getPlayers();
+	public function sendWeatherToPlayers(array $players = []){
+		$players = is_array($players) ? count($players) > 0 : $this->getLevel()->getPlayers();
 
 		$pk = new LevelEventPacket();
 		$pk->evid = $this->weather === self::RAIN ? 3001 : 3003;
