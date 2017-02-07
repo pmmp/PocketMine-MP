@@ -124,7 +124,7 @@ class WeatherManager{
 		$pk->yaw = $yaw;
         $pk->pitch = $pitch;
 		$pk->metadata = is_array($metadata) ? $metadata : []; //Not sure what defualt values should be.
-		foreach($this->getServer()->getOnlinePlayers() as $p){
+		foreach($this->getLevel()->getPlayers() as $p){
 			$p->dataPacket($pk);
 		}
 	}
