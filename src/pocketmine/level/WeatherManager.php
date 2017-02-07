@@ -95,7 +95,7 @@ class WeatherManager{
 			return;
 		}
 
-		$duration = $duration === null ? mt_rand(300, 6000) : $duration;
+		$duration = $duration === null ? mt_rand(600, 6000) : $duration;
 
 		$this->getServer()->getPluginManager()->callEvent($ev = new WeatherChangeEvent($this->getLevel(), $this->weather, $duration));
 
