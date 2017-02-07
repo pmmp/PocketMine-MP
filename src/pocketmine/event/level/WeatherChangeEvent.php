@@ -48,6 +48,7 @@ class WeatherChangeEvent extends LevelEvent implements Cancellable{
 	}
 
 	public function setDuration(int $weatherDuration){
+		$this->weatherDuration = $weatherDuration;
 	}
 
 	public function getDuration() : int{
