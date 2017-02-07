@@ -58,7 +58,7 @@ class WeatherManager{
 		$this->provider = $provider;
 		$this->server = $level->getServer();
 
-		if(!$this->getWeatherFromDisk()){ //Currupt weather or very old world?
+		if(!$this->getWeatherFromDisk()){ //Currupt level.dat or very old world?
 			$this->setWeather(self::NORMAL);
 			
 			$this->saveWeatherToDisk();
@@ -66,11 +66,17 @@ class WeatherManager{
 	}
 
 	public function tick(){
+
 		if(!$this->weatherEnabled){
 			return;
 		}
+
 		if($this->weatherDuration-- <= 0){
 			$this->toggleWeather();
+		}
+
+		if($this->getWeather === self::RAIN and mt_rand(0, 3000) === 0){ //No exact wiki chance value.
+			$this->setWeather(self::THUNDER_STORM); //Small chance rain storm can worsen into thunder storm.
 		}
 	}
 
@@ -155,7 +161,7 @@ class WeatherManager{
 	}
 
 	private function saveWeatherToDisk(bool $force = false){
-		if(!$force && !$this->getServer()->getAutoSave()){
+		if(!$force and !$this->getServer()->getAutoSave()){
 			return false;
 		}
 		//TODO save to level.dat
