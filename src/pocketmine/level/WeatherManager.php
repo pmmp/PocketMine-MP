@@ -105,12 +105,25 @@ class WeatherManager{
 
 	public function toggleWeather(){
 		$this->setDuration(mt_rand(300, 6000));
+		switch($this->weather){
+			case self::NORMAL:
+				$this->setWeather(self::RAIN);
+				break;
+			case self::RAIN:
+				$this->setWeather(self::NORMAL);
+				break;
+		}
 	}
 
 	public function sendWeatherToPlayers($players = null){
 		$players = is_array($players) ? $players : $this->getLevel()->getPlayers();
+
+		$pk = new LevelEventPacket();
+		$pk->evid = $this->weather === self::RAIN ? 3001 : 3003;
+		$pk->data = 90000; //Not sure if this is default.
+
 		foreach($players as $p){
-			//TODO send weather to players
+			$p->dataPacket($pk);
 		}
 	}
 
@@ -139,6 +152,10 @@ class WeatherManager{
 	private function getWeatherFromDisk(){
 		//TODO get weather from level.dat
 		return false; //Return false if weather can't be read from disk.
+	}
+
+	public function getEvid($id){
+		return $id === self::NORMAL ? 3003 : 3001;
 	}
 
 	public function getServer(){
