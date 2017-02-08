@@ -267,8 +267,8 @@ class Config implements \ArrayAccess{
 	 */
 	public function offsetSet($k, $v){
 		if(is_array($this->config)){
-			if(is_null($k)){
-				$this->config[] = $v;
+			if($k === null){
+				$this->config[] = null;
 				end($this->config);
 				$k = key($this->config);
 			}
