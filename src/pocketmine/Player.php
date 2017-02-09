@@ -812,8 +812,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->z = $pos->z;
 		$this->dataPacket($pk);
 
-		$this->sendWeather($this->getLevel()->getWeatherManager()->getWeather());
-
 		$pk = new PlayStatusPacket();
 		$pk->status = PlayStatusPacket::PLAYER_SPAWN;
 		$this->dataPacket($pk);
@@ -1770,8 +1768,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->hasBeenLoadedInCreative = 1;
 		$pk->dayCycleStopTime = -1; //TODO: implement this properly
 		$pk->eduMode = 0;
-		$pk->rainLevel = 0; //TODO: implement these properly
-		$pk->lightningLevel = 0;
+		$pk->rainLevel = $this->getLevel()->getWeatherManager()->getWeather();
+		$pk->lightningLevel = 0; //TODO: implement this properly
 		$pk->commandsEnabled = 1;
 		$pk->levelId = "";
 		$pk->worldName = $this->server->getMotd();
