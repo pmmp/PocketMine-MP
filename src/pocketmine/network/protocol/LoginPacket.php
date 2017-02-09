@@ -40,6 +40,8 @@ class LoginPacket extends DataPacket{
 	public $skinId;
 	public $skin = null;
 
+	public $clientData = [];
+
 	public function decode(){
 		$this->protocol = $this->getInt();
 
@@ -70,18 +72,14 @@ class LoginPacket extends DataPacket{
 			}
 		}
 
-		$skinToken = $this->decodeToken($this->get($this->getLInt()));
-		if(isset($skinToken["ClientRandomId"])){
-			$this->clientId = $skinToken["ClientRandomId"];
-		}
-		if(isset($skinToken["ServerAddress"])){
-			$this->serverAddress = $skinToken["ServerAddress"];
-		}
-		if(isset($skinToken["SkinData"])){
-			$this->skin = base64_decode($skinToken["SkinData"]);
-		}
-		if(isset($skinToken["SkinId"])){
-			$this->skinId = $skinToken["SkinId"];
+		$this->clientData = $this->decodeToken($this->get($this->getLInt()));
+
+		$this->clientId = $this->clientData["ClientRandomId"] ?? null;
+		$this->serverAddress = $this->clientData["ServerAddress"] ?? null;
+		$this->skinId = $this->clientData["SkinId"] ?? null;
+
+		if(isset($this->clientData["SkinData"])){
+			$this->skin = base64_decode($this->clientData["SkinData"]);
 		}
 	}
 
