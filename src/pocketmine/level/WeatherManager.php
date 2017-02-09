@@ -149,7 +149,7 @@ class WeatherManager{
 		$pk = new AddEntityPacket();
 		$pk->type = 93;
 		$pk->eid = Entity::$entityCount++;
-		$pk->x = $pos->z;
+		$pk->x = $pos->x;
 		$pk->y = $pos->y;
 		$pk->z = $pos->z;
 		$pk->yaw = $yaw;
