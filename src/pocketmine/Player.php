@@ -129,6 +129,7 @@ use pocketmine\network\protocol\TakeItemEntityPacket;
 use pocketmine\network\protocol\TextPacket;
 use pocketmine\network\protocol\UpdateAttributesPacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
+use pocketmine\network\protocol\LevelEventPacket;
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
@@ -810,6 +811,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->y = $pos->y;
 		$pk->z = $pos->z;
 		$this->dataPacket($pk);
+
+		$this->sendWeather($this->getLevel()->getWeatherManager()->getWeather());
 
 		$pk = new PlayStatusPacket();
 		$pk->status = PlayStatusPacket::PLAYER_SPAWN;
@@ -3024,6 +3027,18 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->message = $this->server->getLanguage()->translateString($message);
 		$this->dataPacket($pk);
 		*/
+	}
+
+	/**
+	 * Send a weather mode to aplayer.
+	 *
+	 * @param int $id
+	 */
+	public function sendWeather($id){
+		$pk = new LevelEventPacket();
+		$pk->evid = $this->getLevel()->getWeatherManager()->getEvid($id);
+		$pk->data = 90000; //Not sure if this is default.
+		$this->dataPacket($pk);
 	}
 
 	public function sendTranslation($message, array $parameters = []){
