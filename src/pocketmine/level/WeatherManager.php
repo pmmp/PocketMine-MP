@@ -45,7 +45,7 @@ class WeatherManager{
 
 	const NORMAL = 0;
 	const RAIN = 1;
-	const THUNDER_STORM = 2;
+	const RAIN_AND_THUNDER = 2;
 
 	/**
 	 * Starts to manage level weather.
@@ -59,6 +59,7 @@ class WeatherManager{
 		$this->server = $level->getServer();
 
 		if(!$this->getWeatherFromDisk()){ //Currupt level.dat or very old world?
+			$this->setWeatherEnabled(true);
 			$this->setWeather(self::NORMAL);
 			
 			$this->saveWeatherToDisk();
@@ -75,8 +76,16 @@ class WeatherManager{
 			$this->toggleWeather();
 		}
 
-		if($this->getWeather === self::RAIN and mt_rand(0, 3000) === 0){ //No exact wiki chance value.
-			$this->setWeather(self::THUNDER_STORM); //Small chance rain storm can worsen into thunder storm.
+		if($this->getWeather() === self::RAIN and mt_rand(0, 3000) === 0){ //No exact wiki chance value.
+			$this->setWeather(self::RAIN_AND_THUNDER); //Small chance rain storm can worsen into thunder storm.
+		}
+
+		if($this->isRaining()){
+			foreach($this->getLevel()->getPlayers() as $p){
+				if($p->isOnFire()){
+					$p->extinguish();
+				}
+			}
 		}
 	}
 
@@ -95,7 +104,7 @@ class WeatherManager{
 
 		$duration = $duration === null ? mt_rand(300, 6000) : $duration;
 
-		$this->getServer()->getPluginManager()->callEvent($ev = new WeatherChangeEvent($this->getLevel(), $this->weather, $duration));
+		$this->getServer()->getPluginManager()->callEvent($ev = new WeatherChangeEvent($this->getLevel(), $weatherId, $duration));
 
 		if($ev->isCancelled()){
 			return;
@@ -128,6 +137,7 @@ class WeatherManager{
 				$this->setWeather(self::RAIN);
 				break;
 			case self::RAIN:
+			case self::RAIN_AND_THUNDER:
 				$this->setWeather(self::NORMAL);
 				break;
 		}
@@ -137,7 +147,7 @@ class WeatherManager{
 		$players = count($players) > 0 ? $players : $this->getLevel()->getPlayers();
 
 		$pk = new LevelEventPacket();
-		$pk->evid = $this->weather === self::RAIN ? 3001 : 3003;
+		$pk->evid = $this->weather === self::RAIN ? 3001 : $this->weather === self::RAIN_AND_THUNDER ? 3002 : 3003;
 		$pk->data = 90000; //Not sure if this is default.
 
 		foreach($players as $p){
@@ -158,6 +168,10 @@ class WeatherManager{
 		foreach($this->getLevel()->getPlayers() as $p){
 			$p->dataPacket($pk);
 		}
+	}
+
+	public function isRaining(){
+		return $this->weather === self::RAIN || $this->weather === self::RAIN_AND_THUNDER;
 	}
 
 	private function saveWeatherToDisk(bool $force = false){
