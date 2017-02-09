@@ -133,8 +133,8 @@ class WeatherManager{
 		}
 	}
 
-	public function sendWeatherToPlayers($players = null){
-		$players = is_array($players) ? $players : $this->getLevel()->getPlayers();
+	public function sendWeatherToPlayers(array $players = []){
+		$players = count($players) > 0 ? $players : $this->getLevel()->getPlayers();
 
 		$pk = new LevelEventPacket();
 		$pk->evid = $this->weather === self::RAIN ? 3001 : 3003;
@@ -145,7 +145,7 @@ class WeatherManager{
 		}
 	}
 
-	public function strikeLighting(Vector3 $pos, $yaw, $pitch, $metadata = null){
+	public function strikeLighting(Vector3 $pos, $yaw, $pitch, array $metadata = []){
 		$pk = new AddEntityPacket();
 		$pk->type = 93;
 		$pk->eid = Entity::$entityCount++;
@@ -154,7 +154,7 @@ class WeatherManager{
 		$pk->z = $pos->z;
 		$pk->yaw = $yaw;
         $pk->pitch = $pitch;
-		$pk->metadata = is_array($metadata) ? $metadata : []; //Not sure what defualt values should be.
+		$pk->metadata = $metadata; //Not sure what defualt values should be.
 		foreach($this->getLevel()->getPlayers() as $p){
 			$p->dataPacket($pk);
 		}
