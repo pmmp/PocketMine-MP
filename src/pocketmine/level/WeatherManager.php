@@ -79,14 +79,6 @@ class WeatherManager{
 		if($this->getWeather() === self::RAIN and mt_rand(0, 3000) === 0){ //No exact wiki chance value.
 			$this->setWeather(self::RAIN_AND_THUNDER); //Small chance rain storm can worsen into thunder storm.
 		}
-
-		if($this->isRaining()){
-			foreach($this->getLevel()->getPlayers() as $p){
-				if($p->isOnFire()){
-					$p->extinguish();
-				}
-			}
-		}
 	}
 
 	public function setDuration(Int $value){
