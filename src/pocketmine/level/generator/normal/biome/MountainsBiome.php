@@ -42,7 +42,7 @@ class MountainsBiome extends GrassyBiome{
 
 		$this->setElevation(63, 127);
 
-		$this->temperature = 0.4;
+		$this->temperature = 0.5;
 		$this->rainfall = 0.5;
 	}
 
