@@ -384,7 +384,21 @@ abstract class Entity extends Location implements Metadatable{
 	public function setNameTagAlwaysVisible($value = true){
 		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ALWAYS_SHOW_NAMETAG, $value);
 	}
-
+	
+	/**
+	 * @return float
+	 */
+	public function getScale(): float{
+		return $this->getDataProperty(self::DATA_SCALE);
+	}
+	
+	/**
+	 * @param float $value
+	 */
+	public function setScale(float $value){
+		$this->setDataProperty(self::DATA_SCALE, self::DATA_TYPE_FLOAT, $value);
+	}
+	
 	public function isSneaking(){
 		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_SNEAKING);
 	}
