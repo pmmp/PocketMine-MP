@@ -795,6 +795,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->inventory->sendContents($this);
 		$this->inventory->sendArmorContents($this);
 
+		$pk = new SetTimePacket();
+		$pk->time = $this->level->getTime();
+		$pk->started = $this->level->stopTime == false;
+		$this->dataPacket($pk);
+
 		$pos = $this->level->getSafeSpawn($this);
 
 		$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $pos));
@@ -1763,8 +1768,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->hasBeenLoadedInCreative = 1;
 		$pk->dayCycleStopTime = -1; //TODO: implement this properly
 		$pk->eduMode = 0;
-		$pk->rainLevel = $this->getLevel()->getWeatherManager()->getWeather();
-		$pk->lightningLevel = 0; //TODO: implement this properly
+		$pk->rainLevel = 0; //TODO: implement this properly
+		$pk->lightningLevel = 0;
 		$pk->commandsEnabled = 1;
 		$pk->levelId = "";
 		$pk->worldName = $this->server->getMotd();
