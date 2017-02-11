@@ -716,8 +716,7 @@ class Chunk{
 							continue; //Fixes entities allocated in wrong chunks.
 						}
 
-						//TODO: check bitflags
-						if(($entity = Entity::createEntity($nbt["id"] & 0xff, $this, $nbt)) instanceof Entity){
+						if(($entity = Entity::createEntity($nbt["id"], $this, $nbt)) instanceof Entity){
 							$entity->spawnToAll();
 						}else{
 							$changed = true;
