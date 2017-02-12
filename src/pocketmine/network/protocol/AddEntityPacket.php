@@ -23,6 +23,8 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\entity\Attribute;
+
 #ifndef COMPILE
 use pocketmine\utils\Binary;
 
@@ -41,7 +43,8 @@ class AddEntityPacket extends DataPacket{
 	public $speedZ;
 	public $yaw;
 	public $pitch;
-	public $modifiers;
+	/** @var Attribute[] */
+	public $attributes = [];
 	public $metadata = [];
 	public $links = [];
 
@@ -58,7 +61,13 @@ class AddEntityPacket extends DataPacket{
 		$this->putVector3f($this->speedX, $this->speedY, $this->speedZ);
 		$this->putLFloat($this->pitch * (256 / 360));
 		$this->putLFloat($this->yaw * (256 / 360));
-		$this->putUnsignedVarInt($this->modifiers); //attributes?
+		$this->putUnsignedVarInt(count($this->attributes));
+		foreach($this->attributes as $entry){
+			$this->putString($entry->getName());
+			$this->putLFloat($entry->getMinValue());
+			$this->putLFloat($entry->getValue());
+			$this->putLFloat($entry->getMaxValue());
+		}
 		$meta = Binary::writeMetadata($this->metadata);
 		$this->put($meta);
 		$this->putUnsignedVarInt(count($this->links));
