@@ -95,7 +95,7 @@ class PharPluginLoader implements PluginLoader{
 	/**
 	 * Returns the filename patterns that this loader accepts
 	 *
-	 * @return array
+	 * @return string
 	 */
 	public function getPluginFilters(){
 		return "/\\.phar$/i";
