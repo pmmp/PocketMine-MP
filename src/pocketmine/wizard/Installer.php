@@ -58,13 +58,13 @@ class Installer{
 		$this->lang = new InstallerLang($lang);
 
 
-		echo "[*] " . $this->lang->language_has_been_selected . "\n";
+		echo "[*] " . $this->lang->get("language_has_been_selected") . "\n";
 
 		if(!$this->showLicense()){
 			return false;
 		}
 
-		echo "[?] " . $this->lang->skip_installer . " (y/N): ";
+		echo "[?] " . $this->lang->get("skip_installer") . " (y/N): ";
 		if(strtolower($this->getInput()) === "y"){
 			return true;
 		}

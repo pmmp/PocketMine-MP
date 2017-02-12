@@ -36,8 +36,6 @@ class ChunkUtils{
 		$result = str_repeat("\x00", 4096);
 		if($array !== $result){
 			$i = 0;
-			$zM = 0;
-			$yM = 0;
 			for($x = 0; $x < 16; ++$x){
 				$zM = $x + 256;
 				for($z = $x; $z < $zM; $z += 16){
