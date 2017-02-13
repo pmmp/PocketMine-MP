@@ -2680,6 +2680,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				if($recipe instanceof ShapedRecipe){
 					for($x = 0; $x < 3 and $canCraft; ++$x){
 						for($y = 0; $y < 3; ++$y){
+							/** @var Item $item */
 							$item = $packet->input[$y * 3 + $x];
 							$ingredient = $recipe->getIngredient($x, $y);
 							if($item->getCount() > 0){
@@ -2695,6 +2696,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 					for($x = 0; $x < 3 and $canCraft; ++$x){
 						for($y = 0; $y < 3; ++$y){
+							/** @var Item $item */
 							$item = clone $packet->input[$y * 3 + $x];
 
 							foreach($needed as $k => $n){
@@ -2946,7 +2948,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					break;
 				}
 
-				if(($tile = $this->level->getTile($this->temporalVector->setComponents($packet->x, $packet->y, $packet->z))) instanceof ItemFrame){
+				$tile = $this->level->getTile($this->temporalVector->setComponents($packet->x, $packet->y, $packet->z));
+				if($tile instanceof ItemFrame){
 					if(!$tile->getItem()->equals($packet->item) and !$this->isCreative(true)){
 						$tile->spawnTo($this);
 						break;

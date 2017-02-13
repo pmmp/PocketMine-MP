@@ -101,7 +101,8 @@ class BurningFurnace extends Solid{
 
 	public function onActivate(Item $item, Player $player = null){
 		if($player instanceof Player){
-			if(!(($furnace = $this->getLevel()->getTile($this)) instanceof TileFurnace)){
+			$furnace = $this->getLevel()->getTile($this);
+			if(!($furnace instanceof TileFurnace)){
 				$nbt = new CompoundTag("", [
 					new ListTag("Items", []),
 					new StringTag("id", Tile::FURNACE),

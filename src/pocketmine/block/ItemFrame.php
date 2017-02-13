@@ -46,7 +46,8 @@ class ItemFrame extends Flowable{
 	}
 
 	public function onActivate(Item $item, Player $player = null){
-		if(!(($tile = $this->level->getTile($this)) instanceof TileItemFrame)){
+		$tile = $this->level->getTile($this);
+		if(!($tile instanceof TileItemFrame)){
 			$nbt = new CompoundTag("", [
 				new StringTag("id", Tile::ITEM_FRAME),
 				new IntTag("x", $this->x),
@@ -76,7 +77,8 @@ class ItemFrame extends Flowable{
 	}
 
 	public function onBreak(Item $item){
-		if(($tile = $this->level->getTile($this)) instanceof TileItemFrame){
+		$tile = $this->level->getTile($this);
+		if($tile instanceof TileItemFrame){
 			//TODO: add events
 			if(lcg_value() <= $tile->getItemDropChance() and $tile->getItem()->getId() !== Item::AIR){
 				$this->level->dropItem($tile->getBlock(), $tile->getItem());
