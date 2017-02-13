@@ -25,11 +25,6 @@ namespace pocketmine\network\protocol;
 
 use pocketmine\entity\Attribute;
 
-#ifndef COMPILE
-use pocketmine\utils\Binary;
-
-#endif
-
 class AddEntityPacket extends DataPacket{
 	const NETWORK_ID = Info::ADD_ENTITY_PACKET;
 
@@ -68,8 +63,7 @@ class AddEntityPacket extends DataPacket{
 			$this->putLFloat($entry->getValue());
 			$this->putLFloat($entry->getMaxValue());
 		}
-		$meta = Binary::writeMetadata($this->metadata);
-		$this->put($meta);
+		$this->putEntityMetadata($this->metadata);
 		$this->putUnsignedVarInt(count($this->links));
 		foreach($this->links as $link){
 			$this->putEntityId($link[0]);
