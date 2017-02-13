@@ -176,22 +176,6 @@ class BinaryStream extends \stdClass{
 		$this->buffer .= chr($v);
 	}
 
-	public function getDataArray($len = 10){
-		$data = [];
-		for($i = 1; $i <= $len and !$this->feof(); ++$i){
-			$data[] = $this->get($this->getTriad());
-		}
-
-		return $data;
-	}
-
-	public function putDataArray(array $data = []){
-		foreach($data as $v){
-			$this->putTriad(strlen($v));
-			$this->put($v);
-		}
-	}
-
 	public function getUUID(){
 		return UUID::fromBinary($this->get(16));
 	}
