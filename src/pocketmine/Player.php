@@ -3116,8 +3116,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->server->removeOnlinePlayer($this);
 			}
 
-			$this->loggedIn = false;
-
 			if(strlen($this->getName()) > 0){
 				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message, true));
 				if($this->loggedIn === true and $ev->getAutoSave()){
@@ -3129,6 +3127,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 			}
 
+			$this->loggedIn = false;
 			$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
 			$this->spawned = false;
 			$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logOut", [
