@@ -441,11 +441,6 @@ namespace pocketmine {
 		++$errors;
 	}
 
-	if(!extension_loaded("sqlite3")){
-		$logger->critical("Unable to find the SQLite3 extension.");
-		++$errors;
-	}
-
 	if(!extension_loaded("zlib")){
 		$logger->critical("Unable to find the Zlib extension.");
 		++$errors;
