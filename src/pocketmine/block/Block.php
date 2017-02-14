@@ -268,16 +268,16 @@ class Block extends Position implements BlockIds, Metadatable{
 							if($block instanceof Liquid or $block instanceof Ice){
 								self::$lightFilter[$id] = 2;
 							}else{
-								self::$lightFilter[$id] = 1;
+								self::$lightFilter[$id] = 0;
 							}
 						}else{
 							self::$lightFilter[$id] = 15;
 						}
 					}else{
-						self::$lightFilter[$id] = 1;
+						self::$lightFilter[$id] = 0;
 					}
 				}else{
-					self::$lightFilter[$id] = 1;
+					self::$lightFilter[$id] = 15;
 					for($data = 0; $data < 16; ++$data){
 						self::$fullList[($id << 4) | $data] = new Block($id, $data);
 					}
@@ -291,7 +291,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return int 0-15
 	*/
-	public static function getSkyLightVerticalFilter($blockID): int{
+	public static function getVerticalSkyLightFilter($blockID): int{
 		if(!self::$diffusesSkyLight[$blockID]){
 			return self::$lightFilter[$blockID];
 		}else{ //Diffusion
@@ -307,7 +307,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return int 1-15
 	*/
 	public static function getHorizontalLightFilter($blockID): int{
-		return max(self::$lightFilter($blockID), 1);
+		return max(self::$lightFilter[$blockID], 1);
 	}
 
 	/**

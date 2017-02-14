@@ -1281,7 +1281,7 @@ class Level implements ChunkManager, Metadatable{
 	*/
 	public function updateBlockSkyLight(int $x, int $y, int $z){
 		$this->server->broadcastMessage("-------Calc::'".$x."/".$y."/".$z."/"."'-------"); #DBG
-		if(Block::getSkyLightVerticalFilter($this->getBlockIdAt($x, $y, $z)) >= 14){
+		if(Block::getVerticalSkyLightFilter($this->getBlockIdAt($x, $y, $z)) >= 14){
 			$this->setBlockSkyLightAt($x, $y, $z, 0);
 			$this->server->broadcastMessage("-------EndCalc::'".$x."/".$y."/".$z."/"."'::TOOHIGHBASERES-------"); #DBG
 			return;
@@ -1312,13 +1312,13 @@ class Level implements ChunkManager, Metadatable{
 	*/
 	private function getDirectSkyLight($x, $y, $z){
 		$chunk = $this->getChunk($x >> 4, $z >> 4, true);
-		if($highestBlock = $chunk->getHighestBlockAt($x & 0xf, $z & 0xf) < $y){
+		if(($highestBlock = $chunk->getHighestBlockAt($x & 0xf, $z & 0xf)) < $y){
 			return 15;
 		}
 		
 		$directSkyLight = 15;
 		for($i = $y; $i <= $highestBlock; $i++){
-			$lightResistance = Block::getSkyLightVerticalFilter($chunk->getBlockId($x & 0x0f, $i & 0x7f, $z & 0x0f));
+			$lightResistance = Block::getVerticalSkyLightFilter($chunk->getBlockId($x & 0x0f, $i & 0x7f, $z & 0x0f));
 			if($lightResistance == -1){ //diffusion
 				$lightResistance = $i - $y;
 				$y = $i; //If another diffusion occurs, it will not do double diffusion
@@ -1339,7 +1339,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param $origin              TODO::Probably remove! (NO! need of $directSkyLight (actually everything) to abort if (->Too low to reach point of origin??)) ->reason at $origins???
 	 * @param $currWayResistance   The horizontal resistance of the current root way
 	 * @param $origins             TODO::Probably remove! (was meant to be used for inefficent abort calculation, allthough it could improve performance for some blocks it probably would push the performance for all the other blocks unnecessarily)
-	 * @param &$visitedBlocks      Blocks visited in the current root way
+	 * @param &$visitedBlocks      Blocks visited in the current base way
 	 *
 	 * @return int 0-15
 	*/
@@ -1372,7 +1372,7 @@ class Level implements ChunkManager, Metadatable{
 			$this->server->broadcastMessage("LightWay '".$dir."' (recCallLvl:'".$fncId."') has ".$directSkyLight." directSkyLight"); #DBG
 			
 			if($directSkyLight > 0){ //Found an origin of light in our current lightWay! (not THE origin, there can be many origins for one block)
-				if($directSkyLight >= 14){ //No need to continue calculation, we can't get higher skylight!
+				if($directSkyLight >= 14){ //No need to continue calculation, we can't get higher skylight for $calcBase!
 					$lightLvlsFromDir[$dir] = $directSkyLight;
 					$this->server->broadcastMessage("End foreach at '".$dir."' because dirSkyLight ".$directSkyLight." >= 14. (".implode($calcBase, "/").")"); #DBG
 					break;
@@ -1392,21 +1392,24 @@ class Level implements ChunkManager, Metadatable{
 			$lightLvlsFromDir[$dir] = $this->getSkyLightViaWays($lightWay, $newLightWays, $origin, $newWayResistance, $origins, $visitedBlocks, $fncId + 1); //$fncId : DEBUG ONLY
 		}
 		$this->server->broadcastMessage("lightLvlDir for (".implode($calcBase, "/").") is '".max($lightLvlsFromDir)."'"); #DBG
+		if($lightLvlsFromDir === []){ //Revisited an already visited block -_-
+			return 0;
+		}
 		return max($lightLvlsFromDir) - $currResistance;
 	}
 		
 	/**
 	 * Finds horizontal ways for the light to get in to $x $y $z 
 	 *
-	 * @return array|false [Vector3::SIDE_?] => [x, y, z, blockResistance]@TODO Use or scrap blockResistance
+	 * @return array|false [Vector3::SIDE_?] => [x, y, z]
 	*/
 	private function findLightWays(int $x, int $y, int $z){
 		$lightWays = [];
 		$vec3 = new Vector3($x, $y, $z);
 		for($i = Vector3::SIDE_NORTH; $i <= Vector3::SIDE_EAST; $i++){
 			$newVec3 = $vec3->getSide($i);
-			if($blockResistance = Block::getSkyLightVerticalFilter($this->getBlockIdAt($newVec3->x, $newVec3->y, $newVec3->z)) < 15){
-				$lightWays[$i] = [$newVec3->x, $newVec3->y, $newVec3->z, $blockResistance]; //TODO::Use or scrap blockResistance
+			if(Block::getHorizontalLightFilter($this->getBlockIdAt($newVec3->x, $newVec3->y, $newVec3->z)) < 15){
+				$lightWays[$i] = [$newVec3->x, $newVec3->y, $newVec3->z];
 			}
 		}
 		return $lightWays === [] ? false : $lightWays;
@@ -1451,7 +1454,7 @@ class Level implements ChunkManager, Metadatable{
 			/** @var Vector3 $node */
 			$node = $lightPropagationQueue->dequeue();
 
-			$lightLevel = $this->getBlockLightAt($node->x, $node->y, $node->z) - (int) Block::$lightFilter[$this->getBlockIdAt($node->x, $node->y, $node->z)];
+			$lightLevel = $this->getBlockLightAt($node->x, $node->y, $node->z) - (int) Block::getHorizontalLightFilter($this->getBlockIdAt($node->x, $node->y, $node->z));
 
 			if($lightLevel >= 1){
 				$this->computeSpreadBlockLight($node->x - 1, $node->y, $node->z, $lightLevel, $lightPropagationQueue, $visited);
@@ -1524,8 +1527,9 @@ class Level implements ChunkManager, Metadatable{
 		if($pos->y < 0 or $pos->y >= $this->provider->getWorldHeight()){
 			return false;
 		}
-
-		if($this->getChunk($pos->x >> 4, $pos->z >> 4, true)->setBlock($pos->x & 0x0f, $pos->y & Level::Y_MASK, $pos->z & 0x0f, $block->getId(), $block->getDamage())){
+		
+		$chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4, true);
+		if($chunk->setBlock($pos->x & 0x0f, $pos->y & Level::Y_MASK, $pos->z & 0x0f, $block->getId(), $block->getDamage())){
 			if(!($pos instanceof Position)){
 				$pos = $this->temporalPosition->setComponents($pos->x, $pos->y, $pos->z);
 			}
@@ -1551,6 +1555,10 @@ class Level implements ChunkManager, Metadatable{
 			}
 
 			if($update === true){
+				$heightMap = $chunk->getHeightMap($pos->x & 0x0f, $pos->z & 0x0f);
+				if($pos->y > $heightMap && $heightMap !== 255){
+					$chunk->getHighestBlockAt($pos->x & 0x0f, $pos->z & 0x0f, false);
+				}
 				$this->updateAllLight($block);
 
 				$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($block));
