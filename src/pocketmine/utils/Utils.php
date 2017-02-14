@@ -354,6 +354,8 @@ class Utils{
 	 * @param array $extraHeaders
 	 *
 	 * @return bool|mixed
+	 *
+	 * @throws \Throwable if an error occurred
 	 */
 	public static function getURL($page, $timeout = 10, array $extraHeaders = []){
 		if(Utils::$online === false){
@@ -372,7 +374,18 @@ class Utils{
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, (int) $timeout);
 		curl_setopt($ch, CURLOPT_TIMEOUT, (int) $timeout);
 		$ret = curl_exec($ch);
+
+		$err = "";
+		if($ret === false){
+			//Need to get error before closing
+			$err = curl_error($ch);
+		}
+
 		curl_close($ch);
+
+		if($err !== ""){
+			throw new \Exception($err);
+		}
 
 		return $ret;
 	}
@@ -386,6 +399,8 @@ class Utils{
 	 * @param array        $extraHeaders
 	 *
 	 * @return bool|mixed
+	 *
+	 * @throws \Throwable if an error occurred
 	 */
 	public static function postURL($page, $args, $timeout = 10, array $extraHeaders = []){
 		if(Utils::$online === false){
@@ -406,7 +421,18 @@ class Utils{
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, (int) $timeout);
 		curl_setopt($ch, CURLOPT_TIMEOUT, (int) $timeout);
 		$ret = curl_exec($ch);
+
+		$err = "";
+		if($ret === false){
+			//Need to get error before closing
+			$err = curl_error($ch);
+		}
+
 		curl_close($ch);
+
+		if($err !== ""){
+			throw new \Exception($err);
+		}
 
 		return $ret;
 	}
