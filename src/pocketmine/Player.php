@@ -3090,12 +3090,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			}
 
 			$this->connected = false;
-			if(strlen($this->getName()) > 0){
-				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message, true));
-				if($this->loggedIn === true and $ev->getAutoSave()){
-					$this->save();
-				}
-			}
 
 			foreach($this->server->getOnlinePlayers() as $player){
 				if(!$player->canSee($this)){
@@ -3124,8 +3118,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 			$this->loggedIn = false;
 
-			if(isset($ev) and $this->username != "" and $this->spawned !== false and $ev->getQuitMessage() != ""){
-				$this->server->broadcastMessage($ev->getQuitMessage());
+			if(strlen($this->getName()) > 0){
+				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message, true));
+				if($this->loggedIn === true and $ev->getAutoSave()){
+					$this->save();
+				}
+
+				if($this->spawned !== false and $ev->getQuitMessage() != ""){
+					$this->server->broadcastMessage($ev->getQuitMessage());
+				}
 			}
 
 			$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
