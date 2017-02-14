@@ -22,6 +22,8 @@
 
 namespace pocketmine\network\protocol;
 
+#include <rules/DataPacket.h>
+
 
 class UpdateTradePacket extends DataPacket{
 	const NETWORK_ID = Info::UPDATE_TRADE_PACKET;
