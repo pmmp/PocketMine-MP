@@ -70,7 +70,7 @@ namespace pocketmine {
 	use pocketmine\utils\ServerKiller;
 	use pocketmine\utils\Terminal;
 	use pocketmine\utils\Utils;
-	use pocketmine\wizard\Installer;
+	use pocketmine\wizard\SetupWizard;
 	use raklib\RakLib;
 
 	const VERSION = "1.6.2dev";
@@ -474,7 +474,7 @@ namespace pocketmine {
 
 
 	if(!file_exists(\pocketmine\DATA . "server.properties") and !isset($opts["no-wizard"])){
-		$installer = new Installer();
+		$installer = new SetupWizard();
 		if(!$installer->run()){
 			$logger->shutdown();
 			$logger->join();
