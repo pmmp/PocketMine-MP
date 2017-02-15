@@ -33,22 +33,22 @@ class UpdateTradePacket extends DataPacket{
 	public $byte2;
 	public $varint1;
 	public $varint2;
-	public $bool1;
-	public $eid1;
-	public $eid2;
-	public $string;
-	public $nbt;
+	public $isWilling;
+	public $traderEid;
+	public $playerEid;
+	public $displayName;
+	public $offers;
 
 	public function decode(){
 		$this->byte1 = $this->getByte();
 		$this->byte2 = $this->getByte();
 		$this->varint1 = $this->getVarInt();
 		$this->varint2 = $this->getVarInt();
-		$this->bool1 = $this->getBool();
-		$this->eid1 = $this->getEntityId();
-		$this->eid2 = $this->getEntityId();
-		$this->string = $this->getString();
-		$this->nbt = $this->get(true);
+		$this->isWilling = $this->getBool();
+		$this->traderEid = $this->getEntityId();
+		$this->playerEid = $this->getEntityId();
+		$this->displayName = $this->getString();
+		$this->offers = $this->get(true);
 	}
 
 	public function encode(){
@@ -57,10 +57,10 @@ class UpdateTradePacket extends DataPacket{
 		$this->putByte($this->byte2);
 		$this->putVarInt($this->varint1);
 		$this->putVarInt($this->varint2);
-		$this->putBool($this->bool1);
-		$this->putEntityId($this->eid1); //UniqueID
-		$this->putEntityId($this->eid2); //UniqueID
-		$this->putString($this->string);
-		$this->put($this->nbt);
+		$this->putBool($this->isWilling);
+		$this->putEntityId($this->traderEid); //UniqueID
+		$this->putEntityId($this->playerEid); //UniqueID
+		$this->putString($this->displayName);
+		$this->put($this->offers);
 	}
 }
