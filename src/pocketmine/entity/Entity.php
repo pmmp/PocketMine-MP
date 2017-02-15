@@ -109,6 +109,14 @@ abstract class Entity extends Location implements Metadatable{
 	 * 58 (byte)
 	 * 59 (float)
 	 * 60 (float) */
+	const DATA_AREA_EFFECT_CLOUD_RADIUS = 61; //float
+	const DATA_AREA_EFFECT_CLOUD_WAITING = 62; //int
+	const DATA_AREA_EFFECT_CLOUD_PARTICLE_ID = 63; //int
+	/* 64 (int), shulker-related
+	 * 65 (byte), shulker-related
+	 * 66 (short) shulker-related
+	 * 67 (unknown), shulker-related */
+	const DATA_TRADING_PLAYER_EID = 68; //long
 
 
 	const DATA_FLAG_ONFIRE = 0;
