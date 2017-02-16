@@ -89,7 +89,7 @@ class WeatherManager{
 		return $this->weatherDuration;
 	}
 
-	public function setWeather(Int $weatherId, Int $duration = null){
+	public function setWeather(Int $weatherId, $duration = null){
 		if($weatherId === $this->weather){
 			return;
 		}
@@ -178,15 +178,26 @@ class WeatherManager{
 		return false; //Return false if weather can't be read from disk.
 	}
 
-	public function getEvid($id){
+	public function getWeatherName(){
+		switch($this->weather){
+			case self::NORMAL:
+				return "Clear";
+			case self::RAIN:
+				return "Rain";
+			case self::RAIN_AND_THUNDER:
+				return "Thunderstorm";
+		}
+	}
+
+	public function getEvid(Int $id){
 		return $id === self::NORMAL ? 3003 : 3001;
 	}
 
-	public function getServer(){
+	public function getServer() : Server{
 		return $this->server;
 	}
 
-	public function getLevel(){
+	public function getLevel() : Level{
 		return $this->level;
 	}
 }
