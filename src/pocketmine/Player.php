@@ -1699,16 +1699,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->allowFlight = (bool) ($this->gamemode & 0x01);
 
 		if(($level = $this->server->getLevelByName($nbt["Level"])) === null){
-			if($this->server->getDefaultLevel() instanceof Level){
-				$this->setLevel($this->server->getDefaultLevel());
-				$nbt["Level"] = $this->level->getName();
-				$nbt["Pos"][0] = $this->level->getSpawnLocation()->x;
-				$nbt["Pos"][1] = $this->level->getSpawnLocation()->y;
-				$nbt["Pos"][2] = $this->level->getSpawnLocation()->z;
-			}else{
-				$this->close("", "No default level is loaded", true);
-				return;
-			}
+			$this->setLevel($this->server->getDefaultLevel());
+			$nbt["Level"] = $this->level->getName();
+			$nbt["Pos"][0] = $this->level->getSpawnLocation()->x;
+			$nbt["Pos"][1] = $this->level->getSpawnLocation()->y;
+			$nbt["Pos"][2] = $this->level->getSpawnLocation()->z;
 		}else{
 			$this->setLevel($level);
 		}
@@ -3086,6 +3081,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @param bool   $notify
 	 */
 	public final function close($message = "", $reason = "generic reason", $notify = true){
+
 		if($this->connected and !$this->closed){
 			if($notify and strlen((string) $reason) > 0){
 				$pk = new DisconnectPacket;
@@ -3094,6 +3090,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			}
 
 			$this->connected = false;
+			if(strlen($this->getName()) > 0){
+				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message, true));
+				if($this->loggedIn === true and $ev->getAutoSave()){
+					$this->save();
+				}
+			}
 
 			foreach($this->server->getOnlinePlayers() as $player){
 				if(!$player->canSee($this)){
@@ -3112,26 +3114,20 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				unset($this->usedChunks[$index]);
 			}
 
+			parent::close();
+
 			$this->interface->close($this, $notify ? $reason : "");
 
 			if($this->loggedIn){
 				$this->server->removeOnlinePlayer($this);
 			}
 
-			if(strlen($this->getName()) > 0){
-				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message, true));
-				if($this->loggedIn === true and $ev->getAutoSave()){
-					$this->save();
-				}
+			$this->loggedIn = false;
 
-				if($this->spawned !== false and $ev->getQuitMessage() != ""){
-					$this->server->broadcastMessage($ev->getQuitMessage());
-				}
+			if(isset($ev) and $this->username != "" and $this->spawned !== false and $ev->getQuitMessage() != ""){
+				$this->server->broadcastMessage($ev->getQuitMessage());
 			}
 
-			parent::close();
-
-			$this->loggedIn = false;
 			$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
 			$this->spawned = false;
 			$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logOut", [
@@ -3146,21 +3142,21 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->loadQueue = [];
 			$this->hasSpawned = [];
 			$this->spawnPosition = null;
-
-			if($this->perm !== null){
-				$this->perm->clearPermissions();
-				$this->perm = null;
-			}
-
-			if($this->inventory !== null){
-				$this->inventory = null;
-				$this->currentTransaction = null;
-			}
-
-			$this->chunk = null;
-
-			$this->server->removePlayer($this);
 		}
+
+		if($this->perm !== null){
+			$this->perm->clearPermissions();
+			$this->perm = null;
+		}
+
+		if($this->inventory !== null){
+			$this->inventory = null;
+			$this->currentTransaction = null;
+		}
+
+		$this->chunk = null;
+
+		$this->server->removePlayer($this);
 	}
 
 	public function __debugInfo(){
