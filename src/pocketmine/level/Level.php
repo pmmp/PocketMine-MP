@@ -1410,7 +1410,7 @@ class Level implements ChunkManager, Metadatable{
 	private function findLightWays(int $x, int $y, int $z){
 		$lightWays = [];
 		$vec3 = new Vector3($x, $y, $z);
-		for($i = Vector3::SIDE_NORTH; $i <= Vector3::SIDE_EAST; $i++){
+		for($i = Vector3::SIDE_UP; $i <= Vector3::SIDE_EAST; $i++){
 			$newVec3 = $vec3->getSide($i);
 			if(Block::getHorizontalLightFilter($this->getBlockIdAt($newVec3->x, $newVec3->y, $newVec3->z)) < 15){
 				$lightWays[$i] = [$newVec3->x, $newVec3->y, $newVec3->z];
