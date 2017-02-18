@@ -2950,13 +2950,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 				$tile = $this->level->getTile($this->temporalVector->setComponents($packet->x, $packet->y, $packet->z));
 				if($tile instanceof ItemFrame){
-					if(!$tile->getItem()->equals($packet->item) and !$this->isCreative(true)){
+					if($this->isSpectator()){
 						$tile->spawnTo($this);
 						break;
 					}
 
-					if(lcg_value() <= $tile->getItemDropChance() and $packet->item->getId() !== Item::AIR){
-						$this->level->dropItem($tile->getBlock(), $packet->item); //Use the packet item to handle creative drops correctly
+					if(lcg_value() <= $tile->getItemDropChance()){
+						$this->level->dropItem($tile->getBlock(), $tile->getItem());
 					}
 					$tile->setItem(null);
 					$tile->setItemRotation(0);
