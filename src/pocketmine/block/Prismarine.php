@@ -46,7 +46,7 @@ class Prismarine extends Solid{
 			self::DARK => "Dark Prismarine",
 			self::BRICKS => "Prismarine Bricks",
 		];
-		return $names[$this->meta & 0x0f];
+		return $names[$this->meta & 0x03] ?? "Unknown";
 	}
 
 	public function getToolType(){
@@ -56,7 +56,7 @@ class Prismarine extends Solid{
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
-				[$this->id, $this->meta & 0x0f, 1],
+				[$this->id, $this->meta & 0x03, 1],
 			];
 		}else{
 			return [];
