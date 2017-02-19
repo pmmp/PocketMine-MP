@@ -82,28 +82,7 @@ class BaseLang{
 
 	protected static function loadLang($path, array &$d){
 		if(file_exists($path)){
-			if(strlen($content = file_get_contents($path)) > 0){
-				foreach(explode("\n", $content) as $line){
-					$line = trim($line);
-					if($line === "" or $line{0} === "#"){
-						continue;
-					}
-
-					$t = explode("=", $line, 2);
-					if(count($t) < 2){
-						continue;
-					}
-
-					$key = trim($t[0]);
-					$value = trim($t[1]);
-
-					if($value === ""){
-						continue;
-					}
-
-					$d[$key] = $value;
-				}
-			}
+			$d = parse_ini_file($path, false, INI_SCANNER_RAW);
 			return true;
 		}else{
 			return false;
