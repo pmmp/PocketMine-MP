@@ -22,8 +22,10 @@ There are a very wide range of already-written plugins available which you can u
 ### Can I contribute?
 Yes you can! Contributions are welcomed provided that they comply with our [Contributing Guidelines](CONTRIBUTING.md). Please ensure you read the relevant sections of the guidelines carefully before making a Pull Request or opening an Issue.
 
+<!-- TODO uncomment this when Jenkins is fixed
 ### Where can I get the latest .phar?
 Head over to our [official Jenkins server](https://jenkins.pmmp.io/)
+-->
 
 ## Third-party Libraries/Protocols Used
 * __[PHP Sockets](http://php.net/manual/en/book.sockets.php)__
