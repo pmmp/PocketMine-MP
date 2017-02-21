@@ -134,7 +134,6 @@ class Anvil extends McRegion{
 			}
 
 			$result = new Chunk(
-				$this,
 				$chunk["xPos"],
 				$chunk["zPos"],
 				$subChunks,

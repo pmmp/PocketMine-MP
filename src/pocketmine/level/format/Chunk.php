@@ -29,7 +29,7 @@ namespace pocketmine\level\format;
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\level\format\io\ChunkException;
-use pocketmine\level\format\io\LevelProvider;
+use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
@@ -40,9 +40,6 @@ use pocketmine\utils\BinaryStream;
 class Chunk{
 
 	const MAX_SUBCHUNKS = 16;
-
-	/** @var LevelProvider */
-	protected $provider;
 
 	protected $x;
 	protected $z;
@@ -85,7 +82,6 @@ class Chunk{
 	protected $NBTentities = [];
 
 	/**
-	 * @param LevelProvider $provider
 	 * @param int           $chunkX
 	 * @param int           $chunkZ
 	 * @param SubChunk[]    $subChunks
@@ -94,12 +90,11 @@ class Chunk{
 	 * @param string        $biomeIds
 	 * @param int[]         $heightMap
 	 */
-	public function __construct($provider, int $chunkX, int $chunkZ, array $subChunks = [], array $entities = [], array $tiles = [], string $biomeIds = "", array $heightMap = []){
-		$this->provider = $provider;
+	public function __construct(int $chunkX, int $chunkZ, array $subChunks = [], array $entities = [], array $tiles = [], string $biomeIds = "", array $heightMap = []){
 		$this->x = $chunkX;
 		$this->z = $chunkZ;
 
-		$this->height = $provider !== null ? ($provider->getWorldHeight() >> 4) : 16;
+		$this->height = Chunk::MAX_SUBCHUNKS; //TODO: add a way of changing this
 
 		$this->emptySubChunk = new EmptySubChunk();
 
@@ -162,20 +157,6 @@ class Chunk{
 	 */
 	public function setZ(int $z){
 		$this->z = $z;
-	}
-
-	/**
-	 * @return LevelProvider|null
-	 */
-	public function getProvider(){
-		return $this->provider;
-	}
-
-	/**
-	 * @param LevelProvider $provider
-	 */
-	public function setProvider(LevelProvider $provider){
-		$this->provider = $provider;
 	}
 
 	/**
@@ -661,20 +642,12 @@ class Chunk{
 	/**
 	 * Unloads the chunk, closing entities and tiles.
 	 *
-	 * @param bool $save
 	 * @param bool $safe Whether to check if there are still players using this chunk
 	 *
 	 * @return bool
 	 */
-	public function unload(bool $save = true, bool $safe = true) : bool{
-		$level = $this->getProvider();
-		if($level === null){
-			return true;
-		}
-		if($save === true and $this->hasChanged){
-			$level->saveChunk($this->getX(), $this->getZ());
-		}
-		if($safe === true){
+	public function unload(bool $safe = true) : bool{
+		if($safe){
 			foreach($this->getEntities() as $entity){
 				if($entity instanceof Player){
 					return false;
@@ -688,22 +661,24 @@ class Chunk{
 			}
 			$entity->close();
 		}
+
 		foreach($this->getTiles() as $tile){
 			$tile->close();
 		}
-		$this->provider = null;
+
 		return true;
 	}
 
 	/**
 	 * Deserializes tiles and entities from NBT
-	 * TODO: remove this
+	 *
+	 * @param Level $level
 	 */
-	public function initChunk(){
-		if($this->getProvider() instanceof LevelProvider and !$this->isInit){
+	public function initChunk(Level $level){
+		if(!$this->isInit){
 			$changed = false;
 			if($this->NBTentities !== null){
-				$this->getProvider()->getLevel()->timings->syncChunkLoadEntitiesTimer->startTiming();
+				$level->timings->syncChunkLoadEntitiesTimer->startTiming();
 				foreach($this->NBTentities as $nbt){
 					if($nbt instanceof CompoundTag){
 						if(!isset($nbt->id)){
@@ -716,7 +691,7 @@ class Chunk{
 							continue; //Fixes entities allocated in wrong chunks.
 						}
 
-						if(($entity = Entity::createEntity($nbt["id"], $this, $nbt)) instanceof Entity){
+						if(($entity = Entity::createEntity($nbt["id"], $level, $nbt)) instanceof Entity){
 							$entity->spawnToAll();
 						}else{
 							$changed = true;
@@ -724,9 +699,9 @@ class Chunk{
 						}
 					}
 				}
-				$this->getProvider()->getLevel()->timings->syncChunkLoadEntitiesTimer->stopTiming();
+				$level->timings->syncChunkLoadEntitiesTimer->stopTiming();
 
-				$this->getProvider()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->startTiming();
+				$level->timings->syncChunkLoadTileEntitiesTimer->startTiming();
 				foreach($this->NBTtiles as $nbt){
 					if($nbt instanceof CompoundTag){
 						if(!isset($nbt->id)){
@@ -739,14 +714,14 @@ class Chunk{
 							continue; //Fixes tiles allocated in wrong chunks.
 						}
 
-						if(Tile::createTile($nbt["id"], $this, $nbt) === null){
+						if(Tile::createTile($nbt["id"], $level, $nbt) === null){
 							$changed = true;
 							continue;
 						}
 					}
 				}
 
-				$this->getProvider()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
+				$level->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
 
 				$this->NBTentities = null;
 				$this->NBTtiles = null;
@@ -954,12 +929,11 @@ class Chunk{
 	/**
 	 * Deserializes a fast-serialized chunk
 	 *
-	 * @param string             $data
-	 * @param LevelProvider|null $provider
+	 * @param string $data
 	 *
 	 * @return Chunk
 	 */
-	public static function fastDeserialize(string $data, LevelProvider $provider = null){
+	public static function fastDeserialize(string $data){
 		$stream = new BinaryStream();
 		$stream->setBuffer($data);
 		$data = null;
@@ -973,7 +947,7 @@ class Chunk{
 		$heightMap = array_values(unpack("C*", $stream->get(256)));
 		$biomeIds = $stream->get(256);
 
-		$chunk = new Chunk($provider, $x, $z, $subChunks, [], [], $biomeIds, $heightMap);
+		$chunk = new Chunk($x, $z, $subChunks, [], [], $biomeIds, $heightMap);
 		$flags = $stream->getByte();
 		$chunk->lightPopulated = (bool) ($flags & 4);
 		$chunk->terrainPopulated = (bool) ($flags & 2);
@@ -982,8 +956,8 @@ class Chunk{
 	}
 
 	//TODO: get rid of this
-	public static function getEmptyChunk(int $x, int $z, LevelProvider $provider = null) : Chunk{
-		return new Chunk($provider, $x, $z);
+	public static function getEmptyChunk(int $x, int $z) : Chunk{
+		return new Chunk($x, $z);
 	}
 
 	/**

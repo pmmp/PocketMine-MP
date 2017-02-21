@@ -88,7 +88,7 @@ class BurningFurnace extends Solid{
 			}
 		}
 
-		Tile::createTile("Furnace", $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
+		Tile::createTile("Furnace", $this->getLevel(), $nbt);
 
 		return true;
 	}
@@ -111,7 +111,7 @@ class BurningFurnace extends Solid{
 					new IntTag("z", $this->z)
 				]);
 				$nbt->Items->setTagType(NBT::TAG_Compound);
-				$furnace = Tile::createTile("Furnace", $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
+				$furnace = Tile::createTile("Furnace", $this->getLevel(), $nbt);
 			}
 
 			if(isset($furnace->namedtag->Lock) and $furnace->namedtag->Lock instanceof StringTag){

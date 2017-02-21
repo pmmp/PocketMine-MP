@@ -57,7 +57,7 @@ class EnchantingTable extends Transparent{
 			}
 		}
 
-		Tile::createTile(Tile::ENCHANT_TABLE, $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
+		Tile::createTile(Tile::ENCHANT_TABLE, $this->getLevel(), $nbt);
 
 		return true;
 	}

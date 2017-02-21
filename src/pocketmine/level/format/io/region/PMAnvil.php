@@ -129,7 +129,6 @@ class PMAnvil extends Anvil{
 			}
 
 			$result = new Chunk(
-				$this,
 				$chunk["xPos"],
 				$chunk["zPos"],
 				$subChunks,

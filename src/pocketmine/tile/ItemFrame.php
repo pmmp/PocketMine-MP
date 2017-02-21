@@ -22,7 +22,7 @@
 namespace pocketmine\tile;
 
 use pocketmine\item\Item;
-use pocketmine\level\format\Chunk;
+use pocketmine\level\Level;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
@@ -31,7 +31,7 @@ use pocketmine\nbt\tag\StringTag;
 
 class ItemFrame extends Spawnable{
 
-	public function __construct(Chunk $chunk, CompoundTag $nbt){
+	public function __construct(Level $level, CompoundTag $nbt){
 		if(!isset($nbt->ItemRotation)){
 			$nbt->ItemRotation = new ByteTag("ItemRotation", 0);
 		}
@@ -40,7 +40,7 @@ class ItemFrame extends Spawnable{
 			$nbt->ItemDropChance = new FloatTag("ItemDropChance", 1.0);
 		}
 
-		parent::__construct($chunk, $nbt);
+		parent::__construct($level, $nbt);
 	}
 
 	public function hasItem() : bool{

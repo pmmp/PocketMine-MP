@@ -87,7 +87,7 @@ class SignPost extends Transparent{
 				$this->getLevel()->setBlock($block, new WallSign($this->meta), true);
 			}
 
-			Tile::createTile(Tile::SIGN, $this->getLevel()->getChunk($block->x >> 4, $block->z >> 4), $nbt);
+			Tile::createTile(Tile::SIGN, $this->getLevel(), $nbt);
 
 			return true;
 		}

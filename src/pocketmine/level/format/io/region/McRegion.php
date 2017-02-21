@@ -188,7 +188,6 @@ class McRegion extends BaseLevelProvider{
 			}
 
 			$result = new Chunk(
-				$this,
 				$chunk["xPos"],
 				$chunk["zPos"],
 				$subChunks,
@@ -294,9 +293,6 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk){
-
-		$chunk->setProvider($this);
-
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
 		$this->loadRegion($regionX, $regionZ);
 
@@ -354,7 +350,7 @@ class McRegion extends BaseLevelProvider{
 
 	public function unloadChunk(int $chunkX, int $chunkZ, bool $safe = true) : bool{
 		$chunk = $this->chunks[$index = Level::chunkHash($chunkX, $chunkZ)] ?? null;
-		if($chunk instanceof Chunk and $chunk->unload(false, $safe)){
+		if($chunk instanceof Chunk and $chunk->unload($safe)){
 			unset($this->chunks[$index]);
 			return true;
 		}
@@ -422,7 +418,7 @@ class McRegion extends BaseLevelProvider{
 	 * @return Chunk
 	 */
 	public function getEmptyChunk(int $chunkX, int $chunkZ){
-		return Chunk::getEmptyChunk($chunkX, $chunkZ, $this);
+		return Chunk::getEmptyChunk($chunkX, $chunkZ);
 	}
 
 	/**

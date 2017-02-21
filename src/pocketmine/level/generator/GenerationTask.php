@@ -75,7 +75,7 @@ class GenerationTask extends AsyncTask{
 				return;
 			}
 			/** @var Chunk $chunk */
-			$chunk = Chunk::fastDeserialize($this->chunk, $level->getProvider());
+			$chunk = Chunk::fastDeserialize($this->chunk);
 			if($chunk === null){
 				//TODO error
 				return;
