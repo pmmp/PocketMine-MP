@@ -242,9 +242,7 @@ class Block extends Position implements BlockIds, Metadatable{
 
 			foreach(self::$list as $id => $block){
 				if($block === null){
-					for($data = 0; $data < 16; ++$data){
-						self::registerBlock(new UnknownBlock($id, $data));
-					}
+					self::registerBlock(new UnknownBlock($id));
 				}
 			}
 		}
