@@ -19,10 +19,11 @@
  *
 */
 
-
 namespace pocketmine\block;
-
 
 class UnknownBlock extends Flowable{
 
+	public function canBeFlowedInto(){
+		return false;
+	}
 }
