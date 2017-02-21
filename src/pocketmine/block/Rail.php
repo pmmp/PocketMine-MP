@@ -32,4 +32,8 @@ class Rail extends Flowable{
 	public function getName(){
 		return "Rail";
 	}
+
+	public function getHardness(){
+		return 0.7;
+	}
 }

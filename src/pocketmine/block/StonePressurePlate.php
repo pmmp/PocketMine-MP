@@ -36,4 +36,8 @@ class StonePressurePlate extends Transparent{
 	public function isSolid(){
 		return false;
 	}
+
+	public function getHardness(){
+		return 0.5;
+	}
 }

@@ -32,4 +32,8 @@ class DaylightSensor extends Transparent{
 	public function getName(){
 		return "Daylight Sensor";
 	}
+
+	public function getHardness(){
+		return 0.2;
+	}
 }

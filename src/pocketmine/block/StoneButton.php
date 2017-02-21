@@ -32,4 +32,8 @@ class StoneButton extends Flowable{
 	public function getName(){
 		return "Stone Button";
 	}
+
+	public function getHardness(){
+		return 0.5;
+	}
 }
