@@ -477,9 +477,13 @@ class LevelDB extends BaseLevelProvider{
 		return false;
 	}
 
-	public function saveChunk(int $x, int $z) : bool{
-		if($this->isChunkLoaded($x, $z)){
-			$this->writeChunk($this->getChunk($x, $z));
+	public function saveChunk(int $chunkX, int $chunkZ) : bool{
+		if($this->isChunkLoaded($chunkX, $chunkZ)){
+			$chunk = $this->getChunk($chunkX, $chunkZ);
+			if(!$chunk->isGenerated()){
+				throw new \InvalidStateException("Cannot save un-generated chunk");
+			}
+			$this->writeChunk($chunk);
 
 			return true;
 		}
