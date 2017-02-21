@@ -125,7 +125,12 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new Furnace());
 			self::registerBlock(new BurningFurnace());
 			self::registerBlock(new StandingSign());
-			self::registerBlock(new WoodDoor());
+			self::registerBlock((new WoodenDoor())->setId(self::WOODEN_DOOR_BLOCK)->setName("Wooden Door Block"));
+			self::registerBlock((new WoodenDoor())->setId(self::SPRUCE_DOOR_BLOCK)->setName("Spruce Door Block"));
+			self::registerBlock((new WoodenDoor())->setId(self::BIRCH_DOOR_BLOCK)->setName("Birch Door Block"));
+			self::registerBlock((new WoodenDoor())->setId(self::JUNGLE_DOOR_BLOCK)->setName("Jungle Door Block"));
+			self::registerBlock((new WoodenDoor())->setId(self::ACACIA_DOOR_BLOCK)->setName("Acacia Door Block"));
+			self::registerBlock((new WoodenDoor())->setId(self::DARK_OAK_DOOR_BLOCK)->setName("Dark Oak Door Block"));
 			self::registerBlock(new Ladder());
 			self::registerBlock(new Rail());
 

@@ -24,16 +24,12 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 
-class WoodDoor extends Door{
+class WoodenDoor extends Door{
 
 	protected $id = self::WOODEN_DOOR_BLOCK;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
-	}
-
-	public function getName(){
-		return "Wood Door Block";
 	}
 
 	public function canBeActivated(){
