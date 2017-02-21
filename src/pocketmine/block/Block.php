@@ -242,9 +242,8 @@ class Block extends Position implements BlockIds, Metadatable{
 
 			foreach(self::$list as $id => $block){
 				if($block === null){
-					self::$lightFilter[$id] = 1;
 					for($data = 0; $data < 16; ++$data){
-						self::$fullList[($id << 4) | $data] = new UnknownBlock($id, $data);
+						self::registerBlock(new UnknownBlock($id, $data));
 					}
 				}
 			}
@@ -256,15 +255,10 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @since API 3.0.0
 	 *
 	 * @param Block $block
-	 * @param bool  $override Whether to override any already-registed implementations
 	 *
 	 * @return bool indication of success
 	 */
-	public static function registerBlock(Block $block, bool $override = false){
-		if(isset(self::$list[$block->id]) and !$override){
-			return false;
-		}
-
+	public static function registerBlock(Block $block){
 		self::$list[$block->id] = $block;
 		for($data = 0; $data < 16; ++$data){
 			$b = clone $block;
