@@ -258,8 +258,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @since API 3.0.0
 	 *
 	 * @param Block $block
-	 *
-	 * @return bool indication of success
 	 */
 	public static function registerBlock(Block $block){
 		self::$list[$block->id] = $block;
@@ -288,8 +286,6 @@ class Block extends Position implements BlockIds, Metadatable{
 		}else{
 			self::$lightFilter[$block->id] = 1;
 		}
-
-		return true;
 	}
 
 	/**
