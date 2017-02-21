@@ -276,7 +276,7 @@ class Block extends Position implements BlockIds, Metadatable{
 				}else{
 					self::$lightFilter[$id] = 1;
 					for($data = 0; $data < 16; ++$data){
-						self::$fullList[($id << 4) | $data] = new Block($id, $data);
+						self::$fullList[($id << 4) | $data] = new UnknownBlock($id, $data);
 					}
 				}
 			}
@@ -296,10 +296,10 @@ class Block extends Position implements BlockIds, Metadatable{
 			if($block !== null){
 				$block = new $block($meta);
 			}else{
-				$block = new Block($id, $meta);
+				$block = new UnknownBlock($id, $meta);
 			}
 		}catch(\RuntimeException $e){
-			$block = new Block($id, $meta);
+			$block = new UnknownBlock($id, $meta);
 		}
 
 		if($pos !== null){
