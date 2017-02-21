@@ -64,210 +64,184 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$solid = new \SplFixedArray(256);
 			self::$hardness = new \SplFixedArray(256);
 			self::$transparent = new \SplFixedArray(256);
-			self::$list[self::AIR] = new Air();
-			self::$list[self::STONE] = new Stone();
-			self::$list[self::GRASS] = new Grass();
-			self::$list[self::DIRT] = new Dirt();
-			self::$list[self::COBBLESTONE] = new Cobblestone();
-			self::$list[self::PLANKS] = new Planks();
-			self::$list[self::SAPLING] = new Sapling();
-			self::$list[self::BEDROCK] = new Bedrock();
-			self::$list[self::WATER] = new Water();
-			self::$list[self::STILL_WATER] = new StillWater();
-			self::$list[self::LAVA] = new Lava();
-			self::$list[self::STILL_LAVA] = new StillLava();
-			self::$list[self::SAND] = new Sand();
-			self::$list[self::GRAVEL] = new Gravel();
-			self::$list[self::GOLD_ORE] = new GoldOre();
-			self::$list[self::IRON_ORE] = new IronOre();
-			self::$list[self::COAL_ORE] = new CoalOre();
-			self::$list[self::WOOD] = new Wood();
-			self::$list[self::LEAVES] = new Leaves();
-			self::$list[self::SPONGE] = new Sponge();
-			self::$list[self::GLASS] = new Glass();
-			self::$list[self::LAPIS_ORE] = new LapisOre();
-			self::$list[self::LAPIS_BLOCK] = new Lapis();
-			self::$list[self::ACTIVATOR_RAIL] = new ActivatorRail();
-			self::$list[self::COCOA_BLOCK] = new CocoaBlock();
-			self::$list[self::SANDSTONE] = new Sandstone();
-			self::$list[self::NOTE_BLOCK] = new NoteBlock();
-			self::$list[self::BED_BLOCK] = new Bed();
-			self::$list[self::POWERED_RAIL] = new PoweredRail();
-			self::$list[self::DETECTOR_RAIL] = new DetectorRail();
-			self::$list[self::COBWEB] = new Cobweb();
-			self::$list[self::TALL_GRASS] = new TallGrass();
-			self::$list[self::DEAD_BUSH] = new DeadBush();
-			self::$list[self::WOOL] = new Wool();
-			self::$list[self::DANDELION] = new Dandelion();
-			self::$list[self::RED_FLOWER] = new Flower();
-			self::$list[self::BROWN_MUSHROOM] = new BrownMushroom();
-			self::$list[self::RED_MUSHROOM] = new RedMushroom();
-			self::$list[self::GOLD_BLOCK] = new Gold();
-			self::$list[self::IRON_BLOCK] = new Iron();
-			self::$list[self::DOUBLE_SLAB] = new DoubleSlab();
-			self::$list[self::SLAB] = new Slab();
-			self::$list[self::BRICKS_BLOCK] = new Bricks();
-			self::$list[self::TNT] = new TNT();
-			self::$list[self::BOOKSHELF] = new Bookshelf();
-			self::$list[self::MOSS_STONE] = new MossStone();
-			self::$list[self::OBSIDIAN] = new Obsidian();
-			self::$list[self::TORCH] = new Torch();
-			self::$list[self::FIRE] = new Fire();
-			self::$list[self::MONSTER_SPAWNER] = new MonsterSpawner();
-			self::$list[self::WOOD_STAIRS] = (new WoodStairs())->setId(self::WOOD_STAIRS)->setName("Wood Stairs");
-			self::$list[self::CHEST] = new Chest();
+			self::registerBlock(new Air());
+			self::registerBlock(new Stone());
+			self::registerBlock(new Grass());
+			self::registerBlock(new Dirt());
+			self::registerBlock(new Cobblestone());
+			self::registerBlock(new Planks());
+			self::registerBlock(new Sapling());
+			self::registerBlock(new Bedrock());
+			self::registerBlock(new Water());
+			self::registerBlock(new StillWater());
+			self::registerBlock(new Lava());
+			self::registerBlock(new StillLava());
+			self::registerBlock(new Sand());
+			self::registerBlock(new Gravel());
+			self::registerBlock(new GoldOre());
+			self::registerBlock(new IronOre());
+			self::registerBlock(new CoalOre());
+			self::registerBlock(new Wood());
+			self::registerBlock(new Leaves());
+			self::registerBlock(new Sponge());
+			self::registerBlock(new Glass());
+			self::registerBlock(new LapisOre());
+			self::registerBlock(new Lapis());
+			self::registerBlock(new ActivatorRail());
+			self::registerBlock(new CocoaBlock());
+			self::registerBlock(new Sandstone());
+			self::registerBlock(new NoteBlock());
+			self::registerBlock(new Bed());
+			self::registerBlock(new PoweredRail());
+			self::registerBlock(new DetectorRail());
+			self::registerBlock(new Cobweb());
+			self::registerBlock(new TallGrass());
+			self::registerBlock(new DeadBush());
+			self::registerBlock(new Wool());
+			self::registerBlock(new Dandelion());
+			self::registerBlock(new Flower());
+			self::registerBlock(new BrownMushroom());
+			self::registerBlock(new RedMushroom());
+			self::registerBlock(new Gold());
+			self::registerBlock(new Iron());
+			self::registerBlock(new DoubleSlab());
+			self::registerBlock(new Slab());
+			self::registerBlock(new Bricks());
+			self::registerBlock(new TNT());
+			self::registerBlock(new Bookshelf());
+			self::registerBlock(new MossStone());
+			self::registerBlock(new Obsidian());
+			self::registerBlock(new Torch());
+			self::registerBlock(new Fire());
+			self::registerBlock(new MonsterSpawner());
+			self::registerBlock((new WoodStairs())->setId(self::WOOD_STAIRS)->setName("Wood Stairs"));
+			self::registerBlock(new Chest());
 
-			self::$list[self::DIAMOND_ORE] = new DiamondOre();
-			self::$list[self::DIAMOND_BLOCK] = new Diamond();
-			self::$list[self::WORKBENCH] = new Workbench();
-			self::$list[self::WHEAT_BLOCK] = new Wheat();
-			self::$list[self::FARMLAND] = new Farmland();
-			self::$list[self::FURNACE] = new Furnace();
-			self::$list[self::BURNING_FURNACE] = new BurningFurnace();
-			self::$list[self::SIGN_POST] = new SignPost();
-			self::$list[self::WOOD_DOOR_BLOCK] = new WoodDoor();
-			self::$list[self::LADDER] = new Ladder();
-			self::$list[self::RAIL] = new Rail();
+			self::registerBlock(new DiamondOre());
+			self::registerBlock(new Diamond());
+			self::registerBlock(new Workbench());
+			self::registerBlock(new Wheat());
+			self::registerBlock(new Farmland());
+			self::registerBlock(new Furnace());
+			self::registerBlock(new BurningFurnace());
+			self::registerBlock(new SignPost());
+			self::registerBlock(new WoodDoor());
+			self::registerBlock(new Ladder());
+			self::registerBlock(new Rail());
 
-			self::$list[self::COBBLESTONE_STAIRS] = new CobblestoneStairs();
-			self::$list[self::WALL_SIGN] = new WallSign();
-			self::$list[self::LEVER] = new Lever();
-			self::$list[self::STONE_PRESSURE_PLATE] = new StonePressurePlate();
-			self::$list[self::IRON_DOOR_BLOCK] = new IronDoor();
-			self::$list[self::WOODEN_PRESSURE_PLATE] = new WoodenPressurePlate();
-			self::$list[self::REDSTONE_ORE] = new RedstoneOre();
-			self::$list[self::GLOWING_REDSTONE_ORE] = new GlowingRedstoneOre();
+			self::registerBlock(new CobblestoneStairs());
+			self::registerBlock(new WallSign());
+			self::registerBlock(new Lever());
+			self::registerBlock(new StonePressurePlate());
+			self::registerBlock(new IronDoor());
+			self::registerBlock(new WoodenPressurePlate());
+			self::registerBlock(new RedstoneOre());
+			self::registerBlock(new GlowingRedstoneOre());
 
-			self::$list[self::REDSTONE_TORCH] = new RedstoneTorch();
-			self::$list[self::LIT_REDSTONE_TORCH] = new LitRedstoneTorch();
-			self::$list[self::STONE_BUTTON] = new StoneButton();
-			self::$list[self::SNOW_LAYER] = new SnowLayer();
-			self::$list[self::ICE] = new Ice();
-			self::$list[self::SNOW_BLOCK] = new Snow();
-			self::$list[self::CACTUS] = new Cactus();
-			self::$list[self::CLAY_BLOCK] = new Clay();
-			self::$list[self::SUGARCANE_BLOCK] = new Sugarcane();
+			self::registerBlock(new RedstoneTorch());
+			self::registerBlock(new LitRedstoneTorch());
+			self::registerBlock(new StoneButton());
+			self::registerBlock(new SnowLayer());
+			self::registerBlock(new Ice());
+			self::registerBlock(new Snow());
+			self::registerBlock(new Cactus());
+			self::registerBlock(new Clay());
+			self::registerBlock(new Sugarcane());
 
-			self::$list[self::FENCE] = new Fence();
-			self::$list[self::PUMPKIN] = new Pumpkin();
-			self::$list[self::NETHERRACK] = new Netherrack();
-			self::$list[self::SOUL_SAND] = new SoulSand();
-			self::$list[self::GLOWSTONE_BLOCK] = new Glowstone();
+			self::registerBlock(new Fence());
+			self::registerBlock(new Pumpkin());
+			self::registerBlock(new Netherrack());
+			self::registerBlock(new SoulSand());
+			self::registerBlock(new Glowstone());
 
-			self::$list[self::LIT_PUMPKIN] = new LitPumpkin();
-			self::$list[self::CAKE_BLOCK] = new Cake();
+			self::registerBlock(new LitPumpkin());
+			self::registerBlock(new Cake());
 
-			self::$list[self::TRAPDOOR] = new Trapdoor();
+			self::registerBlock(new Trapdoor());
 
-			self::$list[self::STONE_BRICKS] = new StoneBricks();
+			self::registerBlock(new StoneBricks());
 
-			self::$list[self::IRON_BARS] = new IronBars();
-			self::$list[self::GLASS_PANE] = new GlassPane();
-			self::$list[self::MELON_BLOCK] = new Melon();
-			self::$list[self::PUMPKIN_STEM] = new PumpkinStem();
-			self::$list[self::MELON_STEM] = new MelonStem();
-			self::$list[self::VINE] = new Vine();
-			self::$list[self::FENCE_GATE] = new FenceGate();
-			self::$list[self::BRICK_STAIRS] = new BrickStairs();
-			self::$list[self::STONE_BRICK_STAIRS] = new StoneBrickStairs();
+			self::registerBlock(new IronBars());
+			self::registerBlock(new GlassPane());
+			self::registerBlock(new Melon());
+			self::registerBlock(new PumpkinStem());
+			self::registerBlock(new MelonStem());
+			self::registerBlock(new Vine());
+			self::registerBlock((new FenceGate())->setId(self::OAK_FENCE_GATE)->setName("Oak Fence Gate"));
+			self::registerBlock(new BrickStairs());
+			self::registerBlock(new StoneBrickStairs());
 
-			self::$list[self::MYCELIUM] = new Mycelium();
-			self::$list[self::WATER_LILY] = new WaterLily();
-			self::$list[self::NETHER_BRICKS] = new NetherBrick();
-			self::$list[self::NETHER_BRICK_FENCE] = new NetherBrickFence();
-			self::$list[self::NETHER_BRICKS_STAIRS] = new NetherBrickStairs();
+			self::registerBlock(new Mycelium());
+			self::registerBlock(new WaterLily());
+			self::registerBlock(new NetherBrick());
+			self::registerBlock(new NetherBrickFence());
+			self::registerBlock(new NetherBrickStairs());
 
-			self::$list[self::ENCHANTING_TABLE] = new EnchantingTable();
-			self::$list[self::BREWING_STAND_BLOCK] = new BrewingStand();
-			self::$list[self::END_PORTAL_FRAME] = new EndPortalFrame();
-			self::$list[self::END_STONE] = new EndStone();
-			self::$list[self::REDSTONE_LAMP] = new RedstoneLamp();
-			self::$list[self::LIT_REDSTONE_LAMP] = new LitRedstoneLamp();
-			self::$list[self::SANDSTONE_STAIRS] = new SandstoneStairs();
-			self::$list[self::EMERALD_ORE] = new EmeraldOre();
-			self::$list[self::TRIPWIRE_HOOK] = new TripwireHook();
-			self::$list[self::TRIPWIRE] = new Tripwire();
-			self::$list[self::EMERALD_BLOCK] = new Emerald();
-			self::$list[self::SPRUCE_WOOD_STAIRS] = (new WoodStairs())->setId(self::SPRUCE_WOOD_STAIRS)->setName("Spruce Wood Stairs");
-			self::$list[self::BIRCH_WOOD_STAIRS] = (new WoodStairs())->setId(self::BIRCH_WOOD_STAIRS)->setName("Birch Wood Stairs");
-			self::$list[self::JUNGLE_WOOD_STAIRS] = (new WoodStairs())->setId(self::JUNGLE_WOOD_STAIRS)->setName("Jungle Wood Stairs");
-			self::$list[self::STONE_WALL] = new StoneWall();
-			self::$list[self::FLOWER_POT_BLOCK] = new FlowerPot();
-			self::$list[self::CARROT_BLOCK] = new Carrot();
-			self::$list[self::POTATO_BLOCK] = new Potato();
-			self::$list[self::WOODEN_BUTTON] = new WoodenButton();
-			self::$list[self::MOB_HEAD_BLOCK] = new MobHead();
-			self::$list[self::ANVIL] = new Anvil();
-			self::$list[self::TRAPPED_CHEST] = new TrappedChest();
-			self::$list[self::WEIGHTED_PRESSURE_PLATE_LIGHT] = new WeightedPressurePlateLight();
-			self::$list[self::WEIGHTED_PRESSURE_PLATE_HEAVY] = new WeightedPressurePlateHeavy();
+			self::registerBlock(new EnchantingTable());
+			self::registerBlock(new BrewingStand());
+			self::registerBlock(new EndPortalFrame());
+			self::registerBlock(new EndStone());
+			self::registerBlock(new RedstoneLamp());
+			self::registerBlock(new LitRedstoneLamp());
+			self::registerBlock(new SandstoneStairs());
+			self::registerBlock(new EmeraldOre());
+			self::registerBlock(new TripwireHook());
+			self::registerBlock(new Tripwire());
+			self::registerBlock(new Emerald());
+			self::registerBlock((new WoodStairs())->setId(self::SPRUCE_WOOD_STAIRS)->setName("Spruce Wood Stairs"));
+			self::registerBlock((new WoodStairs())->setId(self::BIRCH_WOOD_STAIRS)->setName("Birch Wood Stairs"));
+			self::registerBlock((new WoodStairs())->setId(self::JUNGLE_WOOD_STAIRS)->setName("Jungle Wood Stairs"));
+			self::registerBlock(new StoneWall());
+			self::registerBlock(new FlowerPot());
+			self::registerBlock(new Carrot());
+			self::registerBlock(new Potato());
+			self::registerBlock(new WoodenButton());
+			self::registerBlock(new MobHead());
+			self::registerBlock(new Anvil());
+			self::registerBlock(new TrappedChest());
+			self::registerBlock(new WeightedPressurePlateLight());
+			self::registerBlock(new WeightedPressurePlateHeavy());
 
-			self::$list[self::DAYLIGHT_SENSOR] = new DaylightSensor();
-			self::$list[self::REDSTONE_BLOCK] = new Redstone();
+			self::registerBlock(new DaylightSensor());
+			self::registerBlock(new Redstone());
 
-			self::$list[self::QUARTZ_BLOCK] = new Quartz();
-			self::$list[self::QUARTZ_STAIRS] = new QuartzStairs();
-			self::$list[self::DOUBLE_WOOD_SLAB] = new DoubleWoodSlab();
-			self::$list[self::WOOD_SLAB] = new WoodSlab();
-			self::$list[self::STAINED_CLAY] = new StainedClay();
+			self::registerBlock(new Quartz());
+			self::registerBlock(new QuartzStairs());
+			self::registerBlock(new DoubleWoodSlab());
+			self::registerBlock(new WoodSlab());
+			self::registerBlock(new StainedClay());
 
-			self::$list[self::LEAVES2] = new Leaves2();
-			self::$list[self::WOOD2] = new Wood2();
-			self::$list[self::ACACIA_WOOD_STAIRS] = (new WoodStairs())->setId(self::ACACIA_WOOD_STAIRS)->setName("Acacia Wood Stairs");
-			self::$list[self::DARK_OAK_WOOD_STAIRS] = (new WoodStairs())->setId(self::DARK_OAK_WOOD_STAIRS)->setName("Dark Oak Wood Stairs");
-			self::$list[self::PRISMARINE] = new Prismarine();
-			self::$list[self::SEA_LANTERN] = new SeaLantern();
-			self::$list[self::IRON_TRAPDOOR] = new IronTrapdoor();
-			self::$list[self::HAY_BALE] = new HayBale();
-			self::$list[self::CARPET] = new Carpet();
-			self::$list[self::HARDENED_CLAY] = new HardenedClay();
-			self::$list[self::COAL_BLOCK] = new Coal();
-			self::$list[self::PACKED_ICE] = new PackedIce();
-			self::$list[self::DOUBLE_PLANT] = new DoublePlant();
+			self::registerBlock(new Leaves2());
+			self::registerBlock(new Wood2());
+			self::registerBlock((new WoodStairs())->setId(self::ACACIA_WOOD_STAIRS)->setName("Acacia Wood Stairs"));
+			self::registerBlock((new WoodStairs())->setId(self::DARK_OAK_WOOD_STAIRS)->setName("Dark Oak Wood Stairs"));
+			self::registerBlock(new Prismarine());
+			self::registerBlock(new SeaLantern());
+			self::registerBlock(new IronTrapdoor());
+			self::registerBlock(new HayBale());
+			self::registerBlock(new Carpet());
+			self::registerBlock(new HardenedClay());
+			self::registerBlock(new Coal());
+			self::registerBlock(new PackedIce());
+			self::registerBlock(new DoublePlant());
 
-			self::$list[self::FENCE_GATE_SPRUCE] = new FenceGateSpruce();
-			self::$list[self::FENCE_GATE_BIRCH] = new FenceGateBirch();
-			self::$list[self::FENCE_GATE_JUNGLE] = new FenceGateJungle();
-			self::$list[self::FENCE_GATE_DARK_OAK] = new FenceGateDarkOak();
-			self::$list[self::FENCE_GATE_ACACIA] = new FenceGateAcacia();
+			self::registerBlock((new FenceGate())->setId(self::SPRUCE_FENCE_GATE)->setName("Spruce Fence Gate"));
+			self::registerBlock((new FenceGate())->setId(self::BIRCH_FENCE_GATE)->setName("Birch Fence Gate"));
+			self::registerBlock((new FenceGate())->setId(self::JUNGLE_FENCE_GATE)->setName("Jungle Fence Gate"));
+			self::registerBlock((new FenceGate())->setId(self::DARK_OAK_FENCE_GATE)->setName("Dark Oak Fence Gate"));
+			self::registerBlock((new FenceGate())->setId(self::ACACIA_FENCE_GATE)->setName("Acacia Fence Gate"));
 
-			self::$list[self::ITEM_FRAME_BLOCK] = new ItemFrame();
+			self::registerBlock(new ItemFrame());
 
-			self::$list[self::GRASS_PATH] = new GrassPath();
+			self::registerBlock(new GrassPath());
 
-			self::$list[self::PODZOL] = new Podzol();
-			self::$list[self::BEETROOT_BLOCK] = new Beetroot();
-			self::$list[self::STONECUTTER] = new Stonecutter();
-			self::$list[self::GLOWING_OBSIDIAN] = new GlowingObsidian();
+			self::registerBlock(new Podzol());
+			self::registerBlock(new Beetroot());
+			self::registerBlock(new Stonecutter());
+			self::registerBlock(new GlowingObsidian());
 
 			foreach(self::$list as $id => $block){
-				if($block !== null){
-
-					for($data = 0; $data < 16; ++$data){
-						$b = clone $block;
-						$b->meta = $data;
-						self::$fullList[($id << 4) | $data] = $b;
-					}
-
-					self::$solid[$id] = $block->isSolid();
-					self::$transparent[$id] = $block->isTransparent();
-					self::$hardness[$id] = $block->getHardness();
-					self::$light[$id] = $block->getLightLevel();
-
-					if($block->isSolid()){
-						if($block->isTransparent()){
-							if($block instanceof Liquid or $block instanceof Ice){
-								self::$lightFilter[$id] = 2;
-							}else{
-								self::$lightFilter[$id] = 1;
-							}
-						}else{
-							self::$lightFilter[$id] = 15;
-						}
-					}else{
-						self::$lightFilter[$id] = 1;
-					}
-				}else{
+				if($block === null){
 					self::$lightFilter[$id] = 1;
 					for($data = 0; $data < 16; ++$data){
 						self::$fullList[($id << 4) | $data] = new UnknownBlock($id, $data);
@@ -275,6 +249,50 @@ class Block extends Position implements BlockIds, Metadatable{
 				}
 			}
 		}
+	}
+
+	/**
+	 * Adds a Block type to the index. Plugins may use this method to register new block types, or override existing ones.
+	 * @since API 3.0.0
+	 *
+	 * @param Block $block
+	 * @param bool  $override Whether to override any already-registed implementations
+	 *
+	 * @return bool indication of success
+	 */
+	public static function registerBlock(Block $block, bool $override = false){
+		if(isset(self::$list[$block->id]) and !$override){
+			return false;
+		}
+
+		self::$list[$block->id] = $block;
+		for($data = 0; $data < 16; ++$data){
+			$b = clone $block;
+			$b->meta = $data;
+			self::$fullList[($block->id << 4) | $data] = $b;
+		}
+
+		self::$solid[$block->id] = $block->isSolid();
+		self::$transparent[$block->id] = $block->isTransparent();
+		self::$hardness[$block->id] = $block->getHardness();
+		self::$light[$block->id] = $block->getLightLevel();
+
+		//TODO: remove this mess and add an OOP API for light-filtering
+		if($block->isSolid()){
+			if($block->isTransparent()){
+				if($block instanceof Liquid or $block instanceof Ice){
+					self::$lightFilter[$block->id] = 2;
+				}else{
+					self::$lightFilter[$block->id] = 1;
+				}
+			}else{
+				self::$lightFilter[$block->id] = 15;
+			}
+		}else{
+			self::$lightFilter[$block->id] = 1;
+		}
+
+		return true;
 	}
 
 	/**

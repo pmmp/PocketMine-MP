@@ -35,10 +35,6 @@ class FenceGate extends Transparent{
 		$this->meta = $meta;
 	}
 
-	public function getName(){
-		return "Oak Fence Gate";
-	}
-
 	public function getHardness(){
 		return 2;
 	}
