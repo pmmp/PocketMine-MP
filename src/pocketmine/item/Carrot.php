@@ -25,7 +25,7 @@ use pocketmine\block\Block;
 
 class Carrot extends Food{
 	public function __construct($meta = 0, $count = 1){
-		$this->block = Block::get(Item::CARROT_BLOCK);
+		$this->block = Block::get(Block::CARROT_BLOCK);
 		parent::__construct(self::CARROT, 0, $count, "Carrot");
 	}
 

@@ -21,13 +21,11 @@
 
 namespace pocketmine\item;
 
+use pocketmine\block\Block;
 
-class GoldPickaxe extends Tool{
+class Skull extends Item{
 	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::GOLD_PICKAXE, $meta, $count, "Gold Pickaxe");
-	}
-
-	public function isPickaxe(){
-		return Tool::TIER_GOLD;
+		$this->block = Block::get(Item::SKULL_BLOCK);
+		parent::__construct(self::SKULL, $meta, $count, "Skull");
 	}
 }

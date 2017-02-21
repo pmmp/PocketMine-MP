@@ -25,7 +25,7 @@
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
-use pocketmine\block\Water;
+use pocketmine\block\FlowingWater;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDespawnEvent;
 use pocketmine\event\entity\EntityLevelChangeEvent;
@@ -1192,7 +1192,7 @@ abstract class Entity extends Location implements Metadatable{
 	public function isInsideOfWater(){
 		$block = $this->level->getBlock($this->temporalVector->setComponents(Math::floorFloat($this->x), Math::floorFloat($y = ($this->y + $this->getEyeHeight())), Math::floorFloat($this->z)));
 
-		if($block instanceof Water){
+		if($block instanceof FlowingWater){
 			$f = ($block->y + 1) - ($block->getFluidHeightPercent() - 0.1111111);
 			return $y < $f;
 		}

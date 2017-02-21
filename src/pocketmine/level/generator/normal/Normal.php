@@ -240,7 +240,7 @@ class Normal extends Generator{
 					if($noiseValue > 0){
 						$chunk->setBlockId($x, $y, $z, Block::STONE);
 					}elseif($y <= $this->waterHeight){
-						$chunk->setBlockId($x, $y, $z, Block::STILL_WATER);
+						$chunk->setBlockId($x, $y, $z, Block::WATER);
 					}
 				}
 			}

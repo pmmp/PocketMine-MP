@@ -19,13 +19,17 @@
  *
 */
 
-namespace pocketmine\item;
+namespace pocketmine\block;
 
-use pocketmine\block\Block;
+class HeavyWeightedPressurePlate extends LightWeightedPressurePlate{
 
-class MobHead extends Item{
-	public function __construct($meta = 0, $count = 1){
-		$this->block = Block::get(Item::SKULL_BLOCK);
-		parent::__construct(self::MOB_HEAD, $meta, $count, "Mob Head");
+	protected $id = self::HEAVY_WEIGHTED_PRESSURE_PLATE;
+
+	public function __construct($meta = 0){
+		$this->meta = $meta;
+	}
+
+	public function getName(){
+		return "Heavy Weighted Pressure Plate";
 	}
 }

@@ -24,9 +24,19 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 
-class WoodStairs extends Stair{
+class StoneSlab extends WoodenSlab{
+	const STONE = 0;
+	const SANDSTONE = 1;
+	const WOODEN = 2;
+	const COBBLESTONE = 3;
+	const BRICK = 4;
+	const STONE_BRICK = 5;
+	const QUARTZ = 6;
+	const NETHER_BRICK = 7;
 
-	protected $id = self::WOOD_STAIRS;
+	protected $id = self::STONE_SLAB;
+
+	protected $doubleId = self::DOUBLE_STONE_SLAB;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
@@ -36,17 +46,31 @@ class WoodStairs extends Stair{
 		return 2;
 	}
 
-	public function getResistance(){
-		return 15;
+	public function getName(){
+		static $names = [
+			self::STONE => "Stone",
+			self::SANDSTONE => "Sandstone",
+			self::WOODEN => "Wooden",
+			self::COBBLESTONE => "Cobblestone",
+			self::BRICK => "Brick",
+			self::STONE_BRICK => "Stone Brick",
+			self::QUARTZ => "Quartz",
+			self::NETHER_BRICK => "Nether Brick",
+		];
+		return (($this->meta & 0x08) > 0 ? "Upper " : "") . $names[$this->meta & 0x07] . " Slab";
 	}
 
 	public function getToolType(){
-		return Tool::TYPE_AXE;
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getDrops(Item $item){
-		return [
-			[$this->id, 0, 1],
-		];
+		if($item->isPickaxe() >= Tool::TIER_WOODEN){
+			return [
+				[$this->id, $this->meta & 0x07, 1],
+			];
+		}else{
+			return [];
+		}
 	}
 }

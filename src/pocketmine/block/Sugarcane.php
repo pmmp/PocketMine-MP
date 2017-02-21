@@ -116,7 +116,7 @@ class Sugarcane extends Flowable{
 			$block1 = $down->getSide(3);
 			$block2 = $down->getSide(4);
 			$block3 = $down->getSide(5);
-			if(($block0 instanceof Water) or ($block1 instanceof Water) or ($block2 instanceof Water) or ($block3 instanceof Water)){
+			if(($block0 instanceof FlowingWater) or ($block1 instanceof FlowingWater) or ($block2 instanceof FlowingWater) or ($block3 instanceof FlowingWater)){
 				$this->getLevel()->setBlock($block, new Sugarcane(), true);
 
 				return true;

@@ -19,15 +19,25 @@
  *
 */
 
-namespace pocketmine\item;
+namespace pocketmine\block;
 
+class LightWeightedPressurePlate extends Transparent{
 
-class GoldShovel extends Tool{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::GOLD_SHOVEL, $meta, $count, "Gold Shovel");
+	protected $id = self::LIGHT_WEIGHTED_PRESSURE_PLATE;
+
+	public function __construct($meta = 0){
+		$this->meta = $meta;
 	}
 
-	public function isShovel(){
-		return Tool::TIER_GOLD;
+	public function getName(){
+		return "Light Weighted Pressure Plate";
+	}
+
+	public function isSolid(){
+		return false;
+	}
+
+	public function getHardness(){
+		return 0.5;
 	}
 }

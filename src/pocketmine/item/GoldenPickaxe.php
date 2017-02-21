@@ -22,8 +22,12 @@
 namespace pocketmine\item;
 
 
-class GoldHelmet extends Armor{
+class GoldenPickaxe extends Tool{
 	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::GOLD_HELMET, $meta, $count, "Gold Helmet");
+		parent::__construct(self::GOLDEN_PICKAXE, $meta, $count, "Golden Pickaxe");
+	}
+
+	public function isPickaxe(){
+		return Tool::TIER_GOLD;
 	}
 }

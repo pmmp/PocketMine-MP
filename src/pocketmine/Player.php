@@ -2413,27 +2413,29 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 							}
 
 							$item = $this->inventory->getItemInHand();
+
+							//TODO: get rid of this
 							$damageTable = [
 								Item::WOODEN_SWORD => 4,
-								Item::GOLD_SWORD => 4,
+								Item::GOLDEN_SWORD => 4,
 								Item::STONE_SWORD => 5,
 								Item::IRON_SWORD => 6,
 								Item::DIAMOND_SWORD => 7,
 
 								Item::WOODEN_AXE => 3,
-								Item::GOLD_AXE => 3,
+								Item::GOLDEN_AXE => 3,
 								Item::STONE_AXE => 3,
 								Item::IRON_AXE => 5,
 								Item::DIAMOND_AXE => 6,
 
 								Item::WOODEN_PICKAXE => 2,
-								Item::GOLD_PICKAXE => 2,
+								Item::GOLDEN_PICKAXE => 2,
 								Item::STONE_PICKAXE => 3,
 								Item::IRON_PICKAXE => 4,
 								Item::DIAMOND_PICKAXE => 5,
 
 								Item::WOODEN_SHOVEL => 1,
-								Item::GOLD_SHOVEL => 1,
+								Item::GOLDEN_SHOVEL => 1,
 								Item::STONE_SHOVEL => 2,
 								Item::IRON_SHOVEL => 3,
 								Item::DIAMOND_SHOVEL => 4,
@@ -2452,6 +2454,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 									$cancelled = true;
 								}
 
+								//TODO: get rid of this
 								$armorValues = [
 									Item::LEATHER_CAP => 1,
 									Item::LEATHER_TUNIC => 3,
@@ -2461,10 +2464,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 									Item::CHAIN_CHESTPLATE => 5,
 									Item::CHAIN_LEGGINGS => 4,
 									Item::CHAIN_BOOTS => 1,
-									Item::GOLD_HELMET => 1,
-									Item::GOLD_CHESTPLATE => 5,
-									Item::GOLD_LEGGINGS => 3,
-									Item::GOLD_BOOTS => 1,
+									Item::GOLDEN_HELMET => 1,
+									Item::GOLDEN_CHESTPLATE => 5,
+									Item::GOLDEN_LEGGINGS => 3,
+									Item::GOLDEN_BOOTS => 1,
 									Item::IRON_HELMET => 2,
 									Item::IRON_CHESTPLATE => 6,
 									Item::IRON_LEGGINGS => 5,
@@ -2791,7 +2794,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 
 				switch($recipe->getResult()->getId()){
-					case Item::WORKBENCH:
+					case Item::CRAFTING_TABLE:
 						$this->awardAchievement("buildWorkBench");
 						break;
 					case Item::WOODEN_PICKAXE:
@@ -2812,7 +2815,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						$this->inventory->addItem(Item::get(Item::BUCKET, 0, 3));
 						break;
 					case Item::STONE_PICKAXE:
-					case Item::GOLD_PICKAXE:
+					case Item::GOLDEN_PICKAXE:
 					case Item::IRON_PICKAXE:
 					case Item::DIAMOND_PICKAXE:
 						$this->awardAchievement("buildBetterPickaxe");

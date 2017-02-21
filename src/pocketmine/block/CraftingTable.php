@@ -26,9 +26,9 @@ use pocketmine\item\Tool;
 use pocketmine\Player;
 
 //TODO: check orientation
-class Workbench extends Solid{
+class CraftingTable extends Solid{
 
-	protected $id = self::WORKBENCH;
+	protected $id = self::CRAFTING_TABLE;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

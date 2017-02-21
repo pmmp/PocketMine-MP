@@ -28,16 +28,12 @@ class Cobblestone extends Solid{
 
 	protected $id = self::COBBLESTONE;
 
-	public function __construct(){
-
+	public function __construct($meta = 0){
+		$this->meta = $meta;
 	}
 
 	public function getToolType(){
 		return Tool::TYPE_PICKAXE;
-	}
-
-	public function getName(){
-		return "Cobblestone";
 	}
 
 	public function getHardness(){
@@ -47,7 +43,7 @@ class Cobblestone extends Solid{
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
-				[Item::COBBLESTONE, 0, 1],
+				[$this->id, $this->meta, 1],
 			];
 		}else{
 			return [];

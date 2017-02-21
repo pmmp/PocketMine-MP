@@ -23,6 +23,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Dandelion extends Flowable{
@@ -40,7 +41,7 @@ class Dandelion extends Flowable{
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
-		if($down->getId() === 2 or $down->getId() === 3 or $down->getId() === 60){
+		if($down->getId() === Block::GRASS or $down->getId() === Block::DIRT or $down->getId() === Block::FARMLAND){
 			$this->getLevel()->setBlock($block, $this, true, true);
 
 			return true;
@@ -51,7 +52,7 @@ class Dandelion extends Flowable{
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->isTransparent() === true){
+			if($this->getSide(Vector3::SIDE_DOWN)->isTransparent() === true){
 				$this->getLevel()->useBreakOn($this);
 
 				return Level::BLOCK_UPDATE_NORMAL;

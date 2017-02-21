@@ -26,7 +26,7 @@ use pocketmine\item\Tool;
 
 class Bricks extends Solid{
 
-	protected $id = self::BRICKS_BLOCK;
+	protected $id = self::BRICK_BLOCK;
 
 	public function __construct(){
 
@@ -51,7 +51,7 @@ class Bricks extends Solid{
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
-				[Item::BRICKS_BLOCK, 0, 1],
+				[Item::BRICK_BLOCK, 0, 1],
 			];
 		}else{
 			return [];

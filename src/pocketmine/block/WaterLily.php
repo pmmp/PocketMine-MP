@@ -56,7 +56,7 @@ class WaterLily extends Flowable{
 
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		if($target instanceof Water){
+		if($target instanceof FlowingWater){
 			$up = $target->getSide(Vector3::SIDE_UP);
 			if($up->getId() === Block::AIR){
 				$this->getLevel()->setBlock($up, $this, true, true);
@@ -69,7 +69,7 @@ class WaterLily extends Flowable{
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if(!($this->getSide(0) instanceof Water)){
+			if(!($this->getSide(Vector3::SIDE_DOWN) instanceof FlowingWater)){
 				$this->getLevel()->useBreakOn($this);
 				return Level::BLOCK_UPDATE_NORMAL;
 			}

@@ -26,7 +26,7 @@ use pocketmine\entity\Effect;
 class GoldenAppleEnchanted extends GoldenApple{
 
 	public function __construct($meta = 0, $count = 1){
-		Food::__construct(self::ENCHANTED_GOLDEN_APPLE, $meta, $count, "Enchanted Golden Apple"); //skip parent constructor
+		Food::__construct(self::APPLE_ENCHANTED, $meta, $count, "Enchanted Golden Apple"); //skip parent constructor
 	}
 
 	public function getAdditionalEffects() : array{

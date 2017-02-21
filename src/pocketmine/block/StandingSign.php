@@ -31,9 +31,9 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\Tile;
 
-class SignPost extends Transparent{
+class StandingSign extends Transparent{
 
-	protected $id = self::SIGN_POST;
+	protected $id = self::STANDING_SIGN;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

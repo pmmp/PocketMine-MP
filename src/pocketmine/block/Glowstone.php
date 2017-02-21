@@ -26,7 +26,7 @@ use pocketmine\item\Tool;
 
 class Glowstone extends Transparent{
 
-	protected $id = self::GLOWSTONE_BLOCK;
+	protected $id = self::GLOWSTONE;
 
 	public function __construct(){
 

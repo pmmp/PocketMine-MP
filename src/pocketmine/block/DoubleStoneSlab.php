@@ -23,22 +23,10 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
-use pocketmine\math\AxisAlignedBB;
-use pocketmine\Player;
 
-class Slab extends WoodSlab{
-	const STONE = 0;
-	const SANDSTONE = 1;
-	const WOODEN = 2;
-	const COBBLESTONE = 3;
-	const BRICK = 4;
-	const STONE_BRICK = 5;
-	const QUARTZ = 6;
-	const NETHER_BRICK = 7;
+class DoubleStoneSlab extends Solid{
 
-	protected $id = self::SLAB;
-
-	protected $doubleId = self::DOUBLE_SLAB;
+	protected $id = self::DOUBLE_STONE_SLAB;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
@@ -48,31 +36,32 @@ class Slab extends WoodSlab{
 		return 2;
 	}
 
-	public function getName(){
-		static $names = [
-			self::STONE => "Stone",
-			self::SANDSTONE => "Sandstone",
-			self::WOODEN => "Wooden",
-			self::COBBLESTONE => "Cobblestone",
-			self::BRICK => "Brick",
-			self::STONE_BRICK => "Stone Brick",
-			self::QUARTZ => "Quartz",
-			self::NETHER_BRICK => "Nether Brick",
-		];
-		return (($this->meta & 0x08) > 0 ? "Upper " : "") . $names[$this->meta & 0x07] . " Slab";
-	}
-
 	public function getToolType(){
 		return Tool::TYPE_PICKAXE;
+	}
+
+	public function getName(){
+		static $names = [
+			0 => "Stone",
+			1 => "Sandstone",
+			2 => "Wooden",
+			3 => "Cobblestone",
+			4 => "Brick",
+			5 => "Stone Brick",
+			6 => "Quartz",
+			7 => "Nether Brick",
+		];
+		return "Double " . $names[$this->meta & 0x07] . " Slab";
 	}
 
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
-				[$this->id, $this->meta & 0x07, 1],
+				[Item::STONE_SLAB, $this->meta & 0x07, 2],
 			];
 		}else{
 			return [];
 		}
 	}
+
 }

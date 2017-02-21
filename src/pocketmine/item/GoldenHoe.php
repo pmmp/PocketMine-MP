@@ -19,38 +19,15 @@
  *
 */
 
-namespace pocketmine\block;
+namespace pocketmine\item;
 
-use pocketmine\item\Item;
-use pocketmine\item\Tool;
 
-class MossStone extends Solid{
-
-	protected $id = self::MOSS_STONE;
-
-	public function __construct($meta = 0){
-		$this->meta = $meta;
+class GoldenHoe extends Tool{
+	public function __construct($meta = 0, $count = 1){
+		parent::__construct(self::GOLDEN_HOE, $meta, $count, "Golden Hoe");
 	}
 
-	public function getName(){
-		return "Moss Stone";
-	}
-
-	public function getHardness(){
-		return 2;
-	}
-
-	public function getToolType(){
-		return Tool::TYPE_PICKAXE;
-	}
-
-	public function getDrops(Item $item){
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
-			return [
-				[Item::MOSS_STONE, $this->meta, 1],
-			];
-		}else{
-			return [];
-		}
+	public function isHoe(){
+		return Tool::TIER_GOLD;
 	}
 }

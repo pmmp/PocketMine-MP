@@ -84,7 +84,7 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$list[self::IRON_SHOVEL] = IronShovel::class;
 			self::$list[self::IRON_PICKAXE] = IronPickaxe::class;
 			self::$list[self::IRON_AXE] = IronAxe::class;
-			self::$list[self::FLINT_STEEL] = FlintSteel::class;
+			self::$list[self::FLINT_AND_STEEL] = FlintSteel::class;
 			self::$list[self::APPLE] = Apple::class;
 			self::$list[self::BOW] = Bow::class;
 			self::$list[self::ARROW] = Arrow::class;
@@ -108,10 +108,10 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$list[self::STICK] = Stick::class;
 			self::$list[self::BOWL] = Bowl::class;
 			self::$list[self::MUSHROOM_STEW] = MushroomStew::class;
-			self::$list[self::GOLD_SWORD] = GoldSword::class;
-			self::$list[self::GOLD_SHOVEL] = GoldShovel::class;
-			self::$list[self::GOLD_PICKAXE] = GoldPickaxe::class;
-			self::$list[self::GOLD_AXE] = GoldAxe::class;
+			self::$list[self::GOLDEN_SWORD] = GoldenSword::class;
+			self::$list[self::GOLDEN_SHOVEL] = GoldenShovel::class;
+			self::$list[self::GOLDEN_PICKAXE] = GoldenPickaxe::class;
+			self::$list[self::GOLDEN_AXE] = GoldenAxe::class;
 			self::$list[self::STRING] = StringItem::class;
 			self::$list[self::FEATHER] = Feather::class;
 			self::$list[self::GUNPOWDER] = Gunpowder::class;
@@ -119,7 +119,7 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$list[self::STONE_HOE] = StoneHoe::class;
 			self::$list[self::IRON_HOE] = IronHoe::class;
 			self::$list[self::DIAMOND_HOE] = DiamondHoe::class;
-			self::$list[self::GOLD_HOE] = GoldHoe::class;
+			self::$list[self::GOLDEN_HOE] = GoldenHoe::class;
 			self::$list[self::WHEAT_SEEDS] = WheatSeeds::class;
 			self::$list[self::WHEAT] = Wheat::class;
 			self::$list[self::BREAD] = Bread::class;
@@ -139,10 +139,10 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$list[self::DIAMOND_CHESTPLATE] = DiamondChestplate::class;
 			self::$list[self::DIAMOND_LEGGINGS] = DiamondLeggings::class;
 			self::$list[self::DIAMOND_BOOTS] = DiamondBoots::class;
-			self::$list[self::GOLD_HELMET] = GoldHelmet::class;
-			self::$list[self::GOLD_CHESTPLATE] = GoldChestplate::class;
-			self::$list[self::GOLD_LEGGINGS] = GoldLeggings::class;
-			self::$list[self::GOLD_BOOTS] = GoldBoots::class;
+			self::$list[self::GOLDEN_HELMET] = GoldenHelmet::class;
+			self::$list[self::GOLDEN_CHESTPLATE] = GoldenChestplate::class;
+			self::$list[self::GOLDEN_LEGGINGS] = GoldenLeggings::class;
+			self::$list[self::GOLDEN_BOOTS] = GoldenBoots::class;
 			self::$list[self::FLINT] = Flint::class;
 			self::$list[self::RAW_PORKCHOP] = RawPorkchop::class;
 			self::$list[self::COOKED_PORKCHOP] = CookedPorkchop::class;
@@ -158,7 +158,7 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$list[self::BOAT] = Boat::class;
 			self::$list[self::LEATHER] = Leather::class;
 			self::$list[self::BRICK] = Brick::class;
-			self::$list[self::CLAY] = Clay::class;
+			self::$list[self::CLAY_BALL] = Clay::class;
 			self::$list[self::SUGARCANE] = Sugarcane::class;
 			self::$list[self::PAPER] = Paper::class;
 			self::$list[self::BOOK] = Book::class;
@@ -202,7 +202,7 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$list[self::POTATO] = Potato::class;
 			self::$list[self::BAKED_POTATO] = BakedPotato::class;
 			self::$list[self::GOLDEN_CARROT] = GoldenCarrot::class;
-			self::$list[self::MOB_HEAD] = MobHead::class;
+			self::$list[self::SKULL] = Skull::class;
 			self::$list[self::PUMPKIN_PIE] = PumpkinPie::class;
 			self::$list[self::NETHER_BRICK] = NetherBrick::class;
 			self::$list[self::QUARTZ] = Quartz::class;
@@ -215,7 +215,7 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$list[self::PRISMARINE_CRYSTALS] = PrismarineCrystals::class;
 			self::$list[self::PRISMARINE_SHARD] = PrismarineShard::class;
 			self::$list[self::NETHER_STAR] = NetherStar::class;
-			self::$list[self::ENCHANTED_GOLDEN_APPLE] = GoldenAppleEnchanted::class;
+			self::$list[self::APPLE_ENCHANTED] = GoldenAppleEnchanted::class;
 
 			for($i = 0; $i < 256; ++$i){
 				if(Block::$list[$i] !== null){

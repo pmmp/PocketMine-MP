@@ -33,9 +33,9 @@ use pocketmine\tile\Skull as SkullTile;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 
-class MobHead extends Flowable{
+class Skull extends Flowable{
 
-	protected $id = self::MOB_HEAD_BLOCK;
+	protected $id = self::SKULL_BLOCK;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
@@ -46,7 +46,7 @@ class MobHead extends Flowable{
 	}
 
 	public function getName(){
-		return "Mob Head";
+		return "Skull";
 	}
 
 	protected function recalculateBoundingBox(){
@@ -110,7 +110,7 @@ class MobHead extends Flowable{
 		$tile = $this->level->getTile($this);
 		if($tile instanceof SkullTile){
 			return [
-				[Item::MOB_HEAD, $tile->getType(), 1]
+				[Item::SKULL, $tile->getType(), 1]
 			];
 		}
 

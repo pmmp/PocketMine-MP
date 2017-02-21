@@ -19,17 +19,11 @@
  *
 */
 
-namespace pocketmine\block;
+namespace pocketmine\item;
 
-class WeightedPressurePlateHeavy extends WeightedPressurePlateLight{
 
-	protected $id = self::WEIGHTED_PRESSURE_PLATE_HEAVY;
-
-	public function __construct($meta = 0){
-		$this->meta = $meta;
-	}
-
-	public function getName(){
-		return "Weighted Pressure Plate Heavy";
+class GoldenLeggings extends Armor{
+	public function __construct($meta = 0, $count = 1){
+		parent::__construct(self::GOLDEN_LEGGINGS, $meta, $count, "Golden Leggings");
 	}
 }

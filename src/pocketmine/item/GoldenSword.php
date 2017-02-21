@@ -22,8 +22,12 @@
 namespace pocketmine\item;
 
 
-class GoldBoots extends Armor{
+class GoldenSword extends Tool{
 	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::GOLD_BOOTS, $meta, $count, "Gold Boots");
+		parent::__construct(self::GOLDEN_SWORD, $meta, $count, "Golden Sword");
+	}
+
+	public function isSword(){
+		return Tool::TIER_GOLD;
 	}
 }

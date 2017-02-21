@@ -21,16 +21,12 @@
 
 namespace pocketmine\block;
 
-use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
-use pocketmine\level\Level;
-use pocketmine\Player;
-use pocketmine\Server;
 
 class Leaves2 extends Leaves{
 
 	protected $id = self::LEAVES2;
-	protected $woodType = self::WOOD2;
+	protected $woodType = self::LOG2;
 
 	public function getName(){
 		static $names = [

@@ -132,7 +132,7 @@ class Nether extends Generator{
 					if($noiseValue > 0){
 						$chunk->setBlockId($x, $y, $z, Block::NETHERRACK);
 					}elseif($y <= $this->waterHeight){
-						$chunk->setBlockId($x, $y, $z, Block::STILL_LAVA);
+						$chunk->setBlockId($x, $y, $z, Block::LAVA);
 					}
 				}
 			}
