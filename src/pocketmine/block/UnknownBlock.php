@@ -21,9 +21,13 @@
 
 namespace pocketmine\block;
 
-class UnknownBlock extends Flowable{
+class UnknownBlock extends Transparent{
 
-	public function canBeFlowedInto(){
+	public function isSolid(){
 		return false;
+	}
+
+	public function getHardness(){
+		return 0;
 	}
 }
