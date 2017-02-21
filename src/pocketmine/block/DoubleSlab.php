@@ -51,7 +51,7 @@ class DoubleSlab extends Solid{
 			6 => "Quartz",
 			7 => "Nether Brick",
 		];
-		return "DoubleTag " . $names[$this->meta & 0x07] . " Slab";
+		return "Double " . $names[$this->meta & 0x07] . " Slab";
 	}
 
 	public function getDrops(Item $item){
