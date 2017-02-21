@@ -293,13 +293,15 @@ class Item implements ItemIds, \JsonSerializable{
 
 	public static function get(int $id, int $meta = 0, int $count = 1, string $tags = "") : Item{
 		try{
-			$class = self::$list[$id];
-			if($class === null){
-				return (new Item($id, $meta, $count))->setCompoundTag($tags);
-			}elseif($id < 256){
-				return (new ItemBlock(new $class($meta), $meta, $count))->setCompoundTag($tags);
+			if($id < 256){
+				return (new ItemBlock(Block::get($id, $meta), $meta, $count))->setCompoundTag($tags);
 			}else{
-				return (new $class($meta, $count))->setCompoundTag($tags);
+				$class = self::$list[$id];
+				if($class === null){
+					return (new Item($id, $meta, $count))->setCompoundTag($tags);
+				}else{
+					return (new $class($meta, $count))->setCompoundTag($tags);
+				}
 			}
 		}catch(\RuntimeException $e){
 			return (new Item($id, $meta, $count))->setCompoundTag($tags);

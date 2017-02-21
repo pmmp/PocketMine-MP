@@ -32,10 +32,6 @@ class WoodStairs extends Stair{
 		$this->meta = $meta;
 	}
 
-	public function getName(){
-		return "Wood Stairs";
-	}
-
 	public function getHardness(){
 		return 2;
 	}

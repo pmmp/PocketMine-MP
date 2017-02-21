@@ -114,7 +114,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$list[self::TORCH] = new Torch();
 			self::$list[self::FIRE] = new Fire();
 			self::$list[self::MONSTER_SPAWNER] = new MonsterSpawner();
-			self::$list[self::WOOD_STAIRS] = new WoodStairs();
+			self::$list[self::WOOD_STAIRS] = (new WoodStairs())->setId(self::WOOD_STAIRS)->setName("Wood Stairs");
 			self::$list[self::CHEST] = new Chest();
 
 			self::$list[self::DIAMOND_ORE] = new DiamondOre();
@@ -188,9 +188,9 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$list[self::TRIPWIRE_HOOK] = new TripwireHook();
 			self::$list[self::TRIPWIRE] = new Tripwire();
 			self::$list[self::EMERALD_BLOCK] = new Emerald();
-			self::$list[self::SPRUCE_WOOD_STAIRS] = new SpruceWoodStairs();
-			self::$list[self::BIRCH_WOOD_STAIRS] = new BirchWoodStairs();
-			self::$list[self::JUNGLE_WOOD_STAIRS] = new JungleWoodStairs();
+			self::$list[self::SPRUCE_WOOD_STAIRS] = (new WoodStairs())->setId(self::SPRUCE_WOOD_STAIRS)->setName("Spruce Wood Stairs");
+			self::$list[self::BIRCH_WOOD_STAIRS] = (new WoodStairs())->setId(self::BIRCH_WOOD_STAIRS)->setName("Birch Wood Stairs");
+			self::$list[self::JUNGLE_WOOD_STAIRS] = (new WoodStairs())->setId(self::JUNGLE_WOOD_STAIRS)->setName("Jungle Wood Stairs");
 			self::$list[self::STONE_WALL] = new StoneWall();
 			self::$list[self::FLOWER_POT_BLOCK] = new FlowerPot();
 			self::$list[self::CARROT_BLOCK] = new Carrot();
@@ -213,8 +213,8 @@ class Block extends Position implements BlockIds, Metadatable{
 
 			self::$list[self::LEAVES2] = new Leaves2();
 			self::$list[self::WOOD2] = new Wood2();
-			self::$list[self::ACACIA_WOOD_STAIRS] = new AcaciaWoodStairs();
-			self::$list[self::DARK_OAK_WOOD_STAIRS] = new DarkOakWoodStairs();
+			self::$list[self::ACACIA_WOOD_STAIRS] = (new WoodStairs())->setId(self::ACACIA_WOOD_STAIRS)->setName("Acacia Wood Stairs");
+			self::$list[self::DARK_OAK_WOOD_STAIRS] = (new WoodStairs())->setId(self::DARK_OAK_WOOD_STAIRS)->setName("Dark Oak Wood Stairs");
 			self::$list[self::PRISMARINE] = new Prismarine();
 			self::$list[self::SEA_LANTERN] = new SeaLantern();
 			self::$list[self::IRON_TRAPDOOR] = new IronTrapdoor();
@@ -300,6 +300,8 @@ class Block extends Position implements BlockIds, Metadatable{
 
 		return $block;
 	}
+
+	protected $fallbackName = "Unknown";
 
 	protected $id;
 	protected $meta = 0;
@@ -472,7 +474,20 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return string
 	 */
 	public function getName(){
-		return "Unknown";
+		return $this->fallbackName;
+	}
+
+	/**
+	 * Sets the fallback English name of the block.
+	 * @since API 3.0.0
+	 *
+	 * @param string $name
+	 * @return $this
+	 */
+	public function setName(string $name){
+		$this->fallbackName = $name;
+
+		return $this;
 	}
 
 	/**
@@ -480,6 +495,18 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	final public function getId(){
 		return $this->id;
+	}
+
+	/**
+	 * Sets the ID of the block type.
+	 * @internal
+	 *
+	 * @param int $id
+	 * @return $this
+	 */
+	final protected function setId(int $id){
+		$this->id = $id;
+		return $this;
 	}
 
 	public function addVelocityToEntity(Entity $entity, Vector3 $vector){
