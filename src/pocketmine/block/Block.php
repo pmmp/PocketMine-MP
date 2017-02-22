@@ -379,14 +379,14 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * @return int
+	 * @return float
 	 */
 	public function getHardness(){
 		return 10;
 	}
 
 	/**
-	 * @return int
+	 * @return float
 	 */
 	public function getResistance(){
 		return $this->getHardness() * 5;
