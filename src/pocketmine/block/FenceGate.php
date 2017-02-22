@@ -81,13 +81,7 @@ class FenceGate extends Transparent{
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		$faces = [
-			0 => 3,
-			1 => 0,
-			2 => 1,
-			3 => 2,
-		];
-		$this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0] & 0x03;
+		$this->meta = ($player instanceof Player ? ($player->getDirection() - 1) & 0x03 : 0);
 		$this->getLevel()->setBlock($block, $this, true, true);
 
 		return true;
@@ -100,8 +94,11 @@ class FenceGate extends Transparent{
 	}
 
 	public function onActivate(Item $item, Player $player = null){
-		$this->meta ^= 0x04; //Flip open/close state
-		//TODO: Face player when opened
+		$this->meta = (($this->meta ^ 0x04) & ~0x02);
+
+		if($player !== null){
+			$this->meta |= (($player->getDirection() - 1) & 0x02);
+		}
 
 		$this->getLevel()->setBlock($this, $this, true);
 		$this->level->addSound(new DoorSound($this));
