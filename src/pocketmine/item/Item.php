@@ -74,10 +74,6 @@ class Item implements ItemIds, \JsonSerializable{
 	protected $durability = 0;
 	protected $name;
 
-	public function canBeActivated(){
-		return false;
-	}
-
 	public static function init(){
 		if(self::$list === null){
 			self::$list = new \SplFixedArray(65536);

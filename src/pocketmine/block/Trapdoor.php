@@ -50,10 +50,6 @@ class Trapdoor extends Transparent{
 		return 3;
 	}
 
-	public function canBeActivated(){
-		return true;
-	}
-
 	protected function recalculateBoundingBox(){
 
 		$damage = $this->getDamage();

@@ -39,10 +39,6 @@ class Grass extends Solid{
 
 	}
 
-	public function canBeActivated(){
-		return true;
-	}
-
 	public function getName(){
 		return "Grass";
 	}
