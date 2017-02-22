@@ -158,22 +158,11 @@ class Vector3{
 	}
 
 	public static function getOppositeSide($side){
-		switch((int) $side){
-			case Vector3::SIDE_DOWN:
-				return Vector3::SIDE_UP;
-			case Vector3::SIDE_UP:
-				return Vector3::SIDE_DOWN;
-			case Vector3::SIDE_NORTH:
-				return Vector3::SIDE_SOUTH;
-			case Vector3::SIDE_SOUTH:
-				return Vector3::SIDE_NORTH;
-			case Vector3::SIDE_WEST:
-				return Vector3::SIDE_EAST;
-			case Vector3::SIDE_EAST:
-				return Vector3::SIDE_WEST;
-			default:
-				return -1;
+		if($side >= 0 and $side <= 5){
+			return ((int) $side) ^ 0x01;
 		}
+
+		return -1;
 	}
 
 	public function distance(Vector3 $pos){
