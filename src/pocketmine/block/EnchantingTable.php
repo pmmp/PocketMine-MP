@@ -64,10 +64,6 @@ class EnchantingTable extends Transparent{
 		return true;
 	}
 
-	public function canBeActivated(){
-		return true;
-	}
-
 	public function getHardness(){
 		return 5;
 	}

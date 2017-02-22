@@ -39,10 +39,6 @@ class Bucket extends Item{
 		return 1;
 	}
 
-	public function canBeActivated(){
-		return true;
-	}
-
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$targetBlock = Block::get($this->meta);
 

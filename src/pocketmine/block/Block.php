@@ -472,15 +472,6 @@ class Block extends Position implements BlockIds, Metadatable{
 		return false;
 	}
 
-	/**
-	 * AKA: Block->isActivable
-	 *
-	 * @return bool
-	 */
-	public function canBeActivated(){
-		return false;
-	}
-
 	public function hasEntityCollision(){
 		return false;
 	}

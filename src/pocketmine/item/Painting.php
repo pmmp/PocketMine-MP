@@ -32,10 +32,6 @@ class Painting extends Item{
 		parent::__construct(self::PAINTING, 0, $count, "Painting");
 	}
 
-	public function canBeActivated(){
-		return true;
-	}
-
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($target->isTransparent() === false and $face > 1 and $block->isSolid() === false){
 			$faces = [

@@ -46,10 +46,6 @@ class BurningFurnace extends Solid{
 		return "Burning Furnace";
 	}
 
-	public function canBeActivated(){
-		return true;
-	}
-
 	public function getHardness(){
 		return 3.5;
 	}

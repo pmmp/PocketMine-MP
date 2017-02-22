@@ -41,10 +41,6 @@ class Grass extends Solid{
 		$this->meta = $meta;
 	}
 
-	public function canBeActivated(){
-		return true;
-	}
-
 	public function getName(){
 		return "Grass";
 	}

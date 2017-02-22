@@ -45,10 +45,6 @@ class FenceGate extends Transparent{
 		return 2;
 	}
 
-	public function canBeActivated(){
-		return true;
-	}
-
 	public function getToolType(){
 		return Tool::TYPE_AXE;
 	}

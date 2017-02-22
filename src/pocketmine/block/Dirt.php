@@ -35,10 +35,6 @@ class Dirt extends Solid{
 		$this->meta = $meta;
 	}
 
-	public function canBeActivated(){
-		return true;
-	}
-
 	public function getHardness(){
 		return 0.5;
 	}
