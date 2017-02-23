@@ -68,7 +68,7 @@ class BlockMetadataStore extends MetadataStore{
 			throw new \InvalidArgumentException("Object must be a Block");
 		}
 		if($block->getLevel() === $this->owningLevel){
-			parent::hasMetadata($block, $metadataKey, $owningPlugin);
+			parent::removeMetadata($block, $metadataKey, $owningPlugin);
 		}else{
 			throw new \InvalidStateException("Block does not belong to world " . $this->owningLevel->getName());
 		}
