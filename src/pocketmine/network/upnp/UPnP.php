@@ -37,10 +37,13 @@ abstract class UPnP{
 		$port = (int) $port;
 		$myLocalIP = gethostbyname(trim(`hostname`));
 		try{
+			/** @noinspection PhpUndefinedClassInspection */
 			$com = new \COM("HNetCfg.NATUPnP");
+			/** @noinspection PhpUndefinedFieldInspection */
 			if($com === false or !is_object($com->StaticPortMappingCollection)){
 				return false;
 			}
+			/** @noinspection PhpUndefinedFieldInspection */
 			$com->StaticPortMappingCollection->Add($port, "UDP", $port, $myLocalIP, true, "PocketMine-MP");
 		}catch(\Throwable $e){
 			return false;
@@ -58,10 +61,13 @@ abstract class UPnP{
 		}
 		$port = (int) $port;
 		try{
+			/** @noinspection PhpUndefinedClassInspection */
 			$com = new \COM("HNetCfg.NATUPnP") or false;
+			/** @noinspection PhpUndefinedFieldInspection */
 			if($com === false or !is_object($com->StaticPortMappingCollection)){
 				return false;
 			}
+			/** @noinspection PhpUndefinedFieldInspection */
 			$com->StaticPortMappingCollection->Remove($port, "UDP");
 		}catch(\Throwable $e){
 			return false;
