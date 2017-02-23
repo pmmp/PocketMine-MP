@@ -36,6 +36,7 @@ class Pond{
 	}
 
 	public function canPlaceObject(ChunkManager $level, Vector3 $pos){
+		return false;
 	}
 
 	public function placeObject(ChunkManager $level, Vector3 $pos){
