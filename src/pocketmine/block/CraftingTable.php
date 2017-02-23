@@ -25,7 +25,6 @@ use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\Player;
 
-//TODO: check orientation
 class CraftingTable extends Solid{
 
 	protected $id = self::CRAFTING_TABLE;
