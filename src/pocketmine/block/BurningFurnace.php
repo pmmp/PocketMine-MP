@@ -95,12 +95,6 @@ class BurningFurnace extends Solid{
 		return true;
 	}
 
-	public function onBreak(Item $item){
-		$this->getLevel()->setBlock($this, new Air(), true, true);
-
-		return true;
-	}
-
 	public function onActivate(Item $item, Player $player = null){
 		if($player instanceof Player){
 			$furnace = $this->getLevel()->getTile($this);
