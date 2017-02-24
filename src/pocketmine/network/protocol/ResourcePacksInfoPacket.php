@@ -36,20 +36,35 @@ class ResourcePacksInfoPacket extends DataPacket{
 	public $resourcePackEntries = [];
 
 	public function decode(){
+		$this->mustAccept = $this->getBool();
+		$behaviorPackCount = $this->getLShort();
+		while($behaviorPackCount-- > 0){
+			$id = $this->getString();
+			$version = $this->getString();
+			$size = $this->getLLong();
+			$this->behaviorPackEntries[] = new ResourcePackInfoEntry($id, $version, $size);
+		}
 
+		$resourcePackCount = $this->getLShort();
+		while($resourcePackCount-- > 0){
+			$id = $this->getString();
+			$version = $this->getString();
+			$size = $this->getLLong();
+			$this->resourcePackEntries[] = new ResourcePackInfoEntry($id, $version, $size);
+		}
 	}
 
 	public function encode(){
 		$this->reset();
 
 		$this->putBool($this->mustAccept);
-		$this->putShort(count($this->behaviorPackEntries));
+		$this->putLShort(count($this->behaviorPackEntries));
 		foreach($this->behaviorPackEntries as $entry){
 			$this->putString($entry->getPackId());
 			$this->putString($entry->getVersion());
 			$this->putLLong($entry->getPackSize());
 		}
-		$this->putShort(count($this->resourcePackEntries));
+		$this->putLShort(count($this->resourcePackEntries));
 		foreach($this->resourcePackEntries as $entry){
 			$this->putString($entry->getPackId());
 			$this->putString($entry->getVersion());
