@@ -77,6 +77,7 @@ use pocketmine\network\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\protocol\ResourcePackClientResponsePacket;
 use pocketmine\network\protocol\ResourcePacksInfoPacket;
 use pocketmine\network\protocol\RespawnPacket;
+use pocketmine\network\protocol\RiderJumpPacket;
 use pocketmine\network\protocol\SetCommandsEnabledPacket;
 use pocketmine\network\protocol\SetDifficultyPacket;
 use pocketmine\network\protocol\SetEntityDataPacket;
@@ -353,6 +354,7 @@ class Network{
 		$this->registerPacket(ProtocolInfo::RESOURCE_PACK_CLIENT_RESPONSE_PACKET, ResourcePackClientResponsePacket::class);
 		$this->registerPacket(ProtocolInfo::RESOURCE_PACKS_INFO_PACKET, ResourcePacksInfoPacket::class);
 		$this->registerPacket(ProtocolInfo::RESPAWN_PACKET, RespawnPacket::class);
+		$this->registerPacket(ProtocolInfo::RIDER_JUMP_PACKET, RiderJumpPacket::class);
 		$this->registerPacket(ProtocolInfo::SET_COMMANDS_ENABLED_PACKET, SetCommandsEnabledPacket::class);
 		$this->registerPacket(ProtocolInfo::SET_DIFFICULTY_PACKET, SetDifficultyPacket::class);
 		$this->registerPacket(ProtocolInfo::SET_ENTITY_DATA_PACKET, SetEntityDataPacket::class);

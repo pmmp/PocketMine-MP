@@ -27,6 +27,11 @@ namespace pocketmine\network\protocol;
 class ResourcePackClientResponsePacket extends DataPacket{
 	const NETWORK_ID = Info::RESOURCE_PACK_CLIENT_RESPONSE_PACKET;
 
+	const STATUS_REFUSED = 1;
+	const STATUS_SEND_PACKS = 2;
+	const STATUS_HAVE_ALL_PACKS = 3;
+	const STATUS_COMPLETED = 4;
+
 	public $status; //TODO: add constants for status types
 	public $packIds = [];
 

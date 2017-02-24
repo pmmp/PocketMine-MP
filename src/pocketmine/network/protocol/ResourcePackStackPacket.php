@@ -19,6 +19,7 @@
  *
 */
 
+
 namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
@@ -26,49 +27,47 @@ namespace pocketmine\network\protocol;
 
 use pocketmine\resourcepacks\ResourcePackInfoEntry;
 
-class ResourcePacksInfoPacket extends DataPacket{
-	const NETWORK_ID = Info::RESOURCE_PACKS_INFO_PACKET;
+class ResourcePackStackPacket extends DataPacket{
+	const NETWORK_ID = Info::RESOURCE_PACK_STACK_PACKET;
 
-	public $mustAccept = false; //if true, forces client to use selected resource packs
+	public $mustAccept = false;
+
 	/** @var ResourcePackInfoEntry[] */
-	public $behaviorPackEntries = [];
+	public $behaviorPackStack = [];
 	/** @var ResourcePackInfoEntry[] */
-	public $resourcePackEntries = [];
+	public $resourcePackStack = [];
 
 	public function decode(){
 		$this->mustAccept = $this->getBool();
 		$behaviorPackCount = $this->getLShort();
-		while($behaviorPackCount-- > 0){
-			$id = $this->getString();
+		while($behaviorPackCountCount-- > 0){
+			$packId = $this->getString();
 			$version = $this->getString();
-			$size = $this->getLLong();
-			$this->behaviorPackEntries[] = new ResourcePackInfoEntry($id, $version, $size);
+			$this->behaviorPackStack[] = new ResourcePackInfoEntry($packId, $version);
 		}
 
 		$resourcePackCount = $this->getLShort();
 		while($resourcePackCount-- > 0){
-			$id = $this->getString();
+			$packId = $this->getString();
 			$version = $this->getString();
-			$size = $this->getLLong();
-			$this->resourcePackEntries[] = new ResourcePackInfoEntry($id, $version, $size);
+			$this->resourcePackStack[] = new ResourcePackInfoEntry($packId, $version);
 		}
 	}
 
 	public function encode(){
 		$this->reset();
-
 		$this->putBool($this->mustAccept);
-		$this->putLShort(count($this->behaviorPackEntries));
-		foreach($this->behaviorPackEntries as $entry){
+
+		$this->putLShort(count($this->behaviorPackStack));
+		foreach($this->behaviorPackStack as $entry){
 			$this->putString($entry->getPackId());
 			$this->putString($entry->getVersion());
-			$this->putLLong($entry->getPackSize());
 		}
-		$this->putLShort(count($this->resourcePackEntries));
-		foreach($this->resourcePackEntries as $entry){
+
+		$this->putLShort(count($this->resourcePackStack));
+		foreach($this->resourcePackStack as $entry){
 			$this->putString($entry->getPackId());
 			$this->putString($entry->getVersion());
-			$this->putLLong($entry->getPackSize());
 		}
 	}
 }
