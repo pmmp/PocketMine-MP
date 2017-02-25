@@ -47,7 +47,7 @@ class LevelSoundEventPacket extends DataPacket{
 	const SOUND_MAD = 18;
 	const SOUND_BOOST = 19;
 	const SOUND_BOW = 20;
-	const SOUND_SQUISH_BIG  = 21;
+	const SOUND_SQUISH_BIG = 21;
 	const SOUND_SQUISH_SMALL = 22;
 	const SOUND_FALL_BIG = 23;
 	const SOUND_FALL_SMALL = 24;
@@ -110,14 +110,18 @@ class LevelSoundEventPacket extends DataPacket{
 	const SOUND_BUCKET_EMPTY_WATER = 81;
 	const SOUND_BUCKET_EMPTY_LAVA = 82;
 	const SOUND_GUARDIAN_FLOP = 83;
-	const SOUND_ELDERGUARDIAN_CURSE = 84;
+	const SOUND_MOB_ELDERGUARDIAN_CURSE = 84;
 	const SOUND_MOB_WARNING = 85;
 	const SOUND_MOB_WARNING_BABY = 86;
 	const SOUND_TELEPORT = 87;
 	const SOUND_SHULKER_OPEN = 88;
 	const SOUND_SHULKER_CLOSE = 89;
-	const SOUND_DEFAULT = 90;
-	const SOUND_UNDEFINED = 91;
+	const SOUND_HAGGLE = 90;
+	const SOUND_HAGGLE_YES = 91;
+	const SOUND_HAGGLE_NO = 92;
+	const SOUND_HAGGLE_IDLE = 93;
+	const SOUND_DEFAULT = 94;
+	const SOUND_UNDEFINED = 95;
 
 	public $sound;
 	public $x;
