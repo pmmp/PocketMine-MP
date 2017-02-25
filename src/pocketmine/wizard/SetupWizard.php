@@ -45,8 +45,14 @@ class SetupWizard{
 
 	public function run(){
 		echo "[*] PocketMine-MP set-up wizard\n";
-		echo "[*] Please select a language:\n";
+
 		$langs = BaseLang::getLanguageList();
+		if(empty($langs)){
+			echo "[!] No language files found, please use provided builds or clone the repository recursively." . PHP_EOL;
+			return false;
+		}
+
+		echo "[*] Please select a language:\n";
 		foreach($langs as $short => $native){
 			echo " $native => $short\n";
 		}
