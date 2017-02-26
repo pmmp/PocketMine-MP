@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class SetCommandsEnabledPacket extends DataPacket{
 	const NETWORK_ID = Info::SET_COMMANDS_ENABLED_PACKET;
 
@@ -36,6 +38,10 @@ class SetCommandsEnabledPacket extends DataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putBool($this->enabled);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleSetCommandsEnabled($this);
 	}
 
 }

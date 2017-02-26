@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class PlayStatusPacket extends DataPacket{
 	const NETWORK_ID = Info::PLAY_STATUS_PACKET;
 
@@ -43,6 +45,10 @@ class PlayStatusPacket extends DataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->status);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handlePlayStatus($this);
 	}
 
 }

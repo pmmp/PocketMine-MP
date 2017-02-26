@@ -23,6 +23,8 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class InventoryActionPacket extends DataPacket{
 	const NETWORK_ID = Info::INVENTORY_ACTION_PACKET;
 
@@ -36,5 +38,9 @@ class InventoryActionPacket extends DataPacket{
 	public function encode(){
 		$this->putUnsignedVarInt($this->unknown);
 		$this->putSlot($this->item);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleInventoryAction($this);
 	}
 }

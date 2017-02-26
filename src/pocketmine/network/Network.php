@@ -252,7 +252,10 @@ class Network{
 
 					$pk->decode();
 					assert($pk->feof(), "Still " . strlen(substr($pk->buffer, $pk->offset)) . " bytes unread in " . get_class($pk));
-					$p->handleDataPacket($pk);
+					if(!$pk->handle($p)){
+						$logger = $this->server->getLogger();
+						$logger->debug("Unhandled " . get_class($pk) . " received from " . $p->getName());
+					}
 				}
 			}
 		}catch(\Throwable $e){

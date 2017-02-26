@@ -23,6 +23,8 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class AddPlayerPacket extends DataPacket{
 	const NETWORK_ID = Info::ADD_PLAYER_PACKET;
 
@@ -58,6 +60,10 @@ class AddPlayerPacket extends DataPacket{
 		$this->putLFloat($this->yaw);
 		$this->putSlot($this->item);
 		$this->putEntityMetadata($this->metadata);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleAddPlayer($this);
 	}
 
 }

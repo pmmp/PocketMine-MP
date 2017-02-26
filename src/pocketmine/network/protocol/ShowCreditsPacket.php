@@ -25,6 +25,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class ShowCreditsPacket extends DataPacket{
 	const NETWORK_ID = Info::SHOW_CREDITS_PACKET;
 
@@ -43,5 +45,9 @@ class ShowCreditsPacket extends DataPacket{
 		$this->reset();
 		$this->putEntityId($this->playerEid);
 		$this->putVarInt($this->status);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleShowCredits($this);
 	}
 }

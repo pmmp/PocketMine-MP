@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class PlayerActionPacket extends DataPacket{
 	const NETWORK_ID = Info::PLAYER_ACTION_PACKET;
 
@@ -65,6 +67,10 @@ class PlayerActionPacket extends DataPacket{
 		$this->putVarInt($this->action);
 		$this->putBlockCoords($this->x, $this->y, $this->z);
 		$this->putVarInt($this->face);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handlePlayerAction($this);
 	}
 
 }

@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class AddPaintingPacket extends DataPacket{
 	const NETWORK_ID = Info::ADD_PAINTING_PACKET;
 
@@ -45,6 +47,10 @@ class AddPaintingPacket extends DataPacket{
 		$this->putBlockCoords($this->x, $this->y, $this->z);
 		$this->putVarInt($this->direction);
 		$this->putString($this->title);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleAddPainting($this);
 	}
 
 }

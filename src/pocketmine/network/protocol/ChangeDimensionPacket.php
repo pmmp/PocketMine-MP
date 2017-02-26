@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class ChangeDimensionPacket extends DataPacket{
 	const NETWORK_ID = Info::CHANGE_DIMENSION_PACKET;
 
@@ -45,6 +47,10 @@ class ChangeDimensionPacket extends DataPacket{
 		$this->putVarInt($this->dimension);
 		$this->putVector3f($this->x, $this->y, $this->z);
 		$this->putBool($this->unknown);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleChangeDimension($this);
 	}
 
 }

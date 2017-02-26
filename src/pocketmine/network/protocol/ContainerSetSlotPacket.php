@@ -24,6 +24,7 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\item\Item;
+use pocketmine\network\PocketEditionNetworkSession;
 
 class ContainerSetSlotPacket extends DataPacket{
 	const NETWORK_ID = Info::CONTAINER_SET_SLOT_PACKET;
@@ -50,6 +51,10 @@ class ContainerSetSlotPacket extends DataPacket{
 		$this->putVarInt($this->hotbarSlot);
 		$this->putSlot($this->item);
 		$this->putByte($this->unknown);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleContainerSetSlot($this);
 	}
 
 }

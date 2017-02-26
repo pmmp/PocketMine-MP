@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class PlayerInputPacket extends DataPacket{
 	const NETWORK_ID = Info::PLAYER_INPUT_PACKET;
 
@@ -41,6 +43,10 @@ class PlayerInputPacket extends DataPacket{
 
 	public function encode(){
 
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handlePlayerInput($this);
 	}
 
 }

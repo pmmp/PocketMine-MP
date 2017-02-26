@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class BatchPacket extends DataPacket{
 	const NETWORK_ID = Info::BATCH_PACKET;
 
@@ -36,6 +38,10 @@ class BatchPacket extends DataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putString($this->payload);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleBatch($this);
 	}
 
 }

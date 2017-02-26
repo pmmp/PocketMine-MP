@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class AnimatePacket extends DataPacket{
 	const NETWORK_ID = Info::ANIMATE_PACKET;
 
@@ -39,6 +41,10 @@ class AnimatePacket extends DataPacket{
 		$this->reset();
 		$this->putVarInt($this->action);
 		$this->putEntityId($this->eid);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleAnimate($this);
 	}
 
 }

@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class ResourcePackClientResponsePacket extends DataPacket{
 	const NETWORK_ID = Info::RESOURCE_PACK_CLIENT_RESPONSE_PACKET;
 
@@ -50,6 +52,10 @@ class ResourcePackClientResponsePacket extends DataPacket{
 		foreach($this->packIds as $id){
 			$this->putString($id);
 		}
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleResourcePackClientResponse($this);
 	}
 
 }

@@ -25,6 +25,7 @@ namespace pocketmine\network\protocol;
 
 
 use pocketmine\entity\Attribute;
+use pocketmine\network\PocketEditionNetworkSession;
 
 class UpdateAttributesPacket extends DataPacket{
 	const NETWORK_ID = Info::UPDATE_ATTRIBUTES_PACKET;
@@ -49,6 +50,10 @@ class UpdateAttributesPacket extends DataPacket{
 			$this->putLFloat($entry->getDefaultValue());
 			$this->putString($entry->getName());
 		}
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleUpdateAttributes($this);
 	}
 
 }

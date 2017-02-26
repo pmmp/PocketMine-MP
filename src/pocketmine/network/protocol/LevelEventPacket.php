@@ -23,6 +23,8 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class LevelEventPacket extends DataPacket{
 	const NETWORK_ID = Info::LEVEL_EVENT_PACKET;
 
@@ -105,6 +107,10 @@ class LevelEventPacket extends DataPacket{
 		$this->putVarInt($this->evid);
 		$this->putVector3f($this->x, $this->y, $this->z);
 		$this->putVarInt($this->data);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleLevelEvent($this);
 	}
 
 }

@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class InteractPacket extends DataPacket{
 	const NETWORK_ID = Info::INTERACT_PACKET;
 
@@ -44,6 +46,10 @@ class InteractPacket extends DataPacket{
 		$this->reset();
 		$this->putByte($this->action);
 		$this->putEntityId($this->target);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleInteract($this);
 	}
 
 }

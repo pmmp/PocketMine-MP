@@ -23,6 +23,8 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class TransferPacket extends DataPacket{
 	const NETWORK_ID = Info::TRANSFER_PACKET;
 
@@ -37,6 +39,10 @@ class TransferPacket extends DataPacket{
 		$this->reset();
 		$this->putString($this->address);
 		$this->putLShort($this->port);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleTransfer($this);
 	}
 
 }

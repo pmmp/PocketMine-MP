@@ -25,6 +25,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class RiderJumpPacket extends DataPacket{
 	const NETWORK_ID = Info::RIDER_JUMP_PACKET;
 
@@ -37,5 +39,9 @@ class RiderJumpPacket extends DataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putVarInt($this->unknown);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleRiderJump($this);
 	}
 }

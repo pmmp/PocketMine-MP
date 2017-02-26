@@ -25,6 +25,7 @@ namespace pocketmine\network\protocol;
 
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
+use pocketmine\network\PocketEditionNetworkSession;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Utils;
 
@@ -42,6 +43,8 @@ abstract class DataPacket extends BinaryStream{
 	abstract public function encode();
 
 	abstract public function decode();
+
+	abstract public function handle(PocketEditionNetworkSession $session) : bool;
 
 	public function reset(){
 		$this->buffer = chr($this::NETWORK_ID);

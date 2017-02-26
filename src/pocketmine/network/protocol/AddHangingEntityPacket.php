@@ -23,6 +23,8 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class AddHangingEntityPacket extends DataPacket{
 	const NETWORK_ID = Info::ADD_HANGING_ENTITY_PACKET;
 
@@ -43,6 +45,10 @@ class AddHangingEntityPacket extends DataPacket{
 		$this->putEntityId($this->entityRuntimeId);
 		$this->putBlockCoords($this->x, $this->y, $this->z);
 		$this->putVarInt($this->unknown);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleAddHangingEntity($this);
 	}
 
 }

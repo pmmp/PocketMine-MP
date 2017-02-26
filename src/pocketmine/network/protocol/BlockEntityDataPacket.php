@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class BlockEntityDataPacket extends DataPacket{
 	const NETWORK_ID = Info::BLOCK_ENTITY_DATA_PACKET;
 
@@ -41,6 +43,10 @@ class BlockEntityDataPacket extends DataPacket{
 		$this->reset();
 		$this->putBlockCoords($this->x, $this->y, $this->z);
 		$this->put($this->namedtag);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleBlockEntityData($this);
 	}
 
 }

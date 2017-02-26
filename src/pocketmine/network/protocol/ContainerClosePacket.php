@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class ContainerClosePacket extends DataPacket{
 	const NETWORK_ID = Info::CONTAINER_CLOSE_PACKET;
 
@@ -38,4 +40,7 @@ class ContainerClosePacket extends DataPacket{
 		$this->putByte($this->windowid);
 	}
 
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleContainerClose($this);
+	}
 }

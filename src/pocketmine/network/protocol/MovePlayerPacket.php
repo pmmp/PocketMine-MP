@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class MovePlayerPacket extends DataPacket{
 	const NETWORK_ID = Info::MOVE_PLAYER_PACKET;
 
@@ -60,6 +62,10 @@ class MovePlayerPacket extends DataPacket{
 		$this->putLFloat($this->bodyYaw); //TODO
 		$this->putByte($this->mode);
 		$this->putBool($this->onGround);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleMovePlayer($this);
 	}
 
 }

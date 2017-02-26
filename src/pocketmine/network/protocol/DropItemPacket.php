@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class DropItemPacket extends DataPacket{
 	const NETWORK_ID = Info::DROP_ITEM_PACKET;
 
@@ -37,6 +39,10 @@ class DropItemPacket extends DataPacket{
 
 	public function encode(){
 
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleDropItem($this);
 	}
 
 }

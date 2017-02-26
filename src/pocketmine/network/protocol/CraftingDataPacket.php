@@ -29,6 +29,7 @@ use pocketmine\inventory\MultiRecipe;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\item\Item;
+use pocketmine\network\PocketEditionNetworkSession;
 use pocketmine\utils\BinaryStream;
 
 class CraftingDataPacket extends DataPacket{
@@ -196,6 +197,10 @@ class CraftingDataPacket extends DataPacket{
 		}
 
 		$this->putBool($this->cleanRecipes);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleCraftingData($this);
 	}
 
 }

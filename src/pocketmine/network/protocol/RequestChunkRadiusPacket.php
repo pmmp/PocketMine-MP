@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class RequestChunkRadiusPacket extends DataPacket{
 	const NETWORK_ID = Info::REQUEST_CHUNK_RADIUS_PACKET;
 
@@ -34,6 +36,11 @@ class RequestChunkRadiusPacket extends DataPacket{
 	}
 
 	public function encode(){
+
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleRequestChunkRadius($this);
 	}
 
 }

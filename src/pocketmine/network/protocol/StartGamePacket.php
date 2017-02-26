@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class StartGamePacket extends DataPacket{
 	const NETWORK_ID = Info::START_GAME_PACKET;
 
@@ -76,6 +78,10 @@ class StartGamePacket extends DataPacket{
 		$this->putBool($this->isTexturePacksRequired);
 		$this->putString($this->levelId);
 		$this->putString($this->worldName);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleStartGame($this);
 	}
 
 }

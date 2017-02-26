@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class RespawnPacket extends DataPacket{
 	const NETWORK_ID = Info::RESPAWN_PACKET;
 
@@ -42,6 +44,10 @@ class RespawnPacket extends DataPacket{
 		$this->putLFloat($this->x);
 		$this->putLFloat($this->y);
 		$this->putLFloat($this->z);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleRespawn($this);
 	}
 
 }

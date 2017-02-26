@@ -23,6 +23,8 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class AvailableCommandsPacket extends DataPacket{
 	const NETWORK_ID = Info::AVAILABLE_COMMANDS_PACKET;
 
@@ -37,6 +39,10 @@ class AvailableCommandsPacket extends DataPacket{
 		$this->reset();
 		$this->putString($this->commands);
 		$this->putString($this->unknown);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleAvailableCommands($this);
 	}
 
 }

@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class AdventureSettingsPacket extends DataPacket{
 	const NETWORK_ID = Info::ADVENTURE_SETTINGS_PACKET;
 
@@ -93,6 +95,10 @@ class AdventureSettingsPacket extends DataPacket{
 
 		$this->putUnsignedVarInt($this->flags);
 		$this->putUnsignedVarInt($this->userPermission);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleAdventureSettings($this);
 	}
 
 }

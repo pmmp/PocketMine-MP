@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class BlockEventPacket extends DataPacket{
 	const NETWORK_ID = Info::BLOCK_EVENT_PACKET;
 
@@ -42,6 +44,10 @@ class BlockEventPacket extends DataPacket{
 		$this->putBlockCoords($this->x, $this->y, $this->z);
 		$this->putVarInt($this->case1);
 		$this->putVarInt($this->case2);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleBlockEvent($this);
 	}
 
 }

@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class ExplodePacket extends DataPacket{
 	const NETWORK_ID = Info::EXPLODE_PACKET;
 
@@ -52,6 +54,10 @@ class ExplodePacket extends DataPacket{
 				$this->putBlockCoords($record->x, $record->y, $record->z);
 			}
 		}
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleExplode($this);
 	}
 
 }

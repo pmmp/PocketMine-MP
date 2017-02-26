@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class PlayerFallPacket extends DataPacket{
 	const NETWORK_ID = Info::PLAYER_FALL_PACKET;
 
@@ -35,5 +37,9 @@ class PlayerFallPacket extends DataPacket{
 
 	public function encode(){
 
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handlePlayerFall($this);
 	}
 }

@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class LoginPacket extends DataPacket{
 	const NETWORK_ID = Info::LOGIN_PACKET;
 
@@ -92,5 +94,9 @@ class LoginPacket extends DataPacket{
 		list($headB64, $payloadB64, $sigB64) = $tokens;
 
 		return json_decode(base64_decode($payloadB64), true);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleLogin($this);
 	}
 }

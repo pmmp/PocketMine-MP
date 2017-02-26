@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class RemoveEntityPacket extends DataPacket{
 	const NETWORK_ID = Info::REMOVE_ENTITY_PACKET;
 
@@ -36,6 +38,10 @@ class RemoveEntityPacket extends DataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putEntityId($this->eid);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleRemoveEntity($this);
 	}
 
 }

@@ -24,6 +24,7 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
 use pocketmine\resourcepacks\ResourcePackInfoEntry;
 
 class ResourcePacksInfoPacket extends DataPacket{
@@ -70,5 +71,9 @@ class ResourcePacksInfoPacket extends DataPacket{
 			$this->putString($entry->getVersion());
 			$this->putLLong($entry->getPackSize());
 		}
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleResourcePacksInfo($this);
 	}
 }

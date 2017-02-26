@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class ContainerSetDataPacket extends DataPacket{
 	const NETWORK_ID = Info::CONTAINER_SET_DATA_PACKET;
 
@@ -40,6 +42,10 @@ class ContainerSetDataPacket extends DataPacket{
 		$this->putByte($this->windowid);
 		$this->putVarInt($this->property);
 		$this->putVarInt($this->value);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleContainerSetData($this);
 	}
 
 }

@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class MobEffectPacket extends DataPacket{
 	const NETWORK_ID = Info::MOB_EFFECT_PACKET;
 
@@ -50,6 +52,10 @@ class MobEffectPacket extends DataPacket{
 		$this->putVarInt($this->amplifier);
 		$this->putBool($this->particles);
 		$this->putVarInt($this->duration);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleMobEffect($this);
 	}
 
 }

@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class MoveEntityPacket extends DataPacket{
 	const NETWORK_ID = Info::MOVE_ENTITY_PACKET;
 
@@ -50,6 +52,10 @@ class MoveEntityPacket extends DataPacket{
 		$this->putByte($this->pitch / (360.0 / 256));
 		$this->putByte($this->yaw / (360.0 / 256));
 		$this->putByte($this->headYaw / (360.0 / 256));
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleMoveEntity($this);
 	}
 
 }

@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class ReplaceItemInSlotPacket extends DataPacket{
 	const NETWORK_ID = Info::REPLACE_ITEM_IN_SLOT_PACKET;
 
@@ -38,4 +40,7 @@ class ReplaceItemInSlotPacket extends DataPacket{
 		$this->putSlot($this->item);
 	}
 
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleReplaceItemInSlot($this);
+	}
 }

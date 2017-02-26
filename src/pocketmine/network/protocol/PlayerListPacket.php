@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class PlayerListPacket extends DataPacket{
 	const NETWORK_ID = Info::PLAYER_LIST_PACKET;
 
@@ -59,6 +61,10 @@ class PlayerListPacket extends DataPacket{
 				$this->putUUID($d[0]);
 			}
 		}
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handlePlayerList($this);
 	}
 
 }

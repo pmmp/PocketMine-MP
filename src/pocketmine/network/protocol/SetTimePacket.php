@@ -23,6 +23,8 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class SetTimePacket extends DataPacket{
 	const NETWORK_ID = Info::SET_TIME_PACKET;
 
@@ -37,6 +39,10 @@ class SetTimePacket extends DataPacket{
 		$this->reset();
 		$this->putVarInt($this->time);
 		$this->putBool($this->started);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleSetTime($this);
 	}
 
 }

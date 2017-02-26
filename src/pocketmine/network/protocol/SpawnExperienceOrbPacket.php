@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class SpawnExperienceOrbPacket extends DataPacket{
 	const NETWORK_ID = Info::SPAWN_EXPERIENCE_ORB_PACKET;
 
@@ -40,5 +42,9 @@ class SpawnExperienceOrbPacket extends DataPacket{
 		$this->reset();
 		$this->putVector3f($this->x, $this->y, $this->z);
 		$this->putVarInt($this->amount);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleSpawnExperienceOrb($this);
 	}
 }

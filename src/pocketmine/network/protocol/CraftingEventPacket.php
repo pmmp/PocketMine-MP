@@ -24,6 +24,7 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\item\Item;
+use pocketmine\network\PocketEditionNetworkSession;
 
 class CraftingEventPacket extends DataPacket{
 	const NETWORK_ID = Info::CRAFTING_EVENT_PACKET;
@@ -60,6 +61,10 @@ class CraftingEventPacket extends DataPacket{
 
 	public function encode(){
 
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleCraftingEvent($this);
 	}
 
 }

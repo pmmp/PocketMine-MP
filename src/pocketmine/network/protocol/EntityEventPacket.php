@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class EntityEventPacket extends DataPacket{
 	const NETWORK_ID = Info::ENTITY_EVENT_PACKET;
 
@@ -60,6 +62,10 @@ class EntityEventPacket extends DataPacket{
 		$this->putEntityId($this->eid);
 		$this->putByte($this->event);
 		$this->putVarInt($this->unknown);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleEntityEvent($this);
 	}
 
 }

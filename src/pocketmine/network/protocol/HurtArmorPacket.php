@@ -24,6 +24,8 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\PocketEditionNetworkSession;
+
 class HurtArmorPacket extends DataPacket{
 	const NETWORK_ID = Info::HURT_ARMOR_PACKET;
 
@@ -36,6 +38,10 @@ class HurtArmorPacket extends DataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putVarInt($this->health);
+	}
+
+	public function handle(PocketEditionNetworkSession $session) : bool{
+		return $session->handleHurtArmor($this);
 	}
 
 }
