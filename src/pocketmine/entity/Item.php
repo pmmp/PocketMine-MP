@@ -28,7 +28,7 @@ use pocketmine\item\Item as ItemItem;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\protocol\AddItemEntityPacket;
+use pocketmine\network\mcpe\protocol\AddItemEntityPacket;
 use pocketmine\Player;
 
 class Item extends Entity{

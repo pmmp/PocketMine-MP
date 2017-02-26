@@ -21,7 +21,7 @@
 
 namespace pocketmine;
 
-use pocketmine\network\protocol\Info;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\utils\Utils;
@@ -226,7 +226,7 @@ class CrashDump{
 		$this->data["general"] = [];
 		$this->data["general"]["version"] = $version->get(false);
 		$this->data["general"]["build"] = $version->getBuild();
-		$this->data["general"]["protocol"] = Info::CURRENT_PROTOCOL;
+		$this->data["general"]["protocol"] = ProtocolInfo::CURRENT_PROTOCOL;
 		$this->data["general"]["api"] = \pocketmine\API_VERSION;
 		$this->data["general"]["git"] = \pocketmine\GIT_COMMIT;
 		$this->data["general"]["raklib"] = RakLib::VERSION;
@@ -235,7 +235,7 @@ class CrashDump{
 		$this->data["general"]["zend"] = zend_version();
 		$this->data["general"]["php_os"] = PHP_OS;
 		$this->data["general"]["os"] = Utils::getOS();
-		$this->addLine("PocketMine-MP version: " . $version->get(false) . " #" . $version->getBuild() . " [Protocol " . Info::CURRENT_PROTOCOL . "; API " . API_VERSION . "]");
+		$this->addLine("PocketMine-MP version: " . $version->get(false) . " #" . $version->getBuild() . " [Protocol " . ProtocolInfo::CURRENT_PROTOCOL . "; API " . API_VERSION . "]");
 		$this->addLine("Git commit: " . GIT_COMMIT);
 		$this->addLine("uname -a: " . php_uname("a"));
 		$this->addLine("PHP Version: " . phpversion());

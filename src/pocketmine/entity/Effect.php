@@ -26,7 +26,7 @@ use pocketmine\event\entity\EntityEffectAddEvent;
 use pocketmine\event\entity\EntityEffectRemoveEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
-use pocketmine\network\protocol\MobEffectPacket;
+use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\Player;
 
 class Effect{

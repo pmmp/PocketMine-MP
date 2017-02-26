@@ -25,7 +25,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ExplosionPrimeEvent;
 use pocketmine\level\Explosion;
 use pocketmine\nbt\tag\ByteTag;
-use pocketmine\network\protocol\AddEntityPacket;
+use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class PrimedTNT extends Entity implements Explosive{

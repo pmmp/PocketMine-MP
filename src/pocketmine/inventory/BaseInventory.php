@@ -25,8 +25,8 @@ use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityInventoryChangeEvent;
 use pocketmine\event\inventory\InventoryOpenEvent;
 use pocketmine\item\Item;
-use pocketmine\network\protocol\ContainerSetContentPacket;
-use pocketmine\network\protocol\ContainerSetSlotPacket;
+use pocketmine\network\mcpe\protocol\ContainerSetContentPacket;
+use pocketmine\network\mcpe\protocol\ContainerSetSlotPacket;
 use pocketmine\Player;
 use pocketmine\Server;
 
