@@ -199,6 +199,28 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	const SURVIVAL_SLOTS = 36;
 	const CREATIVE_SLOTS = 112;
 
+	/**
+	 * Checks a supplied username and checks it is valid.
+	 * @param string $name
+	 *
+	 * @return bool
+	 */
+	public static function isValidUserName(string $name) : bool{
+		$lname = strtolower($name);
+		$len = strlen($name);
+		return $lname !== "rcon" and $lname !== "console" and $len >= 1 and $len <= 16 and preg_match("[^A-Za-z0-9_]", $name) === 0;
+	}
+
+	/**
+	 * Checks the length of a supplied skin bitmap and returns whether the length is valid.
+	 * @param string $skin
+	 *
+	 * @return bool
+	 */
+	public static function isValidSkin(string $skin) : bool{
+		return strlen($skin) === 64 * 64 * 4 or strlen($skin) === 64 * 32 * 4;
+	}
+
 	/** @var SourceInterface */
 	protected $interface;
 
@@ -1916,31 +1938,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->uuid = UUID::fromString($packet->clientUUID);
 		$this->rawUUID = $this->uuid->toBinary();
 
-		$valid = true;
-		$len = strlen($packet->username);
-		if($len > 16 or $len < 3){
-			$valid = false;
-		}
-		for($i = 0; $i < $len and $valid; ++$i){
-			$c = ord($packet->username{$i});
-			if(($c >= ord("a") and $c <= ord("z")) or
-				($c >= ord("A") and $c <= ord("Z")) or
-				($c >= ord("0") and $c <= ord("9")) or $c === ord("_")
-			){
-				continue;
-			}
-
-			$valid = false;
-			break;
-		}
-
-		if(!$valid or $this->iusername === "rcon" or $this->iusername === "console"){
+		if(!Player::isValidUserName($packet->username)){
 			$this->close("", "disconnectionScreen.invalidName");
-
 			return true;
 		}
 
-		if(strlen($packet->skin) !== 64 * 32 * 4 and strlen($packet->skin) !== 64 * 64 * 4){
+		if(!Player::isValidSkin($packet->skin)){
 			$this->close("", "disconnectionScreen.invalidSkin");
 			return true;
 		}
