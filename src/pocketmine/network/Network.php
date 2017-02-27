@@ -94,6 +94,7 @@ use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
+use pocketmine\network\mcpe\protocol\UnknownPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\protocol\UseItemPacket;
 use pocketmine\Player;
@@ -245,8 +246,8 @@ class Network{
 				$buf = $stream->getString();
 
 				if(($pk = $this->getPacket(ord($buf{0}))) !== null){
-					if($pk::NETWORK_ID === ProtocolInfo::BATCH_PACKET){
-						throw new \InvalidStateException("Invalid BatchPacket inside BatchPacket");
+					if(!$pk->canBeBatched()){
+						throw new \InvalidStateException("Received invalid " . get_class($pk) . " inside BatchPacket");
 					}
 
 					$pk->setBuffer($buf, 1);
@@ -279,7 +280,7 @@ class Network{
 		if($class !== null){
 			return clone $class;
 		}
-		return null;
+		return new UnknownPacket();
 	}
 
 
