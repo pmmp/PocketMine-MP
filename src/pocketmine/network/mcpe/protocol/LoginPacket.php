@@ -44,6 +44,10 @@ class LoginPacket extends DataPacket{
 
 	public $clientData = [];
 
+	public function canBeBatched() : bool{
+		return false;
+	}
+
 	public function decode(){
 		$this->protocol = $this->getInt();
 

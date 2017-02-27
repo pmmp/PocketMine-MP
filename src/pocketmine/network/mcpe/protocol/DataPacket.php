@@ -40,6 +40,10 @@ abstract class DataPacket extends BinaryStream{
 		return $this::NETWORK_ID;
 	}
 
+	public function canBeBatched() : bool{
+		return true;
+	}
+
 	abstract public function encode();
 
 	abstract public function decode();

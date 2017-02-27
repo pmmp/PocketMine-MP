@@ -31,6 +31,10 @@ class BatchPacket extends DataPacket{
 
 	public $payload;
 
+	public function canBeBatched() : bool{
+		return false;
+	}
+
 	public function decode(){
 		$this->payload = $this->getString();
 	}
