@@ -116,6 +116,7 @@ use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\network\mcpe\protocol\ChangeDimensionPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
+use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
 use pocketmine\network\mcpe\protocol\CommandStepPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
@@ -157,6 +158,7 @@ use pocketmine\network\mcpe\protocol\ResourcePacksInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackStackPacket;
 use pocketmine\network\mcpe\protocol\RespawnPacket;
 use pocketmine\network\mcpe\protocol\RiderJumpPacket;
+use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
 use pocketmine\network\mcpe\protocol\SetCommandsEnabledPacket;
 use pocketmine\network\mcpe\protocol\SetDifficultyPacket;
 use pocketmine\network\mcpe\protocol\SetEntityDataPacket;
@@ -1964,6 +1966,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	public function handlePlayStatus(PlayStatusPacket $packet) : bool{
 		return false;
+	}
+
+	public function handleServerToClientHandshake(ServerToClientHandshakePacket $packet) : bool{
+		return false;
+	}
+
+	public function handleClientToServerHandshake(ClientToServerHandshakePacket $packet) : bool{
+		return false; //TODO
 	}
 
 	public function handleDisconnect(DisconnectPacket $packet) : bool{

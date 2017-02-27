@@ -37,6 +37,7 @@ use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\network\mcpe\protocol\ChangeDimensionPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
+use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
 use pocketmine\network\mcpe\protocol\CommandStepPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
@@ -76,6 +77,7 @@ use pocketmine\network\mcpe\protocol\ResourcePacksInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackStackPacket;
 use pocketmine\network\mcpe\protocol\RespawnPacket;
 use pocketmine\network\mcpe\protocol\RiderJumpPacket;
+use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
 use pocketmine\network\mcpe\protocol\SetCommandsEnabledPacket;
 use pocketmine\network\mcpe\protocol\SetDifficultyPacket;
 use pocketmine\network\mcpe\protocol\SetEntityDataPacket;
@@ -101,9 +103,9 @@ interface NetworkSession{
 
 	public function handlePlayStatus(PlayStatusPacket $packet) : bool;
 
-	//public function handleServerToClientHandshake(ServerToClientHandshakePacket $packet) : bool; //TODO
+	public function handleServerToClientHandshake(ServerToClientHandshakePacket $packet) : bool;
 
-	//public function handleClientToServerHandshake(ClientToServerHandshakePacket $packet) : bool; //TODO
+	public function handleClientToServerHandshake(ClientToServerHandshakePacket $packet) : bool;
 
 	public function handleDisconnect(DisconnectPacket $packet) : bool;
 
