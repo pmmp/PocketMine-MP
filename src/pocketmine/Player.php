@@ -2414,8 +2414,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					}
 				}
 				break;
+			case InteractPacket::ACTION_RIGHT_CLICK:
+			case InteractPacket::ACTION_LEAVE_VEHICLE:
+			case InteractPacket::ACTION_MOUSEOVER:
+				break; //TODO: handle these
 			default:
-				return false; //TODO: handle other actions
+				$this->server->getLogger()->debug("Unhandled/unknown interaction type " . $packet->action . "received from ". $this->getName());
+				break;
 		}
 
 		return true;
@@ -2733,8 +2738,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					$this->setSneaking(false);
 				}
 				return true;
+			case PlayerActionPacket::ACTION_START_GLIDE:
+			case PlayerActionPacket::ACTION_STOP_GLIDE:
+				break; //TODO
 			default:
-				assert(false, "Unhandled player action " . $packet->action . " from " . $this->getName());
+				$this->server->getLogger()->debug("Unhandled/unknown player action type " . $packet->action . " from " . $this->getName());
+				break;
 		}
 
 		$this->startAction = -1;
@@ -3106,7 +3115,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
 		if($packet->isFlying and !$this->allowFlight and !$this->server->getAllowFlight()){
-			$this->kick("Flying is not enabled on this server");
+			$this->kick($this->server->getLanguage()->translateString("kick.reason.cheat", ["%ability.flight"]));
 			return true;
 		}elseif($packet->isFlying !== $this->isFlying()){
 			$this->server->getPluginManager()->callEvent($ev = new PlayerToggleFlightEvent($this, $packet->isFlying));
@@ -3115,10 +3124,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			}else{
 				$this->flying = $ev->isFlying();
 			}
-			return true;
-		}else{
-			return false;
 		}
+
+		if($packet->noClip and !$this->allowMovementCheats and !$this->isSpectator()){
+			$this->kick($this->server->getLanguage()->translateString("kick.reason.cheat", ["%ability.noclip"]));
+			return true;
+		}
+
+		//TODO: check other changes
+
+		return true;
 	}
 
 	public function handleBlockEntityData(BlockEntityDataPacket $packet) : bool{
