@@ -334,7 +334,7 @@ class Server{
 	 * @return int
 	 */
 	public function getViewDistance() : int{
-		return max(2, $this->getConfigInt("view-distance", 6));
+		return max(2, $this->getConfigInt("view-distance", 8));
 	}
 
 	/**
@@ -1395,7 +1395,7 @@ class Server{
 				"enable-rcon" => false,
 				"rcon.password" => substr(base64_encode(random_bytes(20)), 3, 10),
 				"auto-save" => true,
-				"view-distance" => 6
+				"view-distance" => 8
 			]);
 
 			$this->forceLanguage = $this->getProperty("settings.force-language", false);
