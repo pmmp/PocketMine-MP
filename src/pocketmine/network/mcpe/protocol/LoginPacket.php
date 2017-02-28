@@ -40,7 +40,7 @@ class LoginPacket extends DataPacket{
 	public $serverAddress;
 
 	public $skinId;
-	public $skin = null;
+	public $skin = "";
 
 	public $clientData = [];
 
