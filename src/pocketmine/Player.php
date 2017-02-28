@@ -465,8 +465,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @param permission\Permission|string $name
 	 *
 	 * @return bool
+	 *
+	 * @throws \InvalidStateException if the player is closed
 	 */
 	public function hasPermission($name){
+		if($this->closed){
+			throw new \InvalidStateException("Trying to get permissions of closed player");
+		}
 		return $this->perm->hasPermission($name);
 	}
 
