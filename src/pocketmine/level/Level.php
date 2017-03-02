@@ -155,6 +155,8 @@ class Level implements ChunkManager, Metadatable{
 
 	private $cacheChunks = false;
 
+	private $sendTimeTicker = 0;
+
 	/** @var Server */
 	private $server;
 
@@ -620,7 +622,7 @@ class Level implements ChunkManager, Metadatable{
 		if($this->stopTime === true){
 			return;
 		}else{
-			$this->time += $this->tickRate;
+			$this->time += 1;
 		}
 	}
 
@@ -648,6 +650,11 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->doTick->startTiming();
 
 		$this->checkTime();
+
+		if(++$this->sendTimeTicker === 200){
+			$this->sendTime();
+			$this->sendTimeTicker = 0;
+		}
 
 		$this->unloadChunks();
 
