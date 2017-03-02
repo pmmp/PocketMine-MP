@@ -58,6 +58,7 @@ use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LoginPacket;
+use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
@@ -235,7 +236,7 @@ interface NetworkSession{
 
 	//public function handleClientboundMapItemData(ClientboundMapItemDataPacket $packet) : bool; //TODO
 
-	//public function handleMapInfoRequest(MapInfoRequestPacket $packet) : bool; //TODO
+	public function handleMapInfoRequest(MapInfoRequestPacket $packet) : bool; //TODO
 
 	public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet) : bool;
 
