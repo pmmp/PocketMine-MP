@@ -72,7 +72,10 @@ use pocketmine\network\mcpe\protocol\RemoveBlockPacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
 use pocketmine\network\mcpe\protocol\ReplaceItemInSlotPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
+use pocketmine\network\mcpe\protocol\ResourcePackChunkDataPacket;
+use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackClientResponsePacket;
+use pocketmine\network\mcpe\protocol\ResourcePackDataInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePacksInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackStackPacket;
 use pocketmine\network\mcpe\protocol\RespawnPacket;
@@ -256,11 +259,11 @@ interface NetworkSession{
 
 	public function handleCommandStep(CommandStepPacket $packet) : bool;
 
-	//public function handleResourcePackDataInfo(ResourcePackDataInfoPacket $packet) : bool; //TODO
+	public function handleResourcePackDataInfo(ResourcePackDataInfoPacket $packet) : bool;
 
-	//public function handleResourcePackChunkData(ResourcePackChunkDataPacket $packet) : bool; //TODO
+	public function handleResourcePackChunkData(ResourcePackChunkDataPacket $packet) : bool;
 
-	//public function handleResourcePackChunkRequest(ResourcePackChunkRequestPacket $packet) : bool; //TODO
+	public function handleResourcePackChunkRequest(ResourcePackChunkRequestPacket $packet) : bool;
 
 	public function handleTransfer(TransferPacket $packet) : bool;
 

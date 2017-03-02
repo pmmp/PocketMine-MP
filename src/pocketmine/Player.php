@@ -153,7 +153,10 @@ use pocketmine\network\mcpe\protocol\RemoveBlockPacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
 use pocketmine\network\mcpe\protocol\ReplaceItemInSlotPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
+use pocketmine\network\mcpe\protocol\ResourcePackChunkDataPacket;
+use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackClientResponsePacket;
+use pocketmine\network\mcpe\protocol\ResourcePackDataInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePacksInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackStackPacket;
 use pocketmine\network\mcpe\protocol\RespawnPacket;
@@ -182,6 +185,7 @@ use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
 use pocketmine\plugin\Plugin;
+use pocketmine\resourcepacks\ResourcePackInfoEntry;
 use pocketmine\tile\ItemFrame;
 use pocketmine\tile\Spawnable;
 use pocketmine\utils\TextFormat;
@@ -3268,6 +3272,18 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		Timings::$playerCommandTimer->stopTiming();
 
 		return true;
+	}
+
+	public function handleResourcePackDataInfo(ResourcePackDataInfoPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleResourcePackChunkData(ResourcePackChunkDataPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleResourcePackChunkRequest(ResourcePackChunkRequestPacket $packet) : bool{
+		return false;
 	}
 
 	public function handleTransfer(TransferPacket $packet) : bool{
