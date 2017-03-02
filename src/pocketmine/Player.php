@@ -2985,14 +2985,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 *
 	 * @return bool if transfer was successful.
 	 */
-	public function transfer(string $address, int $port = 19132) : bool{
+	public function transfer(string $address, int $port = 19132, string $message = "transfer") : bool{
 		$this->server->getPluginManager()->callEvent($ev = new PlayerTransferEvent($this, $address, $port));
 		if(!$ev->isCancelled()){
 			$pk = new TransferPacket();
 			$pk->address = $ev->getAddress();
 			$pk->port = $ev->getPort();
 			$this->dataPacket($pk);
-			$this->close($this->getDisplayName() . " transferred to another server", "transferred to another server", false); //TODO: add language strings
+			$this->close("", $message, false);
 			return true;
 		}
 		return false;
