@@ -58,8 +58,8 @@ memory:
   low-memory-trigger: true
 
  max-chunks:
-  #Limit of chunks to load per player, overrides chunk-sending.max-chunks
-  trigger-limit: 96
+  #Maximum render distance per player when low memory is triggered
+  chunk-radius: 4
 
   #Do chunk garbage collection on trigger
   trigger-chunk-collect: true
@@ -117,12 +117,11 @@ level-settings:
  always-tick-players: false
 
 chunk-sending:
+ #To change server normal render distance, change view-distance in server.properties.
  #Amount of chunks sent to players per tick
  per-tick: 4
- #Amount of chunks sent around each player
- max-chunks: 192
- #Amount of chunks that need to be sent before spawning the player
- spawn-threshold: 56
+ #Radius of chunks that need to be sent before spawning the player
+ spawn-radius: 4
  #Save a serialized copy of the chunk in memory for faster sending
  #Useful in mostly-static worlds where lots of players join at the same time
  cache-chunks: false

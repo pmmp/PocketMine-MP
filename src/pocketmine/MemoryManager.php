@@ -47,7 +47,7 @@ class MemoryManager{
 	private $garbageCollectionTrigger;
 	private $garbageCollectionAsync;
 
-	private $chunkLimit;
+	private $chunkRadiusOverride;
 	private $chunkCollect;
 	private $chunkTrigger;
 
@@ -104,7 +104,7 @@ class MemoryManager{
 		$this->garbageCollectionTrigger = (bool) $this->server->getProperty("memory.garbage-collection.low-memory-trigger", true);
 		$this->garbageCollectionAsync = (bool) $this->server->getProperty("memory.garbage-collection.collect-async-worker", true);
 
-		$this->chunkLimit = (int) $this->server->getProperty("memory.max-chunks.trigger-limit", 96);
+		$this->chunkRadiusOverride = (int) $this->server->getProperty("memory.max-chunks.chunk-radius", 4);
 		$this->chunkCollect = (bool) $this->server->getProperty("memory.max-chunks.trigger-chunk-collect", true);
 		$this->chunkTrigger = (bool) $this->server->getProperty("memory.max-chunks.low-memory-trigger", true);
 
@@ -122,8 +122,15 @@ class MemoryManager{
 		return !($this->lowMemory and $this->chunkTrigger);
 	}
 
-	public function getViewDistance($distance){
-		return $this->lowMemory ? min($this->chunkLimit, $distance) : $distance;
+	/**
+	 * Returns the allowed chunk radius based on the current memory usage.
+	 *
+	 * @param int $distance
+	 *
+	 * @return int
+	 */
+	public function getViewDistance(int $distance) : int{
+		return $this->lowMemory ? min($this->chunkRadiusOverride, $distance) : $distance;
 	}
 
 	public function trigger($memory, $limit, $global = false, $triggerCount = 0){
