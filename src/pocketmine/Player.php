@@ -2982,19 +2982,23 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 *
 	 * @param string $address The IP address or hostname of the destination server
 	 * @param int    $port    The destination port, defaults to 19132
+	 * @param string $message Message to show in the console when closing the player
 	 *
 	 * @return bool if transfer was successful.
 	 */
 	public function transfer(string $address, int $port = 19132, string $message = "transfer") : bool{
-		$this->server->getPluginManager()->callEvent($ev = new PlayerTransferEvent($this, $address, $port));
+		$this->server->getPluginManager()->callEvent($ev = new PlayerTransferEvent($this, $address, $port, $message));
+
 		if(!$ev->isCancelled()){
 			$pk = new TransferPacket();
 			$pk->address = $ev->getAddress();
 			$pk->port = $ev->getPort();
 			$this->dataPacket($pk);
-			$this->close("", $message, false);
+			$this->close("", $ev->getMessage(), false);
+
 			return true;
 		}
+
 		return false;
 	}
 
