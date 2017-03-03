@@ -37,6 +37,7 @@ use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\network\mcpe\protocol\ChangeDimensionPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
+use pocketmine\network\mcpe\protocol\ClientboundMapItemDataPacket;
 use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
 use pocketmine\network\mcpe\protocol\CommandStepPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
@@ -234,7 +235,7 @@ interface NetworkSession{
 
 	public function handleSpawnExperienceOrb(SpawnExperienceOrbPacket $packet) : bool;
 
-	//public function handleClientboundMapItemData(ClientboundMapItemDataPacket $packet) : bool; //TODO
+	public function handleClientboundMapItemData(ClientboundMapItemDataPacket $packet) : bool;
 
 	public function handleMapInfoRequest(MapInfoRequestPacket $packet) : bool; //TODO
 
