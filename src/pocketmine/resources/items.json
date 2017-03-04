@@ -1,0 +1,730 @@
+{
+    "acacia_door": {
+        "id": 430,
+        "fallback_name": "Acacia Door"
+    },
+    "apple": {
+        "id": 260,
+        "fallback_name": "Apple"
+    },
+    "appleEnchanted": {
+        "id": 466,
+        "fallback_name": "Golden Apple"
+    },
+    "arrow": {
+        "id": 262,
+        "fallback_name": "Arrow"
+    },
+    "baked_potato": {
+        "id": 393,
+        "fallback_name": "Baked Potato"
+    },
+    "bed": {
+        "id": 355,
+        "fallback_name": "Bed"
+    },
+    "beef": {
+        "id": 363,
+        "fallback_name": "Raw Beef"
+    },
+    "beetroot": {
+        "id": 457,
+        "fallback_name": "Beetroot"
+    },
+    "beetroot_seeds": {
+        "id": 458,
+        "fallback_name": "Beetroot Seeds"
+    },
+    "beetroot_soup": {
+        "id": 459,
+        "fallback_name": "Beetroot Soup"
+    },
+    "birch_door": {
+        "id": 428,
+        "fallback_name": "Birch Door"
+    },
+    "blaze_powder": {
+        "id": 377,
+        "fallback_name": "Blaze Powder"
+    },
+    "blaze_rod": {
+        "id": 369,
+        "fallback_name": "Blaze Rod"
+    },
+    "boat": {
+        "id": 333,
+        "fallback_name": "Boat"
+    },
+    "bone": {
+        "id": 352,
+        "fallback_name": "Bone"
+    },
+    "book": {
+        "id": 340,
+        "fallback_name": "Book"
+    },
+    "bow": {
+        "id": 261,
+        "fallback_name": "Bow"
+    },
+    "bowl": {
+        "id": 281,
+        "fallback_name": "Bowl"
+    },
+    "bread": {
+        "id": 297,
+        "fallback_name": "Bread"
+    },
+    "brewing_stand": {
+        "id": 379,
+        "fallback_name": "Brewing Stand"
+    },
+    "brick": {
+        "id": 336,
+        "fallback_name": "Brick"
+    },
+    "bucket": {
+        "id": 325,
+        "fallback_name": "Bucket"
+    },
+    "cake": {
+        "id": 354,
+        "fallback_name": "Cake"
+    },
+    "carrot": {
+        "id": 391,
+        "fallback_name": "Carrot"
+    },
+    "carrotOnAStick": {
+        "id": 398,
+        "fallback_name": "Carrot on a Stick"
+    },
+    "cauldron": {
+        "id": 380,
+        "fallback_name": "Cauldron"
+    },
+    "chainmail_boots": {
+        "id": 305,
+        "fallback_name": "Chain Boots"
+    },
+    "chainmail_chestplate": {
+        "id": 303,
+        "fallback_name": "Chain Chestplate"
+    },
+    "chainmail_helmet": {
+        "id": 302,
+        "fallback_name": "Chain Helmet"
+    },
+    "chainmail_leggings": {
+        "id": 304,
+        "fallback_name": "Chain Leggings"
+    },
+    "chest_minecart": {
+        "id": 342,
+        "fallback_name": "Minecart with Chest"
+    },
+    "chicken": {
+        "id": 365,
+        "fallback_name": "Raw Chicken"
+    },
+    "chorus_fruit": {
+        "id": 432,
+        "fallback_name": "Chorus Fruit"
+    },
+    "chorus_fruit_popped": {
+        "id": 433,
+        "fallback_name": "Popped Chorus Fruit"
+    },
+    "clay_ball": {
+        "id": 337,
+        "fallback_name": "Clay"
+    },
+    "clock": {
+        "id": 347,
+        "fallback_name": "Clock"
+    },
+    "clownfish": {
+        "id": 461,
+        "fallback_name": "Clownfish"
+    },
+    "coal": {
+        "id": 263,
+        "fallback_name": "Coal"
+    },
+    "comparator": {
+        "id": 404,
+        "fallback_name": "Redstone Comparator"
+    },
+    "compass": {
+        "id": 345,
+        "fallback_name": "Compass"
+    },
+    "cooked_beef": {
+        "id": 364,
+        "fallback_name": "Cooked Beef"
+    },
+    "cooked_chicken": {
+        "id": 366,
+        "fallback_name": "Cooked Chicken"
+    },
+    "cooked_fish": {
+        "id": 350,
+        "fallback_name": "Cooked Fish"
+    },
+    "cooked_porkchop": {
+        "id": 320,
+        "fallback_name": "Cooked Porkchop"
+    },
+    "cooked_rabbit": {
+        "id": 412,
+        "fallback_name": "Cooked Rabbit"
+    },
+    "cooked_salmon": {
+        "id": 463,
+        "fallback_name": "Cooked Salmon"
+    },
+    "cookie": {
+        "id": 357,
+        "fallback_name": "Cookie"
+    },
+    "dark_oak_door": {
+        "id": 431,
+        "fallback_name": "Dark Oak Door"
+    },
+    "diamond": {
+        "id": 264,
+        "fallback_name": "Diamond"
+    },
+    "diamond_axe": {
+        "id": 279,
+        "fallback_name": "Diamond Axe"
+    },
+    "diamond_boots": {
+        "id": 313,
+        "fallback_name": "Diamond Boots"
+    },
+    "diamond_chestplate": {
+        "id": 311,
+        "fallback_name": "Diamond Chestplate"
+    },
+    "diamond_helmet": {
+        "id": 310,
+        "fallback_name": "Diamond Helmet"
+    },
+    "diamond_hoe": {
+        "id": 293,
+        "fallback_name": "Diamond Hoe"
+    },
+    "diamond_leggings": {
+        "id": 312,
+        "fallback_name": "Diamond Leggings"
+    },
+    "diamond_pickaxe": {
+        "id": 278,
+        "fallback_name": "Diamond Pickaxe"
+    },
+    "diamond_shovel": {
+        "id": 277,
+        "fallback_name": "Diamond Shovel"
+    },
+    "diamond_sword": {
+        "id": 276,
+        "fallback_name": "Diamond Sword"
+    },
+    "dragon_breath": {
+        "id": 437,
+        "fallback_name": "Dragon's Breath"
+    },
+    "dye": {
+        "id": 351,
+        "fallback_name": "Inc Sac"
+    },
+    "egg": {
+        "id": 344,
+        "fallback_name": "Egg"
+    },
+    "elytra": {
+        "id": 444,
+        "fallback_name": "Elytra Wings"
+    },
+    "emerald": {
+        "id": 388,
+        "fallback_name": "Emerald"
+    },
+    "emptyMap": {
+        "id": 395,
+        "fallback_name": "Empty Map"
+    },
+    "enchanted_book": {
+        "id": 403,
+        "fallback_name": "Enchanted Book"
+    },
+    "end_crystal": {
+        "id": 426,
+        "fallback_name": "End Crystal"
+    },
+    "ender_eye": {
+        "id": 381,
+        "fallback_name": "Eye of Ender"
+    },
+    "ender_pearl": {
+        "id": 368,
+        "fallback_name": "Ender Pearl"
+    },
+    "experience_bottle": {
+        "id": 384,
+        "fallback_name": "Bottle o' Enchanting"
+    },
+    "feather": {
+        "id": 288,
+        "fallback_name": "Feather"
+    },
+    "fermented_spider_eye": {
+        "id": 376,
+        "fallback_name": "Fermented Spider Eye"
+    },
+    "fireball": {
+        "id": 385,
+        "fallback_name": "Fire Charge"
+    },
+    "fish": {
+        "id": 349,
+        "fallback_name": "Raw Fish"
+    },
+    "fishing_rod": {
+        "id": 346,
+        "fallback_name": "Fishing Rod"
+    },
+    "flint": {
+        "id": 318,
+        "fallback_name": "Flint"
+    },
+    "flint_and_steel": {
+        "id": 259,
+        "fallback_name": "Flint and Steel"
+    },
+    "flower_pot": {
+        "id": 390,
+        "fallback_name": "Flower Pot"
+    },
+    "frame": {
+        "id": 389,
+        "fallback_name": "Item Frame"
+    },
+    "ghast_tear": {
+        "id": 370,
+        "fallback_name": "Ghast Tear"
+    },
+    "glass_bottle": {
+        "id": 374,
+        "fallback_name": "Glass Bottle"
+    },
+    "glowstone_dust": {
+        "id": 348,
+        "fallback_name": "Glowstone Dust"
+    },
+    "gold_ingot": {
+        "id": 266,
+        "fallback_name": "Gold Ingot"
+    },
+    "gold_nugget": {
+        "id": 371,
+        "fallback_name": "Gold Nugget"
+    },
+    "golden_apple": {
+        "id": 322,
+        "fallback_name": "Golden Apple"
+    },
+    "golden_axe": {
+        "id": 286,
+        "fallback_name": "Golden Axe"
+    },
+    "golden_boots": {
+        "id": 317,
+        "fallback_name": "Golden Boots"
+    },
+    "golden_carrot": {
+        "id": 396,
+        "fallback_name": "Golden Carrot"
+    },
+    "golden_chestplate": {
+        "id": 315,
+        "fallback_name": "Golden Chestplate"
+    },
+    "golden_helmet": {
+        "id": 314,
+        "fallback_name": "Golden Helmet"
+    },
+    "golden_hoe": {
+        "id": 294,
+        "fallback_name": "Golden Hoe"
+    },
+    "golden_leggings": {
+        "id": 316,
+        "fallback_name": "Golden Leggings"
+    },
+    "golden_pickaxe": {
+        "id": 285,
+        "fallback_name": "Golden Pickaxe"
+    },
+    "golden_shovel": {
+        "id": 284,
+        "fallback_name": "Golden Shovel"
+    },
+    "golden_sword": {
+        "id": 283,
+        "fallback_name": "Golden Sword"
+    },
+    "gunpowder": {
+        "id": 289,
+        "fallback_name": "Gunpowder"
+    },
+    "hopper": {
+        "id": 410,
+        "fallback_name": "Hopper"
+    },
+    "hopper_minecart": {
+        "id": 408,
+        "fallback_name": "Minecart with Hopper"
+    },
+    "horsearmordiamond": {
+        "id": 419,
+        "fallback_name": "Diamond Horse Armour"
+    },
+    "horsearmorgold": {
+        "id": 418,
+        "fallback_name": "Gold Horse Armour"
+    },
+    "horsearmoriron": {
+        "id": 417,
+        "fallback_name": "Iron Horse Armour"
+    },
+    "horsearmorleather": {
+        "id": 416,
+        "fallback_name": "Leather Horse Armour"
+    },
+    "iron_axe": {
+        "id": 258,
+        "fallback_name": "Iron Axe"
+    },
+    "iron_boots": {
+        "id": 309,
+        "fallback_name": "Iron Boots"
+    },
+    "iron_chestplate": {
+        "id": 307,
+        "fallback_name": "Iron Chestplate"
+    },
+    "iron_door": {
+        "id": 330,
+        "fallback_name": "Iron Door"
+    },
+    "iron_helmet": {
+        "id": 306,
+        "fallback_name": "Iron Helmet"
+    },
+    "iron_hoe": {
+        "id": 292,
+        "fallback_name": "Iron Hoe"
+    },
+    "iron_ingot": {
+        "id": 265,
+        "fallback_name": "Iron Ingot"
+    },
+    "iron_leggings": {
+        "id": 308,
+        "fallback_name": "Iron Leggings"
+    },
+    "iron_pickaxe": {
+        "id": 257,
+        "fallback_name": "Iron Pickaxe"
+    },
+    "iron_shovel": {
+        "id": 256,
+        "fallback_name": "Iron Shovel"
+    },
+    "iron_sword": {
+        "id": 267,
+        "fallback_name": "Iron Sword"
+    },
+    "jungle_door": {
+        "id": 429,
+        "fallback_name": "Jungle Door"
+    },
+    "lead": {
+        "id": 420,
+        "fallback_name": "Lead"
+    },
+    "leather": {
+        "id": 334,
+        "fallback_name": "Leather"
+    },
+    "leather_boots": {
+        "id": 301,
+        "fallback_name": "Leather Boots"
+    },
+    "leather_chestplate": {
+        "id": 299,
+        "fallback_name": "Leather Tunic"
+    },
+    "leather_helmet": {
+        "id": 298,
+        "fallback_name": "Leather Cap"
+    },
+    "leather_leggings": {
+        "id": 300,
+        "fallback_name": "Leather Pants"
+    },
+    "lingering_potion": {
+        "id": 441,
+        "fallback_name": "Lingering Potion"
+    },
+    "magma_cream": {
+        "id": 378,
+        "fallback_name": "Magma Cream"
+    },
+    "map_filled": {
+        "id": 358,
+        "fallback_name": "Map"
+    },
+    "melon": {
+        "id": 360,
+        "fallback_name": "Melon"
+    },
+    "melon_seeds": {
+        "id": 362,
+        "fallback_name": "Melon Seeds"
+    },
+    "minecart": {
+        "id": 328,
+        "fallback_name": "Minecart"
+    },
+    "mushroom_stew": {
+        "id": 282,
+        "fallback_name": "Mushroom Stew"
+    },
+    "muttonCooked": {
+        "id": 424,
+        "fallback_name": "Cooked Mutton"
+    },
+    "muttonRaw": {
+        "id": 423,
+        "fallback_name": "Raw Mutton"
+    },
+    "nameTag": {
+        "id": 421,
+        "fallback_name": "Name Tag"
+    },
+    "netherStar": {
+        "id": 399,
+        "fallback_name": "Nether Star"
+    },
+    "nether_wart": {
+        "id": 372,
+        "fallback_name": "Nether Wart"
+    },
+    "netherbrick": {
+        "id": 405,
+        "fallback_name": "Nether Brick"
+    },
+    "painting": {
+        "id": 321,
+        "fallback_name": "Painting"
+    },
+    "paper": {
+        "id": 339,
+        "fallback_name": "Paper"
+    },
+    "poisonous_potato": {
+        "id": 394,
+        "fallback_name": "Poisonous Potato"
+    },
+    "porkchop": {
+        "id": 319,
+        "fallback_name": "Raw Porkchop"
+    },
+    "potato": {
+        "id": 392,
+        "fallback_name": "Potato"
+    },
+    "potion": {
+        "id": 373,
+        "fallback_name": "Potion"
+    },
+    "prismarine_crystals": {
+        "id": 422,
+        "fallback_name": "Prismarine Crystals"
+    },
+    "prismarine_shard": {
+        "id": 409,
+        "fallback_name": "Prismarine Shard"
+    },
+    "pufferfish": {
+        "id": 462,
+        "fallback_name": "Pufferfish"
+    },
+    "pumpkin_pie": {
+        "id": 400,
+        "fallback_name": "Pumpkin Pie"
+    },
+    "pumpkin_seeds": {
+        "id": 361,
+        "fallback_name": "Pumpkin Seeds"
+    },
+    "quartz": {
+        "id": 406,
+        "fallback_name": "Nether Quartz"
+    },
+    "rabbit": {
+        "id": 411,
+        "fallback_name": "Raw Rabbit"
+    },
+    "rabbit_foot": {
+        "id": 414,
+        "fallback_name": "Rabbit's Foot"
+    },
+    "rabbit_hide": {
+        "id": 415,
+        "fallback_name": "Rabbit Hide"
+    },
+    "rabbit_stew": {
+        "id": 413,
+        "fallback_name": "Rabbit Stew"
+    },
+    "redstone": {
+        "id": 331,
+        "fallback_name": "Redstone"
+    },
+    "reeds": {
+        "id": 338,
+        "fallback_name": "Sugar Canes"
+    },
+    "repeater": {
+        "id": 356,
+        "fallback_name": "Redstone Repeater"
+    },
+    "rotten_flesh": {
+        "id": 367,
+        "fallback_name": "Rotten Flesh"
+    },
+    "saddle": {
+        "id": 329,
+        "fallback_name": "Saddle"
+    },
+    "salmon": {
+        "id": 460,
+        "fallback_name": "Raw Salmon"
+    },
+    "shears": {
+        "id": 359,
+        "fallback_name": "Shears"
+    },
+    "shulker_shell": {
+        "id": 445,
+        "fallback_name": "Shulker Shell"
+    },
+    "sign": {
+        "id": 323,
+        "fallback_name": "Sign"
+    },
+    "skull": {
+        "id": 397,
+        "fallback_name": "Skull"
+    },
+    "slime_ball": {
+        "id": 341,
+        "fallback_name": "Slimeball"
+    },
+    "snowball": {
+        "id": 332,
+        "fallback_name": "Snowball"
+    },
+    "spawn_egg": {
+        "id": 383,
+        "fallback_name": "Spawn"
+    },
+    "speckled_melon": {
+        "id": 382,
+        "fallback_name": "Glistering Melon"
+    },
+    "spider_eye": {
+        "id": 375,
+        "fallback_name": "Spider Eye"
+    },
+    "splash_potion": {
+        "id": 438,
+        "fallback_name": "Splash Potion"
+    },
+    "spruce_door": {
+        "id": 427,
+        "fallback_name": "Spruce Door"
+    },
+    "stick": {
+        "id": 280,
+        "fallback_name": "Stick"
+    },
+    "stone_axe": {
+        "id": 275,
+        "fallback_name": "Stone Axe"
+    },
+    "stone_hoe": {
+        "id": 291,
+        "fallback_name": "Stone Hoe"
+    },
+    "stone_pickaxe": {
+        "id": 274,
+        "fallback_name": "Stone Pickaxe"
+    },
+    "stone_shovel": {
+        "id": 273,
+        "fallback_name": "Stone Shovel"
+    },
+    "stone_sword": {
+        "id": 272,
+        "fallback_name": "Stone Sword"
+    },
+    "string": {
+        "id": 287,
+        "fallback_name": "String"
+    },
+    "sugar": {
+        "id": 353,
+        "fallback_name": "Sugar"
+    },
+    "tnt_minecart": {
+        "id": 407,
+        "fallback_name": "Minecart with TNT"
+    },
+    "wheat": {
+        "id": 296,
+        "fallback_name": "Wheat"
+    },
+    "wheat_seeds": {
+        "id": 295,
+        "fallback_name": "Seeds"
+    },
+    "wooden_axe": {
+        "id": 271,
+        "fallback_name": "Wooden Axe"
+    },
+    "wooden_door": {
+        "id": 324,
+        "fallback_name": "Oak Door"
+    },
+    "wooden_hoe": {
+        "id": 290,
+        "fallback_name": "Wooden Hoe"
+    },
+    "wooden_pickaxe": {
+        "id": 270,
+        "fallback_name": "Wooden Pickaxe"
+    },
+    "wooden_shovel": {
+        "id": 269,
+        "fallback_name": "Wooden Shovel"
+    },
+    "wooden_sword": {
+        "id": 268,
+        "fallback_name": "Wooden Sword"
+    }
+}
