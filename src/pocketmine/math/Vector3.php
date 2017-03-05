@@ -157,12 +157,19 @@ class Vector3{
 		}
 	}
 
-	public static function getOppositeSide($side){
+	/**
+	 * Returns the Vector3 side number opposite the specified one
+	 *
+	 * @param int $side 0-5 one of the Vector3::SIDE_* constants
+	 *
+	 * @return int
+	 */
+	public static function getOppositeSide(int $side) : int{
 		if($side >= 0 and $side <= 5){
-			return ((int) $side) ^ 0x01;
+			return $side ^ 0x01;
 		}
 
-		return -1;
+		throw new \InvalidArgumentException("Invalid side $side given to getOppositeSide");
 	}
 
 	public function distance(Vector3 $pos){
