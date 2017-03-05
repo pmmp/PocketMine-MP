@@ -130,7 +130,21 @@ class SimpleTransactionGroup implements TransactionGroup{
 		$haveItems = [];
 		$needItems = [];
 
-		return $this->matchItems($haveItems, $needItems) and count($haveItems) === 0 and count($needItems) === 0 and count($this->transactions) > 0;
+		if($this->matchItems($needItems, $haveItems) and count($this->transactions) > 0){
+			if(count($haveItems) === 0 and count($needItems) === 0){
+				return true;
+			}elseif($this->source->isCreative(true) and count($needItems) > 0){ //Added items from creative inventory
+				foreach($needItems as $item){
+					if(Item::getCreativeItemIndex($item) === -1 and $item->getId() !== Item::AIR){
+						return false;
+					}
+				}
+
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public function execute(){
