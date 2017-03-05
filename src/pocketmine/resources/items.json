@@ -1,7 +1,8 @@
 {
     "acacia_door": {
         "id": 430,
-        "fallback_name": "Acacia Door"
+        "fallback_name": "Acacia Door",
+        "block": "acacia_door_block"
     },
     "apple": {
         "id": 260,
@@ -21,7 +22,8 @@
     },
     "bed": {
         "id": 355,
-        "fallback_name": "Bed"
+        "fallback_name": "Bed",
+        "block": "bed_block"
     },
     "beef": {
         "id": 363,
@@ -33,7 +35,8 @@
     },
     "beetroot_seeds": {
         "id": 458,
-        "fallback_name": "Beetroot Seeds"
+        "fallback_name": "Beetroot Seeds",
+        "block": "beetroot_block"
     },
     "beetroot_soup": {
         "id": 459,
@@ -41,7 +44,8 @@
     },
     "birch_door": {
         "id": 428,
-        "fallback_name": "Birch Door"
+        "fallback_name": "Birch Door",
+        "block": "birch_door_block"
     },
     "blaze_powder": {
         "id": 377,
@@ -77,7 +81,8 @@
     },
     "brewing_stand": {
         "id": 379,
-        "fallback_name": "Brewing Stand"
+        "fallback_name": "Brewing Stand",
+        "block": "brewing_stand_block"
     },
     "brick": {
         "id": 336,
@@ -93,7 +98,8 @@
     },
     "carrot": {
         "id": 391,
-        "fallback_name": "Carrot"
+        "fallback_name": "Carrot",
+        "block": "carrot_block"
     },
     "carrotOnAStick": {
         "id": 398,
@@ -101,7 +107,8 @@
     },
     "cauldron": {
         "id": 380,
-        "fallback_name": "Cauldron"
+        "fallback_name": "Cauldron",
+        "block": "cauldron_block"
     },
     "chainmail_boots": {
         "id": 305,
@@ -153,7 +160,8 @@
     },
     "comparator": {
         "id": 404,
-        "fallback_name": "Redstone Comparator"
+        "fallback_name": "Redstone Comparator",
+        "block": "unpowered_comparator"
     },
     "compass": {
         "id": 345,
@@ -189,7 +197,8 @@
     },
     "dark_oak_door": {
         "id": 431,
-        "fallback_name": "Dark Oak Door"
+        "fallback_name": "Dark Oak Door",
+        "block": "dark_oak_door_block"
     },
     "diamond": {
         "id": 264,
@@ -305,11 +314,13 @@
     },
     "flower_pot": {
         "id": 390,
-        "fallback_name": "Flower Pot"
+        "fallback_name": "Flower Pot",
+        "block": "flower_pot_block"
     },
     "frame": {
         "id": 389,
-        "fallback_name": "Item Frame"
+        "fallback_name": "Item Frame",
+        "block": "frame_block"
     },
     "ghast_tear": {
         "id": 370,
@@ -381,7 +392,8 @@
     },
     "hopper": {
         "id": 410,
-        "fallback_name": "Hopper"
+        "fallback_name": "Hopper",
+        "block": "hopper_block"
     },
     "hopper_minecart": {
         "id": 408,
@@ -417,7 +429,8 @@
     },
     "iron_door": {
         "id": 330,
-        "fallback_name": "Iron Door"
+        "fallback_name": "Iron Door",
+        "block": "iron_door_block"
     },
     "iron_helmet": {
         "id": 306,
@@ -449,7 +462,8 @@
     },
     "jungle_door": {
         "id": 429,
-        "fallback_name": "Jungle Door"
+        "fallback_name": "Jungle Door",
+        "block": "jungle_door_block"
     },
     "lead": {
         "id": 420,
@@ -493,7 +507,8 @@
     },
     "melon_seeds": {
         "id": 362,
-        "fallback_name": "Melon Seeds"
+        "fallback_name": "Melon Seeds",
+        "block": "melon_stem"
     },
     "minecart": {
         "id": 328,
@@ -521,7 +536,8 @@
     },
     "nether_wart": {
         "id": 372,
-        "fallback_name": "Nether Wart"
+        "fallback_name": "Nether Wart",
+        "block": "nether_wart_block"
     },
     "netherbrick": {
         "id": 405,
@@ -593,15 +609,18 @@
     },
     "redstone": {
         "id": 331,
-        "fallback_name": "Redstone"
+        "fallback_name": "Redstone",
+        "block": "redstone_wire"
     },
     "reeds": {
         "id": 338,
-        "fallback_name": "Sugar Canes"
+        "fallback_name": "Sugar Canes",
+        "block": "reeds_block"
     },
     "repeater": {
         "id": 356,
-        "fallback_name": "Redstone Repeater"
+        "fallback_name": "Redstone Repeater",
+        "block": "unpowered_repeater"
     },
     "rotten_flesh": {
         "id": 367,
@@ -625,11 +644,13 @@
     },
     "sign": {
         "id": 323,
-        "fallback_name": "Sign"
+        "fallback_name": "Sign",
+        "block": "standing_sign"
     },
     "skull": {
         "id": 397,
-        "fallback_name": "Skull"
+        "fallback_name": "Skull",
+        "block": "skull_block"
     },
     "slime_ball": {
         "id": 341,
@@ -657,7 +678,8 @@
     },
     "spruce_door": {
         "id": 427,
-        "fallback_name": "Spruce Door"
+        "fallback_name": "Spruce Door",
+        "block": "spruce_door_block"
     },
     "stick": {
         "id": 280,
@@ -685,7 +707,8 @@
     },
     "string": {
         "id": 287,
-        "fallback_name": "String"
+        "fallback_name": "String",
+        "block": "tripwire"
     },
     "sugar": {
         "id": 353,
@@ -701,7 +724,8 @@
     },
     "wheat_seeds": {
         "id": 295,
-        "fallback_name": "Seeds"
+        "fallback_name": "Seeds",
+        "block": "wheat_block"
     },
     "wooden_axe": {
         "id": 271,
@@ -709,7 +733,8 @@
     },
     "wooden_door": {
         "id": 324,
-        "fallback_name": "Oak Door"
+        "fallback_name": "Oak Door",
+        "block": "wooden_door_block"
     },
     "wooden_hoe": {
         "id": 290,

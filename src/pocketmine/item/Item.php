@@ -79,7 +79,13 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$list = new \SplFixedArray(65536);
 			$items = json_decode(file_get_contents(\pocketmine\PATH . "src/pocketmine/resources/items.json"), true);
 			foreach($items as $itemData){
-				self::registerItem(new Item($itemData["id"], 0, 1, $itemData["fallback_name"]));
+				$newItem = new Item($itemData["id"], 0, 1, $itemData["fallback_name"]);
+				if(isset($itemData["block"])){
+					if(defined(Block::class . "::" . strtoupper($itemData["block"]))){ //TODO: remove this hack
+						$newItem->setBlock(Block::get(constant(Block::class . "::" . strtoupper($itemData["block"]))));
+					}
+				}
+				self::registerItem($newItem);
 			}
 
 			for($i = 0; $i < 256; ++$i){
@@ -544,6 +550,10 @@ class Item implements ItemIds, \JsonSerializable{
 		}else{
 			return Block::get(self::AIR);
 		}
+	}
+
+	protected function setBlock(Block $block){
+		$this->block = $block;
 	}
 
 	final public function getId() : int{
