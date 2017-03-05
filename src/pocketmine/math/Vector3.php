@@ -161,8 +161,9 @@ class Vector3{
 	 * Returns the Vector3 side number opposite the specified one
 	 *
 	 * @param int $side 0-5 one of the Vector3::SIDE_* constants
-	 *
 	 * @return int
+	 *
+	 * @throws \InvalidArgumentException if an invalid side is supplied
 	 */
 	public static function getOppositeSide(int $side) : int{
 		if($side >= 0 and $side <= 5){
