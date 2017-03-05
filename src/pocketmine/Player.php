@@ -2808,28 +2808,38 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					break;
 				}
 
-				if($packet->windowid === 0){ //Our inventory
-					if($packet->slot >= $this->inventory->getSize()){
-						break;
-					}
+				switch($packet->windowid){
+					case ContainerSetContentPacket::SPECIAL_INVENTORY: //Normal inventory change
+						if($packet->slot >= $this->inventory->getSize()){
+							break 2;
+						}
 
-					$transaction = new BaseTransaction($this->inventory, $packet->slot, $this->inventory->getItem($packet->slot), $packet->item);
-				}elseif($packet->windowid === ContainerSetContentPacket::SPECIAL_ARMOR){ //Our armor
-					if($packet->slot >= 4){
+						$transaction = new BaseTransaction($this->inventory, $packet->slot, $this->inventory->getItem($packet->slot), $packet->item);
 						break;
-					}
+					case ContainerSetContentPacket::SPECIAL_ARMOR: //Armour change
+						if($packet->slot >= 4){
+							break 2;
+						}
 
-					$transaction = new BaseTransaction($this->inventory, $packet->slot + $this->inventory->getSize(), $this->inventory->getArmorItem($packet->slot), $packet->item);
-				}elseif(isset($this->windowIndex[$packet->windowid])){
-					$this->craftingType = 0;
-					$inv = $this->windowIndex[$packet->windowid];
-					$transaction = new BaseTransaction($inv, $packet->slot, $inv->getItem($packet->slot), $packet->item);
-				}else{
-					break;
+						$transaction = new BaseTransaction($this->inventory, $packet->slot + $this->inventory->getSize(), $this->inventory->getArmorItem($packet->slot), $packet->item);
+						break;
+					case ContainerSetContentPacket::SPECIAL_HOTBAR: //Hotbar link update
+						//hotbarSlot 0-8, slot 9-44
+						$this->inventory->setHotbarSlotIndex($packet->hotbarSlot, $packet->slot - 9);
+						break 2;
+					default:
+						if(!isset($this->windowIndex[$packet->windowid])){
+							break 2; //unknown windowID and/or not matching any open windows
+						}
+
+						$this->craftingType = 0;
+						$inv = $this->windowIndex[$packet->windowid];
+						$transaction = new BaseTransaction($inv, $packet->slot, $inv->getItem($packet->slot), $packet->item);
+						break;
 				}
 
 				if($transaction->getSourceItem()->deepEquals($transaction->getTargetItem()) and $transaction->getTargetItem()->getCount() === $transaction->getSourceItem()->getCount()){ //No changes!
-					//No changes, just a local inventory update sent by the server
+					//No changes, just a local inventory update sent by the client
 					break;
 				}
 
