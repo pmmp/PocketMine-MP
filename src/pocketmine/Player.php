@@ -152,9 +152,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	const SPECTATOR = 3;
 	const VIEW = Player::SPECTATOR;
 
-	const SURVIVAL_SLOTS = 36;
-	const CREATIVE_SLOTS = 112;
-
 	/** @var SourceInterface */
 	protected $interface;
 
