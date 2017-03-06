@@ -94,7 +94,8 @@
     },
     "cake": {
         "id": 354,
-        "fallback_name": "Cake"
+        "fallback_name": "Cake",
+        "block": "cake_block"
     },
     "carrot": {
         "id": 391,
