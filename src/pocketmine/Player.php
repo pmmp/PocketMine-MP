@@ -1616,7 +1616,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if(count($this->messageQueue) > 0){
 			$pk = new TextPacket();
 			$pk->type = TextPacket::TYPE_RAW;
-			$pk->message = implode("\n", $this->messageQueue);
+			$pk->message = implode(TextFormat::WHITE.TextFormat::RESET."\n", $this->messageQueue);
 			$this->dataPacket($pk);
 			$this->messageQueue = [];
 		}
