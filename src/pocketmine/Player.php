@@ -429,6 +429,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	public function setViewDistance(int $distance){
 		$this->viewDistance = $this->server->getAllowedViewDistance($distance);
+
+		$this->spawnThreshold = (int) min($this->viewDistance, $this->server->getProperty("chunk-sending.spawn-radius")) ** 2 * M_PI;
+
 		$pk = new ChunkRadiusUpdatedPacket();
 		$pk->radius = $this->viewDistance;
 		$this->dataPacket($pk);
