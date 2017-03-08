@@ -45,6 +45,6 @@ class ResourcePackChunkRequestPacket extends DataPacket{
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		$session->handleResourcePackChunkRequest($this);
+		return $session->handleResourcePackChunkRequest($this);
 	}
 }

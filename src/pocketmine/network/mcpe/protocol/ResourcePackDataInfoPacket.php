@@ -54,7 +54,7 @@ class ResourcePackDataInfoPacket extends DataPacket{
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		$session->handleResourcePackDataInfo($this);
+		return $session->handleResourcePackDataInfo($this);
 	}
 
 }

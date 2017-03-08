@@ -144,6 +144,6 @@ class ClientboundMapItemDataPacket extends DataPacket{
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		$session->handleClientboundMapItemData($this);
+		return $session->handleClientboundMapItemData($this);
 	}
 }
