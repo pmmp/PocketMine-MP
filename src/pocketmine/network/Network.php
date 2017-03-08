@@ -232,44 +232,36 @@ class Network{
 	}
 
 	public function processBatch(BatchPacket $packet, Player $p){
-		try{
-			if(strlen($packet->payload) === 0){
-				//prevent zlib_decode errors for incorrectly-decoded packets
-				throw new \InvalidArgumentException("BatchPacket payload is empty or packet decode error");
-			}
+		if(strlen($packet->payload) === 0){
+			//prevent zlib_decode errors for incorrectly-decoded packets
+			throw new \InvalidArgumentException("BatchPacket payload is empty or packet decode error");
+		}
 
-			$str = zlib_decode($packet->payload, 1024 * 1024 * 64); //Max 64MB
-			$len = strlen($str);
+		$str = zlib_decode($packet->payload, 1024 * 1024 * 64); //Max 64MB
+		$len = strlen($str);
 
-			if($len === 0){
-				throw new \InvalidStateException("Decoded BatchPacket payload is empty");
-			}
+		if($len === 0){
+			throw new \InvalidStateException("Decoded BatchPacket payload is empty");
+		}
 
-			$stream = new BinaryStream($str);
+		$stream = new BinaryStream($str);
 
-			while($stream->offset < $len){
-				$buf = $stream->getString();
+		while($stream->offset < $len){
+			$buf = $stream->getString();
 
-				if(($pk = $this->getPacket(ord($buf{0}))) !== null){
-					if(!$pk->canBeBatched()){
-						throw new \InvalidStateException("Received invalid " . get_class($pk) . " inside BatchPacket");
-					}
-
-					$pk->setBuffer($buf, 1);
-
-					$pk->decode();
-					assert($pk->feof(), "Still " . strlen(substr($pk->buffer, $pk->offset)) . " bytes unread in " . get_class($pk));
-					if(!$pk->handle($p)){
-						$logger = $this->server->getLogger();
-						$logger->debug("Unhandled " . get_class($pk) . " received from " . $p->getName());
-					}
+			if(($pk = $this->getPacket(ord($buf{0}))) !== null){
+				if(!$pk->canBeBatched()){
+					throw new \InvalidStateException("Received invalid " . get_class($pk) . " inside BatchPacket");
 				}
-			}
-		}catch(\Throwable $e){
-			if(\pocketmine\DEBUG > 1){
-				$logger = $this->server->getLogger();
-				$logger->debug("BatchPacket " . " 0x" . bin2hex($packet->payload));
-				$logger->logException($e);
+
+				$pk->setBuffer($buf, 1);
+
+				$pk->decode();
+				assert($pk->feof(), "Still " . strlen(substr($pk->buffer, $pk->offset)) . " bytes unread in " . get_class($pk));
+				if(!$pk->handle($p)){
+					$logger = $this->server->getLogger();
+					$logger->debug("Unhandled " . get_class($pk) . " received from " . $p->getName());
+				}
 			}
 		}
 	}
