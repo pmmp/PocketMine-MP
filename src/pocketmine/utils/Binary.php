@@ -412,7 +412,7 @@ class Binary{
 	 * Reads a 64-bit zigzag-encoded variable-length integer from the supplied stream.
 	 * @param \pocketmine\nbt\NBT|BinaryStream $stream
 	 *
-	 * @return int
+	 * @return int|string
 	 */
 	public static function readVarLong($stream){
 		if(PHP_INT_SIZE === 8){
@@ -476,7 +476,6 @@ class Binary{
 		for($i = 0; $i <= 63; $i += 7){
 			$b = $stream->getByte();
 			$value = bcadd($value, bcmul($b & 0x7f, bcpow("2", "$i")));
-			var_dump($value);
 
 			if(($b & 0x80) === 0){
 				return $value;
@@ -497,7 +496,6 @@ class Binary{
 		for($i = 0; $i <= 63; $i += 7){
 			$b = $stream->getByte();
 			$value |= (($b & 0x7f) << $i);
-			var_dump($value);
 
 			if(($b & 0x80) === 0){
 				return $value;

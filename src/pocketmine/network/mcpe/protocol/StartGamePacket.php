@@ -58,8 +58,8 @@ class StartGamePacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putEntityId($this->entityUniqueId); //EntityUniqueID
-		$this->putEntityId($this->entityRuntimeId); //EntityRuntimeID
+		$this->putEntityUniqueId($this->entityUniqueId); //EntityUniqueID
+		$this->putEntityRuntimeId($this->entityRuntimeId); //EntityRuntimeID
 		$this->putVector3f($this->x, $this->y, $this->z);
 		$this->putLFloat(0); //TODO: find out what these are (yaw/pitch?)
 		$this->putLFloat(0);
@@ -68,7 +68,7 @@ class StartGamePacket extends DataPacket{
 		$this->putVarInt($this->generator);
 		$this->putVarInt($this->gamemode);
 		$this->putVarInt($this->difficulty);
-		$this->putBlockCoords($this->spawnX, $this->spawnY, $this->spawnZ);
+		$this->putBlockPosition($this->spawnX, $this->spawnY, $this->spawnZ);
 		$this->putBool($this->hasAchievementsDisabled);
 		$this->putVarInt($this->dayCycleStopTime);
 		$this->putBool($this->eduMode);

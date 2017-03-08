@@ -34,13 +34,13 @@ class AnimatePacket extends DataPacket{
 
 	public function decode(){
 		$this->action = $this->getVarInt();
-		$this->eid = $this->getEntityId();
+		$this->eid = $this->getEntityRuntimeId();
 	}
 
 	public function encode(){
 		$this->reset();
 		$this->putVarInt($this->action);
-		$this->putEntityId($this->eid);
+		$this->putEntityRuntimeId($this->eid);
 	}
 
 	public function handle(NetworkSession $session) : bool{

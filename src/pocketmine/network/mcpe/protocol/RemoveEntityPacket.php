@@ -37,7 +37,7 @@ class RemoveEntityPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putEntityId($this->eid);
+		$this->putEntityUniqueId($this->eid);
 	}
 
 	public function handle(NetworkSession $session) : bool{

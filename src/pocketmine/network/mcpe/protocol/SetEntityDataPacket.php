@@ -38,7 +38,7 @@ class SetEntityDataPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putEntityId($this->eid);
+		$this->putEntityRuntimeId($this->eid);
 		$this->putEntityMetadata($this->metadata);
 	}
 

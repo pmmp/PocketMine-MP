@@ -33,7 +33,7 @@ class MobArmorEquipmentPacket extends DataPacket{
 	public $slots = [];
 
 	public function decode(){
-		$this->eid = $this->getEntityId();
+		$this->eid = $this->getEntityRuntimeId();
 		$this->slots[0] = $this->getSlot();
 		$this->slots[1] = $this->getSlot();
 		$this->slots[2] = $this->getSlot();
@@ -42,7 +42,7 @@ class MobArmorEquipmentPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putEntityId($this->eid);
+		$this->putEntityRuntimeId($this->eid);
 		$this->putSlot($this->slots[0]);
 		$this->putSlot($this->slots[1]);
 		$this->putSlot($this->slots[2]);

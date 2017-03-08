@@ -50,8 +50,8 @@ class AddEntityPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putEntityId($this->eid); //EntityUniqueID - TODO: verify this
-		$this->putEntityId($this->eid);
+		$this->putEntityUniqueId($this->eid);
+		$this->putEntityRuntimeId($this->eid);
 		$this->putUnsignedVarInt($this->type);
 		$this->putVector3f($this->x, $this->y, $this->z);
 		$this->putVector3f($this->speedX, $this->speedY, $this->speedZ);
@@ -67,8 +67,8 @@ class AddEntityPacket extends DataPacket{
 		$this->putEntityMetadata($this->metadata);
 		$this->putUnsignedVarInt(count($this->links));
 		foreach($this->links as $link){
-			$this->putEntityId($link[0]);
-			$this->putEntityId($link[1]);
+			$this->putEntityUniqueId($link[0]);
+			$this->putEntityUniqueId($link[1]);
 			$this->putByte($link[2]);
 		}
 	}
