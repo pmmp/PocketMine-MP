@@ -132,7 +132,7 @@ class TimingsCommand extends VanillaCommand{
 
 
 				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsUpload", ["http://paste.ubuntu.com/" . $matches[1] . "/"]));
-				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsRead", ["http://timings.aikar.co/?url=" . $matches[1]]));
+				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsRead", ["http://" . $sender->getServer()->getProperty("timings.host", "mcpetimings.com") . "/?url=" . $matches[1]]));
 				fclose($fileTimings);
 			}else{
 				fclose($fileTimings);

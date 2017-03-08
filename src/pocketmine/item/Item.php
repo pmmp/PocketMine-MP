@@ -291,7 +291,17 @@ class Item implements ItemIds, \JsonSerializable{
 		return -1;
 	}
 
-	public static function get(int $id, int $meta = 0, int $count = 1, string $tags = "") : Item{
+	/**
+	 * Returns an instance of the Item with the specified id, meta, count and NBT.
+	 *
+	 * @param int                $id
+	 * @param int                $meta
+	 * @param int                $count
+	 * @param CompoundTag|string $tags
+	 *
+	 * @return Item
+	 */
+	public static function get(int $id, int $meta = 0, int $count = 1, $tags = "") : Item{
 		try{
 			$class = self::$list[$id];
 			if($class === null){
