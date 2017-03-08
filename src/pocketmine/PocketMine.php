@@ -453,6 +453,10 @@ namespace pocketmine {
 		exit(1); //Exit with error
 	}
 
+	if(PHP_INT_SIZE < 8){
+		$logger->warning("Running PocketMine-MP with 32-bit systems/PHP is deprecated. Support for 32-bit may be dropped in the future.");
+	}
+
 	$gitHash = str_repeat("00", 20);
 	if(file_exists(\pocketmine\PATH . ".git/HEAD")){ //Found Git information!
 		$ref = trim(file_get_contents(\pocketmine\PATH . ".git/HEAD"));
