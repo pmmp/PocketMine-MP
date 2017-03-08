@@ -58,8 +58,8 @@ class StartGamePacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putEntityUniqueId($this->entityUniqueId); //EntityUniqueID
-		$this->putEntityRuntimeId($this->entityRuntimeId); //EntityRuntimeID
+		$this->putEntityUniqueId($this->entityUniqueId);
+		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putVector3f($this->x, $this->y, $this->z);
 		$this->putLFloat(0); //TODO: find out what these are (yaw/pitch?)
 		$this->putLFloat(0);
