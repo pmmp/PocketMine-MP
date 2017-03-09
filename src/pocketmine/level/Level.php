@@ -1574,7 +1574,7 @@ class Level implements ChunkManager, Metadatable{
 				return false;
 			}
 
-			$player->lastBreak = microtime(true);
+			$player->lastBreak = PHP_INT_MAX;
 
 			$drops = $ev->getDrops();
 
