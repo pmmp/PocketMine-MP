@@ -381,7 +381,10 @@ class Binary{
 	 * @return string
 	 */
 	public static function writeVarInt($v){
-		return self::writeUnsignedVarInt(($v << 1) ^ ($v >> (PHP_INT_SIZE === 8 ? 63 : 31)));
+		if(PHP_INT_SIZE === 8){
+			$v = ($v << 32 >> 32);
+		}
+		return self::writeUnsignedVarInt(($v << 1) ^ ($v >> 31));
 	}
 
 	/**
