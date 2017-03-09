@@ -138,7 +138,7 @@ class PlayerInventory extends BaseInventory{
 	 *
 	 * @param int  $index 0-8 index of the hotbar slot to hold
 	 * @param bool $send  Whether to send updates back to the inventory holder. This should usually be true for plugin calls.
-	 *                     It should only be false to prevent feedback loops of equipment packets between client and server.
+	 *                    It should only be false to prevent feedback loops of equipment packets between client and server.
 	 */
 	public function setHeldItemIndex($index, $send = true){
 		if($index >= 0 and $index < $this->getHotbarSize()){
