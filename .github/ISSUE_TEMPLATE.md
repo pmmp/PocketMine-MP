@@ -1,5 +1,6 @@
 ### Issue description
 <!--- use our forum https://forums.pmmp.io for questions -->
+<!--- Any issues requesting updates to new versions of MCPE will be treated as spam. We do not need issues to tell us that there is a new version available. -->
 Write a short description about the issue
 
 ### Steps to reproduce the issue

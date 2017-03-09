@@ -183,6 +183,7 @@ use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\UnknownPacket;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
+use pocketmine\network\mcpe\protocol\UpdateTradePacket;
 use pocketmine\network\mcpe\protocol\UseItemPacket;
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
@@ -771,19 +772,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$level = $level === null ? $this->level : $level;
 		$index = Level::chunkHash($x, $z);
 		if(isset($this->usedChunks[$index])){
-			$chunk = $level->getChunk($x, $z);
-			foreach($chunk->getEntities() as $entity){
+			foreach($level->getChunkEntities($x, $z) as $entity){
 				if($entity !== $this){
 					$entity->despawnFrom($this);
 				}
-			}
-
-			if($level !== $this->level){
-				$pk = new FullChunkDataPacket();
-				$pk->chunkX = $x;
-				$pk->chunkZ = $z;
-				$pk->data = chr($chunk->getSubChunkSendCount());
-				$this->dataPacket($pk);
 			}
 
 			unset($this->usedChunks[$index]);
@@ -3285,6 +3277,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		Timings::$playerCommandTimer->stopTiming();
 
 		return true;
+	}
+
+	public function handleUpdateTrade(UpdateTradePacket $packet) : bool{
+		return false;
 	}
 
 	public function handleResourcePackDataInfo(ResourcePackDataInfoPacket $packet) : bool{

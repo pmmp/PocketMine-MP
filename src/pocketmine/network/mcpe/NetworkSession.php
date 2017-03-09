@@ -101,6 +101,7 @@ use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\UnknownPacket;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
+use pocketmine\network\mcpe\protocol\UpdateTradePacket;
 use pocketmine\network\mcpe\protocol\UseItemPacket;
 
 interface NetworkSession{
@@ -260,6 +261,8 @@ interface NetworkSession{
 	public function handleAvailableCommands(AvailableCommandsPacket $packet) : bool;
 
 	public function handleCommandStep(CommandStepPacket $packet) : bool;
+
+	public function handleUpdateTrade(UpdateTradePacket $packet) : bool;
 
 	public function handleResourcePackDataInfo(ResourcePackDataInfoPacket $packet) : bool;
 
