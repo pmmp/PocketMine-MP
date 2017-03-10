@@ -25,19 +25,20 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\resourcepacks\ResourcePackInfoEntry;
 
 class ResourcePacksInfoPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::RESOURCE_PACKS_INFO_PACKET;
 
 	public $mustAccept = false; //if true, forces client to use selected resource packs
-	/** @var ResourcePackInfoEntry[] */
+	/** @var ResourcePack[] */
 	public $behaviorPackEntries = [];
-	/** @var ResourcePackInfoEntry[] */
+	/** @var ResourcePack[] */
 	public $resourcePackEntries = [];
 
 	public function decode(){
-		$this->mustAccept = $this->getBool();
+		/*$this->mustAccept = $this->getBool();
 		$behaviorPackCount = $this->getLShort();
 		while($behaviorPackCount-- > 0){
 			$id = $this->getString();
@@ -52,7 +53,7 @@ class ResourcePacksInfoPacket extends DataPacket{
 			$version = $this->getString();
 			$size = $this->getLLong();
 			$this->resourcePackEntries[] = new ResourcePackInfoEntry($id, $version, $size);
-		}
+		}*/
 	}
 
 	public function encode(){
@@ -62,13 +63,13 @@ class ResourcePacksInfoPacket extends DataPacket{
 		$this->putLShort(count($this->behaviorPackEntries));
 		foreach($this->behaviorPackEntries as $entry){
 			$this->putString($entry->getPackId());
-			$this->putString($entry->getVersion());
+			$this->putString($entry->getPackVersion());
 			$this->putLLong($entry->getPackSize());
 		}
 		$this->putLShort(count($this->resourcePackEntries));
 		foreach($this->resourcePackEntries as $entry){
 			$this->putString($entry->getPackId());
-			$this->putString($entry->getVersion());
+			$this->putString($entry->getPackVersion());
 			$this->putLLong($entry->getPackSize());
 		}
 	}

@@ -20,31 +20,20 @@
 */
 
 
-namespace pocketmine\network\mcpe\protocol;
-
-#include <rules/DataPacket.h>
+namespace pocketmine\resourcepacks;
 
 
-use pocketmine\network\mcpe\NetworkSession;
+interface ResourcePack{
 
-class ResourcePackChunkRequestPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_CHUNK_REQUEST_PACKET;
+	public function getPackName() : string;
 
-	public $packId;
-	public $chunkIndex;
+	public function getPackId() : string;
 
-	public function decode(){
-		$this->packId = $this->getString();
-		$this->chunkIndex = $this->getLInt();
-	}
+	public function getPackSize() : int;
 
-	public function encode(){
-		$this->reset();
-		$this->putString($this->packId);
-		$this->putLInt($this->chunkIndex);
-	}
+	public function getPackVersion() : string;
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleResourcePackChunkRequest($this);
-	}
+	public function getSha256() : string;
+
+	public function getPackChunk(int $start, int $length) : string;
 }

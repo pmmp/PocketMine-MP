@@ -31,21 +31,22 @@ class ResourcePackChunkDataPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_CHUNK_DATA_PACKET;
 
 	public $packId;
-	public $unknown1;
-	public $unknown2;
+	public $chunkIndex;
+	public $progress;
 	public $data;
 
 	public function decode(){
 		$this->packId = $this->getString();
-		$this->unknown1 = $this->getLInt();
-		$this->unknown2 = $this->getLLong();
+		$this->chunkIndex = $this->getLInt();
+		$this->progress = $this->getLLong();
 		$this->data = $this->get($this->getLInt());
 	}
 
 	public function encode(){
+		$this->reset();
 		$this->putString($this->packId);
-		$this->putLInt($this->unknown1);
-		$this->putLLong($this->unknown2);
+		$this->putLInt($this->chunkIndex);
+		$this->putLLong($this->progress);
 		$this->putLInt(strlen($this->data));
 		$this->put($this->data);
 	}
