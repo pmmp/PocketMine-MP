@@ -398,11 +398,6 @@ namespace pocketmine {
 		++$errors;
 	}
 
-	if(!extension_loaded("sockets")){
-		$logger->critical("Unable to find the Socket extension.");
-		++$errors;
-	}
-
 	$pthreads_version = phpversion("pthreads");
 	if(substr_count($pthreads_version, ".") < 2){
 		$pthreads_version = "0.$pthreads_version";
@@ -431,24 +426,22 @@ namespace pocketmine {
 		");
 	}
 
-	if(!extension_loaded("curl")){
-		$logger->critical("Unable to find the cURL extension.");
-		++$errors;
-	}
+	$extensions = [
+		"curl" => "cURL",
+		"json" => "JSON",
+		"mbstring" => "Multibyte String",
+		"yaml" => "YAML",
+		"openssl" => "OpenSSL",
+		"sockets" => "Sockets",
+		"zip" => "Zip",
+		"zlib" => "Zlib"
+	];
 
-	if(!extension_loaded("yaml")){
-		$logger->critical("Unable to find the YAML extension.");
-		++$errors;
-	}
-
-	if(!extension_loaded("zlib")){
-		$logger->critical("Unable to find the Zlib extension.");
-		++$errors;
-	}
-
-	if(!extension_loaded("openssl")){
-		$logger->critical("Unable to find the OpenSSL extension.");
-		++$errors;
+	foreach($extensions as $ext => $name){
+		if(!extension_loaded($ext)){
+			$logger->critical("Unable to find the $name ($ext) extension.");
+			++$errors;
+		}
 	}
 
 	if($errors > 0){
