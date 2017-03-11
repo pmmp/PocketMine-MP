@@ -57,13 +57,11 @@ class ResourcePackManager{
 			throw new \InvalidArgumentException("Resource packs path $path exists and is not a directory");
 		}
 
-		$this->resourcePacksConfig = new Config($this->path . "resource_packs.yml", Config::YAML, []);
-
-		if(count($this->resourcePacksConfig->getAll()) === 0){
-			$this->resourcePacksConfig->set("force_resources", false);
-			$this->resourcePacksConfig->set("resource_stack", []);
-			$this->resourcePacksConfig->save();
+		if(!file_exists($this->path . "resource_packs.yml")){
+			file_put_contents($this->path . "resource_packs.yml", file_get_contents($this->server->getFilePath() . "src/pocketmine/resources/resource_packs.yml"));
 		}
+
+		$this->resourcePacksConfig = new Config($this->path . "resource_packs.yml", Config::YAML, []);
 
 		$this->serverForceResources = (bool) $this->resourcePacksConfig->get("force_resources", false);
 
