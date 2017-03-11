@@ -1993,7 +1993,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					$pack = $manager->getPackById($uuid);
 					if(!($pack instanceof ResourcePack)){
 						//Client requested a resource pack but we don't have it available on the server
-						$this->close("", "disconnectionScreen.resourcePack", true); //TODO: add strings to lang files
+						$this->close("", "disconnectionScreen.resourcePack", true);
 						break;
 					}
 
