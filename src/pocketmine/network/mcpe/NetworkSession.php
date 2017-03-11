@@ -35,10 +35,12 @@ use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
+use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
 use pocketmine\network\mcpe\protocol\ChangeDimensionPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundMapItemDataPacket;
 use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
+use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\CommandStepPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
@@ -69,6 +71,7 @@ use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\PlayerFallPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
+use pocketmine\network\mcpe\protocol\PlaySoundPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\RemoveBlockPacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
@@ -92,9 +95,11 @@ use pocketmine\network\mcpe\protocol\SetHealthPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
 use pocketmine\network\mcpe\protocol\SetTimePacket;
+use pocketmine\network\mcpe\protocol\SetTitlePacket;
 use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
+use pocketmine\network\mcpe\protocol\StopSoundPacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
@@ -173,6 +178,8 @@ interface NetworkSession{
 	public function handleMobArmorEquipment(MobArmorEquipmentPacket $packet) : bool;
 
 	public function handleInteract(InteractPacket $packet) : bool;
+
+	public function handleBlockPickRequest(BlockPickRequestPacket $packet) : bool;
 
 	public function handleUseItem(UseItemPacket $packet) : bool;
 
@@ -262,6 +269,8 @@ interface NetworkSession{
 
 	public function handleCommandStep(CommandStepPacket $packet) : bool;
 
+	public function handleCommandBlockUpdate(CommandBlockUpdatePacket $packet) : bool;
+
 	public function handleUpdateTrade(UpdateTradePacket $packet) : bool;
 
 	public function handleResourcePackDataInfo(ResourcePackDataInfoPacket $packet) : bool;
@@ -271,6 +280,12 @@ interface NetworkSession{
 	public function handleResourcePackChunkRequest(ResourcePackChunkRequestPacket $packet) : bool;
 
 	public function handleTransfer(TransferPacket $packet) : bool;
+
+	public function handlePlaySound(PlaySoundPacket $packet) : bool;
+
+	public function handleStopSound(StopSoundPacket $packet) : bool;
+
+	public function handleSetTitle(SetTitlePacket $packet) : bool;
 
 	public function handleUnknown(UnknownPacket $packet) : bool;
 }

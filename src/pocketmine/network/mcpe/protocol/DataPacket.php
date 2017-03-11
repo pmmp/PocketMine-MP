@@ -116,17 +116,15 @@ abstract class DataPacket extends BinaryStream{
 					$value[2] = $item->getDamage();
 					break;
 				case Entity::DATA_TYPE_POS:
-					$value = [];
-					$value[0] = $this->getVarInt(); //x
-					$value[1] = $this->getVarInt(); //y (SIGNED)
-					$value[2] = $this->getVarInt(); //z
+					$value = [0, 0, 0];
+					$this->getSignedBlockPosition(...$value);
 					break;
 				case Entity::DATA_TYPE_LONG:
 					$value = $this->getVarLong();
 					break;
 				case Entity::DATA_TYPE_VECTOR3F:
 					$value = [0.0, 0.0, 0.0];
-					$this->getVector3f($value[0], $value[1], $value[2]);
+					$this->getVector3f(...$value);
 					break;
 				default:
 					$value = [];
@@ -173,16 +171,14 @@ abstract class DataPacket extends BinaryStream{
 					break;
 				case Entity::DATA_TYPE_POS:
 					//TODO: change this implementation (use objects)
-					$this->putVarInt($d[1][0]); //x
-					$this->putVarInt($d[1][1]); //y (SIGNED)
-					$this->putVarInt($d[1][2]); //z
+					$this->putSignedBlockPosition(...$d[1]);
 					break;
 				case Entity::DATA_TYPE_LONG:
 					$this->putVarLong($d[1]);
 					break;
 				case Entity::DATA_TYPE_VECTOR3F:
 					//TODO: change this implementation (use objects)
-					$this->putVector3f($d[1][0], $d[1][1], $d[1][2]); //x, y, z
+					$this->putVector3f(...$d[1]); //x, y, z
 			}
 		}
 	}
@@ -220,7 +216,7 @@ abstract class DataPacket extends BinaryStream{
 	}
 
 	/**
-	 * Writes an block position with unsigned Y coordinate.
+	 * Reads an block position with unsigned Y coordinate.
 	 * @param int $x
 	 * @param int $y 0-255
 	 * @param int $z
@@ -232,7 +228,7 @@ abstract class DataPacket extends BinaryStream{
 	}
 
 	/**
-	 * Reads a block position with unsigned Y coordinate.
+	 * Writes a block position with unsigned Y coordinate.
 	 * @param int &$x
 	 * @param int &$y
 	 * @param int &$z
@@ -240,6 +236,30 @@ abstract class DataPacket extends BinaryStream{
 	public function putBlockPosition($x, $y, $z){
 		$this->putVarInt($x);
 		$this->putUnsignedVarInt($y);
+		$this->putVarInt($z);
+	}
+
+	/**
+	 * Reads a block position with a signed Y coordinate.
+	 * @param int &$x
+	 * @param int &$y
+	 * @param int &$z
+	 */
+	public function getSignedBlockPosition(&$x, &$y, &$z){
+		$x = $this->getVarInt();
+		$y = $this->getVarInt();
+		$z = $this->getVarInt();
+	}
+
+	/**
+	 * Writes a block position with a signed Y coordinate.
+	 * @param int $x
+	 * @param int $y
+	 * @param int $z
+	 */
+	public function putSignedBlockPosition($x, $y, $z){
+		$this->putVarInt($x);
+		$this->putVarInt($y);
 		$this->putVarInt($z);
 	}
 
