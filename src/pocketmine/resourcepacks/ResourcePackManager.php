@@ -126,4 +126,11 @@ class ResourcePackManager{
 	public function getPackById(string $id){
 		return $this->uuidList[$id] ?? null;
 	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getPackIdList() : array{
+		return array_keys($this->uuidList);
+	}
 }
