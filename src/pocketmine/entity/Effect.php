@@ -291,7 +291,7 @@ class Effect{
 			case Effect::HEALTH_BOOST:
 				$attr = $entity->getAttributeMap()->getAttribute(Attribute::HEALTH);
 				if($ev->willModify() and $oldEffect !== null){
-					$max = $attr->getMaxValue() - (4 * ($this->amplifier + 1));
+					$max = $attr->getMaxValue() - (4 * ($oldEffect->getAmplifier() + 1));
 				}else{
 					$max = $attr->getMaxValue();
 				}
