@@ -1643,10 +1643,15 @@ abstract class Entity extends Location implements Metadatable{
 			$this->despawnFromAll();
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
+				$this->chunk = null;
 			}
+
 			if($this->getLevel() !== null){
 				$this->getLevel()->removeEntity($this);
+				$this->setLevel(null);
 			}
+
+			$this->namedtag = null;
 		}
 	}
 
