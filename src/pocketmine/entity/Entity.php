@@ -423,7 +423,7 @@ abstract class Entity extends Location implements Metadatable{
 		if($value !== $this->isSprinting()){
 			$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_SPRINTING, (bool) $value);
 			$attr = $this->attributeMap->getAttribute(Attribute::MOVEMENT_SPEED);
-			$attr->setValue($value ? ($attr->getValue() * 1.3) : ($attr->getValue() / 1.3));
+			$attr->setValue($value ? ($attr->getValue() * 1.3) : ($attr->getValue() / 1.3), false, true);
 		}
 	}
 
@@ -1643,10 +1643,15 @@ abstract class Entity extends Location implements Metadatable{
 			$this->despawnFromAll();
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
+				$this->chunk = null;
 			}
+
 			if($this->getLevel() !== null){
 				$this->getLevel()->removeEntity($this);
+				$this->setLevel(null);
 			}
+
+			$this->namedtag = null;
 		}
 	}
 

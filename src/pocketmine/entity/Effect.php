@@ -293,7 +293,7 @@ class Effect{
 				$speed = $attr->getValue();
 			}
 			$speed *= (1 - 0.15 * $this->amplifier);
-			$attr->setValue($speed);
+			$attr->setValue($speed, true);
 		}
 	}
 
