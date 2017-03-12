@@ -31,15 +31,15 @@ class MobEquipmentPacket extends DataPacket{
 
 	public $eid;
 	public $item;
-	public $slot;
-	public $selectedSlot;
+	public $inventorySlot;
+	public $hotbarSlot;
 	public $unknownByte;
 
 	public function decode(){
 		$this->eid = $this->getEntityRuntimeId();
 		$this->item = $this->getSlot();
-		$this->slot = $this->getByte();
-		$this->selectedSlot = $this->getByte();
+		$this->inventorySlot = $this->getByte();
+		$this->hotbarSlot = $this->getByte();
 		$this->unknownByte = $this->getByte();
 	}
 
@@ -47,8 +47,8 @@ class MobEquipmentPacket extends DataPacket{
 		$this->reset();
 		$this->putEntityRuntimeId($this->eid);
 		$this->putSlot($this->item);
-		$this->putByte($this->slot);
-		$this->putByte($this->selectedSlot);
+		$this->putByte($this->inventorySlot);
+		$this->putByte($this->hotbarSlot);
 		$this->putByte($this->unknownByte);
 	}
 

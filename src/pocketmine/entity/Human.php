@@ -285,6 +285,12 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			}
 		}
 
+		if(isset($this->namedtag->SelectedInventorySlot) and $this->namedtag->SelectedInventorySlot instanceof IntTag){
+			$this->inventory->setHeldItemIndex($this->namedtag->SelectedInventorySlot->getValue(), false);
+		}else{
+			$this->inventory->setHeldItemIndex(0, false);
+		}
+
 		parent::initEntity();
 
 		if(!isset($this->namedtag->foodLevel) or !($this->namedtag->foodLevel instanceof IntTag)){
@@ -428,9 +434,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			}
 
 			//Normal inventory
-			$slotCount = Player::SURVIVAL_SLOTS + 9;
-			//$slotCount = (($this instanceof Player and ($this->gamemode & 0x01) === 1) ? Player::CREATIVE_SLOTS : Player::SURVIVAL_SLOTS) + 9;
-			for($slot = 9; $slot < $slotCount; ++$slot){
+			$slotCount = $this->inventory->getSize() + $this->inventory->getHotbarSize();
+			for($slot = $this->inventory->getHotbarSize(); $slot < $slotCount; ++$slot){
 				$item = $this->inventory->getItem($slot - 9);
 				$this->namedtag->Inventory[$slot] = $item->nbtSerialize($slot);
 			}
@@ -442,6 +447,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 					$this->namedtag->Inventory[$slot] = $item->nbtSerialize($slot);
 				}
 			}
+
+			$this->namedtag->SelectedInventorySlot = new IntTag("SelectedInventorySlot", $this->inventory->getHeldItemIndex());
 		}
 
 		if(strlen($this->getSkinData()) > 0){

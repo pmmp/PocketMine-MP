@@ -207,9 +207,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	const SPECTATOR = 3;
 	const VIEW = Player::SPECTATOR;
 
-	const SURVIVAL_SLOTS = 36;
-	const CREATIVE_SLOTS = 112;
-
 	/**
 	 * Checks a supplied username and checks it is valid.
 	 * @param string $name
@@ -881,6 +878,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->sendData($this);
 		$this->inventory->sendContents($this);
 		$this->inventory->sendArmorContents($this);
+		$this->inventory->sendHeldItem($this);
 
 		$pk = new SetTimePacket();
 		$pk->time = $this->level->getTime();
@@ -1809,12 +1807,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return;
 		}
 
-		if($this->isCreative()){
-			$this->inventory->setHeldItemSlot(0);
-		}else{
-			$this->inventory->setHeldItemSlot($this->inventory->getHotbarSlotIndex(0));
-		}
-
 		if(!$this->hasValidSpawnPosition() and isset($this->namedtag->SpawnLevel) and ($level = $this->server->getLevelByName($this->namedtag["SpawnLevel"])) instanceof Level){
 			$this->spawnPosition = new WeakPosition($this->namedtag["SpawnX"], $this->namedtag["SpawnY"], $this->namedtag["SpawnZ"], $level);
 		}
@@ -2251,63 +2243,19 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return true;
 		}
 
-		if($packet->slot === 0x28 or $packet->slot === 0 or $packet->slot === 255){ //0 for 0.8.0 compatibility
-			$packet->slot = -1; //Air
+		if($packet->inventorySlot === 255){
+			$packet->inventorySlot = -1; //Cleared slot
 		}else{
-			$packet->slot -= 9; //Get real block slot
-		}
+			$packet->inventorySlot -= 9; //Get real inventory slot
+			$item = $this->inventory->getItem($packet->inventorySlot);
 
-		/** @var Item $item */
-		$item = null;
-
-		if($this->isCreative()){ //Creative mode match
-			$item = $packet->item;
-			$slot = Item::getCreativeItemIndex($item);
-		}else{
-			$item = $this->inventory->getItem($packet->slot);
-			$slot = $packet->slot;
-		}
-
-		if($packet->slot === -1){ //Air
-			if($this->isCreative()){
-				$found = false;
-				for($i = 0; $i < $this->inventory->getHotbarSize(); ++$i){
-					if($this->inventory->getHotbarSlotIndex($i) === -1){
-						$this->inventory->setHeldItemIndex($i);
-						$found = true;
-						break;
-					}
-				}
-
-				if(!$found){ //couldn't find a empty slot (error)
-					$this->inventory->sendContents($this);
-					return true;
-				}
-			}else{
-				if($packet->selectedSlot >= 0 and $packet->selectedSlot < 9){
-					$this->inventory->setHeldItemIndex($packet->selectedSlot, false);
-					$this->inventory->setHeldItemSlot($packet->slot);
-				}else{
-					$this->inventory->sendContents($this);
-					return true;
-				}
-			}
-		}elseif($item === null or $slot === -1 or !$item->deepEquals($packet->item)){ // packet error or not implemented
-			$this->inventory->sendContents($this);
-			return true;
-		}elseif($this->isCreative()){
-			$this->inventory->setHeldItemIndex($packet->selectedSlot, false);
-			$this->inventory->setItem($packet->selectedSlot, $item);
-			$this->inventory->setHeldItemSlot($packet->selectedSlot);
-		}else{
-			if($packet->selectedSlot >= 0 and $packet->selectedSlot < $this->inventory->getHotbarSize()){
-				$this->inventory->setHeldItemIndex($packet->selectedSlot, false);
-				$this->inventory->setHeldItemSlot($slot);
-			}else{
+			if(!$item->equals($packet->item)){
 				$this->inventory->sendContents($this);
-				return true;
+				return false;
 			}
 		}
+
+		$this->inventory->equipItem($packet->hotbarSlot, $packet->inventorySlot);
 
 		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
 
@@ -2890,29 +2838,34 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return false;
 		}
 
-		if($packet->windowid === 0){ //Our inventory
-			if($packet->slot >= $this->inventory->getSize()){
-				return false;
-			}
-			if($this->isCreative()){
-				if(Item::getCreativeItemIndex($packet->item) !== -1){
-					$this->inventory->setItem($packet->slot, $packet->item);
-					$this->inventory->setHotbarSlotIndex($packet->slot, $packet->slot); //links $hotbar[$packet->slot] to $slots[$packet->slot]
+		switch($packet->windowid){
+			case ContainerSetContentPacket::SPECIAL_INVENTORY: //Normal inventory change
+				if($packet->slot >= $this->inventory->getSize()){
+					return false;
 				}
-			}
-			$transaction = new BaseTransaction($this->inventory, $packet->slot, $this->inventory->getItem($packet->slot), $packet->item);
-		}elseif($packet->windowid === ContainerSetContentPacket::SPECIAL_ARMOR){ //Our armor
-			if($packet->slot >= 4){
-				return false;
-			}
 
-			$transaction = new BaseTransaction($this->inventory, $packet->slot + $this->inventory->getSize(), $this->inventory->getArmorItem($packet->slot), $packet->item);
-		}elseif(isset($this->windowIndex[$packet->windowid])){
-			$this->craftingType = 0;
-			$inv = $this->windowIndex[$packet->windowid];
-			$transaction = new BaseTransaction($inv, $packet->slot, $inv->getItem($packet->slot), $packet->item);
-		}else{
-			return false;
+				$transaction = new BaseTransaction($this->inventory, $packet->slot, $this->inventory->getItem($packet->slot), $packet->item);
+				break;
+			case ContainerSetContentPacket::SPECIAL_ARMOR: //Armour change
+				if($packet->slot >= 4){
+					return false;
+				}
+
+				$transaction = new BaseTransaction($this->inventory, $packet->slot + $this->inventory->getSize(), $this->inventory->getArmorItem($packet->slot), $packet->item);
+				break;
+			case ContainerSetContentPacket::SPECIAL_HOTBAR: //Hotbar link update
+				//hotbarSlot 0-8, slot 9-44
+				$this->inventory->setHotbarSlotIndex($packet->hotbarSlot, $packet->slot - 9);
+				return true;
+			default:
+				if(!isset($this->windowIndex[$packet->windowid])){
+					return false; //unknown windowID and/or not matching any open windows
+				}
+
+				$this->craftingType = 0;
+				$inv = $this->windowIndex[$packet->windowid];
+				$transaction = new BaseTransaction($inv, $packet->slot, $inv->getItem($packet->slot), $packet->item);
+				break;
 		}
 
 		if($transaction->getSourceItem()->deepEquals($transaction->getTargetItem()) and $transaction->getTargetItem()->getCount() === $transaction->getSourceItem()->getCount()){ //No changes!
@@ -3758,6 +3711,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 			if($this->inventory !== null){
 				$this->inventory->clearAll();
+				$this->inventory->setHeldItemIndex(0);
+				$this->inventory->resetHotbar(true);
 			}
 		}
 
