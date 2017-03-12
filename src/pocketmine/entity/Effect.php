@@ -263,27 +263,42 @@ class Effect{
 			$entity->dataPacket($pk);
 		}
 
-		if($this->id === Effect::INVISIBILITY){
-			$entity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INVISIBLE, true);
-			$entity->setNameTagVisible(false);
-		}elseif($this->id === Effect::SPEED){
-			$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
-			if($ev->willModify() and $oldEffect !== null){
-				$speed = $attr->getValue() / (1 + 0.2 * $oldEffect->getAmplifier());
-			}else{
-				$speed = $attr->getValue();
-			}
-			$speed *= (1 + 0.2 * $this->amplifier);
-			$attr->setValue($speed);
-		}elseif($this->id === Effect::SLOWNESS){
-			$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
-			if($ev->willModify() and $oldEffect !== null){
-				$speed = $attr->getValue() / (1 - 0.15 * $oldEffect->getAmplifier());
-			}else{
-				$speed = $attr->getValue();
-			}
-			$speed *= (1 - 0.15 * $this->amplifier);
-			$attr->setValue($speed, true);
+		switch($this->id){
+			case Effect::INVISIBILITY:
+				$entity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INVISIBLE, true);
+				$entity->setNameTagVisible(false);
+				break;
+			case Effect::SPEED:
+				$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
+				if($ev->willModify() and $oldEffect !== null){
+					$speed = $attr->getValue() / (1 + 0.2 * $oldEffect->getAmplifier());
+				}else{
+					$speed = $attr->getValue();
+				}
+				$speed *= (1 + 0.2 * $this->amplifier);
+				$attr->setValue($speed);
+				break;
+			case Effect::SLOWNESS:
+				$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
+				if($ev->willModify() and $oldEffect !== null){
+					$speed = $attr->getValue() / (1 - 0.15 * $oldEffect->getAmplifier());
+				}else{
+					$speed = $attr->getValue();
+				}
+				$speed *= (1 - 0.15 * $this->amplifier);
+				$attr->setValue($speed, true);
+				break;
+			case Effect::HEALTH_BOOST:
+				$attr = $entity->getAttributeMap()->getAttribute(Attribute::HEALTH);
+				if($ev->willModify() and $oldEffect !== null){
+					$max = $attr->getMaxValue() - (4 * ($this->amplifier + 1));
+				}else{
+					$max = $attr->getMaxValue();
+				}
+
+				$max += (4 * ($this->amplifier + 1));
+				$attr->setMaxValue($max);
+				break;
 		}
 	}
 
@@ -301,15 +316,23 @@ class Effect{
 			$entity->dataPacket($pk);
 		}
 
-		if($this->id === Effect::INVISIBILITY){
-			$entity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INVISIBLE, false);
-			$entity->setNameTagVisible(true);
-		}elseif($this->id === Effect::SPEED){
-			$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
-			$attr->setValue($attr->getValue() / (1 + 0.2 * $this->amplifier));
-		}elseif($this->id === Effect::SLOWNESS){
-			$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
-			$attr->setValue($attr->getValue() / (1 - 0.15 * $this->amplifier));
+		switch($this->id){
+			case Effect::INVISIBILITY:
+				$entity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INVISIBLE, false);
+				$entity->setNameTagVisible(true);
+				break;
+			case Effect::SPEED:
+				$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
+				$attr->setValue($attr->getValue() / (1 + 0.2 * $this->amplifier));
+				break;
+			case Effect::SLOWNESS:
+				$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
+				$attr->setValue($attr->getValue() / (1 - 0.15 * $this->amplifier));
+				break;
+			case Effect::HEALTH_BOOST:
+				$attr = $entity->getAttributeMap()->getAttribute(Attribute::HEALTH);
+				$attr->setMaxValue($attr->getMaxValue() - (4 * ($this->amplifier + 1)));
+				break;
 		}
 	}
 }
