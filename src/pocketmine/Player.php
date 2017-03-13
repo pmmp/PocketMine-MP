@@ -3274,7 +3274,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pack = $manager->getPackById($packet->packId);
 		if(!($pack instanceof ResourcePack)){
 			$this->close("", "disconnectionScreen.resourcePack", true);
-			$this->server->getLogger()->debug("Got a resource pack chunk request for unknown pack with UUID " . $uuid . ", available packs: " . implode(", ", $manager->getPackIdList()));
+			$this->server->getLogger()->debug("Got a resource pack chunk request for unknown pack with UUID " . $packet->packId . ", available packs: " . implode(", ", $manager->getPackIdList()));
 
 			return true;
 		}
