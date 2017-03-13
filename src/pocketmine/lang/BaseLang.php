@@ -34,21 +34,29 @@ class BaseLang{
 			$path = \pocketmine\PATH . "src/pocketmine/lang/locale/";
 		}
 
-		$files = array_filter(scandir($path), function($filename){
-			return substr($filename, -4) === ".ini";
-		});
+		if(is_dir($path)){
+			$allFiles = scandir($path);
 
-		$result = [];
+			if($allFiles !== false){
+				$files = array_filter($allFiles, function($filename){
+					return substr($filename, -4) === ".ini";
+				});
 
-		foreach($files as $file){
-			$strings = [];
-			self::loadLang($path . $file, $strings);
-			if(isset($strings["language.name"])){
-				$result[substr($file, 0, -4)] = $strings["language.name"];
+				$result = [];
+
+				foreach($files as $file){
+					$strings = [];
+					self::loadLang($path . $file, $strings);
+					if(isset($strings["language.name"])){
+						$result[substr($file, 0, -4)] = $strings["language.name"];
+					}
+				}
+
+				return $result;
 			}
 		}
 
-		return $result;
+		return [];
 	}
 
 	protected $langName;

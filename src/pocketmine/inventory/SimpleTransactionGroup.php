@@ -98,7 +98,7 @@ class SimpleTransactionGroup implements TransactionGroup{
 			}
 			$checkSourceItem = $ts->getInventory()->getItem($ts->getSlot());
 			$sourceItem = $ts->getSourceItem();
-			if(!$checkSourceItem->deepEquals($sourceItem) or $sourceItem->getCount() !== $checkSourceItem->getCount()){
+			if(!$checkSourceItem->equals($sourceItem) or $sourceItem->getCount() !== $checkSourceItem->getCount()){
 				return false;
 			}
 			if($sourceItem->getId() !== Item::AIR){
@@ -108,7 +108,7 @@ class SimpleTransactionGroup implements TransactionGroup{
 
 		foreach($needItems as $i => $needItem){
 			foreach($haveItems as $j => $haveItem){
-				if($needItem->deepEquals($haveItem)){
+				if($needItem->equals($haveItem)){
 					$amount = min($needItem->getCount(), $haveItem->getCount());
 					$needItem->setCount($needItem->getCount() - $amount);
 					$haveItem->setCount($haveItem->getCount() - $amount);
@@ -130,7 +130,21 @@ class SimpleTransactionGroup implements TransactionGroup{
 		$haveItems = [];
 		$needItems = [];
 
-		return $this->matchItems($haveItems, $needItems) and count($haveItems) === 0 and count($needItems) === 0 and count($this->transactions) > 0;
+		if($this->matchItems($needItems, $haveItems) and count($this->transactions) > 0){
+			if(count($haveItems) === 0 and count($needItems) === 0){
+				return true;
+			}elseif($this->source->isCreative(true) and count($needItems) > 0){ //Added items from creative inventory
+				foreach($needItems as $item){
+					if(Item::getCreativeItemIndex($item) === -1 and $item->getId() !== Item::AIR){
+						return false;
+					}
+				}
+
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public function execute(){

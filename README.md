@@ -16,16 +16,14 @@ If you don't find what you're looking for there, [talk to a human](#discussion).
 There are a very wide range of already-written plugins available which you can use to customise your server. Check out the [old plugin repository](http://plugins.pocketmine.net/), [Poggit](https://poggit.pmmp.io) or just search GitHub.
 
 ### For developers
- * [Latest API documentation](https://jenkins.pmmp.io/job/PocketMine-MP%20Docs/doxygen/) - Doxygen documentation generated from development
+ * [Latest API documentation](https://jenkins.pmmp.io/job/PocketMine-MP-doc/doxygen/) - Doxygen documentation generated from development
  * [DevTools](https://github.com/pmmp/PocketMine-DevTools/) - A development tools plugin for creating plugins.
 
 ### Can I contribute?
 Yes you can! Contributions are welcomed provided that they comply with our [Contributing Guidelines](CONTRIBUTING.md). Please ensure you read the relevant sections of the guidelines carefully before making a Pull Request or opening an Issue.
 
-<!-- TODO uncomment this when Jenkins is fixed
 ### Where can I get the latest .phar?
 Head over to our [official Jenkins server](https://jenkins.pmmp.io/)
--->
 
 ## Third-party Libraries/Protocols Used
 * __[PHP Sockets](http://php.net/manual/en/book.sockets.php)__

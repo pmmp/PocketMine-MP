@@ -155,6 +155,8 @@ class Level implements ChunkManager, Metadatable{
 
 	private $cacheChunks = false;
 
+	private $sendTimeTicker = 0;
+
 	/** @var Server */
 	private $server;
 
@@ -620,7 +622,7 @@ class Level implements ChunkManager, Metadatable{
 		if($this->stopTime === true){
 			return;
 		}else{
-			$this->time += $this->tickRate;
+			$this->time += 1;
 		}
 	}
 
@@ -648,6 +650,11 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->doTick->startTiming();
 
 		$this->checkTime();
+
+		if(++$this->sendTimeTicker === 200){
+			$this->sendTime();
+			$this->sendTimeTicker = 0;
+		}
 
 		$this->unloadChunks();
 
@@ -1499,7 +1506,7 @@ class Level implements ChunkManager, Metadatable{
 		if($player !== null){
 			$ev = new BlockBreakEvent($player, $target, $item, ($player->isCreative() or $player->allowInstaBreak()));
 
-			if($player->isSurvival() and $item instanceof Item and !$target->isBreakable($item)){
+			if(($player->isSurvival() and $item instanceof Item and !$target->isBreakable($item)) or $player->isSpectator()){
 				$ev->setCancelled();
 			}elseif(!$player->isOp() and ($distance = $this->server->getSpawnRadius()) > -1){
 				$t = new Vector2($target->x, $target->z);
