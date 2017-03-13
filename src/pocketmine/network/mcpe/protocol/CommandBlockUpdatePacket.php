@@ -30,7 +30,7 @@ use pocketmine\network\mcpe\NetworkSession;
 class CommandBlockUpdatePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::COMMAND_BLOCK_UPDATE_PACKET;
 
-	public $isCommandBlockUpdate;
+	public $isBlock;
 
 	public $x;
 	public $y;
@@ -39,7 +39,7 @@ class CommandBlockUpdatePacket extends DataPacket{
 	public $isRedstoneMode;
 	public $isConditional;
 
-	public $eid;
+	public $minecartEid;
 
 	public $command;
 	public $lastOutput;
@@ -48,15 +48,16 @@ class CommandBlockUpdatePacket extends DataPacket{
 	public $shouldTrackOutput;
 
 	public function decode(){
-		$this->isCommandBlockUpdate = $this->getBool();
+		$this->isBlock = $this->getBool();
 
-		if($this->isCommandBlockUpdate){
+		if($this->isBlock){
 			$this->getBlockPosition($this->x, $this->y, $this->z);
 			$this->commandBlockMode = $this->getUnsignedVarInt();
 			$this->isRedstoneMode = $this->getBool();
 			$this->isConditional = $this->getBool();
 		}else{
-			$this->eid = $this->getEntityRuntimeId();
+			//Minecart with command block
+			$this->minecartEid = $this->getEntityRuntimeId();
 		}
 
 		$this->command = $this->getString();
@@ -68,15 +69,15 @@ class CommandBlockUpdatePacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putBool($this->isCommandBlockUpdate);
+		$this->putBool($this->isBlock);
 
-		if($this->isCommandBlockUpdate){
+		if($this->isBlock){
 			$this->putBlockPosition($this->x, $this->y, $this->z);
 			$this->putUnsignedVarInt($this->commandBlockMode);
 			$this->putBool($this->isRedstoneMode);
 			$this->putBool($this->isConditional);
 		}else{
-			$this->putEntityRuntimeId($this->eid);
+			$this->putEntityRuntimeId($this->minecartEid);
 		}
 
 		$this->putString($this->command);
