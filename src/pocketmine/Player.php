@@ -2006,6 +2006,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			case ResourcePackClientResponsePacket::STATUS_COMPLETED:
 				$this->processLogin();
 				break;
+			default:
+				return false;
 		}
 
 		return true;
