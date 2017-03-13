@@ -26,14 +26,14 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\protocol\types\InventoryNetworkIds;
+use pocketmine\network\mcpe\protocol\types\WindowTypes;
 
 class UpdateTradePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::UPDATE_TRADE_PACKET;
 
 	//TODO: find fields
 	public $windowId;
-	public $windowType = InventoryNetworkIds::TRADING; //Mojang hardcoded this -_-
+	public $windowType = WindowTypes::TRADING; //Mojang hardcoded this -_-
 	public $varint1;
 	public $varint2;
 	public $isWilling;
