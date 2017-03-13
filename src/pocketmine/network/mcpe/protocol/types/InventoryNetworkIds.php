@@ -39,4 +39,9 @@ interface InventoryNetworkIds{
 	const MINECART_CHEST = 10;
 	const MINECART_HOPPER = 11;
 	const HORSE = 12;
+	const BEACON = 13;
+	const STRUCTURE_EDITOR = 14;
+	const TRADING = 15;
+	const COMMAND_BLOCK = 16;
+
 }
