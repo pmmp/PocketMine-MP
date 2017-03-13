@@ -24,10 +24,13 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 
+/**
+ * Called when an entity takes damage from another entity.
+ */
 class EntityDamageByEntityEvent extends EntityDamageEvent{
 
-	/** @var Entity */
-	private $damager;
+	/** @var int */
+	private $damagerEid;
 	/** @var float */
 	private $knockBack;
 
@@ -39,7 +42,7 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	 * @param float     $knockBack
 	 */
 	public function __construct(Entity $damager, Entity $entity, $cause, $damage, $knockBack = 0.4){
-		$this->damager = $damager;
+		$this->damagerEid = $damager->getId();
 		$this->knockBack = $knockBack;
 		parent::__construct($entity, $cause, $damage);
 		$this->addAttackerModifiers($damager);
@@ -56,10 +59,12 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	}
 
 	/**
-	 * @return Entity
+	 * Returns the attacking entity, or null if the attacker has been killed or closed.
+	 *
+	 * @return Entity|null
 	 */
 	public function getDamager(){
-		return $this->damager;
+		return $this->getEntity()->getLevel()->getServer()->findEntity($this->damagerEid, $this->getEntity()->getLevel());
 	}
 
 	/**

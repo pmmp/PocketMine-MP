@@ -1088,6 +1088,31 @@ class Server{
 	}
 
 	/**
+	 * Searches all levels for the entity with the specified ID.
+	 * Useful for tracking entities across multiple worlds without needing strong references.
+	 *
+	 * @param int        $entityId
+	 * @param Level|null $expectedLevel Level to look in first for the target
+	 *
+	 * @return Entity|null
+	 */
+	public function findEntity(int $entityId, Level $expectedLevel = null){
+		$levels = $this->levels;
+		if($expectedLevel !== null){
+			array_unshift($levels, $expectedLevel);
+		}
+
+		foreach($levels as $level){
+			assert(!$level->isClosed());
+			if(($entity = $level->getEntity($entityId)) instanceof Entity){
+				return $entity;
+			}
+		}
+
+		return null;
+	}
+
+	/**
 	 * @param string $variable
 	 * @param string $defaultValue
 	 *
