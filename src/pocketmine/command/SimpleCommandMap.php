@@ -243,18 +243,30 @@ class SimpleCommandMap implements CommandMap{
 			$targets = [];
 
 			$bad = "";
+			$recursive = "";
 			foreach($commandStrings as $commandString){
 				$args = explode(" ", $commandString);
 				$command = $this->getCommand($args[0]);
+
 
 				if($command === null){
 					if(strlen($bad) > 0){
 						$bad .= ", ";
 					}
 					$bad .= $commandString;
+				}elseif($args[0] === $alias){
+					if($recursive !== ""){
+						$recursive .= ", ";
+					}
+					$recursive .= $commandString;
 				}else{
 					$targets[] = $commandString;
 				}
+			}
+
+			if($recursive !== ""){
+				$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.command.alias.recursive", [$alias, $recursive]));
+				continue;
 			}
 
 			if(strlen($bad) > 0){
