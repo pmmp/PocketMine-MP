@@ -94,8 +94,10 @@ class PlayerInventory extends BaseInventory{
 	}
 
 	/**
-	 * @internal This method is intended for use in network interaction with clients only.
-	 * @deprecated Do not change hotbar slot mapping with plugins, this will cause myriad client-sided bugs, especially with desktop GUI clients.
+	 * Links a hotbar slot to the specified slot in the main inventory. -1 links to no slot and will clear the hotbar slot.
+	 * This method is intended for use in network interaction with clients only.
+	 *
+	 * NOTE: Do not change hotbar slot mapping with plugins, this will cause myriad client-sided bugs, especially with desktop GUI clients.
 	 *
 	 * @param int $hotbarSlot
 	 * @param int $inventorySlot
