@@ -64,6 +64,27 @@ class Sign extends Spawnable{
 
 		return true;
 	}
+	
+	/**
+	 * @param int    $index 0-3
+	 * @param string $line
+	 * @param bool $update
+	 */
+	public function setLine(int $index, string $line, bool $update = true){
+		$this->namedtag["Text".$index + 1] = $line;
+		if($update){
+			$this->onChanged();
+		}
+	}
+	
+	/**
+	 * @param int $index 0-3
+	 *
+	 * @return string
+	 */
+	public function getLine(int $index): string{
+		return $this->namedtag["Text".$index + 1];
+	}
 
 	public function getText(){
 		return [
