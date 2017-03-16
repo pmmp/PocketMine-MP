@@ -57,7 +57,13 @@ class AutoUpdater{
 	}
 
 	protected function check(){
-		$response = Utils::getURL($this->endpoint . "?channel=" . $this->getChannel(), 4);
+		$error = "";
+		$response = Utils::getURL($this->endpoint . "?channel=" . $this->getChannel(), 4, [], $error);
+		if($error !== ""){
+			$this->server->getLogger()->debug("[AutoUpdater] Update check failed due to \"$error\"");
+			return;
+		}
+
 		$response = json_decode($response, true);
 		if(!is_array($response)){
 			return;
