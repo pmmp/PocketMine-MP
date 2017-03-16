@@ -87,7 +87,7 @@ abstract class Command{
 	}
 
 	/**
-	 * Returns an \stdClass containing command data
+	 * Returns an array containing command data
 	 *
 	 * @return array
 	 */
