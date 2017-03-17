@@ -1529,9 +1529,9 @@ class Server{
 			InventoryType::init();
 			Block::init();
 			Enchantment::init();
+			Effect::init();
 			Item::init();
 			Biome::init();
-			Effect::init();
 			Attribute::init();
 			$this->craftingManager = new CraftingManager();
 

@@ -322,4 +322,24 @@ class Effect{
 			$attr->setValue($attr->getValue() / (1 - 0.15 * $this->amplifier));
 		}
 	}
+
+	/**
+	 * Deserializes JSON data into an effect.
+	 *
+	 * TODO: add a serialization method (need effect names)
+	 *
+	 * @param array $data
+	 *
+	 * @return Effect|null
+	 */
+	public static function fromJsonData(array $data){
+		$effect = Effect::getEffectByName($data["name"] ?? "");
+		if($effect instanceof Effect){
+			$effect->setDuration($data["duration"] * 20); //Stored in seconds, but the method takes ticks >_<
+			$effect->setAmplifier($data["amplifier"]);
+			return $effect;
+		}
+
+		return null;
+	}
 }

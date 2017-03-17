@@ -22,6 +22,8 @@
 namespace pocketmine\block;
 
 use pocketmine\entity\Effect;
+use pocketmine\entity\Entity;
+use pocketmine\entity\Human;
 use pocketmine\event\entity\EntityEatBlockEvent;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item;
@@ -87,7 +89,7 @@ class Cake extends Transparent implements FoodSource{
 	}
 
 	public function onActivate(Item $item, Player $player = null){
-		if($player instanceof Player and $player->getHealth() < $player->getMaxHealth()){
+		if($player instanceof Player and $this->canBeConsumedBy($player)){
 			$ev = new EntityEatBlockEvent($player, $this);
 
 			if(!$ev->isCancelled()){
@@ -121,5 +123,13 @@ class Cake extends Transparent implements FoodSource{
 	 */
 	public function getAdditionalEffects() : array{
 		return [];
+	}
+
+	public function canBeConsumedBy(Entity $entity) : bool{
+		return $entity instanceof Human and $entity->getFood() < $entity->getMaxFood();
+	}
+
+	public function requiresHunger() : bool{
+		return true;
 	}
 }

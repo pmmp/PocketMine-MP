@@ -73,18 +73,43 @@ class Item implements ItemIds, \JsonSerializable{
 	public $count;
 	protected $durability = 0;
 	protected $name;
+	protected $maxStackSize = 64;
 
 	public static function init(){
 		if(self::$list === null){
 			self::$list = new \SplFixedArray(65536);
 			$items = json_decode(file_get_contents(\pocketmine\PATH . "src/pocketmine/resources/items.json"), true);
+			if(!is_array($items)){
+				throw new \RuntimeException("items.json is invalid, the file cannot be read!");
+			}
+
+			$types = [
+				"default" => Item::class,
+				"food" => Food::class
+			];
+
 			foreach($items as $itemData){
-				$newItem = new Item($itemData["id"], 0, 1, $itemData["fallback_name"]);
+				if(!isset($itemData["id"])){
+					throw new \RuntimeException("Missing ID from item entry");
+				}elseif(!isset($itemData["fallback_name"])){
+					throw new \RuntimeException("Missing fallback English name from item entry");
+				}
+
+				$type = $itemData["type"] ?? "default";
+				$class = $types[$type];
+				if(!is_a($class, Item::class, true)){
+					throw new \RuntimeException("Unknown item type " . $type);
+				}
+
+				/** @var Item $class */
+				$newItem = $class::fromJsonTypeData($itemData);
+				$newItem->setMaxStackSize($itemData["max_stack_size"] ?? 64);
 				if(isset($itemData["block"])){
 					if(defined(Block::class . "::" . strtoupper($itemData["block"]))){ //TODO: remove this hack
 						$newItem->setBlock(Block::get(constant(Block::class . "::" . strtoupper($itemData["block"]))));
 					}
 				}
+
 				self::registerItem($newItem);
 			}
 
@@ -94,6 +119,22 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		self::initCreativeItems();
+	}
+
+	/**
+	 * @internal
+	 *
+	 * Deserializes an Item type from JSON data. Used internally for reading items from string.
+	 * NOTE: This method handles TYPES and WILL NOT handle data produced by {@link Item#jsonSerialize}
+	 *
+	 * TODO: separate concerns of item types and item stacks
+	 *
+	 * @param array $data
+	 *
+	 * @return Item
+	 */
+	protected static function fromJsonTypeData(array $data){
+		return new Item($data["id"], 0, 1, $data["fallback_name"]);
 	}
 
 	/**
@@ -694,7 +735,11 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return int
 	 */
 	public function getMaxStackSize(){
-		return 64;
+		return $this->maxStackSize;
+	}
+
+	protected function setMaxStackSize(int $size){
+		$this->maxStackSize = max(0, min($size, 64));
 	}
 
 	final public function getFuelTime(){

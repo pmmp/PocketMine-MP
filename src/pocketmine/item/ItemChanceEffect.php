@@ -19,25 +19,44 @@
  *
 */
 
+
 namespace pocketmine\item;
+
 
 use pocketmine\entity\Effect;
 
-class RawChicken extends Food{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::RAW_CHICKEN, $meta, $count, "Raw Chicken");
+/**
+ * Class used to manage effect properties for consumable items which have a random chance of giving the eater effects.
+ */
+class ItemChanceEffect{
+	private $effect;
+	private $chance;
+
+	public function __construct(Effect $effect, float $chance = 1.0){
+		$this->effect = $effect;
+		$this->chance = max(0, min($chance, 1.0));
 	}
 
-	public function getFoodRestore() : int{
-		return 2;
+	/**
+	 * @return Effect
+	 */
+	public function getEffect() : Effect{
+		return $this->effect;
 	}
 
-	public function getSaturationRestore() : float{
-		return 1.2;
+	/**
+	 * Returns the percentage chance that this effect will be applied to the eater
+	 * @return float
+	 */
+	public function getChance() : float{
+		return $this->chance;
 	}
 
-	public function getAdditionalEffects() : array{
-		return mt_rand(0, 9) < 3 ? [Effect::getEffect(Effect::HUNGER)->setDuration(600)] : [];
+	/**
+	 * Returns a random true/false whether to apply an effect to the eater
+	 * @return bool
+	 */
+	public function shouldApply() : bool{
+		return lcg_value() <= $this->chance;
 	}
 }
-
