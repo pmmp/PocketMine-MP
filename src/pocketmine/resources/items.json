@@ -911,7 +911,8 @@
     "sign": {
         "id": 323,
         "fallback_name": "Sign",
-        "block": "standing_sign"
+        "block": "standing_sign",
+        "max_stack_size": 16
     },
     "skull": {
         "id": 397,
@@ -924,11 +925,13 @@
     },
     "snowball": {
         "id": 332,
-        "fallback_name": "Snowball"
+        "fallback_name": "Snowball",
+        "max_stack_size": 16
     },
     "spawn_egg": {
         "id": 383,
-        "fallback_name": "Spawn Egg"
+        "fallback_name": "Spawn Egg",
+        "max_stack_size": 16
     },
     "speckled_melon": {
         "id": 382,
