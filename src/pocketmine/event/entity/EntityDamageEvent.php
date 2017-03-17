@@ -25,6 +25,9 @@ use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 
+/**
+ * Called when an entity takes damage.
+ */
 class EntityDamageEvent extends EntityEvent implements Cancellable{
 	public static $handlerList = null;
 

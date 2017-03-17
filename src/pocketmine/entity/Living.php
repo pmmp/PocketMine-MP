@@ -123,13 +123,15 @@ abstract class Living extends Entity implements Damageable{
 				$e = $source->getChild();
 			}
 
-			if($e->isOnFire() > 0){
-				$this->setOnFire(2 * $this->server->getDifficulty());
-			}
+			if($e !== null){
+				if($e->isOnFire() > 0){
+					$this->setOnFire(2 * $this->server->getDifficulty());
+				}
 
-			$deltaX = $this->x - $e->x;
-			$deltaZ = $this->z - $e->z;
-			$this->knockBack($e, $damage, $deltaX, $deltaZ, $source->getKnockBack());
+				$deltaX = $this->x - $e->x;
+				$deltaZ = $this->z - $e->z;
+				$this->knockBack($e, $damage, $deltaX, $deltaZ, $source->getKnockBack());
+			}
 		}
 
 		$pk = new EntityEventPacket();
