@@ -720,7 +720,7 @@
     "nether_wart": {
         "id": 372,
         "fallback_name": "Nether Wart",
-        "block": "nether_wart_block"
+        "block": "nether_wart_plant"
     },
     "netherbrick": {
         "id": 405,

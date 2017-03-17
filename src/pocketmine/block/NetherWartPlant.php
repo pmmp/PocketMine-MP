@@ -30,7 +30,7 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class NetherWartPlant extends Flowable{
-	protected $id = Block::NETHER_WART_BLOCK;
+	protected $id = Block::NETHER_WART_PLANT;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

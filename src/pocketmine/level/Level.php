@@ -248,7 +248,7 @@ class Level implements ChunkManager, Metadatable{
 		Block::LEAVES2 => Leaves2::class,
 		Block::FIRE => Fire::class,
 		Block::BEETROOT_BLOCK => Beetroot::class,
-		Block::NETHER_WART_BLOCK => NetherWartPlant::class
+		Block::NETHER_WART_PLANT => NetherWartPlant::class
 	];
 
 	/** @var LevelTimings */
