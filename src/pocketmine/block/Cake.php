@@ -91,8 +91,15 @@ class Cake extends Transparent implements FoodSource{
 	public function onActivate(Item $item, Player $player = null){
 		if($player instanceof Player and $this->canBeConsumedBy($player)){
 			$ev = new EntityEatBlockEvent($player, $this);
+			$this->getLevel()->getServer()->getPluginManager()->callEvent($ev);
 
 			if(!$ev->isCancelled()){
+				//TODO: move eating code to Entity classes
+				$player->addSaturation($ev->getSaturationRestore());
+				$player->addFood($ev->getFoodRestore());
+				foreach($ev->getAdditionalEffects() as $effect){
+					$player->addEffect($effect);
+				}
 				$this->getLevel()->setBlock($this, $ev->getResidue());
 				return true;
 			}
