@@ -187,7 +187,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new NetherBrick());
 			self::registerBlock(new NetherBrickFence());
 			self::registerBlock(new NetherBrickStairs());
-
+			self::registerBlock(new NetherWartPlant());
 			self::registerBlock(new EnchantingTable());
 			self::registerBlock(new BrewingStand());
 
