@@ -177,15 +177,35 @@ class SimpleCommandMap implements CommandMap{
 		return true;
 	}
 
-	public function dispatch(CommandSender $sender, $commandLine){
-		$args = explode(" ", $commandLine);
+	/**
+	 * Returns a command to match the specified command line, or null if no matching command was found.
+	 * This method is intended to provide capability for handling commands with spaces in their name.
+	 * The referenced parameters will be modified accordingly depending on the resulting matched command.
+	 *
+	 * @param string   &$commandName
+	 * @param string[] &$args
+	 *
+	 * @return Command|null
+	 */
+	public function matchCommand(string &$commandName, array &$args){
+		$count = max(count($args), 255);
 
-		if(count($args) === 0){
-			return false;
+		for($i = 0; $i < $count; ++$i){
+			$commandName .= array_shift($args);
+			if(($command = $this->getCommand($commandName)) instanceof Command){
+				return $command;
+			}
+
+			$commandName .= " ";
 		}
 
-		$sentCommandLabel = strtolower(array_shift($args));
-		$target = $this->getCommand($sentCommandLabel);
+		return null;
+	}
+
+	public function dispatch(CommandSender $sender, $commandLine){
+		$args = explode(" ", $commandLine);
+		$sentCommandLabel = "";
+		$target = $this->matchCommand($sentCommandLabel, $args);
 
 		if($target === null){
 			return false;
@@ -213,11 +233,7 @@ class SimpleCommandMap implements CommandMap{
 	}
 
 	public function getCommand($name){
-		if(isset($this->knownCommands[$name])){
-			return $this->knownCommands[$name];
-		}
-
-		return null;
+		return $this->knownCommands[$name] ?? null;
 	}
 
 	/**
@@ -235,7 +251,7 @@ class SimpleCommandMap implements CommandMap{
 		$values = $this->server->getCommandAliases();
 
 		foreach($values as $alias => $commandStrings){
-			if(strpos($alias, ":") !== false or strpos($alias, " ") !== false){
+			if(strpos($alias, ":") !== false){
 				$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.command.alias.illegal", [$alias]));
 				continue;
 			}
@@ -243,18 +259,31 @@ class SimpleCommandMap implements CommandMap{
 			$targets = [];
 
 			$bad = "";
+			$recursive = "";
 			foreach($commandStrings as $commandString){
 				$args = explode(" ", $commandString);
-				$command = $this->getCommand($args[0]);
+				$commandName = "";
+				$command = $this->matchCommand($commandName, $args);
+
 
 				if($command === null){
 					if(strlen($bad) > 0){
 						$bad .= ", ";
 					}
 					$bad .= $commandString;
+				}elseif($commandName === $alias){
+					if($recursive !== ""){
+						$recursive .= ", ";
+					}
+					$recursive .= $commandString;
 				}else{
 					$targets[] = $commandString;
 				}
+			}
+
+			if($recursive !== ""){
+				$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.command.alias.recursive", [$alias, $recursive]));
+				continue;
 			}
 
 			if(strlen($bad) > 0){

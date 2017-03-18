@@ -98,7 +98,7 @@ class SimpleTransactionGroup implements TransactionGroup{
 			}
 			$checkSourceItem = $ts->getInventory()->getItem($ts->getSlot());
 			$sourceItem = $ts->getSourceItem();
-			if(!$checkSourceItem->deepEquals($sourceItem) or $sourceItem->getCount() !== $checkSourceItem->getCount()){
+			if(!$checkSourceItem->equals($sourceItem) or $sourceItem->getCount() !== $checkSourceItem->getCount()){
 				return false;
 			}
 			if($sourceItem->getId() !== Item::AIR){
@@ -108,7 +108,7 @@ class SimpleTransactionGroup implements TransactionGroup{
 
 		foreach($needItems as $i => $needItem){
 			foreach($haveItems as $j => $haveItem){
-				if($needItem->deepEquals($haveItem)){
+				if($needItem->equals($haveItem)){
 					$amount = min($needItem->getCount(), $haveItem->getCount());
 					$needItem->setCount($needItem->getCount() - $amount);
 					$haveItem->setCount($haveItem->getCount() - $amount);
