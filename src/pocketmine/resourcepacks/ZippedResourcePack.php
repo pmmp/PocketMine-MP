@@ -25,13 +25,19 @@ namespace pocketmine\resourcepacks;
 
 class ZippedResourcePack implements ResourcePack{
 
+	/**
+	 * Performs basic validation checks on a resource pack's manifest.json.
+	 * TODO: add more manifest validation
+	 *
+	 * @param \stdClass $manifest
+	 * @return bool
+	 */
 	public static function verifyManifest(\stdClass $manifest){
 		if(!isset($manifest->format_version) or !isset($manifest->header) or !isset($manifest->modules)){
 			return false;
 		}
 
 		//Right now we don't care about anything else, only the stuff we're sending to clients.
-		//TODO: add more manifest validation
 		return
 			isset($manifest->header->description) and
 			isset($manifest->header->name) and
@@ -49,7 +55,12 @@ class ZippedResourcePack implements ResourcePack{
 	/** @var string */
 	protected $sha256 = null;
 
+	/** @var resource */
+	protected $fileResource;
 
+	/**
+	 * @param string $zipPath Path to the resource pack zip
+	 */
 	public function __construct(string $zipPath){
 		$this->path = $zipPath;
 
@@ -74,6 +85,12 @@ class ZippedResourcePack implements ResourcePack{
 		}
 
 		$this->manifest = $manifest;
+
+		$this->fileResource = fopen($zipPath, "rb");
+	}
+
+	public function __destruct(){
+		fclose($this->fileResource);
 	}
 
 	public function getPackName() : string{
@@ -100,6 +117,10 @@ class ZippedResourcePack implements ResourcePack{
 	}
 
 	public function getPackChunk(int $start, int $length) : string{
-		return substr(file_get_contents($this->path), $start, $length);
+		fseek($this->fileResource, $start);
+		if(feof($this->fileResource)){
+			throw new \RuntimeException("Requested a resource pack chunk with invalid start offset");
+		}
+		return fread($this->fileResource, $length);
 	}
 }

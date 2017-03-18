@@ -351,6 +351,12 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 	}
 
+	/**
+	 * @param int $id
+	 * @param int $meta
+	 * @param int $count
+	 * @param string $name
+	 */
 	public function __construct(int $id, int $meta = 0, int $count = 1, string $name = "Unknown"){
 		$this->id = $id & 0xffff;
 		$this->meta = $meta !== -1 ? $meta & 0xffff : -1;
@@ -362,6 +368,13 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 	}
 
+	/**
+	 * Sets the Item's NBT
+	 *
+	 * @param CompoundTag|string $tags
+	 *
+	 * @return $this
+	 */
 	public function setCompoundTag($tags){
 		if($tags instanceof CompoundTag){
 			$this->setNamedTag($tags);
@@ -374,16 +387,24 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
+	 * Returns the serialized NBT of the Item
 	 * @return string
 	 */
 	public function getCompoundTag() : string{
 		return $this->tags;
 	}
 
+	/**
+	 * Returns whether this Item has a non-empty NBT.
+	 * @return bool
+	 */
 	public function hasCompoundTag() : bool{
 		return $this->tags !== "";
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function hasCustomBlockData() : bool{
 		if(!$this->hasCompoundTag()){
 			return false;
@@ -411,6 +432,11 @@ class Item implements ItemIds, \JsonSerializable{
 		return $this;
 	}
 
+	/**
+	 * @param CompoundTag $compound
+	 *
+	 * @return $this
+	 */
 	public function setCustomBlockData(CompoundTag $compound){
 		$tags = clone $compound;
 		$tags->setName("BlockEntityTag");
@@ -427,6 +453,9 @@ class Item implements ItemIds, \JsonSerializable{
 		return $this;
 	}
 
+	/**
+	 * @return CompoundTag|null
+	 */
 	public function getCustomBlockData(){
 		if(!$this->hasCompoundTag()){
 			return null;
@@ -440,6 +469,9 @@ class Item implements ItemIds, \JsonSerializable{
 		return null;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function hasEnchantments() : bool{
 		if(!$this->hasCompoundTag()){
 			return false;
@@ -457,7 +489,7 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * @param $id
+	 * @param int $id
 	 *
 	 * @return Enchantment|null
 	 */
@@ -534,6 +566,9 @@ class Item implements ItemIds, \JsonSerializable{
 		return $enchantments;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function hasCustomName() : bool{
 		if(!$this->hasCompoundTag()){
 			return false;
@@ -550,6 +585,9 @@ class Item implements ItemIds, \JsonSerializable{
 		return false;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getCustomName() : string{
 		if(!$this->hasCompoundTag()){
 			return "";
@@ -566,6 +604,11 @@ class Item implements ItemIds, \JsonSerializable{
 		return "";
 	}
 
+	/**
+	 * @param string $name
+	 *
+	 * @return $this
+	 */
 	public function setCustomName(string $name){
 		if($name === ""){
 			$this->clearCustomName();
@@ -590,6 +633,9 @@ class Item implements ItemIds, \JsonSerializable{
 		return $this;
 	}
 
+	/**
+	 * @return $this
+	 */
 	public function clearCustomName(){
 		if(!$this->hasCompoundTag()){
 			return $this;
@@ -621,6 +667,10 @@ class Item implements ItemIds, \JsonSerializable{
 		return null;
 	}
 
+	/**
+	 * Returns a tree of Tag objects representing the Item's NBT
+	 * @return null|CompoundTag
+	 */
 	public function getNamedTag(){
 		if(!$this->hasCompoundTag()){
 			return null;
@@ -630,6 +680,12 @@ class Item implements ItemIds, \JsonSerializable{
 		return $this->cachedNBT = self::parseCompoundTag($this->tags);
 	}
 
+	/**
+	 * Sets the Item's NBT from the supplied CompoundTag object.
+	 * @param CompoundTag $tag
+	 *
+	 * @return $this
+	 */
 	public function setNamedTag(CompoundTag $tag){
 		if($tag->getCount() === 0){
 			return $this->clearNamedTag();
@@ -641,37 +697,73 @@ class Item implements ItemIds, \JsonSerializable{
 		return $this;
 	}
 
+	/**
+	 * Removes the Item's NBT.
+	 * @return Item
+	 */
 	public function clearNamedTag(){
 		return $this->setCompoundTag("");
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getCount() : int{
 		return $this->count;
 	}
 
+	/**
+	 * @param int $count
+	 */
 	public function setCount(int $count){
 		$this->count = $count;
 	}
 
+	/**
+	 * Returns the name of the item, or the custom name if it is set.
+	 * @return string
+	 */
 	final public function getName() : string{
 		return $this->hasCustomName() ? $this->getCustomName() : $this->name;
 	}
 
+	/**
+	 * @return bool
+	 */
 	final public function canBePlaced() : bool{
 		return $this->block !== null and $this->block->canBePlaced();
 	}
 
+	/**
+	 * Returns whether an entity can eat or drink this item.
+	 * @return bool
+	 */
 	public function canBeConsumed() : bool{
 		return false;
 	}
 
+	/**
+	 * Returns whether this item can be consumed by the supplied Entity.
+	 * @param Entity $entity
+	 *
+	 * @return bool
+	 */
 	public function canBeConsumedBy(Entity $entity) : bool{
 		return $this->canBeConsumed();
 	}
 
+	/**
+	 * Called when the item is consumed by an Entity.
+	 * @param Entity $entity
+	 */
 	public function onConsume(Entity $entity){
+
 	}
 
+	/**
+	 * Returns the block corresponding to this Item.
+	 * @return Block
+	 */
 	public function getBlock() : Block{
 		if($this->block instanceof Block){
 			return clone $this->block;
@@ -680,22 +772,41 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 	}
 
+	/**
+	 * @return int
+	 */
 	final public function getId() : int{
 		return $this->id;
 	}
 
+	/**
+	 * @return int
+	 */
 	final public function getDamage() : int{
 		return $this->meta;
 	}
 
+	/**
+	 * @param int $meta
+	 */
 	public function setDamage(int $meta){
 		$this->meta = $meta !== -1 ? $meta & 0xFFFF : -1;
 	}
 
+	/**
+	 * Returns whether this item can match any item with an equivalent ID with any meta value.
+	 * Used in crafting recipes which accept multiple variants of the same item, for example crafting tables recipes.
+	 *
+	 * @return bool
+	 */
 	public function hasAnyDamageValue() : bool{
 		return $this->meta === -1;
 	}
 
+	/**
+	 * Returns the highest amount of this item which will fit into one inventory slot.
+	 * @return int
+	 */
 	public function getMaxStackSize(){
 		return 64;
 	}
@@ -762,28 +873,75 @@ class Item implements ItemIds, \JsonSerializable{
 		return 1;
 	}
 
+	/**
+	 * Called when a player uses this item on a block.
+	 *
+	 * @param Level $level
+	 * @param Player $player
+	 * @param Block $block
+	 * @param Block $target
+	 * @param int $face
+	 * @param float $fx
+	 * @param float $fy
+	 * @param float $fz
+	 *
+	 * @return bool
+	 */
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		return false;
 	}
 
+	/**
+	 * Compares an Item to this Item and check if they match.
+	 *
+	 * @param Item $item
+	 * @param bool $checkDamage Whether to verify that the damage values match.
+	 * @param bool $checkCompound Whether to verify that the items' NBT match.
+	 *
+	 * @return bool
+	 */
 	public final function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
-		return $this->id === $item->getId() and ($checkDamage === false or $this->getDamage() === $item->getDamage()) and ($checkCompound === false or $this->getCompoundTag() === $item->getCompoundTag());
-	}
-
-	public final function deepEquals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
-		if($this->equals($item, $checkDamage, $checkCompound)){
-			return true;
-		}elseif($item->hasCompoundTag() and $this->hasCompoundTag()){
-			return NBT::matchTree($this->getNamedTag(), $item->getNamedTag());
+		if($this->id === $item->getId() and ($checkDamage === false or $this->getDamage() === $item->getDamage())){
+			if($checkCompound){
+				if($item->getCompoundTag() === $this->getCompoundTag()){
+					return true;
+				}elseif($this->hasCompoundTag() and $item->hasCompoundTag()){
+					//Serialized NBT didn't match, check the cached object tree.
+					return NBT::matchTree($this->getNamedTag(), $item->getNamedTag());
+				}
+			}else{
+				return true;
+			}
 		}
 
 		return false;
 	}
 
-	final public function __toString() : string{
-		return "Item " . $this->name . " (" . $this->id . ":" . ($this->meta === null ? "?" : $this->meta) . ")x" . $this->count . ($this->hasCompoundTag() ? " tags:0x" . bin2hex($this->getCompoundTag()) : "");
+	/**
+	 * @deprecated Use {@link Item#equals} instead, this method will be removed in the future.
+	 *
+	 * @param Item $item
+	 * @param bool $checkDamage
+	 * @param bool $checkCompound
+	 *
+	 * @return bool
+	 */
+	public final function deepEquals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
+		return $this->equals($item, $checkDamage, $checkCompound);
 	}
 
+	/**
+	 * @return string
+	 */
+	final public function __toString() : string{
+		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->meta) . ")x" . $this->count . ($this->hasCompoundTag() ? " tags:0x" . bin2hex($this->getCompoundTag()) : "");
+	}
+
+	/**
+	 * Returns an array of item stack properties that can be serialized to json.
+	 *
+	 * @return array
+	 */
 	final public function jsonSerialize(){
 		return [
 			"id" => $this->id,

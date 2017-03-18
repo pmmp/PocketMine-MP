@@ -46,6 +46,10 @@ class ResourcePackManager{
 	/** @var ResourcePack[] */
 	private $uuidList = [];
 
+	/**
+	 * @param Server $server
+	 * @param string $path Path to resource-packs directory.
+	 */
 	public function __construct(Server $server, string $path){
 		$this->server = $server;
 		$this->path = $path;
@@ -103,6 +107,7 @@ class ResourcePackManager{
 	}
 
 	/**
+	 * Returns whether players must accept resource packs in order to join.
 	 * @return bool
 	 */
 	public function resourcePacksRequired() : bool{
@@ -110,6 +115,7 @@ class ResourcePackManager{
 	}
 
 	/**
+	 * Returns an array of resource packs in use, sorted in order of priority.
 	 * @return ResourcePack[]
 	 */
 	public function getResourceStack() : array{
@@ -117,8 +123,9 @@ class ResourcePackManager{
 	}
 
 	/**
-	 * @param string $id
+	 * Returns the resource pack matching the specified UUID string, or null if the ID was not recognized.
 	 *
+	 * @param string $id
 	 * @return ResourcePack|null
 	 */
 	public function getPackById(string $id){
@@ -126,6 +133,7 @@ class ResourcePackManager{
 	}
 
 	/**
+	 * Returns an array of pack IDs for packs currently in use.
 	 * @return string[]
 	 */
 	public function getPackIdList() : array{

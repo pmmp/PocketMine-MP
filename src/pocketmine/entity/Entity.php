@@ -1648,6 +1648,7 @@ abstract class Entity extends Location implements Metadatable{
 			}
 
 			$this->namedtag = null;
+			$this->lastDamageCause = null;
 		}
 	}
 

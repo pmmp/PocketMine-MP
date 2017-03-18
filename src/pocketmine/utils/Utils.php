@@ -348,14 +348,16 @@ class Utils{
 
 	/**
 	 * GETs an URL using cURL
+	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
 	 *
-	 * @param       $page
-	 * @param int   $timeout default 10
-	 * @param array $extraHeaders
+	 * @param        $page
+	 * @param int    $timeout default 10
+	 * @param array  $extraHeaders
+	 * @param string &$err Will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
 	 *
-	 * @return bool|mixed
+	 * @return bool|mixed false if an error occurred, mixed data if successful.
 	 */
-	public static function getURL($page, $timeout = 10, array $extraHeaders = []){
+	public static function getURL($page, $timeout = 10, array $extraHeaders = [], &$err = null){
 		if(Utils::$online === false){
 			return false;
 		}
@@ -372,6 +374,7 @@ class Utils{
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, (int) $timeout);
 		curl_setopt($ch, CURLOPT_TIMEOUT, (int) $timeout);
 		$ret = curl_exec($ch);
+		$err = curl_error($ch);
 		curl_close($ch);
 
 		return $ret;
@@ -379,15 +382,17 @@ class Utils{
 
 	/**
 	 * POSTs data to an URL
+	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
 	 *
 	 * @param              $page
 	 * @param array|string $args
 	 * @param int          $timeout
 	 * @param array        $extraHeaders
+	 * @param string       &$err Will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
 	 *
-	 * @return bool|mixed
+	 * @return bool|mixed false if an error occurred, mixed data if successful.
 	 */
-	public static function postURL($page, $args, $timeout = 10, array $extraHeaders = []){
+	public static function postURL($page, $args, $timeout = 10, array $extraHeaders = [], &$err = null){
 		if(Utils::$online === false){
 			return false;
 		}
@@ -406,6 +411,7 @@ class Utils{
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, (int) $timeout);
 		curl_setopt($ch, CURLOPT_TIMEOUT, (int) $timeout);
 		$ret = curl_exec($ch);
+		$err = curl_error($ch);
 		curl_close($ch);
 
 		return $ret;

@@ -173,11 +173,14 @@ abstract class Tile extends Position{
 			unset($this->level->updateTiles[$this->id]);
 			if($this->chunk instanceof Chunk){
 				$this->chunk->removeTile($this);
+				$this->chunk = null;
 			}
 			if(($level = $this->getLevel()) instanceof Level){
 				$level->removeTile($this);
+				$this->setLevel(null);
 			}
-			$this->level = null;
+
+			$this->namedtag = null;
 		}
 	}
 

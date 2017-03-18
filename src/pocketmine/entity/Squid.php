@@ -60,7 +60,9 @@ class Squid extends WaterAnimal implements Ageable{
 		if($source instanceof EntityDamageByEntityEvent){
 			$this->swimSpeed = mt_rand(150, 350) / 2000;
 			$e = $source->getDamager();
-			$this->swimDirection = (new Vector3($this->x - $e->x, $this->y - $e->y, $this->z - $e->z))->normalize();
+			if($e !== null){
+				$this->swimDirection = (new Vector3($this->x - $e->x, $this->y - $e->y, $this->z - $e->z))->normalize();
+			}
 
 			$pk = new EntityEventPacket();
 			$pk->eid = $this->getId();
