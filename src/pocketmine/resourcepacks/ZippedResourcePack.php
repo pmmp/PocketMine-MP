@@ -25,13 +25,19 @@ namespace pocketmine\resourcepacks;
 
 class ZippedResourcePack implements ResourcePack{
 
+	/**
+	 * Performs basic validation checks on a resource pack's manifest.json.
+	 * TODO: add more manifest validation
+	 *
+	 * @param \stdClass $manifest
+	 * @return bool
+	 */
 	public static function verifyManifest(\stdClass $manifest){
 		if(!isset($manifest->format_version) or !isset($manifest->header) or !isset($manifest->modules)){
 			return false;
 		}
 
 		//Right now we don't care about anything else, only the stuff we're sending to clients.
-		//TODO: add more manifest validation
 		return
 			isset($manifest->header->description) and
 			isset($manifest->header->name) and
@@ -52,7 +58,9 @@ class ZippedResourcePack implements ResourcePack{
 	/** @var resource */
 	protected $fileResource;
 
-
+	/**
+	 * @param string $zipPath Path to the resource pack zip
+	 */
 	public function __construct(string $zipPath){
 		$this->path = $zipPath;
 
