@@ -19,31 +19,34 @@
  *
 */
 
+
 namespace pocketmine\item;
 
-use pocketmine\entity\Effect;
+
 use pocketmine\entity\Entity;
 
-interface FoodSource extends Consumable{
+interface Consumable{
 
 	/**
-	 * Returns the number of hunger points this food type will give to the eater.
+	 * Returns the result of eating the material.
+	 * This may return an Item for eating an item, or a Block for eating things like cake.
 	 *
-	 * @return int
+	 * @return Item|Block|mixed
 	 */
-	public function getFoodRestore() : int;
+	public function getResidue();
 
 	/**
-	 * Returns the amount of saturation which will be given to the eater when the food is eaten.
+	 * Returns effects to be applied to the eater.
 	 *
-	 * @return float
+	 * @return Effect[]
 	 */
-	public function getSaturationRestore() : float;
+	public function getAdditionalEffects() : array;
 
 	/**
-	 * Returns whether the eater must be hungry to eat this item.
+	 * Returns whether the target entity can consume this material.
+	 * @param Entity $entity
 	 *
 	 * @return bool
 	 */
-	public function requiresHunger() : bool;
+	public function canBeConsumedBy(Entity $entity) : bool;
 }

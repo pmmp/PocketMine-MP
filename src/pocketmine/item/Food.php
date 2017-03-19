@@ -62,10 +62,7 @@ class Food extends Item implements FoodSource{
 	}
 
 	protected static function fromJsonTypeData(array $data){
-		$properties = $data["properties"] ?? null;
-		if(!is_array($properties)){
-			throw new \RuntimeException("Food properties not found in supplied data for " . $data["fallback_name"]);
-		}
+		$properties = $data["properties"] ?? [];
 
 		if(!isset($properties["nutrition"]) or !isset($properties["saturation"])){
 			throw new \RuntimeException("Food properties missing from supplied data for " . $data["fallback_name"]);
