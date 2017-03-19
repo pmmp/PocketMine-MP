@@ -2027,9 +2027,8 @@ class Server{
 		$errline = $e->getLine();
 
 		$type = ($errno === E_ERROR or $errno === E_USER_ERROR) ? \LogLevel::ERROR : (($errno === E_USER_WARNING or $errno === E_WARNING) ? \LogLevel::WARNING : \LogLevel::NOTICE);
-		if(($pos = strpos($errstr, "\n")) !== false){
-			$errstr = substr($errstr, 0, $pos);
-		}
+
+		$errstr = preg_replace('/\s+/', ' ', trim($errstr));
 
 		$errfile = cleanPath($errfile);
 
@@ -2041,7 +2040,7 @@ class Server{
 			"fullFile" => $e->getFile(),
 			"file" => $errfile,
 			"line" => $errline,
-			"trace" => @getTrace(1, $trace)
+			"trace" => getTrace(0, $trace)
 		];
 
 		global $lastExceptionError, $lastError;
