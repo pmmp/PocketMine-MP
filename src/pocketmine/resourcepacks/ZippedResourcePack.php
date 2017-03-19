@@ -111,7 +111,7 @@ class ZippedResourcePack implements ResourcePack{
 
 	public function getSha256(bool $cached = true) : string{
 		if($this->sha256 === null or !$cached){
-			$this->sha256 = openssl_digest(file_get_contents($this->path), "sha256", true);
+			$this->sha256 = hash_file("sha256", $this->path, true);
 		}
 		return $this->sha256;
 	}

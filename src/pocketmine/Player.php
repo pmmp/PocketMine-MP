@@ -2133,12 +2133,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$vector = new Vector3($packet->x, $packet->y, $packet->z);
 
-		if($this->isCreative()){
-			$item = $this->inventory->getItemInHand();
-		}else{
-			$item = $this->inventory->getItemInHand();
-		}
-
+		$item = $this->inventory->getItemInHand();
 		$oldItem = clone $item;
 
 		if($this->canInteract($vector->add(0.5, 0.5, 0.5), $this->isCreative() ? 13 : 6) and $this->level->useBreakOn($vector, $item, $this, true)){
@@ -3314,7 +3309,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	/**
-	 * TODO: get rid of these remains, fix DataPacketReceiveEvent, fix timings
+	 * Called when a packet is received from the client. This method will call DataPacketReceiveEvent.
 	 *
 	 * @param DataPacket $packet
 	 */
@@ -3323,17 +3318,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return;
 		}
 
-
 		$timings = Timings::getReceiveDataPacketTimings($packet);
-
 		$timings->startTiming();
 
 		$this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this, $packet));
-		if($ev->isCancelled()){
-			$timings->stopTiming();
-			return;
+		if(!$ev->isCancelled() and !$packet->handle($this)){
+			$this->server->getLogger()->debug("Unhandled " . get_class($packet) . " received from " . $this->getName());
 		}
-
 
 		$timings->stopTiming();
 	}
