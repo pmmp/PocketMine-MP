@@ -232,10 +232,22 @@ class Network{
 		return $this->server;
 	}
 
+	/**
+	 * Decodes a batch packet and does handling for it.
+	 *
+	 * TODO: Move this out of here
+	 *
+	 * @param BatchPacket $packet
+	 * @param Player      $player
+	 *
+	 * @throws \InvalidArgumentException|\InvalidStateException
+	 */
 	public function processBatch(BatchPacket $packet, Player $p){
-		if(strlen($packet->payload) === 0){
-			//prevent zlib_decode errors for incorrectly-decoded packets
+		$rawLen = strlen($packet->payload);
+		if($rawLen === 0){
 			throw new \InvalidArgumentException("BatchPacket payload is empty or packet decode error");
+		}elseif($rawLen < 3){
+			throw new \InvalidArgumentException("Not enough bytes, expected zlib header");
 		}
 
 		$str = zlib_decode($packet->payload, 1024 * 1024 * 64); //Max 64MB
@@ -259,10 +271,7 @@ class Network{
 
 				$pk->decode();
 				assert($pk->feof(), "Still " . strlen(substr($pk->buffer, $pk->offset)) . " bytes unread in " . get_class($pk));
-				if(!$pk->handle($p)){
-					$logger = $this->server->getLogger();
-					$logger->debug("Unhandled " . get_class($pk) . " received from " . $p->getName());
-				}
+				$p->handleDataPacket($pk);
 			}
 		}
 	}
