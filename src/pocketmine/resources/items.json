@@ -930,8 +930,7 @@
     },
     "spawn_egg": {
         "id": 383,
-        "fallback_name": "Spawn Egg",
-        "max_stack_size": 16
+        "fallback_name": "Spawn Egg"
     },
     "speckled_melon": {
         "id": 382,
