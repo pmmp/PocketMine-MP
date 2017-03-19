@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\Player;
@@ -61,7 +62,7 @@ class RedstoneOre extends Solid{
 	}
 
 	public function getDrops(Item $item){
-		if($item->isPickaxe() >= Tool::TIER_IRON){
+		if($item->isPickaxe() >= TieredTool::TIER_IRON){
 			return [
 				[Item::REDSTONE_DUST, 0, mt_rand(4, 5)],
 			];

@@ -19,15 +19,34 @@
  *
 */
 
+
 namespace pocketmine\item;
 
 
-class DiamondPickaxe extends Tool{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::DIAMOND_PICKAXE, $meta, $count, "Diamond Pickaxe");
+class Axe extends TieredTool{
+
+	public function getToolType() : int{
+		return TieredTool::TYPE_AXE;
 	}
 
-	public function isPickaxe(){
-		return Tool::TIER_DIAMOND;
+	public function isAxe(){
+		return $this->tier;
+	}
+
+	protected static function fromJsonTypeData(array $data){
+		$properties = $data["properties"] ?? [];
+		if(!isset($properties["durability"]) or !isset($properties["tier"]) or !isset($properties["attack_damage"])){
+			throw new \RuntimeException("Missing Axe properties from supplied data for " . $data["fallback_name"]);
+		}
+
+		return new Axe(
+			$data["id"],
+			0,
+			1,
+			$data["fallback_name"],
+			TieredTool::toolTierFromString($properties["tier"]),
+			$properties["durability"],
+			$properties["attack_damage"] ?? 1
+		);
 	}
 }

@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
 
 class Lapis extends Solid{
@@ -45,7 +46,7 @@ class Lapis extends Solid{
 	}
 
 	public function getDrops(Item $item){
-		if($item->isPickaxe() >= Tool::TIER_STONE){
+		if($item->isPickaxe() >= TieredTool::TIER_STONE){
 			return [
 				[Item::LAPIS_BLOCK, 0, 1],
 			];

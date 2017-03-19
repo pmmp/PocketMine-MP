@@ -28,6 +28,6 @@ class StoneHoe extends Tool{
 	}
 
 	public function isHoe(){
-		return Tool::TIER_STONE;
+		return TieredTool::TIER_STONE;
 	}
 }

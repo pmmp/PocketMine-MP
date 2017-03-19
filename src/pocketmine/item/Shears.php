@@ -22,8 +22,20 @@
 namespace pocketmine\item;
 
 
+use pocketmine\block\Block;
+
 class Shears extends Tool{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::SHEARS, $meta, $count, "Shears");
+	protected $durability = 238;
+
+	public function getToolType() : int{
+		return Tool::TYPE_SHEARS;
+	}
+
+	public function isShears(){
+		return true;
+	}
+
+	protected static function fromJsonTypeData(array $data){
+		return new Shears($data["id"], 0, 1, $data["fallback_name"], $data["properties"]["durability"]);
 	}
 }

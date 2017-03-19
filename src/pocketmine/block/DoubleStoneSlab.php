@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
 
 class DoubleStoneSlab extends Solid{
@@ -55,7 +56,7 @@ class DoubleStoneSlab extends Solid{
 	}
 
 	public function getDrops(Item $item){
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
+		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
 			return [
 				[Item::STONE_SLAB, $this->meta & 0x07, 2],
 			];

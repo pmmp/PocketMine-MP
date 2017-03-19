@@ -337,7 +337,13 @@
     },
     "diamond_axe": {
         "id": 279,
-        "fallback_name": "Diamond Axe"
+        "fallback_name": "Diamond Axe",
+        "type": "axe",
+        "properties": {
+            "tier": "diamond",
+            "durability": 1562,
+            "attack_damage": 7
+        }
     },
     "diamond_boots": {
         "id": 313,
@@ -361,15 +367,33 @@
     },
     "diamond_pickaxe": {
         "id": 278,
-        "fallback_name": "Diamond Pickaxe"
+        "fallback_name": "Diamond Pickaxe",
+        "type": "pickaxe",
+        "properties": {
+            "tier": "diamond",
+            "durability": 1562,
+            "attack_damage": 6
+        }
     },
     "diamond_shovel": {
         "id": 277,
-        "fallback_name": "Diamond Shovel"
+        "fallback_name": "Diamond Shovel",
+        "type": "shovel",
+        "properties": {
+            "tier": "diamond",
+            "durability": 1562,
+            "attack_damage": 5
+        }
     },
     "diamond_sword": {
         "id": 276,
-        "fallback_name": "Diamond Sword"
+        "fallback_name": "Diamond Sword",
+        "type": "sword",
+        "properties": {
+            "tier": "diamond",
+            "durability": 1562,
+            "attack_damage": 8
+        }
     },
     "dragon_breath": {
         "id": 437,
@@ -504,7 +528,13 @@
     },
     "golden_axe": {
         "id": 286,
-        "fallback_name": "Golden Axe"
+        "fallback_name": "Golden Axe",
+        "type": "axe",
+        "properties": {
+            "tier": "gold",
+            "durability": 33,
+            "attack_damage": 4
+        }
     },
     "golden_boots": {
         "id": 317,
@@ -537,15 +567,33 @@
     },
     "golden_pickaxe": {
         "id": 285,
-        "fallback_name": "Golden Pickaxe"
+        "fallback_name": "Golden Pickaxe",
+        "type": "pickaxe",
+        "properties": {
+            "tier": "gold",
+            "durability": 33,
+            "attack_damage": 3
+        }
     },
     "golden_shovel": {
         "id": 284,
-        "fallback_name": "Golden Shovel"
+        "fallback_name": "Golden Shovel",
+        "type": "shovel",
+        "properties": {
+            "tier": "gold",
+            "durability": 33,
+            "attack_damage": 2
+        }
     },
     "golden_sword": {
         "id": 283,
-        "fallback_name": "Golden Sword"
+        "fallback_name": "Golden Sword",
+        "type": "sword",
+        "properties": {
+            "tier": "gold",
+            "durability": 33,
+            "attack_damage": 5
+        }
     },
     "gunpowder": {
         "id": 289,
@@ -578,7 +626,13 @@
     },
     "iron_axe": {
         "id": 258,
-        "fallback_name": "Iron Axe"
+        "fallback_name": "Iron Axe",
+        "type": "axe",
+        "properties": {
+            "tier": "iron",
+            "durability": 251,
+            "attack_damage": 6
+        }
     },
     "iron_boots": {
         "id": 309,
@@ -611,15 +665,33 @@
     },
     "iron_pickaxe": {
         "id": 257,
-        "fallback_name": "Iron Pickaxe"
+        "fallback_name": "Iron Pickaxe",
+        "type": "pickaxe",
+        "properties": {
+            "tier": "iron",
+            "durability": 251,
+            "attack_damage": 5
+        }
     },
     "iron_shovel": {
         "id": 256,
-        "fallback_name": "Iron Shovel"
+        "fallback_name": "Iron Shovel",
+        "type": "shovel",
+        "properties": {
+            "tier": "iron",
+            "durability": 251,
+            "attack_damage": 4
+        }
     },
     "iron_sword": {
         "id": 267,
-        "fallback_name": "Iron Sword"
+        "fallback_name": "Iron Sword",
+        "type": "sword",
+        "properties": {
+            "tier": "iron",
+            "durability": 251,
+            "attack_damage": 7
+        }
     },
     "jungle_door": {
         "id": 429,
@@ -902,7 +974,11 @@
     },
     "shears": {
         "id": 359,
-        "fallback_name": "Shears"
+        "fallback_name": "Shears",
+        "type": "shears",
+        "properties": {
+            "durability": 238
+        }
     },
     "shulker_shell": {
         "id": 445,
@@ -968,7 +1044,13 @@
     },
     "stone_axe": {
         "id": 275,
-        "fallback_name": "Stone Axe"
+        "fallback_name": "Stone Axe",
+        "type": "axe",
+        "properties": {
+            "tier": "stone",
+            "durability": 132,
+            "attack_damage": 5
+        }
     },
     "stone_hoe": {
         "id": 291,
@@ -976,15 +1058,33 @@
     },
     "stone_pickaxe": {
         "id": 274,
-        "fallback_name": "Stone Pickaxe"
+        "fallback_name": "Stone Pickaxe",
+        "type": "pickaxe",
+        "properties": {
+            "tier": "stone",
+            "durability": 132,
+            "attack_damage": 4
+        }
     },
     "stone_shovel": {
         "id": 273,
-        "fallback_name": "Stone Shovel"
+        "fallback_name": "Stone Shovel",
+        "type": "shovel",
+        "properties": {
+            "tier": "stone",
+            "durability": 132,
+            "attack_damage": 3
+        }
     },
     "stone_sword": {
         "id": 272,
-        "fallback_name": "Stone Sword"
+        "fallback_name": "Stone Sword",
+        "type": "sword",
+        "properties": {
+            "tier": "stone",
+            "durability": 132,
+            "attack_damage": 6
+        }
     },
     "string": {
         "id": 287,
@@ -1010,7 +1110,13 @@
     },
     "wooden_axe": {
         "id": 271,
-        "fallback_name": "Wooden Axe"
+        "fallback_name": "Wooden Axe",
+        "type": "axe",
+        "properties": {
+            "tier": "wooden",
+            "durability": 60,
+            "attack_damage": 4
+        }
     },
     "wooden_door": {
         "id": 324,
@@ -1023,14 +1129,32 @@
     },
     "wooden_pickaxe": {
         "id": 270,
-        "fallback_name": "Wooden Pickaxe"
+        "fallback_name": "Wooden Pickaxe",
+        "type": "pickaxe",
+        "properties": {
+            "tier": "wooden",
+            "durability": 60,
+            "attack_damage": 3
+        }
     },
     "wooden_shovel": {
         "id": 269,
-        "fallback_name": "Wooden Shovel"
+        "fallback_name": "Wooden Shovel",
+        "type": "shovel",
+        "properties": {
+            "tier": "wooden",
+            "durability": 60,
+            "attack_damage": 2
+        }
     },
     "wooden_sword": {
         "id": 268,
-        "fallback_name": "Wooden Sword"
+        "fallback_name": "Wooden Sword",
+        "type": "sword",
+        "properties": {
+            "tier": "wooden",
+            "durability": 60,
+            "attack_damage": 5
+        }
     }
 }

@@ -74,6 +74,7 @@ class Item implements ItemIds, \JsonSerializable{
 	protected $durability = 0;
 	protected $name;
 	protected $maxStackSize = 64;
+	protected $attackPoints = 1; //Default 1 for punching with any item, or air
 
 	public static function init(){
 		if(self::$list === null){
@@ -84,8 +85,13 @@ class Item implements ItemIds, \JsonSerializable{
 			}
 
 			$types = [
+				"axe"     => Axe::class,
 				"default" => Item::class,
-				"food" => Food::class
+				"food"    => Food::class,
+				"pickaxe" => Pickaxe::class,
+				"shears"  => Shears::class,
+				"shovel"  => Shovel::class,
+				"sword"   => Sword::class
 			];
 
 			foreach($items as $itemData){
@@ -96,14 +102,18 @@ class Item implements ItemIds, \JsonSerializable{
 				}
 
 				$type = $itemData["type"] ?? "default";
-				$class = $types[$type];
+				$class = $types[$type] ?? "";
 				if(!is_a($class, Item::class, true)){
 					throw new \RuntimeException("Unknown item type " . $type);
 				}
 
 				/** @var Item $class */
 				$newItem = $class::fromJsonTypeData($itemData);
-				$newItem->setMaxStackSize($itemData["max_stack_size"] ?? 64);
+
+				if(isset($itemData["max_stack_size"])){
+					$newItem->setMaxStackSize($itemData["max_stack_size"]);
+				}
+
 				if(isset($itemData["block"])){
 					if(defined(Block::class . "::" . strtoupper($itemData["block"]))){ //TODO: remove this hack
 						$newItem->setBlock(Block::get(constant(Block::class . "::" . strtoupper($itemData["block"]))));
@@ -760,6 +770,15 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	public function useOn($object){
 		return false;
+	}
+
+	/**
+	 * Returns the amount of damage that this item will deal to an entity.
+	 *
+	 * @return int
+	 */
+	public function getAttackPoints() : int{
+		return $this->attackPoints;
 	}
 
 	/**

@@ -2378,35 +2378,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 							$item = $this->inventory->getItemInHand();
 
-							//TODO: get rid of this
-							$damageTable = [
-								Item::WOODEN_SWORD => 4,
-								Item::GOLDEN_SWORD => 4,
-								Item::STONE_SWORD => 5,
-								Item::IRON_SWORD => 6,
-								Item::DIAMOND_SWORD => 7,
-
-								Item::WOODEN_AXE => 3,
-								Item::GOLDEN_AXE => 3,
-								Item::STONE_AXE => 3,
-								Item::IRON_AXE => 5,
-								Item::DIAMOND_AXE => 6,
-
-								Item::WOODEN_PICKAXE => 2,
-								Item::GOLDEN_PICKAXE => 2,
-								Item::STONE_PICKAXE => 3,
-								Item::IRON_PICKAXE => 4,
-								Item::DIAMOND_PICKAXE => 5,
-
-								Item::WOODEN_SHOVEL => 1,
-								Item::GOLDEN_SHOVEL => 1,
-								Item::STONE_SHOVEL => 2,
-								Item::IRON_SHOVEL => 3,
-								Item::DIAMOND_SHOVEL => 4,
-							];
-
 							$damage = [
-								EntityDamageEvent::MODIFIER_BASE => $damageTable[$item->getId()] ?? 1,
+								EntityDamageEvent::MODIFIER_BASE => $item->getAttackPoints(),
 							];
 
 							if(!$this->canInteract($target, 8)){

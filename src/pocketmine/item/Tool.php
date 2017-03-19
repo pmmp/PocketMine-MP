@@ -25,12 +25,9 @@ use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 
 abstract class Tool extends Item{
-	const TIER_WOODEN = 1;
-	const TIER_GOLD = 2;
-	const TIER_STONE = 3;
-	const TIER_IRON = 4;
-	const TIER_DIAMOND = 5;
 
+	//TODO: fix this mess
+	//Block-breaking tools
 	const TYPE_NONE = 0;
 	const TYPE_SWORD = 1;
 	const TYPE_SHOVEL = 2;
@@ -38,16 +35,29 @@ abstract class Tool extends Item{
 	const TYPE_AXE = 4;
 	const TYPE_SHEARS = 5;
 
-	public function __construct($id, $meta = 0, $count = 1, $name = "Unknown"){
+	//Not a block-breaking tool
+	const TYPE_HOE = 6;
+
+	protected $durability;
+	protected $attackPoints;
+
+	protected $maxStackSize = 1;
+
+	public function __construct($id, $meta = 0, $count = 1, $name = "Unknown", int $durability, int $attackPoints = 1){
 		parent::__construct($id, $meta, $count, $name);
+		$this->durability = $durability;
+		$this->attackPoints = $attackPoints;
 	}
 
-	public function getMaxStackSize(){
-		return 1;
+	abstract public function getToolType() : int;
+
+	public function getAttackPoints() : int{
+		return $this->attackPoints;
 	}
 
 	/**
-	 * TODO: Move this to each item
+	 * TODO: Move this to each tool type
+	 * TODO: split this up into methods for different types of interactions (left/right click block/entity, no way to tell difference here)
 	 *
 	 * @param Entity|Block $object
 	 *
@@ -89,13 +99,14 @@ abstract class Tool extends Item{
 	 * @return int|bool
 	 */
 	public function getMaxDurability(){
+		return $this->durability;
 
 		$levels = [
-			Tool::TIER_GOLD => 33,
-			Tool::TIER_WOODEN => 60,
-			Tool::TIER_STONE => 132,
-			Tool::TIER_IRON => 251,
-			Tool::TIER_DIAMOND => 1562,
+			TieredTool::TIER_GOLD => 33,
+			TieredTool::TIER_WOODEN => 60,
+			TieredTool::TIER_STONE => 132,
+			TieredTool::TIER_IRON => 251,
+			TieredTool::TIER_DIAMOND => 1562,
 			self::FLINT_AND_STEEL => 65,
 			self::SHEARS => 239,
 			self::BOW => 385,
@@ -120,6 +131,8 @@ abstract class Tool extends Item{
 		$tag = $this->getNamedTagEntry("Unbreakable");
 		return $tag !== null and $tag->getValue() > 0;
 	}
+
+	//TODO: remove this mess
 
 	public function isPickaxe(){
 		return false;

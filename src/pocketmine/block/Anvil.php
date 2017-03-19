@@ -23,6 +23,7 @@ namespace pocketmine\block;
 
 use pocketmine\inventory\AnvilInventory;
 use pocketmine\item\Item;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
 use pocketmine\Player;
 
@@ -78,7 +79,7 @@ class Anvil extends Fallable{
 	}
 
 	public function getDrops(Item $item){
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
+		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
 			return [
 				[$this->id, $this->meta & 0x0c, 1],
 			];

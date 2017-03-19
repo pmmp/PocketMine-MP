@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
 
 class Obsidian extends Solid{
@@ -45,7 +46,7 @@ class Obsidian extends Solid{
 	}
 
 	public function getDrops(Item $item){
-		if($item->isPickaxe() >= Tool::TIER_DIAMOND){
+		if($item->isPickaxe() >= TieredTool::TIER_DIAMOND){
 			return [
 				[Item::OBSIDIAN, 0, 1],
 			];

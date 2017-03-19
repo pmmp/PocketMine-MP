@@ -19,15 +19,34 @@
  *
 */
 
+
 namespace pocketmine\item;
 
 
-class GoldenSword extends Tool{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::GOLDEN_SWORD, $meta, $count, "Golden Sword");
+class Shovel extends TieredTool{
+
+	public function getToolType() : int{
+		return Tool::TYPE_SHOVEL;
 	}
 
-	public function isSword(){
-		return Tool::TIER_GOLD;
+	public function isShovel(){
+		return $this->tier;
+	}
+
+	protected static function fromJsonTypeData(array $data){
+		$properties = $data["properties"] ?? [];
+		if(!isset($properties["durability"]) or !isset($properties["tier"]) or !isset($properties["attack_damage"])){
+			throw new \RuntimeException("Missing Shovel properties from supplied data for " . $data["fallback_name"]);
+		}
+
+		return new Shovel(
+			$data["id"],
+			0,
+			1,
+			$data["fallback_name"],
+			TieredTool::toolTierFromString($properties["tier"]),
+			$properties["durability"],
+			$properties["attack_damage"] ?? 1
+		);
 	}
 }
