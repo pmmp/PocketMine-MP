@@ -817,7 +817,7 @@ class Server{
 	public function getPlayerExact($name){
 		$name = strtolower($name);
 		foreach($this->getOnlinePlayers() as $player){
-			if(strtolower($player->getName()) === $name){
+			if($player->getLowerCaseName() === $name){
 				return $player;
 			}
 		}
@@ -834,7 +834,7 @@ class Server{
 		$partialName = strtolower($partialName);
 		$matchedPlayers = [];
 		foreach($this->getOnlinePlayers() as $player){
-			if(strtolower($player->getName()) === $partialName){
+			if($player->getLowerCaseName() === $partialName){
 				$matchedPlayers = [$player];
 				break;
 			}elseif(stripos($player->getName(), $partialName) !== false){
