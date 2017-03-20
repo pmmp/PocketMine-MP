@@ -32,7 +32,6 @@ use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
-use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\network\mcpe\protocol\ChangeDimensionPacket;
@@ -47,6 +46,7 @@ use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
 use pocketmine\network\mcpe\protocol\ContainerSetSlotPacket;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
+use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\DropItemPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
@@ -103,8 +103,16 @@ use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\protocol\UpdateTradePacket;
 use pocketmine\network\mcpe\protocol\UseItemPacket;
+use pocketmine\Server;
 
 interface NetworkSession{
+
+	/**
+	 * @return Server
+	 */
+	public function getServer();
+
+	public function handleDataPacket(DataPacket $pk);
 
 	public function handleLogin(LoginPacket $packet) : bool;
 
@@ -115,8 +123,6 @@ interface NetworkSession{
 	public function handleClientToServerHandshake(ClientToServerHandshakePacket $packet) : bool;
 
 	public function handleDisconnect(DisconnectPacket $packet) : bool;
-
-	public function handleBatch(BatchPacket $packet) : bool;
 
 	public function handleResourcePacksInfo(ResourcePacksInfoPacket $packet) : bool;
 

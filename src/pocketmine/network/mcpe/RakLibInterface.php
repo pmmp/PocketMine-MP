@@ -132,11 +132,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			try{
 				if($packet->buffer !== ""){
 					$pk = $this->getPacket($packet->buffer);
-					if($pk !== null){
-						$pk->decode();
-						assert($pk->feof(), "Still " . strlen(substr($pk->buffer, $pk->offset)) . " bytes unread!");
-						$this->players[$identifier]->handleDataPacket($pk);
-					}
+					$this->players[$identifier]->handleDataPacket($pk);
 				}
 			}catch(\Throwable $e){
 				if(\pocketmine\DEBUG > 1 and isset($pk)){

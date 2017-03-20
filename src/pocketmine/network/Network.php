@@ -55,16 +55,15 @@ use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\ExplodePacket;
 use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
 use pocketmine\network\mcpe\protocol\HurtArmorPacket;
-use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
-use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryActionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LoginPacket;
-use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
+use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
+use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MoveEntityPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
@@ -72,6 +71,7 @@ use pocketmine\network\mcpe\protocol\PlayerFallPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\RemoveBlockPacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
 use pocketmine\network\mcpe\protocol\ReplaceItemInSlotPacket;
@@ -103,9 +103,7 @@ use pocketmine\network\mcpe\protocol\UnknownPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\protocol\UpdateTradePacket;
 use pocketmine\network\mcpe\protocol\UseItemPacket;
-use pocketmine\Player;
 use pocketmine\Server;
-use pocketmine\utils\BinaryStream;
 
 class Network{
 
@@ -230,50 +228,6 @@ class Network{
 
 	public function getServer(){
 		return $this->server;
-	}
-
-	/**
-	 * Decodes a batch packet and does handling for it.
-	 *
-	 * TODO: Move this out of here
-	 *
-	 * @param BatchPacket $packet
-	 * @param Player      $player
-	 *
-	 * @throws \InvalidArgumentException|\InvalidStateException
-	 */
-	public function processBatch(BatchPacket $packet, Player $p){
-		$rawLen = strlen($packet->payload);
-		if($rawLen === 0){
-			throw new \InvalidArgumentException("BatchPacket payload is empty or packet decode error");
-		}elseif($rawLen < 3){
-			throw new \InvalidArgumentException("Not enough bytes, expected zlib header");
-		}
-
-		$str = zlib_decode($packet->payload, 1024 * 1024 * 64); //Max 64MB
-		$len = strlen($str);
-
-		if($len === 0){
-			throw new \InvalidStateException("Decoded BatchPacket payload is empty");
-		}
-
-		$stream = new BinaryStream($str);
-
-		while($stream->offset < $len){
-			$buf = $stream->getString();
-
-			if(($pk = $this->getPacket(ord($buf{0}))) !== null){
-				if(!$pk->canBeBatched()){
-					throw new \InvalidStateException("Received invalid " . get_class($pk) . " inside BatchPacket");
-				}
-
-				$pk->setBuffer($buf, 1);
-
-				$pk->decode();
-				assert($pk->feof(), "Still " . strlen(substr($pk->buffer, $pk->offset)) . " bytes unread in " . get_class($pk));
-				$p->handleDataPacket($pk);
-			}
-		}
 	}
 
 	/**

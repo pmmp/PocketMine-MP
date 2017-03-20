@@ -112,7 +112,6 @@ use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
-use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\network\mcpe\protocol\ChangeDimensionPacket;
@@ -1959,11 +1958,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return false;
 	}
 
-	public function handleBatch(BatchPacket $packet) : bool{
-		$this->server->getNetwork()->processBatch($packet, $this);
-		return true;
-	}
-
 	public function handleResourcePacksInfo(ResourcePacksInfoPacket $packet) : bool{
 		return false;
 	}
@@ -3302,6 +3296,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$timings = Timings::getReceiveDataPacketTimings($packet);
 		$timings->startTiming();
+
+		$packet->decode();
+		assert($packet->feof(), "Still " . strlen(substr($packet->buffer, $packet->offset)) . " bytes unread in " . get_class($packet));
 
 		$this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this, $packet));
 		if(!$ev->isCancelled() and !$packet->handle($this)){
