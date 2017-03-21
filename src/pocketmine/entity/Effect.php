@@ -52,7 +52,7 @@ class Effect{
 	const POISON = 19;
 	const WITHER = 20;
 	const HEALTH_BOOST = 21;
-	const ABSORPTION = 22; // TODO implement
+	const ABSORPTION = 22;
 	const SATURATION = 23;
 	const LEVITATION = 24; //TODO
 
