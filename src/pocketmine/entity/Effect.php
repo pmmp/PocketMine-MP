@@ -427,6 +427,7 @@ class Effect{
 				$speed *= (1 - 0.15 * $this->amplifier);
 				$attr->setValue($speed, true);
 				break;
+
 			case Effect::HEALTH_BOOST:
 				$attr = $entity->getAttributeMap()->getAttribute(Attribute::HEALTH);
 				if($ev->willModify() and $oldEffect !== null){
@@ -438,6 +439,17 @@ class Effect{
 				$max += (4 * ($this->amplifier + 1));
 				$attr->setMaxValue($max);
 				break;
+			case Effect::ABSORPTION:
+				if($ev->willModify() and $oldEffect !== null){
+					$value = $entity->getAbsorption() - (4 * ($oldEffect->getAmplifier() + 1));
+				}else{
+					$value = $entity->getAbsorption();
+				}
+
+				$value += (4 * ($this->amplifier + 1));
+				$entity->setAbsorption($value);
+				break;
+
 		}
 	}
 
@@ -476,6 +488,9 @@ class Effect{
 			case Effect::HEALTH_BOOST:
 				$attr = $entity->getAttributeMap()->getAttribute(Attribute::HEALTH);
 				$attr->setMaxValue($attr->getMaxValue() - (4 * ($this->amplifier + 1)));
+				break;
+			case Effect::ABSORPTION:
+				$entity->setAbsorption($entity->getAbsorption() - (4 * ($this->amplifier + 1)));
 				break;
 		}
 	}
