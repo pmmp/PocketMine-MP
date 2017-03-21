@@ -1494,8 +1494,8 @@ class Level implements ChunkManager, Metadatable{
 				$breakTime = 0.15;
 			}
 
-			if($player->hasEffect(Effect::SWIFTNESS)){
-				$breakTime *= 1 - (0.2 * ($player->getEffect(Effect::SWIFTNESS)->getAmplifier() + 1));
+			if($player->hasEffect(Effect::HASTE)){
+				$breakTime *= 1 - (0.2 * ($player->getEffect(Effect::HASTE)->getAmplifier() + 1));
 			}
 
 			if($player->hasEffect(Effect::MINING_FATIGUE)){

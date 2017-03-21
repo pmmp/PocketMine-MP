@@ -33,14 +33,13 @@ use pocketmine\utils\Config;
 class Effect{
 	const SPEED = 1;
 	const SLOWNESS = 2;
-	const HASTE = 3, SWIFTNESS = 3;
+	const HASTE = 3;
 	const FATIGUE = 4, MINING_FATIGUE = 4;
 	const STRENGTH = 5;
 	const INSTANT_HEALTH = 6, HEALING = 6;
 	const INSTANT_DAMAGE = 7, HARMING = 7;
 	const JUMP = 8;
-	const NAUSEA = 9;
-	const CONFUSION = 9;
+	const NAUSEA = 9, CONFUSION = 9;
 	const REGENERATION = 10;
 	const DAMAGE_RESISTANCE = 11;
 	const FIRE_RESISTANCE = 12;
@@ -55,6 +54,7 @@ class Effect{
 	const HEALTH_BOOST = 21;
 	const ABSORPTION = 22; // TODO implement
 	const SATURATION = 23;
+	const LEVITATION = 24; //TODO
 
 	/** @var Effect[] */
 	protected static $effects = [];
