@@ -33,13 +33,11 @@ use pocketmine\utils\Config;
 class Effect{
 	const SPEED = 1;
 	const SLOWNESS = 2;
-	const HASTE = 3;
-	const SWIFTNESS = 3;
-	const FATIGUE = 4;
-	const MINING_FATIGUE = 4;
+	const HASTE = 3, SWIFTNESS = 3;
+	const FATIGUE = 4, MINING_FATIGUE = 4;
 	const STRENGTH = 5;
-//	TODO: const HEALING = 6;
-//	TODO: const HARMING = 7;
+	const INSTANT_HEALTH = 6, HEALING = 6;
+	const INSTANT_DAMAGE = 7, HARMING = 7;
 	const JUMP = 8;
 	const NAUSEA = 9;
 	const CONFUSION = 9;
@@ -69,7 +67,16 @@ class Effect{
 			$r = ($color >> 16) & 0xff;
 			$g = ($color >> 8) & 0xff;
 			$b = $color & 0xff;
-			self::registerEffect($name, new Effect($data["id"], "%" . $data["name"], $r, $g, $b, $data["isBad"] ?? false));
+			self::registerEffect($name, new Effect(
+				$data["id"],
+				"%" . $data["name"],
+				$r,
+				$g,
+				$b,
+				$data["isBad"] ?? false,
+				$data["default_duration"] ?? 300 * 20,
+				$data["has_bubbles"] ?? true
+			));
 		}
 	}
 
@@ -81,7 +88,7 @@ class Effect{
 	/**
 	 * @param int $id
 	 *
-	 * @return $this
+	 * @return Effect|null
 	 */
 	public static function getEffect($id){
 		if(isset(self::$effects[$id])){
@@ -90,6 +97,11 @@ class Effect{
 		return null;
 	}
 
+	/**
+	 * @param string $name
+	 *
+	 * @return Effect|null
+	 */
 	public static function getEffectByName($name){
 		if(isset(self::$effects[$name])){
 			return clone self::$effects[$name];
@@ -114,40 +126,106 @@ class Effect{
 
 	protected $bad;
 
-	public function __construct($id, $name, $r, $g, $b, $isBad = false){
+	protected $defaultDuration = 300 * 20;
+
+	protected $hasBubbles = true;
+
+	/**
+	 * @param int    $id              Effect ID as per Minecraft PE
+	 * @param string $name            Translation key used for effect name
+	 * @param int    $r               0-255, red balance of potion particle colour
+	 * @param int    $g               0-255, green balance of potion particle colour
+	 * @param int    $b               0-255, blue balance of potion particle colour
+	 * @param bool   $isBad           Whether the effect is harmful
+	 * @param int    $defaultDuration Duration in ticks the effect will last for by default if applied without a duration.
+	 * @param bool   $hasBubbles      Whether the effect has potion bubbles. Some do not (e.g. Instant Damage has its own particles instead of bubbles)
+	 */
+	public function __construct($id, $name, $r, $g, $b, $isBad = false, int $defaultDuration = 300 * 20, bool $hasBubbles = true){
 		$this->id = $id;
 		$this->name = $name;
 		$this->bad = (bool) $isBad;
 		$this->setColor($r, $g, $b);
+		$this->defaultDuration = $defaultDuration;
+		$this->duration = $defaultDuration;
+		$this->hasBubbles = $hasBubbles;
 	}
 
+	/**
+	 * Returns the translation key used to translate this effect's name.
+	 * @return string
+	 */
 	public function getName(){
 		return $this->name;
 	}
 
+	/**
+	 * Returns the effect ID as per Minecraft PE
+	 * @return int
+	 */
 	public function getId(){
 		return $this->id;
 	}
 
+	/**
+	 * Sets the duration in ticks of the effect.
+	 * @param $ticks
+	 *
+	 * @return $this
+	 */
 	public function setDuration($ticks){
 		$this->duration = $ticks;
 		return $this;
 	}
 
+	/**
+	 * Returns the duration remaining of the effect in ticks.
+	 * @return int
+	 */
 	public function getDuration(){
 		return $this->duration;
 	}
 
+	/**
+	 * Returns the default duration this effect will apply for if a duration is not specified.
+	 * @return int
+	 */
+	public function getDefaultDuration() : int{
+		return $this->defaultDuration;
+	}
+
+	/**
+	 * Returns whether this effect will give the subject potion bubbles.
+	 * @return bool
+	 */
+	public function hasBubbles() : bool{
+		return $this->hasBubbles;
+	}
+
+	/**
+	 * Returns whether this effect will produce some visible effect, such as bubbles or particles.
+	 * NOTE: Do not confuse this with {@link Effect#hasBubbles}. For example, Instant Damage does not have bubbles, but still produces visible effects (particles).
+	 *
+	 * @return bool
+	 */
 	public function isVisible(){
 		return $this->show;
 	}
 
+	/**
+	 * Changes the visibility of the effect.
+	 * @param bool $bool
+	 *
+	 * @return $this
+	 */
 	public function setVisible($bool){
 		$this->show = (bool) $bool;
 		return $this;
 	}
 
 	/**
+	 * Returns the amplifier of this effect.
+	 * TODO: fix mess of amplifier used instead of level for effect calculation.
+	 *
 	 * @return int
 	 */
 	public function getAmplifier(){
@@ -164,19 +242,40 @@ class Effect{
 		return $this;
 	}
 
+	/**
+	 * Returns whether the effect is ambient.
+	 * @return bool
+	 */
 	public function isAmbient(){
 		return $this->ambient;
 	}
 
+	/**
+	 * Sets the ambiency of this effect.
+	 * @param bool $ambient
+	 *
+	 * @return $this
+	 */
 	public function setAmbient($ambient = true){
 		$this->ambient = (bool) $ambient;
 		return $this;
 	}
 
+	/**
+	 * Returns whether this effect is harmful.
+	 * TODO: implement inverse effect results for undead mobs
+	 *
+	 * @return bool
+	 */
 	public function isBad(){
 		return $this->bad;
 	}
 
+	/**
+	 * Returns whether the effect will do something on the current tick.
+	 *
+	 * @return bool
+	 */
 	public function canTick(){
 		switch($this->id){
 			case Effect::POISON:
@@ -202,10 +301,19 @@ class Effect{
 					return ($this->duration % $interval) === 0;
 				}
 				return true;
+			case Effect::INSTANT_DAMAGE:
+			case Effect::INSTANT_HEALTH:
+				//If forced to last longer than 1 tick, these apply every tick.
+				return true;
 		}
 		return false;
 	}
 
+	/**
+	 * Applies effect results to an entity.
+	 *
+	 * @param Entity $entity
+	 */
 	public function applyEffect(Entity $entity){
 		switch($this->id){
 			case Effect::POISON:
@@ -231,17 +339,48 @@ class Effect{
 				if($entity instanceof Human){
 					$entity->exhaust(0.5 * $this->amplifier, PlayerExhaustEvent::CAUSE_POTION);
 				}
+				break;
+			case Effect::INSTANT_HEALTH:
+				//TODO: add particles (witch spell)
+				if($entity->getHealth() < $entity->getMaxHealth()){
+					$amount = 2 * (2 ** (($this->amplifier + 1) % 32));
+					$entity->heal($amount, new EntityRegainHealthEvent($entity, $amount, EntityRegainHealthEvent::CAUSE_MAGIC));
+				}
+				break;
+			case Effect::INSTANT_DAMAGE:
+				//TODO: add particles (witch spell)
+				$amount = 2 * (2 ** (($this->amplifier + 1) % 32));
+				$entity->attack($amount, new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, $amount));
+				break;
 		}
 	}
 
+	/**
+	 * Returns an RGB color array of this effect's color.
+	 * @return array
+	 */
 	public function getColor(){
 		return [$this->color >> 16, ($this->color >> 8) & 0xff, $this->color & 0xff];
 	}
 
+	/**
+	 * Sets the color of this effect.
+	 *
+	 * @param int $r
+	 * @param int $g
+	 * @param int $b
+	 */
 	public function setColor($r, $g, $b){
 		$this->color = (($r & 0xff) << 16) + (($g & 0xff) << 8) + ($b & 0xff);
 	}
 
+	/**
+	 * Adds this effect to the Entity, performing effect overriding as specified.
+	 *
+	 * @param Entity      $entity
+	 * @param bool        $modify
+	 * @param Effect|null $oldEffect
+	 */
 	public function add(Entity $entity, $modify = false, Effect $oldEffect = null){
 		$entity->getLevel()->getServer()->getPluginManager()->callEvent($ev = new EntityEffectAddEvent($entity, $this, $modify, $oldEffect));
 		if($ev->isCancelled()){
@@ -302,6 +441,11 @@ class Effect{
 		}
 	}
 
+	/**
+	 * Removes the effect from the entity, resetting any changed values back to their original defaults.
+	 *
+	 * @param Entity $entity
+	 */
 	public function remove(Entity $entity){
 		$entity->getLevel()->getServer()->getPluginManager()->callEvent($ev = new EntityEffectRemoveEvent($entity, $this));
 		if($ev->isCancelled()){

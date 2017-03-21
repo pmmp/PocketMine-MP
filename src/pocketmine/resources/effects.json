@@ -29,13 +29,17 @@
     "instant_health": {
         "id": 6,
         "color": "f82423",
-        "name": "potion.heal"
+        "name": "potion.heal",
+        "default_duration": 1,
+        "has_bubbles": false
     },
     "instant_damage": {
         "id": 7,
         "color": "430a09",
         "name": "potion.harm",
-        "isBad": true
+        "isBad": true,
+        "default_duration": 1,
+        "has_bubbles": false
     },
     "jump_boost": {
         "id": 8,

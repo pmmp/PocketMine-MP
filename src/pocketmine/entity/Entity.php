@@ -492,7 +492,7 @@ abstract class Entity extends Location implements Metadatable{
 		$count = 0;
 		$ambient = true;
 		foreach($this->effects as $effect){
-			if($effect->isVisible()){
+			if($effect->isVisible() and $effect->hasBubbles()){
 				$c = $effect->getColor();
 				$color[0] += $c[0] * ($effect->getAmplifier() + 1);
 				$color[1] += $c[1] * ($effect->getAmplifier() + 1);
