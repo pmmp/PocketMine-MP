@@ -1223,8 +1223,8 @@ class Level implements ChunkManager, Metadatable{
 		$chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4, false);
 		$level = 0;
 		if($chunk instanceof Chunk){
-			//Do not decrease skylightlvl over day. MCPC and MCPE don't do this either.
-			$level = max($chunk->getBlockLight($pos->x & 0x0f, $pos->y & Level::Y_MASK, $pos->z & 0x0f), $chunk->getBlockSkyLight($pos->x & 0x0f, $pos->y & Level::Y_MASK, $pos->z & 0x0f));
+			//Do not decrease skylightlvl over time. MCPC and MCPE don't do this either.
+			$level = max($chunk->getBlockLight($pos->x & 0x0f, $pos->y, $pos->z & 0x0f), $chunk->getBlockSkyLight($pos->x & 0x0f, $pos->y, $pos->z & 0x0f));
 		}
 
 		return $level;
@@ -1281,7 +1281,7 @@ class Level implements ChunkManager, Metadatable{
 	*/
 	public function updateBlockSkyLight(int $x, int $y, int $z){
 		$this->server->broadcastMessage("-------Calc::'".$x."/".$y."/".$z."/"."'-------"); #DBG
-		if(Block::getVerticalLightFilter($this->getBlockIdAt($x, $y, $z)) >= 14){
+		if(Block::getVerticalSkyLightFilter($this->getBlockIdAt($x, $y, $z)) >= 14){
 			$this->setBlockSkyLightAt($x, $y, $z, 0);
 			$this->server->broadcastMessage("-------EndCalc::'".$x."/".$y."/".$z."/"."'::TOOHIGHBASERES-------"); #DBG
 			return;
@@ -1313,13 +1313,13 @@ class Level implements ChunkManager, Metadatable{
 	private function getDirectSkyLight($x, $y, $z){
 		$chunk = $this->getChunk($x >> 4, $z >> 4, true);
 		if(($highestBlock = $chunk->getHighestBlockAt($x & 0xf, $z & 0xf)) < $y){
+			$this->server->getLogger()->debug("Assuming full light because of: y=$y highestBlock=$highestBlock"); #DBG
 			return 15;
 		}
 		
 		$directSkyLight = 15;
 		for($i = $y; $i <= $highestBlock; $i++){
-			$lightResistance = Block::getVerticalLightFilter($chunk->getBlockId($x & 0x0f, $i & 0x7f, $z & 0x0f));
-			echo("i=$i y=$y lR=$lightResistance highestBlock=$highestBlock \n");
+			$lightResistance = Block::getVerticalSkyLightFilter($chunk->getBlockId($x & 0x0f, $i & 0x7f, $z & 0x0f));
 			if($lightResistance == -1){ //diffusion
 				$lightResistance = $i - $y;
 				$y = $i; //If another diffusion occurs, it will not do double diffusion
@@ -1341,15 +1341,15 @@ class Level implements ChunkManager, Metadatable{
 	 * @param $currWayResistance   The horizontal resistance of the current root way
 	 * @param &$visitedBlocks      Blocks visited in the current base way
 	 *
-	 * Note: Origin is referred to as the real origin for which the updateBlockSkyLight call was made. Origins are all blocks that have directSkyLight.
+	 * Note: Origin is referred to as the real origin for which the updateBlockSkyLight call was made.
 	 *
 	 * @return int 0-15
 	*/
 	private function getSkyLightViaWays(array $calcBase, array $lightWays, int $currLightAtOrigin = 0, int $currWayResistance = -1, array &$visitedBlocks = [], $fncId = 0){
-		$this->server->broadcastMessage("CurrWayResistance (".implode($calcBase, "/").") is '".$currWayResistance."'"); #DBG
+		$this->server->getLogger()->debug("CurrWayResistance (".implode($calcBase, "/").") is '".$currWayResistance."'"); #DBG
 		if($currWayResistance !== -1){ //not base
 			if($currWayResistance >= 15 - $currLightAtOrigin){
-				$this->server->brodcastMessage("ARBORTING at $fncId");
+				$this->server->getLogger()->debug("ARBORTING at $fncId");
 				return 0; //No origins useful after this point (They can't make the origin brighter.)
 			}
 		}
@@ -1357,7 +1357,7 @@ class Level implements ChunkManager, Metadatable{
 		$lightLvlsFromDir = [];
 		$currResistance = Block::getHorizontalLightFilter($this->getBlockIdAt($calcBase[0], $calcBase[1], $calcBase[2]));
 		$calcWayResistance = $currWayResistance;
-		$this->server->broadcastMessage("LightResistance for ".implode($calcBase, "/")." is '".$currResistance."'"); #DBG
+		$this->server->getLogger()->debug("LightResistance for ".implode($calcBase, "/")." is '".$currResistance."'"); #DBG
 		var_dump($lightWays); #DBG
 		
 		foreach($lightWays as $dir => $lightWay){ //max 4
@@ -1372,12 +1372,12 @@ class Level implements ChunkManager, Metadatable{
 			$visitedBlocks[Level::blockHash($lightWay[0], $lightWay[1], $lightWay[2])] = true;
 			
 			$directSkyLight = $this->getDirectSkyLight($lightWay[0], $lightWay[1], $lightWay[2]);
-			$this->server->broadcastMessage("LightWay '".$dir."' (recCallLvl:'".$fncId."') has ".$directSkyLight." directSkyLight"); #DBG
+			$this->server->getLogger()->debug("LightWay '".$dir."' (recCallLvl:'".$fncId."') has ".$directSkyLight." directSkyLight"); #DBG
 			
 			if($directSkyLight > 0){ //Found an origin of light in our current lightWay!
 				if($directSkyLight >= 14){ //No need to continue calculation, we can't get higher skylight for $calcBase!
 					$lightLvlsFromDir[$dir] = $directSkyLight;
-					$this->server->broadcastMessage("End foreach at '".$dir."' because dirSkyLight ".$directSkyLight." >= 14. (".implode($calcBase, "/").")"); #DBG
+					$this->server->getLogger()->debug("End foreach at '".$dir."' because dirSkyLight ".$directSkyLight." >= 14. (".implode($calcBase, "/").")"); #DBG
 					break;
 				}
 			}
@@ -1385,20 +1385,20 @@ class Level implements ChunkManager, Metadatable{
 			$newLightWays = $this->findLightWays($lightWay[0], $lightWay[1], $lightWay[2]);
 			
 			if($newLightWays === false){ //No further ways found
-				$this->server->broadcastMessage("Dir '".$dir."' is ended!"); #DBG
+				$this->server->getLogger()->debug("Dir '".$dir."' has ended!"); #DBG
 				continue;
 			}
 			
-			$this->server->broadcastMessage("Dir '".$dir."' has to be explored further!"); #DBG
+			$this->server->getLogger()->debug("Dir '".$dir."' has to be explored further!"); #DBG
 			$lightLvlsFromDir[$dir] = $this->getSkyLightViaWays($lightWay, $newLightWays, $currLightAtOrigin, $calcWayResistance + $currResistance, $visitedBlocks, $fncId + 1); //$fncId : DEBUG ONLY
 			if($currWayResistance === -1){ //base
 				$currLightAtOrigin = max($lightLvlsFromDir);
 			}
 		}
-		$this->server->broadcastMessage("lightLvlDir for (".implode($calcBase, "/").") is '".max($lightLvlsFromDir)."'"); #DBG
 		if($lightLvlsFromDir === []){ //Revisited an already visited block -_-
 			return 0;
 		}
+		$this->server->getLogger()->debug("lightLvlDir for (".implode($calcBase, "/").") is '".max($lightLvlsFromDir)."'"); #DBG
 		return max($lightLvlsFromDir) - $currResistance;
 	}
 		
