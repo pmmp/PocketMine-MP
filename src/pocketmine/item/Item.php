@@ -155,6 +155,7 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$list[self::IRON_DOOR] = IronDoor::class;
 			self::$list[self::REDSTONE] = Redstone::class;
 			self::$list[self::SNOWBALL] = Snowball::class;
+			self::$list[self::ENDERPEARL] = Enderpearl::class;
 			self::$list[self::BOAT] = Boat::class;
 			self::$list[self::LEATHER] = Leather::class;
 			self::$list[self::BRICK] = Brick::class;

@@ -137,6 +137,7 @@ interface ItemIds extends BlockIds{
 	const RAW_CHICKEN = 365;
 	const COOKED_CHICKEN = 366;
 	const ROTTEN_FLESH = 367;
+	const ENDERPEARL = 368, ENDER_PEARL = 368;
 
 	const BLAZE_ROD = 369;
 	const GHAST_TEAR = 370;
