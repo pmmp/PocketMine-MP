@@ -1328,7 +1328,7 @@ class Level implements ChunkManager, Metadatable{
 			/** @var Vector3 $node */
 			$node = $lightPropagationQueue->dequeue();
 
-			$lightLevel = $this->getBlockLightAt($node->x, $node->y, $node->z) - (int) Block::$lightFilter[$this->getBlockIdAt($node->x, $node->y, $node->z)];
+			$lightLevel = $this->getBlockLightAt($node->x, $node->y, $node->z);
 
 			if($lightLevel >= 1){
 				$this->computeSpreadBlockLight($node->x - 1, $node->y, $node->z, $lightLevel, $lightPropagationQueue, $visited);
@@ -1365,6 +1365,7 @@ class Level implements ChunkManager, Metadatable{
 	private function computeSpreadBlockLight(int $x, int $y, int $z, int $currentLight, \SplQueue $queue, array &$visited){
 		if($y < 0) return;
 		$current = $this->getBlockLightAt($x, $y, $z);
+		$currentLight -= Block::$lightFilter[$this->getBlockIdAt($x, $y, $z)];
 
 		if($current < $currentLight){
 			$this->setBlockLightAt($x, $y, $z, $currentLight);
