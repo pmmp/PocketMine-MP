@@ -65,13 +65,19 @@ class Item implements ItemIds, \JsonSerializable{
 
 	/** @var \SplFixedArray */
 	public static $list = null;
+	/** @var Block|null */
 	protected $block;
+	/** @var int */
 	protected $id;
+	/** @var int */
 	protected $meta;
+	/** @var string */
 	private $tags = "";
+	/** @var CompoundTag|null */
 	private $cachedNBT = null;
+	/** @var int */
 	public $count;
-	protected $durability = 0;
+	/** @var string */
 	protected $name;
 
 	public function canBeActivated(){
@@ -1005,6 +1011,14 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		return $item;
+	}
+
+	public function __clone(){
+		if($this->block !== null){
+			$this->block = clone $this->block;
+		}
+
+		$this->cachedNBT = null;
 	}
 
 }
