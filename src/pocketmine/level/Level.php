@@ -1289,14 +1289,35 @@ class Level implements ChunkManager, Metadatable{
 		//TODO
 	}
 
+	/**
+	 * Returns the highest light level available in the positions adjacent to the specified block coordinates.
+	 *
+	 * @param int $x
+	 * @param int $y
+	 * @param int $z
+	 *
+	 * @return int
+	 */
+	public function getHighestAdjacentBlockLight(int $x, int $y, int $z) : int{
+		return max([
+			$this->getBlockLightAt($x + 1, $y, $z),
+			$this->getBlockLightAt($x - 1, $y, $z),
+			$this->getBlockLightAt($x, $y + 1, $z),
+			$this->getBlockLightAt($x, $y - 1, $z),
+			$this->getBlockLightAt($x, $y, $z + 1),
+			$this->getBlockLightAt($x, $y, $z - 1)
+		]);
+	}
+
 	public function updateBlockLight(int $x, int $y, int $z){
 		$lightPropagationQueue = new \SplQueue();
 		$lightRemovalQueue = new \SplQueue();
 		$visited = [];
 		$removalVisited = [];
 
+		$id = $this->getBlockIdAt($x, $y, $z);
 		$oldLevel = $this->getBlockLightAt($x, $y, $z);
-		$newLevel = (int) Block::$light[$this->getBlockIdAt($x, $y, $z)];
+		$newLevel = max(Block::$light[$id], $this->getHighestAdjacentBlockLight($x, $y, $z) - Block::$lightFilter[$id]);
 
 		if($oldLevel !== $newLevel){
 			$this->setBlockLightAt($x, $y, $z, $newLevel);
