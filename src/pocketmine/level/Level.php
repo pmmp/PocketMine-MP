@@ -1286,7 +1286,9 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function updateBlockSkyLight(int $x, int $y, int $z){
+		$this->timings->doBlockSkyLightUpdates->startTiming();
 		//TODO
+		$this->timings->doBlockSkyLightUpdates->stopTiming();
 	}
 
 	/**
@@ -1310,6 +1312,8 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function updateBlockLight(int $x, int $y, int $z){
+		$this->timings->doBlockLightUpdates->startTiming();
+
 		$lightPropagationQueue = new \SplQueue();
 		$lightRemovalQueue = new \SplQueue();
 		$visited = [];
@@ -1360,6 +1364,8 @@ class Level implements ChunkManager, Metadatable{
 				$this->computeSpreadBlockLight($node->x, $node->y, $node->z + 1, $lightLevel, $lightPropagationQueue, $visited);
 			}
 		}
+
+		$this->timings->doBlockLightUpdates->stopTiming();
 	}
 
 	private function computeRemoveBlockLight(int $x, int $y, int $z, int $currentLight, \SplQueue $queue, \SplQueue $spreadQueue, array &$visited, array &$spreadVisited){
@@ -1424,6 +1430,8 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
+		$this->timings->setBlock->startTiming();
+
 		if($this->getChunk($pos->x >> 4, $pos->z >> 4, true)->setBlock($pos->x & 0x0f, $pos->y & Level::Y_MASK, $pos->z & 0x0f, $block->getId(), $block->getDamage())){
 			if(!($pos instanceof Position)){
 				$pos = $this->temporalPosition->setComponents($pos->x, $pos->y, $pos->z);
@@ -1463,8 +1471,12 @@ class Level implements ChunkManager, Metadatable{
 				$this->updateAround($pos);
 			}
 
+			$this->timings->setBlock->stopTiming();
+
 			return true;
 		}
+
+		$this->timings->setBlock->stopTiming();
 
 		return false;
 	}
