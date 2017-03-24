@@ -32,4 +32,8 @@ class RedstoneTorch extends Torch{
 	public function getName(){
 		return "Redstone Torch";
 	}
+
+	public function getLightLevel(){
+		return 7;
+	}
 }
