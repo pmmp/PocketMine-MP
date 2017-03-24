@@ -53,6 +53,8 @@ class Block extends Position implements BlockIds, Metadatable{
 	/** @var \SplFixedArray */
 	public static $hardness = null;
 	/** @var \SplFixedArray */
+	public static $diffusesSkyLight = null;
+	/** @var \SplFixedArray */
 	public static $transparent = null;
 
 	protected $id;
@@ -259,28 +261,53 @@ class Block extends Position implements BlockIds, Metadatable{
 					self::$transparent[$id] = $block->isTransparent();
 					self::$hardness[$id] = $block->getHardness();
 					self::$light[$id] = $block->getLightLevel();
+					self::$diffusesSkyLight[$id] = $block->isDiffusingSkyLight();
 
 					if($block->isSolid()){
 						if($block->isTransparent()){
 							if($block instanceof Liquid or $block instanceof Ice){
 								self::$lightFilter[$id] = 2;
 							}else{
-								self::$lightFilter[$id] = 1;
+								self::$lightFilter[$id] = 0;
 							}
 						}else{
 							self::$lightFilter[$id] = 15;
 						}
 					}else{
-						self::$lightFilter[$id] = 1;
+						self::$lightFilter[$id] = 0;
 					}
 				}else{
-					self::$lightFilter[$id] = 1;
+					self::$lightFilter[$id] = 15;
 					for($data = 0; $data < 16; ++$data){
 						self::$fullList[($id << 4) | $data] = new UnknownBlock($id, $data);
 					}
 				}
 			}
 		}
+	}
+	
+	/**
+	 * @param int $blockID
+	 *
+	 * @return int 0-15
+	*/
+	public static function getVerticalSkyLightFilter($blockID): int{
+		if(!self::$diffusesSkyLight[$blockID]){
+			return self::$lightFilter[$blockID];
+		}else{ //Diffusion
+			return -1;
+		}
+	}
+	
+	/**
+	 * @param int $blockID
+	 *
+	 * This function must always return values in range of 1-15, otherwise it could lead to a freeze.
+	 *
+	 * @return int 1-15
+	*/
+	public static function getHorizontalLightFilter($blockID): int{
+		return max(self::$lightFilter[$blockID], 1);
 	}
 
 	/**
@@ -417,6 +444,13 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getLightLevel(){
 		return 0;
+	}
+	
+	/**
+	 * @return bool
+	 */
+	public function isDiffusingSkyLight(): bool{
+		return false;
 	}
 
 	/**
