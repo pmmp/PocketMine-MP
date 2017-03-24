@@ -157,6 +157,9 @@ class Server{
 	private $currentTPS = 20;
 	private $currentUse = 0;
 
+	/** @var bool */
+	private $doTitleTick = true;
+
 	private $sendUsageTicker = 0;
 
 	private $dispatchSignals = false;
@@ -1455,6 +1458,8 @@ class Server{
 			$this->alwaysTickPlayers = (int) $this->getProperty("level-settings.always-tick-players", false);
 			$this->baseTickRate = (int) $this->getProperty("level-settings.base-tick-rate", 1);
 
+			$this->doTitleTick = (bool) $this->getProperty("console.title-tick", true);
+
 			$this->scheduler = new ServerScheduler();
 
 			if($this->getConfigBoolean("enable-rcon", false) === true){
@@ -2287,10 +2292,6 @@ class Server{
 	}
 
 	private function titleTick(){
-		if(!Terminal::hasFormattingCodes()){
-			return;
-		}
-
 		$d = Utils::getRealMemoryUsage();
 
 		$u = Utils::getMemoryUsage(true);
@@ -2366,7 +2367,9 @@ class Server{
 		}
 
 		if(($this->tickCounter & 0b1111) === 0){
-			$this->titleTick();
+			if($this->doTitleTick and Terminal::hasFormattingCodes()){
+				$this->titleTick();
+			}
 			$this->currentTPS = 20;
 			$this->currentUse = 0;
 
