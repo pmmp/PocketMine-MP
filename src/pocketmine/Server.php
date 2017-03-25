@@ -2434,4 +2434,13 @@ class Server{
 
 		return true;
 	}
+
+	/**
+	 * Called when something attempts to serialize the server instance.
+	 *
+	 * @throws \BadMethodCallException because Server instances cannot be serialized
+	 */
+	public function __sleep(){
+		throw new \BadMethodCallException("Cannot serialize Server instance");
+	}
 }
