@@ -158,6 +158,9 @@ class Server{
 	private $currentTPS = 20;
 	private $currentUse = 0;
 
+	/** @var bool */
+	private $doTitleTick = true;
+
 	private $sendUsageTicker = 0;
 
 	private $dispatchSignals = false;
@@ -817,7 +820,7 @@ class Server{
 	public function getPlayerExact($name){
 		$name = strtolower($name);
 		foreach($this->getOnlinePlayers() as $player){
-			if(strtolower($player->getName()) === $name){
+			if($player->getLowerCaseName() === $name){
 				return $player;
 			}
 		}
@@ -834,7 +837,7 @@ class Server{
 		$partialName = strtolower($partialName);
 		$matchedPlayers = [];
 		foreach($this->getOnlinePlayers() as $player){
-			if(strtolower($player->getName()) === $partialName){
+			if($player->getLowerCaseName() === $partialName){
 				$matchedPlayers = [$player];
 				break;
 			}elseif(stripos($player->getName(), $partialName) !== false){
@@ -1466,6 +1469,8 @@ class Server{
 			$this->alwaysTickPlayers = (int) $this->getProperty("level-settings.always-tick-players", false);
 			$this->baseTickRate = (int) $this->getProperty("level-settings.base-tick-rate", 1);
 
+			$this->doTitleTick = (bool) $this->getProperty("console.title-tick", true);
+
 			$this->scheduler = new ServerScheduler();
 
 			if($this->getConfigBoolean("enable-rcon", false) === true){
@@ -1546,7 +1551,7 @@ class Server{
 			Attribute::init();
 			$this->craftingManager = new CraftingManager();
 
-			$this->resourceManager = new ResourcePackManager($this, \pocketmine\PATH . "resource_packs" . DIRECTORY_SEPARATOR);
+			$this->resourceManager = new ResourcePackManager($this, $this->getDataPath() . "resource_packs" . DIRECTORY_SEPARATOR);
 
 			$this->pluginManager = new PluginManager($this, $this->commandMap);
 			$this->pluginManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
@@ -2262,7 +2267,9 @@ class Server{
 	}
 
 	public function sendUsage($type = SendUsageTask::TYPE_STATUS){
-		$this->scheduler->scheduleAsyncTask(new SendUsageTask($this, $type, $this->uniquePlayers));
+		if($this->getProperty("anonymous-statistics.enabled", true)){
+			$this->scheduler->scheduleAsyncTask(new SendUsageTask($this, $type, $this->uniquePlayers));
+		}
 		$this->uniquePlayers = [];
 	}
 
@@ -2296,10 +2303,6 @@ class Server{
 	}
 
 	private function titleTick(){
-		if(!Terminal::hasFormattingCodes()){
-			return;
-		}
-
 		$d = Utils::getRealMemoryUsage();
 
 		$u = Utils::getMemoryUsage(true);
@@ -2375,7 +2378,9 @@ class Server{
 		}
 
 		if(($this->tickCounter & 0b1111) === 0){
-			$this->titleTick();
+			if($this->doTitleTick and Terminal::hasFormattingCodes()){
+				$this->titleTick();
+			}
 			$this->currentTPS = 20;
 			$this->currentUse = 0;
 
@@ -2439,5 +2444,14 @@ class Server{
 		}
 
 		return true;
+	}
+
+	/**
+	 * Called when something attempts to serialize the server instance.
+	 *
+	 * @throws \BadMethodCallException because Server instances cannot be serialized
+	 */
+	public function __sleep(){
+		throw new \BadMethodCallException("Cannot serialize Server instance");
 	}
 }

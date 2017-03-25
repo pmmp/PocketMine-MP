@@ -45,7 +45,32 @@ class BatchPacket extends DataPacket{
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleBatch($this);
+		if(strlen($this->payload) < 2){
+			throw new \InvalidStateException("Not enough bytes in payload, expected zlib header");
+		}
+
+		$str = zlib_decode($this->payload, 1024 * 1024 * 64); //Max 64MB
+		$len = strlen($str);
+
+		if($len === 0){
+			throw new \InvalidStateException("Decoded BatchPacket payload is empty");
+		}
+
+		$this->setBuffer($str, 0);
+
+		$network = $session->getServer()->getNetwork();
+		while(!$this->feof()){
+			$buf = $this->getString();
+			$pk = $network->getPacket(ord($buf{0}));
+			if(!$pk->canBeBatched()){
+				throw new \InvalidArgumentException("Received invalid " . get_class($pk) . " inside BatchPacket");
+			}
+
+			$pk->setBuffer($buf, 1);
+			$session->handleDataPacket($pk);
+		}
+
+		return true;
 	}
 
 }
