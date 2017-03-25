@@ -196,6 +196,9 @@ class Level implements ChunkManager, Metadatable{
 	private $updateQueue;
 	private $updateQueueIndex = [];
 
+	/** @var \SplQueue */
+	private $neighbourBlockUpdates = [];
+
 	/** @var Player[][] */
 	private $chunkSendQueue = [];
 	private $chunkSendTasks = [];
@@ -338,6 +341,9 @@ class Level implements ChunkManager, Metadatable{
 		$this->folderName = $name;
 		$this->updateQueue = new ReversePriorityQueue();
 		$this->updateQueue->setExtractFlags(\SplPriorityQueue::EXTR_BOTH);
+
+		$this->neighbourBlockUpdates = new \SplQueue();
+
 		$this->time = (int) $this->provider->getTime();
 
 		$this->chunkTickRadius = min($this->server->getViewDistance(), max(1, (int) $this->server->getProperty("chunk-ticking.tick-radius", 4)));
@@ -666,6 +672,15 @@ class Level implements ChunkManager, Metadatable{
 			$block->onUpdate(self::BLOCK_UPDATE_SCHEDULED);
 		}
 		$this->timings->doTickPending->stopTiming();
+
+		while($this->neighbourBlockUpdates->count() > 0){
+			$index = $this->neighbourBlockUpdates->dequeue();
+			Level::getBlockXYZ($index, $x, $y, $z);
+			$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($this->temporalVector->setComponents($x, $y, $z))));
+			if(!$ev->isCancelled()){
+				$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
+			}
+		}
 
 		$this->timings->entityTick->startTiming();
 		//Update entities that need update
@@ -1044,15 +1059,45 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
+	 * @deprecated This method will be removed in the future due to misleading/ambiguous name. Use {@link Level#scheduleDelayedBlockUpdate} instead.
+	 *
 	 * @param Vector3 $pos
 	 * @param int     $delay
 	 */
 	public function scheduleUpdate(Vector3 $pos, int $delay){
+		$this->scheduleDelayedBlockUpdate($pos, $delay);
+	}
+
+	/**
+	 * Schedules a block update to be executed after the specified number of ticks.
+	 * Blocks will be updated with the scheduled update type.
+	 *
+	 * @param Vector3 $pos
+	 * @param int     $delay
+	 */
+	public function scheduleDelayedBlockUpdate(Vector3 $pos, int $delay){
 		if(isset($this->updateQueueIndex[$index = Level::blockHash($pos->x, $pos->y, $pos->z)]) and $this->updateQueueIndex[$index] <= $delay){
 			return;
 		}
 		$this->updateQueueIndex[$index] = $delay;
 		$this->updateQueue->insert(new Vector3((int) $pos->x, (int) $pos->y, (int) $pos->z), (int) $delay + $this->server->getTick());
+	}
+
+	/**
+	 * Schedules the blocks around the specified position to be updated at the end of this tick.
+	 * Blocks will be updated with the normal update type.
+	 *
+	 * @param Vector3 $pos
+	 */
+	public function scheduleNeighbourBlockUpdates(Vector3 $pos){
+		$pos = $pos->floor();
+
+		$this->neighbourBlockUpdates->enqueue(Level::blockHash($pos->x + 1, $pos->y, $pos->z));
+		$this->neighbourBlockUpdates->enqueue(Level::blockHash($pos->x - 1, $pos->y, $pos->z));
+		$this->neighbourBlockUpdates->enqueue(Level::blockHash($pos->x, $pos->y + 1, $pos->z));
+		$this->neighbourBlockUpdates->enqueue(Level::blockHash($pos->x, $pos->y - 1, $pos->z));
+		$this->neighbourBlockUpdates->enqueue(Level::blockHash($pos->x, $pos->y, $pos->z + 1));
+		$this->neighbourBlockUpdates->enqueue(Level::blockHash($pos->x, $pos->y, $pos->z - 1));
 	}
 
 	/**
@@ -1466,9 +1511,8 @@ class Level implements ChunkManager, Metadatable{
 						$entity->scheduleUpdate();
 					}
 					$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
+					$this->scheduleNeighbourBlockUpdates($pos);
 				}
-
-				$this->updateAround($pos);
 			}
 
 			$this->timings->setBlock->stopTiming();
