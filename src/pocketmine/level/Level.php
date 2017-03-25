@@ -366,7 +366,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->weatherLocked = false;
 		$this->weather = self::WEATHER_NORM;
-        $this->weatherDuration = Level::TIME_FULL;
+		$this->weatherDuration = Level::TIME_FULL;
 
 		$this->timings = new LevelTimings($this);
 		$this->temporalPosition = new Position(0, 0, 0, $this);
@@ -737,35 +737,35 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if(!$this->weatherLocked){
-            if($this->weather == self::WEATHER_NORM and $this->weatherDuration-1 <= 0){
-                if(mt_rand(0, 100) > 95){
-                    $this->setWeather(self::WEATHER_RAIN_THUNDER);
-                } else {
-                    $this->setWeather(self::WEATHER_RAIN);
-                }
-            }elseif($this->weather === self::WEATHER_RAIN and mt_rand(0, 3000) === 0 and $this->weatherDuration-1 <= 0){ //No exact wiki chance value.
-                $this->setWeather(self::WEATHER_RAIN_THUNDER);
-            }
+			if($this->weather == self::WEATHER_NORM and $this->weatherDuration-1 <= 0){
+				if(mt_rand(0, 100) > 95){
+					$this->setWeather(self::WEATHER_RAIN_THUNDER);
+				} else {
+					$this->setWeather(self::WEATHER_RAIN);
+				}
+			}elseif($this->weather === self::WEATHER_RAIN and mt_rand(0, 3000) === 0 and $this->weatherDuration-1 <= 0){ //No exact wiki chance value.
+				$this->setWeather(self::WEATHER_RAIN_THUNDER);
+			}
 
-            if($this->weather = self::WEATHER_RAIN_THUNDER){
-                foreach($this->getChunks() as $chunk) {
-                    if(mt_rand(0,100000) == 0) {
-                        $pk = new AddEntityPacket();
-                        $pk->type = 93;
-                        $pk->eid = Entity::$entityCount++;
-                        $pk->x = ($chunk->getX() * 16) + mt_rand(0, 16);
-                        $pk->z = ($chunk->getY() * 16) + mt_rand(0, 16);
-                        $pk->y = $this->getHighestBlockAt($pk->x, $pk->z) + 1;
-                        $pk->yaw = 0;
-                        $pk->pitch = 0;
-                        $pk->metadata = []; //TODO find defaults
-                        foreach($this->getPlayers() as $p){
-                            $p->dataPacket($pk);
-                        }
-                    }
-                }
-            }
-        }
+			if($this->weather = self::WEATHER_RAIN_THUNDER){
+				foreach($this->getChunks() as $chunk) {
+					if(mt_rand(0, 100000) == 0) {
+						$pk = new AddEntityPacket();
+						$pk->type = 93;
+						$pk->eid = Entity::$entityCount++;
+						$pk->x = ($chunk->getX() * 16) + mt_rand(0, 16);
+						$pk->z = ($chunk->getY() * 16) + mt_rand(0, 16);
+						$pk->y = $this->getHighestBlockAt($pk->x, $pk->z) + 1;
+						$pk->yaw = 0;
+						$pk->pitch = 0;
+						$pk->metadata = []; //TODO find defaults
+						foreach($this->getPlayers() as $p){
+							$p->dataPacket($pk);
+						}
+					}
+				}
+			}
+		}
 
 		foreach($this->moveToSend as $index => $entry){
 			Level::getXZ($index, $chunkX, $chunkZ);
@@ -2723,54 +2723,54 @@ class Level implements ChunkManager, Metadatable{
 		$this->provider->setSeed($seed);
 	}
 
-    public function getWeather() : int{
-        return $this->weather;
-    }
+	public function getWeather() : int{
+		return $this->weather;
+	}
 
-    public function getWeatherDuration() : int{
-        return $this->weather;
-    }
+	public function getWeatherDuration() : int{
+		return $this->weather;
+	}
 
-    public function setWeather(int $weatherType, int $duration = null){
-        $this->getServer()->getPluginManager()->callEvent($ev = new WeatherChangeEvent($this, $this->weather, $this->weatherDuration, $weatherType, $duration));
-        if($ev->isCancelled()){
-            return;
-        }
-	    if(!$this->weatherLocked) {
-            $this->weather = $ev->getNewWeather();
-            if($ev->getNewWeather() == self::WEATHER_RAIN or $ev->getNewWeather() == self::WEATHER_RAIN_THUNDER) {
-                $this->weatherDuration = mt_rand((self::TIME_FULL / 2), self::TIME_FULL);
-            }elseif($ev->getNewWeather() == self::WEATHER_NORM){
-                $this->weatherDuration = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
-            }
-        }
-        $this->sendWeather();
-    }
+	public function setWeather(int $weatherType, int $duration = null){
+		$this->getServer()->getPluginManager()->callEvent($ev = new WeatherChangeEvent($this, $this->weather, $this->weatherDuration, $weatherType, $duration));
+		if($ev->isCancelled()){
+			return;
+		}
+		if(!$this->weatherLocked) {
+			$this->weather = $ev->getNewWeather();
+			if($ev->getNewWeather() == self::WEATHER_RAIN or $ev->getNewWeather() == self::WEATHER_RAIN_THUNDER) {
+				$this->weatherDuration = mt_rand((self::TIME_FULL / 2), self::TIME_FULL);
+			}elseif($ev->getNewWeather() == self::WEATHER_NORM){
+				$this->weatherDuration = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
+			}
+		}
+		$this->sendWeather();
+	}
 
-    public function sendWeather() {
-        $players = $this->getPlayers();
-        $pk1 = new LevelEventPacket();
-        $pk2 = new LevelEventPacket();
-        if($this->weather == Level::WEATHER_RAIN_THUNDER){
-            $pk1->evid = LevelEventPacket::EVENT_START_RAIN;
-            $pk2->evid = LevelEventPacket::EVENT_START_THUNDER;
-        }elseif($this->weather == Level::WEATHER_RAIN){
-            $pk1->evid = LevelEventPacket::EVENT_START_RAIN;
-        } else {
-            $pk1->evid = LevelEventPacket::EVENT_STOP_RAIN;
-            $pk2->evid = LevelEventPacket::EVENT_STOP_THUNDER;
-        }
-        $pk1->data = 90000; //TODO find default
-        $pk2->data = 90000; //TODO find default
-        foreach($players as $p){
-            $p->dataPacket($pk1);
-            $p->dataPacket($pk2);
-        }
-    }
+	public function sendWeather() {
+		$players = $this->getPlayers();
+		$pk1 = new LevelEventPacket();
+		$pk2 = new LevelEventPacket();
+		if($this->weather == Level::WEATHER_RAIN_THUNDER){
+			$pk1->evid = LevelEventPacket::EVENT_START_RAIN;
+			$pk2->evid = LevelEventPacket::EVENT_START_THUNDER;
+		}elseif($this->weather == Level::WEATHER_RAIN){
+			$pk1->evid = LevelEventPacket::EVENT_START_RAIN;
+		} else {
+			$pk1->evid = LevelEventPacket::EVENT_STOP_RAIN;
+			$pk2->evid = LevelEventPacket::EVENT_STOP_THUNDER;
+		}
+		$pk1->data = 90000; //TODO find default
+		$pk2->data = 90000; //TODO find default
+		foreach($players as $p){
+			$p->dataPacket($pk1);
+			$p->dataPacket($pk2);
+		}
+	}
 
-    public function lockWeather(bool $state = true) {
-        $this->weatherLocked = $state;
-    }
+	public function lockWeather(bool $state = true) {
+		$this->weatherLocked = $state;
+	}
 
 	public function populateChunk(int $x, int $z, bool $force = false) : bool{
 		if(isset($this->chunkPopulationQueue[$index = Level::chunkHash($x, $z)]) or (count($this->chunkPopulationQueue) >= $this->chunkPopulationQueueSize and !$force)){

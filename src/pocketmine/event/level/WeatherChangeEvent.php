@@ -43,57 +43,57 @@ class WeatherChangeEvent extends LevelEvent implements Cancellable{
 		$this->newDuration = $newDuration;
 	}
 
-    /**
-     * Sets the new weather type as an integer
-     *
-     * @param int $weather
-     */
+	/**
+	 * Sets the new weather type as an integer
+	 *
+	 * @param int $weather
+	 */
 	public function setNewWeather(int $weather){
 		$this->newWeather = $weather;
 	}
 
-    /**
-     * Gives the new weather type as int
-     *
-     * @return int
-     */
+	/**
+	 * Gives the new weather type as int
+	 *
+	 * @return int
+	 */
 	public function getNewWeather() : int{
 		return $this->newWeather;
 	}
 
-    /**
-     * Gives the old weather type as int
-     *
-     * @return int
-     */
-    public function getOldWeather() : int{
-        return $this->oldWeather;
-    }
+	/**
+	 * Gives the old weather type as int
+	 *
+	 * @return int
+	 */
+	public function getOldWeather() : int{
+		return $this->oldWeather;
+	}
 
-    /**
-     * Sets the weather's duration
-     *
-     * @param int $weatherDuration
-     */
+	/**
+	 * Sets the weather's duration
+	 *
+	 * @param int $weatherDuration
+	 */
 	public function setNewDuration(int $weatherDuration){
 		$this->newDuration = $weatherDuration;
 	}
 
-    /**
-     * Gives the new weather's duration
-     *
-     * @return int
-     */
+	/**
+	 * Gives the new weather's duration
+	 *
+	 * @return int
+	 */
 	public function getNewDuration() : int{
 		return $this->newDuration;
 	}
 
-    /**
-     * Gives the old weather's duration
-     *
-     * @return int
-     */
-    public function getOldDuration() : int{
-        return $this->newDuration;
-    }
+	/**
+	 * Gives the old weather's duration
+	 *
+	 * @return int
+	 */
+	public function getOldDuration() : int{
+		return $this->newDuration;
+	}
 }
