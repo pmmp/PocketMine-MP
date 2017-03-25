@@ -83,6 +83,7 @@ use pocketmine\inventory\SimpleTransactionGroup;
 use pocketmine\item\Item;
 use pocketmine\level\ChunkLoader;
 use pocketmine\level\format\Chunk;
+use pocketmine\level\generator\biome\Biome;
 use pocketmine\level\Level;
 use pocketmine\level\Location;
 use pocketmine\level\Position;
@@ -115,6 +116,7 @@ use pocketmine\network\protocol\EntityEventPacket;
 use pocketmine\network\protocol\FullChunkDataPacket;
 use pocketmine\network\protocol\Info as ProtocolInfo;
 use pocketmine\network\protocol\InteractPacket;
+use pocketmine\network\protocol\LevelEventPacket;
 use pocketmine\network\protocol\MovePlayerPacket;
 use pocketmine\network\protocol\PlayerActionPacket;
 use pocketmine\network\protocol\PlayStatusPacket;
@@ -1776,7 +1778,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->hasBeenLoadedInCreative = 1;
 		$pk->dayCycleStopTime = -1; //TODO: implement this properly
 		$pk->eduMode = 0;
-		$pk->rainLevel = 0; //TODO: implement these properly
+		$pk->rainLevel = 0; //TODO: set based on precipitation of biome and height in world
 		$pk->lightningLevel = 0;
 		$pk->commandsEnabled = 1;
 		$pk->levelId = "";
@@ -3033,6 +3035,25 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 		$this->dataPacket($pk);
 	}
+
+    public function sendWeather(){
+        $pk1 = new LevelEventPacket();
+        $pk2 = new LevelEventPacket();
+        if($this->level->getWeather() == Level::WEATHER_RAIN_THUNDER){
+            $pk1->evid = LevelEventPacket::EVENT_START_RAIN;
+            $pk2->evid = LevelEventPacket::EVENT_START_THUNDER;
+        }elseif($this->level->getWeather() == Level::WEATHER_RAIN){
+            $pk1->evid = LevelEventPacket::EVENT_START_RAIN;
+        } else {
+            $pk1->evid = LevelEventPacket::EVENT_STOP_RAIN;
+            $pk2->evid = LevelEventPacket::EVENT_STOP_THUNDER;
+        }
+        $biome = Biome::getBiome($this->level->getBiomeId($this->x, $this->z));
+        $pk1->data = $biome->getRainfall(); // is this correct?
+        $pk2->data = $biome->getRainfall();
+        $this->dataPacket($pk1);
+        $this->dataPacket($pk2);
+    }
 
 	public function sendPopup($message, $subtitle = ""){
 		$pk = new TextPacket();

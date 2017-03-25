@@ -51,10 +51,10 @@ class ToggleDownfall extends VanillaCommand{
 
 		$level = $sender instanceof Player ? $sender->getLevel() : $sender->getServer()->getDefaultLevel();
 
-		switch($level->getWeather()) {
+		switch($level->getWeather()){
 			case Level::WEATHER_RAIN_THUNDER:
 			case Level::WEATHER_RAIN:
-				if(mt_rand(0, 100) > 95) {
+				if(mt_rand(0, 100) > 95){
 					$level->setWeather(Level::WEATHER_RAIN_THUNDER);
 				} else {
 					$level->setWeather(Level::WEATHER_RAIN);
