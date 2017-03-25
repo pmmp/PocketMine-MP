@@ -63,6 +63,10 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 			foreach($this->getInventory()->getViewers() as $player){
 				$player->removeWindow($this->getRealInventory());
 			}
+
+			$this->inventory = null;
+			$this->doubleInventory = null;
+
 			parent::close();
 		}
 	}
