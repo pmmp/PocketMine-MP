@@ -1751,6 +1751,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		$nbt = $this->server->getOfflinePlayerData($this->username);
+
 		$this->playedBefore = ($nbt["lastPlayed"] - $nbt["firstPlayed"]) > 1; // microtime(true) - microtime(true) may have less than one millisecond difference
 		if(!isset($nbt->NameTag)){
 			$nbt->NameTag = new StringTag("NameTag", $this->username);
@@ -1773,12 +1774,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$nbt["Pos"][2] = $this->level->getSpawnLocation()->z;
 		}else{
 			$this->setLevel($level);
-		}
-
-		if(!($nbt instanceof CompoundTag)){
-			$this->close($this->getLeaveMessage(), "Invalid data");
-
-			return;
 		}
 
 		$this->achievements = [];

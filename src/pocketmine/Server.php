@@ -701,7 +701,7 @@ class Server{
 	 *
 	 * @return CompoundTag
 	 */
-	public function getOfflinePlayerData($name){
+	public function getOfflinePlayerData($name) : CompoundTag{
 		$name = strtolower($name);
 		$path = $this->getDataPath() . "players/";
 		if($this->shouldSavePlayerData()){
