@@ -23,7 +23,6 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\entity\Effect;
-use pocketmine\entity\InstantEffect;
 use pocketmine\event\TranslationContainer;
 use pocketmine\utils\TextFormat;
 
@@ -80,12 +79,9 @@ class EffectCommand extends VanillaCommand{
 		$amplification = 0;
 
 		if(count($args) >= 3){
-			$duration = (int) $args[2];
-			if(!($effect instanceof InstantEffect)){
-				$duration *= 20;
-			}
-		}elseif($effect instanceof InstantEffect){
-			$duration = 1;
+			$duration = ((int) $args[2]) * 20; //ticks
+		}else{
+			$duration = $effect->getDefaultDuration();
 		}
 
 		if(count($args) >= 4){

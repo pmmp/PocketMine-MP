@@ -484,10 +484,6 @@ abstract class Entity extends Location implements Metadatable{
 		$this->effects[$effect->getId()] = $effect;
 
 		$this->recalculateEffectColor();
-
-		if($effect->getId() === Effect::HEALTH_BOOST){
-			$this->setHealth($this->getHealth() + 4 * ($effect->getAmplifier() + 1));
-		}
 	}
 
 	protected function recalculateEffectColor(){
@@ -496,7 +492,7 @@ abstract class Entity extends Location implements Metadatable{
 		$count = 0;
 		$ambient = true;
 		foreach($this->effects as $effect){
-			if($effect->isVisible()){
+			if($effect->isVisible() and $effect->hasBubbles()){
 				$c = $effect->getColor();
 				$color[0] += $c[0] * ($effect->getAmplifier() + 1);
 				$color[1] += $c[1] * ($effect->getAmplifier() + 1);
@@ -739,7 +735,21 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->setLastDamageCause($source);
 
-		$this->setHealth($this->getHealth() - $source->getFinalDamage());
+		$damage = $source->getFinalDamage();
+
+		$absorption = $this->getAbsorption();
+		if($absorption > 0){
+			if($absorption > $damage){
+				//Use absorption health before normal health.
+				$this->setAbsorption($absorption - $damage);
+				$damage = 0;
+			}else{
+				$this->setAbsorption(0);
+				$damage -= $absorption;
+			}
+		}
+
+		$this->setHealth($this->getHealth() - $damage);
 	}
 
 	/**
@@ -789,6 +799,14 @@ abstract class Entity extends Location implements Metadatable{
 		}
 	}
 
+	public function getAbsorption() : int{
+		return 0;
+	}
+
+	public function setAbsorption(int $absorption){
+
+	}
+
 	/**
 	 * @param EntityDamageEvent $type
 	 */
@@ -811,7 +829,7 @@ abstract class Entity extends Location implements Metadatable{
 	 * @return int
 	 */
 	public function getMaxHealth(){
-		return $this->maxHealth + ($this->hasEffect(Effect::HEALTH_BOOST) ? 4 * ($this->getEffect(Effect::HEALTH_BOOST)->getAmplifier() + 1) : 0);
+		return $this->maxHealth;
 	}
 
 	/**

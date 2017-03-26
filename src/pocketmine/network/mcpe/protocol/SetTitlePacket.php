@@ -19,6 +19,7 @@
  *
 */
 
+
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
@@ -26,47 +27,40 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 
-class EntityEventPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::ENTITY_EVENT_PACKET;
+class SetTitlePacket extends DataPacket{
+	const NETWORK_ID = ProtocolInfo::SET_TITLE_PACKET;
 
-	const HURT_ANIMATION = 2;
-	const DEATH_ANIMATION = 3;
+	const TYPE_CLEAR_TITLE = 0;
+	const TYPE_RESET_TITLE = 1;
+	const TYPE_SET_TITLE = 2;
+	const TYPE_SET_SUBTITLE = 3;
+	const TYPE_SET_ACTIONBAR_MESSAGE = 4;
+	const TYPE_SET_ANIMATION_TIMES = 5;
 
-	const TAME_FAIL = 6;
-	const TAME_SUCCESS = 7;
-	const SHAKE_WET = 8;
-	const USE_ITEM = 9;
-	const EAT_GRASS_ANIMATION = 10;
-	const FISH_HOOK_BUBBLE = 11;
-	const FISH_HOOK_POSITION = 12;
-	const FISH_HOOK_HOOK = 13;
-	const FISH_HOOK_TEASE = 14;
-	const SQUID_INK_CLOUD = 15;
-	const AMBIENT_SOUND = 16;
-
-	const RESPAWN = 18;
-
-	//TODO: add more events
-
-	public $eid;
-	public $event;
-	public $unknown;
+	public $type;
+	public $text;
+	public $fadeInTime;
+	public $stayTime;
+	public $fadeOutTime;
 
 	public function decode(){
-		$this->eid = $this->getEntityRuntimeId();
-		$this->event = $this->getByte();
-		$this->unknown = $this->getVarInt();
+		$this->type = $this->getVarInt();
+		$this->text = $this->getString();
+		$this->fadeInTime = $this->getVarInt();
+		$this->stayTime = $this->getVarInt();
+		$this->fadeOutTime = $this->getVarInt();
 	}
 
 	public function encode(){
 		$this->reset();
-		$this->putEntityRuntimeId($this->eid);
-		$this->putByte($this->event);
-		$this->putVarInt($this->unknown);
+		$this->putVarInt($this->type);
+		$this->putString($this->text);
+		$this->putVarInt($this->fadeInTime);
+		$this->putVarInt($this->stayTime);
+		$this->putVarInt($this->fadeOutTime);
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleEntityEvent($this);
+		return $session->handleSetTitle($this);
 	}
-
 }

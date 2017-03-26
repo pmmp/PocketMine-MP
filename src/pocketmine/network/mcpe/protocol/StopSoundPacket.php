@@ -19,8 +19,32 @@
  *
 */
 
-namespace pocketmine\entity;
 
-class InstantEffect extends Effect{
+namespace pocketmine\network\mcpe\protocol;
 
+#include <rules/DataPacket.h>
+
+
+use pocketmine\network\mcpe\NetworkSession;
+
+class StopSoundPacket extends DataPacket{
+	const NETWORK_ID = ProtocolInfo::STOP_SOUND_PACKET;
+
+	public $string1;
+	public $stopAll;
+
+	public function decode(){
+		$this->string1 = $this->getString();
+		$this->stopAll = $this->getBool();
+	}
+
+	public function encode(){
+		$this->reset();
+		$this->putString($this->string1);
+		$this->putBool($this->stopAll);
+	}
+
+	public function handle(NetworkSession $session) : bool{
+		return $session->handleStopSound($this);
+	}
 }
