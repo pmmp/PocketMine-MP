@@ -32,6 +32,10 @@ class DisconnectPacket extends DataPacket{
 	public $hideDisconnectionScreen = false;
 	public $message;
 
+	public function canBeSentBeforeLogin() : bool{
+		return true;
+	}
+
 	public function decode(){
 		$this->hideDisconnectionScreen = $this->getBool();
 		$this->message = $this->getString();

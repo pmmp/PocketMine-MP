@@ -35,6 +35,10 @@ class BatchPacket extends DataPacket{
 		return false;
 	}
 
+	public function canBeSentBeforeLogin() : bool{
+		return true;
+	}
+
 	public function decode(){
 		$this->payload = $this->getString();
 	}

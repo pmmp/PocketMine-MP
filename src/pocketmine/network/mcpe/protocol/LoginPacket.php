@@ -48,6 +48,10 @@ class LoginPacket extends DataPacket{
 		return false;
 	}
 
+	public function canBeSentBeforeLogin() : bool{
+		return true;
+	}
+
 	public function decode(){
 		$this->protocol = $this->getInt();
 

@@ -32,6 +32,10 @@ class ServerToClientHandshakePacket extends DataPacket{
 	public $publicKey;
 	public $serverToken;
 
+	public function canBeSentBeforeLogin() : bool{
+		return true;
+	}
+
 	public function decode(){
 		$this->publicKey = $this->getString();
 		$this->serverToken = $this->getString();

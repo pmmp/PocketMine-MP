@@ -44,6 +44,10 @@ abstract class DataPacket extends BinaryStream{
 		return true;
 	}
 
+	public function canBeSentBeforeLogin() : bool{
+		return false;
+	}
+
 	abstract public function encode();
 
 	abstract public function decode();

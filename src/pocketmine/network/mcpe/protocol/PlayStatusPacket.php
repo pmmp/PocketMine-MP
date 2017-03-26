@@ -42,6 +42,10 @@ class PlayStatusPacket extends DataPacket{
 
 	}
 
+	public function canBeSentBeforeLogin() : bool{
+		return true;
+	}
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->status);
