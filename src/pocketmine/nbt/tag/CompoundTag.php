@@ -25,16 +25,17 @@ use pocketmine\nbt\NBT;
 
 #include <rules/NBT.h>
 
-class CompoundTag extends NamedTag implements \ArrayAccess{
+class CompoundTag extends NamedTag implements \ArrayAccess, \IteratorAggregate{
 
 	/**
 	 * @param string     $name
 	 * @param NamedTag[] $value
 	 */
 	public function __construct($name = "", $value = []){
+		$this->value = [];
 		$this->__name = $name;
 		foreach($value as $tag){
-			$this->{$tag->getName()} = $tag;
+			$this->value[$tag->getName()] = $tag;
 		}
 	}
 
@@ -50,15 +51,15 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	}
 
 	public function offsetExists($offset){
-		return isset($this->{$offset}) and $this->{$offset} instanceof Tag;
+		return array_key_exists($offset, $this->value);
 	}
 
 	public function offsetGet($offset){
-		if(isset($this->{$offset}) and $this->{$offset} instanceof Tag){
-			if($this->{$offset} instanceof \ArrayAccess){
-				return $this->{$offset};
+		if(array_key_exists($offset, $this->value)){
+			if(($value = $this->value[$offset]) instanceof \ArrayAccess){
+				return $value;
 			}else{
-				return $this->{$offset}->getValue();
+				return $value->getValue();
 			}
 		}
 
@@ -69,14 +70,34 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 
 	public function offsetSet($offset, $value){
 		if($value instanceof Tag){
-			$this->{$offset} = $value;
-		}elseif(isset($this->{$offset}) and $this->{$offset} instanceof Tag){
-			$this->{$offset}->setValue($value);
+			$this->value[$offset] = $value;
+		}elseif(array_key_exists($offset, $this->value) and $this->value[$offset] instanceof Tag){
+			$this->value[$offset]->setValue($value);
 		}
 	}
 
 	public function offsetUnset($offset){
-		unset($this->{$offset});
+		unset($this->value[$offset]);
+	}
+
+	public function __isset($key){
+		return $this->offsetExists($key);
+	}
+
+	public function __get($key){
+		return $this->offsetGet($key);
+	}
+
+	public function __set($key, $value){
+		$this->offsetSet($key, $value);
+	}
+
+	public function __unset($key){
+		$this->offsetUnset($key);
+	}
+
+	public function getIterator(){
+		return new \ArrayIterator($this->value);
 	}
 
 	public function getType(){
@@ -88,7 +109,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 		do{
 			$tag = $nbt->readTag($network);
 			if($tag instanceof NamedTag and $tag->getName() !== ""){
-				$this->{$tag->getName()} = $tag;
+				$this->offsetSet($tag->getName(), $tag);
 			}
 		}while(!($tag instanceof EndTag) and !$nbt->feof());
 	}
