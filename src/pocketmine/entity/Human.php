@@ -503,17 +503,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		}
 	}
 
-	public function despawnFrom(Player $player){
-		if(isset($this->hasSpawned[$player->getLoaderId()])){
-
-			$pk = new RemoveEntityPacket();
-			$pk->eid = $this->getId();
-
-			$player->dataPacket($pk);
-			unset($this->hasSpawned[$player->getLoaderId()]);
-		}
-	}
-
 	public function close(){
 		if(!$this->closed){
 			if(!($this instanceof Player) or $this->loggedIn){
