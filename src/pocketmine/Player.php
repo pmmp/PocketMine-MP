@@ -196,6 +196,7 @@ use pocketmine\plugin\Plugin;
 use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\tile\ItemFrame;
 use pocketmine\tile\Spawnable;
+use pocketmine\tile\Tile;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
 
@@ -2388,7 +2389,19 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function handleBlockPickRequest(BlockPickRequestPacket $packet) : bool{
-		return false; //TODO
+		$tile = $this->getLevel()->getTile($this->temporalVector->setComponents($packet->tileX, $packet->tileY, $packet->tileZ));
+		if($tile instanceof Tile){ //TODO: check if the held item matches the target tile
+			$nbt = $tile->getCleanedNBT();
+			if($nbt instanceof CompoundTag){
+				$item = $this->inventory->getItemInHand();
+				$item->setCustomBlockData($nbt);
+				$item->setLore(["+(DATA)"]);
+				$this->inventory->setItemInHand($item);
+			}
+
+			return true;
+		}
+		return false;
 	}
 
 	public function handleUseItem(UseItemPacket $packet) : bool{
