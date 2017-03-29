@@ -83,7 +83,7 @@ abstract class Tree{
 	}
 	
 	/**
-	 * Checks if the tree is placeable on the coordinates given.
+	 * Checks if a tree is placeable on the coordinates given.
 	 *
 	 * @param ChunkManager $level
 	 * @param              $x
@@ -112,7 +112,7 @@ abstract class Tree{
 	}
 	
 	/**
-	 * Places the tree if the block at the coordinates given is a non-solid block.
+	 * Places a tree if the block at the coordinates given is a non-solid block.
 	 *
 	 * @param ChunkManager $level
 	 * @param              $x
