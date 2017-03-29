@@ -96,6 +96,7 @@ abstract class Tool extends Item{
 			Tool::TIER_STONE => 132,
 			Tool::TIER_IRON => 251,
 			Tool::TIER_DIAMOND => 1562,
+			self::FISHING_ROD => 65,
 			self::FLINT_STEEL => 65,
 			self::SHEARS => 239,
 			self::BOW => 385,
@@ -146,6 +147,6 @@ abstract class Tool extends Item{
 	}
 
 	public function isTool(){
-		return ($this->id === self::FLINT_STEEL or $this->id === self::SHEARS or $this->id === self::BOW or $this->isPickaxe() !== false or $this->isAxe() !== false or $this->isShovel() !== false or $this->isSword() !== false);
+		return ($this->id == self::FISHING_ROD or $this->id === self::FLINT_STEEL or $this->id === self::SHEARS or $this->id === self::BOW or $this->isPickaxe() !== false or $this->isAxe() !== false or $this->isShovel() !== false or $this->isSword() !== false);
 	}
 }
