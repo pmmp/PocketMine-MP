@@ -44,4 +44,8 @@ class BirchTree extends Tree{
 		}
 		parent::placeObject($level, $x, $y, $z, $random);
 	}
+	
+	public function getName(): string {
+		return "Birch Tree";
+	}
 }

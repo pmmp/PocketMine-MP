@@ -41,7 +41,17 @@ abstract class Tree{
 	public $trunkBlock = Block::LOG;
 	public $leafBlock = Block::LEAVES;
 	public $treeHeight = 7;
-
+	
+	/**
+	 * Grows a tree on the location of the given coordinates.
+	 *
+	 * @param ChunkManager $level
+	 * @param              $x
+	 * @param              $y
+	 * @param              $z
+	 * @param Random       $random
+	 * @param int          $type
+	 */
 	public static function growTree(ChunkManager $level, $x, $y, $z, Random $random, $type = 0){
 		switch($type){
 			case Sapling::SPRUCE:
@@ -71,8 +81,18 @@ abstract class Tree{
 			$tree->placeObject($level, $x, $y, $z, $random);
 		}
 	}
-
-
+	
+	/**
+	 * Checks if the tree is placeable on the coordinates given.
+	 *
+	 * @param ChunkManager $level
+	 * @param              $x
+	 * @param              $y
+	 * @param              $z
+	 * @param Random       $random
+	 *
+	 * @return bool
+	 */
 	public function canPlaceObject(ChunkManager $level, $x, $y, $z, Random $random){
 		$radiusToCheck = 0;
 		for($yy = 0; $yy < $this->treeHeight + 3; ++$yy){
@@ -90,7 +110,16 @@ abstract class Tree{
 
 		return true;
 	}
-
+	
+	/**
+	 * Places the tree if the block at the coordinates given is a non-solid block.
+	 *
+	 * @param ChunkManager $level
+	 * @param              $x
+	 * @param              $y
+	 * @param              $z
+	 * @param Random       $random
+	 */
 	public function placeObject(ChunkManager $level, $x, $y, $z, Random $random){
 
 		$this->placeTrunk($level, $x, $y, $z, $random, $this->treeHeight - 1);
@@ -113,7 +142,7 @@ abstract class Tree{
 			}
 		}
 	}
-
+	
 	protected function placeTrunk(ChunkManager $level, $x, $y, $z, Random $random, $trunkHeight){
 		// The base dirt block
 		$level->setBlockIdAt($x, $y - 1, $z, Block::DIRT);
@@ -126,4 +155,11 @@ abstract class Tree{
 			}
 		}
 	}
+	
+	/**
+	 * Returns the human readable name of the tree.
+	 *
+	 * @return string
+	 */
+	public abstract function getName(): string;
 }

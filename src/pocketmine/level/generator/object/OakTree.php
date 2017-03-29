@@ -38,4 +38,8 @@ class OakTree extends Tree{
 		$this->treeHeight = $random->nextBoundedInt(3) + 4;
 		parent::placeObject($level, $x, $y, $z, $random);
 	}
+	
+	public function getName(): string {
+		return "Oak Tree";
+	}
 }

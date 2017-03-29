@@ -76,6 +76,8 @@ class SpruceTree extends Tree{
 			}
 		}
 	}
-
-
+	
+	public function getName(): string {
+		return "Spruce Tree";
+	}
 }
