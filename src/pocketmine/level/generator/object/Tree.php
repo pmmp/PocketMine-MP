@@ -161,5 +161,5 @@ abstract class Tree{
 	 *
 	 * @return string
 	 */
-	public abstract function getName(): string;
+	public abstract function getName() : string;
 }

@@ -33,7 +33,7 @@ class JungleTree extends Tree{
 		$this->treeHeight = 8;
 	}
 	
-	public function getName(): string {
+	public function getName() : string{
 		return "Jungle Tree";
 	}
 }

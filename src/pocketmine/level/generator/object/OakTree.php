@@ -39,7 +39,7 @@ class OakTree extends Tree{
 		parent::placeObject($level, $x, $y, $z, $random);
 	}
 	
-	public function getName(): string {
+	public function getName() : string{
 		return "Oak Tree";
 	}
 }

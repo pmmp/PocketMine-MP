@@ -81,7 +81,7 @@ class BigTree extends Tree{
 		*/
 	}
 	
-	public function getName(): string {
+	public function getName() : string{
 		return "Big Tree";
 	}
 }
