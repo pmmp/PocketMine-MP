@@ -129,7 +129,7 @@ class MemoryManager{
 	public function trigger($memory, $limit, $global = false, $triggerCount = 0){
 		$this->server->getLogger()->debug(sprintf("[Memory Manager] %sLow memory triggered, limit %gMB, using %gMB",
 			$global ? "Global " : "", round(($limit / 1024) / 1024, 2), round(($memory / 1024) / 1024, 2)));
-		
+
 		foreach($this->server->getLevels() as $level){
 			if($this->cacheTrigger){
 				$level->clearCache(true);
