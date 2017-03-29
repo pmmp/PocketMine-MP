@@ -41,7 +41,7 @@ class Axe extends TieredTool{
 
 		return new Axe(
 			$data["id"],
-			0,
+			$data["meta"] ?? 0,
 			1,
 			$data["fallback_name"],
 			TieredTool::toolTierFromString($properties["tier"]),

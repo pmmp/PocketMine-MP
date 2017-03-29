@@ -41,7 +41,7 @@ class Pickaxe extends TieredTool{
 
 		return new Pickaxe(
 			$data["id"],
-			0,
+			$data["meta"] ?? 0,
 			1,
 			$data["fallback_name"],
 			TieredTool::toolTierFromString($properties["tier"]),

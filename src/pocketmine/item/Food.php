@@ -85,7 +85,7 @@ class Food extends Item implements FoodSource{
 
 		return new Food(
 			$data["id"],
-			0,
+			$data["meta"] ?? 0,
 			1,
 			$data["fallback_name"],
 			$properties["nutrition"],

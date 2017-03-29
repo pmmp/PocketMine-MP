@@ -36,6 +36,6 @@ class Shears extends Tool{
 	}
 
 	protected static function fromJsonTypeData(array $data){
-		return new Shears($data["id"], 0, 1, $data["fallback_name"], $data["properties"]["durability"]);
+		return new Shears($data["id"], $data["meta"] ?? 0, 1, $data["fallback_name"], $data["properties"]["durability"]);
 	}
 }

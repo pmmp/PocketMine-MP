@@ -121,6 +121,14 @@ class Item implements ItemIds, \JsonSerializable{
 				}
 
 				self::registerItem($newItem);
+
+				if(isset($itemData["variants"])){
+					foreach($itemData["variants"] as $variantData){
+						$resultData = array_replace($itemData, $variantData);
+						$variantItem = $class::fromJsonTypeData($resultData);
+						self::registerItem($variantItem);
+					}
+				}
 			}
 
 			for($i = 0; $i < 256; ++$i){
@@ -144,7 +152,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return Item
 	 */
 	protected static function fromJsonTypeData(array $data){
-		return new Item($data["id"], 0, 1, $data["fallback_name"]);
+		return new Item($data["id"], $data["meta"] ?? 0, 1, $data["fallback_name"]);
 	}
 
 	/**
@@ -154,7 +162,9 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @param Item $item
 	 */
 	public static function registerItem(Item $item){
-		self::$list[$item->id] = $item;
+		$existing = self::$list[$item->id] ?? [];
+		$existing[$item->meta & 0xffff] = $item;
+		self::$list[$item->id] = $existing;
 	}
 
 	private static $creative = [];
@@ -233,7 +243,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	public static function get(int $id, int $meta = 0, int $count = 1, $tags = "") : Item{
 		try{
-			$class = self::$list[$id];
+			$class = self::$list[$id][$meta] ?? self::$list[$id][0] ?? null;
 			if($class !== null){
 				$item = clone $class;
 				$item->setDamage($meta);

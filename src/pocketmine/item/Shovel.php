@@ -41,7 +41,7 @@ class Shovel extends TieredTool{
 
 		return new Shovel(
 			$data["id"],
-			0,
+			$data["meta"] ?? 0,
 			1,
 			$data["fallback_name"],
 			TieredTool::toolTierFromString($properties["tier"]),

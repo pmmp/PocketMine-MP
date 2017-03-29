@@ -252,7 +252,12 @@
     "coal": {
         "id": 263,
         "fallback_name": "Coal",
-        "todo": "add variants"
+        "variants": {
+            "charcoal": {
+                "meta": 1,
+                "fallback_name": "Charcoal"
+            }
+        }
     },
     "comparator": {
         "id": 404,
