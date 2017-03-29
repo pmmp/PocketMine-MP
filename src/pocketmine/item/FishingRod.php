@@ -21,7 +21,7 @@
 
 namespace pocketmine\item;
 
-class FishingRod extends Tools {
+class FishingRod extends Tool {
 	public function __construct($meta = 0, $count = 1){
 		parent::__construct(self::FISHING_ROD, $meta, $count, "Fishing Rod");
 	}
