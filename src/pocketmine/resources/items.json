@@ -116,7 +116,33 @@
     },
     "boat": {
         "id": 333,
-        "fallback_name": "Boat"
+        "fallback_name": "Boat",
+        "variants": {
+            "oak": {
+                "meta": 0,
+                "fallback_name": "Oak Boat"
+            },
+            "spruce": {
+                "meta": 1,
+                "fallback_name": "Spruce Boat"
+            },
+            "birch": {
+                "meta": 2,
+                "fallback_name": "Birch Boat"
+            },
+            "jungle": {
+                "meta": 3,
+                "fallback_name": "Jungle Boat"
+            },
+            "acacia": {
+                "meta": 4,
+                "fallback_name": "Acacia Boat"
+            },
+            "dark_oak": {
+                "meta": 5,
+                "fallback_name": "Dark Oak Boat"
+            }
+        }
     },
     "bone": {
         "id": 352,
@@ -159,7 +185,8 @@
     "cake": {
         "id": 354,
         "fallback_name": "Cake",
-        "block": "cake_block"
+        "block": "cake_block",
+        "max_stack_size": 1
     },
     "carrot": {
         "id": 391,
