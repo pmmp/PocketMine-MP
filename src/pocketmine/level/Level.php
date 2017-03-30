@@ -1330,17 +1330,42 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function updateBlockSkyLight(int $x, int $y, int $z){
+		$this->timings->doBlockSkyLightUpdates->startTiming();
 		//TODO
+		$this->timings->doBlockSkyLightUpdates->stopTiming();
+	}
+
+	/**
+	 * Returns the highest light level available in the positions adjacent to the specified block coordinates.
+	 *
+	 * @param int $x
+	 * @param int $y
+	 * @param int $z
+	 *
+	 * @return int
+	 */
+	public function getHighestAdjacentBlockLight(int $x, int $y, int $z) : int{
+		return max([
+			$this->getBlockLightAt($x + 1, $y, $z),
+			$this->getBlockLightAt($x - 1, $y, $z),
+			$this->getBlockLightAt($x, $y + 1, $z),
+			$this->getBlockLightAt($x, $y - 1, $z),
+			$this->getBlockLightAt($x, $y, $z + 1),
+			$this->getBlockLightAt($x, $y, $z - 1)
+		]);
 	}
 
 	public function updateBlockLight(int $x, int $y, int $z){
+		$this->timings->doBlockLightUpdates->startTiming();
+
 		$lightPropagationQueue = new \SplQueue();
 		$lightRemovalQueue = new \SplQueue();
 		$visited = [];
 		$removalVisited = [];
 
+		$id = $this->getBlockIdAt($x, $y, $z);
 		$oldLevel = $this->getBlockLightAt($x, $y, $z);
-		$newLevel = (int) Block::$light[$this->getBlockIdAt($x, $y, $z)];
+		$newLevel = max(Block::$light[$id], $this->getHighestAdjacentBlockLight($x, $y, $z) - Block::$lightFilter[$id]);
 
 		if($oldLevel !== $newLevel){
 			$this->setBlockLightAt($x, $y, $z, $newLevel);
@@ -1372,7 +1397,7 @@ class Level implements ChunkManager, Metadatable{
 			/** @var Vector3 $node */
 			$node = $lightPropagationQueue->dequeue();
 
-			$lightLevel = $this->getBlockLightAt($node->x, $node->y, $node->z) - (int) Block::$lightFilter[$this->getBlockIdAt($node->x, $node->y, $node->z)];
+			$lightLevel = $this->getBlockLightAt($node->x, $node->y, $node->z);
 
 			if($lightLevel >= 1){
 				$this->computeSpreadBlockLight($node->x - 1, $node->y, $node->z, $lightLevel, $lightPropagationQueue, $visited);
@@ -1383,6 +1408,8 @@ class Level implements ChunkManager, Metadatable{
 				$this->computeSpreadBlockLight($node->x, $node->y, $node->z + 1, $lightLevel, $lightPropagationQueue, $visited);
 			}
 		}
+
+		$this->timings->doBlockLightUpdates->stopTiming();
 	}
 
 	private function computeRemoveBlockLight(int $x, int $y, int $z, int $currentLight, \SplQueue $queue, \SplQueue $spreadQueue, array &$visited, array &$spreadVisited){
@@ -1409,6 +1436,7 @@ class Level implements ChunkManager, Metadatable{
 	private function computeSpreadBlockLight(int $x, int $y, int $z, int $currentLight, \SplQueue $queue, array &$visited){
 		if($y < 0) return;
 		$current = $this->getBlockLightAt($x, $y, $z);
+		$currentLight -= Block::$lightFilter[$this->getBlockIdAt($x, $y, $z)];
 
 		if($current < $currentLight){
 			$this->setBlockLightAt($x, $y, $z, $currentLight);
@@ -1445,6 +1473,8 @@ class Level implements ChunkManager, Metadatable{
 		if($pos->y < 0 or $pos->y >= $this->provider->getWorldHeight()){
 			return false;
 		}
+
+		$this->timings->setBlock->startTiming();
 
 		if($this->getChunk($pos->x >> 4, $pos->z >> 4, true)->setBlock($pos->x & 0x0f, $pos->y & Level::Y_MASK, $pos->z & 0x0f, $block->getId(), $block->getDamage())){
 			if(!($pos instanceof Position)){
@@ -1485,8 +1515,12 @@ class Level implements ChunkManager, Metadatable{
 				$this->updateAround($pos);
 			}
 
+			$this->timings->setBlock->stopTiming();
+
 			return true;
 		}
+
+		$this->timings->setBlock->stopTiming();
 
 		return false;
 	}
@@ -1552,7 +1586,7 @@ class Level implements ChunkManager, Metadatable{
 
 			if(($player->isSurvival() and $item instanceof Item and !$target->isBreakable($item)) or $player->isSpectator()){
 				$ev->setCancelled();
-			}elseif(!$player->isOp() and ($distance = $this->server->getSpawnRadius()) > -1){
+			}elseif(!$player->hasPermission("pocketmine.spawnprotect.bypass") and ($distance = $this->server->getSpawnRadius()) > -1){
 				$t = new Vector2($target->x, $target->z);
 				$s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);
 				if(count($this->server->getOps()->getAll()) > 0 and $t->distance($s) <= $distance){ //set it to cancelled so plugins can bypass this
@@ -1564,10 +1598,10 @@ class Level implements ChunkManager, Metadatable{
 				return false;
 			}
 
-			$breakTime = $target->getBreakTime($item);
+			$breakTime = ceil($target->getBreakTime($item) * 20);
 
-			if($player->isCreative() and $breakTime > 0.15){
-				$breakTime = 0.15;
+			if($player->isCreative() and $breakTime > 3){
+				$breakTime = 3;
 			}
 
 			if($player->hasEffect(Effect::SWIFTNESS)){
@@ -1578,13 +1612,13 @@ class Level implements ChunkManager, Metadatable{
 				$breakTime *= 1 + (0.3 * ($player->getEffect(Effect::MINING_FATIGUE)->getAmplifier() + 1));
 			}
 
-			$breakTime -= 0.05; //1 tick compensation
+			$breakTime -= 1; //1 tick compensation
 
-			if(!$ev->getInstaBreak() and ($player->lastBreak + $breakTime) > microtime(true)){
+			if(!$ev->getInstaBreak() and ((ceil($player->lastBreak * 20)) + $breakTime) > ceil(microtime(true) * 20)){
 				return false;
 			}
 
-			$player->lastBreak = microtime(true);
+			$player->lastBreak = PHP_INT_MAX;
 
 			$drops = $ev->getDrops();
 
@@ -1689,7 +1723,7 @@ class Level implements ChunkManager, Metadatable{
 
 		if($player !== null){
 			$ev = new PlayerInteractEvent($player, $item, $target, $face, $target->getId() === 0 ? PlayerInteractEvent::RIGHT_CLICK_AIR : PlayerInteractEvent::RIGHT_CLICK_BLOCK);
-			if(!$player->isOp() and ($distance = $this->server->getSpawnRadius()) > -1){
+			if(!$player->hasPermission("pocketmine.spawnprotect.bypass") and ($distance = $this->server->getSpawnRadius()) > -1){
 				$t = new Vector2($target->x, $target->z);
 				$s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);
 				if(count($this->server->getOps()->getAll()) > 0 and $t->distance($s) <= $distance){ //set it to cancelled so plugins can bypass this
@@ -1779,7 +1813,7 @@ class Level implements ChunkManager, Metadatable{
 
 		if($player !== null){
 			$ev = new BlockPlaceEvent($player, $hand, $block, $target, $item);
-			if(!$player->isOp() and ($distance = $this->server->getSpawnRadius()) > -1){
+			if(!$player->hasPermission("pocketmine.spawnprotect.bypass") and ($distance = $this->server->getSpawnRadius()) > -1){
 				$t = new Vector2($target->x, $target->z);
 				$s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);
 				if(count($this->server->getOps()->getAll()) > 0 and $t->distance($s) <= $distance){ //set it to cancelled so plugins can bypass this
