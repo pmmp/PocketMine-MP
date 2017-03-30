@@ -22,7 +22,8 @@
 
 namespace pocketmine\item;
 
-
+use pocketmine\block\Block;
+use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 
 interface Consumable{

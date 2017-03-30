@@ -136,7 +136,7 @@ class SimpleCommandMap implements CommandMap{
 		if($label === null){
 			$label = $command->getName();
 		}
-		$label = strtolower(trim($label));
+		$label = trim($label);
 		$fallbackPrefix = strtolower(trim($fallbackPrefix));
 
 		$registered = $this->registerAlias($command, false, $fallbackPrefix, $label);
@@ -188,7 +188,7 @@ class SimpleCommandMap implements CommandMap{
 	 * @return Command|null
 	 */
 	public function matchCommand(string &$commandName, array &$args){
-		$count = max(count($args), 255);
+		$count = min(count($args), 255);
 
 		for($i = 0; $i < $count; ++$i){
 			$commandName .= array_shift($args);

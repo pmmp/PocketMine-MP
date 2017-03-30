@@ -1,7 +1,13 @@
 ### Issue description
 <!--- use our forum https://forums.pmmp.io for questions -->
 <!--- Any issues requesting updates to new versions of MCPE will be treated as spam. We do not need issues to tell us that there is a new version available. -->
+<!--- 
 Write a short description about the issue
+
+If you are reporting a regression or unexpected behaviour, please include the below information:
+Expected result: What were you expecting to happen?
+Actual result: What actually happened?
+-->
 
 ### Steps to reproduce the issue
 <!--- help us find the problem by adding steps to reproduce the issue -->

@@ -21,7 +21,7 @@
 
 namespace pocketmine\inventory;
 
-use pocketmine\network\protocol\types\InventoryNetworkIds;
+use pocketmine\network\mcpe\protocol\types\WindowTypes;
 
 /**
  * Saves all the information regarding default inventory sizes and types
@@ -63,15 +63,15 @@ class InventoryType{
 		//TODO: move network stuff out of here
 		//TODO: move inventory data to json
 		static::$default = [
-			static::CHEST =>         new InventoryType(27,      "Chest",        InventoryNetworkIds::CONTAINER),
-			static::DOUBLE_CHEST =>  new InventoryType(27 + 27, "Double Chest", InventoryNetworkIds::CONTAINER),
-			static::PLAYER =>        new InventoryType(36 + 4,  "Player",       InventoryNetworkIds::INVENTORY), //36 CONTAINER, 4 ARMOR
-			static::CRAFTING =>      new InventoryType(5,       "Crafting",     InventoryNetworkIds::INVENTORY), //yes, the use of INVENTORY is intended! 4 CRAFTING slots, 1 RESULT
-			static::WORKBENCH =>     new InventoryType(10,      "Crafting",     InventoryNetworkIds::WORKBENCH), //9 CRAFTING slots, 1 RESULT
-			static::FURNACE =>       new InventoryType(3,       "Furnace",      InventoryNetworkIds::FURNACE), //2 INPUT, 1 OUTPUT
-			static::ENCHANT_TABLE => new InventoryType(2,       "Enchant",      InventoryNetworkIds::ENCHANTMENT), //1 INPUT/OUTPUT, 1 LAPIS
-			static::BREWING_STAND => new InventoryType(4,       "Brewing",      InventoryNetworkIds::BREWING_STAND), //1 INPUT, 3 POTION
-			static::ANVIL =>         new InventoryType(3,       "Anvil",        InventoryNetworkIds::ANVIL) //2 INPUT, 1 OUTP
+			static::CHEST =>         new InventoryType(27, "Chest", WindowTypes::CONTAINER),
+			static::DOUBLE_CHEST =>  new InventoryType(27 + 27, "Double Chest", WindowTypes::CONTAINER),
+			static::PLAYER =>        new InventoryType(36 + 4, "Player", WindowTypes::INVENTORY), //36 CONTAINER, 4 ARMOR
+			static::CRAFTING =>      new InventoryType(5, "Crafting", WindowTypes::INVENTORY), //yes, the use of INVENTORY is intended! 4 CRAFTING slots, 1 RESULT
+			static::WORKBENCH =>     new InventoryType(10, "Crafting", WindowTypes::WORKBENCH), //9 CRAFTING slots, 1 RESULT
+			static::FURNACE =>       new InventoryType(3, "Furnace", WindowTypes::FURNACE), //2 INPUT, 1 OUTPUT
+			static::ENCHANT_TABLE => new InventoryType(2, "Enchant", WindowTypes::ENCHANTMENT), //1 INPUT/OUTPUT, 1 LAPIS
+			static::BREWING_STAND => new InventoryType(4, "Brewing", WindowTypes::BREWING_STAND), //1 INPUT, 3 POTION
+			static::ANVIL =>         new InventoryType(3, "Anvil", WindowTypes::ANVIL) //2 INPUT, 1 OUTP
 		];
 	}
 

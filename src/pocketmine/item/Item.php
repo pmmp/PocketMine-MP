@@ -65,13 +65,19 @@ class Item implements ItemIds, \JsonSerializable{
 
 	/** @var \SplFixedArray */
 	public static $list = null;
+	/** @var Block|null */
 	protected $block;
+	/** @var int */
 	protected $id;
+	/** @var int */
 	protected $meta;
+	/** @var string */
 	private $tags = "";
+	/** @var CompoundTag|null */
 	private $cachedNBT = null;
+	/** @var int */
 	public $count;
-	protected $durability = 0;
+	/** @var string */
 	protected $name;
 	protected $maxStackSize = 64;
 	protected $attackPoints = 1; //Default 1 for punching with any item, or air
@@ -597,6 +603,35 @@ class Item implements ItemIds, \JsonSerializable{
 		return $this;
 	}
 
+	public function getLore() : array{
+		$tag = $this->getNamedTagEntry("display");
+		if($tag instanceof CompoundTag and isset($tag->Lore) and $tag->Lore instanceof ListTag){
+			$lines = [];
+			foreach($tag->Lore->getValue() as $line){
+				$lines[] = $line->getValue();
+			}
+
+			return $lines;
+		}
+
+		return [];
+	}
+
+	public function setLore(array $lines){
+		$tag = $this->getNamedTag();
+		if(!isset($tag->display)){
+			$tag->display = new CompoundTag("display", []);
+		}
+		$tag->display->Lore = new ListTag("Lore");
+		$tag->display->Lore->setTagType(NBT::TAG_String);
+		$count = 0;
+		foreach($lines as $line){
+			$tag->display->Lore[$count++] = new StringTag("", $line);
+		}
+
+		$this->setNamedTag($tag);
+	}
+
 	/**
 	 * @param $name
 	 * @return Tag|null
@@ -965,6 +1000,14 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		return $item;
+	}
+
+	public function __clone(){
+		if($this->block !== null){
+			$this->block = clone $this->block;
+		}
+
+		$this->cachedNBT = null;
 	}
 
 }

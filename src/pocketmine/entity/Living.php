@@ -31,7 +31,7 @@ use pocketmine\event\Timings;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ShortTag;
-use pocketmine\network\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\utils\BlockIterator;
 
 abstract class Living extends Entity implements Damageable{
@@ -77,8 +77,20 @@ abstract class Living extends Entity implements Damageable{
 		}
 	}
 
+	public function getMaxHealth(){
+		return $this->attributeMap->getAttribute(Attribute::HEALTH)->getMaxValue();
+	}
+
 	public function setMaxHealth($amount){
 		$this->attributeMap->getAttribute(Attribute::HEALTH)->setMaxValue($amount);
+	}
+
+	public function getAbsorption() : int{
+		return (int) $this->attributeMap->getAttribute(Attribute::ABSORPTION)->getValue();
+	}
+
+	public function setAbsorption(int $absorption){
+		$this->attributeMap->getAttribute(Attribute::ABSORPTION)->setValue($absorption);
 	}
 
 	public function saveNBT(){

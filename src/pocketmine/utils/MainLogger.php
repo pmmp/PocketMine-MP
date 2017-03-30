@@ -134,12 +134,10 @@ class MainLogger extends \AttachableThreadedLogger{
 			$type = ($errno === E_ERROR or $errno === E_USER_ERROR) ? LogLevel::ERROR : (($errno === E_USER_WARNING or $errno === E_WARNING) ? LogLevel::WARNING : LogLevel::NOTICE);
 		}
 		$errno = $errorConversion[$errno] ?? $errno;
-		if(($pos = strpos($errstr, "\n")) !== false){
-			$errstr = substr($errstr, 0, $pos);
-		}
+		$errstr = preg_replace('/\s+/', ' ', trim($errstr));
 		$errfile = \pocketmine\cleanPath($errfile);
 		$this->log($type, get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline");
-		foreach(@\pocketmine\getTrace(1, $trace) as $i => $line){
+		foreach(\pocketmine\getTrace(0, $trace) as $i => $line){
 			$this->debug($line);
 		}
 	}

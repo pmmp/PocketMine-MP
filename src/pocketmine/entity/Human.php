@@ -35,8 +35,8 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\protocol\AddPlayerPacket;
-use pocketmine\network\protocol\RemoveEntityPacket;
+use pocketmine\network\mcpe\protocol\AddPlayerPacket;
+use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
 use pocketmine\Player;
 use pocketmine\utils\UUID;
 
@@ -408,6 +408,12 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	public function saveNBT(){
 		parent::saveNBT();
+
+		$this->namedtag->foodLevel = new IntTag("foodLevel", $this->getFood());
+		$this->namedtag->foodExhaustionLevel = new FloatTag("foodExhaustionLevel", $this->getExhaustion());
+		$this->namedtag->foodSaturationLevel = new FloatTag("foodSaturationLevel", $this->getSaturation());
+		$this->namedtag->foodTickTimer = new IntTag("foodTickTimer", $this->foodTickTimer);
+
 		$this->namedtag->Inventory = new ListTag("Inventory", []);
 		$this->namedtag->Inventory->setTagType(NBT::TAG_Compound);
 		if($this->inventory !== null){
@@ -437,7 +443,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$slotCount = $this->inventory->getSize() + $this->inventory->getHotbarSize();
 			for($slot = $this->inventory->getHotbarSize(); $slot < $slotCount; ++$slot){
 				$item = $this->inventory->getItem($slot - 9);
-				$this->namedtag->Inventory[$slot] = $item->nbtSerialize($slot);
+				if($item->getId() !== ItemItem::AIR){
+					$this->namedtag->Inventory[$slot] = $item->nbtSerialize($slot);
+				}
 			}
 
 			//Armor
@@ -492,17 +500,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			if(!($this instanceof Player)){
 				$this->server->removePlayerListData($this->getUniqueId(), [$player]);
 			}
-		}
-	}
-
-	public function despawnFrom(Player $player){
-		if(isset($this->hasSpawned[$player->getLoaderId()])){
-
-			$pk = new RemoveEntityPacket();
-			$pk->eid = $this->getId();
-
-			$player->dataPacket($pk);
-			unset($this->hasSpawned[$player->getLoaderId()]);
 		}
 	}
 
