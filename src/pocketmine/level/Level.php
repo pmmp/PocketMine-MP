@@ -416,7 +416,9 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function close(){
-		assert(!$this->closed, "Tried to close a level which is already closed");
+		if($this->closed){
+			throw new \InvalidStateException("Tried to close a level which is already closed");
+		}
 
 		if($this->getAutoSave()){
 			$this->save();
