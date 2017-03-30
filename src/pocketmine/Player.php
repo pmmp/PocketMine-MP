@@ -3456,9 +3456,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 *
 	 * @param string $title
 	 * @param int $type
-	 * @param int $fadeIn
-	 * @param int $stay
-	 * @param int $fadeOut
 	 */
 	protected function sendTitleText(string $title, int $type){
 		$pk = new SetTitlePacket();
