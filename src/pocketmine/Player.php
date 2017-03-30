@@ -902,6 +902,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->sendPlayStatus(PlayStatusPacket::PLAYER_SPAWN);
 
+		if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
+			$this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
+		}
+		if($this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)){
+			$this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
+		}
+
 		$this->server->getPluginManager()->callEvent($ev = new PlayerJoinEvent($this,
 			new TranslationContainer(TextFormat::YELLOW . "%multiplayer.player.joined", [
 				$this->getDisplayName()
@@ -1728,13 +1735,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->close($this->getLeaveMessage(), "You are banned");
 
 			return;
-		}
-
-		if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
-			$this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
-		}
-		if($this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)){
-			$this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
 		}
 
 		foreach($this->server->getOnlinePlayers() as $p){
