@@ -191,11 +191,6 @@ interface LevelProvider{
 	public function getWeather() : int;
 
     /**
-     * @param int $weather
-     */
-	public function setWeather($weather);
-
-    /**
      * @param int $clearTime
      * @param int $rainTime
      * @param int $thunderTime
