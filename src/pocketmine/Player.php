@@ -241,6 +241,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public $playedBefore;
 	public $spawned = false;
 	public $loggedIn = false;
+	public $joined = false;
 	public $gamemode;
 	public $lastBreak;
 
@@ -945,6 +946,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$pk->z = $pos->z;
 			$this->dataPacket($pk);
 		}
+
+		$this->joined = true;
 	}
 
 	protected function orderChunks(){
@@ -1971,7 +1974,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet) : bool{
 		switch($packet->status){
 			case ResourcePackClientResponsePacket::STATUS_REFUSED:
-				$this->close("", "must accept resource packs to join", true);
+				//TODO: add lang strings for this
+				$this->close("", "You must accept resource packs to join this server.", true);
 				break;
 			case ResourcePackClientResponsePacket::STATUS_SEND_PACKS:
 				$manager = $this->server->getResourceManager();
@@ -3536,21 +3540,41 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @param bool   $notify
 	 */
 	public final function close($message = "", $reason = "generic reason", $notify = true){
-
 		if($this->connected and !$this->closed){
 			if($notify and strlen((string) $reason) > 0){
-				$pk = new DisconnectPacket;
+				$pk = new DisconnectPacket();
 				$pk->message = $reason;
 				$this->directDataPacket($pk);
 			}
 
 			$this->connected = false;
-			if(strlen($this->getName()) > 0){
-				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message, true));
-				if($this->loggedIn === true and $ev->getAutoSave()){
-					$this->save();
+
+			$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
+			$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
+
+			if($this->joined){
+				//TODO: add events for player data saving
+				$this->save();
+
+				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message));
+				if($ev->getQuitMessage() != ""){
+					$this->server->broadcastMessage($ev->getQuitMessage());
 				}
 			}
+			$this->joined = false;
+
+			if($this->isValid()){
+				foreach($this->usedChunks as $index => $d){
+					Level::getXZ($index, $chunkX, $chunkZ);
+					$this->level->unregisterChunkLoader($this, $chunkX, $chunkZ);
+					foreach($this->level->getChunkEntities($chunkX, $chunkZ) as $entity){
+						$entity->despawnFrom($this);
+					}
+					unset($this->usedChunks[$index]);
+				}
+			}
+			$this->usedChunks = [];
+			$this->loadQueue = [];
 
 			foreach($this->server->getOnlinePlayers() as $player){
 				if(!$player->canSee($this)){
@@ -3562,61 +3586,40 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			foreach($this->windowIndex as $window){
 				$this->removeWindow($window);
 			}
-
-			foreach($this->usedChunks as $index => $d){
-				Level::getXZ($index, $chunkX, $chunkZ);
-				$this->level->unregisterChunkLoader($this, $chunkX, $chunkZ);
-				foreach($this->level->getChunkEntities($chunkX, $chunkZ) as $entity){
-					$entity->despawnFrom($this, false);
-				}
-				unset($this->usedChunks[$index]);
-			}
+			$this->windows = null;
+			$this->windowIndex = [];
 
 			parent::close();
+			$this->spawned = false;
 
 			$this->interface->close($this, $notify ? $reason : "");
 
 			if($this->loggedIn){
 				$this->server->removeOnlinePlayer($this);
 			}
-
 			$this->loggedIn = false;
 
-			$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
-			$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
-
-			if(isset($ev) and $this->username != "" and $this->spawned !== false and $ev->getQuitMessage() != ""){
-				$this->server->broadcastMessage($ev->getQuitMessage());
-			}
-
-			$this->spawned = false;
 			$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logOut", [
 				TextFormat::AQUA . $this->getName() . TextFormat::WHITE,
 				$this->ip,
 				$this->port,
 				$this->getServer()->getLanguage()->translateString($reason)
 			]));
-			$this->windows = new \SplObjectStorage();
-			$this->windowIndex = [];
-			$this->usedChunks = [];
-			$this->loadQueue = [];
-			$this->hasSpawned = [];
+
 			$this->spawnPosition = null;
+
+			if($this->perm !== null){
+				$this->perm->clearPermissions();
+				$this->perm = null;
+			}
+
+			if($this->inventory !== null){
+				$this->inventory = null;
+				$this->currentTransaction = null;
+			}
+
+			$this->server->removePlayer($this);
 		}
-
-		if($this->perm !== null){
-			$this->perm->clearPermissions();
-			$this->perm = null;
-		}
-
-		if($this->inventory !== null){
-			$this->inventory = null;
-			$this->currentTransaction = null;
-		}
-
-		$this->chunk = null;
-
-		$this->server->removePlayer($this);
 	}
 
 	public function __debugInfo(){
@@ -3634,7 +3637,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		parent::saveNBT();
-		if($this->level instanceof Level){
+		if($this->getLevel() instanceof Level){
 			$this->namedtag->Level = new StringTag("Level", $this->level->getFolderName());
 			if($this->hasValidSpawnPosition()){
 				$this->namedtag["SpawnLevel"] = $this->spawnPosition->getLevel()->getFolderName();
@@ -3642,17 +3645,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->namedtag["SpawnY"] = (int) $this->spawnPosition->y;
 				$this->namedtag["SpawnZ"] = (int) $this->spawnPosition->z;
 			}
+		}
 
-			foreach($this->achievements as $achievement => $status){
-				$this->namedtag->Achievements[$achievement] = new ByteTag($achievement, $status === true ? 1 : 0);
-			}
+		foreach($this->achievements as $achievement => $status){
+			$this->namedtag->Achievements[$achievement] = new ByteTag($achievement, $status === true ? 1 : 0);
+		}
 
-			$this->namedtag["playerGameType"] = $this->gamemode;
-			$this->namedtag["lastPlayed"] = new LongTag("lastPlayed", floor(microtime(true) * 1000));
+		$this->namedtag["playerGameType"] = $this->gamemode;
+		$this->namedtag["lastPlayed"] = new LongTag("lastPlayed", floor(microtime(true) * 1000));
 
-			if($this->username != "" and $this->namedtag instanceof CompoundTag){
-				$this->server->saveOfflinePlayerData($this->username, $this->namedtag, $async);
-			}
+		if($this->username != "" and $this->namedtag instanceof CompoundTag){
+			$this->server->saveOfflinePlayerData($this->username, $this->namedtag, $async);
 		}
 	}
 
