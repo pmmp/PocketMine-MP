@@ -1778,7 +1778,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->hasBeenLoadedInCreative = 1;
 		$pk->dayCycleStopTime = -1; //TODO: implement this properly
 		$pk->eduMode = 0;
-		$pk->rainLevel = 0; //TODO: set based on precipitation of biome and height in world
+		$pk->rainLevel = 0; //TODO: figure out how to implement
 		$pk->lightningLevel = 0;
 		$pk->commandsEnabled = 1;
 		$pk->levelId = "";
@@ -3048,9 +3048,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             $pk1->evid = LevelEventPacket::EVENT_STOP_RAIN;
             $pk2->evid = LevelEventPacket::EVENT_STOP_THUNDER;
         }
-        $biome = Biome::getBiome($this->level->getBiomeId($this->x, $this->z));
-        $pk1->data = $biome->getRainfall(); // is this correct?
-        $pk2->data = $biome->getRainfall();
+        $pk1->data = 90000; //TODO find correct values
+        $pk2->data = 90000;
         $this->dataPacket($pk1);
         $this->dataPacket($pk2);
     }

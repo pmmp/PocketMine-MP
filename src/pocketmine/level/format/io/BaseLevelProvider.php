@@ -29,6 +29,7 @@ use pocketmine\level\Level;
 use pocketmine\level\LevelException;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\LongTag;
@@ -91,6 +92,31 @@ abstract class BaseLevelProvider implements LevelProvider{
 
 	public function setTime($value){
 		$this->levelData->Time = new LongTag("Time", $value);
+	}
+
+	public function getWeather() : int{
+		if($this->levelData["rainTime"] == 0 and $this->levelData["thunderTime"] != 0){
+			return Level::WEATHER_RAIN;
+		}elseif($this->levelData["thunderTime"] == 0){
+			return Level::WEATHER_RAIN_THUNDER;
+		}else{
+			return Level::WEATHER_NORM;
+		}
+	}
+
+	public function setWeatherTimes(int $clearTime, int $rainTime, int $thunderTime){
+		if($rainTime <= 0 or $thunderTime <= 0) {
+			$this->levelData->raining = new ByteTag("raining", 1);
+			if($thunderTime <= 0) {
+				$this->levelData->thundering = new ByteTag("thundering", 1);
+			}
+		}else{
+			$this->levelData->raining = new ByteTag("raining", 0);
+			$this->levelData->thundering = new ByteTag("thundering", 0);
+		}
+		$this->levelData->rainTime = new IntTag("rainTime", $rainTime);
+		$this->levelData->thunderTime = new IntTag("thunderTime", $thunderTime);
+		$this->levelData->clearWeatherTime = new IntTag("clearWeatherTime", $clearTime);
 	}
 
 	public function getSeed(){

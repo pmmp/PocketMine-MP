@@ -185,6 +185,23 @@ interface LevelProvider{
 	 */
 	public function setTime($value);
 
+    /**
+     * @return int The integer version of the type
+     */
+	public function getWeather() : int;
+
+    /**
+     * @param int $weather
+     */
+	public function setWeather($weather);
+
+    /**
+     * @param int $clearTime
+     * @param int $rainTime
+     * @param int $thunderTime
+     */
+	public function setWeatherTimes(int $clearTime, int $rainTime, int $thunderTime);
+
 	/**
 	 * @return int|string int, or the string numeric representation of a long in 32-bit systems
 	 */
