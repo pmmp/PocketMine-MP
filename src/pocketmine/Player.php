@@ -1797,7 +1797,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->sendPlayStatus(PlayStatusPacket::LOGIN_SUCCESS);
 
 		$this->loggedIn = true;
-		$this->server->addOnlinePlayer($this);
 
 		$pk = new ResourcePacksInfoPacket();
 		$manager = $this->server->getResourceManager();
@@ -1875,6 +1874,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		$this->forceMovement = $this->teleportPosition = $this->getPosition();
+
+		$this->server->addOnlinePlayer($this);
 
 		$this->server->onPlayerLogin($this);
 	}
@@ -3637,14 +3638,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		parent::saveNBT();
-		if($this->getLevel() instanceof Level){
+
+		if($this->isValid()){
 			$this->namedtag->Level = new StringTag("Level", $this->level->getFolderName());
-			if($this->hasValidSpawnPosition()){
-				$this->namedtag["SpawnLevel"] = $this->spawnPosition->getLevel()->getFolderName();
-				$this->namedtag["SpawnX"] = (int) $this->spawnPosition->x;
-				$this->namedtag["SpawnY"] = (int) $this->spawnPosition->y;
-				$this->namedtag["SpawnZ"] = (int) $this->spawnPosition->z;
-			}
+		}
+
+		if($this->hasValidSpawnPosition()){
+			$this->namedtag["SpawnLevel"] = $this->spawnPosition->getLevel()->getFolderName();
+			$this->namedtag["SpawnX"] = (int) $this->spawnPosition->x;
+			$this->namedtag["SpawnY"] = (int) $this->spawnPosition->y;
+			$this->namedtag["SpawnZ"] = (int) $this->spawnPosition->z;
 		}
 
 		foreach($this->achievements as $achievement => $status){
