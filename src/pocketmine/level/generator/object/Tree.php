@@ -166,7 +166,7 @@ abstract class Tree{
 	public function getName(): string {
 		$treeName = "";
 		if($this->isBig) {
-			$treeName .= " Large ";
+			$treeName .= "Large ";
 		}
 		$treeName .= explode(" ", (new Wood($this->type))->getName())[0];
 
