@@ -2209,7 +2209,7 @@ class Server{
 		foreach($this->players as $p){
 			if(!$p->loggedIn and ($tickTime - $p->creationTime) >= 10){
 				$p->close("", "Login timeout");
-			}elseif($this->alwaysTickPlayers){
+			}elseif($this->alwaysTickPlayers and $p->joined){
 				$p->onUpdate($currentTick);
 			}
 		}
