@@ -23,6 +23,7 @@ namespace pocketmine\level\generator\object;
 
 use pocketmine\block\Block;
 use pocketmine\block\Sapling;
+use pocketmine\block\Wood;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
 
@@ -41,7 +42,8 @@ abstract class Tree{
 	public $trunkBlock = Block::LOG;
 	public $leafBlock = Block::LEAVES;
 	public $treeHeight = 7;
-	
+	protected $isBig = false;
+
 	/**
 	 * Grows a tree on the location of the given coordinates.
 	 *
@@ -81,7 +83,7 @@ abstract class Tree{
 			$tree->placeObject($level, $x, $y, $z, $random);
 		}
 	}
-	
+
 	/**
 	 * Checks if a tree is placeable on the coordinates given.
 	 *
@@ -110,7 +112,7 @@ abstract class Tree{
 
 		return true;
 	}
-	
+
 	/**
 	 * Places a tree if the block at the coordinates given is a non-solid block.
 	 *
@@ -142,7 +144,7 @@ abstract class Tree{
 			}
 		}
 	}
-	
+
 	protected function placeTrunk(ChunkManager $level, $x, $y, $z, Random $random, $trunkHeight){
 		// The base dirt block
 		$level->setBlockIdAt($x, $y - 1, $z, Block::DIRT);
@@ -155,11 +157,18 @@ abstract class Tree{
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns the human readable name of the tree.
 	 *
 	 * @return string
 	 */
-	public abstract function getName() : string;
+	public function getName(): string {
+		$treeName = explode(" ", (new Wood($this->type))->getName())[0];
+		if($this->isBig) {
+			$treeName .= " Large";
+		}
+		$treeName .= " Tree";
+		return $treeName;
+	}
 }

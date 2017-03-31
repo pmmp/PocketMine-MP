@@ -35,6 +35,7 @@ class BirchTree extends Tree{
 		$this->leafBlock = Block::LEAVES;
 		$this->type = Wood::BIRCH;
 		$this->superBirch = (bool) $superBirch;
+		$this->isBig = (bool)$superBirch;
 	}
 
 	public function placeObject(ChunkManager $level, $x, $y, $z, Random $random){
@@ -43,9 +44,5 @@ class BirchTree extends Tree{
 			$this->treeHeight += 5;
 		}
 		parent::placeObject($level, $x, $y, $z, $random);
-	}
-	
-	public function getName() : string{
-		return "Birch Tree";
 	}
 }

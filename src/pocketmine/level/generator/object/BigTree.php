@@ -25,8 +25,9 @@ use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
 
 class BigTree extends Tree{
-	
+
 	protected $radiusIncrease = 0;
+	protected $isBig = true;
 	private $trunkHeightMultiplier = 0.618;
 	private $trunkHeight;
 	private $leafAmount = 1;
@@ -79,9 +80,5 @@ class BigTree extends Tree{
 			$level->setBlock($x, $pos->y + $yy, $z, 17, $this->type);
 		}
 		*/
-	}
-	
-	public function getName() : string{
-		return "Big Tree";
 	}
 }

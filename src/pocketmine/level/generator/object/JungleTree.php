@@ -32,8 +32,4 @@ class JungleTree extends Tree{
 		$this->type = Wood::JUNGLE;
 		$this->treeHeight = 8;
 	}
-	
-	public function getName() : string{
-		return "Jungle Tree";
-	}
 }
