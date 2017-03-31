@@ -1046,7 +1046,6 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->provider->setTime((int) $this->time);
 
-		$this->provider->setWeather($this->weather);
 		$this->provider->setWeatherTimes($this->clearTime, $this->rainTime, $this->thunderTime);
 
 		$this->saveChunks();
