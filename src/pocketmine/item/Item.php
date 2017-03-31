@@ -46,12 +46,22 @@ class Item implements ItemIds, \JsonSerializable{
 	private static $cachedParser = null;
 
 	private static function parseCompoundTag(string $tag) : CompoundTag{
+		if(strlen($tag) === 0){
+			throw new \InvalidArgumentException("No NBT data found in supplied string");
+		}
+
 		if(self::$cachedParser === null){
 			self::$cachedParser = new NBT(NBT::LITTLE_ENDIAN);
 		}
 
 		self::$cachedParser->read($tag);
-		return self::$cachedParser->getData();
+		$data = self::$cachedParser->getData();
+
+		if(!($data instanceof CompoundTag)){
+			throw new \InvalidArgumentException("Invalid item NBT string given, it could not be deserialized");
+		}
+
+		return $data;
 	}
 
 	private static function writeCompoundTag(CompoundTag $tag) : string{

@@ -183,7 +183,7 @@ auto-updater:
 
 timings:
  #Choose the host to use for viewing your timings results.
- host: mcpetimings.com
+ host: timings.pmmp.io
 
 console:
  #Choose whether to enable server stats reporting on the console title.
