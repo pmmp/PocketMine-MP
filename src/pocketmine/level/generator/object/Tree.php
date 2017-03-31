@@ -164,10 +164,12 @@ abstract class Tree{
 	 * @return string
 	 */
 	public function getName(): string {
-		$treeName = explode(" ", (new Wood($this->type))->getName())[0];
+		$treeName = "";
 		if($this->isBig) {
-			$treeName .= " Large";
+			$treeName .= " Large ";
 		}
+		$treeName .= explode(" ", (new Wood($this->type))->getName())[0];
+
 		$treeName .= " Tree";
 		return $treeName;
 	}
