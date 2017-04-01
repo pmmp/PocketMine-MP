@@ -125,34 +125,36 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_FLAG_SPRINTING = 3;
 	const DATA_FLAG_ACTION = 4;
 	const DATA_FLAG_INVISIBLE = 5;
-	const DATA_FLAG_TEMPTED = 6; //???
+	const DATA_FLAG_TEMPTED = 6;
 	const DATA_FLAG_INLOVE = 7;
 	const DATA_FLAG_SADDLED = 8;
 	const DATA_FLAG_POWERED = 9;
-	const DATA_FLAG_IGNITED = 10; //for creepers?
+	const DATA_FLAG_IGNITED = 10;
 	const DATA_FLAG_BABY = 11;
-	const DATA_FLAG_CONVERTING = 12; //???
+	const DATA_FLAG_CONVERTING = 12;
 	const DATA_FLAG_CRITICAL = 13;
 	const DATA_FLAG_CAN_SHOW_NAMETAG = 14;
 	const DATA_FLAG_ALWAYS_SHOW_NAMETAG = 15;
 	const DATA_FLAG_IMMOBILE = 16, DATA_FLAG_NO_AI = 16;
 	const DATA_FLAG_SILENT = 17;
 	const DATA_FLAG_WALLCLIMBING = 18;
-	const DATA_FLAG_RESTING = 19; //for bats?
-	const DATA_FLAG_SITTING = 20;
-	const DATA_FLAG_ANGRY = 21;
-	const DATA_FLAG_INTERESTED = 22; //for mobs following players with food?
-	const DATA_FLAG_CHARGED = 23;
-	const DATA_FLAG_TAMED = 24;
-	const DATA_FLAG_LEASHED = 25;
-	const DATA_FLAG_SHEARED = 26; //for sheep
-	const DATA_FLAG_GLIDING = 27, DATA_FLAG_FALL_FLYING = 27;
-	const DATA_FLAG_ELDER = 28; //elder guardian
-	const DATA_FLAG_MOVING = 29;
-	const DATA_FLAG_BREATHING = 30; //hides bubbles if true
-	const DATA_FLAG_CHESTED = 31; //for mules?
-	const DATA_FLAG_STACKABLE = 32;
-	const DATA_FLAG_IDLING = 36;
+
+	const DATA_FLAG_RESTING = 22;
+	const DATA_FLAG_SITTING = 23;
+	const DATA_FLAG_ANGRY = 24;
+	const DATA_FLAG_INTERESTED = 25;
+	const DATA_FLAG_CHARGED = 26;
+	const DATA_FLAG_TAMED = 27;
+	const DATA_FLAG_LEASHED = 28;
+	const DATA_FLAG_SHEARED = 29;
+	const DATA_FLAG_GLIDING = 30;
+	const DATA_FLAG_ELDER = 31;
+	const DATA_FLAG_MOVING = 32;
+	const DATA_FLAG_BREATHING = 33;
+	const DATA_FLAG_CHESTED = 34;
+	const DATA_FLAG_STACKABLE = 35;
+
+	const DATA_FLAG_IDLING = 39;
 
 	public static $entityCount = 1;
 	/** @var Entity[] */

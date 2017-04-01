@@ -35,6 +35,7 @@ class AnimatePacket extends DataPacket{
 	public function decode(){
 		$this->action = $this->getVarInt();
 		$this->eid = $this->getEntityRuntimeId();
+		//TODO: check extra float which appears when 0x80 bitflag is set
 	}
 
 	public function encode(){

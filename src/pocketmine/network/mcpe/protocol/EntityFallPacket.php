@@ -29,10 +29,14 @@ use pocketmine\network\mcpe\NetworkSession;
 class EntityFallPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::ENTITY_FALL_PACKET;
 
+	public $eid;
 	public $fallDistance;
+	public $bool1;
 
 	public function decode(){
+		$this->eid = $this->getEntityRuntimeId();
 		$this->fallDistance = $this->getLFloat();
+		$this->bool1 = $this->getBool();
 	}
 
 	public function encode(){

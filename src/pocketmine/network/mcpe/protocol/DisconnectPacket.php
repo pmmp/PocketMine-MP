@@ -44,7 +44,9 @@ class DisconnectPacket extends DataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putBool($this->hideDisconnectionScreen);
-		$this->putString($this->message);
+		if(!$this->hideDisconnectionScreen){
+			$this->putString($this->message);
+		}
 	}
 
 	public function handle(NetworkSession $session) : bool{
