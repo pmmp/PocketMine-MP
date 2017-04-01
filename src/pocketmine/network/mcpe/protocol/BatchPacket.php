@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class BatchPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::BATCH_PACKET;
+	const NETWORK_ID = 0xfe;
 
 	public $payload;
 
@@ -40,12 +40,12 @@ class BatchPacket extends DataPacket{
 	}
 
 	public function decode(){
-		$this->payload = $this->getString();
+		$this->payload = $this->get(true);
 	}
 
 	public function encode(){
 		$this->reset();
-		$this->putString($this->payload);
+		$this->put($this->payload);
 	}
 
 	public function handle(NetworkSession $session) : bool{
@@ -66,9 +66,9 @@ class BatchPacket extends DataPacket{
 		while(!$this->feof()){
 			$buf = $this->getString();
 			$pk = $network->getPacket(ord($buf{0}));
-			if(!$pk->canBeBatched()){
+			/*if(!$pk->canBeBatched()){
 				throw new \InvalidArgumentException("Received invalid " . get_class($pk) . " inside BatchPacket");
-			}
+			}*/
 
 			$pk->setBuffer($buf, 1);
 			$session->handleDataPacket($pk);

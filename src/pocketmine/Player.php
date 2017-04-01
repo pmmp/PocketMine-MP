@@ -148,7 +148,7 @@ use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MoveEntityPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
-use pocketmine\network\mcpe\protocol\PlayerFallPacket;
+use pocketmine\network\mcpe\protocol\EntityFallPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlaySoundPacket;
@@ -2735,7 +2735,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return true;
 	}
 
-	public function handlePlayerFall(PlayerFallPacket $packet) : bool{
+	public function handleEntityFall(EntityFallPacket $packet) : bool{
 		return false;
 	}
 
@@ -3318,7 +3318,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function handleUnknown(UnknownPacket $packet) : bool{
-		$this->server->getLogger()->debug("Received unknown packet from " . $this->getName() . ": 0x" . bin2hex($packet->payload));
+		$this->server->getLogger()->debug("Received unknown packet from " . $this->getName() . ": 0x" . bin2hex($packet->buffer));
 		return true;
 	}
 

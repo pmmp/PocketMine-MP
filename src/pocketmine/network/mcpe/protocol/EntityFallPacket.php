@@ -26,8 +26,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 
-class PlayerFallPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::PLAYER_FALL_PACKET;
+class EntityFallPacket extends DataPacket{
+	const NETWORK_ID = ProtocolInfo::ENTITY_FALL_PACKET;
 
 	public $fallDistance;
 
@@ -40,6 +40,6 @@ class PlayerFallPacket extends DataPacket{
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handlePlayerFall($this);
+		return $session->handleEntityFall($this);
 	}
 }
