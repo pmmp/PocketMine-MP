@@ -64,7 +64,7 @@ class Lava extends Liquid{
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$ret = $this->getLevel()->setBlock($this, $this, true, false);
-		$this->getLevel()->scheduleUpdate($this, $this->tickRate());
+		$this->getLevel()->scheduleDelayedBlockUpdate($this, $this->tickRate());
 
 		return $ret;
 	}
