@@ -2238,7 +2238,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if($packet->inventorySlot === 255){
 			$packet->inventorySlot = -1; //Cleared slot
 		}else{
+			if($packet->inventorySlot < 9){
+				$this->server->getLogger()->debug("Tried to equip a slot that does not exist (index " . $packet->inventorySlot . ")");
+				$this->inventory->sendContents($this);
+				return false;
+			}
 			$packet->inventorySlot -= 9; //Get real inventory slot
+
 			$item = $this->inventory->getItem($packet->inventorySlot);
 
 			if(!$item->equals($packet->item)){
@@ -3336,8 +3342,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$timings->startTiming();
 
 		$packet->decode();
-		assert($packet->feof(), "Still " . strlen(substr($packet->buffer, $packet->offset)) . " bytes unread in " . get_class($packet));
-
+		if(!$packet->feof()){
+			$this->server->getLogger()->debug("Still " . strlen(substr($packet->buffer, $packet->offset)) . " bytes unread in " . get_class($packet) . " from " . $this->getName() . ": " . bin2hex($packet->get(true)));
+		}
 		$this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this, $packet));
 		if(!$ev->isCancelled() and !$packet->handle($this)){
 			$this->server->getLogger()->debug("Unhandled " . get_class($packet) . " received from " . $this->getName() . ": " . bin2hex($packet->buffer));
