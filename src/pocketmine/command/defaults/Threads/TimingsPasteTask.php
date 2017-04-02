@@ -36,7 +36,7 @@ class TimingsPasteTask extends AsyncTask{
 
 	public function __construct($name, $data, $serverName, $version){
 		$this->name = $name;
-		$this->data = unserialize($data);
+		$this->data = $data;
 		$this->serverName = $serverName;
 		$this->version = $version;
 	}

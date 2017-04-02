@@ -105,7 +105,7 @@ class TimingsCommand extends VanillaCommand{
 
 				$sender->sendMessage("Processing timings paste request...");
 
-				$sender->getServer()->getScheduler()->scheduleAsyncTask(new TimingsPasteTask($sender->getName(), serialize($data), $sender->getServer()->getName(), $sender->getServer()->getPocketMineVersion()));
+				$sender->getServer()->getScheduler()->scheduleAsyncTask(new TimingsPasteTask($sender->getName(), $data, $sender->getServer()->getName(), $sender->getServer()->getPocketMineVersion()));
 
 				fclose($fileTimings);
 			}else{
