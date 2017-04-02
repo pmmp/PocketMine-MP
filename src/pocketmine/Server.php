@@ -1809,7 +1809,7 @@ class Server{
 				return;
 			}
 			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsUpload", ["http://paste.ubuntu.com/" . $matches . "/"]));
-			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsRead", ["http://" . "timings.pmmp.io" . "/?url=" . $matches]));
+			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsRead", ["http://" . $this->getProperty("timings.host", "timings.pmmp.io") . "/?url=" . $matches]));
 		}
 	}
 
