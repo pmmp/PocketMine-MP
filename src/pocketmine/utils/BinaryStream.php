@@ -186,10 +186,10 @@ class BinaryStream extends \stdClass{
 
 	public function getSlot(){
 		$id = $this->getVarInt();
-
 		if($id <= 0){
 			return Item::get(0, 0, 0);
 		}
+
 		$auxValue = $this->getVarInt();
 		$data = $auxValue >> 8;
 		$cnt = $auxValue & 0xff;
@@ -201,14 +201,23 @@ class BinaryStream extends \stdClass{
 			$nbt = $this->get($nbtLen);
 		}
 
-		$this->get(2); //??? (TODO)
+		//TODO
+		$canPlaceOn = $this->getVarInt();
+		if($canPlaceOn > 0){
+			for($i = 0; $i < $canPlaceOn; ++$i){
+				$this->getString();
+			}
+		}
 
-		return Item::get(
-			$id,
-			$data,
-			$cnt,
-			$nbt
-		);
+		//TODO
+		$canDestroy = $this->getVarInt();
+		if($canDestroy > 0){
+			for($i = 0; $i < $canDestroy; ++$i){
+				$this->getString();
+			}
+		}
+
+		return Item::get($id, $data, $cnt, $nbt);
 	}
 
 
@@ -219,12 +228,15 @@ class BinaryStream extends \stdClass{
 		}
 
 		$this->putVarInt($item->getId());
-		$auxValue = (($item->getDamage() ?? -1) << 8) | $item->getCount();
+		$auxValue = ($item->getDamage() << 8) | $item->getCount();
 		$this->putVarInt($auxValue);
+
 		$nbt = $item->getCompoundTag();
 		$this->putLShort(strlen($nbt));
 		$this->put($nbt);
-		$this->put("\x00\x00"); //TODO: find out what these are
+
+		$this->putVarInt(0); //CanPlaceOn entry count (TODO)
+		$this->putVarInt(0); //CanDestroy entry count (TODO)
 	}
 
 	public function getString(){
