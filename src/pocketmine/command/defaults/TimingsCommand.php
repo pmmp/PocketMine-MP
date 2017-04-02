@@ -23,6 +23,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\event\TimingsHandler;
+use pocketmine\command\defaults\Threads\TimingsPasteTask;
 use pocketmine\event\TranslationContainer;
 
 class TimingsCommand extends VanillaCommand{
@@ -102,37 +103,10 @@ class TimingsCommand extends VanillaCommand{
 					"content" => stream_get_contents($fileTimings)
 				];
 
-				$ch = curl_init("http://paste.ubuntu.com/");
-				curl_setopt($ch, CURLOPT_POST, 1);
-				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-				curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-				curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
-				curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
-				curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-				curl_setopt($ch, CURLOPT_AUTOREFERER, false);
-				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
-				curl_setopt($ch, CURLOPT_HEADER, true);
-				curl_setopt($ch, CURLOPT_HTTPHEADER, ["User-Agent: " . $this->getName() . " " . $sender->getServer()->getPocketMineVersion()]);
-				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-				try{
-					$data = curl_exec($ch);
-					if($data === false){
-						throw new \Exception(curl_error($ch));
-					}
-				}catch(\Exception $e){
-					$sender->getServer()->getLogger()->logException($e);
-				}
+				$sender->sendMessage("Processing timings paste request...");
 
-				curl_close($ch);
-				if(preg_match('#^Location: http://paste\\.ubuntu\\.com/([0-9]{1,})/#m', $data, $matches) == 0){
-					$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.pasteError"));
+				$sender->getServer()->getScheduler()->scheduleAsyncTask(new TimingsPasteTask($sender->getName(), serialize($data), $sender->getServer()->getName(), $sender->getServer()->getPocketMineVersion()));
 
-					return true;
-				}
-
-
-				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsUpload", ["http://paste.ubuntu.com/" . $matches[1] . "/"]));
-				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsRead", ["http://" . $sender->getServer()->getProperty("timings.host", "mcpetimings.com") . "/?url=" . $matches[1]]));
 				fclose($fileTimings);
 			}else{
 				fclose($fileTimings);

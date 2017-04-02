@@ -1801,6 +1801,17 @@ class Server{
 		}
 	}
 
+	public function timingsPasteCallback($name, $matches, $failed){
+		$sender = $name === "CONSOLE" ? $this->consoleSender : $this->getPlayerExact($name);
+		if($sender !== null){
+			if($failed){
+				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.pasteError"));
+				return;
+			}
+			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsUpload", ["http://paste.ubuntu.com/" . $matches . "/"]));
+			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsRead", ["http://" . "timings.pmmp.io" . "/?url=" . $matches]));
+		}
+	}
 
 	/**
 	 * @param int $type
