@@ -128,7 +128,6 @@ namespace pocketmine {
 
 	set_time_limit(0); //Who set it to 30 seconds?!?!
 
-	gc_enable();
 	error_reporting(-1);
 	ini_set("allow_url_fopen", 1);
 	ini_set("display_errors", 1);
