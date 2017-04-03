@@ -1566,6 +1566,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						$this->teleport($ev->getTo());
 					}else{
 						$this->level->addEntityMovement($this->x >> 4, $this->z >> 4, $this->getId(), $this->x, $this->y + $this->getEyeHeight(), $this->z, $this->yaw, $this->pitch, $this->yaw);
+
+						$distance = $from->distance($to);
+
+						//TODO: check swimming (adds 0.015 exhaustion in MCPE)
+						if($this->isSprinting()){
+							$this->exhaust(0.1 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
+						}else{
+							$this->exhaust(0.01 * $distance, PlayerExhaustEvent::CAUSE_WALKING);
+						}
 					}
 				}
 			}
@@ -2675,6 +2684,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->removeAllEffects();
 				$this->setHealth($this->getMaxHealth());
 
+				foreach($this->attributeMap->getAll() as $attr){
+					$attr->resetToDefault();
+				}
+
 				$this->sendData($this);
 
 				$this->sendSettings();
@@ -2685,6 +2698,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->scheduleUpdate();
 				break;
 			case PlayerActionPacket::ACTION_JUMP:
+				$this->jump();
 				return true;
 			case PlayerActionPacket::ACTION_START_SPRINT:
 				$ev = new PlayerToggleSprintEvent($this, true);
@@ -3684,6 +3698,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return;
 		}
 
+		parent::kill();
+
+		$pk = new RespawnPacket();
+		$pos = $this->getSpawn();
+		$pk->x = $pos->x;
+		$pk->y = $pos->y;
+		$pk->z = $pos->z;
+		$this->dataPacket($pk);
+	}
+
+	protected function callDeathEvent(){
 		$message = "death.attack.generic";
 
 		$params = [
@@ -3793,9 +3818,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				break;
 
 			default:
+				break;
 		}
-
-		Entity::kill();
 
 		$this->server->getPluginManager()->callEvent($ev = new PlayerDeathEvent($this, $this->getDrops(), new TranslationContainer($message, $params)));
 
@@ -3814,13 +3838,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if($ev->getDeathMessage() != ""){
 			$this->server->broadcast($ev->getDeathMessage(), Server::BROADCAST_CHANNEL_USERS);
 		}
-
-		$pk = new RespawnPacket();
-		$pos = $this->getSpawn();
-		$pk->x = $pos->x;
-		$pk->y = $pos->y;
-		$pk->z = $pos->z;
-		$this->dataPacket($pk);
 	}
 
 	public function attack($damage, EntityDamageEvent $source){
