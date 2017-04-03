@@ -76,6 +76,7 @@ class StartGamePacket extends DataPacket{
 		$this->putLFloat($this->lightningLevel);
 		$this->putBool($this->commandsEnabled);
 		$this->putBool($this->isTexturePacksRequired);
+		$this->putUnsignedVarInt(0); //TODO: gamerules
 		$this->putString($this->levelId);
 		$this->putString($this->worldName);
 	}
