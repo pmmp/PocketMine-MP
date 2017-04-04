@@ -505,6 +505,24 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
+	* @param int $id
+	*
+	* @return bool
+	*/
+	public function hasEnchantment(int $id) : bool{
+		if(!$this->hasEnchantments()){
+			return false;
+		}
+		
+		foreach($this->getNamedTag()->ench as $entry){
+			if($entry["id"] === $id){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
 	 * @param int $id
 	 *
 	 * @return Enchantment|null
@@ -523,6 +541,27 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		return null;
+	}
+	
+	/**
+	* @param int $id
+	* @param int $level
+	*/
+	public function removeEnchantment(int $id, int $level = null){
+		if(!$this->hasEnchantments()){
+			return;
+		}
+		
+		$tag = $this->getNamedTag();
+		foreach($tag->ench as $k => $entry){
+			if($entry["id"] === $id){
+				if($level === null or $entry["lvl"] === $level){
+					unset($tag->ench[$k]);
+					break;
+				}
+			}
+		}
+		$this->setNamedTag($tag);
 	}
 
 	/**
