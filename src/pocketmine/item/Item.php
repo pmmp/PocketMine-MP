@@ -739,14 +739,14 @@ class Item implements ItemIds, \JsonSerializable{
 	 * Returns the name of the item, or the custom name if it is set.
 	 * @return string
 	 */
-	final public function getName() : string{
+	public final function getName() : string{
 		return $this->hasCustomName() ? $this->getCustomName() : $this->name;
 	}
 
 	/**
 	 * @return bool
 	 */
-	final public function canBePlaced() : bool{
+	public final function canBePlaced() : bool{
 		return $this->block !== null and $this->block->canBePlaced();
 	}
 
@@ -791,14 +791,14 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @return int
 	 */
-	final public function getId() : int{
+	public final function getId() : int{
 		return $this->id;
 	}
 
 	/**
 	 * @return int
 	 */
-	final public function getDamage() : int{
+	public final function getDamage() : int{
 		return $this->meta;
 	}
 
@@ -827,7 +827,7 @@ class Item implements ItemIds, \JsonSerializable{
 		return 64;
 	}
 
-	final public function getFuelTime(){
+	public final function getFuelTime(){
 		if(!isset(Fuel::$duration[$this->id])){
 			return null;
 		}
@@ -949,7 +949,7 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @return string
 	 */
-	final public function __toString() : string{
+	public final function __toString() : string{
 		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->meta) . ")x" . $this->count . ($this->hasCompoundTag() ? " tags:0x" . bin2hex($this->getCompoundTag()) : "");
 	}
 
@@ -958,7 +958,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @return array
 	 */
-	final public function jsonSerialize(){
+	public final function jsonSerialize(){
 		return [
 			"id" => $this->id,
 			"damage" => $this->meta,
