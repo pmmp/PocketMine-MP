@@ -440,14 +440,10 @@ class Effect{
 				$attr->setMaxValue($max);
 				break;
 			case Effect::ABSORPTION:
-				if($ev->willModify() and $oldEffect !== null){
-					$value = $entity->getAbsorption() - (4 * ($oldEffect->getAmplifier() + 1));
-				}else{
-					$value = $entity->getAbsorption();
+				$new = (4 * ($this->amplifier + 1));
+				if($new > $entity->getAbsorption()){
+					$entity->setAbsorption($new);
 				}
-
-				$value += (4 * ($this->amplifier + 1));
-				$entity->setAbsorption($value);
 				break;
 
 		}
@@ -490,7 +486,7 @@ class Effect{
 				$attr->setMaxValue($attr->getMaxValue() - (4 * ($this->amplifier + 1)));
 				break;
 			case Effect::ABSORPTION:
-				$entity->setAbsorption($entity->getAbsorption() - (4 * ($this->amplifier + 1)));
+				$entity->setAbsorption(0);
 				break;
 		}
 	}
