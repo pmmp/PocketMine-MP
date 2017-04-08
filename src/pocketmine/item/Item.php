@@ -596,7 +596,13 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		if(!$found){
-			$tag->ench->{count($tag->ench) + 1} = new CompoundTag("", [
+			$count = 0;
+			foreach($tag->ench as $key => $value){
+				if(is_numeric($key)){
+					++$count;
+				}
+			}
+			$tag->ench->{$count + 1} = new CompoundTag("", [
 				"id" => new ShortTag("id", $ench->getId()),
 				"lvl" => new ShortTag("lvl", $ench->getLevel())
 			]);
