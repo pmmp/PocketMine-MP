@@ -39,19 +39,19 @@ class ResourcePacksInfoPacket extends DataPacket{
 
 	public function decode(){
 		/*$this->mustAccept = $this->getBool();
-		$behaviorPackCount = $this->getLShort();
+		$behaviorPackCount = $this->getUnsignedVarInt();
 		while($behaviorPackCount-- > 0){
 			$id = $this->getString();
 			$version = $this->getString();
-			$size = $this->getLLong();
+			$size = $this->getUnsignedVarLong();
 			$this->behaviorPackEntries[] = new ResourcePackInfoEntry($id, $version, $size);
 		}
 
-		$resourcePackCount = $this->getLShort();
+		$resourcePackCount = $this->getUnsignedVarInt();
 		while($resourcePackCount-- > 0){
 			$id = $this->getString();
 			$version = $this->getString();
-			$size = $this->getLLong();
+			$size = $this->getUnsignedVarLong();
 			$this->resourcePackEntries[] = new ResourcePackInfoEntry($id, $version, $size);
 		}*/
 	}
@@ -60,17 +60,17 @@ class ResourcePacksInfoPacket extends DataPacket{
 		$this->reset();
 
 		$this->putBool($this->mustAccept);
-		$this->putLShort(count($this->behaviorPackEntries));
+		$this->putUnsignedVarInt(count($this->behaviorPackEntries));
 		foreach($this->behaviorPackEntries as $entry){
 			$this->putString($entry->getPackId());
 			$this->putString($entry->getPackVersion());
-			$this->putLLong($entry->getPackSize());
+			$this->putUnsignedVarLong($entry->getPackSize());
 		}
-		$this->putLShort(count($this->resourcePackEntries));
+		$this->putUnsignedVarInt(count($this->resourcePackEntries));
 		foreach($this->resourcePackEntries as $entry){
 			$this->putString($entry->getPackId());
 			$this->putString($entry->getPackVersion());
-			$this->putLLong($entry->getPackSize());
+			$this->putUnsignedVarLong($entry->getPackSize());
 		}
 	}
 
