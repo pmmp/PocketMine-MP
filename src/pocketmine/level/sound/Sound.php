@@ -29,6 +29,6 @@ abstract class Sound extends Vector3{
 	/**
 	 * @return DataPacket|DataPacket[]
 	 */
-	abstract public function encode();
+	public abstract function encode();
 
 }
