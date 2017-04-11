@@ -34,10 +34,12 @@ class BigTree extends Tree{
 
 	private $totalHeight = 6;
 	private $leavesHeight = 3;
-	protected $radiusIncrease = 0;
 	private $addLeavesVines = false;
 	private $addLogVines = false;
 	private $addCocoaPlants = false;
+
+	protected $radiusIncrease = 0;
+	protected $isBig = true;
 
 	public function canPlaceObject(ChunkManager $level, $x, $y, $z, Random $random){
 		return false;
@@ -80,6 +82,4 @@ class BigTree extends Tree{
 		}
 		*/
 	}
-
-
 }

@@ -23,6 +23,7 @@ namespace pocketmine\level\generator\object;
 
 use pocketmine\block\Block;
 use pocketmine\block\Sapling;
+use pocketmine\block\Wood;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
 
@@ -41,7 +42,18 @@ abstract class Tree{
 	public $trunkBlock = Block::LOG;
 	public $leafBlock = Block::LEAVES;
 	public $treeHeight = 7;
+	protected $isBig = false;
 
+	/**
+	 * Grows a tree on the location of the given coordinates.
+	 *
+	 * @param ChunkManager $level
+	 * @param              $x
+	 * @param              $y
+	 * @param              $z
+	 * @param Random       $random
+	 * @param int          $type
+	 */
 	public static function growTree(ChunkManager $level, $x, $y, $z, Random $random, $type = 0){
 		switch($type){
 			case Sapling::SPRUCE:
@@ -73,6 +85,17 @@ abstract class Tree{
 	}
 
 
+	/**
+	 * Checks if a tree is placeable on the coordinates given.
+	 *
+	 * @param ChunkManager $level
+	 * @param              $x
+	 * @param              $y
+	 * @param              $z
+	 * @param Random       $random
+	 *
+	 * @return bool
+	 */
 	public function canPlaceObject(ChunkManager $level, $x, $y, $z, Random $random){
 		$radiusToCheck = 0;
 		for($yy = 0; $yy < $this->treeHeight + 3; ++$yy){
@@ -91,6 +114,15 @@ abstract class Tree{
 		return true;
 	}
 
+	/**
+	 * Places a tree if the block at the coordinates given is a non-solid block.
+	 *
+	 * @param ChunkManager $level
+	 * @param              $x
+	 * @param              $y
+	 * @param              $z
+	 * @param Random       $random
+	 */
 	public function placeObject(ChunkManager $level, $x, $y, $z, Random $random){
 
 		$this->placeTrunk($level, $x, $y, $z, $random, $this->treeHeight - 1);
@@ -125,5 +157,20 @@ abstract class Tree{
 				$level->setBlockDataAt($x, $y + $yy, $z, $this->type);
 			}
 		}
+	}
+
+	/**
+	 * Returns the human readable name of the tree.
+	 *
+	 * @return string
+	 */
+	public function getName() : string{
+		$treeName = "";
+		if($this->isBig) {
+			$treeName .= "Large ";
+		}
+		$treeName .= explode(" ", (new Wood($this->type))->getName())[0];
+		$treeName .= " Tree";
+		return $treeName;
 	}
 }
