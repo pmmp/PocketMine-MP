@@ -628,13 +628,14 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * WARNING: Do not use this, it's only for internal use.
 	 * Changes to this function won't be recorded on the version.
+	 *
+	 * @param Player ...$targets If empty, will send to all players in the level.
 	 */
-	public function sendTime(){
+	public function sendTime(Player ...$targets){
 		$pk = new SetTimePacket();
 		$pk->time = (int) $this->time;
-		$pk->started = $this->stopTime == false;
 
-		$this->server->broadcastPacket($this->players, $pk);
+		$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
 	}
 
 	/**

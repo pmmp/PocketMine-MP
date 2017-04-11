@@ -763,10 +763,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			}
 
 			$this->usedChunks = [];
-			$pk = new SetTimePacket();
-			$pk->time = $this->level->getTime();
-			$pk->started = $this->level->stopTime == false;
-			$this->dataPacket($pk);
+			$this->level->sendTime($this);
 		}
 	}
 
@@ -883,11 +880,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->inventory->sendContents($this);
 		$this->inventory->sendArmorContents($this);
 		$this->inventory->sendHeldItem($this);
-
-		$pk = new SetTimePacket();
-		$pk->time = $this->level->getTime();
-		$pk->started = $this->level->stopTime == false;
-		$this->dataPacket($pk);
 
 		$pos = $this->level->getSafeSpawn($this);
 
@@ -1843,10 +1835,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->worldName = $this->server->getMotd();
 		$this->dataPacket($pk);
 
-		$pk = new SetTimePacket();
-		$pk->time = $this->level->getTime();
-		$pk->started = $this->level->stopTime == false;
-		$this->dataPacket($pk);
+		$this->level->sendTime($this);
 
 		$this->sendAttributes(true);
 		$this->setNameTagVisible(true);
