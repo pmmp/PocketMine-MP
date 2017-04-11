@@ -409,14 +409,14 @@ class Level implements ChunkManager, Metadatable{
 		return $this->server;
 	}
 
-	public final function getProvider() : LevelProvider{
+	final public function getProvider() : LevelProvider{
 		return $this->provider;
 	}
 
 	/**
 	 * Returns the unique level identifier
 	 */
-	public final function getId() : int{
+	final public function getId() : int{
 		return $this->levelId;
 	}
 

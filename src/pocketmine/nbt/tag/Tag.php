@@ -34,15 +34,15 @@ abstract class Tag extends \stdClass{
 		return $this->value;
 	}
 
-	public abstract function getType();
+	abstract public function getType();
 
 	public function setValue($value){
 		$this->value = $value;
 	}
 
-	public abstract function write(NBT $nbt, bool $network = false);
+	abstract public function write(NBT $nbt, bool $network = false);
 
-	public abstract function read(NBT $nbt, bool $network = false);
+	abstract public function read(NBT $nbt, bool $network = false);
 
 	public function __toString(){
 		return (string) $this->value;

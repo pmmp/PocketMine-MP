@@ -739,14 +739,14 @@ class Item implements ItemIds, \JsonSerializable{
 	 * Returns the name of the item, or the custom name if it is set.
 	 * @return string
 	 */
-	public final function getName() : string{
+	final public function getName() : string{
 		return $this->hasCustomName() ? $this->getCustomName() : $this->name;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public final function canBePlaced() : bool{
+	final public function canBePlaced() : bool{
 		return $this->block !== null and $this->block->canBePlaced();
 	}
 
@@ -791,14 +791,14 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @return int
 	 */
-	public final function getId() : int{
+	final public function getId() : int{
 		return $this->id;
 	}
 
 	/**
 	 * @return int
 	 */
-	public final function getDamage() : int{
+	final public function getDamage() : int{
 		return $this->meta;
 	}
 
@@ -827,7 +827,7 @@ class Item implements ItemIds, \JsonSerializable{
 		return 64;
 	}
 
-	public final function getFuelTime(){
+	final public function getFuelTime(){
 		if(!isset(Fuel::$duration[$this->id])){
 			return null;
 		}
@@ -916,7 +916,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @return bool
 	 */
-	public final function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
+	final public function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
 		if($this->id === $item->getId() and ($checkDamage === false or $this->getDamage() === $item->getDamage())){
 			if($checkCompound){
 				if($item->getCompoundTag() === $this->getCompoundTag()){
@@ -942,14 +942,14 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @return bool
 	 */
-	public final function deepEquals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
+	final public function deepEquals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
 		return $this->equals($item, $checkDamage, $checkCompound);
 	}
 
 	/**
 	 * @return string
 	 */
-	public final function __toString() : string{
+	final public function __toString() : string{
 		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->meta) . ")x" . $this->count . ($this->hasCompoundTag() ? " tags:0x" . bin2hex($this->getCompoundTag()) : "");
 	}
 
@@ -958,7 +958,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @return array
 	 */
-	public final function jsonSerialize(){
+	final public function jsonSerialize(){
 		return [
 			"id" => $this->id,
 			"damage" => $this->meta,

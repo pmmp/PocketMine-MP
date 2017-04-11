@@ -40,7 +40,7 @@ abstract class Event{
 	/**
 	 * @return string
 	 */
-	public final function getEventName(){
+	final public function getEventName(){
 		return $this->eventName === null ? get_class($this) : $this->eventName;
 	}
 

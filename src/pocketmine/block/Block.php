@@ -482,7 +482,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @return int
 	 */
-	public final function getId(){
+	final public function getId(){
 		return $this->id;
 	}
 
@@ -493,14 +493,14 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @return int
 	 */
-	public final function getDamage(){
+	final public function getDamage(){
 		return $this->meta;
 	}
 
 	/**
 	 * @param int $meta
 	 */
-	public final function setDamage($meta){
+	final public function setDamage($meta){
 		$this->meta = $meta & 0x0f;
 	}
 
@@ -509,7 +509,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @param Position $v
 	 */
-	public final function position(Position $v){
+	final public function position(Position $v){
 		$this->x = (int) $v->x;
 		$this->y = (int) $v->y;
 		$this->z = (int) $v->z;

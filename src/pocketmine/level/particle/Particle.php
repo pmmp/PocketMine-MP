@@ -71,6 +71,6 @@ abstract class Particle extends Vector3{
 	/**
 	 * @return DataPacket|DataPacket[]
 	 */
-	public abstract function encode();
+	abstract public function encode();
 
 }
