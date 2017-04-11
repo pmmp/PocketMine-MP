@@ -103,11 +103,11 @@ class TimingsCommand extends VanillaCommand{
 					"content" => stream_get_contents($fileTimings)
 				];
 
+				fclose($fileTimings);
+
 				$sender->sendMessage("Processing timings paste request...");
 
 				$sender->getServer()->getScheduler()->scheduleAsyncTask(new TimingsPasteTask($sender->getName(), $data, $sender->getServer()->getName(), $sender->getServer()->getPocketMineVersion()));
-
-				fclose($fileTimings);
 			}else{
 				fclose($fileTimings);
 				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsWrite", [$timings]));

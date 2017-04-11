@@ -1801,18 +1801,6 @@ class Server{
 		}
 	}
 
-	public function timingsPasteCallback($name, $matches, $failed){
-		$sender = $name === "CONSOLE" ? $this->consoleSender : $this->getPlayerExact($name);
-		if($sender !== null){
-			if($failed){
-				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.pasteError"));
-				return;
-			}
-			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsUpload", ["http://paste.ubuntu.com/" . $matches . "/"]));
-			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsRead", ["http://" . $this->getProperty("timings.host", "timings.pmmp.io") . "/?url=" . $matches]));
-		}
-	}
-
 	/**
 	 * @param int $type
 	 */
@@ -2300,6 +2288,13 @@ class Server{
 	 */
 	public function getMemoryManager(){
 		return $this->memoryManager;
+	}
+
+	/**
+	 * @return ConsoleCommandSender
+	 */
+	public function getConsoleCommandSender(){
+		return $this->consoleSender;
 	}
 
 	private function titleTick(){

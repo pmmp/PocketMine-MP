@@ -22,6 +22,7 @@
 namespace pocketmine\command\defaults\Threads;
 
 use pocketmine\scheduler\AsyncTask;
+use pocketmine\event\TranslationContainer;
 use pocketmine\Server;
 
 class TimingsPasteTask extends AsyncTask{
@@ -31,7 +32,7 @@ class TimingsPasteTask extends AsyncTask{
 	protected $serverName;
 	protected $version;
 
-	protected $messageParams;
+	protected $result;
 	protected $failed = false;
 
 	public function __construct($name, $data, $serverName, $version){
@@ -58,9 +59,7 @@ class TimingsPasteTask extends AsyncTask{
 
 		try{
 			$data = curl_exec($ch);
-			if($data === false){
-				$this->failed = true;
-			}
+			$this->failed = $data === false;
 		}catch(\Exception $e){
 			$this->failed = true;
 		}
@@ -71,10 +70,17 @@ class TimingsPasteTask extends AsyncTask{
 			return;
 		}
 
-		$this->messageParams = $matches[1];
+		$this->result = $matches[1];
 	}
 
 	public function onCompletion(Server $server){
-		$server->timingsPasteCallback($this->name, $this->messageParams, $this->failed);
+		if(($sender = $this->name === "CONSOLE" ? $server->getConsoleCommandSender() : $server->getPlayerExact($this->name)) !== null){
+			if($this->failed){
+				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.pasteError"));
+				return;
+			}
+			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsUpload", ["http://paste.ubuntu.com/" . $this->result . "/"]));
+			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsRead", ["http://" . $server->getProperty("timings.host", "timings.pmmp.io") . "/?url=" . $this->result]));
+		}
 	}
 }
