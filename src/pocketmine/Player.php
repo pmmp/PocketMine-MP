@@ -1987,7 +1987,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						//Client requested a resource pack but we don't have it available on the server
 						$this->close("", "disconnectionScreen.resourcePack", true);
 						$this->server->getLogger()->debug("Got a resource pack request for unknown pack with UUID " . $uuid . ", available packs: " . implode(", ", $manager->getPackIdList()));
-						break;
+						return false;
 					}
 
 					$pk = new ResourcePackDataInfoPacket();
@@ -2388,7 +2388,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				break; //TODO: handle these
 			default:
 				$this->server->getLogger()->debug("Unhandled/unknown interaction type " . $packet->action . "received from ". $this->getName());
-				break;
+				return false;
 		}
 
 		return true;
@@ -2727,7 +2727,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				break; //TODO
 			default:
 				$this->server->getLogger()->debug("Unhandled/unknown player action type " . $packet->action . " from " . $this->getName());
-				break;
+				return false;
 		}
 
 		$this->startAction = -1;
@@ -3290,7 +3290,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->close("", "disconnectionScreen.resourcePack", true);
 			$this->server->getLogger()->debug("Got a resource pack chunk request for unknown pack with UUID " . $packet->packId . ", available packs: " . implode(", ", $manager->getPackIdList()));
 
-			return true;
+			return false;
 		}
 
 		$pk = new ResourcePackChunkDataPacket();
