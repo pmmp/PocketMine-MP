@@ -362,7 +362,7 @@ class Utils{
 	 */
 	public static function getURL($page, $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
 		try{
-			list($httpCode, $headers, $ret) = self::simpleCurl($page, $timeout, $extraHeaders);
+			list($ret, $headers, $httpCode) = self::simpleCurl($page, $timeout, $extraHeaders);
 			return $ret;
 		}catch(\RuntimeException $ex){
 			$err = $ex->getMessage();
@@ -386,7 +386,7 @@ class Utils{
 	 */
 	public static function postURL($page, $args, $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
 		try{
-			list($httpCode, $headers, $ret) = self::simpleCurl($page, $timeout, $extraHeaders, [
+			list($ret, $headers, $httpCode) = self::simpleCurl($page, $timeout, $extraHeaders, [
 				CURLOPT_POST => 1,
 				CURLOPT_POSTFIELDS => $args
 			]);
@@ -408,7 +408,7 @@ class Utils{
 	 * @param array    $extraOpts extra CURLOPT_* to set as an [opt => value] map
 	 * @param callable|null $onSuccess function to be called if there is no error. Accepts a resource argument as the cURL handle.
 	 *
-	 * @return array a plain array of three [HTTP response code : int, headers : array[], result body : string]. Headers are grouped by requests with header name as keys and header value as values
+	 * @return array a plain array of three [result body : string, headers : array[], HTTP response code : int]. Headers are grouped by requests with header name as keys and header value as values
 	 *
 	 * @throws \RuntimeException if a cURL error occurs
 	 */
@@ -453,7 +453,7 @@ class Utils{
 			if($onSuccess !== null){
 				$onSuccess($ch);
 			}
-			return [$httpCode, $headers, $body];
+			return [$body, $headers, $httpCode];
 		}finally{
 			curl_close($ch);
 		}
