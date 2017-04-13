@@ -190,7 +190,7 @@ class Effect{
 	 */
 	public function setAmplifier(int $amplifier){
 		$this->amplifier = $amplifier & 0xff;
-		$this->setLevel($amplifier+1);
+		$this->setLevel($amplifier + 1);
 		return $this;
 	}
 
