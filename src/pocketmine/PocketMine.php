@@ -126,7 +126,7 @@ namespace pocketmine {
 		exit(1);
 	}
 
-	set_time_limit(0); //Who set it to 30 seconds?!?!
+	set_time_limit(30); //Who set it to 0 seconds?!?!
 
 	error_reporting(-1);
 	ini_set("allow_url_fopen", 1);
