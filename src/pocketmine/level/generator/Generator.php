@@ -233,17 +233,17 @@ abstract class Generator{
 		return $noiseArray;
 	}
 
-	public abstract function __construct(array $settings = []);
+	abstract public function __construct(array $settings = []);
 
-	public abstract function init(ChunkManager $level, Random $random);
+	abstract public function init(ChunkManager $level, Random $random);
 
-	public abstract function generateChunk($chunkX, $chunkZ);
+	abstract public function generateChunk($chunkX, $chunkZ);
 
-	public abstract function populateChunk($chunkX, $chunkZ);
+	abstract public function populateChunk($chunkX, $chunkZ);
 
-	public abstract function getSettings();
+	abstract public function getSettings();
 
-	public abstract function getName();
+	abstract public function getName();
 
-	public abstract function getSpawn();
+	abstract public function getSpawn();
 }

@@ -3069,7 +3069,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @param string $reason  Reason showed in console
 	 * @param bool   $notify
 	 */
-	public final function close($message = "", $reason = "generic reason", $notify = true){
+	final public function close($message = "", $reason = "generic reason", $notify = true){
 
 		if($this->connected and !$this->closed){
 			if($notify and strlen((string) $reason) > 0){

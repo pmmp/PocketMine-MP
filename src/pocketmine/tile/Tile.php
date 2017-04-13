@@ -159,7 +159,7 @@ abstract class Tile extends Position{
 		return false;
 	}
 
-	public final function scheduleUpdate(){
+	final public function scheduleUpdate(){
 		$this->level->updateTiles[$this->id] = $this;
 	}
 
