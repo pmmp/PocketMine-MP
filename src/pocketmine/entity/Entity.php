@@ -84,6 +84,7 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_POTION_COLOR = 8; //int (ARGB!)
 	const DATA_POTION_AMBIENT = 9; //byte
 
+	const DATA_ENTITY_AGE = 25; //short
 	/* 27 (byte) player-specific flags
 	 * 28 (int) player "index"?
 	 * 29 (block coords) bed position */
@@ -117,6 +118,9 @@ abstract class Entity extends Location implements Metadatable{
 	 * 66 (short) shulker-related
 	 * 67 (unknown), shulker-related */
 	const DATA_TRADING_PLAYER_EID = 68; //long
+
+	const DATA_STRENGTH = 76; //int
+	const DATA_MAX_STRENGTH = 77; //int
 
 
 	const DATA_FLAG_ONFIRE = 0;
@@ -153,7 +157,9 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_FLAG_BREATHING = 33;
 	const DATA_FLAG_CHESTED = 34;
 	const DATA_FLAG_STACKABLE = 35;
-
+	const DATA_FLAG_SHOWBASE = 36;
+	const DATA_FLAG_REARING = 37;
+	const DATA_FLAG_VIBRATING = 38;
 	const DATA_FLAG_IDLING = 39;
 
 	public static $entityCount = 1;
