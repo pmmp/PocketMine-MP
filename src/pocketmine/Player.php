@@ -2694,7 +2694,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}else{
 					$this->setSprinting(true);
 				}
-				break;
+				return true;
 			case PlayerActionPacket::ACTION_STOP_SPRINT:
 				$ev = new PlayerToggleSprintEvent($this, false);
 				$this->server->getPluginManager()->callEvent($ev);
@@ -2703,7 +2703,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}else{
 					$this->setSprinting(false);
 				}
-				break;
+				return true;
 			case PlayerActionPacket::ACTION_START_SNEAK:
 				$ev = new PlayerToggleSneakEvent($this, true);
 				$this->server->getPluginManager()->callEvent($ev);
