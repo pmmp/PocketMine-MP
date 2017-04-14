@@ -345,7 +345,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function isBanned(){
-		return $this->server->getNameBans()->isBanned(strtolower($this->getName()));
+		return $this->server->getNameBans()->isBanned($this->iusername);
 	}
 
 	public function setBanned($value){
@@ -358,14 +358,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function isWhitelisted(){
-		return $this->server->isWhitelisted(strtolower($this->getName()));
+		return $this->server->isWhitelisted($this->iusername);
 	}
 
 	public function setWhitelisted($value){
 		if($value === true){
-			$this->server->addWhitelist(strtolower($this->getName()));
+			$this->server->addWhitelist($this->iusername);
 		}else{
-			$this->server->removeWhitelist(strtolower($this->getName()));
+			$this->server->removeWhitelist($this->iusername);
 		}
 	}
 
@@ -1562,10 +1562,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 			}
 
-			if(!$this->isSpectator()){
-				$this->checkNearEntities($tickDiff);
-			}
-
 			$this->speed = ($to->subtract($from))->divide($tickDiff);
 		}elseif($distanceSquared == 0){
 			$this->speed = new Vector3(0, 0, 0);
@@ -1655,28 +1651,33 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->processMovement($tickDiff);
 			$this->entityBaseTick($tickDiff);
 
-			if(!$this->isSpectator() and $this->speed !== null){
-				if($this->onGround){
-					if($this->inAirTicks !== 0){
-						$this->startAirTicks = 5;
-					}
-					$this->inAirTicks = 0;
-				}else{
-					if(!$this->allowFlight and $this->inAirTicks > 10 and !$this->isSleeping() and !$this->isImmobile()){
-						$expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - $this->startAirTicks));
-						$diff = ($this->speed->y - $expectedVelocity) ** 2;
+			if(!$this->isSpectator()){
+				$this->checkNearEntities($tickDiff);
 
-						if(!$this->hasEffect(Effect::JUMP) and $diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()){
-							if($this->inAirTicks < 100){
-								$this->setMotion(new Vector3(0, $expectedVelocity, 0));
-							}elseif($this->kick("Flying is not enabled on this server")){
-								$this->timings->stopTiming();
-								return false;
+				if($this->speed !== null){
+					if($this->onGround){
+						if($this->inAirTicks !== 0){
+							$this->startAirTicks = 5;
+						}
+						$this->inAirTicks = 0;
+					}else{
+						if(!$this->allowFlight and $this->inAirTicks > 10 and !$this->isSleeping() and !$this->isImmobile()){
+							$expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - $this->startAirTicks));
+							$diff = ($this->speed->y - $expectedVelocity) ** 2;
+
+							if(!$this->hasEffect(Effect::JUMP) and $diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()){
+								if($this->inAirTicks < 100){
+									$this->setMotion(new Vector3(0, $expectedVelocity, 0));
+								}elseif($this->kick("Flying is not enabled on this server")){
+									$this->timings->stopTiming();
+
+									return false;
+								}
 							}
 						}
-					}
 
-					++$this->inAirTicks;
+						++$this->inAirTicks;
+					}
 				}
 			}
 		}
@@ -1722,18 +1723,18 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 
 	protected function processLogin(){
-		if(!$this->server->isWhitelisted(strtolower($this->getName()))){
+		if(!$this->server->isWhitelisted($this->iusername)){
 			$this->close($this->getLeaveMessage(), "Server is white-listed");
 
 			return;
-		}elseif($this->server->getNameBans()->isBanned(strtolower($this->getName())) or $this->server->getIPBans()->isBanned($this->getAddress())){
+		}elseif($this->server->getNameBans()->isBanned($this->iusername) or $this->server->getIPBans()->isBanned($this->getAddress())){
 			$this->close($this->getLeaveMessage(), "You are banned");
 
 			return;
 		}
 
 		foreach($this->server->getOnlinePlayers() as $p){
-			if($p !== $this and strtolower($p->getName()) === strtolower($this->getName())){
+			if($p !== $this and $p->iusername === $this->iusername){
 				if($p->kick("logged in from another location") === false){
 					$this->close($this->getLeaveMessage(), "Logged in from another location");
 
@@ -1975,7 +1976,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						//Client requested a resource pack but we don't have it available on the server
 						$this->close("", "disconnectionScreen.resourcePack", true);
 						$this->server->getLogger()->debug("Got a resource pack request for unknown pack with UUID " . $uuid . ", available packs: " . implode(", ", $manager->getPackIdList()));
-						break;
+						return false;
 					}
 
 					$pk = new ResourcePackDataInfoPacket();
@@ -2382,7 +2383,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				break; //TODO: handle these
 			default:
 				$this->server->getLogger()->debug("Unhandled/unknown interaction type " . $packet->action . "received from ". $this->getName());
-				break;
+				return false;
 		}
 
 		return true;
@@ -2721,7 +2722,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				break; //TODO
 			default:
 				$this->server->getLogger()->debug("Unhandled/unknown player action type " . $packet->action . " from " . $this->getName());
-				break;
+				return false;
 		}
 
 		$this->startAction = -1;
@@ -3284,7 +3285,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->close("", "disconnectionScreen.resourcePack", true);
 			$this->server->getLogger()->debug("Got a resource pack chunk request for unknown pack with UUID " . $packet->packId . ", available packs: " . implode(", ", $manager->getPackIdList()));
 
-			return true;
+			return false;
 		}
 
 		$pk = new ResourcePackChunkDataPacket();
@@ -3336,7 +3337,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 		$this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this, $packet));
 		if(!$ev->isCancelled() and !$packet->handle($this)){
-			$this->server->getLogger()->debug("Unhandled " . get_class($packet) . " received from " . $this->getName() . ": " . bin2hex($packet->buffer));
+			$this->server->getLogger()->debug("Unhandled " . get_class($packet) . " received from " . $this->getName() . ": 0x" . bin2hex($packet->buffer));
 		}
 
 		$timings->stopTiming();
@@ -3410,10 +3411,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 */
 	public function addTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1){
 		$this->setTitleDuration($fadeIn, $stay, $fadeOut);
-		$this->sendTitleText($title, SetTitlePacket::TYPE_SET_TITLE);
 		if($subtitle !== ""){
 			$this->sendTitleText($subtitle, SetTitlePacket::TYPE_SET_SUBTITLE);
 		}
+		$this->sendTitleText($title, SetTitlePacket::TYPE_SET_TITLE);
 	}
 
 	/**
