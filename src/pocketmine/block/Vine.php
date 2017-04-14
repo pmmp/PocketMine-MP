@@ -124,8 +124,6 @@ class Vine extends Transparent{
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if(!$target->isTransparent() and $target->isSolid()){
 			$faces = [
-				0 => 0,
-				1 => 0,
 				2 => 1,
 				3 => 4,
 				4 => 8,
