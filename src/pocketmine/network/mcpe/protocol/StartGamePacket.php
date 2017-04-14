@@ -31,13 +31,14 @@ class StartGamePacket extends DataPacket{
 
 	public $entityUniqueId;
 	public $entityRuntimeId;
+	public $playerGamemode;
 	public $x;
 	public $y;
 	public $z;
 	public $seed;
 	public $dimension;
 	public $generator = 1; //default infinite - 0 old, 1 infinite, 2 flat
-	public $gamemode;
+	public $worldGamemode;
 	public $difficulty;
 	public $spawnX;
 	public $spawnY;
@@ -51,6 +52,7 @@ class StartGamePacket extends DataPacket{
 	public $isTexturePacksRequired = 0;
 	public $levelId = ""; //base64 string, usually the same as world folder name in vanilla
 	public $worldName;
+	public $premiumWorldTemplateId = "";
 
 	public function decode(){
 
@@ -60,13 +62,14 @@ class StartGamePacket extends DataPacket{
 		$this->reset();
 		$this->putEntityUniqueId($this->entityUniqueId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
+		$this->putVarInt($this->playerGamemode); //client gamemode, other field is world gamemode
 		$this->putVector3f($this->x, $this->y, $this->z);
-		$this->putLFloat(0); //TODO: find out what these are (yaw/pitch?)
+		$this->putLFloat(0); //TODO: yaw/pitch
 		$this->putLFloat(0);
 		$this->putVarInt($this->seed);
 		$this->putVarInt($this->dimension);
 		$this->putVarInt($this->generator);
-		$this->putVarInt($this->gamemode);
+		$this->putVarInt($this->worldGamemode);
 		$this->putVarInt($this->difficulty);
 		$this->putBlockPosition($this->spawnX, $this->spawnY, $this->spawnZ);
 		$this->putBool($this->hasAchievementsDisabled);
@@ -79,6 +82,7 @@ class StartGamePacket extends DataPacket{
 		$this->putUnsignedVarInt(0); //TODO: gamerules
 		$this->putString($this->levelId);
 		$this->putString($this->worldName);
+		$this->putString($this->premiumWorldTemplateId);
 	}
 
 	public function handle(NetworkSession $session) : bool{
