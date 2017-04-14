@@ -116,7 +116,7 @@ class Effect{
 
 	protected $amplifier;
 
-	protected $level;
+	protected $effectLevel;
 
 	protected $color;
 
@@ -162,8 +162,8 @@ class Effect{
 	/**
 	* @return int
 	*/
-	public function getLevel() {
-		return $this->level;
+	public function getEffectLevel() {
+		return $this->effectLevel;
 	}
 
 	/**
@@ -171,8 +171,8 @@ class Effect{
 	*
 	* @return $this
 	*/
-	private function setLevel(int $level) {			// should only be called within setAmplifier
-		$this->level = $level;
+	private function setEffectLevel(int $level) {			// should only be called within setAmplifier
+		$this->effectLevel = $level;
 		return $this;
 	}
 
@@ -190,7 +190,7 @@ class Effect{
 	 */
 	public function setAmplifier(int $amplifier){
 		$this->amplifier = $amplifier & 0xff;
-		$this->setLevel($amplifier + 1);
+		$this->setEffectLevel($amplifier + 1);
 		return $this;
 	}
 
@@ -259,7 +259,7 @@ class Effect{
 
 			case Effect::HUNGER:
 				if($entity instanceof Human){
-					$entity->exhaust(0.5 * $this->level, PlayerExhaustEvent::CAUSE_POTION);
+					$entity->exhaust(0.5 * $this->effectLevel, PlayerExhaustEvent::CAUSE_POTION);
 				}
 		}
 	}
@@ -299,20 +299,20 @@ class Effect{
 		}elseif($this->id === Effect::SPEED){
 			$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
 			if($ev->willModify() and $oldEffect !== null){
-				$speed = $attr->getValue() / (1 + 0.2 * $oldEffect->getLevel());
+				$speed = $attr->getValue() / (1 + 0.2 * $oldEffect->getEffectLevel());
 			}else{
 				$speed = $attr->getValue();
 			}
-			$speed *= (1 + 0.2 * $this->level);
+			$speed *= (1 + 0.2 * $this->effectLevel);
 			$attr->setValue($speed);
 		}elseif($this->id === Effect::SLOWNESS){
 			$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
 			if($ev->willModify() and $oldEffect !== null){
-				$speed = $attr->getValue() / (1 - 0.15 * $oldEffect->getLevel());
+				$speed = $attr->getValue() / (1 - 0.15 * $oldEffect->getEffectLevel());
 			}else{
 				$speed = $attr->getValue();
 			}
-			$speed *= (1 - 0.15 * $this->level);
+			$speed *= (1 - 0.15 * $this->effectLevel);
 			$attr->setValue($speed, true);
 		}
 	}
@@ -336,10 +336,10 @@ class Effect{
 			$entity->setNameTagVisible(true);
 		}elseif($this->id === Effect::SPEED){
 			$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
-			$attr->setValue($attr->getValue() / (1 + 0.2 * $this->level));
+			$attr->setValue($attr->getValue() / (1 + 0.2 * $this->effectLevel));
 		}elseif($this->id === Effect::SLOWNESS){
 			$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
-			$attr->setValue($attr->getValue() / (1 - 0.15 * $this->level));
+			$attr->setValue($attr->getValue() / (1 - 0.15 * $this->effectLevel));
 		}
 	}
 }
