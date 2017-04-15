@@ -418,7 +418,8 @@ class Utils{
 		}
 
 		$ch = curl_init($page);
-		curl_setopt_array($ch, array_merge([
+
+		curl_setopt_array($ch, $extraOpts + [
 			CURLOPT_SSL_VERIFYPEER => false,
 			CURLOPT_SSL_VERIFYHOST => 2,
 			CURLOPT_FORBID_REUSE => 1,
@@ -430,7 +431,7 @@ class Utils{
 			CURLOPT_TIMEOUT_MS => (int) ($timeout * 1000),
 			CURLOPT_HTTPHEADER => array_merge(["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 PocketMine-MP"], $extraHeaders),
 			CURLOPT_HEADER => true
-		], $extraOpts));
+		]);
 		try{
 			$raw = curl_exec($ch);
 			$error = curl_error($ch);
