@@ -408,7 +408,7 @@ class Utils{
 	 * @param array         $extraOpts    extra CURLOPT_* to set as an [opt => value] map
 	 * @param callable|null $onSuccess    function to be called if there is no error. Accepts a resource argument as the cURL handle.
 	 *
-	 * @return array a plain array of three [result body : string, headers : array[], HTTP response code : int]. Headers are grouped by requests with header name as keys and header value as values
+	 * @return array a plain array of three [result body : string, headers : array[], HTTP response code : int]. Headers are grouped by requests with strtolower(header name) as keys and header value as values
 	 *
 	 * @throws \RuntimeException if a cURL error occurs
 	 */
@@ -446,8 +446,8 @@ class Utils{
 			foreach(explode("\r\n\r\n", $rawHeaders) as $rawHeaderGroup){
 				$headerGroup = [];
 				foreach(explode("\r\n", $rawHeaderGroup) as $line){
-					list($name, $value) = explode(":", $line);
-					$headerGroup[strtolower($name)] = $value;
+					list($name, $value) = explode(":", $line, 2);
+					$headerGroup[trim(strtolower($name))] = trim($value);
 				}
 				$headers[] = $headerGroup;
 			}
