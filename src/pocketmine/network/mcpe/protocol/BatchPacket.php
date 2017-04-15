@@ -25,11 +25,14 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\utils\Binary;
+use pocketmine\utils\BinaryStream;
 
 class BatchPacket extends DataPacket{
 	const NETWORK_ID = 0xfe;
 
 	public $payload;
+	public $compressed = false;
 
 	public function canBeBatched() : bool{
 		return false;
@@ -45,7 +48,28 @@ class BatchPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
+		assert($this->compressed);
 		$this->put($this->payload);
+	}
+
+	/**
+	 * @param DataPacket|string $packet
+	 */
+	public function addPacket($packet){
+		if($packet instanceof DataPacket){
+			if(!$packet->isEncoded){
+				$packet->encode();
+			}
+			$packet = $packet->buffer;
+		}
+
+		$this->payload .= Binary::writeUnsignedVarInt(strlen($packet)) . $packet;
+	}
+
+	public function compress(int $level = 7){
+		assert(!$this->compressed);
+		$this->payload = zlib_encode($this->payload, ZLIB_ENCODING_DEFLATE, $level);
+		$this->compressed = true;
 	}
 
 	public function handle(NetworkSession $session) : bool{
