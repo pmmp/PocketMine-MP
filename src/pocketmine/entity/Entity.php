@@ -74,27 +74,46 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_TYPE_VECTOR3F = 8;
 
 	const DATA_FLAGS = 0;
-	//1 (int)
+	const DATA_HEALTH = 1; //int (minecart/boat)
 	const DATA_VARIANT = 2; //int
 	const DATA_COLOUR = 3; //byte
 	const DATA_NAMETAG = 4; //string
 	const DATA_OWNER_EID = 5; //long
-
+	const DATA_TARGET_EID = 6; //long
 	const DATA_AIR = 7; //short
 	const DATA_POTION_COLOR = 8; //int (ARGB!)
 	const DATA_POTION_AMBIENT = 9; //byte
+	/* 10 (byte) */
+	const DATA_HURT_TIME = 11; //int (minecart/boat)
+	const DATA_HURT_DIRECTION = 12; //int (minecart/boat)
+	/* 13 (float) minecart/boat
+	 * 14 (float) minecart/boat */
+	const DATA_EXPERIENCE_VALUE = 15; //int (xp orb)
+
+	//TODO: add more properties
 
 	const DATA_ENTITY_AGE = 25; //short
+
 	/* 27 (byte) player-specific flags
 	 * 28 (int) player "index"?
-	 * 29 (block coords) bed position */
+	 * 29 (block coords) bed position
+	 * 30 (float) fireball
+	 * 31 (float) fireball
+	 * 32 (float) fireball
+	 * 33 (unknown)
+	 * 34 (float) fishing bobber
+	 * 35 (float) fishing bobber
+	 * 36 (float) fishing bobber */
+	const DATA_POTION_AUX_VALUE = 37; //short
 	const DATA_LEAD_HOLDER_EID = 38; //long
 	const DATA_SCALE = 39; //float
 	const DATA_INTERACTIVE_TAG = 40; //string (button text)
-	/* 41 (long) */
+	const DATA_NPC_SKIN_ID = 41; //string
 	const DATA_URL_TAG = 43; //string
 	const DATA_MAX_AIR = 44; //short
 	const DATA_MARK_VARIANT = 45; //int
+
+	//TODO: check which of these changed
 	/* 46 (byte)
 	 * 47 (int)
 	 * 48 (int)
@@ -103,24 +122,32 @@ abstract class Entity extends Location implements Metadatable{
 	 * 51 (long)
 	 * 52 (short)
 	 * 53 (unknown) */
-	const DATA_BOUNDING_BOX_WIDTH = 54; //float
-	const DATA_BOUNDING_BOX_HEIGHT = 55; //float
-	const DATA_FUSE_LENGTH = 56; //int
-	/* 57 (vector3f)
-	 * 58 (byte)
-	 * 59 (float)
-	 * 60 (float) */
-	const DATA_AREA_EFFECT_CLOUD_RADIUS = 61; //float
-	const DATA_AREA_EFFECT_CLOUD_WAITING = 62; //int
-	const DATA_AREA_EFFECT_CLOUD_PARTICLE_ID = 63; //int
-	/* 64 (int), shulker-related
-	 * 65 (byte), shulker-related
-	 * 66 (short) shulker-related
-	 * 67 (unknown), shulker-related */
-	const DATA_TRADING_PLAYER_EID = 68; //long
 
+	const DATA_BOUNDING_BOX_WIDTH = 55; //float
+	const DATA_BOUNDING_BOX_HEIGHT = 56; //float
+	const DATA_FUSE_LENGTH = 57; //int
+	const DATA_RIDER_SEAT_POSITION = 58; //vector3f
+	/* 59 (byte)
+	 * 60 (float)
+	 * 61 (float) */
+	const DATA_AREA_EFFECT_CLOUD_RADIUS = 62; //float
+	const DATA_AREA_EFFECT_CLOUD_WAITING = 63; //int
+	const DATA_AREA_EFFECT_CLOUD_PARTICLE_ID = 64; //int
+	/* 65 (int), shulker-related
+	 * 66 (byte), shulker-related
+	 * 67 (short) shulker-related
+	 * 68 (unknown), shulker-related */
+	const DATA_TRADING_PLAYER_EID = 69; //long
+
+	/* 71 (byte) command-block
+	 * 72 (string) command-block
+	 * 73 (string) command-block
+	 * 74 (byte) command-block */
+	const DATA_CONTROLLING_RIDER_SEAT_NUMBER = 75; //byte
 	const DATA_STRENGTH = 76; //int
 	const DATA_MAX_STRENGTH = 77; //int
+	/* 78 (int)
+	 * 79 (int) */
 
 
 	const DATA_FLAG_ONFIRE = 0;
@@ -197,7 +224,7 @@ abstract class Entity extends Location implements Metadatable{
 		self::DATA_MAX_AIR => [self::DATA_TYPE_SHORT, 400],
 		self::DATA_NAMETAG => [self::DATA_TYPE_STRING, ""],
 		self::DATA_LEAD_HOLDER_EID => [self::DATA_TYPE_LONG, -1],
-		self::DATA_SCALE => [self::DATA_TYPE_FLOAT, 1],
+		self::DATA_SCALE => [self::DATA_TYPE_FLOAT, 1]
 	];
 
 	public $passenger = null;
