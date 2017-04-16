@@ -27,16 +27,15 @@ use pocketmine\Server;
 
 class TimingsPasteTask extends AsyncTask{
 
-	protected $name;
+	protected $sender;
 	protected $data;
 	protected $serverName;
 	protected $version;
 
-	protected $result;
 	protected $failed = false;
 
-	public function __construct($name, $data, $serverName, $version){
-		$this->name = $name;
+	public function __construct($sender, $data, $serverName, $version){
+		parent::__construct($sender);
 		$this->data = $data;
 		$this->serverName = $serverName;
 		$this->version = $version;
@@ -58,8 +57,7 @@ class TimingsPasteTask extends AsyncTask{
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
 		try{
-			$data = curl_exec($ch);
-			$this->failed = $data === false;
+			$this->failed = ($data = curl_exec($ch)) === false;
 		}catch(\Exception $e){
 			$this->failed = true;
 		}
@@ -70,17 +68,16 @@ class TimingsPasteTask extends AsyncTask{
 			return;
 		}
 
-		$this->result = $matches[1];
+		$this->setResult($matches[1]);
 	}
 
 	public function onCompletion(Server $server){
-		if(($sender = $this->name === "CONSOLE" ? $server->getConsoleCommandSender() : $server->getPlayerExact($this->name)) !== null){
-			if($this->failed){
-				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.pasteError"));
-				return;
-			}
-			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsUpload", ["http://paste.ubuntu.com/" . $this->result . "/"]));
-			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsRead", ["http://" . $server->getProperty("timings.host", "timings.pmmp.io") . "/?url=" . $this->result]));
+		$sender = $this->fetchLocal($server);
+		if($this->failed){
+			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.pasteError"));
+			return;
 		}
+		$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsUpload", ["http://paste.ubuntu.com/" . $this->getResult() . "/"]));
+		$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsRead", ["http://" . $server->getProperty("timings.host", "timings.pmmp.io") . "/?url=" . $this->getResult()]));
 	}
 }

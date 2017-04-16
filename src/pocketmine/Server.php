@@ -2290,13 +2290,6 @@ class Server{
 		return $this->memoryManager;
 	}
 
-	/**
-	 * @return ConsoleCommandSender
-	 */
-	public function getConsoleCommandSender(){
-		return $this->consoleSender;
-	}
-
 	private function titleTick(){
 		$d = Utils::getRealMemoryUsage();
 
