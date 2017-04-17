@@ -3438,6 +3438,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->type = SetTitlePacket::TYPE_CLEAR_TITLE;
 		$this->dataPacket($pk);
 	}
+	
+	/**
+	 * Resets the title duration settings.
+	 */
+	public function resetTitles(){
+	    $pk = new SetTitlePacket();
+	    $pk->type = SetTitlePacket::TYPE_RESET_TITLE;
+	    $this->dataPacket($pk);
+	}
 
 	/**
 	 * Sets the title duration.
