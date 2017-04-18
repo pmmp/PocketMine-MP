@@ -1338,10 +1338,15 @@ class Level implements ChunkManager, Metadatable{
 
 		if($yPlusOne === $oldHeightMap){ //Block changed directly beneath the heightmap. Check if a block was removed or changed to a different light-filter.
 			$newHeightMap = $this->getChunk($x >> 4, $z >> 4)->recalculateHeightMapColumn($x & 0x0f, $z & 0x0f);
-		}elseif($yPlusOne > $oldHeightMap){ //Block **placed** above the heightmap.
-			$this->setHeightMap($x, $z, $yPlusOne);
-			$newHeightMap = $yPlusOne;
-		}else{ //block changed below heightmap
+		}elseif($yPlusOne > $oldHeightMap){ //Block changed above the heightmap.
+			if(Block::$lightFilter[$sourceId] > 1 or Block::$diffusesSkyLight[$sourceId]){
+				$this->setHeightMap($x, $z, $yPlusOne);
+				$newHeightMap = $yPlusOne;
+			}else{ //Block changed which has no effect on direct sky light, for example placing or removing glass.
+				$this->timings->doBlockSkyLightUpdates->stopTiming();
+				return;
+			}
+		}else{ //Block changed below heightmap
 			$newHeightMap = $oldHeightMap;
 		}
 
