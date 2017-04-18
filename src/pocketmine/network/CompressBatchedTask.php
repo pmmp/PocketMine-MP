@@ -31,11 +31,13 @@ class CompressBatchedTask extends AsyncTask{
 	public $data;
 	public $final;
 	public $targets;
+	public $immediate = false;
 
-	public function __construct(BatchPacket $data, array $targets, $level = 7){
+	public function __construct(BatchPacket $data, array $targets, $level = 7, bool $sendImmediate = false){
 		$this->data = serialize($data);
 		$this->targets = $targets;
 		$this->level = $level;
+		$this->immediate = $sendImmediate;
 	}
 
 	public function onRun(){
@@ -51,6 +53,6 @@ class CompressBatchedTask extends AsyncTask{
 	}
 
 	public function onCompletion(Server $server){
-		$server->broadcastPacketsCallback(unserialize($this->final), (array) $this->targets);
+		$server->broadcastPacketsCallback(unserialize($this->final), (array) $this->targets, $this->immediate);
 	}
 }
