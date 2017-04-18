@@ -31,9 +31,9 @@ interface ProtocolInfo{
 	/**
 	 * Actual Minecraft: PE protocol version
 	 */
-	const CURRENT_PROTOCOL = 105;
-	const MINECRAFT_VERSION = "v1.0.5.0 beta";
-	const MINECRAFT_VERSION_NETWORK = "1.0.5.0";
+	const CURRENT_PROTOCOL = 106;
+	const MINECRAFT_VERSION = 'v1.0.6.52';
+	const MINECRAFT_VERSION_NETWORK = '1.0.6.52';
 
 	const LOGIN_PACKET = 0x01;
 	const PLAY_STATUS_PACKET = 0x02;
@@ -42,7 +42,7 @@ interface ProtocolInfo{
 	const DISCONNECT_PACKET = 0x05;
 	const BATCH_PACKET = 0x06;
 	const RESOURCE_PACKS_INFO_PACKET = 0x07;
-	const RESOURCE_PACK_STACK_PACKET = 0x08; //ResourcePacksStackPacket
+	const RESOURCE_PACK_STACK_PACKET = 0x08;
 	const RESOURCE_PACK_CLIENT_RESPONSE_PACKET = 0x09;
 	const TEXT_PACKET = 0x0a;
 	const SET_TIME_PACKET = 0x0b;
@@ -99,14 +99,14 @@ interface ProtocolInfo{
 	const CHANGE_DIMENSION_PACKET = 0x3e;
 	const SET_PLAYER_GAME_TYPE_PACKET = 0x3f;
 	const PLAYER_LIST_PACKET = 0x40;
-	const EVENT_PACKET = 0x41; //TelemetryEventPacket
+	const EVENT_PACKET = 0x41;
 	const SPAWN_EXPERIENCE_ORB_PACKET = 0x42;
-	const CLIENTBOUND_MAP_ITEM_DATA_PACKET = 0x43; //MapItemDataPacket
+	const CLIENTBOUND_MAP_ITEM_DATA_PACKET = 0x43;
 	const MAP_INFO_REQUEST_PACKET = 0x44;
 	const REQUEST_CHUNK_RADIUS_PACKET = 0x45;
 	const CHUNK_RADIUS_UPDATED_PACKET = 0x46;
 	const ITEM_FRAME_DROP_ITEM_PACKET = 0x47;
-	const REPLACE_ITEM_IN_SLOT_PACKET = 0x48; //ReplaceSelectedItemPacket
+	const REPLACE_ITEM_IN_SLOT_PACKET = 0x48;
 	const GAME_RULES_CHANGED_PACKET = 0x49;
 	const CAMERA_PACKET = 0x4a;
 	const ADD_ITEM_PACKET = 0x4b;

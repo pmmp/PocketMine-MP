@@ -220,4 +220,12 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 		}
 		return $str . "}";
 	}
+
+	public function __clone(){
+		foreach($this as $key => $tag){
+			if($tag instanceof Tag){
+				$this->{$key} = clone $tag;
+			}
+		}
+	}
 }

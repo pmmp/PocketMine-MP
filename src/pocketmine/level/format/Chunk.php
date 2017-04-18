@@ -307,7 +307,7 @@ class Chunk{
 	 * @param int $level 0-15
 	 */
 	public function setBlockSkyLight(int $x, int $y, int $z, int $level){
-		if($this->getSubChunk($y >> 4)->setBlockSkyLight($x, $y & 0x0f, $z, $level)){
+		if($this->getSubChunk($y >> 4, true)->setBlockSkyLight($x, $y & 0x0f, $z, $level)){
 			$this->hasChanged = true;
 		}
 	}
@@ -334,7 +334,7 @@ class Chunk{
 	 * @param int $level 0-15
 	 */
 	public function setBlockLight(int $x, int $y, int $z, int $level){
-		if($this->getSubChunk($y >> 4)->setBlockLight($x, $y & 0x0f, $z, $level)){
+		if($this->getSubChunk($y >> 4, true)->setBlockLight($x, $y & 0x0f, $z, $level)){
 			$this->hasChanged = true;
 		}
 	}
@@ -568,6 +568,9 @@ class Chunk{
 	 * @param Entity $entity
 	 */
 	public function addEntity(Entity $entity){
+		if($entity->closed){
+			throw new \InvalidArgumentException("Attempted to add a garbage closed Entity to a chunk");
+		}
 		$this->entities[$entity->getId()] = $entity;
 		if(!($entity instanceof Player) and $this->isInit){
 			$this->hasChanged = true;
@@ -588,6 +591,9 @@ class Chunk{
 	 * @param Tile $tile
 	 */
 	public function addTile(Tile $tile){
+		if($tile->closed){
+			throw new \InvalidArgumentException("Attempted to add a garbage closed Tile to a chunk");
+		}
 		$this->tiles[$tile->getId()] = $tile;
 		if(isset($this->tileList[$index = (($tile->x & 0x0f) << 12) | (($tile->z & 0x0f) << 8) | ($tile->y & 0xff)]) and $this->tileList[$index] !== $tile){
 			$this->tileList[$index]->close();

@@ -395,6 +395,7 @@ class Binary{
 	 */
 	public static function writeUnsignedVarInt($value){
 		$buf = "";
+		$value &= 0xffffffff;
 		for($i = 0; $i < 5; ++$i){
 			if(($value >> 7) !== 0){
 				$buf .= chr($value | 0x80); //Let chr() take the last byte of this, it's faster than adding another & 0x7f.

@@ -36,7 +36,6 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
-use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
 use pocketmine\Player;
 use pocketmine\utils\UUID;
 
@@ -505,7 +504,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	public function close(){
 		if(!$this->closed){
-			if(!($this instanceof Player) or $this->loggedIn){
+			if($this->inventory !== null){
 				foreach($this->inventory->getViewers() as $viewer){
 					$viewer->removeWindow($this->inventory);
 				}
