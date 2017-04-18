@@ -74,8 +74,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		parent::__construct($level, $nbt);
 
 		if(strlen($str) < 64 * 32 * 4){
-                        throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
-                }
+			throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
+		}
 	}
 
 	public function getSkinData(){
