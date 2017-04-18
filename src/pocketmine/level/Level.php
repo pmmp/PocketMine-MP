@@ -1253,10 +1253,10 @@ class Level implements ChunkManager, Metadatable{
 		$chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4, false);
 		$level = 0;
 		if($chunk !== null){
-			$level = $chunk->getBlockSkyLight($pos->x & 0x0f, $pos->y & Level::Y_MASK, $pos->z & 0x0f);
+			$level = $chunk->getBlockSkyLight($pos->x & 0x0f, $pos->y, $pos->z & 0x0f);
 			//TODO: decrease light level by time of day
 			if($level < 15){
-				$level = max($chunk->getBlockLight($pos->x & 0x0f, $pos->y & Level::Y_MASK, $pos->z & 0x0f));
+				$level = max($chunk->getBlockLight($pos->x & 0x0f, $pos->y, $pos->z & 0x0f), $level);
 			}
 		}
 
@@ -1271,7 +1271,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return int bitmap, (id << 4) | data
 	 */
 	public function getFullBlock(int $x, int $y, int $z) : int{
-		return $this->getChunk($x >> 4, $z >> 4, false)->getFullBlock($x & 0x0f, $y & Level::Y_MASK, $z & 0x0f);
+		return $this->getChunk($x >> 4, $z >> 4, false)->getFullBlock($x & 0x0f, $y, $z & 0x0f);
 	}
 
 	/**
@@ -1308,14 +1308,64 @@ class Level implements ChunkManager, Metadatable{
 		$this->updateBlockLight($pos->x, $pos->y, $pos->z);
 	}
 
+	/**
+	 * Returns the highest block light level available in the positions adjacent to the specified block coordinates.
+	 *
+	 * @param int $x
+	 * @param int $y
+	 * @param int $z
+	 *
+	 * @return int
+	 */
+	public function getHighestAdjacentBlockSkyLight(int $x, int $y, int $z) : int{
+		return max([
+			$this->getBlockSkyLightAt($x + 1, $y, $z),
+			$this->getBlockSkyLightAt($x - 1, $y, $z),
+			$this->getBlockSkyLightAt($x, $y + 1, $z),
+			$this->getBlockSkyLightAt($x, $y - 1, $z),
+			$this->getBlockSkyLightAt($x, $y, $z + 1),
+			$this->getBlockSkyLightAt($x, $y, $z - 1)
+		]);
+	}
+
 	public function updateBlockSkyLight(int $x, int $y, int $z){
 		$this->timings->doBlockSkyLightUpdates->startTiming();
-		//TODO
+
+		$oldHeightMap = $this->getHeightMap($x, $z);
+		$sourceId = $this->getBlockIdAt($x, $y, $z);
+
+		$yPlusOne = $y + 1;
+
+		if($yPlusOne === $oldHeightMap){ //Block changed directly beneath the heightmap. Check if a block was removed or changed to a different light-filter.
+			$newHeightMap = $this->getChunk($x >> 4, $z >> 4)->recalculateHeightMapColumn($x & 0x0f, $z & 0x0f);
+		}elseif($yPlusOne > $oldHeightMap){ //Block **placed** above the heightmap.
+			$this->setHeightMap($x, $z, $yPlusOne);
+			$newHeightMap = $yPlusOne;
+		}else{ //block changed below heightmap
+			$newHeightMap = $oldHeightMap;
+		}
+
+		$update = new SkyLightUpdate($this);
+
+		if($newHeightMap > $oldHeightMap){ //Heightmap increase, block placed, remove sky light
+			for($i = $y; $i >= $oldHeightMap; --$i){
+				$update->setAndUpdateLight($x, $i, $z, 0); //Remove all light beneath, adjacent recalculation will handle the rest.
+			}
+		}elseif($newHeightMap < $oldHeightMap){ //Heightmap decrease, block changed or removed, add sky light
+			for($i = $y; $i >= $newHeightMap; --$i){
+				$update->setAndUpdateLight($x, $i, $z, 15);
+			}
+		}else{ //No heightmap change, block changed "underground"
+			$update->setAndUpdateLight($x, $y, $z, max(0, $this->getHighestAdjacentBlockSkyLight($x, $y, $z) - Block::$lightFilter[$sourceId]));
+		}
+
+		$update->execute();
+
 		$this->timings->doBlockSkyLightUpdates->stopTiming();
 	}
 
 	/**
-	 * Returns the highest light level available in the positions adjacent to the specified block coordinates.
+	 * Returns the highest block light level available in the positions adjacent to the specified block coordinates.
 	 *
 	 * @param int $x
 	 * @param int $y
@@ -1337,96 +1387,14 @@ class Level implements ChunkManager, Metadatable{
 	public function updateBlockLight(int $x, int $y, int $z){
 		$this->timings->doBlockLightUpdates->startTiming();
 
-		$lightPropagationQueue = new \SplQueue();
-		$lightRemovalQueue = new \SplQueue();
-		$visited = [];
-		$removalVisited = [];
-
 		$id = $this->getBlockIdAt($x, $y, $z);
-		$oldLevel = $this->getBlockLightAt($x, $y, $z);
 		$newLevel = max(Block::$light[$id], $this->getHighestAdjacentBlockLight($x, $y, $z) - Block::$lightFilter[$id]);
 
-		if($oldLevel !== $newLevel){
-			$this->setBlockLightAt($x, $y, $z, $newLevel);
-
-			if($newLevel < $oldLevel){
-				$removalVisited[Level::blockHash($x, $y, $z)] = true;
-				$lightRemovalQueue->enqueue([new Vector3($x, $y, $z), $oldLevel]);
-			}else{
-				$visited[Level::blockHash($x, $y, $z)] = true;
-				$lightPropagationQueue->enqueue(new Vector3($x, $y, $z));
-			}
-		}
-
-		while(!$lightRemovalQueue->isEmpty()){
-			/** @var Vector3 $node */
-			$val = $lightRemovalQueue->dequeue();
-			$node = $val[0];
-			$lightLevel = $val[1];
-
-			$this->computeRemoveBlockLight($node->x - 1, $node->y, $node->z, $lightLevel, $lightRemovalQueue, $lightPropagationQueue, $removalVisited, $visited);
-			$this->computeRemoveBlockLight($node->x + 1, $node->y, $node->z, $lightLevel, $lightRemovalQueue, $lightPropagationQueue, $removalVisited, $visited);
-			$this->computeRemoveBlockLight($node->x, $node->y - 1, $node->z, $lightLevel, $lightRemovalQueue, $lightPropagationQueue, $removalVisited, $visited);
-			$this->computeRemoveBlockLight($node->x, $node->y + 1, $node->z, $lightLevel, $lightRemovalQueue, $lightPropagationQueue, $removalVisited, $visited);
-			$this->computeRemoveBlockLight($node->x, $node->y, $node->z - 1, $lightLevel, $lightRemovalQueue, $lightPropagationQueue, $removalVisited, $visited);
-			$this->computeRemoveBlockLight($node->x, $node->y, $node->z + 1, $lightLevel, $lightRemovalQueue, $lightPropagationQueue, $removalVisited, $visited);
-		}
-
-		while(!$lightPropagationQueue->isEmpty()){
-			/** @var Vector3 $node */
-			$node = $lightPropagationQueue->dequeue();
-
-			$lightLevel = $this->getBlockLightAt($node->x, $node->y, $node->z);
-
-			if($lightLevel >= 1){
-				$this->computeSpreadBlockLight($node->x - 1, $node->y, $node->z, $lightLevel, $lightPropagationQueue, $visited);
-				$this->computeSpreadBlockLight($node->x + 1, $node->y, $node->z, $lightLevel, $lightPropagationQueue, $visited);
-				$this->computeSpreadBlockLight($node->x, $node->y - 1, $node->z, $lightLevel, $lightPropagationQueue, $visited);
-				$this->computeSpreadBlockLight($node->x, $node->y + 1, $node->z, $lightLevel, $lightPropagationQueue, $visited);
-				$this->computeSpreadBlockLight($node->x, $node->y, $node->z - 1, $lightLevel, $lightPropagationQueue, $visited);
-				$this->computeSpreadBlockLight($node->x, $node->y, $node->z + 1, $lightLevel, $lightPropagationQueue, $visited);
-			}
-		}
+		$update = new BlockLightUpdate($this);
+		$update->setAndUpdateLight($x, $y, $z, $newLevel);
+		$update->execute();
 
 		$this->timings->doBlockLightUpdates->stopTiming();
-	}
-
-	private function computeRemoveBlockLight(int $x, int $y, int $z, int $currentLight, \SplQueue $queue, \SplQueue $spreadQueue, array &$visited, array &$spreadVisited){
-		if($y < 0) return;
-		$current = $this->getBlockLightAt($x, $y, $z);
-
-		if($current !== 0 and $current < $currentLight){
-			$this->setBlockLightAt($x, $y, $z, 0);
-
-			if(!isset($visited[$index = Level::blockHash($x, $y, $z)])){
-				$visited[$index] = true;
-				if($current > 1){
-					$queue->enqueue([new Vector3($x, $y, $z), $current]);
-				}
-			}
-		}elseif($current >= $currentLight){
-			if(!isset($spreadVisited[$index = Level::blockHash($x, $y, $z)])){
-				$spreadVisited[$index] = true;
-				$spreadQueue->enqueue(new Vector3($x, $y, $z));
-			}
-		}
-	}
-
-	private function computeSpreadBlockLight(int $x, int $y, int $z, int $currentLight, \SplQueue $queue, array &$visited){
-		if($y < 0) return;
-		$current = $this->getBlockLightAt($x, $y, $z);
-		$currentLight -= Block::$lightFilter[$this->getBlockIdAt($x, $y, $z)];
-
-		if($current < $currentLight){
-			$this->setBlockLightAt($x, $y, $z, $currentLight);
-
-			if(!isset($visited[$index = Level::blockHash($x, $y, $z)])){
-				$visited[$index] = true;
-				if($currentLight > 1){
-					$queue->enqueue(new Vector3($x, $y, $z));
-				}
-			}
-		}
 	}
 
 	/**
@@ -2177,6 +2145,29 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		return null;
+	}
+
+	/**
+	 * Returns the chunks adjacent to the specified chunk.
+	 *
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @return Chunk[]
+	 */
+	public function getAdjacentChunks(int $x, int $z) : array{
+		$result = [];
+		for($xx = 0; $xx <= 2; ++$xx){
+			for($zz = 0; $zz <= 2; ++$zz){
+				$i = $zz * 3 + $xx;
+				if($i === 4){
+					continue; //center chunk
+				}
+				$result[$i] = $this->getChunk($x + $xx - 1, $z + $zz - 1, false);
+			}
+		}
+
+		return $result;
 	}
 
 	public function generateChunkCallback(int $x, int $z, Chunk $chunk){

@@ -159,9 +159,11 @@ class SubChunk{
 	}
 
 	public function getHighestBlockAt(int $x, int $z) : int{
-		for($y = 15; $y >= 0; --$y){
-			if($this->ids{($x << 8) | ($z << 4) | $y} !== "\x00"){
-				return $y;
+		$low = ($x << 8) | ($z << 4);
+		$i = $low | 0x0f;
+		for(; $i >= $low; --$i){
+			if($this->ids{$i} !== "\x00"){
+				return $i & 0x0f;
 			}
 		}
 
