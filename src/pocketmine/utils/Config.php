@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -26,8 +26,6 @@ use pocketmine\Server;
 
 
 /**
- * Class Config
- *
  * Config Class for simple config manipulation of multiple formats.
  */
 class Config{
@@ -48,10 +46,12 @@ class Config{
 
 	/** @var string */
 	private $file;
-	/** @var boolean */
+	/** @var bool */
 	private $correct = false;
-	/** @var integer */
+	/** @var int */
 	private $type = Config::DETECT;
+	/** @var int */
+	private $jsonOptions = JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING;
 
 	public static $formats = [
 		"properties" => Config::PROPERTIES,
@@ -89,7 +89,6 @@ class Config{
 		$this->config = [];
 		$this->nestedCache = [];
 		$this->correct = false;
-		$this->load($this->file);
 		$this->load($this->file, $this->type);
 	}
 
@@ -169,7 +168,7 @@ class Config{
 	}
 
 	/**
-	 * @return boolean
+	 * @return bool
 	 */
 	public function check(){
 		return $this->correct === true;
@@ -178,7 +177,7 @@ class Config{
 	/**
 	 * @param bool $async
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function save($async = false){
 		if($this->correct === true){
@@ -190,7 +189,7 @@ class Config{
 						$content = $this->writeProperties();
 						break;
 					case Config::JSON:
-						$content = json_encode($this->config, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING);
+						$content = json_encode($this->config, $this->jsonOptions);
 						break;
 					case Config::YAML:
 						$content = yaml_emit($this->config, YAML_UTF8_ENCODING);
@@ -223,9 +222,71 @@ class Config{
 	}
 
 	/**
+	 * Sets the options for the JSON encoding when saving
+	 *
+	 * @param int $options
+	 * @return Config $this
+	 * @throws \RuntimeException if the Config is not in JSON
+	 * @see json_encode
+	 */
+	public function setJsonOptions(int $options) : Config{
+		if($this->type !== Config::JSON){
+			throw new \RuntimeException("Attempt to set JSON options for non-JSON config");
+		}
+		$this->jsonOptions = $options;
+		return $this;
+	}
+
+	/**
+	 * Enables the given option in addition to the currently set JSON options
+	 *
+	 * @param int $option
+	 * @return Config $this
+	 * @throws \RuntimeException if the Config is not in JSON
+	 * @see json_encode
+	 */
+	public function enableJsonOption(int $option) : Config{
+		if($this->type !== Config::JSON){
+			throw new \RuntimeException("Attempt to enable JSON option for non-JSON config");
+		}
+		$this->jsonOptions |= $option;
+		return $this;
+	}
+
+	/**
+	 * Disables the given option for the JSON encoding when saving
+	 *
+	 * @param int $option
+	 * @return Config $this
+	 * @throws \RuntimeException if the Config is not in JSON
+	 * @see json_encode
+	 */
+	public function disableJsonOption(int $option) : Config{
+		if($this->type !== Config::JSON){
+			throw new \RuntimeException("Attempt to disable JSON option for non-JSON config");
+		}
+		$this->jsonOptions &= ~$option;
+		return $this;
+	}
+
+	/**
+	 * Returns the options for the JSON encoding when saving
+	 *
+	 * @return int
+	 * @throws \RuntimeException if the Config is not in JSON
+	 * @see json_encode
+	 */
+	public function getJsonOptions() : int{
+		if($this->type !== Config::JSON){
+			throw new \RuntimeException("Attempt to get JSON options for non-JSON config");
+		}
+		return $this->jsonOptions;
+	}
+
+	/**
 	 * @param $k
 	 *
-	 * @return boolean|mixed
+	 * @return bool|mixed
 	 */
 	public function __get($k){
 		return $this->get($k);
@@ -242,7 +303,7 @@ class Config{
 	/**
 	 * @param $k
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function __isset($k){
 		return $this->exists($k);
@@ -316,7 +377,7 @@ class Config{
 	 * @param       $k
 	 * @param mixed $default
 	 *
-	 * @return boolean|mixed
+	 * @return bool|mixed
 	 */
 	public function get($k, $default = false){
 		return ($this->correct and isset($this->config[$k])) ? $this->config[$k] : $default;
@@ -346,7 +407,7 @@ class Config{
 	 * @param      $k
 	 * @param bool $lowercase If set, searches Config in single-case / lowercase.
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function exists($k, $lowercase = false){
 		if($lowercase === true){
@@ -385,7 +446,7 @@ class Config{
 	 * @param $default
 	 * @param $data
 	 *
-	 * @return integer
+	 * @return int
 	 */
 	private function fillDefaults($default, &$data){
 		$changed = 0;

@@ -21,7 +21,7 @@
 
 namespace pocketmine\block;
 
-class WoodenPressurePlate extends Solid{
+class WoodenPressurePlate extends StonePressurePlate{
 
 	protected $id = self::WOODEN_PRESSURE_PLATE;
 

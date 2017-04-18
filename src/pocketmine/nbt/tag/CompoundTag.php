@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -83,23 +83,23 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 		return NBT::TAG_Compound;
 	}
 
-	public function read(NBT $nbt){
+	public function read(NBT $nbt, bool $network = false){
 		$this->value = [];
 		do{
-			$tag = $nbt->readTag();
+			$tag = $nbt->readTag($network);
 			if($tag instanceof NamedTag and $tag->getName() !== ""){
 				$this->{$tag->getName()} = $tag;
 			}
 		}while(!($tag instanceof EndTag) and !$nbt->feof());
 	}
 
-	public function write(NBT $nbt){
+	public function write(NBT $nbt, bool $network = false){
 		foreach($this as $tag){
 			if($tag instanceof Tag and !($tag instanceof EndTag)){
-				$nbt->writeTag($tag);
+				$nbt->writeTag($tag, $network);
 			}
 		}
-		$nbt->writeTag(new EndTag);
+		$nbt->writeTag(new EndTag, $network);
 	}
 
 	public function __toString(){
@@ -110,5 +110,13 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 			}
 		}
 		return $str . "}";
+	}
+
+	public function __clone(){
+		foreach($this as $key => $tag){
+			if($tag instanceof Tag){
+				$this->{$key} = clone $tag;
+			}
+		}
 	}
 }

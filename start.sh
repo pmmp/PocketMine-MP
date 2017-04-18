@@ -25,7 +25,7 @@ if [ "$PHP_BINARY" == "" ]; then
 	if [ -f ./bin/php7/bin/php ]; then
 		export PHPRC=""
 		PHP_BINARY="./bin/php7/bin/php"
-	elif [ type php 2>/dev/null ]; then
+	elif [[ ! -z $(type php) ]]; then
 		PHP_BINARY=$(type -p php)
 	else
 		echo "Couldn't find a working PHP 7 binary, please use the installer."
@@ -53,9 +53,13 @@ while [ "$LOOPS" -eq 0 ] || [ "$DO_LOOP" == "yes" ]; do
 	else
 		exec "$PHP_BINARY" "$POCKETMINE_FILE" $@
 	fi
-	((LOOPS++))
+	if [ "$DO_LOOP" == "yes" ]; then
+		if [ ${LOOPS} -gt 0 ]; then
+			echo "Restarted $LOOPS times"
+		fi 
+		echo "To escape the loop, press CTRL+C now. Otherwise, wait 5 seconds for the server to restart."
+		echo ""
+		sleep 5
+		((LOOPS++))
+	fi
 done
-
-if [ ${LOOPS} -gt 1 ]; then
-	echo "Restarted $LOOPS times"
-fi

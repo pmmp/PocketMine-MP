@@ -21,7 +21,7 @@
 
 namespace pocketmine\block;
 
-class StonePressurePlate extends Solid{
+class StonePressurePlate extends Transparent{
 
 	protected $id = self::STONE_PRESSURE_PLATE;
 
@@ -31,5 +31,13 @@ class StonePressurePlate extends Solid{
 
 	public function getName(){
 		return "Stone Pressure Plate";
+	}
+
+	public function isSolid(){
+		return false;
+	}
+
+	public function getHardness(){
+		return 0.5;
 	}
 }

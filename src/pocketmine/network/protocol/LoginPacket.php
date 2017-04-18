@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -27,9 +27,11 @@ namespace pocketmine\network\protocol;
 class LoginPacket extends DataPacket{
 	const NETWORK_ID = Info::LOGIN_PACKET;
 
+	const EDITION_POCKET = 0;
+
 	public $username;
 	public $protocol;
-
+	public $gameEdition;
 	public $clientUUID;
 	public $clientId;
 	public $identityPublicKey;
@@ -38,13 +40,19 @@ class LoginPacket extends DataPacket{
 	public $skinId;
 	public $skin = null;
 
+	public $clientData = [];
+
 	public function decode(){
 		$this->protocol = $this->getInt();
 
 		if($this->protocol !== Info::CURRENT_PROTOCOL){
+			$this->buffer = null;
 			return; //Do not attempt to decode for non-accepted protocols
 		}
-		$str = zlib_decode($this->get($this->getInt()), 1024 * 1024 * 64);
+
+		$this->gameEdition = $this->getByte();
+
+		$str = zlib_decode($this->getString(), 1024 * 1024 * 64);
 
 		$this->setBuffer($str, 0);
 
@@ -64,18 +72,14 @@ class LoginPacket extends DataPacket{
 			}
 		}
 
-		$skinToken = $this->decodeToken($this->get($this->getLInt()));
-		if(isset($skinToken["ClientRandomId"])){
-			$this->clientId = $skinToken["ClientRandomId"];
-		}
-		if(isset($skinToken["ServerAddress"])){
-			$this->serverAddress = $skinToken["ServerAddress"];
-		}
-		if(isset($skinToken["SkinData"])){
-			$this->skin = base64_decode($skinToken["SkinData"]);
-		}
-		if(isset($skinToken["SkinId"])){
-			$this->skinId = $skinToken["SkinId"];
+		$this->clientData = $this->decodeToken($this->get($this->getLInt()));
+
+		$this->clientId = $this->clientData["ClientRandomId"] ?? null;
+		$this->serverAddress = $this->clientData["ServerAddress"] ?? null;
+		$this->skinId = $this->clientData["SkinId"] ?? null;
+
+		if(isset($this->clientData["SkinData"])){
+			$this->skin = base64_decode($this->clientData["SkinData"]);
 		}
 	}
 

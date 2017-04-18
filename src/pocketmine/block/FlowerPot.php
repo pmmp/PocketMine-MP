@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -52,14 +52,14 @@ class FlowerPot extends Flowable{
 		return true;
 	}
 
-	public function getBoundingBox(){
+	protected function recalculateBoundingBox(){
 		return new AxisAlignedBB(
-			$this->x + (5 / 16),
+			$this->x + 0.3125,
 			$this->y,
-			$this->z + (5 / 16),
-			$this->x + (11 / 16),
-			$this->y + (6 / 16),
-			$this->z + (11 / 16)
+			$this->z + 0.3125,
+			$this->x + 0.6875,
+			$this->y + 0.375,
+			$this->z + 0.6875
 		);
 	}
 
@@ -85,7 +85,7 @@ class FlowerPot extends Flowable{
 			}
 		}
 
-		Tile::createTile(Tile::FLOWER_POT, $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
+		Tile::createTile(Tile::FLOWER_POT, $this->getLevel(), $nbt);
 		return true;
 	}
 
@@ -107,7 +107,7 @@ class FlowerPot extends Flowable{
 			return false;
 		}
 		if(!$pot->canAddItem($item)){
-			return false;
+			return true;
 		}
 
 		$this->setDamage(self::STATE_FULL); //specific damage value is unnecessary, it just needs to be non-zero to show an item.

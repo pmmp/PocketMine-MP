@@ -14,14 +14,16 @@
  * (at your option) any later version.
  *
  * @author PocketMine Team
- * @link   http://www.pocketmine.net/
+ * @link http://www.pocketmine.net/
  *
  *
- */
+*/
+
 
 namespace pocketmine\event\level;
 
-use pocketmine\level\format\FullChunk;
+use pocketmine\level\Level;
+use pocketmine\level\format\Chunk;
 
 /**
  * Called when a Chunk is loaded
@@ -31,9 +33,9 @@ class ChunkLoadEvent extends ChunkEvent{
 
 	private $newChunk;
 
-	public function __construct(FullChunk $chunk, $newChunk){
-		parent::__construct($chunk);
-		$this->newChunk = (bool) $newChunk;
+	public function __construct(Level $level, Chunk $chunk, bool $newChunk){
+		parent::__construct($level, $chunk);
+		$this->newChunk = $newChunk;
 	}
 
 	/**

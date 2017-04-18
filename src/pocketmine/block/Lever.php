@@ -21,7 +21,7 @@
 
 namespace pocketmine\block;
 
-class Lever extends Solid{
+class Lever extends Flowable{
 
 	protected $id = self::LEVER;
 

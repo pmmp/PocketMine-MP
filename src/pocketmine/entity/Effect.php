@@ -22,6 +22,8 @@
 namespace pocketmine\entity;
 
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityEffectAddEvent;
+use pocketmine\event\entity\EntityEffectRemoveEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\network\protocol\MobEffectPacket;
@@ -167,8 +169,8 @@ class Effect{
 	 *
 	 * @return $this
 	 */
-	public function setAmplifier($amplifier){
-		$this->amplifier = (int) $amplifier;
+	public function setAmplifier(int $amplifier){
+		$this->amplifier = $amplifier & 0xff;
 		return $this;
 	}
 
@@ -251,14 +253,18 @@ class Effect{
 	}
 
 	public function add(Entity $entity, $modify = false, Effect $oldEffect = null){
+		$entity->getLevel()->getServer()->getPluginManager()->callEvent($ev = new EntityEffectAddEvent($entity, $this, $modify, $oldEffect));
+		if($ev->isCancelled()){
+			return;
+		}
 		if($entity instanceof Player){
 			$pk = new MobEffectPacket();
-			$pk->eid = 0;
+			$pk->eid = $entity->getId();
 			$pk->effectId = $this->getId();
 			$pk->amplifier = $this->getAmplifier();
 			$pk->particles = $this->isVisible();
 			$pk->duration = $this->getDuration();
-			if($modify){
+			if($ev->willModify()){
 				$pk->eventId = MobEffectPacket::EVENT_MODIFY;
 			}else{
 				$pk->eventId = MobEffectPacket::EVENT_ADD;
@@ -269,10 +275,10 @@ class Effect{
 
 		if($this->id === Effect::INVISIBILITY){
 			$entity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INVISIBLE, true);
-			$entity->setDataProperty(Entity::DATA_SHOW_NAMETAG, Entity::DATA_TYPE_BYTE, 0);
+			$entity->setNameTagVisible(false);
 		}elseif($this->id === Effect::SPEED){
 			$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
-			if($modify and $oldEffect !== null){
+			if($ev->willModify() and $oldEffect !== null){
 				$speed = $attr->getValue() / (1 + 0.2 * $oldEffect->getAmplifier());
 			}else{
 				$speed = $attr->getValue();
@@ -281,20 +287,24 @@ class Effect{
 			$attr->setValue($speed);
 		}elseif($this->id === Effect::SLOWNESS){
 			$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
-			if($modify and $oldEffect !== null){
+			if($ev->willModify() and $oldEffect !== null){
 				$speed = $attr->getValue() / (1 - 0.15 * $oldEffect->getAmplifier());
 			}else{
 				$speed = $attr->getValue();
 			}
 			$speed *= (1 - 0.15 * $this->amplifier);
-			$attr->setValue($speed);
+			$attr->setValue($speed, true);
 		}
 	}
 
 	public function remove(Entity $entity){
+		$entity->getLevel()->getServer()->getPluginManager()->callEvent($ev = new EntityEffectRemoveEvent($entity, $this));
+		if($ev->isCancelled()){
+			return;
+		}
 		if($entity instanceof Player){
 			$pk = new MobEffectPacket();
-			$pk->eid = 0;
+			$pk->eid = $entity->getId();
 			$pk->eventId = MobEffectPacket::EVENT_REMOVE;
 			$pk->effectId = $this->getId();
 
@@ -303,7 +313,7 @@ class Effect{
 
 		if($this->id === Effect::INVISIBILITY){
 			$entity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INVISIBLE, false);
-			$entity->setDataProperty(Entity::DATA_SHOW_NAMETAG, Entity::DATA_TYPE_BYTE, 1);
+			$entity->setNameTagVisible(true);
 		}elseif($this->id === Effect::SPEED){
 			$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
 			$attr->setValue($attr->getValue() / (1 + 0.2 * $this->amplifier));

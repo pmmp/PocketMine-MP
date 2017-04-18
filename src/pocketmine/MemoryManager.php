@@ -47,7 +47,7 @@ class MemoryManager{
 	private $garbageCollectionTrigger;
 	private $garbageCollectionAsync;
 
-	private $chunkLimit;
+	private $chunkRadiusOverride;
 	private $chunkCollect;
 	private $chunkTrigger;
 
@@ -104,7 +104,7 @@ class MemoryManager{
 		$this->garbageCollectionTrigger = (bool) $this->server->getProperty("memory.garbage-collection.low-memory-trigger", true);
 		$this->garbageCollectionAsync = (bool) $this->server->getProperty("memory.garbage-collection.collect-async-worker", true);
 
-		$this->chunkLimit = (int) $this->server->getProperty("memory.max-chunks.trigger-limit", 96);
+		$this->chunkRadiusOverride = (int) $this->server->getProperty("memory.max-chunks.chunk-radius", 4);
 		$this->chunkCollect = (bool) $this->server->getProperty("memory.max-chunks.trigger-chunk-collect", true);
 		$this->chunkTrigger = (bool) $this->server->getProperty("memory.max-chunks.low-memory-trigger", true);
 
@@ -122,8 +122,15 @@ class MemoryManager{
 		return !($this->lowMemory and $this->chunkTrigger);
 	}
 
-	public function getViewDistance($distance){
-		return $this->lowMemory ? min($this->chunkLimit, $distance) : $distance;
+	/**
+	 * Returns the allowed chunk radius based on the current memory usage.
+	 *
+	 * @param int $distance
+	 *
+	 * @return int
+	 */
+	public function getViewDistance(int $distance) : int{
+		return $this->lowMemory ? min($this->chunkRadiusOverride, $distance) : $distance;
 	}
 
 	public function trigger($memory, $limit, $global = false, $triggerCount = 0){
@@ -284,6 +291,8 @@ class MemoryManager{
 
 			echo "[Dump] Wrote " . count($objects) . " objects\n";
 		}while($continue);
+		
+		fclose($obData);
 
 		file_put_contents($outputFolder . "/staticProperties.js", json_encode($staticProperties, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 		file_put_contents($outputFolder . "/serverEntry.js", json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
@@ -292,8 +301,6 @@ class MemoryManager{
 		echo "[Dump] Finished!\n";
 
 		gc_enable();
-
-		$this->server->forceShutdown();
 	}
 
 	private function continueDump($from, &$data, &$objects, &$refCounts, $recursion, $maxNesting, $maxStringSize){
@@ -323,7 +330,7 @@ class MemoryManager{
 				$this->continueDump($value, $data[$key], $objects, $refCounts, $recursion + 1, $maxNesting, $maxStringSize);
 			}
 		}elseif(is_string($from)){
-			$data = sprintf("(string) len(%d) " . substr(Utils::printable($from), 0, $maxStringSize), strlen($from));
+			$data = "(string) len(". strlen($from) .") " . substr(Utils::printable($from), 0, $maxStringSize);
 		}elseif(is_resource($from)){
 			$data = "(resource) " . print_r($from, true);
 		}else{

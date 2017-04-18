@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -23,10 +23,7 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
-#ifndef COMPILE
-use pocketmine\utils\Binary;
-
-#endif
+use pocketmine\entity\Attribute;
 
 class AddEntityPacket extends DataPacket{
 	const NETWORK_ID = Info::ADD_ENTITY_PACKET;
@@ -41,8 +38,9 @@ class AddEntityPacket extends DataPacket{
 	public $speedZ;
 	public $yaw;
 	public $pitch;
-	public $modifiers;
-	public $metadata;
+	/** @var Attribute[] */
+	public $attributes = [];
+	public $metadata = [];
 	public $links = [];
 
 	public function decode(){
@@ -51,23 +49,25 @@ class AddEntityPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putLong($this->eid);
-		$this->putInt($this->type);
-		$this->putFloat($this->x);
-		$this->putFloat($this->y);
-		$this->putFloat($this->z);
-		$this->putFloat($this->speedX);
-		$this->putFloat($this->speedY);
-		$this->putFloat($this->speedZ);
-		$this->putFloat($this->yaw * (256 / 360));
-		$this->putFloat($this->pitch * (256 / 360));
-		$this->putInt($this->modifiers);
-		$meta = Binary::writeMetadata($this->metadata);
-		$this->put($meta);
-		$this->putShort(count($this->links));
+		$this->putEntityId($this->eid); //EntityUniqueID - TODO: verify this
+		$this->putEntityId($this->eid);
+		$this->putUnsignedVarInt($this->type);
+		$this->putVector3f($this->x, $this->y, $this->z);
+		$this->putVector3f($this->speedX, $this->speedY, $this->speedZ);
+		$this->putLFloat($this->pitch * (256 / 360));
+		$this->putLFloat($this->yaw * (256 / 360));
+		$this->putUnsignedVarInt(count($this->attributes));
+		foreach($this->attributes as $entry){
+			$this->putString($entry->getName());
+			$this->putLFloat($entry->getMinValue());
+			$this->putLFloat($entry->getValue());
+			$this->putLFloat($entry->getMaxValue());
+		}
+		$this->putEntityMetadata($this->metadata);
+		$this->putUnsignedVarInt(count($this->links));
 		foreach($this->links as $link){
-			$this->putLong($link[0]);
-			$this->putLong($link[1]);
+			$this->putEntityId($link[0]);
+			$this->putEntityId($link[1]);
 			$this->putByte($link[2]);
 		}
 	}

@@ -21,7 +21,7 @@
 
 namespace pocketmine\block;
 
-class StoneButton extends Solid{
+class StoneButton extends Flowable{
 
 	protected $id = self::STONE_BUTTON;
 
@@ -31,5 +31,9 @@ class StoneButton extends Solid{
 
 	public function getName(){
 		return "Stone Button";
+	}
+
+	public function getHardness(){
+		return 0.5;
 	}
 }

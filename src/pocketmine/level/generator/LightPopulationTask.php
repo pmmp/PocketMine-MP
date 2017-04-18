@@ -21,7 +21,7 @@
 
 namespace pocketmine\level\generator;
 
-use pocketmine\level\format\FullChunk;
+use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
@@ -30,18 +30,15 @@ class LightPopulationTask extends AsyncTask{
 
 	public $levelId;
 	public $chunk;
-	public $chunkClass;
 
-	public function __construct(Level $level, FullChunk $chunk){
+	public function __construct(Level $level, Chunk $chunk){
 		$this->levelId = $level->getId();
-		$this->chunk = $chunk->toFastBinary();
-		$this->chunkClass = get_class($chunk);
+		$this->chunk = $chunk->fastSerialize();
 	}
 
 	public function onRun(){
-		/** @var FullChunk $chunk */
-		$chunk = $this->chunkClass;
-		$chunk = $chunk::fromFastBinary($this->chunk);
+		/** @var Chunk $chunk */
+		$chunk = Chunk::fastDeserialize($this->chunk);
 		if($chunk === null){
 			//TODO error
 			return;
@@ -51,15 +48,14 @@ class LightPopulationTask extends AsyncTask{
 		$chunk->populateSkyLight();
 		$chunk->setLightPopulated();
 
-		$this->chunk = $chunk->toFastBinary();
+		$this->chunk = $chunk->fastSerialize();
 	}
 
 	public function onCompletion(Server $server){
 		$level = $server->getLevel($this->levelId);
 		if($level !== null){
-			/** @var FullChunk $chunk */
-			$chunk = $this->chunkClass;
-			$chunk = $chunk::fromFastBinary($this->chunk, $level->getProvider());
+			/** @var Chunk $chunk */
+			$chunk = Chunk::fastDeserialize($this->chunk);
 			if($chunk === null){
 				//TODO error
 				return;

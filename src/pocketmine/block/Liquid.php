@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -189,7 +189,7 @@ abstract class Liquid extends Transparent{
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$this->checkForHarden();
-			$this->getLevel()->scheduleUpdate($this, $this->tickRate());
+			$this->getLevel()->scheduleDelayedBlockUpdate($this, $this->tickRate());
 		}elseif($type === Level::BLOCK_UPDATE_SCHEDULED){
 			if($this->temporalVector === null){
 				$this->temporalVector = new Vector3(0, 0, 0);
@@ -242,7 +242,7 @@ abstract class Liquid extends Transparent{
 						$this->getLevel()->setBlock($this, new Air(), true);
 					}else{
 						$this->getLevel()->setBlock($this, Block::get($this->id, $decay), true);
-						$this->getLevel()->scheduleUpdate($this, $this->tickRate());
+						$this->getLevel()->scheduleDelayedBlockUpdate($this, $this->tickRate());
 					}
 				}elseif($flag){
 					//$this->getLevel()->scheduleUpdate($this, $this->tickRate());
@@ -262,10 +262,10 @@ abstract class Liquid extends Transparent{
 
 				if($decay >= 8){
 					$this->getLevel()->setBlock($bottomBlock, Block::get($this->id, $decay), true);
-					$this->getLevel()->scheduleUpdate($bottomBlock, $this->tickRate());
+					$this->getLevel()->scheduleDelayedBlockUpdate($bottomBlock, $this->tickRate());
 				}else{
 					$this->getLevel()->setBlock($bottomBlock, Block::get($this->id, $decay + 8), true);
-					$this->getLevel()->scheduleUpdate($bottomBlock, $this->tickRate());
+					$this->getLevel()->scheduleDelayedBlockUpdate($bottomBlock, $this->tickRate());
 				}
 			}elseif($decay >= 0 and ($decay === 0 or !$bottomBlock->canBeFlowedInto())){
 				$flags = $this->getOptimalFlowDirections();
@@ -310,7 +310,7 @@ abstract class Liquid extends Transparent{
 			}
 
 			$this->getLevel()->setBlock($block, Block::get($this->getId(), $newFlowDecay), true);
-			$this->getLevel()->scheduleUpdate($block, $this->tickRate());
+			$this->getLevel()->scheduleDelayedBlockUpdate($block, $this->tickRate());
 		}
 	}
 

@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -31,8 +31,7 @@ use pocketmine\block\LapisOre;
 use pocketmine\block\RedstoneOre;
 use pocketmine\item\Item;
 use pocketmine\level\ChunkManager;
-use pocketmine\level\format\FullChunk;
-use pocketmine\level\generator\biome\Biome;
+use pocketmine\level\format\Chunk;
 use pocketmine\level\generator\populator\Ore;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\math\Vector3;
@@ -41,7 +40,7 @@ use pocketmine\utils\Random;
 class Flat extends Generator{
 	/** @var ChunkManager */
 	private $level;
-	/** @var FullChunk */
+	/** @var Chunk */
 	private $chunk;
 	/** @var Random */
 	private $random;
@@ -83,26 +82,33 @@ class Flat extends Generator{
 		}*/
 	}
 
-	protected function parsePreset($preset, $chunkX, $chunkZ){
-		$this->preset = $preset;
-		$preset = explode(";", $preset);
-		$version = (int) $preset[0];
-		$blocks = isset($preset[1]) ? $preset[1] : "";
-		$biome = isset($preset[2]) ? $preset[2] : 1;
-		$options = isset($preset[3]) ? $preset[3] : "";
-		preg_match_all('#^(([0-9]*x|)([0-9]{1,3})(|:[0-9]{0,2}))$#m', str_replace(",", "\n", $blocks), $matches);
+	public static function parseLayers(string $layers) : array{
+		$result = [];
+		preg_match_all('#^(([0-9]*x|)([0-9]{1,3})(|:[0-9]{0,2}))$#m', str_replace(",", "\n", $layers), $matches);
 		$y = 0;
-		$this->structure = [];
-		$this->chunks = [];
 		foreach($matches[3] as $i => $b){
 			$b = Item::fromString($b . $matches[4][$i]);
 			$cnt = $matches[2][$i] === "" ? 1 : intval($matches[2][$i]);
 			for($cY = $y, $y += $cnt; $cY < $y; ++$cY){
-				$this->structure[$cY] = [$b->getId(), $b->getDamage()];
+				$result[$cY] = [$b->getId(), $b->getDamage()];
 			}
 		}
 
-		$this->floorLevel = $y;
+		return $result;
+	}
+
+	protected function parsePreset($preset, $chunkX, $chunkZ){
+		$this->preset = $preset;
+		$preset = explode(";", $preset);
+		$version = (int) $preset[0];
+		$blocks = $preset[1] ?? "";
+		$biome = $preset[2] ?? 1;
+		$options = $preset[3] ?? "";
+		$this->structure = self::parseLayers($blocks);
+
+		$this->chunks = [];
+
+		$this->floorLevel = $y = count($this->structure);
 
 		for(; $y < 0xFF; ++$y){
 			$this->structure[$y] = [0, 0];
@@ -111,15 +117,10 @@ class Flat extends Generator{
 
 		$this->chunk = clone $this->level->getChunk($chunkX, $chunkZ);
 		$this->chunk->setGenerated();
-		$c = Biome::getBiome($biome)->getColor();
-		$R = $c >> 16;
-		$G = ($c >> 8) & 0xff;
-		$B = $c & 0xff;
 
 		for($Z = 0; $Z < 16; ++$Z){
 			for($X = 0; $X < 16; ++$X){
 				$this->chunk->setBiomeId($X, $Z, $biome);
-				$this->chunk->setBiomeColor($X, $Z, $R, $G, $B);
 				for($y = 0; $y < 128; ++$y){
 					$this->chunk->setBlock($X, $y, $Z, ...$this->structure[$y]);
 				}

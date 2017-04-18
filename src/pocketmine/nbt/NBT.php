@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -24,7 +24,6 @@
  */
 namespace pocketmine\nbt;
 
-use pocketmine\item\Item;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
@@ -35,14 +34,13 @@ use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\LongTag;
-use pocketmine\nbt\tag\NamedTAG;
+use pocketmine\nbt\tag\NamedTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
-use pocketmine\utils\Binary;
 
 #ifndef COMPILE
-
+use pocketmine\utils\Binary;
 #endif
 
 
@@ -72,49 +70,6 @@ class NBT{
 	private $offset;
 	public $endianness;
 	private $data;
-
-
-	/**
-	 * @param Item $item
-	 * @param int  $slot
-	 * @return CompoundTag
-	 */
-	public static function putItemHelper(Item $item, $slot = null){
-		$tag = new CompoundTag(null, [
-			"id" => new ShortTag("id", $item->getId()),
-			"Count" => new ByteTag("Count", $item->getCount()),
-			"Damage" => new ShortTag("Damage", $item->getDamage())
-		]);
-
-		if($slot !== null){
-			$tag->Slot = new ByteTag("Slot", (int) $slot);
-		}
-
-		if($item->hasCompoundTag()){
-			$tag->tag = clone $item->getNamedTag();
-			$tag->tag->setName("tag");
-		}
-
-		return $tag;
-	}
-
-	/**
-	 * @param CompoundTag $tag
-	 * @return Item
-	 */
-	public static function getItemHelper(CompoundTag $tag){
-		if(!isset($tag->id) or !isset($tag->Count)){
-			return Item::get(0);
-		}
-
-		$item = Item::get($tag->id->getValue(), !isset($tag->Damage) ? 0 : $tag->Damage->getValue(), $tag->Count->getValue());
-
-		if(isset($tag->tag) and $tag->tag instanceof CompoundTag){
-			$item->setNamedTag($tag->tag);
-		}
-
-		return $item;
-	}
 
 	public static function matchList(ListTag $tag1, ListTag $tag2){
 		if($tag1->getName() !== $tag2->getName() or $tag1->getCount() !== $tag2->getCount()){
@@ -334,7 +289,7 @@ class NBT{
 					throw new \Exception("Syntax error: invalid quote at offset $offset");
 				}
 			}elseif($c === "\\"){
-				$value .= isset($data{$offset + 1}) ? $data{$offset + 1} : "";
+				$value .= $data{$offset + 1} ?? "";
 				++$offset;
 			}elseif($c === "{" and !$inQuotes){
 				if($value !== ""){
@@ -419,7 +374,7 @@ class NBT{
 			if($c === ":"){
 				++$offset;
 				break;
-			}elseif($c !== " " and $c !== "\r" and $c !== "\n" and $c !== "\t"){
+			}elseif($c !== " " and $c !== "\r" and $c !== "\n" and $c !== "\t" and $c !== "\""){
 				$key .= $c;
 			}
 		}
@@ -455,37 +410,44 @@ class NBT{
 		$this->endianness = $endianness & 0x01;
 	}
 
-	public function read($buffer, $doMultiple = false){
+	public function read($buffer, $doMultiple = false, bool $network = false){
 		$this->offset = 0;
 		$this->buffer = $buffer;
-		$this->data = $this->readTag();
+		$this->data = $this->readTag($network);
 		if($doMultiple and $this->offset < strlen($this->buffer)){
 			$this->data = [$this->data];
 			do{
-				$this->data[] = $this->readTag();
+				$this->data[] = $this->readTag($network);
 			}while($this->offset < strlen($this->buffer));
 		}
 		$this->buffer = "";
 	}
 
-	public function readCompressed($buffer, $compression = ZLIB_ENCODING_GZIP){
+	public function readCompressed($buffer){
 		$this->read(zlib_decode($buffer));
 	}
 
+	public function readNetworkCompressed($buffer){
+		$this->read(zlib_decode($buffer), false, true);
+	}
+
+
 	/**
+	 * @param bool $network
+	 *
 	 * @return string|bool
 	 */
-	public function write(){
+	public function write(bool $network = false){
 		$this->offset = 0;
 		$this->buffer = "";
 
 		if($this->data instanceof CompoundTag){
-			$this->writeTag($this->data);
+			$this->writeTag($this->data, $network);
 
 			return $this->buffer;
 		}elseif(is_array($this->data)){
 			foreach($this->data as $tag){
-				$this->writeTag($tag);
+				$this->writeTag($tag, $network);
 			}
 			return $this->buffer;
 		}
@@ -501,51 +463,64 @@ class NBT{
 		return false;
 	}
 
-	public function readTag(){
-		switch($this->getByte()){
+	public function writeNetworkCompressed($compression = ZLIB_ENCODING_GZIP, $level = 7){
+		if(($write = $this->write(true)) !== false){
+			return zlib_encode($write, $compression, $level);
+		}
+
+		return false;
+	}
+
+	public function readTag(bool $network = false){
+		if($this->feof()){
+			$tagType = -1; //prevent crashes for empty tags
+		}else{
+			$tagType = $this->getByte();
+		}
+		switch($tagType){
 			case NBT::TAG_Byte:
-				$tag = new ByteTag($this->getString());
-				$tag->read($this);
+				$tag = new ByteTag($this->getString($network));
+				$tag->read($this, $network);
 				break;
 			case NBT::TAG_Short:
-				$tag = new ShortTag($this->getString());
-				$tag->read($this);
+				$tag = new ShortTag($this->getString($network));
+				$tag->read($this, $network);
 				break;
 			case NBT::TAG_Int:
-				$tag = new IntTag($this->getString());
-				$tag->read($this);
+				$tag = new IntTag($this->getString($network));
+				$tag->read($this, $network);
 				break;
 			case NBT::TAG_Long:
-				$tag = new LongTag($this->getString());
-				$tag->read($this);
+				$tag = new LongTag($this->getString($network));
+				$tag->read($this, $network);
 				break;
 			case NBT::TAG_Float:
-				$tag = new FloatTag($this->getString());
-				$tag->read($this);
+				$tag = new FloatTag($this->getString($network));
+				$tag->read($this, $network);
 				break;
 			case NBT::TAG_Double:
-				$tag = new DoubleTag($this->getString());
-				$tag->read($this);
+				$tag = new DoubleTag($this->getString($network));
+				$tag->read($this, $network);
 				break;
 			case NBT::TAG_ByteArray:
-				$tag = new ByteArrayTag($this->getString());
-				$tag->read($this);
+				$tag = new ByteArrayTag($this->getString($network));
+				$tag->read($this, $network);
 				break;
 			case NBT::TAG_String:
-				$tag = new StringTag($this->getString());
-				$tag->read($this);
+				$tag = new StringTag($this->getString($network));
+				$tag->read($this, $network);
 				break;
 			case NBT::TAG_List:
-				$tag = new ListTag($this->getString());
-				$tag->read($this);
+				$tag = new ListTag($this->getString($network));
+				$tag->read($this, $network);
 				break;
 			case NBT::TAG_Compound:
-				$tag = new CompoundTag($this->getString());
-				$tag->read($this);
+				$tag = new CompoundTag($this->getString($network));
+				$tag->read($this, $network);
 				break;
 			case NBT::TAG_IntArray:
-				$tag = new IntArrayTag($this->getString());
-				$tag->read($this);
+				$tag = new IntArrayTag($this->getString($network));
+				$tag->read($this, $network);
 				break;
 
 			case NBT::TAG_End: //No named tag
@@ -556,12 +531,12 @@ class NBT{
 		return $tag;
 	}
 
-	public function writeTag(Tag $tag){
+	public function writeTag(Tag $tag, bool $network = false){
 		$this->putByte($tag->getType());
-		if($tag instanceof NamedTAG){
-			$this->putString($tag->getName());
+		if($tag instanceof NamedTag){
+			$this->putString($tag->getName(), $network);
 		}
-		$tag->write($this);
+		$tag->write($this, $network);
 	}
 
 	public function getByte(){
@@ -580,12 +555,19 @@ class NBT{
 		$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Binary::writeShort($v) : Binary::writeLShort($v);
 	}
 
-	public function getInt(){
+	public function getInt(bool $network = false){
+		if($network === true){
+			return Binary::readVarInt($this);
+		}
 		return $this->endianness === self::BIG_ENDIAN ? Binary::readInt($this->get(4)) : Binary::readLInt($this->get(4));
 	}
 
-	public function putInt($v){
-		$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Binary::writeInt($v) : Binary::writeLInt($v);
+	public function putInt($v, bool $network = false){
+		if($network === true){
+			$this->buffer .= Binary::writeVarInt($v);
+		}else{
+			$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Binary::writeInt($v) : Binary::writeLInt($v);
+		}
 	}
 
 	public function getLong(){
@@ -612,18 +594,24 @@ class NBT{
 		$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Binary::writeDouble($v) : Binary::writeLDouble($v);
 	}
 
-	public function getString(){
-		return $this->get($this->getShort());
+	public function getString(bool $network = false){
+		$len = $network ? Binary::readUnsignedVarInt($this) : $this->getShort();
+		return $this->get($len);
 	}
 
-	public function putString($v){
-		$this->putShort(strlen($v));
+	public function putString($v, bool $network = false){
+		if($network === true){
+			$this->put(Binary::writeUnsignedVarInt(strlen($v)));
+		}else{
+			$this->putShort(strlen($v));
+		}
 		$this->buffer .= $v;
 	}
 
 	public function getArray(){
 		$data = [];
 		self::toArray($data, $this->data);
+		return $data;
 	}
 
 	private static function toArray(array &$data, Tag $tag){

@@ -30,26 +30,38 @@ use pocketmine\inventory\Fuel;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\tag\Tag;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\Config;
 
-class Item implements ItemIds{
+class Item implements ItemIds, \JsonSerializable{
 
 	/** @var NBT */
 	private static $cachedParser = null;
 
 	private static function parseCompoundTag(string $tag) : CompoundTag{
+		if(strlen($tag) === 0){
+			throw new \InvalidArgumentException("No NBT data found in supplied string");
+		}
+
 		if(self::$cachedParser === null){
 			self::$cachedParser = new NBT(NBT::LITTLE_ENDIAN);
 		}
 
 		self::$cachedParser->read($tag);
-		return self::$cachedParser->getData();
+		$data = self::$cachedParser->getData();
+
+		if(!($data instanceof CompoundTag)){
+			throw new \InvalidArgumentException("Invalid item NBT string given, it could not be deserialized");
+		}
+
+		return $data;
 	}
 
 	private static function writeCompoundTag(CompoundTag $tag) : string{
@@ -63,13 +75,19 @@ class Item implements ItemIds{
 
 	/** @var \SplFixedArray */
 	public static $list = null;
+	/** @var Block|null */
 	protected $block;
+	/** @var int */
 	protected $id;
+	/** @var int */
 	protected $meta;
+	/** @var string */
 	private $tags = "";
+	/** @var CompoundTag|null */
 	private $cachedNBT = null;
+	/** @var int */
 	public $count;
-	protected $durability = 0;
+	/** @var string */
 	protected $name;
 
 	public function canBeActivated(){
@@ -194,6 +212,7 @@ class Item implements ItemIds{
 			self::$list[self::GLISTERING_MELON] = GlisteringMelon::class;
 			self::$list[self::SPAWN_EGG] = SpawnEgg::class;
 			self::$list[self::EMERALD] = Emerald::class;
+			self::$list[self::ITEM_FRAME] = ItemFrame::class;
 			self::$list[self::FLOWER_POT] = FlowerPot::class;
 			self::$list[self::CARROT] = Carrot::class;
 			self::$list[self::POTATO] = Potato::class;
@@ -209,6 +228,10 @@ class Item implements ItemIds{
 			self::$list[self::BEETROOT] = Beetroot::class;
 			self::$list[self::BEETROOT_SEEDS] = BeetrootSeeds::class;
 			self::$list[self::BEETROOT_SOUP] = BeetrootSoup::class;
+			self::$list[self::PRISMARINE_CRYSTALS] = PrismarineCrystals::class;
+			self::$list[self::PRISMARINE_SHARD] = PrismarineShard::class;
+			self::$list[self::NETHER_STAR] = NetherStar::class;
+			self::$list[self::ENCHANTED_GOLDEN_APPLE] = GoldenAppleEnchanted::class;
 
 			for($i = 0; $i < 256; ++$i){
 				if(Block::$list[$i] !== null){
@@ -227,8 +250,12 @@ class Item implements ItemIds{
 
 		$creativeItems = new Config(Server::getInstance()->getFilePath() . "src/pocketmine/resources/creativeitems.json", Config::JSON, []);
 
-		foreach($creativeItems->getAll() as $item){
-			self::addCreativeItem(Item::get($item["ID"], $item["Damage"]));
+		foreach($creativeItems->getAll() as $data){
+			$item = Item::get($data["id"], $data["damage"], $data["count"], $data["nbt"]);
+			if($item->getName() === "Unknown"){
+				continue;
+			}
+			self::addCreativeItem($item);
 		}
 	}
 
@@ -241,7 +268,7 @@ class Item implements ItemIds{
 	}
 
 	public static function addCreativeItem(Item $item){
-		Item::$creative[] = Item::get($item->getId(), $item->getDamage());
+		Item::$creative[] = clone $item;
 	}
 
 	public static function removeCreativeItem(Item $item){
@@ -267,7 +294,7 @@ class Item implements ItemIds{
 	 * @return Item
 	 */
 	public static function getCreativeItem(int $index){
-		return isset(Item::$creative[$index]) ? Item::$creative[$index] : null;
+		return Item::$creative[$index] ?? null;
 	}
 
 	public static function getCreativeItemIndex(Item $item) : int{
@@ -280,7 +307,17 @@ class Item implements ItemIds{
 		return -1;
 	}
 
-	public static function get(int $id, $meta = 0, int $count = 1, $tags = "") : Item{
+	/**
+	 * Returns an instance of the Item with the specified id, meta, count and NBT.
+	 *
+	 * @param int                $id
+	 * @param int                $meta
+	 * @param int                $count
+	 * @param CompoundTag|string $tags
+	 *
+	 * @return Item
+	 */
+	public static function get(int $id, int $meta = 0, int $count = 1, $tags = "") : Item{
 		try{
 			$class = self::$list[$id];
 			if($class === null){
@@ -330,9 +367,15 @@ class Item implements ItemIds{
 		}
 	}
 
-	public function __construct(int $id, $meta = 0, int $count = 1, string $name = "Unknown"){
+	/**
+	 * @param int $id
+	 * @param int $meta
+	 * @param int $count
+	 * @param string $name
+	 */
+	public function __construct(int $id, int $meta = 0, int $count = 1, string $name = "Unknown"){
 		$this->id = $id & 0xffff;
-		$this->meta = $meta !== null ? $meta & 0xffff : null;
+		$this->meta = $meta !== -1 ? $meta & 0xffff : -1;
 		$this->count = $count;
 		$this->name = $name;
 		if(!isset($this->block) and $this->id <= 0xff and isset(Block::$list[$this->id])){
@@ -341,11 +384,18 @@ class Item implements ItemIds{
 		}
 	}
 
+	/**
+	 * Sets the Item's NBT
+	 *
+	 * @param CompoundTag|string $tags
+	 *
+	 * @return $this
+	 */
 	public function setCompoundTag($tags){
 		if($tags instanceof CompoundTag){
 			$this->setNamedTag($tags);
 		}else{
-			$this->tags = $tags;
+			$this->tags = (string) $tags;
 			$this->cachedNBT = null;
 		}
 
@@ -353,16 +403,24 @@ class Item implements ItemIds{
 	}
 
 	/**
+	 * Returns the serialized NBT of the Item
 	 * @return string
 	 */
-	public function getCompoundTag(){
+	public function getCompoundTag() : string{
 		return $this->tags;
 	}
 
+	/**
+	 * Returns whether this Item has a non-empty NBT.
+	 * @return bool
+	 */
 	public function hasCompoundTag() : bool{
-		return $this->tags !== "" and $this->tags !== null;
+		return $this->tags !== "";
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function hasCustomBlockData() : bool{
 		if(!$this->hasCompoundTag()){
 			return false;
@@ -390,6 +448,11 @@ class Item implements ItemIds{
 		return $this;
 	}
 
+	/**
+	 * @param CompoundTag $compound
+	 *
+	 * @return $this
+	 */
 	public function setCustomBlockData(CompoundTag $compound){
 		$tags = clone $compound;
 		$tags->setName("BlockEntityTag");
@@ -406,6 +469,9 @@ class Item implements ItemIds{
 		return $this;
 	}
 
+	/**
+	 * @return CompoundTag|null
+	 */
 	public function getCustomBlockData(){
 		if(!$this->hasCompoundTag()){
 			return null;
@@ -419,6 +485,9 @@ class Item implements ItemIds{
 		return null;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function hasEnchantments() : bool{
 		if(!$this->hasCompoundTag()){
 			return false;
@@ -436,7 +505,7 @@ class Item implements ItemIds{
 	}
 
 	/**
-	 * @param $id
+	 * @param int $id
 	 *
 	 * @return Enchantment|null
 	 */
@@ -513,6 +582,9 @@ class Item implements ItemIds{
 		return $enchantments;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function hasCustomName() : bool{
 		if(!$this->hasCompoundTag()){
 			return false;
@@ -529,6 +601,9 @@ class Item implements ItemIds{
 		return false;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getCustomName() : string{
 		if(!$this->hasCompoundTag()){
 			return "";
@@ -545,12 +620,17 @@ class Item implements ItemIds{
 		return "";
 	}
 
+	/**
+	 * @param string $name
+	 *
+	 * @return $this
+	 */
 	public function setCustomName(string $name){
 		if($name === ""){
 			$this->clearCustomName();
 		}
 
-		if(!($hadCompoundTag = $this->hasCompoundTag())){
+		if(!$this->hasCompoundTag()){
 			$tag = new CompoundTag("", []);
 		}else{
 			$tag = $this->getNamedTag();
@@ -564,13 +644,14 @@ class Item implements ItemIds{
 			]);
 		}
 
-		if(!$hadCompoundTag){
-			$this->setCompoundTag($tag);
-		}
+		$this->setCompoundTag($tag);
 
 		return $this;
 	}
 
+	/**
+	 * @return $this
+	 */
 	public function clearCustomName(){
 		if(!$this->hasCompoundTag()){
 			return $this;
@@ -589,15 +670,23 @@ class Item implements ItemIds{
 		return $this;
 	}
 
+	/**
+	 * @param $name
+	 * @return Tag|null
+	 */
 	public function getNamedTagEntry($name){
 		$tag = $this->getNamedTag();
 		if($tag !== null){
-			return isset($tag->{$name}) ? $tag->{$name} : null;
+			return $tag->{$name} ?? null;
 		}
 
 		return null;
 	}
 
+	/**
+	 * Returns a tree of Tag objects representing the Item's NBT
+	 * @return null|CompoundTag
+	 */
 	public function getNamedTag(){
 		if(!$this->hasCompoundTag()){
 			return null;
@@ -607,6 +696,12 @@ class Item implements ItemIds{
 		return $this->cachedNBT = self::parseCompoundTag($this->tags);
 	}
 
+	/**
+	 * Sets the Item's NBT from the supplied CompoundTag object.
+	 * @param CompoundTag $tag
+	 *
+	 * @return $this
+	 */
 	public function setNamedTag(CompoundTag $tag){
 		if($tag->getCount() === 0){
 			return $this->clearNamedTag();
@@ -618,37 +713,73 @@ class Item implements ItemIds{
 		return $this;
 	}
 
+	/**
+	 * Removes the Item's NBT.
+	 * @return Item
+	 */
 	public function clearNamedTag(){
 		return $this->setCompoundTag("");
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getCount() : int{
 		return $this->count;
 	}
 
+	/**
+	 * @param int $count
+	 */
 	public function setCount(int $count){
 		$this->count = $count;
 	}
 
+	/**
+	 * Returns the name of the item, or the custom name if it is set.
+	 * @return string
+	 */
 	final public function getName() : string{
 		return $this->hasCustomName() ? $this->getCustomName() : $this->name;
 	}
 
+	/**
+	 * @return bool
+	 */
 	final public function canBePlaced() : bool{
 		return $this->block !== null and $this->block->canBePlaced();
 	}
 
+	/**
+	 * Returns whether an entity can eat or drink this item.
+	 * @return bool
+	 */
 	public function canBeConsumed() : bool{
 		return false;
 	}
 
+	/**
+	 * Returns whether this item can be consumed by the supplied Entity.
+	 * @param Entity $entity
+	 *
+	 * @return bool
+	 */
 	public function canBeConsumedBy(Entity $entity) : bool{
 		return $this->canBeConsumed();
 	}
 
+	/**
+	 * Called when the item is consumed by an Entity.
+	 * @param Entity $entity
+	 */
 	public function onConsume(Entity $entity){
+
 	}
 
+	/**
+	 * Returns the block corresponding to this Item.
+	 * @return Block
+	 */
 	public function getBlock() : Block{
 		if($this->block instanceof Block){
 			return clone $this->block;
@@ -657,18 +788,41 @@ class Item implements ItemIds{
 		}
 	}
 
+	/**
+	 * @return int
+	 */
 	final public function getId() : int{
 		return $this->id;
 	}
 
-	final public function getDamage(){
+	/**
+	 * @return int
+	 */
+	final public function getDamage() : int{
 		return $this->meta;
 	}
 
-	public function setDamage($meta){
-		$this->meta = $meta !== null ? $meta & 0xFFFF : null;
+	/**
+	 * @param int $meta
+	 */
+	public function setDamage(int $meta){
+		$this->meta = $meta !== -1 ? $meta & 0xFFFF : -1;
 	}
 
+	/**
+	 * Returns whether this item can match any item with an equivalent ID with any meta value.
+	 * Used in crafting recipes which accept multiple variants of the same item, for example crafting tables recipes.
+	 *
+	 * @return bool
+	 */
+	public function hasAnyDamageValue() : bool{
+		return $this->meta === -1;
+	}
+
+	/**
+	 * Returns the highest amount of this item which will fit into one inventory slot.
+	 * @return int
+	 */
 	public function getMaxStackSize(){
 		return 64;
 	}
@@ -731,30 +885,150 @@ class Item implements ItemIds{
 		return false;
 	}
 
-	final public function __toString() : string{
-		return "Item " . $this->name . " (" . $this->id . ":" . ($this->meta === null ? "?" : $this->meta) . ")x" . $this->count . ($this->hasCompoundTag() ? " tags:0x" . bin2hex($this->getCompoundTag()) : "");
-	}
-
 	public function getDestroySpeed(Block $block, Player $player){
 		return 1;
 	}
 
+	/**
+	 * Called when a player uses this item on a block.
+	 *
+	 * @param Level $level
+	 * @param Player $player
+	 * @param Block $block
+	 * @param Block $target
+	 * @param int $face
+	 * @param float $fx
+	 * @param float $fy
+	 * @param float $fz
+	 *
+	 * @return bool
+	 */
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		return false;
 	}
 
-	public final function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
-		return $this->id === $item->getId() and ($checkDamage === false or $this->getDamage() === $item->getDamage()) and ($checkCompound === false or $this->getCompoundTag() === $item->getCompoundTag());
-	}
-
-	public final function deepEquals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
-		if($this->equals($item, $checkDamage, $checkCompound)){
-			return true;
-		}elseif($item->hasCompoundTag() or $this->hasCompoundTag()){
-			return NBT::matchTree($this->getNamedTag(), $item->getNamedTag());
+	/**
+	 * Compares an Item to this Item and check if they match.
+	 *
+	 * @param Item $item
+	 * @param bool $checkDamage Whether to verify that the damage values match.
+	 * @param bool $checkCompound Whether to verify that the items' NBT match.
+	 *
+	 * @return bool
+	 */
+	final public function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
+		if($this->id === $item->getId() and ($checkDamage === false or $this->getDamage() === $item->getDamage())){
+			if($checkCompound){
+				if($item->getCompoundTag() === $this->getCompoundTag()){
+					return true;
+				}elseif($this->hasCompoundTag() and $item->hasCompoundTag()){
+					//Serialized NBT didn't match, check the cached object tree.
+					return NBT::matchTree($this->getNamedTag(), $item->getNamedTag());
+				}
+			}else{
+				return true;
+			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * @deprecated Use {@link Item#equals} instead, this method will be removed in the future.
+	 *
+	 * @param Item $item
+	 * @param bool $checkDamage
+	 * @param bool $checkCompound
+	 *
+	 * @return bool
+	 */
+	final public function deepEquals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
+		return $this->equals($item, $checkDamage, $checkCompound);
+	}
+
+	/**
+	 * @return string
+	 */
+	final public function __toString() : string{
+		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->meta) . ")x" . $this->count . ($this->hasCompoundTag() ? " tags:0x" . bin2hex($this->getCompoundTag()) : "");
+	}
+
+	/**
+	 * Returns an array of item stack properties that can be serialized to json.
+	 *
+	 * @return array
+	 */
+	final public function jsonSerialize(){
+		return [
+			"id" => $this->id,
+			"damage" => $this->meta,
+			"count" => $this->count, //TODO: separate items and stacks
+			"nbt" => $this->tags
+		];
+	}
+
+	/**
+	 * Serializes the item to an NBT CompoundTag
+	 *
+	 * @param int    $slot optional, the inventory slot of the item
+	 * @param string $tagName the name to assign to the CompoundTag object
+	 *
+	 * @return CompoundTag
+	 */
+	public function nbtSerialize(int $slot = -1, string $tagName = "") : CompoundTag{
+		$tag = new CompoundTag($tagName, [
+			"id" => new ShortTag("id", $this->id),
+			"Count" => new ByteTag("Count", $this->count ?? -1),
+			"Damage" => new ShortTag("Damage", $this->meta),
+		]);
+
+		if($this->hasCompoundTag()){
+			$tag->tag = clone $this->getNamedTag();
+			$tag->tag->setName("tag");
+		}
+
+		if($slot !== -1){
+			$tag->Slot = new ByteTag("Slot", $slot);
+		}
+
+		return $tag;
+	}
+
+	/**
+	 * Deserializes an Item from an NBT CompoundTag
+	 *
+	 * @param CompoundTag $tag
+	 *
+	 * @return Item
+	 */
+	public static function nbtDeserialize(CompoundTag $tag) : Item{
+		if(!isset($tag->id) or !isset($tag->Count)){
+			return Item::get(0);
+		}
+
+		if($tag->id instanceof ShortTag){
+			$item = Item::get($tag->id->getValue(), !isset($tag->Damage) ? 0 : $tag->Damage->getValue(), $tag->Count->getValue());
+		}elseif($tag->id instanceof StringTag){ //PC item save format
+			$item = Item::fromString($tag->id->getValue());
+			$item->setDamage(!isset($tag->Damage) ? 0 : $tag->Damage->getValue());
+			$item->setCount($tag->Count->getValue());
+		}else{
+			throw new \InvalidArgumentException("Item CompoundTag ID must be an instance of StringTag or ShortTag, " . get_class($tag->id) . " given");
+		}
+
+		if(isset($tag->tag) and $tag->tag instanceof CompoundTag){
+			$item->setNamedTag($tag->tag);
+		}
+
+		return $item;
+	}
+
+	public function __clone(){
+		if($this->block !== null){
+			$this->block = clone $this->block;
+		}
+
+		$this->cachedNBT = null;
 	}
 
 }

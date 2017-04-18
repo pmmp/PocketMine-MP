@@ -114,7 +114,15 @@ class TimingsCommand extends VanillaCommand{
 				curl_setopt($ch, CURLOPT_HEADER, true);
 				curl_setopt($ch, CURLOPT_HTTPHEADER, ["User-Agent: " . $this->getName() . " " . $sender->getServer()->getPocketMineVersion()]);
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-				$data = curl_exec($ch);
+				try{
+					$data = curl_exec($ch);
+					if($data === false){
+						throw new \Exception(curl_error($ch));
+					}
+				}catch(\Exception $e){
+					$sender->getServer()->getLogger()->logException($e);
+				}
+
 				curl_close($ch);
 				if(preg_match('#^Location: http://paste\\.ubuntu\\.com/([0-9]{1,})/#m', $data, $matches) == 0){
 					$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.pasteError"));
@@ -124,7 +132,7 @@ class TimingsCommand extends VanillaCommand{
 
 
 				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsUpload", ["http://paste.ubuntu.com/" . $matches[1] . "/"]));
-				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsRead", ["http://timings.aikar.co/?url=" . $matches[1]]));
+				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsRead", ["http://" . $sender->getServer()->getProperty("timings.host", "mcpetimings.com") . "/?url=" . $matches[1]]));
 				fclose($fileTimings);
 			}else{
 				fclose($fileTimings);

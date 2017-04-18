@@ -19,18 +19,31 @@
  *
 */
 
+declare(strict_types = 1);
+
 namespace pocketmine\command;
 
 use pocketmine\Thread;
 
 class CommandReader extends Thread{
-	private $readline;
+
+	const TYPE_READLINE = 0;
+	const TYPE_STREAM = 1;
+	const TYPE_PIPED = 2;
+
 	/** @var \Threaded */
 	protected $buffer;
 	private $shutdown = false;
+	private $type = self::TYPE_STREAM;
 
 	public function __construct(){
 		$this->buffer = new \Threaded;
+		$opts = getopt("", ["disable-readline"]);
+
+		if((extension_loaded("readline") and !isset($opts["disable-readline"]) and !$this->isPipe(STDIN))){
+			$this->type = self::TYPE_READLINE;
+		}
+
 		$this->start();
 	}
 
@@ -38,23 +51,106 @@ class CommandReader extends Thread{
 		$this->shutdown = true;
 	}
 
-	private function readLine(){
-		if(!$this->readline){
+	public function quit(){
+		$wait = microtime(true) + 0.5;
+		while(microtime(true) < $wait){
+			if($this->isRunning()){
+				usleep(100000);
+			}else{
+				parent::quit();
+				return;
+			}
+		}
+
+		$message = "Thread blocked for unknown reason";
+		if($this->type === self::TYPE_PIPED){
+			$message = "STDIN is being piped from another location and the pipe is blocked, cannot stop safely";
+		}
+
+		throw new \ThreadException($message);
+	}
+
+	private function initStdin(){
+		global $stdin;
+
+		if(is_resource($stdin)){
+			fclose($stdin);
+		}
+
+		$stdin = fopen("php://stdin", "r");
+		if($this->isPipe($stdin)){
+			$this->type = self::TYPE_PIPED;
+		}else{
+			$this->type = self::TYPE_STREAM;
+		}
+	}
+
+	/**
+	 * Checks if the specified stream is a FIFO pipe.
+	 *
+	 * @param resource $stream
+	 * @return bool
+	 */
+	private function isPipe($stream) : bool{
+		return is_resource($stream) and ((function_exists("posix_isatty") and !posix_isatty($stream)) or ((fstat($stream)["mode"] & 0170000) === 0010000));
+	}
+
+	/**
+	 * Reads a line from the console and adds it to the buffer. This method may block the thread.
+	 *
+	 * @return bool if the main execution should continue reading lines
+	 */
+	private function readLine() : bool{
+		$line = "";
+		if($this->type === self::TYPE_READLINE){
+			$line = trim(readline("> "));
+			if($line !== ""){
+				readline_add_history($line);
+			}else{
+				return true;
+			}
+		}else{
 			global $stdin;
 
 			if(!is_resource($stdin)){
-				return "";
+				$this->initStdin();
 			}
 
-			return trim(fgets($stdin));
-		}else{
-			$line = trim(readline("> "));
-			if($line != ""){
-				readline_add_history($line);
-			}
+			switch($this->type){
+				case self::TYPE_STREAM:
+					$r = [$stdin];
+					if(($count = stream_select($r, $w, $e, 0, 200000)) === 0){ //nothing changed in 200000 microseconds
+						return true;
+					}elseif($count === false){ //stream error
+						$this->initStdin();
+					}
 
-			return $line;
+					if(($raw = fgets($stdin)) !== false){
+						$line = trim($raw);
+					}else{
+						return false; //user pressed ctrl+c?
+					}
+
+					break;
+				case self::TYPE_PIPED:
+					if(($raw = fgets($stdin)) === false){ //broken pipe or EOF
+						$this->initStdin();
+						$this->synchronized(function(){
+							$this->wait(200000);
+						}); //prevent CPU waste if it's end of pipe
+						return true; //loop back round
+					}else{
+						$line = trim($raw);
+					}
+					break;
+			}
 		}
+
+		if($line !== ""){
+			$this->buffer[] = preg_replace("#\\x1b\\x5b([^\\x1b]*\\x7e|[\\x40-\\x50])#", "", $line);
+		}
+
+		return true;
 	}
 
 	/**
@@ -71,28 +167,17 @@ class CommandReader extends Thread{
 	}
 
 	public function run(){
-		$opts = getopt("", ["disable-readline"]);
-		if(extension_loaded("readline") and !isset($opts["disable-readline"])){
-			$this->readline = true;
-		}else{
+		if($this->type !== self::TYPE_READLINE){
+			$this->initStdin();
+		}
+
+		while(!$this->shutdown and $this->readLine());
+
+		if($this->type !== self::TYPE_READLINE){
 			global $stdin;
-			$stdin = fopen("php://stdin", "r");
-			stream_set_blocking($stdin, 0);
-			$this->readline = false;
+			fclose($stdin);
 		}
 
-		$lastLine = microtime(true);
-		while(!$this->shutdown){
-			if(($line = $this->readLine()) !== ""){
-				$this->buffer[] = preg_replace("#\\x1b\\x5b([^\\x1b]*\\x7e|[\\x40-\\x50])#", "", $line);
-			}elseif(!$this->shutdown and (microtime(true) - $lastLine) <= 0.1){ //Non blocking! Sleep to save CPU
-				$this->synchronized(function(){
-					$this->wait(10000);
-				});
-			}
-
-			$lastLine = microtime(true);
-		}
 	}
 
 	public function getThreadName(){

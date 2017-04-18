@@ -21,7 +21,7 @@
 
 namespace pocketmine\block;
 
-class Rail extends Solid{
+class Rail extends Flowable{
 
 	protected $id = self::RAIL;
 
@@ -31,5 +31,9 @@ class Rail extends Solid{
 
 	public function getName(){
 		return "Rail";
+	}
+
+	public function getHardness(){
+		return 0.7;
 	}
 }
