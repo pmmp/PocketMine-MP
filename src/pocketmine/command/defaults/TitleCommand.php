@@ -74,7 +74,7 @@ class TitleCommand extends VanillaCommand{
 		        
 		        return false;
 		    }
-		    $player->setSubTitle(implode(" ", array_slice($args, 2)));
+		    $player->addSubTitle(implode(" ", array_slice($args, 2)));
 		}elseif($args[1] === "actionbar"){
 		    if(count($args) < 3){
 		        $sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.usage", [$this->usageMessage]));
