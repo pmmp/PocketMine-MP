@@ -3422,9 +3422,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 	
 	/**
-	 * Sets the subtitle message, without a title.
+	 * Sets the subtitle message, without sending a title.
 	 *
-	 * @param strint $subtitle
+	 * @param string $subtitle
 	 */
 	public function addSubTitle(string $subtitle){
 	    $this->sendTitleText($subtitle, SetTitlePacket::TYPE_SET_SUBTITLE);
