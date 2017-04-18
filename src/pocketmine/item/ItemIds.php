@@ -167,7 +167,7 @@ interface ItemIds extends \pocketmine\block\BlockIds{
 	const EMPTYMAP = 395, EMPTY_MAP = 395, MAP = 395;
 	const GOLDEN_CARROT = 396;
 	const SKULL = 397;
-	const CARROTONASTICK = 398, CARROTONASTICKCARROT_ON_A_STICK = 398;
+	const CARROTONASTICK = 398, CARROT_ON_A_STICK = 398;
 	const NETHERSTAR = 399, NETHER_STAR = 399;
 	const PUMPKIN_PIE = 400;
 
@@ -192,7 +192,7 @@ interface ItemIds extends \pocketmine\block\BlockIds{
 	const NAMETAG = 421, NAME_TAG = 421;
 	const PRISMARINE_CRYSTALS = 422;
 	const MUTTON_RAW = 423, MUTTONRAW = 423, RAW_MUTTON = 423;
-	const MUTTON_COOKED = 424, MUTTONCOOKED = 424, COOKED_MUTTON = 423;
+	const MUTTON_COOKED = 424, MUTTONCOOKED = 424, COOKED_MUTTON = 424;
 
 	const END_CRYSTAL = 426;
 	const SPRUCE_DOOR = 427;
