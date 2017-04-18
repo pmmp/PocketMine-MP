@@ -205,7 +205,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	protected $stepHeight = 0.6;
 
 	public $usedChunks = [];
-	protected $chunkLoadCount = 0;
 	protected $loadQueue = [];
 	protected $nextChunkOrderRun = 5;
 
@@ -729,7 +728,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		$this->usedChunks[Level::chunkHash($x, $z)] = true;
-		$this->chunkLoadCount++;
 
 		if($payload instanceof DataPacket){
 			$this->dataPacket($payload);
@@ -784,7 +782,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->level->requestChunk($X, $Z, $this);
 		}
 
-		if($this->chunkLoadCount >= $this->spawnThreshold and $this->spawned === false and $this->teleportPosition === null){
+		if($this->spawned === false and count($this->usedChunks) >= $this->spawnThreshold and $this->teleportPosition === null){
 			$this->doFirstSpawn();
 		}
 
