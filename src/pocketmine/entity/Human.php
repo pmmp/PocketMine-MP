@@ -252,6 +252,22 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return $this->inventory;
 	}
 
+	/**
+	 * Returns whether this entity is currently using its held item.
+	 * @return bool
+	 */
+	public function isUsingItem() : bool{
+		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_USINGITEM);
+	}
+
+	/**
+	 * Sets whether this entity is currently using its held item.
+	 * @param bool $value
+	 */
+	public function setUsingItem(bool $value = true){
+		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_USINGITEM, $value);
+	}
+
 	protected function initEntity(){
 
 		$this->setDataFlag(self::DATA_PLAYER_FLAGS, self::DATA_PLAYER_FLAG_SLEEP, false, self::DATA_TYPE_BYTE);

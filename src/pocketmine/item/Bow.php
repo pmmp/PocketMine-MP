@@ -22,9 +22,113 @@
 namespace pocketmine\item;
 
 
+use pocketmine\entity\Entity;
+use pocketmine\entity\Projectile;
+use pocketmine\event\entity\EntityShootBowEvent;
+use pocketmine\event\entity\ProjectileLaunchEvent;
+use pocketmine\level\sound\LaunchSound;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\DoubleTag;
+use pocketmine\nbt\tag\FloatTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\ShortTag;
+use pocketmine\Player;
+
 class Bow extends Tool{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::BOW, $meta, $count, "Bow");
+
+	public function getToolType() : int{
+		return Tool::TYPE_BOW;
 	}
 
+	public function onReleaseUsing(Player $player) : bool{
+		/** @var Item $arrow */
+		$arrow = null;
+		if(($index = $player->getInventory()->first(Item::get(Item::ARROW, -1, 1))) === -1){
+			if($player->isSurvival()){
+				return false;
+			}else{
+				$arrow = Item::get(Item::ARROW, 0, 1); //Default to a normal arrow for creative
+			}
+		}else{ //TODO: check offhand slot first (MCPE 1.1)
+			$arrow = $player->getInventory()->getItem($index);
+			$arrow->setCount(1);
+		}
+
+		//TODO: add effects for tipped arrows
+
+		$nbt = new CompoundTag("", [
+			"Pos" => new ListTag("Pos", [
+				new DoubleTag("", $player->x),
+				new DoubleTag("", $player->y + $player->getEyeHeight()),
+				new DoubleTag("", $player->z)
+			]),
+			"Motion" => new ListTag("Motion", [
+				new DoubleTag("", -sin($player->yaw / 180 * M_PI) * cos($player->pitch / 180 * M_PI)),
+				new DoubleTag("", -sin($player->pitch / 180 * M_PI)),
+				new DoubleTag("", cos($player->yaw / 180 * M_PI) * cos($player->pitch / 180 * M_PI))
+			]),
+			"Rotation" => new ListTag("Rotation", [
+				new FloatTag("", $player->yaw),
+				new FloatTag("", $player->pitch)
+			]),
+			"Fire" => new ShortTag("Fire", $player->isOnFire() ? 45 * 60 : 0)
+			//TODO: add Power and Flame enchantment effects
+		]);
+
+		$diff = $player->getItemUseDuration();
+		$p = $diff / 20;
+		$f = min((($p ** 2) + $p * 2) / 3, 1) * 2;
+		$ev = new EntityShootBowEvent($player, $this, Entity::createEntity("Arrow", $player->getLevel(), $nbt, $player, $f == 2), $f);
+
+		if($f < 0.1 or $diff < 5){
+			$ev->setCancelled();
+		}
+
+		$player->getServer()->getPluginManager()->callEvent($ev);
+
+		if($ev->isCancelled()){
+			$ev->getProjectile()->close();
+			$player->getInventory()->sendContents($player);
+		}else{
+			$ev->getProjectile()->setMotion($ev->getProjectile()->getMotion()->multiply($ev->getForce()));
+			if($player->isSurvival()){
+				$player->getInventory()->removeItem($arrow);
+				$this->meta++;
+				if($this->meta >= $this->durability){
+					$player->getInventory()->setItemInHand(Item::get(Item::AIR, 0, 0));
+				}else{
+					$player->getInventory()->setItemInHand($this);
+				}
+			}
+			if($ev->getProjectile() instanceof Projectile){
+				$player->getServer()->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($ev->getProjectile()));
+				if($projectileEv->isCancelled()){
+					$ev->getProjectile()->close();
+				}else{
+					$ev->getProjectile()->spawnToAll();
+					$player->getLevel()->addSound(new LaunchSound($player), $player->getViewers());
+				}
+			}else{
+				$ev->getProjectile()->spawnToAll();
+			}
+		}
+
+		return true;
+	}
+
+
+	protected static function fromJsonTypeData(array $data){
+		$properties = $data["properties"] ?? [];
+		if(!isset($properties["durability"])){
+			throw new \RuntimeException("Missing Bow properties from supplied data for " . $data["fallback_name"]);
+		}
+
+		return new Bow(
+			$data["id"],
+			$data["meta"] ?? 0,
+			1,
+			$data["fallback_name"],
+			$properties["durability"]
+		);
+	}
 }

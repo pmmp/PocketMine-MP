@@ -37,6 +37,7 @@ abstract class Tool extends Item{
 
 	//Not a block-breaking tool
 	const TYPE_HOE = 6;
+	const TYPE_BOW = 7;
 
 	protected $durability;
 	protected $attackPoints;

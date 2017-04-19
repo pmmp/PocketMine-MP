@@ -754,6 +754,23 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return $this->inAirTicks;
 	}
 
+	/**
+	 * Returns how long the player has been using their held item for. Used to calculate arrow velocity when shooting bows.
+	 * @return int
+	 */
+	public function getItemUseDuration() : int{
+		if($this->startAction === -1){
+			return -1;
+		}
+		return $this->server->getTick() - $this->startAction;
+	}
+
+	public function setUsingItem(bool $value = true){
+		parent::setUsingItem($value);
+		$this->startAction = $value ? $this->server->getTick() : -1;
+	}
+
+
 	protected function switchLevel(Level $targetLevel){
 		$oldLevel = $this->level;
 		if(parent::switchLevel($targetLevel)){
@@ -2197,8 +2214,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 		$this->craftingType = 0;
 
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false); //TODO: check if this should be true
-
 		switch($packet->event){
 			case EntityEventPacket::USE_ITEM: //Eating
 				$slot = $this->inventory->getItemInHand();
@@ -2214,6 +2229,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					}else{
 						$this->inventory->sendContents($this);
 					}
+
+					$this->setUsingItem(true);
 				}
 				break;
 			default:
@@ -2251,7 +2268,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->inventory->equipItem($packet->hotbarSlot, $packet->inventorySlot);
 
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
+		$this->setUsingItem(false);
 
 		return true;
 	}
@@ -2395,7 +2412,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->craftingType = 0;
 
 		if($packet->face >= 0 and $packet->face <= 5){ //Use Block, place
-			$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
+			$this->setUsingItem(false);
 
 			if(!$this->canInteract($blockVector->add(0.5, 0.5, 0.5), 13) or $this->isSpectator()){
 			}elseif($this->isCreative()){
@@ -2491,8 +2508,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 			}
 
-			$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, true);
-			$this->startAction = $this->server->getTick();
+			$this->setUsingItem(true);
 		}
 
 		return true;
@@ -2531,71 +2547,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			case PlayerActionPacket::ACTION_STOP_BREAK:
 				break;
 			case PlayerActionPacket::ACTION_RELEASE_ITEM:
-				if($this->startAction > -1 and $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION)){
-					if($this->inventory->getItemInHand()->getId() === Item::BOW){
-						$bow = $this->inventory->getItemInHand();
-						if($this->isSurvival() and !$this->inventory->contains(Item::get(Item::ARROW, 0, 1))){
-							$this->inventory->sendContents($this);
-							break;
-						}
-
-						$nbt = new CompoundTag("", [
-							"Pos" => new ListTag("Pos", [
-								new DoubleTag("", $this->x),
-								new DoubleTag("", $this->y + $this->getEyeHeight()),
-								new DoubleTag("", $this->z)
-							]),
-							"Motion" => new ListTag("Motion", [
-								new DoubleTag("", -sin($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI)),
-								new DoubleTag("", -sin($this->pitch / 180 * M_PI)),
-								new DoubleTag("", cos($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI))
-							]),
-							"Rotation" => new ListTag("Rotation", [
-								new FloatTag("", $this->yaw),
-								new FloatTag("", $this->pitch)
-							]),
-							"Fire" => new ShortTag("Fire", $this->isOnFire() ? 45 * 60 : 0)
-						]);
-
-						$diff = ($this->server->getTick() - $this->startAction);
-						$p = $diff / 20;
-						$f = min((($p ** 2) + $p * 2) / 3, 1) * 2;
-						$ev = new EntityShootBowEvent($this, $bow, Entity::createEntity("Arrow", $this->getLevel(), $nbt, $this, $f == 2 ? true : false), $f);
-
-						if($f < 0.1 or $diff < 5){
-							$ev->setCancelled();
-						}
-
-						$this->server->getPluginManager()->callEvent($ev);
-
-						if($ev->isCancelled()){
-							$ev->getProjectile()->kill();
-							$this->inventory->sendContents($this);
-						}else{
-							$ev->getProjectile()->setMotion($ev->getProjectile()->getMotion()->multiply($ev->getForce()));
-							if($this->isSurvival()){
-								$this->inventory->removeItem(Item::get(Item::ARROW, 0, 1));
-								$bow->setDamage($bow->getDamage() + 1);
-								if($bow->getDamage() >= 385){
-									$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 0));
-								}else{
-									$this->inventory->setItemInHand($bow);
-								}
-							}
-							if($ev->getProjectile() instanceof Projectile){
-								$this->server->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($ev->getProjectile()));
-								if($projectileEv->isCancelled()){
-									$ev->getProjectile()->kill();
-								}else{
-									$ev->getProjectile()->spawnToAll();
-									$this->level->addSound(new LaunchSound($this), $this->getViewers());
-								}
-							}else{
-								$ev->getProjectile()->spawnToAll();
-							}
-						}
-					}
+				if($this->isUsingItem() and $this->getItemUseDuration() > -1){
+					$this->inventory->getItemInHand()->onReleaseUsing($this);
 				}elseif($this->inventory->getItemInHand()->getId() === Item::BUCKET and $this->inventory->getItemInHand()->getDamage() === 1){ //Milk!
+					//TODO: move this to consumable code (should be done with an entity event, not with releasing items)
 					$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $this->inventory->getItemInHand()));
 					if($ev->isCancelled()){
 						$this->inventory->sendContents($this);
@@ -2705,8 +2660,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				return false;
 		}
 
-		$this->startAction = -1;
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
+		$this->setUsingItem(false);
 
 		return true;
 	}
@@ -2784,7 +2738,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->level->dropItem($this->add(0, 1.3, 0), $item, $motion, 40);
 
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
+		$this->setUsingItem(false);
 
 		return true;
 	}

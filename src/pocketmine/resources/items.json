@@ -154,7 +154,11 @@
     },
     "bow": {
         "id": 261,
-        "fallback_name": "Bow"
+        "fallback_name": "Bow",
+        "type": "bow",
+        "properties": {
+            "durability": 385
+        }
     },
     "bowl": {
         "id": 281,

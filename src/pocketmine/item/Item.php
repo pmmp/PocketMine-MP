@@ -102,6 +102,7 @@ class Item implements ItemIds, \JsonSerializable{
 
 			$types = [
 				"axe"     => Axe::class,
+				"bow"     => Bow::class,
 				"default" => Item::class,
 				"food"    => Food::class,
 				"hoe"     => Hoe::class,
@@ -894,6 +895,18 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return bool
 	 */
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+		return false;
+	}
+
+	/**
+	 * Called when a player is using this item (right-click) and releases the use-item button.
+	 * For example, this is called for bows when the player releases their use-item to shoot an arrow.
+	 *
+	 * @param Player $player
+	 *
+	 * @return bool if anything was done
+	 */
+	public function onReleaseUsing(Player $player) : bool{
 		return false;
 	}
 

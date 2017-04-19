@@ -123,7 +123,7 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_FLAG_SNEAKING = 1;
 	const DATA_FLAG_RIDING = 2;
 	const DATA_FLAG_SPRINTING = 3;
-	const DATA_FLAG_ACTION = 4;
+	const DATA_FLAG_USINGITEM = 4, DATA_FLAG_ACTION = 4;
 	const DATA_FLAG_INVISIBLE = 5;
 	const DATA_FLAG_TEMPTED = 6; //???
 	const DATA_FLAG_INLOVE = 7;
