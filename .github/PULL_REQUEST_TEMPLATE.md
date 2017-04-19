@@ -14,10 +14,10 @@
 <!-- Any additions to the API that should be documented in release notes? -->
 
 ## Behavioural changes
-<!-- Any change in how the server behaves, or its performance? ->
+<!-- Any change in how the server behaves, or its performance? -->
 
 # Backwards compatibility
-<!-- Point out possible cases of backwards incompatibility and how they are solved (if any) -->
+<!-- Any possible backwards incompatible changes? How are they solved, or how can they be solved? -->
 
 # Follow-up
 <!-- Suggest any actions to be done before/after merging this pull request -->
