@@ -391,7 +391,12 @@
     },
     "diamond_hoe": {
         "id": 293,
-        "fallback_name": "Diamond Hoe"
+        "fallback_name": "Diamond Hoe",
+        "type": "hoe",
+        "properties": {
+            "tier": "diamond",
+            "durability": 1562
+        }
     },
     "diamond_leggings": {
         "id": 312,
@@ -591,7 +596,12 @@
     },
     "golden_hoe": {
         "id": 294,
-        "fallback_name": "Golden Hoe"
+        "fallback_name": "Golden Hoe",
+        "type": "hoe",
+        "properties": {
+            "tier": "gold",
+            "durability": 33
+        }
     },
     "golden_leggings": {
         "id": 316,
@@ -685,7 +695,12 @@
     },
     "iron_hoe": {
         "id": 292,
-        "fallback_name": "Iron Hoe"
+        "fallback_name": "Iron Hoe",
+        "type": "hoe",
+        "properties": {
+            "tier": "iron",
+            "durability": 251
+        }
     },
     "iron_ingot": {
         "id": 265,
@@ -1086,7 +1101,12 @@
     },
     "stone_hoe": {
         "id": 291,
-        "fallback_name": "Stone Hoe"
+        "fallback_name": "Stone Hoe",
+        "type": "hoe",
+        "properties": {
+            "tier": "stone",
+            "durability": 132
+        }
     },
     "stone_pickaxe": {
         "id": 274,
@@ -1157,7 +1177,12 @@
     },
     "wooden_hoe": {
         "id": 290,
-        "fallback_name": "Wooden Hoe"
+        "fallback_name": "Wooden Hoe",
+        "type": "hoe",
+        "properties": {
+            "tier": "wooden",
+            "durability": 60
+        }
     },
     "wooden_pickaxe": {
         "id": 270,

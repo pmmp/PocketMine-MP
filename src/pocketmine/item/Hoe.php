@@ -22,12 +22,29 @@
 namespace pocketmine\item;
 
 
-class DiamondHoe extends Tool{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::DIAMOND_HOE, $meta, $count, "Diamond Hoe");
+class Hoe extends TieredTool{
+
+	public function getToolType() : int{
+		return Tool::TYPE_HOE;
 	}
 
 	public function isHoe(){
-		return TieredTool::TIER_DIAMOND;
+		return $this->tier;
+	}
+
+	protected static function fromJsonTypeData(array $data){
+		$properties = $data["properties"] ?? [];
+		if(!isset($properties["durability"]) or !isset($properties["tier"])){
+			throw new \RuntimeException("Missing Shovel properties from supplied data for " . $data["fallback_name"]);
+		}
+
+		return new Hoe(
+			$data["id"],
+			$data["meta"] ?? 0,
+			1,
+			$data["fallback_name"],
+			TieredTool::toolTierFromString($properties["tier"]),
+			$properties["durability"]
+		);
 	}
 }

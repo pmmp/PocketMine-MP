@@ -104,6 +104,7 @@ class Item implements ItemIds, \JsonSerializable{
 				"axe"     => Axe::class,
 				"default" => Item::class,
 				"food"    => Food::class,
+				"hoe"     => Hoe::class,
 				"pickaxe" => Pickaxe::class,
 				"shears"  => Shears::class,
 				"shovel"  => Shovel::class,
