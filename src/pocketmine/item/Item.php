@@ -101,15 +101,16 @@ class Item implements ItemIds, \JsonSerializable{
 			}
 
 			$types = [
-				"axe"     => Axe::class,
-				"bow"     => Bow::class,
-				"default" => Item::class,
-				"food"    => Food::class,
-				"hoe"     => Hoe::class,
-				"pickaxe" => Pickaxe::class,
-				"shears"  => Shears::class,
-				"shovel"  => Shovel::class,
-				"sword"   => Sword::class
+				"axe"       => Axe::class,
+				"bow"       => Bow::class,
+				"default"   => Item::class,
+				"food"      => Food::class,
+				"hoe"       => Hoe::class,
+				"pickaxe"   => Pickaxe::class,
+				"shears"    => Shears::class,
+				"shovel"    => Shovel::class,
+				"spawn_egg" => SpawnEgg::class,
+				"sword"     => Sword::class
 			];
 
 			foreach($items as $itemData){
@@ -170,7 +171,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return Item
 	 */
 	protected static function fromJsonTypeData(array $data){
-		return new Item($data["id"], $data["meta"] ?? 0, 1, $data["fallback_name"]);
+		return new static($data["id"], $data["meta"] ?? 0, 1, $data["fallback_name"]);
 	}
 
 	/**

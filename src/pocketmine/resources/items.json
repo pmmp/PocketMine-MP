@@ -1057,7 +1057,8 @@
     },
     "spawn_egg": {
         "id": 383,
-        "fallback_name": "Spawn Egg"
+        "fallback_name": "Spawn Egg",
+        "type": "spawn_egg"
     },
     "speckled_melon": {
         "id": 382,
