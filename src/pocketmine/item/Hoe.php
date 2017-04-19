@@ -31,20 +31,4 @@ class Hoe extends TieredTool{
 	public function isHoe(){
 		return $this->tier;
 	}
-
-	protected static function fromJsonTypeData(array $data){
-		$properties = $data["properties"] ?? [];
-		if(!isset($properties["durability"]) or !isset($properties["tier"])){
-			throw new \RuntimeException("Missing Shovel properties from supplied data for " . $data["fallback_name"]);
-		}
-
-		return new Hoe(
-			$data["id"],
-			$data["meta"] ?? 0,
-			1,
-			$data["fallback_name"],
-			TieredTool::toolTierFromString($properties["tier"]),
-			$properties["durability"]
-		);
-	}
 }

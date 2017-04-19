@@ -115,20 +115,4 @@ class Bow extends Tool{
 
 		return true;
 	}
-
-
-	protected static function fromJsonTypeData(array $data){
-		$properties = $data["properties"] ?? [];
-		if(!isset($properties["durability"])){
-			throw new \RuntimeException("Missing Bow properties from supplied data for " . $data["fallback_name"]);
-		}
-
-		return new Bow(
-			$data["id"],
-			$data["meta"] ?? 0,
-			1,
-			$data["fallback_name"],
-			$properties["durability"]
-		);
-	}
 }

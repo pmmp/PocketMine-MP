@@ -69,4 +69,21 @@ abstract class TieredTool extends Tool{
 				throw new \InvalidArgumentException("Unknown tool tier type $name");
 		}
 	}
+
+	protected static function fromJsonTypeData(array $data){
+		$properties = $data["properties"] ?? [];
+		if(!isset($properties["durability"]) or !isset($properties["tier"])){
+			throw new \RuntimeException("Missing " . static::class . " properties from supplied data for " . $data["fallback_name"]);
+		}
+
+		return new static(
+			$data["id"],
+			$data["meta"] ?? 0,
+			1,
+			$data["fallback_name"],
+			TieredTool::toolTierFromString($properties["tier"]),
+			$properties["durability"],
+			$properties["attack_damage"] ?? 1
+		);
+	}
 }

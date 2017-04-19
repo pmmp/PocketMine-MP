@@ -32,21 +32,4 @@ class Pickaxe extends TieredTool{
 	public function isPickaxe(){
 		return $this->tier;
 	}
-
-	protected static function fromJsonTypeData(array $data){
-		$properties = $data["properties"] ?? [];
-		if(!isset($properties["durability"]) or !isset($properties["tier"]) or !isset($properties["attack_damage"])){
-			throw new \RuntimeException("Missing Pickaxe properties from supplied data for " . $data["fallback_name"]);
-		}
-
-		return new Pickaxe(
-			$data["id"],
-			$data["meta"] ?? 0,
-			1,
-			$data["fallback_name"],
-			TieredTool::toolTierFromString($properties["tier"]),
-			$properties["durability"],
-			$properties["attack_damage"]
-		);
-	}
 }

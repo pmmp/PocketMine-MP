@@ -162,4 +162,18 @@ abstract class Tool extends Item{
 	public function isTool(){
 		return ($this->id === self::FLINT_AND_STEEL or $this->id === self::SHEARS or $this->id === self::BOW or $this->isPickaxe() !== false or $this->isAxe() !== false or $this->isShovel() !== false or $this->isSword() !== false);
 	}
+
+	protected static function fromJsonTypeData(array $data){
+		$properties = $data["properties"] ?? [];
+		if(!isset($properties["durability"])){
+			throw new \RuntimeException("Missing " . static::class . " properties in supplied data for " . $data["fallback_name"]);
+		}
+		return new static(
+			$data["id"],
+			$data["meta"] ?? 0,
+			1,
+			$data["fallback_name"],
+			$properties["durability"]
+		);
+	}
 }
