@@ -129,6 +129,13 @@ namespace pocketmine {
 	set_time_limit(0); //Who set it to 30 seconds?!?!
 
 	error_reporting(-1);
+
+	set_error_handler(function($severity, $message, $file, $line){
+		if((error_reporting() & $severity)){
+			throw new \ErrorException($message, 0, $severity, $file, $line);
+		}
+	});
+
 	ini_set("allow_url_fopen", 1);
 	ini_set("display_errors", 1);
 	ini_set("display_startup_errors", 1);

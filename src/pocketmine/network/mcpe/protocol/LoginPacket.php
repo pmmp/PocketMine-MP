@@ -62,7 +62,19 @@ class LoginPacket extends DataPacket{
 
 		$this->gameEdition = $this->getByte();
 
-		$str = zlib_decode($this->getString(), 1024 * 1024 * 64);
+		$str = $this->getString();
+
+		//TODO: remove this hack once the protocol gets bumped
+		if($str{0} === "\x78"){
+			try{
+				$str = zlib_decode($str, 1024 * 1024 * 64);
+				$this->protocol = 0;
+				$this->buffer = null; // <= 1.1.0.4
+				return;
+			}catch(\ErrorException $e){
+				// >= 1.1.0.5
+			}
+		}
 
 		$this->setBuffer($str, 0);
 

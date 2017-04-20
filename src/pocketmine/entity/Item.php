@@ -234,9 +234,8 @@ class Item extends Entity{
 		$pk->speedY = $this->motionY;
 		$pk->speedZ = $this->motionZ;
 		$pk->item = $this->getItem();
+		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
-
-		$this->sendData($player);
 
 		parent::spawnTo($player);
 	}

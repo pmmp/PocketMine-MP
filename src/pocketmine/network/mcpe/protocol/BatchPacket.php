@@ -74,13 +74,16 @@ class BatchPacket extends DataPacket{
 
 	public function handle(NetworkSession $session) : bool{
 		if(strlen($this->payload) < 2){
-			throw new \InvalidStateException("Not enough bytes in payload, expected zlib header");
+			return false;
 		}
 
-		$str = zlib_decode($this->payload, 1024 * 1024 * 64); //Max 64MB
-		$len = strlen($str);
+		try{
+			$str = zlib_decode($this->payload, 1024 * 1024 * 64); //Max 64MB
+		}catch(\ErrorException $e){
+			return false;
+		}
 
-		if($len === 0){
+		if(strlen($str) === 0){
 			throw new \InvalidStateException("Decoded BatchPacket payload is empty");
 		}
 
