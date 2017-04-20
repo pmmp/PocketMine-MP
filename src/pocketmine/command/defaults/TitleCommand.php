@@ -54,44 +54,50 @@ class TitleCommand extends VanillaCommand{
 		    return true;
 		}
 		
-		if($args[1] === "clear"){
-		    $player->removeTitles();
-		    
-		}elseif($args[1] === "reset"){
-		    $player->resetTitles(); 
-		    
-		}elseif($args[1] === "title"){
-		    if(count($args) < 3){
+		switch($args[1]){
+		    case "clear":
+		        $player->removeTitles();
+		        break;
+		    case "reset":
+		        $player->resetTitles();
+		        break;
+		    case "title":
+		        if(count($args) < 3){
+		            $sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.usage", [$this->usageMessage]));
+		            
+		            return false;
+		        }
+		        $player->addTitle(implode(" ", array_slice($args, 2)));
+		        break;
+		    case "subtitle":
+		        if(count($args) < 3){
+		            $sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.usage", [$this->usageMessage]));
+		            
+		            return false;
+		        }
+		        $player->addSubTitle(implode(" ", array_slice($args, 2)));
+		        break;
+		    case "actionbar":
+		        if(count($args) < 3){
+		            $sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.usage", [$this->usageMessage]));
+		        
+		            return false;
+		        }
+		        $player->addActionBarMessage(implode(" ", array_slice($args, 2)));
+		        break;
+		    case "times":
+		        if(count($args) < 4){
+		            $sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.usage", [$this->usageMessage]));
+		        
+		            return false;
+		        }
+		        $player->setTitleDuration($this->getInteger($sender, $args[2]), $this->getInteger($sender, $args[3]), $this->getInteger($sender, $args[4]));
+		        break;
+		    default:
 		        $sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.usage", [$this->usageMessage]));
 		        
 		        return false;
-		    }  
-		    $player->addTitle(implode(" ", array_slice($args, 2)));
-		  
-		}elseif($args[1] === "subtitle"){
-		    if(count($args) < 3){
-		        $sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.usage", [$this->usageMessage]));
-		        
-		        return false;
-		    }
-		    $player->addSubTitle(implode(" ", array_slice($args, 2)));
-		}elseif($args[1] === "actionbar"){
-		    if(count($args) < 3){
-		        $sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.usage", [$this->usageMessage]));
-		        
-		        return false;
-		    }
-		    $player->addActionBarMessage(implode(" ", array_slice($args, 2)));    
-		}elseif($args[1] === "times"){
-		    if(count($args) !== 5){
-		        $sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.usage", [$this->usageMessage]));
-		    
-		        return false;
-		    }
-		    $player->setTitleDuration($this->getInteger($sender, $args[3]), $this->getInteger($sender, $args[4]), $this->getInteger($sender, $args[5]));
 		}
-		$sender->sendMessage(new TranslationContainer("%commands.title.success"));
-
-		return true;
+		$sender->sendMessage(new TranslationContainer("commands.title.success"));
 	}
 }
