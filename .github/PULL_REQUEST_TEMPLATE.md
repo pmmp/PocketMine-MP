@@ -1,7 +1,7 @@
-# Introduction
+## Introduction
 <!-- Explain existing problems or why this pull request is necessary -->
 
-## Relevant issues
+### Relevant issues
 <!-- List relevant issues here -->
 <!--
 
@@ -10,17 +10,17 @@
 
 -->
 
-# Changes
-## API changes
+## Changes
+### API changes
 <!-- Any additions to the API that should be documented in release notes? -->
 
-## Behavioural changes
+### Behavioural changes
 <!-- Any change in how the server behaves, or its performance? -->
 
-# Backwards compatibility
+## Backwards compatibility
 <!-- Any possible backwards incompatible changes? How are they solved, or how can they be solved? -->
 
-# Follow-up
+## Follow-up
 <!-- Suggest any actions to be done before/after merging this pull request -->
 <!--
 
@@ -32,5 +32,5 @@ Requires translations:
 
 -->
 
-# Tests
+## Tests
 <!-- Attach scripts or actions to test this pull request, as well as the result -->
