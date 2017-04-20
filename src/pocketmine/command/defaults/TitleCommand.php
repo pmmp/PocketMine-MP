@@ -50,11 +50,11 @@ class TitleCommand extends VanillaCommand{
 		$player = $sender->getServer()->getPlayer($args[0]);
 		
 		if($player === null){
-		    $sender->sendMessage(new TranslationContainer(TextFormat::RED . "commands.generic.player.notFound"));
+		    $sender->sendMessage(new TranslationContainer("commands.generic.player.notFound"));
 		    return true;
 		}
 		
-        switch($args[0]){
+        switch($args[1]){
             case "clear":
                 $player->removeTitles();
                 break;
@@ -63,34 +63,34 @@ class TitleCommand extends VanillaCommand{
                 break;
 		    case "title":
 		        if(count($args) < 3){
-		            $sender->sendMessage(new TranslationContainer(TextFormat::RED . "commands.generic.usage", [$this->usageMessage]));
+		            $sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 		            return false;
 		        }
 		        $player->addTitle(implode(" ", array_slice($args, 2)));
 		        break;
 		    case "subtitle":
 		        if(count($args) < 3){
-		            $sender->sendMessage(new TranslationContainer(TextFormat::RED . "commands.generic.usage", [$this->usageMessage]));
+		            $sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 		            return false;
 		        }
 		        $player->addSubTitle(implode(" ", array_slice($args, 2)));
 		        break;
 		    case "actionbar":
 		        if(count($args) < 3){
-		            $sender->sendMessage(new TranslationContainer(TextFormat::RED . "commands.generic.usage", [$this->usageMessage]));
+		            $sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 		            return false;
 		        }
-		        $player->addActionBarMessage(array_slice($args, 2));
+		        $player->addActionBarMessage(implode(" ", array_slice($args, 2)));
 		        break;
 		    case "times":
 		        if(count($args) < 4){
-		            $sender->sendMessage(new TranslationContainer(TextFormat::RED . "commands.generic.usage", [$this->usageMessage]));
+		            $sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 		            return false;
 		        }
 		        $player->setTitleDuration($this->getInteger($sender, $args[2]), $this->getInteger($sender, $args[3]), $this->getInteger($sender, $args[4]));
 		        break;
 		    default:
-		        $sender->sendMessage(new TranslationContainer(TextFormat::RED . "commands.generic.usage", [$this->usageMessage]));
+		        $sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 		        return false;
 		}
 		$sender->sendMessage(new TranslationContainer("commands.title.success"));
