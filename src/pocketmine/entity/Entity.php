@@ -166,7 +166,9 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_FLAG_IMMOBILE = 16, DATA_FLAG_NO_AI = 16;
 	const DATA_FLAG_SILENT = 17;
 	const DATA_FLAG_WALLCLIMBING = 18;
-
+	const DATA_FLAG_CAN_CLIMB = 19;
+	const DATA_FLAG_SWIMMER = 20;
+	const DATA_FLAG_CAN_FLY = 21;
 	const DATA_FLAG_RESTING = 22;
 	const DATA_FLAG_SITTING = 23;
 	const DATA_FLAG_ANGRY = 24;
@@ -485,42 +487,37 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	/**
-	 * Sets whether this entity is currently able to climb blocks. By default this is only true if the entity is climbing a ladder or vine or similar block.
+	 * Returns whether the entity is able to climb blocks such as ladders or vines.
+	 * @return bool
+	 */
+	public function canClimb() : bool{
+		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_CAN_CLIMB);
+	}
+
+	/**
+	 * Sets whether the entity is able to climb climbable blocks.
+	 * @param bool $value
+	 */
+	public function setCanClimb(bool $value){
+		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_CAN_CLIMB, $value);
+	}
+
+	/**
+	 * Returns whether this entity is climbing a block. By default this is only true if the entity is climbing a ladder or vine or similar block.
 	 *
 	 * @return bool
 	 */
-	public function isClimbing() : bool{
+	public function canClimbWalls() : bool{
 		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_WALLCLIMBING);
 	}
 
 	/**
-	 * Sets whether the entity can climb blocks. If true, the entity can climb anything, if false, they cannot climb anything (this includes ladders and vines).
+	 * Sets whether the entity is climbing a block. If true, the entity can climb anything.
 	 *
 	 * @param bool $value
 	 */
-	public function setClimbing(bool $value = true){
+	public function setCanClimbWalls(bool $value = true){
 		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_WALLCLIMBING, $value);
-	}
-
-	/**
-	 * Checks blocks adjacent to the entity's feet to check if it is currently colliding with a climbable block.
-	 */
-	protected function checkClimbing(){
-		$climbing = false;
-
-		$block = $this->level->getBlock($this);
-		if($block->canClimb()){
-			$climbing = true;
-		}else{
-			for($i = 0; $i <= 5; ++$i){
-				if($block->getSide($i)->canClimb()){
-					$climbing = true;
-					break;
-				}
-			}
-		}
-
-		$this->setClimbing($climbing);
 	}
 
 	/**
@@ -1503,7 +1500,6 @@ abstract class Entity extends Location implements Metadatable{
 			$this->checkChunks();
 
 			$this->checkGroundState($movX, $movY, $movZ, $dx, $dy, $dz);
-			$this->checkClimbing();
 			$this->updateFallState($dy, $this->onGround);
 
 			if($movX != $dx){
