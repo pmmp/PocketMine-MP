@@ -112,42 +112,39 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_URL_TAG = 43; //string
 	const DATA_MAX_AIR = 44; //short
 	const DATA_MARK_VARIANT = 45; //int
-
-	//TODO: check which of these changed
-	/* 46 (byte)
+	/* 46 (byte) container stuff
 	 * 47 (int)
-	 * 48 (int)
-	 * 49 (long)
-	 * 50 (long)
-	 * 51 (long)
-	 * 52 (short)
-	 * 53 (unknown) */
+	 * 48 (unknown) */
+	const DATA_WITHER_INVULNERABLE_TICKS = 49;
+	const DATA_WITHER_TARGET_1 = 50;
+	const DATA_WITHER_TARGET_2 = 51;
+	const DATA_WITHER_TARGET_3 = 52;
+	/* 53 (short) */
+	const DATA_BOUNDING_BOX_WIDTH = 54; //float
+	const DATA_BOUNDING_BOX_HEIGHT = 55; //float
+	const DATA_FUSE_LENGTH = 56; //int
+	const DATA_RIDER_SEAT_POSITION = 57; //vector3f
+	const DATA_RIDER_ROTATION_LOCKED = 58; //byte
+	const DATA_RIDER_MAX_ROTATION = 59; //float
+	const DATA_RIDER_MIN_ROTATION = 60; //float
+	const DATA_AREA_EFFECT_CLOUD_RADIUS = 61; //float
+	const DATA_AREA_EFFECT_CLOUD_WAITING = 62; //int
+	const DATA_AREA_EFFECT_CLOUD_PARTICLE_ID = 63; //int
+	/* 64 (int) shulker-related */
+	const DATA_SHULKER_ATTACH_FACE = 65; //byte
+	/* 66 (short) shulker-related */
+	const DATA_SHULKER_ATTACH_POS = 67; //block coords
+	const DATA_TRADING_PLAYER_EID = 68; //long
 
-	const DATA_BOUNDING_BOX_WIDTH = 55; //float
-	const DATA_BOUNDING_BOX_HEIGHT = 56; //float
-	const DATA_FUSE_LENGTH = 57; //int
-	const DATA_RIDER_SEAT_POSITION = 58; //vector3f
-	/* 59 (byte)
-	 * 60 (float)
-	 * 61 (float) */
-	const DATA_AREA_EFFECT_CLOUD_RADIUS = 62; //float
-	const DATA_AREA_EFFECT_CLOUD_WAITING = 63; //int
-	const DATA_AREA_EFFECT_CLOUD_PARTICLE_ID = 64; //int
-	/* 65 (int), shulker-related
-	 * 66 (byte), shulker-related
-	 * 67 (short) shulker-related
-	 * 68 (unknown), shulker-related */
-	const DATA_TRADING_PLAYER_EID = 69; //long
-
-	/* 71 (byte) command-block
+	/* 70 (byte) command-block
+	 * 71 (string) command-block
 	 * 72 (string) command-block
-	 * 73 (string) command-block
-	 * 74 (byte) command-block */
-	const DATA_CONTROLLING_RIDER_SEAT_NUMBER = 75; //byte
-	const DATA_STRENGTH = 76; //int
-	const DATA_MAX_STRENGTH = 77; //int
-	/* 78 (int)
-	 * 79 (int) */
+	 * 73 (byte) command-block */
+	const DATA_CONTROLLING_RIDER_SEAT_NUMBER = 74; //byte
+	const DATA_STRENGTH = 75; //int
+	const DATA_MAX_STRENGTH = 76; //int
+	/* 77 (int)
+	 * 78 (int) */
 
 
 	const DATA_FLAG_ONFIRE = 0;
