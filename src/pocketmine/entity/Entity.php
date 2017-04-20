@@ -86,8 +86,8 @@ abstract class Entity extends Location implements Metadatable{
 	/* 10 (byte) */
 	const DATA_HURT_TIME = 11; //int (minecart/boat)
 	const DATA_HURT_DIRECTION = 12; //int (minecart/boat)
-	/* 13 (float) minecart/boat
-	 * 14 (float) minecart/boat */
+	const DATA_PADDLE_TIME_LEFT = 13; //float
+	const DATA_PADDLE_TIME_RIGHT = 14; //float
 	const DATA_EXPERIENCE_VALUE = 15; //int (xp orb)
 
 	//TODO: add more properties
