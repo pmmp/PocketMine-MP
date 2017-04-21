@@ -43,9 +43,10 @@ class MoveEntityPacket extends DataPacket{
 		$this->eid = $this->getEntityRuntimeId();
 		$this->getVector3f($this->x, $this->y, $this->z);
 		$this->pitch = $this->getByte() * (360.0 / 256);
-		$this->yaw = $this->getByte() * (360.0 / 256);
 		$this->headYaw = $this->getByte() * (360.0 / 256);
+		$this->yaw = $this->getByte() * (360.0 / 256);
 		$this->byte1 = $this->getByte();
+		$this->byte2 = $this->getByte();
 	}
 
 	public function encode(){
