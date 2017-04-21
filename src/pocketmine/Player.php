@@ -1973,7 +1973,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 				break;
 			case ProtocolInfo::MOB_EQUIPMENT_PACKET:
-				if($this->isSpectator() or $this->spawned === false or !$this->isAlive()){
+				if($this->spawned === false or !$this->isAlive() or $this->isSpectator()){
 					break;
 				}
 
@@ -1994,7 +1994,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
 				break;
 			case ProtocolInfo::USE_ITEM_PACKET:
-				if($this->isSpectator() or $this->spawned === false or !$this->isAlive()){
+				if($this->spawned === false or !$this->isAlive() or $this->isSpectator()){
 					break;
 				}
 
@@ -2112,7 +2112,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 				switch($packet->action){
 					case PlayerActionPacket::ACTION_START_BREAK:
-						if($this->isSpectator() or $this->lastBreak !== PHP_INT_MAX or $pos->distanceSquared($this) > 10000){
+						if($this->lastBreak !== PHP_INT_MAX or $pos->distanceSquared($this) > 10000 or $this->isSpectator()){
 							break;
 						}
 						$target = $this->level->getBlock($pos);
@@ -2314,7 +2314,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				break;
 
 			case ProtocolInfo::REMOVE_BLOCK_PACKET:
-				if($this->isSpectator() or $this->spawned === false or !$this->isAlive()){
+				if($this->spawned === false or !$this->isAlive() or $this->isSpectator()){
 					break;
 				}
 				$this->craftingType = 0;
@@ -2507,7 +2507,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			case ProtocolInfo::SET_HEALTH_PACKET: //Not used
 				break;
 			case ProtocolInfo::ENTITY_EVENT_PACKET:
-				if($this->isSpectator() or $this->spawned === false or !$this->isAlive()){
+				if($this->spawned === false or !$this->isAlive() or $this->isSpectator()){
 					break;
 				}
 				$this->craftingType = 0;
@@ -2534,7 +2534,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 				break;
 			case ProtocolInfo::DROP_ITEM_PACKET:
-				if($this->isSpectator() or $this->spawned === false or !$this->isAlive()){
+				if($this->spawned === false or !$this->isAlive() or $this->isSpectator()){
 					break;
 				}
 
@@ -2631,7 +2631,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				break;
 
 			case ProtocolInfo::CRAFTING_EVENT_PACKET:
-				if($this->isSpectator() or $this->spawned === false or !$this->isAlive()){
+				if($this->spawned === false or !$this->isAlive() or $this->isSpectator()){
 					break;
 				}elseif(!isset($this->windowIndex[$packet->windowId])){
 					$this->inventory->sendContents($this);
@@ -2801,7 +2801,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				break;
 
 			case ProtocolInfo::CONTAINER_SET_SLOT_PACKET:
-				if($this->isSpectator() or $this->spawned === false or !$this->isAlive()){
+				if($this->spawned === false or !$this->isAlive() or $this->isSpectator()){
 					break;
 				}
 
@@ -2884,7 +2884,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 				break;
 			case ProtocolInfo::BLOCK_ENTITY_DATA_PACKET:
-				if($this->isSpectator() or $this->spawned === false or !$this->isAlive()){
+				if($this->spawned === false or !$this->isAlive() or $this->isSpectator()){
 					break;
 				}
 				$this->craftingType = 0;
