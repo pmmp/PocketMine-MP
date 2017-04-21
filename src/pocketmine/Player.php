@@ -2672,9 +2672,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->deadTicks = 0;
 				$this->noDamageTicks = 60;
 
+				$this->removeAllEffects();
 				$this->setHealth($this->getMaxHealth());
 
-				$this->removeAllEffects();
 				$this->sendData($this);
 
 				$this->sendSettings();
