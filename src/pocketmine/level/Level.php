@@ -1544,6 +1544,25 @@ class Level implements ChunkManager, Metadatable{
 					$ev->setCancelled();
 				}
 			}
+
+			if($player->isAdventure(true) and !$ev->isCancelled()){
+				$tag = $item->getNamedTagEntry("CanDestroy");
+				$canBreak = false;
+				if($tag instanceof ListTag){
+					foreach($tag as $v){
+						if($v instanceof StringTag){
+							$entry = Item::fromString($v->getValue());
+							if($entry->getId() > 0 and $entry->getBlock() !== null and $entry->getBlock()->getId() === $target->getId()){
+								$canBreak = true;
+								break;
+							}
+						}
+					}
+				}
+
+				$ev->setCancelled(!$canBreak);
+			}
+
 			$this->server->getPluginManager()->callEvent($ev);
 			if($ev->isCancelled()){
 				return false;
@@ -1586,24 +1605,6 @@ class Level implements ChunkManager, Metadatable{
 		if($above !== null){
 			if($above->getId() === Item::FIRE){
 				$this->setBlock($above, new Air(), true);
-			}
-		}
-
-		$tag = $item->getNamedTagEntry("CanDestroy");
-		if($tag instanceof ListTag){
-			$canBreak = false;
-			foreach($tag as $v){
-				if($v instanceof StringTag){
-					$entry = Item::fromString($v->getValue());
-					if($entry->getId() > 0 and $entry->getBlock() !== null and $entry->getBlock()->getId() === $target->getId()){
-						$canBreak = true;
-						break;
-					}
-				}
-			}
-
-			if(!$canBreak){
-				return false;
 			}
 		}
 
@@ -1681,6 +1682,25 @@ class Level implements ChunkManager, Metadatable{
 					$ev->setCancelled();
 				}
 			}
+
+			if($player->isAdventure(true) and !$ev->isCancelled()){
+				$canPlace = false;
+				$tag = $item->getNamedTagEntry("CanPlaceOn");
+				if($tag instanceof ListTag){
+					foreach($tag as $v){
+						if($v instanceof StringTag){
+							$entry = Item::fromString($v->getValue());
+							if($entry->getId() > 0 and $entry->getBlock() !== null and $entry->getBlock()->getId() === $target->getId()){
+								$canPlace = true;
+								break;
+							}
+						}
+					}
+				}
+
+				$ev->setCancelled(!$canPlace);
+			}
+
 			$this->server->getPluginManager()->callEvent($ev);
 			if(!$ev->isCancelled()){
 				$target->onUpdate(self::BLOCK_UPDATE_TOUCH);
@@ -1740,24 +1760,6 @@ class Level implements ChunkManager, Metadatable{
 
 			if($realCount > 0){
 				return false; //Entity in block
-			}
-		}
-
-		$tag = $item->getNamedTagEntry("CanPlaceOn");
-		if($tag instanceof ListTag){
-			$canPlace = false;
-			foreach($tag as $v){
-				if($v instanceof StringTag){
-					$entry = Item::fromString($v->getValue());
-					if($entry->getId() > 0 and $entry->getBlock() !== null and $entry->getBlock()->getId() === $target->getId()){
-						$canPlace = true;
-						break;
-					}
-				}
-			}
-
-			if(!$canPlace){
-				return false;
 			}
 		}
 

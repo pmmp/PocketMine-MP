@@ -43,8 +43,8 @@ class Squid extends WaterAnimal implements Ageable{
 	private $switchDirectionTicker = 0;
 
 	public function initEntity(){
+		$this->setMaxHealth(10);
 		parent::initEntity();
-		$this->setMaxHealth(5);
 	}
 
 	public function getName(){

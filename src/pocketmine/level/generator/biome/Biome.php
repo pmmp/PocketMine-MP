@@ -137,7 +137,7 @@ abstract class Biome{
 		return $this->id;
 	}
 
-	public abstract function getName();
+	abstract public function getName();
 
 	public function getMinElevation(){
 		return $this->minElevation;

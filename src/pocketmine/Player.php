@@ -1335,7 +1335,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public function sendSettings(){
 		$pk = new AdventureSettingsPacket();
 		$pk->flags = 0;
-		$pk->worldImmutable = $this->isAdventure();
+		$pk->worldImmutable = $this->isSpectator();
 		$pk->autoJump = $this->autoJump;
 		$pk->allowFlight = $this->allowFlight;
 		$pk->noClip = $this->isSpectator();
@@ -1582,6 +1582,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						$this->teleport($ev->getTo());
 					}else{
 						$this->level->addEntityMovement($this->x >> 4, $this->z >> 4, $this->getId(), $this->x, $this->y + $this->getEyeHeight(), $this->z, $this->yaw, $this->pitch, $this->yaw);
+
+						$distance = $from->distance($to);
+
+						//TODO: check swimming (adds 0.015 exhaustion in MCPE)
+						if($this->isSprinting()){
+							$this->exhaust(0.1 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
+						}else{
+							$this->exhaust(0.01 * $distance, PlayerExhaustEvent::CAUSE_WALKING);
+						}
 					}
 				}
 			}
@@ -2693,9 +2702,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->deadTicks = 0;
 				$this->noDamageTicks = 60;
 
+				$this->removeAllEffects();
 				$this->setHealth($this->getMaxHealth());
 
-				$this->removeAllEffects();
+				foreach($this->attributeMap->getAll() as $attr){
+					$attr->resetToDefault();
+				}
+
 				$this->sendData($this);
 
 				$this->sendSettings();
@@ -2706,6 +2719,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->scheduleUpdate();
 				break;
 			case PlayerActionPacket::ACTION_JUMP:
+				$this->jump();
 				return true;
 			case PlayerActionPacket::ACTION_START_SPRINT:
 				$ev = new PlayerToggleSprintEvent($this, true);
@@ -3561,7 +3575,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @param string $reason  Reason showed in console
 	 * @param bool   $notify
 	 */
-	public final function close($message = "", $reason = "generic reason", $notify = true){
+	final public function close($message = "", $reason = "generic reason", $notify = true){
 		if($this->connected and !$this->closed){
 			if($notify and strlen((string) $reason) > 0){
 				$pk = new DisconnectPacket();
@@ -3704,6 +3718,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return;
 		}
 
+		parent::kill();
+
+		$pk = new RespawnPacket();
+		$pos = $this->getSpawn();
+		$pk->x = $pos->x;
+		$pk->y = $pos->y;
+		$pk->z = $pos->z;
+		$this->dataPacket($pk);
+	}
+
+	protected function callDeathEvent(){
 		$message = "death.attack.generic";
 
 		$params = [
@@ -3813,9 +3838,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				break;
 
 			default:
+				break;
 		}
-
-		Entity::kill();
 
 		$this->server->getPluginManager()->callEvent($ev = new PlayerDeathEvent($this, $this->getDrops(), new TranslationContainer($message, $params)));
 
@@ -3834,13 +3858,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if($ev->getDeathMessage() != ""){
 			$this->server->broadcast($ev->getDeathMessage(), Server::BROADCAST_CHANNEL_USERS);
 		}
-
-		$pk = new RespawnPacket();
-		$pos = $this->getSpawn();
-		$pk->x = $pos->x;
-		$pk->y = $pos->y;
-		$pk->z = $pos->z;
-		$this->dataPacket($pk);
 	}
 
 	public function attack($damage, EntityDamageEvent $source){

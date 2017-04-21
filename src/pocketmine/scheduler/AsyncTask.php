@@ -161,7 +161,7 @@ abstract class AsyncTask extends Collectable{
 	 *
 	 * @return void
 	 */
-	public abstract function onRun();
+	abstract public function onRun();
 
 	/**
 	 * Actions to execute when completed (on main thread)
