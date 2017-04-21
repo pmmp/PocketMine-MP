@@ -42,7 +42,7 @@ class MovePlayerPacket extends DataPacket{
 	public $pitch;
 	public $mode = self::MODE_NORMAL;
 	public $onGround;
-	public $eid2; //???
+	public $ridingEid;
 
 	public function decode(){
 		$this->eid = $this->getEntityRuntimeId();
@@ -52,7 +52,7 @@ class MovePlayerPacket extends DataPacket{
 		$this->bodyYaw = $this->getLFloat();
 		$this->mode = $this->getByte();
 		$this->onGround = $this->getBool();
-		$this->eid2 = $this->getEntityRuntimeId();
+		$this->ridingEid = $this->getEntityRuntimeId();
 	}
 
 	public function encode(){
@@ -64,7 +64,7 @@ class MovePlayerPacket extends DataPacket{
 		$this->putLFloat($this->bodyYaw); //TODO
 		$this->putByte($this->mode);
 		$this->putBool($this->onGround);
-		$this->putEntityRuntimeId($this->eid2);
+		$this->putEntityRuntimeId($this->ridingEid);
 	}
 
 	public function handle(NetworkSession $session) : bool{
