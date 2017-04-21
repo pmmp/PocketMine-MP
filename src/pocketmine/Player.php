@@ -3008,14 +3008,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$message = $message->getText();
 		}
 
-		//TODO: Remove this workaround (broken client MCPE 1.0.0)
-		$this->messageQueue[] = $this->server->getLanguage()->translateString($message);
-		/*
-		$pk = new TextPacket();
-		$pk->type = TextPacket::TYPE_RAW;
-		$pk->message = $this->server->getLanguage()->translateString($message);
-		$this->dataPacket($pk);
-		*/
+		if(($translated = $this->server->getLanguage()->translateString($message)) !== ""){
+			//TODO: Remove this workaround (broken client MCPE 1.0.0)
+			$this->messageQueue[] = $translated;
+			/*
+			$pk = new TextPacket();
+			$pk->type = TextPacket::TYPE_RAW;
+			$pk->message = $this->server->getLanguage()->translateString($message);
+			$this->dataPacket($pk);
+			*/
+		}
 	}
 
 	public function sendTranslation($message, array $parameters = []){
