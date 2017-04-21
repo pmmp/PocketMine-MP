@@ -101,7 +101,7 @@ class Anvil extends McRegion{
 	public function nbtDeserialize(string $data){
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		try{
-			$nbt->readCompressed($data, ZLIB_ENCODING_DEFLATE);
+			$nbt->readCompressed($data);
 
 			$chunk = $nbt->getData();
 
