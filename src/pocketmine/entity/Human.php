@@ -39,6 +39,7 @@ use pocketmine\network\protocol\AddPlayerPacket;
 use pocketmine\network\protocol\RemoveEntityPacket;
 use pocketmine\Player;
 use pocketmine\utils\UUID;
+use pocketmine\level\Level;
 
 class Human extends Creature implements ProjectileSource, InventoryHolder{
 
@@ -69,6 +70,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	protected $totalXp = 0;
 	protected $xpSeed;
 
+	public function __construct(Level $level, CompoundTag $nbt){
+		parent::__construct($level, $nbt);
+
+		if(strlen($this->skin) < 64 * 32 * 4){
+			throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
+		}
+	}
+
 	public function getSkinData(){
 		return $this->skin;
 	}
@@ -96,8 +105,12 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * @param string $skinId
 	 */
 	public function setSkin($str, $skinId){
-		$this->skin = $str;
-		$this->skinId = $skinId;
+		if(strlen($str) < 64 * 32 * 4){
+			throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
+		}else{
+			$this->skin = $str;
+			$this->skinId = $skinId;
+		}
 	}
 
 	public function getFood() : float{
