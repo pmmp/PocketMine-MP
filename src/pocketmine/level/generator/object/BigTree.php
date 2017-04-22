@@ -25,16 +25,17 @@ use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
 
 class BigTree extends Tree{
+
+	protected $radiusIncrease = 0;
+	protected $isBig = true;
 	private $trunkHeightMultiplier = 0.618;
 	private $trunkHeight;
 	private $leafAmount = 1;
 	private $leafDistanceLimit = 5;
 	private $widthScale = 1;
 	private $branchSlope = 0.381;
-
 	private $totalHeight = 6;
 	private $leavesHeight = 3;
-	protected $radiusIncrease = 0;
 	private $addLeavesVines = false;
 	private $addLogVines = false;
 	private $addCocoaPlants = false;
@@ -80,6 +81,4 @@ class BigTree extends Tree{
 		}
 		*/
 	}
-
-
 }

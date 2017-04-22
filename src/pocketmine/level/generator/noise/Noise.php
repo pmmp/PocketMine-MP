@@ -90,9 +90,9 @@ abstract class Noise{
 		return (($hash & 1) === 0 ? $u : -$u) + (($hash & 2) === 0 ? $v : -$v);
 	}
 
-	abstract public function getNoise2D($x, $z);
+	public abstract function getNoise2D($x, $z);
 
-	abstract public function getNoise3D($x, $y, $z);
+	public abstract function getNoise3D($x, $y, $z);
 
 	public function noise2D($x, $z, $normalized = false){
 		$result = 0;

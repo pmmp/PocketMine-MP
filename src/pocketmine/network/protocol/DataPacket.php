@@ -39,9 +39,9 @@ abstract class DataPacket extends BinaryStream{
 		return $this::NETWORK_ID;
 	}
 
-	abstract public function encode();
+	public abstract function encode();
 
-	abstract public function decode();
+	public abstract function decode();
 
 	public function reset(){
 		$this->buffer = chr($this::NETWORK_ID);
