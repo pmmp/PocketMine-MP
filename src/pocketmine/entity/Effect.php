@@ -65,13 +65,13 @@ class Effect{
 		$config = new Config(\pocketmine\PATH . "src/pocketmine/resources/effects.json", Config::JSON, []);
 
 		foreach($config->getAll() as $name => $data){
-			$color = hexdec($data["color"]);
+			$color = hexdec(substr($data["color"], 3));
 			$r = ($color >> 16) & 0xff;
 			$g = ($color >> 8) & 0xff;
 			$b = $color & 0xff;
 			self::registerEffect($name, new Effect(
 				$data["id"],
-				"%" . $data["name"],
+				"%potion." . $data["name"],
 				$r,
 				$g,
 				$b,
