@@ -1474,7 +1474,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->checkNearEntities($tickDiff);
 			}
 
-			$this->speed = ($to->subtract($from))->divide($tickDiff);
+			$this->speed = ($to->subtract($from)->divide($tickDiff));
 		}elseif($distanceSquared == 0){
 			$this->speed = new Vector3(0, 0, 0);
 		}
