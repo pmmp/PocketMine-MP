@@ -1,0 +1,314 @@
+{
+    "water": {
+        "id": 0,
+        "effects": []
+    },
+    "mundane": {
+        "id": 1,
+        "effects": []
+    },
+    "long_mundane": {
+        "id": 2,
+        "effects": []
+    },
+    "thick": {
+        "id": 3,
+        "effects": []
+    },
+    "awkward": {
+        "id": 4,
+        "effects": []
+    },
+    "night_vision": {
+        "id": 5,
+        "effects": [
+            {
+                "name": "night_vision",
+                "duration": 180
+            }
+        ]
+    },
+    "long_night_vision": {
+        "id": 6,
+        "effects": [
+            {
+                "name": "night_vision",
+                "duration": 480
+            }
+        ]
+    },
+    "invisibility": {
+        "id": 7,
+        "effects": [
+            {
+                "name": "invisibility",
+                "duration": 180
+            }
+        ]
+    },
+    "long_invisibility": {
+        "id": 8,
+        "effects": [
+            {
+                "name": "invisibility",
+                "duration": 480
+            }
+        ]
+    },
+    "leaping": {
+        "id": 9,
+        "effects": [
+            {
+                "name": "jump_boost",
+                "duration": 180
+            }
+        ]
+    },
+    "long_leaping": {
+        "id": 10,
+        "effects": [
+            {
+                "name": "jump_boost",
+                "duration": 480
+            }
+        ]
+    },
+    "strong_leaping": {
+        "id": 11,
+        "effects": [
+            {
+                "name": "jump_boost",
+                "duration": 90,
+                "amplifier": 1
+            }
+        ]
+    },
+    "fire_resistance": {
+        "id": 12,
+        "effects": [
+            {
+                "name": "fire_resistance",
+                "duration": 180
+            }
+        ]
+    },
+    "long_fire_resistance": {
+        "id": 13,
+        "effects": [
+            {
+                "name": "fire_resistance",
+                "duration": 480
+            }
+        ]
+    },
+    "swiftness": {
+        "id": 14,
+        "effects": [
+            {
+                "name": "speed",
+                "duration": 180
+            }
+        ]
+    },
+    "long_swiftness": {
+        "id": 15,
+        "effects": [
+            {
+                "name": "speed",
+                "duration": 480
+            }
+        ]
+    },
+    "strong_swiftness": {
+        "id": 16,
+        "effects": [
+            {
+                "name": "speed",
+                "duration": 90,
+                "amplifier": 1
+            }
+        ]
+    },
+    "slowness": {
+        "id": 17,
+        "effects": [
+            {
+                "name": "slowness",
+                "duration": 90
+            }
+        ]
+    },
+    "long_slowness": {
+        "id": 18,
+        "effects": [
+            {
+                "name": "slowness",
+                "duration": 240
+            }
+        ]
+    },
+    "water_breathing": {
+        "id": 19,
+        "effects": [
+            {
+                "name": "water_breathing",
+                "duration": 180
+            }
+        ]
+    },
+    "long_water_breathing": {
+        "id": 20,
+        "effects": [
+            {
+                "name": "water_breathing",
+                "duration": 480
+            }
+        ]
+    },
+    "healing": {
+        "id": 21,
+        "effects": [
+            {
+                "name": "instant_health"
+            }
+        ]
+    },
+    "strong_healing": {
+        "id": 22,
+        "effects": [
+            {
+                "name": "instant_health",
+                "amplifier": 1
+            }
+        ]
+    },
+    "harming": {
+        "id": 23,
+        "effects": [
+            {
+                "name": "instant_damage"
+            }
+        ]
+    },
+    "strong_harming": {
+        "id": 24,
+        "effects": [
+            {
+                "name": "instant_damage",
+                "amplifier": 1
+            }
+        ]
+    },
+    "poison": {
+        "id": 25,
+        "effects": [
+            {
+                "name": "poison",
+                "duration": 45
+            }
+        ]
+    },
+    "long_poison": {
+        "id": 26,
+        "effects": [
+            {
+                "name": "poison",
+                "duration": 120
+            }
+        ]
+    },
+    "strong_poison": {
+        "id": 27,
+        "effects": [
+            {
+                "name": "poison",
+                "duration": 22,
+                "amplifier": 1
+            }
+        ]
+    },
+    "regeneration": {
+        "id": 28,
+        "effects": [
+            {
+                "name": "regeneration",
+                "duration": 45
+            }
+        ]
+    },
+    "long_regeneration": {
+        "id": 29,
+        "effects": [
+            {
+                "name": "regeneration",
+                "duration": 120
+            }
+        ]
+    },
+    "strong_regeneration": {
+        "id": 30,
+        "effects": [
+            {
+                "name": "regeneration",
+                "duration": 22,
+                "amplifier": 1
+            }
+        ]
+    },
+    "strength": {
+        "id": 31,
+        "effects": [
+            {
+                "name": "strength",
+                "duration": 180
+            }
+        ]
+    },
+    "long_strength": {
+        "id": 32,
+        "effects": [
+            {
+                "name": "strength",
+                "duration": 480
+            }
+        ]
+    },
+    "strong_strength": {
+        "id": 33,
+        "effects": [
+            {
+                "name": "strength",
+                "duration": 90,
+                "amplifier": 1
+            }
+        ]
+    },
+    "weakness": {
+        "id": 34,
+        "effects": [
+            {
+                "name": "weakness",
+                "duration": 90
+            }
+        ]
+    },
+    "long_weakness": {
+        "id": 35,
+        "effects": [
+            {
+                "name": "weakness",
+                "duration": 240
+            }
+        ]
+    },
+    "wither": {
+        "id": 36,
+        "effects": [
+            {
+                "name": "wither",
+                "duration": 40,
+                "amplifier": 1
+            }
+        ]
+    }
+}

@@ -2558,30 +2558,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			case PlayerActionPacket::ACTION_RELEASE_ITEM:
 				if($this->isUsingItem() and $this->getItemUseDuration() > -1){
 					$this->inventory->getItemInHand()->onReleaseUsing($this);
-				}elseif($this->inventory->getItemInHand()->getId() === Item::BUCKET and $this->inventory->getItemInHand()->getDamage() === 1){ //Milk!
-					//TODO: move this to consumable code (should be done with an entity event, not with releasing items)
-					$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $this->inventory->getItemInHand()));
-					if($ev->isCancelled()){
-						$this->inventory->sendContents($this);
-						break;
-					}
-
-					$pk = new EntityEventPacket();
-					$pk->eid = $this->getId();
-					$pk->event = EntityEventPacket::USE_ITEM;
-					$this->dataPacket($pk);
-					$this->server->broadcastPacket($this->getViewers(), $pk);
-
-					if($this->isSurvival()){
-						$slot = $this->inventory->getItemInHand();
-						--$slot->count;
-						$this->inventory->setItemInHand($slot);
-						$this->inventory->addItem(Item::get(Item::BUCKET, 0, 1));
-					}
-
-					$this->removeAllEffects();
-				}else{
-					$this->inventory->sendContents($this);
 				}
 				break;
 			case PlayerActionPacket::ACTION_STOP_SLEEPING:

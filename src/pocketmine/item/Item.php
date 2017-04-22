@@ -93,6 +93,11 @@ class Item implements ItemIds, \JsonSerializable{
 	protected $attackPoints = 1; //Default 1 for punching with any item, or air
 
 	public static function init(){
+		if(static::class !== Item::class){
+			//Make sure nobody accidentally called SomeOtherItem::init() by mistake and called this by accident
+			throw new \RuntimeException("Tried to call inherited item Item::init() from descendent class " . static::class);
+		}
+
 		if(self::$list === null){
 			self::$list = new \SplFixedArray(65536);
 			$items = json_decode(file_get_contents(\pocketmine\PATH . "src/pocketmine/resources/items.json"), true);
@@ -103,10 +108,12 @@ class Item implements ItemIds, \JsonSerializable{
 			$types = [
 				"axe"       => Axe::class,
 				"bow"       => Bow::class,
+				"bucket"    => Bucket::class,
 				"default"   => Item::class,
 				"food"      => Food::class,
 				"hoe"       => Hoe::class,
 				"pickaxe"   => Pickaxe::class,
+				"potion"    => Potion::class,
 				"shears"    => Shears::class,
 				"shovel"    => Shovel::class,
 				"spawn_egg" => SpawnEgg::class,
@@ -126,27 +133,34 @@ class Item implements ItemIds, \JsonSerializable{
 					throw new \RuntimeException("Unknown item type " . $type);
 				}
 
-				/** @var Item $class */
-				$newItem = $class::fromJsonTypeData($itemData);
-
-				if(isset($itemData["max_stack_size"])){
-					$newItem->setMaxStackSize($itemData["max_stack_size"]);
-				}
-
-				if(isset($itemData["block"])){
-					if(defined(Block::class . "::" . strtoupper($itemData["block"]))){ //TODO: remove this hack
-						$newItem->setBlock(Block::get(constant(Block::class . "::" . strtoupper($itemData["block"]))));
-					}
-				}
-
-				self::registerItem($newItem);
+				$dataList = [
+					0 => $itemData
+				];
 
 				if(isset($itemData["variants"])){
-					foreach($itemData["variants"] as $variantData){
-						$resultData = array_replace($itemData, $variantData);
-						$variantItem = $class::fromJsonTypeData($resultData);
-						self::registerItem($variantItem);
+					foreach($itemData["variants"] as $variantName => $variantData){
+						if(!isset($variantData["meta"])){
+							throw new \RuntimeException("Missing variant meta value from item entry");
+						}
+						$dataList[(int) $variantData["meta"]] = array_replace($itemData, $variantData);
 					}
+				}
+
+				foreach($dataList as $meta => $variantData){
+					/** @var Item $class */
+					$newItem = $class::fromJsonTypeData($variantData);
+
+					if(isset($variantData["max_stack_size"])){
+						$newItem->setMaxStackSize($variantData["max_stack_size"]);
+					}
+
+					if(isset($variantData["block"])){
+						if(defined(Block::class . "::" . strtoupper($variantData["block"]))){ //TODO: remove this hack
+							$newItem->setBlock(Block::get(constant(Block::class . "::" . strtoupper($variantData["block"]))));
+						}
+					}
+
+					self::registerItem($newItem);
 				}
 			}
 

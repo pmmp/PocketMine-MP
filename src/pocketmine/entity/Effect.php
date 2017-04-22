@@ -69,7 +69,7 @@ class Effect{
 			$b = $color & 0xff;
 			self::registerEffect($name, new Effect(
 				$data["id"],
-				"%potion." . $data["name"],
+				$data["name"],
 				$r,
 				$g,
 				$b,
@@ -155,6 +155,14 @@ class Effect{
 	 * @return string
 	 */
 	public function getName(){
+		return "%potion." . $this->getBaseLanguageName();
+	}
+
+	/**
+	 * Returns the base language key for this effect type. Used to translate names for potions and tipped arrows.
+	 * @return string
+	 */
+	public function getBaseLanguageName() : string{
 		return $this->name;
 	}
 

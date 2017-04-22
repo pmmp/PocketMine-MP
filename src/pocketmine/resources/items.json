@@ -184,7 +184,27 @@
     },
     "bucket": {
         "id": 325,
-        "fallback_name": "Bucket"
+        "fallback_name": "Bucket",
+        "max_stack_size": 1,
+        "type": "bucket",
+        "variants": {
+            "empty": {
+                "meta": 0,
+                "max_stack_size": 16,
+            },
+            "milk": {
+                "meta": 1,
+                "fallback_name": "Milk Bucket"
+            },
+            "water": {
+                "meta": 8,
+                "fallback_name": "Water Bucket",
+            },
+            "lava": {
+                "meta": 10,
+                "fallback_name": "Lava Bucket",
+            }
+        }
     },
     "cake": {
         "id": 354,
@@ -896,7 +916,7 @@
     "potion": {
         "id": 373,
         "fallback_name": "Potion",
-        "todo": "implement"
+        "type": "potion"
     },
     "prismarine_crystals": {
         "id": 422,

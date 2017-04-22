@@ -47,6 +47,7 @@ use pocketmine\inventory\InventoryType;
 use pocketmine\inventory\Recipe;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
+use pocketmine\item\Potion;
 use pocketmine\lang\BaseLang;
 use pocketmine\level\format\io\leveldb\LevelDB;
 use pocketmine\level\format\io\LevelProviderManager;
@@ -1547,6 +1548,7 @@ class Server{
 			Enchantment::init();
 			Effect::init();
 			Item::init();
+			Potion::init();
 			Biome::init();
 			Attribute::init();
 			$this->craftingManager = new CraftingManager();
