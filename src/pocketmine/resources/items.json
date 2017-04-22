@@ -190,7 +190,7 @@
         "variants": {
             "empty": {
                 "meta": 0,
-                "max_stack_size": 16,
+                "max_stack_size": 16
             },
             "milk": {
                 "meta": 1,
@@ -198,11 +198,11 @@
             },
             "water": {
                 "meta": 8,
-                "fallback_name": "Water Bucket",
+                "fallback_name": "Water Bucket"
             },
             "lava": {
                 "meta": 10,
-                "fallback_name": "Lava Bucket",
+                "fallback_name": "Lava Bucket"
             }
         }
     },
