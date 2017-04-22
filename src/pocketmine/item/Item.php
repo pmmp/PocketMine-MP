@@ -631,7 +631,7 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	public function setLore(array $lines){
-		$tag = $this->getNamedTag();
+		$tag = $this->getNamedTag() ?? new CompoundTag("", []);
 		if(!isset($tag->display)){
 			$tag->display = new CompoundTag("display", []);
 		}
@@ -920,7 +920,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @return bool
 	 */
-	public final function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
+	final public function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
 		if($this->id === $item->getId() and ($checkDamage === false or $this->getDamage() === $item->getDamage())){
 			if($checkCompound){
 				if($item->getCompoundTag() === $this->getCompoundTag()){
@@ -946,7 +946,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @return bool
 	 */
-	public final function deepEquals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
+	final public function deepEquals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
 		return $this->equals($item, $checkDamage, $checkCompound);
 	}
 

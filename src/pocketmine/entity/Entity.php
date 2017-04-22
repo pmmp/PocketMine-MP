@@ -339,6 +339,7 @@ abstract class Entity extends Location implements Metadatable{
 		$this->invulnerable = $this->namedtag["Invulnerable"] > 0 ? true : false;
 
 		$this->attributeMap = new AttributeMap();
+		$this->addAttributes();
 
 		$this->chunk->addEntity($this);
 		$this->level->addEntity($this);
@@ -641,8 +642,6 @@ abstract class Entity extends Location implements Metadatable{
 		}
 
 		$this->scheduleUpdate();
-
-		$this->addAttributes();
 
 		if(isset($this->namedtag->ActiveEffects)){
 			foreach($this->namedtag->ActiveEffects->getValue() as $e){
@@ -1111,7 +1110,7 @@ abstract class Entity extends Location implements Metadatable{
 		//return !($this instanceof Player);
 	}
 
-	public final function scheduleUpdate(){
+	final public function scheduleUpdate(){
 		$this->level->updateEntities[$this->id] = $this;
 	}
 
