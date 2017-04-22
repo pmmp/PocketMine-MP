@@ -13,7 +13,7 @@ If you don't find what you're looking for there, [talk to a human](#discussion).
 - [#pmmp + #pocketmine channel IRC](http://webchat.freenode.net/?channels=pmmp,pocketmine)
 
 ### Plugins
-There are a very wide range of already-written plugins available which you can use to customise your server. Check out the [old plugin repository](http://plugins.pocketmine.net/), [Poggit](https://poggit.pmmp.io) or just search GitHub.
+There are a very wide range of already-written plugins available which you can use to customise your server. Check out [the old plugin repository](http://plugins.pocketmine.net/) and [Poggit](https://poggit.pmmp.io) or just search GitHub.
 
 ### For developers
  * [Latest API documentation](https://jenkins.pmmp.io/job/PocketMine-MP-doc/doxygen/) - Doxygen documentation generated from development
