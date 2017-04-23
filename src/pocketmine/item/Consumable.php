@@ -50,4 +50,10 @@ interface Consumable{
 	 * @return bool
 	 */
 	public function canBeConsumedBy(Entity $entity) : bool;
+
+	/**
+	 * Performs any additional actions necessary when this consumable is consumed.
+	 * @param Entity $consumer
+	 */
+	public function onConsume(Entity $consumer);
 }

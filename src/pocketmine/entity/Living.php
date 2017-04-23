@@ -28,6 +28,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\Timings;
+use pocketmine\item\Consumable;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ShortTag;
@@ -115,6 +116,21 @@ abstract class Living extends Entity implements Damageable{
 		}
 
 		$this->attackTime = 0;
+	}
+
+	public function consume(Consumable $consumable){
+		foreach($consumable->getAdditionalEffects() as $effect){
+			$this->addEffect($effect);
+		}
+
+		$consumable->onConsume($this);
+
+		$pk = new EntityEventPacket();
+		$pk->eid = $this->id;
+		$pk->event = EntityEventPacket::USE_ITEM;
+		$this->server->broadcastPacket($this->hasSpawned, $pk);
+
+		return $consumable->getResidue();
 	}
 
 	/**

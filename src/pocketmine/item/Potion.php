@@ -24,8 +24,6 @@ namespace pocketmine\item;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
-use pocketmine\Server;
-use pocketmine\utils\Config;
 
 class Potion extends Item implements Consumable{
 	protected static $effects = [];

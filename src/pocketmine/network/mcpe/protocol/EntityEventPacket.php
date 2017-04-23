@@ -46,23 +46,25 @@ class EntityEventPacket extends DataPacket{
 
 	const RESPAWN = 18;
 
+	const EAT_PARTICLES = 57; //Requires an item id for data
+
 	//TODO: add more events
 
 	public $eid;
 	public $event;
-	public $unknown;
+	public $data;
 
 	public function decode(){
 		$this->eid = $this->getEntityRuntimeId();
 		$this->event = $this->getByte();
-		$this->unknown = $this->getVarInt();
+		$this->data = $this->getVarInt();
 	}
 
 	public function encode(){
 		$this->reset();
 		$this->putEntityRuntimeId($this->eid);
 		$this->putByte($this->event);
-		$this->putVarInt($this->unknown);
+		$this->putVarInt($this->data);
 	}
 
 	public function handle(NetworkSession $session) : bool{

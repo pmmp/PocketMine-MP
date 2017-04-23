@@ -106,18 +106,19 @@ class Item implements ItemIds, \JsonSerializable{
 			}
 
 			$types = [
-				"axe"       => Axe::class,
-				"bow"       => Bow::class,
-				"bucket"    => Bucket::class,
-				"default"   => Item::class,
-				"food"      => Food::class,
-				"hoe"       => Hoe::class,
-				"pickaxe"   => Pickaxe::class,
-				"potion"    => Potion::class,
-				"shears"    => Shears::class,
-				"shovel"    => Shovel::class,
-				"spawn_egg" => SpawnEgg::class,
-				"sword"     => Sword::class
+				"axe"          => Axe::class,
+				"bow"          => Bow::class,
+				"bucket"       => Bucket::class,
+				"chorus_fruit" => ChorusFruit::class,
+				"default"      => Item::class,
+				"food"         => Food::class,
+				"hoe"          => Hoe::class,
+				"pickaxe"      => Pickaxe::class,
+				"potion"       => Potion::class,
+				"shears"       => Shears::class,
+				"shovel"       => Shovel::class,
+				"spawn_egg"    => SpawnEgg::class,
+				"sword"        => Sword::class
 			];
 
 			foreach($items as $itemData){
@@ -278,6 +279,7 @@ class Item implements ItemIds, \JsonSerializable{
 		try{
 			$class = self::$list[$id][$meta] ?? self::$list[$id][0] ?? null;
 			if($class !== null){
+				/** @var Item $item */
 				$item = clone $class;
 				$item->setDamage($meta);
 				$item->setCount($count);

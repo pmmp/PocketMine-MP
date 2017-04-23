@@ -24,7 +24,6 @@ namespace pocketmine\block;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
-use pocketmine\event\entity\EntityEatBlockEvent;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
@@ -49,10 +48,10 @@ class Cake extends Transparent implements FoodSource{
 
 	protected function recalculateBoundingBox(){
 
-		$f = (1 + $this->getDamage() * 2) / 16;
+		$f = (($this->getDamage() * 2) / 16);
 
 		return new AxisAlignedBB(
-			$this->x + $f,
+			$this->x + 0.0625 + $f,
 			$this->y,
 			$this->z + 0.0625,
 			$this->x + 1 - 0.0625,
@@ -89,20 +88,12 @@ class Cake extends Transparent implements FoodSource{
 	}
 
 	public function onActivate(Item $item, Player $player = null){
-		if($player instanceof Player and $this->canBeConsumedBy($player)){
-			$ev = new EntityEatBlockEvent($player, $this);
-			$this->getLevel()->getServer()->getPluginManager()->callEvent($ev);
-
-			if(!$ev->isCancelled()){
-				//TODO: move eating code to Entity classes
-				$player->addSaturation($ev->getSaturationRestore());
-				$player->addFood($ev->getFoodRestore());
-				foreach($ev->getAdditionalEffects() as $effect){
-					$player->addEffect($effect);
-				}
-				$this->getLevel()->setBlock($this, $ev->getResidue());
-				return true;
+		if($player instanceof Player){
+			if(($result = $player->consume($this)) !== $this){
+				$this->level->setBlock($this, $result, true, true);
 			}
+
+			return true;
 		}
 
 		return false;
@@ -119,8 +110,8 @@ class Cake extends Transparent implements FoodSource{
 	public function getResidue(){
 		$clone = clone $this;
 		$clone->meta++;
-		if($clone->meta >= 0x06){
-			$clone = new Air();
+		if($clone->meta > 0x06){
+			$clone = Block::get(Block::AIR);
 		}
 		return $clone;
 	}
@@ -138,5 +129,9 @@ class Cake extends Transparent implements FoodSource{
 
 	public function requiresHunger() : bool{
 		return true;
+	}
+
+	public function onConsume(Entity $consumer){
+
 	}
 }

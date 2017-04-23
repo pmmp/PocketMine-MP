@@ -271,12 +271,11 @@
     "chorus_fruit": {
         "id": 432,
         "fallback_name": "Chorus Fruit",
-        "type": "food",
+        "type": "chorus_fruit",
         "properties": {
             "nutrition": 4,
             "saturation": 2.4,
-            "requires_hunger": false,
-            "todo": "randomly teleport eater"
+            "requires_hunger": false
         }
     },
     "chorus_fruit_popped": {
@@ -795,7 +794,9 @@
     },
     "lingering_potion": {
         "id": 441,
-        "fallback_name": "Lingering Potion"
+        "fallback_name": "Lingering Potion",
+        "max_stack_size": 1,
+        "todo": "implement"
     },
     "magma_cream": {
         "id": 378,
@@ -916,6 +917,7 @@
     "potion": {
         "id": 373,
         "fallback_name": "Potion",
+        "max_stack_size": 1,
         "type": "potion"
     },
     "prismarine_crystals": {
@@ -1103,6 +1105,7 @@
     "splash_potion": {
         "id": 438,
         "fallback_name": "Splash Potion",
+        "max_stack_size": 1,
         "todo": "implement"
     },
     "spruce_door": {

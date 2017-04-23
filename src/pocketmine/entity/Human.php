@@ -21,11 +21,14 @@
 
 namespace pocketmine\entity;
 
+use pocketmine\block\Block;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
+use pocketmine\item\Consumable;
+use pocketmine\item\FoodSource;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteTag;
@@ -217,6 +220,25 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->setExhaustion($exhaustion);
 
 		return $ev->getAmount();
+	}
+
+	/**
+	 * @param Consumable $consumable
+	 *
+	 * @return mixed|Block|Consumable|ItemItem
+	 */
+	public function consume(Consumable $consumable){
+		if(($result = parent::consume($consumable)) !== $consumable){
+			if($consumable instanceof FoodSource){
+				if($consumable->requiresHunger() and !($this->getFood() < $this->getMaxFood())){
+					return $consumable;
+				}
+				$this->addFood($consumable->getFoodRestore());
+				$this->addSaturation($consumable->getSaturationRestore());
+			}
+		}
+
+		return $result;
 	}
 
 	public function getXpLevel() : int{

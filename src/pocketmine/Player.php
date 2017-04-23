@@ -80,6 +80,7 @@ use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\inventory\SimpleTransactionGroup;
+use pocketmine\item\Consumable;
 use pocketmine\item\Item;
 use pocketmine\level\ChunkLoader;
 use pocketmine\level\format\Chunk;
@@ -2225,24 +2226,41 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		switch($packet->event){
 			case EntityEventPacket::USE_ITEM: //Eating
-				$slot = $this->inventory->getItemInHand();
+				$item = $this->inventory->getItemInHand();
 
-				if($slot->canBeConsumed()){
-					$ev = new PlayerItemConsumeEvent($this, $slot);
-					if(!$slot->canBeConsumedBy($this)){
+				if($item instanceof Consumable and $item->canBeConsumed()){
+					$ev = new PlayerItemConsumeEvent($this, $item);
+					if(!$item->canBeConsumedBy($this)){
 						$ev->setCancelled();
 					}
 					$this->server->getPluginManager()->callEvent($ev);
 					if(!$ev->isCancelled()){
-						$slot->onConsume($this);
+						$this->dataPacket(clone $packet);
+
+						if(($result = $this->consume($item)) !== $item){
+							$this->inventory->setItemInHand($result);
+						}
 					}else{
 						$this->inventory->sendContents($this);
 					}
 
-					$this->setUsingItem(true);
+					$this->setUsingItem(false);
+					break;
+
+					//TODO: check item use cooldown
+					//TODO: add eating sounds
 				}
+
+				return false;
+			case EntityEventPacket::EAT_PARTICLES:
+				if($packet->data === 0){
+					//Make sure a bad client doesn't crash everyone watching
+					throw new \InvalidArgumentException("Received eat-particle entity event with data 0");
+				}
+				$this->server->broadcastPacket($this->getViewers(), $packet);
 				break;
 			default:
+				$this->server->getLogger()->debug("Unhandled entity event type " . $packet->event . " received from " . $this->getName());
 				return false;
 		}
 

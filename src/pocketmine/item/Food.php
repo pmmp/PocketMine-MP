@@ -24,9 +24,6 @@ namespace pocketmine\item;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
-use pocketmine\event\entity\EntityEatItemEvent;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
-use pocketmine\Player;
 
 class Food extends Item implements FoodSource{
 
@@ -83,7 +80,7 @@ class Food extends Item implements FoodSource{
 		}
 		$result = $properties["using_converts_to"] ?? "air";
 
-		return new Food(
+		return new static(
 			$data["id"],
 			$data["meta"] ?? 0,
 			1,
@@ -101,7 +98,7 @@ class Food extends Item implements FoodSource{
 	}
 
 	public function canBeConsumedBy(Entity $entity) : bool{
-		return $entity instanceof Human and (($entity->getFood() < $entity->getMaxFood()) or !$this->requiresHunger);
+		return $entity instanceof Human and (!$this->requiresHunger or ($entity->getFood() < $entity->getMaxFood()));
 	}
 
 	public function getFoodRestore() : int{
@@ -124,8 +121,8 @@ class Food extends Item implements FoodSource{
 	public function getResidue(){
 		if($this->result !== "air"){
 			return Item::fromString($this->result);
-		}elseif($this->getCount() === 1){
-			return Item::get(0);
+		}elseif($this->count === 1){
+			return Item::get(Item::AIR, 0, 0);
 		}else{
 			$new = clone $this;
 			$new->count--;
@@ -145,23 +142,7 @@ class Food extends Item implements FoodSource{
 	}
 
 	public function onConsume(Entity $human){
-		$pk = new EntityEventPacket();
-		$pk->eid = $human->getId();
-		$pk->event = EntityEventPacket::USE_ITEM;
-		if($human instanceof Player){
-			$human->dataPacket($pk);
-		}
-		$human->getLevel()->getServer()->broadcastPacket($human->getViewers(), $pk);
 
-		$ev = new EntityEatItemEvent($human, $this);
-
-		$human->addSaturation($ev->getSaturationRestore());
-		$human->addFood($ev->getFoodRestore());
-		foreach($ev->getAdditionalEffects() as $effect){
-			$human->addEffect($effect);
-		}
-
-		$human->getInventory()->setItemInHand($ev->getResidue());
 	}
 
 	public function __clone(){
