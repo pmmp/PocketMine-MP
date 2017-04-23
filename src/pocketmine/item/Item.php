@@ -121,17 +121,21 @@ class Item implements ItemIds, \JsonSerializable{
 				"sword"        => Sword::class
 			];
 
-			foreach($items as $itemData){
+			foreach($items as $itemName => $itemData){
 				if(!isset($itemData["id"])){
 					throw new \RuntimeException("Missing ID from item entry");
 				}elseif(!isset($itemData["fallback_name"])){
 					throw new \RuntimeException("Missing fallback English name from item entry");
 				}
 
-				$type = $itemData["type"] ?? "default";
-				$class = $types[$type] ?? "";
-				if(!is_a($class, Item::class, true)){
-					throw new \RuntimeException("Unknown item type " . $type);
+				if(isset($itemData["type"])){
+					if(!isset($types[$itemData["type"]])){
+						throw new \RuntimeException("Unknown item type " . $itemData["type"]);
+					}
+
+					$class = $types[$itemData["type"]];
+				}else{
+					$class = $types[$itemName] ?? Item::class;
 				}
 
 				$dataList = [

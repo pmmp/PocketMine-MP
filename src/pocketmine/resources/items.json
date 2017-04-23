@@ -155,7 +155,6 @@
     "bow": {
         "id": 261,
         "fallback_name": "Bow",
-        "type": "bow",
         "properties": {
             "durability": 385
         }
@@ -186,7 +185,6 @@
         "id": 325,
         "fallback_name": "Bucket",
         "max_stack_size": 1,
-        "type": "bucket",
         "variants": {
             "empty": {
                 "meta": 0,
@@ -271,7 +269,6 @@
     "chorus_fruit": {
         "id": 432,
         "fallback_name": "Chorus Fruit",
-        "type": "chorus_fruit",
         "properties": {
             "nutrition": 4,
             "saturation": 2.4,
@@ -917,8 +914,7 @@
     "potion": {
         "id": 373,
         "fallback_name": "Potion",
-        "max_stack_size": 1,
-        "type": "potion"
+        "max_stack_size": 1
     },
     "prismarine_crystals": {
         "id": 422,
@@ -1048,7 +1044,6 @@
     "shears": {
         "id": 359,
         "fallback_name": "Shears",
-        "type": "shears",
         "properties": {
             "durability": 238
         }
@@ -1079,8 +1074,7 @@
     },
     "spawn_egg": {
         "id": 383,
-        "fallback_name": "Spawn Egg",
-        "type": "spawn_egg"
+        "fallback_name": "Spawn Egg"
     },
     "speckled_melon": {
         "id": 382,
