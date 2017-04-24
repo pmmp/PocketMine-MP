@@ -374,12 +374,18 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public function entityBaseTick($tickDiff = 1){
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
+		$this->doFoodTick($tickDiff);
+
+		return $hasUpdate;
+	}
+
+	public function doFoodTick(int $tickDiff = 1){
 		if($this->isAlive()){
 			$food = $this->getFood();
 			$health = $this->getHealth();
 			$difficulty = $this->server->getDifficulty();
 
-			$this->foodTickTimer++;
+			$this->foodTickTimer += $tickDiff;
 			if($this->foodTickTimer >= 80){
 				$this->foodTickTimer = 0;
 			}
@@ -412,8 +418,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				}
 			}
 		}
-
-		return $hasUpdate;
 	}
 
 	public function getName(){
