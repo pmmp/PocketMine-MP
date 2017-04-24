@@ -53,21 +53,21 @@ class ServerCommandEvent extends ServerEvent implements Cancellable{
 	/**
 	 * @return CommandSender
 	 */
-	public function getSender(){
+	public function getSender() : CommandSender{
 		return $this->sender;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getCommand(){
+	public function getCommand() : string{
 		return $this->command;
 	}
 
 	/**
 	 * @param string $command
 	 */
-	public function setCommand($command){
+	public function setCommand(string $command) : string{
 		$this->command = $command;
 	}
 

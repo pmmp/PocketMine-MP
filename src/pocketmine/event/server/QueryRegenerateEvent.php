@@ -79,28 +79,43 @@ class QueryRegenerateEvent extends ServerEvent{
 	 *
 	 * @return int
 	 */
-	public function getTimeout(){
+	public function getTimeout() : int{
 		return $this->timeout;
 	}
 
-	public function setTimeout($timeout){
+    /**
+     * @param int
+     */
+	public function setTimeout(int $timeout){
 		$this->timeout = $timeout;
 	}
 
-	public function getServerName(){
+    /**
+     * @return string
+     */
+	public function getServerName() : string{
 		return $this->serverName;
 	}
 
-	public function setServerName($serverName){
+    /**
+     * @param string
+     */
+	public function setServerName(string $serverName){
 		$this->serverName = $serverName;
 	}
 
-	public function canListPlugins(){
+    /**
+     * @return bool
+     */
+	public function canListPlugins() : bool{
 		return $this->listPlugins;
 	}
 
-	public function setListPlugins($value){
-		$this->listPlugins = (bool) $value;
+    /**
+     * @param bool
+     */
+	public function setListPlugins(bool $value){
+		$this->listPlugins = $value;
 	}
 
 	/**
@@ -131,28 +146,46 @@ class QueryRegenerateEvent extends ServerEvent{
 		$this->players = $players;
 	}
 
-	public function getPlayerCount(){
+    /**
+     * @return int
+     */
+	public function getPlayerCount() : int{
 		return $this->numPlayers;
 	}
 
-	public function setPlayerCount($count){
-		$this->numPlayers = (int) $count;
+    /**
+     * @param int
+     */
+	public function setPlayerCount(int $count){
+		$this->numPlayers = $count;
 	}
 
-	public function getMaxPlayerCount(){
+    /**
+     * @return int
+     */
+	public function getMaxPlayerCount() : int{
 		return $this->maxPlayers;
 	}
 
-	public function setMaxPlayerCount($count){
-		$this->maxPlayers = (int) $count;
+    /**
+     * @param int
+     */
+	public function setMaxPlayerCount(int $count){
+		$this->maxPlayers = $count;
 	}
 
-	public function getWorld(){
+    /**
+     * @return string
+     */
+	public function getWorld() : string{
 		return $this->map;
 	}
 
-	public function setWorld($world){
-		$this->map = (string) $world;
+    /**
+     * @param string
+     */
+	public function setWorld(string $world){
+		$this->map = $world;
 	}
 
 	/**
@@ -160,10 +193,13 @@ class QueryRegenerateEvent extends ServerEvent{
 	 *
 	 * @return array
 	 */
-	public function getExtraData(){
+	public function getExtraData() : array{
 		return $this->extraData;
 	}
 
+    /**
+     * @param array
+     */
 	public function setExtraData(array $extraData){
 		$this->extraData = $extraData;
 	}

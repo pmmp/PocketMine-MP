@@ -48,7 +48,7 @@ class LowMemoryEvent extends ServerEvent{
 	 *
 	 * @return int
 	 */
-	public function getMemory(){
+	public function getMemory() : int{
 		return $this->memory;
 	}
 
@@ -57,7 +57,7 @@ class LowMemoryEvent extends ServerEvent{
 	 *
 	 * @return int
 	 */
-	public function getMemoryLimit(){
+	public function getMemoryLimit() : int{
 		return $this->memory;
 	}
 
@@ -66,14 +66,14 @@ class LowMemoryEvent extends ServerEvent{
 	 *
 	 * @return int
 	 */
-	public function getTriggerCount(){
+	public function getTriggerCount() : int{
 		return $this->triggerCount;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function isGlobal(){
+	public function isGlobal() : bool{
 		return $this->global;
 	}
 
@@ -82,7 +82,7 @@ class LowMemoryEvent extends ServerEvent{
 	 *
 	 * @return int
 	 */
-	public function getMemoryFreed(){
+	public function getMemoryFreed() : int{
 		return $this->getMemory() - ($this->isGlobal() ? Utils::getMemoryUsage(true)[1] : Utils::getMemoryUsage(true)[0]);
 	}
 

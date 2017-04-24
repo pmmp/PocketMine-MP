@@ -40,7 +40,7 @@ abstract class Event{
 	/**
 	 * @return string
 	 */
-	final public function getEventName(){
+	final public function getEventName() : string{
 		return $this->eventName === null ? get_class($this) : $this->eventName;
 	}
 
@@ -49,7 +49,7 @@ abstract class Event{
 	 *
 	 * @throws \BadMethodCallException
 	 */
-	public function isCancelled(){
+	public function isCancelled() : bool{
 		if(!($this instanceof Cancellable)){
 			throw new \BadMethodCallException("Event is not Cancellable");
 		}
@@ -63,7 +63,7 @@ abstract class Event{
 	 *
 	 * @throws \BadMethodCallException
 	 */
-	public function setCancelled($value = true){
+	public function setCancelled(bool $value = true){
 		if(!($this instanceof Cancellable)){
 			throw new \BadMethodCallException("Event is not Cancellable");
 		}
@@ -75,7 +75,7 @@ abstract class Event{
 	/**
 	 * @return HandlerList
 	 */
-	public function getHandlers(){
+	public function getHandlers() : HandlerList{
 		if(static::$handlerList === null){
 			static::$handlerList = new HandlerList();
 		}

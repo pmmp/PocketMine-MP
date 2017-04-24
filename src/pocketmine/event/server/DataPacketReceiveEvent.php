@@ -36,11 +36,17 @@ class DataPacketReceiveEvent extends ServerEvent implements Cancellable{
 		$this->player = $player;
 	}
 
-	public function getPacket(){
+    /**
+     * @return DataPacket
+     */
+	public function getPacket() : DataPacket{
 		return $this->packet;
 	}
 
-	public function getPlayer(){
+    /**
+     * @return Player
+     */
+	public function getPlayer() : Player{
 		return $this->player;
 	}
 }
