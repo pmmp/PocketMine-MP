@@ -709,9 +709,16 @@ class Chunk{
 							continue; //Fixes entities allocated in wrong chunks.
 						}
 
-						if(($entity = Entity::createEntity($nbt["id"], $level, $nbt)) instanceof Entity){
-							$entity->spawnToAll();
-						}else{
+						try{
+							$entity = Entity::createEntity($nbt["id"], $level, $nbt);
+							if($entity instanceof Entity){
+								$entity->spawnToAll();
+							}else{
+								$changed = true;
+								continue;
+							}
+						}catch(\Throwable $t){
+							$level->getServer()->getLogger()->logException($t);
 							$changed = true;
 							continue;
 						}

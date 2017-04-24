@@ -1722,6 +1722,20 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return true;
 	}
 
+	public function doFoodTick(int $tickDiff = 1){
+		if($this->isSurvival()){
+			parent::doFoodTick($tickDiff);
+		}
+	}
+
+	public function exhaust(float $amount, int $cause = PlayerExhaustEvent::CAUSE_CUSTOM) : float{
+		if($this->isSurvival()){
+			return parent::exhaust($amount, $cause);
+		}
+
+		return 0.0;
+	}
+
 	public function checkNetwork(){
 		if(!$this->isOnline()){
 			return;
@@ -4108,7 +4122,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function onChunkChanged(Chunk $chunk){
-		unset($this->usedChunks[Level::chunkHash($chunk->getX(), $chunk->getZ())]);
+		if(isset($this->usedChunks[$hash = Level::chunkHash($chunk->getX(), $chunk->getZ())])){
+			$this->usedChunks[$hash] = false;
+		}
 	}
 
 	public function onChunkLoaded(Chunk $chunk){
