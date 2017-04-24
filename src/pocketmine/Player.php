@@ -4088,7 +4088,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function onChunkChanged(Chunk $chunk){
-		unset($this->usedChunks[Level::chunkHash($chunk->getX(), $chunk->getZ())]);
+		if(isset($this->usedChunks[$hash = Level::chunkHash($chunk->getX(), $chunk->getZ())])){
+			$this->usedChunks[$hash] = false;
+		}
 	}
 
 	public function onChunkLoaded(Chunk $chunk){
