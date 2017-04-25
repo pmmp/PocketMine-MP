@@ -225,9 +225,11 @@ class Effect{
 	}
 
 	/**
+	* Returns the level of this effect.
+	*
 	* @return int
 	*/
-	public function getEffectLevel() {
+	public function getEffectLevel() : int{
 		return $this->effectLevel;
 	}
 
@@ -236,7 +238,7 @@ class Effect{
 	*
 	* @return $this
 	*/
-	private function setEffectLevel(int $level) {			// should only be called within setAmplifier
+	private function setEffectLevel(int $level) : Effect{ // should only be called within setAmplifier
 		$this->effectLevel = $level;
 		return $this;
 	}
