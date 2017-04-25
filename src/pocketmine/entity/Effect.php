@@ -362,13 +362,13 @@ class Effect{
 			case Effect::INSTANT_HEALTH:
 				//TODO: add particles (witch spell)
 				if($entity->getHealth() < $entity->getMaxHealth()){
-					$amount = 2 * (2 ** (($this->amplifier + 1) % 32));
+					$amount = 2 * (2 ** ($this->effectLevel % 32));
 					$entity->heal($amount, new EntityRegainHealthEvent($entity, $amount, EntityRegainHealthEvent::CAUSE_MAGIC));
 				}
 				break;
 			case Effect::INSTANT_DAMAGE:
 				//TODO: add particles (witch spell)
-				$amount = 2 * (2 ** (($this->amplifier + 1) % 32));
+				$amount = 2 * (2 ** ($this->effectLevel % 32));
 				$entity->attack($amount, new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, $amount));
 				break;
 		}
@@ -433,7 +433,7 @@ class Effect{
 				}else{
 					$speed = $attr->getValue();
 				}
-				$speed *= (1 + 0.2 * $this->amplifier);
+				$speed *= (1 + 0.2 * $this->effectLevel);
 				$attr->setValue($speed);
 				break;
 			case Effect::SLOWNESS:
@@ -443,7 +443,7 @@ class Effect{
 				}else{
 					$speed = $attr->getValue();
 				}
-				$speed *= (1 - 0.15 * $this->amplifier);
+				$speed *= (1 - 0.15 * $this->effectLevel);
 				$attr->setValue($speed, true);
 				break;
 
@@ -455,11 +455,11 @@ class Effect{
 					$max = $attr->getMaxValue();
 				}
 
-				$max += (4 * ($this->amplifier + 1));
+				$max += (4 * $this->effectLevel);
 				$attr->setMaxValue($max);
 				break;
 			case Effect::ABSORPTION:
-				$new = (4 * ($this->amplifier + 1));
+				$new = (4 * $this->effectLevel);
 				if($new > $entity->getAbsorption()){
 					$entity->setAbsorption($new);
 				}
@@ -497,11 +497,11 @@ class Effect{
 				break;
 			case Effect::SLOWNESS:
 				$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
-				$attr->setValue($attr->getValue() / (1 - 0.15 * $this->amplifier));
+				$attr->setValue($attr->getValue() / (1 - 0.15 * $this->effectLevel));
 				break;
 			case Effect::HEALTH_BOOST:
 				$attr = $entity->getAttributeMap()->getAttribute(Attribute::HEALTH);
-				$attr->setMaxValue($attr->getMaxValue() - (4 * ($this->amplifier + 1)));
+				$attr->setMaxValue($attr->getMaxValue() - (4 * $this->effectLevel));
 				break;
 			case Effect::ABSORPTION:
 				$entity->setAbsorption(0);
