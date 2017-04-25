@@ -38,6 +38,7 @@ class LoginPacket extends DataPacket{
 	public $clientId;
 	public $identityPublicKey;
 	public $serverAddress;
+	public $deviceModel;
 
 	public $skinId;
 	public $skin = "";
@@ -87,6 +88,7 @@ class LoginPacket extends DataPacket{
 		$this->clientId = $this->clientData["ClientRandomId"] ?? null;
 		$this->serverAddress = $this->clientData["ServerAddress"] ?? null;
 		$this->skinId = $this->clientData["SkinId"] ?? null;
+		$this->deviceModel = $this->clientData["DeviceModel"] ?? null;
 
 		if(isset($this->clientData["SkinData"])){
 			$this->skin = base64_decode($this->clientData["SkinData"]);

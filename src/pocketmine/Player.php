@@ -254,6 +254,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	protected $messageCounter = 2;
 
 	private $clientSecret;
+	
+	private $deviceModel;
 
 	/** @var Vector3 */
 	public $speed = null;
@@ -342,6 +344,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	public function getClientSecret(){
 		return $this->clientSecret;
+	}
+	
+	public function getDeviceModel(){
+	    return $this->deviceModel;
 	}
 
 	public function isBanned(){
@@ -1932,6 +1938,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		$this->randomClientId = $packet->clientId;
+		$this->deviceModel = $packet->deviceModel;
 
 		$this->uuid = UUID::fromString($packet->clientUUID);
 		$this->rawUUID = $this->uuid->toBinary();
