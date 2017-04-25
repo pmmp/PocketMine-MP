@@ -26,7 +26,7 @@ class ResourcePackInfoEntry{
 	protected $version;
 	protected $packSize;
 
-	public function __construct(string $packId, string $version, $packSize){
+	public function __construct(string $packId, string $version, $packSize = 0){
 		$this->packId = $packId;
 		$this->version = $version;
 		$this->packSize = $packSize;

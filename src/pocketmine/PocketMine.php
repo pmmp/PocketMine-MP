@@ -74,7 +74,7 @@ namespace pocketmine {
 	use raklib\RakLib;
 
 	const VERSION = "1.6.2dev";
-	const API_VERSION = "3.0.0-ALPHA4";
+	const API_VERSION = "3.0.0-ALPHA5";
 	const CODENAME = "Unleashed";
 
 	/*
@@ -397,11 +397,6 @@ namespace pocketmine {
 		++$errors;
 	}
 
-	if(!extension_loaded("sockets")){
-		$logger->critical("Unable to find the Socket extension.");
-		++$errors;
-	}
-
 	$pthreads_version = phpversion("pthreads");
 	if(substr_count($pthreads_version, ".") < 2){
 		$pthreads_version = "0.$pthreads_version";
@@ -430,19 +425,21 @@ namespace pocketmine {
 		");
 	}
 
-	if(!extension_loaded("curl")){
-		$logger->critical("Unable to find the cURL extension.");
-		++$errors;
-	}
+	$extensions = [
+		"curl" => "cURL",
+		"json" => "JSON",
+		"mbstring" => "Multibyte String",
+		"yaml" => "YAML",
+		"sockets" => "Sockets",
+		"zip" => "Zip",
+		"zlib" => "Zlib"
+	];
 
-	if(!extension_loaded("yaml")){
-		$logger->critical("Unable to find the YAML extension.");
-		++$errors;
-	}
-
-	if(!extension_loaded("zlib")){
-		$logger->critical("Unable to find the Zlib extension.");
-		++$errors;
+	foreach($extensions as $ext => $name){
+		if(!extension_loaded($ext)){
+			$logger->critical("Unable to find the $name ($ext) extension.");
+			++$errors;
+		}
 	}
 
 	if($errors > 0){
@@ -450,6 +447,10 @@ namespace pocketmine {
 		$logger->shutdown();
 		$logger->join();
 		exit(1); //Exit with error
+	}
+
+	if(PHP_INT_SIZE < 8){
+		$logger->warning("Running PocketMine-MP with 32-bit systems/PHP is deprecated. Support for 32-bit may be dropped in the future.");
 	}
 
 	$gitHash = str_repeat("00", 20);

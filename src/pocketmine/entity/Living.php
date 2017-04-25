@@ -31,7 +31,7 @@ use pocketmine\event\Timings;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ShortTag;
-use pocketmine\network\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\utils\BlockIterator;
 
 abstract class Living extends Entity implements Damageable{
@@ -42,6 +42,8 @@ abstract class Living extends Entity implements Damageable{
 	protected $attackTime = 0;
 
 	protected $invisible = false;
+
+	protected $jumpVelocity = 0.42;
 
 	protected function initEntity(){
 		parent::initEntity();
@@ -68,7 +70,7 @@ abstract class Living extends Entity implements Damageable{
 	public function setHealth($amount){
 		$wasAlive = $this->isAlive();
 		parent::setHealth($amount);
-		$this->attributeMap->getAttribute(Attribute::HEALTH)->setValue($this->getHealth());
+		$this->attributeMap->getAttribute(Attribute::HEALTH)->setValue($this->getHealth(), true);
 		if($this->isAlive() and !$wasAlive){
 			$pk = new EntityEventPacket();
 			$pk->eid = $this->getId();
@@ -77,8 +79,20 @@ abstract class Living extends Entity implements Damageable{
 		}
 	}
 
+	public function getMaxHealth(){
+		return $this->attributeMap->getAttribute(Attribute::HEALTH)->getMaxValue();
+	}
+
 	public function setMaxHealth($amount){
 		$this->attributeMap->getAttribute(Attribute::HEALTH)->setMaxValue($amount);
+	}
+
+	public function getAbsorption() : int{
+		return (int) $this->attributeMap->getAttribute(Attribute::ABSORPTION)->getValue();
+	}
+
+	public function setAbsorption(int $absorption){
+		$this->attributeMap->getAttribute(Attribute::ABSORPTION)->setValue($absorption);
 	}
 
 	public function saveNBT(){
@@ -101,6 +115,23 @@ abstract class Living extends Entity implements Damageable{
 		}
 
 		$this->attackTime = 0;
+	}
+
+	/**
+	 * Returns the initial upwards velocity of a jumping entity in blocks/tick, including additional velocity due to effects.
+	 * @return float
+	 */
+	public function getJumpVelocity() : float{
+		return $this->jumpVelocity + ($this->hasEffect(Effect::JUMP) ? (($this->getEffect(Effect::JUMP)->getAmplifier() + 1) / 10) : 0);
+	}
+
+	/**
+	 * Called when the entity jumps from the ground. This method adds upwards velocity to the entity.
+	 */
+	public function jump(){
+		if($this->onGround){
+			$this->motionY = $this->getJumpVelocity(); //Y motion should already be 0 if we're jumping from the ground.
+		}
 	}
 
 	public function attack($damage, EntityDamageEvent $source){
@@ -171,6 +202,10 @@ abstract class Living extends Entity implements Damageable{
 			return;
 		}
 		parent::kill();
+		$this->callDeathEvent();
+	}
+
+	protected function callDeathEvent(){
 		$this->server->getPluginManager()->callEvent($ev = new EntityDeathEvent($this, $this->getDrops()));
 		foreach($ev->getDrops() as $item){
 			$this->getLevel()->dropItem($this, $item);
