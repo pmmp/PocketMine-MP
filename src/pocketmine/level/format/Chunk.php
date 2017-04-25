@@ -568,6 +568,9 @@ class Chunk{
 	 * @param Entity $entity
 	 */
 	public function addEntity(Entity $entity){
+		if($entity->closed){
+			throw new \InvalidArgumentException("Attempted to add a garbage closed Entity to a chunk");
+		}
 		$this->entities[$entity->getId()] = $entity;
 		if(!($entity instanceof Player) and $this->isInit){
 			$this->hasChanged = true;
@@ -588,6 +591,9 @@ class Chunk{
 	 * @param Tile $tile
 	 */
 	public function addTile(Tile $tile){
+		if($tile->closed){
+			throw new \InvalidArgumentException("Attempted to add a garbage closed Tile to a chunk");
+		}
 		$this->tiles[$tile->getId()] = $tile;
 		if(isset($this->tileList[$index = (($tile->x & 0x0f) << 12) | (($tile->z & 0x0f) << 8) | ($tile->y & 0xff)]) and $this->tileList[$index] !== $tile){
 			$this->tileList[$index]->close();
@@ -691,9 +697,16 @@ class Chunk{
 							continue; //Fixes entities allocated in wrong chunks.
 						}
 
-						if(($entity = Entity::createEntity($nbt["id"], $level, $nbt)) instanceof Entity){
-							$entity->spawnToAll();
-						}else{
+						try{
+							$entity = Entity::createEntity($nbt["id"], $level, $nbt);
+							if($entity instanceof Entity){
+								$entity->spawnToAll();
+							}else{
+								$changed = true;
+								continue;
+							}
+						}catch(\Throwable $t){
+							$level->getServer()->getLogger()->logException($t);
 							$changed = true;
 							continue;
 						}

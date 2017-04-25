@@ -48,8 +48,8 @@ use pocketmine\inventory\Recipe;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\lang\BaseLang;
-use pocketmine\level\format\io\LevelProviderManager;
 use pocketmine\level\format\io\leveldb\LevelDB;
+use pocketmine\level\format\io\LevelProviderManager;
 use pocketmine\level\format\io\region\Anvil;
 use pocketmine\level\format\io\region\McRegion;
 use pocketmine\level\format\io\region\PMAnvil;
@@ -74,13 +74,13 @@ use pocketmine\nbt\tag\LongTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\CompressBatchedTask;
+use pocketmine\network\mcpe\protocol\BatchPacket;
+use pocketmine\network\mcpe\protocol\DataPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\network\mcpe\protocol\PlayerListPacket;
+use pocketmine\network\mcpe\RakLibInterface;
 use pocketmine\network\Network;
-use pocketmine\network\protocol\BatchPacket;
-use pocketmine\network\protocol\DataPacket;
-use pocketmine\network\protocol\Info as ProtocolInfo;
-use pocketmine\network\protocol\PlayerListPacket;
 use pocketmine\network\query\QueryHandler;
-use pocketmine\network\RakLibInterface;
 use pocketmine\network\rcon\RCON;
 use pocketmine\network\upnp\UPnP;
 use pocketmine\permission\BanList;
@@ -90,6 +90,7 @@ use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
 use pocketmine\plugin\ScriptPluginLoader;
+use pocketmine\resourcepacks\ResourcePackManager;
 use pocketmine\scheduler\FileWriteTask;
 use pocketmine\scheduler\SendUsageTask;
 use pocketmine\scheduler\ServerScheduler;
@@ -178,6 +179,9 @@ class Server{
 
 	/** @var CraftingManager */
 	private $craftingManager;
+
+	/** @var ResourcePackManager */
+	private $resourceManager;
 
 	/** @var ConsoleCommandSender */
 	private $consoleSender;
@@ -598,6 +602,13 @@ class Server{
 	}
 
 	/**
+	 * @return ResourcePackManager
+	 */
+	public function getResourceManager() : ResourcePackManager{
+		return $this->resourceManager;
+	}
+
+	/**
 	 * @return ServerScheduler
 	 */
 	public function getScheduler(){
@@ -690,7 +701,7 @@ class Server{
 	 *
 	 * @return CompoundTag
 	 */
-	public function getOfflinePlayerData($name){
+	public function getOfflinePlayerData($name) : CompoundTag{
 		$name = strtolower($name);
 		$path = $this->getDataPath() . "players/";
 		if($this->shouldSavePlayerData()){
@@ -809,7 +820,7 @@ class Server{
 	public function getPlayerExact($name){
 		$name = strtolower($name);
 		foreach($this->getOnlinePlayers() as $player){
-			if(strtolower($player->getName()) === $name){
+			if($player->getLowerCaseName() === $name){
 				return $player;
 			}
 		}
@@ -826,7 +837,7 @@ class Server{
 		$partialName = strtolower($partialName);
 		$matchedPlayers = [];
 		foreach($this->getOnlinePlayers() as $player){
-			if(strtolower($player->getName()) === $partialName){
+			if($player->getLowerCaseName() === $partialName){
 				$matchedPlayers = [$player];
 				break;
 			}elseif(stripos($player->getName(), $partialName) !== false){
@@ -1540,6 +1551,8 @@ class Server{
 			Attribute::init();
 			$this->craftingManager = new CraftingManager();
 
+			$this->resourceManager = new ResourcePackManager($this, $this->getDataPath() . "resource_packs" . DIRECTORY_SEPARATOR);
+
 			$this->pluginManager = new PluginManager($this, $this->commandMap);
 			$this->pluginManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
 			$this->pluginManager->setUseTimings($this->getProperty("settings.enable-profiling", false));
@@ -2196,7 +2209,7 @@ class Server{
 		foreach($this->players as $p){
 			if(!$p->loggedIn and ($tickTime - $p->creationTime) >= 10){
 				$p->close("", "Login timeout");
-			}elseif($this->alwaysTickPlayers){
+			}elseif($this->alwaysTickPlayers and $p->joined){
 				$p->onUpdate($currentTick);
 			}
 		}
@@ -2241,7 +2254,7 @@ class Server{
 		if($this->getAutoSave()){
 			Timings::$worldSaveTimer->startTiming();
 			foreach($this->players as $index => $player){
-				if($player->isOnline()){
+				if($player->joined){
 					$player->save(true);
 				}elseif(!$player->isConnected()){
 					$this->removePlayer($player);

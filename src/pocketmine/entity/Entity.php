@@ -52,9 +52,9 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\protocol\MobEffectPacket;
-use pocketmine\network\protocol\RemoveEntityPacket;
-use pocketmine\network\protocol\SetEntityDataPacket;
+use pocketmine\network\mcpe\protocol\MobEffectPacket;
+use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
+use pocketmine\network\mcpe\protocol\SetEntityDataPacket;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
@@ -339,6 +339,7 @@ abstract class Entity extends Location implements Metadatable{
 		$this->invulnerable = $this->namedtag["Invulnerable"] > 0 ? true : false;
 
 		$this->attributeMap = new AttributeMap();
+		$this->addAttributes();
 
 		$this->chunk->addEntity($this);
 		$this->level->addEntity($this);
@@ -501,10 +502,6 @@ abstract class Entity extends Location implements Metadatable{
 		$this->effects[$effect->getId()] = $effect;
 
 		$this->recalculateEffectColor();
-
-		if($effect->getId() === Effect::HEALTH_BOOST){
-			$this->setHealth($this->getHealth() + 4 * ($effect->getAmplifier() + 1));
-		}
 	}
 
 	protected function recalculateEffectColor(){
@@ -513,7 +510,7 @@ abstract class Entity extends Location implements Metadatable{
 		$count = 0;
 		$ambient = true;
 		foreach($this->effects as $effect){
-			if($effect->isVisible()){
+			if($effect->isVisible() and $effect->hasBubbles()){
 				$c = $effect->getColor();
 				$color[0] += $c[0] * ($effect->getAmplifier() + 1);
 				$color[1] += $c[1] * ($effect->getAmplifier() + 1);
@@ -530,7 +527,7 @@ abstract class Entity extends Location implements Metadatable{
 			$g = ($color[1] / $count) & 0xff;
 			$b = ($color[2] / $count) & 0xff;
 
-			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, ($r << 16) + ($g << 8) + $b);
+			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, 0xff000000 | ($r << 16) | ($g << 8) | $b);
 			$this->setDataProperty(Entity::DATA_POTION_AMBIENT, Entity::DATA_TYPE_BYTE, $ambient ? 1 : 0);
 		}else{
 			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, 0);
@@ -646,8 +643,6 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->scheduleUpdate();
 
-		$this->addAttributes();
-
 		if(isset($this->namedtag->ActiveEffects)){
 			foreach($this->namedtag->ActiveEffects->getValue() as $e){
 				$amplifier = $e["Amplifier"] & 0xff; //0-255 only
@@ -724,6 +719,7 @@ abstract class Entity extends Location implements Metadatable{
 
 	/**
 	 * @param Player $player
+	 * @param bool   $send
 	 */
 	public function despawnFrom(Player $player, bool $send = true){
 		if(isset($this->hasSpawned[$player->getLoaderId()])){
@@ -758,7 +754,21 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->setLastDamageCause($source);
 
-		$this->setHealth($this->getHealth() - $source->getFinalDamage());
+		$damage = $source->getFinalDamage();
+
+		$absorption = $this->getAbsorption();
+		if($absorption > 0){
+			if($absorption > $damage){
+				//Use absorption health before normal health.
+				$this->setAbsorption($absorption - $damage);
+				$damage = 0;
+			}else{
+				$this->setAbsorption(0);
+				$damage -= $absorption;
+			}
+		}
+
+		$this->setHealth($this->getHealth() - $damage);
 	}
 
 	/**
@@ -808,6 +818,14 @@ abstract class Entity extends Location implements Metadatable{
 		}
 	}
 
+	public function getAbsorption() : int{
+		return 0;
+	}
+
+	public function setAbsorption(int $absorption){
+
+	}
+
 	/**
 	 * @param EntityDamageEvent $type
 	 */
@@ -830,7 +848,7 @@ abstract class Entity extends Location implements Metadatable{
 	 * @return int
 	 */
 	public function getMaxHealth(){
-		return $this->maxHealth + ($this->hasEffect(Effect::HEALTH_BOOST) ? 4 * ($this->getEffect(Effect::HEALTH_BOOST)->getAmplifier() + 1) : 0);
+		return $this->maxHealth;
 	}
 
 	/**
@@ -1659,7 +1677,10 @@ abstract class Entity extends Location implements Metadatable{
 		if(!$this->closed){
 			$this->server->getPluginManager()->callEvent(new EntityDespawnEvent($this));
 			$this->closed = true;
+
 			$this->despawnFromAll();
+			$this->hasSpawned = [];
+
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
 				$this->chunk = null;

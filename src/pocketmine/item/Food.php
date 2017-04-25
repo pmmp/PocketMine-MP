@@ -24,7 +24,7 @@ namespace pocketmine\item;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\event\entity\EntityEatItemEvent;
-use pocketmine\network\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\Player;
 
 abstract class Food extends Item implements FoodSource{

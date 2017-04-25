@@ -90,14 +90,14 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\protocol\BatchPacket;
-use pocketmine\network\protocol\DataPacket;
-use pocketmine\network\protocol\FullChunkDataPacket;
-use pocketmine\network\protocol\LevelEventPacket;
-use pocketmine\network\protocol\MoveEntityPacket;
-use pocketmine\network\protocol\SetEntityMotionPacket;
-use pocketmine\network\protocol\SetTimePacket;
-use pocketmine\network\protocol\UpdateBlockPacket;
+use pocketmine\network\mcpe\protocol\BatchPacket;
+use pocketmine\network\mcpe\protocol\DataPacket;
+use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\MoveEntityPacket;
+use pocketmine\network\mcpe\protocol\SetEntityMotionPacket;
+use pocketmine\network\mcpe\protocol\SetTimePacket;
+use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
@@ -133,9 +133,6 @@ class Level implements ChunkManager, Metadatable{
 
 	/** @var Tile[] */
 	private $tiles = [];
-
-	private $motionToSend = [];
-	private $moveToSend = [];
 
 	/** @var Player[] */
 	private $players = [];
@@ -425,7 +422,9 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function close(){
-		assert(!$this->closed, "Tried to close a level which is already closed");
+		if($this->closed){
+			throw new \InvalidStateException("Tried to close a level which is already closed");
+		}
 
 		if($this->getAutoSave()){
 			$this->save();
@@ -652,6 +651,9 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 */
 	public function doTick(int $currentTick){
+		if($this->closed){
+			throw new \InvalidStateException("Attempted to tick a Level which has been closed");
+		}
 
 		$this->timings->doTick->startTiming();
 
@@ -741,35 +743,6 @@ class Level implements ChunkManager, Metadatable{
 		if($this->sleepTicks > 0 and --$this->sleepTicks <= 0){
 			$this->checkSleep();
 		}
-
-		foreach($this->moveToSend as $index => $entry){
-			Level::getXZ($index, $chunkX, $chunkZ);
-			foreach($entry as $e){
-				$pk = new MoveEntityPacket();
-				$pk->eid = $e[0];
-				$pk->x = $e[1];
-				$pk->y = $e[2];
-				$pk->z = $e[3];
-				$pk->yaw = $e[4];
-				$pk->headYaw = $e[5];
-				$pk->pitch = $e[6];
-				$this->addChunkPacket($chunkX, $chunkZ, $pk);
-			}
-		}
-		$this->moveToSend = [];
-
-		foreach($this->motionToSend as $index => $entry){
-			Level::getXZ($index, $chunkX, $chunkZ);
-			foreach($entry as $entity){
-				$pk = new SetEntityMotionPacket();
-				$pk->eid = $entity[0];
-				$pk->motionX = $entity[1];
-				$pk->motionY = $entity[2];
-				$pk->motionZ = $entity[3];
-				$this->addChunkPacket($chunkX, $chunkZ, $pk);
-			}
-		}
-		$this->motionToSend = [];
 
 		foreach($this->chunkPackets as $index => $entries){
 			Level::getXZ($index, $chunkX, $chunkZ);
@@ -1597,6 +1570,25 @@ class Level implements ChunkManager, Metadatable{
 					$ev->setCancelled();
 				}
 			}
+
+			if($player->isAdventure(true) and !$ev->isCancelled()){
+				$tag = $item->getNamedTagEntry("CanDestroy");
+				$canBreak = false;
+				if($tag instanceof ListTag){
+					foreach($tag as $v){
+						if($v instanceof StringTag){
+							$entry = Item::fromString($v->getValue());
+							if($entry->getId() > 0 and $entry->getBlock() !== null and $entry->getBlock()->getId() === $target->getId()){
+								$canBreak = true;
+								break;
+							}
+						}
+					}
+				}
+
+				$ev->setCancelled(!$canBreak);
+			}
+
 			$this->server->getPluginManager()->callEvent($ev);
 			if($ev->isCancelled()){
 				return false;
@@ -1608,8 +1600,8 @@ class Level implements ChunkManager, Metadatable{
 				$breakTime = 3;
 			}
 
-			if($player->hasEffect(Effect::SWIFTNESS)){
-				$breakTime *= 1 - (0.2 * ($player->getEffect(Effect::SWIFTNESS)->getAmplifier() + 1));
+			if($player->hasEffect(Effect::HASTE)){
+				$breakTime *= 1 - (0.2 * ($player->getEffect(Effect::HASTE)->getAmplifier() + 1));
 			}
 
 			if($player->hasEffect(Effect::MINING_FATIGUE)){
@@ -1639,24 +1631,6 @@ class Level implements ChunkManager, Metadatable{
 		if($above !== null){
 			if($above->getId() === Item::FIRE){
 				$this->setBlock($above, new Air(), true);
-			}
-		}
-
-		$tag = $item->getNamedTagEntry("CanDestroy");
-		if($tag instanceof ListTag){
-			$canBreak = false;
-			foreach($tag as $v){
-				if($v instanceof StringTag){
-					$entry = Item::fromString($v->getValue());
-					if($entry->getId() > 0 and $entry->getBlock() !== null and $entry->getBlock()->getId() === $target->getId()){
-						$canBreak = true;
-						break;
-					}
-				}
-			}
-
-			if(!$canBreak){
-				return false;
 			}
 		}
 
@@ -1734,6 +1708,25 @@ class Level implements ChunkManager, Metadatable{
 					$ev->setCancelled();
 				}
 			}
+
+			if($player->isAdventure(true) and !$ev->isCancelled()){
+				$canPlace = false;
+				$tag = $item->getNamedTagEntry("CanPlaceOn");
+				if($tag instanceof ListTag){
+					foreach($tag as $v){
+						if($v instanceof StringTag){
+							$entry = Item::fromString($v->getValue());
+							if($entry->getId() > 0 and $entry->getBlock() !== null and $entry->getBlock()->getId() === $target->getId()){
+								$canPlace = true;
+								break;
+							}
+						}
+					}
+				}
+
+				$ev->setCancelled(!$canPlace);
+			}
+
 			$this->server->getPluginManager()->callEvent($ev);
 			if(!$ev->isCancelled()){
 				$target->onUpdate(self::BLOCK_UPDATE_TOUCH);
@@ -1793,24 +1786,6 @@ class Level implements ChunkManager, Metadatable{
 
 			if($realCount > 0){
 				return false; //Entity in block
-			}
-		}
-
-		$tag = $item->getNamedTagEntry("CanPlaceOn");
-		if($tag instanceof ListTag){
-			$canPlace = false;
-			foreach($tag as $v){
-				if($v instanceof StringTag){
-					$entry = Item::fromString($v->getValue());
-					if($entry->getId() > 0 and $entry->getBlock() !== null and $entry->getBlock()->getId() === $target->getId()){
-						$canPlace = true;
-						break;
-					}
-				}
-			}
-
-			if(!$canPlace){
-				return false;
 			}
 		}
 
@@ -2255,18 +2230,20 @@ class Level implements ChunkManager, Metadatable{
 			$oldEntities = $oldChunk !== null ? $oldChunk->getEntities() : [];
 			$oldTiles = $oldChunk !== null ? $oldChunk->getTiles() : [];
 
-			$this->provider->setChunk($chunkX, $chunkZ, $chunk);
-			$this->chunks[$index] = $chunk;
-
 			foreach($oldEntities as $entity){
 				$chunk->addEntity($entity);
+				$oldChunk->removeEntity($entity);
 				$entity->chunk = $chunk;
 			}
 
 			foreach($oldTiles as $tile){
 				$chunk->addTile($tile);
+				$oldChunk->removeTile($tile);
 				$tile->chunk = $chunk;
 			}
+
+			$this->provider->setChunk($chunkX, $chunkZ, $chunk);
+			$this->chunks[$index] = $chunk;
 		}
 
 		unset($this->chunkCache[$index]);
@@ -2909,16 +2886,23 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function addEntityMotion(int $chunkX, int $chunkZ, int $entityId, float $x, float $y, float $z){
-		if(!isset($this->motionToSend[$index = Level::chunkHash($chunkX, $chunkZ)])){
-			$this->motionToSend[$index] = [];
-		}
-		$this->motionToSend[$index][$entityId] = [$entityId, $x, $y, $z];
+		$pk = new SetEntityMotionPacket();
+		$pk->eid = $entityId;
+		$pk->motionX = $x;
+		$pk->motionY = $y;
+		$pk->motionZ = $z;
+		$this->addChunkPacket($chunkX, $chunkZ, $pk);
 	}
 
 	public function addEntityMovement(int $chunkX, int $chunkZ, int $entityId, float $x, float $y, float $z, float $yaw, float $pitch, $headYaw = null){
-		if(!isset($this->moveToSend[$index = Level::chunkHash($chunkX, $chunkZ)])){
-			$this->moveToSend[$index] = [];
-		}
-		$this->moveToSend[$index][$entityId] = [$entityId, $x, $y, $z, $yaw, $headYaw === null ? $yaw : $headYaw, $pitch];
+		$pk = new MoveEntityPacket();
+		$pk->eid = $entityId;
+		$pk->x = $x;
+		$pk->y = $y;
+		$pk->z = $z;
+		$pk->yaw = $yaw;
+		$pk->pitch = $pitch;
+		$pk->headYaw = $headYaw ?? $yaw;
+		$this->addChunkPacket($chunkX, $chunkZ, $pk);
 	}
 }

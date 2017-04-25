@@ -24,7 +24,6 @@ namespace pocketmine\updater;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
-use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
 
 class AutoUpdater{

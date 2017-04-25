@@ -22,8 +22,8 @@
 namespace pocketmine\inventory;
 
 use pocketmine\math\Vector3;
-use pocketmine\network\protocol\ContainerClosePacket;
-use pocketmine\network\protocol\ContainerOpenPacket;
+use pocketmine\network\mcpe\protocol\ContainerClosePacket;
+use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\Player;
 
 abstract class ContainerInventory extends BaseInventory{

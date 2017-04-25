@@ -38,7 +38,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\network\protocol\ExplodePacket;
+use pocketmine\network\mcpe\protocol\ExplodePacket;
 use pocketmine\utils\Random;
 
 class Explosion{
