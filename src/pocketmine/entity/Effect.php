@@ -118,8 +118,6 @@ class Effect{
 
 	protected $amplifier;
 
-	protected $effectLevel;
-
 	protected $color;
 
 	protected $show = true;
@@ -230,17 +228,7 @@ class Effect{
 	* @return int
 	*/
 	public function getEffectLevel() : int{
-		return $this->effectLevel;
-	}
-
-	/**
-	* @param int $level
-	*
-	* @return $this
-	*/
-	private function setEffectLevel(int $level) : Effect{ // should only be called within setAmplifier
-		$this->effectLevel = $level;
-		return $this;
+		return $this->amplifier + 1;
 	}
 
 	/**
@@ -358,19 +346,19 @@ class Effect{
 
 			case Effect::HUNGER:
 				if($entity instanceof Human){
-					$entity->exhaust(0.5 * $this->effectLevel, PlayerExhaustEvent::CAUSE_POTION);
+					$entity->exhaust(0.5 * $this->getEffectLevel(), PlayerExhaustEvent::CAUSE_POTION);
 				}
 				break;
 			case Effect::INSTANT_HEALTH:
 				//TODO: add particles (witch spell)
 				if($entity->getHealth() < $entity->getMaxHealth()){
-					$amount = 2 * (2 ** ($this->effectLevel % 32));
+					$amount = 2 * (2 ** ($this->getEffectLevel() % 32));
 					$entity->heal($amount, new EntityRegainHealthEvent($entity, $amount, EntityRegainHealthEvent::CAUSE_MAGIC));
 				}
 				break;
 			case Effect::INSTANT_DAMAGE:
 				//TODO: add particles (witch spell)
-				$amount = 2 * (2 ** ($this->effectLevel % 32));
+				$amount = 2 * (2 ** ($this->getEffectLevel() % 32));
 				$entity->attack($amount, new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, $amount));
 				break;
 		}
@@ -457,7 +445,7 @@ class Effect{
 					$max = $attr->getMaxValue();
 				}
 
-				$max += (4 * $this->effectLevel);
+				$max += (4 * $this->getEffectLevel());
 				$attr->setMaxValue($max);
 				break;
 			case Effect::ABSORPTION:
@@ -495,15 +483,15 @@ class Effect{
 				break;
 			case Effect::SPEED:
 				$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
-				$attr->setValue($attr->getValue() / (1 + 0.2 * $this->effectLevel));
+				$attr->setValue($attr->getValue() / (1 + 0.2 * $this->getEffectLevel()));
 				break;
 			case Effect::SLOWNESS:
 				$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
-				$attr->setValue($attr->getValue() / (1 - 0.15 * $this->effectLevel));
+				$attr->setValue($attr->getValue() / (1 - 0.15 * $this->getEffectLevel()));
 				break;
 			case Effect::HEALTH_BOOST:
 				$attr = $entity->getAttributeMap()->getAttribute(Attribute::HEALTH);
-				$attr->setMaxValue($attr->getMaxValue() - (4 * $this->effectLevel));
+				$attr->setMaxValue($attr->getMaxValue() - 4 * $this->getEffectLevel());
 				break;
 			case Effect::ABSORPTION:
 				$entity->setAbsorption(0);
