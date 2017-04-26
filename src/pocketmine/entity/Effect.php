@@ -422,7 +422,7 @@ class Effect{
 				}else{
 					$speed = $attr->getValue();
 				}
-				$speed *= (1 + 0.2 * $this->effectLevel);
+				$speed *= (1 + 0.2 * $this->getEffectLevel());
 				$attr->setValue($speed);
 				break;
 			case Effect::SLOWNESS:
