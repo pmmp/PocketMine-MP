@@ -44,10 +44,6 @@ class LoginPacket extends DataPacket{
 
 	public $clientData = [];
 
-	public function canBeBatched() : bool{
-		return false;
-	}
-
 	public function canBeSentBeforeLogin() : bool{
 		return true;
 	}

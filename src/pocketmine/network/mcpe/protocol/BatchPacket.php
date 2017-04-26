@@ -57,6 +57,9 @@ class BatchPacket extends DataPacket{
 	 */
 	public function addPacket($packet){
 		if($packet instanceof DataPacket){
+			if(!$packet->canBeBatched()){
+				throw new \InvalidArgumentException(get_class($packet) . " cannot be put inside a BatchPacket");
+			}
 			if(!$packet->isEncoded){
 				$packet->encode();
 			}
@@ -93,9 +96,10 @@ class BatchPacket extends DataPacket{
 		while(!$this->feof()){
 			$buf = $this->getString();
 			$pk = $network->getPacket(ord($buf{0}));
-			/*if(!$pk->canBeBatched()){
+
+			if(!$pk->canBeBatched()){
 				throw new \InvalidArgumentException("Received invalid " . get_class($pk) . " inside BatchPacket");
-			}*/
+			}
 
 			$pk->setBuffer($buf, 1);
 			$session->handleDataPacket($pk);
