@@ -247,7 +247,6 @@ class Effect{
 	 */
 	public function setAmplifier(int $amplifier){
 		$this->amplifier = $amplifier & 0xff;
-		$this->setEffectLevel($amplifier + 1);
 		return $this;
 	}
 
@@ -433,7 +432,7 @@ class Effect{
 				}else{
 					$speed = $attr->getValue();
 				}
-				$speed *= (1 - 0.15 * $this->effectLevel);
+				$speed *= (1 - 0.15 * $this->getEffectLevel());
 				$attr->setValue($speed, true);
 				break;
 
@@ -449,7 +448,7 @@ class Effect{
 				$attr->setMaxValue($max);
 				break;
 			case Effect::ABSORPTION:
-				$new = (4 * $this->effectLevel);
+				$new = (4 * $this->getEffectLevel());
 				if($new > $entity->getAbsorption()){
 					$entity->setAbsorption($new);
 				}
