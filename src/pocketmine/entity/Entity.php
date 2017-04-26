@@ -89,18 +89,23 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_PADDLE_TIME_LEFT = 13; //float
 	const DATA_PADDLE_TIME_RIGHT = 14; //float
 	const DATA_EXPERIENCE_VALUE = 15; //int (xp orb)
+	const DATA_MINECART_DISPLAY_BLOCK = 16; //int (id | (data << 16))
+	const DATA_MINECART_DISPLAY_OFFSET = 17; //int
+	const DATA_MINECART_HAS_DISPLAY = 18; //byte (must be 1 for minecart to show block inside)
 
 	//TODO: add more properties
 
+	const DATA_ENDERMAN_HELD_ITEM_ID = 23; //short
+	const DATA_ENDERMAN_HELD_ITEM_DAMAGE = 24; //short
 	const DATA_ENTITY_AGE = 25; //short
 
 	/* 27 (byte) player-specific flags
 	 * 28 (int) player "index"?
-	 * 29 (block coords) bed position
-	 * 30 (float) fireball
-	 * 31 (float) fireball
-	 * 32 (float) fireball
-	 * 33 (unknown)
+	 * 29 (block coords) bed position */
+	const DATA_FIREBALL_POWER_X = 30; //float
+	const DATA_FIREBALL_POWER_Y = 31;
+	const DATA_FIREBALL_POWER_Z = 32;
+	/* 33 (unknown)
 	 * 34 (float) fishing bobber
 	 * 35 (float) fishing bobber
 	 * 36 (float) fishing bobber */
@@ -109,16 +114,17 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_SCALE = 39; //float
 	const DATA_INTERACTIVE_TAG = 40; //string (button text)
 	const DATA_NPC_SKIN_ID = 41; //string
-	const DATA_URL_TAG = 43; //string
-	const DATA_MAX_AIR = 44; //short
-	const DATA_MARK_VARIANT = 45; //int
-	/* 46 (byte) container stuff
-	 * 47 (int)
-	 * 48 (unknown) */
-	const DATA_WITHER_INVULNERABLE_TICKS = 49;
-	const DATA_WITHER_TARGET_1 = 50;
-	const DATA_WITHER_TARGET_2 = 51;
-	const DATA_WITHER_TARGET_3 = 52;
+	const DATA_URL_TAG = 42; //string
+	const DATA_MAX_AIR = 43; //short
+	const DATA_MARK_VARIANT = 44; //int
+	/* 45 (byte) container stuff
+	 * 46 (int) container stuff
+	 * 47 (int) container stuff */
+	const DATA_BLOCK_TARGET = 48; //block coords (ender crystal)
+	const DATA_WITHER_INVULNERABLE_TICKS = 49; //int
+	const DATA_WITHER_TARGET_1 = 50; //long
+	const DATA_WITHER_TARGET_2 = 51; //long
+	const DATA_WITHER_TARGET_3 = 52; //long
 	/* 53 (short) */
 	const DATA_BOUNDING_BOX_WIDTH = 54; //float
 	const DATA_BOUNDING_BOX_HEIGHT = 55; //float
@@ -136,10 +142,10 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_SHULKER_ATTACH_POS = 67; //block coords
 	const DATA_TRADING_PLAYER_EID = 68; //long
 
-	/* 70 (byte) command-block
-	 * 71 (string) command-block
-	 * 72 (string) command-block
-	 * 73 (byte) command-block */
+	/* 70 (byte) command-block */
+	const DATA_COMMAND_BLOCK_COMMAND = 71; //string
+	const DATA_COMMAND_BLOCK_LAST_OUTPUT = 72; //string
+	const DATA_COMMAND_BLOCK_TRACK_OUTPUT = 73; //byte
 	const DATA_CONTROLLING_RIDER_SEAT_NUMBER = 74; //byte
 	const DATA_STRENGTH = 75; //int
 	const DATA_MAX_STRENGTH = 76; //int
