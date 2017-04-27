@@ -223,7 +223,7 @@ class Effect{
 	}
 
 	/**
-	* Returns the level of this effect.
+	* Returns the level of this effect, which is always one higher than the amplifier.
 	*
 	* @return int
 	*/
