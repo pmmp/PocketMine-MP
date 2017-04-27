@@ -30,6 +30,7 @@ use pocketmine\level\format\io\ChunkUtils;
 use pocketmine\level\format\SubChunk;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\Level;
+use pocketmine\level\LevelException;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\{
 	ByteArrayTag, ByteTag, CompoundTag, IntArrayTag, IntTag, ListTag, LongTag, StringTag
@@ -219,12 +220,9 @@ class McRegion extends BaseLevelProvider{
 		$isValid = (file_exists($path . "/level.dat") and is_dir($path . "/region/"));
 
 		if($isValid){
-			$files = glob($path . "/region/*.mc*");
-			if(empty($files)){ //possible glob() issue on some systems
-				$files = array_filter(scandir($path . "/region/"), function($file){
-					return substr($file, strrpos($file, ".") + 1, 2) === "mc"; //region file
-				});
-			}
+			$files = array_filter(scandir($path . "/region/"), function($file){
+				return substr($file, strrpos($file, ".") + 1, 2) === "mc"; //region file
+			});
 
 			foreach($files as $f){
 				if(substr($f, strrpos($f, ".") + 1) !== static::REGION_FILE_EXTENSION){
@@ -442,6 +440,22 @@ class McRegion extends BaseLevelProvider{
 	protected function loadRegion(int $x, int $z){
 		if(!isset($this->regions[$index = Level::chunkHash($x, $z)])){
 			$this->regions[$index] = new RegionLoader($this, $x, $z, static::REGION_FILE_EXTENSION);
+			try{
+				$this->regions[$index]->open();
+			}catch(CorruptedRegionException $e){
+				$logger = $this->level->getServer()->getLogger();
+				$logger->error("Corrupted region file detected: " . $e->getMessage());
+
+				$this->regions[$index]->close(false); //Do not write anything to the file
+
+				$path = $this->regions[$index]->getFilePath();
+				$backupPath = $path . ".bak." . time();
+				rename($path, $backupPath);
+				$logger->error("Corrupted region file has been backed up to " . $backupPath);
+
+				$this->regions[$index] = new RegionLoader($this, $x, $z, static::REGION_FILE_EXTENSION);
+				$this->regions[$index]->open(); //this will create a new empty region to replace the corrupted one
+			}
 		}
 	}
 
