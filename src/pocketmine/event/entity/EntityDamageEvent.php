@@ -86,7 +86,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 		}
 
 		if($entity->hasEffect(Effect::DAMAGE_RESISTANCE)){
-			$this->setDamage(-($this->getDamage(self::MODIFIER_BASE) * 0.20 * ($entity->getEffect(Effect::DAMAGE_RESISTANCE)->getAmplifier() + 1)), self::MODIFIER_RESISTANCE);
+			$this->setDamage(-($this->getDamage(self::MODIFIER_BASE) * 0.20 * $entity->getEffect(Effect::DAMAGE_RESISTANCE)->getEffectLevel()), self::MODIFIER_RESISTANCE);
 		}
 	}
 
