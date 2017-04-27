@@ -37,6 +37,10 @@ class UnknownPacket extends DataPacket{
 		return self::NETWORK_ID;
 	}
 
+	public function getName() : string{
+		return "unknown packet";
+	}
+
 	public function decode(){
 		$this->offset -= 1; //Rewind one byte so we can read the PID
 		$this->payload = $this->get(true);
@@ -48,6 +52,6 @@ class UnknownPacket extends DataPacket{
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleUnknown($this);
+		return false;
 	}
 }
