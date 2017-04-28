@@ -214,6 +214,8 @@ class MemoryManager{
 	}
 
 	public function dumpServerMemory($outputFolder, $maxNesting, $maxStringSize){
+		$hardLimit = ini_get('memory_limit');
+		ini_set('memory_limit', -1);
 		gc_disable();
 
 		if(!file_exists($outputFolder)){
@@ -300,6 +302,7 @@ class MemoryManager{
 
 		echo "[Dump] Finished!\n";
 
+		ini_set('memory_limit', $hardLimit);
 		gc_enable();
 	}
 
