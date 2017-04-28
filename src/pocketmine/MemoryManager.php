@@ -276,7 +276,7 @@ class MemoryManager{
 
 				fwrite($obData, "$hash@$className: " . json_encode($info, JSON_UNESCAPED_SLASHES) . "\n");
 
-				if(!isset($objects["staticProperties"][$className])){
+				if(!isset($staticProperties[$className])){
 					$staticProperties[$className] = [];
 					foreach($reflection->getProperties() as $property){
 						if(!$property->isStatic() or $property->getDeclaringClass()->getName() !== $className){
