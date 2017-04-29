@@ -234,6 +234,8 @@ class MemoryManager{
 
 		$refCounts = [];
 
+		$instanceCounts = [];
+
 		$staticCount = 0;
 		foreach($this->server->getLoader()->getClasses() as $className){
 			$reflection = new \ReflectionClass($className);
@@ -269,6 +271,11 @@ class MemoryManager{
 				$continue = true;
 
 				$className = get_class($object);
+				if(!isset($instanceCounts[$className])){
+					$instanceCounts[$className] = 1;
+				}else{
+					$instanceCounts[$className]++;
+				}
 
 				$objects[$hash] = true;
 
@@ -309,6 +316,9 @@ class MemoryManager{
 		file_put_contents($outputFolder . "/staticProperties.js", json_encode($staticProperties, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 		file_put_contents($outputFolder . "/serverEntry.js", json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 		file_put_contents($outputFolder . "/referenceCounts.js", json_encode($refCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+
+		arsort($instanceCounts, SORT_NUMERIC);
+		file_put_contents($outputFolder . "/instanceCounts.js", json_encode($instanceCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
 		echo "[Dump] Finished!\n";
 
