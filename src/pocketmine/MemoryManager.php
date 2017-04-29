@@ -234,6 +234,30 @@ class MemoryManager{
 
 		$refCounts = [];
 
+		$staticCount = 0;
+		foreach($this->server->getLoader()->getClasses() as $className){
+			$reflection = new \ReflectionClass($className);
+			$staticProperties[$className] = [];
+			foreach($reflection->getProperties() as $property){
+				if(!$property->isStatic() or $property->getDeclaringClass()->getName() !== $className){
+					continue;
+				}
+
+				if(!$property->isPublic()){
+					$property->setAccessible(true);
+				}
+
+				$staticCount++;
+				$this->continueDump($property->getValue(), $staticProperties[$className][$property->getName()], $objects, $refCounts, 0, $maxNesting, $maxStringSize);
+			}
+
+			if(count($staticProperties[$className]) === 0){
+				unset($staticProperties[$className]);
+			}
+		}
+
+		echo "[Dump] Wrote $staticCount static properties\n";
+
 		$this->continueDump($this->server, $data, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 
 		do{
@@ -275,25 +299,11 @@ class MemoryManager{
 				}
 
 				fwrite($obData, "$hash@$className: " . json_encode($info, JSON_UNESCAPED_SLASHES) . "\n");
-
-				if(!isset($staticProperties[$className])){
-					$staticProperties[$className] = [];
-					foreach($reflection->getProperties() as $property){
-						if(!$property->isStatic() or $property->getDeclaringClass()->getName() !== $className){
-							continue;
-						}
-
-						if(!$property->isPublic()){
-							$property->setAccessible(true);
-						}
-						$this->continueDump($property->getValue($object), $staticProperties[$className][$property->getName()], $objects, $refCounts, 0, $maxNesting, $maxStringSize);
-					}
-				}
 			}
 
 			echo "[Dump] Wrote " . count($objects) . " objects\n";
 		}while($continue);
-		
+
 		fclose($obData);
 
 		file_put_contents($outputFolder . "/staticProperties.js", json_encode($staticProperties, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
