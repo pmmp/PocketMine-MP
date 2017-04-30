@@ -214,6 +214,8 @@ class MemoryManager{
 	}
 
 	public function dumpServerMemory($outputFolder, $maxNesting, $maxStringSize){
+		$hardLimit = ini_get('memory_limit');
+		ini_set('memory_limit', -1);
 		gc_disable();
 
 		if(!file_exists($outputFolder)){
@@ -232,6 +234,32 @@ class MemoryManager{
 
 		$refCounts = [];
 
+		$instanceCounts = [];
+
+		$staticCount = 0;
+		foreach($this->server->getLoader()->getClasses() as $className){
+			$reflection = new \ReflectionClass($className);
+			$staticProperties[$className] = [];
+			foreach($reflection->getProperties() as $property){
+				if(!$property->isStatic() or $property->getDeclaringClass()->getName() !== $className){
+					continue;
+				}
+
+				if(!$property->isPublic()){
+					$property->setAccessible(true);
+				}
+
+				$staticCount++;
+				$this->continueDump($property->getValue(), $staticProperties[$className][$property->getName()], $objects, $refCounts, 0, $maxNesting, $maxStringSize);
+			}
+
+			if(count($staticProperties[$className]) === 0){
+				unset($staticProperties[$className]);
+			}
+		}
+
+		echo "[Dump] Wrote $staticCount static properties\n";
+
 		$this->continueDump($this->server, $data, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 
 		do{
@@ -243,6 +271,11 @@ class MemoryManager{
 				$continue = true;
 
 				$className = get_class($object);
+				if(!isset($instanceCounts[$className])){
+					$instanceCounts[$className] = 1;
+				}else{
+					$instanceCounts[$className]++;
+				}
 
 				$objects[$hash] = true;
 
@@ -273,33 +306,23 @@ class MemoryManager{
 				}
 
 				fwrite($obData, "$hash@$className: " . json_encode($info, JSON_UNESCAPED_SLASHES) . "\n");
-
-				if(!isset($objects["staticProperties"][$className])){
-					$staticProperties[$className] = [];
-					foreach($reflection->getProperties() as $property){
-						if(!$property->isStatic() or $property->getDeclaringClass()->getName() !== $className){
-							continue;
-						}
-
-						if(!$property->isPublic()){
-							$property->setAccessible(true);
-						}
-						$this->continueDump($property->getValue($object), $staticProperties[$className][$property->getName()], $objects, $refCounts, 0, $maxNesting, $maxStringSize);
-					}
-				}
 			}
 
 			echo "[Dump] Wrote " . count($objects) . " objects\n";
 		}while($continue);
-		
+
 		fclose($obData);
 
 		file_put_contents($outputFolder . "/staticProperties.js", json_encode($staticProperties, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 		file_put_contents($outputFolder . "/serverEntry.js", json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 		file_put_contents($outputFolder . "/referenceCounts.js", json_encode($refCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
+		arsort($instanceCounts, SORT_NUMERIC);
+		file_put_contents($outputFolder . "/instanceCounts.js", json_encode($instanceCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+
 		echo "[Dump] Finished!\n";
 
+		ini_set('memory_limit', $hardLimit);
 		gc_enable();
 	}
 

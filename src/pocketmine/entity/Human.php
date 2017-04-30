@@ -30,6 +30,7 @@ use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\Consumable;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item as ItemItem;
+use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
@@ -64,12 +65,20 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public $eyeHeight = 1.62;
 
 	protected $skinId;
-	protected $skin;
+	protected $skin = null;
 
 	protected $foodTickTimer = 0;
 
 	protected $totalXp = 0;
 	protected $xpSeed;
+
+	public function __construct(Level $level, CompoundTag $nbt){
+		if($this->skin === null and (!isset($nbt->Skin) or !isset($nbt->Skin->Data) or !Player::isValidSkin($nbt->Skin->Data->getValue()))){
+			throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
+		}
+
+		parent::__construct($level, $nbt);
+	}
 
 	public function getSkinData(){
 		return $this->skin;
@@ -98,6 +107,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * @param string $skinId
 	 */
 	public function setSkin($str, $skinId){
+		if(!Player::isValidSkin($str)){
+			throw new \InvalidStateException("Specified skin is not valid, must be 8KiB or 16KiB");
+		}
+
 		$this->skin = $str;
 		$this->skinId = $skinId;
 	}
@@ -399,12 +412,18 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public function entityBaseTick($tickDiff = 1){
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
+		$this->doFoodTick($tickDiff);
+
+		return $hasUpdate;
+	}
+
+	public function doFoodTick(int $tickDiff = 1){
 		if($this->isAlive()){
 			$food = $this->getFood();
 			$health = $this->getHealth();
 			$difficulty = $this->server->getDifficulty();
 
-			$this->foodTickTimer++;
+			$this->foodTickTimer += $tickDiff;
 			if($this->foodTickTimer >= 80){
 				$this->foodTickTimer = 0;
 			}
@@ -437,8 +456,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				}
 			}
 		}
-
-		return $hasUpdate;
 	}
 
 	public function getName(){
@@ -521,7 +538,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if($player !== $this and !isset($this->hasSpawned[$player->getLoaderId()])){
 			$this->hasSpawned[$player->getLoaderId()] = $player;
 
-			if(strlen($this->skin) < 64 * 32 * 4){
+			if(!Player::isValidSkin($this->skin)){
 				throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
 			}
 
