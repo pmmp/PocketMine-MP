@@ -107,12 +107,17 @@ class Item implements ItemIds, \JsonSerializable{
 
 			$types = [
 				"axe"          => Axe::class,
+				"boots"        => Boots::class,
 				"bow"          => Bow::class,
 				"bucket"       => Bucket::class,
+				"chestplate"   => Chestplate::class,
 				"chorus_fruit" => ChorusFruit::class,
 				"default"      => Item::class,
+				"fishing_rod"  => FishingRod::class,
 				"food"         => Food::class,
+				"helmet"       => Helmet::class,
 				"hoe"          => Hoe::class,
+				"leggings"     => Leggings::class,
 				"pickaxe"      => Pickaxe::class,
 				"potion"       => Potion::class,
 				"shears"       => Shears::class,
@@ -857,6 +862,15 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	public function getAttackPoints() : int{
 		return $this->attackPoints;
+	}
+
+	/**
+	 * Returns the number of defense points gained from wearing this item.
+	 *
+	 * @return int
+	 */
+	public function getDefensePoints() : int{
+		return 0;
 	}
 
 	/**

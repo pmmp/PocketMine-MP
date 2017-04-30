@@ -235,15 +235,33 @@
     },
     "chainmail_chestplate": {
         "id": 303,
-        "fallback_name": "Chain Chestplate"
+        "fallback_name": "Chain Chestplate",
+        "type": "chestplate",
+        "properties": {
+            "tier": "chain",
+            "durability": 241,
+            "defense_points": 5
+        }
     },
     "chainmail_helmet": {
         "id": 302,
-        "fallback_name": "Chain Helmet"
+        "fallback_name": "Chain Helmet",
+        "type": "helmet",
+        "properties": {
+            "tier": "chain",
+            "durability": 166,
+            "defense_points": 2
+        }
     },
     "chainmail_leggings": {
         "id": 304,
-        "fallback_name": "Chain Leggings"
+        "fallback_name": "Chain Leggings",
+        "type": "leggings",
+        "properties": {
+            "tier": "chain",
+            "durability": 226,
+            "defense_points": 5
+        }
     },
     "chest_minecart": {
         "id": 342,
@@ -399,15 +417,33 @@
     },
     "diamond_boots": {
         "id": 313,
-        "fallback_name": "Diamond Boots"
+        "fallback_name": "Diamond Boots",
+        "type": "boots",
+        "properties": {
+            "tier": "diamond",
+            "durability": 430,
+            "defense_points": 3
+        }
     },
     "diamond_chestplate": {
         "id": 311,
-        "fallback_name": "Diamond Chestplate"
+        "fallback_name": "Diamond Chestplate",
+        "type": "chestplate",
+        "properties": {
+            "tier": "diamond",
+            "durability": 529,
+            "defense_points": 8
+        }
     },
     "diamond_helmet": {
         "id": 310,
-        "fallback_name": "Diamond Helmet"
+        "fallback_name": "Diamond Helmet",
+        "type": "helmet",
+        "properties": {
+            "tier": "diamond",
+            "durability": 364,
+            "defense_points": 3
+        }
     },
     "diamond_hoe": {
         "id": 293,
@@ -420,7 +456,13 @@
     },
     "diamond_leggings": {
         "id": 312,
-        "fallback_name": "Diamond Leggings"
+        "fallback_name": "Diamond Leggings",
+        "type": "leggings",
+        "properties": {
+            "tier": "diamond",
+            "durability": 496,
+            "defense_points": 6
+        }
     },
     "diamond_pickaxe": {
         "id": 278,
@@ -519,7 +561,10 @@
     },
     "fishing_rod": {
         "id": 346,
-        "fallback_name": "Fishing Rod"
+        "fallback_name": "Fishing Rod",
+        "properties": {
+            "durability": 65
+        }
     },
     "flint": {
         "id": 318,
@@ -595,7 +640,13 @@
     },
     "golden_boots": {
         "id": 317,
-        "fallback_name": "Golden Boots"
+        "fallback_name": "Golden Boots",
+        "type": "boots",
+        "properties": {
+            "tier": "gold",
+            "durability": 92,
+            "defense_points": 1
+        }
     },
     "golden_carrot": {
         "id": 396,
@@ -608,11 +659,23 @@
     },
     "golden_chestplate": {
         "id": 315,
-        "fallback_name": "Golden Chestplate"
+        "fallback_name": "Golden Chestplate",
+        "type": "chestplate",
+        "properties": {
+            "tier": "gold",
+            "durability": 113,
+            "defense_points": 5
+        }
     },
     "golden_helmet": {
         "id": 314,
-        "fallback_name": "Golden Helmet"
+        "fallback_name": "Golden Helmet",
+        "type": "helmet",
+        "properties": {
+            "tier": "gold",
+            "durability": 78,
+            "defense_points": 2
+        }
     },
     "golden_hoe": {
         "id": 294,
@@ -625,7 +688,13 @@
     },
     "golden_leggings": {
         "id": 316,
-        "fallback_name": "Golden Leggings"
+        "fallback_name": "Golden Leggings",
+        "type": "leggings",
+        "properties": {
+            "tier": "gold",
+            "durability": 106,
+            "defense_points": 6
+        }
     },
     "golden_pickaxe": {
         "id": 285,
@@ -698,11 +767,23 @@
     },
     "iron_boots": {
         "id": 309,
-        "fallback_name": "Iron Boots"
+        "fallback_name": "Iron Boots",
+        "type": "boots",
+        "properties": {
+            "tier": "iron",
+            "durability": 196,
+            "defense_points": 2
+        }
     },
     "iron_chestplate": {
         "id": 307,
-        "fallback_name": "Iron Chestplate"
+        "fallback_name": "Iron Chestplate",
+        "type": "chestplate",
+        "properties": {
+            "tier": "iron",
+            "durability": 241,
+            "defense_points": 6
+        }
     },
     "iron_door": {
         "id": 330,
@@ -711,7 +792,13 @@
     },
     "iron_helmet": {
         "id": 306,
-        "fallback_name": "Iron Helmet"
+        "fallback_name": "Iron Helmet",
+        "type": "helmet",
+        "properties": {
+            "tier": "iron",
+            "durability": 166,
+            "defense_points": 2
+        }
     },
     "iron_hoe": {
         "id": 292,
@@ -728,7 +815,13 @@
     },
     "iron_leggings": {
         "id": 308,
-        "fallback_name": "Iron Leggings"
+        "fallback_name": "Iron Leggings",
+        "type": "leggings",
+        "properties": {
+            "tier": "iron",
+            "durability": 226,
+            "defense_points": 5
+        }
     },
     "iron_pickaxe": {
         "id": 257,
@@ -775,19 +868,43 @@
     },
     "leather_boots": {
         "id": 301,
-        "fallback_name": "Leather Boots"
+        "fallback_name": "Leather Boots",
+        "type": "boots",
+        "properties": {
+            "tier": "leather",
+            "durability": 66,
+            "defense_points": 1
+        }
     },
     "leather_chestplate": {
         "id": 299,
-        "fallback_name": "Leather Tunic"
+        "fallback_name": "Leather Tunic",
+        "type": "chestplate",
+        "properties": {
+            "tier": "leather",
+            "durability": 81,
+            "defense_points": 3
+        }
     },
     "leather_helmet": {
         "id": 298,
-        "fallback_name": "Leather Cap"
+        "fallback_name": "Leather Cap",
+        "type": "helmet",
+        "properties": {
+            "tier": "leather",
+            "durability": 56,
+            "defense_points": 1
+        }
     },
     "leather_leggings": {
         "id": 300,
-        "fallback_name": "Leather Pants"
+        "fallback_name": "Leather Pants",
+        "type": "leggings",
+        "properties": {
+            "tier": "leather",
+            "durability": 76,
+            "defense_points": 2
+        }
     },
     "lingering_potion": {
         "id": 441,

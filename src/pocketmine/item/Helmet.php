@@ -19,11 +19,9 @@
  *
 */
 
+
 namespace pocketmine\item;
 
+class Helmet extends Armor{
 
-class GoldenHelmet extends Armor{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::GOLDEN_HELMET, $meta, $count, "Golden Helmet");
-	}
 }

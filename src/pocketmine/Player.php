@@ -2356,34 +2356,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 							$cancelled = true;
 						}
 
-						//TODO: get rid of this
-						$armorValues = [
-							Item::LEATHER_CAP => 1,
-							Item::LEATHER_TUNIC => 3,
-							Item::LEATHER_PANTS => 2,
-							Item::LEATHER_BOOTS => 1,
-							Item::CHAIN_HELMET => 1,
-							Item::CHAIN_CHESTPLATE => 5,
-							Item::CHAIN_LEGGINGS => 4,
-							Item::CHAIN_BOOTS => 1,
-							Item::GOLDEN_HELMET => 1,
-							Item::GOLDEN_CHESTPLATE => 5,
-							Item::GOLDEN_LEGGINGS => 3,
-							Item::GOLDEN_BOOTS => 1,
-							Item::IRON_HELMET => 2,
-							Item::IRON_CHESTPLATE => 6,
-							Item::IRON_LEGGINGS => 5,
-							Item::IRON_BOOTS => 2,
-							Item::DIAMOND_HELMET => 3,
-							Item::DIAMOND_CHESTPLATE => 8,
-							Item::DIAMOND_LEGGINGS => 6,
-							Item::DIAMOND_BOOTS => 3,
-						];
+						//TODO: get rid of this mess and implement armor properly
 						$points = 0;
 						foreach($target->getInventory()->getArmorContents() as $index => $i){
-							if(isset($armorValues[$i->getId()])){
-								$points += $armorValues[$i->getId()];
-							}
+							$points += $i->getDefensePoints();
 						}
 						$damage[EntityDamageEvent::MODIFIER_ARMOR] = -floor($damage[EntityDamageEvent::MODIFIER_BASE] * $points * 0.04);
 					}
