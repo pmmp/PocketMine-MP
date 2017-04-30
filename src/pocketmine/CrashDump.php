@@ -24,6 +24,7 @@ namespace pocketmine;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginLoadOrder;
+use pocketmine\plugin\PluginManager;
 use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
 use raklib\RakLib;
@@ -86,7 +87,7 @@ class CrashDump{
 	}
 
 	private function pluginsData(){
-		if(class_exists("pocketmine\\plugin\\PluginManager", false)){
+		if($this->server->getPluginManager() instanceof PluginManager){
 			$this->addLine();
 			$this->addLine("Loaded plugins:");
 			$this->data["plugins"] = [];

@@ -1937,8 +1937,10 @@ class Server{
 				UPnP::RemovePortForward($this->getPort());
 			}
 
-			$this->getLogger()->debug("Disabling all plugins");
-			$this->pluginManager->disablePlugins();
+			if($this->pluginManager instanceof PluginManager){
+				$this->getLogger()->debug("Disabling all plugins");
+				$this->pluginManager->disablePlugins();
+			}
 
 			foreach($this->players as $player){
 				$player->close($player->getLeaveMessage(), $this->getProperty("settings.shutdown-message", "Server closed"));
