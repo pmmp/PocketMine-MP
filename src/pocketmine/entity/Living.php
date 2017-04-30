@@ -342,8 +342,10 @@ abstract class Living extends Entity implements Damageable{
 			$source->setCancelled();
 		}
 
+		$source->setDamage(-min($this->getAbsorption(), $source->getFinalDamage()), EntityDamageEvent::MODIFIER_ABSORPTION);
+
 		if($this->hasEffect(Effect::DAMAGE_RESISTANCE)){
-			$source->setDamage(-($source->getDamage(EntityDamageEvent::MODIFIER_BASE) * 0.20 * $this->getEffect(Effect::DAMAGE_RESISTANCE)->getEffectLevel()), EntityDamageEvent::MODIFIER_RESISTANCE);
+			$source->setDamage(-($source->getFinalDamage() * 0.20 * $this->getEffect(Effect::DAMAGE_RESISTANCE)->getEffectLevel()), EntityDamageEvent::MODIFIER_RESISTANCE);
 		}
 
 		parent::attack($source);
@@ -368,6 +370,8 @@ abstract class Living extends Entity implements Damageable{
 				$this->knockBack($e, $source->getDamage(), $deltaX, $deltaZ, $source->getKnockBack());
 			}
 		}
+
+		$this->setAbsorption(max(0, $this->getAbsorption() + $source->getDamage(EntityDamageEvent::MODIFIER_ABSORPTION)));
 
 		$pk = new EntityEventPacket();
 		$pk->entityRuntimeId = $this->getId();

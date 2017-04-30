@@ -892,21 +892,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->setLastDamageCause($source);
 
-		$damage = $source->getFinalDamage();
-
-		$absorption = $this->getAbsorption();
-		if($absorption > 0){
-			if($absorption > $damage){
-				//Use absorption health before normal health.
-				$this->setAbsorption($absorption - $damage);
-				$damage = 0;
-			}else{
-				$this->setAbsorption(0);
-				$damage -= $absorption;
-			}
-		}
-
-		$this->setHealth($this->getHealth() - $damage);
+		$this->setHealth($this->getHealth() - $source->getFinalDamage());
 	}
 
 	/**
@@ -951,14 +937,6 @@ abstract class Entity extends Location implements Metadatable{
 		}else{
 			$this->health = $this->getMaxHealth();
 		}
-	}
-
-	public function getAbsorption() : float{
-		return 0;
-	}
-
-	public function setAbsorption(float $absorption){
-
 	}
 
 	/**
