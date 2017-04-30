@@ -2081,7 +2081,8 @@ class Server{
 		try{
 			$dump = new CrashDump($this);
 		}catch(\Throwable $e){
-			$this->logger->critical($this->getLanguage()->translateString("pocketmine.crash.error", $e->getMessage()));
+			$this->logger->logException($e);
+			$this->logger->critical($this->getLanguage()->translateString("pocketmine.crash.error", [$e->getMessage()]));
 			return;
 		}
 
