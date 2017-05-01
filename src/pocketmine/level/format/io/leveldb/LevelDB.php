@@ -253,6 +253,14 @@ class LevelDB extends BaseLevelProvider{
 		return ["preset" => $this->levelData["generatorOptions"]];
 	}
 
+	public function getDifficulty() : int{
+		return isset($this->levelData->Difficulty) ? $this->levelData->Difficulty->getValue() : Level::DIFFICULTY_NORMAL;
+	}
+
+	public function setDifficulty(int $difficulty){
+		$this->levelData->Difficulty = new IntTag("Difficulty", $difficulty);
+	}
+
 	public function getLoadedChunks() : array{
 		return $this->chunks;
 	}

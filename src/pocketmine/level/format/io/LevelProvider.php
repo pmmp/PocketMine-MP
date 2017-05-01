@@ -207,6 +207,18 @@ interface LevelProvider{
 	public function setSpawn(Vector3 $pos);
 
 	/**
+	 * Returns the world difficulty. This will be one of the Level constants.
+	 * @return int
+	 */
+	public function getDifficulty() : int;
+
+	/**
+	 * Sets the world difficulty.
+	 * @param int $difficulty
+	 */
+	public function setDifficulty(int $difficulty);
+
+	/**
 	 * @return Chunk[]
 	 */
 	public function getLoadedChunks() : array;

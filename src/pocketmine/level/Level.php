@@ -112,6 +112,11 @@ class Level implements ChunkManager, Metadatable{
 
 	const TIME_FULL = 24000;
 
+	const DIFFICULTY_PEACEFUL = 0;
+	const DIFFICULTY_EASY = 1;
+	const DIFFICULTY_NORMAL = 2;
+	const DIFFICULTY_HARD = 3;
+
 	/** @var Tile[] */
 	private $tiles = [];
 
@@ -2742,6 +2747,37 @@ class Level implements ChunkManager, Metadatable{
 		return $this->provider->getWorldHeight();
 	}
 
+	/**
+	 * @return int
+	 */
+	public function getDifficulty() : int{
+		return $this->provider->getDifficulty();
+	}
+
+	/**
+	 * @param int $difficulty
+	 */
+	public function setDifficulty(int $difficulty){
+		if($difficulty < 0 or $difficulty > 3){
+			throw new \InvalidArgumentException("Invalid difficulty level $difficulty");
+		}
+		$this->provider->setDifficulty($difficulty);
+
+		$this->sendDifficulty();
+	}
+
+	/**
+	 * @param Player[] ...$targets
+	 */
+	public function sendDifficulty(Player ...$targets){
+		if(count($targets) === 0){
+			$targets = $this->getPlayers();
+		}
+
+		$pk = new SetDifficultyPacket();
+		$pk->difficulty = $this->getDifficulty();
+		$this->server->broadcastPacket($targets, $pk);
+	}
 
 	public function populateChunk(int $x, int $z, bool $force = false) : bool{
 		if(isset($this->chunkPopulationQueue[$index = Level::chunkHash($x, $z)]) or (count($this->chunkPopulationQueue) >= $this->chunkPopulationQueueSize and !$force)){
