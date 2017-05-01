@@ -733,9 +733,19 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	/**
+	 * Applies damage event modifiers for this entity.
+	 *
+	 * @param EntityDamageEvent $source
+	 */
+	public function applyDamageModifiers(EntityDamageEvent $source){
+
+	}
+
+	/**
+	 * Deals damage to the entity.
+	 *
 	 * @param float             $damage
 	 * @param EntityDamageEvent $source
-	 *
 	 */
 	public function attack($damage, EntityDamageEvent $source){
 		if($this->hasEffect(Effect::FIRE_RESISTANCE) and (
@@ -754,7 +764,10 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->setLastDamageCause($source);
 
-		$this->setHealth($this->getHealth() - $source->getFinalDamage());
+		$damage = $source->getFinalDamage();
+		if($damage > 0){ //Damage may be negative due to modifiers
+			$this->setHealth($this->getHealth() - $damage);
+		}
 	}
 
 	/**
@@ -772,7 +785,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	/**
-	 * @return int
+	 * @return float
 	 */
 	public function getHealth(){
 		return $this->health;
@@ -785,11 +798,11 @@ abstract class Entity extends Location implements Metadatable{
 	/**
 	 * Sets the health of the Entity. This won't send any update to the players
 	 *
-	 * @param int $amount
+	 * @param float $amount
 	 */
-	public function setHealth($amount){
-		$amount = (int) $amount;
-		if($amount === $this->health){
+	public function setHealth(float $amount){
+		$amount = round($amount, 2);
+		if($amount == $this->health){
 			return;
 		}
 
@@ -797,19 +810,9 @@ abstract class Entity extends Location implements Metadatable{
 			if($this->isAlive()){
 				$this->kill();
 			}
-		}elseif($amount <= $this->getMaxHealth() or $amount < $this->health){
-			$this->health = (int) $amount;
 		}else{
-			$this->health = $this->getMaxHealth();
+			$this->health = (float) min($amount, $this->getMaxHealth());
 		}
-	}
-
-	public function getAbsorption() : int{
-		return 0;
-	}
-
-	public function setAbsorption(int $absorption){
-
 	}
 
 	/**
@@ -1586,7 +1589,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function kill(){
-		$this->health = 0;
+		$this->health = 0.0;
 		$this->scheduleUpdate();
 	}
 

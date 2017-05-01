@@ -2330,10 +2330,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$cancelled = false;
 		switch($packet->action){
 			case InteractPacket::ACTION_LEFT_CLICK: //Attack
-				if($target instanceof Player and $this->server->getConfigBoolean("pvp", true) === false){
-					$cancelled = true;
-				}
-
 				if($target instanceof Entity and $this->getGamemode() !== Player::VIEW and $this->isAlive() and $target->isAlive()){
 					if($target instanceof DroppedItem or $target instanceof Arrow){
 						$this->kick("Attempting to attack an invalid entity");
@@ -2349,19 +2345,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 					if(!$this->canInteract($target, 8)){
 						$cancelled = true;
-					}elseif($target instanceof Player){
-						if(($target->getGamemode() & 0x01) > 0){
-							break;
-						}elseif($this->server->getConfigBoolean("pvp") !== true or $this->server->getDifficulty() === 0){
-							$cancelled = true;
-						}
-
-						//TODO: get rid of this mess and implement armor properly
-						$points = 0;
-						foreach($target->getInventory()->getArmorContents() as $index => $i){
-							$points += $i->getDefensePoints();
-						}
-						$damage[EntityDamageEvent::MODIFIER_ARMOR] = -floor($damage[EntityDamageEvent::MODIFIER_BASE] * $points * 0.04);
 					}
 
 					$ev = new EntityDamageByEntityEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $damage);
@@ -2369,7 +2352,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						$ev->setCancelled();
 					}
 
-					$target->attack($ev->getFinalDamage(), $ev);
+					$target->attack($ev->getDamage(), $ev);
 
 					if($ev->isCancelled()){
 						if($item->isTool() and $this->isSurvival()){
@@ -3766,6 +3749,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 	}
 
+	public function getArmorPoints() : int{
+		$base = 0;
+		foreach($this->inventory->getArmorContents() as $armorItem){
+			$base += $armorItem->getDefensePoints();
+		}
+		return $base;
+	}
+
 	public function attack($damage, EntityDamageEvent $source){
 		if(!$this->isAlive()){
 			return;
@@ -3779,6 +3770,19 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$source->setCancelled();
 		}elseif($this->allowFlight and $source->getCause() === EntityDamageEvent::CAUSE_FALL){
 			$source->setCancelled();
+		}elseif($source instanceof EntityDamageByEntityEvent){
+			if($this->server->getDifficulty() === 0 or ($source->getDamager() instanceof Player and !$this->server->getConfigBoolean("pvp"))){
+				$source->setCancelled();
+			}
+		}
+
+		//TODO: add damage multipliers to EntityDamageEvent to allow this to be controlled by plugins
+		switch($this->server->getDifficulty()){
+			case 1: //Easy
+				$source->setDamage($source->getDamage() / 2 + 1);
+				break;
+			case 3: //Hard
+				$source->setDamage($source->getDamage() * (3 / 2));
 		}
 
 		parent::attack($damage, $source);

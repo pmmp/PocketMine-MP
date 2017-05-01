@@ -22,6 +22,7 @@
 namespace pocketmine\event\entity;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\Snowball;
 
 /**
  * Called when an entity takes damage from an entity sourced from another entity, for example being hit by a snowball thrown by a Player.
@@ -53,5 +54,10 @@ class EntityDamageByChildEntityEvent extends EntityDamageByEntityEvent{
 		return $this->getEntity()->getLevel()->getServer()->findEntity($this->childEntityEid, $this->getEntity()->getLevel());
 	}
 
-
+	public function canBeReducedByArmor() : bool{
+		if($this->getChild() instanceof Snowball){
+			return false;
+		}
+		return parent::canBeReducedByArmor();
+	}
 }

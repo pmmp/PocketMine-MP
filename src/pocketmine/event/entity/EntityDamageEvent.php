@@ -36,7 +36,6 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	const MODIFIER_STRENGTH = 2;
 	const MODIFIER_WEAKNESS = 3;
 	const MODIFIER_RESISTANCE = 4;
-
 	const MODIFIER_ABSORPTION = 5;
 
 	const CAUSE_CONTACT = 0;
@@ -85,10 +84,6 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 
 		if(!isset($this->modifiers[self::MODIFIER_BASE])){
 			throw new \InvalidArgumentException("BASE Damage modifier missing");
-		}
-
-		if($entity->hasEffect(Effect::DAMAGE_RESISTANCE)){
-			$this->setDamage(-($this->getDamage(self::MODIFIER_BASE) * 0.20 * ($entity->getEffect(Effect::DAMAGE_RESISTANCE)->getAmplifier() + 1)), self::MODIFIER_RESISTANCE);
 		}
 	}
 
@@ -139,6 +134,27 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	 */
 	public function getFinalDamage(){
 		return array_sum($this->modifiers);
+	}
+
+	/**
+	 * Returns whether this type of damage can be reduced by an entity's armor.
+	 * @return bool
+	 */
+	public function canBeReducedByArmor() : bool{
+		switch($this->cause){
+			case self::CAUSE_FIRE_TICK:
+			case self::CAUSE_SUFFOCATION:
+			case self::CAUSE_DROWNING:
+			case self::CAUSE_STARVATION:
+			case self::CAUSE_FALL:
+			case self::CAUSE_VOID:
+			case self::CAUSE_MAGIC:
+			case self::CAUSE_SUICIDE:
+				//TODO: lightning
+				return false;
+			default:
+				return true;
+		}
 	}
 
 }
