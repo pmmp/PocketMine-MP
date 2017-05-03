@@ -1739,9 +1739,9 @@ class Level implements ChunkManager, Metadatable{
 				if(!$player->isSneaking() and $item->onActivate($this, $player, $block, $target, $face, $fx, $fy, $fz)){
 					if($item->getCount() <= 0){
 						$item = Item::get(Item::AIR, 0, 0);
-
-						return true;
 					}
+
+					return true;
 				}
 			}else{
 				return false;
