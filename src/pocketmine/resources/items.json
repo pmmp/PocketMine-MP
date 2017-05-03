@@ -65,7 +65,8 @@
     "bed": {
         "id": 355,
         "fallback_name": "Bed",
-        "block": "bed_block"
+        "block": "bed_block",
+        "max_stack_size": 1
     },
     "beef": {
         "id": 363,
