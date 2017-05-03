@@ -1,83 +1,164 @@
 {
     "protection": {
-        "id": 0
+        "id": 0,
+        "translation": "protect.all",
+        "max_level": 4,
+        "weight": 10
     },
     "fire_protection": {
-        "id": 1
+        "id": 1,
+        "translation": "protect.fire",
+        "max_level": 4,
+        "weight": 5
     },
     "feather_falling": {
-        "id": 2
+        "id": 2,
+        "translation": "protect.fall",
+        "max_level": 4,
+        "weight": 5
     },
     "blast_protection": {
-        "id": 3
+        "id": 3,
+        "translation": "protect.explosion",
+        "max_level": 4,
+        "weight": 2
     },
     "projectile_protection": {
-        "id": 4
+        "id": 4,
+        "translation": "protect.projectile",
+        "max_level": 4,
+        "weight": 5
     },
     "thorns": {
-        "id": 5
+        "id": 5,
+        "translation": "thorns",
+        "max_level": 3,
+        "weight": 1
     },
     "respiration": {
-        "id": 6
+        "id": 6,
+        "translation": "oxygen",
+        "max_level": 3,
+        "weight": 2
     },
     "depth_strider": {
-        "id": 7
+        "id": 7,
+        "translation": "waterWalker",
+        "max_level": 3,
+        "weight": 2
     },
     "aqua_affinity": {
-        "id": 8
+        "id": 8,
+        "translation": "waterWorker",
+        "max_level": 1,
+        "weight": 2
     },
     "sharpness": {
-        "id": 9
+        "id": 9,
+        "translation": "damage.all",
+        "max_level": 5,
+        "weight": 10
     },
     "smite": {
-        "id": 10
+        "id": 10,
+        "translation": "damage.undead",
+        "max_level": 5,
+        "weight": 5
     },
     "bane_of_arthropods": {
-        "id": 11
+        "id": 11,
+        "translation": "damage.arthropods",
+        "max_level": 5,
+        "weight": 5
     },
     "knockback": {
-        "id": 12
+        "id": 12,
+        "translation": "knockback",
+        "max_level": 2,
+        "weight": 5
     },
     "fire_aspect": {
-        "id": 13
+        "id": 13,
+        "translation": "fire",
+        "max_level": 2,
+        "weight": 2
     },
     "looting": {
-        "id": 14
+        "id": 14,
+        "translation": "lootBonus",
+        "max_level": 3,
+        "weight": 2
     },
     "efficiency": {
-        "id": 15
+        "id": 15,
+        "translation": "digging",
+        "max_level": 5,
+        "weight": 10
     },
     "silk_touch": {
-        "id": 16
+        "id": 16,
+        "translation": "untouching",
+        "max_level": 1,
+        "weight": 1
     },
     "unbreaking": {
-        "id": 17
+        "id": 17,
+        "translation": "durability",
+        "max_level": 3,
+        "weight": 5
     },
     "fortune": {
-        "id": 18
+        "id": 18,
+        "translation": "lootBonusDigger",
+        "max_level": 3,
+        "weight": 2
     },
     "power": {
-        "id": 19
+        "id": 19,
+        "translation": "lootBonusFishing",
+        "max_level": 5,
+        "weight": 10
     },
     "punch": {
-        "id": 20
+        "id": 20,
+        "translation": "arrowKnockback",
+        "max_level": 2,
+        "weight": 2
     },
     "flame": {
-        "id": 21
+        "id": 21,
+        "translation": "arrowFire",
+        "max_level": 1,
+        "weight": 2
     },
     "infinity": {
-        "id": 22
+        "id": 22,
+        "translation": "arrowInfinite",
+        "max_level": 1,
+        "weight": 1
     },
     "luck_of_the_sea": {
-        "id": 23
+        "id": 23,
+        "translation": "lootBonusFishing",
+        "max_level": 3,
+        "weight": 2
     },
     "lure": {
-        "id": 24
+        "id": 24,
+        "translation": "fishingSpeed",
+        "max_level": 3,
+        "weight": 2
     },
     "frost_walker": {
-        "id": 25
+        "id": 25,
+        "translation": "frostwalker",
+        "max_level": 2,
+        "weight": 2
     },
     "mending": {
-        "id": 26
+        "id": 26,
+        "translation": "mending",
+        "max_level": 1,
+        "weight": 2
     }
 }
