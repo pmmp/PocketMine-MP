@@ -173,7 +173,8 @@ abstract class Tool extends Item{
 			$data["meta"] ?? 0,
 			1,
 			$data["fallback_name"],
-			$properties["durability"]
+			$properties["durability"],
+			$properties["attack_damage"] ?? 1
 		);
 	}
 }
