@@ -504,8 +504,10 @@ class Item implements ItemIds, \JsonSerializable{
 		foreach($this->getNamedTag()->ench as $entry){
 			if($entry["id"] === $id){
 				$e = Enchantment::getEnchantment($entry["id"]);
-				$e->setLevel($entry["lvl"]);
-				return $e;
+				if($e !== null){
+					$e->setLevel($entry["lvl"]);
+					return $e;
+				}
 			}
 		}
 
@@ -588,8 +590,10 @@ class Item implements ItemIds, \JsonSerializable{
 		if($this->hasEnchantments()){
 			foreach($this->getNamedTag()->ench as $entry){
 				$e = Enchantment::getEnchantment($entry["id"]);
-				$e->setLevel($entry["lvl"]);
-				$enchantments[] = $e;
+				if($e !== null){
+					$e->setLevel($entry["lvl"]);
+					$enchantments[] = $e;
+				}
 			}
 		}
 

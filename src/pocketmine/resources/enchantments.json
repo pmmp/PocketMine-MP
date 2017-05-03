@@ -1,0 +1,83 @@
+{
+    "protection": {
+        "id": 0
+    },
+    "fire_protection": {
+        "id": 1
+    },
+    "feather_falling": {
+        "id": 2
+    },
+    "blast_protection": {
+        "id": 3
+    },
+    "projectile_protection": {
+        "id": 4
+    },
+    "thorns": {
+        "id": 5
+    },
+    "respiration": {
+        "id": 6
+    },
+    "depth_strider": {
+        "id": 7
+    },
+    "aqua_affinity": {
+        "id": 8
+    },
+    "sharpness": {
+        "id": 9
+    },
+    "smite": {
+        "id": 10
+    },
+    "bane_of_arthropods": {
+        "id": 11
+    },
+    "knockback": {
+        "id": 12
+    },
+    "fire_aspect": {
+        "id": 13
+    },
+    "looting": {
+        "id": 14
+    },
+    "efficiency": {
+        "id": 15
+    },
+    "silk_touch": {
+        "id": 16
+    },
+    "unbreaking": {
+        "id": 17
+    },
+    "fortune": {
+        "id": 18
+    },
+    "power": {
+        "id": 19
+    },
+    "punch": {
+        "id": 20
+    },
+    "flame": {
+        "id": 21
+    },
+    "infinity": {
+        "id": 22
+    },
+    "luck_of_the_sea": {
+        "id": 23
+    },
+    "lure": {
+        "id": 24
+    },
+    "frost_walker": {
+        "id": 25
+    },
+    "mending": {
+        "id": 26
+    }
+}
