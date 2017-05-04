@@ -115,7 +115,7 @@
     },
     "power": {
         "id": 19,
-        "translation": "lootBonusFishing",
+        "translation": "arrowDamage",
         "max_level": 5,
         "weight": 10
     },
