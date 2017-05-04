@@ -23,8 +23,6 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
-use pocketmine\plugin\Plugin;
-use pocketmine\utils\TextFormat;
 
 class TitleCommand extends VanillaCommand{
 
@@ -98,5 +96,7 @@ class TitleCommand extends VanillaCommand{
 		}
 
 		$sender->sendMessage(new TranslationContainer("commands.title.success"));
+
+		return true;
 	}
 }

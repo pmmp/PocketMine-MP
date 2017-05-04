@@ -49,11 +49,6 @@ abstract class Command{
 	/**
 	 * @var string[]
 	 */
-	private $aliases = [];
-
-	/**
-	 * @var string[]
-	 */
 	private $activeAliases = [];
 
 	/** @var CommandMap */

@@ -75,7 +75,6 @@ class EffectCommand extends VanillaCommand{
 			return true;
 		}
 
-		$duration = 300;
 		$amplification = 0;
 
 		if(count($args) >= 3){
