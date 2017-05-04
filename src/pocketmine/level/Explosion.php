@@ -22,6 +22,7 @@
 namespace pocketmine\level;
 
 use pocketmine\block\Block;
+use pocketmine\block\TNT;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockUpdateEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
@@ -39,6 +40,7 @@ use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\ExplodePacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\utils\Random;
 
 class Explosion{
@@ -171,26 +173,8 @@ class Explosion{
 		$air = Item::get(Item::AIR);
 
 		foreach($this->affectedBlocks as $block){
-			if($block->getId() === Block::TNT){
-				$mot = (new Random())->nextSignedFloat() * M_PI * 2;
-				$tnt = Entity::createEntity("PrimedTNT", $this->level, new CompoundTag("", [
-					"Pos" => new ListTag("Pos", [
-						new DoubleTag("", $block->x + 0.5),
-						new DoubleTag("", $block->y),
-						new DoubleTag("", $block->z + 0.5)
-					]),
-					"Motion" => new ListTag("Motion", [
-						new DoubleTag("", -sin($mot) * 0.02),
-						new DoubleTag("", 0.2),
-						new DoubleTag("", -cos($mot) * 0.02)
-					]),
-					"Rotation" => new ListTag("Rotation", [
-						new FloatTag("", 0),
-						new FloatTag("", 0)
-					]),
-					"Fuse" => new ByteTag("Fuse", mt_rand(10, 30))
-				]));
-				$tnt->spawnToAll();
+			if($block instanceof TNT){
+				$block->ignite(mt_rand(10, 30));
 			}elseif(mt_rand(0, 100) < $yield){
 				foreach($block->getDrops($air) as $drop){
 					$this->level->dropItem($block->add(0.5, 0.5, 0.5), Item::get(...$drop));
@@ -223,6 +207,7 @@ class Explosion{
 		$this->level->addChunkPacket($source->x >> 4, $source->z >> 4, $pk);
 
 		$this->level->addParticle(new HugeExplodeSeedParticle($source));
+		$this->level->broadcastLevelSoundEvent($source, LevelSoundEventPacket::SOUND_EXPLODE);
 
 		return true;
 	}

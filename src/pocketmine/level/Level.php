@@ -94,6 +94,7 @@ use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\MoveEntityPacket;
 use pocketmine\network\mcpe\protocol\SetEntityMotionPacket;
 use pocketmine\network\mcpe\protocol\SetTimePacket;
@@ -491,6 +492,38 @@ class Level implements ChunkManager, Metadatable{
 				}
 			}
 		}
+	}
+
+	/**
+	 * Broadcasts a LevelEvent to players in the area. This could be sound, particles, weather changes, etc.
+	 *
+	 * @param Vector3 $pos
+	 * @param int $evid
+	 * @param int $data
+	 */
+	public function broadcastLevelEvent(Vector3 $pos, int $evid, int $data = 0){
+		$pk = new LevelEventPacket();
+		$pk->evid = $evid;
+		$pk->data = $data;
+		list($pk->x, $pk->y, $pk->z) = [$pos->x, $pos->y, $pos->z];
+		$this->addChunkPacket($pos->x >> 4, $pos->z >> 4, $pk);
+	}
+
+	/**
+	 * Broadcasts a LevelSoundEvent to players in the area.
+	 *
+	 * @param Vector3 $pos
+	 * @param int $soundId
+	 * @param int $pitch
+	 * @param int $extraData
+	 */
+	public function broadcastLevelSoundEvent(Vector3 $pos, int $soundId, int $pitch = 1, int $extraData = -1){
+		$pk = new LevelSoundEventPacket();
+		$pk->sound = $soundId;
+		$pk->pitch = $pitch;
+		$pk->extraData = $extraData;
+		list($pk->x, $pk->y, $pk->z) = [$pos->x, $pos->y, $pos->z];
+		$this->addChunkPacket($pos->x >> 4, $pos->z >> 4, $pk);
 	}
 
 	public function getAutoSave() : bool{
@@ -1657,10 +1690,11 @@ class Level implements ChunkManager, Metadatable{
 	 * @param float   $fy     default 0.0
 	 * @param float   $fz     default 0.0
 	 * @param Player  $player default null
+	 * @param bool    $playSound Whether to play a block-place sound if the block was placed successfully.
 	 *
 	 * @return bool
 	 */
-	public function useItemOn(Vector3 $vector, Item &$item, int $face, float $fx = 0.0, float $fy = 0.0, float $fz = 0.0, Player $player = null) : bool{
+	public function useItemOn(Vector3 $vector, Item &$item, int $face, float $fx = 0.0, float $fy = 0.0, float $fz = 0.0, Player $player = null, bool $playSound = false) : bool{
 		$target = $this->getBlock($vector);
 		$block = $target->getSide($face);
 
@@ -1781,6 +1815,10 @@ class Level implements ChunkManager, Metadatable{
 
 		if($hand->place($item, $block, $target, $face, $fx, $fy, $fz, $player) === false){
 			return false;
+		}
+
+		if($playSound){
+			$this->broadcastLevelSoundEvent($hand, LevelSoundEventPacket::SOUND_PLACE, 1, $hand->getId());
 		}
 
 		$item->setCount($item->getCount() - 1);

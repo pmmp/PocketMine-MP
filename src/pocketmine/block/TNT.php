@@ -54,32 +54,35 @@ class TNT extends Solid{
 	public function onActivate(Item $item, Player $player = null){
 		if($item->getId() === Item::FLINT_STEEL){
 			$item->useOn($this);
-			$this->getLevel()->setBlock($this, new Air(), true);
-
-			$mot = (new Random())->nextSignedFloat() * M_PI * 2;
-			$tnt = Entity::createEntity("PrimedTNT", $this->getLevel(), new CompoundTag("", [
-				"Pos" => new ListTag("Pos", [
-					new DoubleTag("", $this->x + 0.5),
-					new DoubleTag("", $this->y),
-					new DoubleTag("", $this->z + 0.5)
-				]),
-				"Motion" => new ListTag("Motion", [
-					new DoubleTag("", -sin($mot) * 0.02),
-					new DoubleTag("", 0.2),
-					new DoubleTag("", -cos($mot) * 0.02)
-				]),
-				"Rotation" => new ListTag("Rotation", [
-					new FloatTag("", 0),
-					new FloatTag("", 0)
-				]),
-				"Fuse" => new ByteTag("Fuse", 80)
-			]));
-
-			$tnt->spawnToAll();
-
+			$this->ignite();
 			return true;
 		}
 
 		return false;
+	}
+
+	public function ignite(int $fuse = 80){
+		$this->getLevel()->setBlock($this, new Air(), true);
+
+		$mot = (new Random())->nextSignedFloat() * M_PI * 2;
+		$tnt = Entity::createEntity("PrimedTNT", $this->getLevel(), new CompoundTag("", [
+			"Pos" => new ListTag("Pos", [
+				new DoubleTag("", $this->x + 0.5),
+				new DoubleTag("", $this->y),
+				new DoubleTag("", $this->z + 0.5)
+			]),
+			"Motion" => new ListTag("Motion", [
+				new DoubleTag("", -sin($mot) * 0.02),
+				new DoubleTag("", 0.2),
+				new DoubleTag("", -cos($mot) * 0.02)
+			]),
+			"Rotation" => new ListTag("Rotation", [
+				new FloatTag("", 0),
+				new FloatTag("", 0)
+			]),
+			"Fuse" => new ByteTag("Fuse", $fuse)
+		]));
+
+		$tnt->spawnToAll();
 	}
 }
