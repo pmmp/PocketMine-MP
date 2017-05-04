@@ -43,6 +43,8 @@ class Item extends Entity{
 	public $width = 0.25;
 	public $length = 0.25;
 	public $height = 0.25;
+	protected $baseOffset = 0.125;
+
 	protected $gravity = 0.04;
 	protected $drag = 0.02;
 
