@@ -49,11 +49,6 @@ abstract class Command{
 	/**
 	 * @var string[]
 	 */
-	private $aliases = [];
-
-	/**
-	 * @var string[]
-	 */
 	private $activeAliases = [];
 
 	/** @var CommandMap */
@@ -79,11 +74,11 @@ abstract class Command{
 	 */
 	public function __construct($name, $description = "", $usageMessage = null, array $aliases = []){
 		$this->commandData = self::generateDefaultData();
-		$this->name = $this->nextLabel = $this->label = $name;
+		$this->name = $name;
+		$this->setLabel($name);
 		$this->setDescription($description);
 		$this->usageMessage = $usageMessage === null ? "/" . $name : $usageMessage;
 		$this->setAliases($aliases);
-		$this->timings = new TimingsHandler("** Command: " . $name);
 	}
 
 	/**
@@ -208,6 +203,9 @@ abstract class Command{
 	public function setLabel($name){
 		$this->nextLabel = $name;
 		if(!$this->isRegistered()){
+			if($this->timings instanceof TimingsHandler){
+				$this->timings->remove();
+			}
 			$this->timings = new TimingsHandler("** Command: " . $name);
 			$this->label = $name;
 

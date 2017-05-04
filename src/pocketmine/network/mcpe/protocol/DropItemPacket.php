@@ -24,12 +24,14 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\item\Item;
 use pocketmine\network\mcpe\NetworkSession;
 
 class DropItemPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::DROP_ITEM_PACKET;
 
 	public $type;
+	/** @var Item */
 	public $item;
 
 	public function decode(){

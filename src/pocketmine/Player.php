@@ -184,7 +184,6 @@ use pocketmine\network\mcpe\protocol\StopSoundPacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
-use pocketmine\network\mcpe\protocol\UnknownPacket;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\protocol\UpdateTradePacket;
@@ -3464,9 +3463,18 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public function addTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1){
 		$this->setTitleDuration($fadeIn, $stay, $fadeOut);
 		if($subtitle !== ""){
-			$this->sendTitleText($subtitle, SetTitlePacket::TYPE_SET_SUBTITLE);
+			$this->addSubTitle($subtitle);
 		}
 		$this->sendTitleText($title, SetTitlePacket::TYPE_SET_TITLE);
+	}
+
+	/**
+	 * Sets the subtitle message, without sending a title.
+	 *
+	 * @param string $subtitle
+	 */
+	public function addSubTitle(string $subtitle){
+	    $this->sendTitleText($subtitle, SetTitlePacket::TYPE_SET_SUBTITLE);
 	}
 
 	/**
@@ -3485,6 +3493,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk = new SetTitlePacket();
 		$pk->type = SetTitlePacket::TYPE_CLEAR_TITLE;
 		$this->dataPacket($pk);
+	}
+
+	/**
+	 * Resets the title duration settings.
+	 */
+	public function resetTitles(){
+	    $pk = new SetTitlePacket();
+	    $pk->type = SetTitlePacket::TYPE_RESET_TITLE;
+	    $this->dataPacket($pk);
 	}
 
 	/**
