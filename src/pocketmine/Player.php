@@ -2775,6 +2775,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			case PlayerActionPacket::ACTION_START_GLIDE:
 			case PlayerActionPacket::ACTION_STOP_GLIDE:
 				break; //TODO
+			case PlayerActionPacket::ACTION_CONTINUE_BREAK:
+				$block = $this->level->getBlock($pos);
+				$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, $block->getId() | ($block->getDamage() << 8) | ($packet->face << 16));
+				break;
 			default:
 				$this->server->getLogger()->debug("Unhandled/unknown player action type " . $packet->action . " from " . $this->getName());
 				return false;

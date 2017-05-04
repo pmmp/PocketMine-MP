@@ -71,6 +71,8 @@ class LevelEventPacket extends DataPacket{
 
 	const EVENT_PARTICLE_BLOCK_FORCE_FIELD = 2008;
 
+	const EVENT_PARTICLE_PUNCH_BLOCK = 2014;
+
 	const EVENT_START_RAIN = 3001;
 	const EVENT_START_THUNDER = 3002;
 	const EVENT_STOP_RAIN = 3003;
