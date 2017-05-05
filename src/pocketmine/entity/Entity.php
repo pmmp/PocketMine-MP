@@ -409,6 +409,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->width *= $multiplier;
 		$this->height *= $multiplier;
+		$this->eyeHeight *= $multiplier;
 		$halfWidth = $this->width / 2;
 
 		$this->boundingBox->setBounds(
@@ -421,8 +422,6 @@ abstract class Entity extends Location implements Metadatable{
 		);
 
 		$this->setDataProperty(self::DATA_SCALE, self::DATA_TYPE_FLOAT, $value);
-		$this->setDataProperty(self::DATA_BOUNDING_BOX_WIDTH, self::DATA_TYPE_FLOAT, $this->width);
-		$this->setDataProperty(self::DATA_BOUNDING_BOX_HEIGHT, self::DATA_TYPE_FLOAT, $this->height);
 	}
 
 	public function isSneaking(){
