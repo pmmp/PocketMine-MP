@@ -223,10 +223,10 @@ class Effect{
 	}
 
 	/**
-	* Returns the level of this effect, which is always one higher than the amplifier.
-	*
-	* @return int
-	*/
+	 * Returns the level of this effect, which is always one higher than the amplifier.
+	 *
+	 * @return int
+	 */
 	public function getEffectLevel() : int{
 		return $this->amplifier + 1;
 	}
