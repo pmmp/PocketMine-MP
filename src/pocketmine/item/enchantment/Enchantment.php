@@ -123,8 +123,8 @@ class Enchantment{
 	 * @return Enchantment|null
 	 */
 	public static function getEnchantmentByName(string $name){
-		if(defined(Enchantment::class . "::TYPE_" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::TYPE_" . strtoupper($name)));
+		if(defined(Enchantment::class . "::" . strtoupper($name))){
+			return self::getEnchantment(constant(Enchantment::class . "::" . strtoupper($name)));
 		}
 		return null;
 	}
