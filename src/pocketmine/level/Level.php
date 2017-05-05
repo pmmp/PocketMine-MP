@@ -516,12 +516,16 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int $soundId
 	 * @param int $pitch
 	 * @param int $extraData
+	 * @param bool $unknown
+	 * @param bool $disableRelativeVolume If true, all players receiving this sound-event will hear the sound at full volume regardless of distance
 	 */
-	public function broadcastLevelSoundEvent(Vector3 $pos, int $soundId, int $pitch = 1, int $extraData = -1){
+	public function broadcastLevelSoundEvent(Vector3 $pos, int $soundId, int $pitch = 1, int $extraData = -1, bool $unknown = false, bool $disableRelativeVolume = false){
 		$pk = new LevelSoundEventPacket();
 		$pk->sound = $soundId;
 		$pk->pitch = $pitch;
 		$pk->extraData = $extraData;
+		$pk->unknownBool = $unknown;
+		$pk->disableRelativeVolume = $disableRelativeVolume;
 		list($pk->x, $pk->y, $pk->z) = [$pos->x, $pos->y, $pos->z];
 		$this->addChunkPacket($pos->x >> 4, $pos->z >> 4, $pk);
 	}
