@@ -1601,11 +1601,11 @@ class Level implements ChunkManager, Metadatable{
 			}
 
 			if($player->hasEffect(Effect::HASTE)){
-				$breakTime *= 1 - (0.2 * ($player->getEffect(Effect::HASTE)->getAmplifier() + 1));
+				$breakTime *= 1 - (0.2 * $player->getEffect(Effect::HASTE)->getEffectLevel());
 			}
 
 			if($player->hasEffect(Effect::MINING_FATIGUE)){
-				$breakTime *= 1 + (0.3 * ($player->getEffect(Effect::MINING_FATIGUE)->getAmplifier() + 1));
+				$breakTime *= 1 + (0.3 * $player->getEffect(Effect::MINING_FATIGUE)->getEffectLevel());
 			}
 
 			$breakTime -= 1; //1 tick compensation
