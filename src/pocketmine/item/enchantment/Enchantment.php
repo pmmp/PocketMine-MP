@@ -143,7 +143,7 @@ class Enchantment{
 	 * @param int $activationType
 	 * @param int $slot
 	 */
-	private function __construct(int $id, string $name, int $rarity, int $activationType, int $slot){
+	public function __construct(int $id, string $name, int $rarity, int $activationType, int $slot){
 		$this->id = $id;
 		$this->name = $name;
 		$this->rarity = $rarity;
