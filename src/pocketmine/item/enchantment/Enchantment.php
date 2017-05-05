@@ -104,6 +104,19 @@ class Enchantment{
 		return null;
 	}
 
+    /**
+     * @param Enchantment $enchantment
+     * @param int $id
+     * @return bool
+     */
+    public static function addEnchantment(Enchantment $enchantment, int $id){
+		if(self::getEnchantmentByName($enchantment->getName())){
+			return false;
+		}
+		self::$enchantments[$id] = $enchantment;
+		return true;
+	}
+
 	/**
 	 * @param string $name
 	 *
