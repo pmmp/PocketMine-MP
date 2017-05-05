@@ -2591,12 +2591,22 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					$this->level->setBlock($block, new Air());
 					break;
 				}
+
+				if(!$this->isCreative()){
+					//TODO: improve this to take stuff like swimming, ladders, enchanted tools into account, fix wrong tool break time calculations for bad tools (pmmp/PocketMine-MP#211)
+					$breakTime = ceil($target->getBreakTime($this->inventory->getItemInHand()) * 20);
+					if($breakTime > 0){
+						$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_START_BREAK, 65535 / $breakTime);
+					}
+				}
 				$this->lastBreak = microtime(true);
 				break;
+
+			/** @noinspection PhpMissingBreakStatementInspection */
 			case PlayerActionPacket::ACTION_ABORT_BREAK:
 				$this->lastBreak = PHP_INT_MAX;
-				break;
 			case PlayerActionPacket::ACTION_STOP_BREAK:
+				$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_STOP_BREAK);
 				break;
 			case PlayerActionPacket::ACTION_RELEASE_ITEM:
 				if($this->startAction > -1 and $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION)){
