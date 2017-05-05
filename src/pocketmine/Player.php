@@ -1385,7 +1385,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	protected function processMovement($tickDiff){
-		if(!$this->spawned or $this->newPosition === null or $this->teleportPosition !== null or $this->isSleeping()){
+		if(!$this->isAlive() and !$this->isSpectator() or !$this->spawned or $this->newPosition === null or $this->teleportPosition !== null or $this->isSleeping()){
 			return;
 		}
 
@@ -1943,7 +1943,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 
 				$revert = false;
-				if(!$this->spawned){
+				if(!$this->isAlive() and !$this->isSpectator() or !$this->spawned){
 					$revert = true;
 					$this->forceMovement = new Vector3($this->x, $this->y, $this->z);
 				}
@@ -2497,7 +2497,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 				break;
 			case ProtocolInfo::ANIMATE_PACKET:
-				if($this->spawned === false){
+				if(!$this->isAlive() and !$this->isSpectator() or $this->spawned === false){
 					break;
 				}
 
@@ -2566,7 +2566,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
 				break;
 			case ProtocolInfo::COMMAND_STEP_PACKET:
-				if($this->spawned === false){
+				if(!$this->isAlive() and !$this->isSpectator() or $this->spawned === false){
 					break;
 				}
 				$this->craftingType = 0;
@@ -2586,7 +2586,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				Timings::$playerCommandTimer->stopTiming();
 				break;
 			case ProtocolInfo::TEXT_PACKET:
-				if($this->spawned === false){
+				if(!$this->isAlive() and !$this->isSpectator() or $this->spawned === false){
 					break;
 				}
 				$this->craftingType = 0;
@@ -2624,7 +2624,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 				break;
 			case ProtocolInfo::CONTAINER_CLOSE_PACKET:
-				if($this->spawned === false or $packet->windowid === 0){
+				if(!$this->isAlive() or !$this->isSpectator() and $this->spawned === false or $packet->windowid === 0){
 					break;
 				}
 				$this->craftingType = 0;
@@ -2891,7 +2891,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 				break;
 			case ProtocolInfo::BLOCK_ENTITY_DATA_PACKET:
-				if($this->spawned === false){
+				if(!$this->isAlive() and !$this->isSpectator() or $this->spawned === false){
 					break;
 				}
 				$this->craftingType = 0;
