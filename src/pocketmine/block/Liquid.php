@@ -216,7 +216,7 @@ abstract class Liquid extends Transparent{
 					$k = -1;
 				}
 
-				if(($topFlowDecay = $this->getFlowDecay($this->level->getBlock($this->level->getBlock($this->temporalVector->setComponents($this->x, $this->y + 1, $this->z))))) >= 0){
+				if(($topFlowDecay = $this->getFlowDecay($this->level->getBlock($this->temporalVector->setComponents($this->x, $this->y + 1, $this->z)))) >= 0){
 					if($topFlowDecay >= 8){
 						$k = $topFlowDecay;
 					}else{
@@ -225,7 +225,7 @@ abstract class Liquid extends Transparent{
 				}
 
 				if($this->adjacentSources >= 2 and $this instanceof Water){
-					$bottomBlock = $this->level->getBlock($this->level->getBlock($this->temporalVector->setComponents($this->x, $this->y - 1, $this->z)));
+					$bottomBlock = $this->level->getBlock($this->temporalVector->setComponents($this->x, $this->y - 1, $this->z));
 					if($bottomBlock->isSolid()){
 						$k = 0;
 					}elseif($bottomBlock instanceof Water and $bottomBlock->getDamage() === 0){
