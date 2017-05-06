@@ -63,7 +63,7 @@ class Potion extends Item implements Consumable{
 
 	public static function getEffectByPotionName(string $name){
 		if(isset(self::$effects[$name])){
-			return clone self::$effects[$meta];
+			return clone self::$effects[$name];
 		}
 
 		return null;
@@ -82,6 +82,9 @@ class Potion extends Item implements Consumable{
 		if(($effect = Potion::getEffectByPotionId($this->meta)) !== null){
 			$effects[] = $effect;
 		}
+
+		//TODO: add CustomPotionEffects tag check
+
 		return $effects;
 	}
 
@@ -93,6 +96,5 @@ class Potion extends Item implements Consumable{
 		foreach($this->getAdditionalEffects() as $effect){
 			$entity->addEffect($effect);
 		}
-		// TODO: finish this off
 	}
 }

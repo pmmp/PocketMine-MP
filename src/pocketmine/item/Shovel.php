@@ -23,6 +23,10 @@
 namespace pocketmine\item;
 
 
+use pocketmine\block\Block;
+use pocketmine\entity\Entity;
+use pocketmine\Player;
+
 class Shovel extends TieredTool{
 
 	public function getToolType() : int{
@@ -31,5 +35,16 @@ class Shovel extends TieredTool{
 
 	public function isShovel(){
 		return $this->tier;
+	}
+
+	public function onDestroyBlock(Block $block, Player $player = null) : bool{
+		if($block->getHardness() > 0){
+			return $this->applyDamage(1);
+		}
+		return false;
+	}
+
+	public function onAttackEntity(Entity $entity, Player $player = null) : bool{
+		return $this->applyDamage(2);
 	}
 }

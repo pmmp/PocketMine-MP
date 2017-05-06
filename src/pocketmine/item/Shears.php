@@ -23,6 +23,8 @@ namespace pocketmine\item;
 
 
 use pocketmine\block\Block;
+use pocketmine\entity\Entity;
+use pocketmine\Player;
 
 class Shears extends Tool{
 	protected $durability = 238;
@@ -35,7 +37,15 @@ class Shears extends Tool{
 		return true;
 	}
 
-	protected static function fromJsonTypeData(array $data){
-		return new Shears($data["id"], $data["meta"] ?? 0, 1, $data["fallback_name"], $data["properties"]["durability"]);
+	public function onDestroyBlock(Block $block, Player $player = null) : bool{
+		if($block->getHardness() === 0 or $block->getToolType() === Tool::TYPE_SHEARS or $block->getId() === Block::VINES){
+			return $this->applyDamage(1);
+		}
+
+		return false;
+	}
+
+	public function onInteractWithEntity(Entity $entity, Player $player = null) : bool{
+		return false; //TODO: shear sheep
 	}
 }

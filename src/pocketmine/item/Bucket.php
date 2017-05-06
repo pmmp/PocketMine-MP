@@ -28,21 +28,20 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\event\player\PlayerBucketFillEvent;
-use pocketmine\level\Level;
 use pocketmine\Player;
 
 class Bucket extends Item implements Consumable{
 
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		$targetBlock = Block::get($this->meta);
+	public function onClickBlock(Player $player, Block $block, Block $blockClicked, int $face, float $fx, float $fy, float $fz){
+		$bucketBlock = Block::get($this->meta);
 
-		if($targetBlock instanceof Air){
-			if($target instanceof Liquid and $target->getDamage() === 0){
+		if($bucketBlock instanceof Air){
+			if($blockClicked instanceof Liquid and $blockClicked->getDamage() === 0){
 				$result = clone $this;
-				$result->setDamage($target->getId());
+				$result->setDamage($blockClicked->getId());
 				$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketFillEvent($player, $block, $face, $this, $result));
 				if(!$ev->isCancelled()){
-					$player->getLevel()->setBlock($target, new Air(), true, true);
+					$player->getLevel()->setBlock($blockClicked, new Air(), true, true);
 					if($player->isSurvival()){
 						$player->getInventory()->setItemInHand($ev->getItem());
 					}
@@ -51,12 +50,12 @@ class Bucket extends Item implements Consumable{
 					$player->getInventory()->sendContents($player);
 				}
 			}
-		}elseif($targetBlock instanceof Liquid){
+		}elseif($bucketBlock instanceof Liquid){
 			$result = clone $this;
 			$result->setDamage(0);
 			$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketEmptyEvent($player, $block, $face, $this, $result));
 			if(!$ev->isCancelled()){
-				$player->getLevel()->setBlock($block, $targetBlock, true, true);
+				$player->getLevel()->setBlock($block, $bucketBlock, true, true);
 				if($player->isSurvival()){
 					$player->getInventory()->setItemInHand($ev->getItem());
 				}
@@ -87,6 +86,5 @@ class Bucket extends Item implements Consumable{
 
 	public function onConsume(Entity $entity){
 		$entity->removeAllEffects();
-		//TODO: add boilerplate code for setting residue and calling events or improve eating implementation
 	}
 }

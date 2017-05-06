@@ -28,7 +28,6 @@ use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\inventory\Fuel;
 use pocketmine\item\enchantment\Enchantment;
-use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
@@ -106,24 +105,25 @@ class Item implements ItemIds, \JsonSerializable{
 			}
 
 			$types = [
-				"axe"          => Axe::class,
-				"boots"        => Boots::class,
-				"bow"          => Bow::class,
-				"bucket"       => Bucket::class,
-				"chestplate"   => Chestplate::class,
+				"axe" => Axe::class,
+				"boots" => Boots::class,
+				"bow" => Bow::class,
+				"bucket" => Bucket::class,
+				"chestplate" => Chestplate::class,
 				"chorus_fruit" => ChorusFruit::class,
-				"default"      => Item::class,
-				"fishing_rod"  => FishingRod::class,
-				"food"         => Food::class,
-				"helmet"       => Helmet::class,
-				"hoe"          => Hoe::class,
-				"leggings"     => Leggings::class,
-				"pickaxe"      => Pickaxe::class,
-				"potion"       => Potion::class,
-				"shears"       => Shears::class,
-				"shovel"       => Shovel::class,
-				"spawn_egg"    => SpawnEgg::class,
-				"sword"        => Sword::class
+				"fishing_rod" => FishingRod::class,
+				"flint_and_steel" => FlintSteel::class,
+				"food" => Food::class,
+				"helmet" => Helmet::class,
+				"hoe" => Hoe::class,
+				"leggings" => Leggings::class,
+				"pickaxe" => Pickaxe::class,
+				"potion" => Potion::class,
+				"projectile" => ProjectileItem::class,
+				"shears" => Shears::class,
+				"shovel" => Shovel::class,
+				"spawn_egg" => SpawnEgg::class,
+				"sword" => Sword::class
 			];
 
 			foreach($items as $itemName => $itemData){
@@ -894,15 +894,6 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * @param Entity|Block $object
-	 *
-	 * @return bool
-	 */
-	public function useOn($object){
-		return false;
-	}
-
-	/**
 	 * Returns the amount of damage that this item will deal to an entity.
 	 *
 	 * @return int
@@ -965,10 +956,9 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * Called when a player uses this item on a block.
 	 *
-	 * @param Level $level
 	 * @param Player $player
 	 * @param Block $block
-	 * @param Block $target
+	 * @param Block $blockClicked
 	 * @param int $face
 	 * @param float $fx
 	 * @param float $fy
@@ -976,7 +966,54 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @return bool
 	 */
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function onClickBlock(Player $player, Block $block, Block $blockClicked, int $face, float $fx, float $fy, float $fz){
+		return false;
+	}
+
+	/**
+	 * Called when a player uses this item on the air, for example throwing a snowball.
+	 *
+	 * @param Player $player
+	 *
+	 * @return bool
+	 */
+	public function onClickAir(Player $player) : bool{
+		return false;
+	}
+
+	/**
+	 * Called when a block is destroyed using this item.
+	 *
+	 * @param Block $block
+	 * @param Player|null $player
+	 *
+	 * @return bool
+	 */
+	public function onDestroyBlock(Block $block, Player $player = null) : bool{
+		return false;
+	}
+
+	/**
+	 * Called when this item is used to deal damage to an entity.
+	 *
+	 * @param Entity $entity
+	 * @param Player|null $player
+	 *
+	 * @return bool
+	 */
+	public function onAttackEntity(Entity $entity, Player $player = null) : bool{
+		return false;
+	}
+
+	/**
+	 * Called when this item is used on an entity, for example when right-clicking a horse to feed it.
+	 *
+	 * @param Entity $entity
+	 * @param Player|null $player
+	 *
+	 * @return bool
+	 */
+	public function onInteractWithEntity(Entity $entity, Player $player = null) : bool{
 		return false;
 	}
 

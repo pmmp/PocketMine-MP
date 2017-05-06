@@ -25,7 +25,7 @@ namespace pocketmine\item;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\utils\Color;
 
-abstract class Armor extends Item{
+abstract class Armor extends Durable{
 	const TIER_LEATHER = 1;
 	const TIER_GOLDEN = 2;
 	const TIER_CHAIN = 3;
@@ -35,13 +35,11 @@ abstract class Armor extends Item{
 	protected $maxStackSize = 1;
 
 	protected $defensePoints;
-	protected $durability;
 	protected $tier;
 
 	public function __construct($id, $meta = 0, $count = 1, $name = "Unknown", int $tier, int $durability, int $defensePoints){
-		parent::__construct($id, $meta, $count, $name);
+		parent::__construct($id, $meta, $count, $name, $durability);
 		$this->tier = $tier;
-		$this->durability = $durability;
 		$this->defensePoints = $defensePoints;
 	}
 
@@ -59,10 +57,6 @@ abstract class Armor extends Item{
 	 */
 	public function getArmorTier() : int{
 		return $this->tier;
-	}
-
-	public function getMaxDurability() : int{
-		return $this->durability;
 	}
 
 	/**

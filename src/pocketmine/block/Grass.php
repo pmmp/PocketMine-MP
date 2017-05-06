@@ -57,6 +57,10 @@ class Grass extends Solid{
 		];
 	}
 
+	public function canBeTilled() : bool{
+		return true;
+	}
+
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_RANDOM){
 			$block = $this->getLevel()->getBlock(new Vector3($this->x, $this->y, $this->z));
@@ -85,13 +89,8 @@ class Grass extends Solid{
 			TallGrassObject::growGrass($this->getLevel(), $this, new Random(mt_rand()), 8, 2);
 
 			return true;
-		}elseif($item->isHoe()){
-			$item->useOn($this);
-			$this->getLevel()->setBlock($this, new Farmland());
-
-			return true;
 		}elseif($item->isShovel() and $this->getSide(1)->getId() === Block::AIR){
-			$item->useOn($this);
+			$item->applyDamage(1);
 			$this->getLevel()->setBlock($this, new GrassPath());
 
 			return true;

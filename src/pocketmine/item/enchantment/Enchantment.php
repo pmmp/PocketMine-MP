@@ -52,14 +52,10 @@ class Enchantment{
 	const FROST_WALKER = 25;
 	const MENDING = 26;
 
-	const RARITY_COMMON = 0;
-	const RARITY_UNCOMMON = 1;
-	const RARITY_RARE = 2;
-	const RARITY_MYTHIC = 3;
-
-	const ACTIVATION_EQUIP = 0;
-	const ACTIVATION_HELD = 1;
-	const ACTIVATION_SELF = 2;
+	const WEIGHT_COMMON = 10;
+	const WEIGHT_UNCOMMON = 5;
+	const WEIGHT_RARE = 2;
+	const RARITY_MYTHIC = 1;
 
 	const SLOT_NONE = 0;
 	const SLOT_ALL = 0b11111111111111;
@@ -87,9 +83,19 @@ class Enchantment{
 	public static function init(){
 		self::$enchantments = new \SplFixedArray(256);
 
-		self::$enchantments[self::PROTECTION] = new Enchantment(self::PROTECTION, "%enchantment.protect.all", self::RARITY_COMMON, self::ACTIVATION_EQUIP, self::SLOT_ARMOR);
-		self::$enchantments[self::FIRE_PROTECTION] = new Enchantment(self::FIRE_PROTECTION, "%enchantment.protect.fire", self::RARITY_UNCOMMON, self::ACTIVATION_EQUIP, self::SLOT_ARMOR);
-		self::$enchantments[self::FEATHER_FALLING] = new Enchantment(self::FEATHER_FALLING, "%enchantment.protect.fall", self::RARITY_UNCOMMON, self::ACTIVATION_EQUIP, self::SLOT_FEET);
+		$data = json_decode(file_get_contents(\pocketmine\PATH . "src/pocketmine/resources/enchantments.json"), true);
+		if(!is_array($data)){
+			throw new \RuntimeException("Enchantments data could not be read");
+		}
+
+		foreach($data as $enchantName => $enchantData){
+			//TODO: add item type flags
+			self::registerEnchantment(new Enchantment($enchantData["id"], $enchantData["translation"], $enchantData["weight"], -1, $enchantData["max_level"]));
+		}
+	}
+
+	public static function registerEnchantment(Enchantment $enchantment){
+		self::$enchantments[$enchantment->getId()] = $enchantment;
 	}
 
 	/**
@@ -110,8 +116,8 @@ class Enchantment{
 	 * @return Enchantment|null
 	 */
 	public static function getEnchantmentByName(string $name){
-		if(defined(Enchantment::class . "::TYPE_" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::TYPE_" . strtoupper($name)));
+		if(defined(Enchantment::class . "::" . strtoupper($name))){
+			return self::getEnchantment(constant(Enchantment::class . "::" . strtoupper($name)));
 		}
 		return null;
 	}
@@ -120,22 +126,22 @@ class Enchantment{
 	private $level = 1;
 	private $name;
 	private $rarity;
-	private $activationType;
 	private $slot;
+	private $maxLevel;
 
 	/**
 	 * @param int $id
 	 * @param string $name
 	 * @param int $rarity
-	 * @param int $activationType
 	 * @param int $slot
+	 * @param int $maxLevel
 	 */
-	private function __construct(int $id, string $name, int $rarity, int $activationType, int $slot){
+	private function __construct(int $id, string $name, int $rarity, int $slot, int $maxLevel){
 		$this->id = $id;
 		$this->name = $name;
 		$this->rarity = $rarity;
-		$this->activationType = $activationType;
 		$this->slot = $slot;
+		$this->maxLevel = $maxLevel;
 	}
 
 	/**
@@ -151,7 +157,7 @@ class Enchantment{
 	 * @return string
 	 */
 	public function getName() : string{
-		return $this->name;
+		return "%enchantment." . $this->name;
 	}
 
 	/**
@@ -160,14 +166,6 @@ class Enchantment{
 	 */
 	public function getRarity() : int{
 		return $this->rarity;
-	}
-
-	/**
-	 * Returns an int constant describing what type of activation this enchantment requires. For example armor enchantments only apply when worn.
-	 * @return int
-	 */
-	public function getActivationType() : int{
-		return $this->activationType;
 	}
 
 	/**
@@ -206,6 +204,46 @@ class Enchantment{
 		$this->level = $level;
 
 		return $this;
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return int
+	 */
+	public static function rarityFromString(string $name) : int{
+		switch($name){
+			case "common":
+				return Enchantment::WEIGHT_COMMON;
+			case "uncommon":
+				return Enchantment::WEIGHT_UNCOMMON;
+			case "rare":
+				return Enchantment::WEIGHT_RARE;
+			case "mythic":
+				return Enchantment::RARITY_MYTHIC;
+			default:
+				throw new \InvalidArgumentException("Unknown enchantment rarity \"$name\"");
+		}
+	}
+
+	/**
+	 * @param int $rarity
+	 *
+	 * @return string
+	 */
+	public static function rarityToString(int $rarity) : string{
+		switch($rarity){
+			case Enchantment::WEIGHT_COMMON:
+				return "common";
+			case Enchantment::WEIGHT_UNCOMMON:
+				return "uncommon";
+			case Enchantment::WEIGHT_RARE:
+				return "rare";
+			case Enchantment::RARITY_MYTHIC:
+				return "mythic";
+			default:
+				throw new \InvalidArgumentException("Unknown rarity type $rarity");
+		}
 	}
 
 }

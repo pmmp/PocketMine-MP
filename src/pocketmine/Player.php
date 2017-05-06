@@ -31,12 +31,9 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Item as DroppedItem;
 use pocketmine\entity\Living;
-use pocketmine\entity\Projectile;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\entity\EntityShootBowEvent;
-use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\event\inventory\CraftItemEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\inventory\InventoryPickupArrowEvent;
@@ -82,12 +79,12 @@ use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\inventory\SimpleTransactionGroup;
 use pocketmine\item\Consumable;
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 use pocketmine\level\ChunkLoader;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\level\Location;
 use pocketmine\level\Position;
-use pocketmine\level\sound\LaunchSound;
 use pocketmine\level\WeakPosition;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector2;
@@ -96,12 +93,8 @@ use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\LongTag;
-use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
@@ -2360,9 +2353,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					}
 
 					if($this->isSurvival()){
-						if($item->isTool()){
-							if($item->useOn($target) and $item->getDamage() >= $item->getMaxDurability()){
-								$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 1));
+						if($item instanceof Tool){
+							if($item->onAttackEntity($target, $this) and $item->getDamage() >= $item->getMaxDurability()){
+								$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 0));
 							}else{
 								$this->inventory->setItemInHand($item);
 							}
@@ -2450,14 +2443,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				cos($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI)
 			);
 
-			if($this->isCreative()){
-				$item = $this->inventory->getItemInHand();
-			}elseif(!$this->inventory->getItemInHand()->equals($packet->item)){
-				$this->inventory->sendHeldItem($this);
-				return true;
-			}else{
-				$item = $this->inventory->getItemInHand();
-			}
+			$item = $this->inventory->getItemInHand();
 
 			$ev = new PlayerInteractEvent($this, $item, $aimPos, $packet->face, PlayerInteractEvent::RIGHT_CLICK_AIR);
 
@@ -2466,47 +2452,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			if($ev->isCancelled()){
 				$this->inventory->sendHeldItem($this);
 				return true;
-			}
-
-			if($item->getId() === Item::SNOWBALL){
-				$nbt = new CompoundTag("", [
-					"Pos" => new ListTag("Pos", [
-						new DoubleTag("", $this->x),
-						new DoubleTag("", $this->y + $this->getEyeHeight()),
-						new DoubleTag("", $this->z)
-					]),
-					"Motion" => new ListTag("Motion", [
-						new DoubleTag("", $aimPos->x),
-						new DoubleTag("", $aimPos->y),
-						new DoubleTag("", $aimPos->z)
-					]),
-					"Rotation" => new ListTag("Rotation", [
-						new FloatTag("", $this->yaw),
-						new FloatTag("", $this->pitch)
-					]),
-				]);
-
-				$f = 1.5;
-				$snowball = Entity::createEntity("Snowball", $this->getLevel(), $nbt, $this);
-				$snowball->setMotion($snowball->getMotion()->multiply($f));
-				if($this->isSurvival()){
-					$item->setCount($item->getCount() - 1);
-					$this->inventory->setItemInHand($item->getCount() > 0 ? $item : Item::get(Item::AIR));
-				}
-				if($snowball instanceof Projectile){
-					$this->server->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($snowball));
-					if($projectileEv->isCancelled()){
-						$snowball->kill();
-					}else{
-						$snowball->spawnToAll();
-						$this->level->addSound(new LaunchSound($this), $this->getViewers());
-					}
+			}else{
+				if(!$item->onClickAir($this)){
+					$this->inventory->sendHeldItem($this);
 				}else{
-					$snowball->spawnToAll();
+					$this->inventory->setItemInHand($item->getCount() > 0 ? $item : Item::get(Item::AIR, 0, 0));
 				}
+				$this->setUsingItem(true);
 			}
-
-			$this->setUsingItem(true);
 		}
 
 		return true;
@@ -2546,7 +2499,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				break;
 			case PlayerActionPacket::ACTION_RELEASE_ITEM:
 				if($this->isUsingItem() and $this->getItemUseDuration() > -1){
-					$this->inventory->getItemInHand()->onReleaseUsing($this);
+					$item = $this->inventory->getItemInHand();
+					if($item->onReleaseUsing($this)){
+						$this->inventory->setItemInHand($item);
+					}
 				}
 				break;
 			case PlayerActionPacket::ACTION_STOP_SLEEPING:

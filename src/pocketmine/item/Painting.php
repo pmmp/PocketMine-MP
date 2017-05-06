@@ -22,7 +22,6 @@
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\level\Level;
 use pocketmine\Player;
 
 class Painting extends Item{
@@ -30,8 +29,8 @@ class Painting extends Item{
 		parent::__construct(self::PAINTING, 0, $count, "Painting");
 	}
 
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($target->isTransparent() === false and $face > 1 and $block->isSolid() === false){
+	public function onClickBlock(Player $player, Block $block, Block $blockClicked, int $face, float $fx, float $fy, float $fz){
+		if($blockClicked->isTransparent() === false and $face > 1 and $block->isSolid() === false){
 			$faces = [
 				2 => 1,
 				3 => 3,
@@ -70,18 +69,14 @@ class Painting extends Item{
 			];
 			$motive = $motives[mt_rand(0, count($motives) - 1)];
 			$data = [
-				"x" => $target->x,
-				"y" => $target->y,
-				"z" => $target->z,
+				"x" => $blockClicked->x,
+				"y" => $blockClicked->y,
+				"z" => $blockClicked->z,
 				"yaw" => $faces[$face] * 90,
 				"Motive" => $motive[0],
 			];
+
 			//TODO
-			//$e = $server->api->entity->add($level, ENTITY_OBJECT, OBJECT_PAINTING, $data);
-			//$e->spawnToAll();
-			/*if(($player->gamemode & 0x01) === 0x00){
-				$player->removeItem(Item::get($this->getId(), $this->getDamage(), 1));
-			}*/
 
 			return true;
 		}

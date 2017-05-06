@@ -22,6 +22,11 @@
 namespace pocketmine\item;
 
 
+use pocketmine\block\Block;
+use pocketmine\entity\Entity;
+use pocketmine\math\Vector3;
+use pocketmine\Player;
+
 class Hoe extends TieredTool{
 
 	public function getToolType() : int{
@@ -30,5 +35,20 @@ class Hoe extends TieredTool{
 
 	public function isHoe(){
 		return $this->tier;
+	}
+
+	public function onClickBlock(Player $player, Block $block, Block $blockClicked, int $face, float $fx, float $fy, float $fz){
+		if($blockClicked->canBeTilled() and $face !== Vector3::SIDE_DOWN){ //Can click on any side to till, except bottom.
+			$player->getLevel()->setBlock($blockClicked, Block::get(Block::FARMLAND), true, true);
+			$this->applyDamage(1);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	public function onAttackEntity(Entity $entity, Player $player = null) : bool{
+		return $this->applyDamage(1);
 	}
 }

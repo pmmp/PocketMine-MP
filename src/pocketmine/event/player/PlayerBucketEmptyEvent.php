@@ -21,10 +21,6 @@
 
 namespace pocketmine\event\player;
 
-use pocketmine\block\Block;
-use pocketmine\item\Item;
-use pocketmine\Player;
-
 class PlayerBucketEmptyEvent extends PlayerBucketEvent{
 	public static $handlerList = null;
 }

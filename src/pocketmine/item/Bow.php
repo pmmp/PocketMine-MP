@@ -88,17 +88,12 @@ class Bow extends Tool{
 
 		if($ev->isCancelled()){
 			$ev->getProjectile()->close();
-			$player->getInventory()->sendContents($player);
+			return false;
 		}else{
 			$ev->getProjectile()->setMotion($ev->getProjectile()->getMotion()->multiply($ev->getForce()));
 			if($player->isSurvival()){
 				$player->getInventory()->removeItem($arrow);
-				$this->meta++;
-				if($this->meta >= $this->durability){
-					$player->getInventory()->setItemInHand(Item::get(Item::AIR, 0, 0));
-				}else{
-					$player->getInventory()->setItemInHand($this);
-				}
+				$this->applyDamage(1);
 			}
 			if($ev->getProjectile() instanceof Projectile){
 				$player->getServer()->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($ev->getProjectile()));

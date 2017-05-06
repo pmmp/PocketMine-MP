@@ -410,10 +410,29 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Returns the best tool type to use for breaking this type of block.
 	 * @return int
 	 */
 	public function getToolType(){
 		return Tool::TYPE_NONE;
+	}
+
+	/**
+	 * Returns whether the tool type specified in {@link Block#getToolType} must be used to get drops when breaking this block.
+	 * For example, wood's tool type is Axe, but does not require an Axe to get drops. Stone on the other hand requires a pickaxe, and a pickaxe must be used.
+	 *
+	 * @return bool
+	 */
+	public function requiresCorrectToolType() : bool{
+		return false;
+	}
+
+	/**
+	 * Returns the tool tier needed to break this block and get drops.
+	 * @return int
+	 */
+	public function getRequiredToolTier() : int{
+		return TieredTool::TIER_ANY;
 	}
 
 	/**
@@ -471,6 +490,14 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	public function canPassThrough(){
+		return false;
+	}
+
+	/**
+	 * Returns whether this block type can be turned into farmland by right-clicking on it with a hoe.
+	 * @return bool
+	 */
+	public function canBeTilled() : bool{
 		return false;
 	}
 

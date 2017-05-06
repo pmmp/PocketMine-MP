@@ -573,7 +573,10 @@
     },
     "flint_and_steel": {
         "id": 259,
-        "fallback_name": "Flint and Steel"
+        "fallback_name": "Flint and Steel",
+        "properties": {
+            "durability": 65
+        }
     },
     "flower_pot": {
         "id": 390,
@@ -1188,7 +1191,12 @@
     "snowball": {
         "id": 332,
         "fallback_name": "Snowball",
-        "max_stack_size": 16
+        "max_stack_size": 16,
+        "type": "projectile",
+        "properties": {
+            "throw_force": 1.5,
+            "projectile_entity": "Snowball"
+        }
     },
     "spawn_egg": {
         "id": 383,
@@ -1217,8 +1225,7 @@
     "splash_potion": {
         "id": 438,
         "fallback_name": "Splash Potion",
-        "max_stack_size": 1,
-        "todo": "implement"
+        "max_stack_size": 1
     },
     "spruce_door": {
         "id": 427,

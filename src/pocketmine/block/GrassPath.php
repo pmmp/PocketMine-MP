@@ -61,4 +61,8 @@ class GrassPath extends Transparent{
 			[Item::DIRT, 0, 1],
 		];
 	}
+
+	public function canBeTilled() : bool{
+		return true;
+	}
 }
