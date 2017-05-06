@@ -141,7 +141,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @return float
 	 */
 	public function getJumpVelocity() : float{
-		return $this->jumpVelocity + ($this->hasEffect(Effect::JUMP) ? (($this->getEffect(Effect::JUMP)->getAmplifier() + 1) / 10) : 0);
+		return $this->jumpVelocity + ($this->hasEffect(Effect::JUMP) ? ($this->getEffect(Effect::JUMP)->getEffectLevel() / 10) : 0);
 	}
 
 	/**
@@ -169,7 +169,7 @@ abstract class Living extends Entity implements Damageable{
 		$cause = $source->getCause();
 		if($cause !== EntityDamageEvent::CAUSE_VOID and $cause !== EntityDamageEvent::CAUSE_SUICIDE){
 			if($this->hasEffect(Effect::DAMAGE_RESISTANCE)){
-				$multiplier = 0.2 * ($this->getEffect(Effect::DAMAGE_RESISTANCE)->getAmplifier() + 1);
+				$multiplier = 0.2 * ($this->getEffect(Effect::DAMAGE_RESISTANCE)->getEffectLevel());
 				$source->setDamage(-($baseDamage * $multiplier), EntityDamageEvent::MODIFIER_RESISTANCE);
 			}
 		}
