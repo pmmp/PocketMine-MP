@@ -104,14 +104,27 @@ class Enchantment{
 		return null;
 	}
 
+    /**
+     * @param Enchantment $enchantment
+     * @param int $id
+     * @return bool
+     */
+    public static function addEnchantment(Enchantment $enchantment, int $id){
+		if(self::getEnchantmentByName($enchantment->getName())){
+			return false;
+		}
+		self::$enchantments[$id] = $enchantment;
+		return true;
+	}
+
 	/**
 	 * @param string $name
 	 *
 	 * @return Enchantment|null
 	 */
 	public static function getEnchantmentByName(string $name){
-		if(defined(Enchantment::class . "::TYPE_" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::TYPE_" . strtoupper($name)));
+		if(defined(Enchantment::class . "::" . strtoupper($name))){
+			return self::getEnchantment(constant(Enchantment::class . "::" . strtoupper($name)));
 		}
 		return null;
 	}
@@ -130,7 +143,7 @@ class Enchantment{
 	 * @param int $activationType
 	 * @param int $slot
 	 */
-	private function __construct(int $id, string $name, int $rarity, int $activationType, int $slot){
+	public function __construct(int $id, string $name, int $rarity, int $activationType, int $slot){
 		$this->id = $id;
 		$this->name = $name;
 		$this->rarity = $rarity;
