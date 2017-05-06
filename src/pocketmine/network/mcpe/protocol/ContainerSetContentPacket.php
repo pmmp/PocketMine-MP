@@ -33,8 +33,10 @@ class ContainerSetContentPacket extends DataPacket{
 	const SPECIAL_ARMOR = 0x78;
 	const SPECIAL_CREATIVE = 0x79;
 	const SPECIAL_HOTBAR = 0x7a;
+	const SPECIAL_FIXED_INVENTORY = 0x7b;
 
 	public $windowid;
+	public $targetEid;
 	public $slots = [];
 	public $hotbar = [];
 
@@ -45,7 +47,8 @@ class ContainerSetContentPacket extends DataPacket{
 	}
 
 	public function decode(){
-		$this->windowid = $this->getByte();
+		$this->windowid = $this->getUnsignedVarInt();
+		$this->targetEid = $this->getEntityUniqueId();
 		$count = $this->getUnsignedVarInt();
 		for($s = 0; $s < $count and !$this->feof(); ++$s){
 			$this->slots[$s] = $this->getSlot();
@@ -60,7 +63,8 @@ class ContainerSetContentPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putByte($this->windowid);
+		$this->putUnsignedVarInt($this->windowid);
+		$this->putEntityUniqueId($this->targetEid);
 		$this->putUnsignedVarInt(count($this->slots));
 		foreach($this->slots as $slot){
 			$this->putSlot($slot);

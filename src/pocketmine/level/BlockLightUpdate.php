@@ -19,27 +19,16 @@
  *
 */
 
-namespace pocketmine\network\mcpe\protocol;
-
-#include <rules/DataPacket.h>
+namespace pocketmine\level;
 
 
-use pocketmine\network\mcpe\NetworkSession;
+class BlockLightUpdate extends LightUpdate{
 
-class PlayerFallPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::PLAYER_FALL_PACKET;
-
-	public $fallDistance;
-
-	public function decode(){
-		$this->fallDistance = $this->getLFloat();
+	public function getLight(int $x, int $y, int $z) : int{
+		return $this->level->getBlockLightAt($x, $y, $z);
 	}
 
-	public function encode(){
-
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handlePlayerFall($this);
+	public function setLight(int $x, int $y, int $z, int $level){
+		$this->level->setBlockLightAt($x, $y, $z, $level);
 	}
 }

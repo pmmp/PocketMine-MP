@@ -26,31 +26,24 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 
-class DisconnectPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::DISCONNECT_PACKET;
+class EntityFallPacket extends DataPacket{
+	const NETWORK_ID = ProtocolInfo::ENTITY_FALL_PACKET;
 
-	public $hideDisconnectionScreen = false;
-	public $message;
-
-	public function canBeSentBeforeLogin() : bool{
-		return true;
-	}
+	public $eid;
+	public $fallDistance;
+	public $bool1;
 
 	public function decode(){
-		$this->hideDisconnectionScreen = $this->getBool();
-		$this->message = $this->getString();
+		$this->eid = $this->getEntityRuntimeId();
+		$this->fallDistance = $this->getLFloat();
+		$this->bool1 = $this->getBool();
 	}
 
 	public function encode(){
-		$this->reset();
-		$this->putBool($this->hideDisconnectionScreen);
-		if(!$this->hideDisconnectionScreen){
-			$this->putString($this->message);
-		}
+
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleDisconnect($this);
+		return $session->handleEntityFall($this);
 	}
-
 }

@@ -55,6 +55,8 @@ class Block extends Position implements BlockIds, Metadatable{
 	public static $hardness = null;
 	/** @var \SplFixedArray */
 	public static $transparent = null;
+	/** @var \SplFixedArray */
+	public static $diffusesSkyLight = null;
 
 	public static function init(){
 		if(self::$list === null){
@@ -65,6 +67,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$solid = new \SplFixedArray(256);
 			self::$hardness = new \SplFixedArray(256);
 			self::$transparent = new \SplFixedArray(256);
+
 			self::registerBlock(new Air());
 			self::registerBlock(new Stone());
 			self::registerBlock(new Grass());
@@ -273,21 +276,8 @@ class Block extends Position implements BlockIds, Metadatable{
 		self::$transparent[$block->id] = $block->isTransparent();
 		self::$hardness[$block->id] = $block->getHardness();
 		self::$light[$block->id] = $block->getLightLevel();
-
-		//TODO: remove this mess and add an OOP API for light-filtering
-		if($block->isSolid()){
-			if($block->isTransparent()){
-				if($block instanceof Liquid or $block instanceof Ice){
-					self::$lightFilter[$block->id] = 2;
-				}else{
-					self::$lightFilter[$block->id] = 1;
-				}
-			}else{
-				self::$lightFilter[$block->id] = 15;
-			}
-		}else{
-			self::$lightFilter[$block->id] = 1;
-		}
+		self::$lightFilter[$block->id] = $block->getLightFilter() + 1;
+		self::$diffusesSkyLight[$block->id] = $block->diffusesSkyLight();
 	}
 
 	/**
@@ -450,6 +440,29 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Returns the amount of light this block will filter out when light passes through this block.
+	 * This value is used in light spread calculation.
+	 *
+	 * @return int 0-15
+	 */
+	public function getLightFilter() : int{
+		return 15;
+	}
+
+	/**
+	 * Returns whether this block will diffuse sky light passing through it vertically.
+	 * Diffusion means that full-strength sky light passing through this block will not be reduced, but will start being filtered below the block.
+	 * Examples of this behaviour include leaves and cobwebs.
+	 *
+	 * Light-diffusing blocks are included by the heightmap.
+	 *
+	 * @return bool
+	 */
+	public function diffusesSkyLight() : bool{
+		return false;
+	}
+
+	/**
 	 * AKA: Block->isPlaceable
 	 *
 	 * @return bool
@@ -498,6 +511,14 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return bool
 	 */
 	public function canBeTilled() : bool{
+		return false;
+	}
+
+	/**
+	 * Returns whether entities can climb up this block.
+	 * @return bool
+	 */
+	public function canClimb() : bool{
 		return false;
 	}
 

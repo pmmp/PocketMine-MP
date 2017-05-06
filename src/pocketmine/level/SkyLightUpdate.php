@@ -19,46 +19,16 @@
  *
 */
 
-namespace pocketmine\block;
+namespace pocketmine\level;
 
-use pocketmine\entity\Entity;
-use pocketmine\item\Item;
-use pocketmine\item\Tool;
 
-class Cobweb extends Flowable{
+class SkyLightUpdate extends LightUpdate{
 
-	protected $id = self::COBWEB;
-
-	public function __construct(){
-
+	public function getLight(int $x, int $y, int $z) : int{
+		return $this->level->getBlockSkyLightAt($x, $y, $z);
 	}
 
-	public function hasEntityCollision(){
-		return true;
-	}
-
-	public function getName(){
-		return "Cobweb";
-	}
-
-	public function getHardness(){
-		return 4;
-	}
-
-	public function getToolType(){
-		return Tool::TYPE_SWORD;
-	}
-
-	public function onEntityCollide(Entity $entity){
-		$entity->resetFallDistance();
-	}
-
-	public function getDrops(Item $item){
-		//TODO: correct drops
-		return [];
-	}
-
-	public function diffusesSkyLight() : bool{
-		return true;
+	public function setLight(int $x, int $y, int $z, int $level){
+		$this->level->setBlockSkyLightAt($x, $y, $z, $level);
 	}
 }

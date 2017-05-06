@@ -68,7 +68,7 @@ use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MoveEntityPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
-use pocketmine\network\mcpe\protocol\PlayerFallPacket;
+use pocketmine\network\mcpe\protocol\EntityFallPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlaySoundPacket;
@@ -190,7 +190,7 @@ interface NetworkSession{
 
 	public function handlePlayerAction(PlayerActionPacket $packet) : bool;
 
-	public function handlePlayerFall(PlayerFallPacket $packet) : bool;
+	public function handleEntityFall(EntityFallPacket $packet) : bool;
 
 	public function handleHurtArmor(HurtArmorPacket $packet) : bool;
 

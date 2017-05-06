@@ -29,7 +29,6 @@ class SetTimePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SET_TIME_PACKET;
 
 	public $time;
-	public $started = true;
 
 	public function decode(){
 
@@ -38,7 +37,6 @@ class SetTimePacket extends DataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putVarInt($this->time);
-		$this->putBool($this->started);
 	}
 
 	public function handle(NetworkSession $session) : bool{

@@ -31,16 +31,23 @@ class AnimatePacket extends DataPacket{
 
 	public $action;
 	public $eid;
+	public $float; //Boat rowing time?
 
 	public function decode(){
 		$this->action = $this->getVarInt();
 		$this->eid = $this->getEntityRuntimeId();
+		if($this->action & 0x80){
+			$this->float = $this->getLFloat();
+		}
 	}
 
 	public function encode(){
 		$this->reset();
 		$this->putVarInt($this->action);
 		$this->putEntityRuntimeId($this->eid);
+		if($this->action & 0x80){
+			$this->putLFloat($this->float);
+		}
 	}
 
 	public function handle(NetworkSession $session) : bool{

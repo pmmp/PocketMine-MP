@@ -1770,20 +1770,15 @@ class Server{
 	 * @param Player[]            $players
 	 * @param DataPacket[]|string $packets
 	 * @param bool                $forceSync
+	 * @param bool                $immediate
 	 */
-	public function batchPackets(array $players, array $packets, $forceSync = false){
+	public function batchPackets(array $players, array $packets, $forceSync = false, bool $immediate = false){
 		Timings::$playerNetworkTimer->startTiming();
-		$str = "";
+
+		$pk = new BatchPacket();
 
 		foreach($packets as $p){
-			if($p instanceof DataPacket){
-				if(!$p->isEncoded){
-					$p->encode();
-				}
-				$str .= Binary::writeUnsignedVarInt(strlen($p->buffer)) . $p->buffer;
-			}else{
-				$str .= Binary::writeUnsignedVarInt(strlen($p)) . $p;
-			}
+			$pk->addPacket($p);
 		}
 
 		$targets = [];
@@ -1794,26 +1789,34 @@ class Server{
 		}
 
 		if(!$forceSync and $this->networkCompressionAsync){
-			$task = new CompressBatchedTask($str, $targets, $this->networkCompressionLevel);
+			$task = new CompressBatchedTask($pk, $targets, $this->networkCompressionLevel, $immediate);
 			$this->getScheduler()->scheduleAsyncTask($task);
 		}else{
-			$this->broadcastPacketsCallback(zlib_encode($str, ZLIB_ENCODING_DEFLATE, $this->networkCompressionLevel), $targets);
+			$pk->compress($this->networkCompressionLevel);
+			$this->broadcastPacketsCallback($pk, $targets, $immediate);
 		}
 
 		Timings::$playerNetworkTimer->stopTiming();
 	}
 
-	public function broadcastPacketsCallback($data, array $identifiers){
-		$pk = new BatchPacket();
-		$pk->payload = $data;
+	public function broadcastPacketsCallback(BatchPacket $pk, array $identifiers, bool $immediate){
 		$pk->encode();
 		$pk->isEncoded = true;
 
-		foreach($identifiers as $i){
-			if(isset($this->players[$i])){
-				$this->players[$i]->dataPacket($pk);
+		if($immediate){
+			foreach($identifiers as $i){
+				if(isset($this->players[$i])){
+					$this->players[$i]->directDataPacket($pk);
+				}
+			}
+		}else{
+			foreach($identifiers as $i){
+				if(isset($this->players[$i])){
+					$this->players[$i]->dataPacket($pk);
+				}
 			}
 		}
+
 	}
 
 

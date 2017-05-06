@@ -127,9 +127,7 @@ class PermissibleBase implements Permissible{
 	 * @throws PluginException
 	 */
 	public function addAttachment(Plugin $plugin, $name = null, $value = null){
-		if($plugin === null){
-			throw new PluginException("Plugin cannot be null");
-		}elseif(!$plugin->isEnabled()){
+		if(!$plugin->isEnabled()){
 			throw new PluginException("Plugin " . $plugin->getDescription()->getName() . " is disabled");
 		}
 
@@ -146,14 +144,8 @@ class PermissibleBase implements Permissible{
 
 	/**
 	 * @param PermissionAttachment $attachment
-	 *
-	 * @throws \Exception
 	 */
 	public function removeAttachment(PermissionAttachment $attachment){
-		if($attachment === null){
-			throw new \InvalidStateException("Attachment cannot be null");
-		}
-
 		if(isset($this->attachments[spl_object_hash($attachment)])){
 			unset($this->attachments[spl_object_hash($attachment)]);
 			if(($ex = $attachment->getRemovalCallback()) !== null){

@@ -31,7 +31,6 @@ class ContainerOpenPacket extends DataPacket{
 
 	public $windowid;
 	public $type;
-	public $slots;
 	public $x;
 	public $y;
 	public $z;
@@ -45,7 +44,6 @@ class ContainerOpenPacket extends DataPacket{
 		$this->reset();
 		$this->putByte($this->windowid);
 		$this->putByte($this->type);
-		$this->putVarInt($this->slots);
 		$this->putBlockPosition($this->x, $this->y, $this->z);
 		$this->putEntityUniqueId($this->entityId);
 	}

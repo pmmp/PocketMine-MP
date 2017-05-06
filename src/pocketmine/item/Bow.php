@@ -68,8 +68,8 @@ class Bow extends Tool{
 				new DoubleTag("", cos($player->yaw / 180 * M_PI) * cos($player->pitch / 180 * M_PI))
 			]),
 			"Rotation" => new ListTag("Rotation", [
-				new FloatTag("", $player->yaw),
-				new FloatTag("", $player->pitch)
+				new FloatTag("", ($player->yaw > 180 ? 360 : 0) - $player->yaw),
+				new FloatTag("", -$player->pitch)
 			]),
 			"Fire" => new ShortTag("Fire", $player->isOnFire() ? 45 * 60 : 0)
 			//TODO: add Power and Flame enchantment effects

@@ -122,8 +122,10 @@ class LevelSoundEventPacket extends DataPacket{
 	const SOUND_HAGGLE_YES = 91;
 	const SOUND_HAGGLE_NO = 92;
 	const SOUND_HAGGLE_IDLE = 93;
-	const SOUND_DEFAULT = 94;
-	const SOUND_UNDEFINED = 95;
+	const SOUND_CHORUSGROW = 94;
+	const SOUND_CHORUSDEATH = 95;
+	const SOUND_DEFAULT = 96;
+	const SOUND_UNDEFINED = 97;
 
 	public $sound;
 	public $x;
@@ -132,7 +134,7 @@ class LevelSoundEventPacket extends DataPacket{
 	public $extraData = -1;
 	public $pitch = 1;
 	public $unknownBool = false;
-	public $unknownBool2 = false;
+	public $disableRelativeVolume = false;
 
 	public function decode(){
 		$this->sound = $this->getByte();
@@ -140,7 +142,7 @@ class LevelSoundEventPacket extends DataPacket{
 		$this->extraData = $this->getVarInt();
 		$this->pitch = $this->getVarInt();
 		$this->unknownBool = $this->getBool();
-		$this->unknownBool2 = $this->getBool();
+		$this->disableRelativeVolume = $this->getBool();
 	}
 
 	public function encode(){
@@ -150,7 +152,7 @@ class LevelSoundEventPacket extends DataPacket{
 		$this->putVarInt($this->extraData);
 		$this->putVarInt($this->pitch);
 		$this->putBool($this->unknownBool);
-		$this->putBool($this->unknownBool2);
+		$this->putBool($this->disableRelativeVolume);
 	}
 
 	public function handle(NetworkSession $session) : bool{
