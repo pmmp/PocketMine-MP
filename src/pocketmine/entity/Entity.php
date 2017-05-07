@@ -534,6 +534,80 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	/**
+	 * Returns the entity ID of the owning entity, or null if the entity doesn't have an owner.
+	 * @return int|string|null
+	 */
+	public function getOwningEntityId(){
+		return $this->getDataProperty(self::DATA_OWNER_EID);
+	}
+
+	/**
+	 * Returns the owning entity, or null if the entity was not found.
+	 * @return Entity|null
+	 */
+	public function getOwningEntity(){
+		$eid = $this->getOwningEntityId();
+		if($eid !== null){
+			return $this->server->findEntity($eid, $this->level);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Sets the owner of the entity.
+	 *
+	 * @param Entity $owner
+	 *
+	 * @throws \InvalidArgumentException if the supplied entity is not valid
+	 */
+	public function setOwningEntity(Entity $owner){
+		if($owner->closed){
+			throw new \InvalidArgumentException("Supplied owning entity is garbage and cannot be used");
+		}
+
+		$this->setDataProperty(self::DATA_OWNER_EID, self::DATA_TYPE_LONG, $owner->getId());
+	}
+
+	/**
+	 * Returns the entity ID of the entity's target, or null if it doesn't have a target.
+	 * @return int|string|null
+	 */
+	public function getTargetEntityId(){
+		return $this->getDataProperty(self::DATA_TARGET_EID);
+	}
+
+	/**
+	 * Returns the entity's target entity, or null if not found.
+	 * This is used for things like hostile mobs attacking entities, and for fishing rods reeling hit entities in.
+	 *
+	 * @return Entity|null
+	 */
+	public function getTargetEntity(){
+		$eid = $this->getTargetEntityId();
+		if($eid !== null){
+			return $this->server->findEntity($eid, $this->level);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Sets the entity's target entity.
+	 *
+	 * @param Entity $target
+	 *
+	 * @throws \InvalidArgumentException if the target entity is not valid
+	 */
+	public function setTargetEntity(Entity $target){
+		if($target->closed){
+			throw new \InvalidArgumentException("Supplied target entity is garbage and cannot be used");
+		}
+
+		$this->setDataProperty(self::DATA_TARGET_EID, self::DATA_TYPE_LONG, $target->getId());
+	}
+
+	/**
 	 * @return Effect[]
 	 */
 	public function getEffects(){

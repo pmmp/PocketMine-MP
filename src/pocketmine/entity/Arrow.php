@@ -37,14 +37,9 @@ class Arrow extends Projectile{
 	protected $gravity = 0.05;
 	protected $drag = 0.01;
 
-	protected $damage = 2;
-
-	protected $isCritical;
-
-	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null, $critical = false){
-		$this->isCritical = (bool) $critical;
+	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null, bool $critical = false){
 		parent::__construct($level, $nbt, $shootingEntity);
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_CRITICAL, $critical);
+		$this->setCritical($critical);
 	}
 
 	public function isCritical() : bool{
