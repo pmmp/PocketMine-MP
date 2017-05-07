@@ -64,20 +64,20 @@ class Effect{
 			throw new \RuntimeException("Effects data could not be read");
 		}
 
-		foreach($data as $name => $data){
-			$color = hexdec(substr($data["color"], 3));
+		foreach($data as $effectName => $effectData){
+			$color = hexdec(substr($effectData["color"], 3));
 			$r = ($color >> 16) & 0xff;
 			$g = ($color >> 8) & 0xff;
 			$b = $color & 0xff;
-			self::registerEffect($name, new Effect(
-				$data["id"],
-				$data["name"],
+			self::registerEffect($effectName, new Effect(
+				$effectData["id"],
+				$effectData["name"],
 				$r,
 				$g,
 				$b,
-				$data["isBad"] ?? false,
-				$data["default_duration"] ?? 300 * 20,
-				$data["has_bubbles"] ?? true
+				$effectData["isBad"] ?? false,
+				$effectData["default_duration"] ?? 300 * 20,
+				$effectData["has_bubbles"] ?? true
 			));
 		}
 	}
