@@ -22,7 +22,6 @@
 namespace pocketmine\entity;
 
 use pocketmine\level\Level;
-use pocketmine\level\particle\CriticalParticle;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
