@@ -29,14 +29,6 @@ class StillWater extends Water{
 
 	protected $id = self::STILL_WATER;
 
-	public function onUpdate($type){
-		//TODO: add freezing in cold biomes
-		if($type !== Level::BLOCK_UPDATE_SCHEDULED){
-			return parent::onUpdate($type);
-		}
-		return false;
-	}
-
 	public function getName(){
 		return "Still Water";
 	}
