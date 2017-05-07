@@ -208,8 +208,13 @@ interface ItemIds extends \pocketmine\block\BlockIds{
 
 	const LINGERING_POTION = 441;
 
+	const COMMAND_BLOCK_MINECART = 443;
 	const ELYTRA = 444;
 	const SHULKER_SHELL = 445;
+
+	const TOTEM = 450;
+
+	const IRON_NUGGET = 452;
 
 	const BOARD = 454;
 

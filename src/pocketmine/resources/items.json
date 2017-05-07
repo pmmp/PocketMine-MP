@@ -325,6 +325,10 @@
             }
         }
     },
+    "command_block_minecart": {
+        "id": 443,
+        "fallback_name": "Minecart with Command Block"
+    },
     "comparator": {
         "id": 404,
         "fallback_name": "Redstone Comparator",
@@ -827,6 +831,10 @@
             "defense_points": 5
         }
     },
+    "iron_nugget": {
+        "id": 452,
+        "fallback_name": "Iron Nugget"
+    },
     "iron_pickaxe": {
         "id": 257,
         "fallback_name": "Iron Pickaxe",
@@ -1297,6 +1305,10 @@
     "tnt_minecart": {
         "id": 407,
         "fallback_name": "Minecart with TNT"
+    },
+    "totem": {
+        "id": 450,
+        "fallback_name": "Totem of Undying"
     },
     "wheat": {
         "id": 296,
