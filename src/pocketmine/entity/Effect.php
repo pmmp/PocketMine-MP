@@ -28,7 +28,6 @@ use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\Player;
-use pocketmine\utils\Config;
 
 class Effect{
 	const SPEED = 1;
@@ -60,9 +59,12 @@ class Effect{
 	protected static $effects = [];
 
 	public static function init(){
-		$config = new Config(\pocketmine\PATH . "src/pocketmine/resources/effects.json", Config::JSON, []);
+		$data = json_decode(file_get_contents(\pocketmine\PATH . "src/pocketmine/resources/effects.json"), true);
+		if(!is_array($data)){
+			throw new \RuntimeException("Effects data could not be read");
+		}
 
-		foreach($config->getAll() as $name => $data){
+		foreach($data as $name => $data){
 			$color = hexdec(substr($data["color"], 3));
 			$r = ($color >> 16) & 0xff;
 			$g = ($color >> 8) & 0xff;
@@ -80,6 +82,10 @@ class Effect{
 		}
 	}
 
+	/**
+	 * @param string $internalName
+	 * @param Effect $effect
+	 */
 	public static function registerEffect(string $internalName, Effect $effect){
 		self::$effects[$effect->getId()] = $effect;
 		self::$effects[$internalName] = $effect;
