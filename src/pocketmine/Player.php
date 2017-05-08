@@ -1739,6 +1739,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	public function canInteract(Vector3 $pos, $maxDistance, $maxDiff = 0.5){
 		$eyePos = $this->getPosition()->add(0, $this->getEyeHeight(), 0);
+
 		if($eyePos->distanceSquared($pos) > $maxDistance ** 2){
 			return false;
 		}
@@ -2444,6 +2445,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
 
 			if(!$this->canInteract($blockVector->add(0.5, 0.5, 0.5), 13) or $this->isSpectator()){
+			
 			}elseif($this->isCreative()){
 				$item = $this->inventory->getItemInHand();
 				if($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
@@ -2481,7 +2483,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				cos($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI)
 			);
 
-			if($this->isCreative()){
+            if($this->isSpectator()){
+                return true;
+            }elseif($this->isCreative()){
 				$item = $this->inventory->getItemInHand();
 			}elseif(!$this->inventory->getItemInHand()->equals($packet->item)){
 				$this->inventory->sendHeldItem($this);
