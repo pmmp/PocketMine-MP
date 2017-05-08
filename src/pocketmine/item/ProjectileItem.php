@@ -53,11 +53,7 @@ class ProjectileItem extends Item{
 	}
 
 	public function onClickAir(Player $player) : bool{
-		$aimPos = new Vector3(
-			-sin($player->getYaw() / 180 * M_PI) * cos($player->getPitch() / 180 * M_PI),
-			-sin($player->getPitch() / 180 * M_PI),
-			cos($player->getYaw() / 180 * M_PI) * cos($player->getPitch() / 180 * M_PI)
-		);
+		$vector = $player->getDirectionVector();
 
 		$nbt = new CompoundTag("", [
 			"Pos" => new ListTag("Pos", [
@@ -66,9 +62,9 @@ class ProjectileItem extends Item{
 				new DoubleTag("", $player->getZ())
 			]),
 			"Motion" => new ListTag("Motion", [
-				new DoubleTag("", $aimPos->x),
-				new DoubleTag("", $aimPos->y),
-				new DoubleTag("", $aimPos->z)
+				new DoubleTag("", $vector->x),
+				new DoubleTag("", $vector->y),
+				new DoubleTag("", $vector->z)
 			]),
 			"Rotation" => new ListTag("Rotation", [
 				new FloatTag("", $player->getYaw()),

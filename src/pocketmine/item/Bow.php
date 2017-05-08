@@ -56,6 +56,8 @@ class Bow extends Tool{
 
 		//TODO: add effects for tipped arrows
 
+		$vector = $player->getDirectionVector();
+
 		$nbt = new CompoundTag("", [
 			"Pos" => new ListTag("Pos", [
 				new DoubleTag("", $player->x),
@@ -63,9 +65,9 @@ class Bow extends Tool{
 				new DoubleTag("", $player->z)
 			]),
 			"Motion" => new ListTag("Motion", [
-				new DoubleTag("", -sin($player->yaw / 180 * M_PI) * cos($player->pitch / 180 * M_PI)),
-				new DoubleTag("", -sin($player->pitch / 180 * M_PI)),
-				new DoubleTag("", cos($player->yaw / 180 * M_PI) * cos($player->pitch / 180 * M_PI))
+				new DoubleTag("", $vector->x),
+				new DoubleTag("", $vector->y),
+				new DoubleTag("", $vector->z)
 			]),
 			"Rotation" => new ListTag("Rotation", [
 				new FloatTag("", ($player->yaw > 180 ? 360 : 0) - $player->yaw),

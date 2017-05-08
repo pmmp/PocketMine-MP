@@ -2458,15 +2458,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->level->sendBlocks([$this], [$target, $block], UpdateBlockPacket::FLAG_ALL_PRIORITY);
 			return true;
 		}elseif($packet->face === -1){
-			$aimPos = new Vector3(
-				-sin($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI),
-				-sin($this->pitch / 180 * M_PI),
-				cos($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI)
-			);
-
 			$item = $this->inventory->getItemInHand();
 
-			$ev = new PlayerInteractEvent($this, $item, $aimPos, $packet->face, PlayerInteractEvent::RIGHT_CLICK_AIR);
+			$ev = new PlayerInteractEvent($this, $item, $this->getDirectionVector(), $packet->face, PlayerInteractEvent::RIGHT_CLICK_AIR);
 
 			$this->server->getPluginManager()->callEvent($ev);
 

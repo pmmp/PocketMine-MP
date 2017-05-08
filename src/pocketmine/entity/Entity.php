@@ -1130,12 +1130,11 @@ abstract class Entity extends Location implements Metadatable{
 	 * @return Vector3
 	 */
 	public function getDirectionVector(){
-		$y = -sin(deg2rad($this->pitch));
-		$xz = cos(deg2rad($this->pitch));
-		$x = -$xz * sin(deg2rad($this->yaw));
-		$z = $xz * cos(deg2rad($this->yaw));
-
-		return $this->temporalVector->setComponents($x, $y, $z)->normalize();
+		return new Vector3(
+			cos($this->pitch / 180 * M_PI) * -sin($this->yaw / 180 * M_PI),
+			-sin($this->pitch / 180 * M_PI),
+			cos($this->pitch / 180 * M_PI) * cos($this->yaw / 180 * M_PI)
+		);
 	}
 
 	public function getDirectionPlane(){
