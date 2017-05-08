@@ -36,16 +36,13 @@ abstract class Projectile extends Entity{
 
 	const DATA_SHOOTER_ID = 17;
 
-	/** @var Entity */
-	public $shootingEntity = null;
 	protected $damage = 0;
 
 	public $hadCollision = false;
 
 	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null){
-		$this->shootingEntity = $shootingEntity;
 		if($shootingEntity !== null){
-			$this->setDataProperty(self::DATA_SHOOTER_ID, self::DATA_TYPE_LONG, $shootingEntity->getId());
+			$this->setOwningEntity($shootingEntity);
 		}
 		parent::__construct($level, $nbt);
 	}
@@ -83,10 +80,10 @@ abstract class Projectile extends Entity{
 
 		$damage = $this->getResultDamage();
 
-		if($this->shootingEntity === null){
+		if($this->getOwningEntity() === null){
 			$ev = new EntityDamageByEntityEvent($this, $entity, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
 		}else{
-			$ev = new EntityDamageByChildEntityEvent($this->shootingEntity, $this, $entity, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
+			$ev = new EntityDamageByChildEntityEvent($this->getOwningEntity(), $this, $entity, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
 		}
 
 		$entity->attack($ev->getFinalDamage(), $ev);
@@ -140,7 +137,7 @@ abstract class Projectile extends Entity{
 
 			foreach($list as $entity){
 				if(/*!$entity->canCollideWith($this) or */
-				($entity === $this->shootingEntity and $this->ticksLived < 5)
+				($entity->getId() === $this->getOwningEntityId() and $this->ticksLived < 5)
 				){
 					continue;
 				}
