@@ -1560,7 +1560,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$delta = pow($this->lastX - $to->x, 2) + pow($this->lastY - $to->y, 2) + pow($this->lastZ - $to->z, 2);
 		$deltaAngle = abs($this->lastYaw - $to->yaw) + abs($this->lastPitch - $to->pitch);
 
-		if(!$revert and ($delta > (1 / 16) or $deltaAngle > 10)){
+		if(!$revert and ($delta > 0.0001 or $deltaAngle > 1.0)){
 
 			$isFirst = ($this->lastX === null or $this->lastY === null or $this->lastZ === null);
 
@@ -1583,7 +1583,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						$this->level->addEntityMovement($this->x >> 4, $this->z >> 4, $this->getId(), $this->x, $this->y + $this->getEyeHeight(), $this->z, $this->yaw, $this->pitch, $this->yaw);
 
 						$distance = $from->distance($to);
-
 						//TODO: check swimming (adds 0.015 exhaustion in MCPE)
 						if($this->isSprinting()){
 							$this->exhaust(0.1 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
@@ -3274,7 +3273,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$tile = $this->level->getTile($this->temporalVector->setComponents($packet->x, $packet->y, $packet->z));
 		if($tile instanceof ItemFrame){
+			$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $tile->getBlock(), 5 - $tile->getBlock()->getDamage(), PlayerInteractEvent::LEFT_CLICK_BLOCK);
+			$this->server->getPluginManager()->callEvent($ev);
+
 			if($this->isSpectator()){
+				$ev->setCancelled();
+			}
+
+			if($ev->isCancelled()){
 				$tile->spawnTo($this);
 				return true;
 			}

@@ -455,6 +455,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->width *= $multiplier;
 		$this->height *= $multiplier;
+		$this->eyeHeight *= $multiplier;
 		$halfWidth = $this->width / 2;
 
 		$this->boundingBox->setBounds(
@@ -467,8 +468,6 @@ abstract class Entity extends Location implements Metadatable{
 		);
 
 		$this->setDataProperty(self::DATA_SCALE, self::DATA_TYPE_FLOAT, $value);
-		$this->setDataProperty(self::DATA_BOUNDING_BOX_WIDTH, self::DATA_TYPE_FLOAT, $this->width);
-		$this->setDataProperty(self::DATA_BOUNDING_BOX_HEIGHT, self::DATA_TYPE_FLOAT, $this->height);
 	}
 
 	public function isSneaking(){
@@ -666,10 +665,10 @@ abstract class Entity extends Location implements Metadatable{
 		foreach($this->effects as $effect){
 			if($effect->isVisible() and $effect->hasBubbles()){
 				$c = $effect->getColor();
-				$color[0] += $c[0] * ($effect->getAmplifier() + 1);
-				$color[1] += $c[1] * ($effect->getAmplifier() + 1);
-				$color[2] += $c[2] * ($effect->getAmplifier() + 1);
-				$count += $effect->getAmplifier() + 1;
+				$color[0] += $c[0] * $effect->getEffectLevel();
+				$color[1] += $c[1] * $effect->getEffectLevel();
+				$color[2] += $c[2] * $effect->getEffectLevel();
+				$count += $effect->getEffectLevel();
 				if(!$effect->isAmbient()){
 					$ambient = false;
 				}
@@ -1332,7 +1331,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function fall($fallDistance){
-		$damage = floor($fallDistance - 3 - ($this->hasEffect(Effect::JUMP) ? $this->getEffect(Effect::JUMP)->getAmplifier() + 1 : 0));
+		$damage = floor($fallDistance - 3 - ($this->hasEffect(Effect::JUMP) ? $this->getEffect(Effect::JUMP)->getEffectLevel() : 0));
 		if($damage > 0){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FALL, $damage);
 			$this->attack($ev->getFinalDamage(), $ev);
@@ -1454,6 +1453,8 @@ abstract class Entity extends Location implements Metadatable{
 		if($dx == 0 and $dz == 0 and $dy == 0){
 			return true;
 		}
+
+		$this->blocksAround = null;
 
 		if($this->keepMovement){
 			$this->boundingBox->offset($dx, $dy, $dz);
@@ -1583,7 +1584,7 @@ abstract class Entity extends Location implements Metadatable{
 			$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
 
 			$this->checkChunks();
-
+			$this->checkBlockCollision();
 			$this->checkGroundState($movX, $movY, $movZ, $dx, $dy, $dz);
 			$this->updateFallState($dy, $this->onGround);
 
