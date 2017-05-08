@@ -28,7 +28,6 @@ use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\Player;
-use pocketmine\utils\Config;
 
 class Effect{
 	const SPEED = 1;
@@ -60,26 +59,33 @@ class Effect{
 	protected static $effects = [];
 
 	public static function init(){
-		$config = new Config(\pocketmine\PATH . "src/pocketmine/resources/effects.json", Config::JSON, []);
+		$data = json_decode(file_get_contents(\pocketmine\PATH . "src/pocketmine/resources/effects.json"), true);
+		if(!is_array($data)){
+			throw new \RuntimeException("Effects data could not be read");
+		}
 
-		foreach($config->getAll() as $name => $data){
-			$color = hexdec(substr($data["color"], 3));
+		foreach($data as $effectName => $effectData){
+			$color = hexdec(substr($effectData["color"], 3));
 			$r = ($color >> 16) & 0xff;
 			$g = ($color >> 8) & 0xff;
 			$b = $color & 0xff;
-			self::registerEffect($name, new Effect(
-				$data["id"],
-				$data["name"],
+			self::registerEffect($effectName, new Effect(
+				$effectData["id"],
+				$effectData["name"],
 				$r,
 				$g,
 				$b,
-				$data["isBad"] ?? false,
-				$data["default_duration"] ?? 300 * 20,
-				$data["has_bubbles"] ?? true
+				$effectData["isBad"] ?? false,
+				$effectData["default_duration"] ?? 300 * 20,
+				$effectData["has_bubbles"] ?? true
 			));
 		}
 	}
 
+	/**
+	 * @param string $internalName
+	 * @param Effect $effect
+	 */
 	public static function registerEffect(string $internalName, Effect $effect){
 		self::$effects[$effect->getId()] = $effect;
 		self::$effects[$internalName] = $effect;
