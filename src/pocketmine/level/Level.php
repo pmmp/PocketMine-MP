@@ -1670,7 +1670,7 @@ class Level implements ChunkManager, Metadatable{
 
 		if($item !== null){
 			$item->onDestroyBlock($target, $player);
-			if($item instanceof Tool and $item->getDamage() >= $item->getMaxDurability()){
+			if($item instanceof Tool and $item->isBroken()){
 				$item = Item::get(Item::AIR, 0, 0);
 			}
 		}
