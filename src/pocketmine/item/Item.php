@@ -165,6 +165,7 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$list[self::PAINTING] = Painting::class;
 			self::$list[self::GOLDEN_APPLE] = GoldenApple::class;
 			self::$list[self::SIGN] = Sign::class;
+			self::$list[self::SPRUCE_DOOR] = SpruceDoor::class;
 			self::$list[self::BIRCH_DOOR] = BirchDoor::class;
 			self::$list[self::WOODEN_DOOR] = WoodenDoor::class;
 			self::$list[self::BUCKET] = Bucket::class;
