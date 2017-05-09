@@ -23,10 +23,9 @@ namespace pocketmine\item;
 
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\Projectile;
+use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\level\sound\LaunchSound;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
@@ -72,7 +71,7 @@ class ProjectileItem extends Item{
 			]),
 		]);
 
-		$projectile = Entity::createEntity($this->getProjectileEntityType(), $player->getLevel(), $nbt, $player);
+		$projectile = Entity::createEntity($this->getProjectileEntityType(), $player->getLevel(), $nbt, $player, $this);
 		if($projectile instanceof Entity){
 			$projectile->setMotion($projectile->getMotion()->multiply($this->getThrowForce()));
 

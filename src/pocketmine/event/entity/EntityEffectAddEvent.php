@@ -42,10 +42,6 @@ class EntityEffectAddEvent extends EntityEffectEvent{
 		return $this->modify;
 	}
 
-	public function setWillModify(bool $modify){
-		$this->modify = $modify;
-	}
-
 	public function hasOldEffect() : bool{
 		return $this->oldEffect instanceof Effect;
 	}

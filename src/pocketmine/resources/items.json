@@ -921,8 +921,7 @@
     "lingering_potion": {
         "id": 441,
         "fallback_name": "Lingering Potion",
-        "max_stack_size": 1,
-        "todo": "implement"
+        "max_stack_size": 1
     },
     "magma_cream": {
         "id": 378,
@@ -1233,7 +1232,12 @@
     "splash_potion": {
         "id": 438,
         "fallback_name": "Splash Potion",
-        "max_stack_size": 1
+        "max_stack_size": 1,
+        "type": "projectile",
+        "properties": {
+            "throw_force": 0.5,
+            "projectile_entity": "thrownpotion"
+        }
     },
     "spruce_door": {
         "id": 427,

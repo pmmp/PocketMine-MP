@@ -125,7 +125,8 @@
     "saturation": {
         "id": 23,
         "color": "#FFF82423",
-        "name": "saturation"
+        "name": "saturation",
+        "default_duration": 1
     },
     "levitation": {
         "id": 24,

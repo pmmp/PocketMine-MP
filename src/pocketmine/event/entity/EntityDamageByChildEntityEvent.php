@@ -22,7 +22,7 @@
 namespace pocketmine\event\entity;
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\Snowball;
+use pocketmine\entity\projectile\Snowball;
 
 /**
  * Called when an entity takes damage from an entity sourced from another entity, for example being hit by a snowball thrown by a Player.

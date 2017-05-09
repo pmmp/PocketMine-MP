@@ -22,6 +22,7 @@
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
+use pocketmine\entity\projectile\ProjectileSource;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;

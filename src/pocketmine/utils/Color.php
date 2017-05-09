@@ -26,77 +26,117 @@ namespace pocketmine\utils;
 class Color{
 
 	/** @var int */
-	protected $a, $r, $g, $b;
-	
+	protected $alpha, $red, $green, $blue;
+
+	/**
+	 * @param int $r Red balance, 0-255
+	 * @param int $g Green balance, 0-255
+	 * @param int $b Blue balance, 0-255
+	 * @param int $a Alpha value (opacity) 0-255, defaults to 255 (fully opaque)
+	 */
 	public function __construct(int $r, int $g, int $b, int $a = 0xff){
-		$this->r = $r & 0xff;
-		$this->g = $g & 0xff;
-		$this->b = $b & 0xff;
-		$this->a = $a & 0xff;
+		$this->red = $r & 0xff;
+		$this->green = $g & 0xff;
+		$this->blue = $b & 0xff;
+		$this->alpha = $a & 0xff;
 	}
 
 	/**
 	 * Returns the alpha (transparency) value of this colour.
 	 * @return int
 	 */
-	public function getA() : int{
-		return $this->a;
+	public function getAlpha() : int{
+		return $this->alpha;
 	}
 
 	/**
 	 * Sets the alpha (opacity) value of this colour, lower = more transparent
 	 * @param int $a
 	 */
-	public function setA(int $a){
-		$this->a = $a & 0xff;
+	public function setAlpha(int $a){
+		$this->alpha = $a & 0xff;
 	}
 
 	/**
 	 * Retuns the red value of this colour.
 	 * @return int
 	 */
-	public function getR() : int{
-		return $this->r;
+	public function getRed() : int{
+		return $this->red;
 	}
 
 	/**
 	 * Sets the red value of this colour.
 	 * @param int $r
 	 */
-	public function setR(int $r){
-		$this->r = $r & 0xff;
+	public function setRed(int $r){
+		$this->red = $r & 0xff;
 	}
 
 	/**
 	 * Returns the green value of this colour.
 	 * @return int
 	 */
-	public function getG() : int{
-		return $this->g;
+	public function getGreen() : int{
+		return $this->green;
 	}
 
 	/**
 	 * Sets the green value of this colour.
 	 * @param int $g
 	 */
-	public function setG(int $g){
-		$this->g = $g & 0xff;
+	public function setGreen(int $g){
+		$this->green = $g & 0xff;
 	}
 
 	/**
 	 * Returns the blue value of this colour.
 	 * @return int
 	 */
-	public function getB() : int{
-		return $this->b;
+	public function getBlue() : int{
+		return $this->blue;
 	}
 
 	/**
 	 * Sets the blue value of this colour.
 	 * @param int $b
 	 */
-	public function setB(int $b){
-		$this->b = $b & 0xff;
+	public function setBlue(int $b){
+		$this->blue = $b & 0xff;
+	}
+
+	/**
+	 * Mixes the supplied list of colours together to produce a result colour. Used for calculating potion effect bubble colours.
+	 *
+	 * @param Color[] ...$colors
+	 *
+	 * @return Color
+	 */
+	public static function mix(Color ...$colors) : Color{
+		if(count($colors) < 1){
+			throw new \InvalidArgumentException("No colours given!");
+		}
+		$alpha = 0;
+		$red = 0;
+		$green = 0;
+		$blue = 0;
+
+		$count = 0;
+
+		foreach($colors as $color){
+			$alpha += $color->getAlpha();
+			$red += $color->getRed();
+			$green += $color->getGreen();
+			$blue += $color->getBlue();
+			$count++;
+		}
+
+		$alpha /= $count;
+		$red /= $count;
+		$green /= $count;
+		$blue /= $count;
+
+		return new Color($red, $green, $blue, $alpha);
 	}
 
 	/**
@@ -107,6 +147,18 @@ class Color{
 	 */
 	public static function fromRGB(int $code){
 		return new Color(($code >> 16) & 0xff, ($code >> 8) & 0xff, $code & 0xff);
+	}
+
+	public static function fromHtmlRGB(string $code){
+		if(strlen($code) < 6){
+			throw new \InvalidArgumentException("Expected a HTML RGB color code representation, for example #FF8844");
+		}
+
+		return Color::fromRGB(hexdec(substr($code, -6))); //Drop # and leading alpha values
+	}
+
+	public function toRGB() : int{
+		return 0xff000000 | ($this->red << 16) | ($this->green << 8) | ($this->blue);
 	}
 
 	/**
@@ -121,38 +173,52 @@ class Color{
 	}
 
 	/**
-	 * Returns an ARGB 32-bit colour value.
+	 * Returns an ARGB big-endian 32-bit colour value.
 	 * @return int
 	 */
 	public function toARGB() : int{
-		return ($this->a << 24) | ($this->r << 16) | ($this->g << 8) | $this->b;
+		return ($this->alpha << 24) | ($this->red << 16) | ($this->green << 8) | $this->blue;
 	}
 
 	/**
-	 * Returns a little-endian ARGB 32-bit colour value.
-	 * @return int
+	 * Returns a Color from the supplied RGBA colour code (32-bit)
+	 *
+	 * @param int $code
+	 *
+	 * @return Color
 	 */
-	public function toBGRA() : int{
-		return ($this->b << 24) | ($this->g << 16) | ($this->r << 8) | $this->a;
+	public static function fromRGBA(int $code){
+		return new Color(
+			($code >> 24) & 0xff,
+			($code >> 16) & 0xff,
+			($code >>  8) & 0xff,
+			$code & 0xff
+		);
 	}
 
 	/**
-	 * Returns an RGBA 32-bit colour value.
+	 * Returns an RGBA big-endian 32-bit colour value.
 	 * @return int
 	 */
 	public function toRGBA() : int{
-		return ($this->r << 24) | ($this->g << 16) | ($this->b << 8) | $this->a;
+		return ($this->red << 24) | ($this->green << 16) | ($this->blue << 8) | $this->alpha;
+	}
+
+	/**
+	 * Returns a Color from the supplied little-endian RGBA colour code.
+	 * @param int $code
+	 *
+	 * @return Color
+	 */
+	public static function fromLittleEndianRGBA(int $code){
+		return new Color($code & 0xff, ($code >> 8) & 0xff, ($code >> 16) & 0xff, ($code >> 24) & 0xff);
 	}
 
 	/**
 	 * Returns a little-endian RGBA colour value.
 	 * @return int
 	 */
-	public function toABGR() : int{
-		return ($this->a << 24) | ($this->b << 16) | ($this->g << 8) | $this->r;
-	}
-
-	public static function fromABGR(int $code){
-		return new Color($code & 0xff, ($code >> 8) & 0xff, ($code >> 16) & 0xff, ($code >> 24) & 0xff);
+	public function toLittleEndianRGBA() : int{
+		return ($this->alpha << 24) | ($this->blue << 16) | ($this->green << 8) | $this->red;
 	}
 }

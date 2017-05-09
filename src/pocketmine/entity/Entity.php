@@ -26,6 +26,9 @@ namespace pocketmine\entity;
 
 use pocketmine\block\Block;
 use pocketmine\block\FlowingWater;
+use pocketmine\entity\projectile\Arrow;
+use pocketmine\entity\projectile\Snowball;
+use pocketmine\entity\projectile\SplashPotion;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDespawnEvent;
 use pocketmine\event\entity\EntityLevelChangeEvent;
@@ -58,6 +61,7 @@ use pocketmine\network\mcpe\protocol\SetEntityDataPacket;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
+use pocketmine\utils\Color;
 
 abstract class Entity extends Location implements Metadatable{
 
@@ -209,6 +213,7 @@ abstract class Entity extends Location implements Metadatable{
 		Entity::registerEntity(Item::class);
 		Entity::registerEntity(PrimedTNT::class);
 		Entity::registerEntity(Snowball::class);
+		Entity::registerEntity(SplashPotion::class);
 		Entity::registerEntity(Squid::class);
 		Entity::registerEntity(Villager::class);
 		Entity::registerEntity(Zombie::class);
@@ -619,14 +624,23 @@ abstract class Entity extends Location implements Metadatable{
 		}
 	}
 
-	public function removeEffect($effectId){
+	/**
+	 * @param $effectId
+	 *
+	 * @return bool
+	 */
+	public function removeEffect($effectId) : bool{
 		if(isset($this->effects[$effectId])){
 			$effect = $this->effects[$effectId];
 			unset($this->effects[$effectId]);
 			$effect->remove($this);
 
 			$this->recalculateEffectColor();
+
+			return true;
 		}
+
+		return false;
 	}
 
 	public function getEffect($effectId){
@@ -637,16 +651,21 @@ abstract class Entity extends Location implements Metadatable{
 		return isset($this->effects[$effectId]);
 	}
 
-	public function addEffect(Effect $effect){
+	/**
+	 * @param Effect $effect
+	 *
+	 * @return bool
+	 */
+	public function addEffect(Effect $effect) : bool{
 		if(isset($this->effects[$effect->getId()])){
 			$oldEffect = $this->effects[$effect->getId()];
 			if(
 				abs($effect->getAmplifier()) < ($oldEffect->getAmplifier())
-				or (abs($effect->getAmplifier()) === abs($oldEffect->getAmplifier())
-					and $effect->getDuration() < $oldEffect->getDuration())
+				or (abs($effect->getAmplifier()) === abs($oldEffect->getAmplifier()) and $effect->getDuration() < $oldEffect->getDuration())
 			){
-				return;
+				return false;
 			}
+
 			$effect->add($this, true, $oldEffect);
 		}else{
 			$effect->add($this, false);
@@ -655,32 +674,28 @@ abstract class Entity extends Location implements Metadatable{
 		$this->effects[$effect->getId()] = $effect;
 
 		$this->recalculateEffectColor();
+
+		return true;
 	}
 
 	protected function recalculateEffectColor(){
-		//TODO: add transparency values
-		$color = [0, 0, 0]; //RGB
-		$count = 0;
+		$colors = [];
 		$ambient = true;
 		foreach($this->effects as $effect){
 			if($effect->isVisible() and $effect->hasBubbles()){
-				$c = $effect->getColor();
-				$color[0] += $c[0] * $effect->getEffectLevel();
-				$color[1] += $c[1] * $effect->getEffectLevel();
-				$color[2] += $c[2] * $effect->getEffectLevel();
-				$count += $effect->getEffectLevel();
+				$level = $effect->getEffectLevel();
+				for($j = 0; $j < $level; ++$j){
+					$colors[] = $effect->getColor(); //Add multiple copies so stronger effects' colors are more apparent
+				}
+
 				if(!$effect->isAmbient()){
 					$ambient = false;
 				}
 			}
 		}
 
-		if($count > 0){
-			$r = ($color[0] / $count) & 0xff;
-			$g = ($color[1] / $count) & 0xff;
-			$b = ($color[2] / $count) & 0xff;
-
-			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, 0xff000000 | ($r << 16) | ($g << 8) | $b);
+		if(count($colors) > 0){
+			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, Color::mix(...$colors)->toARGB());
 			$this->setDataProperty(Entity::DATA_POTION_AMBIENT, Entity::DATA_TYPE_BYTE, $ambient ? 1 : 0);
 		}else{
 			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, 0);
@@ -714,8 +729,10 @@ abstract class Entity extends Location implements Metadatable{
 				return false;
 			}
 
-			self::$knownEntities[$class->getShortName()] = $className;
 			self::$shortNames[$className] = $class->getShortName();
+			self::$knownEntities[$class->getShortName()] = $className;
+			self::$knownEntities[$className::getSaveId()] = $className;
+
 			return true;
 		}
 
@@ -724,16 +741,15 @@ abstract class Entity extends Location implements Metadatable{
 
 	/**
 	 * Returns the short save name
-	 *
 	 * @return string
 	 */
-	public function getSaveId(){
+	public static function getSaveId() : string{
 		return self::$shortNames[static::class];
 	}
 
 	public function saveNBT(){
 		if(!($this instanceof Player)){
-			$this->namedtag->id = new StringTag("id", $this->getSaveId());
+			$this->namedtag->id = new StringTag("id", static::getSaveId());
 			if($this->getNameTag() !== ""){
 				$this->namedtag->CustomName = new StringTag("CustomName", $this->getNameTag());
 				$this->namedtag->CustomNameVisible = new StringTag("CustomNameVisible", $this->isNameTagVisible());

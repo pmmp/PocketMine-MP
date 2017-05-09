@@ -35,8 +35,8 @@ class Potion extends Item implements Consumable{
 		}
 
 		foreach($data as $name => $type){
-			if(isset($type["effects"][0])){
-				$effectData = $type["effects"][0];
+			$effects = [];
+			foreach($type["effects"] as $effectData){
 				$effect = Effect::getEffectByName($effectData["name"]);
 
 				if(isset($effectData["amplifier"])){
@@ -47,26 +47,46 @@ class Potion extends Item implements Consumable{
 					$effect->setDuration($effectData["duration"] * 20);
 				}
 
-				self::$effects[(int) $type["id"]] = $effect;
-				self::$effects[$name] = $effect;
+				$effects[] = $effect;
+			}
+
+			self::$effects[(int) $type["id"]] = $effects;
+			self::$effects[$name] = $effects;
+		}
+	}
+
+	/**
+	 * @param int $id
+	 *
+	 * @return Effect[]
+	 */
+	public static function getEffectsByPotionId(int $id) : array{
+		$result = [];
+
+		if(isset(self::$effects[$id])){
+			foreach(self::$effects[$id] as $effect){
+				$result[] = clone $effect;
 			}
 		}
+
+		return $result;
 	}
 
-	public static function getEffectByPotionId(int $id){
-		if(isset(self::$effects[$id])){
-			return clone self::$effects[$id];
-		}
+	/**
+	 * @param string $name
+	 *
+	 * @return Effect[]
+	 */
+	public static function getEffectsByPotionName(string $name) : array{
+		$result = [];
 
-		return null;
-	}
-
-	public static function getEffectByPotionName(string $name){
 		if(isset(self::$effects[$name])){
-			return clone self::$effects[$name];
+			foreach(self::$effects[$name] as $effect){
+				$result[] = clone $effect;
+			}
 		}
 
-		return null;
+		return $result;
 	}
 
 	public function canBeConsumed() : bool{
@@ -78,10 +98,7 @@ class Potion extends Item implements Consumable{
 	}
 
 	public function getAdditionalEffects() : array{
-		$effects = [];
-		if(($effect = Potion::getEffectByPotionId($this->meta)) !== null){
-			$effects[] = $effect;
-		}
+		$effects = Potion::getEffectsByPotionId($this->meta);
 
 		//TODO: add CustomPotionEffects tag check
 

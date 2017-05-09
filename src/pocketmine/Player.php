@@ -25,7 +25,7 @@ use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\entity\Arrow;
+use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
@@ -1259,6 +1259,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * TODO: remove this when Spectator Mode gets added properly to MCPE
 	 *
 	 * @param int $gamemode
+	 *
+	 * @return int
 	 */
 	public static function getClientFriendlyGamemode(int $gamemode) : int{
 		$gamemode &= 0x03;
@@ -2470,7 +2472,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			}else{
 				if(!$item->onClickAir($this)){
 					$this->inventory->sendHeldItem($this);
-				}else{
+				}elseif($this->isSurvival()){
 					$this->inventory->setItemInHand($item->getCount() > 0 ? $item : Item::get(Item::AIR, 0, 0));
 				}
 				$this->setUsingItem(true);
@@ -3752,7 +3754,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		if($this->isCreative()
-			and $source->getCause() !== EntityDamageEvent::CAUSE_MAGIC
 			and $source->getCause() !== EntityDamageEvent::CAUSE_SUICIDE
 			and $source->getCause() !== EntityDamageEvent::CAUSE_VOID
 		){

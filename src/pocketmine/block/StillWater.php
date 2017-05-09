@@ -21,7 +21,6 @@
 
 namespace pocketmine\block;
 
-use pocketmine\level\Level;
 
 class StillWater extends FlowingWater{
 

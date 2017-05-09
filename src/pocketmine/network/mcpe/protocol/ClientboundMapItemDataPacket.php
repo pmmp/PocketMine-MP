@@ -85,7 +85,7 @@ class ClientboundMapItemDataPacket extends DataPacket{
 			$this->yOffset = $this->getVarInt();
 			for($y = 0; $y < $this->height; ++$y){
 				for($x = 0; $x < $this->width; ++$x){
-					$this->colors[$y][$x] = Color::fromABGR($this->getUnsignedVarInt());
+					$this->colors[$y][$x] = Color::fromLittleEndianRGBA($this->getUnsignedVarInt());
 				}
 			}
 		}
@@ -137,7 +137,7 @@ class ClientboundMapItemDataPacket extends DataPacket{
 			$this->putVarInt($this->yOffset);
 			for($y = 0; $y < $this->height; ++$y){
 				for($x = 0; $x < $this->width; ++$x){
-					$this->putUnsignedVarInt($this->colors[$y][$x]->toABGR());
+					$this->putUnsignedVarInt($this->colors[$y][$x]->toLittleEndianRGBA());
 				}
 			}
 		}

@@ -19,13 +19,16 @@
  *
 */
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\projectile;
 
+use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityCombustByEntityEvent;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
+use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\math\Vector3;
@@ -40,7 +43,13 @@ abstract class Projectile extends Entity{
 
 	public $hadCollision = false;
 
-	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null){
+	/**
+	 * @param Level       $level
+	 * @param CompoundTag $nbt
+	 * @param Entity|null $shootingEntity Entity who threw this projectile.
+	 * @param Item|null   $sourceItem Item used to create this projectile.
+	 */
+	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null, Item $sourceItem = null){
 		if($shootingEntity !== null){
 			$this->setOwningEntity($shootingEntity);
 		}
@@ -75,26 +84,39 @@ abstract class Projectile extends Entity{
 		return ceil(sqrt($this->motionX ** 2 + $this->motionY ** 2 + $this->motionZ ** 2) * $this->damage);
 	}
 
+	/**
+	 * Returns whether this projectile type will damage target entities that it collides with.
+	 * @return bool
+	 */
+	public function dealsDamage() : bool{
+		return true;
+	}
+
+	/**
+	 * Called when the projectile entity collides with an entity.
+	 * @param Entity $entity
+	 */
 	public function onCollideWithEntity(Entity $entity){
 		$this->server->getPluginManager()->callEvent(new ProjectileHitEvent($this));
-
-		$damage = $this->getResultDamage();
-
-		if($this->getOwningEntity() === null){
-			$ev = new EntityDamageByEntityEvent($this, $entity, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
-		}else{
-			$ev = new EntityDamageByChildEntityEvent($this->getOwningEntity(), $this, $entity, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
-		}
-
-		$entity->attack($ev->getFinalDamage(), $ev);
-
 		$this->hadCollision = true;
 
-		if($this->fireTicks > 0){
-			$ev = new EntityCombustByEntityEvent($this, $entity, 5);
-			$this->server->getPluginManager()->callEvent($ev);
-			if(!$ev->isCancelled()){
-				$entity->setOnFire($ev->getDuration());
+		if($this->dealsDamage()){
+			$damage = $this->getResultDamage();
+
+			if($this->getOwningEntity() === null){
+				$ev = new EntityDamageByEntityEvent($this, $entity, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
+			}else{
+				$ev = new EntityDamageByChildEntityEvent($this->getOwningEntity(), $this, $entity, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
+			}
+
+			$entity->attack($ev->getFinalDamage(), $ev);
+
+			if($this->fireTicks > 0){
+				$ev = new EntityCombustByEntityEvent($this, $entity, 5);
+				$this->server->getPluginManager()->callEvent($ev);
+				if(!$ev->isCancelled()){
+					$entity->setOnFire($ev->getDuration());
+				}
 			}
 		}
 
@@ -136,9 +158,7 @@ abstract class Projectile extends Entity{
 			$nearEntity = null;
 
 			foreach($list as $entity){
-				if(/*!$entity->canCollideWith($this) or */
-				($entity->getId() === $this->getOwningEntityId() and $this->ticksLived < 5)
-				){
+				if(!$this->canCollideWith($entity) or ($entity->getId() === $this->getOwningEntityId() and $this->ticksLived < 5)){
 					continue;
 				}
 
