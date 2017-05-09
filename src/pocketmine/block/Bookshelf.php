@@ -26,6 +26,10 @@ use pocketmine\item\Tool;
 class Bookshelf extends Solid{
 
 	protected $id = self::BOOKSHELF;
+	protected $canCatchFireFromLava = true;
+	protected $flammable = true;
+	protected $flammability = 20;
+	protected $flameEncouragement = 30;
 
 	public function __construct(){
 

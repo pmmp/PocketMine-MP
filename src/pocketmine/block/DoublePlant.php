@@ -27,6 +27,10 @@ use pocketmine\level\Level;
 class DoublePlant extends Flowable{
 
 	protected $id = self::DOUBLE_PLANT;
+	protected $flammable = true;
+	protected $flammability = 100;
+	protected $canCatchFireFromLava = true;
+	protected $flameEncouragement = 60;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

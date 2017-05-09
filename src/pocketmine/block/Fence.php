@@ -34,6 +34,10 @@ class Fence extends Transparent{
 	const FENCE_DARKOAK = 5;
 
 	protected $id = self::FENCE;
+	protected $flammable = true;
+	protected $flammability = 20;
+	protected $canCatchFireFromLava = true;
+	protected $flameEncouragement = 5;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

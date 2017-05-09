@@ -28,6 +28,9 @@ use pocketmine\Player;
 class CraftingTable extends Solid{
 
 	protected $id = self::CRAFTING_TABLE;
+	protected $flammable = true;
+	protected $flammability = 0;
+	protected $flameEncouragement = 25;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

@@ -312,6 +312,11 @@ class Block extends Position implements BlockIds, Metadatable{
 	/** @var AxisAlignedBB */
 	public $boundingBox = null;
 
+	protected $flammable = false;
+	protected $canCatchFireFromLava = false;
+	protected $flammability = 0;
+	protected $flameEncouragement = 0;
+
 
 	/**
 	 * @param int $id
@@ -349,6 +354,42 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function isBreakable(Item $item){
 		return true;
+	}
+
+	/**
+	 * Returns if the item is flammable
+	 *
+	 * @return bool
+	 */
+	public function isFlammable() : bool{
+		return $this->flammable;
+	}
+
+	/**
+	 * Returns if the item can catch fire if near lava
+	 *
+	 * @return bool
+	 */
+	public function canCatchFireFromLava() : bool{
+		return $this->canCatchFireFromLava;
+	}
+
+	/**
+	 * Returns the flammability of a block (the higher, the more quickly a block will burn away)
+	 *
+	 * @return int
+	 */
+	public function getFlammability(): int {
+		return $this->flammability;
+	}
+
+	/**
+	 * Returns the flame encouragement of a block (the higher, the more chance the block will catch fire)
+	 *
+	 * @return int
+	 */
+	public function getFlameEncouragement(): int {
+		return $this->flameEncouragement;
 	}
 
 	/**

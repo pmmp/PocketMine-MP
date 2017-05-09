@@ -36,6 +36,10 @@ use pocketmine\tile\Tile;
 class Chest extends Transparent{
 
 	protected $id = self::CHEST;
+	protected $flammable = true;
+	protected $flammability = 0;
+	protected $canCatchFireFromLava = true;
+	protected $flameEncouragement = 25;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

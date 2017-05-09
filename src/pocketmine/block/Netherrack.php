@@ -28,6 +28,10 @@ use pocketmine\item\Tool;
 class Netherrack extends Solid{
 
 	protected $id = self::NETHERRACK;
+	protected $flammable = true;
+	protected $flammability = 0;
+	protected $canCatchFireFromLava = true;
+	protected $flameEncouragement = 40;
 
 	public function __construct(){
 

@@ -28,6 +28,10 @@ use pocketmine\Player;
 class TallGrass extends Flowable{
 
 	protected $id = self::TALL_GRASS;
+	protected $flammable = true;
+	protected $flammability = 100;
+	protected $canCatchFireFromLava = true;
+	protected $flameEncouragement = 60;
 
 	public function __construct($meta = 1){
 		$this->meta = $meta;

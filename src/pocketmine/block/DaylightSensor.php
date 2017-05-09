@@ -24,6 +24,9 @@ namespace pocketmine\block;
 class DaylightSensor extends Transparent{
 
 	protected $id = self::DAYLIGHT_SENSOR;
+	protected $flammable = true;
+	protected $flammability = 0;
+	protected $flameEncouragement = 25;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

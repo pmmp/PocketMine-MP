@@ -26,6 +26,10 @@ use pocketmine\item\Tool;
 class Wool extends Solid{
 
 	protected $id = self::WOOL;
+	protected $flammable = true;
+	protected $flammability = 60;
+	protected $canCatchFireFromLava = true;
+	protected $flameEncouragement = 30;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

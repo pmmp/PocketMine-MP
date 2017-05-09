@@ -34,6 +34,10 @@ use pocketmine\tile\Tile;
 class StandingSign extends Transparent{
 
 	protected $id = self::STANDING_SIGN;
+	protected $flammable = true;
+	protected $flammability = 20;
+	protected $canCatchFireFromLava = true;
+	protected $flameEncouragement = 5;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

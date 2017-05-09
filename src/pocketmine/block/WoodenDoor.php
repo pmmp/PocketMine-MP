@@ -27,6 +27,9 @@ use pocketmine\item\Tool;
 class WoodenDoor extends Door{
 
 	protected $id = self::WOODEN_DOOR_BLOCK;
+	protected $flammable = true;
+	protected $flammability = 0;
+	protected $flameEncouragement = 25;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

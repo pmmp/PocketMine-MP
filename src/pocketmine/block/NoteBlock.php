@@ -24,6 +24,9 @@ namespace pocketmine\block;
 class NoteBlock extends Solid{
 
 	protected $id = self::NOTE_BLOCK;
+	protected $flammable = true;
+	protected $flammability = 0;
+	protected $flameEncouragement = 25;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

@@ -27,6 +27,10 @@ use pocketmine\item\Tool;
 class DoubleWoodSlab extends Solid{
 
 	protected $id = self::DOUBLE_WOODEN_SLAB;
+	protected $flammable = true;
+	protected $flammability = 20;
+	protected $canCatchFireFromLava = true;
+	protected $flameEncouragement = 5;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

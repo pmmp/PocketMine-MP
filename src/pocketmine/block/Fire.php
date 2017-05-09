@@ -87,25 +87,54 @@ class Fire extends Flowable{
 					return false;
 				}
 			}
-			$this->getLevel()->setBlock($this, new Air(), true);
+			$this->level->setBlock($this, new Air(), true);
 
 			return Level::BLOCK_UPDATE_NORMAL;
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
-			if($this->getSide(0)->getId() !== self::NETHERRACK){
-				if(mt_rand(0, 2) === 0){
-					if($this->meta === 0x0F){
+			$fireSpread = false;
+			$flammableBlocks = [];
+			for($flameSide = 0; $flameSide <= 5; $flameSide++) {
+				$flameBlock = $this->getSide($flameSide);
+				for($s = 0; $s <= 5; $s++){
+					$flame = $flameBlock->getSide($s);
+					if($s === $flameSide && $flameBlock->getId() !== Block::AIR) {
+						continue;
+					}
+					if($flame->getId() !== Block::AIR && $flame->getId() !== Block::FIRE) {
+						$flammableBlocks[$flame->getId()] = $flameBlock;
+						continue;
+					}
+					$flammableBlocks[$flameBlock->getId()] = $flame;
+				}
+			}
+			if(empty($flammableBlocks)) {
+				return false;
+			}
+			$randomFlame = $flammableBlocks[array_rand($flammableBlocks)];
+			if(mt_rand(0, 200) <= Block::get(key($randomFlame))->getFlameEncouragement()) {
+				$this->level->setBlock($randomFlame, new Fire());
+				$fireSpread = true;
+			}
+
+			if($this->getSide(0)->isFlammable()) {
+				if(mt_rand(0, 200) <= $this->getSide(0)->getFlammability()) {
+					$this->level->setBlock($this->getSide(0), $this);
+					$this->level->setBlock($this, new Air());
+					$fireSpread = true;
+				}
+			} elseif($fireSpread === false) {
+				if(mt_rand(0, 2) === 0) {
+					if($this->meta === 0x0F) {
 						$this->level->setBlock($this, new Air());
+						return Level::BLOCK_UPDATE_NORMAL;
 					}else{
 						$this->meta++;
 						$this->level->setBlock($this, $this);
 					}
-
-					return Level::BLOCK_UPDATE_NORMAL;
 				}
 			}
+			return Level::BLOCK_UPDATE_NORMAL;
 		}
-
 		return false;
 	}
-
 }

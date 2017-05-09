@@ -29,6 +29,10 @@ use pocketmine\Player;
 class Carpet extends Flowable{
 
 	protected $id = self::CARPET;
+	protected $flammable = true;
+	protected $canCatchFireFromLava = true;
+	protected $flameEncouragement = 30;
+	protected $flammability = 60;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
