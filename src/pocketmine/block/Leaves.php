@@ -38,6 +38,10 @@ class Leaves extends Transparent{
 
 	protected $id = self::LEAVES;
 	protected $woodType = self::LOG;
+	protected $flammable = true;
+	protected $flammability = 60;
+	protected $canCatchFireFromLava = true;
+	protected $flameEncouragement = 30;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

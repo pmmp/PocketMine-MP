@@ -29,6 +29,9 @@ use pocketmine\Player;
 class Dandelion extends Flowable{
 
 	protected $id = self::DANDELION;
+	protected $flammable = true;
+	protected $flammability = 100;
+	protected $flameEncouragement = 30;
 
 	public function __construct(){
 

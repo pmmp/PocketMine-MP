@@ -28,6 +28,10 @@ class Wood2 extends Wood{
 	const DARK_OAK = 1;
 
 	protected $id = self::WOOD2;
+	protected $flammable = true;
+	protected $flammability = 5;
+	protected $canCatchFireFromLava = true;
+	protected $flameEncouragement = 5;
 
 	public function getName(){
 		static $names = [

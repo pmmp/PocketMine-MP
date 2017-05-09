@@ -30,6 +30,10 @@ use pocketmine\Player;
 class FenceGate extends Transparent{
 
 	protected $id = self::FENCE_GATE;
+	protected $flammable = true;
+	protected $flammability = 20;
+	protected $canCatchFireFromLava = true;
+	protected $flameEncouragement = 5;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

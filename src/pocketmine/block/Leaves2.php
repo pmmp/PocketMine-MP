@@ -27,6 +27,10 @@ class Leaves2 extends Leaves{
 
 	protected $id = self::LEAVES2;
 	protected $woodType = self::LOG2;
+	protected $flammable = true;
+	protected $flammability = 30;
+	protected $canCatchFireFromLava = true;
+	protected $flameEncouragement = 60;
 
 	public function getName(){
 		static $names = [

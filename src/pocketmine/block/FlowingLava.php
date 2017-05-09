@@ -27,6 +27,7 @@ use pocketmine\event\entity\EntityCombustByBlockEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
+use pocketmine\level\Level;
 use pocketmine\Player;
 use pocketmine\Server;
 
@@ -67,6 +68,39 @@ class FlowingLava extends Liquid{
 		$this->getLevel()->scheduleDelayedBlockUpdate($this, $this->tickRate());
 
 		return $ret;
+	}
+
+	public function onUpdate($type){
+		if($type === Level::BLOCK_UPDATE_RANDOM){
+			$flammableBlocks = [];
+			for($flameSide = 0; $flameSide <= 5; $flameSide++) {
+				$flameBlock = $this->getSide($flameSide);
+				for($s = 0; $s <= 5; $s++){
+					$flame = $flameBlock->getSide($s);
+					if($s === $flameSide && $flameBlock->getId() !== Block::AIR) {
+						continue;
+					}
+					if($flame->getId() !== Block::AIR && $flame->getId() !== Block::FLOWING_LAVA && $flame->getId() !== Block::STILL_LAVA) {
+						if($flame->canCatchFireFromLava()) {
+							$flammableBlocks[$flame->getId()] = $flameBlock;
+						}
+						continue;
+					}
+					if($flameBlock->canCatchFireFromLava()) {
+						$flammableBlocks[$flameBlock->getId()] = $flame;
+					}
+				}
+			}
+			if(empty($flammableBlocks)) {
+				return false;
+			}
+			$randomFlame = $flammableBlocks[array_rand($flammableBlocks)];
+			if(mt_rand(0, 200) <= Block::get(key($randomFlame))->getFlameEncouragement()) {
+				$this->level->setBlock($randomFlame, new Fire());
+			}
+			return Level::BLOCK_UPDATE_NORMAL;
+		}
+		return false;
 	}
 
 }

@@ -27,6 +27,9 @@ use pocketmine\Player;
 class HayBale extends Solid{
 
 	protected $id = self::HAY_BALE;
+	protected $flammable = true;
+	protected $flammability = 20;
+	protected $flameEncouragement = 60;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

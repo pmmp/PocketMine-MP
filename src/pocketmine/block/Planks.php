@@ -32,6 +32,10 @@ class Planks extends Solid{
 	const DARK_OAK = 5;
 
 	protected $id = self::WOODEN_PLANKS;
+	protected $flammable = true;
+	protected $flammability = 20;
+	protected $canCatchFireFromLava = true;
+	protected $flameEncouragement = 5;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

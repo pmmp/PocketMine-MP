@@ -37,6 +37,9 @@ class Trapdoor extends Transparent{
 	const MASK_SIDE_WEST = 1;
 
 	protected $id = self::TRAPDOOR;
+	protected $flammable = true;
+	protected $flammability = 0;
+	protected $flameEncouragement = 25;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

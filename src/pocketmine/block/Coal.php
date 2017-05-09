@@ -28,6 +28,9 @@ use pocketmine\item\Tool;
 class Coal extends Solid{
 
 	protected $id = self::COAL_BLOCK;
+	protected $flammable = true;
+	protected $flammability = 5;
+	protected $flameEncouragement = 5;
 
 	public function __construct(){
 

@@ -38,6 +38,10 @@ class Flower extends Flowable{
 	const TYPE_OXEYE_DAISY = 8;
 
 	protected $id = self::RED_FLOWER;
+	protected $flammable = true;
+	protected $flammability = 100;
+	protected $canCatchFireFromLava = true;
+	protected $flameEncouragement = 30;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

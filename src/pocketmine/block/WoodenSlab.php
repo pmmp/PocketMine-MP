@@ -29,6 +29,10 @@ use pocketmine\Player;
 class WoodenSlab extends Transparent{
 
 	protected $id = self::WOODEN_SLAB;
+	protected $flammable = true;
+	protected $flammability = 20;
+	protected $canCatchFireFromLava = true;
+	protected $flameEncouragement = 5;
 
 	protected $doubleId = self::DOUBLE_WOODEN_SLAB;
 
