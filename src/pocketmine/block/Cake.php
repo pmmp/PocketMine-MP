@@ -46,20 +46,6 @@ class Cake extends Transparent implements FoodSource{
 		return "Cake Block";
 	}
 
-	protected function recalculateBoundingBox(){
-
-		$f = (($this->getDamage() * 2) / 16);
-
-		return new AxisAlignedBB(
-			$this->x + 0.0625 + $f,
-			$this->y,
-			$this->z + 0.0625,
-			$this->x + 1 - 0.0625,
-			$this->y + 0.5,
-			$this->z + 1 - 0.0625
-		);
-	}
-
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
 		if($down->getId() !== self::AIR){
@@ -133,5 +119,19 @@ class Cake extends Transparent implements FoodSource{
 
 	public function onConsume(Entity $consumer){
 
+	}
+
+	protected function recalculateBoundingBox(){
+
+		$f = (($this->getDamage() * 2) / 16);
+
+		return new AxisAlignedBB(
+			$this->x + 0.0625 + $f,
+			$this->y,
+			$this->z + 0.0625,
+			$this->x + 1 - 0.0625,
+			$this->y + 0.5,
+			$this->z + 1 - 0.0625
+		);
 	}
 }

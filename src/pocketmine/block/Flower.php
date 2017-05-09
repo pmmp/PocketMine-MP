@@ -27,6 +27,7 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Flower extends Flowable{
+
 	const TYPE_POPPY = 0;
 	const TYPE_BLUE_ORCHID = 1;
 	const TYPE_ALLIUM = 2;

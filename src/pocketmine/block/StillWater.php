@@ -21,8 +21,6 @@
 
 namespace pocketmine\block;
 
-use pocketmine\level\Level;
-
 class StillWater extends FlowingWater{
 
 	protected $id = self::STILL_WATER;

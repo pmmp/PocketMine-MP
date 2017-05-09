@@ -44,17 +44,6 @@ class Bed extends Transparent{
 		return "Bed Block";
 	}
 
-	protected function recalculateBoundingBox(){
-		return new AxisAlignedBB(
-			$this->x,
-			$this->y,
-			$this->z,
-			$this->x + 1,
-			$this->y + 0.5625,
-			$this->z + 1
-		);
-	}
-
 	public function onActivate(Item $item, Player $player = null){
 
 		$time = $this->getLevel()->getTime() % Level::TIME_FULL;
@@ -157,6 +146,17 @@ class Bed extends Transparent{
 		return [
 			[Item::BED, 0, 1],
 		];
+	}
+
+	protected function recalculateBoundingBox(){
+		return new AxisAlignedBB(
+			$this->x,
+			$this->y,
+			$this->z,
+			$this->x + 1,
+			$this->y + 0.5625,
+			$this->z + 1
+		);
 	}
 
 }

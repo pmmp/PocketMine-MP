@@ -24,6 +24,7 @@ namespace pocketmine\block;
 use pocketmine\item\Tool;
 
 class Planks extends Solid{
+
 	const OAK = 0;
 	const SPRUCE = 1;
 	const BIRCH = 2;

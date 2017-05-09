@@ -64,6 +64,56 @@ class Vine extends Transparent{
 		$entity->resetFallDistance();
 	}
 
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+		if($target->isSolid()){
+			$faces = [
+				2 => 1,
+				3 => 4,
+				4 => 8,
+				5 => 2,
+			];
+			if(isset($faces[$face])){
+				$this->meta = $faces[$face];
+				$this->getLevel()->setBlock($block, $this, true, true);
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public function onUpdate($type){
+		if($type === Level::BLOCK_UPDATE_NORMAL){
+			$sides = [
+				2 => 4,
+				3 => 1,
+				4 => 2,
+				5 => 8
+			];
+			if(!$this->getSide($sides[$this->meta])->isSolid()){ //Replace with common break method
+				$this->level->useBreakOn($this);
+				return Level::BLOCK_UPDATE_NORMAL;
+			}
+		}
+
+		return false;
+	}
+
+	public function getDrops(Item $item){
+		if($item->isShears()){
+			return [
+				[$this->id, 0, 1],
+			];
+		}else{
+			return [];
+		}
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_AXE;
+	}
+
 	protected function recalculateBoundingBox(){
 
 		$f1 = 1;
@@ -122,56 +172,5 @@ class Vine extends Transparent{
 			$this->y + $f5,
 			$this->z + $f6
 		);
-	}
-
-
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		if($target->isSolid()){
-			$faces = [
-				2 => 1,
-				3 => 4,
-				4 => 8,
-				5 => 2,
-			];
-			if(isset($faces[$face])){
-				$this->meta = $faces[$face];
-				$this->getLevel()->setBlock($block, $this, true, true);
-
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	public function onUpdate($type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			$sides = [
-				2 => 4,
-				3 => 1,
-				4 => 2,
-				5 => 8
-			];
-			if(!$this->getSide($sides[$this->meta])->isSolid()){ //Replace with common break method
-				$this->level->useBreakOn($this);
-				return Level::BLOCK_UPDATE_NORMAL;
-			}
-		}
-
-		return false;
-	}
-
-	public function getDrops(Item $item){
-		if($item->isShears()){
-			return [
-				[$this->id, 0, 1],
-			];
-		}else{
-			return [];
-		}
-	}
-
-	public function getToolType(){
-		return Tool::TYPE_AXE;
 	}
 }

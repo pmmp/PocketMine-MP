@@ -26,6 +26,7 @@ use pocketmine\item\Tool;
 use pocketmine\Player;
 
 class Wood extends Solid{
+
 	const OAK = 0;
 	const SPRUCE = 1;
 	const BIRCH = 2;

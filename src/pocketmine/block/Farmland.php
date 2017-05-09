@@ -45,6 +45,12 @@ class Farmland extends Transparent{
 		return Tool::TYPE_SHOVEL;
 	}
 
+	public function getDrops(Item $item){
+		return [
+			[Item::DIRT, 0, 1],
+		];
+	}
+
 	protected function recalculateBoundingBox(){
 		return new AxisAlignedBB(
 			$this->x,
@@ -54,11 +60,5 @@ class Farmland extends Transparent{
 			$this->y + 0.9375,
 			$this->z + 1
 		);
-	}
-
-	public function getDrops(Item $item){
-		return [
-			[Item::DIRT, 0, 1],
-		];
 	}
 }

@@ -68,18 +68,6 @@ class Carpet extends Flowable{
 		return $names[$this->meta & 0x0f];
 	}
 
-	protected function recalculateBoundingBox(){
-
-		return new AxisAlignedBB(
-			$this->x,
-			$this->y,
-			$this->z,
-			$this->x + 1,
-			$this->y + 0.0625,
-			$this->z + 1
-		);
-	}
-
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
 		if($down->getId() !== self::AIR){
@@ -101,6 +89,18 @@ class Carpet extends Flowable{
 		}
 
 		return false;
+	}
+
+	protected function recalculateBoundingBox(){
+
+		return new AxisAlignedBB(
+			$this->x,
+			$this->y,
+			$this->z,
+			$this->x + 1,
+			$this->y + 0.0625,
+			$this->z + 1
+		);
 	}
 
 }

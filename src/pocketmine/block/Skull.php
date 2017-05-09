@@ -48,18 +48,6 @@ class Skull extends Flowable{
 		return "Skull";
 	}
 
-	protected function recalculateBoundingBox(){
-		//TODO: different bounds depending on attached face (meta)
-		return new AxisAlignedBB(
-			$this->x + 0.25,
-			$this->y,
-			$this->z + 0.25,
-			$this->x + 0.75,
-			$this->y + 0.5,
-			$this->z + 0.75
-		);
-	}
-
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if($face !== 0){
 			$this->meta = $face;
@@ -73,9 +61,9 @@ class Skull extends Flowable{
 				new StringTag("id", Tile::SKULL),
 				new ByteTag("SkullType", $item->getDamage()),
 				new ByteTag("Rot", $rot),
-				new IntTag("x", (int) $this->x),
-				new IntTag("y", (int) $this->y),
-				new IntTag("z", (int) $this->z)
+				new IntTag("x", (int)$this->x),
+				new IntTag("y", (int)$this->y),
+				new IntTag("z", (int)$this->z)
 			]);
 			if($item->hasCustomName()){
 				$nbt->CustomName = new StringTag("CustomName", $item->getCustomName());
@@ -96,5 +84,17 @@ class Skull extends Flowable{
 		}
 
 		return [];
+	}
+
+	protected function recalculateBoundingBox(){
+		//TODO: different bounds depending on attached face (meta)
+		return new AxisAlignedBB(
+			$this->x + 0.25,
+			$this->y,
+			$this->z + 0.25,
+			$this->x + 0.75,
+			$this->y + 0.5,
+			$this->z + 0.75
+		);
 	}
 }

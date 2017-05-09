@@ -26,6 +26,7 @@ use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
 
 class StoneBricks extends Solid{
+
 	const NORMAL = 0;
 	const MOSSY = 1;
 	const CRACKED = 2;

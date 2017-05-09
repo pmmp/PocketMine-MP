@@ -26,6 +26,7 @@ use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
 
 class StoneSlab extends WoodenSlab{
+
 	const STONE = 0;
 	const SANDSTONE = 1;
 	const WOODEN = 2;

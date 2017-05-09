@@ -26,6 +26,7 @@ use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
 
 class Stone extends Solid{
+
 	const NORMAL = 0;
 	const GRANITE = 1;
 	const POLISHED_GRANITE = 2;

@@ -48,17 +48,6 @@ class FlowerPot extends Flowable{
 		return "Flower Pot Block";
 	}
 
-	protected function recalculateBoundingBox(){
-		return new AxisAlignedBB(
-			$this->x + 0.3125,
-			$this->y,
-			$this->z + 0.3125,
-			$this->x + 0.6875,
-			$this->y + 0.375,
-			$this->z + 0.6875
-		);
-	}
-
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if($this->getSide(Vector3::SIDE_DOWN)->isTransparent()){
 			return false;
@@ -128,6 +117,17 @@ class FlowerPot extends Flowable{
 			}
 		}
 		return $items;
+	}
+
+	protected function recalculateBoundingBox(){
+		return new AxisAlignedBB(
+			$this->x + 0.3125,
+			$this->y,
+			$this->z + 0.3125,
+			$this->x + 0.6875,
+			$this->y + 0.375,
+			$this->z + 0.6875
+		);
 	}
 
 }

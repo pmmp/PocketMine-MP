@@ -30,12 +30,12 @@ class MelonStem extends Crops{
 
 	protected $id = self::MELON_STEM;
 
-	public function getName(){
-		return "Melon Stem";
-	}
-
 	public function __construct($meta = 0){
 		$this->meta = $meta;
+	}
+
+	public function getName(){
+		return "Melon Stem";
 	}
 
 	public function onUpdate($type){

@@ -52,18 +52,6 @@ class Cactus extends Transparent{
 		return "Cactus";
 	}
 
-	protected function recalculateBoundingBox(){
-
-		return new AxisAlignedBB(
-			$this->x + 0.0625,
-			$this->y + 0.0625,
-			$this->z + 0.0625,
-			$this->x + 0.9375,
-			$this->y + 0.9375,
-			$this->z + 0.9375
-		);
-	}
-
 	public function onEntityCollide(Entity $entity){
 		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_CONTACT, 1);
 		$entity->attack($ev->getFinalDamage(), $ev);
@@ -127,5 +115,17 @@ class Cactus extends Transparent{
 		return [
 			[$this->id, 0, 1],
 		];
+	}
+
+	protected function recalculateBoundingBox(){
+
+		return new AxisAlignedBB(
+			$this->x + 0.0625,
+			$this->y + 0.0625,
+			$this->z + 0.0625,
+			$this->x + 0.9375,
+			$this->y + 0.9375,
+			$this->z + 0.9375
+		);
 	}
 }

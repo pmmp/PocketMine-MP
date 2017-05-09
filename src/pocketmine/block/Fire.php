@@ -93,38 +93,42 @@ class Fire extends Flowable{
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
 			$fireSpread = false;
 			$flammableBlocks = [];
-			for($flameSide = 0; $flameSide <= 5; $flameSide++) {
+			for($flameSide = 0; $flameSide <= 5; $flameSide++){
 				$flameBlock = $this->getSide($flameSide);
 				for($s = 0; $s <= 5; $s++){
 					$flame = $flameBlock->getSide($s);
-					if($s === $flameSide && $flameBlock->getId() !== Block::AIR) {
+					if($s === $flameSide && $flameBlock->getId() !== Block::AIR){
 						continue;
 					}
-					if($flame->getId() !== Block::AIR && $flame->getId() !== Block::FIRE) {
-						$flammableBlocks[$flame->getId()] = $flameBlock;
+					if($flame->getId() !== Block::AIR && $flame->getId() !== Block::FIRE){
+						if($flameBlock->getId() === Block::AIR){
+							$flammableBlocks[$flame->getId()] = $flameBlock;
+						}
 						continue;
+					}elseif($flame->getId() === Block::AIR){
+						$flammableBlocks[$flameBlock->getId()] = $flame;
 					}
-					$flammableBlocks[$flameBlock->getId()] = $flame;
 				}
 			}
-			if(empty($flammableBlocks)) {
+			if(empty($flammableBlocks)){
 				return false;
 			}
 			$randomFlame = $flammableBlocks[array_rand($flammableBlocks)];
-			if(mt_rand(0, 200) <= Block::get(key($randomFlame))->getFlameEncouragement()) {
+			if(mt_rand(0, 200) <= Block::get(key($randomFlame))->getFlameEncouragement()){
 				$this->level->setBlock($randomFlame, new Fire());
 				$fireSpread = true;
 			}
 
-			if($this->getSide(0)->isFlammable()) {
-				if(mt_rand(0, 200) <= $this->getSide(0)->getFlammability()) {
-					$this->level->setBlock($this->getSide(0), $this);
+			if($this->getSide(0)->isFlammable()){
+				if(mt_rand(0, 200) <= $this->getSide(0)->getFlammability()){
+					$this->level->setBlock($this->getSide(0), new Fire());
 					$this->level->setBlock($this, new Air());
 					$fireSpread = true;
 				}
-			} elseif($fireSpread === false) {
-				if(mt_rand(0, 2) === 0) {
-					if($this->meta === 0x0F) {
+			}
+			if($fireSpread === false){
+				if(mt_rand(0, 2) === 0){
+					if($this->meta === 0x0F){
 						$this->level->setBlock($this, new Air());
 						return Level::BLOCK_UPDATE_NORMAL;
 					}else{

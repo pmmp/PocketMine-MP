@@ -29,6 +29,7 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Leaves extends Transparent{
+
 	const OAK = 0;
 	const SPRUCE = 1;
 	const BIRCH = 2;
@@ -67,6 +68,33 @@ class Leaves extends Transparent{
 
 	public function diffusesSkyLight() : bool{
 		return true;
+	}
+
+	public function onUpdate($type){
+		if($type === Level::BLOCK_UPDATE_NORMAL){
+			if(($this->meta & 0b00001100) === 0){
+				$this->meta |= 0x08;
+				$this->getLevel()->setBlock($this, $this, true, false);
+			}
+		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
+			if(($this->meta & 0b00001100) === 0x08){
+				$this->meta &= 0x03;
+				$visited = [];
+				$check = 0;
+
+				$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new LeavesDecayEvent($this));
+
+				if($ev->isCancelled() or $this->findLog($this, $visited, 0, $check) === true){
+					$this->getLevel()->setBlock($this, $this, false, false);
+				}else{
+					$this->getLevel()->useBreakOn($this);
+
+					return Level::BLOCK_UPDATE_NORMAL;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	protected function findLog(Block $pos, array $visited, $distance, &$check, $fromSide = null){
@@ -127,33 +155,6 @@ class Leaves extends Transparent{
 							return true;
 						}
 						break;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	public function onUpdate($type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if(($this->meta & 0b00001100) === 0){
-				$this->meta |= 0x08;
-				$this->getLevel()->setBlock($this, $this, true, false);
-			}
-		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
-			if(($this->meta & 0b00001100) === 0x08){
-				$this->meta &= 0x03;
-				$visited = [];
-				$check = 0;
-
-				$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new LeavesDecayEvent($this));
-
-				if($ev->isCancelled() or $this->findLog($this, $visited, 0, $check) === true){
-					$this->getLevel()->setBlock($this, $this, false, false);
-				}else{
-					$this->getLevel()->useBreakOn($this);
-
-					return Level::BLOCK_UPDATE_NORMAL;
 				}
 			}
 		}

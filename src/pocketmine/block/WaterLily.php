@@ -43,18 +43,6 @@ class WaterLily extends Flowable{
 		return 0.6;
 	}
 
-	protected function recalculateBoundingBox(){
-		return new AxisAlignedBB(
-			$this->x + 0.0625,
-			$this->y,
-			$this->z + 0.0625,
-			$this->x + 0.9375,
-			$this->y + 0.015625,
-			$this->z + 0.9375
-		);
-	}
-
-
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if($target instanceof FlowingWater){
 			$up = $target->getSide(Vector3::SIDE_UP);
@@ -82,5 +70,16 @@ class WaterLily extends Flowable{
 		return [
 			[$this->id, 0, 1]
 		];
+	}
+
+	protected function recalculateBoundingBox(){
+		return new AxisAlignedBB(
+			$this->x + 0.0625,
+			$this->y,
+			$this->z + 0.0625,
+			$this->x + 0.9375,
+			$this->y + 0.015625,
+			$this->z + 0.9375
+		);
 	}
 }

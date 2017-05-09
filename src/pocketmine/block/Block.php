@@ -57,6 +57,24 @@ class Block extends Position implements BlockIds, Metadatable{
 	public static $transparent = null;
 	/** @var \SplFixedArray */
 	public static $diffusesSkyLight = null;
+	/** @var AxisAlignedBB */
+	public $boundingBox = null;
+	protected $fallbackName = "Unknown";
+	protected $id;
+	protected $meta = 0;
+	protected $flammable = false;
+	protected $canCatchFireFromLava = false;
+	protected $flammability = 0;
+	protected $flameEncouragement = 0;
+
+	/**
+	 * @param int $id
+	 * @param int $meta
+	 */
+	public function __construct($id, $meta = 0){
+		$this->id = (int)$id;
+		$this->meta = (int)$meta;
+	}
 
 	public static function init(){
 		if(self::$list === null){
@@ -280,51 +298,66 @@ class Block extends Position implements BlockIds, Metadatable{
 		self::$diffusesSkyLight[$block->id] = $block->diffusesSkyLight();
 	}
 
-	/**
-	 * @param int      $id
-	 * @param int      $meta
-	 * @param Position $pos
-	 *
-	 * @return Block
-	 */
-	public static function get($id, $meta = 0, Position $pos = null){
-		try{
-			$block = clone self::$fullList[($id << 4) | $meta];
-		}catch(\RuntimeException $e){
-			$block = new UnknownBlock($id, $meta);
-		}
-
-		if($pos !== null){
-			$block->x = $pos->x;
-			$block->y = $pos->y;
-			$block->z = $pos->z;
-			$block->level = $pos->level;
-		}
-
-		return $block;
+	public function isSolid(){
+		return true;
 	}
 
-	protected $fallbackName = "Unknown";
-
-	protected $id;
-	protected $meta = 0;
-
-	/** @var AxisAlignedBB */
-	public $boundingBox = null;
-
-	protected $flammable = false;
-	protected $canCatchFireFromLava = false;
-	protected $flammability = 0;
-	protected $flameEncouragement = 0;
-
+	/**
+	 * @return bool
+	 */
+	public function isTransparent(){
+		return false;
+	}
 
 	/**
-	 * @param int $id
-	 * @param int $meta
+	 * @return float
 	 */
-	public function __construct($id, $meta = 0){
-		$this->id = (int) $id;
-		$this->meta = (int) $meta;
+	public function getHardness(){
+		return 10;
+	}
+
+	/**
+	 * @return int 0-15
+	 */
+	public function getLightLevel(){
+		return 0;
+	}
+
+	/**
+	 * Returns the amount of light this block will filter out when light passes through this block.
+	 * This value is used in light spread calculation.
+	 *
+	 * @return int 0-15
+	 */
+	public function getLightFilter() : int{
+		return 15;
+	}
+
+	/**
+	 * Returns whether this block will diffuse sky light passing through it vertically.
+	 * Diffusion means that full-strength sky light passing through this block will not be reduced, but will start being filtered below the block.
+	 * Examples of this behaviour include leaves and cobwebs.
+	 *
+	 * Light-diffusing blocks are included by the heightmap.
+	 *
+	 * @return bool
+	 */
+	public function diffusesSkyLight() : bool{
+		return false;
+	}
+
+	/**
+	 * Sets the fallback English name of the block.
+	 * @since API 3.0.0
+	 *
+	 * @param string $name
+	 *
+	 * @return $this
+	 */
+	public function setName(string $name){
+		$this->fallbackName = $name;
+
+		return $this;
 	}
 
 	/**
@@ -379,7 +412,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return int
 	 */
-	public function getFlammability(): int {
+	public function getFlammability() : int{
 		return $this->flammability;
 	}
 
@@ -388,7 +421,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return int
 	 */
-	public function getFlameEncouragement(): int {
+	public function getFlameEncouragement() : int{
 		return $this->flameEncouragement;
 	}
 
@@ -429,23 +462,8 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @return float
 	 */
-	public function getHardness(){
-		return 10;
-	}
-
-	/**
-	 * @return float
-	 */
 	public function getResistance(){
 		return $this->getHardness() * 5;
-	}
-
-	/**
-	 * Returns the best tool type to use for breaking this type of block.
-	 * @return int
-	 */
-	public function getToolType(){
-		return Tool::TYPE_NONE;
 	}
 
 	/**
@@ -474,36 +492,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * @return int 0-15
-	 */
-	public function getLightLevel(){
-		return 0;
-	}
-
-	/**
-	 * Returns the amount of light this block will filter out when light passes through this block.
-	 * This value is used in light spread calculation.
-	 *
-	 * @return int 0-15
-	 */
-	public function getLightFilter() : int{
-		return 15;
-	}
-
-	/**
-	 * Returns whether this block will diffuse sky light passing through it vertically.
-	 * Diffusion means that full-strength sky light passing through this block will not be reduced, but will start being filtered below the block.
-	 * Examples of this behaviour include leaves and cobwebs.
-	 *
-	 * Light-diffusing blocks are included by the heightmap.
-	 *
-	 * @return bool
-	 */
-	public function diffusesSkyLight() : bool{
-		return false;
-	}
-
-	/**
 	 * AKA: Block->isPlaceable
 	 *
 	 * @return bool
@@ -517,17 +505,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function canBeReplaced(){
 		return false;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function isTransparent(){
-		return false;
-	}
-
-	public function isSolid(){
-		return true;
 	}
 
 	/**
@@ -563,54 +540,8 @@ class Block extends Position implements BlockIds, Metadatable{
 		return false;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getName(){
-		return $this->fallbackName;
-	}
-
-	/**
-	 * Sets the fallback English name of the block.
-	 * @since API 3.0.0
-	 *
-	 * @param string $name
-	 * @return $this
-	 */
-	public function setName(string $name){
-		$this->fallbackName = $name;
-
-		return $this;
-	}
-
-	/**
-	 * @return int
-	 */
-	final public function getId(){
-		return $this->id;
-	}
-
-	/**
-	 * Sets the ID of the block type.
-	 * @internal
-	 *
-	 * @param int $id
-	 * @return $this
-	 */
-	final protected function setId(int $id){
-		$this->id = $id;
-		return $this;
-	}
-
 	public function addVelocityToEntity(Entity $entity, Vector3 $vector){
 
-	}
-
-	/**
-	 * @return int
-	 */
-	final public function getDamage(){
-		return $this->meta;
 	}
 
 	/**
@@ -626,9 +557,9 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @param Position $v
 	 */
 	final public function position(Position $v){
-		$this->x = (int) $v->x;
-		$this->y = (int) $v->y;
-		$this->z = (int) $v->z;
+		$this->x = (int)$v->x;
+		$this->y = (int)$v->y;
+		$this->z = (int)$v->z;
 		$this->level = $v->level;
 		$this->boundingBox = null;
 	}
@@ -648,6 +579,33 @@ class Block extends Position implements BlockIds, Metadatable{
 				[$this->getId(), $this->getDamage(), 1],
 			];
 		}
+	}
+
+	/**
+	 * @return int
+	 */
+	final public function getId(){
+		return $this->id;
+	}
+
+	/**
+	 * Sets the ID of the block type.
+	 * @internal
+	 *
+	 * @param int $id
+	 *
+	 * @return $this
+	 */
+	final protected function setId(int $id){
+		$this->id = $id;
+		return $this;
+	}
+
+	/**
+	 * @return int
+	 */
+	final public function getDamage(){
+		return $this->meta;
 	}
 
 	/**
@@ -701,6 +659,14 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Returns the best tool type to use for breaking this type of block.
+	 * @return int
+	 */
+	public function getToolType(){
+		return Tool::TYPE_NONE;
+	}
+
+	/**
 	 * Returns the Block on the side $side, works like Vector3::side()
 	 *
 	 * @param int $side
@@ -717,10 +683,41 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * @param int      $id
+	 * @param int      $meta
+	 * @param Position $pos
+	 *
+	 * @return Block
+	 */
+	public static function get($id, $meta = 0, Position $pos = null){
+		try{
+			$block = clone self::$fullList[($id << 4) | $meta];
+		}catch(\RuntimeException $e){
+			$block = new UnknownBlock($id, $meta);
+		}
+
+		if($pos !== null){
+			$block->x = $pos->x;
+			$block->y = $pos->y;
+			$block->z = $pos->z;
+			$block->level = $pos->level;
+		}
+
+		return $block;
+	}
+
+	/**
 	 * @return string
 	 */
 	public function __toString(){
 		return "Block[" . $this->getName() . "] (" . $this->getId() . ":" . $this->getDamage() . ")";
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getName(){
+		return $this->fallbackName;
 	}
 
 	/**
@@ -734,13 +731,6 @@ class Block extends Position implements BlockIds, Metadatable{
 		$bb2 = $this->getBoundingBox();
 
 		return $bb2 !== null and $bb->intersectsWith($bb2);
-	}
-
-	/**
-	 * @param Entity $entity
-	 */
-	public function onEntityCollide(Entity $entity){
-
 	}
 
 	/**
@@ -765,6 +755,13 @@ class Block extends Position implements BlockIds, Metadatable{
 			$this->y + 1,
 			$this->z + 1
 		);
+	}
+
+	/**
+	 * @param Entity $entity
+	 */
+	public function onEntityCollide(Entity $entity){
+
 	}
 
 	/**
