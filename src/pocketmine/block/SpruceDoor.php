@@ -50,7 +50,7 @@ class SpruceDoor extends Door{
 
 	public function getDrops(Item $item){
 		return [
-			[Item::WOODEN_DOOR, 0, 1],
+			[Item::SPRUCE_DOOR, 0, 1],
 		];
 	}
 }
