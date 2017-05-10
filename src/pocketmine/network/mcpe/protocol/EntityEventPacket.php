@@ -46,7 +46,7 @@ class EntityEventPacket extends DataPacket{
 
 	const RESPAWN = 18;
 
-	const EAT_PARTICLES = 57; //Requires an item id for data
+	const EATING_ITEM = 57; //Requires an item id for data
 
 	//TODO: add more events
 

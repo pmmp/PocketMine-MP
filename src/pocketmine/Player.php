@@ -2270,15 +2270,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					break;
 
 					//TODO: check item use cooldown
-					//TODO: add eating sounds
+					//TODO: add eating sounds (burp)
 				}
 
 				return false;
-			case EntityEventPacket::EAT_PARTICLES:
+			case EntityEventPacket::EATING_ITEM:
 				if($packet->data === 0){
 					//Make sure a bad client doesn't crash everyone watching
 					throw new \InvalidArgumentException("Received eat-particle entity event with data 0");
 				}
+
+				$this->dataPacket($packet);
 				$this->server->broadcastPacket($this->getViewers(), $packet);
 				break;
 			default:
