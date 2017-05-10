@@ -23,6 +23,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\entity\Attribute;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\NetworkSession;
@@ -198,6 +199,54 @@ abstract class DataPacket extends BinaryStream{
 					//TODO: change this implementation (use objects)
 					$this->putVector3f(...$d[1]); //x, y, z
 			}
+		}
+	}
+
+	/**
+	 * Reads a list of Attributes from the stream.
+	 * @return Attribute[]
+	 *
+	 * @throws \UnexpectedValueException if reading an attribute with an unrecognized name
+	 */
+	public function getAttributeList() : array{
+		$list = [];
+		$count = $this->getUnsignedVarInt();
+
+		for($i = 0; $i < $count; ++$i){
+			$min = $this->getLFloat();
+			$max = $this->getLFloat();
+			$current = $this->getLFloat();
+			$default = $this->getLFloat();
+			$name = $this->getString();
+
+			$attr = Attribute::getAttributeByName($name);
+			if($attr !== null){
+				$attr->setMinValue($min);
+				$attr->setMaxValue($max);
+				$attr->setValue($current);
+				$attr->setDefaultValue($default);
+
+				$list[] = $attr;
+			}else{
+				throw new \UnexpectedValueException("Unknown attribute type \"$name\"");
+			}
+		}
+
+		return $list;
+	}
+
+	/**
+	 * Writes a list of Attributes to the packet buffer using the standard format.
+	 * @param Attribute[] ...$attributes
+	 */
+	public function putAttributeList(Attribute ...$attributes){
+		$this->putUnsignedVarInt(count($attributes));
+		foreach($attributes as $attribute){
+			$this->putLFloat($attribute->getMinValue());
+			$this->putLFloat($attribute->getMaxValue());
+			$this->putLFloat($attribute->getValue());
+			$this->putLFloat($attribute->getDefaultValue());
+			$this->putString($attribute->getName());
 		}
 	}
 
