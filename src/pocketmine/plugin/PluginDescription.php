@@ -164,7 +164,7 @@ class PluginDescription{
 	/**
 	 * @return array
 	 */
-	public function getExtensions(){
+	public function getRequiredExtensions(){
 		return $this->extensions;
 	}
 
@@ -173,7 +173,7 @@ class PluginDescription{
 	 *
 	 * @throws PluginException if there are required extensions missing or have incompatible version, or if the version constraint cannot be parsed
 	 */
-	public function checkExtensions(){
+	public function checkRequiredExtensions(){
 		foreach($this->extensions as $name => $versionConstrs){
 			if(!extension_loaded($name)){
 				throw new PluginException("Required extension $name not loaded");

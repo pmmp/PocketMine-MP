@@ -148,7 +148,7 @@ class PluginManager{
 				$description = $loader->getPluginDescription($path);
 				if($description instanceof PluginDescription){
 					try{
-						$description->checkExtensions();
+						$description->checkRequiredExtensions();
 					}catch(PluginException $ex){
 						$this->server->getLogger()->error($ex->getMessage());
 						return null;
