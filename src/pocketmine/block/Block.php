@@ -314,6 +314,11 @@ class Block extends Position implements BlockIds, Metadatable{
 
 
 	/**
+	 * Constructs a new instance of a Block.
+	 *
+	 * Note for plugin developers: This constructor should ONLY be used when creating an instance of a new block type to register into the block type index.
+	 * To get an instance of an existing block for use, use {@link Block#get} instead of constructing a new one.
+	 *
 	 * @param int $id
 	 * @param int $meta
 	 */
@@ -359,7 +364,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return mixed
 	 */
 	public function onBreak(Item $item){
-		return $this->getLevel()->setBlock($this, new Air(), true, true);
+		return $this->getLevel()->setBlock($this, Block::get(Block::AIR), true, true);
 	}
 
 	/**

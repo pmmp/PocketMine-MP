@@ -26,7 +26,6 @@ declare(strict_types = 1);
  */
 namespace pocketmine\level;
 
-use pocketmine\block\Air;
 use pocketmine\block\Beetroot;
 use pocketmine\block\Block;
 use pocketmine\block\BrownMushroom;
@@ -1643,7 +1642,7 @@ class Level implements ChunkManager, Metadatable{
 		$above = $this->getBlock(new Vector3($target->x, $target->y + 1, $target->z));
 		if($above !== null){
 			if($above->getId() === Item::FIRE){
-				$this->setBlock($above, new Air(), true);
+				$this->setBlock($above, Block::get(Block::AIR), true);
 			}
 		}
 

@@ -129,26 +129,26 @@ class Bed extends Transparent{
 
 		if(($this->meta & 0x08) === 0x08){ //This is the Top part of bed
 			if($blockNorth->getId() === $this->id and $blockNorth->meta !== 0x08){ //Checks if the block ID and meta are right
-				$this->getLevel()->setBlock($blockNorth, new Air(), true, true);
+				$this->getLevel()->setBlock($blockNorth, Block::get(Block::AIR), true, true);
 			}elseif($blockSouth->getId() === $this->id and $blockSouth->meta !== 0x08){
-				$this->getLevel()->setBlock($blockSouth, new Air(), true, true);
+				$this->getLevel()->setBlock($blockSouth, Block::get(Block::AIR), true, true);
 			}elseif($blockEast->getId() === $this->id and $blockEast->meta !== 0x08){
-				$this->getLevel()->setBlock($blockEast, new Air(), true, true);
+				$this->getLevel()->setBlock($blockEast, Block::get(Block::AIR), true, true);
 			}elseif($blockWest->getId() === $this->id and $blockWest->meta !== 0x08){
-				$this->getLevel()->setBlock($blockWest, new Air(), true, true);
+				$this->getLevel()->setBlock($blockWest, Block::get(Block::AIR), true, true);
 			}
 		}else{ //Bottom Part of Bed
 			if($blockNorth->getId() === $this->id and ($blockNorth->meta & 0x08) === 0x08){
-				$this->getLevel()->setBlock($blockNorth, new Air(), true, true);
+				$this->getLevel()->setBlock($blockNorth, Block::get(Block::AIR), true, true);
 			}elseif($blockSouth->getId() === $this->id and ($blockSouth->meta & 0x08) === 0x08){
-				$this->getLevel()->setBlock($blockSouth, new Air(), true, true);
+				$this->getLevel()->setBlock($blockSouth, Block::get(Block::AIR), true, true);
 			}elseif($blockEast->getId() === $this->id and ($blockEast->meta & 0x08) === 0x08){
-				$this->getLevel()->setBlock($blockEast, new Air(), true, true);
+				$this->getLevel()->setBlock($blockEast, Block::get(Block::AIR), true, true);
 			}elseif($blockWest->getId() === $this->id and ($blockWest->meta & 0x08) === 0x08){
-				$this->getLevel()->setBlock($blockWest, new Air(), true, true);
+				$this->getLevel()->setBlock($blockWest, Block::get(Block::AIR), true, true);
 			}
 		}
-		$this->getLevel()->setBlock($this, new Air(), true, true);
+		$this->getLevel()->setBlock($this, Block::get(Block::AIR), true, true);
 
 		return true;
 	}

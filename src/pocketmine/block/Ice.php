@@ -50,7 +50,7 @@ class Ice extends Transparent{
 	}
 
 	public function onBreak(Item $item){
-		$this->getLevel()->setBlock($this, new FlowingWater(), true);
+		$this->getLevel()->setBlock($this, Block::get(Block::FLOWING_WATER), true);
 
 		return true;
 	}

@@ -21,7 +21,6 @@
 
 namespace pocketmine;
 
-use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
@@ -2506,7 +2505,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 				$block = $target->getSide($packet->face);
 				if($block->getId() === Block::FIRE){
-					$this->level->setBlock($block, new Air());
+					$this->level->setBlock($block, Block::get(Block::AIR));
 					break;
 				}
 

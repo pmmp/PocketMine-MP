@@ -53,7 +53,7 @@ class Sugarcane extends Flowable{
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
 					if($b->getId() === self::AIR){
-						Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, new Sugarcane()));
+						Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, Block::get(Block::SUGARCANE_BLOCK)));
 						if(!$ev->isCancelled()){
 							$this->getLevel()->setBlock($b, $ev->getNewState(), true);
 						}
@@ -87,7 +87,7 @@ class Sugarcane extends Flowable{
 					for($y = 1; $y < 3; ++$y){
 						$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
 						if($b->getId() === self::AIR){
-							$this->getLevel()->setBlock($b, new Sugarcane(), true);
+							$this->getLevel()->setBlock($b, Block::get(Block::SUGARCANE_BLOCK), true);
 							break;
 						}
 					}
@@ -108,7 +108,7 @@ class Sugarcane extends Flowable{
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
 		if($down->getId() === self::SUGARCANE_BLOCK){
-			$this->getLevel()->setBlock($block, new Sugarcane(), true);
+			$this->getLevel()->setBlock($block, Block::get(Block::SUGARCANE_BLOCK), true);
 
 			return true;
 		}elseif($down->getId() === self::GRASS or $down->getId() === self::DIRT or $down->getId() === self::SAND){
@@ -117,7 +117,7 @@ class Sugarcane extends Flowable{
 			$block2 = $down->getSide(4);
 			$block3 = $down->getSide(5);
 			if(($block0 instanceof FlowingWater) or ($block1 instanceof FlowingWater) or ($block2 instanceof FlowingWater) or ($block3 instanceof FlowingWater)){
-				$this->getLevel()->setBlock($block, new Sugarcane(), true);
+				$this->getLevel()->setBlock($block, Block::get(Block::SUGARCANE_BLOCK), true);
 
 				return true;
 			}
