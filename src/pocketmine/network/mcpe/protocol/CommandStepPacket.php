@@ -42,7 +42,7 @@ class CommandStepPacket extends DataPacket{
 		$this->overload = $this->getString();
 		$this->uvarint1 = $this->getUnsignedVarInt();
 		$this->currentStep = $this->getUnsignedVarInt();
-		$this->done = (bool) $this->getByte();
+		$this->done = $this->getBool();
 		$this->clientId = $this->getUnsignedVarLong();
 		$this->inputJson = json_decode($this->getString());
 		$this->outputJson = $this->getString();

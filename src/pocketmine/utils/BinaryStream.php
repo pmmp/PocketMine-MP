@@ -71,11 +71,11 @@ class BinaryStream extends \stdClass{
 	}
 
 	public function getBool() : bool{
-		return (bool) $this->getByte();
+		return $this->get(1) !== "\x00";
 	}
 
 	public function putBool($v){
-		$this->putByte((bool) $v);
+		$this->buffer .= ($v ? "\x01" : "\x00");
 	}
 
 	public function getLong(){
