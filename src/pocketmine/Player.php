@@ -2763,7 +2763,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function handlePlayerFall(PlayerFallPacket $packet) : bool{
-		return false;
+		return true; //not used
 	}
 
 	public function handleHurtArmor(HurtArmorPacket $packet) : bool{
