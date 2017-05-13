@@ -25,7 +25,9 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\NetworkSession;
+#ifndef COMPILE
 use pocketmine\utils\Binary;
+#endif
 
 class BatchPacket extends DataPacket{
 	const NETWORK_ID = 0xfe;
