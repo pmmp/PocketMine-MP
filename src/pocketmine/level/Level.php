@@ -1280,17 +1280,17 @@ class Level implements ChunkManager, Metadatable{
 	*/
 
 	public function getFullLight(Vector3 $pos) : int{
-		$chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4, false);
-		$level = 0;
-		if($chunk !== null){
-			$level = $chunk->getBlockSkyLight($pos->x & 0x0f, $pos->y, $pos->z & 0x0f);
-			//TODO: decrease light level by time of day
-			if($level < 15){
-				$level = max($chunk->getBlockLight($pos->x & 0x0f, $pos->y, $pos->z & 0x0f), $level);
-			}
-		}
+		return $this->getFullLightAt($pos->x, $pos->y, $pos->z);
+	}
 
-		return $level;
+	public function getFullLightAt(int $x, int $y, int $z) : int{
+		//TODO: decrease light level by time of day
+		$skyLight = $this->getBlockSkyLightAt($x, $y, $z);
+		if($skyLight < 15){
+			return max($skyLight, $this->getBlockLightAt($x, $y, $z));
+		}else{
+			return $skyLight;
+		}
 	}
 
 	/**
