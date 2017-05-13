@@ -35,6 +35,7 @@ use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
+use pocketmine\network\mcpe\protocol\BossEventPacket;
 use pocketmine\network\mcpe\protocol\ChangeDimensionPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundMapItemDataPacket;
@@ -266,7 +267,7 @@ interface NetworkSession{
 
 	public function handleAddItem(AddItemPacket $packet) : bool;
 
-	//public function handleBossEvent(BossEventPacket $packet) : bool;
+	public function handleBossEvent(BossEventPacket $packet) : bool;
 
 	public function handleShowCredits(ShowCreditsPacket $packet) : bool;
 
