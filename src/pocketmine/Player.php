@@ -2610,7 +2610,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 							$ev->setCancelled();
 						}
 
-						$ev->call()
+						$ev->call();
 
 						if($ev->isCancelled()){
 							$ev->getProjectile()->kill();
