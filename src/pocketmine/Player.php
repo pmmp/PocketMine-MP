@@ -890,7 +890,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$pos = $this->level->getSafeSpawn($this);
 
-		$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $pos));
+		($ev = new PlayerRespawnEvent($this, $pos))->call();
 
 		$pos = $ev->getRespawnPosition();
 
@@ -909,11 +909,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new PlayerJoinEvent($this,
+		($ev = new PlayerJoinEvent($this,
 			new TranslationContainer(TextFormat::YELLOW . "%multiplayer.player.joined", [
 				$this->getDisplayName()
 			])
-		));
+		))->call();
 		if(strlen(trim($ev->getJoinMessage())) > 0){
 			$this->server->broadcastMessage($ev->getJoinMessage());
 		}
@@ -1054,7 +1054,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$timings = Timings::getSendDataPacketTimings($packet);
 		$timings->startTiming();
-		$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
+		($ev = new DataPacketSendEvent($this, $packet))->call();
 		if($ev->isCancelled()){
 			$timings->stopTiming();
 			return false;
@@ -1086,7 +1086,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$timings = Timings::getSendDataPacketTimings($packet);
 		$timings->startTiming();
 
-		$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
+		($ev = new DataPacketSendEvent($this, $packet))->call();
 		if($ev->isCancelled()){
 			$timings->stopTiming();
 			return false;
@@ -1123,7 +1123,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$timings = Timings::getSendDataPacketTimings($packet);
 		$timings->startTiming();
-		$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
+		($ev = new DataPacketSendEvent($this, $packet))->call();
 		if($ev->isCancelled()){
 			$timings->stopTiming();
 			return false;
@@ -1160,7 +1160,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			}
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new PlayerBedEnterEvent($this, $this->level->getBlock($pos)));
+		($ev = new PlayerBedEnterEvent($this, $this->level->getBlock($pos)))->call();
 		if($ev->isCancelled()){
 			return false;
 		}
@@ -1199,7 +1199,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	public function stopSleep(){
 		if($this->sleeping instanceof Vector3){
-			$this->server->getPluginManager()->callEvent($ev = new PlayerBedLeaveEvent($this, $this->level->getBlock($this->sleeping)));
+			($ev = new PlayerBedLeaveEvent($this, $this->level->getBlock($this->sleeping)))->call();
 
 			$this->sleeping = null;
 			$this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [0, 0, 0]);
@@ -1226,7 +1226,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					return false;
 				}
 			}
-			$this->server->getPluginManager()->callEvent($ev = new PlayerAchievementAwardedEvent($this, $achievementId));
+			($ev = new PlayerAchievementAwardedEvent($this, $achievementId))->call();
 			if(!$ev->isCancelled()){
 				$this->achievements[$achievementId] = true;
 				Achievement::broadcast($this, $achievementId);
@@ -1260,7 +1260,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return false;
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new PlayerGameModeChangeEvent($this, (int) $gm));
+		($ev = new PlayerGameModeChangeEvent($this, (int) $gm))->call();
 		if($ev->isCancelled()){
 			if($client){ //gamemode change by client in the GUI
 				$pk = new SetPlayerGameTypePacket();
@@ -1428,7 +1428,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					continue;
 				}
 
-				$this->server->getPluginManager()->callEvent($ev = new InventoryPickupArrowEvent($this->inventory, $entity));
+				($ev = new InventoryPickupArrowEvent($this->inventory, $entity))->call();
 				if($ev->isCancelled()){
 					continue;
 				}
@@ -1449,7 +1449,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 							continue;
 						}
 
-						$this->server->getPluginManager()->callEvent($ev = new InventoryPickupItemEvent($this->inventory, $entity));
+						($ev = new InventoryPickupItemEvent($this->inventory, $entity))->call();
 						if($ev->isCancelled()){
 							continue;
 						}
@@ -1521,7 +1521,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$ev = new PlayerIllegalMoveEvent($this, $newPos);
 				$ev->setCancelled($this->allowMovementCheats);
 
-				$this->server->getPluginManager()->callEvent($ev);
+				$ev->call();
 
 				if(!$ev->isCancelled()){
 					$revert = true;
@@ -1829,7 +1829,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	protected function completeLoginSequence(){
 		parent::__construct($this->level, $this->namedtag);
-		$this->server->getPluginManager()->callEvent($ev = new PlayerLoginEvent($this, "Plugin reason"));
+		($ev = new PlayerLoginEvent($this, "Plugin reason"))->call();
 		if($ev->isCancelled()){
 			$this->close($this->getLeaveMessage(), $ev->getKickMessage());
 
@@ -1946,7 +1946,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->setSkin($packet->skin, $packet->skinId);
 
-		$this->server->getPluginManager()->callEvent($ev = new PlayerPreLoginEvent($this, "Plugin reason"));
+		($ev = new PlayerPreLoginEvent($this, "Plugin reason"))->call();
 		if($ev->isCancelled()){
 			$this->close("", $ev->getKickMessage());
 
@@ -2057,7 +2057,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					if(mb_strlen($ev->getMessage(), "UTF-8") > 320){
 						$ev->setCancelled();
 					}
-					$this->server->getPluginManager()->callEvent($ev);
+					$ev->call();
 
 					if($ev->isCancelled()){
 						break;
@@ -2229,7 +2229,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					if(!$slot->canBeConsumedBy($this)){
 						$ev->setCancelled();
 					}
-					$this->server->getPluginManager()->callEvent($ev);
+					$ev->call();
 					if(!$ev->isCancelled()){
 						$slot->onConsume($this);
 					}else{
@@ -2490,9 +2490,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$item = $this->inventory->getItemInHand();
 			}
 
-			$ev = new PlayerInteractEvent($this, $item, $aimPos, $packet->face, PlayerInteractEvent::RIGHT_CLICK_AIR);
-
-			$this->server->getPluginManager()->callEvent($ev);
+			($ev = new PlayerInteractEvent($this, $item, $aimPos, $packet->face, PlayerInteractEvent::RIGHT_CLICK_AIR))->call();
 
 			if($ev->isCancelled()){
 				$this->inventory->sendHeldItem($this);
@@ -2525,7 +2523,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					$this->inventory->setItemInHand($item->getCount() > 0 ? $item : Item::get(Item::AIR));
 				}
 				if($snowball instanceof Projectile){
-					$this->server->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($snowball));
+					($projectileEv = new ProjectileLaunchEvent($snowball))->call();
 					if($projectileEv->isCancelled()){
 						$snowball->kill();
 					}else{
@@ -2559,7 +2557,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 				$target = $this->level->getBlock($pos);
 				$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $target, $packet->face, $target->getId() === 0 ? PlayerInteractEvent::LEFT_CLICK_AIR : PlayerInteractEvent::LEFT_CLICK_BLOCK);
-				$this->getServer()->getPluginManager()->callEvent($ev);
+				$ev->call();
 				if($ev->isCancelled()){
 					$this->inventory->sendHeldItem($this);
 					break;
@@ -2612,7 +2610,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 							$ev->setCancelled();
 						}
 
-						$this->server->getPluginManager()->callEvent($ev);
+						$ev->call()
 
 						if($ev->isCancelled()){
 							$ev->getProjectile()->kill();
@@ -2629,7 +2627,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 								}
 							}
 							if($ev->getProjectile() instanceof Projectile){
-								$this->server->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($ev->getProjectile()));
+								($projectileEv = new ProjectileLaunchEvent($ev->getProjectile()))->call();
 								if($projectileEv->isCancelled()){
 									$ev->getProjectile()->kill();
 								}else{
@@ -2642,7 +2640,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						}
 					}
 				}elseif($this->inventory->getItemInHand()->getId() === Item::BUCKET and $this->inventory->getItemInHand()->getDamage() === 1){ //Milk!
-					$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $this->inventory->getItemInHand()));
+					($ev = new PlayerItemConsumeEvent($this, $this->inventory->getItemInHand()))->call();
 					if($ev->isCancelled()){
 						$this->inventory->sendContents($this);
 						break;
@@ -2681,7 +2679,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 				$this->craftingType = 0;
 
-				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
+				($ev = new PlayerRespawnEvent($this, $this->getSpawn()))->call();
 
 				$this->teleport($ev->getRespawnPosition());
 
@@ -2713,8 +2711,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->jump();
 				return true;
 			case PlayerActionPacket::ACTION_START_SPRINT:
-				$ev = new PlayerToggleSprintEvent($this, true);
-				$this->server->getPluginManager()->callEvent($ev);
+				($ev = new PlayerToggleSprintEvent($this, true))->call();
 				if($ev->isCancelled()){
 					$this->sendData($this);
 				}else{
@@ -2722,8 +2719,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 				return true;
 			case PlayerActionPacket::ACTION_STOP_SPRINT:
-				$ev = new PlayerToggleSprintEvent($this, false);
-				$this->server->getPluginManager()->callEvent($ev);
+				($ev = new PlayerToggleSprintEvent($this, false))->call();
 				if($ev->isCancelled()){
 					$this->sendData($this);
 				}else{
@@ -2731,8 +2727,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 				return true;
 			case PlayerActionPacket::ACTION_START_SNEAK:
-				$ev = new PlayerToggleSneakEvent($this, true);
-				$this->server->getPluginManager()->callEvent($ev);
+				($ev = new PlayerToggleSneakEvent($this, true))->call();
 				if($ev->isCancelled()){
 					$this->sendData($this);
 				}else{
@@ -2740,8 +2735,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 				return true;
 			case PlayerActionPacket::ACTION_STOP_SNEAK:
-				$ev = new PlayerToggleSneakEvent($this, false);
-				$this->server->getPluginManager()->callEvent($ev);
+				($ev = new PlayerToggleSneakEvent($this, false))->call();
 				if($ev->isCancelled()){
 					$this->sendData($this);
 				}else{
@@ -2795,7 +2789,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return true;
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new PlayerAnimationEvent($this, $packet->action));
+		($ev = new PlayerAnimationEvent($this, $packet->action))->call();
 		if($ev->isCancelled()){
 			return true;
 		}
@@ -2823,8 +2817,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		$item = $this->inventory->getItemInHand();
-		$ev = new PlayerDropItemEvent($this, $item);
-		$this->server->getPluginManager()->callEvent($ev);
+		($ev = new PlayerDropItemEvent($this, $item))->call();
 		if($ev->isCancelled()){
 			$this->inventory->sendContents($this);
 			return true;
@@ -2856,7 +2849,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->craftingType = 0;
 		$this->currentTransaction = null;
 		if(isset($this->windowIndex[$packet->windowid])){
-			$this->server->getPluginManager()->callEvent(new InventoryCloseEvent($this->windowIndex[$packet->windowid], $this));
+			(new InventoryCloseEvent($this->windowIndex[$packet->windowid], $this))->call();
 			$this->removeWindow($this->windowIndex[$packet->windowid]);
 		}else{
 			unset($this->windowIndex[$packet->windowid]);
@@ -3058,7 +3051,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return true;
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new CraftItemEvent($this, $ingredients, $recipe));
+		($ev = new CraftItemEvent($this, $ingredients, $recipe))->call();
 
 		if($ev->isCancelled()){
 			$this->inventory->sendContents($this);
@@ -3133,7 +3126,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->kick($this->server->getLanguage()->translateString("kick.reason.cheat", ["%ability.flight"]));
 			return true;
 		}elseif($packet->isFlying !== $this->isFlying()){
-			$this->server->getPluginManager()->callEvent($ev = new PlayerToggleFlightEvent($this, $packet->isFlying));
+			($ev = new PlayerToggleFlightEvent($this, $packet->isFlying))->call();
 			if($ev->isCancelled()){
 				$this->sendSettings();
 			}else{
@@ -3240,11 +3233,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$tile = $this->level->getTile($this->temporalVector->setComponents($packet->x, $packet->y, $packet->z));
 		if($tile instanceof ItemFrame){
 			$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $tile->getBlock(), 5 - $tile->getBlock()->getDamage(), PlayerInteractEvent::LEFT_CLICK_BLOCK);
-			$this->server->getPluginManager()->callEvent($ev);
 
 			if($this->isSpectator()){
 				$ev->setCancelled();
 			}
+
+			$ev->call();
 
 			if($ev->isCancelled()){
 				$tile->spawnTo($this);
@@ -3288,7 +3282,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$commandText .= " " . $arg;
 			}
 		}
-		$this->server->getPluginManager()->callEvent($ev = new PlayerCommandPreprocessEvent($this, "/" . $commandText));
+		($ev = new PlayerCommandPreprocessEvent($this, "/" . $commandText))->call();
 		if($ev->isCancelled()){
 			return true;
 		}
@@ -3385,7 +3379,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @return bool if transfer was successful.
 	 */
 	public function transfer(string $address, int $port = 19132, string $message = "transfer") : bool{
-		$this->server->getPluginManager()->callEvent($ev = new PlayerTransferEvent($this, $address, $port, $message));
+		($ev = new PlayerTransferEvent($this, $address, $port, $message))->call();
 
 		if(!$ev->isCancelled()){
 			$pk = new TransferPacket();
@@ -3409,7 +3403,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @return bool
 	 */
 	public function kick($reason = "", $isAdmin = true){
-		$this->server->getPluginManager()->callEvent($ev = new PlayerKickEvent($this, $reason, $this->getLeaveMessage()));
+		($ev = new PlayerKickEvent($this, $reason, $this->getLeaveMessage()))->call();
 		if(!$ev->isCancelled()){
 			if($isAdmin){
 				if(!$this->isBanned()){
@@ -3604,7 +3598,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				//TODO: add events for player data saving
 				$this->save();
 
-				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message));
+				($ev = new PlayerQuitEvent($this, $message))->call();
 				if($ev->getQuitMessage() != ""){
 					$this->server->broadcastMessage($ev->getQuitMessage());
 				}
@@ -3853,7 +3847,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				break;
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new PlayerDeathEvent($this, $this->getDrops(), new TranslationContainer($message, $params)));
+		($ev = new PlayerDeathEvent($this, $this->getDrops(), new TranslationContainer($message, $params)))->call();
 
 		if(!$ev->getKeepInventory()){
 			foreach($ev->getDrops() as $item){

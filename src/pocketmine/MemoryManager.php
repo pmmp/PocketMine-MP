@@ -148,8 +148,7 @@ class MemoryManager{
 			}
 		}
 
-		$ev = new LowMemoryEvent($memory, $limit, $global, $triggerCount);
-		$this->server->getPluginManager()->callEvent($ev);
+		($ev = new LowMemoryEvent($memory, $limit, $global, $triggerCount))->call();
 
 		$cycles = 0;
 		if($this->garbageCollectionTrigger){
