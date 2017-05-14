@@ -754,8 +754,15 @@ class PluginManager{
 		if($class->isAbstract()){
 			throw new PluginException($event . " is an abstract Event");
 		}
-		if($class->getProperty("handlerList")->getDeclaringClass()->getName() !== $event){
-			throw new PluginException($event . " does not have a handler list");
+
+		if(!$class->hasProperty("handlerList") or ($property = $class->getProperty("handlerList"))->getDeclaringClass()->getName() !== $event){
+			throw new PluginException($event . " does not have a valid handler list");
+		}
+		if(!$property->isStatic()){
+			throw new PluginException($event . " handlerList property is not static");
+		}
+		if(!$property->isPublic()){
+			throw new PluginException($event . " handlerList property is not public");
 		}
 
 		if(!$plugin->isEnabled()){

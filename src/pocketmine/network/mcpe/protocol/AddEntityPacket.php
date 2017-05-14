@@ -57,13 +57,7 @@ class AddEntityPacket extends DataPacket{
 		$this->putVector3f($this->speedX, $this->speedY, $this->speedZ);
 		$this->putLFloat($this->pitch);
 		$this->putLFloat($this->yaw);
-		$this->putUnsignedVarInt(count($this->attributes));
-		foreach($this->attributes as $entry){
-			$this->putString($entry->getName());
-			$this->putLFloat($entry->getMinValue());
-			$this->putLFloat($entry->getValue());
-			$this->putLFloat($entry->getMaxValue());
-		}
+		$this->putAttributeList(...$this->attributes);
 		$this->putEntityMetadata($this->metadata);
 		$this->putUnsignedVarInt(count($this->links));
 		foreach($this->links as $link){

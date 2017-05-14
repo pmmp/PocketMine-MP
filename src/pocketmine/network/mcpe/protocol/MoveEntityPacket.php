@@ -45,8 +45,8 @@ class MoveEntityPacket extends DataPacket{
 		$this->pitch = $this->getByte() * (360.0 / 256);
 		$this->headYaw = $this->getByte() * (360.0 / 256);
 		$this->yaw = $this->getByte() * (360.0 / 256);
-		$this->onGround = $this->getByte();
-		$this->teleported = $this->getByte();
+		$this->onGround = $this->getBool();
+		$this->teleported = $this->getBool();
 	}
 
 	public function encode(){
@@ -56,8 +56,8 @@ class MoveEntityPacket extends DataPacket{
 		$this->putByte($this->pitch / (360.0 / 256));
 		$this->putByte($this->headYaw / (360.0 / 256));
 		$this->putByte($this->yaw / (360.0 / 256));
-		$this->putByte($this->onGround);
-		$this->putByte($this->teleported);
+		$this->putBool($this->onGround);
+		$this->putBool($this->teleported);
 	}
 
 	public function handle(NetworkSession $session) : bool{
