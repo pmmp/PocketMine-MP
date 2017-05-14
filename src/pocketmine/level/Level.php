@@ -269,7 +269,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public static function blockHash(int $x, int $y, int $z){
-		if(($y & ~Level::Y_MASK) !== 0){
+		if($y < 0 or $y >= Level::Y_MAX){
 			throw new \InvalidArgumentException("Y coordinate $y is out of range!");
 		}
 		return (($x & 0xFFFFFFF) << 36) | (($y & Level::Y_MASK) << 28) | ($z & 0xFFFFFFF);
@@ -1098,8 +1098,8 @@ class Level implements ChunkManager, Metadatable{
 		$pos = $pos->floor();
 
 		for($i = 0; $i <= 5; ++$i){
-			if($this->isInWorld($s = $pos->getSide($i))){
-				$this->neighbourBlockUpdateQueue->enqueue(Level::blockHash($pos->x, $pos->y, $pos->z));
+			if($this->isInWorld($side = $pos->getSide($i))){
+				$this->neighbourBlockUpdateQueue->enqueue(Level::blockHash($side->x, $side->y, $side->z));
 			}
 		}
 	}
@@ -1328,6 +1328,7 @@ class Level implements ChunkManager, Metadatable{
 		$pos = $pos->floor();
 
 		$fullState = 0;
+		$index = null;
 
 		if($this->isInWorld($pos)){
 			$index = Level::blockHash($pos->x, $pos->y, $pos->z);
@@ -1336,8 +1337,6 @@ class Level implements ChunkManager, Metadatable{
 			}elseif(isset($this->chunks[$chunkIndex = Level::chunkHash($pos->x >> 4, $pos->z >> 4)])){
 				$fullState = $this->chunks[$chunkIndex]->getFullBlock($pos->x & 0x0f, $pos->y, $pos->z & 0x0f);
 			}
-		}else{
-			$addToCache = false;
 		}
 
 		$block = clone $this->blockStates[$fullState & 0xfff];
@@ -1347,7 +1346,7 @@ class Level implements ChunkManager, Metadatable{
 		$block->z = $pos->z;
 		$block->level = $this;
 
-		if($addToCache){
+		if($addToCache and $index !== null){
 			$this->blockCache[$index] = $block;
 		}
 
