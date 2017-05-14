@@ -88,9 +88,6 @@ debug:
  assertions:
   #Warn if assertions are enabled in php.ini, due to assertions may impact on runtime performance if enabled.
   warn-if-enabled: true
-  #Enable throwing exceptions when assertions fail, will allow obtaining more detailed information on the failed assertion, but may cause a server crash.
-  #If set to false, a warning will be raised instead of throwing an exception.
-  throw-exception: false
  #If > 1, it will show debug messages in the console
  level: 1
  #Enables /status, /gc
