@@ -1923,15 +1923,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return false;
 		}
 
-		$this->username = TextFormat::clean($packet->username);
-		$this->displayName = $this->username;
-		$this->iusername = strtolower($this->username);
-		$this->setDataProperty(self::DATA_NAMETAG, self::DATA_TYPE_STRING, $this->username, false);
-
-		if(count($this->server->getOnlinePlayers()) >= $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)){
-			return true;
-		}
-
 		if($packet->protocol !== ProtocolInfo::CURRENT_PROTOCOL){
 			if($packet->protocol < ProtocolInfo::CURRENT_PROTOCOL){
 				$message = "disconnectionScreen.outdatedClient";
@@ -1942,6 +1933,19 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			}
 			$this->close("", $message, false);
 
+			return true;
+		}
+
+		$packet->decodeAdditional();
+
+		//TODO: check MCEE
+
+		$this->username = TextFormat::clean($packet->username);
+		$this->displayName = $this->username;
+		$this->iusername = strtolower($this->username);
+		$this->setDataProperty(self::DATA_NAMETAG, self::DATA_TYPE_STRING, $this->username, false);
+
+		if(count($this->server->getOnlinePlayers()) >= $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)){
 			return true;
 		}
 
@@ -2800,7 +2804,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function handleEntityFall(EntityFallPacket $packet) : bool{
-		return false;
+		return true; //not used
 	}
 
 	public function handleHurtArmor(HurtArmorPacket $packet) : bool{
@@ -3404,12 +3408,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$timings->startTiming();
 
 		$packet->decode();
-		if(!$packet->feof()){
-			$this->server->getLogger()->debug("Still " . strlen(substr($packet->buffer, $packet->offset)) . " bytes unread in " . get_class($packet) . " from " . $this->getName() . ": " . bin2hex($packet->get(true)));
-		}
+
 		$this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this, $packet));
 		if(!$ev->isCancelled() and !$packet->handle($this)){
 			$this->server->getLogger()->debug("Unhandled " . $packet->getName() . " received from " . $this->getName() . ": 0x" . bin2hex($packet->buffer));
+		}
+
+		if(!$packet->feof()){
+			$this->server->getLogger()->debug("Still " . strlen(substr($packet->buffer, $packet->offset)) . " bytes unread in " . get_class($packet) . " from " . $this->getName() . ": " . bin2hex($packet->get(true)));
 		}
 
 		$timings->stopTiming();
