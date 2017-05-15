@@ -31,28 +31,17 @@ class PlayerQuitEvent extends PlayerEvent{
 
 	/** @var string */
 	protected $quitMessage;
-	protected $autoSave = true;
 
-	public function __construct(Player $player, $quitMessage, $autoSave = true){
+	public function __construct(Player $player, string $quitMessage){
 		$this->player = $player;
 		$this->quitMessage = $quitMessage;
-		$this->autoSave = $autoSave;
 	}
 
-	public function setQuitMessage($quitMessage){
+	public function setQuitMessage(string $quitMessage){
 		$this->quitMessage = $quitMessage;
 	}
 
-	public function getQuitMessage(){
+	public function getQuitMessage() : string{
 		return $this->quitMessage;
 	}
-
-	public function getAutoSave(){
-		return $this->autoSave;
-	}
-
-	public function setAutoSave($value = true){
-		$this->autoSave = (bool) $value;
-	}
-
 }
