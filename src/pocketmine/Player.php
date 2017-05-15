@@ -1875,7 +1875,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->spawnX = $spawnPosition->getFloorX();
 		$pk->spawnY = $spawnPosition->getFloorY();
 		$pk->spawnZ = $spawnPosition->getFloorZ();
-		$pk->hasBeenLoadedInCreative = 1;
+		$pk->hasAchievementsDisabled = 1;
 		$pk->dayCycleStopTime = -1; //TODO: implement this properly
 		$pk->eduMode = 0;
 		$pk->rainLevel = 0; //TODO: implement these properly
