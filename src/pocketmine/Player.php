@@ -1866,6 +1866,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
+		$pk->pitch = $this->pitch;
+		$pk->yaw = $this->yaw;
 		$pk->seed = -1;
 		$pk->dimension = 0; //TODO: implement this properly
 		$pk->worldGamemode = Player::getClientFriendlyGamemode($this->server->getGamemode());

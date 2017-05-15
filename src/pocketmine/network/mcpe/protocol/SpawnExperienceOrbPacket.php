@@ -35,7 +35,8 @@ class SpawnExperienceOrbPacket extends DataPacket{
 	public $amount;
 
 	public function decode(){
-
+		$this->getVector3f($this->x, $this->y, $this->z);
+		$this->amount = $this->getVarInt();
 	}
 
 	public function encode(){

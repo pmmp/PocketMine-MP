@@ -34,7 +34,9 @@ class FullChunkDataPacket extends DataPacket{
 	public $data;
 
 	public function decode(){
-
+		$this->chunkX = $this->getVarInt();
+		$this->chunkZ = $this->getVarInt();
+		$this->data = $this->getString();
 	}
 
 	public function encode(){

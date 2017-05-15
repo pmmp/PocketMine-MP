@@ -34,7 +34,6 @@ class UseItemPacket extends DataPacket{
 	public $z;
 	public $blockId;
 	public $face;
-	public $item;
 	public $fx;
 	public $fy;
 	public $fz;
@@ -42,6 +41,8 @@ class UseItemPacket extends DataPacket{
 	public $posY;
 	public $posZ;
 	public $slot;
+	/** @var Item */
+	public $item;
 
 	public function decode(){
 		$this->getBlockPosition($this->x, $this->y, $this->z);
@@ -54,7 +55,13 @@ class UseItemPacket extends DataPacket{
 	}
 
 	public function encode(){
-
+		$this->reset();
+		$this->putUnsignedVarInt($this->blockId);
+		$this->putUnsignedVarInt($this->face);
+		$this->putVector3f($this->fx, $this->fy, $this->fz);
+		$this->putVector3f($this->posX, $this->posY, $this->posZ);
+		$this->putVarInt($this->slot);
+		$this->putSlot($this->item);
 	}
 
 	public function handle(NetworkSession $session) : bool{

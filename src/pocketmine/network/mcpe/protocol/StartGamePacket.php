@@ -35,6 +35,8 @@ class StartGamePacket extends DataPacket{
 	public $x;
 	public $y;
 	public $z;
+	public $pitch;
+	public $yaw;
 	public $seed;
 	public $dimension;
 	public $generator = 1; //default infinite - 0 old, 1 infinite, 2 flat
@@ -55,6 +57,29 @@ class StartGamePacket extends DataPacket{
 	public $premiumWorldTemplateId = "";
 
 	public function decode(){
+		$this->entityUniqueId = $this->getEntityUniqueId();
+		$this->entityRuntimeId = $this->getEntityRuntimeId();
+		$this->playerGamemode = $this->getVarInt();
+		$this->getVector3f($this->x, $this->y, $this->z);
+		$this->pitch = $this->getLFloat();
+		$this->yaw = $this->getLFloat();
+		$this->seed = $this->getVarInt();
+		$this->dimension = $this->getVarInt();
+		$this->generator = $this->getVarInt();
+		$this->worldGamemode = $this->getVarInt();
+		$this->difficulty = $this->getVarInt();
+		$this->getBlockPosition($this->spawnX, $this->spawnY, $this->spawnZ);
+		$this->hasAchievementsDisabled = $this->getBool();
+		$this->dayCycleStopTime = $this->getVarInt();
+		$this->eduMode = $this->getBool();
+		$this->rainLevel = $this->getLFloat();
+		$this->lightningLevel = $this->getLFloat();
+		$this->commandsEnabled = $this->getBool();
+		$this->isTexturePacksRequired = $this->getBool();
+		/*$gameRulesCount = */$this->getUnsignedVarInt(); //TODO
+		$this->levelId = $this->getString();
+		$this->worldName = $this->getString();
+		$this->premiumWorldTemplateId = $this->getString();
 
 	}
 
@@ -64,8 +89,8 @@ class StartGamePacket extends DataPacket{
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putVarInt($this->playerGamemode); //client gamemode, other field is world gamemode
 		$this->putVector3f($this->x, $this->y, $this->z);
-		$this->putLFloat(0); //TODO: yaw/pitch
-		$this->putLFloat(0);
+		$this->putLFloat($this->pitch);
+		$this->putLFloat($this->yaw);
 		$this->putVarInt($this->seed);
 		$this->putVarInt($this->dimension);
 		$this->putVarInt($this->generator);

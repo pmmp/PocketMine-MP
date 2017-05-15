@@ -38,7 +38,8 @@ class ItemFrameDropItemPacket extends DataPacket{
 	}
 
 	public function encode(){
-
+		$this->reset();
+		$this->putBlockPosition($this->x, $this->y, $this->z);
 	}
 
 	public function handle(NetworkSession $session) : bool{

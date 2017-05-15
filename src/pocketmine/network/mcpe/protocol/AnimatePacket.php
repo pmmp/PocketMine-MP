@@ -31,7 +31,7 @@ class AnimatePacket extends DataPacket{
 
 	public $action;
 	public $eid;
-	public $float; //Boat rowing time?
+	public $float; //TODO (Boat rowing time?)
 
 	public function decode(){
 		$this->action = $this->getVarInt();

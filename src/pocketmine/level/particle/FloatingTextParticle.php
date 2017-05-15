@@ -77,7 +77,7 @@ class FloatingTextParticle extends Particle{
 		if(!$this->invisible){
 
 			$pk = new AddEntityPacket();
-			$pk->eid = $this->entityId;
+			$pk->entityRuntimeId = $this->entityId;
 			$pk->type = ItemEntity::NETWORK_ID;
 			$pk->x = $this->x;
 			$pk->y = $this->y - 0.75;

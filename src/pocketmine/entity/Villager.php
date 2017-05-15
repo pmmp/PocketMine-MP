@@ -52,7 +52,7 @@ class Villager extends Creature implements NPC, Ageable{
 
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
-		$pk->eid = $this->getId();
+		$pk->entityRuntimeId = $this->getId();
 		$pk->type = Villager::NETWORK_ID;
 		$pk->x = $this->x;
 		$pk->y = $this->y;

@@ -34,10 +34,14 @@ class InventoryActionPacket extends DataPacket{
 	public $varint2;
 
 	public function decode(){
-
+		$this->uvarint0 = $this->getUnsignedVarInt();
+		$this->item = $this->getSlot();
+		$this->varint1 = $this->getVarInt();
+		$this->varint2 = $this->getVarInt();
 	}
 
 	public function encode(){
+		$this->reset();
 		$this->putUnsignedVarInt($this->uvarint0);
 		$this->putSlot($this->item);
 		$this->putVarInt($this->varint1);

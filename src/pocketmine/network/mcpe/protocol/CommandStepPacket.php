@@ -45,13 +45,23 @@ class CommandStepPacket extends DataPacket{
 		$this->done = $this->getBool();
 		$this->clientId = $this->getUnsignedVarLong();
 		$this->inputJson = json_decode($this->getString());
-		$this->outputJson = $this->getString();
+		$this->outputJson = json_decode($this->getString());
 
 		$this->get(true); //TODO: read command origin data
 	}
 
 	public function encode(){
+		$this->reset();
+		$this->putString($this->command);
+		$this->putString($this->overload);
+		$this->putUnsignedVarInt($this->uvarint1);
+		$this->putUnsignedVarInt($this->currentStep);
+		$this->putBool($this->done);
+		$this->putUnsignedVarLong($this->clientId);
+		$this->putString(json_encode($this->inputJson));
+		$this->putString(json_encode($this->outputJson));
 
+		$this->put("\x00\x00\x00"); //TODO: command origin data
 	}
 
 	public function handle(NetworkSession $session) : bool{

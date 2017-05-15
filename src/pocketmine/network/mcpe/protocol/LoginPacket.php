@@ -85,7 +85,7 @@ class LoginPacket extends DataPacket{
 	}
 
 	public function encode(){
-
+		//TODO
 	}
 
 	public function decodeToken($token){

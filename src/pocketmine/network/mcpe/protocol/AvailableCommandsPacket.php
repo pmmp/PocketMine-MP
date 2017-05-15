@@ -32,7 +32,8 @@ class AvailableCommandsPacket extends DataPacket{
 	public $unknown;
 
 	public function decode(){
-
+		$this->commands = $this->getString();
+		$this->unknown = $this->getString();
 	}
 
 	public function encode(){

@@ -36,7 +36,9 @@ class BlockEventPacket extends DataPacket{
 	public $case2;
 
 	public function decode(){
-
+		$this->getBlockPosition($this->x, $this->y, $this->z);
+		$this->case1 = $this->getVarInt();
+		$this->case2 = $this->getVarInt();
 	}
 
 	public function encode(){

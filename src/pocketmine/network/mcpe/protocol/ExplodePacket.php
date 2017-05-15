@@ -24,6 +24,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 
 class ExplodePacket extends DataPacket{
@@ -33,6 +34,7 @@ class ExplodePacket extends DataPacket{
 	public $y;
 	public $z;
 	public $radius;
+	/** @var Vector3[] */
 	public $records = [];
 
 	public function clean(){
@@ -41,7 +43,14 @@ class ExplodePacket extends DataPacket{
 	}
 
 	public function decode(){
-
+		$this->getVector3f($this->x, $this->y, $this->z);
+		$this->radius = $this->getLFloat();
+		$count = $this->getUnsignedVarInt();
+		for($i = 0; $i < $count; ++$i){
+			$x = $y = $z = null;
+			$this->getBlockPosition($x, $y, $z);
+			$this->records[$i] = new Vector3($x, $y, $z);
+		}
 	}
 
 	public function encode(){

@@ -31,7 +31,7 @@ class SetTimePacket extends DataPacket{
 	public $time;
 
 	public function decode(){
-
+		$this->time = $this->getVarInt();
 	}
 
 	public function encode(){

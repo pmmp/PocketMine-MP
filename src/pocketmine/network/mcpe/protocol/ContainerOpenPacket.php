@@ -34,10 +34,13 @@ class ContainerOpenPacket extends DataPacket{
 	public $x;
 	public $y;
 	public $z;
-	public $entityId = -1;
+	public $entityUniqueId = -1;
 
 	public function decode(){
-
+		$this->windowid = $this->getByte();
+		$this->type = $this->getByte();
+		$this->getBlockPosition($this->x, $this->y, $this->z);
+		$this->entityUniqueId = $this->getEntityUniqueId();
 	}
 
 	public function encode(){
@@ -45,7 +48,7 @@ class ContainerOpenPacket extends DataPacket{
 		$this->putByte($this->windowid);
 		$this->putByte($this->type);
 		$this->putBlockPosition($this->x, $this->y, $this->z);
-		$this->putEntityUniqueId($this->entityId);
+		$this->putEntityUniqueId($this->entityUniqueId);
 	}
 
 	public function handle(NetworkSession $session) : bool{

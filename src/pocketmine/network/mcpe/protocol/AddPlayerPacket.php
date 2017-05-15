@@ -30,7 +30,8 @@ class AddPlayerPacket extends DataPacket{
 
 	public $uuid;
 	public $username;
-	public $eid;
+	public $entityUniqueId = null; //TODO
+	public $entityRuntimeId;
 	public $x;
 	public $y;
 	public $z;
@@ -44,15 +45,25 @@ class AddPlayerPacket extends DataPacket{
 	public $metadata = [];
 
 	public function decode(){
-
+		$this->uuid = $this->getUUID();
+		$this->username = $this->getString();
+		$this->entityUniqueId = $this->getEntityUniqueId();
+		$this->entityRuntimeId = $this->getEntityRuntimeId();
+		$this->getVector3f($this->x, $this->y, $this->z);
+		$this->getVector3f($this->speedX, $this->speedY, $this->speedZ);
+		$this->pitch = $this->getLFloat();
+		$this->headYaw = $this->getLFloat();
+		$this->yaw = $this->getLFloat();
+		$this->item = $this->getSlot();
+		$this->metadata = $this->getEntityMetadata();
 	}
 
 	public function encode(){
 		$this->reset();
 		$this->putUUID($this->uuid);
 		$this->putString($this->username);
-		$this->putEntityUniqueId($this->eid);
-		$this->putEntityRuntimeId($this->eid);
+		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
+		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putVector3f($this->x, $this->y, $this->z);
 		$this->putVector3f($this->speedX, $this->speedY, $this->speedZ);
 		$this->putLFloat($this->pitch);
