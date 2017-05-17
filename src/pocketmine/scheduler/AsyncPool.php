@@ -136,6 +136,14 @@ class AsyncPool{
 
 		$this->taskWorkers = [];
 		$this->tasks = [];
+
+		$this->collectWorkers();
+	}
+
+	private function collectWorkers(){
+		foreach($this->workers as $worker){
+			$worker->collect();
+		}
 	}
 
 	public function collectTasks(){
@@ -158,9 +166,7 @@ class AsyncPool{
 			}
 		}
 
-		foreach($this->workers as $worker){
-			$worker->collect();
-		}
+		$this->collectWorkers();
 
 		Timings::$schedulerAsyncTimer->stopTiming();
 	}
