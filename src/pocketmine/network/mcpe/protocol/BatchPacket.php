@@ -54,20 +54,17 @@ class BatchPacket extends DataPacket{
 	}
 
 	/**
-	 * @param DataPacket|string $packet
+	 * @param DataPacket $packet
 	 */
-	public function addPacket($packet){
-		if($packet instanceof DataPacket){
-			if(!$packet->canBeBatched()){
-				throw new \InvalidArgumentException(get_class($packet) . " cannot be put inside a BatchPacket");
-			}
-			if(!$packet->isEncoded){
-				$packet->encode();
-			}
-			$packet = $packet->buffer;
+	public function addPacket(DataPacket $packet){
+		if(!$packet->canBeBatched()){
+			throw new \InvalidArgumentException(get_class($packet) . " cannot be put inside a BatchPacket");
+		}
+		if(!$packet->isEncoded){
+			$packet->encode();
 		}
 
-		$this->payload .= Binary::writeUnsignedVarInt(strlen($packet)) . $packet;
+		$this->payload .= Binary::writeUnsignedVarInt(strlen($packet->buffer)) . $packet->buffer;
 	}
 
 	public function compress(int $level = 7){
