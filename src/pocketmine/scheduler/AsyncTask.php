@@ -261,7 +261,8 @@ abstract class AsyncTask extends Collectable{
 				$this->{$p} = null;
 			}
 		}
-	}
 
+		$this->setGarbage();
+	}
 }
 

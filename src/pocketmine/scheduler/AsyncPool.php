@@ -41,9 +41,6 @@ class AsyncPool{
 	/** @var int[] */
 	private $workerUsage = [];
 
-	/** @var AsyncTask[] */
-	private $deadTasks = [];
-
 	public function __construct(Server $server, $size){
 		$this->server = $server;
 		$this->size = (int) $size;
@@ -118,7 +115,7 @@ class AsyncPool{
 		unset($this->tasks[$task->getTaskId()]);
 		unset($this->taskWorkers[$task->getTaskId()]);
 
-		$this->deadTasks[] = $task;
+		$task->cleanObject();
 	}
 
 	public function removeTasks(){
@@ -164,11 +161,6 @@ class AsyncPool{
 		foreach($this->workers as $worker){
 			$worker->collect();
 		}
-
-		foreach($this->deadTasks as $task){
-			$task->cleanObject();
-		}
-		$this->deadTasks = [];
 
 		Timings::$schedulerAsyncTimer->stopTiming();
 	}
