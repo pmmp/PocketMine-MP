@@ -122,8 +122,6 @@ chunk-sending:
  #Save a serialized copy of the chunk in memory for faster sending
  #Useful in mostly-static worlds where lots of players join at the same time
  cache-chunks: false
- #Use AsyncTasks for serializing chunks for sending.
- async-chunk-request: false
 
 chunk-ticking:
  #Max amount of chunks processed each tick

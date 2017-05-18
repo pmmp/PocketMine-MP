@@ -24,6 +24,8 @@ namespace pocketmine\level\format\io;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
+use pocketmine\network\mcpe\protocol\BatchPacket;
+use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 use pocketmine\tile\Spawnable;
@@ -38,8 +40,11 @@ class ChunkRequestTask extends AsyncTask{
 
 	protected $tiles;
 
+	protected $compressionLevel;
+
 	public function __construct(Level $level, Chunk $chunk){
 		$this->levelId = $level->getId();
+		$this->compressionLevel = $level->getServer()->networkCompressionLevel;
 
 		$this->chunk = $chunk->fastSerialize();
 		$this->chunkX = $chunk->getX();
@@ -61,9 +66,16 @@ class ChunkRequestTask extends AsyncTask{
 	public function onRun(){
 		$chunk = Chunk::fastDeserialize($this->chunk);
 
-		$ordered = $chunk->networkSerialize() . $this->tiles;
+		$pk = new FullChunkDataPacket();
+		$pk->chunkX = $this->chunkX;
+		$pk->chunkZ = $this->chunkZ;
+		$pk->data = $chunk->networkSerialize() . $this->tiles;
 
-		$this->setResult($ordered, false);
+		$batch = new BatchPacket();
+		$batch->addPacket($pk);
+		$batch->compress($this->compressionLevel);
+
+		$this->setResult($batch);
 	}
 
 	public function onCompletion(Server $server){
