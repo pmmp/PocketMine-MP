@@ -98,18 +98,16 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 	}
 
 	public function count($mode = COUNT_NORMAL){
-		for($i = 0; true; $i++){
-			if(!isset($this->{$i})){
-				return $i;
-			}
-			if($mode === COUNT_RECURSIVE){
-				if($this->{$i} instanceof \Countable){
-					$i += count($this->{$i});
-				}
+		$count = 0;
+		for($i = 0; isset($this->{$i}); $i++){
+			if($mode === COUNT_RECURSIVE and $this->{$i} instanceof \Countable){
+				$count += count($this->{$i});
+			}else{
+				$count++;
 			}
 		}
 
-		return $i;
+		return $count;
 	}
 
 	public function getType(){
