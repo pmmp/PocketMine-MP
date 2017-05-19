@@ -22,7 +22,6 @@
 namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\ListTag as TagEnum;
 
 #include <rules/NBT.h>
 
