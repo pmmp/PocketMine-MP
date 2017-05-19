@@ -1787,8 +1787,8 @@ class Server{
 				$pk->addPacket($p);
 			}
 
-			if(!$forceSync and $this->networkCompressionAsync){
-				$task = new CompressBatchedTask($pk, $targets, $this->networkCompressionLevel, $immediate);
+			if(!$forceSync and !$immediate and $this->networkCompressionAsync){
+				$task = new CompressBatchedTask($pk, $targets, $this->networkCompressionLevel);
 				$this->getScheduler()->scheduleAsyncTask($task);
 			}else{
 				$pk->compress($this->networkCompressionLevel);
@@ -1799,9 +1799,11 @@ class Server{
 		Timings::$playerNetworkTimer->stopTiming();
 	}
 
-	public function broadcastPacketsCallback(BatchPacket $pk, array $identifiers, bool $immediate){
-		$pk->encode();
-		$pk->isEncoded = true;
+	public function broadcastPacketsCallback(BatchPacket $pk, array $identifiers, bool $immediate = false){
+		if(!$pk->isEncoded){
+			$pk->encode();
+			$pk->isEncoded = true;
+		}
 
 		if($immediate){
 			foreach($identifiers as $i){
