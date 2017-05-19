@@ -48,6 +48,16 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 		return $value;
 	}
 
+	public function setValue($value){
+		if(is_array($value)){
+			foreach($value as $name => $tag){
+				if($tag instanceof NamedTag){
+					$this->{$name} = $tag;
+				}
+			}
+		}
+	}
+
 	public function getCount(){
 		$count = 0;
 		foreach($this as $tag){
