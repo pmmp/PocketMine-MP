@@ -16,23 +16,35 @@
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
  *
- * This file is generated automatically, do not edit it manually.
  *
 */
 
-/**
- * Minecraft: PE multiplayer protocol implementation
- */
 namespace pocketmine\network\mcpe\protocol;
 
-
+/**
+ * Version numbers and packet IDs for the current Minecraft PE protocol
+ */
 interface ProtocolInfo{
+
+	/**
+	 * NOTE TO DEVELOPERS
+	 * Do not waste your time or ours submitting pull requests changing game and/or protocol version numbers.
+	 * Pull requests changing game and/or protocol version numbers will be closed.
+	 *
+	 * This file is generated automatically, do not edit it manually.
+	 */
 
 	/**
 	 * Actual Minecraft: PE protocol version
 	 */
 	const CURRENT_PROTOCOL = 107;
+	/**
+	 * Current Minecraft PE version reported by the server. This is usually the earliest currently supported version.
+	 */
 	const MINECRAFT_VERSION = 'v1.0.7.0';
+	/**
+	 * Version number sent to clients in ping responses.
+	 */
 	const MINECRAFT_VERSION_NETWORK = '1.0.7.0';
 
 	const LOGIN_PACKET = 0x01;
