@@ -78,6 +78,8 @@ use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
+use pocketmine\network\mcpe\protocol\SetTitlePacket;
+use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\RakLibInterface;
 use pocketmine\network\Network;
 use pocketmine\network\query\QueryHandler;
@@ -1683,9 +1685,61 @@ class Server{
 		}
 
 		/** @var Player[] $recipients */
-		foreach($recipients as $recipient){
-			$recipient->sendTip($tip);
+		$pk = new TextPacket();
+		$pk->type = TextPacket::TYPE_TIP;
+		$pk->message = $tip;
+		$this->broadcastPacket($recipients, $pk);
+
+		return count($recipients);
+	}
+
+
+	/**
+	 * @param string $title
+	 * @param string $subtitle
+	 * @param int    $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
+	 * @param int    $stay Duration in ticks to stay on screen for
+	 * @param int    $fadeOut Duration in ticks for fade-out.
+	 *
+	 * @return int
+	 */
+	public function broadcastTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1, $recipients = null){
+		if(!is_array($recipients)){
+			/** @var Player[] $recipients */
+			$recipients = [];
+
+			foreach($this->pluginManager->getPermissionSubscriptions(self::BROADCAST_CHANNEL_USERS) as $permissible){
+				if($permissible instanceof Player and $permissible->hasPermission(self::BROADCAST_CHANNEL_USERS)){
+					$recipients[spl_object_hash($permissible)] = $permissible; // do not send messages directly, or some might be repeated
+				}
+			}
 		}
+
+		/** @var SetTitlePacket[] $packets */
+		$packets = [];
+
+		if($fadeIn >= 0 and $stay >= 0 and $fadeOut >= 0){
+			$pk = new SetTitlePacket();
+			$pk->type = SetTitlePacket::TYPE_SET_ANIMATION_TIMES;
+			$pk->fadeInTime = $fadeIn;
+			$pk->stayTime = $stay;
+			$pk->fadeOutTime = $fadeOut;
+			$packets[] = $pk;
+		}
+
+		if($subtitle !== ""){
+			$pk = new SetTitlePacket();
+			$pk->type = SetTitlePacket::TYPE_SET_SUBTITLE;
+			$pk->text = $subtitle;
+			$packets[] = $pk;
+		}
+
+		$pk = new SetTitlePacket();
+		$pk->type = SetTitlePacket::TYPE_SET_TITLE;
+		$pk->text = $title;
+		$packets[] = $pk;
+
+		$this->batchPackets($recipients, $packets);
 
 		return count($recipients);
 	}
@@ -1709,9 +1763,10 @@ class Server{
 		}
 
 		/** @var Player[] $recipients */
-		foreach($recipients as $recipient){
-			$recipient->sendPopup($popup);
-		}
+		$pk = new TextPacket();
+		$pk->type = TextPacket::TYPE_POPUP;
+		$pk->source = $popup;
+		$this->broadcastPacket($recipients, $pk);
 
 		return count($recipients);
 	}
