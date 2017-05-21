@@ -25,7 +25,9 @@ namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
+use pocketmine\IPlayer;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\Server;
 
 /**
  * Called when a player's data is about to be saved to disk.
@@ -64,5 +66,13 @@ class PlayerDataSaveEvent extends Event implements Cancellable{
 	 */
 	public function getPlayerName() : string{
 		return $this->playerName;
+	}
+
+	/**
+	 * Returns the player whose data is being saved. This may be a Player or an OfflinePlayer.
+	 * @return IPlayer (Player or OfflinePlayer)
+	 */
+	public function getPlayer() : IPlayer{
+		return Server::getInstance()->getOfflinePlayer($this->playerName);
 	}
 }
