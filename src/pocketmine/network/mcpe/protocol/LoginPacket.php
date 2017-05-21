@@ -54,9 +54,12 @@ class LoginPacket extends DataPacket{
 
 	public function decode(){
 		$this->protocol = $this->getInt();
-	}
 
-	public function decodeAdditional(){
+		if($this->protocol !== ProtocolInfo::CURRENT_PROTOCOL){
+			$this->buffer = null;
+			return; //Do not attempt to decode for non-accepted protocols
+		}
+
 		$this->gameEdition = $this->getByte();
 
 		$str = zlib_decode($this->getString(), 1024 * 1024 * 64);
