@@ -210,6 +210,14 @@ class McRegion extends BaseLevelProvider{
 		return "mcregion";
 	}
 
+	/**
+	 * Returns the storage version as per Minecraft PC world formats.
+	 * @return int
+	 */
+	public static function getPcWorldFormatVersion() : int{
+		return 19132; //mcregion
+	}
+
 	public function getWorldHeight() : int{
 		//TODO: add world height options
 		return 128;
@@ -251,7 +259,7 @@ class McRegion extends BaseLevelProvider{
 			"SpawnX" => new IntTag("SpawnX", 256),
 			"SpawnY" => new IntTag("SpawnY", 70),
 			"SpawnZ" => new IntTag("SpawnZ", 256),
-			"version" => new IntTag("version", 19133),
+			"version" => new IntTag("version", static::getPcWorldFormatVersion()),
 			"DayTime" => new IntTag("DayTime", 0),
 			"LastPlayed" => new LongTag("LastPlayed", microtime(true) * 1000),
 			"RandomSeed" => new LongTag("RandomSeed", $seed),
