@@ -41,7 +41,12 @@ class MobEffectPacket extends DataPacket{
 	public $duration;
 
 	public function decode(){
-
+		$this->eid = $this->getEntityRuntimeId();
+		$this->eventId = $this->getByte();
+		$this->effectId = $this->getVarInt();
+		$this->amplifier = $this->getVarInt();
+		$this->particles = $this->getBool();
+		$this->duration = $this->getVarInt();
 	}
 
 	public function encode(){

@@ -234,7 +234,6 @@ namespace pocketmine {
 				}
 
 				return parse_offset($offset);
-				break;
 			case 'linux':
 				// Ubuntu / Debian.
 				if(file_exists('/etc/timezone')){
@@ -261,7 +260,6 @@ namespace pocketmine {
 				}
 
 				return parse_offset($offset);
-				break;
 			case 'mac':
 				if(is_link('/etc/localtime')){
 					$filename = readlink('/etc/localtime');
@@ -272,10 +270,8 @@ namespace pocketmine {
 				}
 
 				return false;
-				break;
 			default:
 				return false;
-				break;
 		}
 	}
 

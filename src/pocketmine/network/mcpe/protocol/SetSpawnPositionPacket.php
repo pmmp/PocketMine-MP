@@ -36,7 +36,9 @@ class SetSpawnPositionPacket extends DataPacket{
 	public $unknownBool;
 
 	public function decode(){
-
+		$this->unknown = $this->getVarInt();
+		$this->getBlockPosition($this->x, $this->y, $this->z);
+		$this->unknownBool = $this->getBool();
 	}
 
 	public function encode(){

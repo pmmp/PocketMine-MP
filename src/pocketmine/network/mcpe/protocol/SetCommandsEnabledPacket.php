@@ -32,7 +32,7 @@ class SetCommandsEnabledPacket extends DataPacket{
 	public $enabled;
 
 	public function decode(){
-
+		$this->enabled = $this->getBool();
 	}
 
 	public function encode(){

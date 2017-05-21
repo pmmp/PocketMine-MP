@@ -105,6 +105,7 @@ use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
@@ -813,7 +814,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return $this->spawnPosition instanceof WeakPosition and $this->spawnPosition->isValid();
 	}
 
-	public function sendChunk($x, $z, $payload){
+	public function sendChunk(int $x, int $z, BatchPacket $payload){
 		if($this->connected === false){
 			return;
 		}
@@ -821,15 +822,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->usedChunks[Level::chunkHash($x, $z)] = true;
 		$this->chunkLoadCount++;
 
-		if($payload instanceof DataPacket){
-			$this->dataPacket($payload);
-		}else{
-			$pk = new FullChunkDataPacket();
-			$pk->chunkX = $x;
-			$pk->chunkZ = $z;
-			$pk->data = $payload;
-			$this->batchDataPacket($pk);
-		}
+		$this->dataPacket($payload);
 
 		if($this->spawned){
 			foreach($this->level->getChunkEntities($x, $z) as $entity){
@@ -1878,6 +1871,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
+		$pk->pitch = $this->pitch;
+		$pk->yaw = $this->yaw;
 		$pk->seed = -1;
 		$pk->dimension = 0; //TODO: implement this properly
 		$pk->worldGamemode = Player::getClientFriendlyGamemode($this->server->getGamemode());
@@ -1885,7 +1880,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->spawnX = $spawnPosition->getFloorX();
 		$pk->spawnY = $spawnPosition->getFloorY();
 		$pk->spawnZ = $spawnPosition->getFloorZ();
-		$pk->hasBeenLoadedInCreative = 1;
+		$pk->hasAchievementsDisabled = 1;
 		$pk->dayCycleStopTime = -1; //TODO: implement this properly
 		$pk->eduMode = 0;
 		$pk->rainLevel = 0; //TODO: implement these properly

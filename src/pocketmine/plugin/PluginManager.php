@@ -147,6 +147,13 @@ class PluginManager{
 			if(preg_match($loader->getPluginFilters(), basename($path)) > 0){
 				$description = $loader->getPluginDescription($path);
 				if($description instanceof PluginDescription){
+					try{
+						$description->checkRequiredExtensions();
+					}catch(PluginException $ex){
+						$this->server->getLogger()->error($ex->getMessage());
+						return null;
+					}
+
 					if(($plugin = $loader->loadPlugin($path)) instanceof Plugin){
 						$this->plugins[$plugin->getDescription()->getName()] = $plugin;
 

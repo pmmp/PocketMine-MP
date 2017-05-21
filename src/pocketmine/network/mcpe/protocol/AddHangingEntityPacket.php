@@ -33,10 +33,13 @@ class AddHangingEntityPacket extends DataPacket{
 	public $x;
 	public $y;
 	public $z;
-	public $unknown;
+	public $unknown; //TODO (rotation?)
 
 	public function decode(){
-
+		$this->entityUniqueId = $this->getEntityUniqueId();
+		$this->entityRuntimeId = $this->getEntityRuntimeId();
+		$this->getBlockPosition($this->x, $this->y, $this->z);
+		$this->unknown = $this->getVarInt();
 	}
 
 	public function encode(){

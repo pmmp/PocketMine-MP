@@ -27,6 +27,7 @@ class PluginDescription{
 	private $name;
 	private $main;
 	private $api;
+	private $extensions = [];
 	private $depend = [];
 	private $softDepend = [];
 	private $loadBefore = [];
@@ -74,6 +75,17 @@ class PluginDescription{
 
 		if(isset($plugin["depend"])){
 			$this->depend = (array) $plugin["depend"];
+		}
+		if(isset($plugin["extensions"])){
+			$extensions = (array) $plugin["extensions"];
+			$isLinear = $extensions === array_values($extensions);
+			foreach($extensions as $k => $v){
+				if($isLinear){
+					$k = $v;
+					$v = "*";
+				}
+				$this->extensions[$k] = is_array($v) ? $v : [$v];
+			}
 		}
 		if(isset($plugin["softdepend"])){
 			$this->softDepend = (array) $plugin["softdepend"];
@@ -147,6 +159,50 @@ class PluginDescription{
 	 */
 	public function getCommands(){
 		return $this->commands;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getRequiredExtensions(){
+		return $this->extensions;
+	}
+
+	/**
+	 * Checks if the current PHP runtime has the extensions required by the plugin.
+	 *
+	 * @throws PluginException if there are required extensions missing or have incompatible version, or if the version constraint cannot be parsed
+	 */
+	public function checkRequiredExtensions(){
+		foreach($this->extensions as $name => $versionConstrs){
+			if(!extension_loaded($name)){
+				throw new PluginException("Required extension $name not loaded");
+			}
+
+			if(!is_array($versionConstrs)){
+				$versionConstrs = [$versionConstrs];
+			}
+			$gotVersion = phpversion($name);
+			foreach($versionConstrs as $constr){ // versionConstrs_loop
+				if($constr === "*"){
+					continue;
+				}
+				if($constr === ""){
+					throw new PluginException("One of the extension version constraints of $name is empty. Consider quoting the version string in plugin.yml");
+				}
+				foreach(["<=", "le", "<>", "!=", "ne", "<", "lt", "==", "=", "eq", ">=", "ge", ">", "gt"] as $comparator){
+					// warning: the > character should be quoted in YAML
+					if(substr($constr, 0, strlen($comparator)) === $comparator){
+						$version = substr($constr, strlen($comparator));
+						if(!version_compare($gotVersion, $version, $comparator)){
+							throw new PluginException("Required extension $name has an incompatible version ($gotVersion not $constr)");
+						}
+						continue 2; // versionConstrs_loop
+					}
+				}
+				throw new PluginException("Error parsing version constraint: $constr");
+			}
+		}
 	}
 
 	/**

@@ -33,12 +33,12 @@ class MapInfoRequestPacket extends DataPacket{
 	public $mapId;
 
 	public function decode(){
-		$this->mapId = $this->getVarInt(); //signed var-long, actually entity ID (needs fixing)
+		$this->mapId = $this->getEntityUniqueId();
 	}
 
 	public function encode(){
 		$this->reset();
-		$this->putVarInt($this->mapId);
+		$this->putEntityUniqueId($this->mapId);
 	}
 
 	public function handle(NetworkSession $session) : bool{

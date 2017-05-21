@@ -77,7 +77,7 @@ class FloatingTextParticle extends Particle{
 		if(!$this->invisible){
 
 			$pk = new AddEntityPacket();
-			$pk->eid = $this->entityId;
+			$pk->entityRuntimeId = $this->entityId;
 			$pk->type = ItemEntity::NETWORK_ID;
 			$pk->x = $this->x;
 			$pk->y = $this->y - 0.75;
@@ -87,8 +87,6 @@ class FloatingTextParticle extends Particle{
 			$pk->speedZ = 0;
 			$pk->yaw = 0;
 			$pk->pitch = 0;
-			$pk->item = 0;
-			$pk->meta = 0;
 			$flags = 0;
 			$flags |= 1 << Entity::DATA_FLAG_INVISIBLE;
 			$flags |= 1 << Entity::DATA_FLAG_CAN_SHOW_NAMETAG;

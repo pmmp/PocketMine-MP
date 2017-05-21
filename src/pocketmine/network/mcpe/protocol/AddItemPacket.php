@@ -32,7 +32,7 @@ class AddItemPacket extends DataPacket{
 	public $item;
 
 	public function decode(){
-
+		$this->item = $this->getSlot();
 	}
 
 	public function encode(){

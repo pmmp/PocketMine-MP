@@ -46,7 +46,11 @@ class UpdateBlockPacket extends DataPacket{
 	public $flags;
 
 	public function decode(){
-
+		$this->getBlockPosition($this->x, $this->y, $this->z);
+		$this->blockId = $this->getUnsignedVarInt();
+		$aux = $this->getUnsignedVarInt();
+		$this->blockData = $aux & 0x0f;
+		$this->flags = $aux >> 4;
 	}
 
 	public function encode(){

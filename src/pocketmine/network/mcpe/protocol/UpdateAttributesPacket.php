@@ -35,7 +35,8 @@ class UpdateAttributesPacket extends DataPacket{
 	public $entries = [];
 
 	public function decode(){
-
+		$this->entityId = $this->getEntityRuntimeId();
+		$this->entries = $this->getAttributeList();
 	}
 
 	public function encode(){

@@ -39,7 +39,9 @@ class ChangeDimensionPacket extends DataPacket{
 	public $unknown; //bool
 
 	public function decode(){
-
+		$this->dimension = $this->getVarInt();
+		$this->getVector3f($this->x, $this->y, $this->z);
+		$this->unknown = $this->getBool();
 	}
 
 	public function encode(){

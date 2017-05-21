@@ -14,3 +14,6 @@
 [submodule "tests/plugins/PocketMine-DevTools"]
 	path = tests/plugins/PocketMine-DevTools
 	url = https://github.com/pmmp/PocketMine-DevTools.git
+[submodule "tests/plugins/PocketMine-TesterPlugin"]
+	path = tests/plugins/PocketMine-TesterPlugin
+	url = https://github.com/pmmp/PocketMine-TesterPlugin.git

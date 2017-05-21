@@ -228,7 +228,7 @@ class Item extends Entity{
 
 	public function spawnTo(Player $player){
 		$pk = new AddItemEntityPacket();
-		$pk->eid = $this->getId();
+		$pk->entityRuntimeId = $this->getId();
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;

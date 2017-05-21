@@ -34,7 +34,9 @@ class SetEntityLinkPacket extends DataPacket{
 	public $type;
 
 	public function decode(){
-
+		$this->from = $this->getEntityUniqueId();
+		$this->to = $this->getEntityUniqueId();
+		$this->type = $this->getByte();
 	}
 
 	public function encode(){

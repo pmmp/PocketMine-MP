@@ -29,7 +29,8 @@ use pocketmine\network\mcpe\NetworkSession;
 class AddEntityPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::ADD_ENTITY_PACKET;
 
-	public $eid;
+	public $entityUniqueId = null; //TODO
+	public $entityRuntimeId;
 	public $type;
 	public $x;
 	public $y;
@@ -45,13 +46,27 @@ class AddEntityPacket extends DataPacket{
 	public $links = [];
 
 	public function decode(){
-
+		$this->entityUniqueId = $this->getEntityUniqueId();
+		$this->entityRuntimeId = $this->getEntityRuntimeId();
+		$this->type = $this->getUnsignedVarInt();
+		$this->getVector3f($this->x, $this->y, $this->z);
+		$this->getVector3f($this->speedX, $this->speedY, $this->speedZ);
+		$this->pitch = $this->getLFloat();
+		$this->yaw = $this->getLFloat();
+		$this->attributes = $this->getAttributeList();
+		$this->metadata = $this->getEntityMetadata();
+		$linkCount = $this->getUnsignedVarInt();
+		for($i = 0; $i < $linkCount; ++$i){
+			$this->links[$i][0] = $this->getEntityUniqueId();
+			$this->links[$i][1] = $this->getEntityUniqueId();
+			$this->links[$i][2] = $this->getByte();
+		}
 	}
 
 	public function encode(){
 		$this->reset();
-		$this->putEntityUniqueId($this->eid);
-		$this->putEntityRuntimeId($this->eid);
+		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
+		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putUnsignedVarInt($this->type);
 		$this->putVector3f($this->x, $this->y, $this->z);
 		$this->putVector3f($this->speedX, $this->speedY, $this->speedZ);

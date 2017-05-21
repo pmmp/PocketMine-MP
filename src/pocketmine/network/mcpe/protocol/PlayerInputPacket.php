@@ -42,7 +42,11 @@ class PlayerInputPacket extends DataPacket{
 	}
 
 	public function encode(){
-
+		$this->reset();
+		$this->putLFloat($this->motionX);
+		$this->putLFloat($this->motionY);
+		$this->putBool($this->unknownBool1);
+		$this->putBool($this->unknownBool2);
 	}
 
 	public function handle(NetworkSession $session) : bool{

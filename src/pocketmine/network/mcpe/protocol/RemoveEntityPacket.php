@@ -32,7 +32,7 @@ class RemoveEntityPacket extends DataPacket{
 	public $eid;
 
 	public function decode(){
-
+		$this->eid = $this->getEntityUniqueId();
 	}
 
 	public function encode(){

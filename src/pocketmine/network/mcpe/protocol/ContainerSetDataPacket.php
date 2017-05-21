@@ -34,7 +34,9 @@ class ContainerSetDataPacket extends DataPacket{
 	public $value;
 
 	public function decode(){
-
+		$this->windowid = $this->getByte();
+		$this->property = $this->getVarInt();
+		$this->value = $this->getVarInt();
 	}
 
 	public function encode(){

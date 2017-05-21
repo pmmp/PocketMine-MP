@@ -43,7 +43,19 @@ class PlayerListPacket extends DataPacket{
 	}
 
 	public function decode(){
-
+		$this->type = $this->getByte();
+		$count = $this->getUnsignedVarInt();
+		for($i = 0; $i < $count; ++$i){
+			if($this->type === self::TYPE_ADD){
+				$this->entries[$i][0] = $this->getUUID();
+				$this->entries[$i][1] = $this->getEntityUniqueId();
+				$this->entries[$i][2] = $this->getString();
+				$this->entries[$i][3] = $this->getString();
+				$this->entries[$i][4] = $this->getString();
+			}else{
+				$this->entries[$i][0] = $this->getUUID();
+			}
+		}
 	}
 
 	public function encode(){
