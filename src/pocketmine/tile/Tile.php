@@ -43,6 +43,7 @@ abstract class Tile extends Position{
 	const MOB_SPAWNER = "MobSpawner";
 	const SIGN = "Sign";
 	const SKULL = "Skull";
+	const BED = "Bed";
 
 	public static $tileCount = 1;
 
@@ -65,6 +66,7 @@ abstract class Tile extends Position{
 	public $tickTimer;
 
 	public static function init(){
+		self::registerTile(Bed::class);
 		self::registerTile(Chest::class);
 		self::registerTile(EnchantTable::class);
 		self::registerTile(FlowerPot::class);
@@ -109,7 +111,6 @@ abstract class Tile extends Position{
 
 	/**
 	 * Returns the short save name
-	 *
 	 * @return string
 	 */
 	public function getSaveId(){
