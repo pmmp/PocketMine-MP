@@ -245,6 +245,24 @@ class Block extends Position implements BlockIds, Metadatable{
 
 			self::registerBlock(new GrassPath());
 
+			self::registerBlock((new GlazedTerracotta(Block::PURPLE_GLAZED_TERRACOTTA))->setName("Purple Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::WHITE_GLAZED_TERRACOTTA))->setName("White Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::ORANGE_GLAZED_TERRACOTTA))->setName("Orange Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::MAGENTA_GLAZED_TERRACOTTA))->setName("Magenta Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::LIGHT_BLUE_GLAZED_TERRACOTTA))->setName("Light Blue Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::YELLOW_GLAZED_TERRACOTTA))->setName("Yellow Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::LIME_GLAZED_TERRACOTTA))->setName("Lime Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::PINK_GLAZED_TERRACOTTA))->setName("Pink Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::GRAY_GLAZED_TERRACOTTA))->setName("Grey Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::SILVER_GLAZED_TERRACOTTA))->setName("Light Grey Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::CYAN_GLAZED_TERRACOTTA))->setName("Cyan Glazed Terracotta"));
+			//chalkboard here
+			self::registerBlock((new GlazedTerracotta(Block::BLUE_GLAZED_TERRACOTTA))->setName("Blue Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::BROWN_GLAZED_TERRACOTTA))->setName("Brown Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::GREEN_GLAZED_TERRACOTTA))->setName("Green Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::RED_GLAZED_TERRACOTTA))->setName("Red Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::BLACK_GLAZED_TERRACOTTA))->setName("Black Glazed Terracotta"));
+
 			self::registerBlock(new Podzol());
 			self::registerBlock(new Beetroot());
 			self::registerBlock(new Stonecutter());
