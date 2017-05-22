@@ -27,7 +27,13 @@ use pocketmine\event\TranslationContainer;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
+use pocketmine\tile\Bed as TileBed;
+use pocketmine\tile\Tile;
 use pocketmine\utils\TextFormat;
 
 class Bed extends Transparent{
@@ -116,6 +122,21 @@ class Bed extends Transparent{
 				$this->getLevel()->setBlock($block, Block::get($this->id, $meta), true, true);
 				$this->getLevel()->setBlock($next, Block::get($this->id, $meta | 0x08), true, true);
 
+				$nbt = new CompoundTag("", [
+					new StringTag("id", Tile::BED),
+					new ByteTag("color", $item->getDamage() & 0x0f),
+					new IntTag("x", $block->x),
+					new IntTag("y", $block->y),
+					new IntTag("z", $block->z),
+				]);
+
+				$nbt2 = clone $nbt;
+				$nbt2["x"] = $next->x;
+				$nbt2["z"] = $next->z;
+
+				Tile::createTile(Tile::BED, $this->getLevel(), $nbt);
+				Tile::createTile(Tile::BED, $this->getLevel(), $nbt2);
+
 				return true;
 			}
 		}
@@ -156,9 +177,16 @@ class Bed extends Transparent{
 	}
 
 	public function getDrops(Item $item){
-		return [
-			[Item::BED, 0, 1],
-		];
+		$tile = $this->getLevel()->getTile($this);
+		if($tile instanceof TileBed){
+			return [
+				[Item::BED, $tile->getColor(), 1]
+			];
+		}else{
+			return [
+				[Item::BED, 14, 1] //Red
+			];
+		}
 	}
 
 }
