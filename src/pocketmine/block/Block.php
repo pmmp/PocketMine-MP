@@ -72,7 +72,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new Stone());
 			self::registerBlock(new Grass());
 			self::registerBlock(new Dirt());
-			self::registerBlock((new Cobblestone())->setId(self::COBBLESTONE)->setName("Cobblestone"));
+			self::registerBlock((new Cobblestone(Block::COBBLESTONE))->setName("Cobblestone"));
 			self::registerBlock(new Planks());
 			self::registerBlock(new Sapling());
 			self::registerBlock(new Bedrock());
@@ -113,12 +113,12 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new Bricks());
 			self::registerBlock(new TNT());
 			self::registerBlock(new Bookshelf());
-			self::registerBlock((new Cobblestone())->setId(self::MOSSY_COBBLESTONE)->setName("Moss Stone"));
+			self::registerBlock((new Cobblestone(Block::MOSSY_COBBLESTONE))->setName("Moss Stone"));
 			self::registerBlock(new Obsidian());
 			self::registerBlock(new Torch());
 			self::registerBlock(new Fire());
 			self::registerBlock(new MonsterSpawner());
-			self::registerBlock((new WoodenStairs())->setId(self::OAK_STAIRS)->setName("Oak Wood Stairs"));
+			self::registerBlock((new WoodenStairs(Block::OAK_STAIRS))->setName("Oak Wood Stairs"));
 			self::registerBlock(new Chest());
 
 			self::registerBlock(new DiamondOre());
@@ -129,12 +129,12 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new Furnace());
 			self::registerBlock(new BurningFurnace());
 			self::registerBlock(new StandingSign());
-			self::registerBlock((new WoodenDoor())->setId(self::WOODEN_DOOR_BLOCK)->setName("Wooden Door Block"));
-			self::registerBlock((new WoodenDoor())->setId(self::SPRUCE_DOOR_BLOCK)->setName("Spruce Door Block"));
-			self::registerBlock((new WoodenDoor())->setId(self::BIRCH_DOOR_BLOCK)->setName("Birch Door Block"));
-			self::registerBlock((new WoodenDoor())->setId(self::JUNGLE_DOOR_BLOCK)->setName("Jungle Door Block"));
-			self::registerBlock((new WoodenDoor())->setId(self::ACACIA_DOOR_BLOCK)->setName("Acacia Door Block"));
-			self::registerBlock((new WoodenDoor())->setId(self::DARK_OAK_DOOR_BLOCK)->setName("Dark Oak Door Block"));
+			self::registerBlock((new WoodenDoor(Block::WOODEN_DOOR_BLOCK))->setName("Wooden Door Block"));
+			self::registerBlock((new WoodenDoor(Block::SPRUCE_DOOR_BLOCK))->setName("Spruce Door Block"));
+			self::registerBlock((new WoodenDoor(Block::BIRCH_DOOR_BLOCK))->setName("Birch Door Block"));
+			self::registerBlock((new WoodenDoor(Block::JUNGLE_DOOR_BLOCK))->setName("Jungle Door Block"));
+			self::registerBlock((new WoodenDoor(Block::ACACIA_DOOR_BLOCK))->setName("Acacia Door Block"));
+			self::registerBlock((new WoodenDoor(Block::DARK_OAK_DOOR_BLOCK))->setName("Dark Oak Door Block"));
 			self::registerBlock(new Ladder());
 			self::registerBlock(new Rail());
 
@@ -176,7 +176,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new PumpkinStem());
 			self::registerBlock(new MelonStem());
 			self::registerBlock(new Vine());
-			self::registerBlock((new FenceGate())->setId(self::OAK_FENCE_GATE)->setName("Oak Fence Gate"));
+			self::registerBlock((new FenceGate(Block::OAK_FENCE_GATE))->setName("Oak Fence Gate"));
 			self::registerBlock(new BrickStairs());
 			self::registerBlock(new StoneBrickStairs());
 
@@ -198,9 +198,9 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new TripwireHook());
 			self::registerBlock(new Tripwire());
 			self::registerBlock(new Emerald());
-			self::registerBlock((new WoodenStairs())->setId(self::SPRUCE_STAIRS)->setName("Spruce Wood Stairs"));
-			self::registerBlock((new WoodenStairs())->setId(self::BIRCH_STAIRS)->setName("Birch Wood Stairs"));
-			self::registerBlock((new WoodenStairs())->setId(self::JUNGLE_STAIRS)->setName("Jungle Wood Stairs"));
+			self::registerBlock((new WoodenStairs(Block::SPRUCE_STAIRS))->setName("Spruce Wood Stairs"));
+			self::registerBlock((new WoodenStairs(Block::BIRCH_STAIRS))->setName("Birch Wood Stairs"));
+			self::registerBlock((new WoodenStairs(Block::JUNGLE_STAIRS))->setName("Jungle Wood Stairs"));
 			self::registerBlock(new CobblestoneWall());
 			self::registerBlock(new FlowerPot());
 			self::registerBlock(new Carrot());
@@ -223,8 +223,8 @@ class Block extends Position implements BlockIds, Metadatable{
 
 			self::registerBlock(new Leaves2());
 			self::registerBlock(new Wood2());
-			self::registerBlock((new WoodenStairs())->setId(self::ACACIA_STAIRS)->setName("Acacia Wood Stairs"));
-			self::registerBlock((new WoodenStairs())->setId(self::DARK_OAK_STAIRS)->setName("Dark Oak Wood Stairs"));
+			self::registerBlock((new WoodenStairs(Block::ACACIA_STAIRS))->setName("Acacia Wood Stairs"));
+			self::registerBlock((new WoodenStairs(Block::DARK_OAK_STAIRS))->setName("Dark Oak Wood Stairs"));
 			self::registerBlock(new Prismarine());
 			self::registerBlock(new SeaLantern());
 			self::registerBlock(new IronTrapdoor());
@@ -235,11 +235,11 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new PackedIce());
 			self::registerBlock(new DoublePlant());
 
-			self::registerBlock((new FenceGate())->setId(self::SPRUCE_FENCE_GATE)->setName("Spruce Fence Gate"));
-			self::registerBlock((new FenceGate())->setId(self::BIRCH_FENCE_GATE)->setName("Birch Fence Gate"));
-			self::registerBlock((new FenceGate())->setId(self::JUNGLE_FENCE_GATE)->setName("Jungle Fence Gate"));
-			self::registerBlock((new FenceGate())->setId(self::DARK_OAK_FENCE_GATE)->setName("Dark Oak Fence Gate"));
-			self::registerBlock((new FenceGate())->setId(self::ACACIA_FENCE_GATE)->setName("Acacia Fence Gate"));
+			self::registerBlock((new FenceGate(Block::SPRUCE_FENCE_GATE))->setName("Spruce Fence Gate"));
+			self::registerBlock((new FenceGate(Block::BIRCH_FENCE_GATE))->setName("Birch Fence Gate"));
+			self::registerBlock((new FenceGate(Block::JUNGLE_FENCE_GATE))->setName("Jungle Fence Gate"));
+			self::registerBlock((new FenceGate(Block::DARK_OAK_FENCE_GATE))->setName("Dark Oak Fence Gate"));
+			self::registerBlock((new FenceGate(Block::ACACIA_FENCE_GATE))->setName("Acacia Fence Gate"));
 
 			self::registerBlock(new ItemFrame());
 
@@ -570,18 +570,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	final public function getId(){
 		return $this->id;
-	}
-
-	/**
-	 * Sets the ID of the block type.
-	 * @internal
-	 *
-	 * @param int $id
-	 * @return $this
-	 */
-	final protected function setId(int $id){
-		$this->id = $id;
-		return $this;
 	}
 
 	public function addVelocityToEntity(Entity $entity, Vector3 $vector){

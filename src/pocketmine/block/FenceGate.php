@@ -29,12 +29,6 @@ use pocketmine\Player;
 
 class FenceGate extends Transparent{
 
-	protected $id = self::FENCE_GATE;
-
-	public function __construct($meta = 0){
-		$this->meta = $meta;
-	}
-
 	public function getHardness(){
 		return 2;
 	}
