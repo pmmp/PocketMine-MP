@@ -122,7 +122,7 @@ class FallingSand extends Entity{
 				$this->kill();
 				$block = $this->level->getBlock($pos);
 				if($block->getId() > 0 and $block->isTransparent() and !$block->canBeReplaced()){
-					//FIXME: falling blocks are supposed to be destroyed by glass blocks, and anvils are supposed to destroy torches
+					//FIXME: anvils are supposed to destroy torches
 					$this->getLevel()->dropItem($this, ItemItem::get($this->getBlock(), $this->getDamage(), 1));
 				}else{
 					$this->server->getPluginManager()->callEvent($ev = new EntityBlockChangeEvent($this, $block, Block::get($this->getBlock(), $this->getDamage())));
