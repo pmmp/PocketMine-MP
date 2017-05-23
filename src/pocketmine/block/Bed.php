@@ -77,6 +77,20 @@ class Bed extends Transparent{
 		return ($this->meta & self::BITFLAG_OCCUPIED) !== 0;
 	}
 
+	public function setOccupied(bool $occupied = true){
+		if($occupied){
+			$this->meta |= self::BITFLAG_OCCUPIED;
+		}else{
+			$this->meta &= ~self::BITFLAG_OCCUPIED;
+		}
+
+		$this->getLevel()->setBlock($this, $this, false, false);
+
+		if(($other = $this->getOtherHalf()) !== null and !$other->isOccupied()){
+			$other->setOccupied($occupied);
+		}
+	}
+
 	/**
 	 * @param int  $meta
 	 * @param bool $isHead
@@ -122,32 +136,40 @@ class Bed extends Transparent{
 	}
 
 	public function onActivate(Item $item, Player $player = null){
-		$time = $this->getLevel()->getTime() % Level::TIME_FULL;
-
-		$isNight = ($time >= Level::TIME_NIGHT and $time < Level::TIME_SUNRISE);
-
-		if($player instanceof Player and !$isNight){
-			$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%tile.bed.noSleep"));
-			return true;
-		}
-
-		$other = $this->getOtherHalf();
-		if($other === null){
-			if($player instanceof Player){
+		if($player !== null){
+			$other = $this->getOtherHalf();
+			if($other === null){
 				$player->sendMessage(TextFormat::GRAY . "This bed is incomplete");
+
+				return true;
+			}elseif($player->distanceSquared($this) > 4 and $player->distanceSquared($other) > 4){
+				//MCPE doesn't have messages for bed too far away
+				return true;
 			}
 
-			return true;
-		}
+			$time = $this->getLevel()->getTime() % Level::TIME_FULL;
 
-		$b = ($this->isHeadPart() ? $this : $other);
+			$isNight = ($time >= Level::TIME_NIGHT and $time < Level::TIME_SUNRISE);
 
-		if($player instanceof Player and $player->sleepOn($b) === false){
-			//TODO: change this to use the meta bitflags
-			$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%tile.bed.occupied"));
+			if(!$isNight){
+				$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%tile.bed.noSleep"));
+
+				return true;
+			}
+
+			$b = ($this->isHeadPart() ? $this : $other);
+
+			if($b->isOccupied()){
+				$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%tile.bed.occupied"));
+
+				return true;
+			}
+
+			$player->sleepOn($b);
 		}
 
 		return true;
+
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
