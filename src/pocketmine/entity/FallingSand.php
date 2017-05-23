@@ -22,7 +22,6 @@
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
-use pocketmine\block\Liquid;
 use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item as ItemItem;
@@ -116,12 +115,12 @@ class FallingSand extends Entity{
 			$this->motionY *= 1 - $this->drag;
 			$this->motionZ *= $friction;
 
-			$pos = (new Vector3($this->x - 0.5, $this->y, $this->z - 0.5))->floor();
+			$pos = (new Vector3($this->x - ($this->width / 2), $this->y, $this->z - ($this->length / 2)))->floor();
 
 			if($this->onGround){
 				$this->kill();
 				$block = $this->level->getBlock($pos);
-				if($block->getId() > 0 and !$block->isSolid() and !($block instanceof Liquid)){
+				if($block->getId() > 0 and !$block->isSolid() and !$block->canBeReplaced()){
 					$this->getLevel()->dropItem($this, ItemItem::get($this->getBlock(), $this->getDamage(), 1));
 				}else{
 					$this->server->getPluginManager()->callEvent($ev = new EntityBlockChangeEvent($this, $block, Block::get($this->getBlock(), $this->getDamage())));
