@@ -150,4 +150,8 @@ class PMAnvil extends Anvil{
 	public static function getProviderName() : string{
 		return "pmanvil";
 	}
+
+	public static function getPcWorldFormatVersion() : int{
+		return -1; //Not a PC format, only PocketMine-MP
+	}
 }
