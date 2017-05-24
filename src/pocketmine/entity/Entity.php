@@ -76,7 +76,7 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_FLAGS = 0;
 	const DATA_HEALTH = 1; //int (minecart/boat)
 	const DATA_VARIANT = 2; //int
-	const DATA_COLOUR = 3; //byte
+	const DATA_COLOR = 3, DATA_COLOUR = 3; //byte
 	const DATA_NAMETAG = 4; //string
 	const DATA_OWNER_EID = 5; //long
 	const DATA_TARGET_EID = 6; //long
