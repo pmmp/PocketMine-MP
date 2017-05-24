@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 
 class DeadBush extends Flowable{
 
@@ -38,7 +39,7 @@ class DeadBush extends Flowable{
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->isTransparent() === true){
+			if($this->getSide(Vector3::SIDE_DOWN)->isTransparent() === true){
 				$this->getLevel()->useBreakOn($this);
 
 				return Level::BLOCK_UPDATE_NORMAL;

@@ -26,6 +26,7 @@ use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Vine extends Transparent{
@@ -105,7 +106,7 @@ class Vine extends Transparent{
 			$flag = true;
 		}
 
-		if(!$flag and $this->getSide(1)->isSolid()){
+		if(!$flag and $this->getSide(Vector3::SIDE_UP)->isSolid()){
 			$f2 = min($f2, 0.9375);
 			$f5 = 1;
 			$f1 = 0;

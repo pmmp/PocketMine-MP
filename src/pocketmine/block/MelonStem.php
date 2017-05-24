@@ -24,6 +24,7 @@ namespace pocketmine\block;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Server;
 
 class MelonStem extends Crops{
@@ -40,7 +41,7 @@ class MelonStem extends Crops{
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->isTransparent() === true){
+			if($this->getSide(Vector3::SIDE_DOWN)->isTransparent() === true){
 				$this->getLevel()->useBreakOn($this);
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
@@ -63,7 +64,7 @@ class MelonStem extends Crops{
 						}
 					}
 					$side = $this->getSide(mt_rand(2, 5));
-					$d = $side->getSide(0);
+					$d = $side->getSide(Vector3::SIDE_DOWN);
 					if($side->getId() === self::AIR and ($d->getId() === self::FARMLAND or $d->getId() === self::GRASS or $d->getId() === self::DIRT)){
 						Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($side, Block::get(Block::MELON_BLOCK)));
 						if(!$ev->isCancelled()){
