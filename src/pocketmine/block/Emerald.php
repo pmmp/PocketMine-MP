@@ -48,7 +48,7 @@ class Emerald extends Solid{
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= TieredTool::TIER_IRON){
 			return [
-				[Item::EMERALD_BLOCK, 0, 1],
+				Item::get($this->getId(), 0, 1)
 			];
 		}else{
 			return [];

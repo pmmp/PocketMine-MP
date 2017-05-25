@@ -21,6 +21,8 @@
 
 namespace pocketmine\block;
 
+use pocketmine\item\Item;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
@@ -87,6 +89,16 @@ class CobblestoneWall extends Transparent{
 
 	public function canConnect(Block $block){
 		return ($block->isSolid() and !$block->isTransparent()) or $block instanceof CobblestoneWall or $block instanceof FenceGate;
+	}
+
+	public function getDrops(Item $item){
+		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
+			return [
+				Item::get($this->getId(), $this->getDamage(), 1)
+			];
+		}else{
+			return [];
+		}
 	}
 
 }

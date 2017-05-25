@@ -48,7 +48,7 @@ class DiamondOre extends Solid{
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= TieredTool::TIER_IRON){
 			return [
-				[Item::DIAMOND, 0, 1],
+				Item::get(Item::DIAMOND, 0, 1)
 			];
 		}else{
 			return [];

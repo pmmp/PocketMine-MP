@@ -53,7 +53,7 @@ class Grass extends Solid{
 
 	public function getDrops(Item $item){
 		return [
-			[Item::DIRT, 0, 1],
+			Item::get(Item::DIRT, 0, 1)
 		];
 	}
 

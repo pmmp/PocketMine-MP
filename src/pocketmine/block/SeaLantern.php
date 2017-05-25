@@ -45,7 +45,7 @@ class SeaLantern extends Transparent{
 
 	public function getDrops(Item $item){
 		return [
-			[Item::PRISMARINE_CRYSTALS, 0, 3],
+			Item::get(Item::PRISMARINE_CRYSTALS, 0, mt_rand(2, 3))
 		];
 	}
 

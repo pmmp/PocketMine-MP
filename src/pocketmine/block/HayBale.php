@@ -58,7 +58,7 @@ class HayBale extends Solid{
 
 	public function getDrops(Item $item){
 		return [
-			[$this->id, 0, 1],
+			Item::get($this->id, 0, 1)
 		];
 	}
 

@@ -131,7 +131,7 @@ class WoodenSlab extends Transparent{
 
 	public function getDrops(Item $item){
 		return [
-			[$this->id, $this->meta & 0x07, 1],
+			Item::get($this->getId(), $this->getDamage() & 0x07, 1)
 		];
 	}
 }

@@ -58,7 +58,7 @@ class DoubleStoneSlab extends Solid{
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
 			return [
-				[Item::STONE_SLAB, $this->meta & 0x07, 2],
+				Item::get(Item::STONE_SLAB, $this->meta & 0x07, 2),
 			];
 		}else{
 			return [];

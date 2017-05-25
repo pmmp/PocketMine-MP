@@ -64,9 +64,15 @@ class Stone extends Solid{
 
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			return [
-				[$this->getDamage() === 0 ? Item::COBBLESTONE : Item::STONE, $this->getDamage(), 1],
-			];
+			if($this->getDamage() === 0){
+				return [
+					Item::get(Item::COBBLESTONE, $this->getDamage(), 1)
+				];
+			}else{
+				return [
+					Item::get($this->getId(), $this->getDamage(), 1)
+				];
+			}
 		}else{
 			return [];
 		}

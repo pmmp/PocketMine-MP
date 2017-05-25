@@ -137,7 +137,7 @@ class ItemFrame extends Flowable{
 
 	public function getDrops(Item $item){
 		return [
-			[Item::ITEM_FRAME, 0, 1]
+			Item::get(Item::ITEM_FRAME, 0, 1)
 		];
 	}
 

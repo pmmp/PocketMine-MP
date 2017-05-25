@@ -73,4 +73,10 @@ class Rail extends Flowable{
 
 		return false;
 	}
+
+	public function getDrops(Item $item){
+		return [
+			Item::get($this->getId(), 0, 1)
+		];
+	}
 }

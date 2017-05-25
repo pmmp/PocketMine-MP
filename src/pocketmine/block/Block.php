@@ -608,14 +608,14 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @param Item $item
 	 *
-	 * @return array
+	 * @return Item[]
 	 */
 	public function getDrops(Item $item){
 		if(!isset(self::$list[$this->getId()])){ //Unknown blocks
 			return [];
 		}else{
 			return [
-				[$this->getId(), $this->getDamage(), 1],
+				Item::get($this->getId(), $this->getDamage(), 1)
 			];
 		}
 	}

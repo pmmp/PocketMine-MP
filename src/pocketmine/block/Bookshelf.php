@@ -46,7 +46,7 @@ class Bookshelf extends Solid{
 
 	public function getDrops(Item $item){
 		return [
-			[Item::BOOK, 0, 3]
+			Item::get(Item::BOOK, 0, 3)
 		];
 	}
 

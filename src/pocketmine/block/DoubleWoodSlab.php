@@ -56,7 +56,7 @@ class DoubleWoodSlab extends Solid{
 
 	public function getDrops(Item $item){
 		return [
-			[Item::WOODEN_SLAB, $this->meta & 0x07, 2],
+			Item::get(Item::WOODEN_SLAB, $this->meta & 0x07, 2)
 		];
 	}
 

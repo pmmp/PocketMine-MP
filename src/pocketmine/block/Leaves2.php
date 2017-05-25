@@ -39,10 +39,10 @@ class Leaves2 extends Leaves{
 	public function getDrops(Item $item){
 		$drops = [];
 		if($item->isShears()){
-			$drops[] = [$this->id, $this->meta & 0x01, 1];
+			$drops[] = Item::get($this->id, $this->meta & 0x01, 1);
 		}else{
 			if(mt_rand(1, 20) === 1){ //Saplings
-				$drops[] = [Item::SAPLING, ($this->meta & 0x01) + 4, 1];
+				$drops[] = Item::get(Item::SAPLING, ($this->meta & 0x01) + 4, 1);
 			}
 		}
 

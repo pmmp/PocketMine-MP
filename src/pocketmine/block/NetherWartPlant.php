@@ -74,6 +74,8 @@ class NetherWartPlant extends Flowable{
 	}
 
 	public function getDrops(Item $item){
-		return [[Item::NETHER_WART, 0, ($this->meta === 3 ? mt_rand(2, 4) : 1)]];
+		return [
+			Item::get(Item::NETHER_WART, 0, ($this->meta === 3 ? mt_rand(2, 4) : 1))
+		];
 	}
 }

@@ -106,7 +106,7 @@ class DoublePlant extends Flowable{
 			if(!$item->isShears() and ($this->meta === 2 or $this->meta === 3)){ //grass or fern
 				if(mt_rand(0, 24) === 0){
 					return [
-						[Item::SEEDS, 0, 1]
+						Item::get(Item::SEEDS, 0, 1)
 					];
 				}else{
 					return [];
@@ -114,7 +114,7 @@ class DoublePlant extends Flowable{
 			}
 
 			return [
-				[$this->id, $this->meta & 0x07, 1]
+				Item::get($this->id, $this->meta & 0x07, 1)
 			];
 		}else{
 			return [];

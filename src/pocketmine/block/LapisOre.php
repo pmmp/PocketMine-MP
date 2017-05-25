@@ -48,7 +48,7 @@ class LapisOre extends Solid{
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= TieredTool::TIER_STONE){
 			return [
-				[Item::DYE, 4, mt_rand(4, 8)],
+				Item::get(Item::DYE, 4, mt_rand(4, 8))
 			];
 		}else{
 			return [];

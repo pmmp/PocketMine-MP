@@ -125,7 +125,7 @@ class Cactus extends Transparent{
 
 	public function getDrops(Item $item){
 		return [
-			[$this->id, 0, 1],
+			Item::get($this->getId(), 0, 1)
 		];
 	}
 }

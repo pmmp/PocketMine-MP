@@ -71,7 +71,7 @@ class Wood extends Solid{
 
 	public function getDrops(Item $item){
 		return [
-			[$this->id, $this->meta & 0x03, 1],
+			Item::get($this->getId(), $this->getDamage() & 0x03, 1)
 		];
 	}
 

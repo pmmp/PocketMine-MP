@@ -109,7 +109,7 @@ class StandingSign extends Transparent{
 
 	public function getDrops(Item $item){
 		return [
-			[Item::SIGN, 0, 1],
+			Item::get(Item::SIGN, 0, 1)
 		];
 	}
 

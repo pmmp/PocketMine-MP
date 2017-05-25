@@ -81,7 +81,7 @@ class Anvil extends Fallable{
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
 			return [
-				[$this->id, $this->meta & 0x0c, 1],
+				Item::get($this->getId(), $this->getDamage() & 0x0c, 1)
 			];
 		}else{
 			return [];

@@ -68,7 +68,7 @@ class StoneSlab extends WoodenSlab{
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
 			return [
-				[$this->id, $this->meta & 0x07, 1],
+				Item::get($this->getId(), $this->getDamage() & 0x07, 1)
 			];
 		}else{
 			return [];

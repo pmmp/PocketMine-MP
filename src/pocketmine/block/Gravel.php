@@ -47,13 +47,14 @@ class Gravel extends Fallable{
 	public function getDrops(Item $item){
 		if(mt_rand(1, 10) === 1){
 			return [
-				[Item::FLINT, 0, 1],
+				Item::get(Item::FLINT, 0, 1)
+			];
+		}else{
+
+			return [
+				Item::get(Item::GRAVEL, 0, 1)
 			];
 		}
-
-		return [
-			[Item::GRAVEL, 0, 1],
-		];
 	}
 
 }

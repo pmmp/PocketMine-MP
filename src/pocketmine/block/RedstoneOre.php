@@ -64,7 +64,7 @@ class RedstoneOre extends Solid{
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= TieredTool::TIER_IRON){
 			return [
-				[Item::REDSTONE_DUST, 0, mt_rand(4, 5)],
+				Item::get(Item::REDSTONE_DUST, 0, mt_rand(4, 5))
 			];
 		}else{
 			return [];

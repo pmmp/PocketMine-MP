@@ -48,7 +48,7 @@ class NetherBrick extends Solid{
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
 			return [
-				[Item::NETHER_BRICK, 0, 1],
+				Item::get(Item::NETHER_BRICK, 0, 1)
 			];
 		}else{
 			return [];

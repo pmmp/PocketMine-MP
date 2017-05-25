@@ -57,7 +57,7 @@ class Prismarine extends Solid{
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
 			return [
-				[$this->id, $this->meta & 0x03, 1],
+				Item::get($this->id, $this->meta & 0x03, 1)
 			];
 		}else{
 			return [];

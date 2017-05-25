@@ -84,7 +84,7 @@ class SnowLayer extends Flowable{
 	public function getDrops(Item $item){
 		if($item->isShovel() !== false){
 			return [
-				[Item::SNOWBALL, 0, 1],
+				Item::get(Item::SNOWBALL, 0, 1)
 			];
 		}
 
