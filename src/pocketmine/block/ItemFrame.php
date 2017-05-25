@@ -72,17 +72,6 @@ class ItemFrame extends Flowable{
 		return true;
 	}
 
-	public function onBreak(Item $item){
-		$tile = $this->level->getTile($this);
-		if($tile instanceof TileItemFrame){
-			//TODO: add events
-			if(lcg_value() <= $tile->getItemDropChance() and $tile->getItem()->getId() !== Item::AIR){
-				$this->level->dropItem($tile->getBlock(), $tile->getItem());
-			}
-		}
-		return parent::onBreak($item);
-	}
-
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$sides = [
@@ -136,9 +125,18 @@ class ItemFrame extends Flowable{
 	}
 
 	public function getDrops(Item $item){
-		return [
+		$drops = [
 			Item::get(Item::ITEM_FRAME, 0, 1)
 		];
+
+		$tile = $this->level->getTile($this);
+		if($tile instanceof TileItemFrame){
+			if(lcg_value() <= $tile->getItemDropChance() and $tile->hasItem()){
+				$drops[] = $tile->getItem();
+			}
+		}
+
+		return $drops;
 	}
 
 }
