@@ -687,6 +687,19 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Returns an array of blocks which are considered a part of this block. This is usually just the block itself, but in the case of
+	 * - doors and double plants: will return the top and bottom half (if present)
+	 * - beds: will return the top and bottom halves of the bed (if present)
+	 *
+	 * Used for sending block updates to clients to revert interaction and breaking events if they are cancelled server-side for whatever reason.
+	 *
+	 * @return Block[]
+	 */
+	public function getAffectedBlocks() : array{
+		return [$this];
+	}
+
+	/**
 	 * @return string
 	 */
 	public function __toString(){

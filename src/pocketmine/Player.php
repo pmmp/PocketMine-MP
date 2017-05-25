@@ -2199,15 +2199,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		$this->inventory->sendContents($this);
-		$target = $this->level->getBlock($vector);
-		$tile = $this->level->getTile($vector);
-
-		$this->level->sendBlocks([$this], [$target], UpdateBlockPacket::FLAG_ALL_PRIORITY);
-
 		$this->inventory->sendHeldItem($this);
 
-		if($tile instanceof Spawnable){
-			$tile->spawnTo($this);
+		$blocks = $this->level->getBlock($vector)->getAffectedBlocks();
+		$this->level->sendBlocks([$this], $blocks, UpdateBlockPacket::FLAG_ALL_PRIORITY);
+
+		foreach($blocks as $pos){
+			$t = $this->level->getTile($pos);
+			if($t instanceof Spawnable){
+				$t->spawnTo($this);
+			}
 		}
 
 		return true;
@@ -2458,10 +2459,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			if($blockVector->distanceSquared($this) > 10000){
 				return true;
 			}
-			$target = $this->level->getBlock($blockVector);
-			$block = $target->getSide($packet->face);
 
-			$this->level->sendBlocks([$this], [$target, $block], UpdateBlockPacket::FLAG_ALL_PRIORITY);
+			$target = $this->level->getBlock($blockVector);
+			$blocks = $target->getAffectedBlocks();
+			$blocks[] = $target->getSide($packet->face);
+
+			$this->level->sendBlocks([$this], $blocks, UpdateBlockPacket::FLAG_ALL_PRIORITY);
 			return true;
 		}elseif($packet->face === -1){
 			$item = $this->inventory->getItemInHand();
