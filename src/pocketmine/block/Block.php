@@ -245,6 +245,8 @@ class Block extends Position implements BlockIds, Metadatable{
 
 			self::registerBlock(new GrassPath());
 
+			self::registerBlock(new EndRod());
+
 			self::registerBlock((new GlazedTerracotta(Block::PURPLE_GLAZED_TERRACOTTA))->setName("Purple Glazed Terracotta"));
 			self::registerBlock((new GlazedTerracotta(Block::WHITE_GLAZED_TERRACOTTA))->setName("White Glazed Terracotta"));
 			self::registerBlock((new GlazedTerracotta(Block::ORANGE_GLAZED_TERRACOTTA))->setName("Orange Glazed Terracotta"));
