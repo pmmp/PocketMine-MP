@@ -149,7 +149,7 @@ class Block extends Position implements BlockIds, Metadatable{
 
 			self::registerBlock(new RedstoneTorch());
 			self::registerBlock(new LitRedstoneTorch());
-			self::registerBlock(new StoneButton());
+			self::registerBlock((new Button(Block::STONE_BUTTON))->setName("Stone Button"));
 			self::registerBlock(new SnowLayer());
 			self::registerBlock(new Ice());
 			self::registerBlock(new Snow());
@@ -205,7 +205,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new FlowerPot());
 			self::registerBlock(new Carrot());
 			self::registerBlock(new Potato());
-			self::registerBlock(new WoodenButton());
+			self::registerBlock((new Button(Block::WOODEN_BUTTON))->setName("Wooden Button"));
 			self::registerBlock(new Skull());
 			self::registerBlock(new Anvil());
 			self::registerBlock(new TrappedChest());

@@ -42,10 +42,9 @@ class Torch extends Flowable{
 		return "Torch";
 	}
 
-
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			$below = $this->getSide(0);
+			$below = $this->getSide(Vector3::SIDE_DOWN);
 			$side = $this->getDamage();
 			$faces = [
 				1 => 4,
@@ -57,7 +56,7 @@ class Torch extends Flowable{
 				0 => 0,
 			];
 
-			if($this->getSide($faces[$side])->isTransparent() === true and !($side === Vector3::SIDE_DOWN and ($below instanceof Fence or $below instanceof CobblestoneWall))){
+			if($this->getSide($faces[$side])->isTransparent() === true and !($side === Vector3::SIDE_DOWN && ($below instanceof WoodenSlab && ($below->meta & 0x08) === 0x08) || ($below instanceof Stair && ($below->meta & 0x04) === 0x04) || $below instanceof Fence || $below instanceof CobblestoneWall)){
 				$this->getLevel()->useBreakOn($this);
 
 				return Level::BLOCK_UPDATE_NORMAL;
@@ -82,7 +81,7 @@ class Torch extends Flowable{
 			$this->getLevel()->setBlock($block, $this, true, true);
 
 			return true;
-		}elseif($below->isTransparent() === false or $below instanceof Fence or $below instanceof CobblestoneWall){
+		}elseif($below->isTransparent() === false or ($below instanceof WoodenSlab && ($below->meta & 0x08) === 0x08) || ($below instanceof Stair && ($below->meta & 0x04) === 0x04) || $below instanceof Fence || $below instanceof CobblestoneWall){
 			$this->meta = 0;
 			$this->getLevel()->setBlock($block, $this, true, true);
 
