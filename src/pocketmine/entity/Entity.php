@@ -862,6 +862,10 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	protected function checkObstruction($x, $y, $z){
+		if(count($this->level->getCollisionCubes($this, $this->getBoundingBox(), false)) === 0){
+			return false;
+		}
+
 		$i = Math::floorFloat($x);
 		$j = Math::floorFloat($y);
 		$k = Math::floorFloat($z);
