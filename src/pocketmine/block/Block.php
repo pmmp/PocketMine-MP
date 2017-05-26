@@ -280,7 +280,7 @@ class Block extends Position implements BlockIds, Metadatable{
 
 			//TODO: END_BRICKS
 			//TODO: FROSTED_ICE
-			//TODO: END_ROD
+			self::registerBlock(new EndRod());
 			//TODO: END_GATEWAY
 
 			//TODO: MAGMA
