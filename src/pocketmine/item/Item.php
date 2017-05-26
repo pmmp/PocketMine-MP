@@ -101,6 +101,7 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$list[self::IRON_PICKAXE] = IronPickaxe::class;
 			self::$list[self::IRON_AXE] = IronAxe::class;
 			self::$list[self::FLINT_STEEL] = FlintSteel::class;
+			self::$list[self::FIREBALL] = Fireball::class;
 			self::$list[self::APPLE] = Apple::class;
 			self::$list[self::BOW] = Bow::class;
 			self::$list[self::ARROW] = Arrow::class;

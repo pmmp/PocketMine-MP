@@ -154,7 +154,7 @@ interface ItemIds extends BlockIds{
 	const GLISTERING_MELON = 382;
 	const SPAWN_EGG = 383;
 	const BOTTLE_O_ENCHANTING = 384, ENCHANTING_BOTTLE = 384;
-	const FIRE_CHARGE = 385;
+	const FIRE_CHARGE = 385, FIREBALL = 385;
 
 	const EMERALD = 388;
 	const ITEM_FRAME = 389;
