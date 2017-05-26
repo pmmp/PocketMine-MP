@@ -517,7 +517,7 @@ namespace pocketmine {
 	echo Terminal::$FORMAT_RESET . PHP_EOL;
 
 	if($erroredThreads > 0){
-		if(\pocketmine\DEBUG > 1){
+		if(\pocketmine\DEBUG === true){
 			echo "Some threads could not be stopped, performing a force-kill" . PHP_EOL . PHP_EOL;
 		}
 		kill(getmypid());
