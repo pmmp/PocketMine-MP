@@ -165,6 +165,7 @@ abstract class Entity extends Location implements Metadatable{
 		Entity::registerEntity(Item::class);
 		Entity::registerEntity(PrimedTNT::class);
 		Entity::registerEntity(Snowball::class);
+		Entity::registerEntity(Enderpearl::class);
 		Entity::registerEntity(Squid::class);
 		Entity::registerEntity(Villager::class);
 		Entity::registerEntity(Zombie::class);
