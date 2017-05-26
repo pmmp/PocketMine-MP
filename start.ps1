@@ -20,7 +20,7 @@ if(Test-Path "PocketMine-MP.phar"){
 }
 
 function StartServer{
-	$command = $binary + " " + $file + " --enable-ansi"
+	$command = "powershell " + $binary + " " + $file + " --enable-ansi"
 	iex $command
 }
 
