@@ -1670,9 +1670,6 @@ class Level implements ChunkManager, Metadatable{
 
 		if($item !== null){
 			$item->onDestroyBlock($target, $player);
-			if($item instanceof Tool and $item->isBroken()){
-				$item = Item::get(Item::AIR, 0, 0);
-			}
 		}
 
 		if($player === null or $player->isSurvival()){
@@ -1749,10 +1746,6 @@ class Level implements ChunkManager, Metadatable{
 				}
 
 				if(!$player->isSneaking() and $item->onClickBlock($player, $block, $target, $face, $fx, $fy, $fz)){
-					if($item->getCount() <= 0){
-						$item = Item::get(Item::AIR, 0, 0);
-					}
-
 					return true;
 				}
 			}else{
@@ -1828,10 +1821,7 @@ class Level implements ChunkManager, Metadatable{
 			$this->broadcastLevelSoundEvent($hand, LevelSoundEventPacket::SOUND_PLACE, 1, $hand->getId());
 		}
 
-		$item->setCount($item->getCount() - 1);
-		if($item->getCount() <= 0){
-			$item = Item::get(Item::AIR, 0, 0);
-		}
+		$item->pop();
 
 		return true;
 	}

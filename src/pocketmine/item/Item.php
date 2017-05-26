@@ -783,6 +783,19 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
+	 * Pops an item from the stack and returns it, decreasing the stack count of this item stack by one.
+	 * @return Item
+	 */
+	public function pop() : Item{
+		$item = clone $this;
+		$item->setCount(1);
+
+		$this->count--;
+
+		return $item;
+	}
+
+	/**
 	 * Returns the name of the item, or the custom name if it is set.
 	 * @return string
 	 */

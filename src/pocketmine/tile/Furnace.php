@@ -198,10 +198,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		}
 
 		if($this->namedtag["BurnTime"] > 0 and $ev->isBurning()){
-			$fuel->setCount($fuel->getCount() - 1);
-			if($fuel->getCount() === 0){
-				$fuel = Item::get(Item::AIR, 0, 0);
-			}
+			$fuel->pop();
 			$this->inventory->setFuel($fuel);
 		}
 	}
@@ -238,10 +235,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 
 					if(!$ev->isCancelled()){
 						$this->inventory->setResult($ev->getResult());
-						$raw->setCount($raw->getCount() - 1);
-						if($raw->getCount() === 0){
-							$raw = Item::get(Item::AIR, 0, 0);
-						}
+						$raw->pop();
 						$this->inventory->setSmelting($raw);
 					}
 

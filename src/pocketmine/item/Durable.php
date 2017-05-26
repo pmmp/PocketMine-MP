@@ -87,7 +87,7 @@ abstract class Durable extends Item{
 
 		$this->meta += $amount;
 		if($this->meta >= $this->durability){
-			$this->count--;
+			$this->pop();
 		}
 
 		return true;
