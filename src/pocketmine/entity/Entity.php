@@ -26,6 +26,7 @@ namespace pocketmine\entity;
 
 use pocketmine\block\Block;
 use pocketmine\block\Water;
+use pocketmine\item\Elytra;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDespawnEvent;
 use pocketmine\event\entity\EntityLevelChangeEvent;
@@ -1186,6 +1187,13 @@ abstract class Entity extends Location implements Metadatable{
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FALL, $damage);
 			$this->attack($ev->getFinalDamage(), $ev);
 		}
+		/*
+		// If Player has Elytra
+		if ($this instanceof Player) {
+			if($this->getInventory()->getChestplate() instanceof Elytra){
+				$damage = 0;
+			}
+		}*/
 	}
 
 	public function handleLavaMovement(){ //TODO
