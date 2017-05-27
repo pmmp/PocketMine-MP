@@ -21,7 +21,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 
-class Bedrock extends Solid{
+class DragonEgg extends Solid{
 	protected $id = self::DRAGON_EGG;
 	public function __construct(){
 	}
