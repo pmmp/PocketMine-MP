@@ -149,7 +149,7 @@ abstract class DataPacket extends BinaryStream{
 					$value = [];
 			}
 			if($types === true){
-				$data[$key] = [$value, $type];
+				$data[$key] = [$type, $value];
 			}else{
 				$data[$key] = $value;
 			}
