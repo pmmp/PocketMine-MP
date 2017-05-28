@@ -51,6 +51,7 @@ use pocketmine\entity\Arrow;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Item as DroppedItem;
+use pocketmine\event\block\BatchBlockUpdateEvent;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\block\BlockUpdateEvent;
@@ -1004,34 +1005,19 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function updateAround(Vector3 $pos){
 		$pos = $pos->floor();
-		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($this->temporalVector->setComponents($pos->x, $pos->y - 1, $pos->z))));
-		if(!$ev->isCancelled()){
-			$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
-		}
+		$this->server->getPluginManager()->callEvent($ev = new BatchBlockUpdateEvent([
+			$this->getBlock($this->temporalVector->setComponents($pos->x - 1, $pos->y,     $pos->z)),
+			$this->getBlock($this->temporalVector->setComponents($pos->x + 1, $pos->y,     $pos->z)),
+			$this->getBlock($this->temporalVector->setComponents($pos->x,     $pos->y - 1, $pos->z)),
+			$this->getBlock($this->temporalVector->setComponents($pos->x,     $pos->y + 1, $pos->z)),
+			$this->getBlock($this->temporalVector->setComponents($pos->x,     $pos->y,     $pos->z - 1)),
+			$this->getBlock($this->temporalVector->setComponents($pos->x,     $pos->y,     $pos->z + 1))
+		]));
 
-		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($this->temporalVector->setComponents($pos->x, $pos->y + 1, $pos->z))));
 		if(!$ev->isCancelled()){
-			$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
-		}
-
-		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($this->temporalVector->setComponents($pos->x - 1, $pos->y, $pos->z))));
-		if(!$ev->isCancelled()){
-			$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
-		}
-
-		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($this->temporalVector->setComponents($pos->x + 1, $pos->y, $pos->z))));
-		if(!$ev->isCancelled()){
-			$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
-		}
-
-		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($this->temporalVector->setComponents($pos->x, $pos->y, $pos->z - 1))));
-		if(!$ev->isCancelled()){
-			$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
-		}
-
-		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($this->temporalVector->setComponents($pos->x, $pos->y, $pos->z + 1))));
-		if(!$ev->isCancelled()){
-			$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
+			foreach($ev->getBlockList() as $block){
+				$block->onUpdate(self::BLOCK_UPDATE_NORMAL);
+			}
 		}
 	}
 
