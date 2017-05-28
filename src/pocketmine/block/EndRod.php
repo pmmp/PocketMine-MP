@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -64,7 +65,42 @@ class EndRod extends Flowable{
 
 	public function getDrops(Item $item): array{
 		return [
-			[$this->id, 0, 1],
+			Item::get($this->getId(), 0, 1)
 		];
+	}
+
+	protected function recalculateBoundingBox(){
+		switch ($this->getDamage() & 0x06){
+			case 0x00: {
+				return new AxisAlignedBB(
+					$this->x + 0.375,
+					$this->y,
+					$this->z + 0.375,
+					$this->x + 0.625,
+					$this->y + 1,
+					$this->z + 0.625
+				);
+			}
+			case 0x02: {
+				return new AxisAlignedBB(
+					$this->x + 0.375,
+					$this->y + 0.375,
+					$this->z,
+					$this->x + 0.625,
+					$this->y + 0.625,
+					$this->z + 1
+				);
+			}
+			case 0x04: {
+				return new AxisAlignedBB(
+					$this->x,
+					$this->y + 0.375,
+					$this->z + 0.375,
+					$this->x + 1,
+					$this->y + 0.625,
+					$this->z + 0.625
+				);
+			}
+		}
 	}
 }
