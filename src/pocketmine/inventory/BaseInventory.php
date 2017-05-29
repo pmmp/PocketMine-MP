@@ -103,6 +103,7 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function getItem($index){
+		assert($index >= 0, "Inventory slot should not be negative");
 		return isset($this->slots[$index]) ? clone $this->slots[$index] : Item::get(Item::AIR, 0, 0);
 	}
 

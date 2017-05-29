@@ -214,16 +214,13 @@ class PlayerInventory extends BaseInventory{
 
 		if(!is_array($target)){
 			$target->dataPacket($pk);
-			if($target === $this->getHolder()){
+			if($this->getHeldItemSlot() !== -1 and $target === $this->getHolder()){
 				$this->sendSlot($this->getHeldItemSlot(), $target);
 			}
 		}else{
 			$this->getHolder()->getLevel()->getServer()->broadcastPacket($target, $pk);
-			foreach($target as $player){
-				if($player === $this->getHolder()){
-					$this->sendSlot($this->getHeldItemSlot(), $player);
-					break;
-				}
+			if($this->getHeldItemSlot() !== -1 and in_array($this->getHolder(), $target)){
+				$this->sendSlot($this->getHeldItemSlot(), $this->getHolder());
 			}
 		}
 	}
