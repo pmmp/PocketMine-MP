@@ -37,6 +37,7 @@ use pocketmine\entity\Entity;
 use pocketmine\event\HandlerList;
 use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\level\LevelLoadEvent;
+use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\event\server\ServerCommandEvent;
 use pocketmine\event\Timings;
@@ -758,8 +759,6 @@ class Server{
 		$nbt->Motion->setTagType(NBT::TAG_Double);
 		$nbt->Rotation->setTagType(NBT::TAG_Float);
 
-		$this->saveOfflinePlayerData($name, $nbt);
-
 		return $nbt;
 
 	}
@@ -769,11 +768,16 @@ class Server{
 	 * @param CompoundTag $nbtTag
 	 * @param bool        $async
 	 */
-	public function saveOfflinePlayerData($name, CompoundTag $nbtTag, $async = false){
-		if($this->shouldSavePlayerData()){
+	public function saveOfflinePlayerData(string $name, CompoundTag $nbtTag, bool $async = false){
+		$ev = new PlayerDataSaveEvent($nbtTag, $name);
+		$ev->setCancelled(!$this->shouldSavePlayerData());
+
+		$this->pluginManager->callEvent($ev);
+
+		if(!$ev->isCancelled()){
 			$nbt = new NBT(NBT::BIG_ENDIAN);
 			try{
-				$nbt->setData($nbtTag);
+				$nbt->setData($ev->getSaveData());
 
 				if($async){
 					$this->getScheduler()->scheduleAsyncTask(new FileWriteTask($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed()));
