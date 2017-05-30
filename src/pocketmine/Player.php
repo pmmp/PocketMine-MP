@@ -54,6 +54,7 @@ use pocketmine\event\player\PlayerItemConsumeEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerKickEvent;
 use pocketmine\event\player\PlayerLoginEvent;
+use pocketmine\event\player\PlayerMapInfoRequestEvent;
 use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\player\PlayerPreLoginEvent;
 use pocketmine\event\player\PlayerQuitEvent;
@@ -3090,7 +3091,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function handleMapInfoRequest(MapInfoRequestPacket $packet) : bool{
-		return false; //TODO
+		$this->getServer()->getPluginManager()->callEvent($ev = new PlayerMapInfoRequestEvent($this, $packet->mapId));
+		if(!$ev->isCancelled()){
+			//TODO: more stuff
+		}
+
+		return true;
 	}
 
 	public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet) : bool{

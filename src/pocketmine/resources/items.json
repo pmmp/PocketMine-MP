@@ -521,7 +521,8 @@
     },
     "emptyMap": {
         "id": 395,
-        "fallback_name": "Empty Map"
+        "fallback_name": "Empty Map",
+        "type": "empty_map"
     },
     "enchanted_book": {
         "id": 403,
