@@ -263,7 +263,7 @@ abstract class DataPacket extends BinaryStream{
 	 * @param int|string $eid
 	 */
 	public function putEntityUniqueId($eid){
-		if($eid){
+		if($eid or $eid === 0){
 			$this->putVarLong($eid);
 		}else{
 			throw new \InvalidArgumentException("\"$eid\" is not a valid entity unique ID");
@@ -283,7 +283,7 @@ abstract class DataPacket extends BinaryStream{
 	 * @param int|string $eid
 	 */
 	public function putEntityRuntimeId($eid){
-		if($eid){
+		if($eid or $eid === 0){
 			$this->putUnsignedVarLong($eid);
 		}else{
 			throw new \InvalidArgumentException("\"$eid\" is not a valid entity runtime ID");
