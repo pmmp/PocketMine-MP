@@ -711,9 +711,7 @@ class Chunk{
 
 						try{
 							$entity = Entity::createEntity($nbt["id"], $level, $nbt);
-							if($entity instanceof Entity){
-								$entity->spawnToAll();
-							}else{
+							if(!($entity instanceof Entity)){
 								$changed = true;
 								continue;
 							}

@@ -83,6 +83,7 @@ class ResourcePackManager{
 						$info = new \SplFileInfo($packPath);
 						switch($info->getExtension()){
 							case "zip":
+							case "mcpack":
 								$newPack = new ZippedResourcePack($packPath);
 								break;
 							default:
