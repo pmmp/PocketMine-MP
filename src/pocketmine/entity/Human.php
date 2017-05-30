@@ -425,7 +425,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	public function getDrops(){
-		return $this->inventory !== null ? $this->inventory->getContents() : [];
+		return $this->inventory !== null ? array_values($this->inventory->getContents()) : [];
 	}
 
 	public function saveNBT(){
