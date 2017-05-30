@@ -1556,9 +1556,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->lastPitch = $to->pitch;
 
 			if(!$isFirst){
-				$ev = new PlayerMoveEvent($this, $from, $to);
-
-				$this->server->getPluginManager()->callEvent($ev);
+				($ev = new PlayerMoveEvent($this, $from, $to))->call();
 
 				if(!($revert = $ev->isCancelled())){ //Yes, this is intended
 					if($to->distanceSquared($ev->getTo()) > 0.01){ //If plugins modify the destination
@@ -2068,7 +2066,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						$this->server->dispatchCommand($ev->getPlayer(), substr($ev->getMessage(), 1));
 						Timings::$playerCommandTimer->stopTiming();
 					}else{
-						$this->server->getPluginManager()->callEvent($ev = new PlayerChatEvent($this, $ev->getMessage()));
+						($ev = new PlayerChatEvent($this, $ev->getMessage()))->call();
 						if(!$ev->isCancelled()){
 							$this->server->broadcastMessage($this->getServer()->getLanguage()->translateString($ev->getFormat(), [$ev->getPlayer()->getDisplayName(), $ev->getMessage()]), $ev->getRecipients());
 						}
@@ -3361,7 +3359,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$packet->decode();
 		assert($packet->feof(), "Still " . strlen(substr($packet->buffer, $packet->offset)) . " bytes unread in " . get_class($packet));
 
-		$this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this, $packet));
+		($ev = new DataPacketReceiveEvent($this, $packet))->call();
 		if(!$ev->isCancelled() and !$packet->handle($this)){
 			$this->server->getLogger()->debug("Unhandled " . $packet->getName() . " received from " . $this->getName() . ": 0x" . bin2hex($packet->buffer));
 		}

@@ -997,7 +997,7 @@ class Server{
 
 		$level->initLevel();
 
-		$this->getPluginManager()->callEvent(new LevelLoadEvent($level));
+		(new LevelLoadEvent($level))->call();
 
 		$level->setTickRate($this->baseTickRate);
 
@@ -1050,9 +1050,9 @@ class Server{
 			return false;
 		}
 
-		$this->getPluginManager()->callEvent(new LevelInitEvent($level));
+		(new LevelInitEvent($level))->call();
 
-		$this->getPluginManager()->callEvent(new LevelLoadEvent($level));
+		(new LevelLoadEvent($level))->call();
 
 		$this->getLogger()->notice($this->getLanguage()->translateString("pocketmine.level.backgroundGeneration", [$name]));
 
@@ -1845,7 +1845,7 @@ class Server{
 	public function checkConsole(){
 		Timings::$serverCommandTimer->startTiming();
 		if(($line = $this->console->getLine()) !== null){
-			$this->pluginManager->callEvent($ev = new ServerCommandEvent($this->consoleSender, $line));
+			($ev = new ServerCommandEvent($this->consoleSender, $line))->call();
 			if(!$ev->isCancelled()){
 				$this->dispatchCommand($ev->getSender(), $ev->getCommand());
 			}
@@ -2388,7 +2388,7 @@ class Server{
 
 			if(($this->tickCounter & 0b111111111) === 0){
 				try{
-					$this->getPluginManager()->callEvent($this->queryRegenerateTask = new QueryRegenerateEvent($this, 5));
+					($this->queryRegenerateTask = new QueryRegenerateEvent($this, 5))->call();
 					if($this->queryHandler !== null){
 						$this->queryHandler->regenerateInfo();
 					}

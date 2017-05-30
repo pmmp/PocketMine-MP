@@ -124,7 +124,7 @@ class Explosion{
 		$yield = (1 / $this->size) * 100;
 
 		if($this->what instanceof Entity){
-			$this->level->getServer()->getPluginManager()->callEvent($ev = new EntityExplodeEvent($this->what, $this->source, $this->affectedBlocks, $yield));
+			($ev = new EntityExplodeEvent($this->what, $this->source, $this->affectedBlocks, $yield))->call();
 			if($ev->isCancelled()){
 				return false;
 			}else{
@@ -204,7 +204,7 @@ class Explosion{
 			for($side = 0; $side <= 5; $side++){
 				$sideBlock = $pos->getSide($side);
 				if(!isset($this->affectedBlocks[$index = Level::blockHash($sideBlock->x, $sideBlock->y, $sideBlock->z)]) and !isset($updateBlocks[$index])){
-					$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->level->getBlock($sideBlock)));
+					($ev = new BlockUpdateEvent($this->level->getBlock($sideBlock)))->call();
 					if(!$ev->isCancelled()){
 						$ev->getBlock()->onUpdate(Level::BLOCK_UPDATE_NORMAL);
 					}
