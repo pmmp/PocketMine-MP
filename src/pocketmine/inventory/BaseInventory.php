@@ -141,7 +141,7 @@ abstract class BaseInventory implements Inventory{
 
 		$holder = $this->getHolder();
 		if($holder instanceof Entity){
-			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($holder, $this->getItem($index), $item, $index));
+			($ev = new EntityInventoryChangeEvent($holder, $this->getItem($index), $item, $index))->call();
 			if($ev->isCancelled()){
 				$this->sendSlot($index, $this->getViewers());
 				return false;
@@ -347,7 +347,7 @@ abstract class BaseInventory implements Inventory{
 			$old = $this->slots[$index];
 			$holder = $this->getHolder();
 			if($holder instanceof Entity){
-				Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($holder, $old, $item, $index));
+				($ev = new EntityInventoryChangeEvent($holder, $old, $item, $index))->call();
 				if($ev->isCancelled()){
 					$this->sendSlot($index, $this->getViewers());
 					return false;
@@ -388,7 +388,7 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function open(Player $who){
-		$who->getServer()->getPluginManager()->callEvent($ev = new InventoryOpenEvent($this, $who));
+		($ev = new InventoryOpenEvent($this, $who))->call();
 		if($ev->isCancelled()){
 			return false;
 		}

@@ -144,7 +144,7 @@ class ScriptPluginLoader implements PluginLoader{
 
 			$plugin->setEnabled(true);
 
-			$this->server->getPluginManager()->callEvent(new PluginEnableEvent($plugin));
+			(new PluginEnableEvent($plugin))->call();
 		}
 	}
 
@@ -155,7 +155,7 @@ class ScriptPluginLoader implements PluginLoader{
 		if($plugin instanceof PluginBase and $plugin->isEnabled()){
 			$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.disable", [$plugin->getDescription()->getFullName()]));
 
-			$this->server->getPluginManager()->callEvent(new PluginDisableEvent($plugin));
+			(new PluginDisableEvent($plugin))->call();
 
 			$plugin->setEnabled(false);
 		}

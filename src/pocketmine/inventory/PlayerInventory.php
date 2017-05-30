@@ -71,7 +71,7 @@ class PlayerInventory extends BaseInventory{
 			return false;
 		}
 
-		$this->getHolder()->getLevel()->getServer()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $this->getItem($inventorySlot), $inventorySlot, $hotbarSlot));
+		($ev = new PlayerItemHeldEvent($this->getHolder(), $this->getItem($inventorySlot), $inventorySlot, $hotbarSlot))->call();
 		if($ev->isCancelled()){
 			$this->sendContents($this->getHolder());
 			return false;
@@ -298,14 +298,14 @@ class PlayerInventory extends BaseInventory{
 		}
 
 		if($index >= $this->getSize()){ //Armor change
-			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $this->getItem($index), $item, $index));
+			($ev = new EntityArmorChangeEvent($this->getHolder(), $this->getItem($index), $item, $index))->call();
 			if($ev->isCancelled() and $this->getHolder() instanceof Human){
 				$this->sendArmorSlot($index, $this->getViewers());
 				return false;
 			}
 			$item = $ev->getNewItem();
 		}else{
-			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($this->getHolder(), $this->getItem($index), $item, $index));
+			($ev = new EntityInventoryChangeEvent($this->getHolder(), $this->getItem($index), $item, $index))->call();
 			if($ev->isCancelled()){
 				$this->sendSlot($index, $this->getViewers());
 				return false;
@@ -326,7 +326,7 @@ class PlayerInventory extends BaseInventory{
 			$item = Item::get(Item::AIR, 0, 0);
 			$old = $this->slots[$index];
 			if($index >= $this->getSize() and $index < $this->size){ //Armor change
-				Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $old, $item, $index));
+				($ev = new EntityArmorChangeEvent($this->getHolder(), $old, $item, $index))->call();
 				if($ev->isCancelled()){
 					if($index >= $this->size){
 						$this->sendArmorSlot($index, $this->getViewers());
@@ -337,7 +337,7 @@ class PlayerInventory extends BaseInventory{
 				}
 				$item = $ev->getNewItem();
 			}else{
-				Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($this->getHolder(), $old, $item, $index));
+				($ev = new EntityInventoryChangeEvent($this->getHolder(), $old, $item, $index))->call();
 				if($ev->isCancelled()){
 					if($index >= $this->size){
 						$this->sendArmorSlot($index, $this->getViewers());
