@@ -112,9 +112,9 @@ class PlayerInventory extends BaseInventory{
 	 */
 	public function setHotbarSlotIndex($hotbarSlot, $inventorySlot){
 		if($hotbarSlot < 0 or $hotbarSlot >= $this->getHotbarSize()){
-			throw new \InvalidArgumentException("Hotbar slot index \"$index\" is out of range");
+			throw new \InvalidArgumentException("Hotbar slot index \"$hotbarSlot\" is out of range");
 		}elseif($inventorySlot < -1 or $inventorySlot >= $this->getSize()){
-			throw new \InvalidArgumentException("Inventory slot index \"$index\" is out of range");
+			throw new \InvalidArgumentException("Inventory slot index \"$inventorySlot\" is out of range");
 		}
 
 		if($inventorySlot !== -1 and ($alreadyEquippedIndex = array_search($inventorySlot, $this->hotbar)) !== false){
