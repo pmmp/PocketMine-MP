@@ -341,13 +341,14 @@ class Binary{
 	/**
 	 * Reads a 32-bit zigzag-encoded variable-length integer from the supplied stream.
 	 *
-	 * @param \pocketmine\nbt\NBT|BinaryStream $stream
+	 * @param string $buffer
+	 * @param int    &$offset
 	 *
 	 * @return int
 	 */
-	public static function readVarInt($stream){
+	public static function readVarInt(string $buffer, int &$offset){
 		$shift = PHP_INT_SIZE === 8 ? 63 : 31;
-		$raw = self::readUnsignedVarInt($stream);
+		$raw = self::readUnsignedVarInt($buffer, $offset);
 		$temp = ((($raw << $shift) >> $shift) ^ $raw) >> 1;
 		return $temp ^ ($raw & (1 << $shift));
 	}
@@ -355,18 +356,21 @@ class Binary{
 	/**
 	 * Reads a 32-bit variable-length unsigned integer from the supplied stream.
 	 *
-	 * @param \pocketmine\nbt\NBT|BinaryStream $stream
+	 * @param string $buffer
+	 * @param int    &$offset
 	 *
 	 * @return int
 	 */
-	public static function readUnsignedVarInt($stream){
+	public static function readUnsignedVarInt(string $buffer, int &$offset){
 		$value = 0;
 		for($i = 0; $i <= 35; $i += 7){
-			$b = $stream->getByte();
+			$b = ord($buffer{$offset++});
 			$value |= (($b & 0x7f) << $i);
 
 			if(($b & 0x80) === 0){
 				return $value;
+			}elseif(!isset($buffer{$offset})){
+				throw new \UnexpectedValueException("Expected more bytes, none left to read");
 			}
 		}
 
@@ -414,27 +418,29 @@ class Binary{
 
 	/**
 	 * Reads a 64-bit zigzag-encoded variable-length integer from the supplied stream.
-	 * @param \pocketmine\nbt\NBT|BinaryStream $stream
+	 * @param string $buffer
+	 * @param int    &$offset
 	 *
 	 * @return int|string
 	 */
-	public static function readVarLong($stream){
+	public static function readVarLong(string $buffer, int &$offset){
 		if(PHP_INT_SIZE === 8){
-			return self::readVarLong_64($stream);
+			return self::readVarLong_64($buffer, $offset);
 		}else{
-			return self::readVarLong_32($stream);
+			return self::readVarLong_32($buffer, $offset);
 		}
 	}
 
 	/**
 	 * Legacy BC Math zigzag VarLong reader. Will work on 32-bit or 64-bit, but will be slower than the regular 64-bit method.
-	 * @param \pocketmine\nbt\NBT|BinaryStream $stream
+	 * @param string $buffer
+	 * @param int    &$offset
 	 *
 	 * @return string
 	 */
-	public static function readVarLong_32($stream){
+	public static function readVarLong_32(string $buffer, int &$offset){
 		/** @var string $raw */
-		$raw = self::readUnsignedVarLong_32($stream);
+		$raw = self::readUnsignedVarLong_32($buffer, $offset);
 		$result = bcdiv($raw, "2");
 		if(bcmod($raw, "2") === "1"){
 			$result = bcsub(bcmul($result, "-1"), "1");
@@ -445,44 +451,49 @@ class Binary{
 
 	/**
 	 * 64-bit zizgag VarLong reader.
-	 * @param \pocketmine\nbt\NBT|BinaryStream $stream
+	 * @param string $buffer
+	 * @param int    &$offset
 	 *
 	 * @return int
 	 */
-	public static function readVarLong_64($stream){
-		$raw = self::readUnsignedVarLong_64($stream);
+	public static function readVarLong_64(string $buffer, int &$offset){
+		$raw = self::readUnsignedVarLong_64($buffer, $offset);
 		$temp = ((($raw << 63) >> 63) ^ $raw) >> 1;
 		return $temp ^ ($raw & (1 << 63));
 	}
 
 	/**
 	 * Reads an unsigned VarLong from the supplied stream.
-	 * @param \pocketmine\nbt\NBT|BinaryStream $stream
+	 * @param string $buffer
+	 * @param int    &$offset
 	 *
 	 * @return int|string
 	 */
-	public static function readUnsignedVarLong($stream){
+	public static function readUnsignedVarLong(string $buffer, int &$offset){
 		if(PHP_INT_SIZE === 8){
-			return self::readUnsignedVarLong_64($stream);
+			return self::readUnsignedVarLong_64($buffer, $offset);
 		}else{
-			return self::readUnsignedVarLong_32($stream);
+			return self::readUnsignedVarLong_32($buffer, $offset);
 		}
 	}
 
 	/**
 	 * Legacy BC Math unsigned VarLong reader.
-	 * @param \pocketmine\nbt\NBT|BinaryStream $stream
+	 * @param string $buffer
+	 * @param int    &$offset
 	 *
 	 * @return string
 	 */
-	public static function readUnsignedVarLong_32($stream){
+	public static function readUnsignedVarLong_32(string $buffer, int &$offset){
 		$value = "0";
 		for($i = 0; $i <= 63; $i += 7){
-			$b = $stream->getByte();
+			$b = ord($buffer{$offset++});
 			$value = bcadd($value, bcmul($b & 0x7f, bcpow("2", "$i")));
 
 			if(($b & 0x80) === 0){
 				return $value;
+			}elseif(!isset($buffer{$offset})){
+				throw new \UnexpectedValueException("Expected more bytes, none left to read");
 			}
 		}
 
@@ -491,18 +502,21 @@ class Binary{
 
 	/**
 	 * 64-bit unsigned VarLong reader.
-	 * @param \pocketmine\nbt\NBT|BinaryStream $stream
+	 * @param string $buffer
+	 * @param int    &$offset
 	 *
 	 * @return int
 	 */
-	public static function readUnsignedVarLong_64($stream){
+	public static function readUnsignedVarLong_64(string $buffer, int &$offset){
 		$value = 0;
 		for($i = 0; $i <= 63; $i += 7){
-			$b = $stream->getByte();
+			$b = ord($buffer{$offset++});
 			$value |= (($b & 0x7f) << $i);
 
 			if(($b & 0x80) === 0){
 				return $value;
+			}elseif(!isset($buffer{$offset})){
+				throw new \UnexpectedValueException("Expected more bytes, none left to read");
 			}
 		}
 

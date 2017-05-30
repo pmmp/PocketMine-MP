@@ -261,7 +261,7 @@ class BinaryStream{
 	 * @return int
 	 */
 	public function getUnsignedVarInt(){
-		return Binary::readUnsignedVarInt($this);
+		return Binary::readUnsignedVarInt($this->buffer, $this->offset);
 	}
 
 	/**
@@ -277,7 +277,7 @@ class BinaryStream{
 	 * @return int
 	 */
 	public function getVarInt(){
-		return Binary::readVarInt($this);
+		return Binary::readVarInt($this->buffer, $this->offset);
 	}
 
 	/**
@@ -293,7 +293,7 @@ class BinaryStream{
 	 * @return int|string int, or the string representation of an int64 on 32-bit platforms
 	 */
 	public function getUnsignedVarLong(){
-		return Binary::readUnsignedVarLong($this);
+		return Binary::readUnsignedVarLong($this->buffer, $this->offset);
 	}
 
 	/**
@@ -309,7 +309,7 @@ class BinaryStream{
 	 * @return int|string int, or the string representation of an int64 on 32-bit platforms
 	 */
 	public function getVarLong(){
-		return Binary::readVarLong($this);
+		return Binary::readVarLong($this->buffer, $this->offset);
 	}
 
 	/**
