@@ -695,7 +695,7 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 		
 		$tag->display->Lore->setTagType(NBT::TAG_String);
-		$tag->display->Lore[$tag->display->Lore->getCount()] = new StringTag("", $lore);
+		$tag->display->Lore->{$tag->display->Lore->getCount()} = new StringTag("", $lore);
 		$this->setNamedTag($tag);
 	}
 
