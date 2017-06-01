@@ -267,8 +267,8 @@ class NBT{
 		$tag->write($this, $network);
 	}
 
-	public function getByte(){
-		return Binary::readByte($this->get(1));
+	public function getByte(bool $signed = false){
+		return Binary::readByte($this->get(1), $signed);
 	}
 
 	public function putByte($v){
