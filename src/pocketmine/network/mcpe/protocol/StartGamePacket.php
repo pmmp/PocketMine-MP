@@ -55,6 +55,8 @@ class StartGamePacket extends DataPacket{
 	public $levelId = ""; //base64 string, usually the same as world folder name in vanilla
 	public $worldName;
 	public $premiumWorldTemplateId = "";
+	public $unknownBool = false;
+	public $currentTick = 0;
 
 	public function decode(){
 		$this->entityUniqueId = $this->getEntityUniqueId();
@@ -80,6 +82,8 @@ class StartGamePacket extends DataPacket{
 		$this->levelId = $this->getString();
 		$this->worldName = $this->getString();
 		$this->premiumWorldTemplateId = $this->getString();
+		$this->unknownBool = $this->getBool();
+		$this->currentTick = $this->getLLong();
 
 	}
 
@@ -108,6 +112,8 @@ class StartGamePacket extends DataPacket{
 		$this->putString($this->levelId);
 		$this->putString($this->worldName);
 		$this->putString($this->premiumWorldTemplateId);
+		$this->putBool($this->unknownBool);
+		$this->putLLong($this->currentTick);
 	}
 
 	public function handle(NetworkSession $session) : bool{
