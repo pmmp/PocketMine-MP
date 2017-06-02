@@ -139,7 +139,6 @@ use pocketmine\network\mcpe\protocol\ExplodePacket;
 use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
 use pocketmine\network\mcpe\protocol\HurtArmorPacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
-use pocketmine\network\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\InventoryActionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
@@ -3600,6 +3599,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             $pk2->evid = LevelEventPacket::EVENT_START_THUNDER;
         }elseif($this->level->getWeather() == Level::WEATHER_RAIN){
             $pk1->evid = LevelEventPacket::EVENT_START_RAIN;
+            $pk2->evid = LevelEventPacket::EVENT_STOP_THUNDER;
         } else {
             $pk1->evid = LevelEventPacket::EVENT_STOP_RAIN;
             $pk2->evid = LevelEventPacket::EVENT_STOP_THUNDER;

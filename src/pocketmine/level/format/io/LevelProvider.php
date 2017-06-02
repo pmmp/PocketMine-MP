@@ -186,16 +186,16 @@ interface LevelProvider{
 	 */
 	public function setTime($value);
 
-    /**
-     * @return int The integer version of the type
-     */
+	/**
+	 * @return int The integer version of the type
+	 */
 	public function getWeather() : int;
 
-    /**
-     * @param int $clearTime
-     * @param int $rainTime
-     * @param int $thunderTime
-     */
+	/**
+	 * @param int $clearTime
+	 * @param int $rainTime
+	 * @param int $thunderTime
+	 */
 	public function setWeatherTimes(int $clearTime, int $rainTime, int $thunderTime);
 
 	/**

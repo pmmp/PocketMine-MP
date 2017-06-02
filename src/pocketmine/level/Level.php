@@ -2867,7 +2867,7 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @return int
 	 */
-	public function getClearTime() {
+	public function getClearTime() : int{
 		return $this->clearTime;
 	}
 
@@ -2929,8 +2929,8 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-     * Sets wether or not Weather is updated each tick
-     *
+	 * Sets whether or not Weather is updated each tick
+	 *
 	 * @param bool $state
 	 */
 	public function lockWeather(bool $state = true){
