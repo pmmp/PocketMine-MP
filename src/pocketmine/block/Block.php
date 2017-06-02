@@ -546,7 +546,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return Position
 	 */
 	public function getPosition() : Position{
-		return new Position($this->x, $this->y, $this->z, $this->level);
+		return self::fromObject($this, $this->level);
 	}
 	
 	/**
