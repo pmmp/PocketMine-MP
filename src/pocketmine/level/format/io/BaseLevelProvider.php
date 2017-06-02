@@ -118,7 +118,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 	}
 
 	public function getWeatherTimes() : array{
-	    return [$this->levelData->clearWeatherTime, $this->levelData->rainTime, $this->levelData->thunderTime];
+	    return [$this->levelData->clearWeatherTime->getValue(), $this->levelData->rainTime->getValue(), $this->levelData->thunderTime->getValue()];
     }
 
 	public function getSeed(){
