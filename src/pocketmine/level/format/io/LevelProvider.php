@@ -198,9 +198,9 @@ interface LevelProvider{
 	 */
 	public function setWeatherTimes(int $clearTime, int $rainTime, int $thunderTime);
 
-    /**
-     * @return int[]
-     */
+	/**
+	 * @return int[]
+	 */
 	public function getWeatherTimes() : array;
 
 	/**

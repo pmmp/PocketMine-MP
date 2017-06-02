@@ -269,11 +269,11 @@ class McRegion extends BaseLevelProvider{
 			"generatorOptions" => new StringTag("generatorOptions", isset($options["preset"]) ? $options["preset"] : ""),
 			"LevelName" => new StringTag("LevelName", $name),
 			"GameRules" => new CompoundTag("GameRules", []),
-            "clearWeatherTime" => new IntTag("clearWeatherTime", 0),
-            "raining" => new ByteTag("raining", 0),
-            "rainTime" => new IntTag("rainTime", mt_rand((Level::TIME_FULL / 2), (7 * Level::TIME_FULL) + (Level::TIME_FULL / 2))),
-            "thundering" => new ByteTag("thundering", 0),
-            "thunderTime" => new IntTag("thunderTime", mt_rand((Level::TIME_FULL / 2), (7 * Level::TIME_FULL) + (Level::TIME_FULL / 2)) * 3)
+			"clearWeatherTime" => new IntTag("clearWeatherTime", 0),
+			"raining" => new ByteTag("raining", 0),
+			"rainTime" => new IntTag("rainTime", mt_rand((Level::TIME_FULL / 2), (7 * Level::TIME_FULL) + (Level::TIME_FULL / 2))),
+			"thundering" => new ByteTag("thundering", 0),
+			"thunderTime" => new IntTag("thunderTime", mt_rand((Level::TIME_FULL / 2), (7 * Level::TIME_FULL) + (Level::TIME_FULL / 2)) * 3)
 		]);
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setData(new CompoundTag("", [

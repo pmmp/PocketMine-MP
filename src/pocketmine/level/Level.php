@@ -818,8 +818,8 @@ class Level implements ChunkManager, Metadatable{
 			}elseif(($this->weather === self::WEATHER_RAIN and mt_rand(0, 3000) == 0) or $this->thunderTime <= 0){ //No exact wiki chance value
 				$this->setWeather(self::WEATHER_RAIN_THUNDER);
 			}elseif($this->clearTime > 0) {
-			    $this->setWeather(self::WEATHER_RAIN);
-            }
+				$this->setWeather(self::WEATHER_RAIN);
+			}
 
 			if($this->weather = self::WEATHER_RAIN_THUNDER){
 				foreach($this->getChunks() as $chunk){
