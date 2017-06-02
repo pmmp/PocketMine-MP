@@ -54,8 +54,8 @@ class WeatherCommand extends VanillaCommand{
 		$duration = !isset($args[1]) ? mt_rand((Level::TIME_FULL / 2), (7 * Level::TIME_FULL) + (Level::TIME_FULL / 2)) : (int)$args[1] * 20;
 
 		if($duration < 0) {
-		    $level->lockWeather();
-        }
+			$level->lockWeather();
+		}
 		switch ($args[0]){
 			case "clear":
 				$level->setWeather(Level::WEATHER_NORM);

@@ -91,6 +91,7 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
@@ -813,7 +814,7 @@ class Level implements ChunkManager, Metadatable{
 				} else {
 					$this->setWeather(self::WEATHER_RAIN);
 				}
-			}elseif(($this->weather === self::WEATHER_RAIN and mt_rand(0, 3000) == 0) or $this->thunderTime <= 0){ //No exact wiki chance value.
+			}elseif(($this->weather === self::WEATHER_RAIN and mt_rand(0, 3000) == 0) or $this->thunderTime <= 0){ //No exact wiki chance value
 				$this->setWeather(self::WEATHER_RAIN_THUNDER);
 			}
 
@@ -822,9 +823,9 @@ class Level implements ChunkManager, Metadatable{
 					if(mt_rand(1, 100000) == 1){
 						$pk = new AddEntityPacket();
 						$pk->type = 93;
-						$pk->eid = Entity::$entityCount++;
-						$pk->x = ($chunk->getX() * 16) + mt_rand(0, 16);
-						$pk->z = ($chunk->getY() * 16) + mt_rand(0, 16);
+						$pk->entityRuntimeId = Entity::$entityCount++;
+						$pk->x = ($chunk->getX() << 4) + mt_rand(0, 16);
+						$pk->z = ($chunk->getZ() << 4) + mt_rand(0, 16);
 						$pk->y = $this->getHighestBlockAt($pk->x, $pk->z) + 1;
 						$pk->yaw = 0;
 						$pk->pitch = 0;
@@ -832,6 +833,7 @@ class Level implements ChunkManager, Metadatable{
 						foreach($this->getPlayers() as $p){
 							$p->dataPacket($pk);
 						}
+						$this->setBlock(new Vector3($pk->x, $pk->y, $pk->z),Block::get(Block::FIRE), false, true);
 					}
 				}
 			}
@@ -2878,7 +2880,6 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function setWeather(int $weatherType){
 		$this->getServer()->getPluginManager()->callEvent($ev = new WeatherChangeEvent($this, $this->weather, $weatherType));
-
 		if($ev->isCancelled()){
 			return;
 		}

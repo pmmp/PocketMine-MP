@@ -887,6 +887,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->z = $pos->z;
 		$this->dataPacket($pk);
 
+		$this->sendWeather();
+
 		$this->sendPlayStatus(PlayStatusPacket::PLAYER_SPAWN);
 
 		if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
@@ -3494,7 +3496,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @param string $subtitle
 	 */
 	public function addSubTitle(string $subtitle){
-	    $this->sendTitleText($subtitle, SetTitlePacket::TYPE_SET_SUBTITLE);
+		$this->sendTitleText($subtitle, SetTitlePacket::TYPE_SET_SUBTITLE);
 	}
 
 	/**
@@ -3519,9 +3521,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * Resets the title duration settings.
 	 */
 	public function resetTitles(){
-	    $pk = new SetTitlePacket();
-	    $pk->type = SetTitlePacket::TYPE_RESET_TITLE;
-	    $this->dataPacket($pk);
+		$pk = new SetTitlePacket();
+		$pk->type = SetTitlePacket::TYPE_RESET_TITLE;
+		$this->dataPacket($pk);
 	}
 
 	/**
@@ -3591,24 +3593,24 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->dataPacket($pk);
 	}
 
-    public function sendWeather(){
-        $pk1 = new LevelEventPacket();
-        $pk2 = new LevelEventPacket();
-        if($this->level->getWeather() == Level::WEATHER_RAIN_THUNDER){
-            $pk1->evid = LevelEventPacket::EVENT_START_RAIN;
-            $pk2->evid = LevelEventPacket::EVENT_START_THUNDER;
-        }elseif($this->level->getWeather() == Level::WEATHER_RAIN){
-            $pk1->evid = LevelEventPacket::EVENT_START_RAIN;
-            $pk2->evid = LevelEventPacket::EVENT_STOP_THUNDER;
-        } else {
-            $pk1->evid = LevelEventPacket::EVENT_STOP_RAIN;
-            $pk2->evid = LevelEventPacket::EVENT_STOP_THUNDER;
-        }
-        $pk1->data = 90000; //TODO find correct values
-        $pk2->data = 90000;
-        $this->dataPacket($pk1);
-        $this->dataPacket($pk2);
-    }
+	public function sendWeather(){
+		$pk1 = new LevelEventPacket();
+		$pk2 = new LevelEventPacket();
+		if($this->level->getWeather() == Level::WEATHER_RAIN_THUNDER){
+			$pk1->evid = LevelEventPacket::EVENT_START_RAIN;
+			$pk2->evid = LevelEventPacket::EVENT_START_THUNDER;
+		}elseif($this->level->getWeather() == Level::WEATHER_RAIN){
+			$pk1->evid = LevelEventPacket::EVENT_START_RAIN;
+			$pk2->evid = LevelEventPacket::EVENT_STOP_THUNDER;
+		} else {
+			$pk1->evid = LevelEventPacket::EVENT_STOP_RAIN;
+			$pk2->evid = LevelEventPacket::EVENT_STOP_THUNDER;
+		}
+		$pk1->data = 90000; //TODO find correct values
+		$pk2->data = 90000;
+		$this->dataPacket($pk1);
+		$this->dataPacket($pk2);
+	}
 
 	public function sendPopup($message, $subtitle = ""){
 		$pk = new TextPacket();
