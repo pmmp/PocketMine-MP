@@ -21,6 +21,7 @@
 
 namespace pocketmine\network;
 
+use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 
@@ -28,25 +29,29 @@ class CompressBatchedTask extends AsyncTask{
 
 	public $level = 7;
 	public $data;
-	public $final;
 	public $targets;
 
-	public function __construct($data, array $targets, $level = 7){
-		$this->data = $data;
-		$this->targets = $targets;
+	public function __construct(BatchPacket $batch, array $targets, $level = 7){
+		$this->data = $batch->payload;
+		$this->targets = serialize($targets);
 		$this->level = $level;
 	}
 
 	public function onRun(){
-		try{
-			$this->final = zlib_encode($this->data, ZLIB_ENCODING_DEFLATE, $this->level);
-			$this->data = null;
-		}catch(\Throwable $e){
+		$batch = new BatchPacket();
+		$batch->payload = $this->data;
+		$this->data = null;
 
-		}
+		$batch->compress($this->level);
+		$batch->encode();
+
+		$this->setResult($batch->buffer, false);
 	}
 
 	public function onCompletion(Server $server){
-		$server->broadcastPacketsCallback($this->final, (array) $this->targets);
+		$pk = new BatchPacket($this->getResult());
+		$pk->isEncoded = true;
+		$pk->compressed = true;
+		$server->broadcastPacketsCallback($pk, unserialize($this->targets));
 	}
 }

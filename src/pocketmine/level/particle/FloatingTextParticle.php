@@ -24,8 +24,8 @@ namespace pocketmine\level\particle;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Item as ItemEntity;
 use pocketmine\math\Vector3;
-use pocketmine\network\protocol\AddEntityPacket;
-use pocketmine\network\protocol\RemoveEntityPacket;
+use pocketmine\network\mcpe\protocol\AddEntityPacket;
+use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
 
 class FloatingTextParticle extends Particle{
 	//TODO: HACK!
@@ -77,7 +77,7 @@ class FloatingTextParticle extends Particle{
 		if(!$this->invisible){
 
 			$pk = new AddEntityPacket();
-			$pk->eid = $this->entityId;
+			$pk->entityRuntimeId = $this->entityId;
 			$pk->type = ItemEntity::NETWORK_ID;
 			$pk->x = $this->x;
 			$pk->y = $this->y - 0.75;
@@ -87,13 +87,11 @@ class FloatingTextParticle extends Particle{
 			$pk->speedZ = 0;
 			$pk->yaw = 0;
 			$pk->pitch = 0;
-			$pk->item = 0;
-			$pk->meta = 0;
-			$flags = 0;
-			$flags |= 1 << Entity::DATA_FLAG_INVISIBLE;
-			$flags |= 1 << Entity::DATA_FLAG_CAN_SHOW_NAMETAG;
-			$flags |= 1 << Entity::DATA_FLAG_ALWAYS_SHOW_NAMETAG;
-			$flags |= 1 << Entity::DATA_FLAG_IMMOBILE;
+			$flags = (
+				(1 << Entity::DATA_FLAG_CAN_SHOW_NAMETAG) |
+				(1 << Entity::DATA_FLAG_ALWAYS_SHOW_NAMETAG) |
+				(1 << Entity::DATA_FLAG_IMMOBILE)
+			);
 			$pk->metadata = [
 				Entity::DATA_FLAGS => [Entity::DATA_TYPE_LONG, $flags],
 				Entity::DATA_NAMETAG => [Entity::DATA_TYPE_STRING, $this->title . ($this->text !== "" ? "\n" . $this->text : "")],

@@ -57,4 +57,8 @@ class Cobweb extends Flowable{
 		//TODO: correct drops
 		return [];
 	}
+
+	public function diffusesSkyLight() : bool{
+		return true;
+	}
 }

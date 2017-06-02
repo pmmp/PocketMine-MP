@@ -52,6 +52,10 @@ class Ladder extends Transparent{
 		return 0.4;
 	}
 
+	public function canClimb() : bool{
+		return true;
+	}
+
 	public function onEntityCollide(Entity $entity){
 		$entity->resetFallDistance();
 		$entity->onGround = true;

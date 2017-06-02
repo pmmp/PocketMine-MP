@@ -29,7 +29,7 @@ use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\network\protocol\AddEntityPacket;
+use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class FallingSand extends Entity{
@@ -38,6 +38,8 @@ class FallingSand extends Entity{
 	public $width = 0.98;
 	public $length = 0.98;
 	public $height = 0.98;
+
+	protected $baseOffset = 0.49;
 
 	protected $gravity = 0.04;
 	protected $drag = 0.02;
@@ -95,17 +97,6 @@ class FallingSand extends Entity{
 		$hasUpdate = $this->entityBaseTick($tickDiff);
 
 		if($this->isAlive()){
-			$pos = (new Vector3($this->x - 0.5, $this->y, $this->z - 0.5))->round();
-
-			if($this->ticksLived === 1){
-				$block = $this->level->getBlock($pos);
-				if($block->getId() !== $this->blockId){
-					$this->kill();
-					return true;
-				}
-				$this->level->setBlock($pos, Block::get(0), true);
-			}
-
 			$this->motionY -= $this->gravity;
 
 			$this->move($this->motionX, $this->motionY, $this->motionZ);
@@ -121,7 +112,8 @@ class FallingSand extends Entity{
 			if($this->onGround){
 				$this->kill();
 				$block = $this->level->getBlock($pos);
-				if($block->getId() > 0 and !$block->isSolid() and !($block instanceof Liquid)){
+				if($block->getId() > 0 and $block->isTransparent() and !$block->canBeReplaced()){
+					//FIXME: anvils are supposed to destroy torches
 					$this->getLevel()->dropItem($this, ItemItem::get($this->getBlock(), $this->getDamage(), 1));
 				}else{
 					$this->server->getPluginManager()->callEvent($ev = new EntityBlockChangeEvent($this, $block, Block::get($this->getBlock(), $this->getDamage())));
@@ -154,7 +146,7 @@ class FallingSand extends Entity{
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
 		$pk->type = FallingSand::NETWORK_ID;
-		$pk->eid = $this->getId();
+		$pk->entityRuntimeId = $this->getId();
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;

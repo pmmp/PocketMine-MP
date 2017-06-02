@@ -74,7 +74,7 @@ namespace pocketmine {
 	use raklib\RakLib;
 
 	const VERSION = "1.6.2dev";
-	const API_VERSION = "3.0.0-ALPHA4";
+	const API_VERSION = "3.0.0-ALPHA5";
 	const CODENAME = "Unleashed";
 
 	/*
@@ -83,6 +83,12 @@ namespace pocketmine {
 	 * This is the only non-class based file on this project.
 	 * Enjoy it as much as I did writing it. I don't want to do it again.
 	 */
+
+	if(!extension_loaded("phar")){
+		echo "[CRITICAL] Unable to find the Phar extension." . PHP_EOL;
+		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
+		exit(1);
+	}
 
 	if(\Phar::running(true) !== ""){
 		@define('pocketmine\PATH', \Phar::running(true) . "/");
@@ -128,8 +134,14 @@ namespace pocketmine {
 
 	set_time_limit(0); //Who set it to 30 seconds?!?!
 
-	gc_enable();
 	error_reporting(-1);
+
+	set_error_handler(function($severity, $message, $file, $line){
+		if((error_reporting() & $severity)){
+			throw new \ErrorException($message, 0, $severity, $file, $line);
+		}
+	});
+
 	ini_set("allow_url_fopen", 1);
 	ini_set("display_errors", 1);
 	ini_set("display_startup_errors", 1);
@@ -228,7 +240,6 @@ namespace pocketmine {
 				}
 
 				return parse_offset($offset);
-				break;
 			case 'linux':
 				// Ubuntu / Debian.
 				if(file_exists('/etc/timezone')){
@@ -255,7 +266,6 @@ namespace pocketmine {
 				}
 
 				return parse_offset($offset);
-				break;
 			case 'mac':
 				if(is_link('/etc/localtime')){
 					$filename = readlink('/etc/localtime');
@@ -266,10 +276,8 @@ namespace pocketmine {
 				}
 
 				return false;
-				break;
 			default:
 				return false;
-				break;
 		}
 	}
 
@@ -398,11 +406,6 @@ namespace pocketmine {
 		++$errors;
 	}
 
-	if(!extension_loaded("sockets")){
-		$logger->critical("Unable to find the Socket extension.");
-		++$errors;
-	}
-
 	$pthreads_version = phpversion("pthreads");
 	if(substr_count($pthreads_version, ".") < 2){
 		$pthreads_version = "0.$pthreads_version";
@@ -431,19 +434,21 @@ namespace pocketmine {
 		");
 	}
 
-	if(!extension_loaded("curl")){
-		$logger->critical("Unable to find the cURL extension.");
-		++$errors;
-	}
+	$extensions = [
+		"curl" => "cURL",
+		"json" => "JSON",
+		"mbstring" => "Multibyte String",
+		"yaml" => "YAML",
+		"sockets" => "Sockets",
+		"zip" => "Zip",
+		"zlib" => "Zlib"
+	];
 
-	if(!extension_loaded("yaml")){
-		$logger->critical("Unable to find the YAML extension.");
-		++$errors;
-	}
-
-	if(!extension_loaded("zlib")){
-		$logger->critical("Unable to find the Zlib extension.");
-		++$errors;
+	foreach($extensions as $ext => $name){
+		if(!extension_loaded($ext)){
+			$logger->critical("Unable to find the $name ($ext) extension.");
+			++$errors;
+		}
 	}
 
 	if($errors > 0){
@@ -451,6 +456,10 @@ namespace pocketmine {
 		$logger->shutdown();
 		$logger->join();
 		exit(1); //Exit with error
+	}
+
+	if(PHP_INT_SIZE < 8){
+		$logger->warning("Running PocketMine-MP with 32-bit systems/PHP is deprecated. Support for 32-bit may be dropped in the future.");
 	}
 
 	$gitHash = str_repeat("00", 20);
@@ -495,6 +504,7 @@ namespace pocketmine {
 
 	$killer = new ServerKiller(8);
 	$killer->start();
+	usleep(10000); //Fixes ServerKiller not being able to start on single-core machines
 
 	$erroredThreads = 0;
 	foreach(ThreadManager::getInstance()->getAll() as $id => $thread){

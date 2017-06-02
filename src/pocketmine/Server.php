@@ -37,6 +37,7 @@ use pocketmine\entity\Entity;
 use pocketmine\event\HandlerList;
 use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\level\LevelLoadEvent;
+use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\event\server\ServerCommandEvent;
 use pocketmine\event\Timings;
@@ -48,8 +49,8 @@ use pocketmine\inventory\Recipe;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\lang\BaseLang;
-use pocketmine\level\format\io\LevelProviderManager;
 use pocketmine\level\format\io\leveldb\LevelDB;
+use pocketmine\level\format\io\LevelProviderManager;
 use pocketmine\level\format\io\region\Anvil;
 use pocketmine\level\format\io\region\McRegion;
 use pocketmine\level\format\io\region\PMAnvil;
@@ -74,13 +75,13 @@ use pocketmine\nbt\tag\LongTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\CompressBatchedTask;
+use pocketmine\network\mcpe\protocol\BatchPacket;
+use pocketmine\network\mcpe\protocol\DataPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\network\mcpe\protocol\PlayerListPacket;
+use pocketmine\network\mcpe\RakLibInterface;
 use pocketmine\network\Network;
-use pocketmine\network\protocol\BatchPacket;
-use pocketmine\network\protocol\DataPacket;
-use pocketmine\network\protocol\Info as ProtocolInfo;
-use pocketmine\network\protocol\PlayerListPacket;
 use pocketmine\network\query\QueryHandler;
-use pocketmine\network\RakLibInterface;
 use pocketmine\network\rcon\RCON;
 use pocketmine\network\upnp\UPnP;
 use pocketmine\permission\BanList;
@@ -90,6 +91,7 @@ use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
 use pocketmine\plugin\ScriptPluginLoader;
+use pocketmine\resourcepacks\ResourcePackManager;
 use pocketmine\scheduler\FileWriteTask;
 use pocketmine\scheduler\SendUsageTask;
 use pocketmine\scheduler\ServerScheduler;
@@ -178,6 +180,9 @@ class Server{
 
 	/** @var CraftingManager */
 	private $craftingManager;
+
+	/** @var ResourcePackManager */
+	private $resourceManager;
 
 	/** @var ConsoleCommandSender */
 	private $consoleSender;
@@ -598,6 +603,13 @@ class Server{
 	}
 
 	/**
+	 * @return ResourcePackManager
+	 */
+	public function getResourceManager() : ResourcePackManager{
+		return $this->resourceManager;
+	}
+
+	/**
 	 * @return ServerScheduler
 	 */
 	public function getScheduler(){
@@ -690,7 +702,7 @@ class Server{
 	 *
 	 * @return CompoundTag
 	 */
-	public function getOfflinePlayerData($name){
+	public function getOfflinePlayerData($name) : CompoundTag{
 		$name = strtolower($name);
 		$path = $this->getDataPath() . "players/";
 		if($this->shouldSavePlayerData()){
@@ -747,8 +759,6 @@ class Server{
 		$nbt->Motion->setTagType(NBT::TAG_Double);
 		$nbt->Rotation->setTagType(NBT::TAG_Float);
 
-		$this->saveOfflinePlayerData($name, $nbt);
-
 		return $nbt;
 
 	}
@@ -758,11 +768,16 @@ class Server{
 	 * @param CompoundTag $nbtTag
 	 * @param bool        $async
 	 */
-	public function saveOfflinePlayerData($name, CompoundTag $nbtTag, $async = false){
-		if($this->shouldSavePlayerData()){
+	public function saveOfflinePlayerData(string $name, CompoundTag $nbtTag, bool $async = false){
+		$ev = new PlayerDataSaveEvent($nbtTag, $name);
+		$ev->setCancelled(!$this->shouldSavePlayerData());
+
+		$this->pluginManager->callEvent($ev);
+
+		if(!$ev->isCancelled()){
 			$nbt = new NBT(NBT::BIG_ENDIAN);
 			try{
-				$nbt->setData($nbtTag);
+				$nbt->setData($ev->getSaveData());
 
 				if($async){
 					$this->getScheduler()->scheduleAsyncTask(new FileWriteTask($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed()));
@@ -809,7 +824,7 @@ class Server{
 	public function getPlayerExact($name){
 		$name = strtolower($name);
 		foreach($this->getOnlinePlayers() as $player){
-			if(strtolower($player->getName()) === $name){
+			if($player->getLowerCaseName() === $name){
 				return $player;
 			}
 		}
@@ -826,7 +841,7 @@ class Server{
 		$partialName = strtolower($partialName);
 		$matchedPlayers = [];
 		foreach($this->getOnlinePlayers() as $player){
-			if(strtolower($player->getName()) === $partialName){
+			if($player->getLowerCaseName() === $partialName){
 				$matchedPlayers = [$player];
 				break;
 			}elseif(stripos($player->getName(), $partialName) !== false){
@@ -1432,7 +1447,7 @@ class Server{
 
 			$this->memoryManager = new MemoryManager($this);
 
-			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.start", [TextFormat::AQUA . $this->getVersion()]));
+			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.start", [TextFormat::AQUA . $this->getVersion() . TextFormat::RESET]));
 
 			if(($poolSize = $this->getProperty("settings.async-workers", "auto")) === "auto"){
 				$poolSize = ServerScheduler::$WORKERS;
@@ -1495,7 +1510,7 @@ class Server{
 				$this->logger->warning("Debugging assertions are enabled, this may impact on performance. To disable them, set `zend.assertions = -1` in php.ini.");
 			}
 
-			ini_set('assert.exception', (bool) $this->getProperty("debug.assertions.throw-exception", 0));
+			ini_set('assert.exception', '1');
 
 			if($this->logger instanceof MainLogger){
 				$this->logger->setLogDebug(\pocketmine\DEBUG > 1);
@@ -1539,6 +1554,8 @@ class Server{
 			Effect::init();
 			Attribute::init();
 			$this->craftingManager = new CraftingManager();
+
+			$this->resourceManager = new ResourcePackManager($this, $this->getDataPath() . "resource_packs" . DIRECTORY_SEPARATOR);
 
 			$this->pluginManager = new PluginManager($this, $this->commandMap);
 			$this->pluginManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
@@ -1704,6 +1721,36 @@ class Server{
 	}
 
 	/**
+	 * @param string $title
+	 * @param string $subtitle
+	 * @param int    $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
+	 * @param int    $stay Duration in ticks to stay on screen for
+	 * @param int    $fadeOut Duration in ticks for fade-out.
+	 * @param Player[]|null $recipients
+	 *
+	 * @return int
+	 */
+	public function broadcastTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1, $recipients = null){
+		if(!is_array($recipients)){
+			/** @var Player[] $recipients */
+			$recipients = [];
+
+			foreach($this->pluginManager->getPermissionSubscriptions(self::BROADCAST_CHANNEL_USERS) as $permissible){
+				if($permissible instanceof Player and $permissible->hasPermission(self::BROADCAST_CHANNEL_USERS)){
+					$recipients[spl_object_hash($permissible)] = $permissible; // do not send messages directly, or some might be repeated
+				}
+			}
+		}
+
+		/** @var Player[] $recipients */
+		foreach($recipients as $recipient){
+			$recipient->addTitle($title, $subtitle, $fadeIn, $stay, $fadeOut);
+		}
+
+		return count($recipients);
+	}
+
+	/**
 	 * @param string $message
 	 * @param string $permissions
 	 *
@@ -1737,7 +1784,7 @@ class Server{
 		$packet->encode();
 		$packet->isEncoded = true;
 		if(Network::$BATCH_THRESHOLD >= 0 and strlen($packet->buffer) >= Network::$BATCH_THRESHOLD){
-			$this->batchPackets($players, [$packet->buffer], false);
+			$this->batchPackets($players, [$packet], false);
 			return;
 		}
 
@@ -1752,24 +1799,13 @@ class Server{
 	/**
 	 * Broadcasts a list of packets in a batch to a list of players
 	 *
-	 * @param Player[]            $players
-	 * @param DataPacket[]|string $packets
-	 * @param bool                $forceSync
+	 * @param Player[]     $players
+	 * @param DataPacket[] $packets
+	 * @param bool         $forceSync
+	 * @param bool         $immediate
 	 */
-	public function batchPackets(array $players, array $packets, $forceSync = false){
+	public function batchPackets(array $players, array $packets, $forceSync = false, bool $immediate = false){
 		Timings::$playerNetworkTimer->startTiming();
-		$str = "";
-
-		foreach($packets as $p){
-			if($p instanceof DataPacket){
-				if(!$p->isEncoded){
-					$p->encode();
-				}
-				$str .= Binary::writeUnsignedVarInt(strlen($p->buffer)) . $p->buffer;
-			}else{
-				$str .= Binary::writeUnsignedVarInt(strlen($p)) . $p;
-			}
-		}
 
 		$targets = [];
 		foreach($players as $p){
@@ -1778,27 +1814,45 @@ class Server{
 			}
 		}
 
-		if(!$forceSync and $this->networkCompressionAsync){
-			$task = new CompressBatchedTask($str, $targets, $this->networkCompressionLevel);
-			$this->getScheduler()->scheduleAsyncTask($task);
-		}else{
-			$this->broadcastPacketsCallback(zlib_encode($str, ZLIB_ENCODING_DEFLATE, $this->networkCompressionLevel), $targets);
+		if(count($targets) > 0){
+			$pk = new BatchPacket();
+
+			foreach($packets as $p){
+				$pk->addPacket($p);
+			}
+
+			if(!$forceSync and !$immediate and $this->networkCompressionAsync){
+				$task = new CompressBatchedTask($pk, $targets, $this->networkCompressionLevel);
+				$this->getScheduler()->scheduleAsyncTask($task);
+			}else{
+				$pk->compress($this->networkCompressionLevel);
+				$this->broadcastPacketsCallback($pk, $targets, $immediate);
+			}
 		}
 
 		Timings::$playerNetworkTimer->stopTiming();
 	}
 
-	public function broadcastPacketsCallback($data, array $identifiers){
-		$pk = new BatchPacket();
-		$pk->payload = $data;
-		$pk->encode();
-		$pk->isEncoded = true;
+	public function broadcastPacketsCallback(BatchPacket $pk, array $identifiers, bool $immediate = false){
+		if(!$pk->isEncoded){
+			$pk->encode();
+			$pk->isEncoded = true;
+		}
 
-		foreach($identifiers as $i){
-			if(isset($this->players[$i])){
-				$this->players[$i]->dataPacket($pk);
+		if($immediate){
+			foreach($identifiers as $i){
+				if(isset($this->players[$i])){
+					$this->players[$i]->directDataPacket($pk);
+				}
+			}
+		}else{
+			foreach($identifiers as $i){
+				if(isset($this->players[$i])){
+					$this->players[$i]->dataPacket($pk);
+				}
 			}
 		}
+
 	}
 
 
@@ -1924,8 +1978,10 @@ class Server{
 				UPnP::RemovePortForward($this->getPort());
 			}
 
-			$this->getLogger()->debug("Disabling all plugins");
-			$this->pluginManager->disablePlugins();
+			if($this->pluginManager instanceof PluginManager){
+				$this->getLogger()->debug("Disabling all plugins");
+				$this->pluginManager->disablePlugins();
+			}
 
 			foreach($this->players as $player){
 				$player->close($player->getLeaveMessage(), $this->getProperty("settings.shutdown-message", "Server closed"));
@@ -2068,7 +2124,8 @@ class Server{
 		try{
 			$dump = new CrashDump($this);
 		}catch(\Throwable $e){
-			$this->logger->critical($this->getLanguage()->translateString("pocketmine.crash.error", $e->getMessage()));
+			$this->logger->logException($e);
+			$this->logger->critical($this->getLanguage()->translateString("pocketmine.crash.error", [$e->getMessage()]));
 			return;
 		}
 
@@ -2149,9 +2206,9 @@ class Server{
 	}
 
 	public function addOnlinePlayer(Player $player){
-		$this->playerList[$player->getRawUniqueId()] = $player;
-
 		$this->updatePlayerListData($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkinId(), $player->getSkinData());
+
+		$this->playerList[$player->getRawUniqueId()] = $player;
 	}
 
 	public function removeOnlinePlayer(Player $player){
@@ -2183,9 +2240,6 @@ class Server{
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_ADD;
 		foreach($this->playerList as $player){
-			if($p === $player){
-				continue; //fixes duplicates
-			}
 			$pk->entries[] = [$player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkinId(), $player->getSkinData()];
 		}
 
@@ -2196,7 +2250,7 @@ class Server{
 		foreach($this->players as $p){
 			if(!$p->loggedIn and ($tickTime - $p->creationTime) >= 10){
 				$p->close("", "Login timeout");
-			}elseif($this->alwaysTickPlayers){
+			}elseif($this->alwaysTickPlayers and $p->joined){
 				$p->onUpdate($currentTick);
 			}
 		}
@@ -2241,7 +2295,7 @@ class Server{
 		if($this->getAutoSave()){
 			Timings::$worldSaveTimer->startTiming();
 			foreach($this->players as $index => $player){
-				if($player->isOnline()){
+				if($player->joined){
 					$player->save(true);
 				}elseif(!$player->isConnected()){
 					$this->removePlayer($player);

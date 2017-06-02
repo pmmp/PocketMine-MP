@@ -25,8 +25,8 @@ use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityInventoryChangeEvent;
 use pocketmine\event\inventory\InventoryOpenEvent;
 use pocketmine\item\Item;
-use pocketmine\network\protocol\ContainerSetContentPacket;
-use pocketmine\network\protocol\ContainerSetSlotPacket;
+use pocketmine\network\mcpe\protocol\ContainerSetContentPacket;
+use pocketmine\network\mcpe\protocol\ContainerSetSlotPacket;
 use pocketmine\Player;
 use pocketmine\Server;
 
@@ -103,6 +103,7 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function getItem($index){
+		assert($index >= 0, "Inventory slot should not be negative");
 		return isset($this->slots[$index]) ? clone $this->slots[$index] : Item::get(Item::AIR, 0, 0);
 	}
 

@@ -670,6 +670,35 @@ class Item implements ItemIds, \JsonSerializable{
 		return $this;
 	}
 
+	public function getLore() : array{
+		$tag = $this->getNamedTagEntry("display");
+		if($tag instanceof CompoundTag and isset($tag->Lore) and $tag->Lore instanceof ListTag){
+			$lines = [];
+			foreach($tag->Lore->getValue() as $line){
+				$lines[] = $line->getValue();
+			}
+
+			return $lines;
+		}
+
+		return [];
+	}
+
+	public function setLore(array $lines){
+		$tag = $this->getNamedTag() ?? new CompoundTag("", []);
+		if(!isset($tag->display)){
+			$tag->display = new CompoundTag("display", []);
+		}
+		$tag->display->Lore = new ListTag("Lore");
+		$tag->display->Lore->setTagType(NBT::TAG_String);
+		$count = 0;
+		foreach($lines as $line){
+			$tag->display->Lore[$count++] = new StringTag("", $line);
+		}
+
+		$this->setNamedTag($tag);
+	}
+
 	/**
 	 * @param $name
 	 * @return Tag|null
@@ -916,7 +945,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @return bool
 	 */
-	public final function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
+	final public function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
 		if($this->id === $item->getId() and ($checkDamage === false or $this->getDamage() === $item->getDamage())){
 			if($checkCompound){
 				if($item->getCompoundTag() === $this->getCompoundTag()){
@@ -942,7 +971,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @return bool
 	 */
-	public final function deepEquals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
+	final public function deepEquals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
 		return $this->equals($item, $checkDamage, $checkCompound);
 	}
 

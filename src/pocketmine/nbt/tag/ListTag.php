@@ -22,7 +22,6 @@
 namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\ListTag as TagEnum;
 
 #include <rules/NBT.h>
 
@@ -46,6 +45,16 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 		}
 
 		return $value;
+	}
+
+	public function setValue($value){
+		if(is_array($value)){
+			foreach($value as $name => $tag){
+				if($tag instanceof NamedTag){
+					$this->{$name} = $tag;
+				}
+			}
+		}
 	}
 
 	public function getCount(){
@@ -88,18 +97,16 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 	}
 
 	public function count($mode = COUNT_NORMAL){
-		for($i = 0; true; $i++){
-			if(!isset($this->{$i})){
-				return $i;
-			}
-			if($mode === COUNT_RECURSIVE){
-				if($this->{$i} instanceof \Countable){
-					$i += count($this->{$i});
-				}
+		$count = 0;
+		for($i = 0; isset($this->{$i}); $i++){
+			if($mode === COUNT_RECURSIVE and $this->{$i} instanceof \Countable){
+				$count += count($this->{$i});
+			}else{
+				$count++;
 			}
 		}
 
-		return $i;
+		return $count;
 	}
 
 	public function getType(){
@@ -118,64 +125,12 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 		$this->value = [];
 		$this->tagType = $nbt->getByte();
 		$size = $nbt->getInt($network);
+
+		$tagBase = NBT::createTag($this->tagType);
 		for($i = 0; $i < $size and !$nbt->feof(); ++$i){
-			switch($this->tagType){
-				case NBT::TAG_Byte:
-					$tag = new ByteTag("");
-					$tag->read($nbt, $network);
-					$this->{$i} = $tag;
-					break;
-				case NBT::TAG_Short:
-					$tag = new ShortTag("");
-					$tag->read($nbt, $network);
-					$this->{$i} = $tag;
-					break;
-				case NBT::TAG_Int:
-					$tag = new IntTag("");
-					$tag->read($nbt, $network);
-					$this->{$i} = $tag;
-					break;
-				case NBT::TAG_Long:
-					$tag = new LongTag("");
-					$tag->read($nbt, $network);
-					$this->{$i} = $tag;
-					break;
-				case NBT::TAG_Float:
-					$tag = new FloatTag("");
-					$tag->read($nbt, $network);
-					$this->{$i} = $tag;
-					break;
-				case NBT::TAG_Double:
-					$tag = new DoubleTag("");
-					$tag->read($nbt, $network);
-					$this->{$i} = $tag;
-					break;
-				case NBT::TAG_ByteArray:
-					$tag = new ByteArrayTag("");
-					$tag->read($nbt, $network);
-					$this->{$i} = $tag;
-					break;
-				case NBT::TAG_String:
-					$tag = new StringTag("");
-					$tag->read($nbt, $network);
-					$this->{$i} = $tag;
-					break;
-				case NBT::TAG_List:
-					$tag = new TagEnum("");
-					$tag->read($nbt, $network);
-					$this->{$i} = $tag;
-					break;
-				case NBT::TAG_Compound:
-					$tag = new CompoundTag("");
-					$tag->read($nbt, $network);
-					$this->{$i} = $tag;
-					break;
-				case NBT::TAG_IntArray:
-					$tag = new IntArrayTag("");
-					$tag->read($nbt, $network);
-					$this->{$i} = $tag;
-					break;
-			}
+			$tag = clone $tagBase;
+			$tag->read($nbt, $network);
+			$this->{$i} = $tag;
 		}
 	}
 

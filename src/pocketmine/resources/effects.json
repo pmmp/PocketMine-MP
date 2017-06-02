@@ -1,0 +1,135 @@
+{
+    "speed": {
+        "id": 1,
+        "color": "7cafc6",
+        "name": "potion.moveSpeed"
+    },
+    "slowness": {
+        "id": 2,
+        "color": "5a6c81",
+        "name": "potion.moveSlowdown",
+        "isBad": true
+    },
+    "haste": {
+        "id": 3,
+        "color": "d9c043",
+        "name": "potion.digSpeed"
+    },
+    "mining_fatigue": {
+        "id": 4,
+        "color": "4a4217",
+        "name": "potion.digSlowDown",
+        "isBad": true
+    },
+    "strength": {
+        "id": 5,
+        "color": "932423",
+        "name": "potion.damageBoost"
+    },
+    "instant_health": {
+        "id": 6,
+        "color": "f82423",
+        "name": "potion.heal",
+        "default_duration": 1,
+        "has_bubbles": false
+    },
+    "instant_damage": {
+        "id": 7,
+        "color": "430a09",
+        "name": "potion.harm",
+        "isBad": true,
+        "default_duration": 1,
+        "has_bubbles": false
+    },
+    "jump_boost": {
+        "id": 8,
+        "color": "22ff4c",
+        "name": "potion.jump"
+    },
+    "nausea": {
+        "id": 9,
+        "color": "551d4a",
+        "name": "potion.confusion",
+        "isBad": true
+    },
+    "regeneration": {
+        "id": 10,
+        "color": "cd5cab",
+        "name": "potion.regeneration"
+    },
+    "resistance": {
+        "id": 11,
+        "color": "99453a",
+        "name": "potion.resistance"
+    },
+    "fire_resistance": {
+        "id": 12,
+        "color": "e49a3a",
+        "name": "potion.fireResistance"
+    },
+    "water_breathing": {
+        "id": 13,
+        "color": "2e5299",
+        "name": "potion.waterBreathing"
+    },
+    "invisibility": {
+        "id": 14,
+        "color": "7f8392",
+        "name": "potion.invisibility"
+    },
+    "blindness": {
+        "id": 15,
+        "color": "1f1f23",
+        "name": "potion.blindness",
+        "isBad": true
+    },
+    "night_vision": {
+        "id": 16,
+        "color": "1f1fa1",
+        "name": "potion.nightVision"
+    },
+    "hunger": {
+        "id": 17,
+        "color": "587653",
+        "name": "potion.hunger",
+        "isBad": true
+    },
+    "weakness": {
+        "id": 18,
+        "color": "484d48",
+        "name": "potion.weakness",
+        "isBad": true
+    },
+    "poison": {
+        "id": 19,
+        "color": "4e9331",
+        "name": "potion.poison",
+        "isBad": true
+    },
+    "wither": {
+        "id": 20,
+        "color": "352a27",
+        "name": "potion.wither",
+        "isBad": true
+    },
+    "health_boost": {
+        "id": 21,
+        "color": "f87d23",
+        "name": "potion.healthBoost"
+    },
+    "absorption": {
+        "id": 22,
+        "color": "2552a5",
+        "name": "potion.absorption"
+    },
+    "saturation": {
+        "id": 23,
+        "color": "f82423",
+        "name": "potion.saturation"
+    },
+    "levitation": {
+        "id": 24,
+        "color": "ceffff",
+        "name": "potion.levitation"
+    }
+}

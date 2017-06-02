@@ -50,6 +50,8 @@ class Config{
 	private $correct = false;
 	/** @var int */
 	private $type = Config::DETECT;
+	/** @var int */
+	private $jsonOptions = JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING;
 
 	public static $formats = [
 		"properties" => Config::PROPERTIES,
@@ -187,7 +189,7 @@ class Config{
 						$content = $this->writeProperties();
 						break;
 					case Config::JSON:
-						$content = json_encode($this->config, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING);
+						$content = json_encode($this->config, $this->jsonOptions);
 						break;
 					case Config::YAML:
 						$content = yaml_emit($this->config, YAML_UTF8_ENCODING);
@@ -217,6 +219,68 @@ class Config{
 		}else{
 			return false;
 		}
+	}
+
+	/**
+	 * Sets the options for the JSON encoding when saving
+	 *
+	 * @param int $options
+	 * @return Config $this
+	 * @throws \RuntimeException if the Config is not in JSON
+	 * @see json_encode
+	 */
+	public function setJsonOptions(int $options) : Config{
+		if($this->type !== Config::JSON){
+			throw new \RuntimeException("Attempt to set JSON options for non-JSON config");
+		}
+		$this->jsonOptions = $options;
+		return $this;
+	}
+
+	/**
+	 * Enables the given option in addition to the currently set JSON options
+	 *
+	 * @param int $option
+	 * @return Config $this
+	 * @throws \RuntimeException if the Config is not in JSON
+	 * @see json_encode
+	 */
+	public function enableJsonOption(int $option) : Config{
+		if($this->type !== Config::JSON){
+			throw new \RuntimeException("Attempt to enable JSON option for non-JSON config");
+		}
+		$this->jsonOptions |= $option;
+		return $this;
+	}
+
+	/**
+	 * Disables the given option for the JSON encoding when saving
+	 *
+	 * @param int $option
+	 * @return Config $this
+	 * @throws \RuntimeException if the Config is not in JSON
+	 * @see json_encode
+	 */
+	public function disableJsonOption(int $option) : Config{
+		if($this->type !== Config::JSON){
+			throw new \RuntimeException("Attempt to disable JSON option for non-JSON config");
+		}
+		$this->jsonOptions &= ~$option;
+		return $this;
+	}
+
+	/**
+	 * Returns the options for the JSON encoding when saving
+	 *
+	 * @return int
+	 * @throws \RuntimeException if the Config is not in JSON
+	 * @see json_encode
+	 */
+	public function getJsonOptions() : int{
+		if($this->type !== Config::JSON){
+			throw new \RuntimeException("Attempt to get JSON options for non-JSON config");
+		}
+		return $this->jsonOptions;
 	}
 
 	/**

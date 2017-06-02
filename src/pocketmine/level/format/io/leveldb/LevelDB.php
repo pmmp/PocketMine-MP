@@ -22,18 +22,18 @@
 namespace pocketmine\level\format\io\leveldb;
 
 use pocketmine\level\format\Chunk;
-use pocketmine\level\format\SubChunk;
 use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\ChunkUtils;
-use pocketmine\level\generator\Generator;
+use pocketmine\level\format\SubChunk;
 use pocketmine\level\generator\Flat;
+use pocketmine\level\generator\Generator;
 use pocketmine\level\Level;
 use pocketmine\level\LevelException;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\{
 	ByteTag, CompoundTag, FloatTag, IntTag, LongTag, StringTag
 };
-use pocketmine\network\protocol\Info as ProtocolInfo;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\utils\Binary;
 use pocketmine\utils\MainLogger;
 
