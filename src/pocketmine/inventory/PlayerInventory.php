@@ -31,7 +31,6 @@ use pocketmine\network\mcpe\protocol\ContainerSetSlotPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\Player;
-use pocketmine\Server;
 
 class PlayerInventory extends BaseInventory{
 
