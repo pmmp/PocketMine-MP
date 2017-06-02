@@ -198,6 +198,11 @@ interface LevelProvider{
 	 */
 	public function setWeatherTimes(int $clearTime, int $rainTime, int $thunderTime);
 
+    /**
+     * @return int[]
+     */
+	public function getWeatherTimes() : array;
+
 	/**
 	 * @return int|string int, or the string numeric representation of a long in 32-bit systems
 	 */

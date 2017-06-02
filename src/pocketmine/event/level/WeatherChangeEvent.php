@@ -30,7 +30,9 @@ use pocketmine\event\Cancellable;
 class WeatherChangeEvent extends LevelEvent implements Cancellable{
 	public static $handlerList = null;
 
+	/** @var int $oldWeather */
 	private $oldWeather;
+	/** @var int $newWeather */
 	private $newWeather;
 
 	public function __construct(Level $level, int $oldWeather, int $newWeather){

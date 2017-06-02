@@ -117,6 +117,10 @@ abstract class BaseLevelProvider implements LevelProvider{
 		$this->levelData->clearWeatherTime = new IntTag("clearWeatherTime", $clearTime);
 	}
 
+	public function getWeatherTimes() : array{
+	    return [$this->levelData->clearWeatherTime, $this->levelData->rainTime, $this->levelData->thunderTime];
+    }
+
 	public function getSeed(){
 		return $this->levelData["RandomSeed"];
 	}

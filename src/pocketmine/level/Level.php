@@ -377,9 +377,10 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->weatherLocked = false;
 		$this->weather = $this->provider->getWeather();
-		$this->rainTime = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
-		$this->thunderTime = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2)) * 3;
-		$this->clearTime = 0;
+		$durations = $this->provider->getWeatherTimes();
+		$this->rainTime = isset($durations[1]) ? (int) $durations[1] : mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
+		$this->thunderTime = isset($durations[2]) ? (int) $durations[2] : mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2)) * 3;
+		$this->clearTime = isset($durations[0]) ? (int) $durations[0] : 0;
 
 		$this->timings = new LevelTimings($this);
 		$this->temporalPosition = new Position(0, 0, 0, $this);
@@ -816,7 +817,9 @@ class Level implements ChunkManager, Metadatable{
 				}
 			}elseif(($this->weather === self::WEATHER_RAIN and mt_rand(0, 3000) == 0) or $this->thunderTime <= 0){ //No exact wiki chance value
 				$this->setWeather(self::WEATHER_RAIN_THUNDER);
-			}
+			}elseif($this->clearTime > 0) {
+			    $this->setWeather(self::WEATHER_RAIN);
+            }
 
 			if($this->weather = self::WEATHER_RAIN_THUNDER){
 				foreach($this->getChunks() as $chunk){
@@ -2893,7 +2896,7 @@ class Level implements ChunkManager, Metadatable{
 			$this->clearTime = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
 		}elseif($ev->getNewWeather() == self::WEATHER_NORM){
 			$this->rainTime = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
-			$this->thunderTime = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
+			$this->thunderTime = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2)) * 3;
 			$this->clearTime = 0;
 		}
 
