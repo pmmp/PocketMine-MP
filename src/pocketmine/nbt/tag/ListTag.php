@@ -136,7 +136,7 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 
 	public function write(NBT $nbt, bool $network = false){
 		if(!isset($this->tagType)){
-			$id = null;
+			$id = NBT::TAG_End; //MC defaults to TAG_End for empty lists
 			foreach($this as $tag){
 				if($tag instanceof Tag){
 					if(!isset($id)){
