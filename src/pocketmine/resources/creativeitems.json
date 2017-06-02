@@ -193,19 +193,37 @@
     },
     {
         "id": 159,
+        "damage": 8,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 159,
+        "damage": 7,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 159,
+        "damage": 15,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 159,
+        "damage": 12,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 159,
+        "damage": 14,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 159,
         "damage": 1,
-        "count": 1,
-        "nbt": ""
-    },
-    {
-        "id": 159,
-        "damage": 2,
-        "count": 1,
-        "nbt": ""
-    },
-    {
-        "id": 159,
-        "damage": 3,
         "count": 1,
         "nbt": ""
     },
@@ -223,19 +241,7 @@
     },
     {
         "id": 159,
-        "damage": 6,
-        "count": 1,
-        "nbt": ""
-    },
-    {
-        "id": 159,
-        "damage": 7,
-        "count": 1,
-        "nbt": ""
-    },
-    {
-        "id": 159,
-        "damage": 8,
+        "damage": 13,
         "count": 1,
         "nbt": ""
     },
@@ -247,7 +253,7 @@
     },
     {
         "id": 159,
-        "damage": 10,
+        "damage": 3,
         "count": 1,
         "nbt": ""
     },
@@ -259,25 +265,19 @@
     },
     {
         "id": 159,
-        "damage": 12,
+        "damage": 10,
         "count": 1,
         "nbt": ""
     },
     {
         "id": 159,
-        "damage": 13,
+        "damage": 2,
         "count": 1,
         "nbt": ""
     },
     {
         "id": 159,
-        "damage": 14,
-        "count": 1,
-        "nbt": ""
-    },
-    {
-        "id": 159,
-        "damage": 15,
+        "damage": 6,
         "count": 1,
         "nbt": ""
     },
@@ -913,7 +913,7 @@
     },
     {
         "id": 19,
-        "damage": 0,
+        "damage": 1,
         "count": 1,
         "nbt": ""
     },
@@ -1026,6 +1026,12 @@
         "nbt": ""
     },
     {
+        "id": 395,
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
+    },
+    {
         "id": 96,
         "damage": 0,
         "count": 1,
@@ -1124,6 +1130,96 @@
     {
         "id": 355,
         "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 355,
+        "damage": 8,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 355,
+        "damage": 7,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 355,
+        "damage": 15,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 355,
+        "damage": 12,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 355,
+        "damage": 14,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 355,
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 355,
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 355,
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 355,
+        "damage": 13,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 355,
+        "damage": 9,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 355,
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 355,
+        "damage": 11,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 355,
+        "damage": 10,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 355,
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 355,
+        "damage": 6,
         "count": 1,
         "nbt": ""
     },
@@ -1230,6 +1326,102 @@
         "nbt": ""
     },
     {
+        "id": 218,
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 218,
+        "damage": 8,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 218,
+        "damage": 7,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 218,
+        "damage": 15,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 218,
+        "damage": 12,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 218,
+        "damage": 14,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 218,
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 218,
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 218,
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 218,
+        "damage": 13,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 218,
+        "damage": 9,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 218,
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 218,
+        "damage": 11,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 218,
+        "damage": 10,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 218,
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 218,
+        "damage": 6,
+        "count": 1,
+        "nbt": ""
+    },
+    {
         "id": 145,
         "damage": 0,
         "count": 1,
@@ -1237,13 +1429,13 @@
     },
     {
         "id": 145,
-        "damage": 4,
+        "damage": 1,
         "count": 1,
         "nbt": ""
     },
     {
         "id": 145,
-        "damage": 8,
+        "damage": 2,
         "count": 1,
         "nbt": ""
     },
@@ -1710,6 +1902,102 @@
         "nbt": ""
     },
     {
+        "id": 220,
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 228,
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 227,
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 235,
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 232,
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 234,
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 221,
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 224,
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 225,
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 233,
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 229,
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 223,
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 231,
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 219,
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 222,
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 226,
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
         "id": 295,
         "damage": 0,
         "count": 1,
@@ -1981,6 +2269,12 @@
     },
     {
         "id": 371,
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 452,
         "damage": 0,
         "count": 1,
         "nbt": ""
@@ -2305,6 +2599,12 @@
     },
     {
         "id": 383,
+        "damage": 29,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 383,
         "damage": 23,
         "count": 1,
         "nbt": ""
@@ -2456,6 +2756,24 @@
     {
         "id": 383,
         "damage": 54,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 383,
+        "damage": 57,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 383,
+        "damage": 104,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 383,
+        "damage": 105,
         "count": 1,
         "nbt": ""
     },
@@ -2785,6 +3103,12 @@
     },
     {
         "id": 445,
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 450,
         "damage": 0,
         "count": 1,
         "nbt": ""
@@ -3444,6 +3768,24 @@
         "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0018\u0000\u0002\u0003\u0000lvl\u0003\u0000\u0000\u0000"
     },
     {
+        "id": 403,
+        "damage": 0,
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0019\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
+    },
+    {
+        "id": 403,
+        "damage": 0,
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u0019\u0000\u0002\u0003\u0000lvl\u0002\u0000\u0000\u0000"
+    },
+    {
+        "id": 403,
+        "damage": 0,
+        "count": 1,
+        "nbt": "\n\u0000\u0000\t\u0004\u0000ench\n\u0001\u0000\u0000\u0000\u0002\u0002\u0000id\u001a\u0000\u0002\u0003\u0000lvl\u0001\u0000\u0000\u0000"
+    },
+    {
         "id": 35,
         "damage": 0,
         "count": 1,
@@ -3727,6 +4069,198 @@
     },
     {
         "id": 351,
+        "damage": 6,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 237,
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 237,
+        "damage": 8,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 237,
+        "damage": 7,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 237,
+        "damage": 15,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 237,
+        "damage": 12,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 237,
+        "damage": 14,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 237,
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 237,
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 237,
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 237,
+        "damage": 13,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 237,
+        "damage": 9,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 237,
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 237,
+        "damage": 11,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 237,
+        "damage": 10,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 237,
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 237,
+        "damage": 6,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 236,
+        "damage": 0,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 236,
+        "damage": 8,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 236,
+        "damage": 7,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 236,
+        "damage": 15,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 236,
+        "damage": 12,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 236,
+        "damage": 14,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 236,
+        "damage": 1,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 236,
+        "damage": 4,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 236,
+        "damage": 5,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 236,
+        "damage": 13,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 236,
+        "damage": 9,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 236,
+        "damage": 3,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 236,
+        "damage": 11,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 236,
+        "damage": 10,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 236,
+        "damage": 2,
+        "count": 1,
+        "nbt": ""
+    },
+    {
+        "id": 236,
         "damage": 6,
         "count": 1,
         "nbt": ""

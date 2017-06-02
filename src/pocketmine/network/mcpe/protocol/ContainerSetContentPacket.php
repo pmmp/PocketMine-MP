@@ -53,11 +53,10 @@ class ContainerSetContentPacket extends DataPacket{
 		for($s = 0; $s < $count and !$this->feof(); ++$s){
 			$this->slots[$s] = $this->getSlot();
 		}
-		if($this->windowid === self::SPECIAL_INVENTORY){
-			$count = $this->getUnsignedVarInt();
-			for($s = 0; $s < $count and !$this->feof(); ++$s){
-				$this->hotbar[$s] = $this->getVarInt();
-			}
+
+		$hotbarCount = $this->getUnsignedVarInt(); //MCPE always sends this, even when it's not a player inventory
+		for($s = 0; $s < $hotbarCount and !$this->feof(); ++$s){
+			$this->hotbar[$s] = $this->getVarInt();
 		}
 	}
 
