@@ -57,6 +57,17 @@
 - **You may be asked to rebase your pull request** if the branch becomes outdated and/or if possibly conflicting changes are made to the target branch. To see how to do this, read [this page](https://github.com/edx/edx-platform/wiki/How-to-Rebase-a-Pull-Request).
 
 
+### Cosmetic pull requests
+To avoid creation of pull requests merely to add a name onto the contributor list, pull requests that only carry cosmetic changes from non-team-members are discouraged. Examples of cosmetic pull requests include but are not limited to:
+
+* Only editing files not related to code, espeically GitHub-/integration-related files, such as the README.md, this CONTRIBUTING.md, files in the .github/ directory, etc. These changes involve the team's policy, and is not included in the scope of pull requests, which should be about the software itself. This does not include changes to CI test scripts that help make the tests more inclusive.
+* Bumping submodule versions.
+* Some minor mistakes in human-readable string literals. Actually, such string literals should eventually be moved to https://translate.pocketmine.net.
+* Bumping protocol versions and MCPE version names without including actual protocol changes, even if the client protocol number bump does not involve actual protocol changes.
+* Formatting, unless it changes the behaviour of the code.
+
+It is understood that some sincere contributors only wish to improve the repository at every minor aspect. In case such problems are spotted, please [create an issue](#creating-an-issue), or [contact the team directly](#i-have-a-question), to prevent such issues to be resolved. This is to prevent the influx of unnecessary pull requests that distract code flow.
+
 **Thanks for contributing to PocketMine-MP!**
 
 
