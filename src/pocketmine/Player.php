@@ -1840,12 +1840,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	protected function completeLoginSequence(){
 		parent::__construct($this->level, $this->namedtag);
-		$this->server->getPluginManager()->callEvent($ev = new PlayerLoginEvent($this, "Plugin reason"));
-		if($ev->isCancelled()){
-			$this->close($this->getLeaveMessage(), $ev->getKickMessage());
-
-			return;
-		}
 
 		if(!$this->hasValidSpawnPosition() and isset($this->namedtag->SpawnLevel) and ($level = $this->server->getLevelByName($this->namedtag["SpawnLevel"])) instanceof Level){
 			$this->spawnPosition = new WeakPosition($this->namedtag["SpawnX"], $this->namedtag["SpawnY"], $this->namedtag["SpawnZ"], $level);
@@ -1878,6 +1872,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->levelId = "";
 		$pk->worldName = $this->server->getMotd();
 		$this->dataPacket($pk);
+
+		$this->server->getPluginManager()->callEvent($ev = new PlayerLoginEvent($this, "Plugin reason"));
+		if($ev->isCancelled()){
+			$this->close($this->getLeaveMessage(), $ev->getKickMessage());
+
+			return;
+		}
 
 		$this->level->sendTime($this);
 
