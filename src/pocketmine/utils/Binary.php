@@ -82,56 +82,55 @@ class Binary{
 	/**
 	 * Reads a byte boolean
 	 *
-	 * @param $b
+	 * @param string $b
 	 *
 	 * @return bool
 	 */
-	public static function readBool($b){
-		return self::readByte($b, false) === 0 ? false : true;
+	public static function readBool(string $b) : bool{
+		return $b !== "\x00";
 	}
 
 	/**
 	 * Writes a byte boolean
 	 *
-	 * @param $b
+	 * @param bool $b
 	 *
-	 * @return bool|string
+	 * @return string
 	 */
-	public static function writeBool($b){
-		return self::writeByte($b === true ? 1 : 0);
+	public static function writeBool(bool $b) : string{
+		return $b ? "\x01" : "\x00";
 	}
 
 	/**
-	 * Reads an unsigned/signed byte
+	 * Reads an unsigned byte (0 - 255)
 	 *
 	 * @param string $c
-	 * @param bool   $signed
 	 *
 	 * @return int
 	 */
-	public static function readByte($c, $signed = true){
+	public static function readByte(string $c){
 		self::checkLength($c, 1);
-		$b = ord($c{0});
+		return ord($c{0});
+	}
 
-		if($signed){
-			if(PHP_INT_SIZE === 8){
-				return $b << 56 >> 56;
-			}else{
-				return $b << 24 >> 24;
-			}
-		}else{
-			return $b;
-		}
+	/**
+	 * Reads a signed byte (-128 - 127)
+	 * @param string $c
+	 *
+	 * @return int
+	 */
+	public static function readSignedByte(string $c) : int{
+		return PHP_INT_SIZE === 8 ? (ord($c{0}) << 56 >> 56) : (ord($c{0}) << 24 >> 24);
 	}
 
 	/**
 	 * Writes an unsigned/signed byte
 	 *
-	 * @param $c
+	 * @param int $c
 	 *
 	 * @return string
 	 */
-	public static function writeByte($c){
+	public static function writeByte(int $c) : string{
 		return chr($c);
 	}
 
@@ -239,28 +238,26 @@ class Binary{
 		return pack("V", $value);
 	}
 
-	public static function readFloat($str, int $accuracy = -1){
+	public static function readFloat($str){
 		self::checkLength($str, 4);
-		$value = ENDIANNESS === self::BIG_ENDIAN ? unpack("f", $str)[1] : unpack("f", strrev($str))[1];
-		if($accuracy > -1){
-			return round($value, $accuracy);
-		}else{
-			return $value;
-		}
+		return (ENDIANNESS === self::BIG_ENDIAN ? unpack("f", $str)[1] : unpack("f", strrev($str))[1]);
+	}
+
+	public static function readRoundedFloat(string $str, int $accuracy){
+		return round(self::readFloat($str), $accuracy);
 	}
 
 	public static function writeFloat($value){
 		return ENDIANNESS === self::BIG_ENDIAN ? pack("f", $value) : strrev(pack("f", $value));
 	}
 
-	public static function readLFloat($str, int $accuracy = -1){
+	public static function readLFloat($str){
 		self::checkLength($str, 4);
-		$value = ENDIANNESS === self::BIG_ENDIAN ? unpack("f", strrev($str))[1] : unpack("f", $str)[1];
-		if($accuracy > -1){
-			return round($value, $accuracy);
-		}else{
-			return $value;
-		}
+		return (ENDIANNESS === self::BIG_ENDIAN ? unpack("f", strrev($str))[1] : unpack("f", $str)[1]);
+	}
+
+	public static function readRoundedLFloat(string $str, int $accuracy){
+		return round(self::readLFloat($str), $accuracy);
 	}
 
 	public static function writeLFloat($value){

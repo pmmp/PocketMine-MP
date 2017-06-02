@@ -126,8 +126,12 @@ class BinaryStream{
 		$this->buffer .= Binary::writeShort($v);
 	}
 
-	public function getFloat(int $accuracy = -1){
-		return Binary::readFloat($this->get(4), $accuracy);
+	public function getFloat(){
+		return Binary::readFloat($this->get(4));
+	}
+
+	public function getRoundedFloat(int $accuracy){
+		return Binary::readRoundedFloat($this->get(4), $accuracy);
 	}
 
 	public function putFloat($v){
@@ -142,8 +146,12 @@ class BinaryStream{
 		$this->buffer .= Binary::writeLShort($v);
 	}
 
-	public function getLFloat(int $accuracy = -1){
-		return Binary::readLFloat($this->get(4), $accuracy);
+	public function getLFloat(){
+		return Binary::readLFloat($this->get(4));
+	}
+
+	public function getRoundedLFloat(int $accuracy){
+		return Binary::readRoundedLFloat($this->get(4), $accuracy);
 	}
 
 	public function putLFloat($v){

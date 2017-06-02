@@ -337,9 +337,9 @@ abstract class DataPacket extends BinaryStream{
 	 * @param float $z
 	 */
 	public function getVector3f(&$x, &$y, &$z){
-		$x = $this->getLFloat(4);
-		$y = $this->getLFloat(4);
-		$z = $this->getLFloat(4);
+		$x = $this->getRoundedLFloat(4);
+		$y = $this->getRoundedLFloat(4);
+		$z = $this->getRoundedLFloat(4);
 	}
 
 	/**
