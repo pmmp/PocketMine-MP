@@ -388,7 +388,7 @@ class Binary{
 			$value = "0";
 			for($i = 0; $i < 8; $i += 2){
 				$value = bcmul($value, "65536", 0);
-				$value = bcadd($value, self::readShort(substr($x, $i, 2)), 0);
+				$value = bcadd($value, (string) self::readShort(substr($x, $i, 2)), 0);
 			}
 
 			if(bccomp($value, "9223372036854775807") == 1){
@@ -410,15 +410,16 @@ class Binary{
 			return pack("NN", $value >> 32, $value & 0xFFFFFFFF);
 		}else{
 			$x = "";
+			$value = (string) $value;
 
 			if(bccomp($value, "0") == -1){
 				$value = bcadd($value, "18446744073709551616");
 			}
 
-			$x .= self::writeShort(bcmod(bcdiv($value, "281474976710656"), "65536"));
-			$x .= self::writeShort(bcmod(bcdiv($value, "4294967296"), "65536"));
-			$x .= self::writeShort(bcmod(bcdiv($value, "65536"), "65536"));
-			$x .= self::writeShort(bcmod($value, "65536"));
+			$x .= self::writeShort((int) bcmod(bcdiv($value, "281474976710656"), "65536"));
+			$x .= self::writeShort((int) bcmod(bcdiv($value, "4294967296"), "65536"));
+			$x .= self::writeShort((int) bcmod(bcdiv($value, "65536"), "65536"));
+			$x .= self::writeShort((int) bcmod($value, "65536"));
 
 			return $x;
 		}
@@ -600,7 +601,7 @@ class Binary{
 		$value = "0";
 		for($i = 0; $i <= 63; $i += 7){
 			$b = ord($buffer{$offset++});
-			$value = bcadd($value, bcmul($b & 0x7f, bcpow("2", "$i")));
+			$value = bcadd($value, bcmul((string) ($b & 0x7f), bcpow("2", "$i")));
 
 			if(($b & 0x80) === 0){
 				return $value;
@@ -648,7 +649,7 @@ class Binary{
 		if(PHP_INT_SIZE === 8){
 			return self::writeVarLong_64($v);
 		}else{
-			return self::writeVarLong_32($v);
+			return self::writeVarLong_32((string) $v);
 		}
 	}
 
@@ -687,7 +688,7 @@ class Binary{
 		if(PHP_INT_SIZE === 8){
 			return self::writeUnsignedVarLong_64($v);
 		}else{
-			return self::writeUnsignedVarLong_32($v);
+			return self::writeUnsignedVarLong_32((string) $v);
 		}
 	}
 
