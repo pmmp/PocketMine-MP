@@ -1825,7 +1825,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->achievements[$achievement->getName()] = $achievement->getValue() > 0 ? true : false;
 		}
 
-		$this->namedtag->lastPlayed = new LongTag("lastPlayed", floor(microtime(true) * 1000));
+		$this->namedtag->lastPlayed = new LongTag("lastPlayed", (int) floor(microtime(true) * 1000));
 		if($this->server->getAutoSave()){
 			$this->server->saveOfflinePlayerData($this->username, $this->namedtag, true);
 		}
@@ -3747,7 +3747,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		$this->namedtag["playerGameType"] = $this->gamemode;
-		$this->namedtag["lastPlayed"] = floor(microtime(true) * 1000);
+		$this->namedtag["lastPlayed"] = (int) floor(microtime(true) * 1000);
 
 		if($this->username != "" and $this->namedtag instanceof CompoundTag){
 			$this->server->saveOfflinePlayerData($this->username, $this->namedtag, $async);
