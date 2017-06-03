@@ -1654,12 +1654,12 @@ class Server{
 	}
 
 	/**
-	 * @param string   $message
+	 * @param TextContainer|string   $message
 	 * @param Player[] $recipients
 	 *
 	 * @return int
 	 */
-	public function broadcastMessage(string $message, array $recipients = []) : int{
+	public function broadcastMessage($message, array $recipients = []) : int{
 		if(!is_array($recipients)){
 			return $this->broadcast($message, self::BROADCAST_CHANNEL_USERS);
 		}
