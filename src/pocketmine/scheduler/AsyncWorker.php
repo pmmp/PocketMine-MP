@@ -38,7 +38,7 @@ class AsyncWorker extends Worker{
 	public function run(){
 		$this->registerClassLoader();
 		gc_enable();
-		ini_set("memory_limit", -1);
+		ini_set("memory_limit", '-1');
 
 		global $store;
 		$store = [];
