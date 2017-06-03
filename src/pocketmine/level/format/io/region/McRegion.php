@@ -58,8 +58,8 @@ class McRegion extends BaseLevelProvider{
 		$nbt->zPos = new IntTag("zPos", $chunk->getZ());
 
 		$nbt->LastUpdate = new LongTag("LastUpdate", 0); //TODO
-		$nbt->TerrainPopulated = new ByteTag("TerrainPopulated", $chunk->isPopulated());
-		$nbt->LightPopulated = new ByteTag("LightPopulated", $chunk->isLightPopulated());
+		$nbt->TerrainPopulated = new ByteTag("TerrainPopulated", $chunk->isPopulated() ? 1 : 0);
+		$nbt->LightPopulated = new ByteTag("LightPopulated", $chunk->isLightPopulated() ? 1 : 0);
 
 		$ids = "";
 		$data = "";

@@ -49,8 +49,8 @@ class PMAnvil extends Anvil{
 		$nbt->V = new ByteTag("V", 1);
 		$nbt->LastUpdate = new LongTag("LastUpdate", 0); //TODO
 		$nbt->InhabitedTime = new LongTag("InhabitedTime", 0); //TODO
-		$nbt->TerrainPopulated = new ByteTag("TerrainPopulated", $chunk->isPopulated());
-		$nbt->LightPopulated = new ByteTag("LightPopulated", $chunk->isLightPopulated());
+		$nbt->TerrainPopulated = new ByteTag("TerrainPopulated", $chunk->isPopulated() ? 1 : 0);
+		$nbt->LightPopulated = new ByteTag("LightPopulated", $chunk->isLightPopulated() ? 1 : 0);
 
 		$nbt->Sections = new ListTag("Sections", []);
 		$nbt->Sections->setTagType(NBT::TAG_Compound);
