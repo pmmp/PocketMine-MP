@@ -27,7 +27,7 @@ use pocketmine\nbt\NBT;
 
 class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 
-	private $tagType;
+	private $tagType = NBT::TAG_End;
 
 	public function __construct($name = "", $value = []){
 		$this->__name = $name;
@@ -113,11 +113,11 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 		return NBT::TAG_List;
 	}
 
-	public function setTagType($type){
+	public function setTagType(int $type){
 		$this->tagType = $type;
 	}
 
-	public function getTagType(){
+	public function getTagType() : int{
 		return $this->tagType;
 	}
 
@@ -135,11 +135,11 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 	}
 
 	public function write(NBT $nbt, bool $network = false){
-		if(!isset($this->tagType)){
-			$id = null;
+		if($this->tagType === NBT::TAG_End){ //previously empty list, try detecting type from tag children
+			$id = NBT::TAG_End;
 			foreach($this as $tag){
-				if($tag instanceof Tag){
-					if(!isset($id)){
+				if($tag instanceof Tag and !($tag instanceof EndTag)){
+					if($id === NBT::TAG_End){
 						$id = $tag->getType();
 					}elseif($id !== $tag->getType()){
 						return false;
