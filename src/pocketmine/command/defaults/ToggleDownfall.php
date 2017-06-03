@@ -56,13 +56,13 @@ class ToggleDownfall extends VanillaCommand{
 		switch($level->getWeather()){
 			case Level::WEATHER_RAIN_THUNDER:
 			case Level::WEATHER_RAIN:
-				$level->setWeather(Level::WEATHER_NORM);
+				$level->setWeather(Level::WEATHER_CLEAR);
 				$level->setRainTime($duration);
 				$level->setThunderTime($duration * 3);
 				Command::broadcastCommandMessage($sender, "Toggled downfall", true);
 				return true;
 				break;
-			case Level::WEATHER_NORM:
+			case Level::WEATHER_CLEAR:
 			default:
 				if(mt_rand(0, 100) > 94){
 					$level->setWeather(Level::WEATHER_RAIN_THUNDER);

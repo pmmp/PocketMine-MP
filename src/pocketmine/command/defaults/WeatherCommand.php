@@ -58,7 +58,7 @@ class WeatherCommand extends VanillaCommand{
 		}
 		switch ($args[0]){
 			case "clear":
-				$level->setWeather(Level::WEATHER_NORM);
+				$level->setWeather(Level::WEATHER_CLEAR);
 				$level->setRainTime($duration);
 				$level->setThunderTime($duration * 3);
 				Command::broadcastCommandMessage($sender, "Changing to clear weather", true);

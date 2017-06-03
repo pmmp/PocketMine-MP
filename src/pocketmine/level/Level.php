@@ -133,7 +133,7 @@ class Level implements ChunkManager, Metadatable{
 	const TIME_SUNRISE = 23000;
 	const TIME_FULL = 24000;
 
-	const WEATHER_NORM = 0;
+	const WEATHER_CLEAR = 0;
 	const WEATHER_RAIN = 1;
 	const WEATHER_RAIN_THUNDER = 2;
 
@@ -809,7 +809,7 @@ class Level implements ChunkManager, Metadatable{
 			--$this->thunderTime;
 			--$this->rainTime;
 			--$this->clearTime;
-			if($this->weather == self::WEATHER_NORM and ($this->rainTime <= 0 or $this->thunderTime <= 0)){
+			if($this->weather == self::WEATHER_CLEAR and ($this->rainTime <= 0 or $this->thunderTime <= 0)){
 				if(mt_rand(0, 100) > 95 or $this->thunderTime <= 0){
 					$this->setWeather(self::WEATHER_RAIN_THUNDER);
 				} else {
@@ -2894,7 +2894,7 @@ class Level implements ChunkManager, Metadatable{
 				$this->thunderTime = 0;
 			}
 			$this->clearTime = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
-		}elseif($ev->getNewWeather() == self::WEATHER_NORM){
+		}elseif($ev->getNewWeather() == self::WEATHER_CLEAR){
 			$this->rainTime = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
 			$this->thunderTime = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2)) * 3;
 			$this->clearTime = 0;

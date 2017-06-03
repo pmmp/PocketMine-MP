@@ -98,7 +98,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 		}elseif($this->levelData["thunderTime"] == 0){
 			return Level::WEATHER_RAIN_THUNDER;
 		}else{
-			return Level::WEATHER_NORM;
+			return Level::WEATHER_CLEAR;
 		}
 	}
 
