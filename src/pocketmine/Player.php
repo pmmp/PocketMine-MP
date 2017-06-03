@@ -1873,8 +1873,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->hasAchievementsDisabled = 1;
 		$pk->dayCycleStopTime = -1; //TODO: implement this properly
 		$pk->eduMode = 0;
-		$pk->rainLevel = ($this->getLevel()->getWeather() == Level::WEATHER_RAIN or $this->getLevel()->getWeather() == Level::WEATHER_RAIN_THUNDER) ? 0 : 1;
-		$pk->lightningLevel = ($this->getLevel()->getWeather() == Level::WEATHER_RAIN_THUNDER) ? 0 : 1;
+		$pk->rainLevel = ($this->getLevel()->getWeather() === Level::WEATHER_RAIN or $this->getLevel()->getWeather() == Level::WEATHER_RAIN_THUNDER) ? 0 : 1;
+		$pk->lightningLevel = ($this->getLevel()->getWeather() === Level::WEATHER_RAIN_THUNDER) ? 0 : 1;
 		$pk->commandsEnabled = 1;
 		$pk->levelId = "";
 		$pk->worldName = $this->server->getMotd();
