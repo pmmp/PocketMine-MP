@@ -820,24 +820,23 @@ class Level implements ChunkManager, Metadatable{
 			}elseif($this->clearTime > 0) {
 				$this->setWeather(self::WEATHER_RAIN);
 			}
-
-			if($this->weather = self::WEATHER_RAIN_THUNDER){
-				foreach($this->getChunks() as $chunk){
-					if(mt_rand(1, 100000) == 1){
-						$pk = new AddEntityPacket();
-						$pk->type = 93;
-						$pk->entityRuntimeId = Entity::$entityCount++;
-						$pk->x = ($chunk->getX() << 4) + mt_rand(0, 16);
-						$pk->z = ($chunk->getZ() << 4) + mt_rand(0, 16);
-						$pk->y = $this->getHighestBlockAt($pk->x, $pk->z) + 1;
-						$pk->yaw = 0;
-						$pk->pitch = 0;
-						$pk->metadata = []; //TODO find defaults
-						foreach($this->getPlayers() as $p){
-							$p->dataPacket($pk);
-						}
-						$this->setBlock(new Vector3($pk->x, $pk->y, $pk->z),Block::get(Block::FIRE), false, true);
+		}
+		if($this->weather = self::WEATHER_RAIN_THUNDER){
+			foreach($this->getChunks() as $chunk){
+				if(mt_rand(1, 100000) == 1){
+					$pk = new AddEntityPacket();
+					$pk->type = 93;
+					$pk->entityRuntimeId = Entity::$entityCount++;
+					$pk->x = ($chunk->getX() << 4) + mt_rand(0, 16);
+					$pk->z = ($chunk->getZ() << 4) + mt_rand(0, 16);
+					$pk->y = $this->getHighestBlockAt($pk->x, $pk->z) + 1;
+					$pk->yaw = 0;
+					$pk->pitch = 0;
+					$pk->metadata = [];
+					foreach($this->getPlayers() as $p){
+						$p->dataPacket($pk);
 					}
+					$this->setBlock(new Vector3($pk->x, $pk->y, $pk->z),Block::get(Block::FIRE));
 				}
 			}
 		}

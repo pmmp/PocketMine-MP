@@ -887,8 +887,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->z = $pos->z;
 		$this->dataPacket($pk);
 
-		$this->sendWeather();
-
 		$this->sendPlayStatus(PlayStatusPacket::PLAYER_SPAWN);
 
 		if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
@@ -1875,8 +1873,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->hasAchievementsDisabled = 1;
 		$pk->dayCycleStopTime = -1; //TODO: implement this properly
 		$pk->eduMode = 0;
-		$pk->rainLevel = 0; //TODO: figure out how to implement
-		$pk->lightningLevel = 0;
+		$pk->rainLevel = ($this->getLevel()->getWeather() == Level::WEATHER_RAIN or $this->getLevel()->getWeather() == Level::WEATHER_RAIN_THUNDER) ? 0 : 1;
+		$pk->lightningLevel = ($this->getLevel()->getWeather() == Level::WEATHER_RAIN_THUNDER) ? 0 : 1;
 		$pk->commandsEnabled = 1;
 		$pk->levelId = "";
 		$pk->worldName = $this->server->getMotd();
@@ -3606,8 +3604,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$pk1->evid = LevelEventPacket::EVENT_STOP_RAIN;
 			$pk2->evid = LevelEventPacket::EVENT_STOP_THUNDER;
 		}
-		$pk1->data = 90000; //TODO find correct values
-		$pk2->data = 90000;
+		$pk1->data = mt_rand(90000, 110000); //If we're clearing the weather, it doesn't matter what strength values we set
+		$pk2->data = mt_rand(30000, 40000);
 		$this->dataPacket($pk1);
 		$this->dataPacket($pk2);
 	}
