@@ -29,7 +29,7 @@ class AvailableCommandsPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::AVAILABLE_COMMANDS_PACKET;
 
 	public $commands; //JSON-encoded command data
-	public $unknown;
+	public $unknown = "";
 
 	public function decode(){
 		$this->commands = $this->getString();

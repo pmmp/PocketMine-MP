@@ -38,8 +38,8 @@ class AddEntityPacket extends DataPacket{
 	public $speedX;
 	public $speedY;
 	public $speedZ;
-	public $yaw;
-	public $pitch;
+	public $yaw = 0.0;
+	public $pitch = 0.0;
 	/** @var Attribute[] */
 	public $attributes = [];
 	public $metadata = [];
