@@ -19,7 +19,7 @@
  *
 */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /**
  * PocketMine-MP is the Minecraft: PE multiplayer server software

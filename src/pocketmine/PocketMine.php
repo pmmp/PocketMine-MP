@@ -19,6 +19,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace {
 	function safe_var_dump(){
 		static $cnt = 0;

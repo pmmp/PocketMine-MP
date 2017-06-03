@@ -19,6 +19,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\command;
 
 use pocketmine\event\TranslationContainer;
