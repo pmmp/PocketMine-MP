@@ -2370,7 +2370,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						$ev->setCancelled();
 					}
 
-					$target->attack($ev->getDamage(), $ev);
+					$target->attack($ev);
 
 					if($ev->isCancelled()){
 						if($item->isTool() and $this->isSurvival()){
@@ -3761,7 +3761,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return $base;
 	}
 
-	public function attack($damage, EntityDamageEvent $source){
+	public function attack(EntityDamageEvent $source){
 		if(!$this->isAlive()){
 			return;
 		}
@@ -3788,7 +3788,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$source->setDamage($source->getDamage() * (3 / 2));
 		}
 
-		parent::attack($damage, $source);
+		parent::attack($source);
 
 		if($source->isCancelled()){
 			return;

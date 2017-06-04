@@ -63,7 +63,7 @@ class Fire extends Flowable{
 	public function onEntityCollide(Entity $entity){
 		if(!$entity->hasEffect(Effect::FIRE_RESISTANCE)){
 			$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1);
-			$entity->attack($ev->getFinalDamage(), $ev);
+			$entity->attack($ev);
 		}
 
 		$ev = new EntityCombustByBlockEvent($this, $entity, 8);

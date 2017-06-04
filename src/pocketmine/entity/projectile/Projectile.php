@@ -56,9 +56,9 @@ abstract class Projectile extends Entity{
 		parent::__construct($level, $nbt);
 	}
 
-	public function attack($damage, EntityDamageEvent $source){
+	public function attack(EntityDamageEvent $source){
 		if($source->getCause() === EntityDamageEvent::CAUSE_VOID){
-			parent::attack($damage, $source);
+			parent::attack($source);
 		}
 	}
 
@@ -109,7 +109,7 @@ abstract class Projectile extends Entity{
 				$ev = new EntityDamageByChildEntityEvent($this->getOwningEntity(), $this, $entity, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
 			}
 
-			$entity->attack($ev->getFinalDamage(), $ev);
+			$entity->attack($ev);
 
 			if($this->fireTicks > 0){
 				$ev = new EntityCombustByEntityEvent($this, $entity, 5);

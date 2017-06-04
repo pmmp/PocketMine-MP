@@ -367,19 +367,19 @@ class Effect{
 			case Effect::POISON:
 				if($entity->getHealth() > 1){
 					$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, 1);
-					$entity->attack($ev->getFinalDamage(), $ev);
+					$entity->attack($ev);
 				}
 				break;
 
 			case Effect::WITHER:
 				$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, 1);
-				$entity->attack($ev->getFinalDamage(), $ev);
+				$entity->attack($ev);
 				break;
 
 			case Effect::REGENERATION:
 				if($entity->getHealth() < $entity->getMaxHealth()){
 					$ev = new EntityRegainHealthEvent($entity, 1, EntityRegainHealthEvent::CAUSE_MAGIC);
-					$entity->heal($ev->getAmount(), $ev);
+					$entity->heal($ev);
 				}
 				break;
 
@@ -393,14 +393,14 @@ class Effect{
 				//TODO: add particles (witch spell)
 				if($entity->getHealth() < $entity->getMaxHealth()){
 					$amount = $this->potency * 2 * (2 ** ($this->getEffectLevel() % 32));
-					$entity->heal($amount, new EntityRegainHealthEvent($entity, $amount, EntityRegainHealthEvent::CAUSE_MAGIC));
+					$entity->heal(new EntityRegainHealthEvent($entity, $amount, EntityRegainHealthEvent::CAUSE_MAGIC));
 				}
 				break;
 
 			case Effect::INSTANT_DAMAGE:
 				//TODO: add particles (witch spell)
 				$amount = $this->potency * 2 * (2 ** ($this->getEffectLevel() % 32));
-				$entity->attack($amount, new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, $amount));
+				$entity->attack(new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, $amount));
 				break;
 
 			case Effect::SATURATION:
