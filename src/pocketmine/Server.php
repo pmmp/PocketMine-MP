@@ -1047,7 +1047,7 @@ class Server{
 			/** @var \pocketmine\level\format\io\LevelProvider $provider */
 			$provider::generate($path, $name, $seed, $generator, $options);
 
-			$level = new Level($this, $name, $path, $provider);
+			$level = new Level($this, $name, $path, (string) $provider);
 			$this->levels[$level->getId()] = $level;
 
 			$level->initLevel();
