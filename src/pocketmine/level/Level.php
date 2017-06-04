@@ -19,7 +19,7 @@
  *
 */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /**
  * All Level related classes are here, like Generators, Populators, Noise, ...

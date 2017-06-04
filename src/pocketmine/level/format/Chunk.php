@@ -22,7 +22,7 @@
 /**
  * Implementation of MCPE-style chunks with subchunks with XZY ordering.
  */
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace pocketmine\level\format;
 
