@@ -34,7 +34,7 @@ class tpoCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Allows Telepotation without being noticed",
-			"%pocketmine.command.tp.usage"
+			"Usage: /tpo <player> <targetplayer> || <player> <x> <y> <z>"
 		);
 		$this->setPermission("pocketmine.command.tpo");
 	}
@@ -88,8 +88,10 @@ class tpoCommand extends VanillaCommand{
 		}
 
 		if(count($args) < 3){
+$pa = $sender->getServer()->getPlayer($args[0]);
+$pb = $sender->getServer()->getPlayer($args[1]);
 			$origin->teleport($target);
-			
+$sender->sendMessage("§l§aTeleported §r§c". $pa . "§l§a To §r§c" . $pb . "§l§a!");
 			return true;
 		}elseif($target->getLevel() !== null){
 			if(count($args) === 4 or count($args) === 6){
