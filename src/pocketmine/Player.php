@@ -67,7 +67,6 @@ use pocketmine\event\player\PlayerToggleFlightEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\event\player\PlayerToggleSprintEvent;
 use pocketmine\event\player\PlayerTransferEvent;
-use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\TextContainer;
 use pocketmine\event\Timings;
@@ -104,64 +103,39 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\LongTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\network\mcpe\protocol\AddHangingEntityPacket;
-use pocketmine\network\mcpe\protocol\AddItemEntityPacket;
-use pocketmine\network\mcpe\protocol\AddItemPacket;
-use pocketmine\network\mcpe\protocol\AddPaintingPacket;
-use pocketmine\network\mcpe\protocol\AddPlayerPacket;
+use pocketmine\network\mcpe\PlayerNetworkSessionAdapter;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
-use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
 use pocketmine\network\mcpe\protocol\BossEventPacket;
-use pocketmine\network\mcpe\protocol\ChangeDimensionPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
-use pocketmine\network\mcpe\protocol\ClientboundMapItemDataPacket;
 use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\CommandStepPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
-use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\network\mcpe\protocol\ContainerSetContentPacket;
-use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
 use pocketmine\network\mcpe\protocol\ContainerSetSlotPacket;
-use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\DropItemPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
-use pocketmine\network\mcpe\protocol\ExplodePacket;
-use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
-use pocketmine\network\mcpe\protocol\GameRulesChangedPacket;
-use pocketmine\network\mcpe\protocol\HurtArmorPacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
-use pocketmine\network\mcpe\protocol\InventoryActionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
-use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
-use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
-use pocketmine\network\mcpe\protocol\MoveEntityPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
-use pocketmine\network\mcpe\protocol\EntityFallPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
-use pocketmine\network\mcpe\protocol\PlayerListPacket;
-use pocketmine\network\mcpe\protocol\PlaySoundPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\RemoveBlockPacket;
-use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
-use pocketmine\network\mcpe\protocol\ReplaceItemInSlotPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkDataPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
@@ -170,28 +144,17 @@ use pocketmine\network\mcpe\protocol\ResourcePackDataInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePacksInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackStackPacket;
 use pocketmine\network\mcpe\protocol\RespawnPacket;
-use pocketmine\network\mcpe\protocol\RiderJumpPacket;
-use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
-use pocketmine\network\mcpe\protocol\SetCommandsEnabledPacket;
-use pocketmine\network\mcpe\protocol\SetDifficultyPacket;
-use pocketmine\network\mcpe\protocol\SetEntityDataPacket;
-use pocketmine\network\mcpe\protocol\SetEntityLinkPacket;
-use pocketmine\network\mcpe\protocol\SetEntityMotionPacket;
-use pocketmine\network\mcpe\protocol\SetHealthPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
-use pocketmine\network\mcpe\protocol\SetTimePacket;
 use pocketmine\network\mcpe\protocol\SetTitlePacket;
 use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
-use pocketmine\network\mcpe\protocol\StopSoundPacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
-use pocketmine\network\mcpe\protocol\UpdateTradePacket;
 use pocketmine\network\mcpe\protocol\UseItemPacket;
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
@@ -208,7 +171,7 @@ use pocketmine\utils\UUID;
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
  */
-class Player extends Human implements CommandSender, InventoryHolder, ChunkLoader, IPlayer, NetworkSession{
+class Player extends Human implements CommandSender, InventoryHolder, ChunkLoader, IPlayer{
 
 	const SURVIVAL = 0;
 	const CREATIVE = 1;
@@ -240,6 +203,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	/** @var SourceInterface */
 	protected $interface;
+
+	/**
+	 * @var PlayerNetworkSessionAdapter
+	 * TODO: remove this once player and network are divorced properly
+	 */
+	protected $sessionAdapter;
 
 	/** @var bool */
 	public $playedBefore;
@@ -668,6 +637,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->allowMovementCheats = (bool) $this->server->getProperty("player.anti-cheat.allow-movement-cheats", false);
 		$this->allowInstaBreak = (bool) $this->server->getProperty("player.anti-cheat.allow-instabreak", false);
+
+		$this->sessionAdapter = new PlayerNetworkSessionAdapter($this->server, $this);
 	}
 
 	/**
@@ -1970,10 +1941,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return true;
 	}
 
-	public function handlePlayStatus(PlayStatusPacket $packet) : bool{
-		return false;
-	}
-
 	public function sendPlayStatus(int $status, bool $immediate = false){
 		$pk = new PlayStatusPacket();
 		$pk->status = $status;
@@ -1984,24 +1951,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 	}
 
-	public function handleServerToClientHandshake(ServerToClientHandshakePacket $packet) : bool{
-		return false;
-	}
-
 	public function handleClientToServerHandshake(ClientToServerHandshakePacket $packet) : bool{
 		return false; //TODO
-	}
-
-	public function handleDisconnect(DisconnectPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleResourcePacksInfo(ResourcePacksInfoPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleResourcePackStack(ResourcePackStackPacket $packet) : bool{
-		return false;
 	}
 
 	public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet) : bool{
@@ -2090,42 +2041,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return true;
 	}
 
-	public function handleSetTime(SetTimePacket $packet) : bool{
-		return false;
-	}
-
-	public function handleStartGame(StartGamePacket $packet) : bool{
-		return false;
-	}
-
-	public function handleAddPlayer(AddPlayerPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleAddEntity(AddEntityPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleRemoveEntity(RemoveEntityPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleAddItemEntity(AddItemEntityPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleAddHangingEntity(AddHangingEntityPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleTakeItemEntity(TakeItemEntityPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleMoveEntity(MoveEntityPacket $packet) : bool{
-		return false;
-	}
-
 	public function handleMovePlayer(MovePlayerPacket $packet) : bool{
 		$newPos = new Vector3($packet->x, $packet->y - $this->baseOffset, $packet->z);
 
@@ -2153,10 +2068,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		return true;
-	}
-
-	public function handleRiderJump(RiderJumpPacket $packet) : bool{
-		return false;
 	}
 
 	public function handleRemoveBlock(RemoveBlockPacket $packet) : bool{
@@ -2198,30 +2109,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return true;
 	}
 
-	public function handleUpdateBlock(UpdateBlockPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleAddPainting(AddPaintingPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleExplode(ExplodePacket $packet) : bool{
-		return false;
-	}
-
 	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
 		//TODO: add events so plugins can change this
 		$this->getLevel()->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $packet);
 		return true;
-	}
-
-	public function handleLevelEvent(LevelEventPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleBlockEvent(BlockEventPacket $packet) : bool{
-		return false;
 	}
 
 	public function handleEntityEvent(EntityEventPacket $packet) : bool{
@@ -2256,14 +2147,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return true;
 	}
 
-	public function handleMobEffect(MobEffectPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleUpdateAttributes(UpdateAttributesPacket $packet) : bool{
-		return false;
-	}
-
 	public function handleMobEquipment(MobEquipmentPacket $packet) : bool{
 		if($this->spawned === false or !$this->isAlive()){
 			return true;
@@ -2293,10 +2176,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
 
 		return true;
-	}
-
-	public function handleMobArmorEquipment(MobArmorEquipmentPacket $packet) : bool{
-		return false;
 	}
 
 	public function handleInteract(InteractPacket $packet) : bool{
@@ -2809,34 +2688,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return true;
 	}
 
-	public function handleEntityFall(EntityFallPacket $packet) : bool{
-		return true; //not used
-	}
-
-	public function handleHurtArmor(HurtArmorPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleSetEntityData(SetEntityDataPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleSetEntityMotion(SetEntityMotionPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleSetEntityLink(SetEntityLinkPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleSetHealth(SetHealthPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleSetSpawnPosition(SetSpawnPositionPacket $packet) : bool{
-		return false;
-	}
-
 	public function handleAnimate(AnimatePacket $packet) : bool{
 		if($this->spawned === false or !$this->isAlive()){
 			return true;
@@ -2853,10 +2704,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->server->broadcastPacket($this->getViewers(), $pk);
 
 		return true;
-	}
-
-	public function handleRespawn(RespawnPacket $packet) : bool{
-		return false;
 	}
 
 	public function handleDropItem(DropItemPacket $packet) : bool{
@@ -2885,14 +2732,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
 
 		return true;
-	}
-
-	public function handleInventoryAction(InventoryActionPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleContainerOpen(ContainerOpenPacket $packet) : bool{
-		return false;
 	}
 
 	public function handleContainerClose(ContainerClosePacket $packet) : bool{
@@ -2995,18 +2834,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		return true;
-	}
-
-	public function handleContainerSetData(ContainerSetDataPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleContainerSetContent(ContainerSetContentPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleCraftingData(CraftingDataPacket $packet) : bool{
-		return false;
 	}
 
 	public function handleCraftingEvent(CraftingEventPacket $packet) : bool{
@@ -3226,22 +3053,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return false; //TODO
 	}
 
-	public function handleFullChunkData(FullChunkDataPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleSetCommandsEnabled(SetCommandsEnabledPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleSetDifficulty(SetDifficultyPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleChangeDimension(ChangeDimensionPacket $packet) : bool{
-		return false;
-	}
-
 	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
 		if($packet->gamemode !== $this->gamemode){
 			//Set this back to default. TODO: handle this properly
@@ -3251,16 +3062,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return true;
 	}
 
-	public function handlePlayerList(PlayerListPacket $packet) : bool{
-		return false;
-	}
-
 	public function handleSpawnExperienceOrb(SpawnExperienceOrbPacket $packet) : bool{
 		return false; //TODO
-	}
-
-	public function handleClientboundMapItemData(ClientboundMapItemDataPacket $packet) : bool{
-		return false;
 	}
 
 	public function handleMapInfoRequest(MapInfoRequestPacket $packet) : bool{
@@ -3271,10 +3074,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->setViewDistance($packet->radius);
 
 		return true;
-	}
-
-	public function handleChunkRadiusUpdated(ChunkRadiusUpdatedPacket $packet) : bool{
-		return false;
 	}
 
 	public function handleItemFrameDropItem(ItemFrameDropItemPacket $packet) : bool{
@@ -3306,28 +3105,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return true;
 	}
 
-	public function handleReplaceItemInSlot(ReplaceItemInSlotPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleGameRulesChanged(GameRulesChangedPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleAddItem(AddItemPacket $packet) : bool{
-		return false;
-	}
-
 	public function handleBossEvent(BossEventPacket $packet) : bool{
 		return false; //TODO
 	}
 
 	public function handleShowCredits(ShowCreditsPacket $packet) : bool{
 		return false; //TODO: handle resume
-	}
-
-	public function handleAvailableCommands(AvailableCommandsPacket $packet) : bool{
-		return false;
 	}
 
 	public function handleCommandStep(CommandStepPacket $packet) : bool{
@@ -3357,18 +3140,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return false; //TODO
 	}
 
-	public function handleUpdateTrade(UpdateTradePacket $packet) : bool{
-		return false;
-	}
-
-	public function handleResourcePackDataInfo(ResourcePackDataInfoPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleResourcePackChunkData(ResourcePackChunkDataPacket $packet) : bool{
-		return false;
-	}
-
 	public function handleResourcePackChunkRequest(ResourcePackChunkRequestPacket $packet) : bool{
 		$manager = $this->server->getResourceManager();
 		$pack = $manager->getPackById($packet->packId);
@@ -3388,52 +3159,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return true;
 	}
 
-	public function handleTransfer(TransferPacket $packet) : bool{
-		return false;
-	}
-
-	public function handlePlaySound(PlaySoundPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleStopSound(StopSoundPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleSetTitle(SetTitlePacket $packet) : bool{
-		return false;
-	}
-
 	/**
 	 * Called when a packet is received from the client. This method will call DataPacketReceiveEvent.
 	 *
 	 * @param DataPacket $packet
 	 */
 	public function handleDataPacket(DataPacket $packet){
-		if($this->connected === false){
-			return;
-		}
-
-		//TODO: Remove this hack once InteractPacket spam issue is fixed
-		if($packet->buffer === "\x21\x04\x00"){
-			return;
-		}
-
-		$timings = Timings::getReceiveDataPacketTimings($packet);
-		$timings->startTiming();
-
-		$packet->decode();
-		if(!$packet->feof()){
-			$remains = substr($packet->buffer, $packet->offset);
-			$this->server->getLogger()->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": 0x" . bin2hex($remains));
-		}
-
-		$this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this, $packet));
-		if(!$ev->isCancelled() and !$packet->handle($this)){
-			$this->server->getLogger()->debug("Unhandled " . $packet->getName() . " received from " . $this->getName() . ": 0x" . bin2hex($packet->buffer));
-		}
-
-		$timings->stopTiming();
+		$this->sessionAdapter->handleDataPacket($packet);
 	}
 
 	/**
@@ -3657,6 +3389,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					$this->directDataPacket($pk);
 				}
 
+				$this->sessionAdapter->connected = false;
 				$this->connected = false;
 
 				$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
