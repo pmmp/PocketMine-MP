@@ -3761,6 +3761,18 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return $base;
 	}
 
+	public function applyDamageModifiers(EntityDamageEvent $source){
+		switch($this->server->getDifficulty()){
+			case 1: //Easy
+				$source->setDamage(-(($source->getDamage() / 2) - 1), EntityDamageEvent::MODIFIER_DIFFICULTY);
+				break;
+			case 3: //Hard
+				$source->setDamage($source->getDamage() * (1 / 2), EntityDamageEvent::MODIFIER_DIFFICULTY);
+		}
+
+		parent::applyDamageModifiers($source);
+	}
+
 	public function attack(EntityDamageEvent $source){
 		if(!$this->isAlive()){
 			return;
@@ -3777,15 +3789,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			if($this->server->getDifficulty() === 0 or ($source->getDamager() instanceof Player and !$this->server->getConfigBoolean("pvp"))){
 				$source->setCancelled();
 			}
-		}
-
-		//TODO: add damage multipliers to EntityDamageEvent to allow this to be controlled by plugins
-		switch($this->server->getDifficulty()){
-			case 1: //Easy
-				$source->setDamage($source->getDamage() / 2 + 1);
-				break;
-			case 3: //Hard
-				$source->setDamage($source->getDamage() * (3 / 2));
 		}
 
 		parent::attack($source);
