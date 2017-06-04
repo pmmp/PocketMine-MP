@@ -539,16 +539,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		$this->level = $v->level;
 		$this->boundingBox = null;
 	}
-	
-	/**
-	 * Return the position of the block
-	 *
-	 * @return Position
-	 */
-	public function getPosition() : Position{
-		return self::fromObject($this, $this->level);
-	}
-	
+
 	/**
 	 * Returns an array of Item objects to be dropped
 	 *
