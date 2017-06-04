@@ -64,7 +64,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public $eyeHeight = 1.62;
 
 	protected $skinId;
-	protected $skin = null;
+	protected $skin = "";
 
 	protected $foodTickTimer = 0;
 
@@ -72,7 +72,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	protected $xpSeed;
 
 	public function __construct(Level $level, CompoundTag $nbt){
-		if($this->skin === null and (!isset($nbt->Skin) or !isset($nbt->Skin->Data) or !Player::isValidSkin($nbt->Skin->Data->getValue()))){
+		if($this->skin === "" and (!isset($nbt->Skin) or !isset($nbt->Skin->Data) or !Player::isValidSkin($nbt->Skin->Data->getValue()))){
 			throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
 		}
 
@@ -250,7 +250,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->attributeMap->getAttribute(Attribute::EXPERIENCE)->setValue($progress);
 	}
 
-	public function getTotalXp() : float{
+	public function getTotalXp() : int{
 		return $this->totalXp;
 	}
 
@@ -319,19 +319,19 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if(!isset($this->namedtag->foodLevel) or !($this->namedtag->foodLevel instanceof IntTag)){
 			$this->namedtag->foodLevel = new IntTag("foodLevel", (int) $this->getFood());
 		}else{
-			$this->setFood($this->namedtag["foodLevel"]);
+			$this->setFood((float) $this->namedtag["foodLevel"]);
 		}
 
-		if(!isset($this->namedtag->foodExhaustionLevel) or !($this->namedtag->foodExhaustionLevel instanceof IntTag)){
+		if(!isset($this->namedtag->foodExhaustionLevel) or !($this->namedtag->foodExhaustionLevel instanceof FloatTag)){
 			$this->namedtag->foodExhaustionLevel = new FloatTag("foodExhaustionLevel", $this->getExhaustion());
 		}else{
-			$this->setExhaustion($this->namedtag["foodExhaustionLevel"]);
+			$this->setExhaustion((float) $this->namedtag["foodExhaustionLevel"]);
 		}
 
-		if(!isset($this->namedtag->foodSaturationLevel) or !($this->namedtag->foodSaturationLevel instanceof IntTag)){
+		if(!isset($this->namedtag->foodSaturationLevel) or !($this->namedtag->foodSaturationLevel instanceof FloatTag)){
 			$this->namedtag->foodSaturationLevel = new FloatTag("foodSaturationLevel", $this->getSaturation());
 		}else{
-			$this->setSaturation($this->namedtag["foodSaturationLevel"]);
+			$this->setSaturation((float) $this->namedtag["foodSaturationLevel"]);
 		}
 
 		if(!isset($this->namedtag->foodTickTimer) or !($this->namedtag->foodTickTimer instanceof IntTag)){
@@ -343,7 +343,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if(!isset($this->namedtag->XpLevel) or !($this->namedtag->XpLevel instanceof IntTag)){
 			$this->namedtag->XpLevel = new IntTag("XpLevel", $this->getXpLevel());
 		}else{
-			$this->setXpLevel($this->namedtag["XpLevel"]);
+			$this->setXpLevel((int) $this->namedtag["XpLevel"]);
 		}
 
 		if(!isset($this->namedtag->XpP) or !($this->namedtag->XpP instanceof FloatTag)){

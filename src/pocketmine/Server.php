@@ -42,6 +42,7 @@ use pocketmine\event\level\LevelLoadEvent;
 use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\event\server\ServerCommandEvent;
+use pocketmine\event\TextContainer;
 use pocketmine\event\Timings;
 use pocketmine\event\TimingsHandler;
 use pocketmine\event\TranslationContainer;
@@ -1165,7 +1166,7 @@ class Server{
 			return (string) $v[$variable];
 		}
 
-		return $this->properties->exists($variable) ? $this->properties->get($variable) : $defaultValue;
+		return $this->properties->exists($variable) ? (string) $this->properties->get($variable) : $defaultValue;
 	}
 
 	/**
@@ -1654,8 +1655,8 @@ class Server{
 	}
 
 	/**
-	 * @param TextContainer|string   $message
-	 * @param Player[] $recipients
+	 * @param TextContainer|string $message
+	 * @param Player[]             $recipients
 	 *
 	 * @return int
 	 */

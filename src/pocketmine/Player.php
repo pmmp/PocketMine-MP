@@ -1808,7 +1808,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->allowFlight = (bool) ($this->gamemode & 0x01);
 
-		if(($level = $this->server->getLevelByName($this->namedtag["Level"])) === null){
+		if(($level = $this->server->getLevelByName((string) $this->namedtag["Level"])) === null){
 			$this->setLevel($this->server->getDefaultLevel());
 			$this->namedtag["Level"] = $this->level->getName();
 			$this->namedtag["Pos"][0] = $this->level->getSpawnLocation()->x;
@@ -1844,7 +1844,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	protected function completeLoginSequence(){
 		parent::__construct($this->level, $this->namedtag);
 
-		if(!$this->hasValidSpawnPosition() and isset($this->namedtag->SpawnLevel) and ($level = $this->server->getLevelByName($this->namedtag["SpawnLevel"])) instanceof Level){
+		if(!$this->hasValidSpawnPosition() and isset($this->namedtag->SpawnLevel) and ($level = $this->server->getLevelByName((string) $this->namedtag["SpawnLevel"])) instanceof Level){
 			$this->spawnPosition = new WeakPosition($this->namedtag["SpawnX"], $this->namedtag["SpawnY"], $this->namedtag["SpawnZ"], $level);
 		}
 

@@ -231,7 +231,7 @@ class LevelDB extends BaseLevelProvider{
 	}
 
 	public function getGenerator() : string{
-		return $this->levelData["generatorName"];
+		return (string) $this->levelData["generatorName"];
 	}
 
 	public function getGeneratorOptions() : array{
