@@ -148,7 +148,7 @@ class Level implements ChunkManager, Metadatable{
 
 	private $blockCache = [];
 
-	/** @var DataPacket[] */
+	/** @var BatchPacket[] */
 	private $chunkCache = [];
 
 	private $cacheChunks = false;
