@@ -2428,7 +2428,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			case InteractPacket::ACTION_MOUSEOVER:
 				break; //TODO: handle these
 			default:
-				$this->server->getLogger()->debug("Unhandled/unknown interaction type " . $packet->action . "received from ". $this->getName());
+				$this->server->getLogger()->debug("Unhandled/unknown interaction type " . $packet->action . "received from " . $this->getName());
+
 				return false;
 		}
 
@@ -3495,7 +3496,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @param string $subtitle
 	 */
 	public function addSubTitle(string $subtitle){
-	    $this->sendTitleText($subtitle, SetTitlePacket::TYPE_SET_SUBTITLE);
+		$this->sendTitleText($subtitle, SetTitlePacket::TYPE_SET_SUBTITLE);
 	}
 
 	/**
@@ -3520,9 +3521,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * Resets the title duration settings.
 	 */
 	public function resetTitles(){
-	    $pk = new SetTitlePacket();
-	    $pk->type = SetTitlePacket::TYPE_RESET_TITLE;
-	    $this->dataPacket($pk);
+		$pk = new SetTitlePacket();
+		$pk->type = SetTitlePacket::TYPE_RESET_TITLE;
+		$this->dataPacket($pk);
 	}
 
 	/**
