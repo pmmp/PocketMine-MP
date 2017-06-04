@@ -3566,7 +3566,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/**
 	 * Sends a direct chat message to a player
 	 *
-	 * @param string|TextContainer $message
+	 * @param TextContainer|string $message
 	 */
 	public function sendMessage($message){
 		if($message instanceof TextContainer){

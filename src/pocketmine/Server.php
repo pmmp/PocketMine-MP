@@ -1660,7 +1660,7 @@ class Server{
 	 *
 	 * @return int
 	 */
-	public function broadcastMessage($message, array $recipients = []) : int{
+	public function broadcastMessage($message, array $recipients = null) : int{
 		if(!is_array($recipients)){
 			return $this->broadcast($message, self::BROADCAST_CHANNEL_USERS);
 		}
@@ -1755,12 +1755,12 @@ class Server{
 	}
 
 	/**
-	 * @param string $message
-	 * @param string $permissions
+	 * @param TextContainer|string $message
+	 * @param string               $permissions
 	 *
 	 * @return int
 	 */
-	public function broadcast(string $message, string $permissions) : int{
+	public function broadcast($message, string $permissions) : int{
 		/** @var CommandSender[] $recipients */
 		$recipients = [];
 		foreach(explode(";", $permissions) as $permission){

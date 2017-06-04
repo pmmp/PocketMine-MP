@@ -102,7 +102,7 @@ class ConsoleCommandSender implements CommandSender{
 	}
 
 	/**
-	 * @param string $message
+	 * @param TextContainer|string $message
 	 */
 	public function sendMessage($message){
 		if($message instanceof TextContainer){
