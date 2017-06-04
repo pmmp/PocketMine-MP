@@ -841,6 +841,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$X = null;
 			$Z = null;
 			Level::getXZ($index, $X, $Z);
+			assert(is_int($X) and is_int($Z));
 
 			++$count;
 
