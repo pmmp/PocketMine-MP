@@ -4018,6 +4018,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			}
 
 			$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
+			//This only needs to be sent to players who could see us before the teleport.
+			$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET, $this->getViewers());
+
 			$this->spawnToAll();
 			$this->forceMovement = $this->teleportPosition;
 			$this->teleportPosition = null;
