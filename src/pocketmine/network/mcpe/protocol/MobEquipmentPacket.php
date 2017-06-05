@@ -33,14 +33,14 @@ class MobEquipmentPacket extends DataPacket{
 	public $item;
 	public $inventorySlot;
 	public $hotbarSlot;
-	public $unknownByte = 0;
+	public $windowId = 0;
 
 	public function decode(){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->item = $this->getSlot();
 		$this->inventorySlot = $this->getByte();
 		$this->hotbarSlot = $this->getByte();
-		$this->unknownByte = $this->getByte();
+		$this->windowId = $this->getByte();
 	}
 
 	public function encode(){
@@ -49,7 +49,7 @@ class MobEquipmentPacket extends DataPacket{
 		$this->putSlot($this->item);
 		$this->putByte($this->inventorySlot);
 		$this->putByte($this->hotbarSlot);
-		$this->putByte($this->unknownByte);
+		$this->putByte($this->windowId);
 	}
 
 	public function handle(NetworkSession $session) : bool{
