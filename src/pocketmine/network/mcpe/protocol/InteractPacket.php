@@ -34,6 +34,8 @@ class InteractPacket extends DataPacket{
 	const ACTION_LEAVE_VEHICLE = 3;
 	const ACTION_MOUSEOVER = 4;
 
+	const ACTION_OPEN_INVENTORY = 6;
+
 	public $action;
 	public $target;
 
