@@ -29,8 +29,8 @@ class Bricks extends Solid{
 
 	protected $id = self::BRICK_BLOCK;
 
-	public function __construct(){
-
+	public function __construct($meta = 0){
+		$this->meta = $meta;
 	}
 
 	public function getHardness(){

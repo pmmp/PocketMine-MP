@@ -29,8 +29,8 @@ class IronBars extends Thin{
 
 	protected $id = self::IRON_BARS;
 
-	public function __construct(){
-
+	public function __construct($meta = 0){
+		$this->meta = $meta;
 	}
 
 	public function getName(){

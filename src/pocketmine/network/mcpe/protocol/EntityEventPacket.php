@@ -52,7 +52,7 @@ class EntityEventPacket extends DataPacket{
 
 	public $eid;
 	public $event;
-	public $data;
+	public $data = 0;
 
 	public function decode(){
 		$this->eid = $this->getEntityRuntimeId();

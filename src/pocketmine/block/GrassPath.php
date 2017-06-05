@@ -29,8 +29,8 @@ class GrassPath extends Transparent{
 
 	protected $id = self::GRASS_PATH;
 
-	public function __construct(){
-
+	public function __construct($meta = 0){
+		$this->meta = $meta;
 	}
 
 	public function getName(){

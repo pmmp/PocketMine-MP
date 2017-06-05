@@ -42,7 +42,7 @@ class DropItemPacket extends DataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putByte($this->type);
-		$this->putByte($this->item);
+		$this->putSlot($this->item);
 	}
 
 	public function handle(NetworkSession $session) : bool{
