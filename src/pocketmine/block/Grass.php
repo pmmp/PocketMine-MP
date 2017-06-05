@@ -35,8 +35,8 @@ class Grass extends Solid{
 
 	protected $id = self::GRASS;
 
-	public function __construct(){
-
+	public function __construct($meta = 0){
+		$this->meta = $meta;
 	}
 
 	public function canBeActivated(){

@@ -26,8 +26,8 @@ class Sponge extends Solid{
 
 	protected $id = self::SPONGE;
 
-	public function __construct(){
-
+	public function __construct($meta = 0){
+		$this->meta = $meta;
 	}
 
 	public function getHardness(){
