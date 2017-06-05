@@ -786,9 +786,7 @@ class Level implements ChunkManager, Metadatable{
 			Level::getXZ($index, $chunkX, $chunkZ);
 			$chunkPlayers = $this->getChunkPlayers($chunkX, $chunkZ);
 			if(count($chunkPlayers) > 0){
-				foreach($entries as $pk){
-					$this->server->broadcastPacket($chunkPlayers, $pk);
-				}
+				$this->server->batchPackets($chunkPlayers, $entries, false, false);
 			}
 		}
 
