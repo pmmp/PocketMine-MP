@@ -23,7 +23,6 @@ namespace pocketmine\event;
 
 use pocketmine\entity\Entity;
 use pocketmine\network\mcpe\protocol\DataPacket;
-use pocketmine\Player;
 use pocketmine\plugin\PluginManager;
 use pocketmine\scheduler\PluginTask;
 use pocketmine\scheduler\TaskHandler;
@@ -206,7 +205,7 @@ abstract class Timings{
 	public static function getEntityTimings(Entity $entity){
 		$entityType = (new \ReflectionClass($entity))->getShortName();
 		if(!isset(self::$entityTypeTimingMap[$entityType])){
-			if($entity instanceof Player){
+			if($entity->isPlayer()){
 				self::$entityTypeTimingMap[$entityType] = new TimingsHandler("** tickEntity - EntityPlayer", self::$tickEntityTimer);
 			}else{
 				self::$entityTypeTimingMap[$entityType] = new TimingsHandler("** tickEntity - " . $entityType, self::$tickEntityTimer);

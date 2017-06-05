@@ -40,5 +40,9 @@ interface CommandSender extends Permissible{
 	 */
 	public function getName();
 
+	/**
+	 * @return bool
+	 */
+	public function isPlayer();
 
 }

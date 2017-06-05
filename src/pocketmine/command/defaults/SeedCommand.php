@@ -23,7 +23,6 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
-use pocketmine\Player;
 
 class SeedCommand extends VanillaCommand{
 
@@ -41,7 +40,7 @@ class SeedCommand extends VanillaCommand{
 			return true;
 		}
 
-		if($sender instanceof Player){
+		if($sender->isPlayer()){
 			$seed = $sender->getLevel()->getSeed();
 		}else{
 			$seed = $sender->getServer()->getDefaultLevel()->getSeed();

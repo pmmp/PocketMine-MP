@@ -25,7 +25,6 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\event\entity\EntityEatItemEvent;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
-use pocketmine\Player;
 
 abstract class Food extends Item implements FoodSource{
 	public function canBeConsumed() : bool{
@@ -54,7 +53,7 @@ abstract class Food extends Item implements FoodSource{
 		$pk = new EntityEventPacket();
 		$pk->entityRuntimeId = $human->getId();
 		$pk->event = EntityEventPacket::USE_ITEM;
-		if($human instanceof Player){
+		if($human->isPlayer()){
 			$human->dataPacket($pk);
 		}
 		$human->getLevel()->getServer()->broadcastPacket($human->getViewers(), $pk);

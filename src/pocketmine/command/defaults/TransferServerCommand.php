@@ -25,7 +25,6 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
-use pocketmine\Player;
 
 class TransferServerCommand extends VanillaCommand{
 
@@ -43,7 +42,7 @@ class TransferServerCommand extends VanillaCommand{
 			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 
 			return false;
-		}elseif(!($sender instanceof Player)){
+		}elseif(!$sender->isPlayer()){
 			$sender->sendMessage("This command must be executed as a player");
 
 			return false;

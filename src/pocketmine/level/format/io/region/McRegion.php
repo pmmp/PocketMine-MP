@@ -34,7 +34,6 @@ use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\{
 	ByteArrayTag, ByteTag, CompoundTag, IntArrayTag, IntTag, ListTag, LongTag, StringTag
 };
-use pocketmine\Player;
 use pocketmine\utils\MainLogger;
 
 class McRegion extends BaseLevelProvider{
@@ -89,7 +88,7 @@ class McRegion extends BaseLevelProvider{
 		$entities = [];
 
 		foreach($chunk->getEntities() as $entity){
-			if(!($entity instanceof Player) and !$entity->closed){
+			if(!$entity->isPlayer() and !$entity->closed){
 				$entity->saveNBT();
 				$entities[] = $entity->namedtag;
 			}

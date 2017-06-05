@@ -280,7 +280,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [0, 0, 0], false);
 
 		$this->inventory = new PlayerInventory($this);
-		if($this instanceof Player){
+		if($this->isPlayer()){
 			$this->addWindow($this->inventory, 0);
 		}else{
 			if(isset($this->namedtag->NameTag)){
@@ -497,7 +497,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
 			}
 
-			if(!($this instanceof Player)){
+			if(!$this->isPlayer()){
 				$this->server->updatePlayerListData($this->getUniqueId(), $this->getId(), $this->getName(), $this->skinId, $this->skin, [$player]);
 			}
 
@@ -519,7 +519,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 			$this->inventory->sendArmorContents($player);
 
-			if(!($this instanceof Player)){
+			if(!$this->isPlayer()){
 				$this->server->removePlayerListData($this->getUniqueId(), [$player]);
 			}
 		}

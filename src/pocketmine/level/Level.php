@@ -2446,7 +2446,7 @@ class Level implements ChunkManager, Metadatable{
 			throw new LevelException("Invalid Entity level");
 		}
 
-		if($entity instanceof Player){
+		if($entity->isPlayer()){
 			unset($this->players[$entity->getId()]);
 			$this->checkSleep();
 		}else{
@@ -2466,7 +2466,7 @@ class Level implements ChunkManager, Metadatable{
 		if($entity->getLevel() !== $this){
 			throw new LevelException("Invalid Entity level");
 		}
-		if($entity instanceof Player){
+		if($entity->isPlayer()){
 			$this->players[$entity->getId()] = $entity;
 		}
 		$this->entities[$entity->getId()] = $entity;
@@ -2605,7 +2605,7 @@ class Level implements ChunkManager, Metadatable{
 				if($trySave and $this->getAutoSave() and $chunk->isGenerated()){
 					$entities = 0;
 					foreach($chunk->getEntities() as $e){
-						if($e instanceof Player){
+						if($e->isPlayer()){
 							continue;
 						}
 						++$entities;

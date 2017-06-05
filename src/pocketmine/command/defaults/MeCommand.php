@@ -23,7 +23,6 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
-use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
 class MeCommand extends VanillaCommand{
@@ -48,7 +47,7 @@ class MeCommand extends VanillaCommand{
 			return false;
 		}
 
-		$sender->getServer()->broadcastMessage(new TranslationContainer("chat.type.emote", [$sender instanceof Player ? $sender->getDisplayName() : $sender->getName(), TextFormat::WHITE . implode(" ", $args)]));
+		$sender->getServer()->broadcastMessage(new TranslationContainer("chat.type.emote", [$sender->isPlayer() ? $sender->getDisplayName() : $sender->getName(), TextFormat::WHITE . implode(" ", $args)]));
 
 		return true;
 	}

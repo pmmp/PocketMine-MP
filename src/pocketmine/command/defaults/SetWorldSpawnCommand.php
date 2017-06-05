@@ -25,7 +25,6 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
 class SetWorldSpawnCommand extends VanillaCommand{
@@ -45,7 +44,7 @@ class SetWorldSpawnCommand extends VanillaCommand{
 		}
 
 		if(count($args) === 0){
-			if($sender instanceof Player){
+			if($sender->isPlayer()){
 				$level = $sender->getLevel();
 				$pos = (new Vector3($sender->x, $sender->y, $sender->z))->round();
 			}else{
