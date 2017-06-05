@@ -143,6 +143,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	public function canBeReducedByArmor() : bool{
 		switch($this->cause){
 			case self::CAUSE_FIRE_TICK:
+			case self::CAUSE_LAVA:
 			case self::CAUSE_SUFFOCATION:
 			case self::CAUSE_DROWNING:
 			case self::CAUSE_STARVATION:
@@ -151,6 +152,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 			case self::CAUSE_MAGIC:
 			case self::CAUSE_SUICIDE:
 				//TODO: lightning
+				//TODO: armor will absorb damage from touching lava, but not continuous damage due to lava
 				return false;
 			default:
 				return true;
