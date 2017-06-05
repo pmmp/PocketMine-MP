@@ -1873,8 +1873,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->hasAchievementsDisabled = 1;
 		$pk->dayCycleStopTime = -1; //TODO: implement this properly
 		$pk->eduMode = 0;
-		$pk->rainLevel = ($this->getLevel()->getWeather() === Level::WEATHER_RAIN or $this->getLevel()->getWeather() == Level::WEATHER_RAIN_THUNDER) ? 0 : 1;
-		$pk->lightningLevel = ($this->getLevel()->getWeather() === Level::WEATHER_RAIN_THUNDER) ? 0 : 1;
+		$pk->rainLevel = $this->getLevel()->getRainLevel()/65535; // TODO
+		$pk->lightningLevel = $this->getLevel()->getThunderLevel()/65535; // TODO
 		$pk->commandsEnabled = 1;
 		$pk->levelId = "";
 		$pk->worldName = $this->server->getMotd();
@@ -3589,25 +3589,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$pk->message = $this->server->getLanguage()->translateString($message, $parameters);
 		}
 		$this->dataPacket($pk);
-	}
-
-	public function sendWeather(){
-		$pk1 = new LevelEventPacket();
-		$pk2 = new LevelEventPacket();
-		if($this->level->getWeather() == Level::WEATHER_RAIN_THUNDER){
-			$pk1->evid = LevelEventPacket::EVENT_START_RAIN;
-			$pk2->evid = LevelEventPacket::EVENT_START_THUNDER;
-		}elseif($this->level->getWeather() == Level::WEATHER_RAIN){
-			$pk1->evid = LevelEventPacket::EVENT_START_RAIN;
-			$pk2->evid = LevelEventPacket::EVENT_STOP_THUNDER;
-		} else {
-			$pk1->evid = LevelEventPacket::EVENT_STOP_RAIN;
-			$pk2->evid = LevelEventPacket::EVENT_STOP_THUNDER;
-		}
-		$pk1->data = mt_rand(90000, 110000); //If we're clearing the weather, it doesn't matter what strength values we set
-		$pk2->data = mt_rand(30000, 40000);
-		$this->dataPacket($pk1);
-		$this->dataPacket($pk2);
 	}
 
 	public function sendPopup($message, $subtitle = ""){

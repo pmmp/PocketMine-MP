@@ -27,7 +27,7 @@ use pocketmine\event\TranslationContainer;
 use pocketmine\level\Level;
 use pocketmine\Player;
 
-class ToggleDownfall extends VanillaCommand{
+class ToggleDownfallCommand extends VanillaCommand{
 
 	public function __construct($name, $description = "", $usageMessage = null, array $aliases = []){
 		parent::__construct(
@@ -61,7 +61,6 @@ class ToggleDownfall extends VanillaCommand{
 				$level->setThunderTime($duration * 3);
 				Command::broadcastCommandMessage($sender, "Toggled downfall", true);
 				return true;
-				break;
 			case Level::WEATHER_CLEAR:
 			default:
 				if(mt_rand(0, 100) > 94){
@@ -72,7 +71,6 @@ class ToggleDownfall extends VanillaCommand{
 				$level->setClearTime($duration);
 				Command::broadcastCommandMessage($sender, "Toggled downfall", true);
 				return true;
-				break;
 		}
 	}
 }

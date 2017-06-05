@@ -135,7 +135,8 @@ class Level implements ChunkManager, Metadatable{
 
 	const WEATHER_CLEAR = 0;
 	const WEATHER_RAIN = 1;
-	const WEATHER_RAIN_THUNDER = 2;
+	const WEATHER_THUNDER = 2;
+	const WEATHER_RAIN_THUNDER = 3;
 
 	/** @var Tile[] */
 	private $tiles = [];
@@ -271,8 +272,12 @@ class Level implements ChunkManager, Metadatable{
 	private $weather;
 	/** @var int */
 	private $rainTime;
+	/** @var int $rainIntensity */
+	private $rainIntensity;
 	/** @var int */
 	private $thunderTime;
+	/** @var int $thunderIntensity */
+	private $thunderIntensity;
 	/** @var int */
 	private $clearTime;
 	/** @var bool */
@@ -379,7 +384,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->weather = $this->provider->getWeather();
 		$durations = $this->provider->getWeatherTimes();
 		$this->rainTime = isset($durations[1]) ? (int) $durations[1] : mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
-		$this->thunderTime = isset($durations[2]) ? (int) $durations[2] : mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2)) * 3;
+		$this->thunderTime = isset($durations[2]) ? (int) $durations[2] : mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
 		$this->clearTime = isset($durations[0]) ? (int) $durations[0] : 0;
 
 		$this->timings = new LevelTimings($this);
@@ -695,13 +700,57 @@ class Level implements ChunkManager, Metadatable{
 	 * WARNING: Do not use this, it's only for internal use.
 	 * Changes to this function won't be recorded on the version.
 	 *
-	 * @param Player ...$targets If empty, will send to all players in the level.
+	 * @param Player[] ...$targets If empty, will send to all players in the level.
 	 */
 	public function sendTime(Player ...$targets){
 		$pk = new SetTimePacket();
 		$pk->time = (int) $this->time;
 
 		$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
+	}
+
+	/**
+	 * WARNING: Do not use this, it's only for internal use.
+	 * Changes to this function won't be recorded on the version.
+	 *
+	 * @param Player[] ...$targets If empty, will send to all players in the level.
+	 */
+	public function sendWeather(Player ...$targets){
+		switch($this->getWeather()){
+			case self::WEATHER_RAIN:
+				$pk = new LevelEventPacket();
+				$pk->evid = LevelEventPacket::EVENT_START_RAIN;
+				$pk->data = mt_rand(0x0f,0x1f); // TODO proper values?
+				$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
+				break;
+			case self::WEATHER_THUNDER:
+				$pk = new LevelEventPacket();
+				$pk->evid = LevelEventPacket::EVENT_START_THUNDER;
+				$pk->data = mt_rand(0x0f,0x1f); // TODO proper values?
+				$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
+				break;
+			case self::WEATHER_RAIN_THUNDER:
+				$pk = new LevelEventPacket();
+				$pk->evid = LevelEventPacket::EVENT_START_THUNDER;
+				$pk->data = mt_rand(0x0f,0x1f); // TODO proper values?
+				$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
+				$pk = new LevelEventPacket();
+				$pk->evid = LevelEventPacket::EVENT_START_RAIN;
+				$pk->data = mt_rand(0x0f,0x1f); // TODO proper values?
+				$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
+				break;
+			default:
+			case self::WEATHER_CLEAR:
+				$pk = new LevelEventPacket();
+				$pk->evid = LevelEventPacket::EVENT_STOP_RAIN;
+				$pk->data = 0;
+				$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
+				$pk = new LevelEventPacket();
+				$pk->evid = LevelEventPacket::EVENT_STOP_THUNDER;
+				$pk->data = 0;
+				$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
+				break;
+		}
 	}
 
 	/**
@@ -809,7 +858,7 @@ class Level implements ChunkManager, Metadatable{
 			--$this->thunderTime;
 			--$this->rainTime;
 			--$this->clearTime;
-			if($this->weather == self::WEATHER_CLEAR and ($this->rainTime <= 0 or $this->thunderTime <= 0)){
+			if($this->weather === self::WEATHER_CLEAR and ($this->rainTime <= 0 or $this->thunderTime <= 0)){
 				if(mt_rand(0, 100) > 95 or $this->thunderTime <= 0){
 					$this->setWeather(self::WEATHER_RAIN_THUNDER);
 				} else {
@@ -821,7 +870,7 @@ class Level implements ChunkManager, Metadatable{
 				$this->setWeather(self::WEATHER_RAIN);
 			}
 		}
-		if($this->weather = self::WEATHER_RAIN_THUNDER){
+		if($this->weather === self::WEATHER_RAIN_THUNDER){
 			foreach($this->getChunks() as $chunk){
 				if(mt_rand(1, 100000) == 1){
 					$pk = new AddEntityPacket();
@@ -836,7 +885,6 @@ class Level implements ChunkManager, Metadatable{
 					foreach($this->getPlayers() as $p){
 						$p->dataPacket($pk);
 					}
-					$this->setBlock(new Vector3($pk->x, $pk->y, $pk->z),Block::get(Block::FIRE));
 				}
 			}
 		}
@@ -2858,12 +2906,30 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
+	 * Gives the intensity of the current rain
+	 *
+	 * @return int
+	 */
+	public function getRainLevel() : int{
+		return $this->rainIntensity;
+	}
+
+	/**
 	 * Gives the time until the next thunderstorm in ticks
 	 *
 	 * @return int
 	 */
 	public function getThunderTime() : int{
 		return $this->thunderTime;
+	}
+
+	/**
+	 * Gives the intensity of the current thunder
+	 *
+	 * @return int
+	 */
+	public function getThunderLevel() : int{
+		return $this->thunderIntensity;
 	}
 
 	/**
@@ -2879,29 +2945,37 @@ class Level implements ChunkManager, Metadatable{
 	 * Sets the type of weather being displayed
 	 *
 	 * @param int $weatherType
+	 * @param int $intensity
 	 */
-	public function setWeather(int $weatherType){
-		$this->getServer()->getPluginManager()->callEvent($ev = new WeatherChangeEvent($this, $this->weather, $weatherType));
+	public function setWeather(int $weatherType, int $intensity = -1){
+		$this->getServer()->getPluginManager()->callEvent($ev = new WeatherChangeEvent($this, $this->weather, $weatherType, $intensity));
 		if($ev->isCancelled()){
 			return;
 		}
-
+		if($ev->getNewIntensity() < 0 or $ev->getNewIntensity() > 65535){
+			$ev->setNewIntensity(mt_rand(0,65535)); // TODO proper values?
+		}
 		$this->weather = $ev->getNewWeather();
-		if($ev->getNewWeather() >= self::WEATHER_RAIN){
+		if($ev->getNewWeather() === self::WEATHER_RAIN or $ev->getNewWeather() === self::WEATHER_RAIN_THUNDER){
 			$this->rainTime = 0;
-			if($ev->getNewWeather() == self::WEATHER_RAIN_THUNDER){
+			$this->rainIntensity = $ev->getNewIntensity();
+			if($ev->getNewWeather() === self::WEATHER_RAIN_THUNDER){
 				$this->thunderTime = 0;
+				$this->thunderIntensity = $ev->getNewIntensity();
 			}
-			$this->clearTime = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
+			$this->clearTime = mt_rand((self::TIME_FULL / 2), self::TIME_FULL);
+		}elseif($ev->getNewWeather() === self::WEATHER_THUNDER){
+			$this->thunderTime = 0;
+			$this->thunderIntensity = $ev->getNewIntensity();
+			$this->clearTime = mt_rand((self::TIME_FULL / 2), self::TIME_FULL);
 		}elseif($ev->getNewWeather() == self::WEATHER_CLEAR){
 			$this->rainTime = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
-			$this->thunderTime = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2)) * 3;
+			$this->rainIntensity = 0;
+			$this->thunderTime = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
+			$this->thunderIntensity = 0;
 			$this->clearTime = 0;
 		}
-
-		foreach($this->getPlayers() as $player){
-			$player->sendWeather();
-		}
+		$this->sendWeather();
 	}
 
 	/**
@@ -2909,8 +2983,21 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @param int $time
 	 */
-	public function setRainTime(int $time) {
+	public function setRainTime(int $time){
 		$this->rainTime = $time;
+		if($time > 0){
+			$this->clearTime = mt_rand((self::TIME_FULL / 2), self::TIME_FULL);
+		}
+	}
+
+	/**
+	 * Sets the intensity of the next rainstorm
+	 * Less than 65535
+	 *
+	 * @param int $intensity
+	 */
+	public function setRainLevel(int $intensity){
+		$this->rainIntensity = $intensity;
 	}
 
 	/**
@@ -2918,8 +3005,21 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @param int $time
 	 */
-	public function setThunderTime(int $time) {
+	public function setThunderTime(int $time){
 		$this->thunderTime = $time;
+		if($time > 0){
+			$this->clearTime = mt_rand((self::TIME_FULL / 2), self::TIME_FULL);
+		}
+	}
+
+	/**
+	 * Sets the intensity of the next thunderstorm
+	 * Less than 65535
+	 *
+	 * @param int $intensity
+	 */
+	public function setThunderLevel(int $intensity){
+		$this->thunderIntensity = $intensity;
 	}
 
 	/**
@@ -2927,8 +3027,12 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @param int $time
 	 */
-	public function setClearTime(int $time) {
+	public function setClearTime(int $time){
 		$this->clearTime = $time;
+		if($time > 0){
+			$this->rainTime = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
+			$this->thunderTime = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
+		}
 	}
 
 	/**

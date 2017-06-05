@@ -61,21 +61,18 @@ class WeatherCommand extends VanillaCommand{
 				$level->setWeather(Level::WEATHER_CLEAR);
 				$level->setRainTime($duration);
 				$level->setThunderTime($duration * 3);
-				Command::broadcastCommandMessage($sender, "Changing to clear weather", true);
+				Command::broadcastCommandMessage($sender, "Changing to clear weather");
 				return true;
-				break;
 			case "rain":
 				$level->setWeather(Level::WEATHER_RAIN);
 				$level->setClearTime($duration);
-				Command::broadcastCommandMessage($sender, "Changing to rainy weather", true);
+				Command::broadcastCommandMessage($sender, "Changing to rainy weather");
 				return true;
-				break;
 			case "thunder":
 				$level->setWeather(Level::WEATHER_RAIN_THUNDER);
 				$level->setClearTime($duration);
-				Command::broadcastCommandMessage($sender, "Changing to rain and thunder", true);
+				Command::broadcastCommandMessage($sender, "Changing to rain and thunder");
 				return true;
-				break;
 			default:
 				$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 				break;

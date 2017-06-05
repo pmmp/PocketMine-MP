@@ -34,11 +34,14 @@ class WeatherChangeEvent extends LevelEvent implements Cancellable{
 	private $oldWeather;
 	/** @var int $newWeather */
 	private $newWeather;
+	/** @var int $intensity */
+	private $intensity;
 
-	public function __construct(Level $level, int $oldWeather, int $newWeather){
+	public function __construct(Level $level, int $oldWeather, int $newWeather, int $intensity){
 		parent::__construct($level);
 		$this->oldWeather = $oldWeather;
 		$this->newWeather = $newWeather;
+		$this->intensity = $intensity;
 	}
 
 	/**
@@ -66,5 +69,23 @@ class WeatherChangeEvent extends LevelEvent implements Cancellable{
 	 */
 	public function getOldWeather() : int{
 		return $this->oldWeather;
+	}
+
+	/**
+	 * Gives the new weather intensity
+	 *
+	 * @return int
+	 */
+	public function getNewIntensity() : int{
+		return $this->intensity;
+	}
+
+	/**
+	 * Sets the new weather intensity
+	 *
+	 * @param int $intensity
+	 */
+	public function setNewIntensity(int $intensity){
+		$this->intensity = $intensity;
 	}
 }
