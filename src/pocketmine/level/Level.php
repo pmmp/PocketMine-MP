@@ -839,6 +839,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param bool     $optimizeRebuilds
 	 */
 	public function sendBlocks(array $target, array $blocks, $flags = UpdateBlockPacket::FLAG_NONE, bool $optimizeRebuilds = false){
+		$packets = [];
 		if($optimizeRebuilds){
 			$chunks = [];
 			foreach($blocks as $b){
@@ -853,23 +854,22 @@ class Level implements ChunkManager, Metadatable{
 					$first = true;
 				}
 
+				$pk->x = $b->x;
+				$pk->y = $b->y;
+				$pk->z = $b->z;
+
 				if($b instanceof Block){
-					$pk->x = $b->x;
-					$pk->z = $b->z;
-					$pk->y = $b->y;
 					$pk->blockId = $b->getId();
 					$pk->blockData = $b->getDamage();
-					$pk->flags = $first ? $flags : UpdateBlockPacket::FLAG_NONE;
 				}else{
 					$fullBlock = $this->getFullBlock($b->x, $b->y, $b->z);
-					$pk->x = $b->x;
-					$pk->z = $b->z;
-					$pk->y = $b->y;
 					$pk->blockId = $fullBlock >> 4;
 					$pk->blockData = $fullBlock & 0xf;
-					$pk->flags = $first ? $flags : UpdateBlockPacket::FLAG_NONE;
 				}
-				$this->server->broadcastPacket($target, $pk);
+
+				$pk->flags = $first ? $flags : UpdateBlockPacket::FLAG_NONE;
+
+				$packets[] = $pk;
 			}
 		}else{
 			foreach($blocks as $b){
@@ -877,25 +877,27 @@ class Level implements ChunkManager, Metadatable{
 				if($b === null){
 					continue;
 				}
+
+				$pk->x = $b->x;
+				$pk->y = $b->y;
+				$pk->z = $b->z;
+
 				if($b instanceof Block){
-					$pk->x = $b->x;
-					$pk->z = $b->z;
-					$pk->y = $b->y;
 					$pk->blockId = $b->getId();
 					$pk->blockData = $b->getDamage();
-					$pk->flags = $flags;
 				}else{
 					$fullBlock = $this->getFullBlock($b->x, $b->y, $b->z);
-					$pk->x = $b->x;
-					$pk->z = $b->z;
-					$pk->y = $b->y;
 					$pk->blockId = $fullBlock >> 4;
 					$pk->blockData = $fullBlock & 0xf;
-					$pk->flags = $flags;
 				}
-				$this->server->broadcastPacket($target, $pk);
+
+				$pk->flags = $flags;
+
+				$packets[] = $pk;
 			}
 		}
+
+		$this->server->batchPackets($target, $packets, false, false);
 	}
 
 	public function clearCache(bool $full = false){
