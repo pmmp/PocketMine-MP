@@ -30,18 +30,18 @@ use pocketmine\network\mcpe\NetworkSession;
 class UpdateAttributesPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::UPDATE_ATTRIBUTES_PACKET;
 
-	public $entityId;
+	public $entityRuntimeId;
 	/** @var Attribute[] */
 	public $entries = [];
 
 	public function decode(){
-		$this->entityId = $this->getEntityRuntimeId();
+		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->entries = $this->getAttributeList();
 	}
 
 	public function encode(){
 		$this->reset();
-		$this->putEntityRuntimeId($this->entityId);
+		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putAttributeList(...$this->entries);
 	}
 

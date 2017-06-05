@@ -29,7 +29,7 @@ use pocketmine\network\mcpe\NetworkSession;
 class MoveEntityPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::MOVE_ENTITY_PACKET;
 
-	public $eid;
+	public $entityRuntimeId;
 	public $x;
 	public $y;
 	public $z;
@@ -40,7 +40,7 @@ class MoveEntityPacket extends DataPacket{
 	public $teleported;
 
 	public function decode(){
-		$this->eid = $this->getEntityRuntimeId();
+		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->getVector3f($this->x, $this->y, $this->z);
 		$this->pitch = $this->getByteRotation();
 		$this->headYaw = $this->getByteRotation();
@@ -51,7 +51,7 @@ class MoveEntityPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putEntityRuntimeId($this->eid);
+		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putVector3f($this->x, $this->y, $this->z);
 		$this->putByteRotation($this->pitch);
 		$this->putByteRotation($this->headYaw);

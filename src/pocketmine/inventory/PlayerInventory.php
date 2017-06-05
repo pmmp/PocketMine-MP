@@ -232,7 +232,7 @@ class PlayerInventory extends BaseInventory{
 		$item = $this->getItemInHand();
 
 		$pk = new MobEquipmentPacket();
-		$pk->eid = $this->getHolder()->getId();
+		$pk->entityRuntimeId = $this->getHolder()->getId();
 		$pk->item = $item;
 		$pk->inventorySlot = $this->getHeldItemSlot();
 		$pk->hotbarSlot = $this->getHeldItemIndex();
@@ -413,7 +413,7 @@ class PlayerInventory extends BaseInventory{
 		$armor = $this->getArmorContents();
 
 		$pk = new MobArmorEquipmentPacket();
-		$pk->eid = $this->getHolder()->getId();
+		$pk->entityRuntimeId = $this->getHolder()->getId();
 		$pk->slots = $armor;
 		$pk->encode();
 		$pk->isEncoded = true;
@@ -461,7 +461,7 @@ class PlayerInventory extends BaseInventory{
 		$armor = $this->getArmorContents();
 
 		$pk = new MobArmorEquipmentPacket();
-		$pk->eid = $this->getHolder()->getId();
+		$pk->entityRuntimeId = $this->getHolder()->getId();
 		$pk->slots = $armor;
 		$pk->encode();
 		$pk->isEncoded = true;

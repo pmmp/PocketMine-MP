@@ -2904,7 +2904,7 @@ class Level implements ChunkManager, Metadatable{
 
 	public function addEntityMotion(int $chunkX, int $chunkZ, int $entityId, float $x, float $y, float $z){
 		$pk = new SetEntityMotionPacket();
-		$pk->eid = $entityId;
+		$pk->entityRuntimeId = $entityId;
 		$pk->motionX = $x;
 		$pk->motionY = $y;
 		$pk->motionZ = $z;
@@ -2913,7 +2913,7 @@ class Level implements ChunkManager, Metadatable{
 
 	public function addEntityMovement(int $chunkX, int $chunkZ, int $entityId, float $x, float $y, float $z, float $yaw, float $pitch, $headYaw = null){
 		$pk = new MoveEntityPacket();
-		$pk->eid = $entityId;
+		$pk->entityRuntimeId = $entityId;
 		$pk->x = $x;
 		$pk->y = $y;
 		$pk->z = $z;

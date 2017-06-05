@@ -29,14 +29,14 @@ use pocketmine\network\mcpe\NetworkSession;
 class MobEquipmentPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::MOB_EQUIPMENT_PACKET;
 
-	public $eid;
+	public $entityRuntimeId;
 	public $item;
 	public $inventorySlot;
 	public $hotbarSlot;
 	public $unknownByte = 0;
 
 	public function decode(){
-		$this->eid = $this->getEntityRuntimeId();
+		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->item = $this->getSlot();
 		$this->inventorySlot = $this->getByte();
 		$this->hotbarSlot = $this->getByte();
@@ -45,7 +45,7 @@ class MobEquipmentPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putEntityRuntimeId($this->eid);
+		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putSlot($this->item);
 		$this->putByte($this->inventorySlot);
 		$this->putByte($this->hotbarSlot);
