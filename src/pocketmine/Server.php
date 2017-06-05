@@ -2043,7 +2043,7 @@ class Server{
 		}
 
 
-		if($this->getProperty("network.upnp-forwarding", false) == true){
+		if($this->getProperty("network.upnp-forwarding", false)){
 			$this->logger->info("[UPnP] Trying to port forward...");
 			UPnP::PortForward($this->getPort());
 		}
@@ -2140,7 +2140,7 @@ class Server{
 				if($p instanceof Plugin and !($p->getPluginLoader() instanceof PharPluginLoader)){
 					$report = false;
 				}
-			}elseif(\Phar::running(true) == ""){
+			}elseif(\Phar::running(true) === ""){
 				$report = false;
 			}
 			if($dump->getData()["error"]["type"] === "E_PARSE" or $dump->getData()["error"]["type"] === "E_COMPILE_ERROR"){

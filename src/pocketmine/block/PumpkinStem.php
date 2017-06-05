@@ -46,7 +46,7 @@ class PumpkinStem extends Crops{
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
-			if(mt_rand(0, 2) == 1){
+			if(mt_rand(0, 2) === 1){
 				if($this->meta < 0x07){
 					$block = clone $this;
 					++$block->meta;
