@@ -162,7 +162,7 @@ class Vector3{
 	 * 
 	 * @return Vector3
 	 */
-	public function asVector3() : Vector3 {
+	public function asVector3() : Vector3{
 		return new Vector3($this->x, $this->y, $this->z);
 	}
 

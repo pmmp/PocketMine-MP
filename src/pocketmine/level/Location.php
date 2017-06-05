@@ -62,7 +62,7 @@ class Location extends Position{
 	 * 
 	 * @return Location
 	 */
-	public function asLocation() : Location {
+	public function asLocation() : Location{
 		return new Location($this->x, $this->y, $this->z, $this->yaw, $this->pitch, $this->level);
 	}
 

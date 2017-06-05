@@ -51,7 +51,7 @@ class Position extends Vector3{
 	 * 
 	 * @return Position
 	 */
-	public function asPosition() : Position {
+	public function asPosition() : Position{
 		return new Position($this->x, $this->y, $this->z, $this->level);
 	}
 	
