@@ -911,9 +911,9 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * Returns the amount of damage that this item will deal to an entity.
 	 *
-	 * @return int
+	 * @return float
 	 */
-	public function getAttackPoints() : int{
+	public function getAttackPoints() : float{
 		return $this->attackPoints;
 	}
 
