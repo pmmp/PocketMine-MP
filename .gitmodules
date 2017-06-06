@@ -1,6 +1,3 @@
-[submodule "src/raklib"]
-	url = https://github.com/pmmp/RakLib.git
-	branch = master
 [submodule "src/spl"]
 	path = src/spl
 	url = https://github.com/pmmp/PocketMine-SPL.git
