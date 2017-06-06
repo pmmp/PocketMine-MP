@@ -29,7 +29,7 @@ use pocketmine\network\mcpe\NetworkSession;
 class MoveEntityPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::MOVE_ENTITY_PACKET;
 
-	public $eid;
+	public $entityRuntimeId;
 	public $x;
 	public $y;
 	public $z;
@@ -40,22 +40,22 @@ class MoveEntityPacket extends DataPacket{
 	public $teleported;
 
 	public function decode(){
-		$this->eid = $this->getEntityRuntimeId();
+		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->getVector3f($this->x, $this->y, $this->z);
-		$this->pitch = $this->getByte() * (360.0 / 256);
-		$this->headYaw = $this->getByte() * (360.0 / 256);
-		$this->yaw = $this->getByte() * (360.0 / 256);
+		$this->pitch = $this->getByteRotation();
+		$this->headYaw = $this->getByteRotation();
+		$this->yaw = $this->getByteRotation();
 		$this->onGround = $this->getBool();
 		$this->teleported = $this->getBool();
 	}
 
 	public function encode(){
 		$this->reset();
-		$this->putEntityRuntimeId($this->eid);
+		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putVector3f($this->x, $this->y, $this->z);
-		$this->putByte($this->pitch / (360.0 / 256));
-		$this->putByte($this->headYaw / (360.0 / 256));
-		$this->putByte($this->yaw / (360.0 / 256));
+		$this->putByteRotation($this->pitch);
+		$this->putByteRotation($this->headYaw);
+		$this->putByteRotation($this->yaw);
 		$this->putBool($this->onGround);
 		$this->putBool($this->teleported);
 	}

@@ -29,8 +29,8 @@ class Dirt extends Solid{
 
 	protected $id = self::DIRT;
 
-	public function __construct(){
-
+	public function __construct($meta = 0){
+		$this->meta = $meta;
 	}
 
 	public function canBeActivated(){

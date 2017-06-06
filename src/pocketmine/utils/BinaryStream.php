@@ -19,6 +19,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\utils;
 
 #include <rules/DataPacket.h>
@@ -126,8 +128,12 @@ class BinaryStream{
 		$this->buffer .= Binary::writeShort($v);
 	}
 
-	public function getFloat(int $accuracy = -1){
-		return Binary::readFloat($this->get(4), $accuracy);
+	public function getFloat(){
+		return Binary::readFloat($this->get(4));
+	}
+
+	public function getRoundedFloat(int $accuracy){
+		return Binary::readRoundedFloat($this->get(4), $accuracy);
 	}
 
 	public function putFloat($v){
@@ -142,8 +148,12 @@ class BinaryStream{
 		$this->buffer .= Binary::writeLShort($v);
 	}
 
-	public function getLFloat(int $accuracy = -1){
-		return Binary::readLFloat($this->get(4), $accuracy);
+	public function getLFloat(){
+		return Binary::readLFloat($this->get(4));
+	}
+
+	public function getRoundedLFloat(int $accuracy){
+		return Binary::readRoundedLFloat($this->get(4), $accuracy);
 	}
 
 	public function putLFloat($v){
@@ -168,11 +178,11 @@ class BinaryStream{
 		$this->buffer .= Binary::writeLTriad($v);
 	}
 
-	public function getByte(){
+	public function getByte() : int{
 		return ord($this->buffer{$this->offset++});
 	}
 
-	public function putByte($v){
+	public function putByte(int $v){
 		$this->buffer .= chr($v);
 	}
 
@@ -200,6 +210,9 @@ class BinaryStream{
 
 		$auxValue = $this->getVarInt();
 		$data = $auxValue >> 8;
+		if($data === 0x7fff){
+			$data = -1;
+		}
 		$cnt = $auxValue & 0xff;
 
 		$nbtLen = $this->getLShort();
@@ -236,7 +249,7 @@ class BinaryStream{
 		}
 
 		$this->putVarInt($item->getId());
-		$auxValue = ($item->getDamage() << 8) | $item->getCount();
+		$auxValue = (($item->getDamage() & 0x7fff) << 8) | $item->getCount();
 		$this->putVarInt($auxValue);
 
 		$nbt = $item->getCompoundTag();

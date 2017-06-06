@@ -29,15 +29,15 @@ use pocketmine\network\mcpe\NetworkSession;
 class RemoveEntityPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::REMOVE_ENTITY_PACKET;
 
-	public $eid;
+	public $entityUniqueId;
 
 	public function decode(){
-		$this->eid = $this->getEntityUniqueId();
+		$this->entityUniqueId = $this->getEntityUniqueId();
 	}
 
 	public function encode(){
 		$this->reset();
-		$this->putEntityUniqueId($this->eid);
+		$this->putEntityUniqueId($this->entityUniqueId);
 	}
 
 	public function handle(NetworkSession $session) : bool{

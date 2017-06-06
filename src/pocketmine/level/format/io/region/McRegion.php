@@ -57,9 +57,7 @@ class McRegion extends BaseLevelProvider{
 		$nbt->xPos = new IntTag("xPos", $chunk->getX());
 		$nbt->zPos = new IntTag("zPos", $chunk->getZ());
 
-		$nbt->V = new ByteTag("V", 0); //guess
 		$nbt->LastUpdate = new LongTag("LastUpdate", 0); //TODO
-		$nbt->InhabitedTime = new LongTag("InhabitedTime", 0); //TODO
 		$nbt->TerrainPopulated = new ByteTag("TerrainPopulated", $chunk->isPopulated());
 		$nbt->LightPopulated = new ByteTag("LightPopulated", $chunk->isLightPopulated());
 
@@ -85,7 +83,7 @@ class McRegion extends BaseLevelProvider{
 		$nbt->SkyLight = new ByteArrayTag("SkyLight", $skyLight);
 		$nbt->BlockLight = new ByteArrayTag("BlockLight", $blockLight);
 
-		$nbt->Biomes = new ByteArrayTag("Biomes", $chunk->getBiomeIdArray());
+		$nbt->Biomes = new ByteArrayTag("Biomes", $chunk->getBiomeIdArray()); //doesn't exist in regular McRegion, this is here for PocketMine-MP only
 		$nbt->HeightMap = new ByteArrayTag("HeightMap", pack("C*", ...$chunk->getHeightMapArray()));
 
 		$entities = [];
@@ -108,8 +106,6 @@ class McRegion extends BaseLevelProvider{
 
 		$nbt->TileEntities = new ListTag("TileEntities", $tiles);
 		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
-
-		//TODO: TileTicks
 
 		$writer = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setName("Level");

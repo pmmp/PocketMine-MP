@@ -73,7 +73,7 @@ abstract class Living extends Entity implements Damageable{
 		$this->attributeMap->getAttribute(Attribute::HEALTH)->setValue($this->getHealth(), true);
 		if($this->isAlive() and !$wasAlive){
 			$pk = new EntityEventPacket();
-			$pk->eid = $this->getId();
+			$pk->entityRuntimeId = $this->getId();
 			$pk->event = EntityEventPacket::RESPAWN;
 			$this->server->broadcastPacket($this->hasSpawned, $pk);
 		}
@@ -166,7 +166,7 @@ abstract class Living extends Entity implements Damageable{
 		}
 
 		$pk = new EntityEventPacket();
-		$pk->eid = $this->getId();
+		$pk->entityRuntimeId = $this->getId();
 		$pk->event = $this->getHealth() <= 0 ? EntityEventPacket::DEATH_ANIMATION : EntityEventPacket::HURT_ANIMATION; //Ouch!
 		$this->server->broadcastPacket($this->hasSpawned, $pk);
 

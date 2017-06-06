@@ -27,8 +27,8 @@ class GlassPane extends Thin{
 
 	protected $id = self::GLASS_PANE;
 
-	public function __construct(){
-
+	public function __construct($meta = 0){
+		$this->meta = $meta;
 	}
 
 	public function getName(){

@@ -28,8 +28,8 @@ class Emerald extends Solid{
 
 	protected $id = self::EMERALD_BLOCK;
 
-	public function __construct(){
-
+	public function __construct($meta = 0){
+		$this->meta = $meta;
 	}
 
 	public function getHardness(){

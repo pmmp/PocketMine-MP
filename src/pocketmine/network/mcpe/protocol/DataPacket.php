@@ -19,6 +19,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
@@ -337,9 +339,9 @@ abstract class DataPacket extends BinaryStream{
 	 * @param float $z
 	 */
 	public function getVector3f(&$x, &$y, &$z){
-		$x = $this->getLFloat(4);
-		$y = $this->getLFloat(4);
-		$z = $this->getLFloat(4);
+		$x = $this->getRoundedLFloat(4);
+		$y = $this->getRoundedLFloat(4);
+		$z = $this->getRoundedLFloat(4);
 	}
 
 	/**
@@ -352,5 +354,13 @@ abstract class DataPacket extends BinaryStream{
 		$this->putLFloat($x);
 		$this->putLFloat($y);
 		$this->putLFloat($z);
+	}
+
+	public function getByteRotation() : float{
+		return (float) ($this->getByte() * (360 / 256));
+	}
+
+	public function putByteRotation(float $rotation){
+		$this->putByte((int) ($rotation / (360 / 256)));
 	}
 }

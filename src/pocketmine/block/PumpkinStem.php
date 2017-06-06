@@ -24,6 +24,7 @@ namespace pocketmine\block;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Server;
 
 class PumpkinStem extends Crops{
@@ -40,12 +41,12 @@ class PumpkinStem extends Crops{
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->isTransparent()){
+			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== Block::FARMLAND){
 				$this->getLevel()->useBreakOn($this);
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
-			if(mt_rand(0, 2) == 1){
+			if(mt_rand(0, 2) === 1){
 				if($this->meta < 0x07){
 					$block = clone $this;
 					++$block->meta;

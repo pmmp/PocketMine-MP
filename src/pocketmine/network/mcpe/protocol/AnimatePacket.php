@@ -30,12 +30,12 @@ class AnimatePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::ANIMATE_PACKET;
 
 	public $action;
-	public $eid;
+	public $entityRuntimeId;
 	public $float; //TODO (Boat rowing time?)
 
 	public function decode(){
 		$this->action = $this->getVarInt();
-		$this->eid = $this->getEntityRuntimeId();
+		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		if($this->action & 0x80){
 			$this->float = $this->getLFloat();
 		}
@@ -44,7 +44,7 @@ class AnimatePacket extends DataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putVarInt($this->action);
-		$this->putEntityRuntimeId($this->eid);
+		$this->putEntityRuntimeId($this->entityRuntimeId);
 		if($this->action & 0x80){
 			$this->putLFloat($this->float);
 		}

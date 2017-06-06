@@ -28,8 +28,8 @@ class Iron extends Solid{
 
 	protected $id = self::IRON_BLOCK;
 
-	public function __construct(){
-
+	public function __construct($meta = 0){
+		$this->meta = $meta;
 	}
 
 	public function getName(){
