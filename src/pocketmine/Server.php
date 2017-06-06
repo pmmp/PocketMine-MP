@@ -1815,6 +1815,7 @@ class Server{
 				$compressionLevel = $this->networkCompressionLevel;
 			}else{
 				$compressionLevel = 0; //Do not compress packets under the threshold
+				$forceSync = true;
 			}
 
 			if(!$forceSync and !$immediate and $this->networkCompressionAsync){
