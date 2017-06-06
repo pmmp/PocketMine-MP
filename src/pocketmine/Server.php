@@ -1785,17 +1785,7 @@ class Server{
 	public function broadcastPacket(array $players, DataPacket $packet){
 		$packet->encode();
 		$packet->isEncoded = true;
-		if(Network::$BATCH_THRESHOLD >= 0 and strlen($packet->buffer) >= Network::$BATCH_THRESHOLD){
-			$this->batchPackets($players, [$packet], false);
-			return;
-		}
-
-		foreach($players as $player){
-			$player->dataPacket($packet);
-		}
-		if(isset($packet->__encapsulatedPacket)){
-			unset($packet->__encapsulatedPacket);
-		}
+		$this->batchPackets($players, [$packet], false);
 	}
 
 	/**
@@ -1823,11 +1813,18 @@ class Server{
 				$pk->addPacket($p);
 			}
 
+			if(Network::$BATCH_THRESHOLD >= 0 and strlen($pk->payload) >= Network::$BATCH_THRESHOLD){
+				$compressionLevel = $this->networkCompressionLevel;
+			}else{
+				$compressionLevel = 0; //Do not compress packets under the threshold
+				$forceSync = true;
+			}
+
 			if(!$forceSync and !$immediate and $this->networkCompressionAsync){
-				$task = new CompressBatchedTask($pk, $targets, $this->networkCompressionLevel);
+				$task = new CompressBatchedTask($pk, $targets, $compressionLevel);
 				$this->getScheduler()->scheduleAsyncTask($task);
 			}else{
-				$pk->compress($this->networkCompressionLevel);
+				$pk->compress($compressionLevel);
 				$this->broadcastPacketsCallback($pk, $targets, $immediate);
 			}
 		}
@@ -2045,7 +2042,7 @@ class Server{
 		}
 
 
-		if($this->getProperty("network.upnp-forwarding", false) == true){
+		if($this->getProperty("network.upnp-forwarding", false)){
 			$this->logger->info("[UPnP] Trying to port forward...");
 			UPnP::PortForward($this->getPort());
 		}
@@ -2142,7 +2139,7 @@ class Server{
 				if($p instanceof Plugin and !($p->getPluginLoader() instanceof PharPluginLoader)){
 					$report = false;
 				}
-			}elseif(\Phar::running(true) == ""){
+			}elseif(\Phar::running(true) === ""){
 				$report = false;
 			}
 			if($dump->getData()["error"]["type"] === "E_PARSE" or $dump->getData()["error"]["type"] === "E_COMPILE_ERROR"){

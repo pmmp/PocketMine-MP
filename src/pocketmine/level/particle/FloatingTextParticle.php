@@ -69,7 +69,7 @@ class FloatingTextParticle extends Particle{
 			$this->entityId = (int) bcadd("1095216660480", mt_rand(0, 0x7fffffff)); //No conflict with other things
 		}else{
 			$pk0 = new RemoveEntityPacket();
-			$pk0->eid = $this->entityId;
+			$pk0->entityUniqueId = $this->entityId;
 
 			$p[] = $pk0;
 		}

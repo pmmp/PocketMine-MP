@@ -28,24 +28,27 @@ use pocketmine\network\mcpe\NetworkSession;
 class InventoryActionPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::INVENTORY_ACTION_PACKET;
 
-	public $uvarint0;
+	const ACTION_GIVE_ITEM = 0;
+	const ACTION_ENCHANT_ITEM = 2;
+
+	public $actionId;
 	public $item;
-	public $varint1;
-	public $varint2;
+	public $enchantmentId = 0;
+	public $enchantmentLevel = 0;
 
 	public function decode(){
-		$this->uvarint0 = $this->getUnsignedVarInt();
+		$this->actionId = $this->getUnsignedVarInt();
 		$this->item = $this->getSlot();
-		$this->varint1 = $this->getVarInt();
-		$this->varint2 = $this->getVarInt();
+		$this->enchantmentId = $this->getVarInt();
+		$this->enchantmentLevel = $this->getVarInt();
 	}
 
 	public function encode(){
 		$this->reset();
-		$this->putUnsignedVarInt($this->uvarint0);
+		$this->putUnsignedVarInt($this->actionId);
 		$this->putSlot($this->item);
-		$this->putVarInt($this->varint1);
-		$this->putVarInt($this->varint2);
+		$this->putVarInt($this->enchantmentId);
+		$this->putVarInt($this->enchantmentLevel);
 	}
 
 	public function handle(NetworkSession $session) : bool{
