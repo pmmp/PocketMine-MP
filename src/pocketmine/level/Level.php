@@ -720,23 +720,23 @@ class Level implements ChunkManager, Metadatable{
 			case self::WEATHER_RAIN:
 				$pk = new LevelEventPacket();
 				$pk->evid = LevelEventPacket::EVENT_START_RAIN;
-				$pk->data = mt_rand(1,65535)/65535;
+				$pk->data = $this->getRainLevel();
 				$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
 				break;
 			case self::WEATHER_THUNDER:
 				$pk = new LevelEventPacket();
 				$pk->evid = LevelEventPacket::EVENT_START_THUNDER;
-                $pk->data = mt_rand(1,65535)/65535;
+                $pk->data = $this->getThunderLevel();
 				$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
 				break;
 			case self::WEATHER_RAIN_THUNDER:
 				$pk = new LevelEventPacket();
 				$pk->evid = LevelEventPacket::EVENT_START_THUNDER;
-                $pk->data = mt_rand(1,65535)/65535;
+                $pk->data = $this->getThunderLevel();
 				$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
 				$pk = new LevelEventPacket();
 				$pk->evid = LevelEventPacket::EVENT_START_RAIN;
-                $pk->data = mt_rand(1,65535)/65535;
+                $pk->data = $this->getRainLevel();
 				$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
 				break;
 			default:
@@ -2952,21 +2952,18 @@ class Level implements ChunkManager, Metadatable{
 		if($ev->isCancelled()){
 			return;
 		}
-		if($ev->getNewIntensity() < 0 or $ev->getNewIntensity() > 65535){
-			$ev->setNewIntensity(mt_rand(1,65535));
-		}
 		$this->weather = $ev->getNewWeather();
 		if($ev->getNewWeather() === self::WEATHER_RAIN or $ev->getNewWeather() === self::WEATHER_RAIN_THUNDER){
 			$this->rainTime = 0;
-			$this->rainIntensity = $ev->getNewIntensity()/65535;
+			$this->rainIntensity = ($ev->getNewIntensity() < 0 or $ev->getNewIntensity() > 65535) ? mt_rand(1,65535) : $ev->getNewIntensity()/65535;
 			if($ev->getNewWeather() === self::WEATHER_RAIN_THUNDER){
 				$this->thunderTime = 0;
-				$this->thunderIntensity = $ev->getNewIntensity()/65535;
+				$this->thunderIntensity = ($ev->getNewIntensity() < 0 or $ev->getNewIntensity() > 65535) ? mt_rand(1,65535) : $ev->getNewIntensity()/65535;
 			}
 			$this->clearTime = mt_rand((self::TIME_FULL / 2), self::TIME_FULL);
 		}elseif($ev->getNewWeather() === self::WEATHER_THUNDER){
 			$this->thunderTime = 0;
-			$this->thunderIntensity = $ev->getNewIntensity()/65535;
+			$this->thunderIntensity = ($ev->getNewIntensity() < 0 or $ev->getNewIntensity() > 65535) ? mt_rand(1,65535) : $ev->getNewIntensity()/65535;
 			$this->clearTime = mt_rand((self::TIME_FULL / 2), self::TIME_FULL);
 		}elseif($ev->getNewWeather() == self::WEATHER_CLEAR){
 			$this->rainTime = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
