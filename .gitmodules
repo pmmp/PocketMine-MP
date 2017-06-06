@@ -1,5 +1,4 @@
 [submodule "src/raklib"]
-	path = src/raklib
 	url = https://github.com/pmmp/RakLib.git
 	branch = master
 [submodule "src/spl"]
