@@ -133,7 +133,7 @@ abstract class Living extends Entity implements Damageable{
 		$consumable->onConsume($this);
 
 		$pk = new EntityEventPacket();
-		$pk->eid = $this->id;
+		$pk->entityRuntimeId = $this->id;
 		$pk->event = EntityEventPacket::USE_ITEM;
 		$this->server->broadcastPacket($this->hasSpawned, $pk);
 
