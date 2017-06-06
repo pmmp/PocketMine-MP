@@ -51,26 +51,24 @@ class WeatherCommand extends VanillaCommand{
 
 		$level = $sender instanceof Player ? $sender->getLevel() : $sender->getServer()->getDefaultLevel();
 
-		$duration = !isset($args[1]) ? mt_rand((Level::TIME_FULL / 2), (7 * Level::TIME_FULL) + (Level::TIME_FULL / 2)) : (int)$args[1] * 20;
-
-		if($duration < 0) {
+		if(isset($args[1]) and (int)$args[1] < 0) {
 			$level->lockWeather();
 		}
 		switch ($args[0]){
 			case "clear":
 				$level->setWeather(Level::WEATHER_CLEAR);
-				$level->setRainTime($duration);
-				$level->setThunderTime($duration * 3);
+				$level->setRainTime(!isset($args[1]) ? mt_rand((Level::TIME_FULL / 2), Level::TIME_FULL) : (int)$args[1] * 20);
+				$level->setThunderTime((!isset($args[1]) ? mt_rand((Level::TIME_FULL / 2), Level::TIME_FULL) : (int)$args[1] * 20) * 3);
 				Command::broadcastCommandMessage($sender, "Changing to clear weather");
 				return true;
 			case "rain":
 				$level->setWeather(Level::WEATHER_RAIN);
-				$level->setClearTime($duration);
+				$level->setClearTime(!isset($args[1]) ? mt_rand((Level::TIME_FULL / 2), (7 * Level::TIME_FULL) + (Level::TIME_FULL / 2)) : (int)$args[1] * 20);
 				Command::broadcastCommandMessage($sender, "Changing to rainy weather");
 				return true;
 			case "thunder":
 				$level->setWeather(Level::WEATHER_RAIN_THUNDER);
-				$level->setClearTime($duration);
+                $level->setClearTime(!isset($args[1]) ? mt_rand((Level::TIME_FULL / 2), (7 * Level::TIME_FULL) + (Level::TIME_FULL / 2)) : (int)$args[1] * 20);
 				Command::broadcastCommandMessage($sender, "Changing to rain and thunder");
 				return true;
 			default:
