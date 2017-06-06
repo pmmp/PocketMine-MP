@@ -19,6 +19,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\event\entity;
 
 use pocketmine\entity\Entity;
@@ -55,17 +57,18 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	const CAUSE_CUSTOM = 14;
 	const CAUSE_STARVATION = 15;
 
-
+	/** @var int */
 	private $cause;
-	/** @var array */
+	/** @var float[] */
 	private $modifiers;
+	/** @var float[]  */
 	private $originals;
 
 
 	/**
-	 * @param Entity    $entity
-	 * @param int       $cause
-	 * @param int|int[] $damage
+	 * @param Entity        $entity
+	 * @param int           $cause
+	 * @param float|float[] $damage
 	 *
 	 * @throws \Exception
 	 */
@@ -76,7 +79,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 			$this->modifiers = $damage;
 		}else{
 			$this->modifiers = [
-				self::MODIFIER_BASE => $damage
+				self::MODIFIER_BASE => (float) $damage
 			];
 		}
 
@@ -97,19 +100,19 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	/**
 	 * @param int $type
 	 *
-	 * @return int
+	 * @return float
 	 */
-	public function getOriginalDamage(int $type = self::MODIFIER_BASE) : int{
-		return $this->originals[$type] ?? 0;
+	public function getOriginalDamage(int $type = self::MODIFIER_BASE) : float{
+		return ((float) $this->originals[$type]) ?? 0.0;
 	}
 
 	/**
 	 * @param int $type
 	 *
-	 * @return int
+	 * @return float
 	 */
-	public function getDamage(int $type = self::MODIFIER_BASE) : int{
-		return $this->modifiers[$type] ?? 0;
+	public function getDamage(int $type = self::MODIFIER_BASE) : float{
+		return ((float) $this->modifiers[$type]) ?? 0.0;
 	}
 
 	/**
@@ -130,9 +133,9 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	}
 
 	/**
-	 * @return int
+	 * @return float
 	 */
-	public function getFinalDamage(){
+	public function getFinalDamage() : float{
 		return array_sum($this->modifiers);
 	}
 

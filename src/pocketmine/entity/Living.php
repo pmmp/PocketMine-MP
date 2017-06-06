@@ -59,6 +59,10 @@ abstract class Living extends Entity implements Damageable{
 		}
 
 		$this->setHealth($this->namedtag["Health"]);
+
+		if(isset($this->namedtag->AbsorptionAmount) and $this->namedtag->AbsorptionAmount instanceof FloatTag){
+			$this->setAbsorption((float) $this->namedtag->AbsorptionAmount->getValue());
+		}
 	}
 
 	protected function addAttributes(){
@@ -90,17 +94,18 @@ abstract class Living extends Entity implements Damageable{
 		$this->attributeMap->getAttribute(Attribute::HEALTH)->setMaxValue($amount);
 	}
 
-	public function getAbsorption() : int{
-		return (int) $this->attributeMap->getAttribute(Attribute::ABSORPTION)->getValue();
+	public function getAbsorption() : float{
+		return $this->attributeMap->getAttribute(Attribute::ABSORPTION)->getValue();
 	}
 
-	public function setAbsorption(int $absorption){
+	public function setAbsorption(float $absorption){
 		$this->attributeMap->getAttribute(Attribute::ABSORPTION)->setValue($absorption);
 	}
 
 	public function saveNBT(){
 		parent::saveNBT();
 		$this->namedtag->Health = new FloatTag("Health", ceil($this->getHealth())); //health may be a float due to damage reduction, round up as per vanilla
+		$this->namedtag->AbsorptionAmount = new FloatTag("AbsorptionAmount", $this->getAbsorption());
 	}
 
 	abstract public function getName();
@@ -161,27 +166,23 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	public function applyDamageModifiers(EntityDamageEvent $source){
-		$baseDamage = $source->getDamage(EntityDamageEvent::MODIFIER_BASE);
+		//TODO: armor enchantments
+		if($source->canBeReducedByArmor()){
+			//Using the system from before PC 1.9
+			$points = $this->getArmorPoints();
+			$armorReduction = $source->getFinalDamage() * $points * 0.04;
+			$source->setDamage(-$armorReduction, EntityDamageEvent::MODIFIER_ARMOR);
+		}
 
-		$source->setDamage(-min($this->getAbsorption(), $baseDamage), EntityDamageEvent::MODIFIER_ABSORPTION);
+		$source->setDamage(-min($this->getAbsorption(), $source->getFinalDamage()), EntityDamageEvent::MODIFIER_ABSORPTION);
 
 		$cause = $source->getCause();
 		if($cause !== EntityDamageEvent::CAUSE_VOID and $cause !== EntityDamageEvent::CAUSE_SUICIDE){
 			if($this->hasEffect(Effect::DAMAGE_RESISTANCE)){
 				$multiplier = 0.2 * ($this->getEffect(Effect::DAMAGE_RESISTANCE)->getEffectLevel());
-				$source->setDamage(-($baseDamage * $multiplier), EntityDamageEvent::MODIFIER_RESISTANCE);
+				$source->setDamage(-($source->getFinalDamage() * $multiplier), EntityDamageEvent::MODIFIER_RESISTANCE);
 			}
 		}
-
-		//TODO: armor enchantments
-		if($source->canBeReducedByArmor()){
-			//Using the system from before PC 1.9
-			$points = $this->getArmorPoints();
-			$armorReduction = $baseDamage * $points * 0.04;
-			$source->setDamage(-$armorReduction, EntityDamageEvent::MODIFIER_ARMOR);
-		}
-
-		//TODO: add other stuff
 	}
 
 	public function attack(EntityDamageEvent $source){
