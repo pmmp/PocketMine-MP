@@ -154,7 +154,7 @@ spawn-limits:
 
 auto-report:
  #Send crash reports for processing
- enabled: true
+ enabled: false
  send-code: true
  send-settings: true
  send-phpinfo: false

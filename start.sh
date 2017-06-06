@@ -39,7 +39,7 @@ if [ "$POCKETMINE_FILE" == "" ]; then
 	elif [ -f ./src/pocketmine/PocketMine.php ]; then
 		POCKETMINE_FILE="./src/pocketmine/PocketMine.php"
 	else
-		echo "Couldn't find a valid PocketMine-MP installation"
+		echo "Couldn't find a valid TesseractPM installation"
 		exit 1
 	fi
 fi

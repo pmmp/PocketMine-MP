@@ -44,7 +44,7 @@ class SetupWizard{
 	}
 
 	public function run(){
-		echo "[*] PocketMine-MP set-up wizard\n";
+		echo "[*] TesseractPM set-up wizard\n";
 
 		$langs = BaseLang::getLanguageList();
 		if(empty($langs)){
@@ -217,7 +217,6 @@ LICENSE;
 
 	private function endWizard(){
 		echo "[*] " . $this->lang->get("you_have_finished") . "\n";
-		echo "[*] " . $this->lang->get("pocketmine_plugins") . "\n";
 		echo "[*] " . $this->lang->get("pocketmine_will_start") . "\n\n\n";
 		sleep(4);
 	}

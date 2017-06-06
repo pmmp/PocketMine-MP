@@ -919,10 +919,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->spawnToAll();
 
-		if($this->server->getUpdater()->hasUpdate() and $this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)){
-			$this->server->getUpdater()->showPlayerUpdate($this);
-		}
-
 		if($this->getHealth() <= 0){
 			$pk = new RespawnPacket();
 			$pos = $this->getSpawn();
@@ -3013,6 +3009,27 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return true;
 		}
 
+        $classicingredients = [];
+        if(empty($packet->input)){
+            if(!$recipe instanceof ShapedRecipe){
+                $classicingredients = $recipe->getIngredientList();
+            }else{
+                for($x=0;$x<3; ++$x) {
+                    for ($y = 0; $y < 3; ++$y) {
+                        if(($item = $recipe->getIngredient($x, $y)) instanceof Item){
+                            $classicingredients[] = $item;
+                        }else continue;
+                    }
+                }
+            }
+
+            for($x = 0; $x < 3; ++$x){
+                for($y = 0; $y < 3; ++$y){
+                    $packet->input[$y * 3 + $x] = ($recipe->getIngredient($x, $y)??Item::get(Item::AIR));
+                }
+            }
+        }
+
 		$canCraft = true;
 
 		if($recipe instanceof ShapedRecipe){
@@ -3065,6 +3082,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		/** @var Item[] $ingredients */
 		$ingredients = $packet->input;
+        if(empty($ingredients)) $ingredients = $classicingredients;
 		$result = $packet->output[0];
 
 		if(!$canCraft or !$recipe->getResult()->equals($result)){
