@@ -2908,9 +2908,9 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * Gives the intensity of the current rain
 	 *
-	 * @return int
+	 * @return float between 0 and 1
 	 */
-	public function getRainLevel() : int{
+	public function getRainLevel() : float{
 		return $this->rainIntensity;
 	}
 
@@ -2926,9 +2926,9 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * Gives the intensity of the current thunder
 	 *
-	 * @return int
+	 * @return float between 0 and 1
 	 */
-	public function getThunderLevel() : int{
+	public function getThunderLevel() : float{
 		return $this->thunderIntensity;
 	}
 
@@ -2953,20 +2953,20 @@ class Level implements ChunkManager, Metadatable{
 			return;
 		}
 		if($ev->getNewIntensity() < 0 or $ev->getNewIntensity() > 65535){
-			$ev->setNewIntensity(mt_rand(0,65535)); // TODO proper values?
+			$ev->setNewIntensity(mt_rand(1,65535));
 		}
 		$this->weather = $ev->getNewWeather();
 		if($ev->getNewWeather() === self::WEATHER_RAIN or $ev->getNewWeather() === self::WEATHER_RAIN_THUNDER){
 			$this->rainTime = 0;
-			$this->rainIntensity = $ev->getNewIntensity();
+			$this->rainIntensity = $ev->getNewIntensity()/65535;
 			if($ev->getNewWeather() === self::WEATHER_RAIN_THUNDER){
 				$this->thunderTime = 0;
-				$this->thunderIntensity = $ev->getNewIntensity();
+				$this->thunderIntensity = $ev->getNewIntensity()/65535;
 			}
 			$this->clearTime = mt_rand((self::TIME_FULL / 2), self::TIME_FULL);
 		}elseif($ev->getNewWeather() === self::WEATHER_THUNDER){
 			$this->thunderTime = 0;
-			$this->thunderIntensity = $ev->getNewIntensity();
+			$this->thunderIntensity = $ev->getNewIntensity()/65535;
 			$this->clearTime = mt_rand((self::TIME_FULL / 2), self::TIME_FULL);
 		}elseif($ev->getNewWeather() == self::WEATHER_CLEAR){
 			$this->rainTime = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
@@ -2992,11 +2992,10 @@ class Level implements ChunkManager, Metadatable{
 
 	/**
 	 * Sets the intensity of the next rainstorm
-	 * Less than 65535
 	 *
-	 * @param int $intensity
+	 * @param float $intensity
 	 */
-	public function setRainLevel(int $intensity){
+	public function setRainLevel(float $intensity){
 		$this->rainIntensity = $intensity;
 	}
 
@@ -3014,11 +3013,10 @@ class Level implements ChunkManager, Metadatable{
 
 	/**
 	 * Sets the intensity of the next thunderstorm
-	 * Less than 65535
 	 *
-	 * @param int $intensity
+	 * @param float $intensity
 	 */
-	public function setThunderLevel(int $intensity){
+	public function setThunderLevel(float $intensity){
 		$this->thunderIntensity = $intensity;
 	}
 
