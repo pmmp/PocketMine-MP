@@ -720,23 +720,23 @@ class Level implements ChunkManager, Metadatable{
 			case self::WEATHER_RAIN:
 				$pk = new LevelEventPacket();
 				$pk->evid = LevelEventPacket::EVENT_START_RAIN;
-				$pk->data = $this->getRainLevel();
+				$pk->data = (int) ($this->getRainLevel()*65535);
 				$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
 				break;
 			case self::WEATHER_THUNDER:
 				$pk = new LevelEventPacket();
 				$pk->evid = LevelEventPacket::EVENT_START_THUNDER;
-                $pk->data = $this->getThunderLevel();
+                $pk->data = (int) ($this->getThunderLevel()*65535);
 				$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
 				break;
 			case self::WEATHER_RAIN_THUNDER:
 				$pk = new LevelEventPacket();
 				$pk->evid = LevelEventPacket::EVENT_START_THUNDER;
-                $pk->data = $this->getThunderLevel();
+                $pk->data = (int) ($this->getThunderLevel()*65535);
 				$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
 				$pk = new LevelEventPacket();
 				$pk->evid = LevelEventPacket::EVENT_START_RAIN;
-                $pk->data = $this->getRainLevel();
+                $pk->data = (int) ($this->getRainLevel()*65535);
 				$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
 				break;
 			default:
