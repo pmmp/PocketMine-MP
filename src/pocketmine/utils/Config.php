@@ -28,7 +28,7 @@ use pocketmine\Server;
 /**
  * Config Class for simple config manipulation of multiple formats.
  */
-class Config{
+class Config implements \ArrayAccess{
 	const DETECT = -1; //Detect by file extension
 	const PROPERTIES = 0; // .properties
 	const CNF = Config::PROPERTIES; // .cnf
@@ -313,6 +313,46 @@ class Config{
 	 * @param $k
 	 */
 	public function __unset($k){
+		$this->remove($k);
+	}
+
+	/**
+	 * @param $k
+	 *
+	 * @return bool|mixed
+	 */
+	public function offsetGet($k){
+		return $this->get($k);
+	}
+
+	/**
+	 * @param $k
+	 * @param $v
+	 */
+	public function offsetSet($k, $v){
+		if(is_array($this->config)){
+			if($k === null){
+				$this->config[] = null;
+				end($this->config);
+				$k = key($this->config);
+			}
+			$this->set($k, $v);
+		}
+    }
+
+	/**
+	 * @param $k
+	 *
+	 * @return bool
+	 */
+	public function offsetExists($k){
+		return $this->exists($k);
+	}
+
+	/**
+	 * @param $k
+	 */
+	public function offsetUnset($k){
 		$this->remove($k);
 	}
 
