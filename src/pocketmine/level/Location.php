@@ -57,6 +57,15 @@ class Location extends Position{
 		return new Location($pos->x, $pos->y, $pos->z, $yaw, $pitch, $level ?? (($pos instanceof Position) ? $pos->level : null));
 	}
 
+	/**
+	 * Return a Location instance
+	 * 
+	 * @return Location
+	 */
+	public function asLocation() : Location{
+		return new Location($this->x, $this->y, $this->z, $this->yaw, $this->pitch, $this->level);
+	}
+
 	public function getYaw(){
 		return $this->yaw;
 	}
