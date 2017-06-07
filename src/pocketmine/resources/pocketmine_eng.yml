@@ -1,0 +1,198 @@
+# Main configuration file for PocketMine-MP
+# These settings are the ones that cannot be included in server.properties
+# Some of these settings are safe, others can break your server if modified incorrectly
+# New settings/defaults won't appear automatically on this file when upgrading.
+
+settings:
+ #Three-letter language code for server-side localization
+ #Check your language code on https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes
+ language: "eng"
+ #Whether to send all strings translated to server locale or let the device handle them
+ force-language: false
+ shutdown-message: "Server closed"
+ #Allow listing plugins via Query
+ query-plugins: true
+ #Show a console message when a plugin uses deprecated API methods
+ deprecated-verbose: true
+ #Enable plugin and core profiling by default
+ enable-profiling: false
+ #Will only add results when tick measurement is below or equal to given value (default 20)
+ profile-report-trigger: 20
+ #Number of AsyncTask workers.
+ #Used for plugin asynchronous tasks, world generation, compression and web communication.
+ #Set this approximately to your number of cores.
+ #If set to auto, it'll try to detect the number of cores (or use 2)
+ async-workers: auto
+
+memory:
+ #Global soft memory limit in megabytes. Set to 0 to disable
+ #This will trigger low-memory-triggers and fire an event to free memory when the usage goes over this
+ global-limit: 0
+
+ #Main thread soft memory limit in megabytes. Set to 0 to disable
+ #This will trigger low-memory-triggers and fire an event to free memory when the usage goes over this
+ main-limit: 0
+
+ #Main thread hard memory limit in megabytes. Set to 0 to disable
+ #This will stop the server when the limit is surpassed
+ main-hard-limit: 1024
+
+ #Period in ticks to check memory (default 1 second)
+ check-rate: 20
+
+ #Continue firing low-memory-triggers and event while on low memory
+ continuous-trigger: true
+
+ #Only if memory.continuous-trigger is enabled. Specifies the rate in memory.check-rate steps (default 30 seconds)
+ continuous-trigger-rate: 30
+
+ garbage-collection:
+  #Period in ticks to fire the garbage collector manually (default 30 minutes), set to 0 to disable
+  #This only affect the main thread. Other threads should fire their own collections
+  period: 36000
+
+  #Fire asynchronous tasks to collect garbage from workers
+  collect-async-worker: true
+
+  #Trigger on low memory
+  low-memory-trigger: true
+
+ max-chunks:
+  #Maximum render distance per player when low memory is triggered
+  chunk-radius: 4
+
+  #Do chunk garbage collection on trigger
+  trigger-chunk-collect: true
+
+  #Trigger on low memory
+  low-memory-trigger: true
+
+ world-caches:
+  disable-chunk-cache: true
+  low-memory-trigger: true
+
+
+network:
+ #Threshold for batching packets, in bytes. Only these packets will be compressed
+ #Set to 0 to compress everything, -1 to disable.
+ batch-threshold: 256
+ #Compression level used when sending batched packets. Higher = more CPU, less bandwidth usage
+ compression-level: 7
+ #Use AsyncTasks for compression. Adds half/one tick delay, less CPU load on main thread
+ async-compression: false
+ #Experimental, only for Windows. Tries to use UPnP to automatically port forward
+ upnp-forwarding: false
+
+debug:
+ #To enable assertion execution, set zend.assertions in your php.ini to 1
+ assertions:
+  #Warn if assertions are enabled in php.ini, due to assertions may impact on runtime performance if enabled.
+  warn-if-enabled: true
+  #Enable throwing exceptions when assertions fail, will allow obtaining more detailed information on the failed assertion, but may cause a server crash.
+  #If set to false, a warning will be raised instead of throwing an exception.
+  throw-exception: false
+ #If > 1, it will show debug messages in the console
+ level: 1
+ #Enables /status, /gc
+ commands: false
+ 
+player:
+ #Choose whether to enable player data saving.
+ save-player-data: true
+ anti-cheat:
+  #If false, will try to prevent speed and noclip cheats. May cause movement issues with some blocks which are not yet properly implemented.
+  allow-movement-cheats: false
+  #If false, times block breaks to ensure players are not cheating. May cause issues with some blocks which are not yet properly implemented.
+  allow-instabreak: false
+
+level-settings:
+ #The default format that levels will use when created
+ default-format: pmanvil
+ #Automatically change levels tick rate to maintain 20 ticks per second
+ auto-tick-rate: true
+ auto-tick-rate-limit: 20
+ #Sets the base tick rate (1 = 20 ticks per second, 2 = 10 ticks per second, etc.)
+ base-tick-rate: 1
+ #Tick all players each tick even when other settings disallow this.
+ always-tick-players: false
+
+chunk-sending:
+ #To change server normal render distance, change view-distance in server.properties.
+ #Amount of chunks sent to players per tick
+ per-tick: 4
+ #Radius of chunks that need to be sent before spawning the player
+ spawn-radius: 4
+ #Save a serialized copy of the chunk in memory for faster sending
+ #Useful in mostly-static worlds where lots of players join at the same time
+ cache-chunks: false
+ #Use AsyncTasks for serializing chunks for sending.
+ async-chunk-request: false
+
+chunk-ticking:
+ #Max amount of chunks processed each tick
+ per-tick: 40
+ #Radius of chunks around a player to tick
+ tick-radius: 3
+ light-updates: false
+ clear-tick-list: true
+ #IDs of blocks not to perform random ticking on.
+ disable-block-ticking:
+  #- 2 # grass
+
+chunk-generation:
+ #Max. amount of chunks in the waiting queue to be generated
+ queue-size: 8
+ #Max. amount of chunks in the waiting queue to be populated
+ population-queue-size: 8
+
+ticks-per:
+ animal-spawns: 400
+ monster-spawns: 1
+ autosave: 6000
+ cache-cleanup: 900
+
+spawn-limits:
+  monsters: 70
+  animals: 15
+  water-animals: 5
+  ambient: 15
+
+auto-report:
+ #Send crash reports for processing
+ enabled: true
+ send-code: true
+ send-settings: true
+ send-phpinfo: false
+ host: crash.pocketmine.net
+
+anonymous-statistics:
+ #Sends anonymous statistics for data aggregation, plugin usage tracking
+ enabled: true
+ host: stats.pocketmine.net
+
+auto-updater:
+ enabled: true
+ on-update:
+  warn-console: true
+  warn-ops: true
+ #Can be development, beta or stable.
+ preferred-channel: stable
+ #If using a development version, it will suggest changing the channel
+ suggest-channels: true
+ host: www.pocketmine.net
+
+timings:
+ #Choose the host to use for viewing your timings results.
+ host: mcpetimings.com
+
+aliases:
+ #Examples:
+ #showtheversion: version
+ #savestop: [save-all, stop]
+
+worlds:
+ #These settings will override the generator set in server.properties and allows loading multiple levels
+ #Example:
+ #world:
+ # seed: 404
+ # generator: FLAT:2;7,59x1,3x3,2;1;decoration(treecount=80 grasscount=45)
