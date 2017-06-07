@@ -366,6 +366,9 @@ class Server{
 		return $this->getConfigString("server-ip", "0.0.0.0");
 	}
 
+	/**
+	 * @return UUID
+	 */
 	public function getServerUniqueId(){
 		return $this->serverID;
 	}

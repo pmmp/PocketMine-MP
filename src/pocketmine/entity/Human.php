@@ -293,7 +293,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				$this->setSkin($this->namedtag->Skin["Data"], $this->namedtag->Skin["Name"]);
 			}
 
-			$this->uuid = UUID::fromData($this->getId(), $this->getSkinData(), $this->getNameTag());
+			$this->uuid = UUID::fromData((string) $this->getId(), $this->getSkinData(), $this->getNameTag());
 		}
 
 		if(isset($this->namedtag->Inventory) and $this->namedtag->Inventory instanceof ListTag){
