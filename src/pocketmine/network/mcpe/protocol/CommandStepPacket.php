@@ -49,7 +49,7 @@ class CommandStepPacket extends DataPacket{
 		$this->inputJson = json_decode($this->getString());
 		$this->outputJson = json_decode($this->getString());
 
-		$this->get(true); //TODO: read command origin data
+		$this->get(0); //TODO: read command origin data
 	}
 
 	public function encode(){

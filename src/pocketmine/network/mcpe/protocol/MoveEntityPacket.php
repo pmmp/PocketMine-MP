@@ -38,8 +38,8 @@ class MoveEntityPacket extends DataPacket{
 	public $yaw;
 	public $headYaw;
 	public $pitch;
-	public $onGround;
-	public $teleported;
+	public $onGround = false;
+	public $teleported = false;
 
 	public function decode(){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
