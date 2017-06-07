@@ -11,6 +11,7 @@ If you don't find what you're looking for there, [talk to a human](#discussion).
 ### Discussion
 - [Forums](https://forums.pmmp.io/)
 - [#pmmp + #pocketmine channel IRC](http://webchat.freenode.net/?channels=pmmp,pocketmine)
+- [Glitter (unoffical)](https://gitter.im/PM-MP/Lobby)
 
 ### Plugins
 There are a very wide range of already-written plugins available which you can use to customise your server. Check out [the old plugin repository](http://plugins.pocketmine.net/) and [Poggit](https://poggit.pmmp.io), or just search GitHub.
