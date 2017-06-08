@@ -135,7 +135,7 @@ class LevelDB extends BaseLevelProvider{
 		return file_exists($path . "/level.dat") and is_dir($path . "/db/");
 	}
 
-	public static function generate(string $path, string $name, $seed, string $generator, array $options = []){
+	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []){
 		if(!file_exists($path)){
 			mkdir($path, 0777, true);
 		}

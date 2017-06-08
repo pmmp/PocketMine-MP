@@ -68,13 +68,13 @@ interface LevelProvider{
 	/**
 	 * Generate the needed files in the path given
 	 *
-	 * @param string     $path
-	 * @param string     $name
-	 * @param int|string $seed
-	 * @param string     $generator
-	 * @param array[]    $options
+	 * @param string  $path
+	 * @param string  $name
+	 * @param int     $seed
+	 * @param string  $generator
+	 * @param array[] $options
 	 */
-	public static function generate(string $path, string $name, $seed, string $generator, array $options = []);
+	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []);
 
 	/**
 	 * Returns the generator name
