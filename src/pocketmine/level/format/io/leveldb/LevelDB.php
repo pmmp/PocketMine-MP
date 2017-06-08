@@ -19,6 +19,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\level\format\io\leveldb;
 
 use pocketmine\level\format\Chunk;
@@ -229,7 +231,7 @@ class LevelDB extends BaseLevelProvider{
 	}
 
 	public function getGenerator() : string{
-		return $this->levelData["generatorName"];
+		return (string) $this->levelData["generatorName"];
 	}
 
 	public function getGeneratorOptions() : array{

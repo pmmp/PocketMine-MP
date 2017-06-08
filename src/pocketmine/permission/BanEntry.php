@@ -19,6 +19,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\permission;
 
 use pocketmine\utils\MainLogger;

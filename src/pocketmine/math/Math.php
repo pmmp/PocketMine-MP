@@ -19,6 +19,8 @@
  *
 */
 
+declare(strict_types=1);
+
 /**
  * Math related classes, like matrices, bounding boxes and vector
  */

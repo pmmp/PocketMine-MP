@@ -19,6 +19,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\scheduler;
 
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
@@ -42,7 +44,7 @@ class SendUsageTask extends AsyncTask{
 		$data = [];
 		$data["uniqueServerId"] = $server->getServerUniqueId()->toString();
 		$data["uniqueMachineId"] = Utils::getMachineUniqueId()->toString();
-		$data["uniqueRequestId"] = UUID::fromData($server->getServerUniqueId(), microtime(true))->toString();
+		$data["uniqueRequestId"] = UUID::fromData($server->getServerUniqueId()->toString(), microtime(false))->toString();
 
 		switch($type){
 			case self::TYPE_OPEN:

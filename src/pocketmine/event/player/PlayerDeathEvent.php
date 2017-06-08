@@ -19,6 +19,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\event\player;
 
 use pocketmine\event\entity\EntityDeathEvent;
@@ -65,7 +67,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 	}
 
 	/**
-	 * @param string|TextContainer $deathMessage
+	 * @param TextContainer|string $deathMessage
 	 */
 	public function setDeathMessage($deathMessage){
 		$this->deathMessage = $deathMessage;

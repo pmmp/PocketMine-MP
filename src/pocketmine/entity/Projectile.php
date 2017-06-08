@@ -19,6 +19,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity;
 
 use pocketmine\event\entity\EntityCombustByEntityEvent;
@@ -72,7 +74,7 @@ abstract class Projectile extends Entity{
 	 * @return int
 	 */
 	public function getResultDamage() : int{
-		return ceil(sqrt($this->motionX ** 2 + $this->motionY ** 2 + $this->motionZ ** 2) * $this->damage);
+		return (int) ceil(sqrt($this->motionX ** 2 + $this->motionY ** 2 + $this->motionZ ** 2) * $this->damage);
 	}
 
 	public function onCollideWithEntity(Entity $entity){

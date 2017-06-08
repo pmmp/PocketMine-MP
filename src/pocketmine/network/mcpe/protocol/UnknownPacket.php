@@ -19,6 +19,8 @@
  *
 */
 
+declare(strict_types=1);
+
 
 namespace pocketmine\network\mcpe\protocol;
 
@@ -43,7 +45,7 @@ class UnknownPacket extends DataPacket{
 
 	public function decode(){
 		$this->offset -= 1; //Rewind one byte so we can read the PID
-		$this->payload = $this->get(true);
+		$this->payload = $this->get(0);
 	}
 
 	public function encode(){
