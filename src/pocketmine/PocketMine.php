@@ -75,9 +75,9 @@ namespace pocketmine {
 	use pocketmine\wizard\SetupWizard;
 	use raklib\RakLib;
 
-	const VERSION = "1.6.2dev";
-	const API_VERSION = "3.0.0-ALPHA5";
-	const CODENAME = "Unleashed";
+	const VERSION = "1.0.0beta";
+	const API_VERSION = "2.0.0";
+	const CODENAME = "§l§aNeko";
 
 	/*
 	 * Startup code. Do not look at it, it may harm you.
@@ -114,6 +114,7 @@ namespace pocketmine {
 		if(!is_file(\pocketmine\PATH . "src/spl/ClassLoader.php")){
 			echo "[CRITICAL] Unable to find the PocketMine-SPL library." . PHP_EOL;
 			echo "[CRITICAL] Please use provided builds or clone the repository recursively." . PHP_EOL;
+echo "[NEKO] if you're using a non-compiled src, clone the SPL library from PocketMine GitHub." . PHP_EOL;
 			exit(1);
 		}
 		require_once(\pocketmine\PATH . "src/spl/ClassLoader.php");
@@ -131,7 +132,8 @@ namespace pocketmine {
 		}
 	}catch(\Exception $e){
 		echo "[CRITICAL] Unable to find the RakLib library." . PHP_EOL;
-		exit(1);
+echo "[NEKO] if you're using a non-compiled src, clone the RakLib library from PocketMine GitHub." . PHP_EOL;
+exit(1);
 	}
 
 	set_time_limit(0); //Who set it to 30 seconds?!?!

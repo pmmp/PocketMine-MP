@@ -221,6 +221,9 @@ interface BlockIds{
 	const GRASS_PATH = 198;
 	const ITEM_FRAME_BLOCK = 199;
 
+    const END_GATEWAY = 209;
+
+	
 	const PODZOL = 243;
 	const BEETROOT_BLOCK = 244;
 	const STONECUTTER = 245;
