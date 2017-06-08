@@ -26,7 +26,6 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\event\TimingsHandler;
 use pocketmine\event\TranslationContainer;
-use pocketmine\Player;
 use pocketmine\scheduler\BulkCurlTask;
 use pocketmine\Server;
 
@@ -117,7 +116,7 @@ class TimingsCommand extends VanillaCommand{
 				], $sender) extends BulkCurlTask{
 					public function onCompletion(Server $server){
 						$sender = $this->fetchLocal($server);
-						if($sender instanceof Player and !$sender->isOnline()){ // TODO replace with a more generic API method for checking availability of CommandSender
+						if($sender->isPlayer() and !$sender->isOnline()){ // TODO replace with a more generic API method for checking availability of CommandSender
 							return;
 						}
 						$result = $this->getResult()[0];

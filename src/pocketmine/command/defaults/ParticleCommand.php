@@ -56,7 +56,6 @@ use pocketmine\level\particle\TerrainParticle;
 use pocketmine\level\particle\WaterDripParticle;
 use pocketmine\level\particle\WaterParticle;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
 use pocketmine\utils\Random;
 use pocketmine\utils\TextFormat;
 
@@ -82,7 +81,7 @@ class ParticleCommand extends VanillaCommand{
 			return true;
 		}
 
-		if($sender instanceof Player){
+		if($sender->isPlayer()){
 			$level = $sender->getLevel();
 		}else{
 			$level = $sender->getServer()->getDefaultLevel();

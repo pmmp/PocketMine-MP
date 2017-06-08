@@ -1142,7 +1142,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		foreach($this->level->getNearbyEntities($this->boundingBox->grow(2, 1, 2), $this) as $p){
-			if($p instanceof Player){
+			if($p->isPlayer()){
 				if($p->sleeping !== null and $pos->distance($p->sleeping) <= 0.1){
 					return false;
 				}
@@ -2360,7 +2360,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 					if(!$this->canInteract($target, 8)){
 						$cancelled = true;
-					}elseif($target instanceof Player){
+					}elseif($target->isPlayer()){
 						if(($target->getGamemode() & 0x01) > 0){
 							break;
 						}elseif($this->server->getConfigBoolean("pvp") !== true or $this->server->getDifficulty() === 0){
@@ -3799,7 +3799,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			case EntityDamageEvent::CAUSE_ENTITY_ATTACK:
 				if($cause instanceof EntityDamageByEntityEvent){
 					$e = $cause->getDamager();
-					if($e instanceof Player){
+					if($e->isPlayer()){
 						$message = "death.attack.player";
 						$params[] = $e->getDisplayName();
 						break;
@@ -3815,7 +3815,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			case EntityDamageEvent::CAUSE_PROJECTILE:
 				if($cause instanceof EntityDamageByEntityEvent){
 					$e = $cause->getDamager();
-					if($e instanceof Player){
+					if($e->isPlayer()){
 						$message = "death.attack.arrow";
 						$params[] = $e->getDisplayName();
 					}elseif($e instanceof Living){
@@ -3875,7 +3875,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			case EntityDamageEvent::CAUSE_ENTITY_EXPLOSION:
 				if($cause instanceof EntityDamageByEntityEvent){
 					$e = $cause->getDamager();
-					if($e instanceof Player){
+					if($e->isPlayer()){
 						$message = "death.attack.explosion.player";
 						$params[] = $e->getDisplayName();
 					}elseif($e instanceof Living){

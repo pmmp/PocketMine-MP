@@ -27,7 +27,6 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
 class TeleportCommand extends VanillaCommand{
@@ -59,7 +58,7 @@ class TeleportCommand extends VanillaCommand{
 		$origin = $sender;
 
 		if(count($args) === 1 or count($args) === 3){
-			if($sender instanceof Player){
+			if($sender->isPlayer()){
 				$target = $sender;
 			}else{
 				$sender->sendMessage(TextFormat::RED . "Please provide a player!");

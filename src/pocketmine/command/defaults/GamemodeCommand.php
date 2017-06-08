@@ -26,7 +26,6 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
-use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 
@@ -68,7 +67,7 @@ class GamemodeCommand extends VanillaCommand{
 
 				return true;
 			}
-		}elseif(!($sender instanceof Player)){
+		}elseif(!$sender->isPlayer()){
 			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 
 			return true;

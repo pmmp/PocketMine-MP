@@ -29,7 +29,6 @@ use pocketmine\event\entity\EntityEffectRemoveEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
-use pocketmine\Player;
 use pocketmine\utils\Config;
 
 class Effect{
@@ -396,7 +395,7 @@ class Effect{
 		if($ev->isCancelled()){
 			return;
 		}
-		if($entity instanceof Player){
+		if($entity->isPlayer()){
 			$pk = new MobEffectPacket();
 			$pk->entityRuntimeId = $entity->getId();
 			$pk->effectId = $this->getId();
@@ -468,7 +467,7 @@ class Effect{
 		if($ev->isCancelled()){
 			return;
 		}
-		if($entity instanceof Player){
+		if($entity->isPlayer()){
 			$pk = new MobEffectPacket();
 			$pk->entityRuntimeId = $entity->getId();
 			$pk->eventId = MobEffectPacket::EVENT_REMOVE;

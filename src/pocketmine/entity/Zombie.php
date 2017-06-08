@@ -61,7 +61,7 @@ class Zombie extends Monster{
 		$drops = [
 			ItemItem::get(ItemItem::FEATHER, 0, 1)
 		];
-		if($this->lastDamageCause instanceof EntityDamageByEntityEvent and $this->lastDamageCause->getEntity() instanceof Player){
+		if($this->lastDamageCause instanceof EntityDamageByEntityEvent and $this->lastDamageCause->getEntity()->isPlayer()){
 			if(mt_rand(0, 199) < 5){
 				switch(mt_rand(0, 2)){
 					case 0:

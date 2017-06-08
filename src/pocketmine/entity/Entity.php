@@ -535,6 +535,15 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	/**
+	 * Returns whether this entity is a player.
+	 *
+	 * @return bool
+	 */
+	public function isPlayer() :  bool{
+		return $this->isPlayer;
+	}
+
+	/**
 	 * Returns the entity ID of the owning entity, or null if the entity doesn't have an owner.
 	 * @return int|string|null
 	 */
@@ -734,7 +743,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function saveNBT(){
-		if(!($this instanceof Player)){
+		if(!$this->isPlayer()){
 			$this->namedtag->id = new StringTag("id", $this->getSaveId());
 			if($this->getNameTag() !== ""){
 				$this->namedtag->CustomName = new StringTag("CustomName", $this->getNameTag());
@@ -867,7 +876,7 @@ abstract class Entity extends Location implements Metadatable{
 			$p->dataPacket(clone $pk);
 		}
 
-		if($this instanceof Player){
+		if($this->isPlayer()){
 			$this->dataPacket($pk);
 		}
 	}
@@ -1266,7 +1275,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		//if($this->isStatic())
 		return $hasUpdate;
-		//return !($this instanceof Player);
+		//return !$this->isPlayer();
 	}
 
 	final public function scheduleUpdate(){
@@ -1491,7 +1500,7 @@ abstract class Entity extends Location implements Metadatable{
 
 			$axisalignedbb = clone $this->boundingBox;
 
-			/*$sneakFlag = $this->onGround and $this instanceof Player;
+			/*$sneakFlag = $this->onGround and $this->isPlayer();
 
 			if($sneakFlag){
 				for($mov = 0.05; $dx != 0.0 and count($this->level->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($dx, -1, 0))) === 0; $movX = $dx){

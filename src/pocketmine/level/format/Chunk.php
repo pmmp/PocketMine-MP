@@ -32,7 +32,6 @@ use pocketmine\level\format\io\ChunkException;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\Player;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\utils\BinaryStream;
@@ -584,7 +583,7 @@ class Chunk{
 			throw new \InvalidArgumentException("Attempted to add a garbage closed Entity to a chunk");
 		}
 		$this->entities[$entity->getId()] = $entity;
-		if(!($entity instanceof Player) and $this->isInit){
+		if(!$entity->isPlayer() and $this->isInit){
 			$this->hasChanged = true;
 		}
 	}
@@ -594,7 +593,7 @@ class Chunk{
 	 */
 	public function removeEntity(Entity $entity){
 		unset($this->entities[$entity->getId()]);
-		if(!($entity instanceof Player) and $this->isInit){
+		if(!$entity->isPlayer() and $this->isInit){
 			$this->hasChanged = true;
 		}
 	}
@@ -667,14 +666,14 @@ class Chunk{
 	public function unload(bool $safe = true) : bool{
 		if($safe){
 			foreach($this->getEntities() as $entity){
-				if($entity instanceof Player){
+				if($entity->isPlayer()){
 					return false;
 				}
 			}
 		}
 
 		foreach($this->getEntities() as $entity){
-			if($entity instanceof Player){
+			if($entity->isPlayer()){
 				continue;
 			}
 			$entity->close();

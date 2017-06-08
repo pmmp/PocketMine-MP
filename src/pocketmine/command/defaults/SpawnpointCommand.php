@@ -27,7 +27,6 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
 use pocketmine\level\Position;
-use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
 class SpawnpointCommand extends VanillaCommand{
@@ -49,7 +48,7 @@ class SpawnpointCommand extends VanillaCommand{
 		$target = null;
 
 		if(count($args) === 0){
-			if($sender instanceof Player){
+			if($sender->isPlayer()){
 				$target = $sender;
 			}else{
 				$sender->sendMessage(TextFormat::RED . "Please provide a player!");
@@ -69,7 +68,7 @@ class SpawnpointCommand extends VanillaCommand{
 
 		if(count($args) === 4){
 			if($level !== null){
-				$pos = $sender instanceof Player ? $sender->getPosition() : $level->getSpawnLocation();
+				$pos = $sender->isPlayer() ? $sender->getPosition() : $level->getSpawnLocation();
 				$x = (int) $this->getRelativeDouble($pos->x, $sender, $args[1]);
 				$y = $this->getRelativeDouble($pos->y, $sender, $args[2], 0, 128);
 				$z = $this->getRelativeDouble($pos->z, $sender, $args[3]);
@@ -80,7 +79,7 @@ class SpawnpointCommand extends VanillaCommand{
 				return true;
 			}
 		}elseif(count($args) <= 1){
-			if($sender instanceof Player){
+			if($sender->isPlayer()){
 				$pos = new Position((int) $sender->x, (int) $sender->y, (int) $sender->z, $sender->getLevel());
 				$target->setSpawn($pos);
 
