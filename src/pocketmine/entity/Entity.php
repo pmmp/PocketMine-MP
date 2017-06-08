@@ -1385,10 +1385,20 @@ abstract class Entity extends Location implements Metadatable{
 		return true;
 	}
 
+	/**
+	 * @deprecated Use asPosition() instead getPosition()
+	 * 
+	 * @return Position
+	 */
 	public function getPosition(){
 		return new Position($this->x, $this->y, $this->z, $this->level);
 	}
 
+	/**
+	 * @deprecated Use asLocation() instead getLocation()
+	 * 
+	 * @return Location
+	 */
 	public function getLocation(){
 		return new Location($this->x, $this->y, $this->z, $this->yaw, $this->pitch, $this->level);
 	}
