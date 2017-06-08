@@ -103,9 +103,9 @@ class Flat extends Generator{
 		$this->preset = $preset;
 		$preset = explode(";", $preset);
 		$version = (int) $preset[0];
-		$blocks = $preset[1] ?? "";
-		$biome = $preset[2] ?? 1;
-		$options = $preset[3] ?? "";
+		$blocks = (string) ($preset[1] ?? "");
+		$biome = (int) ($preset[2] ?? 1);
+		$options = (string) ($preset[3] ?? "");
 		$this->structure = self::parseLayers($blocks);
 
 		$this->chunks = [];
