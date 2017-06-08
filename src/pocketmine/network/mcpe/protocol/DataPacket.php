@@ -117,7 +117,7 @@ abstract class DataPacket extends BinaryStream{
 					$value = $this->getByte();
 					break;
 				case Entity::DATA_TYPE_SHORT:
-					$value = $this->getLShort(true); //signed
+					$value = $this->getSignedLShort();
 					break;
 				case Entity::DATA_TYPE_INT:
 					$value = $this->getVarInt();

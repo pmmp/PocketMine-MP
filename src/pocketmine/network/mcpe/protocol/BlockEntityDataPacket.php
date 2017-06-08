@@ -19,6 +19,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
@@ -36,7 +38,7 @@ class BlockEntityDataPacket extends DataPacket{
 
 	public function decode(){
 		$this->getBlockPosition($this->x, $this->y, $this->z);
-		$this->namedtag = $this->get(true);
+		$this->namedtag = $this->get(0);
 	}
 
 	public function encode(){

@@ -19,6 +19,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\plugin;
 
 use pocketmine\command\defaults\TimingsCommand;
@@ -140,7 +142,7 @@ class PluginManager{
 	 * @param string         $path
 	 * @param PluginLoader[] $loaders
 	 *
-	 * @return Plugin
+	 * @return Plugin|null
 	 */
 	public function loadPlugin($path, $loaders = null){
 		foreach(($loaders === null ? $this->fileAssociations : $loaders) as $loader){
@@ -154,16 +156,21 @@ class PluginManager{
 						return null;
 					}
 
-					if(($plugin = $loader->loadPlugin($path)) instanceof Plugin){
-						$this->plugins[$plugin->getDescription()->getName()] = $plugin;
+					try{
+						if(($plugin = $loader->loadPlugin($path)) instanceof Plugin){
+							$this->plugins[$plugin->getDescription()->getName()] = $plugin;
 
-						$pluginCommands = $this->parseYamlCommands($plugin);
+							$pluginCommands = $this->parseYamlCommands($plugin);
 
-						if(count($pluginCommands) > 0){
-							$this->commandMap->registerAll($plugin->getDescription()->getName(), $pluginCommands);
+							if(count($pluginCommands) > 0){
+								$this->commandMap->registerAll($plugin->getDescription()->getName(), $pluginCommands);
+							}
+
+							return $plugin;
 						}
-
-						return $plugin;
+					}catch(\Throwable $e){
+						$this->server->getLogger()->logException($e);
+						return null;
 					}
 				}
 			}

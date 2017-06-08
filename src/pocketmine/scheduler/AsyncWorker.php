@@ -19,6 +19,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\scheduler;
 
 use pocketmine\Worker;
@@ -36,7 +38,7 @@ class AsyncWorker extends Worker{
 	public function run(){
 		$this->registerClassLoader();
 		gc_enable();
-		ini_set("memory_limit", -1);
+		ini_set("memory_limit", '-1');
 
 		global $store;
 		$store = [];

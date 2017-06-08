@@ -19,6 +19,8 @@
  *
  */
 
+declare(strict_types=1);
+
 /**
  * Player-only related events
  */

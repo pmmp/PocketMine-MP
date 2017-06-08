@@ -19,6 +19,8 @@
  *
  */
 
+declare(strict_types=1);
+
 /**
  * Events called when a player attempts to perform movement cheats such as clipping through blocks.
  */

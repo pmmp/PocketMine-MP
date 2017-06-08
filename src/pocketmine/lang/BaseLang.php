@@ -19,6 +19,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\lang;
 
 use pocketmine\event\TextContainer;
