@@ -25,6 +25,12 @@ ALSO NOTE: NO support whatsoever will be provided for forks or spoons of PocketM
 * Server OS:
 * Game version: PE/Win10 (delete as appropriate)
 
+### Plugins
+- Test on a clean server without plugins: is the issue reproducible without any plugins loaded?
+- If it is not, have you asked for help on our forums before creating an issue?
+- Can you provide sample, *minimal* reproducing code for the issue? If so, paste it in the bottom section
+- Paste your list of plugins here (use the 'plugins' command in PocketMine-MP)
+
 ### Crashdump, backtrace or other files
 <!--- please use gist or anything else and add links here -->
 * ...
