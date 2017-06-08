@@ -27,7 +27,9 @@ ALSO NOTE: NO support whatsoever will be provided for forks or spoons of PocketM
 
 ### Plugins
 - Test on a clean server without plugins: is the issue reproducible without any plugins loaded?
-- If it is not, have you asked for help on our forums before creating an issue?
+
+If the issue is **not** reproducible without plugins:
+- Have you asked for help on our forums before creating an issue?
 - Can you provide sample, *minimal* reproducing code for the issue? If so, paste it in the bottom section
 - Paste your list of plugins here (use the 'plugins' command in PocketMine-MP)
 
