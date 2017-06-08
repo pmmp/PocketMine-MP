@@ -83,6 +83,7 @@ use pocketmine\inventory\SimpleTransactionGroup;
 use pocketmine\item\Item;
 use pocketmine\level\ChunkLoader;
 use pocketmine\level\format\Chunk;
+use pocketmine\level\generator\biome\Biome;
 use pocketmine\level\Level;
 use pocketmine\level\Location;
 use pocketmine\level\Position;
@@ -1867,8 +1868,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->hasAchievementsDisabled = 1;
 		$pk->dayCycleStopTime = -1; //TODO: implement this properly
 		$pk->eduMode = 0;
-		$pk->rainLevel = 0; //TODO: implement these properly
-		$pk->lightningLevel = 0;
+		$pk->rainLevel = $this->getLevel()->getRainLevel();
+		$pk->lightningLevel = $this->getLevel()->getThunderLevel();
 		$pk->commandsEnabled = 1;
 		$pk->levelId = "";
 		$pk->worldName = $this->server->getMotd();

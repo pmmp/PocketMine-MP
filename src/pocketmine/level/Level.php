@@ -60,6 +60,7 @@ use pocketmine\event\level\ChunkUnloadEvent;
 use pocketmine\event\level\LevelSaveEvent;
 use pocketmine\event\level\LevelUnloadEvent;
 use pocketmine\event\level\SpawnChangeEvent;
+use pocketmine\event\level\WeatherChangeEvent;
 use pocketmine\event\LevelTimings;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\Timings;
@@ -90,6 +91,7 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
@@ -129,8 +131,12 @@ class Level implements ChunkManager, Metadatable{
 	const TIME_SUNSET = 12000;
 	const TIME_NIGHT = 14000;
 	const TIME_SUNRISE = 23000;
-
 	const TIME_FULL = 24000;
+
+	const WEATHER_CLEAR = 0;
+	const WEATHER_RAIN = 1;
+	const WEATHER_THUNDER = 2;
+	const WEATHER_RAIN_THUNDER = 3;
 
 	/** @var Tile[] */
 	private $tiles = [];
@@ -262,6 +268,21 @@ class Level implements ChunkManager, Metadatable{
 	/** @var Generator */
 	private $generatorInstance;
 
+	/** @var int */
+	private $weather;
+	/** @var int */
+	private $rainTime;
+	/** @var int $rainIntensity */
+	private $rainIntensity;
+	/** @var int */
+	private $thunderTime;
+	/** @var int $thunderIntensity */
+	private $thunderIntensity;
+	/** @var int */
+	private $clearTime;
+	/** @var bool */
+	private $weatherLocked = false;
+
 	private $closed = false;
 
 	public static function chunkHash(int $x, int $z){
@@ -358,6 +379,13 @@ class Level implements ChunkManager, Metadatable{
 				unset($this->randomTickBlocks[$id]);
 			}
 		}
+
+		$this->weatherLocked = false;
+		$this->weather = $this->provider->getWeather();
+		$durations = $this->provider->getWeatherTimes();
+		$this->rainTime = isset($durations[1]) ? (int) $durations[1] : mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
+		$this->thunderTime = isset($durations[2]) ? (int) $durations[2] : mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
+		$this->clearTime = isset($durations[0]) ? (int) $durations[0] : 0;
 
 		$this->timings = new LevelTimings($this);
 		$this->temporalPosition = new Position(0, 0, 0, $this);
@@ -685,6 +713,50 @@ class Level implements ChunkManager, Metadatable{
 	 * WARNING: Do not use this, it's only for internal use.
 	 * Changes to this function won't be recorded on the version.
 	 *
+	 * @param Player[] ...$targets If empty, will send to all players in the level.
+	 */
+	public function sendWeather(Player ...$targets){
+		switch($this->getWeather()){
+			case self::WEATHER_RAIN:
+				$pk = new LevelEventPacket();
+				$pk->evid = LevelEventPacket::EVENT_START_RAIN;
+				$pk->data = (int) ($this->getRainLevel()*65535);
+				$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
+				break;
+			case self::WEATHER_THUNDER:
+				$pk = new LevelEventPacket();
+				$pk->evid = LevelEventPacket::EVENT_START_THUNDER;
+                $pk->data = (int) ($this->getThunderLevel()*65535);
+				$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
+				break;
+			case self::WEATHER_RAIN_THUNDER:
+				$pk = new LevelEventPacket();
+				$pk->evid = LevelEventPacket::EVENT_START_THUNDER;
+                $pk->data = (int) ($this->getThunderLevel()*65535);
+				$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
+				$pk = new LevelEventPacket();
+				$pk->evid = LevelEventPacket::EVENT_START_RAIN;
+                $pk->data = (int) ($this->getRainLevel()*65535);
+				$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
+				break;
+			default:
+			case self::WEATHER_CLEAR:
+				$pk = new LevelEventPacket();
+				$pk->evid = LevelEventPacket::EVENT_STOP_RAIN;
+				$pk->data = 0;
+				$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
+				$pk = new LevelEventPacket();
+				$pk->evid = LevelEventPacket::EVENT_STOP_THUNDER;
+				$pk->data = 0;
+				$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
+				break;
+		}
+	}
+
+	/**
+	 * WARNING: Do not use this, it's only for internal use.
+	 * Changes to this function won't be recorded on the version.
+	 *
 	 * @param int $currentTick
 	 *
 	 */
@@ -780,6 +852,41 @@ class Level implements ChunkManager, Metadatable{
 
 		if($this->sleepTicks > 0 and --$this->sleepTicks <= 0){
 			$this->checkSleep();
+		}
+
+		if(!$this->weatherLocked){
+			--$this->thunderTime;
+			--$this->rainTime;
+			--$this->clearTime;
+			if($this->weather === self::WEATHER_CLEAR and ($this->rainTime <= 0 or $this->thunderTime <= 0)){
+				if(mt_rand(0, 100) > 95 or $this->thunderTime <= 0){
+					$this->setWeather(self::WEATHER_RAIN_THUNDER);
+				} else {
+					$this->setWeather(self::WEATHER_RAIN);
+				}
+			}elseif(($this->weather === self::WEATHER_RAIN and mt_rand(0, 3000) == 0) or $this->thunderTime <= 0){ //No exact wiki chance value
+				$this->setWeather(self::WEATHER_RAIN_THUNDER);
+			}elseif($this->clearTime > 0) {
+				$this->setWeather(self::WEATHER_RAIN);
+			}
+		}
+		if($this->weather === self::WEATHER_RAIN_THUNDER){
+			foreach($this->getChunks() as $chunk){
+				if(mt_rand(1, 100000) == 1){
+					$pk = new AddEntityPacket();
+					$pk->type = 93;
+					$pk->entityRuntimeId = Entity::$entityCount++;
+					$pk->x = ($chunk->getX() << 4) + mt_rand(0, 16);
+					$pk->z = ($chunk->getZ() << 4) + mt_rand(0, 16);
+					$pk->y = $this->getHighestBlockAt($pk->x, $pk->z) + 1;
+					$pk->yaw = 0;
+					$pk->pitch = 0;
+					$pk->metadata = [];
+					foreach($this->getPlayers() as $p){
+						$p->dataPacket($pk);
+					}
+				}
+			}
 		}
 
 		foreach($this->chunkPackets as $index => $entries){
@@ -1019,6 +1126,9 @@ class Level implements ChunkManager, Metadatable{
 		$this->server->getPluginManager()->callEvent(new LevelSaveEvent($this));
 
 		$this->provider->setTime((int) $this->time);
+
+		$this->provider->setWeatherTimes($this->clearTime, $this->rainTime, $this->thunderTime);
+
 		$this->saveChunks();
 		if($this->provider instanceof BaseLevelProvider){
 			$this->provider->saveLevelData();
@@ -2777,6 +2887,157 @@ class Level implements ChunkManager, Metadatable{
 		$this->provider->setSeed($seed);
 	}
 
+	/**
+	 * Gives the current weather type/id
+	 *
+	 * @return int
+	 */
+	public function getWeather() : int{
+		return $this->weather;
+	}
+
+	/**
+	 * Gives the time until the next rain in ticks
+	 *
+	 * @return int
+	 */
+	public function getRainTime() : int{
+		return $this->rainTime;
+	}
+
+	/**
+	 * Gives the intensity of the current rain
+	 *
+	 * @return float between 0 and 1
+	 */
+	public function getRainLevel() : float{
+		return $this->rainIntensity;
+	}
+
+	/**
+	 * Gives the time until the next thunderstorm in ticks
+	 *
+	 * @return int
+	 */
+	public function getThunderTime() : int{
+		return $this->thunderTime;
+	}
+
+	/**
+	 * Gives the intensity of the current thunder
+	 *
+	 * @return float between 0 and 1
+	 */
+	public function getThunderLevel() : float{
+		return $this->thunderIntensity;
+	}
+
+	/**
+	 * Gives the time until the next clear sky in ticks
+	 *
+	 * @return int
+	 */
+	public function getClearTime() : int{
+		return $this->clearTime;
+	}
+
+	/**
+	 * Sets the type of weather being displayed
+	 *
+	 * @param int $weatherType
+	 * @param int $intensity
+	 */
+	public function setWeather(int $weatherType, int $intensity = -1){
+		$this->getServer()->getPluginManager()->callEvent($ev = new WeatherChangeEvent($this, $this->weather, $weatherType, $intensity));
+		if($ev->isCancelled()){
+			return;
+		}
+		$this->weather = $ev->getNewWeather();
+		if($ev->getNewWeather() === self::WEATHER_RAIN or $ev->getNewWeather() === self::WEATHER_RAIN_THUNDER){
+			$this->rainTime = 0;
+			$this->rainIntensity = ($ev->getNewIntensity() < 0 or $ev->getNewIntensity() > 65535) ? mt_rand(1,65535) : $ev->getNewIntensity()/65535;
+			if($ev->getNewWeather() === self::WEATHER_RAIN_THUNDER){
+				$this->thunderTime = 0;
+				$this->thunderIntensity = ($ev->getNewIntensity() < 0 or $ev->getNewIntensity() > 65535) ? mt_rand(1,65535) : $ev->getNewIntensity()/65535;
+			}
+			$this->clearTime = mt_rand((self::TIME_FULL / 2), self::TIME_FULL);
+		}elseif($ev->getNewWeather() === self::WEATHER_THUNDER){
+			$this->thunderTime = 0;
+			$this->thunderIntensity = ($ev->getNewIntensity() < 0 or $ev->getNewIntensity() > 65535) ? mt_rand(1,65535) : $ev->getNewIntensity()/65535;
+			$this->clearTime = mt_rand((self::TIME_FULL / 2), self::TIME_FULL);
+		}elseif($ev->getNewWeather() == self::WEATHER_CLEAR){
+			$this->rainTime = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
+			$this->rainIntensity = 0;
+			$this->thunderTime = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
+			$this->thunderIntensity = 0;
+			$this->clearTime = 0;
+		}
+		$this->sendWeather();
+	}
+
+	/**
+	 * Sets the time until the next rain in ticks
+	 *
+	 * @param int $time
+	 */
+	public function setRainTime(int $time){
+		$this->rainTime = $time;
+		if($time > 0){
+			$this->clearTime = mt_rand((self::TIME_FULL / 2), self::TIME_FULL);
+		}
+	}
+
+	/**
+	 * Sets the intensity of the next rainstorm
+	 *
+	 * @param float $intensity
+	 */
+	public function setRainLevel(float $intensity){
+		$this->rainIntensity = $intensity;
+	}
+
+	/**
+	 * Sets the time until the next thunderstorm in ticks
+	 *
+	 * @param int $time
+	 */
+	public function setThunderTime(int $time){
+		$this->thunderTime = $time;
+		if($time > 0){
+			$this->clearTime = mt_rand((self::TIME_FULL / 2), self::TIME_FULL);
+		}
+	}
+
+	/**
+	 * Sets the intensity of the next thunderstorm
+	 *
+	 * @param float $intensity
+	 */
+	public function setThunderLevel(float $intensity){
+		$this->thunderIntensity = $intensity;
+	}
+
+	/**
+	 * Sets the time until the next clear sky in ticks
+	 *
+	 * @param int $time
+	 */
+	public function setClearTime(int $time){
+		$this->clearTime = $time;
+		if($time > 0){
+			$this->rainTime = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
+			$this->thunderTime = mt_rand((self::TIME_FULL / 2), (7 * self::TIME_FULL) + (self::TIME_FULL / 2));
+		}
+	}
+
+	/**
+	 * Sets whether or not Weather is updated each tick
+	 *
+	 * @param bool $state
+	 */
+	public function lockWeather(bool $state = true){
+		$this->weatherLocked = $state;
+	}
 
 	public function populateChunk(int $x, int $z, bool $force = false) : bool{
 		if(isset($this->chunkPopulationQueue[$index = Level::chunkHash($x, $z)]) or (count($this->chunkPopulationQueue) >= $this->chunkPopulationQueueSize and !$force)){

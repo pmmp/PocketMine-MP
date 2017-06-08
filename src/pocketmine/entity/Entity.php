@@ -1166,7 +1166,7 @@ abstract class Entity extends Location implements Metadatable{
 				$this->fireTicks -= $tickDiff;
 			}
 
-			if($this->fireTicks <= 0){
+			if($this->fireTicks <= 0 or $this->level->getWeather() === Level::WEATHER_RAIN or $this->level->getWeather() === Level::WEATHER_RAIN_THUNDER){
 				$this->extinguish();
 			}else{
 				$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ONFIRE, true);
