@@ -686,6 +686,21 @@ class Item implements ItemIds, \JsonSerializable{
 		return [];
 	}
 
+	public function addLore(string $lore) {
+		$tag = $this->getNamedTag() ?? new CompoundTag("", []);
+		if(!isset($tag->display)){
+			$tag->display = new CompoundTag("display", []);
+		}
+		
+		if(!isset($tag->display->Lore)) {
+			$tag->display->Lore = new ListTag("Lore");
+		}
+		
+		$tag->display->Lore->setTagType(NBT::TAG_String);
+		$tag->display->Lore->{$tag->display->Lore->getCount()} = new StringTag("", $lore);
+		$this->setNamedTag($tag);
+	}
+
 	public function setLore(array $lines){
 		$tag = $this->getNamedTag() ?? new CompoundTag("", []);
 		if(!isset($tag->display)){
