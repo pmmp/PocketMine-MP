@@ -29,13 +29,13 @@ abstract class NamedTag extends Tag{
 	protected $__name;
 
 	/**
-	 * @param string                                                                  $name
-	 * @param bool|float|double|int|ByteTag|ShortTag|array|CompoundTag|ListTag|string $value
+	 * @param string $name
+	 * @param mixed  $value
 	 */
-	public function __construct($name = "", $value = null){
+	public function __construct(string $name = "", $value = null){
 		$this->__name = ($name === null or $name === false) ? "" : $name;
 		if($value !== null){
-			$this->value = $value;
+			$this->setValue($value);
 		}
 	}
 

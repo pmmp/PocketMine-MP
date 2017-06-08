@@ -59,7 +59,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 		}
 
 		if(!isset($this->levelData->generatorName)){
-			$this->levelData->generatorName = new StringTag("generatorName", Generator::getGenerator("DEFAULT"));
+			$this->levelData->generatorName = new StringTag("generatorName", (string) Generator::getGenerator("DEFAULT"));
 		}
 
 		if(!isset($this->levelData->generatorOptions)){

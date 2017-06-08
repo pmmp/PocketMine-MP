@@ -36,8 +36,11 @@ use pocketmine\Player;
 class Item extends Entity{
 	const NETWORK_ID = 64;
 
-	protected $owner = null;
-	protected $thrower = null;
+	/** @var string */
+	protected $owner = "";
+	/** @var string */
+	protected $thrower = "";
+	/** @var int */
 	protected $pickupDelay = 0;
 	/** @var ItemItem */
 	protected $item;

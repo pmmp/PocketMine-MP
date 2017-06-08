@@ -59,7 +59,7 @@ class PMAnvil extends Anvil{
 			if($subChunk->isEmpty()){
 				continue;
 			}
-			$nbt->Sections[++$subChunks] = new CompoundTag(null, [
+			$nbt->Sections[++$subChunks] = new CompoundTag("", [
 				"Y"          => new ByteTag("Y", $y),
 				"Blocks"     => new ByteArrayTag("Blocks",     $subChunk->getBlockIdArray()),
 				"Data"       => new ByteArrayTag("Data",       $subChunk->getBlockDataArray()),

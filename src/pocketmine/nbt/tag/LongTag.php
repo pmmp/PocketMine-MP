@@ -29,6 +29,16 @@ use pocketmine\nbt\NBT;
 
 class LongTag extends NamedTag{
 
+	/**
+	 * LongTag constructor.
+	 *
+	 * @param string $name
+	 * @param int    $value
+	 */
+	public function __construct(string $name = "", int $value = 0){
+		parent::__construct($name, $value);
+	}
+
 	public function getType(){
 		return NBT::TAG_Long;
 	}
