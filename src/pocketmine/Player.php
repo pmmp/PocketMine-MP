@@ -325,6 +325,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/** @var PermissibleBase */
 	private $perm = null;
 
+
+	/**
+	 * Returns a new OfflinePlayer object with the name of the current player.
+	 *
+	 * @return OfflinePlayer
+	 */
+	public function getOfflinePlayer() : OfflinePlayer{
+		return new OfflinePlayer($this->getServer(), $this->getName());
+	}
+
 	public function getLeaveMessage(){
 		return new TranslationContainer(TextFormat::YELLOW . "%multiplayer.player.left", [
 			$this->getDisplayName()
