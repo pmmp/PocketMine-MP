@@ -102,7 +102,7 @@ abstract class Living extends Entity implements Damageable{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Health = new ShortTag("Health", $this->getHealth());
+		$this->namedtag->Health = new FloatTag("Health", $this->getHealth());
 	}
 
 	abstract public function getName();
