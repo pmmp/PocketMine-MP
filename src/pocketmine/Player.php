@@ -2312,7 +2312,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->craftingType = 0;
 
-		$target = $this->level->getEntity($packet->target);
+		$target = $this->level->getEntity((int)$packet->target);
 
 		$cancelled = false;
 		switch($packet->action){
