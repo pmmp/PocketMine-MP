@@ -83,6 +83,12 @@ network:
  #Experimental, only for Windows. Tries to use UPnP to automatically port forward
  upnp-forwarding: false
 
+developer:
+  incompatible-plugins:
+    load: true
+  folder-plugin-loader: true #TODO
+  devtools-commands: true #TODO
+
 debug:
  #To enable assertion execution, set zend.assertions in your php.ini to 1
  assertions:
@@ -154,7 +160,7 @@ spawn-limits:
 
 auto-report:
  #Send crash reports for processing
- enabled: true
+ enabled: false
  send-code: true
  send-settings: true
  send-phpinfo: false
