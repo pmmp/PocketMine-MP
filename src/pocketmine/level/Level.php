@@ -177,7 +177,7 @@ class Level implements ChunkManager, Metadatable{
 	private $chunkPackets = [];
 
 	/** @var float[] */
-	private $unloadQueue;
+	private $unloadQueue = [];
 
 	private $time;
 	public $stopTime;
@@ -195,7 +195,7 @@ class Level implements ChunkManager, Metadatable{
 	private $scheduledBlockUpdateQueueIndex = [];
 
 	/** @var \SplQueue */
-	private $neighbourBlockUpdateQueue = [];
+	private $neighbourBlockUpdateQueue;
 
 	/** @var Player[][] */
 	private $chunkSendQueue = [];
