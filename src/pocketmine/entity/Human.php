@@ -357,7 +357,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		}
 
 		if(!isset($this->namedtag->XpSeed) or !($this->namedtag->XpSeed instanceof IntTag)){
-			$this->namedtag->XpSeed = new IntTag("XpSeed", $this->xpSeed ?? ($this->xpSeed = mt_rand(-0x80000000, 0x7fffffff)));
+			$this->namedtag->XpSeed = new IntTag("XpSeed", $this->xpSeed ?? ($this->xpSeed = mt_rand((int)-0x80000000, (int)0x7fffffff)));
 		}else{
 			$this->xpSeed = $this->namedtag["XpSeed"];
 		}
