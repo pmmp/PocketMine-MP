@@ -75,9 +75,9 @@ namespace pocketmine {
 	use pocketmine\wizard\SetupWizard;
 	use raklib\RakLib;
 
-	const VERSION = "1.6.2dev";
+	const VERSION = "1.2.0";
 	const API_VERSION = "3.0.0-ALPHA5";
-	const CODENAME = "Unleashed";
+	const CODENAME = "Ruby";
 
 	/*
 	 * Startup code. Do not look at it, it may harm you.
@@ -492,11 +492,6 @@ namespace pocketmine {
 			$logger->join();
 			exit(-1);
 		}
-	}
-
-
-	if(\Phar::running(true) === ""){
-		$logger->warning("Non-packaged PocketMine-MP installation detected, do not use on production.");
 	}
 
 	ThreadManager::init();

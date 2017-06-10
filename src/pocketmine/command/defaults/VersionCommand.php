@@ -51,8 +51,11 @@ class VersionCommand extends VanillaCommand{
 				$sender->getServer()->getName(),
 				$sender->getServer()->getPocketMineVersion(),
 				$sender->getServer()->getCodename(),
+				"\n",
 				$sender->getServer()->getApiVersion(),
+				"\n",
 				$sender->getServer()->getVersion(),
+				"\n",
 				ProtocolInfo::CURRENT_PROTOCOL
 			]));
 		}else{
