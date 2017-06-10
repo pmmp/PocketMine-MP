@@ -46,7 +46,7 @@ class BatchPacket extends DataPacket{
 	}
 
 	public function decode(){
-		$this->payload = $this->get(0);
+		$this->payload = $this->getRemaining();
 	}
 
 	public function encode(){

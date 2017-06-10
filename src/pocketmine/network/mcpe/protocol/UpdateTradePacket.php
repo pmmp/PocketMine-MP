@@ -53,7 +53,7 @@ class UpdateTradePacket extends DataPacket{
 		$this->traderEid = $this->getEntityUniqueId();
 		$this->playerEid = $this->getEntityUniqueId();
 		$this->displayName = $this->getString();
-		$this->offers = $this->get(0);
+		$this->offers = $this->getRemaining();
 	}
 
 	public function encode(){
