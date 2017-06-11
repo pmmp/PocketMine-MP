@@ -164,7 +164,7 @@ class AutoUpdater{
 	 */
 	public function getChannel(){
 		$channel = strtolower($this->server->getProperty("auto-updater.preferred-channel", "stable"));
-		if($channel !== "stable" and $channel !== "beta" and $channel !== "development"){
+		if($channel !== "stable" and $channel !== "beta" and $channel !== "alpha" and $channel !== "development"){
 			$channel = "stable";
 		}
 

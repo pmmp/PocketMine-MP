@@ -51,17 +51,20 @@ class UpdateCheckTask extends AsyncTask{
 		if($response !== false){
 			$response = json_decode($response, true);
 			if(is_array($response)){
-				$this->setResult(
-					[
-						 "version" => $response["version"],
-						 "api_version" => $response["api_version"],
-						 "build" => $response["build"],
-						 "date" => $response["date"],
-						 "details_url" => $response["details_url"] ?? null,
-						 "download_url" => $response["download_url"]
-					],
-					true
-				);
+				if(
+					isset($response["version"]) and
+					isset($response["api_version"]) and
+					isset($response["build"]) and
+					isset($response["date"]) and
+					isset($response["download_url"])
+				){
+					$response["details_url"] = $response["details_url"] ?? null;
+					$this->setResult($response, true);
+				}elseif(isset($response["error"])){
+					$this->error = $response["error"];
+				}else{
+					$this->error = "Invalid response data";
+				}
 			}else{
 				$this->error = "Invalid response data";
 			}
