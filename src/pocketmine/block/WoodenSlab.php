@@ -50,10 +50,8 @@ class WoodenSlab extends Transparent{
 			3 => "Jungle",
 			4 => "Acacia",
 			5 => "Dark Oak",
-			6 => "",
-			7 => ""
 		];
-		return (($this->meta & 0x08) === 0x08 ? "Upper " : "") . $names[$this->meta & 0x07] . " Wooden Slab";
+		return (($this->meta & 0x08) === 0x08 ? "Upper " : "") . ($names[$this->meta & 0x07] ?? "Unknown") . " Wooden Slab";
 	}
 
 	protected function recalculateBoundingBox(){
@@ -131,9 +129,7 @@ class WoodenSlab extends Transparent{
 		return Tool::TYPE_AXE;
 	}
 
-	public function getDrops(Item $item){
-		return [
-			Item::get($this->getId(), $this->getDamage() & 0x07, 1)
-		];
+	public function getVariantBitmask() : int{
+		return 0x07;
 	}
 }

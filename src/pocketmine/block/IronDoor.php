@@ -43,12 +43,16 @@ class IronDoor extends Door{
 		return Tool::TYPE_PICKAXE;
 	}
 
+	public function getRequiredHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
+	}
+
 	public function getHardness(){
 		return 5;
 	}
 
 	public function getDrops(Item $item){
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
+		if($this->canBeBrokenWith($item)){
 			return [
 				Item::get(Item::IRON_DOOR, 0, 1)
 			];

@@ -427,32 +427,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * Returns the best tool type to use for breaking this type of block.
-	 * @return int
-	 */
-	public function getToolType(){
-		return Tool::TYPE_NONE;
-	}
-
-	/**
-	 * Returns whether the tool type specified in {@link Block#getToolType} must be used to get drops when breaking this block.
-	 * For example, wood's tool type is Axe, but does not require an Axe to get drops. Stone on the other hand requires a pickaxe, and a pickaxe must be used.
-	 *
-	 * @return bool
-	 */
-	public function requiresCorrectToolType() : bool{
-		return false;
-	}
-
-	/**
-	 * Returns the tool tier needed to break this block and get drops.
-	 * @return int
-	 */
-	public function getRequiredToolTier() : int{
-		return TieredTool::TIER_ANY;
-	}
-
-	/**
 	 * @return float
 	 */
 	public function getFrictionFactor(){
@@ -608,6 +582,44 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Returns the best tool type to use for breaking this type of block.
+	 * @return int
+	 */
+	public function getToolType(){
+		return Tool::TYPE_NONE;
+	}
+
+	/**
+	 * Returns the minimum best tool tier for harvesting this block. This value affects block breaking times with
+	 * different tiers of tool.
+	 *
+	 * If this method returns 0 (Tool::NOT_REQUIRED), it indicates that no tool is required to harvest the block, and
+	 * the block will always drop itself when broken unless {@link Block#getDrops} is overridden for some rare cases
+	 * such as vines.
+	 *
+	 * If the tool required is not a tiered-tool, this method should simply return a value of 1 (Tool::REQUIRED) to
+	 * indicate that a tool is requred to harvest the block.
+	 *
+	 * @return int
+	 */
+	public function getRequiredHarvestLevel() : int{
+		return Tool::NOT_REQUIRED;
+	}
+
+	/**
+	 * Returns the bitmask used to get the true variant of this block. Used for things like removing rotation meta
+	 * values from dropped items such as wooden logs.
+	 *
+	 * By default this is -1, which will cause blocks of this type to always drop with damage. If you want blocks not to
+	 * retain their damage, override this with 0 in descendent classes.
+	 *
+	 * @return int
+	 */
+	public function getVariantBitmask() : int{
+		return -1;
+	}
+
+	/**
 	 * Returns an array of Item objects to be dropped
 	 *
 	 * @param Item $item
@@ -615,13 +627,13 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return Item[]
 	 */
 	public function getDrops(Item $item){
-		if(!isset(self::$list[$this->getId()])){ //Unknown blocks
-			return [];
-		}else{
+		if($this->canBeBrokenWith($item)){
 			return [
-				Item::get($this->getId(), $this->getDamage(), 1)
+				Item::get($this->getId(), $this->getDamage() & $this->getVariantBitmask(), 1)
 			];
 		}
+
+		return [];
 	}
 
 	/**
@@ -632,16 +644,20 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return float
 	 */
 	public function getBreakTime(Item $item){
-		$base = $this->getHardness() * 1.5;
+		$base = $this->getHardness();
+
 		if($this->canBeBrokenWith($item)){
+			$base *= 1.5;
+		}else{
+			$base *= 5;
+		}
+
+		if($this->getToolType() === $item->getBlockBreakingToolType()){
+			//TODO: efficiency
 			if($this->getToolType() === Tool::TYPE_SHEARS and $item->isShears()){
 				$base /= 15;
-			}elseif(
-				($this->getToolType() === Tool::TYPE_PICKAXE and ($tier = $item->isPickaxe()) !== false) or
-				($this->getToolType() === Tool::TYPE_AXE and ($tier = $item->isAxe()) !== false) or
-				($this->getToolType() === Tool::TYPE_SHOVEL and ($tier = $item->isShovel()) !== false)
-			){
-				switch($tier){
+			}else{
+				switch($item->getToolHarvestLevel()){
 					case TieredTool::TIER_WOODEN:
 						$base /= 2;
 						break;
@@ -659,19 +675,20 @@ class Block extends Position implements BlockIds, Metadatable{
 						break;
 				}
 			}
-		}else{
-			$base *= 3.33;
-		}
-
-		if($item->isSword()){
-			$base *= 0.5;
 		}
 
 		return $base;
 	}
 
 	public function canBeBrokenWith(Item $item){
-		return $this->getHardness() !== -1;
+		if($this->getHardness() === 1){
+			return false;
+		}
+
+		return $this->getRequiredHarvestLevel() === 0 or (
+			$item->getBlockBreakingToolType() === $this->getToolType() and
+			$item->getToolHarvestLevel() >= $this->getRequiredHarvestLevel()
+		);
 	}
 
 	/**

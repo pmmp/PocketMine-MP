@@ -38,10 +38,6 @@ use pocketmine\Player;
 
 class Bow extends Tool{
 
-	public function getToolType() : int{
-		return Tool::TYPE_BOW;
-	}
-
 	public function onReleaseUsing(Player $player) : bool{
 		/** @var Item $arrow */
 		$arrow = null;

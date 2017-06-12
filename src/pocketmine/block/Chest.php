@@ -169,9 +169,7 @@ class Chest extends Transparent{
 		return true;
 	}
 
-	public function getDrops(Item $item){
-		return [
-			Item::get($this->getId(), 0, 1)
-		];
+	public function getVariantBitmask() : int{
+		return 0;
 	}
 }

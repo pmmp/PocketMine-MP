@@ -67,13 +67,11 @@ class StoneSlab extends WoodenSlab{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function getDrops(Item $item){
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			return [
-				Item::get($this->getId(), $this->getDamage() & 0x07, 1)
-			];
-		}else{
-			return [];
-		}
+	public function getRequiredHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
+	}
+
+	public function getVariantBitmask() : int{
+		return 0x07;
 	}
 }

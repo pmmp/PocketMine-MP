@@ -38,16 +38,21 @@ class Leaves2 extends Leaves{
 		return $names[$this->meta & 0x01];
 	}
 
+	public function getVariantBitmask() : int{
+		return 0x01;
+	}
+
 	public function getDrops(Item $item){
-		$drops = [];
-		if($item->isShears()){
-			$drops[] = Item::get($this->id, $this->meta & 0x01, 1);
+		if($this->canBeBrokenWith($item)){
+			return parent::getDrops($item);
 		}else{
+			$drops = [];
+
 			if(mt_rand(1, 20) === 1){ //Saplings
 				$drops[] = Item::get(Item::SAPLING, ($this->meta & 0x01) + 4, 1);
 			}
-		}
 
-		return $drops;
+			return $drops;
+		}
 	}
 }

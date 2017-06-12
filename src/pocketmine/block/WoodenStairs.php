@@ -39,10 +39,4 @@ class WoodenStairs extends Stair{
 	public function getToolType(){
 		return Tool::TYPE_AXE;
 	}
-
-	public function getDrops(Item $item){
-		return [
-			Item::get($this->getId(), 0, 1)
-		];
-	}
 }

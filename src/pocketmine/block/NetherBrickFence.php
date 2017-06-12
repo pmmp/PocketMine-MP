@@ -42,21 +42,15 @@ class NetherBrickFence extends Transparent{
 		return Tool::TYPE_PICKAXE;
 	}
 
+	public function getRequiredHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
+	}
+
 	public function getName(){
 		return "Nether Brick Fence";
 	}
 
 	public function canConnect(Block $block){
 		return ($block instanceof NetherBrickFence) or ($block->isSolid() and !$block->isTransparent());
-	}
-
-	public function getDrops(Item $item){
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			return [
-				Item::get($this->id, $this->meta, 1)
-			];
-		}else{
-			return [];
-		}
 	}
 }

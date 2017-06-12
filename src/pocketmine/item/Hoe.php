@@ -31,10 +31,6 @@ use pocketmine\Player;
 
 class Hoe extends TieredTool{
 
-	public function getToolType() : int{
-		return Tool::TYPE_HOE;
-	}
-
 	public function isHoe(){
 		return $this->tier;
 	}

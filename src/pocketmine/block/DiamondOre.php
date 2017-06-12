@@ -47,8 +47,12 @@ class DiamondOre extends Solid{
 		return Tool::TYPE_PICKAXE;
 	}
 
+	public function getRequiredHarvestLevel() : int{
+		return TieredTool::TIER_IRON;
+	}
+
 	public function getDrops(Item $item){
-		if($item->isPickaxe() >= TieredTool::TIER_IRON){
+		if($this->canBeBrokenWith($item)){
 			return [
 				Item::get(Item::DIAMOND, 0, 1)
 			];

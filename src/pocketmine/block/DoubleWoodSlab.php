@@ -42,6 +42,10 @@ class DoubleWoodSlab extends Solid{
 		return Tool::TYPE_AXE;
 	}
 
+	public function getVariantBitmask() : int{
+		return 0x07;
+	}
+
 	public function getName(){
 		static $names = [
 			0 => "Oak",

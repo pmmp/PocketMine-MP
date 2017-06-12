@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
 
 class StainedClay extends Solid{
@@ -39,6 +40,10 @@ class StainedClay extends Solid{
 
 	public function getToolType(){
 		return Tool::TYPE_PICKAXE;
+	}
+
+	public function getRequiredHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
 	}
 
 	public function getName(){

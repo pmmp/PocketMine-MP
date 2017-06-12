@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Tool;
+
 class NoteBlock extends Solid{
 
 	protected $id = self::NOTE_BLOCK;
@@ -33,5 +35,9 @@ class NoteBlock extends Solid{
 
 	public function getName(){
 		return "Note Block";
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_AXE;
 	}
 }

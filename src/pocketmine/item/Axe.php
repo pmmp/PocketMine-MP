@@ -30,7 +30,7 @@ use pocketmine\Player;
 
 class Axe extends TieredTool{
 
-	public function getToolType() : int{
+	public function getBlockBreakingToolType() : int{
 		return TieredTool::TYPE_AXE;
 	}
 

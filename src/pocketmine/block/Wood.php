@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
 use pocketmine\Player;
 
@@ -71,10 +72,8 @@ class Wood extends Solid{
 		return true;
 	}
 
-	public function getDrops(Item $item){
-		return [
-			Item::get($this->getId(), $this->getDamage() & 0x03, 1)
-		];
+	public function getVariantBitmask() : int{
+		return 0x03;
 	}
 
 	public function getToolType(){

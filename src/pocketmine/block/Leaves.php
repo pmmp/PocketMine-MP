@@ -53,6 +53,14 @@ class Leaves extends Transparent{
 		return Tool::TYPE_SHEARS;
 	}
 
+	public function getRequiredHarvestLevel() : int{
+		return Tool::REQUIRED;
+	}
+
+	public function getVariantBitmask() : int{
+		return 0x03;
+	}
+
 	public function getName(){
 		static $names = [
 			self::OAK => "Oak Leaves",
@@ -165,18 +173,19 @@ class Leaves extends Transparent{
 	}
 
 	public function getDrops(Item $item){
-		$drops = [];
-		if($item->isShears()){
-			$drops[] = Item::get($this->id, $this->meta & 0x03, 1);
+		if($this->canBeBrokenWith($item)){
+			return parent::getDrops($item);
 		}else{
+			$drops = [];
+
 			if(mt_rand(1, 20) === 1){ //Saplings
 				$drops[] = Item::get(Item::SAPLING, $this->meta & 0x03, 1);
 			}
 			if(($this->meta & 0x03) === self::OAK and mt_rand(1, 200) === 1){ //Apples
 				$drops[] = Item::get(Item::APPLE, 0, 1);
 			}
-		}
 
-		return $drops;
+			return $drops;
+		}
 	}
 }

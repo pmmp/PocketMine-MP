@@ -45,6 +45,10 @@ abstract class TieredTool extends Tool{
 		return $this->tier;
 	}
 
+	public function getToolHarvestLevel() : int{
+		return $this->getToolTier();
+	}
+
 	/**
 	 * Returns an integer tool tier number from a string tier name.
 	 *

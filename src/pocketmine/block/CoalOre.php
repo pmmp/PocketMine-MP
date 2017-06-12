@@ -48,7 +48,7 @@ class CoalOre extends Solid{
 	}
 
 	public function getDrops(Item $item){
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
+		if($this->canBeBrokenWith($item)){
 			return [
 				Item::get(Item::COAL, 0, 1)
 			];

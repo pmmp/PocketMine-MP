@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Item;
+
 class Tripwire extends Flowable{
 
 	protected $id = self::TRIPWIRE;
@@ -33,5 +35,15 @@ class Tripwire extends Flowable{
 
 	public function getName(){
 		return "Tripwire";
+	}
+
+	public function getVariantBitmask() : int{
+		return 0;
+	}
+
+	public function getDrops(Item $item){
+		return [
+			Item::get(Item::STRING, 0, 1)
+		];
 	}
 }

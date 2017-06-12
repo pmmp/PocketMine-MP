@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Tool;
+
 class StonePressurePlate extends Transparent{
 
 	protected $id = self::STONE_PRESSURE_PLATE;
@@ -41,5 +43,13 @@ class StonePressurePlate extends Transparent{
 
 	public function getHardness(){
 		return 0.5;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_PICKAXE;
+	}
+
+	public function getVariantBitmask() : int{
+		return 0;
 	}
 }

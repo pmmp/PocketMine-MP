@@ -50,6 +50,10 @@ class Stone extends Solid{
 		return Tool::TYPE_PICKAXE;
 	}
 
+	public function getRequiredHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
+	}
+
 	public function getName(){
 		static $names = [
 			self::NORMAL => "Stone",
@@ -65,18 +69,12 @@ class Stone extends Solid{
 	}
 
 	public function getDrops(Item $item){
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			if($this->getDamage() === 0){
-				return [
-					Item::get(Item::COBBLESTONE, $this->getDamage(), 1)
-				];
-			}else{
-				return [
-					Item::get($this->getId(), $this->getDamage(), 1)
-				];
-			}
+		if($this->getDamage() === 0 and $this->canBeBrokenWith($item)){
+			return [
+				Item::get(Item::COBBLESTONE, $this->getDamage(), 1)
+			];
 		}else{
-			return [];
+			return parent::getDrops($item);
 		}
 	}
 

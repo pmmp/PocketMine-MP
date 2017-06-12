@@ -43,6 +43,14 @@ class DoubleStoneSlab extends Solid{
 		return Tool::TYPE_PICKAXE;
 	}
 
+	public function getRequiredHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
+	}
+
+	public function getVariantBitmask() : int{
+		return 0x07;
+	}
+
 	public function getName(){
 		static $names = [
 			0 => "Stone",
@@ -58,7 +66,7 @@ class DoubleStoneSlab extends Solid{
 	}
 
 	public function getDrops(Item $item){
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
+		if($this->canBeBrokenWith($item)){
 			return [
 				Item::get(Item::STONE_SLAB, $this->meta & 0x07, 2),
 			];

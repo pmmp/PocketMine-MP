@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
 
 class Snow extends Solid{
@@ -39,6 +40,14 @@ class Snow extends Solid{
 
 	public function getToolType(){
 		return Tool::TYPE_SHOVEL;
+	}
+
+	public function getRequiredHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
+	}
+
+	public function getVariantBitmask() : int{
+		return 0;
 	}
 
 	public function getName(){

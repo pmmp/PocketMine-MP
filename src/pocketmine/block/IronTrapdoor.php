@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
 
 class IronTrapdoor extends Trapdoor{
@@ -39,5 +40,9 @@ class IronTrapdoor extends Trapdoor{
 
 	public function getToolType(){
 		return Tool::TYPE_PICKAXE;
+	}
+
+	public function getRequiredHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
 	}
 }

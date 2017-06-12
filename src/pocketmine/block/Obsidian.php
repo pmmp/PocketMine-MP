@@ -43,17 +43,15 @@ class Obsidian extends Solid{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function getHardness(){
-		return 35;
+	public function getRequiredHarvestLevel() : int{
+		return TieredTool::TIER_DIAMOND;
 	}
 
-	public function getDrops(Item $item){
-		if($item->isPickaxe() >= TieredTool::TIER_DIAMOND){
-			return [
-				Item::get($this->getId(), 0, 1)
-			];
-		}else{
-			return [];
-		}
+	public function getVariantBitmask() : int{
+		return 0;
+	}
+
+	public function getHardness(){
+		return 35;
 	}
 }

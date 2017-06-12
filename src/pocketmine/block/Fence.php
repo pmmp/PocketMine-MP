@@ -49,6 +49,9 @@ class Fence extends Transparent{
 		return Tool::TYPE_AXE;
 	}
 
+	public function getVariantBitmask() : int{
+		return 0x07;
+	}
 
 	public function getName(){
 		static $names = [

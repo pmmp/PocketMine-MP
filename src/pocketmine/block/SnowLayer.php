@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
@@ -53,6 +54,13 @@ class SnowLayer extends Flowable{
 		return Tool::TYPE_SHOVEL;
 	}
 
+	public function getRequiredHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
+	}
+
+	public function getVariantBitmask() : int{
+		return 0;
+	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if($block->getSide(Vector3::SIDE_DOWN)->isSolid()){
@@ -84,7 +92,7 @@ class SnowLayer extends Flowable{
 	}
 
 	public function getDrops(Item $item){
-		if($item->isShovel() !== false){
+		if($this->canBeBrokenWith($item)){
 			return [
 				Item::get(Item::SNOWBALL, 0, 1)
 			];

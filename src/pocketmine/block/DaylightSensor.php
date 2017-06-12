@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Tool;
+
 class DaylightSensor extends Transparent{
 
 	protected $id = self::DAYLIGHT_SENSOR;
@@ -38,4 +40,10 @@ class DaylightSensor extends Transparent{
 	public function getHardness(){
 		return 0.2;
 	}
+
+	public function getToolType(){
+		return Tool::TYPE_AXE;
+	}
+
+	//TODO
 }

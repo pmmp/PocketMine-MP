@@ -55,6 +55,14 @@ class BurningFurnace extends Solid{
 		return Tool::TYPE_PICKAXE;
 	}
 
+	public function getRequiredHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
+	}
+
+	public function getVariantBitmask() : int{
+		return 0;
+	}
+
 	public function getLightLevel(){
 		return 13;
 	}
@@ -117,15 +125,5 @@ class BurningFurnace extends Solid{
 		}
 
 		return true;
-	}
-
-	public function getDrops(Item $item){
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			return [
-				Item::get($this->getId(), 0, 1)
-			];
-		}else{
-			return [];
-		}
 	}
 }

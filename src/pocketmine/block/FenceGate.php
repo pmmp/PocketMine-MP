@@ -39,6 +39,9 @@ class FenceGate extends Transparent{
 		return Tool::TYPE_AXE;
 	}
 
+	public function getVariantBitmask() : int{
+		return 0;
+	}
 
 	protected function recalculateBoundingBox(){
 
@@ -73,12 +76,6 @@ class FenceGate extends Transparent{
 		$this->getLevel()->setBlock($block, $this, true, true);
 
 		return true;
-	}
-
-	public function getDrops(Item $item){
-		return [
-			Item::get($this->getId(), 0, 1)
-		];
 	}
 
 	public function onActivate(Item $item, Player $player = null){

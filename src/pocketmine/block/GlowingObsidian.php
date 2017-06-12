@@ -24,7 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 
-class GlowingObsidian extends Solid{
+use pocketmine\item\TieredTool;
+
+class GlowingObsidian extends Obsidian{
 
 	protected $id = self::GLOWING_OBSIDIAN;
 
@@ -40,4 +42,7 @@ class GlowingObsidian extends Solid{
 		return 12;
 	}
 
+	public function getHardness(){
+		return 10;
+	}
 }

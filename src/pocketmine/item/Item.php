@@ -935,6 +935,14 @@ class Item implements ItemIds, \JsonSerializable{
 		return false;
 	}
 
+	public function getBlockBreakingToolType() : int{
+		return Tool::TYPE_NONE;
+	}
+
+	public function getToolHarvestLevel() : int{
+		return 0;
+	}
+
 	/**
 	 * @return int|bool
 	 */

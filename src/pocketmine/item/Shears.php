@@ -31,12 +31,16 @@ use pocketmine\Player;
 class Shears extends Tool{
 	protected $durability = 238;
 
-	public function getToolType() : int{
+	public function getBlockBreakingToolType() : int{
 		return Tool::TYPE_SHEARS;
 	}
 
 	public function isShears(){
 		return true;
+	}
+
+	public function getToolHarvestLevel() : int{
+		return 1;
 	}
 
 	public function onDestroyBlock(Block $block, Player $player = null) : bool{

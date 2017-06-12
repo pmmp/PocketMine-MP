@@ -63,8 +63,16 @@ class RedstoneOre extends Solid{
 		return Tool::TYPE_PICKAXE;
 	}
 
+	public function getRequiredHarvestLevel() : int{
+		return TieredTool::TIER_IRON;
+	}
+
+	public function getVariantBitmask() : int{
+		return 0;
+	}
+
 	public function getDrops(Item $item){
-		if($item->isPickaxe() >= TieredTool::TIER_IRON){
+		if($this->canBeBrokenWith($item)){
 			return [
 				Item::get(Item::REDSTONE_DUST, 0, mt_rand(4, 5))
 			];

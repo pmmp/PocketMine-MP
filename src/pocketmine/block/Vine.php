@@ -175,7 +175,7 @@ class Vine extends Transparent{
 	}
 
 	public function getDrops(Item $item){
-		if($item->isShears()){
+		if($item->getBlockBreakingToolType() === Tool::TYPE_SHEARS){
 			return [
 				Item::get($this->getId(), 0, 1)
 			];

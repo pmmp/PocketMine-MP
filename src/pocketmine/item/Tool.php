@@ -28,7 +28,9 @@ use pocketmine\item\enchantment\Enchantment;
 
 abstract class Tool extends Durable{
 
-	//TODO: fix this mess
+	const NOT_REQUIRED = 0;
+	const REQUIRED = 1;
+
 	//Block-breaking tools
 	const TYPE_NONE = 0;
 	const TYPE_SWORD = 1;
@@ -36,10 +38,6 @@ abstract class Tool extends Durable{
 	const TYPE_PICKAXE = 3;
 	const TYPE_AXE = 4;
 	const TYPE_SHEARS = 5;
-
-	//Not a block-breaking tool
-	const TYPE_HOE = 6;
-	const TYPE_BOW = 7;
 
 	protected $attackPoints;
 
@@ -49,8 +47,6 @@ abstract class Tool extends Durable{
 		$this->attackPoints = $attackPoints;
 		parent::__construct($id, $meta, $count, $name, $durability);
 	}
-
-	abstract public function getToolType() : int;
 
 	public function getAttackPoints() : float{
 		$points = $this->attackPoints;

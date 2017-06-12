@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Item;
 use pocketmine\item\Tool;
 
 class PackedIce extends Solid{
@@ -43,6 +44,10 @@ class PackedIce extends Solid{
 
 	public function getToolType(){
 		return Tool::TYPE_PICKAXE;
+	}
+
+	public function getDrops(Item $item){
+		return []; //TODO: silk touch
 	}
 
 }

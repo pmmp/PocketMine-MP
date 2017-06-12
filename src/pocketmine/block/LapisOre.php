@@ -43,12 +43,20 @@ class LapisOre extends Solid{
 		return Tool::TYPE_PICKAXE;
 	}
 
+	public function getRequiredHarvestLevel() : int{
+		return TieredTool::TIER_STONE;
+	}
+
+	public function getVariantBitmask() : int{
+		return 0;
+	}
+
 	public function getName(){
 		return "Lapis Lazuli Ore";
 	}
 
 	public function getDrops(Item $item){
-		if($item->isPickaxe() >= TieredTool::TIER_STONE){
+		if($this->canBeBrokenWith($item)){
 			return [
 				Item::get(Item::DYE, 4, mt_rand(4, 8))
 			];

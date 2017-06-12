@@ -39,21 +39,19 @@ class NetherBrick extends Solid{
 		return Tool::TYPE_PICKAXE;
 	}
 
+	public function getRequiredHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
+	}
+
+	public function getVariantBitmask() : int{
+		return 0;
+	}
+
 	public function getName(){
 		return "Nether Brick";
 	}
 
 	public function getHardness(){
 		return 2;
-	}
-
-	public function getDrops(Item $item){
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			return [
-				Item::get(Item::NETHER_BRICK, 0, 1)
-			];
-		}else{
-			return [];
-		}
 	}
 }

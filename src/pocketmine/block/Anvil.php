@@ -62,8 +62,16 @@ class Anvil extends Fallable{
 		return $names[$this->meta & 0x0c] ?? "Anvil";
 	}
 
+	public function getVariantBitmask() : int{
+		return 0x0c;
+	}
+
 	public function getToolType(){
 		return Tool::TYPE_PICKAXE;
+	}
+
+	public function getRequiredHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
 	}
 
 	public function onActivate(Item $item, Player $player = null){
@@ -78,15 +86,5 @@ class Anvil extends Fallable{
 		$direction = ($player !== null ? $player->getDirection() : 0) & 0x03;
 		$this->meta = ($this->meta & 0x0c) | $direction;
 		$this->getLevel()->setBlock($block, $this, true, true);
-	}
-
-	public function getDrops(Item $item){
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			return [
-				Item::get($this->getId(), $this->getDamage() & 0x0c, 1)
-			];
-		}else{
-			return [];
-		}
 	}
 }

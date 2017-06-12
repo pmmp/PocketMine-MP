@@ -43,18 +43,15 @@ class Lapis extends Solid{
 		return Tool::TYPE_PICKAXE;
 	}
 
+	public function getRequiredHarvestLevel() : int{
+		return TieredTool::TIER_STONE;
+	}
+
+	public function getVariantBitmask() : int{
+		return 0;
+	}
+
 	public function getHardness(){
 		return 3;
 	}
-
-	public function getDrops(Item $item){
-		if($item->isPickaxe() >= TieredTool::TIER_STONE){
-			return [
-				Item::get($this->getId(), 0, 1)
-			];
-		}else{
-			return [];
-		}
-	}
-
 }

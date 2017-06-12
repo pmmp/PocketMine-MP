@@ -30,7 +30,7 @@ use pocketmine\Player;
 
 class Shovel extends TieredTool{
 
-	public function getToolType() : int{
+	public function getBlockBreakingToolType() : int{
 		return Tool::TYPE_SHOVEL;
 	}
 
