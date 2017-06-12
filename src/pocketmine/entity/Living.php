@@ -60,7 +60,7 @@ abstract class Living extends Entity implements Damageable{
 			$this->namedtag->Health = new FloatTag("Health", (float) $this->getMaxHealth());
 		}
 
-		$this->setHealth($this->namedtag["Health"]);
+		$this->setHealth((float) $this->namedtag["Health"]);
 
 		if(isset($this->namedtag->AbsorptionAmount) and $this->namedtag->AbsorptionAmount instanceof FloatTag){
 			$this->setAbsorption((float) $this->namedtag->AbsorptionAmount->getValue());
@@ -164,7 +164,7 @@ abstract class Living extends Entity implements Damageable{
 		return 0;
 	}
 
-	public function damageArmor(int $damage){
+	public function damageArmor(float $damage){
 		//TODO
 	}
 

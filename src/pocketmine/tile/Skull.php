@@ -52,8 +52,8 @@ class Skull extends Spawnable{
 		$this->onChanged();
 	}
 
-	public function getType(){
-		return $this->namedtag["SkullType"];
+	public function getType() : int{
+		return (int) $this->namedtag["SkullType"];
 	}
 
 	public function getSpawnCompound(){
