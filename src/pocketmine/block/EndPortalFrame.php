@@ -46,7 +46,7 @@ class EndPortalFrame extends Solid{
 		return -1;
 	}
 
-	public function getResistance(){
+	public function getBlastResistance(){
 		return 18000000;
 	}
 

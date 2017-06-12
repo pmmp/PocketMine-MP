@@ -120,7 +120,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new Torch());
 			self::registerBlock(new Fire());
 			self::registerBlock(new MonsterSpawner());
-			self::registerBlock((new WoodenStairs(Block::OAK_STAIRS))->setName("Oak Wood Stairs"));
+			self::registerBlock((new Stair(Block::OAK_STAIRS))->setName("Oak Wood Stairs")->setToolType(Tool::TYPE_AXE)->setHardness(2)->setBlastResistance(15));
 			self::registerBlock(new Chest());
 
 			self::registerBlock(new DiamondOre());
@@ -140,7 +140,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new Ladder());
 			self::registerBlock(new Rail());
 
-			self::registerBlock(new CobblestoneStairs());
+			self::registerBlock((new Stair(Block::COBBLESTONE_STAIRS))->setName("Cobblestone Stairs")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(2)->setBlastResistance(30));
 			self::registerBlock(new WallSign());
 			self::registerBlock(new Lever());
 			self::registerBlock(new StonePressurePlate());
@@ -179,14 +179,15 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new MelonStem());
 			self::registerBlock(new Vine());
 			self::registerBlock((new FenceGate(Block::OAK_FENCE_GATE))->setName("Oak Fence Gate"));
-			self::registerBlock(new BrickStairs());
-			self::registerBlock(new StoneBrickStairs());
+			self::registerBlock((new Stair(Block::BRICK_STAIRS))->setName("Brick Stairs")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(2)->setBlastResistance(30));
+			self::registerBlock((new Stair(Block::STONE_BRICK_STAIRS))->setName("Stone Brick Stairs")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(1.5)->setBlastResistance(30));
 
 			self::registerBlock(new Mycelium());
 			self::registerBlock(new WaterLily());
 			self::registerBlock(new NetherBrick());
 			self::registerBlock(new NetherBrickFence());
-			self::registerBlock(new NetherBrickStairs());
+
+			self::registerBlock((new Stair(Block::NETHER_BRICK_STAIRS))->setName("Nether Brick Stairs")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(2)->setBlastResistance(30));
 			self::registerBlock(new NetherWartPlant());
 
 			self::registerBlock(new EnchantingTable());
@@ -195,14 +196,15 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new EndStone());
 			self::registerBlock(new RedstoneLamp());
 			self::registerBlock(new LitRedstoneLamp());
-			self::registerBlock(new SandstoneStairs());
+			self::registerBlock((new Stair(Block::SANDSTONE_STAIRS))->setName("Sandstone Stairs")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(0.8));
+
 			self::registerBlock(new EmeraldOre());
 			self::registerBlock(new TripwireHook());
 			self::registerBlock(new Tripwire());
 			self::registerBlock(new Emerald());
-			self::registerBlock((new WoodenStairs(Block::SPRUCE_STAIRS))->setName("Spruce Wood Stairs"));
-			self::registerBlock((new WoodenStairs(Block::BIRCH_STAIRS))->setName("Birch Wood Stairs"));
-			self::registerBlock((new WoodenStairs(Block::JUNGLE_STAIRS))->setName("Jungle Wood Stairs"));
+			self::registerBlock((new Stair(Block::SPRUCE_STAIRS))->setName("Spruce Wood Stairs")->setToolType(Tool::TYPE_AXE)->setHardness(2)->setBlastResistance(15));
+			self::registerBlock((new Stair(Block::BIRCH_STAIRS))->setName("Birch Wood Stairs")->setToolType(Tool::TYPE_AXE)->setHardness(2)->setBlastResistance(15));
+			self::registerBlock((new Stair(Block::JUNGLE_STAIRS))->setName("Jungle Wood Stairs")->setToolType(Tool::TYPE_AXE)->setHardness(2)->setBlastResistance(15));
 			self::registerBlock(new CobblestoneWall());
 			self::registerBlock(new FlowerPot());
 			self::registerBlock(new Carrot());
@@ -218,24 +220,27 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new Redstone());
 
 			self::registerBlock(new Quartz());
-			self::registerBlock(new QuartzStairs());
+			self::registerBlock((new Stair(Block::QUARTZ_STAIRS))->setName("Quartz Stairs")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(0.8));
 			self::registerBlock(new DoubleWoodSlab());
 			self::registerBlock(new WoodenSlab());
 			self::registerBlock(new StainedClay());
 
 			self::registerBlock(new Leaves2());
 			self::registerBlock(new Wood2());
-			self::registerBlock((new WoodenStairs(Block::ACACIA_STAIRS))->setName("Acacia Wood Stairs"));
-			self::registerBlock((new WoodenStairs(Block::DARK_OAK_STAIRS))->setName("Dark Oak Wood Stairs"));
+			self::registerBlock((new Stair(Block::ACACIA_STAIRS))->setName("Acacia Wood Stairs")->setToolType(Tool::TYPE_AXE)->setHardness(2)->setBlastResistance(15));
+			self::registerBlock((new Stair(Block::DARK_OAK_STAIRS))->setName("Dark Oak Wood Stairs")->setToolType(Tool::TYPE_AXE)->setHardness(2)->setBlastResistance(15));
+
+			self::registerBlock(new IronTrapdoor());
 			self::registerBlock(new Prismarine());
 			self::registerBlock(new SeaLantern());
-			self::registerBlock(new IronTrapdoor());
 			self::registerBlock(new HayBale());
 			self::registerBlock(new Carpet());
 			self::registerBlock(new HardenedClay());
 			self::registerBlock(new Coal());
 			self::registerBlock(new PackedIce());
 			self::registerBlock(new DoublePlant());
+
+			self::registerBlock((new Stair(Block::RED_SANDSTONE_STAIRS))->setName("Red Sandstone Stairs")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(0.8));
 
 			self::registerBlock((new FenceGate(Block::SPRUCE_FENCE_GATE))->setName("Spruce Fence Gate"));
 			self::registerBlock((new FenceGate(Block::BIRCH_FENCE_GATE))->setName("Birch Fence Gate"));
@@ -244,6 +249,8 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock((new FenceGate(Block::ACACIA_FENCE_GATE))->setName("Acacia Fence Gate"));
 
 			self::registerBlock(new ItemFrame());
+
+			self::registerBlock((new Stair(Block::PURPUR_STAIRS))->setName("Purpur Stairs")->setToolType(Tool::TYPE_PICKAXE)->setHardness(1.5)->setBlastResistance(30));
 
 			self::registerBlock(new GrassPath());
 
@@ -326,13 +333,26 @@ class Block extends Position implements BlockIds, Metadatable{
 		return $block;
 	}
 
+	/** @var string */
 	protected $fallbackName = "Unknown";
 
+	/** @var int */
 	protected $id;
+	/** @var int */
 	protected $meta = 0;
 
 	/** @var AxisAlignedBB */
 	public $boundingBox = null;
+
+	/** @var float */
+	protected $blockHardness = 1.0;
+	/** @var float|null */
+	protected $blockBlastResistance = null;
+
+	/** @var int */
+	protected $toolType = Tool::TYPE_NONE;
+	/** @var int */
+	protected $harvestLevel = Tool::NOT_REQUIRED;
 
 
 	/**
@@ -416,14 +436,36 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return float
 	 */
 	public function getHardness(){
-		return 10;
+		return $this->blockHardness;
+	}
+
+	/**
+	 * @param float $hardness
+	 *
+	 * @return $this
+	 */
+	protected function setHardness(float $hardness) : Block{
+		$this->blockHardness = $hardness;
+
+		return $this;
 	}
 
 	/**
 	 * @return float
 	 */
-	public function getResistance(){
-		return $this->getHardness() * 5;
+	public function getBlastResistance(){
+		return $this->blockBlastResistance ?? $this->getHardness() * 5;
+	}
+
+	/**
+	 * @param float $value
+	 *
+	 * @return $this
+	 */
+	protected function setBlastResistance(float $value) : Block{
+		$this->blockBlastResistance = $value;
+
+		return $this;
 	}
 
 	/**
@@ -537,7 +579,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @param string $name
 	 * @return $this
 	 */
-	public function setName(string $name){
+	protected function setName(string $name){
 		$this->fallbackName = $name;
 
 		return $this;
@@ -586,7 +628,18 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return int
 	 */
 	public function getToolType(){
-		return Tool::TYPE_NONE;
+		return $this->toolType;
+	}
+
+	/**
+	 * @param int $toolType
+	 *
+	 * @return $this
+	 */
+	protected function setToolType(int $toolType) : Block{
+		$this->toolType = $toolType;
+
+		return $this;
 	}
 
 	/**
@@ -603,7 +656,13 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return int
 	 */
 	public function getRequiredHarvestLevel() : int{
-		return Tool::NOT_REQUIRED;
+		return $this->harvestLevel;
+	}
+
+	protected function setRequiredHarvestLevel(int $level){
+		$this->harvestLevel = $level;
+
+		return $this;
 	}
 
 	/**

@@ -43,7 +43,7 @@ class Bricks extends Solid{
 		return 2;
 	}
 
-	public function getResistance(){
+	public function getBlastResistance(){
 		return 30;
 	}
 

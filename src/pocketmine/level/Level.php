@@ -1609,6 +1609,10 @@ class Level implements ChunkManager, Metadatable{
 
 			$breakTime -= 1; //1 tick compensation
 
+			var_dump(microtime(true) - $player->lastBreak);
+
+			var_dump($breakTime / 20);
+
 			if(!$ev->getInstaBreak() and ((ceil($player->lastBreak * 20)) + $breakTime) > ceil(microtime(true) * 20)){
 				return false;
 			}

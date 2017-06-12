@@ -33,7 +33,7 @@ abstract class Flowable extends Transparent{
 		return 0;
 	}
 
-	public function getResistance(){
+	public function getBlastResistance(){
 		return 0;
 	}
 

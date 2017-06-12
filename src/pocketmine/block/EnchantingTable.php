@@ -69,7 +69,7 @@ class EnchantingTable extends Transparent{
 		return 5;
 	}
 
-	public function getResistance(){
+	public function getBlastResistance(){
 		return 6000;
 	}
 

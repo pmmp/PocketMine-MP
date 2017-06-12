@@ -28,7 +28,7 @@ use pocketmine\item\TieredTool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 
-abstract class Stair extends Transparent{
+class Stair extends Transparent{
 
 	/*
 	public function collidesWithBB(AxisAlignedBB $bb, &$list = []){

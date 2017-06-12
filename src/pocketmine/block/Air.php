@@ -74,7 +74,7 @@ class Air extends Transparent{
 		return -1;
 	}
 
-	public function getResistance(){
+	public function getBlastResistance(){
 		return 0;
 	}
 
