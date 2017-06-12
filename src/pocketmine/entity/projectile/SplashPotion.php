@@ -124,7 +124,7 @@ class SplashPotion extends Projectile{
 
 							foreach($this->getPotionEffects() as $effect){
 								if(!$effect->isInstantEffect()){
-									$newDuration = round($effect->getDuration() * 0.75 * $distanceMultiplier);
+									$newDuration = (int) round($effect->getDuration() * 0.75 * $distanceMultiplier);
 									if($newDuration < 20){
 										continue;
 									}

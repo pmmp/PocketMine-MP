@@ -156,7 +156,7 @@ class Color{
 			throw new \InvalidArgumentException("Expected a HTML RGB color code representation, for example #FF8844");
 		}
 
-		return Color::fromRGB(hexdec(substr($code, -6))); //Drop # and leading alpha values
+		return Color::fromRGB((int) hexdec(substr($code, -6))); //Drop # and leading alpha values
 	}
 
 	public function toRGB() : int{
