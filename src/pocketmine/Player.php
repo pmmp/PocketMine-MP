@@ -3406,6 +3406,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return;
 		}
 
+		//TODO: Remove this hack once InteractPacket spam issue is fixed
+		if($packet->buffer === "\x21\x04\x00"){
+			return;
+		}
+
 		$timings = Timings::getReceiveDataPacketTimings($packet);
 		$timings->startTiming();
 
