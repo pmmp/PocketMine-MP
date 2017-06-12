@@ -250,7 +250,7 @@ class Block extends Position implements BlockIds, Metadatable{
 
 			self::registerBlock(new ItemFrame());
 
-			self::registerBlock((new Stair(Block::PURPUR_STAIRS))->setName("Purpur Stairs")->setToolType(Tool::TYPE_PICKAXE)->setHardness(1.5)->setBlastResistance(30));
+			self::registerBlock((new Stair(Block::PURPUR_STAIRS))->setName("Purpur Stairs")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(1.5)->setBlastResistance(30));
 
 			self::registerBlock(new GrassPath());
 
