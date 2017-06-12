@@ -82,7 +82,6 @@ use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\inventory\SimpleTransactionGroup;
 use pocketmine\item\Consumable;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\level\ChunkLoader;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;

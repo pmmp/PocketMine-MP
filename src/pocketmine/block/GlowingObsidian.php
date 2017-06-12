@@ -23,9 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-
-use pocketmine\item\TieredTool;
-
 class GlowingObsidian extends Obsidian{
 
 	protected $id = self::GLOWING_OBSIDIAN;

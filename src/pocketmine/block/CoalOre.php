@@ -43,6 +43,10 @@ class CoalOre extends Solid{
 		return Tool::TYPE_PICKAXE;
 	}
 
+	public function getRequiredHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
+	}
+
 	public function getName(){
 		return "Coal Ore";
 	}

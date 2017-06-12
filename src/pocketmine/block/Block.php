@@ -74,7 +74,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new Stone());
 			self::registerBlock(new Grass());
 			self::registerBlock(new Dirt());
-			self::registerBlock((new Cobblestone(Block::COBBLESTONE))->setName("Cobblestone"));
+			self::registerBlock((new Block(Block::COBBLESTONE))->setName("Cobblestone")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(2));
 			self::registerBlock(new Planks());
 			self::registerBlock(new Sapling());
 			self::registerBlock(new Bedrock());
@@ -92,7 +92,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new Sponge());
 			self::registerBlock(new Glass());
 			self::registerBlock(new LapisOre());
-			self::registerBlock(new Lapis());
+			self::registerBlock((new Block(Block::LAPIS_BLOCK))->setName("Lapis Lazuli Block")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_STONE)->setHardness(3));
 			self::registerBlock(new ActivatorRail());
 			self::registerBlock(new CocoaBlock());
 			self::registerBlock(new Sandstone());
@@ -115,7 +115,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock((new Block(Block::BRICK_BLOCK))->setName("Bricks")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(2)->setBlastResistance(30));
 			self::registerBlock(new TNT());
 			self::registerBlock(new Bookshelf());
-			self::registerBlock((new Cobblestone(Block::MOSSY_COBBLESTONE))->setName("Moss Stone"));
+			self::registerBlock((new Block(Block::MOSSY_COBBLESTONE))->setName("Moss Stone")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(2));
 			self::registerBlock(new Obsidian());
 			self::registerBlock(new Torch());
 			self::registerBlock(new Fire());
@@ -445,7 +445,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @param float $hardness
 	 *
-	 * @return $this
+	 * @return Block
 	 */
 	protected function setHardness(float $hardness) : Block{
 		$this->blockHardness = $hardness;
@@ -463,7 +463,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @param float $value
 	 *
-	 * @return $this
+	 * @return Block
 	 */
 	protected function setBlastResistance(float $value) : Block{
 		$this->blockBlastResistance = $value;
@@ -637,7 +637,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @param int $toolType
 	 *
-	 * @return $this
+	 * @return Block
 	 */
 	protected function setToolType(int $toolType) : Block{
 		$this->toolType = $toolType;
@@ -684,7 +684,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @param int $mask
 	 *
-	 * @return $this
+	 * @return Block
 	 */
 	protected function setVariantBitmask(int $mask) : Block{
 		$this->variantBitmask = $mask;
