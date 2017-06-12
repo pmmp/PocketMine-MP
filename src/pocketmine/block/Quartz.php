@@ -26,6 +26,8 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
+use pocketmine\math\Vector3;
+use pocketmine\Player;
 
 class Quartz extends Solid{
 
@@ -66,5 +68,19 @@ class Quartz extends Solid{
 		return 0x03;
 	}
 
-	//TODO: fix rotation
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+		$this->meta &= 0x03;
+
+		if($this->meta !== 0){
+			$faces = [
+				Vector3::SIDE_DOWN => 0,
+				Vector3::SIDE_WEST => 0x04,
+				Vector3::SIDE_NORTH => 0x08
+			];
+
+			$this->meta = ($this->meta & 0x03) | $faces[$face & ~0x01];
+		}
+
+		return $block->getLevel()->setBlock($block, $this, true, true);
+	}
 }
