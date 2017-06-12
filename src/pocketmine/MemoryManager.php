@@ -92,7 +92,7 @@ class MemoryManager{
 		$hardLimit = ((int) $this->server->getProperty("memory.main-hard-limit", $defaultMemory));
 
 		if($hardLimit <= 0){
-			ini_set("memory_limit", -1);
+			ini_set("memory_limit", '-1');
 		}else{
 			ini_set("memory_limit", $hardLimit . "M");
 		}
