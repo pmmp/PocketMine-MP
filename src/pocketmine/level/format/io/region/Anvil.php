@@ -56,7 +56,7 @@ class Anvil extends McRegion{
 			if($subChunk->isEmpty()){
 				continue;
 			}
-			$nbt->Sections[++$subChunks] = new CompoundTag(null, [
+			$nbt->Sections[++$subChunks] = new CompoundTag("", [
 				"Y"          => new ByteTag("Y", $y),
 				"Blocks"     => new ByteArrayTag("Blocks", ChunkUtils::reorderByteArray($subChunk->getBlockIdArray())), //Generic in-memory chunks are currently always XZY
 				"Data"       => new ByteArrayTag("Data", ChunkUtils::reorderNibbleArray($subChunk->getBlockDataArray())),

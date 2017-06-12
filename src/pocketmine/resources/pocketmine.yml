@@ -170,11 +170,11 @@ auto-updater:
  on-update:
   warn-console: true
   warn-ops: true
- #Can be development, beta or stable.
+ #Can be development, alpha, beta or stable.
  preferred-channel: stable
  #If using a development version, it will suggest changing the channel
  suggest-channels: true
- host: www.pocketmine.net
+ host: update.pmmp.io
 
 timings:
  #Choose the host to use for viewing your timings results.

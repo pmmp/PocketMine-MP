@@ -38,7 +38,7 @@ class BlockEntityDataPacket extends DataPacket{
 
 	public function decode(){
 		$this->getBlockPosition($this->x, $this->y, $this->z);
-		$this->namedtag = $this->get(0);
+		$this->namedtag = $this->getRemaining();
 	}
 
 	public function encode(){

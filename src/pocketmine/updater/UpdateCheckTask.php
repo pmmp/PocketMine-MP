@@ -36,7 +36,7 @@ class UpdateCheckTask extends AsyncTask{
 	/** @var string */
 	private $channel;
 	/** @var string */
-	private $error;
+	private $error = "Unknown error";
 
 	public function __construct(string $endpoint, string $channel){
 		$this->endpoint = $endpoint;
@@ -44,24 +44,27 @@ class UpdateCheckTask extends AsyncTask{
 	}
 
 	public function onRun(){
-		$this->error = "";
-		$response = Utils::getURL($this->endpoint . "?channel=" . $this->channel, 4, [], $this->error);
-		if($this->error !== ""){
-			return;
-		}else{
+		$error = "";
+		$response = Utils::getURL($this->endpoint . "?channel=" . $this->channel, 4, [], $error);
+		$this->error = $error;
+
+		if($response !== false){
 			$response = json_decode($response, true);
 			if(is_array($response)){
-				$this->setResult(
-					[
-						 "version" => $response["version"],
-						 "api_version" => $response["api_version"],
-						 "build" => $response["build"],
-						 "date" => $response["date"],
-						 "details_url" => $response["details_url"] ?? null,
-						 "download_url" => $response["download_url"]
-					],
-					true
-				);
+				if(
+					isset($response["version"]) and
+					isset($response["api_version"]) and
+					isset($response["build"]) and
+					isset($response["date"]) and
+					isset($response["download_url"])
+				){
+					$response["details_url"] = $response["details_url"] ?? null;
+					$this->setResult($response, true);
+				}elseif(isset($response["error"])){
+					$this->error = $response["error"];
+				}else{
+					$this->error = "Invalid response data";
+				}
 			}else{
 				$this->error = "Invalid response data";
 			}

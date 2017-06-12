@@ -35,6 +35,7 @@ class ExplodePacket extends DataPacket{
 	public $x;
 	public $y;
 	public $z;
+	/** @var float */
 	public $radius;
 	/** @var Vector3[] */
 	public $records = [];
@@ -46,7 +47,7 @@ class ExplodePacket extends DataPacket{
 
 	public function decode(){
 		$this->getVector3f($this->x, $this->y, $this->z);
-		$this->radius = $this->getLFloat();
+		$this->radius = (float) ($this->getVarInt() / 32);
 		$count = $this->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
 			$x = $y = $z = null;
@@ -58,7 +59,7 @@ class ExplodePacket extends DataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putVector3f($this->x, $this->y, $this->z);
-		$this->putLFloat($this->radius);
+		$this->putVarInt((int) ($this->radius * 32));
 		$this->putUnsignedVarInt(count($this->records));
 		if(count($this->records) > 0){
 			foreach($this->records as $record){

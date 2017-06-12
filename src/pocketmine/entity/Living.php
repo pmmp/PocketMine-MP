@@ -106,7 +106,8 @@ abstract class Living extends Entity implements Damageable{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Health = new FloatTag("Health", ceil($this->getHealth())); //health may be a float due to damage reduction, round up as per vanilla
+
+		$this->namedtag->Health = new FloatTag("Health", $this->getHealth());
 		$this->namedtag->AbsorptionAmount = new FloatTag("AbsorptionAmount", $this->getAbsorption());
 	}
 
