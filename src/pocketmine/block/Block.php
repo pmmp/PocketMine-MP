@@ -654,7 +654,7 @@ class Block extends Position implements BlockIds, Metadatable{
 
 		if($this->getToolType() === $item->getBlockBreakingToolType()){
 			//TODO: efficiency
-			if($this->getToolType() === Tool::TYPE_SHEARS and $item->isShears()){
+			if($this->getToolType() === Tool::TYPE_SHEARS){
 				$base /= 15;
 			}else{
 				switch($item->getToolHarvestLevel()){

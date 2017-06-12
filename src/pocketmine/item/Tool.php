@@ -60,32 +60,6 @@ abstract class Tool extends Durable{
 		return $points;
 	}
 
-	//TODO: remove this mess
-
-	public function isPickaxe(){
-		return false;
-	}
-
-	public function isAxe(){
-		return false;
-	}
-
-	public function isSword(){
-		return false;
-	}
-
-	public function isShovel(){
-		return false;
-	}
-
-	public function isHoe(){
-		return false;
-	}
-
-	public function isShears(){
-		return false;
-	}
-
 	public function isTool(){
 		return true;
 	}
