@@ -108,11 +108,11 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new Flower());
 			self::registerBlock(new BrownMushroom());
 			self::registerBlock(new RedMushroom());
-			self::registerBlock(new Gold());
-			self::registerBlock(new Iron());
+			self::registerBlock((new Block(Block::GOLD_BLOCK))->setName("Block of Gold")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_IRON)->setHardness(3)->setBlastResistance(30));
+			self::registerBlock((new Block(Block::IRON_BLOCK))->setName("Block of Iron")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_IRON)->setHardness(5)->setBlastResistance(30));
 			self::registerBlock(new DoubleStoneSlab());
 			self::registerBlock(new StoneSlab());
-			self::registerBlock(new Bricks());
+			self::registerBlock((new Block(Block::BRICK_BLOCK))->setName("Bricks")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(2)->setBlastResistance(30));
 			self::registerBlock(new TNT());
 			self::registerBlock(new Bookshelf());
 			self::registerBlock((new Cobblestone(Block::MOSSY_COBBLESTONE))->setName("Moss Stone"));
@@ -124,7 +124,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new Chest());
 
 			self::registerBlock(new DiamondOre());
-			self::registerBlock(new Diamond());
+			self::registerBlock((new Block(Block::DIAMOND_BLOCK))->setName("Block of Diamond")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_IRON)->setHardness(5)->setBlastResistance(30));
 			self::registerBlock(new CraftingTable());
 			self::registerBlock(new Wheat());
 			self::registerBlock(new Farmland());
@@ -161,7 +161,7 @@ class Block extends Position implements BlockIds, Metadatable{
 
 			self::registerBlock(new Fence());
 			self::registerBlock(new Pumpkin());
-			self::registerBlock(new Netherrack());
+			self::registerBlock((new Block(Block::NETHERRACK))->setName("Netherrack")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(0.4));
 			self::registerBlock(new SoulSand());
 			self::registerBlock(new Glowstone());
 
@@ -184,7 +184,7 @@ class Block extends Position implements BlockIds, Metadatable{
 
 			self::registerBlock(new Mycelium());
 			self::registerBlock(new WaterLily());
-			self::registerBlock(new NetherBrick());
+			self::registerBlock((new Block(Block::NETHER_BRICK_BLOCK))->setName("Nether Brick")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(2)->setBlastResistance(30));
 			self::registerBlock(new NetherBrickFence());
 
 			self::registerBlock((new Stair(Block::NETHER_BRICK_STAIRS))->setName("Nether Brick Stairs")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(2)->setBlastResistance(30));
@@ -193,7 +193,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new EnchantingTable());
 			self::registerBlock(new BrewingStand());
 			self::registerBlock(new EndPortalFrame());
-			self::registerBlock(new EndStone());
+			self::registerBlock((new Block(Block::END_STONE))->setName("End Stone")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(3)->setBlastResistance(45));
 			self::registerBlock(new RedstoneLamp());
 			self::registerBlock(new LitRedstoneLamp());
 			self::registerBlock((new Stair(Block::SANDSTONE_STAIRS))->setName("Sandstone Stairs")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(0.8));
@@ -201,7 +201,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new EmeraldOre());
 			self::registerBlock(new TripwireHook());
 			self::registerBlock(new Tripwire());
-			self::registerBlock(new Emerald());
+			self::registerBlock((new Block(Block::EMERALD_BLOCK))->setName("Block of Emerald")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_IRON)->setHardness(5)->setBlastResistance(30));
 			self::registerBlock((new Stair(Block::SPRUCE_STAIRS))->setName("Spruce Wood Stairs")->setToolType(Tool::TYPE_AXE)->setHardness(2)->setBlastResistance(15));
 			self::registerBlock((new Stair(Block::BIRCH_STAIRS))->setName("Birch Wood Stairs")->setToolType(Tool::TYPE_AXE)->setHardness(2)->setBlastResistance(15));
 			self::registerBlock((new Stair(Block::JUNGLE_STAIRS))->setName("Jungle Wood Stairs")->setToolType(Tool::TYPE_AXE)->setHardness(2)->setBlastResistance(15));
@@ -217,7 +217,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new HeavyWeightedPressurePlate());
 
 			self::registerBlock(new DaylightSensor());
-			self::registerBlock(new Redstone());
+			self::registerBlock((new Block(Block::REDSTONE_BLOCK))->setName("Block of Redstone")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(5)->setBlastResistance(30));
 
 			self::registerBlock(new Quartz());
 			self::registerBlock((new Stair(Block::QUARTZ_STAIRS))->setName("Quartz Stairs")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(0.8));
@@ -235,7 +235,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new SeaLantern());
 			self::registerBlock(new HayBale());
 			self::registerBlock(new Carpet());
-			self::registerBlock(new HardenedClay());
+			self::registerBlock((new Block(Block::HARDENED_CLAY))->setName("Hardened Clay")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(1.25)->setBlastResistance(21));
 			self::registerBlock(new Coal());
 			self::registerBlock(new PackedIce());
 			self::registerBlock(new DoublePlant());
@@ -277,7 +277,7 @@ class Block extends Position implements BlockIds, Metadatable{
 
 			self::registerBlock(new Podzol());
 			self::registerBlock(new Beetroot());
-			self::registerBlock(new Stonecutter());
+			self::registerBlock((new Block(Block::STONECUTTER))->setName("Stonecutter")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(2.5)->setBlastResistance(17.5));
 			self::registerBlock(new GlowingObsidian());
 
 			foreach(self::$list as $id => $block){
@@ -354,6 +354,8 @@ class Block extends Position implements BlockIds, Metadatable{
 	protected $toolType = Tool::TYPE_NONE;
 	/** @var int */
 	protected $harvestLevel = Tool::NOT_REQUIRED;
+	/** @var int */
+	protected $variantBitmask = -1;
 
 
 	/**
@@ -676,7 +678,18 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return int
 	 */
 	public function getVariantBitmask() : int{
-		return -1;
+		return $this->variantBitmask;
+	}
+
+	/**
+	 * @param int $mask
+	 *
+	 * @return $this
+	 */
+	protected function setVariantBitmask(int $mask) : Block{
+		$this->variantBitmask = $mask;
+
+		return $this;
 	}
 
 	/**
