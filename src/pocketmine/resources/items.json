@@ -981,7 +981,8 @@
     },
     "nameTag": {
         "id": 421,
-        "fallback_name": "Name Tag"
+        "fallback_name": "Name Tag",
+        "type": "name_tag"
     },
     "netherStar": {
         "id": 399,

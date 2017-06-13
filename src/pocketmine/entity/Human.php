@@ -105,6 +105,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return $this->rawUUID;
 	}
 
+	public function canBeNamed() : bool{
+		return false;
+	}
+
 	/**
 	 * @param string $str
 	 * @param string $skinId

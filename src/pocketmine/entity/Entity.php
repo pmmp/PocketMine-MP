@@ -448,6 +448,14 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	/**
+	 * Returns whether this entity can be named using a nametag.
+	 * @return bool
+	 */
+	public function canBeNamed() : bool{
+		return false;
+	}
+
+	/**
 	 * @return float
 	 */
 	public function getScale() : float{

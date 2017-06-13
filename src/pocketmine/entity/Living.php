@@ -113,6 +113,10 @@ abstract class Living extends Entity implements Damageable{
 
 	abstract public function getName();
 
+	public function canBeNamed() : bool{
+		return true;
+	}
+
 	public function hasLineOfSight(Entity $entity){
 		//TODO: head height
 		return true;

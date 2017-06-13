@@ -2348,10 +2348,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$target = $this->level->getEntity($packet->target);
 
+		if(!($target instanceof Entity)){
+			return false;
+		}
+
 		$cancelled = false;
 		switch($packet->action){
 			case InteractPacket::ACTION_LEFT_CLICK: //Attack
-				if($target instanceof Entity and $this->getGamemode() !== Player::VIEW and $this->isAlive() and $target->isAlive()){
+				if($this->getGamemode() !== Player::VIEW and $this->isAlive() and $target->isAlive()){
 					if($target instanceof DroppedItem or $target instanceof Arrow){
 						$this->kick("Attempting to attack an invalid entity");
 						$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidEntity", [$this->getName()]));
@@ -2392,6 +2396,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 				break;
 			case InteractPacket::ACTION_RIGHT_CLICK:
+				$item = $this->inventory->getItemInHand();
+				if($item->onInteractWithEntity($target)){
+					if($this->isSurvival()){
+						$this->inventory->setItemInHand($item);
+					}
+				}
+				break;
 			case InteractPacket::ACTION_LEAVE_VEHICLE:
 			case InteractPacket::ACTION_MOUSEOVER:
 				break; //TODO: handle these
