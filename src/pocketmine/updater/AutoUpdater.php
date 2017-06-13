@@ -59,7 +59,12 @@ class AutoUpdater{
 	 */
 	public function checkUpdateCallback(array $updateInfo){
 		$this->updateInfo = $updateInfo;
-		$this->checkUpdate();
+		if(!$this->checkUpdate()){
+			if($this->server->getProperty("auto-updater.on-update.warn-console", true)){
+				$this->server->getLogger("[AutoUpdater] Receivied invalid response, failed to check for update.");
+			}
+			return;
+		}
 		if($this->hasUpdate()){
 			if($this->server->getProperty("auto-updater.on-update.warn-console", true)){
 				$this->showConsoleUpdate();
@@ -143,8 +148,8 @@ class AutoUpdater{
 	 * Checks the update information against the current server version to decide if there's an update
 	 */
 	protected function checkUpdate(){
-		if($this->updateInfo === null){
-			return;
+		if(!is_array($this->updateInfo) or !$this->isValidResponse($this->updateInfo)){
+			return false;
 		}
 		$currentVersion = new VersionString($this->server->getPocketMineVersion());
 		$newVersion = new VersionString($this->updateInfo["version"]);
@@ -154,7 +159,19 @@ class AutoUpdater{
 		}else{
 			$this->hasUpdate = false;
 		}
+		return true;
+	}
 
+	/**
+	 * Checks the given response is valid.
+	 */
+	protected function isValidResponse(Array $updateInfo){
+		foreach($updateInfo as $key => $response){
+			if($response === null && $key !== "details_url"){
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
