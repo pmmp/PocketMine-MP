@@ -248,11 +248,12 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock((new FenceGate(Block::DARK_OAK_FENCE_GATE))->setName("Dark Oak Fence Gate"));
 			self::registerBlock((new FenceGate(Block::ACACIA_FENCE_GATE))->setName("Acacia Fence Gate"));
 
+
+			self::registerBlock(new GrassPath());
 			self::registerBlock(new ItemFrame());
 
 			self::registerBlock((new Stair(Block::PURPUR_STAIRS))->setName("Purpur Stairs")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(1.5)->setBlastResistance(30));
-
-			self::registerBlock(new GrassPath());
+			self::registerBlock((new Block(Block::END_BRICKS))->setName("End Stone Bricks")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(0.8));
 
 			self::registerBlock((new EndRod(Block::END_ROD))->setName("End Rod"));
 
