@@ -2864,6 +2864,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			// Windows 10 Edition drops the contents of the crafting grid on container close - including air.
 			return true;
 		}
+		
+		if($this->gamemode === self::SPECTATOR) {
+			return false;
+		}
 
 		$item = $this->inventory->getItemInHand();
 		$ev = new PlayerDropItemEvent($this, $item);
