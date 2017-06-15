@@ -235,7 +235,7 @@ abstract class Living extends Entity implements Damageable{
 				if($this instanceof WaterAnimal){
 					$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 400);
 				}else{
-					if($this instanceof Player && $this->getGamemode() === Player::SPECTATOR){
+					if($this instanceof Player && $this->isSpectator()){
 						return $hasUpdate;
 					}
 					$hasUpdate = true;

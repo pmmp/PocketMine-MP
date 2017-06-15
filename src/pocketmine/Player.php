@@ -2865,7 +2865,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return true;
 		}
 		
-		if($this->gamemode === self::SPECTATOR) {
+		if($this->isSpectator()) {
 			return false;
 		}
 
