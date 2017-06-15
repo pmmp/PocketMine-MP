@@ -236,6 +236,7 @@ abstract class Living extends Entity implements Damageable{
 					$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 400);
 				}else{
 					if($this instanceof Player && $this->isSpectator()){
+						Timings::$timerLivingEntityBaseTick->stopTiming();
 						return $hasUpdate;
 					}
 					$hasUpdate = true;
