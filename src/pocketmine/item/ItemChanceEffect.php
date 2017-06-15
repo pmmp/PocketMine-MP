@@ -42,7 +42,7 @@ class ItemChanceEffect{
 	 * @return Effect
 	 */
 	public function getEffect() : Effect{
-		return $this->effect;
+		return clone $this->effect;
 	}
 
 	/**
@@ -59,5 +59,9 @@ class ItemChanceEffect{
 	 */
 	public function shouldApply() : bool{
 		return lcg_value() <= $this->chance;
+	}
+
+	public function __clone(){
+		$this->effect = clone $this->effect;
 	}
 }

@@ -149,7 +149,7 @@ class Food extends Item implements FoodSource{
 
 	public function __clone(){
 		foreach($this->effects as $i => $effect){
-			/** @var Effect $effect */
+			/** @var ItemChanceEffect $effect */
 			$this->effects[$i] = clone $effect;
 		}
 	}
