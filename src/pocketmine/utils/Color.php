@@ -138,7 +138,7 @@ class Color{
 		$green /= $count;
 		$blue /= $count;
 
-		return new Color($red, $green, $blue, $alpha);
+		return new Color((int) $red, (int) $green, (int) $blue, (int) $alpha);
 	}
 
 	/**
