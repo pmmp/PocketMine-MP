@@ -2271,11 +2271,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						$this->inventory->sendContents($this);
 					}
 
+					$this->level->broadcastLevelSoundEvent($this->add(0, 2, 0), LevelSoundEventPacket::SOUND_BURP);
 					$this->setUsingItem(false);
 					break;
 
 					//TODO: check item use cooldown
-					//TODO: add eating sounds (burp)
 				}
 
 				return false;
