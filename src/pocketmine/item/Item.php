@@ -1009,7 +1009,7 @@ class Item implements ItemIds, \JsonSerializable{
 	public function nbtSerialize(int $slot = -1, string $tagName = "") : CompoundTag{
 		$tag = new CompoundTag($tagName, [
 			"id" => new ShortTag("id", $this->id),
-			"Count" => new ByteTag("Count", $this->count ?? -1),
+			"Count" => new ByteTag("Count", $this->count),
 			"Damage" => new ShortTag("Damage", $this->meta),
 		]);
 
