@@ -915,7 +915,7 @@ abstract class Entity extends Location implements Metadatable{
 		if($absorption > 0){
 			if($absorption > $damage){
 				//Use absorption health before normal health.
-				$this->setAbsorption($absorption - $damage);
+				$this->setAbsorption(round($absorption - $damage));
 				$damage = 0;
 			}else{
 				$this->setAbsorption(0);
