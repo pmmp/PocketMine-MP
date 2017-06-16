@@ -21,32 +21,25 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event\inventory;
+namespace pocketmine\event\server;
 
-use pocketmine\event\Cancellable;
-use pocketmine\inventory\Inventory;
-use pocketmine\Player;
+use pocketmine\updater\AutoUpdater;
 
-class InventoryOpenEvent extends InventoryEvent implements Cancellable{
+/**
+ * Called when the AutoUpdater receives notification of an available PocketMine-MP update.
+ * Plugins may use this event to perform actions when an update notification is received.
+ */
+class UpdateNotifyEvent extends ServerEvent{
 	public static $handlerList = null;
 
-	/** @var Player */
-	private $who;
+	/** @var AutoUpdater */
+	private $updater;
 
-	/**
-	 * @param Inventory $inventory
-	 * @param Player    $who
-	 */
-	public function __construct(Inventory $inventory, Player $who){
-		$this->who = $who;
-		parent::__construct($inventory);
+	public function __construct(AutoUpdater $updater){
+		$this->updater = $updater;
 	}
 
-	/**
-	 * @return Player
-	 */
-	public function getPlayer(){
-		return $this->who;
+	public function getUpdater() : AutoUpdater{
+		return $this->updater;
 	}
-
 }
