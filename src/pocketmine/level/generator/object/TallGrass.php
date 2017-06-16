@@ -25,7 +25,7 @@ namespace pocketmine\level\generator\object;
 
 use pocketmine\block\Block;
 use pocketmine\level\ChunkManager;
-use pocketmine\math\Vector3 as Vector3;
+use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
 
 class TallGrass{

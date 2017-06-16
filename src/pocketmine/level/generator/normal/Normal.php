@@ -42,7 +42,7 @@ use pocketmine\level\generator\populator\GroundCover;
 use pocketmine\level\generator\populator\Ore;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\level\Level;
-use pocketmine\math\Vector3 as Vector3;
+use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
 
 class Normal extends Generator{
