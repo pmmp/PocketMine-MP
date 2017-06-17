@@ -2157,7 +2157,7 @@ class Server{
 						"reportPaste" => base64_encode($dump->getEncodedData())
 					]);
 
-					if(($data = json_decode($reply)) !== false and isset($data->crashId)){
+					if($reply !== false and ($data = json_decode($reply)) !== null and isset($data->crashId) and isset($data->crashUrl)){
 						$reportId = $data->crashId;
 						$reportUrl = $data->crashUrl;
 						$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.archive", [$reportUrl, $reportId]));
