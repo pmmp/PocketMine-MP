@@ -290,6 +290,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	protected $stepHeight = 0.6;
 
+	protected $baseOffset = 1.62;
+
 	public $usedChunks = [];
 	protected $chunkLoadCount = 0;
 	protected $loadQueue = [];
@@ -1580,7 +1582,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					if($to->distanceSquared($ev->getTo()) > 0.01){ //If plugins modify the destination
 						$this->teleport($ev->getTo());
 					}else{
-						$this->level->addEntityMovement($this->x >> 4, $this->z >> 4, $this->getId(), $this->x, $this->y + $this->getEyeHeight(), $this->z, $this->yaw, $this->pitch, $this->yaw);
+						$this->level->addEntityMovement($this->x >> 4, $this->z >> 4, $this->getId(), $this->x, $this->y + $this->baseOffset, $this->z, $this->yaw, $this->pitch, $this->yaw);
 
 						$distance = $from->distance($to);
 						//TODO: check swimming (adds 0.015 exhaustion in MCPE)
@@ -2135,7 +2137,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function handleMovePlayer(MovePlayerPacket $packet) : bool{
-		$newPos = new Vector3($packet->x, $packet->y - $this->getEyeHeight(), $packet->z);
+		$newPos = new Vector3($packet->x, $packet->y - $this->baseOffset, $packet->z);
 
 		$revert = false;
 		if(!$this->isAlive() or $this->spawned !== true){
@@ -3962,7 +3964,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk = new MovePlayerPacket();
 		$pk->entityRuntimeId = $this->getId();
 		$pk->x = $pos->x;
-		$pk->y = $pos->y + $this->getEyeHeight();
+		$pk->y = $pos->y + $this->baseOffset;
 		$pk->z = $pos->z;
 		$pk->bodyYaw = $yaw;
 		$pk->pitch = $pitch;
