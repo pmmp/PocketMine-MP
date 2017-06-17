@@ -60,6 +60,7 @@ use pocketmine\network\mcpe\protocol\SetEntityDataPacket;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
+use pocketmine\utils\Binary;
 
 abstract class Entity extends Location implements Metadatable{
 
@@ -773,7 +774,7 @@ abstract class Entity extends Location implements Metadatable{
 			foreach($this->effects as $effect){
 				$effects[] = new CompoundTag("", [
 					"Id" => new ByteTag("Id", $effect->getId()),
-					"Amplifier" => new ByteTag("Amplifier", $effect->getAmplifier()),
+					"Amplifier" => new ByteTag("Amplifier", Binary::signByte($effect->getAmplifier())),
 					"Duration" => new IntTag("Duration", $effect->getDuration()),
 					"Ambient" => new ByteTag("Ambient", 0),
 					"ShowParticles" => new ByteTag("ShowParticles", $effect->isVisible() ? 1 : 0)
@@ -800,7 +801,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		if(isset($this->namedtag->ActiveEffects)){
 			foreach($this->namedtag->ActiveEffects->getValue() as $e){
-				$amplifier = $e["Amplifier"] & 0xff; //0-255 only
+				$amplifier = Binary::unsignByte($e->Amplifier->getValue()); //0-255 only
 
 				$effect = Effect::getEffect($e["Id"]);
 				if($effect === null){

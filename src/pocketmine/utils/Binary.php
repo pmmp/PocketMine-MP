@@ -31,6 +31,30 @@ class Binary{
 	const BIG_ENDIAN = 0x00;
 	const LITTLE_ENDIAN = 0x01;
 
+	public static function signByte(int $value) : int{
+		return $value << 56 >> 56;
+	}
+
+	public static function unsignByte(int $value) : int{
+		return $value & 0xff;
+	}
+
+	public static function signShort(int $value) : int{
+		return $value << 48 >> 48;
+	}
+
+	public function unsignShort(int $value) : int{
+		return $value & 0xffff;
+	}
+
+	public static function signInt(int $value) : int{
+		return $value << 32 >> 32;
+	}
+
+	public static function unsignInt(int $value) : int{
+		return $value & 0xffffffff;
+	}
+
 	private static function checkLength($str, $expect){
 		assert(($len = strlen($str)) === $expect, "Expected $expect bytes, got $len");
 	}
@@ -73,7 +97,7 @@ class Binary{
 	 * @return int
 	 */
 	public static function readSignedByte(string $c) : int{
-		return ord($c{0}) << 56 >> 56;
+		return self::signByte(ord($c{0}));
 	}
 
 	/**
@@ -106,7 +130,7 @@ class Binary{
 	 */
 	public static function readSignedShort(string $str) : int{
 		self::checkLength($str, 2);
-		return unpack("n", $str)[1] << 48 >> 48;
+		return self::signShort(unpack("n", $str)[1]);
 	}
 
 	/**
@@ -141,7 +165,7 @@ class Binary{
 	 */
 	public static function readSignedLShort(string $str) : int{
 		self::checkLength($str, 2);
-		return unpack("v", $str)[1] << 48 >> 48;
+		return self::signShort(unpack("v", $str)[1]);
 	}
 
 	/**
@@ -205,7 +229,7 @@ class Binary{
 	 */
 	public static function readInt(string $str) : int{
 		self::checkLength($str, 4);
-		return unpack("N", $str)[1] << 32 >> 32;
+		return self::signInt(unpack("N", $str)[1]);
 	}
 
 	/**
@@ -226,7 +250,7 @@ class Binary{
 	 */
 	public static function readLInt(string $str) : int{
 		self::checkLength($str, 4);
-		return unpack("V", $str)[1] << 32 >> 32;
+		return self::signInt(unpack("V", $str)[1]);
 	}
 
 	/**
