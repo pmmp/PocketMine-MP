@@ -34,10 +34,6 @@ class Sword extends TieredTool{
 		return Tool::TYPE_SWORD;
 	}
 
-	public function isSword(){
-		return $this->tier;
-	}
-
 	public function onDestroyBlock(Block $block, Player $player = null) : bool{
 		if($block->getHardness() > 0){
 			return $this->applyDamage(2);

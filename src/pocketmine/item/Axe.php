@@ -34,10 +34,6 @@ class Axe extends TieredTool{
 		return TieredTool::TYPE_AXE;
 	}
 
-	public function isAxe(){
-		return $this->tier;
-	}
-
 	public function onDestroyBlock(Block $block, Player $player = null) : bool{
 		if($block->getHardness() > 0){
 			return $this->applyDamage(1);

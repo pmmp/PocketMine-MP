@@ -34,10 +34,6 @@ class Shovel extends TieredTool{
 		return Tool::TYPE_SHOVEL;
 	}
 
-	public function isShovel(){
-		return $this->tier;
-	}
-
 	public function onDestroyBlock(Block $block, Player $player = null) : bool{
 		if($block->getHardness() > 0){
 			return $this->applyDamage(1);

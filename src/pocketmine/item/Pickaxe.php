@@ -34,10 +34,6 @@ class Pickaxe extends TieredTool{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function isPickaxe(){
-		return $this->tier;
-	}
-
 	public function onDestroyBlock(Block $block, Player $player = null) : bool{
 		if($block->getHardness() > 0){
 			return $this->applyDamage(1);
