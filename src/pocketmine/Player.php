@@ -3341,11 +3341,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$overload["key"] = $key;
 				$optionalParameters[$key] = $overload;
 			} elseif($overload["optional"] === false){
-				$overload["key"] = $key + count($optionalParameters);
+				$overload["key"] = $key;
 				$nonOptionalParameters[$key] = $overload;
 			}
 		}
-		$mergedOrderedParameters = array_merge(arsort($optionalParameters), arsort($nonOptionalParameters));
+		$mergedOrderedParameters = array_merge(sort($optionalParameters), sort($nonOptionalParameters));
 
 		$inputJson = $packet->inputJson;
 		foreach($packet->inputJson as $key => $arg){
