@@ -3331,8 +3331,28 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 		$this->craftingType = 0;
 		$commandText = $packet->command;
-		if($packet->inputJson !== null){
-			foreach($packet->inputJson as $arg){ //command ordering will be an issue
+		$command = $this->getServer()->getCommandMap()->getCommand($packet->command);
+		$overloads = $command->getOverloads()["default"]["input"]["parameters"];
+
+		$optionalParameters = [];
+		$nonOptionalParameters = [];
+		foreach($overloads as $key => $overload){
+			if($overload["optional"] === true){
+				$overload["key"] = $key;
+				$optionalParameters[$key] = $overload;
+			} elseif($overload["optional"] === false){
+				$overload["key"] = $key + count($optionalParameters);
+				$nonOptionalParameters[$key] = $overload;
+			}
+		}
+		$mergedOrderedParameters = array_merge(arsort($optionalParameters), arsort($nonOptionalParameters));
+
+		$inputJson = $packet->inputJson;
+		foreach($packet->inputJson as $key => $arg){
+			$inputJson[$mergedOrderedParameters[$key]["key"]] = $arg;
+		}
+		if($inputJson !== null){
+			foreach($inputJson as $key => $arg){
 				$commandText .= " " . $arg;
 			}
 		}
