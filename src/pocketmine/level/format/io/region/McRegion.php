@@ -72,7 +72,7 @@ class McRegion extends BaseLevelProvider{
 					$subChunk = $subChunks[$y];
 					$ids .= $subChunk->getBlockIdColumn($x, $z);
 					$data .= $subChunk->getBlockDataColumn($x, $z);
-					$skyLight .= $subChunk->getSkyLightColumn($x, $z);
+					$skyLight .= $subChunk->getBlockSkyLightColumn($x, $z);
 					$blockLight .= $subChunk->getBlockLightColumn($x, $z);
 				}
 			}

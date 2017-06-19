@@ -437,7 +437,7 @@ class LevelDB extends BaseLevelProvider{
 						   "\x00" . //Subchunk version byte
 						   $subChunks[$y]->getBlockIdArray() .
 						   $subChunks[$y]->getBlockDataArray() .
-						   $subChunks[$y]->getSkyLightArray() .
+						   $subChunks[$y]->getBlockSkyLightArray() .
 						   $subChunks[$y]->getBlockLightArray()
 			);
 		}

@@ -63,7 +63,7 @@ class PMAnvil extends Anvil{
 				"Y"          => new ByteTag("Y", $y),
 				"Blocks"     => new ByteArrayTag("Blocks",     $subChunk->getBlockIdArray()),
 				"Data"       => new ByteArrayTag("Data",       $subChunk->getBlockDataArray()),
-				"SkyLight"   => new ByteArrayTag("SkyLight",   $subChunk->getSkyLightArray()),
+				"SkyLight"   => new ByteArrayTag("SkyLight",   $subChunk->getBlockSkyLightArray()),
 				"BlockLight" => new ByteArrayTag("BlockLight", $subChunk->getBlockLightArray())
 			]);
 		}
