@@ -41,22 +41,22 @@ abstract class Fallable extends Solid{
 			if($down->getId() === self::AIR or ($down instanceof Liquid)){
 				$this->level->setBlock($this, Block::get(Block::AIR), true, true);
 				$fall = Entity::createEntity("FallingSand", $this->getLevel(), new CompoundTag("", [
-					"Pos" => new ListTag("Pos", [
+					new ListTag("Pos", [
 						new DoubleTag("", $this->x + 0.5),
 						new DoubleTag("", $this->y),
 						new DoubleTag("", $this->z + 0.5)
 					]),
-					"Motion" => new ListTag("Motion", [
+					new ListTag("Motion", [
 						new DoubleTag("", 0),
 						new DoubleTag("", 0),
 						new DoubleTag("", 0)
 					]),
-					"Rotation" => new ListTag("Rotation", [
+					new ListTag("Rotation", [
 						new FloatTag("", 0),
 						new FloatTag("", 0)
 					]),
-					"TileID" => new IntTag("TileID", $this->getId()),
-					"Data" => new ByteTag("Data", $this->getDamage()),
+					new IntTag("TileID", $this->getId()),
+					new ByteTag("Data", $this->getDamage()),
 				]));
 
 				$fall->spawnToAll();

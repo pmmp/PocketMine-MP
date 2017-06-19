@@ -2532,17 +2532,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 			if($item->getId() === Item::SNOWBALL){
 				$nbt = new CompoundTag("", [
-					"Pos" => new ListTag("Pos", [
+					new ListTag("Pos", [
 						new DoubleTag("", $this->x),
 						new DoubleTag("", $this->y + $this->getEyeHeight()),
 						new DoubleTag("", $this->z)
 					]),
-					"Motion" => new ListTag("Motion", [
+					new ListTag("Motion", [
 						new DoubleTag("", $aimPos->x),
 						new DoubleTag("", $aimPos->y),
 						new DoubleTag("", $aimPos->z)
 					]),
-					"Rotation" => new ListTag("Rotation", [
+					new ListTag("Rotation", [
 						new FloatTag("", $this->yaw),
 						new FloatTag("", $this->pitch)
 					]),
@@ -2627,22 +2627,22 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						}
 
 						$nbt = new CompoundTag("", [
-							"Pos" => new ListTag("Pos", [
+							new ListTag("Pos", [
 								new DoubleTag("", $this->x),
 								new DoubleTag("", $this->y + $this->getEyeHeight()),
 								new DoubleTag("", $this->z)
 							]),
-							"Motion" => new ListTag("Motion", [
+							new ListTag("Motion", [
 								new DoubleTag("", -sin($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI)),
 								new DoubleTag("", -sin($this->pitch / 180 * M_PI)),
 								new DoubleTag("", cos($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI))
 							]),
-							"Rotation" => new ListTag("Rotation", [
+							new ListTag("Rotation", [
 								//yaw/pitch for arrows taken crosswise, not along the arrow shaft.
 								new FloatTag("", ($this->yaw > 180 ? 360 : 0) - $this->yaw), //arrow yaw must range from -180 to +180
 								new FloatTag("", -$this->pitch)
 							]),
-							"Fire" => new ShortTag("Fire", $this->isOnFire() ? 45 * 60 : 0)
+							new ShortTag("Fire", $this->isOnFire() ? 45 * 60 : 0)
 						]);
 
 						$diff = ($this->server->getTick() - $this->startAction);
