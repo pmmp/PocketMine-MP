@@ -18,8 +18,10 @@
 
 - Information must be provided in the issue body, not in the title. No tags like `[BUG]` are allowed in the title, including `[SOLVED]` for solved issues.
 
-- Similarly, no generic issue reports. For bugs, it is the issue author's responsibility to provide us an issue that is **trackable, debuggable, reproducible, reported professionally and is an actual bug**. If you do not provide us with a summary or instructions on how to reproduce the issue, it will be treated as spam and will therefore be closed. 
-<br>In simple words, if your issue does not appear to be a bug or a feature request, or if the issue cannot be properly confirmed to be valid, the issue will be closed until further information is provided.
+- Similarly, no generic issue reports. For bugs, it is the issue author's responsibility to provide us an issue that is **trackable, debuggable, reproducible, reported professionally and is an actual bug**.
+<br><br>Valid issue reports must include instructions how to reproduce the issue or a crashdump/backtrace (unless the cause of the issue is obvious).
+<br><br>**If you do not provide us with a summary or instructions on how to reproduce the issue, it will be treated as spam and will therefore be closed.**
+<br><br>In simple words, if the issue cannot be properly confirmed to be valid or lacks required information, the issue will be closed until further information is provided.
 
 - To express appreciation, objection, confusion or other supported reactions on pull requests, issues or comments on them, use GitHub [reactions](https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments) rather than posting an individual comment with an emoji only. This helps keeping the issue/pull request conversation clean and readable.
 
