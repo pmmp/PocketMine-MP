@@ -3345,7 +3345,18 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$nonOptionalParameters[$key] = $overload;
 			}
 		}
-		$mergedOrderedParameters = array_merge(sort($optionalParameters), sort($nonOptionalParameters));
+		$optionalSortingArray = [];
+		foreach($optionalParameters as $key => $parameter){
+			$optionalSortingArray[$key] = $parameter["name"];
+		}
+		$nonOptionalSortingArray = [];
+		foreach($nonOptionalParameters as $key => $parameter){
+			$nonOptionalSortingArray[$key] = $parameter["name"];
+		}
+		array_multisort($optionalSortingArray, $optionalParameters);
+		array_multisort($nonOptionalSortingArray, $nonOptionalParameters);
+
+		$mergedOrderedParameters = array_merge($optionalParameters, $nonOptionalParameters);
 
 		$inputJson = $packet->inputJson;
 		foreach($packet->inputJson as $key => $arg){
