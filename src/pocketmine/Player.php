@@ -3645,83 +3645,91 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 */
 	final public function close($message = "", $reason = "generic reason", $notify = true){
 		if($this->connected and !$this->closed){
-			if($notify and strlen((string) $reason) > 0){
-				$pk = new DisconnectPacket();
-				$pk->message = $reason;
-				$this->directDataPacket($pk);
-			}
-
-			$this->connected = false;
-
-			$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
-			$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
-
-			if($this->joined){
-				$this->save();
-
-				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message));
-				if($ev->getQuitMessage() != ""){
-					$this->server->broadcastMessage($ev->getQuitMessage());
+			try{
+				if($notify and strlen((string) $reason) > 0){
+					$pk = new DisconnectPacket();
+					$pk->message = $reason;
+					$this->directDataPacket($pk);
 				}
-			}
-			$this->joined = false;
 
-			if($this->isValid()){
-				foreach($this->usedChunks as $index => $d){
-					Level::getXZ($index, $chunkX, $chunkZ);
-					$this->level->unregisterChunkLoader($this, $chunkX, $chunkZ);
-					foreach($this->level->getChunkEntities($chunkX, $chunkZ) as $entity){
-						$entity->despawnFrom($this);
+				$this->connected = false;
+
+				$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
+				$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
+
+				if($this->joined){
+					try{
+						$this->save();
+					}catch(\Throwable $e){
+						$this->server->getLogger()->critical("Failed to save player data for " . $this->getName());
+						$this->server->getLogger()->logException($e);
 					}
-					unset($this->usedChunks[$index]);
+
+					$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message));
+					if($ev->getQuitMessage() != ""){
+						$this->server->broadcastMessage($ev->getQuitMessage());
+					}
 				}
-			}
-			$this->usedChunks = [];
-			$this->loadQueue = [];
+				$this->joined = false;
 
-			foreach($this->server->getOnlinePlayers() as $player){
-				if(!$player->canSee($this)){
-					$player->showPlayer($this);
+				if($this->isValid()){
+					foreach($this->usedChunks as $index => $d){
+						Level::getXZ($index, $chunkX, $chunkZ);
+						$this->level->unregisterChunkLoader($this, $chunkX, $chunkZ);
+						foreach($this->level->getChunkEntities($chunkX, $chunkZ) as $entity){
+							$entity->despawnFrom($this);
+						}
+						unset($this->usedChunks[$index]);
+					}
 				}
-			}
-			$this->hiddenPlayers = [];
+				$this->usedChunks = [];
+				$this->loadQueue = [];
 
-			foreach($this->windowIndex as $window){
-				$this->removeWindow($window);
-			}
-			$this->windows = null;
-			$this->windowIndex = [];
+				foreach($this->server->getOnlinePlayers() as $player){
+					if(!$player->canSee($this)){
+						$player->showPlayer($this);
+					}
+				}
+				$this->hiddenPlayers = [];
 
-			parent::close();
-			$this->spawned = false;
+				foreach($this->windowIndex as $window){
+					$this->removeWindow($window);
+				}
+				$this->windows = null;
+				$this->windowIndex = [];
 
-			$this->interface->close($this, $notify ? $reason : "");
+				parent::close();
+				$this->spawned = false;
 
-			if($this->loggedIn){
+				$this->interface->close($this, $notify ? $reason : "");
+
+				$this->loggedIn = false;
+
+				$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logOut", [
+					TextFormat::AQUA . $this->getName() . TextFormat::WHITE,
+					$this->ip,
+					$this->port,
+					$this->getServer()->getLanguage()->translateString($reason)
+				]));
+
+				$this->spawnPosition = null;
+
+				if($this->perm !== null){
+					$this->perm->clearPermissions();
+					$this->perm = null;
+				}
+
+				if($this->inventory !== null){
+					$this->inventory = null;
+					$this->currentTransaction = null;
+				}
+
+			}catch(\Throwable $e){
+				$this->server->getLogger()->logException($e);
+			}finally{
 				$this->server->removeOnlinePlayer($this);
+				$this->server->removePlayer($this);
 			}
-			$this->loggedIn = false;
-
-			$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logOut", [
-				TextFormat::AQUA . $this->getName() . TextFormat::WHITE,
-				$this->ip,
-				$this->port,
-				$this->getServer()->getLanguage()->translateString($reason)
-			]));
-
-			$this->spawnPosition = null;
-
-			if($this->perm !== null){
-				$this->perm->clearPermissions();
-				$this->perm = null;
-			}
-
-			if($this->inventory !== null){
-				$this->inventory = null;
-				$this->currentTransaction = null;
-			}
-
-			$this->server->removePlayer($this);
 		}
 	}
 
