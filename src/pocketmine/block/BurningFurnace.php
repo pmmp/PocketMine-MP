@@ -72,16 +72,15 @@ class BurningFurnace extends Solid{
 		$this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0];
 		$this->getLevel()->setBlock($block, $this, true, true);
 		$nbt = new CompoundTag("", [
-			new ListTag("Items", []),
+			new ListTag("Items", [], NBT::TAG_Compound),
 			new StringTag("id", Tile::FURNACE),
 			new IntTag("x", $this->x),
 			new IntTag("y", $this->y),
 			new IntTag("z", $this->z)
 		]);
-		$nbt->Items->setTagType(NBT::TAG_Compound);
 
 		if($item->hasCustomName()){
-			$nbt->CustomName = new StringTag("CustomName", $item->getCustomName());
+			$nbt->setTag(new StringTag("CustomName", $item->getCustomName()));
 		}
 
 		if($item->hasCustomBlockData()){
@@ -106,18 +105,17 @@ class BurningFurnace extends Solid{
 			$furnace = $this->getLevel()->getTile($this);
 			if(!($furnace instanceof TileFurnace)){
 				$nbt = new CompoundTag("", [
-					new ListTag("Items", []),
+					new ListTag("Items", [], NBT::TAG_Compound),
 					new StringTag("id", Tile::FURNACE),
 					new IntTag("x", $this->x),
 					new IntTag("y", $this->y),
 					new IntTag("z", $this->z)
 				]);
-				$nbt->Items->setTagType(NBT::TAG_Compound);
 				$furnace = Tile::createTile("Furnace", $this->getLevel(), $nbt);
 			}
 
-			if(isset($furnace->namedtag->Lock) and $furnace->namedtag->Lock instanceof StringTag){
-				if($furnace->namedtag->Lock->getValue() !== $item->getCustomName()){
+			if(($lockTag = $furnace->namedtag->getTag("Lock")) instanceof StringTag){
+				if($lockTag->getValue() !== $item->getCustomName()){
 					return true;
 				}
 			}

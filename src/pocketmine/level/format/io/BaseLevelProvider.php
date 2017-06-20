@@ -52,18 +52,18 @@ abstract class BaseLevelProvider implements LevelProvider{
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->readCompressed(file_get_contents($this->getPath() . "level.dat"));
 		$levelData = $nbt->getData();
-		if($levelData->Data instanceof CompoundTag){
-			$this->levelData = $levelData->Data;
+		if(($data = $levelData->getTag("Data")) instanceof CompoundTag){
+			$this->levelData = $data;
 		}else{
 			throw new LevelException("Invalid level.dat");
 		}
 
-		if(!isset($this->levelData->generatorName)){
-			$this->levelData->generatorName = new StringTag("generatorName", (string) Generator::getGenerator("DEFAULT"));
+		if(!$this->levelData->exists("generatorName")){
+			$this->levelData->setTag(new StringTag("generatorName", (string) Generator::getGenerator("DEFAULT")));
 		}
 
-		if(!isset($this->levelData->generatorOptions)){
-			$this->levelData->generatorOptions = new StringTag("generatorOptions", "");
+		if(!$this->levelData->exists("generatorOptions")){
+			$this->levelData->setTag(new StringTag("generatorOptions", ""));
 		}
 	}
 
@@ -88,7 +88,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 	}
 
 	public function setTime($value){
-		$this->levelData->Time = new LongTag("Time", $value);
+		$this->levelData->setTag(new LongTag("Time", $value));
 	}
 
 	public function getSeed(){
@@ -96,7 +96,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 	}
 
 	public function setSeed($value){
-		$this->levelData->RandomSeed = new LongTag("RandomSeed", $value);
+		$this->levelData->setTag(new LongTag("RandomSeed", $value));
 	}
 
 	public function getSpawn() : Vector3{
@@ -104,9 +104,9 @@ abstract class BaseLevelProvider implements LevelProvider{
 	}
 
 	public function setSpawn(Vector3 $pos){
-		$this->levelData->SpawnX = new IntTag("SpawnX", (int) $pos->x);
-		$this->levelData->SpawnY = new IntTag("SpawnY", (int) $pos->y);
-		$this->levelData->SpawnZ = new IntTag("SpawnZ", (int) $pos->z);
+		$this->levelData->setTag(new IntTag("SpawnX", (int) $pos->x));
+		$this->levelData->setTag(new IntTag("SpawnY", (int) $pos->y));
+		$this->levelData->setTag(new IntTag("SpawnZ", (int) $pos->z));
 	}
 
 	public function doGarbageCollection(){

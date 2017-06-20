@@ -52,15 +52,15 @@ class FallingSand extends Entity{
 
 	protected function initEntity(){
 		parent::initEntity();
-		if(isset($this->namedtag->TileID)){
-			$this->blockId = $this->namedtag["TileID"];
-		}elseif(isset($this->namedtag->Tile)){
-			$this->blockId = $this->namedtag["Tile"];
-			$this->namedtag["TileID"] = new IntTag("TileID", $this->blockId);
+		if(($tileId = $this->namedtag->getTag("TileID")) instanceof IntTag){
+			$this->blockId = $tileId->getValue();
+		}elseif(($tile = $this->namedtag->getTag("Tile")) instanceof IntTag){
+			$this->blockId = $tile->getValue();
+			$this->namedtag->setTag(new IntTag("TileID", $this->blockId));
 		}
 
-		if(isset($this->namedtag->Data)){
-			$this->damage = $this->namedtag["Data"];
+		if(($data = $this->namedtag->getTag("Data")) instanceof ByteTag){
+			$this->damage = $data->getValue();
 		}
 
 		if($this->blockId === 0){
@@ -141,8 +141,8 @@ class FallingSand extends Entity{
 	}
 
 	public function saveNBT(){
-		$this->namedtag->TileID = new IntTag("TileID", $this->blockId);
-		$this->namedtag->Data = new ByteTag("Data", $this->damage);
+		$this->namedtag->setTag(new IntTag("TileID", $this->blockId));
+		$this->namedtag->setTag(new ByteTag("Data", $this->damage));
 	}
 
 	public function spawnTo(Player $player){

@@ -34,17 +34,10 @@ use pocketmine\utils\TextFormat;
 class Sign extends Spawnable{
 
 	public function __construct(Level $level, CompoundTag $nbt){
-		if(!isset($nbt->Text1)){
-			$nbt->Text1 = new StringTag("Text1", "");
-		}
-		if(!isset($nbt->Text2)){
-			$nbt->Text2 = new StringTag("Text2", "");
-		}
-		if(!isset($nbt->Text3)){
-			$nbt->Text3 = new StringTag("Text3", "");
-		}
-		if(!isset($nbt->Text4)){
-			$nbt->Text4 = new StringTag("Text4", "");
+		for($i = 1; $i <= 4; ++$i){
+			if(!$nbt->exists("Text$i")){
+				$nbt->setTag(new StringTag("Text$i", ""));
+			}
 		}
 
 		parent::__construct($level, $nbt);
@@ -52,14 +45,14 @@ class Sign extends Spawnable{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		unset($this->namedtag->Creator);
+		$this->namedtag->remove("Creator");
 	}
 
 	public function setText($line1 = "", $line2 = "", $line3 = "", $line4 = ""){
-		$this->namedtag->Text1 = new StringTag("Text1", $line1);
-		$this->namedtag->Text2 = new StringTag("Text2", $line2);
-		$this->namedtag->Text3 = new StringTag("Text3", $line3);
-		$this->namedtag->Text4 = new StringTag("Text4", $line4);
+		$this->namedtag->setTag(new StringTag("Text1", $line1));
+		$this->namedtag->setTag(new StringTag("Text2", $line2));
+		$this->namedtag->setTag(new StringTag("Text3", $line3));
+		$this->namedtag->setTag(new StringTag("Text4", $line4));
 		$this->onChanged();
 
 		return true;
@@ -67,20 +60,20 @@ class Sign extends Spawnable{
 
 	public function getText(){
 		return [
-			$this->namedtag["Text1"],
-			$this->namedtag["Text2"],
-			$this->namedtag["Text3"],
-			$this->namedtag["Text4"]
+			$this->namedtag->getTag("Text1")->getValue(),
+			$this->namedtag->getTag("Text2")->getValue(),
+			$this->namedtag->getTag("Text3")->getValue(),
+			$this->namedtag->getTag("Text4")->getValue()
 		];
 	}
 
 	public function getSpawnCompound(){
 		return new CompoundTag("", [
 			new StringTag("id", Tile::SIGN),
-			$this->namedtag->Text1,
-			$this->namedtag->Text2,
-			$this->namedtag->Text3,
-			$this->namedtag->Text4,
+			$this->namedtag->getTag("Text1"),
+			$this->namedtag->getTag("Text2"),
+			$this->namedtag->getTag("Text3"),
+			$this->namedtag->getTag("Text4"),
 			new IntTag("x", (int) $this->x),
 			new IntTag("y", (int) $this->y),
 			new IntTag("z", (int) $this->z)
@@ -88,18 +81,19 @@ class Sign extends Spawnable{
 	}
 
 	public function updateCompoundTag(CompoundTag $nbt, Player $player) : bool{
-		if($nbt["id"] !== Tile::SIGN){
+		if(!$nbt->exists("id") or $nbt->getTag("id")->getValue() !== Tile::SIGN){
 			return false;
 		}
 
-		$ev = new SignChangeEvent($this->getBlock(), $player, [
-			TextFormat::clean($nbt["Text1"], ($removeFormat = $player->getRemoveFormat())),
-			TextFormat::clean($nbt["Text2"], $removeFormat),
-			TextFormat::clean($nbt["Text3"], $removeFormat),
-			TextFormat::clean($nbt["Text4"], $removeFormat)
-		]);
+		$text = [];
+		$removeFormat = $player->getRemoveFormat();
+		for($i = 1; $i <= 4; ++$i){
+			$text[] = $nbt->exists("Text$i") ? TextFormat::clean($nbt->getTag("Text$i")->getValue(), $removeFormat) : "";
+		}
+		$ev = new SignChangeEvent($this->getBlock(), $player, $text);
 
-		if(!isset($this->namedtag->Creator) or $this->namedtag["Creator"] !== $player->getRawUniqueId()){
+		if(!$this->namedtag->exists("Creator") or $this->namedtag->getTag("Creator")->getValue() !== $player->getRawUniqueId()){
+			$this->server->getLogger()->debug("Sign changed but creator id not set or mismatch");
 			$ev->setCancelled();
 		}
 

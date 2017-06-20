@@ -348,43 +348,45 @@ abstract class Entity extends Location implements Metadatable{
 		$this->server = $level->getServer();
 
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
+
+		/** @var ListTag $pos */
+		$pos = $this->namedtag->getTag("Pos");
+		/** @var ListTag $rotation */
+		$rotation = $this->namedtag->getTag("Rotation");
 		$this->setPositionAndRotation(
-			$this->temporalVector->setComponents(
-				$this->namedtag["Pos"][0],
-				$this->namedtag["Pos"][1],
-				$this->namedtag["Pos"][2]
-			),
-			$this->namedtag->Rotation[0],
-			$this->namedtag->Rotation[1]
+			$this->temporalVector->setComponents($pos[0], $pos[1], $pos[2]),
+			$rotation[0],
+			$rotation[1]
 		);
 
-
-		$this->setMotion($this->temporalVector->setComponents($this->namedtag["Motion"][0], $this->namedtag["Motion"][1], $this->namedtag["Motion"][2]));
+		/** @var ListTag $motion */
+		$motion = $this->namedtag->getTag("Motion");
+		$this->setMotion($this->temporalVector->setComponents($motion[0], $motion[1], $motion[2]));
 
 		assert(!is_nan($this->x) and !is_infinite($this->x) and !is_nan($this->y) and !is_infinite($this->y) and !is_nan($this->z) and !is_infinite($this->z));
 
-		if(!isset($this->namedtag->FallDistance)){
-			$this->namedtag->FallDistance = new FloatTag("FallDistance", 0);
+		if(!$this->namedtag->exists("FallDistance")){
+			$this->namedtag->setTag(new FloatTag("FallDistance", 0.0));
 		}
 		$this->fallDistance = $this->namedtag["FallDistance"];
 
-		if(!isset($this->namedtag->Fire)){
-			$this->namedtag->Fire = new ShortTag("Fire", 0);
+		if(!$this->namedtag->exists("Fire")){
+			$this->namedtag->setTag(new ShortTag("Fire", 0));
 		}
 		$this->fireTicks = $this->namedtag["Fire"];
 
-		if(!isset($this->namedtag->Air)){
-			$this->namedtag->Air = new ShortTag("Air", 300);
+		if(!$this->namedtag->exists("Air")){
+			$this->namedtag->setTag(new ShortTag("Air", 300));
 		}
 		$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $this->namedtag["Air"], false);
 
-		if(!isset($this->namedtag->OnGround)){
-			$this->namedtag->OnGround = new ByteTag("OnGround", 0);
+		if(!$this->namedtag->exists("OnGround")){
+			$this->namedtag->setTag(new ByteTag("OnGround", 0));
 		}
 		$this->onGround = $this->namedtag["OnGround"] > 0 ? true : false;
 
-		if(!isset($this->namedtag->Invulnerable)){
-			$this->namedtag->Invulnerable = new ByteTag("Invulnerable", 0);
+		if(!$this->namedtag->exists("Invulnerable")){
+			$this->namedtag->setTag(new ByteTag("Invulnerable", 0));
 		}
 		$this->invulnerable = $this->namedtag["Invulnerable"] > 0 ? true : false;
 
@@ -737,38 +739,37 @@ abstract class Entity extends Location implements Metadatable{
 
 	public function saveNBT(){
 		if(!($this instanceof Player)){
-			$this->namedtag->id = new StringTag("id", $this->getSaveId());
+			$this->namedtag->setTag(new StringTag("id", $this->getSaveId()));
 			if($this->getNameTag() !== ""){
-				$this->namedtag->CustomName = new StringTag("CustomName", $this->getNameTag());
-				$this->namedtag->CustomNameVisible = new ByteTag("CustomNameVisible", $this->isNameTagVisible() ? 1 : 0);
+				$this->namedtag->setTag(new StringTag("CustomName", $this->getNameTag()));
+				$this->namedtag->setTag(new ByteTag("CustomNameVisible", $this->isNameTagVisible() ? 1 : 0));
 			}else{
-				unset($this->namedtag->CustomName);
-				unset($this->namedtag->CustomNameVisible);
+				$this->namedtag->remove("CustomName", "CustomNameVisible");
 			}
 		}
 
-		$this->namedtag->Pos = new ListTag("Pos", [
+		$this->namedtag->setTag(new ListTag("Pos", [
 			new DoubleTag("", $this->x),
 			new DoubleTag("", $this->y),
 			new DoubleTag("", $this->z)
-		]);
+		]));
 
-		$this->namedtag->Motion = new ListTag("Motion", [
+		$this->namedtag->setTag(new ListTag("Motion", [
 			new DoubleTag("", $this->motionX),
 			new DoubleTag("", $this->motionY),
 			new DoubleTag("", $this->motionZ)
-		]);
+		]));
 
-		$this->namedtag->Rotation = new ListTag("Rotation", [
+		$this->namedtag->setTag(new ListTag("Rotation", [
 			new FloatTag("", $this->yaw),
 			new FloatTag("", $this->pitch)
-		]);
+		]));
 
-		$this->namedtag->FallDistance = new FloatTag("FallDistance", $this->fallDistance);
-		$this->namedtag->Fire = new ShortTag("Fire", $this->fireTicks);
-		$this->namedtag->Air = new ShortTag("Air", $this->getDataProperty(self::DATA_AIR));
-		$this->namedtag->OnGround = new ByteTag("OnGround", $this->onGround ? 1 : 0);
-		$this->namedtag->Invulnerable = new ByteTag("Invulnerable", $this->invulnerable ? 1 : 0);
+		$this->namedtag->setTag(new FloatTag("FallDistance", $this->fallDistance));
+		$this->namedtag->setTag(new ShortTag("Fire", $this->fireTicks));
+		$this->namedtag->setTag(new ShortTag("Air", $this->getDataProperty(self::DATA_AIR)));
+		$this->namedtag->setTag(new ByteTag("OnGround", $this->onGround ? 1 : 0));
+		$this->namedtag->setTag(new ByteTag("Invulnerable", $this->invulnerable ? 1 : 0));
 
 		if(count($this->effects) > 0){
 			$effects = [];
@@ -782,34 +783,37 @@ abstract class Entity extends Location implements Metadatable{
 				]);
 			}
 
-			$this->namedtag->ActiveEffects = new ListTag("ActiveEffects", $effects);
+			$this->namedtag->setTag(new ListTag("ActiveEffects", $effects));
 		}else{
-			unset($this->namedtag->ActiveEffects);
+			$this->namedtag->remove("ActiveEffects");
 		}
 	}
 
 	protected function initEntity(){
 		assert($this->namedtag instanceof CompoundTag);
 
-		if(isset($this->namedtag->CustomName)){
+		if($this->namedtag->exists("CustomName")){
 			$this->setNameTag($this->namedtag["CustomName"]);
-			if(isset($this->namedtag->CustomNameVisible)){
+			if($this->namedtag->exists("CustomNameVisible")){
 				$this->setNameTagVisible($this->namedtag["CustomNameVisible"] > 0);
 			}
 		}
 
 		$this->scheduleUpdate();
 
-		if(isset($this->namedtag->ActiveEffects)){
-			foreach($this->namedtag->ActiveEffects->getValue() as $e){
-				$amplifier = Binary::unsignByte($e->Amplifier->getValue()); //0-255 only
+		$effectsTag = $this->namedtag->exists("ActiveEffects");
+		if($effectsTag instanceof ListTag){
+
+			/** @var CompoundTag $e */
+			foreach($effectsTag->getValue() as $e){
+				$amplifier = Binary::unsignByte($e->getTag("Amplifier")->getValue()); //0-255 only
 
 				$effect = Effect::getEffect($e["Id"]);
 				if($effect === null){
 					continue;
 				}
 
-				$effect->setAmplifier($amplifier)->setDuration($e["Duration"])->setVisible($e["ShowParticles"] > 0);
+				$effect->setAmplifier($amplifier)->setDuration((int) $e->getTag("Duration")->getValue())->setVisible($e->getTag("ShowParticles")->getValue() > 0);
 
 				$this->addEffect($effect);
 			}

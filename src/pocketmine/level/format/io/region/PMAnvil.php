@@ -23,128 +23,39 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format\io\region;
 
-use pocketmine\level\format\Chunk;
-use pocketmine\level\format\io\ChunkException;
+
+
 use pocketmine\level\format\SubChunk;
-use pocketmine\nbt\NBT;
+
 use pocketmine\nbt\tag\{
-	ByteArrayTag, ByteTag, CompoundTag, IntArrayTag, IntTag, ListTag, LongTag
+	ByteArrayTag, CompoundTag
 };
-use pocketmine\Player;
-use pocketmine\utils\MainLogger;
+
 
 /**
  * This format is exactly the same as the PC Anvil format, with the only difference being that the stored data order
- * is XZY instead of YZX for more performance loading and saving worlds.
+ * is XZY instead of YZX for better performance loading and saving worlds.
  */
 class PMAnvil extends Anvil{
 
 	const REGION_FILE_EXTENSION = "mcapm";
 
-	public function nbtSerialize(Chunk $chunk) : string{
-		$nbt = new CompoundTag("Level", []);
-		$nbt->xPos = new IntTag("xPos", $chunk->getX());
-		$nbt->zPos = new IntTag("zPos", $chunk->getZ());
-
-		$nbt->V = new ByteTag("V", 1);
-		$nbt->LastUpdate = new LongTag("LastUpdate", 0); //TODO
-		$nbt->InhabitedTime = new LongTag("InhabitedTime", 0); //TODO
-		$nbt->TerrainPopulated = new ByteTag("TerrainPopulated", $chunk->isPopulated() ? 1 : 0);
-		$nbt->LightPopulated = new ByteTag("LightPopulated", $chunk->isLightPopulated() ? 1 : 0);
-
-		$nbt->Sections = new ListTag("Sections", []);
-		$nbt->Sections->setTagType(NBT::TAG_Compound);
-		$subChunks = -1;
-		foreach($chunk->getSubChunks() as $y => $subChunk){
-			if($subChunk->isEmpty()){
-				continue;
-			}
-			$nbt->Sections[++$subChunks] = new CompoundTag("", [
-				new ByteTag("Y", $y),
-				new ByteArrayTag("Blocks",     $subChunk->getBlockIdArray()),
-				new ByteArrayTag("Data",       $subChunk->getBlockDataArray()),
-				new ByteArrayTag("SkyLight",   $subChunk->getBlockSkyLightArray()),
-				new ByteArrayTag("BlockLight", $subChunk->getBlockLightArray())
-			]);
-		}
-
-		$nbt->Biomes = new ByteArrayTag("Biomes", $chunk->getBiomeIdArray());
-		$nbt->HeightMap = new IntArrayTag("HeightMap", $chunk->getHeightMapArray());
-
-		$entities = [];
-
-		foreach($chunk->getEntities() as $entity){
-			if(!($entity instanceof Player) and !$entity->closed){
-				$entity->saveNBT();
-				$entities[] = $entity->namedtag;
-			}
-		}
-
-		$nbt->Entities = new ListTag("Entities", $entities);
-		$nbt->Entities->setTagType(NBT::TAG_Compound);
-
-		$tiles = [];
-		foreach($chunk->getTiles() as $tile){
-			$tile->saveNBT();
-			$tiles[] = $tile->namedtag;
-		}
-
-		$nbt->TileEntities = new ListTag("TileEntities", $tiles);
-		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
-
-		//TODO: TileTicks
-
-		$writer = new NBT(NBT::BIG_ENDIAN);
-		$nbt->setName("Level");
-		$writer->setData(new CompoundTag("", [$nbt]));
-
-		return $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
+	protected function readSection(CompoundTag $tag) : SubChunk{
+		return new SubChunk(
+			$tag->getTag("Blocks")->getValue(),
+			$tag->getTag("Data")->getValue(),
+			$tag->getTag("SkyLight")->getValue(),
+			$tag->getTag("BlockLight")->getValue()
+		);
 	}
 
-	public function nbtDeserialize(string $data){
-		$nbt = new NBT(NBT::BIG_ENDIAN);
-		try{
-			$nbt->readCompressed($data);
-
-			$chunk = $nbt->getData();
-
-			if(!isset($chunk->Level) or !($chunk->Level instanceof CompoundTag)){
-				throw new ChunkException("Invalid NBT format");
-			}
-
-			$chunk = $chunk->Level;
-
-			$subChunks = [];
-			if($chunk->Sections instanceof ListTag){
-				foreach($chunk->Sections as $subChunk){
-					if($subChunk instanceof CompoundTag){
-						$subChunks[$subChunk->Y->getValue()] = new SubChunk(
-							$subChunk->Blocks->getValue(),
-							$subChunk->Data->getValue(),
-							$subChunk->SkyLight->getValue(),
-							$subChunk->BlockLight->getValue()
-						);
-					}
-				}
-			}
-
-			$result = new Chunk(
-				$chunk["xPos"],
-				$chunk["zPos"],
-				$subChunks,
-				isset($chunk->Entities) ? $chunk->Entities->getValue() : [],
-				isset($chunk->TileEntities) ? $chunk->TileEntities->getValue() : [],
-				isset($chunk->Biomes) ? $chunk->Biomes->getValue() : "",
-				isset($chunk->HeightMap) ? $chunk->HeightMap->getValue() : []
-			);
-			$result->setLightPopulated(isset($chunk->LightPopulated) ? ((bool) $chunk->LightPopulated->getValue()) : false);
-			$result->setPopulated(isset($chunk->TerrainPopulated) ? ((bool) $chunk->TerrainPopulated->getValue()) : false);
-			$result->setGenerated(true);
-			return $result;
-		}catch(\Throwable $e){
-			MainLogger::getLogger()->logException($e);
-			return null;
-		}
+	protected function writeSection(SubChunk $subChunk) : CompoundTag{
+		return new CompoundTag("", [
+			new ByteArrayTag("Blocks", $subChunk->getBlockIdArray()),
+			new ByteArrayTag("Data", $subChunk->getBlockDataArray()),
+			new ByteArrayTag("SkyLight", $subChunk->getBlockSkyLightArray()),
+			new ByteArrayTag("BlockLight", $subChunk->getBlockLightArray())
+		]);
 	}
 
 	public static function getProviderName() : string{

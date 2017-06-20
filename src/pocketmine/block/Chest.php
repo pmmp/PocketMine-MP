@@ -99,16 +99,15 @@ class Chest extends Transparent{
 
 		$this->getLevel()->setBlock($block, $this, true, true);
 		$nbt = new CompoundTag("", [
-			new ListTag("Items", []),
+			new ListTag("Items", [], NBT::TAG_Compound),
 			new StringTag("id", Tile::CHEST),
 			new IntTag("x", $this->x),
 			new IntTag("y", $this->y),
 			new IntTag("z", $this->z)
 		]);
-		$nbt->Items->setTagType(NBT::TAG_Compound);
 
 		if($item->hasCustomName()){
-			$nbt->CustomName = new StringTag("CustomName", $item->getCustomName());
+			$nbt->setTag(new StringTag("CustomName", $item->getCustomName()));
 		}
 
 		if($item->hasCustomBlockData()){
@@ -150,18 +149,17 @@ class Chest extends Transparent{
 				$chest = $t;
 			}else{
 				$nbt = new CompoundTag("", [
-					new ListTag("Items", []),
+					new ListTag("Items", [], NBT::TAG_Compound),
 					new StringTag("id", Tile::CHEST),
 					new IntTag("x", $this->x),
 					new IntTag("y", $this->y),
 					new IntTag("z", $this->z)
 				]);
-				$nbt->Items->setTagType(NBT::TAG_Compound);
 				$chest = Tile::createTile("Chest", $this->getLevel(), $nbt);
 			}
 
-			if(isset($chest->namedtag->Lock) and $chest->namedtag->Lock instanceof StringTag){
-				if($chest->namedtag->Lock->getValue() !== $item->getCustomName()){
+			if(($lockTag = $chest->namedtag->getTag("Lock")) instanceof StringTag){
+				if($lockTag->getValue() !== $item->getCustomName()){
 					return true;
 				}
 			}

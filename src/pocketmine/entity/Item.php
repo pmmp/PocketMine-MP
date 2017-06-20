@@ -60,29 +60,26 @@ class Item extends Entity{
 
 		$this->setMaxHealth(5);
 		$this->setHealth($this->namedtag["Health"]);
-		if(isset($this->namedtag->Age)){
-			$this->age = $this->namedtag["Age"];
-		}
-		if(isset($this->namedtag->PickupDelay)){
-			$this->pickupDelay = $this->namedtag["PickupDelay"];
-		}
-		if(isset($this->namedtag->Owner)){
-			$this->owner = $this->namedtag["Owner"];
-		}
-		if(isset($this->namedtag->Thrower)){
-			$this->thrower = $this->namedtag["Thrower"];
-		}
 
+		$age = $this->namedtag->getTag("Age");
+		if($age instanceof ShortTag) $this->age = $age->getValue();
 
-		if(!isset($this->namedtag->Item)){
+		$pickupDelay = $this->namedtag->getTag("PickupDelay");
+		if($pickupDelay instanceof ShortTag) $this->pickupDelay = $pickupDelay->getValue();
+
+		$owner = $this->namedtag->getTag("Owner");
+		if($owner instanceof StringTag) $this->owner = $owner->getValue();
+
+		$thrower = $this->namedtag->getTag("Thrower");
+		if($thrower instanceof StringTag) $this->thrower = $thrower->getValue();
+
+		$item = $this->namedtag->getCompoundTag("Item");
+		if($item === null){
 			$this->close();
 			return;
 		}
 
-		assert($this->namedtag->Item instanceof CompoundTag);
-
-		$this->item = ItemItem::nbtDeserialize($this->namedtag->Item);
-
+		$this->item = ItemItem::nbtDeserialize($item);
 
 		$this->server->getPluginManager()->callEvent(new ItemSpawnEvent($this));
 	}
@@ -166,15 +163,15 @@ class Item extends Entity{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Item = $this->item->nbtSerialize(-1, "Item");
-		$this->namedtag->Health = new ShortTag("Health", $this->getHealth());
-		$this->namedtag->Age = new ShortTag("Age", $this->age);
-		$this->namedtag->PickupDelay = new ShortTag("PickupDelay", $this->pickupDelay);
+		$this->namedtag->setTag($this->item->nbtSerialize(-1, "Item"));
+		$this->namedtag->setTag(new ShortTag("Health", $this->getHealth()));
+		$this->namedtag->setTag(new ShortTag("Age", $this->age));
+		$this->namedtag->setTag(new ShortTag("PickupDelay", $this->pickupDelay));
 		if($this->owner !== null){
-			$this->namedtag->Owner = new StringTag("Owner", $this->owner);
+			$this->namedtag->setTag(new StringTag("Owner", $this->owner));
 		}
 		if($this->thrower !== null){
-			$this->namedtag->Thrower = new StringTag("Thrower", $this->thrower);
+			$this->namedtag->setTag(new StringTag("Thrower", $this->thrower));
 		}
 	}
 
