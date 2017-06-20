@@ -3979,7 +3979,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->pitch = $pitch;
 		$pk->yaw = $yaw;
 		$pk->mode = $mode;
-		$pk->onGround = $this->onGround;
 
 		if($targets !== null){
 			$this->server->broadcastPacket($targets, $pk);
