@@ -3329,44 +3329,46 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if($this->spawned === false or !$this->isAlive()){
 			return true;
 		}
-		$this->craftingType = 0;
 		$commandText = $packet->command;
-		$command = $this->getServer()->getCommandMap()->getCommand($packet->command);
-		$overloads = $command->getOverloads()["default"]["input"]["parameters"];
+		$this->craftingType = 0;
 
-		$optionalParameters = [];
-		$nonOptionalParameters = [];
-		foreach($overloads as $key => $overload){
-			if($overload["optional"] === true){
-				$overload["key"] = $key;
-				$optionalParameters[$key] = $overload;
-			} elseif($overload["optional"] === false){
-				$overload["key"] = $key;
-				$nonOptionalParameters[$key] = $overload;
+		if($packet->inputJson !== null){
+			$command = $this->getServer()->getCommandMap()->getCommand($commandText);
+			$overloads = $command->getOverloads()["default"]["input"]["parameters"];
+
+			$optionalParameters = [];
+			$nonOptionalParameters = [];
+			foreach($overloads as $key => $overload){
+				if($overload["optional"] === true){
+					$overload["key"] = $key;
+					$optionalParameters[$key] = $overload;
+				} elseif($overload["optional"] === false){
+					$overload["key"] = $key;
+					$nonOptionalParameters[$key] = $overload;
+				}
 			}
-		}
-		$optionalSortingArray = [];
-		foreach($optionalParameters as $key => $parameter){
-			$optionalSortingArray[$key] = $parameter["name"];
-		}
-		$nonOptionalSortingArray = [];
-		foreach($nonOptionalParameters as $key => $parameter){
-			$nonOptionalSortingArray[$key] = $parameter["name"];
-		}
-		array_multisort($optionalSortingArray, $optionalParameters);
-		array_multisort($nonOptionalSortingArray, $nonOptionalParameters);
+			$optionalSortingArray = [];
+			foreach($optionalParameters as $key => $parameter){
+				$optionalSortingArray[$key] = $parameter["name"];
+			}
+			$nonOptionalSortingArray = [];
+			foreach($nonOptionalParameters as $key => $parameter){
+				$nonOptionalSortingArray[$key] = $parameter["name"];
+			}
+			array_multisort($optionalSortingArray, $optionalParameters);
+			array_multisort($nonOptionalSortingArray, $nonOptionalParameters);
 
-		$mergedOrderedParameters = array_merge($optionalParameters, $nonOptionalParameters);
+			$mergedOrderedParameters = array_merge($optionalParameters, $nonOptionalParameters);
 
-		$inputJson = $packet->inputJson;
-		foreach($packet->inputJson as $key => $arg){
-			$inputJson[$mergedOrderedParameters[$key]["key"]] = $arg;
-		}
-		if($inputJson !== null){
+			$inputJson = $packet->inputJson;
+			foreach($packet->inputJson as $key => $arg){
+				$inputJson[$mergedOrderedParameters[$key]["key"]] = $arg;
+			}
 			foreach($inputJson as $key => $arg){
 				$commandText .= " " . $arg;
 			}
 		}
+
 		$this->server->getPluginManager()->callEvent($ev = new PlayerCommandPreprocessEvent($this, "/" . $commandText));
 		if($ev->isCancelled()){
 			return true;
