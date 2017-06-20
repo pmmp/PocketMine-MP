@@ -61,14 +61,14 @@ class SignPost extends Transparent{
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if($face !== 0){
 			$nbt = new CompoundTag("", [
-				"id" => new StringTag("id", Tile::SIGN),
-				"x" => new IntTag("x", $block->x),
-				"y" => new IntTag("y", $block->y),
-				"z" => new IntTag("z", $block->z),
-				"Text1" => new StringTag("Text1", ""),
-				"Text2" => new StringTag("Text2", ""),
-				"Text3" => new StringTag("Text3", ""),
-				"Text4" => new StringTag("Text4", "")
+				new StringTag("id", Tile::SIGN),
+				new IntTag("x", $block->x),
+				new IntTag("y", $block->y),
+				new IntTag("z", $block->z),
+				new StringTag("Text1", ""),
+				new StringTag("Text2", ""),
+				new StringTag("Text3", ""),
+				new StringTag("Text4", "")
 			]);
 
 			if($player !== null){
