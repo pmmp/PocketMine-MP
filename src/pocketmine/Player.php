@@ -3764,6 +3764,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		foreach($this->achievements as $achievement => $status){
 			$achievements[$achievement] = new ByteTag($achievement, $status ? 1 : 0);
 		}
+		$this->namedtag->setTag($achievements);
 
 		$this->namedtag["playerGameType"] = $this->gamemode;
 		$this->namedtag["lastPlayed"] = (int) floor(microtime(true) * 1000);
