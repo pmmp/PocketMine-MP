@@ -57,17 +57,17 @@ class ProjectileItem extends Item{
 		$vector = $player->getDirectionVector();
 
 		$nbt = new CompoundTag("", [
-			"Pos" => new ListTag("Pos", [
+			new ListTag("Pos", [
 				new DoubleTag("", $player->getX()),
 				new DoubleTag("", $player->getY() + $player->getEyeHeight()),
 				new DoubleTag("", $player->getZ())
 			]),
-			"Motion" => new ListTag("Motion", [
+			new ListTag("Motion", [
 				new DoubleTag("", $vector->x),
 				new DoubleTag("", $vector->y),
 				new DoubleTag("", $vector->z)
 			]),
-			"Rotation" => new ListTag("Rotation", [
+			new ListTag("Rotation", [
 				new FloatTag("", $player->getYaw()),
 				new FloatTag("", $player->getPitch())
 			]),

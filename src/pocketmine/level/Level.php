@@ -74,6 +74,8 @@ use pocketmine\level\generator\GeneratorRegisterTask;
 use pocketmine\level\generator\GeneratorUnregisterTask;
 use pocketmine\level\generator\LightPopulationTask;
 use pocketmine\level\generator\PopulationTask;
+use pocketmine\level\light\BlockLightUpdate;
+use pocketmine\level\light\SkyLightUpdate;
 use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\level\particle\Particle;
 use pocketmine\level\sound\Sound;
@@ -1512,24 +1514,23 @@ class Level implements ChunkManager, Metadatable{
 
 		if($item->getId() > 0 and $item->getCount() > 0){
 			$itemEntity = Entity::createEntity("Item", $this, new CompoundTag("", [
-				"Pos" => new ListTag("Pos", [
+				new ListTag("Pos", [
 					new DoubleTag("", $source->getX()),
 					new DoubleTag("", $source->getY()),
 					new DoubleTag("", $source->getZ())
 				]),
-
-				"Motion" => new ListTag("Motion", [
+				new ListTag("Motion", [
 					new DoubleTag("", $motion->x),
 					new DoubleTag("", $motion->y),
 					new DoubleTag("", $motion->z)
 				]),
-				"Rotation" => new ListTag("Rotation", [
+				new ListTag("Rotation", [
 					new FloatTag("", lcg_value() * 360),
 					new FloatTag("", 0)
 				]),
-				"Health" => new ShortTag("Health", 5),
-				"Item" => $itemTag,
-				"PickupDelay" => new ShortTag("PickupDelay", $delay)
+				new ShortTag("Health", 5),
+				$itemTag,
+				new ShortTag("PickupDelay", $delay)
 			]));
 
 			$itemEntity->spawnToAll();

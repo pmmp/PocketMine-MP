@@ -57,21 +57,21 @@ class Bow extends Tool{
 		$vector = $player->getDirectionVector();
 
 		$nbt = new CompoundTag("", [
-			"Pos" => new ListTag("Pos", [
+			new ListTag("Pos", [
 				new DoubleTag("", $player->x),
 				new DoubleTag("", $player->y + $player->getEyeHeight()),
 				new DoubleTag("", $player->z)
 			]),
-			"Motion" => new ListTag("Motion", [
+			new ListTag("Motion", [
 				new DoubleTag("", $vector->x),
 				new DoubleTag("", $vector->y),
 				new DoubleTag("", $vector->z)
 			]),
-			"Rotation" => new ListTag("Rotation", [
+			new ListTag("Rotation", [
 				new FloatTag("", ($player->yaw > 180 ? 360 : 0) - $player->yaw),
 				new FloatTag("", -$player->pitch)
 			]),
-			"Fire" => new ShortTag("Fire", $player->isOnFire() ? 45 * 60 : 0)
+			new ShortTag("Fire", $player->isOnFire() ? 45 * 60 : 0)
 			//TODO: add Power and Flame enchantment effects
 		]);
 

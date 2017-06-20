@@ -21,15 +21,16 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\level;
-
+namespace pocketmine\level\light;
 
 use pocketmine\block\Block;
+use pocketmine\level\ChunkManager;
+use pocketmine\level\Level;
 
 //TODO: make light updates asynchronous
 abstract class LightUpdate{
 
-	/** @var Level */
+	/** @var ChunkManager */
 	protected $level;
 
 	/** @var \SplQueue */
@@ -42,7 +43,7 @@ abstract class LightUpdate{
 	/** @var bool[] */
 	protected $removalVisited = [];
 
-	public function __construct(Level $level){
+	public function __construct(ChunkManager $level){
 		$this->level = $level;
 		$this->removalQueue = new \SplQueue();
 		$this->spreadQueue = new \SplQueue();

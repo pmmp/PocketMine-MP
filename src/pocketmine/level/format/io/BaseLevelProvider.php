@@ -123,7 +123,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 	public function saveLevelData(){
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setData(new CompoundTag("", [
-			"Data" => $this->levelData
+			$this->levelData
 		]));
 		$buffer = $nbt->writeCompressed();
 		file_put_contents($this->getPath() . "level.dat", $buffer);

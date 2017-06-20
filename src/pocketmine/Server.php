@@ -156,7 +156,7 @@ class Server{
 	 *
 	 * @var int
 	 */
-	private $tickCounter;
+	private $tickCounter = 0;
 	private $nextTick = 0;
 	private $tickAverage = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20];
 	private $useAverage = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -2133,44 +2133,43 @@ class Server{
 		$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.create"));
 		try{
 			$dump = new CrashDump($this);
+
+			$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.submit", [$dump->getPath()]));
+
+			if($this->getProperty("auto-report.enabled", true) !== false){
+				$report = true;
+				$plugin = $dump->getData()["plugin"];
+				if(is_string($plugin)){
+					$p = $this->pluginManager->getPlugin($plugin);
+					if($p instanceof Plugin and !($p->getPluginLoader() instanceof PharPluginLoader)){
+						$report = false;
+					}
+				}elseif(\Phar::running(true) === ""){
+					$report = false;
+				}
+				if($dump->getData()["error"]["type"] === "E_PARSE" or $dump->getData()["error"]["type"] === "E_COMPILE_ERROR"){
+					$report = false;
+				}
+
+				if($report){
+					$reply = Utils::postURL("http://" . $this->getProperty("auto-report.host", "crash.pocketmine.net") . "/submit/api", [
+						"report" => "yes",
+						"name" => $this->getName() . " " . $this->getPocketMineVersion(),
+						"email" => "crash@pocketmine.net",
+						"reportPaste" => base64_encode($dump->getEncodedData())
+					]);
+
+					if($reply !== false and ($data = json_decode($reply)) !== null and isset($data->crashId) and isset($data->crashUrl)){
+						$reportId = $data->crashId;
+						$reportUrl = $data->crashUrl;
+						$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.archive", [$reportUrl, $reportId]));
+					}
+				}
+			}
 		}catch(\Throwable $e){
 			$this->logger->logException($e);
 			$this->logger->critical($this->getLanguage()->translateString("pocketmine.crash.error", [$e->getMessage()]));
 			return;
-		}
-
-		$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.submit", [$dump->getPath()]));
-
-
-		if($this->getProperty("auto-report.enabled", true) !== false){
-			$report = true;
-			$plugin = $dump->getData()["plugin"];
-			if(is_string($plugin)){
-				$p = $this->pluginManager->getPlugin($plugin);
-				if($p instanceof Plugin and !($p->getPluginLoader() instanceof PharPluginLoader)){
-					$report = false;
-				}
-			}elseif(\Phar::running(true) === ""){
-				$report = false;
-			}
-			if($dump->getData()["error"]["type"] === "E_PARSE" or $dump->getData()["error"]["type"] === "E_COMPILE_ERROR"){
-				$report = false;
-			}
-
-			if($report){
-				$reply = Utils::postURL("http://" . $this->getProperty("auto-report.host", "crash.pocketmine.net") . "/submit/api", [
-					"report" => "yes",
-					"name" => $this->getName() . " " . $this->getPocketMineVersion(),
-					"email" => "crash@pocketmine.net",
-					"reportPaste" => base64_encode($dump->getEncodedData())
-				]);
-
-				if(($data = json_decode($reply)) !== false and isset($data->crashId)){
-					$reportId = $data->crashId;
-					$reportUrl = $data->crashUrl;
-					$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.archive", [$reportUrl, $reportId]));
-				}
-			}
 		}
 
 		//$this->checkMemory();

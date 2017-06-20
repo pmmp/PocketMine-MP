@@ -57,11 +57,11 @@ class Anvil extends McRegion{
 				continue;
 			}
 			$nbt->Sections[++$subChunks] = new CompoundTag("", [
-				"Y"          => new ByteTag("Y", $y),
-				"Blocks"     => new ByteArrayTag("Blocks", ChunkUtils::reorderByteArray($subChunk->getBlockIdArray())), //Generic in-memory chunks are currently always XZY
-				"Data"       => new ByteArrayTag("Data", ChunkUtils::reorderNibbleArray($subChunk->getBlockDataArray())),
-				"SkyLight"   => new ByteArrayTag("SkyLight", ChunkUtils::reorderNibbleArray($subChunk->getSkyLightArray(), "\xff")),
-				"BlockLight" => new ByteArrayTag("BlockLight", ChunkUtils::reorderNibbleArray($subChunk->getBlockLightArray()))
+				new ByteTag("Y", $y),
+				new ByteArrayTag("Blocks", ChunkUtils::reorderByteArray($subChunk->getBlockIdArray())), //Generic in-memory chunks are currently always XZY
+				new ByteArrayTag("Data", ChunkUtils::reorderNibbleArray($subChunk->getBlockDataArray())),
+				new ByteArrayTag("SkyLight", ChunkUtils::reorderNibbleArray($subChunk->getBlockSkyLightArray(), "\xff")),
+				new ByteArrayTag("BlockLight", ChunkUtils::reorderNibbleArray($subChunk->getBlockLightArray()))
 			]);
 		}
 
@@ -93,7 +93,7 @@ class Anvil extends McRegion{
 
 		$writer = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setName("Level");
-		$writer->setData(new CompoundTag("", ["Level" => $nbt]));
+		$writer->setData(new CompoundTag("", [$nbt]));
 
 		return $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
 	}

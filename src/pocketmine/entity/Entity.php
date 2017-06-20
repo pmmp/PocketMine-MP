@@ -63,6 +63,7 @@ use pocketmine\network\mcpe\protocol\SetEntityDataPacket;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
+use pocketmine\utils\Binary;
 use pocketmine\utils\Color;
 
 abstract class Entity extends Location implements Metadatable{
@@ -233,7 +234,6 @@ abstract class Entity extends Location implements Metadatable{
 
 	protected $id;
 
-	protected $dataFlags = 0;
 	protected $dataProperties = [
 		self::DATA_FLAGS => [self::DATA_TYPE_LONG, 0],
 		self::DATA_AIR => [self::DATA_TYPE_SHORT, 400],
@@ -242,6 +242,8 @@ abstract class Entity extends Location implements Metadatable{
 		self::DATA_LEAD_HOLDER_EID => [self::DATA_TYPE_LONG, -1],
 		self::DATA_SCALE => [self::DATA_TYPE_FLOAT, 1]
 	];
+
+	protected $changedDataProperties = [];
 
 	public $passenger = null;
 	public $vehicle = null;
@@ -796,11 +798,11 @@ abstract class Entity extends Location implements Metadatable{
 			$effects = [];
 			foreach($this->effects as $effect){
 				$effects[] = new CompoundTag("", [
-					"Id" => new ByteTag("Id", $effect->getId()),
-					"Amplifier" => new ByteTag("Amplifier", $effect->getAmplifier()),
-					"Duration" => new IntTag("Duration", $effect->getDuration()),
-					"Ambient" => new ByteTag("Ambient", 0),
-					"ShowParticles" => new ByteTag("ShowParticles", $effect->isVisible() ? 1 : 0)
+					new ByteTag("Id", $effect->getId()),
+					new ByteTag("Amplifier", Binary::signByte($effect->getAmplifier())),
+					new IntTag("Duration", $effect->getDuration()),
+					new ByteTag("Ambient", 0),
+					new ByteTag("ShowParticles", $effect->isVisible() ? 1 : 0)
 				]);
 			}
 
@@ -824,7 +826,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		if(isset($this->namedtag->ActiveEffects)){
 			foreach($this->namedtag->ActiveEffects->getValue() as $e){
-				$amplifier = $e["Amplifier"] & 0xff; //0-255 only
+				$amplifier = Binary::unsignByte($e->Amplifier->getValue()); //0-255 only
 
 				$effect = Effect::getEffect($e["Id"]);
 				if($effect === null){
@@ -1139,6 +1141,11 @@ abstract class Entity extends Location implements Metadatable{
 
 			Timings::$timerEntityBaseTick->stopTiming();
 			return false;
+		}
+
+		if(count($this->changedDataProperties) > 0){
+			$this->sendData($this->hasSpawned, $this->changedDataProperties);
+			$this->changedDataProperties = [];
 		}
 
 		if(count($this->effects) > 0){
@@ -1874,11 +1881,11 @@ abstract class Entity extends Location implements Metadatable{
 	 *
 	 * @return bool
 	 */
-	public function setDataProperty($id, $type, $value, $send = true){
+	public function setDataProperty($id, $type, $value, bool $send = true){
 		if($this->getDataProperty($id) !== $value){
 			$this->dataProperties[$id] = [$type, $value];
-			if($send === true){
-				$this->sendData($this->hasSpawned, [$id => $this->dataProperties[$id]]);
+			if($send){
+				$this->changedDataProperties[$id] = $this->dataProperties[$id]; //This will be sent on the next tick
 			}
 
 			return true;

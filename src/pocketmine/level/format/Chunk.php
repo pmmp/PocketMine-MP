@@ -54,7 +54,7 @@ class Chunk{
 
 	protected $height = Chunk::MAX_SUBCHUNKS;
 
-	/** @var SubChunk[] */
+	/** @var SubChunkInterface[] */
 	protected $subChunks = [];
 
 	/** @var EmptySubChunk */
@@ -82,13 +82,13 @@ class Chunk{
 	protected $NBTentities = [];
 
 	/**
-	 * @param int           $chunkX
-	 * @param int           $chunkZ
-	 * @param SubChunk[]    $subChunks
-	 * @param CompoundTag[] $entities
-	 * @param CompoundTag[] $tiles
-	 * @param string        $biomeIds
-	 * @param int[]         $heightMap
+	 * @param int                 $chunkX
+	 * @param int                 $chunkZ
+	 * @param SubChunkInterface[] $subChunks
+	 * @param CompoundTag[]       $entities
+	 * @param CompoundTag[]       $tiles
+	 * @param string              $biomeIds
+	 * @param int[]               $heightMap
 	 */
 	public function __construct(int $chunkX, int $chunkZ, array $subChunks = [], array $entities = [], array $tiles = [], string $biomeIds = "", array $heightMap = []){
 		$this->x = $chunkX;
@@ -514,7 +514,7 @@ class Chunk{
 	public function getBlockSkyLightColumn(int $x, int $z) : string{
 		$result = "";
 		foreach($this->subChunks as $subChunk){
-			$result .= $subChunk->getSkyLightColumn($x, $z);
+			$result .= $subChunk->getBlockSkyLightColumn($x, $z);
 		}
 		return $result;
 	}
@@ -797,9 +797,9 @@ class Chunk{
 	 * @param int  $y
 	 * @param bool $generateNew Whether to create a new, modifiable subchunk if there is not one in place
 	 *
-	 * @return SubChunk|EmptySubChunk
+	 * @return SubChunkInterface
 	 */
-	public function getSubChunk(int $y, bool $generateNew = false) : SubChunk{
+	public function getSubChunk(int $y, bool $generateNew = false) : SubChunkInterface{
 		if($y < 0 or $y >= $this->height){
 			return $this->emptySubChunk;
 		}elseif($generateNew and $this->subChunks[$y] instanceof EmptySubChunk){
@@ -811,13 +811,14 @@ class Chunk{
 
 	/**
 	 * Sets a subchunk in the chunk index
-	 * @param int           $y
-	 * @param SubChunk|null $subChunk
-	 * @param bool          $allowEmpty Whether to check if the chunk is empty, and if so replace it with an empty stub
+	 *
+	 * @param int                    $y
+	 * @param SubChunkInterface|null $subChunk
+	 * @param bool                   $allowEmpty Whether to check if the chunk is empty, and if so replace it with an empty stub
 	 *
 	 * @return bool
 	 */
-	public function setSubChunk(int $y, SubChunk $subChunk = null, bool $allowEmpty = false) : bool{
+	public function setSubChunk(int $y, SubChunkInterface $subChunk = null, bool $allowEmpty = false) : bool{
 		if($y < 0 or $y >= $this->height){
 			return false;
 		}

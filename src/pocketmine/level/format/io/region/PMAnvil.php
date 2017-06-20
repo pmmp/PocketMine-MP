@@ -60,11 +60,11 @@ class PMAnvil extends Anvil{
 				continue;
 			}
 			$nbt->Sections[++$subChunks] = new CompoundTag("", [
-				"Y"          => new ByteTag("Y", $y),
-				"Blocks"     => new ByteArrayTag("Blocks",     $subChunk->getBlockIdArray()),
-				"Data"       => new ByteArrayTag("Data",       $subChunk->getBlockDataArray()),
-				"SkyLight"   => new ByteArrayTag("SkyLight",   $subChunk->getSkyLightArray()),
-				"BlockLight" => new ByteArrayTag("BlockLight", $subChunk->getBlockLightArray())
+				new ByteTag("Y", $y),
+				new ByteArrayTag("Blocks",     $subChunk->getBlockIdArray()),
+				new ByteArrayTag("Data",       $subChunk->getBlockDataArray()),
+				new ByteArrayTag("SkyLight",   $subChunk->getBlockSkyLightArray()),
+				new ByteArrayTag("BlockLight", $subChunk->getBlockLightArray())
 			]);
 		}
 
@@ -96,7 +96,7 @@ class PMAnvil extends Anvil{
 
 		$writer = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setName("Level");
-		$writer->setData(new CompoundTag("", ["Level" => $nbt]));
+		$writer->setData(new CompoundTag("", [$nbt]));
 
 		return $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
 	}

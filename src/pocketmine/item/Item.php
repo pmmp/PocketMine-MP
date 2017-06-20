@@ -39,6 +39,7 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\Player;
 use pocketmine\Server;
+use pocketmine\utils\Binary;
 use pocketmine\utils\Config;
 
 class Item implements ItemIds, \JsonSerializable{
@@ -563,12 +564,13 @@ class Item implements ItemIds, \JsonSerializable{
 		if(!isset($tag->ench)){
 			$tag->ench = new ListTag("ench", []);
 			$tag->ench->setTagType(NBT::TAG_Compound);
+
 		}else{
 			foreach($tag->ench as $k => $entry){
 				if($entry["id"] === $ench->getId()){
 					$tag->ench->{$k} = new CompoundTag("", [
-						"id" => new ShortTag("id", $ench->getId()),
-						"lvl" => new ShortTag("lvl", $ench->getLevel())
+						new ShortTag("id", $ench->getId()),
+						new ShortTag("lvl", $ench->getLevel())
 					]);
 					$found = true;
 					break;
@@ -578,8 +580,8 @@ class Item implements ItemIds, \JsonSerializable{
 
 		if(!$found){
 			$tag->ench->{count($tag->ench)} = new CompoundTag("", [
-				"id" => new ShortTag("id", $ench->getId()),
-				"lvl" => new ShortTag("lvl", $ench->getLevel())
+				new ShortTag("id", $ench->getId()),
+				new ShortTag("lvl", $ench->getLevel())
 			]);
 		}
 
@@ -663,7 +665,7 @@ class Item implements ItemIds, \JsonSerializable{
 			$tag->display->Name = new StringTag("Name", $name);
 		}else{
 			$tag->display = new CompoundTag("display", [
-				"Name" => new StringTag("Name", $name)
+				new StringTag("Name", $name)
 			]);
 		}
 
@@ -1101,9 +1103,9 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	public function nbtSerialize(int $slot = -1, string $tagName = "") : CompoundTag{
 		$tag = new CompoundTag($tagName, [
-			"id" => new ShortTag("id", $this->id),
-			"Count" => new ByteTag("Count", $this->count),
-			"Damage" => new ShortTag("Damage", $this->meta),
+			new ShortTag("id", $this->id),
+			new ByteTag("Count", Binary::signByte($this->count)),
+			new ShortTag("Damage", $this->meta),
 		]);
 
 		if($this->hasCompoundTag()){
@@ -1130,12 +1132,15 @@ class Item implements ItemIds, \JsonSerializable{
 			return Item::get(0);
 		}
 
+		$count = Binary::unsignByte($tag->Count->getValue());
+		$meta = isset($tag->Damage) ? $tag->Damage->getValue() : 0;
+
 		if($tag->id instanceof ShortTag){
-			$item = Item::get($tag->id->getValue(), !isset($tag->Damage) ? 0 : $tag->Damage->getValue(), $tag->Count->getValue());
+			$item = Item::get($tag->id->getValue(), $meta, $count);
 		}elseif($tag->id instanceof StringTag){ //PC item save format
 			$item = Item::fromString($tag->id->getValue());
-			$item->setDamage(!isset($tag->Damage) ? 0 : $tag->Damage->getValue());
-			$item->setCount($tag->Count->getValue());
+			$item->setDamage($meta);
+			$item->setCount($count);
 		}else{
 			throw new \InvalidArgumentException("Item CompoundTag ID must be an instance of StringTag or ShortTag, " . get_class($tag->id) . " given");
 		}

@@ -155,39 +155,39 @@ class LevelDB extends BaseLevelProvider{
 
 		$levelData = new CompoundTag("", [
 			//Vanilla fields
-			"DayCycleStopTime" => new IntTag("DayCycleStopTime", -1),
-			"Difficulty" => new IntTag("Difficulty", 2),
-			"ForceGameType" => new ByteTag("ForceGameType", 0),
-			"GameType" => new IntTag("GameType", 0),
-			"Generator" => new IntTag("Generator", $generatorType),
-			"LastPlayed" => new LongTag("LastPlayed", time()),
-			"LevelName" => new StringTag("LevelName", $name),
-			"NetworkVersion" => new IntTag("NetworkVersion", ProtocolInfo::CURRENT_PROTOCOL),
-			//"Platform" => new IntTag("Platform", 2), //TODO: find out what the possible values are for
-			"RandomSeed" => new LongTag("RandomSeed", $seed),
-			"SpawnX" => new IntTag("SpawnX", 0),
-			"SpawnY" => new IntTag("SpawnY", 32767),
-			"SpawnZ" => new IntTag("SpawnZ", 0),
-			"StorageVersion" => new IntTag("StorageVersion", self::CURRENT_STORAGE_VERSION),
-			"Time" => new LongTag("Time", 0),
-			"eduLevel" => new ByteTag("eduLevel", 0),
-			"falldamage" => new ByteTag("falldamage", 1),
-			"firedamage" => new ByteTag("firedamage", 1),
-			"hasBeenLoadedInCreative" => new ByteTag("hasBeenLoadedInCreative", 1), //badly named, this actually determines whether achievements can be earned in this world...
-			"immutableWorld" => new ByteTag("immutableWorld", 0),
-			"lightningLevel" => new FloatTag("lightningLevel", 0.0),
-			"lightningTime" => new IntTag("lightningTime", 0),
-			"pvp" => new ByteTag("pvp", 1),
-			"rainLevel" => new FloatTag("rainLevel", 0.0),
-			"rainTime" => new IntTag("rainTime", 0),
-			"spawnMobs" => new ByteTag("spawnMobs", 1),
-			"texturePacksRequired" => new ByteTag("texturePacksRequired", 0), //TODO
+			new IntTag("DayCycleStopTime", -1),
+			new IntTag("Difficulty", 2),
+			new ByteTag("ForceGameType", 0),
+			new IntTag("GameType", 0),
+			new IntTag("Generator", $generatorType),
+			new LongTag("LastPlayed", time()),
+			new StringTag("LevelName", $name),
+			new IntTag("NetworkVersion", ProtocolInfo::CURRENT_PROTOCOL),
+			//new IntTag("Platform", 2), //TODO: find out what the possible values are for
+			new LongTag("RandomSeed", $seed),
+			new IntTag("SpawnX", 0),
+			new IntTag("SpawnY", 32767),
+			new IntTag("SpawnZ", 0),
+			new IntTag("StorageVersion", self::CURRENT_STORAGE_VERSION),
+			new LongTag("Time", 0),
+			new ByteTag("eduLevel", 0),
+			new ByteTag("falldamage", 1),
+			new ByteTag("firedamage", 1),
+			new ByteTag("hasBeenLoadedInCreative", 1), //badly named, this actually determines whether achievements can be earned in this world...
+			new ByteTag("immutableWorld", 0),
+			new FloatTag("lightningLevel", 0.0),
+			new IntTag("lightningTime", 0),
+			new ByteTag("pvp", 1),
+			new FloatTag("rainLevel", 0.0),
+			new IntTag("rainTime", 0),
+			new ByteTag("spawnMobs", 1),
+			new ByteTag("texturePacksRequired", 0), //TODO
 
 			//Additional PocketMine-MP fields
-			"GameRules" => new CompoundTag("GameRules", []),
-			"hardcore" => new ByteTag("hardcore", 0),
-			"generatorName" => new StringTag("generatorName", Generator::getGeneratorName($generator)),
-			"generatorOptions" => new StringTag("generatorOptions", $options["preset"] ?? "")
+			new CompoundTag("GameRules", []),
+			new ByteTag("hardcore", 0),
+			new StringTag("generatorName", Generator::getGeneratorName($generator)),
+			new StringTag("generatorOptions", $options["preset"] ?? "")
 		]);
 
 		$nbt = new NBT(NBT::LITTLE_ENDIAN);
@@ -437,7 +437,7 @@ class LevelDB extends BaseLevelProvider{
 						   "\x00" . //Subchunk version byte
 						   $subChunks[$y]->getBlockIdArray() .
 						   $subChunks[$y]->getBlockDataArray() .
-						   $subChunks[$y]->getSkyLightArray() .
+						   $subChunks[$y]->getBlockSkyLightArray() .
 						   $subChunks[$y]->getBlockLightArray()
 			);
 		}
