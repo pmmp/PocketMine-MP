@@ -33,6 +33,8 @@ class Villager extends Creature implements NPC, Ageable{
 	const PROFESSION_PRIEST = 2;
 	const PROFESSION_BLACKSMITH = 3;
 	const PROFESSION_BUTCHER = 4;
+
+	/** @deprecated This profession does not exist in Pocket Edition and will cause a client-sided crash if used. */
 	const PROFESSION_GENERIC = 5;
 
 	const NETWORK_ID = 15;
@@ -49,7 +51,7 @@ class Villager extends Creature implements NPC, Ageable{
 		parent::initEntity();
 
 		$professionTag = $this->namedtag->getTag("Profession");
-		$this->setProfession($professionTag instanceof IntTag ? $professionTag->getValue() : self::PROFESSION_GENERIC);
+		$this->setProfession(($professionTag instanceof IntTag and $professionTag->getValue() < 5 and $professionTag->getValue() >= 0) ? $professionTag->getValue() : self::PROFESSION_FARMER);
 	}
 
 	public function saveNBT(){
