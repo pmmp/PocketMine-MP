@@ -158,7 +158,8 @@ auto-report:
  send-code: true
  send-settings: true
  send-phpinfo: false
- host: crash.pocketmine.net
+ use-https: true
+ host: crash.pmmp.io
 
 anonymous-statistics:
  #Sends anonymous statistics for data aggregation, plugin usage tracking
