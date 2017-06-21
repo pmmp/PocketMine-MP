@@ -1304,12 +1304,6 @@ class Level implements ChunkManager, Metadatable{
 		return $this->getChunk($x >> 4, $z >> 4, false)->getFullBlock($x & 0x0f, $y, $z & 0x0f);
 	}
 
-	/**
-	 * Returns whether the specified Vector3 position is within a valid area of the world.
-	 * @param Vector3 $pos
-	 *
-	 * @return bool
-	 */
 	public function isInWorld(float $x, float $y, float $z) : bool{
 		return (
 			$x <= INT32_MAX and $x >= INT32_MIN and
