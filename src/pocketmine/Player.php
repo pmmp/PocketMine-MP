@@ -1849,8 +1849,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	protected function completeLoginSequence(){
 		parent::__construct($this->level, $this->namedtag);
 
-		if(!$this->hasValidSpawnPosition() and isset($this->namedtag->SpawnLevel) and ($level = $this->server->getLevelByName((string) $this->namedtag["SpawnLevel"])) instanceof Level){
-			$this->spawnPosition = new WeakPosition($this->namedtag["SpawnX"], $this->namedtag["SpawnY"], $this->namedtag["SpawnZ"], $level);
+		if(!$this->hasValidSpawnPosition()){
+			if(isset($this->namedtag->SpawnLevel) and ($level = $this->server->getLevelByName((string) $this->namedtag["SpawnLevel"])) instanceof Level){
+				$this->spawnPosition = new WeakPosition($this->namedtag["SpawnX"], $this->namedtag["SpawnY"], $this->namedtag["SpawnZ"], $level);
+			}else{
+				$this->spawnPosition = WeakPosition::fromObject($this->level->getSafeSpawn());
+			}
 		}
 
 		$spawnPosition = $this->getSpawn();
@@ -3754,10 +3758,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		if($this->hasValidSpawnPosition()){
-			$this->namedtag["SpawnLevel"] = $this->spawnPosition->getLevel()->getFolderName();
-			$this->namedtag["SpawnX"] = (int) $this->spawnPosition->x;
-			$this->namedtag["SpawnY"] = (int) $this->spawnPosition->y;
-			$this->namedtag["SpawnZ"] = (int) $this->spawnPosition->z;
+			$this->namedtag->SpawnLevel = new StringTag("SpawnLevel", $this->spawnPosition->getLevel()->getFolderName());
+			$this->namedtag->SpawnX = new IntTag("SpawnX", (int) $this->spawnPosition->x);
+			$this->namedtag->SpawnY = new IntTag("SpawnY", (int) $this->spawnPosition->y);
+			$this->namedtag->SpawnZ = new IntTag("SpawnZ", (int) $this->spawnPosition->z);
 		}
 
 		foreach($this->achievements as $achievement => $status){
