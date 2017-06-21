@@ -1679,6 +1679,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return true;
 		}
 
+		if($this->nextChunkOrderRun-- <= 0 or $this->chunk === null){
+			$this->orderChunks();
+		}
+
+		if(count($this->loadQueue) > 0 or !$this->spawned){
+			$this->sendNextChunk();
+		}
+
 		$this->timings->startTiming();
 
 		if($this->spawned){
@@ -1740,14 +1748,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public function checkNetwork(){
 		if(!$this->isOnline()){
 			return;
-		}
-
-		if($this->nextChunkOrderRun-- <= 0 or $this->chunk === null){
-			$this->orderChunks();
-		}
-
-		if(count($this->loadQueue) > 0 or !$this->spawned){
-			$this->sendNextChunk();
 		}
 
 		if(count($this->batchedPackets) > 0){
