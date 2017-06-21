@@ -89,7 +89,7 @@ class Explosion{
 							$vBlock->x = $pointerX >= $x ? $x : $x - 1;
 							$vBlock->y = $pointerY >= $y ? $y : $y - 1;
 							$vBlock->z = $pointerZ >= $z ? $z : $z - 1;
-							if(!$this->level->isInWorld($vBlock)){
+							if(!$this->level->isInWorld($vBlock->x, $vBlock->y, $vBlock->z)){
 								break;
 							}
 							$block = $this->level->getBlock($vBlock);

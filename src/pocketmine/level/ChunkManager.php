@@ -131,4 +131,22 @@ interface ChunkManager{
 	 * @return int
 	 */
 	public function getSeed();
+
+	/**
+	 * Returns the height of the world
+	 * @return int
+	 */
+	public function getWorldHeight() : int;
+
+	/**
+	 * Returns whether the specified coordinates are within the valid world boundaries, taking world format limitations
+	 * into account.
+	 *
+	 * @param float $x
+	 * @param float $y
+	 * @param float $z
+	 *
+	 * @return bool
+	 */
+	public function isInWorld(float $x, float $y, float $z) : bool;
 }

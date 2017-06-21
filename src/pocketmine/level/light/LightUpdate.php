@@ -62,9 +62,14 @@ abstract class LightUpdate{
 	abstract protected function setLight(int $x, int $y, int $z, int $level);
 
 	public function setAndUpdateLight(int $x, int $y, int $z, int $newLevel){
+		if(!$this->level->isInWorld($x, $y, $z)){
+			throw new \InvalidArgumentException("Coordinates x=$x, y=$y, z=$z are out of range");
+		}
+
 		if(isset($this->spreadVisited[$index = Level::blockHash($x, $y, $z)]) or isset($this->removalVisited[$index])){
 			throw new \InvalidArgumentException("Already have a visit ready for this block");
 		}
+
 		$oldLevel = $this->getLight($x, $y, $z);
 
 		if($oldLevel !== $newLevel){
@@ -93,7 +98,7 @@ abstract class LightUpdate{
 			];
 
 			foreach($points as list($cx, $cy, $cz)){
-				if($cy < 0){
+				if(!$this->level->isInWorld($cx, $cy, $cz)){
 					continue;
 				}
 				$this->computeRemoveLight($cx, $cy, $cz, $oldAdjacentLight);
@@ -118,7 +123,7 @@ abstract class LightUpdate{
 			];
 
 			foreach($points as list($cx, $cy, $cz)){
-				if($cy < 0){
+				if(!$this->level->isInWorld($cx, $cy, $cz)){
 					continue;
 				}
 				$this->computeSpreadLight($cx, $cy, $cz, $newAdjacentLight);

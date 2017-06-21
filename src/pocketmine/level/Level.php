@@ -1081,7 +1081,10 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int     $delay
 	 */
 	public function scheduleDelayedBlockUpdate(Vector3 $pos, int $delay){
-		if(isset($this->scheduledBlockUpdateQueueIndex[$index = Level::blockHash($pos->x, $pos->y, $pos->z)]) and $this->scheduledBlockUpdateQueueIndex[$index] <= $delay){
+		if(
+			!$this->isInWorld($pos->x, $pos->y, $pos->z) or
+			(isset($this->scheduledBlockUpdateQueueIndex[$index = Level::blockHash($pos->x, $pos->y, $pos->z)]) and $this->scheduledBlockUpdateQueueIndex[$index] <= $delay)
+		){
 			return;
 		}
 		$this->scheduledBlockUpdateQueueIndex[$index] = $delay;
@@ -1098,7 +1101,8 @@ class Level implements ChunkManager, Metadatable{
 		$pos = $pos->floor();
 
 		for($i = 0; $i <= 5; ++$i){
-			if($this->isInWorld($side = $pos->getSide($i))){
+			$side = $pos->getSide($i);
+			if($this->isInWorld($side->x, $side->y, $side->z)){
 				$this->neighbourBlockUpdateQueue->enqueue(Level::blockHash($side->x, $side->y, $side->z));
 			}
 		}
@@ -1306,11 +1310,11 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @return bool
 	 */
-	public function isInWorld(Vector3 $pos) : bool{
+	public function isInWorld(float $x, float $y, float $z) : bool{
 		return (
-			$pos->x <= INT32_MAX and $pos->x >= INT32_MIN and
-			$pos->y < $this->provider->getWorldHeight() and $pos->y >= 0 and
-			$pos->z <= INT32_MAX and $pos->z >= INT32_MIN
+			$x <= INT32_MAX and $x >= INT32_MIN and
+			$y < $this->getWorldHeight() and $y >= 0 and
+			$z <= INT32_MAX and $z >= INT32_MIN
 		);
 	}
 
@@ -1332,7 +1336,7 @@ class Level implements ChunkManager, Metadatable{
 		$fullState = 0;
 		$index = null;
 
-		if($this->isInWorld($pos)){
+		if($this->isInWorld($pos->x, $pos->y, $pos->z)){
 			$index = Level::blockHash($pos->x, $pos->y, $pos->z);
 			if($cached and isset($this->blockCache[$index])){
 				return $this->blockCache[$index];
@@ -1474,7 +1478,7 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function setBlock(Vector3 $pos, Block $block, bool $direct = false, bool $update = true) : bool{
 		$pos = $pos->floor();
-		if($pos->y < 0 or $pos->y >= $this->provider->getWorldHeight()){
+		if(!$this->isInWorld($pos->x, $pos->y, $pos->z)){
 			return false;
 		}
 
@@ -2789,6 +2793,10 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function setSeed(int $seed){
 		$this->provider->setSeed($seed);
+	}
+
+	public function getWorldHeight() : int{
+		return $this->provider->getWorldHeight();
 	}
 
 
