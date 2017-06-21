@@ -33,6 +33,8 @@ class Villager extends Creature implements NPC, Ageable{
 	const PROFESSION_PRIEST = 2;
 	const PROFESSION_BLACKSMITH = 3;
 	const PROFESSION_BUTCHER = 4;
+
+	/** @deprecated This profession does not exist in Pocket Edition and will cause a client-sided crash if used. */
 	const PROFESSION_GENERIC = 5;
 
 	const NETWORK_ID = 15;
@@ -47,9 +49,14 @@ class Villager extends Creature implements NPC, Ageable{
 
 	protected function initEntity(){
 		parent::initEntity();
-		if(!isset($this->namedtag->Profession)){
-			$this->setProfession(self::PROFESSION_GENERIC);
-		}
+
+		$professionTag = $this->namedtag->getTag("Profession");
+		$this->setProfession(($professionTag instanceof IntTag and $professionTag->getValue() < 5 and $professionTag->getValue() >= 0) ? $professionTag->getValue() : self::PROFESSION_FARMER);
+	}
+
+	public function saveNBT(){
+		parent::saveNBT();
+		$this->namedtag->setTag(new IntTag("Profession", $this->getProfession()));
 	}
 
 	public function spawnTo(Player $player){
@@ -73,17 +80,17 @@ class Villager extends Creature implements NPC, Ageable{
 	/**
 	 * Sets the villager profession
 	 *
-	 * @param $profession
+	 * @param int $profession
 	 */
-	public function setProfession($profession){
-		$this->namedtag->Profession = new IntTag("Profession", $profession);
+	public function setProfession(int $profession){
+		$this->setDataProperty(self::DATA_VARIANT, self::DATA_TYPE_INT, $profession);
 	}
 
-	public function getProfession(){
-		return $this->namedtag["Profession"];
+	public function getProfession() : int{
+		return $this->getDataProperty(self::DATA_VARIANT);
 	}
 
-	public function isBaby(){
+	public function isBaby() : bool{
 		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_BABY);
 	}
 }

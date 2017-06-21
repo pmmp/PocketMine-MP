@@ -1301,7 +1301,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->resetFallDistance();
 
-		$this->namedtag->playerGameType = new IntTag("playerGameType", $this->gamemode);
+		$this->namedtag->setTag(new IntTag("playerGameType", $this->gamemode));
 		if(!$client){ //Gamemode changed by server, do not send for client changes
 			$this->sendGamemode();
 		}else{
@@ -1800,15 +1800,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->namedtag = $this->server->getOfflinePlayerData($this->username);
 
 		$this->playedBefore = ($this->namedtag["lastPlayed"] - $this->namedtag["firstPlayed"]) > 1; // microtime(true) - microtime(true) may have less than one millisecond difference
-		if(!isset($this->namedtag->NameTag)){
-			$this->namedtag->NameTag = new StringTag("NameTag", $this->username);
-		}else{
-			$this->namedtag["NameTag"] = $this->username;
-		}
+
+		$this->namedtag->setTag(new StringTag("NameTag", $this->username));
+
 		$this->gamemode = $this->namedtag["playerGameType"] & 0x03;
 		if($this->server->getForceGamemode()){
 			$this->gamemode = $this->server->getGamemode();
-			$this->namedtag->playerGameType = new IntTag("playerGameType", $this->gamemode);
+			$this->namedtag->setTag(new IntTag("playerGameType", $this->gamemode));
 		}
 
 		$this->allowFlight = (bool) ($this->gamemode & 0x01);
@@ -1826,11 +1824,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->achievements = [];
 
 		/** @var ByteTag $achievement */
-		foreach($this->namedtag->Achievements as $achievement){
+		foreach($this->namedtag->getTag("Achievements") as $achievement){
 			$this->achievements[$achievement->getName()] = $achievement->getValue() > 0 ? true : false;
 		}
 
-		$this->namedtag->lastPlayed = new LongTag("lastPlayed", (int) floor(microtime(true) * 1000));
+		$this->namedtag->setTag(new LongTag("lastPlayed", (int) floor(microtime(true) * 1000)));
 		if($this->server->getAutoSave()){
 			$this->server->saveOfflinePlayerData($this->username, $this->namedtag, true);
 		}
@@ -1849,7 +1847,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	protected function completeLoginSequence(){
 		parent::__construct($this->level, $this->namedtag);
 
-		if(!$this->hasValidSpawnPosition() and isset($this->namedtag->SpawnLevel) and ($level = $this->server->getLevelByName((string) $this->namedtag["SpawnLevel"])) instanceof Level){
+		$spawnLevelTag = $this->namedtag->getTag("SpawnLevel");
+		if(!$this->hasValidSpawnPosition() and $spawnLevelTag instanceof StringTag and ($level = $this->server->getLevelByName($spawnLevelTag->getValue())) instanceof Level){
 			$this->spawnPosition = new WeakPosition($this->namedtag["SpawnX"], $this->namedtag["SpawnY"], $this->namedtag["SpawnZ"], $level);
 		}
 
@@ -3750,7 +3749,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		parent::saveNBT();
 
 		if($this->isValid()){
-			$this->namedtag->Level = new StringTag("Level", $this->level->getFolderName());
+			$this->namedtag->setTag(new StringTag("Level", $this->level->getFolderName()));
 		}
 
 		if($this->hasValidSpawnPosition()){
@@ -3760,9 +3759,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->namedtag["SpawnZ"] = (int) $this->spawnPosition->z;
 		}
 
+		$achievements = $this->namedtag->getTag("Achievements");
+		assert($achievements instanceof CompoundTag);
 		foreach($this->achievements as $achievement => $status){
-			$this->namedtag->Achievements[$achievement] = new ByteTag($achievement, $status === true ? 1 : 0);
+			$achievements[$achievement] = new ByteTag($achievement, $status ? 1 : 0);
 		}
+		$this->namedtag->setTag($achievements);
 
 		$this->namedtag["playerGameType"] = $this->gamemode;
 		$this->namedtag["lastPlayed"] = (int) floor(microtime(true) * 1000);

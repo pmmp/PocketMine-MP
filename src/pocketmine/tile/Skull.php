@@ -48,19 +48,19 @@ class Skull extends Spawnable{
 	}
 
 	public function setType(int $type){
-		$this->namedtag->SkullType = new ByteTag("SkullType", $type);
+		$this->namedtag->setTag(new ByteTag("SkullType", $type));
 		$this->onChanged();
 	}
 
 	public function getType(){
-		return $this->namedtag["SkullType"];
+		return $this->namedtag->getTag("SkullType")->getValue();
 	}
 
 	public function getSpawnCompound(){
 		return new CompoundTag("", [
 			new StringTag("id", Tile::SKULL),
-			$this->namedtag->SkullType,
-			$this->namedtag->Rot,
+			$this->namedtag->getTag("SkullType"),
+			$this->namedtag->getTag("Rot"),
 			new IntTag("x", (int) $this->x),
 			new IntTag("y", (int) $this->y),
 			new IntTag("z", (int) $this->z)

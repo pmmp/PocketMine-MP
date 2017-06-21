@@ -60,8 +60,8 @@ abstract class Projectile extends Entity{
 
 		$this->setMaxHealth(1);
 		$this->setHealth(1);
-		if(isset($this->namedtag->Age)){
-			$this->age = $this->namedtag["Age"];
+		if($this->namedtag->exists("Age")){
+			$this->age = $this->namedtag->getTag("Age")->getValue();
 		}
 	}
 
@@ -105,7 +105,7 @@ abstract class Projectile extends Entity{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Age = new ShortTag("Age", $this->age);
+		$this->namedtag->setTag(new ShortTag("Age", $this->age));
 	}
 
 	public function onUpdate($currentTick){

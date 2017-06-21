@@ -61,7 +61,7 @@ class SpawnEgg extends Item{
 		]);
 
 		if($this->hasCustomName()){
-			$nbt->CustomName = new StringTag("CustomName", $this->getCustomName());
+			$nbt->setTag(new StringTag("CustomName", $this->getCustomName()));
 		}
 
 		$entity = Entity::createEntity($this->meta, $level, $nbt);

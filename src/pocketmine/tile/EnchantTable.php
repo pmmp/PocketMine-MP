@@ -31,20 +31,20 @@ class EnchantTable extends Spawnable implements Nameable{
 
 
 	public function getName() : string{
-		return isset($this->namedtag->CustomName) ? $this->namedtag->CustomName->getValue() : "Enchanting Table";
+		return ($t = $this->namedtag->getTag("CustomName")) instanceof StringTag ? $t->getValue() : "Enchanting Table";
 	}
 
 	public function hasName() : bool{
-		return isset($this->namedtag->CustomName);
+		return $this->namedtag->exists("CustomName");
 	}
 
 	public function setName(string $str){
 		if($str === ""){
-			unset($this->namedtag->CustomName);
+			$this->namedtag->remove("CustomName");
 			return;
 		}
 
-		$this->namedtag->CustomName = new StringTag("CustomName", $str);
+		$this->namedtag->setTag(new StringTag("CustomName", $str));
 	}
 
 	public function getSpawnCompound(){
@@ -56,7 +56,7 @@ class EnchantTable extends Spawnable implements Nameable{
 		]);
 
 		if($this->hasName()){
-			$c->CustomName = $this->namedtag->CustomName;
+			$c->setTag($this->namedtag->getTag("CustomName"));
 		}
 
 		return $c;

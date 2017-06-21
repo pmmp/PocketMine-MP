@@ -40,33 +40,29 @@ class Anvil extends McRegion{
 
 	public function nbtSerialize(Chunk $chunk) : string{
 		$nbt = new CompoundTag("Level", []);
-		$nbt->xPos = new IntTag("xPos", $chunk->getX());
-		$nbt->zPos = new IntTag("zPos", $chunk->getZ());
+		$nbt->setTag(new IntTag("xPos", $chunk->getX()));
+		$nbt->setTag(new IntTag("zPos", $chunk->getZ()));
 
-		$nbt->V = new ByteTag("V", 1);
-		$nbt->LastUpdate = new LongTag("LastUpdate", 0); //TODO
-		$nbt->InhabitedTime = new LongTag("InhabitedTime", 0); //TODO
-		$nbt->TerrainPopulated = new ByteTag("TerrainPopulated", $chunk->isPopulated() ? 1 : 0);
-		$nbt->LightPopulated = new ByteTag("LightPopulated", $chunk->isLightPopulated() ? 1 : 0);
+		$nbt->setTag(new ByteTag("V", 1));
+		$nbt->setTag(new LongTag("LastUpdate", 0)); //TODO
+		$nbt->setTag(new LongTag("InhabitedTime", 0)); //TODO
+		$nbt->setTag(new ByteTag("TerrainPopulated", $chunk->isPopulated() ? 1 : 0));
+		$nbt->setTag(new ByteTag("LightPopulated", $chunk->isLightPopulated() ? 1 : 0));
 
-		$nbt->Sections = new ListTag("Sections", []);
-		$nbt->Sections->setTagType(NBT::TAG_Compound);
-		$subChunks = -1;
+		$sections = [];
 		foreach($chunk->getSubChunks() as $y => $subChunk){
 			if($subChunk->isEmpty()){
 				continue;
 			}
-			$nbt->Sections[++$subChunks] = new CompoundTag("", [
-				new ByteTag("Y", $y),
-				new ByteArrayTag("Blocks", ChunkUtils::reorderByteArray($subChunk->getBlockIdArray())), //Generic in-memory chunks are currently always XZY
-				new ByteArrayTag("Data", ChunkUtils::reorderNibbleArray($subChunk->getBlockDataArray())),
-				new ByteArrayTag("SkyLight", ChunkUtils::reorderNibbleArray($subChunk->getBlockSkyLightArray(), "\xff")),
-				new ByteArrayTag("BlockLight", ChunkUtils::reorderNibbleArray($subChunk->getBlockLightArray()))
-			]);
-		}
 
-		$nbt->Biomes = new ByteArrayTag("Biomes", $chunk->getBiomeIdArray());
-		$nbt->HeightMap = new IntArrayTag("HeightMap", $chunk->getHeightMapArray());
+			$subChunkTag = $this->writeSection($subChunk);
+			$subChunkTag->putTag(new ByteTag("Y", $y));
+			$sections[] = $subChunkTag;
+		}
+		$nbt->setTag(new ListTag("Sections", $sections, NBT::TAG_Compound));
+
+		$nbt->setTag(new ByteArrayTag("Biomes", $chunk->getBiomeIdArray()));
+		$nbt->setTag(new IntArrayTag("HeightMap", $chunk->getHeightMapArray()));
 
 		$entities = [];
 
@@ -77,8 +73,7 @@ class Anvil extends McRegion{
 			}
 		}
 
-		$nbt->Entities = new ListTag("Entities", $entities);
-		$nbt->Entities->setTagType(NBT::TAG_Compound);
+		$nbt->setTag(new ListTag("Entities", $entities, NBT::TAG_Compound));
 
 		$tiles = [];
 		foreach($chunk->getTiles() as $tile){
@@ -86,8 +81,7 @@ class Anvil extends McRegion{
 			$tiles[] = $tile->namedtag;
 		}
 
-		$nbt->TileEntities = new ListTag("TileEntities", $tiles);
-		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
+		$nbt->setTag(new ListTag("TileEntities", $tiles, NBT::TAG_Compound));
 
 		//TODO: TileTicks
 
@@ -103,53 +97,66 @@ class Anvil extends McRegion{
 		try{
 			$nbt->readCompressed($data);
 
-			$chunk = $nbt->getData();
+			$chunk = $nbt->getData()->getTag("Level");
 
-			if(!isset($chunk->Level) or !($chunk->Level instanceof CompoundTag)){
+			if(!($chunk instanceof CompoundTag)){
 				throw new ChunkException("Invalid NBT format");
 			}
 
-			$chunk = $chunk->Level;
-
 			$subChunks = [];
-			if($chunk->Sections instanceof ListTag){
-				foreach($chunk->Sections as $subChunk){
+
+			$sectionsTag = $chunk->getTag("Sections");
+			if($sectionsTag instanceof ListTag){
+				foreach($sectionsTag as $subChunk){
 					if($subChunk instanceof CompoundTag){
-						$subChunks[$subChunk->Y->getValue()] = new SubChunk(
-							ChunkUtils::reorderByteArray($subChunk->Blocks->getValue()),
-							ChunkUtils::reorderNibbleArray($subChunk->Data->getValue()),
-							ChunkUtils::reorderNibbleArray($subChunk->SkyLight->getValue(), "\xff"),
-							ChunkUtils::reorderNibbleArray($subChunk->BlockLight->getValue())
-						);
+						$subChunks[$subChunk->getTag("Y")->getValue()] = $this->readSection($subChunk);
 					}
 				}
 			}
 
-			if(isset($chunk->BiomeColors)){
-				$biomeIds = ChunkUtils::convertBiomeColors($chunk->BiomeColors->getValue()); //Convert back to original format
-			}elseif(isset($chunk->Biomes)){
-				$biomeIds = $chunk->Biomes->getValue();
+			if($chunk->exists("BiomeColors")){
+				$biomeIds = ChunkUtils::convertBiomeColors($chunk->getTag("BiomeColors")->getValue()); //Convert back to original format
+			}elseif($chunk->exists("Biomes")){
+				$biomeIds = $chunk->getTag("Biomes")->getValue();
 			}else{
 				$biomeIds = "";
 			}
 
 			$result = new Chunk(
-				$chunk["xPos"],
-				$chunk["zPos"],
+				$chunk->getTag("xPos")->getValue(),
+				$chunk->getTag("zPos")->getValue(),
 				$subChunks,
-				isset($chunk->Entities) ? $chunk->Entities->getValue() : [],
-				isset($chunk->TileEntities) ? $chunk->TileEntities->getValue() : [],
+				$chunk->exists("Entities") ? $chunk->getTag("Entities")->getValue() : [],
+				$chunk->exists("TileEntities") ? $chunk->getTag("TileEntities")->getValue() : [],
 				$biomeIds,
-				isset($chunk->HeightMap) ? $chunk->HeightMap->getValue() : []
+				$chunk->exists("HeightMap") ? $chunk->getTag("HeightMap")->getValue() : []
 			);
-			$result->setLightPopulated(isset($chunk->LightPopulated) ? ((bool) $chunk->LightPopulated->getValue()) : false);
-			$result->setPopulated(isset($chunk->TerrainPopulated) ? ((bool) $chunk->TerrainPopulated->getValue()) : false);
+			$result->setLightPopulated($chunk->exists("LightPopulated") ? $chunk->getTag("LightPopulated")->getValue() !== 0 : false);
+			$result->setPopulated($chunk->exists("TerrainPopulated") ? $chunk->getTag("TerrainPopulated")->getValue() !== 0 : false);
 			$result->setGenerated(true);
 			return $result;
 		}catch(\Throwable $e){
 			MainLogger::getLogger()->logException($e);
 			return null;
 		}
+	}
+
+	protected function readSection(CompoundTag $tag) : SubChunk{
+		return new SubChunk(
+			ChunkUtils::reorderByteArray($tag->getTag("Blocks")->getValue()),
+			ChunkUtils::reorderNibbleArray($tag->getTag("Data")->getValue()),
+			ChunkUtils::reorderNibbleArray($tag->getTag("SkyLight")->getValue(), "\xff"),
+			ChunkUtils::reorderNibbleArray($tag->getTag("BlockLight")->getValue())
+		);
+	}
+
+	protected function writeSection(SubChunk $subChunk) : CompoundTag{
+		return new CompoundTag("", [
+			new ByteArrayTag("Blocks", ChunkUtils::reorderByteArray($subChunk->getBlockIdArray())),
+			new ByteArrayTag("Data", ChunkUtils::reorderNibbleArray($subChunk->getBlockDataArray())),
+			new ByteArrayTag("SkyLight", ChunkUtils::reorderNibbleArray($subChunk->getBlockSkyLightArray())),
+			new ByteArrayTag("BlockLight", ChunkUtils::reorderNibbleArray($subChunk->getBlockLightArray()))
+		]);
 	}
 
 	public static function getProviderName() : string{

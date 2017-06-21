@@ -28,7 +28,7 @@ namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
 
-abstract class Tag extends \stdClass{
+abstract class Tag{
 
 	protected $value;
 

@@ -50,7 +50,7 @@ class EnchantingTable extends Transparent{
 		]);
 
 		if($item->hasCustomName()){
-			$nbt->CustomName = new StringTag("CustomName", $item->getCustomName());
+			$nbt->setTag(new StringTag("CustomName", $item->getCustomName()));
 		}
 
 		if($item->hasCustomBlockData()){

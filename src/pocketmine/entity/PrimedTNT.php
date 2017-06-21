@@ -57,8 +57,8 @@ class PrimedTNT extends Entity implements Explosive{
 	protected function initEntity(){
 		parent::initEntity();
 
-		if(isset($this->namedtag->Fuse)){
-			$this->fuse = $this->namedtag["Fuse"];
+		if($this->namedtag->exists("Fuse")){
+			$this->fuse = $this->namedtag->getTag("Fuse")->getValue();
 		}else{
 			$this->fuse = 80;
 		}
@@ -76,7 +76,7 @@ class PrimedTNT extends Entity implements Explosive{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Fuse = new ByteTag("Fuse", $this->fuse);
+		$this->namedtag->setTag(new ByteTag("Fuse", $this->fuse));
 	}
 
 	public function onUpdate($currentTick){

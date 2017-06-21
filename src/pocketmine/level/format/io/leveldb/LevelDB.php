@@ -87,26 +87,29 @@ class LevelDB extends BaseLevelProvider{
 			"compression" => LEVELDB_ZLIB_COMPRESSION
 		]);
 
-		if(isset($this->levelData->StorageVersion) and $this->levelData->StorageVersion->getValue() > self::CURRENT_STORAGE_VERSION){
+		$storageVersion = $this->levelData->getTag("StorageVersion");
+		assert($storageVersion instanceof IntTag);
+		if($storageVersion->getValue() > self::CURRENT_STORAGE_VERSION){
 			throw new LevelException("Specified LevelDB world format version is newer than the version supported by the server");
 		}
 
-		if(!isset($this->levelData->generatorName)){
-			if(isset($this->levelData->Generator)){
-				switch((int) $this->levelData->Generator->getValue()){ //Detect correct generator from MCPE data
+		if(!$this->levelData->exists("generatorName")){
+			$generatorTag = $this->levelData->getTag("Generator");
+			if($generatorTag instanceof IntTag){
+				switch($generatorTag->getValue()){ //Detect correct generator from MCPE data
 					case self::GENERATOR_FLAT:
-						$this->levelData->generatorName = new StringTag("generatorName", (string) Generator::getGenerator("FLAT"));
+						$this->levelData->setTag(new StringTag("generatorName", (string) Generator::getGenerator("FLAT")));
 						if(($layers = $this->db->get(self::ENTRY_FLAT_WORLD_LAYERS)) !== false){ //Detect existing custom flat layers
 							$layers = trim($layers, "[]");
 						}else{
 							$layers = "7,3,3,2";
 						}
-						$this->levelData->generatorOptions = new StringTag("generatorOptions", "2;" . $layers . ";1");
+						$this->levelData->setTag(new StringTag("generatorOptions", "2;" . $layers . ";1"));
 						break;
 					case self::GENERATOR_INFINITE:
 						//TODO: add a null generator which does not generate missing chunks (to allow importing back to MCPE and generating more normal terrain without PocketMine messing things up)
-						$this->levelData->generatorName = new StringTag("generatorName", (string) Generator::getGenerator("DEFAULT"));
-						$this->levelData->generatorOptions = new StringTag("generatorOptions", "");
+						$this->levelData->setTag(new StringTag("generatorName", (string) Generator::getGenerator("DEFAULT")));
+						$this->levelData->setTag(new StringTag("generatorOptions", ""));
 						break;
 					case self::GENERATOR_LIMITED:
 						throw new LevelException("Limited worlds are not currently supported");
@@ -114,12 +117,12 @@ class LevelDB extends BaseLevelProvider{
 						throw new LevelException("Unknown LevelDB world format type, this level cannot be loaded");
 				}
 			}else{
-				$this->levelData->generatorName = new StringTag("generatorName", (string) Generator::getGenerator("DEFAULT"));
+				$this->levelData->setTag(new StringTag("generatorName", (string) Generator::getGenerator("DEFAULT")));
 			}
 		}
 
-		if(!isset($this->levelData->generatorOptions)){
-			$this->levelData->generatorOptions = new StringTag("generatorOptions", "");
+		if(!$this->levelData->exists("generatorOptions")){
+			$this->levelData->setTag(new StringTag("generatorOptions", ""));
 		}
 	}
 

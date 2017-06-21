@@ -89,8 +89,8 @@ class FlowerPot extends Spawnable{
 			new IntTag("x", (int) $this->x),
 			new IntTag("y", (int) $this->y),
 			new IntTag("z", (int) $this->z),
-			$this->namedtag->item,
-			$this->namedtag->mData
+			$this->namedtag->getTag("item"),
+			$this->namedtag->getTag("mData")
 		]);
 	}
 }

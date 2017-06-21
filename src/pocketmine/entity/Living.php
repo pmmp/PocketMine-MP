@@ -51,16 +51,22 @@ abstract class Living extends Entity implements Damageable{
 	protected function initEntity(){
 		parent::initEntity();
 
-		if(isset($this->namedtag->HealF)){
-			$this->namedtag->Health = new FloatTag("Health", (float) $this->namedtag["HealF"]);
-			unset($this->namedtag->HealF);
-		}elseif(isset($this->namedtag->Health) and !($this->namedtag->Health instanceof FloatTag)){
-			$this->namedtag->Health = new FloatTag("Health", (float) $this->namedtag->Health->getValue());
+		$health = $this->getMaxHealth();
+
+		$healFTag = $this->namedtag->getTag("HealF");
+		if($healFTag instanceof FloatTag){
+			$health = $healFTag->getValue();
+			$this->namedtag->remove("HealF");
 		}else{
-			$this->namedtag->Health = new FloatTag("Health", (float) $this->getMaxHealth());
+			$healthTag = $this->namedtag->getTag("Health");
+			if($healthTag instanceof FloatTag){
+				$health = $healthTag->getValue();
+			}
 		}
 
-		$this->setHealth($this->namedtag["Health"]);
+		$this->namedtag->setTag(new FloatTag("Health", $health));
+
+		$this->setHealth($health);
 	}
 
 	protected function addAttributes(){
@@ -102,7 +108,7 @@ abstract class Living extends Entity implements Damageable{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Health = new FloatTag("Health", $this->getHealth());
+		$this->namedtag->setTag(new FloatTag("Health", $this->getHealth()));
 	}
 
 	abstract public function getName();

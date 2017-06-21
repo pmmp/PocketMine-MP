@@ -72,7 +72,7 @@ class SignPost extends Transparent{
 			]);
 
 			if($player !== null){
-				$nbt->Creator = new StringTag("Creator", $player->getRawUniqueId());
+				$nbt->setTag(new StringTag("Creator", $player->getRawUniqueId()));
 			}
 
 			if($item->hasCustomBlockData()){

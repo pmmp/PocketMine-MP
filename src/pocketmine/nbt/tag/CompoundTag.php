@@ -69,6 +69,53 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 		}
 	}
 
+	/**
+	 * @param string $name
+	 *
+	 * @return NamedTag|null
+	 */
+	public function getTag(string $name){
+		return $this->exists($name) ? $this->{$name} : null;
+	}
+
+	/**
+	 * @param string $name
+	 * @param bool   $create
+	 *
+	 * @return CompoundTag|null
+	 */
+	public function getCompoundTag(string $name, bool $create = false){
+		return ($this->exists($name) and $this->{$name} instanceof CompoundTag) ? $this->{$name} : ($create ? ($this->{$name} = new CompoundTag($name, [])) : null);
+	}
+
+	/**
+	 * @param NamedTag $tag
+	 */
+	public function setTag(NamedTag $tag){
+		$this->{$tag->getName()} = $tag;
+	}
+
+	/**
+	 * @param NamedTag $tag
+	 */
+	public function putTag(NamedTag $tag){
+		$this->setTag($tag);
+	}
+
+	/**
+	 * @param string $name
+	 * @return bool
+	 */
+	public function exists(string $name) : bool{
+		return isset($this->{$name}) and $this->{$name} instanceof NamedTag;
+	}
+
+	public function remove(string ...$names){
+		foreach($names as $name){
+			unset($this->{$name});
+		}
+	}
+
 	public function offsetExists($offset){
 		return isset($this->{$offset}) and $this->{$offset} instanceof Tag;
 	}

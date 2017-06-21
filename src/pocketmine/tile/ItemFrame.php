@@ -34,12 +34,14 @@ use pocketmine\nbt\tag\StringTag;
 class ItemFrame extends Spawnable{
 
 	public function __construct(Level $level, CompoundTag $nbt){
-		if(!isset($nbt->ItemRotation)){
-			$nbt->ItemRotation = new ByteTag("ItemRotation", 0);
+		$itemRotation = $nbt->getTag("ItemRotation");
+		if(!($itemRotation instanceof ByteTag)){
+			$nbt->setTag(new ByteTag("ItemRotation", 0));
 		}
 
-		if(!isset($nbt->ItemDropChance)){
-			$nbt->ItemDropChance = new FloatTag("ItemDropChance", 1.0);
+		$itemDropChance = $nbt->getTag("ItemDropChance");
+		if(!($itemDropChance instanceof FloatTag)){
+			$nbt->setTag(new FloatTag("ItemDropChance", 1.0));
 		}
 
 		parent::__construct($level, $nbt);
@@ -50,37 +52,34 @@ class ItemFrame extends Spawnable{
 	}
 
 	public function getItem() : Item{
-		if(isset($this->namedtag->Item)){
-			return Item::nbtDeserialize($this->namedtag->Item);
-		}else{
-			return Item::get(Item::AIR);
-		}
+		$itemTag = $this->namedtag->getCompoundTag("Item");
+		return $itemTag !== null ? Item::nbtDeserialize($itemTag) : Item::get(Item::AIR, 0, 0);
 	}
 
 	public function setItem(Item $item = null){
 		if($item !== null and $item->getId() !== Item::AIR){
-			$this->namedtag->Item = $item->nbtSerialize(-1, "Item");
+			$this->namedtag->setTag($item->nbtSerialize(-1, "Item"));
 		}else{
-			unset($this->namedtag->Item);
+			$this->namedtag->remove("Item");
 		}
 		$this->onChanged();
 	}
 
 	public function getItemRotation() : int{
-		return $this->namedtag->ItemRotation->getValue();
+		return $this->namedtag->getTag("ItemRotation")->getValue();
 	}
 
 	public function setItemRotation(int $rotation){
-		$this->namedtag->ItemRotation = new ByteTag("ItemRotation", $rotation);
+		$this->namedtag->setTag(new ByteTag("ItemRotation", $rotation));
 		$this->onChanged();
 	}
 
 	public function getItemDropChance() : float{
-		return $this->namedtag->ItemDropChance->getValue();
+		return $this->namedtag->getTag("ItemDropChance")->getValue();
 	}
 
 	public function setItemDropChance(float $chance){
-		$this->namedtag->ItemDropChance = new FloatTag("ItemDropChance", $chance);
+		$this->namedtag->setTag(new FloatTag("ItemDropChance", $chance));
 		$this->onChanged();
 	}
 
@@ -90,11 +89,11 @@ class ItemFrame extends Spawnable{
 			new IntTag("x", (int) $this->x),
 			new IntTag("y", (int) $this->y),
 			new IntTag("z", (int) $this->z),
-			$this->namedtag->ItemDropChance,
-			$this->namedtag->ItemRotation,
+			$this->namedtag->getTag("ItemDropChance"),
+			$this->namedtag->getTag("ItemRotation"),
 		]);
 		if($this->hasItem()){
-			$tag->Item = $this->namedtag->Item;
+			$tag->setTag(clone $this->namedtag->getCompoundTag("Item"));
 		}
 		return $tag;
 	}

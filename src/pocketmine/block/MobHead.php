@@ -80,7 +80,7 @@ class MobHead extends Flowable{
 				new IntTag("z", (int) $this->z)
 			]);
 			if($item->hasCustomName()){
-				$nbt->CustomName = new StringTag("CustomName", $item->getCustomName());
+				$nbt->setTag(new StringTag("CustomName", $item->getCustomName()));
 			}
 			/** @var Spawnable $tile */
 			Tile::createTile("Skull", $this->getLevel(), $nbt);

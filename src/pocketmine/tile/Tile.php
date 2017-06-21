@@ -144,10 +144,10 @@ abstract class Tile extends Position{
 	}
 
 	public function saveNBT(){
-		$this->namedtag->id = new StringTag("id", $this->getSaveId());
-		$this->namedtag->x = new IntTag("x", $this->x);
-		$this->namedtag->y = new IntTag("y", $this->y);
-		$this->namedtag->z = new IntTag("z", $this->z);
+		$this->namedtag->setTag(new StringTag("id", $this->getSaveId()));
+		$this->namedtag->setTag(new IntTag("x", $this->x));
+		$this->namedtag->setTag(new IntTag("y", $this->y));
+		$this->namedtag->setTag(new IntTag("z", $this->z));
 	}
 
 	public function getCleanedNBT(){
