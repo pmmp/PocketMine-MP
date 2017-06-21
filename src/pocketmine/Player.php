@@ -886,11 +886,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$pos = $ev->getRespawnPosition();
 
-		$pk = new RespawnPacket();
-		$pk->x = $pos->x;
-		$pk->y = $pos->y;
-		$pk->z = $pos->z;
-		$this->dataPacket($pk);
+		$this->sendRespawnPacket($pos);
 
 		$this->sendPlayStatus(PlayStatusPacket::PLAYER_SPAWN);
 
@@ -930,15 +926,18 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		if($this->getHealth() <= 0){
-			$pk = new RespawnPacket();
-			$pos = $this->getSpawn();
-			$pk->x = $pos->x;
-			$pk->y = $pos->y;
-			$pk->z = $pos->z;
-			$this->dataPacket($pk);
+			$this->sendRespawnPacket($this->getSpawn());
 		}
 
 		$this->joined = true;
+	}
+
+	protected function sendRespawnPacket(Vector3 $pos){
+		$pk = new RespawnPacket();
+		$pk->x = $pos->x;
+		$pk->y = $pos->y + $this->baseOffset;
+		$pk->z = $pos->z;
+		$this->dataPacket($pk);
 	}
 
 	protected function orderChunks(){
@@ -3796,12 +3795,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		parent::kill();
 
-		$pk = new RespawnPacket();
-		$pos = $this->getSpawn();
-		$pk->x = $pos->x;
-		$pk->y = $pos->y;
-		$pk->z = $pos->z;
-		$this->dataPacket($pk);
+		$this->sendRespawnPacket($this->getSpawn());
 	}
 
 	protected function callDeathEvent(){
