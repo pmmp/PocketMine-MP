@@ -1306,21 +1306,23 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @return bool
 	 */
-	public function isInWorld(Vector3 $pos){
+	public function isInWorld(Vector3 $pos) : bool{
 		return (
-			$pos->x < 0x7fffffff and $pos->x > -0x7fffffff and
+			$pos->x <= INT32_MAX and $pos->x >= INT32_MIN and
 			$pos->y < $this->provider->getWorldHeight() and $pos->y >= 0 and
-			$pos->z < 0x7fffffff and $pos->z > -0x7fffffff
+			$pos->z <= INT32_MAX and $pos->z >= INT32_MIN
 		);
 	}
 
 	/**
 	 * Gets the Block object at the Vector3 location
 	 *
+	 * Note for plugin developers: If you are using this method a lot (thousands of times for many positions for
+	 * example), you may want to set addToCache to false to avoid using excessive amounts of memory.
+	 *
 	 * @param Vector3 $pos
 	 * @param bool    $cached Whether to use the block cache for getting the block (faster, but may be inaccurate)
 	 * @param bool    $addToCache Whether to cache the block object created by this method call.
-	 *                             Note for plugin developers: If you are using this method a lot (thousands of times for many positions), you may want to set this to false to avoid using excessive amounts of memory.
 	 *
 	 * @return Block
 	 */
