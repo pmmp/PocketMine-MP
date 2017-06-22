@@ -273,7 +273,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/** @var Vector3 */
 	protected $forceMovement = null;
 	/** @var Vector3 */
-	protected $teleportPosition = null;
 	protected $connected = true;
 	protected $ip;
 	protected $removeFormat = true;
@@ -853,7 +852,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->level->registerChunkLoader($this, $X, $Z, false);
 
 			if(!$this->level->populateChunk($X, $Z)){
-				if($this->spawned and $this->teleportPosition === null){
+				if($this->spawned){
 					continue;
 				}else{
 					break;
@@ -864,7 +863,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->level->requestChunk($X, $Z, $this);
 		}
 
-		if($this->spawned === false and $this->teleportPosition === null and count($this->usedChunks) >= $this->spawnThreshold){
+		if($this->spawned === false and count($this->usedChunks) >= $this->spawnThreshold){
 			$this->doFirstSpawn();
 		}
 
@@ -1497,7 +1496,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	protected function processMovement($tickDiff){
-		if(!$this->isAlive() or !$this->spawned or $this->newPosition === null or $this->teleportPosition !== null or $this->isSleeping()){
+		if(!$this->isAlive() or !$this->spawned or $this->newPosition === null or $this->isSleeping()){
 			return;
 		}
 
@@ -1712,8 +1711,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 			}
 		}
-
-		$this->checkTeleportPosition();
 
 		$this->timings->stopTiming();
 
@@ -4005,32 +4002,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 	}
 
-	protected function checkTeleportPosition(){
-		if($this->teleportPosition !== null){
-			$chunkX = $this->teleportPosition->x >> 4;
-			$chunkZ = $this->teleportPosition->z >> 4;
-
-			for($X = -1; $X <= 1; ++$X){
-				for($Z = -1; $Z <= 1; ++$Z){
-					if(!isset($this->usedChunks[$index = Level::chunkHash($chunkX + $X, $chunkZ + $Z)]) or $this->usedChunks[$index] === false){
-						return false;
-					}
-				}
-			}
-
-			$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
-			//This only needs to be sent to players who could see us before the teleport.
-			$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET, $this->getViewers());
-
-			$this->spawnToAll();
-			$this->teleportPosition = null;
-
-			return true;
-		}
-
-		return true;
-	}
-
 	/**
 	 * @param Vector3|Position|Location $pos
 	 * @param float                     $yaw
@@ -4052,13 +4023,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->removeWindow($window);
 			}
 
-			$this->teleportPosition = new Vector3($this->x, $this->y, $this->z);
-
 			if($orderChunks){
 				$this->orderChunks();
 			}
 
-			$this->checkTeleportPosition();
+            $this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
+            //This only needs to be sent to players who could see us before the teleport.
+            $this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET, $this->getViewers());
+
+            $this->spawnToAll();
 
 			$this->resetFallDistance();
 			$this->newPosition = null;
@@ -4069,29 +4042,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	/**
-	 * This method may not be reliable. Clients don't like to be moved into unloaded chunks.
-	 * Use teleport() for a delayed teleport after chunks have been sent.
+	 * Use teleport(), this method may be removed in the future.
+     * @deprecated
 	 *
 	 * @param Vector3 $pos
 	 * @param float   $yaw
 	 * @param float   $pitch
 	 */
-	public function teleportImmediate(Vector3 $pos, $yaw = null, $pitch = null){
-		if(parent::teleport($pos, $yaw, $pitch)){
-
-			foreach($this->windowIndex as $window){
-				if($window === $this->inventory){
-					continue;
-				}
-				$this->removeWindow($window);
-			}
-
-			$this->sendPosition($this, $this->yaw, $this->pitch, MovePlayerPacket::MODE_RESET);
-
-			$this->resetFallDistance();
-			$this->orderChunks();
-			$this->newPosition = null;
-		}
+	public function teleportImmediate(Vector3 $pos, $yaw = null, $pitch = null, bool $orderChunks = true){
+		$this->teleport($pos, $yaw, $pitch, $orderChunks);
 	}
 
 	/**
