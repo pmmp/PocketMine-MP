@@ -210,10 +210,11 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @param Item $item
 	 */
-	public static function registerItem(Item $item){
-		$existing = self::$list[$item->id] ?? [];
+	public static function registerItem(Item $item, $extraId = -1){
+		$id = ($extraId == -1 ? $item->id : $extraId);
+		$existing = self::$list[$id] ?? [];
 		$existing[$item->meta & 0xffff] = $item;
-		self::$list[$item->id] = $existing;
+		self::$list[$id] = $existing;
 	}
 
 	private static $creative = [];
