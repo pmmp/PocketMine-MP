@@ -89,6 +89,16 @@ namespace pocketmine {
 	 * Enjoy it as much as I did writing it. I don't want to do it again.
 	 */
 
+	error_reporting(-1);
+
+	set_error_handler(function($severity, $message, $file, $line){
+		if((error_reporting() & $severity)){
+			throw new \ErrorException($message, 0, $severity, $file, $line);
+		}else{ //stfu operator
+			return true;
+		}
+	});
+
 	if(!extension_loaded("phar")){
 		echo "[CRITICAL] Unable to find the Phar extension." . PHP_EOL;
 		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
@@ -96,9 +106,9 @@ namespace pocketmine {
 	}
 
 	if(\Phar::running(true) !== ""){
-		@define('pocketmine\PATH', \Phar::running(true) . "/");
+		define('pocketmine\PATH', \Phar::running(true) . "/");
 	}else{
-		@define('pocketmine\PATH', \getcwd() . DIRECTORY_SEPARATOR);
+		define('pocketmine\PATH', \getcwd() . DIRECTORY_SEPARATOR);
 	}
 
 	if(version_compare("7.0", PHP_VERSION) > 0){
@@ -138,14 +148,6 @@ namespace pocketmine {
 	}
 
 	set_time_limit(0); //Who set it to 30 seconds?!?!
-
-	error_reporting(-1);
-
-	set_error_handler(function($severity, $message, $file, $line){
-		if((error_reporting() & $severity)){
-			throw new \ErrorException($message, 0, $severity, $file, $line);
-		}
-	});
 
 	ini_set("allow_url_fopen", '1');
 	ini_set("display_errors", '1');
