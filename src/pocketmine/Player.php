@@ -4043,7 +4043,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return false;
 		}
 
-		$oldPos = $this->getPosition();
 		if(parent::teleport($pos, $yaw, $pitch)){
 
 			foreach($this->windowIndex as $window){
