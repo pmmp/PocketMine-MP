@@ -2159,6 +2159,11 @@ class Server{
 					$report = false;
 				}
 
+				if(strrpos(\pocketmine\GIT_COMMIT, "-dirty") !== false){
+					$this->logger->debug("Not sending crashdump due to locally modified");
+					$report = false; //Don't send crashdumps for locally modified builds
+				}
+
 				if($report){
 					$url = ($this->getProperty("auto-report.use-https", true) ? "https" : "http") . "://" . $this->getProperty("auto-report.host", "crash.pmmp.io") . "/submit/api";
 					$reply = Utils::postURL($url, [

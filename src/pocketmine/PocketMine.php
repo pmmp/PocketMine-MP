@@ -467,18 +467,16 @@ namespace pocketmine {
 		}
 
 		$gitHash = str_repeat("00", 20);
-		if(file_exists(\pocketmine\PATH . ".git/HEAD")){ //Found Git information!
-			$ref = trim(file_get_contents(\pocketmine\PATH . ".git/HEAD"));
-			if(preg_match('/^[0-9a-f]{40}$/i', $ref)){
-				$gitHash = strtolower($ref);
-			}elseif(substr($ref, 0, 5) === "ref: "){
-				$refFile = \pocketmine\PATH . ".git/" . substr($ref, 5);
-				if(is_file($refFile)){
-					$gitHash = strtolower(trim(file_get_contents($refFile)));
+#ifndef COMPILE
+		if(\Phar::running(true) === ""){
+			if(Utils::execute("git rev-parse HEAD", $out) === 0){
+				$gitHash = trim($out);
+				if(Utils::execute("git diff --quiet") === 1 or Utils::execute("git diff --cached --quiet") === 1){ //Locally-modified
+					$gitHash .= "-dirty";
 				}
 			}
 		}
-
+#endif
 		define('pocketmine\GIT_COMMIT', $gitHash);
 
 
