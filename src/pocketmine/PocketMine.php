@@ -108,7 +108,7 @@ namespace pocketmine {
 	if(\Phar::running(true) !== ""){
 		define('pocketmine\PATH', \Phar::running(true) . "/");
 	}else{
-		define('pocketmine\PATH', \getcwd() . DIRECTORY_SEPARATOR);
+		define('pocketmine\PATH', realpath(getcwd()) . DIRECTORY_SEPARATOR);
 	}
 
 	if(version_compare("7.0", PHP_VERSION) > 0){
@@ -403,7 +403,7 @@ namespace pocketmine {
 	}
 
 	function cleanPath($path){
-		return rtrim(str_replace(["\\", ".php", "phar://", rtrim(str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PATH), "/"), rtrim(str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PLUGIN_PATH), "/")], ["/", "", "", "", ""], $path), "/");
+		return str_replace(["\\", ".php", "phar://", str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PATH), str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PLUGIN_PATH)], ["/", "", "", "", ""], $path);
 	}
 
 	$exitCode = 0;
