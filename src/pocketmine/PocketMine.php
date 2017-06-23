@@ -89,18 +89,6 @@ namespace pocketmine {
 	 * Enjoy it as much as I did writing it. I don't want to do it again.
 	 */
 
-	if(!extension_loaded("phar")){
-		echo "[CRITICAL] Unable to find the Phar extension." . PHP_EOL;
-		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
-		exit(1);
-	}
-
-	if(\Phar::running(true) !== ""){
-		@define('pocketmine\PATH', \Phar::running(true) . "/");
-	}else{
-		@define('pocketmine\PATH', \getcwd() . DIRECTORY_SEPARATOR);
-	}
-
 	if(version_compare("7.0", PHP_VERSION) > 0){
 		echo "[CRITICAL] You must use PHP >= 7.0" . PHP_EOL;
 		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
@@ -111,6 +99,28 @@ namespace pocketmine {
 		echo "[CRITICAL] Unable to find the pthreads extension." . PHP_EOL;
 		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
 		exit(1);
+	}
+
+	error_reporting(-1);
+
+	set_error_handler(function($severity, $message, $file, $line){
+		if((error_reporting() & $severity)){
+			throw new \ErrorException($message, 0, $severity, $file, $line);
+		}else{ //stfu operator
+			return true;
+		}
+	});
+
+	if(!extension_loaded("phar")){
+		echo "[CRITICAL] Unable to find the Phar extension." . PHP_EOL;
+		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
+		exit(1);
+	}
+
+	if(\Phar::running(true) !== ""){
+		define('pocketmine\PATH', \Phar::running(true) . "/");
+	}else{
+		define('pocketmine\PATH', realpath(getcwd()) . DIRECTORY_SEPARATOR);
 	}
 
 	if(!class_exists("ClassLoader", false)){
@@ -138,14 +148,6 @@ namespace pocketmine {
 	}
 
 	set_time_limit(0); //Who set it to 30 seconds?!?!
-
-	error_reporting(-1);
-
-	set_error_handler(function($severity, $message, $file, $line){
-		if((error_reporting() & $severity)){
-			throw new \ErrorException($message, 0, $severity, $file, $line);
-		}
-	});
 
 	ini_set("allow_url_fopen", '1');
 	ini_set("display_errors", '1');
@@ -401,7 +403,7 @@ namespace pocketmine {
 	}
 
 	function cleanPath($path){
-		return rtrim(str_replace(["\\", ".php", "phar://", rtrim(str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PATH), "/"), rtrim(str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PLUGIN_PATH), "/")], ["/", "", "", "", ""], $path), "/");
+		return str_replace(["\\", ".php", "phar://", str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PATH), str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PLUGIN_PATH)], ["/", "", "", "", ""], $path);
 	}
 
 	$exitCode = 0;
@@ -467,18 +469,16 @@ namespace pocketmine {
 		}
 
 		$gitHash = str_repeat("00", 20);
-		if(file_exists(\pocketmine\PATH . ".git/HEAD")){ //Found Git information!
-			$ref = trim(file_get_contents(\pocketmine\PATH . ".git/HEAD"));
-			if(preg_match('/^[0-9a-f]{40}$/i', $ref)){
-				$gitHash = strtolower($ref);
-			}elseif(substr($ref, 0, 5) === "ref: "){
-				$refFile = \pocketmine\PATH . ".git/" . substr($ref, 5);
-				if(is_file($refFile)){
-					$gitHash = strtolower(trim(file_get_contents($refFile)));
+#ifndef COMPILE
+		if(\Phar::running(true) === ""){
+			if(Utils::execute("git rev-parse HEAD", $out) === 0){
+				$gitHash = trim($out);
+				if(Utils::execute("git diff --quiet") === 1 or Utils::execute("git diff --cached --quiet") === 1){ //Locally-modified
+					$gitHash .= "-dirty";
 				}
 			}
 		}
-
+#endif
 		define('pocketmine\GIT_COMMIT', $gitHash);
 
 

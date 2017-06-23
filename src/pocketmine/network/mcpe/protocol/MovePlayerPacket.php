@@ -44,7 +44,7 @@ class MovePlayerPacket extends DataPacket{
 	public $bodyYaw;
 	public $pitch;
 	public $mode = self::MODE_NORMAL;
-	public $onGround;
+	public $onGround = false; //TODO
 	public $ridingEid = 0;
 	public $int1 = 0;
 	public $int2 = 0;
