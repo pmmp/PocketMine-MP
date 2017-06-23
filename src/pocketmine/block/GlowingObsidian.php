@@ -42,4 +42,8 @@ class GlowingObsidian extends Obsidian{
 	public function getHardness(){
 		return 10;
 	}
+
+	public function getBlastResistance(){
+		return 50;
+	}
 }

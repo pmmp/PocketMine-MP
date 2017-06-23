@@ -53,4 +53,8 @@ class Obsidian extends Solid{
 	public function getHardness(){
 		return 35;
 	}
+
+	public function getBlastResistance(){
+		return 6000;
+	}
 }
