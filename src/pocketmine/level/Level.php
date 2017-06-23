@@ -2388,8 +2388,7 @@ class Level implements ChunkManager, Metadatable{
 				$this->timings->syncChunkSendPrepareTimer->startTiming();
 				try{
 					$this->server->getScheduler()->scheduleAsyncTask($this->provider->requestChunkTask($x, $z));
-				}
-				catch(ChunkException $e){
+				}catch(ChunkException $e){
 					unset($this->chunkSendQueue[$index]);
 					unset($this->chunkSendTasks[$index]);
 					$this->server->getLogger()->logException($e);
