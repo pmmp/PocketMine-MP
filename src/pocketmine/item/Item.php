@@ -687,6 +687,11 @@ class Item implements ItemIds, \JsonSerializable{
 		return [];
 	}
 
+	/**
+	 * @param string[] $lines
+	 *
+	 * @return $this
+	 */
 	public function setLore(array $lines){
 		$tag = $this->getNamedTag() ?? new CompoundTag("", []);
 		if(!isset($tag->display)){
@@ -700,6 +705,8 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		$this->setNamedTag($tag);
+
+		return $this;
 	}
 
 	/**
