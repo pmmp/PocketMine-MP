@@ -33,7 +33,7 @@ abstract class Durable extends Item{
 
 	protected $durability;
 
-	public function __construct($id, $meta = 0, $count = 1, $name = "Unknown", int $durability){
+	public function __construct(int $id, int $meta = 0, int $count = 1, string $name = "Unknown", int $durability){
 		$this->durability = $durability;
 		parent::__construct($id, $meta, $count, $name);
 	}

@@ -39,7 +39,7 @@ class ProjectileItem extends Item{
 	protected $throwForce;
 	protected $entityType;
 
-	public function __construct($id, $meta = 0, $count = 1, $name = "Unknown", float $throwForce, string $projectileEntity){
+	public function __construct(int $id, int $meta = 0, int $count = 1, string $name = "Unknown", float $throwForce, string $projectileEntity){
 		$this->throwForce = $throwForce;
 		$this->entityType = $projectileEntity;
 		parent::__construct($id, $meta, $count, $name);

@@ -264,7 +264,7 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @param $index
 	 *
-	 * @return Item
+	 * @return Item|null
 	 */
 	public static function getCreativeItem(int $index){
 		return Item::$creative[$index] ?? null;
@@ -977,7 +977,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @return bool
 	 */
-	public function onClickBlock(Player $player, Block $block, Block $blockClicked, int $face, float $fx, float $fy, float $fz){
+	public function onClickBlock(Player $player, Block $block, Block $blockClicked, int $face, float $fx, float $fy, float $fz) : bool{
 		return false;
 	}
 

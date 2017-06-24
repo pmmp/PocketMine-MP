@@ -27,11 +27,8 @@ use pocketmine\block\Block;
 use pocketmine\Player;
 
 class Painting extends Item{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::PAINTING, 0, $count, "Painting");
-	}
 
-	public function onClickBlock(Player $player, Block $block, Block $blockClicked, int $face, float $fx, float $fy, float $fz){
+	public function onClickBlock(Player $player, Block $block, Block $blockClicked, int $face, float $fx, float $fy, float $fz) : bool{
 		if($blockClicked->isTransparent() === false and $face > 1 and $block->isSolid() === false){
 			$faces = [
 				2 => 1,

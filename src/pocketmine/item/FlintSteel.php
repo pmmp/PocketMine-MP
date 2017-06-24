@@ -29,7 +29,7 @@ use pocketmine\Player;
 
 class FlintSteel extends Tool{
 
-	public function onClickBlock(Player $player, Block $block, Block $blockClicked, int $face, float $fx, float $fy, float $fz){
+	public function onClickBlock(Player $player, Block $block, Block $blockClicked, int $face, float $fx, float $fy, float $fz) : bool{
 		if(($block->getId() === Block::AIR or $block->getId() === Block::FIRE) and ($blockClicked instanceof Solid)){
 			//MCPE deals damage to flint and steel if used on an existing fire.
 			$player->getLevel()->setBlock($block, Block::get(Block::FIRE), true);

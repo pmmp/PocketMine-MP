@@ -23,8 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\Block;
+use pocketmine\Player;
+
 class Boat extends Item{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::BOAT, $meta, $count, "Boat");
+	public function onClickBlock(Player $player, Block $block, Block $blockClicked, int $face, float $fx, float $fy, float $fz) : bool{
+		return false; //TODO
 	}
 }

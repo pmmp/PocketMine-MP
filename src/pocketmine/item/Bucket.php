@@ -34,7 +34,7 @@ use pocketmine\Player;
 
 class Bucket extends Item implements Consumable{
 
-	public function onClickBlock(Player $player, Block $block, Block $blockClicked, int $face, float $fx, float $fy, float $fz){
+	public function onClickBlock(Player $player, Block $block, Block $blockClicked, int $face, float $fx, float $fy, float $fz) : bool{
 		$bucketBlock = Block::get($this->meta);
 
 		if($bucketBlock instanceof Air){

@@ -31,7 +31,7 @@ use pocketmine\Player;
 
 class Hoe extends TieredTool{
 
-	public function onClickBlock(Player $player, Block $block, Block $blockClicked, int $face, float $fx, float $fy, float $fz){
+	public function onClickBlock(Player $player, Block $block, Block $blockClicked, int $face, float $fx, float $fy, float $fz) : bool{
 		if($blockClicked->canBeTilled() and $face !== Vector3::SIDE_DOWN){ //Can click on any side to till, except bottom.
 			$player->getLevel()->setBlock($blockClicked, Block::get(Block::FARMLAND), true, true);
 			$this->applyDamage(1);

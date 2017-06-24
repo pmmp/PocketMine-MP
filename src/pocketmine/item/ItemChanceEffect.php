@@ -30,7 +30,9 @@ use pocketmine\entity\Effect;
  * Class used to manage effect properties for consumable items which have a random chance of giving the eater effects.
  */
 class ItemChanceEffect{
+	/** @var Effect */
 	private $effect;
+	/** @var float */
 	private $chance;
 
 	public function __construct(Effect $effect, float $chance = 1.0){

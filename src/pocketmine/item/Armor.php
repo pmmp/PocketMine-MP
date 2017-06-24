@@ -39,7 +39,7 @@ abstract class Armor extends Durable{
 	protected $defensePoints;
 	protected $tier;
 
-	public function __construct($id, $meta = 0, $count = 1, $name = "Unknown", int $tier, int $durability, int $defensePoints){
+	public function __construct(int $id, int $meta = 0, int $count = 1, string $name = "Unknown", int $tier, int $durability, int $defensePoints){
 		parent::__construct($id, $meta, $count, $name, $durability);
 		$this->tier = $tier;
 		$this->defensePoints = $defensePoints;

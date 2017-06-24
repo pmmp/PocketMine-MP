@@ -43,7 +43,7 @@ abstract class Tool extends Durable{
 
 	protected $maxStackSize = 1;
 
-	public function __construct($id, $meta = 0, $count = 1, $name = "Unknown", int $durability, int $attackPoints = 1){
+	public function __construct(int $id, int $meta = 0, int $count = 1, string $name = "Unknown", int $durability, int $attackPoints = 1){
 		$this->attackPoints = $attackPoints;
 		parent::__construct($id, $meta, $count, $name, $durability);
 	}

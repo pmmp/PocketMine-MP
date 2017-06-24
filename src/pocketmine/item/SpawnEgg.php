@@ -34,7 +34,7 @@ use pocketmine\Player;
 
 class SpawnEgg extends Item{
 
-	public function onClickBlock(Player $player, Block $block, Block $blockClicked, int $face, float $fx, float $fy, float $fz){
+	public function onClickBlock(Player $player, Block $block, Block $blockClicked, int $face, float $fx, float $fy, float $fz) : bool{
 		$block = $blockClicked->getSide($face);
 		$nbt = new CompoundTag("", [
 			new ListTag("Pos", [
