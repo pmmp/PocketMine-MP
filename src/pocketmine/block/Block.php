@@ -131,12 +131,12 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new Furnace());
 			self::registerBlock(new BurningFurnace());
 			self::registerBlock(new StandingSign());
-			self::registerBlock((new WoodenDoor(Block::WOODEN_DOOR_BLOCK))->setName("Wooden Door Block"));
-			self::registerBlock((new WoodenDoor(Block::SPRUCE_DOOR_BLOCK))->setName("Spruce Door Block"));
-			self::registerBlock((new WoodenDoor(Block::BIRCH_DOOR_BLOCK))->setName("Birch Door Block"));
-			self::registerBlock((new WoodenDoor(Block::JUNGLE_DOOR_BLOCK))->setName("Jungle Door Block"));
-			self::registerBlock((new WoodenDoor(Block::ACACIA_DOOR_BLOCK))->setName("Acacia Door Block"));
-			self::registerBlock((new WoodenDoor(Block::DARK_OAK_DOOR_BLOCK))->setName("Dark Oak Door Block"));
+			self::registerBlock((new WoodenDoor(Block::WOODEN_DOOR_BLOCK))->setName("Wooden Door Block")->setItemId(Item::OAK_DOOR));
+			self::registerBlock((new WoodenDoor(Block::SPRUCE_DOOR_BLOCK))->setName("Spruce Door Block")->setItemId(Item::SPRUCE_DOOR));
+			self::registerBlock((new WoodenDoor(Block::BIRCH_DOOR_BLOCK))->setName("Birch Door Block")->setItemId(Item::BIRCH_DOOR));
+			self::registerBlock((new WoodenDoor(Block::JUNGLE_DOOR_BLOCK))->setName("Jungle Door Block")->setItemId(Item::JUNGLE_DOOR));
+			self::registerBlock((new WoodenDoor(Block::ACACIA_DOOR_BLOCK))->setName("Acacia Door Block")->setItemId(Item::ACACIA_DOOR));
+			self::registerBlock((new WoodenDoor(Block::DARK_OAK_DOOR_BLOCK))->setName("Dark Oak Door Block")->setItemId(Item::DARK_OAK_DOOR));
 			self::registerBlock(new Ladder());
 			self::registerBlock(new Rail());
 
@@ -342,6 +342,8 @@ class Block extends Position implements BlockIds, Metadatable{
 	protected $id;
 	/** @var int */
 	protected $meta = 0;
+	/** @var int|null */
+	protected $itemId = null;
 
 	/** @var AxisAlignedBB */
 	public $boundingBox = null;
@@ -596,6 +598,16 @@ class Block extends Position implements BlockIds, Metadatable{
 		return $this->id;
 	}
 
+	final public function getItemId() : int{
+		return $this->itemId ?? $this->id;
+	}
+
+	protected function setItemId(int $id) : Block{
+		$this->itemId = $id;
+
+		return $this;
+	}
+
 	public function addVelocityToEntity(Entity $entity, Vector3 $vector){
 
 	}
@@ -703,7 +715,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	public function getDrops(Item $item){
 		if($this->canBeBrokenWith($item)){
 			return [
-				Item::get($this->getId(), $this->getDamage() & $this->getVariantBitmask(), 1)
+				Item::get($this->getItemId(), $this->getDamage() & $this->getVariantBitmask(), 1)
 			];
 		}
 

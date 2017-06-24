@@ -33,6 +33,8 @@ use pocketmine\Player;
 
 abstract class Door extends Transparent{
 
+	protected $variantBitmask = 0;
+
 	public function isSolid(){
 		return false;
 	}
