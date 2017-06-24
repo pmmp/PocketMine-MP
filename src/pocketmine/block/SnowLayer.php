@@ -34,23 +34,23 @@ class SnowLayer extends Flowable{
 
 	protected $id = self::SNOW_LAYER;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Snow Layer";
 	}
 
-	public function canBeReplaced(){
+	public function canBeReplaced() : bool{
 		return true;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.1;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_SHOVEL;
 	}
 
@@ -62,7 +62,7 @@ class SnowLayer extends Flowable{
 		return 0;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		if($block->getSide(Vector3::SIDE_DOWN)->isSolid()){
 			//TODO: fix placement
 			$this->getLevel()->setBlock($block, $this, true);
@@ -73,7 +73,7 @@ class SnowLayer extends Flowable{
 		return false;
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if(!$this->getSide(Vector3::SIDE_DOWN)->isSolid()){
 				$this->getLevel()->setBlock($this, Block::get(Block::AIR), false, false);
@@ -91,7 +91,7 @@ class SnowLayer extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($this->canBeBrokenWith($item)){
 			return [
 				Item::get(Item::SNOWBALL, 0, 1)

@@ -30,19 +30,19 @@ class IronBars extends Thin{
 
 	protected $id = self::IRON_BARS;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Iron Bars";
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 5;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 

@@ -35,7 +35,7 @@ use pocketmine\nbt\tag\ListTag;
 
 abstract class Fallable extends Solid{
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$down = $this->getSide(Vector3::SIDE_DOWN);
 			if($down->getId() === self::AIR or ($down instanceof Liquid)){

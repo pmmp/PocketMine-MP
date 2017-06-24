@@ -27,11 +27,11 @@ class LitRedstoneTorch extends RedstoneTorch{
 
 	protected $id = self::REDSTONE_TORCH;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Lit Redstone Torch";
 	}
 }

@@ -35,19 +35,19 @@ class Planks extends Solid{
 
 	protected $id = self::WOODEN_PLANKS;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 2;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_AXE;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		static $names = [
 			self::OAK => "Oak Wood Planks",
 			self::SPRUCE => "Spruce Wood Planks",

@@ -29,19 +29,19 @@ class StoneButton extends Flowable{
 
 	protected $id = self::STONE_BUTTON;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Stone Button";
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.5;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 

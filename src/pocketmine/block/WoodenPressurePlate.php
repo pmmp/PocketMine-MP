@@ -29,15 +29,15 @@ class WoodenPressurePlate extends StonePressurePlate{
 
 	protected $id = self::WOODEN_PRESSURE_PLATE;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Wooden Pressure Plate";
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_AXE;
 	}
 }

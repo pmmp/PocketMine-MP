@@ -28,7 +28,7 @@ class StillLava extends FlowingLava{
 
 	protected $id = self::STILL_LAVA;
 
-	public function getName(){
+	public function getName() : string{
 		return "Still Lava";
 	}
 

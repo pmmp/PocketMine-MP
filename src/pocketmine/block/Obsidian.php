@@ -30,15 +30,15 @@ class Obsidian extends Solid{
 
 	protected $id = self::OBSIDIAN;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Obsidian";
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
@@ -50,11 +50,11 @@ class Obsidian extends Solid{
 		return 0;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 35;
 	}
 
-	public function getBlastResistance(){
+	public function getBlastResistance() : float{
 		return 6000;
 	}
 }

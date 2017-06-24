@@ -28,7 +28,7 @@ class StillWater extends FlowingWater{
 
 	protected $id = self::STILL_WATER;
 
-	public function getName(){
+	public function getName() : string{
 		return "Still Water";
 	}
 }

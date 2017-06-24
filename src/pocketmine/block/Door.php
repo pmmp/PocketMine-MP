@@ -35,7 +35,7 @@ abstract class Door extends Transparent{
 
 	protected $variantBitmask = 0;
 
-	public function isSolid(){
+	public function isSolid() : bool{
 		return false;
 	}
 
@@ -203,7 +203,7 @@ abstract class Door extends Transparent{
 		return $bb;
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(Vector3::SIDE_DOWN)->getId() === self::AIR){ //Replace with common break method
 				$this->getLevel()->setBlock($this, Block::get(Block::AIR), false);
@@ -218,7 +218,7 @@ abstract class Door extends Transparent{
 		return false;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		if($face === 1){
 			$blockUp = $this->getSide(Vector3::SIDE_UP);
 			$blockDown = $this->getSide(Vector3::SIDE_DOWN);
@@ -248,7 +248,7 @@ abstract class Door extends Transparent{
 		return false;
 	}
 
-	public function onBreak(Item $item){
+	public function onBreak(Item $item) : bool{
 		if(($this->getDamage() & 0x08) === 0x08){
 			$down = $this->getSide(Vector3::SIDE_DOWN);
 			if($down->getId() === $this->getId()){
@@ -265,7 +265,7 @@ abstract class Door extends Transparent{
 		return true;
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		if(($this->getDamage() & 0x08) === 0x08){ //Top
 			$down = $this->getSide(Vector3::SIDE_DOWN);
 			if($down->getId() === $this->getId()){

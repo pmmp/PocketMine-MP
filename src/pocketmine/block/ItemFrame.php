@@ -35,15 +35,15 @@ use pocketmine\tile\Tile;
 class ItemFrame extends Flowable{
 	protected $id = self::ITEM_FRAME_BLOCK;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Item Frame";
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		$tile = $this->level->getTile($this);
 		if(!($tile instanceof TileItemFrame)){
 			$nbt = new CompoundTag("", [
@@ -66,7 +66,7 @@ class ItemFrame extends Flowable{
 		return true;
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$sides = [
 				0 => 4,
@@ -82,7 +82,7 @@ class ItemFrame extends Flowable{
 		return false;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		if($face === 0 or $face === 1){
 			return false;
 		}
@@ -118,7 +118,7 @@ class ItemFrame extends Flowable{
 
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		$drops = [
 			Item::get(Item::ITEM_FRAME, 0, 1)
 		];

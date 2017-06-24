@@ -34,15 +34,15 @@ class StoneBricks extends Solid{
 
 	protected $id = self::STONE_BRICK;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 1.5;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
@@ -50,7 +50,7 @@ class StoneBricks extends Solid{
 		return TieredTool::TIER_WOODEN;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		static $names = [
 			self::NORMAL => "Stone Bricks",
 			self::MOSSY => "Mossy Stone Bricks",

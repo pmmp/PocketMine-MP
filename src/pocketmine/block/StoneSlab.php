@@ -40,15 +40,15 @@ class StoneSlab extends WoodenSlab{
 
 	protected $doubleId = self::DOUBLE_STONE_SLAB;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 2;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		static $names = [
 			self::STONE => "Stone",
 			self::SANDSTONE => "Sandstone",
@@ -62,7 +62,7 @@ class StoneSlab extends WoodenSlab{
 		return (($this->meta & 0x08) > 0 ? "Upper " : "") . $names[$this->meta & 0x07] . " Slab";
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 

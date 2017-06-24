@@ -312,13 +312,13 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * @param int      $id
-	 * @param int      $meta
+	 * @param int $id
+	 * @param int $meta
 	 * @param Position $pos
 	 *
 	 * @return Block
 	 */
-	public static function get($id, $meta = 0, Position $pos = null){
+	public static function get(int $id, int $meta = 0, Position $pos = null) : Block{
 		try{
 			$block = clone self::$fullList[($id << 4) | $meta];
 		}catch(\RuntimeException $e){
@@ -370,26 +370,26 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @param int $id
 	 * @param int $meta
 	 */
-	public function __construct($id, $meta = 0){
-		$this->id = (int) $id;
-		$this->meta = (int) $meta;
+	public function __construct(int $id, int $meta = 0){
+		$this->id = $id;
+		$this->meta = $meta;
 	}
 
 	/**
 	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
 	 *
-	 * @param Item   $item
-	 * @param Block  $block
-	 * @param Block  $target
-	 * @param int    $face
-	 * @param float  $fx
-	 * @param float  $fy
-	 * @param float  $fz
-	 * @param Player $player = null
+	 * @param Item        $item
+	 * @param Block       $block
+	 * @param Block       $target
+	 * @param int         $face
+	 * @param float       $fx
+	 * @param float       $fy
+	 * @param float       $fz
+	 * @param Player|null $player
 	 *
 	 * @return bool
 	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		return $this->getLevel()->setBlock($this, $this, true, true);
 	}
 
@@ -400,7 +400,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return bool
 	 */
-	public function isBreakable(Item $item){
+	public function isBreakable(Item $item) : bool{
 		return true;
 	}
 
@@ -411,7 +411,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return mixed
 	 */
-	public function onBreak(Item $item){
+	public function onBreak(Item $item) : bool{
 		return $this->getLevel()->setBlock($this, Block::get(Block::AIR), true, true);
 	}
 
@@ -420,28 +420,28 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @param int $type
 	 *
-	 * @return int|bool
+	 * @return bool|int
 	 */
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		return false;
 	}
 
 	/**
 	 * Do actions when activated by Item. Returns if it has done anything
 	 *
-	 * @param Item   $item
-	 * @param Player $player
+	 * @param Item        $item
+	 * @param Player|null $player
 	 *
 	 * @return bool
 	 */
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		return false;
 	}
 
 	/**
 	 * @return float
 	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return $this->blockHardness;
 	}
 
@@ -459,7 +459,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @return float
 	 */
-	public function getBlastResistance(){
+	public function getBlastResistance() : float{
 		return $this->blockBlastResistance ?? $this->getHardness() * 5;
 	}
 
@@ -477,14 +477,14 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @return float
 	 */
-	public function getFrictionFactor(){
+	public function getFrictionFactor() : float{
 		return 0.6;
 	}
 
 	/**
 	 * @return int 0-15
 	 */
-	public function getLightLevel(){
+	public function getLightLevel() : int{
 		return 0;
 	}
 
@@ -516,25 +516,25 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return bool
 	 */
-	public function canBePlaced(){
+	public function canBePlaced() : bool{
 		return true;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function canBeReplaced(){
+	public function canBeReplaced() : bool{
 		return false;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function isTransparent(){
+	public function isTransparent() : bool{
 		return false;
 	}
 
-	public function isSolid(){
+	public function isSolid() : bool{
 		return true;
 	}
 
@@ -543,15 +543,15 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return bool
 	 */
-	public function canBeFlowedInto(){
+	public function canBeFlowedInto() : bool{
 		return false;
 	}
 
-	public function hasEntityCollision(){
+	public function hasEntityCollision() : bool{
 		return false;
 	}
 
-	public function canPassThrough(){
+	public function canPassThrough() : bool{
 		return false;
 	}
 
@@ -574,7 +574,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @return string
 	 */
-	public function getName(){
+	public function getName() : string{
 		return $this->fallbackName;
 	}
 
@@ -594,7 +594,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @return int
 	 */
-	final public function getId(){
+	final public function getId() : int{
 		return $this->id;
 	}
 
@@ -615,14 +615,14 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @return int
 	 */
-	final public function getDamage(){
+	final public function getDamage() : int{
 		return $this->meta;
 	}
 
 	/**
 	 * @param int $meta
 	 */
-	final public function setDamage($meta){
+	final public function setDamage(int $meta){
 		$this->meta = $meta & 0x0f;
 	}
 
@@ -643,7 +643,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * Returns the best tool type to use for breaking this type of block.
 	 * @return int
 	 */
-	public function getToolType(){
+	public function getToolType() : int{
 		return $this->toolType;
 	}
 
@@ -712,7 +712,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return Item[]
 	 */
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($this->canBeBrokenWith($item)){
 			return [
 				Item::get($this->getItemId(), $this->getDamage() & $this->getVariantBitmask(), 1)
@@ -729,7 +729,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return float
 	 */
-	public function getBreakTime(Item $item){
+	public function getBreakTime(Item $item) : float{
 		$base = $this->getHardness();
 
 		if($this->canBeBrokenWith($item)){
@@ -766,7 +766,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		return $base;
 	}
 
-	public function canBeBrokenWith(Item $item){
+	public function canBeBrokenWith(Item $item) : bool{
 		if($this->getHardness() === 1){
 			return false;
 		}
@@ -820,7 +820,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return bool
 	 */
-	public function collidesWithBB(AxisAlignedBB $bb){
+	public function collidesWithBB(AxisAlignedBB $bb) : bool{
 		$bb2 = $this->getBoundingBox();
 
 		return $bb2 !== null and $bb->intersectsWith($bb2);

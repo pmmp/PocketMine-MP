@@ -33,15 +33,15 @@ class MelonStem extends Crops{
 
 	protected $id = self::MELON_STEM;
 
-	public function getName(){
+	public function getName() : string{
 		return "Melon Stem";
 	}
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== Block::FARMLAND){
 				$this->getLevel()->useBreakOn($this);
@@ -82,7 +82,7 @@ class MelonStem extends Crops{
 		return false;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		return [
 			Item::get(Item::MELON_SEEDS, 0, mt_rand(0, 2))
 		];

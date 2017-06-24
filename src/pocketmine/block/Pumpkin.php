@@ -31,23 +31,23 @@ class Pumpkin extends Solid{
 
 	protected $id = self::PUMPKIN;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 1;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_AXE;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Pumpkin";
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		if($player instanceof Player){
 			$this->meta = ((int) $player->getDirection() + 1) % 4;
 		}

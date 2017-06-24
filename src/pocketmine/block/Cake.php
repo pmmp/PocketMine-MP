@@ -37,15 +37,15 @@ class Cake extends Transparent implements FoodSource{
 
 	protected $id = self::CAKE_BLOCK;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.5;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Cake Block";
 	}
 
@@ -63,7 +63,7 @@ class Cake extends Transparent implements FoodSource{
 		);
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
 		if($down->getId() !== self::AIR){
 			$this->getLevel()->setBlock($block, $this, true, true);
@@ -74,7 +74,7 @@ class Cake extends Transparent implements FoodSource{
 		return false;
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(Vector3::SIDE_DOWN)->getId() === self::AIR){ //Replace with common break method
 				$this->getLevel()->setBlock($this, Block::get(Block::AIR), true);
@@ -86,11 +86,11 @@ class Cake extends Transparent implements FoodSource{
 		return false;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		return [];
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
 			if(($result = $player->consume($this)) !== $this){
 				$this->level->setBlock($this, $result, true, true);

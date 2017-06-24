@@ -30,7 +30,7 @@ class Leaves2 extends Leaves{
 	protected $id = self::LEAVES2;
 	protected $woodType = self::LOG2;
 
-	public function getName(){
+	public function getName() : string{
 		static $names = [
 			self::ACACIA => "Acacia Leaves",
 			self::DARK_OAK => "Dark Oak Leaves",
@@ -42,7 +42,7 @@ class Leaves2 extends Leaves{
 		return 0x01;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($this->canBeBrokenWith($item)){
 			return parent::getDrops($item);
 		}else{

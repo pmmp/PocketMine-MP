@@ -38,15 +38,15 @@ class Stone extends Solid{
 
 	protected $id = self::STONE;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 1.5;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
@@ -54,7 +54,7 @@ class Stone extends Solid{
 		return TieredTool::TIER_WOODEN;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		static $names = [
 			self::NORMAL => "Stone",
 			self::GRANITE => "Granite",
@@ -68,7 +68,7 @@ class Stone extends Solid{
 		return $names[$this->meta & 0x07];
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($this->getDamage() === 0 and $this->canBeBrokenWith($item)){
 			return [
 				Item::get(Item::COBBLESTONE, $this->getDamage(), 1)

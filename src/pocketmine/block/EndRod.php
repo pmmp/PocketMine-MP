@@ -31,7 +31,7 @@ use pocketmine\Player;
 
 class EndRod extends Flowable{
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		if($face === Vector3::SIDE_UP or $face === Vector3::SIDE_DOWN){
 			$this->meta = $face;
 		}else{
@@ -44,11 +44,11 @@ class EndRod extends Flowable{
 		return $this->level->setBlock($block, $this, true, true);
 	}
 
-	public function isSolid(){
+	public function isSolid() : bool{
 		return true;
 	}
 
-	public function getLightLevel(){
+	public function getLightLevel() : int{
 		return 14;
 	}
 
@@ -89,7 +89,7 @@ class EndRod extends Flowable{
 		return null;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		return [
 			Item::get($this->getId(), 0, 1)
 		];
