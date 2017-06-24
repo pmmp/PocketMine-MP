@@ -660,7 +660,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->spawnPosition = null;
 		$this->gamemode = $this->server->getGamemode();
 		$this->setLevel($this->server->getDefaultLevel());
-		$this->newPosition = new Vector3(0, 0, 0);
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 
 		$this->uuid = null;
@@ -877,14 +876,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->inventory->sendArmorContents($this);
 		$this->inventory->sendHeldItem($this);
 
-		$pos = $this->level->getSafeSpawn($this);
-
-		$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $pos));
-
-		$pos = $ev->getRespawnPosition();
-
-		$this->sendRespawnPacket($pos);
-
 		$this->sendPlayStatus(PlayStatusPacket::PLAYER_SPAWN);
 
 		if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
@@ -913,8 +904,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 			}
 		}
-
-		$this->teleport($pos);
 
 		$this->spawnToAll();
 
@@ -1497,6 +1486,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return;
 		}
 
+		assert($this->x !== null and $this->y !== null and $this->z !== null);
+		assert($this->newPosition->x !== null and $this->newPosition->y !== null and $this->newPosition->z !== null);
+
 		$newPos = $this->newPosition;
 		$distanceSquared = $newPos->distanceSquared($this);
 
@@ -1504,6 +1496,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		if(($distanceSquared / ($tickDiff ** 2)) > 100 and !$this->allowMovementCheats){
 			$this->server->getLogger()->warning($this->getName() . " moved too fast, reverting movement");
+			$this->server->getLogger()->debug("Old position: " . $this->asVector3() . ", new position: " . $this->newPosition);
 			$revert = true;
 		}else{
 			if($this->chunk === null or !$this->chunk->isGenerated()){
@@ -1542,6 +1535,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				if(!$ev->isCancelled()){
 					$revert = true;
 					$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidMove", [$this->getName()]));
+					$this->server->getLogger()->debug("Old position: " . $this->asVector3() . ", new position: " . $this->newPosition);
 				}
 			}
 
@@ -1861,7 +1855,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->entityRuntimeId = $this->id;
 		$pk->playerGamemode = Player::getClientFriendlyGamemode($this->gamemode);
 		$pk->x = $this->x;
-		$pk->y = $this->y;
+		$pk->y = $this->y + $this->baseOffset;
 		$pk->z = $this->z;
 		$pk->pitch = $this->pitch;
 		$pk->yaw = $this->yaw;
@@ -1916,8 +1910,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if($this->isCreative()){
 			$this->inventory->sendCreativeContents();
 		}
-
-		$this->forceMovement = $this->teleportPosition = $this->getPosition();
 
 		$this->server->addOnlinePlayer($this);
 
@@ -2726,7 +2718,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
 
-				$this->teleport($ev->getRespawnPosition());
+				$realSpawn = $ev->getRespawnPosition()->add(0.5, 0, 0.5);
+
+				if($realSpawn->distanceSquared($this->getSpawn()->add(0.5, 0, 0.5)) > 0.01){
+					$this->teleportImmediate($realSpawn); //If the destination was modified by plugins
+				}else{
+					$this->setPosition($realSpawn); //The client will move to the position of its own accord once chunks are sent
+					$this->nextChunkOrderRun = 0;
+				}
+				$this->resetLastMovements();
 
 				$this->setSprinting(false);
 				$this->setSneaking(false);
@@ -4054,7 +4054,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET, $this->getViewers());
 
 			$this->spawnToAll();
-			$this->forceMovement = $this->teleportPosition;
+			$this->forceMovement = null;
 			$this->teleportPosition = null;
 
 			return true;
@@ -4121,12 +4121,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			}
 
 			$this->forceMovement = new Vector3($this->x, $this->y, $this->z);
+
 			$this->sendPosition($this, $this->yaw, $this->pitch, MovePlayerPacket::MODE_RESET);
+			$this->sendPosition($this, $this->yaw, $this->pitch, MovePlayerPacket::MODE_RESET, $this->getViewers());
+
+			$this->spawnToAll();
 
 			$this->resetFallDistance();
-			$this->orderChunks();
 			$this->nextChunkOrderRun = 0;
 			$this->newPosition = null;
+			$this->stopSleep();
 		}
 	}
 
