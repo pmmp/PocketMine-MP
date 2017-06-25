@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\scheduler;
 
 use pocketmine\event\Timings;
+use pocketmine\event\TimingsHandler;
 
 class TaskHandler{
 
@@ -45,7 +46,7 @@ class TaskHandler{
 	/** @var bool */
 	protected $cancelled = false;
 
-	/** @var \pocketmine\event\TimingsHandler */
+	/** @var TimingsHandler */
 	public $timings;
 
 	public $timingName = null;

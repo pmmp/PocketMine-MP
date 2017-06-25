@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\event\server;
 
+use pocketmine\Player;
+use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\utils\Binary;
 
@@ -34,9 +36,9 @@ class QueryRegenerateEvent extends ServerEvent{
 	private $timeout;
 	private $serverName;
 	private $listPlugins;
-	/** @var \pocketmine\plugin\Plugin[] */
+	/** @var Plugin[] */
 	private $plugins;
-	/** @var \pocketmine\Player[] */
+	/** @var Player[] */
 	private $players;
 
 	private $gametype;
@@ -106,28 +108,28 @@ class QueryRegenerateEvent extends ServerEvent{
 	}
 
 	/**
-	 * @return \pocketmine\plugin\Plugin[]
+	 * @return Plugin[]
 	 */
 	public function getPlugins(){
 		return $this->plugins;
 	}
 
 	/**
-	 * @param \pocketmine\plugin\Plugin[] $plugins
+	 * @param Plugin[] $plugins
 	 */
 	public function setPlugins(array $plugins){
 		$this->plugins = $plugins;
 	}
 
 	/**
-	 * @return \pocketmine\Player[]
+	 * @return Player[]
 	 */
 	public function getPlayerList(){
 		return $this->players;
 	}
 
 	/**
-	 * @param \pocketmine\Player[] $players
+	 * @param Player[] $players
 	 */
 	public function setPlayerList(array $players){
 		$this->players = $players;

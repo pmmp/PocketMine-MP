@@ -27,6 +27,8 @@ declare(strict_types=1);
 namespace pocketmine\plugin;
 
 use pocketmine\command\CommandExecutor;
+use pocketmine\Server;
+use pocketmine\utils\Config;
 
 
 /**
@@ -90,7 +92,7 @@ interface Plugin extends CommandExecutor{
 	public function getResources();
 
 	/**
-	 * @return \pocketmine\utils\Config
+	 * @return Config
 	 */
 	public function getConfig();
 
@@ -101,7 +103,7 @@ interface Plugin extends CommandExecutor{
 	public function reloadConfig();
 
 	/**
-	 * @return \pocketmine\Server
+	 * @return Server
 	 */
 	public function getServer();
 

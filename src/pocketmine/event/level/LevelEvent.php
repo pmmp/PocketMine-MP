@@ -30,7 +30,7 @@ use pocketmine\event\Event;
 use pocketmine\level\Level;
 
 abstract class LevelEvent extends Event{
-	/** @var \pocketmine\level\Level */
+	/** @var Level */
 	private $level;
 
 	/**
@@ -41,7 +41,7 @@ abstract class LevelEvent extends Event{
 	}
 
 	/**
-	 * @return \pocketmine\level\Level
+	 * @return Level
 	 */
 	public function getLevel(){
 		return $this->level;

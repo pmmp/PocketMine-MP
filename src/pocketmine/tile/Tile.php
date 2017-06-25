@@ -26,7 +26,9 @@ declare(strict_types=1);
  */
 namespace pocketmine\tile;
 
+use pocketmine\block\Block;
 use pocketmine\event\Timings;
+use pocketmine\event\TimingsHandler;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
@@ -63,7 +65,7 @@ abstract class Tile extends Position{
 	protected $server;
 	protected $timings;
 
-	/** @var \pocketmine\event\TimingsHandler */
+	/** @var TimingsHandler */
 	public $tickTimer;
 
 	public static function init(){
@@ -162,7 +164,7 @@ abstract class Tile extends Position{
 	}
 
 	/**
-	 * @return \pocketmine\block\Block
+	 * @return Block
 	 */
 	public function getBlock(){
 		return $this->level->getBlock($this);

@@ -50,7 +50,7 @@ class EntityDeathEvent extends EntityEvent{
 	}
 
 	/**
-	 * @return \pocketmine\item\Item[]
+	 * @return Item[]
 	 */
 	public function getDrops(){
 		return $this->drops;

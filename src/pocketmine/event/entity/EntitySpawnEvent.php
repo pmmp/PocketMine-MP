@@ -29,6 +29,7 @@ use pocketmine\entity\Human;
 use pocketmine\entity\Item;
 use pocketmine\entity\Projectile;
 use pocketmine\entity\Vehicle;
+use pocketmine\level\Position;
 
 /**
  * Called when a entity is spawned
@@ -48,7 +49,7 @@ class EntitySpawnEvent extends EntityEvent{
 	}
 
 	/**
-	 * @return \pocketmine\level\Position
+	 * @return Position
 	 */
 	public function getPosition(){
 		return $this->entity->getPosition();
