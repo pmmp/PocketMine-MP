@@ -31,7 +31,9 @@ use pocketmine\network\mcpe\NetworkSession;
 class AddPaintingPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::ADD_PAINTING_PACKET;
 
+	/** @var int|null */
 	public $entityUniqueId = null; //TODO
+	/** @var int */
 	public $entityRuntimeId;
 	public $x;
 	public $y;

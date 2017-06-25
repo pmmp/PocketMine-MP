@@ -27,13 +27,18 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\utils\UUID;
 
 class AddPlayerPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::ADD_PLAYER_PACKET;
 
+	/** @var UUID */
 	public $uuid;
+	/** @var string */
 	public $username;
+	/** @var int|null */
 	public $entityUniqueId = null; //TODO
+	/** @var int */
 	public $entityRuntimeId;
 	public $x;
 	public $y;

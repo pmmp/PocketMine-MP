@@ -191,30 +191,30 @@ class BinaryStream{
 
 
 	/**
-	 * @return int|string
+	 * @return int
 	 */
-	public function getLong(){
+	public function getLong() : int{
 		return Binary::readLong($this->get(8));
 	}
 
 	/**
-	 * @param int|string $v
+	 * @param int $v
 	 */
-	public function putLong($v){
+	public function putLong(int $v){
 		$this->buffer .= Binary::writeLong($v);
 	}
 
 	/**
-	 * @return int|string
+	 * @return int
 	 */
-	public function getLLong(){
+	public function getLLong() : int{
 		return Binary::readLLong($this->get(8));
 	}
 
 	/**
-	 * @param int|string $v
+	 * @param int $v
 	 */
-	public function putLLong($v){
+	public function putLLong(int $v){
 		$this->buffer .= Binary::writeLLong($v);
 	}
 
@@ -337,33 +337,33 @@ class BinaryStream{
 
 	/**
 	 * Reads a 64-bit variable-length integer from the buffer and returns it.
-	 * @return int|string int, or the string representation of an int64 on 32-bit platforms
+	 * @return int
 	 */
-	public function getUnsignedVarLong(){
+	public function getUnsignedVarLong() : int{
 		return Binary::readUnsignedVarLong($this->buffer, $this->offset);
 	}
 
 	/**
 	 * Writes a 64-bit variable-length integer to the end of the buffer.
-	 * @param int|string $v int, or the string representation of an int64 on 32-bit platforms
+	 * @param int $v
 	 */
-	public function putUnsignedVarLong($v){
+	public function putUnsignedVarLong(int $v){
 		$this->buffer .= Binary::writeUnsignedVarLong($v);
 	}
 
 	/**
 	 * Reads a 64-bit zigzag-encoded variable-length integer from the buffer and returns it.
-	 * @return int|string int, or the string representation of an int64 on 32-bit platforms
+	 * @return int
 	 */
-	public function getVarLong(){
+	public function getVarLong() : int{
 		return Binary::readVarLong($this->buffer, $this->offset);
 	}
 
 	/**
 	 * Writes a 64-bit zigzag-encoded variable-length integer to the end of the buffer.
-	 * @param int|string $v int, or the string representation of an int64 on 32-bit platforms
+	 * @param int
 	 */
-	public function putVarLong($v){
+	public function putVarLong(int $v){
 		$this->buffer .= Binary::writeVarLong($v);
 	}
 

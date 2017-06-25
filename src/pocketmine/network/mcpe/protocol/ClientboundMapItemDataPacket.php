@@ -128,6 +128,7 @@ class ClientboundMapItemDataPacket extends DataPacket{
 				$this->putByte($decoration["xOffset"]);
 				$this->putByte($decoration["yOffset"]);
 				$this->putString($decoration["label"]);
+				assert($decoration["color"] instanceof Color);
 				$this->putLInt($decoration["color"]->toARGB());
 			}
 		}

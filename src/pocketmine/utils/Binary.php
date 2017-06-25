@@ -382,12 +382,11 @@ class Binary{
 
 	/**
 	 * Reads an 8-byte integer.
-	 * Note that this method will return a string on 32-bit PHP.
 	 *
 	 * @param string $x
-	 * @return int|string
+	 * @return int
 	 */
-	public static function readLong(string $x){
+	public static function readLong(string $x) : int{
 		self::checkLength($x, 8);
 		$int = unpack("N*", $x);
 		return ($int[1] << 32) | $int[2];
@@ -396,10 +395,10 @@ class Binary{
 	/**
 	 * Writes an 8-byte integer.
 	 *
-	 * @param int|string $value
+	 * @param int $value
 	 * @return string
 	 */
-	public static function writeLong($value) : string{
+	public static function writeLong(int $value) : string{
 		return pack("NN", $value >> 32, $value & 0xFFFFFFFF);
 	}
 
@@ -407,19 +406,19 @@ class Binary{
 	 * Reads an 8-byte little-endian integer.
 	 *
 	 * @param string $str
-	 * @return int|string
+	 * @return int
 	 */
-	public static function readLLong(string $str){
+	public static function readLLong(string $str) : int{
 		return self::readLong(strrev($str));
 	}
 
 	/**
 	 * Writes an 8-byte little-endian integer.
 	 *
-	 * @param int|string $value
+	 * @param int $value
 	 * @return string
 	 */
-	public static function writeLLong($value) : string{
+	public static function writeLLong(int $value) : string{
 		return strrev(self::writeLong($value));
 	}
 
