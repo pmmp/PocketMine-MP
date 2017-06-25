@@ -59,6 +59,10 @@ class Grass extends Solid{
 		];
 	}
 
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_RANDOM){
 			$lightAbove = $this->level->getFullLightAt($this->x, $this->y + 1, $this->z);

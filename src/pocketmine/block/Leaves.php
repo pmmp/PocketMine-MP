@@ -68,6 +68,10 @@ class Leaves extends Transparent{
 		return true;
 	}
 
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
 	protected function findLog(Block $pos, array $visited, $distance, &$check, $fromSide = null){
 		++$check;
 		$index = $pos->x . "." . $pos->y . "." . $pos->z;

@@ -40,6 +40,9 @@ class RedMushroom extends Flowable{
 		return "Red Mushroom";
 	}
 
+	public function ticksRandomly() : bool{
+		return true;
+	}
 
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){

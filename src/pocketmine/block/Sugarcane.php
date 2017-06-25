@@ -44,6 +44,10 @@ class Sugarcane extends Flowable{
 		return "Sugarcane";
 	}
 
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
 			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::SUGARCANE_BLOCK){

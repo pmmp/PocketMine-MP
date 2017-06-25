@@ -57,8 +57,10 @@ class Ice extends Transparent{
 	}
 
 	public function onBreak(Item $item, Player $player = null) : bool{
-		$this->getLevel()->setBlock($this, BlockFactory::get(Block::WATER), true);
+		return $this->getLevel()->setBlock($this, BlockFactory::get(Block::WATER), true);
+	}
 
+	public function ticksRandomly() : bool{
 		return true;
 	}
 
