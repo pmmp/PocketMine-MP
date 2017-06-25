@@ -257,6 +257,10 @@ class Block extends Position implements BlockIds, Metadatable{
 
 			self::registerBlock((new EndRod(Block::END_ROD))->setName("End Rod"));
 
+			self::registerBlock((new Block(Block::NETHER_WART_BLOCK))->setName("Nether Wart Block"));
+			self::registerBlock((new Block(Block::RED_NETHER_BRICK))->setName("Red Nether Brick")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(2)->setBlastResistance(30));
+			self::registerBlock((new BoneBlock(Block::BONE_BLOCK))->setName("Bone Block")->setHardness(2)->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN));
+
 			self::registerBlock((new GlazedTerracotta(Block::PURPLE_GLAZED_TERRACOTTA))->setName("Purple Glazed Terracotta"));
 			self::registerBlock((new GlazedTerracotta(Block::WHITE_GLAZED_TERRACOTTA))->setName("White Glazed Terracotta"));
 			self::registerBlock((new GlazedTerracotta(Block::ORANGE_GLAZED_TERRACOTTA))->setName("Orange Glazed Terracotta"));
