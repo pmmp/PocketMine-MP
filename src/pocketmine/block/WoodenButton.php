@@ -29,19 +29,11 @@ class WoodenButton extends StoneButton{
 
 	protected $id = self::WOODEN_BUTTON;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
-	}
-
 	public function getName() : string{
 		return "Wooden Button";
 	}
 
 	public function getToolType() : int{
 		return Tool::TYPE_AXE;
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
 	}
 }

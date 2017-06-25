@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Item;
 use pocketmine\item\Tool;
+use pocketmine\Player;
 
 class StoneButton extends Flowable{
 
@@ -47,5 +49,11 @@ class StoneButton extends Flowable{
 
 	public function getVariantBitmask() : int{
 		return 0;
+	}
+
+	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
+		//TODO: check target block
+		$this->meta = $face;
+		return $block->getLevel()->setBlock($block, $this, true, true);
 	}
 }
