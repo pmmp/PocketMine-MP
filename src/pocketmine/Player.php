@@ -274,7 +274,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/** @var Vector3 */
 	protected $forceMovement = null;
 	/** @var Vector3 */
-	protected $teleportPosition = null;
 	protected $connected = true;
 	protected $ip;
 	protected $removeFormat = true;
@@ -294,9 +293,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	protected $baseOffset = 1.62;
 
 	public $usedChunks = [];
-	protected $chunkLoadCount = 0;
 	protected $loadQueue = [];
-	protected $nextChunkOrderRun = 5;
+	protected $nextChunkOrderRun;
+	protected $nextChunkOrderRunReset;
 
 	/** @var Player[] */
 	protected $hiddenPlayers = [];
@@ -513,14 +512,19 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return $this->viewDistance;
 	}
 
-	public function setViewDistance(int $distance){
+	public function setViewDistance(int $distance, bool $orderChunks = false){
 		$this->viewDistance = $this->server->getAllowedViewDistance($distance);
 
 		$this->spawnThreshold = (int) (min($this->viewDistance, $this->server->getProperty("chunk-sending.spawn-radius", 4)) ** 2 * M_PI);
+		$this->nextChunkOrderRunReset = (int) $this->server->getProperty("chunk-sending.spawn-radius") * 20;
 
 		$pk = new ChunkRadiusUpdatedPacket();
 		$pk->radius = $this->viewDistance;
 		$this->dataPacket($pk);
+
+		if($orderChunks){
+			$this->orderChunks();
+		}
 	}
 
 	/**
@@ -815,7 +819,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		$this->usedChunks[Level::chunkHash($x, $z)] = true;
-		$this->chunkLoadCount++;
 
 		$this->dataPacket($payload);
 
@@ -852,7 +855,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->level->registerChunkLoader($this, $X, $Z, false);
 
 			if(!$this->level->populateChunk($X, $Z)){
-				if($this->spawned and $this->teleportPosition === null){
+				if($this->spawned){
 					continue;
 				}else{
 					break;
@@ -863,7 +866,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->level->requestChunk($X, $Z, $this);
 		}
 
-		if($this->chunkLoadCount >= $this->spawnThreshold and $this->spawned === false and $this->teleportPosition === null){
+		if($this->spawned === false and count($this->usedChunks) >= $this->spawnThreshold){
 			$this->doFirstSpawn();
 		}
 
@@ -918,7 +921,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			}
 		}
 
-		$this->teleport($pos);
+		$this->teleport($pos, null, null, false);
 
 		$this->spawnToAll();
 
@@ -948,7 +951,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		Timings::$playerChunkOrderTimer->startTiming();
 
-		$this->nextChunkOrderRun = 200;
+		$this->nextChunkOrderRun = $this->nextChunkOrderRunReset;
 
 		$radius = $this->server->getAllowedViewDistance($this->viewDistance);
 		$radiusSquared = $radius ** 2;
@@ -1497,7 +1500,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	protected function processMovement($tickDiff){
-		if(!$this->isAlive() or !$this->spawned or $this->newPosition === null or $this->teleportPosition !== null or $this->isSleeping()){
+		if(!$this->isAlive() or !$this->spawned or $this->newPosition === null or $this->isSleeping()){
 			return;
 		}
 
@@ -1514,7 +1517,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$chunk = $this->level->getChunk($newPos->x >> 4, $newPos->z >> 4, false);
 				if($chunk === null or !$chunk->isGenerated()){
 					$revert = true;
-					$this->nextChunkOrderRun = 0;
+					$this->server->getLogger()->debug($this->getName() . " tried to move into a unloaded or ungenerated chunk.");
 				}else{
 					if($this->chunk !== null){
 						$this->chunk->removeEntity($this);
@@ -1525,11 +1528,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		if(!$revert and $distanceSquared != 0){
-			$dx = $newPos->x - $this->x;
-			$dy = $newPos->y - $this->y;
-			$dz = $newPos->z - $this->z;
 
-			$this->move($dx, $dy, $dz);
+			$this->move($newPos->x - $this->x, $newPos->y - $this->y, $newPos->z - $this->z);
+
+			$this->nextChunkOrderRun -= $this->isSprinting() ? 2 : 1;
 
 			$diffX = $this->x - $newPos->x;
 			$diffY = $this->y - $newPos->y;
@@ -1615,9 +1617,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->forceMovement = new Vector3($from->x, $from->y, $from->z);
 		}else{
 			$this->forceMovement = null;
-			if($distanceSquared != 0 and $this->nextChunkOrderRun > 20){
-				$this->nextChunkOrderRun = 20;
-			}
 		}
 
 		$this->newPosition = null;
@@ -1717,8 +1716,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			}
 		}
 
-		$this->checkTeleportPosition();
-
 		$this->timings->stopTiming();
 
 		return true;
@@ -1743,7 +1740,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return;
 		}
 
-		if($this->nextChunkOrderRun-- <= 0 or $this->chunk === null){
+		if($this->nextChunkOrderRun <= 0 or $this->chunk === null){
 			$this->orderChunks();
 		}
 
@@ -1920,8 +1917,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if($this->isCreative()){
 			$this->inventory->sendCreativeContents();
 		}
-
-		$this->forceMovement = $this->teleportPosition = $this->getPosition();
 
 		$this->server->addOnlinePlayer($this);
 
@@ -2145,13 +2140,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public function handleMovePlayer(MovePlayerPacket $packet) : bool{
 		$newPos = new Vector3($packet->x, $packet->y - $this->baseOffset, $packet->z);
 
-		$revert = false;
-		if(!$this->isAlive() or $this->spawned !== true){
-			$revert = true;
-			$this->forceMovement = new Vector3($this->x, $this->y, $this->z);
-		}
-
-		if($this->teleportPosition !== null or ($this->forceMovement instanceof Vector3 and ($newPos->distanceSquared($this->forceMovement) > 0.1 or $revert))){
+		if(($this->forceMovement instanceof Vector3 and ($newPos->distanceSquared($this->forceMovement) > 0.1))){
 			$this->sendPosition($this->forceMovement, $packet->yaw, $packet->pitch, MovePlayerPacket::MODE_RESET);
 		}else{
 			$packet->yaw %= 360;
@@ -3272,8 +3261,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet) : bool{
-		$this->setViewDistance($packet->radius);
-
+		$this->setViewDistance($packet->radius, !$this->spawned);
 		return true;
 	}
 
@@ -4028,33 +4016,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 	}
 
-	protected function checkTeleportPosition(){
-		if($this->teleportPosition !== null){
-			$chunkX = $this->teleportPosition->x >> 4;
-			$chunkZ = $this->teleportPosition->z >> 4;
-
-			for($X = -1; $X <= 1; ++$X){
-				for($Z = -1; $Z <= 1; ++$Z){
-					if(!isset($this->usedChunks[$index = Level::chunkHash($chunkX + $X, $chunkZ + $Z)]) or $this->usedChunks[$index] === false){
-						return false;
-					}
-				}
-			}
-
-			$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
-			//This only needs to be sent to players who could see us before the teleport.
-			$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET, $this->getViewers());
-
-			$this->spawnToAll();
-			$this->forceMovement = $this->teleportPosition;
-			$this->teleportPosition = null;
-
-			return true;
-		}
-
-		return true;
-	}
-
 	/**
 	 * @param Vector3|Position|Location $pos
 	 * @param float                     $yaw
@@ -4062,12 +4023,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 *
 	 * @return bool
 	 */
-	public function teleport(Vector3 $pos, $yaw = null, $pitch = null){
+	public function teleport(Vector3 $pos, $yaw = null, $pitch = null, bool $orderChunks = true){
 		if(!$this->isOnline()){
 			return false;
 		}
 
-		$oldPos = $this->getPosition();
 		if(parent::teleport($pos, $yaw, $pitch)){
 
 			foreach($this->windowIndex as $window){
@@ -4077,16 +4037,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->removeWindow($window);
 			}
 
-			$this->teleportPosition = new Vector3($this->x, $this->y, $this->z);
-
-			if(!$this->checkTeleportPosition()){
-				$this->forceMovement = $oldPos;
-			}else{
-				$this->spawnToAll();
+			if($orderChunks){
+				$this->orderChunks();
 			}
 
+            $this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
+            //This only needs to be sent to players who could see us before the teleport.
+            $this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET, $this->getViewers());
+
+            $this->spawnToAll();
+
 			$this->resetFallDistance();
-			$this->nextChunkOrderRun = 0;
 			$this->newPosition = null;
 			$this->stopSleep();
 			return true;
@@ -4095,31 +4056,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	/**
-	 * This method may not be reliable. Clients don't like to be moved into unloaded chunks.
-	 * Use teleport() for a delayed teleport after chunks have been sent.
+	 * Use teleport(), this method may be removed in the future.
+     * @deprecated
 	 *
 	 * @param Vector3 $pos
 	 * @param float   $yaw
 	 * @param float   $pitch
 	 */
-	public function teleportImmediate(Vector3 $pos, $yaw = null, $pitch = null){
-		if(parent::teleport($pos, $yaw, $pitch)){
-
-			foreach($this->windowIndex as $window){
-				if($window === $this->inventory){
-					continue;
-				}
-				$this->removeWindow($window);
-			}
-
-			$this->forceMovement = new Vector3($this->x, $this->y, $this->z);
-			$this->sendPosition($this, $this->yaw, $this->pitch, MovePlayerPacket::MODE_RESET);
-
-			$this->resetFallDistance();
-			$this->orderChunks();
-			$this->nextChunkOrderRun = 0;
-			$this->newPosition = null;
-		}
+	public function teleportImmediate(Vector3 $pos, $yaw = null, $pitch = null, bool $orderChunks = true){
+		$this->teleport($pos, $yaw, $pitch, $orderChunks);
 	}
 
 	/**
