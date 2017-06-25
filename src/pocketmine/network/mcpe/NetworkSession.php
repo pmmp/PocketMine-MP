@@ -57,6 +57,7 @@ use pocketmine\network\mcpe\protocol\DropItemPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\ExplodePacket;
 use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
+use pocketmine\network\mcpe\protocol\GameRulesChangedPacket;
 use pocketmine\network\mcpe\protocol\HurtArmorPacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryActionPacket;
@@ -263,7 +264,7 @@ interface NetworkSession{
 
 	public function handleReplaceItemInSlot(ReplaceItemInSlotPacket $packet) : bool;
 
-	//public function handleGameRulesChanged(GameRulesChangedPacket $packet) : bool; //TODO
+	public function handleGameRulesChanged(GameRulesChangedPacket $packet) : bool;
 
 	//public function handleCamera(CameraPacket $packet) : bool; //edu only :(
 
