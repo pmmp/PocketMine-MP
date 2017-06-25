@@ -3363,7 +3363,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$inputJson = $packet->inputJson;
 			$i = 0;
 			foreach($packet->inputJson as $key => $arg){
-				$inputJson[$mergedOrderedParameters[$i++][$key]["key"]] = $arg;
+				$inputJson[$mergedOrderedParameters[$i++]["key"]] = $arg;
 			}
 			foreach($inputJson as $key => $arg){
 				$commandText .= " " . $arg;
