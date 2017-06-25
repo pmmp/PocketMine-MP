@@ -45,6 +45,9 @@ interface Plugin extends CommandExecutor{
 	 */
 	public function onEnable();
 
+	/**
+	 * @return bool
+	 */
 	public function isEnabled();
 
 	/**

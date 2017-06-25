@@ -680,7 +680,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @param Vector3 $pos1
 	 * @param Vector3 $pos2
 	 *
-	 * @return MovingObjectPosition
+	 * @return MovingObjectPosition|null
 	 */
 	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2){
 		$bb = $this->getBoundingBox();

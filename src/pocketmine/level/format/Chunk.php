@@ -67,12 +67,13 @@ class Chunk{
 	/** @var Entity[] */
 	protected $entities = [];
 
-	/** @var int[256] */
+	/** @var int[] */
 	protected $heightMap = [];
 
 	/** @var string */
 	protected $biomeIds;
 
+	/** @var int[] */
 	protected $extraData = [];
 
 	/** @var CompoundTag[] */

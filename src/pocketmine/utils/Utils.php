@@ -36,6 +36,7 @@ class Utils{
 	public static $online = true;
 	public static $ip = false;
 	public static $os;
+	/** @var UUID|null */
 	private static $serverUniqueId = null;
 
 	/**

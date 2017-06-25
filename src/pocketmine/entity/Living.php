@@ -328,7 +328,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @param int   $maxDistance
 	 * @param array $transparent
 	 *
-	 * @return Block
+	 * @return Block|null
 	 */
 	public function getTargetBlock($maxDistance, array $transparent = []){
 		try{

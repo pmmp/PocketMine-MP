@@ -47,7 +47,7 @@ class PharPluginLoader implements PluginLoader{
 	 *
 	 * @param string $file
 	 *
-	 * @return Plugin
+	 * @return Plugin|null
 	 *
 	 * @throws \Exception
 	 */
@@ -80,7 +80,7 @@ class PharPluginLoader implements PluginLoader{
 	 *
 	 * @param string $file
 	 *
-	 * @return PluginDescription
+	 * @return PluginDescription|null
 	 */
 	public function getPluginDescription($file){
 		$phar = new \Phar($file);

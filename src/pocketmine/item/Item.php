@@ -294,7 +294,7 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @param $index
 	 *
-	 * @return Item
+	 * @return Item|null
 	 */
 	public static function getCreativeItem(int $index){
 		return Item::$creative[$index] ?? null;

@@ -139,7 +139,7 @@ abstract class Command{
 	}
 
 	/**
-	 * @return string
+	 * @return string|null
 	 */
 	public function getPermission(){
 		return $this->commandData["pocketminePermission"] ?? null;

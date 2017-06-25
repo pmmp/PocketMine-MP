@@ -151,7 +151,7 @@ class CraftingManager{
 
 	/**
 	 * @param UUID $id
-	 * @return Recipe
+	 * @return Recipe|null
 	 */
 	public function getRecipe(UUID $id){
 		$index = $id->toBinary();
@@ -175,7 +175,7 @@ class CraftingManager{
 	/**
 	 * @param Item $input
 	 *
-	 * @return FurnaceRecipe
+	 * @return FurnaceRecipe|null
 	 */
 	public function matchFurnaceRecipe(Item $input){
 		if(isset($this->furnaceRecipes[$input->getId() . ":" . $input->getDamage()])){

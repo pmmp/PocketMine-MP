@@ -698,7 +698,7 @@ abstract class Entity extends Location implements Metadatable{
 	 * @param CompoundTag $nbt
 	 * @param             $args
 	 *
-	 * @return Entity
+	 * @return Entity|null
 	 */
 	public static function createEntity($type, Level $level, CompoundTag $nbt, ...$args){
 		if(isset(self::$knownEntities[$type])){
@@ -1897,7 +1897,7 @@ abstract class Entity extends Location implements Metadatable{
 	/**
 	 * @param int $id
 	 *
-	 * @return int
+	 * @return int|null
 	 */
 	public function getDataPropertyType($id){
 		return isset($this->dataProperties[$id]) ? $this->dataProperties[$id][0] : null;

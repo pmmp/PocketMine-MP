@@ -1848,7 +1848,7 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * @param int $entityId
 	 *
-	 * @return Entity
+	 * @return Entity|null
 	 */
 	public function getEntity(int $entityId){
 		return $this->entities[$entityId] ?? null;
@@ -1935,7 +1935,7 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * @param $tileId
 	 *
-	 * @return Tile
+	 * @return Tile|null
 	 */
 	public function getTileById(int $tileId){
 		return $this->tiles[$tileId] ?? null;
@@ -1962,7 +1962,7 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @param Vector3 $pos
 	 *
-	 * @return Tile
+	 * @return Tile|null
 	 */
 	public function getTile(Vector3 $pos){
 		$chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4, false);
@@ -2196,7 +2196,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int  $z
 	 * @param bool $create Whether to generate the chunk if it does not exist
 	 *
-	 * @return Chunk
+	 * @return Chunk|null
 	 */
 	public function getChunk(int $x, int $z, bool $create = false){
 		if(isset($this->chunks[$index = Level::chunkHash($x, $z)])){

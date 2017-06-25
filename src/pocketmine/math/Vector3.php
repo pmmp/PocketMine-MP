@@ -245,7 +245,7 @@ class Vector3{
 	 * @param Vector3 $v
 	 * @param float   $x
 	 *
-	 * @return Vector3
+	 * @return Vector3|null
 	 */
 	public function getIntermediateWithXValue(Vector3 $v, $x){
 		$xDiff = $v->x - $this->x;
@@ -272,7 +272,7 @@ class Vector3{
 	 * @param Vector3 $v
 	 * @param float   $y
 	 *
-	 * @return Vector3
+	 * @return Vector3|null
 	 */
 	public function getIntermediateWithYValue(Vector3 $v, $y){
 		$xDiff = $v->x - $this->x;
@@ -299,7 +299,7 @@ class Vector3{
 	 * @param Vector3 $v
 	 * @param float   $z
 	 *
-	 * @return Vector3
+	 * @return Vector3|null
 	 */
 	public function getIntermediateWithZValue(Vector3 $v, $z){
 		$xDiff = $v->x - $this->x;
