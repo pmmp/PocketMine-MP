@@ -238,6 +238,10 @@ interface BlockIds{
 	const ALLOW = 210;
 	const DENY = 211;
 	const BORDER_BLOCK = 212;
+	const MAGMA = 213;
+	const NETHER_WART_BLOCK = 214;
+	const RED_NETHER_BRICK = 215;
+	const BONE_BLOCK = 216;
 
 	const SHULKER_BOX = 218;
 	const PURPLE_GLAZED_TERRACOTTA = 219;
