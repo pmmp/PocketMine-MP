@@ -56,6 +56,10 @@ class Mycelium extends Solid{
 		];
 	}
 
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_RANDOM){
 			//TODO: light levels

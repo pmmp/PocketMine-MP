@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
+use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 
 class Farmland extends Transparent{
@@ -47,6 +48,10 @@ class Farmland extends Transparent{
 		return Tool::TYPE_SHOVEL;
 	}
 
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
 	protected function recalculateBoundingBox(){
 		return new AxisAlignedBB(
 			$this->x,
@@ -56,6 +61,14 @@ class Farmland extends Transparent{
 			$this->y + 0.9375,
 			$this->z + 1
 		);
+	}
+
+	public function onUpdate(int $type){
+		if($type === Level::BLOCK_UPDATE_RANDOM){
+			//TODO: hydration
+		}
+
+		return false;
 	}
 
 	public function getDrops(Item $item) : array{

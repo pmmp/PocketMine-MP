@@ -42,6 +42,9 @@ class Sugarcane extends Flowable{
 		return "Sugarcane";
 	}
 
+	public function ticksRandomly() : bool{
+		return true;
+	}
 
 	public function getDrops(Item $item) : array{
 		return [

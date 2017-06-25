@@ -62,6 +62,10 @@ class SnowLayer extends Flowable{
 		return 0;
 	}
 
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
 	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		if($block->getSide(Vector3::SIDE_DOWN)->isSolid()){
 			//TODO: fix placement

@@ -226,30 +226,8 @@ class Level implements ChunkManager, Metadatable{
 	private $chunkTickList = [];
 	private $chunksPerTick;
 	private $clearChunksOnTick;
-	private $randomTickBlocks = [
-		Block::GRASS => Grass::class,
-		Block::SAPLING => Sapling::class,
-		Block::LEAVES => Leaves::class,
-		Block::WHEAT_BLOCK => Wheat::class,
-		Block::FARMLAND => Farmland::class,
-		Block::SNOW_LAYER => SnowLayer::class,
-		Block::ICE => Ice::class,
-		Block::CACTUS => Cactus::class,
-		Block::SUGARCANE_BLOCK => Sugarcane::class,
-		Block::RED_MUSHROOM => RedMushroom::class,
-		Block::BROWN_MUSHROOM => BrownMushroom::class,
-		Block::PUMPKIN_STEM => PumpkinStem::class,
-		Block::MELON_STEM => MelonStem::class,
-		//Block::VINE => true,
-		Block::MYCELIUM => Mycelium::class,
-		//Block::COCOA_BLOCK => true,
-		Block::CARROT_BLOCK => Carrot::class,
-		Block::POTATO_BLOCK => Potato::class,
-		Block::LEAVES2 => Leaves2::class,
-		Block::FIRE => Fire::class,
-		Block::BEETROOT_BLOCK => Beetroot::class,
-		Block::NETHER_WART_PLANT => NetherWartPlant::class
-	];
+	/** @var \SplFixedArray<Block> */
+	private $randomTickBlocks = null;
 
 	/** @var LevelTimings */
 	public $timings;
@@ -343,10 +321,19 @@ class Level implements ChunkManager, Metadatable{
 		$this->clearChunksOnTick = (bool) $this->server->getProperty("chunk-ticking.clear-tick-list", true);
 		$this->cacheChunks = (bool) $this->server->getProperty("chunk-sending.cache-chunks", false);
 
+		$this->randomTickBlocks = \SplFixedArray::fromArray(array_filter(Block::$list->toArray(), function(Block $block = null){
+			return $block !== null and $block->ticksRandomly();
+		}));
+		$this->randomTickBlocks->setSize(256);
+
 		$dontTickBlocks = $this->server->getProperty("chunk-ticking.disable-block-ticking", []);
 		foreach($dontTickBlocks as $id){
-			if(isset($this->randomTickBlocks[$id])){
-				unset($this->randomTickBlocks[$id]);
+			try{
+				if(isset($this->randomTickBlocks[$id])){
+					$this->randomTickBlocks[$id] = null;
+				}
+			}catch(\RuntimeException $e){
+				//index out of bounds
 			}
 		}
 
@@ -913,11 +900,11 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function addRandomTickedBlock(int $id){
-		$this->randomTickBlocks[$id] = Block::$list[$id];
+		$this->randomTickBlocks[$id] = Block::get($id);
 	}
 
 	public function removeRandomTickedBlock(int $id){
-		unset($this->randomTickBlocks[$id]);
+		$this->randomTickBlocks[$id] = null;
 	}
 
 	private function tickChunks(){
@@ -972,10 +959,11 @@ class Level implements ChunkManager, Metadatable{
 						$z = ($k >> 16) & 0x0f;
 
 						$blockId = $subChunk->getBlockId($x, $y, $z);
-						if(isset($this->randomTickBlocks[$blockId])){
-							$class = $this->randomTickBlocks[$blockId];
+						if($this->randomTickBlocks[$blockId] !== null){
 							/** @var Block $block */
-							$block = new $class($subChunk->getBlockData($x, $y, $z));
+							$block = clone $this->randomTickBlocks[$blockId];
+							$block->setDamage($subChunk->getBlockData($x, $y, $z));
+
 							$block->x = $chunkX * 16 + $x;
 							$block->y = ($Y << 4) + $y;
 							$block->z = $chunkZ * 16 + $z;

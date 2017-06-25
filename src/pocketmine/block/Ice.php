@@ -51,6 +51,10 @@ class Ice extends Transparent{
 		return Tool::TYPE_PICKAXE;
 	}
 
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
 	public function onBreak(Item $item) : bool{
 		$this->getLevel()->setBlock($this, Block::get(Block::FLOWING_WATER), true);
 

@@ -67,6 +67,10 @@ class Vine extends Transparent{
 		return true;
 	}
 
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
 	public function onEntityCollide(Entity $entity){
 		$entity->resetFallDistance();
 	}
@@ -169,6 +173,8 @@ class Vine extends Transparent{
 				$this->level->useBreakOn($this);
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
+		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
+			//TODO: vine growth
 		}
 
 		return false;

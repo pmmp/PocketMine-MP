@@ -41,6 +41,10 @@ class PumpkinStem extends Crops{
 		return "Pumpkin Stem";
 	}
 
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== Block::FARMLAND){

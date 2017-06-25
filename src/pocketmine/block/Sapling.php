@@ -56,6 +56,9 @@ class Sapling extends Flowable{
 		return $names[$this->meta & 0x07] ?? "Unknown";
 	}
 
+	public function ticksRandomly() : bool{
+		return true;
+	}
 
 	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
