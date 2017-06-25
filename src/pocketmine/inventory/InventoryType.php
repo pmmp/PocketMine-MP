@@ -51,7 +51,7 @@ class InventoryType{
 	/**
 	 * @param $index
 	 *
-	 * @return InventoryType
+	 * @return InventoryType|null
 	 */
 	public static function get($index){
 		return static::$default[$index] ?? null;

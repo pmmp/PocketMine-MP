@@ -225,7 +225,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	}
 
 	/**
-	 * @return Chest
+	 * @return Chest|null
 	 */
 	public function getPair(){
 		if($this->isPaired()){

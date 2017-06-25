@@ -23,10 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\command;
 
+use pocketmine\plugin\Plugin;
+
 interface PluginIdentifiableCommand{
 
 	/**
-	 * @return \pocketmine\plugin\Plugin
+	 * @return Plugin
 	 */
 	public function getPlugin();
 }

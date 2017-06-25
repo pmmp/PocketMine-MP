@@ -36,12 +36,12 @@ class CraftItemEvent extends Event implements Cancellable{
 	private $input = [];
 	/** @var Recipe */
 	private $recipe;
-	/** @var \pocketmine\Player */
+	/** @var Player */
 	private $player;
 
 
 	/**
-	 * @param \pocketmine\Player $player
+	 * @param Player $player
 	 * @param Item[]             $input
 	 * @param Recipe             $recipe
 	 */
@@ -71,7 +71,7 @@ class CraftItemEvent extends Event implements Cancellable{
 	}
 
 	/**
-	 * @return \pocketmine\Player
+	 * @return Player
 	 */
 	public function getPlayer(){
 		return $this->player;

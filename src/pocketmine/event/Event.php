@@ -36,7 +36,9 @@ abstract class Event{
 	 * Not doing so will deny the proper event initialization
 	 */
 
+	/** @var string|null */
 	protected $eventName = null;
+	/** @var bool */
 	private $isCancelled = false;
 
 	/**

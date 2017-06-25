@@ -160,7 +160,7 @@ class CommandReader extends Thread{
 	 */
 	public function getLine(){
 		if($this->buffer->count() !== 0){
-			return $this->buffer->shift();
+			return (string) $this->buffer->shift();
 		}
 
 		return null;

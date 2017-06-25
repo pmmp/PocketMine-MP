@@ -36,6 +36,7 @@ use pocketmine\entity\Vehicle;
 class EntityDespawnEvent extends EntityEvent{
 	public static $handlerList = null;
 
+	/** @var int */
 	private $entityType;
 
 	/**

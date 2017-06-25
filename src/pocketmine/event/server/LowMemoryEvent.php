@@ -33,7 +33,9 @@ use pocketmine\utils\Utils;
 class LowMemoryEvent extends ServerEvent{
 	public static $handlerList = null;
 
+	/** @var int */
 	private $memory;
+	/** @var int */
 	private $memoryLimit;
 	private $triggerCount;
 	private $global;
@@ -60,7 +62,7 @@ class LowMemoryEvent extends ServerEvent{
 	 * @return int
 	 */
 	public function getMemoryLimit(){
-		return $this->memory;
+		return $this->memoryLimit;
 	}
 
 	/**

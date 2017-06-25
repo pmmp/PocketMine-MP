@@ -25,6 +25,7 @@ namespace pocketmine\command;
 
 use pocketmine\event\TextContainer;
 use pocketmine\permission\Permissible;
+use pocketmine\Server;
 
 interface CommandSender extends Permissible{
 
@@ -34,7 +35,7 @@ interface CommandSender extends Permissible{
 	public function sendMessage($message);
 
 	/**
-	 * @return \pocketmine\Server
+	 * @return Server
 	 */
 	public function getServer();
 

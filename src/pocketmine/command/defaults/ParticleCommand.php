@@ -133,7 +133,7 @@ class ParticleCommand extends VanillaCommand{
 	 * @param float    $zd
 	 * @param int|null $data
 	 *
-	 * @return Particle
+	 * @return Particle|null
 	 */
 	private function getParticle($name, Vector3 $pos, $xd, $yd, $zd, $data){
 		switch($name){

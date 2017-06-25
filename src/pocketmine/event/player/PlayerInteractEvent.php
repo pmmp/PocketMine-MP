@@ -43,7 +43,7 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 	const PHYSICAL = 4;
 
 	/**
-	 * @var \pocketmine\block\Block;
+	 * @var Block
 	 */
 	protected $blockTouched;
 
@@ -52,7 +52,7 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 	/** @var int */
 	protected $blockFace;
 
-	/** @var \pocketmine\item\Item */
+	/** @var Item */
 	protected $item;
 
 	protected $action;

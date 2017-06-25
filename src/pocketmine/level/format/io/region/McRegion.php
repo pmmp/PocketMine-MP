@@ -430,7 +430,7 @@ class McRegion extends BaseLevelProvider{
 	 * @param int $x
 	 * @param int $z
 	 *
-	 * @return RegionLoader
+	 * @return RegionLoader|null
 	 */
 	protected function getRegion(int $x, int $z){
 		return $this->regions[Level::chunkHash($x, $z)] ?? null;

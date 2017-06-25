@@ -34,7 +34,7 @@ abstract class PluginBase implements Plugin{
 	/** @var PluginLoader */
 	private $loader;
 
-	/** @var \pocketmine\Server */
+	/** @var Server */
 	private $server;
 
 	/** @var bool */
@@ -137,7 +137,7 @@ abstract class PluginBase implements Plugin{
 	/**
 	 * @param string $name
 	 *
-	 * @return Command|PluginIdentifiableCommand
+	 * @return Command|PluginIdentifiableCommand|null
 	 */
 	public function getCommand($name){
 		$command = $this->getServer()->getPluginCommand($name);
@@ -177,7 +177,7 @@ abstract class PluginBase implements Plugin{
 	 *
 	 * @param string $filename
 	 *
-	 * @return resource Resource data, or null
+	 * @return resource|null Resource data, or null
 	 */
 	public function getResource($filename){
 		$filename = rtrim(str_replace("\\", "/", $filename), "/");

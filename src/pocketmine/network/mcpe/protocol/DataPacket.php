@@ -254,41 +254,41 @@ abstract class DataPacket extends BinaryStream{
 
 	/**
 	 * Reads and returns an EntityUniqueID
-	 * @return int|string
+	 * @return int
 	 */
-	public function getEntityUniqueId(){
+	public function getEntityUniqueId() : int{
 		return $this->getVarLong();
 	}
 
 	/**
 	 * Writes an EntityUniqueID
-	 * @param int|string $eid
+	 * @param int $eid
 	 */
-	public function putEntityUniqueId($eid){
+	public function putEntityUniqueId(int $eid){
 		$this->putVarLong($eid);
 	}
 
 	/**
 	 * Reads and returns an EntityRuntimeID
-	 * @return int|string
+	 * @return int
 	 */
-	public function getEntityRuntimeId(){
+	public function getEntityRuntimeId() : int{
 		return $this->getUnsignedVarLong();
 	}
 
 	/**
 	 * Writes an EntityUniqueID
-	 * @param int|string $eid
+	 * @param int $eid
 	 */
-	public function putEntityRuntimeId($eid){
+	public function putEntityRuntimeId(int $eid){
 		$this->putUnsignedVarLong($eid);
 	}
 
 	/**
 	 * Reads an block position with unsigned Y coordinate.
-	 * @param int $x
-	 * @param int $y 0-255
-	 * @param int $z
+	 * @param int &$x
+	 * @param int &$y
+	 * @param int &$z
 	 */
 	public function getBlockPosition(&$x, &$y, &$z){
 		$x = $this->getVarInt();
@@ -298,11 +298,11 @@ abstract class DataPacket extends BinaryStream{
 
 	/**
 	 * Writes a block position with unsigned Y coordinate.
-	 * @param int &$x
-	 * @param int &$y
-	 * @param int &$z
+	 * @param int $x
+	 * @param int $y
+	 * @param int $z
 	 */
-	public function putBlockPosition($x, $y, $z){
+	public function putBlockPosition(int $x, int $y, int $z){
 		$this->putVarInt($x);
 		$this->putUnsignedVarInt($y);
 		$this->putVarInt($z);
@@ -326,7 +326,7 @@ abstract class DataPacket extends BinaryStream{
 	 * @param int $y
 	 * @param int $z
 	 */
-	public function putSignedBlockPosition($x, $y, $z){
+	public function putSignedBlockPosition(int $x, int $y, int $z){
 		$this->putVarInt($x);
 		$this->putVarInt($y);
 		$this->putVarInt($z);
@@ -350,7 +350,7 @@ abstract class DataPacket extends BinaryStream{
 	 * @param float $y
 	 * @param float $z
 	 */
-	public function putVector3f($x, $y, $z){
+	public function putVector3f(float $x, float $y, float $z){
 		$this->putLFloat($x);
 		$this->putLFloat($y);
 		$this->putLFloat($z);
