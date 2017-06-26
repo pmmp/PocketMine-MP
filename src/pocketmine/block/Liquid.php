@@ -434,9 +434,9 @@ abstract class Liquid extends Transparent{
 
 			if($colliding){
 				if($this->getDamage() === 0){
-					$this->getLevel()->setBlock($this, Block::get(Item::OBSIDIAN), true, true);
+					$this->getLevel()->setBlock($this, Block::get(Block::OBSIDIAN), true, true);
 				}elseif($this->getDamage() <= 4){
-					$this->getLevel()->setBlock($this, Block::get(Item::COBBLESTONE), true, true);
+					$this->getLevel()->setBlock($this, Block::get(Block::COBBLESTONE), true, true);
 				}
 			}
 		}

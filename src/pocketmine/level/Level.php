@@ -1641,7 +1641,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$above = $this->getBlock(new Vector3($target->x, $target->y + 1, $target->z));
 		if($above !== null){
-			if($above->getId() === Item::FIRE){
+			if($above->getId() === Block::FIRE){
 				$this->setBlock($above, Block::get(Block::AIR), true);
 			}
 		}
@@ -1705,7 +1705,7 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		if($target->getId() === Item::AIR){
+		if($target->getId() === Block::AIR){
 			return false;
 		}
 
@@ -1762,7 +1762,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		//TODO: remove this hack
-		if(!($block->canBeReplaced() === true or ($hand->getId() === Item::WOODEN_SLAB and $block->getId() === Item::WOODEN_SLAB) or ($hand->getId() === Item::STONE_SLAB and $block->getId() === Item::STONE_SLAB))){
+		if(!($block->canBeReplaced() === true or ($hand->getId() === Block::WOODEN_SLAB and $block->getId() === Block::WOODEN_SLAB) or ($hand->getId() === Block::STONE_SLAB and $block->getId() === Block::STONE_SLAB))){
 			return false;
 		}
 
