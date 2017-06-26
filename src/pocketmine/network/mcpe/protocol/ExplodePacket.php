@@ -51,7 +51,7 @@ class ExplodePacket extends DataPacket{
 		$count = $this->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
 			$x = $y = $z = null;
-			$this->getBlockPosition($x, $y, $z);
+			$this->getSignedBlockPosition($x, $y, $z);
 			$this->records[$i] = new Vector3($x, $y, $z);
 		}
 	}
@@ -63,7 +63,7 @@ class ExplodePacket extends DataPacket{
 		$this->putUnsignedVarInt(count($this->records));
 		if(count($this->records) > 0){
 			foreach($this->records as $record){
-				$this->putBlockPosition($record->x, $record->y, $record->z);
+				$this->putSignedBlockPosition($record->x, $record->y, $record->z);
 			}
 		}
 	}
