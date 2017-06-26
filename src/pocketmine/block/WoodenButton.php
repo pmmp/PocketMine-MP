@@ -27,7 +27,7 @@ use pocketmine\item\Tool;
 
 class WoodenButton extends StoneButton{
 
-	protected $id = self::WOODEN_BUTTON;
+	protected $id = Block::WOODEN_BUTTON;
 
 	public function getName() : string{
 		return "Wooden Button";

@@ -31,7 +31,7 @@ use pocketmine\Player;
 
 class RedstoneOre extends Solid{
 
-	protected $id = self::REDSTONE_ORE;
+	protected $id = Block::REDSTONE_ORE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

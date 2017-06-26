@@ -35,7 +35,7 @@ use pocketmine\tile\Tile;
 
 class StandingSign extends Transparent{
 
-	protected $id = self::STANDING_SIGN;
+	protected $id = Block::STANDING_SIGN;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
@@ -99,7 +99,7 @@ class StandingSign extends Transparent{
 
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(Vector3::SIDE_DOWN)->getId() === self::AIR){
+			if($this->getSide(Vector3::SIDE_DOWN)->getId() === Block::AIR){
 				$this->getLevel()->useBreakOn($this);
 
 				return Level::BLOCK_UPDATE_NORMAL;

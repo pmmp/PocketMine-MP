@@ -38,7 +38,7 @@ use pocketmine\tile\Tile;
 
 class Chest extends Transparent{
 
-	protected $id = self::CHEST;
+	protected $id = Block::CHEST;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

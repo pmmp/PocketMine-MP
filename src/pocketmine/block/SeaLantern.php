@@ -27,7 +27,7 @@ use pocketmine\item\Item;
 
 class SeaLantern extends Transparent{
 
-	protected $id = self::SEA_LANTERN;
+	protected $id = Block::SEA_LANTERN;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

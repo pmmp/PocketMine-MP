@@ -27,7 +27,7 @@ use pocketmine\item\Item;
 
 class Bedrock extends Solid{
 
-	protected $id = self::BEDROCK;
+	protected $id = Block::BEDROCK;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

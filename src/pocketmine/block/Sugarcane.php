@@ -32,7 +32,7 @@ use pocketmine\Server;
 
 class Sugarcane extends Flowable{
 
-	protected $id = self::SUGARCANE_BLOCK;
+	protected $id = Block::SUGARCANE_BLOCK;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
@@ -54,10 +54,10 @@ class Sugarcane extends Flowable{
 
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
-			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::SUGARCANE_BLOCK){
+			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== Block::SUGARCANE_BLOCK){
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
-					if($b->getId() === self::AIR){
+					if($b->getId() === Block::AIR){
 						Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, Block::get(Block::SUGARCANE_BLOCK)));
 						if(!$ev->isCancelled()){
 							$this->getLevel()->setBlock($b, $ev->getNewState(), true);
@@ -81,17 +81,17 @@ class Sugarcane extends Flowable{
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$down = $this->getSide(Vector3::SIDE_DOWN);
-			if($down->isTransparent() === true and $down->getId() !== self::SUGARCANE_BLOCK){
+			if($down->isTransparent() === true and $down->getId() !== Block::SUGARCANE_BLOCK){
 				$this->getLevel()->useBreakOn($this);
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
-			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::SUGARCANE_BLOCK){
+			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== Block::SUGARCANE_BLOCK){
 				if($this->meta === 0x0F){
 					for($y = 1; $y < 3; ++$y){
 						$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
-						if($b->getId() === self::AIR){
+						if($b->getId() === Block::AIR){
 							$this->getLevel()->setBlock($b, Block::get(Block::SUGARCANE_BLOCK), true);
 							break;
 						}
@@ -112,11 +112,11 @@ class Sugarcane extends Flowable{
 
 	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
-		if($down->getId() === self::SUGARCANE_BLOCK){
+		if($down->getId() === Block::SUGARCANE_BLOCK){
 			$this->getLevel()->setBlock($block, Block::get(Block::SUGARCANE_BLOCK), true);
 
 			return true;
-		}elseif($down->getId() === self::GRASS or $down->getId() === self::DIRT or $down->getId() === self::SAND){
+		}elseif($down->getId() === Block::GRASS or $down->getId() === Block::DIRT or $down->getId() === Block::SAND){
 			$block0 = $down->getSide(Vector3::SIDE_NORTH);
 			$block1 = $down->getSide(Vector3::SIDE_SOUTH);
 			$block2 = $down->getSide(Vector3::SIDE_WEST);

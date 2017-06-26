@@ -27,7 +27,7 @@ use pocketmine\item\Tool;
 
 class Wool extends Solid{
 
-	protected $id = self::WOOL;
+	protected $id = Block::WOOL;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

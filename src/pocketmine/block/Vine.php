@@ -37,7 +37,7 @@ class Vine extends Transparent{
 	const FLAG_NORTH = 0x04;
 	const FLAG_EAST = 0x08;
 
-	protected $id = self::VINE;
+	protected $id = Block::VINE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

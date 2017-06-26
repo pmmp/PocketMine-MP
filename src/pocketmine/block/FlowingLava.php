@@ -34,7 +34,7 @@ use pocketmine\Server;
 
 class FlowingLava extends Liquid{
 
-	protected $id = self::FLOWING_LAVA;
+	protected $id = Block::FLOWING_LAVA;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

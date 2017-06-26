@@ -30,9 +30,9 @@ use pocketmine\Player;
 
 class WoodenSlab extends Transparent{
 
-	protected $id = self::WOODEN_SLAB;
+	protected $id = Block::WOODEN_SLAB;
 
-	protected $doubleId = self::DOUBLE_WOODEN_SLAB;
+	protected $doubleId = Block::DOUBLE_WOODEN_SLAB;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

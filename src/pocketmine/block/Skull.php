@@ -36,7 +36,7 @@ use pocketmine\tile\Tile;
 
 class Skull extends Flowable{
 
-	protected $id = self::SKULL_BLOCK;
+	protected $id = Block::SKULL_BLOCK;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

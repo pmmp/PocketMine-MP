@@ -27,7 +27,7 @@ use pocketmine\item\Tool;
 
 class WoodenPressurePlate extends StonePressurePlate{
 
-	protected $id = self::WOODEN_PRESSURE_PLATE;
+	protected $id = Block::WOODEN_PRESSURE_PLATE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

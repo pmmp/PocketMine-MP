@@ -33,7 +33,7 @@ use pocketmine\tile\ItemFrame as TileItemFrame;
 use pocketmine\tile\Tile;
 
 class ItemFrame extends Flowable{
-	protected $id = self::ITEM_FRAME_BLOCK;
+	protected $id = Block::ITEM_FRAME_BLOCK;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

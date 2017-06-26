@@ -29,7 +29,7 @@ use pocketmine\item\Tool;
 
 class DiamondOre extends Solid{
 
-	protected $id = self::DIAMOND_ORE;
+	protected $id = Block::DIAMOND_ORE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

@@ -31,7 +31,7 @@ use pocketmine\Server;
 
 class MelonStem extends Crops{
 
-	protected $id = self::MELON_STEM;
+	protected $id = Block::MELON_STEM;
 
 	public function getName() : string{
 		return "Melon Stem";
@@ -65,13 +65,13 @@ class MelonStem extends Crops{
 				}else{
 					for($side = 2; $side <= 5; ++$side){
 						$b = $this->getSide($side);
-						if($b->getId() === self::MELON_BLOCK){
+						if($b->getId() === Block::MELON_BLOCK){
 							return Level::BLOCK_UPDATE_RANDOM;
 						}
 					}
 					$side = $this->getSide(mt_rand(2, 5));
 					$d = $side->getSide(Vector3::SIDE_DOWN);
-					if($side->getId() === self::AIR and ($d->getId() === self::FARMLAND or $d->getId() === self::GRASS or $d->getId() === self::DIRT)){
+					if($side->getId() === Block::AIR and ($d->getId() === Block::FARMLAND or $d->getId() === Block::GRASS or $d->getId() === Block::DIRT)){
 						Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($side, Block::get(Block::MELON_BLOCK)));
 						if(!$ev->isCancelled()){
 							$this->getLevel()->setBlock($side, $ev->getNewState(), true);

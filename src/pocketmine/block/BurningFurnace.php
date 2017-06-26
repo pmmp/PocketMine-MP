@@ -37,7 +37,7 @@ use pocketmine\tile\Tile;
 
 class BurningFurnace extends Solid{
 
-	protected $id = self::BURNING_FURNACE;
+	protected $id = Block::BURNING_FURNACE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

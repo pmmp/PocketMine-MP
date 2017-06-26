@@ -32,7 +32,7 @@ use pocketmine\Player;
 
 class Ladder extends Transparent{
 
-	protected $id = self::LADDER;
+	protected $id = Block::LADDER;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

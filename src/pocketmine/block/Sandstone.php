@@ -32,7 +32,7 @@ class Sandstone extends Solid{
 	const CHISELED = 1;
 	const SMOOTH = 2;
 
-	protected $id = self::SANDSTONE;
+	protected $id = Block::SANDSTONE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

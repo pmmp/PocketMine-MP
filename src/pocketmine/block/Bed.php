@@ -41,7 +41,7 @@ class Bed extends Transparent{
 	const BITFLAG_OCCUPIED = 0x04;
 	const BITFLAG_HEAD = 0x08;
 
-	protected $id = self::BED_BLOCK;
+	protected $id = Block::BED_BLOCK;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

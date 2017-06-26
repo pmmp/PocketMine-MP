@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 class LightWeightedPressurePlate extends Transparent{
 
-	protected $id = self::LIGHT_WEIGHTED_PRESSURE_PLATE;
+	protected $id = Block::LIGHT_WEIGHTED_PRESSURE_PLATE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

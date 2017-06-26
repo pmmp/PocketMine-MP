@@ -28,7 +28,7 @@ use pocketmine\item\Tool;
 
 class StainedClay extends Solid{
 
-	protected $id = self::STAINED_HARDENED_CLAY;
+	protected $id = Block::STAINED_HARDENED_CLAY;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

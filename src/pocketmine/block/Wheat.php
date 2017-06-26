@@ -27,7 +27,7 @@ use pocketmine\item\Item;
 
 class Wheat extends Crops{
 
-	protected $id = self::WHEAT_BLOCK;
+	protected $id = Block::WHEAT_BLOCK;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

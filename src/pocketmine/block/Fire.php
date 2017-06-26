@@ -36,7 +36,7 @@ use pocketmine\Server;
 
 class Fire extends Flowable{
 
-	protected $id = self::FIRE;
+	protected $id = Block::FIRE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
@@ -90,7 +90,7 @@ class Fire extends Flowable{
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			for($s = 0; $s <= 5; ++$s){
 				$side = $this->getSide($s);
-				if($side->getId() !== self::AIR and !($side instanceof Liquid)){
+				if($side->getId() !== Block::AIR and !($side instanceof Liquid)){
 					return false;
 				}
 			}
@@ -98,7 +98,7 @@ class Fire extends Flowable{
 
 			return Level::BLOCK_UPDATE_NORMAL;
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
-			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::NETHERRACK){
+			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== Block::NETHERRACK){
 				if(mt_rand(0, 2) === 0){
 					if($this->meta === 0x0F){
 						$this->level->setBlock($this, Block::get(Block::AIR));

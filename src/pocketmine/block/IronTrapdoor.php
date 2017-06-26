@@ -28,7 +28,7 @@ use pocketmine\item\Tool;
 
 class IronTrapdoor extends Trapdoor{
 
-	protected $id = self::IRON_TRAPDOOR;
+	protected $id = Block::IRON_TRAPDOOR;
 
 	public function getName() : string{
 		return "Iron Trapdoor";

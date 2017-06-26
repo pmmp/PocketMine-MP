@@ -29,7 +29,7 @@ use pocketmine\item\Tool;
 
 class IronDoor extends Door{
 
-	protected $id = self::IRON_DOOR_BLOCK;
+	protected $id = Block::IRON_DOOR_BLOCK;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

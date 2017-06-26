@@ -29,7 +29,7 @@ use pocketmine\math\AxisAlignedBB;
 
 class GrassPath extends Transparent{
 
-	protected $id = self::GRASS_PATH;
+	protected $id = Block::GRASS_PATH;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

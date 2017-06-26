@@ -36,7 +36,7 @@ use pocketmine\utils\Random;
 
 class TNT extends Solid{
 
-	protected $id = self::TNT;
+	protected $id = Block::TNT;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

@@ -27,8 +27,8 @@ use pocketmine\item\Item;
 
 class Leaves2 extends Leaves{
 
-	protected $id = self::LEAVES2;
-	protected $woodType = self::LOG2;
+	protected $id = Block::LEAVES2;
+	protected $woodType = Block::LOG2;
 
 	public function getName() : string{
 		static $names = [

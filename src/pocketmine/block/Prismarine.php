@@ -32,7 +32,7 @@ class Prismarine extends Solid{
 	const DARK = 1;
 	const BRICKS = 2;
 
-	protected $id = self::PRISMARINE;
+	protected $id = Block::PRISMARINE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

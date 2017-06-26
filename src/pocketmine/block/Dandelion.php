@@ -30,7 +30,7 @@ use pocketmine\Player;
 
 class Dandelion extends Flowable{
 
-	protected $id = self::DANDELION;
+	protected $id = Block::DANDELION;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

@@ -28,7 +28,7 @@ use pocketmine\Player;
 
 class HayBale extends Solid{
 
-	protected $id = self::HAY_BALE;
+	protected $id = Block::HAY_BALE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

@@ -30,7 +30,7 @@ use pocketmine\Player;
 
 class TallGrass extends Flowable{
 
-	protected $id = self::TALL_GRASS;
+	protected $id = Block::TALL_GRASS;
 
 	public function __construct(int $meta = 1){
 		$this->meta = $meta;

@@ -38,8 +38,8 @@ class Leaves extends Transparent{
 	const ACACIA = 0;
 	const DARK_OAK = 1;
 
-	protected $id = self::LEAVES;
-	protected $woodType = self::LOG;
+	protected $id = Block::LEAVES;
+	protected $woodType = Block::LOG;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

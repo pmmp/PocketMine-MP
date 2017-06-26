@@ -28,7 +28,7 @@ use pocketmine\item\Tool;
 
 class DoubleWoodSlab extends Solid{
 
-	protected $id = self::DOUBLE_WOODEN_SLAB;
+	protected $id = Block::DOUBLE_WOODEN_SLAB;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

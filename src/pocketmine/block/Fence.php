@@ -35,7 +35,7 @@ class Fence extends Transparent{
 	const FENCE_ACACIA = 4;
 	const FENCE_DARKOAK = 5;
 
-	protected $id = self::FENCE;
+	protected $id = Block::FENCE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

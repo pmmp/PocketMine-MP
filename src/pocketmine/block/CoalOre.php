@@ -29,7 +29,7 @@ use pocketmine\item\Tool;
 
 class CoalOre extends Solid{
 
-	protected $id = self::COAL_ORE;
+	protected $id = Block::COAL_ORE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

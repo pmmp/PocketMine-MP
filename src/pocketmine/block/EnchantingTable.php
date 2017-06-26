@@ -35,7 +35,7 @@ use pocketmine\tile\Tile;
 
 class EnchantingTable extends Transparent{
 
-	protected $id = self::ENCHANTING_TABLE;
+	protected $id = Block::ENCHANTING_TABLE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

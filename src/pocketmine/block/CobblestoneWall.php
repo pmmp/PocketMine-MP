@@ -32,7 +32,7 @@ class CobblestoneWall extends Transparent{
 	const NONE_MOSSY_WALL = 0;
 	const MOSSY_WALL = 1;
 
-	protected $id = self::COBBLESTONE_WALL;
+	protected $id = Block::COBBLESTONE_WALL;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

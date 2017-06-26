@@ -32,7 +32,7 @@ use pocketmine\Player;
 class DoublePlant extends Flowable{
 	const BITFLAG_TOP = 0x08;
 
-	protected $id = self::DOUBLE_PLANT;
+	protected $id = Block::DOUBLE_PLANT;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

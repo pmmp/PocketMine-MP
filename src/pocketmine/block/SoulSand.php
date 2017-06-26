@@ -28,7 +28,7 @@ use pocketmine\math\AxisAlignedBB;
 
 class SoulSand extends Solid{
 
-	protected $id = self::SOUL_SAND;
+	protected $id = Block::SOUL_SAND;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

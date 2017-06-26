@@ -40,7 +40,7 @@ class FlowerPot extends Flowable{
 	const STATE_EMPTY = 0;
 	const STATE_FULL = 1;
 
-	protected $id = self::FLOWER_POT_BLOCK;
+	protected $id = Block::FLOWER_POT_BLOCK;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

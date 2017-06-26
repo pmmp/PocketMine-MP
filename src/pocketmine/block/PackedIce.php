@@ -28,7 +28,7 @@ use pocketmine\item\Tool;
 
 class PackedIce extends Solid{
 
-	protected $id = self::PACKED_ICE;
+	protected $id = Block::PACKED_ICE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

@@ -41,7 +41,7 @@ class Rail extends Flowable{
 	const CURVE_NORTHWEST = 8;
 	const CURVE_NORTHEAST = 9;
 
-	protected $id = self::RAIL;
+	protected $id = Block::RAIL;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

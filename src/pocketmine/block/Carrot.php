@@ -27,7 +27,7 @@ use pocketmine\item\Item;
 
 class Carrot extends Crops{
 
-	protected $id = self::CARROTS;
+	protected $id = Block::CARROTS;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

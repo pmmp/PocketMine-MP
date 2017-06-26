@@ -28,7 +28,7 @@ use pocketmine\item\Tool;
 
 class Gravel extends Fallable{
 
-	protected $id = self::GRAVEL;
+	protected $id = Block::GRAVEL;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

@@ -27,7 +27,7 @@ use pocketmine\item\Item;
 
 class Glass extends Transparent{
 
-	protected $id = self::GLASS;
+	protected $id = Block::GLASS;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 class TripwireHook extends Flowable{
 
-	protected $id = self::TRIPWIRE_HOOK;
+	protected $id = Block::TRIPWIRE_HOOK;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

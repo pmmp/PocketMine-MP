@@ -29,7 +29,7 @@ class Wood2 extends Wood{
 	const ACACIA = 0;
 	const DARK_OAK = 1;
 
-	protected $id = self::WOOD2;
+	protected $id = Block::WOOD2;
 
 	public function getName() : string{
 		static $names = [

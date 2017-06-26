@@ -35,7 +35,7 @@ class Anvil extends Fallable{
 	const TYPE_SLIGHTLY_DAMAGED = 4;
 	const TYPE_VERY_DAMAGED = 8;
 
-	protected $id = self::ANVIL;
+	protected $id = Block::ANVIL;
 
 	public function isSolid() : bool{
 		return false;

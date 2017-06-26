@@ -33,7 +33,7 @@ class Planks extends Solid{
 	const ACACIA = 4;
 	const DARK_OAK = 5;
 
-	protected $id = self::WOODEN_PLANKS;
+	protected $id = Block::WOODEN_PLANKS;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

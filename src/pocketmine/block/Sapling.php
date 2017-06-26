@@ -38,7 +38,7 @@ class Sapling extends Flowable{
 	const ACACIA = 4;
 	const DARK_OAK = 5;
 
-	protected $id = self::SAPLING;
+	protected $id = Block::SAPLING;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
@@ -62,7 +62,7 @@ class Sapling extends Flowable{
 
 	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
-		if($down->getId() === self::GRASS or $down->getId() === self::DIRT or $down->getId() === self::FARMLAND){
+		if($down->getId() === Block::GRASS or $down->getId() === Block::DIRT or $down->getId() === Block::FARMLAND){
 			$this->getLevel()->setBlock($block, $this, true, true);
 
 			return true;

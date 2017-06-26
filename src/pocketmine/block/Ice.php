@@ -29,7 +29,7 @@ use pocketmine\level\Level;
 
 class Ice extends Transparent{
 
-	protected $id = self::ICE;
+	protected $id = Block::ICE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

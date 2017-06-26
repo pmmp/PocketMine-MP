@@ -32,7 +32,7 @@ use pocketmine\Server;
 
 class Mycelium extends Solid{
 
-	protected $id = self::MYCELIUM;
+	protected $id = Block::MYCELIUM;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

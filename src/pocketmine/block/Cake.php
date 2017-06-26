@@ -35,7 +35,7 @@ use pocketmine\Player;
 
 class Cake extends Transparent implements FoodSource{
 
-	protected $id = self::CAKE_BLOCK;
+	protected $id = Block::CAKE_BLOCK;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
@@ -65,7 +65,7 @@ class Cake extends Transparent implements FoodSource{
 
 	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
-		if($down->getId() !== self::AIR){
+		if($down->getId() !== Block::AIR){
 			$this->getLevel()->setBlock($block, $this, true, true);
 
 			return true;
@@ -76,7 +76,7 @@ class Cake extends Transparent implements FoodSource{
 
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(Vector3::SIDE_DOWN)->getId() === self::AIR){ //Replace with common break method
+			if($this->getSide(Vector3::SIDE_DOWN)->getId() === Block::AIR){ //Replace with common break method
 				$this->getLevel()->setBlock($this, Block::get(Block::AIR), true);
 
 				return Level::BLOCK_UPDATE_NORMAL;

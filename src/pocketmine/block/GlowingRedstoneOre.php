@@ -28,7 +28,7 @@ use pocketmine\level\Level;
 
 class GlowingRedstoneOre extends RedstoneOre{
 
-	protected $id = self::GLOWING_REDSTONE_ORE;
+	protected $id = Block::GLOWING_REDSTONE_ORE;
 
 	public function getName() : string{
 		return "Glowing Redstone Ore";

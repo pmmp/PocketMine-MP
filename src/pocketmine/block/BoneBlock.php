@@ -39,5 +39,4 @@ class BoneBlock extends Solid{
 		$this->meta = $faces[$face & ~0x01];
 		return $block->getLevel()->setBlock($block, $this, true, true);
 	}
-
 }

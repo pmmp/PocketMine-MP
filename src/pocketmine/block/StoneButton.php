@@ -29,7 +29,7 @@ use pocketmine\Player;
 
 class StoneButton extends Flowable{
 
-	protected $id = self::STONE_BUTTON;
+	protected $id = Block::STONE_BUTTON;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

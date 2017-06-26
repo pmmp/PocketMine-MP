@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 class Lever extends Flowable{
 
-	protected $id = self::LEVER;
+	protected $id = Block::LEVER;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

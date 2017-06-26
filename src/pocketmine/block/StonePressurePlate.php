@@ -27,7 +27,7 @@ use pocketmine\item\Tool;
 
 class StonePressurePlate extends Transparent{
 
-	protected $id = self::STONE_PRESSURE_PLATE;
+	protected $id = Block::STONE_PRESSURE_PLATE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

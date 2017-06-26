@@ -32,7 +32,7 @@ use pocketmine\Player;
 
 class SnowLayer extends Flowable{
 
-	protected $id = self::SNOW_LAYER;
+	protected $id = Block::SNOW_LAYER;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

@@ -27,7 +27,7 @@ use pocketmine\item\Tool;
 
 class Sand extends Fallable{
 
-	protected $id = self::SAND;
+	protected $id = Block::SAND;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

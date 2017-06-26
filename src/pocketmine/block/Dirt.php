@@ -27,7 +27,7 @@ use pocketmine\item\Tool;
 
 class Dirt extends Solid{
 
-	protected $id = self::DIRT;
+	protected $id = Block::DIRT;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

@@ -30,7 +30,7 @@ use pocketmine\Player;
 
 class RedMushroom extends Flowable{
 
-	protected $id = self::RED_MUSHROOM;
+	protected $id = Block::RED_MUSHROOM;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

@@ -32,7 +32,7 @@ class StoneBricks extends Solid{
 	const CRACKED = 2;
 	const CHISELED = 3;
 
-	protected $id = self::STONE_BRICK;
+	protected $id = Block::STONE_BRICK;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

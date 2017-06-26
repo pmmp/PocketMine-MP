@@ -33,7 +33,7 @@ class Wood extends Solid{
 	const BIRCH = 2;
 	const JUNGLE = 3;
 
-	protected $id = self::WOOD;
+	protected $id = Block::WOOD;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

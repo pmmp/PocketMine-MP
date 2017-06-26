@@ -31,7 +31,7 @@ use pocketmine\Player;
 
 class Carpet extends Flowable{
 
-	protected $id = self::CARPET;
+	protected $id = Block::CARPET;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
@@ -81,7 +81,7 @@ class Carpet extends Flowable{
 
 	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
-		if($down->getId() !== self::AIR){
+		if($down->getId() !== Block::AIR){
 			$this->getLevel()->setBlock($block, $this, true, true);
 
 			return true;
@@ -92,7 +92,7 @@ class Carpet extends Flowable{
 
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(Vector3::SIDE_DOWN)->getId() === self::AIR){
+			if($this->getSide(Vector3::SIDE_DOWN)->getId() === Block::AIR){
 				$this->getLevel()->useBreakOn($this);
 
 				return Level::BLOCK_UPDATE_NORMAL;

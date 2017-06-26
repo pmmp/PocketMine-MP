@@ -31,7 +31,7 @@ use pocketmine\Player;
 
 class WaterLily extends Flowable{
 
-	protected $id = self::WATER_LILY;
+	protected $id = Block::WATER_LILY;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

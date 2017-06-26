@@ -28,7 +28,7 @@ use pocketmine\item\Tool;
 
 class Obsidian extends Solid{
 
-	protected $id = self::OBSIDIAN;
+	protected $id = Block::OBSIDIAN;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

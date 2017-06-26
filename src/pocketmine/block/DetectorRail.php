@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 class DetectorRail extends Rail{
 
-	protected $id = self::DETECTOR_RAIL;
+	protected $id = Block::DETECTOR_RAIL;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

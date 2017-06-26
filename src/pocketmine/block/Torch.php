@@ -30,7 +30,7 @@ use pocketmine\Player;
 
 class Torch extends Flowable{
 
-	protected $id = self::TORCH;
+	protected $id = Block::TORCH;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

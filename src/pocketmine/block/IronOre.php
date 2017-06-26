@@ -28,7 +28,7 @@ use pocketmine\item\Tool;
 
 class IronOre extends Solid{
 
-	protected $id = self::IRON_ORE;
+	protected $id = Block::IRON_ORE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

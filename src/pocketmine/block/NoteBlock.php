@@ -27,7 +27,7 @@ use pocketmine\item\Tool;
 
 class NoteBlock extends Solid{
 
-	protected $id = self::NOTE_BLOCK;
+	protected $id = Block::NOTE_BLOCK;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

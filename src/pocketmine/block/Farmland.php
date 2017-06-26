@@ -30,7 +30,7 @@ use pocketmine\math\AxisAlignedBB;
 
 class Farmland extends Transparent{
 
-	protected $id = self::FARMLAND;
+	protected $id = Block::FARMLAND;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

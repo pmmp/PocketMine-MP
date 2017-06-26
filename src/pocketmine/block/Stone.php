@@ -36,7 +36,7 @@ class Stone extends Solid{
 	const ANDESITE = 5;
 	const POLISHED_ANDESITE = 6;
 
-	protected $id = self::STONE;
+	protected $id = Block::STONE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

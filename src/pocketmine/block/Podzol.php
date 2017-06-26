@@ -28,7 +28,7 @@ use pocketmine\item\Tool;
 
 class Podzol extends Solid{
 
-	protected $id = self::PODZOL;
+	protected $id = Block::PODZOL;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

@@ -28,7 +28,7 @@ use pocketmine\item\Tool;
 
 class Bookshelf extends Solid{
 
-	protected $id = self::BOOKSHELF;
+	protected $id = Block::BOOKSHELF;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

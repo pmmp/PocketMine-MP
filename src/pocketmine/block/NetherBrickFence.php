@@ -28,7 +28,7 @@ use pocketmine\item\Tool;
 
 class NetherBrickFence extends Transparent{
 
-	protected $id = self::NETHER_BRICK_FENCE;
+	protected $id = Block::NETHER_BRICK_FENCE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

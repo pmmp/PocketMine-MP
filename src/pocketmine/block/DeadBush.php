@@ -28,7 +28,7 @@ use pocketmine\math\Vector3;
 
 class DeadBush extends Flowable{
 
-	protected $id = self::DEAD_BUSH;
+	protected $id = Block::DEAD_BUSH;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

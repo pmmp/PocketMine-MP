@@ -27,7 +27,7 @@ use pocketmine\item\Item;
 
 class GlassPane extends Thin{
 
-	protected $id = self::GLASS_PANE;
+	protected $id = Block::GLASS_PANE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;

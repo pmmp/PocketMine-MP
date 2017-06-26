@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 class GlowingObsidian extends Obsidian{
 
-	protected $id = self::GLOWING_OBSIDIAN;
+	protected $id = Block::GLOWING_OBSIDIAN;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
