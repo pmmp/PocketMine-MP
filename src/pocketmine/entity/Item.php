@@ -231,7 +231,7 @@ class Item extends Entity{
 		$this->thrower = $thrower;
 	}
 
-	public function spawnTo(Player $player){
+	protected function sendSpawnPacket(Player $player){
 		$pk = new AddItemEntityPacket();
 		$pk->entityRuntimeId = $this->getId();
 		$pk->x = $this->x;
@@ -243,7 +243,5 @@ class Item extends Entity{
 		$pk->item = $this->getItem();
 		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
 	}
 }

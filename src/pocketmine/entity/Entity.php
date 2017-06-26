@@ -29,6 +29,7 @@ namespace pocketmine\entity;
 use pocketmine\block\Block;
 use pocketmine\block\FlowingWater;
 use pocketmine\entity\projectile\Arrow;
+use pocketmine\entity\projectile\Egg;
 use pocketmine\entity\projectile\Snowball;
 use pocketmine\entity\projectile\SplashPotion;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -58,6 +59,7 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
 use pocketmine\network\mcpe\protocol\SetEntityDataPacket;
@@ -213,6 +215,7 @@ abstract class Entity extends Location implements Metadatable{
 
 	public static function init(){
 		Entity::registerEntity(Arrow::class);
+		Entity::registerEntity(Egg::class);
 		Entity::registerEntity(FallingSand::class);
 		Entity::registerEntity(Item::class);
 		Entity::registerEntity(PrimedTNT::class);
@@ -851,12 +854,29 @@ abstract class Entity extends Location implements Metadatable{
 		return $this->hasSpawned;
 	}
 
+	protected function sendSpawnPacket(Player $player){
+		$pk = new AddEntityPacket();
+		$pk->entityRuntimeId = $this->getId();
+		$pk->type = static::NETWORK_ID;
+		$pk->x = $this->x;
+		$pk->y = $this->y;
+		$pk->z = $this->z;
+		$pk->speedX = $this->motionX;
+		$pk->speedY = $this->motionY;
+		$pk->speedZ = $this->motionZ;
+		$pk->yaw = $this->yaw;
+		$pk->pitch = $this->pitch;
+		$pk->metadata = $this->dataProperties;
+		$player->dataPacket($pk);
+	}
+
 	/**
 	 * @param Player $player
 	 */
 	public function spawnTo(Player $player){
 		if(!isset($this->hasSpawned[$player->getLoaderId()]) and isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])){
 			$this->hasSpawned[$player->getLoaderId()] = $player;
+			$this->sendSpawnPacket($player);
 		}
 	}
 

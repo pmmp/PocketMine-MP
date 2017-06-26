@@ -509,7 +509,13 @@
     },
     "egg": {
         "id": 344,
-        "fallback_name": "Egg"
+        "fallback_name": "Egg",
+        "max_stack_size": 16,
+        "type": "projectile",
+        "properties": {
+            "throw_force": 1.5,
+            "projectile_entity": "Egg"
+        }
     },
     "elytra": {
         "id": 444,

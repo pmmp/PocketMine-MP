@@ -534,39 +534,41 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		}
 	}
 
+	protected function sendSpawnPacket(Player $player){
+		if(!Player::isValidSkin($this->skin)){
+			throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
+		}
+
+		if(!($this instanceof Player)){
+			$this->server->updatePlayerListData($this->getUniqueId(), $this->getId(), $this->getName(), $this->skinId, $this->skin, [$player]);
+		}
+
+		$pk = new AddPlayerPacket();
+		$pk->uuid = $this->getUniqueId();
+		$pk->username = $this->getName();
+		$pk->entityRuntimeId = $this->getId();
+		$pk->x = $this->x;
+		$pk->y = $this->y;
+		$pk->z = $this->z;
+		$pk->speedX = $this->motionX;
+		$pk->speedY = $this->motionY;
+		$pk->speedZ = $this->motionZ;
+		$pk->yaw = $this->yaw;
+		$pk->pitch = $this->pitch;
+		$pk->item = $this->getInventory()->getItemInHand();
+		$pk->metadata = $this->dataProperties;
+		$player->dataPacket($pk);
+
+		$this->inventory->sendArmorContents($player);
+
+		if(!($this instanceof Player)){
+			$this->server->removePlayerListData($this->getUniqueId(), [$player]);
+		}
+	}
+
 	public function spawnTo(Player $player){
-		if($player !== $this and !isset($this->hasSpawned[$player->getLoaderId()])){
-			$this->hasSpawned[$player->getLoaderId()] = $player;
-
-			if(!Player::isValidSkin($this->skin)){
-				throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
-			}
-
-			if(!($this instanceof Player)){
-				$this->server->updatePlayerListData($this->getUniqueId(), $this->getId(), $this->getName(), $this->skinId, $this->skin, [$player]);
-			}
-
-			$pk = new AddPlayerPacket();
-			$pk->uuid = $this->getUniqueId();
-			$pk->username = $this->getName();
-			$pk->entityRuntimeId = $this->getId();
-			$pk->x = $this->x;
-			$pk->y = $this->y;
-			$pk->z = $this->z;
-			$pk->speedX = $this->motionX;
-			$pk->speedY = $this->motionY;
-			$pk->speedZ = $this->motionZ;
-			$pk->yaw = $this->yaw;
-			$pk->pitch = $this->pitch;
-			$pk->item = $this->getInventory()->getItemInHand();
-			$pk->metadata = $this->dataProperties;
-			$player->dataPacket($pk);
-
-			$this->inventory->sendArmorContents($player);
-
-			if(!($this instanceof Player)){
-				$this->server->removePlayerListData($this->getUniqueId(), [$player]);
-			}
+		if($player !== $this){
+			parent::spawnTo($player);
 		}
 	}
 

@@ -144,20 +144,4 @@ class PrimedTNT extends Entity implements Explosive{
 			$explosion->explodeB();
 		}
 	}
-
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->type = PrimedTNT::NETWORK_ID;
-		$pk->entityRuntimeId = $this->getId();
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->speedX = $this->motionX;
-		$pk->speedY = $this->motionY;
-		$pk->speedZ = $this->motionZ;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
-	}
 }
