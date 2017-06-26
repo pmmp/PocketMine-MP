@@ -780,7 +780,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	public function canBeBrokenWith(Item $item) : bool{
-		if($this->getHardness() === 1){
+		if($this->getHardness() < 0){
 			return false;
 		}
 
