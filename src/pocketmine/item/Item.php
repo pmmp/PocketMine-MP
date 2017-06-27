@@ -123,6 +123,7 @@ class Item implements ItemIds, \JsonSerializable{
 				"leggings" => Leggings::class,
 				"map_filled" => FilledMap::class,
 				"name_tag" => NameTag::class,
+				"painting" => Painting::class,
 				"pickaxe" => Pickaxe::class,
 				"potion" => Potion::class,
 				"projectile" => ProjectileItem::class,

@@ -28,6 +28,8 @@ namespace pocketmine\entity;
 
 use pocketmine\block\Block;
 use pocketmine\block\FlowingWater;
+use pocketmine\entity\object\PaintingEntity;
+use pocketmine\entity\object\PaintingMotive;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\projectile\Egg;
 use pocketmine\entity\projectile\Snowball;
@@ -218,6 +220,7 @@ abstract class Entity extends Location implements Metadatable{
 		Entity::registerEntity(Egg::class);
 		Entity::registerEntity(FallingSand::class);
 		Entity::registerEntity(Item::class);
+		Entity::registerEntity(PaintingEntity::class);
 		Entity::registerEntity(PrimedTNT::class);
 		Entity::registerEntity(Snowball::class);
 		Entity::registerEntity(SplashPotion::class);
@@ -226,6 +229,10 @@ abstract class Entity extends Location implements Metadatable{
 		Entity::registerEntity(Zombie::class);
 
 		Entity::registerEntity(Human::class, true);
+
+		Attribute::init();
+		Effect::init();
+		PaintingMotive::init();
 	}
 
 	/**
@@ -1331,13 +1338,13 @@ abstract class Entity extends Location implements Metadatable{
 			$rotation += 360.0;
 		}
 		if((0 <= $rotation and $rotation < 45) or (315 <= $rotation and $rotation < 360)){
-			return 2; //North
+			return Vector2::DIRECTION_NORTH;
 		}elseif(45 <= $rotation and $rotation < 135){
-			return 3; //East
+			return Vector2::DIRECTION_EAST;
 		}elseif(135 <= $rotation and $rotation < 225){
-			return 0; //South
+			return Vector2::DIRECTION_SOUTH;
 		}elseif(225 <= $rotation and $rotation < 315){
-			return 1; //West
+			return Vector2::DIRECTION_WEST;
 		}else{
 			return null;
 		}

@@ -24,6 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\math;
 
 class Vector2{
+	const DIRECTION_SOUTH = 0;
+	const DIRECTION_WEST = 1;
+	const DIRECTION_NORTH = 2;
+	const DIRECTION_EAST = 3;
+
 	public $x;
 	public $y;
 
@@ -127,6 +132,21 @@ class Vector2{
 
 	public function __toString(){
 		return "Vector2(x=" . $this->x . ",y=" . $this->y . ")";
+	}
+
+	public static function vec3SideToDirection(int $side) : int{
+		switch($side){
+			case Vector3::SIDE_NORTH:
+				return Vector2::DIRECTION_NORTH;
+			case Vector3::SIDE_EAST:
+				return Vector2::DIRECTION_EAST;
+			case Vector3::SIDE_SOUTH:
+				return Vector2::DIRECTION_SOUTH;
+			case Vector3::SIDE_WEST:
+				return Vector2::DIRECTION_WEST;
+			default:
+				throw new \InvalidArgumentException("Side $side cannot be converted to a Vector2 direction");
+		}
 	}
 
 }

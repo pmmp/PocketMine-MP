@@ -33,8 +33,6 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\command\SimpleCommandMap;
-use pocketmine\entity\Attribute;
-use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\event\HandlerList;
 use pocketmine\event\level\LevelInitEvent;
@@ -1570,11 +1568,9 @@ class Server{
 			InventoryType::init();
 			Block::init();
 			Enchantment::init();
-			Effect::init();
 			Item::init();
 			Potion::init();
 			Biome::init();
-			Attribute::init();
 			$this->craftingManager = new CraftingManager();
 
 			$this->resourceManager = new ResourcePackManager($this, $this->getDataPath() . "resource_packs" . DIRECTORY_SEPARATOR);
