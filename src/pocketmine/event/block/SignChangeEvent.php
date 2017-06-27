@@ -52,14 +52,14 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 	/**
 	 * @return Player
 	 */
-	public function getPlayer(){
+	public function getPlayer() : Player{
 		return $this->player;
 	}
 
 	/**
 	 * @return string[]
 	 */
-	public function getLines(){
+	public function getLines() : array{
 		return $this->lines;
 	}
 
@@ -68,7 +68,7 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 	 *
 	 * @return string
 	 */
-	public function getLine($index){
+	public function getLine(int $index) : string{
 		return $this->lines[$index];
 	}
 
@@ -76,7 +76,10 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 	 * @param int    $index 0-3
 	 * @param string $line
 	 */
-	public function setLine($index, $line){
+	public function setLine(int $index, string $line){
+		if($index < 0 or $index > 3){
+			throw new \InvalidArgumentException("Line index must be 0-3, not $index");
+		}
 		$this->lines[$index] = $line;
 	}
 }
