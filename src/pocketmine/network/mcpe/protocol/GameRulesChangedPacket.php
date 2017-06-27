@@ -25,51 +25,24 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
-use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 
-class ExplodePacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::EXPLODE_PACKET;
+class GameRulesChangedPacket extends DataPacket{
+	const NETWORK_ID = ProtocolInfo::GAME_RULES_CHANGED_PACKET;
 
-	public $x;
-	public $y;
-	public $z;
-	/** @var float */
-	public $radius;
-	/** @var Vector3[] */
-	public $records = [];
-
-	public function clean(){
-		$this->records = [];
-		return parent::clean();
-	}
+	public $gameRules = [];
 
 	public function decode(){
-		$this->getVector3f($this->x, $this->y, $this->z);
-		$this->radius = (float) ($this->getVarInt() / 32);
-		$count = $this->getUnsignedVarInt();
-		for($i = 0; $i < $count; ++$i){
-			$x = $y = $z = null;
-			$this->getSignedBlockPosition($x, $y, $z);
-			$this->records[$i] = new Vector3($x, $y, $z);
-		}
+		$this->gameRules = $this->getGameRules();
 	}
 
 	public function encode(){
 		$this->reset();
-		$this->putVector3f($this->x, $this->y, $this->z);
-		$this->putVarInt((int) ($this->radius * 32));
-		$this->putUnsignedVarInt(count($this->records));
-		if(count($this->records) > 0){
-			foreach($this->records as $record){
-				$this->putSignedBlockPosition($record->x, $record->y, $record->z);
-			}
-		}
+		$this->putGameRules($this->gameRules);
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleExplode($this);
+		return $session->handleGameRulesChanged($this);
 	}
 
 }

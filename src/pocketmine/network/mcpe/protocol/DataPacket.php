@@ -363,4 +363,60 @@ abstract class DataPacket extends BinaryStream{
 	public function putByteRotation(float $rotation){
 		$this->putByte((int) ($rotation / (360 / 256)));
 	}
+
+	/**
+	 * Reads gamerules
+	 * TODO: implement this properly
+	 *
+	 * @return array
+	 */
+	public function getGameRules() : array{
+		$count = $this->getUnsignedVarInt();
+		$rules = [];
+		for($i = 0; $i < $count; ++$i){
+			$name = $this->getString();
+			$type = $this->getUnsignedVarInt();
+			$value = null;
+			switch($type){
+				case 1:
+					$value = $this->getBool();
+					break;
+				case 2:
+					$value = $this->getUnsignedVarInt();
+					break;
+				case 3:
+					$value = $this->getLFloat();
+					break;
+			}
+
+			$rules[$name] = [$type, $value];
+		}
+
+		return $rules;
+	}
+
+	/**
+	 * Writes a gamerule array
+	 * TODO: implement this properly
+	 *
+	 * @param array $rules
+	 */
+	public function putGameRules(array $rules){
+		$this->putUnsignedVarInt(count($rules));
+		foreach($rules as $name => $rule){
+			$this->putString($name);
+			$this->putUnsignedVarInt($rule[0]);
+			switch($rule[0]){
+				case 1:
+					$this->putBool($rule[1]);
+					break;
+				case 2:
+					$this->putUnsignedVarInt($rule[1]);
+					break;
+				case 3:
+					$this->putLFloat($rule[1]);
+					break;
+			}
+		}
+	}
 }

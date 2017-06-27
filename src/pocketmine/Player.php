@@ -132,6 +132,7 @@ use pocketmine\network\mcpe\protocol\DropItemPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\ExplodePacket;
 use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
+use pocketmine\network\mcpe\protocol\GameRulesChangedPacket;
 use pocketmine\network\mcpe\protocol\HurtArmorPacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryActionPacket;
@@ -862,11 +863,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->level->registerChunkLoader($this, $X, $Z, false);
 
 			if(!$this->level->populateChunk($X, $Z)){
-				if($this->spawned and $this->teleportPosition === null){
-					continue;
-				}else{
-					break;
-				}
+				continue;
 			}
 
 			unset($this->loadQueue[$index]);
@@ -3164,6 +3161,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return false;
 	}
 
+	public function handleGameRulesChanged(GameRulesChangedPacket $packet) : bool{
+		return false;
+	}
+
 	public function handleAddItem(AddItemPacket $packet) : bool{
 		return false;
 	}
@@ -4063,6 +4064,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public function onChunkChanged(Chunk $chunk){
 		if(isset($this->usedChunks[$hash = Level::chunkHash($chunk->getX(), $chunk->getZ())])){
 			$this->usedChunks[$hash] = false;
+			if(!$this->spawned){
+				$this->nextChunkOrderRun = 0;
+			}
 		}
 	}
 

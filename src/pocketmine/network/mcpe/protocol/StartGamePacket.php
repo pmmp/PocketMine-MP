@@ -54,6 +54,7 @@ class StartGamePacket extends DataPacket{
 	public $lightningLevel;
 	public $commandsEnabled;
 	public $isTexturePacksRequired = true;
+	public $gameRules = []; //TODO: implement this
 	public $levelId = ""; //base64 string, usually the same as world folder name in vanilla
 	public $worldName;
 	public $premiumWorldTemplateId = "";
@@ -80,7 +81,7 @@ class StartGamePacket extends DataPacket{
 		$this->lightningLevel = $this->getLFloat();
 		$this->commandsEnabled = $this->getBool();
 		$this->isTexturePacksRequired = $this->getBool();
-		/*$gameRulesCount = */$this->getUnsignedVarInt(); //TODO
+		$this->gameRules = $this->getGameRules();
 		$this->levelId = $this->getString();
 		$this->worldName = $this->getString();
 		$this->premiumWorldTemplateId = $this->getString();
@@ -93,7 +94,7 @@ class StartGamePacket extends DataPacket{
 		$this->reset();
 		$this->putEntityUniqueId($this->entityUniqueId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putVarInt($this->playerGamemode); //client gamemode, other field is world gamemode
+		$this->putVarInt($this->playerGamemode);
 		$this->putVector3f($this->x, $this->y, $this->z);
 		$this->putLFloat($this->pitch);
 		$this->putLFloat($this->yaw);
@@ -110,7 +111,7 @@ class StartGamePacket extends DataPacket{
 		$this->putLFloat($this->lightningLevel);
 		$this->putBool($this->commandsEnabled);
 		$this->putBool($this->isTexturePacksRequired);
-		$this->putUnsignedVarInt(0); //TODO: gamerules
+		$this->putGameRules($this->gameRules);
 		$this->putString($this->levelId);
 		$this->putString($this->worldName);
 		$this->putString($this->premiumWorldTemplateId);
