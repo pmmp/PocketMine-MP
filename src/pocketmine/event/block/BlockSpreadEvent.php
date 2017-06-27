@@ -25,6 +25,9 @@ namespace pocketmine\event\block;
 
 use pocketmine\block\Block;
 
+/**
+ * Called when a block spreads to another block, such as grass spreading to nearby dirt blocks.
+ */
 class BlockSpreadEvent extends BlockFormEvent{
 	public static $handlerList = null;
 
@@ -39,7 +42,7 @@ class BlockSpreadEvent extends BlockFormEvent{
 	/**
 	 * @return Block
 	 */
-	public function getSource(){
+	public function getSource() : Block{
 		return $this->source;
 	}
 

@@ -43,7 +43,7 @@ abstract class BlockEvent extends Event{
 	/**
 	 * @return Block
 	 */
-	public function getBlock(){
+	public function getBlock() : Block{
 		return $this->block;
 	}
 }
