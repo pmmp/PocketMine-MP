@@ -70,14 +70,12 @@ class WhitelistCommand extends VanillaCommand{
 
 					return true;
 				case "list":
-					$result = "";
-					$count = 0;
-					foreach($sender->getServer()->getWhitelisted()->getAll(true) as $player){
-						$result .= $player . ", ";
-						++$count;
-					}
+					$entries = $sender->getServer()->getWhitelisted()->getAll(true);
+					$result = implode($entries, ", ");
+					$count = count($entries);
+
 					$sender->sendMessage(new TranslationContainer("commands.whitelist.list", [$count, $count]));
-					$sender->sendMessage(substr($result, 0, -2));
+					$sender->sendMessage($result);
 
 					return true;
 

@@ -25,6 +25,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
+use pocketmine\permission\BanEntry;
 
 class BanListCommand extends VanillaCommand{
 
@@ -58,11 +59,10 @@ class BanListCommand extends VanillaCommand{
 			$args[0] = "players";
 		}
 
-		$message = "";
 		$list = $list->getEntries();
-		foreach($list as $entry){
-			$message .= $entry->getName() . ", ";
-		}
+		$message = implode(", ", array_map(function(BanEntry $entry){
+			return $entry->getName();
+		}, $list));
 
 		if($args[0] === "ips"){
 			$sender->sendMessage(new TranslationContainer("commands.banlist.ips", [count($list)]));
@@ -70,7 +70,7 @@ class BanListCommand extends VanillaCommand{
 			$sender->sendMessage(new TranslationContainer("commands.banlist.players", [count($list)]));
 		}
 
-		$sender->sendMessage(substr($message, 0, -2));
+		$sender->sendMessage($message);
 
 		return true;
 	}
