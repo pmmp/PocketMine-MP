@@ -2877,7 +2877,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return true;
 		}
 
-		$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 1));
+		if($packet->item->getCount() < $item->getCount()){
+			// PC edition users may drop any number of item they have
+			$item->setCount($item->getCount() - $packet->item->getCount());
+			$this->inventory->setItemInHand($item);
+
+			// do not trust item id originates from incomming packet
+			$item->setCount($packet->item->getCount());
+		}else{
+			$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 1));
+		}
+
 		$motion = $this->getDirectionVector()->multiply(0.4);
 
 		$this->level->dropItem($this->add(0, 1.3, 0), $item, $motion, 40);
