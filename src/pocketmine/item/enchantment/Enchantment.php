@@ -90,9 +90,18 @@ class Enchantment{
 			throw new \RuntimeException("Enchantments data could not be read");
 		}
 
+		$types = [
+			"protection" => ProtectionEnchantment::class,
+			"blast_protection" => BlastProtectionEnchantment::class,
+			"feather_falling" => FeatherFallingEnchantment::class,
+			"fire_protection" => FireProtectionEnchantment::class,
+			"projectile_protection" => ProjectileProtectionEnchantment::class,
+		];
+
 		foreach($data as $enchantName => $enchantData){
+			$class = $types[$enchantName] ?? Enchantment::class;
 			//TODO: add item type flags
-			self::registerEnchantment(new Enchantment($enchantData["id"], $enchantData["translation"], $enchantData["weight"], -1, $enchantData["max_level"]));
+			self::registerEnchantment(new $class($enchantData["id"], $enchantData["translation"], $enchantData["weight"], -1, $enchantData["max_level"]));
 		}
 	}
 
@@ -138,7 +147,7 @@ class Enchantment{
 	 * @param int $slot
 	 * @param int $maxLevel
 	 */
-	private function __construct(int $id, string $name, int $rarity, int $slot, int $maxLevel){
+	public function __construct(int $id, string $name, int $rarity, int $slot, int $maxLevel){
 		$this->id = $id;
 		$this->name = $name;
 		$this->rarity = $rarity;

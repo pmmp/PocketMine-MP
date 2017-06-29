@@ -24,6 +24,9 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\ProtectionEnchantment;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\utils\Color;
 
@@ -81,6 +84,18 @@ abstract class Armor extends Durable{
 		$tag = $this->getNamedTag();
 		$tag->customColor = new IntTag("customColor", $color->toARGB());
 		$this->setNamedTag($tag);
+	}
+
+	public function getEnchantmentProtectionFactor(EntityDamageEvent $event) : int{
+		$epf = 0;
+
+		foreach($this->getEnchantments() as $enchantment){
+			if($enchantment instanceof ProtectionEnchantment and $enchantment->isApplicable($event)){
+				$epf += $enchantment->getEnchantmentProtectionFactor();
+			}
+		}
+
+		return $epf;
 	}
 
 	protected static function fromJsonTypeData(array $data){

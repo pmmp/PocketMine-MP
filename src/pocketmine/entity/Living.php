@@ -30,11 +30,13 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\Timings;
+use pocketmine\item\Armor;
 use pocketmine\item\Consumable;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\Player;
 use pocketmine\utils\BlockIterator;
 
 abstract class Living extends Entity implements Damageable{
@@ -173,12 +175,28 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	public function applyDamageModifiers(EntityDamageEvent $source){
-		//TODO: armor enchantments
+
+		//Armor damage reduction and enchantments currently use the system from before PC 1.9
+
 		if($source->canBeReducedByArmor()){
-			//Using the system from before PC 1.9
 			$points = $this->getArmorPoints();
 			$armorReduction = $source->getFinalDamage() * $points * 0.04;
 			$source->setDamage(-$armorReduction, EntityDamageEvent::MODIFIER_ARMOR);
+		}
+
+		if($this instanceof Player){
+			//TODO: clean up armor inventory
+
+			$totalEpf = 0;
+			foreach($this->getInventory()->getArmorContents() as $item){
+				if($item instanceof Armor){
+					$totalEpf += $item->getEnchantmentProtectionFactor($source);
+				}
+			}
+
+			$totalEpf = min(ceil(min($totalEpf, 25) * (mt_rand(50, 100) / 100)), 20);
+			$enchantmentReduction = $source->getFinalDamage() * $totalEpf * 0.04;
+			$source->setDamage(-$enchantmentReduction, EntityDamageEvent::MODIFIER_ARMOR_ENCHANTMENTS);
 		}
 
 		$source->setDamage(-min($this->getAbsorption(), $source->getFinalDamage()), EntityDamageEvent::MODIFIER_ABSORPTION);
