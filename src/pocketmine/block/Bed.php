@@ -31,6 +31,22 @@ use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
 class Bed extends Transparent{
+	const WHITE = 0;
+	const ORANGE = 1;
+	const MAGENTA = 2;
+	const LIGHT_BLUE = 3;
+	const YELLOW = 4;
+	const LIME = 5;
+	const PINK = 6;
+	const GRAY = 7;
+	const LIGHT_GRAY = 8;
+	const CYAN = 9;
+	const PURPLE = 10;
+	const BLUE = 11;
+	const BROWN = 12;
+	const GREEN = 13;
+	const RED = 14;
+	const BLACK = 15;
 
 	protected $id = self::BED_BLOCK;
 
@@ -47,7 +63,25 @@ class Bed extends Transparent{
 	}
 
 	public function getName(){
-		return "Bed Block";
+		static $names = [
+			self::WHITE => "White Bed",
+			self::ORANGE => "Orange Bed",
+			self::MAGENTA => "Magenta Bed",
+			self::LIGHT_BLUE => "Light Blue Bed",
+			self::YELLOW => "Yellow Bed",
+			self::LIME => "Lime Bed",
+			self::PINK => "Pink Bed",
+			self::GRAY => "Gray Bed",
+			self::LIGHT_GRAY => "Light Gray Bed",
+			self::CYAN => "Cyan Bed",
+			self::PURPLE => "Purple Bed",
+			self::BLUE => "Blue Bed",
+			self::BROWN => "Brown Bed",
+			self::GREEN => "Green Bed",
+			self::RED => "Red Bed",
+			self::BLACK => "Black Bed",
+		];
+		return $names[$this->meta & 0x0f];
 	}
 
 	protected function recalculateBoundingBox(){
@@ -161,7 +195,7 @@ class Bed extends Transparent{
 
 	public function getDrops(Item $item){
 		return [
-			[Item::BED, 0, 1],
+			[$this->id, $this->meta & 0x0f, 1],
 		];
 	}
 
