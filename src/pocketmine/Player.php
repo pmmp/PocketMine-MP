@@ -2237,6 +2237,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
 		//TODO: add events so plugins can change this
+		if($packet->sound === LevelSoundEventPacket::SOUND_ATTACK_NODAMAGE and $this->isSpectator()){
+			return false;
+		}
 		$this->getLevel()->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $packet);
 		return true;
 	}
@@ -2275,11 +2278,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						$this->inventory->sendContents($this);
 					}
 
+					$this->level->broadcastLevelSoundEvent($this->add(0, 2, 0), LevelSoundEventPacket::SOUND_BURP);
 					$this->setUsingItem(false);
 					break;
 
 					//TODO: check item use cooldown
-					//TODO: add eating sounds (burp)
 				}
 
 				return false;

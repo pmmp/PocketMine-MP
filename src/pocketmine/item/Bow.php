@@ -28,12 +28,12 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\EntityShootBowEvent;
 use pocketmine\event\entity\ProjectileLaunchEvent;
-use pocketmine\level\sound\LaunchSound;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
 class Bow extends Tool{
@@ -101,7 +101,7 @@ class Bow extends Tool{
 					$ev->getProjectile()->close();
 				}else{
 					$ev->getProjectile()->spawnToAll();
-					$player->getLevel()->addSound(new LaunchSound($player), $player->getViewers());
+					$player->getLevel()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_BOW);
 				}
 			}else{
 				$ev->getProjectile()->spawnToAll();

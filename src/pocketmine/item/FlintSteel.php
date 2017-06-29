@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\Solid;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
 class FlintSteel extends Tool{
@@ -33,6 +34,7 @@ class FlintSteel extends Tool{
 		if(($block->getId() === Block::AIR or $block->getId() === Block::FIRE) and ($blockClicked instanceof Solid)){
 			//MCPE deals damage to flint and steel if used on an existing fire.
 			$player->getLevel()->setBlock($block, Block::get(Block::FIRE), true);
+			$player->getLevel()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_IGNITE);
 			$this->applyDamage(1);
 
 			//TODO: nether portals
