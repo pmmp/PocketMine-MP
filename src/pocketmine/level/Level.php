@@ -936,7 +936,7 @@ class Level implements ChunkManager, Metadatable{
 					for($i = 0; $i < 3; ++$i, $k >>= 10){
 						$x = $k & 0x0f;
 						$y = ($k >> 8) & 0x0f;
-						$z = ($k >> 16) & 0x0f;
+						$z = ($k >> 16) & 0x0f; //FIXME: this is always 0 on the third iteration
 
 						$blockId = $subChunk->getBlockId($x, $y, $z);
 						if($this->randomTickBlocks[$blockId] !== null){

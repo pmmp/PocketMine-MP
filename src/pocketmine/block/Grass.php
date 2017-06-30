@@ -30,6 +30,7 @@ use pocketmine\item\Tool;
 use pocketmine\level\generator\object\TallGrass as TallGrassObject;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 use pocketmine\utils\Random;
 
@@ -115,6 +116,7 @@ class Grass extends Solid{
 		}elseif($item instanceof Shovel and $this->getSide(Vector3::SIDE_UP)->getId() === Block::AIR){
 			$item->applyDamage(1);
 			$this->getLevel()->setBlock($this, Block::get(Block::GRASS_PATH));
+			$this->getLevel()->broadcastLevelSoundEvent($this->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_ITEM_USE_ON, 1, Block::GRASS_PATH);
 
 			return true;
 		}

@@ -27,6 +27,8 @@ use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 class Farmland extends Transparent{
 
@@ -64,8 +66,45 @@ class Farmland extends Transparent{
 	}
 
 	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_RANDOM){
-			//TODO: hydration
+		if($type === Level::BLOCK_UPDATE_NORMAL){
+			if($this->getSide(Vector3::SIDE_UP)->isSolid()){
+				$this->level->setBlock($this, Block::get(Block::DIRT), false, true);
+				return $type;
+			}
+		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
+			if(!$this->canHydrate()){
+				if($this->meta > 0){
+					$this->meta--;
+					$this->level->setBlock($this, $this, false, false);
+				}else{
+					$this->level->setBlock($this, Block::get(Block::DIRT), false, true);
+				}
+
+				return $type;
+			}elseif($this->meta < 7){
+				$this->meta = 7;
+				$this->level->setBlock($this, $this, false, false);
+
+				return $type;
+			}
+		}
+
+		return false;
+	}
+
+	protected function canHydrate() : bool{
+		//TODO: check rain
+		$start = $this->add(-4, 0, -4);
+		$end = $this->add(4, 1, 4);
+		for($y = $start->y; $y <= $end->y; ++$y){
+			for($z = $start->z; $z <= $end->z; ++$z){
+				for($x = $start->x; $x <= $end->x; ++$x){
+					$id = $this->level->getBlockIdAt($x, $y, $z);
+					if($id === Block::STILL_WATER or $id === Block::FLOWING_WATER){
+						return true;
+					}
+				}
+			}
 		}
 
 		return false;

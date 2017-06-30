@@ -27,6 +27,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
 class Hoe extends TieredTool{
@@ -34,6 +35,7 @@ class Hoe extends TieredTool{
 	public function onClickBlock(Player $player, Block $block, Block $blockClicked, int $face, float $fx, float $fy, float $fz) : bool{
 		if($blockClicked->canBeTilled() and $face !== Vector3::SIDE_DOWN){ //Can click on any side to till, except bottom.
 			$player->getLevel()->setBlock($blockClicked, Block::get(Block::FARMLAND), true, true);
+			$player->getLevel()->broadcastLevelSoundEvent($blockClicked->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_ITEM_USE_ON, 1, Block::FARMLAND);
 			$this->applyDamage(1);
 
 			return true;
