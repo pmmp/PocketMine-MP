@@ -23,11 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
-use pocketmine\level\Level;
-use pocketmine\math\Vector3;
-use pocketmine\Player;
-
 class BrownMushroom extends RedMushroom{
 
 	protected $id = Block::BROWN_MUSHROOM;

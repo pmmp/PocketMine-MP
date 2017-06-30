@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\event\block;
 
-use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
 
 /**

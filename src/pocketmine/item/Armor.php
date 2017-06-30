@@ -25,7 +25,6 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\ProtectionEnchantment;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\utils\Color;
