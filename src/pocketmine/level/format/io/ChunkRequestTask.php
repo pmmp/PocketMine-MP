@@ -83,11 +83,18 @@ class ChunkRequestTask extends AsyncTask{
 
 	public function onCompletion(Server $server){
 		$level = $server->getLevel($this->levelId);
-		if($level instanceof Level and $this->hasResult()){
-			$batch = new BatchPacket($this->getResult());
-			$batch->compressed = true;
-			$batch->isEncoded = true;
-			$level->chunkRequestCallback($this->chunkX, $this->chunkZ, $batch);
+		if($level instanceof Level){
+			if($this->hasResult()){
+				$batch = new BatchPacket($this->getResult());
+				assert(strlen($batch->buffer) > 0);
+				$batch->compressed = true;
+				$batch->isEncoded = true;
+				$level->chunkRequestCallback($this->chunkX, $this->chunkZ, $batch);
+			}else{
+				$server->getLogger()->error("Chunk request for level #" . $this->levelId . ", x=" . $this->chunkX . ", z=" . $this->chunkZ . " doesn't have any result data");
+			}
+		}else{
+			$server->getLogger()->debug("Dropped chunk task due to level not loaded");
 		}
 	}
 

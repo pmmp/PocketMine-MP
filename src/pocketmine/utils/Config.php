@@ -110,26 +110,25 @@ class Config{
 	 *
 	 * @return bool
 	 */
-	public function load($file, $type = Config::DETECT, $default = []){
+	public function load(string $file, int $type = Config::DETECT, array $default = []){
 		$this->correct = true;
-		$this->type = (int) $type;
 		$this->file = $file;
-		if(!is_array($default)){
-			$default = [];
+
+		$this->type = $type;
+		if($this->type === Config::DETECT){
+			$extension = explode(".", basename($this->file));
+			$extension = strtolower(trim(array_pop($extension)));
+			if(isset(Config::$formats[$extension])){
+				$this->type = Config::$formats[$extension];
+			}else{
+				$this->correct = false;
+			}
 		}
+
 		if(!file_exists($file)){
 			$this->config = $default;
 			$this->save();
 		}else{
-			if($this->type === Config::DETECT){
-				$extension = explode(".", basename($this->file));
-				$extension = strtolower(trim(array_pop($extension)));
-				if(isset(Config::$formats[$extension])){
-					$this->type = Config::$formats[$extension];
-				}else{
-					$this->correct = false;
-				}
-			}
 			if($this->correct === true){
 				$content = file_get_contents($this->file);
 				switch($this->type){
@@ -202,6 +201,8 @@ class Config{
 					case Config::ENUM:
 						$content = implode("\r\n", array_keys($this->config));
 						break;
+					default:
+						throw new \InvalidStateException("Config type is unknown, has not been set or not detected");
 				}
 
 				if($async){

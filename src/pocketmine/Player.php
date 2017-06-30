@@ -516,6 +516,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk = new ChunkRadiusUpdatedPacket();
 		$pk->radius = $this->viewDistance;
 		$this->dataPacket($pk);
+
+		$this->server->getLogger()->debug("Setting view distance for " . $this->getName() . " to " . $this->viewDistance . " (requested " . $distance . ")");
 	}
 
 	/**
@@ -838,6 +840,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 			}
 		}
+
+		if($this->chunkLoadCount >= $this->spawnThreshold and $this->spawned === false and $this->teleportPosition === null){
+			$this->doFirstSpawn();
+		}
 	}
 
 	protected function sendNextChunk(){
@@ -869,10 +875,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 			unset($this->loadQueue[$index]);
 			$this->level->requestChunk($X, $Z, $this);
-		}
-
-		if($this->chunkLoadCount >= $this->spawnThreshold and $this->spawned === false and $this->teleportPosition === null){
-			$this->doFirstSpawn();
 		}
 
 		Timings::$playerChunkSendTimer->stopTiming();

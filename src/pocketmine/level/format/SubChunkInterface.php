@@ -26,9 +26,10 @@ namespace pocketmine\level\format;
 interface SubChunkInterface{
 
 	/**
+	 * @param bool $checkLight
 	 * @return bool
 	 */
-	public function isEmpty() : bool;
+	public function isEmpty(bool $checkLight = true) : bool;
 
 	/**
 	 * @param int $x

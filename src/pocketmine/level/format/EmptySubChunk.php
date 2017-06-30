@@ -25,7 +25,7 @@ namespace pocketmine\level\format;
 
 class EmptySubChunk implements SubChunkInterface{
 
-	public function isEmpty() : bool{
+	public function isEmpty(bool $checkLight = true) : bool{
 		return true;
 	}
 
