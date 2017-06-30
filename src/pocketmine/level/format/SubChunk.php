@@ -46,11 +46,13 @@ class SubChunk implements SubChunkInterface{
 		self::assignData($this->blockLight, $blockLight, 2048);
 	}
 
-	public function isEmpty() : bool{
+	public function isEmpty(bool $checkLight = true) : bool{
 		return (
 			substr_count($this->ids, "\x00") === 4096 and
-			substr_count($this->skyLight, "\xff") === 2048 and
-			substr_count($this->blockLight, "\x00") === 2048
+			(!$checkLight or (
+				substr_count($this->skyLight, "\xff") === 2048 and
+				substr_count($this->blockLight, "\x00") === 2048
+			))
 		);
 	}
 
