@@ -58,6 +58,8 @@ class Block extends Position implements BlockIds, Metadatable{
 	public static $transparent = null;
 	/** @var \SplFixedArray<bool> */
 	public static $diffusesSkyLight = null;
+	/** @var \SplFixedArray */
+	public static $blastResistance = null;
 
 	/**
 	 * Initializes the block factory. By default this is called only once on server start, however you may wish to use
@@ -75,6 +77,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$hardness = new \SplFixedArray(256);
 			self::$transparent = new \SplFixedArray(256);
 			self::$diffusesSkyLight = new \SplFixedArray(256);
+			self::$blastResistance = new \SplFixedArray(256);
 
 			self::registerBlock(new Air());
 			self::registerBlock(new Stone());
@@ -366,6 +369,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		self::$light[$id] = $block->getLightLevel();
 		self::$lightFilter[$id] = $block->getLightFilter() + 1; //opacity plus 1 standard light filter
 		self::$diffusesSkyLight[$id] = $block->diffusesSkyLight();
+		self::$blastResistance[$id] = $block->getBlastResistance();
 	}
 
 	/**

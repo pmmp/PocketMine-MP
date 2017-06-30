@@ -89,23 +89,27 @@ class Explosion{
 							$vBlock->x = $pointerX >= $x ? $x : $x - 1;
 							$vBlock->y = $pointerY >= $y ? $y : $y - 1;
 							$vBlock->z = $pointerZ >= $z ? $z : $z - 1;
+
 							if(!$this->level->isInWorld($vBlock->x, $vBlock->y, $vBlock->z)){
 								break;
 							}
-							$block = $this->level->getBlock($vBlock);
 
-							if($block->getId() !== 0){
-								$blastForce -= ($block->getBlastResistance() / 5 + 0.3) * $this->stepLen;
+							$blockId = $this->level->getBlockIdAt($vBlock->x, $vBlock->y, $vBlock->z);
+
+							if($blockId !== 0){
+								$blastForce -= (Block::$blastResistance[$blockId] / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
-									if(!isset($this->affectedBlocks[$index = Level::blockHash($block->x, $block->y, $block->z)])){
-										$this->affectedBlocks[$index] = $block;
+									if(!isset($this->affectedBlocks[$index = Level::blockHash($vBlock->x, $vBlock->y, $vBlock->z)])){
+										$this->affectedBlocks[$index] = $this->level->getBlock($vBlock);
 									}
 								}
 							}
+
 							$pointerX += $vector->x;
 							$pointerY += $vector->y;
 							$pointerZ += $vector->z;
 						}
+
 					}
 				}
 			}
