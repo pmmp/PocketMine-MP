@@ -59,6 +59,8 @@ class Block extends Position implements BlockIds, Metadatable{
 	public static $transparent = null;
 	/** @var \SplFixedArray */
 	public static $diffusesSkyLight = null;
+	/** @var \SplFixedArray */
+	public static $blastResistance = null;
 
 	public static function init(){
 		if(self::$list === null){
@@ -70,6 +72,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$hardness = new \SplFixedArray(256);
 			self::$transparent = new \SplFixedArray(256);
 			self::$diffusesSkyLight = new \SplFixedArray(256);
+			self::$blastResistance = new \SplFixedArray(256);
 
 			self::registerBlock(new Air());
 			self::registerBlock(new Stone());
@@ -314,6 +317,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		self::$light[$block->id] = $block->getLightLevel();
 		self::$lightFilter[$block->id] = $block->getLightFilter() + 1;
 		self::$diffusesSkyLight[$block->id] = $block->diffusesSkyLight();
+		self::$blastResistance[$block->id] = $block->getBlastResistance();
 	}
 
 	/**
