@@ -26,6 +26,7 @@ namespace pocketmine\item;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 class Food extends Item implements FoodSource{
 
@@ -144,7 +145,7 @@ class Food extends Item implements FoodSource{
 	}
 
 	public function onConsume(Entity $human){
-
+		$human->getLevel()->broadcastLevelSoundEvent($human, LevelSoundEventPacket::SOUND_BURP);
 	}
 
 	public function __clone(){

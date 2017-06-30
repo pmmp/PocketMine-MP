@@ -32,6 +32,7 @@ use pocketmine\math\Vector3;
 class ChorusFruit extends Food{
 
 	public function onConsume(Entity $human){
+		parent::onConsume($human);
 		$minX = ((int) $human->x) - 8;
 		$minY = ((int) $human->y) - 8;
 		$minZ = ((int) $human->z) - 8;

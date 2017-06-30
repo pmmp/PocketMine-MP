@@ -2282,7 +2282,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					break;
 
 					//TODO: check item use cooldown
-					//TODO: add eating sounds (burp)
 				}
 
 				return false;
