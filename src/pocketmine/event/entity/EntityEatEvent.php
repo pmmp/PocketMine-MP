@@ -81,7 +81,7 @@ class EntityEatEvent extends EntityEvent implements Cancellable{
 	/**
 	 * @return Effect[]
 	 */
-	public function getAdditionalEffects(){
+	public function getAdditionalEffects() : array{
 		return $this->additionalEffects;
 	}
 

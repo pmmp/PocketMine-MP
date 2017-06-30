@@ -34,18 +34,18 @@ class EntityInventoryChangeEvent extends EntityEvent implements Cancellable{
 	private $newItem;
 	private $slot;
 
-	public function __construct(Entity $entity, Item $oldItem, Item $newItem, $slot){
+	public function __construct(Entity $entity, Item $oldItem, Item $newItem, int $slot){
 		$this->entity = $entity;
 		$this->oldItem = $oldItem;
 		$this->newItem = $newItem;
-		$this->slot = (int) $slot;
+		$this->slot = $slot;
 	}
 
-	public function getSlot(){
+	public function getSlot() : int{
 		return $this->slot;
 	}
 
-	public function getNewItem(){
+	public function getNewItem() : Item{
 		return $this->newItem;
 	}
 
@@ -53,7 +53,7 @@ class EntityInventoryChangeEvent extends EntityEvent implements Cancellable{
 		$this->newItem = $item;
 	}
 
-	public function getOldItem(){
+	public function getOldItem() : Item{
 		return $this->oldItem;
 	}
 

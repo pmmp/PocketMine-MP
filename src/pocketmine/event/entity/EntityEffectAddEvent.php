@@ -34,7 +34,7 @@ class EntityEffectAddEvent extends EntityEffectEvent{
 	/** @var Effect */
 	private $oldEffect;
 
-	public function __construct(Entity $entity, Effect $effect, $modify, $oldEffect){
+	public function __construct(Entity $entity, Effect $effect, bool $modify, Effect $oldEffect = null){
 		parent::__construct($entity, $effect);
 		$this->modify = $modify;
 		$this->oldEffect = $oldEffect;
@@ -44,6 +44,9 @@ class EntityEffectAddEvent extends EntityEffectEvent{
 		return $this->modify;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function hasOldEffect() : bool{
 		return $this->oldEffect instanceof Effect;
 	}
