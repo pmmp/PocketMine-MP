@@ -968,11 +968,11 @@ class Level implements ChunkManager, Metadatable{
 
 			foreach($chunk->getSubChunks() as $Y => $subChunk){
 				if(!$subChunk->isEmpty()){
-					$k = mt_rand(0, 0x7fffffff);
-					for($i = 0; $i < 3; ++$i, $k >>= 10){
+					for($i = 0; $i < 3; ++$i){
+						$k = mt_rand(0, 0xfff);
 						$x = $k & 0x0f;
-						$y = ($k >> 8) & 0x0f;
-						$z = ($k >> 16) & 0x0f;
+						$y = ($k >> 4) & 0x0f;
+						$z = ($k >> 8) & 0x0f;
 
 						$blockId = $subChunk->getBlockId($x, $y, $z);
 						if(isset($this->randomTickBlocks[$blockId])){
