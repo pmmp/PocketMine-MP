@@ -166,16 +166,29 @@ abstract class Living extends Entity implements Damageable{
 		}
 	}
 
+	/**
+	 * Returns the amount of armor points the mob has. Some mobs have armor points by default regardless of whether they
+	 * are wearing armor or not, such as zombies.
+	 *
+	 * @return int
+	 */
 	public function getArmorPoints() : int{
 		return 0;
 	}
 
+	/**
+	 * Applies durability reduction to armor, if any armor is worn.
+	 * @param float $damage
+	 */
 	public function damageArmor(float $damage){
 		//TODO
 	}
 
+	/**
+	 * Applies damage modifiers to an EntityDamageEvent, such as armor, armor enchantments, absorption...
+	 * @param EntityDamageEvent $source
+	 */
 	public function applyDamageModifiers(EntityDamageEvent $source){
-
 		//Armor damage reduction and enchantments currently use the system from before PC 1.9
 
 		if($source->canBeReducedByArmor()){
@@ -244,7 +257,10 @@ abstract class Living extends Entity implements Damageable{
 		}
 
 		$this->setAbsorption($this->getAbsorption() + $source->getDamage(EntityDamageEvent::MODIFIER_ABSORPTION));
-		$this->damageArmor($source->getDamage(EntityDamageEvent::MODIFIER_BASE));
+
+		//All damage sources cause durability reduction to armor in PE, regardless of whether the armor absorbed some
+		//damage or not.
+		$this->damageArmor($source->getDamage(EntityDamageEvent::MODIFIER_BASE)); //TODO: check difficulty damage increase/reduce
 
 		$pk = new EntityEventPacket();
 		$pk->entityRuntimeId = $this->getId();

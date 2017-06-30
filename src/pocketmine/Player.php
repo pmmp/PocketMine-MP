@@ -80,6 +80,7 @@ use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\inventory\SimpleTransactionGroup;
+use pocketmine\item\Armor;
 use pocketmine\item\Consumable;
 use pocketmine\item\Item;
 use pocketmine\level\ChunkLoader;
@@ -3794,6 +3795,24 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$base += $armorItem->getDefensePoints();
 		}
 		return $base;
+	}
+
+	public function damageArmor(float $damage){
+		//TODO: separate armour from PlayerInventory and make this not just apply to players
+
+		$durabilityRemoved = (int) max(floor($damage / 4), 1);
+		$armor = $this->inventory->getArmorContents();
+
+		foreach($armor as $item){
+			if($item instanceof Armor){
+				$item->applyDamage($durabilityRemoved);
+				if($item->isBroken()){
+					$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BREAK);
+				}
+			}
+		}
+
+		$this->inventory->setArmorContents($armor);
 	}
 
 	public function applyDamageModifiers(EntityDamageEvent $source){
