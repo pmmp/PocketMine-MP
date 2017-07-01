@@ -2271,9 +2271,7 @@ class Server{
 
 	private function checkTickUpdates($currentTick, $tickTime){
 		foreach($this->players as $p){
-			if(!$p->loggedIn and ($tickTime - $p->creationTime) >= 10){
-				$p->close("", "Login timeout");
-			}elseif($this->alwaysTickPlayers and $p->joined){
+			if($this->alwaysTickPlayers and $p->joined){
 				$p->onUpdate($currentTick);
 			}
 		}
