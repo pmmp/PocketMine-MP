@@ -432,6 +432,14 @@ namespace pocketmine {
 			++$errors;
 		}
 
+		if(extension_loaded("leveldb")){
+			$leveldb_version = phpversion("leveldb");
+			if(version_compare($leveldb_version, "0.2.0") < 0){
+				$logger->critical("php-leveldb >= 0.2.0 is required, while you have $leveldb_version");
+				++$errors;
+			}
+		}
+
 		if(extension_loaded("pocketmine")){
 			if(version_compare(phpversion("pocketmine"), "0.0.1") < 0){
 				$logger->critical("You have the native PocketMine extension, but your version is lower than 0.0.1.");
