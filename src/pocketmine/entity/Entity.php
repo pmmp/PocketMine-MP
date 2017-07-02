@@ -359,8 +359,11 @@ abstract class Entity extends Location implements Metadatable{
 			$this->namedtag->Rotation[1]
 		);
 
-
-		$this->setMotion($this->temporalVector->setComponents($this->namedtag["Motion"][0], $this->namedtag["Motion"][1], $this->namedtag["Motion"][2]));
+		if(isset($this->namedtag->Motion)){
+			$this->setMotion($this->temporalVector->setComponents($this->namedtag["Motion"][0], $this->namedtag["Motion"][1], $this->namedtag["Motion"][2]));
+		}else{
+			$this->setMotion($this->temporalVector->setComponents(0, 0, 0));
+		}
 
 		assert(!is_nan($this->x) and !is_infinite($this->x) and !is_nan($this->y) and !is_infinite($this->y) and !is_nan($this->z) and !is_infinite($this->z));
 
