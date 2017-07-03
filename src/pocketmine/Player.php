@@ -3988,6 +3988,18 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->dataPacket($pk);
 		}
 
+		//TODO: Remove this hack for client bug
+		$pk = new MovePlayerPacket();
+		$pk->entityRuntimeId = $this->getId();
+		$pk->x = $pos->x;
+		$pk->y = $pos->y + $this->baseOffset;
+		$pk->z = $pos->z;
+		$pk->bodyYaw = $yaw;
+		$pk->pitch = $pitch;
+		$pk->yaw = $yaw;
+		$pk->mode = MovePlayerPacket::MODE_PITCH;
+		$this->dataPacket($pk);
+
 		$this->newPosition = null;
 	}
 
