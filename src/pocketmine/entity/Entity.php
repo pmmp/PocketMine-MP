@@ -1786,12 +1786,12 @@ abstract class Entity extends Location implements Metadatable{
 
 	/**
 	 * @param Vector3|Position|Location $pos
-	 * @param float                     $yaw
-	 * @param float                     $pitch
+	 * @param float|null                $yaw
+	 * @param float|null                $pitch
 	 *
 	 * @return bool
 	 */
-	public function teleport(Vector3 $pos, $yaw = null, $pitch = null){
+	public function teleport(Vector3 $pos, float $yaw = null, float $pitch = null) : bool{
 		if($pos instanceof Location){
 			$yaw = $yaw === null ? $pos->yaw : $yaw;
 			$pitch = $pitch === null ? $pos->pitch : $pitch;
