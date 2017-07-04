@@ -2384,6 +2384,7 @@ class Server{
 	}
 
 	private function titleTick(){
+		Timings::$titleTickTimer->startTiming();
 		$d = Utils::getRealMemoryUsage();
 
 		$u = Utils::getMemoryUsage(true);
@@ -2399,6 +2400,8 @@ class Server{
 			" | Load " . $this->getTickUsageAverage() . "%\x07";
 
 		$this->network->resetStatistics();
+
+		Timings::$titleTickTimer->stopTiming();
 	}
 
 	/**
