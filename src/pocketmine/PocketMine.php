@@ -174,6 +174,7 @@ namespace pocketmine {
 	date_default_timezone_set("UTC");
 
 	$logger = new MainLogger(\pocketmine\DATA . "server.log");
+	$logger->registerStatic();
 
 	if(!ini_get("date.timezone")){
 		if(($timezone = detect_system_timezone()) and date_default_timezone_set($timezone)){

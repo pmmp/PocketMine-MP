@@ -25,6 +25,7 @@ namespace pocketmine\scheduler;
 
 use pocketmine\Collectable;
 use pocketmine\Server;
+use pocketmine\utils\MainLogger;
 
 /**
  * Class used to run async tasks in other threads.
