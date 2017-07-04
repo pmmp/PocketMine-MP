@@ -441,6 +441,21 @@ class Server{
 		return "UNKNOWN";
 	}
 
+	public static function getGamemodeName(int $mode) : string{
+		switch($mode){
+			case Player::SURVIVAL:
+				return "Survival";
+			case Player::CREATIVE:
+				return "Creative";
+			case Player::ADVENTURE:
+				return "Adventure";
+			case Player::SPECTATOR:
+				return "Spectator";
+			default:
+				throw new \InvalidArgumentException("Invalid gamemode $mode");
+		}
+	}
+
 	/**
 	 * Parses a string and returns a gamemode integer, -1 if not found
 	 *
