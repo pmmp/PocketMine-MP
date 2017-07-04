@@ -25,6 +25,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\block\Block;
 use pocketmine\command\CommandSender;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 use pocketmine\item\Item;
 use pocketmine\level\particle\AngryVillagerParticle;
@@ -77,9 +78,7 @@ class ParticleCommand extends VanillaCommand{
 		}
 
 		if(count($args) < 7){
-			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
-
-			return true;
+			throw new InvalidCommandSyntaxException();
 		}
 
 		if($sender instanceof Player){

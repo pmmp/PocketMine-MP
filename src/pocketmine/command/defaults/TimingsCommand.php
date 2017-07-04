@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TimingsHandler;
 use pocketmine\event\TranslationContainer;
 use pocketmine\Player;
@@ -49,9 +50,7 @@ class TimingsCommand extends VanillaCommand{
 		}
 
 		if(count($args) !== 1){
-			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
-
-			return true;
+			throw new InvalidCommandSyntaxException();
 		}
 
 		$mode = strtolower($args[0]);

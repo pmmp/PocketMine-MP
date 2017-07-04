@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 
 class TitleCommand extends VanillaCommand{
@@ -43,8 +44,7 @@ class TitleCommand extends VanillaCommand{
 		}
 
 		if(count($args) < 2){
-			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
-			return true;
+			throw new InvalidCommandSyntaxException();
 		}
 
 		$player = $sender->getServer()->getPlayer($args[0]);
@@ -62,39 +62,34 @@ class TitleCommand extends VanillaCommand{
 				break;
 			case "title":
 				if(count($args) < 3){
-					$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
-					return false;
+					throw new InvalidCommandSyntaxException();
 				}
 
 				$player->addTitle(implode(" ", array_slice($args, 2)));
 				break;
 			case "subtitle":
 				if(count($args) < 3){
-					$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
-					return false;
+					throw new InvalidCommandSyntaxException();
 				}
 
 				$player->addSubTitle(implode(" ", array_slice($args, 2)));
 				break;
 			case "actionbar":
 				if(count($args) < 3){
-					$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
-					return false;
+					throw new InvalidCommandSyntaxException();
 				}
 
 				$player->addActionBarMessage(implode(" ", array_slice($args, 2)));
 				break;
 			case "times":
 				if(count($args) < 4){
-					$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
-					return false;
+					throw new InvalidCommandSyntaxException();
 				}
 
 				$player->setTitleDuration($this->getInteger($sender, $args[2]), $this->getInteger($sender, $args[3]), $this->getInteger($sender, $args[4]));
 				break;
 			default:
-				$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
-				return false;
+				throw new InvalidCommandSyntaxException();
 		}
 
 		$sender->sendMessage(new TranslationContainer("commands.title.success"));
