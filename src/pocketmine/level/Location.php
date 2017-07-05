@@ -79,4 +79,11 @@ class Location extends Position{
 	public function __toString(){
 		return "Location (level=" . ($this->isValid() ? $this->getLevel()->getName() : "null") . ", x=$this->x, y=$this->y, z=$this->z, yaw=$this->yaw, pitch=$this->pitch)";
 	}
+
+	public function equals(Vector3 $v){
+		if($v instanceof Location){
+			return parent::equals($v) and $v->yaw == $this->yaw and $v->pitch == $this->pitch;
+		}
+		return parent::equals($v);
+	}
 }

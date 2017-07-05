@@ -64,6 +64,7 @@ use pocketmine\command\defaults\TransferServerCommand;
 use pocketmine\command\defaults\VanillaCommand;
 use pocketmine\command\defaults\VersionCommand;
 use pocketmine\command\defaults\WhitelistCommand;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
@@ -216,13 +217,17 @@ class SimpleCommandMap implements CommandMap{
 		}
 
 		$target->timings->startTiming();
+
 		try{
 			$target->execute($sender, $sentCommandLabel, $args);
+		}catch(InvalidCommandSyntaxException $e){
+			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$target->getUsage()]));
 		}catch(\Throwable $e){
 			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.exception"));
 			$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.command.exception", [$commandLine, (string) $target, $e->getMessage()]));
 			$sender->getServer()->getLogger()->logException($e);
 		}
+
 		$target->timings->stopTiming();
 
 		return true;

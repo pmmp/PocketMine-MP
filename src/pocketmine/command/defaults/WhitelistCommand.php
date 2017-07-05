@@ -25,6 +25,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 use pocketmine\utils\TextFormat;
 
@@ -45,8 +46,7 @@ class WhitelistCommand extends VanillaCommand{
 		}
 
 		if(count($args) === 0 or count($args) > 2){
-			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
-			return true;
+			throw new InvalidCommandSyntaxException();
 		}
 
 		if(count($args) === 1){

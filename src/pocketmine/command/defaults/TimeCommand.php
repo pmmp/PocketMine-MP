@@ -25,6 +25,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 use pocketmine\level\Level;
 use pocketmine\Player;
@@ -43,9 +44,7 @@ class TimeCommand extends VanillaCommand{
 
 	public function execute(CommandSender $sender, $currentAlias, array $args){
 		if(count($args) < 1){
-			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
-
-			return false;
+			throw new InvalidCommandSyntaxException();
 		}
 
 		if($args[0] === "start"){
@@ -91,9 +90,7 @@ class TimeCommand extends VanillaCommand{
 
 
 		if(count($args) < 2){
-			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
-
-			return false;
+			throw new InvalidCommandSyntaxException();
 		}
 
 		if($args[0] === "set"){
@@ -132,7 +129,7 @@ class TimeCommand extends VanillaCommand{
 			}
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.time.added", [$value]));
 		}else{
-			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+			throw new InvalidCommandSyntaxException();
 		}
 
 		return true;

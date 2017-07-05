@@ -403,6 +403,12 @@ class LevelDB extends BaseLevelProvider{
 				}
 			}
 
+			foreach($entities as $entityNBT){
+				if($entityNBT->id instanceof IntTag){
+					$entityNBT["id"] &= 0xff;
+				}
+			}
+
 			$tiles = [];
 			if(($tileData = $this->db->get($index . self::TAG_BLOCK_ENTITY)) !== false and strlen($tileData) > 0){
 				$nbt->read($tileData, true);

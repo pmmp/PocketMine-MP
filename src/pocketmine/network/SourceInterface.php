@@ -58,7 +58,7 @@ interface SourceInterface{
 	/**
 	 * @param string $name
 	 */
-	public function setName($name);
+	public function setName(string $name);
 
 	/**
 	 * @return bool

@@ -174,6 +174,7 @@ namespace pocketmine {
 	date_default_timezone_set("UTC");
 
 	$logger = new MainLogger(\pocketmine\DATA . "server.log");
+	$logger->registerStatic();
 
 	if(!ini_get("date.timezone")){
 		if(($timezone = detect_system_timezone()) and date_default_timezone_set($timezone)){
@@ -430,6 +431,14 @@ namespace pocketmine {
 		if(version_compare($pthreads_version, "3.1.5") < 0){
 			$logger->critical("pthreads >= 3.1.5 is required, while you have $pthreads_version.");
 			++$errors;
+		}
+
+		if(extension_loaded("leveldb")){
+			$leveldb_version = phpversion("leveldb");
+			if(version_compare($leveldb_version, "0.2.0") < 0){
+				$logger->critical("php-leveldb >= 0.2.0 is required, while you have $leveldb_version");
+				++$errors;
+			}
 		}
 
 		if(extension_loaded("pocketmine")){

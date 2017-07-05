@@ -440,6 +440,21 @@ class Server{
 		return "UNKNOWN";
 	}
 
+	public static function getGamemodeName(int $mode) : string{
+		switch($mode){
+			case Player::SURVIVAL:
+				return "Survival";
+			case Player::CREATIVE:
+				return "Creative";
+			case Player::ADVENTURE:
+				return "Adventure";
+			case Player::SPECTATOR:
+				return "Spectator";
+			default:
+				throw new \InvalidArgumentException("Invalid gamemode $mode");
+		}
+	}
+
 	/**
 	 * Parses a string and returns a gamemode integer, -1 if not found
 	 *
@@ -2367,6 +2382,7 @@ class Server{
 	}
 
 	private function titleTick(){
+		Timings::$titleTickTimer->startTiming();
 		$d = Utils::getRealMemoryUsage();
 
 		$u = Utils::getMemoryUsage(true);
@@ -2382,6 +2398,8 @@ class Server{
 			" | Load " . $this->getTickUsageAverage() . "%\x07";
 
 		$this->network->resetStatistics();
+
+		Timings::$titleTickTimer->stopTiming();
 	}
 
 	/**
