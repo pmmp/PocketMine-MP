@@ -229,6 +229,8 @@ class Level implements ChunkManager, Metadatable{
 
 	private $closed = false;
 
+
+
 	public static function chunkHash(int $x, int $z){
 		return (($x & 0xFFFFFFFF) << 32) | ($z & 0xFFFFFFFF);
 	}
@@ -262,6 +264,36 @@ class Level implements ChunkManager, Metadatable{
 		}else{
 			throw new \InvalidStateException("ChunkLoader has a loader id already assigned: " . $loader->getLoaderId());
 		}
+	}
+
+	/**
+	 * @param string $str
+	 * @return int
+	 */
+	public static function getDifficultyFromString(string $str) : int{
+		switch(strtolower(trim($str))){
+			case "0":
+			case "peaceful":
+			case "p":
+				return Level::DIFFICULTY_PEACEFUL;
+
+			case "1":
+			case "easy":
+			case "e":
+				return Level::DIFFICULTY_EASY;
+
+			case "2":
+			case "normal":
+			case "n":
+				return Level::DIFFICULTY_NORMAL;
+
+			case "3":
+			case "hard":
+			case "h":
+				return Level::DIFFICULTY_HARD;
+		}
+
+		return -1;
 	}
 
 	/**

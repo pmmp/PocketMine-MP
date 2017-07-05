@@ -28,7 +28,6 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 use pocketmine\level\Level;
-use pocketmine\Server;
 
 class DifficultyCommand extends VanillaCommand{
 
@@ -50,7 +49,7 @@ class DifficultyCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$difficulty = Server::getDifficultyFromString($args[0]);
+		$difficulty = Level::getDifficultyFromString($args[0]);
 
 		if($sender->getServer()->isHardcore()){
 			$difficulty = Level::DIFFICULTY_HARD;
