@@ -173,7 +173,7 @@ class Level implements ChunkManager, Metadatable{
 	/** @var Player[][] */
 	private $playerLoaders = [];
 
-	/** @var DataPacket[] */
+	/** @var DataPacket[][] */
 	private $chunkPackets = [];
 
 	/** @var float[] */

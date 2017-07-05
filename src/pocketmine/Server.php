@@ -576,7 +576,7 @@ class Server{
 	}
 
 	/**
-	 * @return \AttachableThreadedLogger
+	 * @return MainLogger
 	 */
 	public function getLogger(){
 		return $this->logger;

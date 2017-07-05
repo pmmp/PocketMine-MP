@@ -31,7 +31,7 @@ class AsyncWorker extends Worker{
 	private $logger;
 	private $id;
 
-	public function __construct(MainLogger $logger, $id){
+	public function __construct(MainLogger $logger, int $id){
 		$this->logger = $logger;
 		$this->id = $id;
 	}
@@ -53,7 +53,7 @@ class AsyncWorker extends Worker{
 		$this->logger->logException($e);
 	}
 
-	public function getThreadName(){
+	public function getThreadName() : string{
 		return "Asynchronous Worker #" . $this->id;
 	}
 }
