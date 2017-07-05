@@ -77,7 +77,7 @@ class Squid extends WaterAnimal implements Ageable{
 
 
 	public function onUpdate($currentTick){
-		if($this->closed !== false){
+		if($this->closed){
 			return false;
 		}
 

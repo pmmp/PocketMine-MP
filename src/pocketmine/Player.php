@@ -1736,6 +1736,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return 0.0;
 	}
 
+	public function canBreathe() : bool{
+		return $this->isCreative() or parent::canBreathe();
+	}
+
 	public function checkNetwork(){
 		if(!$this->isOnline()){
 			return;

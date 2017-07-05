@@ -23,9 +23,20 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use pocketmine\event\entity\EntityDamageEvent;
+
 abstract class WaterAnimal extends Creature implements Ageable{
 
 	public function isBaby(){
 		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_BABY);
+	}
+
+	public function canBreathe() : bool{
+		return $this->isInsideOfWater();
+	}
+
+	public function onAirExpired(){
+		$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 2);
+		$this->attack($ev);
 	}
 }
