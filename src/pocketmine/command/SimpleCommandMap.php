@@ -131,13 +131,13 @@ class SimpleCommandMap implements CommandMap{
 	}
 
 
-	public function registerAll($fallbackPrefix, array $commands){
+	public function registerAll(string $fallbackPrefix, array $commands){
 		foreach($commands as $command){
 			$this->register($fallbackPrefix, $command);
 		}
 	}
 
-	public function register($fallbackPrefix, Command $command, $label = null){
+	public function register(string $fallbackPrefix, Command $command, string $label = null){
 		if($label === null){
 			$label = $command->getName();
 		}
@@ -241,7 +241,7 @@ class SimpleCommandMap implements CommandMap{
 		$this->setDefaultCommands();
 	}
 
-	public function getCommand($name){
+	public function getCommand(string $name){
 		return $this->knownCommands[$name] ?? null;
 	}
 

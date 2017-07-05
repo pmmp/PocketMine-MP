@@ -626,7 +626,13 @@ class PluginManager{
 				}
 
 				if(isset($data["permission"])){
-					$newCmd->setPermission($data["permission"]);
+					if(is_bool($data["permission"])){
+						$newCmd->setPermission($data["permission"] ? "true" : "false");
+					}elseif(is_string($data["permission"])){
+						$newCmd->setPermission($data["permission"]);
+					}else{
+						throw new \InvalidArgumentException("Permission must be a string or boolean, " . gettype($data["permission"] . " given"));
+					}
 				}
 
 				if(isset($data["permission-message"])){
