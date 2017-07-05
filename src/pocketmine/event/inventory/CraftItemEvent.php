@@ -42,8 +42,8 @@ class CraftItemEvent extends Event implements Cancellable{
 
 	/**
 	 * @param Player $player
-	 * @param Item[]             $input
-	 * @param Recipe             $recipe
+	 * @param Item[] $input
+	 * @param Recipe $recipe
 	 */
 	public function __construct(Player $player, array $input, Recipe $recipe){
 		$this->player = $player;
@@ -54,26 +54,23 @@ class CraftItemEvent extends Event implements Cancellable{
 	/**
 	 * @return Item[]
 	 */
-	public function getInput(){
-		$items = [];
-		foreach($this->input as $i => $item){
-			$items[$i] = clone $item;
-		}
-
-		return $items;
+	public function getInput() : array{
+		return array_map(function(Item $item) : Item{
+			return clone $item;
+		}, $this->input);
 	}
 
 	/**
 	 * @return Recipe
 	 */
-	public function getRecipe(){
+	public function getRecipe() : Recipe{
 		return $this->recipe;
 	}
 
 	/**
 	 * @return Player
 	 */
-	public function getPlayer(){
+	public function getPlayer() : Player{
 		return $this->player;
 	}
 }

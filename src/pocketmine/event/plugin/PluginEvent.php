@@ -42,7 +42,7 @@ abstract class PluginEvent extends Event{
 	/**
 	 * @return Plugin
 	 */
-	public function getPlugin(){
+	public function getPlugin() : Plugin{
 		return $this->plugin;
 	}
 }

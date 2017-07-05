@@ -46,7 +46,7 @@ abstract class ChunkEvent extends LevelEvent{
 	/**
 	 * @return Chunk
 	 */
-	public function getChunk(){
+	public function getChunk() : Chunk{
 		return $this->chunk;
 	}
 }

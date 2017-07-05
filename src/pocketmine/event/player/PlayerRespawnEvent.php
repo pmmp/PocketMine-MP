@@ -47,7 +47,7 @@ class PlayerRespawnEvent extends PlayerEvent{
 	/**
 	 * @return Position
 	 */
-	public function getRespawnPosition(){
+	public function getRespawnPosition() : Position{
 		return $this->position;
 	}
 

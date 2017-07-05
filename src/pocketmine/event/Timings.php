@@ -172,11 +172,11 @@ abstract class Timings{
 
 	/**
 	 * @param TaskHandler $task
-	 * @param             $period
+	 * @param int         $period
 	 *
 	 * @return TimingsHandler
 	 */
-	public static function getPluginTaskTimings(TaskHandler $task, $period){
+	public static function getPluginTaskTimings(TaskHandler $task, int $period){
 		$ftask = $task->getTask();
 		if($ftask instanceof PluginTask and $ftask->getOwner() !== null){
 			$plugin = $ftask->getOwner()->getDescription()->getFullName();
