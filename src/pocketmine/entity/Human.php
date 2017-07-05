@@ -28,6 +28,9 @@ use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
+use pocketmine\item\Consumable;
+use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\FoodSource;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
@@ -451,6 +454,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 					$this->setSprinting(false);
 				}
 			}
+		}
+	}
+
+	protected function doAirSupplyTick(int $tickDiff){
+		//TODO: allow this to apply to other mobs
+		if(($ench = $this->inventory->getHelmet()->getEnchantment(Enchantment::RESPIRATION)) === null or
+			lcg_value() <= (1 / ($ench->getLevel() + 1))){
+			parent::doAirSupplyTick($tickDiff);
 		}
 	}
 

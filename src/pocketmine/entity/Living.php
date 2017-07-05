@@ -422,7 +422,6 @@ abstract class Living extends Entity implements Damageable{
 
 	public function entityBaseTick(int $tickDiff = 1) : bool{
 		Timings::$timerLivingEntityBaseTick->startTiming();
-		$this->setGenericFlag(self::DATA_FLAG_BREATHING, !$this->isInsideOfWater());
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
@@ -435,34 +434,14 @@ abstract class Living extends Entity implements Damageable{
 				$this->attack($ev);
 			}
 
-			if(!$this->hasEffect(Effect::WATER_BREATHING) and $this->isInsideOfWater()){
-				if($this instanceof WaterAnimal){
-					$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 400);
-				}else{
-					$hasUpdate = true;
-					$airTicks = $this->getDataProperty(self::DATA_AIR) - $tickDiff;
-					if($airTicks <= -20){
-						$airTicks = 0;
-
-						$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
-						$this->attack($ev);
-					}
-					$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $airTicks);
+			if(!$this->canBreathe()){
+				if($this->isBreathing()){
+					$this->setBreathing(false);
 				}
-			}else{
-				if($this instanceof WaterAnimal){
-					$hasUpdate = true;
-					$airTicks = $this->getDataProperty(self::DATA_AIR) - $tickDiff;
-					if($airTicks <= -20){
-						$airTicks = 0;
-
-						$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 2);
-						$this->attack($ev);
-					}
-					$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $airTicks);
-				}else{
-					$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 400);
-				}
+				$this->doAirSupplyTick($tickDiff);
+			}elseif(!$this->isBreathing()){
+				$this->setBreathing(true);
+				$this->setAirSupplyTicks($this->getMaxAirSupplyTicks());
 			}
 		}
 
@@ -493,6 +472,90 @@ abstract class Living extends Entity implements Damageable{
 		if(!$this->hasEffect(Effect::FIRE_RESISTANCE)){
 			parent::dealFireDamage();
 		}
+	}
+
+	/**
+	 * Ticks the entity's air supply when it cannot breathe.
+	 * @param int $tickDiff
+	 */
+	protected function doAirSupplyTick(int $tickDiff){
+		$ticks = $this->getAirSupplyTicks() - $tickDiff;
+
+		if($ticks <= -20){
+			$this->setAirSupplyTicks(0);
+			$this->onAirExpired();
+		}else{
+			$this->setAirSupplyTicks($ticks);
+		}
+	}
+
+	/**
+	 * Returns whether the entity can currently breathe.
+	 * @return bool
+	 */
+	public function canBreathe() : bool{
+		return $this->hasEffect(Effect::WATER_BREATHING) or !$this->isInsideOfWater();
+	}
+
+	/**
+	 * Returns whether the entity is currently breathing or not. If this is false, the entity's air supply will be used.
+	 * @return bool
+	 */
+	public function isBreathing() : bool{
+		return $this->getGenericFlag(self::DATA_FLAG_BREATHING);
+	}
+
+	/**
+	 * Sets whether the entity is currently breathing. If false, it will cause the entity's air supply to be used.
+	 * For players, this also shows the oxygen bar.
+	 *
+	 * @param bool $value
+	 */
+	public function setBreathing(bool $value = true){
+		$this->setGenericFlag(self::DATA_FLAG_BREATHING, $value);
+	}
+
+	/**
+	 * Returns the number of ticks remaining in the entity's air supply. Note that the entity may survive longer than
+	 * this amount of time without damage due to enchantments such as Respiration.
+	 *
+	 * @return int
+	 */
+	public function getAirSupplyTicks() : int{
+		return $this->getDataProperty(self::DATA_AIR);
+	}
+
+	/**
+	 * Sets the number of air ticks left in the entity's air supply.
+	 * @param int $ticks
+	 */
+	public function setAirSupplyTicks(int $ticks){
+		$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $ticks);
+	}
+
+	/**
+	 * Returns the maximum amount of air ticks the entity's air supply can contain.
+	 * @return int
+	 */
+	public function getMaxAirSupplyTicks() : int{
+		return $this->getDataProperty(self::DATA_MAX_AIR);
+	}
+
+	/**
+	 * Sets the maximum amount of air ticks the air supply can hold.
+	 * @param int $ticks
+	 */
+	public function setMaxAirSupplyTicks(int $ticks){
+		$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $ticks);
+	}
+
+	/**
+	 * Called when the entity's air supply ticks reaches -20 or lower. The entity will usually take damage at this point
+	 * and then the supply is reset to 0, so this method will be called roughly every second.
+	 */
+	public function onAirExpired(){
+		$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
+		$this->attack($ev);
 	}
 
 	/**
