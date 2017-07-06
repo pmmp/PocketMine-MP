@@ -33,7 +33,7 @@ abstract class PlayerEvent extends Event{
 	/** @var Player */
 	protected $player;
 
-	public function getPlayer(){
+	public function getPlayer() : Player{
 		return $this->player;
 	}
 }

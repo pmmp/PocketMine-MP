@@ -28,25 +28,31 @@ class TextContainer{
 	/** @var string $text */
 	protected $text;
 
-	public function __construct($text){
+	/**
+	 * @param string $text
+	 */
+	public function __construct(string $text){
 		$this->text = $text;
 	}
 
-	public function setText($text){
+	/**
+	 * @param string $text
+	 */
+	public function setText(string $text){
 		$this->text = $text;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getText(){
+	public function getText() : string{
 		return $this->text;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function __toString(){
+	public function __toString() : string{
 		return $this->getText();
 	}
 }

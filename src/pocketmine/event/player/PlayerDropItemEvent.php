@@ -48,7 +48,7 @@ class PlayerDropItemEvent extends PlayerEvent implements Cancellable{
 	/**
 	 * @return Item
 	 */
-	public function getItem(){
+	public function getItem() : Item{
 		return $this->drop;
 	}
 

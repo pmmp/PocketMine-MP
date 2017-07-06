@@ -43,7 +43,7 @@ abstract class LevelEvent extends Event{
 	/**
 	 * @return Level
 	 */
-	public function getLevel(){
+	public function getLevel() : Level{
 		return $this->level;
 	}
 }

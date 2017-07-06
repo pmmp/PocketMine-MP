@@ -30,6 +30,7 @@ use pocketmine\Player;
 class PlayerBedEnterEvent extends PlayerEvent implements Cancellable{
 	public static $handlerList = null;
 
+	/** @var Block */
 	private $bed;
 
 	public function __construct(Player $player, Block $bed){
@@ -37,7 +38,10 @@ class PlayerBedEnterEvent extends PlayerEvent implements Cancellable{
 		$this->bed = $bed;
 	}
 
-	public function getBed(){
+	/**
+	 * @return Block
+	 */
+	public function getBed() : Block{
 		return $this->bed;
 	}
 

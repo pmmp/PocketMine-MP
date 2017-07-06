@@ -32,12 +32,19 @@ class PlayerToggleSprintEvent extends PlayerEvent implements Cancellable{
 	/** @var bool */
 	protected $isSprinting;
 
-	public function __construct(Player $player, $isSprinting){
+	/**
+	 * @param Player $player
+	 * @param bool   $isSprinting
+	 */
+	public function __construct(Player $player, bool $isSprinting){
 		$this->player = $player;
-		$this->isSprinting = (bool) $isSprinting;
+		$this->isSprinting = $isSprinting;
 	}
 
-	public function isSprinting(){
+	/**
+	 * @return bool
+	 */
+	public function isSprinting() : bool{
 		return $this->isSprinting;
 	}
 

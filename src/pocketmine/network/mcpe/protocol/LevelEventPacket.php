@@ -79,6 +79,7 @@ class LevelEventPacket extends DataPacket{
 	const EVENT_START_THUNDER = 3002;
 	const EVENT_STOP_RAIN = 3003;
 	const EVENT_STOP_THUNDER = 3004;
+	const EVENT_PAUSE_GAME = 3005; //data: 1 to pause, 0 to resume
 
 	const EVENT_REDSTONE_TRIGGER = 3500;
 	const EVENT_CAULDRON_EXPLODE = 3501;

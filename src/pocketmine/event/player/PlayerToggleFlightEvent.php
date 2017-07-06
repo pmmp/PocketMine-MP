@@ -32,12 +32,19 @@ class PlayerToggleFlightEvent extends PlayerEvent implements Cancellable{
 	/** @var bool */
 	protected $isFlying;
 
-	public function __construct(Player $player, $isFlying){
+	/**
+	 * @param Player $player
+	 * @param bool   $isFlying
+	 */
+	public function __construct(Player $player, bool $isFlying){
 		$this->player = $player;
-		$this->isFlying = (bool) $isFlying;
+		$this->isFlying = $isFlying;
 	}
 
-	public function isFlying(){
+	/**
+	 * @return bool
+	 */
+	public function isFlying() : bool{
 		return $this->isFlying;
 	}
 
