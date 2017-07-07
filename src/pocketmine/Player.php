@@ -3334,13 +3334,47 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if($this->spawned === false or !$this->isAlive()){
 			return true;
 		}
-		$this->craftingType = 0;
 		$commandText = $packet->command;
+		$this->craftingType = 0;
+
 		if($packet->inputJson !== null){
-			foreach($packet->inputJson as $arg){ //command ordering will be an issue
+			$command = $this->getServer()->getCommandMap()->getCommand($commandText);
+			$overloads = $command->getOverloads()["default"]["input"]["parameters"];
+
+			$optionalParameters = [];
+			$nonOptionalParameters = [];
+			foreach($overloads as $key => $overload){
+				if($overload["optional"] === true){
+					$overload["key"] = $key;
+					$optionalParameters[$key] = $overload;
+				} elseif($overload["optional"] === false){
+					$overload["key"] = $key;
+					$nonOptionalParameters[$key] = $overload;
+				}
+			}
+			$optionalSortingArray = [];
+			foreach($optionalParameters as $key => $parameter){
+				$optionalSortingArray[$key] = $parameter["name"];
+			}
+			$nonOptionalSortingArray = [];
+			foreach($nonOptionalParameters as $key => $parameter){
+				$nonOptionalSortingArray[$key] = $parameter["name"];
+			}
+			array_multisort($optionalSortingArray, $optionalParameters);
+			array_multisort($nonOptionalSortingArray, $nonOptionalParameters);
+
+			$mergedOrderedParameters = array_merge($optionalParameters, $nonOptionalParameters);
+
+			$inputJson = $packet->inputJson;
+			$i = 0;
+			foreach($packet->inputJson as $key => $arg){
+				$inputJson[$mergedOrderedParameters[$i++]["key"]] = $arg;
+			}
+			foreach($inputJson as $key => $arg){
 				$commandText .= " " . $arg;
 			}
 		}
+
 		$this->server->getPluginManager()->callEvent($ev = new PlayerCommandPreprocessEvent($this, "/" . $commandText));
 		if($ev->isCancelled()){
 			return true;
