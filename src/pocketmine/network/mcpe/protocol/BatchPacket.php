@@ -45,12 +45,11 @@ class BatchPacket extends DataPacket{
 		return true;
 	}
 
-	public function decode(){
+	public function decodePayload(){
 		$this->payload = $this->getRemaining();
 	}
 
-	public function encode(){
-		$this->reset();
+	public function encodePayload(){
 		assert($this->compressed);
 		$this->put($this->payload);
 	}

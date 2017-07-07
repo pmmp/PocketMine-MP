@@ -55,9 +55,29 @@ abstract class DataPacket extends BinaryStream{
 		return false;
 	}
 
-	abstract public function encode();
+	public function decode(){
+		$this->offset = 1;
+		$this->decodePayload();
+	}
 
-	abstract public function decode();
+	/**
+	 * Note for plugin developers: If you're adding your own packets, you should perform decoding in here.
+	 */
+	public function decodePayload(){
+
+	}
+
+	public function encode(){
+		$this->reset();
+		$this->encodePayload();
+	}
+
+	/**
+	 * Note for plugin developers: If you're adding your own packets, you should perform encoding in here.
+	 */
+	public function encodePayload(){
+
+	}
 
 	/**
 	 * Performs handling for this packet. Usually you'll want an appropriately named method in the NetworkSession for this.

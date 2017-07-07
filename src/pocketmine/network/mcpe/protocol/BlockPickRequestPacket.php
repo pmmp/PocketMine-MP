@@ -37,13 +37,12 @@ class BlockPickRequestPacket extends DataPacket{
 	public $tileZ;
 	public $hotbarSlot;
 
-	public function decode(){
+	public function decodePayload(){
 		$this->getSignedBlockPosition($this->tileX, $this->tileY, $this->tileZ);
 		$this->hotbarSlot = $this->getByte();
 	}
 
-	public function encode(){
-		$this->reset();
+	public function encodePayload(){
 		$this->putSignedBlockPosition($this->tileX, $this->tileY, $this->tileZ);
 		$this->putByte($this->hotbarSlot);
 	}

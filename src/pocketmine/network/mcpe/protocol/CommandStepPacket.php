@@ -39,7 +39,7 @@ class CommandStepPacket extends DataPacket{
 	public $inputJson;
 	public $outputJson;
 
-	public function decode(){
+	public function decodePayload(){
 		$this->command = $this->getString();
 		$this->overload = $this->getString();
 		$this->uvarint1 = $this->getUnsignedVarInt();
@@ -52,8 +52,7 @@ class CommandStepPacket extends DataPacket{
 		$this->getRemaining(); //TODO: read command origin data
 	}
 
-	public function encode(){
-		$this->reset();
+	public function encodePayload(){
 		$this->putString($this->command);
 		$this->putString($this->overload);
 		$this->putUnsignedVarInt($this->uvarint1);

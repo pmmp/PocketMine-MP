@@ -33,12 +33,11 @@ class ReplaceItemInSlotPacket extends DataPacket{
 
 	public $item;
 
-	public function decode(){
+	public function decodePayload(){
 		$this->item = $this->getSlot();
 	}
 
-	public function encode(){
-		$this->reset();
+	public function encodePayload(){
 		$this->putSlot($this->item);
 	}
 

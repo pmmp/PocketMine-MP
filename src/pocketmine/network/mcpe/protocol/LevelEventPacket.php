@@ -106,14 +106,13 @@ class LevelEventPacket extends DataPacket{
 	public $z = 0;
 	public $data;
 
-	public function decode(){
+	public function decodePayload(){
 		$this->evid = $this->getVarInt();
 		$this->getVector3f($this->x, $this->y, $this->z);
 		$this->data = $this->getVarInt();
 	}
 
-	public function encode(){
-		$this->reset();
+	public function encodePayload(){
 		$this->putVarInt($this->evid);
 		$this->putVector3f($this->x, $this->y, $this->z);
 		$this->putVarInt($this->data);
