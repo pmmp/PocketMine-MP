@@ -248,7 +248,7 @@ class McRegion extends BaseLevelProvider{
 		}
 		//TODO, add extra details
 		$levelData = new CompoundTag("Data", [
-			new ByteTag("hardcore", isset($options["hardcore"]) && $options["hardcore"] === true ? 1 : 0),
+			new ByteTag("hardcore", ($options["hardcore"] ?? false) === true ? 1 : 0),
 			new ByteTag("Difficulty", Level::getDifficultyFromString((string) ($options["difficulty"] ?? "normal"))),
 			new ByteTag("initialized", 1),
 			new IntTag("GameType", 0),

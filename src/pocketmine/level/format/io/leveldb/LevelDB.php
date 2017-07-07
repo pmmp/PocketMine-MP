@@ -197,7 +197,7 @@ class LevelDB extends BaseLevelProvider{
 
 			//Additional PocketMine-MP fields
 			new CompoundTag("GameRules", []),
-			new ByteTag("hardcore", isset($options["hardcore"]) && $options["hardcore"] === true ? 1 : 0),
+			new ByteTag("hardcore", ($options["hardcore"] ?? false) === true ? 1 : 0),
 			new StringTag("generatorName", Generator::getGeneratorName($generator)),
 			new StringTag("generatorOptions", $options["preset"] ?? "")
 		]);
