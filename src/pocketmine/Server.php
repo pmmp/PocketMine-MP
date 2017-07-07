@@ -1652,21 +1652,23 @@ class Server{
 
 			foreach((array) $this->getProperty("worlds", []) as $name => $worldSetting){
 				if($this->loadLevel($name) === false){
-					$seed = $this->getProperty("worlds.$name.seed", time());
+					$options = $this->getProperty("worlds.$name");
+
+					$seed = $this->getProperty($options["seed"], time());
 					if(is_string($seed) and !is_numeric($seed)){
 						$seed = Utils::javaStringHash($seed);
 					}elseif(!is_int($seed)){
 						$seed = (int) $seed;
 					}
 
-					$options = explode(":", $this->getProperty("worlds.$name.generator", Generator::getGenerator("default")));
-					$generator = Generator::getGenerator(array_shift($options));
-					if(count($options) > 0){
-						$options = [
-							"preset" => implode(":", $options)
-						];
+					if(isset($options["generator"])){
+						$generatorOptions = explode(":", $options["generator"]);
+						$generator = Generator::getGenerator(array_shift($generatorOptions));
+						if(count($options) > 0){
+							$options["preset"] = implode(":", $generatorOptions);
+						}
 					}else{
-						$options = [];
+						$generator = Generator::getGenerator("default");
 					}
 
 					$this->generateLevel($name, $seed, $generator, $options);

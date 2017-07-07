@@ -168,7 +168,7 @@ class LevelDB extends BaseLevelProvider{
 		$levelData = new CompoundTag("", [
 			//Vanilla fields
 			new IntTag("DayCycleStopTime", -1),
-			new IntTag("Difficulty", 2),
+			new IntTag("Difficulty", Level::getDifficultyFromString((string) ($options["difficulty"] ?? "normal"))),
 			new ByteTag("ForceGameType", 0),
 			new IntTag("GameType", 0),
 			new IntTag("Generator", $generatorType),
@@ -197,7 +197,7 @@ class LevelDB extends BaseLevelProvider{
 
 			//Additional PocketMine-MP fields
 			new CompoundTag("GameRules", []),
-			new ByteTag("hardcore", 0),
+			new ByteTag("hardcore", isset($options["hardcore"]) && $options["hardcore"] === true ? 1 : 0),
 			new StringTag("generatorName", Generator::getGeneratorName($generator)),
 			new StringTag("generatorOptions", $options["preset"] ?? "")
 		]);
