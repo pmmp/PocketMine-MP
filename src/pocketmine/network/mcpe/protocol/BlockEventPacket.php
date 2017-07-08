@@ -37,14 +37,13 @@ class BlockEventPacket extends DataPacket{
 	public $case1;
 	public $case2;
 
-	public function decode(){
+	public function decodePayload(){
 		$this->getBlockPosition($this->x, $this->y, $this->z);
 		$this->case1 = $this->getVarInt();
 		$this->case2 = $this->getVarInt();
 	}
 
-	public function encode(){
-		$this->reset();
+	public function encodePayload(){
 		$this->putBlockPosition($this->x, $this->y, $this->z);
 		$this->putVarInt($this->case1);
 		$this->putVarInt($this->case2);

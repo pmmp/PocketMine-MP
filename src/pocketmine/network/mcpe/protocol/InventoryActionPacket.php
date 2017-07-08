@@ -38,15 +38,14 @@ class InventoryActionPacket extends DataPacket{
 	public $enchantmentId = 0;
 	public $enchantmentLevel = 0;
 
-	public function decode(){
+	public function decodePayload(){
 		$this->actionId = $this->getUnsignedVarInt();
 		$this->item = $this->getSlot();
 		$this->enchantmentId = $this->getVarInt();
 		$this->enchantmentLevel = $this->getVarInt();
 	}
 
-	public function encode(){
-		$this->reset();
+	public function encodePayload(){
 		$this->putUnsignedVarInt($this->actionId);
 		$this->putSlot($this->item);
 		$this->putVarInt($this->enchantmentId);

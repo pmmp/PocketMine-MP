@@ -49,7 +49,7 @@ class ContainerSetContentPacket extends DataPacket{
 		return parent::clean();
 	}
 
-	public function decode(){
+	public function decodePayload(){
 		$this->windowid = $this->getUnsignedVarInt();
 		$this->targetEid = $this->getEntityUniqueId();
 		$count = $this->getUnsignedVarInt();
@@ -63,8 +63,7 @@ class ContainerSetContentPacket extends DataPacket{
 		}
 	}
 
-	public function encode(){
-		$this->reset();
+	public function encodePayload(){
 		$this->putUnsignedVarInt($this->windowid);
 		$this->putEntityUniqueId($this->targetEid);
 		$this->putUnsignedVarInt(count($this->slots));

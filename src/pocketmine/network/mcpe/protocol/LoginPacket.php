@@ -50,7 +50,7 @@ class LoginPacket extends DataPacket{
 		return true;
 	}
 
-	public function decode(){
+	public function decodePayload(){
 		$this->protocol = $this->getInt();
 
 		if($this->protocol !== ProtocolInfo::CURRENT_PROTOCOL){
@@ -89,7 +89,7 @@ class LoginPacket extends DataPacket{
 		}
 	}
 
-	public function encode(){
+	public function encodePayload(){
 		//TODO
 	}
 

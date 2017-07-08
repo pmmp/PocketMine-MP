@@ -44,7 +44,7 @@ class AddItemEntityPacket extends DataPacket{
 	public $speedZ = 0.0;
 	public $metadata = [];
 
-	public function decode(){
+	public function decodePayload(){
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->item = $this->getSlot();
@@ -53,8 +53,7 @@ class AddItemEntityPacket extends DataPacket{
 		$this->metadata = $this->getEntityMetadata();
 	}
 
-	public function encode(){
-		$this->reset();
+	public function encodePayload(){
 		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putSlot($this->item);

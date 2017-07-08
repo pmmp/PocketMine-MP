@@ -183,9 +183,19 @@ interface SubChunkInterface{
 	public function getBlockSkyLightArray() : string;
 
 	/**
+	 * @param string $data
+	 */
+	public function setBlockSkyLightArray(string $data);
+
+	/**
 	 * @return string
 	 */
 	public function getBlockLightArray() : string;
+
+	/**
+	 * @param string $data
+	 */
+	public function setBlockLightArray(string $data);
 
 	/**
 	 * @return string

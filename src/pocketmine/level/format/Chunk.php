@@ -314,6 +314,17 @@ class Chunk{
 	}
 
 	/**
+	 * @param int $level
+	 */
+	public function setAllBlockSkyLight(int $level){
+		$char = chr(($level & 0x0f) | ($level << 4));
+		$data = str_repeat($char, 2048);
+		for($y = $this->getHighestSubChunkIndex(); $y >= 0; --$y){
+			$this->getSubChunk($y, true)->setBlockSkyLightArray($data);
+		}
+	}
+
+	/**
 	 * Returns the block light level at the specified chunk block coordinates
 	 *
 	 * @param int $x 0-15
@@ -341,6 +352,17 @@ class Chunk{
 	}
 
 	/**
+	 * @param int $level
+	 */
+	public function setAllBlockLight(int $level){
+		$char = chr(($level & 0x0f) | ($level << 4));
+		$data = str_repeat($char, 2048);
+		for($y = $this->getHighestSubChunkIndex(); $y >= 0; --$y){
+			$this->getSubChunk($y, true)->setBlockLightArray($data);
+		}
+	}
+
+	/**
 	 * Returns the Y coordinate of the highest non-air block at the specified X/Z chunk block coordinates
 	 *
 	 * @param int  $x 0-15
@@ -364,6 +386,10 @@ class Chunk{
 		}
 
 		return -1;
+	}
+
+	public function getMaxY() : int{
+		return ($this->getHighestSubChunkIndex() << 4) | 0x0f;
 	}
 
 	/**
@@ -427,22 +453,24 @@ class Chunk{
 	 * TODO: fast adjacent light spread
 	 */
 	public function populateSkyLight(){
+		$maxY = $this->getMaxY();
+
+		$this->setAllBlockSkyLight(0);
+
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
 				$heightMap = $this->getHeightMap($x, $z);
 
-				$y = ($this->getHighestSubChunkIndex() + 1) << 4;
-
-				for(; $y >= $heightMap; --$y){
+				for($y = $maxY; $y >= $heightMap; --$y){
 					$this->setBlockSkyLight($x, $y, $z, 15);
 				}
 
 				$light = 15;
-				for(; $y > 0; --$y){
+				for(; $y >= 0; --$y){
 					if($light > 0){
 						$light -= Block::$lightFilter[$this->getBlockId($x, $y, $z)];
-						if($light < 0){
-							$light = 0;
+						if($light <= 0){
+							break;
 						}
 					}
 					$this->setBlockSkyLight($x, $y, $z, $light);

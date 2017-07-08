@@ -33,12 +33,11 @@ class RemoveEntityPacket extends DataPacket{
 
 	public $entityUniqueId;
 
-	public function decode(){
+	public function decodePayload(){
 		$this->entityUniqueId = $this->getEntityUniqueId();
 	}
 
-	public function encode(){
-		$this->reset();
+	public function encodePayload(){
 		$this->putEntityUniqueId($this->entityUniqueId);
 	}
 
