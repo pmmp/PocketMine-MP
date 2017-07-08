@@ -427,13 +427,12 @@ class Chunk{
 	 * TODO: fast adjacent light spread
 	 */
 	public function populateSkyLight(){
+		$maxY = ($this->getHighestSubChunkIndex() + 1) << 4;
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
 				$heightMap = $this->getHeightMap($x, $z);
 
-				$y = ($this->getHighestSubChunkIndex() + 1) << 4;
-
-				for(; $y >= $heightMap; --$y){
+				for($y = $maxY; $y >= $heightMap; --$y){
 					$this->setBlockSkyLight($x, $y, $z, 15);
 				}
 
