@@ -76,7 +76,7 @@ abstract class LightUpdate{
 			$this->setLight($x, $y, $z, $newLevel);
 			if($oldLevel < $newLevel){ //light increased
 				$this->spreadVisited[$index] = true;
-				$this->spreadQueue->enqueue([$x, $y, $z, $newLevel]);
+				$this->spreadQueue->enqueue([$x, $y, $z]);
 			}else{ //light removed
 				$this->removalVisited[$index] = true;
 				$this->removalQueue->enqueue([$x, $y, $z, $oldLevel]);
@@ -106,7 +106,12 @@ abstract class LightUpdate{
 		}
 
 		while(!$this->spreadQueue->isEmpty()){
-			list($x, $y, $z, $newAdjacentLight) = $this->spreadQueue->dequeue();
+			list($x, $y, $z) = $this->spreadQueue->dequeue();
+
+			$newAdjacentLight = $this->getLight($x, $y, $z);
+			if($newAdjacentLight <= 0){
+				continue;
+			}
 
 			$points = [
 				[$x + 1, $y, $z],
@@ -141,7 +146,7 @@ abstract class LightUpdate{
 		}elseif($current >= $oldAdjacentLevel){
 			if(!isset($this->spreadVisited[$index = Level::blockHash($x, $y, $z)])){
 				$this->spreadVisited[$index] = true;
-				$this->spreadQueue->enqueue([$x, $y, $z, $current]);
+				$this->spreadQueue->enqueue([$x, $y, $z]);
 			}
 		}
 	}
@@ -156,7 +161,7 @@ abstract class LightUpdate{
 			if(!isset($this->spreadVisited[$index = Level::blockHash($x, $y, $z)])){
 				$this->spreadVisited[$index] = true;
 				if($potentialLight > 1){
-					$this->spreadQueue->enqueue([$x, $y, $z, $potentialLight]);
+					$this->spreadQueue->enqueue([$x, $y, $z]);
 				}
 			}
 		}
