@@ -283,6 +283,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock((new GlazedTerracotta(Block::RED_GLAZED_TERRACOTTA))->setName("Red Glazed Terracotta"));
 			self::registerBlock((new GlazedTerracotta(Block::BLACK_GLAZED_TERRACOTTA))->setName("Black Glazed Terracotta"));
 			self::registerBlock((new Block(Block::CONCRETE))->setName("Concrete")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(1.8));
+			 self::registerBlock((new Block(Block::SHULKER_BOX))->setName("Shulker Box")->setToolType(Tool::TYPE_PICKAXE)->setRequiredHarvestLevel(TieredTool::TIER_WOODEN)->setHardness(6.0));
 
 			self::registerBlock(new Podzol());
 			self::registerBlock(new Beetroot());
