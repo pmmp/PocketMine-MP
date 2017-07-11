@@ -75,8 +75,10 @@ class BossEventPacket extends DataPacket{
 			case self::TYPE_SHOW:
 				$this->title = $this->getString();
 				$this->healthPercent = $this->getLFloat();
+				break;
 			case self::TYPE_UNKNOWN_6:
 				$this->unknownShort = $this->getLShort();
+				break;
 			case self::TYPE_TEXTURE:
 				$this->color = $this->getUnsignedVarInt();
 				$this->overlay = $this->getUnsignedVarInt();
@@ -103,8 +105,10 @@ class BossEventPacket extends DataPacket{
 			case self::TYPE_SHOW:
 				$this->putString($this->title);
 				$this->putLFloat($this->healthPercent);
+				break;
 			case self::TYPE_UNKNOWN_6:
 				$this->putLShort($this->unknownShort);
+				break;
 			case self::TYPE_TEXTURE:
 				$this->putUnsignedVarInt($this->color);
 				$this->putUnsignedVarInt($this->overlay);
