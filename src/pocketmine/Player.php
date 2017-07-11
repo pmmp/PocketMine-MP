@@ -2282,6 +2282,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$item = $this->inventory->getItem($packet->inventorySlot);
 
 			if(!$item->equals($packet->item)){
+				if($item->getId() === 0) {
+					return false;
+				}
+
+				if($packet->item->getId() === 0) {
+					return false;
+				}
 				$this->server->getLogger()->debug("Tried to equip " . $packet->item . " but have " . $item . " in target slot");
 				$this->inventory->sendContents($this);
 				return false;
