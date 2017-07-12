@@ -63,7 +63,7 @@ use pocketmine\network\mcpe\protocol\UseItemPacket;
 use pocketmine\Player;
 use pocketmine\Server;
 
-class PlayerNetworkSessionAdapter extends BaseNetworkSession{
+class PlayerNetworkSessionAdapter extends NetworkSession{
 
 	/** @var Server */
 	private $server;
@@ -73,10 +73,6 @@ class PlayerNetworkSessionAdapter extends BaseNetworkSession{
 	public function __construct(Server $server, Player $player){
 		$this->server = $server;
 		$this->player = $player;
-	}
-
-	public function getServer(){
-		return $this->server;
 	}
 
 	public function handleDataPacket(DataPacket $packet){
