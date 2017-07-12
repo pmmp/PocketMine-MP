@@ -70,9 +70,6 @@ class PlayerNetworkSessionAdapter extends BaseNetworkSession{
 	/** @var Player */
 	private $player;
 
-	/** @var bool */
-	public $connected = true;
-
 	public function __construct(Server $server, Player $player){
 		$this->server = $server;
 		$this->player = $player;
@@ -83,10 +80,6 @@ class PlayerNetworkSessionAdapter extends BaseNetworkSession{
 	}
 
 	public function handleDataPacket(DataPacket $packet){
-		if($this->connected === false){
-			return;
-		}
-
 		//TODO: Remove this hack once InteractPacket spam issue is fixed
 		if($packet->buffer === "\x21\x04\x00"){
 			return;

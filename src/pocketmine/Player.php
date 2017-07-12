@@ -3165,7 +3165,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @param DataPacket $packet
 	 */
 	public function handleDataPacket(DataPacket $packet){
-		$this->sessionAdapter->handleDataPacket($packet);
+		if($this->sessionAdapter !== null){
+			$this->sessionAdapter->handleDataPacket($packet);
+		}
 	}
 
 	/**
@@ -3389,7 +3391,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					$this->directDataPacket($pk);
 				}
 
-				$this->sessionAdapter->connected = false;
+				$this->sessionAdapter = null;
 				$this->connected = false;
 
 				$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
