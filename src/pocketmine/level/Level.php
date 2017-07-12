@@ -1968,7 +1968,7 @@ class Level implements ChunkManager, Metadatable{
 		$chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4, false);
 
 		if($chunk !== null){
-			return $chunk->getTile($pos->x & 0x0f, $pos->y, $pos->z & 0x0f);
+			return $chunk->getTile((int) $pos->x & 0x0f, (int) $pos->y, (int) $pos->z & 0x0f); 
 		}
 
 		return null;
