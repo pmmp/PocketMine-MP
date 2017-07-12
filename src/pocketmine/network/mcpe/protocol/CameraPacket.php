@@ -30,12 +30,19 @@ use pocketmine\network\mcpe\NetworkSession;
 class CameraPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::CAMERA_PACKET;
 
+	/** @var int */
+	public $cameraUniqueId;
+	/** @var int */
+	public $playerUniqueId;
+
 	public function decodePayload(){
-		//TODO
+		$this->cameraUniqueId = $this->getEntityUniqueId();
+		$this->playerUniqueId = $this->getEntityUniqueId();
 	}
 
 	public function encodePayload(){
-		//TODO
+		$this->putEntityUniqueId($this->cameraUniqueId);
+		$this->putEntityUniqueId($this->playerUniqueId);
 	}
 
 	public function handle(NetworkSession $session) : bool{
