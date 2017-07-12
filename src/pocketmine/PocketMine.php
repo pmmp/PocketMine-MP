@@ -70,6 +70,7 @@ namespace {
 }
 
 namespace pocketmine {
+
 	use pocketmine\utils\Binary;
 	use pocketmine\utils\MainLogger;
 	use pocketmine\utils\ServerKiller;
@@ -148,10 +149,13 @@ namespace pocketmine {
 		require_once(\pocketmine\PATH . "src/spl/BaseClassLoader.php");
 	}
 
+	/*
+	 * We now use the Composer autoloader, but this autoloader is still used by RakLib and for loading plugins.
+	 */
 	$autoloader = new \BaseClassLoader();
 	$autoloader->addPath(\pocketmine\PATH . "src");
 	$autoloader->addPath(\pocketmine\PATH . "src" . DIRECTORY_SEPARATOR . "spl");
-	$autoloader->register(true);
+	$autoloader->register(false);
 
 	if(!class_exists(RakLib::class)){
 		echo "[CRITICAL] Unable to find the RakLib library." . PHP_EOL;

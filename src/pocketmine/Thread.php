@@ -57,7 +57,7 @@ abstract class Thread extends \Thread{
 			require(\pocketmine\PATH . "src/spl/BaseClassLoader.php");
 		}
 		if($this->classLoader !== null){
-			$this->classLoader->register(true);
+			$this->classLoader->register(false);
 		}
 	}
 

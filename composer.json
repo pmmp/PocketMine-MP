@@ -16,5 +16,13 @@
       "ext-weakref": ">=0.3.3",
       "ext-yaml": ">=2.0.0",
       "ext-zlib": ">=1.2.11"
+   },
+   "autoload": {
+      "exclude-from-classmap": [
+        "src/spl/stubs"
+      ],
+      "psr-0": {
+         "": ["src", "src/spl"]
+      }
    }
 }
