@@ -153,6 +153,7 @@ use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
+use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\protocol\UseItemPacket;
@@ -2761,21 +2762,21 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		switch($packet->windowid){
-			case ContainerSetContentPacket::SPECIAL_INVENTORY: //Normal inventory change
+			case ContainerIds::INVENTORY: //Normal inventory change
 				if($packet->slot >= $this->inventory->getSize()){
 					return false;
 				}
 
 				$transaction = new BaseTransaction($this->inventory, $packet->slot, $this->inventory->getItem($packet->slot), $packet->item);
 				break;
-			case ContainerSetContentPacket::SPECIAL_ARMOR: //Armour change
+			case ContainerIds::ARMOR: //Armour change
 				if($packet->slot >= 4){
 					return false;
 				}
 
 				$transaction = new BaseTransaction($this->inventory, $packet->slot + $this->inventory->getSize(), $this->inventory->getArmorItem($packet->slot), $packet->item);
 				break;
-			case ContainerSetContentPacket::SPECIAL_HOTBAR: //Hotbar link update
+			case ContainerIds::HOTBAR: //Hotbar link update
 				//hotbarSlot 0-8, slot 9-44
 				$this->inventory->setHotbarSlotIndex($packet->hotbarSlot, $packet->slot - 9);
 				return true;
