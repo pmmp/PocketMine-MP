@@ -225,7 +225,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public static function isValidUserName(string $name) : bool{
 		$lname = strtolower($name);
 		$len = strlen($name);
-		return $lname !== "rcon" and $lname !== "console" and $len >= 1 and $len <= 16 and preg_match("/[^A-Za-z0-9_]/", $name) === 0;
+		return $lname !== "rcon" and $lname !== "console" and $len >= 1 and $len <= 16 and preg_match("/\A | \Z|[^A-z0-9_ ]| {2,}|\A[0-9]/", $name) === 0;
 	}
 
 	/**
