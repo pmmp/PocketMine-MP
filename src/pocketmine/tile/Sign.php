@@ -71,7 +71,7 @@ class Sign extends Spawnable{
 	 * @param bool $update
 	 */
 	public function setLine(int $index, string $line, bool $update = true){
-		$this->namedtag["Text".$index + 1] = $line;
+		$this->namedtag["Text".($index + 1)] = $line;
 		if($update){
 			$this->onChanged();
 		}
@@ -83,7 +83,7 @@ class Sign extends Spawnable{
 	 * @return string
 	 */
 	public function getLine(int $index): string{
-		return $this->namedtag["Text".$index + 1];
+		return $this->namedtag["Text".($index + 1)];
 	}
 
 	public function getText(){
