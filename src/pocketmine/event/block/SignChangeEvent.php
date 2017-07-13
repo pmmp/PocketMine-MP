@@ -73,7 +73,7 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 	}
 
 	/**
-	 * @param array string[]
+	 * @param string[] $lines
 	 */
 	public function setLines(array $lines){
 		$this->lines = $lines;

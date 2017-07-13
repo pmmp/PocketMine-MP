@@ -68,7 +68,7 @@ class Sign extends Spawnable{
 	/**
 	 * @param int    $index 0-3
 	 * @param string $line
-	 * @param bool $update
+	 * @param bool   $update
 	 */
 	public function setLine(int $index, string $line, bool $update = true){
 		if($index < 0 or $index > 3){
