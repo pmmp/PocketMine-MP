@@ -71,6 +71,9 @@ class Sign extends Spawnable{
 	 * @param bool $update
 	 */
 	public function setLine(int $index, string $line, bool $update = true){
+		if($index < 0 or $index > 3){
+			throw new \InvalidArgumentException("Index must be in the range 0-3!");
+		}
 		$this->namedtag["Text".($index + 1)] = $line;
 		if($update){
 			$this->onChanged();
@@ -83,6 +86,9 @@ class Sign extends Spawnable{
 	 * @return string
 	 */
 	public function getLine(int $index): string{
+		if($index < 0 or $index > 3){
+			throw new \InvalidArgumentException("Index must be in the range 0-3!");
+		}
 		return $this->namedtag["Text".($index + 1)];
 	}
 
