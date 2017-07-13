@@ -125,7 +125,7 @@ class FormattedCommandAlias extends Command{
 
 			$replacement = "";
 			if($rest and $position < count($args)){
-				for($i = $position; $i < count($args); ++$i){
+				for($i = $position, $c = count($args); $i < $c; ++$i){
 					if($i !== $position){
 						$replacement .= " ";
 					}

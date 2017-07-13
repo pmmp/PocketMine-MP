@@ -37,7 +37,7 @@ class BaseLang{
 		}
 
 		if(is_dir($path)){
-			$allFiles = scandir($path);
+			$allFiles = scandir($path, SCANDIR_SORT_NONE);
 
 			if($allFiles !== false){
 				$files = array_filter($allFiles, function($filename){

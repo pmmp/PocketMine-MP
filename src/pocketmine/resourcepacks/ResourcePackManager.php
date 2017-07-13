@@ -64,7 +64,7 @@ class ResourcePackManager{
 		}
 
 		if(!file_exists($this->path . "resource_packs.yml")){
-			file_put_contents($this->path . "resource_packs.yml", file_get_contents($this->server->getFilePath() . "src/pocketmine/resources/resource_packs.yml"));
+			copy($this->server->getFilePath() . "src/pocketmine/resources/resource_packs.yml", $this->path . "resource_packs.yml");
 		}
 
 		$this->resourcePacksConfig = new Config($this->path . "resource_packs.yml", Config::YAML, []);

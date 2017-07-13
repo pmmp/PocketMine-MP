@@ -306,7 +306,6 @@ class Utils{
 			case "bsd":
 			case "mac":
 				$processors = (int) `sysctl -n hw.ncpu`;
-				$processors = (int) `sysctl -n hw.ncpu`;
 				break;
 			case "win":
 				$processors = (int) getenv("NUMBER_OF_PROCESSORS");
@@ -477,7 +476,7 @@ class Utils{
 
 	public static function javaStringHash($string){
 		$hash = 0;
-		for($i = 0; $i < strlen($string); $i++){
+		for($i = 0, $len = strlen($string); $i < $len; $i++){
 			$ord = ord($string{$i});
 			if($ord & 0x80){
 				$ord -= 0x100;
