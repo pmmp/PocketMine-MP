@@ -329,7 +329,7 @@ abstract class Command{
 	/**
 	 * @return array
 	 */
-	public static final function generateDefaultData() : array{
+	final public static function generateDefaultData() : array{
 		if(self::$defaultDataTemplate === null){
 			self::$defaultDataTemplate = json_decode(file_get_contents(Server::getInstance()->getFilePath() . "src/pocketmine/resources/command_default.json"), true);
 		}
