@@ -444,7 +444,7 @@ class Item implements ItemIds, \JsonSerializable{
 		$tag = $this->getNamedTag();
 
 		if(isset($tag->BlockEntityTag) and $tag->BlockEntityTag instanceof CompoundTag){
-			unset($tag->display->BlockEntityTag);
+			unset($tag->BlockEntityTag);
 			$this->setNamedTag($tag);
 		}
 
