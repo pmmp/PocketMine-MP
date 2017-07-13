@@ -112,7 +112,6 @@ class CraftingManager{
 		}
 
 		$pk->encode();
-		$pk->isEncoded = true;
 
 		$this->craftingDataCache = $pk;
 		Timings::$craftingDataCacheRebuildTimer->stopTiming();

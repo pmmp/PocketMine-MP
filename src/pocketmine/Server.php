@@ -1817,7 +1817,6 @@ class Server{
 	 */
 	public function broadcastPacket(array $players, DataPacket $packet){
 		$packet->encode();
-		$packet->isEncoded = true;
 		$this->batchPackets($players, [$packet], false);
 	}
 
@@ -1867,7 +1866,6 @@ class Server{
 	public function broadcastPacketsCallback(BatchPacket $pk, array $identifiers, bool $immediate = false){
 		if(!$pk->isEncoded){
 			$pk->encode();
-			$pk->isEncoded = true;
 		}
 
 		if($immediate){

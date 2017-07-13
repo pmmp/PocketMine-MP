@@ -200,7 +200,6 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			$identifier = $this->identifiers[$h];
 			if(!$packet->isEncoded){
 				$packet->encode();
-				$packet->isEncoded = true;
 			}
 
 			if($packet instanceof BatchPacket){
