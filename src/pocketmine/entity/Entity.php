@@ -387,12 +387,12 @@ abstract class Entity extends Location implements Metadatable{
 		if(!isset($this->namedtag->OnGround)){
 			$this->namedtag->OnGround = new ByteTag("OnGround", 0);
 		}
-		$this->onGround = $this->namedtag["OnGround"] > 0 ? true : false;
+		$this->onGround = $this->namedtag["OnGround"] !== 0;
 
 		if(!isset($this->namedtag->Invulnerable)){
 			$this->namedtag->Invulnerable = new ByteTag("Invulnerable", 0);
 		}
-		$this->invulnerable = $this->namedtag["Invulnerable"] > 0 ? true : false;
+		$this->invulnerable = $this->namedtag["Invulnerable"] !== 0;
 
 		$this->attributeMap = new AttributeMap();
 		$this->addAttributes();
@@ -640,7 +640,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function getEffect($effectId){
-		return isset($this->effects[$effectId]) ? $this->effects[$effectId] : null;
+		return $this->effects[$effectId] ?? null;
 	}
 
 	public function hasEffect($effectId){
@@ -866,7 +866,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		$pk = new SetEntityDataPacket();
 		$pk->entityRuntimeId = $this->getId();
-		$pk->metadata = $data === null ? $this->dataProperties : $data;
+		$pk->metadata = $data ?? $this->dataProperties;
 
 		foreach($player as $p){
 			if($p === $this){
@@ -1794,8 +1794,8 @@ abstract class Entity extends Location implements Metadatable{
 	 */
 	public function teleport(Vector3 $pos, float $yaw = null, float $pitch = null) : bool{
 		if($pos instanceof Location){
-			$yaw = $yaw === null ? $pos->yaw : $yaw;
-			$pitch = $pitch === null ? $pos->pitch : $pitch;
+			$yaw = $yaw ?? $pos->yaw;
+			$pitch = $pitch ?? $pos->pitch;
 		}
 		$from = Position::fromObject($this, $this->level);
 		$to = Position::fromObject($pos, $pos instanceof Position ? $pos->getLevel() : $this->level);
@@ -1807,7 +1807,7 @@ abstract class Entity extends Location implements Metadatable{
 		$pos = $ev->getTo();
 
 		$this->setMotion($this->temporalVector->setComponents(0, 0, 0));
-		if($this->setPositionAndRotation($pos, $yaw === null ? $this->yaw : $yaw, $pitch === null ? $this->pitch : $pitch) !== false){
+		if($this->setPositionAndRotation($pos, $yaw ?? $this->yaw, $pitch ?? $this->pitch) !== false){
 			$this->resetFallDistance();
 			$this->onGround = true;
 

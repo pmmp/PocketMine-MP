@@ -234,7 +234,7 @@ abstract class Door extends Transparent{
 				2 => 2,
 				3 => 5,
 			];
-			$next = $this->getSide($face[(($direction + 2) % 4)]);
+			$next = $this->getSide($face[($direction + 2) % 4]);
 			$next2 = $this->getSide($face[$direction]);
 			$metaUp = 0x08;
 			if($next->getId() === $this->getId() or ($next2->isTransparent() === false and $next->isTransparent() === true)){ //Door hinge

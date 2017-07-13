@@ -101,8 +101,8 @@ class Permission{
 	 */
 	public function __construct($name, $description = null, $defaultValue = null, array $children = []){
 		$this->name = $name;
-		$this->description = $description !== null ? $description : "";
-		$this->defaultValue = $defaultValue !== null ? $defaultValue : self::$DEFAULT_PERMISSION;
+		$this->description = $description ?? "";
+		$this->defaultValue = $defaultValue ?? self::$DEFAULT_PERMISSION;
 		$this->children = $children;
 
 		$this->recalculatePermissibles();

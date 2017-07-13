@@ -404,7 +404,7 @@ class NBT{
 
 	public function setArray(array $data, callable $guesser = null){
 		$this->data = new CompoundTag("", []);
-		self::fromArray($this->data, $data, $guesser === null ? [self::class, "fromArrayGuesser"] : $guesser);
+		self::fromArray($this->data, $data, $guesser ?? [self::class, "fromArrayGuesser"]);
 	}
 
 	/**

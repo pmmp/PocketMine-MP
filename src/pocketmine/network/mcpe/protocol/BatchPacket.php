@@ -85,7 +85,7 @@ class BatchPacket extends DataPacket{
 			return false;
 		}
 
-		if(strlen($str) === 0){
+		if($str === ""){
 			throw new \InvalidStateException("Decoded BatchPacket payload is empty");
 		}
 

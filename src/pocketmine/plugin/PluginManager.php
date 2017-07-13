@@ -145,7 +145,7 @@ class PluginManager{
 	 * @return Plugin|null
 	 */
 	public function loadPlugin($path, $loaders = null){
-		foreach(($loaders === null ? $this->fileAssociations : $loaders) as $loader){
+		foreach($loaders ?? $this->fileAssociations as $loader){
 			if(preg_match($loader->getPluginFilters(), basename($path)) > 0){
 				$description = $loader->getPluginDescription($path);
 				if($description instanceof PluginDescription){

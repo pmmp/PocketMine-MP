@@ -94,8 +94,7 @@ class LoginPacket extends DataPacket{
 	}
 
 	public function decodeToken($token){
-		$tokens = explode(".", $token);
-		list($headB64, $payloadB64, $sigB64) = $tokens;
+		list($headB64, $payloadB64, $sigB64) = explode(".", $token);
 
 		return json_decode(base64_decode($payloadB64), true);
 	}

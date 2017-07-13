@@ -31,7 +31,7 @@ use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\Player;
 
-class Squid extends WaterAnimal implements Ageable{
+class Squid extends WaterAnimal{
 	const NETWORK_ID = 17;
 
 	public $width = 0.95;

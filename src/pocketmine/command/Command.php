@@ -79,7 +79,7 @@ abstract class Command{
 		$this->name = $name;
 		$this->setLabel($name);
 		$this->setDescription($description);
-		$this->usageMessage = $usageMessage === null ? "/" . $name : $usageMessage;
+		$this->usageMessage = $usageMessage ?? ("/" . $name);
 		$this->setAliases($aliases);
 	}
 

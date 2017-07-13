@@ -461,7 +461,9 @@ class Utils{
 				$headerGroup = [];
 				foreach(explode("\r\n", $rawHeaderGroup) as $line){
 					$nameValue = explode(":", $line, 2);
-					if(isset($nameValue[1])) $headerGroup[trim(strtolower($nameValue[0]))] = trim($nameValue[1]);
+					if(isset($nameValue[1])){
+						$headerGroup[trim(strtolower($nameValue[0]))] = trim($nameValue[1]);
+					}
 				}
 				$headers[] = $headerGroup;
 			}

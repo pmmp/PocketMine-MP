@@ -436,7 +436,8 @@ class LevelDB extends BaseLevelProvider{
 				$entities,
 				$tiles,
 				$biomeIds,
-				$heightMap
+				$heightMap,
+				$extraData
 			);
 
 			//TODO: tile ticks, biome states (?)

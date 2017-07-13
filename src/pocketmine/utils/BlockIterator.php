@@ -179,15 +179,15 @@ class BlockIterator implements \Iterator{
 	}
 
 	private function getXFace(Vector3 $direction){
-		return (($direction->x) > 0) ? Vector3::SIDE_EAST : Vector3::SIDE_WEST;
+		return ($direction->x > 0) ? Vector3::SIDE_EAST : Vector3::SIDE_WEST;
 	}
 
 	private function getYFace(Vector3 $direction){
-		return (($direction->y) > 0) ? Vector3::SIDE_UP : Vector3::SIDE_DOWN;
+		return ($direction->y > 0) ? Vector3::SIDE_UP : Vector3::SIDE_DOWN;
 	}
 
 	private function getZFace(Vector3 $direction){
-		return (($direction->z) > 0) ? Vector3::SIDE_SOUTH : Vector3::SIDE_NORTH;
+		return ($direction->z > 0) ? Vector3::SIDE_SOUTH : Vector3::SIDE_NORTH;
 	}
 
 	private function getXLength(Vector3 $direction){

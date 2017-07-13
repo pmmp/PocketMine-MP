@@ -102,7 +102,7 @@ class FormattedCommandAlias extends Command{
 				throw new \InvalidArgumentException("Invalid replacement token");
 			}
 
-			$position = intval(substr($formatString, $argStart, $index));
+			$position = (int) (substr($formatString, $argStart, $index));
 
 			if($position === 0){
 				throw new \InvalidArgumentException("Invalid replacement token");

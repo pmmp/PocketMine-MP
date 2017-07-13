@@ -37,8 +37,8 @@ class UpdateBlockPacket extends DataPacket{
 	const FLAG_NOGRAPHIC = 0b0100;
 	const FLAG_PRIORITY  = 0b1000;
 
-	const FLAG_ALL = (self::FLAG_NEIGHBORS | self::FLAG_NETWORK);
-	const FLAG_ALL_PRIORITY = (self::FLAG_ALL | self::FLAG_PRIORITY);
+	const FLAG_ALL = self::FLAG_NEIGHBORS | self::FLAG_NETWORK;
+	const FLAG_ALL_PRIORITY = self::FLAG_ALL | self::FLAG_PRIORITY;
 
 	public $x;
 	public $z;

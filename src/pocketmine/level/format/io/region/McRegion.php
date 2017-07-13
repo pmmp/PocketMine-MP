@@ -134,9 +134,9 @@ class McRegion extends BaseLevelProvider{
 
 			$subChunks = [];
 			$fullIds = isset($chunk->Blocks) ? $chunk->Blocks->getValue() : str_repeat("\x00", 32768);
-			$fullData = isset($chunk->Data) ? $chunk->Data->getValue() : (str_repeat("\x00", 16384));
+			$fullData = isset($chunk->Data) ? $chunk->Data->getValue() : str_repeat("\x00", 16384);
 			$fullSkyLight = isset($chunk->SkyLight) ? $chunk->SkyLight->getValue() : str_repeat("\xff", 16384);
-			$fullBlockLight = isset($chunk->BlockLight) ? $chunk->BlockLight->getValue() : (str_repeat("\x00", 16384));
+			$fullBlockLight = isset($chunk->BlockLight) ? $chunk->BlockLight->getValue() : str_repeat("\x00", 16384);
 
 			for($y = 0; $y < 8; ++$y){
 				$offset = ($y << 4);
@@ -262,7 +262,7 @@ class McRegion extends BaseLevelProvider{
 			new LongTag("SizeOnDisk", 0),
 			new LongTag("Time", 0),
 			new StringTag("generatorName", Generator::getGeneratorName($generator)),
-			new StringTag("generatorOptions", isset($options["preset"]) ? $options["preset"] : ""),
+			new StringTag("generatorOptions", $options["preset"] ?? ""),
 			new StringTag("LevelName", $name),
 			new CompoundTag("GameRules", [])
 		]);

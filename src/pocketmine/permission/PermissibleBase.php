@@ -133,7 +133,7 @@ class PermissibleBase implements Permissible{
 			throw new PluginException("Plugin " . $plugin->getDescription()->getName() . " is disabled");
 		}
 
-		$result = new PermissionAttachment($plugin, $this->parent !== null ? $this->parent : $this);
+		$result = new PermissionAttachment($plugin, $this->parent ?? $this);
 		$this->attachments[spl_object_hash($result)] = $result;
 		if($name !== null and $value !== null){
 			$result->setPermission($name, $value);
@@ -165,12 +165,12 @@ class PermissibleBase implements Permissible{
 
 		$this->clearPermissions();
 		$defaults = Server::getInstance()->getPluginManager()->getDefaultPermissions($this->isOp());
-		Server::getInstance()->getPluginManager()->subscribeToDefaultPerms($this->isOp(), $this->parent !== null ? $this->parent : $this);
+		Server::getInstance()->getPluginManager()->subscribeToDefaultPerms($this->isOp(), $this->parent ?? $this);
 
 		foreach($defaults as $perm){
 			$name = $perm->getName();
-			$this->permissions[$name] = new PermissionAttachmentInfo($this->parent !== null ? $this->parent : $this, $name, null, true);
-			Server::getInstance()->getPluginManager()->subscribeToPermission($name, $this->parent !== null ? $this->parent : $this);
+			$this->permissions[$name] = new PermissionAttachmentInfo($this->parent ?? $this, $name, null, true);
+			Server::getInstance()->getPluginManager()->subscribeToPermission($name, $this->parent ?? $this);
 			$this->calculateChildPermissions($perm->getChildren(), false, null);
 		}
 
@@ -202,8 +202,8 @@ class PermissibleBase implements Permissible{
 		foreach($children as $name => $v){
 			$perm = Server::getInstance()->getPluginManager()->getPermission($name);
 			$value = ($v xor $invert);
-			$this->permissions[$name] = new PermissionAttachmentInfo($this->parent !== null ? $this->parent : $this, $name, $attachment, $value);
-			Server::getInstance()->getPluginManager()->subscribeToPermission($name, $this->parent !== null ? $this->parent : $this);
+			$this->permissions[$name] = new PermissionAttachmentInfo($this->parent ?? $this, $name, $attachment, $value);
+			Server::getInstance()->getPluginManager()->subscribeToPermission($name, $this->parent ?? $this);
 
 			if($perm instanceof Permission){
 				$this->calculateChildPermissions($perm->getChildren(), !$value, $attachment);

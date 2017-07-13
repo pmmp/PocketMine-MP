@@ -92,7 +92,7 @@ class UUID{
 	}
 
 	public function toString(){
-		$hex = bin2hex(self::toBinary());
+		$hex = bin2hex($this->toBinary());
 
 		//xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx 8-4-4-4-12
 		if($this->version !== null){

@@ -43,9 +43,9 @@ class VersionString{
 			$this->generation = isset($version[2]) ? (int) $version[2] : 0; //0-15
 			$this->major = isset($version[3]) ? (int) $version[3] : 0; //0-15
 			$this->minor = isset($version[4]) ? (int) $version[4] : 0; //0-31
-			$this->development = $version[5] === "dev" ? true : false;
+			$this->development = $version[5] === "dev";
 			if($version[6] !== ""){
-				$this->build = intval(substr($version[6], 1));
+				$this->build = (int) (substr($version[6], 1));
 			}else{
 				$this->build = 0;
 			}

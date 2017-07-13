@@ -168,7 +168,7 @@ abstract class PluginBase implements Plugin{
 	 * @return bool
 	 */
 	protected function isPhar(){
-		return substr($this->file, 0, 7) === "phar://";
+		return strpos($this->file, "phar://") === 0;
 	}
 
 	/**

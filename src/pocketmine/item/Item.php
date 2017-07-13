@@ -49,7 +49,7 @@ class Item implements ItemIds, \JsonSerializable{
 	private static $cachedParser = null;
 
 	private static function parseCompoundTag(string $tag) : CompoundTag{
-		if(strlen($tag) === 0){
+		if($tag === ""){
 			throw new \InvalidArgumentException("No NBT data found in supplied string");
 		}
 

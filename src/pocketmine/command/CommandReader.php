@@ -40,7 +40,7 @@ class CommandReader extends Thread{
 		$this->buffer = new \Threaded;
 		$opts = getopt("", ["disable-readline"]);
 
-		if((extension_loaded("readline") and !isset($opts["disable-readline"]) and !$this->isPipe(STDIN))){
+		if(extension_loaded("readline") and !isset($opts["disable-readline"]) and !$this->isPipe(STDIN)){
 			$this->type = self::TYPE_READLINE;
 		}
 

@@ -49,13 +49,12 @@ class Torch extends Flowable{
 			$below = $this->getSide(0);
 			$side = $this->getDamage();
 			$faces = [
+				0 => 0,
 				1 => 4,
 				2 => 5,
 				3 => 2,
 				4 => 3,
-				5 => 0,
-				6 => 0,
-				0 => 0,
+				5 => 0
 			];
 
 			if($this->getSide($faces[$side])->isTransparent() === true and !($side === 0 and ($below->getId() === self::FENCE or $below->getId() === self::COBBLE_WALL))){
