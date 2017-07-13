@@ -29,6 +29,7 @@ use pocketmine\utils\UUID;
 
 class FurnaceRecipe implements Recipe{
 
+	/** @var UUID|null */
 	private $id = null;
 
 	/** @var Item */
@@ -46,10 +47,16 @@ class FurnaceRecipe implements Recipe{
 		$this->ingredient = clone $ingredient;
 	}
 
+	/**
+	 * @return UUID|null
+	 */
 	public function getId(){
 		return $this->id;
 	}
 
+	/**
+	 * @param UUID $id
+	 */
 	public function setId(UUID $id){
 		if($this->id !== null){
 			throw new \InvalidStateException("Id is already set");
@@ -68,14 +75,14 @@ class FurnaceRecipe implements Recipe{
 	/**
 	 * @return Item
 	 */
-	public function getInput(){
+	public function getInput() : Item{
 		return clone $this->ingredient;
 	}
 
 	/**
 	 * @return Item
 	 */
-	public function getResult(){
+	public function getResult() : Item{
 		return clone $this->output;
 	}
 
