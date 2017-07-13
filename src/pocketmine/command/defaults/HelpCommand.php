@@ -60,11 +60,7 @@ class HelpCommand extends VanillaCommand{
 			$pageNumber = 1;
 		}
 
-		if($sender instanceof ConsoleCommandSender){
-			$pageHeight = PHP_INT_MAX;
-		}else{
-			$pageHeight = 7;
-		}
+		$pageHeight = $sender->getScreenLineHeight();
 
 		if($command === ""){
 			/** @var Command[][] $commands */
