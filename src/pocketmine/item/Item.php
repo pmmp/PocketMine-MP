@@ -224,8 +224,7 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$list[self::MOB_HEAD] = MobHead::class;
 			self::$list[self::PUMPKIN_PIE] = PumpkinPie::class;
 			self::$list[self::NETHER_BRICK] = NetherBrick::class;
-			self::$list[self::QUARTZ] = Quartz::class;
-			self::$list[self::QUARTZ] = NetherQuartz::class;
+			self::$list[self::NETHER_QUARTZ] = NetherQuartz::class;
 			self::$list[self::COOKED_RABBIT] = CookedRabbit::class;
 			// self::$list[self::CAMERA] = Camera::class;
 			self::$list[self::BEETROOT] = Beetroot::class;
