@@ -76,7 +76,11 @@ class ZippedResourcePack implements ResourcePack{
 		}
 
 		if(($manifestData = $archive->getFromName("manifest.json")) === false){
-			throw new \InvalidStateException("Could not load resource pack from $zipPath: manifest.json not found");
+			if($archive->locateName("pack_manifest.json") !== false){
+				throw new \InvalidStateException("Could not load resource pack from $zipPath: unsupported old pack format");
+			}else{
+				throw new \InvalidStateException("Could not load resource pack from $zipPath: manifest.json not found in the archive root");
+			}
 		}
 
 		$archive->close();
