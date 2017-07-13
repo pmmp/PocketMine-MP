@@ -143,9 +143,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 				$logger->debug("Packet " . (isset($pk) ? get_class($pk) : "unknown") . " 0x" . bin2hex($packet->buffer));
 				$logger->logException($e);
 
-				if(isset($this->players[$identifier])){
-					$this->interface->blockAddress($this->players[$identifier]->getAddress(), 5);
-				}
+				$this->interface->blockAddress($this->players[$identifier]->getAddress(), 5);
 			}
 		}
 	}
