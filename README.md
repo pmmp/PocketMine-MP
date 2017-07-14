@@ -1,6 +1,7 @@
 # [![PocketMine-MP](http://cdn.pocketmine.net/img/PocketMine-MP-h.png)](https://pmmp.io)
 
 __A highly customisable, open source server software for Minecraft: Pocket Edition written in PHP__
+__NOTE: This is a spoon of PocketMine-MP with enhanced features.__
 
 [![Build Status](https://travis-ci.org/pmmp/PocketMine-MP.svg?branch=master)](https://travis-ci.org/pmmp/PocketMine-MP)
 
