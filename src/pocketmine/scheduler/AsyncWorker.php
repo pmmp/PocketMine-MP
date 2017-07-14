@@ -38,9 +38,7 @@ class AsyncWorker extends Worker{
 
 	public function run(){
 		$this->registerClassLoader();
-		if(MainLogger::getLogger() === null){
-			$this->logger->registerStatic();
-		}
+		$this->logger->registerStatic();
 
 		gc_enable();
 		ini_set("memory_limit", '-1');
