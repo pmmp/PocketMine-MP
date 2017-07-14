@@ -69,6 +69,9 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 	 * @return string
 	 */
 	public function getLine($index){
+		if($index < 0 or $index > 3){
+			throw new \InvalidArgumentException("Index must be in the range 0-3!");
+		}
 		return $this->lines[$index];
 	}
 
@@ -76,6 +79,9 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 	 * @param string[] $lines
 	 */
 	public function setLines(array $lines){
+		if(count($lines) > 4){
+			throw new \InvalidArgumentException("Array size cannot be greater than 4!");
+		}
 		$this->lines = $lines;
 	}
 
@@ -84,6 +90,9 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 	 * @param string $line
 	 */
 	public function setLine($index, $line){
+		if($index < 0 or $index > 3){
+			throw new \InvalidArgumentException("Index must be in the range 0-3!");
+		}
 		$this->lines[$index] = $line;
 	}
 }
