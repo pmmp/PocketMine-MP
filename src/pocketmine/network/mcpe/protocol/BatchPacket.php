@@ -30,12 +30,15 @@ use pocketmine\network\mcpe\NetworkSession;
 #ifndef COMPILE
 use pocketmine\utils\Binary;
 #endif
+use pocketmine\utils\BinaryStream;
 
 class BatchPacket extends DataPacket{
 	const NETWORK_ID = 0xfe;
 
-	public $payload;
-	public $compressed = false;
+	/** @var string */
+	public $payload = "";
+	/** @var int */
+	protected $compressionLevel = 7;
 
 	public function canBeBatched() : bool{
 		return false;
@@ -46,12 +49,16 @@ class BatchPacket extends DataPacket{
 	}
 
 	public function decodePayload(){
-		$this->payload = $this->getRemaining();
+		$data = $this->getRemaining();
+		try{
+			$this->payload = zlib_decode($data, 1024 * 1024 * 64); //Max 64MB
+		}catch(\ErrorException $e){ //zlib decode error
+			$this->payload = "";
+		}
 	}
 
 	public function encodePayload(){
-		assert($this->compressed);
-		$this->put($this->payload);
+		$this->put(zlib_encode($this->payload, ZLIB_ENCODING_DEFLATE, $this->compressionLevel));
 	}
 
 	/**
@@ -68,33 +75,31 @@ class BatchPacket extends DataPacket{
 		$this->payload .= Binary::writeUnsignedVarInt(strlen($packet->buffer)) . $packet->buffer;
 	}
 
-	public function compress(int $level = 7){
-		assert(!$this->compressed);
-		$this->payload = zlib_encode($this->payload, ZLIB_ENCODING_DEFLATE, $level);
-		$this->compressed = true;
+	/**
+	 * @return \Generator
+	 */
+	public function getPackets(){
+		$stream = new BinaryStream($this->payload);
+		while(!$stream->feof()){
+			yield $stream->getString();
+		}
+	}
+
+	public function getCompressionLevel() : int{
+		return $this->compressionLevel;
+	}
+
+	public function setCompressionLevel(int $level){
+		$this->compressionLevel = $level;
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		if(strlen($this->payload) < 2){
+		if($this->payload === ""){
 			return false;
 		}
 
-		try{
-			$str = zlib_decode($this->payload, 1024 * 1024 * 64); //Max 64MB
-		}catch(\ErrorException $e){
-			return false;
-		}
-
-		if($str === ""){
-			throw new \InvalidStateException("Decoded BatchPacket payload is empty");
-		}
-
-		$this->setBuffer($str, 0);
-
-		$network = $session->getServer()->getNetwork();
-		while(!$this->feof()){
-			$buf = $this->getString();
-			$pk = $network->getPacket(ord($buf{0}));
+		foreach($this->getPackets() as $buf){
+			$pk = PacketPool::getPacketById(ord($buf{0}));
 
 			if(!$pk->canBeBatched()){
 				throw new \InvalidArgumentException("Received invalid " . get_class($pk) . " inside BatchPacket");

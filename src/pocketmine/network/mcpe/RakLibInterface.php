@@ -27,6 +27,7 @@ use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\network\AdvancedSourceInterface;
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
+use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\Network;
 use pocketmine\Player;
@@ -142,9 +143,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 				$logger->debug("Packet " . (isset($pk) ? get_class($pk) : "unknown") . " 0x" . bin2hex($packet->buffer));
 				$logger->logException($e);
 
-				if(isset($this->players[$identifier])){
-					$this->interface->blockAddress($this->players[$identifier]->getAddress(), 5);
-				}
+				$this->interface->blockAddress($this->players[$identifier]->getAddress(), 5);
 			}
 		}
 	}
@@ -199,7 +198,6 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			$identifier = $this->identifiers[$h];
 			if(!$packet->isEncoded){
 				$packet->encode();
-				$packet->isEncoded = true;
 			}
 
 			if($packet instanceof BatchPacket){
@@ -236,7 +234,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 
 	private function getPacket($buffer){
 		$pid = ord($buffer{0});
-		if(($data = $this->network->getPacket($pid)) === null){
+		if(($data = PacketPool::getPacketById($pid)) === null){
 			return null;
 		}
 		$data->setBuffer($buffer, 1);
