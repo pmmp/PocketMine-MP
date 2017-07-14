@@ -155,7 +155,7 @@ class ShapedRecipe implements Recipe{
 	 *
 	 * @return Item
 	 */
-	public function getIngredient(int $x, int $y){
+	public function getIngredient(int $x, int $y) : Item{
 		return $this->ingredients[$y][$x] ?? Item::get(Item::AIR);
 	}
 

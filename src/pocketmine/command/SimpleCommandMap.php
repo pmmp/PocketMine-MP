@@ -207,7 +207,7 @@ class SimpleCommandMap implements CommandMap{
 		return null;
 	}
 
-	public function dispatch(CommandSender $sender, $commandLine){
+	public function dispatch(CommandSender $sender, string $commandLine) : bool{
 		$args = explode(" ", $commandLine);
 		$sentCommandLabel = "";
 		$target = $this->matchCommand($sentCommandLabel, $args);
@@ -248,7 +248,7 @@ class SimpleCommandMap implements CommandMap{
 	/**
 	 * @return Command[]
 	 */
-	public function getCommands(){
+	public function getCommands() : array{
 		return $this->knownCommands;
 	}
 

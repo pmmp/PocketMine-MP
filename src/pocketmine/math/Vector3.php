@@ -234,7 +234,7 @@ class Vector3{
 		);
 	}
 
-	public function equals(Vector3 $v){
+	public function equals(Vector3 $v) : bool{
 		return $this->x == $v->x and $this->y == $v->y and $this->z == $v->z;
 	}
 

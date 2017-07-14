@@ -100,7 +100,7 @@ abstract class Command{
 	 *
 	 * @return array
 	 */
-	public function generateCustomCommandData(Player $player){
+	public function generateCustomCommandData(Player $player) : array{
 		//TODO: fix command permission filtering on join
 		/*if(!$this->testPermissionSilent($player)){
 			return null;
@@ -202,7 +202,7 @@ abstract class Command{
 		return $this->label;
 	}
 
-	public function setLabel(string $name){
+	public function setLabel(string $name) : bool{
 		$this->nextLabel = $name;
 		if(!$this->isRegistered()){
 			if($this->timings instanceof TimingsHandler){

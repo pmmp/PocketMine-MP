@@ -282,7 +282,7 @@ class Binary{
 	 *
 	 * @return float
 	 */
-	public static function readRoundedFloat(string $str, int $accuracy){
+	public static function readRoundedFloat(string $str, int $accuracy) : float{
 		return round(self::readFloat($str), $accuracy);
 	}
 
@@ -315,7 +315,7 @@ class Binary{
 	 *
 	 * @return float
 	 */
-	public static function readRoundedLFloat(string $str, int $accuracy){
+	public static function readRoundedLFloat(string $str, int $accuracy) : float{
 		return round(self::readLFloat($str), $accuracy);
 	}
 
@@ -335,7 +335,7 @@ class Binary{
 	 * @param float $value
 	 * @return string
 	 */
-	public static function printFloat(float $value){
+	public static function printFloat(float $value) : string{
 		return preg_replace("/(\\.\\d+?)0+$/", "$1", sprintf("%F", $value));
 	}
 

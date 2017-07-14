@@ -55,7 +55,7 @@ class Location extends Position{
 	 *
 	 * @return Location
 	 */
-	public static function fromObject(Vector3 $pos, Level $level = null, $yaw = 0.0, $pitch = 0.0){
+	public static function fromObject(Vector3 $pos, Level $level = null, $yaw = 0.0, $pitch = 0.0) : Location{
 		return new Location($pos->x, $pos->y, $pos->z, $yaw, $pitch, $level ?? (($pos instanceof Position) ? $pos->level : null));
 	}
 
@@ -80,7 +80,7 @@ class Location extends Position{
 		return "Location (level=" . ($this->isValid() ? $this->getLevel()->getName() : "null") . ", x=$this->x, y=$this->y, z=$this->z, yaw=$this->yaw, pitch=$this->pitch)";
 	}
 
-	public function equals(Vector3 $v){
+	public function equals(Vector3 $v) : bool{
 		if($v instanceof Location){
 			return parent::equals($v) and $v->yaw == $this->yaw and $v->pitch == $this->pitch;
 		}

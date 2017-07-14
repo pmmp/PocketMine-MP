@@ -111,28 +111,28 @@ class Permission{
 	/**
 	 * @return string
 	 */
-	public function getName(){
+	public function getName() : string{
 		return $this->name;
 	}
 
 	/**
 	 * @return string[]
 	 */
-	public function &getChildren(){
+	public function &getChildren() : array{
 		return $this->children;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getDefault(){
+	public function getDefault() : string{
 		return $this->defaultValue;
 	}
 
 	/**
 	 * @param string $value
 	 */
-	public function setDefault($value){
+	public function setDefault(string $value){
 		if($value !== $this->defaultValue){
 			$this->defaultValue = $value;
 			$this->recalculatePermissibles();
@@ -142,7 +142,7 @@ class Permission{
 	/**
 	 * @return string
 	 */
-	public function getDescription(){
+	public function getDescription() : string{
 		return $this->description;
 	}
 
@@ -156,7 +156,7 @@ class Permission{
 	/**
 	 * @return Permissible[]
 	 */
-	public function getPermissibles(){
+	public function getPermissibles() : array{
 		return Server::getInstance()->getPluginManager()->getPermissionSubscriptions($this->name);
 	}
 
@@ -201,7 +201,7 @@ class Permission{
 	 *
 	 * @return Permission[]
 	 */
-	public static function loadPermissions(array $data, $default = self::DEFAULT_OP){
+	public static function loadPermissions(array $data, $default = self::DEFAULT_OP) : array{
 		$result = [];
 		foreach($data as $key => $entry){
 			$result[] = self::loadPermission($key, $entry, $default, $result);

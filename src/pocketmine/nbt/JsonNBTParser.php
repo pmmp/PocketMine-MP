@@ -237,7 +237,7 @@ class JsonNBTParser{
 	 * @return string
 	 * @throws \Exception
 	 */
-	private static function readKey(string $data, int &$offset){
+	private static function readKey(string $data, int &$offset) : string{
 		$key = "";
 
 		$len = strlen($data);

@@ -130,7 +130,7 @@ interface ChunkManager{
 	 *
 	 * @return int
 	 */
-	public function getSeed();
+	public function getSeed() : int;
 
 	/**
 	 * Returns the height of the world

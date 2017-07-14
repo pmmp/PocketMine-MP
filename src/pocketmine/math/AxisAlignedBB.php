@@ -54,7 +54,7 @@ class AxisAlignedBB{
 		return $this;
 	}
 
-	public function addCoord($x, $y, $z){
+	public function addCoord($x, $y, $z) : AxisAlignedBB{
 		$minX = $this->minX;
 		$minY = $this->minY;
 		$minZ = $this->minZ;
@@ -83,7 +83,7 @@ class AxisAlignedBB{
 		return new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
 	}
 
-	public function grow($x, $y, $z){
+	public function grow($x, $y, $z) : AxisAlignedBB{
 		return new AxisAlignedBB($this->minX - $x, $this->minY - $y, $this->minZ - $z, $this->maxX + $x, $this->maxY + $y, $this->maxZ + $z);
 	}
 
@@ -109,7 +109,7 @@ class AxisAlignedBB{
 		return $this;
 	}
 
-	public function shrink($x, $y, $z){
+	public function shrink($x, $y, $z) : AxisAlignedBB{
 		return new AxisAlignedBB($this->minX + $x, $this->minY + $y, $this->minZ + $z, $this->maxX - $x, $this->maxY - $y, $this->maxZ - $z);
 	}
 
@@ -134,7 +134,7 @@ class AxisAlignedBB{
 		return $this;
 	}
 
-	public function getOffsetBoundingBox($x, $y, $z){
+	public function getOffsetBoundingBox($x, $y, $z) : AxisAlignedBB{
 		return new AxisAlignedBB($this->minX + $x, $this->minY + $y, $this->minZ + $z, $this->maxX + $x, $this->maxY + $y, $this->maxZ + $z);
 	}
 
@@ -207,7 +207,7 @@ class AxisAlignedBB{
 		return $z;
 	}
 
-	public function intersectsWith(AxisAlignedBB $bb){
+	public function intersectsWith(AxisAlignedBB $bb) : bool{
 		if($bb->maxX > $this->minX and $bb->minX < $this->maxX){
 			if($bb->maxY > $this->minY and $bb->minY < $this->maxY){
 				return $bb->maxZ > $this->minZ and $bb->minZ < $this->maxZ;
@@ -217,7 +217,7 @@ class AxisAlignedBB{
 		return false;
 	}
 
-	public function isVectorInside(Vector3 $vector){
+	public function isVectorInside(Vector3 $vector) : bool{
 		if($vector->x <= $this->minX or $vector->x >= $this->maxX){
 			return false;
 		}
@@ -232,18 +232,24 @@ class AxisAlignedBB{
 		return ($this->maxX - $this->minX + $this->maxY - $this->minY + $this->maxZ - $this->minZ) / 3;
 	}
 
-	public function isVectorInYZ(Vector3 $vector){
+	public function isVectorInYZ(Vector3 $vector) : bool{
 		return $vector->y >= $this->minY and $vector->y <= $this->maxY and $vector->z >= $this->minZ and $vector->z <= $this->maxZ;
 	}
 
-	public function isVectorInXZ(Vector3 $vector){
+	public function isVectorInXZ(Vector3 $vector) : bool{
 		return $vector->x >= $this->minX and $vector->x <= $this->maxX and $vector->z >= $this->minZ and $vector->z <= $this->maxZ;
 	}
 
-	public function isVectorInXY(Vector3 $vector){
+	public function isVectorInXY(Vector3 $vector) : bool{
 		return $vector->x >= $this->minX and $vector->x <= $this->maxX and $vector->y >= $this->minY and $vector->y <= $this->maxY;
 	}
 
+	/**
+	 * @param Vector3 $pos1
+	 * @param Vector3 $pos2
+	 *
+	 * @return MovingObjectPosition|null
+	 */
 	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2){
 		$v1 = $pos1->getIntermediateWithXValue($pos2, $this->minX);
 		$v2 = $pos1->getIntermediateWithXValue($pos2, $this->maxX);

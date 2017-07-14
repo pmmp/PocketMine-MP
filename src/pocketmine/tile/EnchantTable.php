@@ -47,7 +47,7 @@ class EnchantTable extends Spawnable implements Nameable{
 		$this->namedtag->CustomName = new StringTag("CustomName", $str);
 	}
 
-	public function getSpawnCompound(){
+	public function getSpawnCompound() : CompoundTag{
 		$c = new CompoundTag("", [
 			new StringTag("id", Tile::ENCHANT_TABLE),
 			new IntTag("x", (int) $this->x),

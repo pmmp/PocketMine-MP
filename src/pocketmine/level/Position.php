@@ -95,7 +95,7 @@ class Position extends Vector3{
 	 *
 	 * @return bool
 	 */
-	public function isValid(){
+	public function isValid() : bool{
 		return $this->getLevel() instanceof Level;
 	}
 
@@ -133,7 +133,7 @@ class Position extends Vector3{
 		return $this;
 	}
 
-	public function equals(Vector3 $v){
+	public function equals(Vector3 $v) : bool{
 		if($v instanceof Position){
 			return parent::equals($v) and $v->getLevel() === $this->getLevel();
 		}

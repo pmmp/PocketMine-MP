@@ -81,7 +81,7 @@ class AutoUpdater{
 	 *
 	 * @return bool
 	 */
-	public function hasUpdate(){
+	public function hasUpdate() : bool{
 		return $this->hasUpdate;
 	}
 
@@ -164,7 +164,7 @@ class AutoUpdater{
 	 *
 	 * @return string
 	 */
-	public function getChannel(){
+	public function getChannel() : string{
 		$channel = strtolower($this->server->getProperty("auto-updater.preferred-channel", "stable"));
 		if($channel !== "stable" and $channel !== "beta" and $channel !== "alpha" and $channel !== "development"){
 			$channel = "stable";

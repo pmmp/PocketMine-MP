@@ -34,7 +34,7 @@ class ZippedResourcePack implements ResourcePack{
 	 * @param \stdClass $manifest
 	 * @return bool
 	 */
-	public static function verifyManifest(\stdClass $manifest){
+	public static function verifyManifest(\stdClass $manifest) : bool{
 		if(!isset($manifest->format_version) or !isset($manifest->header) or !isset($manifest->modules)){
 			return false;
 		}

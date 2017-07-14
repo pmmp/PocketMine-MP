@@ -31,7 +31,7 @@ class UUID{
 	public function __construct(int $part1 = 0, int $part2 = 0, int $part3 = 0, int $part4 = 0, int $version = null){
 		$this->parts = [$part1, $part2, $part3, $part4];
 
-		$this->version = $version === null ? ($this->parts[1] & 0xf000) >> 12 : $version;
+		$this->version = $version ?? ($this->parts[1] & 0xf000) >> 12;
 	}
 
 	public function getVersion() : int{

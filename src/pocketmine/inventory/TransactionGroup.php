@@ -28,17 +28,17 @@ interface TransactionGroup{
 	/**
 	 * @return float
 	 */
-	public function getCreationTime();
+	public function getCreationTime() : float;
 
 	/**
 	 * @return Transaction[]
 	 */
-	public function getTransactions();
+	public function getTransactions() : array;
 
 	/**
 	 * @return Inventory[]
 	 */
-	public function getInventories();
+	public function getInventories() : array;
 
 	/**
 	 * @param Transaction $transaction
@@ -48,16 +48,16 @@ interface TransactionGroup{
 	/**
 	 * @return bool
 	 */
-	public function canExecute();
+	public function canExecute() : bool;
 
 	/**
 	 * @return bool
 	 */
-	public function execute();
+	public function execute() : bool;
 
 	/**
 	 * @return bool
 	 */
-	public function hasExecuted();
+	public function hasExecuted() : bool;
 
 }

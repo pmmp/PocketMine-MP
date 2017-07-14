@@ -119,7 +119,7 @@ class PluginManager{
 	 *
 	 * @return bool
 	 */
-	public function registerInterface($loaderName){
+	public function registerInterface(string $loaderName) : bool{
 		if(is_subclass_of($loaderName, PluginLoader::class)){
 			$loader = new $loaderName($this->server);
 		}else{
@@ -134,7 +134,7 @@ class PluginManager{
 	/**
 	 * @return Plugin[]
 	 */
-	public function getPlugins(){
+	public function getPlugins() : array{
 		return $this->plugins;
 	}
 
@@ -372,7 +372,7 @@ class PluginManager{
 	 *
 	 * @return bool
 	 */
-	public function addPermission(Permission $permission){
+	public function addPermission(Permission $permission) : bool{
 		if(!isset($this->permissions[$permission->getName()])){
 			$this->permissions[$permission->getName()] = $permission;
 			$this->calculatePermissionDefault($permission);
@@ -471,9 +471,9 @@ class PluginManager{
 	/**
 	 * @param string $permission
 	 *
-	 * @return Permissible[]
+	 * @return array|Permissible[]
 	 */
-	public function getPermissionSubscriptions($permission){
+	public function getPermissionSubscriptions(string $permission) : array{
 		if(isset($this->permSubs[$permission])){
 			return $this->permSubs[$permission];
 			$subs = [];
@@ -522,7 +522,7 @@ class PluginManager{
 	 *
 	 * @return Permissible[]
 	 */
-	public function getDefaultPermSubscriptions($op){
+	public function getDefaultPermSubscriptions(bool $op) : array{
 		$subs = [];
 
 		if($op === true){
@@ -555,7 +555,7 @@ class PluginManager{
 	/**
 	 * @return Permission[]
 	 */
-	public function getPermissions(){
+	public function getPermissions() : array{
 		return $this->permissions;
 	}
 
@@ -594,7 +594,7 @@ class PluginManager{
 	 *
 	 * @return PluginCommand[]
 	 */
-	protected function parseYamlCommands(Plugin $plugin){
+	protected function parseYamlCommands(Plugin $plugin) : array{
 		$pluginCmds = [];
 
 		foreach($plugin->getDescription()->getCommands() as $key => $data){
@@ -799,7 +799,7 @@ class PluginManager{
 	 *
 	 * @return HandlerList
 	 */
-	private function getEventListeners($event){
+	private function getEventListeners($event) : HandlerList{
 		if($event::$handlerList === null){
 			$event::$handlerList = new HandlerList();
 		}
@@ -810,15 +810,15 @@ class PluginManager{
 	/**
 	 * @return bool
 	 */
-	public function useTimings(){
+	public function useTimings() : bool{
 		return self::$useTimings;
 	}
 
 	/**
 	 * @param bool $use
 	 */
-	public function setUseTimings($use){
-		self::$useTimings = (bool) $use;
+	public function setUseTimings(bool $use){
+		self::$useTimings = $use;
 	}
 
 }
