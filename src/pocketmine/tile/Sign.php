@@ -89,7 +89,7 @@ class Sign extends Spawnable{
 		if($index < 0 or $index > 3){
 			throw new \InvalidArgumentException("Index must be in the range 0-3!");
 		}
-		return $this->namedtag["Text" . ($index + 1)];
+		return (string) $this->namedtag["Text" . ($index + 1)];
 	}
 
 	public function getText(){
