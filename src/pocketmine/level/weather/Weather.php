@@ -63,33 +63,6 @@ class Weather {
     }
     
     public function calcWeather($currentTick) {
-        if ($this->canCalculate()) {
-            $tickDiff = $currentTick - $this->lastUpdate;
-            $this->duration -= $tickDiff;
-            if ($this->duration <= 0) {
-                $duration = mt_rand(
-                    min($this->level->getServer()->getLeverylConfigValue("WeatherDurationMin", 6000), $this->level->getServer()->getLeverylConfigValue("WeatherDurationMax", 6000)),
-                    max($this->level->getServer()->getLeverylConfigValue("WeatherDurationMin", 6000), $this->level->getServer()->getLeverylConfigValue("WeatherDurationMax", 6000)));
-                if ($this->weatherNow === self::SUNNY) {
-                    $weather = $this->randomWeatherData[array_rand($this->randomWeatherData)];
-                    $this->setWeather($weather, $duration);
-                } else {
-                    $weather = self::SUNNY;
-                    $this->setWeather($weather, $duration);
-                }
-            }
-            if (($this->weatherNow >= self::RAINY_THUNDER) and ($this->level->getServer()->getLeverylConfigValue("LightningTime", 200) > 0) and is_int($this->duration / $this->level->getServer()->getLeverylConfigValue("LightningTime", 200))) {
-                $players = $this->level->getPlayers();
-                if (count($players) > 0) {
-                    $p = $players[array_rand($players)];
-                    $x = $p->x + mt_rand(-64, 64);
-                    $z = $p->z + mt_rand(-64, 64);
-                    $y = $this->level->getHighestBlockAt($x, $z);
-                    $this->level->spawnLightning($this->temporalVector->setComponents($x, $y, $z));
-                }
-            }
-        }
-        $this->lastUpdate = $currentTick;
     }
     
     public function setWeather(int $wea, int $duration = 12000) {
