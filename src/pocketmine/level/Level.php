@@ -107,6 +107,7 @@ use pocketmine\tile\Chest;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Random;
 use pocketmine\utils\ReversePriorityQueue;
+use pocketmine\level\weather\Weather;
 
 #include <rules/Level.h>
 
@@ -348,6 +349,8 @@ class Level implements ChunkManager, Metadatable{
 				unset($this->randomTickBlocks[$id]);
 			}
 		}
+                
+                $this->weather = new Weather($this, 0);
 
 		$this->timings = new LevelTimings($this);
 		$this->temporalPosition = new Position(0, 0, 0, $this);
@@ -362,6 +365,15 @@ class Level implements ChunkManager, Metadatable{
 	public function getTickRateTime() : float{
 		return $this->tickRateTime;
 	}
+        
+        /**
+         * 
+         * @return Weather
+         */
+        
+        public function getWeather() {
+            return $this->weather;
+        }
 
 	public function setTickRate(int $tickRate){
 		$this->tickRate = $tickRate;
@@ -692,6 +704,7 @@ class Level implements ChunkManager, Metadatable{
 			$this->sendTimeTicker = 0;
 		}
 
+                $this->weather->calcWeather($currentTick);
 		$this->unloadChunks();
 
 		//Do block updates

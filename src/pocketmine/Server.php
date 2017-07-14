@@ -293,6 +293,13 @@ class Server{
 	public function getCodename() : string{
 		return \pocketmine\CODENAME;
 	}
+        
+        /**
+         * @return string
+         */
+        public function getTeamName() : string {
+            return \pocketmine\TEAM_NAME;
+        }
 
 	/**
 	 * @return string

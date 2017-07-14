@@ -32,10 +32,11 @@ use pocketmine\utils\Config;
 use pocketmine\utils\Utils;
 
 class SetupWizard{
-	const DEFAULT_NAME = "Minecraft: PE Server";
+    
+	const DEFAULT_NAME = "FontierEdge Minecraft Server";
 	const DEFAULT_PORT = 19132;
 	const DEFAULT_MEMORY = 256;
-	const DEFAULT_PLAYERS = 20;
+	const DEFAULT_PLAYERS = 10;
 	const DEFAULT_GAMEMODE = 0;
 
 	/** @var BaseLang */
@@ -46,8 +47,15 @@ class SetupWizard{
 	}
 
 	public function run(){
-		$this->message("PocketMine-MP set-up wizard");
-
+		$this->writeLine(" --- FrontierEdge Minecraft Server --- ");
+                $this->writeLine();
+                $this->writeLine(" This program is free software: you can redistribute it and/or modify");
+                $this->writeLine(" it under the terms of the GNU Lesser General Public License as published by");
+                $this->writeLine(" the Free Software Foundation, either version 3 of the License, or");
+                $this->writeLine(" (at your option) any later version.");
+                $this->writeLine();
+                $this->writeLine(" Setting players to 10!");
+        
 		$langs = BaseLang::getLanguageList();
 		if(empty($langs)){
 			$this->error("No language files found, please use provided builds or clone the repository recursively.");

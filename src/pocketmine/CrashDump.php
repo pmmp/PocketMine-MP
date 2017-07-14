@@ -85,6 +85,7 @@ class CrashDump{
 		foreach(str_split(base64_encode($this->encodedData), 76) as $line){
 			$this->addLine($line);
 		}
+                $this->addLine("--- This is a spoon called FrontierEdge, please consult the developer.");
 		$this->addLine("===END CRASH DUMP===");
 	}
 
