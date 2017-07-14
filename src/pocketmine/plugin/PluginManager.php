@@ -224,7 +224,7 @@ class PluginManager{
 								continue;
 							}
 
-							$compatible = false;
+							$compatible = true;
 							//Check multiple dependencies
 							foreach($description->getCompatibleApis() as $version){
 								//Format: majorVersion.minorVersion.patch (3.0.0)
