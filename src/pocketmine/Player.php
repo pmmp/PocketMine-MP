@@ -3826,6 +3826,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function removeWindow(Inventory $inventory){
 		$inventory->close($this);
 		if($this->windows->contains($inventory)){
+			/** @var int $id */
 			$id = $this->windows[$inventory];
 			$this->windows->detach($this->windowIndex[$id]);
 			unset($this->windowIndex[$id]);
