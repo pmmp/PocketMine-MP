@@ -75,7 +75,7 @@ class Flat extends Generator{
 				new object\OreType(new DiamondOre(), 1, 7, 0, 16),
 				new object\OreType(new Dirt(), 20, 32, 0, 128),
 				new object\OreType(new Gravel(), 10, 16, 0, 128)
-							   ]);
+			]);
 			$this->populators[] = $ores;
 		}
 
