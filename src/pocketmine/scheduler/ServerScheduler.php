@@ -95,7 +95,7 @@ class ServerScheduler{
 	 *
 	 * @return void
 	 */
-	public function scheduleAsyncTaskToWorker(AsyncTask $task, $worker){
+	public function scheduleAsyncTaskToWorker(AsyncTask $task, int $worker){
 		if($task->getTaskId() !== null){
 			throw new \UnexpectedValueException("Attempt to schedule the same AsyncTask instance twice");
 		}
