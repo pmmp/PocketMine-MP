@@ -80,7 +80,7 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 	 */
 	public function setLines(array $lines){
 		if(count($lines) !== 4){
-			throw new \InvalidArgumentException("Array size cannot be greater than 4!");
+			throw new \InvalidArgumentException("Array size must be 4!");
 		}
 		$this->lines = $lines;
 	}
