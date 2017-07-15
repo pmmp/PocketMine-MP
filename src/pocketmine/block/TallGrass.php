@@ -36,7 +36,7 @@ class TallGrass extends Flowable{
 		$this->meta = $meta;
 	}
 
-	public function canBeReplaced() : bool{
+	public function canBeReplaced(Block $with = null) : bool{
 		return true;
 	}
 

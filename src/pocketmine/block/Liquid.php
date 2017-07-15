@@ -41,7 +41,7 @@ abstract class Liquid extends Transparent{
 		return false;
 	}
 
-	public function canBeReplaced() : bool{
+	public function canBeReplaced(Block $with = null) : bool{
 		return true;
 	}
 

@@ -57,7 +57,7 @@ class Fire extends Flowable{
 		return false;
 	}
 
-	public function canBeReplaced() : bool{
+	public function canBeReplaced(Block $with = null) : bool{
 		return true;
 	}
 

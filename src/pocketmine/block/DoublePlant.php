@@ -37,7 +37,7 @@ class DoublePlant extends Flowable{
 		$this->meta = $meta;
 	}
 
-	public function canBeReplaced() : bool{
+	public function canBeReplaced(Block $with = null) : bool{
 		return $this->meta === 2 or $this->meta === 3; //grass or fern
 	}
 
