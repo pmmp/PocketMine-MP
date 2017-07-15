@@ -79,8 +79,8 @@ namespace pocketmine {
 	use raklib\RakLib;
 
 	const VERSION = "1.6.2dev";
-	const API_VERSION = "3.0.0-ALPHA7";
-	const CODENAME = "Unleashed";
+	const API_VERSION = "3.0.0";
+	const CODENAME = "BlawoHD";
 
 	/*
 	 * Startup code. Do not look at it, it may harm you.
