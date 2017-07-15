@@ -123,8 +123,8 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	 */
 	protected function getSlotIndex(int $index) : int{
 		foreach($this->namedtag->Items as $i => $slot){
-			if($slot["Slot"] === $index){
-				return $i;
+			if((int) $slot["Slot"] === $index){
+				return (int) $i;
 			}
 		}
 
