@@ -23,12 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\level\generator\object;
 
+use pocketmine\block\Block;
 use pocketmine\level\ChunkManager;
 use pocketmine\math\VectorMath;
 use pocketmine\utils\Random;
 
 class Ore{
+	/** @var Random */
 	private $random;
+	/** @var OreType */
 	public $type;
 
 	public function __construct(Random $random, OreType $type){
@@ -36,16 +39,16 @@ class Ore{
 		$this->random = $random;
 	}
 
-	public function getType(){
+	public function getType() : OreType{
 		return $this->type;
 	}
 
-	public function canPlaceObject(ChunkManager $level, $x, $y, $z){
-		return ($level->getBlockIdAt($x, $y, $z) === 1);
+	public function canPlaceObject(ChunkManager $level, int $x, int $y, int $z) : bool{
+		return $level->getBlockIdAt($x, $y, $z) === Block::STONE;
 	}
 
-	public function placeObject(ChunkManager $level, $x, $y, $z){
-		$clusterSize = (int) $this->type->clusterSize;
+	public function placeObject(ChunkManager $level, int $x, int $y, int $z){
+		$clusterSize = $this->type->clusterSize;
 		$angle = $this->random->nextFloat() * M_PI;
 		$offset = VectorMath::getDirection2D($angle)->multiply($clusterSize)->divide(8);
 		$x1 = $x + 8 + $offset->x;

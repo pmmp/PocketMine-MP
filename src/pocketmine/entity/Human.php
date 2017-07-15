@@ -464,7 +464,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 					new ShortTag("Damage", 0),
 					new ByteTag("Slot", $slot),
 					new ByteTag("TrueSlot", -1),
-					new ShortTag("id", 0),
+					new ShortTag("id", 0)
 				]);
 			}
 

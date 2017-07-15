@@ -45,7 +45,7 @@ class BigTree extends Tree{
 		return false;
 	}
 
-	public function placeObject(ChunkManager $level, $x, $y, $z, Random $random){
+	public function placeObject(ChunkManager $level, int $x, int $y, int $z, Random $random){
 
 		/*$this->trunkHeight = (int) ($this->totalHeight * $this->trunkHeightMultiplier);
 		$leaves = $this->getLeafGroupPoints($level, $pos);

@@ -53,12 +53,13 @@ class Random{
 	 */
 	private $w;
 
+	/** @var int */
 	protected $seed;
 
 	/**
 	 * @param int $seed Integer to be used as seed.
 	 */
-	public function __construct($seed = -1){
+	public function __construct(int $seed = -1){
 		if($seed === -1){
 			$seed = time();
 		}
@@ -69,7 +70,7 @@ class Random{
 	/**
 	 * @param int $seed Integer to be used as seed.
 	 */
-	public function setSeed($seed){
+	public function setSeed(int $seed){
 		$this->seed = $seed;
 		$this->x = self::X ^ $seed;
 		$this->y = self::Y ^ ($seed << 17) | (($seed >> 15) & 0x7fffffff) & 0xffffffff;
@@ -77,7 +78,7 @@ class Random{
 		$this->w = self::W ^ ($seed << 18) | (($seed >> 14) & 0x7fffffff) & 0xffffffff;
 	}
 
-	public function getSeed(){
+	public function getSeed() : int{
 		return $this->seed;
 	}
 

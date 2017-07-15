@@ -30,15 +30,18 @@ use pocketmine\plugin\Plugin;
 
 class OfflinePlayer implements IPlayer, Metadatable{
 
+	/** @var string */
 	private $name;
+	/** @var Server */
 	private $server;
+	/** @var CompoundTag|null */
 	private $namedtag;
 
 	/**
 	 * @param Server $server
 	 * @param string $name
 	 */
-	public function __construct(Server $server, $name){
+	public function __construct(Server $server, string $name){
 		$this->server = $server;
 		$this->name = $name;
 		if(file_exists($this->server->getDataPath() . "players/" . strtolower($this->getName()) . ".dat")){

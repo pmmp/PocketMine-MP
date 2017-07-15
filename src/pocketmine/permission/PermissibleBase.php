@@ -122,13 +122,11 @@ class PermissibleBase implements Permissible{
 	 *
 	 * @param Plugin $plugin
 	 * @param string $name
-	 * @param bool   $value
+	 * @param bool $value
 	 *
 	 * @return PermissionAttachment
-	 *
-	 * @throws PluginException
 	 */
-	public function addAttachment(Plugin $plugin, $name = null, $value = null){
+	public function addAttachment(Plugin $plugin, string $name = null, bool $value = null) : PermissionAttachment{
 		if(!$plugin->isEnabled()){
 			throw new PluginException("Plugin " . $plugin->getDescription()->getName() . " is disabled");
 		}

@@ -180,7 +180,7 @@ class CommandReader extends Thread{
 
 	}
 
-	public function getThreadName(){
+	public function getThreadName() : string{
 		return "Console";
 	}
 }

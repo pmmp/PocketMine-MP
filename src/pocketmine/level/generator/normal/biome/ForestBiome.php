@@ -34,7 +34,7 @@ class ForestBiome extends GrassyBiome{
 
 	public $type;
 
-	public function __construct($type = self::TYPE_NORMAL){
+	public function __construct(int $type = self::TYPE_NORMAL){
 		parent::__construct();
 
 		$this->type = $type;

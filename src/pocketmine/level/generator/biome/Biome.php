@@ -65,8 +65,11 @@ abstract class Biome{
 	/** @var Biome[] */
 	private static $biomes = [];
 
+	/** @var int */
 	private $id;
+	/** @var bool */
 	private $registered = false;
+
 	/** @var Populator[] */
 	private $populators = [];
 
@@ -75,9 +78,12 @@ abstract class Biome{
 	/** @var int */
 	private $maxElevation;
 
+	/** @var Block[] */
 	private $groundCover = [];
 
+	/** @var float */
 	protected $rainfall = 0.5;
+	/** @var float */
 	protected $temperature = 0.5;
 
 	protected static function register(int $id, Biome $biome){

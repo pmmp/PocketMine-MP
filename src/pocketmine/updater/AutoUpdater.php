@@ -44,7 +44,7 @@ class AutoUpdater{
 	 * @param Server $server
 	 * @param string $endpoint
 	 */
-	public function __construct(Server $server, $endpoint){
+	public function __construct(Server $server, string $endpoint){
 		$this->server = $server;
 		$this->endpoint = "http://$endpoint/api/";
 

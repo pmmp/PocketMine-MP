@@ -264,7 +264,7 @@ class PluginDescription{
 	/**
 	 * @return array
 	 */
-	public function getSoftDepend(){
+	public function getSoftDepend() : array{
 		return $this->softDepend;
 	}
 

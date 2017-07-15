@@ -50,7 +50,7 @@ class VersionString{
 			$this->minor = (int) ($version[4] ?? 0); //0-31
 			$this->development = $version[5] === "dev";
 			if($version[6] !== ""){
-				$this->build = (int) (substr($version[6], 1));
+				$this->build = (int) substr($version[6], 1);
 			}else{
 				$this->build = 0;
 			}

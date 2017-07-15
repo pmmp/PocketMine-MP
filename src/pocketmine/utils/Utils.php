@@ -129,7 +129,7 @@ class Utils{
 	 *
 	 * @return string|bool
 	 */
-	public static function getIP($force = false){
+	public static function getIP(bool $force = false){
 		if(Utils::$online === false){
 			return false;
 		}elseif(Utils::$ip !== false and $force !== true){
@@ -238,7 +238,12 @@ class Utils{
 		return [$heap, $stack];
 	}
 
-	public static function getMemoryUsage($advanced = false){
+	/**
+	 * @param bool $advanced
+	 *
+	 * @return int[]|int
+	 */
+	public static function getMemoryUsage(bool $advanced = false){
 		$reserved = memory_get_usage();
 		$VmSize = null;
 		$VmRSS = null;
@@ -270,7 +275,7 @@ class Utils{
 		return [$reserved, $VmRSS, $VmSize];
 	}
 
-	public static function getThreadCount(){
+	public static function getThreadCount() : int{
 		if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
 			if(preg_match("/Threads:[ \t]+([0-9]+)/", file_get_contents("/proc/self/status"), $matches) > 0){
 				return (int) $matches[1];
@@ -371,7 +376,7 @@ class Utils{
 	 * GETs an URL using cURL
 	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
 	 *
-	 * @param         $page
+	 * @param string  $page
 	 * @param int     $timeout default 10
 	 * @param array   $extraHeaders
 	 * @param string  &$err    Will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
@@ -380,7 +385,7 @@ class Utils{
 	 *
 	 * @return bool|mixed false if an error occurred, mixed data if successful.
 	 */
-	public static function getURL($page, $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
+	public static function getURL(string $page, int $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
 		try{
 			list($ret, $headers, $httpCode) = self::simpleCurl($page, $timeout, $extraHeaders);
 			return $ret;
@@ -404,7 +409,7 @@ class Utils{
 	 *
 	 * @return bool|mixed false if an error occurred, mixed data if successful.
 	 */
-	public static function postURL($page, $args, $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
+	public static function postURL(string $page, $args, int $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
 		try{
 			list($ret, $headers, $httpCode) = self::simpleCurl($page, $timeout, $extraHeaders, [
 				CURLOPT_POST => 1,

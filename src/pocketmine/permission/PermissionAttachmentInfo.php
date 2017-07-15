@@ -31,25 +31,21 @@ class PermissionAttachmentInfo{
 	/** @var string */
 	private $permission;
 
-	/** @var PermissionAttachment */
+	/** @var PermissionAttachment|null */
 	private $attachment;
 
 	/** @var bool */
 	private $value;
 
 	/**
-	 * @param Permissible          $permissible
-	 * @param string               $permission
-	 * @param PermissionAttachment $attachment
-	 * @param bool                 $value
+	 * @param Permissible               $permissible
+	 * @param string                    $permission
+	 * @param PermissionAttachment|null $attachment
+	 * @param bool                      $value
 	 *
 	 * @throws \InvalidStateException
 	 */
-	public function __construct(Permissible $permissible, $permission, $attachment, $value){
-		if($permission === null){
-			throw new \InvalidStateException("Permission may not be null");
-		}
-
+	public function __construct(Permissible $permissible, string $permission, PermissionAttachment $attachment = null, bool $value){
 		$this->permissible = $permissible;
 		$this->permission = $permission;
 		$this->attachment = $attachment;
@@ -59,19 +55,19 @@ class PermissionAttachmentInfo{
 	/**
 	 * @return Permissible
 	 */
-	public function getPermissible(){
+	public function getPermissible() : Permissible{
 		return $this->permissible;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getPermission(){
+	public function getPermission() : string{
 		return $this->permission;
 	}
 
 	/**
-	 * @return PermissionAttachment
+	 * @return PermissionAttachment|null
 	 */
 	public function getAttachment(){
 		return $this->attachment;
@@ -80,7 +76,7 @@ class PermissionAttachmentInfo{
 	/**
 	 * @return bool
 	 */
-	public function getValue(){
+	public function getValue() : bool{
 		return $this->value;
 	}
 }

@@ -30,6 +30,7 @@ class RCONInstance extends Thread{
 	public $stop;
 	public $cmd;
 	public $response;
+	/** @var resource */
 	private $socket;
 	private $password;
 	private $maxClients;
@@ -39,14 +40,18 @@ class RCONInstance extends Thread{
 		return $this->waiting === true;
 	}
 
-
-	public function __construct($socket, $password, $maxClients = 50){
+	/**
+	 * @param resource $socket
+	 * @param string   $password
+	 * @param int      $maxClients
+	 */
+	public function __construct($socket, string $password, int $maxClients = 50){
 		$this->stop = false;
 		$this->cmd = "";
 		$this->response = "";
 		$this->socket = $socket;
 		$this->password = $password;
-		$this->maxClients = (int) $maxClients;
+		$this->maxClients = $maxClients;
 		for($n = 0; $n < $this->maxClients; ++$n){
 			$this->{"client" . $n} = null;
 			$this->{"status" . $n} = 0;
@@ -192,7 +197,7 @@ class RCONInstance extends Thread{
 		exit(0);
 	}
 
-	public function getThreadName(){
+	public function getThreadName() : string{
 		return "RCON";
 	}
 }

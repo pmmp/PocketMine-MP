@@ -61,12 +61,15 @@ class BaseLang{
 		return [];
 	}
 
+	/** @var string */
 	protected $langName;
 
+	/** @var string[] */
 	protected $lang = [];
+	/** @var string[] */
 	protected $fallbackLang = [];
 
-	public function __construct($lang, $path = null, $fallback = self::FALLBACK_LANGUAGE){
+	public function __construct(string $lang, string $path = null, string $fallback = self::FALLBACK_LANGUAGE){
 
 		$this->langName = strtolower($lang);
 
@@ -82,15 +85,15 @@ class BaseLang{
 		}
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return $this->get("language.name");
 	}
 
-	public function getLang(){
+	public function getLang() : string{
 		return $this->langName;
 	}
 
-	protected static function loadLang($path, array &$d){
+	protected static function loadLang(string $path, array &$d){
 		if(file_exists($path)){
 			$d = parse_ini_file($path, false, INI_SCANNER_RAW);
 			return true;
@@ -132,7 +135,12 @@ class BaseLang{
 		return $baseText;
 	}
 
-	public function internalGet($id){
+	/**
+	 * @param string $id
+	 *
+	 * @return string|null
+	 */
+	public function internalGet(string $id){
 		if(isset($this->lang[$id])){
 			return $this->lang[$id];
 		}elseif(isset($this->fallbackLang[$id])){
@@ -142,7 +150,12 @@ class BaseLang{
 		return null;
 	}
 
-	public function get($id){
+	/**
+	 * @param string $id
+	 *
+	 * @return string
+	 */
+	public function get(string $id) : string{
 		if(isset($this->lang[$id])){
 			return $this->lang[$id];
 		}elseif(isset($this->fallbackLang[$id])){

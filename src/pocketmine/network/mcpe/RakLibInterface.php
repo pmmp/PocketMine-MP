@@ -75,7 +75,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		$this->network = $network;
 	}
 
-	public function process(){
+	public function process() : bool{
 		$work = false;
 		if($this->interface->handlePacket()){
 			$work = true;
@@ -102,7 +102,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		}
 	}
 
-	public function close(Player $player, $reason = "unknown reason"){
+	public function close(Player $player, string $reason = "unknown reason"){
 		if(isset($this->identifiers[$h = spl_object_hash($player)])){
 			unset($this->players[$this->identifiers[$h]]);
 			unset($this->identifiersACK[$this->identifiers[$h]]);
@@ -148,7 +148,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		}
 	}
 
-	public function blockAddress($address, $timeout = 300){
+	public function blockAddress(string $address, int $timeout = 300){
 		$this->interface->blockAddress($address, $timeout);
 	}
 
@@ -156,7 +156,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		$this->server->handlePacket($address, $port, $payload);
 	}
 
-	public function sendRawPacket($address, $port, $payload){
+	public function sendRawPacket(string $address, int $port, string $payload){
 		$this->interface->sendRaw($address, $port, $payload);
 	}
 
@@ -193,7 +193,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		}
 	}
 
-	public function putPacket(Player $player, DataPacket $packet, $needACK = false, $immediate = false){
+	public function putPacket(Player $player, DataPacket $packet, bool $needACK = false, bool $immediate = true){
 		if(isset($this->identifiers[$h = spl_object_hash($player)])){
 			$identifier = $this->identifiers[$h];
 			if(!$packet->isEncoded){

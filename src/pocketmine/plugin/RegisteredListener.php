@@ -57,7 +57,7 @@ class RegisteredListener{
 	 * @param bool           $ignoreCancelled
 	 * @param TimingsHandler $timings
 	 */
-	public function __construct(Listener $listener, EventExecutor $executor, $priority, Plugin $plugin, $ignoreCancelled, TimingsHandler $timings){
+	public function __construct(Listener $listener, EventExecutor $executor, int $priority, Plugin $plugin, bool $ignoreCancelled, TimingsHandler $timings){
 		$this->listener = $listener;
 		$this->priority = $priority;
 		$this->plugin = $plugin;

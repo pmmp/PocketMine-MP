@@ -32,6 +32,7 @@ use pocketmine\Server;
  * This TransactionGroup only allows doing Transaction between one / two inventories
  */
 class SimpleTransactionGroup implements TransactionGroup{
+	/** @var float */
 	private $creationTime;
 	protected $hasExecuted = false;
 	/** @var Player */

@@ -141,7 +141,7 @@ abstract class PluginBase implements Plugin{
 	 *
 	 * @return Command|PluginIdentifiableCommand|null
 	 */
-	public function getCommand($name){
+	public function getCommand(string $name){
 		$command = $this->getServer()->getPluginCommand($name);
 		if($command === null or $command->getPlugin() !== $this){
 			$command = $this->getServer()->getPluginCommand(strtolower($this->description->getName()) . ":" . $name);

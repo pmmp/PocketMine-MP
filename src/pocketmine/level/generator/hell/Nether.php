@@ -41,10 +41,15 @@ class Nether extends Generator{
 	private $level;
 	/** @var Random */
 	private $random;
+	/** @var int */
 	private $waterHeight = 32;
+	/** @var int */
 	private $emptyHeight = 64;
+	/** @var int */
 	private $emptyAmplitude = 1;
+	/** @var float */
 	private $density = 0.5;
+	/** @var int */
 	private $bedrockDepth = 5;
 
 	/** @var Populator[] */

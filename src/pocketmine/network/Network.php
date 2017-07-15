@@ -45,6 +45,7 @@ class Network{
 	private $upload = 0;
 	private $download = 0;
 
+	/** @var string */
 	private $name;
 
 	public function __construct(Server $server){
@@ -75,7 +76,7 @@ class Network{
 	/**
 	 * @return SourceInterface[]
 	 */
-	public function getInterfaces(){
+	public function getInterfaces() : array{
 		return $this->interfaces;
 	}
 
@@ -121,14 +122,17 @@ class Network{
 	 *
 	 * @param string $name
 	 */
-	public function setName($name){
-		$this->name = (string) $name;
+	public function setName(string $name){
+		$this->name = $name;
 		foreach($this->interfaces as $interface){
 			$interface->setName($this->name);
 		}
 	}
 
-	public function getName(){
+	/**
+	 * @return string
+	 */
+	public function getName() : string{
 		return $this->name;
 	}
 
@@ -138,7 +142,10 @@ class Network{
 		}
 	}
 
-	public function getServer(){
+	/**
+	 * @return Server
+	 */
+	public function getServer() : Server{
 		return $this->server;
 	}
 
@@ -147,7 +154,7 @@ class Network{
 	 * @param int    $port
 	 * @param string $payload
 	 */
-	public function sendPacket($address, $port, $payload){
+	public function sendPacket(string $address, int $port, string $payload){
 		foreach($this->advancedInterfaces as $interface){
 			$interface->sendRawPacket($address, $port, $payload);
 		}
@@ -159,7 +166,7 @@ class Network{
 	 * @param string $address
 	 * @param int    $timeout
 	 */
-	public function blockAddress($address, $timeout = 300){
+	public function blockAddress(string $address, int $timeout = 300){
 		foreach($this->advancedInterfaces as $interface){
 			$interface->blockAddress($address, $timeout);
 		}

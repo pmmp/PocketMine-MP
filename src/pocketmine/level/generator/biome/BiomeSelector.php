@@ -39,8 +39,10 @@ class BiomeSelector{
 	/** @var Biome[] */
 	private $biomes = [];
 
-	private $map = [];
+	/** @var \SplFixedArray */
+	private $map = null;
 
+	/** @var callable */
 	private $lookup;
 
 	public function __construct(Random $random, callable $lookup, Biome $fallback){

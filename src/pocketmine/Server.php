@@ -775,7 +775,7 @@ class Server{
 			new ShortTag("Air", 300),
 			new ByteTag("OnGround", 1),
 			new ByteTag("Invulnerable", 0),
-			new StringTag("NameTag", $name),
+			new StringTag("NameTag", $name)
 		]);
 		$nbt->Pos->setTagType(NBT::TAG_Double);
 		$nbt->Inventory->setTagType(NBT::TAG_Compound);
@@ -1633,7 +1633,7 @@ class Server{
 					$generator = Generator::getGenerator(array_shift($options));
 					if(count($options) > 0){
 						$options = [
-							"preset" => implode(":", $options),
+							"preset" => implode(":", $options)
 						];
 					}else{
 						$options = [];
