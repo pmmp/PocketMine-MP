@@ -86,7 +86,7 @@ class Random{
 	 *
 	 * @return int
 	 */
-	public function nextInt(){
+	public function nextInt() : int{
 		return $this->nextSignedInt() & 0x7fffffff;
 	}
 
@@ -95,7 +95,7 @@ class Random{
 	 *
 	 * @return int
 	 */
-	public function nextSignedInt(){
+	public function nextSignedInt() : int{
 		$t = ($this->x ^ ($this->x << 11)) & 0xffffffff;
 
 		$this->x = $this->y;
@@ -112,7 +112,7 @@ class Random{
 	 *
 	 * @return float
 	 */
-	public function nextFloat(){
+	public function nextFloat() : float{
 		return $this->nextInt() / 0x7fffffff;
 	}
 
@@ -121,7 +121,7 @@ class Random{
 	 *
 	 * @return float
 	 */
-	public function nextSignedFloat(){
+	public function nextSignedFloat() : float{
 		return $this->nextSignedInt() / 0x7fffffff;
 	}
 
@@ -130,7 +130,7 @@ class Random{
 	 *
 	 * @return bool
 	 */
-	public function nextBoolean(){
+	public function nextBoolean() : bool{
 		return ($this->nextSignedInt() & 0x01) === 0;
 	}
 
@@ -138,15 +138,15 @@ class Random{
 	 * Returns a random integer between $start and $end
 	 *
 	 * @param int $start default 0
-	 * @param int $end   default 0x7fffffff
+	 * @param int $end default 0x7fffffff
 	 *
 	 * @return int
 	 */
-	public function nextRange($start = 0, $end = 0x7fffffff){
+	public function nextRange(int $start = 0, int $end = 0x7fffffff) : int{
 		return $start + ($this->nextInt() % ($end + 1 - $start));
 	}
 
-	public function nextBoundedInt($bound){
+	public function nextBoundedInt(int $bound) : int{
 		return $this->nextInt() % $bound;
 	}
 

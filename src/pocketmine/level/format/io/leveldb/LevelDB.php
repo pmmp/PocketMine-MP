@@ -25,7 +25,6 @@ namespace pocketmine\level\format\io\leveldb;
 
 use pocketmine\entity\Entity;
 use pocketmine\level\format\Chunk;
-use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\ChunkUtils;
 use pocketmine\level\format\io\exception\UnsupportedChunkFormatException;
@@ -576,7 +575,7 @@ class LevelDB extends BaseLevelProvider{
 	/**
 	 * @return \LevelDB
 	 */
-	public function getDatabase(){
+	public function getDatabase() : \LevelDB{
 		return $this->db;
 	}
 

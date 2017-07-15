@@ -31,14 +31,17 @@ interface Recipe{
 	/**
 	 * @return Item
 	 */
-	public function getResult();
+	public function getResult() : Item;
 
 	public function registerToCraftingManager();
 
 	/**
-	 * @return UUID
+	 * @return UUID|null
 	 */
 	public function getId();
 
+	/**
+	 * @param UUID $id
+	 */
 	public function setId(UUID $id);
 }

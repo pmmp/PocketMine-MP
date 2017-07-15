@@ -63,7 +63,7 @@ class Explosion{
 	/**
 	 * @return bool
 	 */
-	public function explodeA(){
+	public function explodeA() : bool{
 		if($this->size < 0.1){
 			return false;
 		}
@@ -114,7 +114,7 @@ class Explosion{
 		return true;
 	}
 
-	public function explodeB(){
+	public function explodeB() : bool{
 		$send = [];
 		$updateBlocks = [];
 

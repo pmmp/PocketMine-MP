@@ -131,13 +131,20 @@ class SimpleCommandMap implements CommandMap{
 	}
 
 
-	public function registerAll($fallbackPrefix, array $commands){
+	public function registerAll(string $fallbackPrefix, array $commands){
 		foreach($commands as $command){
 			$this->register($fallbackPrefix, $command);
 		}
 	}
 
-	public function register($fallbackPrefix, Command $command, $label = null){
+	/**
+	 * @param string      $fallbackPrefix
+	 * @param Command     $command
+	 * @param string|null $label
+	 *
+	 * @return bool
+	 */
+	public function register(string $fallbackPrefix, Command $command, string $label = null) : bool{
 		if($label === null){
 			$label = $command->getName();
 		}
@@ -163,7 +170,15 @@ class SimpleCommandMap implements CommandMap{
 		return $registered;
 	}
 
-	private function registerAlias(Command $command, $isAlias, $fallbackPrefix, $label){
+	/**
+	 * @param Command $command
+	 * @param bool $isAlias
+	 * @param string $fallbackPrefix
+	 * @param string $label
+	 *
+	 * @return bool
+	 */
+	private function registerAlias(Command $command, bool $isAlias, string $fallbackPrefix, string $label) : bool{
 		$this->knownCommands[$fallbackPrefix . ":" . $label] = $command;
 		if(($command instanceof VanillaCommand or $isAlias) and isset($this->knownCommands[$label])){
 			return false;
@@ -207,7 +222,7 @@ class SimpleCommandMap implements CommandMap{
 		return null;
 	}
 
-	public function dispatch(CommandSender $sender, $commandLine){
+	public function dispatch(CommandSender $sender, string $commandLine) : bool{
 		$args = explode(" ", $commandLine);
 		$sentCommandLabel = "";
 		$target = $this->matchCommand($sentCommandLabel, $args);
@@ -241,14 +256,14 @@ class SimpleCommandMap implements CommandMap{
 		$this->setDefaultCommands();
 	}
 
-	public function getCommand($name){
+	public function getCommand(string $name){
 		return $this->knownCommands[$name] ?? null;
 	}
 
 	/**
 	 * @return Command[]
 	 */
-	public function getCommands(){
+	public function getCommands() : array{
 		return $this->knownCommands;
 	}
 

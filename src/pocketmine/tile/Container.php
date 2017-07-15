@@ -32,16 +32,16 @@ interface Container{
 	 *
 	 * @return Item
 	 */
-	public function getItem($index);
+	public function getItem(int $index) : Item;
 
 	/**
 	 * @param int  $index
 	 * @param Item $item
 	 */
-	public function setItem($index, Item $item);
+	public function setItem(int $index, Item $item);
 
 	/**
 	 * @return int
 	 */
-	public function getSize();
+	public function getSize() : int;
 }

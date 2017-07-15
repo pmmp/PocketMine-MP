@@ -38,7 +38,7 @@ class TitleCommand extends VanillaCommand{
 		$this->setPermission("pocketmine.command.title");
 	}
 
-	public function execute(CommandSender $sender, $currentAlias, array $args){
+	public function execute(CommandSender $sender, string $commandLabel, array $args){
 		if(!$this->testPermission($sender)){
 			return true;
 		}

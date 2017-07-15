@@ -30,25 +30,25 @@ interface Transaction{
 	/**
 	 * @return Inventory
 	 */
-	public function getInventory();
+	public function getInventory() : Inventory;
 
 	/**
 	 * @return int
 	 */
-	public function getSlot();
+	public function getSlot() : int;
 
 	/**
 	 * @return Item
 	 */
-	public function getSourceItem();
+	public function getSourceItem() : Item;
 
 	/**
 	 * @return Item
 	 */
-	public function getTargetItem();
+	public function getTargetItem() : Item;
 
 	/**
 	 * @return float
 	 */
-	public function getCreationTime();
+	public function getCreationTime() : float;
 }

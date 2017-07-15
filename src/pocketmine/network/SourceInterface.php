@@ -42,7 +42,7 @@ interface SourceInterface{
 	 * @param bool       $needACK
 	 * @param bool       $immediate
 	 *
-	 * @return int
+	 * @return int|null
 	 */
 	public function putPacket(Player $player, DataPacket $packet, $needACK = false, $immediate = true);
 

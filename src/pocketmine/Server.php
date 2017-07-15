@@ -577,7 +577,7 @@ class Server{
 	}
 
 	/**
-	 * @return \AttachableThreadedLogger
+	 * @return MainLogger
 	 */
 	public function getLogger(){
 		return $this->logger;
@@ -1043,12 +1043,12 @@ class Server{
 	 *
 	 * @return bool
 	 */
-	public function generateLevel(string $name, $seed = null, $generator = null, array $options = []){
+	public function generateLevel(string $name, int $seed = null, $generator = null, array $options = []) : bool{
 		if(trim($name) === "" or $this->isLevelGenerated($name)){
 			return false;
 		}
 
-		$seed = $seed === null ? Binary::readInt(random_bytes(4)) : (int) $seed;
+		$seed = $seed ?? Binary::readInt(random_bytes(4));
 
 		if(!isset($options["preset"])){
 			$options["preset"] = $this->getConfigString("generator-settings", "");
@@ -1328,7 +1328,7 @@ class Server{
 	 *
 	 * @return bool
 	 */
-	public function isWhitelisted(string $name){
+	public function isWhitelisted(string $name) : bool{
 		return !$this->hasWhitelist() or $this->operators->exists($name, true) or $this->whitelist->exists($name, true);
 	}
 
@@ -1337,7 +1337,7 @@ class Server{
 	 *
 	 * @return bool
 	 */
-	public function isOp(string $name){
+	public function isOp(string $name) : bool{
 		return $this->operators->exists($name, true);
 	}
 
@@ -1765,7 +1765,7 @@ class Server{
 	 *
 	 * @return int
 	 */
-	public function broadcastTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1, $recipients = null){
+	public function broadcastTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1, array $recipients = null) : int{
 		if(!is_array($recipients)){
 			/** @var Player[] $recipients */
 			$recipients = [];
@@ -1931,7 +1931,7 @@ class Server{
 	 *
 	 * @return bool
 	 */
-	public function dispatchCommand(CommandSender $sender, string $commandLine){
+	public function dispatchCommand(CommandSender $sender, string $commandLine) : bool{
 		if($this->commandMap->dispatch($sender, $commandLine)){
 			return true;
 		}
@@ -2054,6 +2054,9 @@ class Server{
 
 	}
 
+	/**
+	 * @return QueryRegenerateEvent
+	 */
 	public function getQueryInformation(){
 		return $this->queryRegenerateTask;
 	}
@@ -2428,7 +2431,7 @@ class Server{
 	/**
 	 * Tries to execute a server tick
 	 */
-	private function tick(){
+	private function tick() : bool{
 		$tickTime = microtime(true);
 		if(($tickTime - $this->nextTick) < -0.025){ //Allow half a tick of diff
 			return false;

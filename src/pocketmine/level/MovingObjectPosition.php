@@ -52,15 +52,15 @@ class MovingObjectPosition{
 	}
 
 	/**
-	 * @param int     $x
-	 * @param int     $y
-	 * @param int     $z
-	 * @param int     $side
+	 * @param int $x
+	 * @param int $y
+	 * @param int $z
+	 * @param int $side
 	 * @param Vector3 $hitVector
 	 *
 	 * @return MovingObjectPosition
 	 */
-	public static function fromBlock($x, $y, $z, $side, Vector3 $hitVector){
+	public static function fromBlock(int $x, int $y, int $z, int $side, Vector3 $hitVector) : MovingObjectPosition{
 		$ob = new MovingObjectPosition;
 		$ob->typeOfHit = 0;
 		$ob->blockX = $x;
@@ -75,7 +75,7 @@ class MovingObjectPosition{
 	 *
 	 * @return MovingObjectPosition
 	 */
-	public static function fromEntity(Entity $entity){
+	public static function fromEntity(Entity $entity) : MovingObjectPosition{
 		$ob = new MovingObjectPosition;
 		$ob->typeOfHit = 1;
 		$ob->entityHit = $entity;

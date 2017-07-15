@@ -47,11 +47,11 @@ class PlayerInventory extends BaseInventory{
 		parent::__construct($player, InventoryType::get(InventoryType::PLAYER));
 	}
 
-	public function getSize(){
+	public function getSize() : int{
 		return parent::getSize() - 4; //Remove armor slots
 	}
 
-	public function setSize($size){
+	public function setSize(int $size){
 		parent::setSize($size + 4);
 		$this->sendContents($this->getViewers());
 	}
@@ -316,7 +316,7 @@ class PlayerInventory extends BaseInventory{
 		return $this->setItem($this->getSize() + 3, $boots);
 	}
 
-	public function setItem($index, Item $item){
+	public function setItem(int $index, Item $item) : bool{
 		if($index < 0 or $index >= $this->size){
 			return false;
 		}elseif($item->getId() === 0 or $item->getCount() <= 0){
@@ -347,7 +347,7 @@ class PlayerInventory extends BaseInventory{
 		return true;
 	}
 
-	public function clear($index){
+	public function clear(int $index) : bool{
 		if(isset($this->slots[$index])){
 			$item = Item::get(Item::AIR, 0, 0);
 			$old = $this->slots[$index];

@@ -109,7 +109,7 @@ class NBT{
 		}
 	}
 
-	public static function matchList(ListTag $tag1, ListTag $tag2){
+	public static function matchList(ListTag $tag1, ListTag $tag2) : bool{
 		if($tag1->getName() !== $tag2->getName() or $tag1->getCount() !== $tag2->getCount()){
 			return false;
 		}
@@ -141,7 +141,7 @@ class NBT{
 		return true;
 	}
 
-	public static function matchTree(CompoundTag $tag1, CompoundTag $tag2){
+	public static function matchTree(CompoundTag $tag1, CompoundTag $tag2) : bool{
 		if($tag1->getName() !== $tag2->getName() or $tag1->getCount() !== $tag2->getCount()){
 			return false;
 		}
@@ -188,7 +188,7 @@ class NBT{
 		$this->buffer .= $v;
 	}
 
-	public function feof(){
+	public function feof() : bool{
 		return !isset($this->buffer{$this->offset});
 	}
 
@@ -269,11 +269,11 @@ class NBT{
 		$tag->write($this, $network);
 	}
 
-	public function getByte(){
+	public function getByte() : int{
 		return Binary::readByte($this->get(1));
 	}
 
-	public function getSignedByte(){
+	public function getSignedByte() : int{
 		return Binary::readSignedByte($this->get(1));
 	}
 
@@ -281,7 +281,7 @@ class NBT{
 		$this->buffer .= Binary::writeByte($v);
 	}
 
-	public function getShort(){
+	public function getShort() : int{
 		return $this->endianness === self::BIG_ENDIAN ? Binary::readShort($this->get(2)) : Binary::readLShort($this->get(2));
 	}
 
@@ -293,7 +293,7 @@ class NBT{
 		$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Binary::writeShort($v) : Binary::writeLShort($v);
 	}
 
-	public function getInt(bool $network = false){
+	public function getInt(bool $network = false) : int{
 		if($network === true){
 			return Binary::readVarInt($this->buffer, $this->offset);
 		}
@@ -308,7 +308,7 @@ class NBT{
 		}
 	}
 
-	public function getLong(){
+	public function getLong() : int{
 		return $this->endianness === self::BIG_ENDIAN ? Binary::readLong($this->get(8)) : Binary::readLLong($this->get(8));
 	}
 
@@ -316,7 +316,7 @@ class NBT{
 		$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Binary::writeLong($v) : Binary::writeLLong($v);
 	}
 
-	public function getFloat(){
+	public function getFloat() : float{
 		return $this->endianness === self::BIG_ENDIAN ? Binary::readFloat($this->get(4)) : Binary::readLFloat($this->get(4));
 	}
 
@@ -324,7 +324,7 @@ class NBT{
 		$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Binary::writeFloat($v) : Binary::writeLFloat($v);
 	}
 
-	public function getDouble(){
+	public function getDouble() : float{
 		return $this->endianness === self::BIG_ENDIAN ? Binary::readDouble($this->get(8)) : Binary::readLDouble($this->get(8));
 	}
 
@@ -346,7 +346,7 @@ class NBT{
 		$this->buffer .= $v;
 	}
 
-	public function getArray(){
+	public function getArray() : array{
 		$data = [];
 		self::toArray($data, $this->data);
 		return $data;
