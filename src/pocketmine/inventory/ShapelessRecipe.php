@@ -31,6 +31,7 @@ class ShapelessRecipe implements Recipe{
 	/** @var Item */
 	private $output;
 
+	/** @var UUID|null */
 	private $id = null;
 
 	/** @var Item[] */
@@ -40,10 +41,16 @@ class ShapelessRecipe implements Recipe{
 		$this->output = clone $result;
 	}
 
+	/**
+	 * @return UUID|null
+	 */
 	public function getId(){
 		return $this->id;
 	}
 
+	/**
+	 * @param UUID $id
+	 */
 	public function setId(UUID $id){
 		if($this->id !== null){
 			throw new \InvalidStateException("Id is already set");
@@ -52,18 +59,18 @@ class ShapelessRecipe implements Recipe{
 		$this->id = $id;
 	}
 
-	public function getResult(){
+	public function getResult() : Item{
 		return clone $this->output;
 	}
 
 	/**
 	 * @param Item $item
 	 *
-	 * @returns ShapelessRecipe
+	 * @return ShapelessRecipe
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function addIngredient(Item $item){
+	public function addIngredient(Item $item) : ShapelessRecipe{
 		if(count($this->ingredients) >= 9){
 			throw new \InvalidArgumentException("Shapeless recipes cannot have more than 9 ingredients");
 		}
@@ -101,7 +108,7 @@ class ShapelessRecipe implements Recipe{
 	/**
 	 * @return Item[]
 	 */
-	public function getIngredientList(){
+	public function getIngredientList() : array{
 		$ingredients = [];
 		foreach($this->ingredients as $ingredient){
 			$ingredients[] = clone $ingredient;
@@ -113,7 +120,7 @@ class ShapelessRecipe implements Recipe{
 	/**
 	 * @return int
 	 */
-	public function getIngredientCount(){
+	public function getIngredientCount() : int{
 		$count = 0;
 		foreach($this->ingredients as $ingredient){
 			$count += $ingredient->getCount();

@@ -32,6 +32,7 @@ use pocketmine\network\mcpe\protocol\ContainerSetContentPacket;
 use pocketmine\network\mcpe\protocol\ContainerSetSlotPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
+use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\Player;
 use pocketmine\Server;
 
@@ -46,11 +47,11 @@ class PlayerInventory extends BaseInventory{
 		parent::__construct($player, InventoryType::get(InventoryType::PLAYER));
 	}
 
-	public function getSize(){
+	public function getSize() : int{
 		return parent::getSize() - 4; //Remove armor slots
 	}
 
-	public function setSize($size){
+	public function setSize(int $size){
 		parent::setSize($size + 4);
 		$this->sendContents($this->getViewers());
 	}
@@ -238,7 +239,7 @@ class PlayerInventory extends BaseInventory{
 		$pk->item = $item;
 		$pk->inventorySlot = $this->getHeldItemSlot();
 		$pk->hotbarSlot = $this->getHeldItemIndex();
-		$pk->windowId = ContainerSetContentPacket::SPECIAL_INVENTORY;
+		$pk->windowId = ContainerIds::INVENTORY;
 
 		if(!is_array($target)){
 			$target->dataPacket($pk);
@@ -315,7 +316,7 @@ class PlayerInventory extends BaseInventory{
 		return $this->setItem($this->getSize() + 3, $boots);
 	}
 
-	public function setItem($index, Item $item){
+	public function setItem(int $index, Item $item) : bool{
 		if($index < 0 or $index >= $this->size){
 			return false;
 		}elseif($item->getId() === 0 or $item->getCount() <= 0){
@@ -346,7 +347,7 @@ class PlayerInventory extends BaseInventory{
 		return true;
 	}
 
-	public function clear($index){
+	public function clear(int $index) : bool{
 		if(isset($this->slots[$index])){
 			$item = Item::get(Item::AIR, 0, 0);
 			$old = $this->slots[$index];
@@ -419,12 +420,11 @@ class PlayerInventory extends BaseInventory{
 		$pk->entityRuntimeId = $this->getHolder()->getId();
 		$pk->slots = $armor;
 		$pk->encode();
-		$pk->isEncoded = true;
 
 		foreach($target as $player){
 			if($player === $this->getHolder()){
 				$pk2 = new ContainerSetContentPacket();
-				$pk2->windowid = ContainerSetContentPacket::SPECIAL_ARMOR;
+				$pk2->windowid = ContainerIds::ARMOR;
 				$pk2->slots = $armor;
 				$pk2->targetEid = $player->getId();
 				$player->dataPacket($pk2);
@@ -467,13 +467,12 @@ class PlayerInventory extends BaseInventory{
 		$pk->entityRuntimeId = $this->getHolder()->getId();
 		$pk->slots = $armor;
 		$pk->encode();
-		$pk->isEncoded = true;
 
 		foreach($target as $player){
 			if($player === $this->getHolder()){
 				/** @var Player $player */
 				$pk2 = new ContainerSetSlotPacket();
-				$pk2->windowid = ContainerSetContentPacket::SPECIAL_ARMOR;
+				$pk2->windowid = ContainerIds::ARMOR;
 				$pk2->slot = $index - $this->getSize();
 				$pk2->item = $this->getItem($index);
 				$player->dataPacket($pk2);
@@ -523,7 +522,7 @@ class PlayerInventory extends BaseInventory{
 
 	public function sendCreativeContents(){
 		$pk = new ContainerSetContentPacket();
-		$pk->windowid = ContainerSetContentPacket::SPECIAL_CREATIVE;
+		$pk->windowid = ContainerIds::CREATIVE;
 		if($this->getHolder()->getGamemode() === Player::CREATIVE){
 			foreach(Item::getCreativeItems() as $i => $item){
 				$pk->slots[$i] = clone $item;

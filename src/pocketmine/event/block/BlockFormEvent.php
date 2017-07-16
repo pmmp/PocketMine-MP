@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\event\block;
 
-use pocketmine\block\Block;
-
 class BlockFormEvent extends BlockGrowEvent{
 	public static $handlerList = null;
 

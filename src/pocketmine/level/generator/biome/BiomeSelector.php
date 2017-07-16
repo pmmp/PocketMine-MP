@@ -39,8 +39,10 @@ class BiomeSelector{
 	/** @var Biome[] */
 	private $biomes = [];
 
-	private $map = [];
+	/** @var \SplFixedArray */
+	private $map = null;
 
+	/** @var callable */
 	private $lookup;
 
 	public function __construct(Random $random, callable $lookup, Biome $fallback){
@@ -78,7 +80,7 @@ class BiomeSelector{
 	 *
 	 * @return Biome
 	 */
-	public function pickBiome($x, $z){
+	public function pickBiome($x, $z) : Biome{
 		$temperature = (int) ($this->getTemperature($x, $z) * 63);
 		$rainfall = (int) ($this->getRainfall($x, $z) * 63);
 

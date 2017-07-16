@@ -40,7 +40,7 @@ class TransferServerCommand extends VanillaCommand{
 		$this->setPermission("pocketmine.command.transferserver");
 	}
 
-	public function execute(CommandSender $sender, $commandLabel, array $args){
+	public function execute(CommandSender $sender, string $commandLabel, array $args){
 		if(count($args) < 1){
 			throw new InvalidCommandSyntaxException();
 		}elseif(!($sender instanceof Player)){

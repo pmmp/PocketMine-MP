@@ -32,7 +32,7 @@ use pocketmine\event\Cancellable;
  * You don't want to use this except for a few cases like logging commands,
  * blocking commands on certain places, or applying modifiers.
  *
- * The message contains a slash at the start
+ * The message DOES NOT contain a slash at the start
  */
 class ServerCommandEvent extends ServerEvent implements Cancellable{
 	public static $handlerList = null;

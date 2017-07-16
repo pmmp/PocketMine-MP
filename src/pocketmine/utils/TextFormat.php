@@ -60,7 +60,7 @@ abstract class TextFormat{
 	 *
 	 * @return array
 	 */
-	public static function tokenize($string){
+	public static function tokenize(string $string) : array{
 		return preg_split("/(" . TextFormat::ESCAPE . "[0123456789abcdefklmnor])/", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 	}
 
@@ -70,9 +70,9 @@ abstract class TextFormat{
 	 * @param string $string
 	 * @param bool   $removeFormat
 	 *
-	 * @return mixed
+	 * @return string
 	 */
-	public static function clean($string, $removeFormat = true){
+	public static function clean(string $string, bool $removeFormat = true) : string{
 		if($removeFormat){
 			return str_replace(TextFormat::ESCAPE, "", preg_replace(["/" . TextFormat::ESCAPE . "[0123456789abcdefklmnor]/", "/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/"], "", $string));
 		}
@@ -86,7 +86,7 @@ abstract class TextFormat{
 	 *
 	 * @return string
 	 */
-	public static function toJSON($string){
+	public static function toJSON($string) : string{
 		if(!is_array($string)){
 			$string = self::tokenize($string);
 		}
@@ -274,7 +274,7 @@ abstract class TextFormat{
 	 *
 	 * @return string
 	 */
-	public static function toHTML($string){
+	public static function toHTML($string) : string{
 		if(!is_array($string)){
 			$string = self::tokenize($string);
 		}
@@ -386,11 +386,11 @@ abstract class TextFormat{
 	/**
 	 * Returns a string with colorized ANSI Escape codes
 	 *
-	 * @param $string
+	 * @param string|array $string
 	 *
 	 * @return string
 	 */
-	public static function toANSI($string){
+	public static function toANSI($string) : string{
 		if(!is_array($string)){
 			$string = self::tokenize($string);
 		}

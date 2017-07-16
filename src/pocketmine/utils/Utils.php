@@ -64,7 +64,7 @@ class Utils{
 	 *
 	 * @return UUID
 	 */
-	public static function getMachineUniqueId($extra = ""){
+	public static function getMachineUniqueId(string $extra = "") : UUID{
 		if(self::$serverUniqueId !== null and $extra === ""){
 			return self::$serverUniqueId;
 		}
@@ -129,7 +129,7 @@ class Utils{
 	 *
 	 * @return string|bool
 	 */
-	public static function getIP($force = false){
+	public static function getIP(bool $force = false){
 		if(Utils::$online === false){
 			return false;
 		}elseif(Utils::$ip !== false and $force !== true){
@@ -188,7 +188,7 @@ class Utils{
 	 *
 	 * @return string
 	 */
-	public static function getOS($recalculate = false){
+	public static function getOS(bool $recalculate = false) : string{
 		if(self::$os === null or $recalculate){
 			$uname = php_uname("s");
 			if(stripos($uname, "Darwin") !== false){
@@ -215,8 +215,10 @@ class Utils{
 		return self::$os;
 	}
 
-
-	public static function getRealMemoryUsage(){
+	/**
+	 * @return int[]
+	 */
+	public static function getRealMemoryUsage() : array{
 		$stack = 0;
 		$heap = 0;
 
@@ -236,7 +238,12 @@ class Utils{
 		return [$heap, $stack];
 	}
 
-	public static function getMemoryUsage($advanced = false){
+	/**
+	 * @param bool $advanced
+	 *
+	 * @return int[]|int
+	 */
+	public static function getMemoryUsage(bool $advanced = false){
 		$reserved = memory_get_usage();
 		$VmSize = null;
 		$VmRSS = null;
@@ -268,7 +275,7 @@ class Utils{
 		return [$reserved, $VmRSS, $VmSize];
 	}
 
-	public static function getThreadCount(){
+	public static function getThreadCount() : int{
 		if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
 			if(preg_match("/Threads:[ \t]+([0-9]+)/", file_get_contents("/proc/self/status"), $matches) > 0){
 				return (int) $matches[1];
@@ -279,7 +286,11 @@ class Utils{
 		return count(ThreadManager::getInstance()->getAll()) + 3; //RakLib + MainLogger + Main Thread
 	}
 
-	public static function getCoreCount($recalculate = false){
+	/**
+	 * @param bool $recalculate
+	 * @return int
+	 */
+	public static function getCoreCount(bool $recalculate = false) : int{
 		static $processors = 0;
 
 		if($processors > 0 and !$recalculate){
@@ -321,7 +332,7 @@ class Utils{
 	 *
 	 * @return string
 	 */
-	public static function hexdump($bin){
+	public static function hexdump(string $bin) : string{
 		$output = "";
 		$bin = str_split($bin, 16);
 		foreach($bin as $counter => $line){
@@ -337,11 +348,11 @@ class Utils{
 	/**
 	 * Returns a string that can be printed, replaces non-printable characters
 	 *
-	 * @param $str
+	 * @param mixed $str
 	 *
 	 * @return string
 	 */
-	public static function printable($str){
+	public static function printable($str) : string{
 		if(!is_string($str)){
 			return gettype($str);
 		}
@@ -365,7 +376,7 @@ class Utils{
 	 * GETs an URL using cURL
 	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
 	 *
-	 * @param         $page
+	 * @param string  $page
 	 * @param int     $timeout default 10
 	 * @param array   $extraHeaders
 	 * @param string  &$err    Will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
@@ -374,7 +385,7 @@ class Utils{
 	 *
 	 * @return bool|mixed false if an error occurred, mixed data if successful.
 	 */
-	public static function getURL($page, $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
+	public static function getURL(string $page, int $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
 		try{
 			list($ret, $headers, $httpCode) = self::simpleCurl($page, $timeout, $extraHeaders);
 			return $ret;
@@ -398,7 +409,7 @@ class Utils{
 	 *
 	 * @return bool|mixed false if an error occurred, mixed data if successful.
 	 */
-	public static function postURL($page, $args, $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
+	public static function postURL(string $page, $args, int $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
 		try{
 			list($ret, $headers, $httpCode) = self::simpleCurl($page, $timeout, $extraHeaders, [
 				CURLOPT_POST => 1,
@@ -476,7 +487,7 @@ class Utils{
 		}
 	}
 
-	public static function javaStringHash($string){
+	public static function javaStringHash(string $string) : int{
 		$hash = 0;
 		for($i = 0, $len = strlen($string); $i < $len; $i++){
 			$ord = ord($string{$i});

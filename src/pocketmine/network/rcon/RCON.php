@@ -41,10 +41,9 @@ class RCON{
 	private $workers = [];
 	private $clientsPerThread;
 
-	public function __construct(Server $server, $password, $port = 19132, $interface = "0.0.0.0", $threads = 1, $clientsPerThread = 50){
+	public function __construct(Server $server, string $password, int $port = 19132, string $interface = "0.0.0.0", int $threads = 1, int $clientsPerThread = 50){
 		$this->server = $server;
-		$this->workers = [];
-		$this->password = (string) $password;
+		$this->password = $password;
 		$this->server->getLogger()->info("Starting remote control listener");
 		if($this->password === ""){
 			throw new \InvalidArgumentException("Empty password");
@@ -54,7 +53,7 @@ class RCON{
 		$this->clientsPerThread = (int) max(1, $clientsPerThread);
 		$this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 
-		if($this->socket === false or !@socket_bind($this->socket, $interface, (int) $port) or !@socket_listen($this->socket)){
+		if($this->socket === false or !@socket_bind($this->socket, $interface, $port) or !@socket_listen($this->socket)){
 			throw new \RuntimeException(trim(socket_strerror(socket_last_error())));
 		}
 

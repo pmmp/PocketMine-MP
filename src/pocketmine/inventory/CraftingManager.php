@@ -112,7 +112,6 @@ class CraftingManager{
 		}
 
 		$pk->encode();
-		$pk->isEncoded = true;
 
 		$this->craftingDataCache = $pk;
 		Timings::$craftingDataCacheRebuildTimer->stopTiming();
@@ -161,14 +160,14 @@ class CraftingManager{
 	/**
 	 * @return Recipe[]
 	 */
-	public function getRecipes(){
+	public function getRecipes() : array{
 		return $this->recipes;
 	}
 
 	/**
 	 * @return FurnaceRecipe[]
 	 */
-	public function getFurnaceRecipes(){
+	public function getFurnaceRecipes() : array{
 		return $this->furnaceRecipes;
 	}
 
@@ -239,7 +238,7 @@ class CraftingManager{
 	 * @param ShapelessRecipe $recipe
 	 * @return bool
 	 */
-	public function matchRecipe(ShapelessRecipe $recipe){
+	public function matchRecipe(ShapelessRecipe $recipe) : bool{
 		if(!isset($this->recipeLookup[$idx = $recipe->getResult()->getId() . ":" . $recipe->getResult()->getDamage()])){
 			return false;
 		}

@@ -32,6 +32,7 @@ use pocketmine\Server;
  * This TransactionGroup only allows doing Transaction between one / two inventories
  */
 class SimpleTransactionGroup implements TransactionGroup{
+	/** @var float */
 	private $creationTime;
 	protected $hasExecuted = false;
 	/** @var Player */
@@ -54,19 +55,25 @@ class SimpleTransactionGroup implements TransactionGroup{
 	/**
 	 * @return Player
 	 */
-	public function getSource(){
+	public function getSource() : Player{
 		return $this->source;
 	}
 
-	public function getCreationTime(){
+	public function getCreationTime() : float{
 		return $this->creationTime;
 	}
 
-	public function getInventories(){
+	/**
+	 * @return Inventory[]
+	 */
+	public function getInventories() : array{
 		return $this->inventories;
 	}
 
-	public function getTransactions(){
+	/**
+	 * @return Transaction[]
+	 */
+	public function getTransactions() : array{
 		return $this->transactions;
 	}
 
@@ -93,7 +100,7 @@ class SimpleTransactionGroup implements TransactionGroup{
 	 *
 	 * @return bool
 	 */
-	protected function matchItems(array &$needItems, array &$haveItems){
+	protected function matchItems(array &$needItems, array &$haveItems) : bool{
 		foreach($this->transactions as $key => $ts){
 			if($ts->getTargetItem()->getId() !== Item::AIR){
 				$needItems[] = $ts->getTargetItem();
@@ -128,7 +135,7 @@ class SimpleTransactionGroup implements TransactionGroup{
 		return true;
 	}
 
-	public function canExecute(){
+	public function canExecute() : bool{
 		$haveItems = [];
 		$needItems = [];
 
@@ -149,7 +156,10 @@ class SimpleTransactionGroup implements TransactionGroup{
 		return false;
 	}
 
-	public function execute(){
+	/**
+	 * @return bool
+	 */
+	public function execute() : bool{
 		if($this->hasExecuted() or !$this->canExecute()){
 			return false;
 		}
@@ -175,7 +185,7 @@ class SimpleTransactionGroup implements TransactionGroup{
 		return true;
 	}
 
-	public function hasExecuted(){
+	public function hasExecuted() : bool{
 		return $this->hasExecuted;
 	}
 }

@@ -50,11 +50,11 @@ class Flat extends Generator{
 	private $populators = [];
 	private $structure, $chunks, $options, $floorLevel, $preset;
 
-	public function getSettings(){
+	public function getSettings() : array{
 		return $this->options;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "flat";
 	}
 
@@ -74,7 +74,7 @@ class Flat extends Generator{
 				new object\OreType(new GoldOre(), 2, 8, 0, 32),
 				new object\OreType(new DiamondOre(), 1, 7, 0, 16),
 				new object\OreType(new Dirt(), 20, 32, 0, 128),
-				new object\OreType(new Gravel(), 10, 16, 0, 128),
+				new object\OreType(new Gravel(), 10, 16, 0, 128)
 			]);
 			$this->populators[] = $ores;
 		}
@@ -90,7 +90,7 @@ class Flat extends Generator{
 		$y = 0;
 		foreach($matches[3] as $i => $b){
 			$b = Item::fromString($b . $matches[4][$i]);
-			$cnt = $matches[2][$i] === "" ? 1 : (int) ($matches[2][$i]);
+			$cnt = $matches[2][$i] === "" ? 1 : (int) $matches[2][$i];
 			for($cY = $y, $y += $cnt; $cY < $y; ++$cY){
 				$result[$cY] = [$b->getId(), $b->getDamage()];
 			}
@@ -155,7 +155,7 @@ class Flat extends Generator{
 		*/
 	}
 
-	public function generateChunk($chunkX, $chunkZ){
+	public function generateChunk(int $chunkX, int $chunkZ){
 		if($this->chunk === null){
 			if(isset($this->options["preset"]) and $this->options["preset"] != ""){
 				$this->parsePreset($this->options["preset"], $chunkX, $chunkZ);
@@ -169,7 +169,7 @@ class Flat extends Generator{
 		$this->level->setChunk($chunkX, $chunkZ, $chunk);
 	}
 
-	public function populateChunk($chunkX, $chunkZ){
+	public function populateChunk(int $chunkX, int $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 		foreach($this->populators as $populator){
 			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);
@@ -177,7 +177,7 @@ class Flat extends Generator{
 
 	}
 
-	public function getSpawn(){
+	public function getSpawn() : Vector3{
 		return new Vector3(128, $this->floorLevel, 128);
 	}
 }

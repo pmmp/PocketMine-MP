@@ -45,7 +45,7 @@ class PluginCommand extends Command implements PluginIdentifiableCommand{
 		$this->usageMessage = "";
 	}
 
-	public function execute(CommandSender $sender, $commandLabel, array $args){
+	public function execute(CommandSender $sender, string $commandLabel, array $args){
 
 		if(!$this->owningPlugin->isEnabled()){
 			return false;
@@ -64,7 +64,7 @@ class PluginCommand extends Command implements PluginIdentifiableCommand{
 		return $success;
 	}
 
-	public function getExecutor(){
+	public function getExecutor() : CommandExecutor{
 		return $this->executor;
 	}
 
@@ -78,7 +78,7 @@ class PluginCommand extends Command implements PluginIdentifiableCommand{
 	/**
 	 * @return Plugin
 	 */
-	public function getPlugin(){
+	public function getPlugin() : Plugin{
 		return $this->owningPlugin;
 	}
 }

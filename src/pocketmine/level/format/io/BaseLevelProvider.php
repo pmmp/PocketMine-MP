@@ -76,7 +76,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 		return $this->level->getServer();
 	}
 
-	public function getLevel(){
+	public function getLevel() : Level{
 		return $this->level;
 	}
 

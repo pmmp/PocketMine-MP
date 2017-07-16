@@ -41,73 +41,79 @@ abstract class Achievement{
 		"mineWood" => [
 			"name" => "Getting Wood",
 			"requires" => [ //"openInventory",
-			],
+			]
 		],
 		"buildWorkBench" => [
 			"name" => "Benchmarking",
 			"requires" => [
-				"mineWood",
-			],
+				"mineWood"
+			]
 		],
 		"buildPickaxe" => [
 			"name" => "Time to Mine!",
 			"requires" => [
-				"buildWorkBench",
-			],
+				"buildWorkBench"
+			]
 		],
 		"buildFurnace" => [
 			"name" => "Hot Topic",
 			"requires" => [
-				"buildPickaxe",
-			],
+				"buildPickaxe"
+			]
 		],
 		"acquireIron" => [
 			"name" => "Acquire hardware",
 			"requires" => [
-				"buildFurnace",
-			],
+				"buildFurnace"
+			]
 		],
 		"buildHoe" => [
 			"name" => "Time to Farm!",
 			"requires" => [
-				"buildWorkBench",
-			],
+				"buildWorkBench"
+			]
 		],
 		"makeBread" => [
 			"name" => "Bake Bread",
 			"requires" => [
-				"buildHoe",
-			],
+				"buildHoe"
+			]
 		],
 		"bakeCake" => [
 			"name" => "The Lie",
 			"requires" => [
-				"buildHoe",
-			],
+				"buildHoe"
+			]
 		],
 		"buildBetterPickaxe" => [
 			"name" => "Getting an Upgrade",
 			"requires" => [
-				"buildPickaxe",
-			],
+				"buildPickaxe"
+			]
 		],
 		"buildSword" => [
 			"name" => "Time to Strike!",
 			"requires" => [
-				"buildWorkBench",
-			],
+				"buildWorkBench"
+			]
 		],
 		"diamonds" => [
 			"name" => "DIAMONDS!",
 			"requires" => [
-				"acquireIron",
-			],
-		],
+				"acquireIron"
+			]
+		]
 
 	];
 
 
-	public static function broadcast(Player $player, $achievementId){
+	/**
+	 * @param Player $player
+	 * @param string $achievementId
+	 *
+	 * @return bool
+	 */
+	public static function broadcast(Player $player, string $achievementId) : bool{
 		if(isset(Achievement::$list[$achievementId])){
 			$translation = new TranslationContainer("chat.type.achievement", [$player->getDisplayName(), TextFormat::GREEN . Achievement::$list[$achievementId]["name"] . TextFormat::RESET]);
 			if(Server::getInstance()->getConfigBoolean("announce-player-achievements", true) === true){
@@ -122,11 +128,18 @@ abstract class Achievement{
 		return false;
 	}
 
-	public static function add($achievementId, $achievementName, array $requires = []){
+	/**
+	 * @param string $achievementId
+	 * @param string $achievementName
+	 * @param array  $requires
+	 *
+	 * @return bool
+	 */
+	public static function add(string $achievementId, string $achievementName, array $requires = []) : bool{
 		if(!isset(Achievement::$list[$achievementId])){
 			Achievement::$list[$achievementId] = [
 				"name" => $achievementName,
-				"requires" => $requires,
+				"requires" => $requires
 			];
 
 			return true;

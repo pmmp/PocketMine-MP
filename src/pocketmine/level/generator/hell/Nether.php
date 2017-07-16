@@ -41,10 +41,15 @@ class Nether extends Generator{
 	private $level;
 	/** @var Random */
 	private $random;
+	/** @var int */
 	private $waterHeight = 32;
+	/** @var int */
 	private $emptyHeight = 64;
+	/** @var int */
 	private $emptyAmplitude = 1;
+	/** @var float */
 	private $density = 0.5;
+	/** @var int */
 	private $bedrockDepth = 5;
 
 	/** @var Populator[] */
@@ -81,11 +86,11 @@ class Nether extends Generator{
 		}
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "nether";
 	}
 
-	public function getSettings(){
+	public function getSettings() : array{
 		return [];
 	}
 
@@ -110,7 +115,7 @@ class Nether extends Generator{
 		$this->populators[] = $ores;*/
 	}
 
-	public function generateChunk($chunkX, $chunkZ){
+	public function generateChunk(int $chunkX, int $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 
 		$noise = Generator::getFastNoise3D($this->noiseBase, 16, 128, 16, 4, 8, 4, $chunkX * 16, 0, $chunkZ * 16);
@@ -145,7 +150,7 @@ class Nether extends Generator{
 		}
 	}
 
-	public function populateChunk($chunkX, $chunkZ){
+	public function populateChunk(int $chunkX, int $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 		foreach($this->populators as $populator){
 			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);
@@ -156,7 +161,7 @@ class Nether extends Generator{
 		$biome->populateChunk($this->level, $chunkX, $chunkZ, $this->random);
 	}
 
-	public function getSpawn(){
+	public function getSpawn() : Vector3{
 		return new Vector3(127.5, 128, 127.5);
 	}
 

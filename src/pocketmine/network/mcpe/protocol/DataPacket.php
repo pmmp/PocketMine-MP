@@ -70,6 +70,7 @@ abstract class DataPacket extends BinaryStream{
 	public function encode(){
 		$this->reset();
 		$this->encodePayload();
+		$this->isEncoded = true;
 	}
 
 	/**

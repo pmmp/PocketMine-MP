@@ -43,7 +43,7 @@ abstract class PluginTask extends Task{
 	/**
 	 * @return Plugin
 	 */
-	final public function getOwner(){
+	final public function getOwner() : Plugin{
 		return $this->owner;
 	}
 

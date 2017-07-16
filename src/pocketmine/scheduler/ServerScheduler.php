@@ -95,7 +95,7 @@ class ServerScheduler{
 	 *
 	 * @return void
 	 */
-	public function scheduleAsyncTaskToWorker(AsyncTask $task, $worker){
+	public function scheduleAsyncTaskToWorker(AsyncTask $task, int $worker){
 		if($task->getTaskId() !== null){
 			throw new \UnexpectedValueException("Attempt to schedule the same AsyncTask instance twice");
 		}
@@ -180,11 +180,11 @@ class ServerScheduler{
 		return true;
 	}
 
-	public function getAsyncTaskPoolSize(){
+	public function getAsyncTaskPoolSize() : int{
 		return $this->asyncPool->getSize();
 	}
 
-	public function increaseAsyncTaskPoolSize($newSize){
+	public function increaseAsyncTaskPoolSize(int $newSize){
 		$this->asyncPool->increaseSize($newSize);
 	}
 
@@ -194,8 +194,8 @@ class ServerScheduler{
 	 *
 	 * @return null|TaskHandler
 	 */
-	public function scheduleDelayedTask(Task $task, $delay){
-		return $this->addTask($task, (int) $delay, -1);
+	public function scheduleDelayedTask(Task $task, int $delay){
+		return $this->addTask($task, $delay, -1);
 	}
 
 	/**
@@ -204,8 +204,8 @@ class ServerScheduler{
 	 *
 	 * @return null|TaskHandler
 	 */
-	public function scheduleRepeatingTask(Task $task, $period){
-		return $this->addTask($task, -1, (int) $period);
+	public function scheduleRepeatingTask(Task $task, int $period){
+		return $this->addTask($task, -1, $period);
 	}
 
 	/**
@@ -215,14 +215,14 @@ class ServerScheduler{
 	 *
 	 * @return null|TaskHandler
 	 */
-	public function scheduleDelayedRepeatingTask(Task $task, $delay, $period){
-		return $this->addTask($task, (int) $delay, (int) $period);
+	public function scheduleDelayedRepeatingTask(Task $task, int $delay, int $period){
+		return $this->addTask($task, $delay, $period);
 	}
 
 	/**
 	 * @param int $taskId
 	 */
-	public function cancelTask($taskId){
+	public function cancelTask(int $taskId){
 		if($taskId !== null and isset($this->tasks[$taskId])){
 			$this->tasks[$taskId]->cancel();
 			unset($this->tasks[$taskId]);
@@ -259,20 +259,20 @@ class ServerScheduler{
 	 *
 	 * @return bool
 	 */
-	public function isQueued($taskId){
+	public function isQueued(int $taskId) : bool{
 		return isset($this->tasks[$taskId]);
 	}
 
 	/**
 	 * @param Task $task
-	 * @param      $delay
-	 * @param      $period
+	 * @param int  $delay
+	 * @param int  $period
 	 *
 	 * @return null|TaskHandler
 	 *
 	 * @throws PluginException
 	 */
-	private function addTask(Task $task, $delay, $period){
+	private function addTask(Task $task, int $delay, int $period){
 		if($task instanceof PluginTask){
 			if(!($task->getOwner() instanceof Plugin)){
 				throw new PluginException("Invalid owner of PluginTask " . get_class($task));
@@ -294,7 +294,7 @@ class ServerScheduler{
 		return $this->handle(new TaskHandler(get_class($task), $task, $this->nextId(), $delay, $period));
 	}
 
-	private function handle(TaskHandler $handler){
+	private function handle(TaskHandler $handler) : TaskHandler{
 		if($handler->isDelayed()){
 			$nextRun = $this->currentTick + $handler->getDelay();
 		}else{
@@ -311,7 +311,7 @@ class ServerScheduler{
 	/**
 	 * @param int $currentTick
 	 */
-	public function mainThreadHeartbeat($currentTick){
+	public function mainThreadHeartbeat(int $currentTick){
 		$this->currentTick = $currentTick;
 		while($this->isReady($this->currentTick)){
 			/** @var TaskHandler $task */
@@ -341,14 +341,14 @@ class ServerScheduler{
 		$this->asyncPool->collectTasks();
 	}
 
-	private function isReady($currentTicks){
+	private function isReady(int $currentTicks) : bool{
 		return count($this->tasks) > 0 and $this->queue->current()->getNextRun() <= $currentTicks;
 	}
 
 	/**
 	 * @return int
 	 */
-	private function nextId(){
+	private function nextId() : int{
 		return $this->ids++;
 	}
 

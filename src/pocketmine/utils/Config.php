@@ -70,7 +70,7 @@ class Config{
 		"serialize" => Config::SERIALIZED,
 		"txt" => Config::ENUM,
 		"list" => Config::ENUM,
-		"enum" => Config::ENUM,
+		"enum" => Config::ENUM
 	];
 
 	/**
@@ -79,7 +79,7 @@ class Config{
 	 * @param array  $default  Array with the default values that will be written to the file if it did not exist
 	 * @param null   &$correct Sets correct to true if everything has been loaded correctly
 	 */
-	public function __construct($file, $type = Config::DETECT, $default = [], &$correct = null){
+	public function __construct(string $file, int $type = Config::DETECT, array $default = [], &$correct = null){
 		$this->load($file, $type, $default);
 		$correct = $this->correct;
 	}
@@ -95,11 +95,11 @@ class Config{
 	}
 
 	/**
-	 * @param $str
+	 * @param string $str
 	 *
-	 * @return mixed
+	 * @return string
 	 */
-	public static function fixYAMLIndexes($str){
+	public static function fixYAMLIndexes(string $str) : string{
 		return preg_replace("#^([ ]*)([a-zA-Z_]{1}[ ]*)\\:$#m", "$1\"$2\":", $str);
 	}
 
@@ -110,7 +110,7 @@ class Config{
 	 *
 	 * @return bool
 	 */
-	public function load(string $file, int $type = Config::DETECT, array $default = []){
+	public function load(string $file, int $type = Config::DETECT, array $default = []) : bool{
 		$this->correct = true;
 		$this->file = $file;
 
@@ -171,7 +171,7 @@ class Config{
 	/**
 	 * @return bool
 	 */
-	public function check(){
+	public function check() : bool{
 		return $this->correct === true;
 	}
 
@@ -180,7 +180,7 @@ class Config{
 	 *
 	 * @return bool
 	 */
-	public function save($async = false){
+	public function save(bool $async = false) : bool{
 		if($this->correct === true){
 			try{
 				$content = null;
@@ -402,7 +402,7 @@ class Config{
 	/**
 	 * @param array $v
 	 */
-	public function setAll($v){
+	public function setAll(array $v){
 		$this->config = $v;
 	}
 
@@ -412,7 +412,7 @@ class Config{
 	 *
 	 * @return bool
 	 */
-	public function exists($k, $lowercase = false){
+	public function exists($k, bool $lowercase = false) : bool{
 		if($lowercase === true){
 			$k = strtolower($k); //Convert requested  key to lower
 			$array = array_change_key_case($this->config, CASE_LOWER); //Change all keys in array to lower
@@ -434,7 +434,7 @@ class Config{
 	 *
 	 * @return array
 	 */
-	public function getAll($keys = false){
+	public function getAll(bool $keys = false) : array{
 		return ($keys === true ? array_keys($this->config) : $this->config);
 	}
 
@@ -446,12 +446,12 @@ class Config{
 	}
 
 	/**
-	 * @param $default
-	 * @param $data
+	 * @param array $default
+	 * @param array &$data
 	 *
 	 * @return int
 	 */
-	private function fillDefaults($default, &$data){
+	private function fillDefaults(array $default, &$data) : int{
 		$changed = 0;
 		foreach($default as $k => $v){
 			if(is_array($v)){
@@ -469,9 +469,9 @@ class Config{
 	}
 
 	/**
-	 * @param $content
+	 * @param string $content
 	 */
-	private function parseList($content){
+	private function parseList(string $content){
 		foreach(explode("\n", trim(str_replace("\r\n", "\n", $content))) as $v){
 			$v = trim($v);
 			if($v == ""){
@@ -484,7 +484,7 @@ class Config{
 	/**
 	 * @return string
 	 */
-	private function writeProperties(){
+	private function writeProperties() : string{
 		$content = "#Properties Config file\r\n#" . date("D M j H:i:s T Y") . "\r\n";
 		foreach($this->config as $k => $v){
 			if(is_bool($v) === true){
@@ -499,9 +499,9 @@ class Config{
 	}
 
 	/**
-	 * @param $content
+	 * @param string $content
 	 */
-	private function parseProperties($content){
+	private function parseProperties(string $content){
 		if(preg_match_all('/([a-zA-Z0-9\-_\.]*)=([^\r\n]*)/u', $content, $matches) > 0){ //false or 0 matches
 			foreach($matches[1] as $i => $k){
 				$v = trim($matches[2][$i]);

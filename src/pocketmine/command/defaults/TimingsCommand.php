@@ -44,7 +44,7 @@ class TimingsCommand extends VanillaCommand{
 		$this->setPermission("pocketmine.command.timings");
 	}
 
-	public function execute(CommandSender $sender, $currentAlias, array $args){
+	public function execute(CommandSender $sender, string $commandLabel, array $args){
 		if(!$this->testPermission($sender)){
 			return true;
 		}
@@ -111,7 +111,7 @@ class TimingsCommand extends VanillaCommand{
 					["page" => "http://paste.ubuntu.com", "extraOpts" => [
 						CURLOPT_HTTPHEADER => ["User-Agent: " . $sender->getServer()->getName() . " " . $sender->getServer()->getPocketMineVersion()],
 						CURLOPT_POST => 1,
-						CURLOPT_POSTFIELDS => $data,
+						CURLOPT_POSTFIELDS => $data
 					]]
 				], $sender) extends BulkCurlTask{
 					public function onCompletion(Server $server){
