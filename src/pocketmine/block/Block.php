@@ -311,6 +311,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @param int $meta
 	 */
 	public function __construct($id, $meta = 0){
+		parent::__construct();
 		$this->id = (int) $id;
 		$this->meta = (int) $meta;
 	}
