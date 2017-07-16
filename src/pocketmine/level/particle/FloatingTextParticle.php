@@ -86,7 +86,7 @@ class FloatingTextParticle extends Particle{
 			$pk->x = $this->x;
 			$pk->y = $this->y - 0.50;
 			$pk->z = $this->z;
-			$pk->item = Item::get(0);
+			$pk->item = Item::get(Item::AIR);
 			$flags = (
 				(1 << Entity::DATA_FLAG_CAN_SHOW_NAMETAG) |
 				(1 << Entity::DATA_FLAG_ALWAYS_SHOW_NAMETAG) |
