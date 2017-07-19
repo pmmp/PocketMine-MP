@@ -224,7 +224,12 @@ class PluginManager{
 								continue;
 							}
 
-							$compatible = true;
+                                                        if ($this->server->getConfigBoolean("api-check", true)) {
+                                                            $compatible = true;
+                                                        } else {
+                                                            $compatible = false;
+                                                        }
+                                                        
 							//Check multiple dependencies
 							foreach($description->getCompatibleApis() as $version){
 								//Format: majorVersion.minorVersion.patch (3.0.0)
