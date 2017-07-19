@@ -158,11 +158,9 @@ abstract class LightUpdate{
 		if($current < $potentialLight){
 			$this->setLight($x, $y, $z, $potentialLight);
 
-			if(!isset($this->spreadVisited[$index = Level::blockHash($x, $y, $z)])){
+			if(!isset($this->spreadVisited[$index = Level::blockHash($x, $y, $z)]) and $potentialLight > 1){
 				$this->spreadVisited[$index] = true;
-				if($potentialLight > 1){
-					$this->spreadQueue->enqueue([$x, $y, $z]);
-				}
+				$this->spreadQueue->enqueue([$x, $y, $z]);
 			}
 		}
 	}
