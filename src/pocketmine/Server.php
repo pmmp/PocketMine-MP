@@ -1471,7 +1471,7 @@ class Server{
 				"rcon.password" => substr(base64_encode(random_bytes(20)), 3, 10),
 				"auto-save" => true,
 				"view-distance" => 8,
-                                "api-uncheck" => true
+                                "api-check" => false
 			]);
 
 			$this->forceLanguage = $this->getProperty("settings.force-language", false);
