@@ -58,6 +58,16 @@ class Binary{
 	private static function checkLength($str, $expect){
 		assert(($len = strlen($str)) === $expect, "Expected $expect bytes, got $len");
 	}
+        
+        public static function writeUnsign($value) {
+            
+            if (PHP_INT_SIZE === 8) {
+                // TODO
+            } else {
+                // TODO
+            }
+            
+        }
 
 	/**
 	 * Reads a byte boolean
