@@ -1531,6 +1531,8 @@ class Level implements ChunkManager, Metadatable{
 	 * @param Item    $item
 	 * @param Vector3 $motion
 	 * @param int     $delay
+	 *
+	 * @return DroppedItem|null
 	 */
 	public function dropItem(Vector3 $source, Item $item, Vector3 $motion = null, int $delay = 10){
 		$motion = $motion ?? new Vector3(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1);
@@ -1559,7 +1561,9 @@ class Level implements ChunkManager, Metadatable{
 			]));
 
 			$itemEntity->spawnToAll();
+			return $itemEntity;
 		}
+		return null;
 	}
 
 	/**
