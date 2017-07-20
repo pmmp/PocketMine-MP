@@ -64,7 +64,7 @@ class SetWorldSpawnCommand extends VanillaCommand{
 		}
 
 		$level->setSpawnLocation($pos);
-                $level->save(true);
+        $level->save(true);
 
 		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.setworldspawn.success", [round($pos->x, 2), round($pos->y, 2), round($pos->z, 2)]));
 
