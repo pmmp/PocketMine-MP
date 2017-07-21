@@ -44,7 +44,7 @@ class ServerKiller extends Thread{
 		}
 	}
 
-	public function getThreadName(){
+	public function getThreadName() : string{
 		return "Server Killer";
 	}
 }

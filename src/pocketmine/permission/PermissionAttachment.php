@@ -59,7 +59,7 @@ class PermissionAttachment{
 	/**
 	 * @return Plugin
 	 */
-	public function getPlugin(){
+	public function getPlugin() : Plugin{
 		return $this->plugin;
 	}
 
@@ -71,7 +71,7 @@ class PermissionAttachment{
 	}
 
 	/**
-	 * @return PermissionRemovedExecutor
+	 * @return PermissionRemovedExecutor|null
 	 */
 	public function getRemovalCallback(){
 		return $this->removed;
@@ -80,14 +80,14 @@ class PermissionAttachment{
 	/**
 	 * @return Permissible
 	 */
-	public function getPermissible(){
+	public function getPermissible() : Permissible{
 		return $this->permissible;
 	}
 
 	/**
 	 * @return bool[]
 	 */
-	public function getPermissions(){
+	public function getPermissions() : array{
 		return $this->permissions;
 	}
 
@@ -120,7 +120,7 @@ class PermissionAttachment{
 	 * @param string|Permission $name
 	 * @param bool              $value
 	 */
-	public function setPermission($name, $value){
+	public function setPermission($name, bool $value){
 		$name = $name instanceof Permission ? $name->getName() : $name;
 		if(isset($this->permissions[$name])){
 			if($this->permissions[$name] === $value){

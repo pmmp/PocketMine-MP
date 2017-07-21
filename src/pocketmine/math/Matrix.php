@@ -55,17 +55,17 @@ class Matrix implements \ArrayAccess{
 		for($r = 0; $r < $this->rows; ++$r){
 			$this->matrix[$r] = [];
 			for($c = 0; $c < $this->columns; ++$c){
-				$this->matrix[$r][$c] = isset($m[$r][$c]) ? $m[$r][$c] : 0;
+				$this->matrix[$r][$c] = $m[$r][$c] ?? 0;
 			}
 		}
 	}
 
 	public function getRows(){
-		return ($this->rows);
+		return $this->rows;
 	}
 
 	public function getColumns(){
-		return ($this->columns);
+		return $this->columns;
 	}
 
 	public function setElement($row, $column, $value){

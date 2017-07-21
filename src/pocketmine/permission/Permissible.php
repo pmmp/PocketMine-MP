@@ -34,16 +34,16 @@ interface Permissible extends ServerOperator{
 	 *
 	 * @return bool
 	 */
-	public function isPermissionSet($name);
+	public function isPermissionSet($name) : bool;
 
 	/**
 	 * Returns the permission value if overridden, or the default value if not
 	 *
 	 * @param string|Permission $name
 	 *
-	 * @return mixed
+	 * @return bool
 	 */
-	public function hasPermission($name);
+	public function hasPermission($name) : bool;
 
 	/**
 	 * @param Plugin $plugin
@@ -52,7 +52,7 @@ interface Permissible extends ServerOperator{
 	 *
 	 * @return PermissionAttachment
 	 */
-	public function addAttachment(Plugin $plugin, $name = null, $value = null);
+	public function addAttachment(Plugin $plugin, string $name = null, bool $value = null) : PermissionAttachment;
 
 	/**
 	 * @param PermissionAttachment $attachment
@@ -68,8 +68,8 @@ interface Permissible extends ServerOperator{
 	public function recalculatePermissions();
 
 	/**
-	 * @return Permission[]
+	 * @return PermissionAttachmentInfo[]
 	 */
-	public function getEffectivePermissions();
+	public function getEffectivePermissions() : array;
 
 }

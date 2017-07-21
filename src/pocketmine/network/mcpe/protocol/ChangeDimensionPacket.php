@@ -40,14 +40,13 @@ class ChangeDimensionPacket extends DataPacket{
 	public $z;
 	public $respawn = false;
 
-	public function decode(){
+	public function decodePayload(){
 		$this->dimension = $this->getVarInt();
 		$this->getVector3f($this->x, $this->y, $this->z);
 		$this->respawn = $this->getBool();
 	}
 
-	public function encode(){
-		$this->reset();
+	public function encodePayload(){
 		$this->putVarInt($this->dimension);
 		$this->putVector3f($this->x, $this->y, $this->z);
 		$this->putBool($this->respawn);

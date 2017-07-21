@@ -25,19 +25,27 @@ namespace pocketmine\scheduler;
 
 class FileWriteTask extends AsyncTask{
 
+	/** @var string */
 	private $path;
+	/** @var mixed */
 	private $contents;
+	/** @var int */
 	private $flags;
 
-	public function __construct($path, $contents, $flags = 0){
+	/**
+	 * @param string $path
+	 * @param mixed  $contents
+	 * @param int    $flags
+	 */
+	public function __construct(string $path, $contents, int $flags = 0){
 		$this->path = $path;
 		$this->contents = $contents;
-		$this->flags = (int) $flags;
+		$this->flags = $flags;
 	}
 
 	public function onRun(){
 		try{
-			file_put_contents($this->path, $this->contents, (int) $this->flags);
+			file_put_contents($this->path, $this->contents, $this->flags);
 		}catch(\Throwable $e){
 
 		}

@@ -33,12 +33,17 @@ class PluginDescription{
 	private $depend = [];
 	private $softDepend = [];
 	private $loadBefore = [];
+	/** @var string */
 	private $version;
 	private $commands = [];
-	private $description = null;
+	/** @var string */
+	private $description = "";
+	/** @var string[] */
 	private $authors = [];
-	private $website = null;
-	private $prefix = null;
+	/** @var string */
+	private $website = "";
+	/** @var string */
+	private $prefix = "";
 	private $order = PluginLoadOrder::POSTWORLD;
 
 	/**
@@ -64,9 +69,9 @@ class PluginDescription{
 			throw new PluginException("Invalid PluginDescription name");
 		}
 		$this->name = str_replace(" ", "_", $this->name);
-		$this->version = $plugin["version"];
+		$this->version = (string) $plugin["version"];
 		$this->main = $plugin["main"];
-		$this->api = !is_array($plugin["api"]) ? [$plugin["api"]] : $plugin["api"];
+		$this->api = array_map(function($v){ return (string) $v; }, !is_array($plugin["api"]) ? [$plugin["api"]] : $plugin["api"]);
 		if(stripos($this->main, "pocketmine\\") === 0){
 			throw new PluginException("Invalid PluginDescription main, cannot start within the PocketMine namespace");
 		}
@@ -131,42 +136,42 @@ class PluginDescription{
 	/**
 	 * @return string
 	 */
-	public function getFullName(){
+	public function getFullName() : string{
 		return $this->name . " v" . $this->version;
 	}
 
 	/**
 	 * @return array
 	 */
-	public function getCompatibleApis(){
+	public function getCompatibleApis() : array{
 		return $this->api;
 	}
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
-	public function getAuthors(){
+	public function getAuthors() : array{
 		return $this->authors;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getPrefix(){
+	public function getPrefix() : string{
 		return $this->prefix;
 	}
 
 	/**
 	 * @return array
 	 */
-	public function getCommands(){
+	public function getCommands() : array{
 		return $this->commands;
 	}
 
 	/**
 	 * @return array
 	 */
-	public function getRequiredExtensions(){
+	public function getRequiredExtensions() : array{
 		return $this->extensions;
 	}
 
@@ -210,70 +215,70 @@ class PluginDescription{
 	/**
 	 * @return array
 	 */
-	public function getDepend(){
+	public function getDepend() : array{
 		return $this->depend;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getDescription(){
+	public function getDescription() : string{
 		return $this->description;
 	}
 
 	/**
 	 * @return array
 	 */
-	public function getLoadBefore(){
+	public function getLoadBefore() : array{
 		return $this->loadBefore;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getMain(){
+	public function getMain() : string{
 		return $this->main;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getName(){
+	public function getName() : string{
 		return $this->name;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getOrder(){
+	public function getOrder() : int{
 		return $this->order;
 	}
 
 	/**
 	 * @return Permission[]
 	 */
-	public function getPermissions(){
+	public function getPermissions() : array{
 		return $this->permissions;
 	}
 
 	/**
 	 * @return array
 	 */
-	public function getSoftDepend(){
+	public function getSoftDepend() : array{
 		return $this->softDepend;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getVersion(){
+	public function getVersion() : string{
 		return $this->version;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getWebsite(){
+	public function getWebsite() : string{
 		return $this->website;
 	}
 }

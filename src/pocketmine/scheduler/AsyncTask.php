@@ -46,7 +46,7 @@ abstract class AsyncTask extends Collectable{
 	private $result = null;
 	private $serialized = false;
 	private $cancelRun = false;
-	/** @var int */
+	/** @var int|null */
 	private $taskId = null;
 
 	private $crashed = false;
@@ -89,7 +89,7 @@ abstract class AsyncTask extends Collectable{
 		$this->setGarbage();
 	}
 
-	public function isCrashed(){
+	public function isCrashed() : bool{
 		return $this->crashed;
 	}
 
@@ -104,14 +104,14 @@ abstract class AsyncTask extends Collectable{
 		$this->cancelRun = true;
 	}
 
-	public function hasCancelledRun(){
+	public function hasCancelledRun() : bool{
 		return $this->cancelRun === true;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function hasResult(){
+	public function hasResult() : bool{
 		return $this->result !== null;
 	}
 
@@ -119,15 +119,18 @@ abstract class AsyncTask extends Collectable{
 	 * @param mixed $result
 	 * @param bool  $serialize
 	 */
-	public function setResult($result, $serialize = true){
+	public function setResult($result, bool $serialize = true){
 		$this->result = $serialize ? serialize($result) : $result;
 		$this->serialized = $serialize;
 	}
 
-	public function setTaskId($taskId){
+	public function setTaskId(int $taskId){
 		$this->taskId = $taskId;
 	}
 
+	/**
+	 * @return int|null
+	 */
 	public function getTaskId(){
 		return $this->taskId;
 	}
@@ -139,7 +142,7 @@ abstract class AsyncTask extends Collectable{
 	 * @param string $identifier
 	 * @return mixed
 	 */
-	public function getFromThreadStore($identifier){
+	public function getFromThreadStore(string $identifier){
 		global $store;
 		return ($this->isGarbage() or !isset($store[$identifier])) ? null : $store[$identifier];
 	}
@@ -151,7 +154,7 @@ abstract class AsyncTask extends Collectable{
 	 * @param string $identifier
 	 * @param mixed  $value
 	 */
-	public function saveToThreadStore($identifier, $value){
+	public function saveToThreadStore(string $identifier, $value){
 		global $store;
 		if(!$this->isGarbage()){
 			$store[$identifier] = $value;

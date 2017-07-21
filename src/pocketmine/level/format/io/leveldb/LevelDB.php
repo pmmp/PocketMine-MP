@@ -25,7 +25,6 @@ namespace pocketmine\level\format\io\leveldb;
 
 use pocketmine\entity\Entity;
 use pocketmine\level\format\Chunk;
-use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\ChunkUtils;
 use pocketmine\level\format\io\exception\UnsupportedChunkFormatException;
@@ -403,6 +402,12 @@ class LevelDB extends BaseLevelProvider{
 				}
 			}
 
+			foreach($entities as $entityNBT){
+				if($entityNBT->id instanceof IntTag){
+					$entityNBT["id"] &= 0xff;
+				}
+			}
+
 			$tiles = [];
 			if(($tileData = $this->db->get($index . self::TAG_BLOCK_ENTITY)) !== false and strlen($tileData) > 0){
 				$nbt->read($tileData, true);
@@ -430,7 +435,8 @@ class LevelDB extends BaseLevelProvider{
 				$entities,
 				$tiles,
 				$biomeIds,
-				$heightMap
+				$heightMap,
+				$extraData
 			);
 
 			//TODO: tile ticks, biome states (?)
@@ -569,7 +575,7 @@ class LevelDB extends BaseLevelProvider{
 	/**
 	 * @return \LevelDB
 	 */
-	public function getDatabase(){
+	public function getDatabase() : \LevelDB{
 		return $this->db;
 	}
 

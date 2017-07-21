@@ -137,7 +137,7 @@ abstract class LightUpdate{
 		if($current !== 0 and $current < $oldAdjacentLevel){
 			$this->setLight($x, $y, $z, 0);
 
-			if(!isset($visited[$index = Level::blockHash($x, $y, $z)])){
+			if(!isset($this->removalVisited[$index = Level::blockHash($x, $y, $z)])){
 				$this->removalVisited[$index] = true;
 				if($current > 1){
 					$this->removalQueue->enqueue([$x, $y, $z, $current]);

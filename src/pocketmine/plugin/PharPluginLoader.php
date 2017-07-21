@@ -48,10 +48,8 @@ class PharPluginLoader implements PluginLoader{
 	 * @param string $file
 	 *
 	 * @return Plugin|null
-	 *
-	 * @throws \Exception
 	 */
-	public function loadPlugin($file){
+	public function loadPlugin(string $file){
 		if(($description = $this->getPluginDescription($file)) instanceof PluginDescription){
 			$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.load", [$description->getFullName()]));
 			$dataFolder = dirname($file) . DIRECTORY_SEPARATOR . $description->getName();
@@ -80,9 +78,9 @@ class PharPluginLoader implements PluginLoader{
 	 *
 	 * @param string $file
 	 *
-	 * @return PluginDescription|null
+	 * @return null|PluginDescription
 	 */
-	public function getPluginDescription($file){
+	public function getPluginDescription(string $file){
 		$phar = new \Phar($file);
 		if(isset($phar["plugin.yml"])){
 			$pluginYml = $phar["plugin.yml"];
@@ -99,7 +97,7 @@ class PharPluginLoader implements PluginLoader{
 	 *
 	 * @return string
 	 */
-	public function getPluginFilters(){
+	public function getPluginFilters() : string{
 		return "/\\.phar$/i";
 	}
 

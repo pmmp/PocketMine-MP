@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 use pocketmine\permission\BanEntry;
 
@@ -38,7 +39,7 @@ class BanListCommand extends VanillaCommand{
 		$this->setPermission("pocketmine.command.ban.list");
 	}
 
-	public function execute(CommandSender $sender, $currentAlias, array $args){
+	public function execute(CommandSender $sender, string $commandLabel, array $args){
 		if(!$this->testPermission($sender)){
 			return true;
 		}
@@ -50,9 +51,7 @@ class BanListCommand extends VanillaCommand{
 			}elseif($args[0] === "players"){
 				$list = $sender->getServer()->getNameBans();
 			}else{
-				$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
-
-				return false;
+				throw new InvalidCommandSyntaxException();
 			}
 		}else{
 			$list = $sender->getServer()->getNameBans();

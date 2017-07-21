@@ -138,5 +138,5 @@ abstract class MetadataStore{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	abstract public function disambiguate(Metadatable $subject, $metadataKey);
+	abstract public function disambiguate(Metadatable $subject, string $metadataKey) : string;
 }

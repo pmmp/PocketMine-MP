@@ -27,16 +27,10 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\ContainerIds;
 
 class ContainerSetContentPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::CONTAINER_SET_CONTENT_PACKET;
-
-	const SPECIAL_INVENTORY = 0;
-	const SPECIAL_OFFHAND = 0x77;
-	const SPECIAL_ARMOR = 0x78;
-	const SPECIAL_CREATIVE = 0x79;
-	const SPECIAL_HOTBAR = 0x7a;
-	const SPECIAL_FIXED_INVENTORY = 0x7b;
 
 	public $windowid;
 	public $targetEid;
@@ -49,7 +43,7 @@ class ContainerSetContentPacket extends DataPacket{
 		return parent::clean();
 	}
 
-	public function decode(){
+	public function decodePayload(){
 		$this->windowid = $this->getUnsignedVarInt();
 		$this->targetEid = $this->getEntityUniqueId();
 		$count = $this->getUnsignedVarInt();
@@ -63,15 +57,14 @@ class ContainerSetContentPacket extends DataPacket{
 		}
 	}
 
-	public function encode(){
-		$this->reset();
+	public function encodePayload(){
 		$this->putUnsignedVarInt($this->windowid);
 		$this->putEntityUniqueId($this->targetEid);
 		$this->putUnsignedVarInt(count($this->slots));
 		foreach($this->slots as $slot){
 			$this->putSlot($slot);
 		}
-		if($this->windowid === self::SPECIAL_INVENTORY and count($this->hotbar) > 0){
+		if($this->windowid === ContainerIds::INVENTORY and count($this->hotbar) > 0){
 			$this->putUnsignedVarInt(count($this->hotbar));
 			foreach($this->hotbar as $slot){
 				$this->putVarInt($slot);

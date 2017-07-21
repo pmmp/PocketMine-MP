@@ -42,11 +42,10 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 	const RIGHT_CLICK_AIR = 3;
 	const PHYSICAL = 4;
 
-	/**
-	 * @var Block
-	 */
+	/** @var Block */
 	protected $blockTouched;
 
+	/** @var Vector3 */
 	protected $touchVector;
 
 	/** @var int */
@@ -55,9 +54,10 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 	/** @var Item */
 	protected $item;
 
+	/** @var int */
 	protected $action;
 
-	public function __construct(Player $player, Item $item, Vector3 $block, $face, $action = PlayerInteractEvent::RIGHT_CLICK_BLOCK){
+	public function __construct(Player $player, Item $item, Vector3 $block, int $face, int $action = PlayerInteractEvent::RIGHT_CLICK_BLOCK){
 		if($block instanceof Block){
 			$this->blockTouched = $block;
 			$this->touchVector = new Vector3(0, 0, 0);
@@ -67,42 +67,42 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 		}
 		$this->player = $player;
 		$this->item = $item;
-		$this->blockFace = (int) $face;
-		$this->action = (int) $action;
+		$this->blockFace = $face;
+		$this->action = $action;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getAction(){
+	public function getAction() : int{
 		return $this->action;
 	}
 
 	/**
 	 * @return Item
 	 */
-	public function getItem(){
+	public function getItem() : Item{
 		return $this->item;
 	}
 
 	/**
 	 * @return Block
 	 */
-	public function getBlock(){
+	public function getBlock() : Block{
 		return $this->blockTouched;
 	}
 
 	/**
 	 * @return Vector3
 	 */
-	public function getTouchVector(){
+	public function getTouchVector() : Vector3{
 		return $this->touchVector;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getFace(){
+	public function getFace() : int{
 		return $this->blockFace;
 	}
 }

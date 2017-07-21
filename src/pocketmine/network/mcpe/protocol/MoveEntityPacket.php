@@ -41,7 +41,7 @@ class MoveEntityPacket extends DataPacket{
 	public $onGround = false;
 	public $teleported = false;
 
-	public function decode(){
+	public function decodePayload(){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->getVector3f($this->x, $this->y, $this->z);
 		$this->pitch = $this->getByteRotation();
@@ -51,8 +51,7 @@ class MoveEntityPacket extends DataPacket{
 		$this->teleported = $this->getBool();
 	}
 
-	public function encode(){
-		$this->reset();
+	public function encodePayload(){
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putVector3f($this->x, $this->y, $this->z);
 		$this->putByteRotation($this->pitch);

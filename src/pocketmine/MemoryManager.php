@@ -116,11 +116,11 @@ class MemoryManager{
 		gc_enable();
 	}
 
-	public function isLowMemory(){
+	public function isLowMemory() : bool{
 		return $this->lowMemory;
 	}
 
-	public function canUseChunkCache(){
+	public function canUseChunkCache() : bool{
 		return !($this->lowMemory and $this->chunkTrigger);
 	}
 

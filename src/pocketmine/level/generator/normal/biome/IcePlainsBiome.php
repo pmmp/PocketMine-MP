@@ -41,7 +41,7 @@ class IcePlainsBiome extends SnowyBiome{
 		$this->rainfall = 0.8;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Ice Plains";
 	}
 }

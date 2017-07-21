@@ -53,7 +53,7 @@ class AddPlayerPacket extends DataPacket{
 	public $item;
 	public $metadata = [];
 
-	public function decode(){
+	public function decodePayload(){
 		$this->uuid = $this->getUUID();
 		$this->username = $this->getString();
 		$this->entityUniqueId = $this->getEntityUniqueId();
@@ -67,8 +67,7 @@ class AddPlayerPacket extends DataPacket{
 		$this->metadata = $this->getEntityMetadata();
 	}
 
-	public function encode(){
-		$this->reset();
+	public function encodePayload(){
 		$this->putUUID($this->uuid);
 		$this->putString($this->username);
 		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);

@@ -71,6 +71,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	protected $totalXp = 0;
 	protected $xpSeed;
 
+	protected $baseOffset = 1.62;
+
 	public function __construct(Level $level, CompoundTag $nbt){
 		if($this->skin === "" and (!isset($nbt->Skin) or !isset($nbt->Skin->Data) or !Player::isValidSkin($nbt->Skin->Data->getValue()))){
 			throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
@@ -97,7 +99,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	/**
 	 * @return string
 	 */
-	public function getRawUniqueId(){
+	public function getRawUniqueId() : string{
 		return $this->rawUUID;
 	}
 
@@ -139,13 +141,16 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$attr = $this->attributeMap->getAttribute(Attribute::HUNGER);
 		$old = $attr->getValue();
 		$attr->setValue($new);
+
+		$reset = false;
 		// ranges: 18-20 (regen), 7-17 (none), 1-6 (no sprint), 0 (health depletion)
 		foreach([17, 6, 0] as $bound){
 			if(($old > $bound) !== ($new > $bound)){
 				$reset = true;
+				break;
 			}
 		}
-		if(isset($reset)){
+		if($reset){
 			$this->foodTickTimer = 0;
 		}
 
@@ -426,7 +431,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return $this->getNameTag();
 	}
 
-	public function getDrops(){
+	public function getDrops() : array{
 		return $this->inventory !== null ? array_values($this->inventory->getContents()) : [];
 	}
 
@@ -459,7 +464,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 					new ShortTag("Damage", 0),
 					new ByteTag("Slot", $slot),
 					new ByteTag("TrueSlot", -1),
-					new ShortTag("id", 0),
+					new ShortTag("id", 0)
 				]);
 			}
 

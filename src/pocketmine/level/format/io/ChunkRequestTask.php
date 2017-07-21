@@ -75,7 +75,7 @@ class ChunkRequestTask extends AsyncTask{
 
 		$batch = new BatchPacket();
 		$batch->addPacket($pk);
-		$batch->compress($this->compressionLevel);
+		$batch->setCompressionLevel($this->compressionLevel);
 		$batch->encode();
 
 		$this->setResult($batch->buffer, false);
@@ -87,7 +87,6 @@ class ChunkRequestTask extends AsyncTask{
 			if($this->hasResult()){
 				$batch = new BatchPacket($this->getResult());
 				assert(strlen($batch->buffer) > 0);
-				$batch->compressed = true;
 				$batch->isEncoded = true;
 				$level->chunkRequestCallback($this->chunkX, $this->chunkZ, $batch);
 			}else{

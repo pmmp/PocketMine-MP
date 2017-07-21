@@ -43,31 +43,31 @@ class BaseTransaction implements Transaction{
 	 * @param Item      $sourceItem
 	 * @param Item      $targetItem
 	 */
-	public function __construct(Inventory $inventory, $slot, Item $sourceItem, Item $targetItem){
+	public function __construct(Inventory $inventory, int $slot, Item $sourceItem, Item $targetItem){
 		$this->inventory = $inventory;
-		$this->slot = (int) $slot;
+		$this->slot = $slot;
 		$this->sourceItem = clone $sourceItem;
 		$this->targetItem = clone $targetItem;
 		$this->creationTime = microtime(true);
 	}
 
-	public function getCreationTime(){
+	public function getCreationTime() : float{
 		return $this->creationTime;
 	}
 
-	public function getInventory(){
+	public function getInventory() : Inventory{
 		return $this->inventory;
 	}
 
-	public function getSlot(){
+	public function getSlot() : int{
 		return $this->slot;
 	}
 
-	public function getSourceItem(){
+	public function getSourceItem() : Item{
 		return clone $this->sourceItem;
 	}
 
-	public function getTargetItem(){
+	public function getTargetItem() : Item{
 		return clone $this->targetItem;
 	}
 }

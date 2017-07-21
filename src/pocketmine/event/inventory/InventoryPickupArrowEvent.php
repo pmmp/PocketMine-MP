@@ -45,7 +45,7 @@ class InventoryPickupArrowEvent extends InventoryEvent implements Cancellable{
 	/**
 	 * @return Arrow
 	 */
-	public function getArrow(){
+	public function getArrow() : Arrow{
 		return $this->arrow;
 	}
 

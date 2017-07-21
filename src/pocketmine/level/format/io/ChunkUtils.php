@@ -32,7 +32,7 @@ class ChunkUtils{
 	 *
 	 * @return string length 4096
 	 */
-	public static final function reorderByteArray(string $array) : string{
+	final public static function reorderByteArray(string $array) : string{
 		$result = str_repeat("\x00", 4096);
 		if($array !== $result){
 			$i = 0;
@@ -59,7 +59,7 @@ class ChunkUtils{
 	 *
 	 * @return string length 2048
 	 */
-	public static final function reorderNibbleArray(string $array, string $commonValue = "\x00") : string{
+	final public static function reorderNibbleArray(string $array, string $commonValue = "\x00") : string{
 		$result = str_repeat($commonValue, 2048);
 
 		if($array !== $result){

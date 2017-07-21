@@ -48,7 +48,7 @@ class SpawnChangeEvent extends LevelEvent{
 	/**
 	 * @return Position
 	 */
-	public function getPreviousSpawn(){
+	public function getPreviousSpawn() : Position{
 		return $this->previousSpawn;
 	}
 }

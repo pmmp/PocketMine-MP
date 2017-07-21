@@ -28,7 +28,13 @@ namespace pocketmine\event;
  * Events that can be cancelled must use the interface Cancellable
  */
 interface Cancellable{
-	public function isCancelled();
+	/**
+	 * @return bool
+	 */
+	public function isCancelled() : bool;
 
-	public function setCancelled($value = true);
+	/**
+	 * @param bool $value
+	 */
+	public function setCancelled(bool $value = true);
 }

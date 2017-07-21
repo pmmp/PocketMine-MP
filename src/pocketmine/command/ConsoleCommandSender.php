@@ -36,6 +36,9 @@ class ConsoleCommandSender implements CommandSender{
 
 	private $perm;
 
+	/** @var int|null */
+	protected $lineHeight = null;
+
 	public function __construct(){
 		$this->perm = new PermissibleBase($this);
 	}
@@ -45,7 +48,7 @@ class ConsoleCommandSender implements CommandSender{
 	 *
 	 * @return bool
 	 */
-	public function isPermissionSet($name){
+	public function isPermissionSet($name) : bool{
 		return $this->perm->isPermissionSet($name);
 	}
 
@@ -54,18 +57,18 @@ class ConsoleCommandSender implements CommandSender{
 	 *
 	 * @return bool
 	 */
-	public function hasPermission($name){
+	public function hasPermission($name) : bool{
 		return $this->perm->hasPermission($name);
 	}
 
 	/**
 	 * @param Plugin $plugin
 	 * @param string $name
-	 * @param bool   $value
+	 * @param bool $value
 	 *
 	 * @return PermissionAttachment
 	 */
-	public function addAttachment(Plugin $plugin, $name = null, $value = null){
+	public function addAttachment(Plugin $plugin, string $name = null, bool $value = null) : PermissionAttachment{
 		return $this->perm->addAttachment($plugin, $name, $value);
 	}
 
@@ -85,14 +88,14 @@ class ConsoleCommandSender implements CommandSender{
 	/**
 	 * @return PermissionAttachmentInfo[]
 	 */
-	public function getEffectivePermissions(){
+	public function getEffectivePermissions() : array{
 		return $this->perm->getEffectivePermissions();
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function isPlayer(){
+	public function isPlayer() : bool{
 		return false;
 	}
 
@@ -128,15 +131,26 @@ class ConsoleCommandSender implements CommandSender{
 	/**
 	 * @return bool
 	 */
-	public function isOp(){
+	public function isOp() : bool{
 		return true;
 	}
 
 	/**
 	 * @param bool $value
 	 */
-	public function setOp($value){
+	public function setOp(bool $value){
 
+	}
+
+	public function getScreenLineHeight() : int{
+		return $this->lineHeight ?? PHP_INT_MAX;
+	}
+
+	public function setScreenLineHeight(int $height = null){
+		if($height !== null and $height < 1){
+			throw new \InvalidArgumentException("Line height must be at least 1");
+		}
+		$this->lineHeight = $height;
 	}
 
 }

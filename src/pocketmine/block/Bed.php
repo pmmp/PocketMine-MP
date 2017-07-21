@@ -113,7 +113,7 @@ class Bed extends Transparent{
 				3 => 5,
 			];
 			$d = $player instanceof Player ? $player->getDirection() : 0;
-			$next = $this->getSide($faces[(($d + 3) % 4)]);
+			$next = $this->getSide($faces[($d + 3) % 4]);
 			$downNext = $this->getSide(0);
 			if($next->canBeReplaced() === true and $downNext->isTransparent() === false){
 				$meta = (($d + 3) % 4) & 0x03;

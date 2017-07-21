@@ -48,14 +48,14 @@ class PlayerDeathEvent extends EntityDeathEvent{
 	/**
 	 * @return Player
 	 */
-	public function getEntity(){
+	public function getEntity() : Player{
 		return $this->entity;
 	}
 
 	/**
 	 * @return Player
 	 */
-	public function getPlayer(){
+	public function getPlayer() : Player{
 		return $this->entity;
 	}
 
@@ -73,12 +73,12 @@ class PlayerDeathEvent extends EntityDeathEvent{
 		$this->deathMessage = $deathMessage;
 	}
 
-	public function getKeepInventory(){
+	public function getKeepInventory() : bool{
 		return $this->keepInventory;
 	}
 
-	public function setKeepInventory($keepInventory){
-		$this->keepInventory = (bool) $keepInventory;
+	public function setKeepInventory(bool $keepInventory){
+		$this->keepInventory = $keepInventory;
 	}
 
 }

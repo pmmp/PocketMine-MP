@@ -47,7 +47,7 @@ class UseItemPacket extends DataPacket{
 	/** @var Item */
 	public $item;
 
-	public function decode(){
+	public function decodePayload(){
 		$this->getBlockPosition($this->x, $this->y, $this->z);
 		$this->blockId = $this->getUnsignedVarInt();
 		$this->face = $this->getVarInt();
@@ -57,8 +57,7 @@ class UseItemPacket extends DataPacket{
 		$this->item = $this->getSlot();
 	}
 
-	public function encode(){
-		$this->reset();
+	public function encodePayload(){
 		$this->putUnsignedVarInt($this->blockId);
 		$this->putUnsignedVarInt($this->face);
 		$this->putVector3f($this->fx, $this->fy, $this->fz);

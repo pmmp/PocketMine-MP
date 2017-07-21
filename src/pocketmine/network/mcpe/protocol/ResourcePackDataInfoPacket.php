@@ -38,7 +38,7 @@ class ResourcePackDataInfoPacket extends DataPacket{
 	public $compressedPackSize;
 	public $sha256;
 
-	public function decode(){
+	public function decodePayload(){
 		$this->packId = $this->getString();
 		$this->maxChunkSize = $this->getLInt();
 		$this->chunkCount = $this->getLInt();
@@ -46,8 +46,7 @@ class ResourcePackDataInfoPacket extends DataPacket{
 		$this->sha256 = $this->getString();
 	}
 
-	public function encode(){
-		$this->reset();
+	public function encodePayload(){
 		$this->putString($this->packId);
 		$this->putLInt($this->maxChunkSize);
 		$this->putLInt($this->chunkCount);

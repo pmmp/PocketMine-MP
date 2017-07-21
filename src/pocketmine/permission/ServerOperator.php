@@ -30,14 +30,12 @@ interface ServerOperator{
 	 *
 	 * @return bool
 	 */
-	public function isOp();
+	public function isOp() : bool;
 
 	/**
 	 * Sets the operator permission for the current object
 	 *
 	 * @param bool $value
-	 *
-	 * @return void
 	 */
-	public function setOp($value);
+	public function setOp(bool $value);
 }
