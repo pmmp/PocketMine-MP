@@ -140,7 +140,7 @@ class PacketPool{
 	 * @return DataPacket
 	 */
 	public static function getPacketById(int $pid) : DataPacket{
-		return static::$pool[$pid] ?? new UnknownPacket();
+		return isset(static::$pool[$pid]) ? clone static::$pool[$pid] : new UnknownPacket();
 	}
 
 	/**
