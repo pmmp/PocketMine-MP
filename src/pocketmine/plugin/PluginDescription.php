@@ -272,7 +272,7 @@ class PluginDescription{
 	 * @return string
 	 */
 	public function getVersion() : string{
-		return $this->version;
+		return (string) $this->version;
 	}
 
 	/**
