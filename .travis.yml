@@ -1,7 +1,7 @@
 language: php
 
 php:
- - nightly
+ - 7.2
 
 before_script:
 # - pecl install channel://pecl.php.net/pthreads-3.1.6
