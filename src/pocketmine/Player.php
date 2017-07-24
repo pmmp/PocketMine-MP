@@ -3462,7 +3462,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 				$this->interface->close($this, $notify ? $reason : "");
 
-				$this->loggedIn = false;
+				if($this->loggedIn){
+					$this->loggedIn = false;
+					$this->server->removeOnlinePlayer($this);
+				}
 
 				$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logOut", [
 					TextFormat::AQUA . $this->getName() . TextFormat::WHITE,
@@ -3486,7 +3489,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}catch(\Throwable $e){
 				$this->server->getLogger()->logException($e);
 			}finally{
-				$this->server->removeOnlinePlayer($this);
 				$this->server->removePlayer($this);
 			}
 		}
