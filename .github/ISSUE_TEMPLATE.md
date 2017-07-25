@@ -37,5 +37,7 @@ If the issue is **not** reproducible without plugins:
 - Paste your list of plugins here (use the 'plugins' command in PocketMine-MP)
 
 ### Crashdump, backtrace or other files
-<!--- please use gist or anything else and add links here -->
+- Do not paste crashdumps into an issue - please use our Crash Archive at https://crash.pmmp.io for submitting crash reports to not spam the issue tracker. Add links to your reports in the Crash Archive here.
+- Please use gist or anything else to add other files and add links here 
+
 * ...
