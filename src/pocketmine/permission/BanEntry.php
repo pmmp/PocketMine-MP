@@ -26,6 +26,9 @@ namespace pocketmine\permission;
 use pocketmine\utils\MainLogger;
 
 class BanEntry{
+	/**
+	 * @var string
+	 */
 	public static $format = "Y-m-d H:i:s O";
 
 	/** @var string */
@@ -34,7 +37,7 @@ class BanEntry{
 	private $creationDate = null;
 	/** @var string */
 	private $source = "(Unknown)";
-	/** @var \DateTime */
+	/** @var \DateTime|null */
 	private $expirationDate = null;
 	/** @var string */
 	private $reason = "Banned by an operator.";
@@ -64,14 +67,17 @@ class BanEntry{
 		$this->source = $source;
 	}
 
-	public function getExpires() : \DateTime{
+	/**
+	 * @return \DateTime|null
+	 */
+	public function getExpires(){
 		return $this->expirationDate;
 	}
 
 	/**
-	 * @param \DateTime $date
+	 * @param \DateTime|null $date
 	 */
-	public function setExpires(\DateTime $date){
+	public function setExpires(\DateTime $date = null){
 		$this->expirationDate = $date;
 	}
 
