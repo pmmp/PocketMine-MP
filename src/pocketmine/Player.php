@@ -299,10 +299,17 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var int|null */
 	protected $lineHeight = null;
 
+	/**
+	 * @return TranslationContainer|string
+	 */
 	public function getLeaveMessage(){
-		return new TranslationContainer(TextFormat::YELLOW . "%multiplayer.player.left", [
-			$this->getDisplayName()
-		]);
+		if($this->joined){
+			return new TranslationContainer(TextFormat::YELLOW . "%multiplayer.player.left", [
+				$this->getDisplayName()
+			]);
+		}
+
+		return "";
 	}
 
 	/**
@@ -3444,12 +3451,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->usedChunks = [];
 				$this->loadQueue = [];
 
-				foreach($this->server->getOnlinePlayers() as $player){
-					if(!$player->canSee($this)){
-						$player->showPlayer($this);
+				if($this->loggedIn){
+					foreach($this->server->getOnlinePlayers() as $player){
+						if(!$player->canSee($this)){
+							$player->showPlayer($this);
+						}
 					}
+					$this->hiddenPlayers = [];
 				}
-				$this->hiddenPlayers = [];
 
 				foreach($this->windowIndex as $window){
 					$this->removeWindow($window);
@@ -3459,8 +3468,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 				parent::close();
 				$this->spawned = false;
-
-				$this->interface->close($this, $notify ? $reason : "");
 
 				if($this->loggedIn){
 					$this->loggedIn = false;
@@ -3489,6 +3496,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}catch(\Throwable $e){
 				$this->server->getLogger()->logException($e);
 			}finally{
+				$this->interface->close($this, $notify ? $reason : "");
 				$this->server->removePlayer($this);
 			}
 		}
