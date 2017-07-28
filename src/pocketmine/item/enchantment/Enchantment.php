@@ -105,7 +105,7 @@ class Enchantment{
 		return new Enchantment(self::TYPE_INVALID, "unknown", 0, 0, 0);
 	}
 
-	public static function getEffectByName($name){
+	public static function getEnchantmentByName($name){
 		if(defined(Enchantment::class . "::TYPE_" . strtoupper($name))){
 			return self::getEnchantment(constant(Enchantment::class . "::TYPE_" . strtoupper($name)));
 		}
