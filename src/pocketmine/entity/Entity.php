@@ -1251,6 +1251,12 @@ abstract class Entity extends Location implements Metadatable{
 			return false;
 		}
 
+		$tickDiff = $currentTick - $this->lastUpdate;
+		if($tickDiff <= 0){
+			$this->server->getLogger()->debug("Expected tick difference of at least 1, got $tickDiff for " . get_class($this));
+			return false;
+		}
+
 		if(!$this->isAlive()){
 			$this->deadTicks += $tickDiff;
 			if($this->deadTicks >= 10){
@@ -1260,12 +1266,6 @@ abstract class Entity extends Location implements Metadatable{
 				}
 			}
 			return $this->deadTicks < 10;
-		}
-
-		$tickDiff = $currentTick - $this->lastUpdate;
-		if($tickDiff <= 0){
-			$this->server->getLogger()->debug("Expected tick difference of at least 1, got $tickDiff for " . get_class($this));
-			return false;
 		}
 
 		$this->lastUpdate = $currentTick;
