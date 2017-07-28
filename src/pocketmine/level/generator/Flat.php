@@ -121,7 +121,8 @@ class Flat extends Generator{
 			}
 		}
 
-		for($sy = 0; $sy < 256; $sy += 16){
+		$count = count($this->structure);
+		for($sy = 0; $sy < $count; $sy += 16){
 			$subchunk = $this->chunk->getSubChunk($sy >> 4, true);
 			for($y = 0; $y < 16 and isset($this->structure[$y | $sy]); ++$y){
 				list($id, $meta) = $this->structure[$y | $sy];
