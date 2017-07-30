@@ -54,7 +54,7 @@ class Sign extends Spawnable{
 		unset($this->namedtag->Creator);
 	}
 
-	public function setText($line1 = "", $line2 = "", $line3 = "", $line4 = ""){
+	public function setText(string $line1 = "", string $line2 = "", string $line3 = "", string $line4 = ""){
 		$this->namedtag->Text1->setValue($line1);
 		$this->namedtag->Text2->setValue($line2);
 		$this->namedtag->Text3->setValue($line3);
