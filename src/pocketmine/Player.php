@@ -2631,6 +2631,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					$this->setPosition($realSpawn); //The client will move to the position of its own accord once chunks are sent
 					$this->nextChunkOrderRun = 0;
 					$this->isTeleporting = true;
+					$this->newPosition = null;
 				}
 
 				$this->resetLastMovements();
