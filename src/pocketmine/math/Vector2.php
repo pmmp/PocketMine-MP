@@ -125,6 +125,27 @@ class Vector2{
 		return $this->x * $v->x + $this->y * $v->y;
 	}
 
+	/**
+	 * Returns array of vector's components(x, y)
+	 *
+	 * @return array
+	 */
+	public function getComponents() : array {
+		return [$this->x, $this->y];
+	}
+
+	/**
+	 * @param $x
+	 * @param $y
+	 *
+	 * @return Vector2
+	 */
+	public function setComponents($x, $y){
+		$this->x = $x;
+		$this->y = $y;
+		return $this;
+	}
+
 	public function __toString(){
 		return "Vector2(x=" . $this->x . ",y=" . $this->y . ")";
 	}

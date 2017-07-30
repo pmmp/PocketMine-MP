@@ -320,6 +320,15 @@ class Vector3{
 	}
 
 	/**
+	 * Returns array of vector's components(x, y, z)
+	 *
+	 * @return array
+	 */
+	public function getComponents() : array {
+		return [$this->x, $this->y, $this->z];
+	}
+
+	/**
 	 * @param $x
 	 * @param $y
 	 * @param $z
