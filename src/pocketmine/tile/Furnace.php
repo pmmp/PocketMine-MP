@@ -169,7 +169,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 			}
 			$this->namedtag->Items[$i] = $d;
 		}else{
-			$this->namedtag->Items[$i]= $d;
+			$this->namedtag->Items[$i] = $d;
 		}
 	}
 
