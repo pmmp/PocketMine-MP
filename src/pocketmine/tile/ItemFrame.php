@@ -85,18 +85,14 @@ class ItemFrame extends Spawnable{
 	}
 
 	public function getSpawnCompound() : CompoundTag{
-		$tag = new CompoundTag("", [
-			new StringTag("id", Tile::ITEM_FRAME),
-			new IntTag("x", (int) $this->x),
-			new IntTag("y", (int) $this->y),
-			new IntTag("z", (int) $this->z),
-			$this->namedtag->ItemDropChance,
-			$this->namedtag->ItemRotation,
-		]);
+		$nbt = parent::getSpawnCompound();
+		$nbt->ItemDropChance = $this->namedtag->ItemDropChance;
+		$nbt->ItemRotation = $this->namedtag->ItemRotation;
+
 		if($this->hasItem()){
-			$tag->Item = $this->namedtag->Item;
+			$nbt->Item = $this->namedtag->Item;
 		}
-		return $tag;
+		return $nbt;
 	}
 
 }

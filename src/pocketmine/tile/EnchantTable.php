@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 
 class EnchantTable extends Spawnable implements Nameable{
@@ -48,17 +47,12 @@ class EnchantTable extends Spawnable implements Nameable{
 	}
 
 	public function getSpawnCompound() : CompoundTag{
-		$c = new CompoundTag("", [
-			new StringTag("id", Tile::ENCHANT_TABLE),
-			new IntTag("x", (int) $this->x),
-			new IntTag("y", (int) $this->y),
-			new IntTag("z", (int) $this->z)
-		]);
+		$nbt = parent::getSpawnCompound();
 
 		if($this->hasName()){
-			$c->CustomName = $this->namedtag->CustomName;
+			$nbt->CustomName = $this->namedtag->CustomName;
 		}
 
-		return $c;
+		return $nbt;
 	}
 }

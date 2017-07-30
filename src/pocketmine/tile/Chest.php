@@ -277,28 +277,17 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	}
 
 	public function getSpawnCompound() : CompoundTag{
+		$nbt = parent::getSpawnCompound();
+
 		if($this->isPaired()){
-			$c = new CompoundTag("", [
-				new StringTag("id", Tile::CHEST),
-				new IntTag("x", (int) $this->x),
-				new IntTag("y", (int) $this->y),
-				new IntTag("z", (int) $this->z),
-				new IntTag("pairx", (int) $this->namedtag["pairx"]),
-				new IntTag("pairz", (int) $this->namedtag["pairz"])
-			]);
-		}else{
-			$c = new CompoundTag("", [
-				new StringTag("id", Tile::CHEST),
-				new IntTag("x", (int) $this->x),
-				new IntTag("y", (int) $this->y),
-				new IntTag("z", (int) $this->z)
-			]);
+			$nbt->pairx = $this->namedtag->pairx;
+			$nbt->pairz = $this->namedtag->pairz;
 		}
 
 		if($this->hasName()){
-			$c->CustomName = $this->namedtag->CustomName;
+			$nbt->CustomName = $this->namedtag->CustomName;
 		}
 
-		return $c;
+		return $nbt;
 	}
 }

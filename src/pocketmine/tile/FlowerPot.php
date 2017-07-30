@@ -28,7 +28,6 @@ use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ShortTag;
-use pocketmine\nbt\tag\StringTag;
 
 class FlowerPot extends Spawnable{
 
@@ -84,13 +83,9 @@ class FlowerPot extends Spawnable{
 	}
 
 	public function getSpawnCompound() : CompoundTag{
-		return new CompoundTag("", [
-			new StringTag("id", Tile::FLOWER_POT),
-			new IntTag("x", (int) $this->x),
-			new IntTag("y", (int) $this->y),
-			new IntTag("z", (int) $this->z),
-			$this->namedtag->item,
-			$this->namedtag->mData
-		]);
+		$nbt = parent::getSpawnCompound();
+		$nbt->item = $this->namedtag->item;
+		$nbt->mData = $this->namedtag->mData;
+		return $nbt;
 	}
 }

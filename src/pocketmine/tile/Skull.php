@@ -57,13 +57,9 @@ class Skull extends Spawnable{
 	}
 
 	public function getSpawnCompound() : CompoundTag{
-		return new CompoundTag("", [
-			new StringTag("id", Tile::SKULL),
-			$this->namedtag->SkullType,
-			$this->namedtag->Rot,
-			new IntTag("x", (int) $this->x),
-			new IntTag("y", (int) $this->y),
-			new IntTag("z", (int) $this->z)
-		]);
+		$nbt = parent::getSpawnCompound();
+		$nbt->SkullType = $this->namedtag->SkullType;
+		$nbt->Rot = $this->namedtag->Rot;
+		return $nbt;
 	}
 }

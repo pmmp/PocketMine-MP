@@ -102,16 +102,12 @@ class Sign extends Spawnable{
 	}
 
 	public function getSpawnCompound() : CompoundTag{
-		return new CompoundTag("", [
-			new StringTag("id", Tile::SIGN),
-			$this->namedtag->Text1,
-			$this->namedtag->Text2,
-			$this->namedtag->Text3,
-			$this->namedtag->Text4,
-			new IntTag("x", (int) $this->x),
-			new IntTag("y", (int) $this->y),
-			new IntTag("z", (int) $this->z)
-		]);
+		$nbt = parent::getSpawnCompound();
+		for($i = 1; $i <= 4; $i++){
+			$textKey = 'Text'.$i;
+			$nbt->$textKey = $this->namedtag->$textKey;
+		}
+		return $nbt;
 	}
 
 	public function updateCompoundTag(CompoundTag $nbt, Player $player) : bool{
