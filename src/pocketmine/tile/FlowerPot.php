@@ -65,12 +65,12 @@ class FlowerPot extends Spawnable{
 	}
 
 	public function getItem() : Item{
-		return Item::get((int) ($this->namedtag["item"] ?? 0), (int) ($this->namedtag["mData"] ?? 0), 1);
+		return Item::get($this->namedtag->item->getValue(), $this->namedtag->mData->getValue(), 1);
 	}
 
 	public function setItem(Item $item){
-		$this->namedtag["item"] = $item->getId();
-		$this->namedtag["mData"] = $item->getDamage();
+		$this->namedtag->item->setValue($item->getId());
+		$this->namedtag->mData->setValue($item->getDamage());
 		$this->onChanged();
 	}
 

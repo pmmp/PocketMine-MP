@@ -28,8 +28,6 @@ use pocketmine\level\Level;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
 
 class ItemFrame extends Spawnable{
 
@@ -71,7 +69,7 @@ class ItemFrame extends Spawnable{
 	}
 
 	public function setItemRotation(int $rotation){
-		$this->namedtag->ItemRotation = new ByteTag("ItemRotation", $rotation);
+		$this->namedtag->ItemRotation->setValue($rotation);
 		$this->onChanged();
 	}
 
@@ -80,7 +78,7 @@ class ItemFrame extends Spawnable{
 	}
 
 	public function setItemDropChance(float $chance){
-		$this->namedtag->ItemDropChance = new FloatTag("ItemDropChance", $chance);
+		$this->namedtag->ItemDropChance->setValue($chance);
 		$this->onChanged();
 	}
 
