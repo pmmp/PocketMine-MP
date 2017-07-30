@@ -126,6 +126,15 @@ class Vector2{
 	}
 
 	/**
+	 * Returns array of vector's components(x, y)
+	 *
+	 * @return array
+	 */
+	public function getComponents() : array {
+		return [$this->x, $this->y];
+	}
+
+	/**
 	 * @param $x
 	 * @param $y
 	 *
