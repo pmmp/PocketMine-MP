@@ -43,10 +43,6 @@ class ItemFrame extends Flowable{
 		return "Item Frame";
 	}
 
-	public function canBeActivated(){
-		return true;
-	}
-
 	public function onActivate(Item $item, Player $player = null){
 		$tile = $this->level->getTile($this);
 		if(!($tile instanceof TileItemFrame)){

@@ -27,17 +27,12 @@ use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\Player;
 
-//TODO: check orientation
 class Workbench extends Solid{
 
 	protected $id = self::WORKBENCH;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
-	}
-
-	public function canBeActivated(){
-		return true;
 	}
 
 	public function getHardness(){

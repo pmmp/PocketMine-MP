@@ -46,10 +46,6 @@ class BurningFurnace extends Solid{
 		return "Burning Furnace";
 	}
 
-	public function canBeActivated(){
-		return true;
-	}
-
 	public function getHardness(){
 		return 3.5;
 	}
@@ -91,12 +87,6 @@ class BurningFurnace extends Solid{
 		}
 
 		Tile::createTile("Furnace", $this->getLevel(), $nbt);
-
-		return true;
-	}
-
-	public function onBreak(Item $item){
-		$this->getLevel()->setBlock($this, new Air(), true, true);
 
 		return true;
 	}

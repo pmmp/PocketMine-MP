@@ -38,10 +38,6 @@ class SpawnEgg extends Item{
 		parent::__construct(self::SPAWN_EGG, $meta, $count, "Spawn Egg");
 	}
 
-	public function canBeActivated(){
-		return true;
-	}
-
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$nbt = new CompoundTag("", [
 			new ListTag("Pos", [

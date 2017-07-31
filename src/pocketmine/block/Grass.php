@@ -41,10 +41,6 @@ class Grass extends Solid{
 		$this->meta = $meta;
 	}
 
-	public function canBeActivated(){
-		return true;
-	}
-
 	public function getName(){
 		return "Grass";
 	}
@@ -65,24 +61,41 @@ class Grass extends Solid{
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_RANDOM){
-			$block = $this->getLevel()->getBlock(new Vector3($this->x, $this->y, $this->z));
-			if($block->getSide(1)->getLightLevel() < 4){
-				Server::getInstance()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($block, $this, new Dirt()));
-			}elseif($block->getSide(1)->getLightLevel() >= 9){
-				for($l = 0; $l < 4; ++$l){
-					$x = mt_rand($this->x - 1, $this->x + 1);
-					$y = mt_rand($this->y - 2, $this->y + 2);
-					$z = mt_rand($this->z - 1, $this->z + 1);
-					$block = $this->getLevel()->getBlock(new Vector3($x, $y, $z));
-					if($block->getId() === Block::DIRT && $block->getDamage() === 0x0F && $block->getSide(1)->getLightLevel() >= 4 && $block->z <= 2){
-						Server::getInstance()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($block, $this, new Grass()));
-						if(!$ev->isCancelled()){
-							$this->getLevel()->setBlock($block, $ev->getNewState());
-						}
+			$lightAbove = $this->level->getFullLightAt($this->x, $this->y + 1, $this->z);
+			if($lightAbove < 4 and Block::$lightFilter[$this->level->getBlockIdAt($this->x, $this->y + 1, $this->z)] >= 3){ //2 plus 1 standard filter amount
+				//grass dies
+				$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($this, $this, Block::get(Block::DIRT)));
+				if(!$ev->isCancelled()){
+					$this->level->setBlock($this, $ev->getNewState(), false, false);
+				}
+
+				return Level::BLOCK_UPDATE_RANDOM;
+			}elseif($lightAbove >= 9){
+				//try grass spread
+				$vector = $this->asVector3();
+				for($i = 0; $i < 4; ++$i){
+					$vector->x = mt_rand($this->x - 1, $this->x + 1);
+					$vector->y = mt_rand($this->y - 3, $this->y + 1);
+					$vector->z = mt_rand($this->z - 1, $this->z + 1);
+					if(
+						$this->level->getBlockIdAt($vector->x, $vector->y, $vector->z) !== Block::DIRT or
+						$this->level->getFullLightAt($vector->x, $vector->y + 1, $vector->z) < 4 or
+						Block::$lightFilter[$this->level->getBlockIdAt($vector->x, $vector->y + 1, $vector->z)] >= 3
+					){
+						continue;
+					}
+
+					$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($this->level->getBlock($vector), $this, Block::get(Block::GRASS)));
+					if(!$ev->isCancelled()){
+						$this->level->setBlock($vector, $ev->getNewState(), false, false);
 					}
 				}
+
+				return Level::BLOCK_UPDATE_RANDOM;
 			}
 		}
+
+		return false;
 	}
 
 	public function onActivate(Item $item, Player $player = null){

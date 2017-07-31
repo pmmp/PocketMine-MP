@@ -21,15 +21,12 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\network\mcpe\protocol\types;
 
-use pocketmine\level\Level;
+interface DimensionIds{
 
-class StillWater extends Water{
+	const OVERWORLD = 0;
+	const NETHER = 1;
+	const THE_END = 2;
 
-	protected $id = self::STILL_WATER;
-
-	public function getName(){
-		return "Still Water";
-	}
 }
