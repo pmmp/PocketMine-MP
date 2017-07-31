@@ -31,13 +31,15 @@ use pocketmine\network\mcpe\NetworkSession;
 class ChangeDimensionPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::CHANGE_DIMENSION_PACKET;
 
-	const DIMENSION_OVERWORLD = 0;
-	const DIMENSION_NETHER = 1;
-
+	/** @var int */
 	public $dimension;
+	/** @var float */
 	public $x;
+	/** @var float */
 	public $y;
+	/** @var float */
 	public $z;
+	/** @var bool */
 	public $respawn = false;
 
 	public function decodePayload(){
