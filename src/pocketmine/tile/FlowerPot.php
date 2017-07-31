@@ -82,10 +82,8 @@ class FlowerPot extends Spawnable{
 		return $this->getItem()->getId() === Item::AIR;
 	}
 
-	public function getSpawnCompound() : CompoundTag{
-		$nbt = parent::getSpawnCompound();
+	public function addAdditionalSpawnData(CompoundTag $nbt){
 		$nbt->item = $this->namedtag->item;
 		$nbt->mData = $this->namedtag->mData;
-		return $nbt;
 	}
 }

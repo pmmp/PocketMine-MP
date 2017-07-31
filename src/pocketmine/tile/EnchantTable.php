@@ -46,13 +46,9 @@ class EnchantTable extends Spawnable implements Nameable{
 		$this->namedtag->CustomName = new StringTag("CustomName", $str);
 	}
 
-	public function getSpawnCompound() : CompoundTag{
-		$nbt = parent::getSpawnCompound();
-
+	public function addAdditionalSpawnData(CompoundTag $nbt){
 		if($this->hasName()){
 			$nbt->CustomName = $this->namedtag->CustomName;
 		}
-
-		return $nbt;
 	}
 }

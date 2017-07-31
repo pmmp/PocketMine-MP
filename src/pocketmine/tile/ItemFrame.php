@@ -82,15 +82,13 @@ class ItemFrame extends Spawnable{
 		$this->onChanged();
 	}
 
-	public function getSpawnCompound() : CompoundTag{
-		$nbt = parent::getSpawnCompound();
+	public function addAdditionalSpawnData(CompoundTag $nbt){
 		$nbt->ItemDropChance = $this->namedtag->ItemDropChance;
 		$nbt->ItemRotation = $this->namedtag->ItemRotation;
 
 		if($this->hasItem()){
 			$nbt->Item = $this->namedtag->Item;
 		}
-		return $nbt;
 	}
 
 }

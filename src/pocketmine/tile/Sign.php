@@ -98,8 +98,7 @@ class Sign extends Spawnable{
 		];
 	}
 
-	public function getSpawnCompound() : CompoundTag{
-		$nbt = parent::getSpawnCompound();
+	public function addAdditionalSpawnData(CompoundTag $nbt){
 		for($i = 1; $i <= 4; $i++){
 			$textKey = "Text$i";
 			$nbt->$textKey = $this->namedtag->$textKey;

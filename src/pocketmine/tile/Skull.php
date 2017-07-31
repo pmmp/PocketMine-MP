@@ -54,10 +54,8 @@ class Skull extends Spawnable{
 		return $this->namedtag->SkullType->getValue();
 	}
 
-	public function getSpawnCompound() : CompoundTag{
-		$nbt = parent::getSpawnCompound();
+	public function addAdditionalSpawnData(CompoundTag $nbt){
 		$nbt->SkullType = $this->namedtag->SkullType;
 		$nbt->Rot = $this->namedtag->Rot;
-		return $nbt;
 	}
 }

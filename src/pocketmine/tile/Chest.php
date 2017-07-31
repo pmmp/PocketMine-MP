@@ -276,9 +276,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 		return true;
 	}
 
-	public function getSpawnCompound() : CompoundTag{
-		$nbt = parent::getSpawnCompound();
-
+	public function addAdditionalSpawnData(CompoundTag $nbt){
 		if($this->isPaired()){
 			$nbt->pairx = $this->namedtag->pairx;
 			$nbt->pairz = $this->namedtag->pairz;
@@ -287,7 +285,5 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 		if($this->hasName()){
 			$nbt->CustomName = $this->namedtag->CustomName;
 		}
-
-		return $nbt;
 	}
 }
