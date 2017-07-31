@@ -1187,7 +1187,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			$pk = new AnimatePacket();
 			$pk->entityRuntimeId = $this->id;
-			$pk->action = 3; //Wake up
+			$pk->action = AnimatePacket::ACTION_STOP_SLEEP;
 			$this->dataPacket($pk);
 		}
 	}
