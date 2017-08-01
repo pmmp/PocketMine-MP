@@ -25,57 +25,38 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 
-class ContainerSetContentPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::CONTAINER_SET_CONTENT_PACKET;
+class PlayerHotbarPacket extends DataPacket{
+	const NETWORK_ID = ProtocolInfo::PLAYER_HOTBAR_PACKET;
 
-	public $windowid;
-	public $targetEid;
+	/** @var int */
+	public $selectedSlot;
+	/** @var int */
+	public $windowId = ContainerIds::INVENTORY;
+	/** @var int[] */
 	public $slots = [];
-	public $hotbar = [];
-
-	public function clean(){
-		$this->slots = [];
-		$this->hotbar = [];
-		return parent::clean();
-	}
 
 	public function decodePayload(){
-		$this->windowid = $this->getUnsignedVarInt();
-		$this->targetEid = $this->getEntityUniqueId();
+		$this->selectedSlot = $this->getUnsignedVarInt();
+		$this->windowId = $this->getByte();
 		$count = $this->getUnsignedVarInt();
-		for($s = 0; $s < $count and !$this->feof(); ++$s){
-			$this->slots[$s] = $this->getSlot();
-		}
-
-		$hotbarCount = $this->getUnsignedVarInt(); //MCPE always sends this, even when it's not a player inventory
-		for($s = 0; $s < $hotbarCount and !$this->feof(); ++$s){
-			$this->hotbar[$s] = $this->getVarInt();
+		for($i = 0; $i < $count; ++$i){
+			$this->slots[$i] = $this->getUnsignedVarInt();
 		}
 	}
 
 	public function encodePayload(){
-		$this->putUnsignedVarInt($this->windowid);
-		$this->putEntityUniqueId($this->targetEid);
+		$this->putUnsignedVarInt($this->selectedSlot);
+		$this->putByte($this->windowId);
 		$this->putUnsignedVarInt(count($this->slots));
 		foreach($this->slots as $slot){
-			$this->putSlot($slot);
-		}
-		if($this->windowid === ContainerIds::INVENTORY and count($this->hotbar) > 0){
-			$this->putUnsignedVarInt(count($this->hotbar));
-			foreach($this->hotbar as $slot){
-				$this->putVarInt($slot);
-			}
-		}else{
-			$this->putUnsignedVarInt(0);
+			$this->putUnsignedVarInt($slot);
 		}
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleContainerSetContent($this);
+		return $session->handlePlayerHotbar($this);
 	}
-
 }

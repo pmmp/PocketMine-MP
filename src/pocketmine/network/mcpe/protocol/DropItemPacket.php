@@ -29,6 +29,9 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\NetworkSession;
 
+/**
+ * @removed
+ */
 class DropItemPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::DROP_ITEM_PACKET;
 

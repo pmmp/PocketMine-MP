@@ -28,10 +28,11 @@ use pocketmine\event\entity\EntityArmorChangeEvent;
 use pocketmine\event\entity\EntityInventoryChangeEvent;
 use pocketmine\event\player\PlayerItemHeldEvent;
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\protocol\ContainerSetContentPacket;
-use pocketmine\network\mcpe\protocol\ContainerSetSlotPacket;
+use pocketmine\network\mcpe\protocol\InventoryContentPacket;
+use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
+use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\Player;
 use pocketmine\Server;
@@ -424,10 +425,9 @@ class PlayerInventory extends BaseInventory{
 
 		foreach($target as $player){
 			if($player === $this->getHolder()){
-				$pk2 = new ContainerSetContentPacket();
-				$pk2->windowid = ContainerIds::ARMOR;
-				$pk2->slots = $armor;
-				$pk2->targetEid = $player->getId();
+				$pk2 = new InventoryContentPacket();
+				$pk2->windowId = ContainerIds::ARMOR;
+				$pk2->items = $armor;
 				$player->dataPacket($pk2);
 			}else{
 				$player->dataPacket($pk);
@@ -472,9 +472,10 @@ class PlayerInventory extends BaseInventory{
 		foreach($target as $player){
 			if($player === $this->getHolder()){
 				/** @var Player $player */
-				$pk2 = new ContainerSetSlotPacket();
-				$pk2->windowid = ContainerIds::ARMOR;
-				$pk2->slot = $index - $this->getSize();
+
+				$pk2 = new InventorySlotPacket();
+				$pk2->windowId = ContainerIds::ARMOR;
+				$pk2->slotIndex = $index - $this->getSize();
 				$pk2->item = $this->getItem($index);
 				$player->dataPacket($pk2);
 			}else{
@@ -491,45 +492,39 @@ class PlayerInventory extends BaseInventory{
 			$target = [$target];
 		}
 
-		$pk = new ContainerSetContentPacket();
-		$pk->slots = [];
+		$pk = new InventoryContentPacket();
 
 		for($i = 0; $i < $this->getSize(); ++$i){ //Do not send armor by error here
-			$pk->slots[$i] = $this->getItem($i);
-		}
-
-		//Because PE is stupid and shows 9 less slots than you send it, give it 9 dummy slots so it shows all the REAL slots.
-		for($i = $this->getSize(); $i < $this->getSize() + $this->getHotbarSize(); ++$i){
-			$pk->slots[$i] = Item::get(Item::AIR, 0, 0);
+			$pk->items[$i] = $this->getItem($i);
 		}
 
 		foreach($target as $player){
-			$pk->hotbar = [];
-			if($player === $this->getHolder()){
-				for($i = 0; $i < $this->getHotbarSize(); ++$i){
-					$index = $this->getHotbarSlotIndex($i);
-					$pk->hotbar[] = $index <= -1 ? -1 : $index + $this->getHotbarSize();
-				}
-			}
 			if(($id = $player->getWindowId($this)) === -1 or $player->spawned !== true){
 				$this->close($player);
 				continue;
 			}
-			$pk->windowid = $id;
-			$pk->targetEid = $player->getId(); //TODO: check if this is correct
+			$pk->windowId = $id;
 			$player->dataPacket(clone $pk);
+
+			if($player === $this->getHolder()){
+				$pk = new PlayerHotbarPacket();
+				$pk->slots = array_map(function(int $i){ return $i + $this->getHotbarSize(); }, $this->hotbar);
+				$pk->selectedSlot = $this->getHeldItemIndex();
+				$pk->windowId = ContainerIds::INVENTORY;
+				$player->dataPacket($pk);
+			}
 		}
 	}
 
 	public function sendCreativeContents(){
-		$pk = new ContainerSetContentPacket();
-		$pk->windowid = ContainerIds::CREATIVE;
+		$pk = new InventoryContentPacket();
+		$pk->windowId = ContainerIds::CREATIVE;
 		if($this->getHolder()->getGamemode() === Player::CREATIVE){
 			foreach(Item::getCreativeItems() as $i => $item){
-				$pk->slots[$i] = clone $item;
+				$pk->items[$i] = clone $item;
 			}
 		}
-		$pk->targetEid = $this->getHolder()->getId();
+
 		$this->getHolder()->dataPacket($pk);
 	}
 
@@ -542,21 +537,21 @@ class PlayerInventory extends BaseInventory{
 			$target = [$target];
 		}
 
-		$pk = new ContainerSetSlotPacket();
-		$pk->slot = $index;
+		$pk = new InventorySlotPacket();
+		$pk->slotIndex = $index;
 		$pk->item = clone $this->getItem($index);
 
 		foreach($target as $player){
 			if($player === $this->getHolder()){
 				/** @var Player $player */
-				$pk->windowid = 0;
+				$pk->windowId = ContainerIds::INVENTORY;
 				$player->dataPacket(clone $pk);
 			}else{
 				if(($id = $player->getWindowId($this)) === -1){
 					$this->close($player);
 					continue;
 				}
-				$pk->windowid = $id;
+				$pk->windowId = $id;
 				$player->dataPacket(clone $pk);
 			}
 		}

@@ -79,9 +79,7 @@ class AddEntityPacket extends DataPacket{
 		$this->metadata = $this->getEntityMetadata();
 		$linkCount = $this->getUnsignedVarInt();
 		for($i = 0; $i < $linkCount; ++$i){
-			$this->links[$i][0] = $this->getEntityUniqueId();
-			$this->links[$i][1] = $this->getEntityUniqueId();
-			$this->links[$i][2] = $this->getByte();
+			$this->links[] = $this->getEntityLink();
 		}
 	}
 
@@ -105,9 +103,7 @@ class AddEntityPacket extends DataPacket{
 		$this->putEntityMetadata($this->metadata);
 		$this->putUnsignedVarInt(count($this->links));
 		foreach($this->links as $link){
-			$this->putEntityUniqueId($link[0]);
-			$this->putEntityUniqueId($link[1]);
-			$this->putByte($link[2]);
+			$this->putEntityLink($link);
 		}
 	}
 

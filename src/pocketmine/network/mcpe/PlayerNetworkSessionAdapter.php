@@ -33,7 +33,7 @@ use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
 use pocketmine\network\mcpe\protocol\BossEventPacket;
 use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
-use pocketmine\network\mcpe\protocol\CommandStepPacket;
+use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\ContainerSetSlotPacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
@@ -51,6 +51,7 @@ use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
+use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\RemoveBlockPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
@@ -76,11 +77,6 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handleDataPacket(DataPacket $packet){
-		//TODO: Remove this hack once InteractPacket spam issue is fixed
-		if($packet->buffer === "\x21\x04\x00"){
-			return;
-		}
-
 		$timings = Timings::getReceiveDataPacketTimings($packet);
 		$timings->startTiming();
 
@@ -111,13 +107,23 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handleText(TextPacket $packet) : bool{
-		return $this->player->handleText($packet);
+		if($packet->type === TextPacket::TYPE_CHAT){
+			return $this->player->chat($packet->message);
+		}
+
+		return false;
 	}
 
 	public function handleMovePlayer(MovePlayerPacket $packet) : bool{
 		return $this->player->handleMovePlayer($packet);
 	}
 
+	/**
+	 * TODO: REMOVE
+	 * @param RemoveBlockPacket $packet
+	 *
+	 * @return bool
+	 */
 	public function handleRemoveBlock(RemoveBlockPacket $packet) : bool{
 		return $this->player->handleRemoveBlock($packet);
 	}
@@ -146,6 +152,12 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return $this->player->handleBlockPickRequest($packet);
 	}
 
+	/**
+	 * TODO: REMOVE
+	 * @param UseItemPacket $packet
+	 *
+	 * @return bool
+	 */
 	public function handleUseItem(UseItemPacket $packet) : bool{
 		return $this->player->handleUseItem($packet);
 	}
@@ -162,6 +174,12 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return $this->player->handleAnimate($packet);
 	}
 
+	/**
+	 * TODO: REMOVE
+	 * @param DropItemPacket $packet
+	 *
+	 * @return bool
+	 */
 	public function handleDropItem(DropItemPacket $packet) : bool{
 		return $this->player->handleDropItem($packet);
 	}
@@ -170,6 +188,12 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return $this->player->handleContainerClose($packet);
 	}
 
+	/**
+	 * TODO: REMOVE
+	 * @param ContainerSetSlotPacket $packet
+	 *
+	 * @return bool
+	 */
 	public function handleContainerSetSlot(ContainerSetSlotPacket $packet) : bool{
 		return $this->player->handleContainerSetSlot($packet);
 	}
@@ -218,8 +242,8 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return $this->player->handleShowCredits($packet);
 	}
 
-	public function handleCommandStep(CommandStepPacket $packet) : bool{
-		return $this->player->handleCommandStep($packet);
+	public function handleCommandRequest(CommandRequestPacket $packet) : bool{
+		return $this->player->chat($packet->command);
 	}
 
 	public function handleCommandBlockUpdate(CommandBlockUpdatePacket $packet) : bool{
@@ -228,5 +252,9 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 
 	public function handleResourcePackChunkRequest(ResourcePackChunkRequestPacket $packet) : bool{
 		return $this->player->handleResourcePackChunkRequest($packet);
+	}
+
+	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
+		return false; //TODO
 	}
 }

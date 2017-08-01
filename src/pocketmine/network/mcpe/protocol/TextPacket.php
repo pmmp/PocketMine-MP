@@ -41,12 +41,14 @@ class TextPacket extends DataPacket{
 	const TYPE_ANNOUNCEMENT = 7;
 
 	public $type;
+	public $unknownBool = false;
 	public $source;
 	public $message;
 	public $parameters = [];
 
 	public function decodePayload(){
 		$this->type = $this->getByte();
+		$this->unknownBool = $this->getBool();
 		switch($this->type){
 			case self::TYPE_POPUP:
 			case self::TYPE_CHAT:
@@ -71,6 +73,7 @@ class TextPacket extends DataPacket{
 
 	public function encodePayload(){
 		$this->putByte($this->type);
+		$this->putBool($this->unknownBool);
 		switch($this->type){
 			case self::TYPE_POPUP:
 			case self::TYPE_CHAT:

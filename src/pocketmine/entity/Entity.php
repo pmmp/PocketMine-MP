@@ -200,7 +200,9 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_FLAG_EVOKER_SPELL = 40;
 	const DATA_FLAG_CHARGE_ATTACK = 41;
 
-	const DATA_FLAG_LINGER = 45;
+	const DATA_FLAG_LINGER = 44;
+	const DATA_FLAG_HAS_COLLISION = 45;
+	const DATA_FLAG_AFFECTED_BY_GRAVITY = 46;
 
 	public static $entityCount = 1;
 	/** @var Entity[] */
@@ -396,6 +398,9 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->attributeMap = new AttributeMap();
 		$this->addAttributes();
+
+		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_AFFECTED_BY_GRAVITY, true);
+		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_HAS_COLLISION, true);
 
 		$this->chunk->addEntity($this);
 		$this->level->addEntity($this);

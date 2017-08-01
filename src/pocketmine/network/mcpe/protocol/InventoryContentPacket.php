@@ -21,36 +21,38 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
+use pocketmine\item\Item;
 use pocketmine\network\mcpe\NetworkSession;
 
-class BlockPickRequestPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::BLOCK_PICK_REQUEST_PACKET;
+class InventoryContentPacket extends DataPacket{
+	const NETWORK_ID = ProtocolInfo::INVENTORY_CONTENT_PACKET;
 
-	public $tileX;
-	public $tileY;
-	public $tileZ;
-	public $addUserData = false;
-	public $hotbarSlot;
+	/** @var int */
+	public $windowId;
+	/** @var Item[] */
+	public $items = [];
 
 	public function decodePayload(){
-		$this->getSignedBlockPosition($this->tileX, $this->tileY, $this->tileZ);
-		$this->addUserData = $this->getBool();
-		$this->hotbarSlot = $this->getByte();
+		$this->windowId = $this->getUnsignedVarInt();
+		$count = $this->getUnsignedVarInt();
+		for($i = 0; $i < $count; ++$i){
+			$this->items[] = $this->getSlot();
+		}
 	}
 
 	public function encodePayload(){
-		$this->putSignedBlockPosition($this->tileX, $this->tileY, $this->tileZ);
-		$this->putBool($this->addUserData);
-		$this->putByte($this->hotbarSlot);
+		$this->putUnsignedVarInt($this->windowId);
+		$this->putUnsignedVarInt(count($this->items));
+		foreach($this->items as $item){
+			$this->putSlot($item);
+		}
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleBlockPickRequest($this);
+		return $session->handleInventoryContent($this);
 	}
 }

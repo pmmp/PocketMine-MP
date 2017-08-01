@@ -29,6 +29,7 @@ use pocketmine\entity\Attribute;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Utils;
 
@@ -56,7 +57,7 @@ abstract class DataPacket extends BinaryStream{
 	}
 
 	public function decode(){
-		$this->offset = 1;
+		$this->offset = 3;
 		$this->decodePayload();
 	}
 
@@ -69,6 +70,7 @@ abstract class DataPacket extends BinaryStream{
 
 	public function encode(){
 		$this->reset();
+		$this->put("\x00\x00");
 		$this->encodePayload();
 		$this->isEncoded = true;
 	}
@@ -93,7 +95,7 @@ abstract class DataPacket extends BinaryStream{
 	abstract public function handle(NetworkSession $session) : bool;
 
 	public function reset(){
-		$this->buffer = chr($this::NETWORK_ID);
+		$this->buffer = Binary::writeUnsignedVarInt(static::NETWORK_ID);
 		$this->offset = 0;
 	}
 
@@ -439,5 +441,23 @@ abstract class DataPacket extends BinaryStream{
 					break;
 			}
 		}
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function getEntityLink() : array{
+		return [$this->getEntityUniqueId(), $this->getEntityUniqueId(), $this->getByte(), $this->getByte()];
+	}
+
+	/**
+	 * @param array $link
+	 */
+	protected function putEntityLink(array $link){
+		$this->putEntityUniqueId($link[0]);
+		$this->putEntityUniqueId($link[1]);
+		$this->putByte($link[2]);
+		$this->putByte($link[3]);
+
 	}
 }

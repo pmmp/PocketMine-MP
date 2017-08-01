@@ -38,17 +38,38 @@ class InteractPacket extends DataPacket{
 
 	const ACTION_OPEN_INVENTORY = 6;
 
+	/** @var int */
 	public $action;
+	/** @var int */
 	public $target;
+
+	/** @var float */
+	public $x;
+	/** @var float */
+	public $y;
+	/** @var float */
+	public $z;
 
 	public function decodePayload(){
 		$this->action = $this->getByte();
 		$this->target = $this->getEntityRuntimeId();
+
+		if($this->action === self::ACTION_MOUSEOVER){
+			$this->x = $this->getLFloat();
+			$this->y = $this->getLFloat();
+			$this->z = $this->getLFloat();
+		}
 	}
 
 	public function encodePayload(){
 		$this->putByte($this->action);
 		$this->putEntityRuntimeId($this->target);
+
+		if($this->action === self::ACTION_MOUSEOVER){
+			$this->putLFloat($this->x);
+			$this->putLFloat($this->y);
+			$this->putLFloat($this->z);
+		}
 	}
 
 	public function handle(NetworkSession $session) : bool{

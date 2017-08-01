@@ -21,36 +21,39 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\NetworkSession;
 
-class BlockPickRequestPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::BLOCK_PICK_REQUEST_PACKET;
+class NpcRequestPacket extends DataPacket{
+	const NETWORK_ID = ProtocolInfo::NPC_REQUEST_PACKET;
 
-	public $tileX;
-	public $tileY;
-	public $tileZ;
-	public $addUserData = false;
-	public $hotbarSlot;
+	/** @var int */
+	public $entityRuntimeId;
+	/** @var int */
+	public $requestType;
+	/** @var string */
+	public $commandString;
+	/** @var int */
+	public $actionType;
 
 	public function decodePayload(){
-		$this->getSignedBlockPosition($this->tileX, $this->tileY, $this->tileZ);
-		$this->addUserData = $this->getBool();
-		$this->hotbarSlot = $this->getByte();
+		$this->entityRuntimeId = $this->getEntityRuntimeId();
+		$this->requestType = $this->getByte();
+		$this->commandString = $this->getString();
+		$this->actionType = $this->getByte();
 	}
 
 	public function encodePayload(){
-		$this->putSignedBlockPosition($this->tileX, $this->tileY, $this->tileZ);
-		$this->putBool($this->addUserData);
-		$this->putByte($this->hotbarSlot);
+		$this->putEntityRuntimeId($this->entityRuntimeId);
+		$this->putByte($this->requestType);
+		$this->putString($this->commandString);
+		$this->putByte($this->actionType);
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleBlockPickRequest($this);
+		return $session->handleNpcRequest($this);
 	}
 }

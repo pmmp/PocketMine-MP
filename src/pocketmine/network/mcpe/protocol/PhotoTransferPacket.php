@@ -27,32 +27,29 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 
-class InventoryActionPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::INVENTORY_ACTION_PACKET;
+class PhotoTransferPacket extends DataPacket{
+	const NETWORK_ID = ProtocolInfo::PHOTO_TRANSFER_PACKET;
 
-	const ACTION_GIVE_ITEM = 0;
-	const ACTION_ENCHANT_ITEM = 2;
-
-	public $actionId;
-	public $item;
-	public $enchantmentId = 0;
-	public $enchantmentLevel = 0;
+	/** @var string */
+	public $string1;
+	/** @var string */
+	public $string2;
+	/** @var string */
+	public $string3;
 
 	public function decodePayload(){
-		$this->actionId = $this->getUnsignedVarInt();
-		$this->item = $this->getSlot();
-		$this->enchantmentId = $this->getVarInt();
-		$this->enchantmentLevel = $this->getVarInt();
+		$this->string1 = $this->getString();
+		$this->string2 = $this->getString();
+		$this->string3 = $this->getString();
 	}
 
 	public function encodePayload(){
-		$this->putUnsignedVarInt($this->actionId);
-		$this->putSlot($this->item);
-		$this->putVarInt($this->enchantmentId);
-		$this->putVarInt($this->enchantmentLevel);
+		$this->putString($this->string1);
+		$this->putString($this->string2);
+		$this->putString($this->string3);
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleInventoryAction($this);
+		return $session->handlePhotoTransfer($this);
 	}
 }

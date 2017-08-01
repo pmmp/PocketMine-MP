@@ -25,23 +25,22 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\NetworkSession;
 
-class ReplaceItemInSlotPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::REPLACE_ITEM_IN_SLOT_PACKET;
+class SetLastHurtByPacket extends DataPacket{
+	const NETWORK_ID = ProtocolInfo::SET_LAST_HURT_BY_PACKET;
 
-	public $item;
+	public $entityTypeId;
 
 	public function decodePayload(){
-		$this->item = $this->getSlot();
+		$this->entityTypeId = $this->getVarInt();
 	}
 
 	public function encodePayload(){
-		$this->putSlot($this->item);
+		$this->putVarInt($this->entityTypeId);
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleReplaceItemInSlot($this);
+		return $session->handleSetLastHurtBy($this);
 	}
 }

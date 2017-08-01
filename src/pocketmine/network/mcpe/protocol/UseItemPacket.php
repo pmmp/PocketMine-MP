@@ -29,6 +29,9 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\NetworkSession;
 
+/**
+ * @removed
+ */
 class UseItemPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::USE_ITEM_PACKET;
 

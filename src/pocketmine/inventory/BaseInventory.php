@@ -27,8 +27,8 @@ use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityInventoryChangeEvent;
 use pocketmine\event\inventory\InventoryOpenEvent;
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\protocol\ContainerSetContentPacket;
-use pocketmine\network\mcpe\protocol\ContainerSetSlotPacket;
+use pocketmine\network\mcpe\protocol\InventoryContentPacket;
+use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\Player;
 use pocketmine\Server;
 
@@ -419,10 +419,9 @@ abstract class BaseInventory implements Inventory{
 			$target = [$target];
 		}
 
-		$pk = new ContainerSetContentPacket();
-		$pk->slots = [];
+		$pk = new InventoryContentPacket();
 		for($i = 0; $i < $this->getSize(); ++$i){
-			$pk->slots[$i] = $this->getItem($i);
+			$pk->items[$i] = $this->getItem($i);
 		}
 
 		foreach($target as $player){
@@ -430,8 +429,7 @@ abstract class BaseInventory implements Inventory{
 				$this->close($player);
 				continue;
 			}
-			$pk->windowid = $id;
-			$pk->targetEid = $player->getId();
+			$pk->windowId = $id;
 			$player->dataPacket($pk);
 		}
 	}
@@ -445,8 +443,8 @@ abstract class BaseInventory implements Inventory{
 			$target = [$target];
 		}
 
-		$pk = new ContainerSetSlotPacket();
-		$pk->slot = $index;
+		$pk = new InventorySlotPacket();
+		$pk->slotIndex = $index;
 		$pk->item = clone $this->getItem($index);
 
 		foreach($target as $player){
@@ -454,7 +452,7 @@ abstract class BaseInventory implements Inventory{
 				$this->close($player);
 				continue;
 			}
-			$pk->windowid = $id;
+			$pk->windowId = $id;
 			$player->dataPacket($pk);
 		}
 	}

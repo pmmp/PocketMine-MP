@@ -21,36 +21,29 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\NetworkSession;
 
-class BlockPickRequestPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::BLOCK_PICK_REQUEST_PACKET;
+class ModalFormRequestPacket extends DataPacket{
+	const NETWORK_ID = ProtocolInfo::MODAL_FORM_REQUEST_PACKET;
 
-	public $tileX;
-	public $tileY;
-	public $tileZ;
-	public $addUserData = false;
-	public $hotbarSlot;
+	/** @var int */
+	public $uvarint1;
+	/** @var string */
+	public $string1;
 
 	public function decodePayload(){
-		$this->getSignedBlockPosition($this->tileX, $this->tileY, $this->tileZ);
-		$this->addUserData = $this->getBool();
-		$this->hotbarSlot = $this->getByte();
+		//TODO
 	}
 
 	public function encodePayload(){
-		$this->putSignedBlockPosition($this->tileX, $this->tileY, $this->tileZ);
-		$this->putBool($this->addUserData);
-		$this->putByte($this->hotbarSlot);
+		//TODO
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleBlockPickRequest($this);
+		return $session->handleModalFormRequest($this);
 	}
 }

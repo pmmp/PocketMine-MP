@@ -28,6 +28,9 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\NetworkSession;
 
+/**
+ * @removed
+ */
 class ContainerSetSlotPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::CONTAINER_SET_SLOT_PACKET;
 

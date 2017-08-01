@@ -48,6 +48,22 @@ class BatchPacket extends DataPacket{
 		return true;
 	}
 
+	public function decode(){
+		$this->offset = 1;
+		$this->decodePayload();
+	}
+
+	public function encode(){
+		$this->reset();
+		$this->encodePayload();
+		$this->isEncoded = true;
+	}
+
+	public function reset(){
+		$this->buffer = "\xfe";
+		$this->offset = 0;
+	}
+
 	public function decodePayload(){
 		$data = $this->getRemaining();
 		try{
