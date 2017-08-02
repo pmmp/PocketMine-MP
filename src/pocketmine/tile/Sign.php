@@ -86,7 +86,7 @@ class Sign extends Spawnable{
 		if($index < 0 or $index > 3){
 			throw new \InvalidArgumentException("Index must be in the range 0-3!");
 		}
-		return $this->namedtag{"Text" . ($index + 1)}->getValue();
+		return $this->namedtag->{"Text" . ($index + 1)}->getValue();
 	}
 
 	public function getText(){
@@ -100,7 +100,7 @@ class Sign extends Spawnable{
 
 	public function addAdditionalSpawnData(CompoundTag $nbt){
 		for($i = 1; $i <= 4; $i++){
-			$textKey = "Text$i";
+			$textKey = "Text" . $i;
 			$nbt->$textKey = $this->namedtag->$textKey;
 		}
 		return $nbt;
