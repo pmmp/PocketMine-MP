@@ -475,7 +475,7 @@ class PlayerInventory extends BaseInventory{
 
 				$pk2 = new InventorySlotPacket();
 				$pk2->windowId = ContainerIds::ARMOR;
-				$pk2->slotIndex = $index - $this->getSize();
+				$pk2->inventorySlot = $index - $this->getSize();
 				$pk2->item = $this->getItem($index);
 				$player->dataPacket($pk2);
 			}else{
@@ -538,7 +538,7 @@ class PlayerInventory extends BaseInventory{
 		}
 
 		$pk = new InventorySlotPacket();
-		$pk->slotIndex = $index;
+		$pk->inventorySlot = $index;
 		$pk->item = clone $this->getItem($index);
 
 		foreach($target as $player){

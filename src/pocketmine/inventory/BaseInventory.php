@@ -444,7 +444,7 @@ abstract class BaseInventory implements Inventory{
 		}
 
 		$pk = new InventorySlotPacket();
-		$pk->slotIndex = $index;
+		$pk->inventorySlot = $index;
 		$pk->item = clone $this->getItem($index);
 
 		foreach($target as $player){

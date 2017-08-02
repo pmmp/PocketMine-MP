@@ -34,17 +34,104 @@ class InventoryTransactionPacket extends DataPacket{
 	const TYPE_USE_ITEM_ON_ENTITY = 3;
 	const TYPE_RELEASE_ITEM = 4;
 
+	const SOURCE_CONTAINER = 0;
+
+	const SOURCE_WORLD = 2;
+	const SOURCE_CREATIVE = 3;
+	const SOURCE_CRAFTING = 99999;
+
+
+	public $actions = [];
+
+	public $transactionData;
 
 	public function decodePayload(){
 		$type = $this->getUnsignedVarInt();
 
+		$actionCount = $this->getUnsignedVarInt();
+		for($i = 0; $i < $actionCount; ++$i){
+			$this->actions[] = $this->decodeInventoryAction();
+		}
+
+		$this->transactionData = new \stdClass();
+		$this->transactionData->transactionType = $type;
+
+		switch($type){
+			case 0:
+			case 1:
+				//Regular ComplexInventoryTransaction doesn't read any extra data
+				break;
+			case self::TYPE_USE_ITEM:
+				$this->transactionData->useItemActionType = $this->getUnsignedVarInt();
+				$this->getBlockPosition($this->transactionData->x, $this->transactionData->y, $this->transactionData->z);
+				$this->transactionData->face = $this->getVarInt();
+				$this->transactionData->hotbarSlot = $this->getVarInt();
+				$this->transactionData->itemInHand = $this->getSlot();
+				$this->transactionData->playerPos = $this->getVector3Obj();
+				$this->transactionData->clickPos = $this->getVector3Obj();
+				break;
+			case self::TYPE_USE_ITEM_ON_ENTITY:
+				$this->transactionData->entityRuntimeId = $this->getEntityRuntimeId();
+				$this->transactionData->uvarint1_3 = $this->getUnsignedVarInt();
+				$this->transactionData->hotbarSlot = $this->getVarInt();
+				$this->transactionData->itemInHand = $this->getSlot();
+				$this->transactionData->vector1 = $this->getVector3Obj();
+				$this->transactionData->vector2 = $this->getVector3Obj();
+				break;
+			default:
+				throw new \UnexpectedValueException("Unknown transaction type $type");
+
+
+		}
 
 		//TODO
 	}
 
 	public function encodePayload(){
-
 		//TODO
+	}
+
+	protected function decodeInventoryAction(){
+		$actionBucket = new \stdClass();
+		$actionBucket->inventorySource = $this->decodeInventorySource();
+
+		$actionBucket->inventorySlot = $this->getUnsignedVarInt();
+		$actionBucket->oldItem = $this->getSlot();
+		$actionBucket->newItem = $this->getSlot();
+		return $actionBucket;
+	}
+
+	protected function decodeInventorySource(){
+		$bucket = new \stdClass();
+		$bucket->sourceType = $this->getUnsignedVarInt();
+
+		switch($bucket->sourceType){
+			case self::SOURCE_CONTAINER:
+				$bucket->containerId = $this->getVarInt();
+				$bucket->field_2 = 0;
+				break;
+			case 1: //???
+				$bucket->containerId = -1;
+				$bucket->field_2 = 0;
+				break;
+			case self::SOURCE_WORLD:
+				$bucket->containerId = -1;
+				$bucket->field_2 = $this->getUnsignedVarInt();
+				break;
+			case self::SOURCE_CREATIVE:
+				$bucket->containerId = -1;
+				$bucket->field_2 = 0;
+				break;
+			case self::SOURCE_CRAFTING:
+				$bucket->containerId = $this->getVarInt();
+				$bucket->field_2 = 0;
+				break;
+			default:
+				throw new \UnexpectedValueException("Unexpected inventory source type $bucket->sourceType");
+
+		}
+
+		return $bucket;
 	}
 
 	public function handle(NetworkSession $session) : bool{

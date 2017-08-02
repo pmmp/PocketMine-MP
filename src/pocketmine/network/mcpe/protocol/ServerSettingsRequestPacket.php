@@ -31,11 +31,11 @@ class ServerSettingsRequestPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SERVER_SETTINGS_REQUEST_PACKET;
 
 	public function decodePayload(){
-		//TODO
+		//No payload
 	}
 
 	public function encodePayload(){
-		//TODO
+		//No payload
 	}
 
 	public function handle(NetworkSession $session) : bool{

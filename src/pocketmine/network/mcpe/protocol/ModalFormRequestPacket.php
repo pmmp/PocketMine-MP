@@ -31,16 +31,18 @@ class ModalFormRequestPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::MODAL_FORM_REQUEST_PACKET;
 
 	/** @var int */
-	public $uvarint1;
+	public $formId;
 	/** @var string */
-	public $string1;
+	public $formData; //json
 
 	public function decodePayload(){
-		//TODO
+		$this->formId = $this->getUnsignedVarInt();
+		$this->formData = $this->getString();
 	}
 
 	public function encodePayload(){
-		//TODO
+		$this->putUnsignedVarInt($this->formId);
+		$this->putString($this->formData);
 	}
 
 	public function handle(NetworkSession $session) : bool{

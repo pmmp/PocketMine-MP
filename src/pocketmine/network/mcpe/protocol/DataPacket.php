@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
@@ -377,6 +378,50 @@ abstract class DataPacket extends BinaryStream{
 		$this->putLFloat($x);
 		$this->putLFloat($y);
 		$this->putLFloat($z);
+	}
+
+	/**
+	 * Reads a floating-point Vector3 object
+	 * TODO: get rid of primitive methods and replace with this
+	 *
+	 * @return Vector3
+	 */
+	public function getVector3Obj() : Vector3{
+		return new Vector3(
+			$this->getRoundedLFloat(4),
+			$this->getRoundedLFloat(4),
+			$this->getRoundedLFloat(4)
+		);
+	}
+
+	/**
+	 * Writes a floating-point Vector3 object, or 3x zero if null is given.
+	 *
+	 * Note: ONLY use this where it is reasonable to allow not specifying the vector.
+	 * For all other purposes, use {@link DataPacket#putVector3Obj}
+	 *
+	 * @param Vector3|null $vector
+	 */
+	public function putVector3ObjNullable(Vector3 $vector = null){
+		if($vector){
+			$this->putVector3Obj($vector);
+		}else{
+			$this->putLFloat(0.0);
+			$this->putLFloat(0.0);
+			$this->putLFloat(0.0);
+		}
+	}
+
+	/**
+	 * Writes a floating-point Vector3 object
+	 * TODO: get rid of primitive methods and replace with this
+	 *
+	 * @param Vector3 $vector
+	 */
+	public function putVector3Obj(Vector3 $vector){
+		$this->putLFloat($vector->x);
+		$this->putLFloat($vector->y);
+		$this->putLFloat($vector->z);
 	}
 
 	public function getByteRotation() : float{
