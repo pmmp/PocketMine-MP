@@ -912,7 +912,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function addRandomTickedBlock(int $id){
-		$this->randomTickBlocks[$id] = Block::$list[$id];
+		$this->randomTickBlocks[$id] = get_class(Block::$list[$id]);
 	}
 
 	public function removeRandomTickedBlock(int $id){
