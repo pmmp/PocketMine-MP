@@ -25,11 +25,7 @@ namespace pocketmine\block;
 
 class RedstoneTorch extends Torch{
 
-	protected $id = self::REDSTONE_TORCH;
-
-	public function __construct($meta = 0){
-		$this->meta = $meta;
-	}
+	protected $id = self::LIT_REDSTONE_TORCH;
 
 	public function getName(){
 		return "Redstone Torch";

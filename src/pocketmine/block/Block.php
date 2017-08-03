@@ -75,6 +75,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$hardness = new \SplFixedArray(256);
 			self::$transparent = new \SplFixedArray(256);
 			self::$diffusesSkyLight = new \SplFixedArray(256);
+
 			self::$list[self::AIR] = Air::class;
 			self::$list[self::STONE] = Stone::class;
 			self::$list[self::GRASS] = Grass::class;
@@ -98,17 +99,19 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$list[self::GLASS] = Glass::class;
 			self::$list[self::LAPIS_ORE] = LapisOre::class;
 			self::$list[self::LAPIS_BLOCK] = Lapis::class;
-			self::$list[self::ACTIVATOR_RAIL] = ActivatorRail::class;
-			self::$list[self::COCOA_BLOCK] = CocoaBlock::class;
+
 			self::$list[self::SANDSTONE] = Sandstone::class;
 			self::$list[self::NOTE_BLOCK] = NoteBlock::class;
 			self::$list[self::BED_BLOCK] = Bed::class;
 			self::$list[self::POWERED_RAIL] = PoweredRail::class;
 			self::$list[self::DETECTOR_RAIL] = DetectorRail::class;
+
 			self::$list[self::COBWEB] = Cobweb::class;
 			self::$list[self::TALL_GRASS] = TallGrass::class;
 			self::$list[self::DEAD_BUSH] = DeadBush::class;
+
 			self::$list[self::WOOL] = Wool::class;
+
 			self::$list[self::DANDELION] = Dandelion::class;
 			self::$list[self::RED_FLOWER] = Flower::class;
 			self::$list[self::BROWN_MUSHROOM] = BrownMushroom::class;
@@ -139,7 +142,6 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$list[self::WOOD_DOOR_BLOCK] = WoodDoor::class;
 			self::$list[self::LADDER] = Ladder::class;
 			self::$list[self::RAIL] = Rail::class;
-
 			self::$list[self::COBBLESTONE_STAIRS] = CobblestoneStairs::class;
 			self::$list[self::WALL_SIGN] = WallSign::class;
 			self::$list[self::LEVER] = Lever::class;
@@ -148,9 +150,8 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$list[self::WOODEN_PRESSURE_PLATE] = WoodenPressurePlate::class;
 			self::$list[self::REDSTONE_ORE] = RedstoneOre::class;
 			self::$list[self::GLOWING_REDSTONE_ORE] = GlowingRedstoneOre::class;
-
-			self::$list[self::REDSTONE_TORCH] = RedstoneTorch::class;
-			self::$list[self::LIT_REDSTONE_TORCH] = LitRedstoneTorch::class;
+			self::$list[self::UNLIT_REDSTONE_TORCH] = RedstoneTorchUnlit::class;
+			self::$list[self::LIT_REDSTONE_TORCH] = RedstoneTorch::class;
 			self::$list[self::STONE_BUTTON] = StoneButton::class;
 			self::$list[self::SNOW_LAYER] = SnowLayer::class;
 			self::$list[self::ICE] = Ice::class;
@@ -181,7 +182,6 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$list[self::FENCE_GATE] = FenceGate::class;
 			self::$list[self::BRICK_STAIRS] = BrickStairs::class;
 			self::$list[self::STONE_BRICK_STAIRS] = StoneBrickStairs::class;
-
 			self::$list[self::MYCELIUM] = Mycelium::class;
 			self::$list[self::WATER_LILY] = WaterLily::class;
 			self::$list[self::NETHER_BRICKS] = NetherBrick::class;
@@ -190,18 +190,25 @@ class Block extends Position implements BlockIds, Metadatable{
 
 			self::$list[self::ENCHANTING_TABLE] = EnchantingTable::class;
 			self::$list[self::BREWING_STAND_BLOCK] = BrewingStand::class;
+
 			self::$list[self::END_PORTAL_FRAME] = EndPortalFrame::class;
 			self::$list[self::END_STONE] = EndStone::class;
+
 			self::$list[self::REDSTONE_LAMP] = RedstoneLamp::class;
 			self::$list[self::LIT_REDSTONE_LAMP] = LitRedstoneLamp::class;
+
+			self::$list[self::ACTIVATOR_RAIL] = ActivatorRail::class;
+			self::$list[self::COCOA_BLOCK] = CocoaBlock::class;
 			self::$list[self::SANDSTONE_STAIRS] = SandstoneStairs::class;
 			self::$list[self::EMERALD_ORE] = EmeraldOre::class;
+
 			self::$list[self::TRIPWIRE_HOOK] = TripwireHook::class;
 			self::$list[self::TRIPWIRE] = Tripwire::class;
 			self::$list[self::EMERALD_BLOCK] = Emerald::class;
 			self::$list[self::SPRUCE_WOOD_STAIRS] = SpruceWoodStairs::class;
 			self::$list[self::BIRCH_WOOD_STAIRS] = BirchWoodStairs::class;
 			self::$list[self::JUNGLE_WOOD_STAIRS] = JungleWoodStairs::class;
+
 			self::$list[self::STONE_WALL] = StoneWall::class;
 			self::$list[self::FLOWER_POT_BLOCK] = FlowerPot::class;
 			self::$list[self::CARROT_BLOCK] = Carrot::class;
@@ -226,9 +233,10 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$list[self::WOOD2] = Wood2::class;
 			self::$list[self::ACACIA_WOOD_STAIRS] = AcaciaWoodStairs::class;
 			self::$list[self::DARK_OAK_WOOD_STAIRS] = DarkOakWoodStairs::class;
+
+			self::$list[self::IRON_TRAPDOOR] = IronTrapdoor::class;
 			self::$list[self::PRISMARINE] = Prismarine::class;
 			self::$list[self::SEA_LANTERN] = SeaLantern::class;
-			self::$list[self::IRON_TRAPDOOR] = IronTrapdoor::class;
 			self::$list[self::HAY_BALE] = HayBale::class;
 			self::$list[self::CARPET] = Carpet::class;
 			self::$list[self::HARDENED_CLAY] = HardenedClay::class;
@@ -242,9 +250,8 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$list[self::FENCE_GATE_DARK_OAK] = FenceGateDarkOak::class;
 			self::$list[self::FENCE_GATE_ACACIA] = FenceGateAcacia::class;
 
-			self::$list[self::ITEM_FRAME_BLOCK] = ItemFrame::class;
-
 			self::$list[self::GRASS_PATH] = GrassPath::class;
+			self::$list[self::ITEM_FRAME_BLOCK] = ItemFrame::class;
 
 			self::$list[self::PODZOL] = Podzol::class;
 			self::$list[self::BEETROOT_BLOCK] = Beetroot::class;
