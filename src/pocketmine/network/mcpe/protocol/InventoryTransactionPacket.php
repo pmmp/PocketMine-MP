@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\inventory\source\InventorySource;
 
 class InventoryTransactionPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::INVENTORY_TRANSACTION_PACKET;
@@ -34,11 +35,50 @@ class InventoryTransactionPacket extends DataPacket{
 	const TYPE_USE_ITEM_ON_ENTITY = 3;
 	const TYPE_RELEASE_ITEM = 4;
 
+	const USE_ITEM_ACTION_CLICK_BLOCK = 0;
+	const USE_ITEM_ACTION_CLICK_AIR = 1;
+	const USE_ITEM_ACTION_BREAK_BLOCK = 2;
+
+	const RELEASE_ITEM_ACTION_RELEASE = 0; //bow shoot
+	const RELEASE_ITEM_ACTION_CONSUME = 1; //eat food, drink potion
+
+	//TODO: use-item on entity interaction action types
+
 	const SOURCE_CONTAINER = 0;
 
-	const SOURCE_WORLD = 2;
+	const SOURCE_WORLD = 2; //drop/pickup item entity
 	const SOURCE_CREATIVE = 3;
-	const SOURCE_CRAFTING = 99999;
+
+	const SOURCE_TODO = 99999;
+
+	/**
+	 * These identifiers are used for special slot types for transaction/inventory types that are not yet implemented.
+	 * Expect these to change in the future.
+	 */
+	const SOURCE_TYPE_CRAFTING_ADD_INGREDIENT = -2;
+	const SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT = -3;
+	const SOURCE_TYPE_CRAFTING_RESULT = -4;
+
+	const SOURCE_TYPE_ANVIL_INPUT = -10;
+	const SOURCE_TYPE_ANVIL_MATERIAL = -11;
+	const SOURCE_TYPE_ANVIL_RESULT = -12;
+	const SOURCE_TYPE_ANVIL_OUTPUT = -13;
+
+	const SOURCE_TYPE_ENCHANT_INPUT = -15;
+	const SOURCE_TYPE_ENCHANT_MATERIAL = -16;
+	const SOURCE_TYPE_ENCHANT_OUTPUT = -17;
+
+	const SOURCE_TYPE_TRADING_INPUT_1 = -20;
+	const SOURCE_TYPE_TRADING_INPUT_2 = -21;
+	const SOURCE_TYPE_TRADING_USE_INPUTS = -22;
+	const SOURCE_TYPE_TRADING_OUTPUT = -23;
+
+	const SOURCE_TYPE_BEACON = -24;
+
+	const SOURCE_TYPE_CONTAINER_DROP_CONTENTS = -100;
+
+
+
 
 
 	public $actions = [];
@@ -72,11 +112,17 @@ class InventoryTransactionPacket extends DataPacket{
 				break;
 			case self::TYPE_USE_ITEM_ON_ENTITY:
 				$this->transactionData->entityRuntimeId = $this->getEntityRuntimeId();
-				$this->transactionData->uvarint1_3 = $this->getUnsignedVarInt();
+				$this->transactionData->uvarint1_3 = $this->getUnsignedVarInt(); //probably action type, check values
 				$this->transactionData->hotbarSlot = $this->getVarInt();
 				$this->transactionData->itemInHand = $this->getSlot();
 				$this->transactionData->vector1 = $this->getVector3Obj();
 				$this->transactionData->vector2 = $this->getVector3Obj();
+				break;
+			case self::TYPE_RELEASE_ITEM:
+				$this->transactionData->releaseItemActionType = $this->getUnsignedVarInt();
+				$this->transactionData->hotbarSlot = $this->getVarInt();
+				$this->transactionData->itemInHand = $this->getSlot();
+				$this->transactionData->headPos = $this->getVector3Obj();
 				break;
 			default:
 				throw new \UnexpectedValueException("Unknown transaction type $type");
@@ -107,13 +153,12 @@ class InventoryTransactionPacket extends DataPacket{
 
 		switch($bucket->sourceType){
 			case self::SOURCE_CONTAINER:
+
 				$bucket->containerId = $this->getVarInt();
 				$bucket->field_2 = 0;
 				break;
-			case 1: //???
-				$bucket->containerId = -1;
-				$bucket->field_2 = 0;
-				break;
+			case 1:
+				break; //unused
 			case self::SOURCE_WORLD:
 				$bucket->containerId = -1;
 				$bucket->field_2 = $this->getUnsignedVarInt();
@@ -122,7 +167,7 @@ class InventoryTransactionPacket extends DataPacket{
 				$bucket->containerId = -1;
 				$bucket->field_2 = 0;
 				break;
-			case self::SOURCE_CRAFTING:
+			case self::SOURCE_TODO:
 				$bucket->containerId = $this->getVarInt();
 				$bucket->field_2 = 0;
 				break;
