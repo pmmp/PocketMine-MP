@@ -246,12 +246,6 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$list[self::BEETROOT_SOUP] = BeetrootSoup::class;
 
 			self::$list[self::ENCHANTED_GOLDEN_APPLE] = GoldenAppleEnchanted::class;
-
-			for($i = 0; $i < 256; ++$i){
-				if(Block::$list[$i] !== null){
-					self::$list[$i] = Block::$list[$i];
-				}
-			}
 		}
 
 		self::initCreativeItems();
@@ -333,13 +327,15 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	public static function get(int $id, int $meta = 0, int $count = 1, $tags = "") : Item{
 		try{
-			$class = self::$list[$id];
-			if($class === null){
-				return (new Item($id, $meta, $count))->setCompoundTag($tags);
-			}elseif($id < 256){
-				return (new ItemBlock(new $class($meta), $meta, $count))->setCompoundTag($tags);
+			if($id < 256){
+				return (new ItemBlock(Block::get($id, $meta), $meta, $count))->setCompoundTag($tags);
 			}else{
-				return (new $class($meta, $count))->setCompoundTag($tags);
+				$class = self::$list[$id];
+				if($class === null){
+					return (new Item($id, $meta, $count))->setCompoundTag($tags);
+				}else{
+					return (new $class($meta, $count))->setCompoundTag($tags);
+				}
 			}
 		}catch(\RuntimeException $e){
 			return (new Item($id, $meta, $count))->setCompoundTag($tags);

@@ -23,11 +23,26 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class SpruceWoodStairs extends WoodStairs{
+use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
-	protected $id = self::SPRUCE_STAIRS;
+class WoodenStairs extends Stair{
 
-	public function getName(){
-		return "Spruce Wood Stairs";
+	public function getHardness(){
+		return 2;
+	}
+
+	public function getResistance(){
+		return 15;
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_AXE;
+	}
+
+	public function getDrops(Item $item){
+		return [
+			[$this->id, 0, 1],
+		];
 	}
 }

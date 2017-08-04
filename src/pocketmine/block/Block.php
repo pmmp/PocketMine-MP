@@ -59,12 +59,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	/** @var \SplFixedArray */
 	public static $diffusesSkyLight = null;
 
-	protected $id;
-	protected $meta = 0;
-
-	/** @var AxisAlignedBB */
-	public $boundingBox = null;
-
 	/**
 	 * Initializes the block factory. By default this is called only once on server start, however you may wish to use
 	 * this if you need to reset the block factory back to its original defaults for whatever reason.
@@ -134,7 +128,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new Torch());
 			self::registerBlock(new Fire());
 			self::registerBlock(new MonsterSpawner());
-			self::registerBlock(new WoodStairs());
+			self::registerBlock(new WoodenStairs(Block::OAK_STAIRS, 0, "Oak Stairs"));
 			self::registerBlock(new Chest());
 
 			self::registerBlock(new DiamondOre());
@@ -145,7 +139,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new Furnace());
 			self::registerBlock(new BurningFurnace());
 			self::registerBlock(new SignPost());
-			self::registerBlock(new WoodenDoor());
+			self::registerBlock(new WoodenDoor(Block::OAK_DOOR_BLOCK, 0, "Oak Door Block", Item::OAK_DOOR));
 			self::registerBlock(new Ladder());
 			self::registerBlock(new Rail());
 			self::registerBlock(new CobblestoneStairs());
@@ -185,7 +179,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new PumpkinStem());
 			self::registerBlock(new MelonStem());
 			self::registerBlock(new Vine());
-			self::registerBlock(new FenceGate());
+			self::registerBlock(new FenceGate(Block::OAK_FENCE_GATE, 0, "Oak Fence Gate"));
 			self::registerBlock(new BrickStairs());
 			self::registerBlock(new StoneBrickStairs());
 			self::registerBlock(new Mycelium());
@@ -211,9 +205,9 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new TripwireHook());
 			self::registerBlock(new Tripwire());
 			self::registerBlock(new Emerald());
-			self::registerBlock(new SpruceWoodStairs());
-			self::registerBlock(new BirchWoodStairs());
-			self::registerBlock(new JungleWoodStairs());
+			self::registerBlock(new WoodenStairs(Block::SPRUCE_STAIRS, 0, "Spruce Stairs"));
+			self::registerBlock(new WoodenStairs(Block::BIRCH_STAIRS, 0, "Birch Stairs"));
+			self::registerBlock(new WoodenStairs(Block::JUNGLE_STAIRS, 0, "Jungle Stairs"));
 
 			self::registerBlock(new CobblestoneWall());
 			self::registerBlock(new FlowerPot());
@@ -237,8 +231,8 @@ class Block extends Position implements BlockIds, Metadatable{
 
 			self::registerBlock(new Leaves2());
 			self::registerBlock(new Wood2());
-			self::registerBlock(new AcaciaWoodStairs());
-			self::registerBlock(new DarkOakWoodStairs());
+			self::registerBlock(new WoodenStairs(Block::ACACIA_STAIRS, 0, "Acacia Stairs"));
+			self::registerBlock(new WoodenStairs(Block::DARK_OAK_STAIRS, 0, "Dark Oak Stairs"));
 
 			self::registerBlock(new IronTrapdoor());
 			self::registerBlock(new Prismarine());
@@ -250,12 +244,17 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new PackedIce());
 			self::registerBlock(new DoublePlant());
 
-			self::registerBlock(new FenceGateSpruce());
-			self::registerBlock(new FenceGateBirch());
-			self::registerBlock(new FenceGateJungle());
-			self::registerBlock(new FenceGateDarkOak());
-			self::registerBlock(new FenceGateAcacia());
+			self::registerBlock(new FenceGate(Block::SPRUCE_FENCE_GATE, 0, "Spruce Fence Gate"));
+			self::registerBlock(new FenceGate(Block::BIRCH_FENCE_GATE, 0, "Birch Fence Gate"));
+			self::registerBlock(new FenceGate(Block::JUNGLE_FENCE_GATE, 0, "Jungle Fence Gate"));
+			self::registerBlock(new FenceGate(Block::DARK_OAK_FENCE_GATE, 0, "Dark Oak Fence Gate"));
+			self::registerBlock(new FenceGate(Block::ACACIA_FENCE_GATE, 0, "Acacia Fence Gate"));
 
+			self::registerBlock(new WoodenDoor(Block::SPRUCE_DOOR_BLOCK, 0, "Spruce Door Block", Item::SPRUCE_DOOR));
+			self::registerBlock(new WoodenDoor(Block::BIRCH_DOOR_BLOCK, 0, "Birch Door Block", Item::BIRCH_DOOR));
+			self::registerBlock(new WoodenDoor(Block::JUNGLE_DOOR_BLOCK, 0, "Jungle Door Block", Item::JUNGLE_DOOR));
+			self::registerBlock(new WoodenDoor(Block::ACACIA_DOOR_BLOCK, 0, "Acacia Door Block", Item::ACACIA_DOOR));
+			self::registerBlock(new WoodenDoor(Block::DARK_OAK_DOOR_BLOCK, 0, "Dark Oak Door Block", Item::DARK_OAK_DOOR));
 			self::registerBlock(new GrassPath());
 			self::registerBlock(new ItemFrame());
 
@@ -332,13 +331,66 @@ class Block extends Position implements BlockIds, Metadatable{
 		return $block;
 	}
 
+
+	protected $id;
+	protected $meta = 0;
+	/** @var string */
+	protected $fallbackName;
+	/** @var int|null */
+	protected $itemId;
+
+	/** @var AxisAlignedBB */
+	public $boundingBox = null;
+
 	/**
-	 * @param int $id
+	 * @param int    $id     The block type's ID, 0-255
+	 * @param int    $meta   Meta value of the block type
+	 * @param string $name   English name of the block type (TODO: implement translations)
+	 * @param int    $itemId The item ID of the block type, used for block picking and dropping items.
+	 */
+	public function __construct(int $id, int $meta = 0, string $name = "Unknown", int $itemId = null){
+		$this->id = $id;
+		$this->meta = $meta;
+		$this->fallbackName = $name;
+		$this->itemId = $itemId;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getName(){
+		return $this->fallbackName;
+	}
+
+	/**
+	 * @return int
+	 */
+	final public function getId(){
+		return $this->id;
+	}
+
+	/**
+	 * Returns the ID of the item form of the block.
+	 * Used for drops for blocks (some blocks such as doors have a different item ID).
+	 *
+	 * @return int
+	 */
+	public function getItemId() : int{
+		return $this->itemId ?? $this->getId();
+	}
+
+	/**
+	 * @return int
+	 */
+	final public function getDamage(){
+		return $this->meta;
+	}
+
+	/**
 	 * @param int $meta
 	 */
-	public function __construct($id, $meta = 0){
-		$this->id = (int) $id;
-		$this->meta = (int) $meta;
+	final public function setDamage($meta){
+		$this->meta = $meta & 0x0f;
 	}
 
 	/**
@@ -514,36 +566,9 @@ class Block extends Position implements BlockIds, Metadatable{
 		return false;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getName(){
-		return "Unknown";
-	}
-
-	/**
-	 * @return int
-	 */
-	final public function getId(){
-		return $this->id;
-	}
 
 	public function addVelocityToEntity(Entity $entity, Vector3 $vector){
 
-	}
-
-	/**
-	 * @return int
-	 */
-	final public function getDamage(){
-		return $this->meta;
-	}
-
-	/**
-	 * @param int $meta
-	 */
-	final public function setDamage($meta){
-		$this->meta = $meta & 0x0f;
 	}
 
 	/**
@@ -571,7 +596,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			return [];
 		}else{
 			return [
-				[$this->getId(), $this->getDamage(), 1],
+				[$this->getItemId(), $this->getDamage(), 1],
 			];
 		}
 	}

@@ -89,7 +89,7 @@ interface BlockIds{
 	const FURNACE = 61;
 	const BURNING_FURNACE = 62, LIT_FURNACE = 62;
 	const SIGN_POST = 63, STANDING_SIGN = 63;
-	const WOODEN_DOOR_BLOCK = 64;
+	const OAK_DOOR_BLOCK = 64, WOODEN_DOOR_BLOCK = 64;
 	const LADDER = 65;
 	const RAIL = 66;
 	const COBBLESTONE_STAIRS = 67, STONE_STAIRS = 67;
