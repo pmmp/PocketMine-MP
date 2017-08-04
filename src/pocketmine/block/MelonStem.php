@@ -66,7 +66,7 @@ class MelonStem extends Crops{
 						}
 					}
 					$side = $this->getSide(mt_rand(2, 5));
-					$d = $side->getSide(0);
+					$d = $side->getSide(Vector3::SIDE_DOWN);
 					if($side->getId() === self::AIR and ($d->getId() === self::FARMLAND or $d->getId() === self::GRASS or $d->getId() === self::DIRT)){
 						Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($side, new Melon()));
 						if(!$ev->isCancelled()){

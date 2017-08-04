@@ -51,7 +51,7 @@ class Sugarcane extends Flowable{
 
 	public function onActivate(Item $item, Player $player = null){
 		if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
-			if($this->getSide(0)->getId() !== self::SUGARCANE_BLOCK){
+			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::SUGARCANE_BLOCK){
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
 					if($b->getId() === self::AIR){
@@ -77,14 +77,14 @@ class Sugarcane extends Flowable{
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			$down = $this->getSide(0);
+			$down = $this->getSide(Vector3::SIDE_DOWN);
 			if($down->isTransparent() === true and $down->getId() !== self::SUGARCANE_BLOCK){
 				$this->getLevel()->useBreakOn($this);
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
-			if($this->getSide(0)->getId() !== self::SUGARCANE_BLOCK){
+			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::SUGARCANE_BLOCK){
 				if($this->meta === 0x0F){
 					for($y = 1; $y < 3; ++$y){
 						$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
@@ -108,16 +108,16 @@ class Sugarcane extends Flowable{
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		$down = $this->getSide(0);
+		$down = $this->getSide(Vector3::SIDE_DOWN);
 		if($down->getId() === self::SUGARCANE_BLOCK){
 			$this->getLevel()->setBlock($block, new Sugarcane(), true);
 
 			return true;
 		}elseif($down->getId() === self::GRASS or $down->getId() === self::DIRT or $down->getId() === self::SAND){
-			$block0 = $down->getSide(2);
-			$block1 = $down->getSide(3);
-			$block2 = $down->getSide(4);
-			$block3 = $down->getSide(5);
+			$block0 = $down->getSide(Vector3::SIDE_NORTH);
+			$block1 = $down->getSide(Vector3::SIDE_SOUTH);
+			$block2 = $down->getSide(Vector3::SIDE_WEST);
+			$block3 = $down->getSide(Vector3::SIDE_EAST);
 			if(($block0 instanceof Water) or ($block1 instanceof Water) or ($block2 instanceof Water) or ($block3 instanceof Water)){
 				$this->getLevel()->setBlock($block, new Sugarcane(), true);
 

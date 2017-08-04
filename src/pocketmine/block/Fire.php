@@ -31,6 +31,7 @@ use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Server;
 
 class Fire extends Flowable{
@@ -93,7 +94,7 @@ class Fire extends Flowable{
 
 			return Level::BLOCK_UPDATE_NORMAL;
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
-			if($this->getSide(0)->getId() !== self::NETHERRACK){
+			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::NETHERRACK){
 				if(mt_rand(0, 2) === 0){
 					if($this->meta === 0x0F){
 						$this->level->setBlock($this, new Air());

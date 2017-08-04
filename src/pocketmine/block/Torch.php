@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Torch extends Flowable{
@@ -46,7 +47,7 @@ class Torch extends Flowable{
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			$below = $this->getSide(0);
+			$below = $this->getSide(Vector3::SIDE_DOWN);
 			$side = $this->getDamage();
 			$faces = [
 				0 => 0,
@@ -68,7 +69,7 @@ class Torch extends Flowable{
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		$below = $this->getSide(0);
+		$below = $this->getSide(Vector3::SIDE_DOWN);
 
 		if($target->isTransparent() === false and $face !== 0){
 			$faces = [

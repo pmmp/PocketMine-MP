@@ -109,7 +109,7 @@ class Grass extends Solid{
 			$this->getLevel()->setBlock($this, new Farmland());
 
 			return true;
-		}elseif($item->isShovel() and $this->getSide(1)->getId() === Block::AIR){
+		}elseif($item->isShovel() and $this->getSide(Vector3::SIDE_UP)->getId() === Block::AIR){
 			$item->useOn($this);
 			$this->getLevel()->setBlock($this, new GrassPath());
 

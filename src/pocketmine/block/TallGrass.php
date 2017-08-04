@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class TallGrass extends Flowable{
@@ -50,7 +51,7 @@ class TallGrass extends Flowable{
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		$down = $this->getSide(0);
+		$down = $this->getSide(Vector3::SIDE_DOWN);
 		if($down->getId() === self::GRASS){
 			$this->getLevel()->setBlock($block, $this, true);
 
@@ -63,7 +64,7 @@ class TallGrass extends Flowable{
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->isTransparent() === true){ //Replace with common break method
+			if($this->getSide(Vector3::SIDE_DOWN)->isTransparent() === true){ //Replace with common break method
 				$this->getLevel()->setBlock($this, new Air(), true, true);
 
 				return Level::BLOCK_UPDATE_NORMAL;

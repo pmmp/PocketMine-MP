@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 
 abstract class Thin extends Transparent{
 
@@ -38,10 +39,10 @@ abstract class Thin extends Transparent{
 		$f2 = 0.4375;
 		$f3 = 0.5625;
 
-		$flag = $this->canConnect($this->getSide(2));
-		$flag1 = $this->canConnect($this->getSide(3));
-		$flag2 = $this->canConnect($this->getSide(4));
-		$flag3 = $this->canConnect($this->getSide(5));
+		$flag = $this->canConnect($this->getSide(Vector3::SIDE_NORTH));
+		$flag1 = $this->canConnect($this->getSide(Vector3::SIDE_SOUTH));
+		$flag2 = $this->canConnect($this->getSide(Vector3::SIDE_WEST));
+		$flag3 = $this->canConnect($this->getSide(Vector3::SIDE_EAST));
 
 		if((!$flag2 or !$flag3) and ($flag2 or $flag3 or $flag or $flag1)){
 			if($flag2 and !$flag3){
