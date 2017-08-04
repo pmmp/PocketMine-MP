@@ -123,10 +123,10 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$list[self::STICK] = Stick::class;
 			self::$list[self::BOWL] = Bowl::class;
 			self::$list[self::MUSHROOM_STEW] = MushroomStew::class;
-			self::$list[self::GOLD_SWORD] = GoldSword::class;
-			self::$list[self::GOLD_SHOVEL] = GoldShovel::class;
-			self::$list[self::GOLD_PICKAXE] = GoldPickaxe::class;
-			self::$list[self::GOLD_AXE] = GoldAxe::class;
+			self::$list[self::GOLDEN_SWORD] = GoldSword::class;
+			self::$list[self::GOLDEN_SHOVEL] = GoldShovel::class;
+			self::$list[self::GOLDEN_PICKAXE] = GoldPickaxe::class;
+			self::$list[self::GOLDEN_AXE] = GoldAxe::class;
 			self::$list[self::STRING] = StringItem::class;
 			self::$list[self::FEATHER] = Feather::class;
 			self::$list[self::GUNPOWDER] = Gunpowder::class;
@@ -134,7 +134,7 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$list[self::STONE_HOE] = StoneHoe::class;
 			self::$list[self::IRON_HOE] = IronHoe::class;
 			self::$list[self::DIAMOND_HOE] = DiamondHoe::class;
-			self::$list[self::GOLD_HOE] = GoldHoe::class;
+			self::$list[self::GOLDEN_HOE] = GoldHoe::class;
 			self::$list[self::WHEAT_SEEDS] = WheatSeeds::class;
 			self::$list[self::WHEAT] = Wheat::class;
 			self::$list[self::BREAD] = Bread::class;
@@ -142,10 +142,10 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$list[self::LEATHER_TUNIC] = LeatherTunic::class;
 			self::$list[self::LEATHER_PANTS] = LeatherPants::class;
 			self::$list[self::LEATHER_BOOTS] = LeatherBoots::class;
-			self::$list[self::CHAIN_HELMET] = ChainHelmet::class;
-			self::$list[self::CHAIN_CHESTPLATE] = ChainChestplate::class;
-			self::$list[self::CHAIN_LEGGINGS] = ChainLeggings::class;
-			self::$list[self::CHAIN_BOOTS] = ChainBoots::class;
+			self::$list[self::CHAINMAIL_HELMET] = ChainHelmet::class;
+			self::$list[self::CHAINMAIL_CHESTPLATE] = ChainChestplate::class;
+			self::$list[self::CHAINMAIL_LEGGINGS] = ChainLeggings::class;
+			self::$list[self::CHAINMAIL_BOOTS] = ChainBoots::class;
 			self::$list[self::IRON_HELMET] = IronHelmet::class;
 			self::$list[self::IRON_CHESTPLATE] = IronChestplate::class;
 			self::$list[self::IRON_LEGGINGS] = IronLeggings::class;
@@ -154,10 +154,10 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$list[self::DIAMOND_CHESTPLATE] = DiamondChestplate::class;
 			self::$list[self::DIAMOND_LEGGINGS] = DiamondLeggings::class;
 			self::$list[self::DIAMOND_BOOTS] = DiamondBoots::class;
-			self::$list[self::GOLD_HELMET] = GoldHelmet::class;
-			self::$list[self::GOLD_CHESTPLATE] = GoldChestplate::class;
-			self::$list[self::GOLD_LEGGINGS] = GoldLeggings::class;
-			self::$list[self::GOLD_BOOTS] = GoldBoots::class;
+			self::$list[self::GOLDEN_HELMET] = GoldHelmet::class;
+			self::$list[self::GOLDEN_CHESTPLATE] = GoldChestplate::class;
+			self::$list[self::GOLDEN_LEGGINGS] = GoldLeggings::class;
+			self::$list[self::GOLDEN_BOOTS] = GoldBoots::class;
 			self::$list[self::FLINT] = Flint::class;
 			self::$list[self::RAW_PORKCHOP] = RawPorkchop::class;
 			self::$list[self::COOKED_PORKCHOP] = CookedPorkchop::class;
@@ -227,7 +227,7 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$list[self::BAKED_POTATO] = BakedPotato::class;
 
 			self::$list[self::GOLDEN_CARROT] = GoldenCarrot::class;
-			self::$list[self::MOB_HEAD] = MobHead::class;
+			self::$list[self::SKULL] = Skull::class;
 
 			self::$list[self::NETHER_STAR] = NetherStar::class;
 			self::$list[self::PUMPKIN_PIE] = PumpkinPie::class;

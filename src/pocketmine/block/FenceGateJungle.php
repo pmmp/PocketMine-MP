@@ -26,7 +26,7 @@ namespace pocketmine\block;
 
 class FenceGateJungle extends FenceGate{
 
-	protected $id = self::FENCE_GATE_JUNGLE;
+	protected $id = self::JUNGLE_FENCE_GATE;
 
 	public function getName(){
 		return "Jungle Fence Gate";

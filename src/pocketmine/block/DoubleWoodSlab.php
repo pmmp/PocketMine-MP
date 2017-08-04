@@ -28,7 +28,7 @@ use pocketmine\item\Tool;
 
 class DoubleWoodSlab extends Solid{
 
-	protected $id = self::DOUBLE_WOOD_SLAB;
+	protected $id = self::DOUBLE_WOODEN_SLAB;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
@@ -58,7 +58,7 @@ class DoubleWoodSlab extends Solid{
 
 	public function getDrops(Item $item){
 		return [
-			[Item::WOOD_SLAB, $this->meta & 0x07, 2],
+			[Item::WOODEN_SLAB, $this->meta & 0x07, 2],
 		];
 	}
 

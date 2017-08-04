@@ -27,10 +27,10 @@ use pocketmine\item\Tool;
 
 class NetherBrickStairs extends Stair{
 
-	protected $id = self::NETHER_BRICKS_STAIRS;
+	protected $id = self::NETHER_BRICK_STAIRS;
 
 	public function getName(){
-		return "Nether Bricks Stairs";
+		return "Nether Brick Stairs";
 	}
 
 	public function getHardness(){

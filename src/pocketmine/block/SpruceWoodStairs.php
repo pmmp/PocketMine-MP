@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 class SpruceWoodStairs extends WoodStairs{
 
-	protected $id = self::SPRUCE_WOOD_STAIRS;
+	protected $id = self::SPRUCE_STAIRS;
 
 	public function getName(){
 		return "Spruce Wood Stairs";

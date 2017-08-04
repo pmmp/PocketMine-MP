@@ -28,14 +28,14 @@ use pocketmine\item\Tool;
 
 class WoodStairs extends Stair{
 
-	protected $id = self::WOOD_STAIRS;
+	protected $id = self::OAK_STAIRS;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 
 	public function getName(){
-		return "Wood Stairs";
+		return "Oak Wood Stairs";
 	}
 
 	public function getHardness(){

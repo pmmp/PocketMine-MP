@@ -21,12 +21,43 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\block;
 
-class Camera extends Item{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::CAMERA, $meta, $count, "Camera");
+use pocketmine\item\Item;
+use pocketmine\item\Tool;
+use pocketmine\Player;
+
+class CraftingTable extends Solid{
+
+	protected $id = self::CRAFTING_TABLE;
+
+	public function __construct($meta = 0){
+		$this->meta = $meta;
 	}
 
-}
+	public function getHardness(){
+		return 2.5;
+	}
 
+	public function getName(){
+		return "Crafting Table";
+	}
+
+	public function getToolType(){
+		return Tool::TYPE_AXE;
+	}
+
+	public function onActivate(Item $item, Player $player = null){
+		if($player instanceof Player){
+			$player->craftingType = 1;
+		}
+
+		return true;
+	}
+
+	public function getDrops(Item $item){
+		return [
+			[$this->id, 0, 1],
+		];
+	}
+}

@@ -26,7 +26,7 @@ namespace pocketmine\block;
 
 class FenceGateSpruce extends FenceGate{
 
-	protected $id = self::FENCE_GATE_SPRUCE;
+	protected $id = self::SPRUCE_FENCE_GATE;
 
 	public function getName(){
 		return "Spruce Fence Gate";

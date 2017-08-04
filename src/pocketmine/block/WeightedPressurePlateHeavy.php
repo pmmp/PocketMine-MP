@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 class WeightedPressurePlateHeavy extends WeightedPressurePlateLight{
 
-	protected $id = self::WEIGHTED_PRESSURE_PLATE_HEAVY;
+	protected $id = self::HEAVY_WEIGHTED_PRESSURE_PLATE;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

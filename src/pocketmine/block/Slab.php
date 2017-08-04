@@ -28,7 +28,7 @@ use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 
-class Slab extends WoodSlab{
+class Slab extends WoodenSlab{
 	const STONE = 0;
 	const SANDSTONE = 1;
 	const WOODEN = 2;
@@ -38,9 +38,9 @@ class Slab extends WoodSlab{
 	const QUARTZ = 6;
 	const NETHER_BRICK = 7;
 
-	protected $id = self::SLAB;
+	protected $id = self::STONE_SLAB;
 
-	protected $doubleId = self::DOUBLE_SLAB;
+	protected $doubleId = self::DOUBLE_STONE_SLAB;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

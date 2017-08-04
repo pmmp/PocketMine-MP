@@ -124,12 +124,12 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new RedMushroom());
 			self::registerBlock(new Gold());
 			self::registerBlock(new Iron());
-			self::registerBlock(new DoubleSlab());
+			self::registerBlock(new DoubleStoneSlab());
 			self::registerBlock(new Slab());
 			self::registerBlock(new Bricks());
 			self::registerBlock(new TNT());
 			self::registerBlock(new Bookshelf());
-			self::registerBlock(new MossStone());
+			self::registerBlock(new MossyCobblestone());
 			self::registerBlock(new Obsidian());
 			self::registerBlock(new Torch());
 			self::registerBlock(new Fire());
@@ -139,13 +139,13 @@ class Block extends Position implements BlockIds, Metadatable{
 
 			self::registerBlock(new DiamondOre());
 			self::registerBlock(new Diamond());
-			self::registerBlock(new Workbench());
+			self::registerBlock(new CraftingTable());
 			self::registerBlock(new Wheat());
 			self::registerBlock(new Farmland());
 			self::registerBlock(new Furnace());
 			self::registerBlock(new BurningFurnace());
 			self::registerBlock(new SignPost());
-			self::registerBlock(new WoodDoor());
+			self::registerBlock(new WoodenDoor());
 			self::registerBlock(new Ladder());
 			self::registerBlock(new Rail());
 			self::registerBlock(new CobblestoneStairs());
@@ -215,12 +215,12 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new BirchWoodStairs());
 			self::registerBlock(new JungleWoodStairs());
 
-			self::registerBlock(new StoneWall());
+			self::registerBlock(new CobblestoneWall());
 			self::registerBlock(new FlowerPot());
 			self::registerBlock(new Carrot());
 			self::registerBlock(new Potato());
 			self::registerBlock(new WoodenButton());
-			self::registerBlock(new MobHead());
+			self::registerBlock(new Skull());
 			self::registerBlock(new Anvil());
 			self::registerBlock(new TrappedChest());
 			self::registerBlock(new WeightedPressurePlateLight());
@@ -232,7 +232,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new Quartz());
 			self::registerBlock(new QuartzStairs());
 			self::registerBlock(new DoubleWoodSlab());
-			self::registerBlock(new WoodSlab());
+			self::registerBlock(new WoodenSlab());
 			self::registerBlock(new StainedClay());
 
 			self::registerBlock(new Leaves2());

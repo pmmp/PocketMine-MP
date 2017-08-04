@@ -29,7 +29,7 @@ use pocketmine\Player;
 
 class Water extends Liquid{
 
-	protected $id = self::WATER;
+	protected $id = self::FLOWING_WATER;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
