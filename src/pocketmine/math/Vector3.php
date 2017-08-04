@@ -132,8 +132,10 @@ class Vector3{
 		return new Vector3((int) floor($this->x), (int) floor($this->y), (int) floor($this->z));
 	}
 
-	public function round(){
-		return new Vector3((int) round($this->x), (int) round($this->y), (int) round($this->z));
+	public function round(int $precision = 0, int $mode = PHP_ROUND_HALF_UP){
+		return $precision > 0 ?
+			new Vector3(round($this->x, $precision, $mode), round($this->y, $precision, $mode), round($this->z, $precision, $mode)) :
+			new Vector3((int) round($this->x, $precision, $mode), (int) round($this->y, $precision, $mode), (int) round($this->z, $precision, $mode));
 	}
 
 	public function abs(){
