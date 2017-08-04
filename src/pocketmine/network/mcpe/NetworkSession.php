@@ -112,6 +112,7 @@ use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
 use pocketmine\network\mcpe\protocol\SetTimePacket;
 use pocketmine\network\mcpe\protocol\SetTitlePacket;
 use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
+use pocketmine\network\mcpe\protocol\ShowProfilePacket;
 use pocketmine\network\mcpe\protocol\ShowStoreOfferPacket;
 use pocketmine\network\mcpe\protocol\SimpleEventPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
@@ -541,6 +542,10 @@ abstract class NetworkSession{
 	}
 
 	public function handleServerSettingsResponse(ServerSettingsResponsePacket $packet) : bool{
+		return false;
+	}
+
+	public function handleShowProfile(ShowProfilePacket $packet) : bool{
 		return false;
 	}
 

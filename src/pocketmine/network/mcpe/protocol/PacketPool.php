@@ -134,6 +134,7 @@ class PacketPool{
 		static::registerPacket(new ModalFormResponsePacket());
 		static::registerPacket(new ServerSettingsRequestPacket());
 		static::registerPacket(new ServerSettingsResponsePacket());
+		static::registerPacket(new ShowProfilePacket());
 
 		static::registerPacket(new BatchPacket());
 	}
