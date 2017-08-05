@@ -64,7 +64,7 @@ class Sign extends Spawnable{
 
 		return true;
 	}
-	
+
 	/**
 	 * @param int    $index 0-3
 	 * @param string $line
@@ -79,7 +79,7 @@ class Sign extends Spawnable{
 			$this->onChanged();
 		}
 	}
-	
+
 	/**
 	 * @param int $index 0-3
 	 *

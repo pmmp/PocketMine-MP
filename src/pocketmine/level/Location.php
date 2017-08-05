@@ -61,7 +61,7 @@ class Location extends Position{
 
 	/**
 	 * Return a Location instance
-	 * 
+	 *
 	 * @return Location
 	 */
 	public function asLocation() : Location{

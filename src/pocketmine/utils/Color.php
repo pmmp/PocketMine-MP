@@ -29,7 +29,7 @@ class Color{
 
 	/** @var int */
 	protected $a, $r, $g, $b;
-	
+
 	public function __construct(int $r, int $g, int $b, int $a = 0xff){
 		$this->r = $r & 0xff;
 		$this->g = $g & 0xff;

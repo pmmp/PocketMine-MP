@@ -163,7 +163,7 @@ class Vector3{
 
 	/**
 	 * Return a Vector3 instance
-	 * 
+	 *
 	 * @return Vector3
 	 */
 	public function asVector3() : Vector3{
