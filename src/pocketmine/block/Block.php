@@ -41,22 +41,22 @@ use pocketmine\plugin\Plugin;
 
 class Block extends Position implements BlockIds, Metadatable{
 
-	/** @var \SplFixedArray */
+	/** @var \SplFixedArray<Block> */
 	public static $list = null;
-	/** @var \SplFixedArray */
+	/** @var \SplFixedArray<Block> */
 	public static $fullList = null;
 
-	/** @var \SplFixedArray */
+	/** @var \SplFixedArray<int> */
 	public static $light = null;
-	/** @var \SplFixedArray */
+	/** @var \SplFixedArray<int> */
 	public static $lightFilter = null;
-	/** @var \SplFixedArray */
+	/** @var \SplFixedArray<bool> */
 	public static $solid = null;
-	/** @var \SplFixedArray */
+	/** @var \SplFixedArray<float> */
 	public static $hardness = null;
-	/** @var \SplFixedArray */
+	/** @var \SplFixedArray<bool> */
 	public static $transparent = null;
-	/** @var \SplFixedArray */
+	/** @var \SplFixedArray<bool> */
 	public static $diffusesSkyLight = null;
 
 	/**
@@ -262,6 +262,12 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new Beetroot());
 			self::registerBlock(new Stonecutter());
 			self::registerBlock(new GlowingObsidian());
+
+			foreach(self::$list as $id => $block){
+				if($block === null){
+					self::registerBlock(new UnknownBlock($id));
+				}
+			}
 		}
 	}
 
@@ -281,7 +287,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	public static function registerBlock(Block $block, bool $override = false){
 		$id = $block->getId();
 
-		if(isset(self::$list[$id]) and !$override){
+		if(self::$list[$id] !== null and !(self::$list[$id] instanceof UnknownBlock) and !$override){
 			throw new \RuntimeException("Trying to overwrite an already registered block");
 		}
 
@@ -297,7 +303,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		self::$transparent[$id] = $block->isTransparent();
 		self::$hardness[$id] = $block->getHardness();
 		self::$light[$id] = $block->getLightLevel();
-		self::$lightFilter[$id] = $block->getLightFilter();
+		self::$lightFilter[$id] = $block->getLightFilter() + 1; //opacity plus 1 standard light filter
 		self::$diffusesSkyLight[$id] = $block->diffusesSkyLight();
 	}
 
