@@ -42,6 +42,8 @@ class PlayerSkinPacket extends DataPacket{
 	/** @var string */
 	public $skinData;
 	/** @var string */
+	public $unknown;
+	/** @var string */
 	public $geometryModel;
 	/** @var string */
 	public $geometryData;
@@ -53,6 +55,7 @@ class PlayerSkinPacket extends DataPacket{
 		$this->skinName = $this->getString();
 		$this->serializeName = $this->getString();
 		$this->skinData = $this->getString();
+		$this->unknown = $this->getString();
 		$this->geometryModel = $this->getString();
 		$this->geometryData = $this->getString();
 	}
@@ -63,6 +66,7 @@ class PlayerSkinPacket extends DataPacket{
 		$this->putString($this->skinName);
 		$this->putString($this->serializeName);
 		$this->putString($this->skinData);
+		$this->putString($this->unknown);
 		$this->putString($this->geometryModel);
 		$this->putString($this->geometryData);
 	}
