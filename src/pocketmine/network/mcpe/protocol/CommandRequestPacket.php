@@ -32,12 +32,12 @@ class CommandRequestPacket extends DataPacket{
 
 	public $command;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->command = $this->getString();
 		//TODO: everything else
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putString($this->command);
 		//TODO
 	}

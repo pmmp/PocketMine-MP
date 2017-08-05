@@ -30,11 +30,11 @@ use pocketmine\network\mcpe\NetworkSession;
 class ServerSettingsRequestPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SERVER_SETTINGS_REQUEST_PACKET;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		//No payload
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		//No payload
 	}
 

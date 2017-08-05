@@ -39,7 +39,7 @@ class ResourcePackClientResponsePacket extends DataPacket{
 	public $status;
 	public $packIds = [];
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->status = $this->getByte();
 		$entryCount = $this->getLShort();
 		while($entryCount-- > 0){
@@ -47,7 +47,7 @@ class ResourcePackClientResponsePacket extends DataPacket{
 		}
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putByte($this->status);
 		$this->putLShort(count($this->packIds));
 		foreach($this->packIds as $id){

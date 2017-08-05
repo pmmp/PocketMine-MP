@@ -30,11 +30,11 @@ use pocketmine\network\mcpe\NetworkSession;
 class CommandOutputPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::COMMAND_OUTPUT_PACKET;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		//TODO
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		//TODO
 	}
 

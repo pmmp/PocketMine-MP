@@ -85,7 +85,7 @@ class InventoryTransactionPacket extends DataPacket{
 
 	public $transactionData;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$type = $this->getUnsignedVarInt();
 
 		$actionCount = $this->getUnsignedVarInt();
@@ -133,7 +133,7 @@ class InventoryTransactionPacket extends DataPacket{
 		//TODO
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		//TODO
 	}
 

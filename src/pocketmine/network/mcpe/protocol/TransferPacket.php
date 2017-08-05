@@ -33,12 +33,12 @@ class TransferPacket extends DataPacket{
 	public $address;
 	public $port = 19132;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->address = $this->getString();
 		$this->port = $this->getLShort();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putString($this->address);
 		$this->putLShort($this->port);
 	}

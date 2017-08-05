@@ -35,12 +35,12 @@ class ServerSettingsResponsePacket extends DataPacket{
 	/** @var string */
 	public $formData; //json
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->formId = $this->getUnsignedVarInt();
 		$this->formData = $this->getString();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putUnsignedVarInt($this->formId);
 		$this->putString($this->formData);
 	}

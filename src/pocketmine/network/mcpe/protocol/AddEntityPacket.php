@@ -49,7 +49,7 @@ class AddEntityPacket extends DataPacket{
 	public $metadata = [];
 	public $links = [];
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->type = $this->getUnsignedVarInt();
@@ -83,7 +83,7 @@ class AddEntityPacket extends DataPacket{
 		}
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putUnsignedVarInt($this->type);

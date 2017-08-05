@@ -36,7 +36,7 @@ class UpdateEquipPacket extends DataPacket{
 	public $entityUniqueId;
 	public $namedtag;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->windowId = $this->getByte();
 		$this->windowType = $this->getByte();
 		$this->unknownVarint = $this->getVarInt();
@@ -44,7 +44,7 @@ class UpdateEquipPacket extends DataPacket{
 		$this->namedtag = $this->get(true);
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putByte($this->windowId);
 		$this->putByte($this->windowType);
 		$this->putVarInt($this->unknownVarint);

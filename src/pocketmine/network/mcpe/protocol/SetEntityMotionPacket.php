@@ -36,12 +36,12 @@ class SetEntityMotionPacket extends DataPacket{
 	public $motionY;
 	public $motionZ;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->getVector3f($this->motionX, $this->motionY, $this->motionZ);
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putVector3f($this->motionX, $this->motionY, $this->motionZ);
 	}

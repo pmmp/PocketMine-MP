@@ -55,7 +55,7 @@ class BookEditPacket extends DataPacket{
 	/** @var string */
 	public $author;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->type = $this->getByte();
 		$this->inventorySlot = $this->getByte();
 
@@ -82,7 +82,7 @@ class BookEditPacket extends DataPacket{
 		}
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putByte($this->type);
 		$this->putByte($this->inventorySlot);
 

@@ -38,7 +38,7 @@ class PlayerHotbarPacket extends DataPacket{
 	/** @var int[] */
 	public $slots = [];
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->selectedSlot = $this->getUnsignedVarInt();
 		$this->windowId = $this->getByte();
 		$count = $this->getUnsignedVarInt();
@@ -47,7 +47,7 @@ class PlayerHotbarPacket extends DataPacket{
 		}
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putUnsignedVarInt($this->selectedSlot);
 		$this->putByte($this->windowId);
 		$this->putUnsignedVarInt(count($this->slots));

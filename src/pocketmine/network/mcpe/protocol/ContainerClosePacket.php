@@ -33,11 +33,11 @@ class ContainerClosePacket extends DataPacket{
 
 	public $windowid;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->windowid = $this->getByte();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putByte($this->windowid);
 	}
 

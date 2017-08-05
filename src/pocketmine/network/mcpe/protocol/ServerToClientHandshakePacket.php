@@ -41,11 +41,11 @@ class ServerToClientHandshakePacket extends DataPacket{
 		return true;
 	}
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->jwt = $this->getString();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putString($this->jwt);
 	}
 

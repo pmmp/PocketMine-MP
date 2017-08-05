@@ -75,7 +75,7 @@ class StartGamePacket extends DataPacket{
 
 	public $unknownVarInt = 0;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->playerGamemode = $this->getVarInt();
@@ -117,7 +117,7 @@ class StartGamePacket extends DataPacket{
 		$this->unknownVarInt = $this->getVarInt();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putEntityUniqueId($this->entityUniqueId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putVarInt($this->playerGamemode);

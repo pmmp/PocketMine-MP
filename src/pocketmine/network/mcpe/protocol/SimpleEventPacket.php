@@ -32,11 +32,11 @@ class SimpleEventPacket extends DataPacket{
 
 	public $unknownShort1;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->unknownShort1 = $this->getLShort();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putLShort($this->unknownShort1);
 	}
 

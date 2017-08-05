@@ -71,7 +71,7 @@ class AdventureSettingsPacket extends DataPacket{
 	public $playerPermission = PlayerPermissions::MEMBER;
 	public $long1 = 0;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->flags = $this->getUnsignedVarInt();
 		$this->commandPermission = $this->getUnsignedVarInt();
 		$this->flags2 = $this->getUnsignedVarInt();
@@ -79,7 +79,7 @@ class AdventureSettingsPacket extends DataPacket{
 		$this->long1 = $this->getLLong();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putUnsignedVarInt($this->flags);
 		$this->putUnsignedVarInt($this->commandPermission);
 		$this->putUnsignedVarInt($this->flags2);

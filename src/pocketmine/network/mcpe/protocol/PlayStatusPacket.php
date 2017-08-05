@@ -41,7 +41,7 @@ class PlayStatusPacket extends DataPacket{
 
 	public $status;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->status = $this->getInt();
 	}
 
@@ -49,7 +49,7 @@ class PlayStatusPacket extends DataPacket{
 		return true;
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putInt($this->status);
 	}
 

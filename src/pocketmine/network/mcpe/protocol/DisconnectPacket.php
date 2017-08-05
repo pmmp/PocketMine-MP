@@ -38,12 +38,12 @@ class DisconnectPacket extends DataPacket{
 		return true;
 	}
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->hideDisconnectionScreen = $this->getBool();
 		$this->message = $this->getString();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putBool($this->hideDisconnectionScreen);
 		if(!$this->hideDisconnectionScreen){
 			$this->putString($this->message);

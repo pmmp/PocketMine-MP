@@ -38,13 +38,13 @@ class InventorySlotPacket extends DataPacket{
 	/** @var Item */
 	public $item;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->windowId = $this->getUnsignedVarInt();
 		$this->inventorySlot = $this->getUnsignedVarInt();
 		$this->item = $this->getSlot();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putUnsignedVarInt($this->windowId);
 		$this->putUnsignedVarInt($this->inventorySlot);
 		$this->putSlot($this->item);

@@ -41,6 +41,9 @@ abstract class DataPacket extends BinaryStream{
 
 	public $isEncoded = false;
 
+	public $extraByte1 = 0;
+	public $extraByte2 = 0;
+
 	public function pid(){
 		return $this::NETWORK_ID;
 	}
@@ -58,28 +61,44 @@ abstract class DataPacket extends BinaryStream{
 	}
 
 	public function decode(){
-		$this->offset = 3;
+		$this->offset = 0;
+		$this->decodeHeader();
 		$this->decodePayload();
+	}
+
+	protected function decodeHeader(){
+		$pid = $this->getUnsignedVarInt();
+		assert($pid === static::NETWORK_ID);
+
+		$this->extraByte1 = $this->getByte();
+		$this->extraByte2 = $this->getByte();
+		assert($this->extraByte1 === 0 and $this->extraByte2 === 0, "Got unexpected non-zero split-screen bytes (byte1: $this->extraByte1, byte2: $this->extraByte2");
 	}
 
 	/**
 	 * Note for plugin developers: If you're adding your own packets, you should perform decoding in here.
 	 */
-	public function decodePayload(){
+	protected function decodePayload(){
 
 	}
 
 	public function encode(){
 		$this->reset();
-		$this->put("\x00\x00");
 		$this->encodePayload();
 		$this->isEncoded = true;
+	}
+
+	protected function encodeHeader(){
+		$this->putUnsignedVarInt(static::NETWORK_ID);
+
+		$this->putByte($this->extraByte1);
+		$this->putByte($this->extraByte2);
 	}
 
 	/**
 	 * Note for plugin developers: If you're adding your own packets, you should perform encoding in here.
 	 */
-	public function encodePayload(){
+	protected function encodePayload(){
 
 	}
 
@@ -96,7 +115,7 @@ abstract class DataPacket extends BinaryStream{
 	abstract public function handle(NetworkSession $session) : bool;
 
 	public function reset(){
-		$this->buffer = Binary::writeUnsignedVarInt(static::NETWORK_ID);
+		$this->encodeHeader();
 		$this->offset = 0;
 	}
 

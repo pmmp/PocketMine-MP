@@ -34,11 +34,11 @@ class RiderJumpPacket extends DataPacket{
 
 	public $unknown;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->unknown = $this->getVarInt();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putVarInt($this->unknown);
 	}
 

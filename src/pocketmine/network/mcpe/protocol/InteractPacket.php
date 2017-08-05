@@ -59,7 +59,7 @@ class InteractPacket extends DataPacket{
 	/** @var float */
 	public $z;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->action = $this->getByte();
 		$this->target = $this->getEntityRuntimeId();
 
@@ -70,7 +70,7 @@ class InteractPacket extends DataPacket{
 		}
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putByte($this->action);
 		$this->putEntityRuntimeId($this->target);
 

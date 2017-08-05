@@ -46,7 +46,7 @@ class TextPacket extends DataPacket{
 	public $message;
 	public $parameters = [];
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->type = $this->getByte();
 		$this->unknownBool = $this->getBool();
 		switch($this->type){
@@ -71,7 +71,7 @@ class TextPacket extends DataPacket{
 		}
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putByte($this->type);
 		$this->putBool($this->unknownBool);
 		switch($this->type){

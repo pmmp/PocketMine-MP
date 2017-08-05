@@ -36,12 +36,12 @@ class SpawnExperienceOrbPacket extends DataPacket{
 	public $z;
 	public $amount;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->getVector3f($this->x, $this->y, $this->z);
 		$this->amount = $this->getVarInt();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putVector3f($this->x, $this->y, $this->z);
 		$this->putVarInt($this->amount);
 	}

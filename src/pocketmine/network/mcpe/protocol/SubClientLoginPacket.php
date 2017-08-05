@@ -30,11 +30,11 @@ use pocketmine\network\mcpe\NetworkSession;
 class SubClientLoginPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SUB_CLIENT_LOGIN_PACKET;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		//TODO
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		//TODO
 	}
 

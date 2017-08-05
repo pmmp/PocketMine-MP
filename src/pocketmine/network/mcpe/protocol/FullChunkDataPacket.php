@@ -35,13 +35,13 @@ class FullChunkDataPacket extends DataPacket{
 	public $chunkZ;
 	public $data;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->chunkX = $this->getVarInt();
 		$this->chunkZ = $this->getVarInt();
 		$this->data = $this->getString();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putVarInt($this->chunkX);
 		$this->putVarInt($this->chunkZ);
 		$this->putString($this->data);

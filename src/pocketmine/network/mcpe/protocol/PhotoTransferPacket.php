@@ -37,13 +37,13 @@ class PhotoTransferPacket extends DataPacket{
 	/** @var string */
 	public $string3;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->string1 = $this->getString();
 		$this->string2 = $this->getString();
 		$this->string3 = $this->getString();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putString($this->string1);
 		$this->putString($this->string2);
 		$this->putString($this->string3);

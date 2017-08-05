@@ -30,11 +30,11 @@ use pocketmine\network\mcpe\NetworkSession;
 class ModalFormResponsePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::MODAL_FORM_RESPONSE_PACKET;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		//TODO
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		//TODO
 	}
 

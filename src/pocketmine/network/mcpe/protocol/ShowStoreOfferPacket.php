@@ -32,11 +32,11 @@ class ShowStoreOfferPacket extends DataPacket{
 
 	public $offerId;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->offerId = $this->getString();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putString($this->offerId);
 	}
 

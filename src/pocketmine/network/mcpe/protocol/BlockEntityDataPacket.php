@@ -36,12 +36,12 @@ class BlockEntityDataPacket extends DataPacket{
 	public $z;
 	public $namedtag;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->getBlockPosition($this->x, $this->y, $this->z);
 		$this->namedtag = $this->getRemaining();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putBlockPosition($this->x, $this->y, $this->z);
 		$this->put($this->namedtag);
 	}

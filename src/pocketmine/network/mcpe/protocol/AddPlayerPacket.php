@@ -60,7 +60,7 @@ class AddPlayerPacket extends DataPacket{
 	public $uvarint4 = 0;
 	public $long1 = 0;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->uuid = $this->getUUID();
 		$this->username = $this->getString();
 		$this->entityUniqueId = $this->getEntityUniqueId();
@@ -80,7 +80,7 @@ class AddPlayerPacket extends DataPacket{
 		$this->long1 = $this->getLLong();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putUUID($this->uuid);
 		$this->putString($this->username);
 		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);

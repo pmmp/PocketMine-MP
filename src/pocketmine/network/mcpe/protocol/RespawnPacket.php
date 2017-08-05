@@ -35,11 +35,11 @@ class RespawnPacket extends DataPacket{
 	public $y;
 	public $z;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->getVector3f($this->x, $this->y, $this->z);
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putVector3f($this->x, $this->y, $this->z);
 	}
 
