@@ -42,7 +42,8 @@ class InventoryTransactionPacket extends DataPacket{
 	const RELEASE_ITEM_ACTION_RELEASE = 0; //bow shoot
 	const RELEASE_ITEM_ACTION_CONSUME = 1; //eat food, drink potion
 
-	//TODO: use-item on entity interaction action types
+	const USE_ITEM_ON_ENTITY_ACTION_INTERACT = 0;
+	const USE_ITEM_ON_ENTITY_ACTION_ATTACK = 1;
 
 	const SOURCE_CONTAINER = 0;
 
@@ -78,8 +79,8 @@ class InventoryTransactionPacket extends DataPacket{
 	const SOURCE_TYPE_CONTAINER_DROP_CONTENTS = -100;
 
 
-
-
+	const SOURCE_MAGIC_SLOT_DROP_ITEM = 0;
+	const SOURCE_MAGIC_SLOT_PICKUP_ITEM = 1;
 
 	public $actions = [];
 
@@ -112,7 +113,7 @@ class InventoryTransactionPacket extends DataPacket{
 				break;
 			case self::TYPE_USE_ITEM_ON_ENTITY:
 				$this->transactionData->entityRuntimeId = $this->getEntityRuntimeId();
-				$this->transactionData->uvarint1_3 = $this->getUnsignedVarInt(); //probably action type, check values
+				$this->transactionData->actionType = $this->getUnsignedVarInt();
 				$this->transactionData->hotbarSlot = $this->getVarInt();
 				$this->transactionData->itemInHand = $this->getSlot();
 				$this->transactionData->vector1 = $this->getVector3Obj();
@@ -126,8 +127,6 @@ class InventoryTransactionPacket extends DataPacket{
 				break;
 			default:
 				throw new \UnexpectedValueException("Unknown transaction type $type");
-
-
 		}
 
 		//TODO
