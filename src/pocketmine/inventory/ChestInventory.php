@@ -51,7 +51,7 @@ class ChestInventory extends ContainerInventory{
 	}
 
 	public function getDefaultSize() : int{
-		return 7;
+		return 27;
 	}
 
 	/**
