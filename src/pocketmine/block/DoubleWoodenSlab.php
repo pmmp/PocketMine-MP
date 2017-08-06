@@ -26,7 +26,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 
-class DoubleWoodSlab extends Solid{
+class DoubleWoodenSlab extends Solid{
 
 	protected $id = self::DOUBLE_WOODEN_SLAB;
 

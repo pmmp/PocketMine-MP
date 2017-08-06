@@ -225,7 +225,7 @@ class Block extends Position implements BlockIds, Metadatable{
 
 			self::registerBlock(new Quartz());
 			self::registerBlock(new QuartzStairs());
-			self::registerBlock(new DoubleWoodSlab());
+			self::registerBlock(new DoubleWoodenSlab());
 			self::registerBlock(new WoodenSlab());
 			self::registerBlock(new StainedClay());
 
