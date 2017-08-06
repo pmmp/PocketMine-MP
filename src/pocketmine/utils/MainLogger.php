@@ -28,26 +28,31 @@ use pocketmine\Thread;
 use pocketmine\Worker;
 
 class MainLogger extends \AttachableThreadedLogger{
+
+	/** @var string */
 	protected $logFile;
+	/** @var \Threaded */
 	protected $logStream;
+	/** @var bool */
 	protected $shutdown;
+	/** @var bool */
 	protected $logDebug;
 	/** @var MainLogger */
 	public static $logger = null;
 
 	/**
 	 * @param string $logFile
-	 * @param bool   $logDebug
+	 * @param bool $logDebug
 	 *
 	 * @throws \RuntimeException
 	 */
-	public function __construct($logFile, $logDebug = false){
+	public function __construct(string $logFile, bool $logDebug = false){
 		if(static::$logger instanceof MainLogger){
 			throw new \RuntimeException("MainLogger has been already created");
 		}
 		touch($logFile);
 		$this->logFile = $logFile;
-		$this->logDebug = (bool) $logDebug;
+		$this->logDebug = $logDebug;
 		$this->logStream = new \Threaded;
 		$this->start();
 	}
@@ -109,8 +114,8 @@ class MainLogger extends \AttachableThreadedLogger{
 	/**
 	 * @param bool $logDebug
 	 */
-	public function setLogDebug($logDebug){
-		$this->logDebug = (bool) $logDebug;
+	public function setLogDebug(bool $logDebug){
+		$this->logDebug = $logDebug;
 	}
 
 	public function logException(\Throwable $e, $trace = null){
