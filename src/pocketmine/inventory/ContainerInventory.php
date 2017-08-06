@@ -33,7 +33,7 @@ abstract class ContainerInventory extends BaseInventory{
 		parent::onOpen($who);
 		$pk = new ContainerOpenPacket();
 		$pk->windowid = $who->getWindowId($this);
-		$pk->type = $this->getType()->getNetworkType();
+		$pk->type = $this->getNetworkType();
 		$holder = $this->getHolder();
 		if($holder instanceof Vector3){
 			$pk->x = $holder->getX();
