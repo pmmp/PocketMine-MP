@@ -84,6 +84,7 @@ abstract class DataPacket extends BinaryStream{
 
 	public function encode(){
 		$this->reset();
+		$this->encodeHeader();
 		$this->encodePayload();
 		$this->isEncoded = true;
 	}
@@ -113,11 +114,6 @@ abstract class DataPacket extends BinaryStream{
 	 * @return bool true if the packet was handled successfully, false if not.
 	 */
 	abstract public function handle(NetworkSession $session) : bool;
-
-	public function reset(){
-		$this->encodeHeader();
-		$this->offset = 0;
-	}
 
 	public function clean(){
 		$this->buffer = null;
