@@ -25,6 +25,7 @@ namespace pocketmine\inventory;
 
 use pocketmine\level\Level;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 use pocketmine\tile\Chest;
 
@@ -43,31 +44,27 @@ class ChestInventory extends ContainerInventory{
 	public function onOpen(Player $who){
 		parent::onOpen($who);
 
-		if(count($this->getViewers()) === 1){
-			$pk = new BlockEventPacket();
-			$pk->x = $this->getHolder()->getX();
-			$pk->y = $this->getHolder()->getY();
-			$pk->z = $this->getHolder()->getZ();
-			$pk->case1 = 1;
-			$pk->case2 = 2;
-			if(($level = $this->getHolder()->getLevel()) instanceof Level){
-				$level->addChunkPacket($this->getHolder()->getX() >> 4, $this->getHolder()->getZ() >> 4, $pk);
-			}
+		if(count($this->getViewers()) === 1 and ($level = $this->getHolder()->getLevel()) instanceof Level){
+			$this->broadcastBlockEventPacket(1, 2); //chest open
+			$level->broadcastLevelSoundEvent($this->getHolder()->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_CHEST_OPEN);
 		}
 	}
 
 	public function onClose(Player $who){
-		if(count($this->getViewers()) === 1){
-			$pk = new BlockEventPacket();
-			$pk->x = $this->getHolder()->getX();
-			$pk->y = $this->getHolder()->getY();
-			$pk->z = $this->getHolder()->getZ();
-			$pk->case1 = 1;
-			$pk->case2 = 0;
-			if(($level = $this->getHolder()->getLevel()) instanceof Level){
-				$level->addChunkPacket($this->getHolder()->getX() >> 4, $this->getHolder()->getZ() >> 4, $pk);
-			}
+		if(count($this->getViewers()) === 1 and ($level = $this->getHolder()->getLevel()) instanceof Level){
+			$this->broadcastBlockEventPacket(1, 0); //chest close
+			$level->broadcastLevelSoundEvent($this->getHolder()->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_CHEST_CLOSED);
 		}
 		parent::onClose($who);
+	}
+
+	private function broadcastBlockEventPacket(int $case1, int $case2){
+		$pk = new BlockEventPacket();
+		$pk->x = $this->getHolder()->getX();
+		$pk->y = $this->getHolder()->getY();
+		$pk->z = $this->getHolder()->getZ();
+		$pk->case1 = $case1;
+		$pk->case2 = $case2;
+		$this->getHolder()->getLevel()->addChunkPacket($this->getHolder()->getX() >> 4, $this->getHolder()->getZ() >> 4, $pk);
 	}
 }
