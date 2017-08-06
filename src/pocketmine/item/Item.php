@@ -259,7 +259,7 @@ class Item implements ItemIds, \JsonSerializable{
 		$creativeItems = new Config(Server::getInstance()->getFilePath() . "src/pocketmine/resources/creativeitems.json", Config::JSON, []);
 
 		foreach($creativeItems->getAll() as $data){
-			$item = Item::get($data["id"], $data["damage"], $data["count"], $data["nbt"]);
+			$item = Item::jsonDeserialize($data);
 			if($item->getName() === "Unknown"){
 				continue;
 			}
@@ -1053,11 +1053,26 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	final public function jsonSerialize(){
 		return [
-			"id" => $this->id,
-			"damage" => $this->meta,
-			"count" => $this->count, //TODO: separate items and stacks
-			"nbt" => $this->tags
+			"id" => $this->getId(),
+			"damage" => $this->getDamage(),
+			"count" => $this->getCount(),
+			"nbt_hex" => bin2hex($this->getCompoundTag())
 		];
+	}
+
+	/**
+	 * Returns an Item from properties created in an array by {@link Item#jsonSerialize}
+	 *
+	 * @param array $data
+	 * @return Item
+	 */
+	final public static function jsonDeserialize(array $data) : Item{
+		return Item::get(
+			(int) $data["id"],
+			(int) $data["damage"],
+			(int) $data["count"],
+			(string) ($data["nbt"] ?? hex2bin($data["nbt_hex"])) //`nbt` key might contain old raw data
+		);
 	}
 
 	/**

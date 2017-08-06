@@ -57,22 +57,22 @@ class CraftingManager{
 				case 0:
 					// TODO: handle multiple result items
 					$first = $recipe["output"][0];
-					$result = new ShapelessRecipe(Item::get($first["id"], $first["damage"], $first["count"], $first["nbt"]));
+					$result = new ShapelessRecipe(Item::jsonDeserialize($first));
 
 					foreach($recipe["input"] as $ingredient){
-						$result->addIngredient(Item::get($ingredient["id"], $ingredient["damage"], $ingredient["count"], $first["nbt"]));
+						$result->addIngredient(Item::jsonDeserialize($ingredient));
 					}
 					$this->registerRecipe($result);
 					break;
 				case 1:
 					// TODO: handle multiple result items
 					$first = $recipe["output"][0];
-					$result = new ShapedRecipe(Item::get($first["id"], $first["damage"], $first["count"], $first["nbt"]), $recipe["height"], $recipe["width"]);
+					$result = new ShapedRecipe(Item::jsonDeserialize($first), $recipe["height"], $recipe["width"]);
 
 					$shape = array_chunk($recipe["input"], $recipe["width"]);
 					foreach($shape as $y => $row){
 						foreach($row as $x => $ingredient){
-							$result->addIngredient($x, $y, Item::get($ingredient["id"], ($ingredient["damage"] < 0 ? -1 : $ingredient["damage"]), $ingredient["count"], $ingredient["nbt"]));
+							$result->addIngredient($x, $y, Item::jsonDeserialize($ingredient));
 						}
 					}
 					$this->registerRecipe($result);
@@ -80,7 +80,7 @@ class CraftingManager{
 				case 2:
 				case 3:
 					$result = $recipe["output"];
-					$resultItem = Item::get($result["id"], $result["damage"], $result["count"], $result["nbt"]);
+					$resultItem = Item::jsonDeserialize($result);
 					$this->registerRecipe(new FurnaceRecipe($resultItem, Item::get($recipe["inputId"], $recipe["inputDamage"] ?? -1, 1)));
 					break;
 				default:
