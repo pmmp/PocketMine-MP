@@ -221,6 +221,13 @@ class MainLogger extends \AttachableThreadedLogger{
 		}
 	}
 
+	private function writeLogStream(){
+		while($this->logStream->count() > 0){
+			$chunk = $this->logStream->shift();
+			fwrite($this->logResource, $chunk);
+		}
+	}
+
 	public function run(){
 		$this->shutdown = false;
 		$this->logResource = fopen($this->logFile, "a+b");
@@ -230,21 +237,12 @@ class MainLogger extends \AttachableThreadedLogger{
 
 		while($this->shutdown === false){
 			$this->synchronized(function(){
-				while($this->logStream->count() > 0){
-					$chunk = $this->logStream->shift();
-					fwrite($this->logResource, $chunk);
-				}
-
+				$this->writeLogStream();
 				$this->wait(25000);
 			});
 		}
 
-		if($this->logStream->count() > 0){
-			while($this->logStream->count() > 0){
-				$chunk = $this->logStream->shift();
-				fwrite($this->logResource, $chunk);
-			}
-		}
+		$this->writeLogStream();
 
 		fclose($this->logResource);
 	}
