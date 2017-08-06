@@ -33,6 +33,7 @@ use pocketmine\network\mcpe\protocol\ContainerSetSlotPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
+use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
 use pocketmine\Server;
 
@@ -44,7 +45,19 @@ class PlayerInventory extends BaseInventory{
 
 	public function __construct(Human $player){
 		$this->resetHotbar(false);
-		parent::__construct($player, InventoryType::get(InventoryType::PLAYER));
+		parent::__construct($player);
+	}
+
+	public function getNetworkType() : int{
+		return WindowTypes::INVENTORY;
+	}
+
+	public function getName() : string{
+		return "Player";
+	}
+
+	public function getDefaultSize() : int{
+		return 40; //36 inventory, 4 armor
 	}
 
 	public function getSize() : int{

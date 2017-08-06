@@ -24,11 +24,27 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
+use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\tile\Furnace;
 
 class FurnaceInventory extends ContainerInventory{
+	/** @var Furnace */
+	protected $holder;
+
 	public function __construct(Furnace $tile){
-		parent::__construct($tile, InventoryType::get(InventoryType::FURNACE));
+		parent::__construct($tile);
+	}
+
+	public function getNetworkType() : int{
+		return WindowTypes::FURNACE;
+	}
+
+	public function getName() : string{
+		return "Furnace";
+	}
+
+	public function getDefaultSize() : int{
+		return 3; //1 input, 1 fuel, 1 output
 	}
 
 	/**

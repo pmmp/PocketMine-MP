@@ -194,11 +194,6 @@ interface Inventory{
 	public function getViewers() : array;
 
 	/**
-	 * @return InventoryType
-	 */
-	public function getType() : InventoryType;
-
-	/**
 	 * @return InventoryHolder
 	 */
 	public function getHolder();
