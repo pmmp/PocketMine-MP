@@ -32,7 +32,6 @@ class MainLogger extends \AttachableThreadedLogger{
 	protected $logStream;
 	protected $shutdown;
 	protected $logDebug;
-	private $logResource;
 	/** @var MainLogger */
 	public static $logger = null;
 
@@ -186,6 +185,7 @@ class MainLogger extends \AttachableThreadedLogger{
 
 	public function shutdown(){
 		$this->shutdown = true;
+		$this->notify();
 	}
 
 	protected function send($message, $level, $prefix, $color){
@@ -213,37 +213,35 @@ class MainLogger extends \AttachableThreadedLogger{
 			$this->attachment->call($level, $message);
 		}
 
-		$this->logStream[] = date("Y-m-d", $now) . " " . $cleanMessage . "\n";
-		if($this->logStream->count() === 1){
-			$this->synchronized(function(){
-				$this->notify();
-			});
-		}
+		$this->logStream[] = date("Y-m-d", $now) . " " . $cleanMessage . PHP_EOL;
 	}
 
-	private function writeLogStream(){
+	/**
+	 * @param resource $logResource
+	 */
+	private function writeLogStream($logResource){
 		while($this->logStream->count() > 0){
 			$chunk = $this->logStream->shift();
-			fwrite($this->logResource, $chunk);
+			fwrite($logResource, $chunk);
 		}
 	}
 
 	public function run(){
 		$this->shutdown = false;
-		$this->logResource = fopen($this->logFile, "a+b");
-		if(!is_resource($this->logResource)){
+		$logResource = fopen($this->logFile, "ab");
+		if(!is_resource($logResource)){
 			throw new \RuntimeException("Couldn't open log file");
 		}
 
 		while($this->shutdown === false){
+			$this->writeLogStream($logResource);
 			$this->synchronized(function(){
-				$this->writeLogStream();
 				$this->wait(25000);
 			});
 		}
 
-		$this->writeLogStream();
+		$this->writeLogStream($logResource);
 
-		fclose($this->logResource);
+		fclose($logResource);
 	}
 }
