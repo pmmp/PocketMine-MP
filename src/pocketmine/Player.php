@@ -615,21 +615,22 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return $this->perm->getEffectivePermissions();
 	}
 
-	public function sendCommandData(){
-		$data = [];
-		foreach($this->server->getCommandMap()->getCommands() as $command){
-			if(count($cmdData = $command->generateCustomCommandData($this)) > 0){
-				$data[$command->getName()]["versions"][0] = $cmdData;
-			}
-		}
-
-		if(count($data) > 0){
-			//TODO: structure checking
-			$pk = new AvailableCommandsPacket();
-			$pk->commands = json_encode($data);
-			$this->dataPacket($pk);
-		}
-	}
+    public function sendCommandData(){
+        $data = [];
+        foreach($this->server->getCommandMap()->getCommands() as $command){
+            if($command->testPermissionSilent($this)){
+                if(count($cmdData = $command->generateCustomCommandData($this)) > 0){
+                    $data[$command->getName()]["versions"][0] = $cmdData;
+                }
+            }
+        }
+        if(count($data) > 0){
+            //TODO: structure checking
+            $pk = new AvailableCommandsPacket();
+            $pk->commands = json_encode($data);
+            $this->dataPacket($pk);
+        }
+    }
 
 	/**
 	 * @param SourceInterface $interface
