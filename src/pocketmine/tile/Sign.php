@@ -26,7 +26,6 @@ namespace pocketmine\tile;
 use pocketmine\event\block\SignChangeEvent;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
@@ -56,13 +55,11 @@ class Sign extends Spawnable{
 	}
 
 	public function setText($line1 = "", $line2 = "", $line3 = "", $line4 = ""){
-		$this->namedtag->Text1 = new StringTag("Text1", $line1);
-		$this->namedtag->Text2 = new StringTag("Text2", $line2);
-		$this->namedtag->Text3 = new StringTag("Text3", $line3);
-		$this->namedtag->Text4 = new StringTag("Text4", $line4);
+		$this->namedtag->Text1->setValue($line1);
+		$this->namedtag->Text2->setValue($line2);
+		$this->namedtag->Text3->setValue($line3);
+		$this->namedtag->Text4->setValue($line4);
 		$this->onChanged();
-
-		return true;
 	}
 
 	/**
@@ -74,7 +71,7 @@ class Sign extends Spawnable{
 		if($index < 0 or $index > 3){
 			throw new \InvalidArgumentException("Index must be in the range 0-3!");
 		}
-		$this->namedtag["Text" . ($index + 1)] = $line;
+		$this->namedtag->{"Text" . ($index + 1)}->setValue($line);
 		if($update){
 			$this->onChanged();
 		}
@@ -89,29 +86,24 @@ class Sign extends Spawnable{
 		if($index < 0 or $index > 3){
 			throw new \InvalidArgumentException("Index must be in the range 0-3!");
 		}
-		return (string) $this->namedtag["Text" . ($index + 1)];
+		return $this->namedtag->{"Text" . ($index + 1)}->getValue();
 	}
 
 	public function getText(){
 		return [
-			$this->namedtag["Text1"],
-			$this->namedtag["Text2"],
-			$this->namedtag["Text3"],
-			$this->namedtag["Text4"]
+			$this->namedtag->Text1->getValue(),
+			$this->namedtag->Text2->getValue(),
+			$this->namedtag->Text3->getValue(),
+			$this->namedtag->Text4->getValue()
 		];
 	}
 
-	public function getSpawnCompound() : CompoundTag{
-		return new CompoundTag("", [
-			new StringTag("id", Tile::SIGN),
-			$this->namedtag->Text1,
-			$this->namedtag->Text2,
-			$this->namedtag->Text3,
-			$this->namedtag->Text4,
-			new IntTag("x", (int) $this->x),
-			new IntTag("y", (int) $this->y),
-			new IntTag("z", (int) $this->z)
-		]);
+	public function addAdditionalSpawnData(CompoundTag $nbt){
+		for($i = 1; $i <= 4; $i++){
+			$textKey = "Text" . $i;
+			$nbt->$textKey = $this->namedtag->$textKey;
+		}
+		return $nbt;
 	}
 
 	public function updateCompoundTag(CompoundTag $nbt, Player $player) : bool{
@@ -120,13 +112,13 @@ class Sign extends Spawnable{
 		}
 
 		$ev = new SignChangeEvent($this->getBlock(), $player, [
-			TextFormat::clean($nbt["Text1"], ($removeFormat = $player->getRemoveFormat())),
-			TextFormat::clean($nbt["Text2"], $removeFormat),
-			TextFormat::clean($nbt["Text3"], $removeFormat),
-			TextFormat::clean($nbt["Text4"], $removeFormat)
+			TextFormat::clean($nbt->Text1->getValue(), ($removeFormat = $player->getRemoveFormat())),
+			TextFormat::clean($nbt->Text2->getValue(), $removeFormat),
+			TextFormat::clean($nbt->Text3->getValue(), $removeFormat),
+			TextFormat::clean($nbt->Text4->getValue(), $removeFormat)
 		]);
 
-		if(!isset($this->namedtag->Creator) or $this->namedtag["Creator"] !== $player->getRawUniqueId()){
+		if(!isset($this->namedtag->Creator) or $this->namedtag->Creator->getValue() !== $player->getRawUniqueId()){
 			$ev->setCancelled();
 		}
 

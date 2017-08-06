@@ -74,7 +74,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	}
 
 	public function saveNBT(){
-		$this->namedtag->Items = new ListTag("Items", []);
+		$this->namedtag->Items->setValue([]);
 		$this->namedtag->Items->setTagType(NBT::TAG_Compound);
 		for($index = 0; $index < $this->getSize(); ++$index){
 			$this->setItem($index, $this->inventory->getItem($index));
@@ -95,7 +95,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	 */
 	protected function getSlotIndex(int $index){
 		foreach($this->namedtag->Items as $i => $slot){
-			if((int) $slot["Slot"] === $index){
+			if($slot->Slot->getValue() === $index){
 				return (int) $i;
 			}
 		}
@@ -225,7 +225,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	 */
 	public function getPair(){
 		if($this->isPaired()){
-			$tile = $this->getLevel()->getTile(new Vector3((int) $this->namedtag["pairx"], $this->y, (int) $this->namedtag["pairz"]));
+			$tile = $this->getLevel()->getTile(new Vector3($this->namedtag->pairx->getValue(), $this->y, $this->namedtag->pairz->getValue()));
 			if($tile instanceof Chest){
 				return $tile;
 			}
@@ -276,29 +276,14 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 		return true;
 	}
 
-	public function getSpawnCompound() : CompoundTag{
+	public function addAdditionalSpawnData(CompoundTag $nbt){
 		if($this->isPaired()){
-			$c = new CompoundTag("", [
-				new StringTag("id", Tile::CHEST),
-				new IntTag("x", (int) $this->x),
-				new IntTag("y", (int) $this->y),
-				new IntTag("z", (int) $this->z),
-				new IntTag("pairx", (int) $this->namedtag["pairx"]),
-				new IntTag("pairz", (int) $this->namedtag["pairz"])
-			]);
-		}else{
-			$c = new CompoundTag("", [
-				new StringTag("id", Tile::CHEST),
-				new IntTag("x", (int) $this->x),
-				new IntTag("y", (int) $this->y),
-				new IntTag("z", (int) $this->z)
-			]);
+			$nbt->pairx = $this->namedtag->pairx;
+			$nbt->pairz = $this->namedtag->pairz;
 		}
 
 		if($this->hasName()){
-			$c->CustomName = $this->namedtag->CustomName;
+			$nbt->CustomName = $this->namedtag->CustomName;
 		}
-
-		return $c;
 	}
 }

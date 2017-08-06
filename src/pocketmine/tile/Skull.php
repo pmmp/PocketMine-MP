@@ -26,8 +26,6 @@ namespace pocketmine\tile;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
 
 class Skull extends Spawnable{
 	const TYPE_SKELETON = 0;
@@ -48,22 +46,16 @@ class Skull extends Spawnable{
 	}
 
 	public function setType(int $type){
-		$this->namedtag->SkullType = new ByteTag("SkullType", $type);
+		$this->namedtag->SkullType->setValue($type);
 		$this->onChanged();
 	}
 
-	public function getType(){
-		return $this->namedtag["SkullType"];
+	public function getType() : int{
+		return $this->namedtag->SkullType->getValue();
 	}
 
-	public function getSpawnCompound() : CompoundTag{
-		return new CompoundTag("", [
-			new StringTag("id", Tile::SKULL),
-			$this->namedtag->SkullType,
-			$this->namedtag->Rot,
-			new IntTag("x", (int) $this->x),
-			new IntTag("y", (int) $this->y),
-			new IntTag("z", (int) $this->z)
-		]);
+	public function addAdditionalSpawnData(CompoundTag $nbt){
+		$nbt->SkullType = $this->namedtag->SkullType;
+		$nbt->Rot = $this->namedtag->Rot;
 	}
 }
