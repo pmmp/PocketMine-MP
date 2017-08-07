@@ -191,7 +191,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		$this->namedtag->BurnTime->setValue($ev->getBurnTime());
 		$this->namedtag->BurnTicks = new ShortTag("BurnTicks", 0);
 		if($this->getBlock()->getId() === Item::FURNACE){
-			$this->getLevel()->setBlock($this, Block::get(Item::BURNING_FURNACE, $this->getBlock()->getDamage()), true);
+			$this->getLevel()->setBlock($this, Block::get(Block::BURNING_FURNACE, $this->getBlock()->getDamage()), true);
 		}
 
 		if($this->namedtag->BurnTime->getValue() > 0 and $ev->isBurning()){
@@ -254,7 +254,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 			$ret = true;
 		}else{
 			if($this->getBlock()->getId() === Item::BURNING_FURNACE){
-				$this->getLevel()->setBlock($this, Block::get(Item::FURNACE, $this->getBlock()->getDamage()), true);
+				$this->getLevel()->setBlock($this, Block::get(Block::FURNACE, $this->getBlock()->getDamage()), true);
 			}
 			$this->namedtag->BurnTime->setValue(0);
 			$this->namedtag->CookTime->setValue(0);
