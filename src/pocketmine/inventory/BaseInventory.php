@@ -34,8 +34,6 @@ use pocketmine\Server;
 
 abstract class BaseInventory implements Inventory{
 
-	/** @var InventoryType */
-	protected $type;
 	/** @var int */
 	protected $maxStackSize = Inventory::MAX_STACK;
 	/** @var int */
@@ -53,36 +51,30 @@ abstract class BaseInventory implements Inventory{
 
 	/**
 	 * @param InventoryHolder $holder
-	 * @param InventoryType   $type
 	 * @param Item[]          $items
-	 * @param int             $overrideSize
-	 * @param string          $overrideTitle
+	 * @param int             $size
+	 * @param string          $title
 	 */
-	public function __construct(InventoryHolder $holder, InventoryType $type, array $items = [], $overrideSize = null, $overrideTitle = null){
+	public function __construct(InventoryHolder $holder, array $items = [], int $size = null, string $title = null){
 		$this->holder = $holder;
 
-		$this->type = $type;
-		if($overrideSize !== null){
-			$this->size = (int) $overrideSize;
-		}else{
-			$this->size = $this->type->getDefaultSize();
-		}
-
-		if($overrideTitle !== null){
-			$this->title = $overrideTitle;
-		}else{
-			$this->title = $this->type->getDefaultTitle();
-		}
-
-		$this->name = $this->type->getDefaultTitle();
+		$this->size = $size ?? $this->getDefaultSize();
+		$this->title = $title ?? $this->getName();
 
 		$this->setContents($items);
 	}
 
-	public function __destruct(){
-		$this->holder = null;
-		$this->slots = [];
+	abstract public function getName() : string;
+
+	public function getTitle() : string{
+		return $this->title;
 	}
+
+	/**
+	 * Returns the Minecraft PE inventory type used to show the inventory window to clients.
+	 * @return int
+	 */
+	abstract public function getNetworkType() : int;
 
 	public function getSize() : int{
 		return $this->size;
@@ -92,16 +84,10 @@ abstract class BaseInventory implements Inventory{
 		$this->size = $size;
 	}
 
+	abstract public function getDefaultSize() : int;
+
 	public function getMaxStackSize() : int{
 		return $this->maxStackSize;
-	}
-
-	public function getName() : string{
-		return $this->name;
-	}
-
-	public function getTitle() : string{
-		return $this->title;
 	}
 
 	public function getItem(int $index) : Item{
@@ -456,9 +442,4 @@ abstract class BaseInventory implements Inventory{
 			$player->dataPacket($pk);
 		}
 	}
-
-	public function getType() : InventoryType{
-		return $this->type;
-	}
-
 }
