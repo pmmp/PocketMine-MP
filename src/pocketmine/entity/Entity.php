@@ -910,11 +910,11 @@ abstract class Entity extends Location implements Metadatable{
 		}
 	}
 
-	public function getAbsorption() : int{
+	public function getAbsorption() : float{
 		return 0;
 	}
 
-	public function setAbsorption(int $absorption){
+	public function setAbsorption(float $absorption){
 
 	}
 
