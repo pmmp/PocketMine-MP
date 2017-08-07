@@ -26,10 +26,11 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\protocol\types\inventory\source\InventorySource;
 
 class InventoryTransactionPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::INVENTORY_TRANSACTION_PACKET;
+
+	const TYPE_NORMAL = 0;
 
 	const TYPE_USE_ITEM = 2;
 	const TYPE_USE_ITEM_ON_ENTITY = 3;
@@ -98,7 +99,7 @@ class InventoryTransactionPacket extends DataPacket{
 		$this->transactionData->transactionType = $type;
 
 		switch($type){
-			case 0:
+			case self::TYPE_NORMAL:
 			case 1:
 				//Regular ComplexInventoryTransaction doesn't read any extra data
 				break;

@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
+use pocketmine\utils\Binary;
 
 class PlayerHotbarPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::PLAYER_HOTBAR_PACKET;
@@ -43,7 +44,7 @@ class PlayerHotbarPacket extends DataPacket{
 		$this->windowId = $this->getByte();
 		$count = $this->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
-			$this->slots[$i] = $this->getUnsignedVarInt();
+			$this->slots[$i] = Binary::signInt($this->getUnsignedVarInt());
 		}
 	}
 
