@@ -46,7 +46,7 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 	public function __construct(Block $theBlock, Player $thePlayer, array $theLines){
 		parent::__construct($theBlock);
 		$this->player = $thePlayer;
-		$this->lines = $theLines;
+		$this->setLines($theLines);
 	}
 
 	/**
