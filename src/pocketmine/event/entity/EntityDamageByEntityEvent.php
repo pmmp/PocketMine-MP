@@ -25,6 +25,7 @@ namespace pocketmine\event\entity;
 
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 
 /**
  * Called when an entity takes damage from another entity.
@@ -51,12 +52,14 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	}
 
 	protected function addAttackerModifiers(Entity $damager){
-		if($damager->hasEffect(Effect::STRENGTH)){
-			$this->setDamage($this->getDamage(self::MODIFIER_BASE) * 0.3 * $damager->getEffect(Effect::STRENGTH)->getEffectLevel(), self::MODIFIER_STRENGTH);
-		}
+		if($damager instanceof Living){ //TODO: move this to entity classes
+			if($damager->hasEffect(Effect::STRENGTH)){
+				$this->setDamage($this->getDamage(self::MODIFIER_BASE) * 0.3 * $damager->getEffect(Effect::STRENGTH)->getEffectLevel(), self::MODIFIER_STRENGTH);
+			}
 
-		if($damager->hasEffect(Effect::WEAKNESS)){
-			$this->setDamage(-($this->getDamage(self::MODIFIER_BASE) * 0.2 * $damager->getEffect(Effect::WEAKNESS)->getEffectLevel()), self::MODIFIER_WEAKNESS);
+			if($damager->hasEffect(Effect::WEAKNESS)){
+				$this->setDamage(-($this->getDamage(self::MODIFIER_BASE) * 0.2 * $damager->getEffect(Effect::WEAKNESS)->getEffectLevel()), self::MODIFIER_WEAKNESS);
+			}
 		}
 	}
 
