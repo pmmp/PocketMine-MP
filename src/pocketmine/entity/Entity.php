@@ -1121,8 +1121,6 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function entityBaseTick($tickDiff = 1){
-
-		Timings::$timerEntityBaseTick->startTiming();
 		//TODO: check vehicles
 
 		$this->blocksAround = null;
@@ -1135,7 +1133,6 @@ abstract class Entity extends Location implements Metadatable{
 				$this->close();
 			}
 
-			Timings::$timerEntityBaseTick->stopTiming();
 			return false;
 		}
 
@@ -1198,8 +1195,6 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->age += $tickDiff;
 		$this->ticksLived += $tickDiff;
-
-		Timings::$timerEntityBaseTick->stopTiming();
 
 		return $hasUpdate;
 	}
@@ -1272,7 +1267,9 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->timings->startTiming();
 
+		Timings::$timerEntityBaseTick->startTiming();
 		$hasUpdate = $this->entityBaseTick($tickDiff);
+		Timings::$timerEntityBaseTick->stopTiming();
 
 		$this->updateMovement();
 
