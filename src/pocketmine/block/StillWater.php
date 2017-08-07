@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\level\Level;
-
 class StillWater extends Water{
 
 	protected $id = self::STILL_WATER;
