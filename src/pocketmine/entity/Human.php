@@ -26,6 +26,7 @@ namespace pocketmine\entity;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
+use pocketmine\event\player\PlayerExperienceChangeEvent;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\Item as ItemItem;
@@ -243,8 +244,13 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return (int) $this->attributeMap->getAttribute(Attribute::EXPERIENCE_LEVEL)->getValue();
 	}
 
-	public function setXpLevel(int $level){
-		$this->attributeMap->getAttribute(Attribute::EXPERIENCE_LEVEL)->setValue($level);
+	public function setXpLevel(int $level) : bool{
+		$this->server->getPluginManager()->callEvent($ev = new PlayerExperienceChangeEvent($this, $level, $this->getXpProgress()));
+		if(!$ev->isCancelled()){
+			$this->attributeMap->getAttribute(Attribute::EXPERIENCE_LEVEL)->setValue($ev->getExpLevel());
+			return true;
+		}
+		return false;
 	}
 
 	public function getXpProgress() : float{
