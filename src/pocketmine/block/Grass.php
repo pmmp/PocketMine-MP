@@ -30,7 +30,6 @@ use pocketmine\level\generator\object\TallGrass as TallGrassObject;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use pocketmine\Server;
 use pocketmine\utils\Random;
 
 class Grass extends Solid{

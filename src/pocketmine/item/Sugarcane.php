@@ -27,7 +27,7 @@ use pocketmine\block\Block;
 
 class Sugarcane extends Item{
 	public function __construct($meta = 0, $count = 1){
-		$this->block = Block::get(Item::SUGARCANE_BLOCK);
+		$this->block = Block::get(Block::SUGARCANE_BLOCK);
 		parent::__construct(self::SUGARCANE, $meta, $count, "Sugar Cane");
 	}
 }

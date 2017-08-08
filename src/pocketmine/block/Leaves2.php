@@ -23,11 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
-use pocketmine\level\Level;
-use pocketmine\Player;
-use pocketmine\Server;
 
 class Leaves2 extends Leaves{
 
