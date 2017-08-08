@@ -265,14 +265,14 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 			$windowId = $player->getWindowId($this->getInventory());
 			if($windowId > 0){
 				$pk = new ContainerSetDataPacket();
-				$pk->windowid = $windowId;
-				$pk->property = 0; //Smelting
+				$pk->windowId = $windowId;
+				$pk->property = ContainerSetDataPacket::PROPERTY_FURNACE_TICK_COUNT; //Smelting
 				$pk->value = $this->namedtag->CookTime->getValue();
 				$player->dataPacket($pk);
 
 				$pk = new ContainerSetDataPacket();
-				$pk->windowid = $windowId;
-				$pk->property = 1; //Fire icon
+				$pk->windowId = $windowId;
+				$pk->property = ContainerSetDataPacket::PROPERTY_FURNACE_LIT_TIME;
 				$pk->value = $this->namedtag->BurnTicks->getValue();
 				$player->dataPacket($pk);
 			}
