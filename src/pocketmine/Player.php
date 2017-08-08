@@ -1758,6 +1758,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return ($dot1 - $dot) >= -$maxDiff;
 	}
 
+	protected function initHumanData(){
+		//No need to do anything here, this data will be set from the login.
+	}
+
+	protected function initEntity(){
+		parent::initEntity();
+		$this->addDefaultWindows();
+	}
 
 
 	protected function processLogin(){
@@ -3812,6 +3820,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return $this->teleport($pos, $yaw, $pitch);
 	}
 
+	protected function addDefaultWindows(){
+		$this->addWindow($this->getInventory(), ContainerIds::INVENTORY);
+
+		//TODO: more windows
+	}
+
 	/**
 	 * @param Inventory $inventory
 	 *
@@ -3841,7 +3855,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($forceId === null){
 			$this->windowCnt = $cnt = max(ContainerIds::FIRST, ++$this->windowCnt % ContainerIds::LAST);
 		}else{
-			$cnt = (int) $forceId;
+			$cnt = $forceId;
 		}
 		$this->windowIndex[$cnt] = $inventory;
 		$this->windows->attach($inventory, $cnt);
