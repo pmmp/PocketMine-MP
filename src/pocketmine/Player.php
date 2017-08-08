@@ -2789,17 +2789,17 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleContainerClose(ContainerClosePacket $packet) : bool{
-		if($this->spawned === false or $packet->windowid === 0){
+		if($this->spawned === false or $packet->windowId === 0){
 			return true;
 		}
 
 		$this->craftingType = 0;
 		$this->currentTransaction = null;
-		if(isset($this->windowIndex[$packet->windowid])){
-			$this->server->getPluginManager()->callEvent(new InventoryCloseEvent($this->windowIndex[$packet->windowid], $this));
-			$this->removeWindow($this->windowIndex[$packet->windowid]);
+		if(isset($this->windowIndex[$packet->windowId])){
+			$this->server->getPluginManager()->callEvent(new InventoryCloseEvent($this->windowIndex[$packet->windowId], $this));
+			$this->removeWindow($this->windowIndex[$packet->windowId]);
 		}else{
-			unset($this->windowIndex[$packet->windowid]);
+			unset($this->windowIndex[$packet->windowId]);
 		}
 
 		return true;
