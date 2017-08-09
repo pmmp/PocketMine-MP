@@ -49,6 +49,7 @@ class EnchantInventory extends ContainerInventory{
 	}
 
 	/**
+	 * This override is here for documentation and code completion purposes only.
 	 * @return FakeBlockMenu
 	 */
 	public function getHolder(){

@@ -828,6 +828,10 @@ class Item implements ItemIds, \JsonSerializable{
 		$this->count = $count;
 	}
 
+	public function isNull() : bool{
+		return $this->count <= 0 or $this->id === Item::AIR;
+	}
+
 	/**
 	 * Returns the name of the item, or the custom name if it is set.
 	 * @return string

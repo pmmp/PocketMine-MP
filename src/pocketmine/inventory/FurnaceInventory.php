@@ -48,6 +48,7 @@ class FurnaceInventory extends ContainerInventory{
 	}
 
 	/**
+	 * This override is here for documentation and code completion purposes only.
 	 * @return Furnace
 	 */
 	public function getHolder(){
@@ -102,8 +103,8 @@ class FurnaceInventory extends ContainerInventory{
 		return $this->setItem(0, $item);
 	}
 
-	public function onSlotChange($index, $before){
-		parent::onSlotChange($index, $before);
+	public function onSlotChange(int $index, Item $before, bool $send){
+		parent::onSlotChange($index, $before, $send);
 
 		$this->getHolder()->scheduleUpdate();
 	}
