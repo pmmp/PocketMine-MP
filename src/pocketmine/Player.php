@@ -2798,11 +2798,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if(isset($this->windowIndex[$packet->windowId])){
 			$this->server->getPluginManager()->callEvent(new InventoryCloseEvent($this->windowIndex[$packet->windowId], $this));
 			$this->removeWindow($this->windowIndex[$packet->windowId]);
-		}else{
-			unset($this->windowIndex[$packet->windowId]);
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	public function handlePlayerHotbar(PlayerHotbarPacket $packet){
