@@ -48,15 +48,17 @@ class PlayerListPacket extends DataPacket{
 		$this->type = $this->getByte();
 		$count = $this->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
+			$this->entries[$i] = [];
 			if($this->type === self::TYPE_ADD){
 				$this->entries[$i][0] = $this->getUUID();
 				$this->entries[$i][1] = $this->getEntityUniqueId();
 				$this->entries[$i][2] = $this->getString(); //name
 				$this->entries[$i][3] = $this->getString(); //skin id
 				$this->entries[$i][4] = $this->getString(); //skin data
-				$this->entries[$i][5] = $this->getString(); //geometric model
-				$this->entries[$i][6] = $this->getString(); //geometry data (json)
-				$this->entries[$i][7] = $this->getString(); //???
+				$this->entries[$i][5] = $this->getString(); //cape data
+				$this->entries[$i][6] = $this->getString(); //geometric model
+				$this->entries[$i][7] = $this->getString(); //geometry data (json)
+				$this->entries[$i][8] = $this->getString(); //???
 			}else{
 				$this->entries[$i][0] = $this->getUUID();
 			}
@@ -73,9 +75,10 @@ class PlayerListPacket extends DataPacket{
 				$this->putString($d[2]); //name
 				$this->putString($d[3]); //skin id
 				$this->putString($d[4]); //skin data
-				$this->putString($d[5] ?? ""); //geometric model
-				$this->putString($d[6] ?? ""); //geometry data (json)
-				$this->putString($d[7] ?? ""); //???
+				$this->putString($d[5] ?? ""); //cape data
+				$this->putString($d[6] ?? ""); //geometric model
+				$this->putString($d[7] ?? ""); //geometry data (json)
+				$this->putString($d[8] ?? ""); //???
 			}else{
 				$this->putUUID($d[0]);
 			}
