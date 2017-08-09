@@ -103,7 +103,7 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function getContents() : array{
-		return $this->slots->toArray();
+		return array_filter($this->slots->toArray(), function(Item $item = null){ return $item !== null; });
 	}
 
 	/**
