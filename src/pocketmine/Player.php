@@ -78,6 +78,7 @@ use pocketmine\inventory\BigShapedRecipe;
 use pocketmine\inventory\BigShapelessRecipe;
 use pocketmine\inventory\FurnaceInventory;
 use pocketmine\inventory\Inventory;
+use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
@@ -116,7 +117,6 @@ use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
-use pocketmine\network\mcpe\protocol\ContainerSetSlotPacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
@@ -238,6 +238,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var SimpleTransactionGroup */
 	protected $currentTransaction = null;
 	public $craftingType = 0; //0 = 2x2 crafting, 1 = 3x3 crafting, 2 = stonecutter
+
+	/** @var PlayerCursorInventory */
+	protected $cursorInventory;
 
 	public $creationTime = 0;
 
@@ -2149,13 +2152,39 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return true;
 	}
 
+	/**
+	 * Don't expect much from this handler. Most of it is roughly hacked and duct-taped together.
+	 *
+	 * @param InventoryTransactionPacket $packet
+	 * @return bool
+	 */
 	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
 		switch($packet->transactionData->transactionType){
-			case 0:
-				//normal inventory transfer (TODO handle)
-				break;
-			case InventoryTransactionPacket::TYPE_USE_ITEM:
+			case InventoryTransactionPacket::TYPE_NORMAL:
+				$transaction = new SimpleTransactionGroup($this);
 
+				foreach($packet->actions as $action){
+					if($action->inventorySource->sourceType !== InventoryTransactionPacket::SOURCE_CONTAINER){
+						return false; //TODO: handle other source types
+					}
+
+					if($action->inventorySource->containerId === ContainerIds::ARMOR){
+						$transaction->addTransaction(new BaseTransaction($this->inventory, $action->inventorySlot + $this->inventory->getSize(), $action->oldItem, $action->newItem));
+						continue;
+					}
+
+					$transaction->addTransaction(new BaseTransaction($this->windowIndex[$action->inventorySource->containerId], $action->inventorySlot, $action->oldItem, $action->newItem));
+				}
+
+				if(!$transaction->execute()){
+					//need to resend/revert/whatever (TODO)
+					return false; //oops!
+				}
+
+				//TODO: fix achievement for getting iron from furnace
+
+				return true;
+			case InventoryTransactionPacket::TYPE_USE_ITEM:
 				$blockVector = new Vector3($packet->transactionData->x, $packet->transactionData->y, $packet->transactionData->z);
 				$face = $packet->transactionData->face;
 
@@ -2830,91 +2859,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$this->inventory->equipItem($packet->selectedSlot);
-
-		return true;
-	}
-
-	public function handleContainerSetSlot(ContainerSetSlotPacket $packet) : bool{
-		if($this->spawned === false or !$this->isAlive()){
-			return true;
-		}
-
-		if($packet->slot < 0){
-			return false;
-		}
-
-		switch($packet->windowid){
-			case ContainerIds::INVENTORY: //Normal inventory change
-				if($packet->slot >= $this->inventory->getSize()){
-					return false;
-				}
-
-				$transaction = new BaseTransaction($this->inventory, $packet->slot, $this->inventory->getItem($packet->slot), $packet->item);
-				break;
-			case ContainerIds::ARMOR: //Armour change
-				if($packet->slot >= 4){
-					return false;
-				}
-
-				$transaction = new BaseTransaction($this->inventory, $packet->slot + $this->inventory->getSize(), $this->inventory->getArmorItem($packet->slot), $packet->item);
-				break;
-			case ContainerIds::HOTBAR: //Hotbar link update
-				//hotbarSlot 0-8, slot 9-44
-				$this->inventory->setHotbarSlotIndex($packet->hotbarSlot, $packet->slot - 9);
-				return true;
-			default:
-				if(!isset($this->windowIndex[$packet->windowid])){
-					return false; //unknown windowID and/or not matching any open windows
-				}
-
-				$this->craftingType = 0;
-				$inv = $this->windowIndex[$packet->windowid];
-				$transaction = new BaseTransaction($inv, $packet->slot, $inv->getItem($packet->slot), $packet->item);
-				break;
-		}
-
-		if($transaction->getSourceItem()->equals($transaction->getTargetItem()) and $transaction->getTargetItem()->getCount() === $transaction->getSourceItem()->getCount()){ //No changes!
-			//No changes, just a local inventory update sent by the client
-			return true;
-		}
-
-		if($this->currentTransaction === null or $this->currentTransaction->getCreationTime() < (microtime(true) - 8)){
-			if($this->currentTransaction !== null){
-				foreach($this->currentTransaction->getInventories() as $inventory){
-					if($inventory instanceof PlayerInventory){
-						$inventory->sendArmorContents($this);
-					}
-					$inventory->sendContents($this);
-				}
-			}
-			$this->currentTransaction = new SimpleTransactionGroup($this);
-		}
-
-		$this->currentTransaction->addTransaction($transaction);
-
-		if($this->currentTransaction->canExecute()){
-			$achievements = [];
-			foreach($this->currentTransaction->getTransactions() as $ts){
-				$inv = $ts->getInventory();
-				if($inv instanceof FurnaceInventory){
-					if($ts->getSlot() === 2){
-						switch($inv->getResult()->getId()){
-							case Item::IRON_INGOT:
-								$achievements[] = "acquireIron";
-								break;
-						}
-					}
-				}
-			}
-
-			if($this->currentTransaction->execute()){
-				foreach($achievements as $a){
-					$this->awardAchievement($a);
-				}
-			}
-
-			$this->currentTransaction = null;
-		}
 
 		return true;
 	}
@@ -3845,6 +3789,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	protected function addDefaultWindows(){
 		$this->addWindow($this->getInventory(), ContainerIds::INVENTORY);
+
+		$this->cursorInventory = new PlayerCursorInventory($this);
+		$this->addWindow($this->cursorInventory, ContainerIds::CURSOR);
 
 		//TODO: more windows
 	}

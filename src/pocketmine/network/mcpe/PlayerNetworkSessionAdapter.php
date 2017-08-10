@@ -35,7 +35,6 @@ use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
-use pocketmine\network\mcpe\protocol\ContainerSetSlotPacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DropItemPacket;
@@ -181,16 +180,6 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 
 	public function handlePlayerHotbar(PlayerHotbarPacket $packet) : bool{
 		return $this->player->handlePlayerHotbar($packet);
-	}
-
-	/**
-	 * TODO: REMOVE
-	 * @param ContainerSetSlotPacket $packet
-	 *
-	 * @return bool
-	 */
-	public function handleContainerSetSlot(ContainerSetSlotPacket $packet) : bool{
-		return $this->player->handleContainerSetSlot($packet);
 	}
 
 	public function handleCraftingEvent(CraftingEventPacket $packet) : bool{
