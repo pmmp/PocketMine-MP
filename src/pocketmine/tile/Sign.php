@@ -40,7 +40,7 @@ class Sign extends Spawnable{
 			$this->text = explode("\n", $nbt->Text->getValue());
 			unset($nbt->Text);
 		}else{
-			for($i = 1; $i < 4; ++$i){
+			for($i = 1; $i <= 4; ++$i){
 				$textKey = "Text$i";
 				if(isset($nbt->$textKey)){
 					$this->text[$i - 1] = $nbt->$textKey->getValue();
@@ -56,9 +56,9 @@ class Sign extends Spawnable{
 		parent::saveNBT();
 		$this->namedtag->Text = new StringTag("Text", implode("\n", $this->text));
 
-		foreach($this->text as $i => $line){ //Backwards-compatibility
+		for($i = 1; $i <= 4; ++$i){ //Backwards-compatibility
 			$textKey = "Text$i";
-			$this->namedtag->$textKey = new StringTag($textKey, $this->getLine($i));
+			$this->namedtag->$textKey = new StringTag($textKey, $this->getLine($i - 1));
 		}
 
 		unset($this->namedtag->Creator);
