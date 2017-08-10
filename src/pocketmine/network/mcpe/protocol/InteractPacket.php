@@ -31,17 +31,6 @@ use pocketmine\network\mcpe\NetworkSession;
 class InteractPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::INTERACT_PACKET;
 
-	/**
-	 * @deprecated
-	 * This action is no longer used as of MCPE 1.2.0.2, this is now handled in InventoryTransactionPacket
-	 */
-	const ACTION_RIGHT_CLICK = 1;
-	/**
-	 * @deprecated
-	 * This action is no longer used as of MCPE 1.2.0.2, this is now handled in InventoryTransactionPacket
-	 */
-	const ACTION_LEFT_CLICK = 2;
-
 	const ACTION_LEAVE_VEHICLE = 3;
 	const ACTION_MOUSEOVER = 4;
 
