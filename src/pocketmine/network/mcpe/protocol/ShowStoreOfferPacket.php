@@ -31,13 +31,19 @@ class ShowStoreOfferPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SHOW_STORE_OFFER_PACKET;
 
 	public $offerId;
+	public $unknownBool;
+	public $unknownString;
 
 	protected function decodePayload(){
 		$this->offerId = $this->getString();
+		$this->unknownBool = $this->getBool();
+		$this->unknownString = $this->getString();
 	}
 
 	protected function encodePayload(){
 		$this->putString($this->offerId);
+		$this->putBool($this->unknownBool);
+		$this->putString($this->unknownString);
 	}
 
 	public function handle(NetworkSession $session) : bool{

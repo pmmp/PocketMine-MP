@@ -63,6 +63,7 @@ class StartGamePacket extends DataPacket{
 	public $isTexturePacksRequired = true;
 	public $gameRules = []; //TODO: implement this
 	public $hasBonusChestEnabled = false;
+	public $hasStartWithMapEnabled = false;
 	public $hasTrustPlayersEnabled = false;
 	public $defaultPlayerPermission = PlayerPermissions::MEMBER; //TODO
 	public $xboxLiveBroadcastMode = 0; //TODO: find values
@@ -104,6 +105,7 @@ class StartGamePacket extends DataPacket{
 		$this->isTexturePacksRequired = $this->getBool();
 		$this->gameRules = $this->getGameRules();
 		$this->hasBonusChestEnabled = $this->getBool();
+		$this->hasStartWithMapEnabled = $this->getBool();
 		$this->hasTrustPlayersEnabled = $this->getBool();
 		$this->defaultPlayerPermission = $this->getVarInt();
 		$this->xboxLiveBroadcastMode = $this->getVarInt();
@@ -146,6 +148,7 @@ class StartGamePacket extends DataPacket{
 		$this->putBool($this->isTexturePacksRequired);
 		$this->putGameRules($this->gameRules);
 		$this->putBool($this->hasBonusChestEnabled);
+		$this->putBool($this->hasStartWithMapEnabled);
 		$this->putBool($this->hasTrustPlayersEnabled);
 		$this->putVarInt($this->defaultPlayerPermission);
 		$this->putVarInt($this->xboxLiveBroadcastMode);
