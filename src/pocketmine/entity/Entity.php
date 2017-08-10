@@ -1872,8 +1872,9 @@ abstract class Entity extends Location implements Metadatable{
 		$this->close();
 	}
 
-	public function setMetadata(string $metadataKey, MetadataValue $metadataValue){
-		$this->server->getEntityMetadata()->setMetadata($this, $metadataKey, $metadataValue);
+
+	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue){
+		$this->server->getEntityMetadata()->setMetadata($this, $metadataKey, $newMetadataValue);
 	}
 
 	public function getMetadata(string $metadataKey){
@@ -1884,8 +1885,8 @@ abstract class Entity extends Location implements Metadatable{
 		return $this->server->getEntityMetadata()->hasMetadata($this, $metadataKey);
 	}
 
-	public function removeMetadata(string $metadataKey, Plugin $plugin){
-		$this->server->getEntityMetadata()->removeMetadata($this, $metadataKey, $plugin);
+	public function removeMetadata(string $metadataKey, Plugin $owningPlugin){
+		$this->server->getEntityMetadata()->removeMetadata($this, $metadataKey, $owningPlugin);
 	}
 
 	public function __toString(){

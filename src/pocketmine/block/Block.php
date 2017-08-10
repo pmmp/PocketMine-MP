@@ -846,7 +846,7 @@ class Block extends Position implements BlockIds, Metadatable{
 
 	public function hasMetadata(string $metadataKey) : bool{
 		if($this->getLevel() instanceof Level){
-			 return $this->getLevel()->getBlockMetadata()->hasMetadata($this, $metadataKey);
+			return $this->getLevel()->getBlockMetadata()->hasMetadata($this, $metadataKey);
 		}
 
 		return false;
