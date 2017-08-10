@@ -69,14 +69,14 @@ class AdventureSettingsPacket extends DataPacket{
 	public $commandPermission = self::PERMISSION_NORMAL;
 	public $flags2 = -1;
 	public $playerPermission = PlayerPermissions::MEMBER;
-	public $long1 = 0;
+	public $entityUniqueId; //This is a little-endian long, NOT a var-long. (WTF Mojang)
 
 	protected function decodePayload(){
 		$this->flags = $this->getUnsignedVarInt();
 		$this->commandPermission = $this->getUnsignedVarInt();
 		$this->flags2 = $this->getUnsignedVarInt();
 		$this->playerPermission = $this->getUnsignedVarInt();
-		$this->long1 = $this->getLLong();
+		$this->entityUniqueId = $this->getLLong();
 	}
 
 	protected function encodePayload(){
@@ -84,7 +84,7 @@ class AdventureSettingsPacket extends DataPacket{
 		$this->putUnsignedVarInt($this->commandPermission);
 		$this->putUnsignedVarInt($this->flags2);
 		$this->putUnsignedVarInt($this->playerPermission);
-		$this->putLLong($this->long1);
+		$this->putLLong($this->entityUniqueId);
 	}
 
 	public function getFlag(int $flag) : bool{

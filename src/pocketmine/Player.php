@@ -1330,6 +1330,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$pk->commandPermission = ($this->isOp() ? AdventureSettingsPacket::PERMISSION_OPERATOR : AdventureSettingsPacket::PERMISSION_NORMAL);
 		$pk->playerPermission = ($this->isOp() ? PlayerPermissions::OPERATOR : PlayerPermissions::MEMBER);
+		$pk->entityUniqueId = $this->getId();
 
 		$this->dataPacket($pk);
 	}
@@ -3085,6 +3086,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
+		if($packet->entityUniqueId !== $this->getId()){
+			return false; //TODO
+		}
+
+		$handled = false;
+
 		$isFlying = $packet->getFlag(AdventureSettingsPacket::FLYING);
 		if($isFlying and !$this->allowFlight and !$this->server->getAllowFlight()){
 			$this->kick($this->server->getLanguage()->translateString("kick.reason.cheat", ["%ability.flight"]));
@@ -3096,6 +3103,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}else{
 				$this->flying = $ev->isFlying();
 			}
+
+			$handled = true;
 		}
 
 		if($packet->getFlag(AdventureSettingsPacket::NO_CLIP) and !$this->allowMovementCheats and !$this->isSpectator()){
@@ -3105,7 +3114,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		//TODO: check other changes
 
-		return true;
+		return $handled;
 	}
 
 	public function handleBlockEntityData(BlockEntityDataPacket $packet) : bool{
