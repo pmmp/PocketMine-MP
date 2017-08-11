@@ -73,7 +73,6 @@ use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\TextContainer;
 use pocketmine\event\Timings;
 use pocketmine\event\TranslationContainer;
-use pocketmine\inventory\BaseTransaction;
 use pocketmine\inventory\BigShapedRecipe;
 use pocketmine\inventory\BigShapelessRecipe;
 use pocketmine\inventory\FurnaceInventory;
@@ -82,7 +81,7 @@ use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
-use pocketmine\inventory\SimpleTransactionGroup;
+use pocketmine\inventory\transaction\SimpleInventoryTransaction;
 use pocketmine\item\Item;
 use pocketmine\level\ChunkLoader;
 use pocketmine\level\format\Chunk;
@@ -120,7 +119,6 @@ use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
-use pocketmine\network\mcpe\protocol\DropItemPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
@@ -235,8 +233,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public $speed = null;
 
 	public $achievements = [];
-	/** @var SimpleTransactionGroup */
-	protected $currentTransaction = null;
+
 	public $craftingType = 0; //0 = 2x2 crafting, 1 = 3x3 crafting, 2 = stonecutter
 
 	/** @var PlayerCursorInventory */
@@ -2161,28 +2158,38 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
 		switch($packet->transactionData->transactionType){
 			case InventoryTransactionPacket::TYPE_NORMAL:
-				$transaction = new SimpleTransactionGroup($this);
+				$transaction = new SimpleInventoryTransaction($this);
 
 				foreach($packet->actions as $action){
-					if($action->inventorySource->sourceType !== InventoryTransactionPacket::SOURCE_CONTAINER){
-						return false; //TODO: handle other source types
-					}
-
-					if($action->inventorySource->containerId === ContainerIds::ARMOR){
-						$transaction->addTransaction(new BaseTransaction($this->inventory, $action->inventorySlot + $this->inventory->getSize(), $action->oldItem, $action->newItem));
-						continue;
-					}
-
-					$transaction->addTransaction(new BaseTransaction($this->windowIndex[$action->inventorySource->containerId], $action->inventorySlot, $action->oldItem, $action->newItem));
+					$transaction->addAction($action);
 				}
 
 				if(!$transaction->execute()){
-					//need to resend/revert/whatever (TODO)
+					foreach($transaction->getInventories() as $inventory){
+						$inventory->sendContents($this);
+						if($inventory instanceof PlayerInventory){
+							$inventory->sendArmorContents($this);
+						}
+					}
+
+					//TODO: check more stuff that might need reversion
 					return false; //oops!
 				}
 
 				//TODO: fix achievement for getting iron from furnace
 
+				return true;
+			case InventoryTransactionPacket::TYPE_MISMATCH:
+				if(count($packet->actions) > 0){
+					$this->server->getLogger()->debug("Expected 0 actions for mismatch, got " . count($packet->actions) . ", " . json_encode($packet->actions));
+				}
+				foreach($this->windowIndex as $id => $inventory){
+					$inventory->sendContents($this);
+					if($inventory instanceof PlayerInventory){
+						$inventory->sendArmorContents($this);
+					}
+				}
+				$this->inventory->sendHotbar();
 				return true;
 			case InventoryTransactionPacket::TYPE_USE_ITEM:
 				$blockVector = new Vector3($packet->transactionData->x, $packet->transactionData->y, $packet->transactionData->z);
@@ -2462,6 +2469,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				break;
 			case InventoryTransactionPacket::TYPE_RELEASE_ITEM:
 				//TODO
+				break;
+			default:
+				$this->inventory->sendContents($this);
 				break;
 
 		}
@@ -2805,25 +2815,27 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return true;
 	}
 
-	public function handleDropItem(DropItemPacket $packet) : bool{
-		if($this->spawned === false or !$this->isAlive()){
+	/**
+	 * Drops an item on the ground in front of the player. Returns if the item drop was successful.
+	 *
+	 * @param Item $item
+	 * @return bool if the item was dropped or if the item was null
+	 */
+	public function dropItem(Item $item){
+		if(!$this->spawned or !$this->isAlive()){
+			return false;
+		}
+
+		if($item->isNull()){
+			$this->server->getLogger()->debug($this->getName() . " attempted to drop a null item (" . $item . ")");
 			return true;
 		}
 
-		if($packet->item->getId() === Item::AIR){
-			// Windows 10 Edition drops the contents of the crafting grid on container close - including air.
-			return true;
-		}
-
-		$item = $this->inventory->getItemInHand();
-		$ev = new PlayerDropItemEvent($this, $item);
-		$this->server->getPluginManager()->callEvent($ev);
+		$this->server->getPluginManager()->callEvent($ev = new PlayerDropItemEvent($this, $item));
 		if($ev->isCancelled()){
-			$this->inventory->sendContents($this);
-			return true;
+			return false;
 		}
 
-		$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 1));
 		$motion = $this->getDirectionVector()->multiply(0.4);
 
 		$this->level->dropItem($this->add(0, 1.3, 0), $item, $motion, 40);
@@ -2839,7 +2851,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$this->craftingType = 0;
-		$this->currentTransaction = null;
+
 		if(isset($this->windowIndex[$packet->windowId])){
 			$this->server->getPluginManager()->callEvent(new InventoryCloseEvent($this->windowIndex[$packet->windowId], $this));
 			$this->removeWindow($this->windowIndex[$packet->windowId]);
@@ -3477,12 +3489,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					$this->perm->clearPermissions();
 					$this->perm = null;
 				}
-
-				if($this->inventory !== null){
-					$this->inventory = null;
-					$this->currentTransaction = null;
-				}
-
 			}catch(\Throwable $e){
 				$this->server->getLogger()->logException($e);
 			}finally{
@@ -3807,6 +3813,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		return ContainerIds::NONE;
+	}
+
+	/**
+	 * @param int $windowId
+	 *
+	 * @return Inventory|null
+	 */
+	public function getWindow(int $windowId){
+		return $this->windowIndex[$windowId] ?? null;
 	}
 
 	/**

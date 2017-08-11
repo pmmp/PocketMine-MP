@@ -21,34 +21,41 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\inventory;
+namespace pocketmine\inventory\transaction\action;
 
-use pocketmine\item\Item;
+use pocketmine\Player;
 
-interface Transaction{
-
-	/**
-	 * @return Inventory
-	 */
-	public function getInventory() : Inventory;
+/**
+ * Represents an action involving dropping an item into the world.
+ */
+class DropItemAction extends InventoryAction{
 
 	/**
-	 * @return int
+	 * Verifies that the source item of a drop-item action must be air. This is not strictly necessary, just a sanity
+	 * check.
+	 *
+	 * @param Player $source
+	 * @return bool
 	 */
-	public function getSlot() : int;
+	public function isValid(Player $source) : bool{
+		return $this->sourceItem->isNull();
+	}
 
 	/**
-	 * @return Item
+	 * Drops the target item in front of the player.
+	 *
+	 * @param Player $source
+	 * @return bool
 	 */
-	public function getSourceItem() : Item;
+	public function execute(Player $source) : bool{
+		return $source->dropItem($this->targetItem);
+	}
 
-	/**
-	 * @return Item
-	 */
-	public function getTargetItem() : Item;
+	public function onExecuteSuccess(Player $source){
 
-	/**
-	 * @return float
-	 */
-	public function getCreationTime() : float;
+	}
+
+	public function onExecuteFail(Player $source){
+
+	}
 }

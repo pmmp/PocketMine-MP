@@ -21,36 +21,46 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol;
+namespace pocketmine\inventory\transaction;
 
-#include <rules/DataPacket.h>
+use pocketmine\inventory\Inventory;
+use pocketmine\inventory\transaction\action\InventoryAction;
 
+interface InventoryTransaction{
 
-use pocketmine\item\Item;
-use pocketmine\network\mcpe\NetworkSession;
+	/**
+	 * @return float
+	 */
+	public function getCreationTime() : float;
 
-/**
- * @removed
- */
-class DropItemPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::DROP_ITEM_PACKET;
+	/**
+	 * @return InventoryAction[]
+	 */
+	public function getActions() : array;
 
-	public $type;
-	/** @var Item */
-	public $item;
+	/**
+	 * @return Inventory[]
+	 */
+	public function getInventories() : array;
 
-	protected function decodePayload(){
-		$this->type = $this->getByte();
-		$this->item = $this->getSlot();
-	}
+	/**
+	 * @param InventoryAction $action
+	 */
+	public function addAction(InventoryAction $action);
 
-	protected function encodePayload(){
-		$this->putByte($this->type);
-		$this->putSlot($this->item);
-	}
+	/**
+	 * @return bool
+	 */
+	public function canExecute() : bool;
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleDropItem($this);
-	}
+	/**
+	 * @return bool
+	 */
+	public function execute() : bool;
+
+	/**
+	 * @return bool
+	 */
+	public function hasExecuted() : bool;
 
 }

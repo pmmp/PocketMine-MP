@@ -37,7 +37,6 @@ use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
-use pocketmine\network\mcpe\protocol\DropItemPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\EntityFallPacket;
 use pocketmine\network\mcpe\protocol\EntityPickRequestPacket;
@@ -162,16 +161,6 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 
 	public function handleAnimate(AnimatePacket $packet) : bool{
 		return $this->player->handleAnimate($packet);
-	}
-
-	/**
-	 * TODO: REMOVE
-	 * @param DropItemPacket $packet
-	 *
-	 * @return bool
-	 */
-	public function handleDropItem(DropItemPacket $packet) : bool{
-		return $this->player->handleDropItem($packet);
 	}
 
 	public function handleContainerClose(ContainerClosePacket $packet) : bool{

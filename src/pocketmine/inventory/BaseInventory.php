@@ -140,7 +140,6 @@ abstract class BaseInventory implements Inventory{
 		if($holder instanceof Entity){
 			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($holder, $this->getItem($index), $item, $index));
 			if($ev->isCancelled()){
-				$this->sendSlot($index, $this->getViewers());
 				return false;
 			}
 			$item = $ev->getNewItem();

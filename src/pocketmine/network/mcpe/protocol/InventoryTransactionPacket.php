@@ -25,13 +25,18 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\inventory\transaction\action\CreativeInventoryAction;
+use pocketmine\inventory\transaction\action\DropItemAction;
+use pocketmine\inventory\transaction\action\InventoryAction;
+use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\ContainerIds;
 
 class InventoryTransactionPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::INVENTORY_TRANSACTION_PACKET;
 
 	const TYPE_NORMAL = 0;
-
+	const TYPE_MISMATCH = 1;
 	const TYPE_USE_ITEM = 2;
 	const TYPE_USE_ITEM_ON_ENTITY = 3;
 	const TYPE_RELEASE_ITEM = 4;
@@ -87,6 +92,7 @@ class InventoryTransactionPacket extends DataPacket{
 	const ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM = 0;
 	const ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM = 1;
 
+	/** @var InventoryAction[] */
 	public $actions = [];
 
 	public $transactionData;
@@ -104,7 +110,7 @@ class InventoryTransactionPacket extends DataPacket{
 
 		switch($type){
 			case self::TYPE_NORMAL:
-			case 1:
+			case self::TYPE_MISMATCH:
 				//Regular ComplexInventoryTransaction doesn't read any extra data
 				break;
 			case self::TYPE_USE_ITEM:
@@ -133,8 +139,6 @@ class InventoryTransactionPacket extends DataPacket{
 			default:
 				throw new \UnexpectedValueException("Unknown transaction type $type");
 		}
-
-		//TODO
 	}
 
 	protected function encodePayload(){
@@ -142,45 +146,58 @@ class InventoryTransactionPacket extends DataPacket{
 	}
 
 	protected function decodeInventoryAction(){
-		$actionBucket = new \stdClass();
-		$actionBucket->inventorySource = $this->decodeInventorySource();
+		$sourceType = $this->getUnsignedVarInt();
+		$containerId = ContainerIds::NONE;
+		$unknown = 0;
 
-		$actionBucket->inventorySlot = $this->getUnsignedVarInt();
-		$actionBucket->oldItem = $this->getSlot();
-		$actionBucket->newItem = $this->getSlot();
-		return $actionBucket;
-	}
 
-	protected function decodeInventorySource(){
-		$bucket = new \stdClass();
-		$bucket->sourceType = $this->getUnsignedVarInt();
-
-		switch($bucket->sourceType){
+		switch($sourceType){
 			case self::SOURCE_CONTAINER:
-
-				$bucket->containerId = $this->getVarInt();
-				$bucket->field_2 = 0;
+				$containerId = $this->getVarInt();
 				break;
-			case 1:
-				break; //unused
 			case self::SOURCE_WORLD:
-				$bucket->containerId = -1;
-				$bucket->field_2 = $this->getUnsignedVarInt();
+				$unknown = $this->getUnsignedVarInt();
 				break;
 			case self::SOURCE_CREATIVE:
-				$bucket->containerId = -1;
-				$bucket->field_2 = 0;
 				break;
 			case self::SOURCE_TODO:
-				$bucket->containerId = $this->getVarInt();
-				$bucket->field_2 = 0;
+				$containerId = $this->getVarInt();
 				break;
 			default:
-				throw new \UnexpectedValueException("Unexpected inventory source type $bucket->sourceType");
-
+				throw new \UnexpectedValueException("Unexpected inventory source type $sourceType");
 		}
 
-		return $bucket;
+		$inventorySlot = $this->getUnsignedVarInt();
+		$sourceItem = $this->getSlot();
+		$targetItem = $this->getSlot();
+
+		switch($sourceType){
+			case self::SOURCE_CONTAINER:
+				if($containerId === ContainerIds::ARMOR){
+					//TODO: HACK!
+					$inventorySlot += 36;
+					$containerId = ContainerIds::INVENTORY;
+				}
+				return new SlotChangeAction($sourceItem, $targetItem, $containerId, $inventorySlot);
+			case self::SOURCE_WORLD:
+				if($inventorySlot !== self::ACTION_MAGIC_SLOT_DROP_ITEM){
+					throw new \UnexpectedValueException("Only expect drop item world action types from client");
+				}
+
+				return new DropItemAction($sourceItem, $targetItem);
+			case self::SOURCE_CREATIVE:
+				if($inventorySlot === self::ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM){
+					return new CreativeInventoryAction($sourceItem, $targetItem, CreativeInventoryAction::TYPE_DELETE_ITEM);
+				}elseif($inventorySlot === self::ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM){
+					return new CreativeInventoryAction($sourceItem, $targetItem, CreativeInventoryAction::TYPE_CREATE_ITEM);
+				}else{
+					throw new \UnexpectedValueException("Unknown creative inventory action type $inventorySlot");
+				}
+			case self::SOURCE_TODO:
+				return new SlotChangeAction($sourceItem, $targetItem, $containerId, $inventorySlot);
+			default:
+				throw new \UnexpectedValueException("Unknown source type $sourceType");
+		}
 	}
 
 	public function handle(NetworkSession $session) : bool{

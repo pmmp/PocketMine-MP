@@ -351,6 +351,12 @@ class PlayerInventory extends BaseInventory{
 	}
 
 	public function setItem(int $index, Item $item, bool $send = true) : bool{
+		if($item->isNull()){
+			$item = Item::get(Item::AIR, 0, 0);
+		}else{
+			$item = clone $item;
+		}
+
 		if($index >= $this->getSize()){ //Armor change
 			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $this->getItem($index), $item, $index));
 			if($ev->isCancelled() and $this->getHolder() instanceof Human){
@@ -367,9 +373,8 @@ class PlayerInventory extends BaseInventory{
 			$item = $ev->getNewItem();
 		}
 
-
 		$old = $this->getItem($index);
-		$this->slots[$index] = clone $item;
+		$this->slots[$index] = $item;
 		$this->onSlotChange($index, $old, $send);
 
 		return true;
