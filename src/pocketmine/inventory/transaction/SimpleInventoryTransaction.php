@@ -86,11 +86,12 @@ class SimpleInventoryTransaction implements InventoryTransaction{
 			return;
 		}
 
-		$this->actions[spl_object_hash($action)] = $action;
 		if($action instanceof SlotChangeAction){
 			$action->setInventoryFrom($this->source);
 			$this->inventories[spl_object_hash($action->getInventory())] = $action->getInventory();
 		}
+
+		$this->actions[spl_object_hash($action)] = $action;
 	}
 
 	/**
