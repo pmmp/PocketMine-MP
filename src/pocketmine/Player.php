@@ -2149,6 +2149,16 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return true;
 	}
 
+	protected function sendAllInventories(){
+		foreach($this->windowIndex as $id => $inventory){
+			$inventory->sendContents($this);
+			if($inventory instanceof PlayerInventory){
+				$inventory->sendArmorContents($this);
+				$inventory->sendHotbar();
+			}
+		}
+	}
+
 	/**
 	 * Don't expect much from this handler. Most of it is roughly hacked and duct-taped together.
 	 *
@@ -2161,7 +2171,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$transaction = new SimpleInventoryTransaction($this);
 
 				foreach($packet->actions as $action){
-					$transaction->addAction($action);
+					try{
+						$transaction->addAction($action);
+					}catch(\InvalidStateException $e){
+						$this->server->getLogger()->debug($e->getMessage());
+						$this->sendAllInventories();
+						return false;
+					}
 				}
 
 				if(!$transaction->execute()){
@@ -2183,13 +2199,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				if(count($packet->actions) > 0){
 					$this->server->getLogger()->debug("Expected 0 actions for mismatch, got " . count($packet->actions) . ", " . json_encode($packet->actions));
 				}
-				foreach($this->windowIndex as $id => $inventory){
-					$inventory->sendContents($this);
-					if($inventory instanceof PlayerInventory){
-						$inventory->sendArmorContents($this);
-					}
-				}
-				$this->inventory->sendHotbar();
+				$this->sendAllInventories();
+
 				return true;
 			case InventoryTransactionPacket::TYPE_USE_ITEM:
 				$blockVector = new Vector3($packet->transactionData->x, $packet->transactionData->y, $packet->transactionData->z);
