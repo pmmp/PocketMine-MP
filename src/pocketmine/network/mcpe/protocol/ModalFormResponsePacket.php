@@ -30,12 +30,19 @@ use pocketmine\network\mcpe\NetworkSession;
 class ModalFormResponsePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::MODAL_FORM_RESPONSE_PACKET;
 
+	/** @var int */
+	public $formId;
+	/** @var string */
+	public $formData; //json
+
 	protected function decodePayload(){
-		//TODO
+		$this->formId = $this->getUnsignedVarInt();
+		$this->formData = $this->getString();
 	}
 
 	protected function encodePayload(){
-		//TODO
+		$this->putUnsignedVarInt($this->formId);
+		$this->putString($this->formData);
 	}
 
 	public function handle(NetworkSession $session) : bool{
