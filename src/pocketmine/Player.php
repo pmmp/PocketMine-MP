@@ -3802,6 +3802,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		//TODO: more windows
 	}
 
+	public function getCursorInventory() : PlayerCursorInventory{
+		return $this->cursorInventory;
+	}
+
 	/**
 	 * @param Inventory $inventory
 	 *
