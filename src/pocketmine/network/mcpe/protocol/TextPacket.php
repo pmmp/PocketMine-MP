@@ -40,15 +40,20 @@ class TextPacket extends DataPacket{
 	const TYPE_WHISPER = 6;
 	const TYPE_ANNOUNCEMENT = 7;
 
+	/** @var int */
 	public $type;
-	public $unknownBool = false;
+	/** @var bool */
+	public $needsTranslation = false;
+	/** @var string */
 	public $source;
+	/** @var string */
 	public $message;
+	/** @var string[] */
 	public $parameters = [];
 
 	protected function decodePayload(){
 		$this->type = $this->getByte();
-		$this->unknownBool = $this->getBool();
+		$this->needsTranslation = $this->getBool();
 		switch($this->type){
 			case self::TYPE_POPUP:
 			case self::TYPE_CHAT:
@@ -73,7 +78,7 @@ class TextPacket extends DataPacket{
 
 	protected function encodePayload(){
 		$this->putByte($this->type);
-		$this->putBool($this->unknownBool);
+		$this->putBool($this->needsTranslation);
 		switch($this->type){
 			case self::TYPE_POPUP:
 			case self::TYPE_CHAT:
