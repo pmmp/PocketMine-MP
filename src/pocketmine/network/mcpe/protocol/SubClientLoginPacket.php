@@ -30,12 +30,15 @@ use pocketmine\network\mcpe\NetworkSession;
 class SubClientLoginPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SUB_CLIENT_LOGIN_PACKET;
 
+	/** @var string */
+	public $connectionRequestData;
+
 	protected function decodePayload(){
-		//TODO
+		$this->connectionRequestData = $this->getString();
 	}
 
 	protected function encodePayload(){
-		//TODO
+		$this->putString($this->connectionRequestData);
 	}
 
 	public function handle(NetworkSession $session) : bool{

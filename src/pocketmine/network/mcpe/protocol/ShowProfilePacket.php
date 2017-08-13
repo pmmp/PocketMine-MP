@@ -30,12 +30,15 @@ use pocketmine\network\mcpe\NetworkSession;
 class ShowProfilePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SHOW_PROFILE_PACKET;
 
+	/** @var string */
+	public $string1;
+
 	protected function decodePayload(){
-		//TODO
+		$this->string1 = $this->getString();
 	}
 
 	protected function encodePayload(){
-		//TODO
+		$this->putString($this->string1);
 	}
 
 	public function handle(NetworkSession $session) : bool{
