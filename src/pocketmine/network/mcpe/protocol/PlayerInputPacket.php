@@ -31,9 +31,13 @@ use pocketmine\network\mcpe\NetworkSession;
 class PlayerInputPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::PLAYER_INPUT_PACKET;
 
+	/** @var float */
 	public $motionX;
+	/** @var float */
 	public $motionY;
+	/** @var bool */
 	public $unknownBool1;
+	/** @var bool */
 	public $unknownBool2;
 
 	protected function decodePayload(){

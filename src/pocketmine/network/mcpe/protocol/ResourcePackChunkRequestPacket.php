@@ -32,7 +32,9 @@ use pocketmine\network\mcpe\NetworkSession;
 class ResourcePackChunkRequestPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_CHUNK_REQUEST_PACKET;
 
+	/** @var string */
 	public $packId;
+	/** @var int */
 	public $chunkIndex;
 
 	protected function decodePayload(){

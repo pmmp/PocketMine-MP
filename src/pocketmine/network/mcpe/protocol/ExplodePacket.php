@@ -32,9 +32,8 @@ use pocketmine\network\mcpe\NetworkSession;
 class ExplodePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::EXPLODE_PACKET;
 
-	public $x;
-	public $y;
-	public $z;
+	/** @var Vector3 */
+	public $position;
 	/** @var float */
 	public $radius;
 	/** @var Vector3[] */
@@ -46,7 +45,7 @@ class ExplodePacket extends DataPacket{
 	}
 
 	protected function decodePayload(){
-		$this->getVector3f($this->x, $this->y, $this->z);
+		$this->position = $this->getVector3Obj();
 		$this->radius = (float) ($this->getVarInt() / 32);
 		$count = $this->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
@@ -57,7 +56,7 @@ class ExplodePacket extends DataPacket{
 	}
 
 	protected function encodePayload(){
-		$this->putVector3f($this->x, $this->y, $this->z);
+		$this->putVector3Obj($this->position);
 		$this->putVarInt((int) ($this->radius * 32));
 		$this->putUnsignedVarInt(count($this->records));
 		if(count($this->records) > 0){

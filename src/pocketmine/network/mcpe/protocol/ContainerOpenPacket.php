@@ -31,11 +31,17 @@ use pocketmine\network\mcpe\NetworkSession;
 class ContainerOpenPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::CONTAINER_OPEN_PACKET;
 
+	/** @var int */
 	public $windowId;
+	/** @var int */
 	public $type;
+	/** @var int */
 	public $x;
+	/** @var int */
 	public $y;
+	/** @var int */
 	public $z;
+	/** @var int */
 	public $entityUniqueId = -1;
 
 	protected function decodePayload(){

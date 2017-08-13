@@ -32,7 +32,9 @@ use pocketmine\utils\UUID;
 class CraftingEventPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::CRAFTING_EVENT_PACKET;
 
+	/** @var int */
 	public $windowId;
+	/** @var int */
 	public $type;
 	/** @var UUID */
 	public $id;

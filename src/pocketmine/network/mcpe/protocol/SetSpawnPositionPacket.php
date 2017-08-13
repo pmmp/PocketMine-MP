@@ -34,10 +34,15 @@ class SetSpawnPositionPacket extends DataPacket{
 	const TYPE_PLAYER_SPAWN = 0;
 	const TYPE_WORLD_SPAWN = 1;
 
+	/** @var int */
 	public $spawnType;
+	/** @var int */
 	public $x;
+	/** @var int */
 	public $y;
+	/** @var int */
 	public $z;
+	/** @var bool */
 	public $spawnForced;
 
 	protected function decodePayload(){

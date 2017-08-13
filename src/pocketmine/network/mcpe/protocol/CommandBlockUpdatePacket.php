@@ -32,21 +32,32 @@ use pocketmine\network\mcpe\NetworkSession;
 class CommandBlockUpdatePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::COMMAND_BLOCK_UPDATE_PACKET;
 
+	/** @var bool */
 	public $isBlock;
 
+	/** @var int */
 	public $x;
+	/** @var int */
 	public $y;
+	/** @var int */
 	public $z;
+	/** @var int */
 	public $commandBlockMode;
+	/** @var bool */
 	public $isRedstoneMode;
+	/** @var bool */
 	public $isConditional;
 
+	/** @var int */
 	public $minecartEid;
 
+	/** @var string */
 	public $command;
+	/** @var string */
 	public $lastOutput;
+	/** @var string */
 	public $name;
-
+	/** @var bool */
 	public $shouldTrackOutput;
 
 	protected function decodePayload(){

@@ -32,6 +32,7 @@ use pocketmine\network\mcpe\NetworkSession;
 class UpdateAttributesPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::UPDATE_ATTRIBUTES_PACKET;
 
+	/** @var int */
 	public $entityRuntimeId;
 	/** @var Attribute[] */
 	public $entries = [];

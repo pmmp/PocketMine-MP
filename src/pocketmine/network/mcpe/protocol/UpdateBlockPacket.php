@@ -40,11 +40,17 @@ class UpdateBlockPacket extends DataPacket{
 	const FLAG_ALL = self::FLAG_NEIGHBORS | self::FLAG_NETWORK;
 	const FLAG_ALL_PRIORITY = self::FLAG_ALL | self::FLAG_PRIORITY;
 
+	/** @var int */
 	public $x;
+	/** @var int */
 	public $z;
+	/** @var int */
 	public $y;
+	/** @var int */
 	public $blockId;
+	/** @var int */
 	public $blockData;
+	/** @var int */
 	public $flags;
 
 	protected function decodePayload(){

@@ -32,10 +32,15 @@ use pocketmine\network\mcpe\NetworkSession;
 class ResourcePackDataInfoPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_DATA_INFO_PACKET;
 
+	/** @var string */
 	public $packId;
+	/** @var int */
 	public $maxChunkSize;
+	/** @var int */
 	public $chunkCount;
+	/** @var int */
 	public $compressedPackSize;
+	/** @var string */
 	public $sha256;
 
 	protected function decodePayload(){

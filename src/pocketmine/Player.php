@@ -920,9 +920,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	protected function sendRespawnPacket(Vector3 $pos){
 		$pk = new RespawnPacket();
-		$pk->x = $pos->x;
-		$pk->y = $pos->y + $this->baseOffset;
-		$pk->z = $pos->z;
+		$pk->position = $pos->add(0, $this->baseOffset, 0);
+
 		$this->dataPacket($pk);
 	}
 
@@ -1581,7 +1580,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					if($to->distanceSquared($ev->getTo()) > 0.01){ //If plugins modify the destination
 						$this->teleport($ev->getTo());
 					}else{
-						$this->level->addEntityMovement($this->x >> 4, $this->z >> 4, $this->getId(), $this->x, $this->y + $this->baseOffset, $this->z, $this->yaw, $this->pitch, $this->yaw);
+						$this->broadcastMovement();
 
 						$distance = $from->distance($to);
 						//TODO: check swimming (adds 0.015 exhaustion in MCPE)
@@ -1621,7 +1620,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function setMotion(Vector3 $mot){
 		if(parent::setMotion($mot)){
 			if($this->chunk !== null){
-				$this->level->addEntityMotion($this->chunk->getX(), $this->chunk->getZ(), $this->getId(), $this->motionX, $this->motionY, $this->motionZ);
+				$this->broadcastMotion();
 			}
 
 			if($this->motionY > 0){
@@ -1865,9 +1864,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->entityUniqueId = $this->id;
 		$pk->entityRuntimeId = $this->id;
 		$pk->playerGamemode = Player::getClientFriendlyGamemode($this->gamemode);
-		$pk->x = $this->x;
-		$pk->y = $this->y + $this->baseOffset;
-		$pk->z = $this->z;
+
+		$pk->playerPosition = $this->getOffsetPosition();
+
 		$pk->pitch = $this->pitch;
 		$pk->yaw = $this->yaw;
 		$pk->seed = -1;
@@ -2086,7 +2085,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleMovePlayer(MovePlayerPacket $packet) : bool{
-		$newPos = new Vector3($packet->x, $packet->y - $this->baseOffset, $packet->z);
+		$newPos = $packet->position->subtract(0, $this->baseOffset, 0);
 
 		if($this->isTeleporting and $newPos->distanceSquared($this) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
 			$this->server->getLogger()->debug("Ignoring outdated pre-teleport movement from " . $this->getName() . ", received " . $newPos . ", expected " . $this->asVector3());
@@ -3746,9 +3745,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$pk = new MovePlayerPacket();
 		$pk->entityRuntimeId = $this->getId();
-		$pk->x = $pos->x;
-		$pk->y = $pos->y + ($baseOffsetOverride ?? $this->baseOffset);
-		$pk->z = $pos->z;
+		$pk->position = $this->getOffsetPosition();
 		$pk->bodyYaw = $yaw;
 		$pk->pitch = $pitch;
 		$pk->yaw = $yaw;

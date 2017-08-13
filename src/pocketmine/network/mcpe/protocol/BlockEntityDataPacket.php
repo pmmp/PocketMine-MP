@@ -31,9 +31,13 @@ use pocketmine\network\mcpe\NetworkSession;
 class BlockEntityDataPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::BLOCK_ENTITY_DATA_PACKET;
 
+	/** @var int */
 	public $x;
+	/** @var int */
 	public $y;
+	/** @var int */
 	public $z;
+	/** @var string */
 	public $namedtag;
 
 	protected function decodePayload(){

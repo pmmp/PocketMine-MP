@@ -34,14 +34,22 @@ class LoginPacket extends DataPacket{
 
 	const EDITION_POCKET = 0;
 
+	/** @var string */
 	public $username;
+	/** @var int */
 	public $protocol;
+	/** @var string */
 	public $clientUUID;
+	/** @var int */
 	public $clientId;
+	/** @var string */
 	public $identityPublicKey;
+	/** @var string */
 	public $serverAddress;
 
+	/** @var string */
 	public $skinId;
+	/** @var string */
 	public $skin = "";
 
 	/** @var array (the "chain" index contains one or more JWTs) */

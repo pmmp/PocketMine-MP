@@ -31,7 +31,9 @@ use pocketmine\network\mcpe\NetworkSession;
 class DisconnectPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::DISCONNECT_PACKET;
 
+	/** @var bool */
 	public $hideDisconnectionScreen = false;
+	/** @var string */
 	public $message;
 
 	public function canBeSentBeforeLogin() : bool{

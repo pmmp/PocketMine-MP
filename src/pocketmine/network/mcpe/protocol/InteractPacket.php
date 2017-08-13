@@ -53,6 +53,7 @@ class InteractPacket extends DataPacket{
 		$this->target = $this->getEntityRuntimeId();
 
 		if($this->action === self::ACTION_MOUSEOVER){
+			//TODO: should this be a vector3?
 			$this->x = $this->getLFloat();
 			$this->y = $this->getLFloat();
 			$this->z = $this->getLFloat();

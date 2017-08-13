@@ -26,15 +26,21 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\item\Item;
 use pocketmine\network\mcpe\NetworkSession;
 
 class MobEquipmentPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::MOB_EQUIPMENT_PACKET;
 
+	/** @var int */
 	public $entityRuntimeId;
+	/** @var Item */
 	public $item;
+	/** @var int */
 	public $inventorySlot;
+	/** @var int */
 	public $hotbarSlot;
+	/** @var int */
 	public $windowId = 0;
 
 	protected function decodePayload(){

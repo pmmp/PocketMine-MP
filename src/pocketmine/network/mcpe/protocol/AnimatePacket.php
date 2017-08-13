@@ -36,8 +36,11 @@ class AnimatePacket extends DataPacket{
 	const ACTION_STOP_SLEEP = 3;
 	const ACTION_CRITICAL_HIT = 4;
 
+	/** @var int */
 	public $action;
+	/** @var int */
 	public $entityRuntimeId;
+	/** @var float */
 	public $float = 0.0; //TODO (Boat rowing time?)
 
 	protected function decodePayload(){

@@ -32,6 +32,7 @@ use pocketmine\network\mcpe\NetworkSession;
 class RiderJumpPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::RIDER_JUMP_PACKET;
 
+	/** @var int */
 	public $unknown;
 
 	protected function decodePayload(){

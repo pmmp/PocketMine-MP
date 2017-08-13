@@ -33,6 +33,7 @@ use pocketmine\resourcepacks\ResourcePackInfoEntry;
 class ResourcePacksInfoPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::RESOURCE_PACKS_INFO_PACKET;
 
+	/** @var bool */
 	public $mustAccept = false; //if true, forces client to use selected resource packs
 	/** @var ResourcePack[] */
 	public $behaviorPackEntries = [];

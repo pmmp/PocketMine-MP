@@ -31,10 +31,15 @@ use pocketmine\network\mcpe\NetworkSession;
 class BlockEventPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::BLOCK_EVENT_PACKET;
 
+	/** @var int */
 	public $x;
+	/** @var int */
 	public $y;
+	/** @var int */
 	public $z;
+	/** @var int */
 	public $case1;
+	/** @var int */
 	public $case2;
 
 	protected function decodePayload(){

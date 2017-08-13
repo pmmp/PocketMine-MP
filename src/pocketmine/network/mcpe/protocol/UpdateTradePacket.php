@@ -34,14 +34,24 @@ class UpdateTradePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::UPDATE_TRADE_PACKET;
 
 	//TODO: find fields
+
+	/** @var int */
 	public $windowId;
+	/** @var int */
 	public $windowType = WindowTypes::TRADING; //Mojang hardcoded this -_-
+	/** @var int */
 	public $varint1;
+	/** @var int */
 	public $varint2;
+	/** @var bool */
 	public $isWilling;
+	/** @var int */
 	public $traderEid;
+	/** @var int */
 	public $playerEid;
+	/** @var string */
 	public $displayName;
+	/** @var string */
 	public $offers;
 
 	protected function decodePayload(){

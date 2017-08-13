@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\item\Item;
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\utils\UUID;
 
@@ -40,17 +41,19 @@ class AddPlayerPacket extends DataPacket{
 	public $entityUniqueId = null; //TODO
 	/** @var int */
 	public $entityRuntimeId;
-	public $x;
-	public $y;
-	public $z;
-	public $speedX = 0.0;
-	public $speedY = 0.0;
-	public $speedZ = 0.0;
+	/** @var Vector3 */
+	public $position;
+	/** @var Vector3|null */
+	public $motion;
+	/** @var float */
 	public $pitch = 0.0;
+	/** @var float|null */
 	public $headYaw = null; //TODO
+	/** @var float */
 	public $yaw = 0.0;
 	/** @var Item */
 	public $item;
+	/** @var array */
 	public $metadata = [];
 
 	//TODO: adventure settings stuff
@@ -68,8 +71,8 @@ class AddPlayerPacket extends DataPacket{
 		$this->username = $this->getString();
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->getVector3f($this->x, $this->y, $this->z);
-		$this->getVector3f($this->speedX, $this->speedY, $this->speedZ);
+		$this->position = $this->getVector3Obj();
+		$this->motion = $this->getVector3Obj();
 		$this->pitch = $this->getLFloat();
 		$this->headYaw = $this->getLFloat();
 		$this->yaw = $this->getLFloat();
@@ -94,8 +97,8 @@ class AddPlayerPacket extends DataPacket{
 		$this->putString($this->username);
 		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putVector3f($this->x, $this->y, $this->z);
-		$this->putVector3f($this->speedX, $this->speedY, $this->speedZ);
+		$this->putVector3Obj($this->position);
+		$this->putVector3ObjNullable($this->motion);
 		$this->putLFloat($this->pitch);
 		$this->putLFloat($this->headYaw ?? $this->yaw);
 		$this->putLFloat($this->yaw);

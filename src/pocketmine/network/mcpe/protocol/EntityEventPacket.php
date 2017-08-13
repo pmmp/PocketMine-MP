@@ -50,8 +50,11 @@ class EntityEventPacket extends DataPacket{
 
 	//TODO: add more events
 
+	/** @var int */
 	public $entityRuntimeId;
+	/** @var int */
 	public $event;
+	/** @var int */
 	public $data = 0;
 
 	protected function decodePayload(){

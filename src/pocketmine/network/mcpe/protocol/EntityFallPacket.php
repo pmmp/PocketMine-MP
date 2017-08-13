@@ -31,8 +31,11 @@ use pocketmine\network\mcpe\NetworkSession;
 class EntityFallPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::ENTITY_FALL_PACKET;
 
+	/** @var int */
 	public $entityRuntimeId;
+	/** @var float */
 	public $fallDistance;
+	/** @var bool */
 	public $bool1;
 
 	protected function decodePayload(){

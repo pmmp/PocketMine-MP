@@ -65,10 +65,15 @@ class AdventureSettingsPacket extends DataPacket{
 	const OPERATOR = 0x20 | self::BITFLAG_SECOND_SET;
 	const TELEPORT = 0x80 | self::BITFLAG_SECOND_SET;
 
+	/** @var int */
 	public $flags = 0;
+	/** @var int */
 	public $commandPermission = self::PERMISSION_NORMAL;
+	/** @var int */
 	public $flags2 = -1;
+	/** @var int */
 	public $playerPermission = PlayerPermissions::MEMBER;
+	/** @var int */
 	public $entityUniqueId; //This is a little-endian long, NOT a var-long. (WTF Mojang)
 
 	protected function decodePayload(){

@@ -36,7 +36,9 @@ class ResourcePackClientResponsePacket extends DataPacket{
 	const STATUS_HAVE_ALL_PACKS = 3;
 	const STATUS_COMPLETED = 4;
 
+	/** @var int */
 	public $status;
+	/** @var string[] */
 	public $packIds = [];
 
 	protected function decodePayload(){

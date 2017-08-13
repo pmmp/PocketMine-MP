@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 
 class LevelSoundEventPacket extends DataPacket{
@@ -192,18 +193,22 @@ class LevelSoundEventPacket extends DataPacket{
 	const SOUND_DEFAULT = 161;
 	const SOUND_UNDEFINED = 162;
 
+	/** @var int */
 	public $sound;
-	public $x;
-	public $y;
-	public $z;
+	/** @var Vector3 */
+	public $position;
+	/** @var int */
 	public $extraData = -1;
+	/** @var int */
 	public $pitch = 1;
+	/** @var bool */
 	public $unknownBool = false;
+	/** @var bool */
 	public $disableRelativeVolume = false;
 
 	protected function decodePayload(){
 		$this->sound = $this->getByte();
-		$this->getVector3f($this->x, $this->y, $this->z);
+		$this->position = $this->getVector3Obj();
 		$this->extraData = $this->getVarInt();
 		$this->pitch = $this->getVarInt();
 		$this->unknownBool = $this->getBool();
@@ -212,7 +217,7 @@ class LevelSoundEventPacket extends DataPacket{
 
 	protected function encodePayload(){
 		$this->putByte($this->sound);
-		$this->putVector3f($this->x, $this->y, $this->z);
+		$this->putVector3Obj($this->position);
 		$this->putVarInt($this->extraData);
 		$this->putVarInt($this->pitch);
 		$this->putBool($this->unknownBool);

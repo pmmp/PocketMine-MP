@@ -32,10 +32,15 @@ use pocketmine\network\mcpe\NetworkSession;
 class BlockPickRequestPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::BLOCK_PICK_REQUEST_PACKET;
 
+	/** @var int */
 	public $tileX;
+	/** @var int */
 	public $tileY;
+	/** @var int */
 	public $tileZ;
+	/** @var bool */
 	public $addUserData = false;
+	/** @var int */
 	public $hotbarSlot;
 
 	protected function decodePayload(){

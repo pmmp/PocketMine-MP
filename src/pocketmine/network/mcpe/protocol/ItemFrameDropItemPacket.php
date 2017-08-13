@@ -31,8 +31,11 @@ class ItemFrameDropItemPacket extends DataPacket{
 
 	const NETWORK_ID = ProtocolInfo::ITEM_FRAME_DROP_ITEM_PACKET;
 
+	/** @var int */
 	public $x;
+	/** @var int */
 	public $y;
+	/** @var int */
 	public $z;
 
 	protected function decodePayload(){

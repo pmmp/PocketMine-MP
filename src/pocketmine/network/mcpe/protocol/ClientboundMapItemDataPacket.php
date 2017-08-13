@@ -36,16 +36,25 @@ class ClientboundMapItemDataPacket extends DataPacket{
 	const BITFLAG_TEXTURE_UPDATE = 0x02;
 	const BITFLAG_DECORATION_UPDATE = 0x04;
 
+	/** @var int */
 	public $mapId;
+	/** @var int */
 	public $type;
 
+	/** @var int[] */
 	public $eids = [];
+	/** @var int */
 	public $scale;
+	/** @var array */
 	public $decorations = [];
 
+	/** @var int */
 	public $width;
+	/** @var int */
 	public $height;
+	/** @var int */
 	public $xOffset = 0;
+	/** @var int */
 	public $yOffset = 0;
 	/** @var Color[][] */
 	public $colors = [];

@@ -32,11 +32,17 @@ use pocketmine\network\mcpe\NetworkSession;
 class PlaySoundPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::PLAY_SOUND_PACKET;
 
+	/** @var string */
 	public $soundName;
+	/** @var int */
 	public $x;
+	/** @var int */
 	public $y;
+	/** @var int */
 	public $z;
+	/** @var float */
 	public $volume;
+	/** @var float */
 	public $pitch;
 
 	protected function decodePayload(){

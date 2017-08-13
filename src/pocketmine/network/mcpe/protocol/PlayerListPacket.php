@@ -37,6 +37,7 @@ class PlayerListPacket extends DataPacket{
 	//REMOVE: UUID, ADD: UUID, entity id, name, skinId, skin, geometric model, geometry data
 	/** @var array[] */
 	public $entries = [];
+	/** @var int */
 	public $type;
 
 	public function clean(){

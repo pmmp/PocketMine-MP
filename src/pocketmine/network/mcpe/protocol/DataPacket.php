@@ -38,9 +38,12 @@ abstract class DataPacket extends BinaryStream{
 
 	const NETWORK_ID = 0;
 
+	/** @var bool */
 	public $isEncoded = false;
 
+	/** @var int */
 	public $extraByte1 = 0;
+	/** @var int */
 	public $extraByte2 = 0;
 
 	public function pid(){

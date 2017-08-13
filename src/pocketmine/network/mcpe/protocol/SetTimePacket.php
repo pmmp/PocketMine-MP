@@ -30,6 +30,7 @@ use pocketmine\network\mcpe\NetworkSession;
 class SetTimePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SET_TIME_PACKET;
 
+	/** @var int */
 	public $time;
 
 	protected function decodePayload(){

@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 
 class LevelEventPacket extends DataPacket{
@@ -100,21 +101,22 @@ class LevelEventPacket extends DataPacket{
 
 	const EVENT_ADD_PARTICLE_MASK = 0x4000;
 
+	/** @var int */
 	public $evid;
-	public $x = 0; //Weather effects don't have coordinates
-	public $y = 0;
-	public $z = 0;
+	/** @var Vector3|null */
+	public $position;
+	/** @var int */
 	public $data;
 
 	protected function decodePayload(){
 		$this->evid = $this->getVarInt();
-		$this->getVector3f($this->x, $this->y, $this->z);
+		$this->position = $this->getVector3Obj();
 		$this->data = $this->getVarInt();
 	}
 
 	protected function encodePayload(){
 		$this->putVarInt($this->evid);
-		$this->putVector3f($this->x, $this->y, $this->z);
+		$this->putVector3ObjNullable($this->position);
 		$this->putVarInt($this->data);
 	}
 

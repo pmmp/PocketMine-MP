@@ -30,6 +30,7 @@ use pocketmine\network\mcpe\NetworkSession;
 class SimpleEventPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SIMPLE_EVENT_PACKET;
 
+	/** @var int */
 	public $unknownShort1;
 
 	protected function decodePayload(){

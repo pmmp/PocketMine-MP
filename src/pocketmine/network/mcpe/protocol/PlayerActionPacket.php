@@ -54,11 +54,17 @@ class PlayerActionPacket extends DataPacket{
 
 	const ACTION_RELEASE_ITEM = 99999; //TODO REMOVE
 
+	/** @var int */
 	public $entityRuntimeId;
+	/** @var int */
 	public $action;
+	/** @var int */
 	public $x;
+	/** @var int */
 	public $y;
+	/** @var int */
 	public $z;
+	/** @var int */
 	public $face;
 
 	protected function decodePayload(){

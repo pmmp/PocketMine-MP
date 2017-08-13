@@ -45,6 +45,7 @@ class CraftingDataPacket extends DataPacket{
 
 	/** @var object[] */
 	public $entries = [];
+	/** @var bool */
 	public $cleanRecipes = false;
 
 	public function clean(){

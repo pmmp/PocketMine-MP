@@ -95,6 +95,7 @@ class InventoryTransactionPacket extends DataPacket{
 	/** @var InventoryAction[] */
 	public $actions = [];
 
+	/** @var \stdClass */
 	public $transactionData;
 
 	protected function decodePayload(){

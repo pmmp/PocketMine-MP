@@ -30,6 +30,7 @@ use pocketmine\network\mcpe\NetworkSession;
 class CommandRequestPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::COMMAND_REQUEST_PACKET;
 
+	/** @var string */
 	public $command;
 
 	protected function decodePayload(){

@@ -39,6 +39,7 @@ class PlayStatusPacket extends DataPacket{
 	const LOGIN_FAILED_VANILLA_EDU = 5;
 	const LOGIN_FAILED_EDU_VANILLA = 6;
 
+	/** @var int */
 	public $status;
 
 	protected function decodePayload(){

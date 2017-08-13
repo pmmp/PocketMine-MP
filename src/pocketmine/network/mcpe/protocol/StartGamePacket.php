@@ -26,54 +26,88 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 
 class StartGamePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::START_GAME_PACKET;
 
+	/** @var int */
 	public $entityUniqueId;
+	/** @var int */
 	public $entityRuntimeId;
+	/** @var int */
 	public $playerGamemode;
 
-	public $x;
-	public $y;
-	public $z;
+	/** @var Vector3 */
+	public $playerPosition;
 
+	/** @var float */
 	public $pitch;
+	/** @var float */
 	public $yaw;
 
+	/** @var int */
 	public $seed;
+	/** @var int */
 	public $dimension;
+	/** @var int */
 	public $generator = 1; //default infinite - 0 old, 1 infinite, 2 flat
+	/** @var int */
 	public $worldGamemode;
+	/** @var int */
 	public $difficulty;
+	/** @var int */
 	public $spawnX;
+	/** @var int*/
 	public $spawnY;
+	/** @var int */
 	public $spawnZ;
+	/** @var bool */
 	public $hasAchievementsDisabled = true;
+	/** @var int */
 	public $time = -1;
+	/** @var bool */
 	public $eduMode = false;
+	/** @var float */
 	public $rainLevel;
+	/** @var float */
 	public $lightningLevel;
+	/** @var bool */
 	public $isMultiplayerGame = true;
+	/** @var bool */
 	public $hasLANBroadcast = true;
+	/** @var bool */
 	public $hasXboxLiveBroadcast = false;
+	/** @var bool */
 	public $commandsEnabled;
+	/** @var bool */
 	public $isTexturePacksRequired = true;
+	/** @var array */
 	public $gameRules = []; //TODO: implement this
+	/** @var bool */
 	public $hasBonusChestEnabled = false;
+	/** @var bool */
 	public $hasStartWithMapEnabled = false;
+	/** @var bool */
 	public $hasTrustPlayersEnabled = false;
+	/** @var int */
 	public $defaultPlayerPermission = PlayerPermissions::MEMBER; //TODO
+	/** @var int */
 	public $xboxLiveBroadcastMode = 0; //TODO: find values
 
+	/** @var string */
 	public $levelId = ""; //base64 string, usually the same as world folder name in vanilla
+	/** @var string */
 	public $worldName;
+	/** @var string */
 	public $premiumWorldTemplateId = "";
+	/** @var bool */
 	public $unknownBool = false;
+	/** @var int */
 	public $currentTick = 0;
-
+	/** @var int */
 	public $unknownVarInt = 0;
 
 	protected function decodePayload(){
@@ -81,7 +115,7 @@ class StartGamePacket extends DataPacket{
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->playerGamemode = $this->getVarInt();
 
-		$this->getVector3f($this->x, $this->y, $this->z);
+		$this->playerPosition = $this->getVector3Obj();
 
 		$this->pitch = $this->getLFloat();
 		$this->yaw = $this->getLFloat();
@@ -124,7 +158,7 @@ class StartGamePacket extends DataPacket{
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putVarInt($this->playerGamemode);
 
-		$this->putVector3f($this->x, $this->y, $this->z);
+		$this->putVector3Obj($this->playerPosition);
 
 		$this->putLFloat($this->pitch);
 		$this->putLFloat($this->yaw);

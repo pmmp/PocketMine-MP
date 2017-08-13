@@ -31,6 +31,7 @@ use pocketmine\network\mcpe\NetworkSession;
 class SetHealthPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SET_HEALTH_PACKET;
 
+	/** @var int */
 	public $health;
 
 	protected function decodePayload(){

@@ -31,8 +31,11 @@ use pocketmine\network\mcpe\NetworkSession;
 class FullChunkDataPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::FULL_CHUNK_DATA_PACKET;
 
+	/** @var int */
 	public $chunkX;
+	/** @var int */
 	public $chunkZ;
+	/** @var string */
 	public $data;
 
 	protected function decodePayload(){

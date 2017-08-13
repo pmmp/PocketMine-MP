@@ -31,6 +31,7 @@ use pocketmine\network\mcpe\NetworkSession;
 class SetDifficultyPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SET_DIFFICULTY_PACKET;
 
+	/** @var int */
 	public $difficulty;
 
 	protected function decodePayload(){

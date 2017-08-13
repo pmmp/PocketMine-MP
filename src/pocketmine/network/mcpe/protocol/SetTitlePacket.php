@@ -39,10 +39,15 @@ class SetTitlePacket extends DataPacket{
 	const TYPE_SET_ACTIONBAR_MESSAGE = 4;
 	const TYPE_SET_ANIMATION_TIMES = 5;
 
+	/** @var int */
 	public $type;
+	/** @var string */
 	public $text = "";
+	/** @var int */
 	public $fadeInTime = 0;
+	/** @var int */
 	public $stayTime = 0;
+	/** @var int */
 	public $fadeOutTime = 0;
 
 	protected function decodePayload(){

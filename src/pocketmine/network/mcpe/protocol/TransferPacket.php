@@ -30,7 +30,9 @@ use pocketmine\network\mcpe\NetworkSession;
 class TransferPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::TRANSFER_PACKET;
 
+	/** @var string */
 	public $address;
+	/** @var int */
 	public $port = 19132;
 
 	protected function decodePayload(){

@@ -31,6 +31,7 @@ use pocketmine\network\mcpe\NetworkSession;
 class RequestChunkRadiusPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::REQUEST_CHUNK_RADIUS_PACKET;
 
+	/** @var int */
 	public $radius;
 
 	protected function decodePayload(){

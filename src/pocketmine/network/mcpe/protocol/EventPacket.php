@@ -41,8 +41,11 @@ class EventPacket extends DataPacket{
 	const TYPE_AGENT_COMMAND = 8;
 	const TYPE_AGENT_CREATED = 9;
 
+	/** @var int */
 	public $playerRuntimeId;
+	/** @var int */
 	public $eventData;
+	/** @var int */
 	public $type;
 
 	protected function decodePayload(){

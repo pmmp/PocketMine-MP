@@ -34,6 +34,7 @@ use pocketmine\resourcepacks\ResourcePackInfoEntry;
 class ResourcePackStackPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_STACK_PACKET;
 
+	/** @var bool */
 	public $mustAccept = false;
 
 	/** @var ResourcePack[] */

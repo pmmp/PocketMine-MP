@@ -41,8 +41,11 @@ class ContainerSetDataPacket extends DataPacket{
 	const PROPERTY_BREWING_STAND_FUEL_AMOUNT = 1;
 	const PROPERTY_BREWING_STAND_FUEL_TOTAL = 2;
 
+	/** @var int */
 	public $windowId;
+	/** @var int */
 	public $property;
+	/** @var int */
 	public $value;
 
 	protected function decodePayload(){
