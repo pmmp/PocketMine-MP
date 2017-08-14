@@ -152,6 +152,10 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		$this->interface->blockAddress($address, $timeout);
 	}
 
+	public function unblockAddress(string $address){
+		$this->interface->unblockAddress($address);
+	}
+
 	public function handleRaw($address, $port, $payload){
 		$this->server->handlePacket($address, $port, $payload);
 	}

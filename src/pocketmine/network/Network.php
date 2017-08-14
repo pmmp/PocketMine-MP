@@ -171,4 +171,10 @@ class Network{
 			$interface->blockAddress($address, $timeout);
 		}
 	}
+
+	public function unblockAddress(string $address){
+		foreach($this->advancedInterfaces as $interface){
+			$interface->unblockAddress($address);
+		}
+	}
 }
