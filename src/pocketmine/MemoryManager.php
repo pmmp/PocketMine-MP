@@ -33,27 +33,45 @@ class MemoryManager{
 	/** @var Server */
 	private $server;
 
+	/** @var int */
 	private $memoryLimit;
+	/** @var int */
 	private $globalMemoryLimit;
+	/** @var int */
 	private $checkRate;
+	/** @var int */
 	private $checkTicker = 0;
+	/** @var bool */
 	private $lowMemory = false;
 
+	/** @var bool */
 	private $continuousTrigger = true;
+	/** @var int */
 	private $continuousTriggerRate;
+	/** @var int */
 	private $continuousTriggerCount = 0;
+	/** @var int */
 	private $continuousTriggerTicker = 0;
 
+	/** @var int */
 	private $garbageCollectionPeriod;
+	/** @var int */
 	private $garbageCollectionTicker = 0;
+	/** @var bool */
 	private $garbageCollectionTrigger;
+	/** @var bool */
 	private $garbageCollectionAsync;
 
+	/** @var int */
 	private $chunkRadiusOverride;
+	/** @var bool */
 	private $chunkCollect;
+	/** @var bool */
 	private $chunkTrigger;
 
+	/** @var bool */
 	private $chunkCache;
+	/** @var bool */
 	private $cacheTrigger;
 
 	public function __construct(Server $server){
@@ -116,10 +134,16 @@ class MemoryManager{
 		gc_enable();
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function isLowMemory() : bool{
 		return $this->lowMemory;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function canUseChunkCache() : bool{
 		return !($this->lowMemory and $this->chunkTrigger);
 	}
@@ -132,10 +156,18 @@ class MemoryManager{
 	 * @return int
 	 */
 	public function getViewDistance(int $distance) : int{
-		return $this->lowMemory ? min($this->chunkRadiusOverride, $distance) : $distance;
+		return $this->lowMemory ? (int) min($this->chunkRadiusOverride, $distance) : $distance;
 	}
 
-	public function trigger($memory, $limit, $global = false, $triggerCount = 0){
+	/**
+	 * Triggers garbage collection and cache cleanup to try and free memory.
+	 *
+	 * @param int  $memory
+	 * @param int  $limit
+	 * @param bool $global
+	 * @param int  $triggerCount
+	 */
+	public function trigger(int $memory, int $limit, bool $global = false, int $triggerCount = 0){
 		$this->server->getLogger()->debug(sprintf("[Memory Manager] %sLow memory triggered, limit %gMB, using %gMB",
 			$global ? "Global " : "", round(($limit / 1024) / 1024, 2), round(($memory / 1024) / 1024, 2)));
 		if($this->cacheTrigger){
@@ -161,6 +193,9 @@ class MemoryManager{
 		$this->server->getLogger()->debug(sprintf("[Memory Manager] Freed %gMB, $cycles cycles", round(($ev->getMemoryFreed() / 1024) / 1024, 2)));
 	}
 
+	/**
+	 * Called every tick to update the memory manager state.
+	 */
 	public function check(){
 		Timings::$memoryManagerTimer->startTiming();
 
@@ -198,7 +233,10 @@ class MemoryManager{
 		Timings::$memoryManagerTimer->stopTiming();
 	}
 
-	public function triggerGarbageCollector(){
+	/**
+	 * @return int
+	 */
+	public function triggerGarbageCollector() : int{
 		Timings::$garbageCollectorTimer->startTiming();
 
 		if($this->garbageCollectionAsync){
@@ -215,7 +253,14 @@ class MemoryManager{
 		return $cycles;
 	}
 
-	public function dumpServerMemory($outputFolder, $maxNesting, $maxStringSize){
+	/**
+	 * Dumps the server memory into the specified output folder.
+	 *
+	 * @param string $outputFolder
+	 * @param int    $maxNesting
+	 * @param int    $maxStringSize
+	 */
+	public function dumpServerMemory(string $outputFolder, int $maxNesting, int $maxStringSize){
 		$hardLimit = ini_get('memory_limit');
 		ini_set('memory_limit', '-1');
 		gc_disable();
@@ -328,7 +373,16 @@ class MemoryManager{
 		gc_enable();
 	}
 
-	private function continueDump($from, &$data, &$objects, &$refCounts, $recursion, $maxNesting, $maxStringSize){
+	/**
+	 * @param mixed    $from
+	 * @param mixed    &$data
+	 * @param object[] &$objects
+	 * @param int[]    &$refCounts
+	 * @param int      $recursion
+	 * @param int      $maxNesting
+	 * @param int      $maxStringSize
+	 */
+	private function continueDump($from, &$data, array &$objects, array &$refCounts, int $recursion, int $maxNesting, int $maxStringSize){
 		if($maxNesting <= 0){
 			$data = "(error) NESTING LIMIT REACHED";
 			return;
