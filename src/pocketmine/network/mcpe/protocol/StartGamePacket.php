@@ -108,7 +108,7 @@ class StartGamePacket extends DataPacket{
 	/** @var int */
 	public $currentTick = 0;
 	/** @var int */
-	public $unknownVarInt = 0;
+	public $enchantmentSeed = 0;
 
 	protected function decodePayload(){
 		$this->entityUniqueId = $this->getEntityUniqueId();
@@ -150,7 +150,7 @@ class StartGamePacket extends DataPacket{
 		$this->unknownBool = $this->getBool();
 		$this->currentTick = $this->getLLong();
 
-		$this->unknownVarInt = $this->getVarInt();
+		$this->enchantmentSeed = $this->getVarInt();
 	}
 
 	protected function encodePayload(){
@@ -193,7 +193,7 @@ class StartGamePacket extends DataPacket{
 		$this->putBool($this->unknownBool);
 		$this->putLLong($this->currentTick);
 
-		$this->putVarInt($this->unknownVarInt);
+		$this->putVarInt($this->enchantmentSeed);
 	}
 
 	public function handle(NetworkSession $session) : bool{
