@@ -35,6 +35,11 @@ interface AdvancedSourceInterface extends SourceInterface{
 	public function blockAddress(string $address, int $timeout = 300);
 
 	/**
+	 * @param string $address
+	 */
+	public function unblockAddress(string $address);
+
+	/**
 	 * @param Network $network
 	 */
 	public function setNetwork(Network $network);
