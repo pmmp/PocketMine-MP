@@ -99,17 +99,18 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new Glass());
 			self::registerBlock(new LapisOre());
 			self::registerBlock(new Lapis());
-
+			//TODO: DISPENSER
 			self::registerBlock(new Sandstone());
 			self::registerBlock(new NoteBlock());
 			self::registerBlock(new Bed());
 			self::registerBlock(new PoweredRail());
 			self::registerBlock(new DetectorRail());
-
+			//TODO: STICKY_PISTON
 			self::registerBlock(new Cobweb());
 			self::registerBlock(new TallGrass());
 			self::registerBlock(new DeadBush());
-
+			//TODO: PISTON
+			//TODO: PISTONARMCOLLISION
 			self::registerBlock(new Wool());
 
 			self::registerBlock(new Dandelion());
@@ -130,7 +131,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new MonsterSpawner());
 			self::registerBlock(new WoodenStairs(Block::OAK_STAIRS, 0, "Oak Stairs"));
 			self::registerBlock(new Chest());
-
+			//TODO: REDSTONE_WIRE
 			self::registerBlock(new DiamondOre());
 			self::registerBlock(new Diamond());
 			self::registerBlock(new CraftingTable());
@@ -165,14 +166,17 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new Netherrack());
 			self::registerBlock(new SoulSand());
 			self::registerBlock(new Glowstone());
-
+			//TODO: PORTAL
 			self::registerBlock(new LitPumpkin());
 			self::registerBlock(new Cake());
-
+			//TODO: REPEATER_BLOCK
+			//TODO: POWERED_REPEATER
+			//TODO: INVISIBLEBEDROCK
 			self::registerBlock(new Trapdoor());
-
+			//TODO: MONSTER_EGG
 			self::registerBlock(new StoneBricks());
-
+			//TODO: BROWN_MUSHROOM_BLOCK
+			//TODO: RED_MUSHROOM_BLOCK
 			self::registerBlock(new IronBars());
 			self::registerBlock(new GlassPane());
 			self::registerBlock(new Melon());
@@ -190,25 +194,27 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new NetherWartPlant());
 			self::registerBlock(new EnchantingTable());
 			self::registerBlock(new BrewingStand());
-
+			//TODO: CAULDRON_BLOCK
+			//TODO: END_PORTAL
 			self::registerBlock(new EndPortalFrame());
 			self::registerBlock(new EndStone());
-
+			//TODO: DRAGON_EGG
 			self::registerBlock(new RedstoneLamp());
 			self::registerBlock(new LitRedstoneLamp());
-
+			//TODO: DROPPER
 			self::registerBlock(new ActivatorRail());
 			self::registerBlock(new CocoaBlock());
 			self::registerBlock(new SandstoneStairs());
 			self::registerBlock(new EmeraldOre());
-
+			//TODO: ENDER_CHEST
 			self::registerBlock(new TripwireHook());
 			self::registerBlock(new Tripwire());
 			self::registerBlock(new Emerald());
 			self::registerBlock(new WoodenStairs(Block::SPRUCE_STAIRS, 0, "Spruce Stairs"));
 			self::registerBlock(new WoodenStairs(Block::BIRCH_STAIRS, 0, "Birch Stairs"));
 			self::registerBlock(new WoodenStairs(Block::JUNGLE_STAIRS, 0, "Jungle Stairs"));
-
+			//TODO: COMMAND_BLOCK
+			//TODO: BEACON
 			self::registerBlock(new CobblestoneWall());
 			self::registerBlock(new FlowerPot());
 			self::registerBlock(new Carrot());
@@ -219,20 +225,23 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new TrappedChest());
 			self::registerBlock(new WeightedPressurePlateLight());
 			self::registerBlock(new WeightedPressurePlateHeavy());
-
+			//TODO: COMPARATOR_BLOCK
+			//TODO: POWERED_COMPARATOR
 			self::registerBlock(new DaylightSensor());
 			self::registerBlock(new Redstone());
-
+			//TODO: NETHER_QUARTZ_ORE
+			//TODO: HOPPER_BLOCK
 			self::registerBlock(new Quartz());
 			self::registerBlock(new QuartzStairs());
 			self::registerBlock(new DoubleWoodenSlab());
 			self::registerBlock(new WoodenSlab());
 			self::registerBlock(new StainedClay());
-
+			//TODO: STAINED_GLASS_PANE
 			self::registerBlock(new Leaves2());
 			self::registerBlock(new Wood2());
 			self::registerBlock(new WoodenStairs(Block::ACACIA_STAIRS, 0, "Acacia Stairs"));
 			self::registerBlock(new WoodenStairs(Block::DARK_OAK_STAIRS, 0, "Dark Oak Stairs"));
+			//TODO: SLIME
 
 			self::registerBlock(new IronTrapdoor());
 			self::registerBlock(new Prismarine());
@@ -244,11 +253,18 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new PackedIce());
 			self::registerBlock(new DoublePlant());
 
+			//TODO: DAYLIGHT_DETECTOR_INVERTED
+			//TODO: RED_SANDSTONE
+			//TODO: RED_SANDSTONE_STAIRS
+			//TODO: DOUBLE_STONE_SLAB2
+			//TODO: STONE_SLAB2
 			self::registerBlock(new FenceGate(Block::SPRUCE_FENCE_GATE, 0, "Spruce Fence Gate"));
 			self::registerBlock(new FenceGate(Block::BIRCH_FENCE_GATE, 0, "Birch Fence Gate"));
 			self::registerBlock(new FenceGate(Block::JUNGLE_FENCE_GATE, 0, "Jungle Fence Gate"));
 			self::registerBlock(new FenceGate(Block::DARK_OAK_FENCE_GATE, 0, "Dark Oak Fence Gate"));
 			self::registerBlock(new FenceGate(Block::ACACIA_FENCE_GATE, 0, "Acacia Fence Gate"));
+			//TODO: REPEATING_COMMAND_BLOCK
+			//TODO: CHAIN_COMMAND_BLOCK
 
 			self::registerBlock(new WoodenDoor(Block::SPRUCE_DOOR_BLOCK, 0, "Spruce Door Block", Item::SPRUCE_DOOR));
 			self::registerBlock(new WoodenDoor(Block::BIRCH_DOOR_BLOCK, 0, "Birch Door Block", Item::BIRCH_DOOR));
@@ -257,7 +273,22 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new WoodenDoor(Block::DARK_OAK_DOOR_BLOCK, 0, "Dark Oak Door Block", Item::DARK_OAK_DOOR));
 			self::registerBlock(new GrassPath());
 			self::registerBlock(new ItemFrame());
+			//TODO: CHORUS_FLOWER
+			//TODO: PURPUR_BLOCK
 
+			//TODO: PURPUR_STAIRS
+
+			//TODO: END_BRICKS
+			//TODO: FROSTED_ICE
+			//TODO: END_ROD
+			//TODO: END_GATEWAY
+
+			//TODO: MAGMA
+			//TODO: NETHER_WART_BLOCK
+			//TODO: RED_NETHER_BRICK
+			//TODO: BONE_BLOCK
+
+			//TODO: SHULKER_BOX
 			self::registerBlock(new GlazedTerracotta(Block::PURPLE_GLAZED_TERRACOTTA, 0, "Purple Glazed Terracotta"));
 			self::registerBlock(new GlazedTerracotta(Block::WHITE_GLAZED_TERRACOTTA, 0, "White Glazed Terracotta"));
 			self::registerBlock(new GlazedTerracotta(Block::ORANGE_GLAZED_TERRACOTTA, 0, "Orange Glazed Terracotta"));
@@ -275,11 +306,23 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new GlazedTerracotta(Block::GREEN_GLAZED_TERRACOTTA, 0, "Green Glazed Terracotta"));
 			self::registerBlock(new GlazedTerracotta(Block::RED_GLAZED_TERRACOTTA, 0, "Red Glazed Terracotta"));
 			self::registerBlock(new GlazedTerracotta(Block::BLACK_GLAZED_TERRACOTTA, 0, "Black Glazed Terracotta"));
+			//TODO: CONCRETE
+			//TODO: CONCRETEPOWDER
+
+			//TODO: CHORUS_PLANT
+			//TODO: STAINED_GLASS
 
 			self::registerBlock(new Podzol());
 			self::registerBlock(new Beetroot());
 			self::registerBlock(new Stonecutter());
 			self::registerBlock(new GlowingObsidian());
+			//TODO: NETHERREACTOR
+			//TODO: INFO_UPDATE
+			//TODO: INFO_UPDATE2
+			//TODO: MOVINGBLOCK
+			//TODO: OBSERVER
+
+			//TODO: RESERVED6
 
 			foreach(self::$list as $id => $block){
 				if($block === null){
