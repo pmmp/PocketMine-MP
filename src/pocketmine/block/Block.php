@@ -119,7 +119,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new Gold());
 			self::registerBlock(new Iron());
 			self::registerBlock(new DoubleStoneSlab());
-			self::registerBlock(new Slab());
+			self::registerBlock(new StoneSlab());
 			self::registerBlock(new Bricks());
 			self::registerBlock(new TNT());
 			self::registerBlock(new Bookshelf());
