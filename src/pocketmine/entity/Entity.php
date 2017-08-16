@@ -600,18 +600,20 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	/**
-	 * Sets the owner of the entity.
+	 * Sets the owner of the entity. Passing null will remove the current owner.
 	 *
-	 * @param Entity $owner
+	 * @param Entity|null $owner
 	 *
 	 * @throws \InvalidArgumentException if the supplied entity is not valid
 	 */
-	public function setOwningEntity(Entity $owner){
-		if($owner->closed){
+	public function setOwningEntity(Entity $owner = null){
+		if($owner === null){
+			$this->removeDataProperty(self::DATA_OWNER_EID);
+		}elseif($owner->closed){
 			throw new \InvalidArgumentException("Supplied owning entity is garbage and cannot be used");
+		}else{
+			$this->setDataProperty(self::DATA_OWNER_EID, self::DATA_TYPE_LONG, $owner->getId());
 		}
-
-		$this->setDataProperty(self::DATA_OWNER_EID, self::DATA_TYPE_LONG, $owner->getId());
 	}
 
 	/**
@@ -638,18 +640,20 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	/**
-	 * Sets the entity's target entity.
+	 * Sets the entity's target entity. Passing null will remove the current target.
 	 *
-	 * @param Entity $target
+	 * @param Entity|null $target
 	 *
 	 * @throws \InvalidArgumentException if the target entity is not valid
 	 */
-	public function setTargetEntity(Entity $target){
-		if($target->closed){
+	public function setTargetEntity(Entity $target = null){
+		if($target === null){
+			$this->removeDataProperty(self::DATA_TARGET_EID);
+		}elseif($target->closed){
 			throw new \InvalidArgumentException("Supplied target entity is garbage and cannot be used");
+		}else{
+			$this->setDataProperty(self::DATA_TARGET_EID, self::DATA_TYPE_LONG, $target->getId());
 		}
-
-		$this->setDataProperty(self::DATA_TARGET_EID, self::DATA_TYPE_LONG, $target->getId());
 	}
 
 	/**
@@ -1873,6 +1877,10 @@ abstract class Entity extends Location implements Metadatable{
 	 */
 	public function getDataProperty(int $id){
 		return isset($this->dataProperties[$id]) ? $this->dataProperties[$id][1] : null;
+	}
+
+	public function removeDataProperty(int $id){
+		unset($this->dataProperties[$id]);
 	}
 
 	/**
