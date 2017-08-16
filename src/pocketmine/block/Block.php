@@ -316,7 +316,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new Beetroot());
 			self::registerBlock(new Stonecutter());
 			self::registerBlock(new GlowingObsidian());
-			//TODO: NETHERREACTOR
+			self::registerBlock(new NetherReactor());
 			//TODO: INFO_UPDATE
 			//TODO: INFO_UPDATE2
 			//TODO: MOVINGBLOCK
