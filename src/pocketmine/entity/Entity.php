@@ -352,7 +352,7 @@ abstract class Entity extends Location implements Metadatable{
 	protected $server;
 
 	/** @var bool */
-	public $closed = false;
+	protected $closed = false;
 
 	/** @var TimingsHandler */
 	protected $timings;
@@ -1826,6 +1826,19 @@ abstract class Entity extends Location implements Metadatable{
 		}
 	}
 
+	/**
+	 * Returns whether the entity has been "closed".
+	 * @return bool
+	 */
+	public function isClosed() : bool{
+		return $this->closed;
+	}
+
+	/**
+	 * Closes the entity and frees attached references.
+	 *
+	 * WARNING: Entities are unusable after this has been executed!
+	 */
 	public function close(){
 		if(!$this->closed){
 			$this->server->getPluginManager()->callEvent(new EntityDespawnEvent($this));
