@@ -487,7 +487,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 	}
 
-	public function canCollideWith(Entity $entity){
+	public function canCollideWith(Entity $entity) : bool{
 		return false;
 	}
 
@@ -756,7 +756,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return $this->inAirTicks;
 	}
 
-	protected function switchLevel(Level $targetLevel){
+	protected function switchLevel(Level $targetLevel) : bool{
 		$oldLevel = $this->level;
 		if(parent::switchLevel($targetLevel)){
 			foreach($this->usedChunks as $index => $d){
@@ -1398,7 +1398,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return [];
 	}
 
-	protected function checkGroundState($movX, $movY, $movZ, $dx, $dy, $dz){
+	protected function checkGroundState(float $movX, float $movY, float $movZ, float $dx, float $dy, float $dz){
 		if(!$this->onGround or $movY != 0){
 			$bb = clone $this->boundingBox;
 			$bb->minY = $this->y - 0.01;
@@ -1643,7 +1643,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 	}
 
-	public function onUpdate($currentTick){
+	public function onUpdate(int $currentTick) : bool{
 		if(!$this->loggedIn){
 			return false;
 		}
@@ -3549,10 +3549,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	/**
 	 * Gets the username
-	 *
 	 * @return string
 	 */
-	public function getName(){
+	public function getName() : string{
 		return $this->username;
 	}
 

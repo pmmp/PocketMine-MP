@@ -70,7 +70,7 @@ class FallingSand extends Entity{
 		$this->setDataProperty(self::DATA_VARIANT, self::DATA_TYPE_INT, $this->getBlock() | ($this->getDamage() << 8));
 	}
 
-	public function canCollideWith(Entity $entity){
+	public function canCollideWith(Entity $entity) : bool{
 		return false;
 	}
 
@@ -80,7 +80,7 @@ class FallingSand extends Entity{
 		}
 	}
 
-	public function onUpdate($currentTick){
+	public function onUpdate(int $currentTick) : bool{
 
 		if($this->closed){
 			return false;

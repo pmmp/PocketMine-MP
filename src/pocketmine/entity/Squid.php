@@ -49,7 +49,7 @@ class Squid extends WaterAnimal{
 		parent::initEntity();
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Squid";
 	}
 
@@ -73,12 +73,12 @@ class Squid extends WaterAnimal{
 		}
 	}
 
-	private function generateRandomDirection(){
+	private function generateRandomDirection() : Vector3{
 		return new Vector3(mt_rand(-1000, 1000) / 1000, mt_rand(-500, 500) / 1000, mt_rand(-1000, 1000) / 1000);
 	}
 
 
-	public function onUpdate($currentTick){
+	public function onUpdate(int $currentTick) : bool{
 		if($this->closed !== false){
 			return false;
 		}

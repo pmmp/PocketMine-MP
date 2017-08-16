@@ -65,7 +65,7 @@ abstract class Projectile extends Entity{
 		}
 	}
 
-	public function canCollideWith(Entity $entity){
+	public function canCollideWith(Entity $entity) : bool{
 		return $entity instanceof Living and !$this->onGround;
 	}
 
@@ -108,7 +108,7 @@ abstract class Projectile extends Entity{
 		$this->namedtag->Age = new ShortTag("Age", $this->age);
 	}
 
-	public function onUpdate($currentTick){
+	public function onUpdate(int $currentTick) : bool{
 		if($this->closed){
 			return false;
 		}

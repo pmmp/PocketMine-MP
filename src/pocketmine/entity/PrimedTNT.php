@@ -70,7 +70,7 @@ class PrimedTNT extends Entity implements Explosive{
 	}
 
 
-	public function canCollideWith(Entity $entity){
+	public function canCollideWith(Entity $entity) : bool{
 		return false;
 	}
 
@@ -79,7 +79,7 @@ class PrimedTNT extends Entity implements Explosive{
 		$this->namedtag->Fuse = new ByteTag("Fuse", $this->fuse);
 	}
 
-	public function onUpdate($currentTick){
+	public function onUpdate(int $currentTick) : bool{
 
 		if($this->closed){
 			return false;

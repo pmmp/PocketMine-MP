@@ -35,7 +35,7 @@ class Zombie extends Monster{
 	public $length = 0.6;
 	public $height = 1.8;
 
-	public function getName(){
+	public function getName() : string{
 		return "Zombie";
 	}
 

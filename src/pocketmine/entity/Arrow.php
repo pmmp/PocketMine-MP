@@ -62,7 +62,7 @@ class Arrow extends Projectile{
 		}
 	}
 
-	public function onUpdate($currentTick){
+	public function onUpdate(int $currentTick) : bool{
 		if($this->closed){
 			return false;
 		}

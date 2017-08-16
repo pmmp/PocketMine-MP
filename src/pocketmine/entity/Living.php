@@ -57,7 +57,7 @@ abstract class Living extends Entity implements Damageable{
 	/** @var Effect[] */
 	protected $effects = [];
 
-	abstract public function getName();
+	abstract public function getName() : string;
 
 	protected function initEntity(){
 		parent::initEntity();
@@ -151,7 +151,7 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 
-	public function hasLineOfSight(Entity $entity){
+	public function hasLineOfSight(Entity $entity) : bool{
 		//TODO: head height
 		return true;
 		//return $this->getLevel()->rayTraceBlocks(Vector3::createVector($this->x, $this->y + $this->height, $this->z), Vector3::createVector($entity->x, $entity->y + $entity->height, $entity->z)) === null;
@@ -377,7 +377,7 @@ abstract class Living extends Entity implements Damageable{
 		$this->attackTime = 10; //0.5 seconds cooldown
 	}
 
-	public function knockBack(Entity $attacker, $damage, $x, $z, $base = 0.4){
+	public function knockBack(Entity $attacker, float $damage, float $x, float $z, float $base = 0.4){
 		$f = sqrt($x * $x + $z * $z);
 		if($f <= 0){
 			return;
@@ -416,7 +416,7 @@ abstract class Living extends Entity implements Damageable{
 		}
 	}
 
-	public function entityBaseTick($tickDiff = 1){
+	public function entityBaseTick(int $tickDiff = 1) : bool{
 		Timings::$timerLivingEntityBaseTick->startTiming();
 		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_BREATHING, !$this->isInsideOfWater());
 
@@ -505,7 +505,7 @@ abstract class Living extends Entity implements Damageable{
 	 *
 	 * @return Block[]
 	 */
-	public function getLineOfSight($maxDistance, $maxLength = 0, array $transparent = []){
+	public function getLineOfSight(int $maxDistance, int $maxLength = 0, array $transparent = []) : array{
 		if($maxDistance > 120){
 			$maxDistance = 120;
 		}
@@ -551,7 +551,7 @@ abstract class Living extends Entity implements Damageable{
 	 *
 	 * @return Block|null
 	 */
-	public function getTargetBlock($maxDistance, array $transparent = []){
+	public function getTargetBlock(int $maxDistance, array $transparent = []){
 		try{
 			$block = $this->getLineOfSight($maxDistance, 1, $transparent)[0];
 			if($block instanceof Block){

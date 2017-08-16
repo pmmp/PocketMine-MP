@@ -25,7 +25,7 @@ namespace pocketmine\entity;
 
 abstract class WaterAnimal extends Creature implements Ageable{
 
-	public function isBaby(){
+	public function isBaby() : bool{
 		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_BABY);
 	}
 }

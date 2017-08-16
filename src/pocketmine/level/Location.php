@@ -27,7 +27,9 @@ use pocketmine\math\Vector3;
 
 class Location extends Position{
 
+	/** @var float */
 	public $yaw;
+	/** @var float */
 	public $pitch;
 
 	/**
