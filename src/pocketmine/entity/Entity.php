@@ -1392,10 +1392,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		$bb = $block->getBoundingBox();
 
-		if($bb !== null and $block->isSolid() and !$block->isTransparent() and $bb->intersectsWith($this->getBoundingBox())){
-			return true;
-		}
-		return false;
+		return $bb !== null and $block->isSolid() and !$block->isTransparent() and $bb->intersectsWith($this->getBoundingBox());
 	}
 
 	public function fastMove(float $dx, float $dy, float $dz) : bool{

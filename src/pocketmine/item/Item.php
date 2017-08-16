@@ -437,11 +437,8 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		$tag = $this->getNamedTag();
-		if(isset($tag->BlockEntityTag) and $tag->BlockEntityTag instanceof CompoundTag){
-			return true;
-		}
 
-		return false;
+		return isset($tag->BlockEntityTag) and $tag->BlockEntityTag instanceof CompoundTag;
 	}
 
 	public function clearCustomBlockData(){
