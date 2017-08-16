@@ -28,9 +28,15 @@ namespace pocketmine\utils;
  * Manages PocketMine-MP version strings, and compares them
  */
 class VersionString{
+	/** @var int */
+	private $generation;
+	/** @var int */
 	private $major;
-	private $build;
+	/** @var int */
 	private $minor;
+	/** @var int */
+	private $build;
+	/** @var bool */
 	private $development = false;
 
 	/**
@@ -58,7 +64,7 @@ class VersionString{
 	}
 
 	public function getNumber() : int{
-		return (int) (($this->generation << 9) + ($this->major << 5) + $this->minor);
+		return (($this->generation << 9) + ($this->major << 5) + $this->minor);
 	}
 
 	public function getGeneration() : int{

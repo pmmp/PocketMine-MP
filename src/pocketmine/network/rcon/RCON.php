@@ -35,10 +35,15 @@ use pocketmine\utils\TextFormat;
 class RCON{
 	/** @var Server */
 	private $server;
+	/** @var resource */
 	private $socket;
+	/** @var string */
 	private $password;
+	/** @var int */
+	private $threads;
 	/** @var RCONInstance[] */
 	private $workers = [];
+	/** @var int */
 	private $clientsPerThread;
 
 	public function __construct(Server $server, string $password, int $port = 19132, string $interface = "0.0.0.0", int $threads = 1, int $clientsPerThread = 50){
