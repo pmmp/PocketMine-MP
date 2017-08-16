@@ -49,11 +49,9 @@ class WoodenSlab extends Transparent{
 			2 => "Birch",
 			3 => "Jungle",
 			4 => "Acacia",
-			5 => "Dark Oak",
-			6 => "",
-			7 => ""
+			5 => "Dark Oak"
 		];
-		return (($this->meta & 0x08) === 0x08 ? "Upper " : "") . $names[$this->meta & 0x07] . " Wooden Slab";
+		return (($this->meta & 0x08) === 0x08 ? "Upper " : "") . ($names[$this->meta & 0x07] ?? "") . " Wooden Slab";
 	}
 
 	protected function recalculateBoundingBox(){

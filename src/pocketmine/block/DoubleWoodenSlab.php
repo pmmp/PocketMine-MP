@@ -49,11 +49,9 @@ class DoubleWoodenSlab extends Solid{
 			2 => "Birch",
 			3 => "Jungle",
 			4 => "Acacia",
-			5 => "Dark Oak",
-			6 => "",
-			7 => ""
+			5 => "Dark Oak"
 		];
-		return "Double " . $names[$this->meta & 0x07] . " Wooden Slab";
+		return "Double " . ($names[$this->meta & 0x07] ?? "") . " Wooden Slab";
 	}
 
 	public function getDrops(Item $item){

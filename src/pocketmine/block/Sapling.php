@@ -51,11 +51,9 @@ class Sapling extends Flowable{
 			2 => "Birch Sapling",
 			3 => "Jungle Sapling",
 			4 => "Acacia Sapling",
-			5 => "Dark Oak Sapling",
-			6 => "",
-			7 => "",
+			5 => "Dark Oak Sapling"
 		];
-		return $names[$this->meta & 0x07];
+		return $names[$this->meta & 0x07] ?? "Unknown";
 	}
 
 

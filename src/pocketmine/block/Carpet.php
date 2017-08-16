@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\ColorBlockMetaHelper;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
@@ -46,25 +47,7 @@ class Carpet extends Flowable{
 	}
 
 	public function getName(){
-		static $names = [
-			0 => "White Carpet",
-			1 => "Orange Carpet",
-			2 => "Magenta Carpet",
-			3 => "Light Blue Carpet",
-			4 => "Yellow Carpet",
-			5 => "Lime Carpet",
-			6 => "Pink Carpet",
-			7 => "Gray Carpet",
-			8 => "Light Gray Carpet",
-			9 => "Cyan Carpet",
-			10 => "Purple Carpet",
-			11 => "Blue Carpet",
-			12 => "Brown Carpet",
-			13 => "Green Carpet",
-			14 => "Red Carpet",
-			15 => "Black Carpet",
-		];
-		return $names[$this->meta & 0x0f];
+		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Carpet";
 	}
 
 	protected function recalculateBoundingBox(){

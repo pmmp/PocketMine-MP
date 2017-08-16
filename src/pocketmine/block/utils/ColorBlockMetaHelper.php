@@ -21,21 +21,30 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
+class ColorBlockMetaHelper{
 
-class Wood2 extends Wood{
-
-	const ACACIA = 0;
-	const DARK_OAK = 1;
-
-	protected $id = self::WOOD2;
-
-	public function getName(){
+	public static function getColorFromMeta(int $meta) : string{
 		static $names = [
-			0 => "Acacia Wood",
-			1 => "Dark Oak Wood"
+			0 => "White",
+			1 => "Orange",
+			2 => "Magenta",
+			3 => "Light Blue",
+			4 => "Yellow",
+			5 => "Lime",
+			6 => "Pink",
+			7 => "Gray",
+			8 => "Light Gray",
+			9 => "Cyan",
+			10 => "Purple",
+			11 => "Blue",
+			12 => "Brown",
+			13 => "Green",
+			14 => "Red",
+			15 => "Black",
 		];
-		return $names[$this->meta & 0x03] ?? "Unknown";
+
+		return $names[$meta] ?? "Unknown";
 	}
 }

@@ -55,18 +55,10 @@ class Flower extends Flowable{
 			self::TYPE_ORANGE_TULIP => "Orange Tulip",
 			self::TYPE_WHITE_TULIP => "White Tulip",
 			self::TYPE_PINK_TULIP => "Pink Tulip",
-			self::TYPE_OXEYE_DAISY => "Oxeye Daisy",
-			9 => "Unknown",
-			10 => "Unknown",
-			11 => "Unknown",
-			12 => "Unknown",
-			13 => "Unknown",
-			14 => "Unknown",
-			15 => "Unknown"
+			self::TYPE_OXEYE_DAISY => "Oxeye Daisy"
 		];
-		return $names[$this->meta];
+		return $names[$this->meta] ?? "Unknown";
 	}
-
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(Vector3::SIDE_DOWN);
