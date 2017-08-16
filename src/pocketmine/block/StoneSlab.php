@@ -26,7 +26,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 
-class Slab extends WoodenSlab{
+class StoneSlab extends WoodenSlab{
 	const STONE = 0;
 	const SANDSTONE = 1;
 	const WOODEN = 2;
