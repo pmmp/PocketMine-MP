@@ -236,7 +236,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new DoubleWoodenSlab());
 			self::registerBlock(new WoodenSlab());
 			self::registerBlock(new StainedClay());
-			//TODO: STAINED_GLASS_PANE
+			self::registerBlock(new StainedGlassPane());
 			self::registerBlock(new Leaves2());
 			self::registerBlock(new Wood2());
 			self::registerBlock(new WoodenStairs(Block::ACACIA_STAIRS, 0, "Acacia Stairs"));
@@ -310,7 +310,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			//TODO: CONCRETEPOWDER
 
 			//TODO: CHORUS_PLANT
-			//TODO: STAINED_GLASS
+			self::registerBlock(new StainedGlass());
 
 			self::registerBlock(new Podzol());
 			self::registerBlock(new Beetroot());
