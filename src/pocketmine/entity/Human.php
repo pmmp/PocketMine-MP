@@ -107,7 +107,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * @param string $str
 	 * @param string $skinId
 	 */
-	public function setSkin($str, $skinId){
+	public function setSkin(string $str, string $skinId){
 		if(!Player::isValidSkin($str)){
 			throw new \InvalidStateException("Specified skin is not valid, must be 8KiB or 16KiB");
 		}
