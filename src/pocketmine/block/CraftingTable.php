@@ -31,23 +31,23 @@ class CraftingTable extends Solid{
 
 	protected $id = self::CRAFTING_TABLE;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 2.5;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Crafting Table";
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_AXE;
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
 			$player->craftingType = 1;
 		}
@@ -59,5 +59,9 @@ class CraftingTable extends Solid{
 		return [
 			[$this->id, 0, 1],
 		];
+	}
+
+	public function getFuelTime() : int{
+		return 300;
 	}
 }

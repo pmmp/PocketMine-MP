@@ -32,20 +32,20 @@ class Torch extends Flowable{
 
 	protected $id = self::TORCH;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getLightLevel(){
+	public function getLightLevel() : int{
 		return 14;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Torch";
 	}
 
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$below = $this->getSide(Vector3::SIDE_DOWN);
 			$side = $this->getDamage();
@@ -68,7 +68,7 @@ class Torch extends Flowable{
 		return false;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		$below = $this->getSide(Vector3::SIDE_DOWN);
 
 		if($target->isTransparent() === false and $face !== 0){

@@ -27,11 +27,11 @@ class WoodenPressurePlate extends StonePressurePlate{
 
 	protected $id = self::WOODEN_PRESSURE_PLATE;
 
-	public function __construct($meta = 0){
-		$this->meta = $meta;
+	public function getName() : string{
+		return "Wooden Pressure Plate";
 	}
 
-	public function getName(){
-		return "Wooden Pressure Plate";
+	public function getFuelTime() : int{
+		return 300;
 	}
 }

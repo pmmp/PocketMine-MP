@@ -41,7 +41,7 @@ class Villager extends Creature implements NPC, Ageable{
 	public $length = 0.6;
 	public $height = 1.8;
 
-	public function getName(){
+	public function getName() : string{
 		return "Villager";
 	}
 
@@ -69,17 +69,17 @@ class Villager extends Creature implements NPC, Ageable{
 	/**
 	 * Sets the villager profession
 	 *
-	 * @param $profession
+	 * @param int $profession
 	 */
-	public function setProfession($profession){
+	public function setProfession(int $profession){
 		$this->namedtag->Profession = new IntTag("Profession", $profession);
 	}
 
-	public function getProfession(){
-		return $this->namedtag["Profession"];
+	public function getProfession() : int{
+		return (int) $this->namedtag["Profession"];
 	}
 
-	public function isBaby(){
-		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_BABY);
+	public function isBaby() : bool{
+		return $this->getGenericFlag(self::DATA_FLAG_BABY);
 	}
 }

@@ -98,7 +98,7 @@ class Item extends Entity{
 		}
 	}
 
-	public function onUpdate($currentTick){
+	public function onUpdate(int $currentTick) : bool{
 		if($this->closed){
 			return false;
 		}
@@ -181,53 +181,53 @@ class Item extends Entity{
 	/**
 	 * @return ItemItem
 	 */
-	public function getItem(){
+	public function getItem() : ItemItem{
 		return $this->item;
 	}
 
-	public function canCollideWith(Entity $entity){
+	public function canCollideWith(Entity $entity) : bool{
 		return false;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getPickupDelay(){
+	public function getPickupDelay() : int{
 		return $this->pickupDelay;
 	}
 
 	/**
 	 * @param int $delay
 	 */
-	public function setPickupDelay($delay){
+	public function setPickupDelay(int $delay){
 		$this->pickupDelay = $delay;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getOwner(){
+	public function getOwner() : string{
 		return $this->owner;
 	}
 
 	/**
 	 * @param string $owner
 	 */
-	public function setOwner($owner){
+	public function setOwner(string $owner){
 		$this->owner = $owner;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getThrower(){
+	public function getThrower() : string{
 		return $this->thrower;
 	}
 
 	/**
 	 * @param string $thrower
 	 */
-	public function setThrower($thrower){
+	public function setThrower(string $thrower){
 		$this->thrower = $thrower;
 	}
 

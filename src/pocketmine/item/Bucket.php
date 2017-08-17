@@ -39,6 +39,14 @@ class Bucket extends Item{
 		return 1;
 	}
 
+	public function getFuelTime() : int{
+		if($this->meta === Block::LAVA or $this->meta === Block::FLOWING_LAVA){
+			return 20000;
+		}
+
+		return 0;
+	}
+
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$targetBlock = Block::get($this->meta);
 

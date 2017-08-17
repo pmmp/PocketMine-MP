@@ -21,40 +21,30 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\item\Item;
-use pocketmine\item\Tool;
-use pocketmine\Player;
+class ColorBlockMetaHelper{
 
-class Dirt extends Solid{
+	public static function getColorFromMeta(int $meta) : string{
+		static $names = [
+			0 => "White",
+			1 => "Orange",
+			2 => "Magenta",
+			3 => "Light Blue",
+			4 => "Yellow",
+			5 => "Lime",
+			6 => "Pink",
+			7 => "Gray",
+			8 => "Light Gray",
+			9 => "Cyan",
+			10 => "Purple",
+			11 => "Blue",
+			12 => "Brown",
+			13 => "Green",
+			14 => "Red",
+			15 => "Black",
+		];
 
-	protected $id = self::DIRT;
-
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
-	}
-
-	public function getHardness() : float{
-		return 0.5;
-	}
-
-	public function getToolType() : int{
-		return Tool::TYPE_SHOVEL;
-	}
-
-	public function getName() : string{
-		return "Dirt";
-	}
-
-	public function onActivate(Item $item, Player $player = null) : bool{
-		if($item->isHoe()){
-			$item->useOn($this);
-			$this->getLevel()->setBlock($this, Block::get(Block::FARMLAND, 0), true);
-
-			return true;
-		}
-
-		return false;
+		return $names[$meta] ?? "Unknown";
 	}
 }

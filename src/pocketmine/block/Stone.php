@@ -37,19 +37,19 @@ class Stone extends Solid{
 
 	protected $id = self::STONE;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 1.5;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		static $names = [
 			self::NORMAL => "Stone",
 			self::GRANITE => "Granite",
@@ -57,10 +57,9 @@ class Stone extends Solid{
 			self::DIORITE => "Diorite",
 			self::POLISHED_DIORITE => "Polished Diorite",
 			self::ANDESITE => "Andesite",
-			self::POLISHED_ANDESITE => "Polished Andesite",
-			7 => "Unknown Stone",
+			self::POLISHED_ANDESITE => "Polished Andesite"
 		];
-		return $names[$this->meta & 0x07];
+		return $names[$this->meta & 0x07] ?? "Unknown";
 	}
 
 	public function getDrops(Item $item){

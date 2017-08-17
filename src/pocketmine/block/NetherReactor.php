@@ -25,36 +25,40 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
-use pocketmine\Player;
 
-class Dirt extends Solid{
-
-	protected $id = self::DIRT;
+class NetherReactor extends Solid{
+	protected $id = Block::NETHER_REACTOR;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness() : float{
-		return 0.5;
+	public function getName() : string{
+		static $prefixes = [
+			"",
+			"Active ",
+			"Used "
+		];
+		return ($prefixes[$this->meta] ?? "") . "Nether Reactor Core";
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_SHOVEL;
+		return Tool::TYPE_PICKAXE;
 	}
 
-	public function getName() : string{
-		return "Dirt";
+	public function getHardness() : float{
+		return 3;
 	}
 
-	public function onActivate(Item $item, Player $player = null) : bool{
-		if($item->isHoe()){
-			$item->useOn($this);
-			$this->getLevel()->setBlock($this, Block::get(Block::FARMLAND, 0), true);
-
-			return true;
+	public function getDrops(Item $item){
+		if($item->isPickaxe() >= Tool::TIER_WOODEN){
+			return [
+				[Item::IRON_INGOT, 0, 6],
+				[Item::DIAMOND, 0, 3]
+			];
 		}
 
-		return false;
+		return [];
 	}
+
 }

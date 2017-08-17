@@ -30,19 +30,19 @@ class Coal extends Solid{
 
 	protected $id = self::COAL_BLOCK;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 5;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Coal Block";
 	}
 
@@ -54,5 +54,9 @@ class Coal extends Solid{
 		}else{
 			return [];
 		}
+	}
+
+	public function getFuelTime() : int{
+		return 16000;
 	}
 }

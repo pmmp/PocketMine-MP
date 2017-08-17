@@ -38,15 +38,15 @@ class Skull extends Flowable{
 
 	protected $id = self::SKULL_BLOCK;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 1;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Mob Head Block";
 	}
 
@@ -62,7 +62,7 @@ class Skull extends Flowable{
 		);
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		if($face !== 0){
 			$this->meta = $face;
 			if($face === 1){

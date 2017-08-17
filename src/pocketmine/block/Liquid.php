@@ -33,19 +33,19 @@ abstract class Liquid extends Transparent{
 	/** @var Vector3 */
 	private $temporalVector = null;
 
-	public function hasEntityCollision(){
+	public function hasEntityCollision() : bool{
 		return true;
 	}
 
-	public function isBreakable(Item $item){
+	public function isBreakable(Item $item) : bool{
 		return false;
 	}
 
-	public function canBeReplaced(){
+	public function canBeReplaced() : bool{
 		return true;
 	}
 
-	public function isSolid(){
+	public function isSolid() : bool{
 		return false;
 	}
 
@@ -188,7 +188,7 @@ abstract class Liquid extends Transparent{
 		return 0;
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$this->checkForHarden();
 			$this->getLevel()->scheduleDelayedBlockUpdate($this, $this->tickRate());
@@ -358,7 +358,7 @@ abstract class Liquid extends Transparent{
 		return $cost;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 100;
 	}
 

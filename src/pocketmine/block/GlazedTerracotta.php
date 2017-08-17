@@ -30,15 +30,15 @@ use pocketmine\Player;
 
 class GlazedTerracotta extends Solid{
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 1.4;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		if($player !== null){
 			$faces = [
 				0 => 4,

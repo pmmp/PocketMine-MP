@@ -29,15 +29,15 @@ class IronTrapdoor extends Trapdoor{
 
 	protected $id = self::IRON_TRAPDOOR;
 
-	public function getName(){
+	public function getName() : string{
 		return "Iron Trapdoor";
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 5;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 }

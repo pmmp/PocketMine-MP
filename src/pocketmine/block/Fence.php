@@ -37,31 +37,29 @@ class Fence extends Transparent{
 
 	protected $id = self::FENCE;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 2;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_AXE;
 	}
 
 
-	public function getName(){
+	public function getName() : string{
 		static $names = [
 			self::FENCE_OAK => "Oak Fence",
 			self::FENCE_SPRUCE => "Spruce Fence",
 			self::FENCE_BIRCH => "Birch Fence",
 			self::FENCE_JUNGLE => "Jungle Fence",
 			self::FENCE_ACACIA => "Acacia Fence",
-			self::FENCE_DARKOAK => "Dark Oak Fence",
-			"",
-			""
+			self::FENCE_DARKOAK => "Dark Oak Fence"
 		];
-		return $names[$this->meta & 0x07];
+		return $names[$this->meta & 0x07] ?? "Unknown";
 	}
 
 	protected function recalculateBoundingBox(){
@@ -88,6 +86,10 @@ class Fence extends Transparent{
 
 	public function canConnect(Block $block){
 		return ($block instanceof Fence or $block instanceof FenceGate) ? true : $block->isSolid() and !$block->isTransparent();
+	}
+
+	public function getFuelTime() : int{
+		return 300;
 	}
 
 }

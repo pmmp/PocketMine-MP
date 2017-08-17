@@ -44,7 +44,7 @@ class RemoteConsoleCommandSender extends ConsoleCommandSender{
 		return $this->messages;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Rcon";
 	}
 

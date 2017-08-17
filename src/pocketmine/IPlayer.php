@@ -35,7 +35,7 @@ interface IPlayer extends ServerOperator{
 	/**
 	 * @return string
 	 */
-	public function getName();
+	public function getName() : string;
 
 	/**
 	 * @return bool
@@ -63,12 +63,12 @@ interface IPlayer extends ServerOperator{
 	public function getPlayer();
 
 	/**
-	 * @return int|double
+	 * @return int|null
 	 */
 	public function getFirstPlayed();
 
 	/**
-	 * @return int|double
+	 * @return int|null
 	 */
 	public function getLastPlayed();
 

@@ -42,7 +42,7 @@ interface CommandSender extends Permissible{
 	/**
 	 * @return string
 	 */
-	public function getName();
+	public function getName() : string;
 
 	/**
 	 * Returns the line height of the command-sender's screen. Used for determining sizes for command output pagination

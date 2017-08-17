@@ -27,11 +27,11 @@ class LitPumpkin extends Pumpkin{
 
 	protected $id = self::LIT_PUMPKIN;
 
-	public function getLightLevel(){
+	public function getLightLevel() : int{
 		return 15;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Jack o'Lantern";
 	}
 }

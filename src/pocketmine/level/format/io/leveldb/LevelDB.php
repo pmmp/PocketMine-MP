@@ -599,11 +599,7 @@ class LevelDB extends BaseLevelProvider{
 	}
 
 	public function isChunkGenerated(int $chunkX, int $chunkZ) : bool{
-		if($this->chunkExists($chunkX, $chunkZ) and ($chunk = $this->getChunk($chunkX, $chunkZ, false)) !== null){
-			return true;
-		}
-
-		return false;
+		return $this->chunkExists($chunkX, $chunkZ) and ($chunk = $this->getChunk($chunkX, $chunkZ, false)) !== null;
 	}
 
 	public function isChunkPopulated(int $chunkX, int $chunkZ) : bool{

@@ -29,11 +29,11 @@ class Beetroot extends Crops{
 
 	protected $id = self::BEETROOT_BLOCK;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Beetroot Block";
 	}
 

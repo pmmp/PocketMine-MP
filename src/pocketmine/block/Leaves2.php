@@ -30,7 +30,7 @@ class Leaves2 extends Leaves{
 	protected $id = self::LEAVES2;
 	protected $woodType = self::WOOD2;
 
-	public function getName(){
+	public function getName() : string{
 		static $names = [
 			self::ACACIA => "Acacia Leaves",
 			self::DARK_OAK => "Dark Oak Leaves",

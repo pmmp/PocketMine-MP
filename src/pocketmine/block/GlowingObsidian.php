@@ -28,15 +28,15 @@ class GlowingObsidian extends Solid{
 
 	protected $id = self::GLOWING_OBSIDIAN;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Glowing Obsidian";
 	}
 
-	public function getLightLevel(){
+	public function getLightLevel() : int{
 		return 12;
 	}
 

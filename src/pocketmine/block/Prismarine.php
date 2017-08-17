@@ -34,15 +34,15 @@ class Prismarine extends Solid{
 
 	protected $id = self::PRISMARINE;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 1.5;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		static $names = [
 			self::NORMAL => "Prismarine",
 			self::DARK => "Dark Prismarine",
@@ -51,7 +51,7 @@ class Prismarine extends Solid{
 		return $names[$this->meta & 0x03] ?? "Unknown";
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
