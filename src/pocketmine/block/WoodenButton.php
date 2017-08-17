@@ -27,10 +27,6 @@ class WoodenButton extends StoneButton{
 
 	protected $id = self::WOODEN_BUTTON;
 
-	public function __construct($meta = 0){
-		$this->meta = $meta;
-	}
-
 	public function getName(){
 		return "Wooden Button";
 	}

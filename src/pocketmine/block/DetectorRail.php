@@ -27,10 +27,6 @@ class DetectorRail extends Rail{
 
 	protected $id = self::DETECTOR_RAIL;
 
-	public function __construct($meta = 0){
-		$this->meta = $meta;
-	}
-
 	public function getName(){
 		return "Detector Rail";
 	}
