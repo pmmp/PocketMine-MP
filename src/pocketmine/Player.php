@@ -247,9 +247,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $ip;
 	protected $removeFormat = true;
 	protected $port;
-	protected $username;
-	protected $iusername;
-	protected $displayName;
+	protected $username = "";
+	protected $iusername = "";
+	protected $displayName = "";
 	protected $startAction = -1;
 	/** @var Vector3|null */
 	protected $sleeping = null;
@@ -3472,7 +3472,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->windows = null;
 				$this->windowIndex = [];
 
-				parent::close();
+				if($this->constructed){
+					parent::close();
+				}
 				$this->spawned = false;
 
 				if($this->loggedIn){
