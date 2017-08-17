@@ -213,7 +213,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	}
 
 	public function isPaired(){
-		return !(!isset($this->namedtag->pairx) or !isset($this->namedtag->pairz));
+		return isset($this->namedtag->pairx) and isset($this->namedtag->pairz);
 	}
 
 	/**
