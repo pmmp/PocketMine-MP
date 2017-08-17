@@ -2888,9 +2888,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$recipe = $this->server->getCraftingManager()->getRecipe($packet->id);
 
-		if($recipe === null or (($recipe instanceof BigShapelessRecipe or $recipe instanceof BigShapedRecipe) and $this->craftingType === 0)){
+		if($recipe === null or (($recipe instanceof BigShapelessRecipe or $recipe instanceof BigShapedRecipe) and $this->craftingType === 0) or count($packet->input) === 0){
 			$this->inventory->sendContents($this);
-			return true;
+			return false;
 		}
 
 		$canCraft = true;
