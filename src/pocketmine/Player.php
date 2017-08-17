@@ -440,7 +440,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @param bool $remove
 	 */
 	public function setRemoveFormat(bool $remove = true){
-		$this->removeFormat = (bool) $remove;
+		$this->removeFormat = $remove;
 	}
 
 	public function getScreenLineHeight() : int{
@@ -3435,7 +3435,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($this->connected and !$this->closed){
 
 			try{
-				if($notify and strlen((string) $reason) > 0){
+				if($notify and strlen($reason) > 0){
 					$pk = new DisconnectPacket();
 					$pk->message = $reason;
 					$this->directDataPacket($pk);
