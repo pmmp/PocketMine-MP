@@ -436,8 +436,8 @@ abstract class Entity extends Location implements Metadatable{
 		$this->attributeMap = new AttributeMap();
 		$this->addAttributes();
 
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_AFFECTED_BY_GRAVITY, true);
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_HAS_COLLISION, true);
+		$this->setGenericFlag(self::DATA_FLAG_AFFECTED_BY_GRAVITY, true);
+		$this->setGenericFlag(self::DATA_FLAG_HAS_COLLISION, true);
 
 		$this->chunk->addEntity($this);
 		$this->level->addEntity($this);
