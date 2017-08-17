@@ -28,7 +28,7 @@ use pocketmine\math\Vector3;
 
 abstract class Thin extends Transparent{
 
-	public function isSolid(){
+	public function isSolid() : bool{
 		return false;
 	}
 

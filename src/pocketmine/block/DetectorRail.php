@@ -27,7 +27,7 @@ class DetectorRail extends Rail{
 
 	protected $id = self::DETECTOR_RAIL;
 
-	public function getName(){
+	public function getName() : string{
 		return "Detector Rail";
 	}
 }

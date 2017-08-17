@@ -27,7 +27,7 @@ class WoodenButton extends StoneButton{
 
 	protected $id = self::WOODEN_BUTTON;
 
-	public function getName(){
+	public function getName() : string{
 		return "Wooden Button";
 	}
 }

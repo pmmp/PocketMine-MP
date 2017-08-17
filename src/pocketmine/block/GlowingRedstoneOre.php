@@ -29,15 +29,15 @@ class GlowingRedstoneOre extends RedstoneOre{
 
 	protected $id = self::GLOWING_REDSTONE_ORE;
 
-	public function getName(){
+	public function getName() : string{
 		return "Glowing Redstone Ore";
 	}
 
-	public function getLightLevel(){
+	public function getLightLevel() : int{
 		return 9;
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_SCHEDULED or $type === Level::BLOCK_UPDATE_RANDOM){
 			$this->getLevel()->setBlock($this, Block::get(Block::REDSTONE_ORE, $this->meta), false, false);
 

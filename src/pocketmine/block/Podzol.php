@@ -29,19 +29,19 @@ class Podzol extends Solid{
 
 	protected $id = self::PODZOL;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_SHOVEL;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Podzol";
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 2.5;
 	}
 }

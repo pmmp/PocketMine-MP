@@ -29,19 +29,19 @@ class CobblestoneStairs extends Stair{
 
 	protected $id = self::COBBLESTONE_STAIRS;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 2;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Cobblestone Stairs";
 	}
 

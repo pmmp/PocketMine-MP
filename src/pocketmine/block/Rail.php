@@ -43,19 +43,19 @@ class Rail extends Flowable{
 
 	protected $id = self::RAIL;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Rail";
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.7;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		if(!$block->getSide(Vector3::SIDE_DOWN)->isTransparent()){
 			return $this->getLevel()->setBlock($block, $this, true, true);
 		}
@@ -63,7 +63,7 @@ class Rail extends Flowable{
 		return false;
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(Vector3::SIDE_DOWN)->isTransparent()){
 				$this->getLevel()->useBreakOn($this);

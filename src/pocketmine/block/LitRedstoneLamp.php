@@ -27,11 +27,11 @@ class LitRedstoneLamp extends RedstoneLamp{
 
 	protected $id = self::LIT_REDSTONE_LAMP;
 
-	public function getName(){
+	public function getName() : string{
 		return "Lit Redstone Lamp";
 	}
 
-	public function getLightLevel(){
+	public function getLightLevel() : int{
 		return 15;
 	}
 }

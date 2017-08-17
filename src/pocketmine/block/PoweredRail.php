@@ -26,7 +26,7 @@ namespace pocketmine\block;
 class PoweredRail extends Rail{
 	protected $id = self::POWERED_RAIL;
 
-	public function getName(){
+	public function getName() : string{
 		return "Powered Rail";
 	}
 }

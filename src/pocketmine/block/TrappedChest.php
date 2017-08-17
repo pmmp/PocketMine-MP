@@ -29,7 +29,7 @@ class TrappedChest extends Chest{
 
 	protected $id = self::TRAPPED_CHEST;
 
-	public function getName(){
+	public function getName() : string{
 		return "Trapped Chest";
 	}
 }

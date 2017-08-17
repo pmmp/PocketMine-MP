@@ -33,15 +33,15 @@ class PumpkinStem extends Crops{
 
 	protected $id = self::PUMPKIN_STEM;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Pumpkin Stem";
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== Block::FARMLAND){
 				$this->getLevel()->useBreakOn($this);

@@ -31,23 +31,23 @@ class Dirt extends Solid{
 
 	protected $id = self::DIRT;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.5;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_SHOVEL;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Dirt";
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		if($item->isHoe()){
 			$item->useOn($this);
 			$this->getLevel()->setBlock($this, Block::get(Block::FARMLAND, 0), true);

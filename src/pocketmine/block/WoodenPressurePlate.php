@@ -27,7 +27,7 @@ class WoodenPressurePlate extends StonePressurePlate{
 
 	protected $id = self::WOODEN_PRESSURE_PLATE;
 
-	public function getName(){
+	public function getName() : string{
 		return "Wooden Pressure Plate";
 	}
 

@@ -31,15 +31,15 @@ class GrassPath extends Transparent{
 
 	protected $id = self::GRASS_PATH;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Grass Path";
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_SHOVEL;
 	}
 
@@ -54,7 +54,7 @@ class GrassPath extends Transparent{
 		);
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.6;
 	}
 

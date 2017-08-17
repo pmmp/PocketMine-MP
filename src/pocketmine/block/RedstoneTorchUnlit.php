@@ -27,11 +27,11 @@ class RedstoneTorchUnlit extends Torch{
 
 	protected $id = self::UNLIT_REDSTONE_TORCH;
 
-	public function getName(){
+	public function getName() : string{
 		return "Unlit Redstone Torch";
 	}
 
-	public function getLightLevel(){
+	public function getLightLevel() : int{
 		return 0;
 	}
 }

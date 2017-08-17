@@ -29,19 +29,19 @@ class SeaLantern extends Transparent{
 
 	protected $id = self::SEA_LANTERN;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Sea Lantern";
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.3;
 	}
 
-	public function getLightLevel(){
+	public function getLightLevel() : int{
 		return 15;
 	}
 

@@ -31,11 +31,11 @@ use pocketmine\Player;
 
 class FenceGate extends Transparent{
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 2;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_AXE;
 	}
 
@@ -68,7 +68,7 @@ class FenceGate extends Transparent{
 		}
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		$this->meta = ($player instanceof Player ? ($player->getDirection() - 1) & 0x03 : 0);
 		$this->getLevel()->setBlock($block, $this, true, true);
 
@@ -81,7 +81,7 @@ class FenceGate extends Transparent{
 		];
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		$this->meta = (($this->meta ^ 0x04) & ~0x02);
 
 		if($player !== null){

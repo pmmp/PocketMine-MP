@@ -29,23 +29,23 @@ class BrickStairs extends Stair{
 
 	protected $id = self::BRICK_STAIRS;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 2;
 	}
 
-	public function getResistance(){
+	public function getResistance() : float{
 		return 30;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Brick Stairs";
 	}
 

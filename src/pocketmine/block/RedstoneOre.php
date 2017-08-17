@@ -32,23 +32,23 @@ class RedstoneOre extends Solid{
 
 	protected $id = self::REDSTONE_ORE;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Redstone Ore";
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 3;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		return $this->getLevel()->setBlock($this, $this, true, false);
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL or $type === Level::BLOCK_UPDATE_TOUCH){
 			$this->getLevel()->setBlock($this, Block::get(Block::GLOWING_REDSTONE_ORE, $this->meta));
 
@@ -58,7 +58,7 @@ class RedstoneOre extends Solid{
 		return false;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 

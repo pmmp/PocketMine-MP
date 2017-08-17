@@ -28,15 +28,15 @@ use pocketmine\item\Tool;
 
 class WoodenStairs extends Stair{
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 2;
 	}
 
-	public function getResistance(){
+	public function getResistance() : float{
 		return 15;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_AXE;
 	}
 

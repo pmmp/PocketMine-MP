@@ -27,7 +27,7 @@ use pocketmine\item\Item;
 
 class UnknownBlock extends Transparent{
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0;
 	}
 

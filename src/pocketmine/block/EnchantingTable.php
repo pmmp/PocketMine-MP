@@ -36,11 +36,11 @@ class EnchantingTable extends Transparent{
 
 	protected $id = self::ENCHANTING_TABLE;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		$this->getLevel()->setBlock($block, $this, true, true);
 		$nbt = new CompoundTag("", [
 			new StringTag("id", Tile::ENCHANT_TABLE),
@@ -64,23 +64,23 @@ class EnchantingTable extends Transparent{
 		return true;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 5;
 	}
 
-	public function getResistance(){
+	public function getResistance() : float{
 		return 6000;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Enchanting Table";
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
 			//TODO lock
 

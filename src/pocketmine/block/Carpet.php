@@ -34,19 +34,19 @@ class Carpet extends Flowable{
 
 	protected $id = self::CARPET;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.1;
 	}
 
-	public function isSolid(){
+	public function isSolid() : bool{
 		return true;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Carpet";
 	}
 
@@ -62,7 +62,7 @@ class Carpet extends Flowable{
 		);
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
 		if($down->getId() !== self::AIR){
 			$this->getLevel()->setBlock($block, $this, true, true);
@@ -73,7 +73,7 @@ class Carpet extends Flowable{
 		return false;
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(Vector3::SIDE_DOWN)->getId() === self::AIR){
 				$this->getLevel()->useBreakOn($this);

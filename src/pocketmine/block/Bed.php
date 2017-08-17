@@ -43,15 +43,15 @@ class Bed extends Transparent{
 
 	protected $id = self::BED_BLOCK;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.2;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Bed Block";
 	}
 
@@ -135,7 +135,7 @@ class Bed extends Transparent{
 		return null;
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player !== null){
 			$other = $this->getOtherHalf();
 			if($other === null){
@@ -172,7 +172,7 @@ class Bed extends Transparent{
 
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
 		if(!$down->isTransparent()){
 			$meta = (($player instanceof Player ? $player->getDirection() : 0) - 1) & 0x03;
@@ -203,7 +203,7 @@ class Bed extends Transparent{
 		return false;
 	}
 
-	public function onBreak(Item $item){
+	public function onBreak(Item $item) : bool{
 		$this->getLevel()->setBlock($this, Block::get(Block::AIR), true, true);
 		if(($other = $this->getOtherHalf()) !== null){
 			$this->getLevel()->useBreakOn($other); //make sure tiles get removed

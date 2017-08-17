@@ -27,7 +27,7 @@ class ActivatorRail extends Rail{
 
 	protected $id = self::ACTIVATOR_RAIL;
 
-	public function getName(){
+	public function getName() : string{
 		return "Activator Rail";
 	}
 }

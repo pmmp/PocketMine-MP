@@ -34,19 +34,19 @@ class Mycelium extends Solid{
 
 	protected $id = self::MYCELIUM;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Mycelium";
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_SHOVEL;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.6;
 	}
 
@@ -56,7 +56,7 @@ class Mycelium extends Solid{
 		];
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_RANDOM){
 			//TODO: light levels
 			$x = mt_rand($this->x - 1, $this->x + 1);

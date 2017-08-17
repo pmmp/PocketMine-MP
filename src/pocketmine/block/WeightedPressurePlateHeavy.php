@@ -27,7 +27,7 @@ class WeightedPressurePlateHeavy extends WeightedPressurePlateLight{
 
 	protected $id = self::HEAVY_WEIGHTED_PRESSURE_PLATE;
 
-	public function getName(){
+	public function getName() : string{
 		return "Weighted Pressure Plate Heavy";
 	}
 }

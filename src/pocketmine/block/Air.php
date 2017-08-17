@@ -34,35 +34,35 @@ class Air extends Transparent{
 	protected $id = self::AIR;
 	protected $meta = 0;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Air";
 	}
 
-	public function canPassThrough(){
+	public function canPassThrough() : bool{
 		return true;
 	}
 
-	public function isBreakable(Item $item){
+	public function isBreakable(Item $item) : bool{
 		return false;
 	}
 
-	public function canBeFlowedInto(){
+	public function canBeFlowedInto() : bool{
 		return true;
 	}
 
-	public function canBeReplaced(){
+	public function canBeReplaced() : bool{
 		return true;
 	}
 
-	public function canBePlaced(){
+	public function canBePlaced() : bool{
 		return false;
 	}
 
-	public function isSolid(){
+	public function isSolid() : bool{
 		return false;
 	}
 
@@ -70,11 +70,11 @@ class Air extends Transparent{
 		return null;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return -1;
 	}
 
-	public function getResistance(){
+	public function getResistance() : float{
 		return 0;
 	}
 
