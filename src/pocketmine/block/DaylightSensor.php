@@ -38,4 +38,8 @@ class DaylightSensor extends Transparent{
 	public function getHardness(){
 		return 0.2;
 	}
+
+	public function getFuelTime() : int{
+		return 300;
+	}
 }

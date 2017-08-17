@@ -134,4 +134,8 @@ class WoodenSlab extends Transparent{
 			[$this->id, $this->meta & 0x07, 1],
 		];
 	}
+
+	public function getFuelTime() : int{
+		return 300;
+	}
 }

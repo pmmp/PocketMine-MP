@@ -719,6 +719,14 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Returns the time in ticks which the block will fuel a furnace for.
+	 * @return int
+	 */
+	public function getFuelTime() : int{
+		return 0;
+	}
+
+	/**
 	 * Returns the Block on the side $side, works like Vector3::side()
 	 *
 	 * @param int $side

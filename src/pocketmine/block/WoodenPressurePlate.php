@@ -34,4 +34,8 @@ class WoodenPressurePlate extends StonePressurePlate{
 	public function getName(){
 		return "Wooden Pressure Plate";
 	}
+
+	public function getFuelTime() : int{
+		return 300;
+	}
 }

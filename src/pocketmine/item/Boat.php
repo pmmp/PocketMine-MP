@@ -27,4 +27,8 @@ class Boat extends Item{
 	public function __construct($meta = 0, $count = 1){
 		parent::__construct(self::BOAT, $meta, $count, "Boat");
 	}
+
+	public function getFuelTime() : int{
+		return 1200; //400 in PC
+	}
 }

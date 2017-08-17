@@ -59,4 +59,8 @@ class Planks extends Solid{
 		return $names[$this->meta & 0x07] ?? "Unknown";
 	}
 
+	public function getFuelTime() : int{
+		return 300;
+	}
+
 }

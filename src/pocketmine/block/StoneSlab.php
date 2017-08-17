@@ -75,4 +75,8 @@ class StoneSlab extends WoodenSlab{
 			return [];
 		}
 	}
+
+	public function getFuelTime() : int{
+		return 0;
+	}
 }

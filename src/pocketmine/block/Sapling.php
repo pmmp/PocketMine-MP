@@ -112,4 +112,8 @@ class Sapling extends Flowable{
 			[$this->id, $this->meta & 0x07, 1],
 		];
 	}
+
+	public function getFuelTime() : int{
+		return 100;
+	}
 }

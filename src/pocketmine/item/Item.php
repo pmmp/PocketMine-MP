@@ -28,7 +28,6 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
-use pocketmine\inventory\Fuel;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
@@ -917,15 +916,12 @@ class Item implements ItemIds, \JsonSerializable{
 		return 64;
 	}
 
-	final public function getFuelTime(){
-		if(!isset(Fuel::$duration[$this->id])){
-			return null;
-		}
-		if($this->id !== self::BUCKET or $this->meta === 10){
-			return Fuel::$duration[$this->id];
-		}
-
-		return null;
+	/**
+	 * Returns the time in ticks which the item will fuel a furnace for.
+	 * @return int
+	 */
+	public function getFuelTime() : int{
+		return 0;
 	}
 
 	/**
