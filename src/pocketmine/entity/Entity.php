@@ -1713,7 +1713,7 @@ abstract class Entity extends Location implements Metadatable{
 		$this->z = $pos->z;
 
 		$radius = $this->width / 2;
-		$this->boundingBox->setBounds($pos->x - $radius, $pos->y, $pos->z - $radius, $pos->x + $radius, $pos->y + $this->height, $pos->z + $radius);
+		$this->boundingBox->setBounds((float) ($pos->x - $radius), (float) $pos->y, (float) ($pos->z - $radius), (float) ($pos->x + $radius), (float) ($pos->y + $this->height), (float) ($pos->z + $radius));
 
 		$this->checkChunks();
 
