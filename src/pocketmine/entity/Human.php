@@ -283,7 +283,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	protected function initEntity(){
 
-		$this->setDataFlag(self::DATA_PLAYER_FLAGS, self::DATA_PLAYER_FLAG_SLEEP, false, self::DATA_TYPE_BYTE);
+		$this->setPlayerFlag(self::DATA_PLAYER_FLAG_SLEEP, false);
 		$this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [0, 0, 0], false);
 
 		$this->inventory = new PlayerInventory($this);
@@ -541,5 +541,25 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			}
 			parent::close();
 		}
+	}
+
+	/**
+	 * Wrapper around {@link Entity#getDataFlag} for player-specific data flag reading.
+	 *
+	 * @param int $flagId
+	 * @return bool
+	 */
+	public function getPlayerFlag(int $flagId){
+		return $this->getDataFlag(self::DATA_PLAYER_FLAGS, $flagId);
+	}
+
+	/**
+	 * Wrapper around {@link Entity#setDataFlag} for player-specific data flag setting.
+	 *
+	 * @param int  $flagId
+	 * @param bool $value
+	 */
+	public function setPlayerFlag(int $flagId, bool $value = true){
+		$this->setDataFlag(self::DATA_PLAYER_FLAGS, $flagId, $value, self::DATA_TYPE_BYTE);
 	}
 }

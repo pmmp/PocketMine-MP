@@ -1147,7 +1147,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->sleeping = clone $pos;
 
 		$this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [$pos->x, $pos->y, $pos->z]);
-		$this->setDataFlag(self::DATA_PLAYER_FLAGS, self::DATA_PLAYER_FLAG_SLEEP, true, self::DATA_TYPE_BYTE);
+		$this->setPlayerFlag(self::DATA_PLAYER_FLAG_SLEEP, true);
 
 		$this->setSpawn($pos);
 
@@ -1188,7 +1188,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			$this->sleeping = null;
 			$this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [0, 0, 0]);
-			$this->setDataFlag(self::DATA_PLAYER_FLAGS, self::DATA_PLAYER_FLAG_SLEEP, false, self::DATA_TYPE_BYTE);
+			$this->setPlayerFlag(self::DATA_PLAYER_FLAG_SLEEP, false);
 
 			$this->level->sleepTicks = 0;
 
@@ -2166,7 +2166,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 		$this->craftingType = 0;
 
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false); //TODO: check if this should be true
+		$this->setGenericFlag(self::DATA_FLAG_ACTION, false); //TODO: check if this should be true
 
 		switch($packet->event){
 			case EntityEventPacket::USE_ITEM: //Eating
@@ -2218,7 +2218,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->inventory->equipItem($packet->hotbarSlot, $packet->inventorySlot);
 
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
+		$this->setGenericFlag(self::DATA_FLAG_ACTION, false);
 
 		return true;
 	}
@@ -2387,7 +2387,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->craftingType = 0;
 
 		if($packet->face >= 0 and $packet->face <= 5){ //Use Block, place
-			$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
+			$this->setGenericFlag(self::DATA_FLAG_ACTION, false);
 
 			if(!$this->canInteract($blockVector->add(0.5, 0.5, 0.5), 13) or $this->isSpectator()){
 			}elseif($this->isCreative()){
@@ -2482,7 +2482,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				}
 			}
 
-			$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, true);
+			$this->setGenericFlag(self::DATA_FLAG_ACTION, true);
 			$this->startAction = $this->server->getTick();
 		}
 
@@ -2532,7 +2532,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_STOP_BREAK);
 				break;
 			case PlayerActionPacket::ACTION_RELEASE_ITEM:
-				if($this->startAction > -1 and $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION)){
+				if($this->startAction > -1 and $this->getGenericFlag(self::DATA_FLAG_ACTION)){
 					if($this->inventory->getItemInHand()->getId() === Item::BOW){
 						$bow = $this->inventory->getItemInHand();
 						if($this->isSurvival() and !$this->inventory->contains(Item::get(Item::ARROW, 0, 1))){
@@ -2728,7 +2728,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$this->startAction = -1;
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
+		$this->setGenericFlag(self::DATA_FLAG_ACTION, false);
 
 		return true;
 	}
@@ -2774,7 +2774,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->level->dropItem($this->add(0, 1.3, 0), $item, $motion, 40);
 
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
+		$this->setGenericFlag(self::DATA_FLAG_ACTION, false);
 
 		return true;
 	}

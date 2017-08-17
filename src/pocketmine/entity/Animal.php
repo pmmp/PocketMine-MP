@@ -27,6 +27,6 @@ namespace pocketmine\entity;
 abstract class Animal extends Creature implements Ageable{
 
 	public function isBaby() : bool{
-		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_BABY);
+		return $this->getGenericFlag(self::DATA_FLAG_BABY);
 	}
 }

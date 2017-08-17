@@ -453,14 +453,14 @@ abstract class Entity extends Location implements Metadatable{
 	 * @return bool
 	 */
 	public function isNameTagVisible() : bool{
-		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_CAN_SHOW_NAMETAG);
+		return $this->getGenericFlag(self::DATA_FLAG_CAN_SHOW_NAMETAG);
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isNameTagAlwaysVisible() : bool{
-		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ALWAYS_SHOW_NAMETAG);
+		return $this->getGenericFlag(self::DATA_FLAG_ALWAYS_SHOW_NAMETAG);
 	}
 
 
@@ -475,14 +475,14 @@ abstract class Entity extends Location implements Metadatable{
 	 * @param bool $value
 	 */
 	public function setNameTagVisible(bool $value = true){
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_CAN_SHOW_NAMETAG, $value);
+		$this->setGenericFlag(self::DATA_FLAG_CAN_SHOW_NAMETAG, $value);
 	}
 
 	/**
 	 * @param bool $value
 	 */
 	public function setNameTagAlwaysVisible(bool $value = true){
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ALWAYS_SHOW_NAMETAG, $value);
+		$this->setGenericFlag(self::DATA_FLAG_ALWAYS_SHOW_NAMETAG, $value);
 	}
 
 	/**
@@ -521,31 +521,31 @@ abstract class Entity extends Location implements Metadatable{
 
 
 	public function isSneaking() : bool{
-		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_SNEAKING);
+		return $this->getGenericFlag(self::DATA_FLAG_SNEAKING);
 	}
 
 	public function setSneaking(bool $value = true){
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_SNEAKING, $value);
+		$this->setGenericFlag(self::DATA_FLAG_SNEAKING, $value);
 	}
 
 	public function isSprinting() : bool{
-		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_SPRINTING);
+		return $this->getGenericFlag(self::DATA_FLAG_SPRINTING);
 	}
 
 	public function setSprinting(bool $value = true){
 		if($value !== $this->isSprinting()){
-			$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_SPRINTING, $value);
+			$this->setGenericFlag(self::DATA_FLAG_SPRINTING, $value);
 			$attr = $this->attributeMap->getAttribute(Attribute::MOVEMENT_SPEED);
 			$attr->setValue($value ? ($attr->getValue() * 1.3) : ($attr->getValue() / 1.3), false, true);
 		}
 	}
 
 	public function isImmobile() : bool{
-		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_IMMOBILE);
+		return $this->getGenericFlag(self::DATA_FLAG_IMMOBILE);
 	}
 
 	public function setImmobile(bool $value = true){
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_IMMOBILE, $value);
+		$this->setGenericFlag(self::DATA_FLAG_IMMOBILE, $value);
 	}
 
 	/**
@@ -553,7 +553,7 @@ abstract class Entity extends Location implements Metadatable{
 	 * @return bool
 	 */
 	public function canClimb() : bool{
-		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_CAN_CLIMB);
+		return $this->getGenericFlag(self::DATA_FLAG_CAN_CLIMB);
 	}
 
 	/**
@@ -561,7 +561,7 @@ abstract class Entity extends Location implements Metadatable{
 	 * @param bool $value
 	 */
 	public function setCanClimb(bool $value){
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_CAN_CLIMB, $value);
+		$this->setGenericFlag(self::DATA_FLAG_CAN_CLIMB, $value);
 	}
 
 	/**
@@ -570,7 +570,7 @@ abstract class Entity extends Location implements Metadatable{
 	 * @return bool
 	 */
 	public function canClimbWalls() : bool{
-		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_WALLCLIMBING);
+		return $this->getGenericFlag(self::DATA_FLAG_WALLCLIMBING);
 	}
 
 	/**
@@ -579,7 +579,7 @@ abstract class Entity extends Location implements Metadatable{
 	 * @param bool $value
 	 */
 	public function setCanClimbWalls(bool $value = true){
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_WALLCLIMBING, $value);
+		$this->setGenericFlag(self::DATA_FLAG_WALLCLIMBING, $value);
 	}
 
 	/**
@@ -1266,12 +1266,12 @@ abstract class Entity extends Location implements Metadatable{
 			$this->fireTicks = $ticks;
 		}
 
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ONFIRE, true);
+		$this->setGenericFlag(self::DATA_FLAG_ONFIRE, true);
 	}
 
 	public function extinguish(){
 		$this->fireTicks = 0;
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ONFIRE, false);
+		$this->setGenericFlag(self::DATA_FLAG_ONFIRE, false);
 	}
 
 	public function isFireProof() : bool{
@@ -1928,6 +1928,26 @@ abstract class Entity extends Location implements Metadatable{
 	 */
 	public function getDataFlag(int $propertyId, int $flagId) : bool{
 		return (((int) $this->getDataProperty($propertyId)) & (1 << $flagId)) > 0;
+	}
+
+	/**
+	 * Wrapper around {@link Entity#getDataFlag} for generic data flag reading.
+	 *
+	 * @param int $flagId
+	 * @return bool
+	 */
+	public function getGenericFlag(int $flagId) : bool{
+		return $this->getDataFlag(self::DATA_FLAGS, $flagId);
+	}
+
+	/**
+	 * Wrapper around {@link Entity#setDataFlag} for generic data flag setting.
+	 *
+	 * @param int  $flagId
+	 * @param bool $value
+	 */
+	public function setGenericFlag(int $flagId, bool $value = true){
+		$this->setDataFlag(self::DATA_FLAGS, $flagId, $value, self::DATA_TYPE_LONG);
 	}
 
 	public function __destruct(){
