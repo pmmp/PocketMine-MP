@@ -224,6 +224,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $windows;
 	/** @var Inventory[] */
 	protected $windowIndex = [];
+	/** @var bool[] */
+	protected $permanentWindows = [];
 
 	protected $messageCounter = 2;
 
@@ -3495,9 +3497,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					$this->hiddenPlayers = [];
 				}
 
-				foreach($this->windowIndex as $window){
-					$this->removeWindow($window);
-				}
+				$this->removeAllWindows(true);
 				$this->windows = null;
 				$this->windowIndex = [];
 
@@ -3789,12 +3789,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function teleport(Vector3 $pos, float $yaw = null, float $pitch = null) : bool{
 		if(parent::teleport($pos, $yaw, $pitch)){
 
-			foreach($this->windowIndex as $window){
-				if($window === $this->inventory){
-					continue;
-				}
-				$this->removeWindow($window);
-			}
+			$this->removeAllWindows();
 
 			$this->sendPosition($this, $this->yaw, $this->pitch, MovePlayerPacket::MODE_TELEPORT);
 			$this->sendPosition($this, $this->yaw, $this->pitch, MovePlayerPacket::MODE_TELEPORT, $this->getViewers());
@@ -3828,10 +3823,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	protected function addDefaultWindows(){
-		$this->addWindow($this->getInventory(), ContainerIds::INVENTORY);
+		$this->addWindow($this->getInventory(), ContainerIds::INVENTORY, true);
 
 		$this->cursorInventory = new PlayerCursorInventory($this);
-		$this->addWindow($this->cursorInventory, ContainerIds::CURSOR);
+		$this->addWindow($this->cursorInventory, ContainerIds::CURSOR, true);
 
 		//TODO: more windows
 	}
@@ -3841,19 +3836,26 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
+	 * Returns the window ID which the inventory has for this player, or -1 if the window is not open to the player.
+	 *
 	 * @param Inventory $inventory
 	 *
 	 * @return int
 	 */
 	public function getWindowId(Inventory $inventory){
 		if($this->windows->contains($inventory)){
-			return $this->windows[$inventory];
+			/** @var int $id */
+			$id = $this->windows[$inventory];
+			return $id;
 		}
 
 		return ContainerIds::NONE;
 	}
 
 	/**
+	 * Returns the inventory window open to the player with the specified window ID, or null if no window is open with
+	 * that ID.
+	 *
 	 * @param int $windowId
 	 *
 	 * @return Inventory|null
@@ -3863,16 +3865,18 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * Returns the created/existing window id
+	 * Opens an inventory window to the player. Returns the ID of the created window, or the existing window ID if the
+	 * player is already viewing the specified inventory.
 	 *
 	 * @param Inventory $inventory
-	 * @param int|null  $forceId
+	 * @param int|null  $forceId Forces a special ID for the window
+	 * @param bool      $isPermanent Prevents the window being removed if true.
 	 *
 	 * @return int
 	 */
-	public function addWindow(Inventory $inventory, int $forceId = null) : int{
-		if($this->windows->contains($inventory)){
-			return $this->windows[$inventory];
+	public function addWindow(Inventory $inventory, int $forceId = null, bool $isPermanent = false) : int{
+		if(($id = $this->getWindowId($inventory)) !== ContainerIds::NONE){
+			return $id;
 		}
 
 		if($forceId === null){
@@ -3883,6 +3887,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->windowIndex[$cnt] = $inventory;
 		$this->windows->attach($inventory, $cnt);
 		if($inventory->open($this)){
+			if($isPermanent){
+				$this->permanentWindows[$cnt] = true;
+			}
 			return $cnt;
 		}else{
 			$this->removeWindow($inventory);
@@ -3891,13 +3898,41 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 	}
 
-	public function removeWindow(Inventory $inventory){
-		$inventory->close($this);
+	/**
+	 * Removes an inventory window from the player.
+	 *
+	 * @param Inventory $inventory
+	 * @param bool      $force Forces removal of permanent windows such as normal inventory, cursor
+	 *
+	 * @throws \BadMethodCallException if trying to remove a fixed inventory window without the `force` parameter as true
+	 */
+	public function removeWindow(Inventory $inventory, bool $force = false){
 		if($this->windows->contains($inventory)){
 			/** @var int $id */
 			$id = $this->windows[$inventory];
+			if(!$force and isset($this->permanentWindows[$id])){
+				throw new \BadMethodCallException("Cannot remove fixed window $id (" . get_class($inventory) . ") from " . $this->getName());
+			}
 			$this->windows->detach($this->windowIndex[$id]);
 			unset($this->windowIndex[$id]);
+			unset($this->permanentWindows[$id]);
+		}
+
+		$inventory->close($this);
+	}
+
+	/**
+	 * Removes all inventory windows from the player. By default this WILL NOT remove permanent windows.
+	 *
+	 * @param bool $removePermanentWindows Whether to remove permanent windows.
+	 */
+	public function removeAllWindows(bool $removePermanentWindows = false){
+		foreach($this->windowIndex as $id => $window){
+			if(!$removePermanentWindows and isset($this->permanentWindows[$id])){
+				continue;
+			}
+
+			$this->removeWindow($window, $removePermanentWindows);
 		}
 	}
 
