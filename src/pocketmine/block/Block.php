@@ -659,13 +659,9 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return array
 	 */
 	public function getDrops(Item $item){
-		if(!isset(self::$list[$this->getId()])){ //Unknown blocks
-			return [];
-		}else{
-			return [
-				[$this->getItemId(), $this->getDamage(), 1],
-			];
-		}
+		return [
+			[$this->getItemId(), $this->getDamage(), 1],
+		];
 	}
 
 	/**
