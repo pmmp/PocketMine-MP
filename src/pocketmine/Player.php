@@ -769,7 +769,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			$this->usedChunks = [];
 			$this->level->sendTime($this);
+
+			return true;
 		}
+
+		return false;
 	}
 
 	private function unloadChunk(int $x, int $z, Level $level = null){
