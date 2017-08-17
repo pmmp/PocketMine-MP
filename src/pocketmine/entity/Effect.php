@@ -387,10 +387,8 @@ class Effect{
 	 * @param int $r
 	 * @param int $g
 	 * @param int $b
-	 *
-	 * @return int
 	 */
-	public function setColor(int $r, int $g, int $b)  {
+	public function setColor(int $r, int $g, int $b){
 		$this->color = (($r & 0xff) << 16) + (($g & 0xff) << 8) + ($b & 0xff);
 	}
 
