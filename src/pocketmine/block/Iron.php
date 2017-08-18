@@ -46,13 +46,11 @@ class Iron extends Solid{
 		return 5;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= Tool::TIER_STONE){
-			return [
-				[Item::IRON_BLOCK, 0, 1],
-			];
-		}else{
-			return [];
+			return parent::getDrops($item);
 		}
+
+		return [];
 	}
 }

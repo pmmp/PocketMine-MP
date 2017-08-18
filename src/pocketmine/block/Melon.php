@@ -46,9 +46,9 @@ class Melon extends Transparent{
 		return Tool::TYPE_AXE;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		return [
-			[Item::MELON_SLICE, 0, mt_rand(3, 7)],
+			Item::get(Item::MELON_SLICE, 0, mt_rand(3, 7))
 		];
 	}
 }

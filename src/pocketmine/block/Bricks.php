@@ -50,13 +50,11 @@ class Bricks extends Solid{
 		return "Bricks";
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= Tool::TIER_WOODEN){
-			return [
-				[Item::BRICK_BLOCK, 0, 1],
-			];
-		}else{
-			return [];
+			return parent::getDrops($item);
 		}
+
+		return [];
 	}
 }

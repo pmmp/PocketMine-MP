@@ -46,9 +46,9 @@ class Bookshelf extends Solid{
 		return Tool::TYPE_AXE;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		return [
-			[Item::BOOK, 0, 3]
+			Item::get(Item::BOOK, 0, 3)
 		];
 	}
 

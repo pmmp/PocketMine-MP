@@ -43,6 +43,8 @@ class Bed extends Transparent{
 
 	protected $id = self::BED_BLOCK;
 
+	protected $itemId = Item::BED;
+
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
@@ -212,21 +214,21 @@ class Bed extends Transparent{
 		return true;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($this->isHeadPart()){
 			$tile = $this->getLevel()->getTile($this);
 			if($tile instanceof TileBed){
 				return [
-					[Item::BED, $tile->getColor(), 1]
+					Item::get($this->getItemId(), $tile->getColor(), 1)
 				];
 			}else{
 				return [
-					[Item::BED, 14, 1] //Red
+					Item::get($this->getItemId(), 14, 1) //Red
 				];
 			}
-		}else{
-			return [];
 		}
+
+		return [];
 	}
 
 }

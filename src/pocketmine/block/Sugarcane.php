@@ -34,19 +34,14 @@ class Sugarcane extends Flowable{
 
 	protected $id = self::SUGARCANE_BLOCK;
 
+	protected $itemId = Item::SUGARCANE;
+
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
 	public function getName() : string{
 		return "Sugarcane";
-	}
-
-
-	public function getDrops(Item $item){
-		return [
-			[Item::SUGARCANE, 0, 1],
-		];
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{

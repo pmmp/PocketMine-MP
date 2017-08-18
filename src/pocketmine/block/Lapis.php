@@ -46,14 +46,12 @@ class Lapis extends Solid{
 		return 3;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= Tool::TIER_STONE){
-			return [
-				[Item::LAPIS_BLOCK, 0, 1],
-			];
-		}else{
-			return [];
+			return parent::getDrops($item);
 		}
+
+		return [];
 	}
 
 }

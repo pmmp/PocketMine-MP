@@ -30,6 +30,8 @@ class IronDoor extends Door{
 
 	protected $id = self::IRON_DOOR_BLOCK;
 
+	protected $itemId = Item::IRON_DOOR;
+
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
@@ -46,13 +48,11 @@ class IronDoor extends Door{
 		return 5;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= Tool::TIER_WOODEN){
-			return [
-				[Item::IRON_DOOR, 0, 1],
-			];
-		}else{
-			return [];
+			return parent::getDrops($item);
 		}
+
+		return [];
 	}
 }

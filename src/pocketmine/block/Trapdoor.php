@@ -140,9 +140,9 @@ class Trapdoor extends Transparent{
 		return true;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		return [
-			[$this->id, 0, 1],
+			Item::get($this->getItemId(), 0, 1)
 		];
 	}
 

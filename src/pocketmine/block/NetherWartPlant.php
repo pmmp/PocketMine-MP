@@ -33,6 +33,8 @@ use pocketmine\Player;
 class NetherWartPlant extends Flowable{
 	protected $id = Block::NETHER_WART_PLANT;
 
+	protected $itemId = Item::NETHER_WART;
+
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
@@ -74,7 +76,9 @@ class NetherWartPlant extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item $item){
-		return [[Item::NETHER_WART, 0, ($this->meta === 3 ? mt_rand(2, 4) : 1)]];
+	public function getDrops(Item $item) : array{
+		return [
+			Item::get($this->getItemId(), 0, ($this->getDamage() === 3 ? mt_rand(2, 4) : 1))
+		];
 	}
 }
