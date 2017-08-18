@@ -29,6 +29,10 @@ class NetherBrickStairs extends Stair{
 
 	protected $id = self::NETHER_BRICK_STAIRS;
 
+	public function __construct(int $meta = 0){
+		$this->meta = $meta;
+	}
+
 	public function getName() : string{
 		return "Nether Brick Stairs";
 	}
@@ -39,10 +43,6 @@ class NetherBrickStairs extends Stair{
 
 	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
-	}
-
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
 	}
 
 }
