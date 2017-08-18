@@ -238,4 +238,8 @@ class SubChunk implements SubChunkInterface{
 			substr($data, 8192, 2048)  //block light
 		);
 	}
+
+	public function __debugInfo(){
+		return [];
+	}
 }
