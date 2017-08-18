@@ -61,6 +61,7 @@ class AddPlayerPacket extends DataPacket{
 	public $uvarint2 = 0;
 	public $uvarint3 = 0;
 	public $uvarint4 = 0;
+	public $uvarint5 = 0;
 
 	public $long1 = 0;
 
@@ -83,6 +84,7 @@ class AddPlayerPacket extends DataPacket{
 		$this->uvarint2 = $this->getUnsignedVarInt();
 		$this->uvarint3 = $this->getUnsignedVarInt();
 		$this->uvarint4 = $this->getUnsignedVarInt();
+		$this->uvarint5 = $this->getUnsignedVarInt();
 
 		$this->long1 = $this->getLLong();
 
@@ -109,6 +111,7 @@ class AddPlayerPacket extends DataPacket{
 		$this->putUnsignedVarInt($this->uvarint2);
 		$this->putUnsignedVarInt($this->uvarint3);
 		$this->putUnsignedVarInt($this->uvarint4);
+		$this->putUnsignedVarInt($this->uvarint5);
 
 		$this->putLLong($this->long1);
 

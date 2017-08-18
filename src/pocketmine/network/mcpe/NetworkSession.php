@@ -101,6 +101,7 @@ use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsResponsePacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
 use pocketmine\network\mcpe\protocol\SetCommandsEnabledPacket;
+use pocketmine\network\mcpe\protocol\SetDefaultGameTypePacket;
 use pocketmine\network\mcpe\protocol\SetDifficultyPacket;
 use pocketmine\network\mcpe\protocol\SetEntityDataPacket;
 use pocketmine\network\mcpe\protocol\SetEntityLinkPacket;
@@ -546,6 +547,10 @@ abstract class NetworkSession{
 	}
 
 	public function handleShowProfile(ShowProfilePacket $packet) : bool{
+		return false;
+	}
+
+	public function handleSetDefaultGameType(SetDefaultGameTypePacket $packet) : bool{
 		return false;
 	}
 

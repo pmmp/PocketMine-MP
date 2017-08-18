@@ -135,6 +135,7 @@ class PacketPool{
 		static::registerPacket(new ServerSettingsRequestPacket());
 		static::registerPacket(new ServerSettingsResponsePacket());
 		static::registerPacket(new ShowProfilePacket());
+		static::registerPacket(new SetDefaultGameTypePacket());
 
 		static::registerPacket(new BatchPacket());
 	}
