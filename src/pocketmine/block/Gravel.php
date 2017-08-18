@@ -53,9 +53,7 @@ class Gravel extends Fallable{
 			];
 		}
 
-		return [
-			Item::get(Item::GRAVEL, 0, 1)
-		];
+		return parent::getDrops($item);
 	}
 
 }

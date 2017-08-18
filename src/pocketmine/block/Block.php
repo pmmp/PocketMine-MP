@@ -398,8 +398,9 @@ class Block extends Position implements BlockIds, Metadatable{
 		return $block;
 	}
 
-
+	/** @var int */
 	protected $id;
+	/** @var int */
 	protected $meta = 0;
 	/** @var string */
 	protected $fallbackName;
@@ -458,6 +459,19 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	final public function setDamage(int $meta){
 		$this->meta = $meta & 0x0f;
+	}
+
+	/**
+	 * Bitmask to use to remove superfluous information from block meta when getting its item form or name.
+	 * This defaults to -1 (don't remove any data). Used to remove rotation data and bitflags from block drops.
+	 *
+	 * If your block should not have any meta value when it's dropped as an item, override this to return 0 in
+	 * descendent classes.
+	 *
+	 * @return int
+	 */
+	public function getVariantBitmask() : int{
+		return -1;
 	}
 
 	/**
@@ -658,7 +672,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getDrops(Item $item) : array{
 		return [
-			Item::get($this->getItemId(), $this->getDamage(), 1),
+			Item::get($this->getItemId(), $this->getDamage() & $this->getVariantBitmask(), 1),
 		];
 	}
 

@@ -114,4 +114,8 @@ class SignPost extends Transparent{
 	public function getToolType() : int{
 		return Tool::TYPE_AXE;
 	}
+
+	public function getVariantBitmask() : int{
+		return 0;
+	}
 }

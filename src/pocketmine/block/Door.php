@@ -282,4 +282,8 @@ abstract class Door extends Transparent{
 
 		return true;
 	}
+
+	public function getVariantBitmask() : int{
+		return 0;
+	}
 }

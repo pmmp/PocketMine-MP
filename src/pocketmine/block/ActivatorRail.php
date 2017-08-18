@@ -30,4 +30,6 @@ class ActivatorRail extends Rail{
 	public function getName() : string{
 		return "Activator Rail";
 	}
+
+	//TODO
 }

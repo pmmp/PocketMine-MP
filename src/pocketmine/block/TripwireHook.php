@@ -34,4 +34,10 @@ class TripwireHook extends Flowable{
 	public function getName() : string{
 		return "Tripwire Hook";
 	}
+
+	public function getVariantBitmask() : int{
+		return 0;
+	}
+
+	//TODO
 }

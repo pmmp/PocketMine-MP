@@ -93,9 +93,7 @@ class Torch extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item $item) : array{
-		return [
-			Item::get($this->getItemId(), 0, 1)
-		];
+	public function getVariantBitmask() : int{
+		return 0;
 	}
 }
