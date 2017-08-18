@@ -26,7 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\ColorBlockMetaHelper;
 use pocketmine\item\Item;
 
-class StainedGlass extends Transparent{
+class StainedGlass extends StainedGlass{
 
 	protected $id = self::STAINED_GLASS;
 
@@ -36,14 +36,6 @@ class StainedGlass extends Transparent{
 
 	public function getName() : string{
 		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Stained Glass";
-	}
-
-	public function getHardness() : float{
-		return 0.3;
-	}
-
-	public function getDrops(Item $item){
-		return [];
 	}
 
 }
