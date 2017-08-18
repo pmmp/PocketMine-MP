@@ -26,7 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\ColorBlockMetaHelper;
 use pocketmine\item\Item;
 
-class StainedGlass extends StainedGlass{
+class StainedGlass extends Glass{
 
 	protected $id = self::STAINED_GLASS;
 
