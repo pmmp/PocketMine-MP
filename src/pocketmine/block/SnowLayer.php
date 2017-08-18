@@ -68,13 +68,13 @@ class SnowLayer extends Flowable{
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if(!$this->getSide(Vector3::SIDE_DOWN)->isSolid()){
-				$this->getLevel()->setBlock($this, Block::get(Block::AIR), false, false);
+				$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), false, false);
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
 			if($this->level->getBlockLightAt($this->x, $this->y, $this->z) >= 12){
-				$this->getLevel()->setBlock($this, Block::get(Block::AIR), false, false);
+				$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), false, false);
 
 				return Level::BLOCK_UPDATE_RANDOM;
 			}
