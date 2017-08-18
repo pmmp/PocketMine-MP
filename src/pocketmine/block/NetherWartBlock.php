@@ -23,24 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
-use pocketmine\item\Tool;
+class NetherWartBlock extends Solid{
 
-class NetherBrick extends Solid{
+	protected $id = Block::NETHER_WART_BLOCK;
 
-	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+	public function __construct(int $meta = 0){
+		$this->meta = $meta;
+	}
+
+	public function getName() : string{
+		return "Nether Wart Block";
 	}
 
 	public function getHardness() : float{
-		return 2;
-	}
-
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
-			return parent::getDrops($item);
-		}
-
-		return [];
+		return 1;
 	}
 }

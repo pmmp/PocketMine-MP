@@ -188,7 +188,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new StoneBrickStairs());
 			self::registerBlock(new Mycelium());
 			self::registerBlock(new WaterLily());
-			self::registerBlock(new NetherBrick());
+			self::registerBlock(new NetherBrick(Block::NETHER_BRICK_BLOCK, 0, "Nether Bricks"));
 			self::registerBlock(new NetherBrickFence());
 			self::registerBlock(new NetherBrickStairs());
 			self::registerBlock(new NetherWartPlant());
@@ -229,7 +229,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			//TODO: POWERED_COMPARATOR
 			self::registerBlock(new DaylightSensor());
 			self::registerBlock(new Redstone());
-			//TODO: NETHER_QUARTZ_ORE
+			self::registerBlock(new NetherQuartzOre());
 			//TODO: HOPPER_BLOCK
 			self::registerBlock(new Quartz());
 			self::registerBlock(new QuartzStairs());
@@ -283,9 +283,9 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new EndRod());
 			//TODO: END_GATEWAY
 
-			//TODO: MAGMA
-			//TODO: NETHER_WART_BLOCK
-			//TODO: RED_NETHER_BRICK
+			self::registerBlock(new Magma());
+			self::registerBlock(new NetherWartBlock());
+			self::registerBlock(new NetherBrick(Block::RED_NETHER_BRICK, 0, "Red Nether Bricks"));
 			//TODO: BONE_BLOCK
 
 			//TODO: SHULKER_BOX
