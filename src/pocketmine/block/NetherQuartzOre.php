@@ -24,29 +24,36 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
-class Wheat extends Crops{
+class NetherQuartzOre extends Solid{
 
-	protected $id = self::WHEAT_BLOCK;
+	protected $id = Block::NETHER_QUARTZ_ORE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
 	public function getName() : string{
-		return "Wheat Block";
+		return "Nether Quartz Ore";
+	}
+
+	public function getHardness() : float{
+		return 3;
+	}
+
+	public function getToolType() : int{
+		return Tool::TYPE_PICKAXE;
 	}
 
 	public function getDrops(Item $item) : array{
-		if($this->meta >= 0x07){
+		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
-				Item::get(Item::WHEAT, 0, 1),
-				Item::get(Item::WHEAT_SEEDS, 0, mt_rand(0, 3))
-			];
-		}else{
-			return [
-				Item::get(Item::WHEAT_SEEDS, 0, 1)
+				Item::get(Item::QUARTZ, 0, 1)
 			];
 		}
+
+		return [];
 	}
+
 }

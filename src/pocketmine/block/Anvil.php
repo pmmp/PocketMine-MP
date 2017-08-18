@@ -79,13 +79,13 @@ class Anvil extends Fallable{
 		return $this->getLevel()->setBlock($block, $this, true, true);
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
-				[$this->id, $this->meta & 0x0c, 1],
+				Item::get($this->getItemId(), $this->getDamage() & 0x0c, 1),
 			];
-		}else{
-			return [];
 		}
+
+		return [];
 	}
 }

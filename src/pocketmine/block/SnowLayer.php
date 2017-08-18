@@ -83,10 +83,10 @@ class SnowLayer extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($item->isShovel() !== false){
 			return [
-				[Item::SNOWBALL, 0, 1],
+				Item::get(Item::SNOWBALL, 0, 1) //TODO: check layer count
 			];
 		}
 

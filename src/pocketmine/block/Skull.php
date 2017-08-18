@@ -89,11 +89,11 @@ class Skull extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		$tile = $this->level->getTile($this);
 		if($tile instanceof SkullTile){
 			return [
-				[Item::SKULL, $tile->getType(), 1]
+				Item::get(Item::SKULL, $tile->getType(), 1)
 			];
 		}
 

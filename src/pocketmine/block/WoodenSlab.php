@@ -129,9 +129,9 @@ class WoodenSlab extends Transparent{
 		return Tool::TYPE_AXE;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		return [
-			[$this->id, $this->meta & 0x07, 1],
+			Item::get($this->getItemId(), $this->getDamage() & 0x07, 1)
 		];
 	}
 

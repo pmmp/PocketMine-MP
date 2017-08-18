@@ -46,13 +46,13 @@ class EmeraldOre extends Solid{
 		return 3;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= Tool::TIER_IRON){
 			return [
-				[Item::EMERALD, 0, 1],
+				Item::get(Item::EMERALD, 0, 1),
 			];
-		}else{
-			return [];
 		}
+
+		return [];
 	}
 }

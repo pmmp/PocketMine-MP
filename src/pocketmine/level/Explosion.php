@@ -173,7 +173,7 @@ class Explosion{
 				$block->ignite(mt_rand(10, 30));
 			}elseif(mt_rand(0, 100) < $yield){
 				foreach($block->getDrops($air) as $drop){
-					$this->level->dropItem($block->add(0.5, 0.5, 0.5), Item::get(...$drop));
+					$this->level->dropItem($block->add(0.5, 0.5, 0.5), $drop);
 				}
 			}
 

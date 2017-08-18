@@ -31,7 +31,7 @@ class UnknownBlock extends Transparent{
 		return 0;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		return [];
 	}
 }

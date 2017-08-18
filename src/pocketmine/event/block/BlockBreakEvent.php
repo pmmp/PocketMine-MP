@@ -39,6 +39,7 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 
 	/** @var bool */
 	protected $instaBreak = false;
+	/** @var Item[] */
 	protected $blockDrops = [];
 
 	public function __construct(Player $player, Block $block, Item $item, $instaBreak = false){
@@ -46,10 +47,7 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 		$this->item = $item;
 		$this->player = $player;
 		$this->instaBreak = (bool) $instaBreak;
-		$drops = $player->isSurvival() ? $block->getDrops($item) : [];
-		foreach($drops as $i){
-			$this->blockDrops[] = Item::get($i[0], $i[1], $i[2]);
-		}
+		$this->blockDrops = $player->isSurvival() ? $block->getDrops($item) : [];
 	}
 
 	public function getPlayer(){

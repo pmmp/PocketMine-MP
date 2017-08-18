@@ -37,6 +37,8 @@ class SignPost extends Transparent{
 
 	protected $id = self::SIGN_POST;
 
+	protected $itemId = Item::SIGN;
+
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
@@ -107,12 +109,6 @@ class SignPost extends Transparent{
 		}
 
 		return false;
-	}
-
-	public function getDrops(Item $item){
-		return [
-			[Item::SIGN, 0, 1],
-		];
 	}
 
 	public function getToolType() : int{

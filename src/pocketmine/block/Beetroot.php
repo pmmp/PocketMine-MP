@@ -37,15 +37,16 @@ class Beetroot extends Crops{
 		return "Beetroot Block";
 	}
 
-	public function getDrops(Item $item){
-		$drops = [];
+	public function getDrops(Item $item) : array{
 		if($this->meta >= 0x07){
-			$drops[] = [Item::BEETROOT, 0, 1];
-			$drops[] = [Item::BEETROOT_SEEDS, 0, mt_rand(0, 3)];
-		}else{
-			$drops[] = [Item::BEETROOT_SEEDS, 0, 1];
+			return [
+				Item::get(Item::BEETROOT, 0, 1),
+				Item::get(Item::BEETROOT_SEEDS, 0, mt_rand(0, 3))
+			];
 		}
 
-		return $drops;
+		return [
+			Item::get(Item::BEETROOT_SEEDS, 0, 1)
+		];
 	}
 }

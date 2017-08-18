@@ -62,14 +62,18 @@ class Stone extends Solid{
 		return $names[$this->meta & 0x07] ?? "Unknown";
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= Tool::TIER_WOODEN){
-			return [
-				[$this->getDamage() === 0 ? Item::COBBLESTONE : Item::STONE, $this->getDamage(), 1],
-			];
-		}else{
-			return [];
+			if($this->getDamage() === self::NORMAL){
+				return [
+					Item::get(Item::COBBLESTONE, $this->getDamage(), 1)
+				];
+			}
+
+			return parent::getDrops($item);
 		}
+
+		return [];
 	}
 
 }

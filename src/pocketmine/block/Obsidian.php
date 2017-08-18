@@ -43,16 +43,14 @@ class Obsidian extends Solid{
 	}
 
 	public function getHardness() : float{
-		return 35;
+		return 35; //50 in PC
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= Tool::TIER_DIAMOND){
-			return [
-				[Item::OBSIDIAN, 0, 1],
-			];
-		}else{
-			return [];
+			return parent::getDrops($item);
 		}
+
+		return [];
 	}
 }

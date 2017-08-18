@@ -56,14 +56,14 @@ class DoubleStoneSlab extends Solid{
 		return "Double " . $names[$this->meta & 0x07] . " Slab";
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
-				[Item::STONE_SLAB, $this->meta & 0x07, 2],
+				Item::get(Item::STONE_SLAB, $this->getDamage() & 0x07, 2),
 			];
-		}else{
-			return [];
 		}
+
+		return [];
 	}
 
 }

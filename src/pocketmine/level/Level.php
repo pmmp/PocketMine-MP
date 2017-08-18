@@ -1647,9 +1647,6 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}else{
 			$drops = $target->getDrops($item); //Fixes tile entities being deleted before getting drops
-			foreach($drops as $k => $i){
-				$drops[$k] = Item::get($i[0], $i[1], $i[2]);
-			}
 		}
 
 		$above = $this->getBlock(new Vector3($target->x, $target->y + 1, $target->z));

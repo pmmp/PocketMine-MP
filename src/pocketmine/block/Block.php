@@ -188,7 +188,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new StoneBrickStairs());
 			self::registerBlock(new Mycelium());
 			self::registerBlock(new WaterLily());
-			self::registerBlock(new NetherBrick());
+			self::registerBlock(new NetherBrick(Block::NETHER_BRICK_BLOCK, 0, "Nether Bricks"));
 			self::registerBlock(new NetherBrickFence());
 			self::registerBlock(new NetherBrickStairs());
 			self::registerBlock(new NetherWartPlant());
@@ -229,14 +229,14 @@ class Block extends Position implements BlockIds, Metadatable{
 			//TODO: POWERED_COMPARATOR
 			self::registerBlock(new DaylightSensor());
 			self::registerBlock(new Redstone());
-			//TODO: NETHER_QUARTZ_ORE
+			self::registerBlock(new NetherQuartzOre());
 			//TODO: HOPPER_BLOCK
 			self::registerBlock(new Quartz());
 			self::registerBlock(new QuartzStairs());
 			self::registerBlock(new DoubleWoodenSlab());
 			self::registerBlock(new WoodenSlab());
 			self::registerBlock(new StainedClay());
-			//TODO: STAINED_GLASS_PANE
+			self::registerBlock(new StainedGlassPane());
 			self::registerBlock(new Leaves2());
 			self::registerBlock(new Wood2());
 			self::registerBlock(new WoodenStairs(Block::ACACIA_STAIRS, 0, "Acacia Stairs"));
@@ -280,12 +280,12 @@ class Block extends Position implements BlockIds, Metadatable{
 
 			//TODO: END_BRICKS
 			//TODO: FROSTED_ICE
-			//TODO: END_ROD
+			self::registerBlock(new EndRod());
 			//TODO: END_GATEWAY
 
-			//TODO: MAGMA
-			//TODO: NETHER_WART_BLOCK
-			//TODO: RED_NETHER_BRICK
+			self::registerBlock(new Magma());
+			self::registerBlock(new NetherWartBlock());
+			self::registerBlock(new NetherBrick(Block::RED_NETHER_BRICK, 0, "Red Nether Bricks"));
 			//TODO: BONE_BLOCK
 
 			//TODO: SHULKER_BOX
@@ -310,7 +310,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			//TODO: CONCRETEPOWDER
 
 			//TODO: CHORUS_PLANT
-			//TODO: STAINED_GLASS
+			self::registerBlock(new StainedGlass());
 
 			self::registerBlock(new Podzol());
 			self::registerBlock(new Beetroot());
@@ -654,11 +654,11 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @param Item $item
 	 *
-	 * @return array
+	 * @return Item[]
 	 */
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		return [
-			[$this->getItemId(), $this->getDamage(), 1],
+			Item::get($this->getItemId(), $this->getDamage(), 1),
 		];
 	}
 

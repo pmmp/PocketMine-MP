@@ -50,9 +50,9 @@ class Glowstone extends Transparent{
 		return 15;
 	}
 
-	public function getDrops(Item $item){
+	public function getDrops(Item $item) : array{
 		return [
-			[Item::GLOWSTONE_DUST, 0, mt_rand(2, 4)],
+			Item::get(Item::GLOWSTONE_DUST, 0, mt_rand(2, 4))
 		];
 	}
 }

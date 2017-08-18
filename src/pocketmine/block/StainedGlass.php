@@ -23,30 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\ColorBlockMetaHelper;
 use pocketmine\item\Item;
 
-class Wheat extends Crops{
+class StainedGlass extends Glass{
 
-	protected $id = self::WHEAT_BLOCK;
+	protected $id = self::STAINED_GLASS;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
 	public function getName() : string{
-		return "Wheat Block";
+		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Stained Glass";
 	}
 
-	public function getDrops(Item $item) : array{
-		if($this->meta >= 0x07){
-			return [
-				Item::get(Item::WHEAT, 0, 1),
-				Item::get(Item::WHEAT_SEEDS, 0, mt_rand(0, 3))
-			];
-		}else{
-			return [
-				Item::get(Item::WHEAT_SEEDS, 0, 1)
-			];
-		}
-	}
 }
