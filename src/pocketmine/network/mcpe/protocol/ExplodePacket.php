@@ -62,7 +62,7 @@ class ExplodePacket extends DataPacket{
 		$this->putUnsignedVarInt(count($this->records));
 		if(count($this->records) > 0){
 			foreach($this->records as $record){
-				$this->putSignedBlockPosition($record->x, $record->y, $record->z);
+				$this->putSignedBlockPosition((int) $record->x, (int) $record->y, (int) $record->z);
 			}
 		}
 	}
