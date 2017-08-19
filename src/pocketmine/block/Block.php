@@ -76,7 +76,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$transparent = new \SplFixedArray(256);
 			self::$diffusesSkyLight = new \SplFixedArray(256);
 
-			self::registerBlock(Block::get(Block::AIR));
+			self::registerBlock(new Air());
 			self::registerBlock(new Stone());
 			self::registerBlock(new Grass());
 			self::registerBlock(new Dirt());
