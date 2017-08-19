@@ -55,7 +55,7 @@ class SignPost extends Transparent{
 		return "Sign Post";
 	}
 
-	public function getBoundingBox(){
+	protected function recalculateBoundingBox(){
 		return null;
 	}
 

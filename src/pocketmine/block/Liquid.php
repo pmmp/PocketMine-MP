@@ -442,7 +442,7 @@ abstract class Liquid extends Transparent{
 		}
 	}
 
-	public function getBoundingBox(){
+	protected function recalculateBoundingBox(){
 		return null;
 	}
 
