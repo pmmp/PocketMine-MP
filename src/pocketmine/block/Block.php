@@ -69,6 +69,10 @@ class Block extends Position implements BlockIds, Metadatable{
 	/** @var AxisAlignedBB */
 	public $boundingBox = null;
 
+
+	/** @var AxisAlignedBB[] */
+	protected $boundingBoxes = [];
+
 	/**
 	 * @param int         $id     The block type's ID, 0-255
 	 * @param int         $meta   Meta value of the block type
@@ -489,9 +493,15 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return bool
 	 */
 	public function collidesWithBB(AxisAlignedBB $bb) : bool{
-		$bb2 = $this->getBoundingBox();
+		$bbs = $this->getBoundingBoxes();
 
-		return $bb2 !== null and $bb->intersectsWith($bb2);
+		foreach($bbs as $bb2){
+			if($bb->intersectsWith($bb2)){
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -502,6 +512,29 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * @return AxisAlignedBB[]
+	 */
+	public function getBoundingBoxes() : array{
+		if(count($this->boundingBoxes) === 0){
+			$this->boundingBoxes = $this->recalculateBoundingBoxes();
+		}
+
+		return $this->boundingBoxes;
+	}
+
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	protected function recalculateBoundingBoxes() : array{
+		if($bb = $this->recalculateBoundingBox()){
+			return [$bb];
+		}
+
+		return [];
+	}
+
+	/**
+	 * @deprecated
 	 * @return AxisAlignedBB|null
 	 */
 	public function getBoundingBox() : ?AxisAlignedBB{
@@ -512,6 +545,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * @deprecated
 	 * @return AxisAlignedBB|null
 	 */
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
@@ -532,19 +566,36 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return MovingObjectPosition|null
 	 */
 	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2) : ?MovingObjectPosition{
-		$bb = $this->getBoundingBox();
-		if($bb === null){
+		$bbs = $this->getBoundingBoxes();
+		if(empty($bbs)){
 			return null;
 		}
 
-		$result = $bb->calculateIntercept($pos1, $pos2);
-		if($result !== null){
-			$result->blockX = $this->x;
-			$result->blockY = $this->y;
-			$result->blockZ = $this->z;
+		/** @var MovingObjectPosition|null $currentHit */
+		$currentHit = null;
+		/** @var int|float $currentDistance */
+		$currentDistance = PHP_INT_MAX;
+
+		foreach($bbs as $bb){
+			$nextHit = $bb->calculateIntercept($pos1, $pos2);
+			if($nextHit === null){
+				continue;
+			}
+
+			$nextDistance = $nextHit->hitVector->distanceSquared($pos1);
+			if($nextDistance < $currentDistance){
+				$currentHit = $nextHit;
+				$currentDistance = $nextDistance;
+			}
 		}
 
-		return $result;
+		if($currentHit !== null){
+			$currentHit->blockX = $this->x;
+			$currentHit->blockY = $this->y;
+			$currentHit->blockZ = $this->z;
+		}
+
+		return $currentHit;
 	}
 
 	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue){

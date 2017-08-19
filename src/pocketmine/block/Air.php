@@ -71,6 +71,10 @@ class Air extends Transparent{
 		return null;
 	}
 
+	public function getBoundingBoxes() : array{
+		return [];
+	}
+
 	public function getHardness() : float{
 		return -1;
 	}
