@@ -24,15 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\ColorBlockMetaHelper;
-use pocketmine\item\Item;
 
 class StainedGlassPane extends GlassPane{
 
 	protected $id = self::STAINED_GLASS_PANE;
-
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
-	}
 
 	public function getName() : string{
 		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Stained Glass Pane";
