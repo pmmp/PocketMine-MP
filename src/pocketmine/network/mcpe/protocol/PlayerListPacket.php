@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 
 class PlayerListPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::PLAYER_LIST_PACKET;
@@ -34,8 +35,7 @@ class PlayerListPacket extends DataPacket{
 	const TYPE_ADD = 0;
 	const TYPE_REMOVE = 1;
 
-	//REMOVE: UUID, ADD: UUID, entity id, name, skinId, skin, geometric model, geometry data
-	/** @var array[] */
+	/** @var PlayerListEntry[] */
 	public $entries = [];
 	/** @var int */
 	public $type;
@@ -49,39 +49,42 @@ class PlayerListPacket extends DataPacket{
 		$this->type = $this->getByte();
 		$count = $this->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
-			$this->entries[$i] = [];
+			$entry = new PlayerListEntry();
+
 			if($this->type === self::TYPE_ADD){
-				$this->entries[$i][0] = $this->getUUID();
-				$this->entries[$i][1] = $this->getEntityUniqueId();
-				$this->entries[$i][2] = $this->getString(); //name
-				$this->entries[$i][3] = $this->getString(); //skin id
-				$this->entries[$i][4] = $this->getString(); //skin data
-				$this->entries[$i][5] = $this->getString(); //cape data
-				$this->entries[$i][6] = $this->getString(); //geometric model
-				$this->entries[$i][7] = $this->getString(); //geometry data (json)
-				$this->entries[$i][8] = $this->getString(); //???
+				$entry->uuid = $this->getUUID();
+				$entry->entityUniqueId = $this->getEntityUniqueId();
+				$entry->username = $this->getString();
+				$entry->skinId = $this->getString();
+				$entry->skinData = $this->getString();
+				$entry->capeData = $this->getString();
+				$entry->geometryModel = $this->getString();
+				$entry->geometryData = $this->getString();
+				$entry->xboxUserId = $this->getString();
 			}else{
-				$this->entries[$i][0] = $this->getUUID();
+				$entry->uuid = $this->getUUID();
 			}
+
+			$this->entries[$i] = $entry;
 		}
 	}
 
 	protected function encodePayload(){
 		$this->putByte($this->type);
 		$this->putUnsignedVarInt(count($this->entries));
-		foreach($this->entries as $d){
+		foreach($this->entries as $entry){
 			if($this->type === self::TYPE_ADD){
-				$this->putUUID($d[0]);
-				$this->putEntityUniqueId($d[1]);
-				$this->putString($d[2]); //name
-				$this->putString($d[3]); //skin id
-				$this->putString($d[4]); //skin data
-				$this->putString($d[5] ?? ""); //cape data
-				$this->putString($d[6] ?? ""); //geometric model
-				$this->putString($d[7] ?? ""); //geometry data (json)
-				$this->putString($d[8] ?? ""); //???
+				$this->putUUID($entry->uuid);
+				$this->putEntityUniqueId($entry->entityUniqueId);
+				$this->putString($entry->username);
+				$this->putString($entry->skinId);
+				$this->putString($entry->skinData);
+				$this->putString($entry->capeData);
+				$this->putString($entry->geometryModel);
+				$this->putString($entry->geometryData);
+				$this->putString($entry->xboxUserId);
 			}else{
-				$this->putUUID($d[0]);
+				$this->putUUID($entry->uuid);
 			}
 		}
 	}
