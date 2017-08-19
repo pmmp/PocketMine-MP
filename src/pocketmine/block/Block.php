@@ -377,12 +377,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public static function get(int $id, int $meta = 0, Position $pos = null) : Block{
 		try{
-			$block = self::$fullList[($id << 4) | $meta];
-			if($block !== null){
-				$block = clone $block;
-			}else{
-				$block = new UnknownBlock($id, $meta);
-			}
+			$block = clone self::$fullList[($id << 4) | $meta];
 		}catch(\RuntimeException $e){
 			//TODO: this probably should return null (out of bounds IDs may cause unexpected behaviour)
 			$block = new UnknownBlock($id, $meta);
