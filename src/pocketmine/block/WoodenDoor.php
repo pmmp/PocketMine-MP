@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
 use pocketmine\item\Tool;
 
 class WoodenDoor extends Door{
@@ -34,11 +33,5 @@ class WoodenDoor extends Door{
 
 	public function getToolType() : int{
 		return Tool::TYPE_AXE;
-	}
-
-	public function getDrops(Item $item) : array{
-		return [
-			Item::get($this->getItemId(), 0, 1)
-		];
 	}
 }

@@ -377,12 +377,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public static function get(int $id, int $meta = 0, Position $pos = null) : Block{
 		try{
-			$block = self::$fullList[($id << 4) | $meta];
-			if($block !== null){
-				$block = clone $block;
-			}else{
-				$block = new UnknownBlock($id, $meta);
-			}
+			$block = clone self::$fullList[($id << 4) | $meta];
 		}catch(\RuntimeException $e){
 			//TODO: this probably should return null (out of bounds IDs may cause unexpected behaviour)
 			$block = new UnknownBlock($id, $meta);
@@ -398,8 +393,9 @@ class Block extends Position implements BlockIds, Metadatable{
 		return $block;
 	}
 
-
+	/** @var int */
 	protected $id;
+	/** @var int */
 	protected $meta = 0;
 	/** @var string */
 	protected $fallbackName;
@@ -461,6 +457,19 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Bitmask to use to remove superfluous information from block meta when getting its item form or name.
+	 * This defaults to -1 (don't remove any data). Used to remove rotation data and bitflags from block drops.
+	 *
+	 * If your block should not have any meta value when it's dropped as an item, override this to return 0 in
+	 * descendent classes.
+	 *
+	 * @return int
+	 */
+	public function getVariantBitmask() : int{
+		return -1;
+	}
+
+	/**
 	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
 	 *
 	 * @param Item        $item
@@ -497,7 +506,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return bool
 	 */
 	public function onBreak(Item $item) : bool{
-		return $this->getLevel()->setBlock($this, new Air(), true, true);
+		return $this->getLevel()->setBlock($this, Block::get(Block::AIR), true, true);
 	}
 
 	/**
@@ -658,7 +667,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getDrops(Item $item) : array{
 		return [
-			Item::get($this->getItemId(), $this->getDamage(), 1),
+			Item::get($this->getItemId(), $this->getDamage() & $this->getVariantBitmask(), 1),
 		];
 	}
 

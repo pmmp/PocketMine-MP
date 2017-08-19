@@ -42,4 +42,6 @@ class DaylightSensor extends Transparent{
 	public function getFuelTime() : int{
 		return 300;
 	}
+
+	//TODO
 }

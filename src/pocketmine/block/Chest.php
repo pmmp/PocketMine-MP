@@ -129,7 +129,7 @@ class Chest extends Transparent{
 		if($t instanceof TileChest){
 			$t->unpair();
 		}
-		$this->getLevel()->setBlock($this, new Air(), true, true);
+		$this->getLevel()->setBlock($this, Block::get(Block::AIR), true, true);
 
 		return true;
 	}
@@ -169,10 +169,8 @@ class Chest extends Transparent{
 		return true;
 	}
 
-	public function getDrops(Item $item) : array{
-		return [
-			Item::get($this->getItemId(), 0, 1)
-		];
+	public function getVariantBitmask() : int{
+		return 0;
 	}
 
 	public function getFuelTime() : int{

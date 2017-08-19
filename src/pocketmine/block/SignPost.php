@@ -55,7 +55,7 @@ class SignPost extends Transparent{
 		return "Sign Post";
 	}
 
-	public function getBoundingBox(){
+	protected function recalculateBoundingBox(){
 		return null;
 	}
 
@@ -113,5 +113,9 @@ class SignPost extends Transparent{
 
 	public function getToolType() : int{
 		return Tool::TYPE_AXE;
+	}
+
+	public function getVariantBitmask() : int{
+		return 0;
 	}
 }

@@ -65,7 +65,7 @@ class Mycelium extends Solid{
 			$block = $this->getLevel()->getBlock(new Vector3($x, $y, $z));
 			if($block->getId() === Block::DIRT){
 				if($block->getSide(Vector3::SIDE_UP) instanceof Transparent){
-					Server::getInstance()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($block, $this, new Mycelium()));
+					Server::getInstance()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($block, $this, Block::get(Block::MYCELIUM)));
 					if(!$ev->isCancelled()){
 						$this->getLevel()->setBlock($block, $ev->getNewState());
 					}

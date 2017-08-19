@@ -69,10 +69,8 @@ class Wood extends Solid{
 		return true;
 	}
 
-	public function getDrops(Item $item) : array{
-		return [
-			Item::get($this->getItemId(), $this->getDamage() & 0x03, 1)
-		];
+	public function getVariantBitmask() : int{
+		return 0x03;
 	}
 
 	public function getToolType() : int{

@@ -56,4 +56,7 @@ class Pumpkin extends Solid{
 		return true;
 	}
 
+	public function getVariantBitmask() : int{
+		return 0;
+	}
 }

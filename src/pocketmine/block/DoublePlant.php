@@ -104,6 +104,10 @@ class DoublePlant extends Flowable{
 		return false;
 	}
 
+	public function getVariantBitmask() : int{
+		return 0x07;
+	}
+
 	public function getDrops(Item $item) : array{
 		if(!$item->isShears() and ($this->meta === 2 or $this->meta === 3)){ //grass or fern
 			if(mt_rand(0, 24) === 0){
@@ -115,8 +119,6 @@ class DoublePlant extends Flowable{
 			return [];
 		}
 
-		return [
-			Item::get($this->getItemId(), $this->getDamage() & 0x07, 1)
-		];
+		return parent::getDrops($item);
 	}
 }

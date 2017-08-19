@@ -42,4 +42,8 @@ class StonePressurePlate extends Transparent{
 	public function getHardness() : float{
 		return 0.5;
 	}
+
+	public function getVariantBitmask() : int{
+		return 0;
+	}
 }

@@ -19,8 +19,9 @@
  *
 */
 
-namespace pocketmine\block;
+declare(strict_types=1);
 
+namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -97,10 +98,7 @@ class EndRod extends Flowable{
 		return null;
 	}
 
-	public function getDrops(Item $item) : array{
-		return [
-			Item::get($this->getId(), 0, 1)
-		];
+	public function getVariantBitmask() : int{
+		return 0;
 	}
-
 }

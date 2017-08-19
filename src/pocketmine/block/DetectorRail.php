@@ -30,4 +30,6 @@ class DetectorRail extends Rail{
 	public function getName() : string{
 		return "Detector Rail";
 	}
+
+	//TODO
 }

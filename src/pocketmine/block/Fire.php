@@ -87,14 +87,14 @@ class Fire extends Flowable{
 					return false;
 				}
 			}
-			$this->getLevel()->setBlock($this, new Air(), true);
+			$this->getLevel()->setBlock($this, Block::get(Block::AIR), true);
 
 			return Level::BLOCK_UPDATE_NORMAL;
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
 			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::NETHERRACK){
 				if(mt_rand(0, 2) === 0){
 					if($this->meta === 0x0F){
-						$this->level->setBlock($this, new Air());
+						$this->level->setBlock($this, Block::get(Block::AIR));
 					}else{
 						$this->meta++;
 						$this->level->setBlock($this, $this);
