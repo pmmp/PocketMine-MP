@@ -76,7 +76,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$transparent = new \SplFixedArray(256);
 			self::$diffusesSkyLight = new \SplFixedArray(256);
 
-			self::registerBlock(new Air());
+			self::registerBlock(Block::get(Block::AIR));
 			self::registerBlock(new Stone());
 			self::registerBlock(new Grass());
 			self::registerBlock(new Dirt());
@@ -511,7 +511,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return bool
 	 */
 	public function onBreak(Item $item) : bool{
-		return $this->getLevel()->setBlock($this, new Air(), true, true);
+		return $this->getLevel()->setBlock($this, Block::get(Block::AIR), true, true);
 	}
 
 	/**

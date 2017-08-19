@@ -24,14 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\level\generator\normal;
 
 use pocketmine\block\Block;
-use pocketmine\block\CoalOre;
-use pocketmine\block\DiamondOre;
-use pocketmine\block\Dirt;
-use pocketmine\block\GoldOre;
-use pocketmine\block\Gravel;
-use pocketmine\block\IronOre;
-use pocketmine\block\LapisOre;
-use pocketmine\block\RedstoneOre;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\biome\Biome;
 use pocketmine\level\generator\biome\BiomeSelector;
@@ -179,14 +171,14 @@ class Normal extends Generator{
 
 		$ores = new Ore();
 		$ores->setOreTypes([
-			new OreType(new CoalOre(), 20, 16, 0, 128),
-			new OreType(New IronOre(), 20, 8, 0, 64),
-			new OreType(new RedstoneOre(), 8, 7, 0, 16),
-			new OreType(new LapisOre(), 1, 6, 0, 32),
-			new OreType(new GoldOre(), 2, 8, 0, 32),
-			new OreType(new DiamondOre(), 1, 7, 0, 16),
-			new OreType(new Dirt(), 20, 32, 0, 128),
-			new OreType(new Gravel(), 10, 16, 0, 128)
+			new OreType(Block::get(Block::COAL_ORE), 20, 16, 0, 128),
+			new OreType(Block::get(Block::IRON_ORE), 20, 8, 0, 64),
+			new OreType(Block::get(Block::REDSTONE_ORE), 8, 7, 0, 16),
+			new OreType(Block::get(Block::LAPIS_ORE), 1, 6, 0, 32),
+			new OreType(Block::get(Block::GOLD_ORE), 2, 8, 0, 32),
+			new OreType(Block::get(Block::DIAMOND_ORE), 1, 7, 0, 16),
+			new OreType(Block::get(Block::DIRT), 20, 32, 0, 128),
+			new OreType(Block::get(Block::GRAVEL), 10, 16, 0, 128)
 		]);
 		$this->populators[] = $ores;
 	}

@@ -56,7 +56,7 @@ class Bucket extends Item{
 				$result->setDamage($target->getId());
 				$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketFillEvent($player, $block, $face, $this, $result));
 				if(!$ev->isCancelled()){
-					$player->getLevel()->setBlock($target, new Air(), true, true);
+					$player->getLevel()->setBlock($target, Block::get(Block::AIR), true, true);
 					if($player->isSurvival()){
 						$player->getInventory()->setItemInHand($ev->getItem());
 					}

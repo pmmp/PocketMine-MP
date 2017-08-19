@@ -241,7 +241,7 @@ abstract class Liquid extends Transparent{
 				if($k !== $decay){
 					$decay = $k;
 					if($decay < 0){
-						$this->getLevel()->setBlock($this, new Air(), true, true);
+						$this->getLevel()->setBlock($this, Block::get(Block::AIR), true, true);
 					}else{
 						$this->getLevel()->setBlock($this, Block::get($this->id, $decay), true, true);
 						$this->getLevel()->scheduleDelayedBlockUpdate($this, $this->tickRate());

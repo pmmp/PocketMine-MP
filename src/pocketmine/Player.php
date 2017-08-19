@@ -2492,7 +2492,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				}
 				$block = $target->getSide($packet->face);
 				if($block->getId() === Block::FIRE){
-					$this->level->setBlock($block, new Air());
+					$this->level->setBlock($block, Block::get(Block::AIR));
 					break;
 				}
 

@@ -204,9 +204,9 @@ abstract class Door extends Transparent{
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(Vector3::SIDE_DOWN)->getId() === self::AIR){ //Replace with common break method
-				$this->getLevel()->setBlock($this, new Air(), false);
+				$this->getLevel()->setBlock($this, Block::get(Block::AIR), false);
 				if($this->getSide(Vector3::SIDE_UP) instanceof Door){
-					$this->getLevel()->setBlock($this->getSide(Vector3::SIDE_UP), new Air(), false);
+					$this->getLevel()->setBlock($this->getSide(Vector3::SIDE_UP), Block::get(Block::AIR), false);
 				}
 
 				return Level::BLOCK_UPDATE_NORMAL;
@@ -250,15 +250,15 @@ abstract class Door extends Transparent{
 		if(($this->getDamage() & 0x08) === 0x08){
 			$down = $this->getSide(Vector3::SIDE_DOWN);
 			if($down->getId() === $this->getId()){
-				$this->getLevel()->setBlock($down, new Air(), true);
+				$this->getLevel()->setBlock($down, Block::get(Block::AIR), true);
 			}
 		}else{
 			$up = $this->getSide(Vector3::SIDE_UP);
 			if($up->getId() === $this->getId()){
-				$this->getLevel()->setBlock($up, new Air(), true);
+				$this->getLevel()->setBlock($up, Block::get(Block::AIR), true);
 			}
 		}
-		$this->getLevel()->setBlock($this, new Air(), true);
+		$this->getLevel()->setBlock($this, Block::get(Block::AIR), true);
 
 		return true;
 	}

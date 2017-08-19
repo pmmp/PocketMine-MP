@@ -90,7 +90,7 @@ class Cactus extends Transparent{
 					for($y = 1; $y < 3; ++$y){
 						$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
 						if($b->getId() === self::AIR){
-							Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, new Cactus()));
+							Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, Block::get(Block::CACTUS)));
 							if(!$ev->isCancelled()){
 								$this->getLevel()->setBlock($b, $ev->getNewState(), true);
 							}
