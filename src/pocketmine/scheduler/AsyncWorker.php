@@ -31,17 +31,27 @@ class AsyncWorker extends Worker{
 	private $logger;
 	private $id;
 
-	public function __construct(MainLogger $logger, int $id){
+	/** @var int */
+	private $memoryLimit;
+
+	public function __construct(MainLogger $logger, int $id, int $memoryLimit){
 		$this->logger = $logger;
 		$this->id = $id;
+		$this->memoryLimit = $memoryLimit;
 	}
 
 	public function run(){
 		$this->registerClassLoader();
 		$this->logger->registerStatic();
-
 		gc_enable();
-		ini_set("memory_limit", '-1');
+
+		if($this->memoryLimit > 0){
+			ini_set('memory_limit', $this->memoryLimit . 'M');
+			$this->logger->debug("Set memory limit to " . $this->memoryLimit . " MB");
+		}else{
+			ini_set('memory_limit', '-1');
+			$this->logger->debug("No memory limit set");
+		}
 
 		global $store;
 		$store = [];

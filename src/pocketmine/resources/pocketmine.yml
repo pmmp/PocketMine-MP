@@ -37,6 +37,11 @@ memory:
  #This will stop the server when the limit is surpassed
  main-hard-limit: 1024
 
+ #AsyncWorker threads' hard memory limit in megabytes. Set to 0 to disable
+ #This will stop the server if any worker exceeds this limit.
+ #NOTE: THIS LIMIT APPLIES PER WORKER, NOT TO THE WHOLE PROCESS.
+ async-worker-hard-limit: 1024
+
  #Period in ticks to check memory (default 1 second)
  check-rate: 20
 
