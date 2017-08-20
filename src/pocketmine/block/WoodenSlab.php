@@ -86,11 +86,11 @@ class WoodenSlab extends Transparent{
 		$this->meta &= 0x07;
 		if($face === Vector3::SIDE_DOWN){
 			if($target->getId() === $this->id and ($target->getDamage() & 0x08) === 0x08 and ($target->getDamage() & 0x07) === $this->meta){
-				$this->getLevel()->setBlock($target, Block::get($this->doubleId, $this->meta), true);
+				$this->getLevel()->setBlock($target, BlockFactory::get($this->doubleId, $this->meta), true);
 
 				return true;
 			}elseif($block->getId() === $this->id and ($block->getDamage() & 0x07) === $this->meta){
-				$this->getLevel()->setBlock($block, Block::get($this->doubleId, $this->meta), true);
+				$this->getLevel()->setBlock($block, BlockFactory::get($this->doubleId, $this->meta), true);
 
 				return true;
 			}else{
@@ -98,18 +98,18 @@ class WoodenSlab extends Transparent{
 			}
 		}elseif($face === Vector3::SIDE_UP){
 			if($target->getId() === $this->id and ($target->getDamage() & 0x08) === 0 and ($target->getDamage() & 0x07) === $this->meta){
-				$this->getLevel()->setBlock($target, Block::get($this->doubleId, $this->meta), true);
+				$this->getLevel()->setBlock($target, BlockFactory::get($this->doubleId, $this->meta), true);
 
 				return true;
 			}elseif($block->getId() === $this->id and ($block->getDamage() & 0x07) === $this->meta){
-				$this->getLevel()->setBlock($block, Block::get($this->doubleId, $this->meta), true);
+				$this->getLevel()->setBlock($block, BlockFactory::get($this->doubleId, $this->meta), true);
 
 				return true;
 			}
 		}else{ //TODO: collision
 			if($block->getId() === $this->id){
 				if(($block->getDamage() & 0x07) === $this->meta){
-					$this->getLevel()->setBlock($block, Block::get($this->doubleId, $this->meta), true);
+					$this->getLevel()->setBlock($block, BlockFactory::get($this->doubleId, $this->meta), true);
 
 					return true;
 				}

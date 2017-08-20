@@ -204,9 +204,9 @@ abstract class Door extends Transparent{
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(Vector3::SIDE_DOWN)->getId() === self::AIR){ //Replace with common break method
-				$this->getLevel()->setBlock($this, Block::get(Block::AIR), false);
+				$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), false);
 				if($this->getSide(Vector3::SIDE_UP) instanceof Door){
-					$this->getLevel()->setBlock($this->getSide(Vector3::SIDE_UP), Block::get(Block::AIR), false);
+					$this->getLevel()->setBlock($this->getSide(Vector3::SIDE_UP), BlockFactory::get(Block::AIR), false);
 				}
 
 				return Level::BLOCK_UPDATE_NORMAL;
@@ -239,7 +239,7 @@ abstract class Door extends Transparent{
 
 			$this->setDamage($player->getDirection() & 0x03);
 			$this->getLevel()->setBlock($block, $this, true, true); //Bottom
-			$this->getLevel()->setBlock($blockUp, $b = Block::get($this->getId(), $metaUp), true); //Top
+			$this->getLevel()->setBlock($blockUp, $b = BlockFactory::get($this->getId(), $metaUp), true); //Top
 			return true;
 		}
 
@@ -250,15 +250,15 @@ abstract class Door extends Transparent{
 		if(($this->getDamage() & 0x08) === 0x08){
 			$down = $this->getSide(Vector3::SIDE_DOWN);
 			if($down->getId() === $this->getId()){
-				$this->getLevel()->setBlock($down, Block::get(Block::AIR), true);
+				$this->getLevel()->setBlock($down, BlockFactory::get(Block::AIR), true);
 			}
 		}else{
 			$up = $this->getSide(Vector3::SIDE_UP);
 			if($up->getId() === $this->getId()){
-				$this->getLevel()->setBlock($up, Block::get(Block::AIR), true);
+				$this->getLevel()->setBlock($up, BlockFactory::get(Block::AIR), true);
 			}
 		}
-		$this->getLevel()->setBlock($this, Block::get(Block::AIR), true);
+		$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true);
 
 		return true;
 	}
@@ -268,7 +268,7 @@ abstract class Door extends Transparent{
 			$down = $this->getSide(Vector3::SIDE_DOWN);
 			if($down->getId() === $this->getId()){
 				$meta = $down->getDamage() ^ 0x04;
-				$this->level->setBlock($down, Block::get($this->getId(), $meta), true);
+				$this->level->setBlock($down, BlockFactory::get($this->getId(), $meta), true);
 				$this->level->addSound(new DoorSound($this));
 				return true;
 			}

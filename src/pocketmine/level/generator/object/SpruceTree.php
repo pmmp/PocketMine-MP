@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\level\generator\object;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\block\Wood;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
@@ -60,7 +61,7 @@ class SpruceTree extends Tree{
 						continue;
 					}
 
-					if(!Block::$solid[$level->getBlockIdAt($xx, $yyy, $zz)]){
+					if(!BlockFactory::$solid[$level->getBlockIdAt($xx, $yyy, $zz)]){
 						$level->setBlockIdAt($xx, $yyy, $zz, $this->leafBlock);
 						$level->setBlockDataAt($xx, $yyy, $zz, $this->type);
 					}

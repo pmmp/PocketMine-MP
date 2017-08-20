@@ -57,7 +57,7 @@ class DoublePlant extends Flowable{
 		$id = $block->getSide(Vector3::SIDE_DOWN)->getId();
 		if(($id === Block::GRASS or $id === Block::DIRT) and $block->getSide(Vector3::SIDE_UP)->canBeReplaced()){
 			$this->getLevel()->setBlock($block, $this, false, false);
-			$this->getLevel()->setBlock($block->getSide(Vector3::SIDE_UP), Block::get($this->id, $this->meta | self::BITFLAG_TOP), false, false);
+			$this->getLevel()->setBlock($block->getSide(Vector3::SIDE_UP), BlockFactory::get($this->id, $this->meta | self::BITFLAG_TOP), false, false);
 
 			return true;
 		}
@@ -98,7 +98,7 @@ class DoublePlant extends Flowable{
 
 	public function onBreak(Item $item) : bool{
 		if(parent::onBreak($item) and $this->isValidHalfPlant()){
-			return $this->getLevel()->setBlock($this->getSide(($this->meta & self::BITFLAG_TOP) !== 0 ? Vector3::SIDE_DOWN : Vector3::SIDE_UP), Block::get(Block::AIR));
+			return $this->getLevel()->setBlock($this->getSide(($this->meta & self::BITFLAG_TOP) !== 0 ? Vector3::SIDE_DOWN : Vector3::SIDE_UP), BlockFactory::get(Block::AIR));
 		}
 
 		return false;

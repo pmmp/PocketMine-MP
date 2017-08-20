@@ -27,6 +27,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\level\Level;
@@ -328,7 +329,7 @@ class Item implements ItemIds, \JsonSerializable{
 	public static function get(int $id, int $meta = 0, int $count = 1, $tags = "") : Item{
 		try{
 			if($id < 256){
-				return (new ItemBlock(Block::get($id, $meta), $meta, $count))->setCompoundTag($tags);
+				return (new ItemBlock(BlockFactory::get($id, $meta), $meta, $count))->setCompoundTag($tags);
 			}else{
 				$class = self::$list[$id];
 				if($class === null){
@@ -388,8 +389,8 @@ class Item implements ItemIds, \JsonSerializable{
 		$this->meta = $meta !== -1 ? $meta & 0xffff : -1;
 		$this->count = $count;
 		$this->name = $name;
-		if(!isset($this->block) and $this->id <= 0xff and isset(Block::$list[$this->id])){
-			$this->block = Block::get($this->id, $this->meta);
+		if(!isset($this->block) and $this->id <= 0xff and isset(BlockFactory::$list[$this->id])){
+			$this->block = BlockFactory::get($this->id, $this->meta);
 			$this->name = $this->block->getName();
 		}
 	}
@@ -874,7 +875,7 @@ class Item implements ItemIds, \JsonSerializable{
 		if($this->block instanceof Block){
 			return clone $this->block;
 		}else{
-			return Block::get(self::AIR);
+			return BlockFactory::get(self::AIR);
 		}
 	}
 

@@ -180,8 +180,8 @@ class Bed extends Transparent{
 			$meta = (($player instanceof Player ? $player->getDirection() : 0) - 1) & 0x03;
 			$next = $this->getSide(self::getOtherHalfSide($meta));
 			if($next->canBeReplaced() === true and !$next->getSide(Vector3::SIDE_DOWN)->isTransparent()){
-				$this->getLevel()->setBlock($block, Block::get($this->id, $meta), true, true);
-				$this->getLevel()->setBlock($next, Block::get($this->id, $meta | self::BITFLAG_HEAD), true, true);
+				$this->getLevel()->setBlock($block, BlockFactory::get($this->id, $meta), true, true);
+				$this->getLevel()->setBlock($next, BlockFactory::get($this->id, $meta | self::BITFLAG_HEAD), true, true);
 
 				$nbt = new CompoundTag("", [
 					new StringTag("id", Tile::BED),
@@ -206,7 +206,7 @@ class Bed extends Transparent{
 	}
 
 	public function onBreak(Item $item) : bool{
-		$this->getLevel()->setBlock($this, Block::get(Block::AIR), true, true);
+		$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true, true);
 		if(($other = $this->getOtherHalf()) !== null){
 			$this->getLevel()->useBreakOn($other); //make sure tiles get removed
 		}
