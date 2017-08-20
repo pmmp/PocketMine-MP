@@ -32,6 +32,7 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityExplodeEvent;
 use pocketmine\item\Item;
+use pocketmine\level\format\SubChunkInterface;
 use pocketmine\level\particle\HugeExplodeSeedParticle;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Math;
@@ -69,7 +70,14 @@ class Explosion{
 		}
 
 		$vector = new Vector3(0, 0, 0);
-		$vBlock = new Vector3(0, 0, 0);
+		$vBlock = new Position(0, 0, 0, $this->level);
+
+		$currentX = ((int) $this->source->x) >> 4;
+		$currentZ = ((int) $this->source->z) >> 4;
+		$currentChunk = $this->level->getChunk($currentX, $currentZ, true);
+
+		$currentSubY = ((int) $this->source->y) >> 4;
+		$currentSubChunk = $currentChunk->getSubChunk($currentSubY);
 
 		$mRays = (int) ($this->rays - 1);
 		for($i = 0; $i < $this->rays; ++$i){
@@ -90,17 +98,32 @@ class Explosion{
 							$vBlock->y = $pointerY >= $y ? $y : $y - 1;
 							$vBlock->z = $pointerZ >= $z ? $z : $z - 1;
 
-							if(!$this->level->isInWorld($vBlock->x, $vBlock->y, $vBlock->z)){
-								break;
+
+							if(($vBlock->x >> 4) !== $currentX or ($vBlock->z >> 4) !== $currentZ){
+								$currentX = $vBlock->x >> 4;
+								$currentZ = $vBlock->z >> 4;
+
+								$currentChunk = $this->level->getChunk($currentX, $currentZ);
+								if($currentChunk === null){
+									continue;
+								}
 							}
 
-							$blockId = $this->level->getBlockIdAt($vBlock->x, $vBlock->y, $vBlock->z);
+							if(($vBlock->y >> 4) !== $currentSubY){
+								$currentSubY = $vBlock->y >> 4;
+								$currentSubChunk = $currentChunk->getSubChunk($currentSubY);
+								if($currentSubChunk === null){
+									continue;
+								}
+							}
+
+							$blockId = $currentSubChunk->getBlockId($vBlock->x & 0x0f, $vBlock->y & 0x0f, $vBlock->z & 0x0f);
 
 							if($blockId !== 0){
 								$blastForce -= (Block::$blastResistance[$blockId] / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
 									if(!isset($this->affectedBlocks[$index = Level::blockHash($vBlock->x, $vBlock->y, $vBlock->z)])){
-										$this->affectedBlocks[$index] = $this->level->getBlock($vBlock);
+										$this->affectedBlocks[$index] = Block::get($blockId, $currentSubChunk->getBlockData($vBlock->x & 0x0f, $vBlock->y & 0x0f, $vBlock->z & 0x0f), $vBlock);
 									}
 								}
 							}
@@ -109,7 +132,6 @@ class Explosion{
 							$pointerY += $vector->y;
 							$pointerZ += $vector->z;
 						}
-
 					}
 				}
 			}
@@ -187,6 +209,9 @@ class Explosion{
 
 			for($side = 0; $side <= 5; $side++){
 				$sideBlock = $pos->getSide($side);
+				if(!$this->level->isInWorld($sideBlock->x, $sideBlock->y, $sideBlock->z)){
+					continue;
+				}
 				if(!isset($this->affectedBlocks[$index = Level::blockHash($sideBlock->x, $sideBlock->y, $sideBlock->z)]) and !isset($updateBlocks[$index])){
 					$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->level->getBlock($sideBlock)));
 					if(!$ev->isCancelled()){
