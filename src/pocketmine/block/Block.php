@@ -58,7 +58,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	public static $transparent = null;
 	/** @var \SplFixedArray<bool> */
 	public static $diffusesSkyLight = null;
-	/** @var \SplFixedArray */
+	/** @var \SplFixedArray<float> */
 	public static $blastResistance = null;
 
 	/**
