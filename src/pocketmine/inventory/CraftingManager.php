@@ -25,6 +25,7 @@ namespace pocketmine\inventory;
 
 use pocketmine\event\Timings;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\Server;
 use pocketmine\utils\Config;
@@ -81,7 +82,7 @@ class CraftingManager{
 				case 3:
 					$result = $recipe["output"];
 					$resultItem = Item::jsonDeserialize($result);
-					$this->registerRecipe(new FurnaceRecipe($resultItem, Item::get($recipe["inputId"], $recipe["inputDamage"] ?? -1, 1)));
+					$this->registerRecipe(new FurnaceRecipe($resultItem, ItemFactory::get($recipe["inputId"], $recipe["inputDamage"] ?? -1, 1)));
 					break;
 				default:
 					break;

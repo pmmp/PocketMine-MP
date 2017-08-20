@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\item\Tool;
 use pocketmine\level\generator\object\TallGrass as TallGrassObject;
 use pocketmine\level\Level;
@@ -54,7 +55,7 @@ class Grass extends Solid{
 
 	public function getDrops(Item $item) : array{
 		return [
-			Item::get(Item::DIRT, 0, 1),
+			ItemFactory::get(Item::DIRT, 0, 1),
 		];
 	}
 

@@ -31,6 +31,7 @@ use pocketmine\inventory\FurnaceInventory;
 use pocketmine\inventory\FurnaceRecipe;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
@@ -141,7 +142,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	public function getItem(int $index) : Item{
 		$i = $this->getSlotIndex($index);
 		if($i < 0){
-			return Item::get(Item::AIR, 0, 0);
+			return ItemFactory::get(Item::AIR, 0, 0);
 		}else{
 			return Item::nbtDeserialize($this->namedtag->Items[$i]);
 		}
@@ -198,7 +199,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		if($this->namedtag->BurnTime->getValue() > 0 and $ev->isBurning()){
 			$fuel->setCount($fuel->getCount() - 1);
 			if($fuel->getCount() === 0){
-				$fuel = Item::get(Item::AIR, 0, 0);
+				$fuel = ItemFactory::get(Item::AIR, 0, 0);
 			}
 			$this->inventory->setFuel($fuel);
 		}
@@ -230,7 +231,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 			if($smelt instanceof FurnaceRecipe and $canSmelt){
 				$this->namedtag->CookTime->setValue($this->namedtag->CookTime->getValue() + 1);
 				if($this->namedtag->CookTime->getValue() >= 200){ //10 seconds
-					$product = Item::get($smelt->getResult()->getId(), $smelt->getResult()->getDamage(), $product->getCount() + 1);
+					$product = ItemFactory::get($smelt->getResult()->getId(), $smelt->getResult()->getDamage(), $product->getCount() + 1);
 
 					$this->server->getPluginManager()->callEvent($ev = new FurnaceSmeltEvent($this, $raw, $product));
 
@@ -238,7 +239,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 						$this->inventory->setResult($ev->getResult());
 						$raw->setCount($raw->getCount() - 1);
 						if($raw->getCount() === 0){
-							$raw = Item::get(Item::AIR, 0, 0);
+							$raw = ItemFactory::get(Item::AIR, 0, 0);
 						}
 						$this->inventory->setSmelting($raw);
 					}

@@ -27,7 +27,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
-use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\nbt\JsonNBTParser;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
@@ -54,7 +54,7 @@ class GiveCommand extends VanillaCommand{
 		}
 
 		$player = $sender->getServer()->getPlayer($args[0]);
-		$item = Item::fromString($args[1]);
+		$item = ItemFactory::fromString($args[1]);
 
 		if(!isset($args[2])){
 			$item->setCount($item->getMaxStackSize());

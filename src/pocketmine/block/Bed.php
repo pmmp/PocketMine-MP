@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\event\TranslationContainer;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
@@ -219,11 +220,11 @@ class Bed extends Transparent{
 			$tile = $this->getLevel()->getTile($this);
 			if($tile instanceof TileBed){
 				return [
-					Item::get($this->getItemId(), $tile->getColor(), 1)
+					ItemFactory::get($this->getItemId(), $tile->getColor(), 1)
 				];
 			}else{
 				return [
-					Item::get($this->getItemId(), 14, 1) //Red
+					ItemFactory::get($this->getItemId(), 14, 1) //Red
 				];
 			}
 		}

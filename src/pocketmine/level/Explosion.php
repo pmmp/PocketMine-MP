@@ -33,6 +33,7 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityExplodeEvent;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\level\particle\HugeExplodeSeedParticle;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Math;
@@ -192,7 +193,7 @@ class Explosion{
 		}
 
 
-		$air = Item::get(Item::AIR);
+		$air = ItemFactory::get(Item::AIR);
 
 		foreach($this->affectedBlocks as $block){
 			if($block instanceof TNT){

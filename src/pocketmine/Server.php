@@ -50,7 +50,7 @@ use pocketmine\inventory\CraftingManager;
 use pocketmine\inventory\InventoryType;
 use pocketmine\inventory\Recipe;
 use pocketmine\item\enchantment\Enchantment;
-use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\lang\BaseLang;
 use pocketmine\level\format\io\leveldb\LevelDB;
 use pocketmine\level\format\io\LevelProvider;
@@ -1585,7 +1585,7 @@ class Server{
 			InventoryType::init();
 			BlockFactory::init();
 			Enchantment::init();
-			Item::init();
+			ItemFactory::init();
 			Biome::init();
 			Effect::init();
 			Attribute::init();

@@ -28,6 +28,7 @@ use pocketmine\event\entity\EntityArmorChangeEvent;
 use pocketmine\event\entity\EntityInventoryChangeEvent;
 use pocketmine\event\player\PlayerItemHeldEvent;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\network\mcpe\protocol\ContainerSetContentPacket;
 use pocketmine\network\mcpe\protocol\ContainerSetSlotPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
@@ -76,7 +77,7 @@ class PlayerInventory extends BaseInventory{
 		}
 
 		if($inventorySlot === -1){
-			$item = Item::get(Item::AIR, 0, 0);
+			$item = ItemFactory::get(Item::AIR, 0, 0);
 		}else{
 			$item = $this->getItem($inventorySlot);
 		}
@@ -143,7 +144,7 @@ class PlayerInventory extends BaseInventory{
 		if($inventorySlot !== -1){
 			return $this->getItem($inventorySlot);
 		}else{
-			return Item::get(Item::AIR, 0, 0);
+			return ItemFactory::get(Item::AIR, 0, 0);
 		}
 	}
 
@@ -350,7 +351,7 @@ class PlayerInventory extends BaseInventory{
 
 	public function clear(int $index) : bool{
 		if(isset($this->slots[$index])){
-			$item = Item::get(Item::AIR, 0, 0);
+			$item = ItemFactory::get(Item::AIR, 0, 0);
 			$old = $this->slots[$index];
 			if($index >= $this->getSize() and $index < $this->size){ //Armor change
 				Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $old, $item, $index));
@@ -441,7 +442,7 @@ class PlayerInventory extends BaseInventory{
 	public function setArmorContents(array $items){
 		for($i = 0; $i < 4; ++$i){
 			if(!isset($items[$i]) or !($items[$i] instanceof Item)){
-				$items[$i] = Item::get(Item::AIR, 0, 0);
+				$items[$i] = ItemFactory::get(Item::AIR, 0, 0);
 			}
 
 			if($items[$i]->getId() === Item::AIR){
@@ -500,7 +501,7 @@ class PlayerInventory extends BaseInventory{
 
 		//Because PE is stupid and shows 9 less slots than you send it, give it 9 dummy slots so it shows all the REAL slots.
 		for($i = $this->getSize(); $i < $this->getSize() + $this->getHotbarSize(); ++$i){
-			$pk->slots[$i] = Item::get(Item::AIR, 0, 0);
+			$pk->slots[$i] = ItemFactory::get(Item::AIR, 0, 0);
 		}
 
 		foreach($target as $player){

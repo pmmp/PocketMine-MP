@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 
 class Carrot extends Crops{
 
@@ -39,7 +40,7 @@ class Carrot extends Crops{
 
 	public function getDrops(Item $item) : array{
 		return [
-			Item::get(Item::CARROT, 0, $this->meta >= 0x07 ? mt_rand(1, 4) : 1)
+			ItemFactory::get(Item::CARROT, 0, $this->meta >= 0x07 ? mt_rand(1, 4) : 1)
 		];
 	}
 }

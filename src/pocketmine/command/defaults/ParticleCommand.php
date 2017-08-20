@@ -28,6 +28,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\level\particle\AngryVillagerParticle;
 use pocketmine\level\particle\BlockForceFieldParticle;
 use pocketmine\level\particle\BubbleParticle;
@@ -173,12 +174,12 @@ class ParticleCommand extends VanillaCommand{
 			case "reddust":
 				return new RedstoneParticle($pos, $data ?? 1);
 			case "snowballpoof":
-				return new ItemBreakParticle($pos, Item::get(Item::SNOWBALL));
+				return new ItemBreakParticle($pos, ItemFactory::get(Item::SNOWBALL));
 			case "slime":
-				return new ItemBreakParticle($pos, Item::get(Item::SLIMEBALL));
+				return new ItemBreakParticle($pos, ItemFactory::get(Item::SLIMEBALL));
 			case "itembreak":
 				if($data !== null and $data !== 0){
-					return new ItemBreakParticle($pos, Item::get($data));
+					return new ItemBreakParticle($pos, ItemFactory::get($data));
 				}
 				break;
 			case "terrain":
@@ -206,7 +207,7 @@ class ParticleCommand extends VanillaCommand{
 		if(strpos($name, "iconcrack_") === 0){
 			$d = explode("_", $name);
 			if(count($d) === 3){
-				return new ItemBreakParticle($pos, Item::get((int) $d[1], (int) $d[2]));
+				return new ItemBreakParticle($pos, ItemFactory::get((int) $d[1], (int) $d[2]));
 			}
 		}elseif(strpos($name, "blockcrack_") === 0){
 			$d = explode("_", $name);

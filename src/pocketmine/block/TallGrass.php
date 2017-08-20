@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -76,7 +77,7 @@ class TallGrass extends Flowable{
 	public function getDrops(Item $item) : array{
 		if(mt_rand(0, 15) === 0){
 			return [
-				Item::get(Item::WHEAT_SEEDS, 0, 1)
+				ItemFactory::get(Item::WHEAT_SEEDS, 0, 1)
 			];
 		}
 

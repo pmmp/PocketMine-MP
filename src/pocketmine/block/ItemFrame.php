@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\{
@@ -69,7 +70,7 @@ class ItemFrame extends Flowable{
 				$item->setCount($item->getCount() - 1);
 				$tile->setItem($frameItem);
 				if($player instanceof Player and $player->isSurvival()){
-					$player->getInventory()->setItemInHand($item->getCount() <= 0 ? Item::get(Item::AIR) : $item);
+					$player->getInventory()->setItemInHand($item->getCount() <= 0 ? ItemFactory::get(Item::AIR) : $item);
 				}
 			}
 		}

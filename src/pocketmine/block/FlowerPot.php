@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
@@ -116,7 +117,7 @@ class FlowerPot extends Flowable{
 		if($player instanceof Player){
 			if($player->isSurvival()){
 				$item->setCount($item->getCount() - 1);
-				$player->getInventory()->setItemInHand($item->getCount() > 0 ? $item : Item::get(Item::AIR));
+				$player->getInventory()->setItemInHand($item->getCount() > 0 ? $item : ItemFactory::get(Item::AIR));
 			}
 		}
 		return true;

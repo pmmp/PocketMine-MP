@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Server;
@@ -84,7 +85,7 @@ class PumpkinStem extends Crops{
 
 	public function getDrops(Item $item) : array{
 		return [
-			Item::get(Item::PUMPKIN_SEEDS, 0, mt_rand(0, 2))
+			ItemFactory::get(Item::PUMPKIN_SEEDS, 0, mt_rand(0, 2))
 		];
 	}
 }

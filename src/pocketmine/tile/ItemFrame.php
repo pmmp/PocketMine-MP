@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
@@ -51,7 +52,7 @@ class ItemFrame extends Spawnable{
 		if(isset($this->namedtag->Item)){
 			return Item::nbtDeserialize($this->namedtag->Item);
 		}else{
-			return Item::get(Item::AIR);
+			return ItemFactory::get(Item::AIR);
 		}
 	}
 

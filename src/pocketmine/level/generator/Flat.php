@@ -25,7 +25,7 @@ namespace pocketmine\level\generator;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
-use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\generator\object\OreType;
@@ -84,7 +84,7 @@ class Flat extends Generator{
 		preg_match_all('#^(([0-9]*x|)([0-9]{1,3})(|:[0-9]{0,2}))$#m', str_replace(",", "\n", $layers), $matches);
 		$y = 0;
 		foreach($matches[3] as $i => $b){
-			$b = Item::fromString($b . $matches[4][$i]);
+			$b = ItemFactory::fromString($b . $matches[4][$i]);
 			$cnt = $matches[2][$i] === "" ? 1 : (int) $matches[2][$i];
 			for($cY = $y, $y += $cnt; $cY < $y; ++$cY){
 				$result[$cY] = [$b->getId(), $b->getDamage()];

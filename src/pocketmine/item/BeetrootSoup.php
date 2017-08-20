@@ -42,6 +42,6 @@ class BeetrootSoup extends Food{
 	}
 
 	public function getResidue(){
-		return Item::get(Item::BOWL);
+		return ItemFactory::get(Item::BOWL);
 	}
 }

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
@@ -94,7 +95,7 @@ class Skull extends Flowable{
 		$tile = $this->level->getTile($this);
 		if($tile instanceof SkullTile){
 			return [
-				Item::get(Item::SKULL, $tile->getType(), 1)
+				ItemFactory::get(Item::SKULL, $tile->getType(), 1)
 			];
 		}
 

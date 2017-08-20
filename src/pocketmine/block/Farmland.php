@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
 
@@ -60,7 +61,7 @@ class Farmland extends Transparent{
 
 	public function getDrops(Item $item) : array{
 		return [
-			Item::get(Item::DIRT, 0, 1)
+			ItemFactory::get(Item::DIRT, 0, 1)
 		];
 	}
 }

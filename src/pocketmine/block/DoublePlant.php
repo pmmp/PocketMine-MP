@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -112,7 +113,7 @@ class DoublePlant extends Flowable{
 		if(!$item->isShears() and ($this->meta === 2 or $this->meta === 3)){ //grass or fern
 			if(mt_rand(0, 24) === 0){
 				return [
-					Item::get(Item::SEEDS, 0, 1)
+					ItemFactory::get(Item::SEEDS, 0, 1)
 				];
 			}
 

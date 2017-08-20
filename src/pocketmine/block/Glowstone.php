@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\item\Tool;
 
 class Glowstone extends Transparent{
@@ -52,7 +53,7 @@ class Glowstone extends Transparent{
 
 	public function getDrops(Item $item) : array{
 		return [
-			Item::get(Item::GLOWSTONE_DUST, 0, mt_rand(2, 4))
+			ItemFactory::get(Item::GLOWSTONE_DUST, 0, mt_rand(2, 4))
 		];
 	}
 }
