@@ -38,7 +38,7 @@ class Bricks extends Solid{
 		return 2;
 	}
 
-	public function getResistance() : float{
+	public function getBlastResistance() : float{
 		return 30;
 	}
 
