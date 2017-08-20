@@ -217,21 +217,21 @@ abstract class Door extends Transparent{
 	}
 
 	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
-		if($face === 1){
+		if($face === Vector3::SIDE_UP){
 			$blockUp = $this->getSide(Vector3::SIDE_UP);
 			$blockDown = $this->getSide(Vector3::SIDE_DOWN);
 			if($blockUp->canBeReplaced() === false or $blockDown->isTransparent() === true){
 				return false;
 			}
 			$direction = $player instanceof Player ? $player->getDirection() : 0;
-			$face = [
+			$faces = [
 				0 => 3,
 				1 => 4,
 				2 => 2,
 				3 => 5,
 			];
-			$next = $this->getSide($face[($direction + 2) % 4]);
-			$next2 = $this->getSide($face[$direction]);
+			$next = $this->getSide($faces[($direction + 2) % 4]);
+			$next2 = $this->getSide($faces[$direction]);
 			$metaUp = 0x08;
 			if($next->getId() === $this->getId() or ($next2->isTransparent() === false and $next->isTransparent() === true)){ //Door hinge
 				$metaUp |= 0x01;

@@ -80,7 +80,7 @@ class WoodenSlab extends Transparent{
 
 	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$this->meta &= 0x07;
-		if($face === 0){
+		if($face === Vector3::SIDE_DOWN){
 			if($target->getId() === $this->id and ($target->getDamage() & 0x08) === 0x08 and ($target->getDamage() & 0x07) === ($this->meta)){
 				$this->getLevel()->setBlock($target, Block::get($this->doubleId, $this->meta), true);
 
@@ -92,7 +92,7 @@ class WoodenSlab extends Transparent{
 			}else{
 				$this->meta |= 0x08;
 			}
-		}elseif($face === 1){
+		}elseif($face === Vector3::SIDE_UP){
 			if($target->getId() === $this->id and ($target->getDamage() & 0x08) === 0 and ($target->getDamage() & 0x07) === $this->meta){
 				$this->getLevel()->setBlock($target, Block::get($this->doubleId, $this->meta), true);
 

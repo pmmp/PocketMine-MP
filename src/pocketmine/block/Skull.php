@@ -64,9 +64,9 @@ class Skull extends Flowable{
 	}
 
 	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
-		if($face !== 0){
+		if($face !== Vector3::SIDE_DOWN){
 			$this->meta = $face;
-			if($face === 1){
+			if($face === Vector3::SIDE_UP){
 				$rot = floor(($player->yaw * 16 / 360) + 0.5) & 0x0F;
 			}else{
 				$rot = $face;

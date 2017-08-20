@@ -138,7 +138,7 @@ abstract class Stair extends Transparent{
 			3 => 3,
 		];
 		$this->meta = $faces[$player->getDirection()] & 0x03;
-		if(($facePos->y > 0.5 and $face !== 1) or $face === 0){
+		if(($facePos->y > 0.5 and $face !== Vector3::SIDE_UP) or $face === Vector3::SIDE_DOWN){
 			$this->meta |= 0x04; //Upside-down stairs
 		}
 		$this->getLevel()->setBlock($block, $this, true, true);

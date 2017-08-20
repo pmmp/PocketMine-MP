@@ -105,15 +105,15 @@ class ItemFrame extends Flowable{
 	}
 
 	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
-		if($face === 0 or $face === 1){
+		if($face === Vector3::SIDE_DOWN or $face === Vector3::SIDE_UP){
 			return false;
 		}
 
 		$faces = [
-			2 => 3,
-			3 => 2,
-			4 => 1,
-			5 => 0
+			Vector3::SIDE_NORTH => 3,
+			Vector3::SIDE_SOUTH => 2,
+			Vector3::SIDE_WEST => 1,
+			Vector3::SIDE_EAST => 0
 		];
 
 		$this->meta = $faces[$face];
