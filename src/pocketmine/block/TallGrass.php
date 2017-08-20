@@ -64,7 +64,7 @@ class TallGrass extends Flowable{
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(Vector3::SIDE_DOWN)->isTransparent() === true){ //Replace with common break method
-				$this->getLevel()->setBlock($this, Block::get(Block::AIR), true, true);
+				$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true, true);
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}

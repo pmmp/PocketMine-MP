@@ -165,7 +165,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return bool
 	 */
 	public function onBreak(Item $item) : bool{
-		return $this->getLevel()->setBlock($this, Block::get(Block::AIR), true, true);
+		return $this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true, true);
 	}
 
 	/**

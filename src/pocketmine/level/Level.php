@@ -1657,7 +1657,7 @@ class Level implements ChunkManager, Metadatable{
 		$above = $this->getBlock(new Vector3($target->x, $target->y + 1, $target->z));
 		if($above !== null){
 			if($above->getId() === Item::FIRE){
-				$this->setBlock($above, Block::get(Block::AIR), true);
+				$this->setBlock($above, BlockFactory::get(Block::AIR), true);
 			}
 		}
 

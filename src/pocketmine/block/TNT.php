@@ -60,7 +60,7 @@ class TNT extends Solid{
 	}
 
 	public function ignite(int $fuse = 80){
-		$this->getLevel()->setBlock($this, Block::get(Block::AIR), true);
+		$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true);
 
 		$mot = (new Random())->nextSignedFloat() * M_PI * 2;
 		$tnt = Entity::createEntity("PrimedTNT", $this->getLevel(), new CompoundTag("", [

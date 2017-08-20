@@ -76,7 +76,7 @@ class Cake extends Transparent implements FoodSource{
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(Vector3::SIDE_DOWN)->getId() === self::AIR){ //Replace with common break method
-				$this->getLevel()->setBlock($this, Block::get(Block::AIR), true);
+				$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true);
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
@@ -114,7 +114,7 @@ class Cake extends Transparent implements FoodSource{
 		$clone = clone $this;
 		$clone->meta++;
 		if($clone->meta >= 0x06){
-			$clone = Block::get(Block::AIR);
+			$clone = BlockFactory::get(Block::AIR);
 		}
 		return $clone;
 	}
