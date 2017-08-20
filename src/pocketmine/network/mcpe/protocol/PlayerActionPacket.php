@@ -52,8 +52,6 @@ class PlayerActionPacket extends DataPacket{
 
 	const ACTION_SET_ENCHANTMENT_SEED = 19;
 
-	const ACTION_RELEASE_ITEM = 99999; //TODO REMOVE
-
 	/** @var int */
 	public $entityRuntimeId;
 	/** @var int */

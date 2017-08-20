@@ -2485,13 +2485,110 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 				break;
 			case InventoryTransactionPacket::TYPE_RELEASE_ITEM:
-				//TODO
+				$type = $packet->transactionData->releaseItemActionType;
+				switch($type){
+					case InventoryTransactionPacket::RELEASE_ITEM_ACTION_RELEASE:
+						if($this->startAction > -1 and $this->getGenericFlag(self::DATA_FLAG_ACTION)){
+							if($this->inventory->getItemInHand()->getId() === Item::BOW){
+								$bow = $this->inventory->getItemInHand();
+								if($this->isSurvival() and !$this->inventory->contains(Item::get(Item::ARROW, 0, 1))){
+									$this->inventory->sendContents($this);
+									return false;
+								}
+
+								$nbt = new CompoundTag("", [
+									new ListTag("Pos", [
+										new DoubleTag("", $this->x),
+										new DoubleTag("", $this->y + $this->getEyeHeight()),
+										new DoubleTag("", $this->z)
+									]),
+									new ListTag("Motion", [
+										new DoubleTag("", -sin($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI)),
+										new DoubleTag("", -sin($this->pitch / 180 * M_PI)),
+										new DoubleTag("", cos($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI))
+									]),
+									new ListTag("Rotation", [
+										//yaw/pitch for arrows taken crosswise, not along the arrow shaft.
+										new FloatTag("", ($this->yaw > 180 ? 360 : 0) - $this->yaw), //arrow yaw must range from -180 to +180
+										new FloatTag("", -$this->pitch)
+									]),
+									new ShortTag("Fire", $this->isOnFire() ? 45 * 60 : 0)
+								]);
+
+								$diff = ($this->server->getTick() - $this->startAction);
+								$p = $diff / 20;
+								$f = min((($p ** 2) + $p * 2) / 3, 1) * 2;
+								$ev = new EntityShootBowEvent($this, $bow, Entity::createEntity("Arrow", $this->getLevel(), $nbt, $this, $f == 2), $f);
+
+								if($f < 0.1 or $diff < 5){
+									$ev->setCancelled();
+								}
+
+								$this->server->getPluginManager()->callEvent($ev);
+
+								if($ev->isCancelled()){
+									$ev->getProjectile()->kill();
+									$this->inventory->sendContents($this);
+								}else{
+									$ev->getProjectile()->setMotion($ev->getProjectile()->getMotion()->multiply($ev->getForce()));
+									if($this->isSurvival()){
+										$this->inventory->removeItem(Item::get(Item::ARROW, 0, 1));
+										$bow->setDamage($bow->getDamage() + 1);
+										if($bow->getDamage() >= 385){
+											$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 0));
+										}else{
+											$this->inventory->setItemInHand($bow);
+										}
+									}
+									if($ev->getProjectile() instanceof Projectile){
+										$this->server->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($ev->getProjectile()));
+										if($projectileEv->isCancelled()){
+											$ev->getProjectile()->kill();
+										}else{
+											$ev->getProjectile()->spawnToAll();
+											$this->level->addSound(new LaunchSound($this), $this->getViewers());
+										}
+									}else{
+										$ev->getProjectile()->spawnToAll();
+									}
+								}
+							}
+						}elseif($this->inventory->getItemInHand()->getId() === Item::BUCKET and $this->inventory->getItemInHand()->getDamage() === 1){ //Milk!
+							$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $this->inventory->getItemInHand()));
+							if($ev->isCancelled()){
+								$this->inventory->sendContents($this);
+								break;
+							}
+
+							$pk = new EntityEventPacket();
+							$pk->entityRuntimeId = $this->getId();
+							$pk->event = EntityEventPacket::USE_ITEM;
+							$this->dataPacket($pk);
+							$this->server->broadcastPacket($this->getViewers(), $pk);
+
+							if($this->isSurvival()){
+								$slot = $this->inventory->getItemInHand();
+								--$slot->count;
+								$this->inventory->setItemInHand($slot);
+								$this->inventory->addItem(Item::get(Item::BUCKET, 0, 1));
+							}
+
+							$this->removeAllEffects();
+						}else{
+							$this->inventory->sendContents($this);
+						}
+
+						return true;
+					default:
+						break;
+				}
 				break;
 			default:
 				$this->inventory->sendContents($this);
 				break;
 
 		}
+
 		return false; //TODO
 	}
 
@@ -2611,97 +2708,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->lastBreak = PHP_INT_MAX;
 			case PlayerActionPacket::ACTION_STOP_BREAK:
 				$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_STOP_BREAK);
-				break;
-			case PlayerActionPacket::ACTION_RELEASE_ITEM:
-				if($this->startAction > -1 and $this->getGenericFlag(self::DATA_FLAG_ACTION)){
-					if($this->inventory->getItemInHand()->getId() === Item::BOW){
-						$bow = $this->inventory->getItemInHand();
-						if($this->isSurvival() and !$this->inventory->contains(Item::get(Item::ARROW, 0, 1))){
-							$this->inventory->sendContents($this);
-							break;
-						}
-
-						$nbt = new CompoundTag("", [
-							new ListTag("Pos", [
-								new DoubleTag("", $this->x),
-								new DoubleTag("", $this->y + $this->getEyeHeight()),
-								new DoubleTag("", $this->z)
-							]),
-							new ListTag("Motion", [
-								new DoubleTag("", -sin($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI)),
-								new DoubleTag("", -sin($this->pitch / 180 * M_PI)),
-								new DoubleTag("", cos($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI))
-							]),
-							new ListTag("Rotation", [
-								//yaw/pitch for arrows taken crosswise, not along the arrow shaft.
-								new FloatTag("", ($this->yaw > 180 ? 360 : 0) - $this->yaw), //arrow yaw must range from -180 to +180
-								new FloatTag("", -$this->pitch)
-							]),
-							new ShortTag("Fire", $this->isOnFire() ? 45 * 60 : 0)
-						]);
-
-						$diff = ($this->server->getTick() - $this->startAction);
-						$p = $diff / 20;
-						$f = min((($p ** 2) + $p * 2) / 3, 1) * 2;
-						$ev = new EntityShootBowEvent($this, $bow, Entity::createEntity("Arrow", $this->getLevel(), $nbt, $this, $f == 2), $f);
-
-						if($f < 0.1 or $diff < 5){
-							$ev->setCancelled();
-						}
-
-						$this->server->getPluginManager()->callEvent($ev);
-
-						if($ev->isCancelled()){
-							$ev->getProjectile()->kill();
-							$this->inventory->sendContents($this);
-						}else{
-							$ev->getProjectile()->setMotion($ev->getProjectile()->getMotion()->multiply($ev->getForce()));
-							if($this->isSurvival()){
-								$this->inventory->removeItem(Item::get(Item::ARROW, 0, 1));
-								$bow->setDamage($bow->getDamage() + 1);
-								if($bow->getDamage() >= 385){
-									$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 0));
-								}else{
-									$this->inventory->setItemInHand($bow);
-								}
-							}
-							if($ev->getProjectile() instanceof Projectile){
-								$this->server->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($ev->getProjectile()));
-								if($projectileEv->isCancelled()){
-									$ev->getProjectile()->kill();
-								}else{
-									$ev->getProjectile()->spawnToAll();
-									$this->level->addSound(new LaunchSound($this), $this->getViewers());
-								}
-							}else{
-								$ev->getProjectile()->spawnToAll();
-							}
-						}
-					}
-				}elseif($this->inventory->getItemInHand()->getId() === Item::BUCKET and $this->inventory->getItemInHand()->getDamage() === 1){ //Milk!
-					$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $this->inventory->getItemInHand()));
-					if($ev->isCancelled()){
-						$this->inventory->sendContents($this);
-						break;
-					}
-
-					$pk = new EntityEventPacket();
-					$pk->entityRuntimeId = $this->getId();
-					$pk->event = EntityEventPacket::USE_ITEM;
-					$this->dataPacket($pk);
-					$this->server->broadcastPacket($this->getViewers(), $pk);
-
-					if($this->isSurvival()){
-						$slot = $this->inventory->getItemInHand();
-						--$slot->count;
-						$this->inventory->setItemInHand($slot);
-						$this->inventory->addItem(Item::get(Item::BUCKET, 0, 1));
-					}
-
-					$this->removeAllEffects();
-				}else{
-					$this->inventory->sendContents($this);
-				}
 				break;
 			case PlayerActionPacket::ACTION_STOP_SLEEPING:
 				$this->stopSleep();
