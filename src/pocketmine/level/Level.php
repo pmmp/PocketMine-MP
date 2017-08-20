@@ -1702,20 +1702,22 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * Uses a item on a position and face, placing it or activating the block
 	 *
-	 * @param Vector3 $vector
-	 * @param Item    $item
-	 * @param int     $face
-	 * @param float   $fx     default 0.0
-	 * @param float   $fy     default 0.0
-	 * @param float   $fz     default 0.0
-	 * @param Player  $player default null
-	 * @param bool    $playSound Whether to play a block-place sound if the block was placed successfully.
+	 * @param Vector3      $vector
+	 * @param Item         $item
+	 * @param int          $face
+	 * @param Vector3|null $facePos
+	 * @param Player|null  $player default null
+	 * @param bool         $playSound Whether to play a block-place sound if the block was placed successfully.
 	 *
 	 * @return bool
 	 */
-	public function useItemOn(Vector3 $vector, Item &$item, int $face, float $fx = 0.0, float $fy = 0.0, float $fz = 0.0, Player $player = null, bool $playSound = false) : bool{
+	public function useItemOn(Vector3 $vector, Item &$item, int $face, Vector3 $facePos = null, Player $player = null, bool $playSound = false) : bool{
 		$target = $this->getBlock($vector);
 		$block = $target->getSide($face);
+
+		if($facePos === null){
+			$facePos = new Vector3(0.0, 0.0, 0.0);
+		}
 
 		if($block->y >= $this->provider->getWorldHeight() or $block->y < 0){
 			//TODO: build height limit messages for custom world heights and mcregion cap
@@ -1761,7 +1763,7 @@ class Level implements ChunkManager, Metadatable{
 					return true;
 				}
 
-				if(!$player->isSneaking() and $item->onActivate($this, $player, $block, $target, $face, $fx, $fy, $fz)){
+				if(!$player->isSneaking() and $item->onActivate($this, $player, $block, $target, $face, $facePos)){
 					if($item->getCount() <= 0){
 						$item = Item::get(Item::AIR, 0, 0);
 
@@ -1832,7 +1834,7 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
-		if($hand->place($item, $block, $target, $face, $fx, $fy, $fz, $player) === false){
+		if($hand->place($item, $block, $target, $face, $facePos, $player) === false){
 			return false;
 		}
 

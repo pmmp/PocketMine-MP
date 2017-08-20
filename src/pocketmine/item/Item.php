@@ -30,6 +30,7 @@ use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
@@ -978,18 +979,16 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * Called when a player uses this item on a block.
 	 *
-	 * @param Level $level
-	 * @param Player $player
-	 * @param Block $block
-	 * @param Block $target
-	 * @param int $face
-	 * @param float $fx
-	 * @param float $fy
-	 * @param float $fz
+	 * @param Level   $level
+	 * @param Player  $player
+	 * @param Block   $block
+	 * @param Block   $target
+	 * @param int     $face
+	 * @param Vector3 $facePos
 	 *
 	 * @return bool
 	 */
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function onActivate(Level $level, Player $player, Block $block, Block $target, int $face, Vector3 $facePos) : bool{
 		return false;
 	}
 

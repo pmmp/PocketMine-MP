@@ -28,6 +28,7 @@ use pocketmine\block\Block;
 use pocketmine\block\Liquid;
 use pocketmine\event\player\PlayerBucketFillEvent;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Bucket extends Item{
@@ -47,7 +48,7 @@ class Bucket extends Item{
 		return 0;
 	}
 
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function onActivate(Level $level, Player $player, Block $block, Block $target, int $face, Vector3 $facePos) : bool{
 		$targetBlock = Block::get($this->meta);
 
 		if($targetBlock instanceof Air){

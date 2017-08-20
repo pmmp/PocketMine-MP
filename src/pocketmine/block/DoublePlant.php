@@ -53,7 +53,7 @@ class DoublePlant extends Flowable{
 		return $names[$this->meta & 0x07] ?? "";
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
+	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$id = $block->getSide(Vector3::SIDE_DOWN)->getId();
 		if(($id === Block::GRASS or $id === Block::DIRT) and $block->getSide(Vector3::SIDE_UP)->canBeReplaced()){
 			$this->getLevel()->setBlock($block, $this, false, false);

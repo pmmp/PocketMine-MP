@@ -2364,6 +2364,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$blockVector = new Vector3($packet->x, $packet->y, $packet->z);
+		$facePos = new Vector3($packet->fx, $packet->fy, $packet->fz);
 
 		$this->craftingType = 0;
 
@@ -2373,7 +2374,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			if(!$this->canInteract($blockVector->add(0.5, 0.5, 0.5), 13) or $this->isSpectator()){
 			}elseif($this->isCreative()){
 				$item = $this->inventory->getItemInHand();
-				if($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this, true) === true){
+				if($this->level->useItemOn($blockVector, $item, $packet->face, $facePos, $this, true) === true){
 					return true;
 				}
 			}elseif(!$this->inventory->getItemInHand()->equals($packet->item)){
@@ -2381,7 +2382,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}else{
 				$item = $this->inventory->getItemInHand();
 				$oldItem = clone $item;
-				if($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this, true)){
+				if($this->level->useItemOn($blockVector, $item, $packet->face, $facePos, $this, true)){
 					if(!$item->equals($oldItem) or $item->getCount() !== $oldItem->getCount()){
 						$this->inventory->setItemInHand($item);
 						$this->inventory->sendHeldItem($this->hasSpawned);

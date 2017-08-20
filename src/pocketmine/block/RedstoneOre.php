@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class RedstoneOre extends Solid{
@@ -44,7 +45,7 @@ class RedstoneOre extends Solid{
 		return 3;
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
+	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
 		return $this->getLevel()->setBlock($this, $this, true, false);
 	}
 
