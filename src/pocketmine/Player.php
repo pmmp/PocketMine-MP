@@ -1662,7 +1662,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->processMovement($tickDiff);
 			$this->entityBaseTick($tickDiff);
 
-			if(!$this->isSpectator()){
+			if(!$this->isSpectator() and $this->isAlive()){
 				$this->checkNearEntities($tickDiff);
 
 				if($this->speed !== null){
