@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
-use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item as ItemItem;
@@ -80,34 +80,14 @@ class FallingSand extends Entity{
 		}
 	}
 
-	public function onUpdate(int $currentTick) : bool{
-
+	public function entityBaseTick(int $tickDiff = 1) : bool{
 		if($this->closed){
 			return false;
 		}
 
-		$this->timings->startTiming();
-
-		$tickDiff = $currentTick - $this->lastUpdate;
-		if($tickDiff <= 0 and !$this->justCreated){
-			return true;
-		}
-
-		$this->lastUpdate = $currentTick;
-
-		$hasUpdate = $this->entityBaseTick($tickDiff);
+		$hasUpdate = parent::entityBaseTick($tickDiff);
 
 		if($this->isAlive()){
-			$this->motionY -= $this->gravity;
-
-			$this->move($this->motionX, $this->motionY, $this->motionZ);
-
-			$friction = 1 - $this->drag;
-
-			$this->motionX *= $friction;
-			$this->motionY *= 1 - $this->drag;
-			$this->motionZ *= $friction;
-
 			$pos = (new Vector3($this->x - 0.5, $this->y, $this->z - 0.5))->floor();
 
 			if($this->onGround){
@@ -117,18 +97,16 @@ class FallingSand extends Entity{
 					//FIXME: anvils are supposed to destroy torches
 					$this->getLevel()->dropItem($this, ItemItem::get($this->getBlock(), $this->getDamage(), 1));
 				}else{
-					$this->server->getPluginManager()->callEvent($ev = new EntityBlockChangeEvent($this, $block, Block::get($this->getBlock(), $this->getDamage())));
+					$this->server->getPluginManager()->callEvent($ev = new EntityBlockChangeEvent($this, $block, BlockFactory::get($this->getBlock(), $this->getDamage())));
 					if(!$ev->isCancelled()){
 						$this->getLevel()->setBlock($pos, $ev->getTo(), true);
 					}
 				}
 				$hasUpdate = true;
 			}
-
-			$this->updateMovement();
 		}
 
-		return $hasUpdate or !$this->onGround or abs($this->motionX) > 0.00001 or abs($this->motionY) > 0.00001 or abs($this->motionZ) > 0.00001;
+		return $hasUpdate;
 	}
 
 	public function getBlock(){

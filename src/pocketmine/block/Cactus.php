@@ -90,7 +90,7 @@ class Cactus extends Transparent{
 					for($y = 1; $y < 3; ++$y){
 						$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
 						if($b->getId() === self::AIR){
-							Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, Block::get(Block::CACTUS)));
+							Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, BlockFactory::get(Block::CACTUS)));
 							if(!$ev->isCancelled()){
 								$this->getLevel()->setBlock($b, $ev->getNewState(), true);
 							}
@@ -108,7 +108,7 @@ class Cactus extends Transparent{
 		return false;
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
+	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
 		if($down->getId() === self::SAND or $down->getId() === self::CACTUS){
 			$block0 = $this->getSide(Vector3::SIDE_NORTH);

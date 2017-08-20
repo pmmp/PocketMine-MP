@@ -41,7 +41,7 @@ class SnowLayer extends Flowable{
 		return "Snow Layer";
 	}
 
-	public function canBeReplaced() : bool{
+	public function canBeReplaced(Block $with = null) : bool{
 		return true;
 	}
 
@@ -54,7 +54,7 @@ class SnowLayer extends Flowable{
 	}
 
 
-	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
+	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
 		if($block->getSide(Vector3::SIDE_DOWN)->isSolid()){
 			//TODO: fix placement
 			$this->getLevel()->setBlock($block, $this, true);
@@ -68,13 +68,13 @@ class SnowLayer extends Flowable{
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if(!$this->getSide(Vector3::SIDE_DOWN)->isSolid()){
-				$this->getLevel()->setBlock($this, Block::get(Block::AIR), false, false);
+				$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), false, false);
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
 			if($this->level->getBlockLightAt($this->x, $this->y, $this->z) >= 12){
-				$this->getLevel()->setBlock($this, Block::get(Block::AIR), false, false);
+				$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), false, false);
 
 				return Level::BLOCK_UPDATE_RANDOM;
 			}

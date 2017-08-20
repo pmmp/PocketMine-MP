@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\level\generator\populator;
 
-use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\biome\Biome;
 use pocketmine\utils\Random;
@@ -44,7 +44,7 @@ class GroundCover extends Populator{
 
 					$column = $chunk->getBlockIdColumn($x, $z);
 					for($y = 127; $y > 0; --$y){
-						if($column{$y} !== "\x00" and !Block::get(ord($column{$y}))->isTransparent()){
+						if($column{$y} !== "\x00" and !BlockFactory::get(ord($column{$y}))->isTransparent()){
 							break;
 						}
 					}

@@ -41,7 +41,7 @@ class Bedrock extends Solid{
 		return -1;
 	}
 
-	public function getResistance() : float{
+	public function getBlastResistance() : float{
 		return 18000000;
 	}
 

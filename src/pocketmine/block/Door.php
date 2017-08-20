@@ -204,9 +204,9 @@ abstract class Door extends Transparent{
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(Vector3::SIDE_DOWN)->getId() === self::AIR){ //Replace with common break method
-				$this->getLevel()->setBlock($this, Block::get(Block::AIR), false);
+				$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), false);
 				if($this->getSide(Vector3::SIDE_UP) instanceof Door){
-					$this->getLevel()->setBlock($this->getSide(Vector3::SIDE_UP), Block::get(Block::AIR), false);
+					$this->getLevel()->setBlock($this->getSide(Vector3::SIDE_UP), BlockFactory::get(Block::AIR), false);
 				}
 
 				return Level::BLOCK_UPDATE_NORMAL;
@@ -216,22 +216,22 @@ abstract class Door extends Transparent{
 		return false;
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
-		if($face === 1){
+	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
+		if($face === Vector3::SIDE_UP){
 			$blockUp = $this->getSide(Vector3::SIDE_UP);
 			$blockDown = $this->getSide(Vector3::SIDE_DOWN);
 			if($blockUp->canBeReplaced() === false or $blockDown->isTransparent() === true){
 				return false;
 			}
 			$direction = $player instanceof Player ? $player->getDirection() : 0;
-			$face = [
+			$faces = [
 				0 => 3,
 				1 => 4,
 				2 => 2,
 				3 => 5,
 			];
-			$next = $this->getSide($face[($direction + 2) % 4]);
-			$next2 = $this->getSide($face[$direction]);
+			$next = $this->getSide($faces[($direction + 2) % 4]);
+			$next2 = $this->getSide($faces[$direction]);
 			$metaUp = 0x08;
 			if($next->getId() === $this->getId() or ($next2->isTransparent() === false and $next->isTransparent() === true)){ //Door hinge
 				$metaUp |= 0x01;
@@ -239,7 +239,7 @@ abstract class Door extends Transparent{
 
 			$this->setDamage($player->getDirection() & 0x03);
 			$this->getLevel()->setBlock($block, $this, true, true); //Bottom
-			$this->getLevel()->setBlock($blockUp, $b = Block::get($this->getId(), $metaUp), true); //Top
+			$this->getLevel()->setBlock($blockUp, $b = BlockFactory::get($this->getId(), $metaUp), true); //Top
 			return true;
 		}
 
@@ -250,15 +250,15 @@ abstract class Door extends Transparent{
 		if(($this->getDamage() & 0x08) === 0x08){
 			$down = $this->getSide(Vector3::SIDE_DOWN);
 			if($down->getId() === $this->getId()){
-				$this->getLevel()->setBlock($down, Block::get(Block::AIR), true);
+				$this->getLevel()->setBlock($down, BlockFactory::get(Block::AIR), true);
 			}
 		}else{
 			$up = $this->getSide(Vector3::SIDE_UP);
 			if($up->getId() === $this->getId()){
-				$this->getLevel()->setBlock($up, Block::get(Block::AIR), true);
+				$this->getLevel()->setBlock($up, BlockFactory::get(Block::AIR), true);
 			}
 		}
-		$this->getLevel()->setBlock($this, Block::get(Block::AIR), true);
+		$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true);
 
 		return true;
 	}
@@ -268,7 +268,7 @@ abstract class Door extends Transparent{
 			$down = $this->getSide(Vector3::SIDE_DOWN);
 			if($down->getId() === $this->getId()){
 				$meta = $down->getDamage() ^ 0x04;
-				$this->level->setBlock($down, Block::get($this->getId(), $meta), true);
+				$this->level->setBlock($down, BlockFactory::get($this->getId(), $meta), true);
 				$this->level->addSound(new DoorSound($this));
 				return true;
 			}

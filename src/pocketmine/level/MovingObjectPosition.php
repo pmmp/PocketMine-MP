@@ -27,24 +27,30 @@ use pocketmine\entity\Entity;
 use pocketmine\math\Vector3;
 
 class MovingObjectPosition{
+	const TYPE_BLOCK_COLLISION = 0;
+	const TYPE_ENTITY_COLLISION = 1;
 
-	/** 0 = block, 1 = entity */
+	/** @var int */
 	public $typeOfHit;
 
+	/** @var int|null */
 	public $blockX;
+	/** @var int|null */
 	public $blockY;
+	/** @var int|null */
 	public $blockZ;
 
 	/**
+	 * @var int|null
 	 * Which side was hit. If its -1 then it went the full length of the ray trace.
-	 * Bottom = 0, Top = 1, East = 2, West = 3, North = 4, South = 5.
+	 * -1 or one of the Vector3::SIDE_* constants
 	 */
 	public $sideHit;
 
 	/** @var Vector3 */
 	public $hitVector;
 
-	/** @var Entity */
+	/** @var Entity|null */
 	public $entityHit = null;
 
 	protected function __construct(){
@@ -62,10 +68,11 @@ class MovingObjectPosition{
 	 */
 	public static function fromBlock(int $x, int $y, int $z, int $side, Vector3 $hitVector) : MovingObjectPosition{
 		$ob = new MovingObjectPosition;
-		$ob->typeOfHit = 0;
+		$ob->typeOfHit = self::TYPE_BLOCK_COLLISION;
 		$ob->blockX = $x;
 		$ob->blockY = $y;
 		$ob->blockZ = $z;
+		$ob->sideHit = $side;
 		$ob->hitVector = new Vector3($hitVector->x, $hitVector->y, $hitVector->z);
 		return $ob;
 	}
@@ -77,7 +84,7 @@ class MovingObjectPosition{
 	 */
 	public static function fromEntity(Entity $entity) : MovingObjectPosition{
 		$ob = new MovingObjectPosition;
-		$ob->typeOfHit = 1;
+		$ob->typeOfHit = self::TYPE_ENTITY_COLLISION;
 		$ob->entityHit = $entity;
 		$ob->hitVector = new Vector3($entity->x, $entity->y, $entity->z);
 		return $ob;

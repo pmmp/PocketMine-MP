@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
 
-use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
@@ -183,7 +183,7 @@ class ParticleCommand extends VanillaCommand{
 				break;
 			case "terrain":
 				if($data !== null and $data !== 0){
-					return new TerrainParticle($pos, Block::get($data));
+					return new TerrainParticle($pos, BlockFactory::get($data));
 				}
 				break;
 			case "heart":
@@ -211,7 +211,7 @@ class ParticleCommand extends VanillaCommand{
 		}elseif(strpos($name, "blockcrack_") === 0){
 			$d = explode("_", $name);
 			if(count($d) === 2){
-				return new TerrainParticle($pos, Block::get($d[1] & 0xff, $d[1] >> 12));
+				return new TerrainParticle($pos, BlockFactory::get($d[1] & 0xff, $d[1] >> 12));
 			}
 		}elseif(strpos($name, "blockdust_") === 0){
 			$d = explode("_", $name);

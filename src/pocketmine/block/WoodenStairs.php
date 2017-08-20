@@ -32,7 +32,7 @@ class WoodenStairs extends Stair{
 		return 2;
 	}
 
-	public function getResistance() : float{
+	public function getBlastResistance() : float{
 		return 15;
 	}
 

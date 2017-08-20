@@ -27,6 +27,7 @@ use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\level\sound\DoorSound;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Trapdoor extends Transparent{
@@ -123,7 +124,7 @@ class Trapdoor extends Transparent{
 		return $bb;
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
+	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$directions = [
 			0 => 1,
 			1 => 3,
@@ -133,7 +134,7 @@ class Trapdoor extends Transparent{
 		if($player !== null){
 			$this->meta = $directions[$player->getDirection() & 0x03];
 		}
-		if(($fy > 0.5 and $face !== self::SIDE_UP) or $face === self::SIDE_DOWN){
+		if(($facePos->y > 0.5 and $face !== self::SIDE_UP) or $face === self::SIDE_DOWN){
 			$this->meta |= self::MASK_UPPER; //top half of block
 		}
 		$this->getLevel()->setBlock($block, $this, true, true);

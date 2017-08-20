@@ -79,58 +79,27 @@ class PrimedTNT extends Entity implements Explosive{
 		$this->namedtag->Fuse = new ByteTag("Fuse", $this->fuse);
 	}
 
-	public function onUpdate(int $currentTick) : bool{
-
+	public function entityBaseTick(int $tickDiff = 1) : bool{
 		if($this->closed){
 			return false;
 		}
 
-		$this->timings->startTiming();
-
-		$tickDiff = $currentTick - $this->lastUpdate;
-		if($tickDiff <= 0 and !$this->justCreated){
-			return true;
-		}
+		$hasUpdate = parent::entityBaseTick($tickDiff);
 
 		if($this->fuse % 5 === 0){ //don't spam it every tick, it's not necessary
 			$this->setDataProperty(self::DATA_FUSE_LENGTH, self::DATA_TYPE_INT, $this->fuse);
 		}
 
-		$this->lastUpdate = $currentTick;
-
-		$hasUpdate = $this->entityBaseTick($tickDiff);
-
 		if($this->isAlive()){
-
-			$this->motionY -= $this->gravity;
-
-			$this->move($this->motionX, $this->motionY, $this->motionZ);
-
-			$friction = 1 - $this->drag;
-
-			$this->motionX *= $friction;
-			$this->motionY *= $friction;
-			$this->motionZ *= $friction;
-
-			$this->updateMovement();
-
-			if($this->onGround){
-				$this->motionY *= -0.5;
-				$this->motionX *= 0.7;
-				$this->motionZ *= 0.7;
-			}
-
 			$this->fuse -= $tickDiff;
 
 			if($this->fuse <= 0){
 				$this->kill();
 				$this->explode();
 			}
-
 		}
 
-
-		return $hasUpdate or $this->fuse >= 0 or abs($this->motionX) > 0.00001 or abs($this->motionY) > 0.00001 or abs($this->motionZ) > 0.00001;
+		return $hasUpdate or $this->fuse >= 0;
 	}
 
 	public function explode(){

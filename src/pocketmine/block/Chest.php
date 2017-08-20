@@ -67,7 +67,7 @@ class Chest extends Transparent{
 		);
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
+	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$faces = [
 			0 => 4,
 			1 => 2,
@@ -129,7 +129,7 @@ class Chest extends Transparent{
 		if($t instanceof TileChest){
 			$t->unpair();
 		}
-		$this->getLevel()->setBlock($this, Block::get(Block::AIR), true, true);
+		$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true, true);
 
 		return true;
 	}

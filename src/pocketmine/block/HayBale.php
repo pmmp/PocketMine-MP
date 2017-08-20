@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class HayBale extends Solid{
@@ -42,7 +43,7 @@ class HayBale extends Solid{
 		return 0.5;
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
+	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$faces = [
 			0 => 0,
 			1 => 0,

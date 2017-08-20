@@ -50,7 +50,7 @@ class Sugarcane extends Flowable{
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
 					if($b->getId() === self::AIR){
-						Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, Block::get(Block::SUGARCANE_BLOCK)));
+						Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, BlockFactory::get(Block::SUGARCANE_BLOCK)));
 						if(!$ev->isCancelled()){
 							$this->getLevel()->setBlock($b, $ev->getNewState(), true);
 						}
@@ -84,7 +84,7 @@ class Sugarcane extends Flowable{
 					for($y = 1; $y < 3; ++$y){
 						$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
 						if($b->getId() === self::AIR){
-							$this->getLevel()->setBlock($b, Block::get(Block::SUGARCANE_BLOCK), true);
+							$this->getLevel()->setBlock($b, BlockFactory::get(Block::SUGARCANE_BLOCK), true);
 							break;
 						}
 					}
@@ -102,10 +102,10 @@ class Sugarcane extends Flowable{
 		return false;
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
+	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
 		if($down->getId() === self::SUGARCANE_BLOCK){
-			$this->getLevel()->setBlock($block, Block::get(Block::SUGARCANE_BLOCK), true);
+			$this->getLevel()->setBlock($block, BlockFactory::get(Block::SUGARCANE_BLOCK), true);
 
 			return true;
 		}elseif($down->getId() === self::GRASS or $down->getId() === self::DIRT or $down->getId() === self::SAND){
@@ -114,7 +114,7 @@ class Sugarcane extends Flowable{
 			$block2 = $down->getSide(Vector3::SIDE_WEST);
 			$block3 = $down->getSide(Vector3::SIDE_EAST);
 			if(($block0 instanceof Water) or ($block1 instanceof Water) or ($block2 instanceof Water) or ($block3 instanceof Water)){
-				$this->getLevel()->setBlock($block, Block::get(Block::SUGARCANE_BLOCK), true);
+				$this->getLevel()->setBlock($block, BlockFactory::get(Block::SUGARCANE_BLOCK), true);
 
 				return true;
 			}

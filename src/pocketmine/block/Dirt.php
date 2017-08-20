@@ -50,7 +50,7 @@ class Dirt extends Solid{
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($item->isHoe()){
 			$item->useOn($this);
-			$this->getLevel()->setBlock($this, Block::get(Block::FARMLAND, 0), true);
+			$this->getLevel()->setBlock($this, BlockFactory::get(Block::FARMLAND, 0), true);
 
 			return true;
 		}

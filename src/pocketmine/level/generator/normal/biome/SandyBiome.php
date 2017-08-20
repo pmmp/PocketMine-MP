@@ -24,16 +24,17 @@ declare(strict_types=1);
 namespace pocketmine\level\generator\normal\biome;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 
 abstract class SandyBiome extends NormalBiome{
 
 	public function __construct(){
 		$this->setGroundCover([
-			Block::get(Block::SAND, 0),
-			Block::get(Block::SAND, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0)
+			BlockFactory::get(Block::SAND, 0),
+			BlockFactory::get(Block::SAND, 0),
+			BlockFactory::get(Block::SANDSTONE, 0),
+			BlockFactory::get(Block::SANDSTONE, 0),
+			BlockFactory::get(Block::SANDSTONE, 0)
 		]);
 	}
 }

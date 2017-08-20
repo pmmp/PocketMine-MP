@@ -60,8 +60,8 @@ class SignPost extends Transparent{
 	}
 
 
-	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
-		if($face !== 0){
+	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
+		if($face !== Vector3::SIDE_DOWN){
 			$nbt = new CompoundTag("", [
 				new StringTag("id", Tile::SIGN),
 				new IntTag("x", $block->x),
@@ -83,7 +83,7 @@ class SignPost extends Transparent{
 				}
 			}
 
-			if($face === 1){
+			if($face === Vector3::SIDE_UP){
 				$this->meta = floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0f;
 				$this->getLevel()->setBlock($block, $this, true);
 			}else{

@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Water extends Liquid{
@@ -52,7 +53,7 @@ class Water extends Liquid{
 		$entity->resetFallDistance();
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
+	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$ret = $this->getLevel()->setBlock($this, $this, true, false);
 		$this->getLevel()->scheduleDelayedBlockUpdate($this, $this->tickRate());
 

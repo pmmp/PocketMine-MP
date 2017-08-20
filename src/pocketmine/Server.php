@@ -27,7 +27,7 @@ declare(strict_types=1);
  */
 namespace pocketmine;
 
-use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\command\CommandReader;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
@@ -80,8 +80,8 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\CompressBatchedTask;
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
-use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\RakLibInterface;
 use pocketmine\network\Network;
@@ -1439,6 +1439,18 @@ class Server{
 			}
 			$this->config = new Config($this->dataPath . "pocketmine.yml", Config::YAML, []);
 
+			define('pocketmine\DEBUG', (int) $this->getProperty("debug.level", 1));
+
+			if(((int) ini_get('zend.assertions')) > 0 and ((bool) $this->getProperty("debug.assertions.warn-if-enabled", true)) !== false){
+				$this->logger->warning("Debugging assertions are enabled, this may impact on performance. To disable them, set `zend.assertions = -1` in php.ini.");
+			}
+
+			ini_set('assert.exception', '1');
+
+			if($this->logger instanceof MainLogger){
+				$this->logger->setLogDebug(\pocketmine\DEBUG > 1);
+			}
+
 			$this->logger->info("Loading server properties...");
 			$this->properties = new Config($this->dataPath . "server.properties", Config::PROPERTIES, [
 				"motd" => "Minecraft: PE Server",
@@ -1540,18 +1552,6 @@ class Server{
 				$this->setConfigInt("difficulty", 3);
 			}
 
-			define('pocketmine\DEBUG', (int) $this->getProperty("debug.level", 1));
-
-			if(((int) ini_get('zend.assertions')) > 0 and ((bool) $this->getProperty("debug.assertions.warn-if-enabled", true)) !== false){
-				$this->logger->warning("Debugging assertions are enabled, this may impact on performance. To disable them, set `zend.assertions = -1` in php.ini.");
-			}
-
-			ini_set('assert.exception', '1');
-
-			if($this->logger instanceof MainLogger){
-				$this->logger->setLogDebug(\pocketmine\DEBUG > 1);
-			}
-
 			if(\pocketmine\DEBUG >= 0){
 				@cli_set_process_title($this->getName() . " " . $this->getPocketMineVersion());
 			}
@@ -1582,7 +1582,7 @@ class Server{
 
 			Entity::init();
 			Tile::init();
-			Block::init();
+			BlockFactory::init();
 			Enchantment::init();
 			Item::init();
 			Biome::init();

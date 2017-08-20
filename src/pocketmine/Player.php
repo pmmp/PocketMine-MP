@@ -26,6 +26,7 @@ namespace pocketmine;
 use pocketmine\block\Air;
 use pocketmine\block\Bed;
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\Arrow;
@@ -1626,6 +1627,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	}
 
+	protected function tryChangeMovement(){
+
+	}
+
 	public function sendAttributes(bool $sendAll = false){
 		$entries = $sendAll ? $this->attributeMap->getAll() : $this->attributeMap->needSend();
 		if(count($entries) > 0){
@@ -1670,7 +1675,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->processMovement($tickDiff);
 			$this->entityBaseTick($tickDiff);
 
-			if(!$this->isSpectator()){
+			if(!$this->isSpectator() and $this->isAlive()){
 				$this->checkNearEntities($tickDiff);
 
 				if($this->speed !== null){
@@ -2215,7 +2220,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						if(!$this->canInteract($blockVector->add(0.5, 0.5, 0.5), 13) or $this->isSpectator()){
 						}elseif($this->isCreative()){
 							$item = $this->inventory->getItemInHand();
-							if($this->level->useItemOn($blockVector, $item, $face, $packet->transactionData->clickPos->x, $packet->transactionData->clickPos->y, $packet->transactionData->clickPos->z, $this, true) === true){
+							if($this->level->useItemOn($blockVector, $item, $face, $packet->transactionData->clickPos, $this, true) === true){
 								return true;
 							}
 						}elseif(!$this->inventory->getItemInHand()->equals($packet->transactionData->itemInHand)){
@@ -2223,7 +2228,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						}else{
 							$item = $this->inventory->getItemInHand();
 							$oldItem = clone $item;
-							if($this->level->useItemOn($blockVector, $item, $face, $packet->transactionData->clickPos->x, $packet->transactionData->clickPos->y, $packet->transactionData->clickPos->z, $this, true)){
+							if($this->level->useItemOn($blockVector, $item, $face, $packet->transactionData->clickPos, $this, true)){
 								if(!$item->equals($oldItem) or $item->getCount() !== $oldItem->getCount()){
 									$this->inventory->setItemInHand($item);
 									$this->inventory->sendHeldItem($this->hasSpawned);
@@ -2587,7 +2592,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				}
 				$block = $target->getSide($packet->face);
 				if($block->getId() === Block::FIRE){
-					$this->level->setBlock($block, Block::get(Block::AIR));
+					$this->level->setBlock($block, BlockFactory::get(Block::AIR));
 					break;
 				}
 

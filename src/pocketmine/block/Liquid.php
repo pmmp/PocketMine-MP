@@ -41,7 +41,7 @@ abstract class Liquid extends Transparent{
 		return false;
 	}
 
-	public function canBeReplaced() : bool{
+	public function canBeReplaced(Block $with = null) : bool{
 		return true;
 	}
 
@@ -241,9 +241,9 @@ abstract class Liquid extends Transparent{
 				if($k !== $decay){
 					$decay = $k;
 					if($decay < 0){
-						$this->getLevel()->setBlock($this, Block::get(Block::AIR), true, true);
+						$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true, true);
 					}else{
-						$this->getLevel()->setBlock($this, Block::get($this->id, $decay), true, true);
+						$this->getLevel()->setBlock($this, BlockFactory::get($this->id, $decay), true, true);
 						$this->getLevel()->scheduleDelayedBlockUpdate($this, $this->tickRate());
 					}
 				}elseif($flag){
@@ -257,10 +257,10 @@ abstract class Liquid extends Transparent{
 			$bottomBlock = $this->level->getBlock($this->temporalVector->setComponents($this->x, $this->y - 1, $this->z));
 
 			if($this instanceof Lava and $bottomBlock instanceof Water){
-				$this->getLevel()->setBlock($bottomBlock, Block::get(Block::STONE), true, true);
+				$this->getLevel()->setBlock($bottomBlock, BlockFactory::get(Block::STONE), true, true);
 
 			}elseif($bottomBlock->canBeFlowedInto() or ($bottomBlock instanceof Liquid and ($bottomBlock->getDamage() & 0x07) !== 0)){
-				$this->getLevel()->setBlock($bottomBlock, Block::get($this->id, $decay | 0x08), true, false);
+				$this->getLevel()->setBlock($bottomBlock, BlockFactory::get($this->id, $decay | 0x08), true, false);
 				$this->getLevel()->scheduleDelayedBlockUpdate($bottomBlock, $this->tickRate());
 
 			}elseif($decay >= 0 and ($decay === 0 or !$bottomBlock->canBeFlowedInto())){
@@ -305,7 +305,7 @@ abstract class Liquid extends Transparent{
 				$this->getLevel()->useBreakOn($block);
 			}
 
-			$this->getLevel()->setBlock($block, Block::get($this->getId(), $newFlowDecay), true, false);
+			$this->getLevel()->setBlock($block, BlockFactory::get($this->getId(), $newFlowDecay), true, false);
 			$this->getLevel()->scheduleDelayedBlockUpdate($block, $this->tickRate());
 		}
 	}
@@ -434,9 +434,9 @@ abstract class Liquid extends Transparent{
 
 			if($colliding){
 				if($this->getDamage() === 0){
-					$this->getLevel()->setBlock($this, Block::get(Block::OBSIDIAN), true, true);
+					$this->getLevel()->setBlock($this, BlockFactory::get(Block::OBSIDIAN), true, true);
 				}elseif($this->getDamage() <= 4){
-					$this->getLevel()->setBlock($this, Block::get(Block::COBBLESTONE), true, true);
+					$this->getLevel()->setBlock($this, BlockFactory::get(Block::COBBLESTONE), true, true);
 				}
 			}
 		}

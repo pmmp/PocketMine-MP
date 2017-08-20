@@ -26,6 +26,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
@@ -38,7 +39,7 @@ class SpawnEgg extends Item{
 		parent::__construct(self::SPAWN_EGG, $meta, $count, "Spawn Egg");
 	}
 
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function onActivate(Level $level, Player $player, Block $block, Block $target, int $face, Vector3 $facePos) : bool{
 		$nbt = new CompoundTag("", [
 			new ListTag("Pos", [
 				new DoubleTag("", $block->getX() + 0.5),

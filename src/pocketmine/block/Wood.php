@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Wood extends Solid{
@@ -53,14 +54,14 @@ class Wood extends Solid{
 		return $names[$this->meta & 0x03];
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
+	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$faces = [
-			0 => 0,
-			1 => 0,
-			2 => 0b1000,
-			3 => 0b1000,
-			4 => 0b0100,
-			5 => 0b0100,
+			Vector3::SIDE_DOWN => 0,
+			Vector3::SIDE_UP => 0,
+			Vector3::SIDE_NORTH => 0b1000,
+			Vector3::SIDE_SOUTH => 0b1000,
+			Vector3::SIDE_WEST => 0b0100,
+			Vector3::SIDE_EAST => 0b0100,
 		];
 
 		$this->meta = ($this->meta & 0x03) | $faces[$face];

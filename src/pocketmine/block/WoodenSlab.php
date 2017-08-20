@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class WoodenSlab extends Transparent{
@@ -77,41 +78,45 @@ class WoodenSlab extends Transparent{
 		}
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, float $fx, float $fy, float $fz, Player $player = null) : bool{
+	public function canBeReplaced(Block $with = null) : bool{
+		return $with !== null and $with->getId() === $this->getId() and ($with->getDamage() & 0x07) === ($this->getDamage() & 0x07);
+	}
+
+	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$this->meta &= 0x07;
-		if($face === 0){
-			if($target->getId() === $this->id and ($target->getDamage() & 0x08) === 0x08 and ($target->getDamage() & 0x07) === ($this->meta)){
-				$this->getLevel()->setBlock($target, Block::get($this->doubleId, $this->meta), true);
+		if($face === Vector3::SIDE_DOWN){
+			if($target->getId() === $this->id and ($target->getDamage() & 0x08) === 0x08 and ($target->getDamage() & 0x07) === $this->meta){
+				$this->getLevel()->setBlock($target, BlockFactory::get($this->doubleId, $this->meta), true);
 
 				return true;
-			}elseif($block->getId() === $this->id and ($block->getDamage() & 0x07) === ($this->meta)){
-				$this->getLevel()->setBlock($block, Block::get($this->doubleId, $this->meta), true);
+			}elseif($block->getId() === $this->id and ($block->getDamage() & 0x07) === $this->meta){
+				$this->getLevel()->setBlock($block, BlockFactory::get($this->doubleId, $this->meta), true);
 
 				return true;
 			}else{
 				$this->meta |= 0x08;
 			}
-		}elseif($face === 1){
+		}elseif($face === Vector3::SIDE_UP){
 			if($target->getId() === $this->id and ($target->getDamage() & 0x08) === 0 and ($target->getDamage() & 0x07) === $this->meta){
-				$this->getLevel()->setBlock($target, Block::get($this->doubleId, $this->meta), true);
+				$this->getLevel()->setBlock($target, BlockFactory::get($this->doubleId, $this->meta), true);
 
 				return true;
 			}elseif($block->getId() === $this->id and ($block->getDamage() & 0x07) === $this->meta){
-				$this->getLevel()->setBlock($block, Block::get($this->doubleId, $this->meta), true);
+				$this->getLevel()->setBlock($block, BlockFactory::get($this->doubleId, $this->meta), true);
 
 				return true;
 			}
 		}else{ //TODO: collision
 			if($block->getId() === $this->id){
 				if(($block->getDamage() & 0x07) === $this->meta){
-					$this->getLevel()->setBlock($block, Block::get($this->doubleId, $this->meta), true);
+					$this->getLevel()->setBlock($block, BlockFactory::get($this->doubleId, $this->meta), true);
 
 					return true;
 				}
 
 				return false;
 			}else{
-				if($fy > 0.5){
+				if($facePos->y > 0.5){
 					$this->meta |= 0x08;
 				}
 			}
