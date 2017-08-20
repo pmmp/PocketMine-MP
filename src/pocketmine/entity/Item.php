@@ -98,54 +98,20 @@ class Item extends Entity{
 		}
 	}
 
-	public function onUpdate(int $currentTick) : bool{
+	public function entityBaseTick(int $tickDiff = 1) : bool{
 		if($this->closed){
 			return false;
 		}
 
-		$tickDiff = $currentTick - $this->lastUpdate;
-		if($tickDiff <= 0 and !$this->justCreated){
-			return true;
-		}
-
-		$this->lastUpdate = $currentTick;
-
-		$this->timings->startTiming();
-
-		$hasUpdate = $this->entityBaseTick($tickDiff);
+		$hasUpdate = parent::entityBaseTick($tickDiff);
 
 		if($this->isAlive()){
-
 			if($this->pickupDelay > 0 and $this->pickupDelay < 32767){ //Infinite delay
 				$this->pickupDelay -= $tickDiff;
 				if($this->pickupDelay < 0){
 					$this->pickupDelay = 0;
 				}
 			}
-
-			$this->motionY -= $this->gravity;
-
-			if($this->checkObstruction($this->x, $this->y, $this->z)){
-				$hasUpdate = true;
-			}
-
-			$this->move($this->motionX, $this->motionY, $this->motionZ);
-
-			$friction = 1 - $this->drag;
-
-			if($this->onGround and (abs($this->motionX) > 0.00001 or abs($this->motionZ) > 0.00001)){
-				$friction = $this->getLevel()->getBlock($this->temporalVector->setComponents((int) floor($this->x), (int) floor($this->y - 1), (int) floor($this->z) - 1))->getFrictionFactor() * $friction;
-			}
-
-			$this->motionX *= $friction;
-			$this->motionY *= 1 - $this->drag;
-			$this->motionZ *= $friction;
-
-			if($this->onGround){
-				$this->motionY *= -0.5;
-			}
-
-			$this->updateMovement();
 
 			if($this->age > 6000){
 				$this->server->getPluginManager()->callEvent($ev = new ItemDespawnEvent($this));
@@ -159,9 +125,16 @@ class Item extends Entity{
 
 		}
 
-		$this->timings->stopTiming();
+		return $hasUpdate;
+	}
 
-		return $hasUpdate or !$this->onGround or abs($this->motionX) > 0.00001 or abs($this->motionY) > 0.00001 or abs($this->motionZ) > 0.00001;
+	protected function tryChangeMovement(){
+		$this->checkObstruction($this->x, $this->y, $this->z);
+		parent::tryChangeMovement();
+	}
+
+	protected function applyDragBeforeGravity() : bool{
+		return true;
 	}
 
 	public function saveNBT(){

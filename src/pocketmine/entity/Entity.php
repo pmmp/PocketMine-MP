@@ -63,6 +63,8 @@ use pocketmine\Server;
 
 abstract class Entity extends Location implements Metadatable{
 
+	const MOTION_THRESHOLD = 0.00001;
+
 	const NETWORK_ID = -1;
 
 	const DATA_TYPE_BYTE = 0;
@@ -270,6 +272,8 @@ abstract class Entity extends Location implements Metadatable{
 	public $lastMotionY;
 	/** @var float */
 	public $lastMotionZ;
+	/** @var bool */
+	protected $forceMovementUpdate = false;
 
 	/** @var float */
 	public $lastYaw;
@@ -1198,6 +1202,35 @@ abstract class Entity extends Location implements Metadatable{
 		}
 	}
 
+	protected function applyDragBeforeGravity() : bool{
+		return false;
+	}
+
+	protected function applyGravity(){
+		$this->motionY -= $this->gravity;
+	}
+
+	protected function tryChangeMovement(){
+		$friction = 1 - $this->drag;
+
+		if(!$this->onGround){
+			if($this->applyDragBeforeGravity()){
+				$this->motionY *= $friction;
+			}
+
+			$this->applyGravity();
+
+			if(!$this->applyDragBeforeGravity()){
+				$this->motionY *= $friction;
+			}
+		}else{
+			$friction = $this->level->getBlock($this->floor()->subtract(0, 1, 0))->getFrictionFactor();
+		}
+
+		$this->motionX *= $friction;
+		$this->motionZ *= $friction;
+	}
+
 	/**
 	 * @return Vector3
 	 */
@@ -1240,21 +1273,64 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->timings->startTiming();
 
+		if($this->hasMovementUpdate()){
+			$this->tryChangeMovement();
+			$this->move($this->motionX, $this->motionY, $this->motionZ);
+
+			if(abs($this->motionX) <= self::MOTION_THRESHOLD){
+				$this->motionX = 0;
+			}
+			if(abs($this->motionY) <= self::MOTION_THRESHOLD){
+				$this->motionY = 0;
+			}
+			if(abs($this->motionZ) <= self::MOTION_THRESHOLD){
+				$this->motionZ = 0;
+			}
+
+			$this->updateMovement();
+			$this->forceMovementUpdate = false;
+		}
+
 		Timings::$timerEntityBaseTick->startTiming();
 		$hasUpdate = $this->entityBaseTick($tickDiff);
 		Timings::$timerEntityBaseTick->stopTiming();
 
-		$this->updateMovement();
+
 
 		$this->timings->stopTiming();
 
 		//if($this->isStatic())
-		return $hasUpdate;
+		return ($hasUpdate or $this->hasMovementUpdate());
 		//return !($this instanceof Player);
 	}
 
 	final public function scheduleUpdate(){
 		$this->level->updateEntities[$this->id] = $this;
+	}
+
+	/**
+	 * Flags the entity as needing a movement update on the next tick. Setting this forces a movement update even if the
+	 * entity's motion is zero. Used to trigger movement updates when blocks change near entities.
+	 *
+	 * @param bool $value
+	 */
+	final public function setForceMovementUpdate(bool $value = true){
+		$this->forceMovementUpdate = $value;
+		$this->onGround = false;
+	}
+
+	/**
+	 * Returns whether the entity needs a movement update on the next tick.
+	 * @return bool
+	 */
+	final public function hasMovementUpdate() : bool{
+		return (
+			$this->forceMovementUpdate or
+			abs($this->motionX) > self::MOTION_THRESHOLD or
+			abs($this->motionY) > self::MOTION_THRESHOLD or
+			abs($this->motionZ) > self::MOTION_THRESHOLD or
+			!$this->onGround
+		);
 	}
 
 	public function isOnFire() : bool{

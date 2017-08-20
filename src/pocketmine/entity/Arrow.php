@@ -62,14 +62,12 @@ class Arrow extends Projectile{
 		}
 	}
 
-	public function onUpdate(int $currentTick) : bool{
+	public function entityBaseTick(int $tickDiff = 1) : bool{
 		if($this->closed){
 			return false;
 		}
 
-		$this->timings->startTiming();
-
-		$hasUpdate = parent::onUpdate($currentTick);
+		$hasUpdate = parent::entityBaseTick($tickDiff);
 
 		if($this->onGround or $this->hadCollision){
 			$this->setCritical(false);
@@ -79,8 +77,6 @@ class Arrow extends Projectile{
 			$this->close();
 			$hasUpdate = true;
 		}
-
-		$this->timings->stopTiming();
 
 		return $hasUpdate;
 	}
