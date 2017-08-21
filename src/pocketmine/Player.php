@@ -3715,7 +3715,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 	}
 
-	public function attack($damage, EntityDamageEvent $source){
+	public function attack(EntityDamageEvent $source){
 		if(!$this->isAlive()){
 			return;
 		}
@@ -3730,7 +3730,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$source->setCancelled();
 		}
 
-		parent::attack($damage, $source);
+		parent::attack($source);
 
 		if($source->isCancelled()){
 			return;

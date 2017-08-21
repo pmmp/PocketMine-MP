@@ -883,11 +883,9 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	/**
-	 * @param float             $damage
 	 * @param EntityDamageEvent $source
-	 *
 	 */
-	public function attack($damage, EntityDamageEvent $source){
+	public function attack(EntityDamageEvent $source){
 		$this->server->getPluginManager()->callEvent($source);
 		if($source->isCancelled()){
 			return;
@@ -913,11 +911,9 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	/**
-	 * @param float                   $amount
 	 * @param EntityRegainHealthEvent $source
-	 *
 	 */
-	public function heal($amount, EntityRegainHealthEvent $source){
+	public function heal(EntityRegainHealthEvent $source){
 		$this->server->getPluginManager()->callEvent($source);
 		if($source->isCancelled()){
 			return;
@@ -1125,7 +1121,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		if($this->y <= -16 and $this->isAlive()){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_VOID, 10);
-			$this->attack($ev->getFinalDamage(), $ev);
+			$this->attack($ev);
 			$hasUpdate = true;
 		}
 
@@ -1173,7 +1169,7 @@ abstract class Entity extends Location implements Metadatable{
 	 */
 	protected function dealFireDamage(){
 		$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FIRE_TICK, 1);
-		$this->attack($ev->getFinalDamage(), $ev);
+		$this->attack($ev);
 	}
 
 	protected function updateMovement(){
