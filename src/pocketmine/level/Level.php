@@ -26,7 +26,6 @@ declare(strict_types=1);
  */
 namespace pocketmine\level;
 
-use pocketmine\block\Air;
 use pocketmine\block\Beetroot;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;

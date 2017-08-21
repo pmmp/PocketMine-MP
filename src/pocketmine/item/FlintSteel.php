@@ -25,7 +25,6 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
-use pocketmine\block\Fire;
 use pocketmine\block\Solid;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;

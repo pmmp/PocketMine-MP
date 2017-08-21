@@ -67,8 +67,4 @@ class BrownMushroom extends Flowable{
 		return false;
 	}
 
-	protected function recalculateBoundingBox(){
-		return null;
-	}
-
 }

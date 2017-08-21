@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine;
 
-use pocketmine\block\Air;
 use pocketmine\block\Bed;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
@@ -2571,8 +2570,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 									$this->inventory->setItemInHand($bow);
 								}
 							}
-							if($ev->getProjectile() instanceof Projectile){
-								$this->server->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($ev->getProjectile()));
+
+							$projectile = $ev->getProjectile();
+							if($projectile instanceof Projectile){
+								$this->server->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($projectile));
 								if($projectileEv->isCancelled()){
 									$ev->getProjectile()->kill();
 								}else{
