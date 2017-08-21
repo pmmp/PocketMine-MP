@@ -45,7 +45,7 @@ class PlayerAnimationEvent extends PlayerEvent implements Cancellable{
 	 * @param Player $player
 	 * @param int    $animation
 	 */
-	public function __construct(Player $player, $animation = self::ARM_SWING){
+	public function __construct(Player $player, int $animation){
 		$this->player = $player;
 		$this->animationType = $animation;
 	}
