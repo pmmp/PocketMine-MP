@@ -1097,7 +1097,6 @@ abstract class Entity extends Location implements Metadatable{
 	public function entityBaseTick(int $tickDiff = 1) : bool{
 		//TODO: check vehicles
 
-		$this->blocksAround = null;
 		$this->justCreated = false;
 
 		if(!$this->isAlive()){
@@ -1313,6 +1312,8 @@ abstract class Entity extends Location implements Metadatable{
 	final public function setForceMovementUpdate(bool $value = true){
 		$this->forceMovementUpdate = $value;
 		$this->onGround = false;
+
+		$this->blocksAround = null;
 	}
 
 	/**
@@ -1473,6 +1474,8 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function fastMove(float $dx, float $dy, float $dz) : bool{
+		$this->blocksAround = null;
+
 		if($dx == 0 and $dz == 0 and $dy == 0){
 			return true;
 		}
@@ -1512,12 +1515,11 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function move(float $dx, float $dy, float $dz) : bool{
+		$this->blocksAround = null;
 
 		if($dx == 0 and $dz == 0 and $dy == 0){
 			return true;
 		}
-
-		$this->blocksAround = null;
 
 		if($this->keepMovement){
 			$this->boundingBox->offset($dx, $dy, $dz);
