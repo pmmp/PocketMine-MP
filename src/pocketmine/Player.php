@@ -2309,7 +2309,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						$ev->setCancelled();
 					}
 
-					$target->attack($ev->getFinalDamage(), $ev);
+					$target->attack($ev);
 
 					if($ev->isCancelled()){
 						if($item->isTool() and $this->isSurvival()){
