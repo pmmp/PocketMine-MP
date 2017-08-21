@@ -78,7 +78,7 @@ class ItemFrame extends Flowable{
 		return true;
 	}
 
-	public function onBreak(Item $item) : bool{
+	public function onBreak(Item $item, Player $player = null) : bool{
 		$tile = $this->level->getTile($this);
 		if($tile instanceof TileItemFrame){
 			//TODO: add events
@@ -86,7 +86,7 @@ class ItemFrame extends Flowable{
 				$this->level->dropItem($tile->getBlock(), $tile->getItem());
 			}
 		}
-		return parent::onBreak($item);
+		return parent::onBreak($item, $player);
 	}
 
 	public function onUpdate(int $type){

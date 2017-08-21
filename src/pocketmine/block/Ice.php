@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
+use pocketmine\Player;
 
 class Ice extends Transparent{
 
@@ -51,7 +52,7 @@ class Ice extends Transparent{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function onBreak(Item $item) : bool{
+	public function onBreak(Item $item, Player $player = null) : bool{
 		$this->getLevel()->setBlock($this, BlockFactory::get(Block::WATER), true);
 
 		return true;

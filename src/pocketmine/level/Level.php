@@ -1666,7 +1666,7 @@ class Level implements ChunkManager, Metadatable{
 			$this->addParticle(new DestroyBlockParticle($target->add(0.5, 0.5, 0.5), $target));
 		}
 
-		$target->onBreak($item);
+		$target->onBreak($item, $player);
 
 		$tile = $this->getTile($target);
 		if($tile !== null){

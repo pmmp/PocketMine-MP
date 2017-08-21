@@ -161,11 +161,12 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * Do the actions needed so the block is broken with the Item
 	 *
-	 * @param Item $item
+	 * @param Item        $item
+	 * @param Player|null $player
 	 *
 	 * @return bool
 	 */
-	public function onBreak(Item $item) : bool{
+	public function onBreak(Item $item, Player $player = null) : bool{
 		return $this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true, true);
 	}
 

@@ -97,9 +97,9 @@ class DoublePlant extends Flowable{
 		return false;
 	}
 
-	public function onBreak(Item $item) : bool{
-		if(parent::onBreak($item) and $this->isValidHalfPlant()){
-			return $this->getLevel()->setBlock($this->getSide(($this->meta & self::BITFLAG_TOP) !== 0 ? Vector3::SIDE_DOWN : Vector3::SIDE_UP), BlockFactory::get(Block::AIR));
+	public function onBreak(Item $item, Player $player = null) : bool{
+		if(parent::onBreak($item, $player) and $this->isValidHalfPlant()){
+			$this->getLevel()->useBreakOn($this->getSide(($this->meta & self::BITFLAG_TOP) !== 0 ? Vector3::SIDE_DOWN : Vector3::SIDE_UP), $item, $player, $player !== null);
 		}
 
 		return false;
@@ -110,16 +110,20 @@ class DoublePlant extends Flowable{
 	}
 
 	public function getDrops(Item $item) : array{
-		if(!$item->isShears() and ($this->meta === 2 or $this->meta === 3)){ //grass or fern
-			if(mt_rand(0, 24) === 0){
-				return [
-					ItemFactory::get(Item::SEEDS, 0, 1)
-				];
+		if($this->meta & self::BITFLAG_TOP){
+			if(!$item->isShears() and ($this->meta === 2 or $this->meta === 3)){ //grass or fern
+				if(mt_rand(0, 24) === 0){
+					return [
+						ItemFactory::get(Item::SEEDS, 0, 1)
+					];
+				}
+
+				return [];
 			}
 
-			return [];
+			return parent::getDrops($item);
 		}
 
-		return parent::getDrops($item);
+		return [];
 	}
 }
