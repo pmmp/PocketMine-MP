@@ -729,6 +729,7 @@ class Item implements ItemIds, \JsonSerializable{
 		$tag = $this->getNamedTagEntry("display");
 		if($tag instanceof CompoundTag and isset($tag->Lore) and $tag->Lore instanceof ListTag){
 			$lines = [];
+			/** @var StringTag $line */
 			foreach($tag->Lore->getValue() as $line){
 				$lines[] = $line->getValue();
 			}
@@ -1121,6 +1122,7 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		if(isset($tag->tag) and $tag->tag instanceof CompoundTag){
+			/** @var CompoundTag $t */
 			$t = clone $tag->tag;
 			$t->setName("");
 			$item->setNamedTag($t);
