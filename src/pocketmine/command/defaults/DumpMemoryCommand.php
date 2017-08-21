@@ -29,7 +29,7 @@ class DumpMemoryCommand extends VanillaCommand{
 
 	private static $executions = 0;
 
-	public function __construct($name){
+	public function __construct(string $name){
 		parent::__construct(
 			$name,
 			"Dumps the memory",

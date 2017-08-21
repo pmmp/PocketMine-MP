@@ -30,7 +30,7 @@ use pocketmine\utils\TextFormat;
 
 class ReloadCommand extends VanillaCommand{
 
-	public function __construct($name){
+	public function __construct(string $name){
 		parent::__construct(
 			$name,
 			"%pocketmine.command.reload.description",

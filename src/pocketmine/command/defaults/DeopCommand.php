@@ -32,7 +32,7 @@ use pocketmine\utils\TextFormat;
 
 class DeopCommand extends VanillaCommand{
 
-	public function __construct($name){
+	public function __construct(string $name){
 		parent::__construct(
 			$name,
 			"%pocketmine.command.deop.description",

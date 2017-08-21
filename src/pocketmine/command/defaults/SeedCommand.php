@@ -29,7 +29,7 @@ use pocketmine\Player;
 
 class SeedCommand extends VanillaCommand{
 
-	public function __construct($name){
+	public function __construct(string $name){
 		parent::__construct(
 			$name,
 			"%pocketmine.command.seed.description",

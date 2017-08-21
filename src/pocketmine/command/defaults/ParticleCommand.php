@@ -64,7 +64,7 @@ use pocketmine\utils\TextFormat;
 
 class ParticleCommand extends VanillaCommand{
 
-	public function __construct($name){
+	public function __construct(string $name){
 		parent::__construct(
 			$name,
 			"%pocketmine.command.particle.description",
@@ -126,7 +126,6 @@ class ParticleCommand extends VanillaCommand{
 
 	/**
 	 * @param string   $name
-	 *
 	 * @param Vector3  $pos
 	 * @param float    $xd
 	 * @param float    $yd
@@ -135,7 +134,7 @@ class ParticleCommand extends VanillaCommand{
 	 *
 	 * @return Particle|null
 	 */
-	private function getParticle($name, Vector3 $pos, $xd, $yd, $zd, $data){
+	private function getParticle(string $name, Vector3 $pos, float $xd, float $yd, float $zd, int $data = null){
 		switch($name){
 			case "explode":
 				return new ExplodeParticle($pos);
