@@ -64,8 +64,4 @@ class AsyncWorker extends Worker{
 	public function getThreadName() : string{
 		return "Asynchronous Worker #" . $this->id;
 	}
-
-	public function getAsyncWorkerId() : int{
-		return $this->id;
-	}
 }

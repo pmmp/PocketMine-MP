@@ -25,9 +25,7 @@ namespace pocketmine;
 
 use pocketmine\event\server\LowMemoryEvent;
 use pocketmine\event\Timings;
-use pocketmine\scheduler\DumpWorkerMemoryTask;
 use pocketmine\scheduler\GarbageCollectionTask;
-use pocketmine\utils\MainLogger;
 use pocketmine\utils\Utils;
 
 class MemoryManager{
@@ -263,25 +261,6 @@ class MemoryManager{
 	 * @param int    $maxStringSize
 	 */
 	public function dumpServerMemory(string $outputFolder, int $maxNesting, int $maxStringSize){
-		MainLogger::getLogger()->notice("[Dump] After the memory dump is done, the server might crash");
-		self::dumpMemory($this->server, $this->server->getLoader(), $outputFolder, $maxNesting, $maxStringSize);
-
-		$scheduler = $this->server->getScheduler();
-		for($i = 0, $size = $scheduler->getAsyncTaskPoolSize(); $i < $size; ++$i){
-			$scheduler->scheduleAsyncTaskToWorker(new DumpWorkerMemoryTask($outputFolder, $maxNesting, $maxStringSize), $i);
-		}
-	}
-
-	/**
-	 * Static memory dumper accessible from any thread.
-	 *
-	 * @param mixed        $startingObject
-	 * @param \ClassLoader $loader
-	 * @param string       $outputFolder
-	 * @param int          $maxNesting
-	 * @param int          $maxStringSize
-	 */
-	public static function dumpMemory($startingObject, \ClassLoader $loader, string $outputFolder, int $maxNesting, int $maxStringSize){
 		$hardLimit = ini_get('memory_limit');
 		ini_set('memory_limit', '-1');
 		gc_disable();
@@ -290,7 +269,11 @@ class MemoryManager{
 			mkdir($outputFolder, 0777, true);
 		}
 
+		$this->server->getLogger()->notice("[Dump] After the memory dump is done, the server might crash");
+
 		$obData = fopen($outputFolder . "/objects.js", "wb+");
+
+		$staticProperties = [];
 
 		$data = [];
 
@@ -300,9 +283,8 @@ class MemoryManager{
 
 		$instanceCounts = [];
 
-		$staticProperties = [];
 		$staticCount = 0;
-		foreach($loader->getClasses() as $className){
+		foreach($this->server->getLoader()->getClasses() as $className){
 			$reflection = new \ReflectionClass($className);
 			$staticProperties[$className] = [];
 			foreach($reflection->getProperties() as $property){
@@ -315,7 +297,7 @@ class MemoryManager{
 				}
 
 				$staticCount++;
-				self::continueDump($property->getValue(), $staticProperties[$className][$property->getName()], $objects, $refCounts, 0, $maxNesting, $maxStringSize);
+				$this->continueDump($property->getValue(), $staticProperties[$className][$property->getName()], $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 			}
 
 			if(count($staticProperties[$className]) === 0){
@@ -323,37 +305,9 @@ class MemoryManager{
 			}
 		}
 
-		file_put_contents($outputFolder . "/staticProperties.js", json_encode($staticProperties, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-		MainLogger::getLogger()->info("[Dump] Wrote $staticCount static properties");
+		echo "[Dump] Wrote $staticCount static properties\n";
 
-		$globalVariables = [];
-
-		$ignoredGlobals = [
-			'GLOBALS' => true,
-			'_SERVER' => true,
-			'_REQUEST' => true,
-			'_POST' => true,
-			'_GET' => true,
-			'_FILES' => true,
-			'_ENV' => true,
-			'_COOKIE' => true,
-			'_SESSION' => true
-		];
-
-		$globalCount = 0;
-		foreach($GLOBALS as $varName => $value){
-			if(isset($ignoredGlobals[$varName])){
-				continue;
-			}
-
-			$globalCount++;
-			self::continueDump($value, $globalVariables[$varName], $objects, $refCounts, 0, $maxNesting, $maxStringSize);
-		}
-
-		file_put_contents($outputFolder . "/globalVariables.js", json_encode($globalVariables, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-		MainLogger::getLogger()->info("[Dump] Wrote $globalCount global variables");
-
-		self::continueDump($startingObject, $data, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
+		$this->continueDump($this->server, $data, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 
 		do{
 			$continue = false;
@@ -395,24 +349,25 @@ class MemoryManager{
 					if(!$property->isPublic()){
 						$property->setAccessible(true);
 					}
-					self::continueDump($property->getValue($object), $info["properties"][$property->getName()], $objects, $refCounts, 0, $maxNesting, $maxStringSize);
+					$this->continueDump($property->getValue($object), $info["properties"][$property->getName()], $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 				}
 
 				fwrite($obData, "$hash@$className: " . json_encode($info, JSON_UNESCAPED_SLASHES) . "\n");
 			}
 
-			MainLogger::getLogger()->info("[Dump] Wrote " . count($objects) . " objects");
+			echo "[Dump] Wrote " . count($objects) . " objects\n";
 		}while($continue);
 
 		fclose($obData);
 
+		file_put_contents($outputFolder . "/staticProperties.js", json_encode($staticProperties, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 		file_put_contents($outputFolder . "/serverEntry.js", json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 		file_put_contents($outputFolder . "/referenceCounts.js", json_encode($refCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
 		arsort($instanceCounts, SORT_NUMERIC);
 		file_put_contents($outputFolder . "/instanceCounts.js", json_encode($instanceCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
-		MainLogger::getLogger()->info("[Dump] Finished!");
+		echo "[Dump] Finished!\n";
 
 		ini_set('memory_limit', $hardLimit);
 		gc_enable();
@@ -427,7 +382,7 @@ class MemoryManager{
 	 * @param int      $maxNesting
 	 * @param int      $maxStringSize
 	 */
-	private static function continueDump($from, &$data, array &$objects, array &$refCounts, int $recursion, int $maxNesting, int $maxStringSize){
+	private function continueDump($from, &$data, array &$objects, array &$refCounts, int $recursion, int $maxNesting, int $maxStringSize){
 		if($maxNesting <= 0){
 			$data = "(error) NESTING LIMIT REACHED";
 			return;
@@ -451,7 +406,7 @@ class MemoryManager{
 			}
 			$data = [];
 			foreach($from as $key => $value){
-				self::continueDump($value, $data[$key], $objects, $refCounts, $recursion + 1, $maxNesting, $maxStringSize);
+				$this->continueDump($value, $data[$key], $objects, $refCounts, $recursion + 1, $maxNesting, $maxStringSize);
 			}
 		}elseif(is_string($from)){
 			$data = "(string) len(". strlen($from) .") " . substr(Utils::printable($from), 0, $maxStringSize);
