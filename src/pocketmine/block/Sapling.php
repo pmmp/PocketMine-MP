@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\level\generator\object\Tree;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
@@ -109,7 +110,7 @@ class Sapling extends Flowable{
 
 	public function getDrops(Item $item) : array{
 		return [
-			Item::get($this->getItemId(), $this->getDamage() & 0x07, 1)
+			ItemFactory::get($this->getItemId(), $this->getDamage() & 0x07, 1)
 		];
 	}
 

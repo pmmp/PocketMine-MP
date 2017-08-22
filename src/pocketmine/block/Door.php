@@ -246,7 +246,7 @@ abstract class Door extends Transparent{
 		return false;
 	}
 
-	public function onBreak(Item $item) : bool{
+	public function onBreak(Item $item, Player $player = null) : bool{
 		if(($this->getDamage() & 0x08) === 0x08){
 			$down = $this->getSide(Vector3::SIDE_DOWN);
 			if($down->getId() === $this->getId()){

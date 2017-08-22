@@ -31,7 +31,7 @@ use pocketmine\Player;
 
 class BanIpCommand extends VanillaCommand{
 
-	public function __construct($name){
+	public function __construct(string $name){
 		parent::__construct(
 			$name,
 			"%pocketmine.command.ban.ip.description",
@@ -71,7 +71,7 @@ class BanIpCommand extends VanillaCommand{
 		return true;
 	}
 
-	private function processIPBan($ip, CommandSender $sender, $reason){
+	private function processIPBan(string $ip, CommandSender $sender, string $reason){
 		$sender->getServer()->getIPBans()->addBan($ip, $reason, null, $sender->getName());
 
 		foreach($sender->getServer()->getOnlinePlayers() as $player){

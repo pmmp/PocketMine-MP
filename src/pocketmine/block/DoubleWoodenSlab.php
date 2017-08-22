@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\item\Tool;
 
 class DoubleWoodenSlab extends Solid{
@@ -56,7 +57,7 @@ class DoubleWoodenSlab extends Solid{
 
 	public function getDrops(Item $item) : array{
 		return [
-			Item::get(Item::WOODEN_SLAB, $this->getDamage() & 0x07, 2)
+			ItemFactory::get(Item::WOODEN_SLAB, $this->getDamage() & 0x07, 2)
 		];
 	}
 

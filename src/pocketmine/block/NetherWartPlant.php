@@ -26,6 +26,7 @@ namespace pocketmine\block;
 
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -78,7 +79,7 @@ class NetherWartPlant extends Flowable{
 
 	public function getDrops(Item $item) : array{
 		return [
-			Item::get($this->getItemId(), 0, ($this->getDamage() === 3 ? mt_rand(2, 4) : 1))
+			ItemFactory::get($this->getItemId(), 0, ($this->getDamage() === 3 ? mt_rand(2, 4) : 1))
 		];
 	}
 }

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -65,7 +66,7 @@ class FlowerPot extends Spawnable{
 	}
 
 	public function getItem() : Item{
-		return Item::get($this->namedtag->item->getValue(), $this->namedtag->mData->getValue(), 1);
+		return ItemFactory::get($this->namedtag->item->getValue(), $this->namedtag->mData->getValue(), 1);
 	}
 
 	public function setItem(Item $item){
@@ -75,7 +76,7 @@ class FlowerPot extends Spawnable{
 	}
 
 	public function removeItem(){
-		$this->setItem(Item::get(Item::AIR));
+		$this->setItem(ItemFactory::get(Item::AIR));
 	}
 
 	public function isEmpty() : bool{

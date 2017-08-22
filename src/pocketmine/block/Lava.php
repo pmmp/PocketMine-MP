@@ -52,7 +52,7 @@ class Lava extends Liquid{
 		$entity->fallDistance *= 0.5;
 
 		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_LAVA, 4);
-		$entity->attack($ev->getFinalDamage(), $ev);
+		$entity->attack($ev);
 
 		$ev = new EntityCombustByBlockEvent($this, $entity, 15);
 		Server::getInstance()->getPluginManager()->callEvent($ev);

@@ -26,7 +26,6 @@ declare(strict_types=1);
  */
 namespace pocketmine\level;
 
-use pocketmine\block\Air;
 use pocketmine\block\Beetroot;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
@@ -67,6 +66,7 @@ use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\Timings;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\LevelProvider;
@@ -1582,7 +1582,7 @@ class Level implements ChunkManager, Metadatable{
 		$target = $this->getBlock($vector);
 
 		if($item === null){
-			$item = Item::get(Item::AIR, 0, 0);
+			$item = ItemFactory::get(Item::AIR, 0, 0);
 		}
 
 		if($player !== null){
@@ -1604,7 +1604,7 @@ class Level implements ChunkManager, Metadatable{
 				if($tag instanceof ListTag){
 					foreach($tag as $v){
 						if($v instanceof StringTag){
-							$entry = Item::fromString($v->getValue());
+							$entry = ItemFactory::fromString($v->getValue());
 							if($entry->getId() > 0 and $entry->getBlock() !== null and $entry->getBlock()->getId() === $target->getId()){
 								$canBreak = true;
 								break;
@@ -1662,7 +1662,7 @@ class Level implements ChunkManager, Metadatable{
 			$this->addParticle(new DestroyBlockParticle($target->add(0.5, 0.5, 0.5), $target));
 		}
 
-		$target->onBreak($item);
+		$target->onBreak($item, $player);
 
 		$tile = $this->getTile($target);
 		if($tile !== null){
@@ -1682,7 +1682,7 @@ class Level implements ChunkManager, Metadatable{
 		if($item !== null){
 			$item->useOn($target);
 			if($item->isTool() and $item->getDamage() >= $item->getMaxDurability()){
-				$item = Item::get(Item::AIR, 0, 0);
+				$item = ItemFactory::get(Item::AIR, 0, 0);
 			}
 		}
 
@@ -1742,7 +1742,7 @@ class Level implements ChunkManager, Metadatable{
 				if($tag instanceof ListTag){
 					foreach($tag as $v){
 						if($v instanceof StringTag){
-							$entry = Item::fromString($v->getValue());
+							$entry = ItemFactory::fromString($v->getValue());
 							if($entry->getId() > 0 and $entry->getBlock() !== null and $entry->getBlock()->getId() === $target->getId()){
 								$canPlace = true;
 								break;
@@ -1763,7 +1763,7 @@ class Level implements ChunkManager, Metadatable{
 
 				if(!$player->isSneaking() and $item->onActivate($this, $player, $block, $target, $face, $facePos)){
 					if($item->getCount() <= 0){
-						$item = Item::get(Item::AIR, 0, 0);
+						$item = ItemFactory::get(Item::AIR, 0, 0);
 
 						return true;
 					}
@@ -1839,7 +1839,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$item->setCount($item->getCount() - 1);
 		if($item->getCount() <= 0){
-			$item = Item::get(Item::AIR, 0, 0);
+			$item = ItemFactory::get(Item::AIR, 0, 0);
 		}
 
 		return true;
@@ -1883,6 +1883,7 @@ class Level implements ChunkManager, Metadatable{
 			for($x = $minX; $x <= $maxX; ++$x){
 				for($z = $minZ; $z <= $maxZ; ++$z){
 					foreach($this->getChunkEntities($x, $z) as $ent){
+						/** @var Entity|null $entity */
 						if(($entity === null or ($ent !== $entity and $entity->canCollideWith($ent))) and $ent->boundingBox->intersectsWith($bb)){
 							$nearby[] = $ent;
 						}

@@ -29,7 +29,7 @@ use pocketmine\event\TranslationContainer;
 
 class SaveCommand extends VanillaCommand{
 
-	public function __construct($name){
+	public function __construct(string $name){
 		parent::__construct(
 			$name,
 			"%pocketmine.command.save.description",

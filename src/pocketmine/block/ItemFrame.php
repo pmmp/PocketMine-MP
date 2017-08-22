@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\{
@@ -69,7 +70,7 @@ class ItemFrame extends Flowable{
 				$item->setCount($item->getCount() - 1);
 				$tile->setItem($frameItem);
 				if($player instanceof Player and $player->isSurvival()){
-					$player->getInventory()->setItemInHand($item->getCount() <= 0 ? Item::get(Item::AIR) : $item);
+					$player->getInventory()->setItemInHand($item->getCount() <= 0 ? ItemFactory::get(Item::AIR) : $item);
 				}
 			}
 		}
@@ -77,7 +78,7 @@ class ItemFrame extends Flowable{
 		return true;
 	}
 
-	public function onBreak(Item $item) : bool{
+	public function onBreak(Item $item, Player $player = null) : bool{
 		$tile = $this->level->getTile($this);
 		if($tile instanceof TileItemFrame){
 			//TODO: add events
@@ -85,7 +86,7 @@ class ItemFrame extends Flowable{
 				$this->level->dropItem($tile->getBlock(), $tile->getItem());
 			}
 		}
-		return parent::onBreak($item);
+		return parent::onBreak($item, $player);
 	}
 
 	public function onUpdate(int $type){

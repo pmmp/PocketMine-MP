@@ -87,14 +87,14 @@ class Item extends Entity{
 		$this->server->getPluginManager()->callEvent(new ItemSpawnEvent($this));
 	}
 
-	public function attack($damage, EntityDamageEvent $source){
+	public function attack(EntityDamageEvent $source){
 		if(
 			$source->getCause() === EntityDamageEvent::CAUSE_VOID or
 			$source->getCause() === EntityDamageEvent::CAUSE_FIRE_TICK or
 			$source->getCause() === EntityDamageEvent::CAUSE_ENTITY_EXPLOSION or
 			$source->getCause() === EntityDamageEvent::CAUSE_BLOCK_EXPLOSION
 		){
-			parent::attack($damage, $source);
+			parent::attack($source);
 		}
 	}
 

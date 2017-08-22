@@ -29,7 +29,7 @@ use pocketmine\event\TranslationContainer;
 
 class StopCommand extends VanillaCommand{
 
-	public function __construct($name){
+	public function __construct(string $name){
 		parent::__construct(
 			$name,
 			"%pocketmine.command.stop.description",

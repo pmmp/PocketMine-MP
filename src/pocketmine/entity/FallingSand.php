@@ -27,6 +27,7 @@ use pocketmine\block\BlockFactory;
 use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item as ItemItem;
+use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
@@ -74,9 +75,9 @@ class FallingSand extends Entity{
 		return false;
 	}
 
-	public function attack($damage, EntityDamageEvent $source){
+	public function attack(EntityDamageEvent $source){
 		if($source->getCause() === EntityDamageEvent::CAUSE_VOID){
-			parent::attack($damage, $source);
+			parent::attack($source);
 		}
 	}
 
@@ -95,7 +96,7 @@ class FallingSand extends Entity{
 				$block = $this->level->getBlock($pos);
 				if($block->getId() > 0 and $block->isTransparent() and !$block->canBeReplaced()){
 					//FIXME: anvils are supposed to destroy torches
-					$this->getLevel()->dropItem($this, ItemItem::get($this->getBlock(), $this->getDamage(), 1));
+					$this->getLevel()->dropItem($this, ItemFactory::get($this->getBlock(), $this->getDamage(), 1));
 				}else{
 					$this->server->getPluginManager()->callEvent($ev = new EntityBlockChangeEvent($this, $block, BlockFactory::get($this->getBlock(), $this->getDamage())));
 					if(!$ev->isCancelled()){

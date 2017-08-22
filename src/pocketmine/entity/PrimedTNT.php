@@ -48,9 +48,9 @@ class PrimedTNT extends Entity implements Explosive{
 	public $canCollide = false;
 
 
-	public function attack($damage, EntityDamageEvent $source){
+	public function attack(EntityDamageEvent $source){
 		if($source->getCause() === EntityDamageEvent::CAUSE_VOID){
-			parent::attack($damage, $source);
+			parent::attack($source);
 		}
 	}
 

@@ -360,6 +360,8 @@ class BlockFactory{
 	}
 
 	/**
+	 * Returns a new Block instance with the specified ID, meta and position.
+	 *
 	 * @param int      $id
 	 * @param int      $meta
 	 * @param Position $pos

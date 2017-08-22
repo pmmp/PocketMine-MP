@@ -31,7 +31,7 @@ use pocketmine\utils\TextFormat;
 
 class WhitelistCommand extends VanillaCommand{
 
-	public function __construct($name){
+	public function __construct(string $name){
 		parent::__construct(
 			$name,
 			"%pocketmine.command.whitelist.description",
@@ -108,7 +108,7 @@ class WhitelistCommand extends VanillaCommand{
 		return true;
 	}
 
-	private function badPerm(CommandSender $sender, $perm){
+	private function badPerm(CommandSender $sender, string $perm) : bool{
 		if(!$sender->hasPermission("pocketmine.command.whitelist.$perm")){
 			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.permission"));
 

@@ -28,6 +28,7 @@ use pocketmine\event\entity\EntityArmorChangeEvent;
 use pocketmine\event\entity\EntityInventoryChangeEvent;
 use pocketmine\event\player\PlayerItemHeldEvent;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
@@ -93,7 +94,7 @@ class PlayerInventory extends BaseInventory{
 		}
 
 		if($inventorySlot === -1){
-			$item = Item::get(Item::AIR, 0, 0);
+			$item = ItemFactory::get(Item::AIR, 0, 0);
 		}else{
 			$item = $this->getItem($inventorySlot);
 		}
@@ -162,7 +163,7 @@ class PlayerInventory extends BaseInventory{
 		if($inventorySlot !== -1){
 			return $this->getItem($inventorySlot);
 		}else{
-			return Item::get(Item::AIR, 0, 0);
+			return ItemFactory::get(Item::AIR, 0, 0);
 		}
 	}
 
@@ -352,7 +353,7 @@ class PlayerInventory extends BaseInventory{
 
 	public function setItem(int $index, Item $item, bool $send = true) : bool{
 		if($item->isNull()){
-			$item = Item::get(Item::AIR, 0, 0);
+			$item = ItemFactory::get(Item::AIR, 0, 0);
 		}else{
 			$item = clone $item;
 		}
@@ -436,7 +437,7 @@ class PlayerInventory extends BaseInventory{
 	public function setArmorContents(array $items){
 		for($i = 0; $i < 4; ++$i){
 			if(!isset($items[$i]) or !($items[$i] instanceof Item)){
-				$items[$i] = Item::get(Item::AIR, 0, 0);
+				$items[$i] = ItemFactory::get(Item::AIR, 0, 0);
 			}
 
 			$this->setItem($this->getSize() + $i, $items[$i], false);

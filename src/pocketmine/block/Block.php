@@ -28,6 +28,7 @@ namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\level\MovingObjectPosition;
@@ -42,7 +43,9 @@ use pocketmine\plugin\Plugin;
 class Block extends Position implements BlockIds, Metadatable{
 
 	/**
-	 * @deprecated This functionality has moved to {@link BlockFactory#get}
+	 * Returns a new Block instance with the specified ID, meta and position.
+	 *
+	 * This function redirects to {@link BlockFactory#get}.
 	 *
 	 * @param int           $id
 	 * @param int           $meta
@@ -160,11 +163,12 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * Do the actions needed so the block is broken with the Item
 	 *
-	 * @param Item $item
+	 * @param Item        $item
+	 * @param Player|null $player
 	 *
 	 * @return bool
 	 */
-	public function onBreak(Item $item) : bool{
+	public function onBreak(Item $item, Player $player = null) : bool{
 		return $this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true, true);
 	}
 
@@ -338,7 +342,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getDrops(Item $item) : array{
 		return [
-			Item::get($this->getItemId(), $this->getDamage() & $this->getVariantBitmask(), 1),
+			ItemFactory::get($this->getItemId(), $this->getDamage() & $this->getVariantBitmask(), 1),
 		];
 	}
 

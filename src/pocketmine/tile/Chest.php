@@ -27,6 +27,7 @@ use pocketmine\inventory\ChestInventory;
 use pocketmine\inventory\DoubleChestInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
@@ -113,7 +114,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	public function getItem(int $index) : Item{
 		$i = $this->getSlotIndex($index);
 		if($i < 0){
-			return Item::get(Item::AIR, 0, 0);
+			return ItemFactory::get(Item::AIR, 0, 0);
 		}else{
 			return Item::nbtDeserialize($this->namedtag->Items[$i]);
 		}

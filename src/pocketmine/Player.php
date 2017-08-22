@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine;
 
-use pocketmine\block\Air;
 use pocketmine\block\Bed;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
@@ -84,6 +83,7 @@ use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\inventory\transaction\SimpleInventoryTransaction;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\level\ChunkLoader;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
@@ -1425,7 +1425,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}
 
 			if($entity instanceof Arrow and $entity->hadCollision){
-				$item = Item::get(Item::ARROW, 0, 1);
+				$item = ItemFactory::get(Item::ARROW, 0, 1);
 				if($this->isSurvival() and !$this->inventory->canAddItem($item)){
 					continue;
 				}
@@ -2314,7 +2314,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							$snowball->setMotion($snowball->getMotion()->multiply($f));
 							if($this->isSurvival()){
 								$item->setCount($item->getCount() - 1);
-								$this->inventory->setItemInHand($item->getCount() > 0 ? $item : Item::get(Item::AIR));
+								$this->inventory->setItemInHand($item->getCount() > 0 ? $item : ItemFactory::get(Item::AIR));
 							}
 							if($snowball instanceof Projectile){
 								$this->server->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($snowball));
@@ -2439,7 +2439,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 								$ev->setCancelled();
 							}
 
-							$target->attack($ev->getFinalDamage(), $ev);
+							$target->attack($ev);
 
 							if($ev->isCancelled()){
 								if($item->isTool() and $this->isSurvival()){
@@ -2451,7 +2451,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							if($this->isSurvival()){
 								if($item->isTool()){
 									if($item->useOn($target) and $item->getDamage() >= $item->getMaxDurability()){
-										$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 1));
+										$this->inventory->setItemInHand(ItemFactory::get(Item::AIR, 0, 1));
 									}else{
 										$this->inventory->setItemInHand($item);
 									}
@@ -2473,7 +2473,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						if($this->startAction > -1 and $this->getGenericFlag(self::DATA_FLAG_ACTION)){
 							if($this->inventory->getItemInHand()->getId() === Item::BOW){
 								$bow = $this->inventory->getItemInHand();
-								if($this->isSurvival() and !$this->inventory->contains(Item::get(Item::ARROW, 0, 1))){
+								if($this->isSurvival() and !$this->inventory->contains(ItemFactory::get(Item::ARROW, 0, 1))){
 									$this->inventory->sendContents($this);
 									return false;
 								}
@@ -2514,10 +2514,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 								}else{
 									$ev->getProjectile()->setMotion($ev->getProjectile()->getMotion()->multiply($ev->getForce()));
 									if($this->isSurvival()){
-										$this->inventory->removeItem(Item::get(Item::ARROW, 0, 1));
+										$this->inventory->removeItem(ItemFactory::get(Item::ARROW, 0, 1));
 										$bow->setDamage($bow->getDamage() + 1);
 										if($bow->getDamage() >= 385){
-											$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 0));
+											$this->inventory->setItemInHand(ItemFactory::get(Item::AIR, 0, 0));
 										}else{
 											$this->inventory->setItemInHand($bow);
 										}
@@ -2574,7 +2574,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 								$slot = $this->inventory->getItemInHand();
 								--$slot->count;
 								$this->inventory->setItemInHand($slot);
-								$this->inventory->addItem(Item::get(Item::BUCKET, 0, 1));
+								$this->inventory->addItem(ItemFactory::get(Item::BUCKET, 0, 1));
 							}
 
 							$this->removeAllEffects();
@@ -3016,7 +3016,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$newItem = clone $item;
 				$newItem->setCount($item->getCount() - $count);
 			}else{
-				$newItem = Item::get(Item::AIR, 0, 0);
+				$newItem = ItemFactory::get(Item::AIR, 0, 0);
 			}
 
 			$this->inventory->setItem($slot, $newItem);
@@ -3048,7 +3048,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			case Item::CAKE:
 				//TODO: detect complex recipes like cake that leave remains
 				$this->awardAchievement("bakeCake");
-				$this->inventory->addItem(Item::get(Item::BUCKET, 0, 3));
+				$this->inventory->addItem(ItemFactory::get(Item::BUCKET, 0, 3));
 				break;
 			case Item::STONE_PICKAXE:
 			case Item::GOLDEN_PICKAXE:
@@ -3734,7 +3734,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 	}
 
-	public function attack($damage, EntityDamageEvent $source){
+	public function attack(EntityDamageEvent $source){
 		if(!$this->isAlive()){
 			return;
 		}
@@ -3749,7 +3749,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$source->setCancelled();
 		}
 
-		parent::attack($damage, $source);
+		parent::attack($source);
 
 		if($source->isCancelled()){
 			return;

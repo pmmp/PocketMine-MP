@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
@@ -170,13 +171,13 @@ class Leaves extends Transparent{
 		$variantMeta = $this->getDamage() & 0x03;
 
 		if($item->isShears()){
-			$drops[] = Item::get($this->getItemId(), $variantMeta, 1);
+			$drops[] = ItemFactory::get($this->getItemId(), $variantMeta, 1);
 		}else{
 			if(mt_rand(1, 20) === 1){ //Saplings
-				$drops[] = Item::get(Item::SAPLING, $variantMeta, 1);
+				$drops[] = ItemFactory::get(Item::SAPLING, $variantMeta, 1);
 			}
 			if($variantMeta === self::OAK and mt_rand(1, 200) === 1){ //Apples
-				$drops[] = Item::get(Item::APPLE, 0, 1);
+				$drops[] = ItemFactory::get(Item::APPLE, 0, 1);
 			}
 		}
 

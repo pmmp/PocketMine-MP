@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector2;
 use pocketmine\Server;
 use pocketmine\utils\UUID;
@@ -141,7 +142,7 @@ class ShapedRecipe implements Recipe{
 				if($ingredient !== null){
 					$ingredients[$y][$x] = clone $ingredient;
 				}else{
-					$ingredients[$y][$x] = Item::get(Item::AIR);
+					$ingredients[$y][$x] = ItemFactory::get(Item::AIR);
 				}
 			}
 		}
@@ -156,7 +157,7 @@ class ShapedRecipe implements Recipe{
 	 * @return Item
 	 */
 	public function getIngredient(int $x, int $y) : Item{
-		return $this->ingredients[$y][$x] ?? Item::get(Item::AIR);
+		return $this->ingredients[$y][$x] ?? ItemFactory::get(Item::AIR);
 	}
 
 	/**
