@@ -3403,11 +3403,18 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->dataPacket($pk);
 	}
 
+	/**
+	 * Sends a popup message to the player
+	 *
+	 * TODO: add translation type popups
+	 *
+	 * @param string $message
+	 * @param string $subtitle @deprecated
+	 */
 	public function sendPopup(string $message, string $subtitle = ""){
 		$pk = new TextPacket();
 		$pk->type = TextPacket::TYPE_POPUP;
-		$pk->source = $message;
-		$pk->message = $subtitle;
+		$pk->message = $message;
 		$this->dataPacket($pk);
 	}
 
