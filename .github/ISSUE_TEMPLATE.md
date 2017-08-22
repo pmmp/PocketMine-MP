@@ -2,7 +2,7 @@
 <!---
 THIS ISSUE TRACKER IS FOR BUG REPORTING, NOT FOR HELP & SUPPORT. If you need help, use the links below. 
 - http://pmmp.readthedocs.io/en/rtfd/ - Documentation
-- https://forums.pmmp.io PMMP Forums
+- https://forums.pmmp.io - PMMP Forums
 -->
 <!--- Any issues requesting updates to new versions of MCPE will be treated as spam. We do not need issues to tell us that there is a new version available. -->
 <!--- 
