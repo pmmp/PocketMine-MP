@@ -40,7 +40,7 @@ class PlayerQuitEvent extends PlayerEvent{
 	/**
 	 * @param Player                      $player
 	 * @param TranslationContainer|string $quitMessage
-     * @param string                      $quitReason
+	 * @param string                      $quitReason
 	 */
 	public function __construct(Player $player, $quitMessage, $quitReason){
 		$this->player = $player;
