@@ -65,6 +65,7 @@ class BlockFactory{
 			self::$hardness = new \SplFixedArray(256);
 			self::$transparent = new \SplFixedArray(256);
 			self::$diffusesSkyLight = new \SplFixedArray(256);
+			self::$blastResistance = new \SplFixedArray(256);
 
 			self::registerBlock(new Air());
 			self::registerBlock(new Stone());

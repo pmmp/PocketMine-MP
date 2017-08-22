@@ -1238,18 +1238,18 @@ abstract class Entity extends Location implements Metadatable{
 	protected function tryChangeMovement(){
 		$friction = 1 - $this->drag;
 
-		if(!$this->onGround){
-			if($this->applyDragBeforeGravity()){
-				$this->motionY *= $friction;
-			}
+		if($this->applyDragBeforeGravity()){
+			$this->motionY *= $friction;
+		}
 
-			$this->applyGravity();
+		$this->applyGravity();
 
-			if(!$this->applyDragBeforeGravity()){
-				$this->motionY *= $friction;
-			}
-		}else{
-			$friction = $this->level->getBlock($this->floor()->subtract(0, 1, 0))->getFrictionFactor();
+		if(!$this->applyDragBeforeGravity()){
+			$this->motionY *= $friction;
+		}
+
+		if($this->onGround){
+			$friction *= $this->level->getBlock($this->floor()->subtract(0, 1, 0))->getFrictionFactor();
 		}
 
 		$this->motionX *= $friction;
@@ -1341,7 +1341,6 @@ abstract class Entity extends Location implements Metadatable{
 	 */
 	final public function setForceMovementUpdate(bool $value = true){
 		$this->forceMovementUpdate = $value;
-		$this->onGround = false;
 
 		$this->blocksAround = null;
 	}
