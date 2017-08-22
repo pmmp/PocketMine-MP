@@ -249,6 +249,16 @@ class ItemFactory{
 	}
 
 	/**
+	 * Tries to parse the specified string into Item ID/meta identifiers, and returns Item instances it created.
+	 *
+	 * Example accepted formats:
+	 * - `diamond_pickaxe:5`
+	 * - `minecraft:string`
+	 * - `351:4 (lapis lazuli ID:meta)`
+	 *
+	 * If multiple item instances are to be created, their identifiers must be comma-separated, for example:
+	 * `diamond_pickaxe,wooden_shovel:18,iron_ingot`
+	 *
 	 * @param string $str
 	 * @param bool   $multiple
 	 *

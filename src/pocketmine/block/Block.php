@@ -43,7 +43,9 @@ use pocketmine\plugin\Plugin;
 class Block extends Position implements BlockIds, Metadatable{
 
 	/**
-	 * @deprecated This functionality has moved to {@link BlockFactory#get}
+	 * Returns a new Block instance with the specified ID, meta and position.
+	 *
+	 * This function redirects to {@link BlockFactory#get}.
 	 *
 	 * @param int           $id
 	 * @param int           $meta

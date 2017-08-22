@@ -77,6 +77,10 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
+	 * Returns a new Item instance with the specified ID, damage, count and NBT.
+	 *
+	 * This function redirects to {@link ItemFactory#get}.
+	 *
 	 * @param int                $id
 	 * @param int                $meta
 	 * @param int                $count
@@ -84,18 +88,20 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @return Item
 	 */
-
 	public static function get(int $id, int $meta = 0, int $count = 1, $tags = "") : Item{
 		return ItemFactory::get($id, $meta, $count, $tags);
 	}
 
 	/**
+	 * Tries to parse the specified string into Item ID/meta identifiers, and returns Item instances it created.
+	 *
+	 * This function redirects to {@link ItemFactory#fromString}.
+	 *
 	 * @param string $str
 	 * @param bool   $multiple
 	 *
 	 * @return Item[]|Item
 	 */
-
 	public static function fromString(string $str, bool $multiple = false){
 		return ItemFactory::fromString($str, $multiple);
 	}
