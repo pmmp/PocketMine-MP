@@ -48,6 +48,10 @@ class Ice extends Transparent{
 		return 2;
 	}
 
+	public function getFrictionFactor() : float{
+		return 0.98;
+	}
+
 	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
