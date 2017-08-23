@@ -3503,6 +3503,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->removeAllWindows(true);
 				$this->windows = null;
 				$this->windowIndex = [];
+				$this->cursorInventory = null;
 
 				if($this->constructed){
 					parent::close();

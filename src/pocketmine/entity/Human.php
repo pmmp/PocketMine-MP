@@ -537,6 +537,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				foreach($this->inventory->getViewers() as $viewer){
 					$viewer->removeWindow($this->inventory);
 				}
+
+				$this->inventory = null;
 			}
 			parent::close();
 		}
