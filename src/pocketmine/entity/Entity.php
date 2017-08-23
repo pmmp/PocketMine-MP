@@ -296,8 +296,6 @@ abstract class Entity extends Location implements Metadatable{
 	public $height;
 	/** @var float */
 	public $width;
-	/** @var float */
-	public $length;
 
 	/** @var float */
 	protected $baseOffset = 0.0;

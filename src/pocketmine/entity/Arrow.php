@@ -32,7 +32,6 @@ class Arrow extends Projectile{
 	const NETWORK_ID = 80;
 
 	public $width = 0.5;
-	public $length = 0.5;
 	public $height = 0.5;
 
 	protected $gravity = 0.05;

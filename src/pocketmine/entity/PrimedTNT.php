@@ -35,7 +35,6 @@ class PrimedTNT extends Entity implements Explosive{
 	const NETWORK_ID = 65;
 
 	public $width = 0.98;
-	public $length = 0.98;
 	public $height = 0.98;
 
 	protected $baseOffset = 0.49;
