@@ -1322,9 +1322,9 @@ abstract class Entity extends Location implements Metadatable{
 	final public function hasMovementUpdate() : bool{
 		return (
 			$this->forceMovementUpdate or
-			abs($this->motionX) > self::MOTION_THRESHOLD or
-			abs($this->motionY) > self::MOTION_THRESHOLD or
-			abs($this->motionZ) > self::MOTION_THRESHOLD or
+			$this->motionX != 0 or
+			$this->motionY != 0 or
+			$this->motionZ != 0 or
 			!$this->onGround
 		);
 	}
