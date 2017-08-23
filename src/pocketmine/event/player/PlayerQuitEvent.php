@@ -34,14 +34,18 @@ class PlayerQuitEvent extends PlayerEvent{
 
 	/** @var TranslationContainer|string */
 	protected $quitMessage;
+	/** @var string */
+	protected $quitReason;
 
 	/**
 	 * @param Player                      $player
 	 * @param TranslationContainer|string $quitMessage
+	 * @param string                      $quitReason
 	 */
-	public function __construct(Player $player, $quitMessage){
+	public function __construct(Player $player, $quitMessage, string $quitReason){
 		$this->player = $player;
 		$this->quitMessage = $quitMessage;
+		$this->quitReason = $quitReason;
 	}
 
 	/**
@@ -56,5 +60,12 @@ class PlayerQuitEvent extends PlayerEvent{
 	 */
 	public function getQuitMessage(){
 		return $this->quitMessage;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getQuitReason() : string{
+		return $this->quitReason;
 	}
 }

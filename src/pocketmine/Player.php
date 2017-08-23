@@ -3446,7 +3446,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						$this->server->getLogger()->logException($e);
 					}
 
-					$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message));
+					$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message, $reason));
 					if($ev->getQuitMessage() != ""){
 						$this->server->broadcastMessage($ev->getQuitMessage());
 					}
