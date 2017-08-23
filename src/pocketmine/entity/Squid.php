@@ -36,7 +36,6 @@ class Squid extends WaterAnimal{
 	const NETWORK_ID = 17;
 
 	public $width = 0.95;
-	public $length = 0.95;
 	public $height = 0.95;
 
 	/** @var Vector3 */
