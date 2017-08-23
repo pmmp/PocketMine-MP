@@ -255,6 +255,9 @@ class Server{
 	private $players = [];
 
 	/** @var Player[] */
+	private $loggedInPlayers = [];
+
+	/** @var Player[] */
 	private $playerList = [];
 
 	/** @var string[] */
@@ -687,6 +690,13 @@ class Server{
 	 */
 	public function getCommandMap(){
 		return $this->commandMap;
+	}
+
+	/**
+	 * @return Player[]
+	 */
+	public function getLoggedInPlayers() : array{
+		return $this->loggedInPlayers;
 	}
 
 	/**
@@ -2235,8 +2245,16 @@ class Server{
 			$this->uniquePlayers[$player->getRawUniqueId()] = $player->getRawUniqueId();
 		}
 
+		$this->loggedInPlayers[$player->getRawUniqueId()] = $player;
+	}
+
+	public function onPlayerCompleteLoginSequence(Player $player){
 		$this->sendFullPlayerListData($player);
 		$player->dataPacket($this->craftingManager->getCraftingDataPacket());
+	}
+
+	public function onPlayerLogout(Player $player){
+		unset($this->loggedInPlayers[$player->getRawUniqueId()]);
 	}
 
 	public function addPlayer($identifier, Player $player){
