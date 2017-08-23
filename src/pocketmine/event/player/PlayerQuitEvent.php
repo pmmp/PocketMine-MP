@@ -42,7 +42,7 @@ class PlayerQuitEvent extends PlayerEvent{
 	 * @param TranslationContainer|string $quitMessage
 	 * @param string                      $quitReason
 	 */
-	public function __construct(Player $player, $quitMessage, $quitReason){
+	public function __construct(Player $player, $quitMessage, string $quitReason){
 		$this->player = $player;
 		$this->quitMessage = $quitMessage;
 		$this->quitReason = $quitReason;
@@ -65,7 +65,7 @@ class PlayerQuitEvent extends PlayerEvent{
 	/**
 	 * @return string
 	 */
-	public function getQuitReason(){
+	public function getQuitReason() : string{
 		return $this->quitReason;
 	}
 }
