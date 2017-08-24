@@ -48,13 +48,16 @@ class CraftingDataPacket extends DataPacket{
 	/** @var bool */
 	public $cleanRecipes = false;
 
+	public $decodedEntries = [];
+
 	public function clean(){
 		$this->entries = [];
+		$this->decodedEntries = [];
 		return parent::clean();
 	}
 
 	protected function decodePayload(){
-		$entries = [];
+		$this->decodedEntries = [];
 		$recipeCount = $this->getUnsignedVarInt();
 		for($i = 0; $i < $recipeCount; ++$i){
 			$entry = [];
@@ -106,7 +109,7 @@ class CraftingDataPacket extends DataPacket{
 				default:
 					throw new \UnexpectedValueException("Unhandled recipe type $recipeType!"); //do not continue attempting to decode
 			}
-			$entries[] = $entry;
+			$this->decodedEntries[] = $entry;
 		}
 		$this->getBool(); //cleanRecipes
 	}

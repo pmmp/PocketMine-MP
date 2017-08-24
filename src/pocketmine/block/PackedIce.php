@@ -41,6 +41,10 @@ class PackedIce extends Solid{
 		return 0.5;
 	}
 
+	public function getFrictionFactor() : float{
+		return 0.98;
+	}
+
 	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
