@@ -30,13 +30,14 @@ use pocketmine\network\mcpe\NetworkSession;
 class GameRulesChangedPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::GAME_RULES_CHANGED_PACKET;
 
+	/** @var array */
 	public $gameRules = [];
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->gameRules = $this->getGameRules();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putGameRules($this->gameRules);
 	}
 

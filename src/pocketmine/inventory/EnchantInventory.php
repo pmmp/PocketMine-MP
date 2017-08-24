@@ -24,14 +24,32 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\level\Position;
+use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
 
 class EnchantInventory extends ContainerInventory{
+
+	/** @var FakeBlockMenu */
+	protected $holder;
+
 	public function __construct(Position $pos){
-		parent::__construct(new FakeBlockMenu($this, $pos), InventoryType::get(InventoryType::ENCHANT_TABLE));
+		parent::__construct(new FakeBlockMenu($this, $pos));
+	}
+
+	public function getNetworkType() : int{
+		return WindowTypes::ENCHANTMENT;
+	}
+
+	public function getName() : string{
+		return "Enchantment Table";
+	}
+
+	public function getDefaultSize() : int{
+		return 2; //1 input, 1 lapis
 	}
 
 	/**
+	 * This override is here for documentation and code completion purposes only.
 	 * @return FakeBlockMenu
 	 */
 	public function getHolder(){

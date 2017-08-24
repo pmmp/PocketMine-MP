@@ -27,7 +27,6 @@ use pocketmine\network\mcpe\protocol\AddBehaviorTreePacket;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\AddHangingEntityPacket;
 use pocketmine\network\mcpe\protocol\AddItemEntityPacket;
-use pocketmine\network\mcpe\protocol\AddItemPacket;
 use pocketmine\network\mcpe\protocol\AddPaintingPacket;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
@@ -36,6 +35,7 @@ use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
+use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\BossEventPacket;
 use pocketmine\network\mcpe\protocol\CameraPacket;
 use pocketmine\network\mcpe\protocol\ChangeDimensionPacket;
@@ -43,26 +43,28 @@ use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
 use pocketmine\network\mcpe\protocol\ClientboundMapItemDataPacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
-use pocketmine\network\mcpe\protocol\CommandStepPacket;
+use pocketmine\network\mcpe\protocol\CommandOutputPacket;
+use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
-use pocketmine\network\mcpe\protocol\ContainerSetContentPacket;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
-use pocketmine\network\mcpe\protocol\ContainerSetSlotPacket;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
-use pocketmine\network\mcpe\protocol\DropItemPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\EntityFallPacket;
+use pocketmine\network\mcpe\protocol\EntityPickRequestPacket;
 use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\protocol\ExplodePacket;
 use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
 use pocketmine\network\mcpe\protocol\GameRulesChangedPacket;
+use pocketmine\network\mcpe\protocol\GuiDataPickItemPacket;
 use pocketmine\network\mcpe\protocol\HurtArmorPacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
-use pocketmine\network\mcpe\protocol\InventoryActionPacket;
+use pocketmine\network\mcpe\protocol\InventoryContentPacket;
+use pocketmine\network\mcpe\protocol\InventorySlotPacket;
+use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
@@ -71,17 +73,21 @@ use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
+use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
+use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\network\mcpe\protocol\MoveEntityPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
+use pocketmine\network\mcpe\protocol\NpcRequestPacket;
+use pocketmine\network\mcpe\protocol\PhotoTransferPacket;
 use pocketmine\network\mcpe\protocol\PlaySoundPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
+use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
+use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\PurchaseReceiptPacket;
-use pocketmine\network\mcpe\protocol\RemoveBlockPacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
-use pocketmine\network\mcpe\protocol\ReplaceItemInSlotPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkDataPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
@@ -91,24 +97,30 @@ use pocketmine\network\mcpe\protocol\ResourcePackStackPacket;
 use pocketmine\network\mcpe\protocol\ResourcePacksInfoPacket;
 use pocketmine\network\mcpe\protocol\RespawnPacket;
 use pocketmine\network\mcpe\protocol\RiderJumpPacket;
+use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
+use pocketmine\network\mcpe\protocol\ServerSettingsResponsePacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
 use pocketmine\network\mcpe\protocol\SetCommandsEnabledPacket;
+use pocketmine\network\mcpe\protocol\SetDefaultGameTypePacket;
 use pocketmine\network\mcpe\protocol\SetDifficultyPacket;
 use pocketmine\network\mcpe\protocol\SetEntityDataPacket;
 use pocketmine\network\mcpe\protocol\SetEntityLinkPacket;
 use pocketmine\network\mcpe\protocol\SetEntityMotionPacket;
 use pocketmine\network\mcpe\protocol\SetHealthPacket;
+use pocketmine\network\mcpe\protocol\SetLastHurtByPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
 use pocketmine\network\mcpe\protocol\SetTimePacket;
 use pocketmine\network\mcpe\protocol\SetTitlePacket;
 use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
+use pocketmine\network\mcpe\protocol\ShowProfilePacket;
 use pocketmine\network\mcpe\protocol\ShowStoreOfferPacket;
 use pocketmine\network\mcpe\protocol\SimpleEventPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\StopSoundPacket;
 use pocketmine\network\mcpe\protocol\StructureBlockUpdatePacket;
+use pocketmine\network\mcpe\protocol\SubClientLoginPacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
@@ -116,7 +128,7 @@ use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\protocol\UpdateEquipPacket;
 use pocketmine\network\mcpe\protocol\UpdateTradePacket;
-use pocketmine\network\mcpe\protocol\UseItemPacket;
+use pocketmine\network\mcpe\protocol\WSConnectPacket;
 
 abstract class NetworkSession{
 
@@ -202,10 +214,6 @@ abstract class NetworkSession{
 		return false;
 	}
 
-	public function handleRemoveBlock(RemoveBlockPacket $packet) : bool{
-		return false;
-	}
-
 	public function handleUpdateBlock(UpdateBlockPacket $packet) : bool{
 		return false;
 	}
@@ -242,6 +250,10 @@ abstract class NetworkSession{
 		return false;
 	}
 
+	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
+		return false;
+	}
+
 	public function handleMobEquipment(MobEquipmentPacket $packet) : bool{
 		return false;
 	}
@@ -258,7 +270,7 @@ abstract class NetworkSession{
 		return false;
 	}
 
-	public function handleUseItem(UseItemPacket $packet) : bool{
+	public function handleEntityPickRequest(EntityPickRequestPacket $packet) : bool{
 		return false;
 	}
 
@@ -302,14 +314,6 @@ abstract class NetworkSession{
 		return false;
 	}
 
-	public function handleDropItem(DropItemPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleInventoryAction(InventoryActionPacket $packet) : bool{
-		return false;
-	}
-
 	public function handleContainerOpen(ContainerOpenPacket $packet) : bool{
 		return false;
 	}
@@ -318,15 +322,19 @@ abstract class NetworkSession{
 		return false;
 	}
 
-	public function handleContainerSetSlot(ContainerSetSlotPacket $packet) : bool{
+	public function handlePlayerHotbar(PlayerHotbarPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleInventoryContent(InventoryContentPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleInventorySlot(InventorySlotPacket $packet) : bool{
 		return false;
 	}
 
 	public function handleContainerSetData(ContainerSetDataPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleContainerSetContent(ContainerSetContentPacket $packet) : bool{
 		return false;
 	}
 
@@ -335,6 +343,10 @@ abstract class NetworkSession{
 	}
 
 	public function handleCraftingEvent(CraftingEventPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleGuiDataPickItem(GuiDataPickItemPacket $packet) : bool{
 		return false;
 	}
 
@@ -406,19 +418,11 @@ abstract class NetworkSession{
 		return false;
 	}
 
-	public function handleReplaceItemInSlot(ReplaceItemInSlotPacket $packet) : bool{
-		return false;
-	}
-
 	public function handleGameRulesChanged(GameRulesChangedPacket $packet) : bool{
 		return false;
 	}
 
 	public function handleCamera(CameraPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleAddItem(AddItemPacket $packet) : bool{
 		return false;
 	}
 
@@ -434,11 +438,15 @@ abstract class NetworkSession{
 		return false;
 	}
 
-	public function handleCommandStep(CommandStepPacket $packet) : bool{
+	public function handleCommandRequest(CommandRequestPacket $packet) : bool{
 		return false;
 	}
 
 	public function handleCommandBlockUpdate(CommandBlockUpdatePacket $packet) : bool{
+		return false;
+	}
+
+	public function handleCommandOutput(CommandOutputPacket $packet) : bool{
 		return false;
 	}
 
@@ -491,6 +499,58 @@ abstract class NetworkSession{
 	}
 
 	public function handlePurchaseReceipt(PurchaseReceiptPacket $packet) : bool{
+		return false;
+	}
+
+	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleSubClientLogin(SubClientLoginPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleWSConnect(WSConnectPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleSetLastHurtBy(SetLastHurtByPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleBookEdit(BookEditPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleNpcRequest(NpcRequestPacket $packet) : bool{
+		return false;
+	}
+
+	public function handlePhotoTransfer(PhotoTransferPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleModalFormRequest(ModalFormRequestPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleModalFormResponse(ModalFormResponsePacket $packet) : bool{
+		return false;
+	}
+
+	public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleServerSettingsResponse(ServerSettingsResponsePacket $packet) : bool{
+		return false;
+	}
+
+	public function handleShowProfile(ShowProfilePacket $packet) : bool{
+		return false;
+	}
+
+	public function handleSetDefaultGameType(SetDefaultGameTypePacket $packet) : bool{
 		return false;
 	}
 

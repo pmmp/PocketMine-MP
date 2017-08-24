@@ -49,9 +49,7 @@ class GenericSound extends Sound{
 	public function encode(){
 		$pk = new LevelEventPacket;
 		$pk->evid = $this->id;
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
+		$pk->position = $this->asVector3();
 		$pk->data = (int) $this->pitch;
 
 		return $pk;

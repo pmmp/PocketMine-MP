@@ -31,13 +31,14 @@ use pocketmine\network\mcpe\NetworkSession;
 class SetCommandsEnabledPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SET_COMMANDS_ENABLED_PACKET;
 
+	/** @var bool */
 	public $enabled;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->enabled = $this->getBool();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putBool($this->enabled);
 	}
 

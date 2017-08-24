@@ -27,21 +27,29 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\utils\Utils;
 
 class LoginPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::LOGIN_PACKET;
 
 	const EDITION_POCKET = 0;
 
+	/** @var string */
 	public $username;
+	/** @var int */
 	public $protocol;
-	public $gameEdition;
+	/** @var string */
 	public $clientUUID;
+	/** @var int */
 	public $clientId;
+	/** @var string */
 	public $identityPublicKey;
+	/** @var string */
 	public $serverAddress;
 
+	/** @var string */
 	public $skinId;
+	/** @var string */
 	public $skin = "";
 
 	/** @var array (the "chain" index contains one or more JWTs) */
@@ -55,7 +63,7 @@ class LoginPacket extends DataPacket{
 		return true;
 	}
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->protocol = $this->getInt();
 
 		if($this->protocol !== ProtocolInfo::CURRENT_PROTOCOL){
@@ -63,13 +71,11 @@ class LoginPacket extends DataPacket{
 			return; //Do not attempt to decode for non-accepted protocols
 		}
 
-		$this->gameEdition = $this->getByte();
-
 		$this->setBuffer($this->getString(), 0);
 
 		$this->chainData = json_decode($this->get($this->getLInt()), true);
 		foreach($this->chainData["chain"] as $chain){
-			$webtoken = $this->decodeToken($chain);
+			$webtoken = Utils::decodeJWT($chain);
 			if(isset($webtoken["extraData"])){
 				if(isset($webtoken["extraData"]["displayName"])){
 					$this->username = $webtoken["extraData"]["displayName"];
@@ -84,7 +90,7 @@ class LoginPacket extends DataPacket{
 		}
 
 		$this->clientDataJwt = $this->get($this->getLInt());
-		$this->clientData = $this->decodeToken($this->clientDataJwt);
+		$this->clientData = Utils::decodeJWT($this->clientDataJwt);
 
 		$this->clientId = $this->clientData["ClientRandomId"] ?? null;
 		$this->serverAddress = $this->clientData["ServerAddress"] ?? null;
@@ -95,14 +101,8 @@ class LoginPacket extends DataPacket{
 		}
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		//TODO
-	}
-
-	public function decodeToken($token){
-		list($headB64, $payloadB64, $sigB64) = explode(".", $token);
-
-		return json_decode(base64_decode($payloadB64), true);
 	}
 
 	public function handle(NetworkSession $session) : bool{

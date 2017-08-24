@@ -109,7 +109,7 @@ interface BlockIds{
 	const CACTUS = 81;
 	const CLAY_BLOCK = 82;
 	const REEDS_BLOCK = 83, SUGARCANE_BLOCK = 83;
-
+	const JUKEBOX = 84;
 	const FENCE = 85;
 	const PUMPKIN = 86;
 	const NETHERRACK = 87;
@@ -201,7 +201,8 @@ interface BlockIds{
 	const COAL_BLOCK = 173;
 	const PACKED_ICE = 174;
 	const DOUBLE_PLANT = 175;
-
+	const STANDING_BANNER = 176;
+	const WALL_BANNER = 177;
 	const DAYLIGHT_DETECTOR_INVERTED = 178, DAYLIGHT_SENSOR_INVERTED = 178;
 	const RED_SANDSTONE = 179;
 	const RED_SANDSTONE_STAIRS = 180;
@@ -227,6 +228,7 @@ interface BlockIds{
 
 	const PURPUR_STAIRS = 203;
 
+	const UNDYED_SHULKER_BOX = 205;
 	const END_BRICKS = 206;
 	const FROSTED_ICE = 207;
 	const END_ROD = 208;
@@ -270,6 +272,7 @@ interface BlockIds{
 	const INFO_UPDATE2 = 249;
 	const MOVINGBLOCK = 250, MOVING_BLOCK = 250;
 	const OBSERVER = 251;
+	const STRUCTURE_BLOCK = 252;
 
 	const RESERVED6 = 255;
 

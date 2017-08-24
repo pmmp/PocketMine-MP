@@ -31,14 +31,15 @@ use pocketmine\network\mcpe\NetworkSession;
 class ContainerClosePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::CONTAINER_CLOSE_PACKET;
 
-	public $windowid;
+	/** @var int */
+	public $windowId;
 
-	public function decodePayload(){
-		$this->windowid = $this->getByte();
+	protected function decodePayload(){
+		$this->windowId = $this->getByte();
 	}
 
-	public function encodePayload(){
-		$this->putByte($this->windowid);
+	protected function encodePayload(){
+		$this->putByte($this->windowId);
 	}
 
 	public function handle(NetworkSession $session) : bool{

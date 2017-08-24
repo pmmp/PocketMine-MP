@@ -30,13 +30,18 @@ use pocketmine\network\mcpe\NetworkSession;
 class UpdateEquipPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::UPDATE_EQUIP_PACKET;
 
+	/** @var int */
 	public $windowId;
+	/** @var int */
 	public $windowType;
+	/** @var int */
 	public $unknownVarint; //TODO: find out what this is (vanilla always sends 0)
+	/** @var int */
 	public $entityUniqueId;
+	/** @var string */
 	public $namedtag;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->windowId = $this->getByte();
 		$this->windowType = $this->getByte();
 		$this->unknownVarint = $this->getVarInt();
@@ -44,7 +49,7 @@ class UpdateEquipPacket extends DataPacket{
 		$this->namedtag = $this->get(true);
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putByte($this->windowId);
 		$this->putByte($this->windowType);
 		$this->putVarInt($this->unknownVarint);

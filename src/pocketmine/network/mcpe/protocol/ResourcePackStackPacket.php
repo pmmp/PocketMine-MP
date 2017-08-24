@@ -34,6 +34,7 @@ use pocketmine\resourcepacks\ResourcePackInfoEntry;
 class ResourcePackStackPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_STACK_PACKET;
 
+	/** @var bool */
 	public $mustAccept = false;
 
 	/** @var ResourcePack[] */
@@ -41,7 +42,7 @@ class ResourcePackStackPacket extends DataPacket{
 	/** @var ResourcePack[] */
 	public $resourcePackStack = [];
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		/*$this->mustAccept = $this->getBool();
 		$behaviorPackCount = $this->getUnsignedVarInt();
 		while($behaviorPackCount-- > 0){
@@ -58,19 +59,21 @@ class ResourcePackStackPacket extends DataPacket{
 		}*/
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putBool($this->mustAccept);
 
 		$this->putUnsignedVarInt(count($this->behaviorPackStack));
 		foreach($this->behaviorPackStack as $entry){
 			$this->putString($entry->getPackId());
 			$this->putString($entry->getPackVersion());
+			$this->putString(""); //TODO
 		}
 
 		$this->putUnsignedVarInt(count($this->resourcePackStack));
 		foreach($this->resourcePackStack as $entry){
 			$this->putString($entry->getPackId());
 			$this->putString($entry->getPackVersion());
+			$this->putString(""); //TODO
 		}
 	}
 

@@ -156,7 +156,8 @@ interface ItemIds extends BlockIds{
 	const SPAWN_EGG = 383;
 	const BOTTLE_O_ENCHANTING = 384, EXPERIENCE_BOTTLE = 384;
 	const FIREBALL = 385, FIRE_CHARGE = 385;
-
+	const WRITABLE_BOOK = 386;
+	const WRITTEN_BOOK = 387;
 	const EMERALD = 388;
 	const FRAME = 389, ITEM_FRAME = 389;
 	const FLOWER_POT = 390;
@@ -170,7 +171,8 @@ interface ItemIds extends BlockIds{
 	const CARROTONASTICK = 398, CARROT_ON_A_STICK = 398;
 	const NETHERSTAR = 399, NETHER_STAR = 399;
 	const PUMPKIN_PIE = 400;
-
+	const FIREWORKS = 401;
+	const FIREWORKSCHARGE = 402, FIREWORKS_CHARGE = 402;
 	const ENCHANTED_BOOK = 403;
 	const COMPARATOR = 404;
 	const NETHERBRICK = 405;
@@ -193,7 +195,7 @@ interface ItemIds extends BlockIds{
 	const PRISMARINE_CRYSTALS = 422;
 	const MUTTONRAW = 423, MUTTON_RAW = 423, RAW_MUTTON = 423;
 	const COOKED_MUTTON = 424, MUTTONCOOKED = 424, MUTTON_COOKED = 424;
-
+	const ARMOR_STAND = 425;
 	const END_CRYSTAL = 426;
 	const SPRUCE_DOOR = 427;
 	const BIRCH_DOOR = 428;
@@ -211,6 +213,7 @@ interface ItemIds extends BlockIds{
 	const COMMAND_BLOCK_MINECART = 443, MINECART_WITH_COMMAND_BLOCK = 443;
 	const ELYTRA = 444;
 	const SHULKER_SHELL = 445;
+	const BANNER = 446;
 
 	const TOTEM = 450;
 
@@ -225,5 +228,18 @@ interface ItemIds extends BlockIds{
 	const COOKED_SALMON = 463;
 
 	const APPLEENCHANTED = 466, APPLE_ENCHANTED = 466, ENCHANTED_GOLDEN_APPLE = 466;
+
+	const RECORD_13 = 500;
+	const RECORD_CAT = 501;
+	const RECORD_BLOCKS = 502;
+	const RECORD_CHIRP = 503;
+	const RECORD_FAR = 504;
+	const RECORD_MALL = 505;
+	const RECORD_MELLOHI = 506;
+	const RECORD_STAL = 507;
+	const RECORD_STRAD = 508;
+	const RECORD_WARD = 509;
+	const RECORD_11 = 510;
+	const RECORD_WAIT = 511;
 
 }

@@ -25,24 +25,31 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\NetworkSession;
 
-class AddItemPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::ADD_ITEM_PACKET;
+class PhotoTransferPacket extends DataPacket{
+	const NETWORK_ID = ProtocolInfo::PHOTO_TRANSFER_PACKET;
 
-	public $item;
+	/** @var string */
+	public $string1;
+	/** @var string */
+	public $string2;
+	/** @var string */
+	public $string3;
 
-	public function decodePayload(){
-		$this->item = $this->getSlot();
+	protected function decodePayload(){
+		$this->string1 = $this->getString();
+		$this->string2 = $this->getString();
+		$this->string3 = $this->getString();
 	}
 
-	public function encodePayload(){
-		$this->putSlot($this->item);
+	protected function encodePayload(){
+		$this->putString($this->string1);
+		$this->putString($this->string2);
+		$this->putString($this->string3);
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleAddItem($this);
+		return $session->handlePhotoTransfer($this);
 	}
-
 }

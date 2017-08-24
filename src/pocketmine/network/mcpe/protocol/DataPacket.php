@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\Entity;
 use pocketmine\item\ItemFactory;
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Utils;
@@ -37,7 +38,13 @@ abstract class DataPacket extends BinaryStream{
 
 	const NETWORK_ID = 0;
 
+	/** @var bool */
 	public $isEncoded = false;
+
+	/** @var int */
+	public $extraByte1 = 0;
+	/** @var int */
+	public $extraByte2 = 0;
 
 	public function pid(){
 		return $this::NETWORK_ID;
@@ -56,27 +63,45 @@ abstract class DataPacket extends BinaryStream{
 	}
 
 	public function decode(){
-		$this->offset = 1;
+		$this->offset = 0;
+		$this->decodeHeader();
 		$this->decodePayload();
+	}
+
+	protected function decodeHeader(){
+		$pid = $this->getUnsignedVarInt();
+		assert($pid === static::NETWORK_ID);
+
+		$this->extraByte1 = $this->getByte();
+		$this->extraByte2 = $this->getByte();
+		assert($this->extraByte1 === 0 and $this->extraByte2 === 0, "Got unexpected non-zero split-screen bytes (byte1: $this->extraByte1, byte2: $this->extraByte2");
 	}
 
 	/**
 	 * Note for plugin developers: If you're adding your own packets, you should perform decoding in here.
 	 */
-	public function decodePayload(){
+	protected function decodePayload(){
 
 	}
 
 	public function encode(){
 		$this->reset();
+		$this->encodeHeader();
 		$this->encodePayload();
 		$this->isEncoded = true;
+	}
+
+	protected function encodeHeader(){
+		$this->putUnsignedVarInt(static::NETWORK_ID);
+
+		$this->putByte($this->extraByte1);
+		$this->putByte($this->extraByte2);
 	}
 
 	/**
 	 * Note for plugin developers: If you're adding your own packets, you should perform encoding in here.
 	 */
-	public function encodePayload(){
+	protected function encodePayload(){
 
 	}
 
@@ -91,11 +116,6 @@ abstract class DataPacket extends BinaryStream{
 	 * @return bool true if the packet was handled successfully, false if not.
 	 */
 	abstract public function handle(NetworkSession $session) : bool;
-
-	public function reset(){
-		$this->buffer = chr($this::NETWORK_ID);
-		$this->offset = 0;
-	}
 
 	public function clean(){
 		$this->buffer = null;
@@ -377,6 +397,50 @@ abstract class DataPacket extends BinaryStream{
 		$this->putLFloat($z);
 	}
 
+	/**
+	 * Reads a floating-point Vector3 object
+	 * TODO: get rid of primitive methods and replace with this
+	 *
+	 * @return Vector3
+	 */
+	public function getVector3Obj() : Vector3{
+		return new Vector3(
+			$this->getRoundedLFloat(4),
+			$this->getRoundedLFloat(4),
+			$this->getRoundedLFloat(4)
+		);
+	}
+
+	/**
+	 * Writes a floating-point Vector3 object, or 3x zero if null is given.
+	 *
+	 * Note: ONLY use this where it is reasonable to allow not specifying the vector.
+	 * For all other purposes, use {@link DataPacket#putVector3Obj}
+	 *
+	 * @param Vector3|null $vector
+	 */
+	public function putVector3ObjNullable(Vector3 $vector = null){
+		if($vector){
+			$this->putVector3Obj($vector);
+		}else{
+			$this->putLFloat(0.0);
+			$this->putLFloat(0.0);
+			$this->putLFloat(0.0);
+		}
+	}
+
+	/**
+	 * Writes a floating-point Vector3 object
+	 * TODO: get rid of primitive methods and replace with this
+	 *
+	 * @param Vector3 $vector
+	 */
+	public function putVector3Obj(Vector3 $vector){
+		$this->putLFloat($vector->x);
+		$this->putLFloat($vector->y);
+		$this->putLFloat($vector->z);
+	}
+
 	public function getByteRotation() : float{
 		return (float) ($this->getByte() * (360 / 256));
 	}
@@ -439,5 +503,23 @@ abstract class DataPacket extends BinaryStream{
 					break;
 			}
 		}
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function getEntityLink() : array{
+		return [$this->getEntityUniqueId(), $this->getEntityUniqueId(), $this->getByte(), $this->getByte()];
+	}
+
+	/**
+	 * @param array $link
+	 */
+	protected function putEntityLink(array $link){
+		$this->putEntityUniqueId($link[0]);
+		$this->putEntityUniqueId($link[1]);
+		$this->putByte($link[2]);
+		$this->putByte($link[3]);
+
 	}
 }

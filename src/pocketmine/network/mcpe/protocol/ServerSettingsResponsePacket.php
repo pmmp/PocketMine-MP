@@ -27,32 +27,25 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 
-class InventoryActionPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::INVENTORY_ACTION_PACKET;
+class ServerSettingsResponsePacket extends DataPacket{
+	const NETWORK_ID = ProtocolInfo::SERVER_SETTINGS_RESPONSE_PACKET;
 
-	const ACTION_GIVE_ITEM = 0;
-	const ACTION_ENCHANT_ITEM = 2;
+	/** @var int */
+	public $formId;
+	/** @var string */
+	public $formData; //json
 
-	public $actionId;
-	public $item;
-	public $enchantmentId = 0;
-	public $enchantmentLevel = 0;
-
-	public function decodePayload(){
-		$this->actionId = $this->getUnsignedVarInt();
-		$this->item = $this->getSlot();
-		$this->enchantmentId = $this->getVarInt();
-		$this->enchantmentLevel = $this->getVarInt();
+	protected function decodePayload(){
+		$this->formId = $this->getUnsignedVarInt();
+		$this->formData = $this->getString();
 	}
 
-	public function encodePayload(){
-		$this->putUnsignedVarInt($this->actionId);
-		$this->putSlot($this->item);
-		$this->putVarInt($this->enchantmentId);
-		$this->putVarInt($this->enchantmentLevel);
+	protected function encodePayload(){
+		$this->putUnsignedVarInt($this->formId);
+		$this->putString($this->formData);
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleInventoryAction($this);
+		return $session->handleServerSettingsResponse($this);
 	}
 }

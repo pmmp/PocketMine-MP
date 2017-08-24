@@ -31,24 +31,44 @@ use pocketmine\network\mcpe\NetworkSession;
 class InteractPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::INTERACT_PACKET;
 
-	const ACTION_RIGHT_CLICK = 1;
-	const ACTION_LEFT_CLICK = 2;
 	const ACTION_LEAVE_VEHICLE = 3;
 	const ACTION_MOUSEOVER = 4;
 
 	const ACTION_OPEN_INVENTORY = 6;
 
+	/** @var int */
 	public $action;
+	/** @var int */
 	public $target;
 
-	public function decodePayload(){
+	/** @var float */
+	public $x;
+	/** @var float */
+	public $y;
+	/** @var float */
+	public $z;
+
+	protected function decodePayload(){
 		$this->action = $this->getByte();
 		$this->target = $this->getEntityRuntimeId();
+
+		if($this->action === self::ACTION_MOUSEOVER){
+			//TODO: should this be a vector3?
+			$this->x = $this->getLFloat();
+			$this->y = $this->getLFloat();
+			$this->z = $this->getLFloat();
+		}
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putByte($this->action);
 		$this->putEntityRuntimeId($this->target);
+
+		if($this->action === self::ACTION_MOUSEOVER){
+			$this->putLFloat($this->x);
+			$this->putLFloat($this->y);
+			$this->putLFloat($this->z);
+		}
 	}
 
 	public function handle(NetworkSession $session) : bool{

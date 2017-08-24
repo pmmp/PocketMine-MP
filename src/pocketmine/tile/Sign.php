@@ -32,18 +32,21 @@ use pocketmine\utils\TextFormat;
 
 class Sign extends Spawnable{
 
+	/** @var string[] */
+	protected $text = ["", "", "", ""];
+
 	public function __construct(Level $level, CompoundTag $nbt){
-		if(!isset($nbt->Text1)){
-			$nbt->Text1 = new StringTag("Text1", "");
-		}
-		if(!isset($nbt->Text2)){
-			$nbt->Text2 = new StringTag("Text2", "");
-		}
-		if(!isset($nbt->Text3)){
-			$nbt->Text3 = new StringTag("Text3", "");
-		}
-		if(!isset($nbt->Text4)){
-			$nbt->Text4 = new StringTag("Text4", "");
+		if(isset($nbt->Text)){ //MCPE 1.2 save format
+			$this->text = explode("\n", $nbt->Text->getValue());
+			unset($nbt->Text);
+		}else{
+			for($i = 1; $i <= 4; ++$i){
+				$textKey = "Text$i";
+				if(isset($nbt->$textKey)){
+					$this->text[$i - 1] = $nbt->$textKey->getValue();
+					unset($nbt->$textKey);
+				}
+			}
 		}
 
 		parent::__construct($level, $nbt);
@@ -51,14 +54,18 @@ class Sign extends Spawnable{
 
 	public function saveNBT(){
 		parent::saveNBT();
+		$this->namedtag->Text = new StringTag("Text", implode("\n", $this->text));
+
+		for($i = 1; $i <= 4; ++$i){ //Backwards-compatibility
+			$textKey = "Text$i";
+			$this->namedtag->$textKey = new StringTag($textKey, $this->getLine($i - 1));
+		}
+
 		unset($this->namedtag->Creator);
 	}
 
 	public function setText($line1 = "", $line2 = "", $line3 = "", $line4 = ""){
-		$this->namedtag->Text1->setValue($line1);
-		$this->namedtag->Text2->setValue($line2);
-		$this->namedtag->Text3->setValue($line3);
-		$this->namedtag->Text4->setValue($line4);
+		$this->text = [$line1, $line2, $line3, $line4];
 		$this->onChanged();
 	}
 
@@ -71,7 +78,8 @@ class Sign extends Spawnable{
 		if($index < 0 or $index > 3){
 			throw new \InvalidArgumentException("Index must be in the range 0-3!");
 		}
-		$this->namedtag->{"Text" . ($index + 1)}->setValue($line);
+
+		$this->text[$index] = $line;
 		if($update){
 			$this->onChanged();
 		}
@@ -86,23 +94,18 @@ class Sign extends Spawnable{
 		if($index < 0 or $index > 3){
 			throw new \InvalidArgumentException("Index must be in the range 0-3!");
 		}
-		return $this->namedtag->{"Text" . ($index + 1)}->getValue();
+		return $this->text[$index];
 	}
 
-	public function getText(){
-		return [
-			$this->namedtag->Text1->getValue(),
-			$this->namedtag->Text2->getValue(),
-			$this->namedtag->Text3->getValue(),
-			$this->namedtag->Text4->getValue()
-		];
+	/**
+	 * @return string[]
+	 */
+	public function getText() : array{
+		return $this->text;
 	}
 
 	public function addAdditionalSpawnData(CompoundTag $nbt){
-		for($i = 1; $i <= 4; $i++){
-			$textKey = "Text" . $i;
-			$nbt->$textKey = $this->namedtag->$textKey;
-		}
+		$nbt->Text = new StringTag("Text", implode("\n", $this->text));
 		return $nbt;
 	}
 
@@ -111,12 +114,20 @@ class Sign extends Spawnable{
 			return false;
 		}
 
-		$ev = new SignChangeEvent($this->getBlock(), $player, [
-			TextFormat::clean($nbt->Text1->getValue(), ($removeFormat = $player->getRemoveFormat())),
-			TextFormat::clean($nbt->Text2->getValue(), $removeFormat),
-			TextFormat::clean($nbt->Text3->getValue(), $removeFormat),
-			TextFormat::clean($nbt->Text4->getValue(), $removeFormat)
-		]);
+		if(isset($nbt->Text)){
+			$lines = array_pad(explode("\n", $nbt->Text->getValue()), 4, "");
+		}else{
+			$lines = [
+				$nbt->Text1->getValue(),
+				$nbt->Text2->getValue(),
+				$nbt->Text3->getValue(),
+				$nbt->Text4->getValue()
+			];
+		}
+
+		$removeFormat = $player->getRemoveFormat();
+
+		$ev = new SignChangeEvent($this->getBlock(), $player, array_map(function(string $line) use ($removeFormat){ return TextFormat::clean($line, $removeFormat); }, $lines));
 
 		if(!isset($this->namedtag->Creator) or $this->namedtag->Creator->getValue() !== $player->getRawUniqueId()){
 			$ev->setCancelled();

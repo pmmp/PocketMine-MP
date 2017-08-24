@@ -31,19 +31,21 @@ use pocketmine\network\mcpe\NetworkSession;
 class DisconnectPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::DISCONNECT_PACKET;
 
+	/** @var bool */
 	public $hideDisconnectionScreen = false;
+	/** @var string */
 	public $message;
 
 	public function canBeSentBeforeLogin() : bool{
 		return true;
 	}
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->hideDisconnectionScreen = $this->getBool();
 		$this->message = $this->getString();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putBool($this->hideDisconnectionScreen);
 		if(!$this->hideDisconnectionScreen){
 			$this->putString($this->message);

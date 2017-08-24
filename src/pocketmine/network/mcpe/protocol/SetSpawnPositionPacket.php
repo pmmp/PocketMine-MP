@@ -34,19 +34,24 @@ class SetSpawnPositionPacket extends DataPacket{
 	const TYPE_PLAYER_SPAWN = 0;
 	const TYPE_WORLD_SPAWN = 1;
 
+	/** @var int */
 	public $spawnType;
+	/** @var int */
 	public $x;
+	/** @var int */
 	public $y;
+	/** @var int */
 	public $z;
+	/** @var bool */
 	public $spawnForced;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->spawnType = $this->getVarInt();
 		$this->getBlockPosition($this->x, $this->y, $this->z);
 		$this->spawnForced = $this->getBool();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putVarInt($this->spawnType);
 		$this->putBlockPosition($this->x, $this->y, $this->z);
 		$this->putBool($this->spawnForced);

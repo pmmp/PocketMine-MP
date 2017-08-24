@@ -41,11 +41,14 @@ class EventPacket extends DataPacket{
 	const TYPE_AGENT_COMMAND = 8;
 	const TYPE_AGENT_CREATED = 9;
 
+	/** @var int */
 	public $playerRuntimeId;
+	/** @var int */
 	public $eventData;
+	/** @var int */
 	public $type;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->playerRuntimeId = $this->getEntityRuntimeId();
 		$this->eventData = $this->getVarInt();
 		$this->type = $this->getByte();
@@ -53,7 +56,7 @@ class EventPacket extends DataPacket{
 		//TODO: nice confusing mess
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putEntityRuntimeId($this->playerRuntimeId);
 		$this->putVarInt($this->eventData);
 		$this->putByte($this->type);

@@ -33,11 +33,11 @@ class AddBehaviorTreePacket extends DataPacket{
 	/** @var string */
 	public $unknownString1;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->unknownString1 = $this->getString();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putString($this->unknownString1);
 	}
 

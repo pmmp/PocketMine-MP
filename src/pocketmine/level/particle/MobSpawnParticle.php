@@ -40,9 +40,7 @@ class MobSpawnParticle extends Particle{
 	public function encode(){
 		$pk = new LevelEventPacket;
 		$pk->evid = LevelEventPacket::EVENT_PARTICLE_SPAWN;
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
+		$pk->position = $this->asVector3();
 		$pk->data = ($this->width & 0xff) + (($this->height & 0xff) << 8);
 
 		return $pk;

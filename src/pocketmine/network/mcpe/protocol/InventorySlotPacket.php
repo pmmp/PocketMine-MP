@@ -25,49 +25,32 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\NetworkSession;
 
-class UseItemPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::USE_ITEM_PACKET;
+class InventorySlotPacket extends DataPacket{
+	const NETWORK_ID = ProtocolInfo::INVENTORY_SLOT_PACKET;
 
-	public $x;
-	public $y;
-	public $z;
-	public $blockId;
-	public $face;
-	public $fx;
-	public $fy;
-	public $fz;
-	public $posX;
-	public $posY;
-	public $posZ;
-	public $slot;
+	/** @var int */
+	public $windowId;
+	/** @var int */
+	public $inventorySlot;
 	/** @var Item */
 	public $item;
 
-	public function decodePayload(){
-		$this->getBlockPosition($this->x, $this->y, $this->z);
-		$this->blockId = $this->getUnsignedVarInt();
-		$this->face = $this->getVarInt();
-		$this->getVector3f($this->fx, $this->fy, $this->fz);
-		$this->getVector3f($this->posX, $this->posY, $this->posZ);
-		$this->slot = $this->getVarInt();
+	protected function decodePayload(){
+		$this->windowId = $this->getUnsignedVarInt();
+		$this->inventorySlot = $this->getUnsignedVarInt();
 		$this->item = $this->getSlot();
 	}
 
-	public function encodePayload(){
-		$this->putUnsignedVarInt($this->blockId);
-		$this->putUnsignedVarInt($this->face);
-		$this->putVector3f($this->fx, $this->fy, $this->fz);
-		$this->putVector3f($this->posX, $this->posY, $this->posZ);
-		$this->putVarInt($this->slot);
+	protected function encodePayload(){
+		$this->putUnsignedVarInt($this->windowId);
+		$this->putUnsignedVarInt($this->inventorySlot);
 		$this->putSlot($this->item);
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleUseItem($this);
+		return $session->handleInventorySlot($this);
 	}
-
 }

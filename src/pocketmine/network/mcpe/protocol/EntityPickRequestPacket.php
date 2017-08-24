@@ -21,34 +21,31 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\inventory;
+namespace pocketmine\network\mcpe\protocol;
 
-use pocketmine\item\Item;
+#include <rules/DataPacket.h>
 
-interface Transaction{
+use pocketmine\network\mcpe\NetworkSession;
 
-	/**
-	 * @return Inventory
-	 */
-	public function getInventory() : Inventory;
+class EntityPickRequestPacket extends DataPacket{
+	const NETWORK_ID = ProtocolInfo::ENTITY_PICK_REQUEST_PACKET;
 
-	/**
-	 * @return int
-	 */
-	public function getSlot() : int;
+	/** @var int */
+	public $entityTypeId;
+	/** @var int */
+	public $hotbarSlot;
 
-	/**
-	 * @return Item
-	 */
-	public function getSourceItem() : Item;
+	protected function decodePayload(){
+		$this->entityTypeId = $this->getLLong();
+		$this->hotbarSlot = $this->getByte();
+	}
 
-	/**
-	 * @return Item
-	 */
-	public function getTargetItem() : Item;
+	protected function encodePayload(){
+		$this->putLLong($this->entityTypeId);
+		$this->putByte($this->hotbarSlot);
+	}
 
-	/**
-	 * @return float
-	 */
-	public function getCreationTime() : float;
+	public function handle(NetworkSession $session) : bool{
+		return $session->handleEntityPickRequest($this);
+	}
 }

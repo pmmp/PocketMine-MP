@@ -31,13 +31,14 @@ use pocketmine\network\mcpe\NetworkSession;
 class RequestChunkRadiusPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::REQUEST_CHUNK_RADIUS_PACKET;
 
+	/** @var int */
 	public $radius;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->radius = $this->getVarInt();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putVarInt($this->radius);
 	}
 

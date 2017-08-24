@@ -31,19 +31,24 @@ use pocketmine\network\mcpe\NetworkSession;
 class BlockEventPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::BLOCK_EVENT_PACKET;
 
+	/** @var int */
 	public $x;
+	/** @var int */
 	public $y;
+	/** @var int */
 	public $z;
+	/** @var int */
 	public $case1;
+	/** @var int */
 	public $case2;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->getBlockPosition($this->x, $this->y, $this->z);
 		$this->case1 = $this->getVarInt();
 		$this->case2 = $this->getVarInt();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putBlockPosition($this->x, $this->y, $this->z);
 		$this->putVarInt($this->case1);
 		$this->putVarInt($this->case2);

@@ -31,13 +31,14 @@ use pocketmine\network\mcpe\NetworkSession;
 class SetDifficultyPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SET_DIFFICULTY_PACKET;
 
+	/** @var int */
 	public $difficulty;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->difficulty = $this->getUnsignedVarInt();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putUnsignedVarInt($this->difficulty);
 	}
 
