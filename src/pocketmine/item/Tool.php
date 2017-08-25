@@ -97,10 +97,7 @@ abstract class Tool extends Item{
 			Tool::TIER_WOODEN => 60,
 			Tool::TIER_STONE => 132,
 			Tool::TIER_IRON => 251,
-			Tool::TIER_DIAMOND => 1562,
-			self::FLINT_STEEL => 65,
-			self::SHEARS => 239,
-			self::BOW => 385,
+			Tool::TIER_DIAMOND => 1562
 		];
 
 		if(($type = $this->isPickaxe()) === false){
@@ -123,31 +120,7 @@ abstract class Tool extends Item{
 		return $tag !== null and $tag->getValue() > 0;
 	}
 
-	public function isPickaxe(){
-		return false;
-	}
-
-	public function isAxe(){
-		return false;
-	}
-
-	public function isSword(){
-		return false;
-	}
-
-	public function isShovel(){
-		return false;
-	}
-
-	public function isHoe(){
-		return false;
-	}
-
-	public function isShears(){
-		return ($this->id === self::SHEARS);
-	}
-
 	public function isTool(){
-		return ($this->id === self::FLINT_STEEL or $this->id === self::SHEARS or $this->id === self::BOW or $this->isPickaxe() !== false or $this->isAxe() !== false or $this->isShovel() !== false or $this->isSword() !== false);
+		return true;
 	}
 }

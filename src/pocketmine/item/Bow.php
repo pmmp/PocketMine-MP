@@ -33,4 +33,7 @@ class Bow extends Tool{
 		return 200;
 	}
 
+	public function getMaxDurability(){
+		return 385;
+	}
 }
