@@ -29,4 +29,5 @@ class Bowl extends Item{
 		parent::__construct(self::BOWL, $meta, $count, "Bowl");
 	}
 
+	//TODO: check fuel
 }

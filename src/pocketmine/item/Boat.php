@@ -31,4 +31,6 @@ class Boat extends Item{
 	public function getFuelTime() : int{
 		return 1200; //400 in PC
 	}
+
+	//TODO
 }

@@ -105,7 +105,7 @@ abstract class Tool extends Item{
 				if(($type = $this->isSword()) === false){
 					if(($type = $this->isShovel()) === false){
 						if(($type = $this->isHoe()) === false){
-							$type = $this->id;
+							return false;
 						}
 					}
 				}

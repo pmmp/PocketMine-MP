@@ -46,9 +46,9 @@ class ItemFactory{
 			self::registerItem(new Bow());
 			self::registerItem(new Arrow());
 			self::registerItem(new Coal());
-			self::registerItem(new Diamond());
-			self::registerItem(new IronIngot());
-			self::registerItem(new GoldIngot());
+			self::registerItem(new Item(Item::DIAMOND, 0, 1, "Diamond"));
+			self::registerItem(new Item(Item::IRON_INGOT, 0, 1, "Iron Ingot"));
+			self::registerItem(new Item(Item::GOLD_INGOT, 0, 1, "Gold Ingot"));
 			self::registerItem(new IronSword());
 			self::registerItem(new WoodenSword());
 			self::registerItem(new WoodenShovel());
@@ -70,15 +70,15 @@ class ItemFactory{
 			self::registerItem(new GoldPickaxe());
 			self::registerItem(new GoldAxe());
 			self::registerItem(new StringItem());
-			self::registerItem(new Feather());
-			self::registerItem(new Gunpowder());
+			self::registerItem(new Item(Item::FEATHER, 0, 1, "Feather"));
+			self::registerItem(new Item(Item::GUNPOWDER, 0, 1, "Gunpowder"));
 			self::registerItem(new WoodenHoe());
 			self::registerItem(new StoneHoe());
 			self::registerItem(new IronHoe());
 			self::registerItem(new DiamondHoe());
 			self::registerItem(new GoldHoe());
 			self::registerItem(new WheatSeeds());
-			self::registerItem(new Wheat());
+			self::registerItem(new Item(Item::WHEAT, 0, 1, "Wheat"));
 			self::registerItem(new Bread());
 			self::registerItem(new LeatherCap());
 			self::registerItem(new LeatherTunic());
@@ -100,7 +100,7 @@ class ItemFactory{
 			self::registerItem(new GoldChestplate());
 			self::registerItem(new GoldLeggings());
 			self::registerItem(new GoldBoots());
-			self::registerItem(new Flint());
+			self::registerItem(new Item(Item::FLINT, 0, 1, "Flint"));
 			self::registerItem(new RawPorkchop());
 			self::registerItem(new CookedPorkchop());
 			self::registerItem(new Painting());
@@ -115,25 +115,25 @@ class ItemFactory{
 			self::registerItem(new Redstone());
 			self::registerItem(new Snowball());
 			self::registerItem(new Boat());
-			self::registerItem(new Leather());
+			self::registerItem(new Item(Item::LEATHER, 0, 1, "Leather"));
 
-			self::registerItem(new Brick());
-			self::registerItem(new Clay());
+			self::registerItem(new Item(Item::BRICK, 0, 1, "Brick"));
+			self::registerItem(new Item(Item::CLAY_BALL, 0, 1, "Clay"));
 			self::registerItem(new Sugarcane());
-			self::registerItem(new Paper());
+			self::registerItem(new Item(Item::PAPER, 0, 1, "Paper"));
 			self::registerItem(new Book());
-			self::registerItem(new Slimeball());
+			self::registerItem(new Item(Item::SLIME_BALL, 0, 1, "Slimeball"));
 
 			self::registerItem(new Egg());
 			self::registerItem(new Compass());
 			self::registerItem(new FishingRod());
 			self::registerItem(new Clock());
-			self::registerItem(new GlowstoneDust());
+			self::registerItem(new Item(Item::GLOWSTONE_DUST, 0, 1, "Glowstone Dust"));
 			self::registerItem(new Fish());
 			self::registerItem(new CookedFish());
 			self::registerItem(new Dye());
-			self::registerItem(new Bone());
-			self::registerItem(new Sugar());
+			self::registerItem(new Item(Item::BONE, 0, 1, "Bone"));
+			self::registerItem(new Item(Item::SUGAR, 0, 1, "Sugar"));
 			self::registerItem(new Cake());
 			self::registerItem(new Bed());
 
@@ -148,20 +148,20 @@ class ItemFactory{
 			self::registerItem(new RawChicken());
 			self::registerItem(new CookedChicken());
 
-			self::registerItem(new GoldNugget());
+			self::registerItem(new Item(Item::GOLD_NUGGET, 0, 1, "Gold Nugget"));
 			self::registerItem(new NetherWart());
 			self::registerItem(new Potion());
 			self::registerItem(new GlassBottle());
 			self::registerItem(new SpiderEye());
-			self::registerItem(new FermentedSpiderEye());
-			self::registerItem(new BlazePowder());
-			self::registerItem(new MagmaCream());
+			self::registerItem(new Item(Item::FERMENTED_SPIDER_EYE, 0, 1, "Fermented Spider Eye"));
+			self::registerItem(new Item(Item::BLAZE_POWDER, 0, 1, "Blaze Powder"));
+			self::registerItem(new Item(Item::MAGMA_CREAM, 0, 1, "Magma Cream"));
 			self::registerItem(new BrewingStand());
 
-			self::registerItem(new GlisteringMelon());
+			self::registerItem(new Item(Item::GLISTERING_MELON, 0, 1, "Glistering Melon"));
 			self::registerItem(new SpawnEgg());
 
-			self::registerItem(new Emerald());
+			self::registerItem(new Item(Item::EMERALD, 0, 1, "Emerald"));
 			self::registerItem(new ItemFrame());
 			self::registerItem(new FlowerPot());
 			self::registerItem(new Carrot());
@@ -171,17 +171,17 @@ class ItemFactory{
 			self::registerItem(new GoldenCarrot());
 			self::registerItem(new Skull());
 
-			self::registerItem(new NetherStar());
+			self::registerItem(new Item(Item::NETHER_STAR, 0, 1, "Nether Star"));
 			self::registerItem(new PumpkinPie());
 
-			self::registerItem(new NetherBrick());
-			self::registerItem(new NetherQuartz());
+			self::registerItem(new Item(Item::NETHER_BRICK, 0, 1, "Nether Brick"));
+			self::registerItem(new Item(Item::NETHER_QUARTZ, 0, 1, "Nether Quartz"));
 
-			self::registerItem(new PrismarineShard());
+			self::registerItem(new Item(Item::PRISMARINE_SHARD, 0, 1, "Prismarine Shard"));
 
 			self::registerItem(new CookedRabbit());
 
-			self::registerItem(new PrismarineCrystals());
+			self::registerItem(new Item(Item::PRISMARINE_CRYSTALS, 0, 1, "Prismarine Crystals"));
 
 			self::registerItem(new Beetroot());
 			self::registerItem(new BeetrootSeeds());

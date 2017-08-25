@@ -28,5 +28,6 @@ class Dye extends Item{
 		parent::__construct(self::DYE, $meta, $count, "Dye");
 	}
 
+	//TODO: names
 }
 
