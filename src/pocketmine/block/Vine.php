@@ -143,7 +143,7 @@ class Vine extends Transparent{
 				2 => self::FLAG_SOUTH,
 				3 => self::FLAG_NORTH,
 				4 => self::FLAG_EAST,
-				5 => self::FLAG_WEST,
+				5 => self::FLAG_WEST
 			];
 			if(isset($faces[$face])){
 				$this->meta = $faces[$face];

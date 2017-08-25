@@ -135,7 +135,7 @@ abstract class Stair extends Transparent{
 			0 => 0,
 			1 => 2,
 			2 => 1,
-			3 => 3,
+			3 => 3
 		];
 		$this->meta = $faces[$player->getDirection()] & 0x03;
 		if(($facePos->y > 0.5 and $face !== Vector3::SIDE_UP) or $face === Vector3::SIDE_DOWN){

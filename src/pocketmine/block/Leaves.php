@@ -59,7 +59,7 @@ class Leaves extends Transparent{
 			self::OAK => "Oak Leaves",
 			self::SPRUCE => "Spruce Leaves",
 			self::BIRCH => "Birch Leaves",
-			self::JUNGLE => "Jungle Leaves",
+			self::JUNGLE => "Jungle Leaves"
 		];
 		return $names[$this->meta & 0x03];
 	}

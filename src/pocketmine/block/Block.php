@@ -351,7 +351,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getDrops(Item $item) : array{
 		return [
-			ItemFactory::get($this->getItemId(), $this->getDamage() & $this->getVariantBitmask(), 1),
+			ItemFactory::get($this->getItemId(), $this->getDamage() & $this->getVariantBitmask(), 1)
 		];
 	}
 

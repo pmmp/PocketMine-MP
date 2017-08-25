@@ -228,7 +228,7 @@ abstract class Door extends Transparent{
 				0 => 3,
 				1 => 4,
 				2 => 2,
-				3 => 5,
+				3 => 5
 			];
 			$next = $this->getSide($faces[($direction + 2) % 4]);
 			$next2 = $this->getSide($faces[$direction]);

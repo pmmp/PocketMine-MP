@@ -76,7 +76,7 @@ class FlowerPot extends Flowable{
 			new IntTag("y", $block->y),
 			new IntTag("z", $block->z),
 			new ShortTag("item", 0),
-			new IntTag("mData", 0),
+			new IntTag("mData", 0)
 		]);
 
 		if($item->hasCustomBlockData()){

@@ -50,7 +50,7 @@ class HayBale extends Solid{
 			2 => 0b1000,
 			3 => 0b1000,
 			4 => 0b0100,
-			5 => 0b0100,
+			5 => 0b0100
 		];
 
 		$this->meta = ($this->meta & 0x03) | $faces[$face];

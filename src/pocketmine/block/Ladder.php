@@ -116,7 +116,7 @@ class Ladder extends Transparent{
 				2 => 2,
 				3 => 3,
 				4 => 4,
-				5 => 5,
+				5 => 5
 			];
 			if(isset($faces[$face])){
 				$this->meta = $faces[$face];

@@ -77,7 +77,7 @@ class Torch extends Flowable{
 				Vector3::SIDE_NORTH => 4,
 				Vector3::SIDE_SOUTH => 3,
 				Vector3::SIDE_WEST => 2,
-				Vector3::SIDE_EAST => 1,
+				Vector3::SIDE_EAST => 1
 			];
 			$this->meta = $faces[$face];
 			$this->getLevel()->setBlock($block, $this, true, true);

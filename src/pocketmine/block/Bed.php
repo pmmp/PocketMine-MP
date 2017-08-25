@@ -189,7 +189,7 @@ class Bed extends Transparent{
 					new ByteTag("color", $item->getDamage() & 0x0f),
 					new IntTag("x", $block->x),
 					new IntTag("y", $block->y),
-					new IntTag("z", $block->z),
+					new IntTag("z", $block->z)
 				]);
 
 				$nbt2 = clone $nbt;
