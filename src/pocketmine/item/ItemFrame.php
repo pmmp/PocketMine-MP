@@ -27,8 +27,8 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 
 class ItemFrame extends Item{
-	public function __construct($meta = 0, $count = 1){
+	public function __construct(int $meta = 0){
 		$this->block = BlockFactory::get(Block::ITEM_FRAME_BLOCK);
-		parent::__construct(self::ITEM_FRAME, $meta, $count, "Item Frame");
+		parent::__construct(self::ITEM_FRAME, $meta, "Item Frame");
 	}
 }

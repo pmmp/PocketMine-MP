@@ -40,10 +40,6 @@ abstract class Tool extends Item{
 	const TYPE_AXE = 4;
 	const TYPE_SHEARS = 5;
 
-	public function __construct($id, $meta = 0, $count = 1, $name = "Unknown"){
-		parent::__construct($id, $meta, $count, $name);
-	}
-
 	public function getMaxStackSize(){
 		return 1;
 	}

@@ -117,7 +117,10 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @param int $meta
 	 */
 	final public function setDamage(int $meta){
-		$this->meta = $meta & 0x0f;
+		if($meta < 0 or $meta > 0xf){
+			throw new \InvalidArgumentException("Block damage values must be 0-15, not $meta");
+		}
+		$this->meta = $meta;
 	}
 
 	/**

@@ -25,7 +25,7 @@ namespace pocketmine\item;
 
 
 class GoldBoots extends Armor{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::GOLD_BOOTS, $meta, $count, "Gold Boots");
+	public function __construct(int $meta = 0){
+		parent::__construct(self::GOLD_BOOTS, $meta, "Gold Boots");
 	}
 }

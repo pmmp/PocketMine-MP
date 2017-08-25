@@ -25,8 +25,8 @@ namespace pocketmine\item;
 
 
 class GoldPickaxe extends Tool{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::GOLD_PICKAXE, $meta, $count, "Gold Pickaxe");
+	public function __construct(int $meta = 0){
+		parent::__construct(self::GOLD_PICKAXE, $meta, "Gold Pickaxe");
 	}
 
 	public function isPickaxe(){

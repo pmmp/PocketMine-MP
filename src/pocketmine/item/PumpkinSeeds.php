@@ -27,8 +27,8 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 
 class PumpkinSeeds extends Item{
-	public function __construct($meta = 0, $count = 1){
+	public function __construct(int $meta = 0){
 		$this->block = BlockFactory::get(Block::PUMPKIN_STEM);
-		parent::__construct(self::PUMPKIN_SEEDS, $meta, $count, "Pumpkin Seeds");
+		parent::__construct(self::PUMPKIN_SEEDS, $meta, "Pumpkin Seeds");
 	}
 }

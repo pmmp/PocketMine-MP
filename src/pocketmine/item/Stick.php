@@ -25,8 +25,8 @@ namespace pocketmine\item;
 
 
 class Stick extends Item{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::STICK, $meta, $count, "Stick");
+	public function __construct(int $meta = 0){
+		parent::__construct(self::STICK, $meta, "Stick");
 	}
 
 	public function getFuelTime() : int{
