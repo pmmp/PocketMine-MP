@@ -110,7 +110,7 @@ class ItemFactory{
 			self::registerItem(new Bucket());
 
 			self::registerItem(new Minecart());
-
+			//TODO: SADDLE
 			self::registerItem(new IronDoor());
 			self::registerItem(new Redstone());
 			self::registerItem(new Snowball());
@@ -123,6 +123,7 @@ class ItemFactory{
 			self::registerItem(new Item(Item::PAPER, 0, 1, "Paper"));
 			self::registerItem(new Book());
 			self::registerItem(new Item(Item::SLIME_BALL, 0, 1, "Slimeball"));
+			//TODO: CHEST_MINECART
 
 			self::registerItem(new Egg());
 			self::registerItem(new Compass());
@@ -136,9 +137,9 @@ class ItemFactory{
 			self::registerItem(new Item(Item::SUGAR, 0, 1, "Sugar"));
 			self::registerItem(new Cake());
 			self::registerItem(new Bed());
-
+			//TODO: REPEATER
 			self::registerItem(new Cookie());
-
+			//TODO: FILLED_MAP
 			self::registerItem(new Shears());
 			self::registerItem(new Melon());
 			self::registerItem(new PumpkinSeeds());
@@ -147,7 +148,10 @@ class ItemFactory{
 			self::registerItem(new Steak());
 			self::registerItem(new RawChicken());
 			self::registerItem(new CookedChicken());
-
+			//TODO: ROTTEN_FLESH
+			//TODO: ENDER_PEARL
+			//TODO: BLAZE_ROD
+			//TODO: GHAST_TEAR
 			self::registerItem(new Item(Item::GOLD_NUGGET, 0, 1, "Gold Nugget"));
 			self::registerItem(new NetherWart());
 			self::registerItem(new Potion());
@@ -157,9 +161,12 @@ class ItemFactory{
 			self::registerItem(new Item(Item::BLAZE_POWDER, 0, 1, "Blaze Powder"));
 			self::registerItem(new Item(Item::MAGMA_CREAM, 0, 1, "Magma Cream"));
 			self::registerItem(new BrewingStand());
-
+			//TODO: CAULDRON
+			//TODO: ENDER_EYE
 			self::registerItem(new Item(Item::GLISTERING_MELON, 0, 1, "Glistering Melon"));
 			self::registerItem(new SpawnEgg());
+			//TODO: BOTTLE_O_ENCHANTING
+			//TODO: FIREBALL
 
 			self::registerItem(new Item(Item::EMERALD, 0, 1, "Emerald"));
 			self::registerItem(new ItemFrame());
@@ -167,25 +174,66 @@ class ItemFactory{
 			self::registerItem(new Carrot());
 			self::registerItem(new Potato());
 			self::registerItem(new BakedPotato());
-
+			//TODO: POISONOUS_POTATO
+			//TODO: EMPTYMAP
 			self::registerItem(new GoldenCarrot());
 			self::registerItem(new Skull());
-
+			//TODO: CARROTONASTICK
 			self::registerItem(new Item(Item::NETHER_STAR, 0, 1, "Nether Star"));
 			self::registerItem(new PumpkinPie());
 
+			//TODO: ENCHANTED_BOOK
+			//TODO: COMPARATOR
 			self::registerItem(new Item(Item::NETHER_BRICK, 0, 1, "Nether Brick"));
 			self::registerItem(new Item(Item::NETHER_QUARTZ, 0, 1, "Nether Quartz"));
-
+			//TODO: MINECART_WITH_TNT
+			//TODO: HOPPER_MINECART
 			self::registerItem(new Item(Item::PRISMARINE_SHARD, 0, 1, "Prismarine Shard"));
-
+			//TODO: HOPPER
+			//TODO: RABBIT
 			self::registerItem(new CookedRabbit());
-
+			//TODO: RABBIT_STEW
+			//TODO: RABBIT_FOOT
+			//TODO: RABBIT_HIDE
+			//TODO: HORSEARMORLEATHER
+			//TODO: HORSEARMORIRON
+			//TODO: GOLD_HORSE_ARMOR
+			//TODO: DIAMOND_HORSE_ARMOR
+			//TODO: LEAD
+			//TODO: NAMETAG
 			self::registerItem(new Item(Item::PRISMARINE_CRYSTALS, 0, 1, "Prismarine Crystals"));
+			//TODO: MUTTONRAW
+			//TODO: COOKED_MUTTON
+
+			//TODO: END_CRYSTAL
+			//TODO: SPRUCE_DOOR
+			//TODO: BIRCH_DOOR
+			//TODO: JUNGLE_DOOR
+			//TODO: ACACIA_DOOR
+			//TODO: DARK_OAK_DOOR
+			//TODO: CHORUS_FRUIT
+			//TODO: CHORUS_FRUIT_POPPED
+
+			//TODO: DRAGON_BREATH
+			//TODO: SPLASH_POTION
+
+			//TODO: LINGERING_POTION
+
+			//TODO: COMMAND_BLOCK_MINECART
+			//TODO: ELYTRA
+			//TODO: SHULKER_SHELL
+
+			//TODO: TOTEM
+
+			//TODO: IRON_NUGGET
 
 			self::registerItem(new Beetroot());
 			self::registerItem(new BeetrootSeeds());
 			self::registerItem(new BeetrootSoup());
+			//TODO: RAW_SALMON
+			//TODO: CLOWNFISH
+			//TODO: PUFFERFISH
+			//TODO: COOKED_SALMON
 
 			self::registerItem(new GoldenAppleEnchanted());
 		}
