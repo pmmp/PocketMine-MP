@@ -38,7 +38,6 @@ use pocketmine\entity\Projectile;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\entity\EntityShootBowEvent;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\event\inventory\CraftItemEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
@@ -103,7 +102,6 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\LongTag;
-use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\PlayerNetworkSessionAdapter;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
@@ -758,6 +756,29 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function getInAirTicks() : int{
 		return $this->inAirTicks;
+	}
+
+	/**
+	 * Returns whether the player is currently using an item (right-click and hold).
+	 * @return bool
+	 */
+	public function isUsingItem() : bool{
+		return $this->getGenericFlag(self::DATA_FLAG_ACTION) and $this->startAction > -1;
+	}
+
+	public function setUsingItem(bool $value){
+		$this->startAction = $value ? $this->server->getTick() : -1;
+		$this->setGenericFlag(self::DATA_FLAG_ACTION, $value);
+	}
+
+	/**
+	 * Returns how long the player has been using their currently-held item for. Used for determining arrow shoot force
+	 * for bows.
+	 *
+	 * @return int
+	 */
+	public function getItemUseDuration() : int{
+		return $this->startAction === -1 ? -1 : ($this->server->getTick() - $this->startAction);
 	}
 
 	protected function switchLevel(Level $targetLevel) : bool{
@@ -2470,72 +2491,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_STOP_BREAK);
 				break;
 			case PlayerActionPacket::ACTION_RELEASE_ITEM:
-				if($this->startAction > -1 and $this->getGenericFlag(self::DATA_FLAG_ACTION)){
-					if($this->inventory->getItemInHand()->getId() === Item::BOW){
-						$bow = $this->inventory->getItemInHand();
-						if($this->isSurvival() and !$this->inventory->contains(ItemFactory::get(Item::ARROW, 0, 1))){
-							$this->inventory->sendContents($this);
-							break;
-						}
-
-						$nbt = new CompoundTag("", [
-							new ListTag("Pos", [
-								new DoubleTag("", $this->x),
-								new DoubleTag("", $this->y + $this->getEyeHeight()),
-								new DoubleTag("", $this->z)
-							]),
-							new ListTag("Motion", [
-								new DoubleTag("", -sin($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI)),
-								new DoubleTag("", -sin($this->pitch / 180 * M_PI)),
-								new DoubleTag("", cos($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI))
-							]),
-							new ListTag("Rotation", [
-								//yaw/pitch for arrows taken crosswise, not along the arrow shaft.
-								new FloatTag("", ($this->yaw > 180 ? 360 : 0) - $this->yaw), //arrow yaw must range from -180 to +180
-								new FloatTag("", -$this->pitch)
-							]),
-							new ShortTag("Fire", $this->isOnFire() ? 45 * 60 : 0)
-						]);
-
-						$diff = ($this->server->getTick() - $this->startAction);
-						$p = $diff / 20;
-						$f = min((($p ** 2) + $p * 2) / 3, 1) * 2;
-						$ev = new EntityShootBowEvent($this, $bow, Entity::createEntity("Arrow", $this->getLevel(), $nbt, $this, $f == 2), $f);
-
-						if($f < 0.1 or $diff < 5){
-							$ev->setCancelled();
-						}
-
-						$this->server->getPluginManager()->callEvent($ev);
-
-						if($ev->isCancelled()){
-							$ev->getProjectile()->kill();
-							$this->inventory->sendContents($this);
-						}else{
-							$ev->getProjectile()->setMotion($ev->getProjectile()->getMotion()->multiply($ev->getForce()));
-							if($this->isSurvival()){
-								$this->inventory->removeItem(ItemFactory::get(Item::ARROW, 0, 1));
-								$bow->setDamage($bow->getDamage() + 1);
-								if($bow->getDamage() >= 385){
-									$this->inventory->setItemInHand(ItemFactory::get(Item::AIR, 0, 0));
-								}else{
-									$this->inventory->setItemInHand($bow);
-								}
-							}
-
-							$projectile = $ev->getProjectile();
-							if($projectile instanceof Projectile){
-								$this->server->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($projectile));
-								if($projectileEv->isCancelled()){
-									$ev->getProjectile()->kill();
-								}else{
-									$ev->getProjectile()->spawnToAll();
-									$this->level->addSound(new LaunchSound($this), $this->getViewers());
-								}
-							}else{
-								$ev->getProjectile()->spawnToAll();
-							}
-						}
+				if($this->isUsingItem()){
+					$item = $this->inventory->getItemInHand();
+					if($item->onReleaseUsing($this)){
+						$this->inventory->setItemInHand($item);
 					}
 				}elseif($this->inventory->getItemInHand()->getId() === Item::BUCKET and $this->inventory->getItemInHand()->getDamage() === 1){ //Milk!
 					$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $this->inventory->getItemInHand()));

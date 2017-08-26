@@ -830,6 +830,16 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
+	 * Called when a player is using this item and releases it. Used to handle bow shoot actions.
+	 *
+	 * @param Player $player
+	 * @return bool
+	 */
+	public function onReleaseUsing(Player $player) : bool{
+		return false;
+	}
+
+	/**
 	 * Compares an Item to this Item and check if they match.
 	 *
 	 * @param Item $item
