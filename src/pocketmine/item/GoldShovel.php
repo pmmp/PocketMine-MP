@@ -32,4 +32,8 @@ class GoldShovel extends Tool{
 	public function isShovel(){
 		return Tool::TIER_GOLD;
 	}
+
+	public function getAttackPoints() : int{
+		return 2;
+	}
 }

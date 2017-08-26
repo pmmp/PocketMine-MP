@@ -28,4 +28,8 @@ class ChainBoots extends Armor{
 	public function __construct(int $meta = 0){
 		parent::__construct(self::CHAIN_BOOTS, $meta, "Chainmail Boots");
 	}
+
+	public function getDefensePoints() : int{
+		return 1;
+	}
 }

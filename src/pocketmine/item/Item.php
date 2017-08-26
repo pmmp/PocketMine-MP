@@ -747,6 +747,22 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
+	 * Returns how many points of damage this item will deal to an entity when used as a weapon.
+	 * @return int
+	 */
+	public function getAttackPoints() : int{
+		return 1;
+	}
+
+	/**
+	 * Returns how many armor points can be gained by wearing this item.
+	 * @return int
+	 */
+	public function getDefensePoints() : int{
+		return 0;
+	}
+
+	/**
 	 * @param Entity|Block $object
 	 *
 	 * @return bool

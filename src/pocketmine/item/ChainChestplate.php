@@ -28,4 +28,8 @@ class ChainChestplate extends Armor{
 	public function __construct(int $meta = 0){
 		parent::__construct(self::CHAIN_CHESTPLATE, $meta, "Chain Chestplate");
 	}
+
+	public function getDefensePoints() : int{
+		return 5;
+	}
 }

@@ -33,4 +33,8 @@ class StoneAxe extends Tool{
 	public function isAxe(){
 		return Tool::TIER_STONE;
 	}
+
+	public function getAttackPoints() : int{
+		return 5;
+	}
 }

@@ -32,4 +32,8 @@ class IronShovel extends Tool{
 	public function isShovel(){
 		return Tool::TIER_IRON;
 	}
+
+	public function getAttackPoints() : int{
+		return 4;
+	}
 }

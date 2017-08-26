@@ -32,4 +32,8 @@ class GoldSword extends Tool{
 	public function isSword(){
 		return Tool::TIER_GOLD;
 	}
+
+	public function getAttackPoints() : int{
+		return 5;
+	}
 }

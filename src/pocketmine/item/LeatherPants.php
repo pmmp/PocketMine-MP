@@ -28,4 +28,8 @@ class LeatherPants extends Armor{
 	public function __construct(int $meta = 0){
 		parent::__construct(self::LEATHER_PANTS, $meta, "Leather Pants");
 	}
+
+	public function getDefensePoints() : int{
+		return 2;
+	}
 }

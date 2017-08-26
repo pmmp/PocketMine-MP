@@ -32,4 +32,8 @@ class StoneSword extends Tool{
 	public function isSword(){
 		return Tool::TIER_STONE;
 	}
+
+	public function getAttackPoints() : int{
+		return 6;
+	}
 }

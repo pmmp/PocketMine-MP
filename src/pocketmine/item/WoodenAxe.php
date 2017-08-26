@@ -36,4 +36,8 @@ class WoodenAxe extends Tool{
 	public function getFuelTime() : int{
 		return 200;
 	}
+
+	public function getAttackPoints() : int{
+		return 4;
+	}
 }

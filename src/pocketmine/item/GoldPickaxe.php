@@ -32,4 +32,8 @@ class GoldPickaxe extends Tool{
 	public function isPickaxe(){
 		return Tool::TIER_GOLD;
 	}
+
+	public function getAttackPoints() : int{
+		return 3;
+	}
 }

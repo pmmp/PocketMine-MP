@@ -28,4 +28,8 @@ class IronHelmet extends Armor{
 	public function __construct(int $meta = 0){
 		parent::__construct(self::IRON_HELMET, $meta, "Iron Helmet");
 	}
+
+	public function getDefensePoints() : int{
+		return 2;
+	}
 }
