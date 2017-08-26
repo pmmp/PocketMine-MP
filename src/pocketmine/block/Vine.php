@@ -136,9 +136,9 @@ class Vine extends Transparent{
 	}
 
 
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		//TODO: multiple sides
-		if($target->isSolid()){
+		if($blockClicked->isSolid()){
 			$faces = [
 				2 => self::FLAG_SOUTH,
 				3 => self::FLAG_NORTH,
@@ -147,7 +147,7 @@ class Vine extends Transparent{
 			];
 			if(isset($faces[$face])){
 				$this->meta = $faces[$face];
-				$this->getLevel()->setBlock($block, $this, true, true);
+				$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
 				return true;
 			}

@@ -39,7 +39,7 @@ class GlazedTerracotta extends Solid{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		if($player !== null){
 			$faces = [
 				0 => 4,
@@ -50,7 +50,7 @@ class GlazedTerracotta extends Solid{
 			$this->meta = $faces[(~($player->getDirection() - 1)) & 0x03];
 		}
 
-		return $this->getLevel()->setBlock($block, $this, true, true);
+		return $this->getLevel()->setBlock($blockReplace, $this, true, true);
 	}
 
 	public function getVariantBitmask() : int{

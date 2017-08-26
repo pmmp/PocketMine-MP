@@ -67,7 +67,7 @@ class Chest extends Transparent{
 		);
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$faces = [
 			0 => 4,
 			1 => 2,
@@ -94,7 +94,7 @@ class Chest extends Transparent{
 			}
 		}
 
-		$this->getLevel()->setBlock($block, $this, true, true);
+		$this->getLevel()->setBlock($blockReplace, $this, true, true);
 		$nbt = new CompoundTag("", [
 			new ListTag("Items", []),
 			new StringTag("id", Tile::CHEST),

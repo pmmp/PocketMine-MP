@@ -43,7 +43,7 @@ class HayBale extends Solid{
 		return 0.5;
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$faces = [
 			0 => 0,
 			1 => 0,
@@ -54,7 +54,7 @@ class HayBale extends Solid{
 		];
 
 		$this->meta = ($this->meta & 0x03) | $faces[$face];
-		$this->getLevel()->setBlock($block, $this, true, true);
+		$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
 		return true;
 	}

@@ -54,11 +54,11 @@ class Quartz extends Solid{
 		return $names[$this->meta & 0x03] ?? "Unknown";
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		if($this->meta !== self::QUARTZ_NORMAL){
 			$this->meta = PillarRotationHelper::getMetaFromFace($this->meta, $face);
 		}
-		return $this->getLevel()->setBlock($block, $this, true, true);
+		return $this->getLevel()->setBlock($blockReplace, $this, true, true);
 	}
 
 	public function getToolType() : int{

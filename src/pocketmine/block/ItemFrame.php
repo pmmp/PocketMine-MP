@@ -105,7 +105,7 @@ class ItemFrame extends Flowable{
 		return false;
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		if($face === Vector3::SIDE_DOWN or $face === Vector3::SIDE_UP){
 			return false;
 		}
@@ -118,13 +118,13 @@ class ItemFrame extends Flowable{
 		];
 
 		$this->meta = $faces[$face];
-		$this->level->setBlock($block, $this, true, true);
+		$this->level->setBlock($blockReplace, $this, true, true);
 
 		$nbt = new CompoundTag("", [
 			new StringTag("id", Tile::ITEM_FRAME),
-			new IntTag("x", $block->x),
-			new IntTag("y", $block->y),
-			new IntTag("z", $block->z),
+			new IntTag("x", $blockReplace->x),
+			new IntTag("y", $blockReplace->y),
+			new IntTag("z", $blockReplace->z),
 			new FloatTag("ItemDropChance", 1.0),
 			new ByteTag("ItemRotation", 0)
 		]);

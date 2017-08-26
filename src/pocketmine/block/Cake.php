@@ -62,10 +62,10 @@ class Cake extends Transparent implements FoodSource{
 		);
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
 		if($down->getId() !== self::AIR){
-			$this->getLevel()->setBlock($block, $this, true, true);
+			$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
 			return true;
 		}

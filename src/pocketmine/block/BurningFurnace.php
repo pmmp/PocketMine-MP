@@ -59,7 +59,7 @@ class BurningFurnace extends Solid{
 		return 13;
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$faces = [
 			0 => 4,
 			1 => 2,
@@ -67,7 +67,7 @@ class BurningFurnace extends Solid{
 			3 => 3
 		];
 		$this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0];
-		$this->getLevel()->setBlock($block, $this, true, true);
+		$this->getLevel()->setBlock($blockReplace, $this, true, true);
 		$nbt = new CompoundTag("", [
 			new ListTag("Items", []),
 			new StringTag("id", Tile::FURNACE),

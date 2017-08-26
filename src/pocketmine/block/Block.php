@@ -140,15 +140,15 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
 	 *
 	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
+	 * @param Block       $blockReplace
+	 * @param Block       $blockClicked
 	 * @param int         $face
 	 * @param Vector3     $facePos
 	 * @param Player|null $player
 	 *
 	 * @return bool
 	 */
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		return $this->getLevel()->setBlock($this, $this, true, true);
 	}
 

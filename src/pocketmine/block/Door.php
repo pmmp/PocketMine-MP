@@ -216,7 +216,7 @@ abstract class Door extends Transparent{
 		return false;
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		if($face === Vector3::SIDE_UP){
 			$blockUp = $this->getSide(Vector3::SIDE_UP);
 			$blockDown = $this->getSide(Vector3::SIDE_DOWN);
@@ -238,7 +238,7 @@ abstract class Door extends Transparent{
 			}
 
 			$this->setDamage($player->getDirection() & 0x03);
-			$this->getLevel()->setBlock($block, $this, true, true); //Bottom
+			$this->getLevel()->setBlock($blockReplace, $this, true, true); //Bottom
 			$this->getLevel()->setBlock($blockUp, $b = BlockFactory::get($this->getId(), $metaUp), true); //Top
 			return true;
 		}
