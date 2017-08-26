@@ -1540,6 +1540,27 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
+	 * Checks if the level spawn protection radius will prevent the player from using items or building at the specified
+	 * Vector3 position.
+	 *
+	 * @param Player  $player
+	 * @param Vector3 $vector
+	 *
+	 * @return bool false if spawn protection cancelled the action, true if not.
+	 */
+	protected function checkSpawnProtection(Player $player, Vector3 $vector) : bool{
+		if(!$player->hasPermission("pocketmine.spawnprotect.bypass") and ($distance = $this->server->getSpawnRadius()) > -1){
+			$t = new Vector2($vector->x, $vector->z);
+			$s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);
+			if(count($this->server->getOps()->getAll()) > 0 and $t->distance($s) <= $distance){
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Tries to break a block using a item, including Player time checks if available
 	 * It'll try to lower the durability if Item is a tool, and set it to Air if broken.
 	 *
@@ -1562,12 +1583,8 @@ class Level implements ChunkManager, Metadatable{
 
 			if(($player->isSurvival() and $item instanceof Item and !$target->isBreakable($item)) or $player->isSpectator()){
 				$ev->setCancelled();
-			}elseif(!$player->hasPermission("pocketmine.spawnprotect.bypass") and ($distance = $this->server->getSpawnRadius()) > -1){
-				$t = new Vector2($target->x, $target->z);
-				$s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);
-				if(count($this->server->getOps()->getAll()) > 0 and $t->distance($s) <= $distance){ //set it to cancelled so plugins can bypass this
-					$ev->setCancelled();
-				}
+			}elseif($this->checkSpawnProtection($player, $target)){
+				$ev->setCancelled(); //set it to cancelled so plugins can bypass this
 			}
 
 			if($player->isAdventure(true) and !$ev->isCancelled()){
@@ -1682,30 +1699,26 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function useItemOn(Vector3 $vector, Item &$item, int $face, Vector3 $facePos = null, Player $player = null, bool $playSound = false) : bool{
-		$target = $this->getBlock($vector);
-		$block = $target->getSide($face);
+		$blockClicked = $this->getBlock($vector);
+		$blockReplace = $blockClicked->getSide($face);
 
 		if($facePos === null){
 			$facePos = new Vector3(0.0, 0.0, 0.0);
 		}
 
-		if($block->y >= $this->provider->getWorldHeight() or $block->y < 0){
+		if($blockReplace->y >= $this->provider->getWorldHeight() or $blockReplace->y < 0){
 			//TODO: build height limit messages for custom world heights and mcregion cap
 			return false;
 		}
 
-		if($target->getId() === Item::AIR){
+		if($blockClicked->getId() === Item::AIR){
 			return false;
 		}
 
 		if($player !== null){
-			$ev = new PlayerInteractEvent($player, $item, $target, $face, $target->getId() === 0 ? PlayerInteractEvent::RIGHT_CLICK_AIR : PlayerInteractEvent::RIGHT_CLICK_BLOCK);
-			if(!$player->hasPermission("pocketmine.spawnprotect.bypass") and ($distance = $this->server->getSpawnRadius()) > -1){
-				$t = new Vector2($target->x, $target->z);
-				$s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);
-				if(count($this->server->getOps()->getAll()) > 0 and $t->distance($s) <= $distance){ //set it to cancelled so plugins can bypass this
-					$ev->setCancelled();
-				}
+			$ev = new PlayerInteractEvent($player, $item, $blockClicked, $face, $blockClicked->getId() === 0 ? PlayerInteractEvent::RIGHT_CLICK_AIR : PlayerInteractEvent::RIGHT_CLICK_BLOCK);
+			if($this->checkSpawnProtection($player, $blockClicked)){
+				$ev->setCancelled(); //set it to cancelled so plugins can bypass this
 			}
 
 			if($player->isAdventure(true) and !$ev->isCancelled()){
@@ -1715,7 +1728,7 @@ class Level implements ChunkManager, Metadatable{
 					foreach($tag as $v){
 						if($v instanceof StringTag){
 							$entry = ItemFactory::fromString($v->getValue());
-							if($entry->getId() > 0 and $entry->getBlock() !== null and $entry->getBlock()->getId() === $target->getId()){
+							if($entry->getId() > 0 and $entry->getBlock() !== null and $entry->getBlock()->getId() === $blockClicked->getId()){
 								$canPlace = true;
 								break;
 							}
@@ -1728,12 +1741,12 @@ class Level implements ChunkManager, Metadatable{
 
 			$this->server->getPluginManager()->callEvent($ev);
 			if(!$ev->isCancelled()){
-				$target->onUpdate(self::BLOCK_UPDATE_TOUCH);
-				if(!$player->isSneaking() and $target->onActivate($item, $player) === true){
+				$blockClicked->onUpdate(self::BLOCK_UPDATE_TOUCH);
+				if(!$player->isSneaking() and $blockClicked->onActivate($item, $player) === true){
 					return true;
 				}
 
-				if(!$player->isSneaking() and $item->onActivate($this, $player, $block, $target, $face, $facePos)){
+				if(!$player->isSneaking() and $item->onActivate($this, $player, $blockReplace, $blockClicked, $face, $facePos)){
 					if($item->getCount() <= 0){
 						$item = ItemFactory::get(Item::AIR, 0, 0);
 
@@ -1743,7 +1756,7 @@ class Level implements ChunkManager, Metadatable{
 			}else{
 				return false;
 			}
-		}elseif($target->onActivate($item, $player) === true){
+		}elseif($blockClicked->onActivate($item, $player) === true){
 			return true;
 		}
 
@@ -1753,13 +1766,13 @@ class Level implements ChunkManager, Metadatable{
 
 		$hand = $item->getBlock();
 
-		if($target->canBeReplaced($hand)){
-			$block = $target;
-		}elseif(!$block->canBeReplaced($hand)){
+		if($blockClicked->canBeReplaced($hand)){
+			$blockReplace = $blockClicked;
+		}elseif(!$blockReplace->canBeReplaced($hand)){
 			return false;
 		}
 
-		$hand->position($block);
+		$hand->position($blockReplace);
 
 		if($hand->isSolid() === true and $hand->getBoundingBox() !== null){
 			$entities = $this->getCollidingEntities($hand->getBoundingBox());
@@ -1787,9 +1800,9 @@ class Level implements ChunkManager, Metadatable{
 
 
 		if($player !== null){
-			$ev = new BlockPlaceEvent($player, $hand, $block, $target, $item);
+			$ev = new BlockPlaceEvent($player, $hand, $blockReplace, $blockClicked, $item);
 			if(!$player->hasPermission("pocketmine.spawnprotect.bypass") and ($distance = $this->server->getSpawnRadius()) > -1){
-				$t = new Vector2($target->x, $target->z);
+				$t = new Vector2($blockClicked->x, $blockClicked->z);
 				$s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);
 				if(count($this->server->getOps()->getAll()) > 0 and $t->distance($s) <= $distance){ //set it to cancelled so plugins can bypass this
 					$ev->setCancelled();
@@ -1801,7 +1814,7 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
-		if(!$hand->place($item, $block, $target, $face, $facePos, $player)){
+		if(!$hand->place($item, $blockReplace, $blockClicked, $face, $facePos, $player)){
 			return false;
 		}
 
