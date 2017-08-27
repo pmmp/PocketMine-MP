@@ -32,7 +32,7 @@ class Sign extends Item{
 		parent::__construct(self::SIGN, $meta, "Sign");
 	}
 
-	public function getMaxStackSize(){
+	public function getMaxStackSize() : int{
 		return 16;
 	}
 }
