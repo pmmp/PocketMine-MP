@@ -124,7 +124,7 @@ class Trapdoor extends Transparent{
 		return $bb;
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$directions = [
 			0 => 1,
 			1 => 3,
@@ -137,7 +137,7 @@ class Trapdoor extends Transparent{
 		if(($facePos->y > 0.5 and $face !== self::SIDE_UP) or $face === self::SIDE_DOWN){
 			$this->meta |= self::MASK_UPPER; //top half of block
 		}
-		$this->getLevel()->setBlock($block, $this, true, true);
+		$this->getLevel()->setBlock($blockReplace, $this, true, true);
 		return true;
 	}
 

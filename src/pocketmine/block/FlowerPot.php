@@ -63,20 +63,20 @@ class FlowerPot extends Flowable{
 		);
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		if($this->getSide(Vector3::SIDE_DOWN)->isTransparent()){
 			return false;
 		}
 
-		$this->getLevel()->setBlock($block, $this, true, true);
+		$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
 		$nbt = new CompoundTag("", [
 			new StringTag("id", Tile::FLOWER_POT),
-			new IntTag("x", $block->x),
-			new IntTag("y", $block->y),
-			new IntTag("z", $block->z),
+			new IntTag("x", $blockReplace->x),
+			new IntTag("y", $blockReplace->y),
+			new IntTag("z", $blockReplace->z),
 			new ShortTag("item", 0),
-			new IntTag("mData", 0),
+			new IntTag("mData", 0)
 		]);
 
 		if($item->hasCustomBlockData()){

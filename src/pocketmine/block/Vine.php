@@ -67,6 +67,10 @@ class Vine extends Transparent{
 		return true;
 	}
 
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
 	public function onEntityCollide(Entity $entity){
 		$entity->resetFallDistance();
 	}
@@ -132,18 +136,18 @@ class Vine extends Transparent{
 	}
 
 
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		//TODO: multiple sides
-		if($target->isSolid()){
+		if($blockClicked->isSolid()){
 			$faces = [
 				2 => self::FLAG_SOUTH,
 				3 => self::FLAG_NORTH,
 				4 => self::FLAG_EAST,
-				5 => self::FLAG_WEST,
+				5 => self::FLAG_WEST
 			];
 			if(isset($faces[$face])){
 				$this->meta = $faces[$face];
-				$this->getLevel()->setBlock($block, $this, true, true);
+				$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
 				return true;
 			}
@@ -169,6 +173,8 @@ class Vine extends Transparent{
 				$this->level->useBreakOn($this);
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
+		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
+			//TODO: vine growth
 		}
 
 		return false;

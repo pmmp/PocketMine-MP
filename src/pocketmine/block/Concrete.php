@@ -21,11 +21,38 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\block;
 
+use pocketmine\block\utils\ColorBlockMetaHelper;
+use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
-class PrismarineCrystals extends Item{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::PRISMARINE_CRYSTALS, $meta, $count, "Prismarine Crystals");
+class Concrete extends Solid{
+
+	protected $id = Block::CONCRETE;
+
+	public function __construct(int $meta = 0){
+		$this->meta = $meta;
 	}
+
+	public function getName() : string{
+		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Concrete";
+	}
+
+	public function getHardness() : float{
+		return 1.8;
+	}
+
+	public function getToolType() : int{
+		return Tool::TYPE_PICKAXE;
+	}
+
+	public function getDrops(Item $item) : array{
+		if($item->isPickaxe() >= Tool::TIER_WOODEN){
+			return parent::getDrops($item);
+		}
+
+		return [];
+	}
+
 }

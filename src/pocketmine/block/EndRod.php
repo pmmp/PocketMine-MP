@@ -40,17 +40,17 @@ class EndRod extends Flowable{
 		return "End Rod";
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		if($face === Vector3::SIDE_UP or $face === Vector3::SIDE_DOWN){
 			$this->meta = $face;
 		}else{
 			$this->meta = $face ^ 0x01;
 		}
-		if($target instanceof EndRod and $target->getDamage() === $this->meta){
+		if($blockClicked instanceof EndRod and $blockClicked->getDamage() === $this->meta){
 			$this->meta ^= 0x01;
 		}
 
-		return $this->level->setBlock($block, $this, true, true);
+		return $this->level->setBlock($blockReplace, $this, true, true);
 	}
 
 	public function isSolid() : bool{

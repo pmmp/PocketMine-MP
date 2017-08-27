@@ -482,7 +482,7 @@ namespace pocketmine {
 		}
 
 		$gitHash = str_repeat("00", 20);
-#ifndef COMPILE
+
 		if(\Phar::running(true) === ""){
 			if(Utils::execute("git rev-parse HEAD", $out) === 0){
 				$gitHash = trim($out);
@@ -490,8 +490,14 @@ namespace pocketmine {
 					$gitHash .= "-dirty";
 				}
 			}
+		}else{
+			$phar = new \Phar(\Phar::running(false));
+			$meta = $phar->getMetadata();
+			if(isset($meta["git"])){
+				$gitHash = $meta["git"];
+			}
 		}
-#endif
+
 		define('pocketmine\GIT_COMMIT', $gitHash);
 
 

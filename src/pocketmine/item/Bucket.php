@@ -33,8 +33,8 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Bucket extends Item{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::BUCKET, $meta, $count, "Bucket");
+	public function __construct(int $meta = 0){
+		parent::__construct(self::BUCKET, $meta, "Bucket");
 	}
 
 	public function getMaxStackSize(){

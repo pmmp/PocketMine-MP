@@ -21,10 +21,19 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\block\utils;
 
-class FermentedSpiderEye extends Item{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::FERMENTED_SPIDER_EYE, $meta, $count, "Fermented Spider Eye");
+use pocketmine\math\Vector3;
+
+class PillarRotationHelper{
+
+	public static function getMetaFromFace(int $meta, int $face) : int{
+		$faces = [
+			Vector3::SIDE_DOWN => 0,
+			Vector3::SIDE_NORTH => 0x08,
+			Vector3::SIDE_WEST => 0x04,
+		];
+
+		return ($meta & 0x03) | $faces[$face & ~0x01];
 	}
 }

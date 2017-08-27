@@ -54,11 +54,14 @@ class SnowLayer extends Flowable{
 		return Tool::TYPE_SHOVEL;
 	}
 
+	public function ticksRandomly() : bool{
+		return true;
+	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
-		if($block->getSide(Vector3::SIDE_DOWN)->isSolid()){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
+		if($blockReplace->getSide(Vector3::SIDE_DOWN)->isSolid()){
 			//TODO: fix placement
-			$this->getLevel()->setBlock($block, $this, true);
+			$this->getLevel()->setBlock($blockReplace, $this, true);
 
 			return true;
 		}

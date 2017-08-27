@@ -175,21 +175,21 @@ class Bed extends Transparent{
 
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
 		if(!$down->isTransparent()){
 			$meta = (($player instanceof Player ? $player->getDirection() : 0) - 1) & 0x03;
 			$next = $this->getSide(self::getOtherHalfSide($meta));
 			if($next->canBeReplaced() === true and !$next->getSide(Vector3::SIDE_DOWN)->isTransparent()){
-				$this->getLevel()->setBlock($block, BlockFactory::get($this->id, $meta), true, true);
+				$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->id, $meta), true, true);
 				$this->getLevel()->setBlock($next, BlockFactory::get($this->id, $meta | self::BITFLAG_HEAD), true, true);
 
 				$nbt = new CompoundTag("", [
 					new StringTag("id", Tile::BED),
 					new ByteTag("color", $item->getDamage() & 0x0f),
-					new IntTag("x", $block->x),
-					new IntTag("y", $block->y),
-					new IntTag("z", $block->z),
+					new IntTag("x", $blockReplace->x),
+					new IntTag("y", $blockReplace->y),
+					new IntTag("z", $blockReplace->z)
 				]);
 
 				$nbt2 = clone $nbt;

@@ -130,18 +130,18 @@ abstract class Stair extends Transparent{
 		}
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$faces = [
 			0 => 0,
 			1 => 2,
 			2 => 1,
-			3 => 3,
+			3 => 3
 		];
 		$this->meta = $faces[$player->getDirection()] & 0x03;
 		if(($facePos->y > 0.5 and $face !== Vector3::SIDE_UP) or $face === Vector3::SIDE_DOWN){
 			$this->meta |= 0x04; //Upside-down stairs
 		}
-		$this->getLevel()->setBlock($block, $this, true, true);
+		$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
 		return true;
 	}

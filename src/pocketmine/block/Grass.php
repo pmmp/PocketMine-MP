@@ -55,8 +55,12 @@ class Grass extends Solid{
 
 	public function getDrops(Item $item) : array{
 		return [
-			ItemFactory::get(Item::DIRT, 0, 1),
+			ItemFactory::get(Item::DIRT, 0, 1)
 		];
+	}
+
+	public function ticksRandomly() : bool{
+		return true;
 	}
 
 	public function onUpdate(int $type){

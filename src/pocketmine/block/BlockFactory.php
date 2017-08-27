@@ -277,7 +277,7 @@ class BlockFactory{
 			self::registerBlock(new Magma());
 			self::registerBlock(new NetherWartBlock());
 			self::registerBlock(new NetherBrick(Block::RED_NETHER_BRICK, 0, "Red Nether Bricks"));
-			//TODO: BONE_BLOCK
+			self::registerBlock(new BoneBlock());
 
 			//TODO: SHULKER_BOX
 			self::registerBlock(new GlazedTerracotta(Block::PURPLE_GLAZED_TERRACOTTA, 0, "Purple Glazed Terracotta"));
@@ -297,7 +297,7 @@ class BlockFactory{
 			self::registerBlock(new GlazedTerracotta(Block::GREEN_GLAZED_TERRACOTTA, 0, "Green Glazed Terracotta"));
 			self::registerBlock(new GlazedTerracotta(Block::RED_GLAZED_TERRACOTTA, 0, "Red Glazed Terracotta"));
 			self::registerBlock(new GlazedTerracotta(Block::BLACK_GLAZED_TERRACOTTA, 0, "Black Glazed Terracotta"));
-			//TODO: CONCRETE
+			self::registerBlock(new Concrete());
 			//TODO: CONCRETEPOWDER
 
 			//TODO: CHORUS_PLANT
@@ -370,16 +370,14 @@ class BlockFactory{
 	 * @return Block
 	 */
 	public static function get(int $id, int $meta = 0, Position $pos = null) : Block{
+		if($meta < 0 or $meta > 0xf){
+			throw new \InvalidArgumentException("Block meta value $meta is out of bounds");
+		}
+
 		try{
-			$block = self::$fullList[($id << 4) | $meta];
-			if($block !== null){
-				$block = clone $block;
-			}else{
-				$block = new UnknownBlock($id, $meta);
-			}
+			$block = clone self::$fullList[($id << 4) | $meta];
 		}catch(\RuntimeException $e){
-			//TODO: this probably should return null (out of bounds IDs may cause unexpected behaviour)
-			$block = new UnknownBlock($id, $meta);
+			throw new \InvalidArgumentException("Block ID $id is out of bounds");
 		}
 
 		if($pos !== null){

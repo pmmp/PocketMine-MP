@@ -66,6 +66,10 @@ class Cactus extends Transparent{
 		);
 	}
 
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
 	public function onEntityCollide(Entity $entity){
 		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_CONTACT, 1);
 		$entity->attack($ev);
@@ -108,7 +112,7 @@ class Cactus extends Transparent{
 		return false;
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
 		if($down->getId() === self::SAND or $down->getId() === self::CACTUS){
 			$block0 = $this->getSide(Vector3::SIDE_NORTH);

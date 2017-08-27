@@ -59,12 +59,16 @@ class Leaves extends Transparent{
 			self::OAK => "Oak Leaves",
 			self::SPRUCE => "Spruce Leaves",
 			self::BIRCH => "Birch Leaves",
-			self::JUNGLE => "Jungle Leaves",
+			self::JUNGLE => "Jungle Leaves"
 		];
 		return $names[$this->meta & 0x03];
 	}
 
 	public function diffusesSkyLight() : bool{
+		return true;
+	}
+
+	public function ticksRandomly() : bool{
 		return true;
 	}
 
@@ -160,7 +164,7 @@ class Leaves extends Transparent{
 		return false;
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$this->meta |= 0x04;
 		return $this->getLevel()->setBlock($this, $this, true);
 	}

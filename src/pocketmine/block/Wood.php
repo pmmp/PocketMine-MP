@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\PillarRotationHelper;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\math\Vector3;
@@ -49,25 +50,14 @@ class Wood extends Solid{
 			self::OAK => "Oak Wood",
 			self::SPRUCE => "Spruce Wood",
 			self::BIRCH => "Birch Wood",
-			self::JUNGLE => "Jungle Wood",
+			self::JUNGLE => "Jungle Wood"
 		];
 		return $names[$this->meta & 0x03];
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
-		$faces = [
-			Vector3::SIDE_DOWN => 0,
-			Vector3::SIDE_UP => 0,
-			Vector3::SIDE_NORTH => 0b1000,
-			Vector3::SIDE_SOUTH => 0b1000,
-			Vector3::SIDE_WEST => 0b0100,
-			Vector3::SIDE_EAST => 0b0100,
-		];
-
-		$this->meta = ($this->meta & 0x03) | $faces[$face];
-		$this->getLevel()->setBlock($block, $this, true, true);
-
-		return true;
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
+		$this->meta = PillarRotationHelper::getMetaFromFace($this->meta, $face);
+		return $this->getLevel()->setBlock($blockReplace, $this, true, true);
 	}
 
 	public function getVariantBitmask() : int{

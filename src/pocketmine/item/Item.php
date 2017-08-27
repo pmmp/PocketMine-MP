@@ -183,20 +183,24 @@ class Item implements ItemIds, \JsonSerializable{
 	/** @var CompoundTag|null */
 	private $cachedNBT = null;
 	/** @var int */
-	public $count;
+	public $count = 1;
 	/** @var string */
 	protected $name;
 
 	/**
-	 * @param int $id
-	 * @param int $meta
-	 * @param int $count
+	 * Constructs a new Item type. This constructor should ONLY be used when constructing a new item TYPE to register
+	 * into the index.
+	 *
+	 * NOTE: This should NOT BE USED for creating items to set into an inventory. Use {@link ItemFactory#get} for that
+	 * purpose.
+	 *
+	 * @param int    $id
+	 * @param int    $meta
 	 * @param string $name
 	 */
-	public function __construct(int $id, int $meta = 0, int $count = 1, string $name = "Unknown"){
+	public function __construct(int $id, int $meta = 0, string $name = "Unknown"){
 		$this->id = $id & 0xffff;
 		$this->meta = $meta !== -1 ? $meta & 0xffff : -1;
-		$this->count = $count;
 		$this->name = $name;
 		if(!isset($this->block) and $this->id <= 0xff and isset(BlockFactory::$list[$this->id])){
 			$this->block = BlockFactory::get($this->id, $this->meta);
@@ -631,9 +635,12 @@ class Item implements ItemIds, \JsonSerializable{
 
 	/**
 	 * @param int $count
+	 * @return $this
 	 */
 	public function setCount(int $count){
 		$this->count = $count;
+
+		return $this;
 	}
 
 	public function isNull() : bool{
@@ -709,9 +716,12 @@ class Item implements ItemIds, \JsonSerializable{
 
 	/**
 	 * @param int $meta
+	 * @return $this
 	 */
 	public function setDamage(int $meta){
 		$this->meta = $meta !== -1 ? $meta & 0xFFFF : -1;
+
+		return $this;
 	}
 
 	/**
@@ -737,6 +747,22 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return int
 	 */
 	public function getFuelTime() : int{
+		return 0;
+	}
+
+	/**
+	 * Returns how many points of damage this item will deal to an entity when used as a weapon.
+	 * @return int
+	 */
+	public function getAttackPoints() : int{
+		return 1;
+	}
+
+	/**
+	 * Returns how many armor points can be gained by wearing this item.
+	 * @return int
+	 */
+	public function getDefensePoints() : int{
 		return 0;
 	}
 
@@ -804,6 +830,16 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return bool
 	 */
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, int $face, Vector3 $facePos) : bool{
+		return false;
+	}
+
+	/**
+	 * Called when a player is using this item and releases it. Used to handle bow shoot actions.
+	 *
+	 * @param Player $player
+	 * @return bool
+	 */
+	public function onReleaseUsing(Player $player) : bool{
 		return false;
 	}
 

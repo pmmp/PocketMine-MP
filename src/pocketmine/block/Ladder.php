@@ -110,17 +110,17 @@ class Ladder extends Transparent{
 	}
 
 
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
-		if($target->isTransparent() === false){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
+		if($blockClicked->isTransparent() === false){
 			$faces = [
 				2 => 2,
 				3 => 3,
 				4 => 4,
-				5 => 5,
+				5 => 5
 			];
 			if(isset($faces[$face])){
 				$this->meta = $faces[$face];
-				$this->getLevel()->setBlock($block, $this, true, true);
+				$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
 				return true;
 			}

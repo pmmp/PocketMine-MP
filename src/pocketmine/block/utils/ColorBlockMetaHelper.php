@@ -42,7 +42,7 @@ class ColorBlockMetaHelper{
 			12 => "Brown",
 			13 => "Green",
 			14 => "Red",
-			15 => "Black",
+			15 => "Black"
 		];
 
 		return $names[$meta] ?? "Unknown";

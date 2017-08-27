@@ -56,7 +56,7 @@ abstract class Fallable extends Solid{
 						new FloatTag("", 0)
 					]),
 					new IntTag("TileID", $this->getId()),
-					new ByteTag("Data", $this->getDamage()),
+					new ByteTag("Data", $this->getDamage())
 				]));
 
 				$fall->spawnToAll();

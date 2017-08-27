@@ -29,8 +29,8 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Painting extends Item{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::PAINTING, $meta, $count, "Painting");
+	public function __construct(int $meta = 0){
+		parent::__construct(self::PAINTING, $meta, "Painting");
 	}
 
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, int $face, Vector3 $facePos) : bool{

@@ -25,7 +25,11 @@ namespace pocketmine\item;
 
 
 class GoldChestplate extends Armor{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::GOLD_CHESTPLATE, $meta, $count, "Gold Chestplate");
+	public function __construct(int $meta = 0){
+		parent::__construct(self::GOLD_CHESTPLATE, $meta, "Gold Chestplate");
+	}
+
+	public function getDefensePoints() : int{
+		return 5;
 	}
 }

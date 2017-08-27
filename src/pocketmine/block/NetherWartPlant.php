@@ -40,10 +40,14 @@ class NetherWartPlant extends Flowable{
 		$this->meta = $meta;
 	}
 
-	public function place(Item $item, Block $block, Block $target, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
 		if($down->getId() === Block::SOUL_SAND){
-			$this->getLevel()->setBlock($block, $this, false, true);
+			$this->getLevel()->setBlock($blockReplace, $this, false, true);
 
 			return true;
 		}

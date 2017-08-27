@@ -61,6 +61,10 @@ class Fire extends Flowable{
 		return true;
 	}
 
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
 	public function onEntityCollide(Entity $entity){
 		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1);
 		$entity->attack($ev);
@@ -103,6 +107,8 @@ class Fire extends Flowable{
 					return Level::BLOCK_UPDATE_NORMAL;
 				}
 			}
+
+			//TODO: fire spread
 		}
 
 		return false;

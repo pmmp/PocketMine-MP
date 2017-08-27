@@ -25,8 +25,8 @@ namespace pocketmine\item;
 
 
 class WoodenSword extends Tool{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::WOODEN_SWORD, $meta, $count, "Wooden Sword");
+	public function __construct(int $meta = 0){
+		parent::__construct(self::WOODEN_SWORD, $meta, "Wooden Sword");
 	}
 
 	public function isSword(){
@@ -35,5 +35,9 @@ class WoodenSword extends Tool{
 
 	public function getFuelTime() : int{
 		return 200;
+	}
+
+	public function getAttackPoints() : int{
+		return 5;
 	}
 }

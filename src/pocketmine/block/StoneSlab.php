@@ -53,7 +53,7 @@ class StoneSlab extends WoodenSlab{
 			self::BRICK => "Brick",
 			self::STONE_BRICK => "Stone Brick",
 			self::QUARTZ => "Quartz",
-			self::NETHER_BRICK => "Nether Brick",
+			self::NETHER_BRICK => "Nether Brick"
 		];
 		return (($this->meta & 0x08) > 0 ? "Upper " : "") . $names[$this->meta & 0x07] . " Slab";
 	}

@@ -47,7 +47,7 @@ class AsyncPool{
 		$this->server = $server;
 		$this->size = $size;
 
-		$memoryLimit =  (int) max(-1, (int) $this->server->getProperty("memory.async-worker-hard-limit", 1024));
+		$memoryLimit = (int) max(-1, (int) $this->server->getProperty("memory.async-worker-hard-limit", 1024));
 
 		for($i = 0; $i < $this->size; ++$i){
 			$this->workerUsage[$i] = 0;

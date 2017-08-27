@@ -24,11 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 class Boat extends Item{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::BOAT, $meta, $count, "Boat");
+	public function __construct(int $meta = 0){
+		parent::__construct(self::BOAT, $meta, "Boat");
 	}
 
 	public function getFuelTime() : int{
 		return 1200; //400 in PC
 	}
+
+	//TODO
 }

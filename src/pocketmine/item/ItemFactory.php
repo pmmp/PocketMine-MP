@@ -46,9 +46,9 @@ class ItemFactory{
 			self::registerItem(new Bow());
 			self::registerItem(new Arrow());
 			self::registerItem(new Coal());
-			self::registerItem(new Diamond());
-			self::registerItem(new IronIngot());
-			self::registerItem(new GoldIngot());
+			self::registerItem(new Item(Item::DIAMOND, 0, "Diamond"));
+			self::registerItem(new Item(Item::IRON_INGOT, 0, "Iron Ingot"));
+			self::registerItem(new Item(Item::GOLD_INGOT, 0, "Gold Ingot"));
 			self::registerItem(new IronSword());
 			self::registerItem(new WoodenSword());
 			self::registerItem(new WoodenShovel());
@@ -70,15 +70,15 @@ class ItemFactory{
 			self::registerItem(new GoldPickaxe());
 			self::registerItem(new GoldAxe());
 			self::registerItem(new StringItem());
-			self::registerItem(new Feather());
-			self::registerItem(new Gunpowder());
+			self::registerItem(new Item(Item::FEATHER, 0, "Feather"));
+			self::registerItem(new Item(Item::GUNPOWDER, 0, "Gunpowder"));
 			self::registerItem(new WoodenHoe());
 			self::registerItem(new StoneHoe());
 			self::registerItem(new IronHoe());
 			self::registerItem(new DiamondHoe());
 			self::registerItem(new GoldHoe());
 			self::registerItem(new WheatSeeds());
-			self::registerItem(new Wheat());
+			self::registerItem(new Item(Item::WHEAT, 0, "Wheat"));
 			self::registerItem(new Bread());
 			self::registerItem(new LeatherCap());
 			self::registerItem(new LeatherTunic());
@@ -100,7 +100,7 @@ class ItemFactory{
 			self::registerItem(new GoldChestplate());
 			self::registerItem(new GoldLeggings());
 			self::registerItem(new GoldBoots());
-			self::registerItem(new Flint());
+			self::registerItem(new Item(Item::FLINT, 0, "Flint"));
 			self::registerItem(new RawPorkchop());
 			self::registerItem(new CookedPorkchop());
 			self::registerItem(new Painting());
@@ -110,35 +110,36 @@ class ItemFactory{
 			self::registerItem(new Bucket());
 
 			self::registerItem(new Minecart());
-
+			//TODO: SADDLE
 			self::registerItem(new IronDoor());
 			self::registerItem(new Redstone());
 			self::registerItem(new Snowball());
 			self::registerItem(new Boat());
-			self::registerItem(new Leather());
+			self::registerItem(new Item(Item::LEATHER, 0, "Leather"));
 
-			self::registerItem(new Brick());
-			self::registerItem(new Clay());
+			self::registerItem(new Item(Item::BRICK, 0, "Brick"));
+			self::registerItem(new Item(Item::CLAY_BALL, 0, "Clay"));
 			self::registerItem(new Sugarcane());
-			self::registerItem(new Paper());
+			self::registerItem(new Item(Item::PAPER, 0, "Paper"));
 			self::registerItem(new Book());
-			self::registerItem(new Slimeball());
+			self::registerItem(new Item(Item::SLIME_BALL, 0, "Slimeball"));
+			//TODO: CHEST_MINECART
 
 			self::registerItem(new Egg());
 			self::registerItem(new Compass());
 			self::registerItem(new FishingRod());
 			self::registerItem(new Clock());
-			self::registerItem(new GlowstoneDust());
+			self::registerItem(new Item(Item::GLOWSTONE_DUST, 0, "Glowstone Dust"));
 			self::registerItem(new Fish());
 			self::registerItem(new CookedFish());
 			self::registerItem(new Dye());
-			self::registerItem(new Bone());
-			self::registerItem(new Sugar());
+			self::registerItem(new Item(Item::BONE, 0, "Bone"));
+			self::registerItem(new Item(Item::SUGAR, 0, "Sugar"));
 			self::registerItem(new Cake());
 			self::registerItem(new Bed());
-
+			//TODO: REPEATER
 			self::registerItem(new Cookie());
-
+			//TODO: FILLED_MAP
 			self::registerItem(new Shears());
 			self::registerItem(new Melon());
 			self::registerItem(new PumpkinSeeds());
@@ -147,45 +148,92 @@ class ItemFactory{
 			self::registerItem(new Steak());
 			self::registerItem(new RawChicken());
 			self::registerItem(new CookedChicken());
-
-			self::registerItem(new GoldNugget());
+			//TODO: ROTTEN_FLESH
+			//TODO: ENDER_PEARL
+			//TODO: BLAZE_ROD
+			//TODO: GHAST_TEAR
+			self::registerItem(new Item(Item::GOLD_NUGGET, 0, "Gold Nugget"));
 			self::registerItem(new NetherWart());
 			self::registerItem(new Potion());
 			self::registerItem(new GlassBottle());
 			self::registerItem(new SpiderEye());
-			self::registerItem(new FermentedSpiderEye());
-			self::registerItem(new BlazePowder());
-			self::registerItem(new MagmaCream());
+			self::registerItem(new Item(Item::FERMENTED_SPIDER_EYE, 0, "Fermented Spider Eye"));
+			self::registerItem(new Item(Item::BLAZE_POWDER, 0, "Blaze Powder"));
+			self::registerItem(new Item(Item::MAGMA_CREAM, 0, "Magma Cream"));
 			self::registerItem(new BrewingStand());
-
-			self::registerItem(new GlisteringMelon());
+			//TODO: CAULDRON
+			//TODO: ENDER_EYE
+			self::registerItem(new Item(Item::GLISTERING_MELON, 0, "Glistering Melon"));
 			self::registerItem(new SpawnEgg());
+			//TODO: BOTTLE_O_ENCHANTING
+			//TODO: FIREBALL
 
-			self::registerItem(new Emerald());
+			self::registerItem(new Item(Item::EMERALD, 0, "Emerald"));
 			self::registerItem(new ItemFrame());
 			self::registerItem(new FlowerPot());
 			self::registerItem(new Carrot());
 			self::registerItem(new Potato());
 			self::registerItem(new BakedPotato());
-
+			//TODO: POISONOUS_POTATO
+			//TODO: EMPTYMAP
 			self::registerItem(new GoldenCarrot());
 			self::registerItem(new Skull());
-
-			self::registerItem(new NetherStar());
+			//TODO: CARROTONASTICK
+			self::registerItem(new Item(Item::NETHER_STAR, 0, "Nether Star"));
 			self::registerItem(new PumpkinPie());
 
-			self::registerItem(new NetherBrick());
-			self::registerItem(new NetherQuartz());
-
-			self::registerItem(new PrismarineShard());
-
+			//TODO: ENCHANTED_BOOK
+			//TODO: COMPARATOR
+			self::registerItem(new Item(Item::NETHER_BRICK, 0, "Nether Brick"));
+			self::registerItem(new Item(Item::NETHER_QUARTZ, 0, "Nether Quartz"));
+			//TODO: MINECART_WITH_TNT
+			//TODO: HOPPER_MINECART
+			self::registerItem(new Item(Item::PRISMARINE_SHARD, 0, "Prismarine Shard"));
+			//TODO: HOPPER
+			//TODO: RABBIT
 			self::registerItem(new CookedRabbit());
+			//TODO: RABBIT_STEW
+			//TODO: RABBIT_FOOT
+			//TODO: RABBIT_HIDE
+			//TODO: HORSEARMORLEATHER
+			//TODO: HORSEARMORIRON
+			//TODO: GOLD_HORSE_ARMOR
+			//TODO: DIAMOND_HORSE_ARMOR
+			//TODO: LEAD
+			//TODO: NAMETAG
+			self::registerItem(new Item(Item::PRISMARINE_CRYSTALS, 0, "Prismarine Crystals"));
+			//TODO: MUTTONRAW
+			//TODO: COOKED_MUTTON
 
-			self::registerItem(new PrismarineCrystals());
+			//TODO: END_CRYSTAL
+			//TODO: SPRUCE_DOOR
+			//TODO: BIRCH_DOOR
+			//TODO: JUNGLE_DOOR
+			//TODO: ACACIA_DOOR
+			//TODO: DARK_OAK_DOOR
+			//TODO: CHORUS_FRUIT
+			//TODO: CHORUS_FRUIT_POPPED
+
+			//TODO: DRAGON_BREATH
+			//TODO: SPLASH_POTION
+
+			//TODO: LINGERING_POTION
+
+			//TODO: COMMAND_BLOCK_MINECART
+			//TODO: ELYTRA
+			//TODO: SHULKER_SHELL
+
+			//TODO: TOTEM
+
+			//TODO: IRON_NUGGET
 
 			self::registerItem(new Beetroot());
 			self::registerItem(new BeetrootSeeds());
 			self::registerItem(new BeetrootSoup());
+			//TODO: RAW_SALMON
+			//TODO: CLOWNFISH
+			//TODO: PUFFERFISH
+			//TODO: COOKED_SALMON
 
 			self::registerItem(new GoldenAppleEnchanted());
 		}
@@ -224,28 +272,36 @@ class ItemFactory{
 	 * @param CompoundTag|string $tags
 	 *
 	 * @return Item
+	 * @throws \TypeError
 	 */
 	public static function get(int $id, int $meta = 0, int $count = 1, $tags = "") : Item{
+		if(!is_string($tags) and !($tags instanceof CompoundTag)){
+			throw new \TypeError("`tags` argument must be a string or CompoundTag instance, " . (is_object($tags) ? "instance of " . get_class($tags) : gettype($tags)) . " given");
+		}
+
+		$item = null;
 		try{
 			if($id < 256){
-				return (new ItemBlock(BlockFactory::get($id, $meta), $meta, $count))->setCompoundTag($tags);
+				/* Blocks must have a damage value 0-15, but items can have damage value -1 to indicate that they are
+				 * crafting ingredients with any-damage. */
+				$item = new ItemBlock(BlockFactory::get($id, $meta !== -1 ? $meta & 0xf : 0), $meta);
 			}else{
-				/** @var Item|null $item */
-				$item = self::$list[$id];
-				if($item === null){
-					return (new Item($id, $meta, $count))->setCompoundTag($tags);
-				}else{
-					$item = clone $item;
-					$item->setDamage($meta);
-					$item->setCount($count);
-					$item->setCompoundTag($tags);
-
-					return $item;
+				/** @var Item|null $listed */
+				$listed = self::$list[$id];
+				if($listed !== null){
+					$item = clone $listed;
 				}
 			}
 		}catch(\RuntimeException $e){
-			return (new Item($id, $meta, $count))->setCompoundTag($tags);
+			throw new \InvalidArgumentException("Item ID $id is invalid or out of bounds");
 		}
+
+		$item = ($item ?? new Item($id, $meta));
+
+		$item->setDamage($meta);
+		$item->setCount($count);
+		$item->setCompoundTag($tags);
+		return $item;
 	}
 
 	/**
