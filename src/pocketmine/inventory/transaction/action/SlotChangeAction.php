@@ -32,45 +32,30 @@ use pocketmine\Player;
  */
 class SlotChangeAction extends InventoryAction{
 
-	/** @var Inventory|null */
+	/** @var Inventory */
 	protected $inventory;
 	/** @var int */
 	private $inventorySlot;
-	/** @var int */
-	private $containerId;
 
 	/**
-	 * @param Item $sourceItem
-	 * @param Item $targetItem
-	 * @param int  $containerId
-	 * @param int  $inventorySlot
+	 * @param Inventory $inventory
+	 * @param int       $inventorySlot
+	 * @param Item      $sourceItem
+	 * @param Item      $targetItem
 	 */
-	public function __construct(Item $sourceItem, Item $targetItem, int $containerId, int $inventorySlot){
+	public function __construct(Inventory $inventory, int $inventorySlot, Item $sourceItem, Item $targetItem){
 		parent::__construct($sourceItem, $targetItem);
+		$this->inventory = $inventory;
 		$this->inventorySlot = $inventorySlot;
-		$this->containerId = $containerId;
-	}
-
-	public function getContainerId() : int{
-		return $this->containerId;
 	}
 
 	/**
-	 * Returns the inventory involved in this action. Will return null if the action has not yet been fully initialized.
+	 * Returns the inventory involved in this action.
 	 *
-	 * @return Inventory|null
+	 * @return Inventory
 	 */
-	public function getInventory(){
+	public function getInventory() : Inventory{
 		return $this->inventory;
-	}
-
-	public function setInventoryFrom(Player $player){
-		$inventory = $player->getWindow($this->containerId);
-		if($inventory === null){
-			throw new \InvalidStateException("Player " . $player->getName() . " has no open container with ID " . $this->containerId);
-		}
-
-		$this->inventory = $inventory;
 	}
 
 	/**

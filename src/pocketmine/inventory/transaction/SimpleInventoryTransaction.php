@@ -25,7 +25,6 @@ namespace pocketmine\inventory\transaction;
 
 use pocketmine\event\inventory\InventoryTransactionEvent;
 use pocketmine\inventory\Inventory;
-use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
@@ -49,11 +48,15 @@ class SimpleInventoryTransaction implements InventoryTransaction{
 	protected $actions = [];
 
 	/**
-	 * @param Player $source
+	 * @param Player            $source
+	 * @param InventoryAction[] $actions
 	 */
-	public function __construct(Player $source = null){
+	public function __construct(Player $source = null, array $actions = []){
 		$this->creationTime = microtime(true);
 		$this->source = $source;
+		foreach($actions as $action){
+			$this->addAction($action);
+		}
 	}
 
 	/**
@@ -87,7 +90,6 @@ class SimpleInventoryTransaction implements InventoryTransaction{
 		}
 
 		if($action instanceof SlotChangeAction){
-			$action->setInventoryFrom($this->source);
 			$this->inventories[spl_object_hash($action->getInventory())] = $action->getInventory();
 		}
 

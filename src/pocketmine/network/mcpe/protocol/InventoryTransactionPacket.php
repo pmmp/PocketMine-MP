@@ -25,12 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\inventory\transaction\action\CreativeInventoryAction;
-use pocketmine\inventory\transaction\action\DropItemAction;
-use pocketmine\inventory\transaction\action\InventoryAction;
-use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\protocol\types\ContainerIds;
+use pocketmine\network\mcpe\protocol\types\NetworkInventoryAction;
 
 class InventoryTransactionPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::INVENTORY_TRANSACTION_PACKET;
@@ -92,7 +88,7 @@ class InventoryTransactionPacket extends DataPacket{
 	const ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM = 0;
 	const ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM = 1;
 
-	/** @var InventoryAction[] */
+	/** @var NetworkInventoryAction[] */
 	public $actions = [];
 
 	/** @var \stdClass */
@@ -147,58 +143,9 @@ class InventoryTransactionPacket extends DataPacket{
 	}
 
 	protected function decodeInventoryAction(){
-		$sourceType = $this->getUnsignedVarInt();
-		$containerId = ContainerIds::NONE;
-		$unknown = 0;
-
-
-		switch($sourceType){
-			case self::SOURCE_CONTAINER:
-				$containerId = $this->getVarInt();
-				break;
-			case self::SOURCE_WORLD:
-				$unknown = $this->getUnsignedVarInt();
-				break;
-			case self::SOURCE_CREATIVE:
-				break;
-			case self::SOURCE_TODO:
-				$containerId = $this->getVarInt();
-				break;
-			default:
-				throw new \UnexpectedValueException("Unexpected inventory source type $sourceType");
-		}
-
-		$inventorySlot = $this->getUnsignedVarInt();
-		$sourceItem = $this->getSlot();
-		$targetItem = $this->getSlot();
-
-		switch($sourceType){
-			case self::SOURCE_CONTAINER:
-				if($containerId === ContainerIds::ARMOR){
-					//TODO: HACK!
-					$inventorySlot += 36;
-					$containerId = ContainerIds::INVENTORY;
-				}
-				return new SlotChangeAction($sourceItem, $targetItem, $containerId, $inventorySlot);
-			case self::SOURCE_WORLD:
-				if($inventorySlot !== self::ACTION_MAGIC_SLOT_DROP_ITEM){
-					throw new \UnexpectedValueException("Only expect drop item world action types from client");
-				}
-
-				return new DropItemAction($sourceItem, $targetItem);
-			case self::SOURCE_CREATIVE:
-				if($inventorySlot === self::ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM){
-					return new CreativeInventoryAction($sourceItem, $targetItem, CreativeInventoryAction::TYPE_DELETE_ITEM);
-				}elseif($inventorySlot === self::ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM){
-					return new CreativeInventoryAction($sourceItem, $targetItem, CreativeInventoryAction::TYPE_CREATE_ITEM);
-				}else{
-					throw new \UnexpectedValueException("Unknown creative inventory action type $inventorySlot");
-				}
-			case self::SOURCE_TODO:
-				return new SlotChangeAction($sourceItem, $targetItem, $containerId, $inventorySlot);
-			default:
-				throw new \UnexpectedValueException("Unknown source type $sourceType");
-		}
+		$action = new NetworkInventoryAction();
+		$action->read($this);
+		return $action;
 	}
 
 	public function handle(NetworkSession $session) : bool{

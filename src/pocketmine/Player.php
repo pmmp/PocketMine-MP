@@ -80,6 +80,7 @@ use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
+use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\SimpleInventoryTransaction;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -164,6 +165,7 @@ use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\tile\ItemFrame;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
+use pocketmine\utils\MainLogger;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
 
@@ -2178,19 +2180,22 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return bool
 	 */
 	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
+		/** @var InventoryAction[] $actions */
+		$actions = [];
+		foreach($packet->actions as $networkInventoryAction){
+			try{
+				$action = $networkInventoryAction->createInventoryAction($this);
+				$actions[] = $action;
+			}catch(\Throwable $e){
+				MainLogger::getLogger()->debug("Unhandled inventory action from " . $this->getName() . ": " . $e->getMessage());
+				$this->sendAllInventories();
+				return false;
+			}
+		}
+
 		switch($packet->transactionData->transactionType){
 			case InventoryTransactionPacket::TYPE_NORMAL:
-				$transaction = new SimpleInventoryTransaction($this);
-
-				foreach($packet->actions as $action){
-					try{
-						$transaction->addAction($action);
-					}catch(\InvalidStateException $e){
-						$this->server->getLogger()->debug($e->getMessage());
-						$this->sendAllInventories();
-						return false;
-					}
-				}
+				$transaction = new SimpleInventoryTransaction($this, $actions);
 
 				if(!$transaction->execute()){
 					foreach($transaction->getInventories() as $inventory){
@@ -2763,7 +2768,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @param Item $item
 	 * @return bool if the item was dropped or if the item was null
 	 */
-	public function dropItem(Item $item){
+	public function dropItem(Item $item) : bool{
 		if(!$this->spawned or !$this->isAlive()){
 			return false;
 		}
@@ -3762,7 +3767,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 *
 	 * @return int
 	 */
-	public function getWindowId(Inventory $inventory){
+	public function getWindowId(Inventory $inventory) : int{
 		if($this->windows->contains($inventory)){
 			/** @var int $id */
 			$id = $this->windows[$inventory];
