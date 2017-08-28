@@ -118,13 +118,13 @@ class Explosion{
 								}
 							}
 
-							$blockId = $currentSubChunk->getBlockId($vBlock->x & 0x0f, $vBlock->y & 0x0f, $vBlock->z & 0x0f);
+							$blockId = $currentSubChunk->getBlockId($vBlock->x & 0x0f, $vBlock->y, $vBlock->z & 0x0f);
 
 							if($blockId !== 0){
 								$blastForce -= (BlockFactory::$blastResistance[$blockId] / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
 									if(!isset($this->affectedBlocks[$index = Level::blockHash($vBlock->x, $vBlock->y, $vBlock->z)])){
-										$this->affectedBlocks[$index] = BlockFactory::get($blockId, $currentSubChunk->getBlockData($vBlock->x & 0x0f, $vBlock->y & 0x0f, $vBlock->z & 0x0f), $vBlock);
+										$this->affectedBlocks[$index] = BlockFactory::get($blockId, $currentSubChunk->getBlockData($vBlock->x & 0x0f, $vBlock->y, $vBlock->z & 0x0f), $vBlock);
 									}
 								}
 							}
