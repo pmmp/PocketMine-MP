@@ -1202,14 +1202,14 @@ abstract class Entity extends Location implements Metadatable{
 		}
 	}
 
-	public function getOffsetPosition() : Vector3{
-		return new Vector3($this->x, $this->y + $this->baseOffset, $this->z);
+	public function getOffsetPosition(Vector3 $vector3) : Vector3{
+		return new Vector3($vector3->x, $vector3->y + $this->baseOffset, $vector3->z);
 	}
 
 	protected function broadcastMovement(){
 		$pk = new MoveEntityPacket();
 		$pk->entityRuntimeId = $this->id;
-		$pk->position = $this->getOffsetPosition();
+		$pk->position = $this->getOffsetPosition($this);
 		$pk->yaw = $this->yaw;
 		$pk->pitch = $this->pitch;
 		$pk->headYaw = $this->yaw; //TODO
