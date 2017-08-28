@@ -156,6 +156,8 @@ class Banner extends Spawnable{
 			return false;
 		}
 		unset($this->namedtag->Patterns->{$patternLayer});
+
+		$this->onChanged();
 		return true;
 	}
 
@@ -170,6 +172,8 @@ class Banner extends Spawnable{
 		}
 		$index = (int) max(array_keys((array) $this->namedtag->Patterns));
 		unset($this->namedtag->Patterns->{$index});
+
+		$this->onChanged();
 		return true;
 	}
 
@@ -184,6 +188,8 @@ class Banner extends Spawnable{
 		}
 		$index = (int) min(array_keys((array) $this->namedtag->Patterns));
 		unset($this->namedtag->Patterns->{$index});
+
+		$this->onChanged();
 		return true;
 	}
 
