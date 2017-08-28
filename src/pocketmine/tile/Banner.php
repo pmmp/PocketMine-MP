@@ -124,26 +124,24 @@ class Banner extends Spawnable{
 	}
 
 	/**
-	 * Sets a new pattern with the given ID.
+	 * Changes the pattern of a previously existing pattern.
 	 *
 	 * @param int    $id
 	 * @param string $pattern
 	 * @param int    $color
 	 *
-	 * @return bool indicating whether a pattern was overwritten or not.
+	 * @return bool indicating success.
 	 */
-	public function setPattern(int $id, string $pattern, int $color) : bool{
-		$return = false;
+	public function changePattern(int $id, string $pattern, int $color) : bool{
 		if(!isset($this->namedtag->Patterns->{$id})){
-			$this->patternCount++;
-			$return = true;
+			return false;
 		}
-		$this->namedtag->Patterns->{$id} = new CompoundTag("", [
+		$this->namedtag->Patterns->{$id}->setValue([
 			new IntTag("Color", $color & 0x0f),
 			new StringTag("Pattern", $pattern)
 		]);
 		$this->onChanged();
-		return $return;
+		return true;
 	}
 
 	/**
@@ -170,7 +168,8 @@ class Banner extends Spawnable{
 		if(empty((array) $this->namedtag->Patterns)){
 			return false;
 		}
-		unset($this->namedtag->Patterns->{max(array_keys((array) $this->namedtag->Patterns))});
+		$index = (int) max(array_keys((array) $this->namedtag->Patterns));
+		unset($this->namedtag->Patterns->{$index});
 		return true;
 	}
 
@@ -183,7 +182,8 @@ class Banner extends Spawnable{
 		if(empty((array) $this->namedtag->Patterns)){
 			return false;
 		}
-		unset($this->namedtag->Patterns->{min(array_keys((array) $this->namedtag->Patterns))});
+		$index = (int) min(array_keys((array) $this->namedtag->Patterns));
+		unset($this->namedtag->Patterns->{$index});
 		return true;
 	}
 
