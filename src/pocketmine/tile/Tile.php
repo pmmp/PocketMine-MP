@@ -46,6 +46,7 @@ abstract class Tile extends Position{
 	const SIGN = "Sign";
 	const SKULL = "Skull";
 	const BED = "Bed";
+	const BANNER = "Banner";
 
 	public static $tileCount = 1;
 
@@ -76,6 +77,7 @@ abstract class Tile extends Position{
 		self::registerTile(ItemFrame::class);
 		self::registerTile(Sign::class);
 		self::registerTile(Skull::class);
+		self::registerTile(Banner::class);
 	}
 
 	/**
@@ -157,9 +159,8 @@ abstract class Tile extends Position{
 		unset($tag->x, $tag->y, $tag->z, $tag->id);
 		if($tag->getCount() > 0){
 			return $tag;
-		}else{
-			return null;
 		}
+		return null;
 	}
 
 	/**
