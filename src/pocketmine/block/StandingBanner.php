@@ -90,7 +90,7 @@ class StandingBanner extends Transparent {
 
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(Vector3::SIDE_DOWN, 2)->getId() === self::AIR){
+			if($this->getSide(Vector3::SIDE_DOWN)->getId() === self::AIR){
 				$this->getLevel()->useBreakOn($this);
 
 				return Level::BLOCK_UPDATE_NORMAL;

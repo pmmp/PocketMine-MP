@@ -70,6 +70,23 @@ class Banner extends Spawnable{
 	const PATTERN_FLOWER = "flo";
 	const PATTERN_MOJANG = "moj";
 
+	const COLOR_BLACK = 0;
+	const COLOR_RED = 1;
+	const COLOR_GREEN = 2;
+	const COLOR_BROWN = 3;
+	const COLOR_BLUE = 4;
+	const COLOR_PURPLE = 5;
+	const COLOR_CYAN = 6;
+	const COLOR_LIGHT_GRAY = 7;
+	const COLOR_GRAY = 8;
+	const COLOR_PINK = 9;
+	const COLOR_LIME = 10;
+	const COLOR_YELLOW = 11;
+	const COLOR_LIGHT_BLUE = 12;
+	const COLOR_MAGENTA = 13;
+	const COLOR_ORANGE = 14;
+	const COLOR_WHITE = 15;
+
 	private $patternCount = 0;
 
 	public function __construct(Level $level, CompoundTag $nbt){
@@ -145,7 +162,7 @@ class Banner extends Spawnable{
 	}
 
 	/**
-	 * Deletes a layer of the banner with the given ID.
+	 * Deletes a pattern from the banner with the given ID.
 	 *
 	 * @param int $patternLayer
 	 *
