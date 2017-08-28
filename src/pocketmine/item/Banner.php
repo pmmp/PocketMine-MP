@@ -33,7 +33,7 @@ class Banner extends Item{
 		parent::__construct(self::BANNER, $meta, "Banner");
 	}
 
-	public function getMaxStackSize(){
+	public function getMaxStackSize() : int{
 		return 16;
 	}
 }
