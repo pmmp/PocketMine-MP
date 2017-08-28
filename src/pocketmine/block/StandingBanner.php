@@ -114,7 +114,7 @@ class StandingBanner extends Transparent {
 
 	public function onBreak(Item $item, Player $player = null) : bool{
 		if(($tile = $this->level->getTile($this)) !== null) {
-			$this->level->dropItem($this, ItemFactory::get(Item::BANNER)->setNamedTag($tile->namedtag));
+			$this->level->dropItem($this, ItemFactory::get(Item::BANNER)->setNamedTag($tile->getCleanedNBT()));
 		}
 		return parent::onBreak($item, $player);
 	}
