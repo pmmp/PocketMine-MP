@@ -32,7 +32,7 @@ class WoodenDoor extends Item{
 		parent::__construct(self::WOODEN_DOOR, $meta, "Wooden Door");
 	}
 
-	public function getMaxStackSize(){
+	public function getMaxStackSize() : int{
 		return 1;
 	}
 }

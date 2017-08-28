@@ -51,6 +51,7 @@ class Bow extends Tool{
 	public function onReleaseUsing(Player $player) : bool{
 		if($player->isSurvival() and !$player->getInventory()->contains(ItemFactory::get(Item::ARROW, 0, 1))){
 			$player->getInventory()->sendContents($player);
+			return false;
 		}
 
 		$nbt = new CompoundTag("", [

@@ -29,7 +29,7 @@ class BeetrootSoup extends Food{
 		parent::__construct(self::BEETROOT_SOUP, $meta, "Beetroot Soup");
 	}
 
-	public function getMaxStackSize(){
+	public function getMaxStackSize() : int{
 		return 1;
 	}
 

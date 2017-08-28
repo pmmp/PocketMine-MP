@@ -738,7 +738,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * Returns the highest amount of this item which will fit into one inventory slot.
 	 * @return int
 	 */
-	public function getMaxStackSize(){
+	public function getMaxStackSize() : int{
 		return 64;
 	}
 

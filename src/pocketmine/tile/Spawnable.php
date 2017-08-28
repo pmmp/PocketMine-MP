@@ -31,11 +31,7 @@ use pocketmine\Player;
 
 abstract class Spawnable extends Tile{
 
-	public function spawnTo(Player $player){
-		if($this->closed){
-			return false;
-		}
-
+	public function createSpawnPacket() : BlockEntityDataPacket{
 		$nbt = new NBT(NBT::LITTLE_ENDIAN);
 		$nbt->setData($this->getSpawnCompound());
 		$pk = new BlockEntityDataPacket();
@@ -43,7 +39,16 @@ abstract class Spawnable extends Tile{
 		$pk->y = $this->y;
 		$pk->z = $this->z;
 		$pk->namedtag = $nbt->write(true);
-		$player->dataPacket($pk);
+
+		return $pk;
+	}
+
+	public function spawnTo(Player $player){
+		if($this->closed){
+			return false;
+		}
+
+		$player->dataPacket($this->createSpawnPacket());
 
 		return true;
 	}
@@ -58,11 +63,8 @@ abstract class Spawnable extends Tile{
 			return;
 		}
 
-		foreach($this->getLevel()->getChunkPlayers($this->chunk->getX(), $this->chunk->getZ()) as $player){
-			if($player->spawned === true){
-				$this->spawnTo($player);
-			}
-		}
+		$pk = $this->createSpawnPacket();
+		$this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
 	}
 
 	protected function onChanged(){

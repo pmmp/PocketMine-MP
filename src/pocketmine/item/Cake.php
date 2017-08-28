@@ -32,7 +32,7 @@ class Cake extends Item{
 		parent::__construct(self::CAKE, $meta, "Cake");
 	}
 
-	public function getMaxStackSize(){
+	public function getMaxStackSize() : int{
 		return 1;
 	}
 }

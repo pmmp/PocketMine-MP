@@ -375,7 +375,11 @@ class BlockFactory{
 		}
 
 		try{
-			$block = clone self::$fullList[($id << 4) | $meta];
+			if(self::$fullList !== null){
+				$block = clone self::$fullList[($id << 4) | $meta];
+			}else{
+				$block = new UnknownBlock($id, $meta);
+			}
 		}catch(\RuntimeException $e){
 			throw new \InvalidArgumentException("Block ID $id is out of bounds");
 		}

@@ -407,49 +407,31 @@ class Level implements ChunkManager, Metadatable{
 
 	public function addSound(Sound $sound, array $players = null){
 		$pk = $sound->encode();
+		if(!is_array($pk)){
+			$pk = [$pk];
+		}
 
 		if($players === null){
-			if($pk !== null){
-				if(!is_array($pk)){
-					$this->addChunkPacket($sound->x >> 4, $sound->z >> 4, $pk);
-				}else{
-					foreach($pk as $e){
-						$this->addChunkPacket($sound->x >> 4, $sound->z >> 4, $e);
-					}
-				}
+			foreach($pk as $e){
+				$this->addChunkPacket($sound->x >> 4, $sound->z >> 4, $e);
 			}
 		}else{
-			if($pk !== null){
-				if(!is_array($pk)){
-					$this->server->broadcastPacket($players, $pk);
-				}else{
-					$this->server->batchPackets($players, $pk, false);
-				}
-			}
+			$this->server->batchPackets($players, $pk, false);
 		}
 	}
 
 	public function addParticle(Particle $particle, array $players = null){
 		$pk = $particle->encode();
+		if(!is_array($pk)){
+			$pk = [$pk];
+		}
 
 		if($players === null){
-			if($pk !== null){
-				if(!is_array($pk)){
-					$this->addChunkPacket($particle->x >> 4, $particle->z >> 4, $pk);
-				}else{
-					foreach($pk as $e){
-						$this->addChunkPacket($particle->x >> 4, $particle->z >> 4, $e);
-					}
-				}
+			foreach($pk as $e){
+				$this->addChunkPacket($particle->x >> 4, $particle->z >> 4, $e);
 			}
 		}else{
-			if($pk !== null){
-				if(!is_array($pk)){
-					$this->server->broadcastPacket($players, $pk);
-				}else{
-					$this->server->batchPackets($players, $pk, false);
-				}
-			}
+			$this->server->batchPackets($players, $pk, false);
 		}
 	}
 
@@ -1637,10 +1619,8 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		$above = $this->getBlock(new Vector3($target->x, $target->y + 1, $target->z));
-		if($above !== null){
-			if($above->getId() === Item::FIRE){
-				$this->setBlock($above, BlockFactory::get(Block::AIR), true);
-			}
+		if($above->getId() === Item::FIRE){
+			$this->setBlock($above, BlockFactory::get(Block::AIR), true);
 		}
 
 		if($createParticles){

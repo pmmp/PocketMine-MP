@@ -32,7 +32,7 @@ class Bed extends Item{
 		parent::__construct(self::BED, $meta, "Bed");
 	}
 
-	public function getMaxStackSize(){
+	public function getMaxStackSize() : int{
 		return 1;
 	}
 }
