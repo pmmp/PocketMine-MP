@@ -190,7 +190,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public static function isValidUserName(string $name) : bool{
 		$lname = strtolower($name);
 		$len = strlen($name);
-		return $lname !== "rcon" and $lname !== "console" and $len >= 1 and $len <= 16 and preg_match("/[^A-Za-z0-9_]/", $name) === 0;
+		return $lname !== "rcon" and $lname !== "console" and $len >= 1 and $len <= 15 and stristr($name, "\n") === false and stristr($name, "\t") === false and preg_match("/[^A-Za-z0-9_\s]/", $name) === 0;
 	}
 
 	/**
