@@ -2099,13 +2099,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function handleMovePlayer(MovePlayerPacket $packet) : bool{
 		$newPos = new Vector3($packet->x, $packet->y - $this->baseOffset, $packet->z);
 
-		if($this->isTeleporting and $newPos->distanceSquared($this) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
-			$this->server->getLogger()->debug("Ignoring outdated pre-teleport movement from " . $this->getName() . ", received " . $newPos . ", expected " . $this->asVector3());
-			//Still getting movements from before teleport, ignore them
-		}elseif((!$this->isAlive() or $this->spawned !== true) and $newPos->distanceSquared($this) > 0.01){
-			$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
-			$this->server->getLogger()->debug("Reverted movement of " . $this->getName() . " due to not alive or not spawned, received " . $newPos . ", locked at " . $this->asVector3());
-		}else{
 			// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
 			if($this->isTeleporting){
 				$this->isTeleporting = false;
@@ -2117,10 +2110,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			if($packet->yaw < 0){
 				$packet->yaw += 360;
 			}
-
-			$this->setRotation($packet->yaw, $packet->pitch);
-			$this->newPosition = $newPos;
-		}
 
 		return true;
 	}
