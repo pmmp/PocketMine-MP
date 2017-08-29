@@ -137,7 +137,7 @@ class Chest extends Transparent{
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
 			$top = $this->getSide(Vector3::SIDE_UP);
-			if($top->isTransparent() !== true){
+			if(!$top->isTransparent()){
 				return true;
 			}
 
@@ -145,6 +145,9 @@ class Chest extends Transparent{
 			$chest = null;
 			if($t instanceof TileChest){
 				$chest = $t;
+				if($chest->getPair() instanceof TileChest and !$chest->getPair()->getBlock()->getSide(Vector3::SIDE_UP)->isTransparent()){
+					return true;
+				}
 			}else{
 				$nbt = new CompoundTag("", [
 					new ListTag("Items", []),
