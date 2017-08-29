@@ -141,19 +141,47 @@ class Banner extends Spawnable{
 	}
 
 	/**
+	 * Returns whether a pattern with the given ID exists on the banner or not.
+	 *
+	 * @param int $patternId
+	 *
+	 * @return bool
+	 */
+	public function patternExists(int $patternId) : bool{
+		return isset($this->namedtag->Patterns->{$patternId});
+	}
+
+	/**
+	 * Returns the data of a pattern with the given ID.
+	 *
+	 * @param int $patternId
+	 *
+	 * @return array
+	 */
+	public function getPatternData(int $patternId) : array{
+		if(!$this->patternExists($patternId)){
+			return [];
+		}
+		return [
+			"Color" => $this->namedtag->Patterns->{$patternId}->Color->getValue(),
+			"Pattern" => $this->namedtag->Patterns->{$patternId}->Pattern->getValue()
+		];
+	}
+
+	/**
 	 * Changes the pattern of a previously existing pattern.
 	 *
-	 * @param int    $id
+	 * @param int    $patternId
 	 * @param string $pattern
 	 * @param int    $color
 	 *
 	 * @return bool indicating success.
 	 */
-	public function changePattern(int $id, string $pattern, int $color) : bool{
-		if(!isset($this->namedtag->Patterns->{$id})){
+	public function changePattern(int $patternId, string $pattern, int $color) : bool{
+		if(!$this->patternExists($patternId)){
 			return false;
 		}
-		$this->namedtag->Patterns->{$id}->setValue([
+		$this->namedtag->Patterns->{$patternId}->setValue([
 			new IntTag("Color", $color & 0x0f),
 			new StringTag("Pattern", $pattern)
 		]);
@@ -164,15 +192,15 @@ class Banner extends Spawnable{
 	/**
 	 * Deletes a pattern from the banner with the given ID.
 	 *
-	 * @param int $patternLayer
+	 * @param int $patternId
 	 *
 	 * @return bool indicating whether the pattern existed or not.
 	 */
-	public function deletePattern(int $patternLayer) : bool{
-		if(!isset($this->namedtag->Patterns->{$patternLayer})){
+	public function deletePattern(int $patternId) : bool{
+		if(!$this->patternExists($patternId)){
 			return false;
 		}
-		unset($this->namedtag->Patterns->{$patternLayer});
+		unset($this->namedtag->Patterns->{$patternId});
 
 		$this->onChanged();
 		return true;
@@ -185,8 +213,8 @@ class Banner extends Spawnable{
 	 */
 	public function deleteTopPattern() : bool{
 		$keys = array_keys((array) $this->namedtag->Patterns);
-		foreach($keys as $key => $index) {
-			if(!is_numeric($index)) {
+		foreach($keys as $key => $index){
+			if(!is_numeric($index)){
 				unset($keys[$key]);
 			}
 		}
@@ -207,8 +235,8 @@ class Banner extends Spawnable{
 	 */
 	public function deleteBottomPattern() : bool{
 		$keys = array_keys((array) $this->namedtag->Patterns);
-		foreach($keys as $key => $index) {
-			if(!is_numeric($index)) {
+		foreach($keys as $key => $index){
+			if(!is_numeric($index)){
 				unset($keys[$key]);
 			}
 		}
