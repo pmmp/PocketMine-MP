@@ -184,10 +184,16 @@ class Banner extends Spawnable{
 	 * @return bool indicating whether the banner was empty or not.
 	 */
 	public function deleteTopPattern() : bool{
-		if(empty((array) $this->namedtag->Patterns)){
+		$keys = array_keys((array) $this->namedtag->Patterns);
+		foreach($keys as $key => $index) {
+			if(!is_numeric($index)) {
+				unset($keys[$key]);
+			}
+		}
+		if(empty($keys)){
 			return false;
 		}
-		$index = (int) max(array_keys((array) $this->namedtag->Patterns));
+		$index = max($keys);
 		unset($this->namedtag->Patterns->{$index});
 
 		$this->onChanged();
@@ -200,10 +206,16 @@ class Banner extends Spawnable{
 	 * @return bool indicating whether the banner was empty or not.
 	 */
 	public function deleteBottomPattern() : bool{
-		if(empty((array) $this->namedtag->Patterns)){
+		$keys = array_keys((array) $this->namedtag->Patterns);
+		foreach($keys as $key => $index) {
+			if(!is_numeric($index)) {
+				unset($keys[$key]);
+			}
+		}
+		if(empty($keys)){
 			return false;
 		}
-		$index = (int) min(array_keys((array) $this->namedtag->Patterns));
+		$index = min($keys);
 		unset($this->namedtag->Patterns->{$index});
 
 		$this->onChanged();
