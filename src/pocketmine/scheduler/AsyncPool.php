@@ -92,9 +92,9 @@ class AsyncPool{
 		$this->taskWorkers[$task->getTaskId()] = $worker;
 	}
 
-	public function submitTask(AsyncTask $task){
+	public function submitTask(AsyncTask $task) : int{
 		if(isset($this->tasks[$task->getTaskId()]) or $task->isGarbage()){
-			return;
+			return -1;
 		}
 
 		$selectedWorker = mt_rand(0, $this->size - 1);
@@ -107,6 +107,7 @@ class AsyncPool{
 		}
 
 		$this->submitTaskToWorker($task, $selectedWorker);
+		return $selectedWorker;
 	}
 
 	private function removeTask(AsyncTask $task, bool $force = false){
