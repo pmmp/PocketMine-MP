@@ -31,9 +31,10 @@ use pocketmine\level\Position;
  */
 class BlockFactory{
 	/** @var \SplFixedArray<Block> */
-	public static $list = null;
+	private static $list = null;
 	/** @var \SplFixedArray<Block> */
-	public static $fullList = null;
+	private static $fullList = null;
+
 	/** @var \SplFixedArray<bool> */
 	public static $solid = null;
 	/** @var \SplFixedArray<bool> */
@@ -59,6 +60,7 @@ class BlockFactory{
 		if(self::$list === null or $force){
 			self::$list = new \SplFixedArray(256);
 			self::$fullList = new \SplFixedArray(4096);
+
 			self::$light = new \SplFixedArray(256);
 			self::$lightFilter = new \SplFixedArray(256);
 			self::$solid = new \SplFixedArray(256);
@@ -392,5 +394,13 @@ class BlockFactory{
 		}
 
 		return $block;
+	}
+
+	/**
+	 * @internal
+	 * @return \SplFixedArray
+	 */
+	public static function getBlockStatesArray() : \SplFixedArray{
+		return self::$fullList;
 	}
 }

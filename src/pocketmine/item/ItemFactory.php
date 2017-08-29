@@ -32,7 +32,7 @@ use pocketmine\nbt\tag\CompoundTag;
 class ItemFactory{
 
 	/** @var \SplFixedArray */
-	public static $list = null;
+	private static $list = null;
 
 	public static function init(){
 		if(self::$list === null){

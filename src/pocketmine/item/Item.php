@@ -202,7 +202,7 @@ class Item implements ItemIds, \JsonSerializable{
 		$this->id = $id & 0xffff;
 		$this->meta = $meta !== -1 ? $meta & 0xffff : -1;
 		$this->name = $name;
-		if(!isset($this->block) and $this->id <= 0xff and isset(BlockFactory::$list[$this->id])){
+		if(!isset($this->block) and $this->id <= 0xff){
 			$this->block = BlockFactory::get($this->id, $this->meta);
 			$this->name = $this->block->getName();
 		}
