@@ -34,14 +34,6 @@ class Banner extends Item{
 
 	public function __construct(int $meta = 0) {
 		$this->block = BlockFactory::get(Block::STANDING_BANNER);
-		$nbt = $this->getNamedTag() ?? new CompoundTag();
-		if(!isset($nbt->Base) or !($nbt->Base instanceof IntTag)) {
-			$nbt->Base = new IntTag("Base", $meta);
-		}
-		if(!isset($nbt->Patterns) or !($nbt->Patterns instanceof ListTag)) {
-			$nbt->Patterns = new ListTag("Patterns");
-		}
-		$this->setNamedTag($nbt);
 		parent::__construct(self::BANNER, $meta, "Banner");
 	}
 
