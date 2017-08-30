@@ -26,28 +26,43 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 
+/**
+ * Called when an effect is added to an Entity.
+ */
 class EntityEffectAddEvent extends EntityEffectEvent{
 	public static $handlerList = null;
 
 	/** @var bool */
 	private $modify;
-	/** @var Effect */
+	/** @var Effect|null */
 	private $oldEffect;
 
-	public function __construct(Entity $entity, Effect $effect, $modify, $oldEffect){
+	/**
+	 * @param Entity      $entity
+	 * @param Effect      $effect
+	 * @param bool        $modify
+	 * @param Effect|null $oldEffect
+	 */
+	public function __construct(Entity $entity, Effect $effect, bool $modify, Effect $oldEffect = null){
 		parent::__construct($entity, $effect);
 		$this->modify = $modify;
 		$this->oldEffect = $oldEffect;
 	}
 
+	/**
+	 * Returns whether the effect addition will replace an existing effect already applied to the entity.
+	 *
+	 * TODO: isn't this pointless? An effect will only modify an existing effect if oldEffect is non-null anyway...
+	 *
+	 * @return bool
+	 */
 	public function willModify() : bool{
 		return $this->modify;
 	}
 
-	public function setWillModify(bool $modify){
-		$this->modify = $modify;
-	}
-
+	/**
+	 * @return bool
+	 */
 	public function hasOldEffect() : bool{
 		return $this->oldEffect instanceof Effect;
 	}

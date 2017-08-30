@@ -42,6 +42,9 @@ class EntityEatBlockEvent extends EntityEatEvent{
 		return parent::getResidue();
 	}
 
+	/**
+	 * @param Block $residue
+	 */
 	public function setResidue($residue){
 		if(!($residue instanceof Block)){
 			throw new \InvalidArgumentException("Eating a Block can only result in a Block residue");

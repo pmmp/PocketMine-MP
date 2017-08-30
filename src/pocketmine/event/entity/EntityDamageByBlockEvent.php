@@ -49,7 +49,7 @@ class EntityDamageByBlockEvent extends EntityDamageEvent{
 	/**
 	 * @return Block
 	 */
-	public function getDamager(){
+	public function getDamager() : Block{
 		return $this->damager;
 	}
 

@@ -33,7 +33,9 @@ use pocketmine\event\Cancellable;
 class EntityBlockChangeEvent extends EntityEvent implements Cancellable{
 	public static $handlerList = null;
 
+	/** @var Block */
 	private $from;
+	/** @var Block */
 	private $to;
 
 	public function __construct(Entity $entity, Block $from, Block $to){
@@ -45,14 +47,14 @@ class EntityBlockChangeEvent extends EntityEvent implements Cancellable{
 	/**
 	 * @return Block
 	 */
-	public function getBlock(){
+	public function getBlock() : Block{
 		return $this->from;
 	}
 
 	/**
 	 * @return Block
 	 */
-	public function getTo(){
+	public function getTo() : Block{
 		return $this->to;
 	}
 
