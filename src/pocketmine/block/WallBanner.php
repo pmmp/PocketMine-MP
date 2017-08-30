@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 
 class WallBanner extends StandingBanner{
 
@@ -35,10 +36,10 @@ class WallBanner extends StandingBanner{
 
 	public function onUpdate(int $type){
 		$faces = [
-			2 => 3,
-			3 => 2,
-			4 => 5,
-			5 => 4
+			Vector3::SIDE_NORTH => 3,
+			Vector3::SIDE_SOUTH => 2,
+			Vector3::SIDE_WEST => 5,
+			Vector3::SIDE_EAST => 4
 		];
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if(isset($faces[$this->meta])){

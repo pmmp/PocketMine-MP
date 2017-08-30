@@ -87,8 +87,6 @@ class Banner extends Spawnable{
 	const COLOR_ORANGE = 14;
 	const COLOR_WHITE = 15;
 
-	private $patternCount = 0;
-
 	public function __construct(Level $level, CompoundTag $nbt){
 		if(!isset($nbt->Base) or !($nbt->Base instanceof IntTag)){
 			$nbt->Base = new IntTag("Base", 15);
@@ -124,6 +122,21 @@ class Banner extends Spawnable{
 	}
 
 	/**
+	 * Returns an array containing all pattern IDs
+	 *
+	 * @return array
+	 */
+	public function getPatternIds() : array{
+		$keys = array_keys((array) $this->namedtag->Patterns);
+		foreach($keys as $key => $index){
+			if(!is_numeric($index)){
+				unset($keys[$key]);
+			}
+		}
+		return $keys;
+	}
+
+	/**
 	 * Applies a new pattern on the banner with the given color.
 	 *
 	 * @param string $pattern
@@ -132,12 +145,16 @@ class Banner extends Spawnable{
 	 * @return int ID of pattern.
 	 */
 	public function addPattern(string $pattern, int $color) : int{
-		$this->namedtag->Patterns->{($id = $this->patternCount++)} = new CompoundTag("", [
+		$patternId = 0;
+		if($this->getPatternCount() !== 0) {
+			$patternId = max($this->getPatternIds()) + 1;
+		}
+		$this->namedtag->Patterns->{$patternId} = new CompoundTag("", [
 			new IntTag("Color", $color & 0x0f),
 			new StringTag("Pattern", $pattern)
 		]);
 		$this->onChanged();
-		return $id;
+		return $patternId;
 	}
 
 	/**
@@ -212,12 +229,7 @@ class Banner extends Spawnable{
 	 * @return bool indicating whether the banner was empty or not.
 	 */
 	public function deleteTopPattern() : bool{
-		$keys = array_keys((array) $this->namedtag->Patterns);
-		foreach($keys as $key => $index){
-			if(!is_numeric($index)){
-				unset($keys[$key]);
-			}
-		}
+		$keys = $this->getPatternIds();
 		if(empty($keys)){
 			return false;
 		}
@@ -234,12 +246,7 @@ class Banner extends Spawnable{
 	 * @return bool indicating whether the banner was empty or not.
 	 */
 	public function deleteBottomPattern() : bool{
-		$keys = array_keys((array) $this->namedtag->Patterns);
-		foreach($keys as $key => $index){
-			if(!is_numeric($index)){
-				unset($keys[$key]);
-			}
-		}
+		$keys = $this->getPatternIds();
 		if(empty($keys)){
 			return false;
 		}
@@ -256,6 +263,6 @@ class Banner extends Spawnable{
 	 * @return int
 	 */
 	public function getPatternCount() : int{
-		return count((array) $this->namedtag->Patterns);
+		return count($this->getPatternIds());
 	}
 }
