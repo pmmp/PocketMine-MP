@@ -514,8 +514,9 @@ class LevelDB extends BaseLevelProvider{
 	private function writeTags(array $targets, string $index){
 		$nbt = new NBT(NBT::LITTLE_ENDIAN);
 		$out = [];
+		/** @var Entity|Tile $target */
 		foreach($targets as $target){
-			if(!$target->closed){
+			if(!$target->isClosed()){
 				$target->saveNBT();
 				$out[] = $target->namedtag;
 			}

@@ -180,6 +180,10 @@ abstract class Tile extends Position{
 		$this->level->updateTiles[$this->id] = $this;
 	}
 
+	public function isClosed() : bool{
+		return $this->closed;
+	}
+
 	public function __destruct(){
 		$this->close();
 	}
