@@ -36,12 +36,12 @@ class EntityDamageByBlockEvent extends EntityDamageEvent{
 
 
 	/**
-	 * @param Block     $damager
-	 * @param Entity    $entity
-	 * @param int       $cause
-	 * @param int|int[] $damage
+	 * @param Block         $damager
+	 * @param Entity        $entity
+	 * @param int           $cause
+	 * @param float|float[] $damage
 	 */
-	public function __construct(Block $damager, Entity $entity, $cause, $damage){
+	public function __construct(Block $damager, Entity $entity, int $cause, $damage){
 		$this->damager = $damager;
 		parent::__construct($entity, $cause, $damage);
 	}
