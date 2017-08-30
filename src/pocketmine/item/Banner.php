@@ -217,11 +217,7 @@ class Banner extends Item{
 	}
 
 	public function correctNBT(){
-		if(!$this->hasCustomBlockData()){
-			$tag = new CompoundTag();
-		} else {
-			$tag = $this->getNamedTag();
-		}
+		$tag = $this->getNamedTag() ?? new CompoundTag();
 		if(!isset($tag->Base) or !($tag->Base instanceof IntTag)) {
 			$tag->Base = new IntTag("Base", $this->meta);
 		}
