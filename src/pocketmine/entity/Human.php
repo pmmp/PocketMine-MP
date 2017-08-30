@@ -548,7 +548,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * @param int $flagId
 	 * @return bool
 	 */
-	public function getPlayerFlag(int $flagId){
+	public function getPlayerFlag(int $flagId) : bool{
 		return $this->getDataFlag(self::DATA_PLAYER_FLAGS, $flagId);
 	}
 

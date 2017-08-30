@@ -132,7 +132,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	 *
 	 * @return bool
 	 */
-	public function isApplicable(int $type){
+	public function isApplicable(int $type) : bool{
 		return isset($this->modifiers[$type]);
 	}
 
