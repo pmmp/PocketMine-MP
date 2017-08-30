@@ -206,7 +206,7 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_FLAG_LINGER = 44;
 	const DATA_FLAG_HAS_COLLISION = 45;
 	const DATA_FLAG_AFFECTED_BY_GRAVITY = 46;
-
+	const DATA_FLAG_FIRE_IMMUNE = 47;
 	const DATA_FLAG_DANCING = 48;
 
 	public static $entityCount = 1;
