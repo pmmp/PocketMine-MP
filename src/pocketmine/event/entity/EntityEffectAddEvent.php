@@ -32,32 +32,26 @@ use pocketmine\entity\Entity;
 class EntityEffectAddEvent extends EntityEffectEvent{
 	public static $handlerList = null;
 
-	/** @var bool */
-	private $modify;
 	/** @var Effect|null */
 	private $oldEffect;
 
 	/**
 	 * @param Entity      $entity
 	 * @param Effect      $effect
-	 * @param bool        $modify
 	 * @param Effect|null $oldEffect
 	 */
-	public function __construct(Entity $entity, Effect $effect, bool $modify, Effect $oldEffect = null){
+	public function __construct(Entity $entity, Effect $effect, Effect $oldEffect = null){
 		parent::__construct($entity, $effect);
-		$this->modify = $modify;
 		$this->oldEffect = $oldEffect;
 	}
 
 	/**
 	 * Returns whether the effect addition will replace an existing effect already applied to the entity.
 	 *
-	 * TODO: isn't this pointless? An effect will only modify an existing effect if oldEffect is non-null anyway...
-	 *
 	 * @return bool
 	 */
 	public function willModify() : bool{
-		return $this->modify;
+		return $this->hasOldEffect();
 	}
 
 	/**
@@ -73,6 +67,5 @@ class EntityEffectAddEvent extends EntityEffectEvent{
 	public function getOldEffect(){
 		return $this->oldEffect;
 	}
-
 
 }
