@@ -90,7 +90,7 @@ class Cake extends Transparent implements FoodSource{
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{
-		if($player instanceof Player and $player->getHealth() < $player->getMaxHealth()){
+		if($player instanceof Player and $player->getFood() < $player->getMaxFood()){
 			$ev = new EntityEatBlockEvent($player, $this);
 
 			if(!$ev->isCancelled()){
