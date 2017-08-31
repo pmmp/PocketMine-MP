@@ -78,9 +78,9 @@ namespace pocketmine {
 	use pocketmine\wizard\SetupWizard;
 	use raklib\RakLib;
 
-	const VERSION = "1.6.2dev";
+	const VERSION = "1.7dev";
 	const API_VERSION = "3.0.0-ALPHA7";
-	const CODENAME = "Unleashed";
+	const CODENAME = "[REDACTED]";
 
 	/*
 	 * Startup code. Do not look at it, it may harm you.
@@ -89,8 +89,8 @@ namespace pocketmine {
 	 * Enjoy it as much as I did writing it. I don't want to do it again.
 	 */
 
-	if(version_compare("7.0", PHP_VERSION) > 0 or version_compare("7.1", PHP_VERSION) <= 0){
-		echo "[CRITICAL] You must use PHP 7.0" . PHP_EOL;
+	if(version_compare("7.2", PHP_VERSION) > 0){
+		echo "[CRITICAL] You must use PHP >= 7.2" . PHP_EOL;
 		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
 		exit(1);
 	}
@@ -431,8 +431,8 @@ namespace pocketmine {
 		if(substr_count($pthreads_version, ".") < 2){
 			$pthreads_version = "0.$pthreads_version";
 		}
-		if(version_compare($pthreads_version, "3.1.5") < 0){
-			$logger->critical("pthreads >= 3.1.5 is required, while you have $pthreads_version.");
+		if(version_compare($pthreads_version, "3.1.7-dev") < 0){
+			$logger->critical("pthreads >= 3.1.7-dev is required, while you have $pthreads_version.");
 			++$errors;
 		}
 
