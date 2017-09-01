@@ -255,24 +255,20 @@ class PluginManager{
 							}
 
 							if($compatible === false){
-								$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.incompatibleAPI"]));
+								$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+									$name,
+									$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleAPI", [implode(", ", $description->getCompatibleApis())])
+								]));
 								continue;
 							}
 
 							if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
 								$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
 								if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
-									$this->server->getLogger()->error($this->server->getLanguage()->translateString(
-										"pocketmine.plugin.loadError",
-										[
-											$name,
-											$this->server->getLanguage()->translateString(
-												"%pocketmine.plugin.incompatibleProtocol",
-												[
-													implode(", ", $pluginMcpeProtocols)
-												])
-										]
-									));
+									$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+										$name,
+										$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleProtocol", [implode(", ", $pluginMcpeProtocols)])
+									]));
 									continue;
 								}
 							}
@@ -306,7 +302,10 @@ class PluginManager{
 							if(isset($loadedPlugins[$dependency]) or $this->getPlugin($dependency) instanceof Plugin){
 								unset($dependencies[$name][$key]);
 							}elseif(!isset($plugins[$dependency])){
-								$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.unknownDependency"]));
+								$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+									$name,
+									$this->server->getLanguage()->translateString("%pocketmine.plugin.unknownDependency", [$dependency])
+								]));
 								break;
 							}
 						}
