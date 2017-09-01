@@ -23,12 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\permission\Permission;
 
 class PluginDescription{
 	private $name;
 	private $main;
 	private $api;
+	/** @var int[] */
+	private $compatibleMcpeProtocols = [];
 	private $extensions = [];
 	private $depend = [];
 	private $softDepend = [];
@@ -75,6 +78,8 @@ class PluginDescription{
 		if(stripos($this->main, "pocketmine\\") === 0){
 			throw new PluginException("Invalid PluginDescription main, cannot start within the PocketMine namespace");
 		}
+
+		$this->compatibleMcpeProtocols = array_map("intval", (array) ($plugin["mcpe-protocol"] ?? []));
 
 		if(isset($plugin["commands"]) and is_array($plugin["commands"])){
 			$this->commands = $plugin["commands"];
@@ -145,6 +150,13 @@ class PluginDescription{
 	 */
 	public function getCompatibleApis() : array{
 		return $this->api;
+	}
+
+	/**
+	 * @return int[]
+	 */
+	public function getCompatibleMcpeProtocols() : array{
+		return $this->compatibleMcpeProtocols;
 	}
 
 	/**
