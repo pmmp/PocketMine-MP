@@ -1,5 +1,5 @@
 @echo off
-TITLE PocketMine-MP server software for Minecraft: Pocket Edition
+TITLE PocketMine-MP
 cd /d %~dp0
 
 if exist bin\php\php.exe (
