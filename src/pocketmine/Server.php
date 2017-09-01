@@ -1612,13 +1612,14 @@ class Server{
 
 			register_shutdown_function([$this, "crashDump"]);
 
+			$this->queryRegenerateTask = new QueryRegenerateEvent($this, 5);
+
 			$this->pluginManager->loadPlugins($this->pluginPath);
 
 			$this->updater = new AutoUpdater($this, $this->getProperty("auto-updater.host", "update.pmmp.io"));
 
 			$this->enablePlugins(PluginLoadOrder::STARTUP);
 
-			$this->queryRegenerateTask = new QueryRegenerateEvent($this, 5);
 			$this->network->registerInterface(new RakLibInterface($this));
 
 
