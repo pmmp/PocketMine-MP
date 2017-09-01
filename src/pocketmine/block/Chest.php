@@ -136,18 +136,11 @@ class Chest extends Transparent{
 
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
-			$top = $this->getSide(Vector3::SIDE_UP);
-			if(!$top->isTransparent()){
-				return true;
-			}
 
 			$t = $this->getLevel()->getTile($this);
 			$chest = null;
 			if($t instanceof TileChest){
 				$chest = $t;
-				if($chest->getPair() instanceof TileChest and !$chest->getPair()->getBlock()->getSide(Vector3::SIDE_UP)->isTransparent()){
-					return true;
-				}
 			}else{
 				$nbt = new CompoundTag("", [
 					new ListTag("Items", []),
@@ -160,10 +153,12 @@ class Chest extends Transparent{
 				$chest = Tile::createTile("Chest", $this->getLevel(), $nbt);
 			}
 
-			if(isset($chest->namedtag->Lock) and $chest->namedtag->Lock instanceof StringTag){
-				if($chest->namedtag->Lock->getValue() !== $item->getCustomName()){
-					return true;
-				}
+			if(
+				!$this->getSide(Vector3::SIDE_UP)->isTransparent() or
+				($chest->isPaired() and !$chest->getPair()->getBlock()->getSide(Vector3::SIDE_UP)->isTransparent()) or
+				(isset($chest->namedtag->Lock) and $chest->namedtag->Lock instanceof StringTag and $chest->namedtag->Lock->getValue() !== $item->getCustomName())
+			){
+				return true;
 			}
 
 			$player->addWindow($chest->getInventory());
