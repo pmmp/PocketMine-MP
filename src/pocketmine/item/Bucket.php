@@ -27,6 +27,7 @@ use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\Liquid;
+use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\event\player\PlayerBucketFillEvent;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
@@ -70,7 +71,7 @@ class Bucket extends Item{
 		}elseif($targetBlock instanceof Liquid){
 			$result = clone $this;
 			$result->setDamage(0);
-			$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketFillEvent($player, $block, $face, $this, $result));
+			$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketEmptyEvent($player, $block, $face, $this, $result));
 			if(!$ev->isCancelled()){
 				$player->getLevel()->setBlock($block, $targetBlock, true, true);
 				if($player->isSurvival()){
