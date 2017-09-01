@@ -238,7 +238,7 @@ class PluginManager{
 										continue;
 									}
 
-									$pluginNumbers = array_map("intval", explode(".", $pluginApi[0]));
+									$pluginNumbers = array_map("intval", array_pad(explode(".", $pluginApi[0]), 3, "0")); //plugins might specify API like "3.0" or "3"
 									$serverNumbers = array_map("intval", explode(".", $serverApi[0]));
 
 									if($pluginNumbers[0] !== $serverNumbers[0]){ //Completely different API version
