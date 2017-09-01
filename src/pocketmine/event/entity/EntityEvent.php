@@ -33,6 +33,9 @@ abstract class EntityEvent extends Event{
 	/** @var Entity */
 	protected $entity;
 
+	/**
+	 * @return Entity
+	 */
 	public function getEntity(){
 		return $this->entity;
 	}

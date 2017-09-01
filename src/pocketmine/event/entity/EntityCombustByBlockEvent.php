@@ -28,6 +28,7 @@ use pocketmine\entity\Entity;
 
 class EntityCombustByBlockEvent extends EntityCombustEvent{
 
+	/** @var Block */
 	protected $combuster;
 
 	/**
@@ -35,7 +36,7 @@ class EntityCombustByBlockEvent extends EntityCombustEvent{
 	 * @param Entity $combustee
 	 * @param int    $duration
 	 */
-	public function __construct(Block $combuster, Entity $combustee, $duration){
+	public function __construct(Block $combuster, Entity $combustee, int $duration){
 		parent::__construct($combustee, $duration);
 		$this->combuster = $combuster;
 	}
@@ -43,7 +44,7 @@ class EntityCombustByBlockEvent extends EntityCombustEvent{
 	/**
 	 * @return Block
 	 */
-	public function getCombuster(){
+	public function getCombuster() : Block{
 		return $this->combuster;
 	}
 

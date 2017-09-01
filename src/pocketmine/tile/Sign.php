@@ -64,8 +64,31 @@ class Sign extends Spawnable{
 		unset($this->namedtag->Creator);
 	}
 
+	/**
+	 * Changes contents of the specific lines to the string provided. 
+	 * Leaves contents of the specifc lines as is if null is provided.
+	 *
+	 * @param null|string $line1
+	 * @param null|string $line2
+	 * @param null|string $line3
+	 * @param null|string $line4
+	 *
+	 * @return bool
+	 */
 	public function setText($line1 = "", $line2 = "", $line3 = "", $line4 = ""){
-		$this->text = [$line1, $line2, $line3, $line4];
+		if($line1 !== null){
+			$this->text[0] = $line1;
+		}
+		if($line2 !== null){
+			$this->text[1] = $line2;
+		}
+		if($line3 !== null){
+			$this->text[2] = $line3;
+		}
+		if($line4 !== null){
+			$this->text[3] = $line4;
+		}
+
 		$this->onChanged();
 	}
 

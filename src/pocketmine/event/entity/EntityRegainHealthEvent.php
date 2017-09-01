@@ -35,7 +35,9 @@ class EntityRegainHealthEvent extends EntityEvent implements Cancellable{
 	const CAUSE_CUSTOM = 3;
 	const CAUSE_SATURATION = 4;
 
+	/** @var float */
 	private $amount;
+	/** @var int */
 	private $reason;
 
 
@@ -44,27 +46,31 @@ class EntityRegainHealthEvent extends EntityEvent implements Cancellable{
 	 * @param float  $amount
 	 * @param int    $regainReason
 	 */
-	public function __construct(Entity $entity, $amount, $regainReason){
+	public function __construct(Entity $entity, float $amount, int $regainReason){
 		$this->entity = $entity;
 		$this->amount = $amount;
-		$this->reason = (int) $regainReason;
+		$this->reason = $regainReason;
 	}
 
 	/**
 	 * @return float
 	 */
-	public function getAmount(){
+	public function getAmount() : float{
 		return $this->amount;
 	}
 
 	/**
 	 * @param float $amount
 	 */
-	public function setAmount($amount){
+	public function setAmount(float $amount){
 		$this->amount = $amount;
 	}
 
-	public function getRegainReason(){
+	/**
+	 * Returns one of the CAUSE_* constants to indicate why this regeneration occurred.
+	 * @return int
+	 */
+	public function getRegainReason() : int{
 		return $this->reason;
 	}
 

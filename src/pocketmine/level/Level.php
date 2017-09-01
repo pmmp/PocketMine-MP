@@ -270,7 +270,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @throws \Exception
 	 */
 	public function __construct(Server $server, string $name, string $path, string $provider){
-		$this->blockStates = BlockFactory::$fullList;
+		$this->blockStates = BlockFactory::getBlockStatesArray();
 		$this->levelId = static::$levelIdCounter++;
 		$this->blockMetadata = new BlockMetadataStore($this);
 		$this->server = $server;
@@ -302,19 +302,12 @@ class Level implements ChunkManager, Metadatable{
 		$this->clearChunksOnTick = (bool) $this->server->getProperty("chunk-ticking.clear-tick-list", true);
 		$this->cacheChunks = (bool) $this->server->getProperty("chunk-sending.cache-chunks", false);
 
-		$this->randomTickBlocks = \SplFixedArray::fromArray(array_filter(BlockFactory::$list->toArray(), function(Block $block = null){
-			return $block !== null and $block->ticksRandomly();
-		}));
-		$this->randomTickBlocks->setSize(256);
-
 		$dontTickBlocks = $this->server->getProperty("chunk-ticking.disable-block-ticking", []);
-		foreach($dontTickBlocks as $id){
-			try{
-				if(isset($this->randomTickBlocks[$id])){
-					$this->randomTickBlocks[$id] = null;
-				}
-			}catch(\RuntimeException $e){
-				//index out of bounds
+		$this->randomTickBlocks = new \SplFixedArray(256);
+		foreach($this->randomTickBlocks as $id => $null){
+			$block = BlockFactory::get($id); //Make sure it's a copy
+			if(!isset($dontTickBlocks[$id]) and $block->ticksRandomly()){
+				$this->randomTickBlocks[$id] = $block;
 			}
 		}
 
@@ -839,21 +832,15 @@ class Level implements ChunkManager, Metadatable{
 		$this->server->batchPackets($target, $packets, false, false);
 	}
 
-	public function clearCache(bool $full = false){
-		if($full){
+	public function clearCache(bool $force = false){
+		if($force){
 			$this->chunkCache = [];
 			$this->blockCache = [];
 		}else{
-			if(count($this->chunkCache) > 768){
-				$this->chunkCache = [];
-			}
-
 			if(count($this->blockCache) > 2048){
 				$this->blockCache = [];
 			}
-
 		}
-
 	}
 
 	public function clearChunkCache(int $chunkX, int $chunkZ){
@@ -950,7 +937,7 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @return bool
 	 */
-	public function save(bool $force = false){
+	public function save(bool $force = false) : bool{
 
 		if(!$this->getAutoSave() and !$force){
 			return false;

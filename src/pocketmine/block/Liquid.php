@@ -254,48 +254,50 @@ abstract class Liquid extends Transparent{
 				//$this->updateFlow();
 			}
 
-			$bottomBlock = $this->level->getBlock($this->temporalVector->setComponents($this->x, $this->y - 1, $this->z));
+			if($decay >= 0){
+				$bottomBlock = $this->level->getBlock($this->temporalVector->setComponents($this->x, $this->y - 1, $this->z));
 
-			if($this instanceof Lava and $bottomBlock instanceof Water){
-				$this->getLevel()->setBlock($bottomBlock, BlockFactory::get(Block::STONE), true, true);
+				if($this instanceof Lava and $bottomBlock instanceof Water){
+					$this->getLevel()->setBlock($bottomBlock, BlockFactory::get(Block::STONE), true, true);
 
-			}elseif($bottomBlock->canBeFlowedInto() or ($bottomBlock instanceof Liquid and ($bottomBlock->getDamage() & 0x07) !== 0)){
-				$this->getLevel()->setBlock($bottomBlock, BlockFactory::get($this->id, $decay | 0x08), true, false);
-				$this->getLevel()->scheduleDelayedBlockUpdate($bottomBlock, $this->tickRate());
+				}elseif($bottomBlock->canBeFlowedInto() or ($bottomBlock instanceof Liquid and ($bottomBlock->getDamage() & 0x07) !== 0)){
+					$this->getLevel()->setBlock($bottomBlock, BlockFactory::get($this->id, $decay | 0x08), true, false);
+					$this->getLevel()->scheduleDelayedBlockUpdate($bottomBlock, $this->tickRate());
 
-			}elseif($decay >= 0 and ($decay === 0 or !$bottomBlock->canBeFlowedInto())){
-				$flags = $this->getOptimalFlowDirections();
+				}elseif($decay === 0 or !$bottomBlock->canBeFlowedInto()){
+					$flags = $this->getOptimalFlowDirections();
 
-				$l = $decay + $multiplier;
+					$l = $decay + $multiplier;
 
-				if($decay >= 8){
-					$l = 1;
+					if($decay >= 8){
+						$l = 1;
+					}
+
+					if($l >= 8){
+						$this->checkForHarden();
+
+						return;
+					}
+
+					if($flags[0]){
+						$this->flowIntoBlock($this->level->getBlock($this->temporalVector->setComponents($this->x - 1, $this->y, $this->z)), $l);
+					}
+
+					if($flags[1]){
+						$this->flowIntoBlock($this->level->getBlock($this->temporalVector->setComponents($this->x + 1, $this->y, $this->z)), $l);
+					}
+
+					if($flags[2]){
+						$this->flowIntoBlock($this->level->getBlock($this->temporalVector->setComponents($this->x, $this->y, $this->z - 1)), $l);
+					}
+
+					if($flags[3]){
+						$this->flowIntoBlock($this->level->getBlock($this->temporalVector->setComponents($this->x, $this->y, $this->z + 1)), $l);
+					}
 				}
 
-				if($l >= 8){
-					$this->checkForHarden();
-					return;
-				}
-
-				if($flags[0]){
-					$this->flowIntoBlock($this->level->getBlock($this->temporalVector->setComponents($this->x - 1, $this->y, $this->z)), $l);
-				}
-
-				if($flags[1]){
-					$this->flowIntoBlock($this->level->getBlock($this->temporalVector->setComponents($this->x + 1, $this->y, $this->z)), $l);
-				}
-
-				if($flags[2]){
-					$this->flowIntoBlock($this->level->getBlock($this->temporalVector->setComponents($this->x, $this->y, $this->z - 1)), $l);
-				}
-
-				if($flags[3]){
-					$this->flowIntoBlock($this->level->getBlock($this->temporalVector->setComponents($this->x, $this->y, $this->z + 1)), $l);
-				}
+				$this->checkForHarden();
 			}
-
-			$this->checkForHarden();
-
 		}
 	}
 

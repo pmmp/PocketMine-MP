@@ -307,8 +307,8 @@ abstract class Entity extends Location implements Metadatable{
 	/** @var float */
 	protected $baseOffset = 0.0;
 
-	/** @var int */
-	private $health = 20;
+	/** @var float */
+	private $health = 20.0;
 	private $maxHealth = 20;
 
 	/** @var float */
@@ -931,9 +931,9 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	/**
-	 * @return int
+	 * @return float
 	 */
-	public function getHealth(){
+	public function getHealth() : float{
 		return $this->health;
 	}
 
@@ -944,11 +944,10 @@ abstract class Entity extends Location implements Metadatable{
 	/**
 	 * Sets the health of the Entity. This won't send any update to the players
 	 *
-	 * @param int $amount
+	 * @param float $amount
 	 */
-	public function setHealth($amount){
-		$amount = (int) $amount;
-		if($amount === $this->health){
+	public function setHealth(float $amount){
+		if($amount == $this->health){
 			return;
 		}
 
@@ -957,7 +956,7 @@ abstract class Entity extends Location implements Metadatable{
 				$this->kill();
 			}
 		}elseif($amount <= $this->getMaxHealth() or $amount < $this->health){
-			$this->health = (int) $amount;
+			$this->health = $amount;
 		}else{
 			$this->health = $this->getMaxHealth();
 		}
@@ -992,15 +991,15 @@ abstract class Entity extends Location implements Metadatable{
 	/**
 	 * @return int
 	 */
-	public function getMaxHealth(){
+	public function getMaxHealth() : int{
 		return $this->maxHealth;
 	}
 
 	/**
 	 * @param int $amount
 	 */
-	public function setMaxHealth($amount){
-		$this->maxHealth = (int) $amount;
+	public function setMaxHealth(int $amount){
+		$this->maxHealth = $amount;
 	}
 
 	public function canCollideWith(Entity $entity) : bool{

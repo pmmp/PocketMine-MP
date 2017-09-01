@@ -73,7 +73,7 @@ abstract class Living extends Entity implements Damageable{
 			$this->namedtag->Health = new FloatTag("Health", (float) $this->getMaxHealth());
 		}
 
-		$this->setHealth($this->namedtag["Health"]);
+		$this->setHealth((float) $this->namedtag["Health"]);
 
 		if(isset($this->namedtag->ActiveEffects)){
 			foreach($this->namedtag->ActiveEffects->getValue() as $e){
@@ -100,10 +100,10 @@ abstract class Living extends Entity implements Damageable{
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::ABSORPTION));
 	}
 
-	public function setHealth($amount){
+	public function setHealth(float $amount){
 		$wasAlive = $this->isAlive();
 		parent::setHealth($amount);
-		$this->attributeMap->getAttribute(Attribute::HEALTH)->setValue($this->getHealth(), true);
+		$this->attributeMap->getAttribute(Attribute::HEALTH)->setValue(ceil($this->getHealth()), true);
 		if($this->isAlive() and !$wasAlive){
 			$pk = new EntityEventPacket();
 			$pk->entityRuntimeId = $this->getId();
@@ -112,11 +112,11 @@ abstract class Living extends Entity implements Damageable{
 		}
 	}
 
-	public function getMaxHealth(){
-		return $this->attributeMap->getAttribute(Attribute::HEALTH)->getMaxValue();
+	public function getMaxHealth() : int{
+		return (int) $this->attributeMap->getAttribute(Attribute::HEALTH)->getMaxValue();
 	}
 
-	public function setMaxHealth($amount){
+	public function setMaxHealth(int $amount){
 		$this->attributeMap->getAttribute(Attribute::HEALTH)->setMaxValue($amount);
 	}
 
@@ -237,9 +237,9 @@ abstract class Living extends Entity implements Damageable{
 			){
 				return;
 			}
-			$effect->add($this, true, $oldEffect);
+			$effect->add($this, $oldEffect);
 		}else{
-			$effect->add($this, false);
+			$effect->add($this);
 		}
 
 		$this->effects[$effect->getId()] = $effect;
