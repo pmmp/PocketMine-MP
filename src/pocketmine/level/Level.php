@@ -256,8 +256,14 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int|null   $z
 	 */
 	public static function getXZ($hash, &$x, &$z){
-		$x = $hash >> 32;
-		$z = ($hash & 0xFFFFFFFF) << 32 >> 32;
+		if(PHP_INT_SIZE === 8){
+			$x = $hash >> 32;
+			$z = ($hash & 0xFFFFFFFF) << 32 >> 32;
+		}else{
+			$hash = explode(":", $hash);
+			$x = (int) $hash[0];
+			$z = (int) $hash[1];
+		}
 	}
 
 	public static function generateChunkLoaderId(ChunkLoader $loader) : int{
