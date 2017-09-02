@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\utils\Color;
 
 class ClientboundMapItemDataPacket extends DataPacket{
@@ -40,6 +41,8 @@ class ClientboundMapItemDataPacket extends DataPacket{
 	public $mapId;
 	/** @var int */
 	public $type;
+	/** @var int */
+	public $dimensionId = DimensionIds::OVERWORLD;
 
 	/** @var int[] */
 	public $eids = [];
@@ -62,6 +65,7 @@ class ClientboundMapItemDataPacket extends DataPacket{
 	protected function decodePayload(){
 		$this->mapId = $this->getEntityUniqueId();
 		$this->type = $this->getUnsignedVarInt();
+		$this->dimensionId = $this->getByte();
 
 		if(($this->type & 0x08) !== 0){
 			$count = $this->getUnsignedVarInt();
@@ -117,6 +121,7 @@ class ClientboundMapItemDataPacket extends DataPacket{
 		}
 
 		$this->putUnsignedVarInt($type);
+		$this->putByte($this->dimensionId);
 
 		if(($type & 0x08) !== 0){ //TODO: find out what these are for
 			$this->putUnsignedVarInt($eidsCount);

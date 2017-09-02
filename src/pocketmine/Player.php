@@ -2817,7 +2817,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->inventory->setHotbarSlotIndex($hotbarSlot, $slotLink === -1 ? $slotLink : $slotLink - 9);
 		}
 
-		$this->inventory->equipItem($packet->selectedSlot);
+		$this->inventory->equipItem($packet->selectedHotbarSlot);
 
 		return true;
 	}

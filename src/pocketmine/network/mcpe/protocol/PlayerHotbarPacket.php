@@ -33,28 +33,32 @@ class PlayerHotbarPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::PLAYER_HOTBAR_PACKET;
 
 	/** @var int */
-	public $selectedSlot;
+	public $selectedHotbarSlot;
 	/** @var int */
 	public $windowId = ContainerIds::INVENTORY;
 	/** @var int[] */
 	public $slots = [];
+	/** @var bool */
+	public $selectHotbarSlot = true;
 
 	protected function decodePayload(){
-		$this->selectedSlot = $this->getUnsignedVarInt();
+		$this->selectedHotbarSlot = $this->getUnsignedVarInt();
 		$this->windowId = $this->getByte();
 		$count = $this->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
 			$this->slots[$i] = Binary::signInt($this->getUnsignedVarInt());
 		}
+		$this->selectHotbarSlot = $this->getBool();
 	}
 
 	protected function encodePayload(){
-		$this->putUnsignedVarInt($this->selectedSlot);
+		$this->putUnsignedVarInt($this->selectedHotbarSlot);
 		$this->putByte($this->windowId);
 		$this->putUnsignedVarInt(count($this->slots));
 		foreach($this->slots as $slot){
 			$this->putUnsignedVarInt($slot);
 		}
+		$this->putBool($this->selectHotbarSlot);
 	}
 
 	public function handle(NetworkSession $session) : bool{
