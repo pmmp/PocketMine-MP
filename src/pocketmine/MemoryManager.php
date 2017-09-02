@@ -404,8 +404,10 @@ class MemoryManager{
 				fwrite($obData, "$hash@$className: " . json_encode($info, JSON_UNESCAPED_SLASHES) . "\n");
 			}
 
-			MainLogger::getLogger()->info("[Dump] Wrote " . count($objects) . " objects");
+
 		}while($continue);
+
+		MainLogger::getLogger()->info("[Dump] Wrote " . count($objects) . " objects");
 
 		fclose($obData);
 
