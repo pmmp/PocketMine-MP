@@ -178,7 +178,7 @@ class PlayerInventory extends BaseInventory{
 	public function resetHotbar(bool $send = true){
 		$this->hotbar = \SplFixedArray::fromArray(range(0, $this->getHotbarSize() - 1, 1));
 		if($send){
-			$this->sendContents($this->getHolder());
+			$this->sendHotbar();
 		}
 	}
 
