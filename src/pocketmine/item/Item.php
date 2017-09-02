@@ -834,7 +834,21 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
+	 * Called when a player uses the item on air, for example throwing a projectile.
+	 * Returns whether the item was changed, for example count decrease or durability change.
+	 *
+	 * @param Player  $player
+	 * @param Vector3 $directionVector
+	 *
+	 * @return bool
+	 */
+	public function onClickAir(Player $player, Vector3 $directionVector) : bool{
+		return false;
+	}
+
+	/**
 	 * Called when a player is using this item and releases it. Used to handle bow shoot actions.
+	 * Returns whether the item was changed, for example count decrease or durability change.
 	 *
 	 * @param Player $player
 	 * @return bool

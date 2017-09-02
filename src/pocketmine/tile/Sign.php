@@ -72,8 +72,6 @@ class Sign extends Spawnable{
 	 * @param null|string $line2
 	 * @param null|string $line3
 	 * @param null|string $line4
-	 *
-	 * @return bool
 	 */
 	public function setText($line1 = "", $line2 = "", $line3 = "", $line4 = ""){
 		if($line1 !== null){

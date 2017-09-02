@@ -34,11 +34,9 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Item as DroppedItem;
 use pocketmine\entity\Living;
-use pocketmine\entity\Projectile;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\event\inventory\CraftItemEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\inventory\InventoryPickupArrowEvent;
@@ -89,7 +87,6 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\level\Location;
 use pocketmine\level\Position;
-use pocketmine\level\sound\LaunchSound;
 use pocketmine\level\WeakPosition;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector2;
@@ -98,10 +95,7 @@ use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\LongTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\PlayerNetworkSessionAdapter;
@@ -2296,7 +2290,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 						return true;
 					case InventoryTransactionPacket::USE_ITEM_ACTION_CLICK_AIR:
-						$aimPos = new Vector3(
+						$directionVector = new Vector3(
 							-sin($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI),
 							-sin($this->pitch / 180 * M_PI),
 							cos($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI)
@@ -2311,7 +2305,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							$item = $this->inventory->getItemInHand();
 						}
 
-						$ev = new PlayerInteractEvent($this, $item, $aimPos, $face, PlayerInteractEvent::RIGHT_CLICK_AIR);
+						$ev = new PlayerInteractEvent($this, $item, $directionVector, $face, PlayerInteractEvent::RIGHT_CLICK_AIR);
 
 						$this->server->getPluginManager()->callEvent($ev);
 
@@ -2320,42 +2314,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							return true;
 						}
 
-						if($item->getId() === Item::SNOWBALL){
-							$nbt = new CompoundTag("", [
-								new ListTag("Pos", [
-									new DoubleTag("", $this->x),
-									new DoubleTag("", $this->y + $this->getEyeHeight()),
-									new DoubleTag("", $this->z)
-								]),
-								new ListTag("Motion", [
-									new DoubleTag("", $aimPos->x),
-									new DoubleTag("", $aimPos->y),
-									new DoubleTag("", $aimPos->z)
-								]),
-								new ListTag("Rotation", [
-									new FloatTag("", $this->yaw),
-									new FloatTag("", $this->pitch)
-								]),
-							]);
-
-							$f = 1.5;
-							$snowball = Entity::createEntity("Snowball", $this->getLevel(), $nbt, $this);
-							$snowball->setMotion($snowball->getMotion()->multiply($f));
-							if($this->isSurvival()){
-								$item->setCount($item->getCount() - 1);
-								$this->inventory->setItemInHand($item->getCount() > 0 ? $item : ItemFactory::get(Item::AIR));
-							}
-							if($snowball instanceof Projectile){
-								$this->server->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($snowball));
-								if($projectileEv->isCancelled()){
-									$snowball->kill();
-								}else{
-									$snowball->spawnToAll();
-									$this->level->addSound(new LaunchSound($this), $this->getViewers());
-								}
-							}else{
-								$snowball->spawnToAll();
-							}
+						if($item->onClickAir($this, $directionVector) and $this->isSurvival()){
+							$this->inventory->setItemInHand($item);
 						}
 
 						$this->setGenericFlag(self::DATA_FLAG_ACTION, true);
