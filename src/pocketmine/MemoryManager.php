@@ -302,6 +302,7 @@ class MemoryManager{
 
 		$staticProperties = [];
 		$staticCount = 0;
+
 		foreach($loader->getClasses() as $className){
 			$reflection = new \ReflectionClass($className);
 			$staticProperties[$className] = [];
@@ -326,32 +327,34 @@ class MemoryManager{
 		file_put_contents($outputFolder . "/staticProperties.js", json_encode($staticProperties, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 		MainLogger::getLogger()->info("[Dump] Wrote $staticCount static properties");
 
-		$globalVariables = [];
+		if($GLOBALS !== null){ //This might be null if we're on a different thread
+			$globalVariables = [];
+			$globalCount = 0;
 
-		$ignoredGlobals = [
-			'GLOBALS' => true,
-			'_SERVER' => true,
-			'_REQUEST' => true,
-			'_POST' => true,
-			'_GET' => true,
-			'_FILES' => true,
-			'_ENV' => true,
-			'_COOKIE' => true,
-			'_SESSION' => true
-		];
+			$ignoredGlobals = [
+				'GLOBALS' => true,
+				'_SERVER' => true,
+				'_REQUEST' => true,
+				'_POST' => true,
+				'_GET' => true,
+				'_FILES' => true,
+				'_ENV' => true,
+				'_COOKIE' => true,
+				'_SESSION' => true
+			];
 
-		$globalCount = 0;
-		foreach($GLOBALS as $varName => $value){
-			if(isset($ignoredGlobals[$varName])){
-				continue;
+			foreach($GLOBALS as $varName => $value){
+				if(isset($ignoredGlobals[$varName])){
+					continue;
+				}
+
+				$globalCount++;
+				self::continueDump($value, $globalVariables[$varName], $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 			}
 
-			$globalCount++;
-			self::continueDump($value, $globalVariables[$varName], $objects, $refCounts, 0, $maxNesting, $maxStringSize);
+			file_put_contents($outputFolder . "/globalVariables.js", json_encode($globalVariables, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+			MainLogger::getLogger()->info("[Dump] Wrote $globalCount global variables");
 		}
-
-		file_put_contents($outputFolder . "/globalVariables.js", json_encode($globalVariables, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-		MainLogger::getLogger()->info("[Dump] Wrote $globalCount global variables");
 
 		self::continueDump($startingObject, $data, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 
