@@ -48,8 +48,10 @@ class DumpWorkerMemoryTask extends AsyncTask{
 	}
 
 	public function onRun(){
+		global $store;
+
 		MemoryManager::dumpMemory(
-			$this->worker,
+			["worker" => $this->worker, "store" => $store],
 			$this->worker->getClassLoader(),
 			$this->outputFolder . DIRECTORY_SEPARATOR . "AsyncWorker#" . $this->worker->getAsyncWorkerId(),
 			$this->maxNesting,
