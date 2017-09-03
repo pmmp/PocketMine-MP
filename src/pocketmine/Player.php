@@ -2376,11 +2376,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->level->sendBlocks([$this], [$target, $block], UpdateBlockPacket::FLAG_ALL_PRIORITY);
 			return true;
 		}elseif($packet->face === -1){
-			$directionVector = new Vector3(
-				-sin($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI),
-				-sin($this->pitch / 180 * M_PI),
-				cos($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI)
-			);
+			$directionVector = $this->getDirectionVector();
 
 			if($this->isCreative()){
 				$item = $this->inventory->getItemInHand();

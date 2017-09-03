@@ -54,6 +54,8 @@ class Bow extends Tool{
 			return false;
 		}
 
+		$directionVector = $player->getDirectionVector();
+
 		$nbt = new CompoundTag("", [
 			new ListTag("Pos", [
 				new DoubleTag("", $player->x),
@@ -61,9 +63,9 @@ class Bow extends Tool{
 				new DoubleTag("", $player->z)
 			]),
 			new ListTag("Motion", [
-				new DoubleTag("", -sin($player->yaw / 180 * M_PI) * cos($player->pitch / 180 * M_PI)),
-				new DoubleTag("", -sin($player->pitch / 180 * M_PI)),
-				new DoubleTag("", cos($player->yaw / 180 * M_PI) * cos($player->pitch / 180 * M_PI))
+				new DoubleTag("", $directionVector->x),
+				new DoubleTag("", $directionVector->y),
+				new DoubleTag("", $directionVector->z)
 			]),
 			new ListTag("Rotation", [
 				//yaw/pitch for arrows taken crosswise, not along the arrow shaft.
