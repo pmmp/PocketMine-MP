@@ -205,6 +205,7 @@ abstract class Entity extends Location implements Metadatable{
 	public static $entityCount = 1;
 	/** @var Entity[] */
 	private static $knownEntities = [];
+	/** @var string[] */
 	private static $shortNames = [];
 
 	public static function init(){
