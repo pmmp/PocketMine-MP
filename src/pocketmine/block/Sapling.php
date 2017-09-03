@@ -76,9 +76,8 @@ class Sapling extends Flowable{
 		if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
 			//TODO: change log type
 			Tree::growTree($this->getLevel(), $this->x, $this->y, $this->z, new Random(mt_rand()), $this->meta & 0x07);
-			if(($player->gamemode & 0x01) === 0){
-				$item->count--;
-			}
+
+			$item->count--;
 
 			return true;
 		}

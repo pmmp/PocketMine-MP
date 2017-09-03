@@ -2290,11 +2290,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 						return true;
 					case InventoryTransactionPacket::USE_ITEM_ACTION_CLICK_AIR:
-						$directionVector = new Vector3(
-							-sin($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI),
-							-sin($this->pitch / 180 * M_PI),
-							cos($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI)
-						);
+						$directionVector = $this->getDirectionVector();
 
 						if($this->isCreative()){
 							$item = $this->inventory->getItemInHand();

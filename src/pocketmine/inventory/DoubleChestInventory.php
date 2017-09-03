@@ -150,4 +150,9 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 	public function getRightSide() : ChestInventory{
 		return $this->right;
 	}
+
+	public function invalidate(){
+		$this->left = null;
+		$this->right = null;
+	}
 }
