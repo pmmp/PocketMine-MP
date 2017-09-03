@@ -100,11 +100,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	 * @return float
 	 */
 	public function getOriginalDamage(int $type = self::MODIFIER_BASE) : float{
-		if(isset($this->originals[$type])){
-			return $this->originals[$type];
-		}
-
-		return 0.0;
+		return $this->originals[$type] ?? 0.0;
 	}
 
 	/**
@@ -113,11 +109,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	 * @return float
 	 */
 	public function getDamage(int $type = self::MODIFIER_BASE) : float{
-		if(isset($this->modifiers[$type])){
-			return $this->modifiers[$type];
-		}
-
-		return 0.0;
+		return $this->modifiers[$type] ?? 0.0;
 	}
 
 	/**
