@@ -101,7 +101,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 	}
 
 	public function getSpawn() : Vector3{
-		return new Vector3((float) $this->levelData["SpawnX"], (float) $this->levelData["SpawnY"], (float) $this->levelData["SpawnZ"]);
+		return new Vector3((float) $this->levelData["SpawnX"] + 0.5, (float) $this->levelData["SpawnY"], (float) $this->levelData["SpawnZ"] + 0.5);
 	}
 
 	public function setSpawn(Vector3 $pos){
