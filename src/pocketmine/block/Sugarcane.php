@@ -64,9 +64,8 @@ class Sugarcane extends Flowable{
 				$this->meta = 0;
 				$this->getLevel()->setBlock($this, $this, true);
 			}
-			if(($player->gamemode & 0x01) === 0){
-				$item->count--;
-			}
+
+			$item->count--;
 
 			return true;
 		}

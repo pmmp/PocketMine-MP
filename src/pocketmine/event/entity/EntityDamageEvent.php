@@ -37,6 +37,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	const MODIFIER_STRENGTH = 2;
 	const MODIFIER_WEAKNESS = 3;
 	const MODIFIER_RESISTANCE = 4;
+	const MODIFIER_ABSORPTION = 5;
 
 	const CAUSE_CONTACT = 0;
 	const CAUSE_ENTITY_ATTACK = 1;
@@ -99,11 +100,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	 * @return float
 	 */
 	public function getOriginalDamage(int $type = self::MODIFIER_BASE) : float{
-		if(isset($this->originals[$type])){
-			return $this->originals[$type];
-		}
-
-		return 0.0;
+		return $this->originals[$type] ?? 0.0;
 	}
 
 	/**
@@ -112,11 +109,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	 * @return float
 	 */
 	public function getDamage(int $type = self::MODIFIER_BASE) : float{
-		if(isset($this->modifiers[$type])){
-			return $this->modifiers[$type];
-		}
-
-		return 0.0;
+		return $this->modifiers[$type] ?? 0.0;
 	}
 
 	/**
