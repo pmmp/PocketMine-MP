@@ -459,6 +459,7 @@ namespace pocketmine {
 		}
 
 		$extensions = [
+			"bcmath" => "BC Math",
 			"curl" => "cURL",
 			"json" => "JSON",
 			"mbstring" => "Multibyte String",
