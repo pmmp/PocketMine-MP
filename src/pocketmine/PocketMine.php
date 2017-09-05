@@ -123,6 +123,13 @@ namespace pocketmine {
 		define('pocketmine\PATH', realpath(getcwd()) . DIRECTORY_SEPARATOR);
 	}
 
+	$requiredSplVer = "0.0.1";
+	if(!is_file(\pocketmine\PATH . "src/spl/version.php") or version_compare($requiredSplVer, require(\pocketmine\PATH . "src/spl/version.php")) > 0){
+		echo "[CRITICAL] Incompatible PocketMine-SPL submodule version ($requiredSplVer is required)." . PHP_EOL;
+		echo "[CRITICAL] Please update your submodules or use provided builds." . PHP_EOL;
+		exit(1);
+	}
+
 	if(!class_exists("ClassLoader", false)){
 		if(!is_file(\pocketmine\PATH . "src/spl/ClassLoader.php")){
 			echo "[CRITICAL] Unable to find the PocketMine-SPL library." . PHP_EOL;
