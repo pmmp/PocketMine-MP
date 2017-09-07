@@ -1,8 +1,11 @@
 ﻿param (
+	[string]$php = "",
 	[switch]$Loop = $false
 )
 
-if(Test-Path "bin\php\php.exe"){
+if($php -ne ""){
+	$binary = $php
+}elseif(Test-Path "bin\php\php.exe"){
 	$env:PHPRC = ""
 	$binary = "bin\php\php.exe"
 }else{

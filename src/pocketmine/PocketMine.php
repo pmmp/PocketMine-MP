@@ -123,6 +123,13 @@ namespace pocketmine {
 		define('pocketmine\PATH', realpath(getcwd()) . DIRECTORY_SEPARATOR);
 	}
 
+	$requiredSplVer = "0.0.1";
+	if(!is_file(\pocketmine\PATH . "src/spl/version.php") or version_compare($requiredSplVer, require(\pocketmine\PATH . "src/spl/version.php")) > 0){
+		echo "[CRITICAL] Incompatible PocketMine-SPL submodule version ($requiredSplVer is required)." . PHP_EOL;
+		echo "[CRITICAL] Please update your submodules or use provided builds." . PHP_EOL;
+		exit(1);
+	}
+
 	if(!class_exists("ClassLoader", false)){
 		if(!is_file(\pocketmine\PATH . "src/spl/ClassLoader.php")){
 			echo "[CRITICAL] Unable to find the PocketMine-SPL library." . PHP_EOL;
@@ -179,40 +186,51 @@ namespace pocketmine {
 	$logger = new MainLogger(\pocketmine\DATA . "server.log");
 	$logger->registerStatic();
 
-	if(!ini_get("date.timezone")){
+	do{
+		$timezone = ini_get("date.timezone");
+		if($timezone !== ""){
+			/*
+			 * This is here so that people don't come to us complaining and fill up the issue tracker when they put
+			 * an incorrect timezone abbreviation in php.ini apparently.
+			 */
+			if(strpos($timezone, "/") === false){
+				$default_timezone = timezone_name_from_abbr($timezone);
+				if($default_timezone !== false){
+					ini_set("date.timezone", $default_timezone);
+					date_default_timezone_set($default_timezone);
+					break;
+				}else{
+					//Bad php.ini value, try another method to detect timezone
+					$logger->warning("Timezone \"$timezone\" could not be parsed as a valid timezone from php.ini, falling back to auto-detection");
+				}
+			}else{
+				date_default_timezone_set($timezone);
+				break;
+			}
+		}
+
 		if(($timezone = detect_system_timezone()) and date_default_timezone_set($timezone)){
 			//Success! Timezone has already been set and validated in the if statement.
 			//This here is just for redundancy just in case some program wants to read timezone data from the ini.
 			ini_set("date.timezone", $timezone);
-		}else{
-			//If system timezone detection fails or timezone is an invalid value.
-			if($response = Utils::getURL("http://ip-api.com/json")
-				and $ip_geolocation_data = json_decode($response, true)
-				and $ip_geolocation_data['status'] !== 'fail'
-				and date_default_timezone_set($ip_geolocation_data['timezone'])
-			){
-				//Again, for redundancy.
-				ini_set("date.timezone", $ip_geolocation_data['timezone']);
-			}else{
-				ini_set("date.timezone", "UTC");
-				date_default_timezone_set("UTC");
-				$logger->warning("Timezone could not be automatically determined. An incorrect timezone will result in incorrect timestamps on console logs. It has been set to \"UTC\" by default. You can change it on the php.ini file.");
-			}
+			break;
 		}
-	}else{
-		/*
-		 * This is here so that people don't come to us complaining and fill up the issue tracker when they put
-		 * an incorrect timezone abbreviation in php.ini apparently.
-		 */
-		$timezone = ini_get("date.timezone");
-		if(strpos($timezone, "/") === false){
-			$default_timezone = timezone_name_from_abbr($timezone);
-			ini_set("date.timezone", $default_timezone);
-			date_default_timezone_set($default_timezone);
-		}else{
-			date_default_timezone_set($timezone);
+
+		if($response = Utils::getURL("http://ip-api.com/json") //If system timezone detection fails or timezone is an invalid value.
+			and $ip_geolocation_data = json_decode($response, true)
+			and $ip_geolocation_data['status'] !== 'fail'
+			and date_default_timezone_set($ip_geolocation_data['timezone'])
+		){
+			//Again, for redundancy.
+			ini_set("date.timezone", $ip_geolocation_data['timezone']);
+			break;
 		}
-	}
+
+		ini_set("date.timezone", "UTC");
+		date_default_timezone_set("UTC");
+		$logger->warning("Timezone could not be automatically determined or was set to an invalid value. An incorrect timezone will result in incorrect timestamps on console logs. It has been set to \"UTC\" by default. You can change it on the php.ini file.");
+	}while(false);
+
 
 	function detect_system_timezone(){
 		switch(Utils::getOS()){
@@ -459,6 +477,7 @@ namespace pocketmine {
 		}
 
 		$extensions = [
+			"bcmath" => "BC Math",
 			"curl" => "cURL",
 			"json" => "JSON",
 			"mbstring" => "Multibyte String",

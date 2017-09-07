@@ -306,7 +306,8 @@ class PluginManager{
 									$name,
 									$this->server->getLanguage()->translateString("%pocketmine.plugin.unknownDependency", [$dependency])
 								]));
-								break;
+								unset($plugins[$name]);
+								continue 2;
 							}
 						}
 

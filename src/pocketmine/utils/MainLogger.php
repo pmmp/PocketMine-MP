@@ -47,6 +47,7 @@ class MainLogger extends \AttachableThreadedLogger{
 	 * @throws \RuntimeException
 	 */
 	public function __construct(string $logFile, bool $logDebug = false){
+		parent::__construct();
 		if(static::$logger instanceof MainLogger){
 			throw new \RuntimeException("MainLogger has been already created");
 		}
@@ -214,8 +215,10 @@ class MainLogger extends \AttachableThreadedLogger{
 			echo $message . PHP_EOL;
 		}
 
-		if($this->attachment instanceof \ThreadedLoggerAttachment){
-			$this->attachment->call($level, $message);
+		foreach($this->attachments as $attachment){
+			if($attachment instanceof \ThreadedLoggerAttachment){
+				$attachment->call($level, $message);
+			}
 		}
 
 		$this->logStream[] = date("Y-m-d", $now) . " " . $cleanMessage . PHP_EOL;
