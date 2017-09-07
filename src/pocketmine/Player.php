@@ -1282,11 +1282,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($this->isSpectator()){
 			$this->flying = true;
 			$this->despawnFromAll();
-
-			// Client automatically turns off flight controls when on the ground.
-			// A combination of this hack and a new AdventureSettings flag FINALLY
-			// fixes spectator flight controls. Thank @robske110 for this hack.
-			$this->teleport($this->temporalVector->setComponents($this->x, $this->y + 0.1, $this->z));
 		}else{
 			if($this->isSurvival()){
 				$this->flying = false;
