@@ -1695,22 +1695,29 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						}
 						$this->inAirTicks = 0;
 					}else{
-						if(!$this->allowFlight and $this->inAirTicks > 10 and !$this->isSleeping() and !$this->isImmobile()){
-							$expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - $this->startAirTicks));
-							$diff = ($this->speed->y - $expectedVelocity) ** 2;
+						$unhandlingBlocks = [85, 113, 183, 184, 185, 186, 187, 212, 139];
+						$blockUnder = $this->level->getBlock(new Vector3($this->x, $this->y - 1, $this->z));
+						if(in_array($blockUnder->getId(), $unhandlingBlocks)){
+							$this->resetFallDistance();
+						}else{
+							if(!$this->allowFlight and $this->inAirTicks > 10 and !$this->isSleeping() and !$this->isImmobile()){
+								$expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - $this->startAirTicks));
+								$jumpVelocity = (0.42 + ($this->hasEffect(Effect::JUMP) ? ($this->getEffect(Effect::JUMP)->getEffectLevel() / 10) : 0)) / 0.42;
+								$diff = (($this->speed->y - $expectedVelocity) ** 2) / $jumpVelocity;
 
-							if(!$this->hasEffect(Effect::JUMP) and $diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()){
-								if($this->inAirTicks < 100){
-									$this->setMotion(new Vector3(0, $expectedVelocity, 0));
-								}elseif($this->kick("Flying is not enabled on this server")){
-									$this->timings->stopTiming();
+								if($diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()){
+									if($this->inAirTicks < 100){
+										$this->setMotion(new Vector3(0, $expectedVelocity, 0));
+									}elseif($this->kick("Flying is not enabled on this server")){
+										$this->timings->stopTiming();
 
-									return false;
+										return false;
+									}
 								}
 							}
-						}
 
-						$this->inAirTicks += $tickDiff;
+							$this->inAirTicks += $tickDiff;
+						}
 					}
 				}
 			}
