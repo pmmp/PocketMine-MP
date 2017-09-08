@@ -220,9 +220,16 @@ abstract class AsyncTask extends Collectable{
 	 * WARNING: THIS METHOD SHOULD ONLY BE CALLED FROM THE MAIN THREAD!
 	 *
 	 * @param mixed $complexData the data to store
+	 *
+	 * @throws \BadMethodCallException if called from any thread except the main thread
 	 */
 	protected function storeLocal($complexData){
-		Server::getInstance()->getScheduler()->storeLocalComplex($this, $complexData);
+		$server = Server::getInstance();
+		if($server === null){
+			throw new \BadMethodCallException("Objects can only be stored from the main thread!");
+		}
+
+		$server->getScheduler()->storeLocalComplex($this, $complexData);
 	}
 
 	/**
@@ -243,6 +250,7 @@ abstract class AsyncTask extends Collectable{
 	 * @return mixed
 	 *
 	 * @throws \RuntimeException if no data were stored by this AsyncTask instance.
+	 * @throws \BadMethodCallException if called from any thread except the main thread
 	 */
 	protected function fetchLocal(Server $server = null){
 		if($server === null){
@@ -271,6 +279,7 @@ abstract class AsyncTask extends Collectable{
 	 * @return mixed
 	 *
 	 * @throws \RuntimeException if no data were stored by this AsyncTask instance
+	 * @throws \BadMethodCallException if called from any thread except the main thread
 	 */
 	protected function peekLocal(Server $server = null){
 		if($server === null){
