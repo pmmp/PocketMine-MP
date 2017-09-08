@@ -88,4 +88,19 @@ class Location extends Position{
 		}
 		return parent::equals($v);
 	}
+    
+    /**
+     * @param Vector3|int $x
+     * @param int         $y
+     * @param int         $z
+     *
+     * @return Location
+     */
+    public function add($x, $y = 0, $z = 0){
+        if($x instanceof Vector3){
+            return new Location($this->x + $x->x, $this->y + $x->y, $this->z + $x->z, $this->yaw, $this->pitch, $this->level);
+        }else{
+            return new Location($this->x + $x, $this->y + $y, $this->z + $z, $this->yaw, $this->pitch, $this->level);
+        }
+    }
 }
