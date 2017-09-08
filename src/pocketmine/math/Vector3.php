@@ -335,6 +335,21 @@ class Vector3{
 		return $this;
 	}
 
+	public function setX($x){
+		$this->x = $x;
+		return $this;
+	}
+
+	public function setY($y){
+		$this->y = $y;
+		return $this;
+	}
+
+	public function setZ($z){
+		$this->z = $z;
+		return $this;
+	}
+
 	public function __toString(){
 		return "Vector3(x=" . $this->x . ",y=" . $this->y . ",z=" . $this->z . ")";
 	}
