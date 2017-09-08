@@ -4,24 +4,25 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d6227fdf71778b90d853c72f579dce13",
+    "content-hash": "5d5516bb1bc4697a6307988ef6295146",
     "packages": [],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "ext-pthreads": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.0",
+        "php": ">=7.2",
         "ext-curl": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-openssl": "*",
         "ext-phar": "*",
-        "ext-pthreads": ">=3.1.6",
+        "ext-pthreads": ">=3.1.7dev",
         "ext-sockets": "*",
-        "ext-weakref": ">=0.3.3",
         "ext-yaml": ">=2.0.0",
         "ext-zlib": ">=1.2.11"
     },
