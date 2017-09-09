@@ -65,6 +65,10 @@ class Grass extends Solid{
 
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_RANDOM){
+			if($this->getSide(Vector3::SIDE_UP)->getId()===Block::SUGARCANE_BLOCK){
+				return Level::BLOCK_UPDATE_RANDOM;
+			}
+			
 			$lightAbove = $this->level->getFullLightAt($this->x, $this->y + 1, $this->z);
 			if($lightAbove < 4 and BlockFactory::$lightFilter[$this->level->getBlockIdAt($this->x, $this->y + 1, $this->z)] >= 3){ //2 plus 1 standard filter amount
 				//grass dies
