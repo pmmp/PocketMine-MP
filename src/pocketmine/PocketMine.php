@@ -534,7 +534,7 @@ namespace pocketmine {
 
 
 		if(\Phar::running(true) === ""){
-			$logger->warning("Non-packaged PocketMine-MP installation detected, do not use on production.");
+			$logger->warning("Non-packaged PocketMine-MP installation detected. Consider using a phar in production for better performance.");
 		}
 
 		ThreadManager::init();
