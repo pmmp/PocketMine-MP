@@ -105,8 +105,8 @@ class MainLogger extends \AttachableThreadedLogger{
 		$this->send($message, \LogLevel::INFO, "INFO", TextFormat::WHITE);
 	}
 
-	public function debug($message){
-		if($this->logDebug === false){
+	public function debug($message, bool $force = false){
+		if($this->logDebug === false and !$force){
 			return;
 		}
 		$this->send($message, \LogLevel::DEBUG, "DEBUG", TextFormat::GRAY);
@@ -156,7 +156,7 @@ class MainLogger extends \AttachableThreadedLogger{
 		$errfile = \pocketmine\cleanPath($errfile);
 		$this->log($type, get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline");
 		foreach(\pocketmine\getTrace(0, $trace) as $i => $line){
-			$this->debug($line);
+			$this->debug($line, true);
 		}
 	}
 
