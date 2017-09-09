@@ -1,6 +1,8 @@
-﻿param (
+﻿[CmdletBinding(PositionalBinding=$false)]
+param (
 	[string]$php = "",
-	[switch]$Loop = $false
+	[switch]$Loop = $false,
+	[string][Parameter(ValueFromRemainingArguments)]$extraPocketMineArgs
 )
 
 if($php -ne ""){
@@ -23,7 +25,7 @@ if(Test-Path "PocketMine-MP.phar"){
 }
 
 function StartServer{
-	$command = "powershell " + $binary + " " + $file + " --enable-ansi"
+	$command = "powershell " + $binary + " " + $file + " --enable-ansi " + $extraPocketMineArgs
 	iex $command
 }
 
