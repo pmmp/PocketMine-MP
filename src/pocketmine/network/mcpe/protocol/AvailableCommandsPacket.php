@@ -64,25 +64,30 @@ class AvailableCommandsPacket extends DataPacket{
 	const ARG_FLAG_ENUM = 0x200000;
 
 	/**
-	 * This type is used for for /xp <level: int>L. This value should be used on its own without bitflags.
+	 * This is used for for /xp <level: int>L.
 	 */
-	const ARG_FLAG_TEMPLATE = 0x01000000;
+	const ARG_FLAG_POSTFIX = 0x1000000;
 
 	/**
 	 * @var string[]
 	 * A list of every single enum value for every single command in the packet, including alias names.
 	 */
 	public $enumValues = [];
+	/** @var int */
+	private $enumValuesCount = 0;
+
 	/**
 	 * @var string[]
-	 * No idea what this is. Leaving it empty works.
+	 * A list of argument postfixes. Used for the /xp command's <int>L.
 	 */
-	public $idk = [];
+	public $postfixes = [];
+
 	/**
 	 * @var array
 	 * List of enum names, along with a list of ints indicating the enum's possible values from the enumValues array.
 	 */
 	public $enums = [];
+
 	/**
 	 * @var array
 	 * List of command data, including name, description, alias indexes and parameters.
@@ -94,8 +99,11 @@ class AvailableCommandsPacket extends DataPacket{
 			$this->enumValues[] = $this->getString();
 		}
 
+		$this->enumValuesCount = count($this->enumValues);
+
+
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-			$this->idk[] = $this->getString();
+			$this->postfixes[] = $this->getString();
 		}
 
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
@@ -115,12 +123,22 @@ class AvailableCommandsPacket extends DataPacket{
 
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
 			//Get the enum value from the initial pile of mess
-			$enumValues[] = $this->enumValues[$this->getLShort()];
+			$enumValues[] = $this->enumValues[$this->getEnumValueIndex()];
 		}
 
 		$retval["enumValues"] = $enumValues;
 
 		return $retval;
+	}
+
+	protected function getEnumValueIndex() : int{
+		if($this->enumValuesCount < 256){
+			return $this->getByte();
+		}elseif($this->enumValuesCount < 65536){
+			return $this->getLShort();
+		}else{
+			return $this->getLInt();
+		}
 	}
 
 	protected function getCommandData(){
@@ -179,7 +197,7 @@ class AvailableCommandsPacket extends DataPacket{
 				case self::ARG_TYPE_COMMAND:
 					return "command";
 			}
-		}elseif($argtype === self::ARG_FLAG_TEMPLATE){
+		}elseif($argtype === self::ARG_FLAG_POSTFIX){
 			return "special int";
 		}
 
