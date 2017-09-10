@@ -33,7 +33,15 @@ use pocketmine\Server;
  * with no AsyncTask running. Therefore, an AsyncTask SHOULD NOT execute for more than a few seconds. For tasks that
  * run for a long time or infinitely, start another {@link \pocketmine\Thread} instead.
  *
- * WARNING: Do not call PocketMine-MP API methods, or save objects (and arrays containing objects) from/on other Threads!!
+ * WARNING: Any non-Threaded objects WILL BE SERIALIZED when assigned to members of AsyncTasks or other Threaded object.
+ * If later accessed from said Threaded object, you will be operating on a COPY OF THE OBJECT, NOT THE ORIGINAL OBJECT.
+ * If you want to store non-serializable objects to access when the task completes, store them using
+ * {@link AsyncTask#storeLocal}.
+ *
+ * WARNING: As of pthreads v3.1.6, arrays are converted to Volatile objects when assigned as members of Threaded objects.
+ * Keep this in mind when using arrays stored as members of your AsyncTask.
+ *
+ * WARNING: Do not call PocketMine-MP API methods from other Threads!!
  */
 abstract class AsyncTask extends Collectable{
 
@@ -50,29 +58,6 @@ abstract class AsyncTask extends Collectable{
 	private $taskId = null;
 
 	private $crashed = false;
-
-	/**
-	 * Constructs a new instance of AsyncTask. Subclasses don't need to call this constructor unless an argument is to be passed. ONLY construct this class from the main thread.
-	 * <br>
-	 * If an argument is passed into this constructor, it will be stored in a thread-local storage (in ServerScheduler), which MUST be retrieved through {@link #fetchLocal} when {@link #onCompletion} is called.
-	 * Otherwise, a NOTICE level message will be raised and the reference will be removed after onCompletion exits.
-	 * <br>
-	 * If null or no argument is passed, do <em>not</em> call {@link #fetchLocal}, or an exception will be thrown.
-	 * <br>
-	 * WARNING: Use this method carefully. It might take a long time before an AsyncTask is completed. PocketMine will keep a strong reference to objects passed in this method.
-	 * This may result in a light memory leak. Usually this does not cause memory failure, but be aware that the object may be no longer usable when the AsyncTask completes.
-	 * (E.g. a {@link \pocketmine\Level} object is no longer usable because it is unloaded while the AsyncTask is executing, or even a plugin might be unloaded)
-	 * Since PocketMine keeps a strong reference, the objects are still valid, but the implementation is responsible for checking whether these objects are still usable.
-	 *
-	 * @param mixed $complexData the data to store, pass null to store nothing. Scalar types can be safely stored in class properties directly instead of using this thread-local storage.
-	 */
-	public function __construct($complexData = null){
-		if($complexData === null){
-			return;
-		}
-
-		Server::getInstance()->getScheduler()->storeLocalComplex($this, $complexData);
-	}
 
 	public function run(){
 		$this->result = null;
@@ -216,45 +201,92 @@ abstract class AsyncTask extends Collectable{
 	}
 
 	/**
-	 * Call this method from {@link AsyncTask#onCompletion} to fetch the data stored in the constructor, if any, and
-	 * clears it from the storage.
+	 * Saves mixed data in ServerScheduler's object storage on the main thread. You may use this to retain references to
+	 * objects or arrays which you need to access in {@link AsyncTask#onCompletion} which cannot be stored as a
+	 * property of your task.
 	 *
-	 * Do not call this method from {@link AsyncTask#onProgressUpdate}, because this method deletes the data and cannot
-	 * be used in the next {@link AsyncTask#onProgressUpdate} call or from {@link AsyncTask#onCompletion}. Use
-	 * {@link AsyncTask#peekLocal} instead.
+	 * Scalar types can be stored directly in class properties instead of using this storage.
 	 *
-	 * @param Server $server default null
+	 * Objects stored in this storage MUST be retrieved through {@link #fetchLocal} when {@link #onCompletion} is called.
+	 * Otherwise, a NOTICE level message will be raised and the reference will be removed after onCompletion exits.
+	 *
+	 * WARNING: Use this method carefully. It might take a long time before an AsyncTask is completed. PocketMine will
+	 * keep a strong reference to objects passed in this method. This may result in a light memory leak. Usually this
+	 * does not cause memory failure, but be aware that the object may be no longer usable when the AsyncTask completes.
+	 * (E.g. a {@link \pocketmine\Level} object is no longer usable because it is unloaded while the AsyncTask is
+	 * executing, or even a plugin might be unloaded). Since PocketMine keeps a strong reference, the objects are still
+	 * valid, but the implementation is responsible for checking whether these objects are still usable.
+	 *
+	 * WARNING: THIS METHOD SHOULD ONLY BE CALLED FROM THE MAIN THREAD!
+	 *
+	 * @param mixed $complexData the data to store
+	 *
+	 * @throws \BadMethodCallException if called from any thread except the main thread
+	 */
+	protected function storeLocal($complexData){
+		$server = Server::getInstance();
+		if($server === null){
+			throw new \BadMethodCallException("Objects can only be stored from the main thread!");
+		}
+
+		$server->getScheduler()->storeLocalComplex($this, $complexData);
+	}
+
+	/**
+	 * Returns mixed data stored in the ServerScheduler's object store and clears it. Call this method from
+	 * {@link AsyncTask#onCompletion} to fetch the data stored in the object store, if any.
+	 *
+	 * If no data was stored in the local store, or if the data was already retrieved by a previous call to fetchLocal,
+	 * do NOT call this method, or an exception will be thrown.
+	 *
+	 * Do not call this method from {@link AsyncTask#onProgressUpdate}, because this method deletes stored data, which
+	 * means that you will not be able to retrieve it again afterwards. Use {@link AsyncTask#peekLocal} instead to
+	 * retrieve stored data without removing it from the store.
+	 *
+	 * WARNING: THIS METHOD SHOULD ONLY BE CALLED FROM THE MAIN THREAD!
+	 *
+	 * @param Server|null $server
 	 *
 	 * @return mixed
 	 *
 	 * @throws \RuntimeException if no data were stored by this AsyncTask instance.
+	 * @throws \BadMethodCallException if called from any thread except the main thread
 	 */
 	protected function fetchLocal(Server $server = null){
 		if($server === null){
 			$server = Server::getInstance();
-			assert($server !== null, "Call this method only from the main thread!");
+			if($server === null){
+				throw new \BadMethodCallException("Stored objects can only be retrieved from the main thread");
+			}
 		}
 
 		return $server->getScheduler()->fetchLocalComplex($this);
 	}
 
 	/**
-	 * Call this method from {@link AsyncTask#onProgressUpdate} to fetch the data stored in the constructor.
+	 * Returns mixed data stored in the ServerScheduler's object store **without clearing** it. Call this method from
+	 * {@link AsyncTask#onProgressUpdate} to fetch the data stored if you need to be able to access the data later on,
+	 * such as in another progress update.
 	 *
 	 * Use {@link AsyncTask#peekLocal} instead from {@link AsyncTask#onCompletion}, because this method does not delete
 	 * the data, and not clearing the data will result in a warning for memory leak after {@link AsyncTask#onCompletion}
 	 * finished executing.
 	 *
-	 * @param Server|null $server default null
+	 * WARNING: THIS METHOD SHOULD ONLY BE CALLED FROM THE MAIN THREAD!
+	 *
+	 * @param Server|null $server
 	 *
 	 * @return mixed
 	 *
 	 * @throws \RuntimeException if no data were stored by this AsyncTask instance
+	 * @throws \BadMethodCallException if called from any thread except the main thread
 	 */
 	protected function peekLocal(Server $server = null){
 		if($server === null){
 			$server = Server::getInstance();
-			assert($server !== null, "Call this method only from the main thread!");
+			if($server === null){
+				throw new \BadMethodCallException("Stored objects can only be peeked from the main thread");
+			}
 		}
 
 		return $server->getScheduler()->peekLocalComplex($this);
