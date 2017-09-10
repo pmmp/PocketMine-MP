@@ -36,11 +36,14 @@ class AnimatePacket extends DataPacket{
 	const ACTION_STOP_SLEEP = 3;
 	const ACTION_CRITICAL_HIT = 4;
 
+	/** @var int */
 	public $action;
+	/** @var int */
 	public $entityRuntimeId;
+	/** @var float */
 	public $float = 0.0; //TODO (Boat rowing time?)
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->action = $this->getVarInt();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		if($this->action & 0x80){
@@ -48,7 +51,7 @@ class AnimatePacket extends DataPacket{
 		}
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putVarInt($this->action);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		if($this->action & 0x80){

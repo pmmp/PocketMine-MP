@@ -25,23 +25,23 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\NetworkSession;
 
-class ReplaceItemInSlotPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::REPLACE_ITEM_IN_SLOT_PACKET;
+class SubClientLoginPacket extends DataPacket{
+	const NETWORK_ID = ProtocolInfo::SUB_CLIENT_LOGIN_PACKET;
 
-	public $item;
+	/** @var string */
+	public $connectionRequestData;
 
-	public function decodePayload(){
-		$this->item = $this->getSlot();
+	protected function decodePayload(){
+		$this->connectionRequestData = $this->getString();
 	}
 
-	public function encodePayload(){
-		$this->putSlot($this->item);
+	protected function encodePayload(){
+		$this->putString($this->connectionRequestData);
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleReplaceItemInSlot($this);
+		return $session->handleSubClientLogin($this);
 	}
 }

@@ -25,29 +25,34 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\NetworkSession;
 
-class DropItemPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::DROP_ITEM_PACKET;
+class InventoryContentPacket extends DataPacket{
+	const NETWORK_ID = ProtocolInfo::INVENTORY_CONTENT_PACKET;
 
-	public $type;
-	/** @var Item */
-	public $item;
+	/** @var int */
+	public $windowId;
+	/** @var Item[] */
+	public $items = [];
 
-	public function decodePayload(){
-		$this->type = $this->getByte();
-		$this->item = $this->getSlot();
+	protected function decodePayload(){
+		$this->windowId = $this->getUnsignedVarInt();
+		$count = $this->getUnsignedVarInt();
+		for($i = 0; $i < $count; ++$i){
+			$this->items[] = $this->getSlot();
+		}
 	}
 
-	public function encodePayload(){
-		$this->putByte($this->type);
-		$this->putSlot($this->item);
+	protected function encodePayload(){
+		$this->putUnsignedVarInt($this->windowId);
+		$this->putUnsignedVarInt(count($this->items));
+		foreach($this->items as $item){
+			$this->putSlot($item);
+		}
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleDropItem($this);
+		return $session->handleInventoryContent($this);
 	}
-
 }

@@ -35,20 +35,29 @@ class TextPacket extends DataPacket{
 	const TYPE_CHAT = 1;
 	const TYPE_TRANSLATION = 2;
 	const TYPE_POPUP = 3;
-	const TYPE_TIP = 4;
-	const TYPE_SYSTEM = 5;
-	const TYPE_WHISPER = 6;
-	const TYPE_ANNOUNCEMENT = 7;
+	const TYPE_JUKEBOX_POPUP = 4;
+	const TYPE_TIP = 5;
+	const TYPE_SYSTEM = 6;
+	const TYPE_WHISPER = 7;
+	const TYPE_ANNOUNCEMENT = 8;
 
+	/** @var int */
 	public $type;
+	/** @var bool */
+	public $needsTranslation = false;
+	/** @var string */
 	public $source;
+	/** @var string */
 	public $message;
+	/** @var string[] */
 	public $parameters = [];
+	/** @var string */
+	public $xboxUserId = "";
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->type = $this->getByte();
+		$this->needsTranslation = $this->getBool();
 		switch($this->type){
-			case self::TYPE_POPUP:
 			case self::TYPE_CHAT:
 			case self::TYPE_WHISPER:
 			/** @noinspection PhpMissingBreakStatementInspection */
@@ -61,18 +70,23 @@ class TextPacket extends DataPacket{
 				break;
 
 			case self::TYPE_TRANSLATION:
+			case self::TYPE_POPUP:
+			case self::TYPE_JUKEBOX_POPUP:
 				$this->message = $this->getString();
 				$count = $this->getUnsignedVarInt();
 				for($i = 0; $i < $count; ++$i){
 					$this->parameters[] = $this->getString();
 				}
+				break;
 		}
+
+		$this->xboxUserId = $this->getString();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putByte($this->type);
+		$this->putBool($this->needsTranslation);
 		switch($this->type){
-			case self::TYPE_POPUP:
 			case self::TYPE_CHAT:
 			case self::TYPE_WHISPER:
 			/** @noinspection PhpMissingBreakStatementInspection */
@@ -85,12 +99,17 @@ class TextPacket extends DataPacket{
 				break;
 
 			case self::TYPE_TRANSLATION:
+			case self::TYPE_POPUP:
+			case self::TYPE_JUKEBOX_POPUP:
 				$this->putString($this->message);
 				$this->putUnsignedVarInt(count($this->parameters));
 				foreach($this->parameters as $p){
 					$this->putString($p);
 				}
+				break;
 		}
+
+		$this->putString($this->xboxUserId);
 	}
 
 	public function handle(NetworkSession $session) : bool{

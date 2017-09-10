@@ -26,15 +26,36 @@ namespace pocketmine\inventory;
 use pocketmine\level\Level;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
 use pocketmine\tile\Chest;
 
 class ChestInventory extends ContainerInventory{
+
+	/** @var Chest */
+	protected $holder;
+
+	/**
+	 * @param Chest $tile
+	 */
 	public function __construct(Chest $tile){
-		parent::__construct($tile, InventoryType::get(InventoryType::CHEST));
+		parent::__construct($tile);
+	}
+
+	public function getNetworkType() : int{
+		return WindowTypes::CONTAINER;
+	}
+
+	public function getName() : string{
+		return "Chest";
+	}
+
+	public function getDefaultSize() : int{
+		return 27;
 	}
 
 	/**
+	 * This override is here for documentation and code completion purposes only.
 	 * @return Chest
 	 */
 	public function getHolder(){

@@ -31,13 +31,14 @@ use pocketmine\network\mcpe\NetworkSession;
 class HurtArmorPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::HURT_ARMOR_PACKET;
 
+	/** @var int */
 	public $health;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->health = $this->getVarInt();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putVarInt($this->health);
 	}
 

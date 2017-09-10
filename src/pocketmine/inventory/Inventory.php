@@ -70,10 +70,11 @@ interface Inventory{
 	 *
 	 * @param int  $index
 	 * @param Item $item
+	 * @param bool $send
 	 *
 	 * @return bool
 	 */
-	public function setItem(int $index, Item $item) : bool;
+	public function setItem(int $index, Item $item, bool $send = true) : bool;
 
 	/**
 	 * Stores the given Items in the inventory. This will try to fill
@@ -125,7 +126,7 @@ interface Inventory{
 	 * @param int             $index
 	 * @param Player|Player[] $target
 	 */
-	public function sendSlot($index, $target);
+	public function sendSlot(int $index, $target);
 
 	/**
 	 * Checks if the inventory contains any Item with the same material data.
@@ -174,11 +175,12 @@ interface Inventory{
 	/**
 	 * Will clear a specific slot
 	 *
-	 * @param int $index
+	 * @param int  $index
+	 * @param bool $send
 	 *
 	 * @return bool
 	 */
-	public function clear(int $index) : bool;
+	public function clear(int $index, bool $send = true) : bool;
 
 	/**
 	 * Clears all the slots
@@ -192,11 +194,6 @@ interface Inventory{
 	 * @return Player[]
 	 */
 	public function getViewers() : array;
-
-	/**
-	 * @return InventoryType
-	 */
-	public function getType() : InventoryType;
 
 	/**
 	 * @return InventoryHolder
@@ -227,6 +224,7 @@ interface Inventory{
 	/**
 	 * @param int  $index
 	 * @param Item $before
+	 * @param bool $send
 	 */
-	public function onSlotChange($index, $before);
+	public function onSlotChange(int $index, Item $before, bool $send);
 }

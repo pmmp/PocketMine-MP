@@ -41,7 +41,7 @@ class ItemBlock extends Item{
 
 	public function setDamage(int $meta){
 		$this->meta = $meta;
-		$this->block->setDamage($this->meta !== -1 ? $this->meta : 0);
+		$this->block->setDamage($this->meta !== -1 ? $this->meta & 0xf : 0);
 	}
 
 	public function getBlock() : Block{

@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 
 class LevelEventPacket extends DataPacket{
@@ -62,7 +63,14 @@ class LevelEventPacket extends DataPacket{
 
 	const EVENT_SOUND_CAMERA = 1050;
 	const EVENT_SOUND_ORB = 1051;
+	const EVENT_SOUND_TOTEM = 1052;
 
+	const EVENT_SOUND_ARMOR_STAND_BREAK = 1060;
+	const EVENT_SOUND_ARMOR_STAND_HIT = 1061;
+	const EVENT_SOUND_ARMOR_STAND_FALL = 1062;
+	const EVENT_SOUND_ARMOR_STAND_PLACE = 1063;
+
+	//TODO: check 2000-2017
 	const EVENT_PARTICLE_SHOOT = 2000;
 	const EVENT_PARTICLE_DESTROY = 2001;
 	const EVENT_PARTICLE_SPLASH = 2002;
@@ -90,6 +98,7 @@ class LevelEventPacket extends DataPacket{
 	const EVENT_CAULDRON_FILL_WATER = 3506;
 	const EVENT_CAULDRON_TAKE_WATER = 3507;
 	const EVENT_CAULDRON_ADD_DYE = 3508;
+	const EVENT_CAULDRON_CLEAN_BANNER = 3509;
 
 	const EVENT_BLOCK_START_BREAK = 3600;
 	const EVENT_BLOCK_STOP_BREAK = 3601;
@@ -100,21 +109,22 @@ class LevelEventPacket extends DataPacket{
 
 	const EVENT_ADD_PARTICLE_MASK = 0x4000;
 
+	/** @var int */
 	public $evid;
-	public $x = 0; //Weather effects don't have coordinates
-	public $y = 0;
-	public $z = 0;
+	/** @var Vector3|null */
+	public $position;
+	/** @var int */
 	public $data;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->evid = $this->getVarInt();
-		$this->getVector3f($this->x, $this->y, $this->z);
+		$this->position = $this->getVector3Obj();
 		$this->data = $this->getVarInt();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putVarInt($this->evid);
-		$this->putVector3f($this->x, $this->y, $this->z);
+		$this->putVector3ObjNullable($this->position);
 		$this->putVarInt($this->data);
 	}
 

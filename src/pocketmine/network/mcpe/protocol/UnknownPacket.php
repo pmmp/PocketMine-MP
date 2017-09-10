@@ -30,6 +30,7 @@ use pocketmine\network\mcpe\NetworkSession;
 class UnknownPacket extends DataPacket{
 	const NETWORK_ID = -1; //Invalid, do not try to write this
 
+	/** @var string */
 	public $payload;
 
 	public function pid(){

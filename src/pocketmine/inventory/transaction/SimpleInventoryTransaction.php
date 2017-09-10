@@ -21,17 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\inventory;
+namespace pocketmine\inventory\transaction;
 
 use pocketmine\event\inventory\InventoryTransactionEvent;
+use pocketmine\inventory\Inventory;
+use pocketmine\inventory\transaction\action\InventoryAction;
+use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
 use pocketmine\Player;
 use pocketmine\Server;
 
 /**
- * This TransactionGroup only allows doing Transaction between one / two inventories
+ * This InventoryTransaction only allows doing Transaction between one / two inventories
  */
-class SimpleTransactionGroup implements TransactionGroup{
+class SimpleInventoryTransaction implements InventoryTransaction{
 	/** @var float */
 	private $creationTime;
 	protected $hasExecuted = false;
@@ -41,15 +44,19 @@ class SimpleTransactionGroup implements TransactionGroup{
 	/** @var Inventory[] */
 	protected $inventories = [];
 
-	/** @var Transaction[] */
-	protected $transactions = [];
+	/** @var InventoryAction[] */
+	protected $actions = [];
 
 	/**
-	 * @param Player $source
+	 * @param Player            $source
+	 * @param InventoryAction[] $actions
 	 */
-	public function __construct(Player $source = null){
+	public function __construct(Player $source = null, array $actions = []){
 		$this->creationTime = microtime(true);
 		$this->source = $source;
+		foreach($actions as $action){
+			$this->addAction($action);
+		}
 	}
 
 	/**
@@ -71,27 +78,22 @@ class SimpleTransactionGroup implements TransactionGroup{
 	}
 
 	/**
-	 * @return Transaction[]
+	 * @return InventoryAction[]
 	 */
-	public function getTransactions() : array{
-		return $this->transactions;
+	public function getActions() : array{
+		return $this->actions;
 	}
 
-	public function addTransaction(Transaction $transaction){
-		if(isset($this->transactions[spl_object_hash($transaction)])){
+	public function addAction(InventoryAction $action){
+		if(isset($this->actions[spl_object_hash($action)])){
 			return;
 		}
-		foreach($this->transactions as $hash => $tx){
-			if($tx->getInventory() === $transaction->getInventory() and $tx->getSlot() === $transaction->getSlot()){
-				if($transaction->getCreationTime() >= $tx->getCreationTime()){
-					unset($this->transactions[$hash]);
-				}else{
-					return;
-				}
-			}
+
+		if($action instanceof SlotChangeAction){
+			$this->inventories[spl_object_hash($action->getInventory())] = $action->getInventory();
 		}
-		$this->transactions[spl_object_hash($transaction)] = $transaction;
-		$this->inventories[spl_object_hash($transaction->getInventory())] = $transaction->getInventory();
+
+		$this->actions[spl_object_hash($action)] = $action;
 	}
 
 	/**
@@ -101,17 +103,17 @@ class SimpleTransactionGroup implements TransactionGroup{
 	 * @return bool
 	 */
 	protected function matchItems(array &$needItems, array &$haveItems) : bool{
-		foreach($this->transactions as $key => $ts){
-			if($ts->getTargetItem()->getId() !== Item::AIR){
-				$needItems[] = $ts->getTargetItem();
+		foreach($this->actions as $key => $action){
+			if($action->getTargetItem()->getId() !== Item::AIR){
+				$needItems[] = $action->getTargetItem();
 			}
-			$checkSourceItem = $ts->getInventory()->getItem($ts->getSlot());
-			$sourceItem = $ts->getSourceItem();
-			if(!$checkSourceItem->equals($sourceItem) or $sourceItem->getCount() !== $checkSourceItem->getCount()){
+
+			if(!$action->isValid($this->source)){
 				return false;
 			}
-			if($sourceItem->getId() !== Item::AIR){
-				$haveItems[] = $sourceItem;
+
+			if($action->getSourceItem()->getId() !== Item::AIR){
+				$haveItems[] = $action->getSourceItem();
 			}
 		}
 
@@ -139,7 +141,7 @@ class SimpleTransactionGroup implements TransactionGroup{
 		$haveItems = [];
 		$needItems = [];
 
-		return $this->matchItems($needItems, $haveItems) and count($this->transactions) > 0 and ((count($haveItems) === 0 and count($needItems) === 0) or $this->source->isCreative(true));
+		return $this->matchItems($needItems, $haveItems) and count($this->actions) > 0 and count($haveItems) === 0 and count($needItems) === 0;
 	}
 
 	/**
@@ -152,18 +154,15 @@ class SimpleTransactionGroup implements TransactionGroup{
 
 		Server::getInstance()->getPluginManager()->callEvent($ev = new InventoryTransactionEvent($this));
 		if($ev->isCancelled()){
-			foreach($this->inventories as $inventory){
-				if($inventory instanceof PlayerInventory){
-					$inventory->sendArmorContents($this->getSource());
-				}
-				$inventory->sendContents($this->getSource());
-			}
-
 			return false;
 		}
 
-		foreach($this->transactions as $transaction){
-			$transaction->getInventory()->setItem($transaction->getSlot(), $transaction->getTargetItem());
+		foreach($this->actions as $action){
+			if($action->execute($this->source)){
+				$action->onExecuteSuccess($this->source);
+			}else{
+				$action->onExecuteFail($this->source);
+			}
 		}
 
 		$this->hasExecuted = true;

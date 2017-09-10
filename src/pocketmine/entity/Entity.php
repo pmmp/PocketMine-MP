@@ -55,8 +55,10 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\mcpe\protocol\MoveEntityPacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
 use pocketmine\network\mcpe\protocol\SetEntityDataPacket;
+use pocketmine\network\mcpe\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
@@ -199,8 +201,13 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_FLAG_IDLING = 39;
 	const DATA_FLAG_EVOKER_SPELL = 40;
 	const DATA_FLAG_CHARGE_ATTACK = 41;
-
-	const DATA_FLAG_LINGER = 45;
+	const DATA_FLAG_WASD_CONTROLLED = 42;
+	const DATA_FLAG_CAN_POWER_JUMP = 43;
+	const DATA_FLAG_LINGER = 44;
+	const DATA_FLAG_HAS_COLLISION = 45;
+	const DATA_FLAG_AFFECTED_BY_GRAVITY = 46;
+	const DATA_FLAG_FIRE_IMMUNE = 47;
+	const DATA_FLAG_DANCING = 48;
 
 	public static $entityCount = 1;
 	/** @var Entity[] */
@@ -435,6 +442,9 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->attributeMap = new AttributeMap();
 		$this->addAttributes();
+
+		$this->setGenericFlag(self::DATA_FLAG_AFFECTED_BY_GRAVITY, true);
+		$this->setGenericFlag(self::DATA_FLAG_HAS_COLLISION, true);
 
 		$this->chunk->addEntity($this);
 		$this->level->addEntity($this);
@@ -1161,7 +1171,7 @@ abstract class Entity extends Location implements Metadatable{
 			$this->lastYaw = $this->yaw;
 			$this->lastPitch = $this->pitch;
 
-			$this->level->addEntityMovement($this->chunk->getX(), $this->chunk->getZ(), $this->id, $this->x, $this->y + $this->baseOffset, $this->z, $this->yaw, $this->pitch, $this->yaw);
+			$this->broadcastMovement();
 		}
 
 		if($diffMotion > 0.0025 or ($diffMotion > 0.0001 and $this->getMotion()->lengthSquared() <= 0.0001)){ //0.05 ** 2
@@ -1169,8 +1179,31 @@ abstract class Entity extends Location implements Metadatable{
 			$this->lastMotionY = $this->motionY;
 			$this->lastMotionZ = $this->motionZ;
 
-			$this->level->addEntityMotion($this->chunk->getX(), $this->chunk->getZ(), $this->id, $this->motionX, $this->motionY, $this->motionZ);
+			$this->broadcastMotion();
 		}
+	}
+
+	public function getOffsetPosition(Vector3 $vector3) : Vector3{
+		return new Vector3($vector3->x, $vector3->y + $this->baseOffset, $vector3->z);
+	}
+
+	protected function broadcastMovement(){
+		$pk = new MoveEntityPacket();
+		$pk->entityRuntimeId = $this->id;
+		$pk->position = $this->getOffsetPosition($this);
+		$pk->yaw = $this->yaw;
+		$pk->pitch = $this->pitch;
+		$pk->headYaw = $this->yaw; //TODO
+
+		$this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
+	}
+
+	protected function broadcastMotion(){
+		$pk = new SetEntityMotionPacket();
+		$pk->entityRuntimeId = $this->id;
+		$pk->motion = $this->getMotion();
+
+		$this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
 	}
 
 	protected function applyDragBeforeGravity() : bool{

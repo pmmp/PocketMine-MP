@@ -48,7 +48,9 @@ class BossEventPacket extends DataPacket{
 	/* S2C: Not implemented :( Intended to alter bar appearance, but these currently produce no effect on client-side whatsoever. */
 	const TYPE_TEXTURE = 7;
 
+	/** @var int */
 	public $bossEid;
+	/** @var int */
 	public $eventType;
 
 	/** @var int (long) */
@@ -64,7 +66,7 @@ class BossEventPacket extends DataPacket{
 	/** @var int */
 	public $overlay;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->bossEid = $this->getEntityUniqueId();
 		$this->eventType = $this->getUnsignedVarInt();
 		switch($this->eventType){
@@ -94,7 +96,7 @@ class BossEventPacket extends DataPacket{
 		}
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putEntityUniqueId($this->bossEid);
 		$this->putUnsignedVarInt($this->eventType);
 		switch($this->eventType){

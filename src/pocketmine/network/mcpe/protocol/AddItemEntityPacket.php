@@ -25,7 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
+use pocketmine\item\Item;
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 
 class AddItemEntityPacket extends DataPacket{
@@ -35,30 +36,30 @@ class AddItemEntityPacket extends DataPacket{
 	public $entityUniqueId = null; //TODO
 	/** @var int */
 	public $entityRuntimeId;
+	/** @var Item */
 	public $item;
-	public $x;
-	public $y;
-	public $z;
-	public $speedX = 0.0;
-	public $speedY = 0.0;
-	public $speedZ = 0.0;
+	/** @var Vector3 */
+	public $position;
+	/** @var Vector3|null */
+	public $motion;
+	/** @var array */
 	public $metadata = [];
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->item = $this->getSlot();
-		$this->getVector3f($this->x, $this->y, $this->z);
-		$this->getVector3f($this->speedX, $this->speedY, $this->speedZ);
+		$this->position = $this->getVector3Obj();
+		$this->motion = $this->getVector3Obj();
 		$this->metadata = $this->getEntityMetadata();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putSlot($this->item);
-		$this->putVector3f($this->x, $this->y, $this->z);
-		$this->putVector3f($this->speedX, $this->speedY, $this->speedZ);
+		$this->putVector3Obj($this->position);
+		$this->putVector3ObjNullable($this->motion);
 		$this->putEntityMetadata($this->metadata);
 	}
 

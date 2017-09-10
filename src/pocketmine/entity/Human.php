@@ -280,25 +280,28 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return $this->inventory;
 	}
 
+	/**
+	 * For Human entities which are not players, sets their properties such as nametag, skin and UUID from NBT.
+	 */
+	protected function initHumanData(){
+		if(isset($this->namedtag->NameTag)){
+			$this->setNameTag($this->namedtag["NameTag"]);
+		}
+
+		if(isset($this->namedtag->Skin) and $this->namedtag->Skin instanceof CompoundTag){
+			$this->setSkin($this->namedtag->Skin["Data"], $this->namedtag->Skin["Name"]);
+		}
+
+		$this->uuid = UUID::fromData((string) $this->getId(), $this->getSkinData(), $this->getNameTag());
+	}
+
 	protected function initEntity(){
 
 		$this->setPlayerFlag(self::DATA_PLAYER_FLAG_SLEEP, false);
 		$this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [0, 0, 0], false);
 
 		$this->inventory = new PlayerInventory($this);
-		if($this instanceof Player){
-			$this->addWindow($this->inventory, 0);
-		}else{
-			if(isset($this->namedtag->NameTag)){
-				$this->setNameTag($this->namedtag["NameTag"]);
-			}
-
-			if(isset($this->namedtag->Skin) and $this->namedtag->Skin instanceof CompoundTag){
-				$this->setSkin($this->namedtag->Skin["Data"], $this->namedtag->Skin["Name"]);
-			}
-
-			$this->uuid = UUID::fromData((string) $this->getId(), $this->getSkinData(), $this->getNameTag());
-		}
+		$this->initHumanData();
 
 		if(isset($this->namedtag->Inventory) and $this->namedtag->Inventory instanceof ListTag){
 			foreach($this->namedtag->Inventory as $item){
@@ -511,12 +514,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$pk->uuid = $this->getUniqueId();
 			$pk->username = $this->getName();
 			$pk->entityRuntimeId = $this->getId();
-			$pk->x = $this->x;
-			$pk->y = $this->y;
-			$pk->z = $this->z;
-			$pk->speedX = $this->motionX;
-			$pk->speedY = $this->motionY;
-			$pk->speedZ = $this->motionZ;
+			$pk->position = $this->asVector3();
+			$pk->motion = $this->getMotion();
 			$pk->yaw = $this->yaw;
 			$pk->pitch = $this->pitch;
 			$pk->item = $this->getInventory()->getItemInHand();
@@ -537,6 +536,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				foreach($this->inventory->getViewers() as $viewer){
 					$viewer->removeWindow($this->inventory);
 				}
+
+				$this->inventory = null;
 			}
 			parent::close();
 		}

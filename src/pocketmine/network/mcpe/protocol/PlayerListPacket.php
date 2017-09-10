@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 
 class PlayerListPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::PLAYER_LIST_PACKET;
@@ -34,9 +35,9 @@ class PlayerListPacket extends DataPacket{
 	const TYPE_ADD = 0;
 	const TYPE_REMOVE = 1;
 
-	//REMOVE: UUID, ADD: UUID, entity id, name, skinId, skin
-	/** @var array[] */
+	/** @var PlayerListEntry[] */
 	public $entries = [];
+	/** @var int */
 	public $type;
 
 	public function clean(){
@@ -44,34 +45,46 @@ class PlayerListPacket extends DataPacket{
 		return parent::clean();
 	}
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->type = $this->getByte();
 		$count = $this->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
+			$entry = new PlayerListEntry();
+
 			if($this->type === self::TYPE_ADD){
-				$this->entries[$i][0] = $this->getUUID();
-				$this->entries[$i][1] = $this->getEntityUniqueId();
-				$this->entries[$i][2] = $this->getString();
-				$this->entries[$i][3] = $this->getString();
-				$this->entries[$i][4] = $this->getString();
+				$entry->uuid = $this->getUUID();
+				$entry->entityUniqueId = $this->getEntityUniqueId();
+				$entry->username = $this->getString();
+				$entry->skinId = $this->getString();
+				$entry->skinData = $this->getString();
+				$entry->capeData = $this->getString();
+				$entry->geometryModel = $this->getString();
+				$entry->geometryData = $this->getString();
+				$entry->xboxUserId = $this->getString();
 			}else{
-				$this->entries[$i][0] = $this->getUUID();
+				$entry->uuid = $this->getUUID();
 			}
+
+			$this->entries[$i] = $entry;
 		}
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putByte($this->type);
 		$this->putUnsignedVarInt(count($this->entries));
-		foreach($this->entries as $d){
+		foreach($this->entries as $entry){
 			if($this->type === self::TYPE_ADD){
-				$this->putUUID($d[0]);
-				$this->putEntityUniqueId($d[1]);
-				$this->putString($d[2]);
-				$this->putString($d[3]);
-				$this->putString($d[4]);
+				$this->putUUID($entry->uuid);
+				$this->putEntityUniqueId($entry->entityUniqueId);
+				$this->putString($entry->username);
+				$this->putString($entry->skinId);
+				$this->putString($entry->skinData);
+				$this->putString($entry->capeData);
+				$this->putString($entry->geometryModel);
+				$this->putString($entry->geometryData);
+				$this->putString($entry->xboxUserId);
 			}else{
-				$this->putUUID($d[0]);
+				$this->putUUID($entry->uuid);
 			}
 		}
 	}

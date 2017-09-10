@@ -32,8 +32,8 @@ abstract class ContainerInventory extends BaseInventory{
 	public function onOpen(Player $who){
 		parent::onOpen($who);
 		$pk = new ContainerOpenPacket();
-		$pk->windowid = $who->getWindowId($this);
-		$pk->type = $this->getType()->getNetworkType();
+		$pk->windowId = $who->getWindowId($this);
+		$pk->type = $this->getNetworkType();
 		$holder = $this->getHolder();
 		if($holder instanceof Vector3){
 			$pk->x = $holder->getX();
@@ -50,7 +50,7 @@ abstract class ContainerInventory extends BaseInventory{
 
 	public function onClose(Player $who){
 		$pk = new ContainerClosePacket();
-		$pk->windowid = $who->getWindowId($this);
+		$pk->windowId = $who->getWindowId($this);
 		$who->dataPacket($pk);
 		parent::onClose($who);
 	}

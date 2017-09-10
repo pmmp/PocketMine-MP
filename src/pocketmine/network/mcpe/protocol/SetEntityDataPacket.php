@@ -31,15 +31,17 @@ use pocketmine\network\mcpe\NetworkSession;
 class SetEntityDataPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SET_ENTITY_DATA_PACKET;
 
+	/** @var int */
 	public $entityRuntimeId;
+	/** @var array */
 	public $metadata;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->metadata = $this->getEntityMetadata();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putEntityMetadata($this->metadata);
 	}

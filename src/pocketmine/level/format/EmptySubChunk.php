@@ -114,7 +114,7 @@ class EmptySubChunk implements SubChunkInterface{
 	}
 
 	public function networkSerialize() : string{
-		return "\x00" . str_repeat("\x00", 10240);
+		return "\x00" . str_repeat("\x00", 6144);
 	}
 
 	public function fastSerialize() : string{

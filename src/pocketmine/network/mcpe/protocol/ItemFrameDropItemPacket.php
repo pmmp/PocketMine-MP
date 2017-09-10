@@ -31,15 +31,18 @@ class ItemFrameDropItemPacket extends DataPacket{
 
 	const NETWORK_ID = ProtocolInfo::ITEM_FRAME_DROP_ITEM_PACKET;
 
+	/** @var int */
 	public $x;
+	/** @var int */
 	public $y;
+	/** @var int */
 	public $z;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->getBlockPosition($this->x, $this->y, $this->z);
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putBlockPosition($this->x, $this->y, $this->z);
 	}
 

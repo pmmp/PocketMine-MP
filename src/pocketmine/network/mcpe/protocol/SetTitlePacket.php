@@ -39,13 +39,18 @@ class SetTitlePacket extends DataPacket{
 	const TYPE_SET_ACTIONBAR_MESSAGE = 4;
 	const TYPE_SET_ANIMATION_TIMES = 5;
 
+	/** @var int */
 	public $type;
+	/** @var string */
 	public $text = "";
+	/** @var int */
 	public $fadeInTime = 0;
+	/** @var int */
 	public $stayTime = 0;
+	/** @var int */
 	public $fadeOutTime = 0;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->type = $this->getVarInt();
 		$this->text = $this->getString();
 		$this->fadeInTime = $this->getVarInt();
@@ -53,7 +58,7 @@ class SetTitlePacket extends DataPacket{
 		$this->fadeOutTime = $this->getVarInt();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putVarInt($this->type);
 		$this->putString($this->text);
 		$this->putVarInt($this->fadeInTime);

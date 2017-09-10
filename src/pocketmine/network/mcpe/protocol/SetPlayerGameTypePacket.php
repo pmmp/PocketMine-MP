@@ -31,13 +31,14 @@ use pocketmine\network\mcpe\NetworkSession;
 class SetPlayerGameTypePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SET_PLAYER_GAME_TYPE_PACKET;
 
+	/** @var int */
 	public $gamemode;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->gamemode = $this->getVarInt();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putVarInt($this->gamemode);
 	}
 

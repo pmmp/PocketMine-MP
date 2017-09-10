@@ -25,26 +25,20 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\NetworkSession;
 
-class RemoveBlockPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::REMOVE_BLOCK_PACKET;
+class CommandOutputPacket extends DataPacket{
+	const NETWORK_ID = ProtocolInfo::COMMAND_OUTPUT_PACKET;
 
-	public $x;
-	public $y;
-	public $z;
-
-	public function decodePayload(){
-		$this->getBlockPosition($this->x, $this->y, $this->z);
+	protected function decodePayload(){
+		//TODO
 	}
 
-	public function encodePayload(){
-		$this->putBlockPosition($this->x, $this->y, $this->z);
+	protected function encodePayload(){
+		//TODO
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleRemoveBlock($this);
+		return $session->handleCommandOutput($this);
 	}
-
 }

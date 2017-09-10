@@ -25,37 +25,27 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\item\Item;
 use pocketmine\network\mcpe\NetworkSession;
 
-class ContainerSetSlotPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::CONTAINER_SET_SLOT_PACKET;
+class ModalFormRequestPacket extends DataPacket{
+	const NETWORK_ID = ProtocolInfo::MODAL_FORM_REQUEST_PACKET;
 
-	public $windowid;
-	public $slot;
-	public $hotbarSlot = 0;
-	/** @var Item */
-	public $item;
-	public $selectSlot = 0;
+	/** @var int */
+	public $formId;
+	/** @var string */
+	public $formData; //json
 
-	public function decodePayload(){
-		$this->windowid = $this->getByte();
-		$this->slot = $this->getVarInt();
-		$this->hotbarSlot = $this->getVarInt();
-		$this->item = $this->getSlot();
-		$this->selectSlot = $this->getByte();
+	protected function decodePayload(){
+		$this->formId = $this->getUnsignedVarInt();
+		$this->formData = $this->getString();
 	}
 
-	public function encodePayload(){
-		$this->putByte($this->windowid);
-		$this->putVarInt($this->slot);
-		$this->putVarInt($this->hotbarSlot);
-		$this->putSlot($this->item);
-		$this->putByte($this->selectSlot);
+	protected function encodePayload(){
+		$this->putUnsignedVarInt($this->formId);
+		$this->putString($this->formData);
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleContainerSetSlot($this);
+		return $session->handleModalFormRequest($this);
 	}
-
 }

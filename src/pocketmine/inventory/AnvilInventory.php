@@ -24,14 +24,32 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\level\Position;
+use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
 
 class AnvilInventory extends ContainerInventory{
+
+	/** @var FakeBlockMenu */
+	protected $holder;
+
 	public function __construct(Position $pos){
-		parent::__construct(new FakeBlockMenu($this, $pos), InventoryType::get(InventoryType::ANVIL));
+		parent::__construct(new FakeBlockMenu($this, $pos));
+	}
+
+	public function getNetworkType() : int{
+		return WindowTypes::ANVIL;
+	}
+
+	public function getName() : string{
+		return "Anvil";
+	}
+
+	public function getDefaultSize() : int{
+		return 3; //1 input, 1 material, 1 result
 	}
 
 	/**
+	 * This override is here for documentation and code completion purposes only.
 	 * @return FakeBlockMenu
 	 */
 	public function getHolder(){

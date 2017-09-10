@@ -35,14 +35,20 @@ class MobEffectPacket extends DataPacket{
 	const EVENT_MODIFY = 2;
 	const EVENT_REMOVE = 3;
 
+	/** @var int */
 	public $entityRuntimeId;
+	/** @var int */
 	public $eventId;
+	/** @var int */
 	public $effectId;
+	/** @var int */
 	public $amplifier = 0;
+	/** @var bool */
 	public $particles = true;
+	/** @var int */
 	public $duration = 0;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->eventId = $this->getByte();
 		$this->effectId = $this->getVarInt();
@@ -51,7 +57,7 @@ class MobEffectPacket extends DataPacket{
 		$this->duration = $this->getVarInt();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putByte($this->eventId);
 		$this->putVarInt($this->effectId);

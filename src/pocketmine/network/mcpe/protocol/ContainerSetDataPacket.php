@@ -31,18 +31,31 @@ use pocketmine\network\mcpe\NetworkSession;
 class ContainerSetDataPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::CONTAINER_SET_DATA_PACKET;
 
-	public $windowid;
+	const PROPERTY_FURNACE_TICK_COUNT = 0;
+	const PROPERTY_FURNACE_LIT_TIME = 1;
+	const PROPERTY_FURNACE_LIT_DURATION = 2;
+	//TODO: check property 3
+	const PROPERTY_FURNACE_FUEL_AUX = 4;
+
+	const PROPERTY_BREWING_STAND_BREW_TIME = 0;
+	const PROPERTY_BREWING_STAND_FUEL_AMOUNT = 1;
+	const PROPERTY_BREWING_STAND_FUEL_TOTAL = 2;
+
+	/** @var int */
+	public $windowId;
+	/** @var int */
 	public $property;
+	/** @var int */
 	public $value;
 
-	public function decodePayload(){
-		$this->windowid = $this->getByte();
+	protected function decodePayload(){
+		$this->windowId = $this->getByte();
 		$this->property = $this->getVarInt();
 		$this->value = $this->getVarInt();
 	}
 
-	public function encodePayload(){
-		$this->putByte($this->windowid);
+	protected function encodePayload(){
+		$this->putByte($this->windowId);
 		$this->putVarInt($this->property);
 		$this->putVarInt($this->value);
 	}

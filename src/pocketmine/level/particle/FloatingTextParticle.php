@@ -81,12 +81,7 @@ class FloatingTextParticle extends Particle{
 			$pk = new AddEntityPacket();
 			$pk->entityRuntimeId = $this->entityId;
 			$pk->type = ItemEntity::NETWORK_ID;
-			$pk->x = $this->x;
-			$pk->y = $this->y - 0.75;
-			$pk->z = $this->z;
-			$pk->speedX = 0;
-			$pk->speedY = 0;
-			$pk->speedZ = 0;
+			$pk->position = $this->asVector3()->subtract(0, 0.75, 0);
 			$pk->yaw = 0;
 			$pk->pitch = 0;
 			$flags = (

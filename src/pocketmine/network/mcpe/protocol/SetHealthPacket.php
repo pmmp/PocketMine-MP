@@ -31,13 +31,14 @@ use pocketmine\network\mcpe\NetworkSession;
 class SetHealthPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SET_HEALTH_PACKET;
 
+	/** @var int */
 	public $health;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->health = $this->getVarInt();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putVarInt($this->health);
 	}
 

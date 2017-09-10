@@ -78,8 +78,6 @@ use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
-use pocketmine\network\mcpe\protocol\MoveEntityPacket;
-use pocketmine\network\mcpe\protocol\SetEntityMotionPacket;
 use pocketmine\network\mcpe\protocol\SetTimePacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\Player;
@@ -441,7 +439,7 @@ class Level implements ChunkManager, Metadatable{
 		$pk = new LevelEventPacket();
 		$pk->evid = $evid;
 		$pk->data = $data;
-		list($pk->x, $pk->y, $pk->z) = [$pos->x, $pos->y, $pos->z];
+		$pk->position = $pos->asVector3();
 		$this->addChunkPacket($pos->x >> 4, $pos->z >> 4, $pk);
 	}
 
@@ -462,7 +460,7 @@ class Level implements ChunkManager, Metadatable{
 		$pk->extraData = $extraData;
 		$pk->unknownBool = $unknown;
 		$pk->disableRelativeVolume = $disableRelativeVolume;
-		list($pk->x, $pk->y, $pk->z) = [$pos->x, $pos->y, $pos->z];
+		$pk->position = $pos->asVector3();
 		$this->addChunkPacket($pos->x >> 4, $pos->z >> 4, $pk);
 	}
 
@@ -760,9 +758,7 @@ class Level implements ChunkManager, Metadatable{
 	public function sendBlockExtraData(int $x, int $y, int $z, int $id, int $data, array $targets = null){
 		$pk = new LevelEventPacket;
 		$pk->evid = LevelEventPacket::EVENT_SET_DATA;
-		$pk->x = $x + 0.5;
-		$pk->y = $y + 0.5;
-		$pk->z = $z + 0.5;
+		$pk->position = new Vector3($x, $y, $z);
 		$pk->data = ($data << 8) | $id;
 
 		$this->server->broadcastPacket($targets ?? $this->getChunkPlayers($x >> 4, $z >> 4), $pk);
@@ -2862,26 +2858,5 @@ class Level implements ChunkManager, Metadatable{
 
 	public function removeMetadata(string $metadataKey, Plugin $owningPlugin){
 		$this->server->getLevelMetadata()->removeMetadata($this, $metadataKey, $owningPlugin);
-	}
-
-	public function addEntityMotion(int $chunkX, int $chunkZ, int $entityId, float $x, float $y, float $z){
-		$pk = new SetEntityMotionPacket();
-		$pk->entityRuntimeId = $entityId;
-		$pk->motionX = $x;
-		$pk->motionY = $y;
-		$pk->motionZ = $z;
-		$this->addChunkPacket($chunkX, $chunkZ, $pk);
-	}
-
-	public function addEntityMovement(int $chunkX, int $chunkZ, int $entityId, float $x, float $y, float $z, float $yaw, float $pitch, $headYaw = null){
-		$pk = new MoveEntityPacket();
-		$pk->entityRuntimeId = $entityId;
-		$pk->x = $x;
-		$pk->y = $y;
-		$pk->z = $z;
-		$pk->yaw = $yaw;
-		$pk->pitch = $pitch;
-		$pk->headYaw = $headYaw ?? $yaw;
-		$this->addChunkPacket($chunkX, $chunkZ, $pk);
 	}
 }

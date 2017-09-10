@@ -70,10 +70,11 @@ class CraftingManager{
 					$first = $recipe["output"][0];
 					$result = new ShapedRecipe(Item::jsonDeserialize($first), $recipe["height"], $recipe["width"]);
 
-					$shape = array_chunk($recipe["input"], $recipe["width"]);
+					$shape = array_map(function(string $keys) : array{ return str_split($keys); }, $recipe["shape"]);
+					$ingredients = array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["input"]);
 					foreach($shape as $y => $row){
 						foreach($row as $x => $ingredient){
-							$result->addIngredient($x, $y, Item::jsonDeserialize($ingredient));
+							$result->addIngredient($x, $y, $ingredients[$ingredient] ?? Item::get(Item::AIR, 0, 0));
 						}
 					}
 					$this->registerRecipe($result);

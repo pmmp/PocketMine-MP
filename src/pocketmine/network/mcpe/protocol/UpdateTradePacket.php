@@ -34,17 +34,27 @@ class UpdateTradePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::UPDATE_TRADE_PACKET;
 
 	//TODO: find fields
+
+	/** @var int */
 	public $windowId;
+	/** @var int */
 	public $windowType = WindowTypes::TRADING; //Mojang hardcoded this -_-
+	/** @var int */
 	public $varint1;
+	/** @var int */
 	public $varint2;
+	/** @var bool */
 	public $isWilling;
+	/** @var int */
 	public $traderEid;
+	/** @var int */
 	public $playerEid;
+	/** @var string */
 	public $displayName;
+	/** @var string */
 	public $offers;
 
-	public function decodePayload(){
+	protected function decodePayload(){
 		$this->windowId = $this->getByte();
 		$this->windowType = $this->getByte();
 		$this->varint1 = $this->getVarInt();
@@ -56,7 +66,7 @@ class UpdateTradePacket extends DataPacket{
 		$this->offers = $this->getRemaining();
 	}
 
-	public function encodePayload(){
+	protected function encodePayload(){
 		$this->putByte($this->windowId);
 		$this->putByte($this->windowType);
 		$this->putVarInt($this->varint1);

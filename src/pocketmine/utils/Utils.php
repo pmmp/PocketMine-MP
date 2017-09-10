@@ -537,4 +537,10 @@ class Utils{
 
 		return proc_close($process);
 	}
+
+	public static function decodeJWT(string $token) : array{
+		list($headB64, $payloadB64, $sigB64) = explode(".", $token);
+
+		return json_decode(base64_decode($payloadB64), true);
+	}
 }
