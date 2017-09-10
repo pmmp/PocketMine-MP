@@ -2618,6 +2618,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			// Windows 10 Edition drops the contents of the crafting grid on container close - including air.
 			return true;
 		}
+		
+		if($this->isSpectator()) {
+			return false;
+		}
 
 		$item = $this->inventory->getItemInHand();
 		$ev = new PlayerDropItemEvent($this, $item);

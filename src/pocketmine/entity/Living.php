@@ -42,6 +42,7 @@ use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\Player;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BlockIterator;
+use pocketmine\Player;
 
 abstract class Living extends Entity implements Damageable{
 
@@ -439,6 +440,10 @@ abstract class Living extends Entity implements Damageable{
 				if($this instanceof WaterAnimal){
 					$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 400);
 				}else{
+					if($this instanceof Player && $this->isSpectator()){
+						Timings::$timerLivingEntityBaseTick->stopTiming();
+						return $hasUpdate;
+					}
 					$hasUpdate = true;
 					$airTicks = $this->getDataProperty(self::DATA_AIR) - $tickDiff;
 					if($airTicks <= -20){
