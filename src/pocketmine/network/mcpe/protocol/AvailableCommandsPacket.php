@@ -46,16 +46,16 @@ class AvailableCommandsPacket extends DataPacket{
 	const ARG_TYPE_VALUE    = 0x03;
 	const ARG_TYPE_TARGET   = 0x04;
 
-	const ARG_TYPE_STRING   = 0x0c;
-	const ARG_TYPE_POSITION = 0x0d;
+	const ARG_TYPE_STRING   = 0x0d;
+	const ARG_TYPE_POSITION = 0x0e;
 
-	const ARG_TYPE_RAWTEXT  = 0x10;
+	const ARG_TYPE_RAWTEXT  = 0x11;
 
-	const ARG_TYPE_TEXT     = 0x12;
+	const ARG_TYPE_TEXT     = 0x13;
 
-	const ARG_TYPE_JSON     = 0x15;
+	const ARG_TYPE_JSON     = 0x16;
 
-	const ARG_TYPE_COMMAND  = 0x1c;
+	const ARG_TYPE_COMMAND  = 0x1d;
 
 	/**
 	 * Enums are a little different: they are composed as follows:
@@ -162,14 +162,14 @@ class AvailableCommandsPacket extends DataPacket{
 						$retval["overloads"][$i]["params"][$j]["enum"] = null;
 					}
 				}
-				$retval["overloads"][$i]["params"][$j]["paramTypeString"] = self::argTypeToString($type);
+				$retval["overloads"][$i]["params"][$j]["paramTypeString"] = $this->argTypeToString($type);
 			}
 		}
 
 		return $retval;
 	}
 
-	private static function argTypeToString(int $argtype) : string{
+	private function argTypeToString(int $argtype) : string{
 		if($argtype & self::ARG_FLAG_VALID){
 			if($argtype & self::ARG_FLAG_ENUM){
 				return "stringenum (" . ($argtype & 0xffff) . ")";
@@ -197,8 +197,13 @@ class AvailableCommandsPacket extends DataPacket{
 				case self::ARG_TYPE_COMMAND:
 					return "command";
 			}
-		}elseif($argtype === self::ARG_FLAG_POSTFIX){
-			return "special int";
+		}elseif($argtype !== 0){
+			//guessed
+			$baseType = $argtype >> 24;
+			$typeName = $this->argTypeToString(self::ARG_FLAG_VALID | $baseType);
+			$postfix = $this->postfixes[$argtype & 0xffff];
+
+			return $typeName . " (postfix $postfix)";
 		}
 
 		return "unknown ($argtype)";
