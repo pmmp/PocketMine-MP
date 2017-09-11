@@ -358,6 +358,9 @@ class ItemFactory{
 	 * @return bool
 	 */
 	public static function isRegistered(int $id) : bool{
+		if($id < 256){
+			return BlockFactory::isRegistered($id);
+		}
 		return self::$list[$id] !== null;
 	}
 }
