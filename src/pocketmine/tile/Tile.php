@@ -69,6 +69,7 @@ abstract class Tile extends Position{
 	public $tickTimer;
 
 	public static function init(){
+		self::registerTile(Banner::class);
 		self::registerTile(Bed::class);
 		self::registerTile(Chest::class);
 		self::registerTile(EnchantTable::class);
@@ -77,7 +78,6 @@ abstract class Tile extends Position{
 		self::registerTile(ItemFrame::class);
 		self::registerTile(Sign::class);
 		self::registerTile(Skull::class);
-		self::registerTile(Banner::class);
 	}
 
 	/**
