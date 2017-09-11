@@ -341,7 +341,7 @@ class BlockFactory{
 	public static function registerBlock(Block $block, bool $override = false){
 		$id = $block->getId();
 
-		if(self::$list[$id] !== null and !(self::$list[$id] instanceof UnknownBlock) and !$override){
+		if(!$override and self::isRegistered($id)){
 			throw new \RuntimeException("Trying to overwrite an already registered block");
 		}
 
@@ -402,5 +402,16 @@ class BlockFactory{
 	 */
 	public static function getBlockStatesArray() : \SplFixedArray{
 		return self::$fullList;
+	}
+
+	/**
+	 * Returns whether a specified block ID is already registered in the block factory.
+	 *
+	 * @param int $id
+	 * @return bool
+	 */
+	public static function isRegistered(int $id) : bool{
+		$b = self::$list[$id];
+		return $b !== null and !($b instanceof UnknownBlock);
 	}
 }

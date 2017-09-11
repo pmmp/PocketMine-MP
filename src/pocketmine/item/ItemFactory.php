@@ -256,7 +256,7 @@ class ItemFactory{
 	 */
 	public static function registerItem(Item $item, bool $override = false){
 		$id = $item->getId();
-		if(!$override and self::$list[$id] !== null){
+		if(!$override and self::isRegistered($id)){
 			throw new \RuntimeException("Trying to overwrite an already registered item");
 		}
 
@@ -349,5 +349,15 @@ class ItemFactory{
 
 			return $item;
 		}
+	}
+
+	/**
+	 * Returns whether the specified item ID is already registered in the item factory.
+	 *
+	 * @param int $id
+	 * @return bool
+	 */
+	public static function isRegistered(int $id) : bool{
+		return self::$list[$id] !== null;
 	}
 }
