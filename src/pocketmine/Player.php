@@ -1303,9 +1303,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->inventory->sendContents($this);
 		$this->inventory->sendContents($this->getViewers());
 		$this->inventory->sendHeldItem($this->hasSpawned);
-		if($this->isCreative()){
-			$this->inventory->sendCreativeContents();
-		}
+
+		$this->inventory->sendCreativeContents();
 
 		return true;
 	}
@@ -1937,9 +1936,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->sendCommandData();
 
-		if($this->isCreative()){
-			$this->inventory->sendCreativeContents();
-		}
+		$this->inventory->sendCreativeContents();
 
 		$this->server->addOnlinePlayer($this);
 		$this->server->onPlayerCompleteLoginSequence($this);
