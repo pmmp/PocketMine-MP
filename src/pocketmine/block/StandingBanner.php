@@ -68,7 +68,7 @@ class StandingBanner extends Transparent{
 				new IntTag("x", $blockReplace->x),
 				new IntTag("y", $blockReplace->y),
 				new IntTag("z", $blockReplace->z),
-				isset($item->getNamedTag()->Base) ? $item->getNamedTag()->Base : new IntTag("Base", $item->getDamage() & 0x0f),
+				$item->getNamedTag()->Base ?? new IntTag("Base", $item->getDamage() & 0x0f),
 			]);
 
 			if($face === Vector3::SIDE_UP){
