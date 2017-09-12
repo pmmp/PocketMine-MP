@@ -21,43 +21,33 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\inventory;
 
-use pocketmine\inventory\BigCraftingGrid;
-use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\Player;
 
-class CraftingTable extends Solid{
+class CraftingGrid extends BaseInventory{
 
-	protected $id = self::CRAFTING_TABLE;
-
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	public function __construct(Player $holder){
+		parent::__construct($holder);
 	}
 
-	public function getHardness() : float{
-		return 2.5;
+	public function getDefaultSize() : int{
+		return 4;
+	}
+
+	public function setSize(int $size){
+		throw new \BadMethodCallException("Cannot change the size of a crafting grid");
 	}
 
 	public function getName() : string{
-		return "Crafting Table";
+		return "Crafting";
 	}
 
-	public function getToolType() : int{
-		return Tool::TYPE_AXE;
+	public function sendSlot(int $index, $target){
+		//we can't send a slot of a client-sided inventory window
 	}
 
-	public function onActivate(Item $item, Player $player = null) : bool{
-		if($player instanceof Player){
-			$player->setCraftingGrid(new BigCraftingGrid($player));
-			$player->craftingType = 1;
-		}
-
-		return true;
-	}
-
-	public function getFuelTime() : int{
-		return 300;
+	public function sendContents($target){
+		//we can't send the contents of a client-sided inventory window
 	}
 }

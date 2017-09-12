@@ -70,8 +70,10 @@ use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\TextContainer;
 use pocketmine\event\Timings;
 use pocketmine\event\TranslationContainer;
+use pocketmine\inventory\BigCraftingGrid;
 use pocketmine\inventory\BigShapedRecipe;
 use pocketmine\inventory\BigShapelessRecipe;
+use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\FurnaceInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCursorInventory;
@@ -235,6 +237,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	/** @var PlayerCursorInventory */
 	protected $cursorInventory;
+
+	/** @var CraftingGrid */
+	protected $craftingGrid = null;
 
 	public $creationTime = 0;
 
@@ -2071,7 +2076,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return false;
 		}
 
-		$this->craftingType = 0;
+		$this->resetCraftingGridType();
 
 		$message = TextFormat::clean($message, $this->removeFormat);
 		foreach(explode("\n", $message) as $messagePart){
@@ -2139,7 +2144,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($this->spawned === false or !$this->isAlive()){
 			return true;
 		}
-		$this->craftingType = 0;
+		$this->resetCraftingGridType();
 
 		switch($packet->event){
 			default:
@@ -2166,6 +2171,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return bool
 	 */
 	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
+		if($this->isSpectator()){
+			$this->sendAllInventories();
+			return true;
+		}
+
 		/** @var InventoryAction[] $actions */
 		$actions = [];
 		foreach($packet->actions as $networkInventoryAction){
@@ -2190,6 +2200,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							$inventory->sendArmorContents($this);
 						}
 					}
+
+					MainLogger::getLogger()->debug("Failed to execute inventory transaction from " . $this->getName() . " with actions: " . json_encode($packet->actions));
 
 					//TODO: check more stuff that might need reversion
 					return false; //oops!
@@ -2251,7 +2263,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							return true;
 						}
 
-						$this->craftingType = 0;
+						$this->resetCraftingGridType();
 
 						$item = $this->inventory->getItemInHand();
 						$oldItem = clone $item;
@@ -2500,7 +2512,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
-		$this->craftingType = 0;
+		$this->resetCraftingGridType();
 
 		$target = $this->level->getEntity($packet->target);
 		if($target === null){
@@ -2594,7 +2606,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					break;
 				}
 
-				$this->craftingType = 0;
+				$this->resetCraftingGridType();
 
 				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
 
@@ -2745,7 +2757,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
-		$this->craftingType = 0;
+		$this->resetCraftingGridType();
 
 		if(isset($this->windowIndex[$packet->windowId])){
 			$this->server->getPluginManager()->callEvent(new InventoryCloseEvent($this->windowIndex[$packet->windowId], $this));
@@ -2972,7 +2984,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($this->spawned === false or !$this->isAlive()){
 			return true;
 		}
-		$this->craftingType = 0;
+		$this->resetCraftingGridType();
 
 		$pos = new Vector3($packet->x, $packet->y, $packet->z);
 		if($pos->distanceSquared($this) > 10000){
@@ -3373,6 +3385,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->windows = null;
 				$this->windowIndex = [];
 				$this->cursorInventory = null;
+				$this->craftingGrid = null;
 
 				if($this->constructed){
 					parent::close();
@@ -3701,11 +3714,32 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->cursorInventory = new PlayerCursorInventory($this);
 		$this->addWindow($this->cursorInventory, ContainerIds::CURSOR, true);
 
+		$this->craftingGrid = new CraftingGrid($this);
+
 		//TODO: more windows
 	}
 
 	public function getCursorInventory() : PlayerCursorInventory{
 		return $this->cursorInventory;
+	}
+
+	public function getCraftingGrid() : CraftingGrid{
+		return $this->craftingGrid;
+	}
+
+	/**
+	 * @param CraftingGrid $grid
+	 */
+	public function setCraftingGrid(CraftingGrid $grid) : void{
+		$this->craftingGrid = $grid;
+	}
+
+	public function resetCraftingGridType() : void{
+		if($this->craftingGrid instanceof BigCraftingGrid){
+			//TODO: this needs to drop anything left in the crafting grid otherwise our items might get deleted
+			$this->craftingGrid = new CraftingGrid($this);
+			$this->craftingType = 0;
+		}
 	}
 
 	/**

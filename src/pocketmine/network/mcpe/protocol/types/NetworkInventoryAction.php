@@ -31,6 +31,46 @@ use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\Player;
 
 class NetworkInventoryAction{
+	const SOURCE_CONTAINER = 0;
+
+	const SOURCE_WORLD = 2; //drop/pickup item entity
+	const SOURCE_CREATIVE = 3;
+	const SOURCE_TODO = 99999;
+
+	/**
+	 * Fake window IDs for the SOURCE_TODO type (99999)
+	 *
+	 * These identifiers are used for inventory source types which are not currently implemented server-side in MCPE.
+	 * As a general rule of thumb, anything that doesn't have a permanent inventory is client-side. These types are
+	 * to allow servers to track what is going on in client-side windows.
+	 *
+	 * Expect these to change in the future.
+	 */
+	const SOURCE_TYPE_CRAFTING_ADD_INGREDIENT = -2;
+	const SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT = -3;
+	const SOURCE_TYPE_CRAFTING_RESULT = -4;
+	const SOURCE_TYPE_CRAFTING_USE_INGREDIENT = -5;
+
+	const SOURCE_TYPE_ANVIL_INPUT = -10;
+	const SOURCE_TYPE_ANVIL_MATERIAL = -11;
+	const SOURCE_TYPE_ANVIL_RESULT = -12;
+	const SOURCE_TYPE_ANVIL_OUTPUT = -13;
+
+	const SOURCE_TYPE_ENCHANT_INPUT = -15;
+	const SOURCE_TYPE_ENCHANT_MATERIAL = -16;
+	const SOURCE_TYPE_ENCHANT_OUTPUT = -17;
+
+	const SOURCE_TYPE_TRADING_INPUT_1 = -20;
+	const SOURCE_TYPE_TRADING_INPUT_2 = -21;
+	const SOURCE_TYPE_TRADING_USE_INPUTS = -22;
+	const SOURCE_TYPE_TRADING_OUTPUT = -23;
+
+	const SOURCE_TYPE_BEACON = -24;
+
+	/** Any client-side window dropping its contents when the player closes it */
+	const SOURCE_TYPE_CONTAINER_DROP_CONTENTS = -100;
+
+
 	/** @var int */
 	public $sourceType;
 	/** @var int */
@@ -51,15 +91,15 @@ class NetworkInventoryAction{
 		$this->sourceType = $packet->getUnsignedVarInt();
 
 		switch($this->sourceType){
-			case InventoryTransactionPacket::SOURCE_CONTAINER:
+			case self::SOURCE_CONTAINER:
 				$this->windowId = $packet->getVarInt();
 				break;
-			case InventoryTransactionPacket::SOURCE_WORLD:
+			case self::SOURCE_WORLD:
 				$this->unknown = $packet->getUnsignedVarInt();
 				break;
-			case InventoryTransactionPacket::SOURCE_CREATIVE:
+			case self::SOURCE_CREATIVE:
 				break;
-			case InventoryTransactionPacket::SOURCE_TODO:
+			case self::SOURCE_TODO:
 				$this->windowId = $packet->getVarInt();
 				break;
 		}
@@ -76,15 +116,15 @@ class NetworkInventoryAction{
 		$packet->putUnsignedVarInt($this->sourceType);
 
 		switch($this->sourceType){
-			case InventoryTransactionPacket::SOURCE_CONTAINER:
+			case self::SOURCE_CONTAINER:
 				$packet->putVarInt($this->windowId);
 				break;
-			case InventoryTransactionPacket::SOURCE_WORLD:
+			case self::SOURCE_WORLD:
 				$packet->putUnsignedVarInt($this->unknown);
 				break;
-			case InventoryTransactionPacket::SOURCE_CREATIVE:
+			case self::SOURCE_CREATIVE:
 				break;
-			case InventoryTransactionPacket::SOURCE_TODO:
+			case self::SOURCE_TODO:
 				$packet->putVarInt($this->windowId);
 				break;
 		}
@@ -96,7 +136,7 @@ class NetworkInventoryAction{
 
 	public function createInventoryAction(Player $player){
 		switch($this->sourceType){
-			case InventoryTransactionPacket::SOURCE_CONTAINER:
+			case self::SOURCE_CONTAINER:
 				if($this->windowId === ContainerIds::ARMOR){
 					//TODO: HACK!
 					$this->inventorySlot += 36;
@@ -109,13 +149,13 @@ class NetworkInventoryAction{
 				}
 
 				throw new \InvalidStateException("Player " . $player->getName() . " has no open container with window ID $this->windowId");
-			case InventoryTransactionPacket::SOURCE_WORLD:
+			case self::SOURCE_WORLD:
 				if($this->inventorySlot !== InventoryTransactionPacket::ACTION_MAGIC_SLOT_DROP_ITEM){
 					throw new \UnexpectedValueException("Only expecting drop-item world actions from the client!");
 				}
 
 				return new DropItemAction($this->oldItem, $this->newItem);
-			case InventoryTransactionPacket::SOURCE_CREATIVE:
+			case self::SOURCE_CREATIVE:
 				switch($this->inventorySlot){
 					case InventoryTransactionPacket::ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM:
 						return new CreativeInventoryAction($this->oldItem, $this->newItem, CreativeInventoryAction::TYPE_DELETE_ITEM);
@@ -124,7 +164,13 @@ class NetworkInventoryAction{
 				}
 
 				throw new \UnexpectedValueException("Unexpected creative action type $this->inventorySlot");
-			case InventoryTransactionPacket::SOURCE_TODO:
+			case self::SOURCE_TODO:
+				switch($this->windowId){
+					case self::SOURCE_TYPE_CRAFTING_ADD_INGREDIENT:
+					case self::SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT:
+						$window = $player->getCraftingGrid();
+						return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
+				}
 				//TODO
 				throw new \UnexpectedValueException("Player " . $player->getName() . " has no open container with window ID $this->windowId");
 			default:
