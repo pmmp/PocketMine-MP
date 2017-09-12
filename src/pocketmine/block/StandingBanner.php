@@ -35,7 +35,7 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\Tile;
 
-class StandingBanner extends Transparent {
+class StandingBanner extends Transparent{
 
 	protected $id = self::STANDING_BANNER;
 
