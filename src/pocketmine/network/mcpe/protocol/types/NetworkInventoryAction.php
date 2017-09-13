@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\protocol\types;
 
 use pocketmine\inventory\transaction\action\CreativeInventoryAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
+use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
@@ -137,6 +138,11 @@ class NetworkInventoryAction{
 		$packet->putSlot($this->newItem);
 	}
 
+	/**
+	 * @param Player $player
+	 *
+	 * @return InventoryAction
+	 */
 	public function createInventoryAction(Player $player){
 		switch($this->sourceType){
 			case self::SOURCE_CONTAINER:
@@ -161,20 +167,38 @@ class NetworkInventoryAction{
 			case self::SOURCE_CREATIVE:
 				switch($this->inventorySlot){
 					case InventoryTransactionPacket::ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM:
-						return new CreativeInventoryAction($this->oldItem, $this->newItem, CreativeInventoryAction::TYPE_DELETE_ITEM);
+						$type = CreativeInventoryAction::TYPE_DELETE_ITEM;
+						break;
 					case InventoryTransactionPacket::ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM:
-						return new CreativeInventoryAction($this->oldItem, $this->newItem, CreativeInventoryAction::TYPE_CREATE_ITEM);
+						$type = CreativeInventoryAction::TYPE_CREATE_ITEM;
+						break;
+					default:
+						throw new \UnexpectedValueException("Unexpected creative action type $this->inventorySlot");
+
 				}
 
-				throw new \UnexpectedValueException("Unexpected creative action type $this->inventorySlot");
+				return new CreativeInventoryAction($this->oldItem, $this->newItem, $type);
 			case self::SOURCE_TODO:
+				//These types need special handling.
 				switch($this->windowId){
 					case self::SOURCE_TYPE_CRAFTING_ADD_INGREDIENT:
 					case self::SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT:
 						$window = $player->getCraftingGrid();
 						return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
+
+					case self::SOURCE_TYPE_CONTAINER_DROP_CONTENTS:
+						//TODO: this type applies to all fake windows, not just crafting
+						$window = $player->getCraftingGrid();
+
+						//DROP_CONTENTS doesn't bother telling us what slot the item is in, so we find it ourselves
+						$inventorySlot = $window->first($this->oldItem);
+						if($inventorySlot === -1){
+							throw new \InvalidStateException("Fake container " . get_class($window) . " for " . $player->getName() . " does not contain $this->oldItem");
+						}
+						return new SlotChangeAction($window, $inventorySlot, $this->oldItem, $this->newItem);
 				}
-				//TODO
+
+				//TODO: more stuff
 				throw new \UnexpectedValueException("Player " . $player->getName() . " has no open container with window ID $this->windowId");
 			default:
 				throw new \UnexpectedValueException("Unknown inventory source type $this->sourceType");
