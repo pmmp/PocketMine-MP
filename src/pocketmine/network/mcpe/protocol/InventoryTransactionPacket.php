@@ -56,64 +56,95 @@ class InventoryTransactionPacket extends DataPacket{
 	const ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM = 0;
 	const ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM = 1;
 
+	/** @var int */
+	public $transactionType;
+
 	/** @var NetworkInventoryAction[] */
 	public $actions = [];
 
 	/** @var \stdClass */
-	public $transactionData;
+	public $trData;
 
 	protected function decodePayload(){
-		$type = $this->getUnsignedVarInt();
+		$this->transactionType = $this->getUnsignedVarInt();
 
-		$actionCount = $this->getUnsignedVarInt();
-		for($i = 0; $i < $actionCount; ++$i){
-			$this->actions[] = $this->decodeInventoryAction();
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$this->actions[] = (new NetworkInventoryAction())->read($this);
 		}
 
-		$this->transactionData = new \stdClass();
-		$this->transactionData->transactionType = $type;
+		$this->trData = new \stdClass();
 
-		switch($type){
+		switch($this->transactionType){
 			case self::TYPE_NORMAL:
 			case self::TYPE_MISMATCH:
 				//Regular ComplexInventoryTransaction doesn't read any extra data
 				break;
 			case self::TYPE_USE_ITEM:
-				$this->transactionData->useItemActionType = $this->getUnsignedVarInt();
-				$this->getBlockPosition($this->transactionData->x, $this->transactionData->y, $this->transactionData->z);
-				$this->transactionData->face = $this->getVarInt();
-				$this->transactionData->hotbarSlot = $this->getVarInt();
-				$this->transactionData->itemInHand = $this->getSlot();
-				$this->transactionData->playerPos = $this->getVector3Obj();
-				$this->transactionData->clickPos = $this->getVector3Obj();
+				$this->trData->actionType = $this->getUnsignedVarInt();
+				$this->getBlockPosition($this->trData->x, $this->trData->y, $this->trData->z);
+				$this->trData->face = $this->getVarInt();
+				$this->trData->hotbarSlot = $this->getVarInt();
+				$this->trData->itemInHand = $this->getSlot();
+				$this->trData->playerPos = $this->getVector3Obj();
+				$this->trData->clickPos = $this->getVector3Obj();
 				break;
 			case self::TYPE_USE_ITEM_ON_ENTITY:
-				$this->transactionData->entityRuntimeId = $this->getEntityRuntimeId();
-				$this->transactionData->actionType = $this->getUnsignedVarInt();
-				$this->transactionData->hotbarSlot = $this->getVarInt();
-				$this->transactionData->itemInHand = $this->getSlot();
-				$this->transactionData->vector1 = $this->getVector3Obj();
-				$this->transactionData->vector2 = $this->getVector3Obj();
+				$this->trData->entityRuntimeId = $this->getEntityRuntimeId();
+				$this->trData->actionType = $this->getUnsignedVarInt();
+				$this->trData->hotbarSlot = $this->getVarInt();
+				$this->trData->itemInHand = $this->getSlot();
+				$this->trData->vector1 = $this->getVector3Obj();
+				$this->trData->vector2 = $this->getVector3Obj();
 				break;
 			case self::TYPE_RELEASE_ITEM:
-				$this->transactionData->releaseItemActionType = $this->getUnsignedVarInt();
-				$this->transactionData->hotbarSlot = $this->getVarInt();
-				$this->transactionData->itemInHand = $this->getSlot();
-				$this->transactionData->headPos = $this->getVector3Obj();
+				$this->trData->actionType = $this->getUnsignedVarInt();
+				$this->trData->hotbarSlot = $this->getVarInt();
+				$this->trData->itemInHand = $this->getSlot();
+				$this->trData->headPos = $this->getVector3Obj();
 				break;
 			default:
-				throw new \UnexpectedValueException("Unknown transaction type $type");
+				throw new \UnexpectedValueException("Unknown transaction type $this->transactionType");
 		}
 	}
 
 	protected function encodePayload(){
-		//TODO
-	}
+		$this->putUnsignedVarInt($this->transactionType);
 
-	protected function decodeInventoryAction(){
-		$action = new NetworkInventoryAction();
-		$action->read($this);
-		return $action;
+		$this->putUnsignedVarInt(count($this->actions));
+		foreach($this->actions as $action){
+			$action->write($this);
+		}
+
+		switch($this->transactionType){
+			case self::TYPE_NORMAL:
+			case self::TYPE_MISMATCH:
+				break;
+			case self::TYPE_USE_ITEM:
+				$this->putUnsignedVarInt($this->trData->actionType);
+				$this->putBlockPosition($this->trData->x, $this->trData->y, $this->trData->z);
+				$this->putVarInt($this->trData->face);
+				$this->putVarInt($this->trData->hotbarSlot);
+				$this->putSlot($this->trData->itemInHand);
+				$this->putVector3Obj($this->trData->playerPos);
+				$this->putVector3Obj($this->trData->clickPos);
+				break;
+			case self::TYPE_USE_ITEM_ON_ENTITY:
+				$this->putEntityRuntimeId($this->trData->entityRuntimeId);
+				$this->putUnsignedVarInt($this->trData->actionType);
+				$this->putVarInt($this->trData->hotbarSlot);
+				$this->putSlot($this->trData->itemInHand);
+				$this->putVector3Obj($this->trData->vector1);
+				$this->putVector3Obj($this->trData->vector2);
+				break;
+			case self::TYPE_RELEASE_ITEM:
+				$this->putUnsignedVarInt($this->trData->actionType);
+				$this->putVarInt($this->trData->hotbarSlot);
+				$this->putSlot($this->trData->itemInHand);
+				$this->putVector3Obj($this->trData->headPos);
+				break;
+			default:
+				throw new \UnexpectedValueException("Unknown transaction type $this->transactionType");
+		}
 	}
 
 	public function handle(NetworkSession $session) : bool{

@@ -86,6 +86,7 @@ class NetworkInventoryAction{
 
 	/**
 	 * @param InventoryTransactionPacket $packet
+	 * @return $this
 	 */
 	public function read(InventoryTransactionPacket $packet){
 		$this->sourceType = $packet->getUnsignedVarInt();
@@ -107,6 +108,8 @@ class NetworkInventoryAction{
 		$this->inventorySlot = $packet->getUnsignedVarInt();
 		$this->oldItem = $packet->getSlot();
 		$this->newItem = $packet->getSlot();
+
+		return $this;
 	}
 
 	/**

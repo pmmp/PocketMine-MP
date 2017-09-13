@@ -2189,7 +2189,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}
 		}
 
-		switch($packet->transactionData->transactionType){
+		switch($packet->transactionType){
 			case InventoryTransactionPacket::TYPE_NORMAL:
 				$transaction = new SimpleInventoryTransaction($this, $actions);
 
@@ -2218,10 +2218,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 				return true;
 			case InventoryTransactionPacket::TYPE_USE_ITEM:
-				$blockVector = new Vector3($packet->transactionData->x, $packet->transactionData->y, $packet->transactionData->z);
-				$face = $packet->transactionData->face;
+				$blockVector = new Vector3($packet->trData->x, $packet->trData->y, $packet->trData->z);
+				$face = $packet->trData->face;
 
-				$type = $packet->transactionData->useItemActionType;
+				$type = $packet->trData->actionType;
 				switch($type){
 					case InventoryTransactionPacket::USE_ITEM_ACTION_CLICK_BLOCK:
 						$this->setGenericFlag(self::DATA_FLAG_ACTION, false);
@@ -2229,15 +2229,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						if(!$this->canInteract($blockVector->add(0.5, 0.5, 0.5), 13) or $this->isSpectator()){
 						}elseif($this->isCreative()){
 							$item = $this->inventory->getItemInHand();
-							if($this->level->useItemOn($blockVector, $item, $face, $packet->transactionData->clickPos, $this, true) === true){
+							if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this, true) === true){
 								return true;
 							}
-						}elseif(!$this->inventory->getItemInHand()->equals($packet->transactionData->itemInHand)){
+						}elseif(!$this->inventory->getItemInHand()->equals($packet->trData->itemInHand)){
 							$this->inventory->sendHeldItem($this);
 						}else{
 							$item = $this->inventory->getItemInHand();
 							$oldItem = clone $item;
-							if($this->level->useItemOn($blockVector, $item, $face, $packet->transactionData->clickPos, $this, true)){
+							if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this, true)){
 								if(!$item->equals($oldItem) or $item->getCount() !== $oldItem->getCount()){
 									$this->inventory->setItemInHand($item);
 									$this->inventory->sendHeldItem($this->hasSpawned);
@@ -2298,7 +2298,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 						if($this->isCreative()){
 							$item = $this->inventory->getItemInHand();
-						}elseif(!$this->inventory->getItemInHand()->equals($packet->transactionData->itemInHand)){
+						}elseif(!$this->inventory->getItemInHand()->equals($packet->trData->itemInHand)){
 							$this->inventory->sendHeldItem($this);
 							return true;
 						}else{
@@ -2328,12 +2328,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				}
 				break;
 			case InventoryTransactionPacket::TYPE_USE_ITEM_ON_ENTITY:
-				$target = $this->level->getEntity($packet->transactionData->entityRuntimeId);
+				$target = $this->level->getEntity($packet->trData->entityRuntimeId);
 				if($target === null){
 					return false;
 				}
 
-				$type = $packet->transactionData->actionType;
+				$type = $packet->trData->actionType;
 
 				switch($type){
 					case InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_INTERACT:
@@ -2407,7 +2407,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 				break;
 			case InventoryTransactionPacket::TYPE_RELEASE_ITEM:
-				$type = $packet->transactionData->releaseItemActionType;
+				$type = $packet->trData->actionType;
 				switch($type){
 					case InventoryTransactionPacket::RELEASE_ITEM_ACTION_RELEASE:
 						if($this->isUsingItem()){
