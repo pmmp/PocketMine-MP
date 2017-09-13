@@ -106,6 +106,9 @@ abstract class BaseInventory implements Inventory{
 		return $this->slots[$index] !== null ? clone $this->slots[$index] : ItemFactory::get(Item::AIR, 0, 0);
 	}
 
+	/**
+	 * @return Item[]
+	 */
 	public function getContents() : array{
 		return array_filter($this->slots->toArray(), function(Item $item = null){ return $item !== null; });
 	}
@@ -196,13 +199,13 @@ abstract class BaseInventory implements Inventory{
 		}
 	}
 
-	public function first(Item $item) : int{
-		$count = max(1, $item->getCount());
-		$checkDamage = !$item->hasAnyDamageValue();
-		$checkTags = $item->hasCompoundTag();
+	public function first(Item $item, bool $exact = false) : int{
+		$count = $exact ? $item->getCount() : max(1, $item->getCount());
+		$checkDamage = $exact || !$item->hasAnyDamageValue();
+		$checkTags = $exact || $item->hasCompoundTag();
 
 		foreach($this->getContents() as $index => $i){
-			if($item->equals($i, $checkDamage, $checkTags) and $i->getCount() >= $count){
+			if($item->equals($i, $checkDamage, $checkTags) and ($i->getCount() === $count or (!$exact and $i->getCount() > $count))){
 				return $index;
 			}
 		}

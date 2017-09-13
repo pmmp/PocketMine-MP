@@ -191,7 +191,7 @@ class NetworkInventoryAction{
 						$window = $player->getCraftingGrid();
 
 						//DROP_CONTENTS doesn't bother telling us what slot the item is in, so we find it ourselves
-						$inventorySlot = $window->first($this->oldItem);
+						$inventorySlot = $window->first($this->oldItem, true);
 						if($inventorySlot === -1){
 							throw new \InvalidStateException("Fake container " . get_class($window) . " for " . $player->getName() . " does not contain $this->oldItem");
 						}

@@ -149,14 +149,17 @@ interface Inventory{
 	public function all(Item $item) : array;
 
 	/**
-	 * Will return the first slot has the same id and metadata (if not null) as the Item.
-	 * -1 if not found, will check amount
+	 * Returns the first slot number containing an item with the same ID, damage (if not any-damage), NBT (if not empty)
+	 * and count >= to the count of the specified item stack.
+	 *
+	 * If $exact is true, only items with equal ID, damage, NBT and count will match.
 	 *
 	 * @param Item $item
+	 * @param bool $exact
 	 *
 	 * @return int
 	 */
-	public function first(Item $item) : int;
+	public function first(Item $item, bool $exact = false) : int;
 
 	/**
 	 * Returns the first empty slot, or -1 if not found
