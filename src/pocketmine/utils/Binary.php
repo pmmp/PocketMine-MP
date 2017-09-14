@@ -285,7 +285,7 @@ class Binary{
 	 */
 	public static function readFloat(string $str) : float{
 		self::checkLength($str, 4);
-		return (ENDIANNESS === self::BIG_ENDIAN ? unpack("f", $str)[1] : unpack("f", strrev($str))[1]);
+		return unpack("G", $str)[1];
 	}
 
 	/**
@@ -307,7 +307,7 @@ class Binary{
 	 * @return string
 	 */
 	public static function writeFloat(float $value) : string{
-		return ENDIANNESS === self::BIG_ENDIAN ? pack("f", $value) : strrev(pack("f", $value));
+		return pack("G", $value);
 	}
 
 	/**
@@ -318,7 +318,7 @@ class Binary{
 	 */
 	public static function readLFloat(string $str) : float{
 		self::checkLength($str, 4);
-		return (ENDIANNESS === self::BIG_ENDIAN ? unpack("f", strrev($str))[1] : unpack("f", $str)[1]);
+		return unpack("g", $str)[1];
 	}
 
 	/**
@@ -340,7 +340,7 @@ class Binary{
 	 * @return string
 	 */
 	public static function writeLFloat(float $value) : string{
-		return ENDIANNESS === self::BIG_ENDIAN ? strrev(pack("f", $value)) : pack("f", $value);
+		return pack("g", $value);
 	}
 
 	/**
@@ -361,7 +361,7 @@ class Binary{
 	 */
 	public static function readDouble(string $str) : float{
 		self::checkLength($str, 8);
-		return ENDIANNESS === self::BIG_ENDIAN ? unpack("d", $str)[1] : unpack("d", strrev($str))[1];
+		return unpack("E", $str)[1];
 	}
 
 	/**
@@ -371,7 +371,7 @@ class Binary{
 	 * @return string
 	 */
 	public static function writeDouble(float $value) : string{
-		return ENDIANNESS === self::BIG_ENDIAN ? pack("d", $value) : strrev(pack("d", $value));
+		return pack("E", $value);
 	}
 
 	/**
@@ -382,7 +382,7 @@ class Binary{
 	 */
 	public static function readLDouble(string $str) : float{
 		self::checkLength($str, 8);
-		return ENDIANNESS === self::BIG_ENDIAN ? unpack("d", strrev($str))[1] : unpack("d", $str)[1];
+		return unpack("e", $str)[1];
 	}
 
 	/**
@@ -391,7 +391,7 @@ class Binary{
 	 * @return string
 	 */
 	public static function writeLDouble(float $value) : string{
-		return ENDIANNESS === self::BIG_ENDIAN ? strrev(pack("d", $value)) : pack("d", $value);
+		return pack("e", $value);
 	}
 
 	/**
