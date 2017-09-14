@@ -80,7 +80,7 @@ namespace pocketmine {
 	use raklib\RakLib;
 
 	const VERSION = "1.7dev";
-	const API_VERSION = "3.0.0-ALPHA7";
+	const API_VERSION = "3.0.0-ALPHA8";
 	const CODENAME = "[REDACTED]";
 
 	/*
