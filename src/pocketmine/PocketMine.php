@@ -80,7 +80,7 @@ namespace pocketmine {
 	use raklib\RakLib;
 
 	const VERSION = "1.7dev";
-	const API_VERSION = "3.0.0-ALPHA7";
+	const API_VERSION = "3.0.0-ALPHA8";
 	const CODENAME = "[REDACTED]";
 
 	/*
@@ -558,19 +558,7 @@ namespace pocketmine {
 		$killer->start();
 		usleep(10000); //Fixes ServerKiller not being able to start on single-core machines
 
-		$erroredThreads = 0;
-		foreach(ThreadManager::getInstance()->getAll() as $id => $thread){
-			$logger->debug("Stopping " . $thread->getThreadName() . " thread");
-			try{
-				$thread->quit();
-				$logger->debug($thread->getThreadName() . " thread stopped successfully.");
-			}catch(\ThreadException $e){
-				++$erroredThreads;
-				$logger->debug("Could not stop " . $thread->getThreadName() . " thread: " . $e->getMessage());
-			}
-		}
-
-		if($erroredThreads > 0){
+		if(ThreadManager::getInstance()->stopAll() > 0){
 			if(\pocketmine\DEBUG > 1){
 				echo "Some threads could not be stopped, performing a force-kill" . PHP_EOL . PHP_EOL;
 			}

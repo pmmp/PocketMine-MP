@@ -62,6 +62,12 @@ memory:
   #Trigger on low memory
   low-memory-trigger: true
 
+ #Settings controlling memory dump handling.
+ memory-dump:
+  #Dump memory from async workers as well as the main thread. If you have issues with segfaults when dumping memory, disable this setting.
+  dump-async-worker: true
+
+
  max-chunks:
   #Maximum render distance per player when low memory is triggered
   chunk-radius: 4
