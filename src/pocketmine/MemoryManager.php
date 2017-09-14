@@ -76,6 +76,9 @@ class MemoryManager{
 	/** @var bool */
 	private $cacheTrigger;
 
+	/** @var bool */
+	private $dumpWorkers = true;
+
 	public function __construct(Server $server){
 		$this->server = $server;
 
@@ -133,6 +136,7 @@ class MemoryManager{
 		$this->chunkCache = (bool) $this->server->getProperty("memory.world-caches.disable-chunk-cache", true);
 		$this->cacheTrigger = (bool) $this->server->getProperty("memory.world-caches.low-memory-trigger", true);
 
+		$this->dumpWorkers = (bool) $this->server->getProperty("memory.memory-dump.dump-async-worker", true);
 		gc_enable();
 	}
 
@@ -266,9 +270,11 @@ class MemoryManager{
 		MainLogger::getLogger()->notice("[Dump] After the memory dump is done, the server might crash");
 		self::dumpMemory($this->server, $this->server->getLoader(), $outputFolder, $maxNesting, $maxStringSize);
 
-		$scheduler = $this->server->getScheduler();
-		for($i = 0, $size = $scheduler->getAsyncTaskPoolSize(); $i < $size; ++$i){
-			$scheduler->scheduleAsyncTaskToWorker(new DumpWorkerMemoryTask($outputFolder, $maxNesting, $maxStringSize), $i);
+		if($this->dumpWorkers){
+			$scheduler = $this->server->getScheduler();
+			for($i = 0, $size = $scheduler->getAsyncTaskPoolSize(); $i < $size; ++$i){
+				$scheduler->scheduleAsyncTaskToWorker(new DumpWorkerMemoryTask($outputFolder, $maxNesting, $maxStringSize), $i);
+			}
 		}
 	}
 
