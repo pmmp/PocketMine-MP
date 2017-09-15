@@ -189,7 +189,7 @@ class SimpleInventoryTransaction implements InventoryTransaction{
 				$sortedThisLoop = 0;
 				foreach($list as $i => $action){
 					$actionSource = $action->getSourceItem();
-					if($actionSource->equals($lastTargetItem) and $actionSource->getCount() === $lastTargetItem->getCount()){
+					if($actionSource->equalsExact($lastTargetItem)){
 						$lastTargetItem = $action->getTargetItem();
 						unset($list[$i]);
 						$sortedThisLoop++;

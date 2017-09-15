@@ -884,6 +884,16 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
+	 * Returns whether the specified item stack has the same ID, damage, NBT and count as this item stack.
+	 * @param Item $other
+	 *
+	 * @return bool
+	 */
+	final public function equalsExact(Item $other) : bool{
+		return $this->equals($other, true, true) and $this->count === $other->count;
+	}
+
+	/**
 	 * @deprecated Use {@link Item#equals} instead, this method will be removed in the future.
 	 *
 	 * @param Item $item

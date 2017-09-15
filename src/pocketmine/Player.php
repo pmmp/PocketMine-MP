@@ -2238,7 +2238,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							$item = $this->inventory->getItemInHand();
 							$oldItem = clone $item;
 							if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this, true)){
-								if(!$item->equals($oldItem) or $item->getCount() !== $oldItem->getCount()){
+								if(!$item->equalsExact($oldItem)){
 									$this->inventory->setItemInHand($item);
 									$this->inventory->sendHeldItem($this->hasSpawned);
 								}
@@ -2270,7 +2270,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 						if($this->canInteract($blockVector->add(0.5, 0.5, 0.5), $this->isCreative() ? 13 : 6) and $this->level->useBreakOn($blockVector, $item, $this, true)){
 							if($this->isSurvival()){
-								if(!$item->equals($oldItem) or $item->getCount() !== $oldItem->getCount()){
+								if(!$item->equalsExact($oldItem)){
 									$this->inventory->setItemInHand($item);
 									$this->inventory->sendHeldItem($this->hasSpawned);
 								}
