@@ -30,6 +30,7 @@ use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
 use pocketmine\Player;
 use pocketmine\Server;
+use pocketmine\utils\MainLogger;
 
 /**
  * This InventoryTransaction only allows doing Transaction between one / two inventories
@@ -137,10 +138,87 @@ class SimpleInventoryTransaction implements InventoryTransaction{
 		return true;
 	}
 
+	/**
+	 * Iterates over SlotChangeActions in this transaction and compacts any which refer to the same slot in the same
+	 * inventory so they can be correctly handled.
+	 *
+	 * Under normal circumstances, the same slot would never be changed more than once in a single transaction. However,
+	 * due to the way things like the crafting grid are "implemented" in MCPE 1.2 (a.k.a. hacked-in), we may get
+	 * multiple slot changes referring to the same slot in a single transaction. These multiples are not even guaranteed
+	 * to be in the correct order (slot splitting in the crafting grid for example, causes the actions to be sent in the
+	 * wrong order), so this method also tries to chain them into order.
+	 *
+	 * @return bool
+	 */
+	protected function squashDuplicateSlotChanges() : bool{
+		/** @var SlotChangeAction[][] $slotChanges */
+		$slotChanges = [];
+		foreach($this->actions as $key => $action){
+			if($action instanceof SlotChangeAction){
+				$slotChanges[spl_object_hash($action->getInventory()) . "@" . $action->getSlot()][] = $action;
+			}
+		}
+
+		foreach($slotChanges as $hash => $list){
+			if(count($list) === 1){ //No need to compact slot changes if there is only one on this slot
+				unset($slotChanges[$hash]);
+				continue;
+			}
+
+			$originalList = $list;
+
+			/** @var SlotChangeAction|null $originalAction */
+			$originalAction = null;
+			/** @var Item|null $lastTargetItem */
+			$lastTargetItem = null;
+
+			foreach($list as $i => $action){
+				if($action->isValid($this->source)){
+					$originalAction = $action;
+					$lastTargetItem = $action->getTargetItem();
+					unset($list[$i]);
+					break;
+				}
+			}
+
+			if($originalAction === null){
+				return false; //Couldn't find any actions that had a source-item matching the current inventory slot
+			}
+
+			do{
+				$sortedThisLoop = 0;
+				foreach($list as $i => $action){
+					$actionSource = $action->getSourceItem();
+					if($actionSource->equals($lastTargetItem) and $actionSource->getCount() === $lastTargetItem->getCount()){
+						$lastTargetItem = $action->getTargetItem();
+						unset($list[$i]);
+						$sortedThisLoop++;
+					}
+				}
+			}while($sortedThisLoop > 0);
+
+			if(count($list) > 0){ //couldn't chain all the actions together
+				MainLogger::getLogger()->debug("Failed to compact " . count($originalList) . " actions for " . $this->source->getName());
+				return false;
+			}
+
+			foreach($originalList as $action){
+				unset($this->actions[spl_object_hash($action)]);
+			}
+
+			$this->addAction(new SlotChangeAction($originalAction->getInventory(), $originalAction->getSlot(), $originalAction->getSourceItem(), $lastTargetItem));
+
+			MainLogger::getLogger()->debug("Successfully compacted " . count($originalList) . " actions for " . $this->source->getName());
+		}
+
+		return true;
+	}
+
 	public function canExecute() : bool{
+		$this->squashDuplicateSlotChanges();
+
 		$haveItems = [];
 		$needItems = [];
-
 		return $this->matchItems($needItems, $haveItems) and count($this->actions) > 0 and count($haveItems) === 0 and count($needItems) === 0;
 	}
 
