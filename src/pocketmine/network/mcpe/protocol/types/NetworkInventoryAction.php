@@ -154,7 +154,7 @@ class NetworkInventoryAction{
 
 				$window = $player->getWindow($this->windowId);
 				if($window !== null){
-					return new SlotChangeAction($player->getWindow($this->windowId), $this->inventorySlot, $this->oldItem, $this->newItem);
+					return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
 				}
 
 				throw new \InvalidStateException("Player " . $player->getName() . " has no open container with window ID $this->windowId");
