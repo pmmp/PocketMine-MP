@@ -2763,6 +2763,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->server->getPluginManager()->callEvent(new InventoryCloseEvent($this->windowIndex[$packet->windowId], $this));
 			$this->removeWindow($this->windowIndex[$packet->windowId]);
 			return true;
+		}elseif($packet->windowId === 255){
+			//Closed a fake window
+			return true;
 		}
 
 		return false;
