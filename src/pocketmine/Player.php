@@ -3738,12 +3738,17 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function resetCraftingGridType() : void{
-		if($this->craftingGrid instanceof BigCraftingGrid){
-			$drops = $this->inventory->addItem(...$this->craftingGrid->getContents());
+		$contents = $this->craftingGrid->getContents();
+		if(count($contents) > 0){
+			$drops = $this->inventory->addItem(...$contents);
 			foreach($drops as $drop){
 				$this->dropItem($drop);
 			}
 
+			$this->craftingGrid->clearAll();
+		}
+
+		if($this->craftingGrid instanceof BigCraftingGrid){
 			$this->craftingGrid = new CraftingGrid($this);
 			$this->craftingType = 0;
 		}
