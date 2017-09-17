@@ -38,36 +38,62 @@ class ShapedRecipe implements Recipe{
 
 	/** @var string[] */
 	private $shape = [];
-
-	/** @var Item[][] */
-	private $ingredients = [];
-	/** @var Vector2[][] */
-	private $shapeItems = [];
+	/** @var Item[] char => Item map */
+	private $ingredientList = [];
 
 	/**
-	 * @param Item $result
-	 * @param int  $height
-	 * @param int  $width
+	 * Constructs a ShapedRecipe instance.
 	 *
-	 * @throws \Exception
+	 * @param Item     $result
+	 * @param string[] $shape<br>
+	 *     Array of 1, 2, or 3 strings representing the rows of the recipe.
+	 *     This accepts an array of 1, 2 or 3 strings. Each string should be of the same length and must be at most 3
+	 *     characters long. Each character represents a unique type of ingredient. Spaces are interpreted as air.
+	 * @param Item[]   $ingredients<br>
+	 *     Char => Item map of items to be set into the shape.
+	 *     This accepts an array of Items, indexed by character. Every unique character (except space) in the shape
+	 *     array MUST have a corresponding item in this list. Space character is automatically treated as air.
+	 *
+	 * Note: Recipes **do not** need to be square. Do NOT add padding for empty rows/columns.
 	 */
-	public function __construct(Item $result, int $height, int $width){
-		for($h = 0; $h < $height; $h++){
-			if($width === 0 or $width > 3){
-				throw new \InvalidStateException("Crafting rows should be 1, 2, 3 wide, not $width");
-			}
-			$this->ingredients[] = array_fill(0, $width, null);
+	public function __construct(Item $result, array $shape, array $ingredients){
+		$rowCount = count($shape);
+		if($rowCount > 3 or $rowCount <= 0){
+			throw new \InvalidArgumentException("Shaped recipes may only have 1, 2 or 3 rows, not $rowCount");
 		}
 
+		$shape = array_values($shape);
+
+		$columnCount = strlen($shape[0]);
+		if($columnCount > 3 or $rowCount <= 0){
+			throw new \InvalidArgumentException("Shaped recipes may only have 1, 2 or 3 columns, not $columnCount");
+		}
+
+		foreach($shape as $y => $row){
+			if(strlen($row) !== $columnCount){
+				throw new \InvalidArgumentException("Shaped recipe rows must all have the same length (expected $columnCount, got " . strlen($row) . ")");
+			}
+
+			for($x = 0; $x < $columnCount; ++$x){
+				if($row{$x} !== ' ' and !isset($ingredients[$row{$x}])){
+					throw new \InvalidArgumentException("No item specified for symbol '" . $row{$x} . "'");
+				}
+			}
+		}
 		$this->output = clone $result;
+		$this->shape = $shape;
+
+		foreach($ingredients as $char => $i){
+			$this->setIngredient($char, $i);
+		}
 	}
 
 	public function getWidth() : int{
-		return count($this->ingredients[0]);
+		return strlen($this->shape[0]);
 	}
 
 	public function getHeight() : int{
-		return count($this->ingredients);
+		return count($this->shape);
 	}
 
 	/**
@@ -93,42 +119,20 @@ class ShapedRecipe implements Recipe{
 	}
 
 	/**
-	 * @param int $x
-	 * @param int $y
-	 * @param Item $item
-	 *
-	 * @return $this
-	 */
-	public function addIngredient(int $x, int $y, Item $item){
-		$this->ingredients[$y][$x] = clone $item;
-		return $this;
-	}
-
-	/**
 	 * @param string $key
 	 * @param Item   $item
 	 *
 	 * @return $this
-	 * @throws \Exception
+	 * @throws \InvalidArgumentException
 	 */
 	public function setIngredient(string $key, Item $item){
-		if(!array_key_exists($key, $this->shape)){
-			throw new \Exception("Symbol does not appear in the shape: " . $key);
+		if(strpos(implode($this->shape), $key) === false){
+			throw new \InvalidArgumentException("Symbol '$key' does not appear in the recipe shape");
 		}
 
-		$this->fixRecipe($key, $item);
+		$this->ingredientList[$key] = clone $item;
 
 		return $this;
-	}
-
-	/**
-	 * @param string $key
-	 * @param Item $item
-	 */
-	protected function fixRecipe(string $key, Item $item){
-		foreach($this->shapeItems[$key] as $entry){
-			$this->ingredients[$entry->y][$entry->x] = clone $item;
-		}
 	}
 
 	/**
@@ -136,14 +140,10 @@ class ShapedRecipe implements Recipe{
 	 */
 	public function getIngredientMap() : array{
 		$ingredients = [];
-		foreach($this->ingredients as $y => $row){
-			$ingredients[$y] = [];
-			foreach($row as $x => $ingredient){
-				if($ingredient !== null){
-					$ingredients[$y][$x] = clone $ingredient;
-				}else{
-					$ingredients[$y][$x] = ItemFactory::get(Item::AIR);
-				}
+
+		for($y = 0, $y2 = $this->getHeight(); $y < $y2; ++$y){
+			for($x = 0, $x2 = $this->getWidth(); $x < $x2; ++$x){
+				$ingredients[$y][$x] = $this->getIngredient($x, $y);
 			}
 		}
 
@@ -157,10 +157,12 @@ class ShapedRecipe implements Recipe{
 	 * @return Item
 	 */
 	public function getIngredient(int $x, int $y) : Item{
-		return $this->ingredients[$y][$x] ?? ItemFactory::get(Item::AIR);
+		$exists = $this->ingredientList[$this->shape[$y]{$x}] ?? null;
+		return $exists !== null ? clone $exists : ItemFactory::get(Item::AIR);
 	}
 
 	/**
+	 * Returns an array of strings containing characters representing the recipe's shape.
 	 * @return string[]
 	 */
 	public function getShape() : array{
