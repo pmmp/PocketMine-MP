@@ -6,8 +6,9 @@ php:
 before_script:
 # - pecl install channel://pecl.php.net/pthreads-3.1.6
  - echo | pecl install channel://pecl.php.net/yaml-2.0.2
- - git clone https://github.com/krakjoe/pthreads.git --depth=1
+ - git clone https://github.com/krakjoe/pthreads.git
  - cd pthreads
+ - git checkout caca8dc42a5d75ddfb39e6fd15337e87e967517e #master is broken - https://github.com/krakjoe/pthreads/issues/757
  - phpize
  - ./configure
  - make
