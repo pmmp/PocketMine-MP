@@ -654,7 +654,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->loaderId = Level::generateChunkLoaderId($this);
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
 		$this->spawnThreshold = (int) (($this->server->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
-		$this->spawnPosition = null;
 		$this->gamemode = $this->server->getGamemode();
 		$this->setLevel($this->server->getDefaultLevel());
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);

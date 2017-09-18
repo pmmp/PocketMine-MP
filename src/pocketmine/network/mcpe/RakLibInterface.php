@@ -54,7 +54,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	private $players = [];
 
 	/** @var string[] */
-	private $identifiers;
+	private $identifiers = [];
 
 	/** @var int[] */
 	private $identifiersACK = [];
@@ -63,9 +63,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	private $interface;
 
 	public function __construct(Server $server){
-
 		$this->server = $server;
-		$this->identifiers = [];
 
 		$this->rakLib = new RakLibServer($this->server->getLogger(), $this->server->getLoader(), $this->server->getPort(), $this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp(), false);
 		$this->interface = new ServerHandler($this->rakLib, $this);
@@ -213,13 +211,10 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			if($packet instanceof BatchPacket){
 				if($needACK){
 					$pk = new EncapsulatedPacket();
+					$pk->identifierACK = $this->identifiersACK[$identifier]++;
 					$pk->buffer = $packet->buffer;
 					$pk->reliability = $immediate ? PacketReliability::RELIABLE : PacketReliability::RELIABLE_ORDERED;
 					$pk->orderChannel = 0;
-
-					if($needACK === true){
-						$pk->identifierACK = $this->identifiersACK[$identifier]++;
-					}
 				}else{
 					if(!isset($packet->__encapsulatedPacket)){
 						$packet->__encapsulatedPacket = new CachedEncapsulatedPacket;
