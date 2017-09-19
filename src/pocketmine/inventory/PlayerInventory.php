@@ -465,7 +465,7 @@ class PlayerInventory extends BaseInventory{
 
 		$pk = new InventorySlotPacket();
 		$pk->inventorySlot = $index;
-		$pk->item = clone $this->getItem($index);
+		$pk->item = $this->getItem($index);
 
 		foreach($target as $player){
 			if($player === $this->getHolder()){
