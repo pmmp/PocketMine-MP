@@ -53,35 +53,6 @@ class PlayerCursorInventory extends BaseInventory{
 	}
 
 	/**
-	 * @param int             $index
-	 * @param Player|Player[] $target
-	 */
-	public function sendSlot(int $index, $target){
-		if($target instanceof Player){
-			$target = [$target];
-		}
-
-		$pk = new InventorySlotPacket();
-		$pk->inventorySlot = $index;
-		$pk->item = $this->getItem($index);
-
-		foreach($target as $player){
-			if($player === $this->getHolder()){
-				/** @var Player $player */
-				$pk->windowId = ContainerIds::CURSOR;
-				$player->dataPacket(clone $pk);
-			}else{
-				if(($id = $player->getWindowId($this)) === ContainerIds::NONE){
-					$this->close($player);
-					continue;
-				}
-				$pk->windowId = $id;
-				$player->dataPacket(clone $pk);
-			}
-		}
-	}
-
-	/**
 	 * This override is here for documentation and code completion purposes only.
 	 * @return Player
 	 */

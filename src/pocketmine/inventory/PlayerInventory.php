@@ -129,18 +129,6 @@ class PlayerInventory extends BaseInventory{
 	}
 
 	/**
-	 * This is only used when sending inventory contents. Since we now assume that all hotbar slots are the same as
-	 * their respective inventory slots, we simply fill this wil 0-8.
-	 */
-	private function sendHotbar(){
-		$pk = new PlayerHotbarPacket();
-		$pk->windowId = ContainerIds::INVENTORY;
-		$pk->selectedHotbarSlot = $this->getHeldItemIndex();
-		$pk->slots = range(0, $this->getHotbarSize() - 1, 1);
-		$this->getHolder()->dataPacket($pk);
-	}
-
-	/**
 	 * @deprecated
 	 * @return int
 	 */
@@ -413,34 +401,6 @@ class PlayerInventory extends BaseInventory{
 		}
 	}
 
-	/**
-	 * @param Player|Player[] $target
-	 */
-	public function sendContents($target){
-		if($target instanceof Player){
-			$target = [$target];
-		}
-
-		$pk = new InventoryContentPacket();
-
-		for($i = 0; $i < $this->getSize(); ++$i){ //Do not send armor by error here
-			$pk->items[$i] = $this->getItem($i);
-		}
-
-		foreach($target as $player){
-			if(($id = $player->getWindowId($this)) === -1 or $player->spawned !== true){
-				$this->close($player);
-				continue;
-			}
-			$pk->windowId = $id;
-			$player->dataPacket(clone $pk);
-
-			if($player === $this->getHolder()){
-				$this->sendHotbar();
-			}
-		}
-	}
-
 	public function sendCreativeContents(){
 		$pk = new InventoryContentPacket();
 		$pk->windowId = ContainerIds::CREATIVE;
@@ -452,35 +412,6 @@ class PlayerInventory extends BaseInventory{
 		}
 
 		$this->getHolder()->dataPacket($pk);
-	}
-
-	/**
-	 * @param int             $index
-	 * @param Player|Player[] $target
-	 */
-	public function sendSlot(int $index, $target){
-		if($target instanceof Player){
-			$target = [$target];
-		}
-
-		$pk = new InventorySlotPacket();
-		$pk->inventorySlot = $index;
-		$pk->item = $this->getItem($index);
-
-		foreach($target as $player){
-			if($player === $this->getHolder()){
-				/** @var Player $player */
-				$pk->windowId = ContainerIds::INVENTORY;
-				$player->dataPacket(clone $pk);
-			}else{
-				if(($id = $player->getWindowId($this)) === -1){
-					$this->close($player);
-					continue;
-				}
-				$pk->windowId = $id;
-				$player->dataPacket(clone $pk);
-			}
-		}
 	}
 
 	/**

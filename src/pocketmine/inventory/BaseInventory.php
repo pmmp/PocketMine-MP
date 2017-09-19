@@ -403,12 +403,14 @@ abstract class BaseInventory implements Inventory{
 		}
 
 		$pk = new InventoryContentPacket();
-		for($i = 0; $i < $this->getSize(); ++$i){
+
+		//Using getSize() here allows PlayerInventory to report that it's 4 slots smaller than it actually is (armor hack)
+		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
 			$pk->items[$i] = $this->getItem($i);
 		}
 
 		foreach($target as $player){
-			if(($id = $player->getWindowId($this)) === -1 or $player->spawned !== true){
+			if(($id = $player->getWindowId($this)) === ContainerIds::NONE or $player->spawned !== true){
 				$this->close($player);
 				continue;
 			}
@@ -431,7 +433,7 @@ abstract class BaseInventory implements Inventory{
 		$pk->item = $this->getItem($index);
 
 		foreach($target as $player){
-			if(($id = $player->getWindowId($this)) === -1){
+			if(($id = $player->getWindowId($this)) === ContainerIds::NONE){
 				$this->close($player);
 				continue;
 			}
