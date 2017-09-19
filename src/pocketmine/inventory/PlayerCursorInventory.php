@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\Player;
 
 class PlayerCursorInventory extends BaseInventory{
