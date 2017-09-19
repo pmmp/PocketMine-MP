@@ -44,7 +44,6 @@ use pocketmine\event\level\SpawnChangeEvent;
 use pocketmine\event\LevelTimings;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\Timings;
-use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\format\Chunk;
@@ -84,6 +83,7 @@ use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\tile\Chest;
+use pocketmine\tile\Container;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Random;
 use pocketmine\utils\ReversePriorityQueue;
@@ -1618,7 +1618,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$tile = $this->getTile($target);
 		if($tile !== null){
-			if($tile instanceof InventoryHolder){
+			if($tile instanceof Container){
 				if($tile instanceof Chest){
 					$tile->unpair();
 				}
