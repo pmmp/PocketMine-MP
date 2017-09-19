@@ -304,9 +304,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->initHumanData();
 
 		if(isset($this->namedtag->Inventory) and $this->namedtag->Inventory instanceof ListTag){
-			foreach($this->namedtag->Inventory as $item){
+			foreach($this->namedtag->Inventory as $i => $item){
 				if($item["Slot"] >= 0 and $item["Slot"] < 9){ //Hotbar
-					$this->inventory->setHotbarSlotIndex($item["Slot"], isset($item["TrueSlot"]) ? $item["TrueSlot"] : -1);
+					//Old hotbar saving stuff, remove it (useless now)
+					unset($this->namedtag->Inventory->{$i});
 				}elseif($item["Slot"] >= 100 and $item["Slot"] < 104){ //Armor
 					$this->inventory->setItem($this->inventory->getSize() + $item["Slot"] - 100, ItemItem::nbtDeserialize($item));
 				}else{
@@ -448,28 +449,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->namedtag->Inventory = new ListTag("Inventory", []);
 		$this->namedtag->Inventory->setTagType(NBT::TAG_Compound);
 		if($this->inventory !== null){
-			for($slot = 0; $slot < 9; ++$slot){
-				$hotbarSlot = $this->inventory->getHotbarSlotIndex($slot);
-				if($hotbarSlot !== -1){
-					$item = $this->inventory->getItem($hotbarSlot);
-					if($item->getId() !== 0 and $item->getCount() > 0){
-						$tag = $item->nbtSerialize($slot);
-						$tag->TrueSlot = new ByteTag("TrueSlot", $hotbarSlot);
-						$this->namedtag->Inventory[$slot] = $tag;
-
-						continue;
-					}
-				}
-
-				$this->namedtag->Inventory[$slot] = new CompoundTag("", [
-					new ByteTag("Count", 0),
-					new ShortTag("Damage", 0),
-					new ByteTag("Slot", $slot),
-					new ByteTag("TrueSlot", -1),
-					new ShortTag("id", 0)
-				]);
-			}
-
 			//Normal inventory
 			$slotCount = $this->inventory->getSize() + $this->inventory->getHotbarSize();
 			for($slot = $this->inventory->getHotbarSize(); $slot < $slotCount; ++$slot){

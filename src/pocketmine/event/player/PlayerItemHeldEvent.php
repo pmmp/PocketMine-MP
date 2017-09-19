@@ -34,18 +34,21 @@ class PlayerItemHeldEvent extends PlayerEvent implements Cancellable{
 	private $item;
 	/** @var int */
 	private $hotbarSlot;
-	/** @var int */
-	private $inventorySlot;
 
-	public function __construct(Player $player, Item $item, int $inventorySlot, int $hotbarSlot){
+	public function __construct(Player $player, Item $item, int $hotbarSlot){
 		$this->player = $player;
 		$this->item = $item;
-		$this->inventorySlot = $inventorySlot;
 		$this->hotbarSlot = $hotbarSlot;
 	}
 
 	/**
 	 * Returns the hotbar slot the player is attempting to hold.
+	 *
+	 * NOTE: This event is called BEFORE the slot is equipped server-side. Setting the player's held item during this
+	 * event will result in the **old** slot being changed, not this one.
+	 *
+	 * To change the item in the slot that the player is attempting to hold, set the slot that this function reports.
+	 *
 	 * @return int
 	 */
 	public function getSlot() : int{
@@ -53,14 +56,25 @@ class PlayerItemHeldEvent extends PlayerEvent implements Cancellable{
 	}
 
 	/**
+	 * @deprecated This is currently an alias of {@link getSlot}
+	 *
+	 * Some background for confused future readers: Before MCPE 1.2, hotbar slots and inventory slots were not the same
+	 * thing - a hotbar slot was a link to a certain slot in the inventory.
+	 * As of 1.2, hotbar slots are now always linked to their respective slots in the inventory, meaning that the two
+	 * are now synonymous, rendering the separate methods obsolete.
+	 *
 	 * @return int
 	 */
 	public function getInventorySlot() : int{
-		return $this->inventorySlot;
+		return $this->getSlot();
 	}
 
+	/**
+	 * Returns the item in the slot that the player is trying to equip.
+	 *
+	 * @return Item
+	 */
 	public function getItem() : Item{
 		return $this->item;
 	}
-
 }

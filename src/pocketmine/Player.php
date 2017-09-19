@@ -2158,7 +2158,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$inventory->sendContents($this);
 			if($inventory instanceof PlayerInventory){
 				$inventory->sendArmorContents($this);
-				$inventory->sendHotbar();
 			}
 		}
 	}
@@ -2480,26 +2479,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
-		if($packet->inventorySlot === 255){
-			$packet->inventorySlot = -1; //Cleared slot
-		}else{
-			if($packet->inventorySlot < 9){
-				$this->server->getLogger()->debug("Tried to equip a slot that does not exist (index " . $packet->inventorySlot . ")");
-				$this->inventory->sendContents($this);
-				return false;
-			}
-			$packet->inventorySlot -= 9; //Get real inventory slot
+		$item = $this->inventory->getItem($packet->hotbarSlot);
 
-			$item = $this->inventory->getItem($packet->inventorySlot);
-
-			if(!$item->equals($packet->item)){
-				$this->server->getLogger()->debug("Tried to equip " . $packet->item . " but have " . $item . " in target slot");
-				$this->inventory->sendContents($this);
-				return false;
-			}
+		if(!$item->equals($packet->item)){
+			$this->server->getLogger()->debug("Tried to equip " . $packet->item . " but have " . $item . " in target slot");
+			$this->inventory->sendContents($this);
+			return false;
 		}
 
-		$this->inventory->equipItem($packet->hotbarSlot, $packet->inventorySlot);
+		$this->inventory->equipItem($packet->hotbarSlot);
 
 		$this->setGenericFlag(self::DATA_FLAG_ACTION, false);
 
@@ -2773,10 +2761,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function handlePlayerHotbar(PlayerHotbarPacket $packet){
 		if($packet->windowId !== ContainerIds::INVENTORY){
 			return false; //In PE this should never happen
-		}
-
-		foreach($packet->slots as $hotbarSlot => $slotLink){
-			$this->inventory->setHotbarSlotIndex($hotbarSlot, $slotLink === -1 ? $slotLink : $slotLink - 9);
 		}
 
 		$this->inventory->equipItem($packet->selectedHotbarSlot);
@@ -3608,9 +3592,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}
 
 			if($this->inventory !== null){
+				$this->inventory->setHeldItemIndex(0, false); //This is already handled when sending contents, don't send it twice
 				$this->inventory->clearAll();
-				$this->inventory->setHeldItemIndex(0);
-				$this->inventory->resetHotbar(true);
 			}
 		}
 

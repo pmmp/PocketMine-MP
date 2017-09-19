@@ -44,12 +44,13 @@ class PlayerInventory extends BaseInventory{
 	/** @var Human */
 	protected $holder;
 
+	/** @var int */
 	protected $itemInHandIndex = 0;
-	/** @var \SplFixedArray<int> */
-	protected $hotbar;
 
+	/**
+	 * @param Human $player
+	 */
 	public function __construct(Human $player){
-		$this->resetHotbar(false);
 		parent::__construct($player);
 	}
 
@@ -79,115 +80,72 @@ class PlayerInventory extends BaseInventory{
 	 * This method will call PlayerItemHeldEvent.
 	 *
 	 * @param int $hotbarSlot Number of the hotbar slot to equip.
-	 * @param int|null $inventorySlot Inventory slot to map to the specified hotbar slot. Supply null to make no change to the link.
 	 *
 	 * @return bool if the equipment change was successful, false if not.
 	 */
-	public function equipItem(int $hotbarSlot, int $inventorySlot = null) : bool{
-		if($inventorySlot === null){
-			$inventorySlot = $this->getHotbarSlotIndex($hotbarSlot);
-		}
-
-		if($hotbarSlot < 0 or $hotbarSlot >= $this->getHotbarSize() or $inventorySlot < -1 or $inventorySlot >= $this->getSize()){
+	public function equipItem(int $hotbarSlot) : bool{
+		if(!$this->isHotbarSlot($hotbarSlot)){
 			$this->sendContents($this->getHolder());
 			return false;
 		}
 
-		if($inventorySlot === -1){
-			$item = ItemFactory::get(Item::AIR, 0, 0);
-		}else{
-			$item = $this->getItem($inventorySlot);
-		}
-
-		$this->getHolder()->getLevel()->getServer()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $item, $inventorySlot, $hotbarSlot));
+		$this->getHolder()->getLevel()->getServer()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $this->getItem($hotbarSlot), $hotbarSlot));
 
 		if($ev->isCancelled()){
-			$this->sendContents($this->getHolder());
+			$this->sendHeldItem($this->getHolder());
 			return false;
 		}
 
-		$this->setHotbarSlotIndex($hotbarSlot, $inventorySlot);
 		$this->setHeldItemIndex($hotbarSlot, false);
 
 		return true;
 	}
 
-	/**
-	 * Returns the index of the inventory slot mapped to the specified hotbar slot, or -1 if the hotbar slot does not exist.
-	 *
-	 * @param int $index
-	 *
-	 * @return int
-	 */
-	public function getHotbarSlotIndex(int $index) : int{
-		return $this->hotbar[$index] ?? -1;
+	private function isHotbarSlot(int $slot) : bool{
+		return $slot >= 0 and $slot <= $this->getHotbarSize();
 	}
 
 	/**
-	 * Links a hotbar slot to the specified slot in the main inventory. -1 links to no slot and will clear the hotbar slot.
-	 * This method is intended for use in network interaction with clients only.
-	 *
-	 * NOTE: Do not change hotbar slot mapping with plugins, this will cause myriad client-sided bugs, especially with desktop GUI clients.
+	 * @param int $slot
+	 * @throws \InvalidArgumentException
+	 */
+	private function throwIfNotHotbarSlot(int $slot){
+		if(!$this->isHotbarSlot($slot)){
+			throw new \InvalidArgumentException("$slot is not a valid hotbar slot index (expected 0 - " . ($this->getHotbarSize() - 1) . ")");
+		}
+	}
+
+	/**
+	 * Returns the item in the specified hotbar slot.
 	 *
 	 * @param int $hotbarSlot
-	 * @param int $inventorySlot
-	 *
-	 * @throws \RuntimeException if the hotbar slot is out of range
-	 * @throws \InvalidArgumentException if the inventory slot is out of range
-	 */
-	public function setHotbarSlotIndex(int $hotbarSlot, int $inventorySlot){
-		if($inventorySlot < -1 or $inventorySlot >= $this->getSize()){
-			throw new \InvalidArgumentException("Inventory slot index \"$inventorySlot\" is out of range");
-		}
-
-		if($inventorySlot !== -1 and ($alreadyEquippedIndex = array_search($inventorySlot, $this->getHotbar(), true)) !== false){
-			/* Swap the slots
-			 * This assumes that the equipped slot can only be equipped in one other slot
-			 * it will not account for ancient bugs where the same slot ended up linked to several hotbar slots.
-			 * Such bugs will require a hotbar reset to default.
-			 */
-			$this->hotbar[$alreadyEquippedIndex] = $this->hotbar[$hotbarSlot];
-		}
-
-		$this->hotbar[$hotbarSlot] = $inventorySlot;
-	}
-
-	/**
-	 * Returns the item in the slot linked to the specified hotbar slot, or Air if the slot is not linked to any hotbar slot.
-	 * @param int $hotbarSlotIndex
-	 *
 	 * @return Item
+	 *
+	 * @throws \InvalidArgumentException if the hotbar slot index is out of range
 	 */
-	public function getHotbarSlotItem(int $hotbarSlotIndex) : Item{
-		$inventorySlot = $this->getHotbarSlotIndex($hotbarSlotIndex);
-		if($inventorySlot !== -1){
-			return $this->getItem($inventorySlot);
-		}else{
-			return ItemFactory::get(Item::AIR, 0, 0);
-		}
-	}
-
-	public function getHotbar() : array{
-		return $this->hotbar->toArray();
+	public function getHotbarSlotItem(int $hotbarSlot) : Item{
+		$this->throwIfNotHotbarSlot($hotbarSlot);
+		return $this->getItem($hotbarSlot);
 	}
 
 	/**
-	 * Resets hotbar links to their original defaults.
-	 * @param bool $send Whether to send changes to the holder.
+	 * This is only used when sending inventory contents. Since we now assume that all hotbar slots are the same as
+	 * their respective inventory slots, we simply fill this wil 0-8.
 	 */
-	public function resetHotbar(bool $send = true){
-		$this->hotbar = \SplFixedArray::fromArray(range(0, $this->getHotbarSize() - 1, 1));
-		if($send){
-			$this->sendHotbar();
-		}
-	}
-
-	public function sendHotbar(){
+	private function sendHotbar(){
 		$pk = new PlayerHotbarPacket();
 		$pk->windowId = ContainerIds::INVENTORY;
 		$pk->selectedHotbarSlot = $this->getHeldItemIndex();
-		$pk->slots = array_map(function(int $link){ return $link + $this->getHotbarSize(); }, $this->getHotbar());
+		$pk->slots = range(0, $this->getHotbarSize() - 1, 1);
 		$this->getHolder()->dataPacket($pk);
+	}
+
+	/**
+	 * @deprecated
+	 * @return int
+	 */
+	public function getHeldItemSlot() : int{
+		return $this->getHeldItemIndex();
 	}
 
 	/**
@@ -208,17 +166,15 @@ class PlayerInventory extends BaseInventory{
 	 * @throws \InvalidArgumentException if the hotbar slot is out of range
 	 */
 	public function setHeldItemIndex(int $hotbarSlot, bool $send = true){
-		if($hotbarSlot >= 0 and $hotbarSlot < $this->getHotbarSize()){
-			$this->itemInHandIndex = $hotbarSlot;
+		$this->throwIfNotHotbarSlot($hotbarSlot);
 
-			if($this->getHolder() instanceof Player and $send){
-				$this->sendHeldItem($this->getHolder());
-			}
+		$this->itemInHandIndex = $hotbarSlot;
 
-			$this->sendHeldItem($this->getHolder()->getViewers());
-		}else{
-			throw new \InvalidArgumentException("Hotbar slot index \"$hotbarSlot\" is out of range");
+		if($this->getHolder() instanceof Player and $send){
+			$this->sendHeldItem($this->getHolder());
 		}
+
+		$this->sendHeldItem($this->getHolder()->getViewers());
 	}
 
 	/**
@@ -238,27 +194,7 @@ class PlayerInventory extends BaseInventory{
 	 * @return bool
 	 */
 	public function setItemInHand(Item $item) : bool{
-		return $this->setItem($this->getHeldItemSlot(), $item);
-	}
-
-	/**
-	 * Returns the hotbar slot number currently held.
-	 * @return int
-	 */
-	public function getHeldItemSlot() : int{
-		return $this->getHotbarSlotIndex($this->itemInHandIndex);
-	}
-
-	/**
-	 * Sets the hotbar slot link of the currently-held hotbar slot.
-	 * @deprecated Do not change hotbar slot mapping with plugins, this will cause myriad client-sided bugs, especially with desktop GUI clients.
-	 *
-	 * @param int $slot
-	 */
-	public function setHeldItemSlot(int $slot){
-		if($slot >= -1 and $slot < $this->getSize()){
-			$this->setHotbarSlotIndex($this->getHeldItemIndex(), $slot);
-		}
+		return $this->setItem($this->getHeldItemIndex(), $item);
 	}
 
 	/**
@@ -271,19 +207,18 @@ class PlayerInventory extends BaseInventory{
 		$pk = new MobEquipmentPacket();
 		$pk->entityRuntimeId = $this->getHolder()->getId();
 		$pk->item = $item;
-		$pk->inventorySlot = $this->getHeldItemSlot();
-		$pk->hotbarSlot = $this->getHeldItemIndex();
+		$pk->inventorySlot = $pk->hotbarSlot = $this->getHeldItemIndex();
 		$pk->windowId = ContainerIds::INVENTORY;
 
 		if(!is_array($target)){
 			$target->dataPacket($pk);
-			if($this->getHeldItemSlot() !== -1 and $target === $this->getHolder()){
-				$this->sendSlot($this->getHeldItemSlot(), $target);
+			if($target === $this->getHolder()){
+				$this->sendSlot($this->getHeldItemIndex(), $target);
 			}
 		}else{
 			$this->getHolder()->getLevel()->getServer()->broadcastPacket($target, $pk);
-			if($this->getHeldItemSlot() !== -1 and in_array($this->getHolder(), $target, true)){
-				$this->sendSlot($this->getHeldItemSlot(), $this->getHolder());
+			if(in_array($this->getHolder(), $target, true)){
+				$this->sendSlot($this->getHeldItemIndex(), $this->getHolder());
 			}
 		}
 	}
