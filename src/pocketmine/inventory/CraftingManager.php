@@ -174,14 +174,8 @@ class CraftingManager{
 	 *
 	 * @return FurnaceRecipe|null
 	 */
-	public function matchFurnaceRecipe(Item $input){
-		if(isset($this->furnaceRecipes[$input->getId() . ":" . $input->getDamage()])){
-			return $this->furnaceRecipes[$input->getId() . ":" . $input->getDamage()];
-		}elseif(isset($this->furnaceRecipes[$input->getId() . ":?"])){
-			return $this->furnaceRecipes[$input->getId() . ":?"];
-		}
-
-		return null;
+	public function matchFurnaceRecipe(Item $input) : ?FurnaceRecipe{
+		return $this->furnaceRecipes[$input->getId() . ":" . $input->getDamage()] ?? $this->furnaceRecipes[$input->getId() . ":?"] ?? null;
 	}
 
 	/**
