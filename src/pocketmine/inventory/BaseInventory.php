@@ -71,14 +71,6 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	/**
-	 * Returns the Minecraft PE inventory type used to show the inventory window to clients.
-	 * @return int
-	 */
-	public function getNetworkType() : int{
-		return ContainerIds::NONE;
-	}
-
-	/**
 	 * Returns the size of the inventory.
 	 * @return int
 	 */

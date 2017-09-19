@@ -35,7 +35,6 @@ use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
-use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
 use pocketmine\Server;
 
@@ -52,10 +51,6 @@ class PlayerInventory extends BaseInventory{
 	 */
 	public function __construct(Human $player){
 		parent::__construct($player);
-	}
-
-	public function getNetworkType() : int{
-		return WindowTypes::INVENTORY;
 	}
 
 	public function getName() : string{

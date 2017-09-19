@@ -24,8 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
-use pocketmine\network\mcpe\protocol\types\ContainerIds;
-use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
 
 class PlayerCursorInventory extends BaseInventory{
@@ -46,10 +44,6 @@ class PlayerCursorInventory extends BaseInventory{
 
 	public function setSize(int $size){
 		throw new \BadMethodCallException("Cursor can only carry one item at a time");
-	}
-
-	public function getNetworkType() : int{
-		return WindowTypes::INVENTORY; //This should never be spawned to clients
 	}
 
 	/**
