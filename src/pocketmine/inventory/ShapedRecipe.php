@@ -30,7 +30,9 @@ use pocketmine\utils\UUID;
 
 class ShapedRecipe implements CraftingRecipe{
 	/** @var Item */
-	private $output;
+	private $primaryResult;
+	/** @var Item[] */
+	private $extraResults = [];
 
 	/** @var UUID|null */
 	private $id = null;
@@ -43,7 +45,7 @@ class ShapedRecipe implements CraftingRecipe{
 	/**
 	 * Constructs a ShapedRecipe instance.
 	 *
-	 * @param Item     $result
+	 * @param Item     $primaryResult
 	 * @param string[] $shape<br>
 	 *     Array of 1, 2, or 3 strings representing the rows of the recipe.
 	 *     This accepts an array of 1, 2 or 3 strings. Each string should be of the same length and must be at most 3
@@ -52,10 +54,13 @@ class ShapedRecipe implements CraftingRecipe{
 	 *     Char => Item map of items to be set into the shape.
 	 *     This accepts an array of Items, indexed by character. Every unique character (except space) in the shape
 	 *     array MUST have a corresponding item in this list. Space character is automatically treated as air.
+	 * @param Item[]   $extraResults<br>
+	 *     List of additional result items to leave in the crafting grid afterwards. Used for things like cake recipe
+	 *     empty buckets.
 	 *
 	 * Note: Recipes **do not** need to be square. Do NOT add padding for empty rows/columns.
 	 */
-	public function __construct(Item $result, array $shape, array $ingredients){
+	public function __construct(Item $primaryResult, array $shape, array $ingredients, array $extraResults = []){
 		$rowCount = count($shape);
 		if($rowCount > 3 or $rowCount <= 0){
 			throw new \InvalidArgumentException("Shaped recipes may only have 1, 2 or 3 rows, not $rowCount");
@@ -79,7 +84,11 @@ class ShapedRecipe implements CraftingRecipe{
 				}
 			}
 		}
-		$this->output = clone $result;
+		$this->primaryResult = clone $primaryResult;
+		foreach($extraResults as $item){
+			$this->extraResults[] = clone $item;
+		}
+
 		$this->shape = $shape;
 
 		foreach($ingredients as $char => $i){
@@ -99,7 +108,23 @@ class ShapedRecipe implements CraftingRecipe{
 	 * @return Item
 	 */
 	public function getResult() : Item{
-		return $this->output;
+		return $this->primaryResult;
+	}
+
+	/**
+	 * @return Item[]
+	 */
+	public function getExtraResults() : array{
+		return $this->extraResults;
+	}
+
+	/**
+	 * @return Item[]
+	 */
+	public function getAllResults() : array{
+		$results = $this->extraResults;
+		array_unshift($results, $this->primaryResult);
+		return $results;
 	}
 
 	/**

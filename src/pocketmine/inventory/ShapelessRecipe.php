@@ -63,6 +63,14 @@ class ShapelessRecipe implements CraftingRecipe{
 		return clone $this->output;
 	}
 
+	public function getExtraResults() : array{
+		return []; //TODO
+	}
+
+	public function getAllResults() : array{
+		return [$this->getResult()]; //TODO
+	}
+
 	/**
 	 * @param Item $item
 	 *

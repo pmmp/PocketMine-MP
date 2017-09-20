@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\item\Item;
 use pocketmine\utils\UUID;
 
 interface CraftingRecipe extends Recipe{
@@ -38,4 +39,14 @@ interface CraftingRecipe extends Recipe{
 	public function setId(UUID $id);
 
 	public function requiresCraftingTable() : bool;
+
+	/**
+	 * @return Item[]
+	 */
+	public function getExtraResults() : array;
+
+	/**
+	 * @return Item[]
+	 */
+	public function getAllResults() : array;
 }

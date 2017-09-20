@@ -66,13 +66,14 @@ class CraftingManager{
 					$this->registerRecipe($result);
 					break;
 				case 1:
-					// TODO: handle multiple result items
-					$first = $recipe["output"][0];
+					$outputs = $recipe["output"];
+					$first = array_shift($outputs);
 
 					$this->registerRecipe(new ShapedRecipe(
 						Item::jsonDeserialize($first),
 						$recipe["shape"],
-						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["input"])
+						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["input"]),
+						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["output"])
 					));
 					break;
 				case 2:

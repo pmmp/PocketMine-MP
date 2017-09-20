@@ -133,8 +133,11 @@ class CraftingDataPacket extends DataPacket{
 			$stream->putSlot($item);
 		}
 
-		$stream->putUnsignedVarInt(1);
-		$stream->putSlot($recipe->getResult());
+		$results = $recipe->getAllResults();
+		$stream->putUnsignedVarInt(count($results));
+		foreach($results as $item){
+			$stream->putSlot($item);
+		}
 
 		$stream->putUUID($recipe->getId());
 
@@ -151,8 +154,11 @@ class CraftingDataPacket extends DataPacket{
 			}
 		}
 
-		$stream->putUnsignedVarInt(1);
-		$stream->putSlot($recipe->getResult());
+		$results = $recipe->getAllResults();
+		$stream->putUnsignedVarInt(count($results));
+		foreach($results as $item){
+			$stream->putSlot($item);
+		}
 
 		$stream->putUUID($recipe->getId());
 
