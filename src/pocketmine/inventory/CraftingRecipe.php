@@ -36,4 +36,6 @@ interface CraftingRecipe extends Recipe{
 	 * @param UUID $id
 	 */
 	public function setId(UUID $id);
+
+	public function requiresCraftingTable() : bool;
 }

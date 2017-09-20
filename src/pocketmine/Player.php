@@ -71,8 +71,6 @@ use pocketmine\event\TextContainer;
 use pocketmine\event\Timings;
 use pocketmine\event\TranslationContainer;
 use pocketmine\inventory\BigCraftingGrid;
-use pocketmine\inventory\BigShapedRecipe;
-use pocketmine\inventory\BigShapelessRecipe;
 use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\FurnaceInventory;
 use pocketmine\inventory\Inventory;
@@ -2775,7 +2773,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$recipe = $this->server->getCraftingManager()->getRecipe($packet->id);
 
-		if($recipe === null or (($recipe instanceof BigShapelessRecipe or $recipe instanceof BigShapedRecipe) and $this->craftingType === 0) or count($packet->input) === 0){
+		if($recipe === null or ($recipe->requiresCraftingTable() and $this->craftingType === 0) or count($packet->input) === 0){
 			$this->inventory->sendContents($this);
 			return false;
 		}
