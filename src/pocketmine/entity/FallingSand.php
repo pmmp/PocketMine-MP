@@ -26,7 +26,6 @@ namespace pocketmine\entity;
 use pocketmine\block\BlockFactory;
 use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\item\Item as ItemItem;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
