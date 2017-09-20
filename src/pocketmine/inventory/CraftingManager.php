@@ -66,8 +66,7 @@ class CraftingManager{
 					$this->registerRecipe($result);
 					break;
 				case 1:
-					$outputs = $recipe["output"];
-					$first = array_shift($outputs);
+					$first = array_shift($recipe["output"]);
 
 					$this->registerRecipe(new ShapedRecipe(
 						Item::jsonDeserialize($first),
