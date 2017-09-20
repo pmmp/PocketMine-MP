@@ -23,49 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\item\Item;
-use pocketmine\Server;
 use pocketmine\utils\UUID;
 
-class FurnaceRecipe implements Recipe{
-
-	/** @var Item */
-	private $output;
-
-	/** @var Item */
-	private $ingredient;
+interface CraftingRecipe extends Recipe{
 
 	/**
-	 * @param Item $result
-	 * @param Item $ingredient
+	 * @return UUID|null
 	 */
-	public function __construct(Item $result, Item $ingredient){
-		$this->output = clone $result;
-		$this->ingredient = clone $ingredient;
-	}
+	public function getId();
 
 	/**
-	 * @param Item $item
+	 * @param UUID $id
 	 */
-	public function setInput(Item $item){
-		$this->ingredient = clone $item;
-	}
-
-	/**
-	 * @return Item
-	 */
-	public function getInput() : Item{
-		return clone $this->ingredient;
-	}
-
-	/**
-	 * @return Item
-	 */
-	public function getResult() : Item{
-		return clone $this->output;
-	}
-
-	public function registerToCraftingManager(CraftingManager $manager){
-		$manager->registerFurnaceRecipe($this);
-	}
+	public function setId(UUID $id);
 }

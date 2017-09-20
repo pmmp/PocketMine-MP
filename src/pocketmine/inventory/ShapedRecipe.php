@@ -28,7 +28,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\Server;
 use pocketmine\utils\UUID;
 
-class ShapedRecipe implements Recipe{
+class ShapedRecipe implements CraftingRecipe{
 	/** @var Item */
 	private $output;
 
@@ -168,7 +168,7 @@ class ShapedRecipe implements Recipe{
 		return $this->shape;
 	}
 
-	public function registerToCraftingManager(){
-		Server::getInstance()->getCraftingManager()->registerShapedRecipe($this);
+	public function registerToCraftingManager(CraftingManager $manager){
+		$manager->registerShapedRecipe($this);
 	}
 }

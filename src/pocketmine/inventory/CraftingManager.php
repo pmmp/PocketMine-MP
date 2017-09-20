@@ -34,10 +34,10 @@ use pocketmine\utils\UUID;
 
 class CraftingManager{
 
-	/** @var Recipe[] */
+	/** @var CraftingRecipe[] */
 	public $recipes = [];
 
-	/** @var Recipe[][] */
+	/** @var CraftingRecipe[][] */
 	protected $recipeLookup = [];
 
 	/** @var FurnaceRecipe[] */
@@ -148,7 +148,7 @@ class CraftingManager{
 
 	/**
 	 * @param UUID $id
-	 * @return Recipe|null
+	 * @return CraftingRecipe|null
 	 */
 	public function getRecipe(UUID $id){
 		$index = $id->toBinary();
@@ -183,7 +183,8 @@ class CraftingManager{
 	 */
 	public function registerShapedRecipe(ShapedRecipe $recipe){
 		$result = $recipe->getResult();
-		$this->recipes[$recipe->getId()->toBinary()] = $recipe;
+
+		/** @var Item[][] $ingredients */
 		$ingredients = $recipe->getIngredientMap();
 		$hash = "";
 		foreach($ingredients as $v){
@@ -206,7 +207,6 @@ class CraftingManager{
 	 */
 	public function registerShapelessRecipe(ShapelessRecipe $recipe){
 		$result = $recipe->getResult();
-		$this->recipes[$recipe->getId()->toBinary()] = $recipe;
 		$hash = "";
 		$ingredients = $recipe->getIngredientList();
 		usort($ingredients, [$this, "sort"]);
@@ -288,15 +288,13 @@ class CraftingManager{
 	 * @param Recipe $recipe
 	 */
 	public function registerRecipe(Recipe $recipe){
-		$recipe->setId(UUID::fromData((string) ++self::$RECIPE_COUNT, (string) $recipe->getResult()->getId(), (string) $recipe->getResult()->getDamage(), (string) $recipe->getResult()->getCount(), $recipe->getResult()->getCompoundTag()));
-
-		if($recipe instanceof ShapedRecipe){
-			$this->registerShapedRecipe($recipe);
-		}elseif($recipe instanceof ShapelessRecipe){
-			$this->registerShapelessRecipe($recipe);
-		}elseif($recipe instanceof FurnaceRecipe){
-			$this->registerFurnaceRecipe($recipe);
+		if($recipe instanceof CraftingRecipe){
+			$result = $recipe->getResult();
+			$recipe->setId($uuid = UUID::fromData((string) ++self::$RECIPE_COUNT, (string) $result->getId(), (string) $result->getDamage(), (string) $result->getCount(), $result->getCompoundTag()));
+			$this->recipes[$uuid->toBinary()] = $recipe;
 		}
+
+		$recipe->registerToCraftingManager($this);
 	}
 
 }

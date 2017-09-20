@@ -33,15 +33,5 @@ interface Recipe{
 	 */
 	public function getResult() : Item;
 
-	public function registerToCraftingManager();
-
-	/**
-	 * @return UUID|null
-	 */
-	public function getId();
-
-	/**
-	 * @param UUID $id
-	 */
-	public function setId(UUID $id);
+	public function registerToCraftingManager(CraftingManager $manager);
 }

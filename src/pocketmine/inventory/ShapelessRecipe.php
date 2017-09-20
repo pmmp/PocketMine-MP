@@ -27,7 +27,7 @@ use pocketmine\item\Item;
 use pocketmine\Server;
 use pocketmine\utils\UUID;
 
-class ShapelessRecipe implements Recipe{
+class ShapelessRecipe implements CraftingRecipe{
 	/** @var Item */
 	private $output;
 
@@ -129,7 +129,7 @@ class ShapelessRecipe implements Recipe{
 		return $count;
 	}
 
-	public function registerToCraftingManager(){
-		Server::getInstance()->getCraftingManager()->registerShapelessRecipe($this);
+	public function registerToCraftingManager(CraftingManager $manager){
+		$manager->registerShapelessRecipe($this);
 	}
 }
