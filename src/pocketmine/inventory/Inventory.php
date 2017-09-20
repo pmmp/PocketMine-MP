@@ -114,8 +114,9 @@ interface Inventory{
 
 	/**
 	 * @param Item[] $items
+	 * @param bool   $send
 	 */
-	public function setContents(array $items);
+	public function setContents(array $items, bool $send = true);
 
 	/**
 	 * @param Player|Player[] $target

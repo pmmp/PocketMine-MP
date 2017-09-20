@@ -59,7 +59,7 @@ abstract class BaseInventory implements Inventory{
 		$this->slots = new \SplFixedArray($size ?? $this->getDefaultSize());
 		$this->title = $title ?? $this->getName();
 
-		$this->setContents($items);
+		$this->setContents($items, false);
 	}
 
 	abstract public function getName() : string;
@@ -105,8 +105,9 @@ abstract class BaseInventory implements Inventory{
 
 	/**
 	 * @param Item[] $items
+	 * @param bool   $send
 	 */
-	public function setContents(array $items){
+	public function setContents(array $items, bool $send = true){
 		if(count($items) > $this->getSize()){
 			$items = array_slice($items, 0, $this->getSize(), true);
 		}
@@ -123,7 +124,9 @@ abstract class BaseInventory implements Inventory{
 			}
 		}
 
-		$this->sendContents($this->getViewers());
+		if($send){
+			$this->sendContents($this->getViewers());
+		}
 	}
 
 	protected function doSetItemEvents(int $index, Item $newItem) : ?Item{
