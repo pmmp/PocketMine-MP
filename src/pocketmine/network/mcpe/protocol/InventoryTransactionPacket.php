@@ -48,14 +48,6 @@ class InventoryTransactionPacket extends DataPacket{
 	const USE_ITEM_ON_ENTITY_ACTION_ATTACK = 1;
 
 
-
-
-	const ACTION_MAGIC_SLOT_DROP_ITEM = 0;
-	const ACTION_MAGIC_SLOT_PICKUP_ITEM = 1;
-
-	const ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM = 0;
-	const ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM = 1;
-
 	/** @var int */
 	public $transactionType;
 

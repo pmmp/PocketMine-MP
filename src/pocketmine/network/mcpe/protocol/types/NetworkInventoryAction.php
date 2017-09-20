@@ -71,6 +71,11 @@ class NetworkInventoryAction{
 	/** Any client-side window dropping its contents when the player closes it */
 	const SOURCE_TYPE_CONTAINER_DROP_CONTENTS = -100;
 
+	const ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM = 0;
+	const ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM = 1;
+
+	const ACTION_MAGIC_SLOT_DROP_ITEM = 0;
+	const ACTION_MAGIC_SLOT_PICKUP_ITEM = 1;
 
 	/** @var int */
 	public $sourceType;
@@ -159,17 +164,17 @@ class NetworkInventoryAction{
 
 				throw new \InvalidStateException("Player " . $player->getName() . " has no open container with window ID $this->windowId");
 			case self::SOURCE_WORLD:
-				if($this->inventorySlot !== InventoryTransactionPacket::ACTION_MAGIC_SLOT_DROP_ITEM){
+				if($this->inventorySlot !== self::ACTION_MAGIC_SLOT_DROP_ITEM){
 					throw new \UnexpectedValueException("Only expecting drop-item world actions from the client!");
 				}
 
 				return new DropItemAction($this->oldItem, $this->newItem);
 			case self::SOURCE_CREATIVE:
 				switch($this->inventorySlot){
-					case InventoryTransactionPacket::ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM:
+					case self::ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM:
 						$type = CreativeInventoryAction::TYPE_DELETE_ITEM;
 						break;
-					case InventoryTransactionPacket::ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM:
+					case self::ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM:
 						$type = CreativeInventoryAction::TYPE_CREATE_ITEM;
 						break;
 					default:
