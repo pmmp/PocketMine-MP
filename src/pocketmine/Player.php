@@ -158,7 +158,6 @@ use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\tile\ItemFrame;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
-use pocketmine\utils\MainLogger;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
 
@@ -2174,14 +2173,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		/** @var InventoryAction[] $actions */
 		$actions = [];
 		foreach($packet->actions as $networkInventoryAction){
-			try{
-				$action = $networkInventoryAction->createInventoryAction($this);
-				$actions[] = $action;
-			}catch(\Throwable $e){
-				MainLogger::getLogger()->debug("Unhandled inventory action from " . $this->getName() . ": " . $e->getMessage());
+			$action = $networkInventoryAction->createInventoryAction($this);
+
+			if($action === null){
+				$this->server->getLogger()->debug("Unmatched inventory action from " . $this->getName() . ": " . json_encode($networkInventoryAction));
 				$this->sendAllInventories();
 				return false;
 			}
+
+			$actions[] = $action;
 		}
 
 		switch($packet->transactionType){
@@ -2196,7 +2196,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						}
 					}
 
-					MainLogger::getLogger()->debug("Failed to execute inventory transaction from " . $this->getName() . " with actions: " . json_encode($packet->actions));
+					$this->server->getLogger()->debug("Failed to execute inventory transaction from " . $this->getName() . " with actions: " . json_encode($packet->actions));
 
 					//TODO: check more stuff that might need reversion
 					return false; //oops!

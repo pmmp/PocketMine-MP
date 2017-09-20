@@ -146,7 +146,7 @@ class NetworkInventoryAction{
 	/**
 	 * @param Player $player
 	 *
-	 * @return InventoryAction
+	 * @return InventoryAction|null
 	 */
 	public function createInventoryAction(Player $player){
 		switch($this->sourceType){
@@ -162,13 +162,13 @@ class NetworkInventoryAction{
 					return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
 				}
 
-				throw new \InvalidStateException("Player " . $player->getName() . " has no open container with window ID $this->windowId");
+				return null;
 			case self::SOURCE_WORLD:
-				if($this->inventorySlot !== self::ACTION_MAGIC_SLOT_DROP_ITEM){
-					throw new \UnexpectedValueException("Only expecting drop-item world actions from the client!");
+				if($this->inventorySlot === self::ACTION_MAGIC_SLOT_DROP_ITEM){
+					return new DropItemAction($this->oldItem, $this->newItem);
 				}
 
-				return new DropItemAction($this->oldItem, $this->newItem);
+				return null;
 			case self::SOURCE_CREATIVE:
 				switch($this->inventorySlot){
 					case self::ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM:
@@ -178,7 +178,7 @@ class NetworkInventoryAction{
 						$type = CreativeInventoryAction::TYPE_CREATE_ITEM;
 						break;
 					default:
-						throw new \UnexpectedValueException("Unexpected creative action type $this->inventorySlot");
+						return null;
 
 				}
 
@@ -198,16 +198,16 @@ class NetworkInventoryAction{
 						//DROP_CONTENTS doesn't bother telling us what slot the item is in, so we find it ourselves
 						$inventorySlot = $window->first($this->oldItem, true);
 						if($inventorySlot === -1){
-							throw new \InvalidStateException("Fake container " . get_class($window) . " for " . $player->getName() . " does not contain $this->oldItem");
+							return null;
 						}
 						return new SlotChangeAction($window, $inventorySlot, $this->oldItem, $this->newItem);
 				}
 
 				//TODO: more stuff
-				throw new \UnexpectedValueException("Player " . $player->getName() . " has no open container with window ID $this->windowId");
-			default:
-				throw new \UnexpectedValueException("Unknown inventory source type $this->sourceType");
+				return null;
 		}
+
+		return null;
 	}
 
 }
