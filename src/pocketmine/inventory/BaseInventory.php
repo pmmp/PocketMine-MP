@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\entity\Entity;
-use pocketmine\event\entity\EntityInventoryChangeEvent;
 use pocketmine\event\inventory\InventoryOpenEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -128,6 +126,10 @@ abstract class BaseInventory implements Inventory{
 		$this->sendContents($this->getViewers());
 	}
 
+	protected function doSetItemEvents(int $index, Item $newItem) : ?Item{
+		return $newItem;
+	}
+
 	public function setItem(int $index, Item $item, bool $send = true) : bool{
 		if($item->isNull()){
 			$item = ItemFactory::get(Item::AIR, 0, 0);
@@ -135,17 +137,13 @@ abstract class BaseInventory implements Inventory{
 			$item = clone $item;
 		}
 
-		$holder = $this->getHolder();
-		if($holder instanceof Entity){
-			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($holder, $this->getItem($index), $item, $index));
-			if($ev->isCancelled()){
-				return false;
-			}
-			$item = $ev->getNewItem();
+		$newItem = $this->doSetItemEvents($index, $item);
+		if($newItem === null){
+			return false;
 		}
 
 		$old = $this->getItem($index);
-		$this->slots[$index] = $item->isNull() ? null : $item;
+		$this->slots[$index] = $newItem->isNull() ? null : $newItem;
 		$this->onSlotChange($index, $old, $send);
 
 		return true;

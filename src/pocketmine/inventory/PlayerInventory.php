@@ -25,7 +25,6 @@ namespace pocketmine\inventory;
 
 use pocketmine\entity\Human;
 use pocketmine\event\entity\EntityArmorChangeEvent;
-use pocketmine\event\entity\EntityInventoryChangeEvent;
 use pocketmine\event\player\PlayerItemHeldEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -37,7 +36,7 @@ use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\Player;
 use pocketmine\Server;
 
-class PlayerInventory extends BaseInventory{
+class PlayerInventory extends EntityInventory{
 
 	/** @var Human */
 	protected $holder;
@@ -268,34 +267,17 @@ class PlayerInventory extends BaseInventory{
 		return $this->setItem($this->getSize() + 3, $boots);
 	}
 
-	public function setItem(int $index, Item $item, bool $send = true) : bool{
-		if($item->isNull()){
-			$item = ItemFactory::get(Item::AIR, 0, 0);
-		}else{
-			$item = clone $item;
-		}
-
-		if($index >= $this->getSize()){ //Armor change
-			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $this->getItem($index), $item, $index));
-			if($ev->isCancelled() and $this->getHolder() instanceof Human){
-				$this->sendArmorSlot($index, $this->getViewers());
-				return false;
-			}
-			$item = $ev->getNewItem();
-		}else{
-			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($this->getHolder(), $this->getItem($index), $item, $index));
+	protected function doSetItemEvents(int $index, Item $newItem) : ?Item{
+		if($index >= $this->getSize()){
+			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $this->getItem($index), $newItem, $index));
 			if($ev->isCancelled()){
-				$this->sendSlot($index, $this->getViewers());
-				return false;
+				return null;
 			}
-			$item = $ev->getNewItem();
+
+			return $ev->getNewItem();
 		}
 
-		$old = $this->getItem($index);
-		$this->slots[$index] = $item;
-		$this->onSlotChange($index, $old, $send);
-
-		return true;
+		return parent::doSetItemEvents($index, $newItem);
 	}
 
 	public function clearAll(){
