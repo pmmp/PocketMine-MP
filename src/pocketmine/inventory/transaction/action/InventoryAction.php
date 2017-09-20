@@ -75,6 +75,18 @@ abstract class InventoryAction{
 	abstract public function isValid(Player $source) : bool;
 
 	/**
+	 * Called by inventory transactions before any actions are processed. If this returns false, the transaction will
+	 * be cancelled.
+	 *
+	 * @param Player $source
+	 *
+	 * @return bool
+	 */
+	public function onPreExecute(Player $source) : bool{
+		return true;
+	}
+
+	/**
 	 * Performs actions needed to complete the inventory-action server-side. Returns if it was successful. Will return
 	 * false if plugins cancelled events. This will only be called if the transaction which it is part of is considered
 	 * valid.

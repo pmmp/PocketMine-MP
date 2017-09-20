@@ -222,6 +222,12 @@ class SimpleInventoryTransaction implements InventoryTransaction{
 		return $this->matchItems($needItems, $haveItems) and count($this->actions) > 0 and count($haveItems) === 0 and count($needItems) === 0;
 	}
 
+	protected function handleFailed(){
+		foreach($this->actions as $action){
+			$action->onExecuteFail($this->source);
+		}
+	}
+
 	/**
 	 * @return bool
 	 */
@@ -232,7 +238,15 @@ class SimpleInventoryTransaction implements InventoryTransaction{
 
 		Server::getInstance()->getPluginManager()->callEvent($ev = new InventoryTransactionEvent($this));
 		if($ev->isCancelled()){
-			return false;
+			$this->handleFailed();
+			return true;
+		}
+
+		foreach($this->actions as $action){
+			if(!$action->onPreExecute($this->source)){
+				$this->handleFailed();
+				return true;
+			}
 		}
 
 		foreach($this->actions as $action){

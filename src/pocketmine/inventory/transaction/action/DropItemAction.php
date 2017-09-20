@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory\transaction\action;
 
+use pocketmine\event\player\PlayerDropItemEvent;
 use pocketmine\Player;
 
 /**
@@ -39,6 +40,15 @@ class DropItemAction extends InventoryAction{
 	 */
 	public function isValid(Player $source) : bool{
 		return $this->sourceItem->isNull();
+	}
+
+	public function onPreExecute(Player $source) : bool{
+		$source->getServer()->getPluginManager()->callEvent($ev = new PlayerDropItemEvent($source, $this->targetItem));
+		if($ev->isCancelled()){
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
