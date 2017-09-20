@@ -65,7 +65,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		}
 
 		for($i = 0; $i < $this->getSize(); ++$i){
-			$this->inventory->setItem($i, $this->getItem($i));
+			$this->inventory->setItem($i, $this->getItem($i), false);
 		}
 
 		if($this->namedtag->BurnTime->getValue() > 0){
