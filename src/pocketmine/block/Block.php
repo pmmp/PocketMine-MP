@@ -284,11 +284,9 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * @param Block|null $with
-	 *
 	 * @return bool
 	 */
-	public function canBeReplaced(Block $with = null) : bool{
+	public function canBeReplaced() : bool{
 		return false;
 	}
 

@@ -42,7 +42,7 @@ class SnowLayer extends Flowable{
 		return "Snow Layer";
 	}
 
-	public function canBeReplaced(Block $with = null) : bool{
+	public function canBeReplaced() : bool{
 		return true;
 	}
 

@@ -54,7 +54,7 @@ class Air extends Transparent{
 		return true;
 	}
 
-	public function canBeReplaced(Block $with = null) : bool{
+	public function canBeReplaced() : bool{
 		return true;
 	}
 
