@@ -52,7 +52,7 @@ class ItemFrame extends Spawnable{
 		if(isset($this->namedtag->Item)){
 			return Item::nbtDeserialize($this->namedtag->Item);
 		}else{
-			return ItemFactory::get(Item::AIR);
+			return ItemFactory::get(Item::AIR, 0, 0);
 		}
 	}
 
