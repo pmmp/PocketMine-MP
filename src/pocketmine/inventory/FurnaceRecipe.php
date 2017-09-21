@@ -24,8 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
-use pocketmine\Server;
-use pocketmine\utils\UUID;
 
 class FurnaceRecipe implements Recipe{
 

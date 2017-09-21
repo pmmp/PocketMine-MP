@@ -30,7 +30,6 @@ use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\Player;
-use pocketmine\Server;
 
 abstract class BaseInventory implements Inventory{
 

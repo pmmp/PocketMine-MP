@@ -25,7 +25,6 @@ namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\Server;
 use pocketmine\utils\UUID;
 
 class ShapedRecipe implements CraftingRecipe{
