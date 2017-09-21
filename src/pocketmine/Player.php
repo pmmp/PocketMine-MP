@@ -78,7 +78,7 @@ use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\inventory\transaction\action\InventoryAction;
-use pocketmine\inventory\transaction\SimpleInventoryTransaction;
+use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\ChunkLoader;
@@ -2186,7 +2186,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		switch($packet->transactionType){
 			case InventoryTransactionPacket::TYPE_NORMAL:
-				$transaction = new SimpleInventoryTransaction($this, $actions);
+				$transaction = new InventoryTransaction($this, $actions);
 
 				if(!$transaction->execute()){
 					foreach($transaction->getInventories() as $inventory){
