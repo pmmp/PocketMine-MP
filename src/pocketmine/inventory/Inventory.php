@@ -45,7 +45,7 @@ interface Inventory{
 	/**
 	 * @param int $size
 	 */
-	public function setMaxStackSize(int $size);
+	public function setMaxStackSize(int $size) : void;
 
 	/**
 	 * @return string
@@ -116,18 +116,18 @@ interface Inventory{
 	 * @param Item[] $items
 	 * @param bool   $send
 	 */
-	public function setContents(array $items, bool $send = true);
+	public function setContents(array $items, bool $send = true) : void;
 
 	/**
 	 * @param Player|Player[] $target
 	 */
-	public function sendContents($target);
+	public function sendContents($target) : void;
 
 	/**
 	 * @param int             $index
 	 * @param Player|Player[] $target
 	 */
-	public function sendSlot(int $index, $target);
+	public function sendSlot(int $index, $target) : void;
 
 	/**
 	 * Checks if the inventory contains any Item with the same material data.
@@ -174,7 +174,7 @@ interface Inventory{
 	 *
 	 * @param Item $item
 	 */
-	public function remove(Item $item);
+	public function remove(Item $item) : void;
 
 	/**
 	 * Will clear a specific slot
@@ -189,7 +189,7 @@ interface Inventory{
 	/**
 	 * Clears all the slots
 	 */
-	public function clearAll();
+	public function clearAll() : void;
 
 	/**
 	 * Gets all the Players viewing the inventory
@@ -207,7 +207,7 @@ interface Inventory{
 	/**
 	 * @param Player $who
 	 */
-	public function onOpen(Player $who);
+	public function onOpen(Player $who) : void;
 
 	/**
 	 * Tries to open the inventory to a player
@@ -218,17 +218,17 @@ interface Inventory{
 	 */
 	public function open(Player $who) : bool;
 
-	public function close(Player $who);
+	public function close(Player $who) : void;
 
 	/**
 	 * @param Player $who
 	 */
-	public function onClose(Player $who);
+	public function onClose(Player $who) : void;
 
 	/**
 	 * @param int  $index
 	 * @param Item $before
 	 * @param bool $send
 	 */
-	public function onSlotChange(int $index, Item $before, bool $send);
+	public function onSlotChange(int $index, Item $before, bool $send) : void;
 }

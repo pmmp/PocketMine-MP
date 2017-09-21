@@ -43,11 +43,11 @@ class CraftingGrid extends BaseInventory{
 		return "Crafting";
 	}
 
-	public function sendSlot(int $index, $target){
+	public function sendSlot(int $index, $target) : void{
 		//we can't send a slot of a client-sided inventory window
 	}
 
-	public function sendContents($target){
+	public function sendContents($target) : void{
 		//we can't send the contents of a client-sided inventory window
 	}
 }

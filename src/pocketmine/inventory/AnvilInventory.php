@@ -56,7 +56,7 @@ class AnvilInventory extends ContainerInventory{
 		return $this->holder;
 	}
 
-	public function onClose(Player $who){
+	public function onClose(Player $who) : void{
 		parent::onClose($who);
 
 		for($i = 0; $i < 2; ++$i){

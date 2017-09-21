@@ -92,7 +92,7 @@ class CraftingManager{
 	/**
 	 * Rebuilds the cached CraftingDataPacket.
 	 */
-	public function buildCraftingDataCache(){
+	public function buildCraftingDataCache() : void{
 		Timings::$craftingDataCacheRebuildTimer->startTiming();
 		$pk = new CraftingDataPacket();
 		$pk->cleanRecipes = true;
@@ -150,7 +150,7 @@ class CraftingManager{
 	 * @param UUID $id
 	 * @return CraftingRecipe|null
 	 */
-	public function getRecipe(UUID $id){
+	public function getRecipe(UUID $id) : ?CraftingRecipe{
 		$index = $id->toBinary();
 		return $this->recipes[$index] ?? null;
 	}
@@ -181,7 +181,7 @@ class CraftingManager{
 	/**
 	 * @param ShapedRecipe $recipe
 	 */
-	public function registerShapedRecipe(ShapedRecipe $recipe){
+	public function registerShapedRecipe(ShapedRecipe $recipe) : void{
 		$result = $recipe->getResult();
 
 		/** @var Item[][] $ingredients */
@@ -205,7 +205,7 @@ class CraftingManager{
 	/**
 	 * @param ShapelessRecipe $recipe
 	 */
-	public function registerShapelessRecipe(ShapelessRecipe $recipe){
+	public function registerShapelessRecipe(ShapelessRecipe $recipe) : void{
 		$result = $recipe->getResult();
 		$hash = "";
 		$ingredients = $recipe->getIngredientList();
@@ -220,7 +220,7 @@ class CraftingManager{
 	/**
 	 * @param FurnaceRecipe $recipe
 	 */
-	public function registerFurnaceRecipe(FurnaceRecipe $recipe){
+	public function registerFurnaceRecipe(FurnaceRecipe $recipe) : void{
 		$input = $recipe->getInput();
 		$this->furnaceRecipes[$input->getId() . ":" . ($input->hasAnyDamageValue() ? "?" : $input->getDamage())] = $recipe;
 		$this->craftingDataCache = null;
@@ -287,7 +287,7 @@ class CraftingManager{
 	/**
 	 * @param Recipe $recipe
 	 */
-	public function registerRecipe(Recipe $recipe){
+	public function registerRecipe(Recipe $recipe) : void{
 		if($recipe instanceof CraftingRecipe){
 			$result = $recipe->getResult();
 			$recipe->setId($uuid = UUID::fromData((string) ++self::$RECIPE_COUNT, (string) $result->getId(), (string) $result->getDamage(), (string) $result->getCount(), $result->getCompoundTag()));

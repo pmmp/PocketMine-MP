@@ -61,11 +61,11 @@ class DropItemAction extends InventoryAction{
 		return $source->dropItem($this->targetItem);
 	}
 
-	public function onExecuteSuccess(Player $source){
+	public function onExecuteSuccess(Player $source) : void{
 
 	}
 
-	public function onExecuteFail(Player $source){
+	public function onExecuteFail(Player $source) : void{
 
 	}
 }

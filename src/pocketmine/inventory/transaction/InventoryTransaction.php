@@ -237,7 +237,7 @@ class InventoryTransaction{
 		return $this->matchItems($needItems, $haveItems) and count($this->actions) > 0 and count($haveItems) === 0 and count($needItems) === 0;
 	}
 
-	protected function handleFailed(){
+	protected function handleFailed() : void{
 		foreach($this->actions as $action){
 			$action->onExecuteFail($this->source);
 		}

@@ -62,7 +62,7 @@ class ChestInventory extends ContainerInventory{
 		return $this->holder;
 	}
 
-	public function onOpen(Player $who){
+	public function onOpen(Player $who) : void{
 		parent::onOpen($who);
 
 		if(count($this->getViewers()) === 1 and ($level = $this->getHolder()->getLevel()) instanceof Level){
@@ -71,7 +71,7 @@ class ChestInventory extends ContainerInventory{
 		}
 	}
 
-	public function onClose(Player $who){
+	public function onClose(Player $who) : void{
 		if(count($this->getViewers()) === 1 and ($level = $this->getHolder()->getLevel()) instanceof Level){
 			$this->broadcastBlockEventPacket(1, 0); //chest close
 			$level->broadcastLevelSoundEvent($this->getHolder()->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_CHEST_CLOSED);

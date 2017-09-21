@@ -104,7 +104,7 @@ class SlotChangeAction extends InventoryAction{
 	 *
 	 * @param Player $source
 	 */
-	public function onExecuteSuccess(Player $source){
+	public function onExecuteSuccess(Player $source) : void{
 		$viewers = $this->inventory->getViewers();
 		unset($viewers[spl_object_hash($source)]);
 		$this->inventory->sendSlot($this->inventorySlot, $viewers);
@@ -115,7 +115,7 @@ class SlotChangeAction extends InventoryAction{
 	 *
 	 * @param Player $source
 	 */
-	public function onExecuteFail(Player $source){
+	public function onExecuteFail(Player $source) : void{
 		$this->inventory->sendSlot($this->inventorySlot, $source);
 	}
 }

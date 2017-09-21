@@ -86,7 +86,7 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 	 * @param Item[] $items
 	 * @param bool   $send
 	 */
-	public function setContents(array $items, bool $send = true){
+	public function setContents(array $items, bool $send = true) : void{
 		$size = $this->getSize();
 		if(count($items) > $size){
 			$items = array_slice($items, 0, $size, true);
@@ -109,7 +109,7 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 		}
 	}
 
-	public function onOpen(Player $who){
+	public function onOpen(Player $who) : void{
 		parent::onOpen($who);
 
 		if(count($this->getViewers()) === 1){
@@ -125,7 +125,7 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 		}
 	}
 
-	public function onClose(Player $who){
+	public function onClose(Player $who) : void{
 		if(count($this->getViewers()) === 1){
 			$pk = new BlockEventPacket();
 			$pk->x = $this->right->getHolder()->getX();

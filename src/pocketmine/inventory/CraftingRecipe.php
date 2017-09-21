@@ -31,7 +31,7 @@ interface CraftingRecipe extends Recipe{
 	/**
 	 * @return UUID|null
 	 */
-	public function getId();
+	public function getId() : ?UUID;
 
 	/**
 	 * @param UUID $id

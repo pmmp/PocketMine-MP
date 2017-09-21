@@ -129,7 +129,7 @@ class ShapedRecipe implements CraftingRecipe{
 	/**
 	 * @return UUID|null
 	 */
-	public function getId(){
+	public function getId() : ?UUID{
 		return $this->id;
 	}
 
@@ -192,7 +192,7 @@ class ShapedRecipe implements CraftingRecipe{
 		return $this->shape;
 	}
 
-	public function registerToCraftingManager(CraftingManager $manager){
+	public function registerToCraftingManager(CraftingManager $manager) : void{
 		$manager->registerShapedRecipe($this);
 	}
 

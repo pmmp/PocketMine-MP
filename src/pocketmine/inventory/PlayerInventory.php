@@ -204,7 +204,7 @@ class PlayerInventory extends EntityInventory{
 		}
 	}
 
-	public function onSlotChange(int $index, Item $before, bool $send){
+	public function onSlotChange(int $index, Item $before, bool $send) : void{
 		$holder = $this->getHolder();
 		if($holder instanceof Player and !$holder->spawned){
 			return;
@@ -280,7 +280,7 @@ class PlayerInventory extends EntityInventory{
 		return parent::doSetItemEvents($index, $newItem);
 	}
 
-	public function clearAll(){
+	public function clearAll() : void{
 		parent::clearAll();
 
 		for($i = $this->getSize(), $m = $i + 4; $i < $m; ++$i){

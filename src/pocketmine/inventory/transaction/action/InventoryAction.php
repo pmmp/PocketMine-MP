@@ -112,13 +112,13 @@ abstract class InventoryAction{
 	 *
 	 * @param Player $source
 	 */
-	abstract public function onExecuteSuccess(Player $source);
+	abstract public function onExecuteSuccess(Player $source) : void;
 
 	/**
 	 * Performs additional actions when this inventory-action did not complete successfully.
 	 *
 	 * @param Player $source
 	 */
-	abstract public function onExecuteFail(Player $source);
+	abstract public function onExecuteFail(Player $source) : void;
 
 }
