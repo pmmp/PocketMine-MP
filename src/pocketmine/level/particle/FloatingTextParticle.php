@@ -24,11 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\level\particle;
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\Item as ItemEntity;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
 use pocketmine\utils\UUID;
@@ -46,26 +44,26 @@ class FloatingTextParticle extends Particle{
 	 * @param string  $text
 	 * @param string  $title
 	 */
-	public function __construct(Vector3 $pos, $text, $title = ""){
+	public function __construct(Vector3 $pos, string $text, string $title = ""){
 		parent::__construct($pos->x, $pos->y, $pos->z);
 		$this->text = $text;
 		$this->title = $title;
 	}
 
-	public function setText($text){
+	public function setText(string $text) : void{
 		$this->text = $text;
 	}
 
-	public function setTitle($title){
+	public function setTitle(string $title) : void{
 		$this->title = $title;
 	}
 
-	public function isInvisible(){
+	public function isInvisible() : bool{
 		return $this->invisible;
 	}
 
-	public function setInvisible($value = true){
-		$this->invisible = (bool) $value;
+	public function setInvisible(bool $value = true){
+		$this->invisible = $value;
 	}
 
 	public function encode(){
