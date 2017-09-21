@@ -105,7 +105,7 @@ class SimpleInventoryTransaction implements InventoryTransaction{
 	 */
 	protected function matchItems(array &$needItems, array &$haveItems) : bool{
 		foreach($this->actions as $key => $action){
-			if($action->getTargetItem()->getId() !== Item::AIR){
+			if(!$action->getTargetItem()->isNull()){
 				$needItems[] = $action->getTargetItem();
 			}
 
@@ -113,7 +113,7 @@ class SimpleInventoryTransaction implements InventoryTransaction{
 				return false;
 			}
 
-			if($action->getSourceItem()->getId() !== Item::AIR){
+			if(!$action->getSourceItem()->isNull()){
 				$haveItems[] = $action->getSourceItem();
 			}
 		}

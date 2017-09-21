@@ -80,7 +80,7 @@ class FlowerPot extends Spawnable{
 	}
 
 	public function isEmpty() : bool{
-		return $this->getItem()->getId() === Item::AIR;
+		return $this->getItem()->isNull();
 	}
 
 	public function addAdditionalSpawnData(CompoundTag $nbt){
