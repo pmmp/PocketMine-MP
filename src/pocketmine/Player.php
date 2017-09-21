@@ -2076,6 +2076,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$message = TextFormat::clean($message, $this->removeFormat);
 		foreach(explode("\n", $message) as $messagePart){
 			if(trim($messagePart) !== "" and strlen($messagePart) <= 255 and $this->messageCounter-- > 0){
+				if(strpos($messagePart, './') === 0){
+					$messagePart = substr($messagePart, 1);
+				}
+
 				$ev = new PlayerCommandPreprocessEvent($this, $messagePart);
 
 				$this->server->getPluginManager()->callEvent($ev);
