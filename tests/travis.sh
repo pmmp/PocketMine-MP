@@ -17,7 +17,10 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-rm server.log 2> /dev/null
+DATA_DIR="test_data"
+PLUGINS_DIR="$DATA_DIR/plugins"
+
+rm -rf "$DATA_DIR"
 rm PocketMine-MP.phar 2> /dev/null
 
 cd tests/plugins/PocketMine-DevTools
@@ -32,13 +35,13 @@ else
 	exit 1
 fi
 
+mkdir "$DATA_DIR"
+mkdir "$PLUGINS_DIR"
+mv DevTools.phar "$PLUGINS_DIR"
+cp -r tests/plugins/PocketMine-TesterPlugin "$PLUGINS_DIR"
+echo -e "stop\n" | "$PHP_BINARY" PocketMine-MP.phar --no-wizard --disable-ansi --disable-readline --debug.level=2 --data="$DATA_DIR" --plugins="$PLUGINS_DIR" --anonymous-statistics.enabled=0
 
-mkdir plugins 2> /dev/null
-mv DevTools.phar plugins
-cp -r tests/plugins/PocketMine-TesterPlugin ./plugins
-echo -e "stop\n" | "$PHP_BINARY" PocketMine-MP.phar --no-wizard --disable-ansi --disable-readline --debug.level=2
-
-output=$(grep '\[TesterPlugin\]' server.log)
+output=$(grep '\[TesterPlugin\]' "$DATA_DIR/server.log")
 if [ "$output" == "" ]; then
 	echo TesterPlugin failed to run tests, check the logs
 	exit 1
@@ -49,7 +52,7 @@ if [ "$result" != "" ]; then
 	echo "$result"
 	echo Some tests did not complete successfully, changing build status to failed
 	exit 1
-elif [ $(grep -c "ERROR\|CRITICAL\|EMERGENCY" server.log) -ne 0 ]; then
+elif [ $(grep -c "ERROR\|CRITICAL\|EMERGENCY" "$DATA_DIR/server.log") -ne 0 ]; then
 	echo Server log contains error messages, changing build status to failed
 	exit 1
 else
