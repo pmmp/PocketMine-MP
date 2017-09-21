@@ -2386,7 +2386,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							if($this->isSurvival()){
 								if($heldItem->isTool()){
 									if($heldItem->useOn($target) and $heldItem->getDamage() >= $heldItem->getMaxDurability()){
-										$this->inventory->setItemInHand(ItemFactory::get(Item::AIR, 0, 1));
+										$this->inventory->setItemInHand(ItemFactory::get(Item::AIR, 0, 0));
 									}else{
 										$this->inventory->setItemInHand($heldItem);
 									}
