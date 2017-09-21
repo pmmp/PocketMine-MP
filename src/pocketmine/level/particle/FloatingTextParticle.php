@@ -39,7 +39,7 @@ class FloatingTextParticle extends Particle{
 
 	/**
 	 * @param Vector3 $pos
-	 * @param int     $text
+	 * @param string  $text
 	 * @param string  $title
 	 */
 	public function __construct(Vector3 $pos, $text, $title = ""){
