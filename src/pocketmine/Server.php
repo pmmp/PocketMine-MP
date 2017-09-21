@@ -2387,7 +2387,7 @@ class Server{
 	}
 
 	public function sendUsage($type = SendUsageTask::TYPE_STATUS){
-		if($this->getProperty("anonymous-statistics.enabled", true)){
+		if((bool) $this->getProperty("anonymous-statistics.enabled", true)){
 			$this->scheduler->scheduleAsyncTask(new SendUsageTask($this, $type, $this->uniquePlayers));
 		}
 		$this->uniquePlayers = [];
