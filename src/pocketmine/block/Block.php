@@ -61,7 +61,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	protected $id;
 	/** @var int */
 	protected $meta = 0;
-	/** @var string */
+	/** @var string|null */
 	protected $fallbackName;
 	/** @var int|null */
 	protected $itemId;
@@ -70,12 +70,12 @@ class Block extends Position implements BlockIds, Metadatable{
 	public $boundingBox = null;
 
 	/**
-	 * @param int    $id     The block type's ID, 0-255
-	 * @param int    $meta   Meta value of the block type
-	 * @param string $name   English name of the block type (TODO: implement translations)
-	 * @param int    $itemId The item ID of the block type, used for block picking and dropping items.
+	 * @param int         $id     The block type's ID, 0-255
+	 * @param int         $meta   Meta value of the block type
+	 * @param string|null $name   English name of the block type (TODO: implement translations)
+	 * @param int         $itemId The item ID of the block type, used for block picking and dropping items.
 	 */
-	public function __construct(int $id, int $meta = 0, string $name = "Unknown", int $itemId = null){
+	public function __construct(int $id, int $meta = 0, string $name = null, int $itemId = null){
 		$this->id = $id;
 		$this->meta = $meta;
 		$this->fallbackName = $name;
@@ -86,7 +86,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return string
 	 */
 	public function getName() : string{
-		return $this->fallbackName;
+		return $this->fallbackName ?? "Unknown";
 	}
 
 	/**
