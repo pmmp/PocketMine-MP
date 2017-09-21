@@ -50,8 +50,16 @@ class FloatingTextParticle extends Particle{
 		$this->title = $title;
 	}
 
+	public function getText() : string{
+		return $this->text;
+	}
+
 	public function setText(string $text) : void{
 		$this->text = $text;
+	}
+
+	public function getTitle() : string{
+		return $this->title;
 	}
 
 	public function setTitle(string $title) : void{
