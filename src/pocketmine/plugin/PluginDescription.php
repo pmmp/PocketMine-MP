@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
-use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\permission\Permission;
 
 class PluginDescription{
