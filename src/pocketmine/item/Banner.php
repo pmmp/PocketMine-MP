@@ -56,7 +56,7 @@ class Banner extends Item{
 	 *
 	 * @param int $color
 	 */
-	public function setBaseColor(int $color){
+	public function setBaseColor(int $color) : void{
 		$namedTag = $this->getNamedTag();
 		$namedTag->Base->setValue($color & 0x0f);
 		$this->setNamedTag($namedTag);
@@ -76,11 +76,13 @@ class Banner extends Item{
 		if($this->getPatternCount() !== 0) {
 			$patternId = max($this->getPatternIds()) + 1;
 		}
+
 		$namedTag = $this->getNamedTag();
 		$namedTag->Patterns->{$patternId} = new CompoundTag("", [
 			new IntTag("Color", $color & 0x0f),
 			new StringTag("Pattern", $pattern)
 		]);
+
 		$this->setNamedTag($namedTag);
 		return $patternId;
 	}
@@ -108,6 +110,7 @@ class Banner extends Item{
 		if(!$this->patternExists($patternId)){
 			return [];
 		}
+
 		return [
 			"Color" => $this->getNamedTag()->Patterns->{$patternId}->Color->getValue(),
 			"Pattern" => $this->getNamedTag()->Patterns->{$patternId}->Pattern->getValue()
@@ -128,11 +131,13 @@ class Banner extends Item{
 		if(!$this->patternExists($patternId)){
 			return false;
 		}
+
 		$namedTag = $this->getNamedTag();
 		$namedTag->Patterns->{$patternId}->setValue([
 			new IntTag("Color", $color & 0x0f),
 			new StringTag("Pattern", $pattern)
 		]);
+
 		$this->setNamedTag($namedTag);
 		return true;
 	}
@@ -149,9 +154,11 @@ class Banner extends Item{
 		if(!$this->patternExists($patternId)){
 			return false;
 		}
+
 		$namedTag = $this->getNamedTag();
 		unset($namedTag->Patterns->{$patternId});
 		$this->setNamedTag($namedTag);
+
 		return true;
 	}
 
@@ -166,10 +173,12 @@ class Banner extends Item{
 		if(empty($keys)){
 			return false;
 		}
+
 		$index = max($keys);
 		$namedTag = $this->getNamedTag();
 		unset($namedTag->Patterns->{$index});
 		$this->setNamedTag($namedTag);
+
 		return true;
 	}
 
@@ -180,12 +189,14 @@ class Banner extends Item{
 	 */
 	public function getPatternIds() : array{
 		$this->correctNBT();
+
 		$keys = array_keys((array) $this->getNamedTag()->Patterns);
 		foreach($keys as $key => $index){
 			if(!is_numeric($index)){
 				unset($keys[$key]);
 			}
 		}
+
 		return $keys;
 	}
 
@@ -200,10 +211,12 @@ class Banner extends Item{
 		if(empty($keys)){
 			return false;
 		}
+
 		$namedTag = $this->getNamedTag();
 		$index = min($keys);
 		unset($namedTag->Patterns->{$index});
 		$this->setNamedTag($namedTag);
+
 		return true;
 	}
 
@@ -216,11 +229,12 @@ class Banner extends Item{
 		return count($this->getPatternIds());
 	}
 
-	public function correctNBT(){
+	public function correctNBT() : void{
 		$tag = $this->getNamedTag() ?? new CompoundTag();
 		if(!isset($tag->Base) or !($tag->Base instanceof IntTag)) {
 			$tag->Base = new IntTag("Base", $this->meta);
 		}
+
 		if(!isset($tag->Patterns) or !($tag->Patterns instanceof ListTag)) {
 			$tag->Patterns = new ListTag("Patterns");
 		}

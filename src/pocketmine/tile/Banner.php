@@ -116,7 +116,7 @@ class Banner extends Spawnable{
 	 *
 	 * @param int $color
 	 */
-	public function setBaseColor(int $color){
+	public function setBaseColor(int $color) : void{
 		$this->namedtag->Base->setValue($color & 0x0f);
 		$this->onChanged();
 	}
@@ -128,6 +128,7 @@ class Banner extends Spawnable{
 	 */
 	public function getPatternIds() : array{
 		$keys = array_keys((array) $this->namedtag->Patterns);
+
 		foreach($keys as $key => $index){
 			if(!is_numeric($index)){
 				unset($keys[$key]);
@@ -149,10 +150,12 @@ class Banner extends Spawnable{
 		if($this->getPatternCount() !== 0) {
 			$patternId = max($this->getPatternIds()) + 1;
 		}
+
 		$this->namedtag->Patterns->{$patternId} = new CompoundTag("", [
 			new IntTag("Color", $color & 0x0f),
 			new StringTag("Pattern", $pattern)
 		]);
+
 		$this->onChanged();
 		return $patternId;
 	}
@@ -179,6 +182,7 @@ class Banner extends Spawnable{
 		if(!$this->patternExists($patternId)){
 			return [];
 		}
+
 		return [
 			"Color" => $this->namedtag->Patterns->{$patternId}->Color->getValue(),
 			"Pattern" => $this->namedtag->Patterns->{$patternId}->Pattern->getValue()
@@ -198,10 +202,12 @@ class Banner extends Spawnable{
 		if(!$this->patternExists($patternId)){
 			return false;
 		}
+
 		$this->namedtag->Patterns->{$patternId}->setValue([
 			new IntTag("Color", $color & 0x0f),
 			new StringTag("Pattern", $pattern)
 		]);
+
 		$this->onChanged();
 		return true;
 	}
@@ -233,6 +239,7 @@ class Banner extends Spawnable{
 		if(empty($keys)){
 			return false;
 		}
+
 		$index = max($keys);
 		unset($this->namedtag->Patterns->{$index});
 
@@ -250,6 +257,7 @@ class Banner extends Spawnable{
 		if(empty($keys)){
 			return false;
 		}
+
 		$index = min($keys);
 		unset($this->namedtag->Patterns->{$index});
 
