@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\inventory\transaction\action;
 
 use pocketmine\inventory\Inventory;
+use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
@@ -76,6 +77,15 @@ class SlotChangeAction extends InventoryAction{
 	public function isValid(Player $source) : bool{
 		$check = $this->inventory->getItem($this->inventorySlot);
 		return $check->equalsExact($this->sourceItem);
+	}
+
+	/**
+	 * Adds this action's target inventory to the transaction's inventory list.
+	 *
+	 * @param InventoryTransaction $transaction
+	 */
+	public function onAddToTransaction(InventoryTransaction $transaction) : void{
+		$transaction->addInventory($this->inventory);
 	}
 
 	/**

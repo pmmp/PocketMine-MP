@@ -88,16 +88,25 @@ class InventoryTransaction{
 	/**
 	 * @param InventoryAction $action
 	 */
-	public function addAction(InventoryAction $action){
-		if(isset($this->actions[spl_object_hash($action)])){
-			return;
+	public function addAction(InventoryAction $action) : void{
+		if(!isset($this->actions[$hash = spl_object_hash($action)])){
+			$this->actions[spl_object_hash($action)] = $action;
+			$action->onAddToTransaction($this);
+		}else{
+			throw new \InvalidArgumentException("Tried to add the same action to a transaction twice");
 		}
+	}
 
-		if($action instanceof SlotChangeAction){
-			$this->inventories[spl_object_hash($action->getInventory())] = $action->getInventory();
+	/**
+	 * @internal This method should not be used by plugins, it's used to add tracked inventories for InventoryActions
+	 * involving inventories.
+	 *
+	 * @param Inventory $inventory
+	 */
+	public function addInventory(Inventory $inventory) : void{
+		if(!isset($this->inventories[$hash = spl_object_hash($inventory)])){
+			$this->inventories[$hash] = $inventory;
 		}
-
-		$this->actions[spl_object_hash($action)] = $action;
 	}
 
 	/**

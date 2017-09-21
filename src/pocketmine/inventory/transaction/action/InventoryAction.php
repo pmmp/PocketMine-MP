@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory\transaction\action;
 
+use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
@@ -73,6 +74,15 @@ abstract class InventoryAction{
 	 * @return bool
 	 */
 	abstract public function isValid(Player $source) : bool;
+
+	/**
+	 * Called when the action is added to the specified InventoryTransaction.
+	 *
+	 * @param InventoryTransaction $transaction
+	 */
+	public function onAddToTransaction(InventoryTransaction $transaction) : void{
+
+	}
 
 	/**
 	 * Called by inventory transactions before any actions are processed. If this returns false, the transaction will
