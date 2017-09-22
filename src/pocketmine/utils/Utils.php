@@ -541,6 +541,6 @@ class Utils{
 	public static function decodeJWT(string $token) : array{
 		list($headB64, $payloadB64, $sigB64) = explode(".", $token);
 
-		return json_decode(base64_decode($payloadB64), true);
+		return json_decode(base64_decode(strtr($payloadB64, '-_', '+/'), true), true);
 	}
 }
