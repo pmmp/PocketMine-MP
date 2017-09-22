@@ -377,7 +377,7 @@ class PluginManager{
 			return true;
 		}
 
-		return false; //Not compatible if no API versions were specified
+		return false;
 	}
 
 	/**
