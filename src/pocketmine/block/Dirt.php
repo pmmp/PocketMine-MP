@@ -44,7 +44,7 @@ class Dirt extends Solid{
 	}
 
 	public function getName() : string{
-		if($this->meta === 1) {
+		if($this->meta === 1){
 			return "Coarse Dirt";
 		}
 		return "Dirt";
@@ -53,7 +53,7 @@ class Dirt extends Solid{
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($item->isHoe()){
 			$item->useOn($this);
-			if($this->meta === 1) {
+			if($this->meta === 1){
 				$this->getLevel()->setBlock($this, BlockFactory::get(Block::DIRT), true);
 			} else {
 				$this->getLevel()->setBlock($this, BlockFactory::get(Block::FARMLAND), true);
