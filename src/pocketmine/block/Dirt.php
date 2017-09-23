@@ -55,7 +55,7 @@ class Dirt extends Solid{
 			$item->useOn($this);
 			if($this->meta === 1){
 				$this->getLevel()->setBlock($this, BlockFactory::get(Block::DIRT), true);
-			} else {
+			}else{
 				$this->getLevel()->setBlock($this, BlockFactory::get(Block::FARMLAND), true);
 			}
 
