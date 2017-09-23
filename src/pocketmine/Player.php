@@ -46,6 +46,7 @@ use pocketmine\event\player\PlayerAchievementAwardedEvent;
 use pocketmine\event\player\PlayerAnimationEvent;
 use pocketmine\event\player\PlayerBedEnterEvent;
 use pocketmine\event\player\PlayerBedLeaveEvent;
+use pocketmine\event\player\PlayerBlockPickEvent;
 use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDeathEvent;
@@ -2521,22 +2522,35 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleBlockPickRequest(BlockPickRequestPacket $packet) : bool{
-		if($this->isCreative()){
-			$tile = $this->getLevel()->getTile($this->temporalVector->setComponents($packet->tileX, $packet->tileY, $packet->tileZ));
-			if($tile instanceof Tile){ //TODO: check if the held item matches the target tile
+		$block = $this->level->getBlock($this->temporalVector->setComponents($packet->blockX, $packet->blockY, $packet->blockZ));
+
+		//TODO: this doesn't handle crops correctly (need more API work)
+		$item = Item::get($block->getItemId(), $block->getDamage() & $block->getVariantBitmask());
+
+		if($packet->addUserData){
+			$tile = $this->getLevel()->getTile($block);
+			if($tile instanceof Tile){
 				$nbt = $tile->getCleanedNBT();
 				if($nbt instanceof CompoundTag){
-					$item = $this->inventory->getItemInHand();
 					$item->setCustomBlockData($nbt);
 					$item->setLore(["+(DATA)"]);
-					$this->inventory->setItemInHand($item);
 				}
-
-				return true;
 			}
 		}
 
-		return false;
+		$ev = new PlayerBlockPickEvent($this, $block, $item);
+		if(!$this->isCreative(true)){
+			$this->server->getLogger()->debug("Got block-pick request from " . $this->getName() . " when not in creative mode (gamemode " . $this->getGamemode() . ")");
+			$ev->setCancelled();
+		}
+
+		$this->server->getPluginManager()->callEvent($ev);
+		if(!$ev->isCancelled()){
+			$this->inventory->setItemInHand($ev->getResultItem());
+		}
+
+		return true;
+
 	}
 
 	public function handlePlayerAction(PlayerActionPacket $packet) : bool{
