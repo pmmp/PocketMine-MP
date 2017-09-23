@@ -38,8 +38,6 @@ class AdventureSettingsPacket extends DataPacket{
 	const PERMISSION_AUTOMATION = 3;
 	const PERMISSION_ADMIN = 4;
 
-	//TODO: check level 3
-
 	/**
 	 * This constant is used to identify flags that should be set on the second field. In a sensible world, these
 	 * flags would all be set on the same packet field, but as of MCPE 1.2, the new abilities flags have for some
