@@ -40,7 +40,7 @@ class InventoryTransaction{
 	private $creationTime;
 	protected $hasExecuted = false;
 	/** @var Player */
-	protected $source = null;
+	protected $source;
 
 	/** @var Inventory[] */
 	protected $inventories = [];
@@ -52,7 +52,7 @@ class InventoryTransaction{
 	 * @param Player            $source
 	 * @param InventoryAction[] $actions
 	 */
-	public function __construct(Player $source = null, array $actions = []){
+	public function __construct(Player $source, array $actions = []){
 		$this->creationTime = microtime(true);
 		$this->source = $source;
 		foreach($actions as $action){
@@ -219,8 +219,6 @@ class InventoryTransaction{
 			}
 
 			$this->addAction(new SlotChangeAction($originalAction->getInventory(), $originalAction->getSlot(), $originalAction->getSourceItem(), $lastTargetItem));
-
-			MainLogger::getLogger()->debug("Successfully compacted " . count($originalList) . " actions for " . $this->source->getName());
 		}
 
 		return true;
@@ -243,6 +241,11 @@ class InventoryTransaction{
 		}
 	}
 
+	protected function callExecuteEvent() : bool{
+		Server::getInstance()->getPluginManager()->callEvent($ev = new InventoryTransactionEvent($this));
+		return !$ev->isCancelled();
+	}
+
 	/**
 	 * @return bool
 	 */
@@ -251,8 +254,7 @@ class InventoryTransaction{
 			return false;
 		}
 
-		Server::getInstance()->getPluginManager()->callEvent($ev = new InventoryTransactionEvent($this));
-		if($ev->isCancelled()){
+		if(!$this->callExecuteEvent()){
 			$this->handleFailed();
 			return true;
 		}

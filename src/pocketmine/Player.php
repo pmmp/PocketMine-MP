@@ -37,7 +37,6 @@ use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\inventory\CraftItemEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\inventory\InventoryPickupArrowEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
@@ -76,9 +75,8 @@ use pocketmine\inventory\FurnaceInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\PlayerInventory;
-use pocketmine\inventory\ShapedRecipe;
-use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\inventory\transaction\action\InventoryAction;
+use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -110,7 +108,6 @@ use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
-use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
@@ -237,6 +234,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	/** @var CraftingGrid */
 	protected $craftingGrid = null;
+	/** @var CraftingTransaction|null */
+	protected $craftingTransaction = null;
 
 	public $creationTime = 0;
 
@@ -2189,6 +2188,25 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$actions[] = $action;
 		}
 
+		if($packet->isCraftingPart){
+			if($this->craftingTransaction === null){
+				$this->craftingTransaction = new CraftingTransaction($this, $actions);
+			}else{
+				foreach($actions as $action){
+					$this->craftingTransaction->addAction($action);
+				}
+			}
+
+			if($this->craftingTransaction->getPrimaryOutput() !== null){
+				//we get the actions for this in several packets, so we can't execute it until we get the result
+
+				$this->craftingTransaction->execute(); //if it can't execute, no inventories will be modified
+				$this->craftingTransaction = null;
+			}
+
+			return true;
+		}
+
 		switch($packet->transactionType){
 			case InventoryTransactionPacket::TYPE_NORMAL:
 				$transaction = new InventoryTransaction($this, $actions);
@@ -2774,172 +2792,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$this->inventory->equipItem($packet->selectedHotbarSlot);
-
-		return true;
-	}
-
-	public function handleCraftingEvent(CraftingEventPacket $packet) : bool{
-		if($this->spawned === false or !$this->isAlive()){
-			return true;
-		}
-
-		$recipe = $this->server->getCraftingManager()->getRecipe($packet->id);
-
-		if($recipe === null or ($recipe->requiresCraftingTable() and $this->craftingType === 0) or count($packet->input) === 0){
-			$this->inventory->sendContents($this);
-			return false;
-		}
-
-		$canCraft = true;
-
-		if($recipe instanceof ShapedRecipe){
-			for($x = 0; $x < 3 and $canCraft; ++$x){
-				for($y = 0; $y < 3; ++$y){
-					/** @var Item $item */
-					$item = $packet->input[$y * 3 + $x];
-					$ingredient = $recipe->getIngredient($x, $y);
-					if($item->getCount() > 0){
-						if($ingredient === null or !$ingredient->equals($item, !$ingredient->hasAnyDamageValue(), $ingredient->hasCompoundTag())){
-							$canCraft = false;
-							break;
-						}
-					}
-				}
-			}
-		}elseif($recipe instanceof ShapelessRecipe){
-			$needed = $recipe->getIngredientList();
-
-			for($x = 0; $x < 3 and $canCraft; ++$x){
-				for($y = 0; $y < 3; ++$y){
-					/** @var Item $item */
-					$item = clone $packet->input[$y * 3 + $x];
-
-					foreach($needed as $k => $n){
-						if($n->equals($item, !$n->hasAnyDamageValue(), $n->hasCompoundTag())){
-							$remove = min($n->getCount(), $item->getCount());
-							$n->setCount($n->getCount() - $remove);
-							$item->setCount($item->getCount() - $remove);
-
-							if($n->getCount() === 0){
-								unset($needed[$k]);
-							}
-						}
-					}
-
-					if($item->getCount() > 0){
-						$canCraft = false;
-						break;
-					}
-				}
-			}
-
-			if(count($needed) > 0){
-				$canCraft = false;
-			}
-		}else{
-			$canCraft = false;
-		}
-
-		/** @var Item[] $ingredients */
-		$ingredients = $packet->input;
-		$result = $packet->output[0];
-
-		if(!$canCraft or !$recipe->getResult()->equals($result)){
-			$this->server->getLogger()->debug("Unmatched recipe " . $recipe->getId() . " from player " . $this->getName() . ": expected " . $recipe->getResult() . ", got " . $result . ", using: " . implode(", ", $ingredients));
-			$this->inventory->sendContents($this);
-			return false;
-		}
-
-		$used = array_fill(0, $this->inventory->getSize(), 0);
-
-		foreach($ingredients as $ingredient){
-			$slot = -1;
-			foreach($this->inventory->getContents() as $index => $item){
-				if($ingredient->getId() !== 0 and $ingredient->equals($item, !$ingredient->hasAnyDamageValue(), $ingredient->hasCompoundTag()) and ($item->getCount() - $used[$index]) >= 1){
-					$slot = $index;
-					$used[$index]++;
-					break;
-				}
-			}
-
-			if($ingredient->getId() !== 0 and $slot === -1){
-				$canCraft = false;
-				break;
-			}
-		}
-
-		if(!$canCraft){
-			$this->server->getLogger()->debug("Unmatched recipe " . $recipe->getId() . " from player " . $this->getName() . ": client does not have enough items, using: " . implode(", ", $ingredients));
-			$this->inventory->sendContents($this);
-			return false;
-		}
-
-		$this->server->getPluginManager()->callEvent($ev = new CraftItemEvent($this, $ingredients, $recipe));
-
-		if($ev->isCancelled()){
-			$this->inventory->sendContents($this);
-			return true;
-		}
-
-		foreach($used as $slot => $count){
-			if($count === 0){
-				continue;
-			}
-
-			$item = $this->inventory->getItem($slot);
-
-			if($item->getCount() > $count){
-				$newItem = clone $item;
-				$newItem->setCount($item->getCount() - $count);
-			}else{
-				$newItem = ItemFactory::get(Item::AIR, 0, 0);
-			}
-
-			$this->inventory->setItem($slot, $newItem);
-		}
-
-		$extraItem = $this->inventory->addItem($recipe->getResult());
-		if(count($extraItem) > 0){
-			foreach($extraItem as $item){
-				$this->level->dropItem($this, $item);
-			}
-		}
-
-		switch($recipe->getResult()->getId()){
-			case Item::CRAFTING_TABLE:
-				$this->awardAchievement("buildWorkBench");
-				break;
-			case Item::WOODEN_PICKAXE:
-				$this->awardAchievement("buildPickaxe");
-				break;
-			case Item::FURNACE:
-				$this->awardAchievement("buildFurnace");
-				break;
-			case Item::WOODEN_HOE:
-				$this->awardAchievement("buildHoe");
-				break;
-			case Item::BREAD:
-				$this->awardAchievement("makeBread");
-				break;
-			case Item::CAKE:
-				//TODO: detect complex recipes like cake that leave remains
-				$this->awardAchievement("bakeCake");
-				$this->inventory->addItem(ItemFactory::get(Item::BUCKET, 0, 3));
-				break;
-			case Item::STONE_PICKAXE:
-			case Item::GOLDEN_PICKAXE:
-			case Item::IRON_PICKAXE:
-			case Item::DIAMOND_PICKAXE:
-				$this->awardAchievement("buildBetterPickaxe");
-				break;
-			case Item::WOODEN_SWORD:
-				$this->awardAchievement("buildSword");
-				break;
-			case Item::DIAMOND:
-				$this->awardAchievement("diamond");
-				break;
-		}
-
 
 		return true;
 	}

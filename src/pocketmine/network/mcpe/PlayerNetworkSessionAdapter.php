@@ -172,7 +172,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handleCraftingEvent(CraftingEventPacket $packet) : bool{
-		return $this->player->handleCraftingEvent($packet);
+		return true; //this is a broken useless packet, so we don't use it
 	}
 
 	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{

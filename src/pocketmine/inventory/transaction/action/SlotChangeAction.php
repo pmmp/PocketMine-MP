@@ -83,6 +83,7 @@ class SlotChangeAction extends InventoryAction{
 	 * Adds this action's target inventory to the transaction's inventory list.
 	 *
 	 * @param InventoryTransaction $transaction
+	 *
 	 */
 	public function onAddToTransaction(InventoryTransaction $transaction) : void{
 		$transaction->addInventory($this->inventory);
