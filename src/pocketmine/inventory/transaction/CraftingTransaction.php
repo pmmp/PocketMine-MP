@@ -40,8 +40,6 @@ class CraftingTransaction extends InventoryTransaction{
 	/** @var Item|null */
 	protected $primaryOutput;
 
-	private $isReindexed = false;
-
 	/** @var CraftingRecipe|null */
 	protected $recipe = null;
 
@@ -97,11 +95,7 @@ class CraftingTransaction extends InventoryTransaction{
 		return $this->recipe;
 	}
 
-	private function reindexInputs() : void{
-		if($this->isReindexed){
-			return;
-		}
-
+	private function reindexInputs() : array{
 		$xOffset = $this->gridSize;
 		$yOffset = $this->gridSize;
 
@@ -121,7 +115,7 @@ class CraftingTransaction extends InventoryTransaction{
 		}
 
 		if($height === 0 or $width === 0){
-			return;
+			return [];
 		}
 
 		$air = ItemFactory::get(Item::AIR, 0, 0);
@@ -132,15 +126,13 @@ class CraftingTransaction extends InventoryTransaction{
 			}
 		}
 
-		$this->inputs = $reindexed;
-
-		$this->isReindexed = true;
+		return $reindexed;
 	}
 
 	public function canExecute() : bool{
-		$this->reindexInputs();
+		$inputs = $this->reindexInputs();
 
-		$this->recipe = $this->source->getServer()->getCraftingManager()->matchRecipe($this->inputs, $this->primaryOutput, $this->secondaryOutputs);
+		$this->recipe = $this->source->getServer()->getCraftingManager()->matchRecipe($inputs, $this->primaryOutput, $this->secondaryOutputs);
 
 		return $this->recipe !== null and parent::canExecute();
 	}
