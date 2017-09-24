@@ -228,7 +228,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return $this->player->handleResourcePackChunkRequest($packet);
 	}
 
-	public function handleBookEdit(BookEditPacket $packet): bool {
+	public function handleBookEdit(BookEditPacket $packet) : bool{
 		return $this->player->handleBookEdit($packet);
 	}
 

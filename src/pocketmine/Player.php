@@ -3064,8 +3064,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function handleBookEdit(BookEditPacket $packet) : bool{
 		/** @var WritableBook $book */
-		$book = $this->getInventory()->getItemInHand();
-		if($book->getId() !== Item::WRITABLE_BOOK) {
+		$book = $this->inventory->getItem($packet->inventorySlot);
+		if($book->getId() !== Item::WRITABLE_BOOK){
 			return false;
 		}
 		switch($packet->type){
@@ -3086,7 +3086,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			default:
 				return false;
 		}
-		$this->getInventory()->setItemInHand($book);
+		$this->getInventory()->setItem($packet->inventorySlot, $book);
 		return true;
 	}
 

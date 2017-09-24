@@ -20,11 +20,11 @@ class WritableBook extends Item{
 		parent::__construct(self::WRITABLE_BOOK, $meta, "Book & Quill");
 	}
 
-	public function getMaxStackSize(): int {
+	public function getMaxStackSize() : int {
 		return 1;
 	}
 
-	public function correctNBT(){
+	public function correctNBT() : void{
 		$nbt = $this->getNamedTag() ?? new CompoundTag();
 		if(!isset($nbt->pages) or !($nbt->pages instanceof ListTag)){
 			$nbt->pages = new ListTag("pages");
