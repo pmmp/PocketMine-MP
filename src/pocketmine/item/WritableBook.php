@@ -20,27 +20,6 @@ class WritableBook extends Item{
 		parent::__construct(self::WRITABLE_BOOK, $meta, "Book & Quill");
 	}
 
-	public function getMaxStackSize() : int {
-		return 1;
-	}
-
-	public function correctNBT() : void{
-		$nbt = $this->getNamedTag() ?? new CompoundTag();
-		if(!isset($nbt->pages) or !($nbt->pages instanceof ListTag)){
-			$nbt->pages = new ListTag("pages");
-		}
-		if(!isset($nbt->generation) or !($nbt->generation instanceof IntTag)){
-			$nbt->generation = new IntTag("generation", 0);
-		}
-		if(!isset($nbt->author) or !($nbt->author instanceof StringTag)){
-			$nbt->author = new StringTag("author", "");
-		}
-		if(!isset($nbt->title) or !($nbt->title instanceof StringTag)){
-			$nbt->title = new StringTag("title", "");
-		}
-		$this->setNamedTag($nbt);
-	}
-
 	/**
 	 * Returns whether the given page exists in this book.
 	 *
@@ -49,7 +28,6 @@ class WritableBook extends Item{
 	 * @return bool
 	 */
 	public function pageExists(int $pageId) : bool{
-		$this->correctNBT();
 		return isset($this->getNamedTag()->pages->{$pageId});
 	}
 
@@ -81,9 +59,11 @@ class WritableBook extends Item{
 			$this->addPage($pageId);
 			$created = true;
 		}
+
 		$namedTag = $this->getNamedTag();
 		$namedTag->pages->{$pageId}->text->setValue($pageText);
 		$this->setNamedTag($namedTag);
+
 		return $created;
 	}
 
@@ -98,10 +78,20 @@ class WritableBook extends Item{
 		if($pageId < -1) {
 			throw new \InvalidArgumentException("Page number \"$pageId\" is out of range");
 		}
-		$this->correctNBT();
-		$namedTag = $this->getNamedTag();
-		$namedTag->pages->{$pageId} = new CompoundTag("");
-		$namedTag->pages->{$pageId}->text = new StringTag("text", "");
+		$namedTag = $this->getCorrectedNamedTag();
+
+		if(!isset($namedTag->pages) or !($namedTag->pages instanceof ListTag)){
+			$namedTag->pages = new ListTag("pages", []);
+		}
+		for($id = 0; $id <= $pageId; $id++) {
+			if(!$this->pageExists($id)) {
+				$namedTag->pages->{$id} = new CompoundTag("", [
+					new StringTag("text", ""),
+					new StringTag("photoname", "")
+				]);
+			}
+		}
+
 		$this->setNamedTag($namedTag);
 		return $pageId;
 	}
@@ -117,9 +107,12 @@ class WritableBook extends Item{
 		if(!$this->pageExists($pageId)){
 			return false;
 		}
+
 		$namedTag = $this->getNamedTag();
 		unset($namedTag->pages->{$pageId});
+		$this->movePagesAboveDownwards($pageId, $namedTag);
 		$this->setNamedTag($namedTag);
+
 		return true;
 	}
 
@@ -135,10 +128,12 @@ class WritableBook extends Item{
 		if(!$this->pageExists($pageId1) or !$this->pageExists($pageId2)){
 			return false;
 		}
+
 		$pageContents1 = $this->getPageText($pageId1);
 		$pageContents2 = $this->getPageText($pageId2);
 		$this->setPageText($pageId1, $pageContents2);
 		$this->setPageText($pageId2, $pageContents1);
+
 		return true;
 	}
 
@@ -149,7 +144,9 @@ class WritableBook extends Item{
 	 * @return int
 	 */
 	public function getGeneration() : int{
-		$this->correctNBT();
+		if(!isset($this->getNamedTag()->generation)) {
+			return -1;
+		}
 		return $this->getNamedTag()->generation->getValue();
 	}
 
@@ -162,9 +159,13 @@ class WritableBook extends Item{
 		if($generation < 0 or $generation > 3) {
 			throw new \InvalidArgumentException("Generation \"$generation\" is out of range");
 		}
-		$this->correctNBT();
-		$namedTag = $this->getNamedTag();
-		$namedTag->generation->setValue($generation);
+		$namedTag = $this->getCorrectedNamedTag();
+
+		if(isset($namedTag->generation)){
+			$namedTag->generation->setValue($generation);
+		} else {
+			$namedTag->generation = new IntTag("generation", $generation);
+		}
 		$this->setNamedTag($namedTag);
 	}
 
@@ -175,7 +176,9 @@ class WritableBook extends Item{
 	 * @return string
 	 */
 	public function getAuthor() : string{
-		$this->correctNBT();
+		if(!isset($this->getNamedTag()->author)){
+			return "";
+		}
 		return $this->getNamedTag()->author->getValue();
 	}
 
@@ -185,9 +188,12 @@ class WritableBook extends Item{
 	 * @param string $authorName
 	 */
 	public function setAuthor(string $authorName) : void{
-		$this->correctNBT();
-		$namedTag = $this->getNamedTag();
-		$namedTag->author->setValue($authorName);
+		$namedTag = $this->getCorrectedNamedTag();
+		if(isset($namedTag->author)){
+			$namedTag->author->setValue($authorName);
+		} else {
+			$namedTag->author = new StringTag("author", $authorName);
+		}
 		$this->setNamedTag($namedTag);
 	}
 
@@ -197,7 +203,9 @@ class WritableBook extends Item{
 	 * @return string
 	 */
 	public function getTitle() : string{
-		$this->correctNBT();
+		if(!isset($this->getNamedTag()->title)){
+			return "";
+		}
 		return $this->getNamedTag()->title->getValue();
 	}
 
@@ -207,9 +215,42 @@ class WritableBook extends Item{
 	 * @param string $title
 	 */
 	public function setTitle(string $title) : void{
-		$this->correctNBT();
-		$namedTag = $this->getNamedTag();
-		$namedTag->title->setValue($title);
+		$namedTag = $this->getCorrectedNamedTag();
+		if(isset($namedTag->title)){
+			$namedTag->title->setValue($title);
+		} else {
+			$namedTag->title = new StringTag("title", $title);
+		}
 		$this->setNamedTag($namedTag);
+	}
+
+	/**
+	 * @return CompoundTag
+	 */
+	public function getCorrectedNamedTag() : CompoundTag{
+		return $this->getNamedTag() ?? new CompoundTag();
+	}
+
+	public function getMaxStackSize() : int{
+		return 1;
+	}
+
+	/**
+	 * @param int         $id
+	 * @param CompoundTag $namedTag
+	 *
+	 * @return bool
+	 */
+	private function movePagesAboveDownwards(int $id, CompoundTag $namedTag) : bool{
+		if(!isset($namedTag->pages)){
+			return false;
+		}
+		foreach($namedTag->pages as $key => $page){
+			if(!is_numeric($key) or $key <= $id){
+				continue;
+			}
+			$namedTag->pages->{$key - 1} = $page;
+		}
+		return true;
 	}
 }

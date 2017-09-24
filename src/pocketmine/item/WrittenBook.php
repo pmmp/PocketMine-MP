@@ -10,7 +10,7 @@ class WrittenBook extends WritableBook{
 		Item::__construct(self::WRITTEN_BOOK, $meta, "Written Book");
 	}
 
-	public function getMaxStackSize() : int {
+	public function getMaxStackSize() : int{
 		return 16;
 	}
 }

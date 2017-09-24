@@ -2485,11 +2485,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$item = $this->inventory->getItem($packet->hotbarSlot);
 
-		if($item->getId() === Item::WRITABLE_BOOK){
-			if($packet->item->getId() === Item::WRITTEN_BOOK){
-				$this->inventory->setItem($packet->hotbarSlot, $packet->item);
-			}
-		}elseif(!$item->equals($packet->item)){
+		if(!$item->equals($packet->item)){
 			$this->server->getLogger()->debug("Tried to equip " . $packet->item . " but have " . $item . " in target slot");
 			$this->inventory->sendContents($this);
 			return false;
@@ -3064,7 +3060,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function handleBookEdit(BookEditPacket $packet) : bool{
 		/** @var WritableBook $book */
-		$book = $this->inventory->getItem($packet->inventorySlot);
+		$book = $this->inventory->getItem($packet->inventorySlot - 9);
 		if($book->getId() !== Item::WRITABLE_BOOK){
 			return false;
 		}
@@ -3082,11 +3078,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			case BookEditPacket::TYPE_SIGN_BOOK:
 				$book->setAuthor($packet->author);
 				$book->setTitle($packet->title);
+				$book->setGeneration(WritableBook::GENERATION_ORIGINAL);
 				break;
 			default:
 				return false;
 		}
-		$this->getInventory()->setItem($packet->inventorySlot, $book);
+		$this->getInventory()->setItem($packet->inventorySlot - 9, $book);
 		return true;
 	}
 
