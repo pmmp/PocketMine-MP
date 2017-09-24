@@ -53,6 +53,10 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		}
 		if(!isset($nbt->MaxTime)){
 			$nbt->MaxTime = new ShortTag("BurnTime", $nbt->BurnTime->getValue());
+			unset($nbt->BurnTicks);
+		}
+
+		if(!isset($nbt->BurnTicks)){
 			$nbt->BurnTicks = new ShortTag("BurnTicks", 0);
 		}
 
