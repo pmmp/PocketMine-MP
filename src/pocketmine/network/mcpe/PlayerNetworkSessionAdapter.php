@@ -30,6 +30,7 @@ use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
+use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\BossEventPacket;
 use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
@@ -225,6 +226,10 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 
 	public function handleResourcePackChunkRequest(ResourcePackChunkRequestPacket $packet) : bool{
 		return $this->player->handleResourcePackChunkRequest($packet);
+	}
+
+	public function handleBookEdit(BookEditPacket $packet): bool {
+		return $this->player->handleBookEdit($packet);
 	}
 
 	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{

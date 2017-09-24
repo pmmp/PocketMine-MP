@@ -168,6 +168,8 @@ class ItemFactory{
 			//TODO: BOTTLE_O_ENCHANTING
 			//TODO: FIREBALL
 
+			self::registerItem(new WritableBook());
+			self::registerItem(new WrittenBook());
 			self::registerItem(new Item(Item::EMERALD, 0, "Emerald"));
 			self::registerItem(new ItemFrame());
 			self::registerItem(new FlowerPot());

@@ -33,7 +33,7 @@ class CreativeInventoryAction extends InventoryAction{
 	 */
 	const TYPE_DELETE_ITEM = 0;
 	/**
-	 * Player took an item from the creative window.
+	 * Player took an item from the creative window or signs a book.
 	 */
 	const TYPE_CREATE_ITEM = 1;
 
@@ -53,7 +53,7 @@ class CreativeInventoryAction extends InventoryAction{
 	 */
 	public function isValid(Player $source) : bool{
 		return $source->isCreative(true) and
-			($this->actionType === self::TYPE_DELETE_ITEM or Item::getCreativeItemIndex($this->sourceItem) !== -1);
+			($this->actionType === self::TYPE_CREATE_ITEM or $this->actionType === self::TYPE_DELETE_ITEM or Item::getCreativeItemIndex($this->sourceItem) !== -1);
 	}
 
 	/**

@@ -82,6 +82,7 @@ use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\item\WritableBook;
 use pocketmine\level\ChunkLoader;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
@@ -105,6 +106,7 @@ use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
+use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\BossEventPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
@@ -2483,7 +2485,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$item = $this->inventory->getItem($packet->hotbarSlot);
 
-		if(!$item->equals($packet->item)){
+		if($item->getId() === Item::WRITABLE_BOOK){
+			if($packet->item->getId() === Item::WRITTEN_BOOK){
+				$this->inventory->setItem($packet->hotbarSlot, $packet->item);
+			}
+		}elseif(!$item->equals($packet->item)){
 			$this->server->getLogger()->debug("Tried to equip " . $packet->item . " but have " . $item . " in target slot");
 			$this->inventory->sendContents($this);
 			return false;
@@ -3053,6 +3059,34 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$tile->setItemRotation(0);
 		}
 
+		return true;
+	}
+
+	public function handleBookEdit(BookEditPacket $packet) : bool{
+		/** @var WritableBook $book */
+		$book = $this->getInventory()->getItemInHand();
+		if($book->getId() !== Item::WRITABLE_BOOK) {
+			return false;
+		}
+		switch($packet->type){
+			case BookEditPacket::TYPE_REPLACE_PAGE:
+			case BookEditPacket::TYPE_ADD_PAGE:
+				$book->setPageText($packet->pageNumber, $packet->content1);
+				break;
+			case BookEditPacket::TYPE_DELETE_PAGE:
+				$book->deletePage($packet->pageNumber);
+				break;
+			case BookEditPacket::TYPE_SWAP_PAGES:
+				$book->swapPage($packet->pageNumber, $packet->secondaryPageNumber);
+				break;
+			case BookEditPacket::TYPE_SIGN_BOOK:
+				$book->setAuthor($packet->author);
+				$book->setTitle($packet->title);
+				break;
+			default:
+				return false;
+		}
+		$this->getInventory()->setItemInHand($book);
 		return true;
 	}
 
