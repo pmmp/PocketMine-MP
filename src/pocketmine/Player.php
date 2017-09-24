@@ -2146,6 +2146,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->resetCraftingGridType();
 
 		switch($packet->event){
+			case EntityEventPacket::EATING_ITEM:
+				if($packet->data === 0){
+					return false;
+				}
+
+				$this->dataPacket($packet);
+				$this->server->broadcastPacket($this->getViewers(), $packet);
+				break;
 			default:
 				return false;
 		}
