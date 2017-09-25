@@ -147,6 +147,7 @@ use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
+use pocketmine\network\mcpe\VerifyLoginTask;
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
@@ -157,6 +158,7 @@ use pocketmine\tile\ItemFrame;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\utils\TextFormat;
+use pocketmine\utils\Utils;
 use pocketmine\utils\UUID;
 
 
@@ -209,6 +211,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public $joined = false;
 	public $gamemode;
 	public $lastBreak;
+	/** @var bool */
+	protected $authenticated = false;
 
 	protected $windowCnt = 2;
 	/** @var \SplObjectStorage<Inventory> */
@@ -350,6 +354,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}else{
 			$this->server->removeWhitelist($this->iusername);
 		}
+	}
+
+	public function isAuthenticated() : bool{
+		return $this->authenticated;
 	}
 
 	public function getPlayer(){
@@ -1788,18 +1796,34 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->addDefaultWindows();
 	}
 
-
-	protected function processLogin(){
-		if(!$this->server->isWhitelisted($this->iusername)){
-			$this->close($this->getLeaveMessage(), "Server is white-listed");
-
-			return;
-		}elseif($this->server->getNameBans()->isBanned($this->iusername) or $this->server->getIPBans()->isBanned($this->getAddress())){
-			$this->close($this->getLeaveMessage(), "You are banned");
-
+	public function onVerifyCompleted(LoginPacket $packet, bool $isValid, bool $isAuthenticated) : void{
+		if($this->closed){
 			return;
 		}
 
+		if(!$isValid){
+			$this->close("", "disconnect.loginFailedInfo.invalidSession");
+			return;
+		}
+
+		$this->authenticated = $isAuthenticated;
+
+		if(!$isAuthenticated){
+			if($this->server->requiresAuthentication() and $this->kick("disconnectionScreen.notAuthenticated", false)){ //use kick to allow plugins to cancel this
+				return;
+			}else{
+				$this->server->getLogger()->debug($this->getName() . " is NOT logged into to Xbox Live");
+			}
+		}else{
+			$this->server->getLogger()->debug($this->getName() . " is logged into Xbox Live");
+		}
+
+		//TODO: get data from loginpacket (xbox user ID and stuff), add events
+
+		$this->processLogin();
+	}
+
+	protected function processLogin(){
 		foreach($this->server->getLoggedInPlayers() as $p){
 			if($p !== $this and $p->iusername === $this->iusername){
 				if($p->kick("logged in from another location") === false){
@@ -1985,6 +2009,17 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->setSkin($packet->skin, $packet->skinId);
 
+		if(!$this->server->isWhitelisted($this->iusername) and $this->kick("Server is white-listed", false)){
+			return true;
+		}
+
+		if(
+			($this->server->getNameBans()->isBanned($this->iusername) or $this->server->getIPBans()->isBanned($this->getAddress())) and
+			$this->kick("You are banned", false)
+		){
+			return true;
+		}
+
 		$this->server->getPluginManager()->callEvent($ev = new PlayerPreLoginEvent($this, "Plugin reason"));
 		if($ev->isCancelled()){
 			$this->close("", $ev->getKickMessage());
@@ -1992,9 +2027,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
-		//TODO: add JWT verification, add encryption
-
-		$this->processLogin();
+		$this->server->getScheduler()->scheduleAsyncTask(new VerifyLoginTask($this, $packet));
 
 		return true;
 	}

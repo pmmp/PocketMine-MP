@@ -195,6 +195,9 @@ class Server{
 	private $maxPlayers;
 
 	/** @var bool */
+	private $onlineMode = true;
+
+	/** @var bool */
 	private $autoSave;
 
 	/** @var RCON */
@@ -337,6 +340,24 @@ class Server{
 	 */
 	public function getMaxPlayers() : int{
 		return $this->maxPlayers;
+	}
+
+	/**
+	 * Returns whether the server requires that players be authenticated to Xbox Live. If true, connecting players who
+	 * are not logged into Xbox Live will be disconnected.
+	 *
+	 * @return bool
+	 */
+	public function getOnlineMode() : bool{
+		return $this->onlineMode;
+	}
+
+	/**
+	 * Alias of {@link #getOnlineMode()}.
+	 * @return bool
+	 */
+	public function requiresAuthentication() : bool{
+		return $this->getOnlineMode();
 	}
 
 	/**
@@ -1484,7 +1505,8 @@ class Server{
 				"enable-rcon" => false,
 				"rcon.password" => substr(base64_encode(random_bytes(20)), 3, 10),
 				"auto-save" => true,
-				"view-distance" => 8
+				"view-distance" => 8,
+				"online-mode" => true
 			]);
 
 			$this->forceLanguage = $this->getProperty("settings.force-language", false);
@@ -1557,6 +1579,16 @@ class Server{
 			$this->maxPlayers = $this->getConfigInt("max-players", 20);
 			$this->setAutoSave($this->getConfigBoolean("auto-save", true));
 
+			$this->onlineMode = $this->getConfigBoolean("online-mode", true);
+			if($this->onlineMode){
+				$this->logger->notice($this->getLanguage()->translateString("pocketmine.server.auth", ["enabled", "will"]));
+				$this->logger->notice($this->getLanguage()->translateString("pocketmine.server.authProperty", ["disable", "false"]));
+			}else{
+				$this->logger->warning($this->getLanguage()->translateString("pocketmine.server.auth", ["disabled", "will not"]));
+				$this->logger->warning($this->getLanguage()->translateString("pocketmine.server.authWarning"));
+				$this->logger->warning($this->getLanguage()->translateString("pocketmine.server.authProperty", ["enable", "true"]));
+			}
+
 			if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < 3){
 				$this->setConfigInt("difficulty", 3);
 			}
@@ -1583,6 +1615,7 @@ class Server{
 				$this->getApiVersion()
 			]));
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.license", [$this->getName()]));
+
 
 			Timings::init();
 
