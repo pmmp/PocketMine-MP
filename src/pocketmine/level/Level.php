@@ -473,6 +473,8 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
+	 * @internal DO NOT use this from plugins, it's for internal use only. Use Server->unloadLevel() instead.
+	 *
 	 * Unloads the current level from memory safely
 	 *
 	 * @param bool $force default false, force unload of default level
@@ -506,6 +508,8 @@ class Level implements ChunkManager, Metadatable{
 		if($this === $defaultLevel){
 			$this->server->setDefaultLevel(null);
 		}
+
+		$this->server->removeLevel($this);
 
 		$this->close();
 

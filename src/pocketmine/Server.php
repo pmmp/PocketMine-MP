@@ -983,13 +983,16 @@ class Server{
 		if($level === $this->getDefaultLevel() and !$forceUnload){
 			throw new \InvalidStateException("The default level cannot be unloaded while running, please switch levels.");
 		}
-		if($level->unload($forceUnload) === true){
-			unset($this->levels[$level->getId()]);
 
-			return true;
-		}
+		return $level->unload($forceUnload);
+	}
 
-		return false;
+	/**
+	 * @internal
+	 * @param Level $level
+	 */
+	public function removeLevel(Level $level) : void{
+		unset($this->levels[$level->getId()]);
 	}
 
 	/**
