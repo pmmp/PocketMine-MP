@@ -947,11 +947,7 @@ class Server{
 	 * @return Level|null
 	 */
 	public function getLevel(int $levelId) : ?Level{
-		if(isset($this->levels[$levelId])){
-			return $this->levels[$levelId];
-		}
-
-		return null;
+		return $this->levels[$levelId] ?? null;
 	}
 
 	/**
