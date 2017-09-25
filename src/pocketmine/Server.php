@@ -915,7 +915,7 @@ class Server{
 	/**
 	 * @return Level|null
 	 */
-	public function getDefaultLevel(){
+	public function getDefaultLevel() : ?Level{
 		return $this->levelDefault;
 	}
 
@@ -926,7 +926,7 @@ class Server{
 	 *
 	 * @param Level|null $level
 	 */
-	public function setDefaultLevel($level){
+	public function setDefaultLevel(?Level $level) : void{
 		if($level === null or ($this->isLevelLoaded($level->getFolderName()) and $level !== $this->levelDefault)){
 			$this->levelDefault = $level;
 		}
@@ -946,7 +946,7 @@ class Server{
 	 *
 	 * @return Level|null
 	 */
-	public function getLevel(int $levelId){
+	public function getLevel(int $levelId) : ?Level{
 		if(isset($this->levels[$levelId])){
 			return $this->levels[$levelId];
 		}
@@ -961,7 +961,7 @@ class Server{
 	 *
 	 * @return Level|null
 	 */
-	public function getLevelByName(string $name){
+	public function getLevelByName(string $name) : ?Level{
 		foreach($this->getLevels() as $level){
 			if($level->getFolderName() === $name){
 				return $level;
