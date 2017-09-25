@@ -32,7 +32,7 @@ use pocketmine\utils\Config;
 use pocketmine\utils\Utils;
 
 class SetupWizard{
-	const DEFAULT_NAME = "Minecraft: PE Server";
+	const DEFAULT_NAME = \pocketmine\NAME . " Server";
 	const DEFAULT_PORT = 19132;
 	const DEFAULT_MEMORY = 256;
 	const DEFAULT_PLAYERS = 20;
