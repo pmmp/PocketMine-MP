@@ -46,7 +46,7 @@ class SetupWizard{
 	}
 
 	public function run() : bool{
-		$this->message("PocketMine-MP set-up wizard");
+		$this->message(\pocketmine\NAME . " set-up wizard");
 
 		$langs = BaseLang::getLanguageList();
 		if(empty($langs)){

@@ -79,6 +79,7 @@ namespace pocketmine {
 	use pocketmine\wizard\SetupWizard;
 	use raklib\RakLib;
 
+	const NAME = "PocketMine-MP";
 	const VERSION = "1.7dev";
 	const API_VERSION = "3.0.0-ALPHA8";
 	const CODENAME = "[REDACTED]";
@@ -446,13 +447,13 @@ namespace pocketmine {
 		$errors = 0;
 
 		if(PHP_INT_SIZE < 8){
-			$logger->critical("Running PocketMine-MP with 32-bit systems/PHP is no longer supported. Please upgrade to a 64-bit system or use a 64-bit PHP binary.");
+			$logger->critical("Running " . \pocketmine\NAME . " with 32-bit systems/PHP is no longer supported. Please upgrade to a 64-bit system or use a 64-bit PHP binary.");
 			$exitCode = 1;
 			break;
 		}
 
 		if(php_sapi_name() !== "cli"){
-			$logger->critical("You must run PocketMine-MP using the CLI.");
+			$logger->critical("You must run " . \pocketmine\NAME . " using the CLI.");
 			++$errors;
 		}
 
@@ -484,7 +485,7 @@ namespace pocketmine {
 		}
 
 		if(extension_loaded("xdebug")){
-			$logger->warning(PHP_EOL . PHP_EOL . PHP_EOL . "\tYou are running PocketMine with xdebug enabled. This has a major impact on performance." . PHP_EOL . PHP_EOL);
+			$logger->warning(PHP_EOL . PHP_EOL . PHP_EOL . "\tYou are running " . \pocketmine\NAME . " with xdebug enabled. This has a major impact on performance." . PHP_EOL . PHP_EOL);
 		}
 
 		$extensions = [
@@ -546,7 +547,7 @@ namespace pocketmine {
 
 
 		if(\Phar::running(true) === ""){
-			$logger->warning("Non-packaged PocketMine-MP installation detected. Consider using a phar in production for better performance.");
+			$logger->warning("Non-packaged " . \pocketmine\NAME . " installation detected. Consider using a phar in production for better performance.");
 		}
 
 		ThreadManager::init();
