@@ -125,7 +125,7 @@ class FallingSand extends Entity{
 		$pk = new AddEntityPacket();
 		$pk->type = FallingSand::NETWORK_ID;
 		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this->asVector3();
+		$pk->position = $this->getOffsetPosition($this);
 		$pk->motion = $this->getMotion();
 		$pk->yaw = $this->yaw;
 		$pk->pitch = $this->pitch;
