@@ -2473,66 +2473,68 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 				break;
 			case InventoryTransactionPacket::TYPE_RELEASE_ITEM:
-				$this->setUsingItem(false);
-
-				$type = $packet->trData->actionType;
-				switch($type){
-					case InventoryTransactionPacket::RELEASE_ITEM_ACTION_RELEASE:
-						if($this->isUsingItem()){
-							$item = $this->inventory->getItemInHand();
-							if($item->onReleaseUsing($this)){
-								$this->inventory->setItemInHand($item);
-							}
-						}else{
-							$this->inventory->sendContents($this);
-						}
-
-
-						return true;
-					case InventoryTransactionPacket::RELEASE_ITEM_ACTION_CONSUME:
-						$slot = $this->inventory->getItemInHand();
-
-						if($slot->canBeConsumed()){
-							$ev = new PlayerItemConsumeEvent($this, $slot);
-							if(!$slot->canBeConsumedBy($this)){
-								$ev->setCancelled();
-							}
-							$this->server->getPluginManager()->callEvent($ev);
-							if(!$ev->isCancelled()){
-								$slot->onConsume($this);
+				try{
+					$type = $packet->trData->actionType;
+					switch($type){
+						case InventoryTransactionPacket::RELEASE_ITEM_ACTION_RELEASE:
+							if($this->isUsingItem()){
+								$item = $this->inventory->getItemInHand();
+								if($item->onReleaseUsing($this)){
+									$this->inventory->setItemInHand($item);
+								}
 							}else{
 								$this->inventory->sendContents($this);
 							}
 
 							return true;
-						}elseif($this->inventory->getItemInHand()->getId() === Item::BUCKET and $this->inventory->getItemInHand()->getDamage() === 1){ //Milk!
-							$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $this->inventory->getItemInHand()));
-							if($ev->isCancelled()){
-								$this->inventory->sendContents($this);
+						case InventoryTransactionPacket::RELEASE_ITEM_ACTION_CONSUME:
+							$slot = $this->inventory->getItemInHand();
+
+							if($slot->canBeConsumed()){
+								$ev = new PlayerItemConsumeEvent($this, $slot);
+								if(!$slot->canBeConsumedBy($this)){
+									$ev->setCancelled();
+								}
+								$this->server->getPluginManager()->callEvent($ev);
+								if(!$ev->isCancelled()){
+									$slot->onConsume($this);
+								}else{
+									$this->inventory->sendContents($this);
+								}
+
+								return true;
+							}elseif($this->inventory->getItemInHand()->getId() === Item::BUCKET and $this->inventory->getItemInHand()->getDamage() === 1){ //Milk!
+								$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $this->inventory->getItemInHand()));
+								if($ev->isCancelled()){
+									$this->inventory->sendContents($this);
+
+									return true;
+								}
+
+								$pk = new EntityEventPacket();
+								$pk->entityRuntimeId = $this->getId();
+								$pk->event = EntityEventPacket::USE_ITEM;
+								$this->dataPacket($pk);
+								$this->server->broadcastPacket($this->getViewers(), $pk);
+
+								if($this->isSurvival()){
+									$slot = $this->inventory->getItemInHand();
+									--$slot->count;
+									$this->inventory->setItemInHand($slot);
+									$this->inventory->addItem(ItemFactory::get(Item::BUCKET, 0, 1));
+								}
+
+								$this->removeAllEffects();
+
 								return true;
 							}
 
-							$pk = new EntityEventPacket();
-							$pk->entityRuntimeId = $this->getId();
-							$pk->event = EntityEventPacket::USE_ITEM;
-							$this->dataPacket($pk);
-							$this->server->broadcastPacket($this->getViewers(), $pk);
-
-							if($this->isSurvival()){
-								$slot = $this->inventory->getItemInHand();
-								--$slot->count;
-								$this->inventory->setItemInHand($slot);
-								$this->inventory->addItem(ItemFactory::get(Item::BUCKET, 0, 1));
-							}
-
-							$this->removeAllEffects();
-
-							return true;
-						}
-
-						return false;
-					default:
-						break;
+							return false;
+						default:
+							break;
+					}
+				}finally{
+					$this->setUsingItem(false);
 				}
 				break;
 			default:
