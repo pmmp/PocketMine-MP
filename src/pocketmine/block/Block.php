@@ -144,6 +144,22 @@ class Block extends Position implements BlockIds, Metadatable{
 		return $this->meta & $this->getVariantBitmask();
 	}
 
+
+	/**
+	 * AKA: Block->isPlaceable
+	 * @return bool
+	 */
+	public function canBePlaced() : bool{
+		return true;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function canBeReplaced() : bool{
+		return false;
+	}
+
 	/**
 	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
 	 *
@@ -171,6 +187,10 @@ class Block extends Position implements BlockIds, Metadatable{
 		return true;
 	}
 
+	public function canBeBrokenWith(Item $item) : bool{
+		return $this->getHardness() !== -1;
+	}
+
 	/**
 	 * Do the actions needed so the block is broken with the Item
 	 *
@@ -181,6 +201,63 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function onBreak(Item $item, Player $player = null) : bool{
 		return $this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true, true);
+	}
+
+
+	/**
+	 * Returns the seconds that this block takes to be broken using an specific Item
+	 *
+	 * @param Item $item
+	 *
+	 * @return float
+	 */
+	public function getBreakTime(Item $item) : float{
+		$base = $this->getHardness() * 1.5;
+		if($this->canBeBrokenWith($item)){
+			if($this->getToolType() === Tool::TYPE_SHEARS and $item->isShears()){
+				$base /= 15;
+			}elseif(
+				($this->getToolType() === Tool::TYPE_PICKAXE and ($tier = $item->isPickaxe()) !== false) or
+				($this->getToolType() === Tool::TYPE_AXE and ($tier = $item->isAxe()) !== false) or
+				($this->getToolType() === Tool::TYPE_SHOVEL and ($tier = $item->isShovel()) !== false)
+			){
+				switch($tier){
+					case Tool::TIER_WOODEN:
+						$base /= 2;
+						break;
+					case Tool::TIER_STONE:
+						$base /= 4;
+						break;
+					case Tool::TIER_IRON:
+						$base /= 6;
+						break;
+					case Tool::TIER_DIAMOND:
+						$base /= 8;
+						break;
+					case Tool::TIER_GOLD:
+						$base /= 12;
+						break;
+				}
+			}
+		}else{
+			$base *= 3.33;
+		}
+
+		if($item->isSword()){
+			$base *= 0.5;
+		}
+
+		return $base;
+	}
+
+
+	/**
+	 * Returns whether random block updates will be done on this block.
+	 *
+	 * @return bool
+	 */
+	public function ticksRandomly() : bool{
+		return false;
 	}
 
 	/**
@@ -275,30 +352,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * Returns whether random block updates will be done on this block.
-	 *
-	 * @return bool
-	 */
-	public function ticksRandomly() : bool{
-		return false;
-	}
-
-	/**
-	 * AKA: Block->isPlaceable
-	 * @return bool
-	 */
-	public function canBePlaced() : bool{
-		return true;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function canBeReplaced() : bool{
-		return false;
-	}
-
-	/**
 	 * @return bool
 	 */
 	public function isTransparent() : bool{
@@ -362,56 +415,6 @@ class Block extends Position implements BlockIds, Metadatable{
 		return [
 			ItemFactory::get($this->getItemId(), $this->getVariant(), 1)
 		];
-	}
-
-	/**
-	 * Returns the seconds that this block takes to be broken using an specific Item
-	 *
-	 * @param Item $item
-	 *
-	 * @return float
-	 */
-	public function getBreakTime(Item $item) : float{
-		$base = $this->getHardness() * 1.5;
-		if($this->canBeBrokenWith($item)){
-			if($this->getToolType() === Tool::TYPE_SHEARS and $item->isShears()){
-				$base /= 15;
-			}elseif(
-				($this->getToolType() === Tool::TYPE_PICKAXE and ($tier = $item->isPickaxe()) !== false) or
-				($this->getToolType() === Tool::TYPE_AXE and ($tier = $item->isAxe()) !== false) or
-				($this->getToolType() === Tool::TYPE_SHOVEL and ($tier = $item->isShovel()) !== false)
-			){
-				switch($tier){
-					case Tool::TIER_WOODEN:
-						$base /= 2;
-						break;
-					case Tool::TIER_STONE:
-						$base /= 4;
-						break;
-					case Tool::TIER_IRON:
-						$base /= 6;
-						break;
-					case Tool::TIER_DIAMOND:
-						$base /= 8;
-						break;
-					case Tool::TIER_GOLD:
-						$base /= 12;
-						break;
-				}
-			}
-		}else{
-			$base *= 3.33;
-		}
-
-		if($item->isSword()){
-			$base *= 0.5;
-		}
-
-		return $base;
-	}
-
-	public function canBeBrokenWith(Item $item) : bool{
-		return $this->getHardness() !== -1;
 	}
 
 	/**
