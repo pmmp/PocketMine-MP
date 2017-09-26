@@ -82,7 +82,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		$timings->startTiming();
 
 		$packet->decode();
-		if(!$packet->feof()){
+		if(!$packet->feof() and !$packet->mayHaveUnreadBytes()){
 			$remains = substr($packet->buffer, $packet->offset);
 			$this->server->getLogger()->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": 0x" . bin2hex($remains));
 		}
