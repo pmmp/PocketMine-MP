@@ -77,6 +77,7 @@ use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\SetDifficultyPacket;
 use pocketmine\network\mcpe\protocol\SetTimePacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\Player;
@@ -111,6 +112,11 @@ class Level implements ChunkManager, Metadatable{
 	const TIME_SUNRISE = 23000;
 
 	const TIME_FULL = 24000;
+
+	const DIFFICULTY_PEACEFUL = 0;
+	const DIFFICULTY_EASY = 1;
+	const DIFFICULTY_NORMAL = 2;
+	const DIFFICULTY_HARD = 3;
 
 	/** @var Tile[] */
 	private $tiles = [];
@@ -224,6 +230,8 @@ class Level implements ChunkManager, Metadatable{
 
 	private $closed = false;
 
+
+
 	public static function chunkHash(int $x, int $z){
 		return (($x & 0xFFFFFFFF) << 32) | ($z & 0xFFFFFFFF);
 	}
@@ -257,6 +265,36 @@ class Level implements ChunkManager, Metadatable{
 		}else{
 			throw new \InvalidStateException("ChunkLoader has a loader id already assigned: " . $loader->getLoaderId());
 		}
+	}
+
+	/**
+	 * @param string $str
+	 * @return int
+	 */
+	public static function getDifficultyFromString(string $str) : int{
+		switch(strtolower(trim($str))){
+			case "0":
+			case "peaceful":
+			case "p":
+				return Level::DIFFICULTY_PEACEFUL;
+
+			case "1":
+			case "easy":
+			case "e":
+				return Level::DIFFICULTY_EASY;
+
+			case "2":
+			case "normal":
+			case "n":
+				return Level::DIFFICULTY_NORMAL;
+
+			case "3":
+			case "hard":
+			case "h":
+				return Level::DIFFICULTY_HARD;
+		}
+
+		return -1;
 	}
 
 	/**
@@ -2742,6 +2780,37 @@ class Level implements ChunkManager, Metadatable{
 		return $this->provider->getWorldHeight();
 	}
 
+	/**
+	 * @return int
+	 */
+	public function getDifficulty() : int{
+		return $this->provider->getDifficulty();
+	}
+
+	/**
+	 * @param int $difficulty
+	 */
+	public function setDifficulty(int $difficulty){
+		if($difficulty < 0 or $difficulty > 3){
+			throw new \InvalidArgumentException("Invalid difficulty level $difficulty");
+		}
+		$this->provider->setDifficulty($difficulty);
+
+		$this->sendDifficulty();
+	}
+
+	/**
+	 * @param Player[] ...$targets
+	 */
+	public function sendDifficulty(Player ...$targets){
+		if(count($targets) === 0){
+			$targets = $this->getPlayers();
+		}
+
+		$pk = new SetDifficultyPacket();
+		$pk->difficulty = $this->getDifficulty();
+		$this->server->broadcastPacket($targets, $pk);
+	}
 
 	public function populateChunk(int $x, int $z, bool $force = false) : bool{
 		if(isset($this->chunkPopulationQueue[$index = Level::chunkHash($x, $z)]) or (count($this->chunkPopulationQueue) >= $this->chunkPopulationQueueSize and !$force)){

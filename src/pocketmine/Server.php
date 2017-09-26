@@ -515,36 +515,17 @@ class Server{
 	}
 
 	/**
-	 * @param string $str
+	 * @deprecated Moved to {@link Level#getDifficultyFromString}
 	 *
+	 * @param string $str
 	 * @return int
 	 */
 	public static function getDifficultyFromString(string $str) : int{
-		switch(strtolower(trim($str))){
-			case "0":
-			case "peaceful":
-			case "p":
-				return 0;
-
-			case "1":
-			case "easy":
-			case "e":
-				return 1;
-
-			case "2":
-			case "normal":
-			case "n":
-				return 2;
-
-			case "3":
-			case "hard":
-			case "h":
-				return 3;
-		}
-		return -1;
+		return Level::getDifficultyFromString($str);
 	}
 
 	/**
+	 * Returns Server global difficulty. Note that this may be overridden in individual Levels.
 	 * @return int
 	 */
 	public function getDifficulty() : int{
@@ -1589,8 +1570,8 @@ class Server{
 				$this->logger->warning($this->getLanguage()->translateString("pocketmine.server.authProperty", ["enable", "true"]));
 			}
 
-			if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < 3){
-				$this->setConfigInt("difficulty", 3);
+			if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < Level::DIFFICULTY_HARD){
+				$this->setConfigInt("difficulty", Level::DIFFICULTY_HARD);
 			}
 
 			if(\pocketmine\DEBUG >= 0){
@@ -1671,21 +1652,23 @@ class Server{
 
 			foreach((array) $this->getProperty("worlds", []) as $name => $worldSetting){
 				if($this->loadLevel($name) === false){
-					$seed = $this->getProperty("worlds.$name.seed", time());
+					$options = $this->getProperty("worlds.$name");
+
+					$seed = $this->getProperty($options["seed"], time());
 					if(is_string($seed) and !is_numeric($seed)){
 						$seed = Utils::javaStringHash($seed);
 					}elseif(!is_int($seed)){
 						$seed = (int) $seed;
 					}
 
-					$options = explode(":", $this->getProperty("worlds.$name.generator", Generator::getGenerator("default")));
-					$generator = Generator::getGenerator(array_shift($options));
-					if(count($options) > 0){
-						$options = [
-							"preset" => implode(":", $options)
-						];
+					if(isset($options["generator"])){
+						$generatorOptions = explode(":", $options["generator"]);
+						$generator = Generator::getGenerator(array_shift($generatorOptions));
+						if(count($options) > 0){
+							$options["preset"] = implode(":", $generatorOptions);
+						}
 					}else{
-						$options = [];
+						$generator = Generator::getGenerator("default");
 					}
 
 					$this->generateLevel($name, $seed, $generator, $options);
@@ -2006,8 +1989,8 @@ class Server{
 		$this->properties->reload();
 		$this->maxPlayers = $this->getConfigInt("max-players", 20);
 
-		if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < 3){
-			$this->setConfigInt("difficulty", 3);
+		if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < Level::DIFFICULTY_HARD){
+			$this->setConfigInt("difficulty", Level::DIFFICULTY_HARD);
 		}
 
 		$this->banByIP->load();

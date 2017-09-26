@@ -803,6 +803,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			$this->usedChunks = [];
 			$this->level->sendTime($this);
+			$this->level->sendDifficulty($this);
 
 			return true;
 		}
@@ -1924,7 +1925,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->seed = -1;
 		$pk->dimension = DimensionIds::OVERWORLD; //TODO: implement this properly
 		$pk->worldGamemode = Player::getClientFriendlyGamemode($this->server->getGamemode());
-		$pk->difficulty = $this->server->getDifficulty();
+		$pk->difficulty = $this->level->getDifficulty();
 		$pk->spawnX = $spawnPosition->getFloorX();
 		$pk->spawnY = $spawnPosition->getFloorY();
 		$pk->spawnZ = $spawnPosition->getFloorZ();
@@ -2427,7 +2428,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							}elseif($target instanceof Player){
 								if(($target->getGamemode() & 0x01) > 0){
 									return true;
-								}elseif($this->server->getConfigBoolean("pvp") !== true or $this->server->getDifficulty() === 0){
+								}elseif($this->server->getConfigBoolean("pvp") !== true or $this->level->getDifficulty() === Level::DIFFICULTY_PEACEFUL){
 									$cancelled = true;
 								}
 
