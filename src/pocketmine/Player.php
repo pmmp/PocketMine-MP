@@ -2595,7 +2595,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$block = $this->level->getBlock($this->temporalVector->setComponents($packet->blockX, $packet->blockY, $packet->blockZ));
 
 		//TODO: this doesn't handle crops correctly (need more API work)
-		$item = Item::get($block->getItemId(), $block->getDamage() & $block->getVariantBitmask());
+		$item = Item::get($block->getItemId(), $block->getVariant());
 
 		if($packet->addUserData){
 			$tile = $this->getLevel()->getTile($block);

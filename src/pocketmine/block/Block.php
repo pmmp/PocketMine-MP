@@ -137,6 +137,14 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Returns the block meta, stripped of non-variant flags.
+	 * @return int
+	 */
+	public function getVariant() : int{
+		return $this->meta & $this->getVariantBitmask();
+	}
+
+	/**
 	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
 	 *
 	 * @param Item        $item
@@ -352,7 +360,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getDrops(Item $item) : array{
 		return [
-			ItemFactory::get($this->getItemId(), $this->getDamage() & $this->getVariantBitmask(), 1)
+			ItemFactory::get($this->getItemId(), $this->getVariant(), 1)
 		];
 	}
 

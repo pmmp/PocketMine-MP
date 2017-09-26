@@ -44,7 +44,7 @@ class WoodenStairs extends Stair{
 	public function getDrops(Item $item) : array{
 		//TODO: Hierarchy problem (base class is for stone stairs)
 		return [
-			ItemFactory::get($this->getItemId(), $this->getDamage() & $this->getVariantBitmask(), 1)
+			ItemFactory::get($this->getItemId(), $this->getVariant(), 1)
 		];
 	}
 }
