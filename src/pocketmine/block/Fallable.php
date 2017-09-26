@@ -39,7 +39,7 @@ abstract class Fallable extends Solid{
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$down = $this->getSide(Vector3::SIDE_DOWN);
 			if($down->getId() === self::AIR or ($down instanceof Liquid)){
-				$this->level->setBlock($this, BlockFactory::get(Block::AIR), true, true);
+				$this->level->setBlock($this, BlockFactory::get(Block::AIR), true);
 				$fall = Entity::createEntity("FallingSand", $this->getLevel(), new CompoundTag("", [
 					new ListTag("Pos", [
 						new DoubleTag("", $this->x + 0.5),
@@ -62,5 +62,12 @@ abstract class Fallable extends Solid{
 				$fall->spawnToAll();
 			}
 		}
+	}
+
+	/**
+	 * @return null|Block
+	 */
+	public function tickFalling() : ?Block{
+		return null;
 	}
 }

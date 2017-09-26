@@ -302,7 +302,7 @@ class BlockFactory{
 			self::registerBlock(new GlazedTerracotta(Block::RED_GLAZED_TERRACOTTA, 0, "Red Glazed Terracotta"));
 			self::registerBlock(new GlazedTerracotta(Block::BLACK_GLAZED_TERRACOTTA, 0, "Black Glazed Terracotta"));
 			self::registerBlock(new Concrete());
-			//TODO: CONCRETEPOWDER
+			self::registerBlock(new ConcretePowder());
 
 			//TODO: CHORUS_PLANT
 			self::registerBlock(new StainedGlass());
