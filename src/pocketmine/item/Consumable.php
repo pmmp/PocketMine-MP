@@ -25,9 +25,12 @@ namespace pocketmine\item;
 
 use pocketmine\entity\Effect;
 
-interface FoodSource extends Consumable{
+interface Consumable{
 
-	public function getFoodRestore() : int;
+	public function getResidue();
 
-	public function getSaturationRestore() : float;
+	/**
+	 * @return Effect[]
+	 */
+	public function getAdditionalEffects() : array;
 }
