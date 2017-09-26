@@ -160,6 +160,10 @@ class Block extends Position implements BlockIds, Metadatable{
 		return false;
 	}
 
+	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector) : bool{
+		return $blockReplace->canBeReplaced();
+	}
+
 	/**
 	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
 	 *

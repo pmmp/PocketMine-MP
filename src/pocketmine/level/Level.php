@@ -1774,14 +1774,11 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		if(!($blockReplace->canBeReplaced() === true or ($hand->getId() === Item::WOODEN_SLAB and $blockReplace->getId() === Item::WOODEN_SLAB) or ($hand->getId() === Item::STONE_SLAB and $blockReplace->getId() === Item::STONE_SLAB))){
-			return false;
-		}
-
-		if($blockClicked->canBeReplaced() === true){
+		if($hand->canBePlacedAt($blockClicked, $facePos)){
 			$blockReplace = $blockClicked;
 			$hand->position($blockReplace);
-			//$face = -1;
+		}elseif(!$hand->canBePlacedAt($blockReplace, $facePos)){
+			return false;
 		}
 
 		if($hand->isSolid() === true and $hand->getBoundingBox() !== null){
