@@ -42,12 +42,26 @@ class PlayStatusPacket extends DataPacket{
 	/** @var int */
 	public $status;
 
+	/**
+	 * @var int
+	 * Used to determine how to write the packet when we disconnect incompatible clients.
+	 */
+	public $protocol;
+
 	protected function decodePayload(){
 		$this->status = $this->getInt();
 	}
 
 	public function canBeSentBeforeLogin() : bool{
 		return true;
+	}
+
+	protected function encodeHeader(){
+		if($this->protocol < 130){ //MCPE <= 1.1
+			$this->putByte(static::NETWORK_ID);
+		}else{
+			parent::encodeHeader();
+		}
 	}
 
 	protected function encodePayload(){

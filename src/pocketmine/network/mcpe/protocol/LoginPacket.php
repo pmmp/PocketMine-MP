@@ -72,6 +72,10 @@ class LoginPacket extends DataPacket{
 		$this->protocol = $this->getInt();
 
 		if($this->protocol !== ProtocolInfo::CURRENT_PROTOCOL){
+			if($this->protocol > 0xffff){ //guess MCPE <= 1.1
+				$this->offset -= 6;
+				$this->protocol = $this->getInt();
+			}
 			return; //Do not attempt to continue decoding for non-accepted protocols
 		}
 
