@@ -2473,6 +2473,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 				break;
 			case InventoryTransactionPacket::TYPE_RELEASE_ITEM:
+				$this->setUsingItem(false);
+
 				$type = $packet->trData->actionType;
 				switch($type){
 					case InventoryTransactionPacket::RELEASE_ITEM_ACTION_RELEASE:
@@ -2485,7 +2487,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							$this->inventory->sendContents($this);
 						}
 
-						$this->setGenericFlag(self::DATA_FLAG_ACTION, false);
+
 						return true;
 					case InventoryTransactionPacket::RELEASE_ITEM_ACTION_CONSUME:
 						$slot = $this->inventory->getItemInHand();
