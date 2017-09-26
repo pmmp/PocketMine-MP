@@ -167,7 +167,8 @@ class ItemFactory{
 			self::registerItem(new SpawnEgg());
 			//TODO: BOTTLE_O_ENCHANTING
 			//TODO: FIREBALL
-
+			//TODO: WRITABLE_BOOK
+			//TODO: WRITTEN_BOOK
 			self::registerItem(new Item(Item::EMERALD, 0, "Emerald"));
 			self::registerItem(new ItemFrame());
 			self::registerItem(new FlowerPot());
@@ -181,7 +182,8 @@ class ItemFactory{
 			//TODO: CARROTONASTICK
 			self::registerItem(new Item(Item::NETHER_STAR, 0, "Nether Star"));
 			self::registerItem(new PumpkinPie());
-
+			//TODO: FIREWORKS
+			//TODO: FIREWORKSCHARGE
 			//TODO: ENCHANTED_BOOK
 			//TODO: COMPARATOR
 			self::registerItem(new Item(Item::NETHER_BRICK, 0, "Nether Brick"));
@@ -204,7 +206,7 @@ class ItemFactory{
 			self::registerItem(new Item(Item::PRISMARINE_CRYSTALS, 0, "Prismarine Crystals"));
 			//TODO: MUTTONRAW
 			//TODO: COOKED_MUTTON
-
+			//TODO: ARMOR_STAND
 			//TODO: END_CRYSTAL
 			//TODO: SPRUCE_DOOR
 			//TODO: BIRCH_DOOR
@@ -222,6 +224,7 @@ class ItemFactory{
 			//TODO: COMMAND_BLOCK_MINECART
 			//TODO: ELYTRA
 			self::registerItem(new Item(Item::SHULKER_SHELL, 0, "Shulker Shell"));
+			//TODO: BANNER
 
 			//TODO: TOTEM
 
@@ -236,6 +239,19 @@ class ItemFactory{
 			//TODO: COOKED_SALMON
 
 			self::registerItem(new GoldenAppleEnchanted());
+
+			//TODO: RECORD_13
+			//TODO: RECORD_CAT
+			//TODO: RECORD_BLOCKS
+			//TODO: RECORD_CHIRP
+			//TODO: RECORD_FAR
+			//TODO: RECORD_MALL
+			//TODO: RECORD_MELLOHI
+			//TODO: RECORD_STAL
+			//TODO: RECORD_STRAD
+			//TODO: RECORD_WARD
+			//TODO: RECORD_11
+			//TODO: RECORD_WAIT
 		}
 
 		Item::initCreativeItems();
