@@ -219,7 +219,7 @@ abstract class BaseInventory implements Inventory{
 		$item = clone $item;
 		$checkDamage = !$item->hasAnyDamageValue();
 		$checkTags = $item->hasCompoundTag();
-		for($i = 0; $i < $this->getSize(); ++$i){
+		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
 			$slot = $this->getItem($i);
 			if($item->equals($slot, $checkDamage, $checkTags)){
 				if(($diff = $slot->getMaxStackSize() - $slot->getCount()) > 0){
@@ -249,7 +249,7 @@ abstract class BaseInventory implements Inventory{
 
 		$emptySlots = [];
 
-		for($i = 0; $i < $this->getSize(); ++$i){
+		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
 			$item = $this->getItem($i);
 			if($item->isNull()){
 				$emptySlots[] = $i;
@@ -304,7 +304,7 @@ abstract class BaseInventory implements Inventory{
 			}
 		}
 
-		for($i = 0; $i < $this->getSize(); ++$i){
+		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
 			$item = $this->getItem($i);
 			if($item->isNull()){
 				continue;
