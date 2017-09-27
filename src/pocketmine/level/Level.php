@@ -1823,10 +1823,7 @@ class Level implements ChunkManager, Metadatable{
 			$this->broadcastLevelSoundEvent($hand, LevelSoundEventPacket::SOUND_PLACE, 1, $hand->getId());
 		}
 
-		$item->setCount($item->getCount() - 1);
-		if($item->getCount() <= 0){
-			$item = ItemFactory::get(Item::AIR, 0, 0);
-		}
+		$item->pop();
 
 		return true;
 	}

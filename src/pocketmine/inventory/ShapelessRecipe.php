@@ -82,12 +82,8 @@ class ShapelessRecipe implements CraftingRecipe{
 			throw new \InvalidArgumentException("Shapeless recipes cannot have more than 9 ingredients");
 		}
 
-		$it = clone $item;
-		$it->setCount(1);
-
 		while($item->getCount() > 0){
-			$this->ingredients[] = clone $it;
-			$item->setCount($item->getCount() - 1);
+			$this->ingredients[] = $item->pop();
 		}
 
 		return $this;
@@ -105,7 +101,7 @@ class ShapelessRecipe implements CraftingRecipe{
 			}
 			if($ingredient->equals($item, !$item->hasAnyDamageValue(), $item->hasCompoundTag())){
 				unset($this->ingredients[$index]);
-				$item->setCount($item->getCount() - 1);
+				$item->pop();
 			}
 		}
 

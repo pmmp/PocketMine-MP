@@ -112,14 +112,8 @@ class FlowerPot extends Flowable{
 
 		$this->setDamage(self::STATE_FULL); //specific damage value is unnecessary, it just needs to be non-zero to show an item.
 		$this->getLevel()->setBlock($this, $this, true, false);
-		$pot->setItem($item);
+		$pot->setItem($item->pop());
 
-		if($player instanceof Player){
-			if($player->isSurvival()){
-				$item->setCount($item->getCount() - 1);
-				$player->getInventory()->setItemInHand($item->getCount() > 0 ? $item : ItemFactory::get(Item::AIR));
-			}
-		}
 		return true;
 	}
 
