@@ -1119,23 +1119,23 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$timings = Timings::getSendDataPacketTimings($packet);
 		$timings->startTiming();
-		$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
-		if($ev->isCancelled()){
+		try{
+			$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
+			if($ev->isCancelled()){
+				return false;
+			}
+
+			$identifier = $this->interface->putPacket($this, $packet, $needACK, $immediate);
+
+			if($needACK and $identifier !== null){
+				$this->needACK[$identifier] = false;
+				return $identifier;
+			}
+
+			return true;
+		}finally{
 			$timings->stopTiming();
-			return false;
 		}
-
-		$identifier = $this->interface->putPacket($this, $packet, $needACK, $immediate);
-
-		if($needACK and $identifier !== null){
-			$this->needACK[$identifier] = false;
-
-			$timings->stopTiming();
-			return $identifier;
-		}
-
-		$timings->stopTiming();
-		return true;
 	}
 
 	/**
