@@ -42,7 +42,7 @@ class VerifyLoginTask extends AsyncTask{
 	 * has an invalid signature. If false, the keychain might have been tampered with.
 	 * The player will always be disconnected if this is false.
 	 */
-	private $valid = true;
+	private $valid = false;
 	/**
 	 * @var bool
 	 * Whether the player is logged into Xbox Live. This is true if any link in the keychain is signed with the Mojang
@@ -63,15 +63,15 @@ class VerifyLoginTask extends AsyncTask{
 
 		foreach($packet->chainData["chain"] as $jwt){
 			if(!$this->validateToken($jwt, $currentKey)){
-				$this->valid = false;
-
 				return;
 			}
 		}
 
 		if(!$this->validateToken($packet->clientDataJwt, $currentKey)){
-			$this->valid = false;
+			return;
 		}
+
+		$this->valid = true;
 	}
 
 	private function validateToken(string $jwt, ?string &$currentPublicKey) : bool{
