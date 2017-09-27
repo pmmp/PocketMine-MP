@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\entity\Effect;
-
 interface FoodSource extends Consumable{
 
 	public function getFoodRestore() : int;
