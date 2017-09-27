@@ -36,9 +36,9 @@ class PlayerSkinPacket extends DataPacket{
 	/** @var string */
 	public $skinId;
 	/** @var string */
-	public $skinName;
+	public $newSkinName;
 	/** @var string */
-	public $serializeName;
+	public $oldSkinName;
 	/** @var string */
 	public $skinData;
 	/** @var string */
@@ -52,8 +52,8 @@ class PlayerSkinPacket extends DataPacket{
 	protected function decodePayload(){
 		$this->uuid = $this->getUUID();
 		$this->skinId = $this->getString();
-		$this->skinName = $this->getString();
-		$this->serializeName = $this->getString();
+		$this->newSkinName = $this->getString();
+		$this->oldSkinName = $this->getString();
 		$this->skinData = $this->getString();
 		$this->capeData = $this->getString();
 		$this->geometryModel = $this->getString();
@@ -63,8 +63,8 @@ class PlayerSkinPacket extends DataPacket{
 	protected function encodePayload(){
 		$this->putUUID($this->uuid);
 		$this->putString($this->skinId);
-		$this->putString($this->skinName);
-		$this->putString($this->serializeName);
+		$this->putString($this->newSkinName);
+		$this->putString($this->oldSkinName);
 		$this->putString($this->skinData);
 		$this->putString($this->capeData);
 		$this->putString($this->geometryModel);
