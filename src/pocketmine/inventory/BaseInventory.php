@@ -242,7 +242,7 @@ abstract class BaseInventory implements Inventory{
 		/** @var Item[] $slots */
 		$itemSlots = [];
 		foreach($slots as $slot){
-			if($slot->getId() !== 0 and $slot->getCount() > 0){
+			if(!$slot->isNull()){
 				$itemSlots[] = clone $slot;
 			}
 		}
@@ -299,7 +299,7 @@ abstract class BaseInventory implements Inventory{
 		/** @var Item[] $slots */
 		$itemSlots = [];
 		foreach($slots as $slot){
-			if($slot->getId() !== 0 and $slot->getCount() > 0){
+			if(!$slot->isNull()){
 				$itemSlots[] = clone $slot;
 			}
 		}

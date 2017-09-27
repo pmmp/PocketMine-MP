@@ -1519,7 +1519,7 @@ class Level implements ChunkManager, Metadatable{
 		$itemTag = $item->nbtSerialize();
 		$itemTag->setName("Item");
 
-		if($item->getId() > 0 and $item->getCount() > 0){
+		if(!$item->isNull()){
 			$itemEntity = Entity::createEntity("Item", $this, new CompoundTag("", [
 				new ListTag("Pos", [
 					new DoubleTag("", $source->getX()),
@@ -1682,7 +1682,7 @@ class Level implements ChunkManager, Metadatable{
 
 		if($player === null or $player->isSurvival()){
 			foreach($drops as $drop){
-				if($drop->getCount() > 0){
+				if(!$drop->isNull()){
 					$this->dropItem($vector->add(0.5, 0.5, 0.5), $drop);
 				}
 			}
