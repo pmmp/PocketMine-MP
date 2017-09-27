@@ -45,7 +45,7 @@ class ItemBlock extends Item{
 	}
 
 	public function getBlock() : Block{
-		return $this->block;
+		return clone $this->block;
 	}
 
 	public function getFuelTime() : int{
