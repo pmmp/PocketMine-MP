@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
+use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 
@@ -38,7 +41,6 @@ class DeadBush extends Flowable{
 		return "Dead Bush";
 	}
 
-
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(Vector3::SIDE_DOWN)->isTransparent() === true){
@@ -51,4 +53,17 @@ class DeadBush extends Flowable{
 		return false;
 	}
 
+	public function getToolType() : int{
+		return Tool::TYPE_SHEARS;
+	}
+
+	public function getDrops(Item $item) : array{
+		if($item->isShears()){
+			return parent::getDrops($item);
+		}
+
+		return [
+			ItemFactory::get(Item::STICK, 0, mt_rand(0, 2))
+		];
+	}
 }
