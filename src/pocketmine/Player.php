@@ -2250,6 +2250,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}
 
 			return true;
+		}elseif($this->craftingTransaction !== null){
+			$this->server->getLogger()->debug("Got unexpected normal inventory action with incomplete crafting transaction from " . $this->getName() . ", refusing to execute crafting");
+			$this->craftingTransaction = null;
 		}
 
 		switch($packet->transactionType){
