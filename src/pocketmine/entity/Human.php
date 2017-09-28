@@ -510,10 +510,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
 			}
 
-			if(!($this instanceof Player)){
-				$this->server->updatePlayerListData($this->getUniqueId(), $this->getId(), $this->getName(), $this->getSkin(), [$player]);
-			}
-
 			$pk = new AddPlayerPacket();
 			$pk->uuid = $this->getUniqueId();
 			$pk->username = $this->getName();
@@ -529,7 +525,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$this->inventory->sendArmorContents($player);
 
 			if(!($this instanceof Player)){
-				$this->server->removePlayerListData($this->getUniqueId(), [$player]);
+				$this->sendSkin([$player]);
 			}
 		}
 	}
