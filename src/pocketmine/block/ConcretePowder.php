@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\block\utils\ColorBlockMetaHelper;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
-use pocketmine\level\Position;
 
 class ConcretePowder extends Fallable{
 
