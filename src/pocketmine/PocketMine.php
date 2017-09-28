@@ -105,13 +105,15 @@ namespace pocketmine {
 
 	error_reporting(-1);
 
-	set_error_handler(function($severity, $message, $file, $line){
+	function error_handler($severity, $message, $file, $line){
 		if(error_reporting() & $severity){
 			throw new \ErrorException($message, 0, $severity, $file, $line);
 		}else{ //stfu operator
 			return true;
 		}
-	});
+	}
+
+	set_error_handler('\pocketmine\error_handler');
 
 	if(!extension_loaded("phar")){
 		echo "[CRITICAL] Unable to find the Phar extension." . PHP_EOL;
