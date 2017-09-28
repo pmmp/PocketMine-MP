@@ -1650,10 +1650,8 @@ class Server{
 			Generator::addGenerator(Nether::class, "hell");
 			Generator::addGenerator(Nether::class, "nether");
 
-			foreach((array) $this->getProperty("worlds", []) as $name => $worldSetting){
+			foreach((array) $this->getProperty("worlds", []) as $name => $options){
 				if($this->loadLevel($name) === false){
-					$options = $this->getProperty("worlds.$name");
-
 					$seed = $options["seed"] ?? time();
 					if(is_string($seed) and !is_numeric($seed)){
 						$seed = Utils::javaStringHash($seed);
