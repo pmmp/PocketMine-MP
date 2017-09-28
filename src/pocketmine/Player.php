@@ -1064,10 +1064,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return false;
 		}
 
-		if(!$packet->canBeBatched()){
-			throw new \InvalidArgumentException(get_class($packet) . " cannot be added to batch buffer");
-		}
-
 		$timings = Timings::getSendDataPacketTimings($packet);
 		$timings->startTiming();
 		$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
@@ -1124,12 +1120,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
 			if($ev->isCancelled()){
 				return false;
-			}
-
-			if(!$needACK and !$immediate and $packet->canBeBatched()){
-				$this->batchedPackets[] = clone $packet;
-
-				return true;
 			}
 
 			$identifier = $this->interface->putPacket($this, $packet, $needACK, $immediate);
