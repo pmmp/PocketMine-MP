@@ -202,11 +202,10 @@ class ShapedRecipe implements CraftingRecipe{
 
 	/**
 	 * @param Item[][] $input
-	 * @param Item[][] $output
 	 *
 	 * @return bool
 	 */
-	public function matchItems(array $input, array $output) : bool{
+	private function matchInputMap(array $input) : bool{
 		$map = $this->getIngredientMap();
 
 		//match the given items to the requested items
@@ -223,18 +222,31 @@ class ShapedRecipe implements CraftingRecipe{
 			}
 		}
 
-		//we shouldn't need to check if there's anything left in the map, the last block should take care of that
-		//however, we DO need to check if there are too many items in the grid outside of the recipe
-
-		/**
-		 * @var Item[] $row
-		 */
+		//check if there are any items left in the grid outside of the recipe
+		/** @var Item[] $row */
 		foreach($input as $y => $row){
 			foreach($row as $x => $needItem){
 				if(!$needItem->isNull()){
 					return false; //too many input ingredients
 				}
 			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * @param Item[][] $input
+	 * @param Item[][] $output
+	 *
+	 * @return bool
+	 */
+	public function matchItems(array $input, array $output) : bool{
+		if(
+			!$this->matchInputMap($input) and //as-is
+			!$this->matchInputMap(array_map(function(array $row) : array{ return array_reverse($row, false); }, $input)) //mirrored
+		){
+			return false;
 		}
 
 		//and then, finally, check that the output items are good:
