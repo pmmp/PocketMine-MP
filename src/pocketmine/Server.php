@@ -1654,7 +1654,7 @@ class Server{
 				if($this->loadLevel($name) === false){
 					$options = $this->getProperty("worlds.$name");
 
-					$seed = $this->getProperty($options["seed"], time());
+					$seed = $options["seed"] ?? time();
 					if(is_string($seed) and !is_numeric($seed)){
 						$seed = Utils::javaStringHash($seed);
 					}elseif(!is_int($seed)){
