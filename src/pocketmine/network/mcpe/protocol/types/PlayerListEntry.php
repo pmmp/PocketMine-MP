@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
+use pocketmine\entity\Skin;
 use pocketmine\utils\UUID;
 
 class PlayerListEntry{
@@ -33,16 +34,8 @@ class PlayerListEntry{
 	public $entityUniqueId;
 	/** @var string */
 	public $username;
-	/** @var string */
-	public $skinId;
-	/** @var string */
-	public $skinData;
-	/** @var string */
-	public $capeData; //TODO
-	/** @var string */
-	public $geometryModel; //TODO
-	/** @var string */
-	public $geometryData; //TODO
+	/** @var Skin */
+	public $skin;
 	/** @var string */
 	public $xboxUserId; //TODO
 
@@ -53,26 +46,12 @@ class PlayerListEntry{
 		return $entry;
 	}
 
-	public static function createAdditionEntry(
-		UUID $uuid,
-		int $entityUniqueId,
-		string $username,
-		string $skinId,
-		string $skinData,
-		string $capeData = "",
-		string $geometryModel = "",
-		string $geometryData = "",
-		string $xboxUserId = ""
-	) : PlayerListEntry{
+	public static function createAdditionEntry(UUID $uuid, int $entityUniqueId, string $username, Skin $skin, string $xboxUserId = "") : PlayerListEntry{
 		$entry = new PlayerListEntry();
 		$entry->uuid = $uuid;
 		$entry->entityUniqueId = $entityUniqueId;
 		$entry->username = $username;
-		$entry->skinId = $skinId;
-		$entry->skinData = $skinData;
-		$entry->capeData = $capeData;
-		$entry->geometryModel = $geometryModel;
-		$entry->geometryData = $geometryData;
+		$entry->skin = $skin;
 		$entry->xboxUserId = $xboxUserId;
 
 		return $entry;

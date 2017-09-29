@@ -34,6 +34,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Item as DroppedItem;
 use pocketmine\entity\Living;
+use pocketmine\entity\Skin;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -46,6 +47,7 @@ use pocketmine\event\player\PlayerAnimationEvent;
 use pocketmine\event\player\PlayerBedEnterEvent;
 use pocketmine\event\player\PlayerBedLeaveEvent;
 use pocketmine\event\player\PlayerBlockPickEvent;
+use pocketmine\event\player\PlayerChangeSkinEvent;
 use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDeathEvent;
@@ -182,15 +184,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return $lname !== "rcon" and $lname !== "console" and $len >= 1 and $len <= 16 and preg_match("/[^A-Za-z0-9_ ]/", $name) === 0;
 	}
 
-	/**
-	 * Checks the length of a supplied skin bitmap and returns whether the length is valid.
-	 * @param string $skin
-	 *
-	 * @return bool
-	 */
-	public static function isValidSkin(string $skin) : bool{
-		return strlen($skin) === 64 * 64 * 4 or strlen($skin) === 64 * 32 * 4;
-	}
 
 	/** @var SourceInterface */
 	protected $interface;
@@ -717,15 +710,36 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function setDisplayName(string $name){
 		$this->displayName = $name;
 		if($this->spawned){
-			$this->server->updatePlayerListData($this->getUniqueId(), $this->getId(), $this->getDisplayName(), $this->getSkinId(), $this->getSkinData());
+			$this->server->updatePlayerListData($this->getUniqueId(), $this->getId(), $this->getDisplayName(), $this->getSkin());
 		}
 	}
 
-	public function setSkin(string $str, string $skinId){
-		parent::setSkin($str, $skinId);
-		if($this->spawned){
-			$this->server->updatePlayerListData($this->getUniqueId(), $this->getId(), $this->getDisplayName(), $skinId, $str);
+	/**
+	 * Called when a player changes their skin.
+	 * Plugin developers should not use this, use setSkin() and sendSkin() instead.
+	 *
+	 * @param Skin   $skin
+	 * @param string $newSkinName
+	 * @param string $oldSkinName
+	 *
+	 * @return bool
+	 */
+	public function changeSkin(Skin $skin, string $newSkinName, string $oldSkinName) : bool{
+		if(!$skin->isValid()){
+			return false;
 		}
+
+		$ev = new PlayerChangeSkinEvent($this, $this->getSkin(), $skin);
+		$this->server->getPluginManager()->callEvent($ev);
+
+		if($ev->isCancelled()){
+			$this->sendSkin([$this]);
+			return true;
+		}
+
+		$this->setSkin($ev->getNewSkin());
+		$this->sendSkin($this->server->getOnlinePlayers());
+		return true;
 	}
 
 	public function jump(){
@@ -2005,12 +2019,20 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
-		if(!Player::isValidSkin($packet->skin)){
+		$skin = new Skin(
+			$packet->clientData["SkinId"],
+			base64_decode($packet->clientData["SkinData"] ?? ""),
+			base64_decode($packet->clientData["CapeData"] ?? ""),
+			$packet->clientData["SkinGeometryName"],
+			base64_decode($packet->clientData["SkinGeometry"] ?? "")
+		);
+
+		if(!$skin->isValid()){
 			$this->close("", "disconnectionScreen.invalidSkin");
 			return true;
 		}
 
-		$this->setSkin($packet->skin, $packet->skinId);
+		$this->setSkin($skin);
 
 		if(!$this->server->isWhitelisted($this->iusername) and $this->kick("Server is white-listed", false)){
 			return true;

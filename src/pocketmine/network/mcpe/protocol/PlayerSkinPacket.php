@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\entity\Skin;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\utils\UUID;
 
@@ -34,41 +35,37 @@ class PlayerSkinPacket extends DataPacket{
 	/** @var UUID */
 	public $uuid;
 	/** @var string */
-	public $skinId;
+	public $oldSkinName = "";
 	/** @var string */
-	public $newSkinName;
-	/** @var string */
-	public $oldSkinName;
-	/** @var string */
-	public $skinData;
-	/** @var string */
-	public $capeData;
-	/** @var string */
-	public $geometryModel;
-	/** @var string */
-	public $geometryData;
+	public $newSkinName = "";
+	/** @var Skin */
+	public $skin;
 
 
 	protected function decodePayload(){
 		$this->uuid = $this->getUUID();
-		$this->skinId = $this->getString();
+
+		$skinId = $this->getString();
 		$this->newSkinName = $this->getString();
 		$this->oldSkinName = $this->getString();
-		$this->skinData = $this->getString();
-		$this->capeData = $this->getString();
-		$this->geometryModel = $this->getString();
-		$this->geometryData = $this->getString();
+		$skinData = $this->getString();
+		$capeData = $this->getString();
+		$geometryModel = $this->getString();
+		$geometryData = $this->getString();
+
+		$this->skin = new Skin($skinId, $skinData, $capeData, $geometryModel, $geometryData);
 	}
 
 	protected function encodePayload(){
 		$this->putUUID($this->uuid);
-		$this->putString($this->skinId);
+
+		$this->putString($this->skin->getSkinId());
 		$this->putString($this->newSkinName);
 		$this->putString($this->oldSkinName);
-		$this->putString($this->skinData);
-		$this->putString($this->capeData);
-		$this->putString($this->geometryModel);
-		$this->putString($this->geometryData);
+		$this->putString($this->skin->getSkinData());
+		$this->putString($this->skin->getCapeData());
+		$this->putString($this->skin->getGeometryName());
+		$this->putString($this->skin->getGeometryData());
 	}
 
 	public function handle(NetworkSession $session) : bool{

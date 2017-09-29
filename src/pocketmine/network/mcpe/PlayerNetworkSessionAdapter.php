@@ -228,7 +228,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
-		return false; //TODO
+		return $this->player->changeSkin($packet->skin, $packet->newSkinName, $packet->oldSkinName);
 	}
 
 	public function handleModalFormResponse(ModalFormResponsePacket $packet) : bool{
