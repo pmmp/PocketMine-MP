@@ -1488,7 +1488,7 @@ class Server{
 				"rcon.password" => substr(base64_encode(random_bytes(20)), 3, 10),
 				"auto-save" => true,
 				"view-distance" => 8,
-				"online-mode" => true
+				"xbox-auth" => true
 			]);
 
 			$this->forceLanguage = $this->getProperty("settings.force-language", false);
@@ -1561,7 +1561,7 @@ class Server{
 			$this->maxPlayers = $this->getConfigInt("max-players", 20);
 			$this->setAutoSave($this->getConfigBoolean("auto-save", true));
 
-			$this->onlineMode = $this->getConfigBoolean("online-mode", true);
+			$this->onlineMode = $this->getConfigBoolean("xbox-auth", true);
 			if($this->onlineMode){
 				$this->logger->notice($this->getLanguage()->translateString("pocketmine.server.auth", ["enabled", "will"]));
 				$this->logger->notice($this->getLanguage()->translateString("pocketmine.server.authProperty", ["disable", "false"]));
