@@ -58,21 +58,21 @@ abstract class ProjectileItem extends Item{
 			]),
 		]);
 
-		$snowball = Entity::createEntity($this->getProjectileEntityType(), $player->getLevel(), $nbt, $player);
-		$snowball->setMotion($snowball->getMotion()->multiply($this->getThrowForce()));
+		$projectile = Entity::createEntity($this->getProjectileEntityType(), $player->getLevel(), $nbt, $player);
+		$projectile->setMotion($projectile->getMotion()->multiply($this->getThrowForce()));
 
 		$this->count--;
 
-		if($snowball instanceof Projectile){
-			$player->getServer()->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($snowball));
+		if($projectile instanceof Projectile){
+			$player->getServer()->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($projectile));
 			if($projectileEv->isCancelled()){
-				$snowball->kill();
+				$projectile->kill();
 			}else{
-				$snowball->spawnToAll();
+				$projectile->spawnToAll();
 				$player->getLevel()->addSound(new LaunchSound($player), $player->getViewers());
 			}
 		}else{
-			$snowball->spawnToAll();
+			$projectile->spawnToAll();
 		}
 
 		return true;
