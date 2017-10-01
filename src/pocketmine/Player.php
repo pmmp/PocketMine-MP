@@ -238,7 +238,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	protected $randomClientId;
 
-	protected $connected = true;
 	protected $ip;
 	protected $removeFormat = true;
 	protected $port;
@@ -518,7 +517,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return bool
 	 */
 	public function isOnline() : bool{
-		return $this->connected === true and $this->loggedIn === true;
+		return $this->isConnected() and $this->loggedIn === true;
 	}
 
 	/**
@@ -692,7 +691,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return bool
 	 */
 	public function isConnected() : bool{
-		return $this->connected === true;
+		return $this->sessionAdapter !== null;
 	}
 
 	/**
@@ -859,7 +858,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function sendChunk(int $x, int $z, BatchPacket $payload){
-		if($this->connected === false){
+		if(!$this->isConnected()){
 			return;
 		}
 
@@ -882,7 +881,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	protected function sendNextChunk(){
-		if($this->connected === false){
+		if(!$this->isConnected()){
 			return;
 		}
 
@@ -976,7 +975,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	protected function orderChunks(){
-		if($this->connected === false or $this->viewDistance === -1){
+		if(!$this->isConnected() or $this->viewDistance === -1){
 			return false;
 		}
 
@@ -1074,7 +1073,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return bool
 	 */
 	public function batchDataPacket(DataPacket $packet) : bool{
-		if($this->connected === false){
+		if(!$this->isConnected()){
 			return false;
 		}
 
@@ -1119,7 +1118,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return bool|int
 	 */
 	public function sendDataPacket(DataPacket $packet, bool $needACK = false, bool $immediate = false){
-		if($this->connected === false){
+		if(!$this->isConnected()){
 			return false;
 		}
 
@@ -3248,7 +3247,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @param bool                 $notify
 	 */
 	final public function close($message = "", string $reason = "generic reason", bool $notify = true){
-		if($this->connected and !$this->closed){
+		if($this->isConnected() and !$this->closed){
 
 			try{
 				if($notify and strlen($reason) > 0){
@@ -3258,7 +3257,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				}
 
 				$this->sessionAdapter = null;
-				$this->connected = false;
 
 				$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
 				$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
