@@ -24,10 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\level\particle;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\Skin;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
+use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
 use pocketmine\utils\UUID;
 
@@ -88,7 +90,7 @@ class FloatingTextParticle extends Particle{
 
 		if(!$this->invisible){
 			$pk = new AddPlayerPacket();
-			$pk->uuid = UUID::fromRandom();
+			$pk->uuid = $uuid = UUID::fromRandom();
 			$pk->username = "";
 			$pk->entityRuntimeId = $this->entityId;
 			$pk->position = $this->asVector3(); //TODO: check offset
@@ -106,6 +108,11 @@ class FloatingTextParticle extends Particle{
 			];
 
 			$p[] = $pk;
+
+			$skinPk = new PlayerSkinPacket();
+			$skinPk->uuid = $uuid;
+			$skinPk->skin = new Skin("Standard_Custom", str_repeat("\x00", 8192));
+			$p[] = $skinPk;
 		}
 
 		return $p;
