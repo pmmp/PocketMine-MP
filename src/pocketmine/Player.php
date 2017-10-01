@@ -71,6 +71,7 @@ use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\TextContainer;
 use pocketmine\event\Timings;
 use pocketmine\event\TranslationContainer;
+use pocketmine\forms\BaseForm;
 use pocketmine\inventory\BigCraftingGrid;
 use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\Inventory;
@@ -119,6 +120,7 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
+use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
@@ -295,6 +297,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	/** @var int|null */
 	protected $lineHeight = null;
+
+	/** @var int */
+	protected $formIdCounter = 0;
+	/** @var BaseForm[] */
+	protected $forms = [];
 
 	/**
 	 * @return TranslationContainer|string
@@ -3269,6 +3276,35 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->source = $sender;
 		$pk->message = $message;
 		$this->dataPacket($pk);
+	}
+
+	public function sendForm(BaseForm $form) : void{
+		$id =  $this->formIdCounter++;
+
+		$pk = new ModalFormRequestPacket();
+		$pk->formId = $id;
+		$pk->formData = json_encode($form);
+		$this->dataPacket($pk);
+
+		$this->forms[$id] = $form;
+	}
+
+	public function onFormSubmit(int $formId, $responseData) : bool{
+		$form = $this->forms[$formId] ?? null;
+
+		if($form === null){
+			return false;
+		}
+
+		try{
+			$form->handleResponse($this, $responseData);
+		}catch(\Throwable $e){
+			$this->server->getLogger()->logException($e);
+		}
+
+		unset($this->forms[$formId]);
+
+		return true;
 	}
 
 	/**
