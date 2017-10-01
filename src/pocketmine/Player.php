@@ -2018,12 +2018,23 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
+		/* Mojang, some stupid reason, send every single model for every single skin in the selected skin-pack.
+		 * Not only that, they are pretty-printed. This decode/encode is to get rid of the pretty-print, which cuts down
+		 * significantly on the amount of wasted bytes.
+		 * TODO: find out what model crap can be safely dropped from the packet (unless it gets fixed first)
+		 */
+
+		$geometryJsonEncoded = base64_decode($packet->clientData["SkinGeometry"] ?? "");
+		if($geometryJsonEncoded !== ""){
+			$geometryJsonEncoded = json_encode(json_decode($geometryJsonEncoded));
+		}
+
 		$skin = new Skin(
 			$packet->clientData["SkinId"],
 			base64_decode($packet->clientData["SkinData"] ?? ""),
 			base64_decode($packet->clientData["CapeData"] ?? ""),
 			$packet->clientData["SkinGeometryName"],
-			base64_decode($packet->clientData["SkinGeometry"] ?? "")
+			$geometryJsonEncoded
 		);
 
 		if(!$skin->isValid()){
