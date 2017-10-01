@@ -72,7 +72,7 @@ class ChunkRequestTask extends AsyncTask{
 
 		$batch = new BatchPacket();
 		$batch->addPacket($pk);
-		$batch->setCompressionLevel(9);
+		$batch->setCompressionLevel(7);
 		$batch->encode();
 
 		$this->setResult($batch->buffer, false);
