@@ -29,7 +29,7 @@ use pocketmine\Player;
 /**
  * This form type present a simple "yes/no" dialog with two buttons.
  */
-abstract class ModalForm extends BaseForm{
+abstract class ModalForm extends Form{
 
 	/** @var string */
 	private $title;
@@ -43,18 +43,26 @@ abstract class ModalForm extends BaseForm{
 	/**
 	 * @param string $title Text to put on the title of the dialog.
 	 * @param string $text Text to put in the body.
-	 * @param string $button1Text Text to show on the "Yes" button. Defaults to client-translated "Yes" string.
-	 * @param string $button2Text Text to show on the "No" button. Defaults to client-translated "No" string.
+	 * @param string $yesButtonText Text to show on the "Yes" button. Defaults to client-translated "Yes" string.
+	 * @param string $noButtonText Text to show on the "No" button. Defaults to client-translated "No" string.
 	 */
-	public function __construct(string $title, string $text, string $button1Text = "gui.yes", string $button2Text = "gui.no"){
+	public function __construct(string $title, string $text, string $yesButtonText = "gui.yes", string $noButtonText = "gui.no"){
 		$this->title = $title;
 		$this->content = $text;
-		$this->button1 = $button1Text;
-		$this->button2 = $button2Text;
+		$this->button1 = $yesButtonText;
+		$this->button2 = $noButtonText;
 	}
 
 	public function getType() : string{
 		return self::TYPE_MODAL;
+	}
+
+	public function getYesButtonText() : string{
+		return $this->button1;
+	}
+
+	public function getNoButtonText() : string{
+		return $this->button2;
 	}
 
 	final public function handleResponse(Player $player, $data) : void{

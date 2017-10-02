@@ -27,10 +27,10 @@ use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\Player;
 
-abstract class BaseForm implements \JsonSerializable{
+abstract class Form implements \JsonSerializable{
 
 	const TYPE_MODAL = "modal";
-	const TYPE_FORM = "form";
+	const TYPE_LIST = "form";
 	const TYPE_CUSTOM_FORM = "custom_form";
 
 	/**
