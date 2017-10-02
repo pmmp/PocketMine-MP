@@ -86,9 +86,10 @@ class LoginPacket extends DataPacket{
 				if(isset($webtoken["extraData"]["identity"])){
 					$this->clientUUID = $webtoken["extraData"]["identity"];
 				}
-				if(isset($webtoken["identityPublicKey"])){
-					$this->identityPublicKey = $webtoken["identityPublicKey"];
-				}
+			}
+
+			if(isset($webtoken["identityPublicKey"])){
+				$this->identityPublicKey = $webtoken["identityPublicKey"];
 			}
 		}
 
