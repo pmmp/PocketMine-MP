@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\forms;
+namespace pocketmine\form;
 
 use pocketmine\Player;
 
