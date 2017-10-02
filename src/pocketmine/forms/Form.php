@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\forms;
 
-use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
-use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\Player;
 
 abstract class Form implements \JsonSerializable{
@@ -43,7 +41,7 @@ abstract class Form implements \JsonSerializable{
 	 * Handles a modal form response from a player
 	 *
 	 * @param Player $player
-	 * @param mixed  $packet
+	 * @param mixed  $data
 	 */
 	abstract public function handleResponse(Player $player, $data) : void;
 

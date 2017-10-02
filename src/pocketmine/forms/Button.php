@@ -65,7 +65,7 @@ class Button implements \JsonSerializable{
 
 	public function jsonSerialize(){
 		$json = [
-			"text" => $this->text,
+			"text" => $this->text
 		];
 
 		if($this->hasImage()){

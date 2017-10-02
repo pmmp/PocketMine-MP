@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\forms;
 
-use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\Player;
 
 /**
