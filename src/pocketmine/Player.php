@@ -206,6 +206,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public $lastBreak;
 	/** @var bool */
 	protected $authenticated = false;
+	/** @var string */
+	protected $xuid = "";
 
 	protected $windowCnt = 2;
 	/** @var \SplObjectStorage<Inventory> */
@@ -350,6 +352,16 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function isAuthenticated() : bool{
 		return $this->authenticated;
+	}
+
+	/**
+	 * If the player is logged into Xbox Live, returns their Xbox user ID (XUID) as a string. Returns an empty string if
+	 * the player is not logged into Xbox Live.
+	 *
+	 * @return string
+	 */
+	public function getXuid() : string{
+		return $this->xuid;
 	}
 
 	public function getPlayer(){
@@ -1825,11 +1837,19 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if(!$isAuthenticated){
 			if($this->server->requiresAuthentication() and $this->kick("disconnectionScreen.notAuthenticated", false)){ //use kick to allow plugins to cancel this
 				return;
-			}else{
-				$this->server->getLogger()->debug($this->getName() . " is NOT logged into to Xbox Live");
+			}
+
+			$this->server->getLogger()->debug($this->getName() . " is NOT logged into to Xbox Live");
+			if($packet->xuid !== ""){
+				$this->server->getLogger()->warning($this->getName() . " has an XUID, but their login keychain is not signed by Mojang");
 			}
 		}else{
 			$this->server->getLogger()->debug($this->getName() . " is logged into Xbox Live");
+
+			if($packet->xuid === ""){
+				$this->server->getLogger()->error($this->getName() . " should have an XUID, but none found");
+			}
+			$this->xuid = $packet->xuid; //don't set this unless we know they are logged in
 		}
 
 		//TODO: get data from loginpacket (xbox user ID and stuff), add events
