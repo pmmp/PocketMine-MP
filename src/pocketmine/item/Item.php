@@ -982,7 +982,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	public function nbtSerialize(int $slot = -1, string $tagName = "") : CompoundTag{
 		$tag = new CompoundTag($tagName, [
-			new ShortTag("id", $this->id),
+			new ShortTag("id", Binary::signShort($this->id)),
 			new ByteTag("Count", Binary::signByte($this->count)),
 			new ShortTag("Damage", $this->meta),
 		]);
@@ -1015,7 +1015,7 @@ class Item implements ItemIds, \JsonSerializable{
 		$meta = isset($tag->Damage) ? $tag->Damage->getValue() : 0;
 
 		if($tag->id instanceof ShortTag){
-			$item = ItemFactory::get($tag->id->getValue(), $meta, $count);
+			$item = ItemFactory::get(Binary::unsignShort($tag->id->getValue()), $meta, $count);
 		}elseif($tag->id instanceof StringTag){ //PC item save format
 			$item = ItemFactory::fromString($tag->id->getValue());
 			$item->setDamage($meta);
