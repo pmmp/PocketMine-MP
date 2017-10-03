@@ -28,6 +28,8 @@ use pocketmine\inventory\BigCraftingGrid;
 use pocketmine\inventory\CraftingRecipe;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\network\mcpe\protocol\ContainerClosePacket;
+use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\Player;
 
 class CraftingTransaction extends InventoryTransaction{
@@ -140,6 +142,20 @@ class CraftingTransaction extends InventoryTransaction{
 	protected function callExecuteEvent() : bool{
 		$this->source->getServer()->getPluginManager()->callEvent($ev = new CraftItemEvent($this));
 		return !$ev->isCancelled();
+	}
+
+	protected function sendInventories() : void{
+		parent::sendInventories();
+
+		/*
+		 * TODO: HACK!
+		 * we can't resend the contents of the crafting window, so we force the client to close it instead.
+		 * So people don't whine about messy desync issues when someone cancels CraftItemEvent, or when a crafting
+		 * transaction goes wrong.
+		 */
+		$pk = new ContainerClosePacket();
+		$pk->windowId = ContainerIds::NONE;
+		$this->source->dataPacket($pk);
 	}
 
 	public function execute() : bool{

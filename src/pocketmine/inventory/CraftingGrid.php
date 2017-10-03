@@ -50,20 +50,6 @@ class CraftingGrid extends BaseInventory{
 	}
 
 	public function sendContents($target) : void{
-		if(!is_array($target)){
-			$target = [$target];
-		}
-
-		/*
-		 * TODO: HACK!
-		 * we can't resend the contents of this window, so we force the client to close it instead.
-		 * So people don't whine about messy desync issues when someone cancels CraftItemEvent, or when a crafting
-		 * transaction goes wrong.
-		 */
-		$pk = new ContainerClosePacket();
-		$pk->windowId = ContainerIds::NONE;
-		foreach($target as $player){
-			$player->dataPacket($pk);
-		}
+		//no way to do this
 	}
 }
