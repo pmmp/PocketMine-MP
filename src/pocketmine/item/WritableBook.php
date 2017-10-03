@@ -102,6 +102,7 @@ class WritableBook extends Item{
 		if(!isset($namedTag->pages) or !($namedTag->pages instanceof ListTag)){
 			$namedTag->pages = new ListTag("pages", []);
 		}
+
 		for($id = 0; $id <= $pageId; $id++) {
 			if(!$this->pageExists($id)) {
 				$namedTag->pages->{$id} = new CompoundTag("", [
@@ -175,14 +176,14 @@ class WritableBook extends Item{
 	 * @param int $generation
 	 */
 	public function setGeneration(int $generation) : void{
-		if($generation < 0 or $generation > 3) {
+		if($generation < 0 or $generation > 3){
 			throw new \InvalidArgumentException("Generation \"$generation\" is out of range");
 		}
 		$namedTag = $this->getCorrectedNamedTag();
 
 		if(isset($namedTag->generation)){
 			$namedTag->generation->setValue($generation);
-		} else {
+		}else{
 			$namedTag->generation = new IntTag("generation", $generation);
 		}
 		$this->setNamedTag($namedTag);
@@ -210,7 +211,7 @@ class WritableBook extends Item{
 		$namedTag = $this->getCorrectedNamedTag();
 		if(isset($namedTag->author)){
 			$namedTag->author->setValue($authorName);
-		} else {
+		}else{
 			$namedTag->author = new StringTag("author", $authorName);
 		}
 		$this->setNamedTag($namedTag);
@@ -237,7 +238,7 @@ class WritableBook extends Item{
 		$namedTag = $this->getCorrectedNamedTag();
 		if(isset($namedTag->title)){
 			$namedTag->title->setValue($title);
-		} else {
+		}else{
 			$namedTag->title = new StringTag("title", $title);
 		}
 		$this->setNamedTag($namedTag);
@@ -264,6 +265,7 @@ class WritableBook extends Item{
 		if(empty($this->getPages())){
 			return false;
 		}
+
 		$pages = $this->getPages();
 		foreach($pages as $key => $page){
 			if($key <= $id){
@@ -285,6 +287,7 @@ class WritableBook extends Item{
 		if(!isset($namedTag->pages)){
 			return [];
 		}
+
 		return array_filter((array) $namedTag->pages, function(string $key){
 			return is_numeric($key);
 		}, ARRAY_FILTER_USE_KEY);
