@@ -151,7 +151,7 @@ class MemoryManager{
 	 * @return bool
 	 */
 	public function canUseChunkCache() : bool{
-		return !($this->lowMemory and $this->chunkTrigger);
+		return !$this->lowMemory or !$this->chunkCache;
 	}
 
 	/**
