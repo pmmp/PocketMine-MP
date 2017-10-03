@@ -33,7 +33,7 @@ class CreativeInventoryAction extends InventoryAction{
 	 */
 	const TYPE_DELETE_ITEM = 0;
 	/**
-	 * Player took an item from the creative window or signs a book.
+	 * Player took an item from the creative window.
 	 */
 	const TYPE_CREATE_ITEM = 1;
 

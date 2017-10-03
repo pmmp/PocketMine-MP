@@ -246,7 +246,7 @@ class WritableBook extends Item{
 	/**
 	 * @return CompoundTag
 	 */
-	public function getCorrectedNamedTag() : CompoundTag{
+	private function getCorrectedNamedTag() : CompoundTag{
 		return $this->getNamedTag() ?? new CompoundTag();
 	}
 
@@ -261,15 +261,32 @@ class WritableBook extends Item{
 	 * @return bool
 	 */
 	private function movePagesAboveDownwards(int $id, CompoundTag $namedTag) : bool{
-		if(!isset($namedTag->pages)){
+		if(empty($this->getPages())){
 			return false;
 		}
-		foreach($namedTag->pages as $key => $page){
-			if(!is_numeric($key) or $key <= $id){
+		$pages = $this->getPages();
+		foreach($pages as $key => $page){
+			if($key <= $id){
 				continue;
 			}
+			unset($namedTag->pages->{$key});
 			$namedTag->pages->{$key - 1} = $page;
 		}
 		return true;
+	}
+
+	/**
+	 * Returns an array containing all pages of this book.
+	 *
+	 * @return array
+	 */
+	public function getPages() : array{
+		$namedTag = $this->getCorrectedNamedTag();
+		if(!isset($namedTag->pages)){
+			return [];
+		}
+		return array_filter((array) $namedTag->pages, function(string $key){
+			return is_numeric($key);
+		}, ARRAY_FILTER_USE_KEY);
 	}
 }
