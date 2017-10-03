@@ -42,12 +42,15 @@ class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
 	private $action;
 	/** @var WritableBook */
 	private $newBook;
+	/** @var int[] */
+	private $modifiedPages;
 
-	public function __construct(Player $player, WritableBook $oldBook, WritableBook $newBook, int $action){
+	public function __construct(Player $player, WritableBook $oldBook, WritableBook $newBook, int $action, array $modifiedPages){
 		$this->player = $player;
 		$this->oldBook = $oldBook;
 		$this->newBook = $newBook;
 		$this->action = $action;
+		$this->modifiedPages = $modifiedPages;
 	}
 
 	/**
@@ -85,5 +88,14 @@ class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
 	 */
 	public function setNewBook(WritableBook $book) : void{
 		$this->newBook = $book;
+	}
+
+	/**
+	 * Returns an array containing the page IDs of modified pages.
+	 *
+	 * @return int[]
+	 */
+	public function getModifiedPages() : array{
+		return $this->modifiedPages;
 	}
 }

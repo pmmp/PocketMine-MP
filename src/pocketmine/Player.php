@@ -3066,16 +3066,20 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return false;
 		}
 		$newBook = clone $oldBook;
+		$modifiedPages = [];
 		switch($packet->type){
 			case BookEditPacket::TYPE_REPLACE_PAGE:
 			case BookEditPacket::TYPE_ADD_PAGE:
 				$newBook->setPageText($packet->pageNumber, $packet->content1);
+				$modifiedPages[] = $packet->pageNumber;
 				break;
 			case BookEditPacket::TYPE_DELETE_PAGE:
 				$newBook->deletePage($packet->pageNumber);
+				$modifiedPages[] = $packet->pageNumber;
 				break;
 			case BookEditPacket::TYPE_SWAP_PAGES:
 				$newBook->swapPage($packet->pageNumber, $packet->secondaryPageNumber);
+				$modifiedPages = [$packet->pageNumber, $packet->secondaryPageNumber];
 				break;
 			case BookEditPacket::TYPE_SIGN_BOOK:
 				$newBook->setAuthor($packet->author);
@@ -3086,7 +3090,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			default:
 				return false;
 		}
-		$this->getServer()->getPluginManager()->callEvent($event = new PlayerEditBookEvent($this, $oldBook, $newBook, $packet->type));
+		$this->getServer()->getPluginManager()->callEvent($event = new PlayerEditBookEvent($this, $oldBook, $newBook, $packet->type, $modifiedPages));
 		if($event->isCancelled()){
 			return true;
 		}
