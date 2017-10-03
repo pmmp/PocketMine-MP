@@ -36,14 +36,17 @@ class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
 	const ACTION_SIGN_BOOK = 3;
 
 	/** @var WritableBook */
-	private $book;
+	private $oldBook;
 	/** @var int */
 	private $action;
+	/** @var WritableBook */
+	private $newBook;
 
-	public function __construct(Player $player, WritableBook $book, int $action){
+	public function __construct(Player $player, WritableBook $oldBook, WritableBook $newBook, int $action){
 		$this->player = $player;
-		$this->book = $book;
-		$this->action = $action;
+		$this->oldBook = $oldBook;
+		$this->newBook = $newBook;
+		$this->action = $action > 0 ? $action - 1 : $action;
 	}
 
 	/**
@@ -56,11 +59,29 @@ class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
 	}
 
 	/**
-	 * Returns the book that was modified.
+	 * Returns the book before it was modified.
 	 *
 	 * @return WritableBook
 	 */
-	public function getBook() : WritableBook{
-		return $this->book;
+	public function getOldBook() : WritableBook{
+		return $this->oldBook;
+	}
+
+	/**
+	 * Returns the book after it was modified.
+	 *
+	 * @return WritableBook
+	 */
+	public function getNewBook() : WritableBook{
+		return $this->newBook;
+	}
+
+	/**
+	 * Sets the new book as the given instance.
+	 *
+	 * @param WritableBook $book
+	 */
+	public function setNewBook(WritableBook $book) : void{
+		$this->newBook = $book;
 	}
 }

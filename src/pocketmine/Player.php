@@ -3060,40 +3060,40 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleBookEdit(BookEditPacket $packet) : bool{
-		/** @var WritableBook $book */
-		$book = $this->inventory->getItem($packet->inventorySlot - 9);
-		if($book->getId() !== Item::WRITABLE_BOOK){
+		/** @var WritableBook $oldBook */
+		$oldBook = $this->inventory->getItem($packet->inventorySlot - 9);
+		if($oldBook->getId() !== Item::WRITABLE_BOOK){
 			return false;
 		}
-		$eventAction = 0;
-		if($packet->type > 0){
-			$eventAction = $packet->type - 1;
-		}
-		$this->getServer()->getPluginManager()->callEvent($event = new PlayerEditBookEvent($this, $book, $eventAction));
-		if($event->isCancelled()){
-			return true;
-		}
+		$newBook = clone $oldBook;
 		switch($packet->type){
 			case BookEditPacket::TYPE_REPLACE_PAGE:
 			case BookEditPacket::TYPE_ADD_PAGE:
-				$book->setPageText($packet->pageNumber, $packet->content1);
+				$newBook->setPageText($packet->pageNumber, $packet->content1);
 				break;
 			case BookEditPacket::TYPE_DELETE_PAGE:
-				$book->deletePage($packet->pageNumber);
+				$newBook->deletePage($packet->pageNumber);
 				break;
 			case BookEditPacket::TYPE_SWAP_PAGES:
-				$book->swapPage($packet->pageNumber, $packet->secondaryPageNumber);
+				$newBook->swapPage($packet->pageNumber, $packet->secondaryPageNumber);
 				break;
 			case BookEditPacket::TYPE_SIGN_BOOK:
-				$book->setAuthor($packet->author);
-				$book->setTitle($packet->title);
-				$book->setGeneration(WritableBook::GENERATION_ORIGINAL);
-				$this->inventory->setItem($packet->inventorySlot - 9, Item::get(Item::WRITTEN_BOOK, 0, 1, $book->getNamedTag()));
-				return true;
+				$newBook->setAuthor($packet->author);
+				$newBook->setTitle($packet->title);
+				$newBook->setGeneration(WritableBook::GENERATION_ORIGINAL);
+				break;
 			default:
 				return false;
 		}
-		$this->getInventory()->setItem($packet->inventorySlot - 9, $book);
+		$this->getServer()->getPluginManager()->callEvent($event = new PlayerEditBookEvent($this, $oldBook, $newBook, $packet->type));
+		if($event->isCancelled()){
+			return true;
+		}
+		$newBook = $event->getNewBook();
+		if($packet->type === 4){
+			$newBook = Item::get(Item::WRITTEN_BOOK, 0, 1, $newBook->getNamedTag());
+		}
+		$this->getInventory()->setItem($packet->inventorySlot - 9, $newBook);
 		return true;
 	}
 
