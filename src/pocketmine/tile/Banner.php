@@ -128,13 +128,9 @@ class Banner extends Spawnable{
 	 */
 	public function getPatternIds() : array{
 		$keys = array_keys((array) $this->namedtag->Patterns);
-
-		foreach($keys as $key => $index){
-			if(!is_numeric($index)){
-				unset($keys[$key]);
-			}
-		}
-		return $keys;
+		return array_filter($keys, function($key){
+			return is_numeric($key);
+		}, ARRAY_FILTER_USE_KEY);
 	}
 
 	/**
