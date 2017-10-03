@@ -200,7 +200,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	public function __construct(int $id, int $meta = 0, string $name = "Unknown"){
 		$this->id = $id & 0xffff;
-		$this->meta = $meta !== -1 ? $meta & 0xffff : -1;
+		$this->setDamage($meta);
 		$this->name = $name;
 		if(!isset($this->block) and $this->id <= 0xff){
 			$this->block = BlockFactory::get($this->id, $this->meta);
@@ -738,7 +738,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return $this
 	 */
 	public function setDamage(int $meta){
-		$this->meta = $meta !== -1 ? $meta & 0xFFFF : -1;
+		$this->meta = $meta !== -1 ? $meta & 0x7FFF : -1;
 
 		return $this;
 	}
