@@ -50,6 +50,7 @@ use pocketmine\event\player\PlayerBlockPickEvent;
 use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDeathEvent;
+use pocketmine\event\player\PlayerEditBookEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerGameModeChangeEvent;
 use pocketmine\event\player\PlayerInteractEvent;
@@ -3064,6 +3065,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($book->getId() !== Item::WRITABLE_BOOK){
 			return false;
 		}
+		$eventAction = 0;
+		if($packet->type > 0){
+			$eventAction = $packet->type - 1;
+		}
+		$this->getServer()->getPluginManager()->callEvent($event = new PlayerEditBookEvent($this, $book, $eventAction));
+		if($event->isCancelled()){
+			return true;
+		}
 		switch($packet->type){
 			case BookEditPacket::TYPE_REPLACE_PAGE:
 			case BookEditPacket::TYPE_ADD_PAGE:
@@ -3079,7 +3088,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$book->setAuthor($packet->author);
 				$book->setTitle($packet->title);
 				$book->setGeneration(WritableBook::GENERATION_ORIGINAL);
-				break;
+				$this->inventory->setItem($packet->inventorySlot - 9, Item::get(Item::WRITTEN_BOOK, 0, 1, $book->getNamedTag()));
+				return true;
 			default:
 				return false;
 		}
