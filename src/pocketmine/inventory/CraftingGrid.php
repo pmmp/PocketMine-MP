@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\network\mcpe\protocol\ContainerClosePacket;
+use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\Player;
 
 class CraftingGrid extends BaseInventory{
@@ -48,6 +50,20 @@ class CraftingGrid extends BaseInventory{
 	}
 
 	public function sendContents($target) : void{
-		//we can't send the contents of a client-sided inventory window
+		if(!is_array($target)){
+			$target = [$target];
+		}
+
+		/*
+		 * TODO: HACK!
+		 * we can't resend the contents of this window, so we force the client to close it instead.
+		 * So people don't whine about messy desync issues when someone cancels CraftItemEvent, or when a crafting
+		 * transaction goes wrong.
+		 */
+		$pk = new ContainerClosePacket();
+		$pk->windowId = ContainerIds::NONE;
+		foreach($target as $player){
+			$player->dataPacket($pk);
+		}
 	}
 }

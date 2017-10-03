@@ -25,6 +25,7 @@ namespace pocketmine\inventory\transaction;
 
 use pocketmine\event\inventory\InventoryTransactionEvent;
 use pocketmine\inventory\Inventory;
+use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
@@ -235,9 +236,12 @@ class InventoryTransaction{
 		return $this->matchItems($needItems, $haveItems) and count($this->actions) > 0 and count($haveItems) === 0 and count($needItems) === 0;
 	}
 
-	protected function handleFailed() : void{
-		foreach($this->actions as $action){
-			$action->onExecuteFail($this->source);
+	protected function sendInventories() : void{
+		foreach($this->inventories as $inventory){
+			$inventory->sendContents($this->source);
+			if($inventory instanceof PlayerInventory){
+				$inventory->sendArmorContents($this->source);
+			}
 		}
 	}
 
@@ -247,22 +251,24 @@ class InventoryTransaction{
 	}
 
 	/**
+	 * Executes the group of actions, returning whether the transaction executed successfully or not.
 	 * @return bool
 	 */
 	public function execute() : bool{
 		if($this->hasExecuted() or !$this->canExecute()){
+			$this->sendInventories();
 			return false;
 		}
 
 		if(!$this->callExecuteEvent()){
-			$this->handleFailed();
-			return true;
+			$this->sendInventories();
+			return false;
 		}
 
 		foreach($this->actions as $action){
 			if(!$action->onPreExecute($this->source)){
-				$this->handleFailed();
-				return true;
+				$this->sendInventories();
+				return false;
 			}
 		}
 
