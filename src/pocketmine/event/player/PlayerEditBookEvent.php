@@ -19,7 +19,7 @@
  *
 */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
@@ -70,6 +70,7 @@ class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
 
 	/**
 	 * Returns the book after it was modified.
+	 * The new book may be a written book, if the book was signed.
 	 *
 	 * @return WritableBook
 	 */

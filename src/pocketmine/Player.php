@@ -3081,6 +3081,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$newBook->setAuthor($packet->author);
 				$newBook->setTitle($packet->title);
 				$newBook->setGeneration(WritableBook::GENERATION_ORIGINAL);
+				$newBook = Item::get(Item::WRITTEN_BOOK, 0, 1, $newBook->getNamedTag());
 				break;
 			default:
 				return false;
@@ -3089,11 +3090,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($event->isCancelled()){
 			return true;
 		}
-		$newBook = $event->getNewBook();
-		if($packet->type === 4){
-			$newBook = Item::get(Item::WRITTEN_BOOK, 0, 1, $newBook->getNamedTag());
-		}
-		$this->getInventory()->setItem($packet->inventorySlot - 9, $newBook);
+		$this->getInventory()->setItem($packet->inventorySlot - 9, $event->getNewBook());
 		return true;
 	}
 
