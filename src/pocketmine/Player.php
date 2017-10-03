@@ -2362,10 +2362,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						if($blockVector->distanceSquared($this) > 10000){
 							return true;
 						}
+
 						$target = $this->level->getBlock($blockVector);
 						$block = $target->getSide($face);
 
-						$this->level->sendBlocks([$this], [$target, $block], UpdateBlockPacket::FLAG_ALL_PRIORITY);
+						/** @var Block[] $blocks */
+						$blocks = array_merge($target->getAllSides(), $block->getAllSides()); //getAllSides() on each of these will include $target and $block because they are next to each other
+
+						$this->level->sendBlocks([$this], $blocks, UpdateBlockPacket::FLAG_ALL_PRIORITY);
 
 						return true;
 					case InventoryTransactionPacket::USE_ITEM_ACTION_BREAK_BLOCK:
@@ -2391,15 +2395,20 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						}
 
 						$this->inventory->sendContents($this);
-						$target = $this->level->getBlock($blockVector);
-						$tile = $this->level->getTile($blockVector);
-
-						$this->level->sendBlocks([$this], [$target], UpdateBlockPacket::FLAG_ALL_PRIORITY);
-
 						$this->inventory->sendHeldItem($this);
 
-						if($tile instanceof Spawnable){
-							$tile->spawnTo($this);
+						$target = $this->level->getBlock($blockVector);
+						/** @var Block[] $blocks */
+						$blocks = $target->getAllSides();
+						$blocks[] = $target;
+
+						$this->level->sendBlocks([$this], $blocks, UpdateBlockPacket::FLAG_ALL_PRIORITY);
+
+						foreach($blocks as $b){
+							$tile = $this->level->getTile($blockVector);
+							if($tile instanceof Spawnable){
+								$tile->spawnTo($this);
+							}
 						}
 
 						return true;
