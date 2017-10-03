@@ -43,7 +43,7 @@ class Binary{
 		return $value << 48 >> 48;
 	}
 
-	public function unsignShort(int $value) : int{
+	public static function unsignShort(int $value) : int{
 		return $value & 0xffff;
 	}
 
