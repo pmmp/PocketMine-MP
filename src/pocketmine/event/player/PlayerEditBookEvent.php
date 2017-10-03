@@ -30,10 +30,11 @@ use pocketmine\Player;
 class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
 	public static $handlerList = null;
 
-	const ACTION_EDIT_PAGE = 0;
-	const ACTION_DELETE_PAGE = 1;
-	const ACTION_SWAP_PAGES = 2;
-	const ACTION_SIGN_BOOK = 3;
+	const ACTION_REPLACE_PAGE = 0;
+	const ACTION_ADD_PAGE = 1;
+	const ACTION_DELETE_PAGE = 2;
+	const ACTION_SWAP_PAGES = 3;
+	const ACTION_SIGN_BOOK = 4;
 
 	/** @var WritableBook */
 	private $oldBook;
@@ -46,7 +47,7 @@ class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
 		$this->player = $player;
 		$this->oldBook = $oldBook;
 		$this->newBook = $newBook;
-		$this->action = $action > 0 ? $action - 1 : $action;
+		$this->action = $action;
 	}
 
 	/**
