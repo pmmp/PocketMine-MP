@@ -131,12 +131,13 @@ class Level implements ChunkManager, Metadatable{
 	public $updateEntities = [];
 	/** @var Tile[] */
 	public $updateTiles = [];
-
+	/** @var Block[] */
 	private $blockCache = [];
 
 	/** @var BatchPacket[] */
 	private $chunkCache = [];
 
+	/** @var int */
 	private $sendTimeTicker = 0;
 
 	/** @var Server */
@@ -168,6 +169,7 @@ class Level implements ChunkManager, Metadatable{
 	/** @var bool */
 	public $stopTime = false;
 
+	/** @var string */
 	private $folderName;
 
 	/** @var Chunk[] */
@@ -178,6 +180,7 @@ class Level implements ChunkManager, Metadatable{
 
 	/** @var ReversePriorityQueue */
 	private $scheduledBlockUpdateQueue;
+	/** @var int[] */
 	private $scheduledBlockUpdateQueueIndex = [];
 
 	/** @var \SplQueue */
@@ -185,14 +188,21 @@ class Level implements ChunkManager, Metadatable{
 
 	/** @var Player[][] */
 	private $chunkSendQueue = [];
+	/** @var bool[] */
 	private $chunkSendTasks = [];
 
+	/** @var bool[] */
 	private $chunkPopulationQueue = [];
+	/** @var bool[] */
 	private $chunkPopulationLock = [];
+	/** @var bool[] */
 	private $chunkGenerationQueue = [];
+	/** @var int */
 	private $chunkGenerationQueueSize = 8;
+	/** @var int */
 	private $chunkPopulationQueueSize = 2;
 
+	/** @var bool */
 	private $autoSave = true;
 
 	/** @var BlockMetadataStore */
@@ -206,11 +216,16 @@ class Level implements ChunkManager, Metadatable{
 	/** @var \SplFixedArray */
 	private $blockStates;
 
+	/** @var int */
 	public $sleepTicks = 0;
 
+	/** @var int */
 	private $chunkTickRadius;
+	/** @var int[] */
 	private $chunkTickList = [];
+	/** @var int */
 	private $chunksPerTick;
+	/** @var bool */
 	private $clearChunksOnTick;
 	/** @var \SplFixedArray<Block> */
 	private $randomTickBlocks = null;
@@ -218,8 +233,11 @@ class Level implements ChunkManager, Metadatable{
 	/** @var LevelTimings */
 	public $timings;
 
+	/** @var int */
 	private $tickRate;
+	/** @var int */
 	public $tickRateTime = 0;
+	/** @var int */
 	public $tickRateCounter = 0;
 
 	/** @var Generator */
@@ -227,6 +245,7 @@ class Level implements ChunkManager, Metadatable{
 	/** @var Generator */
 	private $generatorInstance;
 
+	/** @var bool */
 	private $closed = false;
 
 
