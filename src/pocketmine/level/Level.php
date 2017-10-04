@@ -95,7 +95,6 @@ class Level implements ChunkManager, Metadatable{
 
 	private static $levelIdCounter = 1;
 	private static $chunkLoaderCounter = 1;
-	public static $COMPRESSION_LEVEL = 8;
 
 	const Y_MASK = 0xFF;
 	const Y_MAX = 0x100; //256
