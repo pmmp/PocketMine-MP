@@ -90,8 +90,8 @@ class BookEditPacket extends DataPacket{
 			case self::TYPE_REPLACE_PAGE:
 			case self::TYPE_ADD_PAGE:
 				$this->putByte($this->pageNumber);
-				$this->putString($this->content1);
-				$this->putString($this->content2);
+				$this->putString($this->text);
+				$this->putString($this->photoName);
 				break;
 			case self::TYPE_DELETE_PAGE:
 				$this->putByte($this->pageNumber);
