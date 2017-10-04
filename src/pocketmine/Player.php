@@ -3090,7 +3090,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$newBook = Item::get(Item::WRITTEN_BOOK, 0, 1, $newBook->getNamedTag());
 				$newBook->setAuthor($packet->author);
 				$newBook->setTitle($packet->title);
-				$newBook->setGeneration(WritableBook::GENERATION_ORIGINAL);
+				$newBook->setGeneration(WrittenBook::GENERATION_ORIGINAL);
 				break;
 			default:
 				return false;
