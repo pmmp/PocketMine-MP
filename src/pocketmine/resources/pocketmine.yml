@@ -130,9 +130,6 @@ chunk-sending:
  per-tick: 4
  #Radius of chunks that need to be sent before spawning the player
  spawn-radius: 4
- #Save a serialized copy of the chunk in memory for faster sending
- #Useful in mostly-static worlds where lots of players join at the same time
- cache-chunks: true
 
 chunk-ticking:
  #Max amount of chunks processed each tick

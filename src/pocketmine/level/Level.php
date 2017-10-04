@@ -137,8 +137,6 @@ class Level implements ChunkManager, Metadatable{
 	/** @var BatchPacket[] */
 	private $chunkCache = [];
 
-	private $cacheChunks = false;
-
 	private $sendTimeTicker = 0;
 
 	/** @var Server */
@@ -337,7 +335,6 @@ class Level implements ChunkManager, Metadatable{
 		$this->chunkGenerationQueueSize = (int) $this->server->getProperty("chunk-generation.queue-size", 8);
 		$this->chunkPopulationQueueSize = (int) $this->server->getProperty("chunk-generation.population-queue-size", 2);
 		$this->clearChunksOnTick = (bool) $this->server->getProperty("chunk-ticking.clear-tick-list", true);
-		$this->cacheChunks = (bool) $this->server->getProperty("chunk-sending.cache-chunks", true);
 
 		$dontTickBlocks = $this->server->getProperty("chunk-ticking.disable-block-ticking", []);
 		$this->randomTickBlocks = new \SplFixedArray(256);
@@ -2408,7 +2405,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$index = Level::chunkHash($x, $z);
 
-		if(!isset($this->chunkCache[$index]) and $this->cacheChunks and $this->server->getMemoryManager()->canUseChunkCache()){
+		if(!isset($this->chunkCache[$index]) and $this->server->getMemoryManager()->canUseChunkCache()){
 			$this->chunkCache[$index] = $payload;
 			$this->sendChunkFromCache($x, $z);
 			$this->timings->syncChunkSendTimer->stopTiming();
