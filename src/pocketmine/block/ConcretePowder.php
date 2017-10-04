@@ -23,47 +23,56 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\block\utils\ColorBlockMetaHelper;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
-use pocketmine\math\Vector3;
 
-class DeadBush extends Flowable{
+class ConcretePowder extends Fallable{
 
-	protected $id = self::DEAD_BUSH;
+	protected $id = self::CONCRETE_POWDER;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
 	public function getName() : string{
-		return "Dead Bush";
+		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Concrete Powder";
 	}
 
-	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(Vector3::SIDE_DOWN)->isTransparent() === true){
-				$this->getLevel()->useBreakOn($this);
-
-				return Level::BLOCK_UPDATE_NORMAL;
-			}
-		}
-
-		return false;
+	public function getHardness() : float{
+		return 0.5;
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_SHEARS;
+		return Tool::TYPE_SHOVEL;
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->isShears()){
-			return parent::getDrops($item);
+	public function onUpdate(int $type){
+		if($type === Level::BLOCK_UPDATE_NORMAL and ($block = $this->checkAdjacentWater()) !== null){
+			$this->level->setBlock($this, $block);
+			return $type;
 		}
 
-		return [
-			ItemFactory::get(Item::STICK, 0, mt_rand(0, 2))
-		];
+		return parent::onUpdate($type);
+	}
+
+	/**
+	 * @return null|Block
+	 */
+	public function tickFalling() : ?Block{
+		return $this->checkAdjacentWater();
+	}
+
+	/**
+	 * @return null|Block
+	 */
+	private function checkAdjacentWater(){
+		for($i = 1; $i < 6; ++$i){ //Do not check underneath
+			if($this->getSide($i) instanceof Water){
+				return Block::get(Block::CONCRETE, $this->meta);
+			}
+		}
+
+		return null;
 	}
 }

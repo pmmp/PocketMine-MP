@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\level\format\io\region;
 
 use pocketmine\level\format\Chunk;
-use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\ChunkException;
+use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\ChunkUtils;
 use pocketmine\level\format\SubChunk;
 use pocketmine\level\generator\Generator;
@@ -248,7 +248,8 @@ class McRegion extends BaseLevelProvider{
 		}
 		//TODO, add extra details
 		$levelData = new CompoundTag("Data", [
-			new ByteTag("hardcore", 0),
+			new ByteTag("hardcore", ($options["hardcore"] ?? false) === true ? 1 : 0),
+			new ByteTag("Difficulty", Level::getDifficultyFromString((string) ($options["difficulty"] ?? "normal"))),
 			new ByteTag("initialized", 1),
 			new IntTag("GameType", 0),
 			new IntTag("generatorVersion", 1), //2 in MCPE
@@ -280,6 +281,14 @@ class McRegion extends BaseLevelProvider{
 
 	public function getGeneratorOptions() : array{
 		return ["preset" => $this->levelData["generatorOptions"]];
+	}
+
+	public function getDifficulty() : int{
+		return isset($this->levelData->Difficulty) ? $this->levelData->Difficulty->getValue() : Level::DIFFICULTY_NORMAL;
+	}
+
+	public function setDifficulty(int $difficulty){
+		$this->levelData->Difficulty = new ByteTag("Difficulty", $difficulty);
 	}
 
 	public function getChunk(int $chunkX, int $chunkZ, bool $create = false){

@@ -47,9 +47,15 @@ class InventoryTransactionPacket extends DataPacket{
 	const USE_ITEM_ON_ENTITY_ACTION_INTERACT = 0;
 	const USE_ITEM_ON_ENTITY_ACTION_ATTACK = 1;
 
-
 	/** @var int */
 	public $transactionType;
+
+	/**
+	 * @var bool
+	 * NOTE: THIS FIELD DOES NOT EXIST IN THE PROTOCOL, it's merely used for convenience for PocketMine-MP to easily
+	 * determine whether we're doing a crafting transaction.
+	 */
+	public $isCraftingPart = false;
 
 	/** @var NetworkInventoryAction[] */
 	public $actions = [];

@@ -21,32 +21,16 @@
 
 declare(strict_types=1);
 
+namespace pocketmine\item;
 
-namespace pocketmine\event\level;
+use pocketmine\entity\Effect;
 
-use pocketmine\level\format\Chunk;
-use pocketmine\level\Level;
+interface Consumable{
 
-/**
- * Chunk-related events
- */
-abstract class ChunkEvent extends LevelEvent{
-	/** @var Chunk */
-	private $chunk;
+	public function getResidue();
 
 	/**
-	 * @param Level $level
-	 * @param Chunk $chunk
+	 * @return Effect[]
 	 */
-	public function __construct(Level $level, Chunk $chunk){
-		parent::__construct($level);
-		$this->chunk = $chunk;
-	}
-
-	/**
-	 * @return Chunk
-	 */
-	public function getChunk() : Chunk{
-		return $this->chunk;
-	}
+	public function getAdditionalEffects() : array;
 }

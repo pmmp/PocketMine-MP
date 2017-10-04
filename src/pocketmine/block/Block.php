@@ -137,6 +137,34 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Returns the block meta, stripped of non-variant flags.
+	 * @return int
+	 */
+	public function getVariant() : int{
+		return $this->meta & $this->getVariantBitmask();
+	}
+
+
+	/**
+	 * AKA: Block->isPlaceable
+	 * @return bool
+	 */
+	public function canBePlaced() : bool{
+		return true;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function canBeReplaced() : bool{
+		return false;
+	}
+
+	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector) : bool{
+		return $blockReplace->canBeReplaced();
+	}
+
+	/**
 	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
 	 *
 	 * @param Item        $item
@@ -163,6 +191,10 @@ class Block extends Position implements BlockIds, Metadatable{
 		return true;
 	}
 
+	public function canBeBrokenWith(Item $item) : bool{
+		return $this->getHardness() !== -1;
+	}
+
 	/**
 	 * Do the actions needed so the block is broken with the Item
 	 *
@@ -173,6 +205,63 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function onBreak(Item $item, Player $player = null) : bool{
 		return $this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true, true);
+	}
+
+
+	/**
+	 * Returns the seconds that this block takes to be broken using an specific Item
+	 *
+	 * @param Item $item
+	 *
+	 * @return float
+	 */
+	public function getBreakTime(Item $item) : float{
+		$base = $this->getHardness() * 1.5;
+		if($this->canBeBrokenWith($item)){
+			if($this->getToolType() === Tool::TYPE_SHEARS and $item->isShears()){
+				$base /= 15;
+			}elseif(
+				($this->getToolType() === Tool::TYPE_PICKAXE and ($tier = $item->isPickaxe()) !== false) or
+				($this->getToolType() === Tool::TYPE_AXE and ($tier = $item->isAxe()) !== false) or
+				($this->getToolType() === Tool::TYPE_SHOVEL and ($tier = $item->isShovel()) !== false)
+			){
+				switch($tier){
+					case Tool::TIER_WOODEN:
+						$base /= 2;
+						break;
+					case Tool::TIER_STONE:
+						$base /= 4;
+						break;
+					case Tool::TIER_IRON:
+						$base /= 6;
+						break;
+					case Tool::TIER_DIAMOND:
+						$base /= 8;
+						break;
+					case Tool::TIER_GOLD:
+						$base /= 12;
+						break;
+				}
+			}
+		}else{
+			$base *= 3.33;
+		}
+
+		if($item->isSword()){
+			$base *= 0.5;
+		}
+
+		return $base;
+	}
+
+
+	/**
+	 * Returns whether random block updates will be done on this block.
+	 *
+	 * @return bool
+	 */
+	public function ticksRandomly() : bool{
+		return false;
 	}
 
 	/**
@@ -267,30 +356,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * Returns whether random block updates will be done on this block.
-	 *
-	 * @return bool
-	 */
-	public function ticksRandomly() : bool{
-		return false;
-	}
-
-	/**
-	 * AKA: Block->isPlaceable
-	 * @return bool
-	 */
-	public function canBePlaced() : bool{
-		return true;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function canBeReplaced() : bool{
-		return false;
-	}
-
-	/**
 	 * @return bool
 	 */
 	public function isTransparent() : bool{
@@ -352,58 +417,8 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getDrops(Item $item) : array{
 		return [
-			ItemFactory::get($this->getItemId(), $this->getDamage() & $this->getVariantBitmask(), 1)
+			ItemFactory::get($this->getItemId(), $this->getVariant(), 1)
 		];
-	}
-
-	/**
-	 * Returns the seconds that this block takes to be broken using an specific Item
-	 *
-	 * @param Item $item
-	 *
-	 * @return float
-	 */
-	public function getBreakTime(Item $item) : float{
-		$base = $this->getHardness() * 1.5;
-		if($this->canBeBrokenWith($item)){
-			if($this->getToolType() === Tool::TYPE_SHEARS and $item->isShears()){
-				$base /= 15;
-			}elseif(
-				($this->getToolType() === Tool::TYPE_PICKAXE and ($tier = $item->isPickaxe()) !== false) or
-				($this->getToolType() === Tool::TYPE_AXE and ($tier = $item->isAxe()) !== false) or
-				($this->getToolType() === Tool::TYPE_SHOVEL and ($tier = $item->isShovel()) !== false)
-			){
-				switch($tier){
-					case Tool::TIER_WOODEN:
-						$base /= 2;
-						break;
-					case Tool::TIER_STONE:
-						$base /= 4;
-						break;
-					case Tool::TIER_IRON:
-						$base /= 6;
-						break;
-					case Tool::TIER_DIAMOND:
-						$base /= 8;
-						break;
-					case Tool::TIER_GOLD:
-						$base /= 12;
-						break;
-				}
-			}
-		}else{
-			$base *= 3.33;
-		}
-
-		if($item->isSword()){
-			$base *= 0.5;
-		}
-
-		return $base;
-	}
-
-	public function canBeBrokenWith(Item $item) : bool{
-		return $this->getHardness() !== -1;
 	}
 
 	/**
@@ -428,6 +443,35 @@ class Block extends Position implements BlockIds, Metadatable{
 		}
 
 		return BlockFactory::get(Block::AIR, 0, Position::fromObject(Vector3::getSide($side, $step)));
+	}
+
+	/**
+	 * Returns the 4 blocks on the horizontal axes around the block (north, south, east, west)
+	 *
+	 * @return Block[]
+	 */
+	public function getHorizontalSides() : array{
+		return [
+			$this->getSide(Vector3::SIDE_NORTH),
+			$this->getSide(Vector3::SIDE_SOUTH),
+			$this->getSide(Vector3::SIDE_WEST),
+			$this->getSide(Vector3::SIDE_EAST)
+		];
+	}
+
+	/**
+	 * Returns the six blocks around this block.
+	 *
+	 * @return Block[]
+	 */
+	public function getAllSides() : array{
+		return array_merge(
+			[
+				$this->getSide(Vector3::SIDE_DOWN),
+				$this->getSide(Vector3::SIDE_UP)
+			],
+			$this->getHorizontalSides()
+		);
 	}
 
 	/**

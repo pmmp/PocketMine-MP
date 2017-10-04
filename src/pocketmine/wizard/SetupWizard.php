@@ -32,7 +32,7 @@ use pocketmine\utils\Config;
 use pocketmine\utils\Utils;
 
 class SetupWizard{
-	const DEFAULT_NAME = "Minecraft: PE Server";
+	const DEFAULT_NAME = \pocketmine\NAME . " Server";
 	const DEFAULT_PORT = 19132;
 	const DEFAULT_MEMORY = 256;
 	const DEFAULT_PLAYERS = 20;
@@ -46,7 +46,7 @@ class SetupWizard{
 	}
 
 	public function run() : bool{
-		$this->message("PocketMine-MP set-up wizard");
+		$this->message(\pocketmine\NAME . " set-up wizard");
 
 		$langs = BaseLang::getLanguageList();
 		if(empty($langs)){

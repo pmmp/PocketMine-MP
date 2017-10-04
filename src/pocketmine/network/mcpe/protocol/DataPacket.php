@@ -62,6 +62,14 @@ abstract class DataPacket extends BinaryStream{
 		return false;
 	}
 
+	/**
+	 * Returns whether the packet may legally have unread bytes left in the buffer.
+	 * @return bool
+	 */
+	public function mayHaveUnreadBytes() : bool{
+		return false;
+	}
+
 	public function decode(){
 		$this->offset = 0;
 		$this->decodeHeader();

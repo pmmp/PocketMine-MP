@@ -362,7 +362,7 @@ abstract class Living extends Entity implements Damageable{
 
 			if($e !== null){
 				if($e->isOnFire() > 0){
-					$this->setOnFire(2 * $this->server->getDifficulty());
+					$this->setOnFire(2 * $this->level->getDifficulty());
 				}
 
 				$deltaX = $this->x - $e->x;

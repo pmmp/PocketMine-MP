@@ -48,6 +48,6 @@ class CraftingGrid extends BaseInventory{
 	}
 
 	public function sendContents($target) : void{
-		//we can't send the contents of a client-sided inventory window
+		//no way to do this
 	}
 }
