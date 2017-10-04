@@ -79,7 +79,9 @@ memory:
   low-memory-trigger: true
 
  world-caches:
+  #Disallow adding to world chunk-packet caches when memory is low
   disable-chunk-cache: true
+  #Clear world caches when memory is low
   low-memory-trigger: true
 
 
