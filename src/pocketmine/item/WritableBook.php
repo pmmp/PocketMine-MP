@@ -88,7 +88,7 @@ class WritableBook extends Item{
 	 * @param int $pageId
 	 */
 	public function addPage(int $pageId) : void{
-		if($pageId < 0) {
+		if($pageId < 0){
 			throw new \InvalidArgumentException("Page number \"$pageId\" is out of range");
 		}
 		$namedTag = $this->getCorrectedNamedTag();
