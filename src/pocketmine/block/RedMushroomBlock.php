@@ -24,58 +24,32 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
+class RedMushroomBlock extends Solid{
 
-/**
- * Air block
- */
-class Air extends Transparent{
-
-	protected $id = self::AIR;
-	protected $meta = 0;
+	protected $id = Block::RED_MUSHROOM_BLOCK;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
 	public function getName() : string{
-		return "Air";
-	}
-
-	public function canPassThrough() : bool{
-		return true;
-	}
-
-	public function isBreakable(Item $item) : bool{
-		return false;
-	}
-
-	public function canBeFlowedInto() : bool{
-		return true;
-	}
-
-	public function canBeReplaced() : bool{
-		return true;
-	}
-
-	public function canBePlaced() : bool{
-		return false;
-	}
-
-	public function isSolid() : bool{
-		return false;
-	}
-
-	public function getBoundingBox(){
-		return null;
+		return "Red Mushroom Block";
 	}
 
 	public function getHardness() : float{
-		return -1;
+		return 0.2;
 	}
 
-	public function getBlastResistance() : float{
-		return 0;
+	public function getToolType() : int{
+		return Tool::TYPE_AXE;
+	}
+
+	public function getDrops(Item $item) : array{
+		return [
+			Item::get(Item::RED_MUSHROOM, 0, mt_rand(0, 2))
+		];
 	}
 
 }

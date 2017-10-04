@@ -199,4 +199,75 @@ class ShapedRecipe implements CraftingRecipe{
 	public function requiresCraftingTable() : bool{
 		return $this->getHeight() > 2 or $this->getWidth() > 2;
 	}
+
+	/**
+	 * @param Item[][] $input
+	 *
+	 * @return bool
+	 */
+	private function matchInputMap(array $input) : bool{
+		$map = $this->getIngredientMap();
+
+		//match the given items to the requested items
+		for($y = 0, $y2 = $this->getHeight(); $y < $y2; ++$y){
+			for($x = 0, $x2 = $this->getWidth(); $x < $x2; ++$x){
+				$given = $input[$y][$x] ?? null;
+				$required = $map[$y][$x];
+
+				if($given === null or !$required->equals($given, !$required->hasAnyDamageValue(), $required->hasCompoundTag()) or $required->getCount() !== $given->getCount()){
+					return false;
+				}
+
+				unset($input[$y][$x]);
+			}
+		}
+
+		//check if there are any items left in the grid outside of the recipe
+		/** @var Item[] $row */
+		foreach($input as $y => $row){
+			foreach($row as $x => $needItem){
+				if(!$needItem->isNull()){
+					return false; //too many input ingredients
+				}
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * @param Item[][] $input
+	 * @param Item[][] $output
+	 *
+	 * @return bool
+	 */
+	public function matchItems(array $input, array $output) : bool{
+		if(
+			!$this->matchInputMap($input) and //as-is
+			!$this->matchInputMap(array_map(function(array $row) : array{ return array_reverse($row, false); }, $input)) //mirrored
+		){
+			return false;
+		}
+
+		//and then, finally, check that the output items are good:
+
+		/** @var Item[] $haveItems */
+		$haveItems = array_merge(...$output);
+		$needItems = $this->getExtraResults();
+		foreach($haveItems as $j => $haveItem){
+			if($haveItem->isNull()){
+				unset($haveItems[$j]);
+				continue;
+			}
+
+			foreach($needItems as $i => $needItem){
+				if($needItem->equals($haveItem, !$needItem->hasAnyDamageValue(), $needItem->hasCompoundTag()) and $needItem->getCount() === $haveItem->getCount()){
+					unset($haveItems[$j], $needItems[$i]);
+					break;
+				}
+			}
+		}
+
+		return count($haveItems) === 0 and count($needItems) === 0;
+	}
 }

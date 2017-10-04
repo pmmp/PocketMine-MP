@@ -225,36 +225,7 @@ class PluginManager{
 								continue;
 							}
 
-							$compatible = false;
-							//Check multiple dependencies
-							foreach($description->getCompatibleApis() as $version){
-								//Format: majorVersion.minorVersion.patch (3.0.0)
-								//    or: majorVersion.minorVersion.patch-devBuild (3.0.0-alpha1)
-								if($version !== $this->server->getApiVersion()){
-									$pluginApi = array_pad(explode("-", $version), 2, ""); //0 = version, 1 = suffix (optional)
-									$serverApi = array_pad(explode("-", $this->server->getApiVersion()), 2, "");
-
-									if(strtoupper($pluginApi[1]) !== strtoupper($serverApi[1])){ //Different release phase (alpha vs. beta) or phase build (alpha.1 vs alpha.2)
-										continue;
-									}
-
-									$pluginNumbers = array_map("intval", array_pad(explode(".", $pluginApi[0]), 3, "0")); //plugins might specify API like "3.0" or "3"
-									$serverNumbers = array_map("intval", explode(".", $serverApi[0]));
-
-									if($pluginNumbers[0] !== $serverNumbers[0]){ //Completely different API version
-										continue;
-									}
-
-									if($pluginNumbers[1] > $serverNumbers[1]){ //If the plugin requires new API features, being backwards compatible
-										continue;
-									}
-								}
-
-								$compatible = true;
-								break;
-							}
-
-							if($compatible === false){
+							if(!$this->isCompatibleApi(...$description->getCompatibleApis())){
 								$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
 									$name,
 									$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleAPI", [implode(", ", $description->getCompatibleApis())])
@@ -371,6 +342,42 @@ class PluginManager{
 
 			return [];
 		}
+	}
+
+	/**
+	 * Returns whether a specified API version string is considered compatible with the server's API version.
+	 *
+	 * @param string[] ...$versions
+	 * @return bool
+	 */
+	public function isCompatibleApi(string ...$versions) : bool{
+		foreach($versions as $version){
+			//Format: majorVersion.minorVersion.patch (3.0.0)
+			//    or: majorVersion.minorVersion.patch-devBuild (3.0.0-alpha1)
+			if($version !== $this->server->getApiVersion()){
+				$pluginApi = array_pad(explode("-", $version), 2, ""); //0 = version, 1 = suffix (optional)
+				$serverApi = array_pad(explode("-", $this->server->getApiVersion()), 2, "");
+
+				if(strtoupper($pluginApi[1]) !== strtoupper($serverApi[1])){ //Different release phase (alpha vs. beta) or phase build (alpha.1 vs alpha.2)
+					continue;
+				}
+
+				$pluginNumbers = array_map("intval", array_pad(explode(".", $pluginApi[0]), 3, "0")); //plugins might specify API like "3.0" or "3"
+				$serverNumbers = array_map("intval", explode(".", $serverApi[0]));
+
+				if($pluginNumbers[0] !== $serverNumbers[0]){ //Completely different API version
+					continue;
+				}
+
+				if($pluginNumbers[1] > $serverNumbers[1]){ //If the plugin requires new API features, being backwards compatible
+					continue;
+				}
+			}
+
+			return true;
+		}
+
+		return false;
 	}
 
 	/**

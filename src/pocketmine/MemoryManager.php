@@ -72,7 +72,7 @@ class MemoryManager{
 	private $chunkTrigger;
 
 	/** @var bool */
-	private $chunkCache;
+	private $disableChunkCacheOnLowMemory;
 	/** @var bool */
 	private $cacheTrigger;
 
@@ -133,7 +133,7 @@ class MemoryManager{
 		$this->chunkCollect = (bool) $this->server->getProperty("memory.max-chunks.trigger-chunk-collect", true);
 		$this->chunkTrigger = (bool) $this->server->getProperty("memory.max-chunks.low-memory-trigger", true);
 
-		$this->chunkCache = (bool) $this->server->getProperty("memory.world-caches.disable-chunk-cache", true);
+		$this->disableChunkCacheOnLowMemory = (bool) $this->server->getProperty("memory.world-caches.disable-chunk-cache", true);
 		$this->cacheTrigger = (bool) $this->server->getProperty("memory.world-caches.low-memory-trigger", true);
 
 		$this->dumpWorkers = (bool) $this->server->getProperty("memory.memory-dump.dump-async-worker", true);
@@ -151,7 +151,7 @@ class MemoryManager{
 	 * @return bool
 	 */
 	public function canUseChunkCache() : bool{
-		return !($this->lowMemory and $this->chunkTrigger);
+		return !$this->lowMemory or !$this->disableChunkCacheOnLowMemory;
 	}
 
 	/**

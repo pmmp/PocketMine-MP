@@ -454,7 +454,7 @@ class Utils{
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_CONNECTTIMEOUT_MS => (int) ($timeout * 1000),
 			CURLOPT_TIMEOUT_MS => (int) ($timeout * 1000),
-			CURLOPT_HTTPHEADER => array_merge(["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 PocketMine-MP"], $extraHeaders),
+			CURLOPT_HTTPHEADER => array_merge(["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 " . \pocketmine\NAME], $extraHeaders),
 			CURLOPT_HEADER => true
 		]);
 		try{
@@ -541,6 +541,6 @@ class Utils{
 	public static function decodeJWT(string $token) : array{
 		list($headB64, $payloadB64, $sigB64) = explode(".", $token);
 
-		return json_decode(base64_decode($payloadB64), true);
+		return json_decode(base64_decode(strtr($payloadB64, '-_', '+/'), true), true);
 	}
 }

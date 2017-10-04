@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
+use pocketmine\inventory\transaction\action\CraftingTakeResultAction;
+use pocketmine\inventory\transaction\action\CraftingTransferMaterialAction;
 use pocketmine\inventory\transaction\action\CreativeInventoryAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\action\InventoryAction;
@@ -108,6 +110,12 @@ class NetworkInventoryAction{
 				break;
 			case self::SOURCE_TODO:
 				$this->windowId = $packet->getVarInt();
+				switch($this->windowId){
+					case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
+					case self::SOURCE_TYPE_CRAFTING_RESULT:
+						$packet->isCraftingPart = true;
+						break;
+				}
 				break;
 		}
 
@@ -190,6 +198,10 @@ class NetworkInventoryAction{
 					case self::SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT:
 						$window = $player->getCraftingGrid();
 						return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
+					case self::SOURCE_TYPE_CRAFTING_RESULT:
+						return new CraftingTakeResultAction($this->oldItem, $this->newItem);
+					case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
+						return new CraftingTransferMaterialAction($this->oldItem, $this->newItem, $this->inventorySlot);
 
 					case self::SOURCE_TYPE_CONTAINER_DROP_CONTENTS:
 						//TODO: this type applies to all fake windows, not just crafting

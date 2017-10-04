@@ -153,7 +153,7 @@ class BlockFactory{
 			self::registerBlock(new Cactus());
 			self::registerBlock(new Clay());
 			self::registerBlock(new Sugarcane());
-
+			//TODO: JUKEBOX
 			self::registerBlock(new Fence());
 			self::registerBlock(new Pumpkin());
 			self::registerBlock(new Netherrack());
@@ -168,8 +168,8 @@ class BlockFactory{
 			self::registerBlock(new Trapdoor());
 			//TODO: MONSTER_EGG
 			self::registerBlock(new StoneBricks());
-			//TODO: BROWN_MUSHROOM_BLOCK
-			//TODO: RED_MUSHROOM_BLOCK
+			self::registerBlock(new BrownMushroomBlock());
+			self::registerBlock(new RedMushroomBlock());
 			self::registerBlock(new IronBars());
 			self::registerBlock(new GlassPane());
 			self::registerBlock(new Melon());
@@ -247,7 +247,8 @@ class BlockFactory{
 			self::registerBlock(new Coal());
 			self::registerBlock(new PackedIce());
 			self::registerBlock(new DoublePlant());
-
+			//TODO: STANDING_BANNER
+			//TODO: WALL_BANNER
 			//TODO: DAYLIGHT_DETECTOR_INVERTED
 			//TODO: RED_SANDSTONE
 			//TODO: RED_SANDSTONE_STAIRS
@@ -273,6 +274,7 @@ class BlockFactory{
 
 			//TODO: PURPUR_STAIRS
 
+			//TODO: UNDYED_SHULKER_BOX
 			//TODO: END_BRICKS
 			//TODO: FROSTED_ICE
 			self::registerBlock(new EndRod());
@@ -302,7 +304,7 @@ class BlockFactory{
 			self::registerBlock(new GlazedTerracotta(Block::RED_GLAZED_TERRACOTTA, 0, "Red Glazed Terracotta"));
 			self::registerBlock(new GlazedTerracotta(Block::BLACK_GLAZED_TERRACOTTA, 0, "Black Glazed Terracotta"));
 			self::registerBlock(new Concrete());
-			//TODO: CONCRETEPOWDER
+			self::registerBlock(new ConcretePowder());
 
 			//TODO: CHORUS_PLANT
 			self::registerBlock(new StainedGlass());
@@ -316,6 +318,7 @@ class BlockFactory{
 			//TODO: INFO_UPDATE2
 			//TODO: MOVINGBLOCK
 			//TODO: OBSERVER
+			//TODO: STRUCTURE_BLOCK
 
 			//TODO: RESERVED6
 

@@ -21,35 +21,39 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\event\player;
 
 use pocketmine\block\Block;
+use pocketmine\event\Cancellable;
+use pocketmine\item\Item;
+use pocketmine\Player;
 
 /**
- * Class used for Items that can be Blocks
+ * Called when a player middle-clicks on a block to get an item in creative mode.
  */
-class ItemBlock extends Item{
+class PlayerBlockPickEvent extends PlayerEvent implements Cancellable{
+	public static $handlerList = null;
 
-	/**
-	 * @param Block $block
-	 * @param int   $meta Used in crafting recipes for any-damage ingredients (blocks must have meta values 0-15)
-	 */
-	public function __construct(Block $block, int $meta = 0){
-		$this->block = $block;
-		parent::__construct($block->getId(), $meta, $block->getName());
-	}
+	/** @var Block */
+	private $blockClicked;
+	/** @var Item */
+	private $resultItem;
 
-	public function setDamage(int $meta){
-		$this->meta = $meta;
-		$this->block->setDamage($this->meta !== -1 ? $this->meta & 0xf : 0);
+	public function __construct(Player $player, Block $blockClicked, Item $resultItem){
+		$this->player = $player;
+		$this->blockClicked = $blockClicked;
+		$this->resultItem = $resultItem;
 	}
 
 	public function getBlock() : Block{
-		return clone $this->block;
+		return $this->blockClicked;
 	}
 
-	public function getFuelTime() : int{
-		return $this->block->getFuelTime();
+	public function getResultItem() : Item{
+		return $this->resultItem;
 	}
 
+	public function setResultItem(Item $item) : void{
+		$this->resultItem = clone $item;
+	}
 }

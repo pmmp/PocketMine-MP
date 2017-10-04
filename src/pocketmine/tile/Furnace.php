@@ -53,6 +53,10 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		}
 		if(!isset($nbt->MaxTime)){
 			$nbt->MaxTime = new ShortTag("BurnTime", $nbt->BurnTime->getValue());
+			unset($nbt->BurnTicks);
+		}
+
+		if(!isset($nbt->BurnTicks)){
 			$nbt->BurnTicks = new ShortTag("BurnTicks", 0);
 		}
 
@@ -191,16 +195,13 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 
 		$this->namedtag->MaxTime->setValue($ev->getBurnTime());
 		$this->namedtag->BurnTime->setValue($ev->getBurnTime());
-		$this->namedtag->BurnTicks = new ShortTag("BurnTicks", 0);
+		$this->namedtag->BurnTicks->setValue(0);
 		if($this->getBlock()->getId() === Item::FURNACE){
 			$this->getLevel()->setBlock($this, BlockFactory::get(Block::BURNING_FURNACE, $this->getBlock()->getDamage()), true);
 		}
 
 		if($this->namedtag->BurnTime->getValue() > 0 and $ev->isBurning()){
-			$fuel->setCount($fuel->getCount() - 1);
-			if($fuel->getCount() === 0){
-				$fuel = ItemFactory::get(Item::AIR, 0, 0);
-			}
+			$fuel->pop();
 			$this->inventory->setFuel($fuel);
 		}
 	}
@@ -226,7 +227,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 
 		if($this->namedtag->BurnTime->getValue() > 0){
 			$this->namedtag->BurnTime->setValue($this->namedtag->BurnTime->getValue() - 1);
-			$this->namedtag->BurnTicks = new ShortTag("BurnTicks", (int) ceil($this->namedtag->BurnTime->getValue() / $this->namedtag->MaxTime->getValue() * 200));
+			$this->namedtag->BurnTicks->setValue((int) ceil($this->namedtag->BurnTime->getValue() / $this->namedtag->MaxTime->getValue() * 200));
 
 			if($smelt instanceof FurnaceRecipe and $canSmelt){
 				$this->namedtag->CookTime->setValue($this->namedtag->CookTime->getValue() + 1);
@@ -237,10 +238,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 
 					if(!$ev->isCancelled()){
 						$this->inventory->setResult($ev->getResult());
-						$raw->setCount($raw->getCount() - 1);
-						if($raw->getCount() === 0){
-							$raw = ItemFactory::get(Item::AIR, 0, 0);
-						}
+						$raw->pop();
 						$this->inventory->setSmelting($raw);
 					}
 

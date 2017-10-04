@@ -82,7 +82,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		$timings->startTiming();
 
 		$packet->decode();
-		if(!$packet->feof()){
+		if(!$packet->feof() and !$packet->mayHaveUnreadBytes()){
 			$remains = substr($packet->buffer, $packet->offset);
 			$this->server->getLogger()->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": 0x" . bin2hex($remains));
 		}
@@ -172,7 +172,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handleCraftingEvent(CraftingEventPacket $packet) : bool{
-		return $this->player->handleCraftingEvent($packet);
+		return true; //this is a broken useless packet, so we don't use it
 	}
 
 	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
@@ -228,7 +228,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
-		return false; //TODO
+		return $this->player->changeSkin($packet->skin, $packet->newSkinName, $packet->oldSkinName);
 	}
 
 	public function handleModalFormResponse(ModalFormResponsePacket $packet) : bool{

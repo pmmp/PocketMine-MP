@@ -3,15 +3,16 @@
 THIS ISSUE TRACKER IS FOR BUG REPORTING, NOT FOR HELP & SUPPORT. If you need help, use the links below. 
 - http://pmmp.readthedocs.io/en/rtfd/ - Documentation
 - https://forums.pmmp.io - PMMP Forums
--->
-<!--- Any issues requesting updates to new versions of MCPE will be treated as spam. We do not need issues to tell us that there is a new version available. -->
-<!--- 
-Write a short description about the issue
 
-If you are reporting a regression or unexpected behaviour, please include the below information:
-Expected result: What were you expecting to happen?
-Actual result: What actually happened?
+Any issues requesting updates to new versions of MCPE will be treated as spam.
+Please do not create issues for missing/un-implemented gameplay features - they will be closed.
 -->
+
+<!--- Write a short description about the issue -->
+
+<!--- If you are reporting a regression or unexpected behaviour, please include the below information: -->
+- Expected result: What were you expecting to happen?
+- Actual result: What actually happened?
 
 ### Steps to reproduce the issue
 <!--- help us find the problem by adding steps to reproduce the issue -->
@@ -21,9 +22,9 @@ Actual result: What actually happened?
 ### OS and versions
 <!--- use the 'version' command in PocketMine-MP
 
-NOTE: LATEST is not a valid version. PocketMine version should include Jenkins build number and/or git commit hash.
+NOTE: LATEST is not a valid version. PocketMine-MP version should include Jenkins build number and/or git commit hash.
 
-NO support whatsoever will be provided for forks or spoons of PocketMine. Issues relating to non-official distributions will be closed as spam. Please send such issues to whoever is responsible for the fork or spoon you are using.
+NO support whatsoever will be provided for third-party modified variants of PocketMine-MP. Issues relating to third-party modifications will be closed as spam.
 
 Note that 32-bit platforms are no longer supported by PocketMine-MP and issues concerning 32-bit platforms will be closed.
 -->

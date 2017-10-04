@@ -200,7 +200,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	public function __construct(int $id, int $meta = 0, string $name = "Unknown"){
 		$this->id = $id & 0xffff;
-		$this->meta = $meta !== -1 ? $meta & 0xffff : -1;
+		$this->setDamage($meta);
 		$this->name = $name;
 		if(!isset($this->block) and $this->id <= 0xff){
 			$this->block = BlockFactory::get($this->id, $this->meta);
@@ -643,6 +643,25 @@ class Item implements ItemIds, \JsonSerializable{
 		return $this;
 	}
 
+	/**
+	 * Pops an item from the stack and returns it, decreasing the stack count of this item stack by one.
+	 * @return Item
+	 *
+	 * @throws \InvalidStateException if the count is less than or equal to zero, or if the stack is air.
+	 */
+	public function pop() : Item{
+		if($this->isNull()){
+			throw new \InvalidStateException("Cannot pop an item from a null stack");
+		}
+
+		$item = clone $this;
+		$item->setCount(1);
+
+		$this->count--;
+
+		return $item;
+	}
+
 	public function isNull() : bool{
 		return $this->count <= 0 or $this->id === Item::AIR;
 	}
@@ -719,7 +738,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return $this
 	 */
 	public function setDamage(int $meta){
-		$this->meta = $meta !== -1 ? $meta & 0xFFFF : -1;
+		$this->meta = $meta !== -1 ? $meta & 0x7FFF : -1;
 
 		return $this;
 	}
@@ -963,7 +982,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	public function nbtSerialize(int $slot = -1, string $tagName = "") : CompoundTag{
 		$tag = new CompoundTag($tagName, [
-			new ShortTag("id", $this->id),
+			new ShortTag("id", Binary::signShort($this->id)),
 			new ByteTag("Count", Binary::signByte($this->count)),
 			new ShortTag("Damage", $this->meta),
 		]);
@@ -996,7 +1015,7 @@ class Item implements ItemIds, \JsonSerializable{
 		$meta = isset($tag->Damage) ? $tag->Damage->getValue() : 0;
 
 		if($tag->id instanceof ShortTag){
-			$item = ItemFactory::get($tag->id->getValue(), $meta, $count);
+			$item = ItemFactory::get(Binary::unsignShort($tag->id->getValue()), $meta, $count);
 		}elseif($tag->id instanceof StringTag){ //PC item save format
 			$item = ItemFactory::fromString($tag->id->getValue());
 			$item->setDamage($meta);

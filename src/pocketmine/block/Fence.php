@@ -85,11 +85,10 @@ class Fence extends Transparent{
 	}
 
 	public function canConnect(Block $block){
-		return ($block instanceof Fence or $block instanceof FenceGate) ? true : $block->isSolid() and !$block->isTransparent();
+		return $block instanceof Fence or $block instanceof FenceGate or ($block->isSolid() and !$block->isTransparent());
 	}
 
 	public function getFuelTime() : int{
 		return 300;
 	}
-
 }
