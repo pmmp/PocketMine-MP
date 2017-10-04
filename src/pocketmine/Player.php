@@ -84,6 +84,7 @@ use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\WritableBook;
+use pocketmine\item\WrittenBook;
 use pocketmine\level\ChunkLoader;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
@@ -3069,8 +3070,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$modifiedPages = [];
 		switch($packet->type){
 			case BookEditPacket::TYPE_REPLACE_PAGE:
-			case BookEditPacket::TYPE_ADD_PAGE:
 				$newBook->setPageText($packet->pageNumber, $packet->content1);
+				$modifiedPages[] = $packet->pageNumber;
+				break;
+			case BookEditPacket::TYPE_ADD_PAGE:
+				$newBook->insertPage($packet->pageNumber, $packet->content1);
 				$modifiedPages[] = $packet->pageNumber;
 				break;
 			case BookEditPacket::TYPE_DELETE_PAGE:
@@ -3082,10 +3086,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$modifiedPages = [$packet->pageNumber, $packet->secondaryPageNumber];
 				break;
 			case BookEditPacket::TYPE_SIGN_BOOK:
+				/** @var WrittenBook $newBook */
+				$newBook = Item::get(Item::WRITTEN_BOOK, 0, 1, $newBook->getNamedTag());
 				$newBook->setAuthor($packet->author);
 				$newBook->setTitle($packet->title);
 				$newBook->setGeneration(WritableBook::GENERATION_ORIGINAL);
-				$newBook = Item::get(Item::WRITTEN_BOOK, 0, 1, $newBook->getNamedTag());
 				break;
 			default:
 				return false;

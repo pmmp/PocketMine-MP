@@ -130,9 +130,29 @@ class WritableBook extends Item{
 
 		$namedTag = $this->getNamedTag();
 		unset($namedTag->pages->{$pageId});
-		$this->movePagesAboveDownwards($pageId, $namedTag);
+		$this->pushPages($pageId, $namedTag);
 		$this->setNamedTag($namedTag);
 
+		return true;
+	}
+
+	/**
+	 * Inserts a new page and moves other pages upwards.
+	 *
+	 * @param int $pageId
+	 * @param string $pageText
+	 *
+	 * @return bool indicating success
+	 */
+	public function insertPage(int $pageId, string $pageText = "") : bool{
+		$namedTag = $this->getCorrectedNamedTag();
+		if(!isset($namedTag->pages) or !($namedTag->pages instanceof ListTag)){
+			$namedTag->pages = new ListTag("pages", []);
+		}
+		$this->pushPages($pageId, $namedTag, false);
+
+		$namedTag->pages->{$pageId}->text->setValue($pageText);
+		$this->setNamedTag($namedTag);
 		return true;
 	}
 
@@ -158,96 +178,9 @@ class WritableBook extends Item{
 	}
 
 	/**
-	 * Returns the generation of the book.
-	 * Generations higher than 1 can not be copied.
-	 *
-	 * @return int
-	 */
-	public function getGeneration() : int{
-		if(!isset($this->getNamedTag()->generation)) {
-			return -1;
-		}
-		return $this->getNamedTag()->generation->getValue();
-	}
-
-	/**
-	 * Sets the generation of a book.
-	 *
-	 * @param int $generation
-	 */
-	public function setGeneration(int $generation) : void{
-		if($generation < 0 or $generation > 3){
-			throw new \InvalidArgumentException("Generation \"$generation\" is out of range");
-		}
-		$namedTag = $this->getCorrectedNamedTag();
-
-		if(isset($namedTag->generation)){
-			$namedTag->generation->setValue($generation);
-		}else{
-			$namedTag->generation = new IntTag("generation", $generation);
-		}
-		$this->setNamedTag($namedTag);
-	}
-
-	/**
-	 * Returns the author of this book.
-	 * This is not a reliable way to get the real author of the book. It can be changed in-game.
-	 *
-	 * @return string
-	 */
-	public function getAuthor() : string{
-		if(!isset($this->getNamedTag()->author)){
-			return "";
-		}
-		return $this->getNamedTag()->author->getValue();
-	}
-
-	/**
-	 * Sets the author of this book.
-	 *
-	 * @param string $authorName
-	 */
-	public function setAuthor(string $authorName) : void{
-		$namedTag = $this->getCorrectedNamedTag();
-		if(isset($namedTag->author)){
-			$namedTag->author->setValue($authorName);
-		}else{
-			$namedTag->author = new StringTag("author", $authorName);
-		}
-		$this->setNamedTag($namedTag);
-	}
-
-	/**
-	 * Returns the title of this book.
-	 *
-	 * @return string
-	 */
-	public function getTitle() : string{
-		if(!isset($this->getNamedTag()->title)){
-			return "";
-		}
-		return $this->getNamedTag()->title->getValue();
-	}
-
-	/**
-	 * Sets the author of this book.
-	 *
-	 * @param string $title
-	 */
-	public function setTitle(string $title) : void{
-		$namedTag = $this->getCorrectedNamedTag();
-		if(isset($namedTag->title)){
-			$namedTag->title->setValue($title);
-		}else{
-			$namedTag->title = new StringTag("title", $title);
-		}
-		$this->setNamedTag($namedTag);
-	}
-
-	/**
 	 * @return CompoundTag
 	 */
-	private function getCorrectedNamedTag() : CompoundTag{
+	protected function getCorrectedNamedTag() : CompoundTag{
 		return $this->getNamedTag() ?? new CompoundTag();
 	}
 
@@ -256,23 +189,28 @@ class WritableBook extends Item{
 	}
 
 	/**
-	 * @param int         $id
+	 * @param int         $pageId
 	 * @param CompoundTag $namedTag
+	 * @param bool        $downwards
 	 *
 	 * @return bool
 	 */
-	private function movePagesAboveDownwards(int $id, CompoundTag $namedTag) : bool{
+	private function pushPages(int $pageId, CompoundTag $namedTag, bool $downwards = true) : bool{
 		if(empty($this->getPages())){
 			return false;
 		}
 
 		$pages = $this->getPages();
+		$type = $downwards ? -1 : 1;
 		foreach($pages as $key => $page){
-			if($key <= $id){
+			if(($key <= $pageId and $downwards) or ($key < $pageId and !$downwards)){
 				continue;
 			}
-			unset($namedTag->pages->{$key});
-			$namedTag->pages->{$key - 1} = $page;
+
+			if($downwards){
+				unset($namedTag->pages->{$key});
+			}
+			$namedTag->pages->{$key + $type} = $page;
 		}
 		return true;
 	}

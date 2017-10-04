@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\StringTag;
+
 class WrittenBook extends WritableBook{
 
 	public function __construct(int $meta = 0){
@@ -31,5 +34,92 @@ class WrittenBook extends WritableBook{
 
 	public function getMaxStackSize() : int{
 		return 16;
+	}
+
+	/**
+	 * Returns the generation of the book.
+	 * Generations higher than 1 can not be copied.
+	 *
+	 * @return int
+	 */
+	public function getGeneration() : int{
+		if(!isset($this->getNamedTag()->generation)) {
+			return -1;
+		}
+		return $this->getNamedTag()->generation->getValue();
+	}
+
+	/**
+	 * Sets the generation of a book.
+	 *
+	 * @param int $generation
+	 */
+	public function setGeneration(int $generation) : void{
+		if($generation < 0 or $generation > 3){
+			throw new \InvalidArgumentException("Generation \"$generation\" is out of range");
+		}
+		$namedTag = $this->getCorrectedNamedTag();
+
+		if(isset($namedTag->generation)){
+			$namedTag->generation->setValue($generation);
+		}else{
+			$namedTag->generation = new IntTag("generation", $generation);
+		}
+		$this->setNamedTag($namedTag);
+	}
+
+	/**
+	 * Returns the author of this book.
+	 * This is not a reliable way to get the real author of the book. It can be changed in-game.
+	 *
+	 * @return string
+	 */
+	public function getAuthor() : string{
+		if(!isset($this->getNamedTag()->author)){
+			return "";
+		}
+		return $this->getNamedTag()->author->getValue();
+	}
+
+	/**
+	 * Sets the author of this book.
+	 *
+	 * @param string $authorName
+	 */
+	public function setAuthor(string $authorName) : void{
+		$namedTag = $this->getCorrectedNamedTag();
+		if(isset($namedTag->author)){
+			$namedTag->author->setValue($authorName);
+		}else{
+			$namedTag->author = new StringTag("author", $authorName);
+		}
+		$this->setNamedTag($namedTag);
+	}
+
+	/**
+	 * Returns the title of this book.
+	 *
+	 * @return string
+	 */
+	public function getTitle() : string{
+		if(!isset($this->getNamedTag()->title)){
+			return "";
+		}
+		return $this->getNamedTag()->title->getValue();
+	}
+
+	/**
+	 * Sets the author of this book.
+	 *
+	 * @param string $title
+	 */
+	public function setTitle(string $title) : void{
+		$namedTag = $this->getCorrectedNamedTag();
+		if(isset($namedTag->title)){
+			$namedTag->title->setValue($title);
+		}else{
+			$namedTag->title = new StringTag("title", $title);
+		}
+		$this->setNamedTag($namedTag);
 	}
 }
