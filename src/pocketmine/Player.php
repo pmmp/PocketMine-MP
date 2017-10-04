@@ -3023,8 +3023,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($oldBook->getId() !== Item::WRITABLE_BOOK){
 			return false;
 		}
+
 		$newBook = clone $oldBook;
 		$modifiedPages = [];
+
 		switch($packet->type){
 			case BookEditPacket::TYPE_REPLACE_PAGE:
 				$newBook->setPageText($packet->pageNumber, $packet->text);
@@ -3052,11 +3054,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			default:
 				return false;
 		}
+
 		$this->getServer()->getPluginManager()->callEvent($event = new PlayerEditBookEvent($this, $oldBook, $newBook, $packet->type, $modifiedPages));
 		if($event->isCancelled()){
 			return true;
 		}
+
 		$this->getInventory()->setItem($packet->inventorySlot - 9, $event->getNewBook());
+
 		return true;
 	}
 
