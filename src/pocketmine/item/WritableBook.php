@@ -97,8 +97,8 @@ class WritableBook extends Item{
 			$namedTag->pages = new ListTag("pages", []);
 		}
 
-		for($id = 0; $id <= $pageId; $id++) {
-			if(!$this->pageExists($id)) {
+		for($id = 0; $id <= $pageId; $id++){
+			if(!$this->pageExists($id)){
 				$namedTag->pages->{$id} = new CompoundTag("", [
 					new StringTag("text", ""),
 					new StringTag("photoname", "")
