@@ -46,7 +46,7 @@ class WritableBook extends Item{
 	}
 
 	/**
-	 * Returns a string containing the content of a page, or an empty string if the page doesn't exist.
+	 * Returns a string containing the content of a page (which could be empty), or null if the page doesn't exist.
 	 *
 	 * @param int $pageId
 	 *
@@ -82,7 +82,8 @@ class WritableBook extends Item{
 	}
 
 	/**
-	 * Adds a new page with the given text. (if given)
+	 * Adds a new page with the given page ID.
+	 * Creates a new page for every page between the given ID and existing pages that doesn't yet exist.
 	 *
 	 * @param int $pageId
 	 */
@@ -109,7 +110,7 @@ class WritableBook extends Item{
 	}
 
 	/**
-	 * Deletes an existing page.
+	 * Deletes an existing page with the given page ID.
 	 *
 	 * @param int $pageId
 	 *
@@ -129,7 +130,7 @@ class WritableBook extends Item{
 	}
 
 	/**
-	 * Inserts a new page and moves other pages upwards.
+	 * Inserts a new page with the given text and moves other pages upwards.
 	 *
 	 * @param int $pageId
 	 * @param string $pageText
