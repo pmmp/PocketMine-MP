@@ -75,7 +75,8 @@ class WrittenBook extends WritableBook{
 
 	/**
 	 * Returns the author of this book.
-	 * This is not a reliable way to get the real author of the book. It can be changed in-game or through plugins.
+	 * This is not a reliable way to get the name of the player who signed this book.
+	 * The author can be set to anything when signing a book.
 	 *
 	 * @return string
 	 */
