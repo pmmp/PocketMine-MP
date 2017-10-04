@@ -171,7 +171,7 @@ class Server{
 
 	private $dispatchSignals = false;
 
-	/** @var \AttachableThreadedLogger */
+	/** @var MainLogger */
 	private $logger;
 
 	/** @var MemoryManager */
@@ -2473,14 +2473,14 @@ class Server{
 		$u = Utils::getMemoryUsage(true);
 		$usage = sprintf("%g/%g/%g/%g MB @ %d threads", round(($u[0] / 1024) / 1024, 2), round(($d[0] / 1024) / 1024, 2), round(($u[1] / 1024) / 1024, 2), round(($u[2] / 1024) / 1024, 2), Utils::getThreadCount());
 
-		echo "\x1b]0;" . $this->getName() . " " .
+		$this->logger->pushToOutputBuffer("\x1b]0;" . $this->getName() . " " .
 			$this->getPocketMineVersion() .
 			" | Online " . count($this->players) . "/" . $this->getMaxPlayers() .
 			" | Memory " . $usage .
 			" | U " . round($this->network->getUpload() / 1024, 2) .
 			" D " . round($this->network->getDownload() / 1024, 2) .
 			" kB/s | TPS " . $this->getTicksPerSecondAverage() .
-			" | Load " . $this->getTickUsageAverage() . "%\x07";
+			" | Load " . $this->getTickUsageAverage() . "%\x07");
 
 		Timings::$titleTickTimer->stopTiming();
 	}
