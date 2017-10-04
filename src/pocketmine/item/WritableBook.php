@@ -142,11 +142,9 @@ class WritableBook extends Item{
 			$namedTag->pages = new ListTag("pages", []);
 		}
 		$this->pushPages($pageId, $namedTag, false);
-		var_dump($namedTag);
 
 		$namedTag->pages->{$pageId}->text->setValue($pageText);
 		$this->setNamedTag($namedTag);
-		var_dump($namedTag);
 		return true;
 	}
 
