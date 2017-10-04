@@ -3017,6 +3017,37 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return true;
 	}
 
+	public function handleBossEvent(BossEventPacket $packet) : bool{
+		return false; //TODO
+	}
+
+	public function handleShowCredits(ShowCreditsPacket $packet) : bool{
+		return false; //TODO: handle resume
+	}
+
+	public function handleCommandBlockUpdate(CommandBlockUpdatePacket $packet) : bool{
+		return false; //TODO
+	}
+
+	public function handleResourcePackChunkRequest(ResourcePackChunkRequestPacket $packet) : bool{
+		$manager = $this->server->getResourceManager();
+		$pack = $manager->getPackById($packet->packId);
+		if(!($pack instanceof ResourcePack)){
+			$this->close("", "disconnectionScreen.resourcePack", true);
+			$this->server->getLogger()->debug("Got a resource pack chunk request for unknown pack with UUID " . $packet->packId . ", available packs: " . implode(", ", $manager->getPackIdList()));
+
+			return false;
+		}
+
+		$pk = new ResourcePackChunkDataPacket();
+		$pk->packId = $pack->getPackId();
+		$pk->chunkIndex = $packet->chunkIndex;
+		$pk->data = $pack->getPackChunk(1048576 * $packet->chunkIndex, 1048576);
+		$pk->progress = (1048576 * $packet->chunkIndex);
+		$this->dataPacket($pk);
+		return true;
+	}
+
 	public function handleBookEdit(BookEditPacket $packet) : bool{
 		/** @var WritableBook $oldBook */
 		$oldBook = $this->inventory->getItem($packet->inventorySlot - 9);
@@ -3062,37 +3093,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->getInventory()->setItem($packet->inventorySlot - 9, $event->getNewBook());
 
-		return true;
-	}
-
-	public function handleBossEvent(BossEventPacket $packet) : bool{
-		return false; //TODO
-	}
-
-	public function handleShowCredits(ShowCreditsPacket $packet) : bool{
-		return false; //TODO: handle resume
-	}
-
-	public function handleCommandBlockUpdate(CommandBlockUpdatePacket $packet) : bool{
-		return false; //TODO
-	}
-
-	public function handleResourcePackChunkRequest(ResourcePackChunkRequestPacket $packet) : bool{
-		$manager = $this->server->getResourceManager();
-		$pack = $manager->getPackById($packet->packId);
-		if(!($pack instanceof ResourcePack)){
-			$this->close("", "disconnectionScreen.resourcePack", true);
-			$this->server->getLogger()->debug("Got a resource pack chunk request for unknown pack with UUID " . $packet->packId . ", available packs: " . implode(", ", $manager->getPackIdList()));
-
-			return false;
-		}
-
-		$pk = new ResourcePackChunkDataPacket();
-		$pk->packId = $pack->getPackId();
-		$pk->chunkIndex = $packet->chunkIndex;
-		$pk->data = $pack->getPackChunk(1048576 * $packet->chunkIndex, 1048576);
-		$pk->progress = (1048576 * $packet->chunkIndex);
-		$this->dataPacket($pk);
 		return true;
 	}
 

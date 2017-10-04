@@ -228,12 +228,12 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return $this->player->handleResourcePackChunkRequest($packet);
 	}
 
-	public function handleBookEdit(BookEditPacket $packet) : bool{
-		return $this->player->handleBookEdit($packet);
-	}
-
 	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
 		return $this->player->changeSkin($packet->skin, $packet->newSkinName, $packet->oldSkinName);
+	}
+
+	public function handleBookEdit(BookEditPacket $packet) : bool{
+		return $this->player->handleBookEdit($packet);
 	}
 
 	public function handleModalFormResponse(ModalFormResponsePacket $packet) : bool{
