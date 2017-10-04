@@ -28,6 +28,11 @@ use pocketmine\nbt\tag\StringTag;
 
 class WrittenBook extends WritableBook{
 
+	const GENERATION_ORIGINAL = 0;
+	const GENERATION_COPY = 1;
+	const GENERATION_COPY_OF_COPY = 2;
+	const GENERATION_TATTERED = 3;
+
 	public function __construct(int $meta = 0){
 		Item::__construct(self::WRITTEN_BOOK, $meta, "Written Book");
 	}
@@ -70,7 +75,7 @@ class WrittenBook extends WritableBook{
 
 	/**
 	 * Returns the author of this book.
-	 * This is not a reliable way to get the real author of the book. It can be changed in-game.
+	 * This is not a reliable way to get the real author of the book. It can be changed in-game or through plugins.
 	 *
 	 * @return string
 	 */

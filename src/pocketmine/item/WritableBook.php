@@ -30,11 +30,6 @@ use pocketmine\nbt\tag\StringTag;
 
 class WritableBook extends Item{
 
-	const GENERATION_ORIGINAL = 0;
-	const GENERATION_COPY = 1;
-	const GENERATION_COPY_OF_COPY = 2;
-	const GENERATION_TATTERED = 3;
-
 	public function __construct(int $meta = 0){
 		parent::__construct(self::WRITABLE_BOOK, $meta, "Book & Quill");
 	}
@@ -89,11 +84,9 @@ class WritableBook extends Item{
 	/**
 	 * Adds a new page with the given text. (if given)
 	 *
-	 * @param int    $pageId
-	 *
-	 * @return int page number
+	 * @param int $pageId
 	 */
-	public function addPage(int $pageId) : int{
+	public function addPage(int $pageId) : void{
 		if($pageId < 0) {
 			throw new \InvalidArgumentException("Page number \"$pageId\" is out of range");
 		}
@@ -113,7 +106,6 @@ class WritableBook extends Item{
 		}
 
 		$this->setNamedTag($namedTag);
-		return $pageId;
 	}
 
 	/**
@@ -150,9 +142,11 @@ class WritableBook extends Item{
 			$namedTag->pages = new ListTag("pages", []);
 		}
 		$this->pushPages($pageId, $namedTag, false);
+		var_dump($namedTag);
 
 		$namedTag->pages->{$pageId}->text->setValue($pageText);
 		$this->setNamedTag($namedTag);
+		var_dump($namedTag);
 		return true;
 	}
 
@@ -210,7 +204,10 @@ class WritableBook extends Item{
 			if($downwards){
 				unset($namedTag->pages->{$key});
 			}
-			$namedTag->pages->{$key + $type} = $page;
+			$namedTag->pages->{$key + $type} = new CompoundTag("", [
+				new StringTag("text", $page->text->getValue()),
+				new StringTag("photoname", "")
+			]);
 		}
 		return true;
 	}
@@ -218,7 +215,7 @@ class WritableBook extends Item{
 	/**
 	 * Returns an array containing all pages of this book.
 	 *
-	 * @return array
+	 * @return CompoundTag[]
 	 */
 	public function getPages() : array{
 		$namedTag = $this->getCorrectedNamedTag();
