@@ -39,16 +39,22 @@ class RegionLoader{
 
 	public static $COMPRESSION_LEVEL = 7;
 
+	/** @var int */
 	protected $x;
+	/** @var int */
 	protected $z;
+	/** @var string */
 	protected $filePath;
+	/** @var resource */
 	protected $filePointer;
+	/** @var int */
 	protected $lastSector;
 	/** @var McRegion */
 	protected $levelProvider;
+	/** @var int[][] */
 	protected $locationTable = [];
-
-	public $lastUsed;
+	/** @var int */
+	public $lastUsed = 0;
 
 	public function __construct(McRegion $level, int $regionX, int $regionZ, string $fileExtension = McRegion::REGION_FILE_EXTENSION){
 		$this->x = $regionX;
