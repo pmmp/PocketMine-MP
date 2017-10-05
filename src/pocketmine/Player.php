@@ -2747,6 +2747,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				}
 
 				$this->resetLastMovements();
+				$this->resetFallDistance();
 
 				$this->setSprinting(false);
 				$this->setSneaking(false);
