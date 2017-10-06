@@ -26,7 +26,7 @@ namespace pocketmine\form;
 use pocketmine\Player;
 
 /**
- * This form type present a simple "yes/no" dialog with two buttons.
+ * This form type presents a simple "yes/no" dialog with two buttons.
  */
 abstract class ModalForm extends Form{
 
