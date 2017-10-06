@@ -38,7 +38,7 @@ abstract class Form implements \JsonSerializable{
 	const TYPE_CUSTOM_FORM = "custom_form";
 
 	/** @var string */
-	protected $title;
+	protected $title = "";
 
 	public function __construct(string $title){
 		$this->title = $title;
