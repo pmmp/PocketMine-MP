@@ -23,47 +23,39 @@ declare(strict_types=1);
 
 namespace pocketmine\form;
 
-/**
- * Represents an option on a MenuForm. The option is shown as a button and may optionally have an image next to it.
- */
-class MenuOption implements \JsonSerializable{
+use pocketmine\form\element\CustomFormElement;
 
-	/**
-	 * @var string
-	 */
-	private $text;
+/**
+ * Represents a custom form which can be shown in the Settings menu on the client. This is exactly the same as a regular
+ * CustomForm, except that this type can also have an icon which can be shown on the settings section button.
+ */
+class ServerSettingsForm extends CustomForm{
 	/**
 	 * @var FormIcon|null
 	 */
-	private $image;
+	private $icon;
 
-	public function __construct(string $text, ?FormIcon $image = null){
-		$this->text = $text;
-		$this->image = $image;
+	public function __construct(string $title, ?FormIcon $icon, CustomFormElement ...$elements){
+		parent::__construct($title, ...$elements);
+		$this->icon = $icon;
 	}
 
-	public function getText() : string{
-		return $this->text;
+	public function hasIcon() : bool{
+		return $this->icon !== null;
 	}
 
-	public function hasImage() : bool{
-		return $this->image !== null;
+	public function getIcon() : ?FormIcon{
+		return $this->icon;
 	}
 
-	public function getImage() : ?FormIcon{
-		return $this->image;
-	}
+	public function serializeFormData() : array{
+		$data = parent::serializeFormData();
 
-	public function jsonSerialize(){
-		$json = [
-			"text" => $this->text
-		];
-
-		if($this->hasImage()){
-			$json["image"] = $this->image;
+		if($this->hasIcon()){
+			$data["icon"] = $this->icon;
 		}
 
-		return $json;
+		return $data;
 	}
 
 }

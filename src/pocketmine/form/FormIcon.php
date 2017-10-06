@@ -24,46 +24,49 @@ declare(strict_types=1);
 namespace pocketmine\form;
 
 /**
- * Represents an option on a MenuForm. The option is shown as a button and may optionally have an image next to it.
+ * Represents an icon which can be placed next to options on menus, or as the icon for the server-settings form type.
  */
-class MenuOption implements \JsonSerializable{
+class FormIcon implements \JsonSerializable{
+	const IMAGE_TYPE_URL = "url";
+	const IMAGE_TYPE_PATH = "path";
 
 	/**
 	 * @var string
 	 */
-	private $text;
+	private $type;
 	/**
-	 * @var FormIcon|null
+	 * @var string
 	 */
-	private $image;
+	private $data;
 
-	public function __construct(string $text, ?FormIcon $image = null){
-		$this->text = $text;
-		$this->image = $image;
+	/**
+	 * @param string $data URL or path depending on the type chosen.
+	 * @param string $type Can be one of the constants at the top of the file, but only "url" is known to work.
+	 */
+	public function __construct(string $data, string $type = self::IMAGE_TYPE_URL){
+		$this->type = $type;
+		$this->data = $data;
 	}
 
-	public function getText() : string{
-		return $this->text;
+	/**
+	 * @return string
+	 */
+	public function getType() : string{
+		return $this->type;
 	}
 
-	public function hasImage() : bool{
-		return $this->image !== null;
-	}
-
-	public function getImage() : ?FormIcon{
-		return $this->image;
+	/**
+	 * @return string
+	 */
+	public function getData() : string{
+		return $this->data;
 	}
 
 	public function jsonSerialize(){
-		$json = [
-			"text" => $this->text
+		return [
+			"type" => $this->type,
+			"data" => $this->data
 		];
-
-		if($this->hasImage()){
-			$json["image"] = $this->image;
-		}
-
-		return $json;
 	}
 
 }
