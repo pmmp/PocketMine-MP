@@ -21,10 +21,16 @@
 
 declare(strict_types=1);
 
+/**
+ * API for Minecraft: Bedrock custom UI (forms)
+ */
 namespace pocketmine\form;
 
 use pocketmine\Player;
 
+/**
+ * Base class for a custom form. Forms are serialized to JSON data to be sent to clients.
+ */
 abstract class Form implements \JsonSerializable{
 
 	const TYPE_MODAL = "modal";
@@ -53,7 +59,7 @@ abstract class Form implements \JsonSerializable{
 	}
 
 	/**
-	 * Handles a modal form response from a player
+	 * Handles a modal form response from a player.
 	 *
 	 * @param Player $player
 	 * @param mixed  $data
