@@ -34,7 +34,7 @@ use pocketmine\Player;
 abstract class Form implements \JsonSerializable{
 
 	const TYPE_MODAL = "modal";
-	const TYPE_LIST = "form";
+	const TYPE_MENU = "form";
 	const TYPE_CUSTOM_FORM = "custom_form";
 
 	/** @var string */
@@ -59,7 +59,7 @@ abstract class Form implements \JsonSerializable{
 	}
 
 	/**
-	 * Handles a modal form response from a player. Plugins should not override this method, override {@link onSubmit}
+	 * Handles a form response from a player. Plugins should not override this method, override {@link onSubmit}
 	 * instead.
 	 *
 	 * @param Player $player

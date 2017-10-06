@@ -24,9 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\form;
 
 /**
- * Represents an option on a ListForm menu. The option is shown as a Button and may optionally have an image next to it.
+ * Represents an option on a MenuForm. The option is shown as a button and may optionally have an image next to it.
  */
-class Button implements \JsonSerializable{
+class MenuOption implements \JsonSerializable{
 
 	const IMAGE_TYPE_PATH = "path";
 	const IMAGE_TYPE_URL = "url";

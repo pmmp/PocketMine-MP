@@ -72,7 +72,6 @@ use pocketmine\event\TextContainer;
 use pocketmine\event\Timings;
 use pocketmine\event\TranslationContainer;
 use pocketmine\form\Form;
-use pocketmine\form\ListForm;
 use pocketmine\inventory\BigCraftingGrid;
 use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\Inventory;

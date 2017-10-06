@@ -29,33 +29,33 @@ use pocketmine\Player;
  * This form type presents a menu to the user with a list of options on it. The user may select an option or close the
  * form by clicking the X in the top left corner.
  */
-abstract class ListForm extends Form{
+abstract class MenuForm extends Form{
 
 	/** @var string */
 	protected $content;
-	/** @var Button[] */
-	private $buttons;
+	/** @var MenuOption[] */
+	private $options;
 
 	/** @var int|null */
 	private $selectedOption;
 
 	/**
-	 * @param string   $title
-	 * @param string   $text
-	 * @param Button[] $buttons
+	 * @param string       $title
+	 * @param string       $text
+	 * @param MenuOption[] $options
 	 */
-	public function __construct(string $title, string $text, Button ...$buttons){
+	public function __construct(string $title, string $text, MenuOption ...$options){
 		parent::__construct($title);
 		$this->content = $text;
-		$this->buttons = $buttons;
+		$this->options = $options;
 	}
 
 	public function getType() : string{
-		return Form::TYPE_LIST;
+		return Form::TYPE_MENU;
 	}
 
-	public function getButton(int $position) : ?Button{
-		return $this->buttons[$position] ?? null;
+	public function getOption(int $position) : ?MenuOption{
+		return $this->options[$position] ?? null;
 	}
 
 	/**
@@ -79,16 +79,16 @@ abstract class ListForm extends Form{
 	/**
 	 * Returns the menu option selected by the user.
 	 *
-	 * @return Button
+	 * @return MenuOption
 	 * @throws \InvalidStateException if no option is selected or if the selected option doesn't exist
 	 */
-	public function getSelectedOption() : Button{
+	public function getSelectedOption() : MenuOption{
 		$index = $this->getSelectedOptionIndex();
 		if($index === null){
 			throw new \InvalidStateException("No option selected, maybe the form hasn't been submitted yet");
 		}
 
-		$option = $this->getButton($index);
+		$option = $this->getOption($index);
 
 		if($option !== null){
 			return $option;
@@ -123,7 +123,7 @@ abstract class ListForm extends Form{
 		if($data === null){
 			$this->onClose($player);
 		}elseif(is_int($data)){
-			if(!isset($this->buttons[$data])){
+			if(!isset($this->options[$data])){
 				throw new \RuntimeException($player->getName() . " selected an option that doesn't seem to exist ($data)");
 			}
 			$this->setSelectedOptionIndex($data);
@@ -136,7 +136,7 @@ abstract class ListForm extends Form{
 	public function serializeFormData() : array{
 		return [
 			"content" => $this->content,
-			"buttons" => $this->buttons
+			"buttons" => $this->options //yes, this is intended (MCPE calls them buttons)
 		];
 	}
 }
