@@ -51,7 +51,7 @@ class RegionLoader{
 	protected $lastSector;
 	/** @var McRegion */
 	protected $levelProvider;
-	/** @var int[][] */
+	/** @var int[][] [offset in sectors, chunk size in sectors, timestamp] */
 	protected $locationTable = [];
 	/** @var int */
 	public $lastUsed = 0;
