@@ -36,6 +36,9 @@ abstract class ListForm extends Form{
 	/** @var Button[] */
 	private $buttons;
 
+	/** @var int|null */
+	private $selectedOption;
+
 	/**
 	 * @param string   $title
 	 * @param string   $text
@@ -55,17 +58,52 @@ abstract class ListForm extends Form{
 		return $this->buttons[$position] ?? null;
 	}
 
-	public function handleResponse(Player $player, $data) : void{
-		if($data === null){
-			$this->onClose($player);
-		}elseif(is_int($data)){
-			if(!isset($this->buttons[$data])){
-				throw new \RuntimeException($player->getName() . " selected an option that doesn't seem to exist ($data)");
-			}
-			$this->onSubmit($player, $data);
-		}else{
-			throw new \UnexpectedValueException("Expected int or NULL, got " . gettype($data));
+	/**
+	 * Returns the index of the option selected by the user. Pass this to {@link getButton} to get the button object
+	 * which was clicked.
+	 *
+	 * @return int|null
+	 */
+	public function getSelectedOptionIndex() : ?int{
+		return $this->selectedOption;
+	}
+
+	/**
+	 * Sets the selected option to the specified index or null. null = no selection.
+	 * @param int $option
+	 */
+	public function setSelectedOptionIndex(int $option) : void{
+		$this->selectedOption = $option;
+	}
+
+	/**
+	 * Returns the menu option selected by the user.
+	 *
+	 * @return Button
+	 * @throws \InvalidStateException if no option is selected or if the selected option doesn't exist
+	 */
+	public function getSelectedOption() : Button{
+		$index = $this->getSelectedOptionIndex();
+		if($index === null){
+			throw new \InvalidStateException("No option selected, maybe the form hasn't been submitted yet");
 		}
+
+		$option = $this->getButton($index);
+
+		if($option !== null){
+			return $option;
+		}
+
+		throw new \InvalidStateException("No option found at index $index");
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * {@link getSelectedOption} can be used to get the option selected by the user.
+	 */
+	public function onSubmit(Player $player) : void{
+
 	}
 
 	/**
@@ -76,14 +114,24 @@ abstract class ListForm extends Form{
 
 	}
 
-	/**
-	 * Called when a player selects an option from the menu.
-	 *
-	 * @param Player $player The player submitting the form
-	 * @param int    $selectedOption The index of the selected button. Use {@link #getButton} with this number to get
-	 *                                the clicked button object.
-	 */
-	abstract public function onSubmit(Player $player, int $selectedOption) : void;
+	public function clearResponseData() : void{
+		$this->selectedOption = null;
+	}
+
+
+	final public function handleResponse(Player $player, $data) : void{
+		if($data === null){
+			$this->onClose($player);
+		}elseif(is_int($data)){
+			if(!isset($this->buttons[$data])){
+				throw new \RuntimeException($player->getName() . " selected an option that doesn't seem to exist ($data)");
+			}
+			$this->setSelectedOptionIndex($data);
+			$this->onSubmit($player);
+		}else{
+			throw new \UnexpectedValueException("Expected int or NULL, got " . gettype($data));
+		}
+	}
 
 	public function serializeFormData() : array{
 		return [

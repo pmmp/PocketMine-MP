@@ -59,12 +59,31 @@ abstract class Form implements \JsonSerializable{
 	}
 
 	/**
-	 * Handles a modal form response from a player.
+	 * Handles a modal form response from a player. Plugins should not override this method, override {@link onSubmit}
+	 * instead.
 	 *
 	 * @param Player $player
 	 * @param mixed  $data
 	 */
 	abstract public function handleResponse(Player $player, $data) : void;
+
+	/**
+	 * Called when a player submits this form. Each form type usually has its own methods for getting relevant data from
+	 * them.
+	 *
+	 * Plugins should extend the class and override this function and add their own code to handle form responses as
+	 * they wish.
+	 *
+	 * @param Player $player
+	 */
+	abstract public function onSubmit(Player $player) : void;
+
+	/**
+	 * Clears response data from a form, useful if you want to reuse the same form object several times.
+	 */
+	public function clearResponseData() : void{
+
+	}
 
 	/**
 	 * Serializes the form to JSON for sending to clients.

@@ -37,6 +37,9 @@ abstract class ModalForm extends Form{
 	/** @var string */
 	private $button2;
 
+	/** @var bool|null */
+	private $choice;
+
 	/**
 	 * @param string $title Text to put on the title of the dialog.
 	 * @param string $text Text to put in the body.
@@ -62,22 +65,48 @@ abstract class ModalForm extends Form{
 		return $this->button2;
 	}
 
+	/**
+	 * If called from {@link onSubmit} this will return true if the user chose Yes, or false if they chose No.
+	 *
+	 * Will return null if called before the form is submitted.
+	 *
+	 * @return bool|null
+	 */
+	public function getChoice() : ?bool{
+		return $this->choice;
+	}
+
+	/**
+	 * Sets the option selected by the player. true = Yes, false = No
+	 *
+	 * @param bool $choice
+	 */
+	public function setChoice(bool $choice) : void{
+		$this->choice = $choice;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * {@link getChoice} can be used in here to find out which option the player selected.
+	 */
+	public function onSubmit(Player $player) : void{
+
+	}
+
+	public function clearResponseData() : void{
+		$this->choice = null;
+	}
+
+
 	final public function handleResponse(Player $player, $data) : void{
 		if(!is_bool($data)){
 			throw new \UnexpectedValueException("Expected bool, got " . gettype($data));
 		}
 
-		$this->onSubmit($player, $data);
+		$this->setChoice($data);
+		$this->onSubmit($player);
 	}
-
-	/**
-	 * Called when a player submits this form. Plugins should extend the class and implement this method to handle form
-	 * responses.
-	 *
-	 * @param Player $player The player who submitted the form.
-	 * @param bool   $responseValue True if the player clicked button1, false if button2.
-	 */
-	abstract public function onSubmit(Player $player, bool $responseValue) : void;
 
 	public function serializeFormData() : array{
 		return [
