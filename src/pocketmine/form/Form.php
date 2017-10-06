@@ -31,11 +31,26 @@ abstract class Form implements \JsonSerializable{
 	const TYPE_LIST = "form";
 	const TYPE_CUSTOM_FORM = "custom_form";
 
+	/** @var string */
+	protected $title;
+
+	public function __construct(string $title){
+		$this->title = $title;
+	}
+
 	/**
 	 * Returns the type used to show this form to clients
 	 * @return string
 	 */
 	abstract public function getType() : string;
+
+	/**
+	 * Returns the text shown on the form title-bar.
+	 * @return string
+	 */
+	public function getTitle() : string{
+		return $this->title;
+	}
 
 	/**
 	 * Handles a modal form response from a player
@@ -52,7 +67,8 @@ abstract class Form implements \JsonSerializable{
 	 */
 	final public function jsonSerialize() : array{
 		$jsonBase = [
-			"type" => $this->getType()
+			"type" => $this->getType(),
+			"title" => $this->getTitle()
 		];
 
 		return array_merge($jsonBase, $this->serializeFormData());

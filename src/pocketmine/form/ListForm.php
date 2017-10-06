@@ -28,8 +28,6 @@ use pocketmine\Player;
 abstract class ListForm extends Form{
 
 	/** @var string */
-	protected $title;
-	/** @var string */
 	protected $content;
 	/** @var Button[] */
 	private $buttons;
@@ -40,7 +38,7 @@ abstract class ListForm extends Form{
 	 * @param Button[] $buttons
 	 */
 	public function __construct(string $title, string $text, Button ...$buttons){
-		$this->title = $title;
+		parent::__construct($title);
 		$this->content = $text;
 		$this->buttons = $buttons;
 	}
@@ -85,7 +83,6 @@ abstract class ListForm extends Form{
 
 	public function serializeFormData() : array{
 		return [
-			"title" => $this->title,
 			"content" => $this->content,
 			"buttons" => $this->buttons
 		];

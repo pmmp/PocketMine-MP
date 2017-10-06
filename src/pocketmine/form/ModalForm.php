@@ -31,8 +31,6 @@ use pocketmine\Player;
 abstract class ModalForm extends Form{
 
 	/** @var string */
-	private $title;
-	/** @var string */
 	private $content;
 	/** @var string */
 	private $button1;
@@ -46,7 +44,7 @@ abstract class ModalForm extends Form{
 	 * @param string $noButtonText Text to show on the "No" button. Defaults to client-translated "No" string.
 	 */
 	public function __construct(string $title, string $text, string $yesButtonText = "gui.yes", string $noButtonText = "gui.no"){
-		$this->title = $title;
+		parent::__construct($title);
 		$this->content = $text;
 		$this->button1 = $yesButtonText;
 		$this->button2 = $noButtonText;
@@ -83,7 +81,6 @@ abstract class ModalForm extends Form{
 
 	public function serializeFormData() : array{
 		return [
-			"title" => $this->title,
 			"content" => $this->content,
 			"button1" => $this->button1,
 			"button2" => $this->button2
