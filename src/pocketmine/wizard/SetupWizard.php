@@ -92,7 +92,7 @@ class SetupWizard{
 	}
 
 	private function showLicense() : bool{
-		$this->message($this->lang->get("welcome_to_pocketmine"));
+		$this->message(str_replace('\n', PHP_EOL, $this->lang->get("welcome_to_pocketmine")));
 		echo <<<LICENSE
 
   This program is free software: you can redistribute it and/or modify
