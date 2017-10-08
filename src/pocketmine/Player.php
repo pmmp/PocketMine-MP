@@ -2338,7 +2338,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$type = $packet->trData->actionType;
 				switch($type){
 					case InventoryTransactionPacket::USE_ITEM_ACTION_CLICK_BLOCK:
-						$this->setGenericFlag(self::DATA_FLAG_ACTION, false);
+						$this->setUsingItem(false);
 
 						if(!$this->canInteract($blockVector->add(0.5, 0.5, 0.5), 13) or $this->isSpectator()){
 						}elseif($this->isCreative()){
@@ -2441,8 +2441,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							$this->inventory->setItemInHand($item);
 						}
 
-						$this->setGenericFlag(self::DATA_FLAG_ACTION, true);
-						$this->startAction = $this->server->getTick();
+						$this->setUsingItem(true);
 
 						return true;
 					default:
@@ -2614,7 +2613,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->inventory->equipItem($packet->hotbarSlot);
 
-		$this->setGenericFlag(self::DATA_FLAG_ACTION, false);
+		$this->setUsingItem(false);
 
 		return true;
 	}
@@ -2824,8 +2823,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				return false;
 		}
 
-		$this->startAction = -1;
-		$this->setGenericFlag(self::DATA_FLAG_ACTION, false);
+		$this->setUsingItem(false);
 
 		return true;
 	}
@@ -2868,7 +2866,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->level->dropItem($this->add(0, 1.3, 0), $item, $motion, 40);
 
-		$this->setGenericFlag(self::DATA_FLAG_ACTION, false);
+		$this->setUsingItem(false);
 
 		return true;
 	}
