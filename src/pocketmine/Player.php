@@ -952,14 +952,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected function doFirstSpawn(){
 		$this->spawned = true;
 
-		$this->sendSettings();
-		$this->sendPotionEffects($this);
-
-		$this->sendData($this);
-		$this->inventory->sendContents($this);
-		$this->inventory->sendArmorContents($this);
-		$this->inventory->sendHeldItem($this);
-
 		$this->sendPlayStatus(PlayStatusPacket::PLAYER_SPAWN);
 
 		if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
@@ -2015,8 +2007,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$this->sendCommandData();
+		$this->sendSettings();
+		$this->sendPotionEffects($this);
+		$this->sendData($this);
 
+		$this->inventory->sendContents($this);
+		$this->inventory->sendArmorContents($this);
 		$this->inventory->sendCreativeContents();
+		$this->inventory->sendHeldItem($this);
 
 		$this->server->addOnlinePlayer($this);
 		$this->server->onPlayerCompleteLoginSequence($this);
