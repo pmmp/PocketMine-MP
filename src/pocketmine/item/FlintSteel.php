@@ -41,14 +41,7 @@ class FlintSteel extends Tool{
 			$level->setBlock($block, BlockFactory::get(Block::FIRE), true);
 			$level->broadcastLevelSoundEvent($block->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_IGNITE);
 
-			if(($player->gamemode & 0x01) === 0 and $this->useOn($block)){
-				if($this->getDamage() >= $this->getMaxDurability()){
-					$player->getInventory()->setItemInHand(Item::get(Item::AIR, 0, 0));
-				}else{
-					$this->meta++;
-					$player->getInventory()->setItemInHand($this);
-				}
-			}
+			$this->applyDamage(1);
 
 			return true;
 		}

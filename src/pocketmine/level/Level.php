@@ -1692,9 +1692,6 @@ class Level implements ChunkManager, Metadatable{
 
 		if($item !== null){
 			$item->useOn($target);
-			if($item->isTool() and $item->getDamage() >= $item->getMaxDurability()){
-				$item = ItemFactory::get(Item::AIR, 0, 0);
-			}
 		}
 
 		if($player === null or $player->isSurvival()){
@@ -1769,11 +1766,7 @@ class Level implements ChunkManager, Metadatable{
 				}
 
 				if(!$player->isSneaking() and $item->onActivate($this, $player, $blockReplace, $blockClicked, $face, $facePos)){
-					if($item->getCount() <= 0){
-						$item = ItemFactory::get(Item::AIR, 0, 0);
-
-						return true;
-					}
+					return true;
 				}
 			}else{
 				return false;
