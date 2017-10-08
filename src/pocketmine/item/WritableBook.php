@@ -90,7 +90,7 @@ class WritableBook extends Item{
 		if($pageId < 0){
 			throw new \InvalidArgumentException("Page number \"$pageId\" is out of range");
 		}
-		$namedTag = $this->getCorrectedNamedTag();
+		$namedTag = $this->getNamedTag();
 
 		if(!isset($namedTag->pages) or !($namedTag->pages instanceof ListTag)){
 			$namedTag->pages = new ListTag("pages", []);
@@ -137,7 +137,7 @@ class WritableBook extends Item{
 	 * @return bool indicating success
 	 */
 	public function insertPage(int $pageId, string $pageText = "") : bool{
-		$namedTag = $this->getCorrectedNamedTag();
+		$namedTag = $this->getNamedTag();
 		if(!isset($namedTag->pages) or !($namedTag->pages instanceof ListTag)){
 			$namedTag->pages = new ListTag("pages", []);
 		}
@@ -167,13 +167,6 @@ class WritableBook extends Item{
 		$this->setPageText($pageId2, $pageContents1);
 
 		return true;
-	}
-
-	/**
-	 * @return CompoundTag
-	 */
-	protected function getCorrectedNamedTag() : CompoundTag{
-		return $this->getNamedTag() ?? new CompoundTag();
 	}
 
 	public function getMaxStackSize() : int{
@@ -216,7 +209,7 @@ class WritableBook extends Item{
 	 * @return CompoundTag[]
 	 */
 	public function getPages() : array{
-		$namedTag = $this->getCorrectedNamedTag();
+		$namedTag = $this->getNamedTag();
 		if(!isset($namedTag->pages)){
 			return [];
 		}

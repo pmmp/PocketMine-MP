@@ -246,19 +246,12 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return bool
 	 */
 	public function hasCustomBlockData() : bool{
-		if(!$this->hasCompoundTag()){
-			return false;
-		}
-
 		$tag = $this->getNamedTag();
 
 		return isset($tag->BlockEntityTag) and $tag->BlockEntityTag instanceof CompoundTag;
 	}
 
 	public function clearCustomBlockData(){
-		if(!$this->hasCompoundTag()){
-			return $this;
-		}
 		$tag = $this->getNamedTag();
 
 		if(isset($tag->BlockEntityTag) and $tag->BlockEntityTag instanceof CompoundTag){
@@ -278,12 +271,7 @@ class Item implements ItemIds, \JsonSerializable{
 		$tags = clone $compound;
 		$tags->setName("BlockEntityTag");
 
-		if(!$this->hasCompoundTag()){
-			$tag = new CompoundTag("", []);
-		}else{
-			$tag = $this->getNamedTag();
-		}
-
+		$tag = $this->getNamedTag();
 		$tag->BlockEntityTag = $tags;
 		$this->setNamedTag($tag);
 
@@ -294,10 +282,6 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return CompoundTag|null
 	 */
 	public function getCustomBlockData(){
-		if(!$this->hasCompoundTag()){
-			return null;
-		}
-
 		$tag = $this->getNamedTag();
 		if(isset($tag->BlockEntityTag) and $tag->BlockEntityTag instanceof CompoundTag){
 			return $tag->BlockEntityTag;
@@ -310,10 +294,6 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return bool
 	 */
 	public function hasEnchantments() : bool{
-		if(!$this->hasCompoundTag()){
-			return false;
-		}
-
 		$tag = $this->getNamedTag();
 
 		return isset($tag->ench) and $tag->ench instanceof ListTag;
@@ -397,11 +377,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @param Enchantment $ench
 	 */
 	public function addEnchantment(Enchantment $ench){
-		if(!$this->hasCompoundTag()){
-			$tag = new CompoundTag("", []);
-		}else{
-			$tag = $this->getNamedTag();
-		}
+		$tag = $this->getNamedTag();
 
 		$found = false;
 
@@ -454,10 +430,6 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return bool
 	 */
 	public function hasCustomName() : bool{
-		if(!$this->hasCompoundTag()){
-			return false;
-		}
-
 		$tag = $this->getNamedTag();
 		if(isset($tag->display)){
 			$tag = $tag->display;
@@ -473,10 +445,6 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return string
 	 */
 	public function getCustomName() : string{
-		if(!$this->hasCompoundTag()){
-			return "";
-		}
-
 		$tag = $this->getNamedTag();
 		if(isset($tag->display)){
 			$tag = $tag->display;
@@ -498,12 +466,7 @@ class Item implements ItemIds, \JsonSerializable{
 			$this->clearCustomName();
 		}
 
-		if(!$this->hasCompoundTag()){
-			$tag = new CompoundTag("", []);
-		}else{
-			$tag = $this->getNamedTag();
-		}
-
+		$tag = $this->getNamedTag();
 		if(isset($tag->display) and $tag->display instanceof CompoundTag){
 			$tag->display->Name = new StringTag("Name", $name);
 		}else{
@@ -521,9 +484,6 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return $this
 	 */
 	public function clearCustomName(){
-		if(!$this->hasCompoundTag()){
-			return $this;
-		}
 		$tag = $this->getNamedTag();
 
 		if(isset($tag->display) and $tag->display instanceof CompoundTag){
@@ -559,7 +519,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return $this
 	 */
 	public function setLore(array $lines){
-		$tag = $this->getNamedTag() ?? new CompoundTag("", []);
+		$tag = $this->getNamedTag();
 		if(!isset($tag->display)){
 			$tag->display = new CompoundTag("display", []);
 		}
@@ -580,24 +540,21 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return Tag|null
 	 */
 	public function getNamedTagEntry($name){
-		$tag = $this->getNamedTag();
-		if($tag !== null){
-			return $tag->{$name} ?? null;
-		}
-
-		return null;
+		return $this->getNamedTag()->{$name} ?? null;
 	}
 
 	/**
-	 * Returns a tree of Tag objects representing the Item's NBT
-	 * @return null|CompoundTag
+	 * Returns a tree of Tag objects representing the Item's NBT. If the item does not have any NBT, an empty CompoundTag
+	 * object is returned to allow the caller to manipulate and apply back to the item.
+	 *
+	 * @return CompoundTag
 	 */
-	public function getNamedTag(){
-		if(!$this->hasCompoundTag()){
-			return null;
+	public function getNamedTag() : CompoundTag{
+		if(!$this->hasCompoundTag() and $this->cachedNBT === null){
+			$this->cachedNBT = new CompoundTag();
 		}
 
-		return $this->cachedNBT ?? ($this->cachedNBT = $this->cachedNBT = self::parseCompoundTag($this->tags));
+		return $this->cachedNBT ?? ($this->cachedNBT = self::parseCompoundTag($this->tags));
 	}
 
 	/**
