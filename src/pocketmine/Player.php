@@ -314,12 +314,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * This might disappear in the future.
-	 * Please use getUniqueId() instead (IP + clientId + name combo, in the future it'll change to real UUID for online
-	 * auth)
-	 *
+	 * This might disappear in the future. Please use getUniqueId() instead.
 	 * @deprecated
 	 *
+	 * @return int
 	 */
 	public function getClientId(){
 		return $this->randomClientId;
