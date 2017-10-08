@@ -1892,7 +1892,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->namedtag->playerGameType = new IntTag("playerGameType", $this->gamemode);
 		}
 
-		$this->allowFlight = (bool) ($this->gamemode & 0x01);
+		$this->allowFlight = $this->isCreative();
 
 		if(($level = $this->server->getLevelByName((string) $this->namedtag["Level"])) === null){
 			$this->setLevel($this->server->getDefaultLevel());
