@@ -595,10 +595,9 @@ class Item implements ItemIds, \JsonSerializable{
 	public function getNamedTag(){
 		if(!$this->hasCompoundTag()){
 			return null;
-		}elseif($this->cachedNBT !== null){
-			return $this->cachedNBT;
 		}
-		return $this->cachedNBT = self::parseCompoundTag($this->tags);
+
+		return $this->cachedNBT ?? ($this->cachedNBT = $this->cachedNBT = self::parseCompoundTag($this->tags));
 	}
 
 	/**
