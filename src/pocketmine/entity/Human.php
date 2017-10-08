@@ -470,8 +470,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->namedtag->foodSaturationLevel = new FloatTag("foodSaturationLevel", $this->getSaturation());
 		$this->namedtag->foodTickTimer = new IntTag("foodTickTimer", $this->foodTickTimer);
 
-		$this->namedtag->Inventory = new ListTag("Inventory", []);
-		$this->namedtag->Inventory->setTagType(NBT::TAG_Compound);
+		$this->namedtag->Inventory = new ListTag("Inventory", [], NBT::TAG_Compound);
 		if($this->inventory !== null){
 			//Normal inventory
 			$slotCount = $this->inventory->getSize() + $this->inventory->getHotbarSize();

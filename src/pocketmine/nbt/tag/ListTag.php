@@ -29,16 +29,18 @@ use pocketmine\nbt\NBT;
 
 class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 
-	private $tagType = NBT::TAG_End;
+	private $tagType;
 
 	/**
 	 * ListTag constructor.
 	 *
 	 * @param string     $name
 	 * @param NamedTag[] $value
+	 * @param int        $tagType
 	 */
-	public function __construct(string $name = "", array $value = []){
+	public function __construct(string $name = "", array $value = [], int $tagType = NBT::TAG_End){
 		parent::__construct($name, $value);
+		$this->tagType = $tagType;
 	}
 
 	/**

@@ -376,8 +376,7 @@ class Item implements ItemIds, \JsonSerializable{
 		$found = false;
 
 		if(!isset($tag->ench)){
-			$tag->ench = new ListTag("ench", []);
-			$tag->ench->setTagType(NBT::TAG_Compound);
+			$tag->ench = new ListTag("ench", [], NBT::TAG_Compound);
 		}else{
 			foreach($tag->ench as $k => $entry){
 				if($entry["id"] === $ench->getId()){
@@ -517,8 +516,7 @@ class Item implements ItemIds, \JsonSerializable{
 		if(!isset($tag->display)){
 			$tag->display = new CompoundTag("display", []);
 		}
-		$tag->display->Lore = new ListTag("Lore");
-		$tag->display->Lore->setTagType(NBT::TAG_String);
+		$tag->display->Lore = new ListTag("Lore", [], NBT::TAG_String);
 		$count = 0;
 		foreach($lines as $line){
 			$tag->display->Lore[$count++] = new StringTag("", $line);

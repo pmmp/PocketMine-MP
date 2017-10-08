@@ -95,8 +95,7 @@ class McRegion extends BaseLevelProvider{
 			}
 		}
 
-		$nbt->Entities = new ListTag("Entities", $entities);
-		$nbt->Entities->setTagType(NBT::TAG_Compound);
+		$nbt->Entities = new ListTag("Entities", $entities, NBT::TAG_Compound);
 
 		$tiles = [];
 		foreach($chunk->getTiles() as $tile){
@@ -104,8 +103,7 @@ class McRegion extends BaseLevelProvider{
 			$tiles[] = $tile->namedtag;
 		}
 
-		$nbt->TileEntities = new ListTag("TileEntities", $tiles);
-		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
+		$nbt->TileEntities = new ListTag("TileEntities", $tiles, NBT::TAG_Compound);
 
 		$writer = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setName("Level");
