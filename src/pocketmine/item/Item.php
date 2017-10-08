@@ -144,13 +144,7 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	public static function isCreativeItem(Item $item) : bool{
-		foreach(Item::$creative as $i => $d){
-			if($item->equals($d, !$item->isTool())){
-				return true;
-			}
-		}
-
-		return false;
+		return Item::getCreativeItemIndex($item) !== -1;
 	}
 
 	/**
