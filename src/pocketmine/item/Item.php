@@ -36,6 +36,7 @@ use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\NamedTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
@@ -533,6 +534,18 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	public function getNamedTagEntry($name){
 		return $this->getNamedTag()->{$name} ?? null;
+	}
+
+	public function setNamedTagEntry(NamedTag $new) : void{
+		$tag = $this->getNamedTag();
+		$tag->{$new->getName()} = $new;
+		$this->setNamedTag($tag);
+	}
+
+	public function removeNamedTagEntry(string $name) : void{
+		$tag = $this->getNamedTag();
+		unset($tag->{$name});
+		$this->setNamedTag($tag);
 	}
 
 	/**
