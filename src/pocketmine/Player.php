@@ -368,6 +368,27 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return $this->xuid;
 	}
 
+	/**
+	 * Returns the player's UUID. This should be preferred over their Xbox user ID (XUID) because UUID is a standard
+	 * format which will never change, and all players will have one regardless of whether they are logged into Xbox
+	 * Live.
+	 *
+	 * The UUID is comprised of:
+	 * - when logged into XBL: a hash of their XUID (and as such will not change for the lifetime of the XBL account)
+	 * - when NOT logged into XBL: a hash of their name + clientID + secret device ID.
+	 *
+	 * WARNING: UUIDs of players **not logged into Xbox Live** CAN BE FAKED and SHOULD NOT be trusted!
+	 *
+	 * (In the olden days this method used to return a fake UUID computed by the server, which was used by plugins such
+	 * as SimpleAuth for authentication. This is NOT SAFE anymore as this UUID is now what was given by the client, NOT
+	 * a server-computed UUID.)
+	 *
+	 * @return UUID|null
+	 */
+	public function getUniqueId(){
+		return parent::getUniqueId();
+	}
+
 	public function getPlayer(){
 		return $this;
 	}
