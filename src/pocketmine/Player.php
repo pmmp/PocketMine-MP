@@ -264,7 +264,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $loadQueue = [];
 	protected $nextChunkOrderRun = 5;
 
-	/** @var Player[] */
+	/** @var bool[] map: raw UUID (string) => bool */
 	protected $hiddenPlayers = [];
 
 	/** @var Vector3|null */
@@ -503,7 +503,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($player === $this){
 			return;
 		}
-		$this->hiddenPlayers[$player->getRawUniqueId()] = $player;
+		$this->hiddenPlayers[$player->getRawUniqueId()] = true;
 		$player->despawnFrom($this);
 	}
 
