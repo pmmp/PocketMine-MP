@@ -209,7 +209,7 @@ class Bed extends Transparent{
 	public function onBreak(Item $item, Player $player = null) : bool{
 		$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true, true);
 		if(($other = $this->getOtherHalf()) !== null){
-			$this->getLevel()->useBreakOn($other, $item, $player, $player !== null); //make sure tiles get removed
+			$this->getLevel()->useBreakOn($other, $item, null, $player !== null); //make sure tiles get removed
 		}
 
 		return true;
