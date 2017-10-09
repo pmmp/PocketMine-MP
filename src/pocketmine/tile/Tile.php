@@ -33,6 +33,7 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\Server;
 
 abstract class Tile extends Position{
 
@@ -47,19 +48,29 @@ abstract class Tile extends Position{
 	const SKULL = "Skull";
 	const BED = "Bed";
 
+	/** @var int */
 	public static $tileCount = 1;
 
+	/** @var string[] classes that extend Tile */
 	private static $knownTiles = [];
+	/** @var string[] */
 	private static $shortNames = [];
 
 	/** @var Chunk */
 	public $chunk;
+	/** @var string */
 	public $name;
+	/** @var int */
 	public $id;
+	/** @var bool */
 	public $closed = false;
+	/** @var CompoundTag */
 	public $namedtag;
+	/** @var float */
 	protected $lastUpdate;
+	/** @var Server */
 	protected $server;
+	/** @var TimingsHandler */
 	protected $timings;
 
 	public static function init(){
