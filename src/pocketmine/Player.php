@@ -2337,7 +2337,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						$this->level->sendBlocks([$this], $blocks, UpdateBlockPacket::FLAG_ALL_PRIORITY);
 
 						foreach($blocks as $b){
-							$tile = $this->level->getTile($blockVector);
+							$tile = $this->level->getTile($b);
 							if($tile instanceof Spawnable){
 								$tile->spawnTo($this);
 							}
