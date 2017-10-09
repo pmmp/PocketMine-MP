@@ -427,7 +427,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return $this->allowMovementCheats;
 	}
 
-	public function setAllowMovementCheats(bool $value = false){
+	public function setAllowMovementCheats(bool $value = true){
 		$this->allowMovementCheats = $value;
 	}
 
@@ -435,7 +435,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return $this->allowInstaBreak;
 	}
 
-	public function setAllowInstaBreak(bool $value = false){
+	public function setAllowInstaBreak(bool $value = true){
 		$this->allowInstaBreak = $value;
 	}
 
