@@ -67,10 +67,10 @@ class Skull extends Flowable{
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		if($face !== Vector3::SIDE_DOWN){
 			$this->meta = $face;
-			if($face === Vector3::SIDE_UP){
+
+			$rot = 0;
+			if($face === Vector3::SIDE_UP and $player !== null){
 				$rot = floor(($player->yaw * 16 / 360) + 0.5) & 0x0F;
-			}else{
-				$rot = $face;
 			}
 			$this->getLevel()->setBlock($blockReplace, $this, true);
 			$nbt = new CompoundTag("", [
