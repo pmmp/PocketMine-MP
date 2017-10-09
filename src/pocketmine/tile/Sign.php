@@ -65,8 +65,8 @@ class Sign extends Spawnable{
 	}
 
 	/**
-	 * Changes contents of the specific lines to the string provided. 
-	 * Leaves contents of the specifc lines as is if null is provided.
+	 * Changes contents of the specific lines to the string provided.
+	 * Leaves contents of the specific lines as is if null is provided.
 	 *
 	 * @param null|string $line1
 	 * @param null|string $line2
