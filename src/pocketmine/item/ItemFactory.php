@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\nbt\tag\CompoundTag;
 
@@ -208,11 +209,11 @@ class ItemFactory{
 			//TODO: COOKED_MUTTON
 			//TODO: ARMOR_STAND
 			//TODO: END_CRYSTAL
-			//TODO: SPRUCE_DOOR
-			//TODO: BIRCH_DOOR
-			//TODO: JUNGLE_DOOR
-			//TODO: ACACIA_DOOR
-			//TODO: DARK_OAK_DOOR
+			self::registerItem(new ItemBlock(Block::SPRUCE_DOOR_BLOCK, 0, Item::SPRUCE_DOOR));
+			self::registerItem(new ItemBlock(Block::BIRCH_DOOR_BLOCK, 0, Item::BIRCH_DOOR));
+			self::registerItem(new ItemBlock(Block::JUNGLE_DOOR_BLOCK, 0, Item::JUNGLE_DOOR));
+			self::registerItem(new ItemBlock(Block::ACACIA_DOOR_BLOCK, 0, Item::ACACIA_DOOR));
+			self::registerItem(new ItemBlock(Block::DARK_OAK_DOOR_BLOCK, 0, Item::DARK_OAK_DOOR));
 			//TODO: CHORUS_FRUIT
 			self::registerItem(new Item(Item::CHORUS_FRUIT_POPPED, 0, "Popped Chorus Fruit"));
 
@@ -300,7 +301,7 @@ class ItemFactory{
 			if($id < 256){
 				/* Blocks must have a damage value 0-15, but items can have damage value -1 to indicate that they are
 				 * crafting ingredients with any-damage. */
-				$item = new ItemBlock(BlockFactory::get($id, $meta !== -1 ? $meta & 0xf : 0), $meta);
+				$item = new ItemBlock($id, $meta);
 			}else{
 				/** @var Item|null $listed */
 				$listed = self::$list[$id];
