@@ -101,7 +101,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handleClientToServerHandshake(ClientToServerHandshakePacket $packet) : bool{
-		return $this->player->handleClientToServerHandshake($packet);
+		return false; //TODO
 	}
 
 	public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet) : bool{
@@ -185,7 +185,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handlePlayerInput(PlayerInputPacket $packet) : bool{
-		return $this->player->handlePlayerInput($packet);
+		return false; //TODO
 	}
 
 	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
@@ -193,11 +193,11 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handleSpawnExperienceOrb(SpawnExperienceOrbPacket $packet) : bool{
-		return $this->player->handleSpawnExperienceOrb($packet);
+		return false; //TODO
 	}
 
 	public function handleMapInfoRequest(MapInfoRequestPacket $packet) : bool{
-		return $this->player->handleMapInfoRequest($packet);
+		return false; //TODO
 	}
 
 	public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet) : bool{
@@ -209,11 +209,11 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handleBossEvent(BossEventPacket $packet) : bool{
-		return $this->player->handleBossEvent($packet);
+		return false; //TODO
 	}
 
 	public function handleShowCredits(ShowCreditsPacket $packet) : bool{
-		return $this->player->handleShowCredits($packet);
+		return false; //TODO: handle resume
 	}
 
 	public function handleCommandRequest(CommandRequestPacket $packet) : bool{
@@ -221,7 +221,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handleCommandBlockUpdate(CommandBlockUpdatePacket $packet) : bool{
-		return $this->player->handleCommandBlockUpdate($packet);
+		return false; //TODO
 	}
 
 	public function handleResourcePackChunkRequest(ResourcePackChunkRequestPacket $packet) : bool{
