@@ -2198,6 +2198,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return bool
 	 */
 	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
+		if(!$this->spawned or !$this->isAlive()){
+			return false;
+		}
+
 		if($this->isSpectator()){
 			$this->sendAllInventories();
 			return true;
@@ -2305,10 +2309,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 						return true;
 					case InventoryTransactionPacket::USE_ITEM_ACTION_BREAK_BLOCK:
-						if($this->spawned === false or !$this->isAlive()){
-							return true;
-						}
-
 						$this->resetCraftingGridType();
 
 						$item = $this->inventory->getItemInHand();
@@ -2394,7 +2394,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							$cancelled = true;
 						}
 
-						if($target instanceof Entity and $this->getGamemode() !== Player::VIEW and $this->isAlive() and $target->isAlive()){
+						if($target->isAlive()){
 							if($target instanceof DroppedItem or $target instanceof Arrow){
 								$this->kick("Attempting to attack an invalid entity");
 								$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidEntity", [$this->getName()]));
