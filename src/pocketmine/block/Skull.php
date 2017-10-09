@@ -49,7 +49,7 @@ class Skull extends Flowable{
 	}
 
 	public function getName() : string{
-		return "Mob Head Block";
+		return "Mob Head";
 	}
 
 	protected function recalculateBoundingBox(){

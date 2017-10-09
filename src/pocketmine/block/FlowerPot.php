@@ -48,7 +48,7 @@ class FlowerPot extends Flowable{
 	}
 
 	public function getName() : string{
-		return "Flower Pot Block";
+		return "Flower Pot";
 	}
 
 	protected function recalculateBoundingBox(){
