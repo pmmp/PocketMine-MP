@@ -1585,7 +1585,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}
 
 			if($this->motionY > 0){
-				$this->startAirTicks = (-(log($this->gravity / ($this->gravity + $this->drag * $this->motionY))) / $this->drag) * 2 + 5;
+				$this->startAirTicks = (-log($this->gravity / ($this->gravity + $this->drag * $this->motionY)) / $this->drag) * 2 + 5;
 			}
 
 			return true;
@@ -2398,7 +2398,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							$heldItem = $this->inventory->getItemInHand();
 
 							$damage = [
-								EntityDamageEvent::MODIFIER_BASE => $heldItem->getAttackPoints(),
+								EntityDamageEvent::MODIFIER_BASE => $heldItem->getAttackPoints()
 							];
 
 							if(!$this->canInteract($target, 8)){
