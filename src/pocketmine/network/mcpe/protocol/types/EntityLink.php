@@ -21,30 +21,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol;
+namespace pocketmine\network\mcpe\protocol\types;
 
-#include <rules/DataPacket.h>
+class EntityLink{
 
-
-use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\protocol\types\EntityLink;
-
-class SetEntityLinkPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::SET_ENTITY_LINK_PACKET;
-
-	/** @var EntityLink */
-	public $link;
-
-	protected function decodePayload(){
-		$this->link = $this->getEntityLink();
-	}
-
-	protected function encodePayload(){
-		$this->putEntityLink($this->link);
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleSetEntityLink($this);
-	}
+	/** @var int */
+	public $fromEntityUniqueId;
+	/** @var int */
+	public $toEntityUniqueId;
+	/** @var int */
+	public $type;
+	/** @var int */
+	public $byte2;
 
 }

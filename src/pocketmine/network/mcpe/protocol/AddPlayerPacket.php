@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\utils\UUID;
 
 class AddPlayerPacket extends DataPacket{
@@ -65,6 +66,7 @@ class AddPlayerPacket extends DataPacket{
 
 	public $long1 = 0;
 
+	/** @var EntityLink[] */
 	public $links = [];
 
 	protected function decodePayload(){
