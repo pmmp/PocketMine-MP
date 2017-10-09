@@ -1665,7 +1665,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		$above = $this->getBlock(new Vector3($target->x, $target->y + 1, $target->z));
-		if($above->getId() === Item::FIRE){
+		if($above->getId() === Block::FIRE){ //TODO: this should be done in Fire's onUpdate(), not with this hack
 			$this->setBlock($above, BlockFactory::get(Block::AIR), true);
 		}
 
@@ -1730,7 +1730,7 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		if($blockClicked->getId() === Item::AIR){
+		if($blockClicked->getId() === Block::AIR){
 			return false;
 		}
 
