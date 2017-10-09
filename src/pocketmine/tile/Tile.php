@@ -56,16 +56,11 @@ abstract class Tile extends Position{
 	public $chunk;
 	public $name;
 	public $id;
-	public $attach;
-	public $metadata;
 	public $closed = false;
 	public $namedtag;
 	protected $lastUpdate;
 	protected $server;
 	protected $timings;
-
-	/** @var TimingsHandler */
-	public $tickTimer;
 
 	public static function init(){
 		self::registerTile(Bed::class);
@@ -137,7 +132,6 @@ abstract class Tile extends Position{
 
 		$this->chunk->addTile($this);
 		$this->getLevel()->addTile($this);
-		$this->tickTimer = Timings::getTileEntityTimings($this);
 	}
 
 	public function getId(){
