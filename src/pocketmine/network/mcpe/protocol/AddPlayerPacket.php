@@ -48,10 +48,10 @@ class AddPlayerPacket extends DataPacket{
 	public $motion;
 	/** @var float */
 	public $pitch = 0.0;
-	/** @var float|null */
-	public $headYaw = null; //TODO
 	/** @var float */
 	public $yaw = 0.0;
+	/** @var float|null */
+	public $headYaw = null; //TODO
 	/** @var Item */
 	public $item;
 	/** @var array */
@@ -77,8 +77,8 @@ class AddPlayerPacket extends DataPacket{
 		$this->position = $this->getVector3Obj();
 		$this->motion = $this->getVector3Obj();
 		$this->pitch = $this->getLFloat();
-		$this->headYaw = $this->getLFloat();
 		$this->yaw = $this->getLFloat();
+		$this->headYaw = $this->getLFloat();
 		$this->item = $this->getSlot();
 		$this->metadata = $this->getEntityMetadata();
 
@@ -104,8 +104,8 @@ class AddPlayerPacket extends DataPacket{
 		$this->putVector3Obj($this->position);
 		$this->putVector3ObjNullable($this->motion);
 		$this->putLFloat($this->pitch);
-		$this->putLFloat($this->headYaw ?? $this->yaw);
 		$this->putLFloat($this->yaw);
+		$this->putLFloat($this->headYaw ?? $this->yaw);
 		$this->putSlot($this->item);
 		$this->putEntityMetadata($this->metadata);
 
