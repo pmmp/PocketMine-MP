@@ -3631,8 +3631,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk = new MovePlayerPacket();
 		$pk->entityRuntimeId = $this->getId();
 		$pk->position = $this->getOffsetPosition($pos);
-		$pk->bodyYaw = $yaw;
 		$pk->pitch = $pitch;
+		$pk->headYaw = $yaw;
 		$pk->yaw = $yaw;
 		$pk->mode = $mode;
 

@@ -42,11 +42,11 @@ class MovePlayerPacket extends DataPacket{
 	/** @var Vector3 */
 	public $position;
 	/** @var float */
-	public $yaw;
-	/** @var float */
-	public $bodyYaw;
-	/** @var float */
 	public $pitch;
+	/** @var float */
+	public $headYaw;
+	/** @var float */
+	public $yaw;
 	/** @var int */
 	public $mode = self::MODE_NORMAL;
 	/** @var bool */
@@ -62,8 +62,8 @@ class MovePlayerPacket extends DataPacket{
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->position = $this->getVector3Obj();
 		$this->pitch = $this->getLFloat();
+		$this->headYaw = $this->getLFloat();
 		$this->yaw = $this->getLFloat();
-		$this->bodyYaw = $this->getLFloat();
 		$this->mode = $this->getByte();
 		$this->onGround = $this->getBool();
 		$this->ridingEid = $this->getEntityRuntimeId();
@@ -77,8 +77,8 @@ class MovePlayerPacket extends DataPacket{
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putVector3Obj($this->position);
 		$this->putLFloat($this->pitch);
+		$this->putLFloat($this->headYaw); //TODO
 		$this->putLFloat($this->yaw);
-		$this->putLFloat($this->bodyYaw); //TODO
 		$this->putByte($this->mode);
 		$this->putBool($this->onGround);
 		$this->putEntityRuntimeId($this->ridingEid);
