@@ -54,7 +54,7 @@ class Cactus extends Transparent{
 		return "Cactus";
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 
 		return new AxisAlignedBB(
 			$this->x + 0.0625,
@@ -70,7 +70,7 @@ class Cactus extends Transparent{
 		return true;
 	}
 
-	public function onEntityCollide(Entity $entity){
+	public function onEntityCollide(Entity $entity) : void{
 		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_CONTACT, 1);
 		$entity->attack($ev);
 	}

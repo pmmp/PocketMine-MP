@@ -116,7 +116,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @param int $meta
 	 */
-	final public function setDamage(int $meta){
+	final public function setDamage(int $meta) : void{
 		if($meta < 0 or $meta > 0xf){
 			throw new \InvalidArgumentException("Block damage values must be 0-15, not $meta");
 		}
@@ -391,7 +391,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 
-	public function addVelocityToEntity(Entity $entity, Vector3 $vector){
+	public function addVelocityToEntity(Entity $entity, Vector3 $vector) : void{
 
 	}
 
@@ -400,7 +400,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @param Position $v
 	 */
-	final public function position(Position $v){
+	final public function position(Position $v) : void{
 		$this->x = (int) $v->x;
 		$this->y = (int) $v->y;
 		$this->z = (int) $v->z;
@@ -497,14 +497,14 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @param Entity $entity
 	 */
-	public function onEntityCollide(Entity $entity){
+	public function onEntityCollide(Entity $entity) : void{
 
 	}
 
 	/**
 	 * @return AxisAlignedBB|null
 	 */
-	public function getBoundingBox(){
+	public function getBoundingBox() : ?AxisAlignedBB{
 		if($this->boundingBox === null){
 			$this->boundingBox = $this->recalculateBoundingBox();
 		}
@@ -514,7 +514,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @return AxisAlignedBB|null
 	 */
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		return new AxisAlignedBB(
 			$this->x,
 			$this->y,
@@ -531,7 +531,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return MovingObjectPosition|null
 	 */
-	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2){
+	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2) : ?MovingObjectPosition{
 		$bb = $this->getBoundingBox();
 		if($bb === null){
 			return null;

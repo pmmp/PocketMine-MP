@@ -52,7 +52,7 @@ class Chest extends Transparent{
 		return Tool::TYPE_AXE;
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		return new AxisAlignedBB(
 			$this->x + 0.0625,
 			$this->y,

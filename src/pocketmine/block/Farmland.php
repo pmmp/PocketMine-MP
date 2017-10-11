@@ -53,7 +53,7 @@ class Farmland extends Transparent{
 		return true;
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		return new AxisAlignedBB(
 			$this->x,
 			$this->y,

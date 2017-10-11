@@ -56,7 +56,7 @@ class BlockFactory{
 	 *
 	 * @param bool $force
 	 */
-	public static function init(bool $force = false){
+	public static function init(bool $force = false) : void{
 		if(self::$list === null or $force){
 			self::$list = new \SplFixedArray(256);
 			self::$fullList = new \SplFixedArray(4096);
@@ -341,7 +341,7 @@ class BlockFactory{
 	 * @throws \RuntimeException if something attempted to override an already-registered block without specifying the
 	 * $override parameter.
 	 */
-	public static function registerBlock(Block $block, bool $override = false){
+	public static function registerBlock(Block $block, bool $override = false) : void{
 		$id = $block->getId();
 
 		if(!$override and self::isRegistered($id)){

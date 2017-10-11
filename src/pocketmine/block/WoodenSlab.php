@@ -55,7 +55,7 @@ class WoodenSlab extends Transparent{
 		return (($this->meta & 0x08) === 0x08 ? "Upper " : "") . ($names[$this->meta & 0x07] ?? "") . " Wooden Slab";
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 
 		if(($this->meta & 0x08) > 0){
 			return new AxisAlignedBB(

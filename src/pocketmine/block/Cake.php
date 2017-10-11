@@ -48,7 +48,7 @@ class Cake extends Transparent implements FoodSource{
 		return "Cake Block";
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 
 		$f = $this->getDamage() * 0.125; //1 slice width
 

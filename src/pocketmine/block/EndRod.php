@@ -61,7 +61,7 @@ class EndRod extends Flowable{
 		return 14;
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		$m = $this->meta & ~0x01;
 		$width = 0.375;
 

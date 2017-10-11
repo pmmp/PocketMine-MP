@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Sign as TileSign;
@@ -53,7 +54,7 @@ class SignPost extends Transparent{
 		return "Sign Post";
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		return null;
 	}
 

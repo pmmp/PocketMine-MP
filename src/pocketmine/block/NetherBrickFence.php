@@ -48,7 +48,7 @@ class NetherBrickFence extends Transparent{
 		return "Nether Brick Fence";
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		$width = 0.375;
 
 		return new AxisAlignedBB(

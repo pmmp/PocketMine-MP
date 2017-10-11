@@ -41,7 +41,7 @@ class FenceGate extends Transparent{
 	}
 
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 
 		if(($this->getDamage() & 0x04) > 0){
 			return null;

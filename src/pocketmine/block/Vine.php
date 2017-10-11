@@ -71,11 +71,11 @@ class Vine extends Transparent{
 		return true;
 	}
 
-	public function onEntityCollide(Entity $entity){
+	public function onEntityCollide(Entity $entity) : void{
 		$entity->resetFallDistance();
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 
 		$f1 = 1;
 		$f2 = 1;

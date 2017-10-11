@@ -44,7 +44,7 @@ class Water extends Liquid{
 		return 2;
 	}
 
-	public function onEntityCollide(Entity $entity){
+	public function onEntityCollide(Entity $entity) : void{
 		$entity->resetFallDistance();
 		if($entity->fireTicks > 0){
 			$entity->extinguish();

@@ -48,7 +48,7 @@ class Lava extends Liquid{
 		return "Lava";
 	}
 
-	public function onEntityCollide(Entity $entity){
+	public function onEntityCollide(Entity $entity) : void{
 		$entity->fallDistance *= 0.5;
 
 		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_LAVA, 4);

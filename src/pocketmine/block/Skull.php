@@ -47,7 +47,7 @@ class Skull extends Flowable{
 		return "Mob Head";
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		//TODO: different bounds depending on attached face (meta)
 		return new AxisAlignedBB(
 			$this->x + 0.25,

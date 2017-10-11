@@ -47,7 +47,7 @@ class FlowerPot extends Flowable{
 		return "Flower Pot";
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		return new AxisAlignedBB(
 			$this->x + 0.3125,
 			$this->y,

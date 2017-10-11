@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 
 abstract class Liquid extends Transparent{
@@ -171,7 +172,7 @@ abstract class Liquid extends Transparent{
 		return $vector->normalize();
 	}
 
-	public function addVelocityToEntity(Entity $entity, Vector3 $vector){
+	public function addVelocityToEntity(Entity $entity, Vector3 $vector) : void{
 		$flow = $this->getFlowVector();
 		$vector->x += $flow->x;
 		$vector->y += $flow->y;
@@ -444,7 +445,7 @@ abstract class Liquid extends Transparent{
 		}
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		return null;
 	}
 

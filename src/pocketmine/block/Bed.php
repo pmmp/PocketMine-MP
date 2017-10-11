@@ -54,7 +54,7 @@ class Bed extends Transparent{
 		return "Bed Block";
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		return new AxisAlignedBB(
 			$this->x,
 			$this->y,
@@ -125,7 +125,7 @@ class Bed extends Transparent{
 	/**
 	 * @return Bed|null
 	 */
-	public function getOtherHalf(){
+	public function getOtherHalf() : ?Bed{
 		$other = $this->getSide(self::getOtherHalfSide($this->meta, $this->isHeadPart()));
 		if($other instanceof Bed and $other->getId() === $this->getId() and $other->isHeadPart() !== $this->isHeadPart() and (($other->getDamage() & 0x03) === ($this->getDamage() & 0x03))){
 			return $other;
