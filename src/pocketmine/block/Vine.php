@@ -77,61 +77,63 @@ class Vine extends Transparent{
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 
-		$f1 = 1;
-		$f2 = 1;
-		$f3 = 1;
-		$f4 = 0;
-		$f5 = 0;
-		$f6 = 0;
+		$minX = 1;
+		$minY = 1;
+		$minZ = 1;
+		$maxX = 0;
+		$maxY = 0;
+		$maxZ = 0;
 
 		$flag = $this->meta > 0;
 
 		if(($this->meta & self::FLAG_WEST) > 0){
-			$f4 = max($f4, 0.0625);
-			$f1 = 0;
-			$f2 = 0;
-			$f5 = 1;
-			$f3 = 0;
-			$f6 = 1;
+			$maxX = max($maxX, 0.0625);
+			$minX = 0;
+			$minY = 0;
+			$maxY = 1;
+			$minZ = 0;
+			$maxZ = 1;
 			$flag = true;
 		}
 
 		if(($this->meta & self::FLAG_EAST) > 0){
-			$f1 = min($f1, 0.9375);
-			$f4 = 1;
-			$f2 = 0;
-			$f5 = 1;
-			$f3 = 0;
-			$f6 = 1;
+			$minX = min($minX, 0.9375);
+			$maxX = 1;
+			$minY = 0;
+			$maxY = 1;
+			$minZ = 0;
+			$maxZ = 1;
 			$flag = true;
 		}
 
 		if(($this->meta & self::FLAG_SOUTH) > 0){
-			$f3 = min($f3, 0.9375);
-			$f6 = 1;
-			$f1 = 0;
-			$f4 = 1;
-			$f2 = 0;
-			$f5 = 1;
+			$minZ = min($minZ, 0.9375);
+			$maxZ = 1;
+			$minX = 0;
+			$maxX = 1;
+			$minY = 0;
+			$maxY = 1;
 			$flag = true;
 		}
 
+		//TODO: Missing NORTH check
+
 		if(!$flag and $this->getSide(Vector3::SIDE_UP)->isSolid()){
-			$f2 = min($f2, 0.9375);
-			$f5 = 1;
-			$f1 = 0;
-			$f4 = 1;
-			$f3 = 0;
-			$f6 = 1;
+			$minY = min($minY, 0.9375);
+			$maxY = 1;
+			$minX = 0;
+			$maxX = 1;
+			$minZ = 0;
+			$maxZ = 1;
 		}
 
 		return new AxisAlignedBB(
-			$this->x + $f1,
-			$this->y + $f2,
-			$this->z + $f3,
-			$this->x + $f4,
-			$this->y + $f5,
-			$this->z + $f6
+			$this->x + $minX,
+			$this->y + $minY,
+			$this->z + $minZ,
+			$this->x + $maxX,
+			$this->y + $maxY,
+			$this->z + $maxZ
 		);
 	}
 
