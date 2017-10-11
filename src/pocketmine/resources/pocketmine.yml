@@ -1,7 +1,7 @@
 # Main configuration file for PocketMine-MP
 # These settings are the ones that cannot be included in server.properties
 # Some of these settings are safe, others can break your server if modified incorrectly
-# New settings/defaults won't appear automatically on this file when upgrading.
+# New settings/defaults won't appear automatically in this file when upgrading.
 
 settings:
  #Three-letter language code for server-side localization
@@ -53,7 +53,7 @@ memory:
 
  garbage-collection:
   #Period in ticks to fire the garbage collector manually (default 30 minutes), set to 0 to disable
-  #This only affect the main thread. Other threads should fire their own collections
+  #This only affects the main thread. Other threads should fire their own collections
   period: 36000
 
   #Fire asynchronous tasks to collect garbage from workers
