@@ -338,6 +338,9 @@ abstract class Entity extends Location implements Metadatable{
 	protected $isStatic = false;
 
 	/** @var bool */
+	private $savedWithChunk = true;
+
+	/** @var bool */
 	public $isCollided = false;
 	/** @var bool */
 	public $isCollidedHorizontally = false;
@@ -762,6 +765,24 @@ abstract class Entity extends Location implements Metadatable{
 		}
 
 		return false;
+	}
+
+	/**
+	 * Returns whether this entity will be saved when its chunk is unloaded.
+	 * @return bool
+	 */
+	public function canSaveWithChunk() : bool{
+		return $this->savedWithChunk;
+	}
+
+	/**
+	 * Sets whether this entity will be saved when its chunk is unloaded. This can be used to prevent the entity being
+	 * saved to disk.
+	 *
+	 * @param bool $value
+	 */
+	public function setCanSaveWithChunk(bool $value) : void{
+		$this->savedWithChunk = $value;
 	}
 
 	/**

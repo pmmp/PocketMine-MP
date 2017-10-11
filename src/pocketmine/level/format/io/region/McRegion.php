@@ -89,7 +89,7 @@ class McRegion extends BaseLevelProvider{
 		$entities = [];
 
 		foreach($chunk->getEntities() as $entity){
-			if(!($entity instanceof Player) and !$entity->isClosed()){
+			if($entity->canSaveWithChunk() and !$entity->isClosed()){
 				$entity->saveNBT();
 				$entities[] = $entity->namedtag;
 			}

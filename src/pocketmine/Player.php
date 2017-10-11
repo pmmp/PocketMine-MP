@@ -3415,6 +3415,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return [];
 	}
 
+	public function canSaveWithChunk() : bool{
+		return false;
+	}
+
+	public function setCanSaveWithChunk(bool $value) : void{
+		throw new \BadMethodCallException("Players can't be saved with chunks");
+	}
+
 	/**
 	 * Handles player data saving
 	 *
