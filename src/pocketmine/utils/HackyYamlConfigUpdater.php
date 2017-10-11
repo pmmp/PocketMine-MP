@@ -74,7 +74,7 @@ class HackyYamlConfigUpdater{
 
 		//Copy relevant config values from the old config to the new one
 		$outputConfig = new Config($this->outputConfigPath . ".temp", Config::YAML);
-		$this->copyConfigValues("", $inputConfig->getAll(), $outputConfig, ["worlds", "aliases"]);
+		$this->copyConfigValues("", $inputConfig->getAll(), $outputConfig, ["worlds" => true, "aliases" => true]);
 		$outputConfig->save();
 
 		$done = preg_replace_callback('/^(\s*)comment[0-9:]+ ([0-9]+)/ms', function($matches) use (&$savedComments){
@@ -96,14 +96,7 @@ class HackyYamlConfigUpdater{
 			if(is_array($v) and count($v) > 0){
 				$this->copyConfigValues($key . ".", $v, $newConfig, $dontRemove);
 			}else{
-				$s = strpos($key, '.');
-				if($s !== false){
-					$root = substr($key, 0, $s);
-				}else{
-					$root = $key;
-				}
-
-				if(isset($dontRemove[$root]) or ($v !== null and $newConfig->getNested($key) !== null)){
+				if($v !== null and (isset($dontRemove[explode('.', $key)[0]]) or $newConfig->getNested($key) !== null)){
 					$newConfig->setNested($key, $v);
 				}
 			}
