@@ -158,7 +158,7 @@ auto-updater:
     warn-console: true
     warn-ops: true
   #Can be development, alpha, beta or stable.
-  preferred-channel: beta
+  preferred-channel: stable
   #If using a development version, it will suggest changing the channel
   suggest-channels: true
   host: update.pmmp.io
