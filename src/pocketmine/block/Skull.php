@@ -27,13 +27,8 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\ByteTag;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
-use pocketmine\tile\Skull as SkullTile;
-use pocketmine\tile\Spawnable;
+use pocketmine\tile\Skull as TileSkull;
 use pocketmine\tile\Tile;
 
 class Skull extends Flowable{
@@ -65,35 +60,20 @@ class Skull extends Flowable{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
-		if($face !== Vector3::SIDE_DOWN){
-			$this->meta = $face;
-
-			$rot = 0;
-			if($face === Vector3::SIDE_UP and $player !== null){
-				$rot = floor(($player->yaw * 16 / 360) + 0.5) & 0x0F;
-			}
-			$this->getLevel()->setBlock($blockReplace, $this, true);
-			$nbt = new CompoundTag("", [
-				new StringTag("id", Tile::SKULL),
-				new ByteTag("SkullType", $item->getDamage()),
-				new ByteTag("Rot", $rot),
-				new IntTag("x", (int) $this->x),
-				new IntTag("y", (int) $this->y),
-				new IntTag("z", (int) $this->z)
-			]);
-			if($item->hasCustomName()){
-				$nbt->CustomName = new StringTag("CustomName", $item->getCustomName());
-			}
-			/** @var Spawnable $tile */
-			Tile::createTile("Skull", $this->getLevel(), $nbt);
-			return true;
+		if($face === Vector3::SIDE_DOWN){
+			return false;
 		}
-		return false;
+
+		$this->meta = $face;
+		$this->getLevel()->setBlock($blockReplace, $this, true);
+		Tile::createTile(Tile::SKULL, $this->getLevel(), TileSkull::createNBT($this, $face, $item, $player));
+
+		return true;
 	}
 
 	public function getDrops(Item $item) : array{
 		$tile = $this->level->getTile($this);
-		if($tile instanceof SkullTile){
+		if($tile instanceof TileSkull){
 			return [
 				ItemFactory::get(Item::SKULL, $tile->getType(), 1)
 			];

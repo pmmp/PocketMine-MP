@@ -23,9 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
+use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\Player;
 
 class Skull extends Spawnable{
 	const TYPE_SKELETON = 0;
@@ -57,5 +60,15 @@ class Skull extends Spawnable{
 	public function addAdditionalSpawnData(CompoundTag $nbt){
 		$nbt->SkullType = $this->namedtag->SkullType;
 		$nbt->Rot = $this->namedtag->Rot;
+	}
+
+	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
+		$nbt->SkullType = new ByteTag("SkullType", $item !== null ? $item->getDamage() : self::TYPE_SKELETON);
+
+		$rot = 0;
+		if($face === Vector3::SIDE_UP and $player !== null){
+			$rot = floor(($player->yaw * 16 / 360) + 0.5) & 0x0F;
+		}
+		$nbt->Rot = new ByteTag("Rot", $rot);
 	}
 }

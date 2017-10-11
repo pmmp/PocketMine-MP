@@ -24,7 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use pocketmine\event\block\SignChangeEvent;
+use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
@@ -158,9 +160,21 @@ class Sign extends Spawnable{
 
 		if(!$ev->isCancelled()){
 			$this->setText(...$ev->getLines());
+
 			return true;
 		}else{
 			return false;
+		}
+	}
+
+	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
+		for($i = 1; $i <= 4; ++$i){
+			$key = "Text$i";
+			$nbt->$key = new StringTag($key, "");
+		}
+
+		if($player !== null){
+			$nbt->Creator = new StringTag("Creator", $player->getRawUniqueId());
 		}
 	}
 

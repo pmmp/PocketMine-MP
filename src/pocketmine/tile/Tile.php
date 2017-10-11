@@ -24,15 +24,22 @@ declare(strict_types=1);
 /**
  * All the Tile classes and related classes
  */
+
 namespace pocketmine\tile;
 
 use pocketmine\block\Block;
 use pocketmine\event\Timings;
 use pocketmine\event\TimingsHandler;
+use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\NamedTag;
+use pocketmine\nbt\tag\StringTag;
+use pocketmine\Player;
 use pocketmine\Server;
 
 abstract class Tile extends Position{
@@ -121,7 +128,7 @@ abstract class Tile extends Position{
 	 * Returns the short save name
 	 * @return string
 	 */
-	public function getSaveId() : string{
+	public static function getSaveId() : string{
 		return self::$shortNames[static::class];
 	}
 
@@ -150,7 +157,7 @@ abstract class Tile extends Position{
 	}
 
 	public function saveNBT(){
-		$this->namedtag->id->setValue($this->getSaveId());
+		$this->namedtag->id->setValue(static::getSaveId());
 		$this->namedtag->x->setValue($this->x);
 		$this->namedtag->y->setValue($this->y);
 		$this->namedtag->z->setValue($this->z);
@@ -165,6 +172,53 @@ abstract class Tile extends Position{
 		}else{
 			return null;
 		}
+	}
+
+	/**
+	 * Creates and returns a CompoundTag containing the necessary information to spawn a tile of this type.
+	 *
+	 * @param Vector3     $pos
+	 * @param int|null    $face
+	 * @param Item|null   $item
+	 * @param Player|null $player
+	 *
+	 * @return CompoundTag
+	 */
+	public static function createNBT(Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : CompoundTag{
+		$nbt = new CompoundTag("", [
+			new StringTag("id", static::getSaveId()),
+			new IntTag("x", (int) $pos->x),
+			new IntTag("y", (int) $pos->y),
+			new IntTag("z", (int) $pos->z)
+		]);
+
+		static::createAdditionalNBT($nbt, $pos, $face, $item, $player);
+
+		if($item !== null){
+			if($item->hasCustomBlockData()){
+				foreach($item->getCustomBlockData() as $customBlockDataTag){
+					if(!($customBlockDataTag instanceof NamedTag)){
+						continue;
+					}
+					$nbt->{$customBlockDataTag->getName()} = $customBlockDataTag;
+				}
+			}
+		}
+
+		return $nbt;
+	}
+
+	/**
+	 * Called by createNBT() to allow descendent classes to add their own base NBT using the parameters provided.
+	 *
+	 * @param CompoundTag $nbt
+	 * @param Vector3     $pos
+	 * @param int|null    $face
+	 * @param Item|null   $item
+	 * @param Player|null $player
+	 */
+	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
+
 	}
 
 	/**
