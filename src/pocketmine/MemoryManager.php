@@ -65,16 +65,16 @@ class MemoryManager{
 	private $garbageCollectionAsync;
 
 	/** @var int */
-	private $chunkRadiusOverride;
+	private $lowMemChunkRadiusOverride;
 	/** @var bool */
-	private $chunkCollect;
+	private $lowMemChunkGC;
 	/** @var bool */
-	private $chunkTrigger;
+	private $lowMemReduceChunkRadius;
 
 	/** @var bool */
-	private $disableChunkCacheOnLowMemory;
+	private $lowMemDisableChunkCache;
 	/** @var bool */
-	private $cacheTrigger;
+	private $lowMemClearWorldCache;
 
 	/** @var bool */
 	private $dumpWorkers = true;
@@ -129,12 +129,12 @@ class MemoryManager{
 		$this->garbageCollectionTrigger = (bool) $this->server->getProperty("memory.garbage-collection.low-memory-trigger", true);
 		$this->garbageCollectionAsync = (bool) $this->server->getProperty("memory.garbage-collection.collect-async-worker", true);
 
-		$this->chunkRadiusOverride = (int) $this->server->getProperty("memory.max-chunks.chunk-radius", 4);
-		$this->chunkCollect = (bool) $this->server->getProperty("memory.max-chunks.trigger-chunk-collect", true);
-		$this->chunkTrigger = (bool) $this->server->getProperty("memory.max-chunks.low-memory-trigger", true);
+		$this->lowMemChunkRadiusOverride = (int) $this->server->getProperty("memory.max-chunks.chunk-radius", 4);
+		$this->lowMemChunkGC = (bool) $this->server->getProperty("memory.max-chunks.trigger-chunk-collect", true);
+		$this->lowMemReduceChunkRadius = (bool) $this->server->getProperty("memory.max-chunks.low-memory-trigger", true);
 
-		$this->disableChunkCacheOnLowMemory = (bool) $this->server->getProperty("memory.world-caches.disable-chunk-cache", true);
-		$this->cacheTrigger = (bool) $this->server->getProperty("memory.world-caches.low-memory-trigger", true);
+		$this->lowMemDisableChunkCache = (bool) $this->server->getProperty("memory.world-caches.disable-chunk-cache", true);
+		$this->lowMemClearWorldCache = (bool) $this->server->getProperty("memory.world-caches.low-memory-trigger", true);
 
 		$this->dumpWorkers = (bool) $this->server->getProperty("memory.memory-dump.dump-async-worker", true);
 		gc_enable();
@@ -151,7 +151,7 @@ class MemoryManager{
 	 * @return bool
 	 */
 	public function canUseChunkCache() : bool{
-		return !$this->lowMemory or !$this->disableChunkCacheOnLowMemory;
+		return !$this->lowMemory or !$this->lowMemDisableChunkCache;
 	}
 
 	/**
@@ -162,7 +162,7 @@ class MemoryManager{
 	 * @return int
 	 */
 	public function getViewDistance(int $distance) : int{
-		return $this->lowMemory ? (int) min($this->chunkRadiusOverride, $distance) : $distance;
+		return $this->lowMemory ? (int) min($this->lowMemChunkRadiusOverride, $distance) : $distance;
 	}
 
 	/**
@@ -176,13 +176,13 @@ class MemoryManager{
 	public function trigger(int $memory, int $limit, bool $global = false, int $triggerCount = 0){
 		$this->server->getLogger()->debug(sprintf("[Memory Manager] %sLow memory triggered, limit %gMB, using %gMB",
 			$global ? "Global " : "", round(($limit / 1024) / 1024, 2), round(($memory / 1024) / 1024, 2)));
-		if($this->cacheTrigger){
+		if($this->lowMemClearWorldCache){
 			foreach($this->server->getLevels() as $level){
 				$level->clearCache(true);
 			}
 		}
 
-		if($this->chunkTrigger and $this->chunkCollect){
+		if($this->lowMemReduceChunkRadius and $this->lowMemChunkGC){
 			foreach($this->server->getLevels() as $level){
 				$level->doChunkGarbageCollection();
 			}
