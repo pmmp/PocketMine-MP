@@ -131,7 +131,6 @@ class MemoryManager{
 
 		$this->lowMemChunkRadiusOverride = (int) $this->server->getProperty("memory.max-chunks.chunk-radius", 4);
 		$this->lowMemChunkGC = (bool) $this->server->getProperty("memory.max-chunks.trigger-chunk-collect", true);
-		$this->lowMemReduceChunkRadius = (bool) $this->server->getProperty("memory.max-chunks.low-memory-trigger", true);
 
 		$this->lowMemDisableChunkCache = (bool) $this->server->getProperty("memory.world-caches.disable-chunk-cache", true);
 		$this->lowMemClearWorldCache = (bool) $this->server->getProperty("memory.world-caches.low-memory-trigger", true);
@@ -162,7 +161,7 @@ class MemoryManager{
 	 * @return int
 	 */
 	public function getViewDistance(int $distance) : int{
-		return $this->lowMemory ? (int) min($this->lowMemChunkRadiusOverride, $distance) : $distance;
+		return ($this->lowMemory and $this->lowMemChunkRadiusOverride > 0) ? (int) min($this->lowMemChunkRadiusOverride, $distance) : $distance;
 	}
 
 	/**
@@ -182,7 +181,7 @@ class MemoryManager{
 			}
 		}
 
-		if($this->lowMemReduceChunkRadius and $this->lowMemChunkGC){
+		if($this->lowMemChunkGC){
 			foreach($this->server->getLevels() as $level){
 				$level->doChunkGarbageCollection();
 			}

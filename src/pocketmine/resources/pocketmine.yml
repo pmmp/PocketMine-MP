@@ -67,16 +67,12 @@ memory:
   #Dump memory from async workers as well as the main thread. If you have issues with segfaults when dumping memory, disable this setting.
   dump-async-worker: true
 
-
  max-chunks:
-  #Maximum render distance per player when low memory is triggered
+  #Cap maximum render distance per player when low memory is triggered. Set to 0 to disable cap.
   chunk-radius: 4
 
   #Do chunk garbage collection on trigger
   trigger-chunk-collect: true
-
-  #Trigger on low memory
-  low-memory-trigger: true
 
  world-caches:
   #Disallow adding to world chunk-packet caches when memory is low
