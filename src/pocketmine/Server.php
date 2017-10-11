@@ -104,6 +104,7 @@ use pocketmine\tile\Tile;
 use pocketmine\updater\AutoUpdater;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Config;
+use pocketmine\utils\HackyYamlConfigUpdater;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
@@ -1459,6 +1460,12 @@ class Server{
 				}
 				@file_put_contents($this->dataPath . "pocketmine.yml", $content);
 			}
+
+			$configUpdater = new HackyYamlConfigUpdater($this->dataPath . "pocketmine.yml", $this->filePath . "src/pocketmine/resources/pocketmine.yml");
+			if($configUpdater->process()){
+				$this->logger->notice("Your pocketmine.yml has been updated. The original has been moved to " . $configUpdater->getBackupPath());
+			}
+
 			$this->config = new Config($this->dataPath . "pocketmine.yml", Config::YAML, []);
 
 			define('pocketmine\DEBUG', (int) $this->getProperty("debug.level", 1));
