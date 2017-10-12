@@ -537,80 +537,14 @@ class Block extends Position implements BlockIds, Metadatable{
 			return null;
 		}
 
-		$v1 = $pos1->getIntermediateWithXValue($pos2, $bb->minX);
-		$v2 = $pos1->getIntermediateWithXValue($pos2, $bb->maxX);
-		$v3 = $pos1->getIntermediateWithYValue($pos2, $bb->minY);
-		$v4 = $pos1->getIntermediateWithYValue($pos2, $bb->maxY);
-		$v5 = $pos1->getIntermediateWithZValue($pos2, $bb->minZ);
-		$v6 = $pos1->getIntermediateWithZValue($pos2, $bb->maxZ);
-
-		if($v1 !== null and !$bb->isVectorInYZ($v1)){
-			$v1 = null;
+		$result = $bb->calculateIntercept($pos1, $pos2);
+		if($result !== null){
+			$result->blockX = $this->x;
+			$result->blockY = $this->y;
+			$result->blockZ = $this->z;
 		}
 
-		if($v2 !== null and !$bb->isVectorInYZ($v2)){
-			$v2 = null;
-		}
-
-		if($v3 !== null and !$bb->isVectorInXZ($v3)){
-			$v3 = null;
-		}
-
-		if($v4 !== null and !$bb->isVectorInXZ($v4)){
-			$v4 = null;
-		}
-
-		if($v5 !== null and !$bb->isVectorInXY($v5)){
-			$v5 = null;
-		}
-
-		if($v6 !== null and !$bb->isVectorInXY($v6)){
-			$v6 = null;
-		}
-
-		$vector = $v1;
-
-		if($v2 !== null and ($vector === null or $pos1->distanceSquared($v2) < $pos1->distanceSquared($vector))){
-			$vector = $v2;
-		}
-
-		if($v3 !== null and ($vector === null or $pos1->distanceSquared($v3) < $pos1->distanceSquared($vector))){
-			$vector = $v3;
-		}
-
-		if($v4 !== null and ($vector === null or $pos1->distanceSquared($v4) < $pos1->distanceSquared($vector))){
-			$vector = $v4;
-		}
-
-		if($v5 !== null and ($vector === null or $pos1->distanceSquared($v5) < $pos1->distanceSquared($vector))){
-			$vector = $v5;
-		}
-
-		if($v6 !== null and ($vector === null or $pos1->distanceSquared($v6) < $pos1->distanceSquared($vector))){
-			$vector = $v6;
-		}
-
-		if($vector === null){
-			return null;
-		}
-
-		$f = -1;
-
-		if($vector === $v1){
-			$f = 4;
-		}elseif($vector === $v2){
-			$f = 5;
-		}elseif($vector === $v3){
-			$f = 0;
-		}elseif($vector === $v4){
-			$f = 1;
-		}elseif($vector === $v5){
-			$f = 2;
-		}elseif($vector === $v6){
-			$f = 3;
-		}
-
-		return MovingObjectPosition::fromBlock($this->x, $this->y, $this->z, $f, $vector->add($this->x, $this->y, $this->z));
+		return $result;
 	}
 
 	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue){
