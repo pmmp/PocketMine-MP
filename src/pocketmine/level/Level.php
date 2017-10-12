@@ -1157,18 +1157,12 @@ class Level implements ChunkManager, Metadatable{
 			if($pos->isSolid()){
 				return true;
 			}
-			$bbs = $pos->getCollisionBoxes();
+			$bb = $pos->getBoundingBox();
 		}else{
-			$bbs = $this->getBlock($pos)->getCollisionBoxes();
+			$bb = $this->getBlock($pos)->getBoundingBox();
 		}
 
-		foreach($bbs as $bb){
-			if($bb->getAverageEdgeLength() >= 1){
-				return true;
-			}
-		}
-
-		return false;
+		return $bb !== null and $bb->getAverageEdgeLength() >= 1;
 	}
 
 	/**
