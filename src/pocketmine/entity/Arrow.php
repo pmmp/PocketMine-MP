@@ -31,8 +31,8 @@ use pocketmine\Player;
 class Arrow extends Projectile{
 	const NETWORK_ID = 80;
 
-	public $width = 0.5;
-	public $height = 0.5;
+	public $width = 0.25;
+	public $height = 0.25;
 
 	protected $gravity = 0.05;
 	protected $drag = 0.01;
