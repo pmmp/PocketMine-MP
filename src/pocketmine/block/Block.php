@@ -70,8 +70,8 @@ class Block extends Position implements BlockIds, Metadatable{
 	public $boundingBox = null;
 
 
-	/** @var AxisAlignedBB[] */
-	protected $collisionBoxes = [];
+	/** @var AxisAlignedBB[]|null */
+	protected $collisionBoxes = null;
 
 	/**
 	 * @param int         $id     The block type's ID, 0-255
@@ -515,7 +515,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return AxisAlignedBB[]
 	 */
 	public function getCollisionBoxes() : array{
-		if(empty($this->collisionBoxes) === 0){
+		if($this->collisionBoxes === null){
 			$this->collisionBoxes = $this->recalculateCollisionBoxes();
 		}
 
