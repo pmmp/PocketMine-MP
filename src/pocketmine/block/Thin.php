@@ -34,45 +34,45 @@ abstract class Thin extends Transparent{
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 
-		$f = 0.4375;
-		$f1 = 0.5625;
-		$f2 = 0.4375;
-		$f3 = 0.5625;
+		$minX = 0.4375;
+		$maxX = 0.5625;
+		$minZ = 0.4375;
+		$maxZ = 0.5625;
 
-		$flag = $this->canConnect($this->getSide(Vector3::SIDE_NORTH));
-		$flag1 = $this->canConnect($this->getSide(Vector3::SIDE_SOUTH));
-		$flag2 = $this->canConnect($this->getSide(Vector3::SIDE_WEST));
-		$flag3 = $this->canConnect($this->getSide(Vector3::SIDE_EAST));
+		$canConnectNorth = $this->canConnect($this->getSide(Vector3::SIDE_NORTH));
+		$canConnectSouth = $this->canConnect($this->getSide(Vector3::SIDE_SOUTH));
+		$canConnectWest = $this->canConnect($this->getSide(Vector3::SIDE_WEST));
+		$canConnectEast = $this->canConnect($this->getSide(Vector3::SIDE_EAST));
 
-		if((!$flag2 or !$flag3) and ($flag2 or $flag3 or $flag or $flag1)){
-			if($flag2 and !$flag3){
-				$f = 0;
-			}elseif(!$flag2 and $flag3){
-				$f1 = 1;
+		if((!$canConnectWest or !$canConnectEast) and ($canConnectWest or $canConnectEast or $canConnectNorth or $canConnectSouth)){
+			if($canConnectWest and !$canConnectEast){
+				$minX = 0;
+			}elseif(!$canConnectWest and $canConnectEast){
+				$maxX = 1;
 			}
 		}else{
-			$f = 0;
-			$f1 = 1;
+			$minX = 0;
+			$maxX = 1;
 		}
 
-		if((!$flag or !$flag1) and ($flag2 or $flag3 or $flag or $flag1)){
-			if($flag and !$flag1){
-				$f2 = 0;
-			}elseif(!$flag and $flag1){
-				$f3 = 1;
+		if((!$canConnectNorth or !$canConnectSouth) and ($canConnectWest or $canConnectEast or $canConnectNorth or $canConnectSouth)){
+			if($canConnectNorth and !$canConnectSouth){
+				$minZ = 0;
+			}elseif(!$canConnectNorth and $canConnectSouth){
+				$maxZ = 1;
 			}
 		}else{
-			$f2 = 0;
-			$f3 = 1;
+			$minZ = 0;
+			$maxZ = 1;
 		}
 
 		return new AxisAlignedBB(
-			$this->x + $f,
+			$this->x + $minX,
 			$this->y,
-			$this->z + $f2,
-			$this->x + $f1,
+			$this->z + $minZ,
+			$this->x + $maxX,
 			$this->y + 1,
-			$this->z + $f3
+			$this->z + $maxZ
 		);
 	}
 
