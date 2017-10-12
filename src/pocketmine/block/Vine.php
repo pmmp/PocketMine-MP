@@ -31,7 +31,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-class Vine extends Transparent{
+class Vine extends Flowable{
 	const FLAG_SOUTH = 0x01;
 	const FLAG_WEST = 0x02;
 	const FLAG_NORTH = 0x04;
@@ -41,10 +41,6 @@ class Vine extends Transparent{
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
-	}
-
-	public function isSolid() : bool{
-		return false;
 	}
 
 	public function getName() : string{
@@ -68,6 +64,10 @@ class Vine extends Transparent{
 	}
 
 	public function ticksRandomly() : bool{
+		return true;
+	}
+
+	public function canBeReplaced() : bool{
 		return true;
 	}
 
@@ -137,42 +137,56 @@ class Vine extends Transparent{
 		);
 	}
 
-
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
-		//TODO: multiple sides
-		if($blockClicked->isSolid()){
-			$faces = [
-				2 => self::FLAG_SOUTH,
-				3 => self::FLAG_NORTH,
-				4 => self::FLAG_EAST,
-				5 => self::FLAG_WEST
-			];
-			if(isset($faces[$face])){
-				$this->meta = $faces[$face];
-				$this->getLevel()->setBlock($blockReplace, $this, true, true);
-
-				return true;
-			}
+		if(!$blockClicked->isSolid() or $face === Vector3::SIDE_UP or $face === Vector3::SIDE_DOWN){
+			return false;
 		}
 
-		return false;
+		$faces = [
+			Vector3::SIDE_NORTH => self::FLAG_SOUTH,
+			Vector3::SIDE_SOUTH => self::FLAG_NORTH,
+			Vector3::SIDE_WEST => self::FLAG_EAST,
+			Vector3::SIDE_EAST => self::FLAG_WEST
+		];
+
+		$this->meta = $faces[$face] ?? 0;
+		if($blockReplace->getId() === $this->getId()){
+			$this->meta |= $blockReplace->meta;
+		}
+
+		$this->getLevel()->setBlock($blockReplace, $this, true, true);
+		return true;
 	}
 
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$sides = [
-				1 => 3,
-				2 => 4,
-				4 => 2,
-				8 => 5
+				self::FLAG_SOUTH => Vector3::SIDE_SOUTH,
+				self::FLAG_WEST => Vector3::SIDE_WEST,
+				self::FLAG_NORTH => Vector3::SIDE_NORTH,
+				self::FLAG_EAST => Vector3::SIDE_EAST
 			];
 
-			if(!isset($sides[$this->meta])){
-				return false; //TODO: remove this once placing on multiple sides is supported (these are bitflags, not actual meta values
+			$meta = $this->meta;
+
+			foreach($sides as $flag => $side){
+				if(($meta & $flag) === 0){
+					continue;
+				}
+
+				if(!$this->getSide($side)->isSolid()){
+					$meta &= ~$flag;
+				}
 			}
 
-			if(!$this->getSide($sides[$this->meta])->isSolid()){ //Replace with common break method
-				$this->level->useBreakOn($this);
+			if($meta !== $this->meta){
+				if($meta === 0){
+					$this->level->useBreakOn($this);
+				}else{
+					$this->meta = $meta;
+					$this->level->setBlock($this, $this);
+				}
+
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
