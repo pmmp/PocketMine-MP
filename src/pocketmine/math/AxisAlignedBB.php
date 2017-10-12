@@ -430,17 +430,17 @@ class AxisAlignedBB{
 		$f = -1;
 
 		if($vector === $v1){
-			$f = 4;
+			$f = Vector3::SIDE_WEST;
 		}elseif($vector === $v2){
-			$f = 5;
+			$f = Vector3::SIDE_EAST;
 		}elseif($vector === $v3){
-			$f = 0;
+			$f = Vector3::SIDE_DOWN;
 		}elseif($vector === $v4){
-			$f = 1;
+			$f = Vector3::SIDE_UP;
 		}elseif($vector === $v5){
-			$f = 2;
+			$f = Vector3::SIDE_NORTH;
 		}elseif($vector === $v6){
-			$f = 3;
+			$f = Vector3::SIDE_SOUTH;
 		}
 
 		return MovingObjectPosition::fromBlock(0, 0, 0, $f, $vector);
