@@ -69,6 +69,10 @@ class Block extends Position implements BlockIds, Metadatable{
 	/** @var AxisAlignedBB */
 	public $boundingBox = null;
 
+
+	/** @var AxisAlignedBB[]|null */
+	protected $collisionBoxes = null;
+
 	/**
 	 * @param int         $id     The block type's ID, 0-255
 	 * @param int         $meta   Meta value of the block type
@@ -489,9 +493,15 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return bool
 	 */
 	public function collidesWithBB(AxisAlignedBB $bb) : bool{
-		$bb2 = $this->getBoundingBox();
+		$bbs = $this->getCollisionBoxes();
 
-		return $bb2 !== null and $bb->intersectsWith($bb2);
+		foreach($bbs as $bb2){
+			if($bb->intersectsWith($bb2)){
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -499,6 +509,28 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function onEntityCollide(Entity $entity) : void{
 
+	}
+
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	public function getCollisionBoxes() : array{
+		if($this->collisionBoxes === null){
+			$this->collisionBoxes = $this->recalculateCollisionBoxes();
+		}
+
+		return $this->collisionBoxes;
+	}
+
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	protected function recalculateCollisionBoxes() : array{
+		if($bb = $this->recalculateBoundingBox()){
+			return [$bb];
+		}
+
+		return [];
 	}
 
 	/**
@@ -532,19 +564,36 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return MovingObjectPosition|null
 	 */
 	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2) : ?MovingObjectPosition{
-		$bb = $this->getBoundingBox();
-		if($bb === null){
+		$bbs = $this->getCollisionBoxes();
+		if(empty($bbs)){
 			return null;
 		}
 
-		$result = $bb->calculateIntercept($pos1, $pos2);
-		if($result !== null){
-			$result->blockX = $this->x;
-			$result->blockY = $this->y;
-			$result->blockZ = $this->z;
+		/** @var MovingObjectPosition|null $currentHit */
+		$currentHit = null;
+		/** @var int|float $currentDistance */
+		$currentDistance = PHP_INT_MAX;
+
+		foreach($bbs as $bb){
+			$nextHit = $bb->calculateIntercept($pos1, $pos2);
+			if($nextHit === null){
+				continue;
+			}
+
+			$nextDistance = $nextHit->hitVector->distanceSquared($pos1);
+			if($nextDistance < $currentDistance){
+				$currentHit = $nextHit;
+				$currentDistance = $nextDistance;
+			}
 		}
 
-		return $result;
+		if($currentHit !== null){
+			$currentHit->blockX = $this->x;
+			$currentHit->blockY = $this->y;
+			$currentHit->blockZ = $this->z;
+		}
+
+		return $currentHit;
 	}
 
 	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue){

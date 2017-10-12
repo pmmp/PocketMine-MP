@@ -1188,7 +1188,9 @@ class Level implements ChunkManager, Metadatable{
 				for($y = $minY; $y <= $maxY; ++$y){
 					$block = $this->getBlock($this->temporalVector->setComponents($x, $y, $z));
 					if(!$block->canPassThrough() and $block->collidesWithBB($bb)){
-						$collides[] = $block->getBoundingBox();
+						foreach($block->getCollisionBoxes() as $blockBB){
+							$collides[] = $blockBB;
+						}
 					}
 				}
 			}
@@ -1789,21 +1791,23 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		if($hand->isSolid() === true and $hand->getBoundingBox() !== null){
-			$entities = $this->getCollidingEntities($hand->getBoundingBox());
-			foreach($entities as $e){
-				if($e instanceof Arrow or $e instanceof DroppedItem or ($e instanceof Player and $e->isSpectator())){
-					continue;
+		if($hand->isSolid()){
+			foreach($hand->getCollisionBoxes() as $collisionBox){
+				$entities = $this->getCollidingEntities($collisionBox);
+				foreach($entities as $e){
+					if($e instanceof Arrow or $e instanceof DroppedItem or ($e instanceof Player and $e->isSpectator())){
+						continue;
+					}
+
+					return false; //Entity in block
 				}
 
-				return false; //Entity in block
-			}
-
-			if($player !== null){
-				if(($diff = $player->getNextPosition()->subtract($player->getPosition())) and $diff->lengthSquared() > 0.00001){
-					$bb = $player->getBoundingBox()->getOffsetBoundingBox($diff->x, $diff->y, $diff->z);
-					if($hand->getBoundingBox()->intersectsWith($bb)){
-						return false; //Inside player BB
+				if($player !== null){
+					if(($diff = $player->getNextPosition()->subtract($player->getPosition())) and $diff->lengthSquared() > 0.00001){
+						$bb = $player->getBoundingBox()->getOffsetBoundingBox($diff->x, $diff->y, $diff->z);
+						if($collisionBox->intersectsWith($bb)){
+							return false; //Inside player BB
+						}
 					}
 				}
 			}
