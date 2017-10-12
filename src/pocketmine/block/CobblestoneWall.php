@@ -27,7 +27,7 @@ use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 
-class CobblestoneWall extends Transparent{
+class CobblestoneWall extends Fence{
 	const NONE_MOSSY_WALL = 0;
 	const MOSSY_WALL = 1;
 
@@ -35,10 +35,6 @@ class CobblestoneWall extends Transparent{
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
-	}
-
-	public function isSolid() : bool{
-		return false;
 	}
 
 	public function getToolType() : int{
@@ -57,38 +53,8 @@ class CobblestoneWall extends Transparent{
 		return "Cobblestone Wall";
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-
-		$north = $this->canConnect($this->getSide(Vector3::SIDE_NORTH));
-		$south = $this->canConnect($this->getSide(Vector3::SIDE_SOUTH));
-		$west = $this->canConnect($this->getSide(Vector3::SIDE_WEST));
-		$east = $this->canConnect($this->getSide(Vector3::SIDE_EAST));
-
-		$n = $north ? 0 : 0.25;
-		$s = $south ? 1 : 0.75;
-		$w = $west ? 0 : 0.25;
-		$e = $east ? 1 : 0.75;
-
-		if($north and $south and !$west and !$east){
-			$w = 0.3125;
-			$e = 0.6875;
-		}elseif(!$north and !$south and $west and $east){
-			$n = 0.3125;
-			$s = 0.6875;
-		}
-
-		return new AxisAlignedBB(
-			$this->x + $w,
-			$this->y,
-			$this->z + $n,
-			$this->x + $e,
-			$this->y + 1.5,
-			$this->z + $s
-		);
-	}
-
-	public function canConnect(Block $block){
-		return ($block->getId() !== self::COBBLESTONE_WALL and $block->getId() !== self::FENCE_GATE) ? $block->isSolid() and !$block->isTransparent() : true;
+	public function getThickness() : float{
+		return 0.5;
 	}
 
 }
