@@ -28,6 +28,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 
 class Farmland extends Transparent{
 
@@ -65,7 +66,10 @@ class Farmland extends Transparent{
 	}
 
 	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_RANDOM){
+		if($type === Level::BLOCK_UPDATE_NORMAL and $this->getSide(Vector3::SIDE_UP)->isSolid()){
+			$this->level->setBlock($this, BlockFactory::get(Block::DIRT), true);
+			return $type;
+		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
 			//TODO: hydration
 		}
 
