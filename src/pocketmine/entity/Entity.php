@@ -1011,87 +1011,87 @@ abstract class Entity extends Location implements Metadatable{
 			return false;
 		}
 
-		$i = Math::floorFloat($x);
-		$j = Math::floorFloat($y);
-		$k = Math::floorFloat($z);
+		$floorX = Math::floorFloat($x);
+		$floorY = Math::floorFloat($y);
+		$floorZ = Math::floorFloat($z);
 
-		$diffX = $x - $i;
-		$diffY = $y - $j;
-		$diffZ = $z - $k;
+		$diffX = $x - $floorX;
+		$diffY = $y - $floorY;
+		$diffZ = $z - $floorZ;
 
-		if(BlockFactory::$solid[$this->level->getBlockIdAt($i, $j, $k)]){
-			$flag = !BlockFactory::$solid[$this->level->getBlockIdAt($i - 1, $j, $k)];
-			$flag1 = !BlockFactory::$solid[$this->level->getBlockIdAt($i + 1, $j, $k)];
-			$flag2 = !BlockFactory::$solid[$this->level->getBlockIdAt($i, $j - 1, $k)];
-			$flag3 = !BlockFactory::$solid[$this->level->getBlockIdAt($i, $j + 1, $k)];
-			$flag4 = !BlockFactory::$solid[$this->level->getBlockIdAt($i, $j, $k - 1)];
-			$flag5 = !BlockFactory::$solid[$this->level->getBlockIdAt($i, $j, $k + 1)];
+		if(BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY, $floorZ)]){
+			$westNonSolid  = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX - 1, $floorY, $floorZ)];
+			$eastNonSolid  = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX + 1, $floorY, $floorZ)];
+			$downNonSolid  = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY - 1, $floorZ)];
+			$upNonSolid    = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY + 1, $floorZ)];
+			$northNonSolid = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY, $floorZ - 1)];
+			$southNonSolid = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY, $floorZ + 1)];
 
 			$direction = -1;
 			$limit = 9999;
 
-			if($flag){
+			if($westNonSolid){
 				$limit = $diffX;
-				$direction = 0;
+				$direction = Vector3::SIDE_WEST;
 			}
 
-			if($flag1 and 1 - $diffX < $limit){
+			if($eastNonSolid and 1 - $diffX < $limit){
 				$limit = 1 - $diffX;
-				$direction = 1;
+				$direction = Vector3::SIDE_EAST;
 			}
 
-			if($flag2 and $diffY < $limit){
+			if($downNonSolid and $diffY < $limit){
 				$limit = $diffY;
-				$direction = 2;
+				$direction = Vector3::SIDE_DOWN;
 			}
 
-			if($flag3 and 1 - $diffY < $limit){
+			if($upNonSolid and 1 - $diffY < $limit){
 				$limit = 1 - $diffY;
-				$direction = 3;
+				$direction = Vector3::SIDE_UP;
 			}
 
-			if($flag4 and $diffZ < $limit){
+			if($northNonSolid and $diffZ < $limit){
 				$limit = $diffZ;
-				$direction = 4;
+				$direction = Vector3::SIDE_NORTH;
 			}
 
-			if($flag5 and 1 - $diffZ < $limit){
-				$direction = 5;
+			if($southNonSolid and 1 - $diffZ < $limit){
+				$direction = Vector3::SIDE_SOUTH;
 			}
 
 			$force = lcg_value() * 0.2 + 0.1;
 
-			if($direction === 0){
+			if($direction === Vector3::SIDE_WEST){
 				$this->motionX = -$force;
 
 				return true;
 			}
 
-			if($direction === 1){
+			if($direction === Vector3::SIDE_EAST){
 				$this->motionX = $force;
 
 				return true;
 			}
 
-			if($direction === 2){
+			if($direction === Vector3::SIDE_DOWN){
 				$this->motionY = -$force;
 
 				return true;
 			}
 
-			if($direction === 3){
+			if($direction === Vector3::SIDE_UP){
 				$this->motionY = $force;
 
 				return true;
 			}
 
-			if($direction === 4){
+			if($direction === Vector3::SIDE_NORTH){
 				$this->motionZ = -$force;
 
 				return true;
 			}
 
-			if($direction === 5){
+			if($direction === Vector3::SIDE_SOUTH){
 				$this->motionZ = $force;
 
 				return true;
