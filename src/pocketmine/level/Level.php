@@ -1791,7 +1791,7 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		if($hand->isSolid() === true){
+		if($hand->isSolid()){
 			foreach($hand->getCollisionBoxes() as $collisionBox){
 				$entities = $this->getCollidingEntities($collisionBox);
 				foreach($entities as $e){
