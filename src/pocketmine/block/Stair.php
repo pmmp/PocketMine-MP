@@ -37,7 +37,7 @@ abstract class Stair extends Transparent{
 		$bbs = [$this->recalculateBoundingBox()];
 
 		$yMin = ($this->meta & 0x04) === 0 ? 0.5 : 0;
-		$yMax = ($this->meta & 0x04) === 0 ? 1 : 0.5;
+		$yMax = $yMin + 0.5;
 
 		$rotationMeta = $this->meta & 0x03;
 
