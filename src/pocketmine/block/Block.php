@@ -71,7 +71,7 @@ class Block extends Position implements BlockIds, Metadatable{
 
 
 	/** @var AxisAlignedBB[] */
-	protected $boundingBoxes = [];
+	protected $collisionBoxes = [];
 
 	/**
 	 * @param int         $id     The block type's ID, 0-255
@@ -493,7 +493,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return bool
 	 */
 	public function collidesWithBB(AxisAlignedBB $bb) : bool{
-		$bbs = $this->getBoundingBoxes();
+		$bbs = $this->getCollisionBoxes();
 
 		foreach($bbs as $bb2){
 			if($bb->intersectsWith($bb2)){
@@ -514,18 +514,18 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @return AxisAlignedBB[]
 	 */
-	public function getBoundingBoxes() : array{
-		if(count($this->boundingBoxes) === 0){
-			$this->boundingBoxes = $this->recalculateBoundingBoxes();
+	public function getCollisionBoxes() : array{
+		if(empty($this->collisionBoxes) === 0){
+			$this->collisionBoxes = $this->recalculateCollisionBoxes();
 		}
 
-		return $this->boundingBoxes;
+		return $this->collisionBoxes;
 	}
 
 	/**
 	 * @return AxisAlignedBB[]
 	 */
-	protected function recalculateBoundingBoxes() : array{
+	protected function recalculateCollisionBoxes() : array{
 		if($bb = $this->recalculateBoundingBox()){
 			return [$bb];
 		}
@@ -534,7 +534,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * @deprecated
 	 * @return AxisAlignedBB|null
 	 */
 	public function getBoundingBox() : ?AxisAlignedBB{
@@ -545,7 +544,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * @deprecated
 	 * @return AxisAlignedBB|null
 	 */
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
@@ -566,7 +564,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return MovingObjectPosition|null
 	 */
 	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2) : ?MovingObjectPosition{
-		$bbs = $this->getBoundingBoxes();
+		$bbs = $this->getCollisionBoxes();
 		if(empty($bbs)){
 			return null;
 		}

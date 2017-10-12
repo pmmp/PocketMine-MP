@@ -1157,9 +1157,9 @@ class Level implements ChunkManager, Metadatable{
 			if($pos->isSolid()){
 				return true;
 			}
-			$bbs = $pos->getBoundingBoxes();
+			$bbs = $pos->getCollisionBoxes();
 		}else{
-			$bbs = $this->getBlock($pos)->getBoundingBoxes();
+			$bbs = $this->getBlock($pos)->getCollisionBoxes();
 		}
 
 		foreach($bbs as $bb){
@@ -1194,7 +1194,7 @@ class Level implements ChunkManager, Metadatable{
 				for($y = $minY; $y <= $maxY; ++$y){
 					$block = $this->getBlock($this->temporalVector->setComponents($x, $y, $z));
 					if(!$block->canPassThrough() and $block->collidesWithBB($bb)){
-						foreach($block->getBoundingBoxes() as $blockBB){
+						foreach($block->getCollisionBoxes() as $blockBB){
 							$collides[] = $blockBB;
 						}
 					}
@@ -1798,7 +1798,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if($hand->isSolid() === true){
-			foreach($hand->getBoundingBoxes() as $collisionBox){
+			foreach($hand->getCollisionBoxes() as $collisionBox){
 				$entities = $this->getCollidingEntities($collisionBox);
 				foreach($entities as $e){
 					if($e instanceof Arrow or $e instanceof DroppedItem or ($e instanceof Player and $e->isSpectator())){

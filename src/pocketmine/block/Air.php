@@ -71,7 +71,7 @@ class Air extends Transparent{
 		return null;
 	}
 
-	public function getBoundingBoxes() : array{
+	public function getCollisionBoxes() : array{
 		return [];
 	}
 

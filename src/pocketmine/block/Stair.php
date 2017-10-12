@@ -31,7 +31,7 @@ use pocketmine\Player;
 
 abstract class Stair extends Transparent{
 
-	protected function recalculateBoundingBoxes() : array{
+	protected function recalculateCollisionBoxes() : array{
 		//TODO: handle corners
 
 		$bbs = [$this->recalculateBoundingBox()];
