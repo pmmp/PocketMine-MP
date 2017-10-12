@@ -34,66 +34,53 @@ abstract class Stair extends Transparent{
 	protected function recalculateCollisionBoxes() : array{
 		//TODO: handle corners
 
-		$bbs = [$this->recalculateBoundingBox()];
+		$minYSlab = ($this->meta & 0x04) === 0 ? 0 : 0.5;
+		$maxYSlab = $minYSlab + 0.5;
 
-		$yMin = ($this->meta & 0x04) === 0 ? 0.5 : 0;
-		$yMax = $yMin + 0.5;
+		$bbs = [
+			new AxisAlignedBB(
+				$this->x,
+				$this->y + $minYSlab,
+				$this->z,
+				$this->x + 1,
+				$this->y + $maxYSlab,
+				$this->z + 1
+			)
+		];
+
+		$minY = ($this->meta & 0x04) === 0 ? 0.5 : 0;
+		$maxY = $minY + 0.5;
 
 		$rotationMeta = $this->meta & 0x03;
 
-		$xMin = 0;
-		$xMax = 1;
-
-		$zMin = 0;
-		$zMax = 1;
+		$minX = $minZ = 0;
+		$maxX = $maxZ = 1;
 
 		switch($rotationMeta){
 			case 0:
-				$xMin = 0.5;
+				$minX = 0.5;
 				break;
 			case 1:
-				$xMax = 0.5;
+				$maxX = 0.5;
 				break;
 			case 2:
-				$zMin = 0.5;
+				$minZ = 0.5;
 				break;
 			case 3:
-				$zMax = 0.5;
+				$maxZ = 0.5;
 				break;
 		}
 
 		$bbs[] = new AxisAlignedBB(
-			$this->x + $xMin,
-			$this->y + $yMin,
-			$this->z + $zMin,
-			$this->x + $xMax,
-			$this->y + $yMax,
-			$this->z + $zMax
+			$this->x + $minX,
+			$this->y + $minY,
+			$this->z + $minZ,
+			$this->x + $maxX,
+			$this->y + $maxY,
+			$this->z + $maxZ
 		);
 
 		return $bbs;
-	}
-
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		if(($this->getDamage() & 0x04) > 0){
-			return new AxisAlignedBB(
-				$this->x,
-				$this->y + 0.5,
-				$this->z,
-				$this->x + 1,
-				$this->y + 1,
-				$this->z + 1
-			);
-		}else{
-			return new AxisAlignedBB(
-				$this->x,
-				$this->y,
-				$this->z,
-				$this->x + 1,
-				$this->y + 0.5,
-				$this->z + 1
-			);
-		}
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
