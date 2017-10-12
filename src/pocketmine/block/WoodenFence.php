@@ -23,30 +23,39 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
 use pocketmine\item\Tool;
 
-class NetherBrickFence extends Fence{
+class WoodenFence extends Fence{
+	const FENCE_OAK = 0;
+	const FENCE_SPRUCE = 1;
+	const FENCE_BIRCH = 2;
+	const FENCE_JUNGLE = 3;
+	const FENCE_ACACIA = 4;
+	const FENCE_DARKOAK = 5;
 
-	protected $id = self::NETHER_BRICK_FENCE;
+	protected $id = self::FENCE;
 
 	public function getHardness() : float{
 		return 2;
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return Tool::TYPE_AXE;
 	}
 
 	public function getName() : string{
-		return "Nether Brick Fence";
+		static $names = [
+			self::FENCE_OAK => "Oak Fence",
+			self::FENCE_SPRUCE => "Spruce Fence",
+			self::FENCE_BIRCH => "Birch Fence",
+			self::FENCE_JUNGLE => "Jungle Fence",
+			self::FENCE_ACACIA => "Acacia Fence",
+			self::FENCE_DARKOAK => "Dark Oak Fence"
+		];
+		return $names[$this->meta & 0x07] ?? "Unknown";
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
-			return parent::getDrops($item);
-		}
-
-		return [];
+	public function getFuelTime() : int{
+		return 300;
 	}
 }

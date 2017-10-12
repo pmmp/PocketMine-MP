@@ -154,7 +154,7 @@ class BlockFactory{
 			self::registerBlock(new Clay());
 			self::registerBlock(new Sugarcane());
 			//TODO: JUKEBOX
-			self::registerBlock(new Fence());
+			self::registerBlock(new WoodenFence());
 			self::registerBlock(new Pumpkin());
 			self::registerBlock(new Netherrack());
 			self::registerBlock(new SoulSand());
