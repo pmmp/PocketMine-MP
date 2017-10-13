@@ -123,6 +123,10 @@ class Item implements ItemIds, \JsonSerializable{
 			}
 			self::addCreativeItem($item);
 		}
+
+		for($i = 0; $i < 36; $i++){ // register splash potions as creative items
+			self::addCreativeItem(ItemFactory::get(self::SPLASH_POTION, $i));
+		}
 	}
 
 	public static function clearCreativeItems(){
