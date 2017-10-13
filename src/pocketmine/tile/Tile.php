@@ -54,6 +54,7 @@ abstract class Tile extends Position{
 	const SIGN = "Sign";
 	const SKULL = "Skull";
 	const BED = "Bed";
+	const ENDER_CHEST = "EnderChest";
 
 	/** @var int */
 	public static $tileCount = 1;
@@ -84,6 +85,7 @@ abstract class Tile extends Position{
 		self::registerTile(Bed::class);
 		self::registerTile(Chest::class);
 		self::registerTile(EnchantTable::class);
+		self::registerTile(EnderChest::class);
 		self::registerTile(FlowerPot::class);
 		self::registerTile(Furnace::class);
 		self::registerTile(ItemFrame::class);
