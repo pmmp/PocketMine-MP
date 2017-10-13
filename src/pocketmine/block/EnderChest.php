@@ -44,8 +44,12 @@ class EnderChest extends Transparent{
 		return 22.5;
 	}
 
+	public function getBlastResistance() : float{
+		return 3000;
+	}
+
 	public function getName() : string{
-		return "Chest";
+		return "Ender Chest";
 	}
 
 	public function getToolType() : int{
@@ -103,7 +107,7 @@ class EnderChest extends Transparent{
 
 	public function getDrops(Item $item) : array{
 		return [
-			ItemFactory::get(Item::ENDER_CHEST, 0, 8)
+			ItemFactory::get(Item::OBSIDIAN, 0, 8)
 		];
 	}
 
