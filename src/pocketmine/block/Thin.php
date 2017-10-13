@@ -36,7 +36,7 @@ abstract class Thin extends Transparent{
 			$this->y,
 			$this->z + ($this->canConnect($this->getSide(Vector3::SIDE_NORTH)) ? 0 : $width),
 			$this->x + 1 - ($this->canConnect($this->getSide(Vector3::SIDE_EAST)) ? 0 : $width),
-			$this->y + 1.5,
+			$this->y + 1,
 			$this->z + 1 - ($this->canConnect($this->getSide(Vector3::SIDE_SOUTH)) ? 0 : $width)
 		);
 	}
