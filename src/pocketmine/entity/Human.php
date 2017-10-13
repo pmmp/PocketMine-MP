@@ -352,7 +352,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 		if(isset($this->namedtag->EnderChestInventory) and $this->namedtag->EnderChestInventory instanceof ListTag){
 			foreach($this->namedtag->EnderChestInventory as $i => $item){
-				$this->enderChestInventory->setItem($item["Slot"] - 9, ItemItem::nbtDeserialize($item));
+				$this->enderChestInventory->setItem($item["Slot"], ItemItem::nbtDeserialize($item));
 			}
 		}
 
@@ -569,8 +569,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				foreach($this->inventory->getViewers() as $viewer){
 					$viewer->removeWindow($this->inventory);
 				}
-
 				$this->inventory = null;
+
+				foreach($this->enderChestInventory->getViewers() as $viewer){
+					$viewer->removeWindow($this->inventory);
+				}
 				$this->enderChestInventory = null;
 			}
 			parent::close();
