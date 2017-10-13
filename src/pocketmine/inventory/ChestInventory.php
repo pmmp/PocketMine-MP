@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
@@ -66,26 +67,26 @@ class ChestInventory extends ContainerInventory{
 		parent::onOpen($who);
 
 		if(count($this->getViewers()) === 1 and ($level = $this->getHolder()->getLevel()) instanceof Level){
-			$this->broadcastBlockEventPacket(1, 2); //chest open
+			$this->broadcastBlockEventPacket($this->getHolder(), true);
 			$level->broadcastLevelSoundEvent($this->getHolder()->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_CHEST_OPEN);
 		}
 	}
 
 	public function onClose(Player $who) : void{
 		if(count($this->getViewers()) === 1 and ($level = $this->getHolder()->getLevel()) instanceof Level){
-			$this->broadcastBlockEventPacket(1, 0); //chest close
+			$this->broadcastBlockEventPacket($this->getHolder(), false);
 			$level->broadcastLevelSoundEvent($this->getHolder()->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_CHEST_CLOSED);
 		}
 		parent::onClose($who);
 	}
 
-	private function broadcastBlockEventPacket(int $case1, int $case2){
+	protected function broadcastBlockEventPacket(Vector3 $vector, bool $isOpen) : void{
 		$pk = new BlockEventPacket();
-		$pk->x = $this->getHolder()->getX();
-		$pk->y = $this->getHolder()->getY();
-		$pk->z = $this->getHolder()->getZ();
-		$pk->case1 = $case1;
-		$pk->case2 = $case2;
+		$pk->x = (int) $vector->x;
+		$pk->y = (int) $vector->y;
+		$pk->z = (int) $vector->z;
+		$pk->case1 = 1; //it's always 1 for a chest
+		$pk->case2 = $isOpen ? 1 : 0;
 		$this->getHolder()->getLevel()->addChunkPacket($this->getHolder()->getX() >> 4, $this->getHolder()->getZ() >> 4, $pk);
 	}
 }
