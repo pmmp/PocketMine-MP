@@ -213,13 +213,13 @@ class Explosion{
 
 			$t = $this->level->getTile($block);
 			if($t instanceof Tile){
-				if($yieldDrops and $t instanceof Container) {
+				if($yieldDrops and $t instanceof Container){
 					if($t instanceof Chest){
 						$t->unpair();
 					}
 
 					$dropPos = $t->asVector3()->add(0.5, 0.5, 0.5);
-					foreach($t->getInventory()->getContents() as $drop) {
+					foreach($t->getInventory()->getContents() as $drop){
 						if(!$drop->isNull()){
 							$this->level->dropItem($dropPos, $drop);
 						}
