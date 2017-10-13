@@ -52,72 +52,51 @@ abstract class Fence extends Transparent{
 	protected function recalculateCollisionBoxes() : array{
 		$inset = 0.5 - $this->getThickness() / 2;
 
-		$bbs = [
-			new AxisAlignedBB( //centre post AABB
-				$this->x + $inset,
-				$this->y,
-				$this->z + $inset,
-				$this->x + 1 - $inset,
-				$this->y + 1.5,
-				$this->z + 1 - $inset
-			)
-		];
+		/** @var AxisAlignedBB[] $bbs */
+		$bbs = [];
 
-		if($this->canConnect($this->getSide(Vector3::SIDE_WEST))){
-			//western side connected part from start X to post (negative X)
-			//
-			// -#
-			//
+		$connectWest = $this->canConnect($this->getSide(Vector3::SIDE_WEST));
+		$connectEast = $this->canConnect($this->getSide(Vector3::SIDE_EAST));
+
+		if($connectWest or $connectEast){
+			//X axis (west/east)
 			$bbs[] = new AxisAlignedBB(
-				$this->x,
+				$this->x + ($connectWest ? 0 : $inset),
 				$this->y,
 				$this->z + $inset,
-				$this->x + $inset, //don't overlap with centre post
+				$this->x + 1 - ($connectEast ? 0 : $inset),
 				$this->y + 1.5,
 				$this->z + 1 - $inset
 			);
 		}
-		if($this->canConnect($this->getSide(Vector3::SIDE_EAST))){
-			//eastern side connected part from post to end X (positive X)
-			//
-			// #-
-			//
-			$bbs[] = new AxisAlignedBB(
-				$this->x + 1 - $inset,
-				$this->y,
-				$this->z + $inset,
-				$this->x + 1,
-				$this->y + 1.5,
-				$this->z + 1 - $inset
-			);
-		}
-		if($this->canConnect($this->getSide(Vector3::SIDE_NORTH))){
-			//northern side connected part from start Z to post (negative Z)
-			//  |
-			//  #
-			//
+
+		$connectNorth = $this->canConnect($this->getSide(Vector3::SIDE_NORTH));
+		$connectSouth = $this->canConnect($this->getSide(Vector3::SIDE_SOUTH));
+
+		if($connectNorth or $connectSouth){
+			//Z axis (north/south)
 			$bbs[] = new AxisAlignedBB(
 				$this->x + $inset,
 				$this->y,
-				$this->z,
+				$this->z + ($connectNorth ? 0 : $inset),
 				$this->x + 1 - $inset,
 				$this->y + 1.5,
-				$this->z + $inset
+				$this->z + 1 - ($connectSouth ? 0 : $inset)
 			);
 		}
-		if($this->canConnect($this->getSide(Vector3::SIDE_SOUTH))){
-			//southern side connected part from post to end Z (positive Z)
-			//
-			//  #
-			//  |
-			$bbs[] = new AxisAlignedBB(
-				$this->x + $inset,
-				$this->y,
-				$this->z + 1 - $inset,
-				$this->x + 1 - $inset,
-				$this->y + 1.5,
-				$this->z + 1
-			);
+
+		if(empty($bbs)){
+			//centre post AABB (only needed if not connected on any axis - other BBs overlapping will do this if any connections are made)
+			return [
+				new AxisAlignedBB(
+					$this->x + $inset,
+					$this->y,
+					$this->z + $inset,
+					$this->x + 1 - $inset,
+					$this->y + 1.5,
+					$this->z + 1 - $inset
+				)
+			];
 		}
 
 		return $bbs;
