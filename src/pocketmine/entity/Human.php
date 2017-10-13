@@ -572,7 +572,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				$this->inventory = null;
 
 				foreach($this->enderChestInventory->getViewers() as $viewer){
-					$viewer->removeWindow($this->inventory);
+					$viewer->removeWindow($this->enderChestInventory);
 				}
 				$this->enderChestInventory = null;
 			}
