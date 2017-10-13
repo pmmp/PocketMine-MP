@@ -38,12 +38,12 @@ class Anvil extends Fallable{
 
 	protected $id = self::ANVIL;
 
-	public function isSolid() : bool{
-		return false;
-	}
-
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
+	}
+
+	public function isTransparent() : bool{
+		return true;
 	}
 
 	public function getHardness() : float{
