@@ -28,10 +28,6 @@ use pocketmine\math\Vector3;
 
 abstract class Thin extends Transparent{
 
-	public function isSolid() : bool{
-		return false;
-	}
-
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 
 		$minX = 0.4375;
