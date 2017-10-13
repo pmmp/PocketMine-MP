@@ -23,50 +23,27 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\PillarRotationHelper;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
-use pocketmine\math\Vector3;
-use pocketmine\Player;
 
-class Quartz extends Solid{
+class EndStoneBricks extends Solid{
 
-	const NORMAL = 0;
-	const CHISELED = 1;
-	const PILLAR = 2;
-
-	protected $id = self::QUARTZ_BLOCK;
+	protected $id = self::END_BRICKS;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
+	}
+
+	public function getName() : string{
+		return "End Stone Bricks";
 	}
 
 	public function getHardness() : float{
 		return 0.8;
 	}
 
-	public function getName() : string{
-		static $names = [
-			self::NORMAL => "Quartz Block",
-			self::CHISELED => "Chiseled Quartz Block",
-			self::PILLAR => "Quartz Pillar"
-		];
-		return $names[$this->getVariant()] ?? "Unknown";
-	}
-
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
-		if($this->meta !== self::NORMAL){
-			$this->meta = PillarRotationHelper::getMetaFromFace($this->meta, $face);
-		}
-		return $this->getLevel()->setBlock($blockReplace, $this, true, true);
-	}
-
 	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
-	}
-
-	public function getVariantBitmask() : int{
-		return 0x03;
 	}
 
 	public function getDrops(Item $item) : array{
@@ -76,4 +53,5 @@ class Quartz extends Solid{
 
 		return [];
 	}
+
 }

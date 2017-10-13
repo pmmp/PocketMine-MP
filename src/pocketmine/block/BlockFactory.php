@@ -268,12 +268,12 @@ class BlockFactory{
 			self::registerBlock(new GrassPath());
 			self::registerBlock(new ItemFrame());
 			//TODO: CHORUS_FLOWER
-			//TODO: PURPUR_BLOCK
+			self::registerBlock(new Purpur());
 
-			//TODO: PURPUR_STAIRS
+			self::registerBlock(new PurpurStairs());
 
 			//TODO: UNDYED_SHULKER_BOX
-			//TODO: END_BRICKS
+			self::registerBlock(new EndStoneBricks());
 			//TODO: FROSTED_ICE
 			self::registerBlock(new EndRod());
 			//TODO: END_GATEWAY
