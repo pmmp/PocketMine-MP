@@ -98,7 +98,7 @@ class EnderChest extends Transparent{
 				return true;
 			}
 
-			$player->getEnderChestInventory()->openAt($enderChest);
+			$player->getEnderChestInventory()->setHolderPosition($enderChest);
 			$player->addWindow($player->getEnderChestInventory());
 		}
 
