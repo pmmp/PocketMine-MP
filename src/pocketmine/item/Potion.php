@@ -135,10 +135,7 @@ class Potion extends Item{
 			foreach($ev->getEffects() as $effect){
 				$entity->addEffect($effect);
 			}
-			//Don't set the held item to glass bottle if we're in creative
-			if($entity instanceof Player and $entity->isCreative()){
-				return;
-			}
+
 			$entity->getInventory()->setItemInHand(Item::get(self::GLASS_BOTTLE));
 		}
 	}
