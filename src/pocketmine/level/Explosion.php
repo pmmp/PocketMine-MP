@@ -40,6 +40,9 @@ use pocketmine\math\Math;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\ExplodePacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\tile\Chest;
+use pocketmine\tile\Container;
+use pocketmine\tile\Tile;
 
 class Explosion{
 
@@ -196,15 +199,35 @@ class Explosion{
 		$air = ItemFactory::get(Item::AIR);
 
 		foreach($this->affectedBlocks as $block){
+			$yieldDrops = false;
+
 			if($block instanceof TNT){
 				$block->ignite(mt_rand(10, 30));
-			}elseif(mt_rand(0, 100) < $yield){
+			}elseif($yieldDrops = (mt_rand(0, 100) < $yield)){
 				foreach($block->getDrops($air) as $drop){
 					$this->level->dropItem($block->add(0.5, 0.5, 0.5), $drop);
 				}
 			}
 
 			$this->level->setBlockIdAt($block->x, $block->y, $block->z, 0);
+
+			$t = $this->level->getTile($block);
+			if($t instanceof Tile){
+				if($yieldDrops and $t instanceof Container){
+					if($t instanceof Chest){
+						$t->unpair();
+					}
+
+					$dropPos = $t->asVector3()->add(0.5, 0.5, 0.5);
+					foreach($t->getInventory()->getContents() as $drop){
+						if(!$drop->isNull()){
+							$this->level->dropItem($dropPos, $drop);
+						}
+					}
+				}
+
+				$t->close();
+			}
 
 			$pos = new Vector3($block->x, $block->y, $block->z);
 
