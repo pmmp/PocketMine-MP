@@ -180,10 +180,8 @@ class SimpleCommandMap implements CommandMap{
 	 * @return bool
 	 */
 	public function unregister(Command $command) : bool{
-		$label = $command->getLabel();
-
 		foreach($this->knownCommands as $lbl => $cmd) {
-			if($cmd->getLabel() === $label) {
+			if($cmd === $command) {
 				unset($this->knownCommands[$lbl]);
 			}
 		}
