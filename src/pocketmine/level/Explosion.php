@@ -40,6 +40,7 @@ use pocketmine\math\Math;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\ExplodePacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\tile\Tile;
 
 class Explosion{
 
@@ -205,6 +206,11 @@ class Explosion{
 			}
 
 			$this->level->setBlockIdAt($block->x, $block->y, $block->z, 0);
+
+			$t = $this->level->getTile($block);
+			if($t instanceof Tile){
+				$this->level->removeTile($t);
+			}
 
 			$pos = new Vector3($block->x, $block->y, $block->z);
 
