@@ -57,4 +57,16 @@ class LongTag extends NamedTag{
 	public function &getValue() : int{
 		return parent::getValue();
 	}
+
+	/**
+	 * @param int $value
+	 *
+	 * @throws \TypeError
+	 */
+	public function setValue($value) : void{
+		if(!is_int($value)){
+			throw new \TypeError("LongTag value must be of type int, " . gettype($value) . " given");
+		}
+		parent::setValue($value);
+	}
 }
