@@ -69,6 +69,270 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 		}
 	}
 
+	/*
+	 * Here follows many functions of misery for the sake of type safety. We really needs generics in PHP :(
+	 */
+
+	/**
+	 * Returns the tag with the specified name, or null if it does not exist.
+	 *
+	 * @param string      $name
+	 * @param string|null $expectedType Class that extends NamedTag
+	 *
+	 * @return NamedTag|null
+	 * @throws \RuntimeException if the tag exists and is not of the expected type (if specified)
+	 */
+	public function getTag(string $name, string $expectedType = null) : ?NamedTag{
+		assert(is_a($expectedType, NamedTag::class, true));
+		$tag = $this->{$name} ?? null;
+		if($tag !== null and $expectedType !== null and !($tag instanceof $expectedType)){
+			throw new \RuntimeException("Expected a tag of type $expectedType, got " . get_class($tag));
+		}
+
+		return $tag;
+	}
+
+	/**
+	 * Returns the ListTag with the specified name, or null if it does not exist. Triggers an exception if a tag exists
+	 * with that name and the tag is not a ListTag.
+	 *
+	 * @param string $name
+	 * @return ListTag|null
+	 */
+	public function getListTag(string $name) : ?ListTag{
+		return $this->getTag($name, ListTag::class);
+	}
+
+	/**
+	 * Returns the CompoundTag with the specified name, or null if it does not exist. Triggers an exception if a tag
+	 * exists with that name and the tag is not a ListTag.
+	 *
+	 * @param string $name
+	 * @return CompoundTag|null
+	 */
+	public function getCompoundTag(string $name) : ?CompoundTag{
+		return $this->getTag($name, CompoundTag::class);
+	}
+
+	/**
+	 * @param NamedTag $tag
+	 */
+	public function setTag(NamedTag $tag) : void{
+		$this->{$tag->getName()} = $tag;
+	}
+
+	public function exists(string $name) : bool{
+		return ($this->{$name} ?? null) instanceof NamedTag;
+	}
+
+	/**
+	 * @param string $name
+	 * @param string $expectedType
+	 * @param mixed  $default
+	 *
+	 * @return mixed
+	 * @throws \RuntimeException if the tag isn't found and no default is given
+	 */
+	public function getTagValue(string $name, string $expectedType, $default = null){
+		$tag = $this->getTag($name, $expectedType);
+		if($tag !== null){
+			return $tag->getValue();
+		}
+
+		if($default !== null){
+			return $default;
+		}
+
+		throw new \RuntimeException("Tag \"$name\" not found and no default value given");
+	}
+
+	/*
+	 * The following methods are wrappers around getTagValue() with type safety.
+	 */
+
+	/**
+	 * @param string   $name
+	 * @param int|null $default
+	 *
+	 * @return int
+	 */
+	public function getByte(string $name, ?int $default = null) : int{
+		return $this->getTagValue($name, ByteTag::class, $default);
+	}
+
+	/**
+	 * @param string   $name
+	 * @param int|null $default
+	 *
+	 * @return int
+	 */
+	public function getShort(string $name, ?int $default = null) : int{
+		return $this->getTagValue($name, ShortTag::class, $default);
+	}
+
+	/**
+	 * @param string   $name
+	 * @param int|null $default
+	 *
+	 * @return int
+	 */
+	public function getInt(string $name, ?int $default = null) : int{
+		return $this->getTagValue($name, IntTag::class, $default);
+	}
+
+	/**
+	 * @param string   $name
+	 * @param int|null $default
+	 *
+	 * @return int
+	 */
+	public function getLong(string $name, ?int $default = null) : int{
+		return $this->getTagValue($name, LongTag::class, $default);
+	}
+
+	/**
+	 * @param string     $name
+	 * @param float|null $default
+	 *
+	 * @return float
+	 */
+	public function getFloat(string $name, ?float $default = null) : float{
+		return $this->getTagValue($name, FloatTag::class, $default);
+	}
+
+	/**
+	 * @param string     $name
+	 * @param float|null $default
+	 *
+	 * @return float
+	 */
+	public function getDouble(string $name, ?float $default = null) : float{
+		return $this->getTagValue($name, DoubleTag::class, $default);
+	}
+
+	/**
+	 * @param string      $name
+	 * @param null|string $default
+	 *
+	 * @return string
+	 */
+	public function getByteArray(string $name, ?string $default = null) : string{
+		return $this->getTagValue($name, ByteArrayTag::class, $default);
+	}
+
+	/**
+	 * @param string      $name
+	 * @param null|string $default
+	 *
+	 * @return string
+	 */
+	public function getString(string $name, ?string $default = null) : string{
+		return $this->getTagValue($name, StringTag::class, $default);
+	}
+
+	/**
+	 * @param string     $name
+	 * @param int[]|null $default
+	 *
+	 * @return int[]
+	 */
+	public function getIntArray(string $name, array $default = null) : array{
+		return $this->getTagValue($name, IntArrayTag::class, $default);
+	}
+
+	/**
+	 * @param string $name Name of the tag to set
+	 * @param string $tagType Class that extends NamedTag
+	 * @param mixed  $value Value to set. This should be compatible with the specified tag type.
+	 */
+	public function setTagValue(string $name, string $tagType, $value){
+		assert(is_a($tagType, NamedTag::class, true));
+		$tag = $this->getTag($name, $tagType);
+		if($tag !== null){
+			$tag->setValue($value);
+		}else{
+			$this->setTag(new $tagType($name, $value));
+		}
+	}
+
+	/*
+	 * The following methods are wrappers around setTagValue() with type safety.
+	 */
+
+	/**
+	 * @param string $name
+	 * @param int    $value
+	 */
+	public function setByte(string $name, int $value) : void{
+		$this->setTagValue($name, ByteTag::class, $value);
+	}
+
+	/**
+	 * @param string $name
+	 * @param int    $value
+	 */
+	public function setShort(string $name, int $value) : void{
+		$this->setTagValue($name, ShortTag::class, $value);
+	}
+
+	/**
+	 * @param string $name
+	 * @param int    $value
+	 */
+	public function setInt(string $name, int $value) : void{
+		$this->setTagValue($name, IntTag::class, $value);
+	}
+
+	/**
+	 * @param string $name
+	 * @param int    $value
+	 */
+	public function setLong(string $name, int $value) : void{
+		$this->setTagValue($name, LongTag::class, $value);
+	}
+
+	/**
+	 * @param string $name
+	 * @param float  $value
+	 */
+	public function setFloat(string $name, float $value) : void{
+		$this->setTagValue($name, FloatTag::class, $value);
+	}
+
+	/**
+	 * @param string $name
+	 * @param float  $value
+	 */
+	public function setDouble(string $name, float $value) : void{
+		$this->setTagValue($name, DoubleTag::class, $value);
+	}
+
+	/**
+	 * @param string $name
+	 * @param string $value
+	 */
+	public function setByteArray(string $name, string $value) : void{
+		$this->setTagValue($name, ByteArrayTag::class, $value);
+	}
+
+	/**
+	 * @param string $name
+	 * @param string $value
+	 */
+	public function setString(string $name, string $value) : void{
+		$this->setTagValue($name, StringTag::class, $value);
+	}
+
+	/**
+	 * @param string $name
+	 * @param int[]  $value
+	 */
+	public function setIntArray(string $name, array $value) : void{
+		$this->setTagValue($name, IntArrayTag::class, $value);
+	}
+
+
+
 	public function offsetExists($offset){
 		return isset($this->{$offset}) and $this->{$offset} instanceof Tag;
 	}
