@@ -32,7 +32,7 @@ use pocketmine\Player;
 use pocketmine\tile\EnderChest as TileEnderChest;
 use pocketmine\tile\Tile;
 
-class EnderChest extends Transparent{
+class EnderChest extends Chest{
 
 	protected $id = self::ENDER_CHEST;
 
@@ -106,9 +106,15 @@ class EnderChest extends Transparent{
 	}
 
 	public function getDrops(Item $item) : array{
-		return [
-			ItemFactory::get(Item::OBSIDIAN, 0, 8)
-		];
+		if($item->isPickaxe() >= Tool::TIER_WOODEN){
+			return [ItemFactory::get(Item::OBSIDIAN, 0, 8)];
+		}
+
+		return [];
+	}
+
+	public function getFuelTime() : int{
+		return 0;
 	}
 
 }
