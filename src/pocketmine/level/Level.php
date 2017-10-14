@@ -711,11 +711,11 @@ class Level implements ChunkManager, Metadatable{
 			Level::getBlockXYZ($index, $x, $y, $z);
 
 			$block = $this->getBlock($this->temporalVector->setComponents($x, $y, $z));
-			$block->clearBoundingBoxes(); //this MUST apply to the original block, not the block chosen by a plugin
+			$block->clearBoundingBoxes(); //for blocks like fences, force recalculation of connected AABBs
 
 			$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($block));
 			if(!$ev->isCancelled()){
-				$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
+				$block->onUpdate(self::BLOCK_UPDATE_NORMAL);
 			}
 		}
 
