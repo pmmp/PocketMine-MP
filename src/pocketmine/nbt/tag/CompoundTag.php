@@ -115,6 +115,9 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	}
 
 	/**
+	 * Sets the specified NamedTag as a child tag of the CompoundTag at the offset specified by the tag's name. If a tag
+	 * already exists at the offset, it will be overwritten with the new one.
+	 *
 	 * @param NamedTag $tag
 	 */
 	public function setTag(NamedTag $tag) : void{
@@ -122,6 +125,9 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	}
 
 	/**
+	 * Removes the child tags with the specified names from the CompoundTag. This function accepts a variadic list of
+	 * strings.
+	 *
 	 * @param string[] ...$names
 	 */
 	public function removeTag(string ...$names) : void{
@@ -130,11 +136,20 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 		}
 	}
 
+	/**
+	 * Returns whether the CompoundTag contains a child tag with the specified name.
+	 *
+	 * @param string $name
+	 * @return bool
+	 */
 	public function hasTag(string $name) : bool{
 		return ($this->{$name} ?? null) instanceof NamedTag;
 	}
 
 	/**
+	 * Returns the value of the child tag with the specified name, or $default if the tag doesn't exist. If the child
+	 * tag is not of type $expectedType, an exception will be thrown.
+	 *
 	 * @param string $name
 	 * @param string $expectedType
 	 * @param mixed  $default
@@ -245,6 +260,9 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	}
 
 	/**
+	 * Sets the value of the child tag at the specified offset, creating it if it does not exist. If the child tag
+	 * exists and the value is of the wrong type, an exception will be thrown.
+
 	 * @param string $name Name of the tag to set
 	 * @param string $tagType Class that extends NamedTag
 	 * @param mixed  $value Value to set. This should be compatible with the specified tag type.
