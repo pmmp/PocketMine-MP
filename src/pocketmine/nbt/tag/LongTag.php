@@ -50,4 +50,11 @@ class LongTag extends NamedTag{
 	public function write(NBT $nbt, bool $network = false){
 		$nbt->putLong($this->value, $network);
 	}
+
+	/**
+	 * @return int
+	 */
+	public function &getValue() : int{
+		return parent::getValue();
+	}
 }
