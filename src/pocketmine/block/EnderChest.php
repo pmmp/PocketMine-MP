@@ -36,10 +36,6 @@ class EnderChest extends Chest{
 
 	protected $id = self::ENDER_CHEST;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
-	}
-
 	public function getHardness() : float{
 		return 22.5;
 	}
@@ -56,17 +52,6 @@ class EnderChest extends Chest{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return new AxisAlignedBB(
-			$this->x + 0.0625,
-			$this->y,
-			$this->z + 0.0625,
-			$this->x + 0.9375,
-			$this->y + 0.9475,
-			$this->z + 0.9375
-		);
-	}
-
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$faces = [
 			0 => 4,
@@ -81,6 +66,10 @@ class EnderChest extends Chest{
 		Tile::createTile(Tile::ENDER_CHEST, $this->getLevel(), TileEnderChest::createNBT($this, $face, $item, $player));
 
 		return true;
+	}
+
+	public function onBreak(Item $item, Player $player = null) : bool{
+		return Block::onBreak($item, $player);
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{
