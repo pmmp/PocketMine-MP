@@ -29,6 +29,7 @@ use pocketmine\nbt\NBT;
 
 class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 
+	/** @var int */
 	private $tagType;
 
 	/**
