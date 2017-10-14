@@ -121,8 +121,12 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 		$this->{$tag->getName()} = $tag;
 	}
 
-	public function exists(string $name) : bool{
+	public function tagExists(string $name) : bool{
 		return ($this->{$name} ?? null) instanceof NamedTag;
+	}
+
+	public function removeTag(string $name) : void{
+		unset($this->{$name});
 	}
 
 	/**
