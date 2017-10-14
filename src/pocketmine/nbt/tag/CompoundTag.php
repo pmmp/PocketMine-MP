@@ -125,8 +125,13 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 		return ($this->{$name} ?? null) instanceof NamedTag;
 	}
 
-	public function removeTag(string $name) : void{
-		unset($this->{$name});
+	/**
+	 * @param string[] ...$names
+	 */
+	public function removeTag(string ...$names) : void{
+		foreach($names as $name){
+			unset($this->{$name});
+		}
 	}
 
 	/**
