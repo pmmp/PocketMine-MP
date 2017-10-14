@@ -1487,7 +1487,7 @@ class Server{
 				"xbox-auth" => true
 			]);
 
-			$this->forceLanguage = $this->getProperty("settings.force-language", false);
+			$this->forceLanguage = (bool) $this->getProperty("settings.force-language", false);
 			$this->baseLang = new BaseLang($this->getProperty("settings.language", BaseLang::FALLBACK_LANGUAGE));
 			$this->logger->info($this->getLanguage()->translateString("language.selected", [$this->getLanguage()->getName(), $this->getLanguage()->getLang()]));
 
