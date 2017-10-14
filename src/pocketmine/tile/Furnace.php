@@ -66,8 +66,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		$this->inventory = new FurnaceInventory($this);
 
 		if(!isset($this->namedtag->Items) or !($this->namedtag->Items instanceof ListTag)){
-			$this->namedtag->Items = new ListTag("Items", []);
-			$this->namedtag->Items->setTagType(NBT::TAG_Compound);
+			$this->namedtag->Items = new ListTag("Items", [], NBT::TAG_Compound);
 		}
 
 		for($i = 0; $i < $this->getSize(); ++$i){
@@ -110,7 +109,6 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 
 	public function saveNBT(){
 		$this->namedtag->Items->setValue([]);
-		$this->namedtag->Items->setTagType(NBT::TAG_Compound);
 		for($index = 0; $index < $this->getSize(); ++$index){
 			$this->setItem($index, $this->inventory->getItem($index));
 		}
