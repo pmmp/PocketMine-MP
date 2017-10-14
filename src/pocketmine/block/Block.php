@@ -558,6 +558,15 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Clears any cached precomputed bounding boxes. This is called on block neighbour update and when the block is set
+	 * into the world to remove any outdated precomputed AABBs and force recalculation.
+	 */
+	public function clearBoundingBoxes() : void{
+		$this->boundingBox = null;
+		$this->collisionBoxes = null;
+	}
+
+	/**
 	 * @param Vector3 $pos1
 	 * @param Vector3 $pos2
 	 *

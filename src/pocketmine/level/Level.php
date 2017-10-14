@@ -709,7 +709,11 @@ class Level implements ChunkManager, Metadatable{
 		while($this->neighbourBlockUpdateQueue->count() > 0){
 			$index = $this->neighbourBlockUpdateQueue->dequeue();
 			Level::getBlockXYZ($index, $x, $y, $z);
-			$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($this->temporalVector->setComponents($x, $y, $z))));
+
+			$block = $this->getBlock($this->temporalVector->setComponents($x, $y, $z));
+			$block->clearBoundingBoxes(); //this MUST apply to the original block, not the block chosen by a plugin
+
+			$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($block));
 			if(!$ev->isCancelled()){
 				$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
 			}
@@ -1482,6 +1486,7 @@ class Level implements ChunkManager, Metadatable{
 			}
 
 			$block->position($pos);
+			$block->clearBoundingBoxes();
 			unset($this->blockCache[Level::blockHash($pos->x, $pos->y, $pos->z)]);
 
 			$index = Level::chunkHash($pos->x >> 4, $pos->z >> 4);
