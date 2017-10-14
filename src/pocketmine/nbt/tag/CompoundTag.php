@@ -55,7 +55,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	 *
 	 * @throws \TypeError
 	 */
-	public function setValue($value){
+	public function setValue($value) : void{
 		if(is_array($value)){
 			foreach($value as $name => $tag){
 				if($tag instanceof NamedTag){
@@ -385,11 +385,11 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 		unset($this->{$offset});
 	}
 
-	public function getType(){
+	public function getType() : int{
 		return NBT::TAG_Compound;
 	}
 
-	public function read(NBT $nbt, bool $network = false){
+	public function read(NBT $nbt, bool $network = false) : void{
 		$this->value = [];
 		do{
 			$tag = $nbt->readTag($network);
@@ -399,7 +399,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 		}while(!($tag instanceof EndTag) and !$nbt->feof());
 	}
 
-	public function write(NBT $nbt, bool $network = false){
+	public function write(NBT $nbt, bool $network = false) : void{
 		foreach($this as $tag){
 			if($tag instanceof Tag and !($tag instanceof EndTag)){
 				$nbt->writeTag($tag, $network);

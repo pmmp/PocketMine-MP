@@ -63,7 +63,7 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 	 *
 	 * @throws \TypeError
 	 */
-	public function setValue($value){
+	public function setValue($value) : void{
 		if(is_array($value)){
 			foreach($value as $name => $tag){
 				if($tag instanceof NamedTag){
@@ -129,7 +129,7 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 		return $count;
 	}
 
-	public function getType(){
+	public function getType() : int{
 		return NBT::TAG_List;
 	}
 
@@ -141,7 +141,7 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 		return $this->tagType;
 	}
 
-	public function read(NBT $nbt, bool $network = false){
+	public function read(NBT $nbt, bool $network = false) : void{
 		$this->value = [];
 		$this->tagType = $nbt->getByte();
 		$size = $nbt->getInt($network);
@@ -154,7 +154,7 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 		}
 	}
 
-	public function write(NBT $nbt, bool $network = false){
+	public function write(NBT $nbt, bool $network = false) : void{
 		if($this->tagType === NBT::TAG_End){ //previously empty list, try detecting type from tag children
 			$id = NBT::TAG_End;
 			foreach($this as $tag){
@@ -162,7 +162,7 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 					if($id === NBT::TAG_End){
 						$id = $tag->getType();
 					}elseif($id !== $tag->getType()){
-						return false;
+						return; //TODO: throw exception?
 					}
 				}
 			}
@@ -182,8 +182,6 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 		foreach($tags as $tag){
 			$tag->write($nbt, $network);
 		}
-
-		return true;
 	}
 
 	public function __toString(){
