@@ -105,7 +105,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 
 	/**
 	 * Returns the CompoundTag with the specified name, or null if it does not exist. Triggers an exception if a tag
-	 * exists with that name and the tag is not a ListTag.
+	 * exists with that name and the tag is not a CompoundTag.
 	 *
 	 * @param string $name
 	 * @return CompoundTag|null
