@@ -249,7 +249,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	 * @param string $tagType Class that extends NamedTag
 	 * @param mixed  $value Value to set. This should be compatible with the specified tag type.
 	 */
-	public function setTagValue(string $name, string $tagType, $value){
+	public function setTagValue(string $name, string $tagType, $value) : void{
 		assert(is_a($tagType, NamedTag::class, true));
 		$tag = $this->getTag($name, $tagType);
 		if($tag !== null){
