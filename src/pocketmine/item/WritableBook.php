@@ -156,7 +156,7 @@ class WritableBook extends Item{
 	 *
 	 * @return bool indicating success
 	 */
-	public function swapPage(int $pageId1, int $pageId2) : bool{
+	public function swapPages(int $pageId1, int $pageId2) : bool{
 		if(!$this->pageExists($pageId1) or !$this->pageExists($pageId2)){
 			return false;
 		}
@@ -195,10 +195,7 @@ class WritableBook extends Item{
 			if($downwards){
 				unset($namedTag->pages->{$key});
 			}
-			$namedTag->pages->{$key + $type} = new CompoundTag("", [
-				new StringTag("text", $page->text->getValue()),
-				new StringTag("photoname", "")
-			]);
+			$namedTag->pages->{$key + $type} = clone $page;
 		}
 		return true;
 	}
