@@ -195,7 +195,11 @@ class WritableBook extends Item{
 			if($downwards){
 				unset($namedTag->pages->{$key});
 			}
-			$namedTag->pages->{$key + $type} = clone $page;
+			$namedTag->pages->{$key + $type} = $page;
+		}
+
+		if(!$downwards){
+			unset($namedTag->pages->{$pageId});
 		}
 		return true;
 	}
