@@ -39,12 +39,12 @@ class SpawnEgg extends Item{
 		parent::__construct(self::SPAWN_EGG, $meta, "Spawn Egg");
 	}
 
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, int $face, Vector3 $facePos) : bool{
+	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos) : bool{
 		$nbt = new CompoundTag("", [
 			new ListTag("Pos", [
-				new DoubleTag("", $block->getX() + 0.5),
-				new DoubleTag("", $block->getY()),
-				new DoubleTag("", $block->getZ() + 0.5)
+				new DoubleTag("", $blockReplace->getX() + 0.5),
+				new DoubleTag("", $blockReplace->getY()),
+				new DoubleTag("", $blockReplace->getZ() + 0.5)
 			]),
 			new ListTag("Motion", [
 				new DoubleTag("", 0),

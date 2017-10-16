@@ -785,14 +785,14 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @param Level   $level
 	 * @param Player  $player
-	 * @param Block   $block
-	 * @param Block   $target
+	 * @param Block   $blockReplace
+	 * @param Block   $blockClicked
 	 * @param int     $face
 	 * @param Vector3 $facePos
 	 *
 	 * @return bool
 	 */
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, int $face, Vector3 $facePos) : bool{
+	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos) : bool{
 		return false;
 	}
 
