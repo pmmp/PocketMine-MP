@@ -107,6 +107,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	}
 
 	public function saveNBT() : void{
+		parent::saveNBT();
 		$this->namedtag->setTag(new ListTag("Items", [], NBT::TAG_Compound));
 		for($index = 0; $index < $this->getSize(); ++$index){
 			$this->setItem($index, $this->inventory->getItem($index));
