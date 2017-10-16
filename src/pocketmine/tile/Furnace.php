@@ -53,24 +53,24 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	protected $inventory;
 
 	public function __construct(Level $level, CompoundTag $nbt){
-		if(!($nbt->getTag(self::TAG_BURN_TIME) instanceof ShortTag) or $nbt->getShort(self::TAG_BURN_TIME) < 0){
+		if(!$nbt->hasTag(self::TAG_BURN_TIME, ShortTag::class) or $nbt->getShort(self::TAG_BURN_TIME) < 0){
 			$nbt->setTag(new ShortTag(self::TAG_BURN_TIME, 0));
 		}
 
-		if(!
-			($nbt->getTag(self::TAG_COOK_TIME) instanceof ShortTag) or
+		if(
+			!$nbt->hasTag(self::TAG_COOK_TIME, ShortTag::class) or
 			$nbt->getShort(self::TAG_COOK_TIME) < 0 or
 			($nbt->getShort(self::TAG_BURN_TIME) === 0 and $nbt->getShort(self::TAG_COOK_TIME) > 0)
 		){
 			$nbt->setTag(new ShortTag(self::TAG_COOK_TIME, 0));
 		}
 
-		if(!($nbt->getTag(self::TAG_MAX_TIME) instanceof ShortTag)){
+		if(!$nbt->hasTag(self::TAG_MAX_TIME, ShortTag::class)){
 			$nbt->setTag(new ShortTag(self::TAG_MAX_TIME, $nbt->getShort(self::TAG_BURN_TIME)));
 			$nbt->removeTag(self::TAG_BURN_TICKS);
 		}
 
-		if(!($nbt->getTag(self::TAG_BURN_TICKS) instanceof ShortTag)){
+		if(!$nbt->getTag(self::TAG_BURN_TICKS, ShortTag::class)){
 			$nbt->setTag(new ShortTag(self::TAG_BURN_TICKS, 0));
 		}
 

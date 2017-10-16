@@ -42,10 +42,10 @@ class Skull extends Spawnable{
 	const TAG_ROT = "Rot";
 
 	public function __construct(Level $level, CompoundTag $nbt){
-		if(!($nbt->getTag(self::TAG_SKULL_TYPE) instanceof ByteTag)){
+		if(!$nbt->hasTag(self::TAG_SKULL_TYPE, ByteTag::class)){
 			$nbt->setTag(new ByteTag(self::TAG_SKULL_TYPE, 0));
 		}
-		if(!($nbt->getTag(self::TAG_ROT) instanceof ByteTag)){
+		if(!$nbt->hasTag(self::TAG_ROT, ByteTag::class)){
 			$nbt->setTag(new ByteTag(self::TAG_ROT, 0));
 		}
 		parent::__construct($level, $nbt);

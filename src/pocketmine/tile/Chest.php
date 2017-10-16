@@ -51,7 +51,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 		parent::__construct($level, $nbt);
 		$this->inventory = new ChestInventory($this);
 
-		if(!($this->namedtag->getTag("Items") instanceof ListTag)){
+		if(!$this->namedtag->hasTag("Items", ListTag::class)){
 			$this->namedtag->setTag(new ListTag("Items", [], NBT::TAG_Compound));
 		}
 
