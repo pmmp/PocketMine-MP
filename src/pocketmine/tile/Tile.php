@@ -136,14 +136,14 @@ abstract class Tile extends Position{
 		$this->namedtag = $nbt;
 		$this->server = $level->getServer();
 		$this->setLevel($level);
-		$this->chunk = $level->getChunk($this->namedtag->x->getValue() >> 4, $this->namedtag->z->getValue() >> 4, false);
+		$this->chunk = $level->getChunk($this->namedtag->getInt("x") >> 4, $this->namedtag->getInt("z") >> 4, false);
 		assert($this->chunk !== null);
 
 		$this->name = "";
 		$this->id = Tile::$tileCount++;
-		$this->x = $this->namedtag->x->getValue();
-		$this->y = $this->namedtag->y->getValue();
-		$this->z = $this->namedtag->z->getValue();
+		$this->x = $this->namedtag->getInt("x");
+		$this->y = $this->namedtag->getInt("y");
+		$this->z = $this->namedtag->getInt("z");
 
 		$this->chunk->addTile($this);
 		$this->getLevel()->addTile($this);
@@ -154,10 +154,10 @@ abstract class Tile extends Position{
 	}
 
 	public function saveNBT() : void{
-		$this->namedtag->id->setValue(static::getSaveId());
-		$this->namedtag->x->setValue($this->x);
-		$this->namedtag->y->setValue($this->y);
-		$this->namedtag->z->setValue($this->z);
+		$this->namedtag->setString("id", static::getSaveId());
+		$this->namedtag->setInt("x", $this->x);
+		$this->namedtag->setInt("y", $this->y);
+		$this->namedtag->setInt("z", $this->z);
 	}
 
 	public function getNBT() : CompoundTag{
@@ -167,7 +167,7 @@ abstract class Tile extends Position{
 	public function getCleanedNBT() : ?CompoundTag{
 		$this->saveNBT();
 		$tag = clone $this->namedtag;
-		unset($tag->x, $tag->y, $tag->z, $tag->id);
+		$tag->removeTag("x", "y", "z", "id");
 		if($tag->getCount() > 0){
 			return $tag;
 		}else{

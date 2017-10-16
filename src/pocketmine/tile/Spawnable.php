@@ -81,10 +81,10 @@ abstract class Spawnable extends Tile{
 	 */
 	final public function getSpawnCompound() : CompoundTag{
 		$nbt = new CompoundTag("", [
-			$this->namedtag->id,
-			$this->namedtag->x,
-			$this->namedtag->y,
-			$this->namedtag->z
+			$this->namedtag->getTag("id"),
+			$this->namedtag->getTag("x"),
+			$this->namedtag->getTag("y"),
+			$this->namedtag->getTag("z")
 		]);
 		$this->addAdditionalSpawnData($nbt);
 		return $nbt;

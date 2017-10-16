@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\StringTag;
 
 /**
  * This trait implements most methods in the {@link Nameable} interface. It should only be used by Tiles.
@@ -46,7 +45,7 @@ trait NameableTrait{
 	 */
 	public function getName() : string{
 		$nbt = $this->getNBT();
-		return isset($nbt->CustomName) ? ((string) $nbt->CustomName->getValue()) : $this->getDefaultName();
+		return $nbt->getString("CustomName") ?? $this->getDefaultName();
 	}
 
 	/**
@@ -55,17 +54,17 @@ trait NameableTrait{
 	public function setName(string $name) : void{
 		$nbt = $this->getNBT();
 		if($name === ""){
-			unset($nbt->CustomName);
+			$nbt->removeTag("CustomName");
 			return;
 		}
 
-		$nbt->CustomName = new StringTag("CustomName", $name);
+		$nbt->setString("CustomName", $name);
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function hasName() : bool{
-		return isset($this->getNBT()->CustomName);
+		return $this->getNBT()->hasTag("CustomName");
 	}
 }

@@ -33,13 +33,15 @@ use pocketmine\nbt\tag\ShortTag;
 use pocketmine\Player;
 
 class FlowerPot extends Spawnable{
+	const TAG_ITEM = "item";
+	const TAG_ITEM_DATA = "mData";
 
 	public function __construct(Level $level, CompoundTag $nbt){
-		if(!isset($nbt->item)){
-			$nbt->item = new ShortTag("item", 0);
+		if(!($nbt->getTag(self::TAG_ITEM) instanceof ShortTag)){
+			$nbt->setTag(new ShortTag(self::TAG_ITEM, 0));
 		}
-		if(!isset($nbt->mData)){
-			$nbt->mData = new IntTag("mData", 0);
+		if(!($nbt->getTag(self::TAG_ITEM_DATA) instanceof IntTag)){
+			$nbt->setTag(new IntTag(self::TAG_ITEM_DATA, 0));
 		}
 		parent::__construct($level, $nbt);
 	}
@@ -68,12 +70,12 @@ class FlowerPot extends Spawnable{
 	}
 
 	public function getItem() : Item{
-		return ItemFactory::get($this->namedtag->item->getValue(), $this->namedtag->mData->getValue(), 1);
+		return ItemFactory::get($this->namedtag->getShort(self::TAG_ITEM), $this->namedtag->getInt(self::TAG_ITEM_DATA), 1);
 	}
 
 	public function setItem(Item $item){
-		$this->namedtag->item->setValue($item->getId());
-		$this->namedtag->mData->setValue($item->getDamage());
+		$this->namedtag->setShort(self::TAG_ITEM, $item->getId());
+		$this->namedtag->setInt(self::TAG_ITEM_DATA, $item->getDamage());
 		$this->onChanged();
 	}
 
@@ -86,12 +88,12 @@ class FlowerPot extends Spawnable{
 	}
 
 	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		$nbt->item = $this->namedtag->item;
-		$nbt->mData = $this->namedtag->mData;
+		$nbt->setTag($this->namedtag->getTag(self::TAG_ITEM));
+		$nbt->setTag($this->namedtag->getTag(self::TAG_ITEM_DATA));
 	}
 
 	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
-		$nbt->item = new ShortTag("item", 0);
-		$nbt->mData = new IntTag("mData", 0);
+		$nbt->setShort(self::TAG_ITEM, 0);
+		$nbt->setInt(self::TAG_ITEM_DATA, 0);
 	}
 }

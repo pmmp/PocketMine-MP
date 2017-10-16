@@ -38,37 +38,40 @@ class Skull extends Spawnable{
 	const TYPE_CREEPER = 4;
 	const TYPE_DRAGON = 5;
 
+	const TAG_SKULL_TYPE = "SkullType";
+	const TAG_ROT = "Rot";
+
 	public function __construct(Level $level, CompoundTag $nbt){
-		if(!isset($nbt->SkullType)){
-			$nbt->SkullType = new ByteTag("SkullType", 0);
+		if(!($nbt->getTag(self::TAG_SKULL_TYPE) instanceof ByteTag)){
+			$nbt->setTag(new ByteTag(self::TAG_SKULL_TYPE, 0));
 		}
-		if(!isset($nbt->Rot)){
-			$nbt->Rot = new ByteTag("Rot", 0);
+		if(!($nbt->getTag(self::TAG_ROT) instanceof ByteTag)){
+			$nbt->setTag(new ByteTag(self::TAG_ROT, 0));
 		}
 		parent::__construct($level, $nbt);
 	}
 
 	public function setType(int $type){
-		$this->namedtag->SkullType->setValue($type);
+		$this->namedtag->setByte(self::TAG_SKULL_TYPE, $type);
 		$this->onChanged();
 	}
 
 	public function getType() : int{
-		return $this->namedtag->SkullType->getValue();
+		return $this->namedtag->getByte(self::TAG_SKULL_TYPE);
 	}
 
 	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		$nbt->SkullType = $this->namedtag->SkullType;
-		$nbt->Rot = $this->namedtag->Rot;
+		$nbt->setTag($this->namedtag->getTag(self::TAG_SKULL_TYPE));
+		$nbt->setTag($this->namedtag->getTag(self::TAG_ROT));
 	}
 
 	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
-		$nbt->SkullType = new ByteTag("SkullType", $item !== null ? $item->getDamage() : self::TYPE_SKELETON);
+		$nbt->setByte(self::TAG_SKULL_TYPE, $item !== null ? $item->getDamage() : self::TYPE_SKELETON);
 
 		$rot = 0;
 		if($face === Vector3::SIDE_UP and $player !== null){
 			$rot = floor(($player->yaw * 16 / 360) + 0.5) & 0x0F;
 		}
-		$nbt->Rot = new ByteTag("Rot", $rot);
+		$nbt->setByte("Rot", $rot);
 	}
 }
