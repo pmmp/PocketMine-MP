@@ -38,6 +38,7 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 
 class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
+	use NameableTrait;
 
 	/** @var ChestInventory */
 	protected $inventory;
@@ -188,27 +189,8 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	/**
 	 * @return string
 	 */
-	public function getName() : string{
-		return isset($this->namedtag->CustomName) ? $this->namedtag->CustomName->getValue() : "Chest";
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function hasName() : bool{
-		return isset($this->namedtag->CustomName);
-	}
-
-	/**
-	 * @param string $str
-	 */
-	public function setName(string $str){
-		if($str === ""){
-			unset($this->namedtag->CustomName);
-			return;
-		}
-
-		$this->namedtag->CustomName = new StringTag("CustomName", $str);
+	public function getDefaultName() : string{
+		return "Chest";
 	}
 
 	public function isPaired(){

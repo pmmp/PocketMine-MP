@@ -43,6 +43,8 @@ use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
 use pocketmine\Player;
 
 class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
+	use NameableTrait;
+
 	/** @var FurnaceInventory */
 	protected $inventory;
 
@@ -78,21 +80,11 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		}
 	}
 
-	public function getName() : string{
-		return isset($this->namedtag->CustomName) ? $this->namedtag->CustomName->getValue() : "Furnace";
-	}
-
-	public function hasName() : bool{
-		return isset($this->namedtag->CustomName);
-	}
-
-	public function setName(string $str){
-		if($str === ""){
-			unset($this->namedtag->CustomName);
-			return;
-		}
-
-		$this->namedtag->CustomName = new StringTag("CustomName", $str);
+	/**
+	 * @return string
+	 */
+	public function getDefaultName() : string{
+		return "Furnace";
 	}
 
 	public function close(){

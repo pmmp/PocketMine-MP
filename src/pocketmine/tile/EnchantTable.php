@@ -30,23 +30,13 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 
 class EnchantTable extends Spawnable implements Nameable{
+	use NameableTrait;
 
-
-	public function getName() : string{
-		return isset($this->namedtag->CustomName) ? $this->namedtag->CustomName->getValue() : "Enchanting Table";
-	}
-
-	public function hasName() : bool{
-		return isset($this->namedtag->CustomName);
-	}
-
-	public function setName(string $str){
-		if($str === ""){
-			unset($this->namedtag->CustomName);
-			return;
-		}
-
-		$this->namedtag->CustomName = new StringTag("CustomName", $str);
+	/**
+	 * @return string
+	 */
+	public function getDefaultName() : string{
+		return "Enchanting Table";
 	}
 
 	public function addAdditionalSpawnData(CompoundTag $nbt){

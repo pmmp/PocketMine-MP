@@ -23,25 +23,49 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
-interface Nameable{
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\StringTag;
+
+/**
+ * This trait implements most methods in the {@link Nameable} interface. It should only be used by Tiles.
+ */
+trait NameableTrait{
 
 	/**
 	 * @return string
 	 */
-	public function getDefaultName() : string;
+	abstract public function getDefaultName() : string;
+
+	/**
+	 * @return CompoundTag
+	 */
+	abstract public function getNBT() : CompoundTag;
 
 	/**
 	 * @return string
 	 */
-	public function getName() : string;
+	public function getName() : string{
+		$nbt = $this->getNBT();
+		return isset($nbt->CustomName) ? ((string) $nbt->CustomName->getValue()) : $this->getDefaultName();
+	}
 
 	/**
-	 * @param string $str
+	 * @param string $name
 	 */
-	public function setName(string $str);
+	public function setName(string $name) : void{
+		$nbt = $this->getNBT();
+		if($name === ""){
+			unset($nbt->CustomName);
+			return;
+		}
+
+		$nbt->CustomName = new StringTag("CustomName", $name);
+	}
 
 	/**
 	 * @return bool
 	 */
-	public function hasName() : bool;
+	public function hasName() : bool{
+		return isset($this->getNBT()->CustomName);
+	}
 }

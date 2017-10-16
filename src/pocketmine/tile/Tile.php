@@ -163,6 +163,10 @@ abstract class Tile extends Position{
 		$this->namedtag->z->setValue($this->z);
 	}
 
+	public function getNBT() : CompoundTag{
+		return $this->namedtag;
+	}
+
 	public function getCleanedNBT(){
 		$this->saveNBT();
 		$tag = clone $this->namedtag;
@@ -264,7 +268,7 @@ abstract class Tile extends Position{
 		}
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return $this->name;
 	}
 
