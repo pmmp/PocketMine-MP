@@ -82,10 +82,10 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	 * @return NamedTag|null
 	 * @throws \RuntimeException if the tag exists and is not of the expected type (if specified)
 	 */
-	public function getTag(string $name, ?string $expectedClass = null) : ?NamedTag{
-		assert($expectedClass === null or is_a($expectedClass, NamedTag::class, true));
+	public function getTag(string $name, string $expectedClass = NamedTag::class) : ?NamedTag{
+		assert(is_a($expectedClass, NamedTag::class, true));
 		$tag = $this->{$name} ?? null;
-		if($tag !== null and $expectedClass !== null and !($tag instanceof $expectedClass)){
+		if($tag !== null and !($tag instanceof $expectedClass)){
 			throw new \RuntimeException("Expected a tag of type $expectedClass, got " . get_class($tag));
 		}
 
