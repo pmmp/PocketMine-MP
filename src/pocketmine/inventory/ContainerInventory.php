@@ -37,14 +37,15 @@ abstract class ContainerInventory extends BaseInventory{
 		$pk->type = $this->getNetworkType();
 		$holder = $this->getHolder();
 
+		$pk->x = $pk->y = $pk->z = 0;
+		$pk->entityUniqueId = -1;
+
 		if($holder instanceof Entity){
 			$pk->entityUniqueId = $holder->getId();
 		}elseif($holder instanceof Vector3){
 			$pk->x = (int) $holder->getX();
 			$pk->y = (int) $holder->getY();
 			$pk->z = (int) $holder->getZ();
-		}else{
-			$pk->x = $pk->y = $pk->z = 0;
 		}
 
 		$who->dataPacket($pk);
