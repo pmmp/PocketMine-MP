@@ -36,7 +36,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\Player;
 
 class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
-	use NameableTrait;
+	use NameableTrait, ContainerTrait;
 
 	const TAG_PAIRX = "pairx";
 	const TAG_PAIRZ = "pairz";
@@ -50,14 +50,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	public function __construct(Level $level, CompoundTag $nbt){
 		parent::__construct($level, $nbt);
 		$this->inventory = new ChestInventory($this);
-
-		if(!$this->namedtag->hasTag("Items", ListTag::class)){
-			$this->namedtag->setTag(new ListTag("Items", [], NBT::TAG_Compound));
-		}
-
-		for($i = 0; $i < $this->getSize(); ++$i){
-			$this->inventory->setItem($i, $this->getItem($i), false);
-		}
+		$this->loadItems();
 	}
 
 	public function close() : void{
@@ -78,10 +71,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 
 	public function saveNBT() : void{
 		parent::saveNBT();
-		$this->namedtag->setTag(new ListTag("Items", [], NBT::TAG_Compound));
-		for($index = 0; $index < $this->getSize(); ++$index){
-			$this->setItem($index, $this->inventory->getItem($index));
-		}
+		$this->saveItems();
 	}
 
 	/**
@@ -89,72 +79,6 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	 */
 	public function getSize() : int{
 		return 27;
-	}
-
-	/**
-	 * @param $index
-	 *
-	 * @return int
-	 */
-	protected function getSlotIndex(int $index) : int{
-		$items = $this->namedtag->getListTag("Items");
-		assert($items instanceof ListTag);
-		foreach($items as $i => $slot){
-			/** @var CompoundTag $slot */
-			if($slot->getByte("Slot") === $index){
-				return (int) $i;
-			}
-		}
-
-		return -1;
-	}
-
-	/**
-	 * This method should not be used by plugins, use the Inventory
-	 *
-	 * @param int $index
-	 *
-	 * @return Item
-	 */
-	public function getItem(int $index) : Item{
-		$i = $this->getSlotIndex($index);
-		if($i < 0){
-			return ItemFactory::get(Item::AIR, 0, 0);
-		}else{
-			return Item::nbtDeserialize($this->namedtag->getListTag("Items")[$i]);
-		}
-	}
-
-	/**
-	 * This method should not be used by plugins, use the Inventory
-	 *
-	 * @param int  $index
-	 * @param Item $item
-	 */
-	public function setItem(int $index, Item $item){
-		$i = $this->getSlotIndex($index);
-
-		$d = $item->nbtSerialize($index);
-
-		$items = $this->namedtag->getListTag("Items");
-		assert($items instanceof ListTag);
-
-		if($item->isNull()){
-			if($i >= 0){
-				unset($items[$i]);
-			}
-		}elseif($i < 0){
-			for($i = 0; $i <= $this->getSize(); ++$i){
-				if(!isset($items[$i])){
-					break;
-				}
-			}
-			$items[$i] = $d;
-		}else{
-			$items[$i] = $d;
-		}
-
-		$this->namedtag->setTag($items);
 	}
 
 	/**
