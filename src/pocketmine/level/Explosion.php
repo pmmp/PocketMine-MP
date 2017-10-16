@@ -218,12 +218,7 @@ class Explosion{
 						$t->unpair();
 					}
 
-					$dropPos = $t->asVector3()->add(0.5, 0.5, 0.5);
-					foreach($t->getInventory()->getContents() as $drop){
-						if(!$drop->isNull()){
-							$this->level->dropItem($dropPos, $drop);
-						}
-					}
+					$t->getInventory()->dropContents($this->level, $t->add(0.5, 0.5, 0.5));
 				}
 
 				$t->close();
