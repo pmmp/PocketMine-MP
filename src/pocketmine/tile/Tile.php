@@ -73,8 +73,6 @@ abstract class Tile extends Position{
 	public $closed = false;
 	/** @var CompoundTag */
 	public $namedtag;
-	/** @var float */
-	protected $lastUpdate;
 	/** @var Server */
 	protected $server;
 	/** @var TimingsHandler */
@@ -142,7 +140,6 @@ abstract class Tile extends Position{
 		assert($this->chunk !== null);
 
 		$this->name = "";
-		$this->lastUpdate = microtime(true);
 		$this->id = Tile::$tileCount++;
 		$this->x = $this->namedtag->x->getValue();
 		$this->y = $this->namedtag->y->getValue();
