@@ -39,7 +39,6 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\NamedTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\nbt\tag\Tag;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\Binary;
@@ -273,7 +272,7 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @return CompoundTag|null
 	 */
-	public function getCustomBlockData(){
+	public function getCustomBlockData() : ?CompoundTag{
 		$tag = $this->getNamedTagEntry(self::TAG_BLOCK_ENTITY_TAG);
 		return $tag instanceof CompoundTag ? $tag : null;
 	}
@@ -312,7 +311,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @return Enchantment|null
 	 */
-	public function getEnchantment(int $id){
+	public function getEnchantment(int $id) : ?Enchantment{
 		$ench = $this->getNamedTagEntry(self::TAG_ENCH);
 		if(!($ench instanceof ListTag)){
 			return null;
@@ -336,7 +335,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @param int $id
 	 * @param int $level
 	 */
-	public function removeEnchantment(int $id, int $level = -1){
+	public function removeEnchantment(int $id, int $level = -1) : void{
 		$ench = $this->getNamedTagEntry(self::TAG_ENCH);
 		if(!($ench instanceof ListTag)){
 			return;
@@ -353,14 +352,14 @@ class Item implements ItemIds, \JsonSerializable{
 		$this->setNamedTagEntry($ench);
 	}
 
-	public function removeEnchantments(){
+	public function removeEnchantments() : void{
 		$this->removeNamedTagEntry(self::TAG_ENCH);
 	}
 
 	/**
 	 * @param Enchantment $enchantment
 	 */
-	public function addEnchantment(Enchantment $enchantment){
+	public function addEnchantment(Enchantment $enchantment) : void{
 		$found = false;
 
 		$ench = $this->getNamedTagEntry(self::TAG_ENCH);
@@ -511,10 +510,10 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * @param $name
-	 * @return Tag|null
+	 * @param string $name
+	 * @return NamedTag|null
 	 */
-	public function getNamedTagEntry($name){
+	public function getNamedTagEntry(string $name) : ?NamedTag{
 		return $this->getNamedTag()->{$name} ?? null;
 	}
 
@@ -882,7 +881,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @return array
 	 */
-	final public function jsonSerialize(){
+	final public function jsonSerialize() : array{
 		$data = [
 			"id" => $this->getId()
 		];
