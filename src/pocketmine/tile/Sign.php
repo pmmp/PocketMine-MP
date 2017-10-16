@@ -129,7 +129,6 @@ class Sign extends Spawnable{
 
 	public function addAdditionalSpawnData(CompoundTag $nbt){
 		$nbt->Text = new StringTag("Text", implode("\n", $this->text));
-		return $nbt;
 	}
 
 	public function updateCompoundTag(CompoundTag $nbt, Player $player) : bool{
