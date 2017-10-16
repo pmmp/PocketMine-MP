@@ -77,16 +77,16 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	 * Returns the tag with the specified name, or null if it does not exist.
 	 *
 	 * @param string      $name
-	 * @param string|null $expectedType Class that extends NamedTag
+	 * @param string|null $expectedClass Class that extends NamedTag
 	 *
 	 * @return NamedTag|null
 	 * @throws \RuntimeException if the tag exists and is not of the expected type (if specified)
 	 */
-	public function getTag(string $name, ?string $expectedType = null) : ?NamedTag{
-		assert($expectedType === null or is_a($expectedType, NamedTag::class, true));
+	public function getTag(string $name, ?string $expectedClass = null) : ?NamedTag{
+		assert($expectedClass === null or is_a($expectedClass, NamedTag::class, true));
 		$tag = $this->{$name} ?? null;
-		if($tag !== null and $expectedType !== null and !($tag instanceof $expectedType)){
-			throw new \RuntimeException("Expected a tag of type $expectedType, got " . get_class($tag));
+		if($tag !== null and $expectedClass !== null and !($tag instanceof $expectedClass)){
+			throw new \RuntimeException("Expected a tag of type $expectedClass, got " . get_class($tag));
 		}
 
 		return $tag;
@@ -262,18 +262,19 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	/**
 	 * Sets the value of the child tag at the specified offset, creating it if it does not exist. If the child tag
 	 * exists and the value is of the wrong type, an exception will be thrown.
+ *
 
 	 * @param string $name Name of the tag to set
-	 * @param string $tagType Class that extends NamedTag
+	 * @param string $tagClass Class that extends NamedTag
 	 * @param mixed  $value Value to set. This should be compatible with the specified tag type.
 	 */
-	public function setTagValue(string $name, string $tagType, $value) : void{
-		assert(is_a($tagType, NamedTag::class, true));
-		$tag = $this->getTag($name, $tagType);
+	public function setTagValue(string $name, string $tagClass, $value) : void{
+		assert(is_a($tagClass, NamedTag::class, true));
+		$tag = $this->getTag($name, $tagClass);
 		if($tag !== null){
 			$tag->setValue($value);
 		}else{
-			$this->setTag(new $tagType($name, $value));
+			$this->setTag(new $tagClass($name, $value));
 		}
 	}
 
