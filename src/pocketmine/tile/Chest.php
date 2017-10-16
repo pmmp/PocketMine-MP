@@ -58,7 +58,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 		}
 	}
 
-	public function close(){
+	public function close() : void{
 		if($this->closed === false){
 			$this->inventory->removeAllViewers(true);
 
@@ -74,7 +74,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 		}
 	}
 
-	public function saveNBT(){
+	public function saveNBT() : void{
 		$this->namedtag->Items->setValue([]);
 		for($index = 0; $index < $this->getSize(); ++$index){
 			$this->setItem($index, $this->inventory->getItem($index));
@@ -93,7 +93,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	 *
 	 * @return int
 	 */
-	protected function getSlotIndex(int $index){
+	protected function getSlotIndex(int $index) : int{
 		foreach($this->namedtag->Items as $i => $slot){
 			if($slot->Slot->getValue() === $index){
 				return (int) $i;
@@ -200,7 +200,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	/**
 	 * @return Chest|null
 	 */
-	public function getPair(){
+	public function getPair() : ?Chest{
 		if($this->isPaired()){
 			$tile = $this->getLevel()->getTile(new Vector3($this->namedtag->pairx->getValue(), $this->y, $this->namedtag->pairz->getValue()));
 			if($tile instanceof Chest){
@@ -253,7 +253,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 		return true;
 	}
 
-	public function addAdditionalSpawnData(CompoundTag $nbt){
+	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		if($this->isPaired()){
 			$nbt->pairx = $this->namedtag->pairx;
 			$nbt->pairz = $this->namedtag->pairz;

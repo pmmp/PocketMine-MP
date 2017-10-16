@@ -43,7 +43,7 @@ abstract class Spawnable extends Tile{
 		return $pk;
 	}
 
-	public function spawnTo(Player $player){
+	public function spawnTo(Player $player) : bool{
 		if($this->closed){
 			return false;
 		}
@@ -67,7 +67,7 @@ abstract class Spawnable extends Tile{
 		$this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
 	}
 
-	protected function onChanged(){
+	protected function onChanged() : void{
 		$this->spawnToAll();
 
 		if($this->chunk !== null){
@@ -96,7 +96,7 @@ abstract class Spawnable extends Tile{
 	 *
 	 * @param CompoundTag $nbt
 	 */
-	abstract public function addAdditionalSpawnData(CompoundTag $nbt);
+	abstract public function addAdditionalSpawnData(CompoundTag $nbt) : void;
 
 	/**
 	 * Called when a player updates a block entity's NBT data

@@ -54,7 +54,7 @@ class Sign extends Spawnable{
 		parent::__construct($level, $nbt);
 	}
 
-	public function saveNBT(){
+	public function saveNBT() : void{
 		parent::saveNBT();
 		$this->namedtag->Text = new StringTag("Text", implode("\n", $this->text));
 
@@ -127,7 +127,7 @@ class Sign extends Spawnable{
 		return $this->text;
 	}
 
-	public function addAdditionalSpawnData(CompoundTag $nbt){
+	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->Text = new StringTag("Text", implode("\n", $this->text));
 	}
 

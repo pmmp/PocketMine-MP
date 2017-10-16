@@ -49,7 +49,7 @@ class Bed extends Spawnable{
 		$this->onChanged();
 	}
 
-	public function addAdditionalSpawnData(CompoundTag $nbt){
+	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->color = $this->namedtag->color;
 	}
 

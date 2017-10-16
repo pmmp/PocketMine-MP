@@ -97,7 +97,7 @@ abstract class Tile extends Position{
 	 *
 	 * @return Tile|null
 	 */
-	public static function createTile($type, Level $level, CompoundTag $nbt, ...$args){
+	public static function createTile($type, Level $level, CompoundTag $nbt, ...$args) : ?Tile{
 		if(isset(self::$knownTiles[$type])){
 			$class = self::$knownTiles[$type];
 			return new $class($level, $nbt, ...$args);
@@ -149,11 +149,11 @@ abstract class Tile extends Position{
 		$this->getLevel()->addTile($this);
 	}
 
-	public function getId(){
+	public function getId() : int{
 		return $this->id;
 	}
 
-	public function saveNBT(){
+	public function saveNBT() : void{
 		$this->namedtag->id->setValue(static::getSaveId());
 		$this->namedtag->x->setValue($this->x);
 		$this->namedtag->y->setValue($this->y);
@@ -164,7 +164,7 @@ abstract class Tile extends Position{
 		return $this->namedtag;
 	}
 
-	public function getCleanedNBT(){
+	public function getCleanedNBT() : ?CompoundTag{
 		$this->saveNBT();
 		$tag = clone $this->namedtag;
 		unset($tag->x, $tag->y, $tag->z, $tag->id);
@@ -236,7 +236,7 @@ abstract class Tile extends Position{
 		return false;
 	}
 
-	final public function scheduleUpdate(){
+	final public function scheduleUpdate() : void{
 		$this->level->updateTiles[$this->id] = $this;
 	}
 
@@ -248,7 +248,7 @@ abstract class Tile extends Position{
 		$this->close();
 	}
 
-	public function close(){
+	public function close() : void{
 		if(!$this->closed){
 			$this->closed = true;
 			unset($this->level->updateTiles[$this->id]);

@@ -85,7 +85,7 @@ class ItemFrame extends Spawnable{
 		$this->onChanged();
 	}
 
-	public function addAdditionalSpawnData(CompoundTag $nbt){
+	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->ItemDropChance = $this->namedtag->ItemDropChance;
 		$nbt->ItemRotation = $this->namedtag->ItemRotation;
 

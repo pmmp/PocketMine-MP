@@ -39,7 +39,7 @@ class EnchantTable extends Spawnable implements Nameable{
 		return "Enchanting Table";
 	}
 
-	public function addAdditionalSpawnData(CompoundTag $nbt){
+	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		if($this->hasName()){
 			$nbt->CustomName = $this->namedtag->CustomName;
 		}

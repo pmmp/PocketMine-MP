@@ -87,7 +87,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		return "Furnace";
 	}
 
-	public function close(){
+	public function close() : void{
 		if($this->closed === false){
 			$this->inventory->removeAllViewers(true);
 			$this->inventory = null;
@@ -96,7 +96,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		}
 	}
 
-	public function saveNBT(){
+	public function saveNBT() : void{
 		$this->namedtag->Items->setValue([]);
 		for($index = 0; $index < $this->getSize(); ++$index){
 			$this->setItem($index, $this->inventory->getItem($index));
@@ -273,7 +273,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		return $ret;
 	}
 
-	public function addAdditionalSpawnData(CompoundTag $nbt){
+	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->BurnTime = $this->namedtag->BurnTime;
 		$nbt->CookTime = $this->namedtag->CookTime;
 
