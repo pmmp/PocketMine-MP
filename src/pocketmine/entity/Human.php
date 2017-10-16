@@ -485,7 +485,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$slotCount = $this->inventory->getSize() + $this->inventory->getHotbarSize();
 			for($slot = $this->inventory->getHotbarSize(); $slot < $slotCount; ++$slot){
 				$item = $this->inventory->getItem($slot - 9);
-				if($item->getId() !== ItemItem::AIR){
+				if(!$item->isNull()){
 					$this->namedtag->Inventory[$slot] = $item->nbtSerialize($slot);
 				}
 			}
@@ -493,7 +493,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			//Armor
 			for($slot = 100; $slot < 104; ++$slot){
 				$item = $this->inventory->getItem($this->inventory->getSize() + $slot - 100);
-				if($item instanceof ItemItem and $item->getId() !== ItemItem::AIR){
+				if(!$item->isNull()){
 					$this->namedtag->Inventory[$slot] = $item->nbtSerialize($slot);
 				}
 			}
