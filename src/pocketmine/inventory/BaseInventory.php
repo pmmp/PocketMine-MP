@@ -349,6 +349,17 @@ abstract class BaseInventory implements Inventory{
 		return $this->viewers;
 	}
 
+	/**
+	 * Removes the inventory window from all players currently viewing it.
+	 * @param bool $force Force removal of permanent windows such as the player's own inventory. Used internally.
+	 */
+	public function removeAllViewers(bool $force = false) : void{
+		foreach($this->viewers as $hash => $viewer){
+			$viewer->removeWindow($this, $force);
+			unset($this->viewers[$hash]);
+		}
+	}
+
 	public function getHolder(){
 		return $this->holder;
 	}
