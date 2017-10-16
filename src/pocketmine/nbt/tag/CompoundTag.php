@@ -262,8 +262,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	/**
 	 * Sets the value of the child tag at the specified offset, creating it if it does not exist. If the child tag
 	 * exists and the value is of the wrong type, an exception will be thrown.
- *
-
+	 *
 	 * @param string $name Name of the tag to set
 	 * @param string $tagClass Class that extends NamedTag
 	 * @param mixed  $value Value to set. This should be compatible with the specified tag type.
