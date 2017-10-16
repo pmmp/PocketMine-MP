@@ -140,10 +140,13 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	 * Returns whether the CompoundTag contains a child tag with the specified name.
 	 *
 	 * @param string $name
+	 * @param string $expectedClass
+	 *
 	 * @return bool
 	 */
-	public function hasTag(string $name) : bool{
-		return ($this->{$name} ?? null) instanceof NamedTag;
+	public function hasTag(string $name, string $expectedClass = NamedTag::class) : bool{
+		assert(is_a($expectedClass, NamedTag::class, true));
+		return ($this->{$name} ?? null) instanceof $expectedClass;
 	}
 
 	/**
