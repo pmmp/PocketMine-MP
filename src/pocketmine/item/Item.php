@@ -46,6 +46,14 @@ use pocketmine\utils\Binary;
 use pocketmine\utils\Config;
 
 class Item implements ItemIds, \JsonSerializable{
+	const TAG_ENCH = "ench";
+	const TAG_DISPLAY = "display";
+	const TAG_BLOCK_ENTITY_TAG = "BlockEntityTag";
+
+	const TAG_DISPLAY_NAME = "Name";
+	const TAG_DISPLAY_LORE = "Lore";
+
+
 	/** @var NBT */
 	private static $cachedParser = null;
 
@@ -241,11 +249,11 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return bool
 	 */
 	public function hasCustomBlockData() : bool{
-		return $this->getNamedTagEntry("BlockEntityTag") instanceof CompoundTag;
+		return $this->getNamedTagEntry(self::TAG_BLOCK_ENTITY_TAG) instanceof CompoundTag;
 	}
 
 	public function clearCustomBlockData(){
-		$this->removeNamedTagEntry("BlockEntityTag");
+		$this->removeNamedTagEntry(self::TAG_BLOCK_ENTITY_TAG);
 		return $this;
 	}
 
@@ -256,7 +264,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	public function setCustomBlockData(CompoundTag $compound){
 		$tags = clone $compound;
-		$tags->setName("BlockEntityTag");
+		$tags->setName(self::TAG_BLOCK_ENTITY_TAG);
 		$this->setNamedTagEntry($tags);
 
 		return $this;
@@ -266,7 +274,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return CompoundTag|null
 	 */
 	public function getCustomBlockData(){
-		$tag = $this->getNamedTagEntry("BlockEntityTag");
+		$tag = $this->getNamedTagEntry(self::TAG_BLOCK_ENTITY_TAG);
 		return $tag instanceof CompoundTag ? $tag : null;
 	}
 
@@ -274,7 +282,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return bool
 	 */
 	public function hasEnchantments() : bool{
-		return $this->getNamedTagEntry("ench") instanceof ListTag;
+		return $this->getNamedTagEntry(self::TAG_ENCH) instanceof ListTag;
 	}
 
 	/**
@@ -284,7 +292,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return bool
 	 */
 	public function hasEnchantment(int $id, int $level = -1) : bool{
-		$ench = $this->getNamedTagEntry("ench");
+		$ench = $this->getNamedTagEntry(self::TAG_ENCH);
 		if(!($ench instanceof ListTag)){
 			return false;
 		}
@@ -305,7 +313,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return Enchantment|null
 	 */
 	public function getEnchantment(int $id){
-		$ench = $this->getNamedTagEntry("ench");
+		$ench = $this->getNamedTagEntry(self::TAG_ENCH);
 		if(!($ench instanceof ListTag)){
 			return null;
 		}
@@ -329,7 +337,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @param int $level
 	 */
 	public function removeEnchantment(int $id, int $level = -1){
-		$ench = $this->getNamedTagEntry("ench");
+		$ench = $this->getNamedTagEntry(self::TAG_ENCH);
 		if(!($ench instanceof ListTag)){
 			return;
 		}
@@ -346,7 +354,7 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	public function removeEnchantments(){
-		$this->removeNamedTagEntry("ench");
+		$this->removeNamedTagEntry(self::TAG_ENCH);
 	}
 
 	/**
@@ -355,9 +363,9 @@ class Item implements ItemIds, \JsonSerializable{
 	public function addEnchantment(Enchantment $enchantment){
 		$found = false;
 
-		$ench = $this->getNamedTagEntry("ench");
+		$ench = $this->getNamedTagEntry(self::TAG_ENCH);
 		if(!($ench instanceof ListTag)){
-			$ench = new ListTag("ench", [], NBT::TAG_Compound);
+			$ench = new ListTag(self::TAG_ENCH, [], NBT::TAG_Compound);
 		}else{
 			/** @var CompoundTag $entry */
 			foreach($ench as $k => $entry){
@@ -389,7 +397,7 @@ class Item implements ItemIds, \JsonSerializable{
 		/** @var Enchantment[] $enchantments */
 		$enchantments = [];
 
-		$ench = $this->getNamedTagEntry("ench");
+		$ench = $this->getNamedTagEntry(self::TAG_ENCH);
 		if($ench instanceof ListTag){
 			/** @var CompoundTag $entry */
 			foreach($ench as $entry){
@@ -408,9 +416,9 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return bool
 	 */
 	public function hasCustomName() : bool{
-		$display = $this->getNamedTagEntry("display");
+		$display = $this->getNamedTagEntry(self::TAG_DISPLAY);
 		if($display instanceof CompoundTag){
-			return $display->hasTag("Name");
+			return $display->hasTag(self::TAG_DISPLAY_NAME);
 		}
 
 		return false;
@@ -420,9 +428,9 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return string
 	 */
 	public function getCustomName() : string{
-		$display = $this->getNamedTagEntry("display");
+		$display = $this->getNamedTagEntry(self::TAG_DISPLAY);
 		if($display instanceof CompoundTag){
-			return $display->getString("Name") ?? "";
+			return $display->getString(self::TAG_DISPLAY_NAME) ?? "";
 		}
 
 		return "";
@@ -439,12 +447,12 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		/** @var CompoundTag $display */
-		$display = $this->getNamedTagEntry("display");
+		$display = $this->getNamedTagEntry(self::TAG_DISPLAY);
 		if(!($display instanceof CompoundTag)){
-			$display = new CompoundTag("display");
+			$display = new CompoundTag(self::TAG_DISPLAY);
 		}
 
-		$display->setString("Name", $name);
+		$display->setString(self::TAG_DISPLAY_NAME, $name);
 		$this->setNamedTagEntry($display);
 
 		return $this;
@@ -454,9 +462,9 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return $this
 	 */
 	public function clearCustomName(){
-		$display = $this->getNamedTagEntry("display");
+		$display = $this->getNamedTagEntry(self::TAG_DISPLAY);
 		if($display instanceof CompoundTag){
-			$display->removeTag("Name");
+			$display->removeTag(self::TAG_DISPLAY_NAME);
 
 			if($display->getCount() === 0){
 				$this->removeNamedTagEntry($display->getName());
@@ -472,8 +480,8 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return string[]
 	 */
 	public function getLore() : array{
-		$display = $this->getNamedTagEntry("display");
-		if($display instanceof CompoundTag and ($lore = $display->getListTag("Lore")) !== null){
+		$display = $this->getNamedTagEntry(self::TAG_DISPLAY);
+		if($display instanceof CompoundTag and ($lore = $display->getListTag(self::TAG_DISPLAY_LORE)) !== null){
 			return array_map(function(StringTag $tag) : string{
 				return $tag->getValue();
 			}, $lore->getValue());
@@ -488,12 +496,12 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return $this
 	 */
 	public function setLore(array $lines){
-		$display = $this->getNamedTagEntry("display");
+		$display = $this->getNamedTagEntry(self::TAG_DISPLAY);
 		if(!($display instanceof CompoundTag)){
-			$display = new CompoundTag("display", []);
+			$display = new CompoundTag(self::TAG_DISPLAY, []);
 		}
 
-		$display->setTag(new ListTag("Lore", array_map(function(string $str) : StringTag{
+		$display->setTag(new ListTag(self::TAG_DISPLAY_LORE, array_map(function(string $str) : StringTag{
 			return new StringTag("", $str);
 		}, $lines), NBT::TAG_String));
 
