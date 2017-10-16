@@ -429,7 +429,7 @@ class Item implements ItemIds, \JsonSerializable{
 	public function getCustomName() : string{
 		$display = $this->getNamedTagEntry(self::TAG_DISPLAY);
 		if($display instanceof CompoundTag){
-			return $display->getString(self::TAG_DISPLAY_NAME) ?? "";
+			return $display->getString(self::TAG_DISPLAY_NAME, "");
 		}
 
 		return "";
@@ -957,7 +957,7 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		$count = Binary::unsignByte($tag->getByte("Count"));
-		$meta = $tag->getShort("Damage") ?? 0;
+		$meta = $tag->getShort("Damage", 0);
 
 		$idTag = $tag->getTag("id");
 		if($idTag instanceof ShortTag){

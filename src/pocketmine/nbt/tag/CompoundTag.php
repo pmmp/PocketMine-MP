@@ -165,6 +165,10 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 			return $tag->getValue();
 		}
 
+		if($default === null){
+			throw new \RuntimeException("Tag with name \"$name\" not found and no default value given");
+		}
+
 		return $default;
 	}
 
@@ -178,7 +182,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	 *
 	 * @return int
 	 */
-	public function getByte(string $name, ?int $default = null) : ?int{
+	public function getByte(string $name, ?int $default = null) : int{
 		return $this->getTagValue($name, ByteTag::class, $default);
 	}
 
@@ -188,7 +192,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	 *
 	 * @return int
 	 */
-	public function getShort(string $name, ?int $default = null) : ?int{
+	public function getShort(string $name, ?int $default = null) : int{
 		return $this->getTagValue($name, ShortTag::class, $default);
 	}
 
@@ -198,7 +202,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	 *
 	 * @return int
 	 */
-	public function getInt(string $name, ?int $default = null) : ?int{
+	public function getInt(string $name, ?int $default = null) : int{
 		return $this->getTagValue($name, IntTag::class, $default);
 	}
 
@@ -208,7 +212,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	 *
 	 * @return int
 	 */
-	public function getLong(string $name, ?int $default = null) : ?int{
+	public function getLong(string $name, ?int $default = null) : int{
 		return $this->getTagValue($name, LongTag::class, $default);
 	}
 
@@ -218,7 +222,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	 *
 	 * @return float
 	 */
-	public function getFloat(string $name, ?float $default = null) : ?float{
+	public function getFloat(string $name, ?float $default = null) : float{
 		return $this->getTagValue($name, FloatTag::class, $default);
 	}
 
@@ -228,7 +232,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	 *
 	 * @return float
 	 */
-	public function getDouble(string $name, ?float $default = null) : ?float{
+	public function getDouble(string $name, ?float $default = null) : float{
 		return $this->getTagValue($name, DoubleTag::class, $default);
 	}
 
@@ -238,7 +242,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	 *
 	 * @return string
 	 */
-	public function getByteArray(string $name, ?string $default = null) : ?string{
+	public function getByteArray(string $name, ?string $default = null) : string{
 		return $this->getTagValue($name, ByteArrayTag::class, $default);
 	}
 
@@ -248,7 +252,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	 *
 	 * @return string
 	 */
-	public function getString(string $name, ?string $default = null) : ?string{
+	public function getString(string $name, ?string $default = null) : string{
 		return $this->getTagValue($name, StringTag::class, $default);
 	}
 
@@ -258,7 +262,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	 *
 	 * @return int[]
 	 */
-	public function getIntArray(string $name, ?array $default = null) : ?array{
+	public function getIntArray(string $name, ?array $default = null) : array{
 		return $this->getTagValue($name, IntArrayTag::class, $default);
 	}
 
