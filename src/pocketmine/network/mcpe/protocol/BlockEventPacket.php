@@ -38,20 +38,20 @@ class BlockEventPacket extends DataPacket{
 	/** @var int */
 	public $z;
 	/** @var int */
-	public $case1;
+	public $eventType;
 	/** @var int */
-	public $case2;
+	public $eventData;
 
 	protected function decodePayload(){
 		$this->getBlockPosition($this->x, $this->y, $this->z);
-		$this->case1 = $this->getVarInt();
-		$this->case2 = $this->getVarInt();
+		$this->eventType = $this->getVarInt();
+		$this->eventData = $this->getVarInt();
 	}
 
 	protected function encodePayload(){
 		$this->putBlockPosition($this->x, $this->y, $this->z);
-		$this->putVarInt($this->case1);
-		$this->putVarInt($this->case2);
+		$this->putVarInt($this->eventType);
+		$this->putVarInt($this->eventData);
 	}
 
 	public function handle(NetworkSession $session) : bool{
