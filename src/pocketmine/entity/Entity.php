@@ -1666,7 +1666,7 @@ abstract class Entity extends Location implements Metadatable{
 					$dz = $cz;
 					$this->boundingBox->setBB($axisalignedbb1);
 				}else{
-					$this->ySize += 0.5;
+					$this->ySize += 0.5; //FIXME: this should be the height of the block it walked up, not fixed 0.5
 				}
 
 			}
