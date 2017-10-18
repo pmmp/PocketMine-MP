@@ -51,4 +51,9 @@ interface Container{
 	 * @return Inventory
 	 */
 	public function getInventory();
+
+	/**
+	 * @return Inventory
+	 */
+	public function getRealInventory();
 }

@@ -45,7 +45,7 @@ trait ContainerTrait{
 	/**
 	 * @return Inventory
 	 */
-	abstract public function getInventory();
+	abstract public function getRealInventory();
 
 	/**
 	 * @param $index
@@ -118,7 +118,7 @@ trait ContainerTrait{
 			$this->getNBT()->setTag(new ListTag(Container::TAG_ITEMS, [], NBT::TAG_Compound));
 		}
 
-		$inventory = $this->getInventory();
+		$inventory = $this->getRealInventory();
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
 			$inventory->setItem($i, $this->getItem($i));
 		}
@@ -127,7 +127,7 @@ trait ContainerTrait{
 	protected function saveItems() : void{
 		$this->getNBT()->setTag(new ListTag(Container::TAG_ITEMS, [], NBT::TAG_Compound));
 
-		$inventory = $this->getInventory();
+		$inventory = $this->getRealInventory();
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
 			$this->setItem($i, $inventory->getItem($i));
 		}
