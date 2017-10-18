@@ -95,7 +95,7 @@ class BaseLang{
 
 	protected static function loadLang(string $path, array &$d){
 		if(file_exists($path)){
-			$d = parse_ini_file($path, false, INI_SCANNER_RAW);
+			$d = array_map('stripcslashes', parse_ini_file($path, false, INI_SCANNER_RAW));
 			return true;
 		}else{
 			return false;
