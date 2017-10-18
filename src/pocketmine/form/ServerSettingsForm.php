@@ -29,7 +29,7 @@ use pocketmine\form\element\CustomFormElement;
  * Represents a custom form which can be shown in the Settings menu on the client. This is exactly the same as a regular
  * CustomForm, except that this type can also have an icon which can be shown on the settings section button.
  */
-class ServerSettingsForm extends CustomForm{
+abstract class ServerSettingsForm extends CustomForm{
 	/**
 	 * @var FormIcon|null
 	 */

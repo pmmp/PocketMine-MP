@@ -59,9 +59,7 @@ abstract class MenuForm extends Form{
 	}
 
 	/**
-	 * Returns the index of the option selected by the user. Pass this to {@link getButton} to get the button object
-	 * which was clicked.
-	 *
+	 * Returns the index of the option selected by the user.
 	 * @return int|null
 	 */
 	public function getSelectedOptionIndex() : ?int{
