@@ -23,21 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Tool;
+class DoubleStoneSlab2 extends DoubleStoneSlab{
 
-class DoubleWoodenSlab extends DoubleSlab{
-
-	protected $id = self::DOUBLE_WOODEN_SLAB;
+	protected $id = self::DOUBLE_STONE_SLAB2;
 
 	public function getSlabId() : int{
-		return self::WOODEN_SLAB;
+		return self::STONE_SLAB2;
 	}
 
-	public function getHardness() : float{
-		return 2;
-	}
-
-	public function getToolType() : int{
-		return Tool::TYPE_AXE;
-	}
 }

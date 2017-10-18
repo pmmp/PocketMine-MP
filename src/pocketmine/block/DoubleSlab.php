@@ -23,21 +23,25 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Tool;
+use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 
-class DoubleWoodenSlab extends DoubleSlab{
+abstract class DoubleSlab extends Solid{
 
-	protected $id = self::DOUBLE_WOODEN_SLAB;
-
-	public function getSlabId() : int{
-		return self::WOODEN_SLAB;
+	public function __construct(int $meta = 0){
+		$this->meta = $meta;
 	}
 
-	public function getHardness() : float{
-		return 2;
+	abstract public function getSlabId() : int;
+
+	public function getName() : string{
+		return "Double " . BlockFactory::get($this->getSlabId(), $this->getVariant())->getName() . " Slab";
 	}
 
-	public function getToolType() : int{
-		return Tool::TYPE_AXE;
+	public function getDrops(Item $item) : array{
+		return [
+			ItemFactory::get($this->getSlabId(), $this->getVariant(), 2)
+		];
 	}
+
 }

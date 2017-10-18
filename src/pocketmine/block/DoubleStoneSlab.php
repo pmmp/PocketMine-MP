@@ -24,15 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\item\Tool;
 
-class DoubleStoneSlab extends Solid{
+class DoubleStoneSlab extends DoubleSlab{
 
 	protected $id = self::DOUBLE_STONE_SLAB;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	public function getSlabId() : int{
+		return self::STONE_SLAB;
 	}
 
 	public function getHardness() : float{
@@ -43,25 +42,9 @@ class DoubleStoneSlab extends Solid{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function getName() : string{
-		static $names = [
-			0 => "Stone",
-			1 => "Sandstone",
-			2 => "Wooden",
-			3 => "Cobblestone",
-			4 => "Brick",
-			5 => "Stone Brick",
-			6 => "Quartz",
-			7 => "Nether Brick"
-		];
-		return "Double " . $names[$this->getVariant()] . " Slab";
-	}
-
 	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= Tool::TIER_WOODEN){
-			return [
-				ItemFactory::get(Item::STONE_SLAB, $this->getVariant(), 2)
-			];
+			return parent::getDrops($item);
 		}
 
 		return [];

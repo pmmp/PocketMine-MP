@@ -23,21 +23,22 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Tool;
+class StoneSlab2 extends StoneSlab{
+	const TYPE_RED_SANDSTONE = 0;
+	const TYPE_PURPUR = 1;
 
-class DoubleWoodenSlab extends DoubleSlab{
+	protected $id = self::STONE_SLAB2;
 
-	protected $id = self::DOUBLE_WOODEN_SLAB;
-
-	public function getSlabId() : int{
-		return self::WOODEN_SLAB;
+	public function getDoubleSlabId() : int{
+		return self::DOUBLE_STONE_SLAB2;
 	}
 
-	public function getHardness() : float{
-		return 2;
-	}
+	public function getName() : string{
+		static $names = [
+			self::TYPE_RED_SANDSTONE => "Red Sandstone",
+			self::TYPE_PURPUR => "Purpur"
+		];
 
-	public function getToolType() : int{
-		return Tool::TYPE_AXE;
+		return (($this->meta & 0x08) > 0 ? "Upper " : "") . ($names[$this->getVariant()] ?? "") . " Slab";
 	}
 }
