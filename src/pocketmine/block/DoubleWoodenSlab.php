@@ -52,12 +52,12 @@ class DoubleWoodenSlab extends Solid{
 			4 => "Acacia",
 			5 => "Dark Oak"
 		];
-		return "Double " . ($names[$this->meta & 0x07] ?? "") . " Wooden Slab";
+		return "Double " . ($names[$this->getVariant()] ?? "") . " Wooden Slab";
 	}
 
 	public function getDrops(Item $item) : array{
 		return [
-			ItemFactory::get(Item::WOODEN_SLAB, $this->getDamage() & 0x07, 2)
+			ItemFactory::get(Item::WOODEN_SLAB, $this->getVariant(), 2)
 		];
 	}
 

@@ -52,7 +52,7 @@ class Wood extends Solid{
 			self::BIRCH => "Birch Wood",
 			self::JUNGLE => "Jungle Wood"
 		];
-		return $names[$this->meta & 0x03];
+		return $names[$this->getVariant()] ?? "Unknown";
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{

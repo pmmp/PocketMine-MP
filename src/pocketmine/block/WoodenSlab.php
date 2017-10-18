@@ -52,7 +52,7 @@ class WoodenSlab extends Transparent{
 			4 => "Acacia",
 			5 => "Dark Oak"
 		];
-		return (($this->meta & 0x08) === 0x08 ? "Upper " : "") . ($names[$this->meta & 0x07] ?? "") . " Wooden Slab";
+		return (($this->meta & 0x08) === 0x08 ? "Upper " : "") . ($names[$this->getVariant()] ?? "") . " Wooden Slab";
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
@@ -93,31 +93,31 @@ class WoodenSlab extends Transparent{
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$this->meta &= 0x07;
 		if($face === Vector3::SIDE_DOWN){
-			if($blockClicked->getId() === $this->id and ($blockClicked->getDamage() & 0x08) === 0x08 and ($blockClicked->getDamage() & 0x07) === $this->meta){
-				$this->getLevel()->setBlock($blockClicked, BlockFactory::get($this->doubleId, $this->meta), true);
+			if($blockClicked->getId() === $this->id and ($blockClicked->getDamage() & 0x08) === 0x08 and $blockClicked->getVariant() === $this->getVariant()){
+				$this->getLevel()->setBlock($blockClicked, BlockFactory::get($this->doubleId, $this->getVariant()), true);
 
 				return true;
-			}elseif($blockReplace->getId() === $this->id and ($blockReplace->getDamage() & 0x07) === $this->meta){
-				$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->doubleId, $this->meta), true);
+			}elseif($blockReplace->getId() === $this->id and $blockReplace->getVariant() === $this->getVariant()){
+				$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->doubleId, $this->getVariant()), true);
 
 				return true;
 			}else{
 				$this->meta |= 0x08;
 			}
 		}elseif($face === Vector3::SIDE_UP){
-			if($blockClicked->getId() === $this->id and ($blockClicked->getDamage() & 0x08) === 0 and ($blockClicked->getDamage() & 0x07) === $this->meta){
-				$this->getLevel()->setBlock($blockClicked, BlockFactory::get($this->doubleId, $this->meta), true);
+			if($blockClicked->getId() === $this->id and ($blockClicked->getDamage() & 0x08) === 0 and $blockClicked->getVariant() === $this->getVariant()){
+				$this->getLevel()->setBlock($blockClicked, BlockFactory::get($this->doubleId, $this->getVariant()), true);
 
 				return true;
-			}elseif($blockReplace->getId() === $this->id and ($blockReplace->getDamage() & 0x07) === $this->meta){
-				$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->doubleId, $this->meta), true);
+			}elseif($blockReplace->getId() === $this->id and $blockReplace->getVariant() === $this->getVariant()){
+				$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->doubleId, $this->getVariant()), true);
 
 				return true;
 			}
 		}else{ //TODO: collision
 			if($blockReplace->getId() === $this->id){
-				if(($blockReplace->getDamage() & 0x07) === $this->meta){
-					$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->doubleId, $this->meta), true);
+				if($blockReplace->getVariant() === $this->meta){
+					$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->doubleId, $this->getVariant()), true);
 
 					return true;
 				}
@@ -130,7 +130,7 @@ class WoodenSlab extends Transparent{
 			}
 		}
 
-		if($blockReplace->getId() === $this->id and ($blockClicked->getDamage() & 0x07) !== ($this->meta & 0x07)){
+		if($blockReplace->getId() === $this->id and $blockClicked->getVariant() !== $this->getVariant()){
 			return false;
 		}
 		$this->getLevel()->setBlock($blockReplace, $this, true, true);

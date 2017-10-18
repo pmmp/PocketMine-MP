@@ -61,7 +61,7 @@ class Leaves extends Transparent{
 			self::BIRCH => "Birch Leaves",
 			self::JUNGLE => "Jungle Leaves"
 		];
-		return $names[$this->meta & 0x03];
+		return $names[$this->getVariant()];
 	}
 
 	public function diffusesSkyLight() : bool{
