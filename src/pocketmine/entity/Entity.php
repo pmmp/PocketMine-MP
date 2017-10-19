@@ -1292,13 +1292,13 @@ abstract class Entity extends Location implements Metadatable{
 
 		if(!$this->isAlive()){
 			$this->deadTicks += $tickDiff;
-			if($this->deadTicks >= 10){
+			if($this->deadTicks >= 20){
 				$this->despawnFromAll();
 				if(!$this->isPlayer){
 					$this->close();
 				}
 			}
-			return $this->deadTicks < 10;
+			return $this->deadTicks < 20;
 		}
 
 
