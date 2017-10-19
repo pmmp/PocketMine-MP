@@ -27,7 +27,7 @@ use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class Egg extends Throwable{
-	const NETWORK_ID = 82;
+	const NETWORK_ID = self::EGG;
 
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();

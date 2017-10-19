@@ -34,7 +34,7 @@ use pocketmine\network\mcpe\protocol\AddItemEntityPacket;
 use pocketmine\Player;
 
 class Item extends Entity{
-	const NETWORK_ID = 64;
+	const NETWORK_ID = self::ITEM;
 
 	/** @var string */
 	protected $owner = "";

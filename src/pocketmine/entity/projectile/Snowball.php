@@ -27,7 +27,7 @@ use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class Snowball extends Throwable{
-	const NETWORK_ID = 81;
+	const NETWORK_ID = self::SNOWBALL;
 
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();

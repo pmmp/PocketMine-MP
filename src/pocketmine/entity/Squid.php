@@ -33,7 +33,7 @@ use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\Player;
 
 class Squid extends WaterAnimal{
-	const NETWORK_ID = 17;
+	const NETWORK_ID = self::SQUID;
 
 	public $width = 0.95;
 	public $height = 0.95;

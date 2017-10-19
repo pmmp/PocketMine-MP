@@ -34,7 +34,7 @@ class Villager extends Creature implements NPC, Ageable{
 	const PROFESSION_BLACKSMITH = 3;
 	const PROFESSION_BUTCHER = 4;
 
-	const NETWORK_ID = 15;
+	const NETWORK_ID = self::VILLAGER;
 
 	public $width = 0.6;
 	public $height = 1.8;

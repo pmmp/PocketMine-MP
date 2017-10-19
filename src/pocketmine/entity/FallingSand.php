@@ -35,7 +35,7 @@ use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class FallingSand extends Entity{
-	const NETWORK_ID = 66;
+	const NETWORK_ID = self::FALLING_BLOCK;
 
 	public $width = 0.98;
 	public $height = 0.98;
