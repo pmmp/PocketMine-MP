@@ -23,21 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\projectile;
 
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
-
 class Snowball extends Throwable{
 	const NETWORK_ID = self::SNOWBALL;
 
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->type = Snowball::NETWORK_ID;
-		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this->asVector3();
-		$pk->motion = $this->getMotion();
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
-	}
 }

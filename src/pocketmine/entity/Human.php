@@ -512,30 +512,32 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	public function spawnTo(Player $player){
-		if($player !== $this and !isset($this->hasSpawned[$player->getLoaderId()])){
-			$this->hasSpawned[$player->getLoaderId()] = $player;
+		if($player !== $this){
+			parent::spawnTo($player);
+		}
+	}
 
-			if(!$this->skin->isValid()){
-				throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
-			}
+	protected function sendSpawnPacket(Player $player) : void{
+		if(!$this->skin->isValid()){
+			throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
+		}
 
-			$pk = new AddPlayerPacket();
-			$pk->uuid = $this->getUniqueId();
-			$pk->username = $this->getName();
-			$pk->entityRuntimeId = $this->getId();
-			$pk->position = $this->asVector3();
-			$pk->motion = $this->getMotion();
-			$pk->yaw = $this->yaw;
-			$pk->pitch = $this->pitch;
-			$pk->item = $this->getInventory()->getItemInHand();
-			$pk->metadata = $this->dataProperties;
-			$player->dataPacket($pk);
+		$pk = new AddPlayerPacket();
+		$pk->uuid = $this->getUniqueId();
+		$pk->username = $this->getName();
+		$pk->entityRuntimeId = $this->getId();
+		$pk->position = $this->asVector3();
+		$pk->motion = $this->getMotion();
+		$pk->yaw = $this->yaw;
+		$pk->pitch = $this->pitch;
+		$pk->item = $this->getInventory()->getItemInHand();
+		$pk->metadata = $this->dataProperties;
+		$player->dataPacket($pk);
 
-			$this->inventory->sendArmorContents($player);
+		$this->inventory->sendArmorContents($player);
 
-			if(!($this instanceof Player)){
-				$this->sendSkin([$player]);
-			}
+		if(!($this instanceof Player)){
+			$this->sendSkin([$player]);
 		}
 	}
 

@@ -58,6 +58,7 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\MoveEntityPacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
 use pocketmine\network\mcpe\protocol\SetEntityDataPacket;
@@ -864,8 +865,28 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public function spawnTo(Player $player){
 		if(!isset($this->hasSpawned[$player->getLoaderId()]) and isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])){
 			$this->hasSpawned[$player->getLoaderId()] = $player;
+
+			$this->sendSpawnPacket($player);
 		}
 	}
+
+	/**
+	 * Called by spawnTo() to send whatever packets needed to spawn the entity to the client.
+	 * @param Player $player
+	 */
+	protected function sendSpawnPacket(Player $player) : void{
+		$pk = new AddEntityPacket();
+		$pk->entityRuntimeId = $this->getId();
+		$pk->type = static::NETWORK_ID;
+		$pk->position = $this->asVector3();
+		$pk->motion = $this->getMotion();
+		$pk->yaw = $this->yaw;
+		$pk->pitch = $this->pitch;
+		$pk->metadata = $this->dataProperties;
+
+		$player->dataPacket($pk);
+	}
+
 
 	/**
 	 * @deprecated

@@ -23,23 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\projectile;
 
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
-
 class Egg extends Throwable{
 	const NETWORK_ID = self::EGG;
-
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->type = Egg::NETWORK_ID;
-		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this->asVector3();
-		$pk->motion = $this->getMotion();
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
-	}
 
 	//TODO: spawn chickens on collision
 }

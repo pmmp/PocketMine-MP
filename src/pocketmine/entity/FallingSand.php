@@ -31,8 +31,6 @@ use pocketmine\item\ItemFactory;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
 
 class FallingSand extends Entity{
 	const NETWORK_ID = self::FALLING_BLOCK;
@@ -135,19 +133,5 @@ class FallingSand extends Entity{
 	public function saveNBT(){
 		$this->namedtag->TileID = new IntTag("TileID", $this->block->getId());
 		$this->namedtag->Data = new ByteTag("Data", $this->block->getDamage());
-	}
-
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->type = FallingSand::NETWORK_ID;
-		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this->asVector3();
-		$pk->motion = $this->getMotion();
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
 	}
 }
