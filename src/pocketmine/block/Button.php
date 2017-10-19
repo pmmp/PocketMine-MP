@@ -23,21 +23,29 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Tool;
+use pocketmine\item\Item;
+use pocketmine\math\Vector3;
+use pocketmine\Player;
 
-class StoneButton extends Button{
+abstract class Button extends Flowable{
 
-	protected $id = self::STONE_BUTTON;
-
-	public function getName() : string{
-		return "Stone Button";
+	public function __construct(int $meta = 0){
+		$this->meta = $meta;
 	}
 
-	public function getHardness() : float{
-		return 0.5;
+	public function getVariantBitmask() : int{
+		return 0;
 	}
 
-	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
+		//TODO: check valid target block
+		$this->meta = $face;
+
+		return $this->level->setBlock($this, $this, true, true);
+	}
+
+	public function onActivate(Item $item, Player $player = null) : bool{
+		//TODO
+		return true;
 	}
 }
