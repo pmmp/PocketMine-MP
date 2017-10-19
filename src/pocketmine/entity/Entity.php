@@ -1131,16 +1131,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		$this->justCreated = false;
 
-		if(!$this->isAlive()){
-			$this->removeAllEffects();
-			$this->despawnFromAll();
-			if(!$this->isPlayer){
-				$this->close();
-			}
-
-			return false;
-		}
-
 		if(count($this->changedDataProperties) > 0){
 			$this->sendData($this->hasSpawned, $this->changedDataProperties);
 			$this->changedDataProperties = [];
