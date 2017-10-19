@@ -683,62 +683,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	/**
-	 * @deprecated
-	 *
-	 * @return Effect[]
-	 */
-	public function getEffects() : array{
-		return [];
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function removeAllEffects(){
-
-	}
-
-	/**
-	 * @deprecated
-	 *
-	 * @param int $effectId
-	 */
-	public function removeEffect(int $effectId){
-
-	}
-
-	/**
-	 * @deprecated
-	 *
-	 * @param int $effectId
-	 *
-	 * @return Effect|null
-	 */
-	public function getEffect(int $effectId){
-		return null;
-	}
-
-	/**
-	 * @deprecated
-	 *
-	 * @param int $effectId
-	 *
-	 * @return bool
-	 */
-	public function hasEffect(int $effectId) : bool{
-		return false;
-	}
-
-	/**
-	 * @deprecated
-	 *
-	 * @param Effect $effect
-	 */
-	public function addEffect(Effect $effect){
-		throw new \BadMethodCallException("Cannot add effects to non-living entities");
-	}
-
-	/**
 	 * @param int|string  $type
 	 * @param Level       $level
 	 * @param CompoundTag $nbt
@@ -885,16 +829,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$pk->metadata = $this->dataProperties;
 
 		$player->dataPacket($pk);
-	}
-
-
-	/**
-	 * @deprecated
-	 *
-	 * @param Player $player
-	 */
-	public function sendPotionEffects(Player $player){
-
 	}
 
 	/**
