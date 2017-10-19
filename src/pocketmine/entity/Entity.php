@@ -219,7 +219,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	/** @var string[] */
 	private static $shortNames = [];
 
-	public static function init(){
+	/**
+	 * Called on server startup to register default entity types.
+	 */
+	public static function init() : void{
 		Entity::registerEntity(Arrow::class);
 		Entity::registerEntity(Egg::class);
 		Entity::registerEntity(FallingSand::class);
@@ -231,6 +234,56 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		Entity::registerEntity(Zombie::class);
 
 		Entity::registerEntity(Human::class, true);
+	}
+
+
+	/**
+	 * Creates an entity with the specified type, level and NBT, with optional additional arguments to pass to the
+	 * entity's constructor
+	 *
+	 * @param int|string  $type
+	 * @param Level       $level
+	 * @param CompoundTag $nbt
+	 * @param mixed       ...$args
+	 *
+	 * @return Entity|null
+	 */
+	public static function createEntity($type, Level $level, CompoundTag $nbt, ...$args) : ?Entity{
+		if(isset(self::$knownEntities[$type])){
+			$class = self::$knownEntities[$type];
+			return new $class($level, $nbt, ...$args);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Registers an entity type into the index.
+	 *
+	 * @param string $className Class that extends Entity
+	 * @param bool   $force Force registration even if the entity does not have a valid network ID
+	 *
+	 * @return bool
+	 */
+	public static function registerEntity(string $className, bool $force = false) : bool{
+		assert(is_a($className, Entity::class, true));
+
+		/** @var Entity $className */
+
+		$class = new \ReflectionClass($className);
+		if(is_a($className, Entity::class, true) and !$class->isAbstract()){
+			if($className::NETWORK_ID !== -1){
+				self::$knownEntities[$className::NETWORK_ID] = $className;
+			}elseif(!$force){
+				return false;
+			}
+
+			self::$knownEntities[$class->getShortName()] = $className;
+			self::$shortNames[$className] = $class->getShortName();
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -680,40 +733,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		}else{
 			$this->setDataProperty(self::DATA_TARGET_EID, self::DATA_TYPE_LONG, $target->getId());
 		}
-	}
-
-	/**
-	 * @param int|string  $type
-	 * @param Level       $level
-	 * @param CompoundTag $nbt
-	 * @param             $args
-	 *
-	 * @return Entity|null
-	 */
-	public static function createEntity($type, Level $level, CompoundTag $nbt, ...$args){
-		if(isset(self::$knownEntities[$type])){
-			$class = self::$knownEntities[$type];
-			return new $class($level, $nbt, ...$args);
-		}
-
-		return null;
-	}
-
-	public static function registerEntity($className, bool $force = false) : bool{
-		$class = new \ReflectionClass($className);
-		if(is_a($className, Entity::class, true) and !$class->isAbstract()){
-			if($className::NETWORK_ID !== -1){
-				self::$knownEntities[$className::NETWORK_ID] = $className;
-			}elseif(!$force){
-				return false;
-			}
-
-			self::$knownEntities[$class->getShortName()] = $className;
-			self::$shortNames[$className] = $class->getShortName();
-			return true;
-		}
-
-		return false;
 	}
 
 	/**
