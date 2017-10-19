@@ -28,11 +28,6 @@ use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\EntityShootBowEvent;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\level\sound\LaunchSound;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\ShortTag;
 use pocketmine\Player;
 
 class Bow extends Tool{
@@ -54,26 +49,13 @@ class Bow extends Tool{
 			return false;
 		}
 
-		$directionVector = $player->getDirectionVector();
-
-		$nbt = new CompoundTag("", [
-			new ListTag("Pos", [
-				new DoubleTag("", $player->x),
-				new DoubleTag("", $player->y + $player->getEyeHeight()),
-				new DoubleTag("", $player->z)
-			]),
-			new ListTag("Motion", [
-				new DoubleTag("", $directionVector->x),
-				new DoubleTag("", $directionVector->y),
-				new DoubleTag("", $directionVector->z)
-			]),
-			new ListTag("Rotation", [
-				//yaw/pitch for arrows taken crosswise, not along the arrow shaft.
-				new FloatTag("", ($player->yaw > 180 ? 360 : 0) - $player->yaw), //arrow yaw must range from -180 to +180
-				new FloatTag("", -$player->pitch)
-			]),
-			new ShortTag("Fire", $player->isOnFire() ? 45 * 60 : 0)
-		]);
+		$nbt = Entity::createBaseNBT(
+			$player->add(0, $player->getEyeHeight(), 0),
+			$player->getDirectionVector(),
+			($player->yaw > 180 ? 360 : 0) - $player->yaw,
+			-$player->pitch
+		);
+		$nbt->setShort("Fire", $player->isOnFire() ? 45 * 60 : 0);
 
 		$diff = $player->getItemUseDuration();
 		$p = $diff / 20;

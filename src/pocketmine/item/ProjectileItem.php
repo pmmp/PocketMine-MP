@@ -28,10 +28,6 @@ use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\level\sound\LaunchSound;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\Player;
 
 abstract class ProjectileItem extends Item{
@@ -41,25 +37,12 @@ abstract class ProjectileItem extends Item{
 	abstract public function getThrowForce() : float;
 
 	public function onClickAir(Player $player, Vector3 $directionVector) : bool{
-		$nbt = new CompoundTag("", [
-			new ListTag("Pos", [
-				new DoubleTag("", $player->x),
-				new DoubleTag("", $player->y + $player->getEyeHeight()),
-				new DoubleTag("", $player->z)
-			]),
-			new ListTag("Motion", [
-				new DoubleTag("", $directionVector->x),
-				new DoubleTag("", $directionVector->y),
-				new DoubleTag("", $directionVector->z)
-			]),
-			new ListTag("Rotation", [
-				new FloatTag("", $player->yaw),
-				new FloatTag("", $player->pitch)
-			]),
-		]);
+		$nbt = Entity::createBaseNBT($player->add(0, $player->getEyeHeight(), 0), $directionVector, $player->yaw, $player->pitch);
 
 		$projectile = Entity::createEntity($this->getProjectileEntityType(), $player->getLevel(), $nbt, $player);
-		$projectile->setMotion($projectile->getMotion()->multiply($this->getThrowForce()));
+		if($projectile !== null){
+			$projectile->setMotion($projectile->getMotion()->multiply($this->getThrowForce()));
+		}
 
 		$this->count--;
 

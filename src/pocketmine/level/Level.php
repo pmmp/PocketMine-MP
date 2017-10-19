@@ -67,11 +67,7 @@ use pocketmine\math\Vector3;
 use pocketmine\metadata\BlockMetadataStore;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
@@ -1544,28 +1540,17 @@ class Level implements ChunkManager, Metadatable{
 		$itemTag->setName("Item");
 
 		if(!$item->isNull()){
-			$itemEntity = Entity::createEntity("Item", $this, new CompoundTag("", [
-				new ListTag("Pos", [
-					new DoubleTag("", $source->getX()),
-					new DoubleTag("", $source->getY()),
-					new DoubleTag("", $source->getZ())
-				]),
-				new ListTag("Motion", [
-					new DoubleTag("", $motion->x),
-					new DoubleTag("", $motion->y),
-					new DoubleTag("", $motion->z)
-				]),
-				new ListTag("Rotation", [
-					new FloatTag("", lcg_value() * 360),
-					new FloatTag("", 0)
-				]),
-				new ShortTag("Health", 5),
-				$itemTag,
-				new ShortTag("PickupDelay", $delay)
-			]));
+			$nbt = Entity::createBaseNBT($source, $motion, lcg_value() * 360, 0);
+			$nbt->setShort("Health", 5);
+			$nbt->setShort("PickupDelay", $delay);
+			$nbt->setTag($itemTag);
+			$itemEntity = Entity::createEntity("Item", $this, $nbt);
 
-			$itemEntity->spawnToAll();
-			return $itemEntity;
+			if($itemEntity instanceof DroppedItem){
+				$itemEntity->spawnToAll();
+
+				return $itemEntity;
+			}
 		}
 		return null;
 	}
