@@ -23,39 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\projectile;
 
-use pocketmine\entity\Entity;
-use pocketmine\level\Level;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
-class Snowball extends Projectile{
+class Snowball extends Throwable{
 	const NETWORK_ID = 81;
-
-	public $width = 0.25;
-	public $height = 0.25;
-
-	protected $gravity = 0.03;
-	protected $drag = 0.01;
-
-	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null){
-		parent::__construct($level, $nbt, $shootingEntity);
-	}
-
-	public function entityBaseTick(int $tickDiff = 1) : bool{
-		if($this->closed){
-			return false;
-		}
-
-		$hasUpdate = parent::entityBaseTick($tickDiff);
-
-		if($this->age > 1200 or $this->isCollided){
-			$this->kill();
-			$hasUpdate = true;
-		}
-
-		return $hasUpdate;
-	}
 
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();

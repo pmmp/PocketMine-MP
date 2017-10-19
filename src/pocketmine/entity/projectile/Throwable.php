@@ -21,23 +21,29 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\entity\projectile;
 
-class Egg extends ProjectileItem{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::EGG, $meta, "Egg");
-	}
+abstract class Throwable extends Projectile{
 
-	public function getMaxStackSize() : int{
-		return 16;
-	}
+	public $width = 0.25;
+	public $height = 0.25;
 
-	public function getProjectileEntityType() : string{
-		return "Egg";
-	}
+	protected $gravity = 0.03;
+	protected $drag = 0.01;
 
-	public function getThrowForce() : float{
-		return 1.5;
+	public function entityBaseTick(int $tickDiff = 1) : bool{
+		if($this->closed){
+			return false;
+		}
+
+		$hasUpdate = parent::entityBaseTick($tickDiff);
+
+		if($this->age > 1200 or $this->isCollided){
+			//TODO: hit particles
+			$this->kill();
+			$hasUpdate = true;
+		}
+
+		return $hasUpdate;
 	}
 }
-

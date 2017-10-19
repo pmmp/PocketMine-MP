@@ -21,23 +21,25 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\entity\projectile;
 
-class Egg extends ProjectileItem{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::EGG, $meta, "Egg");
+use pocketmine\network\mcpe\protocol\AddEntityPacket;
+use pocketmine\Player;
+
+class Egg extends Throwable{
+	const NETWORK_ID = 82;
+
+	public function spawnTo(Player $player){
+		$pk = new AddEntityPacket();
+		$pk->type = Egg::NETWORK_ID;
+		$pk->entityRuntimeId = $this->getId();
+		$pk->position = $this->asVector3();
+		$pk->motion = $this->getMotion();
+		$pk->metadata = $this->dataProperties;
+		$player->dataPacket($pk);
+
+		parent::spawnTo($player);
 	}
 
-	public function getMaxStackSize() : int{
-		return 16;
-	}
-
-	public function getProjectileEntityType() : string{
-		return "Egg";
-	}
-
-	public function getThrowForce() : float{
-		return 1.5;
-	}
+	//TODO: spawn chickens on collision
 }
-
