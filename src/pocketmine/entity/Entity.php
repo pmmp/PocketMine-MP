@@ -382,6 +382,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	/** @var int */
 	public $deadTicks = 0;
 	/** @var int */
+	protected $maxDeadTicks = 0;
+	/** @var int */
 	protected $age = 0;
 
 	/** @var float */
@@ -1260,13 +1262,13 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		if(!$this->isAlive()){
 			$this->deadTicks += $tickDiff;
-			if($this->deadTicks >= 20){
+			if($this->deadTicks >= $this->maxDeadTicks){
 				$this->despawnFromAll();
 				if(!$this->isPlayer){
 					$this->close();
 				}
 			}
-			return $this->deadTicks < 20;
+			return $this->deadTicks < $this->maxDeadTicks;
 		}
 
 
