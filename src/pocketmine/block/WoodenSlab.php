@@ -29,10 +29,6 @@ class WoodenSlab extends Slab{
 
 	protected $id = self::WOODEN_SLAB;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
-	}
-
 	public function getDoubleSlabId() : int{
 		return self::DOUBLE_WOODEN_SLAB;
 	}

@@ -27,10 +27,6 @@ class Purpur extends Quartz{
 
 	protected $id = self::PURPUR_BLOCK;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
-	}
-
 	public function getName() : string{
 		static $names = [
 			self::NORMAL => "Purpur Block",
