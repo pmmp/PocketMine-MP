@@ -35,10 +35,6 @@ abstract class Flowable extends Transparent{
 		return 0;
 	}
 
-	public function getBlastResistance() : float{
-		return 0;
-	}
-
 	public function isSolid() : bool{
 		return false;
 	}
