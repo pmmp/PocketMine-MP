@@ -23,9 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\nbt\tag\ByteTag;
-use pocketmine\nbt\tag\CompoundTag;
 
 abstract class Durable extends Item{
 

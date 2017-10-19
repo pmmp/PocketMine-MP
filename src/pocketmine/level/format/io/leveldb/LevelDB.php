@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format\io\leveldb;
 
-use pocketmine\entity\Entity;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\ChunkUtils;
@@ -38,8 +37,6 @@ use pocketmine\nbt\tag\{
 	ByteTag, CompoundTag, FloatTag, IntTag, LongTag, StringTag
 };
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
-use pocketmine\Player;
-use pocketmine\tile\Tile;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\MainLogger;

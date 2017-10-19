@@ -34,7 +34,6 @@ use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\{
 	ByteArrayTag, ByteTag, CompoundTag, IntArrayTag, IntTag, ListTag, LongTag, StringTag
 };
-use pocketmine\Player;
 use pocketmine\utils\MainLogger;
 
 class McRegion extends BaseLevelProvider{

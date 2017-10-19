@@ -27,7 +27,6 @@ use pocketmine\inventory\ChestInventory;
 use pocketmine\inventory\DoubleChestInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;

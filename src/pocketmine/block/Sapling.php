@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\level\generator\object\Tree;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
