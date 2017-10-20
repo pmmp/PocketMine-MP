@@ -169,10 +169,14 @@ class Leaves extends Transparent{
 		return $this->getLevel()->setBlock($this, $this, true);
 	}
 
+	public function getVariantBitmask() : int{
+		return 0x03;
+	}
+
 	public function getDrops(Item $item) : array{
 		$drops = [];
 
-		$variantMeta = $this->getDamage() & 0x03;
+		$variantMeta = $this->getVariant();
 
 		if($item->isShears()){
 			$drops[] = ItemFactory::get($this->getItemId(), $variantMeta, 1);
