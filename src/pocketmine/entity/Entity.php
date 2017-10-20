@@ -1288,9 +1288,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 				$this->motionZ = 0;
 			}
 
-			$this->updateMovement();
 			$this->forceMovementUpdate = false;
 		}
+
+		$this->updateMovement();
 
 		Timings::$timerEntityBaseTick->startTiming();
 		$hasUpdate = $this->entityBaseTick($tickDiff);
