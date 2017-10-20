@@ -632,4 +632,23 @@ abstract class Living extends Entity implements Damageable{
 
 		return null;
 	}
+
+	/**
+	 * Changes the entity's yaw and pitch to make it look at the specified Vector3 position. For mobs, this will cause
+	 * their heads to turn.
+	 *
+	 * @param Vector3 $target
+	 */
+	public function lookAt(Vector3 $target) : void{
+		$horizontal = sqrt(($target->x - $this->x) ** 2 + ($target->z - $this->z) ** 2);
+		$vertical = $target->y - $this->y;
+		$this->pitch = -atan2($vertical, $horizontal) / M_PI * 180; //negative is up, positive is down
+
+		$xDist = $target->x - $this->x;
+		$zDist = $target->z - $this->z;
+		$this->yaw = atan2($zDist, $xDist) / M_PI * 180 - 90;
+		if($this->yaw < 0){
+			$this->yaw += 360.0;
+		}
+	}
 }
