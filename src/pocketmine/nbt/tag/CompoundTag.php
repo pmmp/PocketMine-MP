@@ -59,7 +59,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 		if(is_array($value)){
 			foreach($value as $name => $tag){
 				if($tag instanceof NamedTag){
-					$this->{$tag->getName()} = $tag;
+					$this->{$tag->__name} = $tag;
 				}else{
 					throw new \TypeError("CompoundTag members must be NamedTags, got " . gettype($tag) . " in given array");
 				}
@@ -121,7 +121,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	 * @param NamedTag $tag
 	 */
 	public function setTag(NamedTag $tag) : void{
-		$this->{$tag->getName()} = $tag;
+		$this->{$tag->__name} = $tag;
 	}
 
 	/**
@@ -400,8 +400,8 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 		$this->value = [];
 		do{
 			$tag = $nbt->readTag($network);
-			if($tag instanceof NamedTag and $tag->getName() !== ""){
-				$this->{$tag->getName()} = $tag;
+			if($tag instanceof NamedTag and $tag->__name !== ""){
+				$this->{$tag->__name} = $tag;
 			}
 		}while(!($tag instanceof EndTag) and !$nbt->feof());
 	}
