@@ -2479,9 +2479,13 @@ class Level implements ChunkManager, Metadatable{
 	 * @throws LevelException
 	 */
 	public function addEntity(Entity $entity){
+		if($entity->isClosed()){
+			throw new \InvalidArgumentException("Attempted to add a garbage closed Entity to Level");
+		}
 		if($entity->getLevel() !== $this){
 			throw new LevelException("Invalid Entity level");
 		}
+
 		if($entity instanceof Player){
 			$this->players[$entity->getId()] = $entity;
 		}
@@ -2494,6 +2498,9 @@ class Level implements ChunkManager, Metadatable{
 	 * @throws LevelException
 	 */
 	public function addTile(Tile $tile){
+		if($tile->isClosed()){
+			throw new \InvalidArgumentException("Attempted to add a garbage closed Tile to Level");
+		}
 		if($tile->getLevel() !== $this){
 			throw new LevelException("Invalid Tile level");
 		}
