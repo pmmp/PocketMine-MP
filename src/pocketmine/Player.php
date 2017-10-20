@@ -2579,7 +2579,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleBlockPickRequest(BlockPickRequestPacket $packet) : bool{
-		$block = $this->level->getBlock($this->temporalVector->setComponents($packet->blockX, $packet->blockY, $packet->blockZ));
+		$block = $this->level->getBlockAt($packet->blockX, $packet->blockY, $packet->blockZ);
 
 		//TODO: this doesn't handle crops correctly (need more API work)
 		$item = Item::get($block->getItemId(), $block->getVariant());

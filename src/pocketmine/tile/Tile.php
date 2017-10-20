@@ -226,7 +226,7 @@ abstract class Tile extends Position{
 	 * @return Block
 	 */
 	public function getBlock() : Block{
-		return $this->level->getBlock($this);
+		return $this->level->getBlockAt($this->x, $this->y, $this->z);
 	}
 
 	/**

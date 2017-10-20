@@ -1105,7 +1105,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		}
 
 		if($this->onGround){
-			$friction *= $this->level->getBlock($this->floor()->subtract(0, 1, 0))->getFrictionFactor();
+			$friction *= $this->level->getBlockAt(Math::floorFloat($this->x), Math::floorFloat($this->y) - 1, Math::floorFloat($this->z))->getFrictionFactor();
 		}
 
 		$this->motionX *= $friction;
@@ -1385,7 +1385,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function isInsideOfWater() : bool{
-		$block = $this->level->getBlock($this->temporalVector->setComponents(Math::floorFloat($this->x), Math::floorFloat($y = ($this->y + $this->getEyeHeight())), Math::floorFloat($this->z)));
+		$block = $this->level->getBlockAt(Math::floorFloat($this->x), Math::floorFloat($y = ($this->y + $this->getEyeHeight())), Math::floorFloat($this->z));
 
 		if($block instanceof Water){
 			$f = ($block->y + 1) - ($block->getFluidHeightPercent() - 0.1111111);
@@ -1396,7 +1396,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function isInsideOfSolid() : bool{
-		$block = $this->level->getBlock($this->temporalVector->setComponents(Math::floorFloat($this->x), Math::floorFloat($y = ($this->y + $this->getEyeHeight())), Math::floorFloat($this->z)));
+		$block = $this->level->getBlockAt(Math::floorFloat($this->x), Math::floorFloat($y = ($this->y + $this->getEyeHeight())), Math::floorFloat($this->z));
 
 		return $block->isSolid() and !$block->isTransparent() and $block->collidesWithBB($this->getBoundingBox());
 	}
@@ -1627,7 +1627,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			for($z = $minZ; $z <= $maxZ; ++$z){
 				for($x = $minX; $x <= $maxX; ++$x){
 					for($y = $minY; $y <= $maxY; ++$y){
-						$block = $this->level->getBlock($this->temporalVector->setComponents($x, $y, $z));
+						$block = $this->level->getBlockAt($x, $y, $z);
 						if($block->hasEntityCollision()){
 							$this->blocksAround[] = $block;
 						}

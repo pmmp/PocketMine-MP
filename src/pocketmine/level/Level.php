@@ -706,7 +706,7 @@ class Level implements ChunkManager, Metadatable{
 			$index = $this->neighbourBlockUpdateQueue->dequeue();
 			Level::getBlockXYZ($index, $x, $y, $z);
 
-			$block = $this->getBlock($this->temporalVector->setComponents($x, $y, $z));
+			$block = $this->getBlockAt($x, $y, $z);
 			$block->clearBoundingBoxes(); //for blocks like fences, force recalculation of connected AABBs
 
 			$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($block));
@@ -1025,33 +1025,36 @@ class Level implements ChunkManager, Metadatable{
 	 * @param Vector3 $pos
 	 */
 	public function updateAround(Vector3 $pos){
-		$pos = $pos->floor();
-		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($this->temporalVector->setComponents($pos->x, $pos->y - 1, $pos->z))));
+		$x = (int) floor($pos->x);
+		$y = (int) floor($pos->y);
+		$z = (int) floor($pos->z);
+
+		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlockAt($x, $y - 1, $z)));
 		if(!$ev->isCancelled()){
 			$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($this->temporalVector->setComponents($pos->x, $pos->y + 1, $pos->z))));
+		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlockAt($x, $y + 1, $z)));
 		if(!$ev->isCancelled()){
 			$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($this->temporalVector->setComponents($pos->x - 1, $pos->y, $pos->z))));
+		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlockAt($x - 1, $y, $z)));
 		if(!$ev->isCancelled()){
 			$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($this->temporalVector->setComponents($pos->x + 1, $pos->y, $pos->z))));
+		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlockAt($x + 1, $y, $z)));
 		if(!$ev->isCancelled()){
 			$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($this->temporalVector->setComponents($pos->x, $pos->y, $pos->z - 1))));
+		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlockAt($x, $y, $z - 1)));
 		if(!$ev->isCancelled()){
 			$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($this->temporalVector->setComponents($pos->x, $pos->y, $pos->z + 1))));
+		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlockAt($x, $y, $z + 1)));
 		if(!$ev->isCancelled()){
 			$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
 		}
@@ -1123,7 +1126,7 @@ class Level implements ChunkManager, Metadatable{
 			for($z = $minZ; $z <= $maxZ; ++$z){
 				for($x = $minX; $x <= $maxX; ++$x){
 					for($y = $minY; $y <= $maxY; ++$y){
-						$block = $this->getBlock($this->temporalVector->setComponents($x, $y, $z));
+						$block = $this->getBlockAt($x, $y, $z);
 						if($block->getId() !== 0 and $block->collidesWithBB($bb)){
 							return [$block];
 						}
@@ -1134,7 +1137,7 @@ class Level implements ChunkManager, Metadatable{
 			for($z = $minZ; $z <= $maxZ; ++$z){
 				for($x = $minX; $x <= $maxX; ++$x){
 					for($y = $minY; $y <= $maxY; ++$y){
-						$block = $this->getBlock($this->temporalVector->setComponents($x, $y, $z));
+						$block = $this->getBlockAt($x, $y, $z);
 						if($block->getId() !== 0 and $block->collidesWithBB($bb)){
 							$collides[] = $block;
 						}
@@ -1186,7 +1189,7 @@ class Level implements ChunkManager, Metadatable{
 		for($z = $minZ; $z <= $maxZ; ++$z){
 			for($x = $minX; $x <= $maxX; ++$x){
 				for($y = $minY; $y <= $maxY; ++$y){
-					$block = $this->getBlock($this->temporalVector->setComponents($x, $y, $z));
+					$block = $this->getBlockAt($x, $y, $z);
 					if(!$block->canPassThrough() and $block->collidesWithBB($bb)){
 						foreach($block->getCollisionBoxes() as $blockBB){
 							$collides[] = $blockBB;
@@ -1311,10 +1314,11 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * Gets the Block object at the Vector3 location
+	 * Gets the Block object at the Vector3 location. This method wraps around {@link getBlockAt}, converting the
+	 * vector components to integers.
 	 *
-	 * Note for plugin developers: If you are using this method a lot (thousands of times for many positions for
-	 * example), you may want to set addToCache to false to avoid using excessive amounts of memory.
+	 * Note: If you're using this for performance-sensitive code, and you're guaranteed to be supplying ints in the
+	 * specified vector, consider using {@link getBlockAt} instead for better performance.
 	 *
 	 * @param Vector3 $pos
 	 * @param bool    $cached Whether to use the block cache for getting the block (faster, but may be inaccurate)
@@ -1323,25 +1327,41 @@ class Level implements ChunkManager, Metadatable{
 	 * @return Block
 	 */
 	public function getBlock(Vector3 $pos, bool $cached = true, bool $addToCache = true) : Block{
-		$pos = $pos->floor();
+		return $this->getBlockAt((int) floor($pos->x), (int) floor($pos->y), (int) floor($pos->z), $cached, $addToCache);
+	}
 
+	/**
+	 * Gets the Block object at the specified coordinates.
+	 *
+	 * Note for plugin developers: If you are using this method a lot (thousands of times for many positions for
+	 * example), you may want to set addToCache to false to avoid using excessive amounts of memory.
+	 *
+	 * @param int  $x
+	 * @param int  $y
+	 * @param int  $z
+	 * @param bool $cached Whether to use the block cache for getting the block (faster, but may be inaccurate)
+	 * @param bool $addToCache Whether to cache the block object created by this method call.
+	 *
+	 * @return Block
+	 */
+	public function getBlockAt(int $x, int $y, int $z, bool $cached = true, bool $addToCache = true) : Block{
 		$fullState = 0;
 		$index = null;
 
-		if($this->isInWorld($pos->x, $pos->y, $pos->z)){
-			$index = Level::blockHash($pos->x, $pos->y, $pos->z);
+		if($this->isInWorld($x, $y, $z)){
+			$index = Level::blockHash($x, $y, $z);
 			if($cached and isset($this->blockCache[$index])){
 				return $this->blockCache[$index];
-			}elseif(isset($this->chunks[$chunkIndex = Level::chunkHash($pos->x >> 4, $pos->z >> 4)])){
-				$fullState = $this->chunks[$chunkIndex]->getFullBlock($pos->x & 0x0f, $pos->y, $pos->z & 0x0f);
+			}elseif(isset($this->chunks[$chunkIndex = Level::chunkHash($x >> 4, $z >> 4)])){
+				$fullState = $this->chunks[$chunkIndex]->getFullBlock($x & 0x0f, $y, $z & 0x0f);
 			}
 		}
 
 		$block = clone $this->blockStates[$fullState & 0xfff];
 
-		$block->x = $pos->x;
-		$block->y = $pos->y;
-		$block->z = $pos->z;
+		$block->x = $x;
+		$block->y = $y;
+		$block->z = $z;
 		$block->level = $this;
 
 		if($addToCache and $index !== null){
@@ -1656,7 +1676,7 @@ class Level implements ChunkManager, Metadatable{
 			$drops = $target->getDrops($item); //Fixes tile entities being deleted before getting drops
 		}
 
-		$above = $this->getBlock(new Vector3($target->x, $target->y + 1, $target->z));
+		$above = $this->getBlockAt($target->x, $target->y + 1, $target->z);
 		if($above->getId() === Block::FIRE){ //TODO: this should be done in Fire's onUpdate(), not with this hack
 			$this->setBlock($above, BlockFactory::get(Block::AIR), true);
 		}
