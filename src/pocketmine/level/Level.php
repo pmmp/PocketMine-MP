@@ -47,6 +47,7 @@ use pocketmine\event\Timings;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\format\Chunk;
+use pocketmine\level\format\EmptySubChunk;
 use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\LevelProvider;
 use pocketmine\level\generator\GenerationTask;
@@ -956,7 +957,7 @@ class Level implements ChunkManager, Metadatable{
 
 
 			foreach($chunk->getSubChunks() as $Y => $subChunk){
-				if(!$subChunk->isEmpty()){
+				if(!($subChunk instanceof EmptySubChunk)){
 					for($i = 0; $i < 3; ++$i){
 						$k = mt_rand(0, 0xfff);
 						$x = $k & 0x0f;
