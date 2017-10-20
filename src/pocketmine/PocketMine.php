@@ -94,7 +94,7 @@ namespace pocketmine {
 	 */
 
 	if(version_compare(MIN_PHP_VERSION, PHP_VERSION) > 0){
-		echo "[CRITICAL] You must use PHP >= " . MIN_PHP_VERSION . PHP_EOL;
+		echo "[CRITICAL] " . \pocketmine\NAME . " requires PHP >= " . MIN_PHP_VERSION . ", but you have PHP " . PHP_VERSION . "." . PHP_EOL;
 		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
 		exit(1);
 	}
@@ -119,7 +119,7 @@ namespace pocketmine {
 
 	if(!extension_loaded("phar")){
 		echo "[CRITICAL] Unable to find the Phar extension." . PHP_EOL;
-		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
+		echo "[CRITICAL] Please use the installer provided on the homepage, or update to a newer PHP version." . PHP_EOL;
 		exit(1);
 	}
 
