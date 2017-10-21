@@ -88,7 +88,7 @@ class Dropdown extends CustomFormElement{
 	public function getSelectedOption() : string{
 		$index = $this->getValue();
 		if($index === null){
-			throw new \InvalidStateException("No option selected, maybe the form hasn't been submitted yet");
+			throw new \InvalidStateException("No option selected (form closed or hasn't been submitted yet)");
 		}
 
 		$option = $this->getOption($index);

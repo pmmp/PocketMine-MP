@@ -83,7 +83,7 @@ abstract class MenuForm extends Form{
 	public function getSelectedOption() : MenuOption{
 		$index = $this->getSelectedOptionIndex();
 		if($index === null){
-			throw new \InvalidStateException("No option selected, maybe the form hasn't been submitted yet");
+			throw new \InvalidStateException("No option selected (form closed or hasn't been submitted yet)");
 		}
 
 		$option = $this->getOption($index);
