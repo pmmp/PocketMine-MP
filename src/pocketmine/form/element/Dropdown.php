@@ -33,17 +33,17 @@ class Dropdown extends CustomFormElement{
 
 	/**
 	 * @param string   $text
-	 * @param string[] $steps
-	 * @param int      $defaultStepIndex
+	 * @param string[] $options
+	 * @param int      $defaultOptionIndex
 	 */
-	public function __construct(string $text, array $steps, int $defaultStepIndex = 0){
+	public function __construct(string $text, array $options, int $defaultOptionIndex = 0){
 		parent::__construct($text);
-		$this->options = $steps;
+		$this->options = $options;
 
-		if(!isset($this->options[$defaultStepIndex])){
-			throw new \InvalidArgumentException("No option at index $defaultStepIndex, cannot set as default");
+		if(!isset($this->options[$defaultOptionIndex])){
+			throw new \InvalidArgumentException("No option at index $defaultOptionIndex, cannot set as default");
 		}
-		$this->defaultOptionIndex = $defaultStepIndex;
+		$this->defaultOptionIndex = $defaultOptionIndex;
 	}
 
 	public function getType() : string{
@@ -71,13 +71,13 @@ class Dropdown extends CustomFormElement{
 	}
 
 	/**
-	 * Returns the text of the step at the specified index, or null if it doesn't exist.
+	 * Returns the text of the option at the specified index, or null if it doesn't exist.
 	 *
 	 * @param int $index
 	 *
 	 * @return string|null
 	 */
-	public function getStep(int $index) : ?string{
+	public function getOption(int $index) : ?string{
 		return $this->options[$index] ?? null;
 	}
 
@@ -91,7 +91,7 @@ class Dropdown extends CustomFormElement{
 			throw new \InvalidStateException("No option selected, maybe the form hasn't been submitted yet");
 		}
 
-		$option = $this->getStep($index);
+		$option = $this->getOption($index);
 
 		if($option !== null){
 			return $option;
