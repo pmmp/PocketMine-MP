@@ -39,6 +39,8 @@ abstract class Form implements \JsonSerializable{
 
 	/** @var string */
 	protected $title = "";
+	/** @var bool */
+	private $sent = false;
 
 	public function __construct(string $title){
 		$this->title = $title;
@@ -77,6 +79,23 @@ abstract class Form implements \JsonSerializable{
 	 * @param Player $player
 	 */
 	abstract public function onSubmit(Player $player) : void;
+
+	/**
+	 * Returns whether the form has already been sent to a player or not. Note that you cannot send the form again if
+	 * this is true.
+	 *
+	 * @return bool
+	 */
+	public function hasBeenSent() : bool{
+		return $this->sent;
+	}
+
+	/**
+	 * Called to flag the form as having been sent to prevent it being used again, to avoid concurrency issues.
+	 */
+	public function setHasBeenSent() : void{
+		$this->sent = true;
+	}
 
 	/**
 	 * Clears response data from a form, useful if you want to reuse the same form object several times.

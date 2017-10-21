@@ -3279,6 +3279,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function sendForm(Form $form) : void{
+		if($form->hasBeenSent()){
+			throw new \InvalidArgumentException("Cannot send the same form more than once, create a new one instead");
+		}
+		$form->setHasBeenSent();
+
 		$id =  $this->formIdCounter++;
 
 		$pk = new ModalFormRequestPacket();
