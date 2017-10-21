@@ -516,6 +516,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$this->namedtag->Fire = new ShortTag("Fire", 0);
 		}
 		$this->fireTicks = (int) $this->namedtag["Fire"];
+		if($this->isOnFire()){
+			$this->setGenericFlag(self::DATA_FLAG_ONFIRE);
+		}
 
 		if(!isset($this->namedtag->Air)){
 			$this->namedtag->Air = new ShortTag("Air", 300);
