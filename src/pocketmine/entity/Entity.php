@@ -216,22 +216,25 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public static $entityCount = 1;
 	/** @var Entity[] */
 	private static $knownEntities = [];
-	/** @var string[] */
-	private static $shortNames = [];
+	/** @var string[][] */
+	private static $saveNames = [];
 
 	/**
 	 * Called on server startup to register default entity types.
 	 */
 	public static function init() : void{
-		Entity::registerEntity(Arrow::class);
-		Entity::registerEntity(Egg::class);
-		Entity::registerEntity(FallingSand::class);
-		Entity::registerEntity(Item::class);
-		Entity::registerEntity(PrimedTNT::class);
-		Entity::registerEntity(Snowball::class);
-		Entity::registerEntity(Squid::class);
-		Entity::registerEntity(Villager::class);
-		Entity::registerEntity(Zombie::class);
+		//define legacy save IDs first - use them for saving for maximum compatibility with Minecraft PC
+		//TODO: index them by version to allow proper multi-save compatibility
+
+		Entity::registerEntity(Arrow::class, false, ['Arrow', 'minecraft:arrow']);
+		Entity::registerEntity(Egg::class, false, ['Egg', 'minecraft:egg']);
+		Entity::registerEntity(FallingSand::class, false, ['FallingSand', 'minecraft:falling_block']);
+		Entity::registerEntity(Item::class, false, ['Item', 'minecraft:item']);
+		Entity::registerEntity(PrimedTNT::class, false, ['PrimedTnt', 'PrimedTNT', 'minecraft:tnt']);
+		Entity::registerEntity(Snowball::class, false, ['Snowball', 'minecraft:snowball']);
+		Entity::registerEntity(Squid::class, false, ['Squid', 'minecraft:squid']);
+		Entity::registerEntity(Villager::class, false, ['Villager',	'minecraft:villager']);
+		Entity::registerEntity(Zombie::class, false, ['Zombie',	'minecraft:zombie']);
 
 		Entity::registerEntity(Human::class, true);
 	}
@@ -260,12 +263,16 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	/**
 	 * Registers an entity type into the index.
 	 *
-	 * @param string $className Class that extends Entity
-	 * @param bool   $force Force registration even if the entity does not have a valid network ID
+	 * @param string   $className Class that extends Entity
+	 * @param bool     $force Force registration even if the entity does not have a valid network ID
+	 * @param string[] $saveNames An array of save names which this entity might be saved under. Defaults to the short name of the class itself if empty.
+	 *
+	 * NOTE: The first save name in the $saveNames array will be used when saving the entity to disk. The reflection
+	 * name of the class will be appended to the end and only used if no other save names are specified.
 	 *
 	 * @return bool
 	 */
-	public static function registerEntity(string $className, bool $force = false) : bool{
+	public static function registerEntity(string $className, bool $force = false, array $saveNames = []) : bool{
 		assert(is_a($className, Entity::class, true));
 
 		/** @var Entity $className */
@@ -278,8 +285,17 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 				return false;
 			}
 
-			self::$knownEntities[$class->getShortName()] = $className;
-			self::$shortNames[$className] = $class->getShortName();
+			$shortName = $class->getShortName();
+			if(!in_array($shortName, $saveNames, true)){
+				$saveNames[] = $class->getShortName();
+			}
+
+			foreach($saveNames as $name){
+				self::$knownEntities[$name] = $className;
+			}
+
+			self::$saveNames[$className] = $saveNames;
+
 			return true;
 		}
 
@@ -793,12 +809,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @return string
 	 */
 	public function getSaveId(){
-		return self::$shortNames[static::class];
+		reset(self::$saveNames[static::class]);
+		return current(self::$saveNames[static::class]);
 	}
 
 	public function saveNBT(){
 		if(!($this instanceof Player)){
 			$this->namedtag->id = new StringTag("id", $this->getSaveId());
+
 			if($this->getNameTag() !== ""){
 				$this->namedtag->CustomName = new StringTag("CustomName", $this->getNameTag());
 				$this->namedtag->CustomNameVisible = new ByteTag("CustomNameVisible", $this->isNameTagVisible() ? 1 : 0);
