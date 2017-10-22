@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\block\Fallable;
 use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -70,7 +71,7 @@ class FallingSand extends Entity{
 			return;
 		}
 
-		$this->block = Block::get($blockId, $damage);
+		$this->block = BlockFactory::get($blockId, $damage);
 
 		$this->setDataProperty(self::DATA_VARIANT, self::DATA_TYPE_INT, $this->block->getId() | ($this->block->getDamage() << 8));
 	}
