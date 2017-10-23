@@ -100,16 +100,17 @@ abstract class MenuForm extends Form{
 	 *
 	 * {@link getSelectedOption} can be used to get the option selected by the user.
 	 */
-	public function onSubmit(Player $player) : void{
-
+	public function onSubmit(Player $player) : ?Form{
+		return null;
 	}
 
 	/**
 	 * Called when a player clicks the close button on this form without selecting an option.
 	 * @param Player $player
+	 * @return Form|null a form which will be opened immediately (before queued forms) as a response to this form, or null if not applicable.
 	 */
-	public function onClose(Player $player) : void{
-
+	public function onClose(Player $player) : ?Form{
+		return null;
 	}
 
 	public function clearResponseData() : void{
@@ -117,18 +118,20 @@ abstract class MenuForm extends Form{
 	}
 
 
-	final public function handleResponse(Player $player, $data) : void{
+	final public function handleResponse(Player $player, $data) : ?Form{
 		if($data === null){
-			$this->onClose($player);
-		}elseif(is_int($data)){
+			return $this->onClose($player);
+		}
+
+		if(is_int($data)){
 			if(!isset($this->options[$data])){
 				throw new \RuntimeException($player->getName() . " selected an option that doesn't seem to exist ($data)");
 			}
 			$this->setSelectedOptionIndex($data);
-			$this->onSubmit($player);
-		}else{
-			throw new \UnexpectedValueException("Expected int or NULL, got " . gettype($data));
+			return $this->onSubmit($player);
 		}
+
+		throw new \UnexpectedValueException("Expected int or NULL, got " . gettype($data));
 	}
 
 	public function serializeFormData() : array{

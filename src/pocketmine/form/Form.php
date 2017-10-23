@@ -40,7 +40,7 @@ abstract class Form implements \JsonSerializable{
 	/** @var string */
 	protected $title = "";
 	/** @var bool */
-	private $sent = false;
+	private $queued = false;
 
 	public function __construct(string $title){
 		$this->title = $title;
@@ -66,8 +66,10 @@ abstract class Form implements \JsonSerializable{
 	 *
 	 * @param Player $player
 	 * @param mixed  $data
+	 *
+	 * @return Form|null a form which will be opened immediately (before queued forms) as a response to this form, or null if not applicable.
 	 */
-	abstract public function handleResponse(Player $player, $data) : void;
+	abstract public function handleResponse(Player $player, $data) : ?Form;
 
 	/**
 	 * Called when a player submits this form. Each form type usually has its own methods for getting relevant data from
@@ -77,8 +79,9 @@ abstract class Form implements \JsonSerializable{
 	 * they wish.
 	 *
 	 * @param Player $player
+	 * @return Form|null a form which will be opened immediately (before queued forms) as a response to this form, or null if not applicable.
 	 */
-	abstract public function onSubmit(Player $player) : void;
+	abstract public function onSubmit(Player $player) : ?Form;
 
 	/**
 	 * Returns whether the form has already been sent to a player or not. Note that you cannot send the form again if
@@ -86,15 +89,15 @@ abstract class Form implements \JsonSerializable{
 	 *
 	 * @return bool
 	 */
-	public function hasBeenSent() : bool{
-		return $this->sent;
+	public function hasBeenQueued() : bool{
+		return $this->queued;
 	}
 
 	/**
 	 * Called to flag the form as having been sent to prevent it being used again, to avoid concurrency issues.
 	 */
-	public function setHasBeenSent() : void{
-		$this->sent = true;
+	public function setHasBeenQueued() : void{
+		$this->queued = true;
 	}
 
 	/**

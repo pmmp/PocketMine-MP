@@ -90,8 +90,8 @@ abstract class ModalForm extends Form{
 	 *
 	 * {@link getChoice} can be used in here to find out which option the player selected.
 	 */
-	public function onSubmit(Player $player) : void{
-
+	public function onSubmit(Player $player) : ?Form{
+		return null;
 	}
 
 	public function clearResponseData() : void{
@@ -99,13 +99,13 @@ abstract class ModalForm extends Form{
 	}
 
 
-	final public function handleResponse(Player $player, $data) : void{
+	final public function handleResponse(Player $player, $data) : ?Form{
 		if(!is_bool($data)){
 			throw new \UnexpectedValueException("Expected bool, got " . gettype($data));
 		}
 
 		$this->setChoice($data);
-		$this->onSubmit($player);
+		return $this->onSubmit($player);
 	}
 
 	public function serializeFormData() : array{
