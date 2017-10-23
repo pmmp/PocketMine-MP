@@ -40,7 +40,7 @@ class Zombie extends Monster{
 
 	public function getDrops() : array{
 		$drops = [
-			ItemFactory::get(ItemItem::ROTTEN_FLESH, 0, 1)
+			ItemFactory::get(ItemItem::ROTTEN_FLESH, 0, mt_rand(0, 2))
 		];
 
 		if(mt_rand(0, 199) < 5){
