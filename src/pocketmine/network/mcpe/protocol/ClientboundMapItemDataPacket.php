@@ -77,7 +77,7 @@ class ClientboundMapItemDataPacket extends DataPacket{
 			}
 		}
 
-		if(($this->type & (self::BITFLAG_DECORATION_UPDATE | self::BITFLAG_TEXTURE_UPDATE)) !== 0){ //Decoration bitflag or colour bitflag
+		if(($this->type & (0x08 | self::BITFLAG_DECORATION_UPDATE | self::BITFLAG_TEXTURE_UPDATE)) !== 0){ //Decoration bitflag or colour bitflag
 			$this->scale = $this->getByte();
 		}
 
@@ -138,7 +138,7 @@ class ClientboundMapItemDataPacket extends DataPacket{
 			}
 		}
 
-		if(($type & (self::BITFLAG_TEXTURE_UPDATE | self::BITFLAG_DECORATION_UPDATE)) !== 0){
+		if(($type & (0x08 | self::BITFLAG_TEXTURE_UPDATE | self::BITFLAG_DECORATION_UPDATE)) !== 0){
 			$this->putByte($this->scale);
 		}
 
