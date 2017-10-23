@@ -2978,7 +2978,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$modifiedPages[] = $packet->pageNumber;
 				break;
 			case BookEditPacket::TYPE_SWAP_PAGES:
-				$newBook->swapPage($packet->pageNumber, $packet->secondaryPageNumber);
+				$newBook->swapPages($packet->pageNumber, $packet->secondaryPageNumber);
 				$modifiedPages = [$packet->pageNumber, $packet->secondaryPageNumber];
 				break;
 			case BookEditPacket::TYPE_SIGN_BOOK:
