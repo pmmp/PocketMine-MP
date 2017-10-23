@@ -21,14 +21,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\network\mcpe\protocol\types;
 
-use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
+class EntityLink{
 
-class FlowerPot extends Item{
-	public function __construct(int $meta = 0){
-		$this->block = BlockFactory::get(Block::FLOWER_POT_BLOCK);
-		parent::__construct(self::FLOWER_POT, $meta, "Flower Pot");
-	}
+	/** @var int */
+	public $fromEntityUniqueId;
+	/** @var int */
+	public $toEntityUniqueId;
+	/** @var int */
+	public $type;
+	/** @var int */
+	public $byte2;
+
 }

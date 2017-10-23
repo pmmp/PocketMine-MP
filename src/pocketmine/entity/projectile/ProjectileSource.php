@@ -21,14 +21,9 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\entity\projectile;
 
-use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
 
-class Skull extends Item{
-	public function __construct(int $meta = 0){
-		$this->block = BlockFactory::get(Block::SKULL_BLOCK);
-		parent::__construct(self::SKULL, $meta, "Mob Head");
-	}
+interface ProjectileSource{
+
 }

@@ -27,10 +27,8 @@ use pocketmine\inventory\EnchantInventory;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
+use pocketmine\tile\EnchantTable as TileEnchantTable;
 use pocketmine\tile\Tile;
 
 class EnchantingTable extends Transparent{
@@ -43,24 +41,8 @@ class EnchantingTable extends Transparent{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		$this->getLevel()->setBlock($blockReplace, $this, true, true);
-		$nbt = new CompoundTag("", [
-			new StringTag("id", Tile::ENCHANT_TABLE),
-			new IntTag("x", $this->x),
-			new IntTag("y", $this->y),
-			new IntTag("z", $this->z)
-		]);
 
-		if($item->hasCustomName()){
-			$nbt->CustomName = new StringTag("CustomName", $item->getCustomName());
-		}
-
-		if($item->hasCustomBlockData()){
-			foreach($item->getCustomBlockData() as $key => $v){
-				$nbt->{$key} = $v;
-			}
-		}
-
-		Tile::createTile(Tile::ENCHANT_TABLE, $this->getLevel(), $nbt);
+		Tile::createTile(Tile::ENCHANT_TABLE, $this->getLevel(), TileEnchantTable::createNBT($this, $face, $item, $player));
 
 		return true;
 	}

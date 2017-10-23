@@ -21,8 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\projectile;
 
+use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityCombustByEntityEvent;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;

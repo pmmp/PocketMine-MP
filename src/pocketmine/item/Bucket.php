@@ -50,16 +50,16 @@ class Bucket extends Item{
 		return 0;
 	}
 
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, int $face, Vector3 $facePos) : bool{
+	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos) : bool{
 		$resultBlock = BlockFactory::get($this->meta);
 
 		if($resultBlock instanceof Air){
-			if($target instanceof Liquid and $target->getDamage() === 0){
+			if($blockClicked instanceof Liquid and $blockClicked->getDamage() === 0){
 				$resultItem = clone $this;
-				$resultItem->setDamage($target->getId());
-				$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketFillEvent($player, $block, $face, $this, $resultItem));
+				$resultItem->setDamage($blockClicked->getId());
+				$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketFillEvent($player, $blockReplace, $face, $this, $resultItem));
 				if(!$ev->isCancelled()){
-					$player->getLevel()->setBlock($target, BlockFactory::get(Block::AIR), true, true);
+					$player->getLevel()->setBlock($blockClicked, BlockFactory::get(Block::AIR), true, true);
 					if($player->isSurvival()){
 						$player->getInventory()->setItemInHand($ev->getItem());
 					}
@@ -71,9 +71,9 @@ class Bucket extends Item{
 		}elseif($resultBlock instanceof Liquid){
 			$resultItem = clone $this;
 			$resultItem->setDamage(0);
-			$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketEmptyEvent($player, $block, $face, $this, $resultItem));
+			$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketEmptyEvent($player, $blockReplace, $face, $this, $resultItem));
 			if(!$ev->isCancelled()){
-				$player->getLevel()->setBlock($block, $resultBlock, true, true);
+				$player->getLevel()->setBlock($blockReplace, $resultBlock, true, true);
 				if($player->isSurvival()){
 					$player->getInventory()->setItemInHand($ev->getItem());
 				}

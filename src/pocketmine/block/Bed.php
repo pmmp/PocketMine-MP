@@ -29,10 +29,6 @@ use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\ByteTag;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\Bed as TileBed;
 use pocketmine\tile\Tile;
@@ -58,7 +54,7 @@ class Bed extends Transparent{
 		return "Bed Block";
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		return new AxisAlignedBB(
 			$this->x,
 			$this->y,
@@ -129,7 +125,7 @@ class Bed extends Transparent{
 	/**
 	 * @return Bed|null
 	 */
-	public function getOtherHalf(){
+	public function getOtherHalf() : ?Bed{
 		$other = $this->getSide(self::getOtherHalfSide($this->meta, $this->isHeadPart()));
 		if($other instanceof Bed and $other->getId() === $this->getId() and $other->isHeadPart() !== $this->isHeadPart() and (($other->getDamage() & 0x03) === ($this->getDamage() & 0x03))){
 			return $other;
@@ -184,20 +180,8 @@ class Bed extends Transparent{
 				$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->id, $meta), true, true);
 				$this->getLevel()->setBlock($next, BlockFactory::get($this->id, $meta | self::BITFLAG_HEAD), true, true);
 
-				$nbt = new CompoundTag("", [
-					new StringTag("id", Tile::BED),
-					new ByteTag("color", $item->getDamage() & 0x0f),
-					new IntTag("x", $blockReplace->x),
-					new IntTag("y", $blockReplace->y),
-					new IntTag("z", $blockReplace->z)
-				]);
-
-				$nbt2 = clone $nbt;
-				$nbt2["x"] = $next->x;
-				$nbt2["z"] = $next->z;
-
-				Tile::createTile(Tile::BED, $this->getLevel(), $nbt);
-				Tile::createTile(Tile::BED, $this->getLevel(), $nbt2);
+				Tile::createTile(Tile::BED, $this->getLevel(), TileBed::createNBT($this, $face, $item, $player));
+				Tile::createTile(Tile::BED, $this->getLevel(), TileBed::createNBT($next, $face, $item, $player));
 
 				return true;
 			}
@@ -209,7 +193,7 @@ class Bed extends Transparent{
 	public function onBreak(Item $item, Player $player = null) : bool{
 		$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true, true);
 		if(($other = $this->getOtherHalf()) !== null){
-			$this->getLevel()->useBreakOn($other, $item, $player, $player !== null); //make sure tiles get removed
+			$this->getLevel()->useBreakOn($other, $item, null, $player !== null); //make sure tiles get removed
 		}
 
 		return true;

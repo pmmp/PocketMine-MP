@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\entity\Entity;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
@@ -35,12 +36,16 @@ abstract class ContainerInventory extends BaseInventory{
 		$pk->windowId = $who->getWindowId($this);
 		$pk->type = $this->getNetworkType();
 		$holder = $this->getHolder();
-		if($holder instanceof Vector3){
-			$pk->x = $holder->getX();
-			$pk->y = $holder->getY();
-			$pk->z = $holder->getZ();
-		}else{
-			$pk->x = $pk->y = $pk->z = 0;
+
+		$pk->x = $pk->y = $pk->z = 0;
+		$pk->entityUniqueId = -1;
+
+		if($holder instanceof Entity){
+			$pk->entityUniqueId = $holder->getId();
+		}elseif($holder instanceof Vector3){
+			$pk->x = (int) $holder->getX();
+			$pk->y = (int) $holder->getY();
+			$pk->z = (int) $holder->getZ();
 		}
 
 		$who->dataPacket($pk);

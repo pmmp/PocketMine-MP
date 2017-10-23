@@ -36,19 +36,12 @@ class FlintSteel extends Tool{
 		parent::__construct(self::FLINT_STEEL, $meta, "Flint and Steel");
 	}
 
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, int $face, Vector3 $facePos) : bool{
-		if($block->getId() === self::AIR and ($target instanceof Solid)){
-			$level->setBlock($block, BlockFactory::get(Block::FIRE), true);
-			$level->broadcastLevelSoundEvent($block->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_IGNITE);
+	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos) : bool{
+		if($blockReplace->getId() === self::AIR and ($blockClicked instanceof Solid)){
+			$level->setBlock($blockReplace, BlockFactory::get(Block::FIRE), true);
+			$level->broadcastLevelSoundEvent($blockReplace->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_IGNITE);
 
-			if(($player->gamemode & 0x01) === 0 and $this->useOn($block)){
-				if($this->getDamage() >= $this->getMaxDurability()){
-					$player->getInventory()->setItemInHand(Item::get(Item::AIR, 0, 0));
-				}else{
-					$this->meta++;
-					$player->getInventory()->setItemInHand($this);
-				}
-			}
+			$this->applyDamage(1);
 
 			return true;
 		}

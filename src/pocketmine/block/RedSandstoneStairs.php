@@ -21,14 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\block;
 
-use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
+class RedSandstoneStairs extends SandstoneStairs{
 
-class ItemFrame extends Item{
-	public function __construct(int $meta = 0){
-		$this->block = BlockFactory::get(Block::ITEM_FRAME_BLOCK);
-		parent::__construct(self::ITEM_FRAME, $meta, "Item Frame");
+	protected $id = self::RED_SANDSTONE_STAIRS;
+
+	public function getName() : string{
+		return "Red " . parent::getName();
 	}
+
 }

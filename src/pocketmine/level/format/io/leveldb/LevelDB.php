@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format\io\leveldb;
 
-use pocketmine\entity\Entity;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\ChunkUtils;
@@ -38,8 +37,6 @@ use pocketmine\nbt\tag\{
 	ByteTag, CompoundTag, FloatTag, IntTag, LongTag, StringTag
 };
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
-use pocketmine\Player;
-use pocketmine\tile\Tile;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\MainLogger;
@@ -509,32 +506,38 @@ class LevelDB extends BaseLevelProvider{
 		//TODO: use this properly
 		$this->db->put($index . self::TAG_STATE_FINALISATION, chr(self::FINALISATION_DONE));
 
-		$this->writeTags($chunk->getTiles(), $index . self::TAG_BLOCK_ENTITY);
-		$this->writeTags(array_filter($chunk->getEntities(), function(Entity $entity) : bool{
-				return !($entity instanceof Player);
-		}), $index . self::TAG_ENTITY);
+		/** @var CompoundTag[] $tiles */
+		$tiles = [];
+		foreach($chunk->getTiles() as $tile){
+			if(!$tile->isClosed()){
+				$tile->saveNBT();
+				$tiles[] = $tile->namedtag;
+			}
+		}
+		$this->writeTags($tiles, $index . self::TAG_BLOCK_ENTITY);
+
+		/** @var CompoundTag[] $entities */
+		$entities = [];
+		foreach($chunk->getEntities() as $entity){
+			if($entity->canSaveWithChunk() and !$entity->isClosed()){
+				$entity->saveNBT();
+				$entities[] = $entity->namedtag;
+			}
+		}
+		$this->writeTags($entities, $index . self::TAG_ENTITY);
 
 		$this->db->delete($index . self::TAG_DATA_2D_LEGACY);
 		$this->db->delete($index . self::TAG_LEGACY_TERRAIN);
 	}
 
 	/**
-	 * @param Entity[]|Tile[] $targets
-	 * @param string          $index
+	 * @param CompoundTag[] $targets
+	 * @param string        $index
 	 */
 	private function writeTags(array $targets, string $index){
-		$nbt = new NBT(NBT::LITTLE_ENDIAN);
-		$out = [];
-		/** @var Entity|Tile $target */
-		foreach($targets as $target){
-			if(!$target->isClosed()){
-				$target->saveNBT();
-				$out[] = $target->namedtag;
-			}
-		}
-
 		if(!empty($targets)){
-			$nbt->setData($out);
+			$nbt = new NBT(NBT::LITTLE_ENDIAN);
+			$nbt->setData($targets);
 			$this->db->put($index, $nbt->write());
 		}else{
 			$this->db->delete($index);

@@ -25,7 +25,7 @@ namespace pocketmine\event\entity;
 
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
-use pocketmine\entity\Projectile;
+use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\Cancellable;
 use pocketmine\item\Item;
 

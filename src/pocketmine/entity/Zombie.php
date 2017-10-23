@@ -26,11 +26,10 @@ namespace pocketmine\entity;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\item\ItemFactory;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class Zombie extends Monster{
-	const NETWORK_ID = 32;
+	const NETWORK_ID = self::ZOMBIE;
 
 	public $width = 0.6;
 	public $height = 1.8;
@@ -39,37 +38,22 @@ class Zombie extends Monster{
 		return "Zombie";
 	}
 
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->type = Zombie::NETWORK_ID;
-		$pk->position = $this->asVector3();
-		$pk->motion = $this->getMotion();
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
-	}
-
 	public function getDrops() : array{
 		$drops = [
-			ItemFactory::get(ItemItem::FEATHER, 0, 1)
+			ItemFactory::get(ItemItem::ROTTEN_FLESH, 0, mt_rand(0, 2))
 		];
-		if($this->lastDamageCause instanceof EntityDamageByEntityEvent and $this->lastDamageCause->getEntity() instanceof Player){
-			if(mt_rand(0, 199) < 5){
-				switch(mt_rand(0, 2)){
-					case 0:
-						$drops[] = ItemFactory::get(ItemItem::IRON_INGOT, 0, 1);
-						break;
-					case 1:
-						$drops[] = ItemFactory::get(ItemItem::CARROT, 0, 1);
-						break;
-					case 2:
-						$drops[] = ItemFactory::get(ItemItem::POTATO, 0, 1);
-						break;
-				}
+
+		if(mt_rand(0, 199) < 5){
+			switch(mt_rand(0, 2)){
+				case 0:
+					$drops[] = ItemFactory::get(ItemItem::IRON_INGOT, 0, 1);
+					break;
+				case 1:
+					$drops[] = ItemFactory::get(ItemItem::CARROT, 0, 1);
+					break;
+				case 2:
+					$drops[] = ItemFactory::get(ItemItem::POTATO, 0, 1);
+					break;
 			}
 		}
 

@@ -26,7 +26,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 
-class MonsterSpawner extends Solid{
+class MonsterSpawner extends Transparent{
 
 	protected $id = self::MONSTER_SPAWNER;
 

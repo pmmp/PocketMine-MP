@@ -764,25 +764,25 @@ class Server{
 				new DoubleTag("", $spawn->x),
 				new DoubleTag("", $spawn->y),
 				new DoubleTag("", $spawn->z)
-			]),
+			], NBT::TAG_Double),
 			new StringTag("Level", $this->getDefaultLevel()->getName()),
 			//new StringTag("SpawnLevel", $this->getDefaultLevel()->getName()),
 			//new IntTag("SpawnX", (int) $spawn->x),
 			//new IntTag("SpawnY", (int) $spawn->y),
 			//new IntTag("SpawnZ", (int) $spawn->z),
 			//new ByteTag("SpawnForced", 1), //TODO
-			new ListTag("Inventory", []),
+			new ListTag("Inventory", [], NBT::TAG_Compound),
 			new CompoundTag("Achievements", []),
 			new IntTag("playerGameType", $this->getGamemode()),
 			new ListTag("Motion", [
 				new DoubleTag("", 0.0),
 				new DoubleTag("", 0.0),
 				new DoubleTag("", 0.0)
-			]),
+			], NBT::TAG_Double),
 			new ListTag("Rotation", [
 				new FloatTag("", 0.0),
 				new FloatTag("", 0.0)
-			]),
+			], NBT::TAG_Float),
 			new FloatTag("FallDistance", 0.0),
 			new ShortTag("Fire", 0),
 			new ShortTag("Air", 300),
@@ -790,10 +790,6 @@ class Server{
 			new ByteTag("Invulnerable", 0),
 			new StringTag("NameTag", $name)
 		]);
-		$nbt->Pos->setTagType(NBT::TAG_Double);
-		$nbt->Inventory->setTagType(NBT::TAG_Compound);
-		$nbt->Motion->setTagType(NBT::TAG_Double);
-		$nbt->Rotation->setTagType(NBT::TAG_Float);
 
 		return $nbt;
 
@@ -1491,7 +1487,7 @@ class Server{
 				"xbox-auth" => true
 			]);
 
-			$this->forceLanguage = $this->getProperty("settings.force-language", false);
+			$this->forceLanguage = (bool) $this->getProperty("settings.force-language", false);
 			$this->baseLang = new BaseLang($this->getProperty("settings.language", BaseLang::FALLBACK_LANGUAGE));
 			$this->logger->info($this->getLanguage()->translateString("language.selected", [$this->getLanguage()->getName(), $this->getLanguage()->getLang()]));
 
@@ -2456,8 +2452,6 @@ class Server{
 			" kB/s | TPS " . $this->getTicksPerSecondAverage() .
 			" | Load " . $this->getTickUsageAverage() . "%\x07";
 
-		$this->network->resetStatistics();
-
 		Timings::$titleTickTimer->stopTiming();
 	}
 
@@ -2518,25 +2512,26 @@ class Server{
 			$player->checkNetwork();
 		}
 
-		if(($this->tickCounter & 0b1111) === 0){
+		if(($this->tickCounter % 20) === 0){
 			if($this->doTitleTick and Terminal::hasFormattingCodes()){
 				$this->titleTick();
 			}
 			$this->currentTPS = 20;
 			$this->currentUse = 0;
 
-			if(($this->tickCounter & 0b111111111) === 0){
-				try{
-					$this->getPluginManager()->callEvent($this->queryRegenerateTask = new QueryRegenerateEvent($this, 5));
-					if($this->queryHandler !== null){
-						$this->queryHandler->regenerateInfo();
-					}
-				}catch(\Throwable $e){
-					$this->logger->logException($e);
-				}
-			}
+			$this->network->updateName();
+			$this->network->resetStatistics();
+		}
 
-			$this->getNetwork()->updateName();
+		if(($this->tickCounter & 0b111111111) === 0){
+			try{
+				$this->getPluginManager()->callEvent($this->queryRegenerateTask = new QueryRegenerateEvent($this, 5));
+				if($this->queryHandler !== null){
+					$this->queryHandler->regenerateInfo();
+				}
+			}catch(\Throwable $e){
+				$this->logger->logException($e);
+			}
 		}
 
 		if($this->autoSave and ++$this->autoSaveTicker >= $this->autoSaveTicks){

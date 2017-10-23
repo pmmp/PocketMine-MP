@@ -30,7 +30,6 @@ use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\{
 	ByteArrayTag, ByteTag, CompoundTag, IntArrayTag, IntTag, ListTag, LongTag
 };
-use pocketmine\Player;
 use pocketmine\utils\MainLogger;
 
 /**
@@ -52,8 +51,8 @@ class PMAnvil extends Anvil{
 		$nbt->TerrainPopulated = new ByteTag("TerrainPopulated", $chunk->isPopulated() ? 1 : 0);
 		$nbt->LightPopulated = new ByteTag("LightPopulated", $chunk->isLightPopulated() ? 1 : 0);
 
-		$nbt->Sections = new ListTag("Sections", []);
-		$nbt->Sections->setTagType(NBT::TAG_Compound);
+		$nbt->Sections = new ListTag("Sections", [], NBT::TAG_Compound);
+
 		$subChunks = -1;
 		foreach($chunk->getSubChunks() as $y => $subChunk){
 			if($subChunk->isEmpty()){
@@ -74,14 +73,13 @@ class PMAnvil extends Anvil{
 		$entities = [];
 
 		foreach($chunk->getEntities() as $entity){
-			if(!($entity instanceof Player) and !$entity->isClosed()){
+			if($entity->canSaveWithChunk() and !$entity->isClosed()){
 				$entity->saveNBT();
 				$entities[] = $entity->namedtag;
 			}
 		}
 
-		$nbt->Entities = new ListTag("Entities", $entities);
-		$nbt->Entities->setTagType(NBT::TAG_Compound);
+		$nbt->Entities = new ListTag("Entities", $entities, NBT::TAG_Compound);
 
 		$tiles = [];
 		foreach($chunk->getTiles() as $tile){
@@ -89,8 +87,7 @@ class PMAnvil extends Anvil{
 			$tiles[] = $tile->namedtag;
 		}
 
-		$nbt->TileEntities = new ListTag("TileEntities", $tiles);
-		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
+		$nbt->TileEntities = new ListTag("TileEntities", $tiles, NBT::TAG_Compound);
 
 		//TODO: TileTicks
 

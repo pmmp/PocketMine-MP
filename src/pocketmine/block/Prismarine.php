@@ -48,7 +48,7 @@ class Prismarine extends Solid{
 			self::DARK => "Dark Prismarine",
 			self::BRICKS => "Prismarine Bricks"
 		];
-		return $names[$this->meta & 0x03] ?? "Unknown";
+		return $names[$this->getVariant()] ?? "Unknown";
 	}
 
 	public function getToolType() : int{

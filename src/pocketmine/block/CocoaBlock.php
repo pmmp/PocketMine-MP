@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class CocoaBlock extends Solid{
+class CocoaBlock extends Transparent{
 
 	protected $id = self::COCOA_BLOCK;
 

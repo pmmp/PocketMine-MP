@@ -61,7 +61,7 @@ class Leaves extends Transparent{
 			self::BIRCH => "Birch Leaves",
 			self::JUNGLE => "Jungle Leaves"
 		];
-		return $names[$this->meta & 0x03];
+		return $names[$this->getVariant()];
 	}
 
 	public function diffusesSkyLight() : bool{
@@ -169,10 +169,14 @@ class Leaves extends Transparent{
 		return $this->getLevel()->setBlock($this, $this, true);
 	}
 
+	public function getVariantBitmask() : int{
+		return 0x03;
+	}
+
 	public function getDrops(Item $item) : array{
 		$drops = [];
 
-		$variantMeta = $this->getDamage() & 0x03;
+		$variantMeta = $this->getVariant();
 
 		if($item->isShears()){
 			$drops[] = ItemFactory::get($this->getItemId(), $variantMeta, 1);

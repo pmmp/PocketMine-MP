@@ -54,7 +54,7 @@ class Cactus extends Transparent{
 		return "Cactus";
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 
 		return new AxisAlignedBB(
 			$this->x + 0.0625,
@@ -70,7 +70,7 @@ class Cactus extends Transparent{
 		return true;
 	}
 
-	public function onEntityCollide(Entity $entity){
+	public function onEntityCollide(Entity $entity) : void{
 		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_CONTACT, 1);
 		$entity->attack($ev);
 	}
@@ -92,7 +92,7 @@ class Cactus extends Transparent{
 			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::CACTUS){
 				if($this->meta === 0x0f){
 					for($y = 1; $y < 3; ++$y){
-						$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
+						$b = $this->getLevel()->getBlockAt($this->x, $this->y + $y, $this->z);
 						if($b->getId() === self::AIR){
 							Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, BlockFactory::get(Block::CACTUS)));
 							if(!$ev->isCancelled()){

@@ -34,7 +34,6 @@ use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\{
 	ByteArrayTag, ByteTag, CompoundTag, IntArrayTag, IntTag, ListTag, LongTag, StringTag
 };
-use pocketmine\Player;
 use pocketmine\utils\MainLogger;
 
 class McRegion extends BaseLevelProvider{
@@ -89,14 +88,13 @@ class McRegion extends BaseLevelProvider{
 		$entities = [];
 
 		foreach($chunk->getEntities() as $entity){
-			if(!($entity instanceof Player) and !$entity->isClosed()){
+			if($entity->canSaveWithChunk() and !$entity->isClosed()){
 				$entity->saveNBT();
 				$entities[] = $entity->namedtag;
 			}
 		}
 
-		$nbt->Entities = new ListTag("Entities", $entities);
-		$nbt->Entities->setTagType(NBT::TAG_Compound);
+		$nbt->Entities = new ListTag("Entities", $entities, NBT::TAG_Compound);
 
 		$tiles = [];
 		foreach($chunk->getTiles() as $tile){
@@ -104,8 +102,7 @@ class McRegion extends BaseLevelProvider{
 			$tiles[] = $tile->namedtag;
 		}
 
-		$nbt->TileEntities = new ListTag("TileEntities", $tiles);
-		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
+		$nbt->TileEntities = new ListTag("TileEntities", $tiles, NBT::TAG_Compound);
 
 		$writer = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setName("Level");

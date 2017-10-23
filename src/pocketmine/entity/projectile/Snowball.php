@@ -21,13 +21,9 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\entity\projectile;
 
-use pocketmine\block\Block;
+class Snowball extends Throwable{
+	const NETWORK_ID = self::SNOWBALL;
 
-class BrewingStand extends Item{
-	public function __construct(int $meta = 0){
-		$this->block = Block::get(Block::BREWING_STAND_BLOCK);
-		parent::__construct(self::BREWING_STAND, $meta, "Brewing Stand");
-	}
 }

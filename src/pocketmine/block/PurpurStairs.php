@@ -21,18 +21,31 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\block;
 
-use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
+use pocketmine\item\Tool;
 
-class WoodenDoor extends Item{
+class PurpurStairs extends Stair{
+
+	protected $id = self::PURPUR_STAIRS;
+
 	public function __construct(int $meta = 0){
-		$this->block = BlockFactory::get(Block::WOODEN_DOOR_BLOCK);
-		parent::__construct(self::WOODEN_DOOR, $meta, "Wooden Door");
+		$this->meta = $meta;
 	}
 
-	public function getMaxStackSize() : int{
-		return 1;
+	public function getName() : string{
+		return "Purpur Stairs";
+	}
+
+	public function getToolType() : int{
+		return Tool::TYPE_PICKAXE;
+	}
+
+	public function getHardness() : float{
+		return 1.5;
+	}
+
+	public function getBlastResistance() : float{
+		return 30;
 	}
 }

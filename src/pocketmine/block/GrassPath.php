@@ -26,7 +26,9 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\Tool;
+use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 
 class GrassPath extends Transparent{
 
@@ -44,7 +46,7 @@ class GrassPath extends Transparent{
 		return Tool::TYPE_SHOVEL;
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		return new AxisAlignedBB(
 			$this->x,
 			$this->y,
@@ -57,6 +59,15 @@ class GrassPath extends Transparent{
 
 	public function getHardness() : float{
 		return 0.6;
+	}
+
+	public function onUpdate(int $type){
+		if($type === Level::BLOCK_UPDATE_NORMAL and $this->getSide(Vector3::SIDE_UP)->isSolid()){
+			$this->level->setBlock($this, BlockFactory::get(Block::DIRT), true);
+			return $type;
+		}
+
+		return false;
 	}
 
 	public function getDrops(Item $item) : array{

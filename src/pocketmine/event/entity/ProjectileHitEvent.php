@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\event\entity;
 
-use pocketmine\entity\Projectile;
+use pocketmine\entity\projectile\Projectile;
 
 class ProjectileHitEvent extends EntityEvent{
 	public static $handlerList = null;
