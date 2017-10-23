@@ -1,6 +1,6 @@
 # [![PocketMine-MP](http://cdn.pocketmine.net/img/PocketMine-MP-h.png)](https://pmmp.io)
 
-__A highly customisable, open source server software for Minecraft: Pocket Edition written in PHP__
+__A highly customisable, open source server software for Minecraft: Bedrock written in PHP__
 
 [![Build Status](https://travis-ci.org/pmmp/PocketMine-MP.svg?branch=master)](https://travis-ci.org/pmmp/PocketMine-MP)
 
@@ -20,7 +20,7 @@ There are a very wide range of already-written plugins available which you can u
  * [DevTools](https://github.com/pmmp/PocketMine-DevTools/) - A development tools plugin for creating plugins.
 
 ### Can I contribute?
-Yes you can! Contributions are welcomed provided that they comply with our [Contributing Guidelines](CONTRIBUTING.md). Please ensure you read the relevant sections of the guidelines carefully before making a Pull Request or opening an Issue.
+Yes you can! Contributions are welcomed provided that they comply with our [Contributing Guidelines](CONTRIBUTING.md). Please ensure you read the relevant sections of the guidelines carefully before making a Pull Request or opening an Issue. Failing to comply could result in a repository ban.
 
 ### Where can I get the latest .phar?
 Head over to our [official Jenkins server](https://jenkins.pmmp.io/)
@@ -52,4 +52,4 @@ Head over to our [official Jenkins server](https://jenkins.pmmp.io/)
 	You should have received a copy of the GNU Lesser General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pmmp/PocketMine are not affiliated with Mojang. All brands and trademarks belong to their respective owners. PocketMine-MP is not a Mojang-approved software, nor is it associated with Mojang.
+pmmp/PocketMine are not affiliated with Mojang. All brands and trademarks belong to their respective owners. PocketMine-MP is not Mojang-approved software, nor is it associated with Mojang.
