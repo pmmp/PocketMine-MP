@@ -97,7 +97,7 @@ class Banner extends Spawnable{
 		parent::__construct($level, $nbt);
 	}
 
-	public function addAdditionalSpawnData(CompoundTag $nbt){
+	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->Patterns = $this->namedtag->Patterns;
 		$nbt->Base = $this->namedtag->Base;
 	}

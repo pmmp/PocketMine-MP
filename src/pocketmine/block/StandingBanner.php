@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\ItemFactory;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
@@ -57,7 +58,7 @@ class StandingBanner extends Transparent{
 		return "Standing Banner";
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		return null;
 	}
 
