@@ -72,7 +72,7 @@ class Arrow extends Projectile{
 		}
 
 		if($this->age > 1200){
-			$this->close();
+			$this->flagForDespawn();
 			$hasUpdate = true;
 		}
 

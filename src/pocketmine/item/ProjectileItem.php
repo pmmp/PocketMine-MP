@@ -49,7 +49,7 @@ abstract class ProjectileItem extends Item{
 		if($projectile instanceof Projectile){
 			$player->getServer()->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($projectile));
 			if($projectileEv->isCancelled()){
-				$projectile->kill();
+				$projectile->flagForDespawn();
 			}else{
 				$projectile->spawnToAll();
 				$player->getLevel()->addSound(new LaunchSound($player), $player->getViewers());
