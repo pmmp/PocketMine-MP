@@ -195,10 +195,11 @@ class WritableBook extends Item{
 			if($downwards){
 				unset($namedTag->pages->{$key});
 			}
-			$namedTag->pages->{$key + $type} = new CompoundTag("", [
-				new StringTag("text", $page->text->getValue()),
-				new StringTag("photoname", "")
-			]);
+			$namedTag->pages->{$key + $type} = $page;
+		}
+
+		if(!$downwards){
+			unset($namedTag->pages->{$pageId});
 		}
 		return true;
 	}
