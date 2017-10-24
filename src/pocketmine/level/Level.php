@@ -1583,7 +1583,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param Player  $player
 	 * @param Vector3 $vector
 	 *
-	 * @return bool false if spawn protection cancelled the action, true if not.
+	 * @return bool true if spawn protection cancelled the action, false if not.
 	 */
 	protected function checkSpawnProtection(Player $player, Vector3 $vector) : bool{
 		if(!$player->hasPermission("pocketmine.spawnprotect.bypass") and ($distance = $this->server->getSpawnRadius()) > -1){
