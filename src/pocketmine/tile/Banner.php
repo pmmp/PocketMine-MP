@@ -150,7 +150,7 @@ class Banner extends Spawnable{
 	 */
 	public function addPattern(string $pattern, int $color) : int{
 		$patternId = 0;
-		if($this->getPatternCount() !== 0) {
+		if($this->getPatternCount() !== 0){
 			$patternId = max($this->getPatternIds()) + 1;
 		}
 
@@ -277,9 +277,9 @@ class Banner extends Spawnable{
 		return count($this->getPatternIds());
 	}
 
-	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null): void {
+	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
 		$nbt->setInt(self::TAG_BASE, $item !== null ? $item->getDamage() & 0x0f : 0);
-		if($item->getNamedTag()->hasTag("Patterns", ListTag::class)) {
+		if($item->getNamedTag()->hasTag("Patterns", ListTag::class)){
 			$nbt->setTag($item->getNamedTag()->getTag("Patterns", ListTag::class));
 		}
 	}

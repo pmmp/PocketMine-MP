@@ -77,7 +77,7 @@ class Banner extends Item{
 	 */
 	public function addPattern(string $pattern, int $color) : int{
 		$patternId = 0;
-		if($this->getPatternCount() !== 0) {
+		if($this->getPatternCount() !== 0){
 			$patternId = max($this->getPatternIds()) + 1;
 		}
 
