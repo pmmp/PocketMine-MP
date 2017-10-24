@@ -23,13 +23,20 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
+use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\Player;
 
 class Banner extends Spawnable{
+	const TAG_BASE = "Base";
+	const TAG_PATTERNS = "Patterns";
+	const TAG_COLOR = "Color";
+	const TAG_PATTERN = "Pattern";
 
 	const PATTERN_BOTTOM_STRIPE = "bs";
 	const PATTERN_TOP_STRIPE = "ts";
@@ -88,18 +95,18 @@ class Banner extends Spawnable{
 	const COLOR_WHITE = 15;
 
 	public function __construct(Level $level, CompoundTag $nbt){
-		if(!isset($nbt->Base) or !($nbt->Base instanceof IntTag)){
-			$nbt->Base = new IntTag("Base", 15);
+		if(!$nbt->hasTag(self::TAG_BASE, IntTag::class)){
+			$nbt->setInt(self::TAG_BASE, 0);
 		}
-		if(!isset($nbt->Patterns) or !($nbt->Patterns instanceof ListTag)){
-			$nbt->Patterns = new ListTag("Patterns");
+		if(!$nbt->hasTag(self::TAG_PATTERNS, ListTag::class)){
+			$nbt->setTag(new ListTag(self::TAG_PATTERNS));
 		}
 		parent::__construct($level, $nbt);
 	}
 
 	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		$nbt->Patterns = $this->namedtag->Patterns;
-		$nbt->Base = $this->namedtag->Base;
+		$nbt->Patterns = $this->namedtag->getTag(self::TAG_PATTERNS);
+		$nbt->Base = $this->namedtag->getTag(self::TAG_BASE);
 	}
 
 	/**
@@ -108,7 +115,7 @@ class Banner extends Spawnable{
 	 * @return int
 	 */
 	public function getBaseColor() : int{
-		return $this->namedtag->Base->getValue();
+		return $this->namedtag->getInt(self::TAG_BASE, 0);
 	}
 
 	/**
@@ -117,7 +124,7 @@ class Banner extends Spawnable{
 	 * @param int $color
 	 */
 	public function setBaseColor(int $color) : void{
-		$this->namedtag->Base->setValue($color & 0x0f);
+		$this->namedtag->setInt(self::TAG_BASE, $color & 0x0f);
 		$this->onChanged();
 	}
 
@@ -127,8 +134,8 @@ class Banner extends Spawnable{
 	 * @return array
 	 */
 	public function getPatternIds() : array{
-		$keys = array_keys((array) $this->namedtag->Patterns);
-		return array_filter($keys, function($key){
+		$keys = array_keys((array) $this->namedtag->getTag(self::TAG_PATTERNS));
+		return array_filter($keys, function(string $key){
 			return is_numeric($key);
 		}, ARRAY_FILTER_USE_KEY);
 	}
@@ -180,8 +187,8 @@ class Banner extends Spawnable{
 		}
 
 		return [
-			"Color" => $this->namedtag->Patterns->{$patternId}->Color->getValue(),
-			"Pattern" => $this->namedtag->Patterns->{$patternId}->Pattern->getValue()
+			self::TAG_COLOR => $this->namedtag->Patterns->{$patternId}->getInt(self::TAG_COLOR, 0),
+			self::TAG_PATTERN => $this->namedtag->Patterns->{$patternId}->getString(self::TAG_PATTERN)
 		];
 	}
 
@@ -200,8 +207,8 @@ class Banner extends Spawnable{
 		}
 
 		$this->namedtag->Patterns->{$patternId}->setValue([
-			new IntTag("Color", $color & 0x0f),
-			new StringTag("Pattern", $pattern)
+			new IntTag(self::TAG_COLOR, $color & 0x0f),
+			new StringTag(self::TAG_PATTERN, $pattern)
 		]);
 
 		$this->onChanged();
@@ -268,5 +275,12 @@ class Banner extends Spawnable{
 	 */
 	public function getPatternCount() : int{
 		return count($this->getPatternIds());
+	}
+
+	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null): void {
+		$nbt->setInt(self::TAG_BASE, $item !== null ? $item->getDamage() & 0x0f : 0);
+		if($item->getNamedTag()->hasTag("Patterns", ListTag::class)) {
+			$nbt->setTag($item->getNamedTag()->getTag("Patterns", ListTag::class));
+		}
 	}
 }

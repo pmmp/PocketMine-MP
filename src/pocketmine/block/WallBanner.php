@@ -35,19 +35,11 @@ class WallBanner extends StandingBanner{
 	}
 
 	public function onUpdate(int $type){
-		$faces = [
-			Vector3::SIDE_NORTH => 3,
-			Vector3::SIDE_SOUTH => 2,
-			Vector3::SIDE_WEST => 5,
-			Vector3::SIDE_EAST => 4
-		];
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if(isset($faces[$this->meta])){
-				if($this->getSide($faces[$this->meta])->getId() === self::AIR){
-					$this->getLevel()->useBreakOn($this);
-				}
-				return Level::BLOCK_UPDATE_NORMAL;
+			if($this->getSide($this->meta ^ 0x01)->getId() === self::AIR){
+				$this->getLevel()->useBreakOn($this);
 			}
+			return Level::BLOCK_UPDATE_NORMAL;
 		}
 		return false;
 	}

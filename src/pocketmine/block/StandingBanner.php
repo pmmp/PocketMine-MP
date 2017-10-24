@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\item\ItemFactory;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
@@ -34,6 +33,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
+use pocketmine\tile\Banner as TileBanner;
 use pocketmine\tile\Tile;
 
 class StandingBanner extends Transparent{
@@ -64,25 +64,15 @@ class StandingBanner extends Transparent{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		if($face !== Vector3::SIDE_DOWN){
-			$nbt = new CompoundTag("", [
-				new StringTag("id", Tile::BANNER),
-				new IntTag("x", $blockReplace->x),
-				new IntTag("y", $blockReplace->y),
-				new IntTag("z", $blockReplace->z),
-				$item->getNamedTag()->Base ?? new IntTag("Base", $item->getDamage() & 0x0f),
-			]);
-
-			if($face === Vector3::SIDE_UP){
+			if($face === Vector3::SIDE_UP and $player !== null){
 				$this->meta = floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0f;
 				$this->getLevel()->setBlock($blockReplace, $this, true);
 			}else{
 				$this->meta = $face;
 				$this->getLevel()->setBlock($blockReplace, new WallBanner($this->meta), true);
 			}
-			if(isset($item->getNamedTag()->Patterns) and ($item->getNamedTag()->Patterns instanceof ListTag)){
-				$nbt->Patterns = $item->getNamedTag()->Patterns;
-			}
-			Tile::createTile(Tile::BANNER, $this->getLevel(), $nbt);
+
+			Tile::createTile(Tile::BANNER, $this->getLevel(), TileBanner::createNBT($this, $face, $item, $player));
 			return true;
 		}
 
@@ -114,7 +104,7 @@ class StandingBanner extends Transparent{
 	}
 
 	public function onBreak(Item $item, Player $player = null) : bool{
-		if(($tile = $this->level->getTile($this)) !== null) {
+		if(($tile = $this->level->getTile($this)) !== null){
 			$this->level->dropItem($this, ItemFactory::get(Item::BANNER)->setNamedTag($tile->getCleanedNBT()));
 		}
 		return parent::onBreak($item, $player);

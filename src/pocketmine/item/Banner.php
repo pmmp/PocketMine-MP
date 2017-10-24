@@ -31,8 +31,12 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 
 class Banner extends Item{
+	const TAG_BASE = "Base";
+	const TAG_PATTERNS = "Patterns";
+	const TAG_COLOR = "Color";
+	const TAG_PATTERN = "Pattern";
 
-	public function __construct(int $meta = 0) {
+	public function __construct(int $meta = 0){
 		$this->block = BlockFactory::get(Block::STANDING_BANNER);
 		parent::__construct(self::BANNER, $meta, "Banner");
 	}
@@ -47,7 +51,7 @@ class Banner extends Item{
 	 * @return int
 	 */
 	public function getBaseColor() : int{
-		return $this->getNamedTag()->Base->getValue();
+		return $this->getNamedTag()->getInt(self::TAG_BASE, 0);
 	}
 
 	/**
@@ -58,7 +62,7 @@ class Banner extends Item{
 	 */
 	public function setBaseColor(int $color) : void{
 		$namedTag = $this->getNamedTag();
-		$namedTag->Base->setValue($color & 0x0f);
+		$namedTag->setInt(self::TAG_BASE, $color & 0x0f);
 		$this->setNamedTag($namedTag);
 	}
 
@@ -79,8 +83,8 @@ class Banner extends Item{
 
 		$namedTag = $this->getNamedTag();
 		$namedTag->Patterns->{$patternId} = new CompoundTag("", [
-			new IntTag("Color", $color & 0x0f),
-			new StringTag("Pattern", $pattern)
+			new IntTag(self::TAG_COLOR, $color & 0x0f),
+			new StringTag(self::TAG_PATTERN, $pattern)
 		]);
 
 		$this->setNamedTag($namedTag);
@@ -112,8 +116,8 @@ class Banner extends Item{
 		}
 
 		return [
-			"Color" => $this->getNamedTag()->Patterns->{$patternId}->Color->getValue(),
-			"Pattern" => $this->getNamedTag()->Patterns->{$patternId}->Pattern->getValue()
+			self::TAG_COLOR => $this->getNamedTag()->Patterns->{$patternId}->getInt(self::TAG_COLOR, 0),
+			self::TAG_PATTERN => $this->getNamedTag()->Patterns->{$patternId}->getString(self::TAG_PATTERN)
 		];
 	}
 
@@ -134,8 +138,8 @@ class Banner extends Item{
 
 		$namedTag = $this->getNamedTag();
 		$namedTag->Patterns->{$patternId}->setValue([
-			new IntTag("Color", $color & 0x0f),
-			new StringTag("Pattern", $pattern)
+			new IntTag(self::TAG_COLOR, $color & 0x0f),
+			new StringTag(self::TAG_PATTERN, $pattern)
 		]);
 
 		$this->setNamedTag($namedTag);
@@ -226,13 +230,13 @@ class Banner extends Item{
 	}
 
 	public function correctNBT() : void{
-		$tag = $this->getNamedTag() ?? new CompoundTag();
-		if(!isset($tag->Base) or !($tag->Base instanceof IntTag)) {
-			$tag->Base = new IntTag("Base", $this->meta);
+		$tag = $this->getNamedTag();
+		if(!$tag->hasTag(self::TAG_BASE, IntTag::class)){
+			$tag->setInt(self::TAG_BASE, 0);
 		}
 
-		if(!isset($tag->Patterns) or !($tag->Patterns instanceof ListTag)) {
-			$tag->Patterns = new ListTag("Patterns");
+		if(!$tag->hasTag(self::TAG_PATTERNS, ListTag::class)){
+			$tag->setTag(new ListTag(self::TAG_PATTERNS));
 		}
 		$this->setNamedTag($tag);
 	}
