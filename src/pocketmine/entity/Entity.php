@@ -273,8 +273,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @return bool
 	 */
 	public static function registerEntity(string $className, bool $force = false, array $saveNames = []) : bool{
-		assert(is_a($className, Entity::class, true));
-
 		/** @var Entity $className */
 
 		$class = new \ReflectionClass($className);
