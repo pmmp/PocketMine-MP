@@ -28,6 +28,8 @@ use pocketmine\entity\Entity;
 use pocketmine\item\FoodSource;
 
 class EntityEatBlockEvent extends EntityEatEvent{
+	public static $handlerList = null;
+
 	public function __construct(Entity $entity, FoodSource $foodSource){
 		if(!($foodSource instanceof Block)){
 			throw new \InvalidArgumentException("Food source must be a block");
@@ -38,7 +40,7 @@ class EntityEatBlockEvent extends EntityEatEvent{
 	/**
 	 * @return Block
 	 */
-	public function getResidue(){
+	public function getResidue() : Block{
 		return parent::getResidue();
 	}
 
