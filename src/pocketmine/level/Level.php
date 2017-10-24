@@ -1793,10 +1793,10 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		if($hand->canBePlacedAt($blockClicked, $facePos)){
+		if($hand->canBePlacedAt($blockClicked, $facePos, $face, true)){
 			$blockReplace = $blockClicked;
 			$hand->position($blockReplace);
-		}elseif(!$hand->canBePlacedAt($blockReplace, $facePos)){
+		}elseif(!$hand->canBePlacedAt($blockReplace, $facePos, $face, false)){
 			return false;
 		}
 
