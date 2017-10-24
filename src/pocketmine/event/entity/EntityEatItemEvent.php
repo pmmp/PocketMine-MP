@@ -28,6 +28,8 @@ use pocketmine\item\Food;
 use pocketmine\item\Item;
 
 class EntityEatItemEvent extends EntityEatEvent{
+	public static $handlerList = null;
+
 	public function __construct(Entity $entity, Food $foodSource){
 		parent::__construct($entity, $foodSource);
 	}
@@ -35,7 +37,7 @@ class EntityEatItemEvent extends EntityEatEvent{
 	/**
 	 * @return Item
 	 */
-	public function getResidue(){
+	public function getResidue() : Item{
 		return parent::getResidue();
 	}
 
