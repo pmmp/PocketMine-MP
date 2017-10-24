@@ -187,7 +187,7 @@ class Banner extends Spawnable{
 		}
 
 		return [
-			self::TAG_COLOR => $this->namedtag->Patterns->{$patternId}->getInt(self::TAG_COLOR, 0),
+			self::TAG_COLOR => $this->namedtag->Patterns->{$patternId}->getInt(self::TAG_COLOR),
 			self::TAG_PATTERN => $this->namedtag->Patterns->{$patternId}->getString(self::TAG_PATTERN)
 		];
 	}

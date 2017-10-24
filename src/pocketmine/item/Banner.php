@@ -116,7 +116,7 @@ class Banner extends Item{
 		}
 
 		return [
-			self::TAG_COLOR => $this->getNamedTag()->Patterns->{$patternId}->getInt(self::TAG_COLOR, 0),
+			self::TAG_COLOR => $this->getNamedTag()->Patterns->{$patternId}->getInt(self::TAG_COLOR),
 			self::TAG_PATTERN => $this->getNamedTag()->Patterns->{$patternId}->getString(self::TAG_PATTERN)
 		];
 	}
