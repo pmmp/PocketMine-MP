@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\PillarRotationHelper;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -44,16 +45,7 @@ class HayBale extends Solid{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
-		$faces = [
-			0 => 0,
-			1 => 0,
-			2 => 0b1000,
-			3 => 0b1000,
-			4 => 0b0100,
-			5 => 0b0100
-		];
-
-		$this->meta = ($this->meta & 0x03) | $faces[$face];
+		$this->meta = PillarRotationHelper::getMetaFromFace($this->meta, $face);
 		$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
 		return true;

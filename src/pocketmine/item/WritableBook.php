@@ -156,7 +156,7 @@ class WritableBook extends Item{
 	 *
 	 * @return bool indicating success
 	 */
-	public function swapPage(int $pageId1, int $pageId2) : bool{
+	public function swapPages(int $pageId1, int $pageId2) : bool{
 		if(!$this->pageExists($pageId1) or !$this->pageExists($pageId2)){
 			return false;
 		}
@@ -181,11 +181,11 @@ class WritableBook extends Item{
 	 * @return bool
 	 */
 	private function pushPages(int $pageId, CompoundTag $namedTag, bool $downwards = true) : bool{
-		if(empty($this->getPages())){
+		$pages = $this->getPages();
+		if(empty($pages)){
 			return false;
 		}
 
-		$pages = $this->getPages();
 		$type = $downwards ? -1 : 1;
 		foreach($pages as $key => $page){
 			if(($key <= $pageId and $downwards) or ($key < $pageId and !$downwards)){

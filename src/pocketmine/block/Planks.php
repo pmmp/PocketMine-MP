@@ -56,7 +56,7 @@ class Planks extends Solid{
 			self::ACACIA => "Acacia Wood Planks",
 			self::DARK_OAK => "Dark Oak Wood Planks"
 		];
-		return $names[$this->meta & 0x07] ?? "Unknown";
+		return $names[$this->getVariant()] ?? "Unknown";
 	}
 
 	public function getFuelTime() : int{

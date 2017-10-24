@@ -164,7 +164,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		return false;
 	}
 
-	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector) : bool{
+	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
 		return $blockReplace->canBeReplaced();
 	}
 
@@ -555,6 +555,15 @@ class Block extends Position implements BlockIds, Metadatable{
 			$this->y + 1,
 			$this->z + 1
 		);
+	}
+
+	/**
+	 * Clears any cached precomputed bounding boxes. This is called on block neighbour update and when the block is set
+	 * into the world to remove any outdated precomputed AABBs and force recalculation.
+	 */
+	public function clearBoundingBoxes() : void{
+		$this->boundingBox = null;
+		$this->collisionBoxes = null;
 	}
 
 	/**

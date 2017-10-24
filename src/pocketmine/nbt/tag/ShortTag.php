@@ -39,15 +39,15 @@ class ShortTag extends NamedTag{
 		parent::__construct($name, $value);
 	}
 
-	public function getType(){
+	public function getType() : int{
 		return NBT::TAG_Short;
 	}
 
-	public function read(NBT $nbt, bool $network = false){
+	public function read(NBT $nbt, bool $network = false) : void{
 		$this->value = $nbt->getSignedShort();
 	}
 
-	public function write(NBT $nbt, bool $network = false){
+	public function write(NBT $nbt, bool $network = false) : void{
 		$nbt->putShort($this->value);
 	}
 
@@ -63,7 +63,7 @@ class ShortTag extends NamedTag{
 	 *
 	 * @throws \TypeError
 	 */
-	public function setValue($value){
+	public function setValue($value) : void{
 		if(!is_int($value)){
 			throw new \TypeError("ShortTag value must be of type int, " . gettype($value) . " given");
 		}elseif($value < -(2 ** 15) or $value > ((2 ** 15) - 1)){

@@ -40,6 +40,9 @@ use pocketmine\math\Math;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\ExplodePacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\tile\Chest;
+use pocketmine\tile\Container;
+use pocketmine\tile\Tile;
 
 class Explosion{
 
@@ -196,15 +199,30 @@ class Explosion{
 		$air = ItemFactory::get(Item::AIR);
 
 		foreach($this->affectedBlocks as $block){
+			$yieldDrops = false;
+
 			if($block instanceof TNT){
 				$block->ignite(mt_rand(10, 30));
-			}elseif(mt_rand(0, 100) < $yield){
+			}elseif($yieldDrops = (mt_rand(0, 100) < $yield)){
 				foreach($block->getDrops($air) as $drop){
 					$this->level->dropItem($block->add(0.5, 0.5, 0.5), $drop);
 				}
 			}
 
 			$this->level->setBlockIdAt($block->x, $block->y, $block->z, 0);
+
+			$t = $this->level->getTile($block);
+			if($t instanceof Tile){
+				if($yieldDrops and $t instanceof Container){
+					if($t instanceof Chest){
+						$t->unpair();
+					}
+
+					$t->getInventory()->dropContents($this->level, $t->add(0.5, 0.5, 0.5));
+				}
+
+				$t->close();
+			}
 
 			$pos = new Vector3($block->x, $block->y, $block->z);
 
@@ -214,7 +232,7 @@ class Explosion{
 					continue;
 				}
 				if(!isset($this->affectedBlocks[$index = Level::blockHash($sideBlock->x, $sideBlock->y, $sideBlock->z)]) and !isset($updateBlocks[$index])){
-					$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->level->getBlock($sideBlock)));
+					$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->level->getBlockAt($sideBlock->x, $sideBlock->y, $sideBlock->z)));
 					if(!$ev->isCancelled()){
 						$ev->getBlock()->onUpdate(Level::BLOCK_UPDATE_NORMAL);
 					}

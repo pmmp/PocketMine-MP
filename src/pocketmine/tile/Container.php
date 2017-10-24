@@ -27,6 +27,7 @@ use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 
 interface Container{
+	const TAG_ITEMS = "Items";
 
 	/**
 	 * @param int $index
@@ -50,4 +51,9 @@ interface Container{
 	 * @return Inventory
 	 */
 	public function getInventory();
+
+	/**
+	 * @return Inventory
+	 */
+	public function getRealInventory();
 }

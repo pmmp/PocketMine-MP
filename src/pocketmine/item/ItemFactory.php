@@ -138,7 +138,7 @@ class ItemFactory{
 			self::registerItem(new Item(Item::SUGAR, 0, "Sugar"));
 			self::registerItem(new Cake());
 			self::registerItem(new Bed());
-			//TODO: REPEATER
+			self::registerItem(new ItemBlock(Block::REPEATER_BLOCK, 0, Item::REPEATER));
 			self::registerItem(new Cookie());
 			//TODO: FILLED_MAP
 			self::registerItem(new Shears());
@@ -162,7 +162,7 @@ class ItemFactory{
 			self::registerItem(new Item(Item::BLAZE_POWDER, 0, "Blaze Powder"));
 			self::registerItem(new Item(Item::MAGMA_CREAM, 0, "Magma Cream"));
 			self::registerItem(new ItemBlock(Block::BREWING_STAND_BLOCK, 0, Item::BREWING_STAND));
-			//TODO: CAULDRON
+			self::registerItem(new ItemBlock(Block::CAULDRON_BLOCK, 0, Item::CAULDRON));
 			//TODO: ENDER_EYE
 			self::registerItem(new Item(Item::GLISTERING_MELON, 0, "Glistering Melon"));
 			self::registerItem(new SpawnEgg());
@@ -186,18 +186,18 @@ class ItemFactory{
 			//TODO: FIREWORKS
 			//TODO: FIREWORKSCHARGE
 			//TODO: ENCHANTED_BOOK
-			//TODO: COMPARATOR
+			self::registerItem(new ItemBlock(Block::COMPARATOR_BLOCK, 0, Item::COMPARATOR));
 			self::registerItem(new Item(Item::NETHER_BRICK, 0, "Nether Brick"));
 			self::registerItem(new Item(Item::NETHER_QUARTZ, 0, "Nether Quartz"));
 			//TODO: MINECART_WITH_TNT
 			//TODO: HOPPER_MINECART
 			self::registerItem(new Item(Item::PRISMARINE_SHARD, 0, "Prismarine Shard"));
-			//TODO: HOPPER
+			self::registerItem(new ItemBlock(Block::HOPPER_BLOCK, 0, Item::HOPPER));
 			//TODO: RABBIT
 			self::registerItem(new CookedRabbit());
 			//TODO: RABBIT_STEW
 			self::registerItem(new Item(Item::RABBIT_FOOT, 0, "Rabbit's Foot"));
-			//TODO: RABBIT_HIDE
+			self::registerItem(new Item(Item::RABBIT_HIDE, 0, "Rabbit Hide"));
 			//TODO: HORSEARMORLEATHER
 			//TODO: HORSEARMORIRON
 			//TODO: GOLD_HORSE_ARMOR

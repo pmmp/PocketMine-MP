@@ -248,10 +248,10 @@ class BlockFactory{
 			//TODO: STANDING_BANNER
 			//TODO: WALL_BANNER
 			//TODO: DAYLIGHT_DETECTOR_INVERTED
-			//TODO: RED_SANDSTONE
-			//TODO: RED_SANDSTONE_STAIRS
-			//TODO: DOUBLE_STONE_SLAB2
-			//TODO: STONE_SLAB2
+			self::registerBlock(new RedSandstone());
+			self::registerBlock(new RedSandstoneStairs());
+			self::registerBlock(new DoubleStoneSlab2());
+			self::registerBlock(new StoneSlab2());
 			self::registerBlock(new FenceGate(Block::SPRUCE_FENCE_GATE, 0, "Spruce Fence Gate"));
 			self::registerBlock(new FenceGate(Block::BIRCH_FENCE_GATE, 0, "Birch Fence Gate"));
 			self::registerBlock(new FenceGate(Block::JUNGLE_FENCE_GATE, 0, "Jungle Fence Gate"));
@@ -268,12 +268,12 @@ class BlockFactory{
 			self::registerBlock(new GrassPath());
 			self::registerBlock(new ItemFrame());
 			//TODO: CHORUS_FLOWER
-			//TODO: PURPUR_BLOCK
+			self::registerBlock(new Purpur());
 
-			//TODO: PURPUR_STAIRS
+			self::registerBlock(new PurpurStairs());
 
 			//TODO: UNDYED_SHULKER_BOX
-			//TODO: END_BRICKS
+			self::registerBlock(new EndStoneBricks());
 			//TODO: FROSTED_ICE
 			self::registerBlock(new EndRod());
 			//TODO: END_GATEWAY

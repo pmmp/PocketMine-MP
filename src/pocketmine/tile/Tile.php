@@ -74,8 +74,6 @@ abstract class Tile extends Position{
 	public $closed = false;
 	/** @var CompoundTag */
 	public $namedtag;
-	/** @var float */
-	protected $lastUpdate;
 	/** @var Server */
 	protected $server;
 	/** @var TimingsHandler */
@@ -101,7 +99,7 @@ abstract class Tile extends Position{
 	 *
 	 * @return Tile|null
 	 */
-	public static function createTile($type, Level $level, CompoundTag $nbt, ...$args){
+	public static function createTile($type, Level $level, CompoundTag $nbt, ...$args) : ?Tile{
 		if(isset(self::$knownTiles[$type])){
 			$class = self::$knownTiles[$type];
 			return new $class($level, $nbt, ...$args);
@@ -140,35 +138,38 @@ abstract class Tile extends Position{
 		$this->namedtag = $nbt;
 		$this->server = $level->getServer();
 		$this->setLevel($level);
-		$this->chunk = $level->getChunk($this->namedtag->x->getValue() >> 4, $this->namedtag->z->getValue() >> 4, false);
+		$this->chunk = $level->getChunk($this->namedtag->getInt("x") >> 4, $this->namedtag->getInt("z") >> 4, false);
 		assert($this->chunk !== null);
 
 		$this->name = "";
-		$this->lastUpdate = microtime(true);
 		$this->id = Tile::$tileCount++;
-		$this->x = $this->namedtag->x->getValue();
-		$this->y = $this->namedtag->y->getValue();
-		$this->z = $this->namedtag->z->getValue();
+		$this->x = $this->namedtag->getInt("x");
+		$this->y = $this->namedtag->getInt("y");
+		$this->z = $this->namedtag->getInt("z");
 
 		$this->chunk->addTile($this);
 		$this->getLevel()->addTile($this);
 	}
 
-	public function getId(){
+	public function getId() : int{
 		return $this->id;
 	}
 
-	public function saveNBT(){
-		$this->namedtag->id->setValue(static::getSaveId());
-		$this->namedtag->x->setValue($this->x);
-		$this->namedtag->y->setValue($this->y);
-		$this->namedtag->z->setValue($this->z);
+	public function saveNBT() : void{
+		$this->namedtag->setString("id", static::getSaveId());
+		$this->namedtag->setInt("x", $this->x);
+		$this->namedtag->setInt("y", $this->y);
+		$this->namedtag->setInt("z", $this->z);
 	}
 
-	public function getCleanedNBT(){
+	public function getNBT() : CompoundTag{
+		return $this->namedtag;
+	}
+
+	public function getCleanedNBT() : ?CompoundTag{
 		$this->saveNBT();
 		$tag = clone $this->namedtag;
-		unset($tag->x, $tag->y, $tag->z, $tag->id);
+		$tag->removeTag("x", "y", "z", "id");
 		if($tag->getCount() > 0){
 			return $tag;
 		}else{
@@ -227,7 +228,7 @@ abstract class Tile extends Position{
 	 * @return Block
 	 */
 	public function getBlock() : Block{
-		return $this->level->getBlock($this);
+		return $this->level->getBlockAt($this->x, $this->y, $this->z);
 	}
 
 	/**
@@ -237,7 +238,7 @@ abstract class Tile extends Position{
 		return false;
 	}
 
-	final public function scheduleUpdate(){
+	final public function scheduleUpdate() : void{
 		$this->level->updateTiles[$this->id] = $this;
 	}
 
@@ -249,7 +250,7 @@ abstract class Tile extends Position{
 		$this->close();
 	}
 
-	public function close(){
+	public function close() : void{
 		if(!$this->closed){
 			$this->closed = true;
 			unset($this->level->updateTiles[$this->id]);
@@ -266,7 +267,7 @@ abstract class Tile extends Position{
 		}
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return $this->name;
 	}
 

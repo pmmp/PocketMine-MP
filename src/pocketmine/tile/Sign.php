@@ -33,20 +33,24 @@ use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
 class Sign extends Spawnable{
+	const TAG_TEXT_BLOB = "Text";
+	const TAG_TEXT_LINE = "Text%d"; //sprintf()able
+	const TAG_CREATOR = "Creator";
 
 	/** @var string[] */
 	protected $text = ["", "", "", ""];
 
 	public function __construct(Level $level, CompoundTag $nbt){
-		if(isset($nbt->Text)){ //MCPE 1.2 save format
-			$this->text = explode("\n", $nbt->Text->getValue());
-			unset($nbt->Text);
+		if($nbt->hasTag(self::TAG_TEXT_BLOB, StringTag::class)){ //MCPE 1.2 save format
+			$this->text = explode("\n", $nbt->getString(self::TAG_TEXT_BLOB));
+			assert(count($this->text) === 4, "Too many lines!");
+			$nbt->removeTag(self::TAG_TEXT_BLOB);
 		}else{
 			for($i = 1; $i <= 4; ++$i){
-				$textKey = "Text$i";
-				if(isset($nbt->$textKey)){
-					$this->text[$i - 1] = $nbt->$textKey->getValue();
-					unset($nbt->$textKey);
+				$textKey = sprintf(self::TAG_TEXT_LINE, $i);
+				if($nbt->hasTag($textKey, StringTag::class)){
+					$this->text[$i - 1] = $nbt->getString($textKey);
+					$nbt->removeTag($textKey);
 				}
 			}
 		}
@@ -54,16 +58,16 @@ class Sign extends Spawnable{
 		parent::__construct($level, $nbt);
 	}
 
-	public function saveNBT(){
+	public function saveNBT() : void{
 		parent::saveNBT();
-		$this->namedtag->Text = new StringTag("Text", implode("\n", $this->text));
+		$this->namedtag->setString(self::TAG_TEXT_BLOB, implode("\n", $this->text));
 
 		for($i = 1; $i <= 4; ++$i){ //Backwards-compatibility
-			$textKey = "Text$i";
-			$this->namedtag->$textKey = new StringTag($textKey, $this->getLine($i - 1));
+			$textKey = sprintf(self::TAG_TEXT_LINE, $i);
+			$this->namedtag->setString($textKey, $this->getLine($i - 1));
 		}
 
-		unset($this->namedtag->Creator);
+		$this->namedtag->removeTag(self::TAG_CREATOR);
 	}
 
 	/**
@@ -127,24 +131,23 @@ class Sign extends Spawnable{
 		return $this->text;
 	}
 
-	public function addAdditionalSpawnData(CompoundTag $nbt){
-		$nbt->Text = new StringTag("Text", implode("\n", $this->text));
-		return $nbt;
+	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
+		$nbt->setString(self::TAG_TEXT_BLOB, implode("\n", $this->text));
 	}
 
 	public function updateCompoundTag(CompoundTag $nbt, Player $player) : bool{
-		if($nbt["id"] !== Tile::SIGN){
+		if($nbt->getString("id") !== Tile::SIGN){
 			return false;
 		}
 
-		if(isset($nbt->Text)){
-			$lines = array_pad(explode("\n", $nbt->Text->getValue()), 4, "");
+		if($nbt->hasTag(self::TAG_TEXT_BLOB, StringTag::class)){
+			$lines = array_pad(explode("\n", $nbt->getString(self::TAG_TEXT_BLOB)), 4, "");
 		}else{
 			$lines = [
-				$nbt->Text1->getValue(),
-				$nbt->Text2->getValue(),
-				$nbt->Text3->getValue(),
-				$nbt->Text4->getValue()
+				$nbt->getString(sprintf(self::TAG_TEXT_LINE, 1)),
+				$nbt->getString(sprintf(self::TAG_TEXT_LINE, 2)),
+				$nbt->getString(sprintf(self::TAG_TEXT_LINE, 3)),
+				$nbt->getString(sprintf(self::TAG_TEXT_LINE, 4))
 			];
 		}
 
@@ -152,7 +155,7 @@ class Sign extends Spawnable{
 
 		$ev = new SignChangeEvent($this->getBlock(), $player, array_map(function(string $line) use ($removeFormat){ return TextFormat::clean($line, $removeFormat); }, $lines));
 
-		if(!isset($this->namedtag->Creator) or $this->namedtag->Creator->getValue() !== $player->getRawUniqueId()){
+		if($this->namedtag->hasTag(self::TAG_CREATOR, StringTag::class) and $this->namedtag->getString(self::TAG_CREATOR) !== $player->getRawUniqueId()){
 			$ev->setCancelled();
 		}
 
@@ -169,12 +172,11 @@ class Sign extends Spawnable{
 
 	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
 		for($i = 1; $i <= 4; ++$i){
-			$key = "Text$i";
-			$nbt->$key = new StringTag($key, "");
+			$nbt->setString(sprintf(self::TAG_TEXT_LINE, $i), "");
 		}
 
 		if($player !== null){
-			$nbt->Creator = new StringTag("Creator", $player->getRawUniqueId());
+			$nbt->setString(self::TAG_CREATOR, $player->getRawUniqueId());
 		}
 	}
 

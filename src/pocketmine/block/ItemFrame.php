@@ -72,10 +72,10 @@ class ItemFrame extends Flowable{
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$sides = [
-				0 => 4,
-				1 => 5,
-				2 => 2,
-				3 => 3
+				0 => Vector3::SIDE_WEST,
+				1 => Vector3::SIDE_EAST,
+				2 => Vector3::SIDE_NORTH,
+				3 => Vector3::SIDE_SOUTH
 			];
 			if(!$this->getSide($sides[$this->meta])->isSolid()){
 				$this->level->useBreakOn($this);

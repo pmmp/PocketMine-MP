@@ -50,15 +50,15 @@ class Torch extends Flowable{
 			$below = $this->getSide(Vector3::SIDE_DOWN);
 			$side = $this->getDamage();
 			$faces = [
-				0 => 0,
-				1 => 4,
-				2 => 5,
-				3 => 2,
-				4 => 3,
-				5 => 0
+				0 => Vector3::SIDE_DOWN,
+				1 => Vector3::SIDE_WEST,
+				2 => Vector3::SIDE_EAST,
+				3 => Vector3::SIDE_NORTH,
+				4 => Vector3::SIDE_SOUTH,
+				5 => Vector3::SIDE_DOWN
 			];
 
-			if($this->getSide($faces[$side])->isTransparent() === true and !($side === 0 and ($below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL))){
+			if($this->getSide($faces[$side])->isTransparent() === true and !($side === Vector3::SIDE_DOWN and ($below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL))){
 				$this->getLevel()->useBreakOn($this);
 
 				return Level::BLOCK_UPDATE_NORMAL;

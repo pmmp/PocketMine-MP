@@ -52,7 +52,7 @@ class WoodenFence extends Fence{
 			self::FENCE_ACACIA => "Acacia Fence",
 			self::FENCE_DARKOAK => "Dark Oak Fence"
 		];
-		return $names[$this->meta & 0x07] ?? "Unknown";
+		return $names[$this->getVariant()] ?? "Unknown";
 	}
 
 	public function getFuelTime() : int{

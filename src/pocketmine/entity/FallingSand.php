@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\block\Fallable;
 use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -31,11 +32,9 @@ use pocketmine\item\ItemFactory;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
 
 class FallingSand extends Entity{
-	const NETWORK_ID = 66;
+	const NETWORK_ID = self::FALLING_BLOCK;
 
 	public $width = 0.98;
 	public $height = 0.98;
@@ -72,7 +71,7 @@ class FallingSand extends Entity{
 			return;
 		}
 
-		$this->block = Block::get($blockId, $damage);
+		$this->block = BlockFactory::get($blockId, $damage);
 
 		$this->setDataProperty(self::DATA_VARIANT, self::DATA_TYPE_INT, $this->block->getId() | ($this->block->getDamage() << 8));
 	}
@@ -135,19 +134,5 @@ class FallingSand extends Entity{
 	public function saveNBT(){
 		$this->namedtag->TileID = new IntTag("TileID", $this->block->getId());
 		$this->namedtag->Data = new ByteTag("Data", $this->block->getDamage());
-	}
-
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->type = FallingSand::NETWORK_ID;
-		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this->asVector3();
-		$pk->motion = $this->getMotion();
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
 	}
 }
