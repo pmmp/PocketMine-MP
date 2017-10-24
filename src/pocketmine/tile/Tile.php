@@ -172,7 +172,7 @@ abstract class Tile extends Position{
 		$tag->removeTag("x", "y", "z", "id");
 		if($tag->getCount() > 0){
 			return $tag;
-		} else {
+		}else{
 			return null;
 		}
 	}
