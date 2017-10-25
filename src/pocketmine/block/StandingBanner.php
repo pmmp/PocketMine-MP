@@ -106,4 +106,8 @@ class StandingBanner extends Transparent{
 
 		return [$drop];
 	}
+
+	public function getFuelTime() : int{
+		return 300;
+	}
 }

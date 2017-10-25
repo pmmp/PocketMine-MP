@@ -31,7 +31,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\tile\Banner as TileBanner;
 
-class Banner extends Item{
+class Banner extends ItemBlock{
 	const TAG_BASE = TileBanner::TAG_BASE;
 	const TAG_PATTERNS = TileBanner::TAG_PATTERNS;
 	const TAG_PATTERN_COLOR = TileBanner::TAG_PATTERN_COLOR;
