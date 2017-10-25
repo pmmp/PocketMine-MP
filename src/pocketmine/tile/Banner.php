@@ -105,8 +105,8 @@ class Banner extends Spawnable{
 	}
 
 	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		$nbt->Patterns = $this->namedtag->getTag(self::TAG_PATTERNS);
-		$nbt->Base = $this->namedtag->getTag(self::TAG_BASE);
+		$nbt->setTag($this->namedtag->getTag(self::TAG_PATTERNS));
+		$nbt->setTag($this->namedtag->getTag(self::TAG_BASE));
 	}
 
 	/**
@@ -154,9 +154,11 @@ class Banner extends Spawnable{
 			$patternId = max($this->getPatternIds()) + 1;
 		}
 
-		$this->namedtag->Patterns->{$patternId} = new CompoundTag("", [
-			new IntTag("Color", $color & 0x0f),
-			new StringTag("Pattern", $pattern)
+		$list = $this->namedtag->getListTag(self::TAG_PATTERNS);
+		assert($list !== null);
+		$list[$patternId] = new CompoundTag("", [
+			new IntTag(self::TAG_COLOR, $color & 0x0f),
+			new StringTag(self::TAG_PATTERN, $pattern)
 		]);
 
 		$this->onChanged();
@@ -171,7 +173,7 @@ class Banner extends Spawnable{
 	 * @return bool
 	 */
 	public function patternExists(int $patternId) : bool{
-		return isset($this->namedtag->Patterns->{$patternId});
+		return isset($this->namedtag->getListTag(self::TAG_PATTERNS)[$patternId]);
 	}
 
 	/**
@@ -186,9 +188,14 @@ class Banner extends Spawnable{
 			return [];
 		}
 
+		$list = $this->namedtag->getListTag(self::TAG_PATTERNS);
+		assert($list instanceof ListTag);
+		$patternTag = $list[$patternId];
+		assert($patternTag instanceof CompoundTag);
+
 		return [
-			self::TAG_COLOR => $this->namedtag->Patterns->{$patternId}->getInt(self::TAG_COLOR),
-			self::TAG_PATTERN => $this->namedtag->Patterns->{$patternId}->getString(self::TAG_PATTERN)
+			self::TAG_COLOR => $patternTag->getInt(self::TAG_COLOR),
+			self::TAG_PATTERN => $patternTag->getString(self::TAG_PATTERN)
 		];
 	}
 
@@ -206,7 +213,10 @@ class Banner extends Spawnable{
 			return false;
 		}
 
-		$this->namedtag->Patterns->{$patternId}->setValue([
+		$list = $this->namedtag->getListTag(self::TAG_PATTERNS);
+		assert($list instanceof ListTag);
+
+		$list[$patternId] = new CompoundTag("", [
 			new IntTag(self::TAG_COLOR, $color & 0x0f),
 			new StringTag(self::TAG_PATTERN, $pattern)
 		]);
@@ -226,7 +236,11 @@ class Banner extends Spawnable{
 		if(!$this->patternExists($patternId)){
 			return false;
 		}
-		unset($this->namedtag->Patterns->{$patternId});
+
+		$list = $this->namedtag->getListTag(self::TAG_PATTERNS);
+		if($list !== null){
+			unset($list[$patternId]);
+		}
 
 		$this->onChanged();
 		return true;
@@ -243,11 +257,7 @@ class Banner extends Spawnable{
 			return false;
 		}
 
-		$index = max($keys);
-		unset($this->namedtag->Patterns->{$index});
-
-		$this->onChanged();
-		return true;
+		return $this->deletePattern(max($keys));
 	}
 
 	/**
@@ -261,11 +271,7 @@ class Banner extends Spawnable{
 			return false;
 		}
 
-		$index = min($keys);
-		unset($this->namedtag->Patterns->{$index});
-
-		$this->onChanged();
-		return true;
+		return $this->deletePattern(min($keys));
 	}
 
 	/**
@@ -279,8 +285,9 @@ class Banner extends Spawnable{
 
 	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
 		$nbt->setInt(self::TAG_BASE, $item !== null ? $item->getDamage() & 0x0f : 0);
-		if($item->getNamedTag()->hasTag("Patterns", ListTag::class)){
-			$nbt->setTag($item->getNamedTag()->getTag("Patterns", ListTag::class));
+
+		if($item->getNamedTag()->hasTag(self::TAG_PATTERNS, ListTag::class)){
+			$nbt->setTag($item->getNamedTag()->getListTag(self::TAG_PATTERNS));
 		}
 	}
 }

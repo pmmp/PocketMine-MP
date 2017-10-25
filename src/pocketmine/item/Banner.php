@@ -29,12 +29,13 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\tile\Banner as TileBanner;
 
 class Banner extends Item{
-	const TAG_BASE = "Base";
-	const TAG_PATTERNS = "Patterns";
-	const TAG_COLOR = "Color";
-	const TAG_PATTERN = "Pattern";
+	const TAG_BASE = TileBanner::TAG_BASE;
+	const TAG_PATTERNS = TileBanner::TAG_PATTERNS;
+	const TAG_COLOR = TileBanner::TAG_COLOR;
+	const TAG_PATTERN = TileBanner::TAG_PATTERN;
 
 	public function __construct(int $meta = 0){
 		$this->block = BlockFactory::get(Block::STANDING_BANNER);
@@ -81,13 +82,16 @@ class Banner extends Item{
 			$patternId = max($this->getPatternIds()) + 1;
 		}
 
-		$namedTag = $this->getNamedTag();
-		$namedTag->Patterns->{$patternId} = new CompoundTag("", [
+		$patternsTag = $this->getNamedTag()->getListTag(self::TAG_PATTERNS);
+		assert($patternsTag !== null);
+
+		$patternsTag[$patternId] = new CompoundTag("", [
 			new IntTag(self::TAG_COLOR, $color & 0x0f),
 			new StringTag(self::TAG_PATTERN, $pattern)
 		]);
 
-		$this->setNamedTag($namedTag);
+		$this->setNamedTagEntry($patternsTag);
+
 		return $patternId;
 	}
 
@@ -100,7 +104,7 @@ class Banner extends Item{
 	 */
 	public function patternExists(int $patternId) : bool{
 		$this->correctNBT();
-		return isset($this->getNamedTag()->Patterns->{$patternId});
+		return isset($this->getNamedTag()->getListTag(self::TAG_PATTERNS)[$patternId]);
 	}
 
 	/**
@@ -115,9 +119,14 @@ class Banner extends Item{
 			return [];
 		}
 
+		$patternsTag = $this->getNamedTag()->getListTag(self::TAG_PATTERNS);
+		assert($patternsTag !== null);
+		$pattern = $patternsTag[$patternId];
+		assert($pattern instanceof CompoundTag);
+
 		return [
-			self::TAG_COLOR => $this->getNamedTag()->Patterns->{$patternId}->getInt(self::TAG_COLOR),
-			self::TAG_PATTERN => $this->getNamedTag()->Patterns->{$patternId}->getString(self::TAG_PATTERN)
+			self::TAG_COLOR => $pattern->getInt(self::TAG_COLOR),
+			self::TAG_PATTERN => $pattern->getString(self::TAG_PATTERN)
 		];
 	}
 
@@ -136,13 +145,15 @@ class Banner extends Item{
 			return false;
 		}
 
-		$namedTag = $this->getNamedTag();
-		$namedTag->Patterns->{$patternId}->setValue([
+		$patternsTag = $this->getNamedTag()->getListTag(self::TAG_PATTERNS);
+		assert($patternsTag !== null);
+
+		$patternsTag[$patternId] = new CompoundTag("", [
 			new IntTag(self::TAG_COLOR, $color & 0x0f),
 			new StringTag(self::TAG_PATTERN, $pattern)
 		]);
 
-		$this->setNamedTag($namedTag);
+		$this->setNamedTagEntry($patternsTag);
 		return true;
 	}
 
@@ -159,9 +170,11 @@ class Banner extends Item{
 			return false;
 		}
 
-		$namedTag = $this->getNamedTag();
-		unset($namedTag->Patterns->{$patternId});
-		$this->setNamedTag($namedTag);
+		$patternsTag = $this->getNamedTag()->getListTag(self::TAG_PATTERNS);
+		if($patternsTag instanceof ListTag){
+			unset($patternsTag[$patternId]);
+			$this->setNamedTagEntry($patternsTag);
+		}
 
 		return true;
 	}
@@ -178,26 +191,7 @@ class Banner extends Item{
 			return false;
 		}
 
-		$index = max($keys);
-		$namedTag = $this->getNamedTag();
-		unset($namedTag->Patterns->{$index});
-		$this->setNamedTag($namedTag);
-
-		return true;
-	}
-
-	/**
-	 * Returns an array containing all pattern IDs
-	 *
-	 * @return array
-	 */
-	public function getPatternIds() : array{
-		$this->correctNBT();
-
-		$keys = array_keys((array) $this->getNamedTag()->Patterns);
-		return array_filter($keys, function($key){
-			return is_numeric($key);
-		}, ARRAY_FILTER_USE_KEY);
+		return $this->deletePattern(max($keys));
 	}
 
 	/**
@@ -212,12 +206,22 @@ class Banner extends Item{
 			return false;
 		}
 
-		$namedTag = $this->getNamedTag();
-		$index = min($keys);
-		unset($namedTag->Patterns->{$index});
-		$this->setNamedTag($namedTag);
+		return $this->deletePattern(min($keys));
+	}
 
-		return true;
+	/**
+	 * Returns an array containing all pattern IDs
+	 *
+	 * @return array
+	 */
+	public function getPatternIds() : array{
+		$this->correctNBT();
+
+		$keys = array_keys((array) ($this->getNamedTag()->getListTag(self::TAG_PATTERNS) ?? []));
+
+		return array_filter($keys, function($key){
+			return is_numeric($key);
+		}, ARRAY_FILTER_USE_KEY);
 	}
 
 	/**
