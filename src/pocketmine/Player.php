@@ -2404,7 +2404,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						}
 
 						$cancelled = false;
-						if($target instanceof Player and $this->server->getConfigBoolean("pvp", true) === false){
+						if($target instanceof Player and $this->server->getConfigBool("pvp", true) === false){
 							$cancelled = true;
 						}
 
@@ -2419,7 +2419,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						}elseif($target instanceof Player){
 							if(($target->getGamemode() & 0x01) > 0){
 								return true;
-							}elseif($this->server->getConfigBoolean("pvp") !== true){
+							}elseif($this->server->getConfigBool("pvp") !== true){
 								$cancelled = true;
 							}
 
