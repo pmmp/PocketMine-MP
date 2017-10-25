@@ -97,14 +97,11 @@ class StandingBanner extends Transparent{
 	}
 
 	public function getDrops(Item $item) : array{
-		return [];
-	}
-
-	public function onBreak(Item $item, Player $player = null) : bool{
 		$tile = $this->level->getTile($this);
+		$banner = ItemFactory::get(Item::BANNER);
 		if($tile instanceof TileBanner){
-			$this->level->dropItem($this, ItemFactory::get(Item::BANNER, $tile->getBaseColor())->setNamedTag($tile->getCleanedNBT()));
+			$banner->setDamage($tile->getBaseColor())->setNamedTag($tile->getCleanedNBT());
 		}
-		return parent::onBreak($item, $player);
+		return [$banner];
 	}
 }
