@@ -757,9 +757,11 @@ class Server{
 			}
 		}
 		$spawn = $this->getDefaultLevel()->getSafeSpawn();
+		$currentTimeMillis = (int) (microtime(true) * 1000);
+
 		$nbt = new CompoundTag("", [
-			new LongTag("firstPlayed", (int) (microtime(true) * 1000)),
-			new LongTag("lastPlayed", (int) (microtime(true) * 1000)),
+			new LongTag("firstPlayed", $currentTimeMillis),
+			new LongTag("lastPlayed", $currentTimeMillis),
 			new ListTag("Pos", [
 				new DoubleTag("", $spawn->x),
 				new DoubleTag("", $spawn->y),
