@@ -29,9 +29,6 @@ use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\Banner as TileBanner;
 use pocketmine\tile\Tile;
@@ -104,8 +101,9 @@ class StandingBanner extends Transparent{
 	}
 
 	public function onBreak(Item $item, Player $player = null) : bool{
-		if(($tile = $this->level->getTile($this)) !== null){
-			$this->level->dropItem($this, ItemFactory::get(Item::BANNER)->setNamedTag($tile->getCleanedNBT()));
+		$tile = $this->level->getTile($this);
+		if($tile instanceof TileBanner){
+			$this->level->dropItem($this, $item = (ItemFactory::get(Item::BANNER, $tile->getBaseColor())->setNamedTag($tile->getCleanedNBT())));
 		}
 		return parent::onBreak($item, $player);
 	}

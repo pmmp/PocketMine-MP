@@ -32,7 +32,9 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 
-class Banner extends Spawnable{
+class Banner extends Spawnable implements Nameable{
+	use NameableTrait;
+
 	const TAG_BASE = "Base";
 	const TAG_PATTERNS = "Patterns";
 	const TAG_PATTERN_COLOR = "Color";
@@ -286,8 +288,17 @@ class Banner extends Spawnable{
 	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
 		$nbt->setInt(self::TAG_BASE, $item !== null ? $item->getDamage() & 0x0f : 0);
 
-		if($item->getNamedTag()->hasTag(self::TAG_PATTERNS, ListTag::class)){
-			$nbt->setTag($item->getNamedTag()->getListTag(self::TAG_PATTERNS));
+		if($item !== null){
+			if($item->getNamedTag()->hasTag(self::TAG_PATTERNS, ListTag::class)){
+				$nbt->setTag($item->getNamedTag()->getListTag(self::TAG_PATTERNS));
+			}
+			if($item->hasCustomName()){
+				$nbt->setString("CustomName", $item->getCustomName());
+			}
 		}
+	}
+
+	public function getDefaultName() : string{
+		return "Banner";
 	}
 }
