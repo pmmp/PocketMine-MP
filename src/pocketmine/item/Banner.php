@@ -34,8 +34,8 @@ use pocketmine\tile\Banner as TileBanner;
 class Banner extends Item{
 	const TAG_BASE = TileBanner::TAG_BASE;
 	const TAG_PATTERNS = TileBanner::TAG_PATTERNS;
-	const TAG_COLOR = TileBanner::TAG_COLOR;
-	const TAG_PATTERN = TileBanner::TAG_PATTERN;
+	const TAG_PATTERN_COLOR = TileBanner::TAG_PATTERN_COLOR;
+	const TAG_PATTERN_NAME = TileBanner::TAG_PATTERN_NAME;
 
 	public function __construct(int $meta = 0){
 		$this->block = BlockFactory::get(Block::STANDING_BANNER);
@@ -86,8 +86,8 @@ class Banner extends Item{
 		assert($patternsTag !== null);
 
 		$patternsTag[$patternId] = new CompoundTag("", [
-			new IntTag(self::TAG_COLOR, $color & 0x0f),
-			new StringTag(self::TAG_PATTERN, $pattern)
+			new IntTag(self::TAG_PATTERN_COLOR, $color & 0x0f),
+			new StringTag(self::TAG_PATTERN_NAME, $pattern)
 		]);
 
 		$this->setNamedTagEntry($patternsTag);
@@ -125,8 +125,8 @@ class Banner extends Item{
 		assert($pattern instanceof CompoundTag);
 
 		return [
-			self::TAG_COLOR => $pattern->getInt(self::TAG_COLOR),
-			self::TAG_PATTERN => $pattern->getString(self::TAG_PATTERN)
+			self::TAG_PATTERN_COLOR => $pattern->getInt(self::TAG_PATTERN_COLOR),
+			self::TAG_PATTERN_NAME => $pattern->getString(self::TAG_PATTERN_NAME)
 		];
 	}
 
@@ -149,8 +149,8 @@ class Banner extends Item{
 		assert($patternsTag !== null);
 
 		$patternsTag[$patternId] = new CompoundTag("", [
-			new IntTag(self::TAG_COLOR, $color & 0x0f),
-			new StringTag(self::TAG_PATTERN, $pattern)
+			new IntTag(self::TAG_PATTERN_COLOR, $color & 0x0f),
+			new StringTag(self::TAG_PATTERN_NAME, $pattern)
 		]);
 
 		$this->setNamedTagEntry($patternsTag);

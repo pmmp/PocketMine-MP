@@ -35,8 +35,8 @@ use pocketmine\Player;
 class Banner extends Spawnable{
 	const TAG_BASE = "Base";
 	const TAG_PATTERNS = "Patterns";
-	const TAG_COLOR = "Color";
-	const TAG_PATTERN = "Pattern";
+	const TAG_PATTERN_COLOR = "Color";
+	const TAG_PATTERN_NAME = "Pattern";
 
 	const PATTERN_BOTTOM_STRIPE = "bs";
 	const PATTERN_TOP_STRIPE = "ts";
@@ -157,8 +157,8 @@ class Banner extends Spawnable{
 		$list = $this->namedtag->getListTag(self::TAG_PATTERNS);
 		assert($list !== null);
 		$list[$patternId] = new CompoundTag("", [
-			new IntTag(self::TAG_COLOR, $color & 0x0f),
-			new StringTag(self::TAG_PATTERN, $pattern)
+			new IntTag(self::TAG_PATTERN_COLOR, $color & 0x0f),
+			new StringTag(self::TAG_PATTERN_NAME, $pattern)
 		]);
 
 		$this->onChanged();
@@ -194,8 +194,8 @@ class Banner extends Spawnable{
 		assert($patternTag instanceof CompoundTag);
 
 		return [
-			self::TAG_COLOR => $patternTag->getInt(self::TAG_COLOR),
-			self::TAG_PATTERN => $patternTag->getString(self::TAG_PATTERN)
+			self::TAG_PATTERN_COLOR => $patternTag->getInt(self::TAG_PATTERN_COLOR),
+			self::TAG_PATTERN_NAME => $patternTag->getString(self::TAG_PATTERN_NAME)
 		];
 	}
 
@@ -217,8 +217,8 @@ class Banner extends Spawnable{
 		assert($list instanceof ListTag);
 
 		$list[$patternId] = new CompoundTag("", [
-			new IntTag(self::TAG_COLOR, $color & 0x0f),
-			new StringTag(self::TAG_PATTERN, $pattern)
+			new IntTag(self::TAG_PATTERN_COLOR, $color & 0x0f),
+			new StringTag(self::TAG_PATTERN_NAME, $pattern)
 		]);
 
 		$this->onChanged();
