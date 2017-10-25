@@ -69,7 +69,7 @@ class StandingBanner extends Transparent{
 				$this->getLevel()->setBlock($blockReplace, $this, true);
 			}else{
 				$this->meta = $face;
-				$this->getLevel()->setBlock($blockReplace, new WallBanner($this->meta), true);
+				$this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::WALL_BANNER, $this->meta), true);
 			}
 
 			Tile::createTile(Tile::BANNER, $this->getLevel(), TileBanner::createNBT($this, $face, $item, $player));
