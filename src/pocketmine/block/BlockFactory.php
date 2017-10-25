@@ -236,8 +236,6 @@ class BlockFactory{
 			self::registerBlock(new WoodenStairs(Block::DARK_OAK_STAIRS, 0, "Dark Oak Stairs"));
 			//TODO: SLIME
 
-			self::registerBlock(new StandingBanner());
-			self::registerBlock(new WallBanner());
 			self::registerBlock(new IronTrapdoor());
 			self::registerBlock(new Prismarine());
 			self::registerBlock(new SeaLantern());
@@ -247,8 +245,8 @@ class BlockFactory{
 			self::registerBlock(new Coal());
 			self::registerBlock(new PackedIce());
 			self::registerBlock(new DoublePlant());
-			//TODO: STANDING_BANNER
-			//TODO: WALL_BANNER
+			self::registerBlock(new StandingBanner());
+			self::registerBlock(new WallBanner());
 			//TODO: DAYLIGHT_DETECTOR_INVERTED
 			self::registerBlock(new RedSandstone());
 			self::registerBlock(new RedSandstoneStairs());
