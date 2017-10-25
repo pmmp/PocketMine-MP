@@ -31,7 +31,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\tile\Banner as TileBanner;
 
-class Banner extends ItemBlock{
+class Banner extends Item{
 	const TAG_BASE = TileBanner::TAG_BASE;
 	const TAG_PATTERNS = TileBanner::TAG_PATTERNS;
 	const TAG_PATTERN_COLOR = TileBanner::TAG_PATTERN_COLOR;
@@ -243,5 +243,9 @@ class Banner extends ItemBlock{
 			$tag->setTag(new ListTag(self::TAG_PATTERNS));
 		}
 		$this->setNamedTag($tag);
+	}
+
+	public function getFuelTime() : int{
+		return 300;
 	}
 }
