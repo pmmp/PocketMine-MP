@@ -1379,7 +1379,7 @@ class Server{
 				if(is_array($value)){
 					$commands = $value;
 				}else{
-					$commands[] = $value;
+					$commands[] = (string) $value;
 				}
 
 				$result[$key] = $commands;
@@ -1653,6 +1653,9 @@ class Server{
 			Generator::addGenerator(Nether::class, "nether");
 
 			foreach((array) $this->getProperty("worlds", []) as $name => $options){
+				if(!is_array($options)){
+					continue;
+				}
 				if($this->loadLevel($name) === false){
 					$seed = $options["seed"] ?? time();
 					if(is_string($seed) and !is_numeric($seed)){
