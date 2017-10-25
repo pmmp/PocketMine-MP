@@ -387,7 +387,6 @@ class Config{
 			if(isset($currentNode[$nodeName])){
 				if(empty($vars)){ //final node
 					unset($currentNode[$nodeName]);
-					break;
 				}elseif(is_array($currentNode[$nodeName])){
 					$currentNode =& $currentNode[$nodeName];
 				}
