@@ -518,6 +518,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		}
 
 		if($this->enderChestInventory !== null){
+			if(!$this->namedtag->hasTag("EnderChestInventory", ListTag::class)){
+				$this->namedtag->setTag(new ListTag("EnderChestInventory", [], NBT::TAG_Compound));
+			}
+
 			$slotCount = $this->enderChestInventory->getSize();
 			for($slot = 0; $slot < $slotCount; ++$slot){
 				$item = $this->enderChestInventory->getItem($slot);
