@@ -428,7 +428,7 @@ class Server{
 	 * @return bool
 	 */
 	public function getGenerateStructures() : bool{
-		return $this->getConfigBoolean("generate-structures", true);
+		return $this->getConfigBool("generate-structures", true);
 	}
 
 	/**
@@ -442,7 +442,7 @@ class Server{
 	 * @return bool
 	 */
 	public function getForceGamemode() : bool{
-		return $this->getConfigBoolean("force-gamemode", false);
+		return $this->getConfigBool("force-gamemode", false);
 	}
 
 	/**
@@ -537,7 +537,7 @@ class Server{
 	 * @return bool
 	 */
 	public function hasWhitelist() : bool{
-		return $this->getConfigBoolean("white-list", false);
+		return $this->getConfigBool("white-list", false);
 	}
 
 	/**
@@ -551,14 +551,14 @@ class Server{
 	 * @return bool
 	 */
 	public function getAllowFlight() : bool{
-		return $this->getConfigBoolean("allow-flight", false);
+		return $this->getConfigBool("allow-flight", false);
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isHardcore() : bool{
-		return $this->getConfigBoolean("hardcore", false);
+		return $this->getConfigBool("hardcore", false);
 	}
 
 	/**
@@ -757,9 +757,11 @@ class Server{
 			}
 		}
 		$spawn = $this->getDefaultLevel()->getSafeSpawn();
+		$currentTimeMillis = (int) (microtime(true) * 1000);
+
 		$nbt = new CompoundTag("", [
-			new LongTag("firstPlayed", (int) (microtime(true) * 1000)),
-			new LongTag("lastPlayed", (int) (microtime(true) * 1000)),
+			new LongTag("firstPlayed", $currentTimeMillis),
+			new LongTag("lastPlayed", $currentTimeMillis),
 			new ListTag("Pos", [
 				new DoubleTag("", $spawn->x),
 				new DoubleTag("", $spawn->y),
@@ -1082,7 +1084,7 @@ class Server{
 
 			$level->setTickRate($this->baseTickRate);
 		}catch(\Throwable $e){
-			$this->logger->error($this->getLanguage()->translateString("pocketmine.level.generateError", [$name, $e->getMessage()]));
+			$this->logger->error($this->getLanguage()->translateString("pocketmine.level.generationError", [$name, $e->getMessage()]));
 			$this->logger->logException($e);
 			return false;
 		}
@@ -1234,7 +1236,7 @@ class Server{
 	 *
 	 * @return bool
 	 */
-	public function getConfigBoolean(string $variable, bool $defaultValue = false) : bool{
+	public function getConfigBool(string $variable, bool $defaultValue = false) : bool{
 		$v = getopt("", ["$variable::"]);
 		if(isset($v[$variable])){
 			$value = $v[$variable];
@@ -1254,6 +1256,18 @@ class Server{
 		}
 
 		return false;
+	}
+
+	/**
+	 * @deprecated
+	 *
+	 * @param string $variable
+	 * @param bool   $defaultValue
+	 *
+	 * @return bool
+	 */
+	public function getConfigBoolean(string $variable, bool $defaultValue = false) : bool{
+		return $this->getConfigBool($variable, $defaultValue);
 	}
 
 	/**
@@ -1379,7 +1393,7 @@ class Server{
 				if(is_array($value)){
 					$commands = $value;
 				}else{
-					$commands[] = $value;
+					$commands[] = (string) $value;
 				}
 
 				$result[$key] = $commands;
@@ -1528,7 +1542,7 @@ class Server{
 
 			$this->scheduler = new ServerScheduler();
 
-			if($this->getConfigBoolean("enable-rcon", false) === true){
+			if($this->getConfigBool("enable-rcon", false) === true){
 				try{
 					$this->rcon = new RCON(
 						$this,
@@ -1560,9 +1574,9 @@ class Server{
 			$this->banByIP->load();
 
 			$this->maxPlayers = $this->getConfigInt("max-players", 20);
-			$this->setAutoSave($this->getConfigBoolean("auto-save", true));
+			$this->setAutoSave($this->getConfigBool("auto-save", true));
 
-			$this->onlineMode = $this->getConfigBoolean("xbox-auth", true);
+			$this->onlineMode = $this->getConfigBool("xbox-auth", true);
 			if($this->onlineMode){
 				$this->logger->notice($this->getLanguage()->translateString("pocketmine.server.auth", ["enabled", "will"]));
 				$this->logger->notice($this->getLanguage()->translateString("pocketmine.server.authProperty", ["disable", "false"]));
@@ -1572,7 +1586,7 @@ class Server{
 				$this->logger->warning($this->getLanguage()->translateString("pocketmine.server.authProperty", ["enable", "true"]));
 			}
 
-			if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < Level::DIFFICULTY_HARD){
+			if($this->getConfigBool("hardcore", false) === true and $this->getDifficulty() < Level::DIFFICULTY_HARD){
 				$this->setConfigInt("difficulty", Level::DIFFICULTY_HARD);
 			}
 
@@ -1653,6 +1667,9 @@ class Server{
 			Generator::addGenerator(Nether::class, "nether");
 
 			foreach((array) $this->getProperty("worlds", []) as $name => $options){
+				if(!is_array($options)){
+					continue;
+				}
 				if($this->loadLevel($name) === false){
 					$seed = $options["seed"] ?? time();
 					if(is_string($seed) and !is_numeric($seed)){
@@ -1989,7 +2006,7 @@ class Server{
 		$this->properties->reload();
 		$this->maxPlayers = $this->getConfigInt("max-players", 20);
 
-		if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < Level::DIFFICULTY_HARD){
+		if($this->getConfigBool("hardcore", false) === true and $this->getDifficulty() < Level::DIFFICULTY_HARD){
 			$this->setConfigInt("difficulty", Level::DIFFICULTY_HARD);
 		}
 
@@ -2097,7 +2114,7 @@ class Server{
 	 * Starts the PocketMine-MP server and starts processing ticks and packets
 	 */
 	public function start(){
-		if($this->getConfigBoolean("enable-query", true) === true){
+		if($this->getConfigBool("enable-query", true) === true){
 			$this->queryHandler = new QueryHandler();
 		}
 

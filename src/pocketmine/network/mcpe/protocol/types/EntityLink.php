@@ -31,7 +31,13 @@ class EntityLink{
 	public $toEntityUniqueId;
 	/** @var int */
 	public $type;
-	/** @var int */
-	public $byte2;
+	/** @var bool */
+	public $bool1;
 
+	public function __construct(int $fromEntityUniqueId = null, int $toEntityUniqueId = null, int $type = null, bool $bool1 = null){
+		$this->fromEntityUniqueId = $fromEntityUniqueId;
+		$this->toEntityUniqueId = $toEntityUniqueId;
+		$this->type = $type;
+		$this->bool1 = $bool1;
+	}
 }
