@@ -44,6 +44,10 @@ class EnderChest extends Chest{
 		return 3000;
 	}
 
+	public function getLightLevel() : int{
+		return 7;
+	}
+
 	public function getName() : string{
 		return "Ender Chest";
 	}
