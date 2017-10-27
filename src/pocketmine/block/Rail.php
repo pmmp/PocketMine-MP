@@ -55,7 +55,7 @@ class Rail extends Flowable{
 		return 0.7;
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if(!$blockReplace->getSide(Vector3::SIDE_DOWN)->isTransparent()){
 			return $this->getLevel()->setBlock($blockReplace, $this, true, true);
 		}

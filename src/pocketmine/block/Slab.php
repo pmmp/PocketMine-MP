@@ -52,7 +52,7 @@ abstract class Slab extends Transparent{
 		return false;
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$this->meta &= 0x07;
 		if($face === Vector3::SIDE_DOWN){
 			if($blockClicked->getId() === $this->id and ($blockClicked->getDamage() & 0x08) === 0x08 and $blockClicked->getVariant() === $this->getVariant()){
@@ -86,7 +86,7 @@ abstract class Slab extends Transparent{
 
 				return false;
 			}else{
-				if($facePos->y > 0.5){
+				if($clickVector->y > 0.5){
 					$this->meta |= 0x08;
 				}
 			}

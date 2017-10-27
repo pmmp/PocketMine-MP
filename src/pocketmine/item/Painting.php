@@ -33,7 +33,7 @@ class Painting extends Item{
 		parent::__construct(self::PAINTING, $meta, "Painting");
 	}
 
-	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos) : bool{
+	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
 		if($blockClicked->isTransparent() === false and $face > 1 and $blockReplace->isSolid() === false){
 			$faces = [
 				2 => 1,
