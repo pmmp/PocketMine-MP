@@ -154,13 +154,13 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	 * tag is not of type $expectedType, an exception will be thrown.
 	 *
 	 * @param string $name
-	 * @param string $expectedType
+	 * @param string $expectedClass
 	 * @param mixed  $default
 	 *
 	 * @return mixed
 	 */
-	public function getTagValue(string $name, string $expectedType, $default = null){
-		$tag = $this->getTag($name, $expectedType);
+	public function getTagValue(string $name, string $expectedClass, $default = null){
+		$tag = $this->getTag($name, $expectedClass);
 		if($tag !== null){
 			return $tag->getValue();
 		}
