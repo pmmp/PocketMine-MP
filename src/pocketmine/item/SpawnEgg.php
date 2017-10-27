@@ -34,7 +34,7 @@ class SpawnEgg extends Item{
 		parent::__construct(self::SPAWN_EGG, $meta, "Spawn Egg");
 	}
 
-	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos) : bool{
+	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
 		$nbt = Entity::createBaseNBT($blockReplace->add(0.5, 0, 0.5), null, lcg_value() * 360, 0);
 
 		if($this->hasCustomName()){

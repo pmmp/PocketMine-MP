@@ -53,17 +53,18 @@ class Chest extends Transparent{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
+		//these are slightly bigger than in PC
 		return new AxisAlignedBB(
-			$this->x + 0.0625,
+			$this->x + 0.025,
 			$this->y,
-			$this->z + 0.0625,
-			$this->x + 0.9375,
-			$this->y + 0.9475,
-			$this->z + 0.9375
+			$this->z + 0.025,
+			$this->x + 0.975,
+			$this->y + 0.95,
+			$this->z + 0.975
 		);
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$faces = [
 			0 => 4,
 			1 => 2,

@@ -30,15 +30,17 @@ use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\Player;
 
 abstract class Spawnable extends Tile{
+	/** @var string|null */
+	private $spawnCompoundCache = null;
+	/** @var NBT|null */
+	private static $nbtWriter = null;
 
 	public function createSpawnPacket() : BlockEntityDataPacket{
-		$nbt = new NBT(NBT::LITTLE_ENDIAN);
-		$nbt->setData($this->getSpawnCompound());
 		$pk = new BlockEntityDataPacket();
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
-		$pk->namedtag = $nbt->write(true);
+		$pk->namedtag = $this->getSerializedSpawnCompound();
 
 		return $pk;
 	}
@@ -67,13 +69,37 @@ abstract class Spawnable extends Tile{
 		$this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
 	}
 
+	/**
+	 * Performs actions needed when the tile is modified, such as clearing caches and respawning the tile to players.
+	 * WARNING: This MUST be called to clear spawn-compound and chunk caches when the tile's spawn compound has changed!
+	 */
 	protected function onChanged() : void{
+		$this->spawnCompoundCache = null;
 		$this->spawnToAll();
 
 		if($this->chunk !== null){
 			$this->chunk->setChanged();
 			$this->level->clearChunkCache($this->chunk->getX(), $this->chunk->getZ());
 		}
+	}
+
+	/**
+	 * Returns encoded NBT (varint, little-endian) used to spawn this tile to clients. Uses cache where possible,
+	 * populates cache if it is null.
+	 *
+	 * @return string encoded NBT
+	 */
+	final public function getSerializedSpawnCompound() : string{
+		if($this->spawnCompoundCache === null){
+			if(self::$nbtWriter === null){
+				self::$nbtWriter = new NBT(NBT::LITTLE_ENDIAN);
+			}
+
+			self::$nbtWriter->setData($this->getSpawnCompound());
+			$this->spawnCompoundCache = self::$nbtWriter->write(true);
+		}
+
+		return $this->spawnCompoundCache;
 	}
 
 	/**
