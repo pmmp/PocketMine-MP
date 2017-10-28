@@ -379,12 +379,11 @@ class Binary{
 	/**
 	 * Reads an 8-byte integer.
 	 *
-	 * @param string $x
+	 * @param string $str
 	 * @return int
 	 */
-	public static function readLong(string $x) : int{
-		$int = unpack("N*", $x);
-		return ($int[1] << 32) | $int[2];
+	public static function readLong(string $str) : int{
+		return unpack("J", $str)[1];
 	}
 
 	/**
@@ -394,7 +393,7 @@ class Binary{
 	 * @return string
 	 */
 	public static function writeLong(int $value) : string{
-		return pack("NN", $value >> 32, $value & 0xFFFFFFFF);
+		return pack("J", $value);
 	}
 
 	/**
@@ -404,7 +403,7 @@ class Binary{
 	 * @return int
 	 */
 	public static function readLLong(string $str) : int{
-		return self::readLong(strrev($str));
+		return unpack("P", $str)[1];
 	}
 
 	/**
@@ -414,7 +413,7 @@ class Binary{
 	 * @return string
 	 */
 	public static function writeLLong(int $value) : string{
-		return strrev(self::writeLong($value));
+		return pack("P", $value);
 	}
 
 
