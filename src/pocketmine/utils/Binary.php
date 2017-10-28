@@ -164,8 +164,7 @@ class Binary{
 	/**
 	 * Reads a 16-bit signed little-endian number
 	 *
-	 * @param      $str
-	 *
+	 * @param string $str
 	 * @return int
 	 */
 	public static function readSignedLShort(string $str) : int{
@@ -175,8 +174,7 @@ class Binary{
 	/**
 	 * Writes a 16-bit signed/unsigned little-endian number
 	 *
-	 * @param $value
-	 *
+	 * @param int $value
 	 * @return string
 	 */
 	public static function writeLShort(int $value) : string{
