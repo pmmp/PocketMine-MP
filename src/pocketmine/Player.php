@@ -768,12 +768,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * If null is given, will additionally send the skin to the player itself as well as its viewers.
 	 */
 	public function sendSkin(array $targets = null) : void{
-		if($targets === null){
-			$targets = $this->hasSpawned;
-			$targets[] = $this;
-		}
-
-		parent::sendSkin($targets);
+		parent::sendSkin($targets ?? $this->server->getOnlinePlayers());
 	}
 
 	/**
