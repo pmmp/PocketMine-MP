@@ -129,13 +129,16 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	/**
-	 * @param Player[] $targets
+	 * Sends the human's skin to the specified list of players. If null is given for targets, the skin will be sent to
+	 * all viewers.
+	 *
+	 * @param Player[]|null $targets
 	 */
-	public function sendSkin(array $targets) : void{
+	public function sendSkin(array $targets = null) : void{
 		$pk = new PlayerSkinPacket();
 		$pk->uuid = $this->getUniqueId();
 		$pk->skin = $this->skin;
-		$this->server->broadcastPacket($targets, $pk);
+		$this->server->broadcastPacket($targets ?? $this->hasSpawned, $pk);
 	}
 
 	public function jump(){
