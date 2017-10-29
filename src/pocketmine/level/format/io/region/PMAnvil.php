@@ -51,10 +51,10 @@ class PMAnvil extends Anvil{
 
 	protected function deserializeSubChunk(CompoundTag $subChunk) : SubChunk{
 		return new SubChunk(
-			$subChunk->Blocks->getValue(),
-			$subChunk->Data->getValue(),
-			$subChunk->SkyLight->getValue(),
-			$subChunk->BlockLight->getValue()
+			$subChunk->getByteArray("Blocks"),
+			$subChunk->getByteArray("Data"),
+			$subChunk->getByteArray("SkyLight"),
+			$subChunk->getByteArray("BlockLight")
 		);
 	}
 

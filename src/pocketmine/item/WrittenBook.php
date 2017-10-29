@@ -33,6 +33,10 @@ class WrittenBook extends WritableBook{
 	const GENERATION_COPY_OF_COPY = 2;
 	const GENERATION_TATTERED = 3;
 
+	const TAG_GENERATION = "generation"; //TAG_Int
+	const TAG_AUTHOR = "author"; //TAG_String
+	const TAG_TITLE = "title"; //TAG_String
+
 	public function __construct(int $meta = 0){
 		Item::__construct(self::WRITTEN_BOOK, $meta, "Written Book");
 	}
@@ -48,10 +52,7 @@ class WrittenBook extends WritableBook{
 	 * @return int
 	 */
 	public function getGeneration() : int{
-		if(!isset($this->getNamedTag()->generation)) {
-			return -1;
-		}
-		return $this->getNamedTag()->generation->getValue();
+		return $this->getNamedTag()->getInt(self::TAG_GENERATION, -1);
 	}
 
 	/**
@@ -64,12 +65,7 @@ class WrittenBook extends WritableBook{
 			throw new \InvalidArgumentException("Generation \"$generation\" is out of range");
 		}
 		$namedTag = $this->getNamedTag();
-
-		if(isset($namedTag->generation)){
-			$namedTag->generation->setValue($generation);
-		}else{
-			$namedTag->generation = new IntTag("generation", $generation);
-		}
+		$namedTag->setInt(self::TAG_GENERATION, $generation);
 		$this->setNamedTag($namedTag);
 	}
 
@@ -81,10 +77,7 @@ class WrittenBook extends WritableBook{
 	 * @return string
 	 */
 	public function getAuthor() : string{
-		if(!isset($this->getNamedTag()->author)){
-			return "";
-		}
-		return $this->getNamedTag()->author->getValue();
+		return $this->getNamedTag()->getString(self::TAG_AUTHOR, "");
 	}
 
 	/**
@@ -94,11 +87,7 @@ class WrittenBook extends WritableBook{
 	 */
 	public function setAuthor(string $authorName) : void{
 		$namedTag = $this->getNamedTag();
-		if(isset($namedTag->author)){
-			$namedTag->author->setValue($authorName);
-		}else{
-			$namedTag->author = new StringTag("author", $authorName);
-		}
+		$namedTag->setString(self::TAG_AUTHOR, $authorName);
 		$this->setNamedTag($namedTag);
 	}
 
@@ -108,10 +97,7 @@ class WrittenBook extends WritableBook{
 	 * @return string
 	 */
 	public function getTitle() : string{
-		if(!isset($this->getNamedTag()->title)){
-			return "";
-		}
-		return $this->getNamedTag()->title->getValue();
+		return $this->getNamedTag()->getString(self::TAG_TITLE, "");
 	}
 
 	/**
@@ -121,11 +107,7 @@ class WrittenBook extends WritableBook{
 	 */
 	public function setTitle(string $title) : void{
 		$namedTag = $this->getNamedTag();
-		if(isset($namedTag->title)){
-			$namedTag->title->setValue($title);
-		}else{
-			$namedTag->title = new StringTag("title", $title);
-		}
+		$namedTag->setString(self::TAG_TITLE, $title);
 		$this->setNamedTag($namedTag);
 	}
 }

@@ -59,28 +59,19 @@ class Item extends Entity{
 
 		$this->setMaxHealth(5);
 		$this->setHealth((int) $this->namedtag["Health"]);
-		if(isset($this->namedtag->Age)){
-			$this->age = $this->namedtag["Age"];
-		}
-		if(isset($this->namedtag->PickupDelay)){
-			$this->pickupDelay = $this->namedtag["PickupDelay"];
-		}
-		if(isset($this->namedtag->Owner)){
-			$this->owner = $this->namedtag["Owner"];
-		}
-		if(isset($this->namedtag->Thrower)){
-			$this->thrower = $this->namedtag["Thrower"];
-		}
+		$this->age = $this->namedtag->getShort("Age", $this->age);
+		$this->pickupDelay = $this->namedtag->getShort("PickupDelay", $this->pickupDelay);
+		$this->owner = $this->namedtag->getString("Owner", $this->owner);
+		$this->thrower = $this->namedtag->getString("Thrower", $this->thrower);
 
 
-		if(!isset($this->namedtag->Item)){
+		$itemTag = $this->namedtag->getCompoundTag("Item");
+		if($itemTag === null){
 			$this->close();
 			return;
 		}
 
-		assert($this->namedtag->Item instanceof CompoundTag);
-
-		$this->item = ItemItem::nbtDeserialize($this->namedtag->Item);
+		$this->item = ItemItem::nbtDeserialize($itemTag);
 
 
 		$this->server->getPluginManager()->callEvent(new ItemSpawnEvent($this));
@@ -139,15 +130,15 @@ class Item extends Entity{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Item = $this->item->nbtSerialize(-1, "Item");
-		$this->namedtag->Health = new ShortTag("Health", (int) $this->getHealth());
-		$this->namedtag->Age = new ShortTag("Age", $this->age);
-		$this->namedtag->PickupDelay = new ShortTag("PickupDelay", $this->pickupDelay);
+		$this->namedtag->setTag($this->item->nbtSerialize(-1, "Item"));
+		$this->namedtag->setShort("Health", (int) $this->getHealth());
+		$this->namedtag->setShort("Age", $this->age);
+		$this->namedtag->setShort("PickupDelay", $this->pickupDelay);
 		if($this->owner !== null){
-			$this->namedtag->Owner = new StringTag("Owner", $this->owner);
+			$this->namedtag->setString("Owner", $this->owner);
 		}
 		if($this->thrower !== null){
-			$this->namedtag->Thrower = new StringTag("Thrower", $this->thrower);
+			$this->namedtag->setString("Thrower", $this->thrower);
 		}
 	}
 
