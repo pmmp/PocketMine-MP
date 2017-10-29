@@ -27,6 +27,14 @@ class RawPorkchop extends Item{
 	public function __construct(int $meta = 0){
 		parent::__construct(self::RAW_PORKCHOP, $meta, "Raw Porkchop");
 	}
-
+	public function getFoodRestore() : int{
+		return 2;
+	}
+	public function getSaturationRestore() : float{
+		return 1.2;
+	}
+	public function getAdditionalEffects() : array{
+		return mt_rand(0, 9) < 3 ? [Effect::getEffect(Effect::HUNGER)->setDuration(600)] : [];
+	}
 }
 
