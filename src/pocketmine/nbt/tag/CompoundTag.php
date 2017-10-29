@@ -271,7 +271,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	 * @param int[]|null $default
 	 * @param bool       $badTagDefault
 	 *
-	 * @return array
+	 * @return int[]
 	 */
 	public function getIntArray(string $name, ?array $default = null, bool $badTagDefault = false) : array{
 		return $this->getTagValue($name, IntArrayTag::class, $default, $badTagDefault);
