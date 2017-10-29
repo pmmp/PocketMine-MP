@@ -126,6 +126,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		}
 
 		$this->skin = $skin;
+		$this->skin->debloatGeometryData();
 	}
 
 	/**
