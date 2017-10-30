@@ -500,28 +500,17 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 
-		/** @var float[]|ListTag $pos */
-		$posTag = $this->namedtag->getListTag("Pos");
-		if($posTag === null){
-			throw new \RuntimeException("Required NBT 'Pos' not found");
-		}
 		/** @var float[] $pos */
-		$pos = $posTag->getValue();
-
-		$rotationTag = $this->namedtag->getListTag("Rotation");
-		if($rotationTag === null){
-			throw new \RuntimeException("Required NBT 'Rotation' not found");
-		}
-
+		$pos = $this->namedtag->getListTag("Pos")->getAllValues();
 		/** @var float[] $rotation */
-		$rotation = $rotationTag->getValue();
+		$rotation = $this->namedtag->getListTag("Rotation")->getAllValues();
 
 		$this->setPositionAndRotation($this->temporalVector->setComponents(...$pos), ...$rotation);
 
 		/** @var float[] $motion */
 		$motion = [0, 0, 0];
 		if($this->namedtag->hasTag("Motion", ListTag::class)){
-			$motion = $this->namedtag->getListTag("Motion")->getValue();
+			$motion = $this->namedtag->getListTag("Motion")->getAllValues();
 		}
 
 		$this->setMotion($this->temporalVector->setComponents(...$motion));
