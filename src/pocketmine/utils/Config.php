@@ -342,7 +342,7 @@ class Config{
 		}
 
 		$base = $value;
-		$this->nestedCache[$key] = $value;
+		$this->nestedCache = [];
 	}
 
 	/**
