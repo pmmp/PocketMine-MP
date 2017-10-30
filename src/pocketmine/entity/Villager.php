@@ -45,7 +45,7 @@ class Villager extends Creature implements NPC, Ageable{
 		parent::initEntity();
 
 		/** @var int $profession */
-		$profession = $this->namedtag["Profession"] ?? self::PROFESSION_FARMER;
+		$profession = $this->namedtag->getInt("Profession", self::PROFESSION_FARMER);
 
 		if($profession > 4 or $profession < 0){
 			$profession = self::PROFESSION_FARMER;
@@ -56,7 +56,7 @@ class Villager extends Creature implements NPC, Ageable{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Profession = new IntTag("Profession", $this->getProfession());
+		$this->namedtag->setInt("Profession", $this->getProfession());
 	}
 
 	/**

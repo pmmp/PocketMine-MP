@@ -62,9 +62,7 @@ abstract class Projectile extends Entity{
 
 		$this->setMaxHealth(1);
 		$this->setHealth(1);
-		if(isset($this->namedtag->Age)){
-			$this->age = $this->namedtag["Age"];
-		}
+		$this->age = $this->namedtag->getShort("Age", $this->age);
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
@@ -107,7 +105,7 @@ abstract class Projectile extends Entity{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Age = new ShortTag("Age", $this->age);
+		$this->namedtag->setShort("Age", $this->age);
 	}
 
 	protected function applyDragBeforeGravity() : bool{

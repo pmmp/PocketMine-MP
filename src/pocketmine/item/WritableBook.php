@@ -201,6 +201,9 @@ class WritableBook extends Item{
 			return false;
 		}
 
+		$pagesTag = $namedTag->getListTag(self::TAG_PAGES);
+		assert($pagesTag !== null);
+
 		$type = $downwards ? -1 : 1;
 		foreach($pages as $key => $page){
 			if(($key <= $pageId and $downwards) or ($key < $pageId and !$downwards)){
@@ -208,9 +211,9 @@ class WritableBook extends Item{
 			}
 
 			if($downwards){
-				unset($namedTag->pages->{$key});
+				unset($pagesTag[$key]);
 			}
-			$namedTag->pages->{$key + $type} = new CompoundTag("", [
+			$pagesTag[$key + $type] = new CompoundTag("", [
 				new StringTag("text", $page->text->getValue()),
 				new StringTag("photoname", "")
 			]);
