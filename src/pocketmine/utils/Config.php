@@ -376,6 +376,26 @@ class Config{
 		return $this->nestedCache[$key] = $base;
 	}
 
+	public function removeNested(string $key) : void{
+		$this->nestedCache = [];
+
+		$vars = explode(".", $key);
+
+		$currentNode =& $this->config;
+		while(count($vars) > 0){
+			$nodeName = array_shift($vars);
+			if(isset($currentNode[$nodeName])){
+				if(empty($vars)){ //final node
+					unset($currentNode[$nodeName]);
+				}elseif(is_array($currentNode[$nodeName])){
+					$currentNode =& $currentNode[$nodeName];
+				}
+			}else{
+				break;
+			}
+		}
+	}
+
 	/**
 	 * @param       $k
 	 * @param mixed $default
