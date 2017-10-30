@@ -1962,17 +1962,33 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * Returns the Tile in a position, or null if not found
+	 * Returns the Tile in a position, or null if not found.
+	 *
+	 * Note: This method wraps getTileAt(). If you're guaranteed to be passing integers, and you're using this method
+	 * in performance-sensitive code, consider using getTileAt() instead of this method for better performance.
 	 *
 	 * @param Vector3 $pos
 	 *
 	 * @return Tile|null
 	 */
-	public function getTile(Vector3 $pos){
-		$chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4, false);
+	public function getTile(Vector3 $pos) : ?Tile{
+		return $this->getTileAt((int) floor($pos->x), (int) floor($pos->y), (int) floor($pos->z));
+	}
+
+	/**
+	 * Returns the tile at the specified x,y,z coordinates, or null if it does not exist.
+	 *
+	 * @param int $x
+	 * @param int $y
+	 * @param int $z
+	 *
+	 * @return Tile|null
+	 */
+	public function getTileAt(int $x, int $y, int $z) : ?Tile{
+		$chunk = $this->getChunk($x >> 4, $z >> 4);
 
 		if($chunk !== null){
-			return $chunk->getTile($pos->x & 0x0f, $pos->y, $pos->z & 0x0f);
+			return $chunk->getTile($x & 0x0f, $y, $z & 0x0f);
 		}
 
 		return null;

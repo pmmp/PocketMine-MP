@@ -211,7 +211,7 @@ class Explosion{
 
 			$this->level->setBlockIdAt($block->x, $block->y, $block->z, 0);
 
-			$t = $this->level->getTile($block);
+			$t = $this->level->getTileAt($block->x, $block->y, $block->z);
 			if($t instanceof Tile){
 				if($yieldDrops and $t instanceof Container){
 					if($t instanceof Chest){
