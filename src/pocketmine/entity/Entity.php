@@ -528,7 +528,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $this->namedtag->getShort("Air", 300), false);
 		$this->onGround = $this->namedtag->getByte("OnGround", 0) !== 0;
-		$this->invulnerable = $this->namedtag->getByte("Invulnerable") !== 0;
+		$this->invulnerable = $this->namedtag->getByte("Invulnerable", 0) !== 0;
 
 		$this->attributeMap = new AttributeMap();
 		$this->addAttributes();
