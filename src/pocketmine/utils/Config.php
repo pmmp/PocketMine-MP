@@ -377,7 +377,7 @@ class Config{
 	}
 
 	public function removeNested(string $key) : void{
-		unset($this->nestedCache[$key]);
+		$this->nestedCache = [];
 
 		$vars = explode(".", $key);
 
