@@ -1851,8 +1851,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->achievements = [];
 
-		$achievements = $this->namedtag->getListTag("Achievements") ?? [];
-
+		$achievements = $this->namedtag->getCompoundTag("Achievements") ?? [];
 		/** @var ByteTag $achievement */
 		foreach($achievements as $achievement){
 			$this->achievements[$achievement->getName()] = $achievement->getValue() !== 0;
@@ -3445,10 +3444,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->namedtag->setInt("SpawnZ", (int) $this->spawnPosition->z);
 		}
 
-		$achievements = new ListTag("Achievements");
-		$offset = 0;
+		$achievements = new CompoundTag("Achievements");
 		foreach($this->achievements as $achievement => $status){
-			$achievements[$offset++] = new ByteTag($achievement, $status === true ? 1 : 0);
+			$achievements->setByte($achievement, $status === true ? 1 : 0);
 		}
 		$this->namedtag->setTag($achievements);
 
