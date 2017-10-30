@@ -172,11 +172,13 @@ console:
   title-tick: true
 
 aliases:
+  keep-user-data: true
   #Examples:
   #showtheversion: version
   #savestop: [save-all, stop]
 
 worlds:
+  keep-user-data: true
   #These settings will override the generator set in server.properties and allows loading multiple levels
   #Example:
   #world:
