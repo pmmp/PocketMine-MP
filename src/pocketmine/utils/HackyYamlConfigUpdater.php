@@ -23,19 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+/**
+ * Hacky code used to update pocketmine.yml when updating PocketMine-MP.
+ */
 class HackyYamlConfigUpdater{
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $inputConfigPath;
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $newConfigTemplatePath;
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $outputConfigPath;
 
 	public function __construct(string $inputConfigPath, string $newConfigTemplatePath, string $outputConfigPath = null){
@@ -90,7 +87,7 @@ class HackyYamlConfigUpdater{
 		return true;
 	}
 
-	private function copyConfigValues(string $currentKey, array $old, Config $newConfig, bool $keepOldConfigs){
+	private function copyConfigValues(string $currentKey, array $old, Config $newConfig, bool $keepOldConfigs) : void{
 		$keepOldConfigs = $keepOldConfigs || (bool) $newConfig->getNested($currentKey . "keep-user-data");
 		$newConfig->removeNested($currentKey . "keep-user-data");
 		foreach($old as $k => $v){
