@@ -34,6 +34,7 @@ use pocketmine\item\Item as ItemItem;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
@@ -360,7 +361,12 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->setXpLevel($this->namedtag->getInt("XpLevel", $this->getXpLevel(), true));
 		$this->setXpProgress($this->namedtag->getFloat("XpP", $this->getXpProgress(), true));
 		$this->totalXp = $this->namedtag->getInt("XpTotal", $this->totalXp, true);
-		$this->xpSeed = $this->namedtag->getInt("XpSeed", $this->xpSeed, true);
+
+		if($this->namedtag->hasTag("XpSeed", IntTag::class)){
+			$this->xpSeed = $this->namedtag->getInt("XpSeed");
+		}else{
+			$this->xpSeed = random_int(INT32_MIN, INT32_MAX);
+		}
 	}
 
 	protected function addAttributes(){
