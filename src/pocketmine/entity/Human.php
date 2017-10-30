@@ -452,6 +452,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->namedtag->setFloat("foodSaturationLevel", $this->getSaturation(), true);
 		$this->namedtag->setInt("foodTickTimer", $this->foodTickTimer);
 
+		$this->namedtag->setInt("XpLevel", $this->getXpLevel());
+		$this->namedtag->setFloat("XpP", $this->getXpProgress());
+		$this->namedtag->setInt("XpTotal", $this->totalXp);
+		$this->namedtag->setInt("XpSeed", $this->xpSeed);
+
 		$inventoryTag = new ListTag("Inventory", [], NBT::TAG_Compound);
 		$this->namedtag->setTag($inventoryTag);
 		if($this->inventory !== null){
