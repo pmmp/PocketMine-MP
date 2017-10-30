@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\Furnace as TileFurnace;
 use pocketmine\tile\Tile;

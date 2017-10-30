@@ -34,7 +34,6 @@ use pocketmine\level\Level;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ShortTag;
 
 abstract class Projectile extends Entity{
 

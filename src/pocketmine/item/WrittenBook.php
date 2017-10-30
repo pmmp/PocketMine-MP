@@ -23,9 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
-
 class WrittenBook extends WritableBook{
 
 	const GENERATION_ORIGINAL = 0;

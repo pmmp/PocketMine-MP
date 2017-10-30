@@ -28,9 +28,10 @@ use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\io\ChunkUtils;
 use pocketmine\level\format\SubChunk;
 use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\{
-	ByteArrayTag, ByteTag, CompoundTag, IntArrayTag, IntTag, ListTag, LongTag
-};
+use pocketmine\nbt\tag\ByteArrayTag;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntArrayTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\utils\MainLogger;
 
 class Anvil extends McRegion{

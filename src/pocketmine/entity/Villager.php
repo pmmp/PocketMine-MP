@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
-use pocketmine\nbt\tag\IntTag;
-
 class Villager extends Creature implements NPC, Ageable{
 	const PROFESSION_FARMER = 0;
 	const PROFESSION_LIBRARIAN = 1;
