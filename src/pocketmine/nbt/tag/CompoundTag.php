@@ -151,22 +151,24 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 
 	/**
 	 * Returns the value of the child tag with the specified name, or $default if the tag doesn't exist. If the child
-	 * tag is not of type $expectedType, an exception will be thrown.
+	 * tag is not of type $expectedType, an exception will be thrown, unless a default is given and $badTagDefault is
+	 * true.
 	 *
 	 * @param string $name
 	 * @param string $expectedClass
 	 * @param mixed  $default
+	 * @param bool   $badTagDefault Return the specified default if the tag is not of the expected type.
 	 *
 	 * @return mixed
 	 */
-	public function getTagValue(string $name, string $expectedClass, $default = null){
-		$tag = $this->getTag($name, $expectedClass);
-		if($tag !== null){
+	public function getTagValue(string $name, string $expectedClass, $default = null, bool $badTagDefault = false){
+		$tag = $this->getTag($name, $badTagDefault ? NamedTag::class : $expectedClass);
+		if($tag instanceof $expectedClass){
 			return $tag->getValue();
 		}
 
 		if($default === null){
-			throw new \RuntimeException("Tag with name \"$name\" not found and no default value given");
+			throw new \RuntimeException("Tag with name \"$name\" " . ($tag !== null ? "not of expected type" : "not found") . " and no valid default value given");
 		}
 
 		return $default;
@@ -179,91 +181,100 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	/**
 	 * @param string   $name
 	 * @param int|null $default
+	 * @param bool     $badTagDefault
 	 *
 	 * @return int
 	 */
-	public function getByte(string $name, ?int $default = null) : int{
-		return $this->getTagValue($name, ByteTag::class, $default);
+	public function getByte(string $name, ?int $default = null, bool $badTagDefault = false) : int{
+		return $this->getTagValue($name, ByteTag::class, $default, $badTagDefault);
 	}
 
 	/**
 	 * @param string   $name
 	 * @param int|null $default
+	 * @param bool     $badTagDefault
 	 *
 	 * @return int
 	 */
-	public function getShort(string $name, ?int $default = null) : int{
-		return $this->getTagValue($name, ShortTag::class, $default);
+	public function getShort(string $name, ?int $default = null, bool $badTagDefault = false) : int{
+		return $this->getTagValue($name, ShortTag::class, $default, $badTagDefault);
 	}
 
 	/**
 	 * @param string   $name
 	 * @param int|null $default
+	 * @param bool     $badTagDefault
 	 *
 	 * @return int
 	 */
-	public function getInt(string $name, ?int $default = null) : int{
-		return $this->getTagValue($name, IntTag::class, $default);
+	public function getInt(string $name, ?int $default = null, bool $badTagDefault = false) : int{
+		return $this->getTagValue($name, IntTag::class, $default, $badTagDefault);
 	}
 
 	/**
 	 * @param string   $name
 	 * @param int|null $default
+	 * @param bool     $badTagDefault
 	 *
 	 * @return int
 	 */
-	public function getLong(string $name, ?int $default = null) : int{
-		return $this->getTagValue($name, LongTag::class, $default);
+	public function getLong(string $name, ?int $default = null, bool $badTagDefault = false) : int{
+		return $this->getTagValue($name, LongTag::class, $default, $badTagDefault);
 	}
 
 	/**
 	 * @param string     $name
 	 * @param float|null $default
+	 * @param bool       $badTagDefault
 	 *
 	 * @return float
 	 */
-	public function getFloat(string $name, ?float $default = null) : float{
-		return $this->getTagValue($name, FloatTag::class, $default);
+	public function getFloat(string $name, ?float $default = null, bool $badTagDefault = false) : float{
+		return $this->getTagValue($name, FloatTag::class, $default, $badTagDefault);
 	}
 
 	/**
 	 * @param string     $name
 	 * @param float|null $default
+	 * @param bool       $badTagDefault
 	 *
 	 * @return float
 	 */
-	public function getDouble(string $name, ?float $default = null) : float{
-		return $this->getTagValue($name, DoubleTag::class, $default);
+	public function getDouble(string $name, ?float $default = null, bool $badTagDefault = false) : float{
+		return $this->getTagValue($name, DoubleTag::class, $default, $badTagDefault);
 	}
 
 	/**
 	 * @param string      $name
-	 * @param null|string $default
+	 * @param string|null $default
+	 * @param bool        $badTagDefault
 	 *
 	 * @return string
 	 */
-	public function getByteArray(string $name, ?string $default = null) : string{
-		return $this->getTagValue($name, ByteArrayTag::class, $default);
+	public function getByteArray(string $name, ?string $default = null, bool $badTagDefault = false) : string{
+		return $this->getTagValue($name, ByteArrayTag::class, $default, $badTagDefault);
 	}
 
 	/**
 	 * @param string      $name
-	 * @param null|string $default
+	 * @param string|null $default
+	 * @param bool        $badTagDefault
 	 *
 	 * @return string
 	 */
-	public function getString(string $name, ?string $default = null) : string{
-		return $this->getTagValue($name, StringTag::class, $default);
+	public function getString(string $name, ?string $default = null, bool $badTagDefault = false) : string{
+		return $this->getTagValue($name, StringTag::class, $default, $badTagDefault);
 	}
 
 	/**
 	 * @param string     $name
 	 * @param int[]|null $default
+	 * @param bool       $badTagDefault
 	 *
 	 * @return int[]
 	 */
-	public function getIntArray(string $name, ?array $default = null) : array{
-		return $this->getTagValue($name, IntArrayTag::class, $default);
+	public function getIntArray(string $name, ?array $default = null, bool $badTagDefault = false) : array{
+		return $this->getTagValue($name, IntArrayTag::class, $default, $badTagDefault);
 	}
 
 	/**
@@ -273,11 +284,12 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	 * @param string $name Name of the tag to set
 	 * @param string $tagClass Class that extends NamedTag
 	 * @param mixed  $value Value to set. This should be compatible with the specified tag type.
+	 * @param bool   $force Force set the value even if the existing tag is not the correct type (overwrite the old tag)
 	 */
-	public function setTagValue(string $name, string $tagClass, $value) : void{
+	public function setTagValue(string $name, string $tagClass, $value, bool $force) : void{
 		assert(is_a($tagClass, NamedTag::class, true));
-		$tag = $this->getTag($name, $tagClass);
-		if($tag !== null){
+		$tag = $this->getTag($name, $force ? NamedTag::class : $tagClass);
+		if($tag instanceof $tagClass){
 			$tag->setValue($value);
 		}else{
 			$this->setTag(new $tagClass($name, $value));
@@ -291,73 +303,82 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 	/**
 	 * @param string $name
 	 * @param int    $value
+	 * @param bool   $force
 	 */
-	public function setByte(string $name, int $value) : void{
-		$this->setTagValue($name, ByteTag::class, $value);
+	public function setByte(string $name, int $value, bool $force = false) : void{
+		$this->setTagValue($name, ByteTag::class, $value, $force);
 	}
 
 	/**
 	 * @param string $name
 	 * @param int    $value
+	 * @param bool   $force
 	 */
-	public function setShort(string $name, int $value) : void{
-		$this->setTagValue($name, ShortTag::class, $value);
+	public function setShort(string $name, int $value, bool $force = false) : void{
+		$this->setTagValue($name, ShortTag::class, $value, $force);
 	}
 
 	/**
 	 * @param string $name
 	 * @param int    $value
+	 * @param bool   $force
 	 */
-	public function setInt(string $name, int $value) : void{
-		$this->setTagValue($name, IntTag::class, $value);
+	public function setInt(string $name, int $value, bool $force = false) : void{
+		$this->setTagValue($name, IntTag::class, $value, $force);
 	}
 
 	/**
 	 * @param string $name
 	 * @param int    $value
+	 * @param bool   $force
 	 */
-	public function setLong(string $name, int $value) : void{
-		$this->setTagValue($name, LongTag::class, $value);
+	public function setLong(string $name, int $value, bool $force = false) : void{
+		$this->setTagValue($name, LongTag::class, $value, $force);
 	}
 
 	/**
 	 * @param string $name
 	 * @param float  $value
+	 * @param bool   $force
 	 */
-	public function setFloat(string $name, float $value) : void{
-		$this->setTagValue($name, FloatTag::class, $value);
+	public function setFloat(string $name, float $value, bool $force = false) : void{
+		$this->setTagValue($name, FloatTag::class, $value, $force);
 	}
 
 	/**
 	 * @param string $name
 	 * @param float  $value
+	 * @param bool   $force
 	 */
-	public function setDouble(string $name, float $value) : void{
-		$this->setTagValue($name, DoubleTag::class, $value);
+	public function setDouble(string $name, float $value, bool $force = false) : void{
+		$this->setTagValue($name, DoubleTag::class, $value, $force);
 	}
 
 	/**
 	 * @param string $name
 	 * @param string $value
+	 * @param bool   $force
 	 */
-	public function setByteArray(string $name, string $value) : void{
-		$this->setTagValue($name, ByteArrayTag::class, $value);
+	public function setByteArray(string $name, string $value, bool $force = false) : void{
+		$this->setTagValue($name, ByteArrayTag::class, $value, $force);
 	}
 
 	/**
 	 * @param string $name
 	 * @param string $value
+	 * @param bool   $force
 	 */
-	public function setString(string $name, string $value) : void{
-		$this->setTagValue($name, StringTag::class, $value);
+	public function setString(string $name, string $value, bool $force = false) : void{
+		$this->setTagValue($name, StringTag::class, $value, $force);
 	}
 
 	/**
 	 * @param string $name
 	 * @param int[]  $value
+	 * @param bool   $force
 	 */
-	public function setIntArray(string $name, array $value) : void{
-		$this->setTagValue($name, IntArrayTag::class, $value);
+	public function setIntArray(string $name, array $value, bool $force = false) : void{
+		$this->setTagValue($name, IntArrayTag::class, $value, $force);
 	}
 
 

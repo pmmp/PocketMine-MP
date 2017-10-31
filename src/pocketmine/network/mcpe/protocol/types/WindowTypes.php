@@ -45,5 +45,6 @@ interface WindowTypes{
 	const STRUCTURE_EDITOR = 14;
 	const TRADING = 15;
 	const COMMAND_BLOCK = 16;
+	const JUKEBOX = 17;
 
 }
