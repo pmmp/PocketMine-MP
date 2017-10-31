@@ -36,15 +36,14 @@ use pocketmine\utils\UUID;
 class CraftingManager{
 
 	/** @var CraftingRecipe[] */
-	public $recipes = [];
+	protected $recipes = [];
 
 	/** @var ShapedRecipe[][] */
 	protected $shapedRecipes = [];
 	/** @var ShapelessRecipe[][] */
 	protected $shapelessRecipes = [];
-
 	/** @var FurnaceRecipe[] */
-	public $furnaceRecipes = [];
+	protected $furnaceRecipes = [];
 
 	private static $RECIPE_COUNT = 0;
 
