@@ -235,7 +235,7 @@ class CraftingManager{
 		/** @var Item[] $row */
 		foreach($map as $y => $row){
 			foreach($row as $x => $item){
-				$item = clone $item;
+				$map[$y][$x] = clone $item;
 			}
 		}
 
