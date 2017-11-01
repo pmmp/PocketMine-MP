@@ -30,6 +30,7 @@ use pocketmine\entity\Entity;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Utils;
@@ -536,5 +537,29 @@ abstract class DataPacket extends BinaryStream{
 		$this->putEntityUniqueId($link->toEntityUniqueId);
 		$this->putByte($link->type);
 		$this->putBool($link->bool1);
+	}
+
+	protected function getCommandOriginData() : CommandOriginData{
+		$result = new CommandOriginData();
+
+		$result->type = $this->getUnsignedVarInt();
+		$result->uuid = $this->getUUID();
+		$result->requestId = $this->getString();
+
+		if($result->type === CommandOriginData::ORIGIN_DEV_CONSOLE or $result->type === CommandOriginData::ORIGIN_TEST){
+			$result->varlong1 = $this->getVarLong();
+		}
+
+		return $result;
+	}
+
+	protected function putCommandOriginData(CommandOriginData $data) : void{
+		$this->putUnsignedVarInt($data->type);
+		$this->putUUID($data->uuid);
+		$this->putString($data->requestId);
+
+		if($data->type === CommandOriginData::ORIGIN_DEV_CONSOLE or $data->type === CommandOriginData::ORIGIN_TEST){
+			$this->putVarLong($data->varlong1);
+		}
 	}
 }
