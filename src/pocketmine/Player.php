@@ -2044,11 +2044,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk = new PlayStatusPacket();
 		$pk->status = $status;
 		$pk->protocol = $this->protocol;
-		if($immediate){
-			$this->directDataPacket($pk);
-		}else{
-			$this->dataPacket($pk);
-		}
+		$this->sendDataPacket($pk, false, $immediate);
 	}
 
 	public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet) : bool{
