@@ -88,4 +88,8 @@ class MelonStem extends Crops{
 			ItemFactory::get(Item::MELON_SEEDS, 0, mt_rand(0, 2))
 		];
 	}
+
+	public function getPickedItem() : Item{
+		return ItemFactory::get(Item::MELON_SEEDS);
+	}
 }

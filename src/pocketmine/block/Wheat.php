@@ -50,4 +50,8 @@ class Wheat extends Crops{
 			];
 		}
 	}
+
+	public function getPickedItem() : Item{
+		return ItemFactory::get(Item::WHEAT_SEEDS);
+	}
 }

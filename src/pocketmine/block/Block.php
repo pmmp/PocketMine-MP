@@ -426,6 +426,14 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Returns the item that players will equip when middle-clicking on this block.
+	 * @return Item
+	 */
+	public function getPickedItem() : Item{
+		return ItemFactory::get($this->getItemId(), $this->getVariant());
+	}
+
+	/**
 	 * Returns the time in ticks which the block will fuel a furnace for.
 	 * @return int
 	 */
