@@ -1917,17 +1917,9 @@ class Server{
 			$pk->encode();
 		}
 
-		if($immediate){
-			foreach($identifiers as $i){
-				if(isset($this->players[$i])){
-					$this->players[$i]->directDataPacket($pk);
-				}
-			}
-		}else{
-			foreach($identifiers as $i){
-				if(isset($this->players[$i])){
-					$this->players[$i]->dataPacket($pk);
-				}
+		foreach($identifiers as $i){
+			if(isset($this->players[$i])){
+				$this->players[$i]->sendDataPacket($pk, false, $immediate);
 			}
 		}
 

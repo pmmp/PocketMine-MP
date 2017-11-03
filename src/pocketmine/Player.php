@@ -175,7 +175,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 *
 	 * @return bool
 	 */
-	public static function isValidUserName(string $name) : bool{
+	public static function isValidUserName(?string $name) : bool{
+		if($name === null){
+			return false;
+		}
+
 		$lname = strtolower($name);
 		$len = strlen($name);
 		return $lname !== "rcon" and $lname !== "console" and $len >= 1 and $len <= 16 and preg_match("/[^A-Za-z0-9_ ]/", $name) === 0;
@@ -1979,6 +1983,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
+		if(!self::isValidUserName($packet->username)){
+			$this->close("", "disconnectionScreen.invalidName");
+			return true;
+		}
+
 		$this->username = TextFormat::clean($packet->username);
 		$this->displayName = $this->username;
 		$this->iusername = strtolower($this->username);
@@ -1991,11 +2000,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->uuid = UUID::fromString($packet->clientUUID);
 		$this->rawUUID = $this->uuid->toBinary();
-
-		if(!Player::isValidUserName($packet->username)){
-			$this->close("", "disconnectionScreen.invalidName");
-			return true;
-		}
 
 		$skin = new Skin(
 			$packet->clientData["SkinId"],
@@ -2040,11 +2044,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk = new PlayStatusPacket();
 		$pk->status = $status;
 		$pk->protocol = $this->protocol;
-		if($immediate){
-			$this->directDataPacket($pk);
-		}else{
-			$this->dataPacket($pk);
-		}
+		$this->sendDataPacket($pk, false, $immediate);
 	}
 
 	public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet) : bool{
@@ -2580,9 +2580,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function handleBlockPickRequest(BlockPickRequestPacket $packet) : bool{
 		$block = $this->level->getBlockAt($packet->blockX, $packet->blockY, $packet->blockZ);
 
-		//TODO: this doesn't handle crops correctly (need more API work)
-		$item = Item::get($block->getItemId(), $block->getVariant());
-
+		$item = $block->getPickedItem();
 		if($packet->addUserData){
 			$tile = $this->getLevel()->getTile($block);
 			if($tile instanceof Tile){
@@ -2622,13 +2620,20 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				if($this->lastBreak !== PHP_INT_MAX or $pos->distanceSquared($this) > 10000){
 					break;
 				}
+
 				$target = $this->level->getBlock($pos);
+
 				$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $target, null, $packet->face, $target->getId() === 0 ? PlayerInteractEvent::LEFT_CLICK_AIR : PlayerInteractEvent::LEFT_CLICK_BLOCK);
+				if($this->level->checkSpawnProtection($this, $target)){
+					$ev->setCancelled();
+				}
+
 				$this->getServer()->getPluginManager()->callEvent($ev);
 				if($ev->isCancelled()){
 					$this->inventory->sendHeldItem($this);
 					break;
 				}
+
 				$block = $target->getSide($packet->face);
 				if($block->getId() === Block::FIRE){
 					$this->level->setBlock($block, BlockFactory::get(Block::AIR));

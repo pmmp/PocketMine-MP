@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\utils\BinaryStream;
+use pocketmine\utils\MainLogger;
 use pocketmine\utils\Utils;
 
 class LoginPacket extends DataPacket{
@@ -73,9 +74,24 @@ class LoginPacket extends DataPacket{
 				$this->offset -= 6;
 				$this->protocol = $this->getInt();
 			}
-			return; //Do not attempt to continue decoding for non-accepted protocols
 		}
 
+		try{
+			$this->decodeConnectionRequest();
+		}catch(\Throwable $e){
+			if($this->protocol === ProtocolInfo::CURRENT_PROTOCOL){
+				throw $e;
+			}
+
+			$logger = MainLogger::getLogger();
+			$logger->debug(get_class($e)  . " was thrown while decoding connection request in login (protocol version " . ($this->protocol ?? "unknown") . "): " . $e->getMessage());
+			foreach(\pocketmine\getTrace(0, $e->getTrace()) as $line){
+				$logger->debug($line);
+			}
+		}
+	}
+
+	protected function decodeConnectionRequest() : void{
 		$buffer = new BinaryStream($this->getString());
 
 		$this->chainData = json_decode($buffer->get($buffer->getLInt()), true);
