@@ -175,7 +175,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 *
 	 * @return bool
 	 */
-	public static function isValidUserName(string $name) : bool{
+	public static function isValidUserName(?string $name) : bool{
+		if($name === null){
+			return false;
+		}
+
 		$lname = strtolower($name);
 		$len = strlen($name);
 		return $lname !== "rcon" and $lname !== "console" and $len >= 1 and $len <= 16 and preg_match("/[^A-Za-z0-9_ ]/", $name) === 0;
@@ -1979,6 +1983,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
+		if(!self::isValidUserName($packet->username)){
+			$this->close("", "disconnectionScreen.invalidName");
+			return true;
+		}
+
 		$this->username = TextFormat::clean($packet->username);
 		$this->displayName = $this->username;
 		$this->iusername = strtolower($this->username);
@@ -1991,11 +2000,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->uuid = UUID::fromString($packet->clientUUID);
 		$this->rawUUID = $this->uuid->toBinary();
-
-		if(!Player::isValidUserName($packet->username)){
-			$this->close("", "disconnectionScreen.invalidName");
-			return true;
-		}
 
 		$skin = new Skin(
 			$packet->clientData["SkinId"],
