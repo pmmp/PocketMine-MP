@@ -355,9 +355,6 @@ class ItemFactory{
 
 			if(defined(Item::class . "::" . strtoupper($b[0]))){
 				$item = self::get(constant(Item::class . "::" . strtoupper($b[0])), $meta);
-				if($item->getId() === Item::AIR and strtoupper($b[0]) !== "AIR" and is_numeric($b[0])){
-					$item = self::get(((int) $b[0]) & 0xFFFF, $meta);
-				}
 			}elseif(is_numeric($b[0])){
 				$item = self::get(((int) $b[0]) & 0xFFFF, $meta);
 			}else{
