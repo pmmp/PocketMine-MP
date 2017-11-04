@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\Furnace as TileFurnace;
 use pocketmine\tile\Tile;
@@ -76,7 +77,7 @@ class BurningFurnace extends Solid{
 				$furnace = Tile::createTile(Tile::FURNACE, $this->getLevel(), TileFurnace::createNBT($this));
 			}
 
-			if($furnace->namedtag->getString("Lock", "", true) !== $item->getCustomName()){
+			if($furnace->namedtag->hasTag("Lock", StringTag::class) and $furnace->namedtag->getString("Lock") !== $item->getCustomName()){
 				return true;
 			}
 
