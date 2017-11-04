@@ -2512,12 +2512,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 									return true;
 								}
 
-								$pk = new EntityEventPacket();
-								$pk->entityRuntimeId = $this->getId();
-								$pk->event = EntityEventPacket::USE_ITEM;
-								$this->dataPacket($pk);
-								$this->server->broadcastPacket($this->getViewers(), $pk);
-
 								if($this->isSurvival()){
 									$slot = $this->inventory->getItemInHand();
 									--$slot->count;
