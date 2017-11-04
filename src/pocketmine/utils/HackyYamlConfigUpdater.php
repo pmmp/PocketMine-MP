@@ -27,6 +27,9 @@ namespace pocketmine\utils;
  * Hacky code used to update pocketmine.yml when updating PocketMine-MP.
  */
 class HackyYamlConfigUpdater{
+	const RESULT_NO_CHANGES = 0;
+	const RESULT_NEW_CONFIG = 1;
+	const RESULT_UPDATED_CONFIG = 2;
 
 	/** @var string */
 	private $inputConfigPath;
@@ -45,14 +48,15 @@ class HackyYamlConfigUpdater{
 		return $this->inputConfigPath . ".bak";
 	}
 
-	public function process() : bool{
-		$isNew = file_exists($this->inputConfigPath);
+	public function process() : int{
+		$hasOldConfig = file_exists($this->inputConfigPath);
+
 		$inputConfig = new Config($this->inputConfigPath, Config::YAML);
 		$template = new Config($this->newConfigTemplatePath, Config::YAML);
 
-		if(!$isNew){
+		if($hasOldConfig){
 			if($template->get("config-version", 0) <= $inputConfig->get("config-version", 0)){
-				return false;
+				return self::RESULT_NO_CHANGES;
 			}
 			$inputConfig->remove("config-version"); //don't overwrite it in the new file
 
@@ -88,7 +92,8 @@ class HackyYamlConfigUpdater{
 
 		file_put_contents($this->outputConfigPath, $done);
 		unlink($this->outputConfigPath . ".temp");
-		return !$isNew;
+
+		return $hasOldConfig ? self::RESULT_UPDATED_CONFIG : self::RESULT_NEW_CONFIG;
 	}
 
 	private function copyConfigValues(array $old, array $new, bool $keepOldConfigs) : array{
