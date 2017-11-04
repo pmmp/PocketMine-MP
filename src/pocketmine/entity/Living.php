@@ -51,6 +51,8 @@ abstract class Living extends Entity implements Damageable{
 	protected $attackTime = 0;
 
 	/** @var int */
+	public $deadTicks = 0;
+	/** @var int */
 	protected $maxDeadTicks = 20;
 
 	protected $invisible = false;
@@ -377,9 +379,17 @@ abstract class Living extends Entity implements Damageable{
 
 		$this->setAbsorption(max(0, $this->getAbsorption() + $source->getDamage(EntityDamageEvent::MODIFIER_ABSORPTION)));
 
-		$this->broadcastEntityEvent($this->getHealth() <= 0 ? EntityEventPacket::DEATH_ANIMATION : EntityEventPacket::HURT_ANIMATION); //Ouch!
+		if($this->isAlive()){
+			$this->doHitAnimation();
+		}else{
+			$this->startDeathAnimation();
+		}
 
 		$this->attackTime = 10; //0.5 seconds cooldown
+	}
+
+	protected function doHitAnimation() : void{
+		$this->broadcastEntityEvent(EntityEventPacket::HURT_ANIMATION);
 	}
 
 	public function knockBack(Entity $attacker, float $damage, float $x, float $z, float $base = 0.4){
@@ -419,6 +429,26 @@ abstract class Living extends Entity implements Damageable{
 		foreach($ev->getDrops() as $item){
 			$this->getLevel()->dropItem($this, $item);
 		}
+	}
+
+	protected function onDeathUpdate(int $tickDiff) : bool{
+		if($this->deadTicks < $this->maxDeadTicks){
+			$this->deadTicks += $tickDiff;
+			if($this->deadTicks >= $this->maxDeadTicks){
+				$this->endDeathAnimation();
+				//TODO: spawn experience orbs here
+			}
+		}
+
+		return $this->deadTicks >= 20;
+	}
+
+	protected function startDeathAnimation() : void{
+		$this->broadcastEntityEvent(EntityEventPacket::DEATH_ANIMATION);
+	}
+
+	protected function endDeathAnimation() : void{
+		//TODO
 	}
 
 	public function entityBaseTick(int $tickDiff = 1) : bool{
