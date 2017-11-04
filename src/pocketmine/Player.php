@@ -2682,7 +2682,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
 
-				$realSpawn = $ev->getRespawnPosition()->add(0.5, 0, 0.5);
+				$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getLevel());
 
 				if($realSpawn->distanceSquared($this->getSpawn()->add(0.5, 0, 0.5)) > 0.01){
 					$this->teleport($realSpawn); //If the destination was modified by plugins
