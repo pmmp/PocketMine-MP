@@ -297,6 +297,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var int|null */
 	protected $lineHeight = null;
 
+	/** @var string */
+	protected $locale = "en_US";
+
 	/**
 	 * @return TranslationContainer|string
 	 */
@@ -736,6 +739,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($this->spawned){
 			$this->server->updatePlayerListData($this->getUniqueId(), $this->getId(), $this->getDisplayName(), $this->getSkin());
 		}
+	}
+
+	/**
+	 * Returns the player's locale, e.g. en_US.
+	 * @return string
+	 */
+	public function getLocale() : string{
+		return $this->locale;
 	}
 
 	/**
@@ -1991,6 +2002,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->username = TextFormat::clean($packet->username);
 		$this->displayName = $this->username;
 		$this->iusername = strtolower($this->username);
+
+		if($packet->locale !== null){
+			$this->locale = $packet->locale;
+		}
 
 		if(count($this->server->getOnlinePlayers()) >= $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)){
 			return true;
