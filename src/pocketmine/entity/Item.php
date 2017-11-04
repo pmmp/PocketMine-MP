@@ -118,7 +118,7 @@ class Item extends Entity{
 				if($ev->isCancelled()){
 					$this->age = 0;
 				}else{
-					$this->kill();
+					$this->flagForDespawn();
 					$hasUpdate = true;
 				}
 			}

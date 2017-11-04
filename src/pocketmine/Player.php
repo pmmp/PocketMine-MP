@@ -1445,7 +1445,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->server->broadcastPacket($entity->getViewers(), $pk);
 
 				$this->inventory->addItem(clone $item);
-				$entity->kill();
+				$entity->flagForDespawn();
 			}elseif($entity instanceof DroppedItem){
 				if($entity->getPickupDelay() <= 0){
 					$item = $entity->getItem();
@@ -1475,7 +1475,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						$this->server->broadcastPacket($entity->getViewers(), $pk);
 
 						$this->inventory->addItem(clone $item);
-						$entity->kill();
+						$entity->flagForDespawn();
 					}
 				}
 			}

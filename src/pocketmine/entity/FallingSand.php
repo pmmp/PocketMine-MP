@@ -104,7 +104,7 @@ class FallingSand extends Entity{
 			}
 
 			if($this->onGround or $blockTarget !== null){
-				$this->kill();
+				$this->flagForDespawn();
 
 				$block = $this->level->getBlock($pos);
 				if($block->getId() > 0 and $block->isTransparent() and !$block->canBeReplaced()){

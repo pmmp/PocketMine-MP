@@ -471,6 +471,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	/** @var bool */
 	protected $closed = false;
+	/** @var bool */
+	private $needsDespawn = false;
 
 	/** @var TimingsHandler */
 	protected $timings;
@@ -1280,15 +1282,20 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		$this->lastUpdate = $currentTick;
 
+		if($this->needsDespawn){
+			$this->close();
+			return false;
+		}
+
 		if(!$this->isAlive()){
 			$this->deadTicks += $tickDiff;
 			if($this->deadTicks >= $this->maxDeadTicks){
 				$this->despawnFromAll();
 				if(!$this->isPlayer){
-					$this->close();
+					$this->flagForDespawn();
 				}
 			}
-			return $this->deadTicks < $this->maxDeadTicks;
+			return true;
 		}
 
 
@@ -1928,6 +1935,13 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		foreach($this->hasSpawned as $player){
 			$this->despawnFrom($player);
 		}
+	}
+
+	/**
+	 * Flags the entity to be removed from the world on the next tick.
+	 */
+	public function flagForDespawn() : void{
+		$this->needsDespawn = true;
 	}
 
 	/**
