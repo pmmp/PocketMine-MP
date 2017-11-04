@@ -46,15 +46,18 @@ class HackyYamlConfigUpdater{
 	}
 
 	public function process() : bool{
+		$isNew = file_exists($this->inputConfigPath);
 		$inputConfig = new Config($this->inputConfigPath, Config::YAML);
 		$template = new Config($this->newConfigTemplatePath, Config::YAML);
 
-		if($template->get("config-version", 0) <= $inputConfig->get("config-version", 0)){
-			return false;
-		}
-		$inputConfig->remove("config-version"); //don't overwrite it in the new file
+		if(!$isNew){
+			if($template->get("config-version", 0) <= $inputConfig->get("config-version", 0)){
+				return false;
+			}
+			$inputConfig->remove("config-version"); //don't overwrite it in the new file
 
-		copy($this->inputConfigPath, $this->getBackupPath());
+			copy($this->inputConfigPath, $this->getBackupPath());
+		}
 
 
 		//Convert comments into YAMl keys, and save their contents
@@ -85,7 +88,7 @@ class HackyYamlConfigUpdater{
 
 		file_put_contents($this->outputConfigPath, $done);
 		unlink($this->outputConfigPath . ".temp");
-		return true;
+		return !$isNew;
 	}
 
 	private function copyConfigValues(array $old, array $new, bool $keepOldConfigs) : array{
