@@ -64,10 +64,7 @@ class Squid extends WaterAnimal{
 				$this->swimDirection = (new Vector3($this->x - $e->x, $this->y - $e->y, $this->z - $e->z))->normalize();
 			}
 
-			$pk = new EntityEventPacket();
-			$pk->entityRuntimeId = $this->getId();
-			$pk->event = EntityEventPacket::SQUID_INK_CLOUD;
-			$this->server->broadcastPacket($this->hasSpawned, $pk);
+			$this->broadcastEntityEvent(EntityEventPacket::SQUID_INK_CLOUD);
 		}
 	}
 

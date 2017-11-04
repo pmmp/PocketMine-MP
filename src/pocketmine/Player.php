@@ -3635,10 +3635,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($source->isCancelled()){
 			return;
 		}elseif($this->getLastDamageCause() === $source and $this->spawned){
-			$pk = new EntityEventPacket();
-			$pk->entityRuntimeId = $this->id;
-			$pk->event = EntityEventPacket::HURT_ANIMATION;
-			$this->dataPacket($pk);
+			$this->broadcastEntityEvent(EntityEventPacket::HURT_ANIMATION);
 
 			if($this->isSurvival()){
 				$this->exhaust(0.3, PlayerExhaustEvent::CAUSE_DAMAGE);
