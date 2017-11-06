@@ -237,6 +237,12 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		return null;
 	}
 
+	public function updatePing(string $identifier, int $pingMS){
+		if(isset($this->players[$identifier])){
+			$this->players[$identifier]->updatePing($pingMS);
+		}
+	}
+
 	private function getPacket($buffer){
 		$pid = ord($buffer{0});
 		if(($data = PacketPool::getPacketById($pid)) === null){
