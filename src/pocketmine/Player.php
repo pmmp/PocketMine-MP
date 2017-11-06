@@ -297,6 +297,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var int|null */
 	protected $lineHeight = null;
 
+	/** @var string */
+	protected $locale = "en_US";
+
+	/**
+	 * @var int
+	 * Last measurement of player's latency in milliseconds.
+	 */
+	protected $lastPingMeasure = 1;
+
 	/**
 	 * @return TranslationContainer|string
 	 */
@@ -739,6 +748,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
+	 * Returns the player's locale, e.g. en_US.
+	 * @return string
+	 */
+	public function getLocale() : string{
+		return $this->locale;
+	}
+
+	/**
 	 * Called when a player changes their skin.
 	 * Plugin developers should not use this, use setSkin() and sendSkin() instead.
 	 *
@@ -789,6 +806,27 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	public function getPort() : int{
 		return $this->port;
+	}
+
+	/**
+	 * Returns the last measured latency for this player, in milliseconds. This is measured automatically and reported
+	 * back by the network interface.
+	 *
+	 * @return int
+	 */
+	public function getPing() : int{
+		return $this->lastPingMeasure;
+	}
+
+	/**
+	 * Updates the player's last ping measurement.
+	 *
+	 * @internal Plugins should not use this method.
+	 *
+	 * @param int $pingMS
+	 */
+	public function updatePing(int $pingMS){
+		$this->lastPingMeasure = $pingMS;
 	}
 
 	/**
@@ -1434,7 +1472,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->server->broadcastPacket($entity->getViewers(), $pk);
 
 				$this->inventory->addItem(clone $item);
-				$entity->kill();
+				$entity->flagForDespawn();
 			}elseif($entity instanceof DroppedItem){
 				if($entity->getPickupDelay() <= 0){
 					$item = $entity->getItem();
@@ -1464,7 +1502,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						$this->server->broadcastPacket($entity->getViewers(), $pk);
 
 						$this->inventory->addItem(clone $item);
-						$entity->kill();
+						$entity->flagForDespawn();
 					}
 				}
 			}
@@ -1992,6 +2030,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->displayName = $this->username;
 		$this->iusername = strtolower($this->username);
 
+		if($packet->locale !== null){
+			$this->locale = $packet->locale;
+		}
+
 		if(count($this->server->getOnlinePlayers()) >= $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)){
 			return true;
 		}
@@ -2497,12 +2539,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 									return true;
 								}
 
-								$pk = new EntityEventPacket();
-								$pk->entityRuntimeId = $this->getId();
-								$pk->event = EntityEventPacket::USE_ITEM;
-								$this->dataPacket($pk);
-								$this->server->broadcastPacket($this->getViewers(), $pk);
-
 								if($this->isSurvival()){
 									$slot = $this->inventory->getItemInHand();
 									--$slot->count;
@@ -2673,7 +2709,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
 
-				$realSpawn = $ev->getRespawnPosition()->add(0.5, 0, 0.5);
+				$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getLevel());
 
 				if($realSpawn->distanceSquared($this->getSpawn()->add(0.5, 0, 0.5)) > 0.01){
 					$this->teleport($realSpawn); //If the destination was modified by plugins
@@ -3626,10 +3662,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($source->isCancelled()){
 			return;
 		}elseif($this->getLastDamageCause() === $source and $this->spawned){
-			$pk = new EntityEventPacket();
-			$pk->entityRuntimeId = $this->id;
-			$pk->event = EntityEventPacket::HURT_ANIMATION;
-			$this->dataPacket($pk);
+			$this->broadcastEntityEvent(EntityEventPacket::HURT_ANIMATION);
 
 			if($this->isSurvival()){
 				$this->exhaust(0.3, PlayerExhaustEvent::CAUSE_DAMAGE);
