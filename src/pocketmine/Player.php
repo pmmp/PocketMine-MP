@@ -980,7 +980,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		foreach($this->usedChunks as $index => $c){
 			Level::getXZ($index, $chunkX, $chunkZ);
 			foreach($this->level->getChunkEntities($chunkX, $chunkZ) as $entity){
-				if($entity !== $this and !$entity->isClosed() and $entity->isAlive()){
+				if($entity !== $this and !$entity->isClosed() and $entity->isAlive() and !$entity->isFlaggedForDespawn()){
 					$entity->spawnTo($this);
 				}
 			}
@@ -1451,7 +1451,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		foreach($this->level->getNearbyEntities($this->boundingBox->grow(1, 0.5, 1), $this) as $entity){
 			$entity->scheduleUpdate();
 
-			if(!$entity->isAlive()){
+			if(!$entity->isAlive() or $entity->isFlaggedForDespawn()){
 				continue;
 			}
 

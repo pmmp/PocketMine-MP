@@ -1944,6 +1944,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->needsDespawn = true;
 	}
 
+	public function isFlaggedForDespawn() : bool{
+		return $this->needsDespawn;
+	}
+
 	/**
 	 * Returns whether the entity has been "closed".
 	 * @return bool

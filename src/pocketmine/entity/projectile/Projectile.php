@@ -121,7 +121,7 @@ abstract class Projectile extends Entity{
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		if($this->isAlive()){
+		if(!$this->isFlaggedForDespawn()){
 			$movingObjectPosition = null;
 
 			$moveVector = new Vector3($this->x + $this->motionX, $this->y + $this->motionY, $this->z + $this->motionZ);
