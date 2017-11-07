@@ -41,9 +41,9 @@ class ItemBlock extends Item{
 		parent::__construct($itemId ?? $this->block->getId(), $meta, $this->block->getName());
 	}
 
-	public function setDamage(int $meta){
-		$this->meta = $meta;
-		$this->block->setDamage($this->meta !== -1 ? $this->meta & 0xf : 0);
+	public function setDamage(int $meta) : Item{
+		$this->block->setDamage($meta !== -1 ? $meta & 0xf : 0);
+		return parent::setDamage($meta);
 	}
 
 	public function getBlock() : Block{

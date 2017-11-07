@@ -93,7 +93,7 @@ class FallingSand extends Entity{
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		if($this->isAlive()){
+		if(!$this->isFlaggedForDespawn()){
 			$pos = Position::fromObject($this->add(-$this->width / 2, $this->height, -$this->width / 2)->floor(), $this->getLevel());
 
 			$this->block->position($pos);
