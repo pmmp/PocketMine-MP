@@ -82,7 +82,6 @@ class JsonNBTParser{
 
 			$tag = NBT::createTag($type);
 			if($tag instanceof NamedTag){
-				$tag->setName($key);
 				$tag->setValue($value);
 				$data[$key] = $tag;
 			}
