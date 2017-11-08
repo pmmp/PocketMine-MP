@@ -102,12 +102,9 @@ class AvailableCommandsPacket extends DataPacket{
 	public $commandData = [];
 
 	protected function decodePayload(){
-		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+		for($i = 0, $this->enumValuesCount = $this->getUnsignedVarInt(); $i < $this->enumValuesCount; ++$i){
 			$this->enumValues[] = $this->getString();
 		}
-
-		$this->enumValuesCount = count($this->enumValues);
-
 
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
 			$this->postfixes[] = $this->getString();
