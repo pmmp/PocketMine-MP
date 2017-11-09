@@ -1709,6 +1709,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$radius = $this->width / 2;
 		$this->boundingBox->setBounds($pos->x - $radius, $pos->y, $pos->z - $radius, $pos->x + $radius, $pos->y + $this->height, $pos->z + $radius);
 
+		$this->blocksAround = null;
+
 		$this->checkChunks();
 
 		return true;
