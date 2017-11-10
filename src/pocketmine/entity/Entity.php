@@ -51,12 +51,10 @@ use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
@@ -504,53 +502,36 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->server = $level->getServer();
 
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
-		$this->setPositionAndRotation(
-			$this->temporalVector->setComponents(
-				$this->namedtag["Pos"][0],
-				$this->namedtag["Pos"][1],
-				$this->namedtag["Pos"][2]
-			),
-			$this->namedtag->Rotation[0],
-			$this->namedtag->Rotation[1]
-		);
 
-		if(isset($this->namedtag->Motion)){
-			$this->setMotion($this->temporalVector->setComponents($this->namedtag["Motion"][0], $this->namedtag["Motion"][1], $this->namedtag["Motion"][2]));
-		}else{
-			$this->setMotion($this->temporalVector->setComponents(0, 0, 0));
+		/** @var float[] $pos */
+		$pos = $this->namedtag->getListTag("Pos")->getAllValues();
+		/** @var float[] $rotation */
+		$rotation = $this->namedtag->getListTag("Rotation")->getAllValues();
+
+		$this->setPositionAndRotation($this->temporalVector->setComponents(...$pos), ...$rotation);
+
+		/** @var float[] $motion */
+		$motion = [0, 0, 0];
+		if($this->namedtag->hasTag("Motion", ListTag::class)){
+			$motion = $this->namedtag->getListTag("Motion")->getAllValues();
 		}
+
+		$this->setMotion($this->temporalVector->setComponents(...$motion));
 
 		$this->resetLastMovements();
 
 		assert(!is_nan($this->x) and !is_infinite($this->x) and !is_nan($this->y) and !is_infinite($this->y) and !is_nan($this->z) and !is_infinite($this->z));
 
-		if(!isset($this->namedtag->FallDistance)){
-			$this->namedtag->FallDistance = new FloatTag("FallDistance", 0);
-		}
-		$this->fallDistance = $this->namedtag["FallDistance"];
+		$this->fallDistance = $this->namedtag->getFloat("FallDistance", 0);
 
-		if(!isset($this->namedtag->Fire)){
-			$this->namedtag->Fire = new ShortTag("Fire", 0);
-		}
-		$this->fireTicks = (int) $this->namedtag["Fire"];
+		$this->fireTicks = $this->namedtag->getShort("Fire", 0);
 		if($this->isOnFire()){
 			$this->setGenericFlag(self::DATA_FLAG_ONFIRE);
 		}
 
-		if(!isset($this->namedtag->Air)){
-			$this->namedtag->Air = new ShortTag("Air", 300);
-		}
-		$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $this->namedtag["Air"], false);
-
-		if(!isset($this->namedtag->OnGround)){
-			$this->namedtag->OnGround = new ByteTag("OnGround", 0);
-		}
-		$this->onGround = $this->namedtag["OnGround"] !== 0;
-
-		if(!isset($this->namedtag->Invulnerable)){
-			$this->namedtag->Invulnerable = new ByteTag("Invulnerable", 0);
-		}
-		$this->invulnerable = $this->namedtag["Invulnerable"] !== 0;
+		$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $this->namedtag->getShort("Air", 300), false);
+		$this->onGround = $this->namedtag->getByte("OnGround", 0) !== 0;
+		$this->invulnerable = $this->namedtag->getByte("Invulnerable", 0) !== 0;
 
 		$this->attributeMap = new AttributeMap();
 		$this->addAttributes();
@@ -816,49 +797,46 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	public function saveNBT(){
 		if(!($this instanceof Player)){
-			$this->namedtag->id = new StringTag("id", $this->getSaveId());
+			$this->namedtag->setString("id", $this->getSaveId(), true);
 
 			if($this->getNameTag() !== ""){
-				$this->namedtag->CustomName = new StringTag("CustomName", $this->getNameTag());
-				$this->namedtag->CustomNameVisible = new ByteTag("CustomNameVisible", $this->isNameTagVisible() ? 1 : 0);
+				$this->namedtag->setString("CustomName", $this->getNameTag());
+				$this->namedtag->setByte("CustomNameVisible", $this->isNameTagVisible() ? 1 : 0);
 			}else{
-				unset($this->namedtag->CustomName);
-				unset($this->namedtag->CustomNameVisible);
+				$this->namedtag->removeTag("CustomName", "CustomNameVisible");
 			}
 		}
 
-		$this->namedtag->Pos = new ListTag("Pos", [
+		$this->namedtag->setTag(new ListTag("Pos", [
 			new DoubleTag("", $this->x),
 			new DoubleTag("", $this->y),
 			new DoubleTag("", $this->z)
-		]);
+		]));
 
-		$this->namedtag->Motion = new ListTag("Motion", [
+		$this->namedtag->setTag(new ListTag("Motion", [
 			new DoubleTag("", $this->motionX),
 			new DoubleTag("", $this->motionY),
 			new DoubleTag("", $this->motionZ)
-		]);
+		]));
 
-		$this->namedtag->Rotation = new ListTag("Rotation", [
+		$this->namedtag->setTag(new ListTag("Rotation", [
 			new FloatTag("", $this->yaw),
 			new FloatTag("", $this->pitch)
-		]);
+		]));
 
-		$this->namedtag->FallDistance = new FloatTag("FallDistance", $this->fallDistance);
-		$this->namedtag->Fire = new ShortTag("Fire", $this->fireTicks);
-		$this->namedtag->Air = new ShortTag("Air", $this->getDataProperty(self::DATA_AIR));
-		$this->namedtag->OnGround = new ByteTag("OnGround", $this->onGround ? 1 : 0);
-		$this->namedtag->Invulnerable = new ByteTag("Invulnerable", $this->invulnerable ? 1 : 0);
+		$this->namedtag->setFloat("FallDistance", $this->fallDistance);
+		$this->namedtag->setShort("Fire", $this->fireTicks);
+		$this->namedtag->setShort("Air", $this->getDataProperty(self::DATA_AIR));
+		$this->namedtag->setByte("OnGround", $this->onGround ? 1 : 0);
+		$this->namedtag->setByte("Invulnerable", $this->invulnerable ? 1 : 0);
 	}
 
 	protected function initEntity(){
 		assert($this->namedtag instanceof CompoundTag);
 
-		if(isset($this->namedtag->CustomName)){
-			$this->setNameTag($this->namedtag["CustomName"]);
-			if(isset($this->namedtag->CustomNameVisible)){
-				$this->setNameTagVisible($this->namedtag["CustomNameVisible"] > 0);
-			}
+		if($this->namedtag->hasTag("CustomName", StringTag::class)){
+			$this->setNameTag($this->namedtag->getString("CustomName"));
+			$this->setNameTagVisible($this->namedtag->getByte("CustomNameVisible", 1) !== 0);
 		}
 
 		$this->scheduleUpdate();

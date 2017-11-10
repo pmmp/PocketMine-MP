@@ -97,9 +97,7 @@ use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\LongTag;
-use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\PlayerNetworkSessionAdapter;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
@@ -1311,7 +1309,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->resetFallDistance();
 
-		$this->namedtag->playerGameType = new IntTag("playerGameType", $this->gamemode);
+		$this->namedtag->setInt("playerGameType", $this->gamemode);
 		if(!$client){ //Gamemode changed by server, do not send for client changes
 			$this->sendGamemode();
 		}else{
@@ -1873,15 +1871,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->namedtag = $this->server->getOfflinePlayerData($this->username);
 
 		$this->playedBefore = ($this->namedtag["lastPlayed"] - $this->namedtag["firstPlayed"]) > 1; // microtime(true) - microtime(true) may have less than one millisecond difference
-		if(!isset($this->namedtag->NameTag)){
-			$this->namedtag->NameTag = new StringTag("NameTag", $this->username);
-		}else{
-			$this->namedtag["NameTag"] = $this->username;
-		}
-		$this->gamemode = $this->namedtag["playerGameType"] & 0x03;
+		$this->namedtag->setString("NameTag", $this->username);
+
+		$this->gamemode = $this->namedtag->getInt("playerGameType", self::SURVIVAL) & 0x03;
 		if($this->server->getForceGamemode()){
 			$this->gamemode = $this->server->getGamemode();
-			$this->namedtag->playerGameType = new IntTag("playerGameType", $this->gamemode);
+			$this->namedtag->setInt("playerGameType", $this->gamemode);
 		}
 
 		$this->allowFlight = $this->isCreative();
@@ -1898,12 +1893,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->achievements = [];
 
+		$achievements = $this->namedtag->getCompoundTag("Achievements") ?? [];
 		/** @var ByteTag $achievement */
-		foreach($this->namedtag->Achievements as $achievement){
+		foreach($achievements as $achievement){
 			$this->achievements[$achievement->getName()] = $achievement->getValue() !== 0;
 		}
 
-		$this->namedtag->lastPlayed = new LongTag("lastPlayed", (int) floor(microtime(true) * 1000));
+		$this->namedtag->setLong("lastPlayed", (int) floor(microtime(true) * 1000));
 		if($this->server->getAutoSave()){
 			$this->server->saveOfflinePlayerData($this->username, $this->namedtag, true);
 		}
@@ -1930,8 +1926,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		if(!$this->hasValidSpawnPosition()){
-			if(isset($this->namedtag->SpawnLevel) and ($level = $this->server->getLevelByName((string) $this->namedtag["SpawnLevel"])) instanceof Level){
-				$this->spawnPosition = new WeakPosition($this->namedtag["SpawnX"], $this->namedtag["SpawnY"], $this->namedtag["SpawnZ"], $level);
+			if(($level = $this->server->getLevelByName($this->namedtag->getString("SpawnLevel", ""))) instanceof Level){
+				$this->spawnPosition = new WeakPosition($this->namedtag->getInt("SpawnX"), $this->namedtag->getInt("SpawnY"), $this->namedtag->getInt("SpawnZ"), $level);
 			}else{
 				$this->spawnPosition = WeakPosition::fromObject($this->level->getSafeSpawn());
 			}
@@ -3479,22 +3475,24 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		parent::saveNBT();
 
 		if($this->isValid()){
-			$this->namedtag->Level = new StringTag("Level", $this->level->getFolderName());
+			$this->namedtag->setString("Level", $this->level->getFolderName());
 		}
 
 		if($this->hasValidSpawnPosition()){
-			$this->namedtag->SpawnLevel = new StringTag("SpawnLevel", $this->spawnPosition->getLevel()->getFolderName());
-			$this->namedtag->SpawnX = new IntTag("SpawnX", (int) $this->spawnPosition->x);
-			$this->namedtag->SpawnY = new IntTag("SpawnY", (int) $this->spawnPosition->y);
-			$this->namedtag->SpawnZ = new IntTag("SpawnZ", (int) $this->spawnPosition->z);
+			$this->namedtag->setString("SpawnLevel", $this->spawnPosition->getLevel()->getFolderName());
+			$this->namedtag->setInt("SpawnX", (int) $this->spawnPosition->x);
+			$this->namedtag->setInt("SpawnY", (int) $this->spawnPosition->y);
+			$this->namedtag->setInt("SpawnZ", (int) $this->spawnPosition->z);
 		}
 
+		$achievements = new CompoundTag("Achievements");
 		foreach($this->achievements as $achievement => $status){
-			$this->namedtag->Achievements[$achievement] = new ByteTag($achievement, $status === true ? 1 : 0);
+			$achievements->setByte($achievement, $status === true ? 1 : 0);
 		}
+		$this->namedtag->setTag($achievements);
 
-		$this->namedtag["playerGameType"] = $this->gamemode;
-		$this->namedtag["lastPlayed"] = (int) floor(microtime(true) * 1000);
+		$this->namedtag->setInt("playerGameType", $this->gamemode);
+		$this->namedtag->setLong("lastPlayed", (int) floor(microtime(true) * 1000));
 
 		if($this->username != "" and $this->namedtag instanceof CompoundTag){
 			$this->server->saveOfflinePlayerData($this->username, $this->namedtag, $async);

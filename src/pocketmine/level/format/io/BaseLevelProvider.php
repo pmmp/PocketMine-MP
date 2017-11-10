@@ -31,8 +31,6 @@ use pocketmine\level\LevelException;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\LongTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\scheduler\AsyncTask;
 
@@ -52,19 +50,19 @@ abstract class BaseLevelProvider implements LevelProvider{
 		}
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->readCompressed(file_get_contents($this->getPath() . "level.dat"));
-		$levelData = $nbt->getData();
-		if($levelData->Data instanceof CompoundTag){
-			$this->levelData = $levelData->Data;
+		$levelData = $nbt->getData()->getCompoundTag("Data");
+		if($levelData !== null){
+			$this->levelData = $levelData;
 		}else{
 			throw new LevelException("Invalid level.dat");
 		}
 
-		if(!isset($this->levelData->generatorName)){
-			$this->levelData->generatorName = new StringTag("generatorName", (string) Generator::getGenerator("DEFAULT"));
+		if(!$this->levelData->hasTag("generatorName", StringTag::class)){
+			$this->levelData->setString("generatorName", (string) Generator::getGenerator("DEFAULT"), true);
 		}
 
-		if(!isset($this->levelData->generatorOptions)){
-			$this->levelData->generatorOptions = new StringTag("generatorOptions", "");
+		if(!$this->levelData->hasTag("generatorOptions", StringTag::class)){
+			$this->levelData->setString("generatorOptions", "");
 		}
 	}
 
@@ -81,33 +79,33 @@ abstract class BaseLevelProvider implements LevelProvider{
 	}
 
 	public function getName() : string{
-		return (string) $this->levelData["LevelName"];
+		return $this->levelData->getString("LevelName");
 	}
 
 	public function getTime() : int{
-		return $this->levelData["Time"];
+		return $this->levelData->getLong("Time", 0, true);
 	}
 
 	public function setTime(int $value){
-		$this->levelData->Time = new LongTag("Time", $value);
+		$this->levelData->setLong("Time", $value, true); //some older PM worlds had this in the wrong format
 	}
 
 	public function getSeed() : int{
-		return $this->levelData["RandomSeed"];
+		return $this->levelData->getLong("RandomSeed");
 	}
 
 	public function setSeed(int $value){
-		$this->levelData->RandomSeed = new LongTag("RandomSeed", $value);
+		$this->levelData->setLong("RandomSeed", $value);
 	}
 
 	public function getSpawn() : Vector3{
-		return new Vector3((float) $this->levelData["SpawnX"], (float) $this->levelData["SpawnY"], (float) $this->levelData["SpawnZ"]);
+		return new Vector3($this->levelData->getInt("SpawnX"), $this->levelData->getInt("SpawnY"), $this->levelData->getInt("SpawnZ"));
 	}
 
 	public function setSpawn(Vector3 $pos){
-		$this->levelData->SpawnX = new IntTag("SpawnX", (int) $pos->x);
-		$this->levelData->SpawnY = new IntTag("SpawnY", (int) $pos->y);
-		$this->levelData->SpawnZ = new IntTag("SpawnZ", (int) $pos->z);
+		$this->levelData->setInt("SpawnX", (int) $pos->x);
+		$this->levelData->setInt("SpawnY", (int) $pos->y);
+		$this->levelData->setInt("SpawnZ", (int) $pos->z);
 	}
 
 	public function doGarbageCollection(){

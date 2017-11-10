@@ -96,26 +96,26 @@ class LevelDB extends BaseLevelProvider{
 			"compression" => LEVELDB_ZLIB_COMPRESSION
 		]);
 
-		if(isset($this->levelData->StorageVersion) and $this->levelData->StorageVersion->getValue() > self::CURRENT_STORAGE_VERSION){
-			throw new LevelException("Specified LevelDB world format version is newer than the version supported by the server");
+		if($this->levelData->getInt("StorageVersion", INT32_MAX, true) > self::CURRENT_STORAGE_VERSION){
+			throw new LevelException("Specified LevelDB world format version is not supported by " . \pocketmine\NAME);
 		}
 
-		if(!isset($this->levelData->generatorName)){
-			if(isset($this->levelData->Generator)){
-				switch((int) $this->levelData->Generator->getValue()){ //Detect correct generator from MCPE data
+		if(!$this->levelData->hasTag("generatorName", StringTag::class)){
+			if($this->levelData->hasTag("Generator", IntTag::class)){
+				switch($this->levelData->getInt("Generator")){ //Detect correct generator from MCPE data
 					case self::GENERATOR_FLAT:
-						$this->levelData->generatorName = new StringTag("generatorName", (string) Generator::getGenerator("FLAT"));
+						$this->levelData->setString("generatorName", (string) Generator::getGenerator("FLAT"));
 						if(($layers = $this->db->get(self::ENTRY_FLAT_WORLD_LAYERS)) !== false){ //Detect existing custom flat layers
 							$layers = trim($layers, "[]");
 						}else{
 							$layers = "7,3,3,2";
 						}
-						$this->levelData->generatorOptions = new StringTag("generatorOptions", "2;" . $layers . ";1");
+						$this->levelData->setString("generatorOptions", "2;" . $layers . ";1");
 						break;
 					case self::GENERATOR_INFINITE:
 						//TODO: add a null generator which does not generate missing chunks (to allow importing back to MCPE and generating more normal terrain without PocketMine messing things up)
-						$this->levelData->generatorName = new StringTag("generatorName", (string) Generator::getGenerator("DEFAULT"));
-						$this->levelData->generatorOptions = new StringTag("generatorOptions", "");
+						$this->levelData->setString("generatorName", (string) Generator::getGenerator("DEFAULT"));
+						$this->levelData->setString("generatorOptions", "");
 						break;
 					case self::GENERATOR_LIMITED:
 						throw new LevelException("Limited worlds are not currently supported");
@@ -123,12 +123,12 @@ class LevelDB extends BaseLevelProvider{
 						throw new LevelException("Unknown LevelDB world format type, this level cannot be loaded");
 				}
 			}else{
-				$this->levelData->generatorName = new StringTag("generatorName", (string) Generator::getGenerator("DEFAULT"));
+				$this->levelData->setString("generatorName", (string) Generator::getGenerator("DEFAULT"));
 			}
 		}
 
-		if(!isset($this->levelData->generatorOptions)){
-			$this->levelData->generatorOptions = new StringTag("generatorOptions", "");
+		if(!$this->levelData->hasTag("generatorOptions", StringTag::class)){
+			$this->levelData->setString("generatorOptions", "");
 		}
 	}
 
@@ -226,8 +226,8 @@ class LevelDB extends BaseLevelProvider{
 	}
 
 	public function saveLevelData(){
-		$this->levelData->NetworkVersion = new IntTag("NetworkVersion", ProtocolInfo::CURRENT_PROTOCOL);
-		$this->levelData->StorageVersion = new IntTag("StorageVersion", self::CURRENT_STORAGE_VERSION);
+		$this->levelData->setInt("NetworkVersion", ProtocolInfo::CURRENT_PROTOCOL);
+		$this->levelData->setInt("StorageVersion", self::CURRENT_STORAGE_VERSION);
 
 		$nbt = new NBT(NBT::LITTLE_ENDIAN);
 		$nbt->setData($this->levelData);
@@ -251,11 +251,11 @@ class LevelDB extends BaseLevelProvider{
 	}
 
 	public function getDifficulty() : int{
-		return isset($this->levelData->Difficulty) ? $this->levelData->Difficulty->getValue() : Level::DIFFICULTY_NORMAL;
+		return $this->levelData->getInt("Difficulty", Level::DIFFICULTY_NORMAL);
 	}
 
 	public function setDifficulty(int $difficulty){
-		$this->levelData->Difficulty = new IntTag("Difficulty", $difficulty);
+		$this->levelData->setInt("Difficulty", $difficulty); //yes, this is intended! (in PE: int, PC: byte)
 	}
 
 	public function getLoadedChunks() : array{

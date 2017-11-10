@@ -34,7 +34,6 @@ use pocketmine\item\Item as ItemItem;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
@@ -311,14 +310,15 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * For Human entities which are not players, sets their properties such as nametag, skin and UUID from NBT.
 	 */
 	protected function initHumanData(){
-		if(isset($this->namedtag->NameTag)){
-			$this->setNameTag($this->namedtag["NameTag"]);
+		if($this->namedtag->hasTag("NameTag", StringTag::class)){
+			$this->setNameTag($this->namedtag->getString("NameTag"));
 		}
 
-		if(isset($this->namedtag->Skin) and $this->namedtag->Skin instanceof CompoundTag){
+		$skin = $this->namedtag->getCompoundTag("Skin");
+		if($skin !== null){
 			$this->setSkin(new Skin(
-				$this->namedtag->Skin["Name"],
-				$this->namedtag->Skin["Data"]
+				$skin->getString("Name"),
+				$skin->getString("Data")
 			));
 		}
 
@@ -333,71 +333,39 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->inventory = new PlayerInventory($this);
 		$this->initHumanData();
 
-		if(isset($this->namedtag->Inventory) and $this->namedtag->Inventory instanceof ListTag){
-			foreach($this->namedtag->Inventory as $i => $item){
-				if($item["Slot"] >= 0 and $item["Slot"] < 9){ //Hotbar
+		$inventoryTag = $this->namedtag->getListTag("Inventory");
+		if($inventoryTag !== null){
+			/** @var CompoundTag $item */
+			foreach($inventoryTag as $i => $item){
+				$slot = $item->getByte("Slot");
+				if($slot >= 0 and $slot < 9){ //Hotbar
 					//Old hotbar saving stuff, remove it (useless now)
-					unset($this->namedtag->Inventory->{$i});
-				}elseif($item["Slot"] >= 100 and $item["Slot"] < 104){ //Armor
-					$this->inventory->setItem($this->inventory->getSize() + $item["Slot"] - 100, ItemItem::nbtDeserialize($item));
+					unset($inventoryTag[$i]);
+				}elseif($slot >= 100 and $slot < 104){ //Armor
+					$this->inventory->setItem($this->inventory->getSize() + $slot - 100, ItemItem::nbtDeserialize($item));
 				}else{
-					$this->inventory->setItem($item["Slot"] - 9, ItemItem::nbtDeserialize($item));
+					$this->inventory->setItem($slot - 9, ItemItem::nbtDeserialize($item));
 				}
 			}
 		}
 
-		if(isset($this->namedtag->SelectedInventorySlot) and $this->namedtag->SelectedInventorySlot instanceof IntTag){
-			$this->inventory->setHeldItemIndex($this->namedtag->SelectedInventorySlot->getValue(), false);
-		}else{
-			$this->inventory->setHeldItemIndex(0, false);
-		}
+		$this->inventory->setHeldItemIndex($this->namedtag->getInt("SelectedInventorySlot", 0), false);
 
 		parent::initEntity();
 
-		if(!isset($this->namedtag->foodLevel) or !($this->namedtag->foodLevel instanceof IntTag)){
-			$this->namedtag->foodLevel = new IntTag("foodLevel", (int) $this->getFood());
-		}else{
-			$this->setFood((float) $this->namedtag["foodLevel"]);
-		}
+		$this->setFood((float) $this->namedtag->getInt("foodLevel", (int) $this->getFood(), true));
+		$this->setExhaustion($this->namedtag->getFloat("foodExhaustionLevel", $this->getExhaustion(), true));
+		$this->setSaturation($this->namedtag->getFloat("foodSaturationLevel", $this->getSaturation(), true));
+		$this->foodTickTimer = $this->namedtag->getInt("foodTickTimer", $this->foodTickTimer, true);
 
-		if(!isset($this->namedtag->foodExhaustionLevel) or !($this->namedtag->foodExhaustionLevel instanceof FloatTag)){
-			$this->namedtag->foodExhaustionLevel = new FloatTag("foodExhaustionLevel", $this->getExhaustion());
-		}else{
-			$this->setExhaustion((float) $this->namedtag["foodExhaustionLevel"]);
-		}
+		$this->setXpLevel($this->namedtag->getInt("XpLevel", $this->getXpLevel(), true));
+		$this->setXpProgress($this->namedtag->getFloat("XpP", $this->getXpProgress(), true));
+		$this->totalXp = $this->namedtag->getInt("XpTotal", $this->totalXp, true);
 
-		if(!isset($this->namedtag->foodSaturationLevel) or !($this->namedtag->foodSaturationLevel instanceof FloatTag)){
-			$this->namedtag->foodSaturationLevel = new FloatTag("foodSaturationLevel", $this->getSaturation());
+		if($this->namedtag->hasTag("XpSeed", IntTag::class)){
+			$this->xpSeed = $this->namedtag->getInt("XpSeed");
 		}else{
-			$this->setSaturation((float) $this->namedtag["foodSaturationLevel"]);
-		}
-
-		if(!isset($this->namedtag->foodTickTimer) or !($this->namedtag->foodTickTimer instanceof IntTag)){
-			$this->namedtag->foodTickTimer = new IntTag("foodTickTimer", $this->foodTickTimer);
-		}else{
-			$this->foodTickTimer = $this->namedtag["foodTickTimer"];
-		}
-
-		if(!isset($this->namedtag->XpLevel) or !($this->namedtag->XpLevel instanceof IntTag)){
-			$this->namedtag->XpLevel = new IntTag("XpLevel", $this->getXpLevel());
-		}else{
-			$this->setXpLevel((int) $this->namedtag["XpLevel"]);
-		}
-
-		if(!isset($this->namedtag->XpP) or !($this->namedtag->XpP instanceof FloatTag)){
-			$this->namedtag->XpP = new FloatTag("XpP", $this->getXpProgress());
-		}
-
-		if(!isset($this->namedtag->XpTotal) or !($this->namedtag->XpTotal instanceof IntTag)){
-			$this->namedtag->XpTotal = new IntTag("XpTotal", $this->totalXp);
-		}else{
-			$this->totalXp = $this->namedtag["XpTotal"];
-		}
-
-		if(!isset($this->namedtag->XpSeed) or !($this->namedtag->XpSeed instanceof IntTag)){
-			$this->namedtag->XpSeed = new IntTag("XpSeed", $this->xpSeed ?? ($this->xpSeed = mt_rand(-0x80000000, 0x7fffffff)));
-		}else{
-			$this->xpSeed = $this->namedtag["XpSeed"];
+			$this->xpSeed = random_int(INT32_MIN, INT32_MAX);
 		}
 	}
 
@@ -479,19 +447,25 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public function saveNBT(){
 		parent::saveNBT();
 
-		$this->namedtag->foodLevel = new IntTag("foodLevel", (int) $this->getFood());
-		$this->namedtag->foodExhaustionLevel = new FloatTag("foodExhaustionLevel", $this->getExhaustion());
-		$this->namedtag->foodSaturationLevel = new FloatTag("foodSaturationLevel", $this->getSaturation());
-		$this->namedtag->foodTickTimer = new IntTag("foodTickTimer", $this->foodTickTimer);
+		$this->namedtag->setInt("foodLevel", (int) $this->getFood(), true);
+		$this->namedtag->setFloat("foodExhaustionLevel", $this->getExhaustion(), true);
+		$this->namedtag->setFloat("foodSaturationLevel", $this->getSaturation(), true);
+		$this->namedtag->setInt("foodTickTimer", $this->foodTickTimer);
 
-		$this->namedtag->Inventory = new ListTag("Inventory", [], NBT::TAG_Compound);
+		$this->namedtag->setInt("XpLevel", $this->getXpLevel());
+		$this->namedtag->setFloat("XpP", $this->getXpProgress());
+		$this->namedtag->setInt("XpTotal", $this->totalXp);
+		$this->namedtag->setInt("XpSeed", $this->xpSeed);
+
+		$inventoryTag = new ListTag("Inventory", [], NBT::TAG_Compound);
+		$this->namedtag->setTag($inventoryTag);
 		if($this->inventory !== null){
 			//Normal inventory
 			$slotCount = $this->inventory->getSize() + $this->inventory->getHotbarSize();
 			for($slot = $this->inventory->getHotbarSize(); $slot < $slotCount; ++$slot){
 				$item = $this->inventory->getItem($slot - 9);
 				if(!$item->isNull()){
-					$this->namedtag->Inventory[$slot] = $item->nbtSerialize($slot);
+					$inventoryTag[$slot] = $item->nbtSerialize($slot);
 				}
 			}
 
@@ -499,19 +473,19 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			for($slot = 100; $slot < 104; ++$slot){
 				$item = $this->inventory->getItem($this->inventory->getSize() + $slot - 100);
 				if(!$item->isNull()){
-					$this->namedtag->Inventory[$slot] = $item->nbtSerialize($slot);
+					$inventoryTag[$slot] = $item->nbtSerialize($slot);
 				}
 			}
 
-			$this->namedtag->SelectedInventorySlot = new IntTag("SelectedInventorySlot", $this->inventory->getHeldItemIndex());
+			$this->namedtag->setInt("SelectedInventorySlot", $this->inventory->getHeldItemIndex());
 		}
 
 		if($this->skin !== null){
-			$this->namedtag->Skin = new CompoundTag("Skin", [
+			$this->namedtag->setTag(new CompoundTag("Skin", [
 				//TODO: save cape & geometry
 				new StringTag("Data", $this->skin->getSkinData()),
 				new StringTag("Name", $this->skin->getSkinId())
-			]);
+			]));
 		}
 	}
 
