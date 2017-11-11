@@ -25,6 +25,7 @@ namespace pocketmine\form;
 
 use pocketmine\form\element\CustomFormElement;
 use pocketmine\Player;
+use pocketmine\utils\Utils;
 
 abstract class CustomForm extends Form{
 
@@ -35,7 +36,9 @@ abstract class CustomForm extends Form{
 	 * @param string              $title
 	 * @param CustomFormElement[] ...$elements
 	 */
-	public function __construct(string $title, CustomFormElement ...$elements){
+	public function __construct(string $title, array $elements){
+		assert(Utils::validateObjectArray($elements, CustomFormElement::class));
+
 		parent::__construct($title);
 		$this->elements = $elements;
 	}

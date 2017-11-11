@@ -23,11 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\form;
 
-use pocketmine\form\element\CustomFormElement;
-
 /**
  * Represents a custom form which can be shown in the Settings menu on the client. This is exactly the same as a regular
  * CustomForm, except that this type can also have an icon which can be shown on the settings section button.
+ *
+ * Passing this form to {@link Player::sendForm()} will not show a form with an icon nor set this form as the server
+ * settings.
  */
 abstract class ServerSettingsForm extends CustomForm{
 	/**
@@ -35,8 +36,8 @@ abstract class ServerSettingsForm extends CustomForm{
 	 */
 	private $icon;
 
-	public function __construct(string $title, ?FormIcon $icon, CustomFormElement ...$elements){
-		parent::__construct($title, ...$elements);
+	public function __construct(string $title, array $elements, ?FormIcon $icon = null){
+		parent::__construct($title, $elements);
 		$this->icon = $icon;
 	}
 

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\form;
 
 use pocketmine\Player;
+use pocketmine\utils\Utils;
 
 /**
  * This form type presents a menu to the user with a list of options on it. The user may select an option or close the
@@ -44,7 +45,9 @@ abstract class MenuForm extends Form{
 	 * @param string       $text
 	 * @param MenuOption[] $options
 	 */
-	public function __construct(string $title, string $text, MenuOption ...$options){
+	public function __construct(string $title, string $text, array $options){
+		assert(Utils::validateObjectArray($options, MenuOption::class));
+
 		parent::__construct($title);
 		$this->content = $text;
 		$this->options = $options;
