@@ -24,8 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
-use pocketmine\level\Level;
-use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\Player;
 use pocketmine\tile\Chest;
 
@@ -113,29 +111,13 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 		parent::onOpen($who);
 
 		if(count($this->getViewers()) === 1){
-			$pk = new BlockEventPacket();
-			$pk->x = $this->right->getHolder()->getX();
-			$pk->y = $this->right->getHolder()->getY();
-			$pk->z = $this->right->getHolder()->getZ();
-			$pk->case1 = 1;
-			$pk->case2 = 2;
-			if(($level = $this->right->getHolder()->getLevel()) instanceof Level){
-				$level->addChunkPacket($this->right->getHolder()->getX() >> 4, $this->right->getHolder()->getZ() >> 4, $pk);
-			}
+			$this->broadcastBlockEventPacket($this->right->getHolder(), true);
 		}
 	}
 
 	public function onClose(Player $who) : void{
 		if(count($this->getViewers()) === 1){
-			$pk = new BlockEventPacket();
-			$pk->x = $this->right->getHolder()->getX();
-			$pk->y = $this->right->getHolder()->getY();
-			$pk->z = $this->right->getHolder()->getZ();
-			$pk->case1 = 1;
-			$pk->case2 = 0;
-			if(($level = $this->right->getHolder()->getLevel()) instanceof Level){
-				$level->addChunkPacket($this->right->getHolder()->getX() >> 4, $this->right->getHolder()->getZ() >> 4, $pk);
-			}
+			$this->broadcastBlockEventPacket($this->right->getHolder(), false);
 		}
 		parent::onClose($who);
 	}

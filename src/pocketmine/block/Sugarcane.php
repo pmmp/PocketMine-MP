@@ -52,7 +52,7 @@ class Sugarcane extends Flowable{
 		if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
 			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::SUGARCANE_BLOCK){
 				for($y = 1; $y < 3; ++$y){
-					$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
+					$b = $this->getLevel()->getBlockAt($this->x, $this->y + $y, $this->z);
 					if($b->getId() === self::AIR){
 						Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, BlockFactory::get(Block::SUGARCANE_BLOCK)));
 						if(!$ev->isCancelled()){
@@ -85,7 +85,7 @@ class Sugarcane extends Flowable{
 			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::SUGARCANE_BLOCK){
 				if($this->meta === 0x0F){
 					for($y = 1; $y < 3; ++$y){
-						$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
+						$b = $this->getLevel()->getBlockAt($this->x, $this->y + $y, $this->z);
 						if($b->getId() === self::AIR){
 							$this->getLevel()->setBlock($b, BlockFactory::get(Block::SUGARCANE_BLOCK), true);
 							break;
@@ -105,7 +105,7 @@ class Sugarcane extends Flowable{
 		return false;
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
 		if($down->getId() === self::SUGARCANE_BLOCK){
 			$this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::SUGARCANE_BLOCK), true);

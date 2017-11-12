@@ -40,7 +40,7 @@ class EndRod extends Flowable{
 		return "End Rod";
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if($face === Vector3::SIDE_UP or $face === Vector3::SIDE_DOWN){
 			$this->meta = $face;
 		}else{
@@ -61,7 +61,7 @@ class EndRod extends Flowable{
 		return 14;
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		$m = $this->meta & ~0x01;
 		$width = 0.375;
 

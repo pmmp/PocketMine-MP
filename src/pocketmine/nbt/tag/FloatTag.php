@@ -39,15 +39,15 @@ class FloatTag extends NamedTag{
 		parent::__construct($name, $value);
 	}
 
-	public function getType(){
+	public function getType() : int{
 		return NBT::TAG_Float;
 	}
 
-	public function read(NBT $nbt, bool $network = false){
+	public function read(NBT $nbt, bool $network = false) : void{
 		$this->value = $nbt->getFloat();
 	}
 
-	public function write(NBT $nbt, bool $network = false){
+	public function write(NBT $nbt, bool $network = false) : void{
 		$nbt->putFloat($this->value);
 	}
 
@@ -58,7 +58,7 @@ class FloatTag extends NamedTag{
 		return parent::getValue();
 	}
 
-	public function setValue($value){
+	public function setValue($value) : void{
 		if(!is_float($value) and !is_int($value)){
 			throw new \TypeError("FloatTag value must be of type float, " . gettype($value) . " given");
 		}

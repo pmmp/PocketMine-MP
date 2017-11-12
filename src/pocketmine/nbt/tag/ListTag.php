@@ -29,16 +29,19 @@ use pocketmine\nbt\NBT;
 
 class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 
-	private $tagType = NBT::TAG_End;
+	/** @var int */
+	private $tagType;
 
 	/**
 	 * ListTag constructor.
 	 *
 	 * @param string     $name
 	 * @param NamedTag[] $value
+	 * @param int        $tagType
 	 */
-	public function __construct(string $name = "", array $value = []){
+	public function __construct(string $name = "", array $value = [], int $tagType = NBT::TAG_End){
 		parent::__construct($name, $value);
+		$this->tagType = $tagType;
 	}
 
 	/**
@@ -60,7 +63,7 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 	 *
 	 * @throws \TypeError
 	 */
-	public function setValue($value){
+	public function setValue($value) : void{
 		if(is_array($value)){
 			foreach($value as $name => $tag){
 				if($tag instanceof NamedTag){
@@ -83,6 +86,23 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 		}
 
 		return $count;
+	}
+
+	public function getAllValues() : array{
+		$result = [];
+		foreach($this as $tag){
+			if(!($tag instanceof NamedTag)){
+				continue;
+			}
+
+			if($tag instanceof \ArrayAccess){
+				$result[] = $tag;
+			}else{
+				$result[] = $tag->getValue();
+			}
+		}
+
+		return $result;
 	}
 
 	public function offsetExists($offset){
@@ -126,7 +146,7 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 		return $count;
 	}
 
-	public function getType(){
+	public function getType() : int{
 		return NBT::TAG_List;
 	}
 
@@ -138,7 +158,7 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 		return $this->tagType;
 	}
 
-	public function read(NBT $nbt, bool $network = false){
+	public function read(NBT $nbt, bool $network = false) : void{
 		$this->value = [];
 		$this->tagType = $nbt->getByte();
 		$size = $nbt->getInt($network);
@@ -151,7 +171,7 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 		}
 	}
 
-	public function write(NBT $nbt, bool $network = false){
+	public function write(NBT $nbt, bool $network = false) : void{
 		if($this->tagType === NBT::TAG_End){ //previously empty list, try detecting type from tag children
 			$id = NBT::TAG_End;
 			foreach($this as $tag){
@@ -159,7 +179,7 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 					if($id === NBT::TAG_End){
 						$id = $tag->getType();
 					}elseif($id !== $tag->getType()){
-						return false;
+						return; //TODO: throw exception?
 					}
 				}
 			}
@@ -179,8 +199,6 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 		foreach($tags as $tag){
 			$tag->write($nbt, $network);
 		}
-
-		return true;
 	}
 
 	public function __toString(){

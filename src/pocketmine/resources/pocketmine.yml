@@ -1,7 +1,7 @@
 # Main configuration file for PocketMine-MP
 # These settings are the ones that cannot be included in server.properties
 # Some of these settings are safe, others can break your server if modified incorrectly
-# New settings/defaults won't appear automatically on this file when upgrading.
+# New settings/defaults won't appear automatically in this file when upgrading.
 
 settings:
  #Three-letter language code for server-side localization
@@ -53,7 +53,7 @@ memory:
 
  garbage-collection:
   #Period in ticks to fire the garbage collector manually (default 30 minutes), set to 0 to disable
-  #This only affect the main thread. Other threads should fire their own collections
+  #This only affects the main thread. Other threads should fire their own collections
   period: 36000
 
   #Fire asynchronous tasks to collect garbage from workers
@@ -67,16 +67,12 @@ memory:
   #Dump memory from async workers as well as the main thread. If you have issues with segfaults when dumping memory, disable this setting.
   dump-async-worker: true
 
-
  max-chunks:
-  #Maximum render distance per player when low memory is triggered
+  #Cap maximum render distance per player when low memory is triggered. Set to 0 to disable cap.
   chunk-radius: 4
 
   #Do chunk garbage collection on trigger
   trigger-chunk-collect: true
-
-  #Trigger on low memory
-  low-memory-trigger: true
 
  world-caches:
   #Disallow adding to world chunk-packet caches when memory is low
@@ -110,8 +106,8 @@ player:
  #Choose whether to enable player data saving.
  save-player-data: true
  anti-cheat:
-  #If false, will try to prevent speed and noclip cheats. May cause movement issues with some blocks which are not yet properly implemented.
-  allow-movement-cheats: false
+  #If false, will try to prevent speed and noclip cheats. May cause movement issues.
+  allow-movement-cheats: true
   #If false, times block breaks to ensure players are not cheating. May cause issues with some blocks which are not yet properly implemented.
   allow-instabreak: false
 
@@ -151,16 +147,7 @@ chunk-generation:
  population-queue-size: 8
 
 ticks-per:
- animal-spawns: 400
- monster-spawns: 1
  autosave: 6000
- cache-cleanup: 900
-
-spawn-limits:
-  monsters: 70
-  animals: 15
-  water-animals: 5
-  ambient: 15
 
 auto-report:
  #Send crash reports for processing
@@ -173,7 +160,7 @@ auto-report:
 
 anonymous-statistics:
  #Sends anonymous statistics for data aggregation, plugin usage tracking
- enabled: true
+ enabled: false #TODO: re-enable this when we have a new stats host
  host: stats.pocketmine.net
 
 auto-updater:

@@ -28,12 +28,10 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
-use pocketmine\Player;
 
 class Squid extends WaterAnimal{
-	const NETWORK_ID = 17;
+	const NETWORK_ID = self::SQUID;
 
 	public $width = 0.95;
 	public $height = 0.95;
@@ -66,10 +64,7 @@ class Squid extends WaterAnimal{
 				$this->swimDirection = (new Vector3($this->x - $e->x, $this->y - $e->y, $this->z - $e->z))->normalize();
 			}
 
-			$pk = new EntityEventPacket();
-			$pk->entityRuntimeId = $this->getId();
-			$pk->event = EntityEventPacket::SQUID_INK_CLOUD;
-			$this->server->broadcastPacket($this->hasSpawned, $pk);
+			$this->broadcastEntityEvent(EntityEventPacket::SQUID_INK_CLOUD);
 		}
 	}
 
@@ -124,21 +119,6 @@ class Squid extends WaterAnimal{
 		if(!$this->isInsideOfWater()){
 			parent::applyGravity();
 		}
-	}
-
-
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->type = Squid::NETWORK_ID;
-		$pk->position = $this->asVector3();
-		$pk->motion = $this->getMotion();
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
 	}
 
 	public function getDrops() : array{

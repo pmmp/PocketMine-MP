@@ -29,7 +29,6 @@ namespace pocketmine\level\format;
 use pocketmine\block\BlockFactory;
 use pocketmine\entity\Entity;
 use pocketmine\level\Level;
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 use pocketmine\tile\Spawnable;
@@ -939,16 +938,10 @@ class Chunk{
 		}
 		$result .= $extraData->getBuffer();
 
-		if(count($this->tiles) > 0){
-			$nbt = new NBT(NBT::LITTLE_ENDIAN);
-			$list = [];
-			foreach($this->tiles as $tile){
-				if($tile instanceof Spawnable){
-					$list[] = $tile->getSpawnCompound();
-				}
+		foreach($this->tiles as $tile){
+			if($tile instanceof Spawnable){
+				$result .= $tile->getSerializedSpawnCompound();
 			}
-			$nbt->setData($list);
-			$result .= $nbt->write(true);
 		}
 
 		return $result;

@@ -37,15 +37,15 @@ class IntTag extends NamedTag{
 		parent::__construct($name, $value);
 	}
 
-	public function getType(){
+	public function getType() : int{
 		return NBT::TAG_Int;
 	}
 
-	public function read(NBT $nbt, bool $network = false){
+	public function read(NBT $nbt, bool $network = false) : void{
 		$this->value = $nbt->getInt($network);
 	}
 
-	public function write(NBT $nbt, bool $network = false){
+	public function write(NBT $nbt, bool $network = false) : void{
 		$nbt->putInt($this->value, $network);
 	}
 
@@ -61,7 +61,7 @@ class IntTag extends NamedTag{
 	 *
 	 * @throws \TypeError
 	 */
-	public function setValue($value){
+	public function setValue($value) : void{
 		if(!is_int($value)){
 			throw new \TypeError("IntTag value must be of type int, " . gettype($value) . " given");
 		}elseif($value < -(2 ** 31) or $value > ((2 ** 31) - 1)){

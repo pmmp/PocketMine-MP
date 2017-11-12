@@ -84,6 +84,8 @@ namespace pocketmine {
 	const API_VERSION = "3.0.0-ALPHA9";
 	const CODENAME = "[REDACTED]";
 
+	const MIN_PHP_VERSION = "7.2.0RC3";
+
 	/*
 	 * Startup code. Do not look at it, it may harm you.
 	 * Most of them are hacks to fix date-related bugs, or basic functions used after this
@@ -91,9 +93,9 @@ namespace pocketmine {
 	 * Enjoy it as much as I did writing it. I don't want to do it again.
 	 */
 
-	if(version_compare("7.2", PHP_VERSION) > 0){
-		echo "[CRITICAL] You must use PHP >= 7.2" . PHP_EOL;
-		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
+	if(version_compare(MIN_PHP_VERSION, PHP_VERSION) > 0){
+		echo "[CRITICAL] " . \pocketmine\NAME . " requires PHP >= " . MIN_PHP_VERSION . ", but you have PHP " . PHP_VERSION . "." . PHP_EOL;
+		echo "[CRITICAL] Please use the installer provided on the homepage, or update to a newer PHP version." . PHP_EOL;
 		exit(1);
 	}
 
@@ -165,8 +167,8 @@ namespace pocketmine {
 		exit(1);
 	}
 
-	if(version_compare(RakLib::VERSION, "0.8.1") < 0){
-		echo "[CRITICAL] RakLib version 0.8.1 is required, while you have version " . RakLib::VERSION . "." . PHP_EOL;
+	if(version_compare(RakLib::VERSION, "0.8.2") < 0){
+		echo "[CRITICAL] RakLib version 0.8.2 is required, while you have version " . RakLib::VERSION . "." . PHP_EOL;
 		echo "[CRITICAL] Please update your submodules or use provided builds." . PHP_EOL;
 		exit(1);
 	}
@@ -408,6 +410,12 @@ namespace pocketmine {
 		return -1;
 	}
 
+	/**
+	 * @param int        $start
+	 * @param array|null $trace
+	 *
+	 * @return array
+	 */
 	function getTrace($start = 0, $trace = null){
 		if($trace === null){
 			if(function_exists("xdebug_get_function_stack")){
@@ -433,7 +441,7 @@ namespace pocketmine {
 					return (is_object($value) ? get_class($value) . " object" : gettype($value) . " " . (is_array($value) ? "Array()" : Utils::printable(@strval($value))));
 				}, $args));
 			}
-			$messages[] = "#$j " . (isset($trace[$i]["file"]) ? cleanPath($trace[$i]["file"]) : "") . "(" . ($trace[$i]["line"] ?? "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" or $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
+			$messages[] = "#$j " . (isset($trace[$i]["file"]) ? cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" or $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
 		}
 
 		return $messages;

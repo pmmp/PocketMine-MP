@@ -21,14 +21,31 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\block;
 
-use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
+use pocketmine\item\Item;
+use pocketmine\math\Vector3;
+use pocketmine\Player;
 
-class ItemFrame extends Item{
+abstract class Button extends Flowable{
+
 	public function __construct(int $meta = 0){
-		$this->block = BlockFactory::get(Block::ITEM_FRAME_BLOCK);
-		parent::__construct(self::ITEM_FRAME, $meta, "Item Frame");
+		$this->meta = $meta;
+	}
+
+	public function getVariantBitmask() : int{
+		return 0;
+	}
+
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+		//TODO: check valid target block
+		$this->meta = $face;
+
+		return $this->level->setBlock($this, $this, true, true);
+	}
+
+	public function onActivate(Item $item, Player $player = null) : bool{
+		//TODO
+		return true;
 	}
 }

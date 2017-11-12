@@ -26,7 +26,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 
-abstract class Tool extends Item{
+abstract class Tool extends Durable{
 	const TIER_WOODEN = 1;
 	const TIER_GOLD = 2;
 	const TIER_STONE = 3;
@@ -64,18 +64,18 @@ abstract class Tool extends Item{
 				$object->getToolType() === Tool::TYPE_SWORD and $this->isSword() or
 				$object->getToolType() === Tool::TYPE_SHEARS and $this->isShears()
 			){
-				$this->meta++;
+				$this->applyDamage(1);
 			}elseif(!$this->isShears() and $object->getBreakTime($this) > 0){
-				$this->meta += 2;
+				$this->applyDamage(2);
 			}
 		}elseif($this->isHoe()){
 			if(($object instanceof Block) and ($object->getId() === self::GRASS or $object->getId() === self::DIRT)){
-				$this->meta++;
+				$this->applyDamage(1);
 			}
 		}elseif(($object instanceof Entity) and !$this->isSword()){
-			$this->meta += 2;
+			$this->applyDamage(2);
 		}else{
-			$this->meta++;
+			$this->applyDamage(1);
 		}
 
 		return true;
@@ -109,11 +109,6 @@ abstract class Tool extends Item{
 		}
 
 		return $levels[$type];
-	}
-
-	public function isUnbreakable(){
-		$tag = $this->getNamedTagEntry("Unbreakable");
-		return $tag !== null and $tag->getValue() > 0;
 	}
 
 	public function isTool(){

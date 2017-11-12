@@ -176,6 +176,23 @@ class SimpleCommandMap implements CommandMap{
 
 	/**
 	 * @param Command $command
+	 *
+	 * @return bool
+	 */
+	public function unregister(Command $command) : bool{
+		foreach($this->knownCommands as $lbl => $cmd){
+			if($cmd === $command){
+				unset($this->knownCommands[$lbl]);
+			}
+		}
+
+		$command->unregister($this);
+
+		return true;
+	}
+
+	/**
+	 * @param Command $command
 	 * @param bool $isAlias
 	 * @param string $fallbackPrefix
 	 * @param string $label

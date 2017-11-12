@@ -23,32 +23,30 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
+use pocketmine\item\Item;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\StringTag;
+use pocketmine\Player;
 
 class EnchantTable extends Spawnable implements Nameable{
+	use NameableTrait;
 
-
-	public function getName() : string{
-		return isset($this->namedtag->CustomName) ? $this->namedtag->CustomName->getValue() : "Enchanting Table";
+	/**
+	 * @return string
+	 */
+	public function getDefaultName() : string{
+		return "Enchanting Table";
 	}
 
-	public function hasName() : bool{
-		return isset($this->namedtag->CustomName);
-	}
-
-	public function setName(string $str){
-		if($str === ""){
-			unset($this->namedtag->CustomName);
-			return;
-		}
-
-		$this->namedtag->CustomName = new StringTag("CustomName", $str);
-	}
-
-	public function addAdditionalSpawnData(CompoundTag $nbt){
+	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		if($this->hasName()){
-			$nbt->CustomName = $this->namedtag->CustomName;
+			$nbt->setTag($this->namedtag->getTag("CustomName"));
+		}
+	}
+
+	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
+		if($item !== null and $item->hasCustomName()){
+			$nbt->setString("CustomName", $item->getCustomName());
 		}
 	}
 }

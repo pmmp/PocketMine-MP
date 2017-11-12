@@ -48,7 +48,7 @@ class Cake extends Transparent implements FoodSource{
 		return "Cake Block";
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 
 		$f = $this->getDamage() * 0.125; //1 slice width
 
@@ -62,7 +62,7 @@ class Cake extends Transparent implements FoodSource{
 		);
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
 		if($down->getId() !== self::AIR){
 			$this->getLevel()->setBlock($blockReplace, $this, true, true);

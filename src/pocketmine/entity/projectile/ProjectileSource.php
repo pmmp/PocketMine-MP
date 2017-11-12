@@ -21,18 +21,9 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\entity\projectile;
 
-use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
 
-class WoodenDoor extends Item{
-	public function __construct(int $meta = 0){
-		$this->block = BlockFactory::get(Block::WOODEN_DOOR_BLOCK);
-		parent::__construct(self::WOODEN_DOOR, $meta, "Wooden Door");
-	}
+interface ProjectileSource{
 
-	public function getMaxStackSize() : int{
-		return 1;
-	}
 }

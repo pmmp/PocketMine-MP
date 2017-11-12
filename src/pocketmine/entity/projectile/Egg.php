@@ -21,14 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\entity\projectile;
 
-use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
+class Egg extends Throwable{
+	const NETWORK_ID = self::EGG;
 
-class Sugarcane extends Item{
-	public function __construct(int $meta = 0){
-		$this->block = BlockFactory::get(Block::SUGARCANE_BLOCK);
-		parent::__construct(self::SUGARCANE, $meta, "Sugar Cane");
-	}
+	//TODO: spawn chickens on collision
 }

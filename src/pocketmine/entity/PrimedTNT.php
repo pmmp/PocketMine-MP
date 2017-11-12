@@ -26,13 +26,11 @@ namespace pocketmine\entity;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ExplosionPrimeEvent;
 use pocketmine\level\Explosion;
-use pocketmine\nbt\tag\ByteTag;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
+use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
-use pocketmine\Player;
 
 class PrimedTNT extends Entity implements Explosive{
-	const NETWORK_ID = 65;
+	const NETWORK_ID = self::TNT;
 
 	public $width = 0.98;
 	public $height = 0.98;
@@ -56,8 +54,8 @@ class PrimedTNT extends Entity implements Explosive{
 	protected function initEntity(){
 		parent::initEntity();
 
-		if(isset($this->namedtag->Fuse)){
-			$this->fuse = $this->namedtag["Fuse"];
+		if($this->namedtag->hasTag("Fuse", ShortTag::class)){
+			$this->fuse = $this->namedtag->getShort("Fuse");
 		}else{
 			$this->fuse = 80;
 		}
@@ -75,7 +73,7 @@ class PrimedTNT extends Entity implements Explosive{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Fuse = new ByteTag("Fuse", $this->fuse);
+		$this->namedtag->setShort("Fuse", $this->fuse, true); //older versions incorrectly saved this as a byte
 	}
 
 	public function entityBaseTick(int $tickDiff = 1) : bool{
@@ -89,11 +87,11 @@ class PrimedTNT extends Entity implements Explosive{
 			$this->setDataProperty(self::DATA_FUSE_LENGTH, self::DATA_TYPE_INT, $this->fuse);
 		}
 
-		if($this->isAlive()){
+		if(!$this->isFlaggedForDespawn()){
 			$this->fuse -= $tickDiff;
 
 			if($this->fuse <= 0){
-				$this->kill();
+				$this->flagForDespawn();
 				$this->explode();
 			}
 		}
@@ -111,17 +109,5 @@ class PrimedTNT extends Entity implements Explosive{
 			}
 			$explosion->explodeB();
 		}
-	}
-
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->type = PrimedTNT::NETWORK_ID;
-		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this->asVector3();
-		$pk->motion = $this->getMotion();
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
 	}
 }

@@ -43,4 +43,8 @@ class Potato extends Crops{
 			ItemFactory::get(Item::POTATO, 0, $this->getDamage() >= 0x07 ? mt_rand(1, 4) : 1)
 		];
 	}
+
+	public function getPickedItem() : Item{
+		return ItemFactory::get(Item::POTATO);
+	}
 }

@@ -119,6 +119,10 @@ class MainLogger extends \AttachableThreadedLogger{
 		$this->logDebug = $logDebug;
 	}
 
+	/**
+	 * @param \Throwable $e
+	 * @param array|null $trace
+	 */
 	public function logException(\Throwable $e, $trace = null){
 		if($trace === null){
 			$trace = $e->getTrace();

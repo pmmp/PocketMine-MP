@@ -51,10 +51,10 @@ class DoublePlant extends Flowable{
 			4 => "Rose Bush",
 			5 => "Peony"
 		];
-		return $names[$this->meta & 0x07] ?? "";
+		return $names[$this->getVariant()] ?? "";
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$id = $blockReplace->getSide(Vector3::SIDE_DOWN)->getId();
 		if(($id === Block::GRASS or $id === Block::DIRT) and $blockReplace->getSide(Vector3::SIDE_UP)->canBeReplaced()){
 			$this->getLevel()->setBlock($blockReplace, $this, false, false);
@@ -79,7 +79,7 @@ class DoublePlant extends Flowable{
 
 		return (
 			$other->getId() === $this->getId() and
-			($other->getDamage() & 0x07) === ($this->getDamage() & 0x07) and
+			$other->getVariant() === $this->getVariant() and
 			($other->getDamage() & self::BITFLAG_TOP) !== ($this->getDamage() & self::BITFLAG_TOP)
 		);
 	}

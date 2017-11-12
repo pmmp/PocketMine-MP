@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format\io\leveldb;
 
-use pocketmine\entity\Entity;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\ChunkUtils;
@@ -38,8 +37,6 @@ use pocketmine\nbt\tag\{
 	ByteTag, CompoundTag, FloatTag, IntTag, LongTag, StringTag
 };
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
-use pocketmine\Player;
-use pocketmine\tile\Tile;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\MainLogger;
@@ -99,26 +96,26 @@ class LevelDB extends BaseLevelProvider{
 			"compression" => LEVELDB_ZLIB_COMPRESSION
 		]);
 
-		if(isset($this->levelData->StorageVersion) and $this->levelData->StorageVersion->getValue() > self::CURRENT_STORAGE_VERSION){
-			throw new LevelException("Specified LevelDB world format version is newer than the version supported by the server");
+		if($this->levelData->getInt("StorageVersion", INT32_MAX, true) > self::CURRENT_STORAGE_VERSION){
+			throw new LevelException("Specified LevelDB world format version is not supported by " . \pocketmine\NAME);
 		}
 
-		if(!isset($this->levelData->generatorName)){
-			if(isset($this->levelData->Generator)){
-				switch((int) $this->levelData->Generator->getValue()){ //Detect correct generator from MCPE data
+		if(!$this->levelData->hasTag("generatorName", StringTag::class)){
+			if($this->levelData->hasTag("Generator", IntTag::class)){
+				switch($this->levelData->getInt("Generator")){ //Detect correct generator from MCPE data
 					case self::GENERATOR_FLAT:
-						$this->levelData->generatorName = new StringTag("generatorName", (string) Generator::getGenerator("FLAT"));
+						$this->levelData->setString("generatorName", (string) Generator::getGenerator("FLAT"));
 						if(($layers = $this->db->get(self::ENTRY_FLAT_WORLD_LAYERS)) !== false){ //Detect existing custom flat layers
 							$layers = trim($layers, "[]");
 						}else{
 							$layers = "7,3,3,2";
 						}
-						$this->levelData->generatorOptions = new StringTag("generatorOptions", "2;" . $layers . ";1");
+						$this->levelData->setString("generatorOptions", "2;" . $layers . ";1");
 						break;
 					case self::GENERATOR_INFINITE:
 						//TODO: add a null generator which does not generate missing chunks (to allow importing back to MCPE and generating more normal terrain without PocketMine messing things up)
-						$this->levelData->generatorName = new StringTag("generatorName", (string) Generator::getGenerator("DEFAULT"));
-						$this->levelData->generatorOptions = new StringTag("generatorOptions", "");
+						$this->levelData->setString("generatorName", (string) Generator::getGenerator("DEFAULT"));
+						$this->levelData->setString("generatorOptions", "");
 						break;
 					case self::GENERATOR_LIMITED:
 						throw new LevelException("Limited worlds are not currently supported");
@@ -126,12 +123,12 @@ class LevelDB extends BaseLevelProvider{
 						throw new LevelException("Unknown LevelDB world format type, this level cannot be loaded");
 				}
 			}else{
-				$this->levelData->generatorName = new StringTag("generatorName", (string) Generator::getGenerator("DEFAULT"));
+				$this->levelData->setString("generatorName", (string) Generator::getGenerator("DEFAULT"));
 			}
 		}
 
-		if(!isset($this->levelData->generatorOptions)){
-			$this->levelData->generatorOptions = new StringTag("generatorOptions", "");
+		if(!$this->levelData->hasTag("generatorOptions", StringTag::class)){
+			$this->levelData->setString("generatorOptions", "");
 		}
 	}
 
@@ -229,8 +226,8 @@ class LevelDB extends BaseLevelProvider{
 	}
 
 	public function saveLevelData(){
-		$this->levelData->NetworkVersion = new IntTag("NetworkVersion", ProtocolInfo::CURRENT_PROTOCOL);
-		$this->levelData->StorageVersion = new IntTag("StorageVersion", self::CURRENT_STORAGE_VERSION);
+		$this->levelData->setInt("NetworkVersion", ProtocolInfo::CURRENT_PROTOCOL);
+		$this->levelData->setInt("StorageVersion", self::CURRENT_STORAGE_VERSION);
 
 		$nbt = new NBT(NBT::LITTLE_ENDIAN);
 		$nbt->setData($this->levelData);
@@ -254,11 +251,11 @@ class LevelDB extends BaseLevelProvider{
 	}
 
 	public function getDifficulty() : int{
-		return isset($this->levelData->Difficulty) ? $this->levelData->Difficulty->getValue() : Level::DIFFICULTY_NORMAL;
+		return $this->levelData->getInt("Difficulty", Level::DIFFICULTY_NORMAL);
 	}
 
 	public function setDifficulty(int $difficulty){
-		$this->levelData->Difficulty = new IntTag("Difficulty", $difficulty);
+		$this->levelData->setInt("Difficulty", $difficulty); //yes, this is intended! (in PE: int, PC: byte)
 	}
 
 	public function getLoadedChunks() : array{
@@ -509,32 +506,38 @@ class LevelDB extends BaseLevelProvider{
 		//TODO: use this properly
 		$this->db->put($index . self::TAG_STATE_FINALISATION, chr(self::FINALISATION_DONE));
 
-		$this->writeTags($chunk->getTiles(), $index . self::TAG_BLOCK_ENTITY);
-		$this->writeTags(array_filter($chunk->getEntities(), function(Entity $entity) : bool{
-				return !($entity instanceof Player);
-		}), $index . self::TAG_ENTITY);
+		/** @var CompoundTag[] $tiles */
+		$tiles = [];
+		foreach($chunk->getTiles() as $tile){
+			if(!$tile->isClosed()){
+				$tile->saveNBT();
+				$tiles[] = $tile->namedtag;
+			}
+		}
+		$this->writeTags($tiles, $index . self::TAG_BLOCK_ENTITY);
+
+		/** @var CompoundTag[] $entities */
+		$entities = [];
+		foreach($chunk->getEntities() as $entity){
+			if($entity->canSaveWithChunk() and !$entity->isClosed()){
+				$entity->saveNBT();
+				$entities[] = $entity->namedtag;
+			}
+		}
+		$this->writeTags($entities, $index . self::TAG_ENTITY);
 
 		$this->db->delete($index . self::TAG_DATA_2D_LEGACY);
 		$this->db->delete($index . self::TAG_LEGACY_TERRAIN);
 	}
 
 	/**
-	 * @param Entity[]|Tile[] $targets
-	 * @param string          $index
+	 * @param CompoundTag[] $targets
+	 * @param string        $index
 	 */
 	private function writeTags(array $targets, string $index){
-		$nbt = new NBT(NBT::LITTLE_ENDIAN);
-		$out = [];
-		/** @var Entity|Tile $target */
-		foreach($targets as $target){
-			if(!$target->isClosed()){
-				$target->saveNBT();
-				$out[] = $target->namedtag;
-			}
-		}
-
 		if(!empty($targets)){
-			$nbt->setData($out);
+			$nbt = new NBT(NBT::LITTLE_ENDIAN);
+			$nbt->setData($targets);
 			$this->db->put($index, $nbt->write());
 		}else{
 			$this->db->delete($index);

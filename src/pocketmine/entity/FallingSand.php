@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\block\Fallable;
 use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -31,11 +32,9 @@ use pocketmine\item\ItemFactory;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
 
 class FallingSand extends Entity{
-	const NETWORK_ID = 66;
+	const NETWORK_ID = self::FALLING_BLOCK;
 
 	public $width = 0.98;
 	public $height = 0.98;
@@ -54,17 +53,13 @@ class FallingSand extends Entity{
 		parent::initEntity();
 
 		$blockId = 0;
-		$damage = 0;
 
-		if(isset($this->namedtag->TileID)){
-			$blockId = (int) $this->namedtag["TileID"];
-		}elseif(isset($this->namedtag->Tile)){
-			$blockId = (int) $this->namedtag["Tile"];
-			$this->namedtag["TileID"] = new IntTag("TileID", $blockId);
-		}
-
-		if(isset($this->namedtag->Data)){
-			$damage = (int) $this->namedtag["Data"];
+		//TODO: 1.8+ save format
+		if($this->namedtag->hasTag("TileID", IntTag::class)){
+			$blockId = $this->namedtag->getInt("TileID");
+		}elseif($this->namedtag->hasTag("Tile", ByteTag::class)){
+			$blockId = $this->namedtag->getByte("Tile");
+			$this->namedtag->removeTag("Tile");
 		}
 
 		if($blockId === 0){
@@ -72,7 +67,9 @@ class FallingSand extends Entity{
 			return;
 		}
 
-		$this->block = Block::get($blockId, $damage);
+		$damage = $this->namedtag->getByte("Data", 0);
+
+		$this->block = BlockFactory::get($blockId, $damage);
 
 		$this->setDataProperty(self::DATA_VARIANT, self::DATA_TYPE_INT, $this->block->getId() | ($this->block->getDamage() << 8));
 	}
@@ -94,7 +91,7 @@ class FallingSand extends Entity{
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		if($this->isAlive()){
+		if(!$this->isFlaggedForDespawn()){
 			$pos = Position::fromObject($this->add(-$this->width / 2, $this->height, -$this->width / 2)->floor(), $this->getLevel());
 
 			$this->block->position($pos);
@@ -105,7 +102,7 @@ class FallingSand extends Entity{
 			}
 
 			if($this->onGround or $blockTarget !== null){
-				$this->kill();
+				$this->flagForDespawn();
 
 				$block = $this->level->getBlock($pos);
 				if($block->getId() > 0 and $block->isTransparent() and !$block->canBeReplaced()){
@@ -133,21 +130,7 @@ class FallingSand extends Entity{
 	}
 
 	public function saveNBT(){
-		$this->namedtag->TileID = new IntTag("TileID", $this->block->getId());
-		$this->namedtag->Data = new ByteTag("Data", $this->block->getDamage());
-	}
-
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->type = FallingSand::NETWORK_ID;
-		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this->asVector3();
-		$pk->motion = $this->getMotion();
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
+		$this->namedtag->setInt("TileID", $this->block->getId(), true);
+		$this->namedtag->setByte("Data", $this->block->getDamage());
 	}
 }

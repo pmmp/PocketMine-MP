@@ -67,7 +67,11 @@ class Block extends Position implements BlockIds, Metadatable{
 	protected $itemId;
 
 	/** @var AxisAlignedBB */
-	public $boundingBox = null;
+	protected $boundingBox = null;
+
+
+	/** @var AxisAlignedBB[]|null */
+	protected $collisionBoxes = null;
 
 	/**
 	 * @param int         $id     The block type's ID, 0-255
@@ -116,7 +120,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @param int $meta
 	 */
-	final public function setDamage(int $meta){
+	final public function setDamage(int $meta) : void{
 		if($meta < 0 or $meta > 0xf){
 			throw new \InvalidArgumentException("Block damage values must be 0-15, not $meta");
 		}
@@ -160,7 +164,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		return false;
 	}
 
-	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector) : bool{
+	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
 		return $blockReplace->canBeReplaced();
 	}
 
@@ -171,12 +175,12 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @param Block       $blockReplace
 	 * @param Block       $blockClicked
 	 * @param int         $face
-	 * @param Vector3     $facePos
+	 * @param Vector3     $clickVector
 	 * @param Player|null $player
 	 *
 	 * @return bool
 	 */
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		return $this->getLevel()->setBlock($this, $this, true, true);
 	}
 
@@ -391,7 +395,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 
-	public function addVelocityToEntity(Entity $entity, Vector3 $vector){
+	public function addVelocityToEntity(Entity $entity, Vector3 $vector) : void{
 
 	}
 
@@ -400,7 +404,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @param Position $v
 	 */
-	final public function position(Position $v){
+	final public function position(Position $v) : void{
 		$this->x = (int) $v->x;
 		$this->y = (int) $v->y;
 		$this->z = (int) $v->z;
@@ -419,6 +423,14 @@ class Block extends Position implements BlockIds, Metadatable{
 		return [
 			ItemFactory::get($this->getItemId(), $this->getVariant(), 1)
 		];
+	}
+
+	/**
+	 * Returns the item that players will equip when middle-clicking on this block.
+	 * @return Item
+	 */
+	public function getPickedItem() : Item{
+		return ItemFactory::get($this->getItemId(), $this->getVariant());
 	}
 
 	/**
@@ -489,22 +501,50 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return bool
 	 */
 	public function collidesWithBB(AxisAlignedBB $bb) : bool{
-		$bb2 = $this->getBoundingBox();
+		$bbs = $this->getCollisionBoxes();
 
-		return $bb2 !== null and $bb->intersectsWith($bb2);
+		foreach($bbs as $bb2){
+			if($bb->intersectsWith($bb2)){
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
 	 * @param Entity $entity
 	 */
-	public function onEntityCollide(Entity $entity){
+	public function onEntityCollide(Entity $entity) : void{
 
+	}
+
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	public function getCollisionBoxes() : array{
+		if($this->collisionBoxes === null){
+			$this->collisionBoxes = $this->recalculateCollisionBoxes();
+		}
+
+		return $this->collisionBoxes;
+	}
+
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	protected function recalculateCollisionBoxes() : array{
+		if($bb = $this->recalculateBoundingBox()){
+			return [$bb];
+		}
+
+		return [];
 	}
 
 	/**
 	 * @return AxisAlignedBB|null
 	 */
-	public function getBoundingBox(){
+	public function getBoundingBox() : ?AxisAlignedBB{
 		if($this->boundingBox === null){
 			$this->boundingBox = $this->recalculateBoundingBox();
 		}
@@ -514,7 +554,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @return AxisAlignedBB|null
 	 */
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		return new AxisAlignedBB(
 			$this->x,
 			$this->y,
@@ -526,91 +566,51 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Clears any cached precomputed bounding boxes. This is called on block neighbour update and when the block is set
+	 * into the world to remove any outdated precomputed AABBs and force recalculation.
+	 */
+	public function clearBoundingBoxes() : void{
+		$this->boundingBox = null;
+		$this->collisionBoxes = null;
+	}
+
+	/**
 	 * @param Vector3 $pos1
 	 * @param Vector3 $pos2
 	 *
 	 * @return MovingObjectPosition|null
 	 */
-	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2){
-		$bb = $this->getBoundingBox();
-		if($bb === null){
+	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2) : ?MovingObjectPosition{
+		$bbs = $this->getCollisionBoxes();
+		if(empty($bbs)){
 			return null;
 		}
 
-		$v1 = $pos1->getIntermediateWithXValue($pos2, $bb->minX);
-		$v2 = $pos1->getIntermediateWithXValue($pos2, $bb->maxX);
-		$v3 = $pos1->getIntermediateWithYValue($pos2, $bb->minY);
-		$v4 = $pos1->getIntermediateWithYValue($pos2, $bb->maxY);
-		$v5 = $pos1->getIntermediateWithZValue($pos2, $bb->minZ);
-		$v6 = $pos1->getIntermediateWithZValue($pos2, $bb->maxZ);
+		/** @var MovingObjectPosition|null $currentHit */
+		$currentHit = null;
+		/** @var int|float $currentDistance */
+		$currentDistance = PHP_INT_MAX;
 
-		if($v1 !== null and !$bb->isVectorInYZ($v1)){
-			$v1 = null;
+		foreach($bbs as $bb){
+			$nextHit = $bb->calculateIntercept($pos1, $pos2);
+			if($nextHit === null){
+				continue;
+			}
+
+			$nextDistance = $nextHit->hitVector->distanceSquared($pos1);
+			if($nextDistance < $currentDistance){
+				$currentHit = $nextHit;
+				$currentDistance = $nextDistance;
+			}
 		}
 
-		if($v2 !== null and !$bb->isVectorInYZ($v2)){
-			$v2 = null;
+		if($currentHit !== null){
+			$currentHit->blockX = $this->x;
+			$currentHit->blockY = $this->y;
+			$currentHit->blockZ = $this->z;
 		}
 
-		if($v3 !== null and !$bb->isVectorInXZ($v3)){
-			$v3 = null;
-		}
-
-		if($v4 !== null and !$bb->isVectorInXZ($v4)){
-			$v4 = null;
-		}
-
-		if($v5 !== null and !$bb->isVectorInXY($v5)){
-			$v5 = null;
-		}
-
-		if($v6 !== null and !$bb->isVectorInXY($v6)){
-			$v6 = null;
-		}
-
-		$vector = $v1;
-
-		if($v2 !== null and ($vector === null or $pos1->distanceSquared($v2) < $pos1->distanceSquared($vector))){
-			$vector = $v2;
-		}
-
-		if($v3 !== null and ($vector === null or $pos1->distanceSquared($v3) < $pos1->distanceSquared($vector))){
-			$vector = $v3;
-		}
-
-		if($v4 !== null and ($vector === null or $pos1->distanceSquared($v4) < $pos1->distanceSquared($vector))){
-			$vector = $v4;
-		}
-
-		if($v5 !== null and ($vector === null or $pos1->distanceSquared($v5) < $pos1->distanceSquared($vector))){
-			$vector = $v5;
-		}
-
-		if($v6 !== null and ($vector === null or $pos1->distanceSquared($v6) < $pos1->distanceSquared($vector))){
-			$vector = $v6;
-		}
-
-		if($vector === null){
-			return null;
-		}
-
-		$f = -1;
-
-		if($vector === $v1){
-			$f = 4;
-		}elseif($vector === $v2){
-			$f = 5;
-		}elseif($vector === $v3){
-			$f = 0;
-		}elseif($vector === $v4){
-			$f = 1;
-		}elseif($vector === $v5){
-			$f = 2;
-		}elseif($vector === $v6){
-			$f = 3;
-		}
-
-		return MovingObjectPosition::fromBlock($this->x, $this->y, $this->z, $f, $vector->add($this->x, $this->y, $this->z));
+		return $currentHit;
 	}
 
 	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue){

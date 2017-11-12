@@ -27,10 +27,6 @@ use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\Chest as TileChest;
@@ -56,18 +52,19 @@ class Chest extends Transparent{
 		return Tool::TYPE_AXE;
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
+		//these are slightly bigger than in PC
 		return new AxisAlignedBB(
-			$this->x + 0.0625,
+			$this->x + 0.025,
 			$this->y,
-			$this->z + 0.0625,
-			$this->x + 0.9375,
-			$this->y + 0.9475,
-			$this->z + 0.9375
+			$this->z + 0.025,
+			$this->x + 0.975,
+			$this->y + 0.95,
+			$this->z + 0.975
 		);
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$faces = [
 			0 => 4,
 			1 => 2,
@@ -95,26 +92,7 @@ class Chest extends Transparent{
 		}
 
 		$this->getLevel()->setBlock($blockReplace, $this, true, true);
-		$nbt = new CompoundTag("", [
-			new ListTag("Items", []),
-			new StringTag("id", Tile::CHEST),
-			new IntTag("x", $this->x),
-			new IntTag("y", $this->y),
-			new IntTag("z", $this->z)
-		]);
-		$nbt->Items->setTagType(NBT::TAG_Compound);
-
-		if($item->hasCustomName()){
-			$nbt->CustomName = new StringTag("CustomName", $item->getCustomName());
-		}
-
-		if($item->hasCustomBlockData()){
-			foreach($item->getCustomBlockData() as $key => $v){
-				$nbt->{$key} = $v;
-			}
-		}
-
-		$tile = Tile::createTile("Chest", $this->getLevel(), $nbt);
+		$tile = Tile::createTile(Tile::CHEST, $this->getLevel(), TileChest::createNBT($this, $face, $item, $player));
 
 		if($chest instanceof TileChest and $tile instanceof TileChest){
 			$chest->pairWith($tile);
@@ -142,21 +120,13 @@ class Chest extends Transparent{
 			if($t instanceof TileChest){
 				$chest = $t;
 			}else{
-				$nbt = new CompoundTag("", [
-					new ListTag("Items", []),
-					new StringTag("id", Tile::CHEST),
-					new IntTag("x", $this->x),
-					new IntTag("y", $this->y),
-					new IntTag("z", $this->z)
-				]);
-				$nbt->Items->setTagType(NBT::TAG_Compound);
-				$chest = Tile::createTile("Chest", $this->getLevel(), $nbt);
+				$chest = Tile::createTile(Tile::CHEST, $this->getLevel(), TileChest::createNBT($this));
 			}
 
 			if(
 				!$this->getSide(Vector3::SIDE_UP)->isTransparent() or
 				($chest->isPaired() and !$chest->getPair()->getBlock()->getSide(Vector3::SIDE_UP)->isTransparent()) or
-				(isset($chest->namedtag->Lock) and $chest->namedtag->Lock instanceof StringTag and $chest->namedtag->Lock->getValue() !== $item->getCustomName())
+				($chest->namedtag->hasTag("Lock", StringTag::class) and $chest->namedtag->getString("Lock") !== $item->getCustomName())
 			){
 				return true;
 			}

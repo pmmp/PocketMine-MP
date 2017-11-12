@@ -41,7 +41,7 @@ class FenceGate extends Transparent{
 	}
 
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 
 		if(($this->getDamage() & 0x04) > 0){
 			return null;
@@ -69,7 +69,7 @@ class FenceGate extends Transparent{
 		}
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$this->meta = ($player instanceof Player ? ($player->getDirection() - 1) & 0x03 : 0);
 		$this->getLevel()->setBlock($blockReplace, $this, true, true);
 

@@ -31,22 +31,22 @@ class PhotoTransferPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::PHOTO_TRANSFER_PACKET;
 
 	/** @var string */
-	public $string1;
+	public $photoName;
 	/** @var string */
-	public $string2;
+	public $photoData;
 	/** @var string */
-	public $string3;
+	public $bookId; //photos are stored in a sibling directory to the games folder (screenshots/(some UUID)/bookID/example.png)
 
 	protected function decodePayload(){
-		$this->string1 = $this->getString();
-		$this->string2 = $this->getString();
-		$this->string3 = $this->getString();
+		$this->photoName = $this->getString();
+		$this->photoData = $this->getString();
+		$this->bookId = $this->getString();
 	}
 
 	protected function encodePayload(){
-		$this->putString($this->string1);
-		$this->putString($this->string2);
-		$this->putString($this->string3);
+		$this->putString($this->photoName);
+		$this->putString($this->photoData);
+		$this->putString($this->bookId);
 	}
 
 	public function handle(NetworkSession $session) : bool{

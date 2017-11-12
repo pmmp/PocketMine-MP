@@ -39,15 +39,15 @@ class ByteArrayTag extends NamedTag{
 		parent::__construct($name, $value);
 	}
 
-	public function getType(){
+	public function getType() : int{
 		return NBT::TAG_ByteArray;
 	}
 
-	public function read(NBT $nbt, bool $network = false){
+	public function read(NBT $nbt, bool $network = false) : void{
 		$this->value = $nbt->get($nbt->getInt($network));
 	}
 
-	public function write(NBT $nbt, bool $network = false){
+	public function write(NBT $nbt, bool $network = false) : void{
 		$nbt->putInt(strlen($this->value), $network);
 		$nbt->put($this->value);
 	}
@@ -64,7 +64,7 @@ class ByteArrayTag extends NamedTag{
 	 *
 	 * @throws \TypeError
 	 */
-	public function setValue($value){
+	public function setValue($value) : void{
 		if(!is_string($value)){
 			throw new \TypeError("ByteArrayTag value must be of type string, " . gettype($value) . " given");
 		}

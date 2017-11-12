@@ -50,6 +50,9 @@ abstract class Living extends Entity implements Damageable{
 
 	protected $attackTime = 0;
 
+	/** @var int */
+	protected $maxDeadTicks = 20;
+
 	protected $invisible = false;
 
 	protected $jumpVelocity = 0.42;
@@ -62,29 +65,33 @@ abstract class Living extends Entity implements Damageable{
 	protected function initEntity(){
 		parent::initEntity();
 
-		if(isset($this->namedtag->HealF)){
-			$this->namedtag->Health = new FloatTag("Health", (float) $this->namedtag["HealF"]);
-			unset($this->namedtag->HealF);
-		}elseif(isset($this->namedtag->Health)){
-			if(!($this->namedtag->Health instanceof FloatTag)){
-				$this->namedtag->Health = new FloatTag("Health", (float) $this->namedtag->Health->getValue());
+		$health = $this->getMaxHealth();
+
+		if($this->namedtag->hasTag("HealF", FloatTag::class)){
+			$health = new FloatTag("Health", (float) $this->namedtag["HealF"]);
+			$this->namedtag->removeTag("HealF");
+		}elseif($this->namedtag->hasTag("Health")){
+			$healthTag = $this->namedtag->getTag("Health");
+			$health = (float) $healthTag->getValue(); //Older versions of PocketMine-MP incorrectly saved this as a short instead of a float
+			if(!($healthTag instanceof FloatTag)){
+				$this->namedtag->removeTag("Health");
 			}
-		}else{
-			$this->namedtag->Health = new FloatTag("Health", (float) $this->getMaxHealth());
 		}
 
-		$this->setHealth((float) $this->namedtag["Health"]);
+		$this->setHealth($health);
 
-		if(isset($this->namedtag->ActiveEffects)){
-			foreach($this->namedtag->ActiveEffects->getValue() as $e){
-				$amplifier = Binary::unsignByte($e->Amplifier->getValue()); //0-255 only
+		/** @var CompoundTag[]|ListTag $activeEffectsTag */
+		$activeEffectsTag = $this->namedtag->getListTag("ActiveEffects");
+		if($activeEffectsTag !== null){
+			foreach($activeEffectsTag as $e){
+				$amplifier = Binary::unsignByte($e->getByte("Amplifier")); //0-255 only
 
-				$effect = Effect::getEffect($e["Id"]);
+				$effect = Effect::getEffect($e->getByte("Id"));
 				if($effect === null){
 					continue;
 				}
 
-				$effect->setAmplifier($amplifier)->setDuration($e["Duration"])->setVisible($e["ShowParticles"] > 0);
+				$effect->setAmplifier($amplifier)->setDuration($e->getInt("Duration"))->setVisible($e->getByte("ShowParticles", 1) > 0);
 
 				$this->addEffect($effect);
 			}
@@ -105,10 +112,7 @@ abstract class Living extends Entity implements Damageable{
 		parent::setHealth($amount);
 		$this->attributeMap->getAttribute(Attribute::HEALTH)->setValue(ceil($this->getHealth()), true);
 		if($this->isAlive() and !$wasAlive){
-			$pk = new EntityEventPacket();
-			$pk->entityRuntimeId = $this->getId();
-			$pk->event = EntityEventPacket::RESPAWN;
-			$this->server->broadcastPacket($this->hasSpawned, $pk);
+			$this->broadcastEntityEvent(EntityEventPacket::RESPAWN);
 		}
 	}
 
@@ -130,7 +134,7 @@ abstract class Living extends Entity implements Damageable{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Health = new FloatTag("Health", $this->getHealth());
+		$this->namedtag->setFloat("Health", $this->getHealth(), true);
 
 		if(count($this->effects) > 0){
 			$effects = [];
@@ -144,9 +148,9 @@ abstract class Living extends Entity implements Damageable{
 				]);
 			}
 
-			$this->namedtag->ActiveEffects = new ListTag("ActiveEffects", $effects);
+			$this->namedtag->setTag(new ListTag("ActiveEffects", $effects));
 		}else{
-			unset($this->namedtag->ActiveEffects);
+			$this->namedtag->removeTag("ActiveEffects");
 		}
 	}
 
@@ -318,7 +322,7 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	public function fall(float $fallDistance){
-		$damage = floor($fallDistance - 3 - ($this->hasEffect(Effect::JUMP) ? $this->getEffect(Effect::JUMP)->getEffectLevel() : 0));
+		$damage = ceil($fallDistance - 3 - ($this->hasEffect(Effect::JUMP) ? $this->getEffect(Effect::JUMP)->getEffectLevel() : 0));
 		if($damage > 0){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FALL, $damage);
 			$this->attack($ev);
@@ -373,10 +377,7 @@ abstract class Living extends Entity implements Damageable{
 
 		$this->setAbsorption(max(0, $this->getAbsorption() + $source->getDamage(EntityDamageEvent::MODIFIER_ABSORPTION)));
 
-		$pk = new EntityEventPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->event = $this->getHealth() <= 0 ? EntityEventPacket::DEATH_ANIMATION : EntityEventPacket::HURT_ANIMATION; //Ouch!
-		$this->server->broadcastPacket($this->hasSpawned, $pk);
+		$this->broadcastEntityEvent($this->getHealth() <= 0 ? EntityEventPacket::DEATH_ANIMATION : EntityEventPacket::HURT_ANIMATION); //Ouch!
 
 		$this->attackTime = 10; //0.5 seconds cooldown
 	}
@@ -422,7 +423,6 @@ abstract class Living extends Entity implements Damageable{
 
 	public function entityBaseTick(int $tickDiff = 1) : bool{
 		Timings::$timerLivingEntityBaseTick->startTiming();
-		$this->setGenericFlag(self::DATA_FLAG_BREATHING, !$this->isInsideOfWater());
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
@@ -435,34 +435,14 @@ abstract class Living extends Entity implements Damageable{
 				$this->attack($ev);
 			}
 
-			if(!$this->hasEffect(Effect::WATER_BREATHING) and $this->isInsideOfWater()){
-				if($this instanceof WaterAnimal){
-					$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 400);
-				}else{
-					$hasUpdate = true;
-					$airTicks = $this->getDataProperty(self::DATA_AIR) - $tickDiff;
-					if($airTicks <= -20){
-						$airTicks = 0;
-
-						$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
-						$this->attack($ev);
-					}
-					$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $airTicks);
+			if(!$this->canBreathe()){
+				if($this->isBreathing()){
+					$this->setBreathing(false);
 				}
-			}else{
-				if($this instanceof WaterAnimal){
-					$hasUpdate = true;
-					$airTicks = $this->getDataProperty(self::DATA_AIR) - $tickDiff;
-					if($airTicks <= -20){
-						$airTicks = 0;
-
-						$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 2);
-						$this->attack($ev);
-					}
-					$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $airTicks);
-				}else{
-					$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 400);
-				}
+				$this->doAirSupplyTick($tickDiff);
+			}elseif(!$this->isBreathing()){
+				$this->setBreathing(true);
+				$this->setAirSupplyTicks($this->getMaxAirSupplyTicks());
 			}
 		}
 
@@ -481,9 +461,12 @@ abstract class Living extends Entity implements Damageable{
 				if($effect->canTick()){
 					$effect->applyEffect($this);
 				}
-				$effect->setDuration($effect->getDuration() - $tickDiff);
-				if($effect->getDuration() <= 0){
+
+				$duration = $effect->getDuration() - $tickDiff;
+				if($duration <= 0){
 					$this->removeEffect($effect->getId());
+				}else{
+					$effect->setDuration($duration);
 				}
 			}
 		}
@@ -493,6 +476,90 @@ abstract class Living extends Entity implements Damageable{
 		if(!$this->hasEffect(Effect::FIRE_RESISTANCE)){
 			parent::dealFireDamage();
 		}
+	}
+
+	/**
+	 * Ticks the entity's air supply when it cannot breathe.
+	 * @param int $tickDiff
+	 */
+	protected function doAirSupplyTick(int $tickDiff){
+		$ticks = $this->getAirSupplyTicks() - $tickDiff;
+
+		if($ticks <= -20){
+			$this->setAirSupplyTicks(0);
+			$this->onAirExpired();
+		}else{
+			$this->setAirSupplyTicks($ticks);
+		}
+	}
+
+	/**
+	 * Returns whether the entity can currently breathe.
+	 * @return bool
+	 */
+	public function canBreathe() : bool{
+		return $this->hasEffect(Effect::WATER_BREATHING) or !$this->isInsideOfWater();
+	}
+
+	/**
+	 * Returns whether the entity is currently breathing or not. If this is false, the entity's air supply will be used.
+	 * @return bool
+	 */
+	public function isBreathing() : bool{
+		return $this->getGenericFlag(self::DATA_FLAG_BREATHING);
+	}
+
+	/**
+	 * Sets whether the entity is currently breathing. If false, it will cause the entity's air supply to be used.
+	 * For players, this also shows the oxygen bar.
+	 *
+	 * @param bool $value
+	 */
+	public function setBreathing(bool $value = true){
+		$this->setGenericFlag(self::DATA_FLAG_BREATHING, $value);
+	}
+
+	/**
+	 * Returns the number of ticks remaining in the entity's air supply. Note that the entity may survive longer than
+	 * this amount of time without damage due to enchantments such as Respiration.
+	 *
+	 * @return int
+	 */
+	public function getAirSupplyTicks() : int{
+		return $this->getDataProperty(self::DATA_AIR);
+	}
+
+	/**
+	 * Sets the number of air ticks left in the entity's air supply.
+	 * @param int $ticks
+	 */
+	public function setAirSupplyTicks(int $ticks){
+		$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $ticks);
+	}
+
+	/**
+	 * Returns the maximum amount of air ticks the entity's air supply can contain.
+	 * @return int
+	 */
+	public function getMaxAirSupplyTicks() : int{
+		return $this->getDataProperty(self::DATA_MAX_AIR);
+	}
+
+	/**
+	 * Sets the maximum amount of air ticks the air supply can hold.
+	 * @param int $ticks
+	 */
+	public function setMaxAirSupplyTicks(int $ticks){
+		$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $ticks);
+	}
+
+	/**
+	 * Called when the entity's air supply ticks reaches -20 or lower. The entity will usually take damage at this point
+	 * and then the supply is reset to 0, so this method will be called roughly every second.
+	 */
+	public function onAirExpired(){
+		$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
+		$this->attack($ev);
 	}
 
 	/**
@@ -565,5 +632,24 @@ abstract class Living extends Entity implements Damageable{
 		}
 
 		return null;
+	}
+
+	/**
+	 * Changes the entity's yaw and pitch to make it look at the specified Vector3 position. For mobs, this will cause
+	 * their heads to turn.
+	 *
+	 * @param Vector3 $target
+	 */
+	public function lookAt(Vector3 $target) : void{
+		$horizontal = sqrt(($target->x - $this->x) ** 2 + ($target->z - $this->z) ** 2);
+		$vertical = $target->y - $this->y;
+		$this->pitch = -atan2($vertical, $horizontal) / M_PI * 180; //negative is up, positive is down
+
+		$xDist = $target->x - $this->x;
+		$zDist = $target->z - $this->z;
+		$this->yaw = atan2($zDist, $xDist) / M_PI * 180 - 90;
+		if($this->yaw < 0){
+			$this->yaw += 360.0;
+		}
 	}
 }

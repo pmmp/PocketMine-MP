@@ -68,11 +68,6 @@ class Binary{
 		return self::readLLong(self::writeLong($value));
 	}
 
-
-	private static function checkLength($str, $expect){
-		assert(($len = strlen($str)) === $expect, "Expected $expect bytes, got $len");
-	}
-
 	/**
 	 * Reads a byte boolean
 	 *
@@ -100,7 +95,6 @@ class Binary{
 	 * @return int
 	 */
 	public static function readByte(string $c) : int{
-		self::checkLength($c, 1);
 		return ord($c{0});
 	}
 
@@ -131,7 +125,6 @@ class Binary{
 	 * @return int
 	 */
 	public static function readShort(string $str) : int{
-		self::checkLength($str, 2);
 		return unpack("n", $str)[1];
 	}
 
@@ -143,7 +136,6 @@ class Binary{
 	 * @return int
 	 */
 	public static function readSignedShort(string $str) : int{
-		self::checkLength($str, 2);
 		return self::signShort(unpack("n", $str)[1]);
 	}
 
@@ -166,27 +158,23 @@ class Binary{
 	 * @return int
 	 */
 	public static function readLShort(string $str) : int{
-		self::checkLength($str, 2);
 		return unpack("v", $str)[1];
 	}
 
 	/**
 	 * Reads a 16-bit signed little-endian number
 	 *
-	 * @param      $str
-	 *
+	 * @param string $str
 	 * @return int
 	 */
 	public static function readSignedLShort(string $str) : int{
-		self::checkLength($str, 2);
 		return self::signShort(unpack("v", $str)[1]);
 	}
 
 	/**
 	 * Writes a 16-bit signed/unsigned little-endian number
 	 *
-	 * @param $value
-	 *
+	 * @param int $value
 	 * @return string
 	 */
 	public static function writeLShort(int $value) : string{
@@ -200,7 +188,6 @@ class Binary{
 	 * @return int
 	 */
 	public static function readTriad(string $str) : int{
-		self::checkLength($str, 3);
 		return unpack("N", "\x00" . $str)[1];
 	}
 
@@ -221,7 +208,6 @@ class Binary{
 	 * @return int
 	 */
 	public static function readLTriad(string $str) : int{
-		self::checkLength($str, 3);
 		return unpack("V", $str . "\x00")[1];
 	}
 
@@ -242,7 +228,6 @@ class Binary{
 	 * @return int
 	 */
 	public static function readInt(string $str) : int{
-		self::checkLength($str, 4);
 		return self::signInt(unpack("N", $str)[1]);
 	}
 
@@ -263,7 +248,6 @@ class Binary{
 	 * @return int
 	 */
 	public static function readLInt(string $str) : int{
-		self::checkLength($str, 4);
 		return self::signInt(unpack("V", $str)[1]);
 	}
 
@@ -284,7 +268,6 @@ class Binary{
 	 * @return float
 	 */
 	public static function readFloat(string $str) : float{
-		self::checkLength($str, 4);
 		return unpack("G", $str)[1];
 	}
 
@@ -317,7 +300,6 @@ class Binary{
 	 * @return float
 	 */
 	public static function readLFloat(string $str) : float{
-		self::checkLength($str, 4);
 		return unpack("g", $str)[1];
 	}
 
@@ -360,7 +342,6 @@ class Binary{
 	 * @return float
 	 */
 	public static function readDouble(string $str) : float{
-		self::checkLength($str, 8);
 		return unpack("E", $str)[1];
 	}
 
@@ -381,7 +362,6 @@ class Binary{
 	 * @return float
 	 */
 	public static function readLDouble(string $str) : float{
-		self::checkLength($str, 8);
 		return unpack("e", $str)[1];
 	}
 
@@ -397,13 +377,11 @@ class Binary{
 	/**
 	 * Reads an 8-byte integer.
 	 *
-	 * @param string $x
+	 * @param string $str
 	 * @return int
 	 */
-	public static function readLong(string $x) : int{
-		self::checkLength($x, 8);
-		$int = unpack("N*", $x);
-		return ($int[1] << 32) | $int[2];
+	public static function readLong(string $str) : int{
+		return unpack("J", $str)[1];
 	}
 
 	/**
@@ -413,7 +391,7 @@ class Binary{
 	 * @return string
 	 */
 	public static function writeLong(int $value) : string{
-		return pack("NN", $value >> 32, $value & 0xFFFFFFFF);
+		return pack("J", $value);
 	}
 
 	/**
@@ -423,7 +401,7 @@ class Binary{
 	 * @return int
 	 */
 	public static function readLLong(string $str) : int{
-		return self::readLong(strrev($str));
+		return unpack("P", $str)[1];
 	}
 
 	/**
@@ -433,7 +411,7 @@ class Binary{
 	 * @return string
 	 */
 	public static function writeLLong(int $value) : string{
-		return strrev(self::writeLong($value));
+		return pack("P", $value);
 	}
 
 

@@ -23,9 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
+use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\Player;
 
 class Skull extends Spawnable{
 	const TYPE_SKELETON = 0;
@@ -35,27 +38,42 @@ class Skull extends Spawnable{
 	const TYPE_CREEPER = 4;
 	const TYPE_DRAGON = 5;
 
+	const TAG_SKULL_TYPE = "SkullType"; //TAG_Byte
+	const TAG_ROT = "Rot"; //TAG_Byte
+	const TAG_MOUTH_MOVING = "MouthMoving"; //TAG_Byte
+	const TAG_MOUTH_TICK_COUNT = "MouthTickCount"; //TAG_Int
+
 	public function __construct(Level $level, CompoundTag $nbt){
-		if(!isset($nbt->SkullType)){
-			$nbt->SkullType = new ByteTag("SkullType", 0);
+		if(!$nbt->hasTag(self::TAG_SKULL_TYPE, ByteTag::class)){
+			$nbt->setByte(self::TAG_SKULL_TYPE, 0, true);
 		}
-		if(!isset($nbt->Rot)){
-			$nbt->Rot = new ByteTag("Rot", 0);
+		if(!$nbt->hasTag(self::TAG_ROT, ByteTag::class)){
+			$nbt->setByte(self::TAG_ROT, 0, true);
 		}
 		parent::__construct($level, $nbt);
 	}
 
 	public function setType(int $type){
-		$this->namedtag->SkullType->setValue($type);
+		$this->namedtag->setByte(self::TAG_SKULL_TYPE, $type);
 		$this->onChanged();
 	}
 
 	public function getType() : int{
-		return $this->namedtag->SkullType->getValue();
+		return $this->namedtag->getByte(self::TAG_SKULL_TYPE);
 	}
 
-	public function addAdditionalSpawnData(CompoundTag $nbt){
-		$nbt->SkullType = $this->namedtag->SkullType;
-		$nbt->Rot = $this->namedtag->Rot;
+	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
+		$nbt->setTag($this->namedtag->getTag(self::TAG_SKULL_TYPE));
+		$nbt->setTag($this->namedtag->getTag(self::TAG_ROT));
+	}
+
+	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
+		$nbt->setByte(self::TAG_SKULL_TYPE, $item !== null ? $item->getDamage() : self::TYPE_SKELETON);
+
+		$rot = 0;
+		if($face === Vector3::SIDE_UP and $player !== null){
+			$rot = floor(($player->yaw * 16 / 360) + 0.5) & 0x0F;
+		}
+		$nbt->setByte("Rot", $rot);
 	}
 }

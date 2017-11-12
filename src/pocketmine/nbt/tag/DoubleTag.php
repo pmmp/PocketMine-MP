@@ -39,15 +39,15 @@ class DoubleTag extends NamedTag{
 		parent::__construct($name, $value);
 	}
 
-	public function getType(){
+	public function getType() : int{
 		return NBT::TAG_Double;
 	}
 
-	public function read(NBT $nbt, bool $network = false){
+	public function read(NBT $nbt, bool $network = false) : void{
 		$this->value = $nbt->getDouble();
 	}
 
-	public function write(NBT $nbt, bool $network = false){
+	public function write(NBT $nbt, bool $network = false) : void{
 		$nbt->putDouble($this->value);
 	}
 
@@ -63,7 +63,7 @@ class DoubleTag extends NamedTag{
 	 *
 	 * @throws \TypeError
 	 */
-	public function setValue($value){
+	public function setValue($value) : void{
 		if(!is_float($value) and !is_int($value)){
 			throw new \TypeError("DoubleTag value must be of type double, " . gettype($value) . " given");
 		}

@@ -54,7 +54,7 @@ abstract class Door extends Transparent{
 		return $down & 0x07 | ($isUp ? 8 : 0) | ($isRight ? 0x10 : 0);
 	}
 
-	protected function recalculateBoundingBox(){
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 
 		$f = 0.1875;
 		$damage = $this->getFullDamage();
@@ -216,7 +216,7 @@ abstract class Door extends Transparent{
 		return false;
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if($face === Vector3::SIDE_UP){
 			$blockUp = $this->getSide(Vector3::SIDE_UP);
 			$blockDown = $this->getSide(Vector3::SIDE_DOWN);
