@@ -3393,12 +3393,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->sendFormRequestPacket($form);
 				return true;
 			}
-		}catch(\Throwable $e){
-			$this->server->getLogger()->logException($e);
-			return true;
-		}finally{
 			$this->sentFormId = null;
 			$this->sentForm = null;
+		}catch(\Throwable $e){
+			$this->server->getLogger()->logException($e);
+			$this->sentFormId = null;
+			$this->sentForm = null;
+			return true;
 		}
 
 		if(count($this->formQueue) > 0){
