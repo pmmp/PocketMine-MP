@@ -29,8 +29,8 @@ use pocketmine\item\Tool;
 class Prismarine extends Solid{
 
 	const NORMAL = 0;
-	const DARK = 1;
-	const BRICKS = 2;
+	const BRICKS = 1;
+	const DARK = 2;
 
 	protected $id = self::PRISMARINE;
 
@@ -45,8 +45,8 @@ class Prismarine extends Solid{
 	public function getName() : string{
 		static $names = [
 			self::NORMAL => "Prismarine",
-			self::DARK => "Dark Prismarine",
-			self::BRICKS => "Prismarine Bricks"
+			self::BRICKS => "Prismarine Bricks",
+			self::DARK => "Dark Prismarine"
 		];
 		return $names[$this->getVariant()] ?? "Unknown";
 	}
