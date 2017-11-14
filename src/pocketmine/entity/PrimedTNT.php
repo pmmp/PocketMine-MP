@@ -26,7 +26,7 @@ namespace pocketmine\entity;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ExplosionPrimeEvent;
 use pocketmine\level\Explosion;
-use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
 class PrimedTNT extends Entity implements Explosive{
@@ -54,8 +54,8 @@ class PrimedTNT extends Entity implements Explosive{
 	protected function initEntity(){
 		parent::initEntity();
 
-		if(isset($this->namedtag->Fuse)){
-			$this->fuse = $this->namedtag["Fuse"];
+		if($this->namedtag->hasTag("Fuse", ShortTag::class)){
+			$this->fuse = $this->namedtag->getShort("Fuse");
 		}else{
 			$this->fuse = 80;
 		}
@@ -73,7 +73,7 @@ class PrimedTNT extends Entity implements Explosive{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Fuse = new ByteTag("Fuse", $this->fuse);
+		$this->namedtag->setShort("Fuse", $this->fuse, true); //older versions incorrectly saved this as a byte
 	}
 
 	public function entityBaseTick(int $tickDiff = 1) : bool{

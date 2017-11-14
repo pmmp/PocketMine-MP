@@ -126,7 +126,7 @@ class Chest extends Transparent{
 			if(
 				!$this->getSide(Vector3::SIDE_UP)->isTransparent() or
 				($chest->isPaired() and !$chest->getPair()->getBlock()->getSide(Vector3::SIDE_UP)->isTransparent()) or
-				(isset($chest->namedtag->Lock) and $chest->namedtag->Lock instanceof StringTag and $chest->namedtag->Lock->getValue() !== $item->getCustomName())
+				($chest->namedtag->hasTag("Lock", StringTag::class) and $chest->namedtag->getString("Lock") !== $item->getCustomName())
 			){
 				return true;
 			}

@@ -23,11 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 
 class WritableBook extends Item{
+
+	const TAG_PAGES = "pages"; //TAG_List<TAG_Compound>
 
 	public function __construct(int $meta = 0){
 		parent::__construct(self::WRITABLE_BOOK, $meta, "Book & Quill");
@@ -41,7 +44,8 @@ class WritableBook extends Item{
 	 * @return bool
 	 */
 	public function pageExists(int $pageId) : bool{
-		return isset($this->getNamedTag()->pages->{$pageId});
+		$pages = $this->getNamedTag()->getListTag(self::TAG_PAGES);
+		return $pages !== null and isset($pages[$pageId]);
 	}
 
 	/**
@@ -52,10 +56,17 @@ class WritableBook extends Item{
 	 * @return string|null
 	 */
 	public function getPageText(int $pageId) : ?string{
-		if(!$this->pageExists($pageId)){
+		$pages = $this->getNamedTag()->getListTag(self::TAG_PAGES);
+		if($pages === null){
 			return null;
 		}
-		return $this->getNamedTag()->pages->{$pageId}->text->getValue();
+
+		$page = $pages[$pageId] ?? null;
+		if($page instanceof CompoundTag){
+			return $page->getString("text", "");
+		}
+
+		return null;
 	}
 
 	/**
@@ -74,7 +85,11 @@ class WritableBook extends Item{
 		}
 
 		$namedTag = $this->getNamedTag();
-		$namedTag->pages->{$pageId}->text->setValue($pageText);
+		/** @var CompoundTag[]|ListTag $pages */
+		$pages = $namedTag->getListTag(self::TAG_PAGES);
+		assert($pages instanceof ListTag);
+		$pages[$pageId]->setString("text", $pageText);
+
 		$this->setNamedTag($namedTag);
 
 		return $created;
@@ -92,19 +107,19 @@ class WritableBook extends Item{
 		}
 		$namedTag = $this->getNamedTag();
 
-		if(!isset($namedTag->pages) or !($namedTag->pages instanceof ListTag)){
-			$namedTag->pages = new ListTag("pages", []);
-		}
+		/** @var CompoundTag[]|ListTag $pages */
+		$pages = $namedTag->getListTag(self::TAG_PAGES) ?? new ListTag(self::TAG_PAGES, [], NBT::TAG_Compound);
 
 		for($id = 0; $id <= $pageId; $id++){
 			if(!$this->pageExists($id)){
-				$namedTag->pages->{$id} = new CompoundTag("", [
+				$pages[$id] = new CompoundTag("", [
 					new StringTag("text", ""),
 					new StringTag("photoname", "")
 				]);
 			}
 		}
 
+		$namedTag->setTag($pages);
 		$this->setNamedTag($namedTag);
 	}
 
@@ -121,7 +136,7 @@ class WritableBook extends Item{
 		}
 
 		$namedTag = $this->getNamedTag();
-		unset($namedTag->pages->{$pageId});
+		unset($namedTag->getListTag(self::TAG_PAGES)[$pageId]);
 		$this->pushPages($pageId, $namedTag);
 		$this->setNamedTag($namedTag);
 
@@ -186,6 +201,9 @@ class WritableBook extends Item{
 			return false;
 		}
 
+		$pagesTag = $namedTag->getListTag(self::TAG_PAGES);
+		assert($pagesTag !== null);
+
 		$type = $downwards ? -1 : 1;
 		foreach($pages as $key => $page){
 			if(($key <= $pageId and $downwards) or ($key < $pageId and !$downwards)){
@@ -193,9 +211,9 @@ class WritableBook extends Item{
 			}
 
 			if($downwards){
-				unset($namedTag->pages->{$key});
+				unset($pagesTag[$key]);
 			}
-			$namedTag->pages->{$key + $type} = new CompoundTag("", [
+			$pagesTag[$key + $type] = new CompoundTag("", [
 				new StringTag("text", $page->text->getValue()),
 				new StringTag("photoname", "")
 			]);

@@ -44,6 +44,11 @@ use pocketmine\Server;
 
 abstract class Tile extends Position{
 
+	const TAG_ID = "id";
+	const TAG_X = "x";
+	const TAG_Y = "y";
+	const TAG_Z = "z";
+
 	const BREWING_STAND = "BrewingStand";
 	const CHEST = "Chest";
 	const ENCHANT_TABLE = "EnchantTable";
@@ -136,14 +141,14 @@ abstract class Tile extends Position{
 		$this->namedtag = $nbt;
 		$this->server = $level->getServer();
 		$this->setLevel($level);
-		$this->chunk = $level->getChunk($this->namedtag->getInt("x") >> 4, $this->namedtag->getInt("z") >> 4, false);
+		$this->chunk = $level->getChunk($this->namedtag->getInt(self::TAG_X) >> 4, $this->namedtag->getInt(self::TAG_Z) >> 4, false);
 		assert($this->chunk !== null);
 
 		$this->name = "";
 		$this->id = Tile::$tileCount++;
-		$this->x = $this->namedtag->getInt("x");
-		$this->y = $this->namedtag->getInt("y");
-		$this->z = $this->namedtag->getInt("z");
+		$this->x = $this->namedtag->getInt(self::TAG_X);
+		$this->y = $this->namedtag->getInt(self::TAG_Y);
+		$this->z = $this->namedtag->getInt(self::TAG_Z);
 
 		$this->chunk->addTile($this);
 		$this->getLevel()->addTile($this);
@@ -154,10 +159,10 @@ abstract class Tile extends Position{
 	}
 
 	public function saveNBT() : void{
-		$this->namedtag->setString("id", static::getSaveId());
-		$this->namedtag->setInt("x", $this->x);
-		$this->namedtag->setInt("y", $this->y);
-		$this->namedtag->setInt("z", $this->z);
+		$this->namedtag->setString(self::TAG_ID, static::getSaveId());
+		$this->namedtag->setInt(self::TAG_X, $this->x);
+		$this->namedtag->setInt(self::TAG_Y, $this->y);
+		$this->namedtag->setInt(self::TAG_Z, $this->z);
 	}
 
 	public function getNBT() : CompoundTag{
@@ -167,7 +172,7 @@ abstract class Tile extends Position{
 	public function getCleanedNBT() : ?CompoundTag{
 		$this->saveNBT();
 		$tag = clone $this->namedtag;
-		$tag->removeTag("x", "y", "z", "id");
+		$tag->removeTag(self::TAG_X, self::TAG_Y, self::TAG_Z, self::TAG_ID);
 		if($tag->getCount() > 0){
 			return $tag;
 		}else{
@@ -187,10 +192,10 @@ abstract class Tile extends Position{
 	 */
 	public static function createNBT(Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : CompoundTag{
 		$nbt = new CompoundTag("", [
-			new StringTag("id", static::getSaveId()),
-			new IntTag("x", (int) $pos->x),
-			new IntTag("y", (int) $pos->y),
-			new IntTag("z", (int) $pos->z)
+			new StringTag(self::TAG_ID, static::getSaveId()),
+			new IntTag(self::TAG_X, (int) $pos->x),
+			new IntTag(self::TAG_Y, (int) $pos->y),
+			new IntTag(self::TAG_Z, (int) $pos->z)
 		]);
 
 		static::createAdditionalNBT($nbt, $pos, $face, $item, $player);

@@ -28,9 +28,10 @@ use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\io\ChunkUtils;
 use pocketmine\level\format\SubChunk;
 use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\{
-	ByteArrayTag, ByteTag, CompoundTag, IntArrayTag, IntTag, ListTag, LongTag
-};
+use pocketmine\nbt\tag\ByteArrayTag;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntArrayTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\utils\MainLogger;
 
 class Anvil extends McRegion{
@@ -39,28 +40,29 @@ class Anvil extends McRegion{
 
 	public function nbtSerialize(Chunk $chunk) : string{
 		$nbt = new CompoundTag("Level", []);
-		$nbt->xPos = new IntTag("xPos", $chunk->getX());
-		$nbt->zPos = new IntTag("zPos", $chunk->getZ());
+		$nbt->setInt("xPos", $chunk->getX());
+		$nbt->setInt("zPos", $chunk->getZ());
 
-		$nbt->V = new ByteTag("V", 1);
-		$nbt->LastUpdate = new LongTag("LastUpdate", 0); //TODO
-		$nbt->InhabitedTime = new LongTag("InhabitedTime", 0); //TODO
-		$nbt->TerrainPopulated = new ByteTag("TerrainPopulated", $chunk->isPopulated() ? 1 : 0);
-		$nbt->LightPopulated = new ByteTag("LightPopulated", $chunk->isLightPopulated() ? 1 : 0);
+		$nbt->setByte("V", 1);
+		$nbt->setLong("LastUpdate", 0); //TODO
+		$nbt->setLong("InhabitedTime", 0); //TODO
+		$nbt->setByte("TerrainPopulated", $chunk->isPopulated() ? 1 : 0);
+		$nbt->setByte("LightPopulated", $chunk->isLightPopulated() ? 1 : 0);
 
-		$nbt->Sections = new ListTag("Sections", [], NBT::TAG_Compound);
-		$subChunks = -1;
+		$subChunks = [];
 		foreach($chunk->getSubChunks() as $y => $subChunk){
 			if($subChunk->isEmpty()){
 				continue;
 			}
+
 			$tag = $this->serializeSubChunk($subChunk);
 			$tag->setByte("Y", $y);
-			$nbt->Sections[++$subChunks] = $tag;
+			$subChunks[] = $tag;
 		}
+		$nbt->setTag(new ListTag("Sections", $subChunks, NBT::TAG_Compound));
 
-		$nbt->Biomes = new ByteArrayTag("Biomes", $chunk->getBiomeIdArray());
-		$nbt->HeightMap = new IntArrayTag("HeightMap", $chunk->getHeightMapArray());
+		$nbt->setByteArray("Biomes", $chunk->getBiomeIdArray());
+		$nbt->setIntArray("HeightMap", $chunk->getHeightMapArray());
 
 		$entities = [];
 
@@ -71,7 +73,7 @@ class Anvil extends McRegion{
 			}
 		}
 
-		$nbt->Entities = new ListTag("Entities", $entities, NBT::TAG_Compound);
+		$nbt->setTag(new ListTag("Entities", $entities, NBT::TAG_Compound));
 
 		$tiles = [];
 		foreach($chunk->getTiles() as $tile){
@@ -79,7 +81,7 @@ class Anvil extends McRegion{
 			$tiles[] = $tile->namedtag;
 		}
 
-		$nbt->TileEntities = new ListTag("TileEntities", $tiles, NBT::TAG_Compound);
+		$nbt->setTag(new ListTag("TileEntities", $tiles, NBT::TAG_Compound));
 
 		//TODO: TileTicks
 
@@ -104,43 +106,38 @@ class Anvil extends McRegion{
 		try{
 			$nbt->readCompressed($data);
 
-			$chunk = $nbt->getData();
+			$chunk = $nbt->getData()->getCompoundTag("Level");
 
-			if(!isset($chunk->Level) or !($chunk->Level instanceof CompoundTag)){
+			if($chunk === null){
 				throw new ChunkException("Invalid NBT format");
 			}
 
-			$chunk = $chunk->Level;
-
 			$subChunks = [];
-			if($chunk->Sections instanceof ListTag){
-				foreach($chunk->Sections as $subChunk){
-					if($subChunk instanceof CompoundTag){
-						$subChunks[$subChunk->Y->getValue()] = $this->deserializeSubChunk($subChunk);
-					}
+			$subChunksTag = $chunk->getListTag("Sections") ?? [];
+			foreach($subChunksTag as $subChunk){
+				if($subChunk instanceof CompoundTag){
+					$subChunks[$subChunk->getByte("Y")] = $this->deserializeSubChunk($subChunk);
 				}
 			}
 
-			if(isset($chunk->BiomeColors)){
-				$biomeIds = ChunkUtils::convertBiomeColors($chunk->BiomeColors->getValue()); //Convert back to original format
-			}elseif(isset($chunk->Biomes)){
-				$biomeIds = $chunk->Biomes->getValue();
+			if($chunk->hasTag("BiomeColors", IntArrayTag::class)){
+				$biomeIds = ChunkUtils::convertBiomeColors($chunk->getIntArray("BiomeColors")); //Convert back to original format
 			}else{
-				$biomeIds = "";
+				$biomeIds = $chunk->getByteArray("Biomes", "", true);
 			}
 
 			$result = new Chunk(
-				$chunk["xPos"],
-				$chunk["zPos"],
+				$chunk->getInt("xPos"),
+				$chunk->getInt("zPos"),
 				$subChunks,
-				isset($chunk->Entities) ? $chunk->Entities->getValue() : [],
-				isset($chunk->TileEntities) ? $chunk->TileEntities->getValue() : [],
+				$chunk->hasTag("Entities", ListTag::class) ? $chunk->getListTag("Entities")->getValue() : [],
+				$chunk->hasTag("TileEntities", ListTag::class) ? $chunk->getListTag("TileEntities")->getValue() : [],
 				$biomeIds,
-				isset($chunk->HeightMap) ? $chunk->HeightMap->getValue() : []
+				$chunk->getIntArray("HeightMap", [])
 			);
-			$result->setLightPopulated(isset($chunk->LightPopulated) ? ((bool) $chunk->LightPopulated->getValue()) : false);
-			$result->setPopulated(isset($chunk->TerrainPopulated) ? ((bool) $chunk->TerrainPopulated->getValue()) : false);
-			$result->setGenerated(true);
+			$result->setLightPopulated($chunk->getByte("LightPopulated", 0) !== 0);
+			$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
+			$result->setGenerated();
 			return $result;
 		}catch(\Throwable $e){
 			MainLogger::getLogger()->logException($e);
@@ -150,10 +147,10 @@ class Anvil extends McRegion{
 
 	protected function deserializeSubChunk(CompoundTag $subChunk) : SubChunk{
 		return new SubChunk(
-			ChunkUtils::reorderByteArray($subChunk->Blocks->getValue()),
-			ChunkUtils::reorderNibbleArray($subChunk->Data->getValue()),
-			ChunkUtils::reorderNibbleArray($subChunk->SkyLight->getValue(), "\xff"),
-			ChunkUtils::reorderNibbleArray($subChunk->BlockLight->getValue())
+			ChunkUtils::reorderByteArray($subChunk->getByteArray("Blocks")),
+			ChunkUtils::reorderNibbleArray($subChunk->getByteArray("Data")),
+			ChunkUtils::reorderNibbleArray($subChunk->getByteArray("SkyLight"), "\xff"),
+			ChunkUtils::reorderNibbleArray($subChunk->getByteArray("BlockLight"))
 		);
 	}
 

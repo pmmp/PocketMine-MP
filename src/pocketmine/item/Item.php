@@ -481,9 +481,7 @@ class Item implements ItemIds, \JsonSerializable{
 	public function getLore() : array{
 		$display = $this->getNamedTagEntry(self::TAG_DISPLAY);
 		if($display instanceof CompoundTag and ($lore = $display->getListTag(self::TAG_DISPLAY_LORE)) !== null){
-			return array_map(function(StringTag $tag) : string{
-				return $tag->getValue();
-			}, $lore->getValue());
+			return $lore->getAllValues();
 		}
 
 		return [];

@@ -53,12 +53,12 @@ class McRegion extends BaseLevelProvider{
 	 */
 	public function nbtSerialize(Chunk $chunk) : string{
 		$nbt = new CompoundTag("Level", []);
-		$nbt->xPos = new IntTag("xPos", $chunk->getX());
-		$nbt->zPos = new IntTag("zPos", $chunk->getZ());
+		$nbt->setInt("xPos", $chunk->getX());
+		$nbt->setInt("zPos", $chunk->getZ());
 
-		$nbt->LastUpdate = new LongTag("LastUpdate", 0); //TODO
-		$nbt->TerrainPopulated = new ByteTag("TerrainPopulated", $chunk->isPopulated() ? 1 : 0);
-		$nbt->LightPopulated = new ByteTag("LightPopulated", $chunk->isLightPopulated() ? 1 : 0);
+		$nbt->setLong("LastUpdate", 0); //TODO
+		$nbt->setByte("TerrainPopulated", $chunk->isPopulated() ? 1 : 0);
+		$nbt->setByte("LightPopulated", $chunk->isLightPopulated() ? 1 : 0);
 
 		$ids = "";
 		$data = "";
@@ -77,13 +77,13 @@ class McRegion extends BaseLevelProvider{
 			}
 		}
 
-		$nbt->Blocks = new ByteArrayTag("Blocks", $ids);
-		$nbt->Data = new ByteArrayTag("Data", $data);
-		$nbt->SkyLight = new ByteArrayTag("SkyLight", $skyLight);
-		$nbt->BlockLight = new ByteArrayTag("BlockLight", $blockLight);
+		$nbt->setByteArray("Blocks", $ids);
+		$nbt->setByteArray("Data", $data);
+		$nbt->setByteArray("SkyLight", $skyLight);
+		$nbt->setByteArray("BlockLight", $blockLight);
 
-		$nbt->Biomes = new ByteArrayTag("Biomes", $chunk->getBiomeIdArray()); //doesn't exist in regular McRegion, this is here for PocketMine-MP only
-		$nbt->HeightMap = new ByteArrayTag("HeightMap", pack("C*", ...$chunk->getHeightMapArray()));
+		$nbt->setByteArray("Biomes", $chunk->getBiomeIdArray()); //doesn't exist in regular McRegion, this is here for PocketMine-MP only
+		$nbt->setByteArray("HeightMap", pack("C*", ...$chunk->getHeightMapArray())); //this is ByteArray in McRegion, but IntArray in Anvil (due to raised build height)
 
 		$entities = [];
 
@@ -94,7 +94,7 @@ class McRegion extends BaseLevelProvider{
 			}
 		}
 
-		$nbt->Entities = new ListTag("Entities", $entities, NBT::TAG_Compound);
+		$nbt->setTag(new ListTag("Entities", $entities, NBT::TAG_Compound));
 
 		$tiles = [];
 		foreach($chunk->getTiles() as $tile){
@@ -102,7 +102,7 @@ class McRegion extends BaseLevelProvider{
 			$tiles[] = $tile->namedtag;
 		}
 
-		$nbt->TileEntities = new ListTag("TileEntities", $tiles, NBT::TAG_Compound);
+		$nbt->setTag(new ListTag("TileEntities", $tiles, NBT::TAG_Compound));
 
 		$writer = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setName("Level");
@@ -281,11 +281,11 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	public function getDifficulty() : int{
-		return isset($this->levelData->Difficulty) ? $this->levelData->Difficulty->getValue() : Level::DIFFICULTY_NORMAL;
+		return $this->levelData->getByte("Difficulty", Level::DIFFICULTY_NORMAL);
 	}
 
 	public function setDifficulty(int $difficulty){
-		$this->levelData->Difficulty = new ByteTag("Difficulty", $difficulty);
+		$this->levelData->setByte("Difficulty", $difficulty);
 	}
 
 	public function getChunk(int $chunkX, int $chunkZ, bool $create = false){
