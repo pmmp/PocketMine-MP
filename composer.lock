@@ -4,18 +4,89 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d4fecad9dce5314493052c870c8cf059",
-    "packages": [],
+    "content-hash": "55bdbaf13ac4ea71f0705f03f715172d",
+    "packages": [
+        {
+            "name": "pmmp/pocketmine-spl",
+            "version": "0.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/PocketMine-SPL.git",
+                "reference": "065b631d63e2c4ddb3141f63a07a9ecbab8357d1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/PocketMine-SPL/zipball/065b631d63e2c4ddb3141f63a07a9ecbab8357d1",
+                "reference": "065b631d63e2c4ddb3141f63a07a9ecbab8357d1",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "exclude-from-classmap": [
+                    "stubs"
+                ],
+                "classmap": [
+                    "./"
+                ]
+            },
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Standard library files required by PocketMine-MP and related projects",
+            "support": {
+                "source": "https://github.com/pmmp/PocketMine-SPL/tree/0.0.2"
+            },
+            "time": "2017-11-14T18:56:38+00:00"
+        },
+        {
+            "name": "pmmp/raklib",
+            "version": "0.9.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/RakLib.git",
+                "reference": "08470471eb16b4325fa02415fd12c5060eba9c34"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/08470471eb16b4325fa02415fd12c5060eba9c34",
+                "reference": "08470471eb16b4325fa02415fd12c5060eba9c34",
+                "shasum": ""
+            },
+            "require": {
+                "ext-bcmath": "*",
+                "ext-pthreads": ">=3.1.7dev",
+                "ext-sockets": "*",
+                "php": ">=7.2.0RC3",
+                "pmmp/pocketmine-spl": "^0.0.2"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "./"
+                ]
+            },
+            "license": [
+                "GPL-3.0"
+            ],
+            "description": "A RakNet server implementation written in PHP",
+            "support": {
+                "source": "https://github.com/pmmp/RakLib/tree/0.9.0",
+                "issues": "https://github.com/pmmp/RakLib/issues"
+            },
+            "time": "2017-11-14T19:03:14+00:00"
+        }
+    ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "php": 5,
         "ext-pthreads": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.2",
+        "php": ">=7.2.0RC3",
         "ext-bcmath": "*",
         "ext-curl": "*",
         "ext-hash": "*",

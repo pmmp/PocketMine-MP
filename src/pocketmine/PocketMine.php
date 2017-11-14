@@ -129,28 +129,14 @@ namespace pocketmine {
 		define('pocketmine\PATH', dirname(__FILE__, 3) . DIRECTORY_SEPARATOR);
 	}
 
-	$requiredSplVer = "0.0.1";
-	if(!is_file(\pocketmine\PATH . "src/spl/version.php")){
-		echo "[CRITICAL] Cannot find PocketMine-SPL or incompatible version." . PHP_EOL;
-		echo "[CRITICAL] Please update your submodules or use provided builds." . PHP_EOL;
-		exit(1);
-	}elseif(version_compare($requiredSplVer, require(\pocketmine\PATH . "src/spl/version.php")) > 0){
-		echo "[CRITICAL] Incompatible PocketMine-SPL submodule version ($requiredSplVer is required)." . PHP_EOL;
-		echo "[CRITICAL] Please update your submodules or use provided builds." . PHP_EOL;
-		exit(1);
-	}
+	define('pocketmine\COMPOSER_AUTOLOADER_PATH', \pocketmine\PATH . 'vendor/autoload.php');
 
-	if(is_file(\pocketmine\PATH . "vendor/autoload.php")){
-		require_once(\pocketmine\PATH . "vendor/autoload.php");
+	if(is_file(\pocketmine\COMPOSER_AUTOLOADER_PATH)){
+		require_once(\pocketmine\COMPOSER_AUTOLOADER_PATH);
 	}else{
 		echo "[CRITICAL] Composer autoloader not found" . PHP_EOL;
 		echo "[CRITICAL] Please initialize composer dependencies before running." . PHP_EOL;
 		exit(1);
-	}
-
-	if(!class_exists("ClassLoader", false)){
-		require_once(\pocketmine\PATH . "src/spl/ClassLoader.php");
-		require_once(\pocketmine\PATH . "src/spl/BaseClassLoader.php");
 	}
 
 	/*
