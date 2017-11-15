@@ -3373,16 +3373,16 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->stopSleep();
 
 				if($this->joined){
+					$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message, $reason));
+					if($ev->getQuitMessage() != ""){
+						$this->server->broadcastMessage($ev->getQuitMessage());
+					}
+
 					try{
 						$this->save();
 					}catch(\Throwable $e){
 						$this->server->getLogger()->critical("Failed to save player data for " . $this->getName());
 						$this->server->getLogger()->logException($e);
-					}
-
-					$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message, $reason));
-					if($ev->getQuitMessage() != ""){
-						$this->server->broadcastMessage($ev->getQuitMessage());
 					}
 				}
 				$this->joined = false;
