@@ -26,8 +26,10 @@ namespace pocketmine\entity;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
+use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\network\mcpe\protocol\AddItemEntityPacket;
+use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\Player;
 
 class Item extends Entity{
@@ -201,5 +203,40 @@ class Item extends Entity{
 		$pk->metadata = $this->dataProperties;
 
 		$player->dataPacket($pk);
+	}
+
+	public function onCollideWithPlayer(Player $player){
+		if($this->getPickupDelay() > 0){
+			return;
+		}
+
+		$item = $this->getItem();
+		$playerInventory = $player->getInventory();
+
+		if(!($item instanceof ItemItem) or ($player->isSurvival() and !$playerInventory->canAddItem($item))){
+			return;
+		}
+
+		$this->server->getPluginManager()->callEvent($ev = new InventoryPickupItemEvent($playerInventory, $this));
+		if($ev->isCancelled()){
+			return;
+		}
+
+		switch($item->getId()){
+			case ItemItem::WOOD:
+				$player->awardAchievement("mineWood");
+				break;
+			case ItemItem::DIAMOND:
+				$player->awardAchievement("diamond");
+				break;
+		}
+
+		$pk = new TakeItemEntityPacket();
+		$pk->eid = $player->getId();
+		$pk->target = $this->getId();
+		$this->server->broadcastPacket($this->getViewers(), $pk);
+
+		$playerInventory->addItem(clone $item);
+		$this->flagForDespawn();
 	}
 }

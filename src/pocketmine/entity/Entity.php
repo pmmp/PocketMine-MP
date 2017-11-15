@@ -1385,7 +1385,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	}
 
-	public function onCollideWithPlayer(Human $entityPlayer){
+	public function onCollideWithPlayer(Player $player){
 
 	}
 
