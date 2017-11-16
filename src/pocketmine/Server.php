@@ -1981,7 +1981,7 @@ class Server{
 		}
 
 
-		$sender->sendMessage(new TranslationContainer(TextFormat::GOLD . "%commands.generic.notFound"));
+		$sender->sendMessage($this->getLanguage()->translateString(TextFormat::RED . "%commands.generic.notFound"));
 
 		return false;
 	}

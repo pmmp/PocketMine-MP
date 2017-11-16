@@ -168,7 +168,7 @@ abstract class Command{
 		}
 
 		if($this->permissionMessage === null){
-			$target->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.permission"));
+			$target->sendMessage($target->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
 		}elseif($this->permissionMessage !== ""){
 			$target->sendMessage(str_replace("<permission>", $this->getPermission(), $this->permissionMessage));
 		}
