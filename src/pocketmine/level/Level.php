@@ -352,7 +352,8 @@ class Level implements ChunkManager, Metadatable{
 		$this->chunkPopulationQueueSize = (int) $this->server->getProperty("chunk-generation.population-queue-size", 2);
 		$this->clearChunksOnTick = (bool) $this->server->getProperty("chunk-ticking.clear-tick-list", true);
 
-		$dontTickBlocks = $this->server->getProperty("chunk-ticking.disable-block-ticking", []);
+		$dontTickBlocks = array_fill_keys($this->server->getProperty("chunk-ticking.disable-block-ticking", []), true);
+
 		$this->randomTickBlocks = new \SplFixedArray(256);
 		foreach($this->randomTickBlocks as $id => $null){
 			$block = BlockFactory::get($id); //Make sure it's a copy
