@@ -131,33 +131,35 @@ namespace pocketmine {
 
 	define('pocketmine\COMPOSER_AUTOLOADER_PATH', \pocketmine\PATH . 'vendor/autoload.php');
 
-	if(is_file(\pocketmine\COMPOSER_AUTOLOADER_PATH)){
-		require_once(\pocketmine\COMPOSER_AUTOLOADER_PATH);
-	}else{
-		echo "[CRITICAL] Composer autoloader not found" . PHP_EOL;
-		echo "[CRITICAL] Please initialize composer dependencies before running." . PHP_EOL;
+	function composer_error_die($message){
+		echo "[CRITICAL] $message" . PHP_EOL;
+		echo "[CRITICAL] Please install/update Composer dependencies or use provided builds." . PHP_EOL;
 		exit(1);
 	}
 
+	if(is_file(\pocketmine\COMPOSER_AUTOLOADER_PATH)){
+		require_once(\pocketmine\COMPOSER_AUTOLOADER_PATH);
+	}else{
+		composer_error_die("Composer autoloader not found.");
+	}
+
+	if(!class_exists(RakLib::class)){
+		composer_error_die("Unable to find the RakLib library.");
+	}
+	if(version_compare(RakLib::VERSION, "0.9.0") < 0){ //TODO: remove this check (it's managed by Composer now)
+		composer_error_die("RakLib version 0.9.0 is required, while you have version " . RakLib::VERSION . ".");
+	}
+	if(!class_exists(\BaseClassLoader::class)){
+		composer_error_die("Unable to find the PocketMine-SPL library.");
+	}
+
 	/*
-	 * We now use the Composer autoloader, but this autoloader is still used by RakLib and for loading plugins.
+	 * We now use the Composer autoloader, but this autoloader is still for loading plugins.
 	 */
 	$autoloader = new \BaseClassLoader();
 	$autoloader->addPath(\pocketmine\PATH . "src");
 	$autoloader->addPath(\pocketmine\PATH . "src" . DIRECTORY_SEPARATOR . "spl");
 	$autoloader->register(false);
-
-	if(!class_exists(RakLib::class)){
-		echo "[CRITICAL] Unable to find the RakLib library." . PHP_EOL;
-		echo "[CRITICAL] Please use provided builds or clone the repository recursively." . PHP_EOL;
-		exit(1);
-	}
-
-	if(version_compare(RakLib::VERSION, "0.8.2") < 0){
-		echo "[CRITICAL] RakLib version 0.8.2 is required, while you have version " . RakLib::VERSION . "." . PHP_EOL;
-		echo "[CRITICAL] Please update your submodules or use provided builds." . PHP_EOL;
-		exit(1);
-	}
 
 	set_time_limit(0); //Who set it to 30 seconds?!?!
 
