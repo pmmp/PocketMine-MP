@@ -1721,7 +1721,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->orderChunks();
 		}
 
-		if(count($this->loadQueue) > 0 or !$this->spawned){
+		if(count($this->loadQueue) > 0){
 			$this->sendNextChunk();
 		}
 
