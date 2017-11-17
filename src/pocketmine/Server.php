@@ -2357,7 +2357,7 @@ class Server{
 		foreach($this->players as $p){
 			if(!$p->loggedIn and ($tickTime - $p->creationTime) >= 10){
 				$p->close("", "Login timeout");
-			}elseif($this->alwaysTickPlayers and $p->joined){
+			}elseif($this->alwaysTickPlayers and $p->spawned){
 				$p->onUpdate($currentTick);
 			}
 		}
@@ -2402,7 +2402,7 @@ class Server{
 		if($this->getAutoSave()){
 			Timings::$worldSaveTimer->startTiming();
 			foreach($this->players as $index => $player){
-				if($player->joined){
+				if($player->spawned){
 					$player->save(true);
 				}elseif(!$player->isConnected()){
 					$this->removePlayer($player);

@@ -197,7 +197,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public $playedBefore;
 	public $spawned = false;
 	public $loggedIn = false;
-	public $joined = false;
 	public $gamemode;
 	public $lastBreak;
 	/** @var bool */
@@ -303,7 +302,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return TranslationContainer|string
 	 */
 	public function getLeaveMessage(){
-		if($this->joined){
+		if($this->spawned){
 			return new TranslationContainer(TextFormat::YELLOW . "%multiplayer.player.left", [
 				$this->getDisplayName()
 			]);
@@ -988,8 +987,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($this->getHealth() <= 0){
 			$this->sendRespawnPacket($this->getSpawn());
 		}
-
-		$this->joined = true;
 	}
 
 	protected function sendRespawnPacket(Vector3 $pos){
@@ -3319,7 +3316,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 				$this->stopSleep();
 
-				if($this->joined){
+				if($this->spawned){
 					$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message, $reason));
 					if($ev->getQuitMessage() != ""){
 						$this->server->broadcastMessage($ev->getQuitMessage());
@@ -3332,7 +3329,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						$this->server->getLogger()->logException($e);
 					}
 				}
-				$this->joined = false;
 
 				if($this->isValid()){
 					foreach($this->usedChunks as $index => $d){
