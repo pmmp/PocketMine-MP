@@ -922,6 +922,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 */
 	public function setMaxHealth(int $amount){
 		$this->maxHealth = $amount;
+		if($this->health > $amount){
+			$this->health = $amount;
+		}
 	}
 
 	/**
