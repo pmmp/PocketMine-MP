@@ -369,7 +369,7 @@ class Item implements ItemIds, \JsonSerializable{
 			/** @var CompoundTag $entry */
 			foreach($ench as $k => $entry){
 				if($entry->getShort("id") === $enchantment->getId()){
-					$ench->{$k} = new CompoundTag("", [
+					$ench[$k] = new CompoundTag("", [
 						new ShortTag("id", $enchantment->getId()),
 						new ShortTag("lvl", $enchantment->getLevel())
 					]);
@@ -380,7 +380,7 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		if(!$found){
-			$ench->{count($ench)} = new CompoundTag("", [
+			$ench[count($ench)] = new CompoundTag("", [
 				new ShortTag("id", $enchantment->getId()),
 				new ShortTag("lvl", $enchantment->getLevel())
 			]);
@@ -512,18 +512,18 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return NamedTag|null
 	 */
 	public function getNamedTagEntry(string $name) : ?NamedTag{
-		return $this->getNamedTag()->{$name} ?? null;
+		return $this->getNamedTag()->getTag($name) ?? null;
 	}
 
 	public function setNamedTagEntry(NamedTag $new) : void{
 		$tag = $this->getNamedTag();
-		$tag->{$new->getName()} = $new;
+		$tag->setTag($new);
 		$this->setNamedTag($tag);
 	}
 
 	public function removeNamedTagEntry(string $name) : void{
 		$tag = $this->getNamedTag();
-		unset($tag->{$name});
+		$tag->removeTag($name);
 		$this->setNamedTag($tag);
 	}
 

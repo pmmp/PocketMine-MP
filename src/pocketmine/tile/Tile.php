@@ -208,7 +208,7 @@ abstract class Tile extends Position{
 					if(!($customBlockDataTag instanceof NamedTag)){
 						continue;
 					}
-					$nbt->{$customBlockDataTag->getName()} = $customBlockDataTag;
+					$nbt->setTag($customBlockDataTag);
 				}
 			}
 		}
