@@ -95,6 +95,7 @@ use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\PlayerNetworkSessionAdapter;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
@@ -1910,10 +1911,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if(($level = $this->server->getLevelByName($this->namedtag->getString("Level", "", true))) === null){
 			$this->setLevel($this->server->getDefaultLevel());
 			$this->namedtag->setString("Level", $this->level->getName());
+			$spawnLocation = $this->level->getSpawnLocation();
 			$this->namedtag->setTag(new ListTag("Pos", [
-				$this->level->getSpawnLocation()->x,
-				$this->level->getSpawnLocation()->y,
-				$this->level->getSpawnLocation()->z
+				new DoubleTag("", $spawnLocation->x),
+				new DoubleTag("", $spawnLocation->y),
+				new DoubleTag("", $spawnLocation->z)
 			]));
 		}else{
 			$this->setLevel($level);
