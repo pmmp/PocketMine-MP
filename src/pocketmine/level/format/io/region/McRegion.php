@@ -121,19 +121,17 @@ class McRegion extends BaseLevelProvider{
 		try{
 			$nbt->readCompressed($data);
 
-			$chunk = $nbt->getData();
+			$chunk = $nbt->getData()->getCompoundTag("Level");
 
-			if(!isset($chunk->Level) or !($chunk->Level instanceof CompoundTag)){
-				throw new ChunkException("Invalid NBT format");
+			if($chunk === null){
+				throw new ChunkException("Invalid NBT format, 'Level' key not found");
 			}
 
-			$chunk = $chunk->Level;
-
 			$subChunks = [];
-			$fullIds = isset($chunk->Blocks) ? $chunk->Blocks->getValue() : str_repeat("\x00", 32768);
-			$fullData = isset($chunk->Data) ? $chunk->Data->getValue() : str_repeat("\x00", 16384);
-			$fullSkyLight = isset($chunk->SkyLight) ? $chunk->SkyLight->getValue() : str_repeat("\xff", 16384);
-			$fullBlockLight = isset($chunk->BlockLight) ? $chunk->BlockLight->getValue() : str_repeat("\x00", 16384);
+			$fullIds = $chunk->hasTag("Blocks", ByteArrayTag::class) ? $chunk->getByteArray("Blocks") : str_repeat("\x00", 32768);
+			$fullData = $chunk->hasTag("Data", ByteArrayTag::class) ? $chunk->getByteArray("Data") : str_repeat("\x00", 16384);
+			$fullSkyLight = $chunk->hasTag("SkyLight", ByteArrayTag::class) ? $chunk->getByteArray("SkyLight") : str_repeat("\xff", 16384);
+			$fullBlockLight = $chunk->hasTag("BlockLight", ByteArrayTag::class) ? $chunk->getByteArray("BlockLight") : str_repeat("\x00", 16384);
 
 			for($y = 0; $y < 8; ++$y){
 				$offset = ($y << 4);
@@ -163,34 +161,32 @@ class McRegion extends BaseLevelProvider{
 				$subChunks[$y] = new SubChunk($ids, $data, $skyLight, $blockLight);
 			}
 
-			if(isset($chunk->BiomeColors)){
-				$biomeIds = ChunkUtils::convertBiomeColors($chunk->BiomeColors->getValue()); //Convert back to original format
-			}elseif(isset($chunk->Biomes)){
-				$biomeIds = $chunk->Biomes->getValue();
+			if($chunk->hasTag("BiomeColors", IntArrayTag::class)){
+				$biomeIds = ChunkUtils::convertBiomeColors($chunk->getIntArray("BiomeColors")); //Convert back to original format
+			}elseif($chunk->hasTag("Biomes", ByteArrayTag::class)){
+				$biomeIds = $chunk->getByteArray("Biomes");
 			}else{
 				$biomeIds = "";
 			}
 
 			$heightMap = [];
-			if(isset($chunk->HeightMap)){
-				if($chunk->HeightMap instanceof ByteArrayTag){
-					$heightMap = array_values(unpack("C*", $chunk->HeightMap->getValue()));
-				}elseif($chunk->HeightMap instanceof IntArrayTag){
-					$heightMap = $chunk->HeightMap->getValue(); #blameshoghicp
-				}
+			if($chunk->hasTag("HeightMap", ByteArrayTag::class)){
+				$heightMap = array_values(unpack("C*", $chunk->getByteArray("HeightMap")));
+			}elseif($chunk->hasTag("HeightMap", IntArrayTag::class)){
+				$heightMap = $chunk->getIntArray("HeightMap"); #blameshoghicp
 			}
 
 			$result = new Chunk(
-				$chunk["xPos"],
-				$chunk["zPos"],
+				$chunk->getInt("xPos"),
+				$chunk->getInt("zPos"),
 				$subChunks,
-				isset($chunk->Entities) ? $chunk->Entities->getValue() : [],
-				isset($chunk->TileEntities) ? $chunk->TileEntities->getValue() : [],
+				$chunk->hasTag("Entities", ListTag::class) ? $chunk->getListTag("Entities")->getValue() : [],
+				$chunk->hasTag("TileEntities", ListTag::class) ? $chunk->getListTag("TileEntities")->getValue() : [],
 				$biomeIds,
 				$heightMap
 			);
-			$result->setLightPopulated(isset($chunk->LightPopulated) ? ((bool) $chunk->LightPopulated->getValue()) : false);
-			$result->setPopulated(isset($chunk->TerrainPopulated) ? ((bool) $chunk->TerrainPopulated->getValue()) : false);
+			$result->setLightPopulated($chunk->getByte("LightPopulated", 0) !== 0);
+			$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
 			$result->setGenerated(true);
 			return $result;
 		}catch(\Throwable $e){

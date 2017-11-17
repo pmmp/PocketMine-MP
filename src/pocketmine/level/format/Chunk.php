@@ -30,6 +30,7 @@ use pocketmine\block\BlockFactory;
 use pocketmine\entity\Entity;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
@@ -729,7 +730,7 @@ class Chunk{
 				$level->timings->syncChunkLoadEntitiesTimer->startTiming();
 				foreach($this->NBTentities as $nbt){
 					if($nbt instanceof CompoundTag){
-						if(!isset($nbt->id)){
+						if(!$nbt->hasTag("id")){ //allow mixed types (because of leveldb)
 							$changed = true;
 							continue;
 						}
@@ -740,7 +741,7 @@ class Chunk{
 						}
 
 						try{
-							$entity = Entity::createEntity($nbt["id"], $level, $nbt);
+							$entity = Entity::createEntity($nbt->getTag("id")->getValue(), $level, $nbt);
 							if(!($entity instanceof Entity)){
 								$changed = true;
 								continue;
@@ -757,17 +758,17 @@ class Chunk{
 				$level->timings->syncChunkLoadTileEntitiesTimer->startTiming();
 				foreach($this->NBTtiles as $nbt){
 					if($nbt instanceof CompoundTag){
-						if(!isset($nbt->id)){
+						if(!$nbt->hasTag(Tile::TAG_ID, StringTag::class)){
 							$changed = true;
 							continue;
 						}
 
-						if(($nbt["x"] >> 4) !== $this->x or ($nbt["z"] >> 4) !== $this->z){
+						if(($nbt->getInt(Tile::TAG_X) >> 4) !== $this->x or ($nbt->getInt(Tile::TAG_Z) >> 4) !== $this->z){
 							$changed = true;
 							continue; //Fixes tiles allocated in wrong chunks.
 						}
 
-						if(Tile::createTile($nbt["id"], $level, $nbt) === null){
+						if(Tile::createTile($nbt->getString(Tile::TAG_ID), $level, $nbt) === null){
 							$changed = true;
 							continue;
 						}
