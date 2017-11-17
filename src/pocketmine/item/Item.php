@@ -512,7 +512,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return NamedTag|null
 	 */
 	public function getNamedTagEntry(string $name) : ?NamedTag{
-		return $this->getNamedTag()->getTag($name) ?? null;
+		return $this->getNamedTag()->getTag($name);
 	}
 
 	public function setNamedTagEntry(NamedTag $new) : void{
