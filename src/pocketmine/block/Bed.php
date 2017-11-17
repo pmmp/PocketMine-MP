@@ -142,7 +142,7 @@ class Bed extends Transparent{
 
 				return true;
 			}elseif($player->distanceSquared($this) > 4 and $player->distanceSquared($other) > 4){
-				//MCPE doesn't have messages for bed too far away
+				$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%tile.bed.tooFar"));
 				return true;
 			}
 
