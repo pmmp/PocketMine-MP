@@ -31,6 +31,8 @@ use pocketmine\nbt\tag\StringTag;
 class WritableBook extends Item{
 
 	const TAG_PAGES = "pages"; //TAG_List<TAG_Compound>
+	const TAG_PAGE_TEXT = "text"; //TAG_String
+	const TAG_PAGE_PHOTONAME = "photoname"; //TAG_String - TODO
 
 	public function __construct(int $meta = 0){
 		parent::__construct(self::WRITABLE_BOOK, $meta, "Book & Quill");
@@ -62,7 +64,7 @@ class WritableBook extends Item{
 
 		$page = $pages[$pageId] ?? null;
 		if($page instanceof CompoundTag){
-			return $page->getString("text", "");
+			return $page->getString(self::TAG_PAGE_TEXT, "");
 		}
 
 		return null;
@@ -87,7 +89,7 @@ class WritableBook extends Item{
 		/** @var CompoundTag[]|ListTag $pages */
 		$pages = $namedTag->getListTag(self::TAG_PAGES);
 		assert($pages instanceof ListTag);
-		$pages[$pageId]->setString("text", $pageText);
+		$pages[$pageId]->setString(self::TAG_PAGE_TEXT, $pageText);
 
 		$this->setNamedTag($namedTag);
 
@@ -110,8 +112,8 @@ class WritableBook extends Item{
 		for($id = 0; $id <= $pageId; $id++){
 			if(!isset($pages[$id])){
 				$pages[$id] = new CompoundTag("", [
-					new StringTag("text", ""),
-					new StringTag("photoname", "")
+					new StringTag(self::TAG_PAGE_TEXT, ""),
+					new StringTag(self::TAG_PAGE_PHOTONAME, "")
 				]);
 			}
 		}
@@ -149,8 +151,8 @@ class WritableBook extends Item{
 		$this->setPages(array_merge(
 			array_slice($pages, 0, $pageId),
 			[new CompoundTag("", [
-				new StringTag("text", $pageText),
-				new StringTag("photoname", "") //TODO
+				new StringTag(self::TAG_PAGE_TEXT, $pageText),
+				new StringTag(self::TAG_PAGE_PHOTONAME, "")
 			])],
 			array_slice($pages, $pageId)
 		));
