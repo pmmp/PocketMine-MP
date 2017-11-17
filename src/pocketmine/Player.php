@@ -95,6 +95,7 @@ use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\PlayerNetworkSessionAdapter;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
@@ -392,11 +393,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function getFirstPlayed(){
-		return $this->namedtag instanceof CompoundTag ? $this->namedtag["firstPlayed"] : null;
+		return $this->namedtag instanceof CompoundTag ? $this->namedtag->getLong("firstPlayed", 0, true) : null;
 	}
 
 	public function getLastPlayed(){
-		return $this->namedtag instanceof CompoundTag ? $this->namedtag["lastPlayed"] : null;
+		return $this->namedtag instanceof CompoundTag ? $this->namedtag->getLong("lastPlayed", 0, true) : null;
 	}
 
 	public function hasPlayedBefore() : bool{
@@ -1816,7 +1817,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->namedtag = $this->server->getOfflinePlayerData($this->username);
 
-		$this->playedBefore = ($this->namedtag["lastPlayed"] - $this->namedtag["firstPlayed"]) > 1; // microtime(true) - microtime(true) may have less than one millisecond difference
+		$this->playedBefore = ($this->getLastPlayed() - $this->getFirstPlayed()) > 1; // microtime(true) - microtime(true) may have less than one millisecond difference
 		$this->namedtag->setString("NameTag", $this->username);
 
 		$this->gamemode = $this->namedtag->getInt("playerGameType", self::SURVIVAL) & 0x03;
@@ -1827,12 +1828,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->allowFlight = $this->isCreative();
 
-		if(($level = $this->server->getLevelByName((string) $this->namedtag["Level"])) === null){
+		if(($level = $this->server->getLevelByName($this->namedtag->getString("Level", "", true))) === null){
 			$this->setLevel($this->server->getDefaultLevel());
-			$this->namedtag["Level"] = $this->level->getName();
-			$this->namedtag["Pos"][0] = $this->level->getSpawnLocation()->x;
-			$this->namedtag["Pos"][1] = $this->level->getSpawnLocation()->y;
-			$this->namedtag["Pos"][2] = $this->level->getSpawnLocation()->z;
+			$this->namedtag->setString("Level", $this->level->getName());
+			$this->namedtag->setTag(new ListTag("Pos", [
+				$this->level->getSpawnLocation()->x,
+				$this->level->getSpawnLocation()->y,
+				$this->level->getSpawnLocation()->z
+			 ]));
 		}else{
 			$this->setLevel($level);
 		}

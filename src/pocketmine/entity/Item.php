@@ -57,7 +57,7 @@ class Item extends Entity{
 		parent::initEntity();
 
 		$this->setMaxHealth(5);
-		$this->setHealth((int) $this->namedtag["Health"]);
+		$this->setHealth($this->namedtag->getShort("Health", (int) $this->getHealth()));
 		$this->age = $this->namedtag->getShort("Age", $this->age);
 		$this->pickupDelay = $this->namedtag->getShort("PickupDelay", $this->pickupDelay);
 		$this->owner = $this->namedtag->getString("Owner", $this->owner);

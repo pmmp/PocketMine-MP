@@ -496,15 +496,16 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->id = Entity::$entityCount++;
 		$this->namedtag = $nbt;
 
-		$this->chunk = $level->getChunk($this->namedtag["Pos"][0] >> 4, $this->namedtag["Pos"][2] >> 4, true);
+		/** @var float[] $pos */
+		$pos = $this->namedtag->getListTag("Pos")->getAllValues();
+
+		$this->chunk = $level->getChunk(((int) $pos[0]) >> 4, ((int) $pos[2]) >> 4, true);
 		assert($this->chunk !== null);
 		$this->setLevel($level);
 		$this->server = $level->getServer();
 
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 
-		/** @var float[] $pos */
-		$pos = $this->namedtag->getListTag("Pos")->getAllValues();
 		/** @var float[] $rotation */
 		$rotation = $this->namedtag->getListTag("Rotation")->getAllValues();
 
