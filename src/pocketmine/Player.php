@@ -222,8 +222,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public $achievements = [];
 
-	public $craftingType = 0; //0 = 2x2 crafting, 1 = 3x3 crafting, 2 = stonecutter
-
 	/** @var PlayerCursorInventory */
 	protected $cursorInventory;
 
@@ -3711,7 +3709,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		if($this->craftingGrid instanceof BigCraftingGrid){
 			$this->craftingGrid = new CraftingGrid($this);
-			$this->craftingType = 0;
 		}
 	}
 
