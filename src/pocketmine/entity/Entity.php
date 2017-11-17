@@ -668,7 +668,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * Sets whether the entity is able to climb climbable blocks.
 	 * @param bool $value
 	 */
-	public function setCanClimb(bool $value){
+	public function setCanClimb(bool $value = true){
 		$this->setGenericFlag(self::DATA_FLAG_CAN_CLIMB, $value);
 	}
 
