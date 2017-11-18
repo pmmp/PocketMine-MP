@@ -1423,11 +1423,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$bb->minY = $this->y - 0.2;
 			$bb->maxY = $this->y + 0.2;
 
-			if(count($this->level->getCollisionBlocks($bb, true)) > 0){
-				$this->onGround = true;
-			}else{
-				$this->onGround = false;
-			}
+			$this->onGround = count($this->level->getCollisionBlocks($bb, true)) > 0;
 		}
 		$this->isCollided = $this->onGround;
 	}
