@@ -3118,17 +3118,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function kick(string $reason = "", bool $isAdmin = true) : bool{
 		$this->server->getPluginManager()->callEvent($ev = new PlayerKickEvent($this, $reason, $this->getLeaveMessage()));
 		if(!$ev->isCancelled()){
+			$message = $reason;
 			if($isAdmin){
 				if(!$this->isBanned()){
 					$message = "Kicked by admin." . ($reason !== "" ? " Reason: " . $reason : "");
-				}else{
-					$message = $reason;
 				}
 			}else{
 				if($reason === ""){
 					$message = "disconnectionScreen.noReason";
-				}else{
-					$message = $reason;
 				}
 			}
 			$this->close($ev->getQuitMessage(), $message);
