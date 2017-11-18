@@ -2807,16 +2807,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return false;
 	}
 
-	public function handlePlayerHotbar(PlayerHotbarPacket $packet){
-		if($packet->windowId !== ContainerIds::INVENTORY){
-			return false; //In PE this should never happen
-		}
-
-		$this->inventory->equipItem($packet->selectedHotbarSlot);
-
-		return true;
-	}
-
 	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
 		if($packet->entityUniqueId !== $this->getId()){
 			return false; //TODO
