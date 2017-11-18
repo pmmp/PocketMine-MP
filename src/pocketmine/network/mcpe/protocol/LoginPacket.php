@@ -60,6 +60,14 @@ class LoginPacket extends DataPacket{
 	/** @var array decoded payload of the clientData JWT */
 	public $clientData = [];
 
+	/**
+	 * This field may be used by plugins to bypass keychain verification. It should only be used for plugins such as
+	 * Specter where passing verification would take too much time and not be worth it.
+	 *
+	 * @var bool
+	 */
+	public $skipVerification = false;
+
 	public function canBeSentBeforeLogin() : bool{
 		return true;
 	}
