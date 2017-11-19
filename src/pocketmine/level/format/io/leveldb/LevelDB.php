@@ -55,6 +55,9 @@ class LevelDB extends BaseLevelProvider{
 	const TAG_BIOME_STATE = "5";
 	const TAG_STATE_FINALISATION = "6";
 
+	const TAG_BORDER_BLOCKS = "8";
+	const TAG_HARDCODED_SPAWNERS = "9";
+
 	const FINALISATION_NEEDS_INSTATICKING = 0;
 	const FINALISATION_NEEDS_POPULATION = 1;
 	const FINALISATION_DONE = 2;
