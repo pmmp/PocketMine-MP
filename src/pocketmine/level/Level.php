@@ -2641,15 +2641,7 @@ class Level implements ChunkManager, Metadatable{
 		try{
 			if($chunk !== null){
 				if($trySave and $this->getAutoSave() and $chunk->isGenerated()){
-					$entities = 0;
-					foreach($chunk->getEntities() as $e){
-						if(!$e->canSaveWithChunk()){
-							continue;
-						}
-						++$entities;
-					}
-
-					if($chunk->hasChanged() or count($chunk->getTiles()) > 0 or $entities > 0){
+					if($chunk->hasChanged() or count($chunk->getTiles()) > 0 or count($chunk->getSavableEntities()) > 0){
 						$this->provider->setChunk($x, $z, $chunk);
 						$this->provider->saveChunk($x, $z);
 					}
