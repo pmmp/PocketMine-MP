@@ -2643,7 +2643,7 @@ class Level implements ChunkManager, Metadatable{
 				if($trySave and $this->getAutoSave() and $chunk->isGenerated()){
 					$entities = 0;
 					foreach($chunk->getEntities() as $e){
-						if($e instanceof Player){
+						if(!$e->canSaveWithChunk()){
 							continue;
 						}
 						++$entities;
