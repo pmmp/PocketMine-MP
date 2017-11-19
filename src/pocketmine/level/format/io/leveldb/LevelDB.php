@@ -77,7 +77,15 @@ class LevelDB extends BaseLevelProvider{
 	/** @var \LevelDB */
 	protected $db;
 
+	private static function checkForLevelDBExtension(){
+		if(!extension_loaded('leveldb')){
+			throw new LevelException("The leveldb PHP extension is required to use this world format");
+		}
+	}
+
 	public function __construct(Level $level, string $path){
+		self::checkForLevelDBExtension();
+
 		$this->level = $level;
 		$this->path = $path;
 		if(!file_exists($this->path)){
@@ -91,6 +99,7 @@ class LevelDB extends BaseLevelProvider{
 		}else{
 			throw new LevelException("Invalid level.dat");
 		}
+
 
 		$this->db = new \LevelDB($this->path . "/db", [
 			"compression" => LEVELDB_ZLIB_COMPRESSION
@@ -145,6 +154,8 @@ class LevelDB extends BaseLevelProvider{
 	}
 
 	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []){
+		self::checkForLevelDBExtension();
+
 		if(!file_exists($path)){
 			mkdir($path, 0777, true);
 		}
