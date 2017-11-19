@@ -1455,15 +1455,15 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			return true;
 		}
 
+		Timings::$entityMoveTimer->startTiming();
+
+		$movX = $dx;
+		$movY = $dy;
+		$movZ = $dz;
+
 		if($this->keepMovement){
 			$this->boundingBox->offset($dx, $dy, $dz);
-			$this->setPosition($this->temporalVector->setComponents(($this->boundingBox->minX + $this->boundingBox->maxX) / 2, $this->boundingBox->minY, ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2));
-			$this->onGround = $this->isPlayer ? true : false;
-			return true;
 		}else{
-
-			Timings::$entityMoveTimer->startTiming();
-
 			$this->ySize *= 0.4;
 
 			/*
@@ -1477,10 +1477,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 				$this->motionZ = 0;
 			}
 			*/
-
-			$movX = $dx;
-			$movY = $dy;
-			$movZ = $dz;
 
 			$axisalignedbb = clone $this->boundingBox;
 
@@ -1575,37 +1571,35 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 				}else{
 					$this->ySize += 0.5; //FIXME: this should be the height of the block it walked up, not fixed 0.5
 				}
-
 			}
-
-			$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
-			$this->y = $this->boundingBox->minY - $this->ySize;
-			$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
-
-			$this->checkChunks();
-			$this->checkBlockCollision();
-			$this->checkGroundState($movX, $movY, $movZ, $dx, $dy, $dz);
-			$this->updateFallState($dy, $this->onGround);
-
-			if($movX != $dx){
-				$this->motionX = 0;
-			}
-
-			if($movY != $dy){
-				$this->motionY = 0;
-			}
-
-			if($movZ != $dz){
-				$this->motionZ = 0;
-			}
-
-
-			//TODO: vehicle collision events (first we need to spawn them!)
-
-			Timings::$entityMoveTimer->stopTiming();
-
-			return true;
 		}
+
+		$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
+		$this->y = $this->boundingBox->minY - $this->ySize;
+		$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
+
+		$this->checkChunks();
+		$this->checkBlockCollision();
+		$this->checkGroundState($movX, $movY, $movZ, $dx, $dy, $dz);
+		$this->updateFallState($dy, $this->onGround);
+
+		if($movX != $dx){
+			$this->motionX = 0;
+		}
+
+		if($movY != $dy){
+			$this->motionY = 0;
+		}
+
+		if($movZ != $dz){
+			$this->motionZ = 0;
+		}
+
+		//TODO: vehicle collision events (first we need to spawn them!)
+
+		Timings::$entityMoveTimer->stopTiming();
+
+		return true;
 	}
 
 	protected function checkGroundState(float $movX, float $movY, float $movZ, float $dx, float $dy, float $dz){
