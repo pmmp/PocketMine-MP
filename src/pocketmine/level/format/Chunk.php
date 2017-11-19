@@ -1004,11 +1004,6 @@ class Chunk{
 		return $chunk;
 	}
 
-	//TODO: get rid of this
-	public static function getEmptyChunk(int $x, int $z) : Chunk{
-		return new Chunk($x, $z);
-	}
-
 	/**
 	 * Creates a block hash from chunk block coordinates. Used for extra data keys in chunk packets.
 	 * @internal
