@@ -1714,8 +1714,9 @@ class Server{
 				$this->setDefaultLevel($this->getLevelByName($default));
 			}
 
-
-			$this->properties->save(true);
+			if($this->properties->hasChanged()){
+				$this->properties->save(true);
+			}
 
 			if(!($this->getDefaultLevel() instanceof Level)){
 				$this->getLogger()->emergency($this->getLanguage()->translateString("pocketmine.level.defaultError"));
@@ -2073,8 +2074,10 @@ class Server{
 				$this->scheduler->mainThreadHeartbeat(PHP_INT_MAX);
 			}
 
-			$this->getLogger()->debug("Saving properties");
-			$this->properties->save();
+			if($this->properties->hasChanged()){
+				$this->getLogger()->debug("Saving properties");
+				$this->properties->save();
+			}
 
 			$this->getLogger()->debug("Closing console");
 			$this->console->shutdown();
