@@ -55,6 +55,9 @@ class Config{
 	/** @var int */
 	private $jsonOptions = JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING;
 
+	/** @var bool */
+	private $changed = false;
+
 	public static $formats = [
 		"properties" => Config::PROPERTIES,
 		"cnf" => Config::CNF,
@@ -92,6 +95,14 @@ class Config{
 		$this->nestedCache = [];
 		$this->correct = false;
 		$this->load($this->file, $this->type);
+	}
+
+	public function hasChanged() : bool{
+		return $this->changed;
+	}
+
+	public function setChanged(bool $changed = true) : void{
+		$this->changed = $changed;
 	}
 
 	/**
@@ -218,6 +229,8 @@ class Config{
 				}
 			}
 
+			$this->changed = false;
+
 			return true;
 		}else{
 			return false;
@@ -237,6 +250,8 @@ class Config{
 			throw new \RuntimeException("Attempt to set JSON options for non-JSON config");
 		}
 		$this->jsonOptions = $options;
+		$this->changed = true;
+
 		return $this;
 	}
 
@@ -253,6 +268,8 @@ class Config{
 			throw new \RuntimeException("Attempt to enable JSON option for non-JSON config");
 		}
 		$this->jsonOptions |= $option;
+		$this->changed = true;
+
 		return $this;
 	}
 
@@ -269,6 +286,8 @@ class Config{
 			throw new \RuntimeException("Attempt to disable JSON option for non-JSON config");
 		}
 		$this->jsonOptions &= ~$option;
+		$this->changed = true;
+
 		return $this;
 	}
 
@@ -343,6 +362,7 @@ class Config{
 
 		$base = $value;
 		$this->nestedCache = [];
+		$this->changed = true;
 	}
 
 	/**
@@ -378,6 +398,7 @@ class Config{
 
 	public function removeNested(string $key) : void{
 		$this->nestedCache = [];
+		$this->changed = true;
 
 		$vars = explode(".", $key);
 
@@ -412,6 +433,7 @@ class Config{
 	 */
 	public function set($k, $v = true){
 		$this->config[$k] = $v;
+		$this->changed = true;
 		foreach($this->nestedCache as $nestedKey => $nvalue){
 			if(substr($nestedKey, 0, strlen($k) + 1) === ($k . ".")){
 				unset($this->nestedCache[$nestedKey]);
@@ -424,6 +446,7 @@ class Config{
 	 */
 	public function setAll(array $v){
 		$this->config = $v;
+		$this->changed = true;
 	}
 
 	/**
@@ -447,6 +470,7 @@ class Config{
 	 */
 	public function remove($k){
 		unset($this->config[$k]);
+		$this->changed = true;
 	}
 
 	/**
@@ -483,6 +507,10 @@ class Config{
 				$data[$k] = $v;
 				++$changed;
 			}
+		}
+
+		if($changed > 0){
+			$this->changed = true;
 		}
 
 		return $changed;
