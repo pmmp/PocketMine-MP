@@ -34,7 +34,6 @@ use pocketmine\level\Level;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ShortTag;
 
 abstract class Projectile extends Entity{
 
@@ -62,9 +61,7 @@ abstract class Projectile extends Entity{
 
 		$this->setMaxHealth(1);
 		$this->setHealth(1);
-		if(isset($this->namedtag->Age)){
-			$this->age = $this->namedtag["Age"];
-		}
+		$this->age = $this->namedtag->getShort("Age", $this->age);
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
@@ -102,12 +99,12 @@ abstract class Projectile extends Entity{
 			}
 		}
 
-		$this->close();
+		$this->flagForDespawn();
 	}
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Age = new ShortTag("Age", $this->age);
+		$this->namedtag->setShort("Age", $this->age);
 	}
 
 	protected function applyDragBeforeGravity() : bool{
@@ -121,7 +118,7 @@ abstract class Projectile extends Entity{
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		if($this->isAlive()){
+		if(!$this->isFlaggedForDespawn()){
 			$movingObjectPosition = null;
 
 			$moveVector = new Vector3($this->x + $this->motionX, $this->y + $this->motionY, $this->z + $this->motionZ);

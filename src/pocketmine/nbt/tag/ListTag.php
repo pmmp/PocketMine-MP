@@ -88,10 +88,32 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 		return $count;
 	}
 
+	public function getAllValues() : array{
+		$result = [];
+		foreach($this as $tag){
+			if(!($tag instanceof NamedTag)){
+				continue;
+			}
+
+			if($tag instanceof \ArrayAccess){
+				$result[] = $tag;
+			}else{
+				$result[] = $tag->getValue();
+			}
+		}
+
+		return $result;
+	}
+
 	public function offsetExists($offset){
 		return isset($this->{$offset});
 	}
 
+	/**
+	 * @param int $offset
+	 *
+	 * @return CompoundTag|ListTag|mixed
+	 */
 	public function offsetGet($offset){
 		if(isset($this->{$offset}) and $this->{$offset} instanceof Tag){
 			if($this->{$offset} instanceof \ArrayAccess){

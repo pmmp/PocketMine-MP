@@ -129,49 +129,37 @@ namespace pocketmine {
 		define('pocketmine\PATH', dirname(__FILE__, 3) . DIRECTORY_SEPARATOR);
 	}
 
-	$requiredSplVer = "0.0.1";
-	if(!is_file(\pocketmine\PATH . "src/spl/version.php")){
-		echo "[CRITICAL] Cannot find PocketMine-SPL or incompatible version." . PHP_EOL;
-		echo "[CRITICAL] Please update your submodules or use provided builds." . PHP_EOL;
-		exit(1);
-	}elseif(version_compare($requiredSplVer, require(\pocketmine\PATH . "src/spl/version.php")) > 0){
-		echo "[CRITICAL] Incompatible PocketMine-SPL submodule version ($requiredSplVer is required)." . PHP_EOL;
-		echo "[CRITICAL] Please update your submodules or use provided builds." . PHP_EOL;
+	define('pocketmine\COMPOSER_AUTOLOADER_PATH', \pocketmine\PATH . 'vendor/autoload.php');
+
+	function composer_error_die($message){
+		echo "[CRITICAL] $message" . PHP_EOL;
+		echo "[CRITICAL] Please install/update Composer dependencies or use provided builds." . PHP_EOL;
 		exit(1);
 	}
 
-	if(is_file(\pocketmine\PATH . "vendor/autoload.php")){
-		require_once(\pocketmine\PATH . "vendor/autoload.php");
+	if(is_file(\pocketmine\COMPOSER_AUTOLOADER_PATH)){
+		require_once(\pocketmine\COMPOSER_AUTOLOADER_PATH);
 	}else{
-		echo "[CRITICAL] Composer autoloader not found" . PHP_EOL;
-		echo "[CRITICAL] Please initialize composer dependencies before running." . PHP_EOL;
-		exit(1);
+		composer_error_die("Composer autoloader not found.");
 	}
 
-	if(!class_exists("ClassLoader", false)){
-		require_once(\pocketmine\PATH . "src/spl/ClassLoader.php");
-		require_once(\pocketmine\PATH . "src/spl/BaseClassLoader.php");
+	if(!class_exists(RakLib::class)){
+		composer_error_die("Unable to find the RakLib library.");
+	}
+	if(version_compare(RakLib::VERSION, "0.9.0") < 0){ //TODO: remove this check (it's managed by Composer now)
+		composer_error_die("RakLib version 0.9.0 is required, while you have version " . RakLib::VERSION . ".");
+	}
+	if(!class_exists(\BaseClassLoader::class)){
+		composer_error_die("Unable to find the PocketMine-SPL library.");
 	}
 
 	/*
-	 * We now use the Composer autoloader, but this autoloader is still used by RakLib and for loading plugins.
+	 * We now use the Composer autoloader, but this autoloader is still for loading plugins.
 	 */
 	$autoloader = new \BaseClassLoader();
 	$autoloader->addPath(\pocketmine\PATH . "src");
 	$autoloader->addPath(\pocketmine\PATH . "src" . DIRECTORY_SEPARATOR . "spl");
 	$autoloader->register(false);
-
-	if(!class_exists(RakLib::class)){
-		echo "[CRITICAL] Unable to find the RakLib library." . PHP_EOL;
-		echo "[CRITICAL] Please use provided builds or clone the repository recursively." . PHP_EOL;
-		exit(1);
-	}
-
-	if(version_compare(RakLib::VERSION, "0.8.1") < 0){
-		echo "[CRITICAL] RakLib version 0.8.1 is required, while you have version " . RakLib::VERSION . "." . PHP_EOL;
-		echo "[CRITICAL] Please update your submodules or use provided builds." . PHP_EOL;
-		exit(1);
-	}
 
 	set_time_limit(0); //Who set it to 30 seconds?!?!
 
@@ -410,6 +398,12 @@ namespace pocketmine {
 		return -1;
 	}
 
+	/**
+	 * @param int        $start
+	 * @param array|null $trace
+	 *
+	 * @return array
+	 */
 	function getTrace($start = 0, $trace = null){
 		if($trace === null){
 			if(function_exists("xdebug_get_function_stack")){
@@ -472,8 +466,8 @@ namespace pocketmine {
 
 		if(extension_loaded("leveldb")){
 			$leveldb_version = phpversion("leveldb");
-			if(version_compare($leveldb_version, "0.2.0") < 0){
-				$logger->critical("php-leveldb >= 0.2.0 is required, while you have $leveldb_version");
+			if(version_compare($leveldb_version, "0.2.1") < 0){
+				$logger->critical("php-leveldb >= 0.2.1 is required, while you have $leveldb_version");
 				++$errors;
 			}
 		}

@@ -352,7 +352,8 @@ class Level implements ChunkManager, Metadatable{
 		$this->chunkPopulationQueueSize = (int) $this->server->getProperty("chunk-generation.population-queue-size", 2);
 		$this->clearChunksOnTick = (bool) $this->server->getProperty("chunk-ticking.clear-tick-list", true);
 
-		$dontTickBlocks = $this->server->getProperty("chunk-ticking.disable-block-ticking", []);
+		$dontTickBlocks = array_fill_keys($this->server->getProperty("chunk-ticking.disable-block-ticking", []), true);
+
 		$this->randomTickBlocks = new \SplFixedArray(256);
 		foreach($this->randomTickBlocks as $id => $null){
 			$block = BlockFactory::get($id); //Make sure it's a copy
@@ -732,11 +733,9 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->tileEntityTick->startTiming();
 		Timings::$tickTileEntityTimer->startTiming();
 		//Update tiles that need update
-		if(count($this->updateTiles) > 0){
-			foreach($this->updateTiles as $id => $tile){
-				if($tile->onUpdate() !== true){
-					unset($this->updateTiles[$id]);
-				}
+		foreach($this->updateTiles as $id => $tile){
+			if($tile->onUpdate() !== true){
+				unset($this->updateTiles[$id]);
 			}
 		}
 		Timings::$tickTileEntityTimer->stopTiming();
@@ -1583,9 +1582,9 @@ class Level implements ChunkManager, Metadatable{
 	 * @param Player  $player
 	 * @param Vector3 $vector
 	 *
-	 * @return bool false if spawn protection cancelled the action, true if not.
+	 * @return bool true if spawn protection cancelled the action, false if not.
 	 */
-	protected function checkSpawnProtection(Player $player, Vector3 $vector) : bool{
+	public function checkSpawnProtection(Player $player, Vector3 $vector) : bool{
 		if(!$player->hasPermission("pocketmine.spawnprotect.bypass") and ($distance = $this->server->getSpawnRadius()) > -1){
 			$t = new Vector2($vector->x, $vector->z);
 			$s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);
@@ -1722,18 +1721,18 @@ class Level implements ChunkManager, Metadatable{
 	 * @param Vector3      $vector
 	 * @param Item         $item
 	 * @param int          $face
-	 * @param Vector3|null $facePos
+	 * @param Vector3|null $clickVector
 	 * @param Player|null  $player default null
 	 * @param bool         $playSound Whether to play a block-place sound if the block was placed successfully.
 	 *
 	 * @return bool
 	 */
-	public function useItemOn(Vector3 $vector, Item &$item, int $face, Vector3 $facePos = null, Player $player = null, bool $playSound = false) : bool{
+	public function useItemOn(Vector3 $vector, Item &$item, int $face, Vector3 $clickVector = null, Player $player = null, bool $playSound = false) : bool{
 		$blockClicked = $this->getBlock($vector);
 		$blockReplace = $blockClicked->getSide($face);
 
-		if($facePos === null){
-			$facePos = new Vector3(0.0, 0.0, 0.0);
+		if($clickVector === null){
+			$clickVector = new Vector3(0.0, 0.0, 0.0);
 		}
 
 		if($blockReplace->y >= $this->provider->getWorldHeight() or $blockReplace->y < 0){
@@ -1746,7 +1745,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if($player !== null){
-			$ev = new PlayerInteractEvent($player, $item, $blockClicked, $face, $blockClicked->getId() === 0 ? PlayerInteractEvent::RIGHT_CLICK_AIR : PlayerInteractEvent::RIGHT_CLICK_BLOCK);
+			$ev = new PlayerInteractEvent($player, $item, $blockClicked, $clickVector, $face, $blockClicked->getId() === 0 ? PlayerInteractEvent::RIGHT_CLICK_AIR : PlayerInteractEvent::RIGHT_CLICK_BLOCK);
 			if($this->checkSpawnProtection($player, $blockClicked)){
 				$ev->setCancelled(); //set it to cancelled so plugins can bypass this
 			}
@@ -1776,7 +1775,7 @@ class Level implements ChunkManager, Metadatable{
 					return true;
 				}
 
-				if(!$player->isSneaking() and $item->onActivate($this, $player, $blockReplace, $blockClicked, $face, $facePos)){
+				if(!$player->isSneaking() and $item->onActivate($this, $player, $blockReplace, $blockClicked, $face, $clickVector)){
 					return true;
 				}
 			}else{
@@ -1793,10 +1792,10 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		if($hand->canBePlacedAt($blockClicked, $facePos, $face, true)){
+		if($hand->canBePlacedAt($blockClicked, $clickVector, $face, true)){
 			$blockReplace = $blockClicked;
 			$hand->position($blockReplace);
-		}elseif(!$hand->canBePlacedAt($blockReplace, $facePos, $face, false)){
+		}elseif(!$hand->canBePlacedAt($blockReplace, $clickVector, $face, false)){
 			return false;
 		}
 
@@ -1835,7 +1834,7 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
-		if(!$hand->place($item, $blockReplace, $blockClicked, $face, $facePos, $player)){
+		if(!$hand->place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
 			return false;
 		}
 
@@ -1962,17 +1961,33 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * Returns the Tile in a position, or null if not found
+	 * Returns the Tile in a position, or null if not found.
+	 *
+	 * Note: This method wraps getTileAt(). If you're guaranteed to be passing integers, and you're using this method
+	 * in performance-sensitive code, consider using getTileAt() instead of this method for better performance.
 	 *
 	 * @param Vector3 $pos
 	 *
 	 * @return Tile|null
 	 */
-	public function getTile(Vector3 $pos){
-		$chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4, false);
+	public function getTile(Vector3 $pos) : ?Tile{
+		return $this->getTileAt((int) floor($pos->x), (int) floor($pos->y), (int) floor($pos->z));
+	}
+
+	/**
+	 * Returns the tile at the specified x,y,z coordinates, or null if it does not exist.
+	 *
+	 * @param int $x
+	 * @param int $y
+	 * @param int $z
+	 *
+	 * @return Tile|null
+	 */
+	public function getTileAt(int $x, int $y, int $z) : ?Tile{
+		$chunk = $this->getChunk($x >> 4, $z >> 4);
 
 		if($chunk !== null){
-			return $chunk->getTile($pos->x & 0x0f, $pos->y, $pos->z & 0x0f);
+			return $chunk->getTile($x & 0x0f, $y, $z & 0x0f);
 		}
 
 		return null;
@@ -2626,15 +2641,7 @@ class Level implements ChunkManager, Metadatable{
 		try{
 			if($chunk !== null){
 				if($trySave and $this->getAutoSave() and $chunk->isGenerated()){
-					$entities = 0;
-					foreach($chunk->getEntities() as $e){
-						if($e instanceof Player){
-							continue;
-						}
-						++$entities;
-					}
-
-					if($chunk->hasChanged() or count($chunk->getTiles()) > 0 or $entities > 0){
+					if($chunk->hasChanged() or count($chunk->getTiles()) > 0 or count($chunk->getSavableEntities()) > 0){
 						$this->provider->setChunk($x, $z, $chunk);
 						$this->provider->saveChunk($x, $z);
 					}
@@ -2688,15 +2695,13 @@ class Level implements ChunkManager, Metadatable{
 			$max = $this->provider->getWorldHeight();
 			$v = $spawn->floor();
 			$chunk = $this->getChunk($v->x >> 4, $v->z >> 4, false);
-			$x = $v->x & 0x0f;
-			$z = $v->z & 0x0f;
+			$x = (int) $v->x;
+			$z = (int) $v->z;
 			if($chunk !== null){
 				$y = (int) min($max - 2, $v->y);
-				$wasAir = ($chunk->getBlockId($x, $y - 1, $z) === 0);
+				$wasAir = ($chunk->getBlockId($x & 0x0f, $y - 1, $z & 0x0f) === 0);
 				for(; $y > 0; --$y){
-					$b = $chunk->getFullBlock($x, $y, $z);
-					$block = BlockFactory::get($b >> 4, $b & 0x0f);
-					if($this->isFullBlock($block)){
+					if($this->isFullBlock($this->getBlockAt($x, $y, $z))){
 						if($wasAir){
 							$y++;
 							break;
@@ -2707,12 +2712,8 @@ class Level implements ChunkManager, Metadatable{
 				}
 
 				for(; $y >= 0 and $y < $max; ++$y){
-					$b = $chunk->getFullBlock($x, $y + 1, $z);
-					$block = BlockFactory::get($b >> 4, $b & 0x0f);
-					if(!$this->isFullBlock($block)){
-						$b = $chunk->getFullBlock($x, $y, $z);
-						$block = BlockFactory::get($b >> 4, $b & 0x0f);
-						if(!$this->isFullBlock($block)){
+					if(!$this->isFullBlock($this->getBlockAt($x, $y + 1, $z))){
+						if(!$this->isFullBlock($this->getBlockAt($x, $y, $z))){
 							return new Position($spawn->x, $y === (int) $spawn->y ? $spawn->y : $y, $spawn->z, $this);
 						}
 					}else{

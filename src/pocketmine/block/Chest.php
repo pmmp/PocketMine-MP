@@ -53,17 +53,18 @@ class Chest extends Transparent{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
+		//these are slightly bigger than in PC
 		return new AxisAlignedBB(
-			$this->x + 0.0625,
+			$this->x + 0.025,
 			$this->y,
-			$this->z + 0.0625,
-			$this->x + 0.9375,
-			$this->y + 0.9475,
-			$this->z + 0.9375
+			$this->z + 0.025,
+			$this->x + 0.975,
+			$this->y + 0.95,
+			$this->z + 0.975
 		);
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$faces = [
 			0 => 4,
 			1 => 2,
@@ -125,7 +126,7 @@ class Chest extends Transparent{
 			if(
 				!$this->getSide(Vector3::SIDE_UP)->isTransparent() or
 				($chest->isPaired() and !$chest->getPair()->getBlock()->getSide(Vector3::SIDE_UP)->isTransparent()) or
-				(isset($chest->namedtag->Lock) and $chest->namedtag->Lock instanceof StringTag and $chest->namedtag->Lock->getValue() !== $item->getCustomName())
+				($chest->namedtag->hasTag("Lock", StringTag::class) and $chest->namedtag->getString("Lock") !== $item->getCustomName())
 			){
 				return true;
 			}

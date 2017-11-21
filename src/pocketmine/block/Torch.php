@@ -68,7 +68,7 @@ class Torch extends Flowable{
 		return false;
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$below = $this->getSide(Vector3::SIDE_DOWN);
 
 		if($blockClicked->isTransparent() === false and $face !== Vector3::SIDE_DOWN){

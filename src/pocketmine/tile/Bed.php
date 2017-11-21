@@ -35,8 +35,8 @@ class Bed extends Spawnable{
 	const TAG_COLOR = "color";
 
 	public function __construct(Level $level, CompoundTag $nbt){
-		if(!$nbt->hasTag(self::TAG_COLOR, ByteTag::class)){
-			$nbt->setTag(new ByteTag(self::TAG_COLOR, 14)); //default to old red
+		if(!$nbt->hasTag(self::TAG_COLOR, ByteTag::class)){ //TODO: check PC format
+			$nbt->setByte(self::TAG_COLOR, 14, true); //default to old red
 		}
 		parent::__construct($level, $nbt);
 	}

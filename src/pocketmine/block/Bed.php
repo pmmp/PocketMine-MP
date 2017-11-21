@@ -142,7 +142,7 @@ class Bed extends Transparent{
 
 				return true;
 			}elseif($player->distanceSquared($this) > 4 and $player->distanceSquared($other) > 4){
-				//MCPE doesn't have messages for bed too far away
+				$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%tile.bed.tooFar"));
 				return true;
 			}
 
@@ -171,7 +171,7 @@ class Bed extends Transparent{
 
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
 		if(!$down->isTransparent()){
 			$meta = (($player instanceof Player ? $player->getDirection() : 0) - 1) & 0x03;

@@ -65,7 +65,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	public function __construct(Server $server){
 		$this->server = $server;
 
-		$this->rakLib = new RakLibServer($this->server->getLogger(), $this->server->getLoader(), $this->server->getPort(), $this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp(), false);
+		$this->rakLib = new RakLibServer($this->server->getLogger(), \pocketmine\COMPOSER_AUTOLOADER_PATH, $this->server->getPort(), $this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp(), false);
 		$this->interface = new ServerHandler($this->rakLib, $this);
 	}
 
@@ -235,6 +235,12 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		}
 
 		return null;
+	}
+
+	public function updatePing(string $identifier, int $pingMS){
+		if(isset($this->players[$identifier])){
+			$this->players[$identifier]->updatePing($pingMS);
+		}
 	}
 
 	private function getPacket($buffer){

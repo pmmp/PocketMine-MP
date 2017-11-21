@@ -58,16 +58,20 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 	/** @var int */
 	protected $action;
 
-	public function __construct(Player $player, Item $item, Vector3 $block, int $face, int $action = PlayerInteractEvent::RIGHT_CLICK_BLOCK){
-		if($block instanceof Block){
-			$this->blockTouched = $block;
-			$this->touchVector = new Vector3(0, 0, 0);
-		}else{
-			$this->touchVector = $block;
-			$this->blockTouched = BlockFactory::get(0, 0, new Position(0, 0, 0, $player->level));
-		}
+	/**
+	 * @param Player       $player
+	 * @param Item         $item
+	 * @param Block|null   $block
+	 * @param Vector3|null $touchVector
+	 * @param int          $face
+	 * @param int          $action
+	 */
+	public function __construct(Player $player, Item $item, ?Block $block, ?Vector3 $touchVector, int $face, int $action = PlayerInteractEvent::RIGHT_CLICK_BLOCK){
+		assert($block !== null or $touchVector !== null);
 		$this->player = $player;
 		$this->item = $item;
+		$this->blockTouched = $block ?? BlockFactory::get(0, 0, new Position(0, 0, 0, $player->level));
+		$this->touchVector = $touchVector ?? new Vector3(0, 0, 0);
 		$this->blockFace = $face;
 		$this->action = $action;
 	}

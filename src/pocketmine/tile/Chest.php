@@ -136,7 +136,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	 */
 	public function getPair() : ?Chest{
 		if($this->isPaired()){
-			$tile = $this->getLevel()->getTile(new Vector3($this->namedtag->getInt(self::TAG_PAIRX), $this->y, $this->namedtag->getInt(self::TAG_PAIRZ)));
+			$tile = $this->getLevel()->getTileAt($this->namedtag->getInt(self::TAG_PAIRX), $this->y, $this->namedtag->getInt(self::TAG_PAIRZ));
 			if($tile instanceof Chest){
 				return $tile;
 			}
@@ -152,8 +152,8 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 
 		$this->createPair($tile);
 
-		$this->spawnToAll();
-		$tile->spawnToAll();
+		$this->onChanged();
+		$tile->onChanged();
 		$this->checkPairing();
 
 		return true;
@@ -175,12 +175,12 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 		$tile = $this->getPair();
 		$this->namedtag->removeTag(self::TAG_PAIRX, self::TAG_PAIRZ);
 
-		$this->spawnToAll();
+		$this->onChanged();
 
 		if($tile instanceof Chest){
 			$tile->namedtag->removeTag(self::TAG_PAIRX, self::TAG_PAIRZ);
 			$tile->checkPairing();
-			$tile->spawnToAll();
+			$tile->onChanged();
 		}
 		$this->checkPairing();
 

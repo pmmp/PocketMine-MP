@@ -215,9 +215,9 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @param CompoundTag|string $tags
 	 *
-	 * @return $this
+	 * @return Item
 	 */
-	public function setCompoundTag($tags){
+	public function setCompoundTag($tags) : Item{
 		if($tags instanceof CompoundTag){
 			$this->setNamedTag($tags);
 		}else{
@@ -259,9 +259,9 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @param CompoundTag $compound
 	 *
-	 * @return $this
+	 * @return Item
 	 */
-	public function setCustomBlockData(CompoundTag $compound){
+	public function setCustomBlockData(CompoundTag $compound) : Item{
 		$tags = clone $compound;
 		$tags->setName(self::TAG_BLOCK_ENTITY_TAG);
 		$this->setNamedTagEntry($tags);
@@ -369,7 +369,7 @@ class Item implements ItemIds, \JsonSerializable{
 			/** @var CompoundTag $entry */
 			foreach($ench as $k => $entry){
 				if($entry->getShort("id") === $enchantment->getId()){
-					$ench->{$k} = new CompoundTag("", [
+					$ench[$k] = new CompoundTag("", [
 						new ShortTag("id", $enchantment->getId()),
 						new ShortTag("lvl", $enchantment->getLevel())
 					]);
@@ -380,7 +380,7 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		if(!$found){
-			$ench->{count($ench)} = new CompoundTag("", [
+			$ench[count($ench)] = new CompoundTag("", [
 				new ShortTag("id", $enchantment->getId()),
 				new ShortTag("lvl", $enchantment->getLevel())
 			]);
@@ -438,9 +438,9 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @param string $name
 	 *
-	 * @return $this
+	 * @return Item
 	 */
-	public function setCustomName(string $name){
+	public function setCustomName(string $name) : Item{
 		if($name === ""){
 			$this->clearCustomName();
 		}
@@ -458,9 +458,9 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * @return $this
+	 * @return Item
 	 */
-	public function clearCustomName(){
+	public function clearCustomName() : Item{
 		$display = $this->getNamedTagEntry(self::TAG_DISPLAY);
 		if($display instanceof CompoundTag){
 			$display->removeTag(self::TAG_DISPLAY_NAME);
@@ -481,9 +481,7 @@ class Item implements ItemIds, \JsonSerializable{
 	public function getLore() : array{
 		$display = $this->getNamedTagEntry(self::TAG_DISPLAY);
 		if($display instanceof CompoundTag and ($lore = $display->getListTag(self::TAG_DISPLAY_LORE)) !== null){
-			return array_map(function(StringTag $tag) : string{
-				return $tag->getValue();
-			}, $lore->getValue());
+			return $lore->getAllValues();
 		}
 
 		return [];
@@ -492,9 +490,9 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @param string[] $lines
 	 *
-	 * @return $this
+	 * @return Item
 	 */
-	public function setLore(array $lines){
+	public function setLore(array $lines) : Item{
 		$display = $this->getNamedTagEntry(self::TAG_DISPLAY);
 		if(!($display instanceof CompoundTag)){
 			$display = new CompoundTag(self::TAG_DISPLAY, []);
@@ -514,18 +512,18 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return NamedTag|null
 	 */
 	public function getNamedTagEntry(string $name) : ?NamedTag{
-		return $this->getNamedTag()->{$name} ?? null;
+		return $this->getNamedTag()->getTag($name);
 	}
 
 	public function setNamedTagEntry(NamedTag $new) : void{
 		$tag = $this->getNamedTag();
-		$tag->{$new->getName()} = $new;
+		$tag->setTag($new);
 		$this->setNamedTag($tag);
 	}
 
 	public function removeNamedTagEntry(string $name) : void{
 		$tag = $this->getNamedTag();
-		unset($tag->{$name});
+		$tag->removeTag($name);
 		$this->setNamedTag($tag);
 	}
 
@@ -547,9 +545,9 @@ class Item implements ItemIds, \JsonSerializable{
 	 * Sets the Item's NBT from the supplied CompoundTag object.
 	 * @param CompoundTag $tag
 	 *
-	 * @return $this
+	 * @return Item
 	 */
-	public function setNamedTag(CompoundTag $tag){
+	public function setNamedTag(CompoundTag $tag) : Item{
 		if($tag->getCount() === 0){
 			return $this->clearNamedTag();
 		}
@@ -564,7 +562,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * Removes the Item's NBT.
 	 * @return Item
 	 */
-	public function clearNamedTag(){
+	public function clearNamedTag() : Item{
 		return $this->setCompoundTag("");
 	}
 
@@ -577,9 +575,9 @@ class Item implements ItemIds, \JsonSerializable{
 
 	/**
 	 * @param int $count
-	 * @return $this
+	 * @return Item
 	 */
-	public function setCount(int $count){
+	public function setCount(int $count) : Item{
 		$this->count = $count;
 
 		return $this;
@@ -677,9 +675,9 @@ class Item implements ItemIds, \JsonSerializable{
 
 	/**
 	 * @param int $meta
-	 * @return $this
+	 * @return Item
 	 */
-	public function setDamage(int $meta){
+	public function setDamage(int $meta) : Item{
 		$this->meta = $meta !== -1 ? $meta & 0x7FFF : -1;
 
 		return $this;
@@ -788,11 +786,11 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @param Block   $blockReplace
 	 * @param Block   $blockClicked
 	 * @param int     $face
-	 * @param Vector3 $facePos
+	 * @param Vector3 $clickVector
 	 *
 	 * @return bool
 	 */
-	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos) : bool{
+	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
 		return false;
 	}
 

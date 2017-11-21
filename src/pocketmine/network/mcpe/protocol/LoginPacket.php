@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\utils\BinaryStream;
+use pocketmine\utils\MainLogger;
 use pocketmine\utils\Utils;
 
 class LoginPacket extends DataPacket{
@@ -49,6 +50,8 @@ class LoginPacket extends DataPacket{
 	public $identityPublicKey;
 	/** @var string */
 	public $serverAddress;
+	/** @var string */
+	public $locale;
 
 	/** @var array (the "chain" index contains one or more JWTs) */
 	public $chainData = [];
@@ -56,6 +59,14 @@ class LoginPacket extends DataPacket{
 	public $clientDataJwt;
 	/** @var array decoded payload of the clientData JWT */
 	public $clientData = [];
+
+	/**
+	 * This field may be used by plugins to bypass keychain verification. It should only be used for plugins such as
+	 * Specter where passing verification would take too much time and not be worth it.
+	 *
+	 * @var bool
+	 */
+	public $skipVerification = false;
 
 	public function canBeSentBeforeLogin() : bool{
 		return true;
@@ -73,9 +84,24 @@ class LoginPacket extends DataPacket{
 				$this->offset -= 6;
 				$this->protocol = $this->getInt();
 			}
-			return; //Do not attempt to continue decoding for non-accepted protocols
 		}
 
+		try{
+			$this->decodeConnectionRequest();
+		}catch(\Throwable $e){
+			if($this->protocol === ProtocolInfo::CURRENT_PROTOCOL){
+				throw $e;
+			}
+
+			$logger = MainLogger::getLogger();
+			$logger->debug(get_class($e)  . " was thrown while decoding connection request in login (protocol version " . ($this->protocol ?? "unknown") . "): " . $e->getMessage());
+			foreach(\pocketmine\getTrace(0, $e->getTrace()) as $line){
+				$logger->debug($line);
+			}
+		}
+	}
+
+	protected function decodeConnectionRequest() : void{
 		$buffer = new BinaryStream($this->getString());
 
 		$this->chainData = json_decode($buffer->get($buffer->getLInt()), true);
@@ -103,6 +129,8 @@ class LoginPacket extends DataPacket{
 
 		$this->clientId = $this->clientData["ClientRandomId"] ?? null;
 		$this->serverAddress = $this->clientData["ServerAddress"] ?? null;
+
+		$this->locale = $this->clientData["LanguageCode"] ?? null;
 	}
 
 	protected function encodePayload(){

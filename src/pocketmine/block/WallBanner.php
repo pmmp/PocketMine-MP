@@ -23,40 +23,23 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\entity\Entity;
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\level\Level;
 
-class Water extends Liquid{
+class WallBanner extends StandingBanner{
 
-	protected $id = self::FLOWING_WATER;
-
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
-	}
+	protected $id = self::WALL_BANNER;
 
 	public function getName() : string{
-		return "Water";
+		return "Wall Banner";
 	}
 
-	public function getLightFilter() : int{
-		return 2;
-	}
-
-	public function onEntityCollide(Entity $entity) : void{
-		$entity->resetFallDistance();
-		if($entity->fireTicks > 0){
-			$entity->extinguish();
+	public function onUpdate(int $type){
+		if($type === Level::BLOCK_UPDATE_NORMAL){
+			if($this->getSide($this->meta ^ 0x01)->getId() === self::AIR){
+				$this->getLevel()->useBreakOn($this);
+			}
+			return Level::BLOCK_UPDATE_NORMAL;
 		}
-
-		$entity->resetFallDistance();
-	}
-
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$ret = $this->getLevel()->setBlock($this, $this, true, false);
-		$this->getLevel()->scheduleDelayedBlockUpdate($this, $this->tickRate());
-
-		return $ret;
+		return false;
 	}
 }

@@ -23,20 +23,21 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\ItemFactory;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
-use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use pocketmine\tile\Sign as TileSign;
+use pocketmine\tile\Banner as TileBanner;
 use pocketmine\tile\Tile;
 
-class SignPost extends Transparent{
+class StandingBanner extends Transparent{
 
-	protected $id = self::SIGN_POST;
+	protected $id = self::STANDING_BANNER;
 
-	protected $itemId = Item::SIGN;
+	protected $itemId = Item::BANNER;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
@@ -51,27 +52,24 @@ class SignPost extends Transparent{
 	}
 
 	public function getName() : string{
-		return "Sign Post";
+		return "Standing Banner";
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		return null;
 	}
 
-
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
 		if($face !== Vector3::SIDE_DOWN){
-
-			if($face === Vector3::SIDE_UP){
+			if($face === Vector3::SIDE_UP and $player !== null){
 				$this->meta = floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0f;
 				$this->getLevel()->setBlock($blockReplace, $this, true);
 			}else{
 				$this->meta = $face;
-				$this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::WALL_SIGN, $this->meta), true);
+				$this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::WALL_BANNER, $this->meta), true);
 			}
 
-			Tile::createTile(Tile::SIGN, $this->getLevel(), TileSign::createNBT($this, $face, $item, $player));
-
+			Tile::createTile(Tile::BANNER, $this->getLevel(), TileBanner::createNBT($this, $face, $item, $player));
 			return true;
 		}
 
@@ -96,5 +94,16 @@ class SignPost extends Transparent{
 
 	public function getVariantBitmask() : int{
 		return 0;
+	}
+
+	public function getDrops(Item $item) : array{
+		$tile = $this->level->getTile($this);
+
+		$drop = ItemFactory::get(Item::BANNER, ($tile instanceof TileBanner ? $tile->getBaseColor() : 0));
+		if($tile instanceof TileBanner and ($patterns = $tile->namedtag->getListTag(TileBanner::TAG_PATTERNS)) !== null and $patterns->getCount() > 0){
+			$drop->setNamedTagEntry($patterns);
+		}
+
+		return [$drop];
 	}
 }

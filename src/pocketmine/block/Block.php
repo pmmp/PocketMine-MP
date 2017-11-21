@@ -67,7 +67,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	protected $itemId;
 
 	/** @var AxisAlignedBB */
-	public $boundingBox = null;
+	protected $boundingBox = null;
 
 
 	/** @var AxisAlignedBB[]|null */
@@ -175,12 +175,12 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @param Block       $blockReplace
 	 * @param Block       $blockClicked
 	 * @param int         $face
-	 * @param Vector3     $facePos
+	 * @param Vector3     $clickVector
 	 * @param Player|null $player
 	 *
 	 * @return bool
 	 */
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		return $this->getLevel()->setBlock($this, $this, true, true);
 	}
 
@@ -423,6 +423,14 @@ class Block extends Position implements BlockIds, Metadatable{
 		return [
 			ItemFactory::get($this->getItemId(), $this->getVariant(), 1)
 		];
+	}
+
+	/**
+	 * Returns the item that players will equip when middle-clicking on this block.
+	 * @return Item
+	 */
+	public function getPickedItem() : Item{
+		return ItemFactory::get($this->getItemId(), $this->getVariant());
 	}
 
 	/**

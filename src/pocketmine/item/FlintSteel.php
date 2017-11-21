@@ -36,7 +36,7 @@ class FlintSteel extends Tool{
 		parent::__construct(self::FLINT_STEEL, $meta, "Flint and Steel");
 	}
 
-	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos) : bool{
+	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
 		if($blockReplace->getId() === self::AIR and ($blockClicked instanceof Solid)){
 			$level->setBlock($blockReplace, BlockFactory::get(Block::FIRE), true);
 			$level->broadcastLevelSoundEvent($blockReplace->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_IGNITE);

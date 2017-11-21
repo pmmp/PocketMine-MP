@@ -65,29 +65,33 @@ abstract class Living extends Entity implements Damageable{
 	protected function initEntity(){
 		parent::initEntity();
 
-		if(isset($this->namedtag->HealF)){
-			$this->namedtag->Health = new FloatTag("Health", (float) $this->namedtag["HealF"]);
-			unset($this->namedtag->HealF);
-		}elseif(isset($this->namedtag->Health)){
-			if(!($this->namedtag->Health instanceof FloatTag)){
-				$this->namedtag->Health = new FloatTag("Health", (float) $this->namedtag->Health->getValue());
+		$health = $this->getMaxHealth();
+
+		if($this->namedtag->hasTag("HealF", FloatTag::class)){
+			$health = new FloatTag("Health", $this->namedtag->getFloat("HealF"));
+			$this->namedtag->removeTag("HealF");
+		}elseif($this->namedtag->hasTag("Health")){
+			$healthTag = $this->namedtag->getTag("Health");
+			$health = (float) $healthTag->getValue(); //Older versions of PocketMine-MP incorrectly saved this as a short instead of a float
+			if(!($healthTag instanceof FloatTag)){
+				$this->namedtag->removeTag("Health");
 			}
-		}else{
-			$this->namedtag->Health = new FloatTag("Health", (float) $this->getMaxHealth());
 		}
 
-		$this->setHealth((float) $this->namedtag["Health"]);
+		$this->setHealth($health);
 
-		if(isset($this->namedtag->ActiveEffects)){
-			foreach($this->namedtag->ActiveEffects->getValue() as $e){
-				$amplifier = Binary::unsignByte($e->Amplifier->getValue()); //0-255 only
+		/** @var CompoundTag[]|ListTag $activeEffectsTag */
+		$activeEffectsTag = $this->namedtag->getListTag("ActiveEffects");
+		if($activeEffectsTag !== null){
+			foreach($activeEffectsTag as $e){
+				$amplifier = Binary::unsignByte($e->getByte("Amplifier")); //0-255 only
 
-				$effect = Effect::getEffect($e["Id"]);
+				$effect = Effect::getEffect($e->getByte("Id"));
 				if($effect === null){
 					continue;
 				}
 
-				$effect->setAmplifier($amplifier)->setDuration($e["Duration"])->setVisible($e["ShowParticles"] > 0);
+				$effect->setAmplifier($amplifier)->setDuration($e->getInt("Duration"))->setVisible($e->getByte("ShowParticles", 1) > 0);
 
 				$this->addEffect($effect);
 			}
@@ -108,10 +112,7 @@ abstract class Living extends Entity implements Damageable{
 		parent::setHealth($amount);
 		$this->attributeMap->getAttribute(Attribute::HEALTH)->setValue(ceil($this->getHealth()), true);
 		if($this->isAlive() and !$wasAlive){
-			$pk = new EntityEventPacket();
-			$pk->entityRuntimeId = $this->getId();
-			$pk->event = EntityEventPacket::RESPAWN;
-			$this->server->broadcastPacket($this->hasSpawned, $pk);
+			$this->broadcastEntityEvent(EntityEventPacket::RESPAWN);
 		}
 	}
 
@@ -133,7 +134,7 @@ abstract class Living extends Entity implements Damageable{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Health = new FloatTag("Health", $this->getHealth());
+		$this->namedtag->setFloat("Health", $this->getHealth(), true);
 
 		if(count($this->effects) > 0){
 			$effects = [];
@@ -147,9 +148,9 @@ abstract class Living extends Entity implements Damageable{
 				]);
 			}
 
-			$this->namedtag->ActiveEffects = new ListTag("ActiveEffects", $effects);
+			$this->namedtag->setTag(new ListTag("ActiveEffects", $effects));
 		}else{
-			unset($this->namedtag->ActiveEffects);
+			$this->namedtag->removeTag("ActiveEffects");
 		}
 	}
 
@@ -321,7 +322,7 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	public function fall(float $fallDistance){
-		$damage = floor($fallDistance - 3 - ($this->hasEffect(Effect::JUMP) ? $this->getEffect(Effect::JUMP)->getEffectLevel() : 0));
+		$damage = ceil($fallDistance - 3 - ($this->hasEffect(Effect::JUMP) ? $this->getEffect(Effect::JUMP)->getEffectLevel() : 0));
 		if($damage > 0){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FALL, $damage);
 			$this->attack($ev);
@@ -376,10 +377,7 @@ abstract class Living extends Entity implements Damageable{
 
 		$this->setAbsorption(max(0, $this->getAbsorption() + $source->getDamage(EntityDamageEvent::MODIFIER_ABSORPTION)));
 
-		$pk = new EntityEventPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->event = $this->getHealth() <= 0 ? EntityEventPacket::DEATH_ANIMATION : EntityEventPacket::HURT_ANIMATION; //Ouch!
-		$this->server->broadcastPacket($this->hasSpawned, $pk);
+		$this->broadcastEntityEvent($this->getHealth() <= 0 ? EntityEventPacket::DEATH_ANIMATION : EntityEventPacket::HURT_ANIMATION); //Ouch!
 
 		$this->attackTime = 10; //0.5 seconds cooldown
 	}
@@ -463,9 +461,12 @@ abstract class Living extends Entity implements Damageable{
 				if($effect->canTick()){
 					$effect->applyEffect($this);
 				}
-				$effect->setDuration($effect->getDuration() - $tickDiff);
-				if($effect->getDuration() <= 0){
+
+				$duration = $effect->getDuration() - $tickDiff;
+				if($duration <= 0){
 					$this->removeEffect($effect->getId());
+				}else{
+					$effect->setDuration($duration);
 				}
 			}
 		}
@@ -549,7 +550,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @param int $ticks
 	 */
 	public function setMaxAirSupplyTicks(int $ticks){
-		$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $ticks);
+		$this->setDataProperty(self::DATA_MAX_AIR, self::DATA_TYPE_SHORT, $ticks);
 	}
 
 	/**

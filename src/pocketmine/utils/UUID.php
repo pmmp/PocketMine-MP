@@ -39,7 +39,7 @@ class UUID{
 	}
 
 	public function equals(UUID $uuid) : bool{
-		return $uuid->parts[0] === $this->parts[0] and $uuid->parts[1] === $this->parts[1] and $uuid->parts[2] === $this->parts[2] and $uuid->parts[3] === $this->parts[3];
+		return $uuid->parts === $this->parts;
 	}
 
 	/**

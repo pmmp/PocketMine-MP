@@ -51,7 +51,6 @@ class CraftingTable extends Solid{
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
 			$player->setCraftingGrid(new BigCraftingGrid($player));
-			$player->craftingType = 1;
 		}
 
 		return true;

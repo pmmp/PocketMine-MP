@@ -55,7 +55,7 @@ class BurningFurnace extends Solid{
 		return 13;
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$faces = [
 			0 => 4,
 			1 => 2,
@@ -77,10 +77,8 @@ class BurningFurnace extends Solid{
 				$furnace = Tile::createTile(Tile::FURNACE, $this->getLevel(), TileFurnace::createNBT($this));
 			}
 
-			if(isset($furnace->namedtag->Lock) and $furnace->namedtag->Lock instanceof StringTag){
-				if($furnace->namedtag->Lock->getValue() !== $item->getCustomName()){
-					return true;
-				}
+			if($furnace->namedtag->hasTag("Lock", StringTag::class) and $furnace->namedtag->getString("Lock") !== $item->getCustomName()){
+				return true;
 			}
 
 			$player->addWindow($furnace->getInventory());
