@@ -96,7 +96,7 @@ class ResourcePackManager{
 
 					if($newPack instanceof ResourcePack){
 						$this->resourcePacks[] = $newPack;
-						$this->uuidList[$newPack->getPackId()] = $newPack;
+						$this->uuidList[strtolower($newPack->getPackId())] = $newPack;
 					}
 				}else{
 					$this->server->getLogger()->warning("Skipped resource entry $pack due to file or directory not found");
