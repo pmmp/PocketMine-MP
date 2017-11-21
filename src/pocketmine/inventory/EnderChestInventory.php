@@ -33,19 +33,11 @@ use pocketmine\tile\EnderChest;
 
 class EnderChestInventory extends ChestInventory{
 
-	/** @var Human */
-	protected $owner;
-
 	/** @var FakeBlockMenu */
 	protected $holder;
 
 	public function __construct(Human $owner){
-		$this->owner = $owner;
 		ContainerInventory::__construct(new FakeBlockMenu($this, $owner->getPosition()));
-	}
-
-	public function getOwner() : Human{
-		return $this->owner;
 	}
 
 	public function getNetworkType() : int{
