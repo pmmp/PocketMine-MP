@@ -3596,6 +3596,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 	}
 
+	public function getOffsetPosition(Vector3 $vector3) : Vector3{
+		$result = parent::getOffsetPosition($vector3);
+		$result->y += 0.001; //Hack for MCPE falling underground for no good reason (TODO: find out why it's doing this)
+		return $result;
+	}
+
 	public function sendPosition(Vector3 $pos, float $yaw = null, float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL, array $targets = null){
 		$yaw = $yaw ?? $this->yaw;
 		$pitch = $pitch ?? $this->pitch;
