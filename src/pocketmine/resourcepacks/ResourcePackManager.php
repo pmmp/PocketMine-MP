@@ -132,7 +132,7 @@ class ResourcePackManager{
 	 * @return ResourcePack|null
 	 */
 	public function getPackById(string $id){
-		return $this->uuidList[$id] ?? null;
+		return $this->uuidList[strtolower($id)] ?? null;
 	}
 
 	/**
