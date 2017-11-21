@@ -29,7 +29,7 @@ use pocketmine\utils\MainLogger;
 
 class BaseLang{
 
-	const FALLBACK_LANGUAGE = "eng";
+	public const FALLBACK_LANGUAGE = "eng";
 
 	public static function getLanguageList(string $path = "") : array{
 		if($path === ""){

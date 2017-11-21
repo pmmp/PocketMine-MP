@@ -44,12 +44,12 @@ use pocketmine\utils\UUID;
 
 class Human extends Creature implements ProjectileSource, InventoryHolder{
 
-	const DATA_PLAYER_FLAG_SLEEP = 1;
-	const DATA_PLAYER_FLAG_DEAD = 2; //TODO: CHECK
+	public const DATA_PLAYER_FLAG_SLEEP = 1;
+	public const DATA_PLAYER_FLAG_DEAD = 2; //TODO: CHECK
 
-	const DATA_PLAYER_FLAGS = 27;
+	public const DATA_PLAYER_FLAGS = 27;
 
-	const DATA_PLAYER_BED_POSITION = 29;
+	public const DATA_PLAYER_BED_POSITION = 29;
 
 	/** @var PlayerInventory */
 	protected $inventory;
@@ -73,8 +73,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	protected $baseOffset = 1.62;
 
 	public function __construct(Level $level, CompoundTag $nbt){
-		if($this->skin === null and (!isset($nbt->Skin) or !isset($nbt->Skin->Data) or !Player::isValidSkin($nbt->Skin->Data->getValue()))){
-			throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
+		if($this->skin === null){
+			$skinTag = $nbt->getCompoundTag("Skin");
+			if($skinTag === null or !self::isValidSkin($skinTag->getString("Data", "", true))){
+				throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
+			}
 		}
 
 		parent::__construct($level, $nbt);

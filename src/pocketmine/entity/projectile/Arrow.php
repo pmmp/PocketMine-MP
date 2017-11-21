@@ -24,11 +24,16 @@ declare(strict_types=1);
 namespace pocketmine\entity\projectile;
 
 use pocketmine\entity\Entity;
+use pocketmine\event\inventory\InventoryPickupArrowEvent;
+use pocketmine\item\ItemFactory;
+use pocketmine\item\Item as ItemItem;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
+use pocketmine\Player;
 
 class Arrow extends Projectile{
-	const NETWORK_ID = self::ARROW;
+	public const NETWORK_ID = self::ARROW;
 
 	public $width = 0.25;
 	public $height = 0.25;
@@ -77,5 +82,31 @@ class Arrow extends Projectile{
 		}
 
 		return $hasUpdate;
+	}
+
+	public function onCollideWithPlayer(Player $player){
+		if(!$this->hadCollision){
+			return;
+		}
+
+		$item = ItemFactory::get(ItemItem::ARROW, 0, 1);
+
+		$playerInventory = $player->getInventory();
+		if($player->isSurvival() and !$playerInventory->canAddItem($item)){
+			return;
+		}
+
+		$this->server->getPluginManager()->callEvent($ev = new InventoryPickupArrowEvent($playerInventory, $this));
+		if($ev->isCancelled()){
+			return;
+		}
+
+		$pk = new TakeItemEntityPacket();
+		$pk->eid = $player->getId();
+		$pk->target = $this->getId();
+		$this->server->broadcastPacket($this->getViewers(), $pk);
+
+		$playerInventory->addItem(clone $item);
+		$this->flagForDespawn();
 	}
 }

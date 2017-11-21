@@ -30,16 +30,16 @@ use pocketmine\Player;
 
 class Rail extends Flowable{
 
-	const STRAIGHT_NORTH_SOUTH = 0;
-	const STRAIGHT_EAST_WEST = 1;
-	const ASCENDING_EAST = 2;
-	const ASCENDING_WEST = 3;
-	const ASCENDING_NORTH = 4;
-	const ASCENDING_SOUTH = 5;
-	const CURVE_SOUTHEAST = 6;
-	const CURVE_SOUTHWEST = 7;
-	const CURVE_NORTHWEST = 8;
-	const CURVE_NORTHEAST = 9;
+	public const STRAIGHT_NORTH_SOUTH = 0;
+	public const STRAIGHT_EAST_WEST = 1;
+	public const ASCENDING_EAST = 2;
+	public const ASCENDING_WEST = 3;
+	public const ASCENDING_NORTH = 4;
+	public const ASCENDING_SOUTH = 5;
+	public const CURVE_SOUTHEAST = 6;
+	public const CURVE_SOUTHWEST = 7;
+	public const CURVE_NORTHWEST = 8;
+	public const CURVE_NORTHEAST = 9;
 
 	protected $id = self::RAIL;
 

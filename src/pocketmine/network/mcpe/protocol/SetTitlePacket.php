@@ -30,14 +30,14 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class SetTitlePacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::SET_TITLE_PACKET;
+	public const NETWORK_ID = ProtocolInfo::SET_TITLE_PACKET;
 
-	const TYPE_CLEAR_TITLE = 0;
-	const TYPE_RESET_TITLE = 1;
-	const TYPE_SET_TITLE = 2;
-	const TYPE_SET_SUBTITLE = 3;
-	const TYPE_SET_ACTIONBAR_MESSAGE = 4;
-	const TYPE_SET_ANIMATION_TIMES = 5;
+	public const TYPE_CLEAR_TITLE = 0;
+	public const TYPE_RESET_TITLE = 1;
+	public const TYPE_SET_TITLE = 2;
+	public const TYPE_SET_SUBTITLE = 3;
+	public const TYPE_SET_ACTIONBAR_MESSAGE = 4;
+	public const TYPE_SET_ANIMATION_TIMES = 5;
 
 	/** @var int */
 	public $type;

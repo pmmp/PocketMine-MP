@@ -30,7 +30,7 @@ use pocketmine\item\Item;
 use pocketmine\Player;
 
 interface Inventory{
-	const MAX_STACK = 64;
+	public const MAX_STACK = 64;
 
 	/**
 	 * @return int

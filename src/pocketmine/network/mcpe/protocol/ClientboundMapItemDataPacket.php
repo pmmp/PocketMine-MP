@@ -32,10 +32,10 @@ use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\utils\Color;
 
 class ClientboundMapItemDataPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::CLIENTBOUND_MAP_ITEM_DATA_PACKET;
+	public const NETWORK_ID = ProtocolInfo::CLIENTBOUND_MAP_ITEM_DATA_PACKET;
 
-	const BITFLAG_TEXTURE_UPDATE = 0x02;
-	const BITFLAG_DECORATION_UPDATE = 0x04;
+	public const BITFLAG_TEXTURE_UPDATE = 0x02;
+	public const BITFLAG_DECORATION_UPDATE = 0x04;
 
 	/** @var int */
 	public $mapId;

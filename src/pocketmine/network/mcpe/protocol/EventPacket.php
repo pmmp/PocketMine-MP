@@ -28,18 +28,18 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class EventPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::EVENT_PACKET;
+	public const NETWORK_ID = ProtocolInfo::EVENT_PACKET;
 
-	const TYPE_ACHIEVEMENT_AWARDED = 0;
-	const TYPE_ENTITY_INTERACT = 1;
-	const TYPE_PORTAL_BUILT = 2;
-	const TYPE_PORTAL_USED = 3;
-	const TYPE_MOB_KILLED = 4;
-	const TYPE_CAULDRON_USED = 5;
-	const TYPE_PLAYER_DEATH = 6;
-	const TYPE_BOSS_KILLED = 7;
-	const TYPE_AGENT_COMMAND = 8;
-	const TYPE_AGENT_CREATED = 9;
+	public const TYPE_ACHIEVEMENT_AWARDED = 0;
+	public const TYPE_ENTITY_INTERACT = 1;
+	public const TYPE_PORTAL_BUILT = 2;
+	public const TYPE_PORTAL_USED = 3;
+	public const TYPE_MOB_KILLED = 4;
+	public const TYPE_CAULDRON_USED = 5;
+	public const TYPE_PLAYER_DEATH = 6;
+	public const TYPE_BOSS_KILLED = 7;
+	public const TYPE_AGENT_COMMAND = 8;
+	public const TYPE_AGENT_CREATED = 9;
 
 	/** @var int */
 	public $playerRuntimeId;

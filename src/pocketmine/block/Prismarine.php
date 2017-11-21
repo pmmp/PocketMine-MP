@@ -28,9 +28,9 @@ use pocketmine\item\Tool;
 
 class Prismarine extends Solid{
 
-	const NORMAL = 0;
-	const DARK = 1;
-	const BRICKS = 2;
+	public const NORMAL = 0;
+	public const DARK = 1;
+	public const BRICKS = 2;
 
 	protected $id = self::PRISMARINE;
 

@@ -26,12 +26,12 @@ namespace pocketmine\block;
 use pocketmine\item\Tool;
 
 class WoodenFence extends Fence{
-	const FENCE_OAK = 0;
-	const FENCE_SPRUCE = 1;
-	const FENCE_BIRCH = 2;
-	const FENCE_JUNGLE = 3;
-	const FENCE_ACACIA = 4;
-	const FENCE_DARKOAK = 5;
+	public const FENCE_OAK = 0;
+	public const FENCE_SPRUCE = 1;
+	public const FENCE_BIRCH = 2;
+	public const FENCE_JUNGLE = 3;
+	public const FENCE_ACACIA = 4;
+	public const FENCE_DARKOAK = 5;
 
 	protected $id = self::FENCE;
 

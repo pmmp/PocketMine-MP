@@ -29,15 +29,15 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Flower extends Flowable{
-	const TYPE_POPPY = 0;
-	const TYPE_BLUE_ORCHID = 1;
-	const TYPE_ALLIUM = 2;
-	const TYPE_AZURE_BLUET = 3;
-	const TYPE_RED_TULIP = 4;
-	const TYPE_ORANGE_TULIP = 5;
-	const TYPE_WHITE_TULIP = 6;
-	const TYPE_PINK_TULIP = 7;
-	const TYPE_OXEYE_DAISY = 8;
+	public const TYPE_POPPY = 0;
+	public const TYPE_BLUE_ORCHID = 1;
+	public const TYPE_ALLIUM = 2;
+	public const TYPE_AZURE_BLUET = 3;
+	public const TYPE_RED_TULIP = 4;
+	public const TYPE_ORANGE_TULIP = 5;
+	public const TYPE_WHITE_TULIP = 6;
+	public const TYPE_PINK_TULIP = 7;
+	public const TYPE_OXEYE_DAISY = 8;
 
 	protected $id = self::RED_FLOWER;
 

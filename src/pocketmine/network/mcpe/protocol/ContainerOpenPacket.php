@@ -29,7 +29,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class ContainerOpenPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::CONTAINER_OPEN_PACKET;
+	public const NETWORK_ID = ProtocolInfo::CONTAINER_OPEN_PACKET;
 
 	/** @var int */
 	public $windowId;

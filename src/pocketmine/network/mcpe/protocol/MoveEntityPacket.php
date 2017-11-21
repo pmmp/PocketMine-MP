@@ -30,7 +30,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 
 class MoveEntityPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::MOVE_ENTITY_PACKET;
+	public const NETWORK_ID = ProtocolInfo::MOVE_ENTITY_PACKET;
 
 	/** @var int */
 	public $entityRuntimeId;

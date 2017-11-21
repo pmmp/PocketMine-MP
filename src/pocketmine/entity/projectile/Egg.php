@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\projectile;
 
 class Egg extends Throwable{
-	const NETWORK_ID = self::EGG;
+	public const NETWORK_ID = self::EGG;
 
 	//TODO: spawn chickens on collision
 }

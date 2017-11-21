@@ -33,8 +33,8 @@ use pocketmine\tile\Tile;
 
 class FlowerPot extends Flowable{
 
-	const STATE_EMPTY = 0;
-	const STATE_FULL = 1;
+	public const STATE_EMPTY = 0;
+	public const STATE_FULL = 1;
 
 	protected $id = self::FLOWER_POT_BLOCK;
 	protected $itemId = Item::FLOWER_POT;

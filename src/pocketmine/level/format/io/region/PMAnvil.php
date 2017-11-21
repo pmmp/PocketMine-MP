@@ -33,7 +33,7 @@ use pocketmine\nbt\tag\CompoundTag;
  */
 class PMAnvil extends Anvil{
 
-	const REGION_FILE_EXTENSION = "mcapm";
+	public const REGION_FILE_EXTENSION = "mcapm";
 
 	protected function serializeSubChunk(SubChunk $subChunk) : CompoundTag{
 		return new CompoundTag("", [

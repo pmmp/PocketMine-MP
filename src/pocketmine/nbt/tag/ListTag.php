@@ -109,6 +109,11 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 		return isset($this->{$offset});
 	}
 
+	/**
+	 * @param int $offset
+	 *
+	 * @return CompoundTag|ListTag|mixed
+	 */
 	public function offsetGet($offset){
 		if(isset($this->{$offset}) and $this->{$offset} instanceof Tag){
 			if($this->{$offset} instanceof \ArrayAccess){

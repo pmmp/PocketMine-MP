@@ -38,7 +38,7 @@ use pocketmine\utils\Utils;
 
 abstract class DataPacket extends BinaryStream{
 
-	const NETWORK_ID = 0;
+	public const NETWORK_ID = 0;
 
 	/** @var bool */
 	public $isEncoded = false;

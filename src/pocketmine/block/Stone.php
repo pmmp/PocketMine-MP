@@ -28,13 +28,13 @@ use pocketmine\item\ItemFactory;
 use pocketmine\item\Tool;
 
 class Stone extends Solid{
-	const NORMAL = 0;
-	const GRANITE = 1;
-	const POLISHED_GRANITE = 2;
-	const DIORITE = 3;
-	const POLISHED_DIORITE = 4;
-	const ANDESITE = 5;
-	const POLISHED_ANDESITE = 6;
+	public const NORMAL = 0;
+	public const GRANITE = 1;
+	public const POLISHED_GRANITE = 2;
+	public const DIORITE = 3;
+	public const POLISHED_DIORITE = 4;
+	public const ANDESITE = 5;
+	public const POLISHED_ANDESITE = 6;
 
 	protected $id = self::STONE;
 

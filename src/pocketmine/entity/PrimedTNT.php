@@ -30,7 +30,7 @@ use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
 class PrimedTNT extends Entity implements Explosive{
-	const NETWORK_ID = self::TNT;
+	public const NETWORK_ID = self::TNT;
 
 	public $width = 0.98;
 	public $height = 0.98;

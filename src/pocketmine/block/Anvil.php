@@ -33,9 +33,9 @@ use pocketmine\Player;
 
 class Anvil extends Fallable{
 
-	const TYPE_NORMAL = 0;
-	const TYPE_SLIGHTLY_DAMAGED = 4;
-	const TYPE_VERY_DAMAGED = 8;
+	public const TYPE_NORMAL = 0;
+	public const TYPE_SLIGHTLY_DAMAGED = 4;
+	public const TYPE_VERY_DAMAGED = 8;
 
 	protected $id = self::ANVIL;
 

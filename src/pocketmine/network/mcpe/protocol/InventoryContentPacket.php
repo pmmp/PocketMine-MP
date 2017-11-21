@@ -29,7 +29,7 @@ use pocketmine\item\Item;
 use pocketmine\network\mcpe\NetworkSession;
 
 class InventoryContentPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::INVENTORY_CONTENT_PACKET;
+	public const NETWORK_ID = ProtocolInfo::INVENTORY_CONTENT_PACKET;
 
 	/** @var int */
 	public $windowId;

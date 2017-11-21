@@ -21,7 +21,7 @@
       "ext-yaml": ">=2.0.0",
       "ext-zip": "*",
       "ext-zlib": ">=1.2.11",
-      "pmmp/raklib": "^0.9.0",
+      "pmmp/raklib": "dev-master#2b76936eb4a5b053128fe98050f33993cb3d8016",
       "pmmp/pocketmine-spl": "^0.0.2"
    },
    "autoload": {

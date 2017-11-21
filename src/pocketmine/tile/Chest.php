@@ -37,9 +37,9 @@ use pocketmine\Player;
 class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	use NameableTrait, ContainerTrait;
 
-	const TAG_PAIRX = "pairx";
-	const TAG_PAIRZ = "pairz";
-	const TAG_PAIR_LEAD = "pairlead";
+	public const TAG_PAIRX = "pairx";
+	public const TAG_PAIRZ = "pairz";
+	public const TAG_PAIR_LEAD = "pairlead";
 
 	/** @var ChestInventory */
 	protected $inventory;

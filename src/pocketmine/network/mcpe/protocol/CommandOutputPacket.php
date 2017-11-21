@@ -30,7 +30,7 @@ use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\CommandOutputMessage;
 
 class CommandOutputPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::COMMAND_OUTPUT_PACKET;
+	public const NETWORK_ID = ProtocolInfo::COMMAND_OUTPUT_PACKET;
 
 	/** @var CommandOriginData */
 	public $originData;

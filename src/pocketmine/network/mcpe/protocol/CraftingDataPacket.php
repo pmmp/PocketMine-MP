@@ -34,14 +34,14 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\utils\BinaryStream;
 
 class CraftingDataPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::CRAFTING_DATA_PACKET;
+	public const NETWORK_ID = ProtocolInfo::CRAFTING_DATA_PACKET;
 
-	const ENTRY_SHAPELESS = 0;
-	const ENTRY_SHAPED = 1;
-	const ENTRY_FURNACE = 2;
-	const ENTRY_FURNACE_DATA = 3;
-	const ENTRY_MULTI = 4; //TODO
-	const ENTRY_SHULKER_BOX = 5; //TODO
+	public const ENTRY_SHAPELESS = 0;
+	public const ENTRY_SHAPED = 1;
+	public const ENTRY_FURNACE = 2;
+	public const ENTRY_FURNACE_DATA = 3;
+	public const ENTRY_MULTI = 4; //TODO
+	public const ENTRY_SHULKER_BOX = 5; //TODO
 
 	/** @var object[] */
 	public $entries = [];

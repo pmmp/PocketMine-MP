@@ -26,7 +26,7 @@ namespace pocketmine\permission;
 use pocketmine\Server;
 
 abstract class DefaultPermissions{
-	const ROOT = "pocketmine";
+	public const ROOT = "pocketmine";
 
 	/**
 	 * @param Permission $perm

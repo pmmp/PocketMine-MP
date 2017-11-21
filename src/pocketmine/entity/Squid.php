@@ -31,7 +31,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 
 class Squid extends WaterAnimal{
-	const NETWORK_ID = self::SQUID;
+	public const NETWORK_ID = self::SQUID;
 
 	public $width = 0.95;
 	public $height = 0.95;

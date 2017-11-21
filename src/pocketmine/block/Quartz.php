@@ -31,9 +31,9 @@ use pocketmine\Player;
 
 class Quartz extends Solid{
 
-	const NORMAL = 0;
-	const CHISELED = 1;
-	const PILLAR = 2;
+	public const NORMAL = 0;
+	public const CHISELED = 1;
+	public const PILLAR = 2;
 
 	protected $id = self::QUARTZ_BLOCK;
 

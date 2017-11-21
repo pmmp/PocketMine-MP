@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class TransferPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::TRANSFER_PACKET;
+	public const NETWORK_ID = ProtocolInfo::TRANSFER_PACKET;
 
 	/** @var string */
 	public $address;

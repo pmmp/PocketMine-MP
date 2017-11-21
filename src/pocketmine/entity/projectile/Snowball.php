@@ -24,6 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\entity\projectile;
 
 class Snowball extends Throwable{
-	const NETWORK_ID = self::SNOWBALL;
+	public const NETWORK_ID = self::SNOWBALL;
 
 }

@@ -25,14 +25,14 @@ namespace pocketmine\item;
 
 class WrittenBook extends WritableBook{
 
-	const GENERATION_ORIGINAL = 0;
-	const GENERATION_COPY = 1;
-	const GENERATION_COPY_OF_COPY = 2;
-	const GENERATION_TATTERED = 3;
+	public const GENERATION_ORIGINAL = 0;
+	public const GENERATION_COPY = 1;
+	public const GENERATION_COPY_OF_COPY = 2;
+	public const GENERATION_TATTERED = 3;
 
-	const TAG_GENERATION = "generation"; //TAG_Int
-	const TAG_AUTHOR = "author"; //TAG_String
-	const TAG_TITLE = "title"; //TAG_String
+	public const TAG_GENERATION = "generation"; //TAG_Int
+	public const TAG_AUTHOR = "author"; //TAG_String
+	public const TAG_TITLE = "title"; //TAG_String
 
 	public function __construct(int $meta = 0){
 		Item::__construct(self::WRITTEN_BOOK, $meta, "Written Book");

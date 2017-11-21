@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class EntityPickRequestPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::ENTITY_PICK_REQUEST_PACKET;
+	public const NETWORK_ID = ProtocolInfo::ENTITY_PICK_REQUEST_PACKET;
 
 	/** @var int */
 	public $entityUniqueId;
