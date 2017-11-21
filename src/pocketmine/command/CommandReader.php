@@ -27,9 +27,9 @@ use pocketmine\Thread;
 
 class CommandReader extends Thread{
 
-	const TYPE_READLINE = 0;
-	const TYPE_STREAM = 1;
-	const TYPE_PIPED = 2;
+	public const TYPE_READLINE = 0;
+	public const TYPE_STREAM = 1;
+	public const TYPE_PIPED = 2;
 
 	/** @var \Threaded */
 	protected $buffer;

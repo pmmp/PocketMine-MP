@@ -27,8 +27,8 @@ use pocketmine\entity\Entity;
 use pocketmine\math\Vector3;
 
 class MovingObjectPosition{
-	const TYPE_BLOCK_COLLISION = 0;
-	const TYPE_ENTITY_COLLISION = 1;
+	public const TYPE_BLOCK_COLLISION = 0;
+	public const TYPE_ENTITY_COLLISION = 1;
 
 	/** @var int */
 	public $typeOfHit;

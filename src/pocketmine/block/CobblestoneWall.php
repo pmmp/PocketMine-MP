@@ -28,8 +28,8 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 
 class CobblestoneWall extends Transparent{
-	const NONE_MOSSY_WALL = 0;
-	const MOSSY_WALL = 1;
+	public const NONE_MOSSY_WALL = 0;
+	public const MOSSY_WALL = 1;
 
 	protected $id = self::COBBLESTONE_WALL;
 

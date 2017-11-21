@@ -38,7 +38,7 @@ use pocketmine\utils\BinaryStream;
 
 class Chunk{
 
-	const MAX_SUBCHUNKS = 16;
+	public const MAX_SUBCHUNKS = 16;
 
 	protected $x;
 	protected $z;

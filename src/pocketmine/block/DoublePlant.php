@@ -30,7 +30,7 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class DoublePlant extends Flowable{
-	const BITFLAG_TOP = 0x08;
+	public const BITFLAG_TOP = 0x08;
 
 	protected $id = self::DOUBLE_PLANT;
 

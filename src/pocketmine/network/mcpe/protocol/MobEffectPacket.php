@@ -29,11 +29,11 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class MobEffectPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::MOB_EFFECT_PACKET;
+	public const NETWORK_ID = ProtocolInfo::MOB_EFFECT_PACKET;
 
-	const EVENT_ADD = 1;
-	const EVENT_MODIFY = 2;
-	const EVENT_REMOVE = 3;
+	public const EVENT_ADD = 1;
+	public const EVENT_MODIFY = 2;
+	public const EVENT_REMOVE = 3;
 
 	/** @var int */
 	public $entityRuntimeId;

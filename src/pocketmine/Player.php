@@ -159,11 +159,11 @@ use pocketmine\utils\UUID;
  */
 class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
-	const SURVIVAL = 0;
-	const CREATIVE = 1;
-	const ADVENTURE = 2;
-	const SPECTATOR = 3;
-	const VIEW = Player::SPECTATOR;
+	public const SURVIVAL = 0;
+	public const CREATIVE = 1;
+	public const ADVENTURE = 2;
+	public const SPECTATOR = 3;
+	public const VIEW = Player::SPECTATOR;
 
 	/**
 	 * Checks a supplied username and checks it is valid.

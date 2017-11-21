@@ -25,9 +25,9 @@ namespace pocketmine\network\mcpe\protocol\types;
 
 interface PlayerPermissions{
 
-	const CUSTOM = 3;
-	const OPERATOR = 2;
-	const MEMBER = 1;
-	const VISITOR = 0;
+	public const CUSTOM = 3;
+	public const OPERATOR = 2;
+	public const MEMBER = 1;
+	public const VISITOR = 0;
 
 }

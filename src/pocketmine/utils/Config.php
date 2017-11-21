@@ -31,15 +31,15 @@ use pocketmine\Server;
  * Config Class for simple config manipulation of multiple formats.
  */
 class Config{
-	const DETECT = -1; //Detect by file extension
-	const PROPERTIES = 0; // .properties
-	const CNF = Config::PROPERTIES; // .cnf
-	const JSON = 1; // .js, .json
-	const YAML = 2; // .yml, .yaml
+	public const DETECT = -1; //Detect by file extension
+	public const PROPERTIES = 0; // .properties
+	public const CNF = Config::PROPERTIES; // .cnf
+	public const JSON = 1; // .js, .json
+	public const YAML = 2; // .yml, .yaml
 	//const EXPORT = 3; // .export, .xport
-	const SERIALIZED = 4; // .sl
-	const ENUM = 5; // .txt, .list, .enum
-	const ENUMERATION = Config::ENUM;
+	public const SERIALIZED = 4; // .sl
+	public const ENUM = 5; // .txt, .list, .enum
+	public const ENUMERATION = Config::ENUM;
 
 	/** @var array */
 	private $config = [];

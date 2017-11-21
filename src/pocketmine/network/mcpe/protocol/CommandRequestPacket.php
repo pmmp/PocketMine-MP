@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class CommandRequestPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::COMMAND_REQUEST_PACKET;
+	public const NETWORK_ID = ProtocolInfo::COMMAND_REQUEST_PACKET;
 
 	/** @var string */
 	public $command;

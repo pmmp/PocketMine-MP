@@ -32,9 +32,9 @@ use pocketmine\utils\MainLogger;
 use pocketmine\utils\Utils;
 
 class LoginPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::LOGIN_PACKET;
+	public const NETWORK_ID = ProtocolInfo::LOGIN_PACKET;
 
-	const EDITION_POCKET = 0;
+	public const EDITION_POCKET = 0;
 
 	/** @var string */
 	public $username;

@@ -30,7 +30,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 
 class AddItemEntityPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::ADD_ITEM_ENTITY_PACKET;
+	public const NETWORK_ID = ProtocolInfo::ADD_ITEM_ENTITY_PACKET;
 
 	/** @var int|null */
 	public $entityUniqueId = null; //TODO

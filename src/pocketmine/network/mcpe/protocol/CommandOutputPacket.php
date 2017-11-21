@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class CommandOutputPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::COMMAND_OUTPUT_PACKET;
+	public const NETWORK_ID = ProtocolInfo::COMMAND_OUTPUT_PACKET;
 
 	protected function decodePayload(){
 		//TODO

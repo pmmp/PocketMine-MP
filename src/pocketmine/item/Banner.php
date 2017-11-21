@@ -32,10 +32,10 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\tile\Banner as TileBanner;
 
 class Banner extends Item{
-	const TAG_BASE = TileBanner::TAG_BASE;
-	const TAG_PATTERNS = TileBanner::TAG_PATTERNS;
-	const TAG_PATTERN_COLOR = TileBanner::TAG_PATTERN_COLOR;
-	const TAG_PATTERN_NAME = TileBanner::TAG_PATTERN_NAME;
+	public const TAG_BASE = TileBanner::TAG_BASE;
+	public const TAG_PATTERNS = TileBanner::TAG_PATTERNS;
+	public const TAG_PATTERN_COLOR = TileBanner::TAG_PATTERN_COLOR;
+	public const TAG_PATTERN_NAME = TileBanner::TAG_PATTERN_NAME;
 
 	public function __construct(int $meta = 0){
 		$this->block = BlockFactory::get(Block::STANDING_BANNER);

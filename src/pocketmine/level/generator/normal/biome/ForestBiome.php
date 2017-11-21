@@ -29,8 +29,8 @@ use pocketmine\level\generator\populator\Tree;
 
 class ForestBiome extends GrassyBiome{
 
-	const TYPE_NORMAL = 0;
-	const TYPE_BIRCH = 1;
+	public const TYPE_NORMAL = 0;
+	public const TYPE_BIRCH = 1;
 
 	public $type;
 

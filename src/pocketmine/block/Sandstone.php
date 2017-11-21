@@ -28,9 +28,9 @@ use pocketmine\item\Tool;
 
 class Sandstone extends Solid{
 
-	const NORMAL = 0;
-	const CHISELED = 1;
-	const SMOOTH = 2;
+	public const NORMAL = 0;
+	public const CHISELED = 1;
+	public const SMOOTH = 2;
 
 	protected $id = self::SANDSTONE;
 

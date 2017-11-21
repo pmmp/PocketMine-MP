@@ -44,22 +44,22 @@ use pocketmine\Server;
 
 abstract class Tile extends Position{
 
-	const TAG_ID = "id";
-	const TAG_X = "x";
-	const TAG_Y = "y";
-	const TAG_Z = "z";
+	public const TAG_ID = "id";
+	public const TAG_X = "x";
+	public const TAG_Y = "y";
+	public const TAG_Z = "z";
 
-	const BREWING_STAND = "BrewingStand";
-	const CHEST = "Chest";
-	const ENCHANT_TABLE = "EnchantTable";
-	const FLOWER_POT = "FlowerPot";
-	const FURNACE = "Furnace";
-	const ITEM_FRAME = "ItemFrame";
-	const MOB_SPAWNER = "MobSpawner";
-	const SIGN = "Sign";
-	const SKULL = "Skull";
-	const BED = "Bed";
-	const BANNER = "Banner";
+	public const BREWING_STAND = "BrewingStand";
+	public const CHEST = "Chest";
+	public const ENCHANT_TABLE = "EnchantTable";
+	public const FLOWER_POT = "FlowerPot";
+	public const FURNACE = "Furnace";
+	public const ITEM_FRAME = "ItemFrame";
+	public const MOB_SPAWNER = "MobSpawner";
+	public const SIGN = "Sign";
+	public const SKULL = "Skull";
+	public const BED = "Bed";
+	public const BANNER = "Banner";
 
 	/** @var int */
 	public static $tileCount = 1;

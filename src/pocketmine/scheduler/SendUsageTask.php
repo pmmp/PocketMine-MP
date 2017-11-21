@@ -31,9 +31,9 @@ use pocketmine\utils\VersionString;
 
 class SendUsageTask extends AsyncTask{
 
-	const TYPE_OPEN = 1;
-	const TYPE_STATUS = 2;
-	const TYPE_CLOSE = 3;
+	public const TYPE_OPEN = 1;
+	public const TYPE_STATUS = 2;
+	public const TYPE_CLOSE = 3;
 
 	public $endpoint;
 	public $data;

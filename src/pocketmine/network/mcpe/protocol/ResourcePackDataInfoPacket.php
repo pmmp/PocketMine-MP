@@ -30,7 +30,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class ResourcePackDataInfoPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_DATA_INFO_PACKET;
+	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_DATA_INFO_PACKET;
 
 	/** @var string */
 	public $packId;

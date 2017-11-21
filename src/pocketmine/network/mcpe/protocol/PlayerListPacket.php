@@ -31,10 +31,10 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 
 class PlayerListPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::PLAYER_LIST_PACKET;
+	public const NETWORK_ID = ProtocolInfo::PLAYER_LIST_PACKET;
 
-	const TYPE_ADD = 0;
-	const TYPE_REMOVE = 1;
+	public const TYPE_ADD = 0;
+	public const TYPE_REMOVE = 1;
 
 	/** @var PlayerListEntry[] */
 	public $entries = [];

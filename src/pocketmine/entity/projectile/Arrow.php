@@ -33,7 +33,7 @@ use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\Player;
 
 class Arrow extends Projectile{
-	const NETWORK_ID = self::ARROW;
+	public const NETWORK_ID = self::ARROW;
 
 	public $width = 0.25;
 	public $height = 0.25;

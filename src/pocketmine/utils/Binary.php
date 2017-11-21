@@ -28,8 +28,8 @@ namespace pocketmine\utils;
 
 
 class Binary{
-	const BIG_ENDIAN = 0x00;
-	const LITTLE_ENDIAN = 0x01;
+	public const BIG_ENDIAN = 0x00;
+	public const LITTLE_ENDIAN = 0x01;
 
 	public static function signByte(int $value) : int{
 		return $value << 56 >> 56;

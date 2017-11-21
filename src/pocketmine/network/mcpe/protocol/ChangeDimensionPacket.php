@@ -30,7 +30,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 
 class ChangeDimensionPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::CHANGE_DIMENSION_PACKET;
+	public const NETWORK_ID = ProtocolInfo::CHANGE_DIMENSION_PACKET;
 
 	/** @var int */
 	public $dimension;

@@ -33,8 +33,8 @@ use pocketmine\nbt\tag\ShortTag;
 use pocketmine\Player;
 
 class FlowerPot extends Spawnable{
-	const TAG_ITEM = "item";
-	const TAG_ITEM_DATA = "mData";
+	public const TAG_ITEM = "item";
+	public const TAG_ITEM_DATA = "mData";
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		//TODO: check PC format

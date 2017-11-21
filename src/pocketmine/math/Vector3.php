@@ -25,12 +25,12 @@ namespace pocketmine\math;
 
 class Vector3{
 
-	const SIDE_DOWN = 0;
-	const SIDE_UP = 1;
-	const SIDE_NORTH = 2;
-	const SIDE_SOUTH = 3;
-	const SIDE_WEST = 4;
-	const SIDE_EAST = 5;
+	public const SIDE_DOWN = 0;
+	public const SIDE_UP = 1;
+	public const SIDE_NORTH = 2;
+	public const SIDE_SOUTH = 3;
+	public const SIDE_WEST = 4;
+	public const SIDE_EAST = 5;
 
 	public $x;
 	public $y;

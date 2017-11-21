@@ -29,7 +29,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class DisconnectPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::DISCONNECT_PACKET;
+	public const NETWORK_ID = ProtocolInfo::DISCONNECT_PACKET;
 
 	/** @var bool */
 	public $hideDisconnectionScreen = false;
