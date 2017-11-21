@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "55bdbaf13ac4ea71f0705f03f715172d",
+    "content-hash": "2ef1e62099624431c885378a43b84cca",
     "packages": [
         {
             "name": "pmmp/pocketmine-spl",
@@ -40,16 +40,16 @@
         },
         {
             "name": "pmmp/raklib",
-            "version": "0.9.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "08470471eb16b4325fa02415fd12c5060eba9c34"
+                "reference": "2b76936eb4a5b053128fe98050f33993cb3d8016"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/08470471eb16b4325fa02415fd12c5060eba9c34",
-                "reference": "08470471eb16b4325fa02415fd12c5060eba9c34",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/2b76936eb4a5b053128fe98050f33993cb3d8016",
+                "reference": "2b76936eb4a5b053128fe98050f33993cb3d8016",
                 "shasum": ""
             },
             "require": {
@@ -70,10 +70,10 @@
             ],
             "description": "A RakNet server implementation written in PHP",
             "support": {
-                "source": "https://github.com/pmmp/RakLib/tree/0.9.0",
+                "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2017-11-14T19:03:14+00:00"
+            "time": "2017-11-21T14:32:13+00:00"
         }
     ],
     "packages-dev": [],
@@ -81,7 +81,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "php": 5,
-        "ext-pthreads": 20
+        "ext-pthreads": 20,
+        "pmmp/raklib": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
