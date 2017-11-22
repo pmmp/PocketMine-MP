@@ -440,7 +440,7 @@ abstract class Living extends Entity implements Damageable{
 			}
 		}
 
-		return $this->deadTicks >= 20;
+		return $this->deadTicks >= $this->maxDeadTicks;
 	}
 
 	protected function startDeathAnimation() : void{
