@@ -466,9 +466,7 @@ abstract class Living extends Entity implements Damageable{
 			}
 
 			if(!$this->canBreathe()){
-				if($this->isBreathing()){
-					$this->setBreathing(false);
-				}
+				$this->setBreathing(false);
 				$this->doAirSupplyTick($tickDiff);
 			}elseif(!$this->isBreathing()){
 				$this->setBreathing(true);
