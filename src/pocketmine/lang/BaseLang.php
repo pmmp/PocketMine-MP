@@ -29,7 +29,7 @@ use pocketmine\utils\MainLogger;
 
 class BaseLang{
 
-	const FALLBACK_LANGUAGE = "eng";
+	public const FALLBACK_LANGUAGE = "eng";
 
 	public static function getLanguageList(string $path = "") : array{
 		if($path === ""){
@@ -117,7 +117,7 @@ class BaseLang{
 			$baseText = str_replace("{%$i}", $this->parseTranslation((string) $p), $baseText, $onlyPrefix);
 		}
 
-		return str_replace("%0", "", $baseText); //fixes a client bug where %0 in translation will cause freeze
+		return $baseText;
 	}
 
 	public function translate(TextContainer $c){

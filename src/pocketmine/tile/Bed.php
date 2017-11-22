@@ -32,7 +32,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 
 class Bed extends Spawnable{
-	const TAG_COLOR = "color";
+	public const TAG_COLOR = "color";
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		if(!$nbt->hasTag(self::TAG_COLOR, ByteTag::class)){ //TODO: check PC format

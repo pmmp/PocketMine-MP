@@ -27,14 +27,14 @@ use pocketmine\item\Item;
 use pocketmine\item\Tool;
 
 class StoneSlab extends Slab{
-	const STONE = 0;
-	const SANDSTONE = 1;
-	const WOODEN = 2;
-	const COBBLESTONE = 3;
-	const BRICK = 4;
-	const STONE_BRICK = 5;
-	const QUARTZ = 6;
-	const NETHER_BRICK = 7;
+	public const STONE = 0;
+	public const SANDSTONE = 1;
+	public const WOODEN = 2;
+	public const COBBLESTONE = 3;
+	public const BRICK = 4;
+	public const STONE_BRICK = 5;
+	public const QUARTZ = 6;
+	public const NETHER_BRICK = 7;
 
 	protected $id = self::STONE_SLAB;
 

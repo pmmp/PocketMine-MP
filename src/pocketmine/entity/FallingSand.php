@@ -34,7 +34,7 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
 
 class FallingSand extends Entity{
-	const NETWORK_ID = self::FALLING_BLOCK;
+	public const NETWORK_ID = self::FALLING_BLOCK;
 
 	public $width = 0.98;
 	public $height = 0.98;

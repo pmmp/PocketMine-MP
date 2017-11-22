@@ -38,7 +38,7 @@ use pocketmine\utils\MainLogger;
 
 class McRegion extends BaseLevelProvider{
 
-	const REGION_FILE_EXTENSION = "mcr";
+	public const REGION_FILE_EXTENSION = "mcr";
 
 	/** @var RegionLoader[] */
 	protected $regions = [];

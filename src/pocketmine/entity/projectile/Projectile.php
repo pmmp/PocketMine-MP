@@ -37,7 +37,7 @@ use pocketmine\nbt\tag\CompoundTag;
 
 abstract class Projectile extends Entity{
 
-	const DATA_SHOOTER_ID = 17;
+	public const DATA_SHOOTER_ID = 17;
 
 	protected $damage = 0;
 

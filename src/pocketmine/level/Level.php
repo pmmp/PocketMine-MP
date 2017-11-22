@@ -93,26 +93,26 @@ class Level implements ChunkManager, Metadatable{
 	private static $levelIdCounter = 1;
 	private static $chunkLoaderCounter = 1;
 
-	const Y_MASK = 0xFF;
-	const Y_MAX = 0x100; //256
+	public const Y_MASK = 0xFF;
+	public const Y_MAX = 0x100; //256
 
-	const BLOCK_UPDATE_NORMAL = 1;
-	const BLOCK_UPDATE_RANDOM = 2;
-	const BLOCK_UPDATE_SCHEDULED = 3;
-	const BLOCK_UPDATE_WEAK = 4;
-	const BLOCK_UPDATE_TOUCH = 5;
+	public const BLOCK_UPDATE_NORMAL = 1;
+	public const BLOCK_UPDATE_RANDOM = 2;
+	public const BLOCK_UPDATE_SCHEDULED = 3;
+	public const BLOCK_UPDATE_WEAK = 4;
+	public const BLOCK_UPDATE_TOUCH = 5;
 
-	const TIME_DAY = 0;
-	const TIME_SUNSET = 12000;
-	const TIME_NIGHT = 14000;
-	const TIME_SUNRISE = 23000;
+	public const TIME_DAY = 0;
+	public const TIME_SUNSET = 12000;
+	public const TIME_NIGHT = 14000;
+	public const TIME_SUNRISE = 23000;
 
-	const TIME_FULL = 24000;
+	public const TIME_FULL = 24000;
 
-	const DIFFICULTY_PEACEFUL = 0;
-	const DIFFICULTY_EASY = 1;
-	const DIFFICULTY_NORMAL = 2;
-	const DIFFICULTY_HARD = 3;
+	public const DIFFICULTY_PEACEFUL = 0;
+	public const DIFFICULTY_EASY = 1;
+	public const DIFFICULTY_NORMAL = 2;
+	public const DIFFICULTY_HARD = 3;
 
 	/** @var Tile[] */
 	private $tiles = [];

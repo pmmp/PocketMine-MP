@@ -45,12 +45,12 @@ use pocketmine\utils\Binary;
 use pocketmine\utils\Config;
 
 class Item implements ItemIds, \JsonSerializable{
-	const TAG_ENCH = "ench";
-	const TAG_DISPLAY = "display";
-	const TAG_BLOCK_ENTITY_TAG = "BlockEntityTag";
+	public const TAG_ENCH = "ench";
+	public const TAG_DISPLAY = "display";
+	public const TAG_BLOCK_ENTITY_TAG = "BlockEntityTag";
 
-	const TAG_DISPLAY_NAME = "Name";
-	const TAG_DISPLAY_LORE = "Lore";
+	public const TAG_DISPLAY_NAME = "Name";
+	public const TAG_DISPLAY_LORE = "Lore";
 
 
 	/** @var NBT */

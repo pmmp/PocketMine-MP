@@ -29,17 +29,17 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class ContainerSetDataPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::CONTAINER_SET_DATA_PACKET;
+	public const NETWORK_ID = ProtocolInfo::CONTAINER_SET_DATA_PACKET;
 
-	const PROPERTY_FURNACE_TICK_COUNT = 0;
-	const PROPERTY_FURNACE_LIT_TIME = 1;
-	const PROPERTY_FURNACE_LIT_DURATION = 2;
+	public const PROPERTY_FURNACE_TICK_COUNT = 0;
+	public const PROPERTY_FURNACE_LIT_TIME = 1;
+	public const PROPERTY_FURNACE_LIT_DURATION = 2;
 	//TODO: check property 3
-	const PROPERTY_FURNACE_FUEL_AUX = 4;
+	public const PROPERTY_FURNACE_FUEL_AUX = 4;
 
-	const PROPERTY_BREWING_STAND_BREW_TIME = 0;
-	const PROPERTY_BREWING_STAND_FUEL_AMOUNT = 1;
-	const PROPERTY_BREWING_STAND_FUEL_TOTAL = 2;
+	public const PROPERTY_BREWING_STAND_BREW_TIME = 0;
+	public const PROPERTY_BREWING_STAND_FUEL_AMOUNT = 1;
+	public const PROPERTY_BREWING_STAND_FUEL_TOTAL = 2;
 
 	/** @var int */
 	public $windowId;

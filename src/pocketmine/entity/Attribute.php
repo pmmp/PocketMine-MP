@@ -25,18 +25,18 @@ namespace pocketmine\entity;
 
 class Attribute{
 
-	const ABSORPTION = 0;
-	const SATURATION = 1;
-	const EXHAUSTION = 2;
-	const KNOCKBACK_RESISTANCE = 3;
-	const HEALTH = 4;
-	const MOVEMENT_SPEED = 5;
-	const FOLLOW_RANGE = 6;
-	const HUNGER = 7;
-	const FOOD = 7;
-	const ATTACK_DAMAGE = 8;
-	const EXPERIENCE_LEVEL = 9;
-	const EXPERIENCE = 10;
+	public const ABSORPTION = 0;
+	public const SATURATION = 1;
+	public const EXHAUSTION = 2;
+	public const KNOCKBACK_RESISTANCE = 3;
+	public const HEALTH = 4;
+	public const MOVEMENT_SPEED = 5;
+	public const FOLLOW_RANGE = 6;
+	public const HUNGER = 7;
+	public const FOOD = 7;
+	public const ATTACK_DAMAGE = 8;
+	public const EXPERIENCE_LEVEL = 9;
+	public const EXPERIENCE = 10;
 
 	private $id;
 	protected $minValue;

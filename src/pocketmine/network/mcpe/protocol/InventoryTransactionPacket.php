@@ -29,23 +29,23 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\NetworkInventoryAction;
 
 class InventoryTransactionPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::INVENTORY_TRANSACTION_PACKET;
+	public const NETWORK_ID = ProtocolInfo::INVENTORY_TRANSACTION_PACKET;
 
-	const TYPE_NORMAL = 0;
-	const TYPE_MISMATCH = 1;
-	const TYPE_USE_ITEM = 2;
-	const TYPE_USE_ITEM_ON_ENTITY = 3;
-	const TYPE_RELEASE_ITEM = 4;
+	public const TYPE_NORMAL = 0;
+	public const TYPE_MISMATCH = 1;
+	public const TYPE_USE_ITEM = 2;
+	public const TYPE_USE_ITEM_ON_ENTITY = 3;
+	public const TYPE_RELEASE_ITEM = 4;
 
-	const USE_ITEM_ACTION_CLICK_BLOCK = 0;
-	const USE_ITEM_ACTION_CLICK_AIR = 1;
-	const USE_ITEM_ACTION_BREAK_BLOCK = 2;
+	public const USE_ITEM_ACTION_CLICK_BLOCK = 0;
+	public const USE_ITEM_ACTION_CLICK_AIR = 1;
+	public const USE_ITEM_ACTION_BREAK_BLOCK = 2;
 
-	const RELEASE_ITEM_ACTION_RELEASE = 0; //bow shoot
-	const RELEASE_ITEM_ACTION_CONSUME = 1; //eat food, drink potion
+	public const RELEASE_ITEM_ACTION_RELEASE = 0; //bow shoot
+	public const RELEASE_ITEM_ACTION_CONSUME = 1; //eat food, drink potion
 
-	const USE_ITEM_ON_ENTITY_ACTION_INTERACT = 0;
-	const USE_ITEM_ON_ENTITY_ACTION_ATTACK = 1;
+	public const USE_ITEM_ON_ENTITY_ACTION_INTERACT = 0;
+	public const USE_ITEM_ON_ENTITY_ACTION_ATTACK = 1;
 
 	/** @var int */
 	public $transactionType;

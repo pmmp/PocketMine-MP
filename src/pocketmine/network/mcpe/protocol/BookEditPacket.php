@@ -28,13 +28,13 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class BookEditPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::BOOK_EDIT_PACKET;
+	public const NETWORK_ID = ProtocolInfo::BOOK_EDIT_PACKET;
 
-	const TYPE_REPLACE_PAGE = 0;
-	const TYPE_ADD_PAGE = 1;
-	const TYPE_DELETE_PAGE = 2;
-	const TYPE_SWAP_PAGES = 3;
-	const TYPE_SIGN_BOOK = 4;
+	public const TYPE_REPLACE_PAGE = 0;
+	public const TYPE_ADD_PAGE = 1;
+	public const TYPE_DELETE_PAGE = 2;
+	public const TYPE_SWAP_PAGES = 3;
+	public const TYPE_SIGN_BOOK = 4;
 
 	/** @var int */
 	public $type;

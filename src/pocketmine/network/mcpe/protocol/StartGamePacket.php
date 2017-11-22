@@ -31,7 +31,7 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 
 class StartGamePacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::START_GAME_PACKET;
+	public const NETWORK_ID = ProtocolInfo::START_GAME_PACKET;
 
 	/** @var int */
 	public $entityUniqueId;

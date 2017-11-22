@@ -44,35 +44,35 @@ use pocketmine\utils\MainLogger;
 class LevelDB extends BaseLevelProvider{
 
 	//According to Tomasso, these aren't supposed to be readable anymore. Thankfully he didn't change the readable ones...
-	const TAG_DATA_2D = "\x2d";
-	const TAG_DATA_2D_LEGACY = "\x2e";
-	const TAG_SUBCHUNK_PREFIX = "\x2f";
-	const TAG_LEGACY_TERRAIN = "0";
-	const TAG_BLOCK_ENTITY = "1";
-	const TAG_ENTITY = "2";
-	const TAG_PENDING_TICK = "3";
-	const TAG_BLOCK_EXTRA_DATA = "4";
-	const TAG_BIOME_STATE = "5";
-	const TAG_STATE_FINALISATION = "6";
+	public const TAG_DATA_2D = "\x2d";
+	public const TAG_DATA_2D_LEGACY = "\x2e";
+	public const TAG_SUBCHUNK_PREFIX = "\x2f";
+	public const TAG_LEGACY_TERRAIN = "0";
+	public const TAG_BLOCK_ENTITY = "1";
+	public const TAG_ENTITY = "2";
+	public const TAG_PENDING_TICK = "3";
+	public const TAG_BLOCK_EXTRA_DATA = "4";
+	public const TAG_BIOME_STATE = "5";
+	public const TAG_STATE_FINALISATION = "6";
 
-	const TAG_BORDER_BLOCKS = "8";
-	const TAG_HARDCODED_SPAWNERS = "9";
+	public const TAG_BORDER_BLOCKS = "8";
+	public const TAG_HARDCODED_SPAWNERS = "9";
 
-	const FINALISATION_NEEDS_INSTATICKING = 0;
-	const FINALISATION_NEEDS_POPULATION = 1;
-	const FINALISATION_DONE = 2;
+	public const FINALISATION_NEEDS_INSTATICKING = 0;
+	public const FINALISATION_NEEDS_POPULATION = 1;
+	public const FINALISATION_DONE = 2;
 
-	const TAG_VERSION = "v";
+	public const TAG_VERSION = "v";
 
-	const ENTRY_FLAT_WORLD_LAYERS = "game_flatworldlayers";
+	public const ENTRY_FLAT_WORLD_LAYERS = "game_flatworldlayers";
 
-	const GENERATOR_LIMITED = 0;
-	const GENERATOR_INFINITE = 1;
-	const GENERATOR_FLAT = 2;
+	public const GENERATOR_LIMITED = 0;
+	public const GENERATOR_INFINITE = 1;
+	public const GENERATOR_FLAT = 2;
 
-	const CURRENT_STORAGE_VERSION = 6; //Current MCPE level format version
-	const CURRENT_LEVEL_CHUNK_VERSION = 7;
-	const CURRENT_LEVEL_SUBCHUNK_VERSION = 0;
+	public const CURRENT_STORAGE_VERSION = 6; //Current MCPE level format version
+	public const CURRENT_LEVEL_CHUNK_VERSION = 7;
+	public const CURRENT_LEVEL_SUBCHUNK_VERSION = 0;
 
 	/** @var Chunk[] */
 	protected $chunks = [];

@@ -32,10 +32,10 @@ use pocketmine\Server;
  * Represents a permission
  */
 class Permission{
-	const DEFAULT_OP = "op";
-	const DEFAULT_NOT_OP = "notop";
-	const DEFAULT_TRUE = "true";
-	const DEFAULT_FALSE = "false";
+	public const DEFAULT_OP = "op";
+	public const DEFAULT_NOT_OP = "notop";
+	public const DEFAULT_TRUE = "true";
+	public const DEFAULT_FALSE = "false";
 
 	public static $DEFAULT_PERMISSION = self::DEFAULT_OP;
 

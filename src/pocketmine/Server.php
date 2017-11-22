@@ -115,8 +115,8 @@ use pocketmine\utils\VersionString;
  * The class that manages everything
  */
 class Server{
-	const BROADCAST_CHANNEL_ADMINISTRATIVE = "pocketmine.broadcast.admin";
-	const BROADCAST_CHANNEL_USERS = "pocketmine.broadcast.user";
+	public const BROADCAST_CHANNEL_ADMINISTRATIVE = "pocketmine.broadcast.admin";
+	public const BROADCAST_CHANNEL_USERS = "pocketmine.broadcast.user";
 
 	/** @var Server */
 	private static $instance = null;

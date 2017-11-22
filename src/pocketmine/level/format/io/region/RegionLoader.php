@@ -29,13 +29,13 @@ use pocketmine\utils\Binary;
 use pocketmine\utils\MainLogger;
 
 class RegionLoader{
-	const VERSION = 1;
-	const COMPRESSION_GZIP = 1;
-	const COMPRESSION_ZLIB = 2;
+	public const VERSION = 1;
+	public const COMPRESSION_GZIP = 1;
+	public const COMPRESSION_ZLIB = 2;
 
-	const MAX_SECTOR_LENGTH = 256 << 12; //256 sectors, (1 MiB)
-	const REGION_HEADER_LENGTH = 8192; //4096 location table + 4096 timestamps
-	const MAX_REGION_FILE_SIZE = 32 * 32 * self::MAX_SECTOR_LENGTH + self::REGION_HEADER_LENGTH; //32 * 32 1MiB chunks + header size
+	public const MAX_SECTOR_LENGTH = 256 << 12; //256 sectors, (1 MiB)
+	public const REGION_HEADER_LENGTH = 8192; //4096 location table + 4096 timestamps
+	public const MAX_REGION_FILE_SIZE = 32 * 32 * self::MAX_SECTOR_LENGTH + self::REGION_HEADER_LENGTH; //32 * 32 1MiB chunks + header size
 
 	public static $COMPRESSION_LEVEL = 7;
 

@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class UpdateEquipPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::UPDATE_EQUIP_PACKET;
+	public const NETWORK_ID = ProtocolInfo::UPDATE_EQUIP_PACKET;
 
 	/** @var int */
 	public $windowId;

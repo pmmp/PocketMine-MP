@@ -36,7 +36,7 @@ use pocketmine\utils\MainLogger;
 
 class Anvil extends McRegion{
 
-	const REGION_FILE_EXTENSION = "mca";
+	public const REGION_FILE_EXTENSION = "mca";
 
 	public function nbtSerialize(Chunk $chunk) : string{
 		$nbt = new CompoundTag("Level", []);

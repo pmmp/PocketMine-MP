@@ -39,15 +39,25 @@ class CompoundTag extends NamedTag implements \ArrayAccess{
 		parent::__construct($name, $value);
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getCount(){
-		$count = 0;
+		return count($this->getValue());
+	}
+
+	/**
+	 * @return NamedTag[]
+	 */
+	public function &getValue(){
+		$result = [];
 		foreach($this as $tag){
-			if($tag instanceof Tag){
-				++$count;
+			if($tag instanceof NamedTag){
+				$result[$tag->getName()] = $tag;
 			}
 		}
 
-		return $count;
+		return $result;
 	}
 
 	/**
