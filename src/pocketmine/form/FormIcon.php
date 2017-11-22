@@ -27,8 +27,8 @@ namespace pocketmine\form;
  * Represents an icon which can be placed next to options on menus, or as the icon for the server-settings form type.
  */
 class FormIcon implements \JsonSerializable{
-	const IMAGE_TYPE_URL = "url";
-	const IMAGE_TYPE_PATH = "path";
+	public const IMAGE_TYPE_URL = "url";
+	public const IMAGE_TYPE_PATH = "path";
 
 	/**
 	 * @var string

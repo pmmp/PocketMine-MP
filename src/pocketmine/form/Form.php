@@ -33,9 +33,9 @@ use pocketmine\Player;
  */
 abstract class Form implements \JsonSerializable{
 
-	const TYPE_MODAL = "modal";
-	const TYPE_MENU = "form";
-	const TYPE_CUSTOM_FORM = "custom_form";
+	public const TYPE_MODAL = "modal";
+	public const TYPE_MENU = "form";
+	public const TYPE_CUSTOM_FORM = "custom_form";
 
 	/** @var string */
 	protected $title = "";
