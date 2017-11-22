@@ -49,6 +49,8 @@ abstract class Tile extends Position{
 	public const TAG_Y = "y";
 	public const TAG_Z = "z";
 
+	public const BANNER = "Banner";
+	public const BED = "Bed";
 	public const BREWING_STAND = "BrewingStand";
 	public const CHEST = "Chest";
 	public const ENCHANT_TABLE = "EnchantTable";
@@ -58,8 +60,6 @@ abstract class Tile extends Position{
 	public const MOB_SPAWNER = "MobSpawner";
 	public const SIGN = "Sign";
 	public const SKULL = "Skull";
-	public const BED = "Bed";
-	public const BANNER = "Banner";
 
 	/** @var int */
 	public static $tileCount = 1;
