@@ -44,8 +44,6 @@ use pocketmine\Server;
 
 abstract class Tile extends Position{
 
-
-
 	public const TAG_ID = "id";
 	public const TAG_X = "x";
 	public const TAG_Y = "y";
