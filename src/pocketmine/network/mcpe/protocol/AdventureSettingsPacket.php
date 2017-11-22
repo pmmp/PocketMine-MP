@@ -30,38 +30,38 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 
 class AdventureSettingsPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::ADVENTURE_SETTINGS_PACKET;
+	public const NETWORK_ID = ProtocolInfo::ADVENTURE_SETTINGS_PACKET;
 
-	const PERMISSION_NORMAL = 0;
-	const PERMISSION_OPERATOR = 1;
-	const PERMISSION_HOST = 2;
-	const PERMISSION_AUTOMATION = 3;
-	const PERMISSION_ADMIN = 4;
+	public const PERMISSION_NORMAL = 0;
+	public const PERMISSION_OPERATOR = 1;
+	public const PERMISSION_HOST = 2;
+	public const PERMISSION_AUTOMATION = 3;
+	public const PERMISSION_ADMIN = 4;
 
 	/**
 	 * This constant is used to identify flags that should be set on the second field. In a sensible world, these
 	 * flags would all be set on the same packet field, but as of MCPE 1.2, the new abilities flags have for some
 	 * reason been assigned a separate field.
 	 */
-	const BITFLAG_SECOND_SET = 1 << 16;
+	public const BITFLAG_SECOND_SET = 1 << 16;
 
-	const WORLD_IMMUTABLE = 0x01;
-	const NO_PVP = 0x02;
+	public const WORLD_IMMUTABLE = 0x01;
+	public const NO_PVP = 0x02;
 
-	const AUTO_JUMP = 0x20;
-	const ALLOW_FLIGHT = 0x40;
-	const NO_CLIP = 0x80;
-	const WORLD_BUILDER = 0x100;
-	const FLYING = 0x200;
-	const MUTED = 0x400;
+	public const AUTO_JUMP = 0x20;
+	public const ALLOW_FLIGHT = 0x40;
+	public const NO_CLIP = 0x80;
+	public const WORLD_BUILDER = 0x100;
+	public const FLYING = 0x200;
+	public const MUTED = 0x400;
 
-	const BUILD_AND_MINE = 0x01 | self::BITFLAG_SECOND_SET;
-	const DOORS_AND_SWITCHES = 0x02 | self::BITFLAG_SECOND_SET;
-	const OPEN_CONTAINERS = 0x04 | self::BITFLAG_SECOND_SET;
-	const ATTACK_PLAYERS = 0x08 | self::BITFLAG_SECOND_SET;
-	const ATTACK_MOBS = 0x10 | self::BITFLAG_SECOND_SET;
-	const OPERATOR = 0x20 | self::BITFLAG_SECOND_SET;
-	const TELEPORT = 0x80 | self::BITFLAG_SECOND_SET;
+	public const BUILD_AND_MINE = 0x01 | self::BITFLAG_SECOND_SET;
+	public const DOORS_AND_SWITCHES = 0x02 | self::BITFLAG_SECOND_SET;
+	public const OPEN_CONTAINERS = 0x04 | self::BITFLAG_SECOND_SET;
+	public const ATTACK_PLAYERS = 0x08 | self::BITFLAG_SECOND_SET;
+	public const ATTACK_MOBS = 0x10 | self::BITFLAG_SECOND_SET;
+	public const OPERATOR = 0x20 | self::BITFLAG_SECOND_SET;
+	public const TELEPORT = 0x80 | self::BITFLAG_SECOND_SET;
 
 	/** @var int */
 	public $flags = 0;

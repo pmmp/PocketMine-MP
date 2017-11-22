@@ -32,7 +32,7 @@ use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\utils\UUID;
 
 class AddPlayerPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::ADD_PLAYER_PACKET;
+	public const NETWORK_ID = ProtocolInfo::ADD_PLAYER_PACKET;
 
 	/** @var UUID */
 	public $uuid;

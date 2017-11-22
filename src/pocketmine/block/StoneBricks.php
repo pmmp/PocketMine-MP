@@ -27,10 +27,10 @@ use pocketmine\item\Item;
 use pocketmine\item\Tool;
 
 class StoneBricks extends Solid{
-	const NORMAL = 0;
-	const MOSSY = 1;
-	const CRACKED = 2;
-	const CHISELED = 3;
+	public const NORMAL = 0;
+	public const MOSSY = 1;
+	public const CRACKED = 2;
+	public const CHISELED = 3;
 
 	protected $id = self::STONE_BRICKS;
 

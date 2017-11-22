@@ -93,26 +93,26 @@ class Level implements ChunkManager, Metadatable{
 	private static $levelIdCounter = 1;
 	private static $chunkLoaderCounter = 1;
 
-	const Y_MASK = 0xFF;
-	const Y_MAX = 0x100; //256
+	public const Y_MASK = 0xFF;
+	public const Y_MAX = 0x100; //256
 
-	const BLOCK_UPDATE_NORMAL = 1;
-	const BLOCK_UPDATE_RANDOM = 2;
-	const BLOCK_UPDATE_SCHEDULED = 3;
-	const BLOCK_UPDATE_WEAK = 4;
-	const BLOCK_UPDATE_TOUCH = 5;
+	public const BLOCK_UPDATE_NORMAL = 1;
+	public const BLOCK_UPDATE_RANDOM = 2;
+	public const BLOCK_UPDATE_SCHEDULED = 3;
+	public const BLOCK_UPDATE_WEAK = 4;
+	public const BLOCK_UPDATE_TOUCH = 5;
 
-	const TIME_DAY = 0;
-	const TIME_SUNSET = 12000;
-	const TIME_NIGHT = 14000;
-	const TIME_SUNRISE = 23000;
+	public const TIME_DAY = 0;
+	public const TIME_SUNSET = 12000;
+	public const TIME_NIGHT = 14000;
+	public const TIME_SUNRISE = 23000;
 
-	const TIME_FULL = 24000;
+	public const TIME_FULL = 24000;
 
-	const DIFFICULTY_PEACEFUL = 0;
-	const DIFFICULTY_EASY = 1;
-	const DIFFICULTY_NORMAL = 2;
-	const DIFFICULTY_HARD = 3;
+	public const DIFFICULTY_PEACEFUL = 0;
+	public const DIFFICULTY_EASY = 1;
+	public const DIFFICULTY_NORMAL = 2;
+	public const DIFFICULTY_HARD = 3;
 
 	/** @var Tile[] */
 	private $tiles = [];
@@ -352,7 +352,8 @@ class Level implements ChunkManager, Metadatable{
 		$this->chunkPopulationQueueSize = (int) $this->server->getProperty("chunk-generation.population-queue-size", 2);
 		$this->clearChunksOnTick = (bool) $this->server->getProperty("chunk-ticking.clear-tick-list", true);
 
-		$dontTickBlocks = $this->server->getProperty("chunk-ticking.disable-block-ticking", []);
+		$dontTickBlocks = array_fill_keys($this->server->getProperty("chunk-ticking.disable-block-ticking", []), true);
+
 		$this->randomTickBlocks = new \SplFixedArray(256);
 		foreach($this->randomTickBlocks as $id => $null){
 			$block = BlockFactory::get($id); //Make sure it's a copy
@@ -732,11 +733,9 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->tileEntityTick->startTiming();
 		Timings::$tickTileEntityTimer->startTiming();
 		//Update tiles that need update
-		if(count($this->updateTiles) > 0){
-			foreach($this->updateTiles as $id => $tile){
-				if($tile->onUpdate() !== true){
-					unset($this->updateTiles[$id]);
-				}
+		foreach($this->updateTiles as $id => $tile){
+			if($tile->onUpdate() !== true){
+				unset($this->updateTiles[$id]);
 			}
 		}
 		Timings::$tickTileEntityTimer->stopTiming();
@@ -2642,15 +2641,7 @@ class Level implements ChunkManager, Metadatable{
 		try{
 			if($chunk !== null){
 				if($trySave and $this->getAutoSave() and $chunk->isGenerated()){
-					$entities = 0;
-					foreach($chunk->getEntities() as $e){
-						if($e instanceof Player){
-							continue;
-						}
-						++$entities;
-					}
-
-					if($chunk->hasChanged() or count($chunk->getTiles()) > 0 or $entities > 0){
+					if($chunk->hasChanged() or count($chunk->getTiles()) > 0 or count($chunk->getSavableEntities()) > 0){
 						$this->provider->setChunk($x, $z, $chunk);
 						$this->provider->saveChunk($x, $z);
 					}
@@ -2704,15 +2695,13 @@ class Level implements ChunkManager, Metadatable{
 			$max = $this->provider->getWorldHeight();
 			$v = $spawn->floor();
 			$chunk = $this->getChunk($v->x >> 4, $v->z >> 4, false);
-			$x = $v->x & 0x0f;
-			$z = $v->z & 0x0f;
+			$x = (int) $v->x;
+			$z = (int) $v->z;
 			if($chunk !== null){
 				$y = (int) min($max - 2, $v->y);
-				$wasAir = ($chunk->getBlockId($x, $y - 1, $z) === 0);
+				$wasAir = ($chunk->getBlockId($x & 0x0f, $y - 1, $z & 0x0f) === 0);
 				for(; $y > 0; --$y){
-					$b = $chunk->getFullBlock($x, $y, $z);
-					$block = BlockFactory::get($b >> 4, $b & 0x0f);
-					if($this->isFullBlock($block)){
+					if($this->isFullBlock($this->getBlockAt($x, $y, $z))){
 						if($wasAir){
 							$y++;
 							break;
@@ -2723,12 +2712,8 @@ class Level implements ChunkManager, Metadatable{
 				}
 
 				for(; $y >= 0 and $y < $max; ++$y){
-					$b = $chunk->getFullBlock($x, $y + 1, $z);
-					$block = BlockFactory::get($b >> 4, $b & 0x0f);
-					if(!$this->isFullBlock($block)){
-						$b = $chunk->getFullBlock($x, $y, $z);
-						$block = BlockFactory::get($b >> 4, $b & 0x0f);
-						if(!$this->isFullBlock($block)){
+					if(!$this->isFullBlock($this->getBlockAt($x, $y + 1, $z))){
+						if(!$this->isFullBlock($this->getBlockAt($x, $y, $z))){
 							return new Position($spawn->x, $y === (int) $spawn->y ? $spawn->y : $y, $spawn->z, $this);
 						}
 					}else{

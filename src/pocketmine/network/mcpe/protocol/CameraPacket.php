@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class CameraPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::CAMERA_PACKET;
+	public const NETWORK_ID = ProtocolInfo::CAMERA_PACKET;
 
 	/** @var int */
 	public $cameraUniqueId;

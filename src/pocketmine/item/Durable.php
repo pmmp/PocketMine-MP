@@ -32,8 +32,7 @@ abstract class Durable extends Item{
 	 * @return bool
 	 */
 	public function isUnbreakable() : bool{
-		$tag = $this->getNamedTagEntry("Unbreakable");
-		return $tag !== null and $tag->getValue() !== 0;
+		return $this->getNamedTag()->getByte("Unbreakable", 0) !== 0;
 	}
 
 	/**

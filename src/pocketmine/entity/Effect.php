@@ -33,30 +33,30 @@ use pocketmine\Player;
 use pocketmine\utils\Config;
 
 class Effect{
-	const SPEED = 1;
-	const SLOWNESS = 2;
-	const HASTE = 3;
-	const FATIGUE = 4, MINING_FATIGUE = 4;
-	const STRENGTH = 5;
-	const INSTANT_HEALTH = 6, HEALING = 6;
-	const INSTANT_DAMAGE = 7, HARMING = 7;
-	const JUMP = 8;
-	const NAUSEA = 9, CONFUSION = 9;
-	const REGENERATION = 10;
-	const DAMAGE_RESISTANCE = 11;
-	const FIRE_RESISTANCE = 12;
-	const WATER_BREATHING = 13;
-	const INVISIBILITY = 14;
-	const BLINDNESS = 15;
-	const NIGHT_VISION = 16;
-	const HUNGER = 17;
-	const WEAKNESS = 18;
-	const POISON = 19;
-	const WITHER = 20;
-	const HEALTH_BOOST = 21;
-	const ABSORPTION = 22;
-	const SATURATION = 23;
-	const LEVITATION = 24; //TODO
+	public const SPEED = 1;
+	public const SLOWNESS = 2;
+	public const HASTE = 3;
+	public const FATIGUE = 4, MINING_FATIGUE = 4;
+	public const STRENGTH = 5;
+	public const INSTANT_HEALTH = 6, HEALING = 6;
+	public const INSTANT_DAMAGE = 7, HARMING = 7;
+	public const JUMP = 8;
+	public const NAUSEA = 9, CONFUSION = 9;
+	public const REGENERATION = 10;
+	public const DAMAGE_RESISTANCE = 11;
+	public const FIRE_RESISTANCE = 12;
+	public const WATER_BREATHING = 13;
+	public const INVISIBILITY = 14;
+	public const BLINDNESS = 15;
+	public const NIGHT_VISION = 16;
+	public const HUNGER = 17;
+	public const WEAKNESS = 18;
+	public const POISON = 19;
+	public const WITHER = 20;
+	public const HEALTH_BOOST = 21;
+	public const ABSORPTION = 22;
+	public const SATURATION = 23;
+	public const LEVITATION = 24; //TODO
 
 	/** @var Effect[] */
 	protected static $effects = [];

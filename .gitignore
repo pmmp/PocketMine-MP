@@ -34,3 +34,6 @@ vendor/*
 
 # Travis files
 test_data/*
+
+# Doxygen
+Documentation/*

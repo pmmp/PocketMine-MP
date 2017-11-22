@@ -68,7 +68,7 @@ abstract class Living extends Entity implements Damageable{
 		$health = $this->getMaxHealth();
 
 		if($this->namedtag->hasTag("HealF", FloatTag::class)){
-			$health = new FloatTag("Health", (float) $this->namedtag["HealF"]);
+			$health = new FloatTag("Health", $this->namedtag->getFloat("HealF"));
 			$this->namedtag->removeTag("HealF");
 		}elseif($this->namedtag->hasTag("Health")){
 			$healthTag = $this->namedtag->getTag("Health");
@@ -550,7 +550,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @param int $ticks
 	 */
 	public function setMaxAirSupplyTicks(int $ticks){
-		$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $ticks);
+		$this->setDataProperty(self::DATA_MAX_AIR, self::DATA_TYPE_SHORT, $ticks);
 	}
 
 	/**

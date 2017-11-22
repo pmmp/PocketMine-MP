@@ -33,9 +33,9 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\Player;
 
 class ItemFrame extends Spawnable{
-	const TAG_ITEM_ROTATION = "ItemRotation";
-	const TAG_ITEM_DROP_CHANCE = "ItemDropChance";
-	const TAG_ITEM = "Item";
+	public const TAG_ITEM_ROTATION = "ItemRotation";
+	public const TAG_ITEM_DROP_CHANCE = "ItemDropChance";
+	public const TAG_ITEM = "Item";
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		if(!$nbt->hasTag(self::TAG_ITEM_ROTATION, ByteTag::class)){

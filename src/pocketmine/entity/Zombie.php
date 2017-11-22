@@ -29,7 +29,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\Player;
 
 class Zombie extends Monster{
-	const NETWORK_ID = self::ZOMBIE;
+	public const NETWORK_ID = self::ZOMBIE;
 
 	public $width = 0.6;
 	public $height = 1.8;

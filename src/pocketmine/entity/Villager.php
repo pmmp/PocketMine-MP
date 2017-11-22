@@ -24,13 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 class Villager extends Creature implements NPC, Ageable{
-	const PROFESSION_FARMER = 0;
-	const PROFESSION_LIBRARIAN = 1;
-	const PROFESSION_PRIEST = 2;
-	const PROFESSION_BLACKSMITH = 3;
-	const PROFESSION_BUTCHER = 4;
+	public const PROFESSION_FARMER = 0;
+	public const PROFESSION_LIBRARIAN = 1;
+	public const PROFESSION_PRIEST = 2;
+	public const PROFESSION_BLACKSMITH = 3;
+	public const PROFESSION_BUTCHER = 4;
 
-	const NETWORK_ID = self::VILLAGER;
+	public const NETWORK_ID = self::VILLAGER;
 
 	public $width = 0.6;
 	public $height = 1.8;

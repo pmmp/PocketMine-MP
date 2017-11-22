@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class PhotoTransferPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::PHOTO_TRANSFER_PACKET;
+	public const NETWORK_ID = ProtocolInfo::PHOTO_TRANSFER_PACKET;
 
 	/** @var string */
 	public $photoName;

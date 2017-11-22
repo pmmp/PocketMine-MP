@@ -44,10 +44,10 @@ use pocketmine\Player;
 class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	use NameableTrait, ContainerTrait;
 
-	const TAG_BURN_TIME = "BurnTime";
-	const TAG_COOK_TIME = "CookTime";
-	const TAG_MAX_TIME = "MaxTime";
-	const TAG_BURN_TICKS = "BurnTicks";
+	public const TAG_BURN_TIME = "BurnTime";
+	public const TAG_COOK_TIME = "CookTime";
+	public const TAG_MAX_TIME = "MaxTime";
+	public const TAG_BURN_TICKS = "BurnTicks";
 
 	/** @var FurnaceInventory */
 	protected $inventory;

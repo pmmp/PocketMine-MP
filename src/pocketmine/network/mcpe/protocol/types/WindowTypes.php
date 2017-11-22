@@ -27,24 +27,24 @@ namespace pocketmine\network\mcpe\protocol\types;
 
 interface WindowTypes{
 
-	const INVENTORY = -1;
-	const CONTAINER = 0;
-	const WORKBENCH = 1;
-	const FURNACE = 2;
-	const ENCHANTMENT = 3;
-	const BREWING_STAND = 4;
-	const ANVIL = 5;
-	const DISPENSER = 6;
-	const DROPPER = 7;
-	const HOPPER = 8;
-	const CAULDRON = 9;
-	const MINECART_CHEST = 10;
-	const MINECART_HOPPER = 11;
-	const HORSE = 12;
-	const BEACON = 13;
-	const STRUCTURE_EDITOR = 14;
-	const TRADING = 15;
-	const COMMAND_BLOCK = 16;
-	const JUKEBOX = 17;
+	public const INVENTORY = -1;
+	public const CONTAINER = 0;
+	public const WORKBENCH = 1;
+	public const FURNACE = 2;
+	public const ENCHANTMENT = 3;
+	public const BREWING_STAND = 4;
+	public const ANVIL = 5;
+	public const DISPENSER = 6;
+	public const DROPPER = 7;
+	public const HOPPER = 8;
+	public const CAULDRON = 9;
+	public const MINECART_CHEST = 10;
+	public const MINECART_HOPPER = 11;
+	public const HORSE = 12;
+	public const BEACON = 13;
+	public const STRUCTURE_EDITOR = 14;
+	public const TRADING = 15;
+	public const COMMAND_BLOCK = 16;
+	public const JUKEBOX = 17;
 
 }

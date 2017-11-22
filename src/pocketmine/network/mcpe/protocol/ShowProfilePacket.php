@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class ShowProfilePacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::SHOW_PROFILE_PACKET;
+	public const NETWORK_ID = ProtocolInfo::SHOW_PROFILE_PACKET;
 
 	/** @var string */
 	public $xuid;

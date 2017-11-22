@@ -30,7 +30,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class BlockPickRequestPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::BLOCK_PICK_REQUEST_PACKET;
+	public const NETWORK_ID = ProtocolInfo::BLOCK_PICK_REQUEST_PACKET;
 
 	/** @var int */
 	public $blockX;

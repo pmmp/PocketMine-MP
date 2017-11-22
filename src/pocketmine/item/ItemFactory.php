@@ -225,7 +225,7 @@ class ItemFactory{
 			//TODO: COMMAND_BLOCK_MINECART
 			//TODO: ELYTRA
 			self::registerItem(new Item(Item::SHULKER_SHELL, 0, "Shulker Shell"));
-			//TODO: BANNER
+			self::registerItem(new Banner());
 
 			//TODO: TOTEM
 
