@@ -53,7 +53,7 @@ class EnderChestInventory extends ChestInventory{
 	}
 
 	/**
-	 * Set the holders position to that of a tile
+	 * Set the holder's position to that of a tile
 	 *
 	 * @param EnderChest $enderChest
 	 */
