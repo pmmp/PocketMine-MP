@@ -34,13 +34,13 @@ abstract class CustomForm extends Form{
 
 	/**
 	 * @param string              $title
-	 * @param CustomFormElement[] ...$elements
+	 * @param CustomFormElement[] $elements
 	 */
 	public function __construct(string $title, array $elements){
 		assert(Utils::validateObjectArray($elements, CustomFormElement::class));
 
 		parent::__construct($title);
-		$this->elements = $elements;
+		$this->elements = array_values($elements);
 	}
 
 	/**

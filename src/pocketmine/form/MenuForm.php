@@ -50,7 +50,7 @@ abstract class MenuForm extends Form{
 
 		parent::__construct($title);
 		$this->content = $text;
-		$this->options = $options;
+		$this->options = array_values($options);
 	}
 
 	public function getType() : string{
