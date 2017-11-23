@@ -1433,6 +1433,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return [];
 	}
 
+	public function getXpDropAmount() : int{
+		if(!$this->isCreative()){
+			return min(100, $this->getCurrentTotalXp());
+		}
+
+		return 0;
+	}
+
 	protected function checkGroundState(float $movX, float $movY, float $movZ, float $dx, float $dy, float $dz){
 		if(!$this->onGround or $movY != 0){
 			$bb = clone $this->boundingBox;
