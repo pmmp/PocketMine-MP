@@ -1653,10 +1653,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->sendAttributes();
 
 		if(!$this->isAlive() and $this->spawned){
-			$this->deadTicks += $tickDiff;
-			if($this->deadTicks >= $this->maxDeadTicks){
-				$this->despawnFromAll();
-			}
+			$this->onDeathUpdate($tickDiff);
 			return true;
 		}
 
