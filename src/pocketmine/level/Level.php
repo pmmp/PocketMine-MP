@@ -145,6 +145,7 @@ class Level implements ChunkManager, Metadatable{
 	/** @var LevelProvider */
 	private $provider;
 
+	/** @var int */
 	private $worldHeight;
 
 	/** @var ChunkLoader[] */
