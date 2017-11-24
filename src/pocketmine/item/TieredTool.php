@@ -42,6 +42,10 @@ abstract class TieredTool extends Tool{
 		return self::getDurabilityFromTier($this->tier);
 	}
 
+	public function getTier() : int{
+		return $this->tier;
+	}
+
 	public static function getDurabilityFromTier(int $tier) : int{
 		static $levels = [
 			self::TIER_GOLD => 33,
