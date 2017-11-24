@@ -27,11 +27,6 @@ use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 
 abstract class Tool extends Durable{
-	public const TIER_WOODEN = 1;
-	public const TIER_GOLD = 2;
-	public const TIER_STONE = 3;
-	public const TIER_IRON = 4;
-	public const TIER_DIAMOND = 5;
 
 	public const TYPE_NONE = 0;
 	public const TYPE_SWORD = 1;
@@ -79,36 +74,6 @@ abstract class Tool extends Durable{
 		}
 
 		return true;
-	}
-
-	/**
-	 * TODO: Move this to each item
-	 *
-	 * @return int|bool
-	 */
-	public function getMaxDurability(){
-
-		$levels = [
-			Tool::TIER_GOLD => 33,
-			Tool::TIER_WOODEN => 60,
-			Tool::TIER_STONE => 132,
-			Tool::TIER_IRON => 251,
-			Tool::TIER_DIAMOND => 1562
-		];
-
-		if(($type = $this->isPickaxe()) === false){
-			if(($type = $this->isAxe()) === false){
-				if(($type = $this->isSword()) === false){
-					if(($type = $this->isShovel()) === false){
-						if(($type = $this->isHoe()) === false){
-							return false;
-						}
-					}
-				}
-			}
-		}
-
-		return $levels[$type];
 	}
 
 	public function isTool(){

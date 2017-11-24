@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -98,7 +99,7 @@ class EnderChest extends Chest{
 	}
 
 	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
+		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
 			return [ItemFactory::get(Item::OBSIDIAN, 0, 8)];
 		}
 

@@ -24,20 +24,16 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 
-class WoodenPickaxe extends Tool{
+class WoodenPickaxe extends Pickaxe{
 	public function __construct(int $meta = 0){
-		parent::__construct(self::WOODEN_PICKAXE, $meta, "Wooden Pickaxe");
+		parent::__construct(self::WOODEN_PICKAXE, $meta, "Wooden Pickaxe", self::TIER_WOODEN);
 	}
 
 	public function isPickaxe(){
-		return Tool::TIER_WOODEN;
+		return self::TIER_WOODEN;
 	}
 
 	public function getFuelTime() : int{
 		return 200;
-	}
-
-	public function getAttackPoints() : int{
-		return 3;
 	}
 }

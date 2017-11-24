@@ -23,13 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+class Sword extends TieredTool{
 
-class StoneHoe extends Tool{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::STONE_HOE, $meta, "Stone Hoe");
+	public function isSword(){
+		return $this->tier;
 	}
 
-	public function isHoe(){
-		return Tool::TIER_STONE;
+	public function getAttackPoints() : int{
+		return self::getBaseDamageFromTier($this->tier);
 	}
+
 }

@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
 
 class Stone extends Solid{
@@ -64,7 +65,7 @@ class Stone extends Solid{
 	}
 
 	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
+		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
 			if($this->getDamage() === self::NORMAL){
 				return [
 					ItemFactory::get(Item::COBBLESTONE, $this->getDamage(), 1)

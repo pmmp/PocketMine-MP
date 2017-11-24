@@ -29,6 +29,7 @@ namespace pocketmine\block;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\level\MovingObjectPosition;
@@ -230,19 +231,19 @@ class Block extends Position implements BlockIds, Metadatable{
 				($this->getToolType() === Tool::TYPE_SHOVEL and ($tier = $item->isShovel()) !== false)
 			){
 				switch($tier){
-					case Tool::TIER_WOODEN:
+					case TieredTool::TIER_WOODEN:
 						$base /= 2;
 						break;
-					case Tool::TIER_STONE:
+					case TieredTool::TIER_STONE:
 						$base /= 4;
 						break;
-					case Tool::TIER_IRON:
+					case TieredTool::TIER_IRON:
 						$base /= 6;
 						break;
-					case Tool::TIER_DIAMOND:
+					case TieredTool::TIER_DIAMOND:
 						$base /= 8;
 						break;
-					case Tool::TIER_GOLD:
+					case TieredTool::TIER_GOLD:
 						$base /= 12;
 						break;
 				}

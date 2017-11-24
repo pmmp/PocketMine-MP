@@ -23,13 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-
-class IronHoe extends Tool{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::IRON_HOE, $meta, "Iron Hoe");
-	}
+class Hoe extends TieredTool{
 
 	public function isHoe(){
-		return Tool::TIER_IRON;
+		return $this->tier;
 	}
+
 }

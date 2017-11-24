@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
 
 class NetherReactor extends Solid{
@@ -52,7 +53,7 @@ class NetherReactor extends Solid{
 	}
 
 	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
+		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
 			return [
 				ItemFactory::get(Item::IRON_INGOT, 0, 6),
 				ItemFactory::get(Item::DIAMOND, 0, 3)
