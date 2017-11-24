@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Tool;
-
 class BrewingStand extends Transparent{
 
 	protected $id = self::BREWING_STAND_BLOCK;
@@ -42,7 +40,7 @@ class BrewingStand extends Transparent{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
 	public function getVariantBitmask() : int{

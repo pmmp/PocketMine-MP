@@ -30,7 +30,6 @@ use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\TieredTool;
-use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\level\Position;
@@ -223,12 +222,12 @@ class Block extends Position implements BlockIds, Metadatable{
 	public function getBreakTime(Item $item) : float{
 		$base = $this->getHardness() * 1.5;
 		if($this->canBeBrokenWith($item)){
-			if($this->getToolType() === Tool::TYPE_SHEARS and $item->isShears()){
+			if($this->getToolType() === BlockToolType::TYPE_SHEARS and $item->isShears()){
 				$base /= 15;
 			}elseif(
-				($this->getToolType() === Tool::TYPE_PICKAXE and ($tier = $item->isPickaxe()) !== false) or
-				($this->getToolType() === Tool::TYPE_AXE and ($tier = $item->isAxe()) !== false) or
-				($this->getToolType() === Tool::TYPE_SHOVEL and ($tier = $item->isShovel()) !== false)
+				($this->getToolType() === BlockToolType::TYPE_PICKAXE and ($tier = $item->isPickaxe()) !== false) or
+				($this->getToolType() === BlockToolType::TYPE_AXE and ($tier = $item->isAxe()) !== false) or
+				($this->getToolType() === BlockToolType::TYPE_SHOVEL and ($tier = $item->isShovel()) !== false)
 			){
 				switch($tier){
 					case TieredTool::TIER_WOODEN:
@@ -320,7 +319,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return int
 	 */
 	public function getToolType() : int{
-		return Tool::TYPE_NONE;
+		return BlockToolType::TYPE_NONE;
 	}
 
 	/**

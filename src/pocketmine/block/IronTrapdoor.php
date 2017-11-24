@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Tool;
-
 class IronTrapdoor extends Trapdoor{
 
 	protected $id = self::IRON_TRAPDOOR;
@@ -38,6 +36,6 @@ class IronTrapdoor extends Trapdoor{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 }

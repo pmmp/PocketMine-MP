@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -51,7 +50,7 @@ class Leaves extends Transparent{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_SHEARS;
+		return BlockToolType::TYPE_SHEARS;
 	}
 
 	public function getName() : string{

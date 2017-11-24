@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
-use pocketmine\item\Tool;
 
 class EndStoneBricks extends Solid{
 
@@ -44,7 +43,7 @@ class EndStoneBricks extends Solid{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
 	public function getDrops(Item $item) : array{

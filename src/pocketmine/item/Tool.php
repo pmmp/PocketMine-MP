@@ -24,16 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
 
 abstract class Tool extends Durable{
-
-	public const TYPE_NONE = 0;
-	public const TYPE_SWORD = 1;
-	public const TYPE_SHOVEL = 2;
-	public const TYPE_PICKAXE = 3;
-	public const TYPE_AXE = 4;
-	public const TYPE_SHEARS = 5;
 
 	public function getMaxStackSize() : int{
 		return 1;
@@ -53,11 +47,11 @@ abstract class Tool extends Durable{
 
 		if($object instanceof Block){
 			if(
-				$object->getToolType() === Tool::TYPE_PICKAXE and $this->isPickaxe() or
-				$object->getToolType() === Tool::TYPE_SHOVEL and $this->isShovel() or
-				$object->getToolType() === Tool::TYPE_AXE and $this->isAxe() or
-				$object->getToolType() === Tool::TYPE_SWORD and $this->isSword() or
-				$object->getToolType() === Tool::TYPE_SHEARS and $this->isShears()
+				$object->getToolType() === BlockToolType::TYPE_PICKAXE and $this->isPickaxe() or
+				$object->getToolType() === BlockToolType::TYPE_SHOVEL and $this->isShovel() or
+				$object->getToolType() === BlockToolType::TYPE_AXE and $this->isAxe() or
+				$object->getToolType() === BlockToolType::TYPE_SWORD and $this->isSword() or
+				$object->getToolType() === BlockToolType::TYPE_SHEARS and $this->isShears()
 			){
 				$this->applyDamage(1);
 			}elseif(!$this->isShears() and $object->getBreakTime($this) > 0){

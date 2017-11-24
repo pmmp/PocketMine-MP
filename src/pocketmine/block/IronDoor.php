@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
-use pocketmine\item\Tool;
 
 class IronDoor extends Door{
 
@@ -42,7 +41,7 @@ class IronDoor extends Door{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
 	public function getHardness() : float{

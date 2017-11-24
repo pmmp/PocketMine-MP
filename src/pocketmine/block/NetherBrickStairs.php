@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Tool;
-
 class NetherBrickStairs extends Stair{
 
 	protected $id = self::NETHER_BRICK_STAIRS;
@@ -42,7 +40,7 @@ class NetherBrickStairs extends Stair{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
 }

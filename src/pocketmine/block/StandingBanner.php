@@ -23,11 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\ItemFactory;
-use pocketmine\math\AxisAlignedBB;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
+use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Banner as TileBanner;
@@ -89,7 +88,7 @@ class StandingBanner extends Transparent{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_AXE;
+		return BlockToolType::TYPE_AXE;
 	}
 
 	public function getVariantBitmask() : int{

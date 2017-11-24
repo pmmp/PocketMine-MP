@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
-use pocketmine\item\Tool;
 
 class NetherBrickFence extends Fence{
 
@@ -36,7 +35,7 @@ class NetherBrickFence extends Fence{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
 	public function getName() : string{

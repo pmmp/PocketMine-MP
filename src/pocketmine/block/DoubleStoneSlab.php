@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
-use pocketmine\item\Tool;
 
 class DoubleStoneSlab extends DoubleSlab{
 
@@ -40,7 +39,7 @@ class DoubleStoneSlab extends DoubleSlab{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
 	public function getDrops(Item $item) : array{

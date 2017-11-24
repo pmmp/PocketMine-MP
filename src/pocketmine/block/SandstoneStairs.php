@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Tool;
-
 class SandstoneStairs extends Stair{
 
 	protected $id = self::SANDSTONE_STAIRS;
@@ -38,7 +36,7 @@ class SandstoneStairs extends Stair{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
 	public function getName() : string{

@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\block\utils\ColorBlockMetaHelper;
 use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
-use pocketmine\item\Tool;
 
 class Concrete extends Solid{
 
@@ -45,7 +44,7 @@ class Concrete extends Solid{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
 	public function getDrops(Item $item) : array{

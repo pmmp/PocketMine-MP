@@ -23,43 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\entity\Entity;
-use pocketmine\item\Item;
+/**
+ * Types of tools that can be used to break blocks
+ */
+interface BlockToolType{
 
-class Cobweb extends Flowable{
+	public const TYPE_NONE = 0;
+	public const TYPE_SWORD = 1;
+	public const TYPE_SHOVEL = 2;
+	public const TYPE_PICKAXE = 3;
+	public const TYPE_AXE = 4;
+	public const TYPE_SHEARS = 5;
 
-	protected $id = self::COBWEB;
-
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
-	}
-
-	public function hasEntityCollision() : bool{
-		return true;
-	}
-
-	public function getName() : string{
-		return "Cobweb";
-	}
-
-	public function getHardness() : float{
-		return 4;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_SWORD;
-	}
-
-	public function onEntityCollide(Entity $entity) : void{
-		$entity->resetFallDistance();
-	}
-
-	public function getDrops(Item $item) : array{
-		//TODO: correct drops
-		return [];
-	}
-
-	public function diffusesSkyLight() : bool{
-		return true;
-	}
 }

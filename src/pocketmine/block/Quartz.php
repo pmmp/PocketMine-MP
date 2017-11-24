@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\block\utils\PillarRotationHelper;
 use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
-use pocketmine\item\Tool;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -63,7 +62,7 @@ class Quartz extends Solid{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
 	public function getVariantBitmask() : int{
