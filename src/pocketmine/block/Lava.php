@@ -52,6 +52,10 @@ class Lava extends Liquid{
 		return 30;
 	}
 
+	public function getLiquidLevelDecreasePerBlock() : int{
+		return 2; //TODO: this is 1 in the nether
+	}
+
 	protected function checkForHarden(){
 		$colliding = false;
 		for($side = 0; $side <= 5 and !$colliding; ++$side){

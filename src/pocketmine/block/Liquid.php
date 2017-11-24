@@ -181,6 +181,15 @@ abstract class Liquid extends Transparent{
 
 	abstract public function tickRate() : int;
 
+	/**
+	 * Returns how many liquid levels are lost per block flowed horizontally. Affects how far the liquid can flow.
+	 *
+	 * @return int
+	 */
+	public function getLiquidLevelDecreasePerBlock() : int{
+		return 1;
+	}
+
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$this->checkForHarden();
@@ -191,7 +200,7 @@ abstract class Liquid extends Transparent{
 			}
 
 			$decay = $this->getFlowDecay($this);
-			$multiplier = $this instanceof Lava ? 2 : 1;
+			$multiplier = $this->getLiquidLevelDecreasePerBlock();
 
 			if($decay > 0){
 				$smallestFlowDecay = -100;
