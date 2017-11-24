@@ -149,7 +149,7 @@ class ItemFactory{
 			self::registerItem(new Steak());
 			self::registerItem(new RawChicken());
 			self::registerItem(new CookedChicken());
-			//TODO: ROTTEN_FLESH
+			self::registerItem(new RottenFlesh());
 			//TODO: ENDER_PEARL
 			self::registerItem(new BlazeRod());
 			self::registerItem(new Item(Item::GHAST_TEAR, 0, "Ghast Tear"));
