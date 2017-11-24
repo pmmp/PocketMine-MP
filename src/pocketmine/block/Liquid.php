@@ -179,15 +179,7 @@ abstract class Liquid extends Transparent{
 		$vector->z += $flow->z;
 	}
 
-	public function tickRate(){
-		if($this instanceof Water){
-			return 5;
-		}elseif($this instanceof Lava){
-			return 30;
-		}
-
-		return 0;
-	}
+	abstract public function tickRate() : int;
 
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
@@ -428,21 +420,8 @@ abstract class Liquid extends Transparent{
 		return ($decay >= 0 && $blockDecay >= $decay) ? $decay : $blockDecay;
 	}
 
-	private function checkForHarden(){
-		if($this instanceof Lava){
-			$colliding = false;
-			for($side = 0; $side <= 5 and !$colliding; ++$side){
-				$colliding = $this->getSide($side) instanceof Water;
-			}
+	protected function checkForHarden(){
 
-			if($colliding){
-				if($this->getDamage() === 0){
-					$this->level->setBlock($this, BlockFactory::get(Block::OBSIDIAN), true, true);
-				}elseif($this->getDamage() <= 4){
-					$this->level->setBlock($this, BlockFactory::get(Block::COBBLESTONE), true, true);
-				}
-			}
-		}
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

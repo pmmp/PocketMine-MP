@@ -48,6 +48,25 @@ class Lava extends Liquid{
 		return "Lava";
 	}
 
+	public function tickRate() : int{
+		return 30;
+	}
+
+	protected function checkForHarden(){
+		$colliding = false;
+		for($side = 0; $side <= 5 and !$colliding; ++$side){
+			$colliding = $this->getSide($side) instanceof Water;
+		}
+
+		if($colliding){
+			if($this->getDamage() === 0){
+				$this->level->setBlock($this, BlockFactory::get(Block::OBSIDIAN), true, true);
+			}elseif($this->getDamage() <= 4){
+				$this->level->setBlock($this, BlockFactory::get(Block::COBBLESTONE), true, true);
+			}
+		}
+	}
+
 	public function onEntityCollide(Entity $entity) : void{
 		$entity->fallDistance *= 0.5;
 
