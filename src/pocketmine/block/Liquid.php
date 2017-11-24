@@ -203,36 +203,36 @@ abstract class Liquid extends Transparent{
 				$smallestFlowDecay = $this->getSmallestFlowDecay($this->level->getBlockAt($this->x - 1, $this->y, $this->z), $smallestFlowDecay);
 				$smallestFlowDecay = $this->getSmallestFlowDecay($this->level->getBlockAt($this->x + 1, $this->y, $this->z), $smallestFlowDecay);
 
-				$k = $smallestFlowDecay + $multiplier;
+				$newDecay = $smallestFlowDecay + $multiplier;
 
-				if($k >= 8 or $smallestFlowDecay < 0){
-					$k = -1;
+				if($newDecay >= 8 or $smallestFlowDecay < 0){
+					$newDecay = -1;
 				}
 
 				if(($topFlowDecay = $this->getFlowDecay($this->level->getBlockAt($this->x, $this->y + 1, $this->z))) >= 0){
 					if($topFlowDecay >= 8){
-						$k = $topFlowDecay;
+						$newDecay = $topFlowDecay;
 					}else{
-						$k = $topFlowDecay | 0x08;
+						$newDecay = $topFlowDecay | 0x08;
 					}
 				}
 
 				if($this->adjacentSources >= 2 and $this instanceof Water){
 					$bottomBlock = $this->level->getBlockAt($this->x, $this->y - 1, $this->z);
 					if($bottomBlock->isSolid()){
-						$k = 0;
+						$newDecay = 0;
 					}elseif($bottomBlock instanceof Water and $bottomBlock->getDamage() === 0){
-						$k = 0;
+						$newDecay = 0;
 					}
 				}
 
-				if($this instanceof Lava and $decay < 8 and $k < 8 and $k > 1 and mt_rand(0, 4) !== 0){
-					$k = $decay;
+				if($this instanceof Lava and $decay < 8 and $newDecay < 8 and $newDecay > 1 and mt_rand(0, 4) !== 0){
+					$newDecay = $decay;
 					$flag = false;
 				}
 
-				if($k !== $decay){
-					$decay = $k;
+				if($newDecay !== $decay){
+					$decay = $newDecay;
 					if($decay < 0){
 						$this->level->setBlock($this, BlockFactory::get(Block::AIR), true, true);
 					}else{
