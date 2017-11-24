@@ -442,7 +442,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * Returns the Block on the side $side, works like Vector3::side()
+	 * Returns the Block on the side $side, works like Vector3::getSide()
 	 *
 	 * @param int $side
 	 * @param int $step
