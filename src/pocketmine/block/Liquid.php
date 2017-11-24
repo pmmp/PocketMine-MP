@@ -193,8 +193,6 @@ abstract class Liquid extends Transparent{
 			$decay = $this->getFlowDecay($this);
 			$multiplier = $this instanceof Lava ? 2 : 1;
 
-			$flag = true;
-
 			if($decay > 0){
 				$smallestFlowDecay = -100;
 				$this->adjacentSources = 0;
@@ -228,7 +226,6 @@ abstract class Liquid extends Transparent{
 
 				if($this instanceof Lava and $decay < 8 and $newDecay < 8 and $newDecay > 1 and mt_rand(0, 4) !== 0){
 					$newDecay = $decay;
-					$flag = false;
 				}
 
 				if($newDecay !== $decay){
@@ -239,12 +236,7 @@ abstract class Liquid extends Transparent{
 						$this->level->setBlock($this, BlockFactory::get($this->id, $decay), true, true);
 						$this->level->scheduleDelayedBlockUpdate($this, $this->tickRate());
 					}
-				}elseif($flag){
-					//$this->getLevel()->scheduleUpdate($this, $this->tickRate());
-					//$this->updateFlow();
 				}
-			}else{
-				//$this->updateFlow();
 			}
 
 			if($decay >= 0){
