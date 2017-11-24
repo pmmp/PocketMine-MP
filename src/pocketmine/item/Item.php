@@ -28,6 +28,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\level\Level;
@@ -739,6 +740,16 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	public function isTool(){
 		return false;
+	}
+
+	/**
+	 * Returns what type of block-breaking tool this is. Blocks requiring the same tool type as the item will break
+	 * faster (except for blocks requiring no tool, which break at the same speed regardless of the tool used)
+	 *
+	 * @return int
+	 */
+	public function getBlockToolType() : int{
+		return BlockToolType::TYPE_NONE;
 	}
 
 	/**

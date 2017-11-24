@@ -23,10 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\BlockToolType;
+
 class Axe extends TieredTool{
 
 	public function isAxe(){
 		return $this->tier;
+	}
+
+	public function getBlockToolType() : int{
+		return BlockToolType::TYPE_AXE;
 	}
 
 	public function getAttackPoints() : int{

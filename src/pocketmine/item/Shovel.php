@@ -23,10 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\BlockToolType;
+
 class Shovel extends TieredTool{
 
 	public function isShovel(){
 		return $this->tier;
+	}
+
+	public function getBlockToolType() : int{
+		return BlockToolType::TYPE_SHOVEL;
 	}
 
 	public function getAttackPoints() : int{
