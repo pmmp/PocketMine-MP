@@ -395,13 +395,7 @@ abstract class Liquid extends Transparent{
 			}
 		}
 
-		$minCost = $this->flowCost[0];
-
-		for($i = 1; $i < 4; ++$i){
-			if($this->flowCost[$i] < $minCost){
-				$minCost = $this->flowCost[$i];
-			}
-		}
+		$minCost = min($this->flowCost);
 
 		for($i = 0; $i < 4; ++$i){
 			$this->isOptimalFlowDirection[$i] = ($this->flowCost[$i] === $minCost);
