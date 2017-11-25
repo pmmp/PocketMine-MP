@@ -38,6 +38,9 @@ abstract class Liquid extends Transparent{
 	public $isOptimalFlowDirection = [0, 0, 0, 0];
 	public $flowCost = [0, 0, 0, 0];
 
+	/** @var Vector3|null */
+	protected $flowVector = null;
+
 	public function hasEntityCollision() : bool{
 		return true;
 	}
@@ -105,7 +108,16 @@ abstract class Liquid extends Transparent{
 		return $decay;
 	}
 
+	public function clearCaches() : void{
+		parent::clearCaches();
+		$this->flowVector = null;
+	}
+
 	public function getFlowVector() : Vector3{
+		if($this->flowVector !== null){
+			return $this->flowVector;
+		}
+
 		$vector = new Vector3(0, 0, 0);
 
 		if($this->temporalVector === null){
@@ -181,7 +193,7 @@ abstract class Liquid extends Transparent{
 			}
 		}
 
-		return $vector->normalize();
+		return $this->flowVector = $vector->normalize();
 	}
 
 	public function addVelocityToEntity(Entity $entity, Vector3 $vector) : void{
