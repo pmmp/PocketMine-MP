@@ -34,6 +34,10 @@ abstract class Liquid extends Transparent{
 	/** @var Vector3 */
 	private $temporalVector = null;
 
+	public $adjacentSources = 0;
+	public $isOptimalFlowDirection = [0, 0, 0, 0];
+	public $flowCost = [0, 0, 0, 0];
+
 	public function hasEntityCollision() : bool{
 		return true;
 	}
@@ -50,9 +54,17 @@ abstract class Liquid extends Transparent{
 		return false;
 	}
 
-	public $adjacentSources = 0;
-	public $isOptimalFlowDirection = [0, 0, 0, 0];
-	public $flowCost = [0, 0, 0, 0];
+	public function getHardness() : float{
+		return 100;
+	}
+
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
+		return null;
+	}
+
+	public function getDrops(Item $item) : array{
+		return [];
+	}
 
 	public function getFluidHeightPercent(){
 		$d = $this->meta;
@@ -354,10 +366,6 @@ abstract class Liquid extends Transparent{
 		return $cost;
 	}
 
-	public function getHardness() : float{
-		return 100;
-	}
-
 	/**
 	 * @return bool[]
 	 */
@@ -420,13 +428,5 @@ abstract class Liquid extends Transparent{
 
 	protected function checkForHarden(){
 
-	}
-
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return null;
-	}
-
-	public function getDrops(Item $item) : array{
-		return [];
 	}
 }
