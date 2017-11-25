@@ -63,7 +63,7 @@ abstract class Liquid extends Transparent{
 		return ($d + 1) / 9;
 	}
 
-	protected function getFlowDecay(Vector3 $pos){
+	protected function getFlowDecay(Vector3 $pos) : int{
 		if(!($pos instanceof Block)){
 			$pos = $this->level->getBlock($pos);
 		}
@@ -75,7 +75,7 @@ abstract class Liquid extends Transparent{
 		}
 	}
 
-	protected function getEffectiveFlowDecay(Vector3 $pos){
+	protected function getEffectiveFlowDecay(Vector3 $pos) : int{
 		if(!($pos instanceof Block)){
 			$pos = $this->level->getBlock($pos);
 		}
@@ -93,7 +93,7 @@ abstract class Liquid extends Transparent{
 		return $decay;
 	}
 
-	public function getFlowVector(){
+	public function getFlowVector() : Vector3{
 		$vector = new Vector3(0, 0, 0);
 
 		if($this->temporalVector === null){
@@ -295,7 +295,7 @@ abstract class Liquid extends Transparent{
 		}
 	}
 
-	private function flowIntoBlock(Block $block, $newFlowDecay){
+	private function flowIntoBlock(Block $block, int $newFlowDecay) : void{
 		if($block->canBeFlowedInto()){
 			if($block->getId() > 0){
 				$this->level->useBreakOn($block);
@@ -306,7 +306,7 @@ abstract class Liquid extends Transparent{
 		}
 	}
 
-	private function calculateFlowCost(Block $block, $accumulatedCost, $previousDirection){
+	private function calculateFlowCost(Block $block, int $accumulatedCost, int $previousDirection) : int{
 		$cost = 1000;
 
 		for($j = 0; $j < 4; ++$j){
@@ -358,7 +358,10 @@ abstract class Liquid extends Transparent{
 		return 100;
 	}
 
-	private function getOptimalFlowDirections(){
+	/**
+	 * @return bool[]
+	 */
+	private function getOptimalFlowDirections() : array{
 		if($this->temporalVector === null){
 			$this->temporalVector = new Vector3(0, 0, 0);
 		}
@@ -407,7 +410,7 @@ abstract class Liquid extends Transparent{
 		return $this->isOptimalFlowDirection;
 	}
 
-	private function getSmallestFlowDecay(Vector3 $pos, $decay){
+	private function getSmallestFlowDecay(Vector3 $pos, int $decay) : int{
 		$blockDecay = $this->getFlowDecay($pos);
 
 		if($blockDecay < 0){
