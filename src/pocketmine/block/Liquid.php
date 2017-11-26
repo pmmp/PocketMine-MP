@@ -53,6 +53,10 @@ abstract class Liquid extends Transparent{
 		return true;
 	}
 
+	public function canBeFlowedInto() : bool{
+		return true;
+	}
+
 	public function isSolid() : bool{
 		return false;
 	}
@@ -273,12 +277,11 @@ abstract class Liquid extends Transparent{
 
 				if($this instanceof Lava and $bottomBlock instanceof Water){
 					$this->level->setBlock($bottomBlock, BlockFactory::get(Block::STONE), true, true);
+				}else{
+					$this->flowIntoBlock($bottomBlock, $decay | 0x08);
+				}
 
-				}elseif($bottomBlock->canBeFlowedInto() or ($bottomBlock instanceof Liquid and ($bottomBlock->getDamage() & 0x07) !== 0)){
-					$this->level->setBlock($bottomBlock, BlockFactory::get($this->id, $decay | 0x08), true, false);
-					$this->level->scheduleDelayedBlockUpdate($bottomBlock, $this->tickRate());
-
-				}elseif($decay === 0 or !$bottomBlock->canBeFlowedInto()){
+				if($decay === 0 or !$bottomBlock->canBeFlowedInto()){
 					$flags = $this->getOptimalFlowDirections();
 
 					$l = $decay + $multiplier;
@@ -316,7 +319,7 @@ abstract class Liquid extends Transparent{
 	}
 
 	private function flowIntoBlock(Block $block, int $newFlowDecay) : void{
-		if($block->canBeFlowedInto()){
+		if($block->canBeFlowedInto() and !($block instanceof Liquid)){
 			if($block->getId() > 0){
 				$this->level->useBreakOn($block);
 			}
@@ -351,9 +354,7 @@ abstract class Liquid extends Transparent{
 				}
 				$blockSide = $this->level->getBlockAt($x, $y, $z);
 
-				if(!$blockSide->canBeFlowedInto() and !($blockSide instanceof Liquid)){
-					continue;
-				}elseif($blockSide instanceof Liquid and $blockSide->getDamage() === 0){
+				if(!$blockSide->canBeFlowedInto()){
 					continue;
 				}elseif($this->level->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
 					return $accumulatedCost;
@@ -400,9 +401,7 @@ abstract class Liquid extends Transparent{
 			}
 			$block = $this->level->getBlockAt($x, $y, $z);
 
-			if(!$block->canBeFlowedInto() and !($block instanceof Liquid)){
-				continue;
-			}elseif($block instanceof Liquid and $block->getDamage() === 0){
+			if(!$block->canBeFlowedInto()){
 				continue;
 			}elseif($this->level->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
 				$this->flowCost[$j] = 0;
