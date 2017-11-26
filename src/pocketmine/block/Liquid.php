@@ -309,7 +309,7 @@ abstract class Liquid extends Transparent{
 	}
 
 	private function flowIntoBlock(Block $block, int $newFlowDecay) : void{
-		if($block->canBeFlowedInto() and !($block instanceof Liquid)){
+		if($this->canFlowInto($block)){
 			if($block->getId() > 0){
 				$this->level->useBreakOn($block);
 			}
@@ -343,7 +343,7 @@ abstract class Liquid extends Transparent{
 
 			$blockSide = $this->level->getBlockAt($x, $y, $z);
 
-			if(!$blockSide->canBeFlowedInto()){
+			if(!$this->canFlowInto($blockSide)){
 				continue;
 			}elseif($this->level->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
 				return $accumulatedCost;
@@ -389,7 +389,7 @@ abstract class Liquid extends Transparent{
 			}
 			$block = $this->level->getBlockAt($x, $y, $z);
 
-			if(!$block->canBeFlowedInto()){
+			if(!$this->canFlowInto($block)){
 				continue;
 			}elseif($this->level->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
 				$flowCost[$j] = $maxCost = 0;
@@ -426,5 +426,9 @@ abstract class Liquid extends Transparent{
 
 	protected function checkForHarden(){
 
+	}
+
+	protected function canFlowInto(Block $block) : bool{
+		return $block->canBeFlowedInto() and !($block instanceof Liquid); //TODO: I think this should only be liquids of the same type
 	}
 }
