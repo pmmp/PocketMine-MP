@@ -82,28 +82,20 @@ abstract class Liquid extends Transparent{
 		return ($d + 1) / 9;
 	}
 
-	protected function getFlowDecay(Vector3 $pos) : int{
-		if(!($pos instanceof Block)){
-			$pos = $this->level->getBlock($pos);
+	protected function getFlowDecay(Block $block) : int{
+		if($block->getId() !== $this->getId()){
+			return -1;
 		}
 
-		if($pos->getId() !== $this->getId()){
-			return -1;
-		}else{
-			return $pos->getDamage();
-		}
+		return $block->getDamage();
 	}
 
-	protected function getEffectiveFlowDecay(Vector3 $pos) : int{
-		if(!($pos instanceof Block)){
-			$pos = $this->level->getBlock($pos);
-		}
-
-		if($pos->getId() !== $this->getId()){
+	protected function getEffectiveFlowDecay(Block $block) : int{
+		if($block->getId() !== $this->getId()){
 			return -1;
 		}
 
-		$decay = $pos->getDamage();
+		$decay = $block->getDamage();
 
 		if($decay >= 8){
 			$decay = 0;
@@ -419,8 +411,8 @@ abstract class Liquid extends Transparent{
 		return $this->isOptimalFlowDirection;
 	}
 
-	private function getSmallestFlowDecay(Vector3 $pos, int $decay) : int{
-		$blockDecay = $this->getFlowDecay($pos);
+	private function getSmallestFlowDecay(Block $block, int $decay) : int{
+		$blockDecay = $this->getFlowDecay($block);
 
 		if($blockDecay < 0){
 			return $decay;
