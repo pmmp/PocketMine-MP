@@ -162,27 +162,16 @@ abstract class Liquid extends Transparent{
 		}
 
 		if($this->getDamage() >= 8){
-			$falling = false;
-
-			if(!$this->level->getBlockAt($this->x, $this->y, $this->z - 1)->canBeFlowedInto()){
-				$falling = true;
-			}elseif(!$this->level->getBlockAt($this->x, $this->y, $this->z + 1)->canBeFlowedInto()){
-				$falling = true;
-			}elseif(!$this->level->getBlockAt($this->x - 1, $this->y, $this->z)->canBeFlowedInto()){
-				$falling = true;
-			}elseif(!$this->level->getBlockAt($this->x + 1, $this->y, $this->z)->canBeFlowedInto()){
-				$falling = true;
-			}elseif(!$this->level->getBlockAt($this->x, $this->y + 1, $this->z - 1)->canBeFlowedInto()){
-				$falling = true;
-			}elseif(!$this->level->getBlockAt($this->x, $this->y + 1, $this->z + 1)->canBeFlowedInto()){
-				$falling = true;
-			}elseif(!$this->level->getBlockAt($this->x - 1, $this->y + 1, $this->z)->canBeFlowedInto()){
-				$falling = true;
-			}elseif(!$this->level->getBlockAt($this->x + 1, $this->y + 1, $this->z)->canBeFlowedInto()){
-				$falling = true;
-			}
-
-			if($falling){
+			if(
+				!$this->canFlowInto($this->level->getBlockAt($this->x, $this->y, $this->z - 1)) or
+				!$this->canFlowInto($this->level->getBlockAt($this->x, $this->y, $this->z + 1)) or
+				!$this->canFlowInto($this->level->getBlockAt($this->x - 1, $this->y, $this->z)) or
+				!$this->canFlowInto($this->level->getBlockAt($this->x + 1, $this->y, $this->z)) or
+				!$this->canFlowInto($this->level->getBlockAt($this->x, $this->y + 1, $this->z - 1)) or
+				!$this->canFlowInto($this->level->getBlockAt($this->x, $this->y + 1, $this->z + 1)) or
+				!$this->canFlowInto($this->level->getBlockAt($this->x - 1, $this->y + 1, $this->z)) or
+				!$this->canFlowInto($this->level->getBlockAt($this->x + 1, $this->y + 1, $this->z))
+			){
 				$vector = $vector->normalize()->add(0, -6, 0);
 			}
 		}
