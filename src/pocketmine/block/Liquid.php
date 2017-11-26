@@ -257,10 +257,6 @@ abstract class Liquid extends Transparent{
 					}
 				}
 
-				if($this instanceof Lava and $decay < 8 and $newDecay < 8 and $newDecay > 1 and mt_rand(0, 4) !== 0){
-					$newDecay = $decay;
-				}
-
 				if($newDecay !== $decay){
 					$decay = $newDecay;
 					if($decay < 0){
