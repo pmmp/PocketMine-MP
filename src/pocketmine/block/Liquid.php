@@ -35,8 +35,6 @@ abstract class Liquid extends Transparent{
 	private $temporalVector = null;
 
 	public $adjacentSources = 0;
-	public $isOptimalFlowDirection = [0, 0, 0, 0];
-	public $flowCost = [0, 0, 0, 0];
 
 	/** @var Vector3|null */
 	protected $flowVector = null;
@@ -373,10 +371,9 @@ abstract class Liquid extends Transparent{
 			$this->temporalVector = new Vector3(0, 0, 0);
 		}
 
+		$flowCost = array_fill(0, 4, 1000);
 		$maxCost = 4;
 		for($j = 0; $j < 4; ++$j){
-			$this->flowCost[$j] = 1000;
-
 			$x = $this->x;
 			$y = $this->y;
 			$z = $this->z;
@@ -395,20 +392,22 @@ abstract class Liquid extends Transparent{
 			if(!$block->canBeFlowedInto()){
 				continue;
 			}elseif($this->level->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
-				$this->flowCost[$j] = $maxCost = 0;
+				$flowCost[$j] = $maxCost = 0;
 			}elseif($maxCost > 0){
-				$this->flowCost[$j] = $this->calculateFlowCost($block, 1, $this->x, $this->z, $maxCost);
-				$maxCost = min($maxCost, $this->flowCost[$j]);
+				$flowCost[$j] = $this->calculateFlowCost($block, 1, $this->x, $this->z, $maxCost);
+				$maxCost = min($maxCost, $flowCost[$j]);
 			}
 		}
 
-		$minCost = min($this->flowCost);
+		$minCost = min($flowCost);
+
+		$isOptimalFlowDirection = [];
 
 		for($i = 0; $i < 4; ++$i){
-			$this->isOptimalFlowDirection[$i] = ($this->flowCost[$i] === $minCost);
+			$isOptimalFlowDirection[$i] = ($flowCost[$i] === $minCost);
 		}
 
-		return $this->isOptimalFlowDirection;
+		return $isOptimalFlowDirection;
 	}
 
 	private function getSmallestFlowDecay(Block $block, int $decay) : int{
