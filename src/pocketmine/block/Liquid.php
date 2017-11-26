@@ -329,46 +329,44 @@ abstract class Liquid extends Transparent{
 		}
 	}
 
-	private function calculateFlowCost(Block $block, int $accumulatedCost, int $previousDirection) : int{
+	private function calculateFlowCost(Block $block, int $accumulatedCost, int $prevX, int $prevZ) : int{
 		$cost = 1000;
 
 		for($j = 0; $j < 4; ++$j){
-			if(
-				($j === 0 and $previousDirection === 1) or
-				($j === 1 and $previousDirection === 0) or
-				($j === 2 and $previousDirection === 3) or
-				($j === 3 and $previousDirection === 2)
-			){
-				$x = $block->x;
-				$y = $block->y;
-				$z = $block->z;
+			$x = $block->x;
+			$y = $block->y;
+			$z = $block->z;
 
-				if($j === 0){
-					--$x;
-				}elseif($j === 1){
-					++$x;
-				}elseif($j === 2){
-					--$z;
-				}elseif($j === 3){
-					++$z;
-				}
-				$blockSide = $this->level->getBlockAt($x, $y, $z);
+			if($j === 0){
+				--$x;
+			}elseif($j === 1){
+				++$x;
+			}elseif($j === 2){
+				--$z;
+			}elseif($j === 3){
+				++$z;
+			}
 
-				if(!$blockSide->canBeFlowedInto()){
-					continue;
-				}elseif($this->level->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
-					return $accumulatedCost;
-				}
+			if($prevX === $x and $prevZ === $z){
+				continue;
+			}
 
-				if($accumulatedCost >= 4){
-					continue;
-				}
+			$blockSide = $this->level->getBlockAt($x, $y, $z);
 
-				$realCost = $this->calculateFlowCost($blockSide, $accumulatedCost + 1, $j);
+			if(!$blockSide->canBeFlowedInto()){
+				continue;
+			}elseif($this->level->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
+				return $accumulatedCost;
+			}
 
-				if($realCost < $cost){
-					$cost = $realCost;
-				}
+			if($accumulatedCost >= 4){
+				continue;
+			}
+
+			$realCost = $this->calculateFlowCost($blockSide, $accumulatedCost + 1, $x, $z);
+
+			if($realCost < $cost){
+				$cost = $realCost;
 			}
 		}
 
@@ -406,7 +404,7 @@ abstract class Liquid extends Transparent{
 			}elseif($this->level->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
 				$this->flowCost[$j] = 0;
 			}else{
-				$this->flowCost[$j] = $this->calculateFlowCost($block, 1, $j);
+				$this->flowCost[$j] = $this->calculateFlowCost($block, 1, $this->x, $this->z);
 			}
 		}
 
