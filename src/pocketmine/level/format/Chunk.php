@@ -40,17 +40,25 @@ class Chunk{
 
 	public const MAX_SUBCHUNKS = 16;
 
+	/** @var int */
 	protected $x;
+	/** @var int */
 	protected $z;
 
+	/** @var bool */
 	protected $hasChanged = false;
 
+	/** @var bool */
 	protected $isInit = false;
 
+	/** @var bool*/
 	protected $lightPopulated = false;
+	/** @var bool */
 	protected $terrainGenerated = false;
+	/** @var bool */
 	protected $terrainPopulated = false;
 
+	/** @var int */
 	protected $height = Chunk::MAX_SUBCHUNKS;
 
 	/** @var \SplFixedArray|SubChunkInterface[] */
@@ -61,6 +69,7 @@ class Chunk{
 
 	/** @var Tile[] */
 	protected $tiles = [];
+	/** @var Tile[] */
 	protected $tileList = [];
 
 	/** @var Entity[] */
