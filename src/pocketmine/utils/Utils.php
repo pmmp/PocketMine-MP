@@ -543,4 +543,13 @@ class Utils{
 
 		return json_decode(base64_decode(strtr($payloadB64, '-_', '+/'), true), true);
 	}
+
+	public static function validateObjectArray(array $array, string $class) : bool{
+		foreach($array as $key => $item){
+			if(!($item instanceof $class)){
+				throw new \RuntimeException("\$item[$key] is not an instance of $class");
+			}
+		}
+		return true;
+	}
 }
