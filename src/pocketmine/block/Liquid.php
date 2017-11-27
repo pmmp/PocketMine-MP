@@ -254,11 +254,7 @@ abstract class Liquid extends Transparent{
 			if($decay >= 0){
 				$bottomBlock = $this->level->getBlockAt($this->x, $this->y - 1, $this->z);
 
-				if($this instanceof Lava and $bottomBlock instanceof Water){
-					$this->level->setBlock($bottomBlock, BlockFactory::get(Block::STONE), true, true);
-				}else{
-					$this->flowIntoBlock($bottomBlock, $decay | 0x08);
-				}
+				$this->flowIntoBlock($bottomBlock, $decay | 0x08);
 
 				if($decay === 0 or !$bottomBlock->canBeFlowedInto()){
 					if($decay >= 8){
@@ -293,7 +289,7 @@ abstract class Liquid extends Transparent{
 		}
 	}
 
-	private function flowIntoBlock(Block $block, int $newFlowDecay) : void{
+	protected function flowIntoBlock(Block $block, int $newFlowDecay) : void{
 		if($this->canFlowInto($block) and !($block instanceof Liquid)){
 			if($block->getId() > 0){
 				$this->level->useBreakOn($block);

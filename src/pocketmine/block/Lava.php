@@ -71,6 +71,14 @@ class Lava extends Liquid{
 		}
 	}
 
+	protected function flowIntoBlock(Block $block, int $newFlowDecay) : void{
+		if($block instanceof Water){
+			$this->level->setBlock($block, BlockFactory::get(Block::STONE), true, true);
+		}else{
+			parent::flowIntoBlock($block, $newFlowDecay);
+		}
+	}
+
 	public function onEntityCollide(Entity $entity) : void{
 		$entity->fallDistance *= 0.5;
 
