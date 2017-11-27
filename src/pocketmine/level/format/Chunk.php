@@ -54,10 +54,10 @@ class Chunk{
 	protected $height = Chunk::MAX_SUBCHUNKS;
 
 	/** @var \SplFixedArray|SubChunkInterface[] */
-	protected $subChunks = [];
+	protected $subChunks;
 
 	/** @var EmptySubChunk */
-	protected $emptySubChunk = null;
+	protected $emptySubChunk;
 
 	/** @var Tile[] */
 	protected $tiles = [];
