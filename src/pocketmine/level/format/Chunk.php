@@ -249,7 +249,7 @@ class Chunk{
 	 * @param int $data 0-15
 	 */
 	public function setBlockData(int $x, int $y, int $z, int $data){
-		if($this->getSubChunk($y >> 4)->setBlockData($x, $y & 0x0f, $z, $data)){
+		if($this->getSubChunk($y >> 4, true)->setBlockData($x, $y & 0x0f, $z, $data)){
 			$this->hasChanged = true;
 		}
 	}
