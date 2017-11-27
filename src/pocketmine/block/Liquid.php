@@ -298,7 +298,7 @@ abstract class Liquid extends Transparent{
 	}
 
 	private function flowIntoBlock(Block $block, int $newFlowDecay) : void{
-		if($this->canFlowInto($block)){
+		if($this->canFlowInto($block) and !($block instanceof Liquid)){
 			if($block->getId() > 0){
 				$this->level->useBreakOn($block);
 			}
@@ -418,6 +418,6 @@ abstract class Liquid extends Transparent{
 	}
 
 	protected function canFlowInto(Block $block) : bool{
-		return $block->canBeFlowedInto() and !($block instanceof Liquid); //TODO: I think this should only be liquids of the same type
+		return $block->canBeFlowedInto() and !($block instanceof Liquid and $block->meta === 0); //TODO: I think this should only be liquids of the same type
 	}
 }
