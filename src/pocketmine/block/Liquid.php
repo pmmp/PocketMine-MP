@@ -361,7 +361,7 @@ abstract class Liquid extends Transparent{
 		}
 
 		$flowCost = array_fill(0, 4, 1000);
-		$maxCost = 4;
+		$maxCost = 4 / $this->getLiquidLevelDecreasePerBlock();
 		for($j = 0; $j < 4; ++$j){
 			$x = $this->x;
 			$y = $this->y;
