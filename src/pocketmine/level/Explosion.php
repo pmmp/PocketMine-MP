@@ -78,10 +78,11 @@ class Explosion{
 
 		$currentX = ((int) $this->source->x) >> 4;
 		$currentZ = ((int) $this->source->z) >> 4;
-		$currentChunk = $this->level->getChunk($currentX, $currentZ, true);
 
 		$currentSubY = ((int) $this->source->y) >> 4;
-		$currentSubChunk = $currentChunk->getSubChunk($currentSubY);
+
+		$currentChunk = null;
+		$currentSubChunk = null;
 
 		$mRays = (int) ($this->rays - 1);
 		for($i = 0; $i < $this->rays; ++$i){
@@ -103,9 +104,10 @@ class Explosion{
 							$vBlock->z = $pointerZ >= $z ? $z : $z - 1;
 
 
-							if(($vBlock->x >> 4) !== $currentX or ($vBlock->z >> 4) !== $currentZ){
+							if($currentChunk === null or ($vBlock->x >> 4) !== $currentX or ($vBlock->z >> 4) !== $currentZ){
 								$currentX = $vBlock->x >> 4;
 								$currentZ = $vBlock->z >> 4;
+								$currentSubChunk = null;
 
 								$currentChunk = $this->level->getChunk($currentX, $currentZ);
 								if($currentChunk === null){
@@ -113,7 +115,7 @@ class Explosion{
 								}
 							}
 
-							if(($vBlock->y >> 4) !== $currentSubY){
+							if($currentSubChunk === null or ($vBlock->y >> 4) !== $currentSubY){
 								$currentSubY = $vBlock->y >> 4;
 								$currentSubChunk = $currentChunk->getSubChunk($currentSubY);
 								if($currentSubChunk === null){
