@@ -375,8 +375,6 @@ class Chunk{
 			return -1;
 		}
 
-		$height = $index << 4;
-
 		for($y = $index; $y >= 0; --$y){
 			$height = $this->getSubChunk($y)->getHighestBlockAt($x, $z) | ($y << 4);
 			if($height !== -1){
