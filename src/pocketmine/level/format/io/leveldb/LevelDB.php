@@ -500,8 +500,8 @@ class LevelDB extends BaseLevelProvider{
 			}else{
 				$this->db->put($key,
 					chr(self::CURRENT_LEVEL_SUBCHUNK_VERSION) .
-					$subChunks[$y]->getBlockIdArray() .
-					$subChunks[$y]->getBlockDataArray()
+					$subChunk->getBlockIdArray() .
+					$subChunk->getBlockDataArray()
 				);
 			}
 		}
