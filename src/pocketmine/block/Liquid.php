@@ -308,10 +308,14 @@ abstract class Liquid extends Transparent{
 		}
 	}
 
-	private function calculateFlowCost(Block $block, int $accumulatedCost, int $prevX, int $prevZ, int $maxCost) : int{
+	private function calculateFlowCost(Block $block, int $accumulatedCost, int $maxCost, int $oppositeDirection) : int{
 		$cost = 1000;
 
 		for($j = 0; $j < 4; ++$j){
+			if($j === $oppositeDirection){
+				continue;
+			}
+
 			$x = $block->x;
 			$y = $block->y;
 			$z = $block->z;
@@ -326,10 +330,6 @@ abstract class Liquid extends Transparent{
 				++$z;
 			}
 
-			if($prevX === $x and $prevZ === $z){
-				continue;
-			}
-
 			$blockSide = $this->level->getBlockAt($x, $y, $z);
 
 			if(!$this->canFlowInto($blockSide)){
@@ -342,7 +342,7 @@ abstract class Liquid extends Transparent{
 				continue;
 			}
 
-			$realCost = $this->calculateFlowCost($blockSide, $accumulatedCost + 1, $x, $z, $maxCost);
+			$realCost = $this->calculateFlowCost($blockSide, $accumulatedCost + 1, $maxCost, $oppositeDirection);
 
 			if($realCost < $cost){
 				$cost = $realCost;
@@ -383,7 +383,7 @@ abstract class Liquid extends Transparent{
 			}elseif($this->level->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
 				$flowCost[$j] = $maxCost = 0;
 			}elseif($maxCost > 0){
-				$flowCost[$j] = $this->calculateFlowCost($block, 1, $this->x, $this->z, $maxCost);
+				$flowCost[$j] = $this->calculateFlowCost($block, 1, $maxCost, $j ^ 0x01);
 				$maxCost = min($maxCost, $flowCost[$j]);
 			}
 		}
