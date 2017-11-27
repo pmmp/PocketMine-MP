@@ -261,34 +261,30 @@ abstract class Liquid extends Transparent{
 				}
 
 				if($decay === 0 or !$bottomBlock->canBeFlowedInto()){
-					$flags = $this->getOptimalFlowDirections();
-
-					$l = $decay + $multiplier;
-
 					if($decay >= 8){
-						$l = 1;
+						$adjacentDecay = 1;
+					}else{
+						$adjacentDecay = $decay + $multiplier;
 					}
 
-					if($l >= 8){
-						$this->checkForHarden();
+					if($adjacentDecay < 8){
+						$flags = $this->getOptimalFlowDirections();
 
-						return;
-					}
+						if($flags[0]){
+							$this->flowIntoBlock($this->level->getBlockAt($this->x - 1, $this->y, $this->z), $adjacentDecay);
+						}
 
-					if($flags[0]){
-						$this->flowIntoBlock($this->level->getBlockAt($this->x - 1, $this->y, $this->z), $l);
-					}
+						if($flags[1]){
+							$this->flowIntoBlock($this->level->getBlockAt($this->x + 1, $this->y, $this->z), $adjacentDecay);
+						}
 
-					if($flags[1]){
-						$this->flowIntoBlock($this->level->getBlockAt($this->x + 1, $this->y, $this->z), $l);
-					}
+						if($flags[2]){
+							$this->flowIntoBlock($this->level->getBlockAt($this->x, $this->y, $this->z - 1), $adjacentDecay);
+						}
 
-					if($flags[2]){
-						$this->flowIntoBlock($this->level->getBlockAt($this->x, $this->y, $this->z - 1), $l);
-					}
-
-					if($flags[3]){
-						$this->flowIntoBlock($this->level->getBlockAt($this->x, $this->y, $this->z + 1), $l);
+						if($flags[3]){
+							$this->flowIntoBlock($this->level->getBlockAt($this->x, $this->y, $this->z + 1), $adjacentDecay);
+						}
 					}
 				}
 
