@@ -67,7 +67,7 @@ class AvailableCommandsPacket extends DataPacket{
 	public const ARG_FLAG_ENUM = 0x200000;
 
 	/**
-	 * This is used for for /xp <level: int>L.
+	 * This is used for /xp <level: int>L.
 	 */
 	public const ARG_FLAG_POSTFIX = 0x1000000;
 

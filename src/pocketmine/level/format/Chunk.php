@@ -40,27 +40,36 @@ class Chunk{
 
 	public const MAX_SUBCHUNKS = 16;
 
+	/** @var int */
 	protected $x;
+	/** @var int */
 	protected $z;
 
+	/** @var bool */
 	protected $hasChanged = false;
 
+	/** @var bool */
 	protected $isInit = false;
 
+	/** @var bool*/
 	protected $lightPopulated = false;
+	/** @var bool */
 	protected $terrainGenerated = false;
+	/** @var bool */
 	protected $terrainPopulated = false;
 
+	/** @var int */
 	protected $height = Chunk::MAX_SUBCHUNKS;
 
-	/** @var SubChunkInterface[] */
-	protected $subChunks = [];
+	/** @var \SplFixedArray|SubChunkInterface[] */
+	protected $subChunks;
 
 	/** @var EmptySubChunk */
-	protected $emptySubChunk = null;
+	protected $emptySubChunk;
 
 	/** @var Tile[] */
 	protected $tiles = [];
+	/** @var Tile[] */
 	protected $tileList = [];
 
 	/** @var Entity[] */
@@ -97,23 +106,11 @@ class Chunk{
 
 		$this->height = Chunk::MAX_SUBCHUNKS; //TODO: add a way of changing this
 
+		$this->subChunks = new \SplFixedArray($this->height);
 		$this->emptySubChunk = new EmptySubChunk();
 
-		foreach($subChunks as $y => $subChunk){
-			if($y < 0 or $y >= $this->height){
-				throw new ChunkException("Invalid subchunk index $y!");
-			}
-			if($subChunk->isEmpty()){
-				$this->subChunks[$y] = $this->emptySubChunk;
-			}else{
-				$this->subChunks[$y] = $subChunk;
-			}
-		}
-
-		for($i = 0; $i < $this->height; ++$i){
-			if(!isset($this->subChunks[$i])){
-				$this->subChunks[$i] = $this->emptySubChunk;
-			}
+		foreach($this->subChunks as $y => $null){
+			$this->subChunks[$y] = $subChunks[$y] ?? $this->emptySubChunk;
 		}
 
 		if(count($heightMap) === 256){
@@ -252,7 +249,7 @@ class Chunk{
 	 * @param int $data 0-15
 	 */
 	public function setBlockData(int $x, int $y, int $z, int $data){
-		if($this->getSubChunk($y >> 4)->setBlockData($x, $y & 0x0f, $z, $data)){
+		if($this->getSubChunk($y >> 4, true)->setBlockData($x, $y & 0x0f, $z, $data)){
 			$this->hasChanged = true;
 		}
 	}
@@ -377,8 +374,6 @@ class Chunk{
 		if($index === -1){
 			return -1;
 		}
-
-		$height = $index << 4;
 
 		for($y = $index; $y >= 0; --$y){
 			$height = $this->getSubChunk($y)->getHighestBlockAt($x, $z) | ($y << 4);
@@ -843,7 +838,7 @@ class Chunk{
 		}elseif($generateNew and $this->subChunks[$y] instanceof EmptySubChunk){
 			$this->subChunks[$y] = new SubChunk();
 		}
-		assert($this->subChunks[$y] !== null, "Somehow something broke, no such subchunk at index $y");
+
 		return $this->subChunks[$y];
 	}
 
@@ -870,9 +865,9 @@ class Chunk{
 	}
 
 	/**
-	 * @return SubChunk[]
+	 * @return \SplFixedArray|SubChunkInterface[]
 	 */
-	public function getSubChunks() : array{
+	public function getSubChunks() : \SplFixedArray{
 		return $this->subChunks;
 	}
 
@@ -882,8 +877,8 @@ class Chunk{
 	 * @return int
 	 */
 	public function getHighestSubChunkIndex() : int{
-		for($y = count($this->subChunks) - 1; $y >= 0; --$y){
-			if($this->subChunks[$y] === null or $this->subChunks[$y] instanceof EmptySubChunk){
+		for($y = $this->subChunks->count() - 1; $y >= 0; --$y){
+			if($this->subChunks[$y] instanceof EmptySubChunk){
 				//No need to thoroughly prune empties at runtime, this will just reduce performance.
 				continue;
 			}
@@ -907,10 +902,7 @@ class Chunk{
 	 */
 	public function pruneEmptySubChunks(){
 		foreach($this->subChunks as $y => $subChunk){
-			if($y < 0 or $y >= $this->height){
-				assert(false, "Invalid subchunk index");
-				unset($this->subChunks[$y]);
-			}elseif($subChunk instanceof EmptySubChunk){
+			if($subChunk instanceof EmptySubChunk){
 				continue;
 			}elseif($subChunk->isEmpty()){ //normal subchunk full of air, remove it and replace it with an empty stub
 				$this->subChunks[$y] = $this->emptySubChunk;
