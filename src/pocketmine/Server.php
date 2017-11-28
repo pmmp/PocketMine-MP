@@ -2066,20 +2066,6 @@ class Server{
 				$this->unloadLevel($level, true);
 			}
 
-			$this->getLogger()->debug("Removing event handlers");
-			HandlerList::unregisterAll();
-
-			if($this->scheduler instanceof ServerScheduler){
-				$this->getLogger()->debug("Stopping all tasks");
-				$this->scheduler->cancelAllTasks();
-				$this->scheduler->mainThreadHeartbeat(PHP_INT_MAX);
-			}
-
-			if($this->properties->hasChanged()){
-				$this->getLogger()->debug("Saving properties");
-				$this->properties->save();
-			}
-
 			$this->getLogger()->debug("Closing console");
 			$this->console->shutdown();
 			$this->console->notify();
@@ -2098,6 +2084,8 @@ class Server{
 			$this->logger->emergency("Crashed while crashing, killing process");
 			@kill(getmypid());
 		}
+		
+		VAR_DUMP("DKTAPPS IS FAKE SCAMMAR !");
 
 	}
 
