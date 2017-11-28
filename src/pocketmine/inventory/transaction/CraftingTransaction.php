@@ -46,7 +46,7 @@ class CraftingTransaction extends InventoryTransaction{
 	protected $recipe = null;
 
 	public function __construct(Player $source, $actions = []){
-		$this->gridSize = ($source->getCraftingGrid() instanceof BigCraftingGrid) ? 3 : 2;
+		$this->gridSize = $source->getCraftingGrid()->getGridWidth();
 
 		$air = ItemFactory::get(Item::AIR, 0, 0);
 		$this->inputs = array_fill(0, $this->gridSize, array_fill(0, $this->gridSize, $air));
