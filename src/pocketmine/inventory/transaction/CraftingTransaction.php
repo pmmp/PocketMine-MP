@@ -59,6 +59,10 @@ class CraftingTransaction extends InventoryTransaction{
 		$y = (int) ($index / $this->gridSize);
 		$x = $index % $this->gridSize;
 
+		if(!isset($this->inputs[$y][$x])){
+			return;
+		}
+
 		if($this->inputs[$y][$x]->isNull()){
 			$this->inputs[$y][$x] = clone $item;
 		}elseif(!$this->inputs[$y][$x]->equals($item)){
@@ -73,6 +77,10 @@ class CraftingTransaction extends InventoryTransaction{
 	public function setExtraOutput(int $index, Item $item) : void{
 		$y = (int) ($index / $this->gridSize);
 		$x = $index % $this->gridSize;
+
+		if(!isset($this->secondaryOutputs[$y][$x])){
+			return;
+		}
 
 		if($this->secondaryOutputs[$y][$x]->isNull()){
 			$this->secondaryOutputs[$y][$x] = clone $item;
