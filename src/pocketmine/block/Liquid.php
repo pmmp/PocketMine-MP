@@ -193,7 +193,7 @@ abstract class Liquid extends Transparent{
 	 *
 	 * @return int
 	 */
-	public function getLiquidLevelDecreasePerBlock() : int{
+	public function getFlowDecayPerBlock() : int{
 		return 1;
 	}
 
@@ -207,7 +207,7 @@ abstract class Liquid extends Transparent{
 			}
 
 			$decay = $this->getFlowDecay($this);
-			$multiplier = $this->getLiquidLevelDecreasePerBlock();
+			$multiplier = $this->getFlowDecayPerBlock();
 
 			if($decay > 0){
 				$smallestFlowDecay = -100;
@@ -353,7 +353,7 @@ abstract class Liquid extends Transparent{
 		}
 
 		$flowCost = array_fill(0, 4, 1000);
-		$maxCost = 4 / $this->getLiquidLevelDecreasePerBlock();
+		$maxCost = 4 / $this->getFlowDecayPerBlock();
 		for($j = 0; $j < 4; ++$j){
 			$x = $this->x;
 			$y = $this->y;

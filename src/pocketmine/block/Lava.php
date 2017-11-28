@@ -52,7 +52,7 @@ class Lava extends Liquid{
 		return 30;
 	}
 
-	public function getLiquidLevelDecreasePerBlock() : int{
+	public function getFlowDecayPerBlock() : int{
 		return 2; //TODO: this is 1 in the nether
 	}
 
