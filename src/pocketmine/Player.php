@@ -70,6 +70,7 @@ use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\TextContainer;
 use pocketmine\event\Timings;
 use pocketmine\event\TranslationContainer;
+use pocketmine\form\Form;
 use pocketmine\inventory\BigCraftingGrid;
 use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\Inventory;
@@ -117,6 +118,7 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
+use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
@@ -302,6 +304,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * Last measurement of player's latency in milliseconds.
 	 */
 	protected $lastPingMeasure = 1;
+
+	/** @var int */
+	protected $formIdCounter = 0;
+	/** @var int|null */
+	protected $sentFormId = null;
+	/** @var Form|null */
+	protected $sentForm = null;
+	/** @var Form[] */
+	protected $formQueue = [];
 
 	/**
 	 * @return TranslationContainer|string
@@ -3293,6 +3304,68 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->source = $sender;
 		$pk->message = $message;
 		$this->dataPacket($pk);
+	}
+
+	/**
+	 * Sends a Form to the player, or queue to send it if a form is already open.
+	 *
+	 * @param Form $form
+	 * @param bool $prepend if true, the form will be sent immediately after the current form is closed (if any), before other queued forms.
+	 */
+	public function sendForm(Form $form, bool $prepend = false) : void{
+		if($form->hasBeenQueued()){
+			throw new \InvalidArgumentException("Cannot queue to send the same form more than once, create a new one instead");
+		}
+		$form->setHasBeenQueued();
+
+		if($this->sentForm !== null){
+			if($prepend){
+				array_unshift($this->formQueue, $form);
+			}else{
+				$this->formQueue[] = $form;
+			}
+			return;
+		}
+
+		$this->sendFormRequestPacket($form);
+	}
+
+	public function onFormSubmit(int $formId, $responseData) : bool{
+		if($formId !== $this->sentFormId){
+			return false;
+		}
+
+		$form = null;
+
+		try{
+			$form = $this->sentForm->handleResponse($this, $responseData);
+		}catch(\Throwable $e){
+			$this->server->getLogger()->logException($e);
+		}
+
+		if($form === null){
+			$form = array_shift($this->formQueue);
+		}
+
+		if($form !== null){
+			$this->sendFormRequestPacket($form);
+		}else{
+			$this->sentFormId = null;
+			$this->sentForm = null;
+		}
+
+		return true;
+	}
+
+	private function sendFormRequestPacket(Form $form) : void{
+		$id = $this->formIdCounter++;
+		$pk = new ModalFormRequestPacket();
+		$pk->formId = $id;
+		$pk->formData = json_encode($form);
+		$this->dataPacket($pk);
+
+		$this->sentFormId = $id;
+		$this->sentForm = $form;
 	}
 
 	/**
