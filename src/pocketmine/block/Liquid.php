@@ -204,10 +204,19 @@ abstract class Liquid extends Transparent{
 		return 1;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @param int $type
+	 *
+	 * @return bool|int
+	 */
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$this->checkForHarden();
 			$this->level->scheduleDelayedBlockUpdate($this, $this->tickRate());
+
+			return $type;
 		}elseif($type === Level::BLOCK_UPDATE_SCHEDULED){
 			if($this->temporalVector === null){
 				$this->temporalVector = new Vector3(0, 0, 0);
@@ -293,7 +302,11 @@ abstract class Liquid extends Transparent{
 
 				$this->checkForHarden();
 			}
+
+			return $type;
 		}
+
+		return false;
 	}
 
 	protected function flowIntoBlock(Block $block, int $newFlowDecay) : void{
