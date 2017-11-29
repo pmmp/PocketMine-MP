@@ -77,7 +77,7 @@ class SlotChangeAction extends InventoryAction{
 	public function isValid(Player $source) : bool{
 		return (
 			$this->inventorySlot >= 0 and
-			$this->inventorySlot < $this->inventory->getSize() and
+			$this->inventory->slotExists($this->inventorySlot) and
 			$this->inventory->getItem($this->inventorySlot)->equalsExact($this->sourceItem)
 		);
 	}
