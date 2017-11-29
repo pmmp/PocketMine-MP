@@ -2210,15 +2210,16 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		/** @var InventoryAction[] $actions */
 		$actions = [];
 		foreach($packet->actions as $networkInventoryAction){
-			$action = $networkInventoryAction->createInventoryAction($this);
-
-			if($action === null){
-				$this->server->getLogger()->debug("Unmatched inventory action from " . $this->getName() . ": " . json_encode($networkInventoryAction));
+			try{
+				$action = $networkInventoryAction->createInventoryAction($this);
+				if($action !== null){
+					$actions[] = $action;
+				}
+			}catch(\Throwable $e){
+				$this->server->getLogger()->debug("Unhandled inventory action from " . $this->getName() . ": " . $e->getMessage());
 				$this->sendAllInventories();
 				return false;
 			}
-
-			$actions[] = $action;
 		}
 
 		if($packet->isCraftingPart){
