@@ -39,6 +39,13 @@ abstract class Liquid extends Transparent{
 	/** @var Vector3|null */
 	protected $flowVector = null;
 
+	/** @var int[] */
+	private $flowCostVisited = [];
+
+	private const CAN_FLOW_DOWN = 1;
+	private const CAN_FLOW = 0;
+	private const BLOCKED = -1;
+
 	public function hasEntityCollision() : bool{
 		return true;
 	}
@@ -300,7 +307,7 @@ abstract class Liquid extends Transparent{
 		}
 	}
 
-	private function calculateFlowCost(Block $block, int $accumulatedCost, int $maxCost, int $oppositeDirection) : int{
+	private function calculateFlowCost(int $blockX, int $blockY, int $blockZ, int $accumulatedCost, int $maxCost, int $oppositeDirection) : int{
 		$cost = 1000;
 
 		for($j = 0; $j < 4; ++$j){
@@ -308,9 +315,9 @@ abstract class Liquid extends Transparent{
 				continue;
 			}
 
-			$x = $block->x;
-			$y = $block->y;
-			$z = $block->z;
+			$x = $blockX;
+			$y = $blockY;
+			$z = $blockZ;
 
 			if($j === 0){
 				--$x;
@@ -322,11 +329,22 @@ abstract class Liquid extends Transparent{
 				++$z;
 			}
 
-			$blockSide = $this->level->getBlockAt($x, $y, $z);
+			if(!isset($this->flowCostVisited[$hash = Level::blockHash($x, $y, $z)])){
+				$blockSide = $this->level->getBlockAt($x, $y, $z);
+				if(!$this->canFlowInto($blockSide)){
+					$this->flowCostVisited[$hash] = self::BLOCKED;
+				}elseif($this->level->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
+					$this->flowCostVisited[$hash] = self::CAN_FLOW_DOWN;
+				}else{
+					$this->flowCostVisited[$hash] = self::CAN_FLOW;
+				}
+			}
 
-			if(!$this->canFlowInto($blockSide)){
+			$status = $this->flowCostVisited[$hash];
+
+			if($status === self::BLOCKED){
 				continue;
-			}elseif($this->level->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
+			}elseif($status === self::CAN_FLOW_DOWN){
 				return $accumulatedCost;
 			}
 
@@ -334,7 +352,7 @@ abstract class Liquid extends Transparent{
 				continue;
 			}
 
-			$realCost = $this->calculateFlowCost($blockSide, $accumulatedCost + 1, $maxCost, $oppositeDirection);
+			$realCost = $this->calculateFlowCost($x, $y, $z, $accumulatedCost + 1, $maxCost, $oppositeDirection);
 
 			if($realCost < $cost){
 				$cost = $realCost;
@@ -371,14 +389,19 @@ abstract class Liquid extends Transparent{
 			$block = $this->level->getBlockAt($x, $y, $z);
 
 			if(!$this->canFlowInto($block)){
+				$this->flowCostVisited[Level::blockHash($x, $y, $z)] = self::BLOCKED;
 				continue;
 			}elseif($this->level->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
+				$this->flowCostVisited[Level::blockHash($x, $y, $z)] = self::CAN_FLOW_DOWN;
 				$flowCost[$j] = $maxCost = 0;
 			}elseif($maxCost > 0){
-				$flowCost[$j] = $this->calculateFlowCost($block, 1, $maxCost, $j ^ 0x01);
+				$this->flowCostVisited[Level::blockHash($x, $y, $z)] = self::CAN_FLOW;
+				$flowCost[$j] = $this->calculateFlowCost($x, $y, $z, 1, $maxCost, $j ^ 0x01);
 				$maxCost = min($maxCost, $flowCost[$j]);
 			}
 		}
+
+		$this->flowCostVisited = [];
 
 		$minCost = min($flowCost);
 
