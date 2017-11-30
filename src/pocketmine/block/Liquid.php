@@ -320,11 +320,11 @@ abstract class Liquid extends Transparent{
 		}
 	}
 
-	private function calculateFlowCost(int $blockX, int $blockY, int $blockZ, int $accumulatedCost, int $maxCost, int $oppositeDirection) : int{
+	private function calculateFlowCost(int $blockX, int $blockY, int $blockZ, int $accumulatedCost, int $maxCost, int $originOpposite, int $lastOpposite) : int{
 		$cost = 1000;
 
 		for($j = 0; $j < 4; ++$j){
-			if($j === $oppositeDirection){
+			if($j === $originOpposite or $j === $lastOpposite){
 				continue;
 			}
 
@@ -365,7 +365,7 @@ abstract class Liquid extends Transparent{
 				continue;
 			}
 
-			$realCost = $this->calculateFlowCost($x, $y, $z, $accumulatedCost + 1, $maxCost, $oppositeDirection);
+			$realCost = $this->calculateFlowCost($x, $y, $z, $accumulatedCost + 1, $maxCost, $originOpposite, $j ^ 0x01);
 
 			if($realCost < $cost){
 				$cost = $realCost;
@@ -409,7 +409,7 @@ abstract class Liquid extends Transparent{
 				$flowCost[$j] = $maxCost = 0;
 			}elseif($maxCost > 0){
 				$this->flowCostVisited[Level::blockHash($x, $y, $z)] = self::CAN_FLOW;
-				$flowCost[$j] = $this->calculateFlowCost($x, $y, $z, 1, $maxCost, $j ^ 0x01);
+				$flowCost[$j] = $this->calculateFlowCost($x, $y, $z, 1, $maxCost, $j ^ 0x01, $j ^ 0x01);
 				$maxCost = min($maxCost, $flowCost[$j]);
 			}
 		}
