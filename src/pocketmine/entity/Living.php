@@ -231,9 +231,10 @@ abstract class Living extends Entity implements Damageable{
 	 * Adds an effect to the mob.
 	 * If a weaker effect of the same type is already applied, it will be replaced.
 	 * If a weaker or equal-strength effect is already applied but has a shorter duration, it will be replaced.
-	 * Returns whether the effect has been successfully applied.
 	 *
 	 * @param Effect $effect
+	 *
+ 	 * Returns whether the effect has been successfully applied.
 	 * @return bool
 	 */
 	public function addEffect(Effect $effect) : bool{
