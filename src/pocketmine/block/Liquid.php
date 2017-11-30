@@ -31,9 +31,6 @@ use pocketmine\math\Vector3;
 
 abstract class Liquid extends Transparent{
 
-	/** @var Vector3 */
-	private $temporalVector = null;
-
 	public $adjacentSources = 0;
 
 	/** @var Vector3|null */
@@ -120,10 +117,6 @@ abstract class Liquid extends Transparent{
 		}
 
 		$vector = new Vector3(0, 0, 0);
-
-		if($this->temporalVector === null){
-			$this->temporalVector = new Vector3(0, 0, 0);
-		}
 
 		$decay = $this->getEffectiveFlowDecay($this);
 
@@ -218,10 +211,6 @@ abstract class Liquid extends Transparent{
 
 			return $type;
 		}elseif($type === Level::BLOCK_UPDATE_SCHEDULED){
-			if($this->temporalVector === null){
-				$this->temporalVector = new Vector3(0, 0, 0);
-			}
-
 			$decay = $this->getFlowDecay($this);
 			$multiplier = $this->getFlowDecayPerBlock();
 
@@ -379,10 +368,6 @@ abstract class Liquid extends Transparent{
 	 * @return bool[]
 	 */
 	private function getOptimalFlowDirections() : array{
-		if($this->temporalVector === null){
-			$this->temporalVector = new Vector3(0, 0, 0);
-		}
-
 		$flowCost = array_fill(0, 4, 1000);
 		$maxCost = 4 / $this->getFlowDecayPerBlock();
 		for($j = 0; $j < 4; ++$j){
