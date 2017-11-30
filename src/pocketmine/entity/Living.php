@@ -234,8 +234,7 @@ abstract class Living extends Entity implements Damageable{
 	 *
 	 * @param Effect $effect
 	 *
- 	 * Returns whether the effect has been successfully applied.
-	 * @return bool
+	 * @return bool whether the effect has been successfully applied.
 	 */
 	public function addEffect(Effect $effect) : bool{
 		if(isset($this->effects[$effect->getId()])){
