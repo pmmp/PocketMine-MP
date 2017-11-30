@@ -229,11 +229,7 @@ abstract class Liquid extends Transparent{
 				}
 
 				if(($topFlowDecay = $this->getFlowDecay($this->level->getBlockAt($this->x, $this->y + 1, $this->z))) >= 0){
-					if($topFlowDecay >= 8){
-						$newDecay = $topFlowDecay;
-					}else{
-						$newDecay = $topFlowDecay | 0x08;
-					}
+					$newDecay = $topFlowDecay | 0x08;
 				}
 
 				if($this->adjacentSources >= 2 and $this instanceof Water){
