@@ -102,6 +102,30 @@ class Color{
 	}
 
 	/**
+	 * Mixes the supplied list of colours together to produce a result colour.
+	 *
+	 * @param Color[] ...$colors
+	 * @return Color
+	 */
+	public static function mix(Color ...$colors) : Color{
+		$count = count($colors);
+		if($count < 1){
+			throw new \ArgumentCountError("No colors given");
+		}
+
+		$a = $r = $g = $b = 0;
+
+		foreach($colors as $color){
+			$a += $color->a;
+			$r += $color->r;
+			$g += $color->g;
+			$b += $color->b;
+		}
+
+		return new Color((int) ($r / $count), (int) ($g / $count), (int) ($b / $count), (int) ($a / $count));
+	}
+
+	/**
 	 * Returns a Color from the supplied RGB colour code (24-bit)
 	 * @param int $code
 	 *
