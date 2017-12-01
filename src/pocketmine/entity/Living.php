@@ -233,15 +233,17 @@ abstract class Living extends Entity implements Damageable{
 	 * If a weaker or equal-strength effect is already applied but has a shorter duration, it will be replaced.
 	 *
 	 * @param Effect $effect
+	 *
+	 * @return bool whether the effect has been successfully applied.
 	 */
-	public function addEffect(Effect $effect){
+	public function addEffect(Effect $effect) : bool{
 		if(isset($this->effects[$effect->getId()])){
 			$oldEffect = $this->effects[$effect->getId()];
 			if(
 				abs($effect->getAmplifier()) < $oldEffect->getAmplifier()
 				or (abs($effect->getAmplifier()) === abs($oldEffect->getAmplifier()) and $effect->getDuration() < $oldEffect->getDuration())
 			){
-				return;
+				return false;
 			}
 			$effect->add($this, $oldEffect);
 		}else{
@@ -251,6 +253,8 @@ abstract class Living extends Entity implements Damageable{
 		$this->effects[$effect->getId()] = $effect;
 
 		$this->recalculateEffectColor();
+
+		return true;
 	}
 
 	/**
