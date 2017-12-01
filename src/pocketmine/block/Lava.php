@@ -57,23 +57,27 @@ class Lava extends Liquid{
 	}
 
 	protected function checkForHarden(){
-		$colliding = false;
-		for($side = 1; $side <= 5 and !$colliding; ++$side){ //don't check downwards side
-			$colliding = $this->getSide($side) instanceof Water;
+		$colliding = null;
+		for($side = 1; $side <= 5; ++$side){ //don't check downwards side
+			$blockSide = $this->getSide($side);
+			if($side instanceof Water){
+				$colliding = $blockSide;
+				break;
+			}
 		}
 
-		if($colliding){
+		if($colliding !== null){
 			if($this->getDamage() === 0){
-				$this->level->setBlock($this, BlockFactory::get(Block::OBSIDIAN), true, true);
+				$this->liquidCollide($colliding, BlockFactory::get(Block::OBSIDIAN));
 			}elseif($this->getDamage() <= 4){
-				$this->level->setBlock($this, BlockFactory::get(Block::COBBLESTONE), true, true);
+				$this->liquidCollide($colliding, BlockFactory::get(Block::COBBLESTONE));
 			}
 		}
 	}
 
 	protected function flowIntoBlock(Block $block, int $newFlowDecay) : void{
 		if($block instanceof Water){
-			$this->level->setBlock($block, BlockFactory::get(Block::STONE), true, true);
+			$block->liquidCollide($this, BlockFactory::get(Block::STONE));
 		}else{
 			parent::flowIntoBlock($block, $newFlowDecay);
 		}

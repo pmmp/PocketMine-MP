@@ -426,6 +426,13 @@ abstract class Liquid extends Transparent{
 
 	}
 
+	protected function liquidCollide(Block $cause, Block $result) : bool{
+		//TODO: add events
+
+		$this->level->setBlock($this, $result, true, true);
+		return true;
+	}
+
 	protected function canFlowInto(Block $block) : bool{
 		return $block->canBeFlowedInto() and !($block instanceof Liquid and $block->meta === 0); //TODO: I think this should only be liquids of the same type
 	}
