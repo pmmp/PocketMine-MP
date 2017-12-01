@@ -38,7 +38,7 @@ class Color{
 	}
 
 	/**
-	 * Returns the alpha (transparency) value of this colour.
+	 * Returns the alpha (opacity) value of this colour.
 	 * @return int
 	 */
 	public function getA() : int{
