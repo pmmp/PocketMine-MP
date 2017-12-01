@@ -60,7 +60,7 @@ class Lava extends Liquid{
 		$colliding = null;
 		for($side = 1; $side <= 5; ++$side){ //don't check downwards side
 			$blockSide = $this->getSide($side);
-			if($side instanceof Water){
+			if($blockSide instanceof Water){
 				$colliding = $blockSide;
 				break;
 			}
