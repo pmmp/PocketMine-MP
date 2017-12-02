@@ -1731,8 +1731,7 @@ class Server{
 			}
 
 			$this->enablePlugins(PluginLoadOrder::POSTWORLD);
-
-			$this->start();
+			
 		}catch(\Throwable $e){
 			$this->exceptionHandler($e);
 		}
@@ -2111,7 +2110,7 @@ class Server{
 	/**
 	 * Starts the PocketMine-MP server and starts processing ticks and packets
 	 */
-	public function start(){
+	private function start(){
 		if($this->getConfigBool("enable-query", true) === true){
 			$this->queryHandler = new QueryHandler();
 		}
