@@ -53,3 +53,7 @@ Head over to our [official Jenkins server](https://jenkins.pmmp.io/)
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 pmmp/PocketMine are not affiliated with Mojang. All brands and trademarks belong to their respective owners. PocketMine-MP is not a Mojang-approved software, nor is it associated with Mojang.
+
+## Donate
+Make PocketMine-MP breathing. (Держите карманную почту мп живым)
+Bitcoin donation address (BTC): 12bxPF7xenUxLkJjyTarkKbVvUBGuUK1w9
