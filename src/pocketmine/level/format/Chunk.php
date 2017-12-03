@@ -975,6 +975,23 @@ class Chunk{
 	}
 
 	/**
+	 * @param string $chunkData from FullChunkDataPacket
+	 * @param int    $x         chunkX
+	 * @param int    $z         chunkZ
+	 * @return Chunk
+	 */
+	public static function networkDeserialize(string $chunkData, int $x, int $z) : Chunk{
+		$start = 1;
+		$subChunks = [];
+		for($y = 0; $y < ord($chunkData{0}); ++$y){
+			$data = substr(substr($chunkData, $start, 6145), 1);
+			$subChunks[$y] = new SubChunk(substr($data, 0, 4096), substr($data, 4096, 2048));
+			$start += 6145;
+		}
+		return new Chunk($x, $z, $subChunks, [], [], "", [], []);
+	}
+
+	/**
 	 * Deserializes a fast-serialized chunk
 	 *
 	 * @param string $data
