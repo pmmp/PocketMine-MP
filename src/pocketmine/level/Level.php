@@ -170,6 +170,8 @@ class Level implements ChunkManager, Metadatable{
 
 	/** @var string */
 	private $folderName;
+	/** @var string */
+	private $displayName;
 
 	/** @var Chunk[] */
 	private $chunks = [];
@@ -339,12 +341,14 @@ class Level implements ChunkManager, Metadatable{
 			throw new LevelException("Provider is not a subclass of LevelProvider");
 		}
 
+		$this->displayName = $this->provider->getName();
 		$this->worldHeight = $this->provider->getWorldHeight();
 
-		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.preparing", [$this->provider->getName()]));
+		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.preparing", [$this->displayName]));
 		$this->generator = Generator::getGenerator($this->provider->getGenerator());
 
 		$this->folderName = $name;
+
 		$this->scheduledBlockUpdateQueue = new ReversePriorityQueue();
 		$this->scheduledBlockUpdateQueue->setExtractFlags(\SplPriorityQueue::EXTR_BOTH);
 
@@ -2751,7 +2755,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return string
 	 */
 	public function getName() : string{
-		return $this->provider->getName();
+		return $this->displayName;
 	}
 
 	/**
