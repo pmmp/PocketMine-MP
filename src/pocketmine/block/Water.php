@@ -44,6 +44,10 @@ class Water extends Liquid{
 		return 2;
 	}
 
+	public function tickRate() : int{
+		return 5;
+	}
+
 	public function onEntityCollide(Entity $entity) : void{
 		$entity->resetFallDistance();
 		if($entity->fireTicks > 0){
