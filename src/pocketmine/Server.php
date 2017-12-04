@@ -2395,7 +2395,11 @@ class Server{
 					}
 				}
 			}catch(\Throwable $e){
-				$this->logger->critical($this->getLanguage()->translateString("pocketmine.level.tickError", [$level->getName(), $e->getMessage()]));
+				if(!$level->isClosed()){
+					$this->logger->critical($this->getLanguage()->translateString("pocketmine.level.tickError", [$level->getName(), $e->getMessage()]));
+				}else{
+					$this->logger->critical($this->getLanguage()->translateString("pocketmine.level.tickUnloadError", [$level->getName()]));
+				}
 				$this->logger->logException($e);
 			}
 		}
