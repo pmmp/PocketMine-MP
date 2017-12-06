@@ -168,6 +168,11 @@ class Level implements ChunkManager, Metadatable{
 	/** @var bool */
 	public $stopTime = false;
 
+	/** @var float */
+	private $sunAnglePercentage = 0.0;
+	/** @var int */
+	private $skyLightReduction = 0;
+
 	/** @var string */
 	private $folderName;
 	/** @var string */
@@ -703,6 +708,9 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->doTick->startTiming();
 
 		$this->checkTime();
+
+		$this->sunAnglePercentage = $this->computeSunAnglePercentage(); //Sun angle depends on the current time
+		$this->skyLightReduction = $this->computeSkyLightReduction(); //Sky light reduction depends on the sun angle
 
 		if(++$this->sendTimeTicker === 200){
 			$this->sendTime();
@@ -1303,13 +1311,91 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function getFullLightAt(int $x, int $y, int $z) : int{
-		//TODO: decrease light level by time of day
-		$skyLight = $this->getBlockSkyLightAt($x, $y, $z);
+		$skyLight = $this->getRealBlockSkyLightAt($x, $y, $z);
 		if($skyLight < 15){
 			return max($skyLight, $this->getBlockLightAt($x, $y, $z));
 		}else{
 			return $skyLight;
 		}
+	}
+
+	/**
+	 * Computes the percentage of a circle away from noon the sun is currently at. This can be multiplied by 2 * M_PI to
+	 * get an angle in radians, or by 360 to get an angle in degrees.
+	 *
+	 * @return float
+	 */
+	public function computeSunAnglePercentage() : float{
+		$timeProgress = ($this->time % 24000) / 24000;
+
+		//0.0 needs to be high noon, not dusk
+		$sunProgress = $timeProgress + ($timeProgress < 0.25 ? 0.75 : -0.25);
+
+		//Offset the sun progress to be above the horizon longer at dusk and dawn
+		//this is roughly an inverted sine curve, which pushes the sun progress back at dusk and forwards at dawn
+		$diff = (((1 - ((cos($sunProgress * M_PI) + 1) / 2)) - $sunProgress) / 3);
+
+		return $sunProgress + $diff;
+	}
+
+	/**
+	 * Returns the percentage of a circle away from noon the sun is currently at.
+	 * @return float
+	 */
+	public function getSunAnglePercentage() : float{
+		return $this->sunAnglePercentage;
+	}
+
+	/**
+	 * Returns the current sun angle in radians.
+	 * @return float
+	 */
+	public function getSunAngleRadians() : float{
+		return $this->sunAnglePercentage * 2 * M_PI;
+	}
+
+	/**
+	 * Returns the current sun angle in degrees.
+	 * @return float
+	 */
+	public function getSunAngleDegrees() : float{
+		return $this->sunAnglePercentage * 360.0;
+	}
+
+	/**
+	 * Computes how many points of sky light is subtracted based on the current time. Used to offset raw chunk sky light
+	 * to get a real light value.
+	 *
+	 * @return int
+	 */
+	public function computeSkyLightReduction() : int{
+		$percentage = max(0, min(1, -(cos($this->getSunAngleRadians()) * 2 - 0.5)));
+
+		//TODO: check rain and thunder level
+
+		return (int) ($percentage * 11);
+	}
+
+	/**
+	 * Returns how many points of sky light is subtracted based on the current time.
+	 * @return int
+	 */
+	public function getSkyLightReduction() : int{
+		return $this->skyLightReduction;
+	}
+
+	/**
+	 * Returns the sky light level at the specified coordinates, offset by the current time and weather.
+	 *
+	 * @param int $x
+	 * @param int $y
+	 * @param int $z
+	 *
+	 * @return int 0-15
+	 */
+	public function getRealBlockSkyLightAt(int $x, int $y, int $z) : int{
+		$light = $this->getBlockSkyLightAt($x, $y, $z) - $this->skyLightReduction;
+		return $light < 0 ? 0 : $light;
 	}
 
 	/**
