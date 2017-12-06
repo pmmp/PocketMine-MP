@@ -601,6 +601,14 @@ class Level implements ChunkManager, Metadatable{
 		return $this->chunkLoaders[Level::chunkHash($chunkX, $chunkZ)] ?? [];
 	}
 
+	/**
+	 * Queues a DataPacket to be sent to all players using the chunk at the specified X/Z coordinates at the end of the
+	 * current tick.
+	 *
+	 * @param int        $chunkX
+	 * @param int        $chunkZ
+	 * @param DataPacket $packet
+	 */
 	public function addChunkPacket(int $chunkX, int $chunkZ, DataPacket $packet){
 		if(!isset($this->chunkPackets[$index = Level::chunkHash($chunkX, $chunkZ)])){
 			$this->chunkPackets[$index] = [$packet];
