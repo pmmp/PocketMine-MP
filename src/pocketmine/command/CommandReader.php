@@ -103,8 +103,7 @@ class CommandReader extends Thread{
 	private function readLine() : bool{
 		$line = "";
 		if($this->type === self::TYPE_READLINE){
-			$line = trim(readline("> "));
-			if($line !== ""){
+			if(($raw = readline("> ")) !== false and ($line = trim($raw)) !== ""){
 				readline_add_history($line);
 			}else{
 				return true;
