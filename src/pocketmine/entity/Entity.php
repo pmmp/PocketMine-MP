@@ -1026,8 +1026,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$this->fireTicks -= $tickDiff;
 		}
 
-
-
 		if(($this->fireTicks % 20 === 0) or $tickDiff > 20){
 			$this->dealFireDamage();
 		}
