@@ -384,13 +384,12 @@ abstract class Living extends Entity implements Damageable{
 			$e = $source->getDamager();
 			if($source instanceof EntityDamageByChildEntityEvent){
 				$e = $source->getChild();
-			}
-
-			if($e !== null){
 				if($e->isOnFire() > 0){
 					$this->setOnFire(2 * $this->level->getDifficulty());
 				}
+			}
 
+			if($e !== null){
 				$deltaX = $this->x - $e->x;
 				$deltaZ = $this->z - $e->z;
 				$this->knockBack($e, $source->getDamage(), $deltaX, $deltaZ, $source->getKnockBack());
@@ -516,6 +515,10 @@ abstract class Living extends Entity implements Damageable{
 				$effect->setDuration($duration);
 			}
 		}
+	}
+
+	public function setOnFire(int $seconds) : bool{
+		return !$this->hasEffect(Effect::FIRE_RESISTANCE) and parent::setOnFire($seconds);
 	}
 
 	protected function dealFireDamage(){

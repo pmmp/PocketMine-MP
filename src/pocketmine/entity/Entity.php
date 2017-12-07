@@ -989,18 +989,35 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		return $this->fireTicks > 0;
 	}
 
-	public function setOnFire(int $seconds){
+	/**
+	 * Sets the entity on fire.
+	 *
+	 * @param int $seconds
+	 *
+	 * @return bool whether the entity was successfully set on fire.
+	 */
+	public function setOnFire(int $seconds) : bool{
 		$ticks = $seconds * 20;
-		if($ticks > $this->fireTicks){
+
+		$isUpdated = $ticks > $this->fireTicks;
+		if($isUpdated){
 			$this->fireTicks = $ticks;
+			$this->setGenericFlag(self::DATA_FLAG_ONFIRE, true);
 		}
 
-		$this->setGenericFlag(self::DATA_FLAG_ONFIRE, true);
+		return $isUpdated;
 	}
 
-	public function extinguish(){
-		$this->fireTicks = 0;
-		$this->setGenericFlag(self::DATA_FLAG_ONFIRE, false);
+	/**
+	 * Extinguishes the entity if on fire.
+	 *
+	 * @param int $seconds delay in extinguishing the entity.
+	 */
+	public function extinguish(int $seconds = 0) : void{
+		$this->fireTicks = $seconds * 20;
+		if($seconds === 0){
+			$this->setGenericFlag(self::DATA_FLAG_ONFIRE, false);
+		}
 	}
 
 	public function isFireProof() : bool{

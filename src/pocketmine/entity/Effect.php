@@ -441,6 +441,9 @@ class Effect{
 					$entity->setAbsorption($new);
 				}
 				break;
+			case Effect::FIRE_RESISTANCE:
+				$entity->extinguish(2);
+				break;
 		}
 	}
 
