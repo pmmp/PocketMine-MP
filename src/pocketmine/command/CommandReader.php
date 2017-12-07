@@ -103,8 +103,7 @@ class CommandReader extends Thread{
 	private function readLine() : bool{
 		$line = "";
 		if($this->type === self::TYPE_READLINE){
-			$line = trim(readline("> "));
-			if($line !== ""){
+			if(($raw = readline("> ")) !== false and ($line = trim($raw)) !== ""){
 				readline_add_history($line);
 			}else{
 				return true;
@@ -117,7 +116,9 @@ class CommandReader extends Thread{
 			}
 
 			switch($this->type){
+				/** @noinspection PhpMissingBreakStatementInspection */
 				case self::TYPE_STREAM:
+					//stream_select doesn't work on piped streams for some reason
 					$r = [$stdin];
 					if(($count = stream_select($r, $w, $e, 0, 200000)) === 0){ //nothing changed in 200000 microseconds
 						return true;
@@ -125,13 +126,6 @@ class CommandReader extends Thread{
 						$this->initStdin();
 					}
 
-					if(($raw = fgets($stdin)) !== false){
-						$line = trim($raw);
-					}else{
-						return false; //user pressed ctrl+c?
-					}
-
-					break;
 				case self::TYPE_PIPED:
 					if(($raw = fgets($stdin)) === false){ //broken pipe or EOF
 						$this->initStdin();
@@ -139,9 +133,9 @@ class CommandReader extends Thread{
 							$this->wait(200000);
 						}); //prevent CPU waste if it's end of pipe
 						return true; //loop back round
-					}else{
-						$line = trim($raw);
 					}
+
+					$line = trim($raw);
 					break;
 			}
 		}
