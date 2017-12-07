@@ -518,12 +518,6 @@ abstract class Living extends Entity implements Damageable{
 		}
 	}
 
-	protected function dealFireDamage(){
-		if(!$this->hasEffect(Effect::FIRE_RESISTANCE)){
-			parent::dealFireDamage();
-		}
-	}
-
 	/**
 	 * Ticks the entity's air supply when it cannot breathe.
 	 * @param int $tickDiff
