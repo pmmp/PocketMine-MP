@@ -40,7 +40,7 @@ abstract class Form implements \JsonSerializable{
 	/** @var string */
 	protected $title = "";
 	/** @var bool */
-	private $queued = false;
+	private $inUse = false;
 
 	public function __construct(string $title){
 		$this->title = $title;
@@ -89,15 +89,15 @@ abstract class Form implements \JsonSerializable{
 	 *
 	 * @return bool
 	 */
-	public function hasBeenQueued() : bool{
-		return $this->queued;
+	public function isInUse() : bool{
+		return $this->inUse;
 	}
 
 	/**
 	 * Called to flag the form as having been sent to prevent it being used again, to avoid concurrency issues.
 	 */
-	public function setHasBeenQueued() : void{
-		$this->queued = true;
+	public function setInUse() : void{
+		$this->inUse = true;
 	}
 
 	/**
