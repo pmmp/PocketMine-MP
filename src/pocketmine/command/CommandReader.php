@@ -133,9 +133,9 @@ class CommandReader extends Thread{
 							$this->wait(200000);
 						}); //prevent CPU waste if it's end of pipe
 						return true; //loop back round
-					}else{
-						$line = trim($raw);
 					}
+
+					$line = trim($raw);
 					break;
 			}
 		}
