@@ -424,8 +424,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	/** @var int */
 	public $lastUpdate;
 	/** @var int */
-	public $maxFireTicks;
-	/** @var int */
 	public $fireTicks = 0;
 	/** @var CompoundTag */
 	public $namedtag;
