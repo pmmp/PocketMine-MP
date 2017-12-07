@@ -1023,7 +1023,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public function extinguish(){
 		$this->fireTicks = 0;
 		$this->setGenericFlag(self::DATA_FLAG_ONFIRE, false);
-
 	}
 
 	public function isFireProof() : bool{
