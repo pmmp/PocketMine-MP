@@ -3350,14 +3350,18 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->sentFormId = null;
 		$this->sentForm = null;
 
-		if($form !== null){
-			$form->setInUse(); //forms in the queue will already be marked as "in use", we only need to check here
-		}else{
-			$form = array_shift($this->formQueue);
-		}
+		try{
+			if($form !== null){
+				$form->setInUse(); //forms in the queue will already be marked as "in use", we only need to check here
+			}else{
+				$form = array_shift($this->formQueue);
+			}
 
-		if($form !== null){
-			$this->sendFormRequestPacket($form);
+			if($form !== null){
+				$this->sendFormRequestPacket($form);
+			}
+		}catch(\Throwable $e){
+			$this->server->getLogger()->logException($e);
 		}
 
 		return true;
