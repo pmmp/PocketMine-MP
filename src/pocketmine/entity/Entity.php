@@ -424,8 +424,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	/** @var int */
 	public $lastUpdate;
 	/** @var int */
-	public $maxFireTicks;
-	/** @var int */
 	public $fireTicks = 0;
 	/** @var CompoundTag */
 	public $namedtag;
@@ -1009,15 +1007,23 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	/**
-	 * Extinguishes the entity if on fire.
-	 *
-	 * @param int $seconds delay in extinguishing the entity.
+	 * @return int
 	 */
-	public function extinguish(int $seconds = 0) : void{
-		$this->fireTicks = $seconds * 20;
-		if($seconds === 0){
-			$this->setGenericFlag(self::DATA_FLAG_ONFIRE, false);
-		}
+	public function getFireTicks() : int{
+		return $this->fireTicks;
+	}
+
+	/**
+	 * @param int $fireTicks
+	 */
+	public function setFireTicks(int $fireTicks) : void{
+		$this->fireTicks = $fireTicks;
+	}
+
+	public function extinguish(){
+		$this->fireTicks = 0;
+		$this->setGenericFlag(self::DATA_FLAG_ONFIRE, false);
+
 	}
 
 	public function isFireProof() : bool{
@@ -1030,8 +1036,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		}else{
 			$this->fireTicks -= $tickDiff;
 		}
-
-
 
 		if(($this->fireTicks % 20 === 0) or $tickDiff > 20){
 			$this->dealFireDamage();

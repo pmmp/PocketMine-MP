@@ -517,14 +517,8 @@ abstract class Living extends Entity implements Damageable{
 		}
 	}
 
-	public function setOnFire(int $seconds) : bool{
-		return !$this->hasEffect(Effect::FIRE_RESISTANCE) and parent::setOnFire($seconds);
-	}
-
-	protected function dealFireDamage(){
-		if(!$this->hasEffect(Effect::FIRE_RESISTANCE)){
-			parent::dealFireDamage();
-		}
+	public function isFireProof() : bool{
+		return $this->hasEffect(Effect::FIRE_RESISTANCE);
 	}
 
 	/**
