@@ -1423,7 +1423,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function isFireProof() : bool{
-		return $this->isCreative();
+		return parent::isFireProof() or $this->isCreative();
 	}
 
 	public function getDrops() : array{
