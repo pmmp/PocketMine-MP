@@ -384,7 +384,7 @@ abstract class Living extends Entity implements Damageable{
 			$e = $source->getDamager();
 			if($source instanceof EntityDamageByChildEntityEvent){
 				$e = $source->getChild();
-				if($e->isOnFire() > 0){
+				if($e !== null and $e->isOnFire() > 0){
 					$this->setOnFire(2 * $this->level->getDifficulty());
 				}
 			}
