@@ -231,4 +231,12 @@ interface Inventory{
 	 * @param bool $send
 	 */
 	public function onSlotChange(int $index, Item $before, bool $send) : void;
+
+	/**
+	 * Returns whether the specified slot exists in the inventory.
+	 *
+	 * @param int $slot
+	 * @return bool
+	 */
+	public function slotExists(int $slot) : bool;
 }

@@ -1664,10 +1664,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->sendAttributes();
 
 		if(!$this->isAlive() and $this->spawned){
-			$this->deadTicks += $tickDiff;
-			if($this->deadTicks >= $this->maxDeadTicks){
-				$this->despawnFromAll();
-			}
+			$this->onDeathUpdate($tickDiff);
 			return true;
 		}
 
@@ -1848,7 +1845,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		if(
-			($this->server->getNameBans()->isBanned($this->iusername) or $this->server->getIPBans()->isBanned($this->getAddress())) and
+			($this->isBanned() or $this->server->getIPBans()->isBanned($this->getAddress())) and
 			$this->kick("You are banned", false)
 		){
 			return true;
@@ -2224,15 +2221,16 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		/** @var InventoryAction[] $actions */
 		$actions = [];
 		foreach($packet->actions as $networkInventoryAction){
-			$action = $networkInventoryAction->createInventoryAction($this);
-
-			if($action === null){
-				$this->server->getLogger()->debug("Unmatched inventory action from " . $this->getName() . ": " . json_encode($networkInventoryAction));
+			try{
+				$action = $networkInventoryAction->createInventoryAction($this);
+				if($action !== null){
+					$actions[] = $action;
+				}
+			}catch(\Throwable $e){
+				$this->server->getLogger()->debug("Unhandled inventory action from " . $this->getName() . ": " . $e->getMessage());
 				$this->sendAllInventories();
 				return false;
 			}
-
-			$actions[] = $action;
 		}
 
 		if($packet->isCraftingPart){
@@ -3661,6 +3659,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($ev->getDeathMessage() != ""){
 			$this->server->broadcast($ev->getDeathMessage(), Server::BROADCAST_CHANNEL_USERS);
 		}
+	}
+
+	protected function onDeathUpdate(int $tickDiff) : bool{
+		if(parent::onDeathUpdate($tickDiff)){
+			$this->despawnFromAll(); //non-player entities rely on close() to do this for them
+		}
+
+		return false; //never flag players for despawn
 	}
 
 	public function attack(EntityDamageEvent $source){

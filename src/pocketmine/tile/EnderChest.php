@@ -21,15 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\level\light;
+namespace pocketmine\tile;
 
-class BlockLightUpdate extends LightUpdate{
+use pocketmine\nbt\tag\CompoundTag;
 
-	public function getLight(int $x, int $y, int $z) : int{
-		return $this->subChunkHandler->currentSubChunk->getBlockLight($x & 0x0f, $y & 0x0f, $z & 0x0f);
+class EnderChest extends Spawnable{
+
+	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
+
 	}
 
-	public function setLight(int $x, int $y, int $z, int $level){
-		$this->subChunkHandler->currentSubChunk->setBlockLight($x & 0x0f, $y & 0x0f, $z & 0x0f, $level);
-	}
 }

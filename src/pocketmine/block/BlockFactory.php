@@ -199,7 +199,7 @@ class BlockFactory{
 			self::registerBlock(new CocoaBlock());
 			self::registerBlock(new SandstoneStairs());
 			self::registerBlock(new EmeraldOre());
-			//TODO: ENDER_CHEST
+			self::registerBlock(new EnderChest());
 			self::registerBlock(new TripwireHook());
 			self::registerBlock(new Tripwire());
 			self::registerBlock(new Emerald());

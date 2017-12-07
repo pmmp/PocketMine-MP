@@ -28,11 +28,21 @@ use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 abstract class Liquid extends Transparent{
 
-	/** @var Vector3 */
-	private $temporalVector = null;
+	public $adjacentSources = 0;
+
+	/** @var Vector3|null */
+	protected $flowVector = null;
+
+	/** @var int[] */
+	private $flowCostVisited = [];
+
+	private const CAN_FLOW_DOWN = 1;
+	private const CAN_FLOW = 0;
+	private const BLOCKED = -1;
 
 	public function hasEntityCollision() : bool{
 		return true;
@@ -46,13 +56,25 @@ abstract class Liquid extends Transparent{
 		return true;
 	}
 
+	public function canBeFlowedInto() : bool{
+		return true;
+	}
+
 	public function isSolid() : bool{
 		return false;
 	}
 
-	public $adjacentSources = 0;
-	public $isOptimalFlowDirection = [0, 0, 0, 0];
-	public $flowCost = [0, 0, 0, 0];
+	public function getHardness() : float{
+		return 100;
+	}
+
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
+		return null;
+	}
+
+	public function getDrops(Item $item) : array{
+		return [];
+	}
 
 	public function getFluidHeightPercent(){
 		$d = $this->meta;
@@ -63,28 +85,20 @@ abstract class Liquid extends Transparent{
 		return ($d + 1) / 9;
 	}
 
-	protected function getFlowDecay(Vector3 $pos){
-		if(!($pos instanceof Block)){
-			$pos = $this->getLevel()->getBlock($pos);
+	protected function getFlowDecay(Block $block) : int{
+		if($block->getId() !== $this->getId()){
+			return -1;
 		}
 
-		if($pos->getId() !== $this->getId()){
-			return -1;
-		}else{
-			return $pos->getDamage();
-		}
+		return $block->getDamage();
 	}
 
-	protected function getEffectiveFlowDecay(Vector3 $pos){
-		if(!($pos instanceof Block)){
-			$pos = $this->getLevel()->getBlock($pos);
-		}
-
-		if($pos->getId() !== $this->getId()){
+	protected function getEffectiveFlowDecay(Block $block) : int{
+		if($block->getId() !== $this->getId()){
 			return -1;
 		}
 
-		$decay = $pos->getDamage();
+		$decay = $block->getDamage();
 
 		if($decay >= 8){
 			$decay = 0;
@@ -93,12 +107,17 @@ abstract class Liquid extends Transparent{
 		return $decay;
 	}
 
-	public function getFlowVector(){
-		$vector = new Vector3(0, 0, 0);
+	public function clearCaches() : void{
+		parent::clearCaches();
+		$this->flowVector = null;
+	}
 
-		if($this->temporalVector === null){
-			$this->temporalVector = new Vector3(0, 0, 0);
+	public function getFlowVector() : Vector3{
+		if($this->flowVector !== null){
+			return $this->flowVector;
 		}
+
+		$vector = new Vector3(0, 0, 0);
 
 		$decay = $this->getEffectiveFlowDecay($this);
 
@@ -117,7 +136,7 @@ abstract class Liquid extends Transparent{
 			}elseif($j === 3){
 				++$z;
 			}
-			$sideBlock = $this->getLevel()->getBlockAt($x, $y, $z);
+			$sideBlock = $this->level->getBlockAt($x, $y, $z);
 			$blockDecay = $this->getEffectiveFlowDecay($sideBlock);
 
 			if($blockDecay < 0){
@@ -125,7 +144,7 @@ abstract class Liquid extends Transparent{
 					continue;
 				}
 
-				$blockDecay = $this->getEffectiveFlowDecay($this->getLevel()->getBlockAt($x, $y - 1, $z));
+				$blockDecay = $this->getEffectiveFlowDecay($this->level->getBlockAt($x, $y - 1, $z));
 
 				if($blockDecay >= 0){
 					$realDecay = $blockDecay - ($decay - 8);
@@ -144,32 +163,21 @@ abstract class Liquid extends Transparent{
 		}
 
 		if($this->getDamage() >= 8){
-			$falling = false;
-
-			if(!$this->getLevel()->getBlockAt($this->x, $this->y, $this->z - 1)->canBeFlowedInto()){
-				$falling = true;
-			}elseif(!$this->getLevel()->getBlockAt($this->x, $this->y, $this->z + 1)->canBeFlowedInto()){
-				$falling = true;
-			}elseif(!$this->getLevel()->getBlockAt($this->x - 1, $this->y, $this->z)->canBeFlowedInto()){
-				$falling = true;
-			}elseif(!$this->getLevel()->getBlockAt($this->x + 1, $this->y, $this->z)->canBeFlowedInto()){
-				$falling = true;
-			}elseif(!$this->getLevel()->getBlockAt($this->x, $this->y + 1, $this->z - 1)->canBeFlowedInto()){
-				$falling = true;
-			}elseif(!$this->getLevel()->getBlockAt($this->x, $this->y + 1, $this->z + 1)->canBeFlowedInto()){
-				$falling = true;
-			}elseif(!$this->getLevel()->getBlockAt($this->x - 1, $this->y + 1, $this->z)->canBeFlowedInto()){
-				$falling = true;
-			}elseif(!$this->getLevel()->getBlockAt($this->x + 1, $this->y + 1, $this->z)->canBeFlowedInto()){
-				$falling = true;
-			}
-
-			if($falling){
+			if(
+				!$this->canFlowInto($this->level->getBlockAt($this->x, $this->y, $this->z - 1)) or
+				!$this->canFlowInto($this->level->getBlockAt($this->x, $this->y, $this->z + 1)) or
+				!$this->canFlowInto($this->level->getBlockAt($this->x - 1, $this->y, $this->z)) or
+				!$this->canFlowInto($this->level->getBlockAt($this->x + 1, $this->y, $this->z)) or
+				!$this->canFlowInto($this->level->getBlockAt($this->x, $this->y + 1, $this->z - 1)) or
+				!$this->canFlowInto($this->level->getBlockAt($this->x, $this->y + 1, $this->z + 1)) or
+				!$this->canFlowInto($this->level->getBlockAt($this->x - 1, $this->y + 1, $this->z)) or
+				!$this->canFlowInto($this->level->getBlockAt($this->x + 1, $this->y + 1, $this->z))
+			){
 				$vector = $vector->normalize()->add(0, -6, 0);
 			}
 		}
 
-		return $vector->normalize();
+		return $this->flowVector = $vector->normalize();
 	}
 
 	public function addVelocityToEntity(Entity $entity, Vector3 $vector) : void{
@@ -179,29 +187,33 @@ abstract class Liquid extends Transparent{
 		$vector->z += $flow->z;
 	}
 
-	public function tickRate(){
-		if($this instanceof Water){
-			return 5;
-		}elseif($this instanceof Lava){
-			return 30;
-		}
+	abstract public function tickRate() : int;
 
-		return 0;
+	/**
+	 * Returns how many liquid levels are lost per block flowed horizontally. Affects how far the liquid can flow.
+	 *
+	 * @return int
+	 */
+	public function getFlowDecayPerBlock() : int{
+		return 1;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @param int $type
+	 *
+	 * @return bool|int
+	 */
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$this->checkForHarden();
-			$this->getLevel()->scheduleDelayedBlockUpdate($this, $this->tickRate());
+			$this->level->scheduleDelayedBlockUpdate($this, $this->tickRate());
+
+			return $type;
 		}elseif($type === Level::BLOCK_UPDATE_SCHEDULED){
-			if($this->temporalVector === null){
-				$this->temporalVector = new Vector3(0, 0, 0);
-			}
-
 			$decay = $this->getFlowDecay($this);
-			$multiplier = $this instanceof Lava ? 2 : 1;
-
-			$flag = true;
+			$multiplier = $this->getFlowDecayPerBlock();
 
 			if($decay > 0){
 				$smallestFlowDecay = -100;
@@ -211,168 +223,151 @@ abstract class Liquid extends Transparent{
 				$smallestFlowDecay = $this->getSmallestFlowDecay($this->level->getBlockAt($this->x - 1, $this->y, $this->z), $smallestFlowDecay);
 				$smallestFlowDecay = $this->getSmallestFlowDecay($this->level->getBlockAt($this->x + 1, $this->y, $this->z), $smallestFlowDecay);
 
-				$k = $smallestFlowDecay + $multiplier;
+				$newDecay = $smallestFlowDecay + $multiplier;
 
-				if($k >= 8 or $smallestFlowDecay < 0){
-					$k = -1;
+				if($newDecay >= 8 or $smallestFlowDecay < 0){
+					$newDecay = -1;
 				}
 
 				if(($topFlowDecay = $this->getFlowDecay($this->level->getBlockAt($this->x, $this->y + 1, $this->z))) >= 0){
-					if($topFlowDecay >= 8){
-						$k = $topFlowDecay;
-					}else{
-						$k = $topFlowDecay | 0x08;
-					}
+					$newDecay = $topFlowDecay | 0x08;
 				}
 
 				if($this->adjacentSources >= 2 and $this instanceof Water){
 					$bottomBlock = $this->level->getBlockAt($this->x, $this->y - 1, $this->z);
 					if($bottomBlock->isSolid()){
-						$k = 0;
+						$newDecay = 0;
 					}elseif($bottomBlock instanceof Water and $bottomBlock->getDamage() === 0){
-						$k = 0;
+						$newDecay = 0;
 					}
 				}
 
-				if($this instanceof Lava and $decay < 8 and $k < 8 and $k > 1 and mt_rand(0, 4) !== 0){
-					$k = $decay;
-					$flag = false;
-				}
-
-				if($k !== $decay){
-					$decay = $k;
+				if($newDecay !== $decay){
+					$decay = $newDecay;
 					if($decay < 0){
-						$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true, true);
+						$this->level->setBlock($this, BlockFactory::get(Block::AIR), true, true);
 					}else{
-						$this->getLevel()->setBlock($this, BlockFactory::get($this->id, $decay), true, true);
-						$this->getLevel()->scheduleDelayedBlockUpdate($this, $this->tickRate());
+						$this->level->setBlock($this, BlockFactory::get($this->id, $decay), true, true);
+						$this->level->scheduleDelayedBlockUpdate($this, $this->tickRate());
 					}
-				}elseif($flag){
-					//$this->getLevel()->scheduleUpdate($this, $this->tickRate());
-					//$this->updateFlow();
 				}
-			}else{
-				//$this->updateFlow();
 			}
 
 			if($decay >= 0){
 				$bottomBlock = $this->level->getBlockAt($this->x, $this->y - 1, $this->z);
 
-				if($this instanceof Lava and $bottomBlock instanceof Water){
-					$this->getLevel()->setBlock($bottomBlock, BlockFactory::get(Block::STONE), true, true);
+				$this->flowIntoBlock($bottomBlock, $decay | 0x08);
 
-				}elseif($bottomBlock->canBeFlowedInto() or ($bottomBlock instanceof Liquid and ($bottomBlock->getDamage() & 0x07) !== 0)){
-					$this->getLevel()->setBlock($bottomBlock, BlockFactory::get($this->id, $decay | 0x08), true, false);
-					$this->getLevel()->scheduleDelayedBlockUpdate($bottomBlock, $this->tickRate());
-
-				}elseif($decay === 0 or !$bottomBlock->canBeFlowedInto()){
-					$flags = $this->getOptimalFlowDirections();
-
-					$l = $decay + $multiplier;
-
+				if($decay === 0 or !$bottomBlock->canBeFlowedInto()){
 					if($decay >= 8){
-						$l = 1;
+						$adjacentDecay = 1;
+					}else{
+						$adjacentDecay = $decay + $multiplier;
 					}
 
-					if($l >= 8){
-						$this->checkForHarden();
+					if($adjacentDecay < 8){
+						$flags = $this->getOptimalFlowDirections();
 
-						return;
-					}
+						if($flags[0]){
+							$this->flowIntoBlock($this->level->getBlockAt($this->x - 1, $this->y, $this->z), $adjacentDecay);
+						}
 
-					if($flags[0]){
-						$this->flowIntoBlock($this->level->getBlockAt($this->x - 1, $this->y, $this->z), $l);
-					}
+						if($flags[1]){
+							$this->flowIntoBlock($this->level->getBlockAt($this->x + 1, $this->y, $this->z), $adjacentDecay);
+						}
 
-					if($flags[1]){
-						$this->flowIntoBlock($this->level->getBlockAt($this->x + 1, $this->y, $this->z), $l);
-					}
+						if($flags[2]){
+							$this->flowIntoBlock($this->level->getBlockAt($this->x, $this->y, $this->z - 1), $adjacentDecay);
+						}
 
-					if($flags[2]){
-						$this->flowIntoBlock($this->level->getBlockAt($this->x, $this->y, $this->z - 1), $l);
-					}
-
-					if($flags[3]){
-						$this->flowIntoBlock($this->level->getBlockAt($this->x, $this->y, $this->z + 1), $l);
+						if($flags[3]){
+							$this->flowIntoBlock($this->level->getBlockAt($this->x, $this->y, $this->z + 1), $adjacentDecay);
+						}
 					}
 				}
 
 				$this->checkForHarden();
 			}
+
+			return $type;
 		}
+
+		return false;
 	}
 
-	private function flowIntoBlock(Block $block, $newFlowDecay){
-		if($block->canBeFlowedInto()){
+	protected function flowIntoBlock(Block $block, int $newFlowDecay) : void{
+		if($this->canFlowInto($block) and !($block instanceof Liquid)){
 			if($block->getId() > 0){
-				$this->getLevel()->useBreakOn($block);
+				$this->level->useBreakOn($block);
 			}
 
-			$this->getLevel()->setBlock($block, BlockFactory::get($this->getId(), $newFlowDecay), true, false);
-			$this->getLevel()->scheduleDelayedBlockUpdate($block, $this->tickRate());
+			$this->level->setBlock($block, BlockFactory::get($this->getId(), $newFlowDecay), true, true);
+			$this->level->scheduleDelayedBlockUpdate($block, $this->tickRate());
 		}
 	}
 
-	private function calculateFlowCost(Block $block, $accumulatedCost, $previousDirection){
+	private function calculateFlowCost(int $blockX, int $blockY, int $blockZ, int $accumulatedCost, int $maxCost, int $originOpposite, int $lastOpposite) : int{
 		$cost = 1000;
 
 		for($j = 0; $j < 4; ++$j){
-			if(
-				($j === 0 and $previousDirection === 1) or
-				($j === 1 and $previousDirection === 0) or
-				($j === 2 and $previousDirection === 3) or
-				($j === 3 and $previousDirection === 2)
-			){
-				$x = $block->x;
-				$y = $block->y;
-				$z = $block->z;
+			if($j === $originOpposite or $j === $lastOpposite){
+				continue;
+			}
 
-				if($j === 0){
-					--$x;
-				}elseif($j === 1){
-					++$x;
-				}elseif($j === 2){
-					--$z;
-				}elseif($j === 3){
-					++$z;
+			$x = $blockX;
+			$y = $blockY;
+			$z = $blockZ;
+
+			if($j === 0){
+				--$x;
+			}elseif($j === 1){
+				++$x;
+			}elseif($j === 2){
+				--$z;
+			}elseif($j === 3){
+				++$z;
+			}
+
+			if(!isset($this->flowCostVisited[$hash = Level::blockHash($x, $y, $z)])){
+				$blockSide = $this->level->getBlockAt($x, $y, $z);
+				if(!$this->canFlowInto($blockSide)){
+					$this->flowCostVisited[$hash] = self::BLOCKED;
+				}elseif($this->level->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
+					$this->flowCostVisited[$hash] = self::CAN_FLOW_DOWN;
+				}else{
+					$this->flowCostVisited[$hash] = self::CAN_FLOW;
 				}
-				$blockSide = $this->getLevel()->getBlockAt($x, $y, $z);
+			}
 
-				if(!$blockSide->canBeFlowedInto() and !($blockSide instanceof Liquid)){
-					continue;
-				}elseif($blockSide instanceof Liquid and $blockSide->getDamage() === 0){
-					continue;
-				}elseif($this->getLevel()->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
-					return $accumulatedCost;
-				}
+			$status = $this->flowCostVisited[$hash];
 
-				if($accumulatedCost >= 4){
-					continue;
-				}
+			if($status === self::BLOCKED){
+				continue;
+			}elseif($status === self::CAN_FLOW_DOWN){
+				return $accumulatedCost;
+			}
 
-				$realCost = $this->calculateFlowCost($blockSide, $accumulatedCost + 1, $j);
+			if($accumulatedCost >= $maxCost){
+				continue;
+			}
 
-				if($realCost < $cost){
-					$cost = $realCost;
-				}
+			$realCost = $this->calculateFlowCost($x, $y, $z, $accumulatedCost + 1, $maxCost, $originOpposite, $j ^ 0x01);
+
+			if($realCost < $cost){
+				$cost = $realCost;
 			}
 		}
 
 		return $cost;
 	}
 
-	public function getHardness() : float{
-		return 100;
-	}
-
-	private function getOptimalFlowDirections(){
-		if($this->temporalVector === null){
-			$this->temporalVector = new Vector3(0, 0, 0);
-		}
-
+	/**
+	 * @return bool[]
+	 */
+	private function getOptimalFlowDirections() : array{
+		$flowCost = array_fill(0, 4, 1000);
+		$maxCost = 4 / $this->getFlowDecayPerBlock();
 		for($j = 0; $j < 4; ++$j){
-			$this->flowCost[$j] = 1000;
-
 			$x = $this->x;
 			$y = $this->y;
 			$z = $this->z;
@@ -386,36 +381,36 @@ abstract class Liquid extends Transparent{
 			}elseif($j === 3){
 				++$z;
 			}
-			$block = $this->getLevel()->getBlockAt($x, $y, $z);
+			$block = $this->level->getBlockAt($x, $y, $z);
 
-			if(!$block->canBeFlowedInto() and !($block instanceof Liquid)){
+			if(!$this->canFlowInto($block)){
+				$this->flowCostVisited[Level::blockHash($x, $y, $z)] = self::BLOCKED;
 				continue;
-			}elseif($block instanceof Liquid and $block->getDamage() === 0){
-				continue;
-			}elseif($this->getLevel()->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
-				$this->flowCost[$j] = 0;
-			}else{
-				$this->flowCost[$j] = $this->calculateFlowCost($block, 1, $j);
+			}elseif($this->level->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
+				$this->flowCostVisited[Level::blockHash($x, $y, $z)] = self::CAN_FLOW_DOWN;
+				$flowCost[$j] = $maxCost = 0;
+			}elseif($maxCost > 0){
+				$this->flowCostVisited[Level::blockHash($x, $y, $z)] = self::CAN_FLOW;
+				$flowCost[$j] = $this->calculateFlowCost($x, $y, $z, 1, $maxCost, $j ^ 0x01, $j ^ 0x01);
+				$maxCost = min($maxCost, $flowCost[$j]);
 			}
 		}
 
-		$minCost = $this->flowCost[0];
+		$this->flowCostVisited = [];
 
-		for($i = 1; $i < 4; ++$i){
-			if($this->flowCost[$i] < $minCost){
-				$minCost = $this->flowCost[$i];
-			}
-		}
+		$minCost = min($flowCost);
+
+		$isOptimalFlowDirection = [];
 
 		for($i = 0; $i < 4; ++$i){
-			$this->isOptimalFlowDirection[$i] = ($this->flowCost[$i] === $minCost);
+			$isOptimalFlowDirection[$i] = ($flowCost[$i] === $minCost);
 		}
 
-		return $this->isOptimalFlowDirection;
+		return $isOptimalFlowDirection;
 	}
 
-	private function getSmallestFlowDecay(Vector3 $pos, $decay){
-		$blockDecay = $this->getFlowDecay($pos);
+	private function getSmallestFlowDecay(Block $block, int $decay) : int{
+		$blockDecay = $this->getFlowDecay($block);
 
 		if($blockDecay < 0){
 			return $decay;
@@ -428,28 +423,19 @@ abstract class Liquid extends Transparent{
 		return ($decay >= 0 && $blockDecay >= $decay) ? $decay : $blockDecay;
 	}
 
-	private function checkForHarden(){
-		if($this instanceof Lava){
-			$colliding = false;
-			for($side = 0; $side <= 5 and !$colliding; ++$side){
-				$colliding = $this->getSide($side) instanceof Water;
-			}
+	protected function checkForHarden(){
 
-			if($colliding){
-				if($this->getDamage() === 0){
-					$this->getLevel()->setBlock($this, BlockFactory::get(Block::OBSIDIAN), true, true);
-				}elseif($this->getDamage() <= 4){
-					$this->getLevel()->setBlock($this, BlockFactory::get(Block::COBBLESTONE), true, true);
-				}
-			}
-		}
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return null;
+	protected function liquidCollide(Block $cause, Block $result) : bool{
+		//TODO: add events
+
+		$this->level->setBlock($this, $result, true, true);
+		$this->level->broadcastLevelSoundEvent($this->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_FIZZ, (int) ((2.6 + (lcg_value() - lcg_value()) * 0.8) * 1000));
+		return true;
 	}
 
-	public function getDrops(Item $item) : array{
-		return [];
+	protected function canFlowInto(Block $block) : bool{
+		return $block->canBeFlowedInto() and !($block instanceof Liquid and $block->meta === 0); //TODO: I think this should only be liquids of the same type
 	}
 }

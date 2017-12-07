@@ -59,7 +59,7 @@ class StandingBanner extends Transparent{
 		return null;
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $facePos, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if($face !== Vector3::SIDE_DOWN){
 			if($face === Vector3::SIDE_UP and $player !== null){
 				$this->meta = floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0f;

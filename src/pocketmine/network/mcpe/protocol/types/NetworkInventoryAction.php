@@ -170,13 +170,13 @@ class NetworkInventoryAction{
 					return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
 				}
 
-				return null;
+				throw new \InvalidStateException("Player " . $player->getName() . " has no open container with window ID $this->windowId");
 			case self::SOURCE_WORLD:
-				if($this->inventorySlot === self::ACTION_MAGIC_SLOT_DROP_ITEM){
-					return new DropItemAction($this->oldItem, $this->newItem);
+				if($this->inventorySlot !== self::ACTION_MAGIC_SLOT_DROP_ITEM){
+					throw new \UnexpectedValueException("Only expecting drop-item world actions from the client!");
 				}
 
-				return null;
+				return new DropItemAction($this->oldItem, $this->newItem);
 			case self::SOURCE_CREATIVE:
 				switch($this->inventorySlot){
 					case self::ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM:
@@ -186,7 +186,7 @@ class NetworkInventoryAction{
 						$type = CreativeInventoryAction::TYPE_CREATE_ITEM;
 						break;
 					default:
-						return null;
+						throw new \UnexpectedValueException("Unexpected creative action type $this->inventorySlot");
 
 				}
 
@@ -210,16 +210,16 @@ class NetworkInventoryAction{
 						//DROP_CONTENTS doesn't bother telling us what slot the item is in, so we find it ourselves
 						$inventorySlot = $window->first($this->oldItem, true);
 						if($inventorySlot === -1){
-							return null;
+							throw new \InvalidStateException("Fake container " . get_class($window) . " for " . $player->getName() . " does not contain $this->oldItem");
 						}
 						return new SlotChangeAction($window, $inventorySlot, $this->oldItem, $this->newItem);
 				}
 
 				//TODO: more stuff
-				return null;
+				throw new \UnexpectedValueException("Player " . $player->getName() . " has no open container with window ID $this->windowId");
+			default:
+				throw new \UnexpectedValueException("Unknown inventory source type $this->sourceType");
 		}
-
-		return null;
 	}
 
 }

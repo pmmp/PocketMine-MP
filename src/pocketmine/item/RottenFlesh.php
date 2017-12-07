@@ -21,15 +21,32 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\level\light;
+namespace pocketmine\item;
 
-class BlockLightUpdate extends LightUpdate{
+use pocketmine\entity\Effect;
 
-	public function getLight(int $x, int $y, int $z) : int{
-		return $this->subChunkHandler->currentSubChunk->getBlockLight($x & 0x0f, $y & 0x0f, $z & 0x0f);
+class RottenFlesh extends Food{
+
+	public function __construct(int $meta = 0){
+		parent::__construct(self::ROTTEN_FLESH, $meta, "Rotten Flesh");
 	}
 
-	public function setLight(int $x, int $y, int $z, int $level){
-		$this->subChunkHandler->currentSubChunk->setBlockLight($x & 0x0f, $y & 0x0f, $z & 0x0f, $level);
+	public function getFoodRestore() : int{
+		return 4;
 	}
+
+	public function getSaturationRestore() : float{
+		return 0.8;
+	}
+
+	public function getAdditionalEffects() : array{
+		if(lcg_value() <= 0.8){
+			return [
+				Effect::getEffect(Effect::HUNGER)->setDuration(600)
+			];
+		}
+
+		return [];
+	}
+
 }
