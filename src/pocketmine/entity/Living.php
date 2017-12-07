@@ -441,10 +441,10 @@ abstract class Living extends Entity implements Damageable{
 			return;
 		}
 		parent::kill();
-		$this->callDeathEvent();
+		$this->onDeath();
 	}
 
-	protected function callDeathEvent(){
+	protected function onDeath(){
 		$this->server->getPluginManager()->callEvent($ev = new EntityDeathEvent($this, $this->getDrops()));
 		foreach($ev->getDrops() as $item){
 			$this->getLevel()->dropItem($this, $item);

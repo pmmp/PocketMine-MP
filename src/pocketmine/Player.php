@@ -3457,7 +3457,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->sendRespawnPacket($this->getSpawn());
 	}
 
-	protected function callDeathEvent(){
+	protected function onDeath(){
 		$message = "death.attack.generic";
 
 		$params = [
