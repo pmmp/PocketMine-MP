@@ -3354,11 +3354,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$form = array_shift($this->formQueue);
 		}
 
-		$this->sentFormId = null;
-		$this->sentForm = null;
-
 		if($form !== null){
-			$this->sendForm($form);
+			$this->sendFormRequestPacket($form);
+		}else{
+			$this->sentFormId = null;
+			$this->sentForm = null;
 		}
 
 		return true;
