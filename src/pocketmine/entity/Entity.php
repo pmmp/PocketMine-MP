@@ -998,6 +998,20 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->setGenericFlag(self::DATA_FLAG_ONFIRE, true);
 	}
 
+	/**
+	 * @return int
+	 */
+	public function getFireTicks() : int{
+		return $this->fireTicks;
+	}
+
+	/**
+	 * @param int $fireTicks
+	 */
+	public function setFireTicks(int $fireTicks) : void{
+		$this->fireTicks = $fireTicks;
+	}
+
 	public function extinguish(){
 		$this->fireTicks = 0;
 		$this->setGenericFlag(self::DATA_FLAG_ONFIRE, false);
