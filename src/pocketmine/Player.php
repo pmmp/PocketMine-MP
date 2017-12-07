@@ -3336,6 +3336,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	public function onFormSubmit(int $formId, $responseData) : bool{
 		if($formId !== $this->sentFormId){
+			$this->server->getLogger()->debug("Got unexpected response for form $formId, but waiting for response for $this->sentFormId");
 			return false;
 		}
 
