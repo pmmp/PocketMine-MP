@@ -3314,9 +3314,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @param bool $prepend if true, the form will be sent immediately after the current form is closed (if any), before other queued forms.
 	 */
 	public function sendForm(Form $form, bool $prepend = false) : void{
-		if($form->isInUse()){
-			throw new \InvalidArgumentException("Cannot queue to send the same form more than once, create a new one instead");
-		}
 		$form->setInUse();
 
 		if($this->sentForm !== null){
@@ -3350,7 +3347,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->server->getLogger()->logException($e);
 		}
 
-		if($form === null){
+		if($form !== null){
+			$form->setInUse(); //forms in the queue will already be marked as "in use", we only need to check here
+		}else{
 			$form = array_shift($this->formQueue);
 		}
 

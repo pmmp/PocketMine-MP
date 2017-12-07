@@ -97,6 +97,9 @@ abstract class Form implements \JsonSerializable{
 	 * Called to flag the form as having been sent to prevent it being used again, to avoid concurrency issues.
 	 */
 	public function setInUse() : void{
+		if($this->isInUse()){
+			throw new \InvalidArgumentException("Form is already in use, create a new one instead");
+		}
 		$this->inUse = true;
 	}
 
