@@ -442,8 +442,8 @@ class Effect{
 				}
 				break;
 			case Effect::FIRE_RESISTANCE:
-				if($entity->getFireTicks() > 2){
-					$entity->setFireTicks(2);
+				if($entity->getFireTicks() > 40){
+					$entity->setFireTicks(40);
 				}
 				break;
 		}
