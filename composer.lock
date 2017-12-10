@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "e08f45a793f6a776c35ffaba9db65b49",
+    "content-hash": "15cc30eec8e5ea5a56340190f254368e",
     "packages": [
         {
             "name": "pmmp/pocketmine-spl",
-            "version": "0.0.2",
+            "version": "0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/PocketMine-SPL.git",
-                "reference": "065b631d63e2c4ddb3141f63a07a9ecbab8357d1"
+                "reference": "c56936e6aaad925bb60002b29b1c70f497af4679"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/PocketMine-SPL/zipball/065b631d63e2c4ddb3141f63a07a9ecbab8357d1",
-                "reference": "065b631d63e2c4ddb3141f63a07a9ecbab8357d1",
+                "url": "https://api.github.com/repos/pmmp/PocketMine-SPL/zipball/c56936e6aaad925bb60002b29b1c70f497af4679",
+                "reference": "c56936e6aaad925bb60002b29b1c70f497af4679",
                 "shasum": ""
             },
             "type": "library",
@@ -34,9 +34,9 @@
             ],
             "description": "Standard library files required by PocketMine-MP and related projects",
             "support": {
-                "source": "https://github.com/pmmp/PocketMine-SPL/tree/0.0.2"
+                "source": "https://github.com/pmmp/PocketMine-SPL/tree/master"
             },
-            "time": "2017-11-14T18:56:38+00:00"
+            "time": "2017-12-10T12:18:30+00:00"
         },
         {
             "name": "pmmp/raklib",
