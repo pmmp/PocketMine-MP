@@ -38,7 +38,7 @@ class Potion extends Item{
 		return 1;
 	}
 
-	public function onConsume(Living $entity){
+	public function onConsume(Living $consumer){
 		// TODO: Implement potions
 	}
 }

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\entity\Effect;
+use pocketmine\entity\Living;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
@@ -89,14 +90,8 @@ class Cake extends Transparent implements FoodSource{
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{
-		//TODO: refactor this into generic food handling
-		if($player instanceof Player and (!$this->requiresHunger() or $player->getFood() < $player->getMaxFood())){
-			$player->addFood($this->getFoodRestore());
-			$player->addSaturation($this->getSaturationRestore());
-			foreach($this->getAdditionalEffects() as $effect){
-				$player->addEffect($effect);
-			}
-			$this->getLevel()->setBlock($this, $this->getResidue());
+		if($player !== null){
+			$player->consumeObject($this);
 			return true;
 		}
 
@@ -129,5 +124,9 @@ class Cake extends Transparent implements FoodSource{
 	 */
 	public function getAdditionalEffects() : array{
 		return [];
+	}
+
+	public function onConsume(Living $consumer) : void{
+		$this->level->setBlock($this, $this->getResidue());
 	}
 }

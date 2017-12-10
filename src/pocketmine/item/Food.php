@@ -23,46 +23,22 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\entity\Human;
 use pocketmine\entity\Living;
 
 abstract class Food extends Item implements FoodSource{
-	public function canBeConsumed() : bool{
-		return true;
-	}
-
 	public function requiresHunger() : bool{
 		return true;
 	}
 
-	public function canBeConsumedBy(Living $entity) : bool{
-		return $entity instanceof Human and (!$this->requiresHunger() or $entity->getFood() < $entity->getMaxFood());
-	}
-
 	public function getResidue(){
-		if($this->getCount() === 1){
-			return ItemFactory::get(0);
-		}else{
-			$new = clone $this;
-			$new->count--;
-			return $new;
-		}
+		return ItemFactory::get(Item::AIR, 0, 0);
 	}
 
 	public function getAdditionalEffects() : array{
 		return [];
 	}
 
-	public function onConsume(Living $entity){
-		foreach($this->getAdditionalEffects() as $effect){
-			$entity->addEffect($effect);
-		}
+	public function onConsume(Living $consumer){
 
-		if($entity instanceof Human){
-			$entity->addSaturation($this->getSaturationRestore());
-			$entity->addFood($this->getFoodRestore());
-
-			$entity->getInventory()->setItemInHand($this->getResidue());
-		}
 	}
 }

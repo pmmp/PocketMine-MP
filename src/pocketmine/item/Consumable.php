@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\entity\Effect;
+use pocketmine\entity\Living;
 
 interface Consumable{
 
@@ -33,4 +34,6 @@ interface Consumable{
 	 * @return Effect[]
 	 */
 	public function getAdditionalEffects() : array;
+
+	public function onConsume(Living $consumer);
 }
