@@ -23,15 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
+use pocketmine\entity\Living;
 
 abstract class Food extends Item implements FoodSource{
 	public function canBeConsumed() : bool{
 		return true;
 	}
 
-	public function canBeConsumedBy(Entity $entity) : bool{
+	public function canBeConsumedBy(Living $entity) : bool{
 		return $entity instanceof Human and $entity->getFood() < $entity->getMaxFood();
 	}
 
@@ -49,13 +49,16 @@ abstract class Food extends Item implements FoodSource{
 		return [];
 	}
 
-	public function onConsume(Entity $human){
-		$human->addSaturation($this->getSaturationRestore());
-		$human->addFood($this->getFoodRestore());
+	public function onConsume(Living $entity){
 		foreach($this->getAdditionalEffects() as $effect){
-			$human->addEffect($effect);
+			$entity->addEffect($effect);
 		}
 
-		$human->getInventory()->setItemInHand($this->getResidue());
+		if($entity instanceof Human){
+			$entity->addSaturation($this->getSaturationRestore());
+			$entity->addFood($this->getFoodRestore());
+
+			$entity->getInventory()->setItemInHand($this->getResidue());
+		}
 	}
 }

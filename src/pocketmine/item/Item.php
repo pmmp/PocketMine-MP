@@ -30,6 +30,7 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\level\Level;
@@ -631,19 +632,21 @@ class Item implements ItemIds, \JsonSerializable{
 
 	/**
 	 * Returns whether this item can be consumed by the supplied Entity.
-	 * @param Entity $entity
+	 *
+	 * @param Living $entity
 	 *
 	 * @return bool
 	 */
-	public function canBeConsumedBy(Entity $entity) : bool{
+	public function canBeConsumedBy(Living $entity) : bool{
 		return $this->canBeConsumed();
 	}
 
 	/**
 	 * Called when the item is consumed by an Entity.
-	 * @param Entity $entity
+	 *
+	 * @param Living $entity
 	 */
-	public function onConsume(Entity $entity){
+	public function onConsume(Living $entity){
 
 	}
 
