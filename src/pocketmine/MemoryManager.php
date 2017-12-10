@@ -68,8 +68,6 @@ class MemoryManager{
 	private $lowMemChunkRadiusOverride;
 	/** @var bool */
 	private $lowMemChunkGC;
-	/** @var bool */
-	private $lowMemReduceChunkRadius;
 
 	/** @var bool */
 	private $lowMemDisableChunkCache;
