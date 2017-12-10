@@ -90,7 +90,7 @@ class Cake extends Transparent implements FoodSource{
 
 	public function onActivate(Item $item, Player $player = null) : bool{
 		//TODO: refactor this into generic food handling
-		if($player instanceof Player and $player->getFood() < $player->getMaxFood()){
+		if($player instanceof Player and (!$this->requiresHunger() or $player->getFood() < $player->getMaxFood())){
 			$player->addFood($this->getFoodRestore());
 			$player->addSaturation($this->getSaturationRestore());
 			foreach($this->getAdditionalEffects() as $effect){
@@ -109,6 +109,10 @@ class Cake extends Transparent implements FoodSource{
 
 	public function getSaturationRestore() : float{
 		return 0.4;
+	}
+
+	public function requiresHunger() : bool{
+		return true;
 	}
 
 	public function getResidue(){
