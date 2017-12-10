@@ -25,7 +25,6 @@ namespace pocketmine\item;
 
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
-use pocketmine\event\entity\EntityEatItemEvent;
 
 abstract class Food extends Item implements FoodSource{
 	public function canBeConsumed() : bool{
@@ -51,14 +50,12 @@ abstract class Food extends Item implements FoodSource{
 	}
 
 	public function onConsume(Entity $human){
-		$ev = new EntityEatItemEvent($human, $this);
-
-		$human->addSaturation($ev->getSaturationRestore());
-		$human->addFood($ev->getFoodRestore());
-		foreach($ev->getAdditionalEffects() as $effect){
+		$human->addSaturation($this->getSaturationRestore());
+		$human->addFood($this->getFoodRestore());
+		foreach($this->getAdditionalEffects() as $effect){
 			$human->addEffect($effect);
 		}
 
-		$human->getInventory()->setItemInHand($ev->getResidue());
+		$human->getInventory()->setItemInHand($this->getResidue());
 	}
 }
