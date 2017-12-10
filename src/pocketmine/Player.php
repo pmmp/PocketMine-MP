@@ -2485,8 +2485,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 								}
 
 								return true;
-							}elseif($this->inventory->getItemInHand()->getId() === Item::BUCKET and $this->inventory->getItemInHand()->getDamage() === 1){ //Milk!
-								$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $this->inventory->getItemInHand()));
+							}elseif($slot->getId() === Item::BUCKET and $slot->getDamage() === 1){ //Milk!
+								$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $slot));
 								if($ev->isCancelled()){
 									$this->inventory->sendContents($this);
 
@@ -2494,7 +2494,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 								}
 
 								if($this->isSurvival()){
-									$slot = $this->inventory->getItemInHand();
 									--$slot->count;
 									$this->inventory->setItemInHand($slot);
 									$this->inventory->addItem(ItemFactory::get(Item::BUCKET, 0, 1));
