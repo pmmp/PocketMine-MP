@@ -34,6 +34,10 @@ class Potion extends Item{
 		return true;
 	}
 
+	public function getMaxStackSize() : int{
+		return 1;
+	}
+
 	public function onConsume(Entity $entity){
 		// TODO: Implement potions
 	}
