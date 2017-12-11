@@ -29,10 +29,6 @@ class WoodenSword extends Sword{
 		parent::__construct(self::WOODEN_SWORD, $meta, "Wooden Sword", self::TIER_WOODEN);
 	}
 
-	public function isSword(){
-		return self::TIER_WOODEN;
-	}
-
 	public function getFuelTime() : int{
 		return 200;
 	}

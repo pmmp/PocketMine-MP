@@ -29,10 +29,6 @@ class WoodenPickaxe extends Pickaxe{
 		parent::__construct(self::WOODEN_PICKAXE, $meta, "Wooden Pickaxe", self::TIER_WOODEN);
 	}
 
-	public function isPickaxe(){
-		return self::TIER_WOODEN;
-	}
-
 	public function getFuelTime() : int{
 		return 200;
 	}

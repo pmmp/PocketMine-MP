@@ -29,10 +29,6 @@ class WoodenHoe extends Hoe{
 		parent::__construct(self::WOODEN_HOE, $meta, "Wooden Hoe", self::TIER_WOODEN);
 	}
 
-	public function isHoe(){
-		return self::TIER_WOODEN;
-	}
-
 	public function getFuelTime() : int{
 		return 200;
 	}

@@ -29,10 +29,6 @@ class WoodenAxe extends Axe{
 		parent::__construct(self::WOODEN_AXE, $meta, "Wooden Axe", self::TIER_WOODEN);
 	}
 
-	public function isAxe(){
-		return self::TIER_WOODEN;
-	}
-
 	public function getFuelTime() : int{
 		return 200;
 	}

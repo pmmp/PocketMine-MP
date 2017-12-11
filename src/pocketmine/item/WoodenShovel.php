@@ -29,10 +29,6 @@ class WoodenShovel extends Shovel{
 		parent::__construct(self::WOODEN_SHOVEL, $meta, "Wooden Shovel", self::TIER_WOODEN);
 	}
 
-	public function isShovel(){
-		return self::TIER_WOODEN;
-	}
-
 	public function getFuelTime() : int{
 		return 200;
 	}
