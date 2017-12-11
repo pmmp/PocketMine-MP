@@ -800,7 +800,7 @@ class PluginManager{
 				get_class($listener) . "->" . ($executor instanceof MethodEventExecutor ? $executor->getMethod() : "<unknown>")
 			]));
 		}
-		if(isset($tags[""]))
+
 
 		if(!$plugin->isEnabled()){
 			throw new PluginException("Plugin attempted to register " . $event . " while not enabled");
