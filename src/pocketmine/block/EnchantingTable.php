@@ -63,6 +63,10 @@ class EnchantingTable extends Transparent{
 		return BlockToolType::TYPE_PICKAXE;
 	}
 
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
+	}
+
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
 			//TODO lock
@@ -71,13 +75,5 @@ class EnchantingTable extends Transparent{
 		}
 
 		return true;
-	}
-
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			return parent::getDrops($item);
-		}
-
-		return [];
 	}
 }

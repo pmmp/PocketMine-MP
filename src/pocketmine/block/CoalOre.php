@@ -43,12 +43,16 @@ class CoalOre extends Solid{
 		return BlockToolType::TYPE_PICKAXE;
 	}
 
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
+	}
+
 	public function getName() : string{
 		return "Coal Ore";
 	}
 
 	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
+		if($this->canBeBrokenWith($item)){
 			return [
 				ItemFactory::get(Item::COAL, 0, 1)
 			];

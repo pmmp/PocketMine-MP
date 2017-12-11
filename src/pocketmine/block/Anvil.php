@@ -68,6 +68,10 @@ class Anvil extends Fallable{
 		return BlockToolType::TYPE_PICKAXE;
 	}
 
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
+	}
+
 	public function recalculateBoundingBox() : ?AxisAlignedBB{
 		$inset = 0.125;
 
@@ -107,7 +111,7 @@ class Anvil extends Fallable{
 	}
 
 	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
+		if($this->canBeBrokenWith($item)){
 			return [
 				ItemFactory::get($this->getItemId(), $this->getDamage() & 0x0c, 1)
 			];

@@ -50,6 +50,10 @@ class Stone extends Solid{
 		return BlockToolType::TYPE_PICKAXE;
 	}
 
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
+	}
+
 	public function getName() : string{
 		static $names = [
 			self::NORMAL => "Stone",
@@ -64,7 +68,7 @@ class Stone extends Solid{
 	}
 
 	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
+		if($this->canBeBrokenWith($item)){
 			if($this->getDamage() === self::NORMAL){
 				return [
 					ItemFactory::get(Item::COBBLESTONE, $this->getDamage(), 1)

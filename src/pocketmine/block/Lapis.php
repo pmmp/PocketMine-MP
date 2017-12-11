@@ -42,16 +42,11 @@ class Lapis extends Solid{
 		return BlockToolType::TYPE_PICKAXE;
 	}
 
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_STONE;
+	}
+
 	public function getHardness() : float{
 		return 3;
 	}
-
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= TieredTool::TIER_STONE){
-			return parent::getDrops($item);
-		}
-
-		return [];
-	}
-
 }

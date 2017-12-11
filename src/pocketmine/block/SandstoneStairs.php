@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
+
 class SandstoneStairs extends Stair{
 
 	protected $id = self::SANDSTONE_STAIRS;
@@ -37,6 +39,10 @@ class SandstoneStairs extends Stair{
 
 	public function getToolType() : int{
 		return BlockToolType::TYPE_PICKAXE;
+	}
+
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
 	}
 
 	public function getName() : string{

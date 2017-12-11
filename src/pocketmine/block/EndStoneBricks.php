@@ -46,12 +46,7 @@ class EndStoneBricks extends Solid{
 		return BlockToolType::TYPE_PICKAXE;
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			return parent::getDrops($item);
-		}
-
-		return [];
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
 	}
-
 }

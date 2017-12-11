@@ -47,12 +47,16 @@ class NetherReactor extends Solid{
 		return BlockToolType::TYPE_PICKAXE;
 	}
 
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
+	}
+
 	public function getHardness() : float{
 		return 3;
 	}
 
 	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
+		if($this->canBeBrokenWith($item)){
 			return [
 				ItemFactory::get(Item::IRON_INGOT, 0, 6),
 				ItemFactory::get(Item::DIAMOND, 0, 3)

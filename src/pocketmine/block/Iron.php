@@ -42,15 +42,11 @@ class Iron extends Solid{
 		return BlockToolType::TYPE_PICKAXE;
 	}
 
-	public function getHardness() : float{
-		return 5;
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_STONE;
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= TieredTool::TIER_STONE){
-			return parent::getDrops($item);
-		}
-
-		return [];
+	public function getHardness() : float{
+		return 5;
 	}
 }

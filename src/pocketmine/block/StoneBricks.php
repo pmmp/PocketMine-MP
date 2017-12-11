@@ -46,6 +46,10 @@ class StoneBricks extends Solid{
 		return BlockToolType::TYPE_PICKAXE;
 	}
 
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
+	}
+
 	public function getName() : string{
 		static $names = [
 			self::NORMAL => "Stone Bricks",
@@ -55,13 +59,4 @@ class StoneBricks extends Solid{
 		];
 		return $names[$this->getVariant()] ?? "Unknown";
 	}
-
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			return parent::getDrops($item);
-		}
-
-		return [];
-	}
-
 }

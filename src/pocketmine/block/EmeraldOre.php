@@ -43,12 +43,16 @@ class EmeraldOre extends Solid{
 		return BlockToolType::TYPE_PICKAXE;
 	}
 
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_IRON;
+	}
+
 	public function getHardness() : float{
 		return 3;
 	}
 
 	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= TieredTool::TIER_IRON){
+		if($this->canBeBrokenWith($item)){
 			return [
 				ItemFactory::get(Item::EMERALD, 0, 1)
 			];

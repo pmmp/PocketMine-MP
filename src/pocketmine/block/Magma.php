@@ -49,6 +49,10 @@ class Magma extends Solid{
 		return BlockToolType::TYPE_PICKAXE;
 	}
 
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
+	}
+
 	public function getLightLevel() : int{
 		return 3;
 	}
@@ -63,13 +67,4 @@ class Magma extends Solid{
 			$entity->attack($ev);
 		}
 	}
-
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			return parent::getDrops($item);
-		}
-
-		return [];
-	}
-
 }

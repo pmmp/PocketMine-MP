@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
+
 class NetherBrickStairs extends Stair{
 
 	protected $id = self::NETHER_BRICK_STAIRS;
@@ -41,6 +43,10 @@ class NetherBrickStairs extends Stair{
 
 	public function getToolType() : int{
 		return BlockToolType::TYPE_PICKAXE;
+	}
+
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
 	}
 
 }

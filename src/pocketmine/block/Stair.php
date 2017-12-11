@@ -102,12 +102,4 @@ abstract class Stair extends Transparent{
 	public function getVariantBitmask() : int{
 		return 0;
 	}
-
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			return parent::getDrops($item);
-		}
-
-		return [];
-	}
 }

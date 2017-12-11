@@ -55,6 +55,10 @@ class EnderChest extends Chest{
 		return BlockToolType::TYPE_PICKAXE;
 	}
 
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
+	}
+
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$faces = [
 			0 => 4,
@@ -98,8 +102,10 @@ class EnderChest extends Chest{
 	}
 
 	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			return [ItemFactory::get(Item::OBSIDIAN, 0, 8)];
+		if($this->canBeBrokenWith($item)){
+			return [
+				ItemFactory::get(Item::OBSIDIAN, 0, 8)
+			];
 		}
 
 		return [];

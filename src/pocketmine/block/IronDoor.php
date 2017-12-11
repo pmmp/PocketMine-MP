@@ -44,15 +44,11 @@ class IronDoor extends Door{
 		return BlockToolType::TYPE_PICKAXE;
 	}
 
-	public function getHardness() : float{
-		return 5;
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			return parent::getDrops($item);
-		}
-
-		return [];
+	public function getHardness() : float{
+		return 5;
 	}
 }
