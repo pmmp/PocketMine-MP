@@ -29,6 +29,9 @@ namespace pocketmine\event\player;
 use pocketmine\event\Event;
 use pocketmine\Player;
 
+/**
+ * @noHandle
+ */
 abstract class PlayerEvent extends Event{
 	/** @var Player */
 	protected $player;

@@ -29,6 +29,7 @@ use pocketmine\level\Level;
 
 /**
  * Chunk-related events
+ * @noHandle
  */
 abstract class ChunkEvent extends LevelEvent{
 	/** @var Chunk */

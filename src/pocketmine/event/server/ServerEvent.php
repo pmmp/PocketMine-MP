@@ -28,6 +28,9 @@ namespace pocketmine\event\server;
 
 use pocketmine\event\Event;
 
+/**
+ * @noHandle
+ */
 abstract class ServerEvent extends Event{
 
 }

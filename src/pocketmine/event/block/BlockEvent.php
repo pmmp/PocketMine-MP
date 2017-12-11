@@ -30,7 +30,7 @@ use pocketmine\block\Block;
 use pocketmine\event\Event;
 
 /**
- * @NoHandler
+ * @noHandle
  */
 abstract class BlockEvent extends Event{
 	/** @var Block */

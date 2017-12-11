@@ -26,15 +26,10 @@ declare(strict_types=1);
  */
 namespace pocketmine\event;
 
+/**
+ * @noHandle
+ */
 abstract class Event{
-
-	/**
-	 * Any callable event must declare the static variable
-	 *
-	 * public static $handlerList = null;
-	 *
-	 * Not doing so will deny the proper event initialization
-	 */
 
 	/** @var string|null */
 	protected $eventName = null;

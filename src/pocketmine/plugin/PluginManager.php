@@ -771,14 +771,6 @@ class PluginManager{
 				if(count($parameters) === 1 and $parameters[0]->getClass() instanceof \ReflectionClass and is_subclass_of($parameters[0]->getClass()->getName(), Event::class)){
 					$class = $parameters[0]->getClass()->getName();
 					$reflection = new \ReflectionClass($class);
-					$eventTags = self::parseDocComment((string) $reflection->getDocComment());
-					if(isset($eventTags["deprecated"]) and $this->server->getProperty("settings.deprecated-verbose", true)){
-						$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.plugin.deprecatedEvent", [
-							$plugin->getName(),
-							$class,
-							get_class($listener) . "->" . $method->getName() . "()"
-						]));
-					}
 					$this->registerEvent($class, $listener, $priority, new MethodEventExecutor($method->getName()), $plugin, $ignoreCancelled);
 				}
 			}
@@ -800,6 +792,15 @@ class PluginManager{
 			throw new PluginException($event . " is not an Event");
 		}
 
+		$tags = self::parseDocComment((string) (new \ReflectionClass($event))->getDocComment());
+		if(isset($tags["deprecated"]) and $this->server->getProperty("settings.deprecated-verbose", true)){
+			$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.plugin.deprecateEvent", [
+				$plugin->getName(),
+				$event,
+				get_class($listener) . "->" . ($executor instanceof MethodEventExecutor ? $executor->getMethod() : "<unknown>")
+			]));
+		}
+		if(isset($tags[""]))
 
 		if(!$plugin->isEnabled()){
 			throw new PluginException("Plugin attempted to register " . $event . " while not enabled");
@@ -818,7 +819,7 @@ class PluginManager{
 	private function getEventListeners(string $event) : HandlerList{
 		$list = HandlerList::getHandlerListFor($event);
 		if($list === null){
-			throw new PluginException($event . " cannot be handled because it declares the @nonHandler tag");
+			throw new PluginException($event . " cannot be handled because it declares the @noHandle tag");
 		}
 		return $list;
 	}
