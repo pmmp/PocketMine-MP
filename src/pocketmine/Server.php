@@ -323,6 +323,13 @@ class Server{
 	/**
 	 * @return string
 	 */
+	public function getResourcePath() : string{
+		return \pocketmine\RESOURCE_PATH;
+	}
+
+	/**
+	 * @return string
+	 */
 	public function getDataPath() : string{
 		return $this->dataPath;
 	}
