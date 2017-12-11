@@ -24,10 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\event\inventory;
 
 use pocketmine\entity\Item;
-use pocketmine\event\Cancellable;
 use pocketmine\inventory\Inventory;
 
-class InventoryPickupItemEvent extends InventoryEvent implements Cancellable{
+class InventoryPickupItemEvent extends InventoryEvent{
 	public static $handlerList = null;
 
 	/** @var Item */
@@ -49,4 +48,7 @@ class InventoryPickupItemEvent extends InventoryEvent implements Cancellable{
 		return $this->item;
 	}
 
+	public function isCancellable() : bool{
+		return true;
+	}
 }

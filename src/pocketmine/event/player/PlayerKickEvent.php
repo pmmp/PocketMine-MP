@@ -23,14 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\event\Cancellable;
 use pocketmine\event\TextContainer;
 use pocketmine\Player;
 
 /**
  * Called when a player leaves the server
  */
-class PlayerKickEvent extends PlayerEvent implements Cancellable{
+class PlayerKickEvent extends PlayerEvent{
 	public static $handlerList = null;
 
 	/** @var TextContainer|string */
@@ -70,4 +69,7 @@ class PlayerKickEvent extends PlayerEvent implements Cancellable{
 		return $this->quitMessage;
 	}
 
+	public function isCancellable() : bool{
+		return true;
+	}
 }

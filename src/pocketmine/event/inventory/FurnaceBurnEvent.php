@@ -24,11 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\event\inventory;
 
 use pocketmine\event\block\BlockEvent;
-use pocketmine\event\Cancellable;
 use pocketmine\item\Item;
 use pocketmine\tile\Furnace;
 
-class FurnaceBurnEvent extends BlockEvent implements Cancellable{
+class FurnaceBurnEvent extends BlockEvent{
 	public static $handlerList = null;
 
 	/** @var Furnace */
@@ -92,5 +91,9 @@ class FurnaceBurnEvent extends BlockEvent implements Cancellable{
 	 */
 	public function setBurning(bool $burning){
 		$this->burning = $burning;
+	}
+
+	public function isCancellable() : bool{
+		return true;
 	}
 }

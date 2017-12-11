@@ -23,11 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\event\Cancellable;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
-class PlayerItemHeldEvent extends PlayerEvent implements Cancellable{
+class PlayerItemHeldEvent extends PlayerEvent{
 	public static $handlerList = null;
 
 	/** @var Item */
@@ -76,5 +75,9 @@ class PlayerItemHeldEvent extends PlayerEvent implements Cancellable{
 	 */
 	public function getItem() : Item{
 		return $this->item;
+	}
+
+	public function isCancellable() : bool{
+		return true;
 	}
 }

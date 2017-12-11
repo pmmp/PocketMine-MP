@@ -25,9 +25,8 @@ namespace pocketmine\event\entity;
 
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
-use pocketmine\event\Cancellable;
 
-class EntityEffectEvent extends EntityEvent implements Cancellable{
+class EntityEffectEvent extends EntityEvent{
 
 	/** @var Effect */
 	private $effect;
@@ -39,5 +38,9 @@ class EntityEffectEvent extends EntityEvent implements Cancellable{
 
 	public function getEffect() : Effect{
 		return $this->effect;
+	}
+
+	public function isCancellable() : bool{
+		return true;
 	}
 }

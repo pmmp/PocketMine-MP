@@ -24,10 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\event\player;
 
 use pocketmine\entity\Human;
-use pocketmine\event\Cancellable;
 use pocketmine\event\entity\EntityEvent;
 
-class PlayerExhaustEvent extends EntityEvent implements Cancellable{
+class PlayerExhaustEvent extends EntityEvent{
 	public static $handlerList = null;
 
 	public const CAUSE_ATTACK = 1;
@@ -78,5 +77,9 @@ class PlayerExhaustEvent extends EntityEvent implements Cancellable{
 	 */
 	public function getCause() : int{
 		return $this->cause;
+	}
+
+	public function isCancellable() : bool{
+		return true;
 	}
 }

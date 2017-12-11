@@ -24,14 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\event\block;
 
 use pocketmine\block\Block;
-use pocketmine\event\Cancellable;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
 /**
  * Called when a player places a block
  */
-class BlockPlaceEvent extends BlockEvent implements Cancellable{
+class BlockPlaceEvent extends BlockEvent{
 	public static $handlerList = null;
 
 	/** @var Player */
@@ -81,5 +80,9 @@ class BlockPlaceEvent extends BlockEvent implements Cancellable{
 	 */
 	public function getBlockAgainst() : Block{
 		return $this->blockAgainst;
+	}
+
+	public function isCancellable() : bool{
+		return true;
 	}
 }

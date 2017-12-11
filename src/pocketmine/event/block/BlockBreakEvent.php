@@ -24,14 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\event\block;
 
 use pocketmine\block\Block;
-use pocketmine\event\Cancellable;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
 /**
  * Called when a player destroys a block somewhere in the world.
  */
-class BlockBreakEvent extends BlockEvent implements Cancellable{
+class BlockBreakEvent extends BlockEvent{
 	public static $handlerList = null;
 
 	/** @var Player */
@@ -112,5 +111,9 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 	 */
 	public function setDropsVariadic(Item ...$drops){
 		$this->blockDrops = $drops;
+	}
+
+	public function isCancellable() : bool{
+		return true;
 	}
 }

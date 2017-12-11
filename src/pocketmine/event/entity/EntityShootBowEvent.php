@@ -26,10 +26,9 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\entity\projectile\Projectile;
-use pocketmine\event\Cancellable;
 use pocketmine\item\Item;
 
-class EntityShootBowEvent extends EntityEvent implements Cancellable{
+class EntityShootBowEvent extends EntityEvent{
 	public static $handlerList = null;
 
 	/** @var Item */
@@ -104,5 +103,7 @@ class EntityShootBowEvent extends EntityEvent implements Cancellable{
 		$this->force = $force;
 	}
 
-
+	public function isCancellable() : bool{
+		return true;
+	}
 }

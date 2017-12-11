@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
-use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
 use pocketmine\event\Listener;
 use pocketmine\event\TimingsHandler;
@@ -91,7 +90,7 @@ class RegisteredListener{
 	 * @param Event $event
 	 */
 	public function callEvent(Event $event){
-		if($event instanceof Cancellable and $event->isCancelled() and $this->isIgnoringCancelled()){
+		if($event->isCancellable() and $event->isCancelled() and $this->isIgnoringCancelled()){
 			return;
 		}
 		$this->timings->startTiming();

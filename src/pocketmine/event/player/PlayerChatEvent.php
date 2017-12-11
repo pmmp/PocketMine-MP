@@ -23,14 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\event\Cancellable;
 use pocketmine\Player;
 use pocketmine\Server;
 
 /**
  * Called when a player chats something
  */
-class PlayerChatEvent extends PlayerEvent implements Cancellable{
+class PlayerChatEvent extends PlayerEvent{
 	public static $handlerList = null;
 
 	/** @var string */
@@ -112,5 +111,9 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 	 */
 	public function setRecipients(array $recipients){
 		$this->recipients = $recipients;
+	}
+
+	public function isCancellable() : bool{
+		return true;
 	}
 }

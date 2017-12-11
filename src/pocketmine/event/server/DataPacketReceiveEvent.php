@@ -23,11 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\event\server;
 
-use pocketmine\event\Cancellable;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\Player;
 
-class DataPacketReceiveEvent extends ServerEvent implements Cancellable{
+class DataPacketReceiveEvent extends ServerEvent{
 	public static $handlerList = null;
 
 	/** @var DataPacket */
@@ -56,5 +55,9 @@ class DataPacketReceiveEvent extends ServerEvent implements Cancellable{
 	 */
 	public function getPlayer() : Player{
 		return $this->player;
+	}
+
+	public function isCancellable() : bool{
+		return true;
 	}
 }

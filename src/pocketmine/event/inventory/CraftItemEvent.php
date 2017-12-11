@@ -23,14 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\event\inventory;
 
-use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
 use pocketmine\inventory\Recipe;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
-class CraftItemEvent extends Event implements Cancellable{
+class CraftItemEvent extends Event{
 	public static $handlerList = null;
 
 	/** @var CraftingTransaction */
@@ -76,5 +75,9 @@ class CraftItemEvent extends Event implements Cancellable{
 	 */
 	public function getPlayer() : Player{
 		return $this->transaction->getSource();
+	}
+
+	public function isCancellable() : bool{
+		return true;
 	}
 }

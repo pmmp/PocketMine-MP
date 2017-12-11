@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
 use pocketmine\IPlayer;
 use pocketmine\nbt\tag\CompoundTag;
@@ -32,7 +31,7 @@ use pocketmine\Server;
 /**
  * Called when a player's data is about to be saved to disk.
  */
-class PlayerDataSaveEvent extends Event implements Cancellable{
+class PlayerDataSaveEvent extends Event{
 	public static $handlerList = null;
 
 	/** @var CompoundTag */
@@ -74,5 +73,9 @@ class PlayerDataSaveEvent extends Event implements Cancellable{
 	 */
 	public function getPlayer() : IPlayer{
 		return Server::getInstance()->getOfflinePlayer($this->playerName);
+	}
+
+	public function isCancellable() : bool{
+		return true;
 	}
 }

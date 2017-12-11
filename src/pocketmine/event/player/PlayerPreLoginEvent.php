@@ -23,13 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
 /**
  * Called when the player logs in, before things have been set up
  */
-class PlayerPreLoginEvent extends PlayerEvent implements Cancellable{
+class PlayerPreLoginEvent extends PlayerEvent{
 	public static $handlerList = null;
 
 	/** @var string */
@@ -58,4 +57,7 @@ class PlayerPreLoginEvent extends PlayerEvent implements Cancellable{
 		return $this->kickMessage;
 	}
 
+	public function isCancellable() : bool{
+		return true;
+	}
 }

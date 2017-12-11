@@ -24,14 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\event\player;
 
 use pocketmine\block\Block;
-use pocketmine\event\Cancellable;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
 /**
  * Called when a player middle-clicks on a block to get an item in creative mode.
  */
-class PlayerBlockPickEvent extends PlayerEvent implements Cancellable{
+class PlayerBlockPickEvent extends PlayerEvent{
 	public static $handlerList = null;
 
 	/** @var Block */
@@ -55,5 +54,9 @@ class PlayerBlockPickEvent extends PlayerEvent implements Cancellable{
 
 	public function setResultItem(Item $item) : void{
 		$this->resultItem = clone $item;
+	}
+
+	public function isCancellable() : bool{
+		return true;
 	}
 }

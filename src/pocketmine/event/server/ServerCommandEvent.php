@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\event\server;
 
 use pocketmine\command\CommandSender;
-use pocketmine\event\Cancellable;
 
 /**
  * Called when the console runs a command, early in the process
@@ -34,7 +33,7 @@ use pocketmine\event\Cancellable;
  *
  * The message DOES NOT contain a slash at the start
  */
-class ServerCommandEvent extends ServerEvent implements Cancellable{
+class ServerCommandEvent extends ServerEvent{
 	public static $handlerList = null;
 
 	/** @var string */
@@ -73,4 +72,7 @@ class ServerCommandEvent extends ServerEvent implements Cancellable{
 		$this->command = $command;
 	}
 
+	public function isCancellable() : bool{
+		return true;
+	}
 }

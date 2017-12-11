@@ -24,12 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\event\entity;
 
 use pocketmine\entity\Entity;
-use pocketmine\event\Cancellable;
 
 /**
  * Called when a entity decides to explode
  */
-class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
+class ExplosionPrimeEvent extends EntityEvent{
 	public static $handlerList = null;
 
 	/** @var float */
@@ -72,4 +71,7 @@ class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 		$this->blockBreaking = $affectsBlocks;
 	}
 
+	public function isCancellable() : bool{
+		return true;
+	}
 }

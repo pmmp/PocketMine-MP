@@ -25,7 +25,6 @@ namespace pocketmine\event\player;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
-use pocketmine\event\Cancellable;
 use pocketmine\item\Item;
 use pocketmine\level\Position;
 use pocketmine\math\Vector3;
@@ -34,7 +33,7 @@ use pocketmine\Player;
 /**
  * Called when a player interacts or touches a block (including air?)
  */
-class PlayerInteractEvent extends PlayerEvent implements Cancellable{
+class PlayerInteractEvent extends PlayerEvent{
 	public static $handlerList = null;
 
 	public const LEFT_CLICK_BLOCK = 0;
@@ -109,5 +108,9 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 	 */
 	public function getFace() : int{
 		return $this->blockFace;
+	}
+
+	public function isCancellable() : bool{
+		return true;
 	}
 }

@@ -24,12 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\event\block;
 
 use pocketmine\block\Block;
-use pocketmine\event\Cancellable;
 
 /**
  * Called when plants or crops grow.
  */
-class BlockGrowEvent extends BlockEvent implements Cancellable{
+class BlockGrowEvent extends BlockEvent{
 	public static $handlerList = null;
 
 	/** @var Block */
@@ -47,4 +46,7 @@ class BlockGrowEvent extends BlockEvent implements Cancellable{
 		return $this->newState;
 	}
 
+	public function isCancellable() : bool{
+		return true;
+	}
 }

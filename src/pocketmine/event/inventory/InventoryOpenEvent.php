@@ -23,11 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\event\inventory;
 
-use pocketmine\event\Cancellable;
 use pocketmine\inventory\Inventory;
 use pocketmine\Player;
 
-class InventoryOpenEvent extends InventoryEvent implements Cancellable{
+class InventoryOpenEvent extends InventoryEvent{
 	public static $handlerList = null;
 
 	/** @var Player */
@@ -49,4 +48,7 @@ class InventoryOpenEvent extends InventoryEvent implements Cancellable{
 		return $this->who;
 	}
 
+	public function isCancellable() : bool{
+		return true;
+	}
 }

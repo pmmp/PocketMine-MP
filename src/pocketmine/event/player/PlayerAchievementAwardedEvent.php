@@ -23,13 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
 /**
  * Called when a player is awarded an achievement
  */
-class PlayerAchievementAwardedEvent extends PlayerEvent implements Cancellable{
+class PlayerAchievementAwardedEvent extends PlayerEvent{
 	public static $handlerList = null;
 
 	/** @var string */
@@ -49,5 +48,9 @@ class PlayerAchievementAwardedEvent extends PlayerEvent implements Cancellable{
 	 */
 	public function getAchievement() : string{
 		return $this->achievement;
+	}
+
+	public function isCancellable() : bool{
+		return true;
 	}
 }

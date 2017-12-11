@@ -24,10 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\event\entity;
 
 use pocketmine\entity\Entity;
-use pocketmine\event\Cancellable;
 use pocketmine\level\Position;
 
-class EntityTeleportEvent extends EntityEvent implements Cancellable{
+class EntityTeleportEvent extends EntityEvent{
 	public static $handlerList = null;
 
 	/** @var Position */
@@ -70,5 +69,7 @@ class EntityTeleportEvent extends EntityEvent implements Cancellable{
 		$this->to = $to;
 	}
 
-
+	public function isCancellable() : bool{
+		return true;
+	}
 }

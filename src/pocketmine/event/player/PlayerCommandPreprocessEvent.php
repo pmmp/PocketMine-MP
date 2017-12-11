@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
 /**
@@ -34,7 +33,7 @@ use pocketmine\Player;
  *
  * The message contains a slash at the start
  */
-class PlayerCommandPreprocessEvent extends PlayerEvent implements Cancellable{
+class PlayerCommandPreprocessEvent extends PlayerEvent{
 	public static $handlerList = null;
 
 	/** @var string */
@@ -71,4 +70,7 @@ class PlayerCommandPreprocessEvent extends PlayerEvent implements Cancellable{
 		$this->player = $player;
 	}
 
+	public function isCancellable() : bool{
+		return true;
+	}
 }

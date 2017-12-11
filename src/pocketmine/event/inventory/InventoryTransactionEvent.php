@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\event\inventory;
 
-use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
 use pocketmine\inventory\transaction\InventoryTransaction;
 
@@ -31,7 +30,7 @@ use pocketmine\inventory\transaction\InventoryTransaction;
  * Called when there is a transaction between two Inventory objects.
  * The source of this can be a Player, entities, mobs, or even hoppers in the future!
  */
-class InventoryTransactionEvent extends Event implements Cancellable{
+class InventoryTransactionEvent extends Event{
 	public static $handlerList = null;
 
 	/** @var InventoryTransaction */
@@ -51,4 +50,7 @@ class InventoryTransactionEvent extends Event implements Cancellable{
 		return $this->transaction;
 	}
 
+	public function isCancellable() : bool{
+		return true;
+	}
 }
