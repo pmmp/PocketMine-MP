@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
 
 abstract class Tool extends Durable{
@@ -46,13 +45,7 @@ abstract class Tool extends Durable{
 		}
 
 		if($object instanceof Block){
-			if(
-				$object->getToolType() === BlockToolType::TYPE_PICKAXE and $this->isPickaxe() or
-				$object->getToolType() === BlockToolType::TYPE_SHOVEL and $this->isShovel() or
-				$object->getToolType() === BlockToolType::TYPE_AXE and $this->isAxe() or
-				$object->getToolType() === BlockToolType::TYPE_SWORD and $this->isSword() or
-				$object->getToolType() === BlockToolType::TYPE_SHEARS and $this->isShears()
-			){
+			if(($object->getToolType() & $this->getBlockToolType()) !== 0){
 				$this->applyDamage(1);
 			}elseif(!$this->isShears() and $object->getBreakTime($this) > 0){
 				$this->applyDamage(2);

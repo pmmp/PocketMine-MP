@@ -224,12 +224,8 @@ class Block extends Position implements BlockIds, Metadatable{
 		if($this->canBeBrokenWith($item)){
 			if($this->getToolType() === BlockToolType::TYPE_SHEARS and $item->isShears()){
 				$base /= 15;
-			}elseif(
-				($this->getToolType() === BlockToolType::TYPE_PICKAXE and ($tier = $item->isPickaxe()) !== false) or
-				($this->getToolType() === BlockToolType::TYPE_AXE and ($tier = $item->isAxe()) !== false) or
-				($this->getToolType() === BlockToolType::TYPE_SHOVEL and ($tier = $item->isShovel()) !== false)
-			){
-				switch($tier){
+			}elseif($item instanceof TieredTool and ($this->getToolType() & $item->getBlockToolType()) !== 0){
+				switch($item->getTier()){
 					case TieredTool::TIER_WOODEN:
 						$base /= 2;
 						break;
