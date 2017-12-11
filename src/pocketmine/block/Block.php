@@ -196,7 +196,13 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	public function canBeBrokenWith(Item $item) : bool{
-		return $this->getHardness() !== -1;
+		if($this->getHardness() < 0){
+			return false;
+		}
+
+		$toolType = $this->getToolType();
+		return $toolType === BlockToolType::TYPE_NONE or ($toolType & $item->getBlockToolType()) !== 0;
+		//TODO: check tool harvest level (tier)
 	}
 
 	/**
