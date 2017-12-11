@@ -31,7 +31,6 @@ use pocketmine\Player;
  * Called when a player leaves the server
  */
 class PlayerKickEvent extends PlayerEvent implements Cancellable{
-	public static $handlerList = null;
 
 	/** @var TextContainer|string */
 	protected $quitMessage;

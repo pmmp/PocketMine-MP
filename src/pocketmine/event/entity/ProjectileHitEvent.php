@@ -26,7 +26,6 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\projectile\Projectile;
 
 class ProjectileHitEvent extends EntityEvent{
-	public static $handlerList = null;
 
 	/**
 	 * @param Projectile $entity

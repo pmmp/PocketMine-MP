@@ -27,6 +27,5 @@ namespace pocketmine\event\entity;
  * Called when an effect is removed from an entity.
  */
 class EntityEffectRemoveEvent extends EntityEffectEvent{
-	public static $handlerList = null;
 
 }
