@@ -234,7 +234,6 @@ class Server{
 	private $serverID;
 
 	private $autoloader;
-	private $filePath;
 	private $dataPath;
 	private $pluginPath;
 
@@ -318,7 +317,7 @@ class Server{
 	 * @return string
 	 */
 	public function getFilePath() : string{
-		return $this->filePath;
+		return \pocketmine\PATH;
 	}
 
 	/**
@@ -1422,19 +1421,16 @@ class Server{
 	/**
 	 * @param \ClassLoader    $autoloader
 	 * @param \ThreadedLogger $logger
-	 * @param string          $filePath
 	 * @param string          $dataPath
 	 * @param string          $pluginPath
 	 */
-	public function __construct(\ClassLoader $autoloader, \ThreadedLogger $logger, string $filePath, string $dataPath, string $pluginPath){
+	public function __construct(\ClassLoader $autoloader, \ThreadedLogger $logger, string $dataPath, string $pluginPath){
 		self::$instance = $this;
 		self::$sleeper = new \Threaded;
 		$this->autoloader = $autoloader;
 		$this->logger = $logger;
 
 		try{
-
-			$this->filePath = $filePath;
 			if(!file_exists($dataPath . "worlds/")){
 				mkdir($dataPath . "worlds/", 0777);
 			}
@@ -1456,7 +1452,7 @@ class Server{
 
 			$this->logger->info("Loading pocketmine.yml...");
 			if(!file_exists($this->dataPath . "pocketmine.yml")){
-				$content = file_get_contents($this->filePath . "src/pocketmine/resources/pocketmine.yml");
+				$content = file_get_contents(\pocketmine\PATH . "src/pocketmine/resources/pocketmine.yml");
 				if($version->isDev()){
 					$content = str_replace("preferred-channel: stable", "preferred-channel: beta", $content);
 				}

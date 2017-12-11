@@ -549,7 +549,7 @@ namespace pocketmine {
 		}
 
 		ThreadManager::init();
-		new Server($autoloader, $logger, \pocketmine\PATH, \pocketmine\DATA, \pocketmine\PLUGIN_PATH);
+		new Server($autoloader, $logger, \pocketmine\DATA, \pocketmine\PLUGIN_PATH);
 
 		$logger->info("Stopping other threads");
 
