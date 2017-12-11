@@ -60,7 +60,7 @@ class Effect{
 	protected static $effects = [];
 
 	public static function init(){
-		$config = new Config(\pocketmine\PATH . "src/pocketmine/resources/effects.json", Config::JSON, []);
+		$config = new Config(\pocketmine\RESOURCE_PATH . "effects.json", Config::JSON, []);
 
 		foreach($config->getAll() as $name => $data){
 			$color = hexdec(substr($data["color"], 3));
