@@ -195,14 +195,26 @@ class Block extends Position implements BlockIds, Metadatable{
 		return true;
 	}
 
+	/**
+	 * @return int
+	 */
+	public function getToolType() : int{
+		return BlockToolType::TYPE_NONE;
+	}
+
+	public function getToolHarvestLevel() : int{
+		return 0;
+	}
+
 	public function canBeBrokenWith(Item $item) : bool{
 		if($this->getHardness() < 0){
 			return false;
 		}
 
 		$toolType = $this->getToolType();
-		return $toolType === BlockToolType::TYPE_NONE or ($toolType & $item->getBlockToolType()) !== 0;
-		//TODO: check tool harvest level (tier)
+		$harvestLevel = $this->getToolHarvestLevel();
+		return $toolType === BlockToolType::TYPE_NONE or $harvestLevel === 0 or (
+			($toolType & $item->getBlockToolType()) !== 0 and $item->getBlockToolHarvestLevel() >= $harvestLevel);
 	}
 
 	/**
@@ -317,13 +329,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getBlastResistance() : float{
 		return $this->getHardness() * 5;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getToolType() : int{
-		return BlockToolType::TYPE_NONE;
 	}
 
 	/**

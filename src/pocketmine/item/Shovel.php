@@ -35,6 +35,10 @@ class Shovel extends TieredTool{
 		return BlockToolType::TYPE_SHOVEL;
 	}
 
+	public function getBlockToolHarvestLevel() : int{
+		return $this->tier;
+	}
+
 	public function getAttackPoints() : int{
 		return self::getBaseDamageFromTier($this->tier) - 3;
 	}

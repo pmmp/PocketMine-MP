@@ -35,6 +35,10 @@ class Axe extends TieredTool{
 		return BlockToolType::TYPE_AXE;
 	}
 
+	public function getBlockToolHarvestLevel() : int{
+		return $this->tier;
+	}
+
 	public function getAttackPoints() : int{
 		return self::getBaseDamageFromTier($this->tier) - 1;
 	}

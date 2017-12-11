@@ -752,6 +752,10 @@ class Item implements ItemIds, \JsonSerializable{
 		return BlockToolType::TYPE_NONE;
 	}
 
+	public function getBlockToolHarvestLevel() : int{
+		return 0;
+	}
+
 	/**
 	 * Returns the maximum amount of damage this item can take before it breaks.
 	 *
