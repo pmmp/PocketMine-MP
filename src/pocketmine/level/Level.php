@@ -1721,7 +1721,7 @@ class Level implements ChunkManager, Metadatable{
 		if($player !== null){
 			$ev = new BlockBreakEvent($player, $target, $item, $player->isCreative() or $player->allowInstaBreak());
 
-			if(($player->isSurvival() and $item instanceof Item and !$target->isBreakable($item)) or $player->isSpectator()){
+			if(($player->isSurvival() and !$target->isBreakable($item)) or $player->isSpectator()){
 				$ev->setCancelled();
 			}elseif($this->checkSpawnProtection($player, $target)){
 				$ev->setCancelled(); //set it to cancelled so plugins can bypass this
@@ -1774,7 +1774,7 @@ class Level implements ChunkManager, Metadatable{
 
 			$drops = $ev->getDrops();
 
-		}elseif($item !== null and !$target->isBreakable($item)){
+		}elseif(!$target->isBreakable($item)){
 			return false;
 		}else{
 			$drops = $target->getDrops($item); //Fixes tile entities being deleted before getting drops
@@ -1804,9 +1804,7 @@ class Level implements ChunkManager, Metadatable{
 			$tile->close();
 		}
 
-		if($item !== null){
-			$item->useOn($target);
-		}
+		$item->useOn($target);
 
 		if($player === null or $player->isSurvival()){
 			foreach($drops as $drop){
