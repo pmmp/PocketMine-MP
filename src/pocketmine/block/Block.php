@@ -220,31 +220,33 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return float
 	 */
 	public function getBreakTime(Item $item) : float{
-		$base = $this->getHardness() * 1.5;
+		$base = $this->getHardness();
 		if($this->canBeBrokenWith($item)){
-			if($this->getToolType() === BlockToolType::TYPE_SHEARS and $item->isShears()){
-				$base /= 15;
-			}elseif($item instanceof TieredTool and ($this->getToolType() & $item->getBlockToolType()) !== 0){
-				switch($item->getTier()){
-					case TieredTool::TIER_WOODEN:
-						$base /= 2;
-						break;
-					case TieredTool::TIER_STONE:
-						$base /= 4;
-						break;
-					case TieredTool::TIER_IRON:
-						$base /= 6;
-						break;
-					case TieredTool::TIER_DIAMOND:
-						$base /= 8;
-						break;
-					case TieredTool::TIER_GOLD:
-						$base /= 12;
-						break;
-				}
-			}
+			$base *= 1.5;
 		}else{
-			$base *= 3.33;
+			$base *= 5;
+		}
+
+		if($this->getToolType() === BlockToolType::TYPE_SHEARS and $item->isShears()){
+			$base /= 15;
+		}elseif($item instanceof TieredTool and ($this->getToolType() & $item->getBlockToolType()) !== 0){
+			switch($item->getTier()){
+				case TieredTool::TIER_WOODEN:
+					$base /= 2;
+					break;
+				case TieredTool::TIER_STONE:
+					$base /= 4;
+					break;
+				case TieredTool::TIER_IRON:
+					$base /= 6;
+					break;
+				case TieredTool::TIER_DIAMOND:
+					$base /= 8;
+					break;
+				case TieredTool::TIER_GOLD:
+					$base /= 12;
+					break;
+			}
 		}
 
 		if($item->isSword()){
