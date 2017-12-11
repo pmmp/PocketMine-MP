@@ -252,7 +252,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		}
 
 		if($item->isSword()){
-			$base *= 0.5;
+			$base /= 1.5;
 		}
 
 		return $base;
