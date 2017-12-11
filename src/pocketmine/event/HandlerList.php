@@ -99,16 +99,16 @@ class HandlerList{
 		}
 
 		$class = new \ReflectionClass($event);
-		$tags = PluginManager::parseDocComment($class->getDocComment());
-		if($tags["nonHandler"]){
+		$tags = PluginManager::parseDocComment((string) $class->getDocComment());
+		if(isset($tags["nonHandler"])){
 			return null;
 		}
 
 		$list = new HandlerList($event);
 		$super = $class;
 		$parentList = null;
-		while($parentList === null && ($super = $super->getParentClass())->getName() !== Event::class){
-			$parentList = self::getHandlerListFor($super->getParentClass()->getName()); // while loop to allow skipping @nonHandler events in the inheritance tree
+		while($parentList === null && ($super = $super->getParentClass()) !== false){
+			$parentList = self::getHandlerListFor($super->getName()); // while loop to allow skipping @nonHandler events in the inheritance tree
 		}
 		$lists = $parentList !== null ? self::$classMap[$parentList->class] : [];
 		array_unshift($lists, $list);
