@@ -24,9 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\event;
 
 use pocketmine\plugin\Plugin;
+use pocketmine\plugin\PluginManager;
 use pocketmine\plugin\RegisteredListener;
 
 class HandlerList{
+	/** @var string */
+	private $class;
 
 	/**
 	 * @var RegisteredListener[]
@@ -42,6 +45,13 @@ class HandlerList{
 	 * @var HandlerList[]
 	 */
 	private static $allLists = [];
+
+	/**
+	 * @var HandlerList[][] a 2D array of HandlerList.
+	 *                      The first dimension index is the class name, containing an array of HandlerList for that class and its superclasses.
+	 *                      The second dimension index is an integer >= 0, starting from the HandlerList for that class.
+	 */
+	private static $classMap = [];
 
 	public static function bakeAll(){
 		foreach(self::$allLists as $h){
@@ -70,7 +80,8 @@ class HandlerList{
 		}
 	}
 
-	public function __construct(){
+	public function __construct(string $class){
+		$this->class = $class;
 		$this->handlerSlots = [
 			EventPriority::LOWEST => [],
 			EventPriority::LOW => [],
@@ -80,6 +91,38 @@ class HandlerList{
 			EventPriority::MONITOR => []
 		];
 		self::$allLists[] = $this;
+	}
+
+	public static function getHandlerListFor(string $event) : ?HandlerList{
+		if(isset(self::$classMap[$event])){
+			return self::$classMap[$event][0];
+		}
+
+		$class = new \ReflectionClass($event);
+		$tags = PluginManager::parseDocComment($class->getDocComment());
+		if($tags["nonHandler"]){
+			return null;
+		}
+
+		$list = new HandlerList($event);
+		$super = $class;
+		$parentList = null;
+		while($parentList === null && ($super = $super->getParentClass())->getName() !== Event::class){
+			$parentList = self::getHandlerListFor($super->getParentClass()->getName()); // while loop to allow skipping @nonHandler events in the inheritance tree
+		}
+		$lists = $parentList !== null ? self::$classMap[$parentList->class] : [];
+		array_unshift($lists, $list);
+
+		self::$classMap[$event] = $lists;
+		return $list;
+	}
+
+	/**
+	 * @param string $event
+	 * @return HandlerList[]
+	 */
+	public static function getHandlerListsFor(string $event) : array{
+		return self::$classMap[$event] ?? [];
 	}
 
 	/**

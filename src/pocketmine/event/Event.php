@@ -77,14 +77,11 @@ abstract class Event{
 	}
 
 	/**
-	 * @return HandlerList
+	 * @deprecated
+	 * @return HandlerList|null
 	 */
-	public function getHandlers() : HandlerList{
-		if(static::$handlerList === null){
-			static::$handlerList = new HandlerList();
-		}
-
-		return static::$handlerList;
+	public function getHandlers() : ?HandlerList{
+		return HandlerList::getHandlerListFor(get_class($this));
 	}
 
 }
