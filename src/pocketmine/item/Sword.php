@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\Block;
 use pocketmine\block\BlockToolType;
 
 class Sword extends TieredTool{
@@ -41,5 +42,13 @@ class Sword extends TieredTool{
 
 	public function getBlockToolHarvestLevel() : int{
 		return 1;
+	}
+
+	public function getMiningEfficiency(Block $block) : float{
+		return parent::getMiningEfficiency($block) * 1.5; //swords break any block 1.5x faster than hand
+	}
+
+	protected function getBaseMiningEfficiency() : float{
+		return 10;
 	}
 }

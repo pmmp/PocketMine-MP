@@ -245,31 +245,12 @@ class Block extends Position implements BlockIds, Metadatable{
 			$base *= 5;
 		}
 
-		if($this->getToolType() === BlockToolType::TYPE_SHEARS and $item->isShears()){
-			$base /= 15;
-		}elseif($item instanceof TieredTool and ($this->getToolType() & $item->getBlockToolType()) !== 0){
-			switch($item->getTier()){
-				case TieredTool::TIER_WOODEN:
-					$base /= 2;
-					break;
-				case TieredTool::TIER_STONE:
-					$base /= 4;
-					break;
-				case TieredTool::TIER_IRON:
-					$base /= 6;
-					break;
-				case TieredTool::TIER_DIAMOND:
-					$base /= 8;
-					break;
-				case TieredTool::TIER_GOLD:
-					$base /= 12;
-					break;
-			}
+		$efficiency = $item->getMiningEfficiency($this);
+		if($efficiency <= 0){
+			throw new \RuntimeException("Item efficiency is invalid");
 		}
 
-		if($item->isSword()){
-			$base /= 1.5;
-		}
+		$base /= $efficiency;
 
 		return $base;
 	}

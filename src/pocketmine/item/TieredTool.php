@@ -77,4 +77,24 @@ abstract class TieredTool extends Tool{
 
 		return $levels[$tier];
 	}
+
+	public static function getBaseMiningEfficiencyFromTier(int $tier) : float{
+		static $levels = [
+			self::TIER_WOODEN => 2,
+			self::TIER_STONE => 4,
+			self::TIER_IRON => 6,
+			self::TIER_DIAMOND => 8,
+			self::TIER_GOLD => 12
+		];
+
+		if(!isset($levels[$tier])){
+			throw new \InvalidArgumentException("Unknown tier '$tier'");
+		}
+
+		return $levels[$tier];
+	}
+
+	protected function getBaseMiningEfficiency() : float{
+		return self::getBaseMiningEfficiencyFromTier($this->tier);
+	}
 }

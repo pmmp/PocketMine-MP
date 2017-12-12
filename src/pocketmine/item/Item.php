@@ -789,7 +789,7 @@ class Item implements ItemIds, \JsonSerializable{
 		return false;
 	}
 
-	public function getDestroySpeed(Block $block, Player $player){
+	public function getMiningEfficiency(Block $block) : float{
 		return 1;
 	}
 
