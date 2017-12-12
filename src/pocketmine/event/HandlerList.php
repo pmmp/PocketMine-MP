@@ -77,7 +77,8 @@ class HandlerList{
 			EventPriority::NORMAL => [],
 			EventPriority::HIGH => [],
 			EventPriority::HIGHEST => [],
-			EventPriority::MONITOR => []
+			EventPriority::MONITOR => [],
+			EventPriority::EXECUTE => []
 		];
 		self::$allLists[] = $this;
 	}
@@ -88,7 +89,7 @@ class HandlerList{
 	 * @throws \Exception
 	 */
 	public function register(RegisteredListener $listener){
-		if($listener->getPriority() < EventPriority::MONITOR or $listener->getPriority() > EventPriority::LOWEST){
+		if($listener->getPriority() < EventPriority::EXECUTE or $listener->getPriority() > EventPriority::LOWEST){
 			return;
 		}
 		if(isset($this->handlerSlots[$listener->getPriority()][spl_object_hash($listener)])){
