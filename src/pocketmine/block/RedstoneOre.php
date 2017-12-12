@@ -68,13 +68,9 @@ class RedstoneOre extends Solid{
 		return TieredTool::TIER_IRON;
 	}
 
-	public function getDrops(Item $item) : array{
-		if($this->isCompatibleWithTool($item)){
-			return [
-				ItemFactory::get(Item::REDSTONE_DUST, 0, mt_rand(4, 5))
-			];
-		}
-
-		return [];
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			ItemFactory::get(Item::REDSTONE_DUST, 0, mt_rand(4, 5))
+		];
 	}
 }

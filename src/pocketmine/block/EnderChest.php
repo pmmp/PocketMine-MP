@@ -101,14 +101,10 @@ class EnderChest extends Chest{
 		return true;
 	}
 
-	public function getDrops(Item $item) : array{
-		if($this->isCompatibleWithTool($item)){
-			return [
-				ItemFactory::get(Item::OBSIDIAN, 0, 8)
-			];
-		}
-
-		return [];
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			ItemFactory::get(Item::OBSIDIAN, 0, 8)
+		];
 	}
 
 	public function getFuelTime() : int{

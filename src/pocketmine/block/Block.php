@@ -434,12 +434,23 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getDrops(Item $item) : array{
 		if($this->isCompatibleWithTool($item)){
-			return [
-				ItemFactory::get($this->getItemId(), $this->getVariant(), 1)
-			];
+			return $this->getDropsForCompatibleTool($item);
 		}
 
 		return [];
+	}
+
+	/**
+	 * Returns an array of Items to be dropped when the block is broken using the correct tool type.
+	 *
+	 * @param Item $item
+	 *
+	 * @return Item[]
+	 */
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			ItemFactory::get($this->getItemId(), $this->getVariant(), 1)
+		];
 	}
 
 	/**

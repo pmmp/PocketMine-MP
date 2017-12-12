@@ -67,18 +67,14 @@ class Stone extends Solid{
 		return $names[$this->getVariant()] ?? "Unknown";
 	}
 
-	public function getDrops(Item $item) : array{
-		if($this->isCompatibleWithTool($item)){
-			if($this->getDamage() === self::NORMAL){
-				return [
-					ItemFactory::get(Item::COBBLESTONE, $this->getDamage(), 1)
-				];
-			}
-
-			return parent::getDrops($item);
+	public function getDropsForCompatibleTool(Item $item) : array{
+		if($this->getDamage() === self::NORMAL){
+			return [
+				ItemFactory::get(Item::COBBLESTONE, $this->getDamage(), 1)
+			];
 		}
 
-		return [];
+		return parent::getDropsForCompatibleTool($item);
 	}
 
 }

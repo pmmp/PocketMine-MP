@@ -51,14 +51,10 @@ class CoalOre extends Solid{
 		return "Coal Ore";
 	}
 
-	public function getDrops(Item $item) : array{
-		if($this->isCompatibleWithTool($item)){
-			return [
-				ItemFactory::get(Item::COAL, 0, 1)
-			];
-		}
-
-		return [];
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			ItemFactory::get(Item::COAL, 0, 1)
+		];
 	}
 
 }

@@ -51,14 +51,10 @@ class NetherQuartzOre extends Solid{
 		return TieredTool::TIER_WOODEN;
 	}
 
-	public function getDrops(Item $item) : array{
-		if($this->isCompatibleWithTool($item)){
-			return [
-				ItemFactory::get(Item::QUARTZ, 0, 1)
-			];
-		}
-
-		return [];
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			ItemFactory::get(Item::QUARTZ, 0, 1)
+		];
 	}
 
 }

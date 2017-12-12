@@ -51,13 +51,9 @@ class DiamondOre extends Solid{
 		return TieredTool::TIER_IRON;
 	}
 
-	public function getDrops(Item $item) : array{
-		if($this->isCompatibleWithTool($item)){
-			return [
-				ItemFactory::get(Item::DIAMOND, 0, 1)
-			];
-		}
-
-		return [];
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			ItemFactory::get(Item::DIAMOND, 0, 1)
+		];
 	}
 }

@@ -51,13 +51,9 @@ class EmeraldOre extends Solid{
 		return 3;
 	}
 
-	public function getDrops(Item $item) : array{
-		if($this->isCompatibleWithTool($item)){
-			return [
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
 				ItemFactory::get(Item::EMERALD, 0, 1)
-			];
-		}
-
-		return [];
+		];
 	}
 }

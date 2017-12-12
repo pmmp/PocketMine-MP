@@ -51,14 +51,10 @@ class LapisOre extends Solid{
 		return "Lapis Lazuli Ore";
 	}
 
-	public function getDrops(Item $item) : array{
-		if($this->isCompatibleWithTool($item)){
-			return [
-				ItemFactory::get(Item::DYE, 4, mt_rand(4, 8))
-			];
-		}
-
-		return [];
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			ItemFactory::get(Item::DYE, 4, mt_rand(4, 8))
+		];
 	}
 
 }
