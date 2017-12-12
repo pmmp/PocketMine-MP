@@ -51,10 +51,10 @@ class ItemFactory{
 			self::registerItem(new Item(Item::IRON_INGOT, 0, "Iron Ingot"));
 			self::registerItem(new Item(Item::GOLD_INGOT, 0, "Gold Ingot"));
 			self::registerItem(new Sword(Item::IRON_SWORD, 0, "Iron Sword", TieredTool::TIER_IRON));
-			self::registerItem(new WoodenSword());
-			self::registerItem(new WoodenShovel());
-			self::registerItem(new WoodenPickaxe());
-			self::registerItem(new WoodenAxe());
+			self::registerItem(new Sword(Item::WOODEN_SWORD, 0, "Wooden Sword", TieredTool::TIER_WOODEN));
+			self::registerItem(new Shovel(Item::WOODEN_SHOVEL, 0, "Wooden Shovel", TieredTool::TIER_WOODEN));
+			self::registerItem(new Pickaxe(Item::WOODEN_PICKAXE, 0, "Wooden Pickaxe", TieredTool::TIER_WOODEN));
+			self::registerItem(new Axe(Item::WOODEN_AXE, 0, "Wooden Axe", TieredTool::TIER_WOODEN));
 			self::registerItem(new Sword(Item::STONE_SWORD, 0, "Stone Sword", TieredTool::TIER_STONE));
 			self::registerItem(new Shovel(Item::STONE_SHOVEL, 0, "Stone Shovel", TieredTool::TIER_STONE));
 			self::registerItem(new Pickaxe(Item::STONE_PICKAXE, 0, "Stone Pickaxe", TieredTool::TIER_STONE));

@@ -97,4 +97,12 @@ abstract class TieredTool extends Tool{
 	protected function getBaseMiningEfficiency() : float{
 		return self::getBaseMiningEfficiencyFromTier($this->tier);
 	}
+
+	public function getFuelTime() : int{
+		if($this->tier === self::TIER_WOODEN){
+			return 200;
+		}
+
+		return 0;
+	}
 }
