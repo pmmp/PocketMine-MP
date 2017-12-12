@@ -752,6 +752,15 @@ class Item implements ItemIds, \JsonSerializable{
 		return BlockToolType::TYPE_NONE;
 	}
 
+	/**
+	 * Returns the harvesting power that this tool has. This affects what blocks it can mine when the tool type matches
+	 * the mined block.
+	 * This should return 1 for non-tiered tools, and the tool tier for tiered tools.
+	 *
+	 * @see Block::getToolHarvestLevel()
+	 *
+	 * @return int
+	 */
 	public function getBlockToolHarvestLevel() : int{
 		return 0;
 	}

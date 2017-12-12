@@ -202,6 +202,18 @@ class Block extends Position implements BlockIds, Metadatable{
 		return BlockToolType::TYPE_NONE;
 	}
 
+	/**
+	 * Returns the level of tool required to harvest this block (for normal blocks). When the tool type matches the
+	 * block's required tool type, the tool must have a harvest level greater than or equal to this value to be able to
+	 * successfully harvest the block.
+	 *
+	 * If the block requires a specific minimum tier of tiered tool, the minimum tier required should be returned.
+	 * Otherwise, 1 should be returned if a tool is required, 0 if not.
+	 *
+	 * @see Item::getBlockToolHarvestLevel()
+	 *
+	 * @return int
+	 */
 	public function getToolHarvestLevel() : int{
 		return 0;
 	}
