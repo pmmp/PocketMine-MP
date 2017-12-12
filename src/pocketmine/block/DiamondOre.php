@@ -52,7 +52,7 @@ class DiamondOre extends Solid{
 	}
 
 	public function getDrops(Item $item) : array{
-		if($this->canBeBrokenWith($item)){
+		if($this->isCompatibleWithTool($item)){
 			return [
 				ItemFactory::get(Item::DIAMOND, 0, 1)
 			];

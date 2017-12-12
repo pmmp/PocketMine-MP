@@ -52,7 +52,7 @@ class LapisOre extends Solid{
 	}
 
 	public function getDrops(Item $item) : array{
-		if($this->canBeBrokenWith($item)){
+		if($this->isCompatibleWithTool($item)){
 			return [
 				ItemFactory::get(Item::DYE, 4, mt_rand(4, 8))
 			];

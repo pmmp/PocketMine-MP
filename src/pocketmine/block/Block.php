@@ -218,7 +218,18 @@ class Block extends Position implements BlockIds, Metadatable{
 		return 0;
 	}
 
-	public function canBeBrokenWith(Item $item) : bool{
+	/**
+	 * Returns whether the specified item is the proper tool to use for breaking this block. This checks tool type and
+	 * harvest level requirement.
+	 *
+	 * In most cases this is also used to determine whether block drops should be created or not, except in some
+	 * special cases such as vines.
+	 *
+	 * @param Item $tool
+	 *
+	 * @return bool
+	 */
+	public function isCompatibleWithTool(Item $tool) : bool{
 		if($this->getHardness() < 0){
 			return false;
 		}
@@ -226,7 +237,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		$toolType = $this->getToolType();
 		$harvestLevel = $this->getToolHarvestLevel();
 		return $toolType === BlockToolType::TYPE_NONE or $harvestLevel === 0 or (
-			($toolType & $item->getBlockToolType()) !== 0 and $item->getBlockToolHarvestLevel() >= $harvestLevel);
+			($toolType & $tool->getBlockToolType()) !== 0 and $tool->getBlockToolHarvestLevel() >= $harvestLevel);
 	}
 
 	/**
@@ -251,7 +262,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getBreakTime(Item $item) : float{
 		$base = $this->getHardness();
-		if($this->canBeBrokenWith($item)){
+		if($this->isCompatibleWithTool($item)){
 			$base *= 1.5;
 		}else{
 			$base *= 5;
@@ -422,7 +433,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return Item[]
 	 */
 	public function getDrops(Item $item) : array{
-		if($this->canBeBrokenWith($item)){
+		if($this->isCompatibleWithTool($item)){
 			return [
 				ItemFactory::get($this->getItemId(), $this->getVariant(), 1)
 			];

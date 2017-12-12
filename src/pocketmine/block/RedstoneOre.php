@@ -69,7 +69,7 @@ class RedstoneOre extends Solid{
 	}
 
 	public function getDrops(Item $item) : array{
-		if($this->canBeBrokenWith($item)){
+		if($this->isCompatibleWithTool($item)){
 			return [
 				ItemFactory::get(Item::REDSTONE_DUST, 0, mt_rand(4, 5))
 			];

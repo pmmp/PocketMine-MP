@@ -102,7 +102,7 @@ class EnderChest extends Chest{
 	}
 
 	public function getDrops(Item $item) : array{
-		if($this->canBeBrokenWith($item)){
+		if($this->isCompatibleWithTool($item)){
 			return [
 				ItemFactory::get(Item::OBSIDIAN, 0, 8)
 			];

@@ -56,7 +56,7 @@ class NetherReactor extends Solid{
 	}
 
 	public function getDrops(Item $item) : array{
-		if($this->canBeBrokenWith($item)){
+		if($this->isCompatibleWithTool($item)){
 			return [
 				ItemFactory::get(Item::IRON_INGOT, 0, 6),
 				ItemFactory::get(Item::DIAMOND, 0, 3)

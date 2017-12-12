@@ -68,7 +68,7 @@ class Stone extends Solid{
 	}
 
 	public function getDrops(Item $item) : array{
-		if($this->canBeBrokenWith($item)){
+		if($this->isCompatibleWithTool($item)){
 			if($this->getDamage() === self::NORMAL){
 				return [
 					ItemFactory::get(Item::COBBLESTONE, $this->getDamage(), 1)
