@@ -762,15 +762,13 @@ class PluginManager{
 		foreach($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method){
 			if(!$method->isStatic()){
 				$tags = self::parseDocComment((string) $method->getDocComment());
-				$priority = isset($tags["priority"]) && defined(EventPriority::class . "::" . $tags["priority"]) ?
-					constant(EventPriority::class . "::" . $tags["priority"]) : EventPriority::NORMAL;
-				$ignoreCancelled = isset($tags["ignoreCancelled"]) &&
-					in_array($tags["ignoreCancelled"], ["", "true"], true);
+				$priority = isset($tags["priority"]) && defined(EventPriority::class . "::" . strtoupper($tags["priority"])) ?
+					constant(EventPriority::class . "::" . strtoupper($tags["priority"])) : EventPriority::NORMAL;
+				$ignoreCancelled = isset($tags["ignoreCancelled"]) && strtolower($tags["ignoreCancelled"]) === "true";
 
 				$parameters = $method->getParameters();
 				if(count($parameters) === 1 and $parameters[0]->getClass() instanceof \ReflectionClass and is_subclass_of($parameters[0]->getClass()->getName(), Event::class)){
 					$class = $parameters[0]->getClass()->getName();
-					$reflection = new \ReflectionClass($class);
 					$this->registerEvent($class, $listener, $priority, new MethodEventExecutor($method->getName()), $plugin, $ignoreCancelled);
 				}
 			}
