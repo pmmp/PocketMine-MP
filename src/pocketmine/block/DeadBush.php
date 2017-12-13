@@ -56,13 +56,17 @@ class DeadBush extends Flowable{
 		return BlockToolType::TYPE_SHEARS;
 	}
 
+	public function getToolHarvestLevel() : int{
+		return 1;
+	}
+
 	public function getDrops(Item $item) : array{
-		if($item->isShears()){
-			return parent::getDrops($item);
+		if(!$this->isCompatibleWithTool($item)){
+			return [
+				ItemFactory::get(Item::STICK, 0, mt_rand(0, 2))
+			];
 		}
 
-		return [
-			ItemFactory::get(Item::STICK, 0, mt_rand(0, 2))
-		];
+		return parent::getDrops($item);
 	}
 }

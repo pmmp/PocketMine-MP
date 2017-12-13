@@ -74,14 +74,24 @@ class TallGrass extends Flowable{
 		return false;
 	}
 
+	public function getToolType() : int{
+		return BlockToolType::TYPE_SHEARS;
+	}
+
+	public function getToolHarvestLevel() : int{
+		return 1;
+	}
+
 	public function getDrops(Item $item) : array{
+		if($this->isCompatibleWithTool($item)){
+			return parent::getDrops($item);
+		}
+
 		if(mt_rand(0, 15) === 0){
 			return [
 				ItemFactory::get(Item::WHEAT_SEEDS, 0, 1)
 			];
 		}
-
-		//TODO: check shears
 
 		return [];
 	}
