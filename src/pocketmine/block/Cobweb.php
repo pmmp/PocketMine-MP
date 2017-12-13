@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 
 class Cobweb extends Flowable{
 
@@ -59,8 +60,9 @@ class Cobweb extends Flowable{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		//TODO: correct drops
-		return [];
+		return [
+			ItemFactory::get(Item::STRING)
+		];
 	}
 
 	public function diffusesSkyLight() : bool{
