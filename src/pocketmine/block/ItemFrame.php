@@ -99,8 +99,8 @@ class ItemFrame extends Flowable{
 		return 0;
 	}
 
-	public function getDrops(Item $item) : array{
-		$drops = parent::getDrops($item);
+	public function getDropsForCompatibleTool(Item $item) : array{
+		$drops = parent::getDropsForCompatibleTool($item);
 
 		$tile = $this->level->getTile($this);
 		if($tile instanceof TileItemFrame){

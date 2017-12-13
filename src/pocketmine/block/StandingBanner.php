@@ -95,7 +95,7 @@ class StandingBanner extends Transparent{
 		return 0;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		$tile = $this->level->getTile($this);
 
 		$drop = ItemFactory::get(Item::BANNER, ($tile instanceof TileBanner ? $tile->getBaseColor() : 0));

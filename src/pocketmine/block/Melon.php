@@ -46,7 +46,7 @@ class Melon extends Transparent{
 		return BlockToolType::TYPE_AXE;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			ItemFactory::get(Item::MELON_SLICE, 0, mt_rand(3, 7))
 		];

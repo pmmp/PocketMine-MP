@@ -81,6 +81,8 @@ class TallGrass extends Flowable{
 			];
 		}
 
+		//TODO: check shears
+
 		return [];
 	}
 

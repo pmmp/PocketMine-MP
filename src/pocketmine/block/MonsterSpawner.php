@@ -45,7 +45,7 @@ class MonsterSpawner extends Transparent{
 		return "Monster Spawner";
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [];
 	}
 }

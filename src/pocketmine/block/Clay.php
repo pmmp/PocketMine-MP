@@ -46,7 +46,7 @@ class Clay extends Solid{
 		return "Clay Block";
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			ItemFactory::get(Item::CLAY_BALL, 0, 4)
 		];

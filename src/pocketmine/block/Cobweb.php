@@ -58,7 +58,7 @@ class Cobweb extends Flowable{
 		$entity->resetFallDistance();
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		//TODO: correct drops
 		return [];
 	}

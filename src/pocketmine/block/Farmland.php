@@ -107,7 +107,7 @@ class Farmland extends Transparent{
 		return false;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			ItemFactory::get(Item::DIRT, 0, 1)
 		];

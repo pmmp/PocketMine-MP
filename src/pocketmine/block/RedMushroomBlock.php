@@ -45,7 +45,7 @@ class RedMushroomBlock extends Solid{
 		return BlockToolType::TYPE_AXE;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			Item::get(Item::RED_MUSHROOM, 0, mt_rand(0, 2))
 		];

@@ -201,7 +201,7 @@ class Vine extends Flowable{
 
 	public function getDrops(Item $item) : array{
 		if($item->isShears()){
-			return parent::getDrops($item);
+			return $this->getDropsForCompatibleTool($item);
 		}
 
 		return [];

@@ -46,7 +46,7 @@ class Bookshelf extends Solid{
 		return BlockToolType::TYPE_AXE;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			ItemFactory::get(Item::BOOK, 0, 3)
 		];

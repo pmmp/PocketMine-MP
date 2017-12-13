@@ -46,14 +46,14 @@ class Gravel extends Fallable{
 		return BlockToolType::TYPE_SHOVEL;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		if(mt_rand(1, 10) === 1){
 			return [
 				ItemFactory::get(Item::FLINT, 0, 1)
 			];
 		}
 
-		return parent::getDrops($item);
+		return parent::getDropsForCompatibleTool($item);
 	}
 
 }

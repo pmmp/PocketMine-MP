@@ -50,7 +50,7 @@ class Mycelium extends Solid{
 		return 0.6;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			ItemFactory::get(Item::DIRT, 0, 1)
 		];
