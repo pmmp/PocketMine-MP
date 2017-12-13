@@ -55,6 +55,7 @@ class Effect{
 	public const ABSORPTION = 22;
 	public const SATURATION = 23;
 	public const LEVITATION = 24; //TODO
+	public const FATAL_POISON = 25;
 
 	/** @var Effect[] */
 	protected static $effects = [];
@@ -295,6 +296,7 @@ class Effect{
 	public function canTick() : bool{
 		switch($this->id){
 			case Effect::POISON:
+			case Effect::FATAL_POISON:
 				if(($interval = (25 >> $this->amplifier)) > 0){
 					return ($this->duration % $interval) === 0;
 				}
@@ -332,11 +334,14 @@ class Effect{
 	 */
 	public function applyEffect(Entity $entity){
 		switch($this->id){
+			/** @noinspection PhpMissingBreakStatementInspection */
 			case Effect::POISON:
-				if($entity->getHealth() > 1){
-					$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, 1);
-					$entity->attack($ev);
+				if($entity->getHealth() <= 1){
+					break;
 				}
+			case Effect::FATAL_POISON:
+				$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, 1);
+				$entity->attack($ev);
 				break;
 
 			case Effect::WITHER:
