@@ -28,6 +28,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\level\Level;
@@ -742,6 +743,29 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
+	 * Returns what type of block-breaking tool this is. Blocks requiring the same tool type as the item will break
+	 * faster (except for blocks requiring no tool, which break at the same speed regardless of the tool used)
+	 *
+	 * @return int
+	 */
+	public function getBlockToolType() : int{
+		return BlockToolType::TYPE_NONE;
+	}
+
+	/**
+	 * Returns the harvesting power that this tool has. This affects what blocks it can mine when the tool type matches
+	 * the mined block.
+	 * This should return 1 for non-tiered tools, and the tool tier for tiered tools.
+	 *
+	 * @see Block::getToolHarvestLevel()
+	 *
+	 * @return int
+	 */
+	public function getBlockToolHarvestLevel() : int{
+		return 0;
+	}
+
+	/**
 	 * Returns the maximum amount of damage this item can take before it breaks.
 	 *
 	 * @return int|bool
@@ -774,7 +798,7 @@ class Item implements ItemIds, \JsonSerializable{
 		return false;
 	}
 
-	public function getDestroySpeed(Block $block, Player $player){
+	public function getMiningEfficiency(Block $block) : float{
 		return 1;
 	}
 

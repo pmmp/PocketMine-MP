@@ -72,7 +72,7 @@ abstract class Liquid extends Transparent{
 		return null;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [];
 	}
 

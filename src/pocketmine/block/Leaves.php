@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -51,7 +50,7 @@ class Leaves extends Transparent{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_SHEARS;
+		return BlockToolType::TYPE_SHEARS;
 	}
 
 	public function getName() : string{
@@ -174,19 +173,19 @@ class Leaves extends Transparent{
 	}
 
 	public function getDrops(Item $item) : array{
-		if($item->isShears()){
-			return parent::getDrops($item);
+		if(!$this->isCompatibleWithTool($item)){
+			$drops = [];
+			if(mt_rand(1, 20) === 1){ //Saplings
+				$drops[] = $this->getSaplingItem();
+			}
+			if($this->canDropApples() and mt_rand(1, 200) === 1){ //Apples
+				$drops[] = ItemFactory::get(Item::APPLE, 0, 1);
+			}
+
+			return $drops;
 		}
 
-		$drops = [];
-		if(mt_rand(1, 20) === 1){ //Saplings
-			$drops[] = $this->getSaplingItem();
-		}
-		if($this->canDropApples() and mt_rand(1, 200) === 1){ //Apples
-			$drops[] = ItemFactory::get(Item::APPLE, 0, 1);
-		}
-
-		return $drops;
+		return parent::getDrops($item);
 	}
 
 	public function getSaplingItem() : Item{

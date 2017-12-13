@@ -24,26 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\ColorBlockMetaHelper;
-use pocketmine\item\Tool;
 
-class StainedClay extends Solid{
+class StainedClay extends HardenedClay{
 
 	protected $id = self::STAINED_CLAY;
-
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
-	}
-
-	public function getHardness() : float{
-		return 1.25;
-	}
-
-	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
-	}
 
 	public function getName() : string{
 		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Stained Clay";
 	}
-
 }

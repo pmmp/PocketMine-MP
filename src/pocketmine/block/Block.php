@@ -29,7 +29,6 @@ namespace pocketmine\block;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\level\Position;
@@ -195,8 +194,49 @@ class Block extends Position implements BlockIds, Metadatable{
 		return true;
 	}
 
-	public function canBeBrokenWith(Item $item) : bool{
-		return $this->getHardness() !== -1;
+	/**
+	 * @return int
+	 */
+	public function getToolType() : int{
+		return BlockToolType::TYPE_NONE;
+	}
+
+	/**
+	 * Returns the level of tool required to harvest this block (for normal blocks). When the tool type matches the
+	 * block's required tool type, the tool must have a harvest level greater than or equal to this value to be able to
+	 * successfully harvest the block.
+	 *
+	 * If the block requires a specific minimum tier of tiered tool, the minimum tier required should be returned.
+	 * Otherwise, 1 should be returned if a tool is required, 0 if not.
+	 *
+	 * @see Item::getBlockToolHarvestLevel()
+	 *
+	 * @return int
+	 */
+	public function getToolHarvestLevel() : int{
+		return 0;
+	}
+
+	/**
+	 * Returns whether the specified item is the proper tool to use for breaking this block. This checks tool type and
+	 * harvest level requirement.
+	 *
+	 * In most cases this is also used to determine whether block drops should be created or not, except in some
+	 * special cases such as vines.
+	 *
+	 * @param Item $tool
+	 *
+	 * @return bool
+	 */
+	public function isCompatibleWithTool(Item $tool) : bool{
+		if($this->getHardness() < 0){
+			return false;
+		}
+
+		$toolType = $this->getToolType();
+		$harvestLevel = $this->getToolHarvestLevel();
+		return $toolType === BlockToolType::TYPE_NONE or $harvestLevel === 0 or (
+			($toolType & $tool->getBlockToolType()) !== 0 and $tool->getBlockToolHarvestLevel() >= $harvestLevel);
 	}
 
 	/**
@@ -220,40 +260,19 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return float
 	 */
 	public function getBreakTime(Item $item) : float{
-		$base = $this->getHardness() * 1.5;
-		if($this->canBeBrokenWith($item)){
-			if($this->getToolType() === Tool::TYPE_SHEARS and $item->isShears()){
-				$base /= 15;
-			}elseif(
-				($this->getToolType() === Tool::TYPE_PICKAXE and ($tier = $item->isPickaxe()) !== false) or
-				($this->getToolType() === Tool::TYPE_AXE and ($tier = $item->isAxe()) !== false) or
-				($this->getToolType() === Tool::TYPE_SHOVEL and ($tier = $item->isShovel()) !== false)
-			){
-				switch($tier){
-					case Tool::TIER_WOODEN:
-						$base /= 2;
-						break;
-					case Tool::TIER_STONE:
-						$base /= 4;
-						break;
-					case Tool::TIER_IRON:
-						$base /= 6;
-						break;
-					case Tool::TIER_DIAMOND:
-						$base /= 8;
-						break;
-					case Tool::TIER_GOLD:
-						$base /= 12;
-						break;
-				}
-			}
+		$base = $this->getHardness();
+		if($this->isCompatibleWithTool($item)){
+			$base *= 1.5;
 		}else{
-			$base *= 3.33;
+			$base *= 5;
 		}
 
-		if($item->isSword()){
-			$base /= 1.5;
+		$efficiency = $item->getMiningEfficiency($this);
+		if($efficiency <= 0){
+			throw new \RuntimeException("Item efficiency is invalid");
 		}
+
+		$base /= $efficiency;
 
 		return $base;
 	}
@@ -313,13 +332,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getBlastResistance() : float{
 		return $this->getHardness() * 5;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getToolType() : int{
-		return Tool::TYPE_NONE;
 	}
 
 	/**
@@ -420,6 +432,21 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return Item[]
 	 */
 	public function getDrops(Item $item) : array{
+		if($this->isCompatibleWithTool($item)){
+			return $this->getDropsForCompatibleTool($item);
+		}
+
+		return [];
+	}
+
+	/**
+	 * Returns an array of Items to be dropped when the block is broken using the correct tool type.
+	 *
+	 * @param Item $item
+	 *
+	 * @return Item[]
+	 */
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			ItemFactory::get($this->getItemId(), $this->getVariant(), 1)
 		];

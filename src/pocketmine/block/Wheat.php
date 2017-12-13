@@ -38,7 +38,7 @@ class Wheat extends Crops{
 		return "Wheat Block";
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		if($this->meta >= 0x07){
 			return [
 				ItemFactory::get(Item::WHEAT, 0, 1),

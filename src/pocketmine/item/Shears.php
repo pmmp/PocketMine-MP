@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\BlockToolType;
 
 class Shears extends Tool{
 	public function __construct(int $meta = 0){
@@ -35,5 +36,17 @@ class Shears extends Tool{
 
 	public function isShears(){
 		return true;
+	}
+
+	public function getBlockToolType() : int{
+		return BlockToolType::TYPE_SHEARS;
+	}
+
+	public function getBlockToolHarvestLevel() : int{
+		return 1;
+	}
+
+	protected function getBaseMiningEfficiency() : float{
+		return 15;
 	}
 }

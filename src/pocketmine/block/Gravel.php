@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\item\Tool;
 
 class Gravel extends Fallable{
 
@@ -44,17 +43,17 @@ class Gravel extends Fallable{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_SHOVEL;
+		return BlockToolType::TYPE_SHOVEL;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		if(mt_rand(1, 10) === 1){
 			return [
 				ItemFactory::get(Item::FLINT, 0, 1)
 			];
 		}
 
-		return parent::getDrops($item);
+		return parent::getDropsForCompatibleTool($item);
 	}
 
 }

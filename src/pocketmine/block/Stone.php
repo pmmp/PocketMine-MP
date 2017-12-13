@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\item\Tool;
+use pocketmine\item\TieredTool;
 
 class Stone extends Solid{
 	public const NORMAL = 0;
@@ -47,7 +47,11 @@ class Stone extends Solid{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
+	}
+
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
 	}
 
 	public function getName() : string{
@@ -63,18 +67,14 @@ class Stone extends Solid{
 		return $names[$this->getVariant()] ?? "Unknown";
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
-			if($this->getDamage() === self::NORMAL){
-				return [
-					ItemFactory::get(Item::COBBLESTONE, $this->getDamage(), 1)
-				];
-			}
-
-			return parent::getDrops($item);
+	public function getDropsForCompatibleTool(Item $item) : array{
+		if($this->getDamage() === self::NORMAL){
+			return [
+				ItemFactory::get(Item::COBBLESTONE, $this->getDamage(), 1)
+			];
 		}
 
-		return [];
+		return parent::getDropsForCompatibleTool($item);
 	}
 
 }

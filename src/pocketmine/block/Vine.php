@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
@@ -201,14 +200,14 @@ class Vine extends Flowable{
 	}
 
 	public function getDrops(Item $item) : array{
-		if($item->isShears()){
-			return parent::getDrops($item);
+		if($item->getBlockToolType() & BlockToolType::TYPE_SHEARS){
+			return $this->getDropsForCompatibleTool($item);
 		}
 
 		return [];
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_AXE;
+		return BlockToolType::TYPE_AXE;
 	}
 }

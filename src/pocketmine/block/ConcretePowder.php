@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\ColorBlockMetaHelper;
-use pocketmine\item\Tool;
 use pocketmine\level\Level;
 
 class ConcretePowder extends Fallable{
@@ -44,7 +43,7 @@ class ConcretePowder extends Fallable{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_SHOVEL;
+		return BlockToolType::TYPE_SHOVEL;
 	}
 
 	public function onUpdate(int $type){
