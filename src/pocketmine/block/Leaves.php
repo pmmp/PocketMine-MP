@@ -174,21 +174,26 @@ class Leaves extends Transparent{
 	}
 
 	public function getDrops(Item $item) : array{
-		$drops = [];
-
-		$variantMeta = $this->getVariant();
-
 		if($item->isShears()){
-			$drops[] = ItemFactory::get($this->getItemId(), $variantMeta, 1);
-		}else{
-			if(mt_rand(1, 20) === 1){ //Saplings
-				$drops[] = ItemFactory::get(Item::SAPLING, $variantMeta, 1);
-			}
-			if($variantMeta === self::OAK and mt_rand(1, 200) === 1){ //Apples
-				$drops[] = ItemFactory::get(Item::APPLE, 0, 1);
-			}
+			return parent::getDrops($item);
+		}
+
+		$drops = [];
+		if(mt_rand(1, 20) === 1){ //Saplings
+			$drops[] = $this->getSaplingItem();
+		}
+		if($this->canDropApples() and mt_rand(1, 200) === 1){ //Apples
+			$drops[] = ItemFactory::get(Item::APPLE, 0, 1);
 		}
 
 		return $drops;
+	}
+
+	public function getSaplingItem() : Item{
+		return ItemFactory::get(Item::SAPLING, $this->getVariant());
+	}
+
+	public function canDropApples() : bool{
+		return $this->meta === self::OAK;
 	}
 }
