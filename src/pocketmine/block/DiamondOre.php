@@ -53,7 +53,7 @@ class DiamondOre extends Solid{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get(Item::DIAMOND, 0, 1)
+			ItemFactory::get(Item::DIAMOND)
 		];
 	}
 }

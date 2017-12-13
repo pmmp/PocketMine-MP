@@ -89,7 +89,7 @@ class TallGrass extends Flowable{
 
 		if(mt_rand(0, 15) === 0){
 			return [
-				ItemFactory::get(Item::WHEAT_SEEDS, 0, 1)
+				ItemFactory::get(Item::WHEAT_SEEDS)
 			];
 		}
 

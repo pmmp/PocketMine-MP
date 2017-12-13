@@ -204,11 +204,11 @@ class Bed extends Transparent{
 			$tile = $this->getLevel()->getTile($this);
 			if($tile instanceof TileBed){
 				return [
-					ItemFactory::get($this->getItemId(), $tile->getColor(), 1)
+					ItemFactory::get($this->getItemId(), $tile->getColor())
 				];
 			}else{
 				return [
-					ItemFactory::get($this->getItemId(), 14, 1) //Red
+					ItemFactory::get($this->getItemId(), 14) //Red
 				];
 			}
 		}

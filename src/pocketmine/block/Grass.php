@@ -54,7 +54,7 @@ class Grass extends Solid{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get(Item::DIRT, 0, 1)
+			ItemFactory::get(Item::DIRT)
 		];
 	}
 

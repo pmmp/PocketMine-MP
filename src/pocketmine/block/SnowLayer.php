@@ -93,7 +93,7 @@ class SnowLayer extends Flowable{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get(Item::SNOWBALL, 0, 1) //TODO: check layer count
+			ItemFactory::get(Item::SNOWBALL) //TODO: check layer count
 		];
 	}
 }

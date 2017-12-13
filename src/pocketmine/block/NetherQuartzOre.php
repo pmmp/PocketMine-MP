@@ -53,7 +53,7 @@ class NetherQuartzOre extends Solid{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get(Item::QUARTZ, 0, 1)
+			ItemFactory::get(Item::QUARTZ)
 		];
 	}
 

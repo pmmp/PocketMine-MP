@@ -448,7 +448,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get($this->getItemId(), $this->getVariant(), 1)
+			ItemFactory::get($this->getItemId(), $this->getVariant())
 		];
 	}
 

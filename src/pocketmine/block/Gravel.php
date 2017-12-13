@@ -49,7 +49,7 @@ class Gravel extends Fallable{
 	public function getDropsForCompatibleTool(Item $item) : array{
 		if(mt_rand(1, 10) === 1){
 			return [
-				ItemFactory::get(Item::FLINT, 0, 1)
+				ItemFactory::get(Item::FLINT)
 			];
 		}
 

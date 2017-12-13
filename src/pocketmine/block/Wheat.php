@@ -41,12 +41,12 @@ class Wheat extends Crops{
 	public function getDropsForCompatibleTool(Item $item) : array{
 		if($this->meta >= 0x07){
 			return [
-				ItemFactory::get(Item::WHEAT, 0, 1),
+				ItemFactory::get(Item::WHEAT),
 				ItemFactory::get(Item::WHEAT_SEEDS, 0, mt_rand(0, 3))
 			];
 		}else{
 			return [
-				ItemFactory::get(Item::WHEAT_SEEDS, 0, 1)
+				ItemFactory::get(Item::WHEAT_SEEDS)
 			];
 		}
 	}

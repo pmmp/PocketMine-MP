@@ -75,7 +75,7 @@ class Skull extends Flowable{
 		$tile = $this->level->getTile($this);
 		if($tile instanceof TileSkull){
 			return [
-				ItemFactory::get(Item::SKULL, $tile->getType(), 1)
+				ItemFactory::get(Item::SKULL, $tile->getType())
 			];
 		}
 

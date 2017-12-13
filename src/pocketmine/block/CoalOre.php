@@ -53,7 +53,7 @@ class CoalOre extends Solid{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get(Item::COAL, 0, 1)
+			ItemFactory::get(Item::COAL)
 		];
 	}
 

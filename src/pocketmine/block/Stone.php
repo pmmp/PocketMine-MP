@@ -70,7 +70,7 @@ class Stone extends Solid{
 	public function getDropsForCompatibleTool(Item $item) : array{
 		if($this->getDamage() === self::NORMAL){
 			return [
-				ItemFactory::get(Item::COBBLESTONE, $this->getDamage(), 1)
+				ItemFactory::get(Item::COBBLESTONE, $this->getDamage())
 			];
 		}
 

@@ -179,7 +179,7 @@ class Leaves extends Transparent{
 				$drops[] = $this->getSaplingItem();
 			}
 			if($this->canDropApples() and mt_rand(1, 200) === 1){ //Apples
-				$drops[] = ItemFactory::get(Item::APPLE, 0, 1);
+				$drops[] = ItemFactory::get(Item::APPLE);
 			}
 
 			return $drops;
