@@ -1456,8 +1456,13 @@ class Level implements ChunkManager, Metadatable{
 			$index = Level::blockHash($x, $y, $z);
 			if($cached and isset($this->blockCache[$index])){
 				return $this->blockCache[$index];
-			}elseif(isset($this->chunks[$chunkIndex = Level::chunkHash($x >> 4, $z >> 4)])){
-				$fullState = $this->chunks[$chunkIndex]->getFullBlock($x & 0x0f, $y, $z & 0x0f);
+			}
+
+			$chunk = $this->chunks[$chunkIndex = Level::chunkHash($x >> 4, $z >> 4)] ?? null;
+			if($chunk !== null){
+				$fullState = $chunk->getFullBlock($x & 0x0f, $y, $z & 0x0f);
+			}else{
+				$addToCache = false;
 			}
 		}
 
