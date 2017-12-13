@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
+
 class EndStone extends Solid{
 
 	protected $id = self::END_STONE;
@@ -37,6 +39,10 @@ class EndStone extends Solid{
 
 	public function getToolType() : int{
 		return BlockToolType::TYPE_PICKAXE;
+	}
+
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
 	}
 
 	public function getHardness() : float{

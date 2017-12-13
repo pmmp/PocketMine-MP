@@ -35,5 +35,13 @@ class CocoaBlock extends Transparent{
 		return "Cocoa Block";
 	}
 
+	public function getHardness() : float{
+		return 0.2;
+	}
+
+	public function getToolType() : int{
+		return BlockToolType::TYPE_AXE;
+	}
+
 	//TODO
 }
