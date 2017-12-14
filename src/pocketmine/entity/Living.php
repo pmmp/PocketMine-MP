@@ -286,7 +286,7 @@ abstract class Living extends Entity implements Damageable{
 				$level = $effect->getEffectLevel();
 				$color = $effect->getColor();
 				for($i = 0; $i < $level; ++$i){
-					$colors[] = clone $color;
+					$colors[] = $color;
 				}
 
 				if(!$effect->isAmbient()){
