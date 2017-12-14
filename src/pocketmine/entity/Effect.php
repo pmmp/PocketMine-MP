@@ -259,7 +259,10 @@ class Effect{
 	}
 
 	/**
-	 * Returns whether the effect is ambient.
+	 * Returns whether the effect originated from the ambient environment.
+	 * Ambient effects can originate from things such as a Beacon's area of effect radius.
+	 * If this flag is set, the amount of visible particles will be reduced by a factor of 5.
+	 *
 	 * @return bool
 	 */
 	public function isAmbient() : bool{
