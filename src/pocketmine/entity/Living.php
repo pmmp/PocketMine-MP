@@ -95,7 +95,7 @@ abstract class Living extends Entity implements Damageable{
 					continue;
 				}
 
-				$effect->setAmplifier($amplifier)->setDuration($e->getInt("Duration"))->setVisible($e->getByte("ShowParticles", 1) > 0);
+				$effect->setAmplifier($amplifier)->setDuration($e->getInt("Duration"))->setVisible($e->getByte("ShowParticles", 1) > 0)->setAmbient($e->getByte("Ambient", 0) !== 0);
 
 				$this->addEffect($effect);
 			}
@@ -147,7 +147,7 @@ abstract class Living extends Entity implements Damageable{
 					new ByteTag("Id", $effect->getId()),
 					new ByteTag("Amplifier", Binary::signByte($effect->getAmplifier())),
 					new IntTag("Duration", $effect->getDuration()),
-					new ByteTag("Ambient", 0),
+					new ByteTag("Ambient", $effect->isAmbient() ? 1 : 0),
 					new ByteTag("ShowParticles", $effect->isVisible() ? 1 : 0)
 				]);
 			}
