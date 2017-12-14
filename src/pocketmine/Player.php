@@ -2409,9 +2409,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						if(!$this->canInteract($target, 8)){
 							$cancelled = true;
 						}elseif($target instanceof Player){
-							if(($target->getGamemode() & 0x01) > 0){
-								return true;
-							}elseif($this->server->getConfigBool("pvp") !== true){
+							if($this->server->getConfigBool("pvp") !== true){
 								$cancelled = true;
 							}
 
