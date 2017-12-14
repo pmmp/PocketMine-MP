@@ -2399,9 +2399,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						}
 
 						$cancelled = false;
-						if($target instanceof Player and $this->server->getConfigBool("pvp", true) === false){
-							$cancelled = true;
-						}
 
 						$heldItem = $this->inventory->getItemInHand();
 
