@@ -2402,26 +2402,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 						$heldItem = $this->inventory->getItemInHand();
 
-						$damage = [
-							EntityDamageEvent::MODIFIER_BASE => $heldItem->getAttackPoints()
-						];
-
 						if(!$this->canInteract($target, 8)){
 							$cancelled = true;
 						}elseif($target instanceof Player){
 							if($this->server->getConfigBool("pvp") !== true){
 								$cancelled = true;
 							}
-
-							$points = 0;
-							foreach($target->getInventory()->getArmorContents() as $armorItem){
-								$points += $armorItem->getDefensePoints();
-							}
-
-							$damage[EntityDamageEvent::MODIFIER_ARMOR] = -($damage[EntityDamageEvent::MODIFIER_BASE] * $points * 0.04);
 						}
 
-						$ev = new EntityDamageByEntityEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $damage);
+						$ev = new EntityDamageByEntityEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $heldItem->getAttackPoints());
 						if($cancelled){
 							$ev->setCancelled();
 						}
@@ -3587,6 +3576,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		return false; //never flag players for despawn
+	}
+
+	public function getArmorPoints() : int{
+		$total = 0;
+		foreach($this->inventory->getArmorContents() as $item){
+			$total += $item->getDefensePoints();
+		}
+
+		return $total;
 	}
 
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{

@@ -349,16 +349,34 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	/**
+	 * Returns how many armour points this mob has. Armour points provide a percentage reduction to damage.
+	 * For mobs which can wear armour, this should return the sum total of the armour points provided by their
+	 * equipment.
+	 *
+	 * @return int
+	 */
+	public function getArmorPoints() : int{
+		return 0;
+	}
+
+	/**
 	 * Called prior to EntityDamageEvent execution to apply modifications to the event's damage, such as reduction due
 	 * to effects or armour.
 	 *
 	 * @param EntityDamageEvent $source
 	 */
 	public function applyDamageModifiers(EntityDamageEvent $source) : void{
+		if($source->canBeReducedByArmor()){
+			//MCPE uses the same system as PC did pre-1.9
+			$source->setDamage(-$source->getFinalDamage() * $this->getArmorPoints() * 0.04, EntityDamageEvent::MODIFIER_ARMOR);
+		}
+
 		$cause = $source->getCause();
 		if($this->hasEffect(Effect::DAMAGE_RESISTANCE) and $cause !== EntityDamageEvent::CAUSE_VOID and $cause !== EntityDamageEvent::CAUSE_SUICIDE){
 			$source->setDamage(-($source->getFinalDamage() * 0.20 * $this->getEffect(Effect::DAMAGE_RESISTANCE)->getEffectLevel()), EntityDamageEvent::MODIFIER_RESISTANCE);
 		}
+
+		//TODO: armour protection enchantments should be checked here (after effect damage reduction)
 
 		$source->setDamage(-min($this->getAbsorption(), $source->getFinalDamage()), EntityDamageEvent::MODIFIER_ABSORPTION);
 	}

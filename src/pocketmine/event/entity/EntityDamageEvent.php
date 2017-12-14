@@ -136,4 +136,25 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 		return array_sum($this->modifiers);
 	}
 
+	/**
+	 * Returns whether an entity can use armour points to reduce this type of damage.
+	 * @return bool
+	 */
+	public function canBeReducedByArmor() : bool{
+		switch($this->cause){
+			case self::CAUSE_FIRE_TICK:
+			case self::CAUSE_SUFFOCATION:
+			case self::CAUSE_DROWNING:
+			case self::CAUSE_STARVATION:
+			case self::CAUSE_FALL:
+			case self::CAUSE_VOID:
+			case self::CAUSE_MAGIC:
+			case self::CAUSE_SUICIDE:
+				//TODO: lightning
+				return false;
+
+		}
+
+		return true;
+	}
 }
