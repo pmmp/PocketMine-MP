@@ -25,12 +25,11 @@ namespace pocketmine\event\entity;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
-use pocketmine\event\Cancellable;
 
 /**
  * Called when an Entity, excluding players, changes a block directly
  */
-class EntityBlockChangeEvent extends EntityEvent implements Cancellable{
+class EntityBlockChangeEvent extends EntityEvent{
 	public static $handlerList = null;
 
 	/** @var Block */
@@ -58,4 +57,7 @@ class EntityBlockChangeEvent extends EntityEvent implements Cancellable{
 		return $this->to;
 	}
 
+	public function isCancellable() : bool{
+		return true;
+	}
 }

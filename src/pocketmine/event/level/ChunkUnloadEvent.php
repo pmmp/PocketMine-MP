@@ -23,11 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\event\level;
 
-use pocketmine\event\Cancellable;
 
 /**
  * Called when a Chunk is unloaded
  */
-class ChunkUnloadEvent extends ChunkEvent implements Cancellable{
+class ChunkUnloadEvent extends ChunkEvent{
 	public static $handlerList = null;
+
+	public function isCancellable() : bool{
+		return true;
+	}
 }

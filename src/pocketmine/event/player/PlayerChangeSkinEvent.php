@@ -24,13 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\event\player;
 
 use pocketmine\entity\Skin;
-use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
 /**
  * Called when a player changes their skin in-game.
  */
-class PlayerChangeSkinEvent extends PlayerEvent implements Cancellable{
+class PlayerChangeSkinEvent extends PlayerEvent{
 	public static $handlerList = null;
 
 	/** @var Skin */
@@ -75,4 +74,7 @@ class PlayerChangeSkinEvent extends PlayerEvent implements Cancellable{
 		$this->newSkin = $skin;
 	}
 
+	public function isCancellable() : bool{
+		return true;
+	}
 }

@@ -24,10 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\event\inventory;
 
 use pocketmine\entity\projectile\Arrow;
-use pocketmine\event\Cancellable;
 use pocketmine\inventory\Inventory;
 
-class InventoryPickupArrowEvent extends InventoryEvent implements Cancellable{
+class InventoryPickupArrowEvent extends InventoryEvent{
 	public static $handlerList = null;
 
 	/** @var Arrow */
@@ -49,4 +48,7 @@ class InventoryPickupArrowEvent extends InventoryEvent implements Cancellable{
 		return $this->arrow;
 	}
 
+	public function isCancellable() : bool{
+		return true;
+	}
 }

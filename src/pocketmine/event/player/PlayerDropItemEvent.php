@@ -23,14 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\event\Cancellable;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
 /**
  * Called when a player tries to drop an item from its hotbar
  */
-class PlayerDropItemEvent extends PlayerEvent implements Cancellable{
+class PlayerDropItemEvent extends PlayerEvent{
 	public static $handlerList = null;
 
 	/** @var Item */
@@ -52,4 +51,7 @@ class PlayerDropItemEvent extends PlayerEvent implements Cancellable{
 		return $this->drop;
 	}
 
+	public function isCancellable() : bool{
+		return true;
+	}
 }

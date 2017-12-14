@@ -25,13 +25,12 @@ namespace pocketmine\event\entity;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
-use pocketmine\event\Cancellable;
 use pocketmine\level\Position;
 
 /**
  * Called when a entity explodes
  */
-class EntityExplodeEvent extends EntityEvent implements Cancellable{
+class EntityExplodeEvent extends EntityEvent{
 	public static $handlerList = null;
 
 	/** @var Position */
@@ -93,4 +92,7 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 		$this->yield = $yield;
 	}
 
+	public function isCancellable() : bool{
+		return true;
+	}
 }

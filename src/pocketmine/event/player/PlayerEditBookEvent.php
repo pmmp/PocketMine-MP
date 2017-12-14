@@ -23,11 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\event\Cancellable;
 use pocketmine\item\WritableBook;
 use pocketmine\Player;
 
-class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
+class PlayerEditBookEvent extends PlayerEvent{
 	public static $handlerList = null;
 
 	public const ACTION_REPLACE_PAGE = 0;
@@ -97,5 +96,9 @@ class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
 	 */
 	public function getModifiedPages() : array{
 		return $this->modifiedPages;
+	}
+
+	public function isCancellable() : bool{
+		return true;
 	}
 }

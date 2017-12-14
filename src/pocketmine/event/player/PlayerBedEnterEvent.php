@@ -24,10 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\event\player;
 
 use pocketmine\block\Block;
-use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
-class PlayerBedEnterEvent extends PlayerEvent implements Cancellable{
+class PlayerBedEnterEvent extends PlayerEvent{
 	public static $handlerList = null;
 
 	/** @var Block */
@@ -45,4 +44,7 @@ class PlayerBedEnterEvent extends PlayerEvent implements Cancellable{
 		return $this->bed;
 	}
 
+	public function isCancellable() : bool{
+		return true;
+	}
 }

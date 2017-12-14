@@ -24,14 +24,13 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player\cheat;
 
-use pocketmine\event\Cancellable;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 /**
  * Called when a player attempts to perform movement cheats such as clipping through blocks.
  */
-class PlayerIllegalMoveEvent extends PlayerCheatEvent implements Cancellable{
+class PlayerIllegalMoveEvent extends PlayerCheatEvent{
 	public static $handlerList = null;
 
 	/** @var Vector3 */
@@ -73,5 +72,9 @@ class PlayerIllegalMoveEvent extends PlayerCheatEvent implements Cancellable{
 	 */
 	public function getExpectedPosition() : Vector3{
 		return $this->expectedPosition;
+	}
+
+	public function isCancellable() : bool{
+		return true;
 	}
 }

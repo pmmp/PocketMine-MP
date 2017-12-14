@@ -23,11 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\event\level;
 
-use pocketmine\event\Cancellable;
 
 /**
  * Called when a Level is unloaded
  */
-class LevelUnloadEvent extends LevelEvent implements Cancellable{
+class LevelUnloadEvent extends LevelEvent{
 	public static $handlerList = null;
+
+	public function isCancellable() : bool{
+		return true;
+	}
 }

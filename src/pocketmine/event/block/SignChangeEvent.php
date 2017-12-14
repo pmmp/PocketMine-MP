@@ -24,13 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\event\block;
 
 use pocketmine\block\Block;
-use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
 /**
  * Called when a sign is changed by a player.
  */
-class SignChangeEvent extends BlockEvent implements Cancellable{
+class SignChangeEvent extends BlockEvent{
 	public static $handlerList = null;
 
 	/** @var Player */
@@ -101,5 +100,9 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 			throw new \InvalidArgumentException("Index must be in the range 0-3!");
 		}
 		$this->lines[$index] = $line;
+	}
+
+	public function isCancellable() : bool{
+		return true;
 	}
 }

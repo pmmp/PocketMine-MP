@@ -23,13 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
 /**
  * Called when a player does an animation
  */
-class PlayerAnimationEvent extends PlayerEvent implements Cancellable{
+class PlayerAnimationEvent extends PlayerEvent{
 	public static $handlerList = null;
 
 	/**
@@ -57,4 +56,7 @@ class PlayerAnimationEvent extends PlayerEvent implements Cancellable{
 		return $this->animationType;
 	}
 
+	public function isCancellable() : bool{
+		return true;
+	}
 }

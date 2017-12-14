@@ -24,12 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\event\entity;
 
 use pocketmine\entity\Entity;
-use pocketmine\event\Cancellable;
 
 /**
  * Called when an entity takes damage.
  */
-class EntityDamageEvent extends EntityEvent implements Cancellable{
+class EntityDamageEvent extends EntityEvent{
 	public static $handlerList = null;
 
 	public const MODIFIER_BASE = 0;
@@ -136,4 +135,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 		return array_sum($this->modifiers);
 	}
 
+	public function isCancellable() : bool{
+		return true;
+	}
 }

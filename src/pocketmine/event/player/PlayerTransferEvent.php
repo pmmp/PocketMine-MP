@@ -23,10 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
-class PlayerTransferEvent extends PlayerEvent implements Cancellable{
+class PlayerTransferEvent extends PlayerEvent{
 	public static $handlerList = null;
 
 	/** @var string */
@@ -89,5 +88,9 @@ class PlayerTransferEvent extends PlayerEvent implements Cancellable{
 	 */
 	public function setMessage(string $message){
 		$this->message = $message;
+	}
+
+	public function isCancellable() : bool{
+		return true;
 	}
 }

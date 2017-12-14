@@ -24,10 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\event\entity;
 
 use pocketmine\entity\Entity;
-use pocketmine\event\Cancellable;
 use pocketmine\level\Level;
 
-class EntityLevelChangeEvent extends EntityEvent implements Cancellable{
+class EntityLevelChangeEvent extends EntityEvent{
 	public static $handlerList = null;
 
 	/** @var Level */
@@ -47,5 +46,9 @@ class EntityLevelChangeEvent extends EntityEvent implements Cancellable{
 
 	public function getTarget() : Level{
 		return $this->targetLevel;
+	}
+
+	public function isCancellable() : bool{
+		return true;
 	}
 }
