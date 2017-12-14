@@ -28,6 +28,7 @@ use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\Player;
+use pocketmine\utils\Color;
 use pocketmine\utils\Config;
 
 class Effect{
@@ -64,16 +65,16 @@ class Effect{
 		$config = new Config(\pocketmine\RESOURCE_PATH . "effects.json", Config::JSON, []);
 
 		foreach($config->getAll() as $name => $data){
-			$color = hexdec(substr($data["color"], 3));
+			$color = hexdec(substr($data["color"], 1));
+			$a = ($color >> 24) & 0xff;
 			$r = ($color >> 16) & 0xff;
 			$g = ($color >> 8) & 0xff;
 			$b = $color & 0xff;
+
 			self::registerEffect($name, new Effect(
 				$data["id"],
 				"%potion." . $data["name"],
-				$r,
-				$g,
-				$b,
+				new Color($r, $g, $b, $a),
 				$data["isBad"] ?? false,
 				$data["default_duration"] ?? 300 * 20,
 				$data["has_bubbles"] ?? true
@@ -122,7 +123,7 @@ class Effect{
 	protected $duration;
  	/** @var int */
 	protected $amplifier = 0;
-	/** @var int[] */
+	/** @var Color */
 	protected $color;
 	/** @var bool */
 	protected $visible = true;
@@ -136,20 +137,18 @@ class Effect{
 	protected $hasBubbles = true;
 
 	/**
-	 * @param int    $id              Effect ID as per Minecraft PE
-	 * @param string $name            Translation key used for effect name
-	 * @param int    $r               0-255, red balance of potion particle colour
-	 * @param int    $g               0-255, green balance of potion particle colour
-	 * @param int    $b               0-255, blue balance of potion particle colour
-	 * @param bool   $isBad           Whether the effect is harmful
+	 * @param int    $id Effect ID as per Minecraft PE
+	 * @param string $name Translation key used for effect name
+	 * @param Color  $color
+	 * @param bool   $isBad Whether the effect is harmful
 	 * @param int    $defaultDuration Duration in ticks the effect will last for by default if applied without a duration.
-	 * @param bool   $hasBubbles      Whether the effect has potion bubbles. Some do not (e.g. Instant Damage has its own particles instead of bubbles)
+	 * @param bool   $hasBubbles Whether the effect has potion bubbles. Some do not (e.g. Instant Damage has its own particles instead of bubbles)
 	 */
-	public function __construct(int $id, string $name, int $r, int $g, int $b, bool $isBad = false, int $defaultDuration = 300 * 20, bool $hasBubbles = true){
+	public function __construct(int $id, string $name, Color $color, bool $isBad = false, int $defaultDuration = 300 * 20, bool $hasBubbles = true){
 		$this->id = $id;
 		$this->name = $name;
 		$this->bad = $isBad;
-		$this->setColor($r, $g, $b);
+		$this->color = $color;
 		$this->defaultDuration = $defaultDuration;
 		$this->duration = $defaultDuration;
 		$this->hasBubbles = $hasBubbles;
@@ -380,22 +379,20 @@ class Effect{
 	}
 
 	/**
-	 * Returns an RGB color array of this effect's color.
-	 * @return int[]
+	 * Returns a Color object representing this effect's particle colour.
+	 * @return Color
 	 */
-	public function getColor() : array{
-		return [$this->color >> 16, ($this->color >> 8) & 0xff, $this->color & 0xff];
+	public function getColor() : Color{
+		return clone $this->color;
 	}
 
 	/**
 	 * Sets the color of this effect.
 	 *
-	 * @param int $r
-	 * @param int $g
-	 * @param int $b
+	 * @param Color $color
 	 */
-	public function setColor(int $r, int $g, int $b){
-		$this->color = (($r & 0xff) << 16) + (($g & 0xff) << 8) + ($b & 0xff);
+	public function setColor(Color $color){
+		$this->color = clone $color;
 	}
 
 	/**
@@ -489,5 +486,9 @@ class Effect{
 				$entity->setAbsorption(0);
 				break;
 		}
+	}
+
+	public function __clone(){
+		$this->color = clone $this->color;
 	}
 }

@@ -44,6 +44,7 @@ use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\Player;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BlockIterator;
+use pocketmine\utils\Color;
 
 abstract class Living extends Entity implements Damageable{
 
@@ -277,29 +278,25 @@ abstract class Living extends Entity implements Damageable{
 	 * Recalculates the mob's potion bubbles colour based on the active effects.
 	 */
 	protected function recalculateEffectColor(){
-		//TODO: add transparency values
-		$color = [0, 0, 0]; //RGB
-		$count = 0;
+		/** @var Color[] $colors */
+		$colors = [];
 		$ambient = true;
 		foreach($this->effects as $effect){
 			if($effect->isVisible() and $effect->hasBubbles()){
-				$c = $effect->getColor();
-				$color[0] += $c[0] * $effect->getEffectLevel();
-				$color[1] += $c[1] * $effect->getEffectLevel();
-				$color[2] += $c[2] * $effect->getEffectLevel();
-				$count += $effect->getEffectLevel();
+				$level = $effect->getEffectLevel();
+				$color = $effect->getColor();
+				for($i = 0; $i < $level; ++$i){
+					$colors[] = $color;
+				}
+
 				if(!$effect->isAmbient()){
 					$ambient = false;
 				}
 			}
 		}
 
-		if($count > 0){
-			$r = ($color[0] / $count) & 0xff;
-			$g = ($color[1] / $count) & 0xff;
-			$b = ($color[2] / $count) & 0xff;
-
-			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, 0xff000000 | ($r << 16) | ($g << 8) | $b);
+		if(!empty($colors)){
+			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, Color::mix(...$colors)->toARGB());
 			$this->setDataProperty(Entity::DATA_POTION_AMBIENT, Entity::DATA_TYPE_BYTE, $ambient ? 1 : 0);
 		}else{
 			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, 0);
