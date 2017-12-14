@@ -348,6 +348,31 @@ abstract class Living extends Entity implements Damageable{
 		}
 	}
 
+	/**
+	 * Called prior to EntityDamageEvent execution to apply modifications to the event's damage, such as reduction due
+	 * to effects or armour.
+	 *
+	 * @param EntityDamageEvent $source
+	 */
+	public function applyDamageModifiers(EntityDamageEvent $source) : void{
+		$source->setDamage(-min($this->getAbsorption(), $source->getFinalDamage()), EntityDamageEvent::MODIFIER_ABSORPTION);
+
+		$cause = $source->getCause();
+		if($this->hasEffect(Effect::DAMAGE_RESISTANCE) and $cause !== EntityDamageEvent::CAUSE_VOID and $cause !== EntityDamageEvent::CAUSE_SUICIDE){
+			$source->setDamage(-($source->getFinalDamage() * 0.20 * $this->getEffect(Effect::DAMAGE_RESISTANCE)->getEffectLevel()), EntityDamageEvent::MODIFIER_RESISTANCE);
+		}
+	}
+
+	/**
+	 * Called after EntityDamageEvent execution to apply post-hurt effects, such as reducing absorption or modifying
+	 * armour durability.
+	 *
+	 * @param EntityDamageEvent $source
+	 */
+	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
+		$this->setAbsorption(max(0, $this->getAbsorption() + $source->getDamage(EntityDamageEvent::MODIFIER_ABSORPTION)));
+	}
+
 	public function attack(EntityDamageEvent $source){
 		if($this->attackTime > 0 or $this->noDamageTicks > 0){
 			$lastCause = $this->getLastDamageCause();
@@ -365,11 +390,7 @@ abstract class Living extends Entity implements Damageable{
 			$source->setCancelled();
 		}
 
-		$source->setDamage(-min($this->getAbsorption(), $source->getFinalDamage()), EntityDamageEvent::MODIFIER_ABSORPTION);
-
-		if($this->hasEffect(Effect::DAMAGE_RESISTANCE)){
-			$source->setDamage(-($source->getFinalDamage() * 0.20 * $this->getEffect(Effect::DAMAGE_RESISTANCE)->getEffectLevel()), EntityDamageEvent::MODIFIER_RESISTANCE);
-		}
+		$this->applyDamageModifiers($source);
 
 		parent::attack($source);
 
@@ -394,7 +415,7 @@ abstract class Living extends Entity implements Damageable{
 			}
 		}
 
-		$this->setAbsorption(max(0, $this->getAbsorption() + $source->getDamage(EntityDamageEvent::MODIFIER_ABSORPTION)));
+		$this->applyPostDamageEffects($source);
 
 		if($this->isAlive()){
 			$this->doHitAnimation();

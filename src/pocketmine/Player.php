@@ -3589,6 +3589,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return false; //never flag players for despawn
 	}
 
+	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
+		parent::applyPostDamageEffects($source);
+
+		$this->exhaust(0.3, PlayerExhaustEvent::CAUSE_DAMAGE);
+	}
+
 	public function attack(EntityDamageEvent $source){
 		if(!$this->isAlive()){
 			return;
@@ -3604,12 +3610,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		parent::attack($source);
-
-		if($source->isCancelled()){
-			return;
-		}
-
-		$this->exhaust(0.3, PlayerExhaustEvent::CAUSE_DAMAGE);
 	}
 
 	protected function doHitAnimation() : void{
