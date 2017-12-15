@@ -173,19 +173,19 @@ class Leaves extends Transparent{
 	}
 
 	public function getDrops(Item $item) : array{
-		if(!$this->isCompatibleWithTool($item)){
-			$drops = [];
-			if(mt_rand(1, 20) === 1){ //Saplings
-				$drops[] = $this->getSaplingItem();
-			}
-			if($this->canDropApples() and mt_rand(1, 200) === 1){ //Apples
-				$drops[] = ItemFactory::get(Item::APPLE);
-			}
-
-			return $drops;
+		if($item->getBlockToolType() & BlockToolType::TYPE_SHEARS){
+			return $this->getDropsForCompatibleTool($item);
 		}
 
-		return parent::getDrops($item);
+		$drops = [];
+		if(mt_rand(1, 20) === 1){ //Saplings
+			$drops[] = $this->getSaplingItem();
+		}
+		if($this->canDropApples() and mt_rand(1, 200) === 1){ //Apples
+			$drops[] = ItemFactory::get(Item::APPLE);
+		}
+
+		return $drops;
 	}
 
 	public function getSaplingItem() : Item{
