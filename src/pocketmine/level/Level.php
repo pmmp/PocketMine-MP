@@ -2400,9 +2400,6 @@ class Level implements ChunkManager, Metadatable{
 		$oldChunk = $this->getChunk($chunkX, $chunkZ, false);
 		if($unload and $oldChunk !== null){
 			$this->unloadChunk($chunkX, $chunkZ, false, false);
-
-			$this->provider->setChunk($chunkX, $chunkZ, $chunk);
-			$this->chunks[$index] = $chunk;
 		}else{
 			$oldEntities = $oldChunk !== null ? $oldChunk->getEntities() : [];
 			$oldTiles = $oldChunk !== null ? $oldChunk->getTiles() : [];
@@ -2418,10 +2415,10 @@ class Level implements ChunkManager, Metadatable{
 				$oldChunk->removeTile($tile);
 				$tile->chunk = $chunk;
 			}
-
-			$this->provider->setChunk($chunkX, $chunkZ, $chunk);
-			$this->chunks[$index] = $chunk;
 		}
+
+		$this->provider->setChunk($chunkX, $chunkZ, $chunk);
+		$this->chunks[$index] = $chunk;
 
 		unset($this->chunkCache[$index]);
 		$chunk->setChanged();
