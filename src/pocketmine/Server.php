@@ -129,6 +129,9 @@ class Server{
 	/** @var BanList */
 	private $banByIP = null;
 
+	/** @var BanList */
+	private $banByUUID = null;
+
 	/** @var Config */
 	private $operators = null;
 
@@ -1312,6 +1315,13 @@ class Server{
 	}
 
 	/**
+	 * @return BanList
+	 */
+	public function getUUIDBans(){
+		return $this->banByUUID;
+	}
+
+	/**
 	 * @param string $name
 	 */
 	public function addOp(string $name){
@@ -1578,6 +1588,9 @@ class Server{
 			@touch($this->dataPath . "banned-ips.txt");
 			$this->banByIP = new BanList($this->dataPath . "banned-ips.txt");
 			$this->banByIP->load();
+			@touch($this->dataPath . "banned-uuids.txt");
+			$this->banByUUID = new BanList($this->dataPath . "banned-uuids.txt");
+			$this->banByUUID->load();
 
 			$this->maxPlayers = $this->getConfigInt("max-players", 20);
 			$this->setAutoSave($this->getConfigBool("auto-save", true));
@@ -2008,8 +2021,9 @@ class Server{
 			$this->setConfigInt("difficulty", Level::DIFFICULTY_HARD);
 		}
 
-		$this->banByIP->load();
 		$this->banByName->load();
+		$this->banByIP->load();
+		$this->banByUUID->load();
 		$this->reloadWhitelist();
 		$this->operators->reload();
 

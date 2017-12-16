@@ -27,6 +27,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
+use pocketmine\utils\UUID;
 
 class PardonCommand extends VanillaCommand{
 
@@ -40,15 +41,33 @@ class PardonCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
+		if(!$this->testPermission($sender))
 			return true;
-		}
 
-		if(count($args) !== 1){
+		if(count($args) !== 1)
 			throw new InvalidCommandSyntaxException();
-		}
 
 		$sender->getServer()->getNameBans()->remove($args[0]);
+
+		$mapFilePath = $sender->getServer()->getDataPath() . "banned-player-uuid-map.yml";
+
+		if (file_exists($mapFilePath)){
+			$mapFileData = yaml_parse_file($mapFilePath);
+
+			if (isset($mapFileData[strtolower($args[0])])){
+				try {
+					$uuid = UUID::fromString($mapFileData[strtolower($args[0])]);
+
+					$sender->getServer()->getUUIDBans()->remove($uuid->toString());
+				}catch(\Exception $exception){
+					$sender->getServer()->getLogger()->debug("UUID for pardoned player found, but invalid");
+				}
+
+				unset($mapFileData[$args[0]]);
+			}
+
+			yaml_emit_file($mapFilePath, $mapFileData);
+		}
 
 		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.unban.success", [$args[0]]));
 

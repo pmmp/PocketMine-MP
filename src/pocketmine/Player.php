@@ -330,7 +330,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function isBanned() : bool{
-		return $this->server->getNameBans()->isBanned($this->iusername);
+		return $this->server->getNameBans()->isBanned($this->iusername) or $this->server->getUUIDBans()->isBanned($this->uuid->toString());
 	}
 
 	public function setBanned(bool $value){
@@ -339,6 +339,16 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->kick("You have been banned");
 		}else{
 			$this->server->getNameBans()->remove($this->getName());
+		}
+	}
+
+	// Does nothing if the player is not authenticated
+	public function setUUIDBanned(bool $value){
+		if($value === true){
+			$this->server->getUUIDBans()->addBan($this->getUniqueId(), null, null, null);
+			$this->kick("You have been banned");
+		}else{
+			$this->server->getUUIDBans()->remove($this->getUniqueId());
 		}
 	}
 

@@ -28,6 +28,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 use pocketmine\Player;
+use pocketmine\utils\UUID;
 
 class BanCommand extends VanillaCommand{
 
@@ -56,6 +57,19 @@ class BanCommand extends VanillaCommand{
 
 		if(($player = $sender->getServer()->getPlayerExact($name)) instanceof Player){
 			$player->kick($reason !== "" ? "Banned by admin. Reason: " . $reason : "Banned by admin.");
+
+			$sender->getServer()->getUUIDBans()->addBan($player->getUniqueId()->toString(), $reason, null, $sender->getName());
+
+			$mapFilePath = $sender->getServer()->getDataPath() . "banned-player-uuid-map.yml";
+
+			$mapFileData = [];
+
+			if (file_exists($mapFilePath)) {
+				$mapFileData = yaml_parse_file($mapFilePath);
+			}
+
+			$mapFileData[strtolower($name)] = $player->getUniqueId()->toString();
+			yaml_emit_file($mapFilePath, $mapFileData);
 		}
 
 		Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.ban.success", [$player !== null ? $player->getName() : $name]));
