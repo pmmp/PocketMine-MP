@@ -369,9 +369,9 @@ class Item implements ItemIds, \JsonSerializable{
 		}else{
 			/** @var CompoundTag $entry */
 			foreach($ench as $k => $entry){
-				if($entry->getShort("id") === $enchantment->getType()->getId()){
+				if($entry->getShort("id") === $enchantment->getId()){
 					$ench[$k] = new CompoundTag("", [
-						new ShortTag("id", $enchantment->getType()->getId()),
+						new ShortTag("id", $enchantment->getId()),
 						new ShortTag("lvl", $enchantment->getLevel())
 					]);
 					$found = true;
@@ -382,7 +382,7 @@ class Item implements ItemIds, \JsonSerializable{
 
 		if(!$found){
 			$ench[count($ench)] = new CompoundTag("", [
-				new ShortTag("id", $enchantment->getType()->getId()),
+				new ShortTag("id", $enchantment->getId()),
 				new ShortTag("lvl", $enchantment->getLevel())
 			]);
 		}
