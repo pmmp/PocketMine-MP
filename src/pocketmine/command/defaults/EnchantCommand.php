@@ -27,6 +27,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\utils\TextFormat;
 
 class EnchantCommand extends VanillaCommand{
@@ -74,9 +75,7 @@ class EnchantCommand extends VanillaCommand{
 			return true;
 		}
 
-		$enchantment->setLevel((int) ($args[2] ?? 1));
-
-		$item->addEnchantment($enchantment);
+		$item->addEnchantment(new EnchantmentInstance($enchantment, (int) ($args[2] ?? 1)));
 		$player->getInventory()->setItemInHand($item);
 
 
