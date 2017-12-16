@@ -80,7 +80,7 @@ class EnchantCommand extends VanillaCommand{
 		$player->getInventory()->setItemInHand($item);
 
 
-		self::broadcastCommandMessage($sender, new TranslationContainer("%commands.enchant.success"));
+		self::broadcastCommandMessage($sender, new TranslationContainer("%commands.enchant.success", [$player->getName()]));
 		return true;
 	}
 }
