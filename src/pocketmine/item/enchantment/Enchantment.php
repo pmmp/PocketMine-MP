@@ -56,10 +56,10 @@ class Enchantment{
 	public const FROST_WALKER = 25;
 	public const MENDING = 26;
 
-	public const RARITY_COMMON = 0;
-	public const RARITY_UNCOMMON = 1;
+	public const RARITY_COMMON = 10;
+	public const RARITY_UNCOMMON = 5;
 	public const RARITY_RARE = 2;
-	public const RARITY_MYTHIC = 3;
+	public const RARITY_MYTHIC = 1;
 
 	public const SLOT_NONE = 0;
 	public const SLOT_ALL = 0b11111111111111;
