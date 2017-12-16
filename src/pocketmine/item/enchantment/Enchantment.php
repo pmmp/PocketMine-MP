@@ -87,9 +87,9 @@ class Enchantment{
 	public static function init(){
 		self::$enchantments = new \SplFixedArray(256);
 
-		self::registerEnchantment(new Enchantment(self::PROTECTION, "%enchantment.protect.all", self::RARITY_COMMON, self::SLOT_ARMOR));
-		self::registerEnchantment(new Enchantment(self::FIRE_PROTECTION, "%enchantment.protect.fire", self::RARITY_UNCOMMON, self::SLOT_ARMOR));
-		self::registerEnchantment(new Enchantment(self::FEATHER_FALLING, "%enchantment.protect.fall", self::RARITY_UNCOMMON, self::SLOT_FEET));
+		self::registerEnchantment(new Enchantment(self::PROTECTION, "%enchantment.protect.all", self::RARITY_COMMON, self::SLOT_ARMOR, 4));
+		self::registerEnchantment(new Enchantment(self::FIRE_PROTECTION, "%enchantment.protect.fire", self::RARITY_UNCOMMON, self::SLOT_ARMOR, 4));
+		self::registerEnchantment(new Enchantment(self::FEATHER_FALLING, "%enchantment.protect.fall", self::RARITY_UNCOMMON, self::SLOT_FEET, 4));
 	}
 
 	/**
@@ -133,18 +133,22 @@ class Enchantment{
 	private $rarity;
 	/** @var int */
 	private $slot;
+	/** @var int */
+	private $maxLevel;
 
 	/**
 	 * @param int    $id
 	 * @param string $name
 	 * @param int    $rarity
 	 * @param int    $slot
+	 * @param int    $maxLevel
 	 */
-	public function __construct(int $id, string $name, int $rarity, int $slot){
+	public function __construct(int $id, string $name, int $rarity, int $slot, int $maxLevel){
 		$this->id = $id;
 		$this->name = $name;
 		$this->rarity = $rarity;
 		$this->slot = $slot;
+		$this->maxLevel = $maxLevel;
 	}
 
 	/**
@@ -187,5 +191,13 @@ class Enchantment{
 	 */
 	public function hasSlot(int $slot) : bool{
 		return ($this->slot & $slot) > 0;
+	}
+
+	/**
+	 * Returns the maximum level of this enchantment that can be found on an enchantment table.
+	 * @return int
+	 */
+	public function getMaxLevel() : int{
+		return $this->maxLevel;
 	}
 }
