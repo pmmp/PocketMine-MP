@@ -61,10 +61,6 @@ class Enchantment{
 	public const RARITY_RARE = 2;
 	public const RARITY_MYTHIC = 3;
 
-	public const ACTIVATION_EQUIP = 0;
-	public const ACTIVATION_HELD = 1;
-	public const ACTIVATION_SELF = 2;
-
 	public const SLOT_NONE = 0;
 	public const SLOT_ALL = 0b11111111111111;
 	public const SLOT_ARMOR = 0b1111;
@@ -91,9 +87,9 @@ class Enchantment{
 	public static function init(){
 		self::$enchantments = new \SplFixedArray(256);
 
-		self::registerEnchantment(new Enchantment(self::PROTECTION, "%enchantment.protect.all", self::RARITY_COMMON, self::ACTIVATION_EQUIP, self::SLOT_ARMOR));
-		self::registerEnchantment(new Enchantment(self::FIRE_PROTECTION, "%enchantment.protect.fire", self::RARITY_UNCOMMON, self::ACTIVATION_EQUIP, self::SLOT_ARMOR));
-		self::registerEnchantment(new Enchantment(self::FEATHER_FALLING, "%enchantment.protect.fall", self::RARITY_UNCOMMON, self::ACTIVATION_EQUIP, self::SLOT_FEET));
+		self::registerEnchantment(new Enchantment(self::PROTECTION, "%enchantment.protect.all", self::RARITY_COMMON, self::SLOT_ARMOR));
+		self::registerEnchantment(new Enchantment(self::FIRE_PROTECTION, "%enchantment.protect.fire", self::RARITY_UNCOMMON, self::SLOT_ARMOR));
+		self::registerEnchantment(new Enchantment(self::FEATHER_FALLING, "%enchantment.protect.fall", self::RARITY_UNCOMMON, self::SLOT_FEET));
 	}
 
 	/**
@@ -136,22 +132,18 @@ class Enchantment{
 	/** @var int */
 	private $rarity;
 	/** @var int */
-	private $activationType;
-	/** @var int */
 	private $slot;
 
 	/**
-	 * @param int $id
+	 * @param int    $id
 	 * @param string $name
-	 * @param int $rarity
-	 * @param int $activationType
-	 * @param int $slot
+	 * @param int    $rarity
+	 * @param int    $slot
 	 */
-	public function __construct(int $id, string $name, int $rarity, int $activationType, int $slot){
+	public function __construct(int $id, string $name, int $rarity, int $slot){
 		$this->id = $id;
 		$this->name = $name;
 		$this->rarity = $rarity;
-		$this->activationType = $activationType;
 		$this->slot = $slot;
 	}
 
@@ -177,14 +169,6 @@ class Enchantment{
 	 */
 	public function getRarity() : int{
 		return $this->rarity;
-	}
-
-	/**
-	 * Returns an int constant describing what type of activation this enchantment requires. For example armor enchantments only apply when worn.
-	 * @return int
-	 */
-	public function getActivationType() : int{
-		return $this->activationType;
 	}
 
 	/**
