@@ -131,8 +131,6 @@ class Enchantment{
 
 	/** @var int */
 	private $id;
-	/** @var int */
-	private $level = 1;
 	/** @var string */
 	private $name;
 	/** @var int */
