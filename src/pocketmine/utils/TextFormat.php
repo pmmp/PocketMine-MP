@@ -28,6 +28,7 @@ namespace pocketmine\utils;
  */
 abstract class TextFormat{
 	public const ESCAPE = "\xc2\xa7"; //§
+	public const EOL = "\n";
 
 	public const BLACK = TextFormat::ESCAPE . "0";
 	public const DARK_BLUE = TextFormat::ESCAPE . "1";
