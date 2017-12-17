@@ -65,7 +65,7 @@ class StringTag extends NamedTag{
 	 */
 	public function setValue($value) : void{
 		if(!is_string($value)){
-			throw new \TypeError("ShortTag value must be of type int, " . gettype($value) . " given");
+			throw new \TypeError("StringTag value must be of type string, " . gettype($value) . " given");
 		}
 		parent::setValue($value);
 	}
