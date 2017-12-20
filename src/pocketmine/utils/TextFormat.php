@@ -64,6 +64,17 @@ abstract class TextFormat{
 	public static function tokenize(string $string) : array{
 		return preg_split("/(" . TextFormat::ESCAPE . "[0123456789abcdefklmnor])/", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 	}
+	
+	/**
+     * Colorizes the string by replacing '&' to '§'
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    public static function colorize(string $string): string{
+        return preg_replace('/&([0-9a-fk-or])/u', TextFormat::ESCAPE . '$1', $string);
+    }
 
 	/**
 	 * Cleans the string from Minecraft codes and ANSI Escape Codes
