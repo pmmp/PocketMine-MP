@@ -66,14 +66,14 @@ abstract class TextFormat{
 	}
 	
 	/**
-     * Colorizes the string by replacing '&' to '§'
+     * Colorizes the string by replacing specified symbol to '§' ('&' by default)
      *
      * @param string $string
      *
      * @return string
      */
-    public static function colorize(string $string): string{
-        return preg_replace('/&([0-9a-fk-or])/u', TextFormat::ESCAPE . '$1', $string);
+    public static function colorize(string $string, string $replaceSymb = '&'): string{
+        return preg_replace('/' . $replaceSymb . '([0-9a-fk-or])/u', TextFormat::ESCAPE . '$1', $string);
     }
 
 	/**
