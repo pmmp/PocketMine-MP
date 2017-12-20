@@ -64,11 +64,9 @@ class BanList{
 	 * @return BanEntry|null
 	 */
 	public function getEntry(string $name) : ?BanEntry{
-		$name = strtolower($name);
-		
 		$this->removeExpired();
 
-		return $this->list[$name] ?? null;
+		return $this->list[strtolower($name)] ?? null;
 	}
 
 	/**
