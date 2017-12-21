@@ -63,7 +63,7 @@ class EnchantmentInstance{
 	 * Returns the level of the enchantment.
 	 * @return int
 	 */
-	public function getLevel(): int{
+	public function getLevel() : int{
 		return $this->level;
 	}
 
