@@ -58,6 +58,14 @@ abstract class Armor extends Item{
 		$this->setNamedTagEntry(new IntTag(self::TAG_CUSTOM_COLOR, Binary::signInt($color->toARGB())));
 	}
 
+	/**
+	 * Returns the total enchantment protection factor this armour piece offers from all applicable protection
+	 * enchantments on the item.
+	 *
+	 * @param EntityDamageEvent $event
+	 *
+	 * @return int
+	 */
 	public function getEnchantmentProtectionFactor(EntityDamageEvent $event) : int{
 		$epf = 0;
 

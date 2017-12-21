@@ -31,6 +31,17 @@ class ProtectionEnchantment extends Enchantment{
 	/** @var int[]|null */
 	protected $applicableDamageTypes = null;
 
+	/**
+	 * ProtectionEnchantment constructor.
+	 *
+	 * @param int        $id
+	 * @param string     $name
+	 * @param int        $rarity
+	 * @param int        $slot
+	 * @param int        $maxLevel
+	 * @param float      $typeModifier
+	 * @param int[]|null $applicableDamageTypes EntityDamageEvent::CAUSE_* constants which this enchantment type applies to, or null if it applies to all types of damage.
+	 */
 	public function __construct(int $id, string $name, int $rarity, int $slot, int $maxLevel, float $typeModifier, ?array $applicableDamageTypes){
 		parent::__construct($id, $name, $rarity, $slot, $maxLevel);
 
@@ -40,14 +51,30 @@ class ProtectionEnchantment extends Enchantment{
 		}
 	}
 
+	/**
+	 * Returns the multiplier by which this enchantment type's EPF increases with each enchantment level.
+	 * @return float
+	 */
 	public function getTypeModifier() : float{
 		return $this->typeModifier;
 	}
 
+	/**
+	 * Returns the base EPF this enchantment type offers for the given enchantment level.
+	 * @param int $level
+	 *
+	 * @return int
+	 */
 	public function getProtectionFactor(int $level) : int{
 		return (int) floor((6 + $level ** 2) * $this->typeModifier / 3);
 	}
 
+	/**
+	 * Returns whether this enchantment type offers protection from the specified damage source's cause.
+	 * @param EntityDamageEvent $event
+	 *
+	 * @return bool
+	 */
 	public function isApplicable(EntityDamageEvent $event) : bool{
 		return $this->applicableDamageTypes === null or isset($this->applicableDamageTypes[$event->getCause()]);
 	}
