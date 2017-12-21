@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\item\enchantment;
 
-
+/**
+ * Manages enchantment type data.
+ */
 class Enchantment{
 
 	public const PROTECTION = 0;
@@ -110,7 +112,7 @@ class Enchantment{
 	 */
 	public static function getEnchantment(int $id){
 		if(isset(self::$enchantments[$id])){
-			return clone self::$enchantments[$id];
+			return self::$enchantments[$id];
 		}
 		return null;
 	}
@@ -129,8 +131,6 @@ class Enchantment{
 
 	/** @var int */
 	private $id;
-	/** @var int */
-	private $level = 1;
 	/** @var string */
 	private $name;
 	/** @var int */
@@ -204,25 +204,4 @@ class Enchantment{
 	public function hasSlot(int $slot) : bool{
 		return ($this->slot & $slot) > 0;
 	}
-
-	/**
-	 * Returns the level of the enchantment.
-	 * @return int
-	 */
-	public function getLevel() : int{
-		return $this->level;
-	}
-
-	/**
-	 * Sets the level of the enchantment.
-	 * @param int $level
-	 *
-	 * @return $this
-	 */
-	public function setLevel(int $level){
-		$this->level = $level;
-
-		return $this;
-	}
-
 }

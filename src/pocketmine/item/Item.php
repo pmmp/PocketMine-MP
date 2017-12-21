@@ -31,6 +31,7 @@ use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
@@ -310,9 +311,9 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @param int $id
 	 *
-	 * @return Enchantment|null
+	 * @return EnchantmentInstance|null
 	 */
-	public function getEnchantment(int $id) : ?Enchantment{
+	public function getEnchantment(int $id) : ?EnchantmentInstance{
 		$ench = $this->getNamedTagEntry(self::TAG_ENCH);
 		if(!($ench instanceof ListTag)){
 			return null;
@@ -323,8 +324,7 @@ class Item implements ItemIds, \JsonSerializable{
 			if($entry->getShort("id") === $id){
 				$e = Enchantment::getEnchantment($entry->getShort("id"));
 				if($e !== null){
-					$e->setLevel($entry->getShort("lvl"));
-					return $e;
+					return new EnchantmentInstance($e, $entry->getShort("lvl"));
 				}
 			}
 		}
@@ -358,9 +358,9 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * @param Enchantment $enchantment
+	 * @param EnchantmentInstance $enchantment
 	 */
-	public function addEnchantment(Enchantment $enchantment) : void{
+	public function addEnchantment(EnchantmentInstance $enchantment) : void{
 		$found = false;
 
 		$ench = $this->getNamedTagEntry(self::TAG_ENCH);
@@ -391,10 +391,10 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * @return Enchantment[]
+	 * @return EnchantmentInstance[]
 	 */
 	public function getEnchantments() : array{
-		/** @var Enchantment[] $enchantments */
+		/** @var EnchantmentInstance[] $enchantments */
 		$enchantments = [];
 
 		$ench = $this->getNamedTagEntry(self::TAG_ENCH);
@@ -403,8 +403,7 @@ class Item implements ItemIds, \JsonSerializable{
 			foreach($ench as $entry){
 				$e = Enchantment::getEnchantment($entry->getShort("id"));
 				if($e !== null){
-					$e->setLevel($entry->getShort("lvl"));
-					$enchantments[] = $e;
+					$enchantments[] = new EnchantmentInstance($e, $entry->getShort("lvl"));
 				}
 			}
 		}
