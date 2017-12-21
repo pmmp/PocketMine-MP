@@ -59,6 +59,17 @@ class BanList{
 	}
 
 	/**
+	 * @param string $name
+	 *
+	 * @return BanEntry|null
+	 */
+	public function getEntry(string $name) : ?BanEntry{
+		$this->removeExpired();
+
+		return $this->list[strtolower($name)] ?? null;
+	}
+
+	/**
 	 * @return BanEntry[]
 	 */
 	public function getEntries() : array{
