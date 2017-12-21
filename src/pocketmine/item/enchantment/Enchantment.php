@@ -116,8 +116,9 @@ class Enchantment{
 	 * @return Enchantment|null
 	 */
 	public static function getEnchantmentByName(string $name){
-		if(defined(Enchantment::class . "::" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::" . strtoupper($name)));
+		$const = Enchantment::class . "::" . strtoupper($name);
+		if(defined($const)){
+			return self::getEnchantment(constant($const));
 		}
 		return null;
 	}
