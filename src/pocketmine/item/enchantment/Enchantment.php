@@ -107,10 +107,7 @@ class Enchantment{
 	 * @return Enchantment|null
 	 */
 	public static function getEnchantment(int $id){
-		if(isset(self::$enchantments[$id])){
-			return self::$enchantments[$id];
-		}
-		return null;
+		return self::$enchantments[$id] ?? null;
 	}
 
 	/**
