@@ -110,6 +110,14 @@ class ResourcePackManager{
 	}
 
 	/**
+	 * Returns the directory which resource packs are loaded from.
+	 * @return string
+	 */
+	public function getPath() : string{
+		return $this->path;
+	}
+
+	/**
 	 * Returns whether players must accept resource packs in order to join.
 	 * @return bool
 	 */
