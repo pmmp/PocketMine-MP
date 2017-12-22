@@ -1828,6 +1828,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->setSkin($skin);
 
+		$this->server->getPluginManager()->callEvent($ev = new PlayerPreLoginEvent($this, "Plugin reason"));
+		if($ev->isCancelled()){
+			$this->close("", $ev->getKickMessage());
+
+			return true;
+		}
+
 		if(!$this->server->isWhitelisted($this->iusername) and $this->kick("Server is white-listed", false)){
 			return true;
 		}
@@ -1836,13 +1843,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			($this->isBanned() or $this->server->getIPBans()->isBanned($this->getAddress())) and
 			$this->kick("You are banned", false)
 		){
-			return true;
-		}
-
-		$this->server->getPluginManager()->callEvent($ev = new PlayerPreLoginEvent($this, "Plugin reason"));
-		if($ev->isCancelled()){
-			$this->close("", $ev->getKickMessage());
-
 			return true;
 		}
 
