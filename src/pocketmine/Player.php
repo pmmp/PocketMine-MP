@@ -2645,8 +2645,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					break;
 				}
 
-				$this->resetCraftingGridType();
-
 				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
 
 				$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getLevel());
@@ -3551,6 +3549,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			default:
 				break;
 		}
+
+		//Crafting grid must always be evacuated even if keep-inventory is true. This dumps the contents into the
+		//main inventory and drops the rest on the ground.
+		$this->resetCraftingGridType();
 
 		$this->server->getPluginManager()->callEvent($ev = new PlayerDeathEvent($this, $this->getDrops(), new TranslationContainer($message, $params)));
 
