@@ -1753,10 +1753,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return false;
 		}
 
-		$dV = $this->getDirectionPlane();
-		$dot = $dV->dot(new Vector2($eyePos->x, $eyePos->z));
-		$dot1 = $dV->dot(new Vector2($pos->x, $pos->z));
-		return ($dot1 - $dot) >= -$maxDiff;
+		$dV = $this->getDirectionVector();
+		$eyeDot = $dV->dot($eyePos);
+		$targetDot = $dV->dot($pos);
+		return ($targetDot - $eyeDot) >= -$maxDiff;
 	}
 
 	protected function initHumanData(){
