@@ -36,9 +36,6 @@ class ResourcePackManager{
 	/** @var string */
 	private $path;
 
-	/** @var Config */
-	private $resourcePacksConfig;
-
 	/** @var bool */
 	private $serverForceResources = false;
 
@@ -67,13 +64,13 @@ class ResourcePackManager{
 			copy(\pocketmine\RESOURCE_PATH . "resource_packs.yml", $this->path . "resource_packs.yml");
 		}
 
-		$this->resourcePacksConfig = new Config($this->path . "resource_packs.yml", Config::YAML, []);
+		$resourcePacksConfig = new Config($this->path . "resource_packs.yml", Config::YAML, []);
 
-		$this->serverForceResources = (bool) $this->resourcePacksConfig->get("force_resources", false);
+		$this->serverForceResources = (bool) $resourcePacksConfig->get("force_resources", false);
 
 		$this->server->getLogger()->info("Loading resource packs...");
 
-		foreach($this->resourcePacksConfig->get("resource_stack", []) as $pos => $pack){
+		foreach($resourcePacksConfig->get("resource_stack", []) as $pos => $pack){
 			try{
 				$packPath = $this->path . DIRECTORY_SEPARATOR . $pack;
 				if(file_exists($packPath)){
