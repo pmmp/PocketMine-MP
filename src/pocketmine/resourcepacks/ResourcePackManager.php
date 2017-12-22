@@ -24,14 +24,10 @@ declare(strict_types=1);
 
 namespace pocketmine\resourcepacks;
 
-
-use pocketmine\Server;
 use pocketmine\utils\Config;
+use pocketmine\utils\MainLogger;
 
 class ResourcePackManager{
-
-	/** @var Server */
-	private $server;
 
 	/** @var string */
 	private $path;
@@ -46,15 +42,15 @@ class ResourcePackManager{
 	private $uuidList = [];
 
 	/**
-	 * @param Server $server
 	 * @param string $path Path to resource-packs directory.
 	 */
-	public function __construct(Server $server, string $path){
-		$this->server = $server;
+	public function __construct(string $path){
 		$this->path = $path;
 
+		$logger = MainLogger::getLogger();
+
 		if(!file_exists($this->path)){
-			$this->server->getLogger()->debug("Resource packs path $path does not exist, creating directory");
+			$logger->debug("Resource packs path $path does not exist, creating directory");
 			mkdir($this->path);
 		}elseif(!is_dir($this->path)){
 			throw new \InvalidArgumentException("Resource packs path $path exists and is not a directory");
@@ -68,7 +64,7 @@ class ResourcePackManager{
 
 		$this->serverForceResources = (bool) $resourcePacksConfig->get("force_resources", false);
 
-		$this->server->getLogger()->info("Loading resource packs...");
+		$logger->info("Loading resource packs...");
 
 		foreach($resourcePacksConfig->get("resource_stack", []) as $pos => $pack){
 			try{
@@ -77,7 +73,7 @@ class ResourcePackManager{
 					$newPack = null;
 					//Detect the type of resource pack.
 					if(is_dir($packPath)){
-						$this->server->getLogger()->warning("Skipped resource entry $pack due to directory resource packs currently unsupported");
+						$logger->warning("Skipped resource entry $pack due to directory resource packs currently unsupported");
 					}else{
 						$info = new \SplFileInfo($packPath);
 						switch($info->getExtension()){
@@ -86,7 +82,7 @@ class ResourcePackManager{
 								$newPack = new ZippedResourcePack($packPath);
 								break;
 							default:
-								$this->server->getLogger()->warning("Skipped resource entry $pack due to format not recognized");
+								$logger->warning("Skipped resource entry $pack due to format not recognized");
 								break;
 						}
 					}
@@ -96,14 +92,14 @@ class ResourcePackManager{
 						$this->uuidList[strtolower($newPack->getPackId())] = $newPack;
 					}
 				}else{
-					$this->server->getLogger()->warning("Skipped resource entry $pack due to file or directory not found");
+					$logger->warning("Skipped resource entry $pack due to file or directory not found");
 				}
 			}catch(\Throwable $e){
-				$this->server->getLogger()->logException($e);
+				$logger->logException($e);
 			}
 		}
 
-		$this->server->getLogger()->debug("Successfully loaded " . count($this->resourcePacks) . " resource packs");
+		$logger->debug("Successfully loaded " . count($this->resourcePacks) . " resource packs");
 	}
 
 	/**
