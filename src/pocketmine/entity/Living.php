@@ -323,6 +323,14 @@ abstract class Living extends Entity implements Damageable{
 		}
 	}
 
+	/**
+	 * Causes the mob to consume the given Consumable object, applying applicable effects, health bonuses, food bonuses,
+	 * etc.
+	 *
+	 * @param Consumable $consumable
+	 *
+	 * @return bool
+	 */
 	public function consumeObject(Consumable $consumable) : bool{
 		foreach($consumable->getAdditionalEffects() as $effect){
 			$this->addEffect($effect);

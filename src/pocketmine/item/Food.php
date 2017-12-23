@@ -30,6 +30,9 @@ abstract class Food extends Item implements FoodSource{
 		return true;
 	}
 
+	/**
+	 * @return Item
+	 */
 	public function getResidue(){
 		return ItemFactory::get(Item::AIR, 0, 0);
 	}

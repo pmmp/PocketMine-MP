@@ -110,6 +110,9 @@ class Cake extends Transparent implements FoodSource{
 		return true;
 	}
 
+	/**
+	 * @return Block
+	 */
 	public function getResidue(){
 		$clone = clone $this;
 		$clone->meta++;
