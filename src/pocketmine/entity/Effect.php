@@ -39,10 +39,10 @@ class Effect{
 	public const STRENGTH = 5;
 	public const INSTANT_HEALTH = 6, HEALING = 6;
 	public const INSTANT_DAMAGE = 7, HARMING = 7;
-	public const JUMP = 8;
+	public const JUMP_BOOST = 8, JUMP = 8;
 	public const NAUSEA = 9, CONFUSION = 9;
 	public const REGENERATION = 10;
-	public const DAMAGE_RESISTANCE = 11;
+	public const RESISTANCE = 11, DAMAGE_RESISTANCE = 11;
 	public const FIRE_RESISTANCE = 12;
 	public const WATER_BREATHING = 13;
 	public const INVISIBILITY = 14;
