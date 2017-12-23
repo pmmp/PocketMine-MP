@@ -97,7 +97,9 @@ class FlowerPot extends Flowable{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		$items = parent::getDropsForCompatibleTool($item);
+		$items = [
+			ItemFactory::get($this->getItemId(), 0)//reset damage
+		];
 
 		$tile = $this->getLevel()->getTile($this);
 		if($tile instanceof TileFlowerPot){
