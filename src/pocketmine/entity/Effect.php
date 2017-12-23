@@ -360,12 +360,12 @@ class Effect{
 			case Effect::INSTANT_HEALTH:
 				//TODO: add particles (witch spell)
 				if($entity->getHealth() < $entity->getMaxHealth()){
-					$entity->heal(new EntityRegainHealthEvent($entity, 4 << $this->getEffectLevel(), EntityRegainHealthEvent::CAUSE_MAGIC));
+					$entity->heal(new EntityRegainHealthEvent($entity, 4 << $this->amplifier, EntityRegainHealthEvent::CAUSE_MAGIC));
 				}
 				break;
 			case Effect::INSTANT_DAMAGE:
 				//TODO: add particles (witch spell)
-				$entity->attack(new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, 4 << $this->getEffectLevel()));
+				$entity->attack(new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, 4 << $this->amplifier));
 				break;
 		}
 	}
