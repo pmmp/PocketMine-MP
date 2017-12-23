@@ -78,6 +78,7 @@ use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
+use pocketmine\item\Consumable;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\WritableBook;
@@ -2448,52 +2449,40 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 									$this->inventory->setItemInHand($item);
 								}
 							}else{
-								$this->inventory->sendContents($this);
+								break;
 							}
 
 							return true;
 						case InventoryTransactionPacket::RELEASE_ITEM_ACTION_CONSUME:
 							$slot = $this->inventory->getItemInHand();
 
-							if($slot->canBeConsumed()){
+							if($slot instanceof Consumable){
 								$ev = new PlayerItemConsumeEvent($this, $slot);
-								if(!$slot->canBeConsumedBy($this)){
-									$ev->setCancelled();
-								}
 								$this->server->getPluginManager()->callEvent($ev);
-								if(!$ev->isCancelled()){
-									$slot->onConsume($this);
-								}else{
-									$this->inventory->sendContents($this);
-								}
 
-								return true;
-							}elseif($slot->getId() === Item::BUCKET and $slot->getDamage() === 1){ //Milk!
-								$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $slot));
-								if($ev->isCancelled()){
+								if($ev->isCancelled() or !$this->consumeObject($slot)){
 									$this->inventory->sendContents($this);
-
 									return true;
 								}
 
 								if($this->isSurvival()){
-									--$slot->count;
+									$slot->pop();
 									$this->inventory->setItemInHand($slot);
-									$this->inventory->addItem(ItemFactory::get(Item::BUCKET, 0, 1));
+									$this->inventory->addItem($slot->getResidue());
 								}
-
-								$this->removeAllEffects();
 
 								return true;
 							}
 
-							return false;
+							break;
 						default:
 							break;
 					}
 				}finally{
 					$this->setUsingItem(false);
 				}
+
+				$this->inventory->sendContents($this);
 				break;
 			default:
 				$this->inventory->sendContents($this);

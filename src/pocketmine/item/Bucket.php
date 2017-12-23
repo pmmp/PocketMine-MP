@@ -27,13 +27,14 @@ use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\Liquid;
+use pocketmine\entity\Living;
 use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\event\player\PlayerBucketFillEvent;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-class Bucket extends Item{
+class Bucket extends Item implements Consumable{
 	public function __construct(int $meta = 0){
 		parent::__construct(self::BUCKET, $meta, "Bucket");
 	}
@@ -84,5 +85,21 @@ class Bucket extends Item{
 		}
 
 		return false;
+	}
+
+	public function getResidue(){
+		return ItemFactory::get(Item::BUCKET, 0, 1);
+	}
+
+	public function getAdditionalEffects() : array{
+		return [];
+	}
+
+	public function canBeConsumed() : bool{
+		return $this->meta === 1; //Milk
+	}
+
+	public function onConsume(Living $consumer){
+		$consumer->removeAllEffects();
 	}
 }

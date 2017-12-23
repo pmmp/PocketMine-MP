@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 
 class Potion extends Item{
 	public function __construct(int $meta = 0){
@@ -38,7 +38,7 @@ class Potion extends Item{
 		return 1;
 	}
 
-	public function onConsume(Entity $entity){
+	public function onConsume(Living $consumer){
 		// TODO: Implement potions
 	}
 }
