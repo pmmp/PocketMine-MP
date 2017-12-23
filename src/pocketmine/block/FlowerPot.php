@@ -96,6 +96,10 @@ class FlowerPot extends Flowable{
 		return true;
 	}
 
+	public function getVariantBitmask() : int{
+		return 0;
+	}
+
 	public function getDropsForCompatibleTool(Item $item) : array{
 		$items = parent::getDropsForCompatibleTool($item);
 
