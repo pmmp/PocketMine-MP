@@ -333,7 +333,6 @@ abstract class Living extends Entity implements Damageable{
 		return true;
 	}
 
-
 	/**
 	 * Returns the initial upwards velocity of a jumping entity in blocks/tick, including additional velocity due to effects.
 	 * @return float
