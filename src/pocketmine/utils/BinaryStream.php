@@ -287,12 +287,12 @@ class BinaryStream{
 
 
 	public function putSlot(Item $item){
-		if($item->getId() === 0){
+		if($item->getItemId() === 0){
 			$this->putVarInt(0);
 			return;
 		}
 
-		$this->putVarInt($item->getId());
+		$this->putVarInt($item->getItemId());
 		$auxValue = (($item->getDamage() & 0x7fff) << 8) | $item->getCount();
 		$this->putVarInt($auxValue);
 
