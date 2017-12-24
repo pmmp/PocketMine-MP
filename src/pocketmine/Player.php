@@ -2148,8 +2148,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->isTeleporting = false;
 			}
 
-			$packet->yaw %= 360;
-			$packet->pitch %= 360;
+			$packet->yaw = fmod($packet->yaw, 360);
+			$packet->pitch = fmod($packet->pitch, 360);
 
 			if($packet->yaw < 0){
 				$packet->yaw += 360;
