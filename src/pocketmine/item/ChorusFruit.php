@@ -63,8 +63,11 @@ class ChorusFruit extends Food{
 			$y = mt_rand($minY, $maxY);
 			$z = mt_rand($minZ, $maxZ);
 
-			while($y > 0 and !$level->getBlockAt($x, $y, $z)->isSolid()){
+			while($y >= 0 and !$level->getBlockAt($x, $y, $z)->isSolid()){
 				$y--;
+			}
+			if($y < 0){
+				continue;
 			}
 
 			$blockUp = $level->getBlockAt($x, $y + 1, $z);
