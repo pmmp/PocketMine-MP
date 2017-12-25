@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Tool;
-
 class WoodenFence extends Fence{
 	public const FENCE_OAK = 0;
 	public const FENCE_SPRUCE = 1;
@@ -40,7 +38,7 @@ class WoodenFence extends Fence{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_AXE;
+		return BlockToolType::TYPE_AXE;
 	}
 
 	public function getName() : string{

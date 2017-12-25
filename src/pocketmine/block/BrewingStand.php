@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Tool;
+use pocketmine\item\TieredTool;
 
 class BrewingStand extends Transparent{
 
@@ -42,7 +42,11 @@ class BrewingStand extends Transparent{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
+	}
+
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
 	}
 
 	public function getVariantBitmask() : int{

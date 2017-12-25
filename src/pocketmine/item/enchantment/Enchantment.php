@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\item\enchantment;
 
-
+/**
+ * Manages enchantment type data.
+ */
 class Enchantment{
 
 	public const PROTECTION = 0;
@@ -54,14 +56,10 @@ class Enchantment{
 	public const FROST_WALKER = 25;
 	public const MENDING = 26;
 
-	public const RARITY_COMMON = 0;
-	public const RARITY_UNCOMMON = 1;
+	public const RARITY_COMMON = 10;
+	public const RARITY_UNCOMMON = 5;
 	public const RARITY_RARE = 2;
-	public const RARITY_MYTHIC = 3;
-
-	public const ACTIVATION_EQUIP = 0;
-	public const ACTIVATION_HELD = 1;
-	public const ACTIVATION_SELF = 2;
+	public const RARITY_MYTHIC = 1;
 
 	public const SLOT_NONE = 0;
 	public const SLOT_ALL = 0b11111111111111;
@@ -89,9 +87,9 @@ class Enchantment{
 	public static function init(){
 		self::$enchantments = new \SplFixedArray(256);
 
-		self::registerEnchantment(new Enchantment(self::PROTECTION, "%enchantment.protect.all", self::RARITY_COMMON, self::ACTIVATION_EQUIP, self::SLOT_ARMOR));
-		self::registerEnchantment(new Enchantment(self::FIRE_PROTECTION, "%enchantment.protect.fire", self::RARITY_UNCOMMON, self::ACTIVATION_EQUIP, self::SLOT_ARMOR));
-		self::registerEnchantment(new Enchantment(self::FEATHER_FALLING, "%enchantment.protect.fall", self::RARITY_UNCOMMON, self::ACTIVATION_EQUIP, self::SLOT_FEET));
+		self::registerEnchantment(new Enchantment(self::PROTECTION, "%enchantment.protect.all", self::RARITY_COMMON, self::SLOT_ARMOR, 4));
+		self::registerEnchantment(new Enchantment(self::FIRE_PROTECTION, "%enchantment.protect.fire", self::RARITY_UNCOMMON, self::SLOT_ARMOR, 4));
+		self::registerEnchantment(new Enchantment(self::FEATHER_FALLING, "%enchantment.protect.fall", self::RARITY_UNCOMMON, self::SLOT_FEET, 4));
 	}
 
 	/**
@@ -109,10 +107,7 @@ class Enchantment{
 	 * @return Enchantment|null
 	 */
 	public static function getEnchantment(int $id){
-		if(isset(self::$enchantments[$id])){
-			return clone self::$enchantments[$id];
-		}
-		return null;
+		return self::$enchantments[$id] ?? null;
 	}
 
 	/**
@@ -121,32 +116,37 @@ class Enchantment{
 	 * @return Enchantment|null
 	 */
 	public static function getEnchantmentByName(string $name){
-		if(defined(Enchantment::class . "::" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::" . strtoupper($name)));
+		$const = Enchantment::class . "::" . strtoupper($name);
+		if(defined($const)){
+			return self::getEnchantment(constant($const));
 		}
 		return null;
 	}
 
+	/** @var int */
 	private $id;
-	private $level = 1;
+	/** @var string */
 	private $name;
+	/** @var int */
 	private $rarity;
-	private $activationType;
+	/** @var int */
 	private $slot;
+	/** @var int */
+	private $maxLevel;
 
 	/**
-	 * @param int $id
+	 * @param int    $id
 	 * @param string $name
-	 * @param int $rarity
-	 * @param int $activationType
-	 * @param int $slot
+	 * @param int    $rarity
+	 * @param int    $slot
+	 * @param int    $maxLevel
 	 */
-	public function __construct(int $id, string $name, int $rarity, int $activationType, int $slot){
+	public function __construct(int $id, string $name, int $rarity, int $slot, int $maxLevel){
 		$this->id = $id;
 		$this->name = $name;
 		$this->rarity = $rarity;
-		$this->activationType = $activationType;
 		$this->slot = $slot;
+		$this->maxLevel = $maxLevel;
 	}
 
 	/**
@@ -174,14 +174,6 @@ class Enchantment{
 	}
 
 	/**
-	 * Returns an int constant describing what type of activation this enchantment requires. For example armor enchantments only apply when worn.
-	 * @return int
-	 */
-	public function getActivationType() : int{
-		return $this->activationType;
-	}
-
-	/**
 	 * Returns an int with bitflags set to indicate what item types this enchantment can apply to.
 	 * @return int
 	 */
@@ -200,23 +192,12 @@ class Enchantment{
 	}
 
 	/**
-	 * Returns the level of the enchantment.
+	 * Returns the maximum level of this enchantment that can be found on an enchantment table.
 	 * @return int
 	 */
-	public function getLevel(): int{
-		return $this->level;
+	public function getMaxLevel() : int{
+		return $this->maxLevel;
 	}
 
-	/**
-	 * Sets the level of the enchantment.
-	 * @param int $level
-	 *
-	 * @return $this
-	 */
-	public function setLevel(int $level){
-		$this->level = $level;
-
-		return $this;
-	}
-
+	//TODO: methods for min/max XP cost bounds based on enchantment level (not needed yet - enchanting is client-side)
 }

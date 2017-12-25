@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Tool;
-
 class Podzol extends Solid{
 
 	protected $id = self::PODZOL;
@@ -34,7 +32,7 @@ class Podzol extends Solid{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_SHOVEL;
+		return BlockToolType::TYPE_SHOVEL;
 	}
 
 	public function getName() : string{

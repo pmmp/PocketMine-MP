@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\item\Tool;
+use pocketmine\item\TieredTool;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\EnderChest as TileEnderChest;
@@ -52,7 +52,11 @@ class EnderChest extends Chest{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
+	}
+
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
@@ -97,12 +101,10 @@ class EnderChest extends Chest{
 		return true;
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
-			return [ItemFactory::get(Item::OBSIDIAN, 0, 8)];
-		}
-
-		return [];
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			ItemFactory::get(Item::OBSIDIAN, 0, 8)
+		];
 	}
 
 	public function getFuelTime() : int{

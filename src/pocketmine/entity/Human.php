@@ -30,7 +30,9 @@ use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\inventory\EnderChestInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
+use pocketmine\item\Consumable;
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\FoodSource;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
@@ -269,6 +271,19 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->setExhaustion($exhaustion);
 
 		return $ev->getAmount();
+	}
+
+	public function consumeObject(Consumable $consumable) : bool{
+		if($consumable instanceof FoodSource){
+			if($consumable->requiresHunger() and $this->getFood() >= $this->getMaxFood()){
+				return false;
+			}
+
+			$this->addFood($consumable->getFoodRestore());
+			$this->addSaturation($consumable->getSaturationRestore());
+		}
+
+		return parent::consumeObject($consumable);
 	}
 
 	public function getXpLevel() : int{

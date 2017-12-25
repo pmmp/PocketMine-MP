@@ -75,7 +75,7 @@ class ItemFrame extends Flowable{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if($face === Vector3::SIDE_DOWN or $face === Vector3::SIDE_UP){
+		if($face === Vector3::SIDE_DOWN or $face === Vector3::SIDE_UP or !$blockClicked->isSolid()){
 			return false;
 		}
 
@@ -99,8 +99,8 @@ class ItemFrame extends Flowable{
 		return 0;
 	}
 
-	public function getDrops(Item $item) : array{
-		$drops = parent::getDrops($item);
+	public function getDropsForCompatibleTool(Item $item) : array{
+		$drops = parent::getDropsForCompatibleTool($item);
 
 		$tile = $this->level->getTile($this);
 		if($tile instanceof TileItemFrame){

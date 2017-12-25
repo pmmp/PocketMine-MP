@@ -21,34 +21,25 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event\entity;
+namespace pocketmine\item;
 
-use pocketmine\block\Block;
-use pocketmine\entity\Entity;
-use pocketmine\item\FoodSource;
+use pocketmine\block\BlockToolType;
 
-class EntityEatBlockEvent extends EntityEatEvent{
-	public function __construct(Entity $entity, FoodSource $foodSource){
-		if(!($foodSource instanceof Block)){
-			throw new \InvalidArgumentException("Food source must be a block");
-		}
-		parent::__construct($entity, $foodSource);
+class Axe extends TieredTool{
+
+	public function isAxe(){
+		return $this->tier;
 	}
 
-	/**
-	 * @return Block
-	 */
-	public function getResidue(){
-		return parent::getResidue();
+	public function getBlockToolType() : int{
+		return BlockToolType::TYPE_AXE;
 	}
 
-	/**
-	 * @param Block $residue
-	 */
-	public function setResidue($residue){
-		if(!($residue instanceof Block)){
-			throw new \InvalidArgumentException("Eating a Block can only result in a Block residue");
-		}
-		parent::setResidue($residue);
+	public function getBlockToolHarvestLevel() : int{
+		return $this->tier;
+	}
+
+	public function getAttackPoints() : int{
+		return self::getBaseDamageFromTier($this->tier) - 1;
 	}
 }

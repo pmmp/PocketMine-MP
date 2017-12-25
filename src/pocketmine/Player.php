@@ -78,6 +78,7 @@ use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
+use pocketmine\item\Consumable;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\WritableBook;
@@ -1679,7 +1680,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							$expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - $this->startAirTicks));
 							$diff = ($this->speed->y - $expectedVelocity) ** 2;
 
-							if(!$this->hasEffect(Effect::JUMP) and $diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()){
+							if(!$this->hasEffect(Effect::JUMP) and !$this->hasEffect(Effect::LEVITATION) and $diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()){
 								if($this->inAirTicks < 100){
 									$this->setMotion(new Vector3(0, $expectedVelocity, 0));
 								}elseif($this->kick($this->server->getLanguage()->translateString("kick.reason.cheat", ["%ability.flight"]))){
@@ -1743,20 +1744,19 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 *
 	 * @param Vector3 $pos
 	 * @param         $maxDistance
-	 * @param float   $maxDiff
 	 *
 	 * @return bool
 	 */
-	public function canInteract(Vector3 $pos, $maxDistance, float $maxDiff = 0.5) : bool{
+	public function canInteract(Vector3 $pos, $maxDistance) : bool{
 		$eyePos = $this->getPosition()->add(0, $this->getEyeHeight(), 0);
 		if($eyePos->distanceSquared($pos) > $maxDistance ** 2){
 			return false;
 		}
 
-		$dV = $this->getDirectionPlane();
-		$dot = $dV->dot(new Vector2($eyePos->x, $eyePos->z));
-		$dot1 = $dV->dot(new Vector2($pos->x, $pos->z));
-		return ($dot1 - $dot) >= -$maxDiff;
+		$dV = $this->getDirectionVector();
+		$eyeDot = $dV->dot($eyePos);
+		$targetDot = $dV->dot($pos);
+		return ($targetDot - $eyeDot) >= 0;
 	}
 
 	protected function initHumanData(){
@@ -1828,6 +1828,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->setSkin($skin);
 
+		$this->server->getPluginManager()->callEvent($ev = new PlayerPreLoginEvent($this, "Plugin reason"));
+		if($ev->isCancelled()){
+			$this->close("", $ev->getKickMessage());
+
+			return true;
+		}
+
 		if(!$this->server->isWhitelisted($this->iusername) and $this->kick("Server is white-listed", false)){
 			return true;
 		}
@@ -1836,13 +1843,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			($this->isBanned() or $this->server->getIPBans()->isBanned($this->getAddress())) and
 			$this->kick("You are banned", false)
 		){
-			return true;
-		}
-
-		$this->server->getPluginManager()->callEvent($ev = new PlayerPreLoginEvent($this, "Plugin reason"));
-		if($ev->isCancelled()){
-			$this->close("", $ev->getKickMessage());
-
 			return true;
 		}
 
@@ -2148,8 +2148,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->isTeleporting = false;
 			}
 
-			$packet->yaw %= 360;
-			$packet->pitch %= 360;
+			$packet->yaw = fmod($packet->yaw, 360);
+			$packet->pitch = fmod($packet->pitch, 360);
 
 			if($packet->yaw < 0){
 				$packet->yaw += 360;
@@ -2399,34 +2399,18 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						}
 
 						$cancelled = false;
-						if($target instanceof Player and $this->server->getConfigBool("pvp", true) === false){
-							$cancelled = true;
-						}
 
 						$heldItem = $this->inventory->getItemInHand();
-
-						$damage = [
-							EntityDamageEvent::MODIFIER_BASE => $heldItem->getAttackPoints()
-						];
 
 						if(!$this->canInteract($target, 8)){
 							$cancelled = true;
 						}elseif($target instanceof Player){
-							if(($target->getGamemode() & 0x01) > 0){
-								return true;
-							}elseif($this->server->getConfigBool("pvp") !== true){
+							if($this->server->getConfigBool("pvp") !== true){
 								$cancelled = true;
 							}
-
-							$points = 0;
-							foreach($target->getInventory()->getArmorContents() as $armorItem){
-								$points += $armorItem->getDefensePoints();
-							}
-
-							$damage[EntityDamageEvent::MODIFIER_ARMOR] = -($damage[EntityDamageEvent::MODIFIER_BASE] * $points * 0.04);
 						}
 
-						$ev = new EntityDamageByEntityEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $damage);
+						$ev = new EntityDamageByEntityEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $heldItem->getAttackPoints());
 						if($cancelled){
 							$ev->setCancelled();
 						}
@@ -2465,52 +2449,40 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 									$this->inventory->setItemInHand($item);
 								}
 							}else{
-								$this->inventory->sendContents($this);
+								break;
 							}
 
 							return true;
 						case InventoryTransactionPacket::RELEASE_ITEM_ACTION_CONSUME:
 							$slot = $this->inventory->getItemInHand();
 
-							if($slot->canBeConsumed()){
+							if($slot instanceof Consumable){
 								$ev = new PlayerItemConsumeEvent($this, $slot);
-								if(!$slot->canBeConsumedBy($this)){
-									$ev->setCancelled();
-								}
 								$this->server->getPluginManager()->callEvent($ev);
-								if(!$ev->isCancelled()){
-									$slot->onConsume($this);
-								}else{
-									$this->inventory->sendContents($this);
-								}
 
-								return true;
-							}elseif($slot->getId() === Item::BUCKET and $slot->getDamage() === 1){ //Milk!
-								$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $slot));
-								if($ev->isCancelled()){
+								if($ev->isCancelled() or !$this->consumeObject($slot)){
 									$this->inventory->sendContents($this);
-
 									return true;
 								}
 
 								if($this->isSurvival()){
-									--$slot->count;
+									$slot->pop();
 									$this->inventory->setItemInHand($slot);
-									$this->inventory->addItem(ItemFactory::get(Item::BUCKET, 0, 1));
+									$this->inventory->addItem($slot->getResidue());
 								}
-
-								$this->removeAllEffects();
 
 								return true;
 							}
 
-							return false;
+							break;
 						default:
 							break;
 					}
 				}finally{
 					$this->setUsingItem(false);
 				}
+
+				$this->inventory->sendContents($this);
 				break;
 			default:
 				$this->inventory->sendContents($this);
@@ -2660,8 +2632,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					$this->setBanned(true);
 					break;
 				}
-
-				$this->resetCraftingGridType();
 
 				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
 
@@ -3568,6 +3538,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				break;
 		}
 
+		//Crafting grid must always be evacuated even if keep-inventory is true. This dumps the contents into the
+		//main inventory and drops the rest on the ground.
+		$this->resetCraftingGridType();
+
 		$this->server->getPluginManager()->callEvent($ev = new PlayerDeathEvent($this, $this->getDrops(), new TranslationContainer($message, $params)));
 
 		if(!$ev->getKeepInventory()){
@@ -3594,6 +3568,21 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return false; //never flag players for despawn
 	}
 
+	public function getArmorPoints() : int{
+		$total = 0;
+		foreach($this->inventory->getArmorContents() as $item){
+			$total += $item->getDefensePoints();
+		}
+
+		return $total;
+	}
+
+	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
+		parent::applyPostDamageEffects($source);
+
+		$this->exhaust(0.3, PlayerExhaustEvent::CAUSE_DAMAGE);
+	}
+
 	public function attack(EntityDamageEvent $source){
 		if(!$this->isAlive()){
 			return;
@@ -3609,13 +3598,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		parent::attack($source);
+	}
 
-		if($source->isCancelled()){
-			return;
-		}elseif($this->getLastDamageCause() === $source and $this->spawned){
+	protected function doHitAnimation() : void{
+		parent::doHitAnimation();
+		if($this->spawned){
 			$this->broadcastEntityEvent(EntityEventPacket::HURT_ANIMATION, null, [$this]);
-
-			$this->exhaust(0.3, PlayerExhaustEvent::CAUSE_DAMAGE);
 		}
 	}
 

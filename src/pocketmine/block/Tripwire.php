@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
+
 class Tripwire extends Flowable{
 
 	protected $id = self::TRIPWIRE;
@@ -33,5 +36,11 @@ class Tripwire extends Flowable{
 
 	public function getName() : string{
 		return "Tripwire";
+	}
+
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			ItemFactory::get(Item::STRING)
+		];
 	}
 }

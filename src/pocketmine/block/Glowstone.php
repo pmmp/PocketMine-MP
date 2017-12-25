@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\item\Tool;
 
 class Glowstone extends Transparent{
 
@@ -44,14 +43,14 @@ class Glowstone extends Transparent{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
 	public function getLightLevel() : int{
 		return 15;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			ItemFactory::get(Item::GLOWSTONE_DUST, 0, mt_rand(2, 4))
 		];

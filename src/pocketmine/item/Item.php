@@ -28,8 +28,10 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
@@ -309,9 +311,9 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @param int $id
 	 *
-	 * @return Enchantment|null
+	 * @return EnchantmentInstance|null
 	 */
-	public function getEnchantment(int $id) : ?Enchantment{
+	public function getEnchantment(int $id) : ?EnchantmentInstance{
 		$ench = $this->getNamedTagEntry(self::TAG_ENCH);
 		if(!($ench instanceof ListTag)){
 			return null;
@@ -322,8 +324,7 @@ class Item implements ItemIds, \JsonSerializable{
 			if($entry->getShort("id") === $id){
 				$e = Enchantment::getEnchantment($entry->getShort("id"));
 				if($e !== null){
-					$e->setLevel($entry->getShort("lvl"));
-					return $e;
+					return new EnchantmentInstance($e, $entry->getShort("lvl"));
 				}
 			}
 		}
@@ -357,9 +358,9 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * @param Enchantment $enchantment
+	 * @param EnchantmentInstance $enchantment
 	 */
-	public function addEnchantment(Enchantment $enchantment) : void{
+	public function addEnchantment(EnchantmentInstance $enchantment) : void{
 		$found = false;
 
 		$ench = $this->getNamedTagEntry(self::TAG_ENCH);
@@ -390,10 +391,10 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * @return Enchantment[]
+	 * @return EnchantmentInstance[]
 	 */
 	public function getEnchantments() : array{
-		/** @var Enchantment[] $enchantments */
+		/** @var EnchantmentInstance[] $enchantments */
 		$enchantments = [];
 
 		$ench = $this->getNamedTagEntry(self::TAG_ENCH);
@@ -402,8 +403,7 @@ class Item implements ItemIds, \JsonSerializable{
 			foreach($ench as $entry){
 				$e = Enchantment::getEnchantment($entry->getShort("id"));
 				if($e !== null){
-					$e->setLevel($entry->getShort("lvl"));
-					$enchantments[] = $e;
+					$enchantments[] = new EnchantmentInstance($e, $entry->getShort("lvl"));
 				}
 			}
 		}
@@ -622,32 +622,6 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * Returns whether an entity can eat or drink this item.
-	 * @return bool
-	 */
-	public function canBeConsumed() : bool{
-		return false;
-	}
-
-	/**
-	 * Returns whether this item can be consumed by the supplied Entity.
-	 * @param Entity $entity
-	 *
-	 * @return bool
-	 */
-	public function canBeConsumedBy(Entity $entity) : bool{
-		return $this->canBeConsumed();
-	}
-
-	/**
-	 * Called when the item is consumed by an Entity.
-	 * @param Entity $entity
-	 */
-	public function onConsume(Entity $entity){
-
-	}
-
-	/**
 	 * Returns the block corresponding to this Item.
 	 * @return Block
 	 */
@@ -742,6 +716,29 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
+	 * Returns what type of block-breaking tool this is. Blocks requiring the same tool type as the item will break
+	 * faster (except for blocks requiring no tool, which break at the same speed regardless of the tool used)
+	 *
+	 * @return int
+	 */
+	public function getBlockToolType() : int{
+		return BlockToolType::TYPE_NONE;
+	}
+
+	/**
+	 * Returns the harvesting power that this tool has. This affects what blocks it can mine when the tool type matches
+	 * the mined block.
+	 * This should return 1 for non-tiered tools, and the tool tier for tiered tools.
+	 *
+	 * @see Block::getToolHarvestLevel()
+	 *
+	 * @return int
+	 */
+	public function getBlockToolHarvestLevel() : int{
+		return 0;
+	}
+
+	/**
 	 * Returns the maximum amount of damage this item can take before it breaks.
 	 *
 	 * @return int|bool
@@ -774,7 +771,7 @@ class Item implements ItemIds, \JsonSerializable{
 		return false;
 	}
 
-	public function getDestroySpeed(Block $block, Player $player){
+	public function getMiningEfficiency(Block $block) : float{
 		return 1;
 	}
 

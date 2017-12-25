@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
+
 class StonePressurePlate extends Transparent{
 
 	protected $id = self::STONE_PRESSURE_PLATE;
@@ -45,5 +47,13 @@ class StonePressurePlate extends Transparent{
 
 	public function getVariantBitmask() : int{
 		return 0;
+	}
+
+	public function getToolType() : int{
+		return BlockToolType::TYPE_PICKAXE;
+	}
+
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
 	}
 }

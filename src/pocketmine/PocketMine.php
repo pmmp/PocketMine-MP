@@ -171,6 +171,8 @@ namespace pocketmine {
 	ini_set("memory_limit", '-1');
 	define('pocketmine\START_TIME', microtime(true));
 
+	define('pocketmine\RESOURCE_PATH', \pocketmine\PATH . 'src' . DIRECTORY_SEPARATOR . 'pocketmine' . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR);
+
 	$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-profiler"]);
 
 	define('pocketmine\DATA', isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR);
@@ -549,7 +551,7 @@ namespace pocketmine {
 		}
 
 		ThreadManager::init();
-		new Server($autoloader, $logger, \pocketmine\PATH, \pocketmine\DATA, \pocketmine\PLUGIN_PATH);
+		new Server($autoloader, $logger, \pocketmine\DATA, \pocketmine\PLUGIN_PATH);
 
 		$logger->info("Stopping other threads");
 
