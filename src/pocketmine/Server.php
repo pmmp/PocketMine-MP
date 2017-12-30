@@ -67,6 +67,7 @@ use pocketmine\level\LevelException;
 use pocketmine\metadata\EntityMetadataStore;
 use pocketmine\metadata\LevelMetadataStore;
 use pocketmine\metadata\PlayerMetadataStore;
+use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
@@ -749,7 +750,7 @@ class Server{
 		if($this->shouldSavePlayerData()){
 			if(file_exists($path . "$name.dat")){
 				try{
-					$nbt = new NBT(NBT::BIG_ENDIAN);
+					$nbt = new BigEndianNBTStream();
 					$nbt->readCompressed(file_get_contents($path . "$name.dat"));
 
 					return $nbt->getData();
@@ -815,7 +816,7 @@ class Server{
 		$this->pluginManager->callEvent($ev);
 
 		if(!$ev->isCancelled()){
-			$nbt = new NBT(NBT::BIG_ENDIAN);
+			$nbt = new BigEndianNBTStream();
 			try{
 				$nbt->setData($ev->getSaveData());
 

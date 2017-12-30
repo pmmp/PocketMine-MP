@@ -32,7 +32,7 @@ use pocketmine\level\generator\Flat;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\Level;
 use pocketmine\level\LevelException;
-use pocketmine\nbt\NBT;
+use pocketmine\nbt\LittleEndianNBTStream;
 use pocketmine\nbt\tag\{
 	ByteTag, CompoundTag, FloatTag, IntTag, LongTag, StringTag
 };
@@ -94,7 +94,7 @@ class LevelDB extends BaseLevelProvider{
 		if(!file_exists($this->path)){
 			mkdir($this->path, 0777, true);
 		}
-		$nbt = new NBT(NBT::LITTLE_ENDIAN);
+		$nbt = new LittleEndianNBTStream();
 		$nbt->read(substr(file_get_contents($this->getPath() . "level.dat"), 8));
 		$levelData = $nbt->getData();
 		if($levelData instanceof CompoundTag){
@@ -217,7 +217,7 @@ class LevelDB extends BaseLevelProvider{
 			new StringTag("generatorOptions", $options["preset"] ?? "")
 		]);
 
-		$nbt = new NBT(NBT::LITTLE_ENDIAN);
+		$nbt = new LittleEndianNBTStream();
 		$nbt->setData($levelData);
 		$buffer = $nbt->write();
 		file_put_contents($path . "level.dat", Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
@@ -247,7 +247,7 @@ class LevelDB extends BaseLevelProvider{
 		$this->levelData->setInt("NetworkVersion", ProtocolInfo::CURRENT_PROTOCOL);
 		$this->levelData->setInt("StorageVersion", self::CURRENT_STORAGE_VERSION);
 
-		$nbt = new NBT(NBT::LITTLE_ENDIAN);
+		$nbt = new LittleEndianNBTStream();
 		$nbt->setData($this->levelData);
 		$buffer = $nbt->write();
 		file_put_contents($this->getPath() . "level.dat", Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
@@ -416,7 +416,7 @@ class LevelDB extends BaseLevelProvider{
 					throw new UnsupportedChunkFormatException("don't know how to decode chunk format version $chunkVersion");
 			}
 
-			$nbt = new NBT(NBT::LITTLE_ENDIAN);
+			$nbt = new LittleEndianNBTStream();
 
 			$entities = [];
 			if(($entityData = $this->db->get($index . self::TAG_ENTITY)) !== false and strlen($entityData) > 0){
@@ -553,7 +553,7 @@ class LevelDB extends BaseLevelProvider{
 	 */
 	private function writeTags(array $targets, string $index){
 		if(!empty($targets)){
-			$nbt = new NBT(NBT::LITTLE_ENDIAN);
+			$nbt = new LittleEndianNBTStream();
 			$nbt->setData($targets);
 			$this->db->put($index, $nbt->write());
 		}else{
