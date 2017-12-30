@@ -409,31 +409,31 @@ class McRegion extends BaseLevelProvider{
 	/**
 	 * @param int $chunkX
 	 * @param int $chunkZ
-	 * @param int &$x
-	 * @param int &$z
+	 * @param int &$regionX
+	 * @param int &$regionZ
 	 */
-	public static function getRegionIndex(int $chunkX, int $chunkZ, &$x, &$z){
-		$x = $chunkX >> 5;
-		$z = $chunkZ >> 5;
+	public static function getRegionIndex(int $chunkX, int $chunkZ, &$regionX, &$regionZ){
+		$regionX = $chunkX >> 5;
+		$regionZ = $chunkZ >> 5;
 	}
 
 	/**
-	 * @param int $x
-	 * @param int $z
+	 * @param int $regionX
+	 * @param int $regionZ
 	 *
 	 * @return RegionLoader|null
 	 */
-	protected function getRegion(int $x, int $z){
-		return $this->regions[Level::chunkHash($x, $z)] ?? null;
+	protected function getRegion(int $regionX, int $regionZ){
+		return $this->regions[Level::chunkHash($regionX, $regionZ)] ?? null;
 	}
 
 	/**
-	 * @param int $x
-	 * @param int $z
+	 * @param int $regionX
+	 * @param int $regionZ
 	 */
-	protected function loadRegion(int $x, int $z){
-		if(!isset($this->regions[$index = Level::chunkHash($x, $z)])){
-			$this->regions[$index] = new RegionLoader($this, $x, $z, static::REGION_FILE_EXTENSION);
+	protected function loadRegion(int $regionX, int $regionZ){
+		if(!isset($this->regions[$index = Level::chunkHash($regionX, $regionZ)])){
+			$this->regions[$index] = new RegionLoader($this, $regionX, $regionZ, static::REGION_FILE_EXTENSION);
 			try{
 				$this->regions[$index]->open();
 			}catch(CorruptedRegionException $e){
@@ -447,7 +447,7 @@ class McRegion extends BaseLevelProvider{
 				rename($path, $backupPath);
 				$logger->error("Corrupted region file has been backed up to " . $backupPath);
 
-				$this->regions[$index] = new RegionLoader($this, $x, $z, static::REGION_FILE_EXTENSION);
+				$this->regions[$index] = new RegionLoader($this, $regionX, $regionZ, static::REGION_FILE_EXTENSION);
 				$this->regions[$index]->open(); //this will create a new empty region to replace the corrupted one
 			}
 		}
