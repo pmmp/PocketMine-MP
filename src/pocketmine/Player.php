@@ -1741,11 +1741,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * Returns whether the player can interact with the specified position. This checks distance and direction.
 	 *
 	 * @param Vector3 $pos
-	 * @param         $maxDistance
+	 * @param float   $maxDistance
 	 *
 	 * @return bool
 	 */
-	public function canInteract(Vector3 $pos, $maxDistance) : bool{
+	public function canInteract(Vector3 $pos, float $maxDistance) : bool{
 		$eyePos = $this->getPosition()->add(0, $this->getEyeHeight(), 0);
 		if($eyePos->distanceSquared($pos) > $maxDistance ** 2){
 			return false;
