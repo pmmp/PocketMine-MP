@@ -89,7 +89,7 @@ abstract class TextFormat{
 	 * @return string
 	 */
 	public static function colorize(string $string, string $placeholder = "&") : string{
-		return preg_replace('/' . preg_quote($placeholder) . '([0-9a-fk-or])/u', TextFormat::ESCAPE . '$1', $string);
+		return preg_replace('/' . preg_quote($placeholder, "/") . '([0-9a-fk-or])/u', TextFormat::ESCAPE . '$1', $string);
 	}
 
 	/**
