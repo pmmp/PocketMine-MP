@@ -336,10 +336,11 @@ class McRegion extends BaseLevelProvider{
 		}
 		$regionX = $regionZ = null;
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
-		/** @noinspection PhpStrictTypeCheckingInspection */
+		assert(is_int($regionX) and is_int($regionZ));
+
 		$this->loadRegion($regionX, $regionZ);
 		$this->level->timings->syncChunkLoadDataTimer->startTiming();
-		/** @noinspection PhpStrictTypeCheckingInspection */
+
 		$chunk = $this->getRegion($regionX, $regionZ)->readChunk($chunkX & 0x1f, $chunkZ & 0x1f);
 		if($chunk === null and $create){
 			$chunk = new Chunk($chunkX, $chunkZ);
