@@ -33,7 +33,11 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\NamedTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
+#ifndef COMPILE
 use pocketmine\utils\Binary;
+#endif
+
+#include <rules/NBT.h>
 
 /**
  * Base Named Binary Tag encoder/decoder

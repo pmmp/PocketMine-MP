@@ -23,7 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\nbt;
 
+#ifndef COMPILE
 use pocketmine\utils\Binary;
+#endif
+
+#include <rules/NBT.h>
 
 class NetworkLittleEndianNBTStream extends LittleEndianNBTStream{
 
