@@ -1183,7 +1183,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->setSpawn($pos);
 
-		$this->level->sleepTicks = 60;
+		$this->level->setSleepTicks(60);
 
 		return true;
 	}
@@ -1200,7 +1200,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [0, 0, 0]);
 			$this->setPlayerFlag(self::DATA_PLAYER_FLAG_SLEEP, false);
 
-			$this->level->sleepTicks = 0;
+			$this->level->setSleepTicks(0);
 
 			$pk = new AnimatePacket();
 			$pk->entityRuntimeId = $this->id;

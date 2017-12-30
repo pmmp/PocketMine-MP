@@ -223,7 +223,7 @@ class Level implements ChunkManager, Metadatable{
 	private $blockStates;
 
 	/** @var int */
-	public $sleepTicks = 0;
+	private $sleepTicks = 0;
 
 	/** @var int */
 	private $chunkTickRadius;
@@ -836,6 +836,10 @@ class Level implements ChunkManager, Metadatable{
 				}
 			}
 		}
+	}
+
+	public function setSleepTicks(int $ticks) : void{
+		$this->sleepTicks = $ticks;
 	}
 
 	public function sendBlockExtraData(int $x, int $y, int $z, int $id, int $data, array $targets = null){
