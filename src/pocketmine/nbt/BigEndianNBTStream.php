@@ -39,7 +39,7 @@ class BigEndianNBTStream extends NBTStream{
 		return Binary::readSignedShort($this->get(2));
 	}
 
-	public function putShort($v){
+	public function putShort(int $v) : void{
 		$this->buffer .= Binary::writeShort($v);
 	}
 
@@ -47,7 +47,7 @@ class BigEndianNBTStream extends NBTStream{
 		return Binary::readInt($this->get(4));
 	}
 
-	public function putInt($v){
+	public function putInt(int $v) : void{
 		$this->buffer .= Binary::writeInt($v);
 	}
 
@@ -55,7 +55,7 @@ class BigEndianNBTStream extends NBTStream{
 		return Binary::readLong($this->get(8));
 	}
 
-	public function putLong($v){
+	public function putLong(int $v) : void{
 		$this->buffer .= Binary::writeLong($v);
 	}
 
@@ -63,7 +63,7 @@ class BigEndianNBTStream extends NBTStream{
 		return Binary::readFloat($this->get(4));
 	}
 
-	public function putFloat($v){
+	public function putFloat(float $v) : void{
 		$this->buffer .= Binary::writeFloat($v);
 	}
 
@@ -71,7 +71,7 @@ class BigEndianNBTStream extends NBTStream{
 		return Binary::readDouble($this->get(8));
 	}
 
-	public function putDouble($v){
+	public function putDouble(float $v) : void{
 		$this->buffer .= Binary::writeDouble($v);
 	}
 

@@ -35,7 +35,7 @@ class NetworkLittleEndianNBTStream extends LittleEndianNBTStream{
 		return Binary::readVarInt($this->buffer, $this->offset);
 	}
 
-	public function putInt($v){
+	public function putInt(int $v) : void{
 		$this->put(Binary::writeVarInt($v));
 	}
 
@@ -43,15 +43,15 @@ class NetworkLittleEndianNBTStream extends LittleEndianNBTStream{
 		return Binary::readVarLong($this->buffer, $this->offset);
 	}
 
-	public function putLong($v){
+	public function putLong(int $v) : void{
 		$this->put(Binary::writeVarLong($v));
 	}
 
-	public function getString(){
+	public function getString() : string{
 		return $this->get(Binary::readUnsignedVarInt($this->buffer, $this->offset));
 	}
 
-	public function putString($v){
+	public function putString(string $v) : void{
 		$this->put(Binary::writeUnsignedVarInt(strlen($v)) . $v);
 	}
 

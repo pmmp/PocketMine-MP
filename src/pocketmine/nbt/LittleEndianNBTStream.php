@@ -39,7 +39,7 @@ class LittleEndianNBTStream extends NBTStream{
 		return Binary::readSignedLShort($this->get(2));
 	}
 
-	public function putShort($v){
+	public function putShort(int $v) : void{
 		$this->put(Binary::writeLShort($v));
 	}
 
@@ -47,7 +47,7 @@ class LittleEndianNBTStream extends NBTStream{
 		return Binary::readLInt($this->get(4));
 	}
 
-	public function putInt($v){
+	public function putInt(int $v) : void{
 		$this->put(Binary::writeLInt($v));
 	}
 
@@ -55,7 +55,7 @@ class LittleEndianNBTStream extends NBTStream{
 		return Binary::readLLong($this->get(8));
 	}
 
-	public function putLong($v){
+	public function putLong(int $v) : void{
 		$this->put(Binary::writeLLong($v));
 	}
 
@@ -63,7 +63,7 @@ class LittleEndianNBTStream extends NBTStream{
 		return Binary::readLFloat($this->get(4));
 	}
 
-	public function putFloat($v){
+	public function putFloat(float $v) : void{
 		$this->put(Binary::writeLFloat($v));
 	}
 
@@ -71,7 +71,7 @@ class LittleEndianNBTStream extends NBTStream{
 		return Binary::readLDouble($this->get(8));
 	}
 
-	public function putDouble($v){
+	public function putDouble(float $v) : void{
 		$this->put(Binary::writeLDouble($v));
 	}
 

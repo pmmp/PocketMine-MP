@@ -48,7 +48,7 @@ abstract class NBTStream{
 	public $offset;
 	private $data;
 
-	public function get($len){
+	public function get($len) : string{
 		if($len < 0){
 			$this->offset = strlen($this->buffer) - 1;
 			return "";
@@ -59,7 +59,7 @@ abstract class NBTStream{
 		return $len === 1 ? $this->buffer{$this->offset++} : substr($this->buffer, ($this->offset += $len) - $len, $len);
 	}
 
-	public function put($v){
+	public function put(string $v) : void{
 		$this->buffer .= $v;
 	}
 
@@ -72,7 +72,7 @@ abstract class NBTStream{
 		$this->buffer = "";
 	}
 
-	public function read($buffer, $doMultiple = false){
+	public function read(string $buffer, bool $doMultiple = false) : void{
 		$this->offset = 0;
 		$this->buffer = $buffer;
 		$this->data = $this->readTag();
@@ -85,7 +85,7 @@ abstract class NBTStream{
 		$this->buffer = "";
 	}
 
-	public function readCompressed($buffer){
+	public function readCompressed(string $buffer) : void{
 		$this->read(zlib_decode($buffer));
 	}
 
@@ -110,7 +110,7 @@ abstract class NBTStream{
 		return false;
 	}
 
-	public function writeCompressed($compression = ZLIB_ENCODING_GZIP, $level = 7){
+	public function writeCompressed(int $compression = ZLIB_ENCODING_GZIP, int $level = 7){
 		if(($write = $this->write()) !== false){
 			return zlib_encode($write, $compression, $level);
 		}
@@ -118,7 +118,7 @@ abstract class NBTStream{
 		return false;
 	}
 
-	public function readTag(){
+	public function readTag() : Tag{
 		if($this->feof()){
 			return new EndTag();
 		}
@@ -134,7 +134,7 @@ abstract class NBTStream{
 		return $tag;
 	}
 
-	public function writeTag(Tag $tag){
+	public function writeTag(Tag $tag) : void{
 		$this->putByte($tag->getType());
 		if($tag instanceof NamedTag){
 			$this->putString($tag->getName());
@@ -150,7 +150,7 @@ abstract class NBTStream{
 		return Binary::readSignedByte($this->get(1));
 	}
 
-	public function putByte($v){
+	public function putByte(int $v) : void{
 		$this->buffer .= Binary::writeByte($v);
 	}
 
@@ -158,32 +158,32 @@ abstract class NBTStream{
 
 	abstract public function getSignedShort() : int;
 
-	abstract public function putShort($v);
+	abstract public function putShort(int $v) : void;
 
 
 	abstract public function getInt() : int;
 
-	abstract public function putInt($v);
+	abstract public function putInt(int $v) : void;
 
 	abstract public function getLong() : int;
 
-	abstract public function putLong($v);
+	abstract public function putLong(int $v) : void;
 
 
 	abstract public function getFloat() : float;
 
-	abstract public function putFloat($v);
+	abstract public function putFloat(float $v) : void;
 
 
 	abstract public function getDouble() : float;
 
-	abstract public function putDouble($v);
+	abstract public function putDouble(float $v) : void;
 
-	public function getString(){
+	public function getString() : string{
 		return $this->get($this->getShort());
 	}
 
-	public function putString($v){
+	public function putString(string $v) : void{
 		$this->putShort(strlen($v));
 		$this->put($v);
 	}
@@ -200,7 +200,7 @@ abstract class NBTStream{
 		return $data;
 	}
 
-	private static function toArray(array &$data, Tag $tag){
+	private static function toArray(array &$data, Tag $tag) : void{
 		/** @var CompoundTag[]|ListTag[]|IntArrayTag[] $tag */
 		foreach($tag as $key => $value){
 			if($value instanceof CompoundTag or $value instanceof ListTag or $value instanceof IntArrayTag){
@@ -212,7 +212,7 @@ abstract class NBTStream{
 		}
 	}
 
-	public static function fromArrayGuesser($key, $value){
+	public static function fromArrayGuesser(string $key, $value) : ?NamedTag{
 		if(is_int($value)){
 			return new IntTag($key, $value);
 		}elseif(is_float($value)){
@@ -226,7 +226,7 @@ abstract class NBTStream{
 		return null;
 	}
 
-	private static function fromArray(Tag $tag, array $data, callable $guesser){
+	private static function fromArray(Tag $tag, array $data, callable $guesser) : void{
 		foreach($data as $key => $value){
 			if(is_array($value)){
 				$isNumeric = true;
@@ -250,7 +250,7 @@ abstract class NBTStream{
 		}
 	}
 
-	public function setArray(array $data, callable $guesser = null){
+	public function setArray(array $data, callable $guesser = null) : void{
 		$this->data = new CompoundTag("", []);
 		self::fromArray($this->data, $data, $guesser ?? [self::class, "fromArrayGuesser"]);
 	}
@@ -265,7 +265,7 @@ abstract class NBTStream{
 	/**
 	 * @param CompoundTag|array $data
 	 */
-	public function setData($data){
+	public function setData($data) : void{
 		$this->data = $data;
 	}
 }

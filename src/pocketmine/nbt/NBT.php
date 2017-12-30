@@ -62,7 +62,7 @@ abstract class NBT{
 	 *
 	 * @return Tag
 	 */
-	public static function createTag(int $type){
+	public static function createTag(int $type) : Tag{
 		switch($type){
 			case self::TAG_End:
 				return new EndTag();
