@@ -340,7 +340,7 @@ class McRegion extends BaseLevelProvider{
 		$this->loadRegion($regionX, $regionZ);
 		$this->level->timings->syncChunkLoadDataTimer->startTiming();
 		/** @noinspection PhpStrictTypeCheckingInspection */
-		$chunk = $this->getRegion($regionX, $regionZ)->readChunk($chunkX - $regionX * 32, $chunkZ - $regionZ * 32);
+		$chunk = $this->getRegion($regionX, $regionZ)->readChunk($chunkX & 0x1f, $chunkZ & 0x1f);
 		if($chunk === null and $create){
 			$chunk = new Chunk($chunkX, $chunkZ);
 		}
@@ -377,7 +377,7 @@ class McRegion extends BaseLevelProvider{
 
 	public function isChunkGenerated(int $chunkX, int $chunkZ) : bool{
 		if(($region = $this->getRegion($chunkX >> 5, $chunkZ >> 5)) !== null){
-			return $region->chunkExists($chunkX - $region->getX() * 32, $chunkZ - $region->getZ() * 32) and $this->getChunk($chunkX - $region->getX() * 32, $chunkZ - $region->getZ() * 32, true)->isGenerated();
+			return $region->chunkExists($chunkX & 0x1f, $chunkZ & 0x1f) and $this->getChunk($chunkX & 0x1f, $chunkZ & 0x1f, true)->isGenerated();
 		}
 
 		return false;

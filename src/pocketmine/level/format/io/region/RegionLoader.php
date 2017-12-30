@@ -183,7 +183,7 @@ class RegionLoader{
 		$this->lastUsed = time();
 		$chunkData = $this->levelProvider->nbtSerialize($chunk);
 		if($chunkData !== false){
-			$this->saveChunk($chunk->getX() - ($this->getX() * 32), $chunk->getZ() - ($this->getZ() * 32), $chunkData);
+			$this->saveChunk($chunk->getX() & 0x1f, $chunk->getZ() & 0x1f, $chunkData);
 		}
 	}
 
