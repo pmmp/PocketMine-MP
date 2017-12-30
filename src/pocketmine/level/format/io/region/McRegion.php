@@ -315,7 +315,7 @@ class McRegion extends BaseLevelProvider{
 			if(!$chunk->isGenerated()){
 				throw new \InvalidStateException("Cannot save un-generated chunk");
 			}
-			$this->getRegion($chunkX >> 5, $chunkZ >> 5)->writeChunk($chunk);
+			$this->getRegion($chunkX >> 5, $chunkZ >> 5)->writeChunk($chunkX & 0x1f, $chunkZ & 0x1f, $this->nbtSerialize($chunk));
 
 			return true;
 		}
@@ -341,7 +341,13 @@ class McRegion extends BaseLevelProvider{
 		$this->loadRegion($regionX, $regionZ);
 		$this->level->timings->syncChunkLoadDataTimer->startTiming();
 
-		$chunk = $this->getRegion($regionX, $regionZ)->readChunk($chunkX & 0x1f, $chunkZ & 0x1f);
+		$chunk = null;
+
+		$chunkData = $this->getRegion($regionX, $regionZ)->readChunk($chunkX & 0x1f, $chunkZ & 0x1f);
+		if($chunkData !== null){
+			$chunk = $this->nbtDeserialize($chunkData);
+		}
+
 		if($chunk === null and $create){
 			$chunk = new Chunk($chunkX, $chunkZ);
 		}
@@ -434,7 +440,7 @@ class McRegion extends BaseLevelProvider{
 	 */
 	protected function loadRegion(int $regionX, int $regionZ){
 		if(!isset($this->regions[$index = Level::chunkHash($regionX, $regionZ)])){
-			$this->regions[$index] = new RegionLoader($this, $regionX, $regionZ, static::REGION_FILE_EXTENSION);
+			$this->regions[$index] = new RegionLoader($this->getPath() . "region/r.$regionX.$regionZ." . static::REGION_FILE_EXTENSION, $regionX, $regionZ);
 			try{
 				$this->regions[$index]->open();
 			}catch(CorruptedRegionException $e){
@@ -448,7 +454,7 @@ class McRegion extends BaseLevelProvider{
 				rename($path, $backupPath);
 				$logger->error("Corrupted region file has been backed up to " . $backupPath);
 
-				$this->regions[$index] = new RegionLoader($this, $regionX, $regionZ, static::REGION_FILE_EXTENSION);
+				$this->regions[$index] = new RegionLoader($this->getPath() . "region/r.$regionX.$regionZ." . static::REGION_FILE_EXTENSION, $regionX, $regionZ);
 				$this->regions[$index]->open(); //this will create a new empty region to replace the corrupted one
 			}
 		}
