@@ -163,10 +163,6 @@ class LevelDB extends BaseLevelProvider{
 	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []){
 		self::checkForLevelDBExtension();
 
-		if(!file_exists($path)){
-			mkdir($path, 0777, true);
-		}
-
 		if(!file_exists($path . "/db")){
 			mkdir($path . "/db", 0777, true);
 		}
