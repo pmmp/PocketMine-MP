@@ -756,12 +756,16 @@ class PluginManager{
 						$priority = constant(EventPriority::class . "::" . $matches[1]);
 					}
 				}
-				if(preg_match("/^[\t ]*\\* @ignoreCancelled[\t ]{1,}([a-zA-Z]{1,})/m", (string) $method->getDocComment(), $matches) > 0){
-					$matches[1] = strtolower($matches[1]);
-					if($matches[1] === "false"){
-						$ignoreCancelled = false;
-					}elseif($matches[1] === "true"){
+				if(preg_match("/^[\t ]*\\* @ignoreCancelled([\t ]{1,}([a-zA-Z]{1,}))?/m", (string) $method->getDocComment(), $matches) > 0){
+					if(!isset($matches[1])){
 						$ignoreCancelled = true;
+					}else{
+						$matches[1] = strtolower(trim($matches[1]));
+						if($matches[1] === "false"){
+							$ignoreCancelled = false;
+						}elseif($matches[1] === "true"){
+							$ignoreCancelled = true;
+						}
 					}
 				}
 
