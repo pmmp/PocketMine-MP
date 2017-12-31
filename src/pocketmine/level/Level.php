@@ -343,7 +343,7 @@ class Level implements ChunkManager, Metadatable{
 		/** @var LevelProvider $provider */
 
 		if(is_subclass_of($provider, LevelProvider::class, true)){
-			$this->provider = new $provider($this, $path);
+			$this->provider = new $provider($path);
 		}else{
 			throw new LevelException("Provider is not a subclass of LevelProvider");
 		}
@@ -2546,7 +2546,7 @@ class Level implements ChunkManager, Metadatable{
 				}
 				$this->timings->syncChunkSendPrepareTimer->startTiming();
 
-				$chunk = $this->provider->getChunk($x, $z, false);
+				$chunk = $this->provider->getChunk($x, $z);
 				if(!($chunk instanceof Chunk)){
 					throw new ChunkException("Invalid Chunk sent");
 				}
@@ -2686,7 +2686,13 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->cancelUnloadChunkRequest($x, $z);
 
-		$chunk = $this->provider->getChunk($x, $z, $generate);
+		$this->timings->syncChunkLoadDataTimer->startTiming();
+
+		$this->provider->loadChunk($x, $z, $generate);
+		$chunk = $this->provider->getChunk($x, $z);
+
+		$this->timings->syncChunkLoadDataTimer->stopTiming();
+
 		if($chunk === null){
 			if($generate){
 				throw new \InvalidStateException("Could not create new Chunk");

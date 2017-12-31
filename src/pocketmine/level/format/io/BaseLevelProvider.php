@@ -33,8 +33,6 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
 
 abstract class BaseLevelProvider implements LevelProvider{
-	/** @var Level */
-	protected $level;
 	/** @var string */
 	protected $path;
 	/** @var CompoundTag */
@@ -42,8 +40,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 	/** @var Chunk[] */
 	protected $chunks = [];
 
-	public function __construct(Level $level, string $path){
-		$this->level = $level;
+	public function __construct(string $path){
 		$this->path = $path;
 		if(!file_exists($this->path)){
 			mkdir($this->path, 0777, true);
@@ -120,15 +117,8 @@ abstract class BaseLevelProvider implements LevelProvider{
 		file_put_contents($this->getPath() . "level.dat", $buffer);
 	}
 
-	public function getChunk(int $chunkX, int $chunkZ, bool $create = false){
-		$index = Level::chunkHash($chunkX, $chunkZ);
-		if(isset($this->chunks[$index])){
-			return $this->chunks[$index];
-		}else{
-			$this->loadChunk($chunkX, $chunkZ, $create);
-
-			return $this->chunks[$index] ?? null;
-		}
+	public function getChunk(int $chunkX, int $chunkZ){
+		return $this->chunks[Level::chunkHash($chunkX, $chunkZ)] ?? null;
 	}
 
 	public function isChunkLoaded(int $chunkX, int $chunkZ) : bool{
@@ -145,12 +135,10 @@ abstract class BaseLevelProvider implements LevelProvider{
 			return true;
 		}
 
-		$this->level->timings->syncChunkLoadDataTimer->startTiming();
 		$chunk = $this->readChunk($chunkX, $chunkZ);
 		if($chunk === null and $create){
 			$chunk = new Chunk($chunkX, $chunkZ);
 		}
-		$this->level->timings->syncChunkLoadDataTimer->stopTiming();
 
 		if($chunk !== null){
 			$this->chunks[$index] = $chunk;

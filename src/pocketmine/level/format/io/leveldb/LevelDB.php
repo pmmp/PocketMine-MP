@@ -87,10 +87,9 @@ class LevelDB extends BaseLevelProvider{
 		}
 	}
 
-	public function __construct(Level $level, string $path){
+	public function __construct(string $path){
 		self::checkForLevelDBExtension();
 
-		$this->level = $level;
 		$this->path = $path;
 		if(!file_exists($this->path)){
 			mkdir($this->path, 0777, true);
@@ -530,6 +529,5 @@ class LevelDB extends BaseLevelProvider{
 	public function close(){
 		$this->unloadChunks();
 		$this->db->close();
-		$this->level = null;
 	}
 }

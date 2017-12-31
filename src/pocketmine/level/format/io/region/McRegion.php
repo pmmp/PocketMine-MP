@@ -355,7 +355,6 @@ class McRegion extends BaseLevelProvider{
 			$region->close();
 			unset($this->regions[$index]);
 		}
-		$this->level = null;
 	}
 
 	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{

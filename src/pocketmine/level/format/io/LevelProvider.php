@@ -24,16 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\level\format\io;
 
 use pocketmine\level\format\Chunk;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 
 interface LevelProvider{
 
 	/**
-	 * @param Level  $level
 	 * @param string $path
 	 */
-	public function __construct(Level $level, string $path);
+	public function __construct(string $path);
 
 	/**
 	 * Returns the full provider name, like "anvil" or "mcregion", will be used to find the correct format.
@@ -91,13 +89,12 @@ interface LevelProvider{
 	 * Gets the Chunk object
 	 * This method must be implemented by all the level formats.
 	 *
-	 * @param int  $chunkX
-	 * @param int  $chunkZ
-	 * @param bool $create
+	 * @param int $chunkX
+	 * @param int $chunkZ
 	 *
 	 * @return Chunk|null
 	 */
-	public function getChunk(int $chunkX, int $chunkZ, bool $create = false);
+	public function getChunk(int $chunkX, int $chunkZ);
 
 	/**
 	 * @param int   $chunkX
