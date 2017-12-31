@@ -435,12 +435,25 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	/**
+	 * Returns the path to a specific region file based on its X/Z coordinates
+	 *
+	 * @param int $regionX
+	 * @param int $regionZ
+	 *
+	 * @return string
+	 */
+	protected function pathToRegion(int $regionX, int $regionZ) : string{
+		return $this->path . "region/r.$regionX.$regionZ." . static::REGION_FILE_EXTENSION;
+	}
+
+	/**
 	 * @param int $regionX
 	 * @param int $regionZ
 	 */
 	protected function loadRegion(int $regionX, int $regionZ){
 		if(!isset($this->regions[$index = Level::chunkHash($regionX, $regionZ)])){
-			$this->regions[$index] = new RegionLoader($this->getPath() . "region/r.$regionX.$regionZ." . static::REGION_FILE_EXTENSION, $regionX, $regionZ);
+			$path = $this->pathToRegion($regionX, $regionZ);
+			$this->regions[$index] = new RegionLoader($path, $regionX, $regionZ);
 			try{
 				$this->regions[$index]->open();
 			}catch(CorruptedRegionException $e){
@@ -449,12 +462,11 @@ class McRegion extends BaseLevelProvider{
 
 				$this->regions[$index]->close(false); //Do not write anything to the file
 
-				$path = $this->regions[$index]->getFilePath();
 				$backupPath = $path . ".bak." . time();
 				rename($path, $backupPath);
 				$logger->error("Corrupted region file has been backed up to " . $backupPath);
 
-				$this->regions[$index] = new RegionLoader($this->getPath() . "region/r.$regionX.$regionZ." . static::REGION_FILE_EXTENSION, $regionX, $regionZ);
+				$this->regions[$index] = new RegionLoader($path, $regionX, $regionZ);
 				$this->regions[$index]->open(); //this will create a new empty region to replace the corrupted one
 			}
 		}
