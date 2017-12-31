@@ -70,14 +70,6 @@ abstract class BaseLevelProvider implements LevelProvider{
 		return $this->path;
 	}
 
-	public function getServer(){
-		return $this->level->getServer();
-	}
-
-	public function getLevel() : Level{
-		return $this->level;
-	}
-
 	public function getName() : string{
 		return $this->levelData->getString("LevelName");
 	}
@@ -215,15 +207,6 @@ abstract class BaseLevelProvider implements LevelProvider{
 			$this->unloadChunk($chunk->getX(), $chunk->getZ(), false);
 		}
 		$this->chunks = [];
-	}
-
-	public function isChunkPopulated(int $chunkX, int $chunkZ) : bool{
-		$chunk = $this->getChunk($chunkX, $chunkZ);
-		if($chunk !== null){
-			return $chunk->isPopulated();
-		}else{
-			return false;
-		}
 	}
 
 	abstract protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk;

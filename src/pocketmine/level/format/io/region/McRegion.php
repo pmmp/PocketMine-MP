@@ -280,14 +280,6 @@ class McRegion extends BaseLevelProvider{
 		$this->levelData->setByte("Difficulty", $difficulty);
 	}
 
-	public function isChunkGenerated(int $chunkX, int $chunkZ) : bool{
-		if(($region = $this->getRegion($chunkX >> 5, $chunkZ >> 5)) !== null){
-			return $region->chunkExists($chunkX & 0x1f, $chunkZ & 0x1f) and $this->getChunk($chunkX & 0x1f, $chunkZ & 0x1f, true)->isGenerated();
-		}
-
-		return false;
-	}
-
 	public function doGarbageCollection(){
 		$limit = time() - 300;
 		foreach($this->regions as $index => $region){

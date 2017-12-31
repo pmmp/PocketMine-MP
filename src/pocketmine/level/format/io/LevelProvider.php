@@ -145,22 +145,6 @@ interface LevelProvider{
 	public function isChunkLoaded(int $chunkX, int $chunkZ) : bool;
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return bool
-	 */
-	public function isChunkGenerated(int $chunkX, int $chunkZ) : bool;
-
-	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return bool
-	 */
-	public function isChunkPopulated(int $chunkX, int $chunkZ) : bool;
-
-	/**
 	 * @return string
 	 */
 	public function getName() : string;
@@ -213,11 +197,6 @@ interface LevelProvider{
 	public function getLoadedChunks() : array;
 
 	public function doGarbageCollection();
-
-	/**
-	 * @return Level
-	 */
-	public function getLevel() : Level;
 
 	public function close();
 

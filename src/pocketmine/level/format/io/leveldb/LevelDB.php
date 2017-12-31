@@ -527,10 +527,6 @@ class LevelDB extends BaseLevelProvider{
 		return $this->db->get(LevelDB::chunkIndex($chunkX, $chunkZ) . self::TAG_VERSION) !== false;
 	}
 
-	public function isChunkGenerated(int $chunkX, int $chunkZ) : bool{
-		return $this->chunkExists($chunkX, $chunkZ) and ($chunk = $this->getChunk($chunkX, $chunkZ, false)) !== null;
-	}
-
 	public function close(){
 		$this->unloadChunks();
 		$this->db->close();
