@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format\io;
 
+use pocketmine\level\format\Chunk;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\Level;
 use pocketmine\level\LevelException;
@@ -38,6 +39,8 @@ abstract class BaseLevelProvider implements LevelProvider{
 	protected $path;
 	/** @var CompoundTag */
 	protected $levelData;
+	/** @var Chunk[] */
+	protected $chunks = [];
 
 	public function __construct(Level $level, string $path){
 		$this->level = $level;
@@ -124,4 +127,106 @@ abstract class BaseLevelProvider implements LevelProvider{
 		$buffer = $nbt->writeCompressed();
 		file_put_contents($this->getPath() . "level.dat", $buffer);
 	}
+
+	public function getChunk(int $chunkX, int $chunkZ, bool $create = false){
+		$index = Level::chunkHash($chunkX, $chunkZ);
+		if(isset($this->chunks[$index])){
+			return $this->chunks[$index];
+		}else{
+			$this->loadChunk($chunkX, $chunkZ, $create);
+
+			return $this->chunks[$index] ?? null;
+		}
+	}
+
+	public function isChunkLoaded(int $chunkX, int $chunkZ) : bool{
+		return isset($this->chunks[Level::chunkHash($chunkX, $chunkZ)]);
+	}
+
+	public function getLoadedChunks() : array{
+		return $this->chunks;
+	}
+
+	public function loadChunk(int $chunkX, int $chunkZ, bool $create = false) : bool{
+		$index = Level::chunkHash($chunkX, $chunkZ);
+		if(isset($this->chunks[$index])){
+			return true;
+		}
+
+		$this->level->timings->syncChunkLoadDataTimer->startTiming();
+		$chunk = $this->readChunk($chunkX, $chunkZ);
+		if($chunk === null and $create){
+			$chunk = new Chunk($chunkX, $chunkZ);
+		}
+		$this->level->timings->syncChunkLoadDataTimer->stopTiming();
+
+		if($chunk !== null){
+			$this->chunks[$index] = $chunk;
+
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk){
+		$chunk->setX($chunkX);
+		$chunk->setZ($chunkZ);
+
+		if(isset($this->chunks[$index = Level::chunkHash($chunkX, $chunkZ)]) and $this->chunks[$index] !== $chunk){
+			$this->unloadChunk($chunkX, $chunkZ, false);
+		}
+
+		$this->chunks[$index] = $chunk;
+	}
+
+	public function saveChunks(){
+		foreach($this->chunks as $chunk){
+			$this->saveChunk($chunk->getX(), $chunk->getZ());
+		}
+	}
+
+	public function saveChunk(int $chunkX, int $chunkZ) : bool{
+		if($this->isChunkLoaded($chunkX, $chunkZ)){
+			$chunk = $this->getChunk($chunkX, $chunkZ);
+			if(!$chunk->isGenerated()){
+				throw new \InvalidStateException("Cannot save un-generated chunk");
+			}
+			$this->writeChunk($chunk);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	public function unloadChunk(int $chunkX, int $chunkZ, bool $safe = true) : bool{
+		$chunk = $this->chunks[$index = Level::chunkHash($chunkX, $chunkZ)] ?? null;
+		if($chunk instanceof Chunk and $chunk->unload($safe)){
+			unset($this->chunks[$index]);
+			return true;
+		}
+
+		return false;
+	}
+
+	public function unloadChunks(){
+		foreach($this->chunks as $chunk){
+			$this->unloadChunk($chunk->getX(), $chunk->getZ(), false);
+		}
+		$this->chunks = [];
+	}
+
+	public function isChunkPopulated(int $chunkX, int $chunkZ) : bool{
+		$chunk = $this->getChunk($chunkX, $chunkZ);
+		if($chunk !== null){
+			return $chunk->isPopulated();
+		}else{
+			return false;
+		}
+	}
+
+	abstract protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk;
+
+	abstract protected function writeChunk(Chunk $chunk) : void;
 }
