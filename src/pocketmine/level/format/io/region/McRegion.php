@@ -457,7 +457,7 @@ class McRegion extends BaseLevelProvider{
 			try{
 				$this->regions[$index]->open();
 			}catch(CorruptedRegionException $e){
-				$logger = $this->level->getServer()->getLogger();
+				$logger = MainLogger::getLogger();
 				$logger->error("Corrupted region file detected: " . $e->getMessage());
 
 				$this->regions[$index]->close(false); //Do not write anything to the file
