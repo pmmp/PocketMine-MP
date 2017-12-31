@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format\io;
 
-use pocketmine\level\format\Chunk;
-use pocketmine\level\format\ChunkException;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\Level;
 use pocketmine\level\LevelException;
@@ -32,7 +30,6 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\scheduler\AsyncTask;
 
 abstract class BaseLevelProvider implements LevelProvider{
 	/** @var Level */
@@ -126,14 +123,5 @@ abstract class BaseLevelProvider implements LevelProvider{
 		]));
 		$buffer = $nbt->writeCompressed();
 		file_put_contents($this->getPath() . "level.dat", $buffer);
-	}
-
-	public function requestChunkTask(int $x, int $z) : AsyncTask{
-		$chunk = $this->getChunk($x, $z, false);
-		if(!($chunk instanceof Chunk)){
-			throw new ChunkException("Invalid Chunk sent");
-		}
-
-		return new ChunkRequestTask($this->level, $chunk);
 	}
 }

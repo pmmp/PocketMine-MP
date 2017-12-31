@@ -26,7 +26,6 @@ namespace pocketmine\level\format\io;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
-use pocketmine\scheduler\AsyncTask;
 
 interface LevelProvider{
 
@@ -160,16 +159,6 @@ interface LevelProvider{
 	 * @return bool
 	 */
 	public function isChunkPopulated(int $chunkX, int $chunkZ) : bool;
-
-	/**
-	 * Requests a MC: PE network chunk to be sent
-	 *
-	 * @param int $x
-	 * @param int $z
-	 *
-	 * @return AsyncTask
-	 */
-	public function requestChunkTask(int $x, int $z) : AsyncTask;
 
 	/**
 	 * @return string

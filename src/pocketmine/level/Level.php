@@ -47,8 +47,10 @@ use pocketmine\event\Timings;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\format\Chunk;
+use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\EmptySubChunk;
 use pocketmine\level\format\io\BaseLevelProvider;
+use pocketmine\level\format\io\ChunkRequestTask;
 use pocketmine\level\format\io\LevelProvider;
 use pocketmine\level\generator\GenerationTask;
 use pocketmine\level\generator\Generator;
@@ -2544,8 +2546,12 @@ class Level implements ChunkManager, Metadatable{
 				}
 				$this->timings->syncChunkSendPrepareTimer->startTiming();
 
-				$task = $this->provider->requestChunkTask($x, $z);
-				$this->server->getScheduler()->scheduleAsyncTask($task);
+				$chunk = $this->provider->getChunk($x, $z, false);
+				if(!($chunk instanceof Chunk)){
+					throw new ChunkException("Invalid Chunk sent");
+				}
+
+				$this->server->getScheduler()->scheduleAsyncTask(new ChunkRequestTask($this, $chunk));
 
 				$this->timings->syncChunkSendPrepareTimer->stopTiming();
 			}
