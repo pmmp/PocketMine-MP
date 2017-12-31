@@ -27,6 +27,7 @@ use pocketmine\event\TranslationContainer;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
+use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -193,7 +194,14 @@ class Bed extends Transparent{
 	public function onBreak(Item $item, Player $player = null) : bool{
 		$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true, true);
 		if(($other = $this->getOtherHalf()) !== null){
-			$this->getLevel()->useBreakOn($other, $item, null, $player !== null); //make sure tiles get removed
+			if($player !== null){
+				$other->getLevel()->addParticle(new DestroyBlockParticle($other->add(0.5, 0.5, 0.5), $other));
+			}
+			$tile = $other->getLevel()->getTile($other);
+			if($tile !== null){
+				$tile->close();
+			}
+			$other->getLevel()->setBlock($other, BlockFactory::get(Block::AIR), true, true);
 		}
 
 		return true;
