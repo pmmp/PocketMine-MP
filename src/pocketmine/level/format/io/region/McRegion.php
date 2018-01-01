@@ -350,7 +350,6 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	public function close(){
-		$this->unloadChunks();
 		foreach($this->regions as $index => $region){
 			$region->close();
 			unset($this->regions[$index]);

@@ -1046,8 +1046,7 @@ class Level implements ChunkManager, Metadatable{
 	public function saveChunks(){
 		foreach($this->chunks as $chunk){
 			if($chunk->hasChanged() and $chunk->isGenerated()){
-				$this->provider->setChunk($chunk->getX(), $chunk->getZ(), $chunk);
-				$this->provider->saveChunk($chunk->getX(), $chunk->getZ());
+				$this->provider->saveChunk($chunk);
 				$chunk->setChanged(false);
 			}
 		}
@@ -2428,7 +2427,6 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
-		$this->provider->setChunk($chunkX, $chunkZ, $chunk);
 		$this->chunks[$chunkHash] = $chunk;
 
 		unset($this->blockCache[$chunkHash]);
@@ -2463,7 +2461,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function isChunkLoaded(int $x, int $z) : bool{
-		return isset($this->chunks[Level::chunkHash($x, $z)]) or $this->provider->isChunkLoaded($x, $z);
+		return isset($this->chunks[Level::chunkHash($x, $z)]);
 	}
 
 	/**
@@ -2546,7 +2544,7 @@ class Level implements ChunkManager, Metadatable{
 				}
 				$this->timings->syncChunkSendPrepareTimer->startTiming();
 
-				$chunk = $this->provider->getChunk($x, $z);
+				$chunk = $this->chunks[$index] ?? null;
 				if(!($chunk instanceof Chunk)){
 					throw new ChunkException("Invalid Chunk sent");
 				}
@@ -2688,8 +2686,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->timings->syncChunkLoadDataTimer->startTiming();
 
-		$this->provider->loadChunk($x, $z, $generate);
-		$chunk = $this->provider->getChunk($x, $z);
+		$chunk = $this->provider->loadChunk($x, $z, $generate);
 
 		$this->timings->syncChunkLoadDataTimer->stopTiming();
 
@@ -2770,8 +2767,7 @@ class Level implements ChunkManager, Metadatable{
 			if($chunk !== null){
 				if($trySave and $this->getAutoSave() and $chunk->isGenerated()){
 					if($chunk->hasChanged() or count($chunk->getTiles()) > 0 or count($chunk->getSavableEntities()) > 0){
-						$this->provider->setChunk($x, $z, $chunk);
-						$this->provider->saveChunk($x, $z);
+						$this->provider->saveChunk($chunk);
 					}
 				}
 
@@ -2779,7 +2775,9 @@ class Level implements ChunkManager, Metadatable{
 					$loader->onChunkUnloaded($chunk);
 				}
 			}
-			$this->provider->unloadChunk($x, $z, $safe);
+
+			//TODO: not checking return value, but is it needed anyway?
+			$chunk->unload($safe);
 		}catch(\Throwable $e){
 			$logger = $this->server->getLogger();
 			$logger->error($this->server->getLanguage()->translateString("pocketmine.level.chunkUnloadError", [$e->getMessage()]));
@@ -3036,12 +3034,6 @@ class Level implements ChunkManager, Metadatable{
 				if(!$this->isSpawnChunk($X, $Z)){
 					$this->unloadChunkRequest($X, $Z, true);
 				}
-			}
-		}
-
-		foreach($this->provider->getLoadedChunks() as $chunk){
-			if(!isset($this->chunks[Level::chunkHash($chunk->getX(), $chunk->getZ())])){
-				$this->provider->unloadChunk($chunk->getX(), $chunk->getZ(), false);
 			}
 		}
 

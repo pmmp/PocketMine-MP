@@ -86,60 +86,20 @@ interface LevelProvider{
 	public function getGeneratorOptions() : array;
 
 	/**
-	 * Gets the Chunk object
-	 * This method must be implemented by all the level formats.
-	 *
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return Chunk|null
-	 */
-	public function getChunk(int $chunkX, int $chunkZ);
-
-	/**
-	 * @param int   $chunkX
-	 * @param int   $chunkZ
 	 * @param Chunk $chunk
-	 */
-	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk);
-
-	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
 	 *
-	 * @return bool
+	 * @return void
 	 */
-	public function saveChunk(int $chunkX, int $chunkZ) : bool;
-
-	public function saveChunks();
+	public function saveChunk(Chunk $chunk) : void;
 
 	/**
 	 * @param int  $chunkX
 	 * @param int  $chunkZ
 	 * @param bool $create
 	 *
-	 * @return bool
+	 * @return null|Chunk
 	 */
-	public function loadChunk(int $chunkX, int $chunkZ, bool $create = false) : bool;
-
-	/**
-	 * @param int  $chunkX
-	 * @param int  $chunkZ
-	 * @param bool $safe
-	 *
-	 * @return bool
-	 */
-	public function unloadChunk(int $chunkX, int $chunkZ, bool $safe = true) : bool;
-
-	public function unloadChunks();
-
-	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return bool
-	 */
-	public function isChunkLoaded(int $chunkX, int $chunkZ) : bool;
+	public function loadChunk(int $chunkX, int $chunkZ, bool $create = false) : ?Chunk;
 
 	/**
 	 * @return string
@@ -187,11 +147,6 @@ interface LevelProvider{
 	 * @param int $difficulty
 	 */
 	public function setDifficulty(int $difficulty);
-
-	/**
-	 * @return Chunk[]
-	 */
-	public function getLoadedChunks() : array;
 
 	public function doGarbageCollection();
 

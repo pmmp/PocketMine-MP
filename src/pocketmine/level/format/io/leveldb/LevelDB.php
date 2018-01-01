@@ -527,7 +527,6 @@ class LevelDB extends BaseLevelProvider{
 	}
 
 	public function close(){
-		$this->unloadChunks();
 		$this->db->close();
 	}
 }
