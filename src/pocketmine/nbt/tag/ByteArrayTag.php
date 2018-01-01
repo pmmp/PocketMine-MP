@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\NBTStream;
 
 #include <rules/NBT.h>
 
@@ -43,12 +44,12 @@ class ByteArrayTag extends NamedTag{
 		return NBT::TAG_ByteArray;
 	}
 
-	public function read(NBT $nbt, bool $network = false) : void{
-		$this->value = $nbt->get($nbt->getInt($network));
+	public function read(NBTStream $nbt) : void{
+		$this->value = $nbt->get($nbt->getInt());
 	}
 
-	public function write(NBT $nbt, bool $network = false) : void{
-		$nbt->putInt(strlen($this->value), $network);
+	public function write(NBTStream $nbt) : void{
+		$nbt->putInt(strlen($this->value));
 		$nbt->put($this->value);
 	}
 

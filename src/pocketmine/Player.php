@@ -80,7 +80,6 @@ use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Consumable;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\item\WritableBook;
 use pocketmine\item\WrittenBook;
 use pocketmine\level\ChunkLoader;
@@ -90,10 +89,9 @@ use pocketmine\level\Location;
 use pocketmine\level\Position;
 use pocketmine\level\WeakPosition;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\MetadataValue;
-use pocketmine\nbt\NBT;
+use pocketmine\nbt\NetworkLittleEndianNBTStream;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
@@ -2836,8 +2834,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$t = $this->level->getTile($pos);
 		if($t instanceof Spawnable){
-			$nbt = new NBT(NBT::LITTLE_ENDIAN);
-			$nbt->read($packet->namedtag, false, true);
+			$nbt = new NetworkLittleEndianNBTStream();
+			$nbt->read($packet->namedtag);
 			$nbt = $nbt->getData();
 			if(!$t->updateCompoundTag($nbt, $this)){
 				$t->spawnTo($this);

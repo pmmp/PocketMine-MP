@@ -26,7 +26,7 @@ declare(strict_types=1);
  */
 namespace pocketmine\nbt\tag;
 
-use pocketmine\nbt\NBT;
+use pocketmine\nbt\NBTStream;
 
 abstract class Tag extends \stdClass{
 
@@ -42,9 +42,9 @@ abstract class Tag extends \stdClass{
 		$this->value = $value;
 	}
 
-	abstract public function write(NBT $nbt, bool $network = false) : void;
+	abstract public function write(NBTStream $nbt) : void;
 
-	abstract public function read(NBT $nbt, bool $network = false) : void;
+	abstract public function read(NBTStream $nbt) : void;
 
 	public function __toString(){
 		return (string) $this->value;

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\NBTStream;
 
 #include <rules/NBT.h>
 
@@ -43,12 +44,12 @@ class StringTag extends NamedTag{
 		return NBT::TAG_String;
 	}
 
-	public function read(NBT $nbt, bool $network = false) : void{
-		$this->value = $nbt->getString($network);
+	public function read(NBTStream $nbt) : void{
+		$this->value = $nbt->getString();
 	}
 
-	public function write(NBT $nbt, bool $network = false) : void{
-		$nbt->putString($this->value, $network);
+	public function write(NBTStream $nbt) : void{
+		$nbt->putString($this->value);
 	}
 
 	/**

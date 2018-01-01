@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\NBTStream;
 
 class EndTag extends Tag{
 
@@ -31,11 +32,11 @@ class EndTag extends Tag{
 		return NBT::TAG_End;
 	}
 
-	public function read(NBT $nbt, bool $network = false) : void{
+	public function read(NBTStream $nbt) : void{
 
 	}
 
-	public function write(NBT $nbt, bool $network = false) : void{
+	public function write(NBTStream $nbt) : void{
 
 	}
 }

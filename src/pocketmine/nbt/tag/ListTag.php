@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\NBTStream;
 
 #include <rules/NBT.h>
 
@@ -163,20 +164,20 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 		return $this->tagType;
 	}
 
-	public function read(NBT $nbt, bool $network = false) : void{
+	public function read(NBTStream $nbt) : void{
 		$this->value = [];
 		$this->tagType = $nbt->getByte();
-		$size = $nbt->getInt($network);
+		$size = $nbt->getInt();
 
 		$tagBase = NBT::createTag($this->tagType);
 		for($i = 0; $i < $size and !$nbt->feof(); ++$i){
 			$tag = clone $tagBase;
-			$tag->read($nbt, $network);
+			$tag->read($nbt);
 			$this->{$i} = $tag;
 		}
 	}
 
-	public function write(NBT $nbt, bool $network = false) : void{
+	public function write(NBTStream $nbt) : void{
 		if($this->tagType === NBT::TAG_End){ //previously empty list, try detecting type from tag children
 			$id = NBT::TAG_End;
 			foreach($this as $tag){
@@ -200,9 +201,9 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 				$tags[] = $tag;
 			}
 		}
-		$nbt->putInt(count($tags), $network);
+		$nbt->putInt(count($tags));
 		foreach($tags as $tag){
-			$tag->write($nbt, $network);
+			$tag->write($nbt);
 		}
 	}
 
