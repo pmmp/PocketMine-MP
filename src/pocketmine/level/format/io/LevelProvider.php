@@ -86,13 +86,16 @@ interface LevelProvider{
 	public function getGeneratorOptions() : array;
 
 	/**
-	 * @param Chunk $chunk
+	 * Saves a chunk (usually to disk).
 	 *
-	 * @return void
+	 * @param Chunk $chunk
 	 */
 	public function saveChunk(Chunk $chunk) : void;
 
 	/**
+	 * Loads a chunk (usually from disk storage) and returns it. If the chunk does not exist, null is returned, or an
+	 * empty Chunk if $create is specified.
+	 *
 	 * @param int  $chunkX
 	 * @param int  $chunkZ
 	 * @param bool $create
