@@ -146,6 +146,8 @@ class Level implements ChunkManager, Metadatable{
 
 	/** @var LevelProvider */
 	private $provider;
+	/** @var int */
+	private $providerGarbageCollectionTicker = 0;
 
 	/** @var int */
 	private $worldHeight;
@@ -720,6 +722,10 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		$this->unloadChunks();
+		if(++$this->providerGarbageCollectionTicker >= 6000){
+			$this->provider->doGarbageCollection();
+			$this->providerGarbageCollectionTicker = 0;
+		}
 
 		//Do block updates
 		$this->timings->doTickPending->startTiming();
