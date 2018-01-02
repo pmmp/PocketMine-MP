@@ -2162,7 +2162,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
 		//TODO: add events so plugins can change this
-		$this->getLevel()->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $packet);
+		if($this->chunk !== null){
+			$this->getLevel()->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $packet);
+		}
 		return true;
 	}
 

@@ -350,7 +350,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public $passenger = null;
 	public $vehicle = null;
 
-	/** @var Chunk */
+	/** @var Chunk|null */
 	public $chunk;
 
 	/** @var EntityDamageEvent|null */
@@ -1082,22 +1082,26 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function broadcastMovement(){
-		$pk = new MoveEntityPacket();
-		$pk->entityRuntimeId = $this->id;
-		$pk->position = $this->getOffsetPosition($this);
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->headYaw = $this->yaw; //TODO
+		if($this->chunk !== null){
+			$pk = new MoveEntityPacket();
+			$pk->entityRuntimeId = $this->id;
+			$pk->position = $this->getOffsetPosition($this);
+			$pk->yaw = $this->yaw;
+			$pk->pitch = $this->pitch;
+			$pk->headYaw = $this->yaw; //TODO
 
-		$this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
+			$this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
+		}
 	}
 
 	protected function broadcastMotion(){
-		$pk = new SetEntityMotionPacket();
-		$pk->entityRuntimeId = $this->id;
-		$pk->motion = $this->getMotion();
+		if($this->chunk !== null){
+			$pk = new SetEntityMotionPacket();
+			$pk->entityRuntimeId = $this->id;
+			$pk->motion = $this->getMotion();
 
-		$this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
+			$this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
+		}
 	}
 
 	protected function applyDragBeforeGravity() : bool{
@@ -1879,7 +1883,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @param Player $player
 	 */
 	public function spawnTo(Player $player){
-		if(!isset($this->hasSpawned[$player->getLoaderId()]) and isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])){
+		if(!isset($this->hasSpawned[$player->getLoaderId()]) and $this->chunk !== null and isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])){
 			$this->hasSpawned[$player->getLoaderId()] = $player;
 
 			$this->sendSpawnPacket($player);
