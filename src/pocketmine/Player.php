@@ -1165,6 +1165,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return false;
 		}
 
+		$pos = $pos->floor();
 		$b = $this->level->getBlock($pos);
 
 		$this->server->getPluginManager()->callEvent($ev = new PlayerBedEnterEvent($this, $b));
