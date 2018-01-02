@@ -24,16 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\level\format\io;
 
 use pocketmine\level\format\Chunk;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 
 interface LevelProvider{
 
 	/**
-	 * @param Level  $level
 	 * @param string $path
 	 */
-	public function __construct(Level $level, string $path);
+	public function __construct(string $path);
 
 	/**
 	 * Returns the full provider name, like "anvil" or "mcregion", will be used to find the correct format.
@@ -88,77 +86,23 @@ interface LevelProvider{
 	public function getGeneratorOptions() : array;
 
 	/**
-	 * Gets the Chunk object
-	 * This method must be implemented by all the level formats.
+	 * Saves a chunk (usually to disk).
 	 *
-	 * @param int  $chunkX
-	 * @param int  $chunkZ
-	 * @param bool $create
-	 *
-	 * @return Chunk|null
-	 */
-	public function getChunk(int $chunkX, int $chunkZ, bool $create = false);
-
-	/**
-	 * @param int   $chunkX
-	 * @param int   $chunkZ
 	 * @param Chunk $chunk
 	 */
-	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk);
+	public function saveChunk(Chunk $chunk) : void;
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
+	 * Loads a chunk (usually from disk storage) and returns it. If the chunk does not exist, null is returned, or an
+	 * empty Chunk if $create is specified.
 	 *
-	 * @return bool
-	 */
-	public function saveChunk(int $chunkX, int $chunkZ) : bool;
-
-	public function saveChunks();
-
-	/**
 	 * @param int  $chunkX
 	 * @param int  $chunkZ
 	 * @param bool $create
 	 *
-	 * @return bool
+	 * @return null|Chunk
 	 */
-	public function loadChunk(int $chunkX, int $chunkZ, bool $create = false) : bool;
-
-	/**
-	 * @param int  $chunkX
-	 * @param int  $chunkZ
-	 * @param bool $safe
-	 *
-	 * @return bool
-	 */
-	public function unloadChunk(int $chunkX, int $chunkZ, bool $safe = true) : bool;
-
-	public function unloadChunks();
-
-	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return bool
-	 */
-	public function isChunkLoaded(int $chunkX, int $chunkZ) : bool;
-
-	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return bool
-	 */
-	public function isChunkGenerated(int $chunkX, int $chunkZ) : bool;
-
-	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return bool
-	 */
-	public function isChunkPopulated(int $chunkX, int $chunkZ) : bool;
+	public function loadChunk(int $chunkX, int $chunkZ, bool $create = false) : ?Chunk;
 
 	/**
 	 * @return string
@@ -208,17 +152,13 @@ interface LevelProvider{
 	public function setDifficulty(int $difficulty);
 
 	/**
-	 * @return Chunk[]
+	 * Performs garbage collection in the level provider, such as cleaning up regions in Region-based worlds.
 	 */
-	public function getLoadedChunks() : array;
-
 	public function doGarbageCollection();
 
 	/**
-	 * @return Level
+	 * Performs cleanups necessary when the level provider is closed and no longer needed.
 	 */
-	public function getLevel() : Level;
-
 	public function close();
 
 }
