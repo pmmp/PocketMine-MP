@@ -151,8 +151,14 @@ interface LevelProvider{
 	 */
 	public function setDifficulty(int $difficulty);
 
+	/**
+	 * Performs garbage collection in the level provider, such as cleaning up regions in Region-based worlds.
+	 */
 	public function doGarbageCollection();
 
+	/**
+	 * Performs cleanups necessary when the level provider is closed and no longer needed.
+	 */
 	public function close();
 
 }
