@@ -2680,15 +2680,17 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
+	 * Attempts to load a chunk from the level provider (if not already loaded).
+	 *
 	 * @param int  $x
 	 * @param int  $z
-	 * @param bool $generate
+	 * @param bool $create Whether to create an empty chunk to load if the chunk cannot be loaded from disk.
 	 *
-	 * @return bool
+	 * @return bool if loading the chunk was successful
 	 *
 	 * @throws \InvalidStateException
 	 */
-	public function loadChunk(int $x, int $z, bool $generate = true) : bool{
+	public function loadChunk(int $x, int $z, bool $create = true) : bool{
 		if(isset($this->chunks[$chunkHash = Level::chunkHash($x, $z)])){
 			return true;
 		}
@@ -2699,12 +2701,12 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->timings->syncChunkLoadDataTimer->startTiming();
 
-		$chunk = $this->provider->loadChunk($x, $z, $generate);
+		$chunk = $this->provider->loadChunk($x, $z, $create);
 
 		$this->timings->syncChunkLoadDataTimer->stopTiming();
 
 		if($chunk === null){
-			if($generate){
+			if($create){
 				throw new \InvalidStateException("Could not create new Chunk");
 			}
 			return false;
