@@ -2763,12 +2763,11 @@ class Level implements ChunkManager, Metadatable{
 			$this->server->getPluginManager()->callEvent($ev = new ChunkUnloadEvent($this, $chunk));
 			if($ev->isCancelled()){
 				$this->timings->doChunkUnload->stopTiming();
+
 				return false;
 			}
-		}
 
-		try{
-			if($chunk !== null){
+			try{
 				if($trySave and $this->getAutoSave() and $chunk->isGenerated()){
 					if($chunk->hasChanged() or count($chunk->getTiles()) > 0 or count($chunk->getSavableEntities()) > 0){
 						$this->provider->saveChunk($chunk);
@@ -2780,11 +2779,11 @@ class Level implements ChunkManager, Metadatable{
 				}
 
 				$chunk->onUnload();
+			}catch(\Throwable $e){
+				$logger = $this->server->getLogger();
+				$logger->error($this->server->getLanguage()->translateString("pocketmine.level.chunkUnloadError", [$e->getMessage()]));
+				$logger->logException($e);
 			}
-		}catch(\Throwable $e){
-			$logger = $this->server->getLogger();
-			$logger->error($this->server->getLanguage()->translateString("pocketmine.level.chunkUnloadError", [$e->getMessage()]));
-			$logger->logException($e);
 		}
 
 		unset($this->chunks[$chunkHash]);
