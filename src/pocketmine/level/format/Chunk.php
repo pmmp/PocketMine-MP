@@ -691,9 +691,9 @@ class Chunk{
 	}
 
 	/**
-	 * Unloads the chunk, closing entities and tiles.
+	 * Called when the chunk is unloaded, closing entities and tiles.
 	 */
-	public function unload() : void{
+	public function onUnload() : void{
 		foreach($this->getEntities() as $entity){
 			if($entity instanceof Player){
 				continue;

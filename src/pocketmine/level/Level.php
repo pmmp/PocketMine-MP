@@ -2780,7 +2780,7 @@ class Level implements ChunkManager, Metadatable{
 				}
 			}
 
-			$chunk->unload();
+			$chunk->onUnload();
 		}catch(\Throwable $e){
 			$logger = $this->server->getLogger();
 			$logger->error($this->server->getLanguage()->translateString("pocketmine.level.chunkUnloadError", [$e->getMessage()]));
