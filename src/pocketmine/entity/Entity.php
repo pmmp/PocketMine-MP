@@ -494,7 +494,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$pos = $this->namedtag->getListTag("Pos")->getAllValues();
 
 		$this->chunk = $level->getChunk(((int) $pos[0]) >> 4, ((int) $pos[2]) >> 4, true);
-		assert($this->chunk !== null);
+		if($this->chunk === null){
+			throw new \InvalidStateException("Cannot create entities in unloaded chunks");
+		}
+
 		$this->setLevel($level);
 		$this->server = $level->getServer();
 
