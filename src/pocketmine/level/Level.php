@@ -2780,8 +2780,7 @@ class Level implements ChunkManager, Metadatable{
 				}
 			}
 
-			//TODO: not checking return value, but is it needed anyway?
-			$chunk->unload($safe);
+			$chunk->unload();
 		}catch(\Throwable $e){
 			$logger = $this->server->getLogger();
 			$logger->error($this->server->getLanguage()->translateString("pocketmine.level.chunkUnloadError", [$e->getMessage()]));

@@ -692,20 +692,8 @@ class Chunk{
 
 	/**
 	 * Unloads the chunk, closing entities and tiles.
-	 *
-	 * @param bool $safe Whether to check if there are still players using this chunk
-	 *
-	 * @return bool
 	 */
-	public function unload(bool $safe = true) : bool{
-		if($safe){
-			foreach($this->getEntities() as $entity){
-				if($entity instanceof Player){
-					return false;
-				}
-			}
-		}
-
+	public function unload() : void{
 		foreach($this->getEntities() as $entity){
 			if($entity instanceof Player){
 				continue;
@@ -716,8 +704,6 @@ class Chunk{
 		foreach($this->getTiles() as $tile){
 			$tile->close();
 		}
-
-		return true;
 	}
 
 	/**
