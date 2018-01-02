@@ -2334,11 +2334,12 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * Gets the Chunk object
+	 * Returns the chunk at the specified X/Z coordinates. If the chunk is not loaded, attempts to (synchronously!!!)
+	 * load it.
 	 *
 	 * @param int  $x
 	 * @param int  $z
-	 * @param bool $create Whether to generate the chunk if it does not exist
+	 * @param bool $create Whether to create an empty chunk as a placeholder if the chunk does not exist
 	 *
 	 * @return Chunk|null
 	 */
