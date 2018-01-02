@@ -3,6 +3,7 @@ worlds/*
 plugins/*
 bin/*
 timings/*
+crashdumps/*
 *.log
 *.txt
 *.phar
