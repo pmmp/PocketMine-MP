@@ -186,6 +186,7 @@ abstract class DataPacket extends BinaryStream{
 					$value[0] = $item->getId();
 					$value[1] = $item->getCount();
 					$value[2] = $item->getDamage();
+					$value[3] = $item->getCompoundTag();
 					break;
 				case Entity::DATA_TYPE_POS:
 					$value = [0, 0, 0];
@@ -239,7 +240,7 @@ abstract class DataPacket extends BinaryStream{
 					break;
 				case Entity::DATA_TYPE_SLOT:
 					//TODO: change this implementation (use objects)
-					$this->putSlot(ItemFactory::get($d[1][0], $d[1][2], $d[1][1])); //ID, damage, count
+					$this->putSlot(ItemFactory::get($d[1][0], $d[1][2], $d[1][1], $d[1][3])); //ID, damage, count, compoundtag
 					break;
 				case Entity::DATA_TYPE_POS:
 					//TODO: change this implementation (use objects)
