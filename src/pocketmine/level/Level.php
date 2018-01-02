@@ -1711,7 +1711,9 @@ class Level implements ChunkManager, Metadatable{
 	public function checkSpawnProtection(Player $player, Vector3 $vector) : bool{
 		if(!$player->hasPermission("pocketmine.spawnprotect.bypass") and ($distance = $this->server->getSpawnRadius()) > -1){
 			$t = new Vector2($vector->x, $vector->z);
-			$s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);
+
+			$spawnLocation = $this->getSpawnLocation();
+			$s = new Vector2($spawnLocation->x, $spawnLocation->z);
 			if(count($this->server->getOps()->getAll()) > 0 and $t->distance($s) <= $distance){
 				return true;
 			}
@@ -2811,8 +2813,9 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function isSpawnChunk(int $X, int $Z) : bool{
-		$spawnX = $this->provider->getSpawn()->getX() >> 4;
-		$spawnZ = $this->provider->getSpawn()->getZ() >> 4;
+		$spawn = $this->provider->getSpawn();
+		$spawnX = $spawn->x >> 4;
+		$spawnZ = $spawn->z >> 4;
 
 		return abs($X - $spawnX) <= 1 and abs($Z - $spawnZ) <= 1;
 	}
