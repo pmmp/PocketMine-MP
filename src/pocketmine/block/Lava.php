@@ -48,6 +48,14 @@ class Lava extends Liquid{
 		return "Lava";
 	}
 
+	public function getStillForm() : Block{
+		return BlockFactory::get(Block::STILL_LAVA, $this->meta);
+	}
+
+	public function getFlowingForm() : Block{
+		return BlockFactory::get(Block::FLOWING_LAVA, $this->meta);
+	}
+
 	public function tickRate() : int{
 		return 30;
 	}

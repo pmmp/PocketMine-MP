@@ -59,7 +59,7 @@ class Bucket extends Item implements Consumable{
 				$stack = clone $this;
 
 				$resultItem = $stack->pop();
-				$resultItem->setDamage($blockClicked->getId());
+				$resultItem->setDamage($blockClicked->getFlowingForm()->getId());
 				$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketFillEvent($player, $blockReplace, $face, $this, $resultItem));
 				if(!$ev->isCancelled()){
 					$player->getLevel()->setBlock($blockClicked, BlockFactory::get(Block::AIR), true, true);
@@ -84,7 +84,7 @@ class Bucket extends Item implements Consumable{
 			$resultItem->setDamage(0);
 			$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketEmptyEvent($player, $blockReplace, $face, $this, $resultItem));
 			if(!$ev->isCancelled()){
-				$player->getLevel()->setBlock($blockReplace, $resultBlock, true, true);
+				$player->getLevel()->setBlock($blockReplace, $resultBlock->getFlowingForm(), true, true);
 				if($player->isSurvival()){
 					$player->getInventory()->setItemInHand($ev->getItem());
 				}

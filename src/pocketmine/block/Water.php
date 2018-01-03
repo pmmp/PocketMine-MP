@@ -44,6 +44,14 @@ class Water extends Liquid{
 		return 2;
 	}
 
+	public function getStillForm() : Block{
+		return BlockFactory::get(Block::STILL_WATER, $this->meta);
+	}
+
+	public function getFlowingForm() : Block{
+		return BlockFactory::get(Block::FLOWING_WATER, $this->meta);
+	}
+
 	public function tickRate() : int{
 		return 5;
 	}
