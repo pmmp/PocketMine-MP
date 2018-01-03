@@ -40,7 +40,7 @@ class Bucket extends Item implements Consumable{
 	}
 
 	public function getMaxStackSize() : int{
-		return 1;
+		return $this->meta === Block::AIR ? 16 : 1; //empty buckets stack to 16
 	}
 
 	public function getFuelTime() : int{
@@ -56,14 +56,24 @@ class Bucket extends Item implements Consumable{
 
 		if($resultBlock instanceof Air){
 			if($blockClicked instanceof Liquid and $blockClicked->getDamage() === 0){
-				$resultItem = clone $this;
+				$stack = clone $this;
+
+				$resultItem = $stack->pop();
 				$resultItem->setDamage($blockClicked->getId());
 				$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketFillEvent($player, $blockReplace, $face, $this, $resultItem));
 				if(!$ev->isCancelled()){
 					$player->getLevel()->setBlock($blockClicked, BlockFactory::get(Block::AIR), true, true);
 					if($player->isSurvival()){
-						$player->getInventory()->setItemInHand($ev->getItem());
+						if($stack->getCount() === 0){
+							$player->getInventory()->setItemInHand($ev->getItem());
+						}else{
+							$player->getInventory()->setItemInHand($stack);
+							$player->getInventory()->addItem($ev->getItem());
+						}
+					}else{
+						$player->getInventory()->addItem($ev->getItem());
 					}
+
 					return true;
 				}else{
 					$player->getInventory()->sendContents($player);
