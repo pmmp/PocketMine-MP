@@ -496,7 +496,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	protected function initEntity(){
 
 		$this->setPlayerFlag(self::DATA_PLAYER_FLAG_SLEEP, false);
-		$this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [0, 0, 0], false);
+		$this->propertyManager->setBlockPos(self::DATA_PLAYER_BED_POSITION, null);
 
 		$this->inventory = new PlayerInventory($this);
 		$this->enderChestInventory = new EnderChestInventory($this);
@@ -705,7 +705,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$pk->yaw = $this->yaw;
 		$pk->pitch = $this->pitch;
 		$pk->item = $this->getInventory()->getItemInHand();
-		$pk->metadata = $this->dataProperties;
+		$pk->metadata = $this->propertyManager->getAll();
 		$player->dataPacket($pk);
 
 		$this->inventory->sendArmorContents($player);

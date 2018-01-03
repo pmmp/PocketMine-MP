@@ -29,7 +29,6 @@ use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\utils\Utils;
 
-
 abstract class DataPacket extends NetworkBinaryStream{
 
 	public const NETWORK_ID = 0;

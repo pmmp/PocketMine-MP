@@ -297,11 +297,11 @@ abstract class Living extends Entity implements Damageable{
 		}
 
 		if(!empty($colors)){
-			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, Color::mix(...$colors)->toARGB());
-			$this->setDataProperty(Entity::DATA_POTION_AMBIENT, Entity::DATA_TYPE_BYTE, $ambient ? 1 : 0);
+			$this->propertyManager->setInt(Entity::DATA_POTION_COLOR, Color::mix(...$colors)->toARGB());
+			$this->propertyManager->setByte(Entity::DATA_POTION_AMBIENT, $ambient ? 1 : 0);
 		}else{
-			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, 0);
-			$this->setDataProperty(Entity::DATA_POTION_AMBIENT, Entity::DATA_TYPE_BYTE, 0);
+			$this->propertyManager->setInt(Entity::DATA_POTION_COLOR, 0);
+			$this->propertyManager->setByte(Entity::DATA_POTION_AMBIENT, 0);
 		}
 	}
 
@@ -619,7 +619,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @return int
 	 */
 	public function getAirSupplyTicks() : int{
-		return $this->getDataProperty(self::DATA_AIR);
+		return $this->propertyManager->getShort(self::DATA_AIR);
 	}
 
 	/**
@@ -627,7 +627,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @param int $ticks
 	 */
 	public function setAirSupplyTicks(int $ticks){
-		$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $ticks);
+		$this->propertyManager->setShort(self::DATA_AIR, $ticks);
 	}
 
 	/**
@@ -635,7 +635,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @return int
 	 */
 	public function getMaxAirSupplyTicks() : int{
-		return $this->getDataProperty(self::DATA_MAX_AIR);
+		return $this->propertyManager->getShort(self::DATA_MAX_AIR);
 	}
 
 	/**
@@ -643,7 +643,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @param int $ticks
 	 */
 	public function setMaxAirSupplyTicks(int $ticks){
-		$this->setDataProperty(self::DATA_MAX_AIR, self::DATA_TYPE_SHORT, $ticks);
+		$this->propertyManager->setShort(self::DATA_MAX_AIR, $ticks);
 	}
 
 	/**
