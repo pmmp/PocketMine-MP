@@ -98,6 +98,10 @@ class EndRod extends Flowable{
 		return null;
 	}
 
+	public function canPassThrough() : bool{
+		return false;
+	}
+
 	public function getVariantBitmask() : int{
 		return 0;
 	}

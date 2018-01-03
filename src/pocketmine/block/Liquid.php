@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
-use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
@@ -68,8 +67,8 @@ abstract class Liquid extends Transparent{
 		return 100;
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return null;
+	public function canPassThrough() : bool{
+		return true;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
