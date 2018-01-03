@@ -97,14 +97,6 @@ class DoublePlant extends Flowable{
 		return false;
 	}
 
-	public function onBreak(Item $item, Player $player = null) : bool{
-		if(parent::onBreak($item, $player) and $this->isValidHalfPlant()){
-			$this->getLevel()->useBreakOn($this->getSide(($this->meta & self::BITFLAG_TOP) !== 0 ? Vector3::SIDE_DOWN : Vector3::SIDE_UP), $item, $player, $player !== null);
-		}
-
-		return false;
-	}
-
 	public function getVariantBitmask() : int{
 		return 0x07;
 	}
@@ -131,5 +123,13 @@ class DoublePlant extends Flowable{
 		}
 
 		return [];
+	}
+
+	public function getAffectedBlocks() : array{
+		if($this->isValidHalfPlant()){
+			return [$this, $this->getSide(($this->meta & self::BITFLAG_TOP) !== 0 ? Vector3::SIDE_DOWN : Vector3::SIDE_UP)];
+		}
+
+		return parent::getAffectedBlocks();
 	}
 }

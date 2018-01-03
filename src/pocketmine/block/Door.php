@@ -246,23 +246,6 @@ abstract class Door extends Transparent{
 		return false;
 	}
 
-	public function onBreak(Item $item, Player $player = null) : bool{
-		if(($this->getDamage() & 0x08) === 0x08){
-			$down = $this->getSide(Vector3::SIDE_DOWN);
-			if($down->getId() === $this->getId()){
-				$this->getLevel()->setBlock($down, BlockFactory::get(Block::AIR), true);
-			}
-		}else{
-			$up = $this->getSide(Vector3::SIDE_UP);
-			if($up->getId() === $this->getId()){
-				$this->getLevel()->setBlock($up, BlockFactory::get(Block::AIR), true);
-			}
-		}
-		$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true);
-
-		return true;
-	}
-
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if(($this->getDamage() & 0x08) === 0x08){ //Top
 			$down = $this->getSide(Vector3::SIDE_DOWN);
@@ -285,5 +268,29 @@ abstract class Door extends Transparent{
 
 	public function getVariantBitmask() : int{
 		return 0;
+	}
+
+	public function getDropsForCompatibleTool(Item $item) : array{
+		if(($this->meta & 0x08) === 0){ //bottom half only
+			return parent::getDropsForCompatibleTool($item);
+		}
+
+		return [];
+	}
+
+	public function getAffectedBlocks() : array{
+		if(($this->getDamage() & 0x08) === 0x08){
+			$down = $this->getSide(Vector3::SIDE_DOWN);
+			if($down->getId() === $this->getId()){
+				return [$this, $down];
+			}
+		}else{
+			$up = $this->getSide(Vector3::SIDE_UP);
+			if($up->getId() === $this->getId()){
+				return [$this, $up];
+			}
+		}
+
+		return parent::getAffectedBlocks();
 	}
 }

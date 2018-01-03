@@ -514,6 +514,16 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Returns a list of blocks that this block is part of. In most cases, only contains the block itself, but in cases
+	 * such as double plants, beds and doors, will contain both halves.
+	 *
+	 * @return Block[]
+	 */
+	public function getAffectedBlocks() : array{
+		return [$this];
+	}
+
+	/**
 	 * @return string
 	 */
 	public function __toString(){

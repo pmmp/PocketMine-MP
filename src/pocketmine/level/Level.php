@@ -1735,13 +1735,16 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function useBreakOn(Vector3 $vector, Item &$item = null, Player $player = null, bool $createParticles = false) : bool{
 		$target = $this->getBlock($vector);
+		$affectedBlocks = $target->getAffectedBlocks();
 
 		if($item === null){
 			$item = ItemFactory::get(Item::AIR, 0, 0);
 		}
 
+		$drops = ($player !== null and $player->isCreative()) ? [] : array_merge(...array_map(function(Block $block) use ($item) : array{ return $block->getDrops($item); }, $affectedBlocks));
+
 		if($player !== null){
-			$ev = new BlockBreakEvent($player, $target, $item, $player->isCreative() or $player->allowInstaBreak());
+			$ev = new BlockBreakEvent($player, $target, $item, $player->isCreative() or $player->allowInstaBreak(), $drops);
 
 			if(($player->isSurvival() and !$target->isBreakable($item)) or $player->isSpectator()){
 				$ev->setCancelled();
@@ -1798,10 +1801,27 @@ class Level implements ChunkManager, Metadatable{
 
 		}elseif(!$target->isBreakable($item)){
 			return false;
-		}else{
-			$drops = $target->getDrops($item); //Fixes tile entities being deleted before getting drops
 		}
 
+		foreach($affectedBlocks as $t){
+			$this->destroyBlockInternal($t, $item, $player, $createParticles);
+		}
+
+		$item->useOn($target);
+
+		if(!empty($drops)){
+			$dropPos = $target->add(0.5, 0.5, 0.5);
+			foreach($drops as $drop){
+				if(!$drop->isNull()){
+					$this->dropItem($dropPos, $drop);
+				}
+			}
+		}
+
+		return true;
+	}
+
+	private function destroyBlockInternal(Block $target, Item $item, ?Player $player = null, bool $createParticles = false) : void{
 		$above = $this->getBlockAt($target->x, $target->y + 1, $target->z);
 		if($above->getId() === Block::FIRE){ //TODO: this should be done in Fire's onUpdate(), not with this hack
 			$this->setBlock($above, BlockFactory::get(Block::AIR), true);
@@ -1825,18 +1845,6 @@ class Level implements ChunkManager, Metadatable{
 
 			$tile->close();
 		}
-
-		$item->useOn($target);
-
-		if($player === null or $player->isSurvival()){
-			foreach($drops as $drop){
-				if(!$drop->isNull()){
-					$this->dropItem($vector->add(0.5, 0.5, 0.5), $drop);
-				}
-			}
-		}
-
-		return true;
 	}
 
 	/**

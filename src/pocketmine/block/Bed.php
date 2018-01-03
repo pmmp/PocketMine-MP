@@ -190,15 +190,6 @@ class Bed extends Transparent{
 		return false;
 	}
 
-	public function onBreak(Item $item, Player $player = null) : bool{
-		$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true, true);
-		if(($other = $this->getOtherHalf()) !== null){
-			$this->getLevel()->useBreakOn($other, $item, null, $player !== null); //make sure tiles get removed
-		}
-
-		return true;
-	}
-
 	public function getDropsForCompatibleTool(Item $item) : array{
 		if($this->isHeadPart()){
 			$tile = $this->getLevel()->getTile($this);
@@ -216,4 +207,11 @@ class Bed extends Transparent{
 		return [];
 	}
 
+	public function getAffectedBlocks() : array{
+		if(($other = $this->getOtherHalf()) !== null){
+			return [$this, $other];
+		}
+
+		return parent::getAffectedBlocks();
+	}
 }
