@@ -1634,7 +1634,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 */
 	public function getBlocksAround() : array{
 		if($this->blocksAround === null){
-			$bb = $this->boundingBox->grow(0.01, 0.01, 0.01);
+			$bb = clone $this->boundingBox;
 			$minX = Math::floorFloat($bb->minX);
 			$minY = Math::floorFloat($bb->minY);
 			$minZ = Math::floorFloat($bb->minZ);
@@ -1648,7 +1648,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 				for($x = $minX; $x <= $maxX; ++$x){
 					for($y = $minY; $y <= $maxY; ++$y){
 						$block = $this->level->getBlockAt($x, $y, $z);
-						if($block->hasEntityCollision()){
+						if($block->hasEntityCollision() and ($bb2 = $block->getBoundingBox()) !== null and $bb2->intersectsWith($bb)){
 							$this->blocksAround[] = $block;
 						}
 					}
