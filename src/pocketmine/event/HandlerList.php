@@ -93,6 +93,15 @@ class HandlerList{
 		self::$allLists[] = $this;
 	}
 
+	/**
+	 * Returns the HandlerList for listeners that explicitly handle this event.
+	 *
+	 * Calling this method also lazily initializes the $classMap inheritance tree of handler lists.
+	 *
+	 * @param string $event
+	 * @return null|HandlerList
+	 * @throws \ReflectionException
+	 */
 	public static function getHandlerListFor(string $event) : ?HandlerList{
 		if(isset(self::$classMap[$event])){
 			return self::$classMap[$event][0];
@@ -206,12 +215,20 @@ class HandlerList{
 
 			return $listeners;
 		}else{
-			while(($handlers = $this->handlers) === null){
+			while($this->handlers === null){
 				$this->bake();
 			}
 
-			return $handlers;
+			return $this->handlers;
 		}
+	}
+
+	/**
+	 * @param int $priority
+	 * @return RegisteredListener[]
+	 */
+	public function getListenersByPriority(int $priority) : array{
+		return $this->handlerSlots[$priority];
 	}
 
 	/**

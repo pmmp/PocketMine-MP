@@ -712,23 +712,33 @@ class PluginManager{
 	 * @param Event $event
 	 */
 	public function callEvent(Event $event){
-		foreach(HandlerList::getHandlerListsFor(get_class($event)) as $handlerList){
-			foreach($handlerList->getRegisteredListeners() as $registration){
-				if(!$registration->getPlugin()->isEnabled()){
-					continue;
-				}
+		static $priorities = [
+			EventPriority::LOWEST,
+			EventPriority::LOW,
+			EventPriority::NORMAL,
+			EventPriority::HIGH,
+			EventPriority::HIGHEST,
+			EventPriority::MONITOR,
+		];
+		foreach($priorities as $priority){
+			foreach(HandlerList::getHandlerListsFor(get_class($event)) as $handlerList){
+				foreach($handlerList->getListenersByPriority($priority) as $registration){
+					if(!$registration->getPlugin()->isEnabled()){
+						continue;
+					}
 
-				try{
-					$registration->callEvent($event);
-				}catch(\Throwable $e){
-					$this->server->getLogger()->critical(
-						$this->server->getLanguage()->translateString("pocketmine.plugin.eventError", [
-							$event->getEventName(),
-							$registration->getPlugin()->getDescription()->getFullName(),
-							$e->getMessage(),
-							get_class($registration->getListener())
-						]));
-					$this->server->getLogger()->logException($e);
+					try{
+						$registration->callEvent($event);
+					}catch(\Throwable $e){
+						$this->server->getLogger()->critical(
+							$this->server->getLanguage()->translateString("pocketmine.plugin.eventError", [
+								$event->getEventName(),
+								$registration->getPlugin()->getDescription()->getFullName(),
+								$e->getMessage(),
+								get_class($registration->getListener())
+							]));
+						$this->server->getLogger()->logException($e);
+					}
 				}
 			}
 		}
