@@ -76,6 +76,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	protected $totalXp = 0;
 	protected $xpSeed;
+	protected $xpCooldown = 0;
 
 	protected $baseOffset = 1.62;
 
@@ -410,6 +411,23 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->totalXp = $amount;
 	}
 
+	/**
+	 * Returns whether the human can pickup XP orbs (checks cooldown time)
+	 * @return bool
+	 */
+	public function canPickupXp() : bool{
+		return $this->xpCooldown === 0;
+	}
+
+	/**
+	 * Sets the duration in ticks until the human can pick up another XP orb.
+	 * @param int $value
+	 */
+	public function resetXpCooldown(int $value = 2){
+		$this->xpCooldown = $value;
+	}
+
+
 	public function getInventory(){
 		return $this->inventory;
 	}
@@ -504,6 +522,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
 		$this->doFoodTick($tickDiff);
+
+		if($this->xpCooldown > 0){
+			$this->xpCooldown--;
+		}
 
 		return $hasUpdate;
 	}
