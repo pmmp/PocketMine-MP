@@ -789,6 +789,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @return string
 	 */
 	public function getSaveId(){
+		if(!isset(self::$saveNames[static::class])){
+			throw new \InvalidStateException("Entity is not registered");
+		}
 		reset(self::$saveNames[static::class]);
 		return current(self::$saveNames[static::class]);
 	}
