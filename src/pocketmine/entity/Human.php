@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\entity\projectile\ProjectileSource;
+use pocketmine\entity\utils\ExperienceUtils;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
@@ -286,42 +287,127 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return parent::consumeObject($consumable);
 	}
 
+	/**
+	 * Returns the player's experience level.
+	 * @return int
+	 */
 	public function getXpLevel() : int{
 		return (int) $this->attributeMap->getAttribute(Attribute::EXPERIENCE_LEVEL)->getValue();
 	}
 
+	/**
+	 * Sets the player's experience level. This does not affect their total XP or their XP progress.
+	 * @param int $level
+	 */
 	public function setXpLevel(int $level){
 		$this->attributeMap->getAttribute(Attribute::EXPERIENCE_LEVEL)->setValue($level);
 	}
 
+	/**
+	 * Adds a number of XP levels to the player.
+	 * @param int $amount
+	 */
+	public function addXpLevels(int $amount) : void{
+		$this->setXpLevel($this->getXpLevel() + $amount);
+	}
+
+	/**
+	 * Subtracts a number of XP levels from the player.
+	 * @param int $amount
+	 */
+	public function subtractXpLevels(int $amount) : void{
+		$this->setXpLevel($this->getXpLevel() - $amount);
+	}
+
+	/**
+	 * Returns a value between 0.0 and 1.0 to indicate how far through the current level the player is.
+	 * @return float
+	 */
 	public function getXpProgress() : float{
 		return $this->attributeMap->getAttribute(Attribute::EXPERIENCE)->getValue();
 	}
 
+	/**
+	 * Sets the player's progress through the current level to a value between 0.0 and 1.0.
+	 * @param float $progress
+	 */
 	public function setXpProgress(float $progress){
 		$this->attributeMap->getAttribute(Attribute::EXPERIENCE)->setValue($progress);
 	}
 
-	public function getTotalXp() : int{
+	/**
+	 * Returns the number of XP points the player has progressed into their current level.
+	 * @return int
+	 */
+	public function getRemainderXp() : int{
+		return (int) (ExperienceUtils::getXpToCompleteLevel($this->getXpLevel()) * $this->getXpProgress());
+	}
+
+	/**
+	 * Returns the amount of XP points the player currently has, calculated from their current level and progress
+	 * through their current level. This will be reduced by enchanting deducting levels and is used to calculate the
+	 * amount of XP the player drops on death.
+	 *
+	 * @return int
+	 */
+	public function getCurrentTotalXp() : int{
+		return ExperienceUtils::getXpToReachLevel($this->getXpLevel()) + $this->getRemainderXp();
+	}
+
+	/**
+	 * Sets the current total of XP the player has, recalculating their XP level and progress.
+	 * Note that this DOES NOT update the player's lifetime total XP.
+	 *
+	 * @param int $amount
+	 */
+	public function setCurrentTotalXp(int $amount) : void{
+		$newLevel = ExperienceUtils::getLevelFromXp($amount);
+
+		$this->setXpLevel((int) $newLevel);
+		$this->setXpProgress($newLevel - ((int) $newLevel));
+	}
+
+	/**
+	 * Adds an amount of XP to the player, recalculating their XP level and progress. XP amount will be added to the
+	 * player's lifetime XP.
+	 *
+	 * @param int $amount
+	 */
+	public function addXp(int $amount) : void{
+		$this->totalXp += $amount;
+		$this->setCurrentTotalXp($this->getCurrentTotalXp() + $amount);
+	}
+
+	/**
+	 * Takes an amount of XP from the player, recalculating their XP level and progress.
+	 * @param int $amount
+	 */
+	public function subtractXp(int $amount) : void{
+		$this->addXp(-$amount);
+	}
+
+	/**
+	 * Returns the total XP the player has collected in their lifetime. Resets when the player dies.
+	 * XP levels being removed in enchanting do not reduce this number.
+	 *
+	 * @return int
+	 */
+	public function getLifetimeTotalXp() : int{
 		return $this->totalXp;
 	}
 
-	public function getRemainderXp() : int{
-		return $this->getTotalXp() - self::getTotalXpForLevel($this->getXpLevel());
-	}
-
-	public function recalculateXpProgress() : float{
-		$this->setXpProgress($progress = $this->getRemainderXp() / self::getTotalXpForLevel($this->getXpLevel()));
-		return $progress;
-	}
-
-	public static function getTotalXpForLevel(int $level) : int{
-		if($level <= 16){
-			return $level ** 2 + $level * 6;
-		}elseif($level < 32){
-			return $level ** 2 * 2.5 - 40.5 * $level + 360;
+	/**
+	 * Sets the lifetime total XP of the player. This does not recalculate their level or progress. Used for player
+	 * score when they die. (TODO: add this when MCPE supports it)
+	 *
+	 * @param int $amount
+	 */
+	public function setLifetimeTotalXp(int $amount) : void{
+		if($amount < 0){
+			throw new \InvalidArgumentException("XP must be greater than 0");
 		}
-		return $level ** 2 * 4.5 - 162.5 * $level + 2220;
+
+		$this->totalXp = $amount;
 	}
 
 	public function getInventory(){
