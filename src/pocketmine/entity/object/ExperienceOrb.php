@@ -41,6 +41,48 @@ class ExperienceOrb extends Entity{
 	 */
 	public const MAX_TARGET_DISTANCE = 8.0;
 
+	/**
+	 * Split sizes used for dropping experience orbs.
+	 */
+	public const ORB_SPLIT_SIZES = [2477, 1237, 617, 307, 149, 73, 37, 17, 7, 3, 1]; //This is indexed biggest to smallest so that we can return as soon as we found the biggest value.
+
+	/**
+	 * Returns the largest size of normal XP orb that will be spawned for the specified amount of XP. Used to split XP
+	 * up into multiple orbs when an amount of XP is dropped.
+	 *
+	 * @param int $amount
+	 *
+	 * @return int
+	 */
+	public static function getMaxOrbSize(int $amount) : int{
+		foreach(self::ORB_SPLIT_SIZES as $split){
+			if($amount >= $split){
+				return $split;
+			}
+		}
+
+		return 1;
+	}
+
+	/**
+	 * Splits the specified amount of XP into an array of acceptable XP orb sizes.
+	 *
+	 * @param int $amount
+	 *
+	 * @return int[]
+	 */
+	public static function splitIntoOrbSizes(int $amount) : array{
+		$result = [];
+
+		while($amount > 0){
+			$size = self::getMaxOrbSize($amount);
+			$result[] = $size;
+			$amount -= $size;
+		}
+
+		return $result;
+	}
+
 	public $height = 0.25;
 	public $width = 0.25;
 
