@@ -2059,6 +2059,48 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
+	 * Returns the closest Entity to the specified position, within the given radius.
+	 *
+	 * @param Vector3 $pos
+	 * @param float   $maxDistance
+	 * @param string  $entityType Class of entity to use for instanceof
+	 * @param bool    $includeDead Whether to include entitites which are dead
+	 *
+	 * @return Entity|null an entity of type $entityType, or null if not found
+	 */
+	public function getNearestEntity(Vector3 $pos, float $maxDistance, string $entityType = Entity::class, bool $includeDead = false) : ?Entity{
+		assert(is_a($entityType, Entity::class, true));
+
+		$minX = Math::floorFloat(($pos->x - $maxDistance) / 16);
+		$maxX = Math::ceilFloat(($pos->x + $maxDistance) / 16);
+		$minZ = Math::floorFloat(($pos->z - $maxDistance) / 16);
+		$maxZ = Math::ceilFloat(($pos->z + $maxDistance) / 16);
+
+		$currentTargetDistSq = $maxDistance ** 2;
+
+		/** @var Entity|null $currentTarget */
+		$currentTarget = null;
+
+		for($x = $minX; $x <= $maxX; ++$x){
+			for($z = $minZ; $z <= $maxZ; ++$z){
+				foreach($this->getChunkEntities($x, $z) as $entity){
+					if(!($entity instanceof $entityType) or $entity->isClosed() or $entity->isFlaggedForDespawn() or (!$includeDead and !$entity->isAlive())){
+						continue;
+					}
+					$distSq = $entity->distanceSquared($pos);
+					if($distSq < $currentTargetDistSq){
+						$currentTargetDistSq = $distSq;
+						$currentTarget = $entity;
+					}
+				}
+			}
+		}
+
+		return $currentTarget;
+	}
+
+
+	/**
 	 * Returns a list of the Tile entities in this level
 	 *
 	 * @return Tile[]
