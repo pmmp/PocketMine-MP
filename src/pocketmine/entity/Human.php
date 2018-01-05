@@ -459,6 +459,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->xpCooldown = $value;
 	}
 
+	public function getXpDropAmount() : int{
+		return (int) min(100, $this->getCurrentTotalXp());
+	}
 
 	public function getInventory(){
 		return $this->inventory;

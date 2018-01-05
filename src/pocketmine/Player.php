@@ -1435,7 +1435,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function getXpDropAmount() : int{
 		if(!$this->isCreative()){
-			return min(100, $this->getCurrentTotalXp());
+			return parent::getXpDropAmount();
 		}
 
 		return 0;
