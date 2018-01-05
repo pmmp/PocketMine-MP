@@ -27,7 +27,6 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ShortTag;
-use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\Player;
 
 class ExperienceOrb extends Entity{
@@ -200,7 +199,6 @@ class ExperienceOrb extends Entity{
 				$this->flagForDespawn();
 
 				$currentTarget->addXp($this->getXpValue());
-				$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_ORB, mt_rand());
 				$currentTarget->resetXpCooldown();
 
 				//TODO: check Mending enchantment

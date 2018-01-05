@@ -42,6 +42,8 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\Player;
 use pocketmine\utils\UUID;
@@ -306,10 +308,20 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * Adds a number of XP levels to the player.
-	 * @param int $amount
+	 *
+	 * @param int  $amount
+	 * @param bool $playSound
 	 */
-	public function addXpLevels(int $amount) : void{
-		$this->setXpLevel($this->getXpLevel() + $amount);
+	public function addXpLevels(int $amount, bool $playSound = true) : void{
+		$oldLevel = $this->getXpLevel();
+		$this->setXpLevel($oldLevel + $amount);
+
+		if($playSound){
+			$newLevel = $this->getXpLevel();
+			if((int) ($newLevel / 5) > (int) ($oldLevel / 5)){
+				$this->playLevelUpSound($newLevel);
+			}
+		}
 	}
 
 	/**
@@ -372,11 +384,31 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * Adds an amount of XP to the player, recalculating their XP level and progress. XP amount will be added to the
 	 * player's lifetime XP.
 	 *
-	 * @param int $amount
+	 * @param int  $amount
+	 * @param bool $playSound Whether to play level-up and XP gained sounds.
 	 */
-	public function addXp(int $amount) : void{
+	public function addXp(int $amount, bool $playSound = true) : void{
 		$this->totalXp += $amount;
-		$this->setCurrentTotalXp($this->getCurrentTotalXp() + $amount);
+
+		$oldLevel = $this->getXpLevel();
+		$oldTotal = $this->getCurrentTotalXp();
+
+		$this->setCurrentTotalXp($oldTotal + $amount);
+
+		if($playSound){
+			$newLevel = $this->getXpLevel();
+
+			if((int) ($newLevel / 5) > (int) ($oldLevel / 5)){
+				$this->playLevelUpSound($newLevel);
+			}elseif($this->getCurrentTotalXp() > $oldTotal){
+				$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_ORB, mt_rand());
+			}
+		}
+	}
+
+	private function playLevelUpSound(int $newLevel) : void{
+		$volume = 0x10000000 * (min(30, $newLevel) / 5); //No idea why such odd numbers, but this works...
+		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_LEVELUP, 1, (int) $volume);
 	}
 
 	/**
