@@ -25,7 +25,6 @@ namespace pocketmine\level\format\io;
 
 use pocketmine\level\format\Chunk;
 use pocketmine\level\generator\Generator;
-use pocketmine\level\Level;
 use pocketmine\level\LevelException;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\BigEndianNBTStream;
