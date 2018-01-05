@@ -28,7 +28,6 @@ namespace pocketmine\level;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
-use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Item as DroppedItem;
 use pocketmine\entity\object\ExperienceOrb;
@@ -1780,7 +1779,7 @@ class Level implements ChunkManager, Metadatable{
 		$drops = ($player !== null and $player->isCreative()) ? [] : array_merge(...array_map(function(Block $block) use ($item) : array{ return $block->getDrops($item); }, $affectedBlocks));
 
 		if($player !== null){
-			$ev = new BlockBreakEvent($player, $target, $item, $player->isCreative() or $player->allowInstaBreak(), $drops);
+			$ev = new BlockBreakEvent($player, $target, $item, $player->isCreative(), $drops);
 
 			if(($player->isSurvival() and !$target->isBreakable($item)) or $player->isSpectator()){
 				$ev->setCancelled();
@@ -1810,28 +1809,6 @@ class Level implements ChunkManager, Metadatable{
 			if($ev->isCancelled()){
 				return false;
 			}
-
-			$breakTime = ceil($target->getBreakTime($item) * 20);
-
-			if($player->isCreative() and $breakTime > 3){
-				$breakTime = 3;
-			}
-
-			if($player->hasEffect(Effect::HASTE)){
-				$breakTime *= 1 - (0.2 * $player->getEffect(Effect::HASTE)->getEffectLevel());
-			}
-
-			if($player->hasEffect(Effect::MINING_FATIGUE)){
-				$breakTime *= 1 + (0.3 * $player->getEffect(Effect::MINING_FATIGUE)->getEffectLevel());
-			}
-
-			$breakTime -= 1; //1 tick compensation
-
-			if(!$ev->getInstaBreak() and (ceil($player->lastBreak * 20) + $breakTime) > ceil(microtime(true) * 20)){
-				return false;
-			}
-
-			$player->lastBreak = PHP_INT_MAX;
 
 			$drops = $ev->getDrops();
 

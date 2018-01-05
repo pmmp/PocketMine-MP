@@ -201,7 +201,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public $spawned = false;
 	public $loggedIn = false;
 	public $gamemode;
-	public $lastBreak;
 	/** @var bool */
 	protected $authenticated = false;
 	/** @var string */
@@ -280,7 +279,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $flying = false;
 
 	protected $allowMovementCheats = false;
-	protected $allowInstaBreak = false;
 
 	private $needACK = [];
 
@@ -437,14 +435,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function setAllowMovementCheats(bool $value = true){
 		$this->allowMovementCheats = $value;
-	}
-
-	public function allowInstaBreak() : bool{
-		return $this->allowInstaBreak;
-	}
-
-	public function setAllowInstaBreak(bool $value = true){
-		$this->allowInstaBreak = $value;
 	}
 
 	/**
@@ -695,7 +685,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->perm = new PermissibleBase($this);
 		$this->namedtag = new CompoundTag();
 		$this->server = Server::getInstance();
-		$this->lastBreak = PHP_INT_MAX;
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->clientID = $clientID;
@@ -712,7 +701,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->creationTime = microtime(true);
 
 		$this->allowMovementCheats = (bool) $this->server->getProperty("player.anti-cheat.allow-movement-cheats", false);
-		$this->allowInstaBreak = (bool) $this->server->getProperty("player.anti-cheat.allow-instabreak", false);
 
 		$this->sessionAdapter = new PlayerNetworkSessionAdapter($this->server, $this);
 	}
@@ -2588,7 +2576,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		switch($packet->action){
 			case PlayerActionPacket::ACTION_START_BREAK:
-				if($this->lastBreak !== PHP_INT_MAX or $pos->distanceSquared($this) > 10000){
+				if($pos->distanceSquared($this) > 10000){
 					break;
 				}
 
@@ -2618,12 +2606,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_START_BREAK, (int) (65535 / $breakTime));
 					}
 				}
-				$this->lastBreak = microtime(true);
+
 				break;
 
-			/** @noinspection PhpMissingBreakStatementInspection */
 			case PlayerActionPacket::ACTION_ABORT_BREAK:
-				$this->lastBreak = PHP_INT_MAX;
 			case PlayerActionPacket::ACTION_STOP_BREAK:
 				$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_STOP_BREAK);
 				break;

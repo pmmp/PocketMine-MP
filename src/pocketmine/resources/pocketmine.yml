@@ -108,8 +108,6 @@ player:
  anti-cheat:
   #If false, will try to prevent speed and noclip cheats. May cause movement issues.
   allow-movement-cheats: true
-  #If false, times block breaks to ensure players are not cheating. May cause issues with some blocks which are not yet properly implemented.
-  allow-instabreak: false
 
 level-settings:
  #The default format that levels will use when created
