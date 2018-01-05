@@ -2887,6 +2887,7 @@ class Level implements ChunkManager, Metadatable{
 		unset($this->chunkTickList[$chunkHash]);
 		unset($this->chunkCache[$chunkHash]);
 		unset($this->blockCache[$chunkHash]);
+		unset($this->changedBlocks[$chunkHash]);
 
 		$this->timings->doChunkUnload->stopTiming();
 
