@@ -510,7 +510,9 @@ abstract class Living extends Entity implements Damageable{
 			$this->deadTicks += $tickDiff;
 			if($this->deadTicks >= $this->maxDeadTicks){
 				$this->endDeathAnimation();
-				//TODO: spawn experience orbs here
+
+				//TODO: check death conditions (must have been damaged by player < 5 seconds from death)
+				$this->level->dropExperience($this, $this->getXpDropAmount());
 			}
 		}
 
@@ -658,6 +660,14 @@ abstract class Living extends Entity implements Damageable{
 	 */
 	public function getDrops() : array{
 		return [];
+	}
+
+	/**
+	 * Returns the amount of XP this mob will drop on death.
+	 * @return int
+	 */
+	public function getXpDropAmount() : int{
+		return 0;
 	}
 
 	/**
