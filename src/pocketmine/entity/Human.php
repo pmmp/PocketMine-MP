@@ -300,9 +300,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * Sets the player's experience level. This does not affect their total XP or their XP progress.
+	 *
 	 * @param int $level
 	 */
-	public function setXpLevel(int $level){
+	public function setXpLevel(int $level) : void{
 		$this->attributeMap->getAttribute(Attribute::EXPERIENCE_LEVEL)->setValue($level);
 	}
 
@@ -342,9 +343,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * Sets the player's progress through the current level to a value between 0.0 and 1.0.
+	 *
 	 * @param float $progress
 	 */
-	public function setXpProgress(float $progress){
+	public function setXpProgress(float $progress) : void{
 		$this->attributeMap->getAttribute(Attribute::EXPERIENCE)->setValue($progress);
 	}
 
@@ -453,9 +455,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * Sets the duration in ticks until the human can pick up another XP orb.
+	 *
 	 * @param int $value
 	 */
-	public function resetXpCooldown(int $value = 2){
+	public function resetXpCooldown(int $value = 2) : void{
 		$this->xpCooldown = $value;
 	}
 
