@@ -2118,7 +2118,7 @@ class Server{
 	/**
 	 * Starts the PocketMine-MP server and starts processing ticks and packets
 	 */
-	public function start(){
+	private function start(){
 		if($this->getConfigBool("enable-query", true) === true){
 			$this->queryHandler = new QueryHandler();
 		}
