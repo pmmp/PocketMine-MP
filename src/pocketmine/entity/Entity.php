@@ -520,10 +520,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 		$this->recalculateBoundingBox();
 
-		$this->chunk = $this->level->getChunk($this->getFloorX() >> 4, $this->getFloorZ() >> 4, false);
-		if($this->chunk === null){
-			throw new \InvalidStateException("Cannot create entities in unloaded chunks");
-		}
+		$this->chunk = $level->getLoadedChunk(((int) floor($pos[0])) >> 4, ((int) floor($pos[2])) >> 4);
 
 		if($this->namedtag->hasTag("Motion", ListTag::class)){
 			/** @var float[] $motion */
@@ -1792,11 +1789,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	protected function checkChunks(){
 		$chunkX = $this->getFloorX() >> 4;
 		$chunkZ = $this->getFloorZ() >> 4;
+
 		if($this->chunk === null or ($this->chunk->getX() !== $chunkX or $this->chunk->getZ() !== $chunkZ)){
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
 			}
-			$this->chunk = $this->level->getChunk($chunkX, $chunkZ, true);
+			$this->chunk = $this->level->getChunk($chunkX, $chunkZ);
 
 			if(!$this->justCreated){
 				$newChunk = $this->level->getChunkPlayers($chunkX, $chunkZ);
