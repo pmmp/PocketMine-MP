@@ -148,6 +148,10 @@ class Level implements ChunkManager, Metadatable{
 	private $provider;
 	/** @var int */
 	private $providerGarbageCollectionTicker = 0;
+	/** @var callable[][] */
+	private $chunkLoadCallbacks = [];
+	/** @var bool[] */
+	private $chunkLoadLock = [];
 
 	/** @var int */
 	private $worldHeight;
@@ -626,7 +630,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 	}
 
-	public function registerChunkLoader(ChunkLoader $loader, int $chunkX, int $chunkZ, bool $autoLoad = true){
+	public function registerChunkLoader(ChunkLoader $loader, int $chunkX, int $chunkZ, bool $autoLoad = true, ?callable $chunkLoadCallback = null){
 		$hash = $loader->getLoaderId();
 
 		if(!isset($this->chunkLoaders[$index = Level::chunkHash($chunkX, $chunkZ)])){
@@ -651,7 +655,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->cancelUnloadChunkRequest($chunkX, $chunkZ);
 
 		if($autoLoad){
-			$this->loadChunk($chunkX, $chunkZ);
+			$this->loadChunk($chunkX, $chunkZ, true, $chunkLoadCallback);
 		}
 	}
 
@@ -726,6 +730,16 @@ class Level implements ChunkManager, Metadatable{
 			$this->provider->doGarbageCollection();
 			$this->providerGarbageCollectionTicker = 0;
 		}
+
+		$this->timings->syncChunkLoadTimer->startTiming();
+
+		while($this->provider->hasBufferedChunks()){
+			$this->timings->syncChunkLoadDataTimer->startTiming();
+			$chunk = $this->provider->getBufferedChunk();
+			$this->timings->syncChunkLoadDataTimer->stopTiming();
+			$this->onChunkLoaded($chunk);
+		}
+		$this->timings->syncChunkLoadTimer->stopTiming();
 
 		//Do block updates
 		$this->timings->doTickPending->startTiming();
@@ -1053,7 +1067,7 @@ class Level implements ChunkManager, Metadatable{
 	public function saveChunks(){
 		foreach($this->chunks as $chunk){
 			if($chunk->hasChanged() and $chunk->isGenerated()){
-				$this->provider->saveChunk($chunk);
+				$this->provider->requestChunkSave($chunk);
 				$chunk->setChanged(false);
 			}
 		}
@@ -2754,38 +2768,45 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * Attempts to load a chunk from the level provider (if not already loaded).
 	 *
-	 * @param int  $x
-	 * @param int  $z
-	 * @param bool $create Whether to create an empty chunk to load if the chunk cannot be loaded from disk.
+	 * @param int           $x
+	 * @param int           $z
+	 * @param bool          $create Whether to create an empty chunk to load if the chunk cannot be loaded from disk.
+	 * @param callable|null $callback Callable to call when the chunk is loaded, must accept a Chunk as first parameter
 	 *
 	 * @return bool if loading the chunk was successful
-	 *
-	 * @throws \InvalidStateException
 	 */
-	public function loadChunk(int $x, int $z, bool $create = true) : bool{
+	public function loadChunk(int $x, int $z, bool $create = true, ?callable $callback = null) : bool{
 		if(isset($this->chunks[$chunkHash = Level::chunkHash($x, $z)])){
+			if($callback !== null){
+				$callback($this->chunks[$chunkHash]);
+			}
 			return true;
 		}
 
-		$this->timings->syncChunkLoadTimer->startTiming();
-
 		$this->cancelUnloadChunkRequest($x, $z);
 
-		$this->timings->syncChunkLoadDataTimer->startTiming();
+		$this->provider->requestChunkLoad($x, $z);
 
-		$chunk = $this->provider->loadChunk($x, $z, $create);
+		$this->chunkLoadLock[$chunkHash] = true;
 
-		$this->timings->syncChunkLoadDataTimer->stopTiming();
-
-		if($chunk === null){
-			if($create){
-				throw new \InvalidStateException("Could not create new Chunk");
+		if($callback !== null){
+			if(!isset($this->chunkLoadCallbacks[$chunkHash])){
+				$this->chunkLoadCallbacks[$chunkHash] = [$callback];
+			}else{
+				$this->chunkLoadCallbacks[$chunkHash][] = $callback;
 			}
-			return false;
 		}
 
-		$this->chunks[$chunkHash] = $chunk;
+		return false;
+	}
+
+	public function onChunkLoaded(Chunk $chunk) : void{
+		$x = $chunk->getX();
+		$z = $chunk->getZ();
+		$this->chunks[$chunkHash = Level::chunkHash($x, $z)] = $chunk;
 		unset($this->blockCache[$chunkHash]);
+
+		unset($this->chunkLoadLock[$chunkHash]);
 
 		$chunk->initChunk($this);
 
@@ -2803,9 +2824,17 @@ class Level implements ChunkManager, Metadatable{
 			$this->unloadChunkRequest($x, $z);
 		}
 
-		$this->timings->syncChunkLoadTimer->stopTiming();
+		if(isset($this->chunkLoadCallbacks[$chunkHash])){
+			foreach($this->chunkLoadCallbacks[$chunkHash] as $callback){
+				try{
+					$callback($chunk);
+				}catch(\Throwable $e){
+					$this->server->getLogger()->logException($e);
+				}
+			}
 
-		return true;
+			unset($this->chunkLoadCallbacks[$chunkHash]);
+		}
 	}
 
 	private function queueUnloadChunk(int $x, int $z){
@@ -2853,7 +2882,7 @@ class Level implements ChunkManager, Metadatable{
 			try{
 				if($trySave and $this->getAutoSave() and $chunk->isGenerated()){
 					if($chunk->hasChanged() or count($chunk->getTiles()) > 0 or count($chunk->getSavableEntities()) > 0){
-						$this->provider->saveChunk($chunk);
+						$this->provider->requestChunkSave($chunk);
 					}
 				}
 
@@ -3052,7 +3081,11 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function populateChunk(int $x, int $z, bool $force = false) : bool{
-		if(isset($this->chunkPopulationQueue[$index = Level::chunkHash($x, $z)]) or (count($this->chunkPopulationQueue) >= $this->chunkPopulationQueueSize and !$force)){
+		if(
+			isset($this->chunkLoadLock[$chunkHash = Level::chunkHash($x, $z)]) or
+			isset($this->chunkPopulationQueue[$chunkHash]) or
+			(count($this->chunkPopulationQueue) >= $this->chunkPopulationQueueSize and !$force))
+		{
 			return false;
 		}
 
@@ -3070,13 +3103,14 @@ class Level implements ChunkManager, Metadatable{
 			}
 
 			if($populate){
-				if(!isset($this->chunkPopulationQueue[$index])){
-					$this->chunkPopulationQueue[$index] = true;
+				if(!isset($this->chunkPopulationQueue[$chunkHash])){
+					$this->chunkPopulationQueue[$chunkHash] = true;
 					for($xx = -1; $xx <= 1; ++$xx){
 						for($zz = -1; $zz <= 1; ++$zz){
 							$this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)] = true;
 						}
 					}
+
 					$task = new PopulationTask($this, $chunk);
 					$this->server->getScheduler()->scheduleAsyncTask($task);
 				}

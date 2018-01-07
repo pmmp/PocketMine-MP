@@ -85,10 +85,10 @@ class Chunk{
 	protected $extraData = [];
 
 	/** @var CompoundTag[] */
-	protected $NBTtiles = [];
+	public $NBTtiles = [];
 
 	/** @var CompoundTag[] */
-	protected $NBTentities = [];
+	public $NBTentities = [];
 
 	/**
 	 * @param int                 $chunkX
@@ -773,6 +773,29 @@ class Chunk{
 
 			$this->isInit = true;
 		}
+	}
+
+	public function getDeinitCopy() : Chunk{
+		$result = clone $this;
+		$result->NBTentities = [];
+		$result->NBTtiles = [];
+
+		foreach($result->getSavableEntities() as $entity){
+			$entity->saveNBT();
+			$result->NBTentities[] = $entity->namedtag;
+		}
+
+		$result->entities = [];
+
+		foreach($result->tiles as $tile){
+			$tile->saveNBT();
+			$result->NBTtiles[] = $tile->namedtag;
+		}
+
+		$result->tiles = [];
+		$result->tileList = [];
+
+		return $result;
 	}
 
 	/**

@@ -37,6 +37,10 @@ abstract class BaseLevelProvider implements LevelProvider{
 	/** @var CompoundTag */
 	protected $levelData;
 
+	/** @var ThreadedChunkProvider */
+	protected $chunkProvider;
+
+
 	public function __construct(string $path){
 		$this->path = $path;
 		if(!file_exists($this->path)){
@@ -58,7 +62,12 @@ abstract class BaseLevelProvider implements LevelProvider{
 		if(!$this->levelData->hasTag("generatorOptions", StringTag::class)){
 			$this->levelData->setString("generatorOptions", "");
 		}
+
+		$this->chunkProvider = $this->createChunkProvider();
+		$this->chunkProvider->start();
 	}
+
+	abstract protected function createChunkProvider() : ThreadedChunkProvider;
 
 	public function getPath() : string{
 		return $this->path;
@@ -114,23 +123,23 @@ abstract class BaseLevelProvider implements LevelProvider{
 		file_put_contents($this->getPath() . "level.dat", $buffer);
 	}
 
-	public function loadChunk(int $chunkX, int $chunkZ, bool $create = false) : ?Chunk{
-		$chunk = $this->readChunk($chunkX, $chunkZ);
-		if($chunk === null and $create){
-			$chunk = new Chunk($chunkX, $chunkZ);
-		}
-
-		return $chunk;
+	public function requestChunkLoad(int $chunkX, int $chunkZ) : void{
+		$this->chunkProvider->requestChunkLoad($chunkX, $chunkZ);
 	}
 
-	public function saveChunk(Chunk $chunk) : void{
-		if(!$chunk->isGenerated()){
-			throw new \InvalidStateException("Cannot save un-generated chunk");
-		}
-		$this->writeChunk($chunk);
+	public function getBufferedChunk() : ?Chunk{
+		return $this->chunkProvider->readChunkFromBuffer();
 	}
 
-	abstract protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk;
+	public function hasBufferedChunks() : bool{
+		return $this->chunkProvider->hasChunksInBuffer();
+	}
 
-	abstract protected function writeChunk(Chunk $chunk) : void;
+	public function requestChunkSave(Chunk $chunk) : void{
+		$this->chunkProvider->requestChunkSave($chunk);
+	}
+
+	public function close(){
+		$this->chunkProvider->quit();
+	}
 }
