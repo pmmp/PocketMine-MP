@@ -968,9 +968,8 @@ class Chunk{
 	 * @return Chunk
 	 */
 	public static function fastDeserialize(string $data) : Chunk{
-		$stream = new BinaryStream();
-		$stream->setBuffer($data);
-		$data = null;
+		$stream = new BinaryStream($data);
+
 		$x = $stream->getInt();
 		$z = $stream->getInt();
 		$subChunks = [];
