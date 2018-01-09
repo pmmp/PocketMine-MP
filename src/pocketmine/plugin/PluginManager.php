@@ -712,15 +712,7 @@ class PluginManager{
 	 * @param Event $event
 	 */
 	public function callEvent(Event $event){
-		static $priorities = [
-			EventPriority::LOWEST,
-			EventPriority::LOW,
-			EventPriority::NORMAL,
-			EventPriority::HIGH,
-			EventPriority::HIGHEST,
-			EventPriority::MONITOR,
-		];
-		foreach($priorities as $priority){
+		foreach(EventPriority::ALL as $priority){
 			foreach(HandlerList::getHandlerListsFor(get_class($event)) as $handlerList){
 				foreach($handlerList->getListenersByPriority($priority) as $registration){
 					if(!$registration->getPlugin()->isEnabled()){

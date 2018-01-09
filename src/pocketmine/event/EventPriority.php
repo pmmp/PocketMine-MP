@@ -33,6 +33,15 @@ namespace pocketmine\event;
  * MONITOR events should not change the event outcome or contents
  */
 abstract class EventPriority{
+	public const ALL = [
+		self::LOWEST,
+		self::LOW,
+		self::NORMAL,
+		self::HIGH,
+		self::HIGHEST,
+		self::MONITOR
+	];
+
 	/**
 	 * Event call is of very low importance and should be ran first, to allow
 	 * other plugins to further customise the outcome
@@ -43,7 +52,8 @@ abstract class EventPriority{
 	 */
 	public const LOW = 4;
 	/**
-	 * Event call is neither important or unimportant, and may be ran normally
+	 * Event call is neither important or unimportant, and may be ran normally.
+	 * This is the default priority.
 	 */
 	public const NORMAL = 3;
 	/**
@@ -61,5 +71,4 @@ abstract class EventPriority{
 	 * No modifications to the event should be made under this priority
 	 */
 	public const MONITOR = 0;
-
 }
