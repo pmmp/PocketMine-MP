@@ -767,7 +767,7 @@ class PluginManager{
 		foreach($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method){
 			if(!$method->isStatic()){
 				$tags = self::parseDocComment((string) $method->getDocComment());
-				$priority = isset($tags["priority"]) && defined(EventPriority::class . "::" . strtoupper($tags["priority"])) ?
+				$priority = isset($tags["priority"]) && strtoupper($tags["priority"]) !== "ALL" && defined(EventPriority::class . "::" . strtoupper($tags["priority"])) ?
 					constant(EventPriority::class . "::" . strtoupper($tags["priority"])) : EventPriority::NORMAL;
 				$ignoreCancelled = isset($tags["ignoreCancelled"]) && strtolower($tags["ignoreCancelled"]) === "true";
 
