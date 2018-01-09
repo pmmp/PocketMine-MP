@@ -714,6 +714,9 @@ class PluginManager{
 	public function callEvent(Event $event){
 		foreach(EventPriority::ALL as $priority){
 			foreach(HandlerList::getHandlerListsFor(get_class($event)) as $handlerList){
+				if($handlerList === null){
+					continue;
+				}
 				foreach($handlerList->getListenersByPriority($priority) as $registration){
 					if(!$registration->getPlugin()->isEnabled()){
 						continue;
