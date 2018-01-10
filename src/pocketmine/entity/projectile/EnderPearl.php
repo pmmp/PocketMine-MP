@@ -46,8 +46,7 @@ class EnderPearl extends Throwable{
 				$ev = new PlayerEnderPearlTeleportEvent($player, $this);
 				$player->getServer()->getPluginManager()->callEvent($ev);
 				if(!$ev->isCancelled()){
-					if($player->isSurvival())
-						$player->attack(new EntityDamageEvent($player, EntityDamageEvent::CAUSE_FALL, 5));
+					$player->attack(new EntityDamageEvent($player, EntityDamageEvent::CAUSE_FALL, 5));
 					for($i = 0; $i < 5; ++$i)
 						$player->getLevel()->addParticle(new PortalParticle(new Vector3($player->x + mt_rand(-15, 15) / 10, $player->y + mt_rand(0, 20) / 10, $player->z + mt_rand(-15, 15) / 10)));
 					$player->getLevel()->addSound(new EndermanTeleportSound($this));
