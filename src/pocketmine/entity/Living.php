@@ -35,6 +35,7 @@ use pocketmine\event\Timings;
 use pocketmine\item\Consumable;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
+use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
@@ -44,7 +45,6 @@ use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\Player;
 use pocketmine\utils\Binary;
-use pocketmine\utils\BlockIterator;
 use pocketmine\utils\Color;
 
 abstract class Living extends Entity implements Damageable{
@@ -689,11 +689,8 @@ abstract class Living extends Entity implements Damageable{
 		$blocks = [];
 		$nextIndex = 0;
 
-		$itr = new BlockIterator($this->level, $this->getPosition(), $this->getDirectionVector(), $this->getEyeHeight(), $maxDistance);
-
-		while($itr->valid()){
-			$itr->next();
-			$block = $itr->current();
+		foreach(VoxelRayTrace::inDirection($this->add(0, $this->eyeHeight, 0), $this->getDirectionVector(), $maxDistance) as $vector3){
+			$block = $this->level->getBlockAt($vector3->x, $vector3->y, $vector3->z);
 			$blocks[$nextIndex++] = $block;
 
 			if($maxLength !== 0 and count($blocks) > $maxLength){
