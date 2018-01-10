@@ -46,6 +46,16 @@ abstract class BaseLevelProvider implements LevelProvider{
 		if(!file_exists($this->path)){
 			mkdir($this->path, 0777, true);
 		}
+
+		$this->loadLevelData();
+		$this->fixLevelData();
+
+		$this->chunkProvider = $this->createChunkProvider();
+		$this->chunkProvider->start();
+	}
+
+
+	protected function loadLevelData() : void{
 		$nbt = new BigEndianNBTStream();
 		$nbt->readCompressed(file_get_contents($this->getPath() . "level.dat"));
 		$levelData = $nbt->getData()->getCompoundTag("Data");
@@ -54,7 +64,9 @@ abstract class BaseLevelProvider implements LevelProvider{
 		}else{
 			throw new LevelException("Invalid level.dat");
 		}
+	}
 
+	protected function fixLevelData() : void{
 		if(!$this->levelData->hasTag("generatorName", StringTag::class)){
 			$this->levelData->setString("generatorName", (string) Generator::getGenerator("DEFAULT"), true);
 		}
@@ -62,9 +74,6 @@ abstract class BaseLevelProvider implements LevelProvider{
 		if(!$this->levelData->hasTag("generatorOptions", StringTag::class)){
 			$this->levelData->setString("generatorOptions", "");
 		}
-
-		$this->chunkProvider = $this->createChunkProvider();
-		$this->chunkProvider->start();
 	}
 
 	abstract protected function createChunkProvider() : ThreadedChunkProvider;

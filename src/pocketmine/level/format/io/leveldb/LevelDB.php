@@ -81,11 +81,10 @@ class LevelDB extends BaseLevelProvider{
 
 	public function __construct(string $path){
 		self::checkForLevelDBExtension();
+		parent::__construct($path);
+	}
 
-		$this->path = $path;
-		if(!file_exists($this->path)){
-			mkdir($this->path, 0777, true);
-		}
+	protected function loadLevelData() : void{
 		$nbt = new LittleEndianNBTStream();
 		$nbt->read(substr(file_get_contents($this->getPath() . "level.dat"), 8));
 		$levelData = $nbt->getData();
@@ -95,14 +94,16 @@ class LevelDB extends BaseLevelProvider{
 			throw new LevelException("Invalid level.dat");
 		}
 
-		$db = new \LevelDB($this->path . "/db", [
-			"compression" => LEVELDB_ZLIB_RAW_COMPRESSION
-		]);
-
 		$version = $this->levelData->getInt("StorageVersion", INT32_MAX, true);
 		if($version > self::CURRENT_STORAGE_VERSION){
 			throw new LevelException("Specified LevelDB world format version ($version) is not supported by " . \pocketmine\NAME);
 		}
+	}
+
+	protected function fixLevelData() : void{
+		$db = new \LevelDB($this->path . "/db", [
+			"compression" => LEVELDB_ZLIB_RAW_COMPRESSION
+		]);
 
 		if(!$this->levelData->hasTag("generatorName", StringTag::class)){
 			if($this->levelData->hasTag("Generator", IntTag::class)){
@@ -136,9 +137,6 @@ class LevelDB extends BaseLevelProvider{
 		if(!$this->levelData->hasTag("generatorOptions", StringTag::class)){
 			$this->levelData->setString("generatorOptions", "");
 		}
-
-		$this->chunkProvider = $this->createChunkProvider();
-		$this->chunkProvider->start();
 	}
 
 	protected function createChunkProvider() : ThreadedChunkProvider{
