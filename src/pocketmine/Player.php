@@ -65,6 +65,8 @@ use pocketmine\event\player\PlayerRespawnEvent;
 use pocketmine\event\player\PlayerToggleFlightEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\event\player\PlayerToggleSprintEvent;
+use pocketmine\event\player\PlayerTeleportEvent;
+use pocketmine\event\player\PlayerWorldTeleportEvent;
 use pocketmine\event\player\PlayerTransferEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\TextContainer;
@@ -3637,6 +3639,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if(parent::teleport($pos, $yaw, $pitch)){
 
 			$this->removeAllWindows();
+
+			$from = new Location($this->lastX, $this->lastY, $this->lastZ, $this->lastYaw, $this->lastPitch, $this->level);
+			$to = $this->getLocation();
+			$ev = new PlayerTeleportEvent($this, $from, $to);
+			$this->server->getPluginManager()->callEvent($ev);
+			if($this->level != $this->getLocation()->getLevel()){
+				$ev = new PlayerWorldTeleportEvent($this, $from, $to);
+				$this->server->getPluginManager()->callEvent($ev);
+			}
 
 			$this->sendPosition($this, $this->yaw, $this->pitch, MovePlayerPacket::MODE_TELEPORT);
 			$this->sendPosition($this, $this->yaw, $this->pitch, MovePlayerPacket::MODE_TELEPORT, $this->getViewers());
