@@ -150,7 +150,7 @@ class ItemFactory{
 			self::registerItem(new RawChicken());
 			self::registerItem(new CookedChicken());
 			self::registerItem(new RottenFlesh());
-			//TODO: ENDER_PEARL
+			self::registerItem(new EnderPearl());
 			self::registerItem(new BlazeRod());
 			self::registerItem(new Item(Item::GHAST_TEAR, 0, "Ghast Tear"));
 			self::registerItem(new Item(Item::GOLD_NUGGET, 0, "Gold Nugget"));
