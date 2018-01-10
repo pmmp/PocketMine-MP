@@ -39,9 +39,7 @@ class EnderPearl extends Throwable{
 			return false;
 		}
 
-		$hasUpdate = parent::entityBaseTick($tickDiff);
-
-		if($this->age > 1200 or $this->isCollided){
+		if($this->isCollided){
 			if(($player = $this->getOwningEntity()) instanceof Player and $player->isAlive() and $this->y > 0){
 				$ev = new PlayerEnderPearlTeleportEvent($player, $this);
 				$player->getServer()->getPluginManager()->callEvent($ev);
@@ -54,10 +52,10 @@ class EnderPearl extends Throwable{
 				}
 			}
 			$this->flagForDespawn();
-			$hasUpdate = true;
+			return true;
+		}else{
+			return parent::entityBaseTick($tickDiff);
 		}
-
-		return $hasUpdate;
 	}
 	
 	public function onCollideWithEntity(Entity $entity){
