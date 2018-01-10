@@ -131,6 +131,8 @@ class LevelDB extends BaseLevelProvider{
 			}
 		}
 
+		$db->close();
+
 		if(!$this->levelData->hasTag("generatorOptions", StringTag::class)){
 			$this->levelData->setString("generatorOptions", "");
 		}
