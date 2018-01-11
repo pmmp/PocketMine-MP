@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "13a106ee8e33d29b4fc1d9edf2828b7d",
+    "content-hash": "f77760ebc72a115643865a02056f39cc",
     "packages": [
         {
             "name": "pocketmine/pocketmine-binaryutils",
@@ -19,6 +19,9 @@
                 "url": "https://api.github.com/repos/pmmp/PocketMine-BinaryUtils/zipball/4795001f4444725f97b3c14c1e295635ff0a98a4",
                 "reference": "4795001f4444725f97b3c14c1e295635ff0a98a4",
                 "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2"
             },
             "type": "library",
             "autoload": {
@@ -35,6 +38,40 @@
                 "issues": "https://github.com/pmmp/PocketMine-BinaryUtils/issues"
             },
             "time": "2018-01-11T12:51:47+00:00"
+        },
+        {
+            "name": "pocketmine/pocketmine-nbt",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/PocketMine-NBT.git",
+                "reference": "f8934c0aed90d1f55452588f7ebef7c4519518a5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/PocketMine-NBT/zipball/f8934c0aed90d1f55452588f7ebef7c4519518a5",
+                "reference": "f8934c0aed90d1f55452588f7ebef7c4519518a5",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.0",
+                "pocketmine/pocketmine-binaryutils": "dev-master#8bb34e771fee69abcc5482d17d2fa0b4f0e15a5e"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "pocketmine\\nbt\\": "src/"
+                }
+            },
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "PHP library for working with Named Binary Tags",
+            "support": {
+                "source": "https://github.com/pmmp/PocketMine-NBT/tree/master",
+                "issues": "https://github.com/pmmp/PocketMine-NBT/issues"
+            },
+            "time": "2018-01-11T13:51:50+00:00"
         },
         {
             "name": "pocketmine/pocketmine-spl",
@@ -112,7 +149,8 @@
     "stability-flags": {
         "php": 5,
         "ext-pthreads": 20,
-        "pocketmine/pocketmine-binaryutils": 20
+        "pocketmine/pocketmine-binaryutils": 20,
+        "pocketmine/pocketmine-nbt": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
