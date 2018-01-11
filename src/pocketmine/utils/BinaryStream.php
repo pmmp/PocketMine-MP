@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
-#include <rules/DataPacket.h>
+#include <rules/BinaryIO.h>
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
