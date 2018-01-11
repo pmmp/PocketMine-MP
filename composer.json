@@ -1,5 +1,5 @@
 {
-   "name": "pmmp/pocketmine-mp",
+   "name": "pocketmine/pocketmine-mp",
    "description": "A server software for Minecraft: Pocket Edition written in PHP",
    "type": "project",
    "homepage": "https://pmmp.io",
@@ -21,8 +21,8 @@
       "ext-yaml": ">=2.0.0",
       "ext-zip": "*",
       "ext-zlib": ">=1.2.11",
-      "pmmp/raklib": "dev-master#ae39b0bc648ac653f3744d3e9e8e4f6713f8cc11",
-      "pmmp/pocketmine-spl": "^0.1.0"
+      "pocketmine/raklib": "^0.10.0",
+      "pocketmine/pocketmine-spl": "^0.2.0"
    },
    "autoload": {
       "psr-0": {
