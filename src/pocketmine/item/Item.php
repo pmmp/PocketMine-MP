@@ -413,6 +413,28 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
+	 * Returns the level of the enchantment on this item with the specified ID, or 0 if the item does not have the
+	 * enchantment.
+	 *
+	 * @param int $enchantmentId
+	 *
+	 * @return int
+	 */
+	public function getEnchantmentLevel(int $enchantmentId) : int{
+		$ench = $this->getNamedTag()->getListTag(self::TAG_ENCH);
+		if($ench !== null){
+			/** @var CompoundTag $entry */
+			foreach($ench as $entry){
+				if($entry->getShort("id") === $enchantmentId){
+					return $entry->getShort("lvl");
+				}
+			}
+		}
+
+		return 0;
+	}
+
+	/**
 	 * @return bool
 	 */
 	public function hasCustomName() : bool{
