@@ -1639,13 +1639,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 */
 	public function getBlocksAround() : array{
 		if($this->blocksAround === null){
-			$bb = $this->boundingBox->grow(0.01, 0.01, 0.01);
-			$minX = Math::floorFloat($bb->minX);
-			$minY = Math::floorFloat($bb->minY);
-			$minZ = Math::floorFloat($bb->minZ);
-			$maxX = Math::ceilFloat($bb->maxX);
-			$maxY = Math::ceilFloat($bb->maxY);
-			$maxZ = Math::ceilFloat($bb->maxZ);
+			$inset = 0.001; //Offset against floating-point errors
+
+			$minX = Math::floorFloat($this->boundingBox->minX + $inset);
+			$minY = Math::floorFloat($this->boundingBox->minY + $inset);
+			$minZ = Math::floorFloat($this->boundingBox->minZ + $inset);
+			$maxX = Math::ceilFloat($this->boundingBox->maxX - $inset);
+			$maxY = Math::ceilFloat($this->boundingBox->maxY - $inset);
+			$maxZ = Math::ceilFloat($this->boundingBox->maxZ - $inset);
 
 			$this->blocksAround = [];
 
