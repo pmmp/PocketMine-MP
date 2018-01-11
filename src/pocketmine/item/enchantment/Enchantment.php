@@ -61,26 +61,26 @@ class Enchantment{
 	public const RARITY_RARE = 2;
 	public const RARITY_MYTHIC = 1;
 
-	public const SLOT_NONE = 0;
-	public const SLOT_ALL = 0b111111111111111;
-	public const SLOT_ARMOR = 0b1111;
-	public const SLOT_HEAD = 0b1;
-	public const SLOT_TORSO = 0b10;
-	public const SLOT_LEGS = 0b100;
-	public const SLOT_FEET = 0b1000;
-	public const SLOT_SWORD = 0b10000;
-	public const SLOT_BOW = 0b100000;
-	public const SLOT_TOOL = 0b111000000;
-	public const SLOT_HOE = 0b1000000;
-	public const SLOT_SHEARS = 0b10000000;
-	public const SLOT_FLINT_AND_STEEL = 0b100000000;
-	public const SLOT_DIG = 0b111000000000;
-	public const SLOT_AXE = 0b1000000000;
-	public const SLOT_PICKAXE = 0b10000000000;
-	public const SLOT_SHOVEL = 0b100000000000;
-	public const SLOT_FISHING_ROD = 0b1000000000000;
-	public const SLOT_CARROT_STICK = 0b10000000000000;
-	public const SLOT_ELYTRA = 0b100000000000000;
+	public const SLOT_NONE = 0x0;
+	public const SLOT_ALL = 0x7fff;
+	public const SLOT_ARMOR = self::SLOT_HEAD | self::SLOT_TORSO | self::SLOT_LEGS | self::SLOT_FEET;
+	public const SLOT_HEAD = 0x1;
+	public const SLOT_TORSO = 0x2;
+	public const SLOT_LEGS = 0x4;
+	public const SLOT_FEET = 0x8;
+	public const SLOT_SWORD = 0x10;
+	public const SLOT_BOW = 0x20;
+	public const SLOT_TOOL = self::SLOT_HOE | self::SLOT_SHEARS | self::SLOT_FLINT_AND_STEEL;
+	public const SLOT_HOE = 0x40;
+	public const SLOT_SHEARS = 0x80;
+	public const SLOT_FLINT_AND_STEEL = 0x100;
+	public const SLOT_DIG = self::SLOT_AXE | self::SLOT_PICKAXE | self::SLOT_SHOVEL;
+	public const SLOT_AXE = 0x200;
+	public const SLOT_PICKAXE = 0x400;
+	public const SLOT_SHOVEL = 0x800;
+	public const SLOT_FISHING_ROD = 0x1000;
+	public const SLOT_CARROT_STICK = 0x2000;
+	public const SLOT_ELYTRA = 0x4000;
 
 	/** @var Enchantment[] */
 	protected static $enchantments;
