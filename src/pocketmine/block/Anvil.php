@@ -61,7 +61,7 @@ class Anvil extends Fallable{
 			self::TYPE_SLIGHTLY_DAMAGED => "Slightly Damaged Anvil",
 			self::TYPE_VERY_DAMAGED => "Very Damaged Anvil"
 		];
-		return $names[$this->meta & 0x0c] ?? "Anvil";
+		return $names[$this->getVariant()] ?? "Anvil";
 	}
 
 	public function getToolType() : int{
@@ -106,13 +106,11 @@ class Anvil extends Fallable{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$direction = ($player !== null ? $player->getDirection() : 0) & 0x03;
-		$this->meta = ($this->meta & 0x0c) | $direction;
+		$this->meta = $this->getVariant() | $direction;
 		return $this->getLevel()->setBlock($blockReplace, $this, true, true);
 	}
 
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			ItemFactory::get($this->getItemId(), $this->getDamage() & 0x0c)
-		];
-	}
+	public function getVariantBitmask(): int{
+        return 0x0c;
+    }
 }
