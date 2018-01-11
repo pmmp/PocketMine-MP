@@ -62,7 +62,7 @@ class Enchantment{
 	public const RARITY_MYTHIC = 1;
 
 	public const SLOT_NONE = 0;
-	public const SLOT_ALL = 0b11111111111111;
+	public const SLOT_ALL = 0b111111111111111;
 	public const SLOT_ARMOR = 0b1111;
 	public const SLOT_HEAD = 0b1;
 	public const SLOT_TORSO = 0b10;
@@ -73,13 +73,14 @@ class Enchantment{
 	public const SLOT_TOOL = 0b111000000;
 	public const SLOT_HOE = 0b1000000;
 	public const SLOT_SHEARS = 0b10000000;
-	public const SLOT_FLINT_AND_STEEL = 0b10000000;
+	public const SLOT_FLINT_AND_STEEL = 0b100000000;
 	public const SLOT_DIG = 0b111000000000;
 	public const SLOT_AXE = 0b1000000000;
 	public const SLOT_PICKAXE = 0b10000000000;
-	public const SLOT_SHOVEL = 0b10000000000;
-	public const SLOT_FISHING_ROD = 0b100000000000;
-	public const SLOT_CARROT_STICK = 0b1000000000000;
+	public const SLOT_SHOVEL = 0b100000000000;
+	public const SLOT_FISHING_ROD = 0b1000000000000;
+	public const SLOT_CARROT_STICK = 0b10000000000000;
+	public const SLOT_ELYTRA = 0b100000000000000;
 
 	/** @var Enchantment[] */
 	protected static $enchantments;
