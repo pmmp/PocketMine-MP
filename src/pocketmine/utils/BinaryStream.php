@@ -25,9 +25,6 @@ namespace pocketmine\utils;
 
 #include <rules/BinaryIO.h>
 
-use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-
 class BinaryStream{
 
 	/** @var int */
@@ -217,91 +214,6 @@ class BinaryStream{
 	 */
 	public function putLLong(int $v){
 		$this->buffer .= Binary::writeLLong($v);
-	}
-
-
-	public function getString() : string{
-		return $this->get($this->getUnsignedVarInt());
-	}
-
-	public function putString(string $v){
-		$this->putUnsignedVarInt(strlen($v));
-		$this->put($v);
-	}
-
-
-	public function getUUID() : UUID{
-		//This is actually two little-endian longs: UUID Most followed by UUID Least
-		$part1 = $this->getLInt();
-		$part0 = $this->getLInt();
-		$part3 = $this->getLInt();
-		$part2 = $this->getLInt();
-		return new UUID($part0, $part1, $part2, $part3);
-	}
-
-	public function putUUID(UUID $uuid){
-		$this->putLInt($uuid->getPart(1));
-		$this->putLInt($uuid->getPart(0));
-		$this->putLInt($uuid->getPart(3));
-		$this->putLInt($uuid->getPart(2));
-	}
-
-	public function getSlot() : Item{
-		$id = $this->getVarInt();
-		if($id <= 0){
-			return ItemFactory::get(0, 0, 0);
-		}
-
-		$auxValue = $this->getVarInt();
-		$data = $auxValue >> 8;
-		if($data === 0x7fff){
-			$data = -1;
-		}
-		$cnt = $auxValue & 0xff;
-
-		$nbtLen = $this->getLShort();
-		$nbt = "";
-
-		if($nbtLen > 0){
-			$nbt = $this->get($nbtLen);
-		}
-
-		//TODO
-		$canPlaceOn = $this->getVarInt();
-		if($canPlaceOn > 0){
-			for($i = 0; $i < $canPlaceOn; ++$i){
-				$this->getString();
-			}
-		}
-
-		//TODO
-		$canDestroy = $this->getVarInt();
-		if($canDestroy > 0){
-			for($i = 0; $i < $canDestroy; ++$i){
-				$this->getString();
-			}
-		}
-
-		return ItemFactory::get($id, $data, $cnt, $nbt);
-	}
-
-
-	public function putSlot(Item $item){
-		if($item->getId() === 0){
-			$this->putVarInt(0);
-			return;
-		}
-
-		$this->putVarInt($item->getId());
-		$auxValue = (($item->getDamage() & 0x7fff) << 8) | $item->getCount();
-		$this->putVarInt($auxValue);
-
-		$nbt = $item->getCompoundTag();
-		$this->putLShort(strlen($nbt));
-		$this->put($nbt);
-
-		$this->putVarInt(0); //CanPlaceOn entry count (TODO)
-		$this->putVarInt(0); //CanDestroy entry count (TODO)
 	}
 
 	/**
