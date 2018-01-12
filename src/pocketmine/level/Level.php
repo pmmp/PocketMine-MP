@@ -932,8 +932,13 @@ class Level implements ChunkManager, Metadatable{
 			$this->chunkCache = [];
 			$this->blockCache = [];
 		}else{
-			if(count($this->blockCache) > 2048){
-				$this->blockCache = [];
+			$count = 0;
+			foreach($this->blockCache as $list){
+				$count += count($list);
+				if($count > 2048){
+					$this->blockCache = [];
+					break;
+				}
 			}
 		}
 	}
