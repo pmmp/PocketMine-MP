@@ -30,9 +30,9 @@ use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
-use pocketmine\level\MovingObjectPosition;
 use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
@@ -615,15 +615,15 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @param Vector3 $pos1
 	 * @param Vector3 $pos2
 	 *
-	 * @return MovingObjectPosition|null
+	 * @return RayTraceResult|null
 	 */
-	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2) : ?MovingObjectPosition{
+	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2) : ?RayTraceResult{
 		$bbs = $this->getCollisionBoxes();
 		if(empty($bbs)){
 			return null;
 		}
 
-		/** @var MovingObjectPosition|null $currentHit */
+		/** @var RayTraceResult|null $currentHit */
 		$currentHit = null;
 		/** @var int|float $currentDistance */
 		$currentDistance = PHP_INT_MAX;
@@ -639,12 +639,6 @@ class Block extends Position implements BlockIds, Metadatable{
 				$currentHit = $nextHit;
 				$currentDistance = $nextDistance;
 			}
-		}
-
-		if($currentHit !== null){
-			$currentHit->blockX = $this->x;
-			$currentHit->blockY = $this->y;
-			$currentHit->blockZ = $this->z;
 		}
 
 		return $currentHit;

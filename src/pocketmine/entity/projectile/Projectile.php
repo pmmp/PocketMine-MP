@@ -31,7 +31,6 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\level\Level;
-use pocketmine\level\MovingObjectPosition;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 
@@ -136,13 +135,13 @@ abstract class Projectile extends Entity{
 				}
 
 				$axisalignedbb = $entity->boundingBox->grow(0.3, 0.3, 0.3);
-				$ob = $axisalignedbb->calculateIntercept($this, $moveVector);
+				$rayTraceResult = $axisalignedbb->calculateIntercept($this, $moveVector);
 
-				if($ob === null){
+				if($rayTraceResult === null){
 					continue;
 				}
 
-				$distance = $this->distanceSquared($ob->hitVector);
+				$distance = $this->distanceSquared($rayTraceResult->hitVector);
 
 				if($distance < $nearDistance){
 					$nearDistance = $distance;
@@ -151,14 +150,8 @@ abstract class Projectile extends Entity{
 			}
 
 			if($nearEntity !== null){
-				$movingObjectPosition = MovingObjectPosition::fromEntity($nearEntity);
-			}
-
-			if($movingObjectPosition !== null){
-				if($movingObjectPosition->entityHit !== null){
-					$this->onCollideWithEntity($movingObjectPosition->entityHit);
-					return false;
-				}
+				$this->onCollideWithEntity($nearEntity);
+				return false;
 			}
 
 			if($this->isCollided and !$this->hadCollision){ //Collided with a block
