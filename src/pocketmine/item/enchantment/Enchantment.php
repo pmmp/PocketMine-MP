@@ -205,6 +205,17 @@ class Enchantment{
 	public function getMaxLevel() : int{
 		return $this->maxLevel;
 	}
+	
+	/**
+     * Sets the level of the enchantment.
+     * @param int $level
+     *
+     * @deprecated 
+     * @return EnchantmentInstance
+     */
+    public function setLevel(int $level) : EnchantmentInstance{
+        return new EnchantmentInstance($this, $level);
+    }
 
 	//TODO: methods for min/max XP cost bounds based on enchantment level (not needed yet - enchanting is client-side)
 }
