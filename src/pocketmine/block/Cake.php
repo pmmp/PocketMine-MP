@@ -89,6 +89,10 @@ class Cake extends Transparent implements FoodSource{
 		return [];
 	}
 
+	public function isAffectedBySilkTouch() : bool{
+		return false;
+	}
+
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player !== null){
 			$player->consumeObject($this);

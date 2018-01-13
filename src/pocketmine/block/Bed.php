@@ -207,6 +207,10 @@ class Bed extends Transparent{
 		return [];
 	}
 
+	public function isAffectedBySilkTouch() : bool{
+		return false;
+	}
+
 	public function getAffectedBlocks() : array{
 		if(($other = $this->getOtherHalf()) !== null){
 			return [$this, $other];
