@@ -78,17 +78,18 @@ It is mainly [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accept
 - Strings SHOULD use the double quote `"` except when the single quote is required.
 - All code SHOULD have parameter and type declarations where possible.
 - Strict types SHOULD be enabled on new files where it is sensible to do so.
+- All constant declarations SHOULD be preceded by a visibility modifier.
 
 ```php
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace pocketmine\example;
 
 class ExampleClass{
 
-	const EXAMPLE_CLASS_CONSTANT = 1;
+	public const EXAMPLE_CLASS_CONSTANT = 1;
 
 	public $examplePublicVariable = "defaultValue";
 	private $examplePrivateVariable;
@@ -99,7 +100,7 @@ class ExampleClass{
 	 * @param string      $firstArgument  the first argument
 	 * @param string|null $secondArgument default null
 	 */
-	public function __construct(string $firstArgument, &$secondArgument = null){
+	public function __construct(string $firstArgument, ?string &$secondArgument = null){
 		if($firstArgument === "exampleValue"){ //Remember to use === instead of == when possible
 			//do things
 		}elseif($firstArgument === "otherValue"){
@@ -119,7 +120,6 @@ class ExampleClass{
 	public function doStuff(string $stuff) : string{
 		return $stuff;
 	}
-
 }
 ```
 
