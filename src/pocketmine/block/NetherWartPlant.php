@@ -90,4 +90,8 @@ class NetherWartPlant extends Flowable{
 			ItemFactory::get($this->getItemId(), 0, ($this->getDamage() === 3 ? mt_rand(2, 4) : 1))
 		];
 	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return false;
+	}
 }

@@ -27,6 +27,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
@@ -433,6 +434,10 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getDrops(Item $item) : array{
 		if($this->isCompatibleWithTool($item)){
+			if($this->isAffectedBySilkTouch() and $item->hasEnchantment(Enchantment::SILK_TOUCH)){
+				return $this->getSilkTouchDrops($item);
+			}
+
 			return $this->getDropsForCompatibleTool($item);
 		}
 
@@ -450,6 +455,29 @@ class Block extends Position implements BlockIds, Metadatable{
 		return [
 			ItemFactory::get($this->getItemId(), $this->getVariant())
 		];
+	}
+
+	/**
+	 * Returns an array of Items to be dropped when the block is broken using a compatible Silk Touch-enchanted tool.
+	 *
+	 * @param Item $item
+	 *
+	 * @return Item[]
+	 */
+	public function getSilkTouchDrops(Item $item) : array{
+		return [
+			ItemFactory::get($this->getItemId(), $this->getVariant())
+		];
+	}
+
+	/**
+	 * Returns whether Silk Touch enchanted tools will cause this block to drop as itself. Since most blocks drop
+	 * themselves anyway, this is implicitly true.
+	 *
+	 * @return bool
+	 */
+	public function isAffectedBySilkTouch() : bool{
+		return true;
 	}
 
 	/**
