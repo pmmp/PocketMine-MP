@@ -39,6 +39,7 @@ We try to ensure that our project's codebase is as clean as possible and ensure 
 - **Your pull request will be checked and discussed in due time.** Since the team is scattered all around the world, your PR may not receive any attention for some time.
 - **It is inadvisable to create large pull requests with lots of changes** unless this has been discussed with the team beforehand. Large pull requests are difficult to review, and such pull requests may end up being closed. The only exception is when all features in the pull request are related to each other, and share the same core changes.
 - **You may be asked to rebase your pull request** if the branch becomes outdated and/or if possibly conflicting changes are made to the target branch. To see how to do this, read [this page](https://github.com/edx/edx-platform/wiki/How-to-Rebase-a-Pull-Request).
+- **Details should be provided of tests done.** Simply saying "Tested" or equivalent is not acceptable.
 
 ### Code contributions
 - **Avoid using GitHub Web Editor**. The web editor lacks most useful GIT features and **should only be used for very minor changes**. It is immediately clear if the web editor has been used, and if so the PR is more likely to be rejected. If you want to make serious contributions, **please learn how to use [GIT version control](https://git-scm.com/)**.
