@@ -5,8 +5,8 @@
 
 ## Creating an Issue
 - If you are reporting a bug:
- - **make sure that you are using the latest supported version** before opening an issue.
- - **test it on a clean test server, WITHOUT PLUGINS**, to see if the issue still occurs. If not then it may be a plugin issue. Please also indicate the result of such tests.
+  - **make sure that you are using the latest supported version** before opening an issue.
+  - **test it on a clean test server, WITHOUT PLUGINS**, to see if the issue still occurs. If not then it may be a plugin issue. Please also indicate the result of such tests.
 
 - [Search the issue tracker](https://github.com/pmmp/PocketMine-MP/issues?utf8=%E2%9C%93&q=is%3Aissue) to check if anyone has already reported it, to avoid needlessly creating duplicate issues. Make sure you also check closed issues, as an issue you think is valid may already have been resolved.
 
