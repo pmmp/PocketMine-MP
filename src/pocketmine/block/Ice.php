@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\Player;
@@ -56,7 +57,10 @@ class Ice extends Transparent{
 	}
 
 	public function onBreak(Item $item, Player $player = null) : bool{
-		return $this->getLevel()->setBlock($this, BlockFactory::get(Block::WATER), true);
+		if(!$item->hasEnchantment(Enchantment::SILK_TOUCH)){
+			return $this->getLevel()->setBlock($this, BlockFactory::get(Block::WATER), true);
+		}
+		return parent::onBreak($item, $player);
 	}
 
 	public function ticksRandomly() : bool{
