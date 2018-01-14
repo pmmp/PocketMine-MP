@@ -44,4 +44,8 @@ abstract class DoubleSlab extends Solid{
 		];
 	}
 
+	public function isAffectedBySilkTouch() : bool{
+		return false;
+	}
+
 }

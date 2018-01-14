@@ -114,4 +114,7 @@ class FlowerPot extends Flowable{
 		return $items;
 	}
 
+	public function isAffectedBySilkTouch() : bool{
+		return false;
+	}
 }

@@ -105,4 +105,8 @@ class StandingBanner extends Transparent{
 
 		return [$drop];
 	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return false;
+	}
 }
