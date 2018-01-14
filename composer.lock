@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "f77760ebc72a115643865a02056f39cc",
+    "content-hash": "1c1cb8b3b3cd2e20af5acb65235bb586",
     "packages": [
         {
             "name": "pocketmine/pocketmine-binaryutils",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/PocketMine-BinaryUtils.git",
-                "reference": "4795001f4444725f97b3c14c1e295635ff0a98a4"
+                "reference": "a7cd5303a3b215d26bf9be76682ce9311f40e887"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/PocketMine-BinaryUtils/zipball/4795001f4444725f97b3c14c1e295635ff0a98a4",
-                "reference": "4795001f4444725f97b3c14c1e295635ff0a98a4",
+                "url": "https://api.github.com/repos/pmmp/PocketMine-BinaryUtils/zipball/a7cd5303a3b215d26bf9be76682ce9311f40e887",
+                "reference": "a7cd5303a3b215d26bf9be76682ce9311f40e887",
                 "shasum": ""
             },
             "require": {
@@ -37,7 +37,7 @@
                 "source": "https://github.com/pmmp/PocketMine-BinaryUtils/tree/master",
                 "issues": "https://github.com/pmmp/PocketMine-BinaryUtils/issues"
             },
-            "time": "2018-01-11T12:51:47+00:00"
+            "time": "2018-01-14T18:53:25+00:00"
         },
         {
             "name": "pocketmine/pocketmine-nbt",

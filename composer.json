@@ -23,7 +23,7 @@
       "ext-zlib": ">=1.2.11",
       "pocketmine/raklib": "^0.10.0",
       "pocketmine/pocketmine-spl": "^0.2.0",
-      "pocketmine/pocketmine-binaryutils": "dev-master#4795001f4444725f97b3c14c1e295635ff0a98a4",
+      "pocketmine/pocketmine-binaryutils": "dev-master#a7cd5303a3b215d26bf9be76682ce9311f40e887",
       "pocketmine/pocketmine-nbt": "dev-master#f8934c0aed90d1f55452588f7ebef7c4519518a5"
    },
    "autoload": {
