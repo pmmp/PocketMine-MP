@@ -434,7 +434,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getDrops(Item $item) : array{
 		if($this->isCompatibleWithTool($item)){
-			if($item->hasEnchantment(Enchantment::SILK_TOUCH) and $this->isAffectedBySilkTouch()){
+			if($this->isAffectedBySilkTouch() and $item->hasEnchantment(Enchantment::SILK_TOUCH)){
 				return $this->getSilkTouchDrops($item);
 			}
 
