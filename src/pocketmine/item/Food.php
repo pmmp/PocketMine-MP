@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\entity\Living;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 abstract class Food extends Item implements FoodSource{
 	public function requiresHunger() : bool{
@@ -42,6 +43,6 @@ abstract class Food extends Item implements FoodSource{
 	}
 
 	public function onConsume(Living $consumer){
-
+		$consumer->getLevel()->broadcastLevelSoundEvent($consumer->add(0, 2, 0), LevelSoundEventPacket::SOUND_BURP);
 	}
 }

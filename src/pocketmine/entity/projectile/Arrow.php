@@ -29,6 +29,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\Player;
 
@@ -42,6 +43,8 @@ class Arrow extends Projectile{
 	protected $drag = 0.01;
 
 	protected $damage = 2;
+
+	protected $sound = true;
 
 	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null, bool $critical = false){
 		parent::__construct($level, $nbt, $shootingEntity);
@@ -74,6 +77,10 @@ class Arrow extends Projectile{
 
 		if($this->onGround or $this->hadCollision){
 			$this->setCritical(false);
+			if($this->sound === true){
+ 				$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BOW_HIT);
+ 				$this->sound = false;
+ 			}
 		}
 
 		if($this->age > 1200){
@@ -85,7 +92,7 @@ class Arrow extends Projectile{
 	}
 
 	public function onCollideWithPlayer(Player $player){
-		if(!$this->hadCollision){
+		if(!$this->hadCollision or $this->age < 10){
 			return;
 		}
 
