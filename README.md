@@ -16,7 +16,7 @@ If you don't find what you're looking for there, [talk to a human](#discussion).
 There are a very wide range of already-written plugins available which you can use to customise your server. Check out [Poggit](https://poggit.pmmp.io), or just search GitHub.
 
 ### For developers
- * [Latest API documentation](https://jenkins.pmmp.io/job/PocketMine-MP-doc/doxygen/) - Doxygen documentation generated from development
+ * [Latest API documentation](https://jenkins.pmmp.io/job/PocketMine-MP-doc/) - Doxygen documentation generated from development
  * [DevTools](https://github.com/pmmp/PocketMine-DevTools/) - A development tools plugin for creating plugins.
 
 ### Can I contribute?
