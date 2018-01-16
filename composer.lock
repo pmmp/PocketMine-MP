@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "1c1cb8b3b3cd2e20af5acb65235bb586",
+    "content-hash": "f13679b4c6a569a758646a63936dbd18",
     "packages": [
         {
             "name": "pocketmine/pocketmine-binaryutils",
@@ -107,16 +107,16 @@
         },
         {
             "name": "pocketmine/raklib",
-            "version": "0.10.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "112e11fb68efcd97dab8b1ace16e818b3163cba0"
+                "reference": "998af685be51d6ee8a1e206066ccd96c21450bfd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/112e11fb68efcd97dab8b1ace16e818b3163cba0",
-                "reference": "112e11fb68efcd97dab8b1ace16e818b3163cba0",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/998af685be51d6ee8a1e206066ccd96c21450bfd",
+                "reference": "998af685be51d6ee8a1e206066ccd96c21450bfd",
                 "shasum": ""
             },
             "require": {
@@ -124,6 +124,7 @@
                 "ext-pthreads": ">=3.1.7dev",
                 "ext-sockets": "*",
                 "php": ">=7.2.0RC3",
+                "pocketmine/pocketmine-binaryutils": "dev-master#a7cd5303a3b215d26bf9be76682ce9311f40e887",
                 "pocketmine/pocketmine-spl": "^0.2.0"
             },
             "type": "library",
@@ -137,10 +138,10 @@
             ],
             "description": "A RakNet server implementation written in PHP",
             "support": {
-                "source": "https://github.com/pmmp/RakLib/tree/0.10.0",
+                "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2018-01-11T13:13:42+00:00"
+            "time": "2018-01-16T19:33:21+00:00"
         }
     ],
     "packages-dev": [],
@@ -149,6 +150,7 @@
     "stability-flags": {
         "php": 5,
         "ext-pthreads": 20,
+        "pocketmine/raklib": 20,
         "pocketmine/pocketmine-binaryutils": 20,
         "pocketmine/pocketmine-nbt": 20
     },
