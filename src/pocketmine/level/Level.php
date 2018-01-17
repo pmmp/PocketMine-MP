@@ -163,6 +163,8 @@ class Level implements ChunkManager, Metadatable{
 
 	/** @var DataPacket[][] */
 	private $chunkPackets = [];
+	/** @var DataPacket[] */
+	private $globalPackets = [];
 
 	/** @var float[] */
 	private $unloadQueue = [];
@@ -626,6 +628,15 @@ class Level implements ChunkManager, Metadatable{
 		}
 	}
 
+	/**
+	 * Queues a DataPacket to be sent to everyone in the Level at the end of the current tick.
+	 *
+	 * @param DataPacket $packet
+	 */
+	public function addGlobalPacket(DataPacket $packet) : void{
+		$this->globalPackets[] = $packet;
+	}
+
 	public function registerChunkLoader(ChunkLoader $loader, int $chunkX, int $chunkZ, bool $autoLoad = true){
 		$hash = $loader->getLoaderId();
 
@@ -806,6 +817,9 @@ class Level implements ChunkManager, Metadatable{
 		if($this->sleepTicks > 0 and --$this->sleepTicks <= 0){
 			$this->checkSleep();
 		}
+
+		$this->server->batchPackets($this->players, $this->globalPackets);
+		$this->globalPackets = [];
 
 		foreach($this->chunkPackets as $index => $entries){
 			Level::getXZ($index, $chunkX, $chunkZ);
