@@ -26,7 +26,7 @@ namespace pocketmine\entity\projectile;
 use pocketmine\entity\Entity;
 use pocketmine\event\inventory\InventoryPickupArrowEvent;
 use pocketmine\item\ItemFactory;
-use pocketmine\item\Item as ItemItem;
+use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
@@ -89,7 +89,7 @@ class Arrow extends Projectile{
 			return;
 		}
 
-		$item = ItemFactory::get(ItemItem::ARROW, 0, 1);
+		$item = ItemFactory::get(Item::ARROW, 0, 1);
 
 		$playerInventory = $player->getInventory();
 		if($player->isSurvival() and !$playerInventory->canAddItem($item)){
