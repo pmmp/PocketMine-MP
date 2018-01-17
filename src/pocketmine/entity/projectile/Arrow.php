@@ -25,8 +25,8 @@ namespace pocketmine\entity\projectile;
 
 use pocketmine\entity\Entity;
 use pocketmine\event\inventory\InventoryPickupArrowEvent;
-use pocketmine\item\ItemFactory;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
