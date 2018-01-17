@@ -33,7 +33,7 @@ use pocketmine\level\Level;
 use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\{
-	ByteArrayTag, ByteTag, CompoundTag, IntArrayTag, IntTag, ListTag, LongTag, StringTag
+	ByteArrayTag, ByteTag, CompoundTag, FloatTag, IntArrayTag, IntTag, ListTag, LongTag, StringTag
 };
 use pocketmine\utils\MainLogger;
 
@@ -266,6 +266,48 @@ class McRegion extends BaseLevelProvider{
 
 	public function setDifficulty(int $difficulty){
 		$this->levelData->setByte("Difficulty", $difficulty);
+	}
+
+	public function getRainTime() : int{
+		return $this->levelData->getInt("rainTime", 0);
+	}
+
+	public function setRainTime(int $ticks) : void{
+		$this->levelData->setInt("rainTime", $ticks);
+	}
+
+	public function getRainLevel() : float{
+		if($this->levelData->hasTag("rainLevel", FloatTag::class)){ //PocketMine/MCPE
+			return $this->levelData->getFloat("rainLevel");
+		}
+
+		return (float) $this->levelData->getByte("raining", 0); //PC vanilla
+	}
+
+	public function setRainLevel(float $level) : void{
+		$this->levelData->setFloat("rainLevel", $level); //PocketMine/MCPE
+		$this->levelData->setByte("raining", (int) ceil($level)); //PC vanilla
+	}
+
+	public function getLightningTime() : int{
+		return $this->levelData->getInt("thunderTime", 0);
+	}
+
+	public function setLightningTime(int $ticks) : void{
+		$this->levelData->setInt("thunderTime", $ticks);
+	}
+
+	public function getLightningLevel() : float{
+		if($this->levelData->hasTag("lightningLevel", FloatTag::class)){ //PocketMine/MCPE
+			return $this->levelData->getFloat("lightningLevel");
+		}
+
+		return (float) $this->levelData->getByte("thundering", 0); //PC vanilla
+	}
+
+	public function setLightningLevel(float $level) : void{
+		$this->levelData->setFloat("lightningLevel", $level); //PocketMine/MCPE
+		$this->levelData->setByte("thundering", (int) ceil($level)); //PC vanilla
 	}
 
 	public function doGarbageCollection(){
