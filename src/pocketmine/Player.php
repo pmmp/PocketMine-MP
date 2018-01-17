@@ -2413,6 +2413,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							$ev->setCancelled();
 						}
 
+						if(!$this->isSprinting() and !$this->isFlying() and $this->fallDistance > 0 and !$this->hasEffect(Effect::BLINDNESS) and !$this->isInsideOfWater()){
+							$ev->setDamage($ev->getDamage() / 2, EntityDamageEvent::MODIFIER_CRITICAL);
+							$pk = new AnimatePacket();
+							$pk->action = AnimatePacket::ACTION_CRITICAL_HIT;
+							$pk->entityRuntimeId = $target->getId();
+							$this->server->broadcastPacket($target->getViewers(), $pk);
+						}
+
 						$target->attack($ev);
 
 						if($ev->isCancelled()){
