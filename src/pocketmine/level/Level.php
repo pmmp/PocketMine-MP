@@ -503,16 +503,21 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * Broadcasts a LevelEvent to players in the area. This could be sound, particles, weather changes, etc.
 	 *
-	 * @param Vector3 $pos
-	 * @param int $evid
-	 * @param int $data
+	 * @param Vector3|null $pos If null, broadcasts to every player in the Level
+	 * @param int          $evid
+	 * @param int          $data
 	 */
-	public function broadcastLevelEvent(Vector3 $pos, int $evid, int $data = 0){
+	public function broadcastLevelEvent(?Vector3 $pos, int $evid, int $data = 0){
 		$pk = new LevelEventPacket();
 		$pk->evid = $evid;
 		$pk->data = $data;
-		$pk->position = $pos->asVector3();
-		$this->addChunkPacket($pos->x >> 4, $pos->z >> 4, $pk);
+		if($pos !== null){
+			$pk->position = $pos->asVector3();
+			$this->addChunkPacket($pos->x >> 4, $pos->z >> 4, $pk);
+		}else{
+			$pk->position = null;
+			$this->addGlobalPacket($pk);
+		}
 	}
 
 	/**
