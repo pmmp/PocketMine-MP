@@ -2607,8 +2607,6 @@ class Level implements ChunkManager, Metadatable{
 		if($entity instanceof Player){
 			unset($this->players[$entity->getId()]);
 			$this->checkSleep();
-		}else{
-			$entity->close();
 		}
 
 		unset($this->entities[$entity->getId()]);
