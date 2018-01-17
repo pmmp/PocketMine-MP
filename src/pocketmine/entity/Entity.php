@@ -1067,6 +1067,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		return !$this->justCreated and $entity !== $this;
 	}
 
+	public function canBeCollidedWith() : bool{
+		return true;
+	}
+
 	protected function updateMovement(){
 		$diffPosition = ($this->x - $this->lastX) ** 2 + ($this->y - $this->lastY) ** 2 + ($this->z - $this->lastZ) ** 2;
 		$diffRotation = ($this->yaw - $this->lastYaw) ** 2 + ($this->pitch - $this->lastPitch) ** 2;
