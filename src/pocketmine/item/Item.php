@@ -761,15 +761,6 @@ class Item implements ItemIds, \JsonSerializable{
 		return 0;
 	}
 
-	/**
-	 * Returns the maximum amount of damage this item can take before it breaks.
-	 *
-	 * @return int|bool
-	 */
-	public function getMaxDurability(){
-		return false;
-	}
-
 	public function isPickaxe(){
 		return false;
 	}

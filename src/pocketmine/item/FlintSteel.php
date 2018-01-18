@@ -49,7 +49,7 @@ class FlintSteel extends Tool{
 		return false;
 	}
 
-	public function getMaxDurability(){
+	public function getMaxDurability() : int{
 		return 65;
 	}
 }
