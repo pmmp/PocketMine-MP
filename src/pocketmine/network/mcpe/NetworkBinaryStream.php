@@ -411,7 +411,7 @@ class NetworkBinaryStream extends BinaryStream{
 	 *
 	 * @param Vector3|null $vector
 	 */
-	public function putVector3ObjNullable(Vector3 $vector = null){
+	public function putVector3ObjNullable(?Vector3 $vector = null){
 		if($vector){
 			$this->putVector3Obj($vector);
 		}else{
