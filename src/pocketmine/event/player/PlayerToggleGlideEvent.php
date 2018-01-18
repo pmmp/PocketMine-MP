@@ -34,7 +34,7 @@ class PlayerToggleGlideEvent extends PlayerEvent implements Cancellable{
 
 	/**
 	 * @param Player $player
-	 * @param bool   $isGlideing
+	 * @param bool   $isGliding
 	 */
 	public function __construct(Player $player, bool $isGliding){
 		$this->player = $player;
