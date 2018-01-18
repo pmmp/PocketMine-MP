@@ -522,7 +522,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		assert(!is_nan($this->x) and !is_infinite($this->x) and !is_nan($this->y) and !is_infinite($this->y) and !is_nan($this->z) and !is_infinite($this->z));
 
-		$this->fallDistance = $this->namedtag->getFloat("FallDistance", 0);
+		$this->fallDistance = $this->namedtag->getFloat("FallDistance", 0.0);
 
 		$this->fireTicks = $this->namedtag->getShort("Fire", 0);
 		if($this->isOnFire()){
