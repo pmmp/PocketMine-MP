@@ -57,7 +57,7 @@ abstract class Durable extends Item{
 
 		$amount -= $this->getUnbreakingDamageReduction($amount);
 
-		$this->meta += $amount;
+		$this->meta = min($this->meta + $amount, $this->getMaxDurability());
 		if($this->isBroken()){
 			$this->pop();
 		}
