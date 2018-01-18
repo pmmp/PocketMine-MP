@@ -1663,9 +1663,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			if($this->isGliding()){
 				$this->resetFallDistance();
 				if($currentTick % 20 === 0){
-                	                $elytra = $this->inventory->getChestplate();
-        	                        $elytra->applyDamage(1);
-	                                $this->inventory->setChestplate($elytra);
+					$elytra = $this->inventory->getChestplate();
+					$elytra->applyDamage(1);
+					$this->inventory->setChestplate($elytra);
 				}
 			}
 
