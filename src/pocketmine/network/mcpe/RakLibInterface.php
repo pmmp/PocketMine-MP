@@ -72,14 +72,14 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	/** @var SleeperNotifier */
 	private $sleeper;
 
-	public function __construct(Server $server){
+	public function __construct(Server $server, InternetAddress $address){
 		$this->server = $server;
 
 		$this->sleeper = new SleeperNotifier();
 		$this->rakLib = new RakLibServer(
 			$this->server->getLogger(),
 			\pocketmine\COMPOSER_AUTOLOADER_PATH,
-			new InternetAddress($this->server->getIp(), $this->server->getPort(), 4),
+			$address,
 			(int) $this->server->getProperty("network.max-mtu-size", 1492),
 			self::MCPE_RAKNET_PROTOCOL_VERSION,
 			$this->sleeper

@@ -107,6 +107,7 @@ use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\utils\UUID;
+use raklib\utils\InternetAddress;
 
 /**
  * The class that manages everything
@@ -388,6 +389,13 @@ class Server{
 	/**
 	 * @return int
 	 */
+	public function getPortv6() : int{
+		return $this->getConfigInt("server-portv6", $this->getPort());
+	}
+
+	/**
+	 * @return int
+	 */
 	public function getViewDistance() : int{
 		return max(2, $this->getConfigInt("view-distance", 8));
 	}
@@ -409,6 +417,10 @@ class Server{
 	public function getIp() : string{
 		$str = $this->getConfigString("server-ip");
 		return $str !== "" ? $str : "0.0.0.0";
+	}
+
+	public function getIpv6() : string{
+		return $this->getConfigString("server-ipv6", "::");
 	}
 
 	/**
@@ -1598,6 +1610,7 @@ class Server{
 			}
 
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.networkStart", [$this->getIp(), $this->getPort()]));
+			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.networkStart", ["[" . $this->getIpv6() . "]", $this->getPortv6()]));
 			define("BOOTUP_RANDOM", random_bytes(16));
 			$this->serverID = Utils::getMachineUniqueId($this->getIp() . $this->getPort());
 
@@ -1650,9 +1663,11 @@ class Server{
 
 			$this->enablePlugins(PluginLoadOrder::STARTUP);
 
-			$this->network->registerInterface(new RakLibInterface($this));
+			$this->network->registerInterface(new RakLibInterface($this, new InternetAddress($this->getIp(), $this->getPort(), 4)));
+			$this->network->registerInterface(new RakLibInterface($this, new InternetAddress($this->getIpv6(), $this->getPortv6(), 6)));
 
 			LevelProviderManager::init();
+
 			if(extension_loaded("leveldb")){
 				$this->logger->debug($this->getLanguage()->translateString("pocketmine.debug.enable"));
 			}
