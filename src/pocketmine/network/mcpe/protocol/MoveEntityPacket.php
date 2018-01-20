@@ -49,7 +49,7 @@ class MoveEntityPacket extends DataPacket{
 
 	protected function decodePayload(){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->position = $this->getVector3Obj();
+		$this->position = $this->getVector3();
 		$this->pitch = $this->getByteRotation();
 		$this->headYaw = $this->getByteRotation();
 		$this->yaw = $this->getByteRotation();
@@ -59,7 +59,7 @@ class MoveEntityPacket extends DataPacket{
 
 	protected function encodePayload(){
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putVector3Obj($this->position);
+		$this->putVector3($this->position);
 		$this->putByteRotation($this->pitch);
 		$this->putByteRotation($this->headYaw);
 		$this->putByteRotation($this->yaw);

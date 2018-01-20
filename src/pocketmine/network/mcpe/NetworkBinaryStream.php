@@ -163,7 +163,7 @@ class NetworkBinaryStream extends BinaryStream{
 					$value = $this->getVarLong();
 					break;
 				case Entity::DATA_TYPE_VECTOR3F:
-					$value = $this->getVector3Obj();
+					$value = $this->getVector3();
 					break;
 				default:
 					$value = [];
@@ -219,7 +219,7 @@ class NetworkBinaryStream extends BinaryStream{
 					$this->putVarLong($d[1]);
 					break;
 				case Entity::DATA_TYPE_VECTOR3F:
-					$this->putVector3ObjNullable($d[1]);
+					$this->putVector3Nullable($d[1]);
 			}
 		}
 	}
@@ -360,38 +360,11 @@ class NetworkBinaryStream extends BinaryStream{
 	}
 
 	/**
-	 * Reads a floating-point vector3 rounded to 4dp.
-	 *
-	 * @param float $x
-	 * @param float $y
-	 * @param float $z
-	 */
-	public function getVector3f(&$x, &$y, &$z){
-		$x = $this->getRoundedLFloat(4);
-		$y = $this->getRoundedLFloat(4);
-		$z = $this->getRoundedLFloat(4);
-	}
-
-	/**
-	 * Writes a floating-point vector3
-	 *
-	 * @param float $x
-	 * @param float $y
-	 * @param float $z
-	 */
-	public function putVector3f(float $x, float $y, float $z){
-		$this->putLFloat($x);
-		$this->putLFloat($y);
-		$this->putLFloat($z);
-	}
-
-	/**
-	 * Reads a floating-point Vector3 object
-	 * TODO: get rid of primitive methods and replace with this
+	 * Reads a floating-point Vector3 object with coordinates rounded to 4 decimal places.
 	 *
 	 * @return Vector3
 	 */
-	public function getVector3Obj() : Vector3{
+	public function getVector3() : Vector3{
 		return new Vector3(
 			$this->getRoundedLFloat(4),
 			$this->getRoundedLFloat(4),
@@ -403,13 +376,15 @@ class NetworkBinaryStream extends BinaryStream{
 	 * Writes a floating-point Vector3 object, or 3x zero if null is given.
 	 *
 	 * Note: ONLY use this where it is reasonable to allow not specifying the vector.
-	 * For all other purposes, use {@link DataPacket#putVector3Obj}
+	 * For all other purposes, use the non-nullable version.
+	 *
+	 * @see NetworkBinaryStream::putVector3()
 	 *
 	 * @param Vector3|null $vector
 	 */
-	public function putVector3ObjNullable(Vector3 $vector = null){
+	public function putVector3Nullable(Vector3 $vector = null){
 		if($vector){
-			$this->putVector3Obj($vector);
+			$this->putVector3($vector);
 		}else{
 			$this->putLFloat(0.0);
 			$this->putLFloat(0.0);
@@ -419,11 +394,10 @@ class NetworkBinaryStream extends BinaryStream{
 
 	/**
 	 * Writes a floating-point Vector3 object
-	 * TODO: get rid of primitive methods and replace with this
 	 *
 	 * @param Vector3 $vector
 	 */
-	public function putVector3Obj(Vector3 $vector){
+	public function putVector3(Vector3 $vector){
 		$this->putLFloat($vector->x);
 		$this->putLFloat($vector->y);
 		$this->putLFloat($vector->z);
