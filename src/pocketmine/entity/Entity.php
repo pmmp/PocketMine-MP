@@ -966,6 +966,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		return $this->attributeMap;
 	}
 
+	public function getDataPropertyManager() : DataPropertyManager{
+		return $this->propertyManager;
+	}
+
 	public function entityBaseTick(int $tickDiff = 1) : bool{
 		//TODO: check vehicles
 
