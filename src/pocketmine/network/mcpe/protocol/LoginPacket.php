@@ -79,7 +79,7 @@ class LoginPacket extends DataPacket{
 	protected function decodePayload(){
 		$this->protocol = $this->getInt();
 
-		if($this->protocol !== ProtocolInfo::CURRENT_PROTOCOL){
+		if(!in_array($this->protocol, ProtocolInfo::ACCEPTED_PROTOCOLS)){
 			if($this->protocol > 0xffff){ //guess MCPE <= 1.1
 				$this->offset -= 6;
 				$this->protocol = $this->getInt();
@@ -89,7 +89,7 @@ class LoginPacket extends DataPacket{
 		try{
 			$this->decodeConnectionRequest();
 		}catch(\Throwable $e){
-			if($this->protocol === ProtocolInfo::CURRENT_PROTOCOL){
+		    if(in_array($this->protocol, ProtocolInfo::ACCEPTED_PROTOCOLS))
 				throw $e;
 			}
 
