@@ -23,6 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Item;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3;
+use pocketmine\Player;
+
 class Lever extends Flowable{
 
 	protected $id = self::LEVER;
@@ -38,4 +43,58 @@ class Lever extends Flowable{
 	public function getHardness() : float{
 		return 0.5;
 	}
+
+	public function getVariantBitmask() : int{
+		return 0;
+	}
+
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+		if(!$blockClicked->isSolid()){
+			return false;
+		}
+
+		if($face === Vector3::SIDE_DOWN){
+			$this->meta = 0;
+		}else{
+			$this->meta = 6 - $face;
+		}
+
+		if($player !== null){
+			if(($player->getDirection() & 0x01) === 0){
+				if($face === Vector3::SIDE_UP){
+					$this->meta = 6;
+				}
+			}else{
+				if($face === Vector3::SIDE_DOWN){
+					$this->meta = 7;
+				}
+			}
+		}
+
+		return $this->level->setBlock($blockReplace, $this, true, true);
+	}
+
+	public function onUpdate(int $type){
+		if($type === Level::BLOCK_UPDATE_NORMAL){
+			$faces = [
+				0 => Vector3::SIDE_UP,
+				1 => Vector3::SIDE_WEST,
+				2 => Vector3::SIDE_EAST,
+				3 => Vector3::SIDE_NORTH,
+				4 => Vector3::SIDE_SOUTH,
+				5 => Vector3::SIDE_DOWN,
+				6 => Vector3::SIDE_DOWN,
+				7 => Vector3::SIDE_UP
+			];
+			if(!$this->getSide($faces[$this->meta & 0x07])->isSolid()){
+				$this->level->useBreakOn($this);
+
+				return $type;
+			}
+		}
+
+		return false;
+	}
+
+	//TODO
 }
