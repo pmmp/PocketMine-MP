@@ -150,7 +150,6 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 			case self::CAUSE_VOID:
 			case self::CAUSE_MAGIC:
 			case self::CAUSE_SUICIDE:
-				//TODO: lightning
 				return false;
 
 		}
