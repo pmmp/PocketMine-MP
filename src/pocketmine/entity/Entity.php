@@ -1665,9 +1665,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$minX = Math::floorFloat($this->boundingBox->minX + $inset);
 			$minY = Math::floorFloat($this->boundingBox->minY + $inset);
 			$minZ = Math::floorFloat($this->boundingBox->minZ + $inset);
-			$maxX = Math::ceilFloat($this->boundingBox->maxX - $inset);
-			$maxY = Math::ceilFloat($this->boundingBox->maxY - $inset);
-			$maxZ = Math::ceilFloat($this->boundingBox->maxZ - $inset);
+			$maxX = Math::floorFloat($this->boundingBox->maxX - $inset);
+			$maxY = Math::floorFloat($this->boundingBox->maxY - $inset);
+			$maxZ = Math::floorFloat($this->boundingBox->maxZ - $inset);
 
 			$this->blocksAround = [];
 
