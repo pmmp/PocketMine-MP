@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,27 +27,31 @@ namespace pocketmine\network\mcpe\protocol;
  * Version numbers and packet IDs for the current Minecraft PE protocol
  */
 interface ProtocolInfo{
-
-	/**
-	 * NOTE TO DEVELOPERS
-	 * Do not waste your time or ours submitting pull requests changing game and/or protocol version numbers.
-	 * Pull requests changing game and/or protocol version numbers will be closed.
-	 *
-	 * This file is generated automatically, do not edit it manually.
-	 */
-
-	/**
-	 * Actual Minecraft: PE protocol version
-	 */
-	public const CURRENT_PROTOCOL = 160;
-	/**
-	 * Current Minecraft PE version reported by the server. This is usually the earliest currently supported version.
-	 */
-	public const MINECRAFT_VERSION = 'v1.2.7';
-	/**
-	 * Version number sent to clients in ping responses.
-	 */
-	public const MINECRAFT_VERSION_NETWORK = '1.2.7';
+    
+    /**
+     * NOTE TO DEVELOPERS
+     * Do not waste your time or ours submitting pull requests changing game and/or protocol version numbers.
+     * Pull requests changing game and/or protocol version numbers will be closed.
+     *
+     * This file is generated automatically, do not edit it manually.
+     */
+    
+    /**
+     * Actual Minecraft: PE protocol version
+     */
+    const CURRENT_PROTOCOL = 160;
+    /**
+     * Accepted Minecraft: PE protocol versions
+     */
+    const ACCEPTED_PROTOCOLS = [137,141,150,160];
+    /**
+     * Current Minecraft PE version reported by the server. This is usually the earliest currently supported version.
+     */
+    const MINECRAFT_VERSION = ["1.2.0","1.2.1","v1.2.3","1.2.5","1.2.6","1.2.7","1.2.8","1.2.9"];
+    /**
+     * Version number sent to clients in ping responses.
+     */
+    const MINECRAFT_VERSION_NETWORK = '1.2.x';
 
 	public const LOGIN_PACKET = 0x01;
 	public const PLAY_STATUS_PACKET = 0x02;
