@@ -304,7 +304,7 @@ class Server{
 	 * @return string
 	 */
 	public function getVersion() : string{
-		return ProtocolInfo::MINECRAFT_VERSION;
+	    return implode(",",ProtocolInfo::MINECRAFT_VERSION);
 	}
 
 	/**
