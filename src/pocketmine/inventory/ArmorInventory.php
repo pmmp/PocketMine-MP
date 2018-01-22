@@ -141,4 +141,11 @@ class ArmorInventory extends BaseInventory{
 			$player->dataPacket($pk);
 		}
 	}
+
+	/**
+	 * @return Player[]
+	 */
+	public function getViewers() : array{
+		return array_merge(parent::getViewers(), $this->holder->getViewers());
+	}
 }
