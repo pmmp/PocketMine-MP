@@ -108,9 +108,11 @@ interface Inventory{
 	public function removeItem(Item ...$slots) : array;
 
 	/**
+	 * @param bool $includeEmpty
+	 *
 	 * @return Item[]
 	 */
-	public function getContents() : array;
+	public function getContents(bool $includeEmpty = false) : array;
 
 	/**
 	 * @param Item[] $items

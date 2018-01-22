@@ -93,10 +93,20 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	/**
+	 * @param bool $includeEmpty
+	 *
 	 * @return Item[]
 	 */
-	public function getContents() : array{
-		return array_filter($this->slots->toArray(), function(Item $item = null){ return $item !== null; });
+	public function getContents(bool $includeEmpty = false) : array{
+		$contents = [];
+		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
+			$item = $this->getItem($i);
+			if($includeEmpty or !$item->isNull()){
+				$contents[$i] = $item;
+			}
+		}
+
+		return $contents;
 	}
 
 	/**
