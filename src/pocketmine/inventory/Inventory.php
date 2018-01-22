@@ -202,11 +202,6 @@ interface Inventory{
 	public function getViewers() : array;
 
 	/**
-	 * @return InventoryHolder
-	 */
-	public function getHolder();
-
-	/**
 	 * @param Player $who
 	 */
 	public function onOpen(Player $who) : void;

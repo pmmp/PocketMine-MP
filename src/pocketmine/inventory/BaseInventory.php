@@ -45,18 +45,13 @@ abstract class BaseInventory implements Inventory{
 	protected $slots = [];
 	/** @var Player[] */
 	protected $viewers = [];
-	/** @var InventoryHolder */
-	protected $holder;
 
 	/**
-	 * @param InventoryHolder $holder
-	 * @param Item[]          $items
-	 * @param int             $size
-	 * @param string          $title
+	 * @param Item[] $items
+	 * @param int    $size
+	 * @param string $title
 	 */
-	public function __construct(InventoryHolder $holder, array $items = [], int $size = null, string $title = null){
-		$this->holder = $holder;
-
+	public function __construct(array $items = [], int $size = null, string $title = null){
 		$this->slots = new \SplFixedArray($size ?? $this->getDefaultSize());
 		$this->title = $title ?? $this->getName();
 
@@ -377,10 +372,6 @@ abstract class BaseInventory implements Inventory{
 			$viewer->removeWindow($this, $force);
 			unset($this->viewers[$hash]);
 		}
-	}
-
-	public function getHolder(){
-		return $this->holder;
 	}
 
 	public function setMaxStackSize(int $size) : void{

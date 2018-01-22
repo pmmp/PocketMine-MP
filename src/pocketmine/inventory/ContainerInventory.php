@@ -30,6 +30,14 @@ use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\Player;
 
 abstract class ContainerInventory extends BaseInventory{
+	/** @var Vector3 */
+	protected $holder;
+	
+	public function __construct(Vector3 $holder, array $items = [], int $size = null, string $title = null){
+		$this->holder = $holder;
+		parent::__construct($items, $size, $title);
+	}
+
 	public function onOpen(Player $who) : void{
 		parent::onOpen($who);
 		$pk = new ContainerOpenPacket();
@@ -65,4 +73,11 @@ abstract class ContainerInventory extends BaseInventory{
 	 * @return int
 	 */
 	abstract public function getNetworkType() : int;
+
+	/**
+	 * @return Vector3
+	 */
+	public function getHolder(){
+		return $this->holder;
+	}
 }

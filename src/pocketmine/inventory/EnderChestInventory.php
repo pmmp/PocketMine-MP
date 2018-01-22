@@ -24,16 +24,17 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\entity\Human;
+use pocketmine\level\Position;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\tile\EnderChest;
 
 class EnderChestInventory extends ChestInventory{
 
-	/** @var FakeBlockMenu */
+	/** @var Position */
 	protected $holder;
 
 	public function __construct(Human $owner){
-		ContainerInventory::__construct(new FakeBlockMenu($this, $owner->getPosition()));
+		ContainerInventory::__construct(new Position());
 	}
 
 	public function getNetworkType() : int{
@@ -60,7 +61,7 @@ class EnderChestInventory extends ChestInventory{
 
 	/**
 	 * This override is here for documentation and code completion purposes only.
-	 * @return FakeBlockMenu
+	 * @return Position
 	 */
 	public function getHolder(){
 		return $this->holder;
