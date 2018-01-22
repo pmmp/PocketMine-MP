@@ -351,12 +351,14 @@ abstract class BaseInventory implements Inventory{
 		return $this->setItem($index, ItemFactory::get(Item::AIR, 0, 0), $send);
 	}
 
-	public function clearAll() : void{
+	public function clearAll(bool $send = true) : void{
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
 			$this->clear($i, false);
 		}
 
-		$this->sendContents($this->getViewers());
+		if($send){
+			$this->sendContents($this->getViewers());
+		}
 	}
 
 	/**

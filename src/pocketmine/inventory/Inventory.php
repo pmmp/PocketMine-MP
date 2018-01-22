@@ -188,8 +188,10 @@ interface Inventory{
 
 	/**
 	 * Clears all the slots
+	 *
+	 * @param bool $send
 	 */
-	public function clearAll() : void;
+	public function clearAll(bool $send = true) : void;
 
 	/**
 	 * Gets all the Players viewing the inventory
