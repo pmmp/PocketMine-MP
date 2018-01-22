@@ -32,7 +32,9 @@ use pocketmine\event\entity\EntityEffectAddEvent;
 use pocketmine\event\entity\EntityEffectRemoveEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\Timings;
+use pocketmine\inventory\ArmorInventory;
 use pocketmine\item\Consumable;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
@@ -66,10 +68,15 @@ abstract class Living extends Entity implements Damageable{
 	/** @var Effect[] */
 	protected $effects = [];
 
+	/** @var ArmorInventory */
+	protected $armorInventory;
+
 	abstract public function getName() : string;
 
 	protected function initEntity(){
 		parent::initEntity();
+
+		$this->armorInventory = new ArmorInventory($this);
 
 		$health = $this->getMaxHealth();
 
@@ -374,7 +381,19 @@ abstract class Living extends Entity implements Damageable{
 	 * @return int
 	 */
 	public function getArmorPoints() : int{
-		return 0;
+		$total = 0;
+		foreach($this->armorInventory->getContents() as $item){
+			$total += $item->getDefensePoints();
+		}
+
+		return $total;
+	}
+
+	/**
+	 * @return ArmorInventory
+	 */
+	public function getArmorInventory() : ArmorInventory{
+		return $this->armorInventory;
 	}
 
 	/**
@@ -576,13 +595,17 @@ abstract class Living extends Entity implements Damageable{
 	 * @param int $tickDiff
 	 */
 	protected function doAirSupplyTick(int $tickDiff){
-		$ticks = $this->getAirSupplyTicks() - $tickDiff;
+		if(($respirationLevel = $this->armorInventory->getHelmet()->getEnchantmentLevel(Enchantment::RESPIRATION)) <= 0 or
+			lcg_value() <= (1 / ($respirationLevel + 1))
+		){
+			$ticks = $this->getAirSupplyTicks() - $tickDiff;
 
-		if($ticks <= -20){
-			$this->setAirSupplyTicks(0);
-			$this->onAirExpired();
-		}else{
-			$this->setAirSupplyTicks($ticks);
+			if($ticks <= -20){
+				$this->setAirSupplyTicks(0);
+				$this->onAirExpired();
+			}else{
+				$this->setAirSupplyTicks($ticks);
+			}
 		}
 	}
 
@@ -749,5 +772,11 @@ abstract class Living extends Entity implements Damageable{
 		if($this->yaw < 0){
 			$this->yaw += 360.0;
 		}
+	}
+
+	protected function sendSpawnPacket(Player $player) : void{
+		parent::sendSpawnPacket($player);
+
+		$this->armorInventory->sendContents($player);
 	}
 }
