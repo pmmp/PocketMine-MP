@@ -2247,6 +2247,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		switch($packet->transactionType){
 			case InventoryTransactionPacket::TYPE_NORMAL:
+				$this->setUsingItem(false);
 				$transaction = new InventoryTransaction($this, $actions);
 
 				if(!$transaction->execute()){
@@ -2262,6 +2263,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				if(count($packet->actions) > 0){
 					$this->server->getLogger()->debug("Expected 0 actions for mismatch, got " . count($packet->actions) . ", " . json_encode($packet->actions));
 				}
+				$this->setUsingItem(false);
 				$this->sendAllInventories();
 
 				return true;
@@ -2766,8 +2768,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$motion = $this->getDirectionVector()->multiply(0.4);
 
 		$this->level->dropItem($this->add(0, 1.3, 0), $item, $motion, 40);
-
-		$this->setUsingItem(false);
 
 		return true;
 	}
