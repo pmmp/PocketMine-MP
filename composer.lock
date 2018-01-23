@@ -5,6 +5,7 @@
         "This file is @generated automatically"
     ],
 <<<<<<< HEAD
+<<<<<<< HEAD
     "content-hash": "539efc3616f87bdf637798e9ea4b6125",
 =======
     "content-hash": "13a106ee8e33d29b4fc1d9edf2828b7d",
@@ -41,6 +42,11 @@
             "time": "2018-01-14T18:53:25+00:00"
         },
         {
+=======
+    "content-hash": "2e9fcb8bb36b51385e5dc3ebf0336d07",
+    "packages": [
+        {
+>>>>>>> parent of 579c50876... Move Binary and BinaryStream to Composer library
             "name": "pocketmine/pocketmine-spl",
             "version": "0.2.0",
             "source": {
@@ -116,6 +122,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "php": 5,
+<<<<<<< HEAD
         "ext-pthreads": 20,
 <<<<<<< HEAD
         "pocketmine/raklib": 20,
@@ -124,6 +131,9 @@
 =======
         "pocketmine/pocketmine-binaryutils": 20
 >>>>>>> parent of c4966404b... Moved NBT to Composer library
+=======
+        "ext-pthreads": 20
+>>>>>>> parent of 579c50876... Move Binary and BinaryStream to Composer library
     },
     "prefer-stable": false,
     "prefer-lowest": false,
