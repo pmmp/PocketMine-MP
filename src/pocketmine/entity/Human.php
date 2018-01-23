@@ -32,7 +32,6 @@ use pocketmine\inventory\EnderChestInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\Consumable;
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\level\Level;
@@ -494,6 +493,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	protected function initEntity(){
+		parent::initEntity();
 
 		$this->setPlayerFlag(self::DATA_PLAYER_FLAG_SLEEP, false);
 		$this->propertyManager->setBlockPos(self::DATA_PLAYER_BED_POSITION, null);
@@ -511,7 +511,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 					//Old hotbar saving stuff, remove it (useless now)
 					unset($inventoryTag[$i]);
 				}elseif($slot >= 100 and $slot < 104){ //Armor
-					$this->inventory->setItem($this->inventory->getSize() + $slot - 100, ItemItem::nbtDeserialize($item));
+					$this->armorInventory->setItem($slot - 100, ItemItem::nbtDeserialize($item));
 				}else{
 					$this->inventory->setItem($slot - 9, ItemItem::nbtDeserialize($item));
 				}
@@ -528,7 +528,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 		$this->inventory->setHeldItemIndex($this->namedtag->getInt("SelectedInventorySlot", 0), false);
 
-		parent::initEntity();
 
 		$this->setFood((float) $this->namedtag->getInt("foodLevel", (int) $this->getFood(), true));
 		$this->setExhaustion($this->namedtag->getFloat("foodExhaustionLevel", $this->getExhaustion(), true));
@@ -609,14 +608,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		}
 	}
 
-	protected function doAirSupplyTick(int $tickDiff){
-		//TODO: allow this to apply to other mobs
-		if(($respirationLevel = $this->inventory->getHelmet()->getEnchantmentLevel(Enchantment::RESPIRATION)) <= 0 or
-			lcg_value() <= (1 / ($respirationLevel + 1))){
-			parent::doAirSupplyTick($tickDiff);
-		}
-	}
-
 	public function getName() : string{
 		return $this->getNameTag();
 	}
@@ -652,7 +643,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 			//Armor
 			for($slot = 100; $slot < 104; ++$slot){
-				$item = $this->inventory->getItem($this->inventory->getSize() + $slot - 100);
+				$item = $this->armorInventory->getItem($slot - 100);
 				if(!$item->isNull()){
 					$inventoryTag[$slot] = $item->nbtSerialize($slot);
 				}
@@ -708,7 +699,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$pk->metadata = $this->propertyManager->getAll();
 		$player->dataPacket($pk);
 
-		$this->inventory->sendArmorContents($player);
+		$this->armorInventory->sendContents($player);
 
 		if(!($this instanceof Player)){
 			$this->sendSkin([$player]);
