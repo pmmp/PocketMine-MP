@@ -129,8 +129,18 @@ namespace pocketmine {
 		define('pocketmine\PATH', dirname(__FILE__, 3) . DIRECTORY_SEPARATOR);
 	}
 
-	define('pocketmine\COMPOSER_AUTOLOADER_PATH', \pocketmine\PATH . 'vendor/autoload.php');
+	$requiredSplVer = "0.0.1";
+	if(!is_file(\pocketmine\PATH . "src/spl/version.php")){
+		echo "[CRITICAL] Cannot find PocketMine-SPL or incompatible version." . PHP_EOL;
+		echo "[CRITICAL] Please update your submodules or use provided builds." . PHP_EOL;
+		exit(1);
+	}elseif(version_compare($requiredSplVer, require(\pocketmine\PATH . "src/spl/version.php")) > 0){
+		echo "[CRITICAL] Incompatible PocketMine-SPL submodule version ($requiredSplVer is required)." . PHP_EOL;
+		echo "[CRITICAL] Please update your submodules or use provided builds." . PHP_EOL;
+		exit(1);
+	}
 
+<<<<<<< HEAD
 	function composer_error_die($message){
 		echo "[CRITICAL] $message" . PHP_EOL;
 		echo "[CRITICAL] Please install/update Composer dependencies or use provided builds." . PHP_EOL;
@@ -139,6 +149,10 @@ namespace pocketmine {
 
 	if(is_file(\pocketmine\COMPOSER_AUTOLOADER_PATH)){
 		require_once(\pocketmine\COMPOSER_AUTOLOADER_PATH);
+=======
+	if(is_file(\pocketmine\PATH . "vendor/autoload.php")){
+		require_once(\pocketmine\PATH . "vendor/autoload.php");
+>>>>>>> parent of 0d2b171c2... Remove RakLib and SPL submodules, start using Composer
 	}else{
 		composer_error_die("Composer autoloader not found.");
 	}
@@ -151,6 +165,11 @@ namespace pocketmine {
 	}
 	if(!class_exists(\BaseClassLoader::class)){
 		composer_error_die("Unable to find the PocketMine-SPL library.");
+	}
+
+	if(!class_exists("ClassLoader", false)){
+		require_once(\pocketmine\PATH . "src/spl/ClassLoader.php");
+		require_once(\pocketmine\PATH . "src/spl/BaseClassLoader.php");
 	}
 
 	/*

@@ -65,6 +65,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	public function __construct(Server $server){
 		$this->server = $server;
 
+<<<<<<< HEAD
 		$this->rakLib = new RakLibServer(
 			$this->server->getLogger(),
 			\pocketmine\COMPOSER_AUTOLOADER_PATH,
@@ -73,6 +74,9 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			false,
 			(int) $this->server->getProperty("network.max-mtu-size", 1492)
 		);
+=======
+		$this->rakLib = new RakLibServer($this->server->getLogger(), $this->server->getLoader(), $this->server->getPort(), $this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp(), false);
+>>>>>>> parent of 0d2b171c2... Remove RakLib and SPL submodules, start using Composer
 		$this->interface = new ServerHandler($this->rakLib, $this);
 	}
 
