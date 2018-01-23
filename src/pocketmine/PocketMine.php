@@ -157,8 +157,6 @@ namespace pocketmine {
 	 * We now use the Composer autoloader, but this autoloader is still for loading plugins.
 	 */
 	$autoloader = new \BaseClassLoader();
-	$autoloader->addPath(\pocketmine\PATH . "src");
-	$autoloader->addPath(\pocketmine\PATH . "src" . DIRECTORY_SEPARATOR . "spl");
 	$autoloader->register(false);
 
 	set_time_limit(0); //Who set it to 30 seconds?!?!
