@@ -4,7 +4,13 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
     "content-hash": "539efc3616f87bdf637798e9ea4b6125",
+=======
+    "content-hash": "13a106ee8e33d29b4fc1d9edf2828b7d",
+>>>>>>> parent of c4966404b... Moved NBT to Composer library
     "packages": [
         {
             "name": "pocketmine/pocketmine-binaryutils",
@@ -19,9 +25,6 @@
                 "url": "https://api.github.com/repos/pmmp/PocketMine-BinaryUtils/zipball/a7cd5303a3b215d26bf9be76682ce9311f40e887",
                 "reference": "a7cd5303a3b215d26bf9be76682ce9311f40e887",
                 "shasum": ""
-            },
-            "require": {
-                "php": ">=7.2"
             },
             "type": "library",
             "autoload": {
@@ -40,40 +43,11 @@
             "time": "2018-01-14T18:53:25+00:00"
         },
         {
-            "name": "pocketmine/pocketmine-nbt",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/pmmp/PocketMine-NBT.git",
-                "reference": "f8934c0aed90d1f55452588f7ebef7c4519518a5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/PocketMine-NBT/zipball/f8934c0aed90d1f55452588f7ebef7c4519518a5",
-                "reference": "f8934c0aed90d1f55452588f7ebef7c4519518a5",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.2.0",
-                "pocketmine/pocketmine-binaryutils": "dev-master#8bb34e771fee69abcc5482d17d2fa0b4f0e15a5e"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "pocketmine\\nbt\\": "src/"
-                }
-            },
-            "license": [
-                "LGPL-3.0"
-            ],
-            "description": "PHP library for working with Named Binary Tags",
-            "support": {
-                "source": "https://github.com/pmmp/PocketMine-NBT/tree/master",
-                "issues": "https://github.com/pmmp/PocketMine-NBT/issues"
-            },
-            "time": "2018-01-11T13:51:50+00:00"
-        },
+=======
+    "content-hash": "2e9fcb8bb36b51385e5dc3ebf0336d07",
+    "packages": [
         {
+>>>>>>> parent of 579c50876... Move Binary and BinaryStream to Composer library
             "name": "pocketmine/pocketmine-spl",
             "version": "0.2.0",
             "source": {
@@ -144,20 +118,35 @@
             "time": "2018-01-18T18:09:59+00:00"
         }
     ],
+=======
+    "content-hash": "d4fecad9dce5314493052c870c8cf059",
+    "packages": [],
+>>>>>>> parent of 0d2b171c2... Remove RakLib and SPL submodules, start using Composer
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+<<<<<<< HEAD
         "php": 5,
+<<<<<<< HEAD
         "ext-pthreads": 20,
+<<<<<<< HEAD
         "pocketmine/raklib": 20,
         "pocketmine/pocketmine-binaryutils": 20,
         "pocketmine/pocketmine-nbt": 20
+=======
+        "pocketmine/pocketmine-binaryutils": 20
+>>>>>>> parent of c4966404b... Moved NBT to Composer library
+=======
+=======
+>>>>>>> parent of 0d2b171c2... Remove RakLib and SPL submodules, start using Composer
+        "ext-pthreads": 20
+>>>>>>> parent of 579c50876... Move Binary and BinaryStream to Composer library
     },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.2.0RC3",
+        "php": ">=7.2",
         "ext-bcmath": "*",
         "ext-curl": "*",
         "ext-hash": "*",

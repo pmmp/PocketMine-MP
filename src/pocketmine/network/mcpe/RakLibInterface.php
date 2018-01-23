@@ -65,14 +65,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	public function __construct(Server $server){
 		$this->server = $server;
 
-		$this->rakLib = new RakLibServer(
-			$this->server->getLogger(),
-			\pocketmine\COMPOSER_AUTOLOADER_PATH,
-			$this->server->getPort(),
-			$this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp(),
-			false,
-			(int) $this->server->getProperty("network.max-mtu-size", 1492)
-		);
+		$this->rakLib = new RakLibServer($this->server->getLogger(), $this->server->getLoader(), $this->server->getPort(), $this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp(), false);
 		$this->interface = new ServerHandler($this->rakLib, $this);
 	}
 
@@ -220,14 +213,14 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 					$pk = new EncapsulatedPacket();
 					$pk->identifierACK = $this->identifiersACK[$identifier]++;
 					$pk->buffer = $packet->buffer;
-					$pk->reliability = PacketReliability::RELIABLE_ORDERED;
+					$pk->reliability = $immediate ? PacketReliability::RELIABLE : PacketReliability::RELIABLE_ORDERED;
 					$pk->orderChannel = 0;
 				}else{
 					if(!isset($packet->__encapsulatedPacket)){
 						$packet->__encapsulatedPacket = new CachedEncapsulatedPacket;
 						$packet->__encapsulatedPacket->identifierACK = null;
-						$packet->__encapsulatedPacket->buffer = $packet->buffer;
-						$packet->__encapsulatedPacket->reliability = PacketReliability::RELIABLE_ORDERED;
+						$packet->__encapsulatedPacket->buffer = $packet->buffer; // #blameshoghi
+						$packet->__encapsulatedPacket->reliability = $immediate ? PacketReliability::RELIABLE : PacketReliability::RELIABLE_ORDERED;
 						$packet->__encapsulatedPacket->orderChannel = 0;
 					}
 					$pk = $packet->__encapsulatedPacket;
@@ -242,12 +235,6 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		}
 
 		return null;
-	}
-
-	public function updatePing(string $identifier, int $pingMS){
-		if(isset($this->players[$identifier])){
-			$this->players[$identifier]->updatePing($pingMS);
-		}
 	}
 
 	private function getPacket($buffer){
