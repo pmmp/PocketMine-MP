@@ -426,11 +426,7 @@ abstract class BaseInventory implements Inventory{
 		}
 
 		$pk = new InventoryContentPacket();
-
-		//Using getSize() here allows PlayerInventory to report that it's 4 slots smaller than it actually is (armor hack)
-		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
-			$pk->items[$i] = $this->getItem($i);
-		}
+		$pk->items = $this->getContents(true);
 
 		foreach($target as $player){
 			if(($id = $player->getWindowId($this)) === ContainerIds::NONE){
@@ -466,6 +462,6 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function slotExists(int $slot) : bool{
-		return $slot >= 0 and $slot < $this->slots->getSize(); //use actual slots size to allow PlayerInventory to lie
+		return $slot >= 0 and $slot < $this->slots->getSize();
 	}
 }
