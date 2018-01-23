@@ -265,7 +265,7 @@ class MemoryManager{
 	 */
 	public function dumpServerMemory(string $outputFolder, int $maxNesting, int $maxStringSize){
 		MainLogger::getLogger()->notice("[Dump] After the memory dump is done, the server might crash");
-		self::dumpMemory($this->server, $this->server->getLoader(), $outputFolder, $maxNesting, $maxStringSize);
+		self::dumpMemory($this->server, $outputFolder, $maxNesting, $maxStringSize);
 
 		if($this->dumpWorkers){
 			$scheduler = $this->server->getScheduler();
@@ -278,13 +278,14 @@ class MemoryManager{
 	/**
 	 * Static memory dumper accessible from any thread.
 	 *
-	 * @param mixed        $startingObject
-	 * @param \ClassLoader $loader
-	 * @param string       $outputFolder
-	 * @param int          $maxNesting
-	 * @param int          $maxStringSize
+	 * @param mixed  $startingObject
+	 * @param string $outputFolder
+	 * @param int    $maxNesting
+	 * @param int    $maxStringSize
+	 *
+	 * @throws \ReflectionException
 	 */
-	public static function dumpMemory($startingObject, \ClassLoader $loader, string $outputFolder, int $maxNesting, int $maxStringSize){
+	public static function dumpMemory($startingObject, string $outputFolder, int $maxNesting, int $maxStringSize){
 		$hardLimit = ini_get('memory_limit');
 		ini_set('memory_limit', '-1');
 		gc_disable();
@@ -306,7 +307,7 @@ class MemoryManager{
 		$staticProperties = [];
 		$staticCount = 0;
 
-		foreach($loader->getClasses() as $className){
+		foreach(get_declared_classes() as $className){
 			$reflection = new \ReflectionClass($className);
 			$staticProperties[$className] = [];
 			foreach($reflection->getProperties() as $property){
