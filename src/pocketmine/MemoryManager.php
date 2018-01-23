@@ -330,7 +330,7 @@ class MemoryManager{
 		file_put_contents($outputFolder . "/staticProperties.js", json_encode($staticProperties, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 		MainLogger::getLogger()->info("[Dump] Wrote $staticCount static properties");
 
-		if($GLOBALS !== null){ //This might be null if we're on a different thread
+		if(isset($GLOBALS)){ //This might be null if we're on a different thread
 			$globalVariables = [];
 			$globalCount = 0;
 
