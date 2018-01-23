@@ -89,7 +89,7 @@ class LoginPacket extends DataPacket{
 		try{
 			$this->decodeConnectionRequest();
 		}catch(\Throwable $e){
-		    if(in_array($this->protocol, ProtocolInfo::ACCEPTED_PROTOCOLS))
+		    if(in_array($this->protocol, ProtocolInfo::ACCEPTED_PROTOCOLS)) {
 				throw $e;
 			}
 

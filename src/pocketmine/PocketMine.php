@@ -140,28 +140,6 @@ namespace pocketmine {
 		exit(1);
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-	function composer_error_die($message){
-		echo "[CRITICAL] $message" . PHP_EOL;
-		echo "[CRITICAL] Please install/update Composer dependencies or use provided builds." . PHP_EOL;
-		exit(1);
-	}
-
-=======
->>>>>>> parent of bee3c4f5c... Cleaned up error messages for submodules (they are Composer dependencies now)
-	if(is_file(\pocketmine\COMPOSER_AUTOLOADER_PATH)){
-		require_once(\pocketmine\COMPOSER_AUTOLOADER_PATH);
-=======
-	if(is_file(\pocketmine\PATH . "vendor/autoload.php")){
-		require_once(\pocketmine\PATH . "vendor/autoload.php");
->>>>>>> parent of 0d2b171c2... Remove RakLib and SPL submodules, start using Composer
-	}else{
-		echo "[CRITICAL] Composer autoloader not found" . PHP_EOL;
-		echo "[CRITICAL] Please initialize composer dependencies before running." . PHP_EOL;
-		exit(1);
-	}
-
 	if(!class_exists("ClassLoader", false)){
 		require_once(\pocketmine\PATH . "src/spl/ClassLoader.php");
 		require_once(\pocketmine\PATH . "src/spl/BaseClassLoader.php");
@@ -181,7 +159,7 @@ namespace pocketmine {
 		exit(1);
 	}
 
-	if(version_compare(RakLib::VERSION, "0.8.2") < 0){
+	if(version_compare(RakLib::VERSION, "0.8.1") < 0){
 		echo "[CRITICAL] RakLib version 0.8.2 is required, while you have version " . RakLib::VERSION . "." . PHP_EOL;
 		echo "[CRITICAL] Please update your submodules or use provided builds." . PHP_EOL;
 		exit(1);
