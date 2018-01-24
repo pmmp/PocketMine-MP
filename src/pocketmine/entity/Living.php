@@ -33,6 +33,7 @@ use pocketmine\event\entity\EntityEffectRemoveEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\Timings;
 use pocketmine\inventory\ArmorInventory;
+use pocketmine\item\Armor;
 use pocketmine\item\Consumable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item as ItemItem;
@@ -390,10 +391,30 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	/**
+	 * Returns the highest level of the specified enchantment on any armour piece that the entity is currently wearing.
+	 *
+	 * @param int $enchantmentId
+	 *
+	 * @return int
+	 */
+	public function getHighestArmorEnchantmentLevel(int $enchantmentId) : int{
+		$result = 0;
+		foreach($this->armorInventory->getContents() as $item){
+			$result = max($result, $item->getEnchantmentLevel($enchantmentId));
+		}
+
+		return $result;
+	}
+
+	/**
 	 * @return ArmorInventory
 	 */
 	public function getArmorInventory() : ArmorInventory{
 		return $this->armorInventory;
+	}
+
+	public function setOnFire(int $seconds){
+		parent::setOnFire($seconds - (int) min($seconds, $seconds * $this->getHighestArmorEnchantmentLevel(Enchantment::FIRE_PROTECTION) * 0.15));
 	}
 
 	/**
@@ -413,7 +434,13 @@ abstract class Living extends Entity implements Damageable{
 			$source->setDamage(-($source->getFinalDamage() * 0.20 * $this->getEffect(Effect::DAMAGE_RESISTANCE)->getEffectLevel()), EntityDamageEvent::MODIFIER_RESISTANCE);
 		}
 
-		//TODO: armour protection enchantments should be checked here (after effect damage reduction)
+		$totalEpf = 0;
+		foreach($this->armorInventory->getContents() as $item){
+			if($item instanceof Armor){
+				$totalEpf += $item->getEnchantmentProtectionFactor($source);
+			}
+		}
+		$source->setDamage(-$source->getFinalDamage() * min(ceil(min($totalEpf, 25) * (mt_rand(50, 100) / 100)), 20) * 0.04, EntityDamageEvent::MODIFIER_ARMOR_ENCHANTMENTS);
 
 		$source->setDamage(-min($this->getAbsorption(), $source->getFinalDamage()), EntityDamageEvent::MODIFIER_ABSORPTION);
 	}
@@ -446,6 +473,16 @@ abstract class Living extends Entity implements Damageable{
 		}
 
 		$this->applyDamageModifiers($source);
+
+		if($source instanceof EntityDamageByEntityEvent and (
+			$source->getCause() === EntityDamageEvent::CAUSE_BLOCK_EXPLOSION or
+			$source->getCause() === EntityDamageEvent::CAUSE_ENTITY_EXPLOSION)
+		){
+			//TODO: knockback should not just apply for entity damage sources
+			//this doesn't matter for TNT right now because the PrimedTNT entity is considered the source, not the block.
+			$base = $source->getKnockBack();
+			$source->setKnockBack($base - min($base, $base * $this->getHighestArmorEnchantmentLevel(Enchantment::BLAST_PROTECTION) * 0.15));
+		}
 
 		parent::attack($source);
 
