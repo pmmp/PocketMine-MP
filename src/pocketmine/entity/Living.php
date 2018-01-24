@@ -391,10 +391,30 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	/**
+	 * Returns the highest level of the specified enchantment on any armour piece that the entity is currently wearing.
+	 *
+	 * @param int $enchantmentId
+	 *
+	 * @return int
+	 */
+	public function getHighestArmorEnchantmentLevel(int $enchantmentId) : int{
+		$result = 0;
+		foreach($this->armorInventory->getContents() as $item){
+			$result = max($result, $item->getEnchantmentLevel($enchantmentId));
+		}
+
+		return $result;
+	}
+
+	/**
 	 * @return ArmorInventory
 	 */
 	public function getArmorInventory() : ArmorInventory{
 		return $this->armorInventory;
+	}
+
+	public function setOnFire(int $seconds){
+		parent::setOnFire($seconds - (int) min($seconds, $seconds * $this->getHighestArmorEnchantmentLevel(Enchantment::FIRE_PROTECTION) * 0.15));
 	}
 
 	/**
@@ -453,6 +473,16 @@ abstract class Living extends Entity implements Damageable{
 		}
 
 		$this->applyDamageModifiers($source);
+
+		if($source instanceof EntityDamageByEntityEvent and (
+			$source->getCause() === EntityDamageEvent::CAUSE_BLOCK_EXPLOSION or
+			$source->getCause() === EntityDamageEvent::CAUSE_ENTITY_EXPLOSION)
+		){
+			//TODO: knockback should not just apply for entity damage sources
+			//this doesn't matter for TNT right now because the PrimedTNT entity is considered the source, not the block.
+			$base = $source->getKnockBack();
+			$source->setKnockBack($base - min($base, $base * $this->getHighestArmorEnchantmentLevel(Enchantment::BLAST_PROTECTION) * 0.15));
+		}
 
 		parent::attack($source);
 
