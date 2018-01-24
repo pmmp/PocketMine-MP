@@ -91,8 +91,8 @@ class InventoryTransactionPacket extends DataPacket{
 				$this->trData->actionType = $this->getUnsignedVarInt();
 				$this->trData->hotbarSlot = $this->getVarInt();
 				$this->trData->itemInHand = $this->getSlot();
-				$this->trData->vector1 = $this->getVector3();
-				$this->trData->vector2 = $this->getVector3();
+				$this->trData->playerPos = $this->getVector3();
+				$this->trData->clickPos = $this->getVector3();
 				break;
 			case self::TYPE_RELEASE_ITEM:
 				$this->trData->actionType = $this->getUnsignedVarInt();
@@ -131,8 +131,8 @@ class InventoryTransactionPacket extends DataPacket{
 				$this->putUnsignedVarInt($this->trData->actionType);
 				$this->putVarInt($this->trData->hotbarSlot);
 				$this->putSlot($this->trData->itemInHand);
-				$this->putVector3($this->trData->vector1);
-				$this->putVector3($this->trData->vector2);
+				$this->putVector3($this->trData->playerPos);
+				$this->putVector3($this->trData->clickPos);
 				break;
 			case self::TYPE_RELEASE_ITEM:
 				$this->putUnsignedVarInt($this->trData->actionType);
