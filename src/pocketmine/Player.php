@@ -3548,6 +3548,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			if($this->inventory !== null){
 				$this->inventory->setHeldItemIndex(0, false); //This is already handled when sending contents, don't send it twice
 				$this->inventory->clearAll();
+				$this->armorInventory->clearAll();
 			}
 		}
 
