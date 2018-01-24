@@ -25,6 +25,7 @@ namespace pocketmine\plugin;
 
 use pocketmine\command\PluginCommand;
 use pocketmine\command\SimpleCommandMap;
+use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
 use pocketmine\event\EventPriority;
 use pocketmine\event\HandlerList;
@@ -712,6 +713,11 @@ class PluginManager{
 				$currentList = $currentList->getParent();
 			}
 		}
+
+		if($event instanceof Cancellable && !$event->isCancelled() && $event->isFinallyCancelled()){
+			$event->setCancelled();
+		}
+
 		--$this->eventCallDepth;
 	}
 
