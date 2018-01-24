@@ -341,9 +341,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	/** @var DataPropertyManager */
 	protected $propertyManager;
 
-	public $passenger = null;
-	public $vehicle = null;
-
 	/** @var Chunk|null */
 	public $chunk;
 
