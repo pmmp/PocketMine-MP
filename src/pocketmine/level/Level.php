@@ -29,6 +29,7 @@ namespace pocketmine\level;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\entity\Entity;
+use pocketmine\entity\FloatingText;
 use pocketmine\entity\Item as DroppedItem;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\projectile\Arrow;
@@ -1684,6 +1685,26 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		return $orbs;
+	}
+
+	/**
+	 * @param Vector3 $pos
+	 * @param string  $text
+	 * @param string  $title
+	 *
+	 * @return null|Entity
+	 */
+	public function addFloatingText(Vector3 $pos, string $text, string $title = ""){
+		$entity = Entity::createEntity("FloatingText", $this, Entity::createBaseNBT($pos));
+		assert($entity !== null);
+
+		if($entity instanceof FloatingText){
+			$entity->setTitle($title);
+			$entity->setText($text);
+		}
+
+		$entity->spawnToAll();
+		return $entity;
 	}
 
 	/**

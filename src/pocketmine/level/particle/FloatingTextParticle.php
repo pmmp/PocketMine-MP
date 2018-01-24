@@ -33,6 +33,9 @@ use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
 use pocketmine\utils\UUID;
 
+/**
+ * @deprecated Use {@link Level#addFloatingText} instead of this, this implementation has issues which cannot be resolved.
+ */
 class FloatingTextParticle extends Particle{
 	//TODO: HACK!
 
