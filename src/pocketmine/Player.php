@@ -697,9 +697,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->setLevel($this->server->getDefaultLevel());
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 
-		$this->uuid = null;
-		$this->rawUUID = null;
-
 		$this->creationTime = microtime(true);
 
 		$this->allowMovementCheats = (bool) $this->server->getProperty("player.anti-cheat.allow-movement-cheats", false);
