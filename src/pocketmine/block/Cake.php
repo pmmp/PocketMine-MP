@@ -45,7 +45,7 @@ class Cake extends Transparent implements FoodSource{
 	}
 
 	public function getName() : string{
-		return "Cake Block";
+		return "Cake";
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
