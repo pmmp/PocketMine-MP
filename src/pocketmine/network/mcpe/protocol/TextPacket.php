@@ -46,13 +46,19 @@ class TextPacket extends DataPacket{
 	/** @var bool */
 	public $needsTranslation = false;
 	/** @var string */
-	public $source;
+	public $sourceName;
+	/** @var string */
+	public $sourceThirdPartyName = "";
+	/** @var int */
+	public $sourcePlatform = 0;
 	/** @var string */
 	public $message;
 	/** @var string[] */
 	public $parameters = [];
 	/** @var string */
 	public $xboxUserId = "";
+	/** @var string */
+	public $string1 = "";
 
 	protected function decodePayload(){
 		$this->type = $this->getByte();
@@ -62,7 +68,9 @@ class TextPacket extends DataPacket{
 			case self::TYPE_WHISPER:
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_ANNOUNCEMENT:
-				$this->source = $this->getString();
+				$this->sourceName = $this->getString();
+				$this->sourceThirdPartyName = $this->getString();
+				$this->sourcePlatform = $this->getVarInt();
 			case self::TYPE_RAW:
 			case self::TYPE_TIP:
 			case self::TYPE_SYSTEM:
@@ -81,6 +89,7 @@ class TextPacket extends DataPacket{
 		}
 
 		$this->xboxUserId = $this->getString();
+		$this->string1 = $this->getString();
 	}
 
 	protected function encodePayload(){
@@ -91,7 +100,9 @@ class TextPacket extends DataPacket{
 			case self::TYPE_WHISPER:
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_ANNOUNCEMENT:
-				$this->putString($this->source);
+				$this->putString($this->sourceName);
+				$this->putString($this->sourceThirdPartyName);
+				$this->putVarInt($this->sourcePlatform);
 			case self::TYPE_RAW:
 			case self::TYPE_TIP:
 			case self::TYPE_SYSTEM:
@@ -110,6 +121,7 @@ class TextPacket extends DataPacket{
 		}
 
 		$this->putString($this->xboxUserId);
+		$this->putString($this->string1);
 	}
 
 	public function handle(NetworkSession $session) : bool{

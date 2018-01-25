@@ -48,8 +48,15 @@ class PlayerSkinPacket extends DataPacket{
 		$skinId = $this->getString();
 		$this->newSkinName = $this->getString();
 		$this->oldSkinName = $this->getString();
+
+		$this->getLInt(); //always 1
+		$this->getLInt(); //length, unneeded
 		$skinData = $this->getString();
+
+		$this->getLInt(); //0 if there's no cape, 1 if there is
+		$this->getLInt(); //length, again unneeded.
 		$capeData = $this->getString();
+
 		$geometryModel = $this->getString();
 		$geometryData = $this->getString();
 
@@ -62,8 +69,17 @@ class PlayerSkinPacket extends DataPacket{
 		$this->putString($this->skin->getSkinId());
 		$this->putString($this->newSkinName);
 		$this->putString($this->oldSkinName);
-		$this->putString($this->skin->getSkinData());
-		$this->putString($this->skin->getCapeData());
+
+		$skinData = $this->skin->getSkinData();
+		$this->putLInt(1);
+		$this->putLInt(strlen($skinData));
+		$this->putString($skinData);
+
+		$capeData = $this->skin->getCapeData();
+		$this->putLInt($capeData !== "" ? 1 : 0);
+		$this->putLInt(strlen($capeData));
+		$this->putString($capeData);
+
 		$this->putString($this->skin->getGeometryName());
 		$this->putString($this->skin->getGeometryData());
 	}
