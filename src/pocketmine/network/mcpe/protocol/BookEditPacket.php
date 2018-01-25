@@ -54,6 +54,8 @@ class BookEditPacket extends DataPacket{
 	public $title;
 	/** @var string */
 	public $author;
+	/** @var string */
+	public $xuid;
 
 	protected function decodePayload(){
 		$this->type = $this->getByte();
@@ -76,6 +78,7 @@ class BookEditPacket extends DataPacket{
 			case self::TYPE_SIGN_BOOK:
 				$this->title = $this->getString();
 				$this->author = $this->getString();
+				$this->xuid = $this->getString();
 				break;
 			default:
 				throw new \UnexpectedValueException("Unknown book edit type $this->type!");
@@ -103,6 +106,7 @@ class BookEditPacket extends DataPacket{
 			case self::TYPE_SIGN_BOOK:
 				$this->putString($this->title);
 				$this->putString($this->author);
+				$this->putString($this->xuid);
 				break;
 			default:
 				throw new \UnexpectedValueException("Unknown book edit type $this->type!");
