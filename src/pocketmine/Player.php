@@ -2416,7 +2416,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						}
 
 						if(!$this->isSprinting() and !$this->isFlying() and $this->fallDistance > 0 and !$this->hasEffect(Effect::BLINDNESS) and !$this->isInsideOfWater()){
-							$ev->setDamage($ev->getDamage() / 2, EntityDamageEvent::MODIFIER_CRITICAL);
+							$ev->setDamage($ev->getFinalDamage() / 2, EntityDamageEvent::MODIFIER_CRITICAL);
 						}
 
 						$target->attack($ev);
@@ -2427,7 +2427,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							}
 							return true;
 						}
-						
+
 						if($ev->getDamage(EntityDamageEvent::MODIFIER_CRITICAL) > 0){
 							$pk = new AnimatePacket();
 							$pk->action = AnimatePacket::ACTION_CRITICAL_HIT;
