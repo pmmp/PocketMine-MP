@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "f13679b4c6a569a758646a63936dbd18",
+    "content-hash": "539efc3616f87bdf637798e9ea4b6125",
     "packages": [
         {
             "name": "pocketmine/pocketmine-binaryutils",
@@ -111,12 +111,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "998af685be51d6ee8a1e206066ccd96c21450bfd"
+                "reference": "c29bebd2df63680e975d5d129aa25476f3ef86ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/998af685be51d6ee8a1e206066ccd96c21450bfd",
-                "reference": "998af685be51d6ee8a1e206066ccd96c21450bfd",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/c29bebd2df63680e975d5d129aa25476f3ef86ba",
+                "reference": "c29bebd2df63680e975d5d129aa25476f3ef86ba",
                 "shasum": ""
             },
             "require": {
@@ -141,7 +141,7 @@
                 "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2018-01-16T19:33:21+00:00"
+            "time": "2018-01-18T18:09:59+00:00"
         }
     ],
     "packages-dev": [],

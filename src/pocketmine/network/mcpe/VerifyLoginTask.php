@@ -36,12 +36,12 @@ class VerifyLoginTask extends AsyncTask{
 	private $packet;
 
 	/**
-	 * @var bool
-	 * Whether the keychain signatures were validated correctly. This will be set to false if any link in the keychain
-	 * has an invalid signature. If false, the keychain might have been tampered with.
-	 * The player will always be disconnected if this is false.
+	 * @var string|null
+	 * Whether the keychain signatures were validated correctly. This will be set to an error message if any link in the
+	 * keychain is invalid for whatever reason (bad signature, not in nbf-exp window, etc). If this is non-null, the
+	 * keychain might have been tampered with. The player will always be disconnected if this is non-null.
 	 */
-	private $valid = false;
+	private $error = "Unknown";
 	/**
 	 * @var bool
 	 * Whether the player is logged into Xbox Live. This is true if any link in the keychain is signed with the Mojang
@@ -58,31 +58,38 @@ class VerifyLoginTask extends AsyncTask{
 	public function onRun(){
 		$packet = $this->packet; //Get it in a local variable to make sure it stays unserialized
 
-		$currentKey = null;
-		$first = true;
+		try{
+			$currentKey = null;
+			$first = true;
 
-		foreach($packet->chainData["chain"] as $jwt){
-			if(!$this->validateToken($jwt, $currentKey, $first)){
-				return;
+			foreach($packet->chainData["chain"] as $jwt){
+				$this->validateToken($jwt, $currentKey, $first);
+				$first = false;
 			}
-			$first = false;
-		}
 
-		if(!$this->validateToken($packet->clientDataJwt, $currentKey)){
-			return;
-		}
+			$this->validateToken($packet->clientDataJwt, $currentKey);
 
-		$this->valid = true;
+			$this->error = null;
+		}catch(\Throwable $e){
+			$this->error = $e->getMessage();
+		}
 	}
 
-	private function validateToken(string $jwt, ?string &$currentPublicKey, bool $first = false) : bool{
+	/**
+	 * @param string      $jwt
+	 * @param null|string $currentPublicKey
+	 * @param bool        $first
+	 *
+	 * @throws \RuntimeException if errors are encountered
+	 */
+	private function validateToken(string $jwt, ?string &$currentPublicKey, bool $first = false) : void{
 		[$headB64, $payloadB64, $sigB64] = explode('.', $jwt);
 
 		$headers = json_decode(base64_decode(strtr($headB64, '-_', '+/'), true), true);
 
 		if($currentPublicKey === null){
 			if(!$first){
-				return false; //we should have a key but the last link didn't have one
+				throw new \RuntimeException("%pocketmine.disconnect.invalidSession.missingKey");
 			}
 
 			//First link, check that it is self-signed
@@ -114,7 +121,7 @@ class VerifyLoginTask extends AsyncTask{
 
 		$v = openssl_verify("$headB64.$payloadB64", $derSignature, "-----BEGIN PUBLIC KEY-----\n" . wordwrap($currentPublicKey, 64, "\n", true) . "\n-----END PUBLIC KEY-----\n", OPENSSL_ALGO_SHA384);
 		if($v !== 1){
-			return false; //bad signature, it might have been tampered with
+			throw new \RuntimeException("%pocketmine.disconnect.invalidSession.badSignature");
 		}
 
 		if($currentPublicKey === self::MOJANG_ROOT_PUBLIC_KEY){
@@ -125,16 +132,14 @@ class VerifyLoginTask extends AsyncTask{
 
 		$time = time();
 		if(isset($claims["nbf"]) and $claims["nbf"] > $time){
-			return false; //token can't be used yet
+			throw new \RuntimeException("%pocketmine.disconnect.invalidSession.tooEarly");
 		}
 
 		if(isset($claims["exp"]) and $claims["exp"] < $time){
-			return false; //token has expired
+			throw new \RuntimeException("%pocketmine.disconnect.invalidSession.tooLate");
 		}
 
 		$currentPublicKey = $claims["identityPublicKey"] ?? null; //if there are further links, the next link should be signed with this
-
-		return true;
 	}
 
 	public function onCompletion(Server $server){
@@ -143,7 +148,7 @@ class VerifyLoginTask extends AsyncTask{
 		if($player->isClosed()){
 			$server->getLogger()->error("Player " . $player->getName() . " was disconnected before their login could be verified");
 		}else{
-			$player->onVerifyCompleted($this->packet, $this->valid, $this->authenticated);
+			$player->onVerifyCompleted($this->packet, $this->error, $this->authenticated);
 		}
 	}
 

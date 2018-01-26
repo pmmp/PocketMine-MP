@@ -30,7 +30,8 @@ class PlayerCursorInventory extends BaseInventory{
 	protected $holder;
 
 	public function __construct(Player $holder){
-		parent::__construct($holder);
+		$this->holder = $holder;
+		parent::__construct();
 	}
 
 	public function getName() : string{

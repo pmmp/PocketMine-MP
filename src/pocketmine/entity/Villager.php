@@ -63,11 +63,11 @@ class Villager extends Creature implements NPC, Ageable{
 	 * @param int $profession
 	 */
 	public function setProfession(int $profession){
-		$this->setDataProperty(self::DATA_VARIANT, self::DATA_TYPE_INT, $profession);
+		$this->propertyManager->setInt(self::DATA_VARIANT, $profession);
 	}
 
 	public function getProfession() : int{
-		return $this->getDataProperty(self::DATA_VARIANT);
+		return $this->propertyManager->getInt(self::DATA_VARIANT);
 	}
 
 	public function isBaby() : bool{

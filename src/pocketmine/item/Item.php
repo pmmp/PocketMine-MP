@@ -761,15 +761,6 @@ class Item implements ItemIds, \JsonSerializable{
 		return 0;
 	}
 
-	/**
-	 * Returns the maximum amount of damage this item can take before it breaks.
-	 *
-	 * @return int|bool
-	 */
-	public function getMaxDurability(){
-		return false;
-	}
-
 	public function isPickaxe(){
 		return false;
 	}
@@ -801,7 +792,6 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * Called when a player uses this item on a block.
 	 *
-	 * @param Level   $level
 	 * @param Player  $player
 	 * @param Block   $blockReplace
 	 * @param Block   $blockClicked
@@ -810,7 +800,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @return bool
 	 */
-	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
+	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
 		return false;
 	}
 

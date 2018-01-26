@@ -36,8 +36,8 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 	public function __construct(Chest $left, Chest $right){
 		$this->left = $left->getRealInventory();
 		$this->right = $right->getRealInventory();
-		$items = array_merge($this->left->getContents(), $this->right->getContents());
-		BaseInventory::__construct($this, $items);
+		$items = array_merge($this->left->getContents(true), $this->right->getContents(true));
+		BaseInventory::__construct($items);
 	}
 
 	public function getName() : string{
@@ -69,15 +69,6 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 
 	public function clear(int $index, bool $send = true) : bool{
 		return $index < $this->left->getSize() ? $this->left->clear($index, $send) : $this->right->clear($index - $this->right->getSize(), $send);
-	}
-
-	public function getContents() : array{
-		$contents = [];
-		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
-			$contents[$i] = $this->getItem($i);
-		}
-
-		return $contents;
 	}
 
 	/**

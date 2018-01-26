@@ -125,14 +125,14 @@ class ExperienceOrb extends Entity{
 	}
 
 	public function getXpValue() : int{
-		return $this->getDataProperty(self::DATA_EXPERIENCE_VALUE) ?? 0;
+		return $this->propertyManager->getInt(self::DATA_EXPERIENCE_VALUE) ?? 0;
 	}
 
 	public function setXpValue(int $amount) : void{
 		if($amount <= 0){
 			throw new \InvalidArgumentException("XP amount must be greater than 0, got $amount");
 		}
-		$this->setDataProperty(self::DATA_EXPERIENCE_VALUE, self::DATA_TYPE_INT, $amount);
+		$this->propertyManager->setInt(self::DATA_EXPERIENCE_VALUE, $amount);
 	}
 
 	public function hasTargetPlayer() : bool{

@@ -51,7 +51,7 @@ class Bucket extends Item implements Consumable{
 		return 0;
 	}
 
-	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
+	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
 		$resultBlock = BlockFactory::get($this->meta);
 
 		if($resultBlock instanceof Air){
