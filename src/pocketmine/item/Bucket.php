@@ -30,7 +30,6 @@ use pocketmine\block\Liquid;
 use pocketmine\entity\Living;
 use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\event\player\PlayerBucketFillEvent;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
