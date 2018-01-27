@@ -38,6 +38,7 @@ use raklib\RakLib;
 use raklib\server\RakLibServer;
 use raklib\server\ServerHandler;
 use raklib\server\ServerInstance;
+use raklib\utils\InternetAddress;
 
 class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 
@@ -68,9 +69,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		$this->rakLib = new RakLibServer(
 			$this->server->getLogger(),
 			\pocketmine\COMPOSER_AUTOLOADER_PATH,
-			$this->server->getPort(),
-			$this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp(),
-			false,
+			new InternetAddress($this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp(), $this->server->getPort(), 4),
 			(int) $this->server->getProperty("network.max-mtu-size", 1492)
 		);
 		$this->interface = new ServerHandler($this->rakLib, $this);
