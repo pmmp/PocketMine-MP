@@ -3780,10 +3780,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$inventory->close($this);
-
-		unset($this->windows[$hash]);
 		if($id !== null){
-			unset($this->windowIndex[$id], $this->permanentWindows[$id]);
+			unset($this->windows[$hash], $this->windowIndex[$id], $this->permanentWindows[$id]);
 		}
 	}
 
