@@ -1848,7 +1848,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if(!$packet->skipVerification){
 			$this->server->getScheduler()->scheduleAsyncTask(new VerifyLoginTask($this, $packet));
 		}else{
-			$this->onVerifyCompleted($packet, true, true);
+			$this->onVerifyCompleted($packet, null, true);
 		}
 
 		return true;
@@ -1861,13 +1861,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->sendDataPacket($pk, false, $immediate);
 	}
 
-	public function onVerifyCompleted(LoginPacket $packet, bool $isValid, bool $isAuthenticated) : void{
+	public function onVerifyCompleted(LoginPacket $packet, ?string $error, bool $isAuthenticated) : void{
 		if($this->closed){
 			return;
 		}
 
-		if(!$isValid){
-			$this->close("", "disconnect.loginFailedInfo.invalidSession");
+		if($error !== null){
+			$this->close("", $this->server->getLanguage()->translateString("pocketmine.disconnect.invalidSession", [$error]));
 			return;
 		}
 
