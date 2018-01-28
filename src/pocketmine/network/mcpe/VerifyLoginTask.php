@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe;
 
 use pocketmine\network\mcpe\protocol\LoginPacket;
-use pocketmine\network\VerifyLoginException;
 use pocketmine\Player;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
