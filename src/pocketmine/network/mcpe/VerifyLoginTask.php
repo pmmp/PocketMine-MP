@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe;
 
 use pocketmine\network\mcpe\protocol\LoginPacket;
+use pocketmine\network\VerifyLoginException;
 use pocketmine\Player;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
@@ -70,7 +71,7 @@ class VerifyLoginTask extends AsyncTask{
 			$this->validateToken($packet->clientDataJwt, $currentKey);
 
 			$this->error = null;
-		}catch(\Throwable $e){
+		}catch(VerifyLoginException $e){
 			$this->error = $e->getMessage();
 		}
 	}
@@ -80,7 +81,7 @@ class VerifyLoginTask extends AsyncTask{
 	 * @param null|string $currentPublicKey
 	 * @param bool        $first
 	 *
-	 * @throws \RuntimeException if errors are encountered
+	 * @throws VerifyLoginException if errors are encountered
 	 */
 	private function validateToken(string $jwt, ?string &$currentPublicKey, bool $first = false) : void{
 		[$headB64, $payloadB64, $sigB64] = explode('.', $jwt);
@@ -89,7 +90,7 @@ class VerifyLoginTask extends AsyncTask{
 
 		if($currentPublicKey === null){
 			if(!$first){
-				throw new \RuntimeException("%pocketmine.disconnect.invalidSession.missingKey");
+				throw new VerifyLoginException("%pocketmine.disconnect.invalidSession.missingKey");
 			}
 
 			//First link, check that it is self-signed
@@ -121,7 +122,7 @@ class VerifyLoginTask extends AsyncTask{
 
 		$v = openssl_verify("$headB64.$payloadB64", $derSignature, "-----BEGIN PUBLIC KEY-----\n" . wordwrap($currentPublicKey, 64, "\n", true) . "\n-----END PUBLIC KEY-----\n", OPENSSL_ALGO_SHA384);
 		if($v !== 1){
-			throw new \RuntimeException("%pocketmine.disconnect.invalidSession.badSignature");
+			throw new VerifyLoginException("%pocketmine.disconnect.invalidSession.badSignature");
 		}
 
 		if($currentPublicKey === self::MOJANG_ROOT_PUBLIC_KEY){
@@ -132,11 +133,11 @@ class VerifyLoginTask extends AsyncTask{
 
 		$time = time();
 		if(isset($claims["nbf"]) and $claims["nbf"] > $time){
-			throw new \RuntimeException("%pocketmine.disconnect.invalidSession.tooEarly");
+			throw new VerifyLoginException("%pocketmine.disconnect.invalidSession.tooEarly");
 		}
 
 		if(isset($claims["exp"]) and $claims["exp"] < $time){
-			throw new \RuntimeException("%pocketmine.disconnect.invalidSession.tooLate");
+			throw new VerifyLoginException("%pocketmine.disconnect.invalidSession.tooLate");
 		}
 
 		$currentPublicKey = $claims["identityPublicKey"] ?? null; //if there are further links, the next link should be signed with this
