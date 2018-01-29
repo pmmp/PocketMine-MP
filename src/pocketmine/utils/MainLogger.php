@@ -224,9 +224,7 @@ class MainLogger extends \AttachableThreadedLogger{
 		}
 
 		foreach($this->attachments as $attachment){
-			if($attachment instanceof \ThreadedLoggerAttachment){
-				$attachment->call($level, $message);
-			}
+			$attachment->call($level, $message);
 		}
 
 		$this->logStream[] = date("Y-m-d", $now) . " " . $cleanMessage . PHP_EOL;
