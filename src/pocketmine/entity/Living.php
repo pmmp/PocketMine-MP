@@ -800,7 +800,7 @@ abstract class Living extends Entity implements Damageable{
          * @return null|Entity
          *
          */
-        public function getTargetEntity2(AxisAlignedBB $distance = null, float $precision = 0.998){
+        public function getEntityLookingAt(AxisAlignedBB $distance = null, float $precision = 0.998){
                 if($distance === null){
                         $pointA = $this->subtract(100, 100, 100);
                         $pointB = $this->add(100, 100, 100);
