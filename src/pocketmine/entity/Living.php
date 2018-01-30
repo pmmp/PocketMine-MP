@@ -800,24 +800,24 @@ abstract class Living extends Entity implements Damageable{
          * @return null|Entity
          *
          */
-	public function getEntityLookingAt(AxisAlignedBB $distance = null, float $precision = 0.998){
-	        if($distance === null){
-	                $pointA = $this->subtract(100, 100, 100);
-	                $pointB = $this->add(100, 100, 100);
+        public function getTargetEntity2(AxisAlignedBB $distance = null, float $precision = 0.998){
+                if($distance === null){
+                        $pointA = $this->subtract(100, 100, 100);
+                        $pointB = $this->add(100, 100, 100);
 
-	                $distance = new AxisAlignedBB($pointA->x, $pointA->y, $pointA->z, $pointB->x, $pointB->y, $pointB->z);
+                        $distance = new AxisAlignedBB($pointA->x, $pointA->y, $pointA->z, $pointB->x, $pointB->y, $pointB->z);
                 }
 
                 foreach($this->level->getNearbyEntities($distance) as $entity){
-	                if($entity === $this) continue;
+                        if($entity === $this) continue;
 
-	                $toEntity = $this->asVector3()->subtract($entity->asVector3());
-	                $direction = $this->getDirectionVector();
-	                $exact = $toEntity->normalize()->dot($direction);
+                        $toEntity = $entity->asVector3()->subtract($this->asVector3());
+                        $direction = $this->getDirectionVector();
+                        $exact = $toEntity->normalize()->dot($direction);
 
-	                if($exact >= $precision){
+                        if($exact >= $precision){
 
-	                        return $entity;
+                                return $entity;
 
                         }
                 }
