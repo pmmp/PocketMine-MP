@@ -365,11 +365,11 @@ class PluginManager{
 				$pluginNumbers = array_map("intval", array_pad(explode(".", $pluginApi[0]), 3, "0")); //plugins might specify API like "3.0" or "3"
 				$serverNumbers = array_map("intval", explode(".", $serverApi[0]));
 
-				if($pluginNumbers[0] !== $serverNumbers[0]){ //Completely different API version
+				if($pluginNumbers[0] !== $serverNumbers[0] or $pluginNumbers[1] !== $serverNumbers[1]){ //Completely different API version
 					continue;
 				}
 
-				if($pluginNumbers[1] > $serverNumbers[1]){ //If the plugin requires new API features, being backwards compatible
+				if($pluginNumbers[2] > $serverNumbers[2]){ //If the plugin requires new API features or bug fixes, being backwards compatible
 					continue;
 				}
 			}
