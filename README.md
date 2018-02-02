@@ -10,7 +10,6 @@ If you don't find what you're looking for there, [talk to a human](#discussion).
 
 ### Discussion
 - [Forums](https://forums.pmmp.io/)
-- [#pmmp + #pocketmine channel IRC](http://webchat.freenode.net/?channels=pmmp,pocketmine)
 
 ### Plugins
 There are a very wide range of already-written plugins available which you can use to customise your server. Check out [Poggit](https://poggit.pmmp.io), or just search GitHub.
