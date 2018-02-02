@@ -23,7 +23,10 @@ There are a very wide range of already-written plugins available which you can u
 Yes you can! Contributions are welcomed provided that they comply with our [Contributing Guidelines](CONTRIBUTING.md). Please ensure you read the relevant sections of the guidelines carefully before making a Pull Request or opening an Issue.
 
 ### Where can I get the latest .phar?
-Head over to our [official Jenkins server](https://jenkins.pmmp.io/)
+- Latest release builds can be found in our [GitHub releases](https://github.com/pmmp/PocketMine-MP/releases).
+- Latest bleeding-edge development builds (and other builds in the build job channels) can be found on our [Jenkins server](https://jenkins.pmmp.io/).
+
+**Note: Please avoid development builds unless there is no other alternative for what you need.** Development builds are subject to changes at any time without notice, and it is likely that your server or plugins might break without warning.
 
 ## Third-party Libraries/Protocols Used
 * __[PHP Sockets](http://php.net/manual/en/book.sockets.php)__
