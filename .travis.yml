@@ -8,7 +8,7 @@ before_script:
  - echo | pecl install channel://pecl.php.net/yaml-2.0.2
  - git clone https://github.com/krakjoe/pthreads.git
  - cd pthreads
- - git checkout db8bc7fe2bfd79019c94f591eefa48bad4725a88
+ - git checkout d32079fb4a88e6e008104d36dbbf0c2dd7deb403
  - phpize
  - ./configure
  - make
