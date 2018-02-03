@@ -691,21 +691,9 @@ class Chunk{
 	}
 
 	/**
-	 * Unloads the chunk, closing entities and tiles.
-	 *
-	 * @param bool $safe Whether to check if there are still players using this chunk
-	 *
-	 * @return bool
+	 * Called when the chunk is unloaded, closing entities and tiles.
 	 */
-	public function unload(bool $safe = true) : bool{
-		if($safe){
-			foreach($this->getEntities() as $entity){
-				if($entity instanceof Player){
-					return false;
-				}
-			}
-		}
-
+	public function onUnload() : void{
 		foreach($this->getEntities() as $entity){
 			if($entity instanceof Player){
 				continue;
@@ -716,8 +704,6 @@ class Chunk{
 		foreach($this->getTiles() as $tile){
 			$tile->close();
 		}
-
-		return true;
 	}
 
 	/**
@@ -982,9 +968,8 @@ class Chunk{
 	 * @return Chunk
 	 */
 	public static function fastDeserialize(string $data) : Chunk{
-		$stream = new BinaryStream();
-		$stream->setBuffer($data);
-		$data = null;
+		$stream = new BinaryStream($data);
+
 		$x = $stream->getInt();
 		$z = $stream->getInt();
 		$subChunks = [];

@@ -23,7 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\item\enchantment;
 
+use pocketmine\event\entity\EntityDamageEvent;
 
+/**
+ * Manages enchantment type data.
+ */
 class Enchantment{
 
 	public const PROTECTION = 0;
@@ -54,34 +58,31 @@ class Enchantment{
 	public const FROST_WALKER = 25;
 	public const MENDING = 26;
 
-	public const RARITY_COMMON = 0;
-	public const RARITY_UNCOMMON = 1;
+	public const RARITY_COMMON = 10;
+	public const RARITY_UNCOMMON = 5;
 	public const RARITY_RARE = 2;
-	public const RARITY_MYTHIC = 3;
+	public const RARITY_MYTHIC = 1;
 
-	public const ACTIVATION_EQUIP = 0;
-	public const ACTIVATION_HELD = 1;
-	public const ACTIVATION_SELF = 2;
-
-	public const SLOT_NONE = 0;
-	public const SLOT_ALL = 0b11111111111111;
-	public const SLOT_ARMOR = 0b1111;
-	public const SLOT_HEAD = 0b1;
-	public const SLOT_TORSO = 0b10;
-	public const SLOT_LEGS = 0b100;
-	public const SLOT_FEET = 0b1000;
-	public const SLOT_SWORD = 0b10000;
-	public const SLOT_BOW = 0b100000;
-	public const SLOT_TOOL = 0b111000000;
-	public const SLOT_HOE = 0b1000000;
-	public const SLOT_SHEARS = 0b10000000;
-	public const SLOT_FLINT_AND_STEEL = 0b10000000;
-	public const SLOT_DIG = 0b111000000000;
-	public const SLOT_AXE = 0b1000000000;
-	public const SLOT_PICKAXE = 0b10000000000;
-	public const SLOT_SHOVEL = 0b10000000000;
-	public const SLOT_FISHING_ROD = 0b100000000000;
-	public const SLOT_CARROT_STICK = 0b1000000000000;
+	public const SLOT_NONE = 0x0;
+	public const SLOT_ALL = 0x7fff;
+	public const SLOT_ARMOR = self::SLOT_HEAD | self::SLOT_TORSO | self::SLOT_LEGS | self::SLOT_FEET;
+	public const SLOT_HEAD = 0x1;
+	public const SLOT_TORSO = 0x2;
+	public const SLOT_LEGS = 0x4;
+	public const SLOT_FEET = 0x8;
+	public const SLOT_SWORD = 0x10;
+	public const SLOT_BOW = 0x20;
+	public const SLOT_TOOL = self::SLOT_HOE | self::SLOT_SHEARS | self::SLOT_FLINT_AND_STEEL;
+	public const SLOT_HOE = 0x40;
+	public const SLOT_SHEARS = 0x80;
+	public const SLOT_FLINT_AND_STEEL = 0x100;
+	public const SLOT_DIG = self::SLOT_AXE | self::SLOT_PICKAXE | self::SLOT_SHOVEL;
+	public const SLOT_AXE = 0x200;
+	public const SLOT_PICKAXE = 0x400;
+	public const SLOT_SHOVEL = 0x800;
+	public const SLOT_FISHING_ROD = 0x1000;
+	public const SLOT_CARROT_STICK = 0x2000;
+	public const SLOT_ELYTRA = 0x4000;
 
 	/** @var Enchantment[] */
 	protected static $enchantments;
@@ -89,9 +90,29 @@ class Enchantment{
 	public static function init(){
 		self::$enchantments = new \SplFixedArray(256);
 
-		self::registerEnchantment(new Enchantment(self::PROTECTION, "%enchantment.protect.all", self::RARITY_COMMON, self::ACTIVATION_EQUIP, self::SLOT_ARMOR));
-		self::registerEnchantment(new Enchantment(self::FIRE_PROTECTION, "%enchantment.protect.fire", self::RARITY_UNCOMMON, self::ACTIVATION_EQUIP, self::SLOT_ARMOR));
-		self::registerEnchantment(new Enchantment(self::FEATHER_FALLING, "%enchantment.protect.fall", self::RARITY_UNCOMMON, self::ACTIVATION_EQUIP, self::SLOT_FEET));
+		self::registerEnchantment(new ProtectionEnchantment(self::PROTECTION, "%enchant.protect.all", self::RARITY_COMMON, self::SLOT_ARMOR, 4, 0.75, null));
+		self::registerEnchantment(new ProtectionEnchantment(self::FIRE_PROTECTION, "%enchantment.protect.fire", self::RARITY_UNCOMMON, self::SLOT_ARMOR, 4, 1.25, [
+			EntityDamageEvent::CAUSE_FIRE,
+			EntityDamageEvent::CAUSE_FIRE_TICK,
+			EntityDamageEvent::CAUSE_LAVA
+			//TODO: check fireballs
+		]));
+		self::registerEnchantment(new ProtectionEnchantment(self::FEATHER_FALLING, "%enchantment.protect.fall", self::RARITY_UNCOMMON, self::SLOT_FEET, 4, 2.5, [
+			EntityDamageEvent::CAUSE_FALL
+		]));
+		self::registerEnchantment(new ProtectionEnchantment(self::BLAST_PROTECTION, "%enchantment.protect.explosion", self::RARITY_RARE, self::SLOT_ARMOR, 4, 1.5, [
+			EntityDamageEvent::CAUSE_BLOCK_EXPLOSION,
+			EntityDamageEvent::CAUSE_ENTITY_EXPLOSION
+		]));
+		self::registerEnchantment(new ProtectionEnchantment(self::PROJECTILE_PROTECTION, "%enchantment.protect.projectile", self::RARITY_UNCOMMON, self::SLOT_ARMOR, 4, 1.5, [
+			EntityDamageEvent::CAUSE_PROJECTILE
+		]));
+
+		self::registerEnchantment(new Enchantment(self::RESPIRATION, "%enchantment.oxygen", self::RARITY_RARE, self::SLOT_HEAD, 3));
+
+		self::registerEnchantment(new Enchantment(self::EFFICIENCY, "%enchantment.digging", self::RARITY_COMMON, self::SLOT_DIG | self::SLOT_SHEARS, 5));
+		self::registerEnchantment(new Enchantment(self::SILK_TOUCH, "%enchantment.untouching", self::RARITY_MYTHIC, self::SLOT_DIG | self::SLOT_SHEARS, 1));
+		self::registerEnchantment(new Enchantment(self::UNBREAKING, "%enchantment.durability", self::RARITY_UNCOMMON, self::SLOT_ALL, 3)); //TODO: item type flags need to be split up
 	}
 
 	/**
@@ -109,10 +130,7 @@ class Enchantment{
 	 * @return Enchantment|null
 	 */
 	public static function getEnchantment(int $id){
-		if(isset(self::$enchantments[$id])){
-			return clone self::$enchantments[$id];
-		}
-		return null;
+		return self::$enchantments[$id] ?? null;
 	}
 
 	/**
@@ -121,32 +139,37 @@ class Enchantment{
 	 * @return Enchantment|null
 	 */
 	public static function getEnchantmentByName(string $name){
-		if(defined(Enchantment::class . "::" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::" . strtoupper($name)));
+		$const = Enchantment::class . "::" . strtoupper($name);
+		if(defined($const)){
+			return self::getEnchantment(constant($const));
 		}
 		return null;
 	}
 
+	/** @var int */
 	private $id;
-	private $level = 1;
+	/** @var string */
 	private $name;
+	/** @var int */
 	private $rarity;
-	private $activationType;
+	/** @var int */
 	private $slot;
+	/** @var int */
+	private $maxLevel;
 
 	/**
-	 * @param int $id
+	 * @param int    $id
 	 * @param string $name
-	 * @param int $rarity
-	 * @param int $activationType
-	 * @param int $slot
+	 * @param int    $rarity
+	 * @param int    $slot
+	 * @param int    $maxLevel
 	 */
-	public function __construct(int $id, string $name, int $rarity, int $activationType, int $slot){
+	public function __construct(int $id, string $name, int $rarity, int $slot, int $maxLevel){
 		$this->id = $id;
 		$this->name = $name;
 		$this->rarity = $rarity;
-		$this->activationType = $activationType;
 		$this->slot = $slot;
+		$this->maxLevel = $maxLevel;
 	}
 
 	/**
@@ -174,14 +197,6 @@ class Enchantment{
 	}
 
 	/**
-	 * Returns an int constant describing what type of activation this enchantment requires. For example armor enchantments only apply when worn.
-	 * @return int
-	 */
-	public function getActivationType() : int{
-		return $this->activationType;
-	}
-
-	/**
 	 * Returns an int with bitflags set to indicate what item types this enchantment can apply to.
 	 * @return int
 	 */
@@ -200,23 +215,12 @@ class Enchantment{
 	}
 
 	/**
-	 * Returns the level of the enchantment.
+	 * Returns the maximum level of this enchantment that can be found on an enchantment table.
 	 * @return int
 	 */
-	public function getLevel(): int{
-		return $this->level;
+	public function getMaxLevel() : int{
+		return $this->maxLevel;
 	}
 
-	/**
-	 * Sets the level of the enchantment.
-	 * @param int $level
-	 *
-	 * @return $this
-	 */
-	public function setLevel(int $level){
-		$this->level = $level;
-
-		return $this;
-	}
-
+	//TODO: methods for min/max XP cost bounds based on enchantment level (not needed yet - enchanting is client-side)
 }

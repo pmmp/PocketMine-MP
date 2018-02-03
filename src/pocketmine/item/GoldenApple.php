@@ -24,8 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\entity\Effect;
-use pocketmine\entity\Entity;
-use pocketmine\entity\Human;
 
 class GoldenApple extends Food{
 
@@ -33,8 +31,8 @@ class GoldenApple extends Food{
 		parent::__construct(self::GOLDEN_APPLE, $meta, "Golden Apple");
 	}
 
-	public function canBeConsumedBy(Entity $entity) : bool{
-		return $entity instanceof Human;
+	public function requiresHunger() : bool{
+		return false;
 	}
 
 	public function getFoodRestore() : int{

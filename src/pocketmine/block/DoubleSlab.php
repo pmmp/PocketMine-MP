@@ -38,10 +38,13 @@ abstract class DoubleSlab extends Solid{
 		return "Double " . BlockFactory::get($this->getSlabId(), $this->getVariant())->getName() . " Slab";
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			ItemFactory::get($this->getSlabId(), $this->getVariant(), 2)
 		];
 	}
 
+	public function isAffectedBySilkTouch() : bool{
+		return false;
+	}
 }

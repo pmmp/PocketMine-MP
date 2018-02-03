@@ -51,8 +51,7 @@ class CraftingManager{
 	private $craftingDataCache;
 
 	public function __construct(){
-		// load recipes from src/pocketmine/resources/recipes.json
-		$recipes = new Config(Server::getInstance()->getFilePath() . "src/pocketmine/resources/recipes.json", Config::JSON, []);
+		$recipes = new Config(\pocketmine\RESOURCE_PATH . "recipes.json", Config::JSON, []);
 
 		MainLogger::getLogger()->info("Loading recipes...");
 		foreach($recipes->getAll() as $recipe){

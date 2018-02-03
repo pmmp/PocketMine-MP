@@ -28,6 +28,7 @@ use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\Player;
+use pocketmine\utils\Color;
 use pocketmine\utils\Config;
 
 class Effect{
@@ -38,10 +39,10 @@ class Effect{
 	public const STRENGTH = 5;
 	public const INSTANT_HEALTH = 6, HEALING = 6;
 	public const INSTANT_DAMAGE = 7, HARMING = 7;
-	public const JUMP = 8;
+	public const JUMP_BOOST = 8, JUMP = 8;
 	public const NAUSEA = 9, CONFUSION = 9;
 	public const REGENERATION = 10;
-	public const DAMAGE_RESISTANCE = 11;
+	public const RESISTANCE = 11, DAMAGE_RESISTANCE = 11;
 	public const FIRE_RESISTANCE = 12;
 	public const WATER_BREATHING = 13;
 	public const INVISIBILITY = 14;
@@ -55,24 +56,25 @@ class Effect{
 	public const ABSORPTION = 22;
 	public const SATURATION = 23;
 	public const LEVITATION = 24; //TODO
+	public const FATAL_POISON = 25;
 
 	/** @var Effect[] */
 	protected static $effects = [];
 
 	public static function init(){
-		$config = new Config(\pocketmine\PATH . "src/pocketmine/resources/effects.json", Config::JSON, []);
+		$config = new Config(\pocketmine\RESOURCE_PATH . "effects.json", Config::JSON, []);
 
 		foreach($config->getAll() as $name => $data){
-			$color = hexdec(substr($data["color"], 3));
+			$color = hexdec(substr($data["color"], 1));
+			$a = ($color >> 24) & 0xff;
 			$r = ($color >> 16) & 0xff;
 			$g = ($color >> 8) & 0xff;
 			$b = $color & 0xff;
+
 			self::registerEffect($name, new Effect(
 				$data["id"],
 				"%potion." . $data["name"],
-				$r,
-				$g,
-				$b,
+				new Color($r, $g, $b, $a),
 				$data["isBad"] ?? false,
 				$data["default_duration"] ?? 300 * 20,
 				$data["has_bubbles"] ?? true
@@ -121,7 +123,7 @@ class Effect{
 	protected $duration;
  	/** @var int */
 	protected $amplifier = 0;
-	/** @var int[] */
+	/** @var Color */
 	protected $color;
 	/** @var bool */
 	protected $visible = true;
@@ -135,20 +137,18 @@ class Effect{
 	protected $hasBubbles = true;
 
 	/**
-	 * @param int    $id              Effect ID as per Minecraft PE
-	 * @param string $name            Translation key used for effect name
-	 * @param int    $r               0-255, red balance of potion particle colour
-	 * @param int    $g               0-255, green balance of potion particle colour
-	 * @param int    $b               0-255, blue balance of potion particle colour
-	 * @param bool   $isBad           Whether the effect is harmful
+	 * @param int    $id Effect ID as per Minecraft PE
+	 * @param string $name Translation key used for effect name
+	 * @param Color  $color
+	 * @param bool   $isBad Whether the effect is harmful
 	 * @param int    $defaultDuration Duration in ticks the effect will last for by default if applied without a duration.
-	 * @param bool   $hasBubbles      Whether the effect has potion bubbles. Some do not (e.g. Instant Damage has its own particles instead of bubbles)
+	 * @param bool   $hasBubbles Whether the effect has potion bubbles. Some do not (e.g. Instant Damage has its own particles instead of bubbles)
 	 */
-	public function __construct(int $id, string $name, int $r, int $g, int $b, bool $isBad = false, int $defaultDuration = 300 * 20, bool $hasBubbles = true){
+	public function __construct(int $id, string $name, Color $color, bool $isBad = false, int $defaultDuration = 300 * 20, bool $hasBubbles = true){
 		$this->id = $id;
 		$this->name = $name;
 		$this->bad = $isBad;
-		$this->setColor($r, $g, $b);
+		$this->color = $color;
 		$this->defaultDuration = $defaultDuration;
 		$this->duration = $defaultDuration;
 		$this->hasBubbles = $hasBubbles;
@@ -258,7 +258,10 @@ class Effect{
 	}
 
 	/**
-	 * Returns whether the effect is ambient.
+	 * Returns whether the effect originated from the ambient environment.
+	 * Ambient effects can originate from things such as a Beacon's area of effect radius.
+	 * If this flag is set, the amount of visible particles will be reduced by a factor of 5.
+	 *
 	 * @return bool
 	 */
 	public function isAmbient() : bool{
@@ -295,6 +298,7 @@ class Effect{
 	public function canTick() : bool{
 		switch($this->id){
 			case Effect::POISON:
+			case Effect::FATAL_POISON:
 				if(($interval = (25 >> $this->amplifier)) > 0){
 					return ($this->duration % $interval) === 0;
 				}
@@ -310,15 +314,10 @@ class Effect{
 				}
 				return true;
 			case Effect::HUNGER:
-				if($this->amplifier < 0){ // prevents hacking with amplifier -1
-					return false;
-				}
-				if(($interval = 20) > 0){
-					return ($this->duration % $interval) === 0;
-				}
 				return true;
 			case Effect::INSTANT_DAMAGE:
 			case Effect::INSTANT_HEALTH:
+			case Effect::SATURATION:
 				//If forced to last longer than 1 tick, these apply every tick.
 				return true;
 		}
@@ -332,11 +331,14 @@ class Effect{
 	 */
 	public function applyEffect(Entity $entity){
 		switch($this->id){
+			/** @noinspection PhpMissingBreakStatementInspection */
 			case Effect::POISON:
-				if($entity->getHealth() > 1){
-					$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, 1);
-					$entity->attack($ev);
+				if($entity->getHealth() <= 1){
+					break;
 				}
+			case Effect::FATAL_POISON:
+				$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, 1);
+				$entity->attack($ev);
 				break;
 
 			case Effect::WITHER:
@@ -353,41 +355,43 @@ class Effect{
 
 			case Effect::HUNGER:
 				if($entity instanceof Human){
-					$entity->exhaust(0.5 * $this->getEffectLevel(), PlayerExhaustEvent::CAUSE_POTION);
+					$entity->exhaust(0.025 * $this->getEffectLevel(), PlayerExhaustEvent::CAUSE_POTION);
 				}
 				break;
 			case Effect::INSTANT_HEALTH:
 				//TODO: add particles (witch spell)
 				if($entity->getHealth() < $entity->getMaxHealth()){
-					$amount = 2 * (2 ** ($this->getEffectLevel() % 32));
-					$entity->heal(new EntityRegainHealthEvent($entity, $amount, EntityRegainHealthEvent::CAUSE_MAGIC));
+					$entity->heal(new EntityRegainHealthEvent($entity, 4 << $this->amplifier, EntityRegainHealthEvent::CAUSE_MAGIC));
 				}
 				break;
 			case Effect::INSTANT_DAMAGE:
 				//TODO: add particles (witch spell)
-				$amount = 2 * (2 ** ($this->getEffectLevel() % 32));
-				$entity->attack(new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, $amount));
+				$entity->attack(new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, 4 << $this->amplifier));
+				break;
+			case Effect::SATURATION:
+				if($entity instanceof Human){
+					$entity->addFood($this->getEffectLevel());
+					$entity->addSaturation($this->getEffectLevel() * 2);
+				}
 				break;
 		}
 	}
 
 	/**
-	 * Returns an RGB color array of this effect's color.
-	 * @return int[]
+	 * Returns a Color object representing this effect's particle colour.
+	 * @return Color
 	 */
-	public function getColor() : array{
-		return [$this->color >> 16, ($this->color >> 8) & 0xff, $this->color & 0xff];
+	public function getColor() : Color{
+		return clone $this->color;
 	}
 
 	/**
 	 * Sets the color of this effect.
 	 *
-	 * @param int $r
-	 * @param int $g
-	 * @param int $b
+	 * @param Color $color
 	 */
-	public function setColor(int $r, int $g, int $b){
-		$this->color = (($r & 0xff) << 16) + (($g & 0xff) << 8) + ($b & 0xff);
+	public function setColor(Color $color){
+		$this->color = clone $color;
 	}
 
 	/**
@@ -419,7 +423,7 @@ class Effect{
 
 		switch($this->id){
 			case Effect::INVISIBILITY:
-				$entity->setGenericFlag(Entity::DATA_FLAG_INVISIBLE, true);
+				$entity->setInvisible();
 				$entity->setNameTagVisible(false);
 				break;
 			case Effect::SPEED:
@@ -462,7 +466,7 @@ class Effect{
 
 		switch($this->id){
 			case Effect::INVISIBILITY:
-				$entity->setGenericFlag(Entity::DATA_FLAG_INVISIBLE, false);
+				$entity->setInvisible(false);
 				$entity->setNameTagVisible(true);
 				break;
 			case Effect::SPEED:
@@ -481,5 +485,9 @@ class Effect{
 				$entity->setAbsorption(0);
 				break;
 		}
+	}
+
+	public function __clone(){
+		$this->color = clone $this->color;
 	}
 }

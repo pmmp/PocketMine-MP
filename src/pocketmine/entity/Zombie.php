@@ -23,10 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
-use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\item\ItemFactory;
-use pocketmine\Player;
 
 class Zombie extends Monster{
 	public const NETWORK_ID = self::ZOMBIE;
@@ -58,5 +56,10 @@ class Zombie extends Monster{
 		}
 
 		return $drops;
+	}
+
+	public function getXpDropAmount() : int{
+		//TODO: check for equipment and whether it's a baby
+		return 5;
 	}
 }

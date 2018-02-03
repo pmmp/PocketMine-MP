@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\entity\Effect;
-use pocketmine\event\entity\EntityEatBlockEvent;
+use pocketmine\entity\Living;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
@@ -45,7 +45,7 @@ class Cake extends Transparent implements FoodSource{
 	}
 
 	public function getName() : string{
-		return "Cake Block";
+		return "Cake";
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
@@ -85,25 +85,18 @@ class Cake extends Transparent implements FoodSource{
 		return false;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [];
 	}
 
+	public function isAffectedBySilkTouch() : bool{
+		return false;
+	}
+
 	public function onActivate(Item $item, Player $player = null) : bool{
-		//TODO: refactor this into generic food handling
-		if($player instanceof Player and $player->getFood() < $player->getMaxFood()){
-			$player->getServer()->getPluginManager()->callEvent($ev = new EntityEatBlockEvent($player, $this));
-
-			if(!$ev->isCancelled()){
-				$player->addFood($ev->getFoodRestore());
-				$player->addSaturation($ev->getSaturationRestore());
-				foreach($ev->getAdditionalEffects() as $effect){
-					$player->addEffect($effect);
-				}
-
-				$this->getLevel()->setBlock($this, $ev->getResidue());
-				return true;
-			}
+		if($player !== null){
+			$player->consumeObject($this);
+			return true;
 		}
 
 		return false;
@@ -117,6 +110,13 @@ class Cake extends Transparent implements FoodSource{
 		return 0.4;
 	}
 
+	public function requiresHunger() : bool{
+		return true;
+	}
+
+	/**
+	 * @return Block
+	 */
 	public function getResidue(){
 		$clone = clone $this;
 		$clone->meta++;
@@ -131,5 +131,9 @@ class Cake extends Transparent implements FoodSource{
 	 */
 	public function getAdditionalEffects() : array{
 		return [];
+	}
+
+	public function onConsume(Living $consumer) : void{
+		$this->level->setBlock($this, $this->getResidue());
 	}
 }

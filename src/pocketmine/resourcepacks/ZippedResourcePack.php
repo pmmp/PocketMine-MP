@@ -86,7 +86,7 @@ class ZippedResourcePack implements ResourcePack{
 		$archive->close();
 
 		$manifest = json_decode($manifestData);
-		if(!self::verifyManifest($manifest)){
+		if($manifest === null or !self::verifyManifest($manifest)){
 			throw new \InvalidStateException("Could not load resource pack from $zipPath: manifest.json is invalid or incomplete");
 		}
 

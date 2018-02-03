@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\nbt\tag\ByteTag;
 
 abstract class Durable extends Item{
@@ -54,15 +55,46 @@ abstract class Durable extends Item{
 			return false;
 		}
 
-		//TODO: Unbreaking enchantment
+		$amount -= $this->getUnbreakingDamageReduction($amount);
 
-		$this->meta += $amount;
+		$this->meta = min($this->meta + $amount, $this->getMaxDurability());
 		if($this->isBroken()){
-			$this->pop();
+			$this->onBroken();
 		}
 
 		return true;
 	}
+
+	protected function getUnbreakingDamageReduction(int $amount) : int{
+		if(($unbreakingLevel = $this->getEnchantmentLevel(Enchantment::UNBREAKING)) > 0){
+			$negated = 0;
+
+			$chance = 1 / ($unbreakingLevel + 1);
+			for($i = 0; $i < $amount; ++$i){
+				if(lcg_value() > $chance){
+					$negated++;
+				}
+			}
+
+			return $negated;
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Called when the item's damage exceeds its maximum durability.
+	 */
+	protected function onBroken() : void{
+		$this->pop();
+	}
+
+	/**
+	 * Returns the maximum amount of damage this item can take before it breaks.
+	 *
+	 * @return int
+	 */
+	abstract public function getMaxDurability() : int;
 
 	/**
 	 * Returns whether the item is broken.

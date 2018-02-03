@@ -38,6 +38,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	public const MODIFIER_WEAKNESS = 3;
 	public const MODIFIER_RESISTANCE = 4;
 	public const MODIFIER_ABSORPTION = 5;
+	public const MODIFIER_ARMOR_ENCHANTMENTS = 6;
 
 	public const CAUSE_CONTACT = 0;
 	public const CAUSE_ENTITY_ATTACK = 1;
@@ -136,4 +137,24 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 		return array_sum($this->modifiers);
 	}
 
+	/**
+	 * Returns whether an entity can use armour points to reduce this type of damage.
+	 * @return bool
+	 */
+	public function canBeReducedByArmor() : bool{
+		switch($this->cause){
+			case self::CAUSE_FIRE_TICK:
+			case self::CAUSE_SUFFOCATION:
+			case self::CAUSE_DROWNING:
+			case self::CAUSE_STARVATION:
+			case self::CAUSE_FALL:
+			case self::CAUSE_VOID:
+			case self::CAUSE_MAGIC:
+			case self::CAUSE_SUICIDE:
+				return false;
+
+		}
+
+		return true;
+	}
 }

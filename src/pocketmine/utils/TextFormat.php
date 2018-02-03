@@ -28,6 +28,7 @@ namespace pocketmine\utils;
  */
 abstract class TextFormat{
 	public const ESCAPE = "\xc2\xa7"; //§
+	public const EOL = "\n";
 
 	public const BLACK = TextFormat::ESCAPE . "0";
 	public const DARK_BLUE = TextFormat::ESCAPE . "1";
@@ -77,6 +78,18 @@ abstract class TextFormat{
 			return str_replace(TextFormat::ESCAPE, "", preg_replace(["/" . TextFormat::ESCAPE . "[0123456789abcdefklmnor]/", "/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/"], "", $string));
 		}
 		return str_replace("\x1b", "", preg_replace("/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/", "", $string));
+	}
+
+	/**
+	 * Replaces placeholders of § with the correct character. Only valid codes (as in the constants of the TextFormat class) will be converted.
+	 *
+	 * @param string $string
+	 * @param string $placeholder default "&"
+	 *
+	 * @return string
+	 */
+	public static function colorize(string $string, string $placeholder = "&") : string{
+		return preg_replace('/' . preg_quote($placeholder, "/") . '([0-9a-fk-or])/u', TextFormat::ESCAPE . '$1', $string);
 	}
 
 	/**

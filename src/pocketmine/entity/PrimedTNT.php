@@ -61,7 +61,7 @@ class PrimedTNT extends Entity implements Explosive{
 		}
 
 		$this->setGenericFlag(self::DATA_FLAG_IGNITED, true);
-		$this->setDataProperty(self::DATA_FUSE_LENGTH, self::DATA_TYPE_INT, $this->fuse);
+		$this->propertyManager->setInt(self::DATA_FUSE_LENGTH, $this->fuse);
 
 		$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_IGNITE);
 	}
@@ -84,7 +84,7 @@ class PrimedTNT extends Entity implements Explosive{
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
 		if($this->fuse % 5 === 0){ //don't spam it every tick, it's not necessary
-			$this->setDataProperty(self::DATA_FUSE_LENGTH, self::DATA_TYPE_INT, $this->fuse);
+			$this->propertyManager->setInt(self::DATA_FUSE_LENGTH, $this->fuse);
 		}
 
 		if(!$this->isFlaggedForDespawn()){

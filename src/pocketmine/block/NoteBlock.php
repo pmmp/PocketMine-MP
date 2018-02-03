@@ -38,4 +38,12 @@ class NoteBlock extends Solid{
 	public function getFuelTime() : int{
 		return 300;
 	}
+
+	public function getHardness() : float{
+		return 0.8;
+	}
+
+	public function getToolType() : int{
+		return BlockToolType::TYPE_AXE;
+	}
 }

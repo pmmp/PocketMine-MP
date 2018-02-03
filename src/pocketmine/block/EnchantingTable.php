@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\inventory\EnchantInventory;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
+use pocketmine\item\TieredTool;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\EnchantTable as TileEnchantTable;
@@ -60,7 +60,11 @@ class EnchantingTable extends Transparent{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
+	}
+
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{
@@ -71,13 +75,5 @@ class EnchantingTable extends Transparent{
 		}
 
 		return true;
-	}
-
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
-			return parent::getDrops($item);
-		}
-
-		return [];
 	}
 }
