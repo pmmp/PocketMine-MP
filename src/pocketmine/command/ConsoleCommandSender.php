@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\command;
 
-use pocketmine\event\TextContainer;
+use pocketmine\lang\TextContainer;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\Permission;
 use pocketmine\permission\PermissionAttachment;
