@@ -95,7 +95,7 @@ class RCONInstance extends Thread{
 	}
 
 	public function run(){
-
+		$this->registerClassLoader();
 		while($this->stop !== true){
 			$this->synchronized(function(){
 				$this->wait(2000);
