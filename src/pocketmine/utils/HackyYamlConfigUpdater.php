@@ -68,7 +68,7 @@ class HackyYamlConfigUpdater{
 		$commentCounter = 0;
 		$savedComments = [];
 
-		$result = preg_replace_callback('/( *)#(.*)/m', function($matches) use (&$commentCounter, &$savedComments){
+		$result = preg_replace_callback('/^( *)#(.*)/m', function($matches) use (&$commentCounter, &$savedComments){
 			$commentCounter++;
 			$savedComments[$commentCounter] = rtrim($matches[2], "\r\n");
 			return $matches[1] . "comment$commentCounter: $commentCounter";
