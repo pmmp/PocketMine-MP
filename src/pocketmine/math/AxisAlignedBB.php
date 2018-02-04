@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\math;
 
-use pocketmine\level\MovingObjectPosition;
-
 class AxisAlignedBB{
 
 	/** @var float */
@@ -226,8 +224,7 @@ class AxisAlignedBB{
 			if($x1 < $x){
 				$x = $x1;
 			}
-		}
-		if($x < 0 and $bb->minX >= $this->maxX){
+		}elseif($x < 0 and $bb->minX >= $this->maxX){
 			$x2 = $this->maxX - $bb->minX;
 			if($x2 > $x){
 				$x = $x2;
@@ -249,8 +246,7 @@ class AxisAlignedBB{
 			if($y1 < $y){
 				$y = $y1;
 			}
-		}
-		if($y < 0 and $bb->minY >= $this->maxY){
+		}elseif($y < 0 and $bb->minY >= $this->maxY){
 			$y2 = $this->maxY - $bb->minY;
 			if($y2 > $y){
 				$y = $y2;
@@ -272,8 +268,7 @@ class AxisAlignedBB{
 			if($z1 < $z){
 				$z = $z1;
 			}
-		}
-		if($z < 0 and $bb->minZ >= $this->maxZ){
+		}elseif($z < 0 and $bb->minZ >= $this->maxZ){
 			$z2 = $this->maxZ - $bb->minZ;
 			if($z2 > $z){
 				$z = $z2;
@@ -356,15 +351,15 @@ class AxisAlignedBB{
 
 	/**
 	 * Performs a ray-trace and calculates the point on the AABB's edge nearest the start position that the ray-trace
-	 * collided with. Returns a MovingObjectPosition with colliding vector closest to the start position.
+	 * collided with. Returns a RayTraceResult with colliding vector closest to the start position.
 	 * Returns null if no colliding point was found.
 	 *
 	 * @param Vector3 $pos1
 	 * @param Vector3 $pos2
 	 *
-	 * @return MovingObjectPosition|null
+	 * @return RayTraceResult|null
 	 */
-	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2){
+	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2) : ?RayTraceResult{
 		$v1 = $pos1->getIntermediateWithXValue($pos2, $this->minX);
 		$v2 = $pos1->getIntermediateWithXValue($pos2, $this->maxX);
 		$v3 = $pos1->getIntermediateWithYValue($pos2, $this->minY);
@@ -426,7 +421,7 @@ class AxisAlignedBB{
 			$f = Vector3::SIDE_SOUTH;
 		}
 
-		return MovingObjectPosition::fromBlock(0, 0, 0, $f, $vector);
+		return new RayTraceResult($this, $f, $vector);
 	}
 
 	public function __toString(){

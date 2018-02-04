@@ -31,24 +31,22 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\level\Level;
-use pocketmine\level\MovingObjectPosition;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ShortTag;
 
 abstract class Projectile extends Entity{
 
-	const DATA_SHOOTER_ID = 17;
+	public const DATA_SHOOTER_ID = 17;
 
 	protected $damage = 0;
 
 	public $hadCollision = false;
 
 	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null){
+		parent::__construct($level, $nbt);
 		if($shootingEntity !== null){
 			$this->setOwningEntity($shootingEntity);
 		}
-		parent::__construct($level, $nbt);
 	}
 
 	public function attack(EntityDamageEvent $source){
@@ -62,9 +60,7 @@ abstract class Projectile extends Entity{
 
 		$this->setMaxHealth(1);
 		$this->setHealth(1);
-		if(isset($this->namedtag->Age)){
-			$this->age = $this->namedtag["Age"];
-		}
+		$this->age = $this->namedtag->getShort("Age", $this->age);
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
@@ -102,12 +98,12 @@ abstract class Projectile extends Entity{
 			}
 		}
 
-		$this->close();
+		$this->flagForDespawn();
 	}
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Age = new ShortTag("Age", $this->age);
+		$this->namedtag->setShort("Age", $this->age);
 	}
 
 	protected function applyDragBeforeGravity() : bool{
@@ -121,7 +117,7 @@ abstract class Projectile extends Entity{
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		if($this->isAlive()){
+		if(!$this->isFlaggedForDespawn()){
 			$movingObjectPosition = null;
 
 			$moveVector = new Vector3($this->x + $this->motionX, $this->y + $this->motionY, $this->z + $this->motionZ);
@@ -139,13 +135,13 @@ abstract class Projectile extends Entity{
 				}
 
 				$axisalignedbb = $entity->boundingBox->grow(0.3, 0.3, 0.3);
-				$ob = $axisalignedbb->calculateIntercept($this, $moveVector);
+				$rayTraceResult = $axisalignedbb->calculateIntercept($this, $moveVector);
 
-				if($ob === null){
+				if($rayTraceResult === null){
 					continue;
 				}
 
-				$distance = $this->distanceSquared($ob->hitVector);
+				$distance = $this->distanceSquared($rayTraceResult->hitVector);
 
 				if($distance < $nearDistance){
 					$nearDistance = $distance;
@@ -154,14 +150,8 @@ abstract class Projectile extends Entity{
 			}
 
 			if($nearEntity !== null){
-				$movingObjectPosition = MovingObjectPosition::fromEntity($nearEntity);
-			}
-
-			if($movingObjectPosition !== null){
-				if($movingObjectPosition->entityHit !== null){
-					$this->onCollideWithEntity($movingObjectPosition->entityHit);
-					return false;
-				}
+				$this->onCollideWithEntity($nearEntity);
+				return false;
 			}
 
 			if($this->isCollided and !$this->hadCollision){ //Collided with a block

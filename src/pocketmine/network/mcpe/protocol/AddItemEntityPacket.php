@@ -30,7 +30,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 
 class AddItemEntityPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::ADD_ITEM_ENTITY_PACKET;
+	public const NETWORK_ID = ProtocolInfo::ADD_ITEM_ENTITY_PACKET;
 
 	/** @var int|null */
 	public $entityUniqueId = null; //TODO
@@ -49,8 +49,8 @@ class AddItemEntityPacket extends DataPacket{
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->item = $this->getSlot();
-		$this->position = $this->getVector3Obj();
-		$this->motion = $this->getVector3Obj();
+		$this->position = $this->getVector3();
+		$this->motion = $this->getVector3();
 		$this->metadata = $this->getEntityMetadata();
 	}
 
@@ -58,8 +58,8 @@ class AddItemEntityPacket extends DataPacket{
 		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putSlot($this->item);
-		$this->putVector3Obj($this->position);
-		$this->putVector3ObjNullable($this->motion);
+		$this->putVector3($this->position);
+		$this->putVector3Nullable($this->motion);
 		$this->putEntityMetadata($this->metadata);
 	}
 

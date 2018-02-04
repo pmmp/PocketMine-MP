@@ -1,8 +1,9 @@
 players/*
 worlds/*
 plugins/*
-bin/*
+bin*/*
 timings/*
+crashdumps/*
 *.log
 *.txt
 *.phar
@@ -34,3 +35,6 @@ vendor/*
 
 # Travis files
 test_data/*
+
+# Doxygen
+Documentation/*

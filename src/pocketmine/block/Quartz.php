@@ -25,15 +25,15 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\PillarRotationHelper;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
+use pocketmine\item\TieredTool;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Quartz extends Solid{
 
-	const NORMAL = 0;
-	const CHISELED = 1;
-	const PILLAR = 2;
+	public const NORMAL = 0;
+	public const CHISELED = 1;
+	public const PILLAR = 2;
 
 	protected $id = self::QUARTZ_BLOCK;
 
@@ -62,18 +62,14 @@ class Quartz extends Solid{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
+	}
+
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
 	}
 
 	public function getVariantBitmask() : int{
 		return 0x03;
-	}
-
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
-			return parent::getDrops($item);
-		}
-
-		return [];
 	}
 }

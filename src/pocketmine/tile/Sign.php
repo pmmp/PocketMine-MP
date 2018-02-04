@@ -33,9 +33,9 @@ use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
 class Sign extends Spawnable{
-	const TAG_TEXT_BLOB = "Text";
-	const TAG_TEXT_LINE = "Text%d"; //sprintf()able
-	const TAG_CREATOR = "Creator";
+	public const TAG_TEXT_BLOB = "Text";
+	public const TAG_TEXT_LINE = "Text%d"; //sprintf()able
+	public const TAG_CREATOR = "Creator";
 
 	/** @var string[] */
 	protected $text = ["", "", "", ""];

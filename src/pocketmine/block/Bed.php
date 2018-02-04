@@ -35,8 +35,8 @@ use pocketmine\tile\Tile;
 use pocketmine\utils\TextFormat;
 
 class Bed extends Transparent{
-	const BITFLAG_OCCUPIED = 0x04;
-	const BITFLAG_HEAD = 0x08;
+	public const BITFLAG_OCCUPIED = 0x04;
+	public const BITFLAG_HEAD = 0x08;
 
 	protected $id = self::BED_BLOCK;
 
@@ -142,7 +142,7 @@ class Bed extends Transparent{
 
 				return true;
 			}elseif($player->distanceSquared($this) > 4 and $player->distanceSquared($other) > 4){
-				//MCPE doesn't have messages for bed too far away
+				$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%tile.bed.tooFar"));
 				return true;
 			}
 
@@ -190,25 +190,16 @@ class Bed extends Transparent{
 		return false;
 	}
 
-	public function onBreak(Item $item, Player $player = null) : bool{
-		$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true, true);
-		if(($other = $this->getOtherHalf()) !== null){
-			$this->getLevel()->useBreakOn($other, $item, null, $player !== null); //make sure tiles get removed
-		}
-
-		return true;
-	}
-
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		if($this->isHeadPart()){
 			$tile = $this->getLevel()->getTile($this);
 			if($tile instanceof TileBed){
 				return [
-					ItemFactory::get($this->getItemId(), $tile->getColor(), 1)
+					ItemFactory::get($this->getItemId(), $tile->getColor())
 				];
 			}else{
 				return [
-					ItemFactory::get($this->getItemId(), 14, 1) //Red
+					ItemFactory::get($this->getItemId(), 14) //Red
 				];
 			}
 		}
@@ -216,4 +207,15 @@ class Bed extends Transparent{
 		return [];
 	}
 
+	public function isAffectedBySilkTouch() : bool{
+		return false;
+	}
+
+	public function getAffectedBlocks() : array{
+		if(($other = $this->getOtherHalf()) !== null){
+			return [$this, $other];
+		}
+
+		return parent::getAffectedBlocks();
+	}
 }

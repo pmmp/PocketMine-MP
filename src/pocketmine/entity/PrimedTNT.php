@@ -26,11 +26,11 @@ namespace pocketmine\entity;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ExplosionPrimeEvent;
 use pocketmine\level\Explosion;
-use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
 class PrimedTNT extends Entity implements Explosive{
-	const NETWORK_ID = self::TNT;
+	public const NETWORK_ID = self::TNT;
 
 	public $width = 0.98;
 	public $height = 0.98;
@@ -54,14 +54,14 @@ class PrimedTNT extends Entity implements Explosive{
 	protected function initEntity(){
 		parent::initEntity();
 
-		if(isset($this->namedtag->Fuse)){
-			$this->fuse = $this->namedtag["Fuse"];
+		if($this->namedtag->hasTag("Fuse", ShortTag::class)){
+			$this->fuse = $this->namedtag->getShort("Fuse");
 		}else{
 			$this->fuse = 80;
 		}
 
 		$this->setGenericFlag(self::DATA_FLAG_IGNITED, true);
-		$this->setDataProperty(self::DATA_FUSE_LENGTH, self::DATA_TYPE_INT, $this->fuse);
+		$this->propertyManager->setInt(self::DATA_FUSE_LENGTH, $this->fuse);
 
 		$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_IGNITE);
 	}
@@ -73,7 +73,7 @@ class PrimedTNT extends Entity implements Explosive{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Fuse = new ByteTag("Fuse", $this->fuse);
+		$this->namedtag->setShort("Fuse", $this->fuse, true); //older versions incorrectly saved this as a byte
 	}
 
 	public function entityBaseTick(int $tickDiff = 1) : bool{
@@ -84,14 +84,14 @@ class PrimedTNT extends Entity implements Explosive{
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
 		if($this->fuse % 5 === 0){ //don't spam it every tick, it's not necessary
-			$this->setDataProperty(self::DATA_FUSE_LENGTH, self::DATA_TYPE_INT, $this->fuse);
+			$this->propertyManager->setInt(self::DATA_FUSE_LENGTH, $this->fuse);
 		}
 
-		if($this->isAlive()){
+		if(!$this->isFlaggedForDespawn()){
 			$this->fuse -= $tickDiff;
 
 			if($this->fuse <= 0){
-				$this->kill();
+				$this->flagForDespawn();
 				$this->explode();
 			}
 		}

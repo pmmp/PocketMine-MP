@@ -30,6 +30,7 @@ use pocketmine\block\BlockFactory;
 use pocketmine\entity\Entity;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
@@ -37,29 +38,38 @@ use pocketmine\utils\BinaryStream;
 
 class Chunk{
 
-	const MAX_SUBCHUNKS = 16;
+	public const MAX_SUBCHUNKS = 16;
 
+	/** @var int */
 	protected $x;
+	/** @var int */
 	protected $z;
 
+	/** @var bool */
 	protected $hasChanged = false;
 
+	/** @var bool */
 	protected $isInit = false;
 
+	/** @var bool*/
 	protected $lightPopulated = false;
+	/** @var bool */
 	protected $terrainGenerated = false;
+	/** @var bool */
 	protected $terrainPopulated = false;
 
+	/** @var int */
 	protected $height = Chunk::MAX_SUBCHUNKS;
 
-	/** @var SubChunkInterface[] */
-	protected $subChunks = [];
+	/** @var \SplFixedArray|SubChunkInterface[] */
+	protected $subChunks;
 
 	/** @var EmptySubChunk */
-	protected $emptySubChunk = null;
+	protected $emptySubChunk;
 
 	/** @var Tile[] */
 	protected $tiles = [];
+	/** @var Tile[] */
 	protected $tileList = [];
 
 	/** @var Entity[] */
@@ -96,23 +106,11 @@ class Chunk{
 
 		$this->height = Chunk::MAX_SUBCHUNKS; //TODO: add a way of changing this
 
+		$this->subChunks = new \SplFixedArray($this->height);
 		$this->emptySubChunk = new EmptySubChunk();
 
-		foreach($subChunks as $y => $subChunk){
-			if($y < 0 or $y >= $this->height){
-				throw new ChunkException("Invalid subchunk index $y!");
-			}
-			if($subChunk->isEmpty()){
-				$this->subChunks[$y] = $this->emptySubChunk;
-			}else{
-				$this->subChunks[$y] = $subChunk;
-			}
-		}
-
-		for($i = 0; $i < $this->height; ++$i){
-			if(!isset($this->subChunks[$i])){
-				$this->subChunks[$i] = $this->emptySubChunk;
-			}
+		foreach($this->subChunks as $y => $null){
+			$this->subChunks[$y] = $subChunks[$y] ?? $this->emptySubChunk;
 		}
 
 		if(count($heightMap) === 256){
@@ -251,7 +249,7 @@ class Chunk{
 	 * @param int $data 0-15
 	 */
 	public function setBlockData(int $x, int $y, int $z, int $data){
-		if($this->getSubChunk($y >> 4)->setBlockData($x, $y & 0x0f, $z, $data)){
+		if($this->getSubChunk($y >> 4, true)->setBlockData($x, $y & 0x0f, $z, $data)){
 			$this->hasChanged = true;
 		}
 	}
@@ -376,8 +374,6 @@ class Chunk{
 		if($index === -1){
 			return -1;
 		}
-
-		$height = $index << 4;
 
 		for($y = $index; $y >= 0; --$y){
 			$height = $this->getSubChunk($y)->getHighestBlockAt($x, $z) | ($y << 4);
@@ -667,6 +663,13 @@ class Chunk{
 	}
 
 	/**
+	 * @return Entity[]
+	 */
+	public function getSavableEntities() : array{
+		return array_filter($this->entities, function(Entity $entity) : bool{ return $entity->canSaveWithChunk() and !$entity->isClosed(); });
+	}
+
+	/**
 	 * @return Tile[]
 	 */
 	public function getTiles() : array{
@@ -688,21 +691,9 @@ class Chunk{
 	}
 
 	/**
-	 * Unloads the chunk, closing entities and tiles.
-	 *
-	 * @param bool $safe Whether to check if there are still players using this chunk
-	 *
-	 * @return bool
+	 * Called when the chunk is unloaded, closing entities and tiles.
 	 */
-	public function unload(bool $safe = true) : bool{
-		if($safe){
-			foreach($this->getEntities() as $entity){
-				if($entity instanceof Player){
-					return false;
-				}
-			}
-		}
-
+	public function onUnload() : void{
 		foreach($this->getEntities() as $entity){
 			if($entity instanceof Player){
 				continue;
@@ -713,8 +704,6 @@ class Chunk{
 		foreach($this->getTiles() as $tile){
 			$tile->close();
 		}
-
-		return true;
 	}
 
 	/**
@@ -729,7 +718,7 @@ class Chunk{
 				$level->timings->syncChunkLoadEntitiesTimer->startTiming();
 				foreach($this->NBTentities as $nbt){
 					if($nbt instanceof CompoundTag){
-						if(!isset($nbt->id)){
+						if(!$nbt->hasTag("id")){ //allow mixed types (because of leveldb)
 							$changed = true;
 							continue;
 						}
@@ -740,7 +729,7 @@ class Chunk{
 						}
 
 						try{
-							$entity = Entity::createEntity($nbt["id"], $level, $nbt);
+							$entity = Entity::createEntity($nbt->getTag("id")->getValue(), $level, $nbt);
 							if(!($entity instanceof Entity)){
 								$changed = true;
 								continue;
@@ -757,17 +746,17 @@ class Chunk{
 				$level->timings->syncChunkLoadTileEntitiesTimer->startTiming();
 				foreach($this->NBTtiles as $nbt){
 					if($nbt instanceof CompoundTag){
-						if(!isset($nbt->id)){
+						if(!$nbt->hasTag(Tile::TAG_ID, StringTag::class)){
 							$changed = true;
 							continue;
 						}
 
-						if(($nbt["x"] >> 4) !== $this->x or ($nbt["z"] >> 4) !== $this->z){
+						if(($nbt->getInt(Tile::TAG_X) >> 4) !== $this->x or ($nbt->getInt(Tile::TAG_Z) >> 4) !== $this->z){
 							$changed = true;
 							continue; //Fixes tiles allocated in wrong chunks.
 						}
 
-						if(Tile::createTile($nbt["id"], $level, $nbt) === null){
+						if(Tile::createTile($nbt->getString(Tile::TAG_ID), $level, $nbt) === null){
 							$changed = true;
 							continue;
 						}
@@ -835,7 +824,7 @@ class Chunk{
 		}elseif($generateNew and $this->subChunks[$y] instanceof EmptySubChunk){
 			$this->subChunks[$y] = new SubChunk();
 		}
-		assert($this->subChunks[$y] !== null, "Somehow something broke, no such subchunk at index $y");
+
 		return $this->subChunks[$y];
 	}
 
@@ -862,9 +851,9 @@ class Chunk{
 	}
 
 	/**
-	 * @return SubChunk[]
+	 * @return \SplFixedArray|SubChunkInterface[]
 	 */
-	public function getSubChunks() : array{
+	public function getSubChunks() : \SplFixedArray{
 		return $this->subChunks;
 	}
 
@@ -874,8 +863,8 @@ class Chunk{
 	 * @return int
 	 */
 	public function getHighestSubChunkIndex() : int{
-		for($y = count($this->subChunks) - 1; $y >= 0; --$y){
-			if($this->subChunks[$y] === null or $this->subChunks[$y] instanceof EmptySubChunk){
+		for($y = $this->subChunks->count() - 1; $y >= 0; --$y){
+			if($this->subChunks[$y] instanceof EmptySubChunk){
 				//No need to thoroughly prune empties at runtime, this will just reduce performance.
 				continue;
 			}
@@ -899,10 +888,7 @@ class Chunk{
 	 */
 	public function pruneEmptySubChunks(){
 		foreach($this->subChunks as $y => $subChunk){
-			if($y < 0 or $y >= $this->height){
-				assert(false, "Invalid subchunk index");
-				unset($this->subChunks[$y]);
-			}elseif($subChunk instanceof EmptySubChunk){
+			if($subChunk instanceof EmptySubChunk){
 				continue;
 			}elseif($subChunk->isEmpty()){ //normal subchunk full of air, remove it and replace it with an empty stub
 				$this->subChunks[$y] = $this->emptySubChunk;
@@ -982,9 +968,8 @@ class Chunk{
 	 * @return Chunk
 	 */
 	public static function fastDeserialize(string $data) : Chunk{
-		$stream = new BinaryStream();
-		$stream->setBuffer($data);
-		$data = null;
+		$stream = new BinaryStream($data);
+
 		$x = $stream->getInt();
 		$z = $stream->getInt();
 		$subChunks = [];
@@ -1001,11 +986,6 @@ class Chunk{
 		$chunk->terrainPopulated = (bool) ($flags & 2);
 		$chunk->terrainGenerated = (bool) ($flags & 1);
 		return $chunk;
-	}
-
-	//TODO: get rid of this
-	public static function getEmptyChunk(int $x, int $z) : Chunk{
-		return new Chunk($x, $z);
 	}
 
 	/**

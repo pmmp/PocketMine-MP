@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\ColorBlockMetaHelper;
-use pocketmine\item\Tool;
+use pocketmine\item\Item;
 
 class Wool extends Solid{
 
@@ -39,11 +39,19 @@ class Wool extends Solid{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_SHEARS;
+		return BlockToolType::TYPE_SHEARS;
 	}
 
 	public function getName() : string{
 		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Wool";
 	}
 
+	public function getBreakTime(Item $item) : float{
+		$time = parent::getBreakTime($item);
+		if($item->getBlockToolType() === BlockToolType::TYPE_SHEARS){
+			$time *= 3; //shears break compatible blocks 15x faster, but wool 5x
+		}
+
+		return $time;
+	}
 }

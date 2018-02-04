@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class GuiDataPickItemPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::GUI_DATA_PICK_ITEM_PACKET;
+	public const NETWORK_ID = ProtocolInfo::GUI_DATA_PICK_ITEM_PACKET;
 
 	/** @var int */
 	public $hotbarSlot;

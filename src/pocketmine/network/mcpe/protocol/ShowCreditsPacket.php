@@ -30,10 +30,10 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class ShowCreditsPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::SHOW_CREDITS_PACKET;
+	public const NETWORK_ID = ProtocolInfo::SHOW_CREDITS_PACKET;
 
-	const STATUS_START_CREDITS = 0;
-	const STATUS_END_CREDITS = 1;
+	public const STATUS_START_CREDITS = 0;
+	public const STATUS_END_CREDITS = 1;
 
 	/** @var int */
 	public $playerEid;

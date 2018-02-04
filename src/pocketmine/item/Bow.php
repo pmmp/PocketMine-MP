@@ -39,7 +39,7 @@ class Bow extends Tool{
 		return 200;
 	}
 
-	public function getMaxDurability(){
+	public function getMaxDurability() : int{
 		return 385;
 	}
 
@@ -75,7 +75,7 @@ class Bow extends Tool{
 			$entity = $ev->getProjectile(); //This might have been changed by plugins
 
 			if($ev->isCancelled()){
-				$entity->kill();
+				$entity->flagForDespawn();
 				$player->getInventory()->sendContents($player);
 			}else{
 				$entity->setMotion($entity->getMotion()->multiply($ev->getForce()));
@@ -87,7 +87,7 @@ class Bow extends Tool{
 				if($entity instanceof Projectile){
 					$player->getServer()->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($entity));
 					if($projectileEv->isCancelled()){
-						$ev->getProjectile()->kill();
+						$ev->getProjectile()->flagForDespawn();
 					}else{
 						$ev->getProjectile()->spawnToAll();
 						$player->level->addSound(new LaunchSound($player), $player->getViewers());

@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol\types;
 
 interface DimensionIds{
 
-	const OVERWORLD = 0;
-	const NETHER = 1;
-	const THE_END = 2;
+	public const OVERWORLD = 0;
+	public const NETHER = 1;
+	public const THE_END = 2;
 
 }

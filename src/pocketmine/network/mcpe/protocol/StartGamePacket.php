@@ -31,7 +31,7 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 
 class StartGamePacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::START_GAME_PACKET;
+	public const NETWORK_ID = ProtocolInfo::START_GAME_PACKET;
 
 	/** @var int */
 	public $entityUniqueId;
@@ -115,7 +115,7 @@ class StartGamePacket extends DataPacket{
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->playerGamemode = $this->getVarInt();
 
-		$this->playerPosition = $this->getVector3Obj();
+		$this->playerPosition = $this->getVector3();
 
 		$this->pitch = $this->getLFloat();
 		$this->yaw = $this->getLFloat();
@@ -158,7 +158,7 @@ class StartGamePacket extends DataPacket{
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putVarInt($this->playerGamemode);
 
-		$this->putVector3Obj($this->playerPosition);
+		$this->putVector3($this->playerPosition);
 
 		$this->putLFloat($this->pitch);
 		$this->putLFloat($this->yaw);

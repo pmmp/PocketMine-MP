@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class UnknownPacket extends DataPacket{
-	const NETWORK_ID = -1; //Invalid, do not try to write this
+	public const NETWORK_ID = -1; //Invalid, do not try to write this
 
 	/** @var string */
 	public $payload;

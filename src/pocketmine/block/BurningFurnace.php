@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
+use pocketmine\item\TieredTool;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
@@ -34,6 +34,8 @@ use pocketmine\tile\Tile;
 class BurningFurnace extends Solid{
 
 	protected $id = self::BURNING_FURNACE;
+
+	protected $itemId = self::FURNACE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
@@ -48,7 +50,11 @@ class BurningFurnace extends Solid{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
+	}
+
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
 	}
 
 	public function getLightLevel() : int{
@@ -77,10 +83,8 @@ class BurningFurnace extends Solid{
 				$furnace = Tile::createTile(Tile::FURNACE, $this->getLevel(), TileFurnace::createNBT($this));
 			}
 
-			if(isset($furnace->namedtag->Lock) and $furnace->namedtag->Lock instanceof StringTag){
-				if($furnace->namedtag->Lock->getValue() !== $item->getCustomName()){
-					return true;
-				}
+			if($furnace->namedtag->hasTag("Lock", StringTag::class) and $furnace->namedtag->getString("Lock") !== $item->getCustomName()){
+				return true;
 			}
 
 			$player->addWindow($furnace->getInventory());
@@ -91,13 +95,5 @@ class BurningFurnace extends Solid{
 
 	public function getVariantBitmask() : int{
 		return 0;
-	}
-
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
-			return parent::getDrops($item);
-		}
-
-		return [];
 	}
 }

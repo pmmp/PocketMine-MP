@@ -40,27 +40,27 @@ use pocketmine\utils\Random;
 
 abstract class Biome{
 
-	const OCEAN = 0;
-	const PLAINS = 1;
-	const DESERT = 2;
-	const MOUNTAINS = 3;
-	const FOREST = 4;
-	const TAIGA = 5;
-	const SWAMP = 6;
-	const RIVER = 7;
+	public const OCEAN = 0;
+	public const PLAINS = 1;
+	public const DESERT = 2;
+	public const MOUNTAINS = 3;
+	public const FOREST = 4;
+	public const TAIGA = 5;
+	public const SWAMP = 6;
+	public const RIVER = 7;
 
-	const HELL = 8;
+	public const HELL = 8;
 
-	const ICE_PLAINS = 12;
-
-
-	const SMALL_MOUNTAINS = 20;
+	public const ICE_PLAINS = 12;
 
 
-	const BIRCH_FOREST = 27;
+	public const SMALL_MOUNTAINS = 20;
 
 
-	const MAX_BIOMES = 256;
+	public const BIRCH_FOREST = 27;
+
+
+	public const MAX_BIOMES = 256;
 
 	/** @var Biome[] */
 	private static $biomes = [];

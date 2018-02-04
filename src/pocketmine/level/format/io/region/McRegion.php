@@ -30,6 +30,7 @@ use pocketmine\level\format\io\ChunkUtils;
 use pocketmine\level\format\SubChunk;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\Level;
+use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\{
 	ByteArrayTag, ByteTag, CompoundTag, IntArrayTag, IntTag, ListTag, LongTag, StringTag
@@ -38,13 +39,10 @@ use pocketmine\utils\MainLogger;
 
 class McRegion extends BaseLevelProvider{
 
-	const REGION_FILE_EXTENSION = "mcr";
+	public const REGION_FILE_EXTENSION = "mcr";
 
 	/** @var RegionLoader[] */
 	protected $regions = [];
-
-	/** @var Chunk[] */
-	protected $chunks = [];
 
 	/**
 	 * @param Chunk $chunk
@@ -53,12 +51,12 @@ class McRegion extends BaseLevelProvider{
 	 */
 	public function nbtSerialize(Chunk $chunk) : string{
 		$nbt = new CompoundTag("Level", []);
-		$nbt->xPos = new IntTag("xPos", $chunk->getX());
-		$nbt->zPos = new IntTag("zPos", $chunk->getZ());
+		$nbt->setInt("xPos", $chunk->getX());
+		$nbt->setInt("zPos", $chunk->getZ());
 
-		$nbt->LastUpdate = new LongTag("LastUpdate", 0); //TODO
-		$nbt->TerrainPopulated = new ByteTag("TerrainPopulated", $chunk->isPopulated() ? 1 : 0);
-		$nbt->LightPopulated = new ByteTag("LightPopulated", $chunk->isLightPopulated() ? 1 : 0);
+		$nbt->setLong("LastUpdate", 0); //TODO
+		$nbt->setByte("TerrainPopulated", $chunk->isPopulated() ? 1 : 0);
+		$nbt->setByte("LightPopulated", $chunk->isLightPopulated() ? 1 : 0);
 
 		$ids = "";
 		$data = "";
@@ -77,24 +75,22 @@ class McRegion extends BaseLevelProvider{
 			}
 		}
 
-		$nbt->Blocks = new ByteArrayTag("Blocks", $ids);
-		$nbt->Data = new ByteArrayTag("Data", $data);
-		$nbt->SkyLight = new ByteArrayTag("SkyLight", $skyLight);
-		$nbt->BlockLight = new ByteArrayTag("BlockLight", $blockLight);
+		$nbt->setByteArray("Blocks", $ids);
+		$nbt->setByteArray("Data", $data);
+		$nbt->setByteArray("SkyLight", $skyLight);
+		$nbt->setByteArray("BlockLight", $blockLight);
 
-		$nbt->Biomes = new ByteArrayTag("Biomes", $chunk->getBiomeIdArray()); //doesn't exist in regular McRegion, this is here for PocketMine-MP only
-		$nbt->HeightMap = new ByteArrayTag("HeightMap", pack("C*", ...$chunk->getHeightMapArray()));
+		$nbt->setByteArray("Biomes", $chunk->getBiomeIdArray()); //doesn't exist in regular McRegion, this is here for PocketMine-MP only
+		$nbt->setByteArray("HeightMap", pack("C*", ...$chunk->getHeightMapArray())); //this is ByteArray in McRegion, but IntArray in Anvil (due to raised build height)
 
 		$entities = [];
 
-		foreach($chunk->getEntities() as $entity){
-			if($entity->canSaveWithChunk() and !$entity->isClosed()){
-				$entity->saveNBT();
-				$entities[] = $entity->namedtag;
-			}
+		foreach($chunk->getSavableEntities() as $entity){
+			$entity->saveNBT();
+			$entities[] = $entity->namedtag;
 		}
 
-		$nbt->Entities = new ListTag("Entities", $entities, NBT::TAG_Compound);
+		$nbt->setTag(new ListTag("Entities", $entities, NBT::TAG_Compound));
 
 		$tiles = [];
 		foreach($chunk->getTiles() as $tile){
@@ -102,9 +98,9 @@ class McRegion extends BaseLevelProvider{
 			$tiles[] = $tile->namedtag;
 		}
 
-		$nbt->TileEntities = new ListTag("TileEntities", $tiles, NBT::TAG_Compound);
+		$nbt->setTag(new ListTag("TileEntities", $tiles, NBT::TAG_Compound));
 
-		$writer = new NBT(NBT::BIG_ENDIAN);
+		$writer = new BigEndianNBTStream();
 		$nbt->setName("Level");
 		$writer->setData(new CompoundTag("", [$nbt]));
 
@@ -117,23 +113,21 @@ class McRegion extends BaseLevelProvider{
 	 * @return Chunk|null
 	 */
 	public function nbtDeserialize(string $data){
-		$nbt = new NBT(NBT::BIG_ENDIAN);
+		$nbt = new BigEndianNBTStream();
 		try{
 			$nbt->readCompressed($data);
 
-			$chunk = $nbt->getData();
+			$chunk = $nbt->getData()->getCompoundTag("Level");
 
-			if(!isset($chunk->Level) or !($chunk->Level instanceof CompoundTag)){
-				throw new ChunkException("Invalid NBT format");
+			if($chunk === null){
+				throw new ChunkException("Invalid NBT format, 'Level' key not found");
 			}
 
-			$chunk = $chunk->Level;
-
 			$subChunks = [];
-			$fullIds = isset($chunk->Blocks) ? $chunk->Blocks->getValue() : str_repeat("\x00", 32768);
-			$fullData = isset($chunk->Data) ? $chunk->Data->getValue() : str_repeat("\x00", 16384);
-			$fullSkyLight = isset($chunk->SkyLight) ? $chunk->SkyLight->getValue() : str_repeat("\xff", 16384);
-			$fullBlockLight = isset($chunk->BlockLight) ? $chunk->BlockLight->getValue() : str_repeat("\x00", 16384);
+			$fullIds = $chunk->hasTag("Blocks", ByteArrayTag::class) ? $chunk->getByteArray("Blocks") : str_repeat("\x00", 32768);
+			$fullData = $chunk->hasTag("Data", ByteArrayTag::class) ? $chunk->getByteArray("Data") : str_repeat("\x00", 16384);
+			$fullSkyLight = $chunk->hasTag("SkyLight", ByteArrayTag::class) ? $chunk->getByteArray("SkyLight") : str_repeat("\xff", 16384);
+			$fullBlockLight = $chunk->hasTag("BlockLight", ByteArrayTag::class) ? $chunk->getByteArray("BlockLight") : str_repeat("\x00", 16384);
 
 			for($y = 0; $y < 8; ++$y){
 				$offset = ($y << 4);
@@ -163,34 +157,32 @@ class McRegion extends BaseLevelProvider{
 				$subChunks[$y] = new SubChunk($ids, $data, $skyLight, $blockLight);
 			}
 
-			if(isset($chunk->BiomeColors)){
-				$biomeIds = ChunkUtils::convertBiomeColors($chunk->BiomeColors->getValue()); //Convert back to original format
-			}elseif(isset($chunk->Biomes)){
-				$biomeIds = $chunk->Biomes->getValue();
+			if($chunk->hasTag("BiomeColors", IntArrayTag::class)){
+				$biomeIds = ChunkUtils::convertBiomeColors($chunk->getIntArray("BiomeColors")); //Convert back to original format
+			}elseif($chunk->hasTag("Biomes", ByteArrayTag::class)){
+				$biomeIds = $chunk->getByteArray("Biomes");
 			}else{
 				$biomeIds = "";
 			}
 
 			$heightMap = [];
-			if(isset($chunk->HeightMap)){
-				if($chunk->HeightMap instanceof ByteArrayTag){
-					$heightMap = array_values(unpack("C*", $chunk->HeightMap->getValue()));
-				}elseif($chunk->HeightMap instanceof IntArrayTag){
-					$heightMap = $chunk->HeightMap->getValue(); #blameshoghicp
-				}
+			if($chunk->hasTag("HeightMap", ByteArrayTag::class)){
+				$heightMap = array_values(unpack("C*", $chunk->getByteArray("HeightMap")));
+			}elseif($chunk->hasTag("HeightMap", IntArrayTag::class)){
+				$heightMap = $chunk->getIntArray("HeightMap"); #blameshoghicp
 			}
 
 			$result = new Chunk(
-				$chunk["xPos"],
-				$chunk["zPos"],
+				$chunk->getInt("xPos"),
+				$chunk->getInt("zPos"),
 				$subChunks,
-				isset($chunk->Entities) ? $chunk->Entities->getValue() : [],
-				isset($chunk->TileEntities) ? $chunk->TileEntities->getValue() : [],
+				$chunk->hasTag("Entities", ListTag::class) ? $chunk->getListTag("Entities")->getValue() : [],
+				$chunk->hasTag("TileEntities", ListTag::class) ? $chunk->getListTag("TileEntities")->getValue() : [],
 				$biomeIds,
 				$heightMap
 			);
-			$result->setLightPopulated(isset($chunk->LightPopulated) ? ((bool) $chunk->LightPopulated->getValue()) : false);
-			$result->setPopulated(isset($chunk->TerrainPopulated) ? ((bool) $chunk->TerrainPopulated->getValue()) : false);
+			$result->setLightPopulated($chunk->getByte("LightPopulated", 0) !== 0);
+			$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
 			$result->setGenerated(true);
 			return $result;
 		}catch(\Throwable $e){
@@ -264,7 +256,7 @@ class McRegion extends BaseLevelProvider{
 			new StringTag("LevelName", $name),
 			new CompoundTag("GameRules", [])
 		]);
-		$nbt = new NBT(NBT::BIG_ENDIAN);
+		$nbt = new BigEndianNBTStream();
 		$nbt->setData(new CompoundTag("", [
 			$levelData
 		]));
@@ -281,124 +273,11 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	public function getDifficulty() : int{
-		return isset($this->levelData->Difficulty) ? $this->levelData->Difficulty->getValue() : Level::DIFFICULTY_NORMAL;
+		return $this->levelData->getByte("Difficulty", Level::DIFFICULTY_NORMAL);
 	}
 
 	public function setDifficulty(int $difficulty){
-		$this->levelData->Difficulty = new ByteTag("Difficulty", $difficulty);
-	}
-
-	public function getChunk(int $chunkX, int $chunkZ, bool $create = false){
-		$index = Level::chunkHash($chunkX, $chunkZ);
-		if(isset($this->chunks[$index])){
-			return $this->chunks[$index];
-		}else{
-			$this->loadChunk($chunkX, $chunkZ, $create);
-
-			return $this->chunks[$index] ?? null;
-		}
-	}
-
-	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk){
-		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
-		$this->loadRegion($regionX, $regionZ);
-
-		$chunk->setX($chunkX);
-		$chunk->setZ($chunkZ);
-
-
-		if(isset($this->chunks[$index = Level::chunkHash($chunkX, $chunkZ)]) and $this->chunks[$index] !== $chunk){
-			$this->unloadChunk($chunkX, $chunkZ, false);
-		}
-
-		$this->chunks[$index] = $chunk;
-	}
-
-	public function saveChunk(int $chunkX, int $chunkZ) : bool{
-		if($this->isChunkLoaded($chunkX, $chunkZ)){
-			$chunk = $this->getChunk($chunkX, $chunkZ);
-			if(!$chunk->isGenerated()){
-				throw new \InvalidStateException("Cannot save un-generated chunk");
-			}
-			$this->getRegion($chunkX >> 5, $chunkZ >> 5)->writeChunk($chunk);
-
-			return true;
-		}
-
-		return false;
-	}
-
-	public function saveChunks(){
-		foreach($this->chunks as $chunk){
-			$this->saveChunk($chunk->getX(), $chunk->getZ());
-		}
-	}
-
-	public function loadChunk(int $chunkX, int $chunkZ, bool $create = false) : bool{
-		$index = Level::chunkHash($chunkX, $chunkZ);
-		if(isset($this->chunks[$index])){
-			return true;
-		}
-		$regionX = $regionZ = null;
-		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
-		/** @noinspection PhpStrictTypeCheckingInspection */
-		$this->loadRegion($regionX, $regionZ);
-		$this->level->timings->syncChunkLoadDataTimer->startTiming();
-		/** @noinspection PhpStrictTypeCheckingInspection */
-		$chunk = $this->getRegion($regionX, $regionZ)->readChunk($chunkX - $regionX * 32, $chunkZ - $regionZ * 32);
-		if($chunk === null and $create){
-			$chunk = $this->getEmptyChunk($chunkX, $chunkZ);
-		}
-		$this->level->timings->syncChunkLoadDataTimer->stopTiming();
-
-		if($chunk !== null){
-			$this->chunks[$index] = $chunk;
-			return true;
-		}else{
-			return false;
-		}
-	}
-
-	public function unloadChunk(int $chunkX, int $chunkZ, bool $safe = true) : bool{
-		$chunk = $this->chunks[$index = Level::chunkHash($chunkX, $chunkZ)] ?? null;
-		if($chunk instanceof Chunk and $chunk->unload($safe)){
-			unset($this->chunks[$index]);
-			return true;
-		}
-
-		return false;
-	}
-
-	public function unloadChunks(){
-		foreach($this->chunks as $chunk){
-			$this->unloadChunk($chunk->getX(), $chunk->getZ(), false);
-		}
-		$this->chunks = [];
-	}
-
-	public function isChunkLoaded(int $chunkX, int $chunkZ) : bool{
-		return isset($this->chunks[Level::chunkHash($chunkX, $chunkZ)]);
-	}
-
-	public function isChunkGenerated(int $chunkX, int $chunkZ) : bool{
-		if(($region = $this->getRegion($chunkX >> 5, $chunkZ >> 5)) !== null){
-			return $region->chunkExists($chunkX - $region->getX() * 32, $chunkZ - $region->getZ() * 32) and $this->getChunk($chunkX - $region->getX() * 32, $chunkZ - $region->getZ() * 32, true)->isGenerated();
-		}
-
-		return false;
-	}
-
-	public function isChunkPopulated(int $chunkX, int $chunkZ) : bool{
-		$chunk = $this->getChunk($chunkX, $chunkZ);
-		if($chunk !== null){
-			return $chunk->isPopulated();
-		}else{
-			return false;
-		}
-	}
-
-	public function getLoadedChunks() : array{
-		return $this->chunks;
+		$this->levelData->setByte("Difficulty", $difficulty);
 	}
 
 	public function doGarbageCollection(){
@@ -414,66 +293,91 @@ class McRegion extends BaseLevelProvider{
 	/**
 	 * @param int $chunkX
 	 * @param int $chunkZ
-	 * @param int &$x
-	 * @param int &$z
+	 * @param int &$regionX
+	 * @param int &$regionZ
 	 */
-	public static function getRegionIndex(int $chunkX, int $chunkZ, &$x, &$z){
-		$x = $chunkX >> 5;
-		$z = $chunkZ >> 5;
+	public static function getRegionIndex(int $chunkX, int $chunkZ, &$regionX, &$regionZ){
+		$regionX = $chunkX >> 5;
+		$regionZ = $chunkZ >> 5;
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return Chunk
-	 */
-	public function getEmptyChunk(int $chunkX, int $chunkZ) : Chunk{
-		return Chunk::getEmptyChunk($chunkX, $chunkZ);
-	}
-
-	/**
-	 * @param int $x
-	 * @param int $z
+	 * @param int $regionX
+	 * @param int $regionZ
 	 *
 	 * @return RegionLoader|null
 	 */
-	protected function getRegion(int $x, int $z){
-		return $this->regions[Level::chunkHash($x, $z)] ?? null;
+	protected function getRegion(int $regionX, int $regionZ){
+		return $this->regions[Level::chunkHash($regionX, $regionZ)] ?? null;
 	}
 
 	/**
-	 * @param int $x
-	 * @param int $z
+	 * Returns the path to a specific region file based on its X/Z coordinates
+	 *
+	 * @param int $regionX
+	 * @param int $regionZ
+	 *
+	 * @return string
 	 */
-	protected function loadRegion(int $x, int $z){
-		if(!isset($this->regions[$index = Level::chunkHash($x, $z)])){
-			$this->regions[$index] = new RegionLoader($this, $x, $z, static::REGION_FILE_EXTENSION);
+	protected function pathToRegion(int $regionX, int $regionZ) : string{
+		return $this->path . "region/r.$regionX.$regionZ." . static::REGION_FILE_EXTENSION;
+	}
+
+	/**
+	 * @param int $regionX
+	 * @param int $regionZ
+	 */
+	protected function loadRegion(int $regionX, int $regionZ){
+		if(!isset($this->regions[$index = Level::chunkHash($regionX, $regionZ)])){
+			$path = $this->pathToRegion($regionX, $regionZ);
+			$this->regions[$index] = new RegionLoader($path, $regionX, $regionZ);
 			try{
 				$this->regions[$index]->open();
 			}catch(CorruptedRegionException $e){
-				$logger = $this->level->getServer()->getLogger();
+				$logger = MainLogger::getLogger();
 				$logger->error("Corrupted region file detected: " . $e->getMessage());
 
 				$this->regions[$index]->close(false); //Do not write anything to the file
 
-				$path = $this->regions[$index]->getFilePath();
 				$backupPath = $path . ".bak." . time();
 				rename($path, $backupPath);
 				$logger->error("Corrupted region file has been backed up to " . $backupPath);
 
-				$this->regions[$index] = new RegionLoader($this, $x, $z, static::REGION_FILE_EXTENSION);
+				$this->regions[$index] = new RegionLoader($path, $regionX, $regionZ);
 				$this->regions[$index]->open(); //this will create a new empty region to replace the corrupted one
 			}
 		}
 	}
 
 	public function close(){
-		$this->unloadChunks();
 		foreach($this->regions as $index => $region){
 			$region->close();
 			unset($this->regions[$index]);
 		}
-		$this->level = null;
+	}
+
+	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{
+		$regionX = $regionZ = null;
+		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
+		assert(is_int($regionX) and is_int($regionZ));
+
+		$this->loadRegion($regionX, $regionZ);
+
+		$chunkData = $this->getRegion($regionX, $regionZ)->readChunk($chunkX & 0x1f, $chunkZ & 0x1f);
+		if($chunkData !== null){
+			return $this->nbtDeserialize($chunkData);
+		}
+
+		return null;
+	}
+
+	protected function writeChunk(Chunk $chunk) : void{
+		$chunkX = $chunk->getX();
+		$chunkZ = $chunk->getZ();
+
+		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
+		$this->loadRegion($regionX, $regionZ);
+
+		$this->getRegion($regionX, $regionZ)->writeChunk($chunkX & 0x1f, $chunkZ & 0x1f, $this->nbtSerialize($chunk));
 	}
 }

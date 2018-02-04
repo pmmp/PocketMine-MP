@@ -26,14 +26,14 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\NetworkSession;
 #ifndef COMPILE
 use pocketmine\utils\Binary;
 #endif
-use pocketmine\utils\BinaryStream;
 
 class BatchPacket extends DataPacket{
-	const NETWORK_ID = 0xfe;
+	public const NETWORK_ID = 0xfe;
 
 	/** @var string */
 	public $payload = "";
@@ -88,7 +88,7 @@ class BatchPacket extends DataPacket{
 	 * @return \Generator
 	 */
 	public function getPackets(){
-		$stream = new BinaryStream($this->payload);
+		$stream = new NetworkBinaryStream($this->payload);
 		while(!$stream->feof()){
 			yield $stream->getString();
 		}

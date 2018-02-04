@@ -29,12 +29,12 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class ResourcePackClientResponsePacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_CLIENT_RESPONSE_PACKET;
+	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_CLIENT_RESPONSE_PACKET;
 
-	const STATUS_REFUSED = 1;
-	const STATUS_SEND_PACKS = 2;
-	const STATUS_HAVE_ALL_PACKS = 3;
-	const STATUS_COMPLETED = 4;
+	public const STATUS_REFUSED = 1;
+	public const STATUS_SEND_PACKS = 2;
+	public const STATUS_HAVE_ALL_PACKS = 3;
+	public const STATUS_COMPLETED = 4;
 
 	/** @var int */
 	public $status;

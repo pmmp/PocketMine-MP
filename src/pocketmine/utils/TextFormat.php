@@ -27,31 +27,32 @@ namespace pocketmine\utils;
  * Class used to handle Minecraft chat format, and convert it to other formats like ANSI or HTML
  */
 abstract class TextFormat{
-	const ESCAPE = "\xc2\xa7"; //§
+	public const ESCAPE = "\xc2\xa7"; //§
+	public const EOL = "\n";
 
-	const BLACK = TextFormat::ESCAPE . "0";
-	const DARK_BLUE = TextFormat::ESCAPE . "1";
-	const DARK_GREEN = TextFormat::ESCAPE . "2";
-	const DARK_AQUA = TextFormat::ESCAPE . "3";
-	const DARK_RED = TextFormat::ESCAPE . "4";
-	const DARK_PURPLE = TextFormat::ESCAPE . "5";
-	const GOLD = TextFormat::ESCAPE . "6";
-	const GRAY = TextFormat::ESCAPE . "7";
-	const DARK_GRAY = TextFormat::ESCAPE . "8";
-	const BLUE = TextFormat::ESCAPE . "9";
-	const GREEN = TextFormat::ESCAPE . "a";
-	const AQUA = TextFormat::ESCAPE . "b";
-	const RED = TextFormat::ESCAPE . "c";
-	const LIGHT_PURPLE = TextFormat::ESCAPE . "d";
-	const YELLOW = TextFormat::ESCAPE . "e";
-	const WHITE = TextFormat::ESCAPE . "f";
+	public const BLACK = TextFormat::ESCAPE . "0";
+	public const DARK_BLUE = TextFormat::ESCAPE . "1";
+	public const DARK_GREEN = TextFormat::ESCAPE . "2";
+	public const DARK_AQUA = TextFormat::ESCAPE . "3";
+	public const DARK_RED = TextFormat::ESCAPE . "4";
+	public const DARK_PURPLE = TextFormat::ESCAPE . "5";
+	public const GOLD = TextFormat::ESCAPE . "6";
+	public const GRAY = TextFormat::ESCAPE . "7";
+	public const DARK_GRAY = TextFormat::ESCAPE . "8";
+	public const BLUE = TextFormat::ESCAPE . "9";
+	public const GREEN = TextFormat::ESCAPE . "a";
+	public const AQUA = TextFormat::ESCAPE . "b";
+	public const RED = TextFormat::ESCAPE . "c";
+	public const LIGHT_PURPLE = TextFormat::ESCAPE . "d";
+	public const YELLOW = TextFormat::ESCAPE . "e";
+	public const WHITE = TextFormat::ESCAPE . "f";
 
-	const OBFUSCATED = TextFormat::ESCAPE . "k";
-	const BOLD = TextFormat::ESCAPE . "l";
-	const STRIKETHROUGH = TextFormat::ESCAPE . "m";
-	const UNDERLINE = TextFormat::ESCAPE . "n";
-	const ITALIC = TextFormat::ESCAPE . "o";
-	const RESET = TextFormat::ESCAPE . "r";
+	public const OBFUSCATED = TextFormat::ESCAPE . "k";
+	public const BOLD = TextFormat::ESCAPE . "l";
+	public const STRIKETHROUGH = TextFormat::ESCAPE . "m";
+	public const UNDERLINE = TextFormat::ESCAPE . "n";
+	public const ITALIC = TextFormat::ESCAPE . "o";
+	public const RESET = TextFormat::ESCAPE . "r";
 
 	/**
 	 * Splits the string by Format tokens
@@ -77,6 +78,18 @@ abstract class TextFormat{
 			return str_replace(TextFormat::ESCAPE, "", preg_replace(["/" . TextFormat::ESCAPE . "[0123456789abcdefklmnor]/", "/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/"], "", $string));
 		}
 		return str_replace("\x1b", "", preg_replace("/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/", "", $string));
+	}
+
+	/**
+	 * Replaces placeholders of § with the correct character. Only valid codes (as in the constants of the TextFormat class) will be converted.
+	 *
+	 * @param string $string
+	 * @param string $placeholder default "&"
+	 *
+	 * @return string
+	 */
+	public static function colorize(string $string, string $placeholder = "&") : string{
+		return preg_replace('/' . preg_quote($placeholder, "/") . '([0-9a-fk-or])/u', TextFormat::ESCAPE . '$1', $string);
 	}
 
 	/**

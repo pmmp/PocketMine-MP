@@ -2,6 +2,7 @@
 param (
 	[string]$php = "",
 	[switch]$Loop = $false,
+	[string]$file = "",
 	[string][Parameter(ValueFromRemainingArguments)]$extraPocketMineArgs
 )
 
@@ -14,14 +15,16 @@ if($php -ne ""){
 	$binary = "php"
 }
 
-if(Test-Path "PocketMine-MP.phar"){
-	$file = "PocketMine-MP.phar"
-}elseif(Test-Path "src\pocketmine\PocketMine.php"){
-	$file = "src\pocketmine\PocketMine.php"
-}else{
-	echo "Couldn't find a valid PocketMine-MP installation"
-	pause
-	exit 1
+if($file -eq ""){
+	if(Test-Path "PocketMine-MP.phar"){
+	    $file = "PocketMine-MP.phar"
+	}elseif(Test-Path "src\pocketmine\PocketMine.php"){
+	    $file = "src\pocketmine\PocketMine.php"
+	}else{
+	    echo "Couldn't find a valid PocketMine-MP installation"
+	    pause
+	    exit 1
+	}
 }
 
 function StartServer{

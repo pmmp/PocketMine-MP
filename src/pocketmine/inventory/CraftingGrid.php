@@ -26,13 +26,20 @@ namespace pocketmine\inventory;
 use pocketmine\Player;
 
 class CraftingGrid extends BaseInventory{
+	/** @var Player */
+	protected $holder;
 
 	public function __construct(Player $holder){
-		parent::__construct($holder);
+		$this->holder = $holder;
+		parent::__construct();
+	}
+
+	public function getGridWidth() : int{
+		return 2;
 	}
 
 	public function getDefaultSize() : int{
-		return 4;
+		return $this->getGridWidth() ** 2;
 	}
 
 	public function setSize(int $size){
@@ -49,5 +56,12 @@ class CraftingGrid extends BaseInventory{
 
 	public function sendContents($target) : void{
 		//no way to do this
+	}
+
+	/**
+	 * @return Player
+	 */
+	public function getHolder(){
+		return $this->holder;
 	}
 }

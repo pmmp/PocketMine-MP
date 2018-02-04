@@ -30,7 +30,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class CommandBlockUpdatePacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::COMMAND_BLOCK_UPDATE_PACKET;
+	public const NETWORK_ID = ProtocolInfo::COMMAND_BLOCK_UPDATE_PACKET;
 
 	/** @var bool */
 	public $isBlock;

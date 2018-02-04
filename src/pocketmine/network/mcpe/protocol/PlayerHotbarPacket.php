@@ -32,7 +32,7 @@ use pocketmine\utils\Binary;
 #endif
 
 class PlayerHotbarPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::PLAYER_HOTBAR_PACKET;
+	public const NETWORK_ID = ProtocolInfo::PLAYER_HOTBAR_PACKET;
 
 	/** @var int */
 	public $selectedHotbarSlot;

@@ -27,13 +27,13 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\item\Tool;
 use pocketmine\level\Level;
-use pocketmine\level\MovingObjectPosition;
 use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
@@ -67,7 +67,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	protected $itemId;
 
 	/** @var AxisAlignedBB */
-	public $boundingBox = null;
+	protected $boundingBox = null;
 
 
 	/** @var AxisAlignedBB[]|null */
@@ -195,8 +195,49 @@ class Block extends Position implements BlockIds, Metadatable{
 		return true;
 	}
 
-	public function canBeBrokenWith(Item $item) : bool{
-		return $this->getHardness() !== -1;
+	/**
+	 * @return int
+	 */
+	public function getToolType() : int{
+		return BlockToolType::TYPE_NONE;
+	}
+
+	/**
+	 * Returns the level of tool required to harvest this block (for normal blocks). When the tool type matches the
+	 * block's required tool type, the tool must have a harvest level greater than or equal to this value to be able to
+	 * successfully harvest the block.
+	 *
+	 * If the block requires a specific minimum tier of tiered tool, the minimum tier required should be returned.
+	 * Otherwise, 1 should be returned if a tool is required, 0 if not.
+	 *
+	 * @see Item::getBlockToolHarvestLevel()
+	 *
+	 * @return int
+	 */
+	public function getToolHarvestLevel() : int{
+		return 0;
+	}
+
+	/**
+	 * Returns whether the specified item is the proper tool to use for breaking this block. This checks tool type and
+	 * harvest level requirement.
+	 *
+	 * In most cases this is also used to determine whether block drops should be created or not, except in some
+	 * special cases such as vines.
+	 *
+	 * @param Item $tool
+	 *
+	 * @return bool
+	 */
+	public function isCompatibleWithTool(Item $tool) : bool{
+		if($this->getHardness() < 0){
+			return false;
+		}
+
+		$toolType = $this->getToolType();
+		$harvestLevel = $this->getToolHarvestLevel();
+		return $toolType === BlockToolType::TYPE_NONE or $harvestLevel === 0 or (
+			($toolType & $tool->getBlockToolType()) !== 0 and $tool->getBlockToolHarvestLevel() >= $harvestLevel);
 	}
 
 	/**
@@ -220,40 +261,19 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return float
 	 */
 	public function getBreakTime(Item $item) : float{
-		$base = $this->getHardness() * 1.5;
-		if($this->canBeBrokenWith($item)){
-			if($this->getToolType() === Tool::TYPE_SHEARS and $item->isShears()){
-				$base /= 15;
-			}elseif(
-				($this->getToolType() === Tool::TYPE_PICKAXE and ($tier = $item->isPickaxe()) !== false) or
-				($this->getToolType() === Tool::TYPE_AXE and ($tier = $item->isAxe()) !== false) or
-				($this->getToolType() === Tool::TYPE_SHOVEL and ($tier = $item->isShovel()) !== false)
-			){
-				switch($tier){
-					case Tool::TIER_WOODEN:
-						$base /= 2;
-						break;
-					case Tool::TIER_STONE:
-						$base /= 4;
-						break;
-					case Tool::TIER_IRON:
-						$base /= 6;
-						break;
-					case Tool::TIER_DIAMOND:
-						$base /= 8;
-						break;
-					case Tool::TIER_GOLD:
-						$base /= 12;
-						break;
-				}
-			}
+		$base = $this->getHardness();
+		if($this->isCompatibleWithTool($item)){
+			$base *= 1.5;
 		}else{
-			$base *= 3.33;
+			$base *= 5;
 		}
 
-		if($item->isSword()){
-			$base *= 0.5;
+		$efficiency = $item->getMiningEfficiency($this);
+		if($efficiency <= 0){
+			throw new \RuntimeException("Item efficiency is invalid");
 		}
+
+		$base /= $efficiency;
 
 		return $base;
 	}
@@ -313,13 +333,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getBlastResistance() : float{
 		return $this->getHardness() * 5;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getToolType() : int{
-		return Tool::TYPE_NONE;
 	}
 
 	/**
@@ -420,9 +433,59 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return Item[]
 	 */
 	public function getDrops(Item $item) : array{
+		if($this->isCompatibleWithTool($item)){
+			if($this->isAffectedBySilkTouch() and $item->hasEnchantment(Enchantment::SILK_TOUCH)){
+				return $this->getSilkTouchDrops($item);
+			}
+
+			return $this->getDropsForCompatibleTool($item);
+		}
+
+		return [];
+	}
+
+	/**
+	 * Returns an array of Items to be dropped when the block is broken using the correct tool type.
+	 *
+	 * @param Item $item
+	 *
+	 * @return Item[]
+	 */
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get($this->getItemId(), $this->getVariant(), 1)
+			ItemFactory::get($this->getItemId(), $this->getVariant())
 		];
+	}
+
+	/**
+	 * Returns an array of Items to be dropped when the block is broken using a compatible Silk Touch-enchanted tool.
+	 *
+	 * @param Item $item
+	 *
+	 * @return Item[]
+	 */
+	public function getSilkTouchDrops(Item $item) : array{
+		return [
+			ItemFactory::get($this->getItemId(), $this->getVariant())
+		];
+	}
+
+	/**
+	 * Returns whether Silk Touch enchanted tools will cause this block to drop as itself. Since most blocks drop
+	 * themselves anyway, this is implicitly true.
+	 *
+	 * @return bool
+	 */
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
+
+	/**
+	 * Returns the item that players will equip when middle-clicking on this block.
+	 * @return Item
+	 */
+	public function getPickedItem() : Item{
+		return ItemFactory::get($this->getItemId(), $this->getVariant());
 	}
 
 	/**
@@ -434,7 +497,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * Returns the Block on the side $side, works like Vector3::side()
+	 * Returns the Block on the side $side, works like Vector3::getSide()
 	 *
 	 * @param int $side
 	 * @param int $step
@@ -476,6 +539,16 @@ class Block extends Position implements BlockIds, Metadatable{
 			],
 			$this->getHorizontalSides()
 		);
+	}
+
+	/**
+	 * Returns a list of blocks that this block is part of. In most cases, only contains the block itself, but in cases
+	 * such as double plants, beds and doors, will contain both halves.
+	 *
+	 * @return Block[]
+	 */
+	public function getAffectedBlocks() : array{
+		return [$this];
 	}
 
 	/**
@@ -558,10 +631,10 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * Clears any cached precomputed bounding boxes. This is called on block neighbour update and when the block is set
-	 * into the world to remove any outdated precomputed AABBs and force recalculation.
+	 * Clears any cached precomputed objects, such as bounding boxes. This is called on block neighbour update and when
+	 * the block is set into the world to remove any outdated precomputed things such as AABBs and force recalculation.
 	 */
-	public function clearBoundingBoxes() : void{
+	public function clearCaches() : void{
 		$this->boundingBox = null;
 		$this->collisionBoxes = null;
 	}
@@ -570,15 +643,15 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @param Vector3 $pos1
 	 * @param Vector3 $pos2
 	 *
-	 * @return MovingObjectPosition|null
+	 * @return RayTraceResult|null
 	 */
-	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2) : ?MovingObjectPosition{
+	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2) : ?RayTraceResult{
 		$bbs = $this->getCollisionBoxes();
 		if(empty($bbs)){
 			return null;
 		}
 
-		/** @var MovingObjectPosition|null $currentHit */
+		/** @var RayTraceResult|null $currentHit */
 		$currentHit = null;
 		/** @var int|float $currentDistance */
 		$currentDistance = PHP_INT_MAX;
@@ -594,12 +667,6 @@ class Block extends Position implements BlockIds, Metadatable{
 				$currentHit = $nextHit;
 				$currentDistance = $nextDistance;
 			}
-		}
-
-		if($currentHit !== null){
-			$currentHit->blockX = $this->x;
-			$currentHit->blockY = $this->y;
-			$currentHit->blockZ = $this->z;
 		}
 
 		return $currentHit;

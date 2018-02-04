@@ -29,7 +29,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class HurtArmorPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::HURT_ARMOR_PACKET;
+	public const NETWORK_ID = ProtocolInfo::HURT_ARMOR_PACKET;
 
 	/** @var int */
 	public $health;

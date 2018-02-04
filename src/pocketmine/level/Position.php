@@ -119,20 +119,6 @@ class Position extends Vector3{
 		return "Position(level=" . ($this->isValid() ? $this->getLevel()->getName() : "null") . ",x=" . $this->x . ",y=" . $this->y . ",z=" . $this->z . ")";
 	}
 
-	/**
-	 * @param $x
-	 * @param $y
-	 * @param $z
-	 *
-	 * @return Position
-	 */
-	public function setComponents($x, $y, $z){
-		$this->x = $x;
-		$this->y = $y;
-		$this->z = $z;
-		return $this;
-	}
-
 	public function equals(Vector3 $v) : bool{
 		if($v instanceof Position){
 			return parent::equals($v) and $v->getLevel() === $this->getLevel();

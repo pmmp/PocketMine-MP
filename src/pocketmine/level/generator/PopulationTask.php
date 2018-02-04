@@ -78,7 +78,7 @@ class PopulationTask extends AsyncTask{
 			$zz = -1 + (int) ($i / 3);
 			$ck = $this->{"chunk$i"};
 			if($ck === null){
-				$chunks[$i] = Chunk::getEmptyChunk($chunk->getX() + $xx, $chunk->getZ() + $zz);
+				$chunks[$i] = new Chunk($chunk->getX() + $xx, $chunk->getZ() + $zz);
 			}else{
 				$chunks[$i] = Chunk::fastDeserialize($ck);
 			}

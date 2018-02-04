@@ -43,5 +43,9 @@ class DaylightSensor extends Transparent{
 		return 300;
 	}
 
+	public function getToolType() : int{
+		return BlockToolType::TYPE_AXE;
+	}
+
 	//TODO
 }

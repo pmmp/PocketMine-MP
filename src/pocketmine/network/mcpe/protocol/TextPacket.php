@@ -29,17 +29,17 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class TextPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::TEXT_PACKET;
+	public const NETWORK_ID = ProtocolInfo::TEXT_PACKET;
 
-	const TYPE_RAW = 0;
-	const TYPE_CHAT = 1;
-	const TYPE_TRANSLATION = 2;
-	const TYPE_POPUP = 3;
-	const TYPE_JUKEBOX_POPUP = 4;
-	const TYPE_TIP = 5;
-	const TYPE_SYSTEM = 6;
-	const TYPE_WHISPER = 7;
-	const TYPE_ANNOUNCEMENT = 8;
+	public const TYPE_RAW = 0;
+	public const TYPE_CHAT = 1;
+	public const TYPE_TRANSLATION = 2;
+	public const TYPE_POPUP = 3;
+	public const TYPE_JUKEBOX_POPUP = 4;
+	public const TYPE_TIP = 5;
+	public const TYPE_SYSTEM = 6;
+	public const TYPE_WHISPER = 7;
+	public const TYPE_ANNOUNCEMENT = 8;
 
 	/** @var int */
 	public $type;

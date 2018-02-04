@@ -85,9 +85,13 @@ class NetherWartPlant extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			ItemFactory::get($this->getItemId(), 0, ($this->getDamage() === 3 ? mt_rand(2, 4) : 1))
 		];
+	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return false;
 	}
 }

@@ -23,14 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format\io\region;
 
-use pocketmine\level\format\Chunk;
-use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\SubChunk;
-use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\{
-	ByteArrayTag, ByteTag, CompoundTag, IntArrayTag, IntTag, ListTag, LongTag
-};
-use pocketmine\utils\MainLogger;
+use pocketmine\nbt\tag\ByteArrayTag;
+use pocketmine\nbt\tag\CompoundTag;
 
 /**
  * This format is exactly the same as the PC Anvil format, with the only difference being that the stored data order
@@ -38,7 +33,7 @@ use pocketmine\utils\MainLogger;
  */
 class PMAnvil extends Anvil{
 
-	const REGION_FILE_EXTENSION = "mcapm";
+	public const REGION_FILE_EXTENSION = "mcapm";
 
 	protected function serializeSubChunk(SubChunk $subChunk) : CompoundTag{
 		return new CompoundTag("", [
@@ -51,10 +46,10 @@ class PMAnvil extends Anvil{
 
 	protected function deserializeSubChunk(CompoundTag $subChunk) : SubChunk{
 		return new SubChunk(
-			$subChunk->Blocks->getValue(),
-			$subChunk->Data->getValue(),
-			$subChunk->SkyLight->getValue(),
-			$subChunk->BlockLight->getValue()
+			$subChunk->getByteArray("Blocks"),
+			$subChunk->getByteArray("Data"),
+			$subChunk->getByteArray("SkyLight"),
+			$subChunk->getByteArray("BlockLight")
 		);
 	}
 

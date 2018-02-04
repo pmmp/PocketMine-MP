@@ -34,4 +34,12 @@ class WoodenPressurePlate extends StonePressurePlate{
 	public function getFuelTime() : int{
 		return 300;
 	}
+
+	public function getToolType() : int{
+		return BlockToolType::TYPE_AXE;
+	}
+
+	public function getToolHarvestLevel() : int{
+		return 0; //TODO: fix hierarchy problem
+	}
 }

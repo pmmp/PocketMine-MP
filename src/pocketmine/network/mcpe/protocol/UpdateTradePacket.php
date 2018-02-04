@@ -31,7 +31,7 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 
 class UpdateTradePacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::UPDATE_TRADE_PACKET;
+	public const NETWORK_ID = ProtocolInfo::UPDATE_TRADE_PACKET;
 
 	//TODO: find fields
 

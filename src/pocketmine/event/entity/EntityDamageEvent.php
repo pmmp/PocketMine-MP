@@ -32,29 +32,30 @@ use pocketmine\event\Cancellable;
 class EntityDamageEvent extends EntityEvent implements Cancellable{
 	public static $handlerList = null;
 
-	const MODIFIER_BASE = 0;
-	const MODIFIER_ARMOR = 1;
-	const MODIFIER_STRENGTH = 2;
-	const MODIFIER_WEAKNESS = 3;
-	const MODIFIER_RESISTANCE = 4;
-	const MODIFIER_ABSORPTION = 5;
+	public const MODIFIER_BASE = 0;
+	public const MODIFIER_ARMOR = 1;
+	public const MODIFIER_STRENGTH = 2;
+	public const MODIFIER_WEAKNESS = 3;
+	public const MODIFIER_RESISTANCE = 4;
+	public const MODIFIER_ABSORPTION = 5;
+	public const MODIFIER_ARMOR_ENCHANTMENTS = 6;
 
-	const CAUSE_CONTACT = 0;
-	const CAUSE_ENTITY_ATTACK = 1;
-	const CAUSE_PROJECTILE = 2;
-	const CAUSE_SUFFOCATION = 3;
-	const CAUSE_FALL = 4;
-	const CAUSE_FIRE = 5;
-	const CAUSE_FIRE_TICK = 6;
-	const CAUSE_LAVA = 7;
-	const CAUSE_DROWNING = 8;
-	const CAUSE_BLOCK_EXPLOSION = 9;
-	const CAUSE_ENTITY_EXPLOSION = 10;
-	const CAUSE_VOID = 11;
-	const CAUSE_SUICIDE = 12;
-	const CAUSE_MAGIC = 13;
-	const CAUSE_CUSTOM = 14;
-	const CAUSE_STARVATION = 15;
+	public const CAUSE_CONTACT = 0;
+	public const CAUSE_ENTITY_ATTACK = 1;
+	public const CAUSE_PROJECTILE = 2;
+	public const CAUSE_SUFFOCATION = 3;
+	public const CAUSE_FALL = 4;
+	public const CAUSE_FIRE = 5;
+	public const CAUSE_FIRE_TICK = 6;
+	public const CAUSE_LAVA = 7;
+	public const CAUSE_DROWNING = 8;
+	public const CAUSE_BLOCK_EXPLOSION = 9;
+	public const CAUSE_ENTITY_EXPLOSION = 10;
+	public const CAUSE_VOID = 11;
+	public const CAUSE_SUICIDE = 12;
+	public const CAUSE_MAGIC = 13;
+	public const CAUSE_CUSTOM = 14;
+	public const CAUSE_STARVATION = 15;
 
 	/** @var int */
 	private $cause;
@@ -136,4 +137,24 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 		return array_sum($this->modifiers);
 	}
 
+	/**
+	 * Returns whether an entity can use armour points to reduce this type of damage.
+	 * @return bool
+	 */
+	public function canBeReducedByArmor() : bool{
+		switch($this->cause){
+			case self::CAUSE_FIRE_TICK:
+			case self::CAUSE_SUFFOCATION:
+			case self::CAUSE_DROWNING:
+			case self::CAUSE_STARVATION:
+			case self::CAUSE_FALL:
+			case self::CAUSE_VOID:
+			case self::CAUSE_MAGIC:
+			case self::CAUSE_SUICIDE:
+				return false;
+
+		}
+
+		return true;
+	}
 }

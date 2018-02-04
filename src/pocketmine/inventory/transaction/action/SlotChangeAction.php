@@ -75,8 +75,10 @@ class SlotChangeAction extends InventoryAction{
 	 * @return bool
 	 */
 	public function isValid(Player $source) : bool{
-		$check = $this->inventory->getItem($this->inventorySlot);
-		return $check->equalsExact($this->sourceItem);
+		return (
+			$this->inventory->slotExists($this->inventorySlot) and
+			$this->inventory->getItem($this->inventorySlot)->equalsExact($this->sourceItem)
+		);
 	}
 
 	/**

@@ -32,10 +32,10 @@ use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\utils\Color;
 
 class ClientboundMapItemDataPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::CLIENTBOUND_MAP_ITEM_DATA_PACKET;
+	public const NETWORK_ID = ProtocolInfo::CLIENTBOUND_MAP_ITEM_DATA_PACKET;
 
-	const BITFLAG_TEXTURE_UPDATE = 0x02;
-	const BITFLAG_DECORATION_UPDATE = 0x04;
+	public const BITFLAG_TEXTURE_UPDATE = 0x02;
+	public const BITFLAG_DECORATION_UPDATE = 0x04;
 
 	/** @var int */
 	public $mapId;
@@ -77,7 +77,7 @@ class ClientboundMapItemDataPacket extends DataPacket{
 			}
 		}
 
-		if(($this->type & (self::BITFLAG_DECORATION_UPDATE | self::BITFLAG_TEXTURE_UPDATE)) !== 0){ //Decoration bitflag or colour bitflag
+		if(($this->type & (0x08 | self::BITFLAG_DECORATION_UPDATE | self::BITFLAG_TEXTURE_UPDATE)) !== 0){ //Decoration bitflag or colour bitflag
 			$this->scale = $this->getByte();
 		}
 
@@ -138,7 +138,7 @@ class ClientboundMapItemDataPacket extends DataPacket{
 			}
 		}
 
-		if(($type & (self::BITFLAG_TEXTURE_UPDATE | self::BITFLAG_DECORATION_UPDATE)) !== 0){
+		if(($type & (0x08 | self::BITFLAG_TEXTURE_UPDATE | self::BITFLAG_DECORATION_UPDATE)) !== 0){
 			$this->putByte($this->scale);
 		}
 

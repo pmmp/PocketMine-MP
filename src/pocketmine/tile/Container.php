@@ -27,7 +27,7 @@ use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 
 interface Container{
-	const TAG_ITEMS = "Items";
+	public const TAG_ITEMS = "Items";
 
 	/**
 	 * @param int $index

@@ -23,15 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Tool;
-
 class Planks extends Solid{
-	const OAK = 0;
-	const SPRUCE = 1;
-	const BIRCH = 2;
-	const JUNGLE = 3;
-	const ACACIA = 4;
-	const DARK_OAK = 5;
+	public const OAK = 0;
+	public const SPRUCE = 1;
+	public const BIRCH = 2;
+	public const JUNGLE = 3;
+	public const ACACIA = 4;
+	public const DARK_OAK = 5;
 
 	protected $id = self::WOODEN_PLANKS;
 
@@ -44,7 +42,7 @@ class Planks extends Solid{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_AXE;
+		return BlockToolType::TYPE_AXE;
 	}
 
 	public function getName() : string{

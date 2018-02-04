@@ -28,10 +28,10 @@ abstract class PluginLoadOrder{
 	/*
 	 * The plugin will be loaded at startup
 	 */
-	const STARTUP = 0;
+	public const STARTUP = 0;
 
 	/*
 	 * The plugin will be loaded after the first world has been loaded/created.
 	 */
-	const POSTWORLD = 1;
+	public const POSTWORLD = 1;
 }

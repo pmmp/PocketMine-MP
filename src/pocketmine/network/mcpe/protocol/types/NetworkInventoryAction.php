@@ -34,11 +34,11 @@ use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\Player;
 
 class NetworkInventoryAction{
-	const SOURCE_CONTAINER = 0;
+	public const SOURCE_CONTAINER = 0;
 
-	const SOURCE_WORLD = 2; //drop/pickup item entity
-	const SOURCE_CREATIVE = 3;
-	const SOURCE_TODO = 99999;
+	public const SOURCE_WORLD = 2; //drop/pickup item entity
+	public const SOURCE_CREATIVE = 3;
+	public const SOURCE_TODO = 99999;
 
 	/**
 	 * Fake window IDs for the SOURCE_TODO type (99999)
@@ -49,35 +49,35 @@ class NetworkInventoryAction{
 	 *
 	 * Expect these to change in the future.
 	 */
-	const SOURCE_TYPE_CRAFTING_ADD_INGREDIENT = -2;
-	const SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT = -3;
-	const SOURCE_TYPE_CRAFTING_RESULT = -4;
-	const SOURCE_TYPE_CRAFTING_USE_INGREDIENT = -5;
+	public const SOURCE_TYPE_CRAFTING_ADD_INGREDIENT = -2;
+	public const SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT = -3;
+	public const SOURCE_TYPE_CRAFTING_RESULT = -4;
+	public const SOURCE_TYPE_CRAFTING_USE_INGREDIENT = -5;
 
-	const SOURCE_TYPE_ANVIL_INPUT = -10;
-	const SOURCE_TYPE_ANVIL_MATERIAL = -11;
-	const SOURCE_TYPE_ANVIL_RESULT = -12;
-	const SOURCE_TYPE_ANVIL_OUTPUT = -13;
+	public const SOURCE_TYPE_ANVIL_INPUT = -10;
+	public const SOURCE_TYPE_ANVIL_MATERIAL = -11;
+	public const SOURCE_TYPE_ANVIL_RESULT = -12;
+	public const SOURCE_TYPE_ANVIL_OUTPUT = -13;
 
-	const SOURCE_TYPE_ENCHANT_INPUT = -15;
-	const SOURCE_TYPE_ENCHANT_MATERIAL = -16;
-	const SOURCE_TYPE_ENCHANT_OUTPUT = -17;
+	public const SOURCE_TYPE_ENCHANT_INPUT = -15;
+	public const SOURCE_TYPE_ENCHANT_MATERIAL = -16;
+	public const SOURCE_TYPE_ENCHANT_OUTPUT = -17;
 
-	const SOURCE_TYPE_TRADING_INPUT_1 = -20;
-	const SOURCE_TYPE_TRADING_INPUT_2 = -21;
-	const SOURCE_TYPE_TRADING_USE_INPUTS = -22;
-	const SOURCE_TYPE_TRADING_OUTPUT = -23;
+	public const SOURCE_TYPE_TRADING_INPUT_1 = -20;
+	public const SOURCE_TYPE_TRADING_INPUT_2 = -21;
+	public const SOURCE_TYPE_TRADING_USE_INPUTS = -22;
+	public const SOURCE_TYPE_TRADING_OUTPUT = -23;
 
-	const SOURCE_TYPE_BEACON = -24;
+	public const SOURCE_TYPE_BEACON = -24;
 
 	/** Any client-side window dropping its contents when the player closes it */
-	const SOURCE_TYPE_CONTAINER_DROP_CONTENTS = -100;
+	public const SOURCE_TYPE_CONTAINER_DROP_CONTENTS = -100;
 
-	const ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM = 0;
-	const ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM = 1;
+	public const ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM = 0;
+	public const ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM = 1;
 
-	const ACTION_MAGIC_SLOT_DROP_ITEM = 0;
-	const ACTION_MAGIC_SLOT_PICKUP_ITEM = 1;
+	public const ACTION_MAGIC_SLOT_DROP_ITEM = 0;
+	public const ACTION_MAGIC_SLOT_PICKUP_ITEM = 1;
 
 	/** @var int */
 	public $sourceType;
@@ -159,24 +159,18 @@ class NetworkInventoryAction{
 	public function createInventoryAction(Player $player){
 		switch($this->sourceType){
 			case self::SOURCE_CONTAINER:
-				if($this->windowId === ContainerIds::ARMOR){
-					//TODO: HACK!
-					$this->inventorySlot += 36;
-					$this->windowId = ContainerIds::INVENTORY;
-				}
-
 				$window = $player->getWindow($this->windowId);
 				if($window !== null){
 					return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
 				}
 
-				return null;
+				throw new \InvalidStateException("Player " . $player->getName() . " has no open container with window ID $this->windowId");
 			case self::SOURCE_WORLD:
-				if($this->inventorySlot === self::ACTION_MAGIC_SLOT_DROP_ITEM){
-					return new DropItemAction($this->oldItem, $this->newItem);
+				if($this->inventorySlot !== self::ACTION_MAGIC_SLOT_DROP_ITEM){
+					throw new \UnexpectedValueException("Only expecting drop-item world actions from the client!");
 				}
 
-				return null;
+				return new DropItemAction($this->oldItem, $this->newItem);
 			case self::SOURCE_CREATIVE:
 				switch($this->inventorySlot){
 					case self::ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM:
@@ -186,7 +180,7 @@ class NetworkInventoryAction{
 						$type = CreativeInventoryAction::TYPE_CREATE_ITEM;
 						break;
 					default:
-						return null;
+						throw new \UnexpectedValueException("Unexpected creative action type $this->inventorySlot");
 
 				}
 
@@ -210,16 +204,16 @@ class NetworkInventoryAction{
 						//DROP_CONTENTS doesn't bother telling us what slot the item is in, so we find it ourselves
 						$inventorySlot = $window->first($this->oldItem, true);
 						if($inventorySlot === -1){
-							return null;
+							throw new \InvalidStateException("Fake container " . get_class($window) . " for " . $player->getName() . " does not contain $this->oldItem");
 						}
 						return new SlotChangeAction($window, $inventorySlot, $this->oldItem, $this->newItem);
 				}
 
 				//TODO: more stuff
-				return null;
+				throw new \UnexpectedValueException("Player " . $player->getName() . " has no open container with window ID $this->windowId");
+			default:
+				throw new \UnexpectedValueException("Unknown inventory source type $this->sourceType");
 		}
-
-		return null;
 	}
 
 }

@@ -29,10 +29,10 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class SetSpawnPositionPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::SET_SPAWN_POSITION_PACKET;
+	public const NETWORK_ID = ProtocolInfo::SET_SPAWN_POSITION_PACKET;
 
-	const TYPE_PLAYER_SPAWN = 0;
-	const TYPE_WORLD_SPAWN = 1;
+	public const TYPE_PLAYER_SPAWN = 0;
+	public const TYPE_WORLD_SPAWN = 1;
 
 	/** @var int */
 	public $spawnType;

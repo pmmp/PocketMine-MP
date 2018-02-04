@@ -44,16 +44,23 @@ use pocketmine\Server;
 
 abstract class Tile extends Position{
 
-	const BREWING_STAND = "BrewingStand";
-	const CHEST = "Chest";
-	const ENCHANT_TABLE = "EnchantTable";
-	const FLOWER_POT = "FlowerPot";
-	const FURNACE = "Furnace";
-	const ITEM_FRAME = "ItemFrame";
-	const MOB_SPAWNER = "MobSpawner";
-	const SIGN = "Sign";
-	const SKULL = "Skull";
-	const BED = "Bed";
+	public const TAG_ID = "id";
+	public const TAG_X = "x";
+	public const TAG_Y = "y";
+	public const TAG_Z = "z";
+
+	public const BANNER = "Banner";
+	public const BED = "Bed";
+	public const BREWING_STAND = "BrewingStand";
+	public const CHEST = "Chest";
+	public const ENCHANT_TABLE = "EnchantTable";
+	public const ENDER_CHEST = "EnderChest";
+	public const FLOWER_POT = "FlowerPot";
+	public const FURNACE = "Furnace";
+	public const ITEM_FRAME = "ItemFrame";
+	public const MOB_SPAWNER = "MobSpawner";
+	public const SIGN = "Sign";
+	public const SKULL = "Skull";
 
 	/** @var int */
 	public static $tileCount = 1;
@@ -79,9 +86,11 @@ abstract class Tile extends Position{
 	protected $timings;
 
 	public static function init(){
+		self::registerTile(Banner::class);
 		self::registerTile(Bed::class);
 		self::registerTile(Chest::class);
 		self::registerTile(EnchantTable::class);
+		self::registerTile(EnderChest::class);
 		self::registerTile(FlowerPot::class);
 		self::registerTile(Furnace::class);
 		self::registerTile(ItemFrame::class);
@@ -136,14 +145,16 @@ abstract class Tile extends Position{
 		$this->namedtag = $nbt;
 		$this->server = $level->getServer();
 		$this->setLevel($level);
-		$this->chunk = $level->getChunk($this->namedtag->getInt("x") >> 4, $this->namedtag->getInt("z") >> 4, false);
-		assert($this->chunk !== null);
+		$this->chunk = $level->getChunk($this->namedtag->getInt(self::TAG_X) >> 4, $this->namedtag->getInt(self::TAG_Z) >> 4, false);
+		if($this->chunk === null){
+			throw new \InvalidStateException("Cannot create tiles in unloaded chunks");
+		}
 
 		$this->name = "";
 		$this->id = Tile::$tileCount++;
-		$this->x = $this->namedtag->getInt("x");
-		$this->y = $this->namedtag->getInt("y");
-		$this->z = $this->namedtag->getInt("z");
+		$this->x = $this->namedtag->getInt(self::TAG_X);
+		$this->y = $this->namedtag->getInt(self::TAG_Y);
+		$this->z = $this->namedtag->getInt(self::TAG_Z);
 
 		$this->chunk->addTile($this);
 		$this->getLevel()->addTile($this);
@@ -154,10 +165,10 @@ abstract class Tile extends Position{
 	}
 
 	public function saveNBT() : void{
-		$this->namedtag->setString("id", static::getSaveId());
-		$this->namedtag->setInt("x", $this->x);
-		$this->namedtag->setInt("y", $this->y);
-		$this->namedtag->setInt("z", $this->z);
+		$this->namedtag->setString(self::TAG_ID, static::getSaveId());
+		$this->namedtag->setInt(self::TAG_X, $this->x);
+		$this->namedtag->setInt(self::TAG_Y, $this->y);
+		$this->namedtag->setInt(self::TAG_Z, $this->z);
 	}
 
 	public function getNBT() : CompoundTag{
@@ -167,7 +178,7 @@ abstract class Tile extends Position{
 	public function getCleanedNBT() : ?CompoundTag{
 		$this->saveNBT();
 		$tag = clone $this->namedtag;
-		$tag->removeTag("x", "y", "z", "id");
+		$tag->removeTag(self::TAG_X, self::TAG_Y, self::TAG_Z, self::TAG_ID);
 		if($tag->getCount() > 0){
 			return $tag;
 		}else{
@@ -187,10 +198,10 @@ abstract class Tile extends Position{
 	 */
 	public static function createNBT(Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : CompoundTag{
 		$nbt = new CompoundTag("", [
-			new StringTag("id", static::getSaveId()),
-			new IntTag("x", (int) $pos->x),
-			new IntTag("y", (int) $pos->y),
-			new IntTag("z", (int) $pos->z)
+			new StringTag(self::TAG_ID, static::getSaveId()),
+			new IntTag(self::TAG_X, (int) $pos->x),
+			new IntTag(self::TAG_Y, (int) $pos->y),
+			new IntTag(self::TAG_Z, (int) $pos->z)
 		]);
 
 		static::createAdditionalNBT($nbt, $pos, $face, $item, $player);
@@ -201,7 +212,7 @@ abstract class Tile extends Position{
 					if(!($customBlockDataTag instanceof NamedTag)){
 						continue;
 					}
-					$nbt->{$customBlockDataTag->getName()} = $customBlockDataTag;
+					$nbt->setTag($customBlockDataTag);
 				}
 			}
 		}

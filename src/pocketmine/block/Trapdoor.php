@@ -24,20 +24,19 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\level\sound\DoorSound;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Trapdoor extends Transparent{
-	const MASK_UPPER = 0x04;
-	const MASK_OPENED = 0x08;
-	const MASK_SIDE = 0x03;
-	const MASK_SIDE_SOUTH = 2;
-	const MASK_SIDE_NORTH = 3;
-	const MASK_SIDE_EAST = 0;
-	const MASK_SIDE_WEST = 1;
+	public const MASK_UPPER = 0x04;
+	public const MASK_OPENED = 0x08;
+	public const MASK_SIDE = 0x03;
+	public const MASK_SIDE_SOUTH = 2;
+	public const MASK_SIDE_NORTH = 3;
+	public const MASK_SIDE_EAST = 0;
+	public const MASK_SIDE_WEST = 1;
 
 	protected $id = self::TRAPDOOR;
 
@@ -153,7 +152,7 @@ class Trapdoor extends Transparent{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_AXE;
+		return BlockToolType::TYPE_AXE;
 	}
 
 	public function getFuelTime() : int{

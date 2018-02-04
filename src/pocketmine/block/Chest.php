@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\StringTag;
@@ -49,7 +48,7 @@ class Chest extends Transparent{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_AXE;
+		return BlockToolType::TYPE_AXE;
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
@@ -102,16 +101,6 @@ class Chest extends Transparent{
 		return true;
 	}
 
-	public function onBreak(Item $item, Player $player = null) : bool{
-		$t = $this->getLevel()->getTile($this);
-		if($t instanceof TileChest){
-			$t->unpair();
-		}
-		$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true, true);
-
-		return true;
-	}
-
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
 
@@ -126,7 +115,7 @@ class Chest extends Transparent{
 			if(
 				!$this->getSide(Vector3::SIDE_UP)->isTransparent() or
 				($chest->isPaired() and !$chest->getPair()->getBlock()->getSide(Vector3::SIDE_UP)->isTransparent()) or
-				(isset($chest->namedtag->Lock) and $chest->namedtag->Lock instanceof StringTag and $chest->namedtag->Lock->getValue() !== $item->getCustomName())
+				($chest->namedtag->hasTag("Lock", StringTag::class) and $chest->namedtag->getString("Lock") !== $item->getCustomName())
 			){
 				return true;
 			}

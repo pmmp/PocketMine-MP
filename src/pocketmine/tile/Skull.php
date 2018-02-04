@@ -31,22 +31,24 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 
 class Skull extends Spawnable{
-	const TYPE_SKELETON = 0;
-	const TYPE_WITHER = 1;
-	const TYPE_ZOMBIE = 2;
-	const TYPE_HUMAN = 3;
-	const TYPE_CREEPER = 4;
-	const TYPE_DRAGON = 5;
+	public const TYPE_SKELETON = 0;
+	public const TYPE_WITHER = 1;
+	public const TYPE_ZOMBIE = 2;
+	public const TYPE_HUMAN = 3;
+	public const TYPE_CREEPER = 4;
+	public const TYPE_DRAGON = 5;
 
-	const TAG_SKULL_TYPE = "SkullType";
-	const TAG_ROT = "Rot";
+	public const TAG_SKULL_TYPE = "SkullType"; //TAG_Byte
+	public const TAG_ROT = "Rot"; //TAG_Byte
+	public const TAG_MOUTH_MOVING = "MouthMoving"; //TAG_Byte
+	public const TAG_MOUTH_TICK_COUNT = "MouthTickCount"; //TAG_Int
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		if(!$nbt->hasTag(self::TAG_SKULL_TYPE, ByteTag::class)){
-			$nbt->setTag(new ByteTag(self::TAG_SKULL_TYPE, 0));
+			$nbt->setByte(self::TAG_SKULL_TYPE, 0, true);
 		}
 		if(!$nbt->hasTag(self::TAG_ROT, ByteTag::class)){
-			$nbt->setTag(new ByteTag(self::TAG_ROT, 0));
+			$nbt->setByte(self::TAG_ROT, 0, true);
 		}
 		parent::__construct($level, $nbt);
 	}

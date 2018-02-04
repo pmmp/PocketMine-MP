@@ -23,16 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
-use pocketmine\nbt\tag\IntTag;
-
 class Villager extends Creature implements NPC, Ageable{
-	const PROFESSION_FARMER = 0;
-	const PROFESSION_LIBRARIAN = 1;
-	const PROFESSION_PRIEST = 2;
-	const PROFESSION_BLACKSMITH = 3;
-	const PROFESSION_BUTCHER = 4;
+	public const PROFESSION_FARMER = 0;
+	public const PROFESSION_LIBRARIAN = 1;
+	public const PROFESSION_PRIEST = 2;
+	public const PROFESSION_BLACKSMITH = 3;
+	public const PROFESSION_BUTCHER = 4;
 
-	const NETWORK_ID = self::VILLAGER;
+	public const NETWORK_ID = self::VILLAGER;
 
 	public $width = 0.6;
 	public $height = 1.8;
@@ -45,7 +43,7 @@ class Villager extends Creature implements NPC, Ageable{
 		parent::initEntity();
 
 		/** @var int $profession */
-		$profession = $this->namedtag["Profession"] ?? self::PROFESSION_FARMER;
+		$profession = $this->namedtag->getInt("Profession", self::PROFESSION_FARMER);
 
 		if($profession > 4 or $profession < 0){
 			$profession = self::PROFESSION_FARMER;
@@ -56,7 +54,7 @@ class Villager extends Creature implements NPC, Ageable{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Profession = new IntTag("Profession", $this->getProfession());
+		$this->namedtag->setInt("Profession", $this->getProfession());
 	}
 
 	/**
@@ -65,11 +63,11 @@ class Villager extends Creature implements NPC, Ageable{
 	 * @param int $profession
 	 */
 	public function setProfession(int $profession){
-		$this->setDataProperty(self::DATA_VARIANT, self::DATA_TYPE_INT, $profession);
+		$this->propertyManager->setInt(self::DATA_VARIANT, $profession);
 	}
 
 	public function getProfession() : int{
-		return $this->getDataProperty(self::DATA_VARIANT);
+		return $this->propertyManager->getInt(self::DATA_VARIANT);
 	}
 
 	public function isBaby() : bool{

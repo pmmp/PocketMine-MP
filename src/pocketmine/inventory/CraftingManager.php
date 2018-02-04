@@ -36,15 +36,14 @@ use pocketmine\utils\UUID;
 class CraftingManager{
 
 	/** @var CraftingRecipe[] */
-	public $recipes = [];
+	protected $recipes = [];
 
 	/** @var ShapedRecipe[][] */
 	protected $shapedRecipes = [];
 	/** @var ShapelessRecipe[][] */
 	protected $shapelessRecipes = [];
-
 	/** @var FurnaceRecipe[] */
-	public $furnaceRecipes = [];
+	protected $furnaceRecipes = [];
 
 	private static $RECIPE_COUNT = 0;
 
@@ -52,8 +51,7 @@ class CraftingManager{
 	private $craftingDataCache;
 
 	public function __construct(){
-		// load recipes from src/pocketmine/resources/recipes.json
-		$recipes = new Config(Server::getInstance()->getFilePath() . "src/pocketmine/resources/recipes.json", Config::JSON, []);
+		$recipes = new Config(\pocketmine\RESOURCE_PATH . "recipes.json", Config::JSON, []);
 
 		MainLogger::getLogger()->info("Loading recipes...");
 		foreach($recipes->getAll() as $recipe){
@@ -236,7 +234,7 @@ class CraftingManager{
 		/** @var Item[] $row */
 		foreach($map as $y => $row){
 			foreach($row as $x => $item){
-				$item = clone $item;
+				$map[$y][$x] = clone $item;
 			}
 		}
 

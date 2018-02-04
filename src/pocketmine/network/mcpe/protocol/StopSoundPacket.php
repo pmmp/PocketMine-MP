@@ -30,7 +30,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 
 class StopSoundPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::STOP_SOUND_PACKET;
+	public const NETWORK_ID = ProtocolInfo::STOP_SOUND_PACKET;
 
 	/** @var string */
 	public $soundName;

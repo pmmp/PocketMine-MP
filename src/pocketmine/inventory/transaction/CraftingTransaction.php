@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\inventory\transaction;
 
 use pocketmine\event\inventory\CraftItemEvent;
-use pocketmine\inventory\BigCraftingGrid;
 use pocketmine\inventory\CraftingRecipe;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -46,7 +45,7 @@ class CraftingTransaction extends InventoryTransaction{
 	protected $recipe = null;
 
 	public function __construct(Player $source, $actions = []){
-		$this->gridSize = ($source->getCraftingGrid() instanceof BigCraftingGrid) ? 3 : 2;
+		$this->gridSize = $source->getCraftingGrid()->getGridWidth();
 
 		$air = ItemFactory::get(Item::AIR, 0, 0);
 		$this->inputs = array_fill(0, $this->gridSize, array_fill(0, $this->gridSize, $air));
@@ -58,6 +57,10 @@ class CraftingTransaction extends InventoryTransaction{
 	public function setInput(int $index, Item $item) : void{
 		$y = (int) ($index / $this->gridSize);
 		$x = $index % $this->gridSize;
+
+		if(!isset($this->inputs[$y][$x])){
+			return;
+		}
 
 		if($this->inputs[$y][$x]->isNull()){
 			$this->inputs[$y][$x] = clone $item;
@@ -73,6 +76,10 @@ class CraftingTransaction extends InventoryTransaction{
 	public function setExtraOutput(int $index, Item $item) : void{
 		$y = (int) ($index / $this->gridSize);
 		$x = $index % $this->gridSize;
+
+		if(!isset($this->secondaryOutputs[$y][$x])){
+			return;
+		}
 
 		if($this->secondaryOutputs[$y][$x]->isNull()){
 			$this->secondaryOutputs[$y][$x] = clone $item;

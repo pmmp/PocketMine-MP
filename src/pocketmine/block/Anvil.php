@@ -26,16 +26,16 @@ namespace pocketmine\block;
 use pocketmine\inventory\AnvilInventory;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\item\Tool;
+use pocketmine\item\TieredTool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Anvil extends Fallable{
 
-	const TYPE_NORMAL = 0;
-	const TYPE_SLIGHTLY_DAMAGED = 4;
-	const TYPE_VERY_DAMAGED = 8;
+	public const TYPE_NORMAL = 0;
+	public const TYPE_SLIGHTLY_DAMAGED = 4;
+	public const TYPE_VERY_DAMAGED = 8;
 
 	protected $id = self::ANVIL;
 
@@ -65,7 +65,11 @@ class Anvil extends Fallable{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
+	}
+
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
 	}
 
 	public function recalculateBoundingBox() : ?AxisAlignedBB{
@@ -106,13 +110,9 @@ class Anvil extends Fallable{
 		return $this->getLevel()->setBlock($blockReplace, $this, true, true);
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
-			return [
-				ItemFactory::get($this->getItemId(), $this->getDamage() & 0x0c, 1)
-			];
-		}
-
-		return [];
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			ItemFactory::get($this->getItemId(), $this->getDamage() & 0x0c)
+		];
 	}
 }
