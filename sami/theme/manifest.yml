@@ -1,0 +1,5 @@
+name: pocketmine
+parent: default
+
+#global:
+#    'index.twig':      'index.html'
