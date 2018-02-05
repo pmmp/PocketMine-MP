@@ -58,7 +58,7 @@ class RCONInstance extends Thread{
 			$this->{"timeout" . $n} = 0;
 		}
 
-		$this->start();
+		$this->start(PTHREADS_INHERIT_NONE);
 	}
 
 	private function writePacket($client, $requestID, $packetType, $payload){
