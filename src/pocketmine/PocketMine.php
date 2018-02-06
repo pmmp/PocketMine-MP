@@ -152,13 +152,8 @@ namespace pocketmine {
 	}
 
 	if(extension_loaded("pocketmine")){
-		if(version_compare(phpversion("pocketmine"), "0.0.1") < 0){
-			critical_error("You have the native PocketMine extension, but your version is lower than 0.0.1.");
-			++$errors;
-		}elseif(version_compare(phpversion("pocketmine"), "0.0.4") > 0){
-			critical_error("You have the native PocketMine extension, but your version is higher than 0.0.4.");
-			++$errors;
-		}
+		critical_error("The native PocketMine extension is no longer supported.");
+		++$errors;
 	}
 
 	if($errors > 0){
