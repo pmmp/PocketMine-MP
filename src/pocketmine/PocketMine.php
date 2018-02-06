@@ -85,6 +85,10 @@ namespace pocketmine {
 
 	const MIN_PHP_VERSION = "7.2.0RC3";
 
+	function critical_error($message){
+		echo "[ERROR] $message" . PHP_EOL;
+	}
+
 	/*
 	 * Startup code. Do not look at it, it may harm you.
 	 * Most of them are hacks to fix date-related bugs, or basic functions used after this
@@ -93,14 +97,72 @@ namespace pocketmine {
 	 */
 
 	if(version_compare(MIN_PHP_VERSION, PHP_VERSION) > 0){
-		echo "[CRITICAL] " . \pocketmine\NAME . " requires PHP >= " . MIN_PHP_VERSION . ", but you have PHP " . PHP_VERSION . "." . PHP_EOL;
-		echo "[CRITICAL] Please use the installer provided on the homepage, or update to a newer PHP version." . PHP_EOL;
+		critical_error(\pocketmine\NAME . " requires PHP >= " . MIN_PHP_VERSION . ", but you have PHP " . PHP_VERSION . ".");
+		critical_error("Please use the installer provided on the homepage, or update to a newer PHP version.");
 		exit(1);
 	}
 
-	if(!extension_loaded("pthreads")){
-		echo "[CRITICAL] Unable to find the pthreads extension." . PHP_EOL;
-		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
+	/* Dependencies check */
+
+	$errors = 0;
+
+	if(php_sapi_name() !== "cli"){
+		critical_error("You must run " . \pocketmine\NAME . " using the CLI.");
+		++$errors;
+	}
+
+	$extensions = [
+		"bcmath" => "BC Math",
+		"curl" => "cURL",
+		"json" => "JSON",
+		"mbstring" => "Multibyte String",
+		"openssl" => "OpenSSL",
+		"phar" => "Phar",
+		"pthreads" => "pthreads",
+		"sockets" => "Sockets",
+		"yaml" => "YAML",
+		"zip" => "Zip",
+		"zlib" => "Zlib"
+	];
+
+	foreach($extensions as $ext => $name){
+		if(!extension_loaded($ext)){
+			critical_error("Unable to find the $name ($ext) extension.");
+			++$errors;
+		}
+	}
+
+	if(extension_loaded("pthreads")){
+		$pthreads_version = phpversion("pthreads");
+		if(substr_count($pthreads_version, ".") < 2){
+			$pthreads_version = "0.$pthreads_version";
+		}
+		if(version_compare($pthreads_version, "3.1.7-dev") < 0){
+			critical_error("pthreads >= 3.1.7-dev is required, while you have $pthreads_version.");
+			++$errors;
+		}
+	}
+
+	if(extension_loaded("leveldb")){
+		$leveldb_version = phpversion("leveldb");
+		if(version_compare($leveldb_version, "0.2.1") < 0){
+			critical_error("php-leveldb >= 0.2.1 is required, while you have $leveldb_version");
+			++$errors;
+		}
+	}
+
+	if(extension_loaded("pocketmine")){
+		if(version_compare(phpversion("pocketmine"), "0.0.1") < 0){
+			critical_error("You have the native PocketMine extension, but your version is lower than 0.0.1.");
+			++$errors;
+		}elseif(version_compare(phpversion("pocketmine"), "0.0.4") > 0){
+			critical_error("You have the native PocketMine extension, but your version is higher than 0.0.4.");
+			++$errors;
+		}
+	}
+
+	if($errors > 0){
+		critical_error("Please use the installer provided on the homepage, or recompile PHP again.");
 		exit(1);
 	}
 
@@ -116,12 +178,6 @@ namespace pocketmine {
 
 	set_error_handler('\pocketmine\error_handler');
 
-	if(!extension_loaded("phar")){
-		echo "[CRITICAL] Unable to find the Phar extension." . PHP_EOL;
-		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
-		exit(1);
-	}
-
 	if(\Phar::running(true) !== ""){
 		define('pocketmine\PATH', \Phar::running(true) . "/");
 	}else{
@@ -131,8 +187,8 @@ namespace pocketmine {
 	define('pocketmine\COMPOSER_AUTOLOADER_PATH', \pocketmine\PATH . 'vendor/autoload.php');
 
 	function composer_error_die($message){
-		echo "[CRITICAL] $message" . PHP_EOL;
-		echo "[CRITICAL] Please install/update Composer dependencies or use provided builds." . PHP_EOL;
+		critical_error($message);
+		critical_error("Please install/update Composer dependencies or use provided builds.");
 		exit(1);
 	}
 
@@ -445,73 +501,8 @@ namespace pocketmine {
 	$exitCode = 0;
 
 	do{
-		$errors = 0;
-
-		if(PHP_INT_SIZE < 8){
-			$logger->critical("Running " . \pocketmine\NAME . " with 32-bit systems/PHP is no longer supported. Please upgrade to a 64-bit system or use a 64-bit PHP binary.");
-			$exitCode = 1;
-			break;
-		}
-
-		if(php_sapi_name() !== "cli"){
-			$logger->critical("You must run " . \pocketmine\NAME . " using the CLI.");
-			++$errors;
-		}
-
-		$pthreads_version = phpversion("pthreads");
-		if(substr_count($pthreads_version, ".") < 2){
-			$pthreads_version = "0.$pthreads_version";
-		}
-		if(version_compare($pthreads_version, "3.1.7-dev") < 0){
-			$logger->critical("pthreads >= 3.1.7-dev is required, while you have $pthreads_version.");
-			++$errors;
-		}
-
-		if(extension_loaded("leveldb")){
-			$leveldb_version = phpversion("leveldb");
-			if(version_compare($leveldb_version, "0.2.1") < 0){
-				$logger->critical("php-leveldb >= 0.2.1 is required, while you have $leveldb_version");
-				++$errors;
-			}
-		}
-
-		if(extension_loaded("pocketmine")){
-			if(version_compare(phpversion("pocketmine"), "0.0.1") < 0){
-				$logger->critical("You have the native PocketMine extension, but your version is lower than 0.0.1.");
-				++$errors;
-			}elseif(version_compare(phpversion("pocketmine"), "0.0.4") > 0){
-				$logger->critical("You have the native PocketMine extension, but your version is higher than 0.0.4.");
-				++$errors;
-			}
-		}
-
 		if(extension_loaded("xdebug")){
 			$logger->warning(PHP_EOL . PHP_EOL . PHP_EOL . "\tYou are running " . \pocketmine\NAME . " with xdebug enabled. This has a major impact on performance." . PHP_EOL . PHP_EOL);
-		}
-
-		$extensions = [
-			"bcmath" => "BC Math",
-			"curl" => "cURL",
-			"json" => "JSON",
-			"mbstring" => "Multibyte String",
-			"openssl" => "OpenSSL",
-			"sockets" => "Sockets",
-			"yaml" => "YAML",
-			"zip" => "Zip",
-			"zlib" => "Zlib"
-		];
-
-		foreach($extensions as $ext => $name){
-			if(!extension_loaded($ext)){
-				$logger->critical("Unable to find the $name ($ext) extension.");
-				++$errors;
-			}
-		}
-
-		if($errors > 0){
-			$logger->critical("Please use the installer provided on the homepage, or recompile PHP again.");
-			$exitCode = 1;
-			break;
 		}
 
 		$gitHash = str_repeat("00", 20);
