@@ -377,7 +377,7 @@ namespace pocketmine {
 			case "linux":
 			default:
 				if(function_exists("posix_kill")){
-					posix_kill($pid, SIGKILL);
+					posix_kill($pid, 9); //SIGKILL
 				}else{
 					exec("kill -9 " . ((int) $pid) . " > /dev/null 2>&1");
 				}
