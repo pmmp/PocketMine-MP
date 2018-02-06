@@ -334,48 +334,45 @@ namespace pocketmine {
 		return str_replace(["\\", ".php", "phar://", str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PATH), str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PLUGIN_PATH)], ["/", "", "", "", ""], $path);
 	}
 
+	if(extension_loaded("xdebug")){
+		$logger->warning(PHP_EOL . PHP_EOL . PHP_EOL . "\tYou are running " . \pocketmine\NAME . " with xdebug enabled. This has a major impact on performance." . PHP_EOL . PHP_EOL);
+	}
+
+	if(\Phar::running(true) === ""){
+		$logger->warning("Non-packaged " . \pocketmine\NAME . " installation detected. Consider using a phar in production for better performance.");
+	}
+
+	$gitHash = str_repeat("00", 20);
+
+	if(\Phar::running(true) === ""){
+		if(Utils::execute("git rev-parse HEAD", $out) === 0){
+			$gitHash = trim($out);
+			if(Utils::execute("git diff --quiet") === 1 or Utils::execute("git diff --cached --quiet") === 1){ //Locally-modified
+				$gitHash .= "-dirty";
+			}
+		}
+	}else{
+		$phar = new \Phar(\Phar::running(false));
+		$meta = $phar->getMetadata();
+		if(isset($meta["git"])){
+			$gitHash = $meta["git"];
+		}
+	}
+
+	define('pocketmine\GIT_COMMIT', $gitHash);
+
+
+	@define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);
+	@ini_set("opcache.mmap_base", bin2hex(random_bytes(8))); //Fix OPCache address errors
+
 	$exitCode = 0;
-
 	do{
-		if(extension_loaded("xdebug")){
-			$logger->warning(PHP_EOL . PHP_EOL . PHP_EOL . "\tYou are running " . \pocketmine\NAME . " with xdebug enabled. This has a major impact on performance." . PHP_EOL . PHP_EOL);
-		}
-
-		$gitHash = str_repeat("00", 20);
-
-		if(\Phar::running(true) === ""){
-			if(Utils::execute("git rev-parse HEAD", $out) === 0){
-				$gitHash = trim($out);
-				if(Utils::execute("git diff --quiet") === 1 or Utils::execute("git diff --cached --quiet") === 1){ //Locally-modified
-					$gitHash .= "-dirty";
-				}
-			}
-		}else{
-			$phar = new \Phar(\Phar::running(false));
-			$meta = $phar->getMetadata();
-			if(isset($meta["git"])){
-				$gitHash = $meta["git"];
-			}
-		}
-
-		define('pocketmine\GIT_COMMIT', $gitHash);
-
-
-		@define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);
-		@ini_set("opcache.mmap_base", bin2hex(random_bytes(8))); //Fix OPCache address errors
-
-
 		if(!file_exists(\pocketmine\DATA . "server.properties") and !isset($opts["no-wizard"])){
 			$installer = new SetupWizard();
 			if(!$installer->run()){
 				$exitCode = -1;
 				break;
 			}
-		}
-
-
-		if(\Phar::running(true) === ""){
-			$logger->warning("Non-packaged " . \pocketmine\NAME . " installation detected. Consider using a phar in production for better performance.");
 		}
 
 		ThreadManager::init();
