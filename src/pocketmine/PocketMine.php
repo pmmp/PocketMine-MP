@@ -103,6 +103,12 @@ namespace pocketmine {
 		exit(1);
 	}
 
+	if(PHP_INT_SIZE < 8){
+		critical_error("Running " . \pocketmine\NAME . " with 32-bit systems/PHP is no longer supported.");
+		critical_error("Please upgrade to a 64-bit system, or use a 64-bit PHP binary if this is a 64-bit system.");
+		exit(1);
+	}
+
 	/* Dependencies check */
 
 	$errors = 0;
