@@ -368,6 +368,7 @@ class LevelDB extends BaseLevelProvider{
 
 			$nbt = new LittleEndianNBTStream();
 
+			/** @var CompoundTag[] $entities */
 			$entities = [];
 			if(($entityData = $this->db->get($index . self::TAG_ENTITY)) !== false and strlen($entityData) > 0){
 				$nbt->read($entityData, true);
@@ -377,9 +378,10 @@ class LevelDB extends BaseLevelProvider{
 				}
 			}
 
+			/** @var CompoundTag $entityNBT */
 			foreach($entities as $entityNBT){
-				if($entityNBT->id instanceof IntTag){
-					$entityNBT["id"] &= 0xff;
+				if($entityNBT->hasTag("id", IntTag::class)){
+					$entityNBT->setInt("id", $entityNBT->getInt("id") & 0xff); //remove type flags - TODO: use these instead of removing them)
 				}
 			}
 
