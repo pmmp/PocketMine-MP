@@ -37,6 +37,7 @@ use pocketmine\item\Armor;
 use pocketmine\item\Consumable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item as ItemItem;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\ByteTag;
@@ -786,9 +787,43 @@ abstract class Living extends Entity implements Damageable{
 			}
 		}catch(\ArrayOutOfBoundsException $e){
 		}
-
 		return null;
 	}
+
+        /**
+         *
+         * For the exact entity use a precision >= 0.998
+         *
+         * @param AxisAlignedBB|null $distance
+         * @param float              $precision
+         *
+         * @return null|Entity
+         *
+         */
+        public function getEntityLookingAt(AxisAlignedBB $distance = null, float $precision = 0.998){
+                if($distance === null){
+                        $pointA = $this->subtract(100, 100, 100);
+                        $pointB = $this->add(100, 100, 100);
+
+                        $distance = new AxisAlignedBB($pointA->x, $pointA->y, $pointA->z, $pointB->x, $pointB->y, $pointB->z);
+                }
+
+                foreach($this->level->getNearbyEntities($distance) as $entity){
+                        if($entity === $this) continue;
+
+                        $toEntity = $entity->asVector3()->subtract($this->asVector3());
+                        $direction = $this->getDirectionVector();
+                        $exact = $toEntity->normalize()->dot($direction);
+
+                        if($exact >= $precision){
+
+                                return $entity;
+
+                        }
+                }
+
+                return null;
+        }
 
 	/**
 	 * Changes the entity's yaw and pitch to make it look at the specified Vector3 position. For mobs, this will cause
