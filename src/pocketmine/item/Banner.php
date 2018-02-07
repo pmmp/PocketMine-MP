@@ -77,22 +77,17 @@ class Banner extends Item{
 	 * @return int ID of pattern.
 	 */
 	public function addPattern(string $pattern, int $color) : int{
-		$patternId = 0;
-		if($this->getPatternCount() !== 0){
-			$patternId = max($this->getPatternIds()) + 1;
-		}
-
 		$patternsTag = $this->getNamedTag()->getListTag(self::TAG_PATTERNS);
 		assert($patternsTag !== null);
 
-		$patternsTag[$patternId] = new CompoundTag("", [
+		$patternsTag->push(new CompoundTag("", [
 			new IntTag(self::TAG_PATTERN_COLOR, $color & 0x0f),
 			new StringTag(self::TAG_PATTERN_NAME, $pattern)
-		]);
+		]));
 
 		$this->setNamedTagEntry($patternsTag);
 
-		return $patternId;
+		return $patternsTag->count() - 1;
 	}
 
 	/**
@@ -104,7 +99,7 @@ class Banner extends Item{
 	 */
 	public function patternExists(int $patternId) : bool{
 		$this->correctNBT();
-		return isset($this->getNamedTag()->getListTag(self::TAG_PATTERNS)[$patternId]);
+		return $this->getNamedTag()->getListTag(self::TAG_PATTERNS)->isset($patternId);
 	}
 
 	/**
@@ -121,7 +116,7 @@ class Banner extends Item{
 
 		$patternsTag = $this->getNamedTag()->getListTag(self::TAG_PATTERNS);
 		assert($patternsTag !== null);
-		$pattern = $patternsTag[$patternId];
+		$pattern = $patternsTag->get($patternId);
 		assert($pattern instanceof CompoundTag);
 
 		return [
@@ -148,10 +143,10 @@ class Banner extends Item{
 		$patternsTag = $this->getNamedTag()->getListTag(self::TAG_PATTERNS);
 		assert($patternsTag !== null);
 
-		$patternsTag[$patternId] = new CompoundTag("", [
+		$patternsTag->set($patternId, new CompoundTag("", [
 			new IntTag(self::TAG_PATTERN_COLOR, $color & 0x0f),
 			new StringTag(self::TAG_PATTERN_NAME, $pattern)
-		]);
+		]));
 
 		$this->setNamedTagEntry($patternsTag);
 		return true;
@@ -172,7 +167,7 @@ class Banner extends Item{
 
 		$patternsTag = $this->getNamedTag()->getListTag(self::TAG_PATTERNS);
 		if($patternsTag instanceof ListTag){
-			unset($patternsTag[$patternId]);
+			$patternsTag->remove($patternId);
 			$this->setNamedTagEntry($patternsTag);
 		}
 
@@ -186,12 +181,7 @@ class Banner extends Item{
 	 * @return bool indicating whether the banner was empty or not.
 	 */
 	public function deleteTopPattern() : bool{
-		$keys = $this->getPatternIds();
-		if(empty($keys)){
-			return false;
-		}
-
-		return $this->deletePattern(max($keys));
+		return $this->deletePattern($this->getPatternCount() - 1);
 	}
 
 	/**
@@ -201,27 +191,7 @@ class Banner extends Item{
 	 * @return bool indicating whether the banner was empty or not.
 	 */
 	public function deleteBottomPattern() : bool{
-		$keys = $this->getPatternIds();
-		if(empty($keys)){
-			return false;
-		}
-
-		return $this->deletePattern(min($keys));
-	}
-
-	/**
-	 * Returns an array containing all pattern IDs
-	 *
-	 * @return array
-	 */
-	public function getPatternIds() : array{
-		$this->correctNBT();
-
-		$keys = array_keys((array) ($this->getNamedTag()->getListTag(self::TAG_PATTERNS) ?? []));
-
-		return array_filter($keys, function($key){
-			return is_numeric($key);
-		}, ARRAY_FILTER_USE_KEY);
+		return $this->deletePattern(0);
 	}
 
 	/**
@@ -230,7 +200,7 @@ class Banner extends Item{
 	 * @return int
 	 */
 	public function getPatternCount() : int{
-		return count($this->getPatternIds());
+		return $this->getNamedTag()->getListTag(self::TAG_PATTERNS)->count();
 	}
 
 	public function correctNBT() : void{

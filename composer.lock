@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "08158e4b18863a13bde2505e4b274f0c",
+    "content-hash": "19400d9f6e78537580761ca473974158",
     "packages": [
         {
             "name": "pocketmine/pocketmine-binaryutils",
@@ -45,12 +45,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/PocketMine-NBT.git",
-                "reference": "3bb6fb1b1b7b3aa40939764a5479b2758f3c135e"
+                "reference": "37ad66b279fa8e746ccc68a451eef8ef9421aaa5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/PocketMine-NBT/zipball/3bb6fb1b1b7b3aa40939764a5479b2758f3c135e",
-                "reference": "3bb6fb1b1b7b3aa40939764a5479b2758f3c135e",
+                "url": "https://api.github.com/repos/pmmp/PocketMine-NBT/zipball/37ad66b279fa8e746ccc68a451eef8ef9421aaa5",
+                "reference": "37ad66b279fa8e746ccc68a451eef8ef9421aaa5",
                 "shasum": ""
             },
             "require": {
@@ -63,6 +63,11 @@
                     "pocketmine\\nbt\\": "src/"
                 }
             },
+            "autoload-dev": {
+                "psr-4": {
+                    "pocketmine\\nbt\\": "tests/phpunit/"
+                }
+            },
             "license": [
                 "LGPL-3.0"
             ],
@@ -71,7 +76,7 @@
                 "source": "https://github.com/pmmp/PocketMine-NBT/tree/master",
                 "issues": "https://github.com/pmmp/PocketMine-NBT/issues"
             },
-            "time": "2018-02-11T15:53:29+00:00"
+            "time": "2018-02-13T14:33:27+00:00"
         },
         {
             "name": "pocketmine/pocketmine-spl",
