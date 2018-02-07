@@ -21,10 +21,10 @@
       "ext-yaml": ">=2.0.0",
       "ext-zip": "*",
       "ext-zlib": ">=1.2.11",
-      "pocketmine/raklib": "dev-master#eaa85c2b23bbc1a85030a621d4644c0e33e05950",
+      "pocketmine/raklib": "dev-master#9b50878021ca545684fc1fd2d9333911ab2988e1",
       "pocketmine/pocketmine-spl": "^0.2.0",
       "pocketmine/pocketmine-binaryutils": "dev-master#a7cd5303a3b215d26bf9be76682ce9311f40e887",
-      "pocketmine/pocketmine-nbt": "dev-master#f8934c0aed90d1f55452588f7ebef7c4519518a5"
+      "pocketmine/pocketmine-nbt": "dev-master#45706a9732d63950d2a82dc1a340af5c7c280cc5"
    },
    "autoload": {
       "psr-0": {
