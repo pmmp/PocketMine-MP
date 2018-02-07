@@ -90,7 +90,7 @@ class Enchantment{
 	public static function init(){
 		self::$enchantments = new \SplFixedArray(256);
 
-		self::registerEnchantment(new ProtectionEnchantment(self::PROTECTION, "%enchant.protect.all", self::RARITY_COMMON, self::SLOT_ARMOR, 4, 0.75, null));
+		self::registerEnchantment(new ProtectionEnchantment(self::PROTECTION, "%enchantment.protect.all", self::RARITY_COMMON, self::SLOT_ARMOR, 4, 0.75, null));
 		self::registerEnchantment(new ProtectionEnchantment(self::FIRE_PROTECTION, "%enchantment.protect.fire", self::RARITY_UNCOMMON, self::SLOT_ARMOR, 4, 1.25, [
 			EntityDamageEvent::CAUSE_FIRE,
 			EntityDamageEvent::CAUSE_FIRE_TICK,
