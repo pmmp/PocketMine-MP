@@ -1950,7 +1950,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->server->onPlayerLogin($this);
 
 		$pk = new ResourcePacksInfoPacket();
-		$manager = $this->server->getResourceManager();
+		$manager = $this->server->getResourcePackManager();
 		$pk->resourcePackEntries = $manager->getResourceStack();
 		$pk->mustAccept = $manager->resourcePacksRequired();
 		$this->dataPacket($pk);
@@ -1963,7 +1963,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->close("", "You must accept resource packs to join this server.", true);
 				break;
 			case ResourcePackClientResponsePacket::STATUS_SEND_PACKS:
-				$manager = $this->server->getResourceManager();
+				$manager = $this->server->getResourcePackManager();
 				foreach($packet->packIds as $uuid){
 					$pack = $manager->getPackById($uuid);
 					if(!($pack instanceof ResourcePack)){
@@ -1986,7 +1986,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				break;
 			case ResourcePackClientResponsePacket::STATUS_HAVE_ALL_PACKS:
 				$pk = new ResourcePackStackPacket();
-				$manager = $this->server->getResourceManager();
+				$manager = $this->server->getResourcePackManager();
 				$pk->resourcePackStack = $manager->getResourceStack();
 				$pk->mustAccept = $manager->resourcePacksRequired();
 				$this->dataPacket($pk);
@@ -2888,7 +2888,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleResourcePackChunkRequest(ResourcePackChunkRequestPacket $packet) : bool{
-		$manager = $this->server->getResourceManager();
+		$manager = $this->server->getResourcePackManager();
 		$pack = $manager->getPackById($packet->packId);
 		if(!($pack instanceof ResourcePack)){
 			$this->close("", "disconnectionScreen.resourcePack", true);

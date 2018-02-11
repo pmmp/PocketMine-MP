@@ -640,7 +640,7 @@ class Server{
 	/**
 	 * @return ResourcePackManager
 	 */
-	public function getResourceManager() : ResourcePackManager{
+	public function getResourcePackManager() : ResourcePackManager{
 		return $this->resourceManager;
 	}
 
