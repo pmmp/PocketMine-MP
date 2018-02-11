@@ -36,6 +36,7 @@ use pocketmine\item\FoodSource;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
@@ -485,7 +486,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if($skin !== null){
 			$this->setSkin(new Skin(
 				$skin->getString("Name"),
-				$skin->getString("Data")
+				$skin->hasTag("Data", StringTag::class) ? $skin->getString("Data") : $skin->getByteArray("Data") //old data (this used to be saved as a StringTag in older versions of PM)
 			));
 		}
 
@@ -673,7 +674,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if($this->skin !== null){
 			$this->namedtag->setTag(new CompoundTag("Skin", [
 				//TODO: save cape & geometry
-				new StringTag("Data", $this->skin->getSkinData()),
+				new ByteArrayTag("Data", $this->skin->getSkinData()),
 				new StringTag("Name", $this->skin->getSkinId())
 			]));
 		}
