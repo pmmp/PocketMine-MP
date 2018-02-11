@@ -486,7 +486,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if($skin !== null){
 			$this->setSkin(new Skin(
 				$skin->getString("Name"),
-				$skin->hasTag("Data", StringTag::class) ? $skin->getString("Data") : $skin->getByteArray("Data") //old data (this used to be saved as a StringTag in older versions of PM)
+				$skin->hasTag("Data", StringTag::class) ? $skin->getString("Data") : $skin->getByteArray("Data"), //old data (this used to be saved as a StringTag in older versions of PM)
+				$skin->getByteArray("CapeData", ""),
+				$skin->getString("GeometryName", ""),
+				$skin->getByteArray("GeometryData", "")
 			));
 		}
 
@@ -674,8 +677,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if($this->skin !== null){
 			$this->namedtag->setTag(new CompoundTag("Skin", [
 				//TODO: save cape & geometry
+				new StringTag("Name", $this->skin->getSkinId()),
 				new ByteArrayTag("Data", $this->skin->getSkinData()),
-				new StringTag("Name", $this->skin->getSkinId())
+				new ByteArrayTag("CapeData", $this->skin->getCapeData()),
+				new StringTag("GeometryName", $this->skin->getGeometryName()),
+				new ByteArrayTag("GeometryData", $this->skin->getGeometryData())
 			]));
 		}
 	}
