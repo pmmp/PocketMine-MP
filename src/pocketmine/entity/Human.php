@@ -85,7 +85,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public function __construct(Level $level, CompoundTag $nbt){
 		if($this->skin === null){
 			$skinTag = $nbt->getCompoundTag("Skin");
-			if($skinTag === null or !self::isValidSkin($skinTag->getString("Data", "", true))){
+			if($skinTag === null or !self::isValidSkin($skinTag->hasTag("Data", ByteArrayTag::class) ?
+				$skinTag->getByteArray("Data") :
+				$skinTag->getString("Data", "")
+			)){
 				throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
 			}
 		}
