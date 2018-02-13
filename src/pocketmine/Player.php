@@ -991,7 +991,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		if($this->getHealth() <= 0){
-			$this->sendRespawnPacket($this->getSpawn());
+			$this->respawn();
 		}
 	}
 
@@ -2626,50 +2626,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					break;
 				}
 
-				if($this->server->isHardcore()){
-					$this->setBanned(true);
-					break;
-				}
-
-				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
-
-				$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getLevel());
-
-				if($realSpawn->distanceSquared($this->getSpawn()->add(0.5, 0, 0.5)) > 0.01){
-					$this->teleport($realSpawn); //If the destination was modified by plugins
-				}else{
-					$this->setPosition($realSpawn); //The client will move to the position of its own accord once chunks are sent
-					$this->nextChunkOrderRun = 0;
-					$this->isTeleporting = true;
-					$this->newPosition = null;
-				}
-
-				$this->resetLastMovements();
-				$this->resetFallDistance();
-
-				$this->setSprinting(false);
-				$this->setSneaking(false);
-
-				$this->extinguish();
-				$this->setAirSupplyTicks($this->getMaxAirSupplyTicks());
-				$this->deadTicks = 0;
-				$this->noDamageTicks = 60;
-
-				$this->removeAllEffects();
-				$this->setHealth($this->getMaxHealth());
-
-				foreach($this->attributeMap->getAll() as $attr){
-					$attr->resetToDefault();
-				}
-
-				$this->sendData($this);
-
-				$this->sendSettings();
-				$this->inventory->sendContents($this);
-				$this->armorInventory->sendContents($this);
-
-				$this->spawnToAll();
-				$this->scheduleUpdate();
+				$this->respawn();
 				break;
 			case PlayerActionPacket::ACTION_JUMP:
 				$this->jump();
@@ -3395,6 +3352,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->namedtag->setInt("SpawnX", (int) $this->spawnPosition->x);
 			$this->namedtag->setInt("SpawnY", (int) $this->spawnPosition->y);
 			$this->namedtag->setInt("SpawnZ", (int) $this->spawnPosition->z);
+
+			if(!$this->isAlive()){
+				//hack for respawn after quit
+				$this->namedtag->setTag(new ListTag("Pos", [
+					new DoubleTag("", $this->spawnPosition->x),
+					new DoubleTag("", $this->spawnPosition->y),
+					new DoubleTag("", $this->spawnPosition->z)
+				]));
+			}
 		}
 
 		$achievements = new CompoundTag("Achievements");
@@ -3565,6 +3531,45 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		return false; //never flag players for despawn
+	}
+
+	protected function respawn() : void{
+		if($this->server->isHardcore()){
+			$this->setBanned(true);
+			return;
+		}
+
+		$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
+
+		$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getLevel());
+		$this->teleport($realSpawn);
+
+		$this->resetLastMovements();
+		$this->resetFallDistance();
+
+		$this->setSprinting(false);
+		$this->setSneaking(false);
+
+		$this->extinguish();
+		$this->setAirSupplyTicks($this->getMaxAirSupplyTicks());
+		$this->deadTicks = 0;
+		$this->noDamageTicks = 60;
+
+		$this->removeAllEffects();
+		$this->setHealth($this->getMaxHealth());
+
+		foreach($this->attributeMap->getAll() as $attr){
+			$attr->resetToDefault();
+		}
+
+		$this->sendData($this);
+
+		$this->sendSettings();
+		$this->inventory->sendContents($this);
+		$this->armorInventory->sendContents($this);
+
+		$this->spawnToAll();
+		$this->scheduleUpdate();
 	}
 
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
