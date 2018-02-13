@@ -116,7 +116,7 @@ class ArmorInventory extends BaseInventory{
 
 				$pk2 = new InventorySlotPacket();
 				$pk2->windowId = $player->getWindowId($this);
-				$pk2->inventorySlot = $index - $this->getSize();
+				$pk2->inventorySlot = $index;
 				$pk2->item = $this->getItem($index);
 				$player->dataPacket($pk2);
 			}else{
