@@ -536,9 +536,6 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	public function kill(){
-		if(!$this->isAlive()){
-			return;
-		}
 		parent::kill();
 		$this->onDeath();
 	}
