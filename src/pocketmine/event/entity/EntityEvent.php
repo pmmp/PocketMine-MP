@@ -29,9 +29,6 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\Entity;
 use pocketmine\event\Event;
 
-/**
- * @noHandle
- */
 abstract class EntityEvent extends Event{
 	/** @var Entity */
 	protected $entity;

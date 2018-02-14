@@ -29,9 +29,6 @@ namespace pocketmine\event\plugin;
 use pocketmine\event\Event;
 use pocketmine\plugin\Plugin;
 
-/**
- * @noHandle
- */
 abstract class PluginEvent extends Event{
 
 	/** @var Plugin */

@@ -28,6 +28,9 @@ namespace pocketmine\event\player\cheat;
 
 use pocketmine\event\player\PlayerEvent;
 
+/**
+ * @allowHandle
+ */
 abstract class PlayerCheatEvent extends PlayerEvent{
 
 }

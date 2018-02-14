@@ -90,13 +90,13 @@ class HandlerList{
 
 		$class = new \ReflectionClass($event);
 		$tags = PluginManager::parseDocComment((string) $class->getDocComment());
-		$noHandle = isset($tags["noHandle"]) && $tags["noHandle"] !== "false";
+		$noHandle = $class->isAbstract() && !(isset($tags["allowHandle"]) && $tags["allowHandle"] !== "false");
 
 		$super = $class;
 		$parentList = null;
 		while($parentList === null && ($super = $super->getParentClass()) !== false){
-			// skip @noHandle events in the inheritance tree to go to the nearest ancestor
-			// while loop to allow skipping @noHandle events in the inheritance tree
+			// skip $noHandle events in the inheritance tree to go to the nearest ancestor
+			// while loop to allow skipping $noHandle events in the inheritance tree
 			$parentList = self::getHandlerListFor($super->getName());
 		}
 		$lists = $parentList !== null ? self::$classMap[$parentList->class] : [];

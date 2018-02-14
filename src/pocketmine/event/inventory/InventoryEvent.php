@@ -30,9 +30,6 @@ use pocketmine\entity\Human;
 use pocketmine\event\Event;
 use pocketmine\inventory\Inventory;
 
-/**
- * @noHandle
- */
 abstract class InventoryEvent extends Event{
 
 	/** @var Inventory */

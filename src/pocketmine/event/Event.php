@@ -26,9 +26,6 @@ declare(strict_types=1);
  */
 namespace pocketmine\event;
 
-/**
- * @noHandle
- */
 abstract class Event{
 
 	/** @var string|null */

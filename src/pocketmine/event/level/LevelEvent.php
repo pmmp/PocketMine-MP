@@ -29,9 +29,6 @@ namespace pocketmine\event\level;
 use pocketmine\event\Event;
 use pocketmine\level\Level;
 
-/**
- * @noHandle
- */
 abstract class LevelEvent extends Event{
 	/** @var Level */
 	private $level;
