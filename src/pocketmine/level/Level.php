@@ -823,8 +823,10 @@ class Level implements ChunkManager, Metadatable{
 			$this->checkSleep();
 		}
 
-		$this->server->batchPackets($this->players, $this->globalPackets);
-		$this->globalPackets = [];
+		if(!empty($this->players) and !empty($this->globalPackets)){
+			$this->server->batchPackets($this->players, $this->globalPackets);
+			$this->globalPackets = [];
+		}
 
 		foreach($this->chunkPackets as $index => $entries){
 			Level::getXZ($index, $chunkX, $chunkZ);
