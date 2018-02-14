@@ -112,4 +112,8 @@ class ItemFrame extends Flowable{
 
 		return $drops;
 	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return false;
+	}
 }

@@ -43,7 +43,6 @@ use pocketmine\event\level\LevelLoadEvent;
 use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\event\server\ServerCommandEvent;
-use pocketmine\event\TextContainer;
 use pocketmine\event\Timings;
 use pocketmine\event\TimingsHandler;
 use pocketmine\inventory\CraftingManager;
@@ -51,6 +50,7 @@ use pocketmine\inventory\Recipe;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\ItemFactory;
 use pocketmine\lang\BaseLang;
+use pocketmine\lang\TextContainer;
 use pocketmine\level\format\io\leveldb\LevelDB;
 use pocketmine\level\format\io\LevelProvider;
 use pocketmine\level\format\io\LevelProviderManager;
@@ -640,7 +640,7 @@ class Server{
 	/**
 	 * @return ResourcePackManager
 	 */
-	public function getResourceManager() : ResourcePackManager{
+	public function getResourcePackManager() : ResourcePackManager{
 		return $this->resourceManager;
 	}
 
@@ -773,8 +773,8 @@ class Server{
 				new DoubleTag("", $spawn->y),
 				new DoubleTag("", $spawn->z)
 			], NBT::TAG_Double),
-			new StringTag("Level", $this->getDefaultLevel()->getName()),
-			//new StringTag("SpawnLevel", $this->getDefaultLevel()->getName()),
+			new StringTag("Level", $this->getDefaultLevel()->getFolderName()),
+			//new StringTag("SpawnLevel", $this->getDefaultLevel()->getFolderName()),
 			//new IntTag("SpawnX", (int) $spawn->x),
 			//new IntTag("SpawnY", (int) $spawn->y),
 			//new IntTag("SpawnZ", (int) $spawn->z),
@@ -1102,8 +1102,9 @@ class Server{
 
 		$this->getLogger()->notice($this->getLanguage()->translateString("pocketmine.level.backgroundGeneration", [$name]));
 
-		$centerX = $level->getSpawnLocation()->getX() >> 4;
-		$centerZ = $level->getSpawnLocation()->getZ() >> 4;
+		$spawnLocation = $level->getSpawnLocation();
+		$centerX = $spawnLocation->x >> 4;
+		$centerZ = $spawnLocation->z >> 4;
 
 		$order = [];
 
@@ -1433,6 +1434,9 @@ class Server{
 	 * @param string          $pluginPath
 	 */
 	public function __construct(\ClassLoader $autoloader, \ThreadedLogger $logger, string $dataPath, string $pluginPath){
+		if(self::$instance !== null){
+			throw new \InvalidStateException("Only one server instance can exist at once");
+		}
 		self::$instance = $this;
 		self::$sleeper = new \Threaded;
 		$this->autoloader = $autoloader;
@@ -1523,6 +1527,8 @@ class Server{
 				if($processors > 0){
 					$poolSize = max(1, $processors);
 				}
+			}else{
+				$poolSize = (int) $poolSize;
 			}
 
 			ServerScheduler::$WORKERS = $poolSize;
@@ -1885,6 +1891,9 @@ class Server{
 	 * @param bool         $immediate
 	 */
 	public function batchPackets(array $players, array $packets, bool $forceSync = false, bool $immediate = false){
+		if(empty($packets)){
+			throw new \InvalidArgumentException("Cannot send empty batch");
+		}
 		Timings::$playerNetworkTimer->startTiming();
 
 		$targets = [];
@@ -2090,11 +2099,13 @@ class Server{
 			if($this->network instanceof Network){
 				$this->getLogger()->debug("Stopping network interfaces");
 				foreach($this->network->getInterfaces() as $interface){
+					$this->getLogger()->debug("Stopping network interface " . get_class($interface));
 					$interface->shutdown();
 					$this->network->unregisterInterface($interface);
 				}
 			}
 
+			$this->getLogger()->debug("Collecting cycles");
 			gc_collect_cycles();
 		}catch(\Throwable $e){
 			$this->logger->logException($e);
@@ -2114,7 +2125,7 @@ class Server{
 	/**
 	 * Starts the PocketMine-MP server and starts processing ticks and packets
 	 */
-	public function start(){
+	private function start(){
 		if($this->getConfigBool("enable-query", true) === true){
 			$this->queryHandler = new QueryHandler();
 		}
@@ -2210,8 +2221,8 @@ class Server{
 
 		ini_set("error_reporting", '0');
 		ini_set("memory_limit", '-1'); //Fix error dump not dumped on memory problems
-		$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.create"));
 		try{
+			$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.create"));
 			$dump = new CrashDump($this);
 
 			$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.submit", [$dump->getPath()]));
@@ -2253,7 +2264,9 @@ class Server{
 			}
 		}catch(\Throwable $e){
 			$this->logger->logException($e);
-			$this->logger->critical($this->getLanguage()->translateString("pocketmine.crash.error", [$e->getMessage()]));
+			try{
+				$this->logger->critical($this->getLanguage()->translateString("pocketmine.crash.error", [$e->getMessage()]));
+			}catch(\Throwable $e){}
 		}
 
 		//$this->checkMemory();
@@ -2307,7 +2320,7 @@ class Server{
 	}
 
 	public function addOnlinePlayer(Player $player){
-		$this->updatePlayerListData($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkin());
+		$this->updatePlayerListData($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkin(), $player->getXuid());
 
 		$this->playerList[$player->getRawUniqueId()] = $player;
 	}
@@ -2325,13 +2338,14 @@ class Server{
 	 * @param int           $entityId
 	 * @param string        $name
 	 * @param Skin          $skin
+	 * @param string        $xboxUserId
 	 * @param Player[]|null $players
 	 */
-	public function updatePlayerListData(UUID $uuid, int $entityId, string $name, Skin $skin, array $players = null){
+	public function updatePlayerListData(UUID $uuid, int $entityId, string $name, Skin $skin, string $xboxUserId = "", array $players = null){
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_ADD;
 
-		$pk->entries[] = PlayerListEntry::createAdditionEntry($uuid, $entityId, $name, $skin);
+		$pk->entries[] = PlayerListEntry::createAdditionEntry($uuid, $entityId, $name, $skin, $xboxUserId);
 		$this->broadcastPacket($players ?? $this->playerList, $pk);
 	}
 
@@ -2353,7 +2367,7 @@ class Server{
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_ADD;
 		foreach($this->playerList as $player){
-			$pk->entries[] = PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkin());
+			$pk->entries[] = PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkin(), $player->getXuid());
 		}
 
 		$p->dataPacket($pk);

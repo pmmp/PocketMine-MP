@@ -75,10 +75,6 @@ class EnderChest extends Chest{
 		return true;
 	}
 
-	public function onBreak(Item $item, Player $player = null) : bool{
-		return Block::onBreak($item, $player);
-	}
-
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
 

@@ -423,7 +423,7 @@ class Effect{
 
 		switch($this->id){
 			case Effect::INVISIBILITY:
-				$entity->setGenericFlag(Entity::DATA_FLAG_INVISIBLE, true);
+				$entity->setInvisible();
 				$entity->setNameTagVisible(false);
 				break;
 			case Effect::SPEED:
@@ -466,7 +466,7 @@ class Effect{
 
 		switch($this->id){
 			case Effect::INVISIBILITY:
-				$entity->setGenericFlag(Entity::DATA_FLAG_INVISIBLE, false);
+				$entity->setInvisible(false);
 				$entity->setNameTagVisible(true);
 				break;
 			case Effect::SPEED:

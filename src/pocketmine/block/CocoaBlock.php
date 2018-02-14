@@ -44,4 +44,8 @@ class CocoaBlock extends Transparent{
 	}
 
 	//TODO
+
+	public function isAffectedBySilkTouch() : bool{
+		return false;
+	}
 }

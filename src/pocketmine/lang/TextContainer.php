@@ -21,22 +21,38 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\nbt\tag;
+namespace pocketmine\lang;
 
-use pocketmine\nbt\NBT;
-use pocketmine\nbt\NBTStream;
+class TextContainer{
 
-class EndTag extends Tag{
+	/** @var string $text */
+	protected $text;
 
-	public function getType() : int{
-		return NBT::TAG_End;
+	/**
+	 * @param string $text
+	 */
+	public function __construct(string $text){
+		$this->text = $text;
 	}
 
-	public function read(NBTStream $nbt) : void{
-
+	/**
+	 * @param string $text
+	 */
+	public function setText(string $text){
+		$this->text = $text;
 	}
 
-	public function write(NBTStream $nbt) : void{
+	/**
+	 * @return string
+	 */
+	public function getText() : string{
+		return $this->text;
+	}
 
+	/**
+	 * @return string
+	 */
+	public function __toString() : string{
+		return $this->getText();
 	}
 }

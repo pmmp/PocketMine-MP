@@ -4,20 +4,92 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "b1cbfab50811b3a3a47d93251cd171b4",
+    "content-hash": "19400d9f6e78537580761ca473974158",
     "packages": [
         {
-            "name": "pmmp/pocketmine-spl",
-            "version": "0.1.0",
+            "name": "pocketmine/pocketmine-binaryutils",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/pmmp/PocketMine-SPL.git",
-                "reference": "c56936e6aaad925bb60002b29b1c70f497af4679"
+                "url": "https://github.com/pmmp/PocketMine-BinaryUtils.git",
+                "reference": "a7cd5303a3b215d26bf9be76682ce9311f40e887"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/PocketMine-SPL/zipball/c56936e6aaad925bb60002b29b1c70f497af4679",
-                "reference": "c56936e6aaad925bb60002b29b1c70f497af4679",
+                "url": "https://api.github.com/repos/pmmp/PocketMine-BinaryUtils/zipball/a7cd5303a3b215d26bf9be76682ce9311f40e887",
+                "reference": "a7cd5303a3b215d26bf9be76682ce9311f40e887",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "pocketmine\\utils\\": "src/"
+                }
+            },
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Classes and methods for conveniently handling binary data",
+            "support": {
+                "source": "https://github.com/pmmp/PocketMine-BinaryUtils/tree/master",
+                "issues": "https://github.com/pmmp/PocketMine-BinaryUtils/issues"
+            },
+            "time": "2018-01-14T18:53:25+00:00"
+        },
+        {
+            "name": "pocketmine/pocketmine-nbt",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/PocketMine-NBT.git",
+                "reference": "37ad66b279fa8e746ccc68a451eef8ef9421aaa5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/PocketMine-NBT/zipball/37ad66b279fa8e746ccc68a451eef8ef9421aaa5",
+                "reference": "37ad66b279fa8e746ccc68a451eef8ef9421aaa5",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.0",
+                "pocketmine/pocketmine-binaryutils": "dev-master#8bb34e771fee69abcc5482d17d2fa0b4f0e15a5e"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "pocketmine\\nbt\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "pocketmine\\nbt\\": "tests/phpunit/"
+                }
+            },
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "PHP library for working with Named Binary Tags",
+            "support": {
+                "source": "https://github.com/pmmp/PocketMine-NBT/tree/master",
+                "issues": "https://github.com/pmmp/PocketMine-NBT/issues"
+            },
+            "time": "2018-02-13T14:33:27+00:00"
+        },
+        {
+            "name": "pocketmine/pocketmine-spl",
+            "version": "0.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/PocketMine-SPL.git",
+                "reference": "70c591a44b6c5aa541a1a55585764bed2b23148c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/PocketMine-SPL/zipball/70c591a44b6c5aa541a1a55585764bed2b23148c",
+                "reference": "70c591a44b6c5aa541a1a55585764bed2b23148c",
                 "shasum": ""
             },
             "type": "library",
@@ -36,20 +108,20 @@
             "support": {
                 "source": "https://github.com/pmmp/PocketMine-SPL/tree/master"
             },
-            "time": "2017-12-10T12:18:30+00:00"
+            "time": "2018-01-11T13:03:01+00:00"
         },
         {
-            "name": "pmmp/raklib",
+            "name": "pocketmine/raklib",
             "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "ae39b0bc648ac653f3744d3e9e8e4f6713f8cc11"
+                "reference": "9b50878021ca545684fc1fd2d9333911ab2988e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/ae39b0bc648ac653f3744d3e9e8e4f6713f8cc11",
-                "reference": "ae39b0bc648ac653f3744d3e9e8e4f6713f8cc11",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/9b50878021ca545684fc1fd2d9333911ab2988e1",
+                "reference": "9b50878021ca545684fc1fd2d9333911ab2988e1",
                 "shasum": ""
             },
             "require": {
@@ -57,7 +129,8 @@
                 "ext-pthreads": ">=3.1.7dev",
                 "ext-sockets": "*",
                 "php": ">=7.2.0RC3",
-                "pmmp/pocketmine-spl": "^0.1.0"
+                "pocketmine/pocketmine-binaryutils": "dev-master#a7cd5303a3b215d26bf9be76682ce9311f40e887",
+                "pocketmine/pocketmine-spl": "^0.2.0"
             },
             "type": "library",
             "autoload": {
@@ -73,7 +146,7 @@
                 "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2017-12-28T12:29:47+00:00"
+            "time": "2018-02-07T08:10:25+00:00"
         }
     ],
     "packages-dev": [],
@@ -82,7 +155,9 @@
     "stability-flags": {
         "php": 5,
         "ext-pthreads": 20,
-        "pmmp/raklib": 20
+        "pocketmine/raklib": 20,
+        "pocketmine/pocketmine-binaryutils": 20,
+        "pocketmine/pocketmine-nbt": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

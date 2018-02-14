@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\math;
 
-use pocketmine\level\MovingObjectPosition;
-
 class AxisAlignedBB{
 
 	/** @var float */
@@ -353,15 +351,15 @@ class AxisAlignedBB{
 
 	/**
 	 * Performs a ray-trace and calculates the point on the AABB's edge nearest the start position that the ray-trace
-	 * collided with. Returns a MovingObjectPosition with colliding vector closest to the start position.
+	 * collided with. Returns a RayTraceResult with colliding vector closest to the start position.
 	 * Returns null if no colliding point was found.
 	 *
 	 * @param Vector3 $pos1
 	 * @param Vector3 $pos2
 	 *
-	 * @return MovingObjectPosition|null
+	 * @return RayTraceResult|null
 	 */
-	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2){
+	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2) : ?RayTraceResult{
 		$v1 = $pos1->getIntermediateWithXValue($pos2, $this->minX);
 		$v2 = $pos1->getIntermediateWithXValue($pos2, $this->maxX);
 		$v3 = $pos1->getIntermediateWithYValue($pos2, $this->minY);
@@ -423,7 +421,7 @@ class AxisAlignedBB{
 			$f = Vector3::SIDE_SOUTH;
 		}
 
-		return MovingObjectPosition::fromBlock(0, 0, 0, $f, $vector);
+		return new RayTraceResult($this, $f, $vector);
 	}
 
 	public function __toString(){

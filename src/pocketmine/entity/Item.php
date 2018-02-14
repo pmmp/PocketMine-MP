@@ -200,7 +200,7 @@ class Item extends Entity{
 		$pk->position = $this->asVector3();
 		$pk->motion = $this->getMotion();
 		$pk->item = $this->getItem();
-		$pk->metadata = $this->dataProperties;
+		$pk->metadata = $this->propertyManager->getAll();
 
 		$player->dataPacket($pk);
 	}

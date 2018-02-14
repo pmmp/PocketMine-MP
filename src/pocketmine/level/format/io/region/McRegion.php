@@ -44,9 +44,6 @@ class McRegion extends BaseLevelProvider{
 	/** @var RegionLoader[] */
 	protected $regions = [];
 
-	/** @var Chunk[] */
-	protected $chunks = [];
-
 	/**
 	 * @param Chunk $chunk
 	 *
@@ -283,119 +280,6 @@ class McRegion extends BaseLevelProvider{
 		$this->levelData->setByte("Difficulty", $difficulty);
 	}
 
-	public function getChunk(int $chunkX, int $chunkZ, bool $create = false){
-		$index = Level::chunkHash($chunkX, $chunkZ);
-		if(isset($this->chunks[$index])){
-			return $this->chunks[$index];
-		}else{
-			$this->loadChunk($chunkX, $chunkZ, $create);
-
-			return $this->chunks[$index] ?? null;
-		}
-	}
-
-	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk){
-		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
-		$this->loadRegion($regionX, $regionZ);
-
-		$chunk->setX($chunkX);
-		$chunk->setZ($chunkZ);
-
-
-		if(isset($this->chunks[$index = Level::chunkHash($chunkX, $chunkZ)]) and $this->chunks[$index] !== $chunk){
-			$this->unloadChunk($chunkX, $chunkZ, false);
-		}
-
-		$this->chunks[$index] = $chunk;
-	}
-
-	public function saveChunk(int $chunkX, int $chunkZ) : bool{
-		if($this->isChunkLoaded($chunkX, $chunkZ)){
-			$chunk = $this->getChunk($chunkX, $chunkZ);
-			if(!$chunk->isGenerated()){
-				throw new \InvalidStateException("Cannot save un-generated chunk");
-			}
-			$this->getRegion($chunkX >> 5, $chunkZ >> 5)->writeChunk($chunk);
-
-			return true;
-		}
-
-		return false;
-	}
-
-	public function saveChunks(){
-		foreach($this->chunks as $chunk){
-			$this->saveChunk($chunk->getX(), $chunk->getZ());
-		}
-	}
-
-	public function loadChunk(int $chunkX, int $chunkZ, bool $create = false) : bool{
-		$index = Level::chunkHash($chunkX, $chunkZ);
-		if(isset($this->chunks[$index])){
-			return true;
-		}
-		$regionX = $regionZ = null;
-		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
-		/** @noinspection PhpStrictTypeCheckingInspection */
-		$this->loadRegion($regionX, $regionZ);
-		$this->level->timings->syncChunkLoadDataTimer->startTiming();
-		/** @noinspection PhpStrictTypeCheckingInspection */
-		$chunk = $this->getRegion($regionX, $regionZ)->readChunk($chunkX - $regionX * 32, $chunkZ - $regionZ * 32);
-		if($chunk === null and $create){
-			$chunk = new Chunk($chunkX, $chunkZ);
-		}
-		$this->level->timings->syncChunkLoadDataTimer->stopTiming();
-
-		if($chunk !== null){
-			$this->chunks[$index] = $chunk;
-			return true;
-		}else{
-			return false;
-		}
-	}
-
-	public function unloadChunk(int $chunkX, int $chunkZ, bool $safe = true) : bool{
-		$chunk = $this->chunks[$index = Level::chunkHash($chunkX, $chunkZ)] ?? null;
-		if($chunk instanceof Chunk and $chunk->unload($safe)){
-			unset($this->chunks[$index]);
-			return true;
-		}
-
-		return false;
-	}
-
-	public function unloadChunks(){
-		foreach($this->chunks as $chunk){
-			$this->unloadChunk($chunk->getX(), $chunk->getZ(), false);
-		}
-		$this->chunks = [];
-	}
-
-	public function isChunkLoaded(int $chunkX, int $chunkZ) : bool{
-		return isset($this->chunks[Level::chunkHash($chunkX, $chunkZ)]);
-	}
-
-	public function isChunkGenerated(int $chunkX, int $chunkZ) : bool{
-		if(($region = $this->getRegion($chunkX >> 5, $chunkZ >> 5)) !== null){
-			return $region->chunkExists($chunkX - $region->getX() * 32, $chunkZ - $region->getZ() * 32) and $this->getChunk($chunkX - $region->getX() * 32, $chunkZ - $region->getZ() * 32, true)->isGenerated();
-		}
-
-		return false;
-	}
-
-	public function isChunkPopulated(int $chunkX, int $chunkZ) : bool{
-		$chunk = $this->getChunk($chunkX, $chunkZ);
-		if($chunk !== null){
-			return $chunk->isPopulated();
-		}else{
-			return false;
-		}
-	}
-
-	public function getLoadedChunks() : array{
-		return $this->chunks;
-	}
-
 	public function doGarbageCollection(){
 		$limit = time() - 300;
 		foreach($this->regions as $index => $region){
@@ -409,56 +293,91 @@ class McRegion extends BaseLevelProvider{
 	/**
 	 * @param int $chunkX
 	 * @param int $chunkZ
-	 * @param int &$x
-	 * @param int &$z
+	 * @param int &$regionX
+	 * @param int &$regionZ
 	 */
-	public static function getRegionIndex(int $chunkX, int $chunkZ, &$x, &$z){
-		$x = $chunkX >> 5;
-		$z = $chunkZ >> 5;
+	public static function getRegionIndex(int $chunkX, int $chunkZ, &$regionX, &$regionZ){
+		$regionX = $chunkX >> 5;
+		$regionZ = $chunkZ >> 5;
 	}
 
 	/**
-	 * @param int $x
-	 * @param int $z
+	 * @param int $regionX
+	 * @param int $regionZ
 	 *
 	 * @return RegionLoader|null
 	 */
-	protected function getRegion(int $x, int $z){
-		return $this->regions[Level::chunkHash($x, $z)] ?? null;
+	protected function getRegion(int $regionX, int $regionZ){
+		return $this->regions[Level::chunkHash($regionX, $regionZ)] ?? null;
 	}
 
 	/**
-	 * @param int $x
-	 * @param int $z
+	 * Returns the path to a specific region file based on its X/Z coordinates
+	 *
+	 * @param int $regionX
+	 * @param int $regionZ
+	 *
+	 * @return string
 	 */
-	protected function loadRegion(int $x, int $z){
-		if(!isset($this->regions[$index = Level::chunkHash($x, $z)])){
-			$this->regions[$index] = new RegionLoader($this, $x, $z, static::REGION_FILE_EXTENSION);
+	protected function pathToRegion(int $regionX, int $regionZ) : string{
+		return $this->path . "region/r.$regionX.$regionZ." . static::REGION_FILE_EXTENSION;
+	}
+
+	/**
+	 * @param int $regionX
+	 * @param int $regionZ
+	 */
+	protected function loadRegion(int $regionX, int $regionZ){
+		if(!isset($this->regions[$index = Level::chunkHash($regionX, $regionZ)])){
+			$path = $this->pathToRegion($regionX, $regionZ);
+			$this->regions[$index] = new RegionLoader($path, $regionX, $regionZ);
 			try{
 				$this->regions[$index]->open();
 			}catch(CorruptedRegionException $e){
-				$logger = $this->level->getServer()->getLogger();
+				$logger = MainLogger::getLogger();
 				$logger->error("Corrupted region file detected: " . $e->getMessage());
 
 				$this->regions[$index]->close(false); //Do not write anything to the file
 
-				$path = $this->regions[$index]->getFilePath();
 				$backupPath = $path . ".bak." . time();
 				rename($path, $backupPath);
 				$logger->error("Corrupted region file has been backed up to " . $backupPath);
 
-				$this->regions[$index] = new RegionLoader($this, $x, $z, static::REGION_FILE_EXTENSION);
+				$this->regions[$index] = new RegionLoader($path, $regionX, $regionZ);
 				$this->regions[$index]->open(); //this will create a new empty region to replace the corrupted one
 			}
 		}
 	}
 
 	public function close(){
-		$this->unloadChunks();
 		foreach($this->regions as $index => $region){
 			$region->close();
 			unset($this->regions[$index]);
 		}
-		$this->level = null;
+	}
+
+	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{
+		$regionX = $regionZ = null;
+		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
+		assert(is_int($regionX) and is_int($regionZ));
+
+		$this->loadRegion($regionX, $regionZ);
+
+		$chunkData = $this->getRegion($regionX, $regionZ)->readChunk($chunkX & 0x1f, $chunkZ & 0x1f);
+		if($chunkData !== null){
+			return $this->nbtDeserialize($chunkData);
+		}
+
+		return null;
+	}
+
+	protected function writeChunk(Chunk $chunk) : void{
+		$chunkX = $chunk->getX();
+		$chunkZ = $chunk->getZ();
+
+		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
+		$this->loadRegion($regionX, $regionZ);
+
+		$this->getRegion($regionX, $regionZ)->writeChunk($chunkX & 0x1f, $chunkZ & 0x1f, $this->nbtSerialize($chunk));
 	}
 }

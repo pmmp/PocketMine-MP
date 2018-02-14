@@ -76,6 +76,14 @@ abstract class Liquid extends Transparent{
 		return [];
 	}
 
+	abstract public function getStillForm() : Block;
+
+	abstract public function getFlowingForm() : Block;
+
+	abstract public function getBucketFillSound() : int;
+
+	abstract public function getBucketEmptySound() : int;
+
 	public function getFluidHeightPercent(){
 		$d = $this->meta;
 		if($d >= 8){

@@ -45,7 +45,7 @@ class Cake extends Transparent implements FoodSource{
 	}
 
 	public function getName() : string{
-		return "Cake Block";
+		return "Cake";
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
@@ -87,6 +87,10 @@ class Cake extends Transparent implements FoodSource{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [];
+	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return false;
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{

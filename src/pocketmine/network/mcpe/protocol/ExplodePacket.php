@@ -45,7 +45,7 @@ class ExplodePacket extends DataPacket{
 	}
 
 	protected function decodePayload(){
-		$this->position = $this->getVector3Obj();
+		$this->position = $this->getVector3();
 		$this->radius = (float) ($this->getVarInt() / 32);
 		$count = $this->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
@@ -56,7 +56,7 @@ class ExplodePacket extends DataPacket{
 	}
 
 	protected function encodePayload(){
-		$this->putVector3Obj($this->position);
+		$this->putVector3($this->position);
 		$this->putVarInt((int) ($this->radius * 32));
 		$this->putUnsignedVarInt(count($this->records));
 		if(count($this->records) > 0){

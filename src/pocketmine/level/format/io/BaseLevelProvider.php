@@ -24,26 +24,20 @@ declare(strict_types=1);
 namespace pocketmine\level\format\io;
 
 use pocketmine\level\format\Chunk;
-use pocketmine\level\format\ChunkException;
 use pocketmine\level\generator\Generator;
-use pocketmine\level\Level;
 use pocketmine\level\LevelException;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\scheduler\AsyncTask;
 
 abstract class BaseLevelProvider implements LevelProvider{
-	/** @var Level */
-	protected $level;
 	/** @var string */
 	protected $path;
 	/** @var CompoundTag */
 	protected $levelData;
 
-	public function __construct(Level $level, string $path){
-		$this->level = $level;
+	public function __construct(string $path){
 		$this->path = $path;
 		if(!file_exists($this->path)){
 			mkdir($this->path, 0777, true);
@@ -68,14 +62,6 @@ abstract class BaseLevelProvider implements LevelProvider{
 
 	public function getPath() : string{
 		return $this->path;
-	}
-
-	public function getServer(){
-		return $this->level->getServer();
-	}
-
-	public function getLevel() : Level{
-		return $this->level;
 	}
 
 	public function getName() : string{
@@ -128,12 +114,23 @@ abstract class BaseLevelProvider implements LevelProvider{
 		file_put_contents($this->getPath() . "level.dat", $buffer);
 	}
 
-	public function requestChunkTask(int $x, int $z) : AsyncTask{
-		$chunk = $this->getChunk($x, $z, false);
-		if(!($chunk instanceof Chunk)){
-			throw new ChunkException("Invalid Chunk sent");
+	public function loadChunk(int $chunkX, int $chunkZ, bool $create = false) : ?Chunk{
+		$chunk = $this->readChunk($chunkX, $chunkZ);
+		if($chunk === null and $create){
+			$chunk = new Chunk($chunkX, $chunkZ);
 		}
 
-		return new ChunkRequestTask($this->level, $chunk);
+		return $chunk;
 	}
+
+	public function saveChunk(Chunk $chunk) : void{
+		if(!$chunk->isGenerated()){
+			throw new \InvalidStateException("Cannot save un-generated chunk");
+		}
+		$this->writeChunk($chunk);
+	}
+
+	abstract protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk;
+
+	abstract protected function writeChunk(Chunk $chunk) : void;
 }

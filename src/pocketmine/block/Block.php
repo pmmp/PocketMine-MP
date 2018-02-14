@@ -27,12 +27,13 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
-use pocketmine\level\MovingObjectPosition;
 use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
@@ -433,6 +434,10 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getDrops(Item $item) : array{
 		if($this->isCompatibleWithTool($item)){
+			if($this->isAffectedBySilkTouch() and $item->hasEnchantment(Enchantment::SILK_TOUCH)){
+				return $this->getSilkTouchDrops($item);
+			}
+
 			return $this->getDropsForCompatibleTool($item);
 		}
 
@@ -450,6 +455,29 @@ class Block extends Position implements BlockIds, Metadatable{
 		return [
 			ItemFactory::get($this->getItemId(), $this->getVariant())
 		];
+	}
+
+	/**
+	 * Returns an array of Items to be dropped when the block is broken using a compatible Silk Touch-enchanted tool.
+	 *
+	 * @param Item $item
+	 *
+	 * @return Item[]
+	 */
+	public function getSilkTouchDrops(Item $item) : array{
+		return [
+			ItemFactory::get($this->getItemId(), $this->getVariant())
+		];
+	}
+
+	/**
+	 * Returns whether Silk Touch enchanted tools will cause this block to drop as itself. Since most blocks drop
+	 * themselves anyway, this is implicitly true.
+	 *
+	 * @return bool
+	 */
+	public function isAffectedBySilkTouch() : bool{
+		return true;
 	}
 
 	/**
@@ -511,6 +539,16 @@ class Block extends Position implements BlockIds, Metadatable{
 			],
 			$this->getHorizontalSides()
 		);
+	}
+
+	/**
+	 * Returns a list of blocks that this block is part of. In most cases, only contains the block itself, but in cases
+	 * such as double plants, beds and doors, will contain both halves.
+	 *
+	 * @return Block[]
+	 */
+	public function getAffectedBlocks() : array{
+		return [$this];
 	}
 
 	/**
@@ -605,15 +643,15 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @param Vector3 $pos1
 	 * @param Vector3 $pos2
 	 *
-	 * @return MovingObjectPosition|null
+	 * @return RayTraceResult|null
 	 */
-	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2) : ?MovingObjectPosition{
+	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2) : ?RayTraceResult{
 		$bbs = $this->getCollisionBoxes();
 		if(empty($bbs)){
 			return null;
 		}
 
-		/** @var MovingObjectPosition|null $currentHit */
+		/** @var RayTraceResult|null $currentHit */
 		$currentHit = null;
 		/** @var int|float $currentDistance */
 		$currentDistance = PHP_INT_MAX;
@@ -629,12 +667,6 @@ class Block extends Position implements BlockIds, Metadatable{
 				$currentHit = $nextHit;
 				$currentDistance = $nextDistance;
 			}
-		}
-
-		if($currentHit !== null){
-			$currentHit->blockX = $this->x;
-			$currentHit->blockY = $this->y;
-			$currentHit->blockZ = $this->z;
 		}
 
 		return $currentHit;

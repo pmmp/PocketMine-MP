@@ -67,26 +67,28 @@ class ChestInventory extends ContainerInventory{
 		parent::onOpen($who);
 
 		if(count($this->getViewers()) === 1 and ($level = $this->getHolder()->getLevel()) instanceof Level){
-			$this->broadcastBlockEventPacket($this->getHolder(), true);
+			$this->broadcastBlockEventPacket(true);
 			$level->broadcastLevelSoundEvent($this->getHolder()->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_CHEST_OPEN);
 		}
 	}
 
 	public function onClose(Player $who) : void{
 		if(count($this->getViewers()) === 1 and ($level = $this->getHolder()->getLevel()) instanceof Level){
-			$this->broadcastBlockEventPacket($this->getHolder(), false);
+			$this->broadcastBlockEventPacket(false);
 			$level->broadcastLevelSoundEvent($this->getHolder()->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_CHEST_CLOSED);
 		}
 		parent::onClose($who);
 	}
 
-	protected function broadcastBlockEventPacket(Vector3 $vector, bool $isOpen) : void{
+	protected function broadcastBlockEventPacket(bool $isOpen) : void{
+		$holder = $this->getHolder();
+
 		$pk = new BlockEventPacket();
-		$pk->x = (int) $vector->x;
-		$pk->y = (int) $vector->y;
-		$pk->z = (int) $vector->z;
+		$pk->x = (int) $holder->x;
+		$pk->y = (int) $holder->y;
+		$pk->z = (int) $holder->z;
 		$pk->eventType = 1; //it's always 1 for a chest
 		$pk->eventData = $isOpen ? 1 : 0;
-		$this->getHolder()->getLevel()->addChunkPacket($this->getHolder()->getX() >> 4, $this->getHolder()->getZ() >> 4, $pk);
+		$holder->getLevel()->addChunkPacket($holder->getX() >> 4, $holder->getZ() >> 4, $pk);
 	}
 }

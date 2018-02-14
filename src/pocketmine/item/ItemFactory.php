@@ -136,7 +136,7 @@ class ItemFactory{
 			self::registerItem(new Dye());
 			self::registerItem(new Item(Item::BONE, 0, "Bone"));
 			self::registerItem(new Item(Item::SUGAR, 0, "Sugar"));
-			self::registerItem(new Cake());
+			self::registerItem(new ItemBlock(Block::CAKE_BLOCK, 0, Item::CAKE));
 			self::registerItem(new Bed());
 			self::registerItem(new ItemBlock(Block::REPEATER_BLOCK, 0, Item::REPEATER));
 			self::registerItem(new Cookie());
