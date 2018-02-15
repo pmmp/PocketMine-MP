@@ -56,7 +56,7 @@ class SlimeBlock extends Solid implements Bouncy{
 	/**
 	 * @return float
 	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0;
 	}
 
