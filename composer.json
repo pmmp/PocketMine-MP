@@ -27,7 +27,7 @@
       "pocketmine/pocketmine-nbt": "dev-master#7186c4a47243f7eb374cbafc31cc797686b61db6"
    },
    "autoload": {
-      "psr-0": {
+      "psr-4": {
          "": ["src"]
       }
    },
