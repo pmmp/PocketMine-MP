@@ -112,7 +112,7 @@ class Anvil extends Fallable{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get($this->getItemId(), $this->getDamage() & 0x0c)
+			ItemFactory::get($this->getItemId(), $this->getDamage() >> 2)
 		];
 	}
 }

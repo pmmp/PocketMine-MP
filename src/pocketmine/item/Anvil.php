@@ -26,33 +26,13 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 
-/**
- * Class used for Items that can be Blocks
- */
-class ItemBlock extends Item{
-	/** @var int */
-	protected $blockId;
+class Anvil extends ItemBlock{
 
-	/**
-	 * @param int      $blockId
-	 * @param int      $meta usually 0-15 (placed blocks may only have meta values 0-15)
-	 * @param int|null $itemId
-	 */
-	public function __construct(int $blockId, int $meta = 0, int $itemId = null){
-		$this->blockId = $blockId;
-		parent::__construct($itemId ?? $blockId, $meta, $this->getBlock()->getName());
+	public function __construct(int $meta = 0){
+		parent::__construct(Item::ANVIL, $meta);
 	}
 
 	public function getBlock() : Block{
-		return BlockFactory::get($this->blockId, $this->meta === -1 ? 0 : $this->meta & 0xf);
+		return BlockFactory::get(Block::ANVIL, $this->meta << 2);
 	}
-
-	public function getVanillaName() : string{
-		return $this->getBlock()->getName();
-	}
-
-	public function getFuelTime() : int{
-		return $this->getBlock()->getFuelTime();
-	}
-
 }

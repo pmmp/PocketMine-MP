@@ -38,6 +38,8 @@ class ItemFactory{
 	public static function init(){
 		self::$list = new \SplFixedArray(65536);
 
+		self::registerItem(new Anvil(), true);
+
 		self::registerItem(new Shovel(Item::IRON_SHOVEL, 0, "Iron Shovel", TieredTool::TIER_IRON));
 		self::registerItem(new Pickaxe(Item::IRON_PICKAXE, 0, "Iron Pickaxe", TieredTool::TIER_IRON));
 		self::registerItem(new Axe(Item::IRON_AXE, 0, "Iron Axe", TieredTool::TIER_IRON));
