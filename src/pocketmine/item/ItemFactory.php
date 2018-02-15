@@ -332,6 +332,8 @@ class ItemFactory{
 	 * @param bool   $multiple
 	 *
 	 * @return Item[]|Item
+	 *
+	 * @throws \InvalidArgumentException if the given string cannot be parsed as an item identifier
 	 */
 	public static function fromString(string $str, bool $multiple = false){
 		if($multiple === true){
@@ -349,12 +351,12 @@ class ItemFactory{
 				$meta = $b[1] & 0xFFFF;
 			}
 
-			if(defined(ItemIds::class . "::" . strtoupper($b[0]))){
-				$item = self::get(constant(ItemIds::class . "::" . strtoupper($b[0])), $meta);
-			}elseif(is_numeric($b[0])){
+			if(is_numeric($b[0])){
 				$item = self::get(((int) $b[0]) & 0xFFFF, $meta);
+			}elseif(defined(ItemIds::class . "::" . strtoupper($b[0]))){
+				$item = self::get(constant(ItemIds::class . "::" . strtoupper($b[0])), $meta);
 			}else{
-				$item = self::get(Item::AIR, 0, 0);
+				throw new \InvalidArgumentException("Unable to resolve \"" . $str . "\" to a valid item");
 			}
 
 			return $item;
