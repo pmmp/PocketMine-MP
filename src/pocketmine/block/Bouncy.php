@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-interface Bouncy extends Solid{
+interface Bouncy{
     /**
      * @return float
      */
