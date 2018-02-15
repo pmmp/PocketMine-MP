@@ -89,9 +89,9 @@ abstract class BaseLevelProvider implements LevelProvider{
 	}
 
 	public function setSpawn(Vector3 $pos){
-		$this->levelData->setInt("SpawnX", (int) $pos->x);
-		$this->levelData->setInt("SpawnY", (int) $pos->y);
-		$this->levelData->setInt("SpawnZ", (int) $pos->z);
+		$this->levelData->setInt("SpawnX", $pos->getFloorX());
+		$this->levelData->setInt("SpawnY", $pos->getFloorY());
+		$this->levelData->setInt("SpawnZ", $pos->getFloorZ());
 	}
 
 	public function doGarbageCollection(){

@@ -478,7 +478,7 @@ class Level implements ChunkManager, Metadatable{
 
 		if($players === null){
 			foreach($pk as $e){
-				$this->addChunkPacket($sound->x >> 4, $sound->z >> 4, $e);
+				$this->addChunkPacket($sound->getFloorX() >> 4, $sound->getFloorZ() >> 4, $e);
 			}
 		}else{
 			$this->server->batchPackets($players, $pk, false);
@@ -493,7 +493,7 @@ class Level implements ChunkManager, Metadatable{
 
 		if($players === null){
 			foreach($pk as $e){
-				$this->addChunkPacket($particle->x >> 4, $particle->z >> 4, $e);
+				$this->addChunkPacket($particle->getFloorX() >> 4, $particle->getFloorZ() >> 4, $e);
 			}
 		}else{
 			$this->server->batchPackets($players, $pk, false);
@@ -513,7 +513,7 @@ class Level implements ChunkManager, Metadatable{
 		$pk->data = $data;
 		if($pos !== null){
 			$pk->position = $pos->asVector3();
-			$this->addChunkPacket($pos->x >> 4, $pos->z >> 4, $pk);
+			$this->addChunkPacket($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4, $pk);
 		}else{
 			$pk->position = null;
 			$this->addGlobalPacket($pk);
@@ -538,7 +538,7 @@ class Level implements ChunkManager, Metadatable{
 		$pk->unknownBool = $unknown;
 		$pk->disableRelativeVolume = $disableRelativeVolume;
 		$pk->position = $pos->asVector3();
-		$this->addChunkPacket($pos->x >> 4, $pos->z >> 4, $pk);
+		$this->addChunkPacket($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4, $pk);
 	}
 
 	public function getAutoSave() : bool{
@@ -987,8 +987,8 @@ class Level implements ChunkManager, Metadatable{
 		$randRange = (int) ($randRange > $this->chunkTickRadius ? $this->chunkTickRadius : $randRange);
 
 		foreach($this->loaders as $loader){
-			$chunkX = $loader->getX() >> 4;
-			$chunkZ = $loader->getZ() >> 4;
+			$chunkX = (int) floor($loader->getX()) >> 4;
+			$chunkZ = (int) floor($loader->getZ()) >> 4;
 
 			$index = Level::chunkHash($chunkX, $chunkZ);
 			$existingLoaders = max(0, $this->chunkTickList[$index] ?? 0);

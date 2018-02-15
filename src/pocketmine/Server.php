@@ -775,9 +775,9 @@ class Server{
 			], NBT::TAG_Double),
 			new StringTag("Level", $this->getDefaultLevel()->getFolderName()),
 			//new StringTag("SpawnLevel", $this->getDefaultLevel()->getFolderName()),
-			//new IntTag("SpawnX", (int) $spawn->x),
-			//new IntTag("SpawnY", (int) $spawn->y),
-			//new IntTag("SpawnZ", (int) $spawn->z),
+			//new IntTag("SpawnX", $spawn->getFloorX()),
+			//new IntTag("SpawnY", $spawn->getFloorY()),
+			//new IntTag("SpawnZ", $spawn->getFloorZ()),
 			//new ByteTag("SpawnForced", 1), //TODO
 			new ListTag("Inventory", [], NBT::TAG_Compound),
 			new ListTag("EnderChestInventory", [], NBT::TAG_Compound),
@@ -1103,8 +1103,8 @@ class Server{
 		$this->getLogger()->notice($this->getLanguage()->translateString("pocketmine.level.backgroundGeneration", [$name]));
 
 		$spawnLocation = $level->getSpawnLocation();
-		$centerX = $spawnLocation->x >> 4;
-		$centerZ = $spawnLocation->z >> 4;
+		$centerX = $spawnLocation->getFloorX() >> 4;
+		$centerZ = $spawnLocation->getFloorZ() >> 4;
 
 		$order = [];
 

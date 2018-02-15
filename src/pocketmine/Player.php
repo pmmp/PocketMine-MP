@@ -1017,8 +1017,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$newOrder = [];
 		$unloadChunks = $this->usedChunks;
 
-		$centerX = $this->x >> 4;
-		$centerZ = $this->z >> 4;
+		$centerX = $this->getFloorX() >> 4;
+		$centerZ = $this->getFloorZ() >> 4;
 
 		for($x = 0; $x < $radius; ++$x){
 			for($z = 0; $z <= $x; ++$z){
@@ -1127,9 +1127,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 		$this->spawnPosition = new WeakPosition($pos->x, $pos->y, $pos->z, $level);
 		$pk = new SetSpawnPositionPacket();
-		$pk->x = (int) $this->spawnPosition->x;
-		$pk->y = (int) $this->spawnPosition->y;
-		$pk->z = (int) $this->spawnPosition->z;
+		$pk->x = $this->spawnPosition->getFloorX();
+		$pk->y = $this->spawnPosition->getFloorY();
+		$pk->z = $this->spawnPosition->getFloorZ();
 		$pk->spawnType = SetSpawnPositionPacket::TYPE_PLAYER_SPAWN;
 		$pk->spawnForced = false;
 		$this->dataPacket($pk);
@@ -1476,7 +1476,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$revert = true;
 		}else{
 			if($this->chunk === null or !$this->chunk->isGenerated()){
-				$chunk = $this->level->getChunk($newPos->x >> 4, $newPos->z >> 4, false);
+				$chunk = $this->level->getChunk($newPos->getFloorX() >> 4, $newPos->getFloorZ() >> 4, false);
 				if($chunk === null or !$chunk->isGenerated()){
 					$revert = true;
 					$this->nextChunkOrderRun = 0;
@@ -3349,9 +3349,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		if($this->hasValidSpawnPosition()){
 			$this->namedtag->setString("SpawnLevel", $this->spawnPosition->getLevel()->getFolderName());
-			$this->namedtag->setInt("SpawnX", (int) $this->spawnPosition->x);
-			$this->namedtag->setInt("SpawnY", (int) $this->spawnPosition->y);
-			$this->namedtag->setInt("SpawnZ", (int) $this->spawnPosition->z);
+			$this->namedtag->setInt("SpawnX", $this->spawnPosition->getFloorX());
+			$this->namedtag->setInt("SpawnY", $this->spawnPosition->getFloorY());
+			$this->namedtag->setInt("SpawnZ", $this->spawnPosition->getFloorZ());
 
 			if(!$this->isAlive()){
 				//hack for respawn after quit
