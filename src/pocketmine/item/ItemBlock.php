@@ -30,6 +30,8 @@ use pocketmine\block\BlockFactory;
  * Class used for Items that can be Blocks
  */
 class ItemBlock extends Item{
+	/** @var int */
+	protected $blockId;
 
 	/**
 	 * @param int      $blockId
@@ -37,21 +39,16 @@ class ItemBlock extends Item{
 	 * @param int|null $itemId
 	 */
 	public function __construct(int $blockId, int $meta = 0, int $itemId = null){
-		$this->block = BlockFactory::get($blockId, $meta & 0xf);
-		parent::__construct($itemId ?? $this->block->getId(), $meta, $this->block->getName());
-	}
-
-	public function setDamage(int $meta) : Item{
-		$this->block->setDamage($meta !== -1 ? $meta & 0xf : 0);
-		return parent::setDamage($meta);
+		$this->blockId = $blockId;
+		parent::__construct($itemId ?? $blockId, $meta, $this->getBlock()->getName());
 	}
 
 	public function getBlock() : Block{
-		return clone $this->block;
+		return BlockFactory::get($this->blockId, $this->meta === -1 ? 0 : $this->meta & 0xf);
 	}
 
 	public function getFuelTime() : int{
-		return $this->block->getFuelTime();
+		return $this->getBlock()->getFuelTime();
 	}
 
 }
