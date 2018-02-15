@@ -298,6 +298,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	protected $lastPingMeasure = 1;
 
+	/** 
+	 * @var int 
+	 * Last time when player used ender pearl
+	 */
+	protected $lastEnderPearlUse = -1;
+
 	/**
 	 * @return TranslationContainer|string
 	 */
@@ -3666,6 +3672,17 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	public function teleportImmediate(Vector3 $pos, float $yaw = null, float $pitch = null) : bool{
 		return $this->teleport($pos, $yaw, $pitch);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function canUseEnderPearl() : bool{
+		return $this->lastEnderPearlUse === -1 or time() - $this->lastEnderPearlUse >= 1;
+	}
+
+	public function onUseEnderPearl() : void{
+		$this->lastEnderPearlUse = time();
 	}
 
 	protected function addDefaultWindows(){
