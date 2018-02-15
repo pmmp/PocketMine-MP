@@ -54,6 +54,11 @@ class GiveCommand extends VanillaCommand{
 		}
 
 		$player = $sender->getServer()->getPlayer($args[0]);
+		if($player === null){
+			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
+			return true;
+		}
+
 		try{
 			$item = ItemFactory::fromString($args[1]);
 		}catch(\InvalidArgumentException $e){
@@ -84,14 +89,8 @@ class GiveCommand extends VanillaCommand{
 			$item->setNamedTag($tags);
 		}
 
-		if($player instanceof Player){
-			//TODO: overflow
-			$player->getInventory()->addItem(clone $item);
-		}else{
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
-
-			return true;
-		}
+		//TODO: overflow
+		$player->getInventory()->addItem(clone $item);
 
 		Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.give.success", [
 			$item->getName() . " (" . $item->getId() . ":" . $item->getDamage() . ")",
