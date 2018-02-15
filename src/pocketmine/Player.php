@@ -1615,6 +1615,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected function tryChangeMovement(){
 
 	}
+        
+        //TODO fix some movement bugs and remove this
+	public function bounce(float $fallDistance);
 
 	public function sendAttributes(bool $sendAll = false){
 		$entries = $sendAll ? $this->attributeMap->getAll() : $this->attributeMap->needSend();

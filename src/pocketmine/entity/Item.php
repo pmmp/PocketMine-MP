@@ -239,4 +239,8 @@ class Item extends Entity{
 		$playerInventory->addItem(clone $item);
 		$this->flagForDespawn();
 	}
+	
+	public function fall(float $fallDistance) {
+	    $this->bounce($fallDistance);
+    }
 }

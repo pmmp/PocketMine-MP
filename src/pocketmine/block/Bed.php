@@ -34,7 +34,7 @@ use pocketmine\tile\Bed as TileBed;
 use pocketmine\tile\Tile;
 use pocketmine\utils\TextFormat;
 
-class Bed extends Transparent{
+class Bed extends Transparent implements Bouncy{
 	public const BITFLAG_OCCUPIED = 0x04;
 	public const BITFLAG_HEAD = 0x08;
 
@@ -217,5 +217,12 @@ class Bed extends Transparent{
 		}
 
 		return parent::getAffectedBlocks();
+	}
+	/**
+	 * @return float
+	 */
+        public function getMaxBounce() : float{
+            //TODO need to change to exact value
+            return 2.5;
 	}
 }
