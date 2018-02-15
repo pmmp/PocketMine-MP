@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use pocketmine\block\Bouncy;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
@@ -241,6 +242,8 @@ class Item extends Entity{
 	}
 	
 	public function fall(float $fallDistance) {
-	    $this->bounce($fallDistance);
-    }
+	    if($this->getLevel()->getBlock($this->floor()->subtract(0, 1 , 0)) instanceof Bouncy) {
+                $this->bounce($fallDistance);
+            }
+        }
 }
