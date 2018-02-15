@@ -1434,7 +1434,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public function bounce(float $fallDistance){
 		if (($this->getLevel()->getBlock($this->floor()->subtract(0, 1, 0))->getMaxBounce() > 0) and ($fallDistance > 0.2)) {
 			$bounceDistance = (($this->getLevel()->getBlock($this->floor()->subtract(0, 1, 0))->getMaxBounce() < ((-0.0011 * $fallDistance + 0.43529) * $fallDistance + 1.7323)) ? $this->getLevel()->getBlock($this->floor()->subtract(0, 1, 0))->getMaxBounce() : ((-0.0011 * $fallDistance + 0.43529) * $fallDistance + 1.7323));
-			$ev = new EntityBounceOnBlockEvent($this,$fallDistance,$bounceDistance)
+			$ev = new EntityBounceOnBlockEvent($this,$fallDistance,$bounceDistance);
 			Server::getInstance()->getPluginManager()->callEvent($ev);
 			if(!$ev->isCancelled()) {
 				$this->motionY = 0.1 * $bounceDistance;
