@@ -254,8 +254,6 @@ class ItemFactory{
 			//TODO: RECORD_11
 			//TODO: RECORD_WAIT
 		}
-
-		Item::initCreativeItems();
 	}
 
 	/**

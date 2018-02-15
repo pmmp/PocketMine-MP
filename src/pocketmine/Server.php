@@ -48,6 +48,7 @@ use pocketmine\event\TimingsHandler;
 use pocketmine\inventory\CraftingManager;
 use pocketmine\inventory\Recipe;
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\lang\BaseLang;
 use pocketmine\lang\TextContainer;
@@ -1637,6 +1638,7 @@ class Server{
 			BlockFactory::init();
 			Enchantment::init();
 			ItemFactory::init();
+			Item::initCreativeItems();
 			Biome::init();
 			Effect::init();
 			Attribute::init();
