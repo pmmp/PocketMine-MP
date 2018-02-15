@@ -843,7 +843,7 @@ class Item implements ItemIds, \JsonSerializable{
 					return true;
 				}elseif($this->hasCompoundTag() and $item->hasCompoundTag()){
 					//Serialized NBT didn't match, check the cached object tree.
-					return NBT::matchTree($this->getNamedTag(), $item->getNamedTag());
+					return $this->getNamedTag()->equals($item->getNamedTag());
 				}
 			}else{
 				return true;
