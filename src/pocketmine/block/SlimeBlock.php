@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Item;
 
 class SlimeBlock extends Solid implements Bouncy{
         /**
@@ -58,13 +59,6 @@ class SlimeBlock extends Solid implements Bouncy{
 	 */
 	public function getHardness() : float{
 		return 0;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getName() : string{
-		return "Slime Block";
 	}
 
 	/**
