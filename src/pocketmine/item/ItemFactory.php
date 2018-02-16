@@ -347,8 +347,10 @@ class ItemFactory{
 			$b = explode(":", str_replace([" ", "minecraft:"], ["_", ""], trim($str)));
 			if(!isset($b[1])){
 				$meta = 0;
-			}else{
+			}elseif(is_numeric($b[1])){
 				$meta = $b[1] & 0xFFFF;
+			}else{
+				throw new \InvalidArgumentException("Unable to parse \"" . $b[1] . "\" from \"" . $str . "\" as a valid meta value");
 			}
 
 			if(is_numeric($b[0])){
