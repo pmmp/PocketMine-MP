@@ -633,7 +633,15 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return string
 	 */
 	final public function getName() : string{
-		return $this->hasCustomName() ? $this->getCustomName() : $this->name;
+		return $this->hasCustomName() ? $this->getCustomName() : $this->getVanillaName();
+	}
+
+	/**
+	 * Returns the vanilla name of the item, disregarding custom names.
+	 * @return string
+	 */
+	public function getVanillaName() : string{
+		return $this->name;
 	}
 
 	/**
