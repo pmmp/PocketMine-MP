@@ -292,24 +292,21 @@ class ItemFactory{
 			throw new \TypeError("`tags` argument must be a string or CompoundTag instance, " . (is_object($tags) ? "instance of " . get_class($tags) : gettype($tags)) . " given");
 		}
 
-		$item = null;
 		try{
-			if($id < 256){
+			/** @var Item|null $listed */
+			$listed = self::$list[$id];
+			if($listed !== null){
+				$item = clone $listed;
+			}elseif($id < 256){
 				/* Blocks must have a damage value 0-15, but items can have damage value -1 to indicate that they are
 				 * crafting ingredients with any-damage. */
 				$item = new ItemBlock($id, $meta);
 			}else{
-				/** @var Item|null $listed */
-				$listed = self::$list[$id];
-				if($listed !== null){
-					$item = clone $listed;
-				}
+				$item = new Item($id, $meta);
 			}
 		}catch(\RuntimeException $e){
 			throw new \InvalidArgumentException("Item ID $id is invalid or out of bounds");
 		}
-
-		$item = ($item ?? new Item($id, $meta));
 
 		$item->setDamage($meta);
 		$item->setCount($count);
