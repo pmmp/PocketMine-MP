@@ -145,7 +145,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			$address = $this->players[$identifier]->getAddress();
 			try{
 				if($packet->buffer !== ""){
-					$pk = $this->getPacket($packet->buffer);
+					$pk = PacketPool::getPacket($packet->buffer);
 					$this->players[$identifier]->handleDataPacket($pk);
 				}
 			}catch(\Throwable $e){
@@ -247,15 +247,5 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		if(isset($this->players[$identifier])){
 			$this->players[$identifier]->updatePing($pingMS);
 		}
-	}
-
-	private function getPacket($buffer){
-		$pid = ord($buffer{0});
-		if(($data = PacketPool::getPacketById($pid)) === null){
-			return null;
-		}
-		$data->setBuffer($buffer, 1);
-
-		return $data;
 	}
 }
