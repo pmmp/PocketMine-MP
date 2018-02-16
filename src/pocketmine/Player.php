@@ -1814,7 +1814,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$packet->clientData["SkinGeometryName"] ?? "",
 			base64_decode($packet->clientData["SkinGeometry"] ?? "")
 		);
-		$skin->debloatGeometryData();
 
 		if(!$skin->isValid()){
 			$this->close("", "disconnectionScreen.invalidSkin");
