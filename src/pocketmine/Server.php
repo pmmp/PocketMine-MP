@@ -2317,7 +2317,7 @@ class Server{
 		unset($this->loggedInPlayers[$player->getRawUniqueId()]);
 	}
 
-	public function addPlayer($identifier, Player $player){
+	public function addPlayer(string $identifier, Player $player){
 		$this->players[$identifier] = $player;
 		$this->identifiers[spl_object_hash($player)] = $identifier;
 	}
