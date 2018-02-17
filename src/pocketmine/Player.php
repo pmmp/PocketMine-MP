@@ -243,7 +243,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $startAction = -1;
 	/** @var Vector3|null */
 	protected $sleeping = null;
-	protected $clientID = null;
 
 	private $loaderId = 0;
 
@@ -678,18 +677,16 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	/**
 	 * @param SourceInterface $interface
-	 * @param null            $clientID
 	 * @param string          $ip
 	 * @param int             $port
 	 */
-	public function __construct(SourceInterface $interface, $clientID, string $ip, int $port){
+	public function __construct(SourceInterface $interface, string $ip, int $port){
 		$this->interface = $interface;
 		$this->perm = new PermissibleBase($this);
 		$this->namedtag = new CompoundTag();
 		$this->server = Server::getInstance();
 		$this->ip = $ip;
 		$this->port = $port;
-		$this->clientID = $clientID;
 		$this->loaderId = Level::generateChunkLoaderId($this);
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
 		$this->spawnThreshold = (int) (($this->server->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
