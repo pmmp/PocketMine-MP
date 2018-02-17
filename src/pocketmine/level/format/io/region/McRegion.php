@@ -260,11 +260,11 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	public function getGenerator() : string{
-		return (string) $this->levelData["generatorName"];
+		return $this->levelData->getString("generatorName", "DEFAULT");
 	}
 
 	public function getGeneratorOptions() : array{
-		return ["preset" => $this->levelData["generatorOptions"]];
+		return ["preset" => $this->levelData->getString("generatorOptions", "")];
 	}
 
 	public function getDifficulty() : int{
