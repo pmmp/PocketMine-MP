@@ -101,10 +101,7 @@ class McRegion extends BaseLevelProvider{
 		$nbt->setTag(new ListTag("TileEntities", $tiles, NBT::TAG_Compound));
 
 		$writer = new BigEndianNBTStream();
-		$nbt->setName("Level");
-		$writer->setData(new CompoundTag("", [$nbt]));
-
-		return $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
+		return $writer->writeCompressed(new CompoundTag("", [$nbt]), ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
 	}
 
 	/**
@@ -115,13 +112,12 @@ class McRegion extends BaseLevelProvider{
 	public function nbtDeserialize(string $data){
 		$nbt = new BigEndianNBTStream();
 		try{
-			$nbt->readCompressed($data);
-
-			$chunk = $nbt->getData()->getCompoundTag("Level");
-
-			if($chunk === null){
-				throw new ChunkException("Invalid NBT format, 'Level' key not found");
+			$chunk = $nbt->readCompressed($data);
+			if(!($chunk instanceof CompoundTag) or !$chunk->hasTag("Level")){
+				throw new ChunkException("Invalid NBT format");
 			}
+
+			$chunk = $chunk->getCompoundTag("Level");
 
 			$subChunks = [];
 			$fullIds = $chunk->hasTag("Blocks", ByteArrayTag::class) ? $chunk->getByteArray("Blocks") : str_repeat("\x00", 32768);
@@ -257,10 +253,9 @@ class McRegion extends BaseLevelProvider{
 			new CompoundTag("GameRules", [])
 		]);
 		$nbt = new BigEndianNBTStream();
-		$nbt->setData(new CompoundTag("", [
+		$buffer = $nbt->writeCompressed(new CompoundTag("", [
 			$levelData
 		]));
-		$buffer = $nbt->writeCompressed();
 		file_put_contents($path . "level.dat", $buffer);
 	}
 

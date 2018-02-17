@@ -95,8 +95,7 @@ abstract class Spawnable extends Tile{
 				self::$nbtWriter = new NetworkLittleEndianNBTStream();
 			}
 
-			self::$nbtWriter->setData($this->getSpawnCompound());
-			$this->spawnCompoundCache = self::$nbtWriter->write();
+			$this->spawnCompoundCache = self::$nbtWriter->write($this->getSpawnCompound());
 		}
 
 		return $this->spawnCompoundCache;

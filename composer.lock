@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "c7e83c674d1c7756afa995b7f595d790",
+    "content-hash": "b649f9dd4cf9477cfe9027cdb75858e0",
     "packages": [
         {
             "name": "pocketmine/pocketmine-binaryutils",
@@ -45,12 +45,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/PocketMine-NBT.git",
-                "reference": "7186c4a47243f7eb374cbafc31cc797686b61db6"
+                "reference": "33aaaebab10b501d233b6208d6a170b82f40c3b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/PocketMine-NBT/zipball/7186c4a47243f7eb374cbafc31cc797686b61db6",
-                "reference": "7186c4a47243f7eb374cbafc31cc797686b61db6",
+                "url": "https://api.github.com/repos/pmmp/PocketMine-NBT/zipball/33aaaebab10b501d233b6208d6a170b82f40c3b4",
+                "reference": "33aaaebab10b501d233b6208d6a170b82f40c3b4",
                 "shasum": ""
             },
             "require": {
@@ -76,7 +76,7 @@
                 "source": "https://github.com/pmmp/PocketMine-NBT/tree/master",
                 "issues": "https://github.com/pmmp/PocketMine-NBT/issues"
             },
-            "time": "2018-02-14T17:39:47+00:00"
+            "time": "2018-02-17T14:20:32+00:00"
         },
         {
             "name": "pocketmine/pocketmine-spl",

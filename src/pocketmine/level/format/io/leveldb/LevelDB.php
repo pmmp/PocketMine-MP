@@ -95,8 +95,7 @@ class LevelDB extends BaseLevelProvider{
 			mkdir($this->path, 0777, true);
 		}
 		$nbt = new LittleEndianNBTStream();
-		$nbt->read(substr(file_get_contents($this->getPath() . "level.dat"), 8));
-		$levelData = $nbt->getData();
+		$levelData = $nbt->read(substr(file_get_contents($this->getPath() . "level.dat"), 8));
 		if($levelData instanceof CompoundTag){
 			$this->levelData = $levelData;
 		}else{
@@ -210,8 +209,7 @@ class LevelDB extends BaseLevelProvider{
 		]);
 
 		$nbt = new LittleEndianNBTStream();
-		$nbt->setData($levelData);
-		$buffer = $nbt->write();
+		$buffer = $nbt->write($levelData);
 		file_put_contents($path . "level.dat", Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
 
 
@@ -240,8 +238,7 @@ class LevelDB extends BaseLevelProvider{
 		$this->levelData->setInt("StorageVersion", self::CURRENT_STORAGE_VERSION);
 
 		$nbt = new LittleEndianNBTStream();
-		$nbt->setData($this->levelData);
-		$buffer = $nbt->write();
+		$buffer = $nbt->write($this->levelData);
 		file_put_contents($this->getPath() . "level.dat", Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
 	}
 
@@ -371,8 +368,7 @@ class LevelDB extends BaseLevelProvider{
 			/** @var CompoundTag[] $entities */
 			$entities = [];
 			if(($entityData = $this->db->get($index . self::TAG_ENTITY)) !== false and strlen($entityData) > 0){
-				$nbt->read($entityData, true);
-				$entities = $nbt->getData();
+				$entities = $nbt->read($entityData, true);
 				if(!is_array($entities)){
 					$entities = [$entities];
 				}
@@ -387,8 +383,7 @@ class LevelDB extends BaseLevelProvider{
 
 			$tiles = [];
 			if(($tileData = $this->db->get($index . self::TAG_BLOCK_ENTITY)) !== false and strlen($tileData) > 0){
-				$nbt->read($tileData, true);
-				$tiles = $nbt->getData();
+				$tiles = $nbt->read($tileData, true);
 				if(!is_array($tiles)){
 					$tiles = [$tiles];
 				}
@@ -506,8 +501,7 @@ class LevelDB extends BaseLevelProvider{
 	private function writeTags(array $targets, string $index){
 		if(!empty($targets)){
 			$nbt = new LittleEndianNBTStream();
-			$nbt->setData($targets);
-			$this->db->put($index, $nbt->write());
+			$this->db->put($index, $nbt->write($targets));
 		}else{
 			$this->db->delete($index);
 		}
