@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use pocketmine\level\Level;
-use pocketmine\nbt\NBT;
+use pocketmine\nbt\NetworkLittleEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\Player;
@@ -32,7 +32,7 @@ use pocketmine\Player;
 abstract class Spawnable extends Tile{
 	/** @var string|null */
 	private $spawnCompoundCache = null;
-	/** @var NBT|null */
+	/** @var NetworkLittleEndianNBTStream|null */
 	private static $nbtWriter = null;
 
 	public function createSpawnPacket() : BlockEntityDataPacket{
@@ -92,11 +92,11 @@ abstract class Spawnable extends Tile{
 	final public function getSerializedSpawnCompound() : string{
 		if($this->spawnCompoundCache === null){
 			if(self::$nbtWriter === null){
-				self::$nbtWriter = new NBT(NBT::LITTLE_ENDIAN);
+				self::$nbtWriter = new NetworkLittleEndianNBTStream();
 			}
 
 			self::$nbtWriter->setData($this->getSpawnCompound());
-			$this->spawnCompoundCache = self::$nbtWriter->write(true);
+			$this->spawnCompoundCache = self::$nbtWriter->write();
 		}
 
 		return $this->spawnCompoundCache;

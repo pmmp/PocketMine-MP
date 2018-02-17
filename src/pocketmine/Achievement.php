@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine;
 
-use pocketmine\event\TranslationContainer;
+use pocketmine\lang\TranslationContainer;
 use pocketmine\utils\TextFormat;
 
 /**

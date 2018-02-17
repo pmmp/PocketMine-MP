@@ -38,6 +38,7 @@ use raklib\RakLib;
 use raklib\server\RakLibServer;
 use raklib\server\ServerHandler;
 use raklib\server\ServerInstance;
+use raklib\utils\InternetAddress;
 
 class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 
@@ -65,7 +66,12 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	public function __construct(Server $server){
 		$this->server = $server;
 
-		$this->rakLib = new RakLibServer($this->server->getLogger(), \pocketmine\COMPOSER_AUTOLOADER_PATH, $this->server->getPort(), $this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp(), false);
+		$this->rakLib = new RakLibServer(
+			$this->server->getLogger(),
+			\pocketmine\COMPOSER_AUTOLOADER_PATH,
+			new InternetAddress($this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp(), $this->server->getPort(), 4),
+			(int) $this->server->getProperty("network.max-mtu-size", 1492)
+		);
 		$this->interface = new ServerHandler($this->rakLib, $this);
 	}
 
@@ -139,7 +145,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			$address = $this->players[$identifier]->getAddress();
 			try{
 				if($packet->buffer !== ""){
-					$pk = $this->getPacket($packet->buffer);
+					$pk = PacketPool::getPacket($packet->buffer);
 					$this->players[$identifier]->handleDataPacket($pk);
 				}
 			}catch(\Throwable $e){
@@ -219,7 +225,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 					if(!isset($packet->__encapsulatedPacket)){
 						$packet->__encapsulatedPacket = new CachedEncapsulatedPacket;
 						$packet->__encapsulatedPacket->identifierACK = null;
-						$packet->__encapsulatedPacket->buffer = $packet->buffer; // #blameshoghi
+						$packet->__encapsulatedPacket->buffer = $packet->buffer;
 						$packet->__encapsulatedPacket->reliability = PacketReliability::RELIABLE_ORDERED;
 						$packet->__encapsulatedPacket->orderChannel = 0;
 					}
@@ -241,15 +247,5 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		if(isset($this->players[$identifier])){
 			$this->players[$identifier]->updatePing($pingMS);
 		}
-	}
-
-	private function getPacket($buffer){
-		$pid = ord($buffer{0});
-		if(($data = PacketPool::getPacketById($pid)) === null){
-			return null;
-		}
-		$data->setBuffer($buffer, 1);
-
-		return $data;
 	}
 }

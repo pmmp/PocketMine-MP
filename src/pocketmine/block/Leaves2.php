@@ -39,19 +39,11 @@ class Leaves2 extends Leaves{
 		return $names[$this->getVariant()] ?? "Unknown";
 	}
 
-	public function getDrops(Item $item) : array{
-		$variantMeta = $this->getVariant();
+	public function getSaplingItem() : Item{
+		return ItemFactory::get(Item::SAPLING, $this->getVariant() + 4);
+	}
 
-		if($item->isShears()){
-			return [
-				ItemFactory::get($this->getItemId(), $variantMeta, 1)
-			];
-		}elseif(mt_rand(1, 20) === 1){ //Saplings
-			return [
-				ItemFactory::get(Item::SAPLING, $variantMeta + 4, 1)
-			];
-		}
-
-		return [];
+	public function canDropApples() : bool{
+		return $this->meta === self::DARK_OAK;
 	}
 }

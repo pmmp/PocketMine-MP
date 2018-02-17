@@ -291,15 +291,5 @@ abstract class AsyncTask extends Collectable{
 
 		return $server->getScheduler()->peekLocalComplex($this);
 	}
-
-	public function cleanObject(){
-		foreach($this as $p => $v){
-			if(!($v instanceof \Threaded)){
-				$this->{$p} = null;
-			}
-		}
-
-		$this->setGarbage();
-	}
 }
 

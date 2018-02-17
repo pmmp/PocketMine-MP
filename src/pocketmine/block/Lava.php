@@ -29,6 +29,7 @@ use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 use pocketmine\Server;
 
@@ -46,6 +47,22 @@ class Lava extends Liquid{
 
 	public function getName() : string{
 		return "Lava";
+	}
+
+	public function getStillForm() : Block{
+		return BlockFactory::get(Block::STILL_LAVA, $this->meta);
+	}
+
+	public function getFlowingForm() : Block{
+		return BlockFactory::get(Block::FLOWING_LAVA, $this->meta);
+	}
+
+	public function getBucketFillSound() : int{
+		return LevelSoundEventPacket::SOUND_BUCKET_FILL_LAVA;
+	}
+
+	public function getBucketEmptySound() : int{
+		return LevelSoundEventPacket::SOUND_BUCKET_EMPTY_LAVA;
 	}
 
 	public function tickRate() : int{

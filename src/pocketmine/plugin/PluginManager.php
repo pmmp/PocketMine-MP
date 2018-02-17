@@ -372,6 +372,10 @@ class PluginManager{
 				if($pluginNumbers[1] > $serverNumbers[1]){ //If the plugin requires new API features, being backwards compatible
 					continue;
 				}
+
+				if($pluginNumbers[2] > $serverNumbers[2]){ //If the plugin requires bug fixes in patches, being backwards compatible
+					continue;
+				}
 			}
 
 			return true;
@@ -500,23 +504,7 @@ class PluginManager{
 	 * @return array|Permissible[]
 	 */
 	public function getPermissionSubscriptions(string $permission) : array{
-		if(isset($this->permSubs[$permission])){
-			return $this->permSubs[$permission];
-			$subs = [];
-			foreach($this->permSubs[$permission] as $k => $perm){
-				/** @var \WeakRef $perm */
-				if($perm->acquire()){
-					$subs[] = $perm->get();
-					$perm->release();
-				}else{
-					unset($this->permSubs[$permission][$k]);
-				}
-			}
-
-			return $subs;
-		}
-
-		return [];
+		return $this->permSubs[$permission] ?? [];
 	}
 
 	/**
@@ -549,33 +537,11 @@ class PluginManager{
 	 * @return Permissible[]
 	 */
 	public function getDefaultPermSubscriptions(bool $op) : array{
-		$subs = [];
-
 		if($op === true){
 			return $this->defSubsOp;
-			foreach($this->defSubsOp as $k => $perm){
-				/** @var \WeakRef $perm */
-				if($perm->acquire()){
-					$subs[] = $perm->get();
-					$perm->release();
-				}else{
-					unset($this->defSubsOp[$k]);
-				}
-			}
-		}else{
-			return $this->defSubs;
-			foreach($this->defSubs as $k => $perm){
-				/** @var \WeakRef $perm */
-				if($perm->acquire()){
-					$subs[] = $perm->get();
-					$perm->release();
-				}else{
-					unset($this->defSubs[$k]);
-				}
-			}
 		}
 
-		return $subs;
+		return $this->defSubs;
 	}
 
 	/**

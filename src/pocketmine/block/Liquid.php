@@ -72,9 +72,17 @@ abstract class Liquid extends Transparent{
 		return null;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [];
 	}
+
+	abstract public function getStillForm() : Block;
+
+	abstract public function getFlowingForm() : Block;
+
+	abstract public function getBucketFillSound() : int;
+
+	abstract public function getBucketEmptySound() : int;
 
 	public function getFluidHeightPercent(){
 		$d = $this->meta;

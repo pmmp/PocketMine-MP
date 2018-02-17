@@ -41,7 +41,7 @@ class GlassPane extends Thin{
 		return 0.3;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [];
 	}
 }

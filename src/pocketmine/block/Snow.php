@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Tool;
+use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
+use pocketmine\item\TieredTool;
 
 class Snow extends Solid{
 
@@ -38,11 +40,21 @@ class Snow extends Solid{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_SHOVEL;
+		return BlockToolType::TYPE_SHOVEL;
+	}
+
+	public function getToolHarvestLevel() : int{
+		return TieredTool::TIER_WOODEN;
 	}
 
 	public function getName() : string{
 		return "Snow Block";
+	}
+
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			ItemFactory::get(Item::SNOWBALL, 0, 4)
+		];
 	}
 
 }

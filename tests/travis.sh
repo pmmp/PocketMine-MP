@@ -10,7 +10,7 @@ while getopts "p:" OPTION 2> /dev/null; do
 	esac
 done
 
-./tests/lint.sh -p "$PHP_BINARY"
+./tests/lint.sh -p "$PHP_BINARY" -d ./src/pocketmine
 
 if [ $? -ne 0 ]; then
 	echo Lint scan failed!

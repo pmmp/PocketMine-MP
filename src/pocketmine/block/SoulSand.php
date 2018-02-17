@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
 
 class SoulSand extends Solid{
@@ -43,7 +42,7 @@ class SoulSand extends Solid{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_SHOVEL;
+		return BlockToolType::TYPE_SHOVEL;
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

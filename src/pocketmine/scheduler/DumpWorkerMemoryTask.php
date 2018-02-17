@@ -52,7 +52,6 @@ class DumpWorkerMemoryTask extends AsyncTask{
 
 		MemoryManager::dumpMemory(
 			["worker" => $this->worker, "store" => $store],
-			$this->worker->getClassLoader(),
 			$this->outputFolder . DIRECTORY_SEPARATOR . "AsyncWorker#" . $this->worker->getAsyncWorkerId(),
 			$this->maxNesting,
 			$this->maxStringSize

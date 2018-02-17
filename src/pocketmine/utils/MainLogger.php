@@ -39,6 +39,8 @@ class MainLogger extends \AttachableThreadedLogger{
 	protected $logDebug;
 	/** @var MainLogger */
 	public static $logger = null;
+	/** @var bool */
+	private $syncFlush = false;
 
 	/**
 	 * @param string $logFile
@@ -162,6 +164,8 @@ class MainLogger extends \AttachableThreadedLogger{
 		foreach(\pocketmine\getTrace(0, $trace) as $i => $line){
 			$this->debug($line, true);
 		}
+
+		$this->syncFlushBuffer();
 	}
 
 	public function log($level, $message){
@@ -210,7 +214,7 @@ class MainLogger extends \AttachableThreadedLogger{
 			$threadName = (new \ReflectionClass($thread))->getShortName() . " thread";
 		}
 
-		$message = TextFormat::toANSI(TextFormat::AQUA . "[" . date("H:i:s", $now) . "] " . TextFormat::RESET . $color . "[" . $threadName . "/" . $prefix . "]:" . " " . $message . TextFormat::RESET);
+		$message = Terminal::toANSI(TextFormat::AQUA . "[" . date("H:i:s", $now) . "] " . TextFormat::RESET . $color . "[" . $threadName . "/" . $prefix . "]:" . " " . $message . TextFormat::RESET);
 		$cleanMessage = TextFormat::clean($message);
 
 		if(!Terminal::hasFormattingCodes()){
@@ -220,12 +224,21 @@ class MainLogger extends \AttachableThreadedLogger{
 		}
 
 		foreach($this->attachments as $attachment){
-			if($attachment instanceof \ThreadedLoggerAttachment){
-				$attachment->call($level, $message);
-			}
+			$attachment->call($level, $message);
 		}
 
 		$this->logStream[] = date("Y-m-d", $now) . " " . $cleanMessage . PHP_EOL;
+	}
+
+	public function syncFlushBuffer(){
+		$this->syncFlush = true;
+		$this->synchronized(function(){
+			$this->notify(); //write immediately
+
+			while($this->syncFlush){
+				$this->wait(); //block until it's all been written to disk
+			}
+		});
 	}
 
 	/**
@@ -235,6 +248,11 @@ class MainLogger extends \AttachableThreadedLogger{
 		while($this->logStream->count() > 0){
 			$chunk = $this->logStream->shift();
 			fwrite($logResource, $chunk);
+		}
+
+		if($this->syncFlush){
+			$this->syncFlush = false;
+			$this->notify(); //if this was due to a sync flush, tell the caller to stop waiting
 		}
 	}
 

@@ -29,11 +29,11 @@ use pocketmine\Player;
 
 class AnvilInventory extends ContainerInventory{
 
-	/** @var FakeBlockMenu */
+	/** @var Position */
 	protected $holder;
 
 	public function __construct(Position $pos){
-		parent::__construct(new FakeBlockMenu($this, $pos));
+		parent::__construct($pos->asPosition());
 	}
 
 	public function getNetworkType() : int{
@@ -50,7 +50,7 @@ class AnvilInventory extends ContainerInventory{
 
 	/**
 	 * This override is here for documentation and code completion purposes only.
-	 * @return FakeBlockMenu
+	 * @return Position
 	 */
 	public function getHolder(){
 		return $this->holder;

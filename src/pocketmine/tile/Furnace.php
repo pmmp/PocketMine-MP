@@ -105,13 +105,6 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	}
 
 	/**
-	 * @return int
-	 */
-	public function getSize() : int{
-		return 3;
-	}
-
-	/**
 	 * @return FurnaceInventory
 	 */
 	public function getInventory(){
