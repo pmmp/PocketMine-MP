@@ -21,22 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\nbt\tag;
+namespace pocketmine\item;
 
-use pocketmine\nbt\NBT;
-use pocketmine\nbt\NBTStream;
+use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 
-class EndTag extends Tag{
+class Anvil extends ItemBlock{
 
-	public function getType() : int{
-		return NBT::TAG_End;
+	public function __construct(int $meta = 0){
+		parent::__construct(Item::ANVIL, $meta);
 	}
 
-	public function read(NBTStream $nbt) : void{
-
-	}
-
-	public function write(NBTStream $nbt) : void{
-
+	public function getBlock() : Block{
+		return BlockFactory::get(Block::ANVIL, $this->meta << 2);
 	}
 }

@@ -162,23 +162,22 @@ class LevelDBChunkProvider implements InternalChunkProvider{
 
 			$entities = [];
 			if(($entityData = $this->db->get($index . LevelDB::TAG_ENTITY)) !== false and strlen($entityData) > 0){
-				$nbt->read($entityData, true);
-				$entities = $nbt->getData();
+				$entities = $nbt->read($entityData, true);
 				if(!is_array($entities)){
 					$entities = [$entities];
 				}
 			}
 
+			/** @var CompoundTag $entityNBT */
 			foreach($entities as $entityNBT){
-				if($entityNBT->id instanceof IntTag){
-					$entityNBT["id"] &= 0xff;
+				if($entityNBT->hasTag("id", IntTag::class)){
+					$entityNBT->setInt("id", $entityNBT->getInt("id") & 0xff); //remove type flags - TODO: use these instead of removing them)
 				}
 			}
 
 			$tiles = [];
 			if(($tileData = $this->db->get($index . LevelDB::TAG_BLOCK_ENTITY)) !== false and strlen($tileData) > 0){
-				$nbt->read($tileData, true);
-				$tiles = $nbt->getData();
+				$tiles = $nbt->read($tileData, true);
 				if(!is_array($tiles)){
 					$tiles = [$tiles];
 				}
@@ -281,8 +280,7 @@ class LevelDBChunkProvider implements InternalChunkProvider{
 	private function writeTags(array $targets, string $index){
 		if(!empty($targets)){
 			$nbt = new LittleEndianNBTStream();
-			$nbt->setData($targets);
-			$this->db->put($index, $nbt->write());
+			$this->db->put($index, $nbt->write($targets));
 		}else{
 			$this->db->delete($index);
 		}

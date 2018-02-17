@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event;
+namespace pocketmine\lang;
 
 class TextContainer{
 

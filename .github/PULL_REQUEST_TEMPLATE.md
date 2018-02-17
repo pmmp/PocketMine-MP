@@ -33,4 +33,8 @@ Requires translations:
 -->
 
 ## Tests
-<!-- Attach scripts or actions to test this pull request, as well as the result -->
+<!--
+Details should be provided of tests done. Simply saying "tested" or equivalent is not acceptable.
+
+Attach scripts or actions to test this pull request, as well as the result
+-->

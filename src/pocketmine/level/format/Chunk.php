@@ -723,11 +723,6 @@ class Chunk{
 							continue;
 						}
 
-						if(($nbt["Pos"][0] >> 4) !== $this->x or ($nbt["Pos"][2] >> 4) !== $this->z){
-							$changed = true;
-							continue; //Fixes entities allocated in wrong chunks.
-						}
-
 						try{
 							$entity = Entity::createEntity($nbt->getTag("id")->getValue(), $level, $nbt);
 							if(!($entity instanceof Entity)){
@@ -749,11 +744,6 @@ class Chunk{
 						if(!$nbt->hasTag(Tile::TAG_ID, StringTag::class)){
 							$changed = true;
 							continue;
-						}
-
-						if(($nbt->getInt(Tile::TAG_X) >> 4) !== $this->x or ($nbt->getInt(Tile::TAG_Z) >> 4) !== $this->z){
-							$changed = true;
-							continue; //Fixes tiles allocated in wrong chunks.
 						}
 
 						if(Tile::createTile($nbt->getString(Tile::TAG_ID), $level, $nbt) === null){

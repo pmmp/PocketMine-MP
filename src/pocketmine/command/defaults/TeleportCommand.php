@@ -26,7 +26,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\event\TranslationContainer;
+use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
@@ -47,9 +47,9 @@ class TeleportCommand extends VanillaCommand{
 			return true;
 		}
 
-		$args = array_filter($args, function($arg){
+		$args = array_values(array_filter($args, function($arg){
 			return strlen($arg) > 0;
-		});
+		}));
 		if(count($args) < 1 or count($args) > 6){
 			throw new InvalidCommandSyntaxException();
 		}

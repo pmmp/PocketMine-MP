@@ -129,7 +129,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
-		return $this->player->handleInventoryTransaction($packet); //TODO
+		return $this->player->handleInventoryTransaction($packet);
 	}
 
 	public function handleMobEquipment(MobEquipmentPacket $packet) : bool{

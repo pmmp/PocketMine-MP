@@ -30,7 +30,6 @@ use pocketmine\block\Liquid;
 use pocketmine\entity\Living;
 use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\event\player\PlayerBucketFillEvent;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -51,7 +50,7 @@ class Bucket extends Item implements Consumable{
 		return 0;
 	}
 
-	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
+	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
 		$resultBlock = BlockFactory::get($this->meta);
 
 		if($resultBlock instanceof Air){

@@ -125,14 +125,14 @@ class ExperienceOrb extends Entity{
 	}
 
 	public function getXpValue() : int{
-		return $this->getDataProperty(self::DATA_EXPERIENCE_VALUE) ?? 0;
+		return $this->propertyManager->getInt(self::DATA_EXPERIENCE_VALUE) ?? 0;
 	}
 
 	public function setXpValue(int $amount) : void{
 		if($amount <= 0){
 			throw new \InvalidArgumentException("XP amount must be greater than 0, got $amount");
 		}
-		$this->setDataProperty(self::DATA_EXPERIENCE_VALUE, self::DATA_TYPE_INT, $amount);
+		$this->propertyManager->setInt(self::DATA_EXPERIENCE_VALUE, $amount);
 	}
 
 	public function hasTargetPlayer() : bool{
@@ -165,16 +165,16 @@ class ExperienceOrb extends Entity{
 		}
 
 		$currentTarget = $this->getTargetPlayer();
+		if($currentTarget !== null and $currentTarget->distanceSquared($this) > self::MAX_TARGET_DISTANCE ** 2){
+			$currentTarget = null;
+		}
 
 		if($this->lookForTargetTime >= 20){
-			if($currentTarget === null or $currentTarget->distanceSquared($this) > self::MAX_TARGET_DISTANCE ** 2){
-				$this->setTargetPlayer(null);
-
+			if($currentTarget === null){
 				$newTarget = $this->level->getNearestEntity($this, self::MAX_TARGET_DISTANCE, Human::class);
 
 				if($newTarget instanceof Human and !($newTarget instanceof Player and $newTarget->isSpectator())){
 					$currentTarget = $newTarget;
-					$this->setTargetPlayer($currentTarget);
 				}
 			}
 
@@ -182,6 +182,8 @@ class ExperienceOrb extends Entity{
 		}else{
 			$this->lookForTargetTime += $tickDiff;
 		}
+
+		$this->setTargetPlayer($currentTarget);
 
 		if($currentTarget !== null){
 			$vector = $currentTarget->subtract($this)->add(0, $currentTarget->getEyeHeight() / 2, 0)->divide(self::MAX_TARGET_DISTANCE);

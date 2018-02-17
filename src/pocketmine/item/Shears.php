@@ -30,7 +30,7 @@ class Shears extends Tool{
 		parent::__construct(self::SHEARS, $meta, "Shears");
 	}
 
-	public function getMaxDurability(){
+	public function getMaxDurability() : int{
 		return 239;
 	}
 

@@ -106,10 +106,9 @@ class McRegion extends BaseLevelProvider{
 			new CompoundTag("GameRules", [])
 		]);
 		$nbt = new BigEndianNBTStream();
-		$nbt->setData(new CompoundTag("", [
+		$buffer = $nbt->writeCompressed(new CompoundTag("", [
 			$levelData
 		]));
-		$buffer = $nbt->writeCompressed();
 		file_put_contents($path . "level.dat", $buffer);
 	}
 

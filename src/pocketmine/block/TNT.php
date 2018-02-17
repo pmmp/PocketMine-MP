@@ -60,7 +60,7 @@ class TNT extends Solid{
 
 		$mot = (new Random())->nextSignedFloat() * M_PI * 2;
 		$nbt = Entity::createBaseNBT($this->add(0.5, 0, 0.5), new Vector3(-sin($mot) * 0.02, 0.2, -cos($mot) * 0.02));
-		$nbt->setByte("Fuse", $fuse);
+		$nbt->setShort("Fuse", $fuse);
 
 		$tnt = Entity::createEntity("PrimedTNT", $this->getLevel(), $nbt);
 

@@ -32,6 +32,11 @@ abstract class EntityInventory extends BaseInventory{
 	/** @var Entity */
 	protected $holder;
 
+	public function __construct(Entity $holder, array $items = [], int $size = null, string $title = null){
+		$this->holder = $holder;
+		parent::__construct($items, $size, $title);
+	}
+
 	protected function doSetItemEvents(int $index, Item $newItem) : ?Item{
 		Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($this->getHolder(), $this->getItem($index), $newItem, $index));
 		if($ev->isCancelled()){
@@ -42,9 +47,9 @@ abstract class EntityInventory extends BaseInventory{
 	}
 
 	/**
-	 * @return Entity|InventoryHolder
+	 * @return Entity
 	 */
 	public function getHolder(){
-		return parent::getHolder();
+		return $this->holder;
 	}
 }

@@ -94,10 +94,7 @@ class McRegionChunkProvider implements InternalChunkProvider{
 		$nbt->setTag(new ListTag("TileEntities", $chunk->NBTtiles, NBT::TAG_Compound));
 
 		$writer = new BigEndianNBTStream();
-		$nbt->setName("Level");
-		$writer->setData(new CompoundTag("", [$nbt]));
-
-		return $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
+		return $writer->writeCompressed(new CompoundTag("", [$nbt]), ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
 	}
 
 	/**
@@ -108,13 +105,12 @@ class McRegionChunkProvider implements InternalChunkProvider{
 	protected function nbtDeserialize(string $data){
 		$nbt = new BigEndianNBTStream();
 		try{
-			$nbt->readCompressed($data);
-
-			$chunk = $nbt->getData()->getCompoundTag("Level");
-
-			if($chunk === null){
-				throw new ChunkException("Invalid NBT format, 'Level' key not found");
+			$chunk = $nbt->readCompressed($data);
+			if(!($chunk instanceof CompoundTag) or !$chunk->hasTag("Level")){
+				throw new ChunkException("Invalid NBT format");
 			}
+
+			$chunk = $chunk->getCompoundTag("Level");
 
 			$subChunks = [];
 			$fullIds = $chunk->hasTag("Blocks", ByteArrayTag::class) ? $chunk->getByteArray("Blocks") : str_repeat("\x00", 32768);
