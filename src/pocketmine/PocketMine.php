@@ -307,7 +307,7 @@ namespace pocketmine {
 		$logger->info("Stopping other threads");
 
 		$killer = new ServerKiller(8);
-		$killer->start();
+		$killer->start(PTHREADS_INHERIT_NONE);
 		usleep(10000); //Fixes ServerKiller not being able to start on single-core machines
 
 		if(ThreadManager::getInstance()->stopAll() > 0){
