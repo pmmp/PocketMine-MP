@@ -131,18 +131,6 @@ class Banner extends Spawnable implements Nameable{
 	}
 
 	/**
-	 * Returns an array containing all pattern IDs
-	 *
-	 * @return array
-	 */
-	public function getPatternIds() : array{
-		$keys = array_keys((array) $this->namedtag->getTag(self::TAG_PATTERNS));
-		return array_filter($keys, function(string $key){
-			return is_numeric($key);
-		}, ARRAY_FILTER_USE_KEY);
-	}
-
-	/**
 	 * Applies a new pattern on the banner with the given color.
 	 *
 	 * @param string $pattern
@@ -151,20 +139,15 @@ class Banner extends Spawnable implements Nameable{
 	 * @return int ID of pattern.
 	 */
 	public function addPattern(string $pattern, int $color) : int{
-		$patternId = 0;
-		if($this->getPatternCount() !== 0){
-			$patternId = max($this->getPatternIds()) + 1;
-		}
-
 		$list = $this->namedtag->getListTag(self::TAG_PATTERNS);
 		assert($list !== null);
-		$list[$patternId] = new CompoundTag("", [
+		$list->push(new CompoundTag("", [
 			new IntTag(self::TAG_PATTERN_COLOR, $color & 0x0f),
 			new StringTag(self::TAG_PATTERN_NAME, $pattern)
-		]);
+		]));
 
 		$this->onChanged();
-		return $patternId;
+		return $list->count() - 1; //Last offset in the list
 	}
 
 	/**
@@ -175,7 +158,7 @@ class Banner extends Spawnable implements Nameable{
 	 * @return bool
 	 */
 	public function patternExists(int $patternId) : bool{
-		return isset($this->namedtag->getListTag(self::TAG_PATTERNS)[$patternId]);
+		return $this->namedtag->getListTag(self::TAG_PATTERNS)->isset($patternId);
 	}
 
 	/**
@@ -192,7 +175,7 @@ class Banner extends Spawnable implements Nameable{
 
 		$list = $this->namedtag->getListTag(self::TAG_PATTERNS);
 		assert($list instanceof ListTag);
-		$patternTag = $list[$patternId];
+		$patternTag = $list->get($patternId);
 		assert($patternTag instanceof CompoundTag);
 
 		return [
@@ -218,10 +201,10 @@ class Banner extends Spawnable implements Nameable{
 		$list = $this->namedtag->getListTag(self::TAG_PATTERNS);
 		assert($list instanceof ListTag);
 
-		$list[$patternId] = new CompoundTag("", [
+		$list->set($patternId, new CompoundTag("", [
 			new IntTag(self::TAG_PATTERN_COLOR, $color & 0x0f),
 			new StringTag(self::TAG_PATTERN_NAME, $pattern)
-		]);
+		]));
 
 		$this->onChanged();
 		return true;
@@ -241,7 +224,7 @@ class Banner extends Spawnable implements Nameable{
 
 		$list = $this->namedtag->getListTag(self::TAG_PATTERNS);
 		if($list !== null){
-			unset($list[$patternId]);
+			$list->remove($patternId);
 		}
 
 		$this->onChanged();
@@ -254,12 +237,7 @@ class Banner extends Spawnable implements Nameable{
 	 * @return bool indicating whether the banner was empty or not.
 	 */
 	public function deleteTopPattern() : bool{
-		$keys = $this->getPatternIds();
-		if(empty($keys)){
-			return false;
-		}
-
-		return $this->deletePattern(max($keys));
+		return $this->deletePattern($this->getPatternCount() - 1);
 	}
 
 	/**
@@ -268,12 +246,7 @@ class Banner extends Spawnable implements Nameable{
 	 * @return bool indicating whether the banner was empty or not.
 	 */
 	public function deleteBottomPattern() : bool{
-		$keys = $this->getPatternIds();
-		if(empty($keys)){
-			return false;
-		}
-
-		return $this->deletePattern(min($keys));
+		return $this->deletePattern(0);
 	}
 
 	/**
@@ -282,7 +255,7 @@ class Banner extends Spawnable implements Nameable{
 	 * @return int
 	 */
 	public function getPatternCount() : int{
-		return count($this->getPatternIds());
+		return $this->namedtag->getListTag(self::TAG_PATTERNS)->count();
 	}
 
 	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{

@@ -41,11 +41,11 @@ class Vector2{
 	}
 
 	public function getFloorX(){
-		return (int) $this->x;
+		return (int) floor($this->x);
 	}
 
 	public function getFloorY(){
-		return (int) $this->y;
+		return (int) floor($this->y);
 	}
 
 	public function add($x, $y = 0){
@@ -65,11 +65,11 @@ class Vector2{
 	}
 
 	public function ceil(){
-		return new Vector2((int) ($this->x + 1), (int) ($this->y + 1));
+		return new Vector2((int) ceil($this->x), (int) ceil($this->y));
 	}
 
 	public function floor(){
-		return new Vector2((int) $this->x, (int) $this->y);
+		return new Vector2((int) floor($this->x), (int) floor($this->y));
 	}
 
 	public function round(){

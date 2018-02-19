@@ -81,7 +81,7 @@ interface Plugin extends CommandExecutor{
 	 *
 	 * @param string $filename
 	 *
-	 * @return
+	 * @return null|resource Resource data, or null
 	 */
 	public function getResource(string $filename);
 

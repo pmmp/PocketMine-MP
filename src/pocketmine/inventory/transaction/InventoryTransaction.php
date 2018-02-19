@@ -25,7 +25,6 @@ namespace pocketmine\inventory\transaction;
 
 use pocketmine\event\inventory\InventoryTransactionEvent;
 use pocketmine\inventory\Inventory;
-use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
@@ -239,9 +238,6 @@ class InventoryTransaction{
 	protected function sendInventories() : void{
 		foreach($this->inventories as $inventory){
 			$inventory->sendContents($this->source);
-			if($inventory instanceof PlayerInventory){
-				$inventory->sendArmorContents($this->source);
-			}
 		}
 	}
 

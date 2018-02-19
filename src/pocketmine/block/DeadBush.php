@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 
@@ -54,16 +53,20 @@ class DeadBush extends Flowable{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_SHEARS;
+		return BlockToolType::TYPE_SHEARS;
+	}
+
+	public function getToolHarvestLevel() : int{
+		return 1;
 	}
 
 	public function getDrops(Item $item) : array{
-		if($item->isShears()){
-			return parent::getDrops($item);
+		if(!$this->isCompatibleWithTool($item)){
+			return [
+				ItemFactory::get(Item::STICK, 0, mt_rand(0, 2))
+			];
 		}
 
-		return [
-			ItemFactory::get(Item::STICK, 0, mt_rand(0, 2))
-		];
+		return parent::getDrops($item);
 	}
 }

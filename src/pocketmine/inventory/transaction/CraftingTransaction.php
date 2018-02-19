@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\inventory\transaction;
 
 use pocketmine\event\inventory\CraftItemEvent;
-use pocketmine\inventory\BigCraftingGrid;
 use pocketmine\inventory\CraftingRecipe;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;

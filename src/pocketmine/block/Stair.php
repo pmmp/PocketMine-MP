@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -101,13 +100,5 @@ abstract class Stair extends Transparent{
 
 	public function getVariantBitmask() : int{
 		return 0;
-	}
-
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
-			return parent::getDrops($item);
-		}
-
-		return [];
 	}
 }

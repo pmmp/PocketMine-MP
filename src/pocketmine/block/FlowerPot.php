@@ -96,8 +96,12 @@ class FlowerPot extends Flowable{
 		return true;
 	}
 
-	public function getDrops(Item $item) : array{
-		$items = parent::getDrops($item);
+	public function getVariantBitmask() : int{
+		return 0;
+	}
+
+	public function getDropsForCompatibleTool(Item $item) : array{
+		$items = parent::getDropsForCompatibleTool($item);
 
 		$tile = $this->getLevel()->getTile($this);
 		if($tile instanceof TileFlowerPot){
@@ -110,4 +114,7 @@ class FlowerPot extends Flowable{
 		return $items;
 	}
 
+	public function isAffectedBySilkTouch() : bool{
+		return false;
+	}
 }

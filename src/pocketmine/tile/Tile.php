@@ -146,7 +146,9 @@ abstract class Tile extends Position{
 		$this->server = $level->getServer();
 		$this->setLevel($level);
 		$this->chunk = $level->getChunk($this->namedtag->getInt(self::TAG_X) >> 4, $this->namedtag->getInt(self::TAG_Z) >> 4, false);
-		assert($this->chunk !== null);
+		if($this->chunk === null){
+			throw new \InvalidStateException("Cannot create tiles in unloaded chunks");
+		}
 
 		$this->name = "";
 		$this->id = Tile::$tileCount++;
@@ -205,12 +207,10 @@ abstract class Tile extends Position{
 		static::createAdditionalNBT($nbt, $pos, $face, $item, $player);
 
 		if($item !== null){
-			if($item->hasCustomBlockData()){
-				foreach($item->getCustomBlockData() as $customBlockDataTag){
-					if(!($customBlockDataTag instanceof NamedTag)){
-						continue;
-					}
-					$nbt->setTag($customBlockDataTag);
+			$customBlockData = $item->getCustomBlockData();
+			if($customBlockData !== null){
+				foreach($customBlockData as $customBlockDataTag){
+					$nbt->setTag(clone $customBlockDataTag);
 				}
 			}
 		}

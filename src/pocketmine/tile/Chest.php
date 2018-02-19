@@ -74,13 +74,6 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	}
 
 	/**
-	 * @return int
-	 */
-	public function getSize() : int{
-		return 27;
-	}
-
-	/**
 	 * @return ChestInventory|DoubleChestInventory
 	 */
 	public function getInventory(){

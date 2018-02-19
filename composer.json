@@ -1,5 +1,5 @@
 {
-   "name": "pmmp/pocketmine-mp",
+   "name": "pocketmine/pocketmine-mp",
    "description": "A server software for Minecraft: Pocket Edition written in PHP",
    "type": "project",
    "homepage": "https://pmmp.io",
@@ -21,11 +21,13 @@
       "ext-yaml": ">=2.0.0",
       "ext-zip": "*",
       "ext-zlib": ">=1.2.11",
-      "pmmp/raklib": "dev-master#e46352f9df4f34f70dd40b8a3144e941ffc1caf7",
-      "pmmp/pocketmine-spl": "^0.0.2"
+      "pocketmine/raklib": "dev-master#87d7e7fba9d8b2231d95d8f55e19c060ebbcb35c",
+      "pocketmine/pocketmine-spl": "^0.2.0",
+      "pocketmine/pocketmine-binaryutils": "dev-master#a7cd5303a3b215d26bf9be76682ce9311f40e887",
+      "pocketmine/pocketmine-nbt": "dev-master#33aaaebab10b501d233b6208d6a170b82f40c3b4"
    },
    "autoload": {
-      "psr-0": {
+      "psr-4": {
          "": ["src"]
       }
    },
@@ -37,6 +39,14 @@
       {
          "type": "vcs",
          "url": "https://github.com/pmmp/PocketMine-SPL"
+      },
+      {
+         "type": "vcs",
+         "url": "https://github.com/pmmp/PocketMine-BinaryUtils"
+      },
+      {
+         "type": "vcs",
+         "url": "https://github.com/pmmp/PocketMine-NBT"
       }
    ]
 }

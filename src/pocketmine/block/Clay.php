@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\item\Tool;
 
 class Clay extends Solid{
 
@@ -40,14 +39,14 @@ class Clay extends Solid{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_SHOVEL;
+		return BlockToolType::TYPE_SHOVEL;
 	}
 
 	public function getName() : string{
 		return "Clay Block";
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			ItemFactory::get(Item::CLAY_BALL, 0, 4)
 		];

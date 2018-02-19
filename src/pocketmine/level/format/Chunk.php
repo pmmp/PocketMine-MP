@@ -691,21 +691,9 @@ class Chunk{
 	}
 
 	/**
-	 * Unloads the chunk, closing entities and tiles.
-	 *
-	 * @param bool $safe Whether to check if there are still players using this chunk
-	 *
-	 * @return bool
+	 * Called when the chunk is unloaded, closing entities and tiles.
 	 */
-	public function unload(bool $safe = true) : bool{
-		if($safe){
-			foreach($this->getEntities() as $entity){
-				if($entity instanceof Player){
-					return false;
-				}
-			}
-		}
-
+	public function onUnload() : void{
 		foreach($this->getEntities() as $entity){
 			if($entity instanceof Player){
 				continue;
@@ -716,8 +704,6 @@ class Chunk{
 		foreach($this->getTiles() as $tile){
 			$tile->close();
 		}
-
-		return true;
 	}
 
 	/**
@@ -735,11 +721,6 @@ class Chunk{
 						if(!$nbt->hasTag("id")){ //allow mixed types (because of leveldb)
 							$changed = true;
 							continue;
-						}
-
-						if(($nbt["Pos"][0] >> 4) !== $this->x or ($nbt["Pos"][2] >> 4) !== $this->z){
-							$changed = true;
-							continue; //Fixes entities allocated in wrong chunks.
 						}
 
 						try{
@@ -763,11 +744,6 @@ class Chunk{
 						if(!$nbt->hasTag(Tile::TAG_ID, StringTag::class)){
 							$changed = true;
 							continue;
-						}
-
-						if(($nbt->getInt(Tile::TAG_X) >> 4) !== $this->x or ($nbt->getInt(Tile::TAG_Z) >> 4) !== $this->z){
-							$changed = true;
-							continue; //Fixes tiles allocated in wrong chunks.
 						}
 
 						if(Tile::createTile($nbt->getString(Tile::TAG_ID), $level, $nbt) === null){
@@ -982,9 +958,8 @@ class Chunk{
 	 * @return Chunk
 	 */
 	public static function fastDeserialize(string $data) : Chunk{
-		$stream = new BinaryStream();
-		$stream->setBuffer($data);
-		$data = null;
+		$stream = new BinaryStream($data);
+
 		$x = $stream->getInt();
 		$z = $stream->getInt();
 		$subChunks = [];

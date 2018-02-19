@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
+use pocketmine\item\ItemFactory;
 
 class Cobweb extends Flowable{
 
@@ -48,16 +48,21 @@ class Cobweb extends Flowable{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_SWORD;
+		return BlockToolType::TYPE_SWORD | BlockToolType::TYPE_SHEARS;
+	}
+
+	public function getToolHarvestLevel() : int{
+		return 1;
 	}
 
 	public function onEntityCollide(Entity $entity) : void{
 		$entity->resetFallDistance();
 	}
 
-	public function getDrops(Item $item) : array{
-		//TODO: correct drops
-		return [];
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			ItemFactory::get(Item::STRING)
+		];
 	}
 
 	public function diffusesSkyLight() : bool{

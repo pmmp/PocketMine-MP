@@ -55,11 +55,6 @@ class PermissibleBase implements Permissible{
 		}
 	}
 
-	public function __destruct(){
-		$this->parent = null;
-		$this->opable = null;
-	}
-
 	/**
 	 * @return bool
 	 */
