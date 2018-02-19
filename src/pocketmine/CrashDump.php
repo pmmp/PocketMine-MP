@@ -186,7 +186,7 @@ class CrashDump{
 		$this->addLine("Line: " . $error["line"]);
 		$this->addLine("Type: " . $error["type"]);
 
-		if(strpos($error["file"], "src/pocketmine/") === false and strpos($error["file"], "src/raklib/") === false and file_exists($error["fullFile"])){
+		if(strpos($error["file"], "src/pocketmine/") === false and strpos($error["file"], "vendor/pocketmine/") === false and file_exists($error["fullFile"])){
 			$this->addLine();
 			$this->addLine("THIS CRASH WAS CAUSED BY A PLUGIN");
 			$this->data["plugin"] = true;

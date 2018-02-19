@@ -25,7 +25,6 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 

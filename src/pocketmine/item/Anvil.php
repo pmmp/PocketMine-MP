@@ -21,38 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event;
+namespace pocketmine\item;
 
-class TextContainer{
+use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 
-	/** @var string $text */
-	protected $text;
+class Anvil extends ItemBlock{
 
-	/**
-	 * @param string $text
-	 */
-	public function __construct(string $text){
-		$this->text = $text;
+	public function __construct(int $meta = 0){
+		parent::__construct(Item::ANVIL, $meta);
 	}
 
-	/**
-	 * @param string $text
-	 */
-	public function setText(string $text){
-		$this->text = $text;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getText() : string{
-		return $this->text;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function __toString() : string{
-		return $this->getText();
+	public function getBlock() : Block{
+		return BlockFactory::get(Block::ANVIL, $this->meta << 2);
 	}
 }

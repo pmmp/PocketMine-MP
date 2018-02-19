@@ -21,25 +21,38 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\lang;
 
-use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
+class TextContainer{
 
-class Carrot extends Food{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::CARROT, $meta, "Carrot");
+	/** @var string $text */
+	protected $text;
+
+	/**
+	 * @param string $text
+	 */
+	public function __construct(string $text){
+		$this->text = $text;
 	}
 
-	public function getBlock() : Block{
-		return BlockFactory::get(Block::CARROT_BLOCK);
+	/**
+	 * @param string $text
+	 */
+	public function setText(string $text){
+		$this->text = $text;
 	}
 
-	public function getFoodRestore() : int{
-		return 3;
+	/**
+	 * @return string
+	 */
+	public function getText() : string{
+		return $this->text;
 	}
 
-	public function getSaturationRestore() : float{
-		return 4.8;
+	/**
+	 * @return string
+	 */
+	public function __toString() : string{
+		return $this->getText();
 	}
 }

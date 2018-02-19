@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "539efc3616f87bdf637798e9ea4b6125",
+    "content-hash": "5cf5b17b7ad474212f61300e4fbbd012",
     "packages": [
         {
             "name": "pocketmine/pocketmine-binaryutils",
@@ -45,12 +45,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/PocketMine-NBT.git",
-                "reference": "f8934c0aed90d1f55452588f7ebef7c4519518a5"
+                "reference": "33aaaebab10b501d233b6208d6a170b82f40c3b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/PocketMine-NBT/zipball/f8934c0aed90d1f55452588f7ebef7c4519518a5",
-                "reference": "f8934c0aed90d1f55452588f7ebef7c4519518a5",
+                "url": "https://api.github.com/repos/pmmp/PocketMine-NBT/zipball/33aaaebab10b501d233b6208d6a170b82f40c3b4",
+                "reference": "33aaaebab10b501d233b6208d6a170b82f40c3b4",
                 "shasum": ""
             },
             "require": {
@@ -63,6 +63,11 @@
                     "pocketmine\\nbt\\": "src/"
                 }
             },
+            "autoload-dev": {
+                "psr-4": {
+                    "pocketmine\\nbt\\": "tests/phpunit/"
+                }
+            },
             "license": [
                 "LGPL-3.0"
             ],
@@ -71,7 +76,7 @@
                 "source": "https://github.com/pmmp/PocketMine-NBT/tree/master",
                 "issues": "https://github.com/pmmp/PocketMine-NBT/issues"
             },
-            "time": "2018-01-11T13:51:50+00:00"
+            "time": "2018-02-17T14:20:32+00:00"
         },
         {
             "name": "pocketmine/pocketmine-spl",
@@ -111,12 +116,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "c29bebd2df63680e975d5d129aa25476f3ef86ba"
+                "reference": "87d7e7fba9d8b2231d95d8f55e19c060ebbcb35c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/c29bebd2df63680e975d5d129aa25476f3ef86ba",
-                "reference": "c29bebd2df63680e975d5d129aa25476f3ef86ba",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/87d7e7fba9d8b2231d95d8f55e19c060ebbcb35c",
+                "reference": "87d7e7fba9d8b2231d95d8f55e19c060ebbcb35c",
                 "shasum": ""
             },
             "require": {
@@ -141,7 +146,7 @@
                 "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2018-01-18T18:09:59+00:00"
+            "time": "2018-02-18T20:15:02+00:00"
         }
     ],
     "packages-dev": [],

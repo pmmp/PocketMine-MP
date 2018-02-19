@@ -36,6 +36,7 @@ use pocketmine\item\FoodSource;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
@@ -84,7 +85,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public function __construct(Level $level, CompoundTag $nbt){
 		if($this->skin === null){
 			$skinTag = $nbt->getCompoundTag("Skin");
-			if($skinTag === null or !self::isValidSkin($skinTag->getString("Data", "", true))){
+			if($skinTag === null or !self::isValidSkin($skinTag->hasTag("Data", ByteArrayTag::class) ?
+				$skinTag->getByteArray("Data") :
+				$skinTag->getString("Data", "")
+			)){
 				throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
 			}
 		}
@@ -485,7 +489,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if($skin !== null){
 			$this->setSkin(new Skin(
 				$skin->getString("Name"),
-				$skin->getString("Data")
+				$skin->hasTag("Data", StringTag::class) ? $skin->getString("Data") : $skin->getByteArray("Data"), //old data (this used to be saved as a StringTag in older versions of PM)
+				$skin->getByteArray("CapeData", ""),
+				$skin->getString("GeometryName", ""),
+				$skin->getByteArray("GeometryData", "")
 			));
 		}
 
@@ -508,8 +515,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			foreach($inventoryTag as $i => $item){
 				$slot = $item->getByte("Slot");
 				if($slot >= 0 and $slot < 9){ //Hotbar
-					//Old hotbar saving stuff, remove it (useless now)
-					unset($inventoryTag[$i]);
+					//Old hotbar saving stuff, ignore it
 				}elseif($slot >= 100 and $slot < 104){ //Armor
 					$this->armorInventory->setItem($slot - 100, ItemItem::nbtDeserialize($item));
 				}else{
@@ -640,7 +646,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			for($slot = $this->inventory->getHotbarSize(); $slot < $slotCount; ++$slot){
 				$item = $this->inventory->getItem($slot - 9);
 				if(!$item->isNull()){
-					$inventoryTag[$slot] = $item->nbtSerialize($slot);
+					$inventoryTag->push($item->nbtSerialize($slot));
 				}
 			}
 
@@ -648,7 +654,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			for($slot = 100; $slot < 104; ++$slot){
 				$item = $this->armorInventory->getItem($slot - 100);
 				if(!$item->isNull()){
-					$inventoryTag[$slot] = $item->nbtSerialize($slot);
+					$inventoryTag->push($item->nbtSerialize($slot));
 				}
 			}
 
@@ -672,9 +678,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 		if($this->skin !== null){
 			$this->namedtag->setTag(new CompoundTag("Skin", [
-				//TODO: save cape & geometry
-				new StringTag("Data", $this->skin->getSkinData()),
-				new StringTag("Name", $this->skin->getSkinId())
+				new StringTag("Name", $this->skin->getSkinId()),
+				new ByteArrayTag("Data", $this->skin->getSkinData()),
+				new ByteArrayTag("CapeData", $this->skin->getCapeData()),
+				new StringTag("GeometryName", $this->skin->getGeometryName()),
+				new ByteArrayTag("GeometryData", $this->skin->getGeometryData())
 			]));
 		}
 	}

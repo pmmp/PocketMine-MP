@@ -41,11 +41,11 @@ class Vector2{
 	}
 
 	public function getFloorX(){
-		return (int) $this->x;
+		return (int) floor($this->x);
 	}
 
 	public function getFloorY(){
-		return (int) $this->y;
+		return (int) floor($this->y);
 	}
 
 	public function add($x, $y = 0){

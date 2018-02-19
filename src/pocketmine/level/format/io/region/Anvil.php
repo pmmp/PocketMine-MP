@@ -85,10 +85,7 @@ class Anvil extends McRegion{
 		//TODO: TileTicks
 
 		$writer = new BigEndianNBTStream();
-		$nbt->setName("Level");
-		$writer->setData(new CompoundTag("", [$nbt]));
-
-		return $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
+		return $writer->writeCompressed(new CompoundTag("", [$nbt]), ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
 	}
 
 	protected function serializeSubChunk(SubChunk $subChunk) : CompoundTag{
@@ -103,13 +100,12 @@ class Anvil extends McRegion{
 	public function nbtDeserialize(string $data){
 		$nbt = new BigEndianNBTStream();
 		try{
-			$nbt->readCompressed($data);
-
-			$chunk = $nbt->getData()->getCompoundTag("Level");
-
-			if($chunk === null){
+			$chunk = $nbt->readCompressed($data);
+			if(!($chunk instanceof CompoundTag) or !$chunk->hasTag("Level")){
 				throw new ChunkException("Invalid NBT format");
 			}
+
+			$chunk = $chunk->getCompoundTag("Level");
 
 			$subChunks = [];
 			$subChunksTag = $chunk->getListTag("Sections") ?? [];

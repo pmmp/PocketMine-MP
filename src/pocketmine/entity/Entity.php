@@ -484,7 +484,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		/** @var float[] $pos */
 		$pos = $this->namedtag->getListTag("Pos")->getAllValues();
 
-		$this->chunk = $level->getChunk(((int) $pos[0]) >> 4, ((int) $pos[2]) >> 4, true);
+		$this->chunk = $level->getChunk(((int) floor($pos[0])) >> 4, ((int) floor($pos[2])) >> 4, true);
 		if($this->chunk === null){
 			throw new \InvalidStateException("Cannot create entities in unloaded chunks");
 		}
@@ -848,7 +848,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		if($this->namedtag->hasTag("CustomName", StringTag::class)){
 			$this->setNameTag($this->namedtag->getString("CustomName"));
-			$this->setNameTagVisible($this->namedtag->getByte("CustomNameVisible", 1) !== 0);
+
+			if($this->namedtag->hasTag("CustomNameVisible", StringTag::class)){
+				//Older versions incorrectly saved this as a string (see 890f72dbf23a77f294169b79590770470041adc4)
+				$this->setNameTagVisible($this->namedtag->getString("CustomNameVisible") !== "");
+				$this->namedtag->removeTag("CustomNameVisible");
+			}else{
+				$this->setNameTagVisible($this->namedtag->getByte("CustomNameVisible", 1) !== 0);
+			}
 		}
 
 		$this->scheduleUpdate();
@@ -922,6 +929,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		if($amount <= 0){
 			if($this->isAlive()){
+				$this->health = 0;
 				$this->kill();
 			}
 		}elseif($amount <= $this->getMaxHealth() or $amount < $this->health){
@@ -1749,14 +1757,16 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function checkChunks(){
-		if($this->chunk === null or ($this->chunk->getX() !== ($this->x >> 4) or $this->chunk->getZ() !== ($this->z >> 4))){
+		$chunkX = $this->getFloorX() >> 4;
+		$chunkZ = $this->getFloorZ() >> 4;
+		if($this->chunk === null or ($this->chunk->getX() !== $chunkX or $this->chunk->getZ() !== $chunkZ)){
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
 			}
-			$this->chunk = $this->level->getChunk($this->x >> 4, $this->z >> 4, true);
+			$this->chunk = $this->level->getChunk($chunkX, $chunkZ, true);
 
 			if(!$this->justCreated){
-				$newChunk = $this->level->getChunkPlayers($this->x >> 4, $this->z >> 4);
+				$newChunk = $this->level->getChunkPlayers($chunkX, $chunkZ);
 				foreach($this->hasSpawned as $player){
 					if(!isset($newChunk[$player->getLoaderId()])){
 						$this->despawnFrom($player);

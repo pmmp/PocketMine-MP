@@ -43,13 +43,13 @@ abstract class BaseLevelProvider implements LevelProvider{
 			mkdir($this->path, 0777, true);
 		}
 		$nbt = new BigEndianNBTStream();
-		$nbt->readCompressed(file_get_contents($this->getPath() . "level.dat"));
-		$levelData = $nbt->getData()->getCompoundTag("Data");
-		if($levelData !== null){
-			$this->levelData = $levelData;
-		}else{
+		$levelData = $nbt->readCompressed(file_get_contents($this->getPath() . "level.dat"));
+
+		if(!($levelData instanceof CompoundTag) or !$levelData->hasTag("Data", CompoundTag::class)){
 			throw new LevelException("Invalid level.dat");
 		}
+
+		$this->levelData = $levelData->getCompoundTag("Data");
 
 		if(!$this->levelData->hasTag("generatorName", StringTag::class)){
 			$this->levelData->setString("generatorName", (string) Generator::getGenerator("DEFAULT"), true);
@@ -89,9 +89,9 @@ abstract class BaseLevelProvider implements LevelProvider{
 	}
 
 	public function setSpawn(Vector3 $pos){
-		$this->levelData->setInt("SpawnX", (int) $pos->x);
-		$this->levelData->setInt("SpawnY", (int) $pos->y);
-		$this->levelData->setInt("SpawnZ", (int) $pos->z);
+		$this->levelData->setInt("SpawnX", $pos->getFloorX());
+		$this->levelData->setInt("SpawnY", $pos->getFloorY());
+		$this->levelData->setInt("SpawnZ", $pos->getFloorZ());
 	}
 
 	public function doGarbageCollection(){
@@ -107,10 +107,9 @@ abstract class BaseLevelProvider implements LevelProvider{
 
 	public function saveLevelData(){
 		$nbt = new BigEndianNBTStream();
-		$nbt->setData(new CompoundTag("", [
+		$buffer = $nbt->writeCompressed(new CompoundTag("", [
 			$this->levelData
 		]));
-		$buffer = $nbt->writeCompressed();
 		file_put_contents($this->getPath() . "level.dat", $buffer);
 	}
 
