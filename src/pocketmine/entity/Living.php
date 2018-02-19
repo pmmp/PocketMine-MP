@@ -363,14 +363,14 @@ abstract class Living extends Entity implements Damageable{
 				return;
 		}
 		if($fallDistance > 3){
-			$this->getLevel()->addParticle(new DestroyBlockParticle($this, $this->getLevel()->getBlock($this->floor()->subtract(0, 1, 0))));
+			$this->getLevel()->addParticle(new DestroyBlockParticle($this, $this->getLevel()->getBlock($this->subtract(0, 0.1, 0))));
 		}
 		$damage = ceil($fallDistance - 3 - ($this->hasEffect(Effect::JUMP) ? $this->getEffect(Effect::JUMP)->getEffectLevel() : 0));
-		if(!$this->isSneaking() and $this->getLevel()->getBlock($this->floor()->subtract(0, 1, 0)) instanceof Bouncy) {
-		    $this->bounce($fallDistance);
-		    if($this->getLevel()->getBlock($this->floor()->subtract(0, 1 , 0)) instanceof SlimeBlock) {
+		if(!$this->isSneaking() and $this->getLevel()->getBlock($this->subtract(0, 0.1, 0)) instanceof Bouncy) {
+		    if($this->getLevel()->getBlock($this->subtract(0, 1 , 0)) instanceof SlimeBlock) {
 		        $damage = 0;
 		    }
+			$this->bounce($fallDistance);
 	    }
 		if($damage > 0){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FALL, $damage);

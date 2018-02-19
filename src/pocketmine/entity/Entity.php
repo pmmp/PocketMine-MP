@@ -1432,13 +1432,20 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @param float $fallDistance
 	 */
 	public function bounce(float $fallDistance){
-		if (($this->getLevel()->getBlock($this->floor()->subtract(0, 1, 0))->getMaxBounce() > 0) and ($fallDistance > 0.2)) {
-			$bounceDistance = (($this->getLevel()->getBlock($this->floor()->subtract(0, 1, 0))->getMaxBounce() < ((-0.0011 * $fallDistance + 0.43529) * $fallDistance + 1.7323)) ? $this->getLevel()->getBlock($this->floor()->subtract(0, 1, 0))->getMaxBounce() : ((-0.0011 * $fallDistance + 0.43529) * $fallDistance + 1.7323));
+		if (($this->getLevel()->getBlock($this->subtract(0, 0.1, 0))->getMaxBounce() > 0) and ($fallDistance > 0.2)) {
+			$bounceDistance = (-0.0011 * ($fallDistance * $fallDistance) + (0.43529 * $fallDistance) + 1.7323);
+			if($this->getLevel()->getBlock($this->subtract(0, 0.1, 0))->getMaxBounce() < $bounceDistance) {
+				$bounceDistance = $this->getLevel()->getBlock($this->subtract(0, 0.1, 0))->getMaxBounce();
+			}
 			$ev = new EntityBounceOnBlockEvent($this,$fallDistance,$bounceDistance);
 			Server::getInstance()->getPluginManager()->callEvent($ev);
 			if(!$ev->isCancelled()) {
-				$this->motionY = 0.1 * $bounceDistance;
-				$this->move($this->motionX, $this->motionY, $this->motionZ);
+				$motion = $this->getMotion();
+				$motion->y = $bounceDistance;
+				if($motion->y > ($this instanceof Item ? 2.9863502922411 : 2.8972288948972)){
+					$this->tryChangeMovement();
+					$this->move($motion->x, $motion->y, $motion->z);
+				}
 			}
 		}
 	}
