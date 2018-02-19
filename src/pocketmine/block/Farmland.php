@@ -112,4 +112,8 @@ class Farmland extends Transparent{
 			ItemFactory::get(Item::DIRT)
 		];
 	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return false;
+	}
 }

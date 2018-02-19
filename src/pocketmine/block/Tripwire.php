@@ -43,4 +43,8 @@ class Tripwire extends Flowable{
 			ItemFactory::get(Item::STRING)
 		];
 	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return false;
+	}
 }

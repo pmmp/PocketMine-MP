@@ -26,8 +26,8 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\event\TranslationContainer;
 use pocketmine\item\ItemFactory;
+use pocketmine\lang\TranslationContainer;
 use pocketmine\nbt\JsonNBTParser;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
@@ -54,7 +54,17 @@ class GiveCommand extends VanillaCommand{
 		}
 
 		$player = $sender->getServer()->getPlayer($args[0]);
-		$item = ItemFactory::fromString($args[1]);
+		if($player === null){
+			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
+			return true;
+		}
+
+		try{
+			$item = ItemFactory::fromString($args[1]);
+		}catch(\InvalidArgumentException $e){
+			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.give.item.notFound", [$args[1]]));
+			return true;
+		}
 
 		if(!isset($args[2])){
 			$item->setCount($item->getMaxStackSize());
@@ -79,20 +89,8 @@ class GiveCommand extends VanillaCommand{
 			$item->setNamedTag($tags);
 		}
 
-		if($player instanceof Player){
-			if($item->getId() === 0){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.give.item.notFound", [$args[1]]));
-
-				return true;
-			}
-
-			//TODO: overflow
-			$player->getInventory()->addItem(clone $item);
-		}else{
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
-
-			return true;
-		}
+		//TODO: overflow
+		$player->getInventory()->addItem(clone $item);
 
 		Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.give.success", [
 			$item->getName() . " (" . $item->getId() . ":" . $item->getDamage() . ")",

@@ -278,6 +278,10 @@ abstract class Door extends Transparent{
 		return [];
 	}
 
+	public function isAffectedBySilkTouch() : bool{
+		return false;
+	}
+
 	public function getAffectedBlocks() : array{
 		if(($this->getDamage() & 0x08) === 0x08){
 			$down = $this->getSide(Vector3::SIDE_DOWN);

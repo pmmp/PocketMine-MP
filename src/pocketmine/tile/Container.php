@@ -30,24 +30,6 @@ interface Container{
 	public const TAG_ITEMS = "Items";
 
 	/**
-	 * @param int $index
-	 *
-	 * @return Item
-	 */
-	public function getItem(int $index) : Item;
-
-	/**
-	 * @param int  $index
-	 * @param Item $item
-	 */
-	public function setItem(int $index, Item $item);
-
-	/**
-	 * @return int
-	 */
-	public function getSize() : int;
-
-	/**
 	 * @return Inventory
 	 */
 	public function getInventory();

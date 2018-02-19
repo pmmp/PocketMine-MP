@@ -1,7 +1,7 @@
 players/*
 worlds/*
 plugins/*
-bin/*
+bin*/*
 timings/*
 crashdumps/*
 *.log

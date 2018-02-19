@@ -207,12 +207,10 @@ abstract class Tile extends Position{
 		static::createAdditionalNBT($nbt, $pos, $face, $item, $player);
 
 		if($item !== null){
-			if($item->hasCustomBlockData()){
-				foreach($item->getCustomBlockData() as $customBlockDataTag){
-					if(!($customBlockDataTag instanceof NamedTag)){
-						continue;
-					}
-					$nbt->setTag($customBlockDataTag);
+			$customBlockData = $item->getCustomBlockData();
+			if($customBlockData !== null){
+				foreach($customBlockData as $customBlockDataTag){
+					$nbt->setTag(clone $customBlockDataTag);
 				}
 			}
 		}

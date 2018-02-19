@@ -21,35 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\nbt\tag;
+namespace pocketmine\network\mcpe;
 
+class VerifyLoginException extends \RuntimeException{
 
-abstract class NamedTag extends Tag{
-	/** @var string */
-	protected $__name;
-
-	/**
-	 * @param string $name
-	 * @param mixed  $value
-	 */
-	public function __construct(string $name = "", $value = null){
-		$this->__name = ($name === null or $name === false) ? "" : $name;
-		if($value !== null){
-			$this->setValue($value);
-		}
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getName() : string{
-		return $this->__name;
-	}
-
-	/**
-	 * @param string $name
-	 */
-	public function setName(string $name) : void{
-		$this->__name = $name;
-	}
 }

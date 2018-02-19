@@ -46,7 +46,7 @@ class WritableBook extends Item{
 	 * @return bool
 	 */
 	public function pageExists(int $pageId) : bool{
-		return isset($this->getPages()[$pageId]);
+		return $this->getPagesTag()->isset($pageId);
 	}
 
 	/**
@@ -62,7 +62,7 @@ class WritableBook extends Item{
 			return null;
 		}
 
-		$page = $pages[$pageId] ?? null;
+		$page = $pages->get($pageId);
 		if($page instanceof CompoundTag){
 			return $page->getString(self::TAG_PAGE_TEXT, "");
 		}
@@ -85,13 +85,13 @@ class WritableBook extends Item{
 			$created = true;
 		}
 
-		$namedTag = $this->getNamedTag();
-		/** @var CompoundTag[]|ListTag $pages */
-		$pages = $namedTag->getListTag(self::TAG_PAGES);
-		assert($pages instanceof ListTag);
-		$pages[$pageId]->setString(self::TAG_PAGE_TEXT, $pageText);
+		/** @var CompoundTag[]|ListTag $pagesTag */
+		$pagesTag = $this->getPagesTag();
+		/** @var CompoundTag $page */
+		$page = $pagesTag->get($pageId);
+		$page->setString(self::TAG_PAGE_TEXT, $pageText);
 
-		$this->setNamedTag($namedTag);
+		$this->setNamedTagEntry($pagesTag);
 
 		return $created;
 	}
@@ -107,18 +107,16 @@ class WritableBook extends Item{
 			throw new \InvalidArgumentException("Page number \"$pageId\" is out of range");
 		}
 
-		$pages = $this->getPages();
+		$pagesTag = $this->getPagesTag();
 
-		for($id = 0; $id <= $pageId; $id++){
-			if(!isset($pages[$id])){
-				$pages[$id] = new CompoundTag("", [
-					new StringTag(self::TAG_PAGE_TEXT, ""),
-					new StringTag(self::TAG_PAGE_PHOTONAME, "")
-				]);
-			}
+		for($current = $pagesTag->count(); $current <= $pageId; $current++){
+			$pagesTag->push(new CompoundTag("", [
+				new StringTag(self::TAG_PAGE_TEXT, ""),
+				new StringTag(self::TAG_PAGE_PHOTONAME, "")
+			]));
 		}
 
-		$this->setPages($pages);
+		$this->setNamedTagEntry($pagesTag);
 	}
 
 	/**
@@ -129,10 +127,9 @@ class WritableBook extends Item{
 	 * @return bool indicating success
 	 */
 	public function deletePage(int $pageId) : bool{
-		$pages = $this->getPages();
-		unset($pages[$pageId]);
-
-		$this->setPages(array_values($pages));
+		$pagesTag = $this->getPagesTag();
+		$pagesTag->remove($pageId);
+		$this->setNamedTagEntry($pagesTag);
 
 		return true;
 	}
@@ -146,16 +143,14 @@ class WritableBook extends Item{
 	 * @return bool indicating success
 	 */
 	public function insertPage(int $pageId, string $pageText = "") : bool{
-		$pages = $this->getPages();
+		$pagesTag = $this->getPagesTag();
 
-		$this->setPages(array_merge(
-			array_slice($pages, 0, $pageId),
-			[new CompoundTag("", [
-				new StringTag(self::TAG_PAGE_TEXT, $pageText),
-				new StringTag(self::TAG_PAGE_PHOTONAME, "")
-			])],
-			array_slice($pages, $pageId)
-		));
+		$pagesTag->insert($pageId, new CompoundTag("", [
+			new StringTag(self::TAG_PAGE_TEXT, $pageText),
+			new StringTag(self::TAG_PAGE_PHOTONAME, "")
+		]));
+
+		$this->setNamedTagEntry($pagesTag);
 
 		return true;
 	}
@@ -197,6 +192,10 @@ class WritableBook extends Item{
 		}
 
 		return $pages->getValue();
+	}
+
+	protected function getPagesTag() : ListTag{
+		return $this->getNamedTag()->getListTag(self::TAG_PAGES) ?? new ListTag(self::TAG_PAGES, [], NBT::TAG_Compound);
 	}
 
 	/**

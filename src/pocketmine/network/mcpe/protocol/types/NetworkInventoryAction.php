@@ -159,12 +159,6 @@ class NetworkInventoryAction{
 	public function createInventoryAction(Player $player){
 		switch($this->sourceType){
 			case self::SOURCE_CONTAINER:
-				if($this->windowId === ContainerIds::ARMOR){
-					//TODO: HACK!
-					$this->inventorySlot += 36;
-					$this->windowId = ContainerIds::INVENTORY;
-				}
-
 				$window = $player->getWindow($this->windowId);
 				if($window !== null){
 					return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);

@@ -85,4 +85,8 @@ class Skull extends Flowable{
 
 		return [];
 	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return false;
+	}
 }

@@ -32,7 +32,6 @@ use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNBTStream;
 use pocketmine\nbt\NBT;
@@ -43,7 +42,6 @@ use pocketmine\nbt\tag\NamedTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
-use pocketmine\Server;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Config;
 
@@ -56,7 +54,7 @@ class Item implements ItemIds, \JsonSerializable{
 	public const TAG_DISPLAY_LORE = "Lore";
 
 
-	/** @var NBT */
+	/** @var LittleEndianNBTStream */
 	private static $cachedParser = null;
 
 	private static function parseCompoundTag(string $tag) : CompoundTag{
@@ -68,9 +66,7 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$cachedParser = new LittleEndianNBTStream();
 		}
 
-		self::$cachedParser->read($tag);
-		$data = self::$cachedParser->getData();
-
+		$data = self::$cachedParser->read($tag);
 		if(!($data instanceof CompoundTag)){
 			throw new \InvalidArgumentException("Invalid item NBT string given, it could not be deserialized");
 		}
@@ -83,8 +79,7 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$cachedParser = new LittleEndianNBTStream();
 		}
 
-		self::$cachedParser->setData($tag);
-		return self::$cachedParser->write();
+		return self::$cachedParser->write($tag);
 	}
 
 	/**
@@ -124,7 +119,7 @@ class Item implements ItemIds, \JsonSerializable{
 	public static function initCreativeItems(){
 		self::clearCreativeItems();
 
-		$creativeItems = new Config(Server::getInstance()->getFilePath() . "src/pocketmine/resources/creativeitems.json", Config::JSON, []);
+		$creativeItems = new Config(\pocketmine\RESOURCE_PATH . "creativeitems.json", Config::JSON, []);
 
 		foreach($creativeItems->getAll() as $data){
 			$item = Item::jsonDeserialize($data);
@@ -177,8 +172,6 @@ class Item implements ItemIds, \JsonSerializable{
 		return -1;
 	}
 
-	/** @var Block|null */
-	protected $block;
 	/** @var int */
 	protected $id;
 	/** @var int */
@@ -207,10 +200,6 @@ class Item implements ItemIds, \JsonSerializable{
 		$this->id = $id & 0xffff;
 		$this->setDamage($meta);
 		$this->name = $name;
-		if(!isset($this->block) and $this->id <= 0xff){
-			$this->block = BlockFactory::get($this->id, $this->meta);
-			$this->name = $this->block->getName();
-		}
 	}
 
 	/**
@@ -346,7 +335,7 @@ class Item implements ItemIds, \JsonSerializable{
 		/** @var CompoundTag $entry */
 		foreach($ench as $k => $entry){
 			if($entry->getShort("id") === $id and ($level === -1 or $entry->getShort("lvl") === $level)){
-				unset($ench[$k]);
+				$ench->remove($k);
 				break;
 			}
 		}
@@ -371,10 +360,10 @@ class Item implements ItemIds, \JsonSerializable{
 			/** @var CompoundTag $entry */
 			foreach($ench as $k => $entry){
 				if($entry->getShort("id") === $enchantment->getId()){
-					$ench[$k] = new CompoundTag("", [
+					$ench->set($k, new CompoundTag("", [
 						new ShortTag("id", $enchantment->getId()),
 						new ShortTag("lvl", $enchantment->getLevel())
-					]);
+					]));
 					$found = true;
 					break;
 				}
@@ -382,10 +371,10 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		if(!$found){
-			$ench[count($ench)] = new CompoundTag("", [
+			$ench->push(new CompoundTag("", [
 				new ShortTag("id", $enchantment->getId()),
 				new ShortTag("lvl", $enchantment->getLevel())
-			]);
+			]));
 		}
 
 		$this->setNamedTagEntry($ench);
@@ -410,6 +399,28 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		return $enchantments;
+	}
+
+	/**
+	 * Returns the level of the enchantment on this item with the specified ID, or 0 if the item does not have the
+	 * enchantment.
+	 *
+	 * @param int $enchantmentId
+	 *
+	 * @return int
+	 */
+	public function getEnchantmentLevel(int $enchantmentId) : int{
+		$ench = $this->getNamedTag()->getListTag(self::TAG_ENCH);
+		if($ench !== null){
+			/** @var CompoundTag $entry */
+			foreach($ench as $entry){
+				if($entry->getShort("id") === $enchantmentId){
+					return $entry->getShort("lvl");
+				}
+			}
+		}
+
+		return 0;
 	}
 
 	/**
@@ -612,14 +623,22 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return string
 	 */
 	final public function getName() : string{
-		return $this->hasCustomName() ? $this->getCustomName() : $this->name;
+		return $this->hasCustomName() ? $this->getCustomName() : $this->getVanillaName();
+	}
+
+	/**
+	 * Returns the vanilla name of the item, disregarding custom names.
+	 * @return string
+	 */
+	public function getVanillaName() : string{
+		return $this->name;
 	}
 
 	/**
 	 * @return bool
 	 */
 	final public function canBePlaced() : bool{
-		return $this->block !== null and $this->block->canBePlaced();
+		return $this->getBlock()->canBePlaced();
 	}
 
 	/**
@@ -627,11 +646,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return Block
 	 */
 	public function getBlock() : Block{
-		if($this->block instanceof Block){
-			return clone $this->block;
-		}else{
-			return BlockFactory::get(self::AIR);
-		}
+		return BlockFactory::get(self::AIR);
 	}
 
 	/**
@@ -739,15 +754,6 @@ class Item implements ItemIds, \JsonSerializable{
 		return 0;
 	}
 
-	/**
-	 * Returns the maximum amount of damage this item can take before it breaks.
-	 *
-	 * @return int|bool
-	 */
-	public function getMaxDurability(){
-		return false;
-	}
-
 	public function isPickaxe(){
 		return false;
 	}
@@ -779,7 +785,6 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * Called when a player uses this item on a block.
 	 *
-	 * @param Level   $level
 	 * @param Player  $player
 	 * @param Block   $blockReplace
 	 * @param Block   $blockClicked
@@ -788,7 +793,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @return bool
 	 */
-	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
+	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
 		return false;
 	}
 
@@ -832,7 +837,7 @@ class Item implements ItemIds, \JsonSerializable{
 					return true;
 				}elseif($this->hasCompoundTag() and $item->hasCompoundTag()){
 					//Serialized NBT didn't match, check the cached object tree.
-					return NBT::matchTree($this->getNamedTag(), $item->getNamedTag());
+					return $this->getNamedTag()->equals($item->getNamedTag());
 				}
 			}else{
 				return true;
@@ -978,10 +983,6 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	public function __clone(){
-		if($this->block !== null){
-			$this->block = clone $this->block;
-		}
-
 		$this->cachedNBT = null;
 	}
 

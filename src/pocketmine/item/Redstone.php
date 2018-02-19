@@ -28,9 +28,11 @@ use pocketmine\block\BlockFactory;
 
 class Redstone extends Item{
 	public function __construct(int $meta = 0){
-		$this->block = BlockFactory::get(Block::REDSTONE_WIRE);
 		parent::__construct(self::REDSTONE, $meta, "Redstone");
 	}
 
+	public function getBlock() : Block{
+		return BlockFactory::get(Block::REDSTONE_WIRE);
+	}
 }
 
