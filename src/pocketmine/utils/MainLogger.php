@@ -159,9 +159,9 @@ class MainLogger extends \AttachableThreadedLogger{
 		}
 		$errno = $errorConversion[$errno] ?? $errno;
 		$errstr = preg_replace('/\s+/', ' ', trim($errstr));
-		$errfile = \pocketmine\cleanPath($errfile);
+		$errfile = Utils::cleanPath($errfile);
 		$this->log($type, get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline");
-		foreach(\pocketmine\getTrace(0, $trace) as $i => $line){
+		foreach(Utils::getTrace(0, $trace) as $i => $line){
 			$this->debug($line, true);
 		}
 
