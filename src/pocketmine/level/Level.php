@@ -2721,6 +2721,8 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->syncChunkLoadDataTimer->stopTiming();
 
 		if($chunk === null){
+			$this->timings->syncChunkLoadTimer->stopTiming();
+
 			if($create){
 				throw new \InvalidStateException("Could not create new Chunk");
 			}
