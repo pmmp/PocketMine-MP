@@ -1468,6 +1468,16 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$revert = false;
 
 		if(($distanceSquared / ($tickDiff ** 2)) > 100){
+			/* !!! BEWARE YE WHO ENTER HERE !!!
+			 *
+			 * This is NOT an anti-cheat check. It is a safety check.
+			 * Without it hackers can teleport with freedom on their own and cause lots of undesirable behaviour, like
+			 * freezes, lag spikes and memory exhaustion due to sync chunk loading and collision checks across large distances.
+			 * Not only that, but high-latency players can trigger such behaviour innocently.
+			 *
+			 * If you must tamper with this code, be aware that this can cause very nasty results. Do not waste our time
+			 * asking for help if you suffer the consequences of messing with this.
+			 */
 			$this->server->getLogger()->warning($this->getName() . " moved too fast, reverting movement");
 			$this->server->getLogger()->debug("Old position: " . $this->asVector3() . ", new position: " . $this->newPosition);
 			$revert = true;
