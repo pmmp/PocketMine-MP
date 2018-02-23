@@ -80,11 +80,11 @@ namespace pocketmine {
 	use raklib\RakLib;
 
 	const NAME = "PocketMine-MP";
-	const VERSION = "1.7dev";
+	const VERSION = "1.0.1";
 	const API_VERSION = "3.0.0-ALPHA11";
-	const CODENAME = "[REDACTED]";
+	const CODENAME = "'BedrockEdition'";
 
-	const MIN_PHP_VERSION = "7.2.0RC3";
+	const MIN_PHP_VERSION = "7.2.0";
 
 	function critical_error($message){
 		echo "[ERROR] $message" . PHP_EOL;
