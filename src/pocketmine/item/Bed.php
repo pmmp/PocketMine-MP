@@ -28,8 +28,11 @@ use pocketmine\block\BlockFactory;
 
 class Bed extends Item{
 	public function __construct(int $meta = 0){
-		$this->block = BlockFactory::get(Block::BED_BLOCK);
 		parent::__construct(self::BED, $meta, "Bed");
+	}
+
+	public function getBlock() : Block{
+		return BlockFactory::get(Block::BED_BLOCK);
 	}
 
 	public function getMaxStackSize() : int{

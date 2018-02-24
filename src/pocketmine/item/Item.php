@@ -42,7 +42,6 @@ use pocketmine\nbt\tag\NamedTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
-use pocketmine\Server;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Config;
 
@@ -67,9 +66,7 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$cachedParser = new LittleEndianNBTStream();
 		}
 
-		self::$cachedParser->read($tag);
-		$data = self::$cachedParser->getData();
-
+		$data = self::$cachedParser->read($tag);
 		if(!($data instanceof CompoundTag)){
 			throw new \InvalidArgumentException("Invalid item NBT string given, it could not be deserialized");
 		}
@@ -82,8 +79,7 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$cachedParser = new LittleEndianNBTStream();
 		}
 
-		self::$cachedParser->setData($tag);
-		return self::$cachedParser->write();
+		return self::$cachedParser->write($tag);
 	}
 
 	/**
@@ -123,7 +119,7 @@ class Item implements ItemIds, \JsonSerializable{
 	public static function initCreativeItems(){
 		self::clearCreativeItems();
 
-		$creativeItems = new Config(Server::getInstance()->getFilePath() . "src/pocketmine/resources/creativeitems.json", Config::JSON, []);
+		$creativeItems = new Config(\pocketmine\RESOURCE_PATH . "creativeitems.json", Config::JSON, []);
 
 		foreach($creativeItems->getAll() as $data){
 			$item = Item::jsonDeserialize($data);
@@ -176,8 +172,6 @@ class Item implements ItemIds, \JsonSerializable{
 		return -1;
 	}
 
-	/** @var Block|null */
-	protected $block;
 	/** @var int */
 	protected $id;
 	/** @var int */
@@ -206,10 +200,6 @@ class Item implements ItemIds, \JsonSerializable{
 		$this->id = $id & 0xffff;
 		$this->setDamage($meta);
 		$this->name = $name;
-		if(!isset($this->block) and $this->id <= 0xff){
-			$this->block = BlockFactory::get($this->id, $this->meta);
-			$this->name = $this->block->getName();
-		}
 	}
 
 	/**
@@ -633,14 +623,22 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return string
 	 */
 	final public function getName() : string{
-		return $this->hasCustomName() ? $this->getCustomName() : $this->name;
+		return $this->hasCustomName() ? $this->getCustomName() : $this->getVanillaName();
+	}
+
+	/**
+	 * Returns the vanilla name of the item, disregarding custom names.
+	 * @return string
+	 */
+	public function getVanillaName() : string{
+		return $this->name;
 	}
 
 	/**
 	 * @return bool
 	 */
 	final public function canBePlaced() : bool{
-		return $this->block !== null and $this->block->canBePlaced();
+		return $this->getBlock()->canBePlaced();
 	}
 
 	/**
@@ -648,11 +646,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return Block
 	 */
 	public function getBlock() : Block{
-		if($this->block instanceof Block){
-			return clone $this->block;
-		}else{
-			return BlockFactory::get(self::AIR);
-		}
+		return BlockFactory::get(self::AIR);
 	}
 
 	/**
@@ -843,7 +837,7 @@ class Item implements ItemIds, \JsonSerializable{
 					return true;
 				}elseif($this->hasCompoundTag() and $item->hasCompoundTag()){
 					//Serialized NBT didn't match, check the cached object tree.
-					return NBT::matchTree($this->getNamedTag(), $item->getNamedTag());
+					return $this->getNamedTag()->equals($item->getNamedTag());
 				}
 			}else{
 				return true;
@@ -989,10 +983,6 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	public function __clone(){
-		if($this->block !== null){
-			$this->block = clone $this->block;
-		}
-
 		$this->cachedNBT = null;
 	}
 

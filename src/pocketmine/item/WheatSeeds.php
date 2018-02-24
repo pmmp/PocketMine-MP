@@ -28,7 +28,10 @@ use pocketmine\block\BlockFactory;
 
 class WheatSeeds extends Item{
 	public function __construct(int $meta = 0){
-		$this->block = BlockFactory::get(Block::WHEAT_BLOCK);
 		parent::__construct(self::WHEAT_SEEDS, $meta, "Wheat Seeds");
+	}
+
+	public function getBlock() : Block{
+		return BlockFactory::get(Block::WHEAT_BLOCK);
 	}
 }

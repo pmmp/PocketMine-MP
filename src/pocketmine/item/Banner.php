@@ -38,8 +38,11 @@ class Banner extends Item{
 	public const TAG_PATTERN_NAME = TileBanner::TAG_PATTERN_NAME;
 
 	public function __construct(int $meta = 0){
-		$this->block = BlockFactory::get(Block::STANDING_BANNER);
 		parent::__construct(self::BANNER, $meta, "Banner");
+	}
+
+	public function getBlock() : Block{
+		return BlockFactory::get(Block::STANDING_BANNER);
 	}
 
 	public function getMaxStackSize() : int{

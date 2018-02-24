@@ -484,7 +484,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		/** @var float[] $pos */
 		$pos = $this->namedtag->getListTag("Pos")->getAllValues();
 
-		$this->chunk = $level->getChunk(((int) $pos[0]) >> 4, ((int) $pos[2]) >> 4, true);
+		$this->chunk = $level->getChunk(((int) floor($pos[0])) >> 4, ((int) floor($pos[2])) >> 4, true);
 		if($this->chunk === null){
 			throw new \InvalidStateException("Cannot create entities in unloaded chunks");
 		}
@@ -1085,13 +1085,13 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		return true;
 	}
 
-	protected function updateMovement(){
+	protected function updateMovement(bool $teleport = false){
 		$diffPosition = ($this->x - $this->lastX) ** 2 + ($this->y - $this->lastY) ** 2 + ($this->z - $this->lastZ) ** 2;
 		$diffRotation = ($this->yaw - $this->lastYaw) ** 2 + ($this->pitch - $this->lastPitch) ** 2;
 
 		$diffMotion = ($this->motionX - $this->lastMotionX) ** 2 + ($this->motionY - $this->lastMotionY) ** 2 + ($this->motionZ - $this->lastMotionZ) ** 2;
 
-		if($diffPosition > 0.0001 or $diffRotation > 1.0){
+		if($teleport or $diffPosition > 0.0001 or $diffRotation > 1.0){
 			$this->lastX = $this->x;
 			$this->lastY = $this->y;
 			$this->lastZ = $this->z;
@@ -1099,7 +1099,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$this->lastYaw = $this->yaw;
 			$this->lastPitch = $this->pitch;
 
-			$this->broadcastMovement();
+			$this->broadcastMovement($teleport);
 		}
 
 		if($diffMotion > 0.0025 or ($diffMotion > 0.0001 and $this->getMotion()->lengthSquared() <= 0.0001)){ //0.05 ** 2
@@ -1115,7 +1115,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		return new Vector3($vector3->x, $vector3->y + $this->baseOffset, $vector3->z);
 	}
 
-	protected function broadcastMovement(){
+	protected function broadcastMovement(bool $teleport = false){
 		if($this->chunk !== null){
 			$pk = new MoveEntityPacket();
 			$pk->entityRuntimeId = $this->id;
@@ -1123,6 +1123,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$pk->yaw = $this->yaw;
 			$pk->pitch = $this->pitch;
 			$pk->headYaw = $this->yaw; //TODO
+			$pk->teleported = $teleport;
 
 			$this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
 		}
@@ -1757,14 +1758,16 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function checkChunks(){
-		if($this->chunk === null or ($this->chunk->getX() !== ($this->x >> 4) or $this->chunk->getZ() !== ($this->z >> 4))){
+		$chunkX = $this->getFloorX() >> 4;
+		$chunkZ = $this->getFloorZ() >> 4;
+		if($this->chunk === null or ($this->chunk->getX() !== $chunkX or $this->chunk->getZ() !== $chunkZ)){
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
 			}
-			$this->chunk = $this->level->getChunk($this->x >> 4, $this->z >> 4, true);
+			$this->chunk = $this->level->getChunk($chunkX, $chunkZ, true);
 
 			if(!$this->justCreated){
-				$newChunk = $this->level->getChunkPlayers($this->x >> 4, $this->z >> 4);
+				$newChunk = $this->level->getChunkPlayers($chunkX, $chunkZ);
 				foreach($this->hasSpawned as $player){
 					if(!isset($newChunk[$player->getLoaderId()])){
 						$this->despawnFrom($player);
@@ -1844,14 +1847,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$this->resetFallDistance();
 			$this->onGround = true;
 
-			$this->lastX = $this->x;
-			$this->lastY = $this->y;
-			$this->lastZ = $this->z;
-
-			$this->lastYaw = $this->yaw;
-			$this->lastPitch = $this->pitch;
-
-			$this->updateMovement();
+			$this->updateMovement(true);
 
 			return true;
 		}

@@ -165,16 +165,16 @@ class ExperienceOrb extends Entity{
 		}
 
 		$currentTarget = $this->getTargetPlayer();
+		if($currentTarget !== null and $currentTarget->distanceSquared($this) > self::MAX_TARGET_DISTANCE ** 2){
+			$currentTarget = null;
+		}
 
 		if($this->lookForTargetTime >= 20){
-			if($currentTarget === null or $currentTarget->distanceSquared($this) > self::MAX_TARGET_DISTANCE ** 2){
-				$this->setTargetPlayer(null);
-
+			if($currentTarget === null){
 				$newTarget = $this->level->getNearestEntity($this, self::MAX_TARGET_DISTANCE, Human::class);
 
 				if($newTarget instanceof Human and !($newTarget instanceof Player and $newTarget->isSpectator())){
 					$currentTarget = $newTarget;
-					$this->setTargetPlayer($currentTarget);
 				}
 			}
 
@@ -182,6 +182,8 @@ class ExperienceOrb extends Entity{
 		}else{
 			$this->lookForTargetTime += $tickDiff;
 		}
+
+		$this->setTargetPlayer($currentTarget);
 
 		if($currentTarget !== null){
 			$vector = $currentTarget->subtract($this)->add(0, $currentTarget->getEyeHeight() / 2, 0)->divide(self::MAX_TARGET_DISTANCE);

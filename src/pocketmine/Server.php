@@ -48,6 +48,7 @@ use pocketmine\event\TimingsHandler;
 use pocketmine\inventory\CraftingManager;
 use pocketmine\inventory\Recipe;
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\lang\BaseLang;
 use pocketmine\lang\TextContainer;
@@ -751,9 +752,12 @@ class Server{
 			if(file_exists($path . "$name.dat")){
 				try{
 					$nbt = new BigEndianNBTStream();
-					$nbt->readCompressed(file_get_contents($path . "$name.dat"));
+					$compound = $nbt->readCompressed(file_get_contents($path . "$name.dat"));
+					if(!($compound instanceof CompoundTag)){
+						throw new \RuntimeException("Invalid data found in \"$name.dat\", expected " . CompoundTag::class . ", got " . (is_object($compound) ? get_class($compound) : gettype($compound)));
+					}
 
-					return $nbt->getData();
+					return $compound;
 				}catch(\Throwable $e){ //zlib decode error / corrupt data
 					rename($path . "$name.dat", $path . "$name.dat.bak");
 					$this->logger->notice($this->getLanguage()->translateString("pocketmine.data.playerCorrupted", [$name]));
@@ -775,9 +779,9 @@ class Server{
 			], NBT::TAG_Double),
 			new StringTag("Level", $this->getDefaultLevel()->getFolderName()),
 			//new StringTag("SpawnLevel", $this->getDefaultLevel()->getFolderName()),
-			//new IntTag("SpawnX", (int) $spawn->x),
-			//new IntTag("SpawnY", (int) $spawn->y),
-			//new IntTag("SpawnZ", (int) $spawn->z),
+			//new IntTag("SpawnX", $spawn->getFloorX()),
+			//new IntTag("SpawnY", $spawn->getFloorY()),
+			//new IntTag("SpawnZ", $spawn->getFloorZ()),
 			//new ByteTag("SpawnForced", 1), //TODO
 			new ListTag("Inventory", [], NBT::TAG_Compound),
 			new ListTag("EnderChestInventory", [], NBT::TAG_Compound),
@@ -818,12 +822,10 @@ class Server{
 		if(!$ev->isCancelled()){
 			$nbt = new BigEndianNBTStream();
 			try{
-				$nbt->setData($ev->getSaveData());
-
 				if($async){
-					$this->getScheduler()->scheduleAsyncTask(new FileWriteTask($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed()));
+					$this->getScheduler()->scheduleAsyncTask(new FileWriteTask($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed($ev->getSaveData())));
 				}else{
-					file_put_contents($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed());
+					file_put_contents($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed($ev->getSaveData()));
 				}
 			}catch(\Throwable $e){
 				$this->logger->critical($this->getLanguage()->translateString("pocketmine.data.saveError", [$name, $e->getMessage()]));
@@ -1103,8 +1105,8 @@ class Server{
 		$this->getLogger()->notice($this->getLanguage()->translateString("pocketmine.level.backgroundGeneration", [$name]));
 
 		$spawnLocation = $level->getSpawnLocation();
-		$centerX = $spawnLocation->x >> 4;
-		$centerZ = $spawnLocation->z >> 4;
+		$centerX = $spawnLocation->getFloorX() >> 4;
+		$centerZ = $spawnLocation->getFloorZ() >> 4;
 
 		$order = [];
 
@@ -1637,6 +1639,7 @@ class Server{
 			BlockFactory::init();
 			Enchantment::init();
 			ItemFactory::init();
+			Item::initCreativeItems();
 			Biome::init();
 			Effect::init();
 			Attribute::init();
@@ -2110,7 +2113,7 @@ class Server{
 		}catch(\Throwable $e){
 			$this->logger->logException($e);
 			$this->logger->emergency("Crashed while crashing, killing process");
-			@kill(getmypid());
+			@Utils::kill(getmypid());
 		}
 
 	}
@@ -2192,7 +2195,7 @@ class Server{
 
 		$errstr = preg_replace('/\s+/', ' ', trim($errstr));
 
-		$errfile = cleanPath($errfile);
+		$errfile = Utils::cleanPath($errfile);
 
 		$this->logger->logException($e, $trace);
 
@@ -2202,7 +2205,7 @@ class Server{
 			"fullFile" => $e->getFile(),
 			"file" => $errfile,
 			"line" => $errline,
-			"trace" => getTrace(0, $trace)
+			"trace" => Utils::getTrace(0, $trace)
 		];
 
 		global $lastExceptionError, $lastError;
@@ -2274,7 +2277,7 @@ class Server{
 
 		$this->forceShutdown();
 		$this->isRunning = false;
-		@kill(getmypid());
+		@Utils::kill(getmypid());
 		exit(1);
 	}
 
@@ -2314,7 +2317,7 @@ class Server{
 		unset($this->loggedInPlayers[$player->getRawUniqueId()]);
 	}
 
-	public function addPlayer($identifier, Player $player){
+	public function addPlayer(string $identifier, Player $player){
 		$this->players[$identifier] = $player;
 		$this->identifiers[spl_object_hash($player)] = $identifier;
 	}

@@ -372,6 +372,10 @@ class PluginManager{
 				if($pluginNumbers[1] > $serverNumbers[1]){ //If the plugin requires new API features, being backwards compatible
 					continue;
 				}
+
+				if($pluginNumbers[2] > $serverNumbers[2]){ //If the plugin requires bug fixes in patches, being backwards compatible
+					continue;
+				}
 			}
 
 			return true;

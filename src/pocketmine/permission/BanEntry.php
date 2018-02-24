@@ -56,6 +56,7 @@ class BanEntry{
 	}
 
 	public function setCreated(\DateTime $date){
+		self::validateDate($date);
 		$this->creationDate = $date;
 	}
 
@@ -78,6 +79,9 @@ class BanEntry{
 	 * @param \DateTime|null $date
 	 */
 	public function setExpires(\DateTime $date = null){
+		if($date !== null){
+			self::validateDate($date);
+		}
 		$this->expirationDate = $date;
 	}
 
@@ -111,36 +115,70 @@ class BanEntry{
 	}
 
 	/**
+	 * Hacky function to validate \DateTime objects due to a bug in PHP. format() with "Y" can emit years with more than
+	 * 4 digits, but createFromFormat() with "Y" doesn't accept them if they have more than 4 digits on the year.
+	 *
+	 * @link https://bugs.php.net/bug.php?id=75992
+	 *
+	 * @param \DateTime $dateTime
+	 * @throws \RuntimeException if the argument can't be parsed from a formatted date string
+	 */
+	private static function validateDate(\DateTime $dateTime) : void{
+		self::parseDate($dateTime->format(self::$format));
+	}
+
+	/**
+	 * @param string $date
+	 *
+	 * @return \DateTime|null
+	 * @throws \RuntimeException
+	 */
+	private static function parseDate(string $date) : ?\DateTime{
+		$datetime = \DateTime::createFromFormat(self::$format, $date);
+		if(!($datetime instanceof \DateTime)){
+			throw new \RuntimeException("Error parsing date for BanEntry: " . implode(", ", \DateTime::getLastErrors()["errors"]));
+		}
+
+		return $datetime;
+	}
+
+	/**
 	 * @param string $str
 	 *
 	 * @return BanEntry|null
+	 * @throws \RuntimeException
 	 */
-	public static function fromString(string $str){
+	public static function fromString(string $str) : ?BanEntry{
 		if(strlen($str) < 2){
 			return null;
 		}else{
 			$str = explode("|", trim($str));
 			$entry = new BanEntry(trim(array_shift($str)));
-			if(count($str) > 0){
-				$datetime = \DateTime::createFromFormat(self::$format, array_shift($str));
-				if(!($datetime instanceof \DateTime)){
-					MainLogger::getLogger()->alert("Error parsing date for BanEntry for player \"" . $entry->getName() . "\", the format may be invalid!");
-					return $entry;
+			do{
+				if(empty($str)){
+					break;
 				}
-				$entry->setCreated($datetime);
-				if(count($str) > 0){
-					$entry->setSource(trim(array_shift($str)));
-					if(count($str) > 0){
-						$expire = trim(array_shift($str));
-						if(strtolower($expire) !== "forever" and strlen($expire) > 0){
-							$entry->setExpires(\DateTime::createFromFormat(self::$format, $expire));
-						}
-						if(count($str) > 0){
-							$entry->setReason(trim(array_shift($str)));
-						}
-					}
+
+				$entry->setCreated(self::parseDate(array_shift($str)));
+				if(empty($str)){
+					break;
 				}
-			}
+
+				$entry->setSource(trim(array_shift($str)));
+				if(empty($str)){
+					break;
+				}
+
+				$expire = trim(array_shift($str));
+				if(strtolower($expire) !== "forever" and strlen($expire) > 0){
+					$entry->setExpires(self::parseDate($expire));
+				}
+				if(empty($str)){
+					break;
+				}
+
+				$entry->setReason(trim(array_shift($str)));
+			}while(false);
 
 			return $entry;
 		}

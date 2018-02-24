@@ -26,20 +26,13 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 
-class Carrot extends Food{
+class Anvil extends ItemBlock{
+
 	public function __construct(int $meta = 0){
-		parent::__construct(self::CARROT, $meta, "Carrot");
+		parent::__construct(Item::ANVIL, $meta);
 	}
 
 	public function getBlock() : Block{
-		return BlockFactory::get(Block::CARROT_BLOCK);
-	}
-
-	public function getFoodRestore() : int{
-		return 3;
-	}
-
-	public function getSaturationRestore() : float{
-		return 4.8;
+		return BlockFactory::get(Block::ANVIL, $this->meta << 2);
 	}
 }

@@ -115,10 +115,10 @@ class CrashDump{
 	}
 
 	private function extraData(){
-		global $arguments;
+		global $argv;
 
 		if($this->server->getProperty("auto-report.send-settings", true) !== false){
-			$this->data["parameters"] = (array) $arguments;
+			$this->data["parameters"] = (array) $argv;
 			$this->data["server.properties"] = @file_get_contents($this->server->getDataPath() . "server.properties");
 			$this->data["server.properties"] = preg_replace("#^rcon\\.password=(.*)$#m", "rcon.password=******", $this->data["server.properties"]);
 			$this->data["pocketmine.yml"] = @file_get_contents($this->server->getDataPath() . "pocketmine.yml");
@@ -148,7 +148,7 @@ class CrashDump{
 			$error = $lastExceptionError;
 		}else{
 			$error = (array) error_get_last();
-			$error["trace"] = getTrace(4); //Skipping CrashDump->baseCrash, CrashDump->construct, Server->crashDump
+			$error["trace"] = Utils::getTrace(4); //Skipping CrashDump->baseCrash, CrashDump->construct, Server->crashDump
 			$errorConversion = [
 				E_ERROR => "E_ERROR",
 				E_WARNING => "E_WARNING",
@@ -167,7 +167,7 @@ class CrashDump{
 				E_USER_DEPRECATED => "E_USER_DEPRECATED"
 			];
 			$error["fullFile"] = $error["file"];
-			$error["file"] = cleanPath($error["file"]);
+			$error["file"] = Utils::cleanPath($error["file"]);
 			$error["type"] = $errorConversion[$error["type"]] ?? $error["type"];
 			if(($pos = strpos($error["message"], "\n")) !== false){
 				$error["message"] = substr($error["message"], 0, $pos);
@@ -195,7 +195,7 @@ class CrashDump{
 			$file = $reflection->getProperty("file");
 			$file->setAccessible(true);
 			foreach($this->server->getPluginManager()->getPlugins() as $plugin){
-				$filePath = \pocketmine\cleanPath($file->getValue($plugin));
+				$filePath = Utils::cleanPath($file->getValue($plugin));
 				if(strpos($error["file"], $filePath) === 0){
 					$this->data["plugin"] = $plugin->getName();
 					$this->addLine("BAD PLUGIN: " . $plugin->getDescription()->getFullName());

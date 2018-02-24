@@ -478,7 +478,7 @@ class Level implements ChunkManager, Metadatable{
 
 		if($players === null){
 			foreach($pk as $e){
-				$this->addChunkPacket($sound->x >> 4, $sound->z >> 4, $e);
+				$this->addChunkPacket($sound->getFloorX() >> 4, $sound->getFloorZ() >> 4, $e);
 			}
 		}else{
 			$this->server->batchPackets($players, $pk, false);
@@ -493,7 +493,7 @@ class Level implements ChunkManager, Metadatable{
 
 		if($players === null){
 			foreach($pk as $e){
-				$this->addChunkPacket($particle->x >> 4, $particle->z >> 4, $e);
+				$this->addChunkPacket($particle->getFloorX() >> 4, $particle->getFloorZ() >> 4, $e);
 			}
 		}else{
 			$this->server->batchPackets($players, $pk, false);
@@ -513,7 +513,7 @@ class Level implements ChunkManager, Metadatable{
 		$pk->data = $data;
 		if($pos !== null){
 			$pk->position = $pos->asVector3();
-			$this->addChunkPacket($pos->x >> 4, $pos->z >> 4, $pk);
+			$this->addChunkPacket($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4, $pk);
 		}else{
 			$pk->position = null;
 			$this->addGlobalPacket($pk);
@@ -538,7 +538,7 @@ class Level implements ChunkManager, Metadatable{
 		$pk->unknownBool = $unknown;
 		$pk->disableRelativeVolume = $disableRelativeVolume;
 		$pk->position = $pos->asVector3();
-		$this->addChunkPacket($pos->x >> 4, $pos->z >> 4, $pk);
+		$this->addChunkPacket($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4, $pk);
 	}
 
 	public function getAutoSave() : bool{
@@ -987,8 +987,8 @@ class Level implements ChunkManager, Metadatable{
 		$randRange = (int) ($randRange > $this->chunkTickRadius ? $this->chunkTickRadius : $randRange);
 
 		foreach($this->loaders as $loader){
-			$chunkX = $loader->getX() >> 4;
-			$chunkZ = $loader->getZ() >> 4;
+			$chunkX = (int) floor($loader->getX()) >> 4;
+			$chunkZ = (int) floor($loader->getZ()) >> 4;
 
 			$index = Level::chunkHash($chunkX, $chunkZ);
 			$existingLoaders = max(0, $this->chunkTickList[$index] ?? 0);
@@ -1748,7 +1748,7 @@ class Level implements ChunkManager, Metadatable{
 					foreach($tag as $v){
 						if($v instanceof StringTag){
 							$entry = ItemFactory::fromString($v->getValue());
-							if($entry->getId() > 0 and $entry->getBlock() !== null and $entry->getBlock()->getId() === $target->getId()){
+							if($entry->getId() > 0 and $entry->getBlock()->getId() === $target->getId()){
 								$canBreak = true;
 								break;
 							}
@@ -1916,7 +1916,7 @@ class Level implements ChunkManager, Metadatable{
 					foreach($tag as $v){
 						if($v instanceof StringTag){
 							$entry = ItemFactory::fromString($v->getValue());
-							if($entry->getId() > 0 and $entry->getBlock() !== null and $entry->getBlock()->getId() === $blockClicked->getId()){
+							if($entry->getId() > 0 and $entry->getBlock()->getId() === $blockClicked->getId()){
 								$canPlace = true;
 								break;
 							}
@@ -2666,7 +2666,7 @@ class Level implements ChunkManager, Metadatable{
 			throw new LevelException("Invalid Tile level");
 		}
 		$this->tiles[$tile->getId()] = $tile;
-		$this->clearChunkCache($tile->getX() >> 4, $tile->getZ() >> 4);
+		$this->clearChunkCache($tile->getFloorX() >> 4, $tile->getFloorZ() >> 4);
 	}
 
 	/**
@@ -2681,7 +2681,7 @@ class Level implements ChunkManager, Metadatable{
 
 		unset($this->tiles[$tile->getId()]);
 		unset($this->updateTiles[$tile->getId()]);
-		$this->clearChunkCache($tile->getX() >> 4, $tile->getZ() >> 4);
+		$this->clearChunkCache($tile->getFloorX() >> 4, $tile->getFloorZ() >> 4);
 	}
 
 	/**
@@ -2721,6 +2721,8 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->syncChunkLoadDataTimer->stopTiming();
 
 		if($chunk === null){
+			$this->timings->syncChunkLoadTimer->stopTiming();
+
 			if($create){
 				throw new \InvalidStateException("Could not create new Chunk");
 			}

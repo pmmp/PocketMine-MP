@@ -89,6 +89,6 @@ class ChestInventory extends ContainerInventory{
 		$pk->z = (int) $holder->z;
 		$pk->eventType = 1; //it's always 1 for a chest
 		$pk->eventData = $isOpen ? 1 : 0;
-		$holder->getLevel()->addChunkPacket($holder->getX() >> 4, $holder->getZ() >> 4, $pk);
+		$holder->getLevel()->addChunkPacket($holder->getFloorX() >> 4, $holder->getFloorZ() >> 4, $pk);
 	}
 }
