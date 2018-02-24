@@ -238,7 +238,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @return bool
 	 */
 	public function hasEffects() : bool{
-		return count($this->effects) > 0;
+		return !empty($this->effects);
 	}
 
 	/**
