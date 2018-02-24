@@ -234,7 +234,7 @@ abstract class Living extends Entity implements Damageable{
 	}
 	
 	/**
-	 * Returns whether the any effect is active on the mob.
+	 * Returns whether the mob has any active effects.
 	 * @return bool
 	 */
 	public function hasEffects() : bool{
