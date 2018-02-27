@@ -48,18 +48,6 @@ class CraftItemEvent extends Event implements Cancellable{
 	}
 
 	/**
-	 * @deprecated This returns a one-dimensional array of ingredients and does not account for the positioning of
-	 * items in the crafting grid. Prefer getting the input map from the transaction instead.
-	 *
-	 * @return Item[]
-	 */
-	public function getInput() : array{
-		return array_map(function(Item $item) : Item{
-			return clone $item;
-		}, array_merge(...$this->transaction->getInputMap()));
-	}
-
-	/**
 	 * @return Recipe
 	 */
 	public function getRecipe() : Recipe{

@@ -49,14 +49,6 @@ class EntityTeleportEvent extends EntityEvent implements Cancellable{
 	}
 
 	/**
-	 * @deprecated This method has no effect or use.
-	 * @param Position $from
-	 */
-	public function setFrom(Position $from){
-		$this->from = $from;
-	}
-
-	/**
 	 * @return Position
 	 */
 	public function getTo() : Position{

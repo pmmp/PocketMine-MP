@@ -520,16 +520,6 @@ class Server{
 	}
 
 	/**
-	 * @deprecated Moved to {@link Level#getDifficultyFromString}
-	 *
-	 * @param string $str
-	 * @return int
-	 */
-	public static function getDifficultyFromString(string $str) : int{
-		return Level::getDifficultyFromString($str);
-	}
-
-	/**
 	 * Returns Server global difficulty. Note that this may be overridden in individual Levels.
 	 * @return int
 	 */
@@ -1250,18 +1240,6 @@ class Server{
 		}
 
 		return false;
-	}
-
-	/**
-	 * @deprecated
-	 *
-	 * @param string $variable
-	 * @param bool   $defaultValue
-	 *
-	 * @return bool
-	 */
-	public function getConfigBoolean(string $variable, bool $defaultValue = false) : bool{
-		return $this->getConfigBool($variable, $defaultValue);
 	}
 
 	/**
