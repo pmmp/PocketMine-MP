@@ -93,13 +93,6 @@ class ConsoleCommandSender implements CommandSender{
 	}
 
 	/**
-	 * @return bool
-	 */
-	public function isPlayer() : bool{
-		return false;
-	}
-
-	/**
 	 * @return Server
 	 */
 	public function getServer(){
