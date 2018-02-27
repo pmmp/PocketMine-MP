@@ -174,10 +174,11 @@ class ServerScheduler{
 	 */
 	public function removeLocalComplex(AsyncTask $for) : bool{
 		if(isset($this->objectStore[$for])){
-			Server::getInstance()->getLogger()->notice("AsyncTask " . get_class($for) . " stored local complex data but did not remove them after completion");
 			unset($this->objectStore[$for]);
+
 			return false;
 		}
+
 		return true;
 	}
 
