@@ -703,10 +703,6 @@ class Server{
 		return $this->playerList;
 	}
 
-	public function addRecipe(Recipe $recipe){
-		$this->craftingManager->registerRecipe($recipe);
-	}
-
 	public function shouldSavePlayerData() : bool{
 		return (bool) $this->getProperty("player.save-player-data", true);
 	}
