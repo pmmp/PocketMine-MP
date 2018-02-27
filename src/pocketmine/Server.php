@@ -264,9 +264,6 @@ class Server{
 	/** @var Player[] */
 	private $playerList = [];
 
-	/** @var string[] */
-	private $identifiers = [];
-
 	/** @var Level[] */
 	private $levels = [];
 
@@ -899,20 +896,7 @@ class Server{
 	 * @param Player $player
 	 */
 	public function removePlayer(Player $player){
-		if(isset($this->identifiers[$hash = spl_object_hash($player)])){
-			$identifier = $this->identifiers[$hash];
-			unset($this->players[$identifier]);
-			unset($this->identifiers[$hash]);
-			return;
-		}
-
-		foreach($this->players as $identifier => $p){
-			if($player === $p){
-				unset($this->players[$identifier]);
-				unset($this->identifiers[spl_object_hash($player)]);
-				break;
-			}
-		}
+		unset($this->players[spl_object_hash($player)]);
 	}
 
 	/**
@@ -1899,14 +1883,9 @@ class Server{
 		}
 		Timings::$playerNetworkTimer->startTiming();
 
-		$targets = [];
-		foreach($players as $p){
-			if($p->isConnected()){
-				$targets[] = $this->identifiers[spl_object_hash($p)];
-			}
-		}
+		$targets = array_filter($players, function(Player $player) : bool{ return $player->isConnected(); });
 
-		if(count($targets) > 0){
+		if(!empty($targets)){
 			$pk = new BatchPacket();
 
 			foreach($packets as $p){
@@ -1931,17 +1910,19 @@ class Server{
 		Timings::$playerNetworkTimer->stopTiming();
 	}
 
-	public function broadcastPacketsCallback(BatchPacket $pk, array $identifiers, bool $immediate = false){
+	/**
+	 * @param BatchPacket $pk
+	 * @param Player[]    $players
+	 * @param bool        $immediate
+	 */
+	public function broadcastPacketsCallback(BatchPacket $pk, array $players, bool $immediate = false){
 		if(!$pk->isEncoded){
 			$pk->encode();
 		}
 
-		foreach($identifiers as $i){
-			if(isset($this->players[$i])){
-				$this->players[$i]->sendDataPacket($pk, false, $immediate);
-			}
+		foreach($players as $i){
+			$i->sendDataPacket($pk, false, $immediate);
 		}
-
 	}
 
 
@@ -2317,9 +2298,8 @@ class Server{
 		unset($this->loggedInPlayers[$player->getRawUniqueId()]);
 	}
 
-	public function addPlayer(string $identifier, Player $player){
-		$this->players[$identifier] = $player;
-		$this->identifiers[spl_object_hash($player)] = $identifier;
+	public function addPlayer(Player $player){
+		$this->players[spl_object_hash($player)] = $player;
 	}
 
 	public function addOnlinePlayer(Player $player){

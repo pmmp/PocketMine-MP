@@ -134,7 +134,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		$this->players[$identifier] = $player;
 		$this->identifiersACK[$identifier] = 0;
 		$this->identifiers[spl_object_hash($player)] = $identifier;
-		$this->server->addPlayer($identifier, $player);
+		$this->server->addPlayer($player);
 	}
 
 	public function handleEncapsulated(string $identifier, EncapsulatedPacket $packet, int $flags) : void{
