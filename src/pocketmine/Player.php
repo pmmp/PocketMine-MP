@@ -1946,9 +1946,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$this->namedtag->setLong("lastPlayed", (int) floor(microtime(true) * 1000));
-		if($this->server->getAutoSave()){
-			$this->server->saveOfflinePlayerData($this->username, $this->namedtag, true);
-		}
 
 		$this->sendPlayStatus(PlayStatusPacket::LOGIN_SUCCESS);
 
