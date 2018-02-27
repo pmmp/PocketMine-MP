@@ -459,8 +459,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	/** @var TimingsHandler */
 	protected $timings;
-	/** @var bool */
-	protected $isPlayer = false;
 
 	/** @var bool */
 	protected $constructed = false;
@@ -469,8 +467,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public function __construct(Level $level, CompoundTag $nbt){
 		$this->constructed = true;
 		$this->timings = Timings::getEntityTimings($this);
-
-		$this->isPlayer = $this instanceof Player;
 
 		$this->temporalVector = new Vector3();
 
