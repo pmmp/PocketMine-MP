@@ -879,13 +879,6 @@ class Server{
 	}
 
 	/**
-	 * @param Player $player
-	 */
-	public function removePlayer(Player $player){
-		unset($this->players[spl_object_hash($player)]);
-	}
-
-	/**
 	 * @return Level[]
 	 */
 	public function getLevels() : array{
@@ -2271,6 +2264,13 @@ class Server{
 
 	public function addPlayer(Player $player){
 		$this->players[spl_object_hash($player)] = $player;
+	}
+
+	/**
+	 * @param Player $player
+	 */
+	public function removePlayer(Player $player){
+		unset($this->players[spl_object_hash($player)]);
 	}
 
 	public function addOnlinePlayer(Player $player){
