@@ -2143,10 +2143,7 @@ class Server{
 
 		$errstr = $e->getMessage();
 		$errfile = $e->getFile();
-		$errno = $e->getCode();
 		$errline = $e->getLine();
-
-		$type = ($errno === E_ERROR or $errno === E_USER_ERROR) ? \LogLevel::ERROR : (($errno === E_USER_WARNING or $errno === E_WARNING) ? \LogLevel::WARNING : \LogLevel::NOTICE);
 
 		$errstr = preg_replace('/\s+/', ' ', trim($errstr));
 
@@ -2155,7 +2152,7 @@ class Server{
 		$this->logger->logException($e, $trace);
 
 		$lastError = [
-			"type" => $type,
+			"type" => \get_class($e),
 			"message" => $errstr,
 			"fullFile" => $e->getFile(),
 			"file" => $errfile,
