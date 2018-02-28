@@ -286,7 +286,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 			$shortName = $class->getShortName();
 			if(!in_array($shortName, $saveNames, true)){
-				$saveNames[] = $class->getShortName();
+				$saveNames[] = $shortName;
 			}
 
 			foreach($saveNames as $name){
