@@ -2253,11 +2253,6 @@ class Server{
 		$this->loggedInPlayers[$player->getRawUniqueId()] = $player;
 	}
 
-	public function onPlayerCompleteLoginSequence(Player $player){
-		$this->sendFullPlayerListData($player);
-		$player->dataPacket($this->craftingManager->getCraftingDataPacket());
-	}
-
 	public function onPlayerLogout(Player $player){
 		unset($this->loggedInPlayers[$player->getRawUniqueId()]);
 	}

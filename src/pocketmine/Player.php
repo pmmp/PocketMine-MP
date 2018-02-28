@@ -2080,9 +2080,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->armorInventory->sendContents($this);
 		$this->inventory->sendCreativeContents();
 		$this->inventory->sendHeldItem($this);
+		$this->dataPacket($this->server->getCraftingManager()->getCraftingDataPacket());
 
 		$this->server->addOnlinePlayer($this);
-		$this->server->onPlayerCompleteLoginSequence($this);
+		$this->server->sendFullPlayerListData($this);
 	}
 
 	/**
