@@ -26,6 +26,7 @@ namespace pocketmine\tile;
 use pocketmine\level\Level;
 use pocketmine\nbt\NetworkLittleEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\Player;
 
@@ -106,7 +107,7 @@ abstract class Spawnable extends Tile{
 	 */
 	final public function getSpawnCompound() : CompoundTag{
 		$nbt = new CompoundTag("", [
-			$this->namedtag->getTag(self::TAG_ID),
+			new StringTag(self::TAG_ID, static::getSaveId()),
 			$this->namedtag->getTag(self::TAG_X),
 			$this->namedtag->getTag(self::TAG_Y),
 			$this->namedtag->getTag(self::TAG_Z)

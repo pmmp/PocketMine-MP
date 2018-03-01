@@ -92,15 +92,13 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		}
 
 		if(!$this->rakLib->isRunning() and !$this->rakLib->isShutdown()){
-			$this->network->unregisterInterface($this);
-
 			throw new \Exception("RakLib Thread crashed");
 		}
 
 		return $work;
 	}
 
-	public function closeSession($identifier, $reason){
+	public function closeSession(string $identifier, string $reason) : void{
 		if(isset($this->players[$identifier])){
 			$player = $this->players[$identifier];
 			unset($this->identifiers[spl_object_hash($player)]);
@@ -127,19 +125,19 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		$this->interface->emergencyShutdown();
 	}
 
-	public function openSession($identifier, $address, $port, $clientID){
-		$ev = new PlayerCreationEvent($this, Player::class, Player::class, null, $address, $port);
+	public function openSession(string $identifier, string $address, int $port, int $clientID) : void{
+		$ev = new PlayerCreationEvent($this, Player::class, Player::class, $address, $port);
 		$this->server->getPluginManager()->callEvent($ev);
 		$class = $ev->getPlayerClass();
 
-		$player = new $class($this, $ev->getClientId(), $ev->getAddress(), $ev->getPort());
+		$player = new $class($this, $ev->getAddress(), $ev->getPort());
 		$this->players[$identifier] = $player;
 		$this->identifiersACK[$identifier] = 0;
 		$this->identifiers[spl_object_hash($player)] = $identifier;
-		$this->server->addPlayer($identifier, $player);
+		$this->server->addPlayer($player);
 	}
 
-	public function handleEncapsulated($identifier, EncapsulatedPacket $packet, $flags){
+	public function handleEncapsulated(string $identifier, EncapsulatedPacket $packet, int $flags) : void{
 		if(isset($this->players[$identifier])){
 			//get this now for blocking in case the player was closed before the exception was raised
 			$address = $this->players[$identifier]->getAddress();
@@ -166,15 +164,15 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		$this->interface->unblockAddress($address);
 	}
 
-	public function handleRaw($address, $port, $payload){
-		$this->server->handlePacket($address, $port, $payload);
+	public function handleRaw(string $address, int $port, string $payload) : void{
+		$this->server->handlePacket($this, $address, $port, $payload);
 	}
 
 	public function sendRawPacket(string $address, int $port, string $payload){
 		$this->interface->sendRaw($address, $port, $payload);
 	}
 
-	public function notifyACK($identifier, $identifierACK){
+	public function notifyACK(string $identifier, int $identifierACK) : void{
 
 	}
 
@@ -200,8 +198,8 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		$this->interface->sendOption("portChecking", (bool) $name);
 	}
 
-	public function handleOption($name, $value){
-		if($name === "bandwidth"){
+	public function handleOption(string $option, string $value) : void{
+		if($option === "bandwidth"){
 			$v = unserialize($value);
 			$this->network->addStatistics($v["up"], $v["down"]);
 		}
@@ -243,7 +241,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		return null;
 	}
 
-	public function updatePing(string $identifier, int $pingMS){
+	public function updatePing(string $identifier, int $pingMS) : void{
 		if(isset($this->players[$identifier])){
 			$this->players[$identifier]->updatePing($pingMS);
 		}

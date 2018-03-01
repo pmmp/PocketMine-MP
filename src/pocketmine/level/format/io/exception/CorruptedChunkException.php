@@ -21,31 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\utils;
+namespace pocketmine\level\format\io\exception;
 
-use pocketmine\Thread;
+use pocketmine\level\format\ChunkException;
 
-class ServerKiller extends Thread{
+class CorruptedChunkException extends ChunkException{
 
-	public $time;
-
-	public function __construct($time = 15){
-		$this->time = $time;
-	}
-
-	public function run(){
-		$this->registerClassLoader();
-		$start = time();
-		$this->synchronized(function(){
-			$this->wait($this->time * 1000000);
-		});
-		if(time() - $start >= $this->time){
-			echo "\nTook too long to stop, server was killed forcefully!\n";
-			@Utils::kill(getmypid());
-		}
-	}
-
-	public function getThreadName() : string{
-		return "Server Killer";
-	}
 }

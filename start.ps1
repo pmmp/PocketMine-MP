@@ -28,7 +28,7 @@ if($file -eq ""){
 }
 
 function StartServer{
-	$command = "powershell " + $binary + " " + $file + " " + $extraPocketMineArgs
+	$command = "powershell -NoProfile " + $binary + " " + $file + " " + $extraPocketMineArgs
 	iex $command
 }
 

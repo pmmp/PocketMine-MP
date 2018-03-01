@@ -858,19 +858,6 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * @deprecated Use {@link Item#equals} instead, this method will be removed in the future.
-	 *
-	 * @param Item $item
-	 * @param bool $checkDamage
-	 * @param bool $checkCompound
-	 *
-	 * @return bool
-	 */
-	final public function deepEquals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
-		return $this->equals($item, $checkDamage, $checkCompound);
-	}
-
-	/**
 	 * @return string
 	 */
 	final public function __toString() : string{

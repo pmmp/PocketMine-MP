@@ -286,7 +286,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 			$shortName = $class->getShortName();
 			if(!in_array($shortName, $saveNames, true)){
-				$saveNames[] = $class->getShortName();
+				$saveNames[] = $shortName;
 			}
 
 			foreach($saveNames as $name){
@@ -459,8 +459,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	/** @var TimingsHandler */
 	protected $timings;
-	/** @var bool */
-	protected $isPlayer = false;
 
 	/** @var bool */
 	protected $constructed = false;
@@ -469,8 +467,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public function __construct(Level $level, CompoundTag $nbt){
 		$this->constructed = true;
 		$this->timings = Timings::getEntityTimings($this);
-
-		$this->isPlayer = $this instanceof Player;
 
 		$this->temporalVector = new Vector3();
 
@@ -1082,13 +1078,13 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		return true;
 	}
 
-	protected function updateMovement(){
+	protected function updateMovement(bool $teleport = false){
 		$diffPosition = ($this->x - $this->lastX) ** 2 + ($this->y - $this->lastY) ** 2 + ($this->z - $this->lastZ) ** 2;
 		$diffRotation = ($this->yaw - $this->lastYaw) ** 2 + ($this->pitch - $this->lastPitch) ** 2;
 
 		$diffMotion = ($this->motionX - $this->lastMotionX) ** 2 + ($this->motionY - $this->lastMotionY) ** 2 + ($this->motionZ - $this->lastMotionZ) ** 2;
 
-		if($diffPosition > 0.0001 or $diffRotation > 1.0){
+		if($teleport or $diffPosition > 0.0001 or $diffRotation > 1.0){
 			$this->lastX = $this->x;
 			$this->lastY = $this->y;
 			$this->lastZ = $this->z;
@@ -1096,7 +1092,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$this->lastYaw = $this->yaw;
 			$this->lastPitch = $this->pitch;
 
-			$this->broadcastMovement();
+			$this->broadcastMovement($teleport);
 		}
 
 		if($diffMotion > 0.0025 or ($diffMotion > 0.0001 and $this->getMotion()->lengthSquared() <= 0.0001)){ //0.05 ** 2
@@ -1112,7 +1108,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		return new Vector3($vector3->x, $vector3->y + $this->baseOffset, $vector3->z);
 	}
 
-	protected function broadcastMovement(){
+	protected function broadcastMovement(bool $teleport = false){
 		if($this->chunk !== null){
 			$pk = new MoveEntityPacket();
 			$pk->entityRuntimeId = $this->id;
@@ -1120,6 +1116,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$pk->yaw = $this->yaw;
 			$pk->pitch = $this->pitch;
 			$pk->headYaw = $this->yaw; //TODO
+			$pk->teleported = $teleport;
 
 			$this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
 		}
@@ -1843,14 +1840,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$this->resetFallDistance();
 			$this->onGround = true;
 
-			$this->lastX = $this->x;
-			$this->lastY = $this->y;
-			$this->lastZ = $this->z;
-
-			$this->lastYaw = $this->yaw;
-			$this->lastPitch = $this->pitch;
-
-			$this->updateMovement();
+			$this->updateMovement(true);
 
 			return true;
 		}
