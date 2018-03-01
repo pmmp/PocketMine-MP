@@ -27,7 +27,7 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\io\ChunkUtils;
 use pocketmine\level\format\io\exception\CorruptedChunkException;
-use pocketmine\level\format\io\InternalChunkProvider;
+use pocketmine\level\format\io\ChunkProvider;
 use pocketmine\level\format\SubChunk;
 use pocketmine\level\Level;
 use pocketmine\nbt\BigEndianNBTStream;
@@ -38,7 +38,7 @@ use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\utils\MainLogger;
 
-class McRegionChunkProvider implements InternalChunkProvider{
+class McRegionChunkProvider implements ChunkProvider{
 	/** @var string */
 	private $path;
 	/** @var RegionLoader[] */

@@ -37,7 +37,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 	/** @var CompoundTag */
 	protected $levelData;
 
-	/** @var ThreadedChunkProvider */
+	/** @var ChunkProviderThread */
 	protected $chunkProvider;
 
 
@@ -76,7 +76,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 		}
 	}
 
-	abstract protected function createChunkProvider() : ThreadedChunkProvider;
+	abstract protected function createChunkProvider() : ChunkProviderThread;
 
 	public function getPath() : string{
 		return $this->path;

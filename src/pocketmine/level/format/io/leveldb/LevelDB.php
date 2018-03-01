@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\level\format\io\leveldb;
 
 use pocketmine\level\format\io\BaseLevelProvider;
-use pocketmine\level\format\io\ThreadedChunkProvider;
+use pocketmine\level\format\io\ChunkProviderThread;
 use pocketmine\level\generator\Flat;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\Level;
@@ -138,8 +138,8 @@ class LevelDB extends BaseLevelProvider{
 		}
 	}
 
-	protected function createChunkProvider() : ThreadedChunkProvider{
-		return new ThreadedChunkProvider(LevelDBChunkProvider::class, $this->path);
+	protected function createChunkProvider() : ChunkProviderThread{
+		return new ChunkProviderThread(LevelDBChunkProvider::class, $this->path);
 	}
 
 	public static function getProviderName() : string{

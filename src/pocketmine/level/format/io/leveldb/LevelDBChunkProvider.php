@@ -26,7 +26,7 @@ namespace pocketmine\level\format\io\leveldb;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\io\ChunkUtils;
 use pocketmine\level\format\io\exception\UnsupportedChunkFormatException;
-use pocketmine\level\format\io\InternalChunkProvider;
+use pocketmine\level\format\io\ChunkProvider;
 use pocketmine\level\format\SubChunk;
 use pocketmine\nbt\LittleEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
@@ -34,7 +34,7 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
 
-class LevelDBChunkProvider implements InternalChunkProvider{
+class LevelDBChunkProvider implements ChunkProvider{
 	/** @var string */
 	private $path;
 	/** @var \LevelDB */

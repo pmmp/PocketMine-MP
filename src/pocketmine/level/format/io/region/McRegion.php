@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\level\format\io\region;
 
 use pocketmine\level\format\io\BaseLevelProvider;
-use pocketmine\level\format\io\ThreadedChunkProvider;
+use pocketmine\level\format\io\ChunkProviderThread;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\Level;
 use pocketmine\nbt\BigEndianNBTStream;
@@ -36,8 +36,8 @@ class McRegion extends BaseLevelProvider{
 
 	public const REGION_FILE_EXTENSION = "mcr";
 
-	protected function createChunkProvider() : ThreadedChunkProvider{
-		return new ThreadedChunkProvider(McRegionChunkProvider::class, $this->path);
+	protected function createChunkProvider() : ChunkProviderThread{
+		return new ChunkProviderThread(McRegionChunkProvider::class, $this->path);
 	}
 
 	public static function getProviderName() : string{

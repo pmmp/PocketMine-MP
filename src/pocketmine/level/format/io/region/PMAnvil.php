@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format\io\region;
 
-use pocketmine\level\format\io\ThreadedChunkProvider;
+use pocketmine\level\format\io\ChunkProviderThread;
 
 /**
  * This format is exactly the same as the PC Anvil format, with the only difference being that the stored data order
@@ -33,8 +33,8 @@ class PMAnvil extends Anvil{
 
 	public const REGION_FILE_EXTENSION = "mcapm";
 
-	protected function createChunkProvider() : ThreadedChunkProvider{
-		return new ThreadedChunkProvider(PMAnvilChunkProvider::class, $this->path);
+	protected function createChunkProvider() : ChunkProviderThread{
+		return new ChunkProviderThread(PMAnvilChunkProvider::class, $this->path);
 	}
 
 	public static function getProviderName() : string{

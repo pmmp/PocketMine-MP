@@ -25,7 +25,7 @@ namespace pocketmine\level\format\io;
 
 use pocketmine\level\format\Chunk;
 
-interface InternalChunkProvider{
+interface ChunkProvider{
 
 	/**
 	 * @param int $chunkX

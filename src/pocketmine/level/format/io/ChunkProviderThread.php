@@ -28,7 +28,7 @@ use pocketmine\level\Level;
 use pocketmine\Thread;
 use pocketmine\utils\MainLogger;
 
-class ThreadedChunkProvider extends Thread{
+class ChunkProviderThread extends Thread{
 	/** @var \Threaded */
 	private $loadRequestBuffer;
 	/** @var \Threaded */
@@ -41,10 +41,10 @@ class ThreadedChunkProvider extends Thread{
 	private $chunkProviderCtorArgs;
 
 	/**
-	 * ThreadedChunkProvider constructor.
+	 * ChunkProviderThread constructor.
 	 *
-	 * @param string  $chunkProviderClass Class which implements InternalChunkProvider
-	 * @param mixed[] ...$chunkProviderCtorArgs Arguments to pass to the InternalChunkProvider's constructor
+	 * @param string  $chunkProviderClass Class which implements ChunkProvider
+	 * @param mixed[] ...$chunkProviderCtorArgs Arguments to pass to the ChunkProvider's constructor
 	 */
 	public function __construct(string $chunkProviderClass, ...$chunkProviderCtorArgs){
 		$this->loadRequestBuffer = new \Threaded();
@@ -88,7 +88,7 @@ class ThreadedChunkProvider extends Thread{
 	public function run(){
 		try{
 			$this->registerClassLoader();
-			/** @var InternalChunkProvider $chunkProvider */
+			/** @var ChunkProvider $chunkProvider */
 			$chunkProvider = new $this->chunkProviderClass(...unserialize($this->chunkProviderCtorArgs));
 
 			$nextGarbageCollectionTime = time() + 300;
@@ -123,7 +123,7 @@ class ThreadedChunkProvider extends Thread{
 		}
 	}
 
-	private function processChunkLoads(InternalChunkProvider $provider) : void{
+	private function processChunkLoads(ChunkProvider $provider) : void{
 		while(($request = $this->loadRequestBuffer->shift()) !== null){
 			Level::getXZ($request, $chunkX, $chunkZ);
 
@@ -139,7 +139,7 @@ class ThreadedChunkProvider extends Thread{
 		}
 	}
 
-	private function processChunkSaves(InternalChunkProvider $provider) : void{
+	private function processChunkSaves(ChunkProvider $provider) : void{
 		while(($chunkBytes = $this->saveRequestBuffer->shift()) !== null){
 			assert(is_string($chunkBytes));
 			$chunk = unserialize($chunkBytes);

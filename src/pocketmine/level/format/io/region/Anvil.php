@@ -23,14 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format\io\region;
 
-use pocketmine\level\format\io\ThreadedChunkProvider;
+use pocketmine\level\format\io\ChunkProviderThread;
 
 class Anvil extends McRegion{
 
 	public const REGION_FILE_EXTENSION = "mca";
 
-	protected function createChunkProvider() : ThreadedChunkProvider{
-		return new ThreadedChunkProvider(AnvilChunkProvider::class, $this->path);
+	protected function createChunkProvider() : ChunkProviderThread{
+		return new ChunkProviderThread(AnvilChunkProvider::class, $this->path);
 	}
 
 	public static function getProviderName() : string{
