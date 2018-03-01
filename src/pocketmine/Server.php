@@ -1031,11 +1031,11 @@ class Server{
 	}
 
 	/**
-	 * Generates a new level if it does not exists
+	 * Generates a new level if it does not exist
 	 *
 	 * @param string      $name
 	 * @param int|null    $seed
-	 * @param string|null $generator Class name that extends pocketmine\level\generator\Noise
+	 * @param string|null $generator Class name that extends pocketmine\level\generator\Generator
 	 * @param array       $options
 	 *
 	 * @return bool
