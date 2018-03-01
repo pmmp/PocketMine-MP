@@ -27,6 +27,7 @@ declare(strict_types=1);
 namespace pocketmine\level\generator;
 
 use pocketmine\level\ChunkManager;
+use pocketmine\level\generator\hell\Nether;
 use pocketmine\level\generator\noise\Noise;
 use pocketmine\level\generator\normal\Normal;
 use pocketmine\math\Vector3;
@@ -34,6 +35,14 @@ use pocketmine\utils\Random;
 
 abstract class Generator{
 	private static $list = [];
+
+	public static function init() : void{
+		self::addGenerator(Flat::class, "flat");
+		self::addGenerator(Normal::class, "normal");
+		self::addGenerator(Normal::class, "default");
+		self::addGenerator(Nether::class, "hell");
+		self::addGenerator(Nether::class, "nether");
+	}
 
 	public static function addGenerator($object, $name) : bool{
 		if(is_subclass_of($object, Generator::class) and !isset(Generator::$list[$name = strtolower($name)])){
