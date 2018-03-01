@@ -36,7 +36,7 @@ use pocketmine\utils\Random;
 abstract class Generator{
 	private static $list = [];
 
-	public static function init() : void{
+	public static function registerDefaultGenerators() : void{
 		self::addGenerator(Flat::class, "flat");
 		self::addGenerator(Normal::class, "normal");
 		self::addGenerator(Normal::class, "default");

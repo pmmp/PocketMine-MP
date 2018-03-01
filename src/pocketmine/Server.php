@@ -1637,7 +1637,7 @@ class Server{
 				$this->logger->debug($this->getLanguage()->translateString("pocketmine.debug.enable"));
 			}
 
-			Generator::init();
+			Generator::registerDefaultGenerators();
 
 			foreach((array) $this->getProperty("worlds", []) as $name => $options){
 				if(!is_array($options)){
