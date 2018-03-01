@@ -2706,16 +2706,24 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->timings->syncChunkLoadDataTimer->startTiming();
 
-		$chunk = $this->provider->loadChunk($x, $z, $create);
+		$chunk = null;
+
+		try{
+			$chunk = $this->provider->loadChunk($x, $z);
+		}catch(\Exception $e){
+			$logger = $this->server->getLogger();
+			$logger->critical("An error occurred while loading chunk x=$x z=$z: " . $e->getMessage());
+			$logger->logException($e);
+		}
+
+		if($chunk === null and $create){
+			$chunk = new Chunk($x, $z);
+		}
 
 		$this->timings->syncChunkLoadDataTimer->stopTiming();
 
 		if($chunk === null){
 			$this->timings->syncChunkLoadTimer->stopTiming();
-
-			if($create){
-				throw new \InvalidStateException("Could not create new Chunk");
-			}
 			return false;
 		}
 

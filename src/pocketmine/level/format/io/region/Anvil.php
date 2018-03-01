@@ -33,7 +33,6 @@ use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\utils\MainLogger;
 
 class Anvil extends McRegion{
 
@@ -99,45 +98,40 @@ class Anvil extends McRegion{
 
 	protected function nbtDeserialize(string $data){
 		$nbt = new BigEndianNBTStream();
-		try{
-			$chunk = $nbt->readCompressed($data);
-			if(!($chunk instanceof CompoundTag) or !$chunk->hasTag("Level")){
-				throw new ChunkException("Invalid NBT format");
-			}
-
-			$chunk = $chunk->getCompoundTag("Level");
-
-			$subChunks = [];
-			$subChunksTag = $chunk->getListTag("Sections") ?? [];
-			foreach($subChunksTag as $subChunk){
-				if($subChunk instanceof CompoundTag){
-					$subChunks[$subChunk->getByte("Y")] = $this->deserializeSubChunk($subChunk);
-				}
-			}
-
-			if($chunk->hasTag("BiomeColors", IntArrayTag::class)){
-				$biomeIds = ChunkUtils::convertBiomeColors($chunk->getIntArray("BiomeColors")); //Convert back to original format
-			}else{
-				$biomeIds = $chunk->getByteArray("Biomes", "", true);
-			}
-
-			$result = new Chunk(
-				$chunk->getInt("xPos"),
-				$chunk->getInt("zPos"),
-				$subChunks,
-				$chunk->hasTag("Entities", ListTag::class) ? $chunk->getListTag("Entities")->getValue() : [],
-				$chunk->hasTag("TileEntities", ListTag::class) ? $chunk->getListTag("TileEntities")->getValue() : [],
-				$biomeIds,
-				$chunk->getIntArray("HeightMap", [])
-			);
-			$result->setLightPopulated($chunk->getByte("LightPopulated", 0) !== 0);
-			$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
-			$result->setGenerated();
-			return $result;
-		}catch(\Throwable $e){
-			MainLogger::getLogger()->logException($e);
-			return null;
+		$chunk = $nbt->readCompressed($data);
+		if(!($chunk instanceof CompoundTag) or !$chunk->hasTag("Level")){
+			throw new ChunkException("Invalid NBT format");
 		}
+
+		$chunk = $chunk->getCompoundTag("Level");
+
+		$subChunks = [];
+		$subChunksTag = $chunk->getListTag("Sections") ?? [];
+		foreach($subChunksTag as $subChunk){
+			if($subChunk instanceof CompoundTag){
+				$subChunks[$subChunk->getByte("Y")] = $this->deserializeSubChunk($subChunk);
+			}
+		}
+
+		if($chunk->hasTag("BiomeColors", IntArrayTag::class)){
+			$biomeIds = ChunkUtils::convertBiomeColors($chunk->getIntArray("BiomeColors")); //Convert back to original format
+		}else{
+			$biomeIds = $chunk->getByteArray("Biomes", "", true);
+		}
+
+		$result = new Chunk(
+			$chunk->getInt("xPos"),
+			$chunk->getInt("zPos"),
+			$subChunks,
+			$chunk->hasTag("Entities", ListTag::class) ? $chunk->getListTag("Entities")->getValue() : [],
+			$chunk->hasTag("TileEntities", ListTag::class) ? $chunk->getListTag("TileEntities")->getValue() : [],
+			$biomeIds,
+			$chunk->getIntArray("HeightMap", [])
+		);
+		$result->setLightPopulated($chunk->getByte("LightPopulated", 0) !== 0);
+		$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
+		$result->setGenerated();
+		return $result;
 	}
 
 	protected function deserializeSubChunk(CompoundTag $subChunk) : SubChunk{
