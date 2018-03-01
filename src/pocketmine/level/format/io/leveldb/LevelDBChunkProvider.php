@@ -57,6 +57,8 @@ class LevelDBChunkProvider implements InternalChunkProvider{
 	 * @param int $chunkZ
 	 *
 	 * @return Chunk|null
+	 *
+	 * @throws UnsupportedChunkFormatException
 	 */
 	public function readChunk(int $chunkX, int $chunkZ) : ?Chunk{
 		$index = self::chunkIndex($chunkX, $chunkZ);

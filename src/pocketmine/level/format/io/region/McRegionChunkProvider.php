@@ -26,6 +26,7 @@ namespace pocketmine\level\format\io\region;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\io\ChunkUtils;
+use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\level\format\io\InternalChunkProvider;
 use pocketmine\level\format\SubChunk;
 use pocketmine\level\Level;
@@ -251,6 +252,14 @@ class McRegionChunkProvider implements InternalChunkProvider{
 		}
 	}
 
+	/**
+	 * @param int $chunkX
+	 * @param int $chunkZ
+	 *
+	 * @return null|Chunk
+	 *
+	 * @throws CorruptedChunkException
+	 */
 	public function readChunk(int $chunkX, int $chunkZ) : ?Chunk{
 		$regionX = $regionZ = null;
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);

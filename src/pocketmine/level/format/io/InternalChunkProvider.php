@@ -27,8 +27,21 @@ use pocketmine\level\format\Chunk;
 
 interface InternalChunkProvider{
 
+	/**
+	 * @param int $chunkX
+	 * @param int $chunkZ
+	 *
+	 * @return null|Chunk
+	 *
+	 * @throws \Exception various exceptions, see individual implementations for specifics
+	 */
 	public function readChunk(int $chunkX, int $chunkZ) : ?Chunk;
 
+	/**
+	 * @param Chunk $chunk
+	 *
+	 * @throws \Exception various exceptions, see individual implementations for specifics
+	 */
 	public function writeChunk(Chunk $chunk) : void;
 
 	public function doGarbageCollection() : void;

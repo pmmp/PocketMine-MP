@@ -127,8 +127,15 @@ class ThreadedChunkProvider extends Thread{
 		while(($request = $this->loadRequestBuffer->shift()) !== null){
 			Level::getXZ($request, $chunkX, $chunkZ);
 
-			$chunk = $provider->readChunk($chunkX, $chunkZ);
-			$this->loadedChunksBuffer[] = serialize($chunk ?? new Chunk($chunkX, $chunkZ));
+			try{
+				$chunk = $provider->readChunk($chunkX, $chunkZ);
+				$this->loadedChunksBuffer[] = serialize($chunk ?? new Chunk($chunkX, $chunkZ));
+			}catch(\Exception $e){
+				$logger = MainLogger::getLogger();
+				$logger->critical("Could not process chunk load request for x=$chunkX z=$chunkZ: " . $e->getMessage());
+				$logger->logException($e);
+				$this->loadedChunksBuffer[] = serialize(new Chunk($chunkX, $chunkZ)); //overwrite with empty chunk, will be generated later
+			}
 		}
 	}
 
@@ -136,7 +143,13 @@ class ThreadedChunkProvider extends Thread{
 		while(($chunkBytes = $this->saveRequestBuffer->shift()) !== null){
 			assert(is_string($chunkBytes));
 			$chunk = unserialize($chunkBytes);
-			$provider->writeChunk($chunk);
+			try{
+				$provider->writeChunk($chunk);
+			}catch(\Exception $e){
+				$logger = MainLogger::getLogger();
+				$logger->critical("Could not process chunk save request for x=" . $chunk->getX() . " z=" . $chunk->getZ() . ": " . $e->getMessage());
+				$logger->logException($e);
+			}
 		}
 	}
 }
