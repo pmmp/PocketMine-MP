@@ -49,7 +49,7 @@ class McRegion extends BaseLevelProvider{
 	 *
 	 * @return string
 	 */
-	public function nbtSerialize(Chunk $chunk) : string{
+	protected function nbtSerialize(Chunk $chunk) : string{
 		$nbt = new CompoundTag("Level", []);
 		$nbt->setInt("xPos", $chunk->getX());
 		$nbt->setInt("zPos", $chunk->getZ());
@@ -109,7 +109,7 @@ class McRegion extends BaseLevelProvider{
 	 *
 	 * @return Chunk|null
 	 */
-	public function nbtDeserialize(string $data){
+	protected function nbtDeserialize(string $data){
 		$nbt = new BigEndianNBTStream();
 		try{
 			$chunk = $nbt->readCompressed($data);

@@ -39,7 +39,7 @@ class Anvil extends McRegion{
 
 	public const REGION_FILE_EXTENSION = "mca";
 
-	public function nbtSerialize(Chunk $chunk) : string{
+	protected function nbtSerialize(Chunk $chunk) : string{
 		$nbt = new CompoundTag("Level", []);
 		$nbt->setInt("xPos", $chunk->getX());
 		$nbt->setInt("zPos", $chunk->getZ());
@@ -97,7 +97,7 @@ class Anvil extends McRegion{
 		]);
 	}
 
-	public function nbtDeserialize(string $data){
+	protected function nbtDeserialize(string $data){
 		$nbt = new BigEndianNBTStream();
 		try{
 			$chunk = $nbt->readCompressed($data);
