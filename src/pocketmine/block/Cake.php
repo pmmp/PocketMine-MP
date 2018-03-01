@@ -94,7 +94,7 @@ class Cake extends Transparent implements FoodSource{
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{
-		if($player !== null){
+		if($player !== null and !$player->isCreative()){
 			$player->consumeObject($this);
 			return true;
 		}
