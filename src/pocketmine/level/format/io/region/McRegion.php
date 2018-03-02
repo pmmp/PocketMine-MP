@@ -320,22 +320,25 @@ class McRegion extends BaseLevelProvider{
 	protected function loadRegion(int $regionX, int $regionZ){
 		if(!isset($this->regions[$index = Level::chunkHash($regionX, $regionZ)])){
 			$path = $this->pathToRegion($regionX, $regionZ);
-			$this->regions[$index] = new RegionLoader($path, $regionX, $regionZ);
+
+			$region = new RegionLoader($path, $regionX, $regionZ);
 			try{
-				$this->regions[$index]->open();
+				$region->open();
 			}catch(CorruptedRegionException $e){
 				$logger = MainLogger::getLogger();
 				$logger->error("Corrupted region file detected: " . $e->getMessage());
 
-				$this->regions[$index]->close(false); //Do not write anything to the file
+				$region->close(false); //Do not write anything to the file
 
 				$backupPath = $path . ".bak." . time();
 				rename($path, $backupPath);
 				$logger->error("Corrupted region file has been backed up to " . $backupPath);
 
-				$this->regions[$index] = new RegionLoader($path, $regionX, $regionZ);
-				$this->regions[$index]->open(); //this will create a new empty region to replace the corrupted one
+				$region = new RegionLoader($path, $regionX, $regionZ);
+				$region->open(); //this will create a new empty region to replace the corrupted one
 			}
+
+			$this->regions[$index] = $region;
 		}
 	}
 
