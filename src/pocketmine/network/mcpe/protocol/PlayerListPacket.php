@@ -60,12 +60,8 @@ class PlayerListPacket extends DataPacket{
 				$entry->platform = $this->getVarInt();
 
 				$skinId = $this->getString();
-				$this->getLInt(); //always 1
 				$skinData = $this->getString();
-				$capeData = "";
-				if($this->getLInt() !== 0){
-					$capeData = $this->getString();
-				}
+				$capeData = $this->getString();
 				$geometryName = $this->getString();
 				$geometryData = $this->getString();
 
@@ -97,17 +93,8 @@ class PlayerListPacket extends DataPacket{
 				$this->putString($entry->thirdPartyName);
 				$this->putVarInt($entry->platform);
 				$this->putString($entry->skin->getSkinId());
-
-				$this->putLInt(1);
 				$this->putString($entry->skin->getSkinData());
-
-				$capeData = $entry->skin->getCapeData();
-				if($capeData !== ""){
-					$this->putLInt(1);
-					$this->putString($capeData);
-				}else{
-					$this->putLInt(0);
-				}
+				$this->putString($entry->skin->getCapeData());
 				$this->putString($entry->skin->getGeometryName());
 				$this->putString($entry->skin->getGeometryData());
 				$this->putString($entry->xboxUserId);
