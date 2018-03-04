@@ -27,7 +27,7 @@ class PaintingMotive{
 	/** @var PaintingMotive[] */
 	protected static $motives = [];
 
-	public static function init(){
+	public static function init() : void{
 		foreach([
 			new PaintingMotive(1, 1, "Alban"),
 			new PaintingMotive(1, 1, "Aztec"),
@@ -67,7 +67,7 @@ class PaintingMotive{
 	/**
 	 * @param PaintingMotive $motive
 	 */
-	public static function registerMotive(PaintingMotive $motive){
+	public static function registerMotive(PaintingMotive $motive) : void{
 		self::$motives[$motive->getName()] = $motive;
 	}
 
@@ -75,7 +75,7 @@ class PaintingMotive{
 	 * @param string $name
 	 * @return PaintingMotive|null
 	 */
-	public static function getMotiveByName(string $name){
+	public static function getMotiveByName(string $name) : ?PaintingMotive{
 		return self::$motives[$name] ?? null;
 	}
 
