@@ -31,7 +31,6 @@ use pocketmine\block\BlockFactory;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Item as DroppedItem;
 use pocketmine\entity\object\ExperienceOrb;
-use pocketmine\entity\projectile\Arrow;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\block\BlockUpdateEvent;
@@ -1872,13 +1871,8 @@ class Level implements ChunkManager, Metadatable{
 
 		if($hand->isSolid()){
 			foreach($hand->getCollisionBoxes() as $collisionBox){
-				$entities = $this->getCollidingEntities($collisionBox);
-				foreach($entities as $e){
-					if($e instanceof Arrow or $e instanceof DroppedItem or ($e instanceof Player and $e->isSpectator())){
-						continue;
-					}
-
-					return false; //Entity in block
+				if(!empty($this->getCollidingEntities($collisionBox))){
+					return false;  //Entity in block
 				}
 
 				if($player !== null){
