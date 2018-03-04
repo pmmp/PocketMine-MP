@@ -209,4 +209,13 @@ class ExperienceOrb extends Entity{
 
 		return $hasUpdate;
 	}
+
+	protected function tryChangeMovement(){
+		$this->checkObstruction($this->x, $this->y, $this->z);
+		parent::tryChangeMovement();
+	}
+
+	public function canBeCollidedWith() : bool{
+		return false;
+	}
 }
