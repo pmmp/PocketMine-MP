@@ -28,7 +28,7 @@ NO support whatsoever will be provided for third-party modified variants of Pock
 
 Note that 32-bit platforms are no longer supported by PocketMine-MP and issues concerning 32-bit platforms will be closed.
 -->
-* PocketMine-MP:
+* PocketMine-MP: <!-- LATEST IS NOT A VALID VERSION -->
 * PHP:
 * Server OS:
 * Game version: PE/Win10 (delete as appropriate)
