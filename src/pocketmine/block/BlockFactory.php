@@ -51,9 +51,7 @@ class BlockFactory{
 	/** @var \SplFixedArray<float> */
 	public static $blastResistance = null;
 
-	/**
-	 * @var int[]
-	 */
+	/** @var int[] */
 	public static $staticRuntimeIdMap = [];
 
 	/** @var int[] */
