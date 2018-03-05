@@ -180,6 +180,14 @@ class Effect{
 	}
 
 	/**
+	 * Returns whether the effect is by default an instant effect.
+	 * @return bool
+	 */
+	public function isInstantEffect() : bool{
+		return $this->defaultDuration <= 1;
+	}
+
+	/**
 	 * Returns the default duration this effect will apply for if a duration is not specified.
 	 * @return int
 	 */
@@ -236,8 +244,9 @@ class Effect{
 	 *
 	 * @param Living         $entity
 	 * @param EffectInstance $instance
+	 * @param float          $potency
 	 */
-	public function applyEffect(Living $entity, EffectInstance $instance) : void{
+	public function applyEffect(Living $entity, EffectInstance $instance, float $potency = 1.0) : void{
 		switch($this->id){
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case Effect::POISON:
@@ -269,12 +278,12 @@ class Effect{
 			case Effect::INSTANT_HEALTH:
 				//TODO: add particles (witch spell)
 				if($entity->getHealth() < $entity->getMaxHealth()){
-					$entity->heal(new EntityRegainHealthEvent($entity, 4 << $instance->getAmplifier(), EntityRegainHealthEvent::CAUSE_MAGIC));
+					$entity->heal(new EntityRegainHealthEvent($entity, (4 << $instance->getAmplifier()) * $potency, EntityRegainHealthEvent::CAUSE_MAGIC));
 				}
 				break;
 			case Effect::INSTANT_DAMAGE:
 				//TODO: add particles (witch spell)
-				$entity->attack(new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, 4 << $instance->getAmplifier()));
+				$entity->attack(new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, (4 << $instance->getAmplifier()) * $potency));
 				break;
 			case Effect::SATURATION:
 				if($entity instanceof Human){
