@@ -450,12 +450,12 @@ class Level implements ChunkManager, Metadatable{
 			throw new \InvalidStateException("Tried to close a level which is already closed");
 		}
 
-		if($this->getAutoSave()){
-			$this->save();
-		}
-
 		foreach($this->chunks as $chunk){
 			$this->unloadChunk($chunk->getX(), $chunk->getZ(), false);
+		}
+
+		if($this->getAutoSave()){
+			$this->save();
 		}
 
 		$this->unregisterGenerator();
