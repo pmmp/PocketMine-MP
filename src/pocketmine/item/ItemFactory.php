@@ -105,7 +105,7 @@ class ItemFactory{
 		self::registerItem(new Item(Item::FLINT, 0, "Flint"));
 		self::registerItem(new RawPorkchop());
 		self::registerItem(new CookedPorkchop());
-		self::registerItem(new Painting());
+		self::registerItem(new PaintingItem());
 		self::registerItem(new GoldenApple());
 		self::registerItem(new Sign());
 		self::registerItem(new ItemBlock(Block::OAK_DOOR_BLOCK, 0, Item::OAK_DOOR));

@@ -33,8 +33,6 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\command\SimpleCommandMap;
-use pocketmine\entity\Attribute;
-use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Skin;
 use pocketmine\event\HandlerList;
@@ -1607,8 +1605,7 @@ class Server{
 			ItemFactory::init();
 			Item::initCreativeItems();
 			Biome::init();
-			Effect::init();
-			Attribute::init();
+
 			$this->craftingManager = new CraftingManager();
 
 			$this->resourceManager = new ResourcePackManager($this->getDataPath() . "resource_packs" . DIRECTORY_SEPARATOR);

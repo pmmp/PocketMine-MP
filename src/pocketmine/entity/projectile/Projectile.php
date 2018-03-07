@@ -67,6 +67,10 @@ abstract class Projectile extends Entity{
 		return $entity instanceof Living and !$this->onGround;
 	}
 
+	public function canBeCollidedWith() : bool{
+		return false;
+	}
+
 	/**
 	 * Returns the amount of damage this projectile will deal to the entity it hits.
 	 * @return int
