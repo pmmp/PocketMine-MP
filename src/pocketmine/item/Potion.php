@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\entity\Effect;
+use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Living;
 
 class Potion extends Item implements Consumable{
@@ -70,7 +71,7 @@ class Potion extends Item implements Consumable{
 	 * Returns a list of effects applied by potions with the specified ID.
 	 *
 	 * @param int $id
-	 * @return Effect[]
+	 * @return EffectInstance[]
 	 *
 	 * @throws \InvalidArgumentException if the potion type is unknown
 	 */
@@ -84,131 +85,131 @@ class Potion extends Item implements Consumable{
 				return [];
 			case self::NIGHT_VISION:
 				return [
-					Effect::getEffect(Effect::NIGHT_VISION)->setDuration(3600)
+					new EffectInstance(Effect::getEffect(Effect::NIGHT_VISION), 3600)
 				];
 			case self::LONG_NIGHT_VISION:
 				return [
-					Effect::getEffect(Effect::NIGHT_VISION)->setDuration(9600)
+					new EffectInstance(Effect::getEffect(Effect::NIGHT_VISION), 9600)
 				];
 			case self::INVISIBILITY:
 				return [
-					Effect::getEffect(Effect::INVISIBILITY)->setDuration(3600)
+					new EffectInstance(Effect::getEffect(Effect::INVISIBILITY), 3600)
 				];
 			case self::LONG_INVISIBILITY:
 				return [
-					Effect::getEffect(Effect::INVISIBILITY)->setDuration(9600)
+					new EffectInstance(Effect::getEffect(Effect::INVISIBILITY), 9600)
 				];
 			case self::LEAPING:
 				return [
-					Effect::getEffect(Effect::JUMP_BOOST)->setDuration(3600)
+					new EffectInstance(Effect::getEffect(Effect::JUMP_BOOST), 3600)
 				];
 			case self::LONG_LEAPING:
 				return [
-					Effect::getEffect(Effect::JUMP_BOOST)->setDuration(9600)
+					new EffectInstance(Effect::getEffect(Effect::JUMP_BOOST), 9600)
 				];
 			case self::STRONG_LEAPING:
 				return [
-					Effect::getEffect(Effect::JUMP_BOOST)->setDuration(1800)->setAmplifier(1)
+					new EffectInstance(Effect::getEffect(Effect::JUMP_BOOST), 1800, 1)
 				];
 			case self::FIRE_RESISTANCE:
 				return [
-					Effect::getEffect(Effect::FIRE_RESISTANCE)->setDuration(3600)
+					new EffectInstance(Effect::getEffect(Effect::FIRE_RESISTANCE), 3600)
 				];
 			case self::LONG_FIRE_RESISTANCE:
 				return [
-					Effect::getEffect(Effect::FIRE_RESISTANCE)->setDuration(9600)
+					new EffectInstance(Effect::getEffect(Effect::FIRE_RESISTANCE), 9600)
 				];
 			case self::SWIFTNESS:
 				return [
-					Effect::getEffect(Effect::SPEED)->setDuration(3600)
+					new EffectInstance(Effect::getEffect(Effect::SPEED), 3600)
 				];
 			case self::LONG_SWIFTNESS:
 				return [
-					Effect::getEffect(Effect::SPEED)->setDuration(9600)
+					new EffectInstance(Effect::getEffect(Effect::SPEED), 9600)
 				];
 			case self::STRONG_SWIFTNESS:
 				return [
-					Effect::getEffect(Effect::SPEED)->setDuration(1800)->setAmplifier(1)
+					new EffectInstance(Effect::getEffect(Effect::SPEED), 1800, 1)
 				];
 			case self::SLOWNESS:
 				return [
-					Effect::getEffect(Effect::SLOWNESS)->setDuration(1800)
+					new EffectInstance(Effect::getEffect(Effect::SLOWNESS), 1800)
 				];
 			case self::LONG_SLOWNESS:
 				return [
-					Effect::getEffect(Effect::SLOWNESS)->setDuration(4800)
+					new EffectInstance(Effect::getEffect(Effect::SLOWNESS), 4800)
 				];
 			case self::WATER_BREATHING:
 				return [
-					Effect::getEffect(Effect::WATER_BREATHING)->setDuration(3600)
+					new EffectInstance(Effect::getEffect(Effect::WATER_BREATHING), 3600)
 				];
 			case self::LONG_WATER_BREATHING:
 				return [
-					Effect::getEffect(Effect::WATER_BREATHING)->setDuration(9600)
+					new EffectInstance(Effect::getEffect(Effect::WATER_BREATHING), 9600)
 				];
 			case self::HEALING:
 				return [
-					Effect::getEffect(Effect::INSTANT_HEALTH)
+					new EffectInstance(Effect::getEffect(Effect::INSTANT_HEALTH))
 				];
 			case self::STRONG_HEALING:
 				return [
-					Effect::getEffect(Effect::INSTANT_HEALTH)->setAmplifier(1)
+					new EffectInstance(Effect::getEffect(Effect::INSTANT_HEALTH), null, 1)
 				];
 			case self::HARMING:
 				return [
-					Effect::getEffect(Effect::INSTANT_DAMAGE)
+					new EffectInstance(Effect::getEffect(Effect::INSTANT_DAMAGE))
 				];
 			case self::STRONG_HARMING:
 				return [
-					Effect::getEffect(Effect::INSTANT_DAMAGE)->setAmplifier(1)
+					new EffectInstance(Effect::getEffect(Effect::INSTANT_DAMAGE), null, 1)
 				];
 			case self::POISON:
 				return [
-					Effect::getEffect(Effect::POISON)->setDuration(900)
+					new EffectInstance(Effect::getEffect(Effect::POISON), 900)
 				];
 			case self::LONG_POISON:
 				return [
-					Effect::getEffect(Effect::POISON)->setDuration(2400)
+					new EffectInstance(Effect::getEffect(Effect::POISON), 2400)
 				];
 			case self::STRONG_POISON:
 				return [
-					Effect::getEffect(Effect::POISON)->setDuration(440)->setAmplifier(1)
+					new EffectInstance(Effect::getEffect(Effect::POISON), 440, 1)
 				];
 			case self::REGENERATION:
 				return [
-					Effect::getEffect(Effect::REGENERATION)->setDuration(900)
+					new EffectInstance(Effect::getEffect(Effect::REGENERATION), 900)
 				];
 			case self::LONG_REGENERATION:
 				return [
-					Effect::getEffect(Effect::REGENERATION)->setDuration(2400)
+					new EffectInstance(Effect::getEffect(Effect::REGENERATION), 2400)
 				];
 			case self::STRONG_REGENERATION:
 				return [
-					Effect::getEffect(Effect::REGENERATION)->setDuration(440)->setAmplifier(1)
+					new EffectInstance(Effect::getEffect(Effect::REGENERATION), 440, 1)
 				];
 			case self::STRENGTH:
 				return [
-					Effect::getEffect(Effect::STRENGTH)->setDuration(3600)
+					new EffectInstance(Effect::getEffect(Effect::STRENGTH), 3600)
 				];
 			case self::LONG_STRENGTH:
 				return [
-					Effect::getEffect(Effect::STRENGTH)->setDuration(9600)
+					new EffectInstance(Effect::getEffect(Effect::STRENGTH), 9600)
 				];
 			case self::STRONG_STRENGTH:
 				return [
-					Effect::getEffect(Effect::STRENGTH)->setDuration(1800)->setAmplifier(1)
+					new EffectInstance(Effect::getEffect(Effect::STRENGTH), 1800, 1)
 				];
 			case self::WEAKNESS:
 				return [
-					Effect::getEffect(Effect::WEAKNESS)->setDuration(1800)
+					new EffectInstance(Effect::getEffect(Effect::WEAKNESS), 1800)
 				];
 			case self::LONG_WEAKNESS:
 				return [
-					Effect::getEffect(Effect::WEAKNESS)->setDuration(4800)
+					new EffectInstance(Effect::getEffect(Effect::WEAKNESS), 4800)
 				];
 			case self::WITHER:
 				return [
-					Effect::getEffect(Effect::WITHER)->setDuration(800)->setAmplifier(1)
+					new EffectInstance(Effect::getEffect(Effect::WITHER), 800, 1)
 				];
 		}
 

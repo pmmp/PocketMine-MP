@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\entity\Effect;
+use pocketmine\entity\EffectInstance;
 
 class GoldenAppleEnchanted extends GoldenApple{
 
@@ -33,10 +34,10 @@ class GoldenAppleEnchanted extends GoldenApple{
 
 	public function getAdditionalEffects() : array{
 		return [
-			Effect::getEffect(Effect::REGENERATION)->setDuration(600)->setAmplifier(4),
-			Effect::getEffect(Effect::ABSORPTION)->setDuration(2400)->setAmplifier(3),
-			Effect::getEffect(Effect::DAMAGE_RESISTANCE)->setDuration(6000),
-			Effect::getEffect(Effect::FIRE_RESISTANCE)->setDuration(6000),
+			new EffectInstance(Effect::getEffect(Effect::REGENERATION), 600, 4),
+			new EffectInstance(Effect::getEffect(Effect::ABSORPTION), 2400, 3),
+			new EffectInstance(Effect::getEffect(Effect::RESISTANCE), 6000),
+			new EffectInstance(Effect::getEffect(Effect::FIRE_RESISTANCE), 6000)
 		];
 	}
 }
