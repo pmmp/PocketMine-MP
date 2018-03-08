@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\projectile;
 
 use pocketmine\entity\Entity;
+use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\event\inventory\InventoryPickupArrowEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -72,10 +73,6 @@ class Arrow extends Projectile{
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		if($this->onGround or $this->hadCollision){
-			$this->setCritical(false);
-		}
-
 		if($this->age > 1200){
 			$this->flagForDespawn();
 			$hasUpdate = true;
@@ -84,8 +81,12 @@ class Arrow extends Projectile{
 		return $hasUpdate;
 	}
 
+	protected function onHit(ProjectileHitEvent $event) : void{
+		$this->setCritical(false);
+	}
+
 	public function onCollideWithPlayer(Player $player){
-		if(!$this->hadCollision){
+		if($this->blockHit === null){
 			return;
 		}
 

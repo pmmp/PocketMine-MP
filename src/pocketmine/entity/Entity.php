@@ -355,7 +355,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	protected $lastDamageCause = null;
 
 	/** @var Block[] */
-	private $blocksAround = [];
+	protected $blocksAround = [];
 
 	/** @var float|null */
 	public $lastX = null;
@@ -1387,7 +1387,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * Returns whether the entity needs a movement update on the next tick.
 	 * @return bool
 	 */
-	final public function hasMovementUpdate() : bool{
+	public function hasMovementUpdate() : bool{
 		return (
 			$this->forceMovementUpdate or
 			$this->motionX != 0 or

@@ -21,28 +21,28 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity\projectile;
+namespace pocketmine\event\entity;
 
-abstract class Throwable extends Projectile{
+use pocketmine\entity\Entity;
+use pocketmine\entity\projectile\Projectile;
+use pocketmine\math\RayTraceResult;
 
-	public $width = 0.25;
-	public $height = 0.25;
+class ProjectileHitEntityEvent extends ProjectileHitEvent{
 
-	protected $gravity = 0.03;
-	protected $drag = 0.01;
+	/** @var Entity */
+	private $entityHit;
 
-	public function entityBaseTick(int $tickDiff = 1) : bool{
-		if($this->closed){
-			return false;
-		}
+	public function __construct(Projectile $entity, RayTraceResult $rayTraceResult, Entity $entityHit){
+		parent::__construct($entity, $rayTraceResult);
+		$this->entityHit = $entityHit;
+	}
 
-		$hasUpdate = parent::entityBaseTick($tickDiff);
-
-		if($this->age > 1200 or $this->isCollided){
-			$this->flagForDespawn();
-			$hasUpdate = true;
-		}
-
-		return $hasUpdate;
+	/**
+	 * Returns the Entity struck by the projectile.
+	 *
+	 * @return Entity
+	 */
+	public function getEntityHit() : Entity{
+		return $this->entityHit;
 	}
 }
