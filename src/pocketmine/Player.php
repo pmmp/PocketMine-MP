@@ -3692,6 +3692,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			$this->isTeleporting = true;
 
+			//TODO: workaround for player last pos not getting updated
+			//Entity::updateMovement() normally handles this, but it's overridden with an empty function in Player
+			$this->resetLastMovements();
+
 			return true;
 		}
 
