@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\entity\Effect;
+use pocketmine\entity\EffectInstance;
 
 class Fish extends Food{
 	public const FISH_FISH = 0;
@@ -71,9 +72,9 @@ class Fish extends Food{
 
 	public function getAdditionalEffects() : array{
 		return $this->meta === self::FISH_PUFFERFISH ? [
-			Effect::getEffect(Effect::HUNGER)->setDuration(300)->setAmplifier(2),
-			Effect::getEffect(Effect::NAUSEA)->setDuration(300)->setAmplifier(1),
-			Effect::getEffect(Effect::POISON)->setDuration(1200)->setAmplifier(3),
+			new EffectInstance(Effect::getEffect(Effect::HUNGER), 300, 2),
+			new EffectInstance(Effect::getEffect(Effect::NAUSEA), 300, 1),
+			new EffectInstance(Effect::getEffect(Effect::POISON), 1200, 3)
 		] : [];
 	}
 }

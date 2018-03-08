@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\entity\Effect;
+use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Living;
 
 /**
@@ -41,7 +41,7 @@ interface Consumable{
 	public function getResidue();
 
 	/**
-	 * @return Effect[]
+	 * @return EffectInstance[]
 	 */
 	public function getAdditionalEffects() : array;
 

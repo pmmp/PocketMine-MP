@@ -26,8 +26,8 @@ namespace pocketmine\item;
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\ProjectileLaunchEvent;
-use pocketmine\level\sound\LaunchSound;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
 abstract class ProjectileItem extends Item{
@@ -52,7 +52,10 @@ abstract class ProjectileItem extends Item{
 				$projectile->flagForDespawn();
 			}else{
 				$projectile->spawnToAll();
-				$player->getLevel()->addSound(new LaunchSound($player), $player->getViewers());
+
+				//319 is the Player's entity type ID in MCPE, with all its flags (which we don't know)
+				//without this, it doesn't work at all.
+				$player->getLevel()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_THROW, 319);
 			}
 		}else{
 			$projectile->spawnToAll();

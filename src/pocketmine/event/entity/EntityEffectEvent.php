@@ -23,21 +23,21 @@ declare(strict_types=1);
 
 namespace pocketmine\event\entity;
 
-use pocketmine\entity\Effect;
+use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 
 class EntityEffectEvent extends EntityEvent implements Cancellable{
 
-	/** @var Effect */
+	/** @var EffectInstance */
 	private $effect;
 
-	public function __construct(Entity $entity, Effect $effect){
+	public function __construct(Entity $entity, EffectInstance $effect){
 		$this->entity = $entity;
 		$this->effect = $effect;
 	}
 
-	public function getEffect() : Effect{
+	public function getEffect() : EffectInstance{
 		return $this->effect;
 	}
 }
