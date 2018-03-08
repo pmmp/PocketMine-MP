@@ -111,6 +111,8 @@ class CraftingTransaction extends InventoryTransaction{
 		$minY = 0;
 		$maxY = 0;
 
+		$empty = true;
+
 		foreach($this->inputs as $y => $row){
 			foreach($row as $x => $item){
 				if(!$item->isNull()){
@@ -119,19 +121,18 @@ class CraftingTransaction extends InventoryTransaction{
 
 					$minY = min($minY, $y);
 					$maxY = max($maxY, $y);
+
+					$empty = false;
 				}
 			}
 		}
 
-		$height = $maxY - $minY + 1;
-		$width = $maxX - $minX + 1;
-
-		if($height === 0 or $width === 0){
+		if($empty){
 			return [];
 		}
 
 		$air = ItemFactory::get(Item::AIR, 0, 0);
-		$reindexed = array_fill(0, $height, array_fill(0, $width, $air));
+		$reindexed = array_fill(0, $maxY - $minY + 1, array_fill(0, $maxX - $minX + 1, $air));
 		foreach($reindexed as $y => $row){
 			foreach($row as $x => $item){
 				$reindexed[$y][$x] = $this->inputs[$y + $minY][$x + $minX];
