@@ -105,23 +105,26 @@ class CraftingTransaction extends InventoryTransaction{
 	}
 
 	private function reindexInputs() : array{
-		$xOffset = $this->gridSize;
-		$yOffset = $this->gridSize;
+		$minX = 0;
+		$maxX = 0;
 
-		$height = 0;
-		$width = 0;
+		$minY = 0;
+		$maxY = 0;
 
 		foreach($this->inputs as $y => $row){
 			foreach($row as $x => $item){
 				if(!$item->isNull()){
-					$xOffset = min($x, $xOffset);
-					$yOffset = min($y, $yOffset);
+					$minX = min($minX, $x);
+					$maxX = max($maxX, $x);
 
-					$height = max($y + 1 - $yOffset, $height);
-					$width = max($x + 1 - $xOffset, $width);
+					$minY = min($minY, $y);
+					$maxY = max($maxY, $y);
 				}
 			}
 		}
+
+		$height = $maxY - $minY + 1;
+		$width = $maxX - $minX + 1;
 
 		if($height === 0 or $width === 0){
 			return [];
@@ -131,7 +134,7 @@ class CraftingTransaction extends InventoryTransaction{
 		$reindexed = array_fill(0, $height, array_fill(0, $width, $air));
 		foreach($reindexed as $y => $row){
 			foreach($row as $x => $item){
-				$reindexed[$y][$x] = $this->inputs[$y + $yOffset][$x + $xOffset];
+				$reindexed[$y][$x] = $this->inputs[$y + $minY][$x + $minX];
 			}
 		}
 
