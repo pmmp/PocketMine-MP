@@ -299,6 +299,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	protected $lastPingMeasure = 1;
 
+	/** @var int[] ID => ticks map */
+	protected $usedItemsCooldown = [];
+
 	/**
 	 * @return TranslationContainer|string
 	 */
@@ -858,6 +861,39 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	public function getItemUseDuration() : int{
 		return $this->startAction === -1 ? -1 : ($this->server->getTick() - $this->startAction);
+	}
+
+	/**
+	 * Returns whether the player has a cooldown period left before it can use the given item again.
+	 *
+	 * @param Item $item
+	 *
+	 * @return bool
+	 */
+	public function hasItemCooldown(Item $item) : bool{
+		$this->checkItemCooldowns();
+		return isset($this->usedItemsCooldown[$item->getId()]);
+	}
+
+	/**
+	 * Resets the player's cooldown time for the given item back to the maximum.
+	 *
+	 * @param Item $item
+	 */
+	public function resetItemCooldown(Item $item) : void{
+		$ticks = $item->getCooldownTicks();
+		if($ticks > 0){
+			$this->usedItemsCooldown[$item->getId()] = $this->server->getTick() + $ticks;
+		}
+	}
+
+	protected function checkItemCooldowns() : void{
+		$serverTick = $this->server->getTick();
+		foreach($this->usedItemsCooldown as $itemId => $cooldownUntil){
+			if($cooldownUntil <= $serverTick){
+				unset($this->usedItemsCooldown[$itemId]);
+			}
+		}
 	}
 
 	protected function switchLevel(Level $targetLevel) : bool{
@@ -2384,6 +2420,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						}
 
 						$ev = new PlayerInteractEvent($this, $item, null, $directionVector, $face, PlayerInteractEvent::RIGHT_CLICK_AIR);
+						if($this->hasItemCooldown($item)){
+							$ev->setCancelled();
+						}
 
 						$this->server->getPluginManager()->callEvent($ev);
 
@@ -2392,8 +2431,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							return true;
 						}
 
-						if($item->onClickAir($this, $directionVector) and $this->isSurvival()){
-							$this->inventory->setItemInHand($item);
+						if($item->onClickAir($this, $directionVector)){
+							$this->resetItemCooldown($item);
+							if($this->isSurvival()){
+								$this->inventory->setItemInHand($item);
+							}
 						}
 
 						$this->setUsingItem(true);
@@ -2486,7 +2528,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						case InventoryTransactionPacket::RELEASE_ITEM_ACTION_RELEASE:
 							if($this->isUsingItem()){
 								$item = $this->inventory->getItemInHand();
+								if($this->hasItemCooldown($item)){
+									$this->inventory->sendContents($this);
+									return false;
+								}
 								if($item->onReleaseUsing($this)){
+									$this->resetItemCooldown($item);
 									$this->inventory->setItemInHand($item);
 								}
 							}else{
@@ -2499,12 +2546,17 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 							if($slot instanceof Consumable){
 								$ev = new PlayerItemConsumeEvent($this, $slot);
+								if($this->hasItemCooldown($slot)){
+									$ev->setCancelled();
+								}
 								$this->server->getPluginManager()->callEvent($ev);
 
 								if($ev->isCancelled() or !$this->consumeObject($slot)){
 									$this->inventory->sendContents($this);
 									return true;
 								}
+
+								$this->resetItemCooldown($slot);
 
 								if($this->isSurvival()){
 									$slot->pop();

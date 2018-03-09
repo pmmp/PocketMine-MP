@@ -84,4 +84,8 @@ class ChorusFruit extends Food{
 			break;
 		}
 	}
+
+	public function getCooldownTicks() : int{
+		return 20;
+	}
 }

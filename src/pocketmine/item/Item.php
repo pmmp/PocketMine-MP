@@ -822,6 +822,15 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
+	 * Returns the number of ticks a player must wait before activating this item again.
+	 *
+	 * @return int
+	 */
+	public function getCooldownTicks() : int{
+		return 0;
+	}
+
+	/**
 	 * Compares an Item to this Item and check if they match.
 	 *
 	 * @param Item $item
