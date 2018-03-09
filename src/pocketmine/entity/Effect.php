@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use pocketmine\event\entity\EntityDamageByChildEntityEvent;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
@@ -245,8 +247,10 @@ class Effect{
 	 * @param Living         $entity
 	 * @param EffectInstance $instance
 	 * @param float          $potency
+	 * @param null|Entity    $source
+	 * @param null|Entity    $sourceOwner
 	 */
-	public function applyEffect(Living $entity, EffectInstance $instance, float $potency = 1.0) : void{
+	public function applyEffect(Living $entity, EffectInstance $instance, float $potency = 1.0, ?Entity $source = null, ?Entity $sourceOwner = null) : void{
 		switch($this->id){
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case Effect::POISON:
@@ -283,7 +287,16 @@ class Effect{
 				break;
 			case Effect::INSTANT_DAMAGE:
 				//TODO: add particles (witch spell)
-				$entity->attack(new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, (4 << $instance->getAmplifier()) * $potency));
+				$damage = (4 << $instance->getAmplifier()) * $potency;
+				if($source !== null and $sourceOwner !== null){
+					$ev = new EntityDamageByChildEntityEvent($sourceOwner, $source, $entity, EntityDamageEvent::CAUSE_MAGIC, $damage);
+				}elseif($source !== null){
+					$ev = new EntityDamageByEntityEvent($source, $entity, EntityDamageEvent::CAUSE_MAGIC, $damage);
+				}else{
+					$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, $damage);
+				}
+				$entity->attack($ev);
+
 				break;
 			case Effect::SATURATION:
 				if($entity instanceof Human){
