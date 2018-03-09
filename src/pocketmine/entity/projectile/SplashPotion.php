@@ -23,9 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\projectile;
 
+use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\ProjectileHitEntityEvent;
+use pocketmine\event\entity\ProjectileHitBlockEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\Potion;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
@@ -108,6 +111,17 @@ class SplashPotion extends Throwable{
 				}
 			}else{
 				//TODO: lingering potions
+			}
+		}elseif($event instanceof ProjectileHitBlockEvent and $this->getPotionId() === Potion::WATER){
+			$blockIn = $event->getBlockHit()->getSide($event->getRayTraceResult()->getHitFace());
+
+			if($blockIn->getId() === Block::FIRE){
+				$this->level->setBlock($blockIn, BlockFactory::get(Block::AIR));
+			}
+			foreach($blockIn->getHorizontalSides() as $horizontalSide){
+				if($horizontalSide->getId() === Block::FIRE){
+					$this->level->setBlock($horizontalSide, BlockFactory::get(Block::AIR));
+				}
 			}
 		}
 
