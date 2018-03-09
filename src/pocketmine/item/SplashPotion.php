@@ -23,17 +23,23 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\nbt\tag\CompoundTag;
 
-class GoldHelmet extends Armor{
+class SplashPotion extends ProjectileItem{
+
 	public function __construct(int $meta = 0){
-		parent::__construct(self::GOLD_HELMET, $meta, "Gold Helmet");
+		parent::__construct(self::SPLASH_POTION, $meta, "Splash Potion");
 	}
 
-	public function getDefensePoints() : int{
-		return 2;
+	public function getProjectileEntityType() : string{
+		return "ThrownPotion";
 	}
 
-	public function getMaxDurability() : int{
-		return 78;
+	public function getThrowForce() : float{
+		return 0.5;
+	}
+
+	protected function addExtraTags(CompoundTag $tag) : void{
+		$tag->setShort("PotionId", $this->meta);
 	}
 }

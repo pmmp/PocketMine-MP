@@ -44,6 +44,7 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\Player;
 use pocketmine\utils\Binary;
@@ -466,6 +467,29 @@ abstract class Living extends Entity implements Damageable{
 	 */
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
 		$this->setAbsorption(max(0, $this->getAbsorption() + $source->getDamage(EntityDamageEvent::MODIFIER_ABSORPTION)));
+		$this->damageArmor($source->getDamage(EntityDamageEvent::MODIFIER_BASE));
+	}
+
+	/**
+	 * Damages the worn armour according to the amount of damage given. Each 4 points (rounded down) deals 1 damage
+	 * point to each armour piece, but never less than 1 total.
+	 *
+	 * @param float $damage
+	 */
+	public function damageArmor(float $damage) : void{
+		$durabilityRemoved = (int) max(floor($damage / 4), 1);
+
+		$armor = $this->armorInventory->getContents(true);
+		foreach($armor as $item){
+			if($item instanceof Armor){
+				$item->applyDamage($durabilityRemoved);
+				if($item->isBroken()){
+					$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BREAK);
+				}
+			}
+		}
+
+		$this->armorInventory->setContents($armor);
 	}
 
 	public function attack(EntityDamageEvent $source){

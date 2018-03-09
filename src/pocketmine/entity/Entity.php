@@ -35,6 +35,7 @@ use pocketmine\entity\object\PaintingMotive;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\projectile\Egg;
 use pocketmine\entity\projectile\Snowball;
+use pocketmine\entity\projectile\SplashPotion;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDespawnEvent;
 use pocketmine\event\entity\EntityLevelChangeEvent;
@@ -236,6 +237,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		Entity::registerEntity(Painting::class, false, ['Painting', 'minecraft:painting']);
 		Entity::registerEntity(PrimedTNT::class, false, ['PrimedTnt', 'PrimedTNT', 'minecraft:tnt']);
 		Entity::registerEntity(Snowball::class, false, ['Snowball', 'minecraft:snowball']);
+		Entity::registerEntity(SplashPotion::class, false, ['ThrownPotion', 'minecraft:potion', 'thrownpotion']);
 		Entity::registerEntity(Squid::class, false, ['Squid', 'minecraft:squid']);
 		Entity::registerEntity(Villager::class, false, ['Villager',	'minecraft:villager']);
 		Entity::registerEntity(Zombie::class, false, ['Zombie',	'minecraft:zombie']);
@@ -355,7 +357,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	protected $lastDamageCause = null;
 
 	/** @var Block[] */
-	private $blocksAround = [];
+	protected $blocksAround = [];
 
 	/** @var float|null */
 	public $lastX = null;
@@ -1387,7 +1389,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * Returns whether the entity needs a movement update on the next tick.
 	 * @return bool
 	 */
-	final public function hasMovementUpdate() : bool{
+	public function hasMovementUpdate() : bool{
 		return (
 			$this->forceMovementUpdate or
 			$this->motionX != 0 or

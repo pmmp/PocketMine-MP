@@ -21,19 +21,29 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\event\entity;
 
+use pocketmine\block\Block;
+use pocketmine\entity\projectile\Projectile;
+use pocketmine\math\RayTraceResult;
 
-class GoldHelmet extends Armor{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::GOLD_HELMET, $meta, "Gold Helmet");
+class ProjectileHitBlockEvent extends ProjectileHitEvent{
+
+	/** @var Block */
+	private $blockHit;
+
+	public function __construct(Projectile $entity, RayTraceResult $rayTraceResult, Block $blockHit){
+		parent::__construct($entity, $rayTraceResult);
+		$this->blockHit = $blockHit;
 	}
 
-	public function getDefensePoints() : int{
-		return 2;
-	}
-
-	public function getMaxDurability() : int{
-		return 78;
+	/**
+	 * Returns the Block struck by the projectile.
+	 * Hint: to get the block face hit, look at the RayTraceResult.
+	 *
+	 * @return Block
+	 */
+	public function getBlockHit() : Block{
+		return $this->blockHit;
 	}
 }

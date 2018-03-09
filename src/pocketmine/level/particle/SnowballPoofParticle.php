@@ -21,19 +21,12 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\level\particle;
 
+use pocketmine\math\Vector3;
 
-class GoldHelmet extends Armor{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::GOLD_HELMET, $meta, "Gold Helmet");
-	}
-
-	public function getDefensePoints() : int{
-		return 2;
-	}
-
-	public function getMaxDurability() : int{
-		return 78;
+class SnowballPoofParticle extends GenericParticle{
+	public function __construct(Vector3 $pos){
+		parent::__construct($pos, self::TYPE_SNOWBALL_POOF, 0);
 	}
 }
