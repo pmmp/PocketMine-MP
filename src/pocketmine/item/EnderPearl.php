@@ -28,6 +28,10 @@ class EnderPearl extends ProjectileItem{
 		parent::__construct(self::ENDER_PEARL, $meta, "Ender Pearl");
 	}
 
+	public function getMaxStackSize() : int{
+		return 16;
+	}
+
 	public function getProjectileEntityType() : string{
 		return "ThrownEnderpearl";
 	}
