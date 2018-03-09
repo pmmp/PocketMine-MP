@@ -23,16 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-class CookedFish extends Food{
+class RawSalmon extends Food{
 	public function __construct(int $meta = 0){
-		parent::__construct(self::COOKED_FISH, $meta, "Cooked Fish");
+		parent::__construct(self::RAW_SALMON, $meta, "Raw Salmon");
 	}
 
 	public function getFoodRestore() : int{
-		return 5;
+		return 2;
 	}
 
 	public function getSaturationRestore() : float{
-		return 6;
+		return 0.2;
 	}
 }
