@@ -86,8 +86,8 @@ abstract class Projectile extends Entity{
 				break;
 			}
 
-			if($this->namedtag->hasTag("blockId", ByteTag::class)){
-				$blockId = $this->namedtag->getByte("blockId");
+			if($this->namedtag->hasTag("blockId", IntTag::class)){
+				$blockId = $this->namedtag->getInt("blockId");
 			}else{
 				break;
 			}
@@ -131,7 +131,7 @@ abstract class Projectile extends Entity{
 			$this->namedtag->setInt("tileZ", $this->blockHit->z);
 
 			//we intentionally use different ones to PC because we don't have stringy IDs
-			$this->namedtag->setByte("blockId", $this->blockHitId);
+			$this->namedtag->setInt("blockId", $this->blockHitId);
 			$this->namedtag->setByte("blockData", $this->blockHitData);
 		}
 	}
