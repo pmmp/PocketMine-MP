@@ -284,19 +284,21 @@ abstract class Projectile extends Entity{
 	protected function onHitEntity(Entity $entityHit, RayTraceResult $hitResult) : void{
 		$damage = $this->getResultDamage();
 
-		if($this->getOwningEntity() === null){
-			$ev = new EntityDamageByEntityEvent($this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
-		}else{
-			$ev = new EntityDamageByChildEntityEvent($this->getOwningEntity(), $this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
-		}
+		if($damage >= 0){
+			if($this->getOwningEntity() === null){
+				$ev = new EntityDamageByEntityEvent($this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
+			}else{
+				$ev = new EntityDamageByChildEntityEvent($this->getOwningEntity(), $this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
+			}
 
-		$entityHit->attack($ev);
+			$entityHit->attack($ev);
 
-		if($this->fireTicks > 0){
-			$ev = new EntityCombustByEntityEvent($this, $entityHit, 5);
-			$this->server->getPluginManager()->callEvent($ev);
-			if(!$ev->isCancelled()){
-				$entityHit->setOnFire($ev->getDuration());
+			if($this->fireTicks > 0){
+				$ev = new EntityCombustByEntityEvent($this, $entityHit, 5);
+				$this->server->getPluginManager()->callEvent($ev);
+				if(!$ev->isCancelled()){
+					$entityHit->setOnFire($ev->getDuration());
+				}
 			}
 		}
 
