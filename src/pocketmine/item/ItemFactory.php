@@ -218,7 +218,7 @@ class ItemFactory{
 		self::registerItem(new ChorusFruit());
 		self::registerItem(new Item(Item::CHORUS_FRUIT_POPPED, 0, "Popped Chorus Fruit"));
 
-		//TODO: DRAGON_BREATH
+		self::registerItem(new Item(Item::DRAGON_BREATH, 0, "Dragon's Breath"));
 		self::registerItem(new SplashPotion());
 
 		//TODO: LINGERING_POTION
