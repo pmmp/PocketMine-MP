@@ -37,6 +37,5 @@ class Egg extends Throwable{
 		for($i = 0; $i < 6; ++$i){
 			$this->level->addParticle(new ItemBreakParticle($this, ItemFactory::get(Item::EGG)));
 		}
-		parent::onHit($event);
 	}
 }

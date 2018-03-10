@@ -33,6 +33,5 @@ class Snowball extends Throwable{
 		for($i = 0; $i < 6; ++$i){
 			$this->level->addParticle(new SnowballPoofParticle($this));
 		}
-		parent::onHit($event);
 	}
 }
