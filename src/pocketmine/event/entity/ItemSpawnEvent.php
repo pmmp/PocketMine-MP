@@ -23,21 +23,21 @@ declare(strict_types=1);
 
 namespace pocketmine\event\entity;
 
-use pocketmine\entity\Item;
+use pocketmine\entity\object\ItemEntity;
 
 class ItemSpawnEvent extends EntityEvent{
 	public static $handlerList = null;
 
 	/**
-	 * @param Item $item
+	 * @param ItemEntity $item
 	 */
-	public function __construct(Item $item){
+	public function __construct(ItemEntity $item){
 		$this->entity = $item;
 
 	}
 
 	/**
-	 * @return Item
+	 * @return ItemEntity
 	 */
 	public function getEntity(){
 		return $this->entity;

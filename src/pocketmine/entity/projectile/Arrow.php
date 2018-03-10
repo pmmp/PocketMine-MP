@@ -23,12 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\projectile;
 
+use pocketmine\block\Block;
 use pocketmine\entity\Entity;
+use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\event\inventory\InventoryPickupArrowEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
+use pocketmine\math\RayTraceResult;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\Player;
 
@@ -72,10 +77,6 @@ class Arrow extends Projectile{
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		if($this->onGround or $this->hadCollision){
-			$this->setCritical(false);
-		}
-
 		if($this->age > 1200){
 			$this->flagForDespawn();
 			$hasUpdate = true;
@@ -84,8 +85,18 @@ class Arrow extends Projectile{
 		return $hasUpdate;
 	}
 
+	protected function onHit(ProjectileHitEvent $event) : void{
+		$this->setCritical(false);
+		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BOW_HIT);
+	}
+
+	protected function onHitBlock(Block $blockHit, RayTraceResult $hitResult) : void{
+		parent::onHitBlock($blockHit, $hitResult);
+		$this->broadcastEntityEvent(EntityEventPacket::ARROW_SHAKE, 7); //7 ticks
+	}
+
 	public function onCollideWithPlayer(Player $player){
-		if(!$this->hadCollision){
+		if($this->blockHit === null){
 			return;
 		}
 

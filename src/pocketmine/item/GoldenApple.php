@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\entity\Effect;
+use pocketmine\entity\EffectInstance;
 
 class GoldenApple extends Food{
 
@@ -45,8 +46,8 @@ class GoldenApple extends Food{
 
 	public function getAdditionalEffects() : array{
 		return [
-			Effect::getEffect(Effect::REGENERATION)->setDuration(100)->setAmplifier(1),
-			Effect::getEffect(Effect::ABSORPTION)->setDuration(2400)
+			new EffectInstance(Effect::getEffect(Effect::REGENERATION), 100, 1),
+			new EffectInstance(Effect::getEffect(Effect::ABSORPTION), 2400)
 		];
 	}
 }

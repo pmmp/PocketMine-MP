@@ -35,7 +35,7 @@ use pocketmine\inventory\ArmorInventory;
 use pocketmine\item\Armor;
 use pocketmine\item\Consumable;
 use pocketmine\item\enchantment\Enchantment;
-use pocketmine\item\Item as ItemItem;
+use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\ByteTag;
@@ -44,6 +44,7 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\Player;
 use pocketmine\utils\Binary;
@@ -63,7 +64,7 @@ abstract class Living extends Entity implements Damageable{
 
 	protected $jumpVelocity = 0.42;
 
-	/** @var Effect[] */
+	/** @var EffectInstance[] */
 	protected $effects = [];
 
 	/** @var ArmorInventory */
@@ -95,16 +96,18 @@ abstract class Living extends Entity implements Damageable{
 		$activeEffectsTag = $this->namedtag->getListTag("ActiveEffects");
 		if($activeEffectsTag !== null){
 			foreach($activeEffectsTag as $e){
-				$amplifier = Binary::unsignByte($e->getByte("Amplifier")); //0-255 only
-
 				$effect = Effect::getEffect($e->getByte("Id"));
 				if($effect === null){
 					continue;
 				}
 
-				$effect->setAmplifier($amplifier)->setDuration($e->getInt("Duration"))->setVisible($e->getByte("ShowParticles", 1) > 0)->setAmbient($e->getByte("Ambient", 0) !== 0);
-
-				$this->addEffect($effect);
+				$this->addEffect(new EffectInstance(
+					$effect,
+					$e->getInt("Duration"),
+					Binary::unsignByte($e->getByte("Amplifier")),
+					$e->getByte("ShowParticles", 1) !== 0,
+					$e->getByte("Ambient", 0) !== 0
+				));
 			}
 		}
 	}
@@ -174,7 +177,7 @@ abstract class Living extends Entity implements Damageable{
 
 	/**
 	 * Returns an array of Effects currently active on the mob.
-	 * @return Effect[]
+	 * @return EffectInstance[]
 	 */
 	public function getEffects() : array{
 		return $this->effects;
@@ -203,7 +206,8 @@ abstract class Living extends Entity implements Damageable{
 			}
 
 			unset($this->effects[$effectId]);
-			$effect->remove($this);
+			$effect->getType()->remove($this, $effect);
+			$this->sendEffectRemove($effect);
 
 			$this->recalculateEffectColor();
 		}
@@ -215,7 +219,7 @@ abstract class Living extends Entity implements Damageable{
 	 *
 	 * @param int $effectId
 	 *
-	 * @return Effect|null
+	 * @return EffectInstance|null
 	 */
 	public function getEffect(int $effectId){
 		return $this->effects[$effectId] ?? null;
@@ -245,11 +249,11 @@ abstract class Living extends Entity implements Damageable{
 	 * If a weaker effect of the same type is already applied, it will be replaced.
 	 * If a weaker or equal-strength effect is already applied but has a shorter duration, it will be replaced.
 	 *
-	 * @param Effect $effect
+	 * @param EffectInstance $effect
 	 *
 	 * @return bool whether the effect has been successfully applied.
 	 */
-	public function addEffect(Effect $effect) : bool{
+	public function addEffect(EffectInstance $effect) : bool{
 		$oldEffect = null;
 		$cancelled = false;
 
@@ -271,7 +275,13 @@ abstract class Living extends Entity implements Damageable{
 			return false;
 		}
 
-		$effect->add($this, $oldEffect);
+		if($oldEffect !== null){
+			$oldEffect->getType()->remove($this, $oldEffect);
+		}
+
+		$effect->getType()->add($this, $effect);
+		$this->sendEffectAdd($effect, $oldEffect !== null);
+
 		$this->effects[$effect->getId()] = $effect;
 
 		$this->recalculateEffectColor();
@@ -287,7 +297,7 @@ abstract class Living extends Entity implements Damageable{
 		$colors = [];
 		$ambient = true;
 		foreach($this->effects as $effect){
-			if($effect->isVisible() and $effect->hasBubbles()){
+			if($effect->isVisible() and $effect->getType()->hasBubbles()){
 				$level = $effect->getEffectLevel();
 				$color = $effect->getColor();
 				for($i = 0; $i < $level; ++$i){
@@ -325,6 +335,14 @@ abstract class Living extends Entity implements Damageable{
 
 			$player->dataPacket($pk);
 		}
+	}
+
+	protected function sendEffectAdd(EffectInstance $effect, bool $replacesOldEffect) : void{
+
+	}
+
+	protected function sendEffectRemove(EffectInstance $effect) : void{
+
 	}
 
 	/**
@@ -449,6 +467,29 @@ abstract class Living extends Entity implements Damageable{
 	 */
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
 		$this->setAbsorption(max(0, $this->getAbsorption() + $source->getDamage(EntityDamageEvent::MODIFIER_ABSORPTION)));
+		$this->damageArmor($source->getDamage(EntityDamageEvent::MODIFIER_BASE));
+	}
+
+	/**
+	 * Damages the worn armour according to the amount of damage given. Each 4 points (rounded down) deals 1 damage
+	 * point to each armour piece, but never less than 1 total.
+	 *
+	 * @param float $damage
+	 */
+	public function damageArmor(float $damage) : void{
+		$durabilityRemoved = (int) max(floor($damage / 4), 1);
+
+		$armor = $this->armorInventory->getContents(true);
+		foreach($armor as $item){
+			if($item instanceof Armor){
+				$item->applyDamage($durabilityRemoved);
+				if($item->isBroken()){
+					$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BREAK);
+				}
+			}
+		}
+
+		$this->armorInventory->setContents($armor);
 	}
 
 	public function attack(EntityDamageEvent $source){
@@ -609,13 +650,14 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	protected function doEffectsTick(int $tickDiff = 1){
-		foreach($this->effects as $effect){
-			if($effect->canTick()){
-				$effect->applyEffect($this);
+		foreach($this->effects as $instance){
+			$type = $instance->getType();
+			if($type->canTick($instance)){
+				$type->applyEffect($this, $instance);
 			}
-			$effect->setDuration(max(0, $effect->getDuration() - $tickDiff));
-			if($effect->getDuration() <= 0){
-				$this->removeEffect($effect->getId());
+			$instance->decreaseDuration($tickDiff);
+			if($instance->hasExpired()){
+				$this->removeEffect($instance->getId());
 			}
 		}
 	}
@@ -709,7 +751,7 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	/**
-	 * @return ItemItem[]
+	 * @return Item[]
 	 */
 	public function getDrops() : array{
 		return [];

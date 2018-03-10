@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\entity\Effect;
+use pocketmine\entity\EffectInstance;
 
 class SpiderEye extends Food{
 	public function __construct(int $meta = 0){
@@ -39,6 +40,6 @@ class SpiderEye extends Food{
 	}
 
 	public function getAdditionalEffects() : array{
-		return [Effect::getEffect(Effect::POISON)->setDuration(80)];
+		return [new EffectInstance(Effect::getEffect(Effect::POISON), 80)];
 	}
 }

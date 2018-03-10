@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\entity\Effect;
+use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Living;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item;
@@ -127,7 +127,7 @@ class Cake extends Transparent implements FoodSource{
 	}
 
 	/**
-	 * @return Effect[]
+	 * @return EffectInstance[]
 	 */
 	public function getAdditionalEffects() : array{
 		return [];

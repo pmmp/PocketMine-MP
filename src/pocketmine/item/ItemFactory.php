@@ -132,7 +132,7 @@ class ItemFactory{
 		self::registerItem(new FishingRod());
 		self::registerItem(new Clock());
 		self::registerItem(new Item(Item::GLOWSTONE_DUST, 0, "Glowstone Dust"));
-		self::registerItem(new Fish());
+		self::registerItem(new RawFish());
 		self::registerItem(new CookedFish());
 		self::registerItem(new Dye());
 		self::registerItem(new Item(Item::BONE, 0, "Bone"));
@@ -151,7 +151,7 @@ class ItemFactory{
 		self::registerItem(new RawChicken());
 		self::registerItem(new CookedChicken());
 		self::registerItem(new RottenFlesh());
-		//TODO: ENDER_PEARL
+		self::registerItem(new EnderPearl());
 		self::registerItem(new BlazeRod());
 		self::registerItem(new Item(Item::GHAST_TEAR, 0, "Ghast Tear"));
 		self::registerItem(new Item(Item::GOLD_NUGGET, 0, "Gold Nugget"));
@@ -167,7 +167,7 @@ class ItemFactory{
 		//TODO: ENDER_EYE
 		self::registerItem(new Item(Item::GLISTERING_MELON, 0, "Glistering Melon"));
 		self::registerItem(new SpawnEgg());
-		//TODO: BOTTLE_O_ENCHANTING
+		self::registerItem(new ExperienceBottle());
 		//TODO: FIREBALL
 		self::registerItem(new WritableBook());
 		self::registerItem(new WrittenBook());
@@ -177,7 +177,7 @@ class ItemFactory{
 		self::registerItem(new Carrot());
 		self::registerItem(new Potato());
 		self::registerItem(new BakedPotato());
-		//TODO: POISONOUS_POTATO
+		self::registerItem(new PoisonousPotato());
 		//TODO: EMPTYMAP
 		self::registerItem(new GoldenCarrot());
 		self::registerItem(new ItemBlock(Block::SKULL_BLOCK, 0, Item::SKULL));
@@ -194,9 +194,9 @@ class ItemFactory{
 		//TODO: HOPPER_MINECART
 		self::registerItem(new Item(Item::PRISMARINE_SHARD, 0, "Prismarine Shard"));
 		self::registerItem(new ItemBlock(Block::HOPPER_BLOCK, 0, Item::HOPPER));
-		//TODO: RABBIT
+		self::registerItem(new RawRabbit());
 		self::registerItem(new CookedRabbit());
-		//TODO: RABBIT_STEW
+		self::registerItem(new RabbitStew());
 		self::registerItem(new Item(Item::RABBIT_FOOT, 0, "Rabbit's Foot"));
 		self::registerItem(new Item(Item::RABBIT_HIDE, 0, "Rabbit Hide"));
 		//TODO: HORSEARMORLEATHER
@@ -206,8 +206,8 @@ class ItemFactory{
 		//TODO: LEAD
 		//TODO: NAMETAG
 		self::registerItem(new Item(Item::PRISMARINE_CRYSTALS, 0, "Prismarine Crystals"));
-		//TODO: MUTTONRAW
-		//TODO: COOKED_MUTTON
+		self::registerItem(new RawMutton());
+		self::registerItem(new CookedMutton());
 		//TODO: ARMOR_STAND
 		//TODO: END_CRYSTAL
 		self::registerItem(new ItemBlock(Block::SPRUCE_DOOR_BLOCK, 0, Item::SPRUCE_DOOR));
@@ -218,8 +218,8 @@ class ItemFactory{
 		self::registerItem(new ChorusFruit());
 		self::registerItem(new Item(Item::CHORUS_FRUIT_POPPED, 0, "Popped Chorus Fruit"));
 
-		//TODO: DRAGON_BREATH
-		//TODO: SPLASH_POTION
+		self::registerItem(new Item(Item::DRAGON_BREATH, 0, "Dragon's Breath"));
+		self::registerItem(new SplashPotion());
 
 		//TODO: LINGERING_POTION
 
@@ -235,10 +235,10 @@ class ItemFactory{
 		self::registerItem(new Beetroot());
 		self::registerItem(new BeetrootSeeds());
 		self::registerItem(new BeetrootSoup());
-		//TODO: RAW_SALMON
-		//TODO: CLOWNFISH
-		//TODO: PUFFERFISH
-		//TODO: COOKED_SALMON
+		self::registerItem(new RawSalmon());
+		self::registerItem(new Clownfish());
+		self::registerItem(new Pufferfish());
+		self::registerItem(new CookedSalmon());
 
 		self::registerItem(new GoldenAppleEnchanted());
 
