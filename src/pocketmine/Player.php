@@ -32,8 +32,8 @@ use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
-use pocketmine\entity\Item as DroppedItem;
 use pocketmine\entity\Living;
+use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Skin;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
@@ -2461,7 +2461,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						if(!$target->isAlive()){
 							return true;
 						}
-						if($target instanceof DroppedItem or $target instanceof Arrow){
+						if($target instanceof ItemEntity or $target instanceof Arrow){
 							$this->kick("Attempting to attack an invalid entity");
 							$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidEntity", [$this->getName()]));
 							return false;

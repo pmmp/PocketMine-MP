@@ -29,8 +29,8 @@ namespace pocketmine\level;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\entity\Entity;
-use pocketmine\entity\Item as DroppedItem;
 use pocketmine\entity\object\ExperienceOrb;
+use pocketmine\entity\object\ItemEntity;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\block\BlockUpdateEvent;
@@ -1623,7 +1623,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param Vector3 $motion
 	 * @param int     $delay
 	 *
-	 * @return DroppedItem|null
+	 * @return ItemEntity|null
 	 */
 	public function dropItem(Vector3 $source, Item $item, Vector3 $motion = null, int $delay = 10){
 		$motion = $motion ?? new Vector3(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1);
@@ -1637,7 +1637,7 @@ class Level implements ChunkManager, Metadatable{
 			$nbt->setTag($itemTag);
 			$itemEntity = Entity::createEntity("Item", $this, $nbt);
 
-			if($itemEntity instanceof DroppedItem){
+			if($itemEntity instanceof ItemEntity){
 				$itemEntity->spawnToAll();
 
 				return $itemEntity;

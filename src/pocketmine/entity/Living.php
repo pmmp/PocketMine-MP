@@ -35,7 +35,7 @@ use pocketmine\inventory\ArmorInventory;
 use pocketmine\item\Armor;
 use pocketmine\item\Consumable;
 use pocketmine\item\enchantment\Enchantment;
-use pocketmine\item\Item as ItemItem;
+use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\ByteTag;
@@ -751,7 +751,7 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	/**
-	 * @return ItemItem[]
+	 * @return Item[]
 	 */
 	public function getDrops() : array{
 		return [];

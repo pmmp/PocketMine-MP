@@ -30,6 +30,7 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\Water;
 use pocketmine\entity\object\ExperienceOrb;
+use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\object\Painting;
 use pocketmine\entity\object\PaintingMotive;
 use pocketmine\entity\projectile\Arrow;
@@ -237,7 +238,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		Entity::registerEntity(ExperienceBottle::class, false, ['ThrownExpBottle', 'minecraft:xp_bottle']);
 		Entity::registerEntity(ExperienceOrb::class, false, ['XPOrb', 'minecraft:xp_orb']);
 		Entity::registerEntity(FallingSand::class, false, ['FallingSand', 'minecraft:falling_block']);
-		Entity::registerEntity(Item::class, false, ['Item', 'minecraft:item']);
+		Entity::registerEntity(ItemEntity::class, false, ['Item', 'minecraft:item']);
 		Entity::registerEntity(Painting::class, false, ['Painting', 'minecraft:painting']);
 		Entity::registerEntity(PrimedTNT::class, false, ['PrimedTnt', 'PrimedTNT', 'minecraft:tnt']);
 		Entity::registerEntity(Snowball::class, false, ['Snowball', 'minecraft:snowball']);
