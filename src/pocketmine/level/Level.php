@@ -967,6 +967,10 @@ class Level implements ChunkManager, Metadatable{
 		unset($this->chunkCache[Level::chunkHash($chunkX, $chunkZ)]);
 	}
 
+	public function getRandomTickedBlocks() : SplFixedArray{
+		return $this->randomTickBlocks;
+	}
+
 	public function addRandomTickedBlock(int $id){
 		$this->randomTickBlocks[$id] = BlockFactory::get($id);
 	}
