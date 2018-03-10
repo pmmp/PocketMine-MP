@@ -96,6 +96,7 @@ use pocketmine\tile\Tile;
 use pocketmine\updater\AutoUpdater;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Config;
+use pocketmine\utils\HackyYamlConfigUpdater;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
@@ -1429,13 +1430,21 @@ class Server{
 			$version = new VersionString($this->getPocketMineVersion());
 
 			$this->logger->info("Loading pocketmine.yml...");
-			if(!file_exists($this->dataPath . "pocketmine.yml")){
-				$content = file_get_contents(\pocketmine\RESOURCE_PATH . "pocketmine.yml");
+
+			$configUpdater = new HackyYamlConfigUpdater($this->dataPath . "pocketmine.yml", \pocketmine\RESOURCE_PATH . "pocketmine.yml");
+			$result = $configUpdater->process();
+			if($result === HackyYamlConfigUpdater::RESULT_UPDATED_CONFIG){
+				$this->logger->notice("Your pocketmine.yml has been updated. The original has been moved to " . $configUpdater->getBackupPath());
+
+			}elseif($result === HackyYamlConfigUpdater::RESULT_NEW_CONFIG){
+				$content = file_get_contents($this->dataPath . "pocketmine.yml");
+
 				if($version->isDev()){
 					$content = str_replace("preferred-channel: stable", "preferred-channel: beta", $content);
 				}
 				@file_put_contents($this->dataPath . "pocketmine.yml", $content);
 			}
+
 			$this->config = new Config($this->dataPath . "pocketmine.yml", Config::YAML, []);
 
 			define('pocketmine\DEBUG', (int) $this->getProperty("debug.level", 1));
