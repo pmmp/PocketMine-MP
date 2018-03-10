@@ -167,7 +167,7 @@ class ItemFactory{
 		//TODO: ENDER_EYE
 		self::registerItem(new Item(Item::GLISTERING_MELON, 0, "Glistering Melon"));
 		self::registerItem(new SpawnEgg());
-		//TODO: BOTTLE_O_ENCHANTING
+		self::registerItem(new ExperienceBottle());
 		//TODO: FIREBALL
 		self::registerItem(new WritableBook());
 		self::registerItem(new WrittenBook());
