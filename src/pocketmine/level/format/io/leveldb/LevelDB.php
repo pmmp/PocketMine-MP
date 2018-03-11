@@ -86,13 +86,20 @@ class LevelDB extends BaseLevelProvider{
 		}
 	}
 
+	private static function createDB(string $path) : \LevelDB{
+		return new \LevelDB($path . "/db", [
+			"compression" => LEVELDB_ZLIB_RAW_COMPRESSION
+		]);
+	}
+
 	public function __construct(string $path){
 		self::checkForLevelDBExtension();
+		parent::__construct($path);
 
-		$this->path = $path;
-		if(!file_exists($this->path)){
-			mkdir($this->path, 0777, true);
-		}
+		$this->db = self::createDB($path);
+	}
+
+	protected function loadLevelData() : void{
 		$nbt = new LittleEndianNBTStream();
 		$levelData = $nbt->read(substr(file_get_contents($this->getPath() . "level.dat"), 8));
 		if($levelData instanceof CompoundTag){
@@ -101,21 +108,21 @@ class LevelDB extends BaseLevelProvider{
 			throw new LevelException("Invalid level.dat");
 		}
 
-		$this->db = new \LevelDB($this->path . "/db", [
-			"compression" => LEVELDB_ZLIB_RAW_COMPRESSION
-		]);
-
 		$version = $this->levelData->getInt("StorageVersion", INT32_MAX, true);
 		if($version > self::CURRENT_STORAGE_VERSION){
 			throw new LevelException("Specified LevelDB world format version ($version) is not supported by " . \pocketmine\NAME);
 		}
+	}
+
+	protected function fixLevelData() : void{
+		$db = self::createDB($this->path);
 
 		if(!$this->levelData->hasTag("generatorName", StringTag::class)){
 			if($this->levelData->hasTag("Generator", IntTag::class)){
 				switch($this->levelData->getInt("Generator")){ //Detect correct generator from MCPE data
 					case self::GENERATOR_FLAT:
 						$this->levelData->setString("generatorName", (string) Generator::getGenerator("FLAT"));
-						if(($layers = $this->db->get(self::ENTRY_FLAT_WORLD_LAYERS)) !== false){ //Detect existing custom flat layers
+						if(($layers = $db->get(self::ENTRY_FLAT_WORLD_LAYERS)) !== false){ //Detect existing custom flat layers
 							$layers = trim($layers, "[]");
 						}else{
 							$layers = "7,3,3,2";
@@ -140,6 +147,8 @@ class LevelDB extends BaseLevelProvider{
 		if(!$this->levelData->hasTag("generatorOptions", StringTag::class)){
 			$this->levelData->setString("generatorOptions", "");
 		}
+
+		$db->close();
 	}
 
 	public static function getProviderName() : string{
@@ -212,9 +221,7 @@ class LevelDB extends BaseLevelProvider{
 		file_put_contents($path . "level.dat", Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
 
 
-		$db = new \LevelDB($path . "/db", [
-			"compression" => LEVELDB_ZLIB_RAW_COMPRESSION
-		]);
+		$db = self::createDB($path);
 
 		if($generatorType === self::GENERATOR_FLAT and isset($options["preset"])){
 			$layers = explode(";", $options["preset"])[1] ?? "";
