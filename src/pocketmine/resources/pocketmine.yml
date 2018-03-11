@@ -142,8 +142,6 @@ chunk-ticking:
   #- 2 # grass
 
 chunk-generation:
- #Max. amount of chunks in the waiting queue to be generated
- queue-size: 8
  #Max. amount of chunks in the waiting queue to be populated
  population-queue-size: 8
 

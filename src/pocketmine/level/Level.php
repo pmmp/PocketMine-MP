@@ -51,7 +51,6 @@ use pocketmine\level\format\EmptySubChunk;
 use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\ChunkRequestTask;
 use pocketmine\level\format\io\LevelProvider;
-use pocketmine\level\generator\GenerationTask;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\GeneratorRegisterTask;
 use pocketmine\level\generator\GeneratorUnregisterTask;
@@ -206,10 +205,6 @@ class Level implements ChunkManager, Metadatable{
 	private $chunkPopulationQueue = [];
 	/** @var bool[] */
 	private $chunkPopulationLock = [];
-	/** @var bool[] */
-	private $chunkGenerationQueue = [];
-	/** @var int */
-	private $chunkGenerationQueueSize = 8;
 	/** @var int */
 	private $chunkPopulationQueueSize = 2;
 
@@ -368,7 +363,6 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->chunkTickRadius = min($this->server->getViewDistance(), max(1, (int) $this->server->getProperty("chunk-ticking.tick-radius", 4)));
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-ticking.per-tick", 40);
-		$this->chunkGenerationQueueSize = (int) $this->server->getProperty("chunk-generation.queue-size", 8);
 		$this->chunkPopulationQueueSize = (int) $this->server->getProperty("chunk-generation.population-queue-size", 2);
 		$this->clearChunksOnTick = (bool) $this->server->getProperty("chunk-ticking.clear-tick-list", true);
 
@@ -2400,8 +2394,7 @@ class Level implements ChunkManager, Metadatable{
 					$loader->onChunkPopulated($chunk);
 				}
 			}
-		}elseif(isset($this->chunkGenerationQueue[$index]) or isset($this->chunkPopulationLock[$index])){
-			unset($this->chunkGenerationQueue[$index]);
+		}elseif(isset($this->chunkPopulationLock[$index])){
 			unset($this->chunkPopulationLock[$index]);
 			$this->setChunk($x, $z, $chunk, false);
 		}else{
@@ -3028,29 +3021,6 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		return true;
-	}
-
-	public function generateChunk(int $x, int $z, bool $force = false){
-		if(count($this->chunkGenerationQueue) >= $this->chunkGenerationQueueSize and !$force){
-			return;
-		}
-
-		if(!isset($this->chunkGenerationQueue[$index = Level::chunkHash($x, $z)])){
-			Timings::$generationTimer->startTiming();
-			$this->chunkGenerationQueue[$index] = true;
-			$task = new GenerationTask($this, $this->getChunk($x, $z, true));
-			$this->server->getScheduler()->scheduleAsyncTask($task);
-			Timings::$generationTimer->stopTiming();
-		}
-	}
-
-	public function regenerateChunk(int $x, int $z){
-		$this->unloadChunk($x, $z, false);
-
-		$this->cancelUnloadChunkRequest($x, $z);
-
-		$this->generateChunk($x, $z);
-		//TODO: generate & refresh chunk from the generator object
 	}
 
 	public function doChunkGarbageCollection(){
