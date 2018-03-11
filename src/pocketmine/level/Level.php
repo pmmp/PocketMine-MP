@@ -256,29 +256,29 @@ class Level implements ChunkManager, Metadatable{
 
 
 
-	public static function chunkHash(int $x, int $z){
+	public static function chunkHash(int $x, int $z) : int{
 		return (($x & 0xFFFFFFFF) << 32) | ($z & 0xFFFFFFFF);
 	}
 
-	public static function blockHash(int $x, int $y, int $z){
+	public static function blockHash(int $x, int $y, int $z) : int{
 		if($y < 0 or $y >= Level::Y_MAX){
 			throw new \InvalidArgumentException("Y coordinate $y is out of range!");
 		}
 		return (($x & 0xFFFFFFF) << 36) | (($y & Level::Y_MASK) << 28) | ($z & 0xFFFFFFF);
 	}
 
-	public static function getBlockXYZ($hash, &$x, &$y, &$z){
+	public static function getBlockXYZ(int $hash, ?int &$x, ?int &$y, ?int &$z) : void{
 		$x = $hash >> 36;
 		$y = ($hash >> 28) & Level::Y_MASK; //it's always positive
 		$z = ($hash & 0xFFFFFFF) << 36 >> 36;
 	}
 
 	/**
-	 * @param string|int $hash
-	 * @param int|null   $x
-	 * @param int|null   $z
+	 * @param int      $hash
+	 * @param int|null $x
+	 * @param int|null $z
 	 */
-	public static function getXZ($hash, &$x, &$z){
+	public static function getXZ(int $hash, ?int &$x, ?int &$z) : void{
 		$x = $hash >> 32;
 		$z = ($hash & 0xFFFFFFFF) << 32 >> 32;
 	}
