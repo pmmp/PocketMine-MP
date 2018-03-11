@@ -21,18 +21,19 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\object;
 
+use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
-use pocketmine\item\Item as ItemItem;
+use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\AddItemEntityPacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\Player;
 
-class Item extends Entity{
+class ItemEntity extends Entity{
 	public const NETWORK_ID = self::ITEM;
 
 	/** @var string */
@@ -41,7 +42,7 @@ class Item extends Entity{
 	protected $thrower = "";
 	/** @var int */
 	protected $pickupDelay = 0;
-	/** @var ItemItem */
+	/** @var Item */
 	protected $item;
 
 	public $width = 0.25;
@@ -70,7 +71,7 @@ class Item extends Entity{
 			return;
 		}
 
-		$this->item = ItemItem::nbtDeserialize($itemTag);
+		$this->item = Item::nbtDeserialize($itemTag);
 
 
 		$this->server->getPluginManager()->callEvent(new ItemSpawnEvent($this));
@@ -142,13 +143,17 @@ class Item extends Entity{
 	}
 
 	/**
-	 * @return ItemItem
+	 * @return Item
 	 */
-	public function getItem() : ItemItem{
+	public function getItem() : Item{
 		return $this->item;
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
+		return false;
+	}
+
+	public function canBeCollidedWith() : bool{
 		return false;
 	}
 
@@ -213,7 +218,7 @@ class Item extends Entity{
 		$item = $this->getItem();
 		$playerInventory = $player->getInventory();
 
-		if(!($item instanceof ItemItem) or ($player->isSurvival() and !$playerInventory->canAddItem($item))){
+		if(!($item instanceof Item) or ($player->isSurvival() and !$playerInventory->canAddItem($item))){
 			return;
 		}
 
@@ -223,10 +228,10 @@ class Item extends Entity{
 		}
 
 		switch($item->getId()){
-			case ItemItem::WOOD:
+			case Item::WOOD:
 				$player->awardAchievement("mineWood");
 				break;
-			case ItemItem::DIAMOND:
+			case Item::DIAMOND:
 				$player->awardAchievement("diamond");
 				break;
 		}

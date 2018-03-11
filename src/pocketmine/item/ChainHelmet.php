@@ -32,4 +32,8 @@ class ChainHelmet extends Armor{
 	public function getDefensePoints() : int{
 		return 2;
 	}
+
+	public function getMaxDurability() : int{
+		return 166;
+	}
 }

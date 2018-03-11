@@ -30,7 +30,6 @@ use pocketmine\item\ItemFactory;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\nbt\JsonNBTParser;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
 class GiveCommand extends VanillaCommand{

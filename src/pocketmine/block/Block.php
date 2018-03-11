@@ -320,14 +320,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * @deprecated
-	 * @return float
-	 */
-	public function getResistance() : float{
-		return $this->getBlastResistance();
-	}
-
-	/**
 	 * Returns the block's resistance to explosions. Usually 5x hardness.
 	 * @return float
 	 */

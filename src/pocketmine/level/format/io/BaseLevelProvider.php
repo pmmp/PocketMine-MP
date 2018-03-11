@@ -113,13 +113,8 @@ abstract class BaseLevelProvider implements LevelProvider{
 		file_put_contents($this->getPath() . "level.dat", $buffer);
 	}
 
-	public function loadChunk(int $chunkX, int $chunkZ, bool $create = false) : ?Chunk{
-		$chunk = $this->readChunk($chunkX, $chunkZ);
-		if($chunk === null and $create){
-			$chunk = new Chunk($chunkX, $chunkZ);
-		}
-
-		return $chunk;
+	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk{
+		return $this->readChunk($chunkX, $chunkZ);
 	}
 
 	public function saveChunk(Chunk $chunk) : void{

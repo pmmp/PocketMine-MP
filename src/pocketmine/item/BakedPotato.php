@@ -36,4 +36,3 @@ class BakedPotato extends Food{
 		return 7.2;
 	}
 }
-

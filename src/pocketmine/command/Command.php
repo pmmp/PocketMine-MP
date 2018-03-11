@@ -234,9 +234,9 @@ abstract class Command{
 	}
 
 	/**
-	 * @return string
+	 * @return string|null
 	 */
-	public function getPermissionMessage() : string{
+	public function getPermissionMessage() : ?string{
 		return $this->permissionMessage;
 	}
 

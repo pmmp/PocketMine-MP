@@ -29,4 +29,3 @@ class Arrow extends Item{
 	}
 
 }
-

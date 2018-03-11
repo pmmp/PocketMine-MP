@@ -36,4 +36,3 @@ class CookedChicken extends Food{
 		return 7.2;
 	}
 }
-

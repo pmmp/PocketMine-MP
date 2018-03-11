@@ -29,10 +29,11 @@ use pocketmine\block\BlockFactory;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\Effect;
+use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
-use pocketmine\entity\Item as DroppedItem;
 use pocketmine\entity\Living;
+use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Skin;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
@@ -114,6 +115,7 @@ use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LoginPacket;
+use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
@@ -296,6 +298,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * Last measurement of player's latency in milliseconds.
 	 */
 	protected $lastPingMeasure = 1;
+
+	/** @var int[] ID => ticks map */
+	protected $usedItemsCooldown = [];
 
 	/**
 	 * @return TranslationContainer|string
@@ -856,6 +861,39 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	public function getItemUseDuration() : int{
 		return $this->startAction === -1 ? -1 : ($this->server->getTick() - $this->startAction);
+	}
+
+	/**
+	 * Returns whether the player has a cooldown period left before it can use the given item again.
+	 *
+	 * @param Item $item
+	 *
+	 * @return bool
+	 */
+	public function hasItemCooldown(Item $item) : bool{
+		$this->checkItemCooldowns();
+		return isset($this->usedItemsCooldown[$item->getId()]);
+	}
+
+	/**
+	 * Resets the player's cooldown time for the given item back to the maximum.
+	 *
+	 * @param Item $item
+	 */
+	public function resetItemCooldown(Item $item) : void{
+		$ticks = $item->getCooldownTicks();
+		if($ticks > 0){
+			$this->usedItemsCooldown[$item->getId()] = $this->server->getTick() + $ticks;
+		}
+	}
+
+	protected function checkItemCooldowns() : void{
+		$serverTick = $this->server->getTick();
+		foreach($this->usedItemsCooldown as $itemId => $cooldownUntil){
+			if($cooldownUntil <= $serverTick){
+				unset($this->usedItemsCooldown[$itemId]);
+			}
+		}
 	}
 
 	protected function switchLevel(Level $targetLevel) : bool{
@@ -1602,9 +1640,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function setMotion(Vector3 $mot){
 		if(parent::setMotion($mot)){
-			if($this->chunk !== null){
-				$this->broadcastMotion();
-			}
+			$this->broadcastMotion();
 
 			if($this->motionY > 0){
 				$this->startAirTicks = (-log($this->gravity / ($this->gravity + $this->drag * $this->motionY)) / $this->drag) * 2 + 5;
@@ -1720,6 +1756,27 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function canBreathe() : bool{
 		return $this->isCreative() or parent::canBreathe();
+	}
+
+	protected function sendEffectAdd(EffectInstance $effect, bool $replacesOldEffect) : void{
+		$pk = new MobEffectPacket();
+		$pk->entityRuntimeId = $this->getId();
+		$pk->eventId = $replacesOldEffect ? MobEffectPacket::EVENT_MODIFY : MobEffectPacket::EVENT_ADD;
+		$pk->effectId = $effect->getId();
+		$pk->amplifier = $effect->getAmplifier();
+		$pk->particles = $effect->isVisible();
+		$pk->duration = $effect->getDuration();
+
+		$this->dataPacket($pk);
+	}
+
+	protected function sendEffectRemove(EffectInstance $effect) : void{
+		$pk = new MobEffectPacket();
+		$pk->entityRuntimeId = $this->getId();
+		$pk->eventId = MobEffectPacket::EVENT_REMOVE;
+		$pk->effectId = $effect->getId();
+
+		$this->dataPacket($pk);
 	}
 
 	public function checkNetwork(){
@@ -1946,9 +2003,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$this->namedtag->setLong("lastPlayed", (int) floor(microtime(true) * 1000));
-		if($this->server->getAutoSave()){
-			$this->server->saveOfflinePlayerData($this->username, $this->namedtag, true);
-		}
 
 		$this->sendPlayStatus(PlayStatusPacket::LOGIN_SUCCESS);
 
@@ -2083,9 +2137,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->armorInventory->sendContents($this);
 		$this->inventory->sendCreativeContents();
 		$this->inventory->sendHeldItem($this);
+		$this->dataPacket($this->server->getCraftingManager()->getCraftingDataPacket());
 
 		$this->server->addOnlinePlayer($this);
-		$this->server->onPlayerCompleteLoginSequence($this);
+		$this->server->sendFullPlayerListData($this);
 	}
 
 	/**
@@ -2363,6 +2418,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						}
 
 						$ev = new PlayerInteractEvent($this, $item, null, $directionVector, $face, PlayerInteractEvent::RIGHT_CLICK_AIR);
+						if($this->hasItemCooldown($item)){
+							$ev->setCancelled();
+						}
 
 						$this->server->getPluginManager()->callEvent($ev);
 
@@ -2371,8 +2429,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							return true;
 						}
 
-						if($item->onClickAir($this, $directionVector) and $this->isSurvival()){
-							$this->inventory->setItemInHand($item);
+						if($item->onClickAir($this, $directionVector)){
+							$this->resetItemCooldown($item);
+							if($this->isSurvival()){
+								$this->inventory->setItemInHand($item);
+							}
 						}
 
 						$this->setUsingItem(true);
@@ -2398,7 +2459,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						if(!$target->isAlive()){
 							return true;
 						}
-						if($target instanceof DroppedItem or $target instanceof Arrow){
+						if($target instanceof ItemEntity or $target instanceof Arrow){
 							$this->kick("Attempting to attack an invalid entity");
 							$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidEntity", [$this->getName()]));
 							return false;
@@ -2465,7 +2526,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						case InventoryTransactionPacket::RELEASE_ITEM_ACTION_RELEASE:
 							if($this->isUsingItem()){
 								$item = $this->inventory->getItemInHand();
+								if($this->hasItemCooldown($item)){
+									$this->inventory->sendContents($this);
+									return false;
+								}
 								if($item->onReleaseUsing($this)){
+									$this->resetItemCooldown($item);
 									$this->inventory->setItemInHand($item);
 								}
 							}else{
@@ -2478,12 +2544,17 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 							if($slot instanceof Consumable){
 								$ev = new PlayerItemConsumeEvent($this, $slot);
+								if($this->hasItemCooldown($slot)){
+									$ev->setCancelled();
+								}
 								$this->server->getPluginManager()->callEvent($ev);
 
 								if($ev->isCancelled() or !$this->consumeObject($slot)){
 									$this->inventory->sendContents($this);
 									return true;
 								}
+
+								$this->resetItemCooldown($slot);
 
 								if($this->isSurvival()){
 									$slot->pop();
@@ -2803,7 +2874,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->resetCraftingGridType();
 
 		$pos = new Vector3($packet->x, $packet->y, $packet->z);
-		if($pos->distanceSquared($this) > 10000){
+		if($pos->distanceSquared($this) > 10000 or $this->level->checkSpawnProtection($this, $pos)){
 			return true;
 		}
 
@@ -3671,23 +3742,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			$this->isTeleporting = true;
 
+			//TODO: workaround for player last pos not getting updated
+			//Entity::updateMovement() normally handles this, but it's overridden with an empty function in Player
+			$this->resetLastMovements();
+
 			return true;
 		}
 
 		return false;
-	}
-
-	/**
-	 * @deprecated This functionality is now performed in {@link Player#teleport}.
-	 *
-	 * @param Vector3    $pos
-	 * @param float|null $yaw
-	 * @param float|null $pitch
-	 *
-	 * @return bool
-	 */
-	public function teleportImmediate(Vector3 $pos, float $yaw = null, float $pitch = null) : bool{
-		return $this->teleport($pos, $yaw, $pitch);
 	}
 
 	protected function addDefaultWindows(){

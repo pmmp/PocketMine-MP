@@ -29,9 +29,8 @@ namespace pocketmine\level;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\entity\Entity;
-use pocketmine\entity\Item as DroppedItem;
 use pocketmine\entity\object\ExperienceOrb;
-use pocketmine\entity\projectile\Arrow;
+use pocketmine\entity\object\ItemEntity;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\block\BlockUpdateEvent;
@@ -451,12 +450,12 @@ class Level implements ChunkManager, Metadatable{
 			throw new \InvalidStateException("Tried to close a level which is already closed");
 		}
 
-		if($this->getAutoSave()){
-			$this->save();
-		}
-
 		foreach($this->chunks as $chunk){
 			$this->unloadChunk($chunk->getX(), $chunk->getZ(), false);
+		}
+
+		if($this->getAutoSave()){
+			$this->save();
 		}
 
 		$this->unregisterGenerator();
@@ -968,6 +967,10 @@ class Level implements ChunkManager, Metadatable{
 		unset($this->chunkCache[Level::chunkHash($chunkX, $chunkZ)]);
 	}
 
+	public function getRandomTickedBlocks() : \SplFixedArray{
+		return $this->randomTickBlocks;
+	}
+
 	public function addRandomTickedBlock(int $id){
 		$this->randomTickBlocks[$id] = BlockFactory::get($id);
 	}
@@ -1121,16 +1124,6 @@ class Level implements ChunkManager, Metadatable{
 		if(!$ev->isCancelled()){
 			$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
 		}
-	}
-
-	/**
-	 * @deprecated This method will be removed in the future due to misleading/ambiguous name. Use {@link Level#scheduleDelayedBlockUpdate} instead.
-	 *
-	 * @param Vector3 $pos
-	 * @param int     $delay
-	 */
-	public function scheduleUpdate(Vector3 $pos, int $delay){
-		$this->scheduleDelayedBlockUpdate($pos, $delay);
 	}
 
 	/**
@@ -1630,7 +1623,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param Vector3 $motion
 	 * @param int     $delay
 	 *
-	 * @return DroppedItem|null
+	 * @return ItemEntity|null
 	 */
 	public function dropItem(Vector3 $source, Item $item, Vector3 $motion = null, int $delay = 10){
 		$motion = $motion ?? new Vector3(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1);
@@ -1644,7 +1637,7 @@ class Level implements ChunkManager, Metadatable{
 			$nbt->setTag($itemTag);
 			$itemEntity = Entity::createEntity("Item", $this, $nbt);
 
-			if($itemEntity instanceof DroppedItem){
+			if($itemEntity instanceof ItemEntity){
 				$itemEntity->spawnToAll();
 
 				return $itemEntity;
@@ -1882,13 +1875,8 @@ class Level implements ChunkManager, Metadatable{
 
 		if($hand->isSolid()){
 			foreach($hand->getCollisionBoxes() as $collisionBox){
-				$entities = $this->getCollidingEntities($collisionBox);
-				foreach($entities as $e){
-					if($e instanceof Arrow or $e instanceof DroppedItem or ($e instanceof Player and $e->isSpectator())){
-						continue;
-					}
-
-					return false; //Entity in block
+				if(!empty($this->getCollidingEntities($collisionBox))){
+					return false;  //Entity in block
 				}
 
 				if($player !== null){
@@ -2716,16 +2704,24 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->timings->syncChunkLoadDataTimer->startTiming();
 
-		$chunk = $this->provider->loadChunk($x, $z, $create);
+		$chunk = null;
+
+		try{
+			$chunk = $this->provider->loadChunk($x, $z);
+		}catch(\Exception $e){
+			$logger = $this->server->getLogger();
+			$logger->critical("An error occurred while loading chunk x=$x z=$z: " . $e->getMessage());
+			$logger->logException($e);
+		}
+
+		if($chunk === null and $create){
+			$chunk = new Chunk($x, $z);
+		}
 
 		$this->timings->syncChunkLoadDataTimer->stopTiming();
 
 		if($chunk === null){
 			$this->timings->syncChunkLoadTimer->stopTiming();
-
-			if($create){
-				throw new \InvalidStateException("Could not create new Chunk");
-			}
 			return false;
 		}
 

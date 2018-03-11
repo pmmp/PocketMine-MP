@@ -108,13 +108,12 @@ class BatchPacket extends DataPacket{
 		}
 
 		foreach($this->getPackets() as $buf){
-			$pk = PacketPool::getPacketById(ord($buf{0}));
+			$pk = PacketPool::getPacket($buf);
 
 			if(!$pk->canBeBatched()){
 				throw new \InvalidArgumentException("Received invalid " . get_class($pk) . " inside BatchPacket");
 			}
 
-			$pk->setBuffer($buf, 1);
 			$session->handleDataPacket($pk);
 		}
 

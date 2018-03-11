@@ -30,4 +30,3 @@ class Minecart extends Item{
 
 	//TODO
 }
-

@@ -36,4 +36,3 @@ class RawBeef extends Food{
 		return 1.8;
 	}
 }
-

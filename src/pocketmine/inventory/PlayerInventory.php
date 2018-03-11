@@ -108,14 +108,6 @@ class PlayerInventory extends EntityInventory{
 	}
 
 	/**
-	 * @deprecated
-	 * @return int
-	 */
-	public function getHeldItemSlot() : int{
-		return $this->getHeldItemIndex();
-	}
-
-	/**
 	 * Returns the hotbar slot number the holder is currently holding.
 	 * @return int
 	 */

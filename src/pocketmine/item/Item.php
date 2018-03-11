@@ -822,6 +822,15 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
+	 * Returns the number of ticks a player must wait before activating this item again.
+	 *
+	 * @return int
+	 */
+	public function getCooldownTicks() : int{
+		return 0;
+	}
+
+	/**
 	 * Compares an Item to this Item and check if they match.
 	 *
 	 * @param Item $item
@@ -855,19 +864,6 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	final public function equalsExact(Item $other) : bool{
 		return $this->equals($other, true, true) and $this->count === $other->count;
-	}
-
-	/**
-	 * @deprecated Use {@link Item#equals} instead, this method will be removed in the future.
-	 *
-	 * @param Item $item
-	 * @param bool $checkDamage
-	 * @param bool $checkCompound
-	 *
-	 * @return bool
-	 */
-	final public function deepEquals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
-		return $this->equals($item, $checkDamage, $checkCompound);
 	}
 
 	/**
