@@ -46,15 +46,18 @@ use pocketmine\tile\Container;
 use pocketmine\tile\Tile;
 
 class Explosion{
-
-	private $rays = 16; //Rays
+	/** @var int */
+	private $rays = 16;
+	/** @var Level */
 	public $level;
+	/** @var Position */
 	public $source;
+	/** @var float */
 	public $size;
-	/**
-	 * @var Block[]
-	 */
+
+	/** @var Block[] */
 	public $affectedBlocks = [];
+	/** @var float */
 	public $stepLen = 0.3;
 	/** @var Entity|Block */
 	private $what;
@@ -62,7 +65,12 @@ class Explosion{
 	/** @var SubChunkIteratorManager */
 	private $subChunkHandler;
 
-	public function __construct(Position $center, $size, $what = null){
+	/**
+	 * @param Position     $center
+	 * @param float        $size
+	 * @param Entity|Block $what
+	 */
+	public function __construct(Position $center, float $size, $what = null){
 		$this->level = $center->getLevel();
 		$this->source = $center;
 		$this->size = max($size, 0);
