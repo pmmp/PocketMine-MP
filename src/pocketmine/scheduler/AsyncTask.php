@@ -292,4 +292,3 @@ abstract class AsyncTask extends Collectable{
 		return $server->getScheduler()->peekLocalComplex($this);
 	}
 }
-

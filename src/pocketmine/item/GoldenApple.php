@@ -51,4 +51,3 @@ class GoldenApple extends Food{
 		];
 	}
 }
-

@@ -235,7 +235,7 @@ abstract class Living extends Entity implements Damageable{
 	public function hasEffect(int $effectId) : bool{
 		return isset($this->effects[$effectId]);
 	}
-	
+
 	/**
 	 * Returns whether the mob has any active effects.
 	 * @return bool

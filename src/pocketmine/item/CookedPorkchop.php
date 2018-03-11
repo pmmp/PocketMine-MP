@@ -36,4 +36,3 @@ class CookedPorkchop extends Food{
 		return 12.8;
 	}
 }
-

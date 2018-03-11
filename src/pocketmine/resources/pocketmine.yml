@@ -104,7 +104,7 @@ debug:
  level: 1
  #Enables /status, /gc
  commands: false
- 
+
 player:
  #Choose whether to enable player data saving.
  save-player-data: true

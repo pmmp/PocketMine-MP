@@ -36,4 +36,3 @@ class RawPorkchop extends Food{
 		return 0.6;
 	}
 }
-
