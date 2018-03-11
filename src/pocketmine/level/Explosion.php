@@ -71,11 +71,18 @@ class Explosion{
 	 * @param Entity|Block $what
 	 */
 	public function __construct(Position $center, float $size, $what = null){
-		$this->level = $center->getLevel();
 		$this->source = $center;
-		$this->size = max($size, 0);
-		$this->what = $what;
+		$this->level = $center->getLevel();
+		if($this->level === null){
+			throw new \InvalidArgumentException("Position does not have a valid level");
+		}
 
+		if($size <= 0){
+			throw new \InvalidArgumentException("Explosion radius must be greater than 0, got $size");
+		}
+		$this->size = $size;
+
+		$this->what = $what;
 		$this->subChunkHandler = new SubChunkIteratorManager($this->level, false);
 	}
 
