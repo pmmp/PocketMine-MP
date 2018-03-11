@@ -21,27 +21,30 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\level\format\io\region;
+namespace pocketmine\level\format\io;
 
-use pocketmine\level\format\io\ChunkProviderThread;
+use pocketmine\level\format\Chunk;
 
-/**
- * This format is exactly the same as the PC Anvil format, with the only difference being that the stored data order
- * is XZY instead of YZX for more performance loading and saving worlds.
- */
-class PMAnvil extends Anvil{
+interface ChunkProvider{
 
-	public const REGION_FILE_EXTENSION = "mcapm";
+	/**
+	 * @param int $chunkX
+	 * @param int $chunkZ
+	 *
+	 * @return null|Chunk
+	 *
+	 * @throws \Exception various exceptions, see individual implementations for specifics
+	 */
+	public function readChunk(int $chunkX, int $chunkZ) : ?Chunk;
 
-	protected function createChunkProvider() : ChunkProviderThread{
-		return new ChunkProviderThread(PMAnvilChunkProvider::class, $this->path);
-	}
+	/**
+	 * @param Chunk $chunk
+	 *
+	 * @throws \Exception various exceptions, see individual implementations for specifics
+	 */
+	public function writeChunk(Chunk $chunk) : void;
 
-	public static function getProviderName() : string{
-		return "pmanvil";
-	}
+	public function doGarbageCollection() : void;
 
-	public static function getPcWorldFormatVersion() : int{
-		return -1; //Not a PC format, only PocketMine-MP
-	}
+	public function close() : void;
 }

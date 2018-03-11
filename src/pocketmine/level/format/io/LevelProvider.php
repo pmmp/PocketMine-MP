@@ -86,24 +86,24 @@ interface LevelProvider{
 	public function getGeneratorOptions() : array;
 
 	/**
-	 * Saves a chunk (usually to disk).
+	 * Pushes a chunk to the provider buffer to be asynchronously saved (usually to disk).
 	 *
 	 * @param Chunk $chunk
 	 */
-	public function saveChunk(Chunk $chunk) : void;
+	public function requestChunkSave(Chunk $chunk) : void;
 
 	/**
-	 * Loads a chunk (usually from disk storage) and returns it. If the chunk does not exist, null is returned.
+	 * Requests a chunk to be asynchronously loaded from the provider (usually from disk storage). The chunk will be
+	 * pushed into the buffer, which can be read from using getBufferedChunk().
 	 *
 	 * @param int $chunkX
 	 * @param int $chunkZ
-	 *
-	 * @return null|Chunk
-	 *
-	 * @throws \Exception any of a range of exceptions that could be thrown while reading chunks. See individual
-	 * implementations for details.
 	 */
-	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk;
+	public function requestChunkLoad(int $chunkX, int $chunkZ) : void;
+
+	public function getBufferedChunk() : ?Chunk;
+
+	public function hasBufferedChunks() : bool;
 
 	/**
 	 * @return string

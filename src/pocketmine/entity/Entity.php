@@ -496,10 +496,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		/** @var float[] $pos */
 		$pos = $this->namedtag->getListTag("Pos")->getAllValues();
 
-		$this->chunk = $level->getChunk(((int) floor($pos[0])) >> 4, ((int) floor($pos[2])) >> 4, true);
-		if($this->chunk === null){
-			throw new \InvalidStateException("Cannot create entities in unloaded chunks");
-		}
+		$this->chunk = $level->getLoadedChunk(((int) floor($pos[0])) >> 4, ((int) floor($pos[2])) >> 4);
 
 		$this->setLevel($level);
 		$this->server = $level->getServer();
@@ -1776,7 +1773,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
 			}
-			$this->chunk = $this->level->getChunk($chunkX, $chunkZ, true);
+			$this->chunk = $this->level->getChunk($chunkX, $chunkZ);
 
 			if(!$this->justCreated){
 				$newChunk = $this->level->getChunkPlayers($chunkX, $chunkZ);

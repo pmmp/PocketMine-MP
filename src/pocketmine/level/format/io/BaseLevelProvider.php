@@ -37,11 +37,25 @@ abstract class BaseLevelProvider implements LevelProvider{
 	/** @var CompoundTag */
 	protected $levelData;
 
+	/** @var ChunkProviderThread */
+	protected $chunkProvider;
+
+
 	public function __construct(string $path){
 		$this->path = $path;
 		if(!file_exists($this->path)){
 			mkdir($this->path, 0777, true);
 		}
+
+		$this->loadLevelData();
+		$this->fixLevelData();
+
+		$this->chunkProvider = $this->createChunkProvider();
+		$this->chunkProvider->start();
+	}
+
+
+	protected function loadLevelData() : void{
 		$nbt = new BigEndianNBTStream();
 		$levelData = $nbt->readCompressed(file_get_contents($this->getPath() . "level.dat"));
 
@@ -50,7 +64,9 @@ abstract class BaseLevelProvider implements LevelProvider{
 		}
 
 		$this->levelData = $levelData->getCompoundTag("Data");
+	}
 
+	protected function fixLevelData() : void{
 		if(!$this->levelData->hasTag("generatorName", StringTag::class)){
 			$this->levelData->setString("generatorName", (string) Generator::getGenerator("DEFAULT"), true);
 		}
@@ -59,6 +75,8 @@ abstract class BaseLevelProvider implements LevelProvider{
 			$this->levelData->setString("generatorOptions", "");
 		}
 	}
+
+	abstract protected function createChunkProvider() : ChunkProviderThread;
 
 	public function getPath() : string{
 		return $this->path;
@@ -113,18 +131,23 @@ abstract class BaseLevelProvider implements LevelProvider{
 		file_put_contents($this->getPath() . "level.dat", $buffer);
 	}
 
-	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk{
-		return $this->readChunk($chunkX, $chunkZ);
+	public function requestChunkLoad(int $chunkX, int $chunkZ) : void{
+		$this->chunkProvider->requestChunkLoad($chunkX, $chunkZ);
 	}
 
-	public function saveChunk(Chunk $chunk) : void{
-		if(!$chunk->isGenerated()){
-			throw new \InvalidStateException("Cannot save un-generated chunk");
-		}
-		$this->writeChunk($chunk);
+	public function getBufferedChunk() : ?Chunk{
+		return $this->chunkProvider->readChunkFromBuffer();
 	}
 
-	abstract protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk;
+	public function hasBufferedChunks() : bool{
+		return $this->chunkProvider->hasChunksInBuffer();
+	}
 
-	abstract protected function writeChunk(Chunk $chunk) : void;
+	public function requestChunkSave(Chunk $chunk) : void{
+		$this->chunkProvider->requestChunkSave($chunk);
+	}
+
+	public function close(){
+		$this->chunkProvider->quit();
+	}
 }
