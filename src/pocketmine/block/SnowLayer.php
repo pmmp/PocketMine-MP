@@ -100,4 +100,6 @@ class SnowLayer extends Flowable{
 	public function isAffectedBySilkTouch() : bool{
 		return false;
 	}
+
+	//TODO: bounding & collision boxes
 }

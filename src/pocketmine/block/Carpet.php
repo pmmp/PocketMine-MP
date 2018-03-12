@@ -62,6 +62,10 @@ class Carpet extends Flowable{
 		);
 	}
 
+	public function canPassThrough() : bool{
+		return false;
+	}
+
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
 		if($down->getId() !== self::AIR){

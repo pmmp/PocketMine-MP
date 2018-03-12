@@ -591,6 +591,10 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return AxisAlignedBB[]
 	 */
 	protected function recalculateCollisionBoxes() : array{
+		if($this->canPassThrough()){
+			return [];
+		}
+
 		if($bb = $this->recalculateBoundingBox()){
 			return [$bb];
 		}

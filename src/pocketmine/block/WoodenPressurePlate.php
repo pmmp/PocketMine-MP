@@ -42,4 +42,8 @@ class WoodenPressurePlate extends StonePressurePlate{
 	public function getToolHarvestLevel() : int{
 		return 0; //TODO: fix hierarchy problem
 	}
+
+	public function canPassThrough() : bool{
+		return true;
+	}
 }

@@ -58,6 +58,10 @@ class FlowerPot extends Flowable{
 		);
 	}
 
+	public function canPassThrough() : bool{
+		return false;
+	}
+
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if($this->getSide(Vector3::SIDE_DOWN)->isTransparent()){
 			return false;
