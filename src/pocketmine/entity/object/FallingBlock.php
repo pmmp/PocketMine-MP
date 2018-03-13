@@ -21,11 +21,12 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\object;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\Fallable;
+use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\ItemFactory;
@@ -33,7 +34,7 @@ use pocketmine\level\Position;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
 
-class FallingSand extends Entity{
+class FallingBlock extends Entity{
 	public const NETWORK_ID = self::FALLING_BLOCK;
 
 	public $width = 0.98;

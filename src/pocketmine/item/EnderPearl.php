@@ -23,16 +23,24 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-class RawBeef extends Food{
+class EnderPearl extends ProjectileItem{
 	public function __construct(int $meta = 0){
-		parent::__construct(self::RAW_BEEF, $meta, "Raw Beef");
+		parent::__construct(self::ENDER_PEARL, $meta, "Ender Pearl");
 	}
 
-	public function getFoodRestore() : int{
-		return 3;
+	public function getMaxStackSize() : int{
+		return 16;
 	}
 
-	public function getSaturationRestore() : float{
-		return 1.8;
+	public function getProjectileEntityType() : string{
+		return "ThrownEnderpearl";
+	}
+
+	public function getThrowForce() : float{
+		return 1.5;
+	}
+
+	public function getCooldownTicks() : int{
+		return 20;
 	}
 }

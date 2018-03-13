@@ -35,4 +35,3 @@ class StringItem extends Item{
 		return BlockFactory::get(Block::TRIPWIRE);
 	}
 }
-

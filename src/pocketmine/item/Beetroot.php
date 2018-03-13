@@ -36,4 +36,3 @@ class Beetroot extends Food{
 		return 1.2;
 	}
 }
-

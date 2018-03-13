@@ -43,4 +43,3 @@ class RawChicken extends Food{
 		return mt_rand(0, 9) < 3 ? [new EffectInstance(Effect::getEffect(Effect::HUNGER), 600)] : [];
 	}
 }
-

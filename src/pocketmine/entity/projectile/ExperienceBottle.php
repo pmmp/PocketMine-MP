@@ -24,18 +24,25 @@ declare(strict_types=1);
 namespace pocketmine\entity\projectile;
 
 use pocketmine\event\entity\ProjectileHitEvent;
-use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\level\particle\ItemBreakParticle;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\utils\Color;
 
-class Egg extends Throwable{
-	public const NETWORK_ID = self::EGG;
+class ExperienceBottle extends Throwable{
+	public const NETWORK_ID = self::XP_BOTTLE;
 
-	//TODO: spawn chickens on collision
+	protected $gravity = 0.07;
 
-	protected function onHit(ProjectileHitEvent $event) : void{
-		for($i = 0; $i < 6; ++$i){
-			$this->level->addParticle(new ItemBreakParticle($this, ItemFactory::get(Item::EGG)));
-		}
+	public function getResultDamage() : int{
+		return -1;
+	}
+
+	public function onHit(ProjectileHitEvent $event) : void{
+		$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_PARTICLE_SPLASH, (new Color(0x38, 0x5d, 0xc6))->toARGB());
+		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_GLASS);
+
+		$this->level->dropExperience($this, mt_rand(3, 11));
+
+		$this->flagForDespawn();
 	}
 }

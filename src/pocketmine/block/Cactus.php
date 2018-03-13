@@ -80,12 +80,14 @@ class Cactus extends Transparent{
 			$down = $this->getSide(Vector3::SIDE_DOWN);
 			if($down->getId() !== self::SAND and $down->getId() !== self::CACTUS){
 				$this->getLevel()->useBreakOn($this);
-			}else{
-				for($side = 2; $side <= 5; ++$side){
-					$b = $this->getSide($side);
-					if(!$b->canBeFlowedInto()){
-						$this->getLevel()->useBreakOn($this);
-					}
+				return Level::BLOCK_UPDATE_NORMAL;
+			}
+
+			for($side = 2; $side <= 5; ++$side){
+				$b = $this->getSide($side);
+				if(!$b->canBeFlowedInto()){
+					$this->getLevel()->useBreakOn($this);
+					return Level::BLOCK_UPDATE_NORMAL;
 				}
 			}
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){

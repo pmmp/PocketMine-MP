@@ -23,16 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-class RawBeef extends Food{
+class ExperienceBottle extends ProjectileItem{
 	public function __construct(int $meta = 0){
-		parent::__construct(self::RAW_BEEF, $meta, "Raw Beef");
+		parent::__construct(self::EXPERIENCE_BOTTLE, $meta, "Bottle o' Enchanting");
 	}
 
-	public function getFoodRestore() : int{
-		return 3;
+	public function getProjectileEntityType() : string{
+		return "ThrownExpBottle";
 	}
 
-	public function getSaturationRestore() : float{
-		return 1.8;
+	public function getThrowForce() : float{
+		return 0.7;
 	}
 }

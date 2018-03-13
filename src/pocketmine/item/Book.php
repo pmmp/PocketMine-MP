@@ -29,4 +29,3 @@ class Book extends Item{
 	}
 
 }
-

@@ -42,6 +42,12 @@ abstract class BaseLevelProvider implements LevelProvider{
 		if(!file_exists($this->path)){
 			mkdir($this->path, 0777, true);
 		}
+
+		$this->loadLevelData();
+		$this->fixLevelData();
+	}
+
+	protected function loadLevelData() : void{
 		$nbt = new BigEndianNBTStream();
 		$levelData = $nbt->readCompressed(file_get_contents($this->getPath() . "level.dat"));
 
@@ -50,7 +56,9 @@ abstract class BaseLevelProvider implements LevelProvider{
 		}
 
 		$this->levelData = $levelData->getCompoundTag("Data");
+	}
 
+	protected function fixLevelData() : void{
 		if(!$this->levelData->hasTag("generatorName", StringTag::class)){
 			$this->levelData->setString("generatorName", (string) Generator::getGenerator("DEFAULT"), true);
 		}

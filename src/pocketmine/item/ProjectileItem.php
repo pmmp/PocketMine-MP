@@ -68,8 +68,10 @@ abstract class ProjectileItem extends Item{
 				//without this, it doesn't work at all.
 				$player->getLevel()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_THROW, 319);
 			}
-		}else{
+		}elseif($projectile !== null){
 			$projectile->spawnToAll();
+		}else{
+			return false;
 		}
 
 		return true;
