@@ -68,4 +68,12 @@ class TNT extends Solid{
 			$tnt->spawnToAll();
 		}
 	}
+
+	public function getFlameEncouragement() : int{
+		return 15;
+	}
+
+	public function getFlammability() : int{
+		return 100;
+	}
 }

@@ -191,4 +191,12 @@ class Leaves extends Transparent{
 	public function canDropApples() : bool{
 		return $this->meta === self::OAK;
 	}
+
+	public function getFlameEncouragement() : int{
+		return 30;
+	}
+
+	public function getFlammability() : int{
+		return 60;
+	}
 }
