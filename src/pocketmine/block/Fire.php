@@ -94,7 +94,7 @@ class Fire extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::NETHERRACK){
+		if(!$this->getSide(Vector3::SIDE_DOWN)->burnsForever()){
 			if(mt_rand(0, 2) === 0){
 				if($this->meta === 0x0F){
 					$this->level->setBlock($this, BlockFactory::get(Block::AIR));

@@ -517,6 +517,15 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Returns whether fire lit on this block will burn indefinitely.
+	 *
+	 * @return bool
+	 */
+	public function burnsForever() : bool{
+		return false;
+	}
+
+	/**
 	 * Returns the Block on the side $side, works like Vector3::getSide()
 	 *
 	 * @param int $side
