@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\ItemFrame as TileItemFrame;
@@ -58,20 +57,16 @@ class ItemFrame extends Flowable{
 		return true;
 	}
 
-	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			$sides = [
-				0 => Vector3::SIDE_WEST,
-				1 => Vector3::SIDE_EAST,
-				2 => Vector3::SIDE_NORTH,
-				3 => Vector3::SIDE_SOUTH
-			];
-			if(!$this->getSide($sides[$this->meta])->isSolid()){
-				$this->level->useBreakOn($this);
-				return Level::BLOCK_UPDATE_NORMAL;
-			}
+	public function onNearbyBlockChange() : void{
+		$sides = [
+			0 => Vector3::SIDE_WEST,
+			1 => Vector3::SIDE_EAST,
+			2 => Vector3::SIDE_NORTH,
+			3 => Vector3::SIDE_SOUTH
+		];
+		if(!$this->getSide($sides[$this->meta])->isSolid()){
+			$this->level->useBreakOn($this);
 		}
-		return false;
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{

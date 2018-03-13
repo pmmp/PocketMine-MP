@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
-use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -59,10 +58,6 @@ class Vine extends Flowable{
 	}
 
 	public function canClimb() : bool{
-		return true;
-	}
-
-	public function ticksRandomly() : bool{
 		return true;
 	}
 
@@ -157,42 +152,42 @@ class Vine extends Flowable{
 		return true;
 	}
 
-	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			$sides = [
-				self::FLAG_SOUTH => Vector3::SIDE_SOUTH,
-				self::FLAG_WEST => Vector3::SIDE_WEST,
-				self::FLAG_NORTH => Vector3::SIDE_NORTH,
-				self::FLAG_EAST => Vector3::SIDE_EAST
-			];
+	public function onNearbyBlockChange() : void{
+		$sides = [
+			self::FLAG_SOUTH => Vector3::SIDE_SOUTH,
+			self::FLAG_WEST => Vector3::SIDE_WEST,
+			self::FLAG_NORTH => Vector3::SIDE_NORTH,
+			self::FLAG_EAST => Vector3::SIDE_EAST
+		];
 
-			$meta = $this->meta;
+		$meta = $this->meta;
 
-			foreach($sides as $flag => $side){
-				if(($meta & $flag) === 0){
-					continue;
-				}
-
-				if(!$this->getSide($side)->isSolid()){
-					$meta &= ~$flag;
-				}
+		foreach($sides as $flag => $side){
+			if(($meta & $flag) === 0){
+				continue;
 			}
 
-			if($meta !== $this->meta){
-				if($meta === 0){
-					$this->level->useBreakOn($this);
-				}else{
-					$this->meta = $meta;
-					$this->level->setBlock($this, $this);
-				}
-
-				return Level::BLOCK_UPDATE_NORMAL;
+			if(!$this->getSide($side)->isSolid()){
+				$meta &= ~$flag;
 			}
-		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
-			//TODO: vine growth
 		}
 
-		return false;
+		if($meta !== $this->meta){
+			if($meta === 0){
+				$this->level->useBreakOn($this);
+			}else{
+				$this->meta = $meta;
+				$this->level->setBlock($this, $this);
+			}
+		}
+	}
+
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
+	public function onRandomTick() : void{
+		//TODO: vine growth
 	}
 
 	public function getVariantBitmask() : int{

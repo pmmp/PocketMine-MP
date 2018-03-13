@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\TieredTool;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -50,14 +49,12 @@ class RedstoneOre extends Solid{
 		return $this->getLevel()->setBlock($this, $this, true, false);
 	}
 
-	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_NORMAL or $type === Level::BLOCK_UPDATE_TOUCH){
-			$this->getLevel()->setBlock($this, BlockFactory::get(Block::GLOWING_REDSTONE_ORE, $this->meta));
+	public function onActivate(Item $item, Player $player = null) : bool{
+		return $this->getLevel()->setBlock($this, BlockFactory::get(Block::GLOWING_REDSTONE_ORE, $this->meta));
+	}
 
-			return Level::BLOCK_UPDATE_WEAK;
-		}
-
-		return false;
+	public function onNearbyBlockChange() : void{
+		$this->getLevel()->setBlock($this, BlockFactory::get(Block::GLOWING_REDSTONE_ORE, $this->meta));
 	}
 
 	public function getToolType() : int{

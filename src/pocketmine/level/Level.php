@@ -96,12 +96,6 @@ class Level implements ChunkManager, Metadatable{
 	public const Y_MASK = 0xFF;
 	public const Y_MAX = 0x100; //256
 
-	public const BLOCK_UPDATE_NORMAL = 1;
-	public const BLOCK_UPDATE_RANDOM = 2;
-	public const BLOCK_UPDATE_SCHEDULED = 3;
-	public const BLOCK_UPDATE_WEAK = 4;
-	public const BLOCK_UPDATE_TOUCH = 5;
-
 	public const TIME_DAY = 0;
 	public const TIME_SUNSET = 12000;
 	public const TIME_NIGHT = 14000;
@@ -743,7 +737,7 @@ class Level implements ChunkManager, Metadatable{
 		while($this->scheduledBlockUpdateQueue->count() > 0 and $this->scheduledBlockUpdateQueue->current()["priority"] <= $currentTick){
 			$block = $this->getBlock($this->scheduledBlockUpdateQueue->extract()["data"]);
 			unset($this->scheduledBlockUpdateQueueIndex[Level::blockHash($block->x, $block->y, $block->z)]);
-			$block->onUpdate(self::BLOCK_UPDATE_SCHEDULED);
+			$block->onScheduledUpdate();
 		}
 
 		//Normal updates
@@ -756,7 +750,7 @@ class Level implements ChunkManager, Metadatable{
 
 			$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($block));
 			if(!$ev->isCancelled()){
-				$block->onUpdate(self::BLOCK_UPDATE_NORMAL);
+				$block->onNearbyBlockChange();
 			}
 		}
 
@@ -1034,7 +1028,7 @@ class Level implements ChunkManager, Metadatable{
 							$block->y = ($Y << 4) + $y;
 							$block->z = $chunkZ * 16 + $z;
 							$block->level = $this;
-							$block->onUpdate(self::BLOCK_UPDATE_RANDOM);
+							$block->onRandomTick();
 						}
 					}
 				}
@@ -1557,7 +1551,7 @@ class Level implements ChunkManager, Metadatable{
 						$entity->setForceMovementUpdate();
 						$entity->scheduleUpdate();
 					}
-					$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
+					$ev->getBlock()->onNearbyBlockChange();
 					$this->scheduleNeighbourBlockUpdates($pos);
 				}
 			}
@@ -1799,7 +1793,6 @@ class Level implements ChunkManager, Metadatable{
 
 			$this->server->getPluginManager()->callEvent($ev);
 			if(!$ev->isCancelled()){
-				$blockClicked->onUpdate(self::BLOCK_UPDATE_TOUCH);
 				if(!$player->isSneaking() and $blockClicked->onActivate($item, $player) === true){
 					return true;
 				}

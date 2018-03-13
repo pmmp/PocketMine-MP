@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\level\Level;
-
 class GlowingRedstoneOre extends RedstoneOre{
 
 	protected $id = self::GLOWING_REDSTONE_ORE;
@@ -39,13 +37,11 @@ class GlowingRedstoneOre extends RedstoneOre{
 		return 9;
 	}
 
-	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_SCHEDULED or $type === Level::BLOCK_UPDATE_RANDOM){
-			$this->getLevel()->setBlock($this, BlockFactory::get(Block::REDSTONE_ORE, $this->meta), false, false);
+	public function ticksRandomly() : bool{
+		return true;
+	}
 
-			return Level::BLOCK_UPDATE_WEAK;
-		}
-
-		return false;
+	public function onRandomTick() : void{
+		$this->getLevel()->setBlock($this, BlockFactory::get(Block::REDSTONE_ORE, $this->meta), false, false);
 	}
 }

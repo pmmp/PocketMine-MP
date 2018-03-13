@@ -206,101 +206,88 @@ abstract class Liquid extends Transparent{
 		return 1;
 	}
 
-	/**
-	 * {@inheritdoc}
-	 *
-	 * @param int $type
-	 *
-	 * @return bool|int
-	 */
-	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			$this->checkForHarden();
-			$this->level->scheduleDelayedBlockUpdate($this, $this->tickRate());
+	public function onNearbyBlockChange() : void{
+		$this->checkForHarden();
+		$this->level->scheduleDelayedBlockUpdate($this, $this->tickRate());
+	}
 
-			return $type;
-		}elseif($type === Level::BLOCK_UPDATE_SCHEDULED){
-			$decay = $this->getFlowDecay($this);
-			$multiplier = $this->getFlowDecayPerBlock();
+	public function onScheduledUpdate() : void{
+		$decay = $this->getFlowDecay($this);
+		$multiplier = $this->getFlowDecayPerBlock();
 
-			if($decay > 0){
-				$smallestFlowDecay = -100;
-				$this->adjacentSources = 0;
-				$smallestFlowDecay = $this->getSmallestFlowDecay($this->level->getBlockAt($this->x, $this->y, $this->z - 1), $smallestFlowDecay);
-				$smallestFlowDecay = $this->getSmallestFlowDecay($this->level->getBlockAt($this->x, $this->y, $this->z + 1), $smallestFlowDecay);
-				$smallestFlowDecay = $this->getSmallestFlowDecay($this->level->getBlockAt($this->x - 1, $this->y, $this->z), $smallestFlowDecay);
-				$smallestFlowDecay = $this->getSmallestFlowDecay($this->level->getBlockAt($this->x + 1, $this->y, $this->z), $smallestFlowDecay);
+		if($decay > 0){
+			$smallestFlowDecay = -100;
+			$this->adjacentSources = 0;
+			$smallestFlowDecay = $this->getSmallestFlowDecay($this->level->getBlockAt($this->x, $this->y, $this->z - 1), $smallestFlowDecay);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($this->level->getBlockAt($this->x, $this->y, $this->z + 1), $smallestFlowDecay);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($this->level->getBlockAt($this->x - 1, $this->y, $this->z), $smallestFlowDecay);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($this->level->getBlockAt($this->x + 1, $this->y, $this->z), $smallestFlowDecay);
 
-				$newDecay = $smallestFlowDecay + $multiplier;
+			$newDecay = $smallestFlowDecay + $multiplier;
 
-				if($newDecay >= 8 or $smallestFlowDecay < 0){
-					$newDecay = -1;
-				}
-
-				if(($topFlowDecay = $this->getFlowDecay($this->level->getBlockAt($this->x, $this->y + 1, $this->z))) >= 0){
-					$newDecay = $topFlowDecay | 0x08;
-				}
-
-				if($this->adjacentSources >= 2 and $this instanceof Water){
-					$bottomBlock = $this->level->getBlockAt($this->x, $this->y - 1, $this->z);
-					if($bottomBlock->isSolid()){
-						$newDecay = 0;
-					}elseif($bottomBlock instanceof Water and $bottomBlock->getDamage() === 0){
-						$newDecay = 0;
-					}
-				}
-
-				if($newDecay !== $decay){
-					$decay = $newDecay;
-					if($decay < 0){
-						$this->level->setBlock($this, BlockFactory::get(Block::AIR), true, true);
-					}else{
-						$this->level->setBlock($this, BlockFactory::get($this->id, $decay), true, true);
-						$this->level->scheduleDelayedBlockUpdate($this, $this->tickRate());
-					}
-				}
+			if($newDecay >= 8 or $smallestFlowDecay < 0){
+				$newDecay = -1;
 			}
 
-			if($decay >= 0){
+			if(($topFlowDecay = $this->getFlowDecay($this->level->getBlockAt($this->x, $this->y + 1, $this->z))) >= 0){
+				$newDecay = $topFlowDecay | 0x08;
+			}
+
+			if($this->adjacentSources >= 2 and $this instanceof Water){
 				$bottomBlock = $this->level->getBlockAt($this->x, $this->y - 1, $this->z);
-
-				$this->flowIntoBlock($bottomBlock, $decay | 0x08);
-
-				if($decay === 0 or !$bottomBlock->canBeFlowedInto()){
-					if($decay >= 8){
-						$adjacentDecay = 1;
-					}else{
-						$adjacentDecay = $decay + $multiplier;
-					}
-
-					if($adjacentDecay < 8){
-						$flags = $this->getOptimalFlowDirections();
-
-						if($flags[0]){
-							$this->flowIntoBlock($this->level->getBlockAt($this->x - 1, $this->y, $this->z), $adjacentDecay);
-						}
-
-						if($flags[1]){
-							$this->flowIntoBlock($this->level->getBlockAt($this->x + 1, $this->y, $this->z), $adjacentDecay);
-						}
-
-						if($flags[2]){
-							$this->flowIntoBlock($this->level->getBlockAt($this->x, $this->y, $this->z - 1), $adjacentDecay);
-						}
-
-						if($flags[3]){
-							$this->flowIntoBlock($this->level->getBlockAt($this->x, $this->y, $this->z + 1), $adjacentDecay);
-						}
-					}
+				if($bottomBlock->isSolid()){
+					$newDecay = 0;
+				}elseif($bottomBlock instanceof Water and $bottomBlock->getDamage() === 0){
+					$newDecay = 0;
 				}
-
-				$this->checkForHarden();
 			}
 
-			return $type;
+			if($newDecay !== $decay){
+				$decay = $newDecay;
+				if($decay < 0){
+					$this->level->setBlock($this, BlockFactory::get(Block::AIR), true, true);
+				}else{
+					$this->level->setBlock($this, BlockFactory::get($this->id, $decay), true, true);
+					$this->level->scheduleDelayedBlockUpdate($this, $this->tickRate());
+				}
+			}
 		}
 
-		return false;
+		if($decay >= 0){
+			$bottomBlock = $this->level->getBlockAt($this->x, $this->y - 1, $this->z);
+
+			$this->flowIntoBlock($bottomBlock, $decay | 0x08);
+
+			if($decay === 0 or !$bottomBlock->canBeFlowedInto()){
+				if($decay >= 8){
+					$adjacentDecay = 1;
+				}else{
+					$adjacentDecay = $decay + $multiplier;
+				}
+
+				if($adjacentDecay < 8){
+					$flags = $this->getOptimalFlowDirections();
+
+					if($flags[0]){
+						$this->flowIntoBlock($this->level->getBlockAt($this->x - 1, $this->y, $this->z), $adjacentDecay);
+					}
+
+					if($flags[1]){
+						$this->flowIntoBlock($this->level->getBlockAt($this->x + 1, $this->y, $this->z), $adjacentDecay);
+					}
+
+					if($flags[2]){
+						$this->flowIntoBlock($this->level->getBlockAt($this->x, $this->y, $this->z - 1), $adjacentDecay);
+					}
+
+					if($flags[3]){
+						$this->flowIntoBlock($this->level->getBlockAt($this->x, $this->y, $this->z + 1), $adjacentDecay);
+					}
+				}
+			}
+
+			$this->checkForHarden();
+		}
 	}
 
 	protected function flowIntoBlock(Block $block, int $newFlowDecay) : void{

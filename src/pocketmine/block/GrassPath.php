@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 
@@ -60,13 +59,10 @@ class GrassPath extends Transparent{
 		return 0.6;
 	}
 
-	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_NORMAL and $this->getSide(Vector3::SIDE_UP)->isSolid()){
+	public function onNearbyBlockChange() : void{
+		if($this->getSide(Vector3::SIDE_UP)->isSolid()){
 			$this->level->setBlock($this, BlockFactory::get(Block::DIRT), true);
-			return $type;
 		}
-
-		return false;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

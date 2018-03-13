@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -67,9 +66,6 @@ class Leaves extends Transparent{
 		return true;
 	}
 
-	public function ticksRandomly() : bool{
-		return true;
-	}
 
 	protected function findLog(Block $pos, array $visited, $distance, &$check, $fromSide = null){
 		++$check;
@@ -136,31 +132,31 @@ class Leaves extends Transparent{
 		return false;
 	}
 
-	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if(($this->meta & 0b00001100) === 0){
-				$this->meta |= 0x08;
-				$this->getLevel()->setBlock($this, $this, true, false);
-			}
-		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
-			if(($this->meta & 0b00001100) === 0x08){
-				$this->meta &= 0x03;
-				$visited = [];
-				$check = 0;
+	public function onNearbyBlockChange() : void{
+		if(($this->meta & 0b00001100) === 0){
+			$this->meta |= 0x08;
+			$this->getLevel()->setBlock($this, $this, true, false);
+		}
+	}
 
-				$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new LeavesDecayEvent($this));
+	public function ticksRandomly() : bool{
+		return true;
+	}
 
-				if($ev->isCancelled() or $this->findLog($this, $visited, 0, $check) === true){
-					$this->getLevel()->setBlock($this, $this, false, false);
-				}else{
-					$this->getLevel()->useBreakOn($this);
+	public function onRandomTick() : void{
+		if(($this->meta & 0b00001100) === 0x08){
+			$this->meta &= 0x03;
+			$visited = [];
+			$check = 0;
 
-					return Level::BLOCK_UPDATE_NORMAL;
-				}
+			$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new LeavesDecayEvent($this));
+
+			if($ev->isCancelled() or $this->findLog($this, $visited, 0, $check) === true){
+				$this->getLevel()->setBlock($this, $this, false, false);
+			}else{
+				$this->getLevel()->useBreakOn($this);
 			}
 		}
-
-		return false;
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{

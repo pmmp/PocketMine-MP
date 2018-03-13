@@ -278,6 +278,12 @@ class Block extends Position implements BlockIds, Metadatable{
 		return $base;
 	}
 
+	/**
+	 * Called when this block or a block immediately adjacent to it changes state.
+	 */
+	public function onNearbyBlockChange() : void{
+
+	}
 
 	/**
 	 * Returns whether random block updates will be done on this block.
@@ -289,14 +295,18 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * Fires a block update on the Block
-	 *
-	 * @param int $type
-	 *
-	 * @return bool|int
+	 * Called when this block is randomly updated due to chunk ticking.
+	 * WARNING: This will not be called if ticksRandomly() does not return true!
 	 */
-	public function onUpdate(int $type){
-		return false;
+	public function onRandomTick() : void{
+
+	}
+
+	/**
+	 * Called when this block is updated by the delayed blockupdate scheduler in the level.
+	 */
+	public function onScheduledUpdate() : void{
+
 	}
 
 	/**

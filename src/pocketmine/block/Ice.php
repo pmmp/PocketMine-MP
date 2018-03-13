@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
-use pocketmine\level\Level;
 use pocketmine\Player;
 
 class Ice extends Transparent{
@@ -67,15 +66,10 @@ class Ice extends Transparent{
 		return true;
 	}
 
-	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_RANDOM){
-			if($this->level->getHighestAdjacentBlockLight($this->x, $this->y, $this->z) >= 12){
-				$this->level->useBreakOn($this);
-
-				return $type;
-			}
+	public function onRandomTick() : void{
+		if($this->level->getHighestAdjacentBlockLight($this->x, $this->y, $this->z) >= 12){
+			$this->level->useBreakOn($this);
 		}
-		return false;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
