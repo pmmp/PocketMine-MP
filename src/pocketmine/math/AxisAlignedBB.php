@@ -282,12 +282,14 @@ class AxisAlignedBB{
 	 * Returns whether any part of the specified AABB is inside (intersects with) this one.
 	 *
 	 * @param AxisAlignedBB $bb
+	 * @param float         $epsilon
+	 *
 	 * @return bool
 	 */
-	public function intersectsWith(AxisAlignedBB $bb) : bool{
-		if($bb->maxX > $this->minX and $bb->minX < $this->maxX){
-			if($bb->maxY > $this->minY and $bb->minY < $this->maxY){
-				return $bb->maxZ > $this->minZ and $bb->minZ < $this->maxZ;
+	public function intersectsWith(AxisAlignedBB $bb, float $epsilon = 0.00001) : bool{
+		if($bb->maxX - $this->minX > $epsilon and $this->maxX - $bb->minX > $epsilon){
+			if($bb->maxY - $this->minY > $epsilon and $this->maxY - $bb->minY > $epsilon){
+				return $bb->maxZ - $this->minZ > $epsilon and $this->maxZ - $bb->minZ > $epsilon;
 			}
 		}
 
