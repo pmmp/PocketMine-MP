@@ -568,9 +568,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return bool
 	 */
 	public function collidesWithBB(AxisAlignedBB $bb) : bool{
-		$bbs = $this->getCollisionBoxes();
-
-		foreach($bbs as $bb2){
+		foreach($this->getCollisionBoxes() as $bb2){
 			if($bb->intersectsWith($bb2)){
 				return true;
 			}
