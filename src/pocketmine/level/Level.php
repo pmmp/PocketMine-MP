@@ -1068,7 +1068,7 @@ class Level implements ChunkManager, Metadatable{
 
 	public function saveChunks(){
 		foreach($this->chunks as $chunk){
-			if($chunk->hasChanged() and $chunk->isGenerated()){
+			if(($chunk->hasChanged() or count($chunk->getTiles()) > 0 or count($chunk->getSavableEntities()) > 0) and $chunk->isGenerated()){
 				$this->provider->saveChunk($chunk);
 				$chunk->setChanged(false);
 			}
