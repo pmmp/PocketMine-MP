@@ -526,6 +526,15 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Returns whether this block can catch fire.
+	 *
+	 * @return bool
+	 */
+	public function isFlammable() : bool{
+		return $this->getFlammability() > 0;
+	}
+
+	/**
 	 * Returns the Block on the side $side, works like Vector3::getSide()
 	 *
 	 * @param int $side
