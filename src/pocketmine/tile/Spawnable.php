@@ -67,7 +67,7 @@ abstract class Spawnable extends Tile{
 		}
 
 		$pk = $this->createSpawnPacket();
-		$this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
+		$this->level->addChunkPacket($this->getFloorX() >> 4, $this->getFloorZ() >> 4, $pk);
 	}
 
 	/**
@@ -78,9 +78,7 @@ abstract class Spawnable extends Tile{
 		$this->spawnCompoundCache = null;
 		$this->spawnToAll();
 
-		if($this->chunk !== null){
-			$this->level->clearChunkCache($this->chunk->getX(), $this->chunk->getZ());
-		}
+		$this->level->clearChunkCache($this->getFloorX() >> 4, $this->getFloorZ() >> 4);
 	}
 
 	/**

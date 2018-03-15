@@ -2388,7 +2388,6 @@ class Level implements ChunkManager, Metadatable{
 			foreach($oldTiles as $tile){
 				$chunk->addTile($tile);
 				$oldChunk->removeTile($tile);
-				$tile->chunk = $chunk;
 			}
 		}
 
@@ -2600,8 +2599,18 @@ class Level implements ChunkManager, Metadatable{
 		if($tile->getLevel() !== $this){
 			throw new LevelException("Invalid Tile level");
 		}
+
+		$chunkX = $tile->getFloorX() >> 4;
+		$chunkZ = $tile->getFloorZ() >> 4;
+
+		if(isset($this->chunks[$hash = Level::chunkHash($chunkX, $chunkZ)])){
+			$this->chunks[$hash]->addTile($tile);
+		}else{
+			throw new \InvalidStateException("Attempted to create tile " . get_class($tile) . " in unloaded chunk $chunkX $chunkZ");
+		}
+
 		$this->tiles[$tile->getId()] = $tile;
-		$this->clearChunkCache($tile->getFloorX() >> 4, $tile->getFloorZ() >> 4);
+		$this->clearChunkCache($chunkX, $chunkZ);
 	}
 
 	/**
@@ -2614,9 +2623,15 @@ class Level implements ChunkManager, Metadatable{
 			throw new LevelException("Invalid Tile level");
 		}
 
-		unset($this->tiles[$tile->getId()]);
-		unset($this->updateTiles[$tile->getId()]);
-		$this->clearChunkCache($tile->getFloorX() >> 4, $tile->getFloorZ() >> 4);
+		unset($this->tiles[$tile->getId()], $this->updateTiles[$tile->getId()]);
+
+		$chunkX = $tile->getFloorX() >> 4;
+		$chunkZ = $tile->getFloorZ() >> 4;
+
+		if(isset($this->chunks[$hash = Level::chunkHash($chunkX, $chunkZ)])){
+			$this->chunks[$hash]->removeTile($tile);
+		}
+		$this->clearChunkCache($chunkX, $chunkZ);
 	}
 
 	/**
