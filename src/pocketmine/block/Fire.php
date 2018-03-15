@@ -79,14 +79,9 @@ class Fire extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		for($s = 0; $s <= 5; ++$s){
-			$side = $this->getSide($s);
-			if($side->getId() !== self::AIR and !($side instanceof Liquid)){
-				return;
-			}
+		if(!$this->getSide(Vector3::SIDE_DOWN)->isSolid() and !$this->hasAdjacentFlammableBlocks()){
+			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true);
 		}
-
-		$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true);
 	}
 
 	public function ticksRandomly() : bool{
@@ -94,17 +89,49 @@ class Fire extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if(!$this->getSide(Vector3::SIDE_DOWN)->burnsForever()){
-			if(mt_rand(0, 2) === 0){
-				if($this->meta === 0x0F){
-					$this->level->setBlock($this, BlockFactory::get(Block::AIR));
-				}else{
-					$this->meta++;
-					$this->level->setBlock($this, $this);
+		$down = $this->getSide(Vector3::SIDE_DOWN);
+
+		$result = null;
+		if($this->meta < 15){
+			$this->meta++;
+			$result = $this;
+		}
+
+		if(!$down->burnsForever()){
+			if($this->meta === 15){
+				if(!$down->isFlammable() and mt_rand(0, 3) === 3){ //1/4 chance to extinguish
+					$result = BlockFactory::get(Block::AIR);
+				}
+			}elseif(!$this->hasAdjacentFlammableBlocks()){
+				if(!$down->isSolid() or $this->meta > 3){ //fire older than 3, or without a solid block below
+					$result = BlockFactory::get(Block::AIR);
 				}
 			}
 		}
 
+		if($result !== null){
+			$this->level->setBlock($this, $result);
+			if($result->getId() !== $this->id){
+				return;
+			}
+		}
+
+		$this->level->scheduleDelayedBlockUpdate($this, 30 + mt_rand(0, 10));
+
 		//TODO: fire spread
+	}
+
+	public function onScheduledUpdate() : void{
+		$this->onRandomTick();
+	}
+
+	private function hasAdjacentFlammableBlocks() : bool{
+		for($i = 0; $i <= 5; ++$i){
+			if($this->getSide($i)->isFlammable()){
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
