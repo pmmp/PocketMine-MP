@@ -1735,11 +1735,6 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	private function destroyBlockInternal(Block $target, Item $item, ?Player $player = null, bool $createParticles = false) : void{
-		$above = $this->getBlockAt($target->x, $target->y + 1, $target->z);
-		if($above->getId() === Block::FIRE){ //TODO: this should be done in Fire's onUpdate(), not with this hack
-			$this->setBlock($above, BlockFactory::get(Block::AIR), true);
-		}
-
 		if($createParticles){
 			$this->addParticle(new DestroyBlockParticle($target->add(0.5, 0.5, 0.5), $target));
 		}
