@@ -1529,7 +1529,7 @@ class Level implements ChunkManager, Metadatable{
 
 			if($direct === true){
 				$this->sendBlocks($this->getChunkPlayers($pos->x >> 4, $pos->z >> 4), [$block], UpdateBlockPacket::FLAG_ALL_PRIORITY);
-				unset($this->chunkCache[$chunkHash]);
+				unset($this->chunkCache[$chunkHash], $this->changedBlocks[$chunkHash][$blockHash]);
 			}else{
 				if(!isset($this->changedBlocks[$chunkHash])){
 					$this->changedBlocks[$chunkHash] = [];
