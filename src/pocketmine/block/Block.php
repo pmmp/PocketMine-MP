@@ -535,6 +535,13 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Called when this block is burned away by being on fire.
+	 */
+	public function onIncinerate() : void{
+
+	}
+
+	/**
 	 * Returns the Block on the side $side, works like Vector3::getSide()
 	 *
 	 * @param int $side

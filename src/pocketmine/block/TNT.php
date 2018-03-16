@@ -76,4 +76,8 @@ class TNT extends Solid{
 	public function getFlammability() : int{
 		return 100;
 	}
+
+	public function onIncinerate() : void{
+		$this->ignite();
+	}
 }
