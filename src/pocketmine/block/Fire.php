@@ -27,11 +27,14 @@ use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\event\block\BlockBurnEvent;
+use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\event\entity\EntityCombustByBlockEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
+use function intdiv;
+use function max;
 use function min;
 use function mt_rand;
 
@@ -140,17 +143,8 @@ class Fire extends Flowable{
 		$this->level->scheduleDelayedBlockUpdate($this, mt_rand(30, 40));
 
 		if($canSpread){
-			//TODO: raise upper bound for chance in humid biomes
-
-			foreach($this->getHorizontalSides() as $side){
-				$this->burnBlock($side, 300);
-			}
-
-			//vanilla uses a 250 upper bound here, but I don't think they intended to increase the chance of incineration
-			$this->burnBlock($this->getSide(Facing::UP), 350);
-			$this->burnBlock($this->getSide(Facing::DOWN), 350);
-
-			//TODO: fire spread
+			$this->burnBlocksAround();
+			$this->spreadFire();
 		}
 	}
 
@@ -168,6 +162,18 @@ class Fire extends Flowable{
 		return false;
 	}
 
+	private function burnBlocksAround() : void{
+		//TODO: raise upper bound for chance in humid biomes
+
+		foreach($this->getHorizontalSides() as $side){
+			$this->burnBlock($side, 300);
+		}
+
+		//vanilla uses a 250 upper bound here, but I don't think they intended to increase the chance of incineration
+		$this->burnBlock($this->getSide(Facing::UP), 350);
+		$this->burnBlock($this->getSide(Facing::DOWN), 350);
+	}
+
 	private function burnBlock(Block $block, int $chanceBound) : void{
 		if(mt_rand(0, $chanceBound) < $block->getFlammability()){
 			$ev = new BlockBurnEvent($block, $this);
@@ -178,11 +184,62 @@ class Fire extends Flowable{
 				if(mt_rand(0, $this->age + 9) < 5){ //TODO: check rain
 					$fire = clone $this;
 					$fire->age = min(15, $fire->age + (mt_rand(0, 4) >> 2));
-					$this->level->setBlock($block, $fire);
+					$this->spreadBlock($block, $fire);
 				}else{
 					$this->level->setBlock($block, BlockFactory::get(Block::AIR));
 				}
 			}
+		}
+	}
+
+	private function spreadFire() : void{
+		$difficulty7 = $this->level->getDifficulty() * 7;
+		$age30 = $this->age + 30;
+
+		for($y = -1; $y <= 4; ++$y){
+			//Higher blocks have a lower chance of catching fire
+			$randomBound = 100 + ($y > 1 ? ($y - 1) * 100 : 0);
+
+			for($z = -1; $z <= 1; ++$z){
+				for($x = -1; $x <= 1; ++$x){
+					if($x === 0 and $y === 0 and $z === 0){
+						continue;
+					}
+
+					$block = $this->level->getBlockAt($this->x + $x, $this->y + $y, $this->z + $z);
+					if($block->getId() !== Block::AIR){
+						continue;
+					}
+
+					//TODO: fire can't spread if it's raining in any horizontally adjacent block, or the current one
+
+					$encouragement = 0;
+					foreach($block->getAllSides() as $blockSide){
+						$encouragement = max($encouragement, $blockSide->getFlameEncouragement());
+					}
+
+					if($encouragement <= 0){
+						continue;
+					}
+
+					$maxChance = intdiv($encouragement + 40 + $difficulty7, $age30);
+					//TODO: max chance is lowered by half in humid biomes
+
+					if($maxChance > 0 and mt_rand(0, $randomBound - 1) <= $maxChance){
+						$new = clone $this;
+						$new->age = min(15, $this->age + (mt_rand(0, 4) >> 2));
+						$this->spreadBlock($block, $new);
+					}
+				}
+			}
+		}
+	}
+
+	private function spreadBlock(Block $block, Block $newState) : void{
+		$ev = new BlockSpreadEvent($block, $this, $newState);
+		$ev->call();
+		if(!$ev->isCancelled()){
+			$this->level->setBlock($block, $ev->getNewState());
 		}
 	}
 }
