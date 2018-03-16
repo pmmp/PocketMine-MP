@@ -39,15 +39,15 @@ interface ProtocolInfo{
 	/**
 	 * Actual Minecraft: PE protocol version
 	 */
-	public const CURRENT_PROTOCOL = 220;
+	public const CURRENT_PROTOCOL = 222;
 	/**
 	 * Current Minecraft PE version reported by the server. This is usually the earliest currently supported version.
 	 */
-	public const MINECRAFT_VERSION = 'v1.2.13.5 beta';
+	public const MINECRAFT_VERSION = 'v1.2.13.10 beta';
 	/**
 	 * Version number sent to clients in ping responses.
 	 */
-	public const MINECRAFT_VERSION_NETWORK = '1.2.13.5';
+	public const MINECRAFT_VERSION_NETWORK = '1.2.13.10';
 
 	public const LOGIN_PACKET = 0x01;
 	public const PLAY_STATUS_PACKET = 0x02;
