@@ -792,7 +792,7 @@ class Level implements ChunkManager, Metadatable{
 						foreach($this->getChunkPlayers($chunkX, $chunkZ) as $p){
 							$p->onChunkChanged($chunk);
 						}
-					}else{
+					}elseif(!empty($blocks)){
 						$this->sendBlocks($this->getChunkPlayers($chunkX, $chunkZ), $blocks, UpdateBlockPacket::FLAG_ALL);
 					}
 				}
