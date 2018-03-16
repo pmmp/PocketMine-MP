@@ -28,7 +28,6 @@ use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
-use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -66,52 +65,49 @@ class Cactus extends Transparent{
 		);
 	}
 
-	public function ticksRandomly() : bool{
-		return true;
-	}
-
 	public function onEntityCollide(Entity $entity) : void{
 		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_CONTACT, 1);
 		$entity->attack($ev);
 	}
 
-	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			$down = $this->getSide(Vector3::SIDE_DOWN);
-			if($down->getId() !== self::SAND and $down->getId() !== self::CACTUS){
-				$this->getLevel()->useBreakOn($this);
-				return Level::BLOCK_UPDATE_NORMAL;
-			}
-
+	public function onNearbyBlockChange() : void{
+		$down = $this->getSide(Vector3::SIDE_DOWN);
+		if($down->getId() !== self::SAND and $down->getId() !== self::CACTUS){
+			$this->getLevel()->useBreakOn($this);
+		}else{
 			for($side = 2; $side <= 5; ++$side){
 				$b = $this->getSide($side);
 				if(!$b->canBeFlowedInto()){
 					$this->getLevel()->useBreakOn($this);
-					return Level::BLOCK_UPDATE_NORMAL;
-				}
-			}
-		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
-			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::CACTUS){
-				if($this->meta === 0x0f){
-					for($y = 1; $y < 3; ++$y){
-						$b = $this->getLevel()->getBlockAt($this->x, $this->y + $y, $this->z);
-						if($b->getId() === self::AIR){
-							Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, BlockFactory::get(Block::CACTUS)));
-							if(!$ev->isCancelled()){
-								$this->getLevel()->setBlock($b, $ev->getNewState(), true);
-							}
-						}
-					}
-					$this->meta = 0;
-					$this->getLevel()->setBlock($this, $this);
-				}else{
-					++$this->meta;
-					$this->getLevel()->setBlock($this, $this);
+					break;
 				}
 			}
 		}
+	}
 
-		return false;
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
+	public function onRandomTick() : void{
+		if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::CACTUS){
+			if($this->meta === 0x0f){
+				for($y = 1; $y < 3; ++$y){
+					$b = $this->getLevel()->getBlockAt($this->x, $this->y + $y, $this->z);
+					if($b->getId() === self::AIR){
+						Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, BlockFactory::get(Block::CACTUS)));
+						if(!$ev->isCancelled()){
+							$this->getLevel()->setBlock($b, $ev->getNewState(), true);
+						}
+					}
+				}
+				$this->meta = 0;
+				$this->getLevel()->setBlock($this, $this);
+			}else{
+				++$this->meta;
+				$this->getLevel()->setBlock($this, $this);
+			}
+		}
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{

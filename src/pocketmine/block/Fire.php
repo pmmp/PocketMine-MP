@@ -29,7 +29,6 @@ use pocketmine\event\entity\EntityCombustByBlockEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Server;
 
@@ -61,10 +60,6 @@ class Fire extends Flowable{
 		return true;
 	}
 
-	public function ticksRandomly() : bool{
-		return true;
-	}
-
 	public function onEntityCollide(Entity $entity) : void{
 		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1);
 		$entity->attack($ev);
@@ -83,35 +78,33 @@ class Fire extends Flowable{
 		return [];
 	}
 
-	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			for($s = 0; $s <= 5; ++$s){
-				$side = $this->getSide($s);
-				if($side->getId() !== self::AIR and !($side instanceof Liquid)){
-					return false;
-				}
+	public function onNearbyBlockChange() : void{
+		for($s = 0; $s <= 5; ++$s){
+			$side = $this->getSide($s);
+			if($side->getId() !== self::AIR and !($side instanceof Liquid)){
+				return;
 			}
-			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true);
-
-			return Level::BLOCK_UPDATE_NORMAL;
-		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
-			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::NETHERRACK){
-				if(mt_rand(0, 2) === 0){
-					if($this->meta === 0x0F){
-						$this->level->setBlock($this, BlockFactory::get(Block::AIR));
-					}else{
-						$this->meta++;
-						$this->level->setBlock($this, $this);
-					}
-
-					return Level::BLOCK_UPDATE_NORMAL;
-				}
-			}
-
-			//TODO: fire spread
 		}
 
-		return false;
+		$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true);
 	}
 
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
+	public function onRandomTick() : void{
+		if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::NETHERRACK){
+			if(mt_rand(0, 2) === 0){
+				if($this->meta === 0x0F){
+					$this->level->setBlock($this, BlockFactory::get(Block::AIR));
+				}else{
+					$this->meta++;
+					$this->level->setBlock($this, $this);
+				}
+			}
+		}
+
+		//TODO: fire spread
+	}
 }

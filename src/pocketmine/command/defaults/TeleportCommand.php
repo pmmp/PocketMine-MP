@@ -37,7 +37,8 @@ class TeleportCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"%pocketmine.command.tp.description",
-			"%commands.tp.usage"
+			"%commands.tp.usage",
+			["teleport"]
 		);
 		$this->setPermission("pocketmine.command.teleport");
 	}

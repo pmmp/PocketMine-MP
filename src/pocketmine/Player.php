@@ -668,6 +668,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			$aliases = $command->getAliases();
 			if(!empty($aliases)){
+				if(!\in_array($data->commandName, $aliases, true)){
+					//work around a client bug which makes the original name not show when aliases are used
+					$aliases[] = $data->commandName;
+				}
 				$data->aliases = new CommandEnum();
 				$data->aliases->enumName = ucfirst($command->getName()) . "Aliases";
 				$data->aliases->enumValues = $aliases;
@@ -1752,6 +1756,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		return 0.0;
+	}
+
+	public function isHungry() : bool{
+		return $this->isSurvival() and parent::isHungry();
 	}
 
 	public function canBreathe() : bool{

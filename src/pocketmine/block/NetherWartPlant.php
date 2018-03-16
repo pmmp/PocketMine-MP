@@ -27,7 +27,6 @@ namespace pocketmine\block;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -44,10 +43,6 @@ class NetherWartPlant extends Flowable{
 		return "Nether Wart";
 	}
 
-	public function ticksRandomly() : bool{
-		return true;
-	}
-
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
 		if($down->getId() === Block::SOUL_SAND){
@@ -59,30 +54,26 @@ class NetherWartPlant extends Flowable{
 		return false;
 	}
 
-	public function onUpdate(int $type){
-		switch($type){
-			case Level::BLOCK_UPDATE_RANDOM:
-				if($this->meta < 3 and mt_rand(0, 10) === 0){ //Still growing
-					$block = clone $this;
-					$block->meta++;
-					$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
-
-					if(!$ev->isCancelled()){
-						$this->getLevel()->setBlock($this, $ev->getNewState(), false, true);
-
-						return $type;
-					}
-				}
-				break;
-			case Level::BLOCK_UPDATE_NORMAL:
-				if($this->getSide(Vector3::SIDE_DOWN)->getId() !== Block::SOUL_SAND){
-					$this->getLevel()->useBreakOn($this);
-					return $type;
-				}
-				break;
+	public function onNearbyBlockChange() : void{
+		if($this->getSide(Vector3::SIDE_DOWN)->getId() !== Block::SOUL_SAND){
+			$this->getLevel()->useBreakOn($this);
 		}
+	}
 
-		return false;
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
+	public function onRandomTick() : void{
+		if($this->meta < 3 and mt_rand(0, 10) === 0){ //Still growing
+			$block = clone $this;
+			$block->meta++;
+			$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
+
+			if(!$ev->isCancelled()){
+				$this->getLevel()->setBlock($this, $ev->getNewState(), false, true);
+			}
+		}
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

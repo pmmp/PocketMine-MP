@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\ColorBlockMetaHelper;
-use pocketmine\level\Level;
 
 class ConcretePowder extends Fallable{
 
@@ -46,13 +45,10 @@ class ConcretePowder extends Fallable{
 		return BlockToolType::TYPE_SHOVEL;
 	}
 
-	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_NORMAL and ($block = $this->checkAdjacentWater()) !== null){
+	public function onNearbyBlockChange() : void{
+		if(($block = $this->checkAdjacentWater()) !== null){
 			$this->level->setBlock($this, $block);
-			return $type;
 		}
-
-		return parent::onUpdate($type);
 	}
 
 	/**
