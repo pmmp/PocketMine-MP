@@ -878,10 +878,10 @@ class Level implements ChunkManager, Metadatable{
 		if($optimizeRebuilds){
 			$chunks = [];
 			foreach($blocks as $b){
-				$pk = new UpdateBlockPacket();
 				if($b === null){
 					continue;
 				}
+				$pk = new UpdateBlockPacket();
 
 				$first = false;
 				if(!isset($chunks[$index = Level::chunkHash($b->x >> 4, $b->z >> 4)])){
@@ -908,10 +908,10 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}else{
 			foreach($blocks as $b){
-				$pk = new UpdateBlockPacket();
 				if($b === null){
 					continue;
 				}
+				$pk = new UpdateBlockPacket();
 
 				$pk->x = $b->x;
 				$pk->y = $b->y;
