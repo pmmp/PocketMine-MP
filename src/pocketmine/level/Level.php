@@ -1519,6 +1519,8 @@ class Level implements ChunkManager, Metadatable{
 				$pos = $this->temporalPosition->setComponents($pos->x, $pos->y, $pos->z);
 			}
 
+			$block = clone $block;
+
 			$block->position($pos);
 			$block->clearCaches();
 
@@ -1535,7 +1537,7 @@ class Level implements ChunkManager, Metadatable{
 					$this->changedBlocks[$chunkHash] = [];
 				}
 
-				$this->changedBlocks[$chunkHash][$blockHash] = clone $block;
+				$this->changedBlocks[$chunkHash][$blockHash] = $block;
 			}
 
 			foreach($this->getChunkLoaders($pos->x >> 4, $pos->z >> 4) as $loader){
