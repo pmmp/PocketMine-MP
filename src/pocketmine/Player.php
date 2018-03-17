@@ -198,10 +198,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $protocol = -1;
 
 	/** @var bool */
-	public $playedBefore;
+	protected $playedBefore;
 	public $spawned = false;
 	public $loggedIn = false;
-	public $gamemode;
+	protected $gamemode;
 	/** @var bool */
 	protected $authenticated = false;
 	/** @var string */
@@ -222,7 +222,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var Vector3 */
 	public $speed = null;
 
-	public $achievements = [];
+	protected $achievements = [];
 
 	/** @var PlayerCursorInventory */
 	protected $cursorInventory;
