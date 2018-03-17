@@ -217,8 +217,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	protected $messageCounter = 2;
 
-	private $clientSecret;
-
 	/** @var Vector3 */
 	public $speed = null;
 
@@ -323,10 +321,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	public function getClientId(){
 		return $this->randomClientId;
-	}
-
-	public function getClientSecret(){
-		return $this->clientSecret;
 	}
 
 	public function isBanned() : bool{
