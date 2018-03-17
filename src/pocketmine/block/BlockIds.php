@@ -275,6 +275,7 @@ interface BlockIds{
 	public const STRUCTURE_BLOCK = 252;
 
 	public const RESERVED6 = 255;
+
 	public const PRISMARINE_STAIRS = 257;
 	public const DARK_PRISMARINE_STAIRS = 258;
 	public const PRISMARINE_BRICKS_STAIRS = 259;
