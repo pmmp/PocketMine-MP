@@ -232,8 +232,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $displayName = "";
 	/** @var int */
 	protected $randomClientId;
-	/** @var bool */
-	protected $authenticated = false;
 	/** @var string */
 	protected $xuid = "";
 
@@ -374,7 +372,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function isAuthenticated() : bool{
-		return $this->authenticated;
+		return $this->xuid !== "";
 	}
 
 	/**
@@ -1948,7 +1946,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->sendDataPacket($pk, false, $immediate);
 	}
 
-	public function onVerifyCompleted(LoginPacket $packet, ?string $error, bool $isAuthenticated) : void{
+	public function onVerifyCompleted(LoginPacket $packet, ?string $error, bool $signedByMojang) : void{
 		if($this->closed){
 			return;
 		}
@@ -1958,27 +1956,29 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return;
 		}
 
-		$this->authenticated = $isAuthenticated;
+		$xuid = $packet->xuid;
 
-		if(!$isAuthenticated){
+		if(!$signedByMojang and $xuid !== ""){
+			$this->server->getLogger()->warning($this->getName() . " has an XUID, but their login keychain is not signed by Mojang");
+			$xuid = "";
+		}
+
+		if($xuid === ""){
+			if($signedByMojang){
+				$this->server->getLogger()->error($this->getName() . " should have an XUID, but none found");
+			}
+
 			if($this->server->requiresAuthentication() and $this->kick("disconnectionScreen.notAuthenticated", false)){ //use kick to allow plugins to cancel this
 				return;
 			}
 
 			$this->server->getLogger()->debug($this->getName() . " is NOT logged into to Xbox Live");
-			if($packet->xuid !== ""){
-				$this->server->getLogger()->warning($this->getName() . " has an XUID, but their login keychain is not signed by Mojang");
-			}
 		}else{
 			$this->server->getLogger()->debug($this->getName() . " is logged into Xbox Live");
-
-			if($packet->xuid === ""){
-				$this->server->getLogger()->error($this->getName() . " should have an XUID, but none found");
-			}
-			$this->xuid = $packet->xuid; //don't set this unless we know they are logged in
+			$this->xuid = $xuid;
 		}
 
-		//TODO: get data from loginpacket (xbox user ID and stuff), add events
+		//TODO: encryption
 
 		$this->processLogin();
 	}
