@@ -21,10 +21,10 @@
       "ext-yaml": ">=2.0.0",
       "ext-zip": "*",
       "ext-zlib": ">=1.2.11",
-      "pocketmine/raklib": "dev-master#fc2a4856e52e854336b7d0a343456c68729c64b3",
-      "pocketmine/pocketmine-spl": "^0.2.0",
-      "pocketmine/pocketmine-binaryutils": "dev-master#a7cd5303a3b215d26bf9be76682ce9311f40e887",
-      "pocketmine/pocketmine-nbt": "dev-master#33aaaebab10b501d233b6208d6a170b82f40c3b4"
+      "pocketmine/raklib": "dev-master#31d6522de71a9c404aff5c23c49c6ea0526793fb",
+      "pocketmine/spl": "dev-master#ee32424c100fd11ae7f7b8df7604623fd475f0ec",
+      "pocketmine/binaryutils": "dev-master#03e6851f814aba96487ec64181a6ae948edd9f7a",
+      "pocketmine/nbt": "dev-master#e8fb4c11b291e96c2b44220a5d00f97c1692556e"
    },
    "autoload": {
       "psr-4": {
@@ -38,15 +38,15 @@
       },
       {
          "type": "vcs",
-         "url": "https://github.com/pmmp/PocketMine-SPL"
+         "url": "https://github.com/pmmp/SPL"
       },
       {
          "type": "vcs",
-         "url": "https://github.com/pmmp/PocketMine-BinaryUtils"
+         "url": "https://github.com/pmmp/BinaryUtils"
       },
       {
          "type": "vcs",
-         "url": "https://github.com/pmmp/PocketMine-NBT"
+         "url": "https://github.com/pmmp/NBT"
       }
    ]
 }
