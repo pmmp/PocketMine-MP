@@ -275,5 +275,14 @@ interface BlockIds{
 	public const STRUCTURE_BLOCK = 252;
 
 	public const RESERVED6 = 255;
+	public const PRISMARINE_STAIRS = 257;
+	public const DARK_PRISMARINE_STAIRS = 258;
+	public const PRISMARINE_BRICKS_STAIRS = 259;
+	public const STRIPPED_SPRUCE_LOG = 260;
+	public const STRIPPED_BIRCH_LOG = 261;
+	public const STRIPPED_JUNGLE_LOG = 262;
+	public const STRIPPED_ACACIA_LOG = 263;
+	public const STRIPPED_DARK_OAK_LOG = 264;
+	public const STRIPPED_OAK_LOG = 265;
 
 }
