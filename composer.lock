@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "3426771a9526fe9ecb4c66b2ec87a3dd",
+    "content-hash": "e04780cd000c97da7b356dfdf858bf47",
     "packages": [
         {
             "name": "pocketmine/binaryutils",
@@ -38,6 +38,39 @@
                 "issues": "https://github.com/pmmp/BinaryUtils/issues"
             },
             "time": "2018-03-17T11:57:06+00:00"
+        },
+        {
+            "name": "pocketmine/math",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/Math.git",
+                "reference": "e0fe8ab70bcacead007cf11dd5b74adc91d94388"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/e0fe8ab70bcacead007cf11dd5b74adc91d94388",
+                "reference": "e0fe8ab70bcacead007cf11dd5b74adc91d94388",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "pocketmine\\math\\": "src/"
+                }
+            },
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "PHP library containing math related code used in PocketMine-MP",
+            "support": {
+                "source": "https://github.com/pmmp/Math/tree/master",
+                "issues": "https://github.com/pmmp/Math/issues"
+            },
+            "time": "2018-03-17T12:35:50+00:00"
         },
         {
             "name": "pocketmine/nbt",
@@ -158,7 +191,8 @@
         "pocketmine/raklib": 20,
         "pocketmine/spl": 20,
         "pocketmine/binaryutils": 20,
-        "pocketmine/nbt": 20
+        "pocketmine/nbt": 20,
+        "pocketmine/math": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
