@@ -752,7 +752,16 @@ class PluginManager{
 				$ignoreCancelled = isset($tags["ignoreCancelled"]) && strtolower($tags["ignoreCancelled"]) === "true";
 
 				$parameters = $method->getParameters();
-				if(count($parameters) === 1 and $parameters[0]->getClass() instanceof \ReflectionClass and is_subclass_of($parameters[0]->getClass()->getName(), Event::class)){
+				try{
+					$isHandler = count($parameters) === 1 && $parameters[0]->getClass() instanceof \ReflectionClass && is_subclass_of($parameters[0]->getClass()->getName(), Event::class);
+				}catch(\ReflectionException $e){
+					if(isset($tags["softDepend"])){
+						continue;
+					}
+
+					throw new \ClassNotFoundException($e->getMessage(), 0, $e);
+				}
+				if($isHandler){
 					$class = $parameters[0]->getClass()->getName();
 					$this->registerEvent($class, $listener, $priority, new MethodEventExecutor($method->getName()), $plugin, $ignoreCancelled);
 				}
