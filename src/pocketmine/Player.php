@@ -197,11 +197,41 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var int */
 	protected $protocol = -1;
 
+	/** @var string */
+	protected $ip;
+	/** @var int */
+	protected $port;
+
+	/** @var bool[] */
+	private $needACK = [];
+
+	/** @var DataPacket[] */
+	private $batchedPackets = [];
+
+	/**
+	 * @var int
+	 * Last measurement of player's latency in milliseconds.
+	 */
+	protected $lastPingMeasure = 1;
+
+
+	/** @var float */
+	public $creationTime = 0;
+
 	/** @var bool */
-	protected $playedBefore;
-	public $spawned = false;
 	public $loggedIn = false;
-	protected $gamemode;
+
+	/** @var bool */
+	public $spawned = false;
+
+	/** @var string */
+	protected $username = "";
+	/** @var string */
+	protected $iusername = "";
+	/** @var string */
+	protected $displayName = "";
+	/** @var int */
+	protected $randomClientId;
 	/** @var bool */
 	protected $authenticated = false;
 	/** @var string */
@@ -214,89 +244,84 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $windowIndex = [];
 	/** @var bool[] */
 	protected $permanentWindows = [];
-
-	protected $messageCounter = 2;
-
-	/** @var Vector3 */
-	public $speed = null;
-
-	protected $achievements = [];
-
 	/** @var PlayerCursorInventory */
 	protected $cursorInventory;
-
 	/** @var CraftingGrid */
 	protected $craftingGrid = null;
 	/** @var CraftingTransaction|null */
 	protected $craftingTransaction = null;
 
-	public $creationTime = 0;
-
-	protected $randomClientId;
-
-	protected $ip;
+	/** @var int */
+	protected $messageCounter = 2;
+	/** @var bool */
 	protected $removeFormat = true;
-	protected $port;
-	protected $username = "";
-	protected $iusername = "";
-	protected $displayName = "";
-	protected $startAction = -1;
-	/** @var Vector3|null */
-	protected $sleeping = null;
 
+	/** @var bool[] name of achievement => bool */
+	protected $achievements = [];
+	/** @var bool */
+	protected $playedBefore;
+	/** @var int */
+	protected $gamemode;
+
+	/** @var int */
 	private $loaderId = 0;
-
-	protected $stepHeight = 0.6;
-
+	/** @var bool[] chunkHash => bool (true = sent, false = needs sending) */
 	public $usedChunks = [];
-	protected $chunkLoadCount = 0;
+	/** @var bool[] chunkHash => dummy */
 	protected $loadQueue = [];
+	/** @var int */
 	protected $nextChunkOrderRun = 5;
+
+	/** @var int */
+	protected $viewDistance = -1;
+	/** @var int */
+	protected $spawnThreshold;
+	/** @var int */
+	protected $chunkLoadCount = 0;
+	/** @var int */
+	protected $chunksPerTick;
 
 	/** @var bool[] map: raw UUID (string) => bool */
 	protected $hiddenPlayers = [];
 
 	/** @var Vector3|null */
 	protected $newPosition;
-
+	/** @var Vector3|null */
+	public $speed = null;
 	/** @var bool */
 	protected $isTeleporting = false;
-
-	protected $viewDistance = -1;
-	protected $chunksPerTick;
-	protected $spawnThreshold;
-	/** @var null|WeakPosition */
-	private $spawnPosition = null;
-
+	/** @var int */
 	protected $inAirTicks = 0;
+	/** @var int */
 	protected $startAirTicks = 5;
-
-	//TODO: Abilities
-	protected $autoJump = true;
-	protected $allowFlight = false;
-	protected $flying = false;
-
+	/** @var float */
+	protected $stepHeight = 0.6;
+	/** @var bool */
 	protected $allowMovementCheats = false;
 
-	private $needACK = [];
+	/** @var Vector3|null */
+	protected $sleeping = null;
+	/** @var WeakPosition|null */
+	private $spawnPosition = null;
 
-	private $batchedPackets = [];
+	//TODO: Abilities
+	/** @var bool */
+	protected $autoJump = true;
+	/** @var bool */
+	protected $allowFlight = false;
+	/** @var bool */
+	protected $flying = false;
 
 	/** @var PermissibleBase */
 	private $perm = null;
 
 	/** @var int|null */
 	protected $lineHeight = null;
-
 	/** @var string */
 	protected $locale = "en_US";
 
-	/**
-	 * @var int
-	 * Last measurement of player's latency in milliseconds.
-	 */
-	protected $lastPingMeasure = 1;
-
+	/** @var int */
+	protected $startAction = -1;
 	/** @var int[] ID => ticks map */
 	protected $usedItemsCooldown = [];
 
