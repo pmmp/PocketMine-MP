@@ -94,7 +94,7 @@ class Fire extends Flowable{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
 
 		$result = null;
-		if($this->meta < 15){
+		if($this->meta < 15 and mt_rand(0, 2) === 0){
 			$this->meta++;
 			$result = $this;
 		}
