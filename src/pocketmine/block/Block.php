@@ -506,7 +506,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return Block
 	 */
-	public function getSide($side, $step = 1){
+	public function getSide(int $side, int $step = 1){
 		if($this->isValid()){
 			return $this->getLevel()->getBlock(Vector3::getSide($side, $step));
 		}

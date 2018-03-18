@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "e04780cd000c97da7b356dfdf858bf47",
+    "content-hash": "5db3835d3aa7483520dc89b1778bd765",
     "packages": [
         {
             "name": "pocketmine/binaryutils",
@@ -45,12 +45,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "e0fe8ab70bcacead007cf11dd5b74adc91d94388"
+                "reference": "1df74f0352309a9c1e6728fa416a3f0493d07b16"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/e0fe8ab70bcacead007cf11dd5b74adc91d94388",
-                "reference": "e0fe8ab70bcacead007cf11dd5b74adc91d94388",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/1df74f0352309a9c1e6728fa416a3f0493d07b16",
+                "reference": "1df74f0352309a9c1e6728fa416a3f0493d07b16",
                 "shasum": ""
             },
             "require": {
@@ -70,7 +70,7 @@
                 "source": "https://github.com/pmmp/Math/tree/master",
                 "issues": "https://github.com/pmmp/Math/issues"
             },
-            "time": "2018-03-17T12:35:50+00:00"
+            "time": "2018-03-18T18:01:56+00:00"
         },
         {
             "name": "pocketmine/nbt",
