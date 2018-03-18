@@ -52,7 +52,7 @@ class DumpMemoryCommand extends VanillaCommand{
 
 		++self::$executions;
 
-		$sender->getServer()->getMemoryManager()->dumpServerMemory($args[1] ?? ($sender->getServer()->getDataPath() . "/memoryDump_$token"), 48, 80);
+		$sender->getServer()->getMemoryManager()->dumpServerMemory($args[1] ?? ($sender->getServer()->getDataPath() . "/memory_dumps/$token"), 48, 80);
 		return true;
 	}
 }
