@@ -729,8 +729,12 @@ class PluginManager{
 		foreach($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method){
 			if(!$method->isStatic()){
 				$tags = self::parseDocComment((string) $method->getDocComment());
-				$priority = isset($tags["priority"]) && strtoupper($tags["priority"]) !== "ALL" && defined(EventPriority::class . "::" . strtoupper($tags["priority"])) ?
-					constant(EventPriority::class . "::" . strtoupper($tags["priority"])) : EventPriority::NORMAL;
+
+				try{
+					$priority = isset($tags["priority"]) ? EventPriority::fromString($tags["priority"]) : EventPriority::NORMAL;
+				}catch(\InvalidArgumentException $e){
+					throw new PluginException("Event handler " . \get_class($listener) . "->" . $method->getName() . "() declares invalid/unknown priority \"" . $tags["priority"] . "\"");
+				}
 				$ignoreCancelled = isset($tags["ignoreCancelled"]) && strtolower($tags["ignoreCancelled"]) === "true";
 
 				$parameters = $method->getParameters();
