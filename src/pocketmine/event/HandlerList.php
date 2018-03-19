@@ -28,17 +28,6 @@ use pocketmine\plugin\PluginManager;
 use pocketmine\plugin\RegisteredListener;
 
 class HandlerList{
-	/** @var string */
-	private $class;
-
-	/**
-	 * @var RegisteredListener[][]
-	 */
-	private $handlerSlots = [];
-
-	/** @var HandlerList|null */
-	private $parentList;
-
 	/**
 	 * @var HandlerList[] classname => HandlerList
 	 */
@@ -62,13 +51,6 @@ class HandlerList{
 				}
 			}
 		}
-	}
-
-	public function __construct(string $class, ?HandlerList $parentList){
-		$this->class = $class;
-		$this->handlerSlots = array_fill_keys(EventPriority::ALL, []);
-		$this->parentList = $parentList;
-		self::$allLists[$this->class] = $this;
 	}
 
 	/**
@@ -102,6 +84,28 @@ class HandlerList{
 		}
 
 		return new HandlerList($event, $parentList);
+	}
+
+	/**
+	 * @return HandlerList[]
+	 */
+	public static function getHandlerLists() : array{
+		return self::$allLists;
+	}
+
+
+	/** @var string */
+	private $class;
+	/** @var RegisteredListener[][] */
+	private $handlerSlots = [];
+	/** @var HandlerList|null */
+	private $parentList;
+
+	public function __construct(string $class, ?HandlerList $parentList){
+		$this->class = $class;
+		$this->handlerSlots = array_fill_keys(EventPriority::ALL, []);
+		$this->parentList = $parentList;
+		self::$allLists[$this->class] = $this;
 	}
 
 	/**
@@ -163,12 +167,5 @@ class HandlerList{
 	 */
 	public function getParent() : ?HandlerList{
 		return $this->parentList;
-	}
-
-	/**
-	 * @return HandlerList[]
-	 */
-	public static function getHandlerLists() : array{
-		return self::$allLists;
 	}
 }
