@@ -25,15 +25,13 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\event\TimingsHandler;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\Player;
 use pocketmine\scheduler\BulkCurlTask;
 use pocketmine\Server;
+use pocketmine\timings\TimingsHandler;
 
 class TimingsCommand extends VanillaCommand{
-
-	public static $timingStart = 0;
 
 	public function __construct(string $name){
 		parent::__construct(
@@ -56,18 +54,17 @@ class TimingsCommand extends VanillaCommand{
 		$mode = strtolower($args[0]);
 
 		if($mode === "on"){
-			$sender->getServer()->getPluginManager()->setUseTimings(true);
-			TimingsHandler::reload();
+			TimingsHandler::setEnabled();
 			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.enable"));
 
 			return true;
 		}elseif($mode === "off"){
-			$sender->getServer()->getPluginManager()->setUseTimings(false);
+			TimingsHandler::setEnabled(false);
 			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.disable"));
 			return true;
 		}
 
-		if(!$sender->getServer()->getPluginManager()->useTimings()){
+		if(!TimingsHandler::isEnabled()){
 			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsDisabled"));
 
 			return true;
@@ -79,24 +76,24 @@ class TimingsCommand extends VanillaCommand{
 			TimingsHandler::reload();
 			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.reset"));
 		}elseif($mode === "merged" or $mode === "report" or $paste){
+			$timings = "";
+			if($paste){
+				$fileTimings = fopen("php://temp", "r+b");
+			}else{
+				$index = 0;
+				$timingFolder = $sender->getServer()->getDataPath() . "timings/";
 
-			$sampleTime = microtime(true) - self::$timingStart;
-			$index = 0;
-			$timingFolder = $sender->getServer()->getDataPath() . "timings/";
+				if(!file_exists($timingFolder)){
+					mkdir($timingFolder, 0777);
+				}
+				$timings = $timingFolder . "timings.txt";
+				while(file_exists($timings)){
+					$timings = $timingFolder . "timings" . (++$index) . ".txt";
+				}
 
-			if(!file_exists($timingFolder)){
-				mkdir($timingFolder, 0777);
+				$fileTimings = fopen($timings, "a+b");
 			}
-			$timings = $timingFolder . "timings.txt";
-			while(file_exists($timings)){
-				$timings = $timingFolder . "timings" . (++$index) . ".txt";
-			}
-
-			$fileTimings = $paste ? fopen("php://temp", "r+b") : fopen($timings, "a+b");
-
 			TimingsHandler::printTimings($fileTimings);
-
-			fwrite($fileTimings, "Sample time " . round($sampleTime * 1000000000) . " (" . $sampleTime . "s)" . PHP_EOL);
 
 			if($paste){
 				fseek($fileTimings, 0);

@@ -24,9 +24,9 @@ declare(strict_types=1);
 namespace pocketmine;
 
 use pocketmine\event\server\LowMemoryEvent;
-use pocketmine\event\Timings;
 use pocketmine\scheduler\DumpWorkerMemoryTask;
 use pocketmine\scheduler\GarbageCollectionTask;
+use pocketmine\timings\Timings;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\Utils;
 

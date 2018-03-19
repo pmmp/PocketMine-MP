@@ -21,42 +21,19 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event;
+namespace pocketmine\timings;
 
-use pocketmine\command\defaults\TimingsCommand;
 use pocketmine\entity\Living;
-use pocketmine\plugin\PluginManager;
 use pocketmine\Server;
 
 class TimingsHandler{
 
 	/** @var TimingsHandler[] */
 	private static $HANDLERS = [];
-
-	private $name;
-	/** @var TimingsHandler */
-	private $parent = null;
-
-	private $count = 0;
-	private $curCount = 0;
-	private $start = 0;
-	private $timingDepth = 0;
-	private $totalTime = 0;
-	private $curTickTotal = 0;
-	private $violations = 0;
-
-	/**
-	 * @param string         $name
-	 * @param TimingsHandler $parent
-	 */
-	public function __construct(string $name, TimingsHandler $parent = null){
-		$this->name = $name;
-		if($parent !== null){
-			$this->parent = $parent;
-		}
-
-		self::$HANDLERS[spl_object_hash($this)] = $this;
-	}
+	/** @var bool */
+	private static $enabled = false;
+	/** @var float */
+	private static $timingStart = 0;
 
 	/**
 	 * @param resource $fp
@@ -92,23 +69,39 @@ class TimingsHandler{
 
 		fwrite($fp, "# Entities " . $entities . PHP_EOL);
 		fwrite($fp, "# LivingEntities " . $livingEntities . PHP_EOL);
+
+		$sampleTime = microtime(true) - self::$timingStart;
+		fwrite($fp, "Sample time " . round($sampleTime * 1000000000) . " (" . $sampleTime . "s)" . PHP_EOL);
+	}
+
+	public static function isEnabled() : bool{
+		return self::$enabled;
+	}
+
+	public static function setEnabled(bool $enable = true) : void{
+		self::$enabled = $enable;
+		self::reload();
+	}
+
+	public static function getStartTime() : float{
+		return self::$timingStart;
 	}
 
 	public static function reload(){
-		if(Server::getInstance()->getPluginManager()->useTimings()){
+		if(self::$enabled){
 			foreach(self::$HANDLERS as $timings){
 				$timings->reset();
 			}
-			TimingsCommand::$timingStart = microtime(true);
+			self::$timingStart = microtime(true);
 		}
 	}
 
 	public static function tick(bool $measure = true){
-		if(PluginManager::$useTimings){
+		if(self::$enabled){
 			if($measure){
 				foreach(self::$HANDLERS as $timings){
 					if($timings->curTickTotal > 0.05){
-						$timings->violations += round($timings->curTickTotal / 0.05);
+						$timings->violations += (int) round($timings->curTickTotal / 0.05);
 					}
 					$timings->curTickTotal = 0;
 					$timings->curCount = 0;
@@ -127,8 +120,39 @@ class TimingsHandler{
 		}
 	}
 
+	/** @var string */
+	private $name;
+	/** @var TimingsHandler */
+	private $parent = null;
+
+	/** @var int */
+	private $count = 0;
+	/** @var int */
+	private $curCount = 0;
+	/** @var float */
+	private $start = 0;
+	/** @var int */
+	private $timingDepth = 0;
+	/** @var float */
+	private $totalTime = 0;
+	/** @var float */
+	private $curTickTotal = 0;
+	/** @var int */
+	private $violations = 0;
+
+	/**
+	 * @param string         $name
+	 * @param TimingsHandler $parent
+	 */
+	public function __construct(string $name, TimingsHandler $parent = null){
+		$this->name = $name;
+		$this->parent = $parent;
+
+		self::$HANDLERS[spl_object_hash($this)] = $this;
+	}
+
 	public function startTiming(){
-		if(PluginManager::$useTimings and ++$this->timingDepth === 1){
+		if(self::$enabled and ++$this->timingDepth === 1){
 			$this->start = microtime(true);
 			if($this->parent !== null and ++$this->parent->timingDepth === 1){
 				$this->parent->start = $this->start;
@@ -137,7 +161,7 @@ class TimingsHandler{
 	}
 
 	public function stopTiming(){
-		if(PluginManager::$useTimings){
+		if(self::$enabled){
 			if(--$this->timingDepth !== 0 or $this->start === 0){
 				return;
 			}
@@ -167,5 +191,4 @@ class TimingsHandler{
 	public function remove(){
 		unset(self::$HANDLERS[spl_object_hash($this)]);
 	}
-
 }
