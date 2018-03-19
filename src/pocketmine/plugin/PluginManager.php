@@ -791,7 +791,7 @@ class PluginManager{
 	private function getEventListeners(string $event) : HandlerList{
 		$list = HandlerList::getHandlerListFor($event);
 		if($list === null){
-			throw new PluginException($event . " cannot be handled because it is abstract but does not declare the @allowHandle tag");
+			throw new PluginException("Abstract events not declaring @allowHandle cannot be handled (tried to register listener for $event)");
 		}
 		return $list;
 	}
