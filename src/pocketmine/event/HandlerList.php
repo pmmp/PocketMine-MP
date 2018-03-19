@@ -113,6 +113,7 @@ class HandlerList{
 	 * @return HandlerList[]
 	 */
 	public static function getHandlerListsFor(string $event) : array{
+		self::getHandlerListFor($event); //Force handler lists initialization, even if they don't have direct listeners
 		return self::$classMap[$event] ?? [];
 	}
 
