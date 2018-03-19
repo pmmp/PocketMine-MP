@@ -622,4 +622,13 @@ class Utils{
 	public static function cleanPath($path){
 		return str_replace(["\\", ".php", "phar://", str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PATH), str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PLUGIN_PATH)], ["/", "", "", "", ""], $path);
 	}
+
+	public static function validateObjectArray(array $array, string $class) : bool{
+		foreach($array as $key => $item){
+			if(!($item instanceof $class)){
+				throw new \RuntimeException("\$item[$key] is not an instance of $class");
+			}
+		}
+		return true;
+	}
 }
