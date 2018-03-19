@@ -71,4 +71,21 @@ abstract class EventPriority{
 	 * No modifications to the event should be made under this priority
 	 */
 	public const MONITOR = 0;
+
+	/**
+	 * @param string $name
+	 *
+	 * @return int
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public static function fromString(string $name) : int{
+		$name = strtoupper($name);
+		$const = self::class . "::" . $name;
+		if($name !== "ALL" and \defined($const)){
+			return \constant($const);
+		}
+
+		throw new \InvalidArgumentException("Unable to resolve priority \"$name\"");
+	}
 }
