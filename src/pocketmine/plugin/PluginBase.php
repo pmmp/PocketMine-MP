@@ -77,7 +77,7 @@ abstract class PluginBase implements Plugin{
 	 * @return bool
 	 */
 	final public function isEnabled() : bool{
-		return $this->isEnabled === true;
+		return $this->isEnabled;
 	}
 
 	/**
@@ -86,7 +86,7 @@ abstract class PluginBase implements Plugin{
 	final public function setEnabled(bool $boolean = true){
 		if($this->isEnabled !== $boolean){
 			$this->isEnabled = $boolean;
-			if($this->isEnabled === true){
+			if($this->isEnabled){
 				$this->onEnable();
 			}else{
 				$this->onDisable();
@@ -98,7 +98,7 @@ abstract class PluginBase implements Plugin{
 	 * @return bool
 	 */
 	final public function isDisabled() : bool{
-		return $this->isEnabled === false;
+		return !$this->isEnabled;
 	}
 
 	final public function getDataFolder() : string{
@@ -110,7 +110,7 @@ abstract class PluginBase implements Plugin{
 	}
 
 	final public function init(PluginLoader $loader, Server $server, PluginDescription $description, $dataFolder, $file){
-		if($this->initialized === false){
+		if(!$this->initialized){
 			$this->initialized = true;
 			$this->loader = $loader;
 			$this->server = $server;
@@ -210,7 +210,7 @@ abstract class PluginBase implements Plugin{
 			mkdir(dirname($out), 0755, true);
 		}
 
-		if(file_exists($out) and $replace !== true){
+		if(file_exists($out) and !$replace){
 			return false;
 		}
 
@@ -248,7 +248,7 @@ abstract class PluginBase implements Plugin{
 	}
 
 	public function saveConfig(){
-		if($this->getConfig()->save() === false){
+		if(!$this->getConfig()->save()){
 			$this->getLogger()->critical("Could not save config to " . $this->configFile);
 		}
 	}

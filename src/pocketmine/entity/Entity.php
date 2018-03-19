@@ -1723,13 +1723,13 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		return $this->asLocation();
 	}
 
-	public function setPosition(Vector3 $pos){
+	public function setPosition(Vector3 $pos) : bool{
 		if($this->closed){
 			return false;
 		}
 
 		if($pos instanceof Position and $pos->level !== null and $pos->level !== $this->level){
-			if($this->switchLevel($pos->getLevel()) === false){
+			if(!$this->switchLevel($pos->getLevel())){
 				return false;
 			}
 		}
@@ -1754,7 +1754,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function setPositionAndRotation(Vector3 $pos, float $yaw, float $pitch) : bool{
-		if($this->setPosition($pos) === true){
+		if($this->setPosition($pos)){
 			$this->setRotation($yaw, $pitch);
 
 			return true;
@@ -1824,7 +1824,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function isOnGround() : bool{
-		return $this->onGround === true;
+		return $this->onGround;
 	}
 
 	/**
@@ -1849,7 +1849,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$pos = $ev->getTo();
 
 		$this->setMotion($this->temporalVector->setComponents(0, 0, 0));
-		if($this->setPositionAndRotation($pos, $yaw ?? $this->yaw, $pitch ?? $this->pitch) !== false){
+		if($this->setPositionAndRotation($pos, $yaw ?? $this->yaw, $pitch ?? $this->pitch)){
 			$this->resetFallDistance();
 			$this->onGround = true;
 

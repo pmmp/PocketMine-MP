@@ -48,7 +48,7 @@ class BanList{
 	 * @return bool
 	 */
 	public function isEnabled() : bool{
-		return $this->enabled === true;
+		return $this->enabled;
 	}
 
 	/**
@@ -172,7 +172,7 @@ class BanList{
 		$this->removeExpired();
 		$fp = @fopen($this->file, "w");
 		if(is_resource($fp)){
-			if($flag === true){
+			if($flag){
 				fwrite($fp, "# Updated " . strftime("%x %H:%M", time()) . " by " . Server::getInstance()->getName() . " " . Server::getInstance()->getPocketMineVersion() . "\n");
 				fwrite($fp, "# victim name | ban date | banned by | banned until | reason\n\n");
 			}

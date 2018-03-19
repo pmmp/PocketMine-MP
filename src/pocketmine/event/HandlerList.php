@@ -123,7 +123,7 @@ class HandlerList{
 					}
 				}
 			}
-			if($changed === true){
+			if($changed){
 				$this->handlers = null;
 			}
 		}elseif($object instanceof RegisteredListener){

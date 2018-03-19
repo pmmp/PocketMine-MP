@@ -73,7 +73,7 @@ class TaskHandler{
 	 * @return bool
 	 */
 	public function isCancelled() : bool{
-		return $this->cancelled === true;
+		return $this->cancelled;
 	}
 
 	/**

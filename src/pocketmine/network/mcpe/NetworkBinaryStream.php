@@ -168,7 +168,7 @@ class NetworkBinaryStream extends BinaryStream{
 				default:
 					$value = [];
 			}
-			if($types === true){
+			if($types){
 				$data[$key] = [$type, $value];
 			}else{
 				$data[$key] = $value;

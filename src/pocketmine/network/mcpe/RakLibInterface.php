@@ -236,7 +236,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 					$pk = $packet->__encapsulatedPacket;
 				}
 
-				$this->interface->sendEncapsulated($identifier, $pk, ($needACK === true ? RakLib::FLAG_NEED_ACK : 0) | ($immediate === true ? RakLib::PRIORITY_IMMEDIATE : RakLib::PRIORITY_NORMAL));
+				$this->interface->sendEncapsulated($identifier, $pk, ($needACK ? RakLib::FLAG_NEED_ACK : 0) | ($immediate ? RakLib::PRIORITY_IMMEDIATE : RakLib::PRIORITY_NORMAL));
 				return $pk->identifierACK;
 			}else{
 				$this->server->batchPackets([$player], [$packet], true, $immediate);
