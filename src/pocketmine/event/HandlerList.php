@@ -36,15 +36,16 @@ class HandlerList{
 	 */
 	private $handlerSlots = [];
 
+	/** @var HandlerList|null */
+	private $parentList;
+
 	/**
 	 * @var HandlerList[]
 	 */
 	private static $allLists = [];
 
 	/**
-	 * @var HandlerList[][] a 2D array of HandlerList.
-	 *                      The first dimension index is the class name, containing an array of HandlerList for that class and its superclasses.
-	 *                      The second dimension index is an integer >= 0, starting from the HandlerList for that class.
+	 * @var HandlerList[] classname => HandlerList
 	 */
 	private static $classMap = [];
 
@@ -68,9 +69,10 @@ class HandlerList{
 		}
 	}
 
-	public function __construct(string $class){
+	public function __construct(string $class, ?HandlerList $parentList){
 		$this->class = $class;
 		$this->handlerSlots = array_fill_keys(EventPriority::ALL, []);
+		$this->parentList = $parentList;
 		self::$allLists[] = $this;
 	}
 
@@ -85,12 +87,15 @@ class HandlerList{
 	 */
 	public static function getHandlerListFor(string $event) : ?HandlerList{
 		if(isset(self::$classMap[$event])){
-			return self::$classMap[$event][0];
+			return self::$classMap[$event];
 		}
 
 		$class = new \ReflectionClass($event);
 		$tags = PluginManager::parseDocComment((string) $class->getDocComment());
-		$noHandle = $class->isAbstract() && !(isset($tags["allowHandle"]) && $tags["allowHandle"] !== "false");
+
+		if($class->isAbstract() && !isset($tags["allowHandle"])){
+			return null;
+		}
 
 		$super = $class;
 		$parentList = null;
@@ -99,22 +104,8 @@ class HandlerList{
 			// while loop to allow skipping $noHandle events in the inheritance tree
 			$parentList = self::getHandlerListFor($super->getName());
 		}
-		$lists = $parentList !== null ? self::$classMap[$parentList->class] : [];
 
-		$list = $noHandle ? null : new HandlerList($event) ;
-		array_unshift($lists, $list);
-
-		self::$classMap[$event] = $lists;
-		return $list;
-	}
-
-	/**
-	 * @param string $event
-	 * @return HandlerList[]
-	 */
-	public static function getHandlerListsFor(string $event) : array{
-		self::getHandlerListFor($event); //Force handler lists initialization, even if they don't have direct listeners
-		return self::$classMap[$event] ?? [];
+		return self::$classMap[$event] = new HandlerList($event, $parentList);
 	}
 
 	/**
@@ -168,6 +159,13 @@ class HandlerList{
 	 */
 	public function getListenersByPriority(int $priority) : array{
 		return $this->handlerSlots[$priority];
+	}
+
+	/**
+	 * @return null|HandlerList
+	 */
+	public function getParent() : ?HandlerList{
+		return $this->parentList;
 	}
 
 	/**

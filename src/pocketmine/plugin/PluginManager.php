@@ -678,12 +678,13 @@ class PluginManager{
 	 * @param Event $event
 	 */
 	public function callEvent(Event $event){
+		$handlerList = HandlerList::getHandlerListFor(get_class($event));
+		assert($handlerList !== null, "Called event should have a valid HandlerList");
+
 		foreach(EventPriority::ALL as $priority){
-			foreach(HandlerList::getHandlerListsFor(get_class($event)) as $handlerList){
-				if($handlerList === null){
-					continue;
-				}
-				foreach($handlerList->getListenersByPriority($priority) as $registration){
+			$currentList = $handlerList;
+			while($currentList !== null){
+				foreach($currentList->getListenersByPriority($priority) as $registration){
 					if(!$registration->getPlugin()->isEnabled()){
 						continue;
 					}
@@ -701,6 +702,8 @@ class PluginManager{
 						$this->server->getLogger()->logException($e);
 					}
 				}
+
+				$currentList = $currentList->getParent();
 			}
 		}
 	}
