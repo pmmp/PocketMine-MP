@@ -335,7 +335,7 @@ class ItemFactory{
 	 * @throws \InvalidArgumentException if the given string cannot be parsed as an item identifier
 	 */
 	public static function fromString(string $str, bool $multiple = false){
-		if($multiple === true){
+		if($multiple){
 			$blocks = [];
 			foreach(explode(",", $str) as $b){
 				$blocks[] = self::fromString($b, false);

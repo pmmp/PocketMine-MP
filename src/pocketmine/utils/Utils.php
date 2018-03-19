@@ -130,9 +130,9 @@ class Utils{
 	 * @return string|bool
 	 */
 	public static function getIP(bool $force = false){
-		if(Utils::$online === false){
+		if(!Utils::$online){
 			return false;
-		}elseif(Utils::$ip !== false and $force !== true){
+		}elseif(Utils::$ip !== false and !$force){
 			return Utils::$ip;
 		}
 
@@ -438,7 +438,7 @@ class Utils{
 	 * @throws \RuntimeException if a cURL error occurs
 	 */
 	public static function simpleCurl(string $page, $timeout = 10, array $extraHeaders = [], array $extraOpts = [], callable $onSuccess = null){
-		if(Utils::$online === false){
+		if(!Utils::$online){
 			throw new \RuntimeException("Server is offline");
 		}
 

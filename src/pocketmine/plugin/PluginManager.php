@@ -310,7 +310,7 @@ class PluginManager{
 					}
 				}
 
-				if($missingDependency === true){
+				if($missingDependency){
 					foreach($plugins as $name => $file){
 						if(!isset($dependencies[$name])){
 							unset($softDependencies[$name]);
@@ -325,7 +325,7 @@ class PluginManager{
 					}
 
 					//No plugins loaded :(
-					if($missingDependency === true){
+					if($missingDependency){
 						foreach($plugins as $name => $file){
 							$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.circularDependency"]));
 						}
@@ -430,7 +430,7 @@ class PluginManager{
 	 * @return Permission[]
 	 */
 	public function getDefaultPermissions(bool $op) : array{
-		if($op === true){
+		if($op){
 			return $this->defaultPermsOp;
 		}else{
 			return $this->defaultPerms;
@@ -512,7 +512,7 @@ class PluginManager{
 	 * @param Permissible $permissible
 	 */
 	public function subscribeToDefaultPerms(bool $op, Permissible $permissible){
-		if($op === true){
+		if($op){
 			$this->defSubsOp[spl_object_hash($permissible)] = $permissible;
 		}else{
 			$this->defSubs[spl_object_hash($permissible)] = $permissible;
@@ -524,7 +524,7 @@ class PluginManager{
 	 * @param Permissible $permissible
 	 */
 	public function unsubscribeFromDefaultPerms(bool $op, Permissible $permissible){
-		if($op === true){
+		if($op){
 			unset($this->defSubsOp[spl_object_hash($permissible)]);
 		}else{
 			unset($this->defSubs[spl_object_hash($permissible)]);
@@ -537,7 +537,7 @@ class PluginManager{
 	 * @return Permissible[]
 	 */
 	public function getDefaultPermSubscriptions(bool $op) : array{
-		if($op === true){
+		if($op){
 			return $this->defSubsOp;
 		}
 
