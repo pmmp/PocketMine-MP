@@ -26,10 +26,10 @@ declare(strict_types=1);
  */
 namespace pocketmine\command;
 
-use pocketmine\event\TimingsHandler;
 use pocketmine\lang\TextContainer;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\Server;
+use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\TextFormat;
 
 abstract class Command{

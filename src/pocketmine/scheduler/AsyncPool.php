@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
-use pocketmine\event\Timings;
 use pocketmine\Server;
+use pocketmine\timings\Timings;
 
 class AsyncPool{
 
