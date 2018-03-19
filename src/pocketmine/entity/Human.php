@@ -208,6 +208,15 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->setFood($amount);
 	}
 
+	/**
+	 * Returns whether this Human may consume objects requiring hunger.
+	 *
+	 * @return bool
+	 */
+	public function isHungry() : bool{
+		return $this->getFood() < $this->getMaxFood();
+	}
+
 	public function getSaturation() : float{
 		return $this->attributeMap->getAttribute(Attribute::SATURATION)->getValue();
 	}
@@ -282,7 +291,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	public function consumeObject(Consumable $consumable) : bool{
 		if($consumable instanceof FoodSource){
-			if($consumable->requiresHunger() and $this->getFood() >= $this->getMaxFood()){
+			if($consumable->requiresHunger() and !$this->isHungry()){
 				return false;
 			}
 

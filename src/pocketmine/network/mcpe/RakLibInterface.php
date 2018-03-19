@@ -41,6 +41,11 @@ use raklib\server\ServerInstance;
 use raklib\utils\InternetAddress;
 
 class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
+	/**
+	 * Sometimes this gets changed when the MCPE-layer protocol gets broken to the point where old and new can't
+	 * communicate. It's important that we check this to avoid catastrophes.
+	 */
+	private const MCPE_RAKNET_PROTOCOL_VERSION = 8;
 
 	/** @var Server */
 	private $server;
@@ -70,7 +75,8 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			$this->server->getLogger(),
 			\pocketmine\COMPOSER_AUTOLOADER_PATH,
 			new InternetAddress($this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp(), $this->server->getPort(), 4),
-			(int) $this->server->getProperty("network.max-mtu-size", 1492)
+			(int) $this->server->getProperty("network.max-mtu-size", 1492),
+			self::MCPE_RAKNET_PROTOCOL_VERSION
 		);
 		$this->interface = new ServerHandler($this->rakLib, $this);
 	}

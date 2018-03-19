@@ -31,6 +31,10 @@ class SplashPotion extends ProjectileItem{
 		parent::__construct(self::SPLASH_POTION, $meta, "Splash Potion");
 	}
 
+	public function getMaxStackSize() : int{
+		return 1;
+	}
+
 	public function getProjectileEntityType() : string{
 		return "ThrownPotion";
 	}

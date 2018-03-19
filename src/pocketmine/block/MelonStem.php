@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Server;
 
@@ -42,45 +41,32 @@ class MelonStem extends Crops{
 		$this->meta = $meta;
 	}
 
-	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== Block::FARMLAND){
-				$this->getLevel()->useBreakOn($this);
-				return Level::BLOCK_UPDATE_NORMAL;
-			}
-		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
-			if(mt_rand(0, 2) === 1){
-				if($this->meta < 0x07){
-					$block = clone $this;
-					++$block->meta;
-					Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
+	public function onRandomTick() : void{
+		if(mt_rand(0, 2) === 1){
+			if($this->meta < 0x07){
+				$block = clone $this;
+				++$block->meta;
+				Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
+				if(!$ev->isCancelled()){
+					$this->getLevel()->setBlock($this, $ev->getNewState(), true);
+				}
+			}else{
+				for($side = 2; $side <= 5; ++$side){
+					$b = $this->getSide($side);
+					if($b->getId() === self::MELON_BLOCK){
+						return;
+					}
+				}
+				$side = $this->getSide(mt_rand(2, 5));
+				$d = $side->getSide(Vector3::SIDE_DOWN);
+				if($side->getId() === self::AIR and ($d->getId() === self::FARMLAND or $d->getId() === self::GRASS or $d->getId() === self::DIRT)){
+					Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($side, BlockFactory::get(Block::MELON_BLOCK)));
 					if(!$ev->isCancelled()){
-						$this->getLevel()->setBlock($this, $ev->getNewState(), true);
-					}
-
-					return Level::BLOCK_UPDATE_RANDOM;
-				}else{
-					for($side = 2; $side <= 5; ++$side){
-						$b = $this->getSide($side);
-						if($b->getId() === self::MELON_BLOCK){
-							return Level::BLOCK_UPDATE_RANDOM;
-						}
-					}
-					$side = $this->getSide(mt_rand(2, 5));
-					$d = $side->getSide(Vector3::SIDE_DOWN);
-					if($side->getId() === self::AIR and ($d->getId() === self::FARMLAND or $d->getId() === self::GRASS or $d->getId() === self::DIRT)){
-						Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($side, BlockFactory::get(Block::MELON_BLOCK)));
-						if(!$ev->isCancelled()){
-							$this->getLevel()->setBlock($side, $ev->getNewState(), true);
-						}
+						$this->getLevel()->setBlock($side, $ev->getNewState(), true);
 					}
 				}
 			}
-
-			return Level::BLOCK_UPDATE_RANDOM;
 		}
-
-		return false;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

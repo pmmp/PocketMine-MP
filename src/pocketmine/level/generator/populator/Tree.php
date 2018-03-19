@@ -68,7 +68,7 @@ class Tree extends Populator{
 			$b = $this->level->getBlockIdAt($x, $y, $z);
 			if($b === Block::DIRT or $b === Block::GRASS){
 				break;
-			}elseif($b !== 0 and $b !== Block::SNOW_LAYER){
+			}elseif($b !== Block::AIR and $b !== Block::SNOW_LAYER){
 				return -1;
 			}
 		}

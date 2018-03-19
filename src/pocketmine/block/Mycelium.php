@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Server;
 
@@ -60,19 +59,17 @@ class Mycelium extends Solid{
 		return true;
 	}
 
-	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_RANDOM){
-			//TODO: light levels
-			$x = mt_rand($this->x - 1, $this->x + 1);
-			$y = mt_rand($this->y - 2, $this->y + 2);
-			$z = mt_rand($this->z - 1, $this->z + 1);
-			$block = $this->getLevel()->getBlockAt($x, $y, $z);
-			if($block->getId() === Block::DIRT){
-				if($block->getSide(Vector3::SIDE_UP) instanceof Transparent){
-					Server::getInstance()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($block, $this, BlockFactory::get(Block::MYCELIUM)));
-					if(!$ev->isCancelled()){
-						$this->getLevel()->setBlock($block, $ev->getNewState());
-					}
+	public function onRandomTick() : void{
+		//TODO: light levels
+		$x = mt_rand($this->x - 1, $this->x + 1);
+		$y = mt_rand($this->y - 2, $this->y + 2);
+		$z = mt_rand($this->z - 1, $this->z + 1);
+		$block = $this->getLevel()->getBlockAt($x, $y, $z);
+		if($block->getId() === Block::DIRT){
+			if($block->getSide(Vector3::SIDE_UP) instanceof Transparent){
+				Server::getInstance()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($block, $this, BlockFactory::get(Block::MYCELIUM)));
+				if(!$ev->isCancelled()){
+					$this->getLevel()->setBlock($block, $ev->getNewState());
 				}
 			}
 		}

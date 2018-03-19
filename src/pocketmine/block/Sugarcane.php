@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\Server;
@@ -42,10 +41,6 @@ class Sugarcane extends Flowable{
 
 	public function getName() : string{
 		return "Sugarcane";
-	}
-
-	public function ticksRandomly() : bool{
-		return true;
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{
@@ -73,36 +68,34 @@ class Sugarcane extends Flowable{
 		return false;
 	}
 
-	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			$down = $this->getSide(Vector3::SIDE_DOWN);
-			if($down->isTransparent() === true and $down->getId() !== self::SUGARCANE_BLOCK){
-				$this->getLevel()->useBreakOn($this);
+	public function onNearbyBlockChange() : void{
+		$down = $this->getSide(Vector3::SIDE_DOWN);
+		if($down->isTransparent() and $down->getId() !== self::SUGARCANE_BLOCK){
+			$this->getLevel()->useBreakOn($this);
+		}
+	}
 
-				return Level::BLOCK_UPDATE_NORMAL;
-			}
-		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
-			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::SUGARCANE_BLOCK){
-				if($this->meta === 0x0F){
-					for($y = 1; $y < 3; ++$y){
-						$b = $this->getLevel()->getBlockAt($this->x, $this->y + $y, $this->z);
-						if($b->getId() === self::AIR){
-							$this->getLevel()->setBlock($b, BlockFactory::get(Block::SUGARCANE_BLOCK), true);
-							break;
-						}
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
+	public function onRandomTick() : void{
+		if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::SUGARCANE_BLOCK){
+			if($this->meta === 0x0F){
+				for($y = 1; $y < 3; ++$y){
+					$b = $this->getLevel()->getBlockAt($this->x, $this->y + $y, $this->z);
+					if($b->getId() === self::AIR){
+						$this->getLevel()->setBlock($b, BlockFactory::get(Block::SUGARCANE_BLOCK), true);
+						break;
 					}
-					$this->meta = 0;
-					$this->getLevel()->setBlock($this, $this, true);
-				}else{
-					++$this->meta;
-					$this->getLevel()->setBlock($this, $this, true);
 				}
-
-				return Level::BLOCK_UPDATE_RANDOM;
+				$this->meta = 0;
+				$this->getLevel()->setBlock($this, $this, true);
+			}else{
+				++$this->meta;
+				$this->getLevel()->setBlock($this, $this, true);
 			}
 		}
-
-		return false;
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
