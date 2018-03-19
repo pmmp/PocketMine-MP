@@ -40,14 +40,9 @@ class HandlerList{
 	private $parentList;
 
 	/**
-	 * @var HandlerList[]
-	 */
-	private static $allLists = [];
-
-	/**
 	 * @var HandlerList[] classname => HandlerList
 	 */
-	private static $classMap = [];
+	private static $allLists = [];
 
 	/**
 	 * Unregisters all the listeners
@@ -73,7 +68,7 @@ class HandlerList{
 		$this->class = $class;
 		$this->handlerSlots = array_fill_keys(EventPriority::ALL, []);
 		$this->parentList = $parentList;
-		self::$allLists[] = $this;
+		self::$allLists[$this->class] = $this;
 	}
 
 	/**
@@ -86,8 +81,8 @@ class HandlerList{
 	 * @throws \ReflectionException
 	 */
 	public static function getHandlerListFor(string $event) : ?HandlerList{
-		if(isset(self::$classMap[$event])){
-			return self::$classMap[$event];
+		if(isset(self::$allLists[$event])){
+			return self::$allLists[$event];
 		}
 
 		$class = new \ReflectionClass($event);
@@ -105,7 +100,7 @@ class HandlerList{
 			$parentList = self::getHandlerListFor($super->getName());
 		}
 
-		return self::$classMap[$event] = new HandlerList($event, $parentList);
+		return new HandlerList($event, $parentList);
 	}
 
 	/**
