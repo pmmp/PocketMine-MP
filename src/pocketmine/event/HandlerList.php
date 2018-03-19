@@ -77,6 +77,7 @@ class HandlerList{
 	 * Calling this method also lazily initializes the $classMap inheritance tree of handler lists.
 	 *
 	 * @param string $event
+	 *
 	 * @return null|HandlerList
 	 * @throws \ReflectionException
 	 */
@@ -150,6 +151,7 @@ class HandlerList{
 
 	/**
 	 * @param int $priority
+	 *
 	 * @return RegisteredListener[]
 	 */
 	public function getListenersByPriority(int $priority) : array{
