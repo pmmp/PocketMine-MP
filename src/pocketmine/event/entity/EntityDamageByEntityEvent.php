@@ -31,7 +31,6 @@ use pocketmine\entity\Living;
  * Called when an entity takes damage from another entity.
  */
 class EntityDamageByEntityEvent extends EntityDamageEvent{
-
 	/** @var int */
 	private $damagerEntityId;
 	/** @var float */

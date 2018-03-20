@@ -30,7 +30,6 @@ use pocketmine\Player;
  * Called when a player leaves the server
  */
 class PlayerQuitEvent extends PlayerEvent{
-	public static $handlerList = null;
 
 	/** @var TranslationContainer|string */
 	protected $quitMessage;

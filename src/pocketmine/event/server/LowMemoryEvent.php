@@ -31,8 +31,6 @@ use pocketmine\utils\Utils;
  * Plugins should free caches or other non-essential data.
  */
 class LowMemoryEvent extends ServerEvent{
-	public static $handlerList = null;
-
 	/** @var int */
 	private $memory;
 	/** @var int */

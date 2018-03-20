@@ -671,24 +671,45 @@ class PluginManager{
 	 * @param Event $event
 	 */
 	public function callEvent(Event $event){
-		foreach($event->getHandlers()->getRegisteredListeners() as $registration){
-			if(!$registration->getPlugin()->isEnabled()){
-				continue;
-			}
+		$handlerList = HandlerList::getHandlerListFor(get_class($event));
+		assert($handlerList !== null, "Called event should have a valid HandlerList");
 
-			try{
-				$registration->callEvent($event);
-			}catch(\Throwable $e){
-				$this->server->getLogger()->critical(
-					$this->server->getLanguage()->translateString("pocketmine.plugin.eventError", [
-						$event->getEventName(),
-						$registration->getPlugin()->getDescription()->getFullName(),
-						$e->getMessage(),
-						get_class($registration->getListener())
-					]));
-				$this->server->getLogger()->logException($e);
+		foreach(EventPriority::ALL as $priority){
+			$currentList = $handlerList;
+			while($currentList !== null){
+				foreach($currentList->getListenersByPriority($priority) as $registration){
+					if(!$registration->getPlugin()->isEnabled()){
+						continue;
+					}
+
+					try{
+						$registration->callEvent($event);
+					}catch(\Throwable $e){
+						$this->server->getLogger()->critical(
+							$this->server->getLanguage()->translateString("pocketmine.plugin.eventError", [
+								$event->getEventName(),
+								$registration->getPlugin()->getDescription()->getFullName(),
+								$e->getMessage(),
+								get_class($registration->getListener())
+							]));
+						$this->server->getLogger()->logException($e);
+					}
+				}
+
+				$currentList = $currentList->getParent();
 			}
 		}
+	}
+
+	/**
+	 * Extracts one-line tags from the doc-comment
+	 *
+	 * @param string $docComment
+	 * @return string[] an array of tagName => tag value. If the tag has no value, an empty string is used as the value.
+	 */
+	public static function parseDocComment(string $docComment) : array{
+		preg_match_all('/^[\t ]*\* @([a-zA-Z]+)(?:[\t ]+(.+))?[\t ]*$/m', $docComment, $matches);
+		return array_combine($matches[1], $matches[2]);
 	}
 
 	/**
@@ -699,7 +720,7 @@ class PluginManager{
 	 *
 	 * @throws PluginException
 	 */
-	public function registerEvents(Listener $listener, Plugin $plugin){
+	public function registerEvents(Listener $listener, Plugin $plugin) : void{
 		if(!$plugin->isEnabled()){
 			throw new PluginException("Plugin attempted to register " . get_class($listener) . " while not enabled");
 		}
@@ -707,34 +728,18 @@ class PluginManager{
 		$reflection = new \ReflectionClass(get_class($listener));
 		foreach($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method){
 			if(!$method->isStatic()){
-				$priority = EventPriority::NORMAL;
-				$ignoreCancelled = false;
-				if(preg_match("/^[\t ]*\\* @priority[\t ]{1,}([a-zA-Z]{1,})/m", (string) $method->getDocComment(), $matches) > 0){
-					$matches[1] = strtoupper($matches[1]);
-					if(defined(EventPriority::class . "::" . $matches[1])){
-						$priority = constant(EventPriority::class . "::" . $matches[1]);
-					}
+				$tags = self::parseDocComment((string) $method->getDocComment());
+
+				try{
+					$priority = isset($tags["priority"]) ? EventPriority::fromString($tags["priority"]) : EventPriority::NORMAL;
+				}catch(\InvalidArgumentException $e){
+					throw new PluginException("Event handler " . \get_class($listener) . "->" . $method->getName() . "() declares invalid/unknown priority \"" . $tags["priority"] . "\"");
 				}
-				if(preg_match("/^[\t ]*\\* @ignoreCancelled[\t ]{1,}([a-zA-Z]{1,})/m", (string) $method->getDocComment(), $matches) > 0){
-					$matches[1] = strtolower($matches[1]);
-					if($matches[1] === "false"){
-						$ignoreCancelled = false;
-					}elseif($matches[1] === "true"){
-						$ignoreCancelled = true;
-					}
-				}
+				$ignoreCancelled = isset($tags["ignoreCancelled"]) && strtolower($tags["ignoreCancelled"]) === "true";
 
 				$parameters = $method->getParameters();
 				if(count($parameters) === 1 and $parameters[0]->getClass() instanceof \ReflectionClass and is_subclass_of($parameters[0]->getClass()->getName(), Event::class)){
 					$class = $parameters[0]->getClass()->getName();
-					$reflection = new \ReflectionClass($class);
-					if(strpos((string) $reflection->getDocComment(), "@deprecated") !== false and $this->server->getProperty("settings.deprecated-verbose", true)){
-						$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.plugin.deprecatedEvent", [
-							$plugin->getName(),
-							$class,
-							get_class($listener) . "->" . $method->getName() . "()"
-						]));
-					}
 					$this->registerEvent($class, $listener, $priority, new MethodEventExecutor($method->getName()), $plugin, $ignoreCancelled);
 				}
 			}
@@ -751,24 +756,20 @@ class PluginManager{
 	 *
 	 * @throws PluginException
 	 */
-	public function registerEvent(string $event, Listener $listener, int $priority, EventExecutor $executor, Plugin $plugin, bool $ignoreCancelled = false){
+	public function registerEvent(string $event, Listener $listener, int $priority, EventExecutor $executor, Plugin $plugin, bool $ignoreCancelled = false) : void{
 		if(!is_subclass_of($event, Event::class)){
 			throw new PluginException($event . " is not an Event");
 		}
-		$class = new \ReflectionClass($event);
-		if($class->isAbstract()){
-			throw new PluginException($event . " is an abstract Event");
+
+		$tags = self::parseDocComment((string) (new \ReflectionClass($event))->getDocComment());
+		if(isset($tags["deprecated"]) and $this->server->getProperty("settings.deprecated-verbose", true)){
+			$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.plugin.deprecateEvent", [
+				$plugin->getName(),
+				$event,
+				get_class($listener) . "->" . ($executor instanceof MethodEventExecutor ? $executor->getMethod() : "<unknown>")
+			]));
 		}
 
-		if(!$class->hasProperty("handlerList") or ($property = $class->getProperty("handlerList"))->getDeclaringClass()->getName() !== $event){
-			throw new PluginException($event . " does not have a valid handler list");
-		}
-		if(!$property->isStatic()){
-			throw new PluginException($event . " handlerList property is not static");
-		}
-		if(!$property->isPublic()){
-			throw new PluginException($event . " handlerList property is not public");
-		}
 
 		if(!$plugin->isEnabled()){
 			throw new PluginException("Plugin attempted to register " . $event . " while not enabled");
@@ -785,10 +786,10 @@ class PluginManager{
 	 * @return HandlerList
 	 */
 	private function getEventListeners(string $event) : HandlerList{
-		if($event::$handlerList === null){
-			$event::$handlerList = new HandlerList();
+		$list = HandlerList::getHandlerListFor($event);
+		if($list === null){
+			throw new PluginException("Abstract events not declaring @allowHandle cannot be handled (tried to register listener for $event)");
 		}
-
-		return $event::$handlerList;
+		return $list;
 	}
 }

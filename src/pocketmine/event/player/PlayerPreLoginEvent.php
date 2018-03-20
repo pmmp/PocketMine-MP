@@ -30,8 +30,6 @@ use pocketmine\Player;
  * Called when the player logs in, before things have been set up
  */
 class PlayerPreLoginEvent extends PlayerEvent implements Cancellable{
-	public static $handlerList = null;
-
 	/** @var string */
 	protected $kickMessage;
 

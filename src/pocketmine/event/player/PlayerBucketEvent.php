@@ -28,8 +28,10 @@ use pocketmine\event\Cancellable;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
+/**
+ * @allowHandle
+ */
 abstract class PlayerBucketEvent extends PlayerEvent implements Cancellable{
-
 	/** @var Block */
 	private $blockClicked;
 	/** @var int */
