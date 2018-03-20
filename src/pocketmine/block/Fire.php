@@ -120,9 +120,9 @@ class Fire extends Flowable{
 			$this->level->setBlock($this, $result);
 		}
 
-		if($canSpread){
-			$this->level->scheduleDelayedBlockUpdate($this, mt_rand(30, 40));
+		$this->level->scheduleDelayedBlockUpdate($this, mt_rand(30, 40));
 
+		if($canSpread){
 			//TODO: raise upper bound for chance in humid biomes
 
 			foreach($this->getHorizontalSides() as $side){
