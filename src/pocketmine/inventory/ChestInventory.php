@@ -65,16 +65,16 @@ class ChestInventory extends ContainerInventory{
 	public function onOpen(Player $who) : void{
 		parent::onOpen($who);
 
-		if(count($this->getViewers()) === 1 and ($level = $this->getHolder()->getLevel()) instanceof Level){
+		if(count($this->getViewers()) === 1 and $this->getHolder()->isValid()){
 			$this->broadcastBlockEventPacket(true);
-			$level->broadcastLevelSoundEvent($this->getHolder()->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_CHEST_OPEN);
+			$this->getHolder()->getLevel()->broadcastLevelSoundEvent($this->getHolder()->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_CHEST_OPEN);
 		}
 	}
 
 	public function onClose(Player $who) : void{
-		if(count($this->getViewers()) === 1 and ($level = $this->getHolder()->getLevel()) instanceof Level){
+		if(count($this->getViewers()) === 1 and $this->getHolder()->isValid()){
 			$this->broadcastBlockEventPacket(false);
-			$level->broadcastLevelSoundEvent($this->getHolder()->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_CHEST_CLOSED);
+			$this->getHolder()->getLevel()->broadcastLevelSoundEvent($this->getHolder()->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_CHEST_CLOSED);
 		}
 		parent::onClose($who);
 	}

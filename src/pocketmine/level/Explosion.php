@@ -71,11 +71,11 @@ class Explosion{
 	 * @param Entity|Block $what
 	 */
 	public function __construct(Position $center, float $size, $what = null){
-		$this->source = $center;
-		$this->level = $center->getLevel();
-		if($this->level === null){
+		if(!$center->isValid()){
 			throw new \InvalidArgumentException("Position does not have a valid level");
 		}
+		$this->source = $center;
+		$this->level = $center->getLevel();
 
 		if($size <= 0){
 			throw new \InvalidArgumentException("Explosion radius must be greater than 0, got $size");

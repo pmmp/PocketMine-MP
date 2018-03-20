@@ -673,30 +673,30 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue){
-		if($this->getLevel() instanceof Level){
-			$this->getLevel()->getBlockMetadata()->setMetadata($this, $metadataKey, $newMetadataValue);
+		if($this->isValid()){
+			$this->level->getBlockMetadata()->setMetadata($this, $metadataKey, $newMetadataValue);
 		}
 	}
 
 	public function getMetadata(string $metadataKey){
-		if($this->getLevel() instanceof Level){
-			return $this->getLevel()->getBlockMetadata()->getMetadata($this, $metadataKey);
+		if($this->isValid()){
+			return $this->level->getBlockMetadata()->getMetadata($this, $metadataKey);
 		}
 
 		return null;
 	}
 
 	public function hasMetadata(string $metadataKey) : bool{
-		if($this->getLevel() instanceof Level){
-			return $this->getLevel()->getBlockMetadata()->hasMetadata($this, $metadataKey);
+		if($this->isValid()){
+			return $this->level->getBlockMetadata()->hasMetadata($this, $metadataKey);
 		}
 
 		return false;
 	}
 
 	public function removeMetadata(string $metadataKey, Plugin $owningPlugin){
-		if($this->getLevel() instanceof Level){
-			$this->getLevel()->getBlockMetadata()->removeMetadata($this, $metadataKey, $owningPlugin);
+		if($this->isValid()){
+			$this->level->getBlockMetadata()->removeMetadata($this, $metadataKey, $owningPlugin);
 		}
 	}
 }

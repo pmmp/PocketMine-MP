@@ -2003,8 +2003,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 				$this->chunk = null;
 			}
 
-			if($this->getLevel() !== null){
-				$this->getLevel()->removeEntity($this);
+			if($this->isValid()){
+				$this->level->removeEntity($this);
 				$this->setLevel(null);
 			}
 
