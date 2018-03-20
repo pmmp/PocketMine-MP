@@ -26,7 +26,7 @@ namespace pocketmine\plugin;
 use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
 use pocketmine\event\Listener;
-use pocketmine\event\TimingsHandler;
+use pocketmine\timings\TimingsHandler;
 
 class RegisteredListener{
 
@@ -107,6 +107,6 @@ class RegisteredListener{
 	 * @return bool
 	 */
 	public function isIgnoringCancelled() : bool{
-		return $this->ignoreCancelled === true;
+		return $this->ignoreCancelled;
 	}
 }

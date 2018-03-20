@@ -27,6 +27,5 @@ namespace pocketmine\event\server;
  * Called when a network interface is unregistered
  */
 class NetworkInterfaceUnregisterEvent extends NetworkInterfaceEvent{
-	public static $handlerList = null;
 
 }

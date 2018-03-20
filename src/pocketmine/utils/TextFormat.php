@@ -123,50 +123,50 @@ abstract class TextFormat{
 				if($color !== "white"){
 					$pointer["color"] = $color;
 				}
-				if($bold !== false){
+				if($bold){
 					$pointer["bold"] = true;
 				}
-				if($italic !== false){
+				if($italic){
 					$pointer["italic"] = true;
 				}
-				if($underlined !== false){
+				if($underlined){
 					$pointer["underlined"] = true;
 				}
-				if($strikethrough !== false){
+				if($strikethrough){
 					$pointer["strikethrough"] = true;
 				}
-				if($obfuscated !== false){
+				if($obfuscated){
 					$pointer["obfuscated"] = true;
 				}
 				++$index;
 			}
 			switch($token){
 				case TextFormat::BOLD:
-					if($bold === false){
+					if(!$bold){
 						$pointer["bold"] = true;
 						$bold = true;
 					}
 					break;
 				case TextFormat::OBFUSCATED:
-					if($obfuscated === false){
+					if(!$obfuscated){
 						$pointer["obfuscated"] = true;
 						$obfuscated = true;
 					}
 					break;
 				case TextFormat::ITALIC:
-					if($italic === false){
+					if(!$italic){
 						$pointer["italic"] = true;
 						$italic = true;
 					}
 					break;
 				case TextFormat::UNDERLINE:
-					if($underlined === false){
+					if(!$underlined){
 						$pointer["underlined"] = true;
 						$underlined = true;
 					}
 					break;
 				case TextFormat::STRIKETHROUGH:
-					if($strikethrough === false){
+					if(!$strikethrough){
 						$pointer["strikethrough"] = true;
 						$strikethrough = true;
 					}
@@ -176,23 +176,23 @@ abstract class TextFormat{
 						$pointer["color"] = "white";
 						$color = "white";
 					}
-					if($bold !== false){
+					if($bold){
 						$pointer["bold"] = false;
 						$bold = false;
 					}
-					if($italic !== false){
+					if($italic){
 						$pointer["italic"] = false;
 						$italic = false;
 					}
-					if($underlined !== false){
+					if($underlined){
 						$pointer["underlined"] = false;
 						$underlined = false;
 					}
-					if($strikethrough !== false){
+					if($strikethrough){
 						$pointer["strikethrough"] = false;
 						$strikethrough = false;
 					}
-					if($obfuscated !== false){
+					if($obfuscated){
 						$pointer["obfuscated"] = false;
 						$obfuscated = false;
 					}

@@ -31,8 +31,6 @@ use pocketmine\Server;
  * Called when a player chats something
  */
 class PlayerChatEvent extends PlayerEvent implements Cancellable{
-	public static $handlerList = null;
-
 	/** @var string */
 	protected $message;
 

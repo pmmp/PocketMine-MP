@@ -51,7 +51,7 @@ class RedMushroom extends Flowable{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
-		if($down->isTransparent() === false){
+		if(!$down->isTransparent()){
 			$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
 			return true;

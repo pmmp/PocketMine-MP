@@ -46,7 +46,7 @@ class Permission{
 	 */
 	public static function getByName($value) : string{
 		if(is_bool($value)){
-			if($value === true){
+			if($value){
 				return "true";
 			}else{
 				return "false";

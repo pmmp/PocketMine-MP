@@ -40,9 +40,7 @@ use pocketmine\event\level\ChunkUnloadEvent;
 use pocketmine\event\level\LevelSaveEvent;
 use pocketmine\event\level\LevelUnloadEvent;
 use pocketmine\event\level\SpawnChangeEvent;
-use pocketmine\event\LevelTimings;
 use pocketmine\event\player\PlayerInteractEvent;
-use pocketmine\event\Timings;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\format\Chunk;
@@ -83,6 +81,7 @@ use pocketmine\Server;
 use pocketmine\tile\Chest;
 use pocketmine\tile\Container;
 use pocketmine\tile\Tile;
+use pocketmine\timings\Timings;
 use pocketmine\utils\Random;
 use pocketmine\utils\ReversePriorityQueue;
 
@@ -549,7 +548,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$ev = new LevelUnloadEvent($this);
 
-		if($this === $this->server->getDefaultLevel() and $force !== true){
+		if($this === $this->server->getDefaultLevel() and !$force){
 			$ev->setCancelled(true);
 		}
 
@@ -680,7 +679,7 @@ class Level implements ChunkManager, Metadatable{
 	 * Changes to this function won't be recorded on the version.
 	 */
 	public function checkTime(){
-		if($this->stopTime === true){
+		if($this->stopTime){
 			return;
 		}else{
 			$this->time += 1;
@@ -771,7 +770,7 @@ class Level implements ChunkManager, Metadatable{
 		Timings::$tickTileEntityTimer->startTiming();
 		//Update tiles that need update
 		foreach($this->updateTiles as $id => $tile){
-			if($tile->onUpdate() !== true){
+			if(!$tile->onUpdate()){
 				unset($this->updateTiles[$id]);
 			}
 		}
@@ -1523,6 +1522,8 @@ class Level implements ChunkManager, Metadatable{
 				$pos = $this->temporalPosition->setComponents($pos->x, $pos->y, $pos->z);
 			}
 
+			$block = clone $block;
+
 			$block->position($pos);
 			$block->clearCaches();
 
@@ -1531,7 +1532,7 @@ class Level implements ChunkManager, Metadatable{
 
 			unset($this->blockCache[$chunkHash][$blockHash]);
 
-			if($direct === true){
+			if($direct){
 				$this->sendBlocks($this->getChunkPlayers($pos->x >> 4, $pos->z >> 4), [$block], UpdateBlockPacket::FLAG_ALL_PRIORITY);
 				unset($this->chunkCache[$chunkHash], $this->changedBlocks[$chunkHash][$blockHash]);
 			}else{
@@ -1539,14 +1540,14 @@ class Level implements ChunkManager, Metadatable{
 					$this->changedBlocks[$chunkHash] = [];
 				}
 
-				$this->changedBlocks[$chunkHash][$blockHash] = clone $block;
+				$this->changedBlocks[$chunkHash][$blockHash] = $block;
 			}
 
 			foreach($this->getChunkLoaders($pos->x >> 4, $pos->z >> 4) as $loader){
 				$loader->onBlockChanged($block);
 			}
 
-			if($update === true){
+			if($update){
 				$this->updateAllLight($block);
 
 				$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($block));
@@ -1797,7 +1798,7 @@ class Level implements ChunkManager, Metadatable{
 
 			$this->server->getPluginManager()->callEvent($ev);
 			if(!$ev->isCancelled()){
-				if(!$player->isSneaking() and $blockClicked->onActivate($item, $player) === true){
+				if(!$player->isSneaking() and $blockClicked->onActivate($item, $player)){
 					return true;
 				}
 
@@ -1807,7 +1808,7 @@ class Level implements ChunkManager, Metadatable{
 			}else{
 				return false;
 			}
-		}elseif($blockClicked->onActivate($item, $player) === true){
+		}elseif($blockClicked->onActivate($item, $player)){
 			return true;
 		}
 
@@ -2345,7 +2346,7 @@ class Level implements ChunkManager, Metadatable{
 			unset($this->chunkPopulationQueue[$index]);
 			$this->setChunk($x, $z, $chunk, false);
 			$chunk = $this->getChunk($x, $z, false);
-			if($chunk !== null and ($oldChunk === null or $oldChunk->isPopulated() === false) and $chunk->isPopulated()){
+			if($chunk !== null and ($oldChunk === null or !$oldChunk->isPopulated()) and $chunk->isPopulated()){
 				$this->server->getPluginManager()->callEvent(new ChunkPopulateEvent($this, $chunk));
 
 				foreach($this->getChunkLoaders($x, $z) as $loader){
@@ -2721,7 +2722,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function unloadChunkRequest(int $x, int $z, bool $safe = true){
-		if(($safe === true and $this->isChunkInUse($x, $z)) or $this->isSpawnChunk($x, $z)){
+		if(($safe and $this->isChunkInUse($x, $z)) or $this->isSpawnChunk($x, $z)){
 			return false;
 		}
 
@@ -2735,7 +2736,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function unloadChunk(int $x, int $z, bool $safe = true, bool $trySave = true) : bool{
-		if($safe === true and $this->isChunkInUse($x, $z)){
+		if($safe and $this->isChunkInUse($x, $z)){
 			return false;
 		}
 

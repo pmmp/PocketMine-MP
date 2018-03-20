@@ -28,8 +28,6 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use pocketmine\block\Block;
-use pocketmine\event\Timings;
-use pocketmine\event\TimingsHandler;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
@@ -39,6 +37,8 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\Server;
+use pocketmine\timings\Timings;
+use pocketmine\timings\TimingsHandler;
 
 abstract class Tile extends Position{
 
@@ -269,8 +269,8 @@ abstract class Tile extends Position{
 		if(!$this->closed){
 			$this->closed = true;
 
-			if(($level = $this->getLevel()) instanceof Level){
-				$level->removeTile($this);
+			if($this->isValid()){
+				$this->level->removeTile($this);
 				$this->setLevel(null);
 			}
 

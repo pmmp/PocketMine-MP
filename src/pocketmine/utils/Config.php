@@ -140,7 +140,7 @@ class Config{
 			$this->config = $default;
 			$this->save();
 		}else{
-			if($this->correct === true){
+			if($this->correct){
 				$content = file_get_contents($this->file);
 				switch($this->type){
 					case Config::PROPERTIES:
@@ -183,7 +183,7 @@ class Config{
 	 * @return bool
 	 */
 	public function check() : bool{
-		return $this->correct === true;
+		return $this->correct;
 	}
 
 	/**
@@ -192,7 +192,7 @@ class Config{
 	 * @return bool
 	 */
 	public function save(bool $async = false) : bool{
-		if($this->correct === true){
+		if($this->correct){
 			try{
 				$content = null;
 				switch($this->type){
@@ -456,7 +456,7 @@ class Config{
 	 * @return bool
 	 */
 	public function exists($k, bool $lowercase = false) : bool{
-		if($lowercase === true){
+		if($lowercase){
 			$k = strtolower($k); //Convert requested  key to lower
 			$array = array_change_key_case($this->config, CASE_LOWER); //Change all keys in array to lower
 			return isset($array[$k]); //Find $k in modified array
@@ -479,7 +479,7 @@ class Config{
 	 * @return array
 	 */
 	public function getAll(bool $keys = false) : array{
-		return ($keys === true ? array_keys($this->config) : $this->config);
+		return ($keys ? array_keys($this->config) : $this->config);
 	}
 
 	/**
@@ -535,8 +535,8 @@ class Config{
 	private function writeProperties() : string{
 		$content = "#Properties Config file\r\n#" . date("D M j H:i:s T Y") . "\r\n";
 		foreach($this->config as $k => $v){
-			if(is_bool($v) === true){
-				$v = $v === true ? "on" : "off";
+			if(is_bool($v)){
+				$v = $v ? "on" : "off";
 			}elseif(is_array($v)){
 				$v = implode(";", $v);
 			}

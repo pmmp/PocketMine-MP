@@ -26,9 +26,10 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\math\RayTraceResult;
 
+/**
+ * @allowHandle
+ */
 abstract class ProjectileHitEvent extends EntityEvent{
-	public static $handlerList = null;
-
 	/** @var RayTraceResult */
 	private $rayTraceResult;
 

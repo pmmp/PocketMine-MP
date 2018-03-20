@@ -30,8 +30,6 @@ use pocketmine\event\Cancellable;
  * Called when a entity decides to explode
  */
 class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
-	public static $handlerList = null;
-
 	/** @var float */
 	protected $force;
 	/** @var bool */

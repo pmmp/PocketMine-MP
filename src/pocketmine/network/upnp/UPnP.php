@@ -31,7 +31,7 @@ use pocketmine\utils\Utils;
 abstract class UPnP{
 
 	public static function PortForward(int $port) : bool{
-		if(Utils::$online === false){
+		if(!Utils::$online){
 			return false;
 		}
 		if(Utils::getOS() != "win" or !class_exists("COM")){
@@ -56,7 +56,7 @@ abstract class UPnP{
 	}
 
 	public static function RemovePortForward(int $port) : bool{
-		if(Utils::$online === false){
+		if(!Utils::$online){
 			return false;
 		}
 		if(Utils::getOS() != "win" or !class_exists("COM")){

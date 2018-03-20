@@ -33,6 +33,15 @@ namespace pocketmine\event;
  * MONITOR events should not change the event outcome or contents
  */
 abstract class EventPriority{
+	public const ALL = [
+		self::LOWEST,
+		self::LOW,
+		self::NORMAL,
+		self::HIGH,
+		self::HIGHEST,
+		self::MONITOR
+	];
+
 	/**
 	 * Event call is of very low importance and should be ran first, to allow
 	 * other plugins to further customise the outcome
@@ -43,7 +52,8 @@ abstract class EventPriority{
 	 */
 	public const LOW = 4;
 	/**
-	 * Event call is neither important or unimportant, and may be ran normally
+	 * Event call is neither important or unimportant, and may be ran normally.
+	 * This is the default priority.
 	 */
 	public const NORMAL = 3;
 	/**
@@ -62,4 +72,20 @@ abstract class EventPriority{
 	 */
 	public const MONITOR = 0;
 
+	/**
+	 * @param string $name
+	 *
+	 * @return int
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public static function fromString(string $name) : int{
+		$name = strtoupper($name);
+		$const = self::class . "::" . $name;
+		if($name !== "ALL" and \defined($const)){
+			return \constant($const);
+		}
+
+		throw new \InvalidArgumentException("Unable to resolve priority \"$name\"");
+	}
 }

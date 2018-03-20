@@ -117,7 +117,7 @@ class Cactus extends Transparent{
 			$block1 = $this->getSide(Vector3::SIDE_SOUTH);
 			$block2 = $this->getSide(Vector3::SIDE_WEST);
 			$block3 = $this->getSide(Vector3::SIDE_EAST);
-			if($block0->isTransparent() === true and $block1->isTransparent() === true and $block2->isTransparent() === true and $block3->isTransparent() === true){
+			if($block0->isTransparent() and $block1->isTransparent() and $block2->isTransparent() and $block3->isTransparent()){
 				$this->getLevel()->setBlock($this, $this, true);
 
 				return true;

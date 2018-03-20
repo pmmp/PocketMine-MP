@@ -92,7 +92,7 @@ class VersionString{
 	}
 
 	public function get(bool $build = false) : string{
-		return $this->getRelease() . ($this->development === true ? "dev" : "") . (($this->build > 0 and $build === true) ? "-" . $this->build : "");
+		return $this->getRelease() . ($this->development ? "dev" : "") . (($this->build > 0 and $build) ? "-" . $this->build : "");
 	}
 
 	public function __toString() : string{
@@ -106,12 +106,12 @@ class VersionString{
 	 * @return int
 	 */
 	public function compare($target, bool $diff = false) : int{
-		if(($target instanceof VersionString) === false){
+		if(!($target instanceof VersionString)){
 			$target = new VersionString($target);
 		}
 		$number = $this->getNumber();
 		$tNumber = $target->getNumber();
-		if($diff === true){
+		if($diff){
 			return $tNumber - $number;
 		}
 		if($number > $tNumber){

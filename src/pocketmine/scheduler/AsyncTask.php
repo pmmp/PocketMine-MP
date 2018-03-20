@@ -62,7 +62,7 @@ abstract class AsyncTask extends Collectable{
 	public function run(){
 		$this->result = null;
 
-		if($this->cancelRun !== true){
+		if(!$this->cancelRun){
 			try{
 				$this->onRun();
 			}catch(\Throwable $e){
@@ -90,7 +90,7 @@ abstract class AsyncTask extends Collectable{
 	}
 
 	public function hasCancelledRun() : bool{
-		return $this->cancelRun === true;
+		return $this->cancelRun;
 	}
 
 	/**

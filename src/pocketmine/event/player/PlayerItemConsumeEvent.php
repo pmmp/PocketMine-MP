@@ -31,8 +31,6 @@ use pocketmine\Player;
  * Called when a player eats something
  */
 class PlayerItemConsumeEvent extends PlayerEvent implements Cancellable{
-	public static $handlerList = null;
-
 	/** @var Item */
 	private $item;
 

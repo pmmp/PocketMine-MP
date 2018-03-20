@@ -91,7 +91,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	}
 
 	public function close() : void{
-		if($this->closed === false){
+		if(!$this->closed){
 			$this->inventory->removeAllViewers(true);
 			$this->inventory = null;
 
@@ -139,7 +139,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	}
 
 	public function onUpdate() : bool{
-		if($this->closed === true){
+		if($this->closed){
 			return false;
 		}
 

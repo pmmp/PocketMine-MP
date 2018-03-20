@@ -31,8 +31,6 @@ use pocketmine\event\Cancellable;
  * Called when an Entity, excluding players, changes a block directly
  */
 class EntityBlockChangeEvent extends EntityEvent implements Cancellable{
-	public static $handlerList = null;
-
 	/** @var Block */
 	private $from;
 	/** @var Block */

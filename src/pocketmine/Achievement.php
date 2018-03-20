@@ -116,7 +116,7 @@ abstract class Achievement{
 	public static function broadcast(Player $player, string $achievementId) : bool{
 		if(isset(Achievement::$list[$achievementId])){
 			$translation = new TranslationContainer("chat.type.achievement", [$player->getDisplayName(), TextFormat::GREEN . Achievement::$list[$achievementId]["name"] . TextFormat::RESET]);
-			if(Server::getInstance()->getConfigBool("announce-player-achievements", true) === true){
+			if(Server::getInstance()->getConfigBool("announce-player-achievements", true)){
 				Server::getInstance()->broadcastMessage($translation);
 			}else{
 				$player->sendMessage($translation);

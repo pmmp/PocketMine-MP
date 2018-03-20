@@ -213,7 +213,7 @@ abstract class Door extends Transparent{
 		if($face === Vector3::SIDE_UP){
 			$blockUp = $this->getSide(Vector3::SIDE_UP);
 			$blockDown = $this->getSide(Vector3::SIDE_DOWN);
-			if($blockUp->canBeReplaced() === false or $blockDown->isTransparent() === true){
+			if(!$blockUp->canBeReplaced() or $blockDown->isTransparent()){
 				return false;
 			}
 			$direction = $player instanceof Player ? $player->getDirection() : 0;
@@ -226,7 +226,7 @@ abstract class Door extends Transparent{
 			$next = $this->getSide($faces[($direction + 2) % 4]);
 			$next2 = $this->getSide($faces[$direction]);
 			$metaUp = 0x08;
-			if($next->getId() === $this->getId() or ($next2->isTransparent() === false and $next->isTransparent() === true)){ //Door hinge
+			if($next->getId() === $this->getId() or (!$next2->isTransparent() and $next->isTransparent())){ //Door hinge
 				$metaUp |= 0x01;
 			}
 

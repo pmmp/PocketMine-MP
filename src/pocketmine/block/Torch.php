@@ -63,7 +63,7 @@ class Torch extends Flowable{
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$below = $this->getSide(Vector3::SIDE_DOWN);
 
-		if($blockClicked->isTransparent() === false and $face !== Vector3::SIDE_DOWN){
+		if(!$blockClicked->isTransparent() and $face !== Vector3::SIDE_DOWN){
 			$faces = [
 				Vector3::SIDE_UP => 5,
 				Vector3::SIDE_NORTH => 4,
@@ -75,7 +75,7 @@ class Torch extends Flowable{
 			$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
 			return true;
-		}elseif($below->isTransparent() === false or $below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL){
+		}elseif(!$below->isTransparent() or $below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL){
 			$this->meta = 0;
 			$this->getLevel()->setBlock($blockReplace, $this, true, true);
 

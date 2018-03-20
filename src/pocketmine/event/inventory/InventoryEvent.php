@@ -31,7 +31,6 @@ use pocketmine\event\Event;
 use pocketmine\inventory\Inventory;
 
 abstract class InventoryEvent extends Event{
-
 	/** @var Inventory */
 	protected $inventory;
 
