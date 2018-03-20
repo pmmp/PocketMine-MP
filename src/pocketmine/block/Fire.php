@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Arrow;
+use pocketmine\event\block\BlockBurnEvent;
 use pocketmine\event\entity\EntityCombustByBlockEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -152,12 +153,15 @@ class Fire extends Flowable{
 
 	private function burnBlock(Block $block, int $chanceBound) : void{
 		if(mt_rand(0, $chanceBound) < $block->getFlammability()){
-			$block->onIncinerate();
+			$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockBurnEvent($block, $this));
+			if(!$ev->isCancelled()){
+				$block->onIncinerate();
 
-			if(mt_rand(0, $this->meta + 9) < 5){ //TODO: check rain
-				$this->level->setBlock($block, BlockFactory::get(Block::FIRE, min(15, $this->meta + (mt_rand(0, 4) >> 2))));
-			}else{
-				$this->level->setBlock($block, BlockFactory::get(Block::AIR));
+				if(mt_rand(0, $this->meta + 9) < 5){ //TODO: check rain
+					$this->level->setBlock($block, BlockFactory::get(Block::FIRE, min(15, $this->meta + (mt_rand(0, 4) >> 2))));
+				}else{
+					$this->level->setBlock($block, BlockFactory::get(Block::AIR));
+				}
 			}
 		}
 	}
