@@ -28,7 +28,6 @@ use pocketmine\entity\projectile\Projectile;
 use pocketmine\math\RayTraceResult;
 
 class ProjectileHitBlockEvent extends ProjectileHitEvent{
-
 	/** @var Block */
 	private $blockHit;
 

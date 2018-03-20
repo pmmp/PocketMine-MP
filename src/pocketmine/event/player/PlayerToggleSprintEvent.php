@@ -27,7 +27,6 @@ use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
 class PlayerToggleSprintEvent extends PlayerEvent implements Cancellable{
-
 	/** @var bool */
 	protected $isSprinting;
 

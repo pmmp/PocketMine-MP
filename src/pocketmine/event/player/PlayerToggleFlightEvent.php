@@ -27,7 +27,6 @@ use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
 class PlayerToggleFlightEvent extends PlayerEvent implements Cancellable{
-
 	/** @var bool */
 	protected $isFlying;
 

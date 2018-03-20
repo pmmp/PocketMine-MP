@@ -32,7 +32,6 @@ use pocketmine\Player;
  * @allowHandle
  */
 abstract class PlayerBucketEvent extends PlayerEvent implements Cancellable{
-
 	/** @var Block */
 	private $blockClicked;
 	/** @var int */

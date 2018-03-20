@@ -28,7 +28,6 @@ use pocketmine\item\WritableBook;
 use pocketmine\Player;
 
 class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
-
 	public const ACTION_REPLACE_PAGE = 0;
 	public const ACTION_ADD_PAGE = 1;
 	public const ACTION_DELETE_PAGE = 2;

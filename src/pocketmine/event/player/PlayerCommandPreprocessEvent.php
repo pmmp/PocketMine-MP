@@ -35,7 +35,6 @@ use pocketmine\Player;
  * The message contains a slash at the start
  */
 class PlayerCommandPreprocessEvent extends PlayerEvent implements Cancellable{
-
 	/** @var string */
 	protected $message;
 

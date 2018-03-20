@@ -30,7 +30,6 @@ use pocketmine\event\Cancellable;
  * Called when plants or crops grow.
  */
 class BlockGrowEvent extends BlockEvent implements Cancellable{
-
 	/** @var Block */
 	private $newState;
 

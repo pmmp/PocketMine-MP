@@ -32,7 +32,6 @@ use pocketmine\level\Position;
  * Called when a entity explodes
  */
 class EntityExplodeEvent extends EntityEvent implements Cancellable{
-
 	/** @var Position */
 	protected $position;
 

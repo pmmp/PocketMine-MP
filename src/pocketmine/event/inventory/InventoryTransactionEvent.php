@@ -32,7 +32,6 @@ use pocketmine\inventory\transaction\InventoryTransaction;
  * The source of this can be a Player, entities, mobs, or even hoppers in the future!
  */
 class InventoryTransactionEvent extends Event implements Cancellable{
-
 	/** @var InventoryTransaction */
 	private $transaction;
 

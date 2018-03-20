@@ -30,7 +30,6 @@ use pocketmine\Player;
  * Called when a player does an animation
  */
 class PlayerAnimationEvent extends PlayerEvent implements Cancellable{
-
 	/** @var int */
 	private $animationType;
 

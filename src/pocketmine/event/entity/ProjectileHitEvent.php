@@ -30,7 +30,6 @@ use pocketmine\math\RayTraceResult;
  * @allowHandle
  */
 abstract class ProjectileHitEvent extends EntityEvent{
-
 	/** @var RayTraceResult */
 	private $rayTraceResult;
 

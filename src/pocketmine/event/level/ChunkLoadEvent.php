@@ -31,7 +31,6 @@ use pocketmine\level\Level;
  * Called when a Chunk is loaded
  */
 class ChunkLoadEvent extends ChunkEvent{
-
 	/** @var bool */
 	private $newChunk;
 

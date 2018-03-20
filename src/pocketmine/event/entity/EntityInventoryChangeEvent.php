@@ -31,7 +31,6 @@ use pocketmine\item\Item;
  * Called before a slot in an entity's inventory changes.
  */
 class EntityInventoryChangeEvent extends EntityEvent implements Cancellable{
-
 	/** @var Item */
 	private $oldItem;
 	/** @var Item */

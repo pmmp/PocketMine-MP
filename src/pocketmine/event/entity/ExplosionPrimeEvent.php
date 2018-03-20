@@ -30,7 +30,6 @@ use pocketmine\event\Cancellable;
  * Called when a entity decides to explode
  */
 class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
-
 	/** @var float */
 	protected $force;
 	/** @var bool */

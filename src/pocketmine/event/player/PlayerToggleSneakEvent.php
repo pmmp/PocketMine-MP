@@ -27,7 +27,6 @@ use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
 class PlayerToggleSneakEvent extends PlayerEvent implements Cancellable{
-
 	/** @var bool */
 	protected $isSneaking;
 

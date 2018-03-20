@@ -30,7 +30,6 @@ use pocketmine\Player;
  * Called when a player joins the server, after sending all the spawn packets
  */
 class PlayerJoinEvent extends PlayerEvent{
-
 	/** @var string|TextContainer */
 	protected $joinMessage;
 

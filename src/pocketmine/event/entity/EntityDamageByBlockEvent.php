@@ -30,10 +30,8 @@ use pocketmine\entity\Entity;
  * Called when an entity takes damage from a block.
  */
 class EntityDamageByBlockEvent extends EntityDamageEvent{
-
 	/** @var Block */
 	private $damager;
-
 
 	/**
 	 * @param Block         $damager

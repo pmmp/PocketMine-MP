@@ -31,7 +31,6 @@ use pocketmine\Player;
  * Called when a player changes their skin in-game.
  */
 class PlayerChangeSkinEvent extends PlayerEvent implements Cancellable{
-
 	/** @var Skin */
 	private $oldSkin;
 	/** @var Skin */

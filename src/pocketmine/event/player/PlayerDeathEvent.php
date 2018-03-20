@@ -29,7 +29,6 @@ use pocketmine\lang\TextContainer;
 use pocketmine\Player;
 
 class PlayerDeathEvent extends EntityDeathEvent{
-
 	/** @var Player */
 	protected $entity;
 

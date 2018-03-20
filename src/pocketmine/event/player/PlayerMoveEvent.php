@@ -28,7 +28,6 @@ use pocketmine\level\Location;
 use pocketmine\Player;
 
 class PlayerMoveEvent extends PlayerEvent implements Cancellable{
-
 	/** @var Location */
 	private $from;
 	/** @var Location */

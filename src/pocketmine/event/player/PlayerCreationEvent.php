@@ -31,7 +31,6 @@ use pocketmine\Player;
  * Allows the creation of players overriding the base Player class
  */
 class PlayerCreationEvent extends Event{
-
 	/** @var SourceInterface */
 	private $interface;
 	/** @var string */

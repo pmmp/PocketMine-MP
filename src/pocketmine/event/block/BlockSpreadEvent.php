@@ -29,7 +29,6 @@ use pocketmine\block\Block;
  * Called when a block spreads to another block, such as grass spreading to nearby dirt blocks.
  */
 class BlockSpreadEvent extends BlockFormEvent{
-
 	/** @var Block */
 	private $source;
 

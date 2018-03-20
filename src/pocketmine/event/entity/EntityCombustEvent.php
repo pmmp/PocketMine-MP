@@ -27,7 +27,6 @@ use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 
 class EntityCombustEvent extends EntityEvent implements Cancellable{
-
 	protected $duration;
 
 	/**

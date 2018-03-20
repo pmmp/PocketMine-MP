@@ -30,7 +30,6 @@ use pocketmine\event\Cancellable;
 use pocketmine\item\Item;
 
 class EntityShootBowEvent extends EntityEvent implements Cancellable{
-
 	/** @var Item */
 	private $bow;
 	/** @var Projectile */

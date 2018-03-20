@@ -30,7 +30,6 @@ use pocketmine\entity\Entity;
  * Called when an effect is added to an Entity.
  */
 class EntityEffectAddEvent extends EntityEffectEvent{
-
 	/** @var EffectInstance|null */
 	private $oldEffect;
 

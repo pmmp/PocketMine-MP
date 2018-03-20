@@ -27,7 +27,6 @@ use pocketmine\inventory\Inventory;
 use pocketmine\Player;
 
 class InventoryCloseEvent extends InventoryEvent{
-
 	/** @var Player */
 	private $who;
 

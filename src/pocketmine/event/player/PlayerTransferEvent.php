@@ -27,7 +27,6 @@ use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
 class PlayerTransferEvent extends PlayerEvent implements Cancellable{
-
 	/** @var string */
 	protected $address;
 	/** @var int */

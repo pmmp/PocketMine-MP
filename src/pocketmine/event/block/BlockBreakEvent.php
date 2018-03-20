@@ -32,7 +32,6 @@ use pocketmine\Player;
  * Called when a player destroys a block somewhere in the world.
  */
 class BlockBreakEvent extends BlockEvent implements Cancellable{
-
 	/** @var Player */
 	protected $player;
 

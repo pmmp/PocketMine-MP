@@ -26,7 +26,6 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\Entity;
 
 class EntityCombustByEntityEvent extends EntityCombustEvent{
-
 	/** @var Entity */
 	protected $combuster;
 

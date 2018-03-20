@@ -30,7 +30,6 @@ use pocketmine\Player;
  * Called when a player is respawned (or first time spawned)
  */
 class PlayerRespawnEvent extends PlayerEvent{
-
 	/** @var Position */
 	protected $position;
 
