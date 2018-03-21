@@ -720,7 +720,7 @@ class PluginManager{
 	 */
 	public static function parseDocComment(string $docComment) : array{
 		preg_match_all('/^[\t ]*\* @([a-zA-Z]+)(?:[\t ]+(.+))?[\t ]*$/m', $docComment, $matches);
-		return array_combine($matches[1], $matches[2]);
+		return array_combine($matches[1], array_map("trim", $matches[2]));
 	}
 
 	/**
