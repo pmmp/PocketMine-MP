@@ -80,7 +80,7 @@ abstract class EventPriority{
 	 * @throws \InvalidArgumentException
 	 */
 	public static function fromString(string $name) : int{
-		$name = strtoupper($name);
+		$name = strtoupper(trim($name));
 		$const = self::class . "::" . $name;
 		if($name !== "ALL" and \defined($const)){
 			return \constant($const);
