@@ -80,7 +80,7 @@ class VersionString{
 	}
 
 	public function getRelease() : string{
-		return $this->generation . "." . $this->major . ($this->minor > 0 ? "." . $this->minor : "");
+		return $this->generation . "." . $this->major . "." . $this->minor;
 	}
 
 	public function getBuild() : int{
