@@ -556,6 +556,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->spawnThreshold = (int) (min($this->viewDistance, $this->server->getProperty("chunk-sending.spawn-radius", 4)) ** 2 * M_PI);
 
+		$this->nextChunkOrderRun = 0;
+
 		$pk = new ChunkRadiusUpdatedPacket();
 		$pk->radius = $this->viewDistance;
 		$this->dataPacket($pk);
