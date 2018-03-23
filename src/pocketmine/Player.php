@@ -1806,7 +1806,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return;
 		}
 
-		if($this->nextChunkOrderRun-- <= 0 or $this->chunk === null){
+		if($this->nextChunkOrderRun-- <= 0){
 			$this->orderChunks();
 		}
 
