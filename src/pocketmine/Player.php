@@ -1541,17 +1541,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->server->getLogger()->debug("Old position: " . $this->asVector3() . ", new position: " . $this->newPosition);
 			$revert = true;
 		}else{
-			if($this->chunk === null or !$this->chunk->isGenerated()){
-				$chunk = $this->level->getChunk($newPos->getFloorX() >> 4, $newPos->getFloorZ() >> 4, false);
-				if($chunk === null or !$chunk->isGenerated()){
-					$revert = true;
-					$this->nextChunkOrderRun = 0;
-				}else{
-					if($this->chunk !== null){
-						$this->chunk->removeEntity($this);
-					}
-					$this->chunk = $chunk;
-				}
+			$chunkX = $newPos->getFloorX() >> 4;
+			$chunkZ = $newPos->getFloorZ() >> 4;
+
+			if(!$this->level->isChunkLoaded($chunkX, $chunkZ) or !$this->level->isChunkGenerated($chunkX, $chunkZ)){
+				$revert = true;
+				$this->nextChunkOrderRun = 0;
 			}
 		}
 
