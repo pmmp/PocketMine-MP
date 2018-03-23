@@ -2927,12 +2927,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return true;
 	}
 
-	public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet) : bool{
-		$this->setViewDistance($packet->radius);
-
-		return true;
-	}
-
 	public function handleItemFrameDropItem(ItemFrameDropItemPacket $packet) : bool{
 		if(!$this->spawned or !$this->isAlive()){
 			return true;
