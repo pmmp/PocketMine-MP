@@ -58,7 +58,7 @@ class TextPacket extends DataPacket{
 	/** @var string */
 	public $xboxUserId = "";
 	/** @var string */
-	public $string1 = "";
+	public $platformChatId = "";
 
 	protected function decodePayload(){
 		$this->type = $this->getByte();
@@ -89,7 +89,7 @@ class TextPacket extends DataPacket{
 		}
 
 		$this->xboxUserId = $this->getString();
-		$this->string1 = $this->getString();
+		$this->platformChatId = $this->getString();
 	}
 
 	protected function encodePayload(){
@@ -121,7 +121,7 @@ class TextPacket extends DataPacket{
 		}
 
 		$this->putString($this->xboxUserId);
-		$this->putString($this->string1);
+		$this->putString($this->platformChatId);
 	}
 
 	public function handle(NetworkSession $session) : bool{
