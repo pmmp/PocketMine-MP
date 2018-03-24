@@ -47,7 +47,7 @@ class AddPlayerPacket extends DataPacket{
 	/** @var int */
 	public $entityRuntimeId;
 	/** @var string */
-	public $string1 = "";
+	public $platformChatId = "";
 	/** @var Vector3 */
 	public $position;
 	/** @var Vector3|null */
@@ -82,7 +82,7 @@ class AddPlayerPacket extends DataPacket{
 		$this->platform = $this->getVarInt();
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->string1 = $this->getString();
+		$this->platformChatId = $this->getString();
 		$this->position = $this->getVector3();
 		$this->motion = $this->getVector3();
 		$this->pitch = $this->getLFloat();
@@ -112,7 +112,7 @@ class AddPlayerPacket extends DataPacket{
 		$this->putVarInt($this->platform);
 		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putString($this->string1);
+		$this->putString($this->platformChatId);
 		$this->putVector3($this->position);
 		$this->putVector3Nullable($this->motion);
 		$this->putLFloat($this->pitch);

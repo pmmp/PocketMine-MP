@@ -39,7 +39,7 @@ class PlayerListEntry{
 	/** @var int */
 	public $platform = 0;
 	/** @var string */
-	public $string1 = "";
+	public $platformChatId = "";
 	/** @var Skin */
 	public $skin;
 	/** @var string */
