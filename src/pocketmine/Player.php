@@ -1594,9 +1594,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$deltaAngle = abs($this->lastYaw - $to->yaw) + abs($this->lastPitch - $to->pitch);
 
 		if(!$revert and ($delta > 0.0001 or $deltaAngle > 1.0)){
-
-			$isFirst = ($this->lastX === null or $this->lastY === null or $this->lastZ === null);
-
 			$this->lastX = $to->x;
 			$this->lastY = $to->y;
 			$this->lastZ = $to->z;
@@ -1604,24 +1601,22 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->lastYaw = $to->yaw;
 			$this->lastPitch = $to->pitch;
 
-			if(!$isFirst){
-				$ev = new PlayerMoveEvent($this, $from, $to);
+			$ev = new PlayerMoveEvent($this, $from, $to);
 
-				$this->server->getPluginManager()->callEvent($ev);
+			$this->server->getPluginManager()->callEvent($ev);
 
-				if(!($revert = $ev->isCancelled())){ //Yes, this is intended
-					if($to->distanceSquared($ev->getTo()) > 0.01){ //If plugins modify the destination
-						$this->teleport($ev->getTo());
+			if(!($revert = $ev->isCancelled())){ //Yes, this is intended
+				if($to->distanceSquared($ev->getTo()) > 0.01){ //If plugins modify the destination
+					$this->teleport($ev->getTo());
+				}else{
+					$this->broadcastMovement();
+
+					$distance = $from->distance($to);
+					//TODO: check swimming (adds 0.015 exhaustion in MCPE)
+					if($this->isSprinting()){
+						$this->exhaust(0.1 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
 					}else{
-						$this->broadcastMovement();
-
-						$distance = $from->distance($to);
-						//TODO: check swimming (adds 0.015 exhaustion in MCPE)
-						if($this->isSprinting()){
-							$this->exhaust(0.1 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
-						}else{
-							$this->exhaust(0.01 * $distance, PlayerExhaustEvent::CAUSE_WALKING);
-						}
+						$this->exhaust(0.01 * $distance, PlayerExhaustEvent::CAUSE_WALKING);
 					}
 				}
 			}
