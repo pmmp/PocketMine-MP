@@ -1574,7 +1574,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				}
 			}
 
-			if($diff > 0){
+			if($diff > 0 and !$revert){
 				$this->x = $newPos->x;
 				$this->y = $newPos->y;
 				$this->z = $newPos->z;
