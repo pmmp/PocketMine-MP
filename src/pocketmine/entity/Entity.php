@@ -374,11 +374,11 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public $lastZ = null;
 
 	/** @var float */
-	public $motionX;
+	public $motionX = 0.0;
 	/** @var float */
-	public $motionY;
+	public $motionY = 0.0;
 	/** @var float */
-	public $motionZ;
+	public $motionZ = 0.0;
 	/** @var Vector3 */
 	public $temporalVector;
 	/** @var float */
@@ -492,36 +492,31 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		$this->id = Entity::$entityCount++;
 		$this->namedtag = $nbt;
+		$this->server = $level->getServer();
 
 		/** @var float[] $pos */
 		$pos = $this->namedtag->getListTag("Pos")->getAllValues();
+		/** @var float[] $rotation */
+		$rotation = $this->namedtag->getListTag("Rotation")->getAllValues();
 
-		$this->chunk = $level->getChunk(((int) floor($pos[0])) >> 4, ((int) floor($pos[2])) >> 4, true);
+		parent::__construct($pos[0], $pos[1], $pos[2], $rotation[0], $rotation[1], $level);
+		assert(!is_nan($this->x) and !is_infinite($this->x) and !is_nan($this->y) and !is_infinite($this->y) and !is_nan($this->z) and !is_infinite($this->z));
+
+		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
+		$this->recalculateBoundingBox();
+
+		$this->chunk = $this->level->getChunk($this->getFloorX() >> 4, $this->getFloorZ() >> 4, false);
 		if($this->chunk === null){
 			throw new \InvalidStateException("Cannot create entities in unloaded chunks");
 		}
 
-		$this->setLevel($level);
-		$this->server = $level->getServer();
-
-		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
-
-		/** @var float[] $rotation */
-		$rotation = $this->namedtag->getListTag("Rotation")->getAllValues();
-
-		$this->setPositionAndRotation($this->temporalVector->setComponents(...$pos), ...$rotation);
-
-		/** @var float[] $motion */
-		$motion = [0, 0, 0];
 		if($this->namedtag->hasTag("Motion", ListTag::class)){
+			/** @var float[] $motion */
 			$motion = $this->namedtag->getListTag("Motion")->getAllValues();
+			$this->setMotion($this->temporalVector->setComponents(...$motion));
 		}
 
-		$this->setMotion($this->temporalVector->setComponents(...$motion));
-
 		$this->resetLastMovements();
-
-		assert(!is_nan($this->x) and !is_infinite($this->x) and !is_nan($this->y) and !is_infinite($this->y) and !is_nan($this->z) and !is_infinite($this->z));
 
 		$this->fallDistance = $this->namedtag->getFloat("FallDistance", 0.0);
 
