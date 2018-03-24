@@ -3331,7 +3331,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					$pk->message = $reason;
 					$this->directDataPacket($pk);
 				}
-
+				$this->interface->close($this, $notify ? $reason : "");
 				$this->sessionAdapter = null;
 
 				$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
@@ -3408,7 +3408,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}catch(\Throwable $e){
 				$this->server->getLogger()->logException($e);
 			}finally{
-				$this->interface->close($this, $notify ? $reason : "");
 				$this->server->removePlayer($this);
 			}
 		}
