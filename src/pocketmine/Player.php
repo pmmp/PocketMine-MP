@@ -1559,11 +1559,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			$this->move($dx, $dy, $dz);
 
-			$diffX = $this->x - $newPos->x;
-			$diffY = $this->y - $newPos->y;
-			$diffZ = $this->z - $newPos->z;
-
-			$diff = ($diffX ** 2 + $diffY ** 2 + $diffZ ** 2) / ($tickDiff ** 2);
+			$diff = $this->subtract($newPos)->lengthSquared() / $tickDiff ** 2;
 
 			if($this->isSurvival() and !$revert and $diff > 0.0625){
 				$ev = new PlayerIllegalMoveEvent($this, $newPos, new Vector3($this->lastX, $this->lastY, $this->lastZ));
