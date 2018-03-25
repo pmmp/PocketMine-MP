@@ -139,8 +139,8 @@ class Painting extends Entity{
 		$this->boundingBox->setBB(self::getPaintingBB($this->blockIn->getSide($facing), $facing, $this->getMotive()));
 	}
 
-	protected function tryChangeMovement(){
-		$this->motionX = $this->motionY = $this->motionZ = 0;
+	public function hasMovementUpdate() : bool{
+		return false;
 	}
 
 	protected function updateMovement(bool $teleport = false){
