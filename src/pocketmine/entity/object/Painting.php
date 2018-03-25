@@ -50,8 +50,6 @@ class Painting extends Entity{
 	protected $direction = 0;
 	/** @var string */
 	protected $motive;
-	/** @var int */
-	protected $checkDestroyedTicker = 0;
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		$this->motive = $nbt->getString("Motive");
@@ -78,33 +76,6 @@ class Painting extends Entity{
 
 		$this->namedtag->setByte("Facing", (int) $this->direction);
 		$this->namedtag->setByte("Direction", (int) $this->direction); //Save both for full compatibility
-	}
-
-	public function entityBaseTick(int $tickDiff = 1) : bool{
-		static $directions = [
-			0 => Vector3::SIDE_SOUTH,
-			1 => Vector3::SIDE_WEST,
-			2 => Vector3::SIDE_NORTH,
-			3 => Vector3::SIDE_EAST
-		];
-
-		$hasUpdate = parent::entityBaseTick($tickDiff);
-
-		if($this->checkDestroyedTicker++ > 10){
-			/*
-			 * we don't have a way to only update on local block updates yet! since random chunk ticking always updates
-			 * all the things
-			 * ugly hack, but vanilla uses 100 ticks so on there it looks even worse
-			 */
-			$this->checkDestroyedTicker = 0;
-			$face = $directions[$this->direction];
-			if(!self::canFit($this->level, $this->blockIn->getSide($face), $face, false, $this->getMotive())){
-				$this->kill();
-				$hasUpdate = true;
-			}
-		}
-
-		return $hasUpdate; //doesn't need to be ticked always
 	}
 
 	public function kill(){
@@ -137,6 +108,22 @@ class Painting extends Entity{
 		$facing = $directions[$this->direction];
 
 		$this->boundingBox->setBB(self::getPaintingBB($this->blockIn->getSide($facing), $facing, $this->getMotive()));
+	}
+
+	public function onNearbyBlockChange() : void{
+		parent::onNearbyBlockChange();
+
+		static $directions = [
+			0 => Vector3::SIDE_SOUTH,
+			1 => Vector3::SIDE_WEST,
+			2 => Vector3::SIDE_NORTH,
+			3 => Vector3::SIDE_EAST
+		];
+
+		$face = $directions[$this->direction];
+		if(!self::canFit($this->level, $this->blockIn->getSide($face), $face, false, $this->getMotive())){
+			$this->kill();
+		}
 	}
 
 	public function hasMovementUpdate() : bool{

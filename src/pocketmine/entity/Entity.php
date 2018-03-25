@@ -1375,6 +1375,11 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->level->updateEntities[$this->id] = $this;
 	}
 
+	public function onNearbyBlockChange() : void{
+		$this->setForceMovementUpdate();
+		$this->scheduleUpdate();
+	}
+
 	/**
 	 * Flags the entity as needing a movement update on the next tick. Setting this forces a movement update even if the
 	 * entity's motion is zero. Used to trigger movement updates when blocks change near entities.
