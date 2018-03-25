@@ -105,10 +105,10 @@ class CraftingTransaction extends InventoryTransaction{
 	}
 
 	private function reindexInputs() : array{
-		$minX = 0;
+		$minX = PHP_INT_MAX;
 		$maxX = 0;
 
-		$minY = 0;
+		$minY = PHP_INT_MAX;
 		$maxY = 0;
 
 		$empty = true;
