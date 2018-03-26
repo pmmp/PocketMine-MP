@@ -237,6 +237,10 @@ abstract class BaseInventory implements Inventory{
 		return -1;
 	}
 
+	public function isSlotEmpty(int $index) : bool{
+		return $this->slots[$index] === null or $this->slots[$index]->isNull();
+	}
+
 	public function canAddItem(Item $item) : bool{
 		$item = clone $item;
 		$checkDamage = !$item->hasAnyDamageValue();
