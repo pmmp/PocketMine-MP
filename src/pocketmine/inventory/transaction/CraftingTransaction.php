@@ -26,132 +26,117 @@ namespace pocketmine\inventory\transaction;
 use pocketmine\event\inventory\CraftItemEvent;
 use pocketmine\inventory\CraftingRecipe;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
-use pocketmine\Player;
+use pocketmine\utils\MainLogger;
 
 class CraftingTransaction extends InventoryTransaction{
-
-	protected $gridSize;
-	/** @var Item[][] */
-	protected $inputs;
-	/** @var Item[][] */
-	protected $secondaryOutputs;
-	/** @var Item|null */
-	protected $primaryOutput;
-
 	/** @var CraftingRecipe|null */
-	protected $recipe = null;
+	protected $recipe;
+	/** @var int|null */
+	protected $repetitions;
 
-	public function __construct(Player $source, $actions = []){
-		$this->gridSize = $source->getCraftingGrid()->getGridWidth();
+	/** @var Item[] */
+	protected $inputs = [];
+	/** @var Item[] */
+	protected $outputs = [];
 
-		$air = ItemFactory::get(Item::AIR, 0, 0);
-		$this->inputs = array_fill(0, $this->gridSize, array_fill(0, $this->gridSize, $air));
-		$this->secondaryOutputs = array_fill(0, $this->gridSize, array_fill(0, $this->gridSize, $air));
-
-		parent::__construct($source, $actions);
-	}
-
-	public function setInput(int $index, Item $item) : void{
-		$y = (int) ($index / $this->gridSize);
-		$x = $index % $this->gridSize;
-
-		if(!isset($this->inputs[$y][$x])){
-			return;
+	/**
+	 * @param Item[] $txItems
+	 * @param Item[] $recipeItems
+	 * @param bool   $wildcards
+	 *
+	 * @return int
+	 * @throws \InvalidStateException
+	 * @throws \InvalidArgumentException
+	 */
+	protected function matchRecipeItems(array $txItems, array $recipeItems, bool $wildcards) : int{
+		if(empty($recipeItems)){
+			throw new \InvalidArgumentException("No recipe items given");
+		}
+		if(empty($txItems)){
+			throw new \InvalidArgumentException("No transaction items given");
 		}
 
-		if($this->inputs[$y][$x]->isNull()){
-			$this->inputs[$y][$x] = clone $item;
-		}elseif(!$this->inputs[$y][$x]->equals($item)){
-			throw new \RuntimeException("Input $index has already been set and does not match the current item (expected " . $this->inputs[$y][$x] . ", got " . $item . ")");
-		}
-	}
-
-	public function getInputMap() : array{
-		return $this->inputs;
-	}
-
-	public function setExtraOutput(int $index, Item $item) : void{
-		$y = (int) ($index / $this->gridSize);
-		$x = $index % $this->gridSize;
-
-		if(!isset($this->secondaryOutputs[$y][$x])){
-			return;
-		}
-
-		if($this->secondaryOutputs[$y][$x]->isNull()){
-			$this->secondaryOutputs[$y][$x] = clone $item;
-		}elseif(!$this->secondaryOutputs[$y][$x]->equals($item)){
-			throw new \RuntimeException("Output $index has already been set and does not match the current item (expected " . $this->secondaryOutputs[$y][$x] . ", got " . $item . ")");
-		}
-	}
-
-	public function getPrimaryOutput() : ?Item{
-		return $this->primaryOutput;
-	}
-
-	public function setPrimaryOutput(Item $item) : void{
-		if($this->primaryOutput === null){
-			$this->primaryOutput = clone $item;
-		}elseif(!$this->primaryOutput->equals($item)){
-			throw new \RuntimeException("Primary result item has already been set and does not match the current item (expected " . $this->primaryOutput . ", got " . $item . ")");
-		}
-	}
-
-	public function getRecipe() : ?CraftingRecipe{
-		return $this->recipe;
-	}
-
-	private function reindexInputs() : array{
-		$minX = PHP_INT_MAX;
-		$maxX = 0;
-
-		$minY = PHP_INT_MAX;
-		$maxY = 0;
-
-		$empty = true;
-
-		foreach($this->inputs as $y => $row){
-			foreach($row as $x => $item){
-				if(!$item->isNull()){
-					$minX = min($minX, $x);
-					$maxX = max($maxX, $x);
-
-					$minY = min($minY, $y);
-					$maxY = max($maxY, $y);
-
-					$empty = false;
+		$iterations = 0;
+		while(!empty($recipeItems)){
+			/** @var Item $recipeItem */
+			$recipeItem = array_pop($recipeItems);
+			$needCount = $recipeItem->getCount();
+			foreach($recipeItems as $i => $otherRecipeItem){
+				if($otherRecipeItem->equals($recipeItem)){ //make sure they have the same wildcards set
+					$needCount += $otherRecipeItem->getCount();
+					unset($recipeItems[$i]);
 				}
 			}
-		}
 
-		if($empty){
-			return [];
-		}
+			$haveCount = 0;
+			foreach($txItems as $j => $txItem){
+				if($txItem->equals($recipeItem, !$wildcards or !$recipeItem->hasAnyDamageValue(), !$wildcards or $recipeItem->hasCompoundTag())){
+					$haveCount += $txItem->getCount();
+					unset($txItems[$j]);
+				}
+			}
 
-		$air = ItemFactory::get(Item::AIR, 0, 0);
-		$reindexed = array_fill(0, $maxY - $minY + 1, array_fill(0, $maxX - $minX + 1, $air));
-		foreach($reindexed as $y => $row){
-			foreach($row as $x => $item){
-				$reindexed[$y][$x] = $this->inputs[$y + $minY][$x + $minX];
+			if($haveCount % $needCount !== 0){
+				//wrong count for this output, should divide exactly
+				throw new \InvalidStateException("Expected an exact multiple of required $recipeItem (given: $haveCount, needed: $needCount)");
+			}
+
+			$multiplier = intdiv($haveCount, $needCount);
+			if($multiplier < 1){
+				throw new \InvalidStateException("Expected more than zero items matching $recipeItem (given: $haveCount, needed: $needCount)");
+			}
+			if($iterations === 0){
+				$iterations = $multiplier;
+			}elseif($multiplier !== $iterations){
+				//wrong count for this output, should match previous outputs
+				throw new \InvalidStateException("Expected $recipeItem x$iterations, but found x$multiplier");
 			}
 		}
 
-		return $reindexed;
+		if($iterations < 1){
+			throw new \InvalidStateException("Tried to craft zero times");
+		}
+		if(!empty($txItems)){
+			//all items should be destroyed in this process
+			throw new \InvalidStateException("Expected 0 ingredients left over, have " . count($txItems));
+		}
+
+		return $iterations;
 	}
 
+
 	public function canExecute() : bool{
-		$inputs = $this->reindexInputs();
+		$this->squashDuplicateSlotChanges();
+		if(count($this->actions) < 1){
+			return false;
+		}
 
-		$this->recipe = $this->source->getServer()->getCraftingManager()->matchRecipe($inputs, $this->primaryOutput, $this->secondaryOutputs);
+		$this->matchItems($this->outputs, $this->inputs);
 
-		return $this->recipe !== null and parent::canExecute();
+		$this->recipe = $this->source->getServer()->getCraftingManager()->matchRecipe($this->source->getCraftingGrid(), $this->outputs);
+		if($this->recipe === null){
+			return false;
+		}
+
+		try{
+			$this->repetitions = $this->matchRecipeItems($this->outputs, $this->recipe->getResults(), false);
+
+			if(($inputIterations = $this->matchRecipeItems($this->inputs, $this->recipe->getIngredientList(), true)) !== $this->repetitions){
+				throw new \InvalidStateException("Tried to craft recipe $this->repetitions times in batch, but have enough inputs for $inputIterations");
+			}
+
+			return true;
+		}catch(\InvalidStateException $e){
+			MainLogger::getLogger()->debug("Failed to validate crafting transaction for " . $this->source->getName() . ": " . $e->getMessage());
+		}
+
+		return false;
 	}
 
 	protected function callExecuteEvent() : bool{
-		$this->source->getServer()->getPluginManager()->callEvent($ev = new CraftItemEvent($this));
+		$this->source->getServer()->getPluginManager()->callEvent($ev = new CraftItemEvent($this, $this->recipe, $this->repetitions, $this->inputs, $this->outputs));
 		return !$ev->isCancelled();
 	}
 
@@ -171,37 +156,39 @@ class CraftingTransaction extends InventoryTransaction{
 
 	public function execute() : bool{
 		if(parent::execute()){
-			switch($this->primaryOutput->getId()){
-				case Item::CRAFTING_TABLE:
-					$this->source->awardAchievement("buildWorkBench");
-					break;
-				case Item::WOODEN_PICKAXE:
-					$this->source->awardAchievement("buildPickaxe");
-					break;
-				case Item::FURNACE:
-					$this->source->awardAchievement("buildFurnace");
-					break;
-				case Item::WOODEN_HOE:
-					$this->source->awardAchievement("buildHoe");
-					break;
-				case Item::BREAD:
-					$this->source->awardAchievement("makeBread");
-					break;
-				case Item::CAKE:
-					$this->source->awardAchievement("bakeCake");
-					break;
-				case Item::STONE_PICKAXE:
-				case Item::GOLDEN_PICKAXE:
-				case Item::IRON_PICKAXE:
-				case Item::DIAMOND_PICKAXE:
-					$this->source->awardAchievement("buildBetterPickaxe");
-					break;
-				case Item::WOODEN_SWORD:
-					$this->source->awardAchievement("buildSword");
-					break;
-				case Item::DIAMOND:
-					$this->source->awardAchievement("diamond");
-					break;
+			foreach($this->outputs as $item){
+				switch($item->getId()){
+					case Item::CRAFTING_TABLE:
+						$this->source->awardAchievement("buildWorkBench");
+						break;
+					case Item::WOODEN_PICKAXE:
+						$this->source->awardAchievement("buildPickaxe");
+						break;
+					case Item::FURNACE:
+						$this->source->awardAchievement("buildFurnace");
+						break;
+					case Item::WOODEN_HOE:
+						$this->source->awardAchievement("buildHoe");
+						break;
+					case Item::BREAD:
+						$this->source->awardAchievement("makeBread");
+						break;
+					case Item::CAKE:
+						$this->source->awardAchievement("bakeCake");
+						break;
+					case Item::STONE_PICKAXE:
+					case Item::GOLDEN_PICKAXE:
+					case Item::IRON_PICKAXE:
+					case Item::DIAMOND_PICKAXE:
+						$this->source->awardAchievement("buildBetterPickaxe");
+						break;
+					case Item::WOODEN_SWORD:
+						$this->source->awardAchievement("buildSword");
+						break;
+					case Item::DIAMOND:
+						$this->source->awardAchievement("diamond");
+						break;
+				}
 			}
 
 			return true;

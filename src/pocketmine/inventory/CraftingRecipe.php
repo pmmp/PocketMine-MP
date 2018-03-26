@@ -39,23 +39,25 @@ interface CraftingRecipe extends Recipe{
 	public function setId(UUID $id);
 
 	/**
-	 * @return Item[]
-	 */
-	public function getExtraResults() : array;
-
-	/**
-	 * @return Item[]
-	 */
-	public function getAllResults() : array;
-
-	/**
-	 * Returns whether the specified list of crafting grid inputs and outputs matches this recipe. Outputs DO NOT
-	 * include the primary result item.
+	 * Returns a list of items needed to craft this recipe. This MUST NOT include Air items or items with a zero count.
 	 *
-	 * @param Item[][] $input 2D array of items taken from the crafting grid
-	 * @param Item[][] $output 2D array of items put back into the crafting grid (secondary results)
+	 * @return Item[]
+	 */
+	public function getIngredientList() : array;
+
+	/**
+	 * Returns a list of items created by crafting this recipe.
+	 *
+	 * @return Item[]
+	 */
+	public function getResults() : array;
+
+	/**
+	 * Returns whether the given crafting grid meets the requirements to craft this recipe.
+	 *
+	 * @param CraftingGrid $grid
 	 *
 	 * @return bool
 	 */
-	public function matchItems(array $input, array $output) : bool;
+	public function matchesCraftingGrid(CraftingGrid $grid) : bool;
 }

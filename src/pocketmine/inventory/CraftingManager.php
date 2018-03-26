@@ -59,20 +59,13 @@ class CraftingManager{
 		foreach($recipes->getAll() as $recipe){
 			switch($recipe["type"]){
 				case 0:
-					// TODO: handle multiple result items
-					$first = $recipe["output"][0];
-					$result = new ShapelessRecipe(Item::jsonDeserialize($first));
-
-					foreach($recipe["input"] as $ingredient){
-						$result->addIngredient(Item::jsonDeserialize($ingredient));
-					}
-					$this->registerRecipe($result);
+					$this->registerRecipe(new ShapelessRecipe(
+						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["input"]),
+						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["output"])
+					));
 					break;
 				case 1:
-					$first = array_shift($recipe["output"]);
-
 					$this->registerRecipe(new ShapedRecipe(
-						Item::jsonDeserialize($first),
 						$recipe["shape"],
 						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["input"]),
 						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["output"])
@@ -152,6 +145,41 @@ class CraftingManager{
 	}
 
 	/**
+	 * @param Item[] $items
+	 *
+	 * @return Item[]
+	 */
+	private static function pack(array $items) : array{
+		/** @var Item[] $result */
+		$result = [];
+
+		foreach($items as $i => $item){
+			foreach($result as $otherItem){
+				if($item->equals($otherItem)){
+					$otherItem->setCount($otherItem->getCount() + $item->getCount());
+					continue 2;
+				}
+			}
+
+			//No matching item found
+			$result[] = clone $item;
+		}
+
+		return $result;
+	}
+
+	private static function hashOutputs(array $outputs) : string{
+		$outputs = self::pack($outputs);
+		usort($outputs, [self::class, "sort"]);
+		foreach($outputs as $o){
+			//this reduces accuracy of hash, but it's necessary to deal with recipe book shift-clicking stupidity
+			$o->setCount(1);
+		}
+
+		return json_encode($outputs);
+	}
+
+	/**
 	 * @param UUID $id
 	 * @return CraftingRecipe|null
 	 */
@@ -192,7 +220,7 @@ class CraftingManager{
 	 * @param ShapedRecipe $recipe
 	 */
 	public function registerShapedRecipe(ShapedRecipe $recipe) : void{
-		$this->shapedRecipes[json_encode($recipe->getResult())][json_encode($recipe->getIngredientMap())] = $recipe;
+		$this->shapedRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 		$this->craftingDataCache = null;
 	}
 
@@ -200,9 +228,7 @@ class CraftingManager{
 	 * @param ShapelessRecipe $recipe
 	 */
 	public function registerShapelessRecipe(ShapelessRecipe $recipe) : void{
-		$ingredients = $recipe->getIngredientList();
-		usort($ingredients, [self::class, "sort"]);
-		$this->shapelessRecipes[json_encode($recipe->getResult())][json_encode($ingredients)] = $recipe;
+		$this->shapelessRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 		$this->craftingDataCache = null;
 	}
 
@@ -216,61 +242,27 @@ class CraftingManager{
 	}
 
 	/**
-	 * Clones a map of Item objects to avoid accidental modification.
-	 *
-	 * @param Item[][] $map
-	 * @return Item[][]
-	 */
-	private function cloneItemMap(array $map) : array{
-		/** @var Item[] $row */
-		foreach($map as $y => $row){
-			foreach($row as $x => $item){
-				$map[$y][$x] = clone $item;
-			}
-		}
-
-		return $map;
-	}
-
-	/**
-	 * @param Item[][] $inputMap
-	 * @param Item     $primaryOutput
-	 * @param Item[][] $extraOutputMap
+	 * @param CraftingGrid $grid
+	 * @param Item[]       $outputs
 	 *
 	 * @return CraftingRecipe|null
 	 */
-	public function matchRecipe(array $inputMap, Item $primaryOutput, array $extraOutputMap) : ?CraftingRecipe{
+	public function matchRecipe(CraftingGrid $grid, array $outputs) : ?CraftingRecipe{
 		//TODO: try to match special recipes before anything else (first they need to be implemented!)
 
-		$outputHash = json_encode($primaryOutput);
+		$outputHash = self::hashOutputs($outputs);
+
 		if(isset($this->shapedRecipes[$outputHash])){
-			$inputHash = json_encode($inputMap);
-			$recipe = $this->shapedRecipes[$outputHash][$inputHash] ?? null;
-
-			if($recipe !== null and $recipe->matchItems($this->cloneItemMap($inputMap), $this->cloneItemMap($extraOutputMap))){ //matched a recipe by hash
-				return $recipe;
-			}
-
 			foreach($this->shapedRecipes[$outputHash] as $recipe){
-				if($recipe->matchItems($this->cloneItemMap($inputMap), $this->cloneItemMap($extraOutputMap))){
+				if($recipe->matchesCraftingGrid($grid)){
 					return $recipe;
 				}
 			}
 		}
 
 		if(isset($this->shapelessRecipes[$outputHash])){
-			$list = array_merge(...$inputMap);
-			usort($list, [self::class, "sort"]);
-
-			$inputHash = json_encode($list);
-			$recipe = $this->shapelessRecipes[$outputHash][$inputHash] ?? null;
-
-			if($recipe !== null and $recipe->matchItems($this->cloneItemMap($inputMap), $this->cloneItemMap($extraOutputMap))){
-				return $recipe;
-			}
-
 			foreach($this->shapelessRecipes[$outputHash] as $recipe){
-				if($recipe->matchItems($this->cloneItemMap($inputMap), $this->cloneItemMap($extraOutputMap))){
+				if($recipe->matchesCraftingGrid($grid)){
 					return $recipe;
 				}
 			}
@@ -293,8 +285,7 @@ class CraftingManager{
 	 */
 	public function registerRecipe(Recipe $recipe) : void{
 		if($recipe instanceof CraftingRecipe){
-			$result = $recipe->getResult();
-			$recipe->setId($uuid = UUID::fromData((string) ++self::$RECIPE_COUNT, (string) $result->getId(), (string) $result->getDamage(), (string) $result->getCount(), $result->getCompoundTag()));
+			$recipe->setId($uuid = UUID::fromData((string) ++self::$RECIPE_COUNT, json_encode(self::pack($recipe->getResults()))));
 			$this->recipes[$uuid->toBinary()] = $recipe;
 		}
 

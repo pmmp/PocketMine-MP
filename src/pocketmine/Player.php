@@ -2302,11 +2302,17 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				}
 			}
 
-			if($this->craftingTransaction->getPrimaryOutput() !== null){
-				//we get the actions for this in several packets, so we can't execute it until we get the result
+			if($packet->isFinalCraftingPart){
+				//we get the actions for this in several packets, so we need to wait until we have all the pieces before
+				//trying to execute it
 
-				$this->craftingTransaction->execute();
+				$result = $this->craftingTransaction->execute();
+				if(!$result){
+					$this->server->getLogger()->debug("Failed to execute crafting transaction from " . $this->getName());
+				}
+
 				$this->craftingTransaction = null;
+				return $result;
 			}
 
 			return true;
