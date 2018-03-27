@@ -196,10 +196,6 @@ class ShapedRecipe implements CraftingRecipe{
 		$manager->registerShapedRecipe($this);
 	}
 
-	public function requiresCraftingTable() : bool{
-		return $this->getHeight() > 2 or $this->getWidth() > 2;
-	}
-
 	/**
 	 * @param Item[][] $input
 	 *

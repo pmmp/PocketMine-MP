@@ -136,10 +136,6 @@ class ShapelessRecipe implements CraftingRecipe{
 		$manager->registerShapelessRecipe($this);
 	}
 
-	public function requiresCraftingTable() : bool{
-		return count($this->ingredients) > 4;
-	}
-
 	/**
 	 * @param Item[][] $input
 	 * @param Item[][] $output

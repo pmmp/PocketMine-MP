@@ -38,8 +38,6 @@ interface CraftingRecipe extends Recipe{
 	 */
 	public function setId(UUID $id);
 
-	public function requiresCraftingTable() : bool;
-
 	/**
 	 * @return Item[]
 	 */
