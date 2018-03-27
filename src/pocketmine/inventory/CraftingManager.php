@@ -30,7 +30,6 @@ use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Config;
-use pocketmine\utils\MainLogger;
 use pocketmine\utils\UUID;
 
 class CraftingManager{
@@ -51,9 +50,12 @@ class CraftingManager{
 	private $craftingDataCache;
 
 	public function __construct(){
+		$this->init();
+	}
+
+	public function init() : void{
 		$recipes = new Config(\pocketmine\RESOURCE_PATH . "recipes.json", Config::JSON, []);
 
-		MainLogger::getLogger()->info("Loading recipes...");
 		foreach($recipes->getAll() as $recipe){
 			switch($recipe["type"]){
 				case 0:
