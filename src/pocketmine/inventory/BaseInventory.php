@@ -99,10 +99,13 @@ abstract class BaseInventory implements Inventory{
 	 */
 	public function getContents(bool $includeEmpty = false) : array{
 		$contents = [];
-		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
-			$item = $this->getItem($i);
-			if($includeEmpty or !$item->isNull()){
-				$contents[$i] = $item;
+		$air = null;
+
+		foreach($this->slots as $i => $slot){
+			if($slot !== null){
+				$contents[$i] = clone $slot;
+			}elseif($includeEmpty){
+				$contents[$i] = $air ?? ($air = ItemFactory::get(Item::AIR, 0, 0));
 			}
 		}
 
