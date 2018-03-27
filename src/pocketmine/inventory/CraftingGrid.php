@@ -26,16 +26,22 @@ namespace pocketmine\inventory;
 use pocketmine\Player;
 
 class CraftingGrid extends BaseInventory{
+	public const SIZE_SMALL = 2;
+	public const SIZE_BIG = 3;
+
 	/** @var Player */
 	protected $holder;
+	/** @var int */
+	private $gridWidth;
 
-	public function __construct(Player $holder){
+	public function __construct(Player $holder, int $gridWidth){
 		$this->holder = $holder;
+		$this->gridWidth = $gridWidth;
 		parent::__construct();
 	}
 
 	public function getGridWidth() : int{
-		return 2;
+		return $this->gridWidth;
 	}
 
 	public function getDefaultSize() : int{
