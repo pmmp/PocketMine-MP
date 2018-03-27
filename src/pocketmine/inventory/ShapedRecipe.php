@@ -68,7 +68,7 @@ class ShapedRecipe implements CraftingRecipe{
 		$shape = array_values($shape);
 
 		$columnCount = strlen($shape[0]);
-		if($columnCount > 3 or $rowCount <= 0){
+		if($columnCount > 3 or $columnCount <= 0){
 			throw new \InvalidArgumentException("Shaped recipes may only have 1, 2 or 3 columns, not $columnCount");
 		}
 
