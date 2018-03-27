@@ -48,6 +48,7 @@ use pocketmine\event\entity\EntityMotionEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
+use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\level\Location;
@@ -982,6 +983,19 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		return $this->propertyManager;
 	}
 
+	/**
+	 * Called when interacted or tapped by a Player
+	 *
+	 * @param Player $player
+	 * @param Item $item
+	 * @param Vector3 $clickPos
+	 * @param int $slot
+	 * @return bool
+	 */
+	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : bool {
+		return true;
+	}
+	
 	public function entityBaseTick(int $tickDiff = 1) : bool{
 		//TODO: check vehicles
 
