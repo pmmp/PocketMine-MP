@@ -46,11 +46,13 @@ interface CraftingRecipe extends Recipe{
 	public function getIngredientList() : array;
 
 	/**
-	 * Returns a list of items created by crafting this recipe.
+	 * Returns a list of results this recipe will produce when the inputs in the given crafting grid are consumed.
+	 *
+	 * @param CraftingGrid $grid
 	 *
 	 * @return Item[]
 	 */
-	public function getResults() : array;
+	public function getResultsFor(CraftingGrid $grid) : array;
 
 	/**
 	 * Returns whether the given crafting grid meets the requirements to craft this recipe.

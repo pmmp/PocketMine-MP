@@ -70,6 +70,10 @@ class ShapelessRecipe implements CraftingRecipe{
 		return array_map(function(Item $item) : Item{ return clone $item; }, $this->results);
 	}
 
+	public function getResultsFor(CraftingGrid $grid) : array{
+		return $this->getResults();
+	}
+
 	/**
 	 * @param Item $item
 	 *

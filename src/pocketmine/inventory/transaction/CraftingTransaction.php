@@ -121,7 +121,7 @@ class CraftingTransaction extends InventoryTransaction{
 		}
 
 		try{
-			$this->repetitions = $this->matchRecipeItems($this->outputs, $this->recipe->getResults(), false);
+			$this->repetitions = $this->matchRecipeItems($this->outputs, $this->recipe->getResultsFor($this->source->getCraftingGrid()), false);
 
 			if(($inputIterations = $this->matchRecipeItems($this->inputs, $this->recipe->getIngredientList(), true)) !== $this->repetitions){
 				throw new \InvalidStateException("Tried to craft recipe $this->repetitions times in batch, but have enough inputs for $inputIterations");

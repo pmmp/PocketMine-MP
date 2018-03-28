@@ -220,7 +220,10 @@ class CraftingManager{
 	 * @param ShapedRecipe $recipe
 	 */
 	public function registerShapedRecipe(ShapedRecipe $recipe) : void{
+		$recipe->setId($uuid = UUID::fromData((string) ++self::$RECIPE_COUNT, json_encode(self::pack($recipe->getResults()))));
+		$this->recipes[$uuid->toBinary()] = $recipe;
 		$this->shapedRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
+
 		$this->craftingDataCache = null;
 	}
 
@@ -228,7 +231,10 @@ class CraftingManager{
 	 * @param ShapelessRecipe $recipe
 	 */
 	public function registerShapelessRecipe(ShapelessRecipe $recipe) : void{
+		$recipe->setId($uuid = UUID::fromData((string) ++self::$RECIPE_COUNT, json_encode(self::pack($recipe->getResults()))));
+		$this->recipes[$uuid->toBinary()] = $recipe;
 		$this->shapelessRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
+
 		$this->craftingDataCache = null;
 	}
 
@@ -284,11 +290,6 @@ class CraftingManager{
 	 * @param Recipe $recipe
 	 */
 	public function registerRecipe(Recipe $recipe) : void{
-		if($recipe instanceof CraftingRecipe){
-			$recipe->setId($uuid = UUID::fromData((string) ++self::$RECIPE_COUNT, json_encode(self::pack($recipe->getResults()))));
-			$this->recipes[$uuid->toBinary()] = $recipe;
-		}
-
 		$recipe->registerToCraftingManager($this);
 	}
 

@@ -108,6 +108,15 @@ class ShapedRecipe implements CraftingRecipe{
 	}
 
 	/**
+	 * @param CraftingGrid $grid
+	 *
+	 * @return Item[]
+	 */
+	public function getResultsFor(CraftingGrid $grid) : array{
+		return $this->getResults();
+	}
+
+	/**
 	 * @return UUID|null
 	 */
 	public function getId() : ?UUID{
