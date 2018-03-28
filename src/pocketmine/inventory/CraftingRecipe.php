@@ -24,20 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
-use pocketmine\utils\UUID;
 
 interface CraftingRecipe extends Recipe{
-
-	/**
-	 * @return UUID|null
-	 */
-	public function getId() : ?UUID;
-
-	/**
-	 * @param UUID $id
-	 */
-	public function setId(UUID $id);
-
 	/**
 	 * Returns a list of items needed to craft this recipe. This MUST NOT include Air items or items with a zero count.
 	 *

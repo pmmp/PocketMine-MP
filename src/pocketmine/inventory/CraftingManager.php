@@ -30,21 +30,14 @@ use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Config;
-use pocketmine\utils\UUID;
 
 class CraftingManager{
-
-	/** @var CraftingRecipe[] */
-	protected $recipes = [];
-
 	/** @var ShapedRecipe[][] */
 	protected $shapedRecipes = [];
 	/** @var ShapelessRecipe[][] */
 	protected $shapelessRecipes = [];
 	/** @var FurnaceRecipe[] */
 	protected $furnaceRecipes = [];
-
-	private static $RECIPE_COUNT = 0;
 
 	/** @var BatchPacket */
 	private $craftingDataCache;
@@ -93,11 +86,14 @@ class CraftingManager{
 		$pk = new CraftingDataPacket();
 		$pk->cleanRecipes = true;
 
-		foreach($this->recipes as $recipe){
-			if($recipe instanceof ShapedRecipe){
-				$pk->addShapedRecipe($recipe);
-			}elseif($recipe instanceof ShapelessRecipe){
+		foreach($this->shapelessRecipes as $list){
+			foreach($list as $recipe){
 				$pk->addShapelessRecipe($recipe);
+			}
+		}
+		foreach($this->shapedRecipes as $list){
+			foreach($list as $recipe){
+				$pk->addShapedRecipe($recipe);
 			}
 		}
 
@@ -180,22 +176,6 @@ class CraftingManager{
 	}
 
 	/**
-	 * @param UUID $id
-	 * @return CraftingRecipe|null
-	 */
-	public function getRecipe(UUID $id) : ?CraftingRecipe{
-		$index = $id->toBinary();
-		return $this->recipes[$index] ?? null;
-	}
-
-	/**
-	 * @return Recipe[]
-	 */
-	public function getRecipes() : array{
-		return $this->recipes;
-	}
-
-	/**
 	 * @return ShapelessRecipe[][]
 	 */
 	public function getShapelessRecipes() : array{
@@ -220,8 +200,6 @@ class CraftingManager{
 	 * @param ShapedRecipe $recipe
 	 */
 	public function registerShapedRecipe(ShapedRecipe $recipe) : void{
-		$recipe->setId($uuid = UUID::fromData((string) ++self::$RECIPE_COUNT, json_encode(self::pack($recipe->getResults()))));
-		$this->recipes[$uuid->toBinary()] = $recipe;
 		$this->shapedRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 
 		$this->craftingDataCache = null;
@@ -231,8 +209,6 @@ class CraftingManager{
 	 * @param ShapelessRecipe $recipe
 	 */
 	public function registerShapelessRecipe(ShapelessRecipe $recipe) : void{
-		$recipe->setId($uuid = UUID::fromData((string) ++self::$RECIPE_COUNT, json_encode(self::pack($recipe->getResults()))));
-		$this->recipes[$uuid->toBinary()] = $recipe;
 		$this->shapelessRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 
 		$this->craftingDataCache = null;

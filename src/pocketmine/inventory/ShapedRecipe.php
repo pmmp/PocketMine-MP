@@ -25,12 +25,8 @@ namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\utils\UUID;
 
 class ShapedRecipe implements CraftingRecipe{
-	/** @var UUID|null */
-	private $id = null;
-
 	/** @var string[] */
 	private $shape = [];
 	/** @var Item[] char => Item map */
@@ -114,21 +110,6 @@ class ShapedRecipe implements CraftingRecipe{
 	 */
 	public function getResultsFor(CraftingGrid $grid) : array{
 		return $this->getResults();
-	}
-
-	/**
-	 * @return UUID|null
-	 */
-	public function getId() : ?UUID{
-		return $this->id;
-	}
-
-	public function setId(UUID $id){
-		if($this->id !== null){
-			throw new \InvalidStateException("Id is already set");
-		}
-
-		$this->id = $id;
 	}
 
 	/**

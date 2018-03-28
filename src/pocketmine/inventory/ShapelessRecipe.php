@@ -24,12 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
-use pocketmine\utils\UUID;
 
 class ShapelessRecipe implements CraftingRecipe{
-	/** @var UUID|null */
-	private $id = null;
-
 	/** @var Item[] */
 	private $ingredients = [];
 	/** @var Item[] */
@@ -46,24 +42,6 @@ class ShapelessRecipe implements CraftingRecipe{
 		}
 
 		$this->results = array_map(function(Item $item) : Item{ return clone $item; }, $results);
-	}
-
-	/**
-	 * @return UUID|null
-	 */
-	public function getId() : ?UUID{
-		return $this->id;
-	}
-
-	/**
-	 * @param UUID $id
-	 */
-	public function setId(UUID $id){
-		if($this->id !== null){
-			throw new \InvalidStateException("Id is already set");
-		}
-
-		$this->id = $id;
 	}
 
 	public function getResults() : array{
