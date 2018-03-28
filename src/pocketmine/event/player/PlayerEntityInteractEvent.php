@@ -84,7 +84,7 @@ class PlayerEntityInteractEvent extends PlayerEvent implements Cancellable{
 	/**
 	 * @return int
 	 */
-	public function geSlot() : int{
+	public function getSlot() : int{
 		return $this->slot;
 	}
 }
