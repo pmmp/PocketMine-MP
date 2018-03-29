@@ -986,16 +986,16 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	/**
 	 * Called when interacted or tapped by a Player
 	 *
-	 * @param Player $player
-	 * @param Item $item
+	 * @param Player  $player
+	 * @param Item    $item
 	 * @param Vector3 $clickPos
-	 * @param int $slot
-	 * @return bool
+	 * @param int     $slot
+	 * @return void
 	 */
-	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : bool {
-		return true;
+	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : void{
+		return;
 	}
-	
+
 	public function entityBaseTick(int $tickDiff = 1) : bool{
 		//TODO: check vehicles
 

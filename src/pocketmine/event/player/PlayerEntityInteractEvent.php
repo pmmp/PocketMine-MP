@@ -82,6 +82,8 @@ class PlayerEntityInteractEvent extends PlayerEvent implements Cancellable{
 	}
 
 	/**
+	 * Returns the hotbar slot number used to tap/click the entity
+	 *
 	 * @return int
 	 */
 	public function getSlot() : int{
