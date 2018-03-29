@@ -165,63 +165,71 @@ class InventoryTransaction{
 	protected function squashDuplicateSlotChanges() : bool{
 		/** @var SlotChangeAction[][] $slotChanges */
 		$slotChanges = [];
+		/** @var Inventory[] $inventories */
+		$inventories = [];
+		/** @var int[] $slots */
+		$slots = [];
+
 		foreach($this->actions as $key => $action){
 			if($action instanceof SlotChangeAction){
-				$slotChanges[spl_object_hash($action->getInventory()) . "@" . $action->getSlot()][] = $action;
+				$slotChanges[$h = (spl_object_hash($action->getInventory()) . "@" . $action->getSlot())][] = $action;
+				$inventories[$h] = $action->getInventory();
+				$slots[$h] = $action->getSlot();
 			}
 		}
 
 		foreach($slotChanges as $hash => $list){
 			if(count($list) === 1){ //No need to compact slot changes if there is only one on this slot
-				unset($slotChanges[$hash]);
 				continue;
 			}
 
-			$originalList = $list;
+			$inventory = $inventories[$hash];
+			$slot = $slots[$hash];
+			$sourceItem = $inventory->getItem($slot);
 
-			/** @var SlotChangeAction|null $originalAction */
-			$originalAction = null;
-			/** @var Item|null $lastTargetItem */
-			$lastTargetItem = null;
-
-			foreach($list as $i => $action){
-				if($action->isValid($this->source)){
-					$originalAction = $action;
-					$lastTargetItem = $action->getTargetItem();
-					unset($list[$i]);
-					break;
-				}
-			}
-
-			if($originalAction === null){
-				return false; //Couldn't find any actions that had a source-item matching the current inventory slot
-			}
-
-			do{
-				$sortedThisLoop = 0;
-				foreach($list as $i => $action){
-					$actionSource = $action->getSourceItem();
-					if($actionSource->equalsExact($lastTargetItem)){
-						$lastTargetItem = $action->getTargetItem();
-						unset($list[$i]);
-						$sortedThisLoop++;
-					}
-				}
-			}while($sortedThisLoop > 0);
-
-			if(count($list) > 0){ //couldn't chain all the actions together
-				MainLogger::getLogger()->debug("Failed to compact " . count($originalList) . " actions for " . $this->source->getName());
+			$targetItem = $this->findResultItem($sourceItem, $list);
+			if($targetItem === null){
+				MainLogger::getLogger()->debug("Failed to compact " . count($list) . " actions for " . $this->source->getName());
 				return false;
 			}
 
-			foreach($originalList as $action){
+			foreach($list as $action){
 				unset($this->actions[spl_object_hash($action)]);
 			}
 
-			$this->addAction(new SlotChangeAction($originalAction->getInventory(), $originalAction->getSlot(), $originalAction->getSourceItem(), $lastTargetItem));
+			if(!$targetItem->equalsExact($sourceItem)){
+				//sometimes we get actions on the crafting grid whose source and target items are the same, so dump them
+				$this->addAction(new SlotChangeAction($inventory, $slot, $sourceItem, $targetItem));
+			}
 		}
 
 		return true;
+	}
+
+	/**
+	 * @param Item               $needOrigin
+	 * @param SlotChangeAction[] $possibleActions
+	 *
+	 * @return null|Item
+	 */
+	protected function findResultItem(Item $needOrigin, array $possibleActions) : ?Item{
+		assert(!empty($possibleActions));
+
+		foreach($possibleActions as $i => $action){
+			if($action->getSourceItem()->equalsExact($needOrigin)){
+				$newList = $possibleActions;
+				unset($newList[$i]);
+				if(empty($newList)){
+					return $action->getTargetItem();
+				}
+				$result = $this->findResultItem($action->getTargetItem(), $newList);
+				if($result !== null){
+					return $result;
+				}
+			}
+		}
+
+		return null;
 	}
 
 	/**
