@@ -170,7 +170,7 @@ class NetworkInventoryAction{
 					throw new \UnexpectedValueException("Only expecting drop-item world actions from the client!");
 				}
 
-				return new DropItemAction($this->oldItem, $this->newItem);
+				return new DropItemAction($this->newItem);
 			case self::SOURCE_CREATIVE:
 				switch($this->inventorySlot){
 					case self::ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM:

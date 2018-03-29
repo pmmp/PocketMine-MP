@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\inventory\transaction\action;
 
 use pocketmine\event\player\PlayerDropItemEvent;
+use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\Player;
 
 /**
@@ -31,15 +33,12 @@ use pocketmine\Player;
  */
 class DropItemAction extends InventoryAction{
 
-	/**
-	 * Verifies that the source item of a drop-item action must be air. This is not strictly necessary, just a sanity
-	 * check.
-	 *
-	 * @param Player $source
-	 * @return bool
-	 */
+	public function __construct(Item $targetItem){
+		parent::__construct(ItemFactory::get(Item::AIR, 0, 0), $targetItem);
+	}
+
 	public function isValid(Player $source) : bool{
-		return $this->sourceItem->isNull();
+		return true;
 	}
 
 	public function onPreExecute(Player $source) : bool{
