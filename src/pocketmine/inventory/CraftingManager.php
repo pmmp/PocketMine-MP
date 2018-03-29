@@ -144,7 +144,7 @@ class CraftingManager{
 	 *
 	 * @return int
 	 */
-	public function sort(Item $i1, Item $i2){
+	public static function sort(Item $i1, Item $i2){
 		if($i1->getId() > $i2->getId()){
 			return 1;
 		}elseif($i1->getId() < $i2->getId()){
@@ -212,7 +212,7 @@ class CraftingManager{
 	 */
 	public function registerShapelessRecipe(ShapelessRecipe $recipe) : void{
 		$ingredients = $recipe->getIngredientList();
-		usort($ingredients, [$this, "sort"]);
+		usort($ingredients, [self::class, "sort"]);
 		$this->shapelessRecipes[json_encode($recipe->getResult())][json_encode($ingredients)] = $recipe;
 		$this->craftingDataCache = null;
 	}
@@ -271,7 +271,7 @@ class CraftingManager{
 
 		if(isset($this->shapelessRecipes[$outputHash])){
 			$list = array_merge(...$inputMap);
-			usort($list, [$this, "sort"]);
+			usort($list, [self::class, "sort"]);
 
 			$inputHash = json_encode($list);
 			$recipe = $this->shapelessRecipes[$outputHash][$inputHash] ?? null;
