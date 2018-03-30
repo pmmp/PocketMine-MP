@@ -990,10 +990,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @param Item    $item
 	 * @param Vector3 $clickPos
 	 * @param int     $slot
-	 * @return void
 	 */
 	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : void{
-		return;
 	}
 
 	public function entityBaseTick(int $tickDiff = 1) : bool{
