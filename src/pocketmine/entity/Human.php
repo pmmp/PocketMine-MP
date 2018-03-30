@@ -28,6 +28,7 @@ use pocketmine\entity\utils\ExperienceUtils;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
+use pocketmine\event\player\PlayerExperienceChangeEvent;
 use pocketmine\inventory\EnderChestInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
@@ -314,9 +315,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * Sets the player's experience level. This does not affect their total XP or their XP progress.
 	 *
 	 * @param int $level
+	 *
+	 * @return bool
 	 */
-	public function setXpLevel(int $level) : void{
-		$this->attributeMap->getAttribute(Attribute::EXPERIENCE_LEVEL)->setValue($level);
+	public function setXpLevel(int $level) : bool{
+		return $this->setXpAndProgress($level, null);
 	}
 
 	/**
@@ -324,25 +327,34 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 *
 	 * @param int  $amount
 	 * @param bool $playSound
+	 *
+	 * @return bool
 	 */
-	public function addXpLevels(int $amount, bool $playSound = true) : void{
+	public function addXpLevels(int $amount, bool $playSound = true) : bool{
 		$oldLevel = $this->getXpLevel();
-		$this->setXpLevel($oldLevel + $amount);
-
-		if($playSound){
-			$newLevel = $this->getXpLevel();
-			if((int) ($newLevel / 5) > (int) ($oldLevel / 5)){
-				$this->playLevelUpSound($newLevel);
+		if($this->setXpLevel($oldLevel + $amount)){
+			if($playSound){
+				$newLevel = $this->getXpLevel();
+				if((int) ($newLevel / 5) > (int) ($oldLevel / 5)){
+					$this->playLevelUpSound($newLevel);
+				}
 			}
+
+			return true;
 		}
+
+		return false;
 	}
 
 	/**
 	 * Subtracts a number of XP levels from the player.
+	 *
 	 * @param int $amount
+	 *
+	 * @return bool
 	 */
-	public function subtractXpLevels(int $amount) : void{
-		$this->setXpLevel($this->getXpLevel() - $amount);
+	public function subtractXpLevels(int $amount) : bool{
+		return $this->addXpLevels(-$amount);
 	}
 
 	/**
@@ -357,9 +369,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * Sets the player's progress through the current level to a value between 0.0 and 1.0.
 	 *
 	 * @param float $progress
+	 *
+	 * @return bool
 	 */
-	public function setXpProgress(float $progress) : void{
-		$this->attributeMap->getAttribute(Attribute::EXPERIENCE)->setValue($progress);
+	public function setXpProgress(float $progress) : bool{
+		return $this->setXpAndProgress(null, $progress);
 	}
 
 	/**
@@ -386,12 +400,13 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * Note that this DOES NOT update the player's lifetime total XP.
 	 *
 	 * @param int $amount
+	 *
+	 * @return bool
 	 */
-	public function setCurrentTotalXp(int $amount) : void{
+	public function setCurrentTotalXp(int $amount) : bool{
 		$newLevel = ExperienceUtils::getLevelFromXp($amount);
 
-		$this->setXpLevel((int) $newLevel);
-		$this->setXpProgress($newLevel - ((int) $newLevel));
+		return $this->setXpAndProgress((int) $newLevel, $newLevel - ((int) $newLevel));
 	}
 
 	/**
@@ -400,24 +415,29 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 *
 	 * @param int  $amount
 	 * @param bool $playSound Whether to play level-up and XP gained sounds.
+	 *
+	 * @return bool
 	 */
-	public function addXp(int $amount, bool $playSound = true) : void{
+	public function addXp(int $amount, bool $playSound = true) : bool{
 		$this->totalXp += $amount;
 
 		$oldLevel = $this->getXpLevel();
 		$oldTotal = $this->getCurrentTotalXp();
 
-		$this->setCurrentTotalXp($oldTotal + $amount);
-
-		if($playSound){
-			$newLevel = $this->getXpLevel();
-
-			if((int) ($newLevel / 5) > (int) ($oldLevel / 5)){
-				$this->playLevelUpSound($newLevel);
-			}elseif($this->getCurrentTotalXp() > $oldTotal){
-				$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_ORB, mt_rand());
+		if($this->setCurrentTotalXp($oldTotal + $amount)){
+			if($playSound){
+				$newLevel = $this->getXpLevel();
+				if((int) ($newLevel / 5) > (int) ($oldLevel / 5)){
+					$this->playLevelUpSound($newLevel);
+				}elseif($this->getCurrentTotalXp() > $oldTotal){
+					$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_ORB, mt_rand());
+				}
 			}
+
+			return true;
 		}
+
+		return false;
 	}
 
 	private function playLevelUpSound(int $newLevel) : void{
@@ -427,10 +447,37 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * Takes an amount of XP from the player, recalculating their XP level and progress.
+	 *
 	 * @param int $amount
+	 *
+	 * @return bool
 	 */
-	public function subtractXp(int $amount) : void{
-		$this->addXp(-$amount);
+	public function subtractXp(int $amount) : bool{
+		return $this->addXp(-$amount);
+	}
+
+	protected function setXpAndProgress(?int $level, ?float $progress) : bool{
+		if(!$this->justCreated){
+			$ev = new PlayerExperienceChangeEvent($this, $this->getXpLevel(), $this->getXpProgress(), $level, $progress);
+			$this->server->getPluginManager()->callEvent($ev);
+
+			if($ev->isCancelled()){
+				return false;
+			}
+
+			$level = $ev->getNewLevel();
+			$progress = $ev->getNewProgress();
+		}
+
+		if($level !== null){
+			$this->getAttributeMap()->getAttribute(Attribute::EXPERIENCE_LEVEL)->setValue($level);
+		}
+
+		if($progress !== null){
+			$this->getAttributeMap()->getAttribute(Attribute::EXPERIENCE)->setValue($progress);
+		}
+
+		return true;
 	}
 
 	/**
