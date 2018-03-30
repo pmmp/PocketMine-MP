@@ -1708,7 +1708,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function checkBlockCollision(){
-		$vector = new Vector3(0, 0, 0);
+		$vector = $this->temporalVector->setComponents(0, 0, 0);
 
 		foreach($this->getBlocksAround() as $block){
 			$block->onEntityCollide($this);
