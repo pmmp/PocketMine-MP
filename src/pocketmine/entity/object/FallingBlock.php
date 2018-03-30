@@ -79,6 +79,10 @@ class FallingBlock extends Entity{
 		return false;
 	}
 
+	public function canBeMovedByCurrents() : bool{
+		return false;
+	}
+
 	public function attack(EntityDamageEvent $source){
 		if($source->getCause() === EntityDamageEvent::CAUSE_VOID){
 			parent::attack($source);

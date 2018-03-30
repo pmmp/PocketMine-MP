@@ -189,10 +189,12 @@ abstract class Liquid extends Transparent{
 	}
 
 	public function addVelocityToEntity(Entity $entity, Vector3 $vector) : void{
-		$flow = $this->getFlowVector();
-		$vector->x += $flow->x;
-		$vector->y += $flow->y;
-		$vector->z += $flow->z;
+		if($entity->canBeMovedByCurrents()){
+			$flow = $this->getFlowVector();
+			$vector->x += $flow->x;
+			$vector->y += $flow->y;
+			$vector->z += $flow->z;
+		}
 	}
 
 	abstract public function tickRate() : int;

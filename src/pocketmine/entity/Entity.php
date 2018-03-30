@@ -1698,6 +1698,15 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		return $this->blocksAround;
 	}
 
+	/**
+	 * Returns whether this entity can be moved by currents in liquids.
+	 *
+	 * @return bool
+	 */
+	public function canBeMovedByCurrents() : bool{
+		return true;
+	}
+
 	protected function checkBlockCollision(){
 		$vector = new Vector3(0, 0, 0);
 
