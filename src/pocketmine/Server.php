@@ -2096,7 +2096,11 @@ class Server{
 
 		if($this->getProperty("network.upnp-forwarding", false)){
 			$this->logger->info("[UPnP] Trying to port forward...");
-			UPnP::PortForward($this->getPort());
+			try{
+				UPnP::PortForward($this->getPort());
+			}catch(\Throwable $e){
+				$this->logger->alert("UPnP portforward failed: " . $e->getMessage());
+			}
 		}
 
 		$this->tickCounter = 0;
