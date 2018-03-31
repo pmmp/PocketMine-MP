@@ -21,27 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol;
+namespace pocketmine\network\mcpe\protocol\types;
 
-#include <rules/DataPacket.h>
+use pocketmine\utils\UUID;
 
-use pocketmine\network\mcpe\NetworkSession;
-
-class RemoveObjectivePacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::REMOVE_OBJECTIVE_PACKET;
-
+class ScorePacketEntry{
+	/** @var UUID */
+	public $uuid;
 	/** @var string */
 	public $objectiveName;
-
-	protected function decodePayload(){
-		$this->objectiveName = $this->getString();
-	}
-
-	protected function encodePayload(){
-		$this->putString($this->objectiveName);
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleRemoveObjective($this);
-	}
+	/** @var int */
+	public $score;
 }

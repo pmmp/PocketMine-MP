@@ -26,16 +26,37 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\ScorePacketEntry;
 
 class SetScorePacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_SCORE_PACKET;
 
+	public const TYPE_MODIFY_SCORE = 0;
+	public const TYPE_RESET_SCORE = 1;
+
+	/** @var int */
+	public $type;
+	/** @var ScorePacketEntry[] */
+	public $entries = [];
+
 	protected function decodePayload(){
-		//TODO
+		$this->type = $this->getByte();
+		for($i = 0, $i2 = $this->getUnsignedVarInt(); $i < $i2; ++$i){
+			$entry = new ScorePacketEntry();
+			$entry->uuid = $this->getUUID();
+			$entry->objectiveName = $this->getString();
+			$entry->score = $this->getLInt();
+		}
 	}
 
 	protected function encodePayload(){
-		//TODO
+		$this->putByte($this->type);
+		$this->putUnsignedVarInt(count($this->entries));
+		foreach($this->entries as $entry){
+			$this->putUUID($entry->uuid);
+			$this->putString($entry->objectiveName);
+			$this->putLInt($entry->score);
+		}
 	}
 
 	public function handle(NetworkSession $session) : bool{
