@@ -2009,8 +2009,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->achievements[$achievement->getName()] = $achievement->getValue() !== 0;
 		}
 
-		$this->namedtag->setLong("lastPlayed", (int) floor(microtime(true) * 1000));
-
 		$this->sendPlayStatus(PlayStatusPacket::LOGIN_SUCCESS);
 
 		$this->loggedIn = true;
