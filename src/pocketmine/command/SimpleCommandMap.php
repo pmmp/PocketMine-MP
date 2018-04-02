@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\command;
 
+use pocketmine\command\defaults\DayLockCommand;
 use pocketmine\command\defaults\BanCommand;
 use pocketmine\command\defaults\BanIpCommand;
 use pocketmine\command\defaults\BanListCommand;
@@ -89,6 +90,8 @@ class SimpleCommandMap implements CommandMap{
 			new BanCommand("ban"),
 			new BanIpCommand("ban-ip"),
 			new BanListCommand("banlist"),
+			new DayLockCommand("alwaysday"),
+		  new DayLockCommand("daylock"),
 			new DefaultGamemodeCommand("defaultgamemode"),
 			new DeopCommand("deop"),
 			new DifficultyCommand("difficulty"),

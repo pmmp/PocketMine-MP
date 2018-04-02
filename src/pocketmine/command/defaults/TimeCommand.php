@@ -47,33 +47,7 @@ class TimeCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		if($args[0] === "start"){
-			if(!$sender->hasPermission("pocketmine.command.time.start")){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.permission"));
-
-				return true;
-			}
-			foreach($sender->getServer()->getLevels() as $level){
-				$level->checkTime();
-				$level->startTime();
-				$level->checkTime();
-			}
-			Command::broadcastCommandMessage($sender, "Restarted the time");
-			return true;
-		}elseif($args[0] === "stop"){
-			if(!$sender->hasPermission("pocketmine.command.time.stop")){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.permission"));
-
-				return true;
-			}
-			foreach($sender->getServer()->getLevels() as $level){
-				$level->checkTime();
-				$level->stopTime();
-				$level->checkTime();
-			}
-			Command::broadcastCommandMessage($sender, "Stopped the time");
-			return true;
-		}elseif($args[0] === "query"){
+		if($args[0] === "query"){
 			if(!$sender->hasPermission("pocketmine.command.time.query")){
 				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.permission"));
 
@@ -101,7 +75,7 @@ class TimeCommand extends VanillaCommand{
 			}
 
 			if($args[1] === "day"){
-				$value = 0;
+				$value = Level::TIME_DAY;
 			}elseif($args[1] === "night"){
 				$value = Level::TIME_NIGHT;
 			}else{
