@@ -110,7 +110,7 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 	/**
 	 * Variadic hack for easy array member type enforcement.
 	 *
-	 * @param Item[] ...$drops
+	 * @param Item ...$drops
 	 */
 	public function setDropsVariadic(Item ...$drops){
 		$this->blockDrops = $drops;

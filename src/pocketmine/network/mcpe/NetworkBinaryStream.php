@@ -254,7 +254,7 @@ class NetworkBinaryStream extends BinaryStream{
 	/**
 	 * Writes a list of Attributes to the packet buffer using the standard format.
 	 *
-	 * @param Attribute[] ...$attributes
+	 * @param Attribute ...$attributes
 	 */
 	public function putAttributeList(Attribute ...$attributes) : void{
 		$this->putUnsignedVarInt(count($attributes));
