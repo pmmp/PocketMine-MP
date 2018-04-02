@@ -143,7 +143,7 @@ class DataPropertyManager{
 	 */
 	public function getItem(int $key) : ?Item{
 		$value = $this->getPropertyValue($key, Entity::DATA_TYPE_SLOT);
-		assert($value instanceof \pocketmine\item\Item  or $value === null);
+		assert($value instanceof Item  or $value === null);
 		return $value;
 	}
 
