@@ -26,7 +26,6 @@ namespace pocketmine\event\inventory;
 use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
 use pocketmine\inventory\CraftingRecipe;
-use pocketmine\inventory\Recipe;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\item\Item;
 use pocketmine\Player;
