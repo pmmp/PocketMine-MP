@@ -52,18 +52,14 @@ class DayLockCommand extends VanillaCommand{
 
 		if(count($args) < 1 or $args[0] === "true"){
 			foreach($sender->getServer()->getLevels() as $level){
-				$level->checkTime();
 				$level->setTime(5000);
 				$level->stopTime();
-				$level->checkTime();
 			}
 
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.always.day.locked"));
 		}elseif($args[0] === "false"){
 			foreach($sender->getServer()->getLevels() as $level){
-				$level->checkTime();
 				$level->startTime();
-				$level->checkTime();
 			}
 
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.always.day.unlocked"));
