@@ -36,9 +36,9 @@ class DayLockCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"%pocketmine.command.daylock.description",
-			"%commands.daylock.usage",
+			"%commands.daylock.usage"
 		);
-		$this->setPermission("pocketmine.command.daylock;pocketmine.command.alwaysday");
+		$this->setPermission("pocketmine.command.daylock");
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
