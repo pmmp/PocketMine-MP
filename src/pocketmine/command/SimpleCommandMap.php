@@ -91,7 +91,7 @@ class SimpleCommandMap implements CommandMap{
 			new BanIpCommand("ban-ip"),
 			new BanListCommand("banlist"),
 			new DayLockCommand("alwaysday"),
-		  new DayLockCommand("daylock"),
+			new DayLockCommand("daylock"),
 			new DefaultGamemodeCommand("defaultgamemode"),
 			new DeopCommand("deop"),
 			new DifficultyCommand("difficulty"),
