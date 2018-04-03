@@ -53,6 +53,7 @@ class DayLockCommand extends VanillaCommand{
 		if(count($args) < 1 or $args[0] === "true"){
 			foreach($sender->getServer()->getLevels() as $level){
 				$level->checkTime();
+				$level->setTime(5000);
 				$level->stopTime();
 				$level->checkTime();
 			}
