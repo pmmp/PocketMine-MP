@@ -2778,7 +2778,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				break; //TODO
 			case PlayerActionPacket::ACTION_CONTINUE_BREAK:
 				$block = $this->level->getBlock($pos);
-				$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, $block->getId() | ($block->getDamage() << 8) | ($packet->face << 16));
+				$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, BlockFactory::toStaticRuntimeId($block->getId(), $block->getDamage()) | ($packet->face << 24));
+				//TODO: destroy-progress level event
 				break;
 			default:
 				$this->server->getLogger()->debug("Unhandled/unknown player action type " . $packet->action . " from " . $this->getName());
@@ -2967,7 +2968,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function handleBookEdit(BookEditPacket $packet) : bool{
 		/** @var WritableBook $oldBook */
-		$oldBook = $this->inventory->getItem($packet->inventorySlot - 9);
+		$oldBook = $this->inventory->getItem($packet->inventorySlot);
 		if($oldBook->getId() !== Item::WRITABLE_BOOK){
 			return false;
 		}
@@ -3008,7 +3009,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
-		$this->getInventory()->setItem($packet->inventorySlot - 9, $event->getNewBook());
+		$this->getInventory()->setItem($packet->inventorySlot, $event->getNewBook());
 
 		return true;
 	}
@@ -3314,7 +3315,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function sendWhisper(string $sender, string $message){
 		$pk = new TextPacket();
 		$pk->type = TextPacket::TYPE_WHISPER;
-		$pk->source = $sender;
+		$pk->sourceName = $sender;
 		$pk->message = $message;
 		$this->dataPacket($pk);
 	}

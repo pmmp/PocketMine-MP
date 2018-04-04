@@ -30,15 +30,18 @@ use pocketmine\network\mcpe\NetworkSession;
 class SimpleEventPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::SIMPLE_EVENT_PACKET;
 
+	public const TYPE_ENABLE_COMMANDS = 1;
+	public const TYPE_DISABLE_COMMANDS = 2;
+
 	/** @var int */
-	public $unknownShort1;
+	public $eventType;
 
 	protected function decodePayload(){
-		$this->unknownShort1 = $this->getLShort();
+		$this->eventType = $this->getLShort();
 	}
 
 	protected function encodePayload(){
-		$this->putLShort($this->unknownShort1);
+		$this->putLShort($this->eventType);
 	}
 
 	public function handle(NetworkSession $session) : bool{

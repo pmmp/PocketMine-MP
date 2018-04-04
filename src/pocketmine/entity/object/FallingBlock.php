@@ -72,7 +72,7 @@ class FallingBlock extends Entity{
 
 		$this->block = BlockFactory::get($blockId, $damage);
 
-		$this->propertyManager->setInt(self::DATA_VARIANT, $this->block->getId() | ($this->block->getDamage() << 8));
+		$this->propertyManager->setInt(self::DATA_VARIANT, BlockFactory::toStaticRuntimeId($this->block->getId(), $this->block->getDamage()));
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
