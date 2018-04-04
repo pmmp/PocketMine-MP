@@ -44,11 +44,11 @@ class CraftingTransaction extends InventoryTransaction{
 	 * @param Item[] $txItems
 	 * @param Item[] $recipeItems
 	 * @param bool   $wildcards
+	 * @param int    $iterations
 	 *
 	 * @return int
-	 * @throws TransactionValidationException
 	 */
-	protected function matchRecipeItems(array $txItems, array $recipeItems, bool $wildcards) : int{
+	protected function matchRecipeItems(array $txItems, array $recipeItems, bool $wildcards, int $iterations = 0) : int{
 		if(empty($recipeItems)){
 			throw new TransactionValidationException("No recipe items given");
 		}
@@ -56,7 +56,6 @@ class CraftingTransaction extends InventoryTransaction{
 			throw new TransactionValidationException("No transaction items given");
 		}
 
-		$iterations = 0;
 		while(!empty($recipeItems)){
 			/** @var Item $recipeItem */
 			$recipeItem = array_pop($recipeItems);
@@ -120,7 +119,7 @@ class CraftingTransaction extends InventoryTransaction{
 		try{
 			$this->repetitions = $this->matchRecipeItems($this->outputs, $this->recipe->getResultsFor($this->source->getCraftingGrid()), false);
 
-			if(($inputIterations = $this->matchRecipeItems($this->inputs, $this->recipe->getIngredientList(), true)) !== $this->repetitions){
+			if(($inputIterations = $this->matchRecipeItems($this->inputs, $this->recipe->getIngredientList(), true, $this->repetitions)) !== $this->repetitions){
 				throw new TransactionValidationException("Tried to craft recipe $this->repetitions times in batch, but have enough inputs for $inputIterations");
 			}
 		}catch(\InvalidStateException $e){
