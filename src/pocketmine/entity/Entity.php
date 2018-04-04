@@ -531,6 +531,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->propertyManager->setString(self::DATA_NAMETAG, "");
 		$this->propertyManager->setLong(self::DATA_LEAD_HOLDER_EID, -1);
 		$this->propertyManager->setFloat(self::DATA_SCALE, 1);
+		$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_WIDTH, $this->width);
+		$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_HEIGHT, $this->height);
 
 		$this->fireTicks = $this->namedtag->getShort("Fire", 0);
 		if($this->isOnFire()){
