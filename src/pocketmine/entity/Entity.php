@@ -166,8 +166,11 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_CONTROLLING_RIDER_SEAT_NUMBER = 73; //byte
 	public const DATA_STRENGTH = 74; //int
 	public const DATA_MAX_STRENGTH = 75; //int
-	/* 76 (int)
-	 * 77 (int) */
+	/* 76 (int) */
+	public const DATA_LIMITED_LIFE = 77;
+	public const DATA_ARMOR_STAND_POSE_INDEX = 78; //int
+	public const DATA_ENDER_CRYSTAL_TIME_OFFSET = 79; //int
+	/* 80 (byte) something to do with nametag visibility? */
 
 
 	public const DATA_FLAG_ONFIRE = 0;
