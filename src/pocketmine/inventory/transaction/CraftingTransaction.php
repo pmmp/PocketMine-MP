@@ -116,15 +116,10 @@ class CraftingTransaction extends InventoryTransaction{
 			throw new TransactionValidationException("Unable to match a recipe to transaction");
 		}
 
-		try{
-			$this->repetitions = $this->matchRecipeItems($this->outputs, $this->recipe->getResultsFor($this->source->getCraftingGrid()), false);
-
-			if(($inputIterations = $this->matchRecipeItems($this->inputs, $this->recipe->getIngredientList(), true, $this->repetitions)) !== $this->repetitions){
-				throw new TransactionValidationException("Tried to craft recipe $this->repetitions times in batch, but have enough inputs for $inputIterations");
-			}
-		}catch(\InvalidStateException $e){
-			throw new TransactionValidationException($e->getMessage());
-		}
+		//compute number of times recipe was crafted
+		$this->repetitions = $this->matchRecipeItems($this->outputs, $this->recipe->getResultsFor($this->source->getCraftingGrid()), false);
+		//assert that $repetitions x recipe ingredients should be consumed
+		$this->matchRecipeItems($this->inputs, $this->recipe->getIngredientList(), true, $this->repetitions);
 	}
 
 	protected function callExecuteEvent() : bool{
