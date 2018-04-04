@@ -28,7 +28,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\ItemFactory;
 use pocketmine\lang\TranslationContainer;
-use pocketmine\nbt\JsonNBTParser;
+use pocketmine\nbt\JsonNbtParser;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\TextFormat;
 
@@ -75,7 +75,7 @@ class GiveCommand extends VanillaCommand{
 			$tags = $exception = null;
 			$data = implode(" ", array_slice($args, 3));
 			try{
-				$tags = JsonNBTParser::parseJSON($data);
+				$tags = JsonNbtParser::parseJson($data);
 			}catch(\Exception $ex){
 				$exception = $ex;
 			}

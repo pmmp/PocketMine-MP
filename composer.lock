@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "5db3835d3aa7483520dc89b1778bd765",
+    "content-hash": "4bacfe4e1183113688c2bccd624b15d0",
     "packages": [
         {
             "name": "pocketmine/binaryutils",
@@ -78,12 +78,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "e8fb4c11b291e96c2b44220a5d00f97c1692556e"
+                "reference": "4c06591a6beda8050e144eb82ed10d01c88654a8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/e8fb4c11b291e96c2b44220a5d00f97c1692556e",
-                "reference": "e8fb4c11b291e96c2b44220a5d00f97c1692556e",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/4c06591a6beda8050e144eb82ed10d01c88654a8",
+                "reference": "4c06591a6beda8050e144eb82ed10d01c88654a8",
                 "shasum": ""
             },
             "require": {
@@ -109,7 +109,7 @@
                 "source": "https://github.com/pmmp/NBT/tree/master",
                 "issues": "https://github.com/pmmp/NBT/issues"
             },
-            "time": "2018-03-17T12:16:12+00:00"
+            "time": "2018-04-02T11:14:01+00:00"
         },
         {
             "name": "pocketmine/raklib",
