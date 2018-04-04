@@ -28,7 +28,6 @@ use pocketmine\inventory\CraftingRecipe;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
-use pocketmine\utils\MainLogger;
 
 class CraftingTransaction extends InventoryTransaction{
 	/** @var CraftingRecipe|null */
@@ -47,15 +46,14 @@ class CraftingTransaction extends InventoryTransaction{
 	 * @param bool   $wildcards
 	 *
 	 * @return int
-	 * @throws \InvalidStateException
-	 * @throws \InvalidArgumentException
+	 * @throws TransactionValidationException
 	 */
 	protected function matchRecipeItems(array $txItems, array $recipeItems, bool $wildcards) : int{
 		if(empty($recipeItems)){
-			throw new \InvalidArgumentException("No recipe items given");
+			throw new TransactionValidationException("No recipe items given");
 		}
 		if(empty($txItems)){
-			throw new \InvalidArgumentException("No transaction items given");
+			throw new TransactionValidationException("No transaction items given");
 		}
 
 		$iterations = 0;
@@ -80,59 +78,54 @@ class CraftingTransaction extends InventoryTransaction{
 
 			if($haveCount % $needCount !== 0){
 				//wrong count for this output, should divide exactly
-				throw new \InvalidStateException("Expected an exact multiple of required $recipeItem (given: $haveCount, needed: $needCount)");
+				throw new TransactionValidationException("Expected an exact multiple of required $recipeItem (given: $haveCount, needed: $needCount)");
 			}
 
 			$multiplier = intdiv($haveCount, $needCount);
 			if($multiplier < 1){
-				throw new \InvalidStateException("Expected more than zero items matching $recipeItem (given: $haveCount, needed: $needCount)");
+				throw new TransactionValidationException("Expected more than zero items matching $recipeItem (given: $haveCount, needed: $needCount)");
 			}
 			if($iterations === 0){
 				$iterations = $multiplier;
 			}elseif($multiplier !== $iterations){
 				//wrong count for this output, should match previous outputs
-				throw new \InvalidStateException("Expected $recipeItem x$iterations, but found x$multiplier");
+				throw new TransactionValidationException("Expected $recipeItem x$iterations, but found x$multiplier");
 			}
 		}
 
 		if($iterations < 1){
-			throw new \InvalidStateException("Tried to craft zero times");
+			throw new TransactionValidationException("Tried to craft zero times");
 		}
 		if(!empty($txItems)){
 			//all items should be destroyed in this process
-			throw new \InvalidStateException("Expected 0 ingredients left over, have " . count($txItems));
+			throw new TransactionValidationException("Expected 0 ingredients left over, have " . count($txItems));
 		}
 
 		return $iterations;
 	}
 
-
-	public function canExecute() : bool{
+	public function validate() : void{
 		$this->squashDuplicateSlotChanges();
 		if(count($this->actions) < 1){
-			return false;
+			throw new TransactionValidationException("Transaction must have at least one action to be executable");
 		}
 
 		$this->matchItems($this->outputs, $this->inputs);
 
 		$this->recipe = $this->source->getServer()->getCraftingManager()->matchRecipe($this->source->getCraftingGrid(), $this->outputs);
 		if($this->recipe === null){
-			return false;
+			throw new TransactionValidationException("Unable to match a recipe to transaction");
 		}
 
 		try{
 			$this->repetitions = $this->matchRecipeItems($this->outputs, $this->recipe->getResultsFor($this->source->getCraftingGrid()), false);
 
 			if(($inputIterations = $this->matchRecipeItems($this->inputs, $this->recipe->getIngredientList(), true)) !== $this->repetitions){
-				throw new \InvalidStateException("Tried to craft recipe $this->repetitions times in batch, but have enough inputs for $inputIterations");
+				throw new TransactionValidationException("Tried to craft recipe $this->repetitions times in batch, but have enough inputs for $inputIterations");
 			}
-
-			return true;
 		}catch(\InvalidStateException $e){
-			MainLogger::getLogger()->debug("Failed to validate crafting transaction for " . $this->source->getName() . ": " . $e->getMessage());
+			throw new TransactionValidationException($e->getMessage());
 		}
-
-		return false;
 	}
 
 	protected function callExecuteEvent() : bool{
