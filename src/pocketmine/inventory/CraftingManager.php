@@ -254,6 +254,29 @@ class CraftingManager{
 	}
 
 	/**
+	 * @param Item[] $outputs
+	 *
+	 * @return CraftingRecipe[]|\Generator
+	 */
+	public function matchRecipeByOutputs(array $outputs) : \Generator{
+		//TODO: try to match special recipes before anything else (first they need to be implemented!)
+
+		$outputHash = self::hashOutputs($outputs);
+
+		if(isset($this->shapedRecipes[$outputHash])){
+			foreach($this->shapedRecipes[$outputHash] as $recipe){
+				yield $recipe;
+			}
+		}
+
+		if(isset($this->shapelessRecipes[$outputHash])){
+			foreach($this->shapelessRecipes[$outputHash] as $recipe){
+				yield $recipe;
+			}
+		}
+	}
+
+	/**
 	 * @param Item $input
 	 *
 	 * @return FurnaceRecipe|null

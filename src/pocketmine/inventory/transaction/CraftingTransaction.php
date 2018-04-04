@@ -111,15 +111,26 @@ class CraftingTransaction extends InventoryTransaction{
 
 		$this->matchItems($this->outputs, $this->inputs);
 
-		$this->recipe = $this->source->getServer()->getCraftingManager()->matchRecipe($this->source->getCraftingGrid(), $this->outputs);
-		if($this->recipe === null){
-			throw new TransactionValidationException("Unable to match a recipe to transaction");
+		$failed = 0;
+		foreach($this->source->getServer()->getCraftingManager()->matchRecipeByOutputs($this->outputs) as $recipe){
+			try{
+				//compute number of times recipe was crafted
+				$this->repetitions = $this->matchRecipeItems($this->outputs, $recipe->getResultsFor($this->source->getCraftingGrid()), false);
+				//assert that $repetitions x recipe ingredients should be consumed
+				$this->matchRecipeItems($this->inputs, $recipe->getIngredientList(), true, $this->repetitions);
+
+				//Success!
+				$this->recipe = $recipe;
+				break;
+			}catch(TransactionValidationException $e){
+				//failed
+				++$failed;
+			}
 		}
 
-		//compute number of times recipe was crafted
-		$this->repetitions = $this->matchRecipeItems($this->outputs, $this->recipe->getResultsFor($this->source->getCraftingGrid()), false);
-		//assert that $repetitions x recipe ingredients should be consumed
-		$this->matchRecipeItems($this->inputs, $this->recipe->getIngredientList(), true, $this->repetitions);
+		if($this->recipe === null){
+			throw new TransactionValidationException("Unable to match a recipe to transaction (tried to match against $failed recipes)");
+		}
 	}
 
 	protected function callExecuteEvent() : bool{
