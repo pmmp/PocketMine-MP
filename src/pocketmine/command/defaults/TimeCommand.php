@@ -101,7 +101,7 @@ class TimeCommand extends VanillaCommand{
 			}
 
 			if($args[1] === "day"){
-				$value = 0;
+				$value = Level::TIME_DAY;
 			}elseif($args[1] === "night"){
 				$value = Level::TIME_NIGHT;
 			}else{
