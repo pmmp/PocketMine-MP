@@ -25,6 +25,10 @@ namespace pocketmine\network\mcpe\protocol\types;
 
 class EntityLink{
 
+	public const TYPE_REMOVE = 0;
+	public const TYPE_RIDER = 1;
+	public const TYPE_PASSENGER = 2;
+
 	/** @var int */
 	public $fromEntityUniqueId;
 	/** @var int */
