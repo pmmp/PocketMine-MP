@@ -68,16 +68,16 @@ class ResourcePacksInfoPacket extends DataPacket{
 			$this->putString($entry->getPackId());
 			$this->putString($entry->getPackVersion());
 			$this->putLLong($entry->getPackSize());
-			$this->putString(""); //TODO
-			$this->putString(""); //TODO
+			$this->putString(""); //TODO: encryption key
+			$this->putString(""); //TODO: subpack name
 		}
 		$this->putLShort(count($this->resourcePackEntries));
 		foreach($this->resourcePackEntries as $entry){
 			$this->putString($entry->getPackId());
 			$this->putString($entry->getPackVersion());
 			$this->putLLong($entry->getPackSize());
-			$this->putString(""); //TODO
-			$this->putString(""); //TODO
+			$this->putString(""); //TODO: encryption key
+			$this->putString(""); //TODO: subpack name
 		}
 	}
 
