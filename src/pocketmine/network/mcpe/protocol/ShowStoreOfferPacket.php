@@ -33,16 +33,16 @@ class ShowStoreOfferPacket extends DataPacket{
 	/** @var string */
 	public $offerId;
 	/** @var bool */
-	public $unknownBool;
+	public $showAll;
 
 	protected function decodePayload(){
 		$this->offerId = $this->getString();
-		$this->unknownBool = $this->getBool();
+		$this->showAll = $this->getBool();
 	}
 
 	protected function encodePayload(){
 		$this->putString($this->offerId);
-		$this->putBool($this->unknownBool);
+		$this->putBool($this->showAll);
 	}
 
 	public function handle(NetworkSession $session) : bool{

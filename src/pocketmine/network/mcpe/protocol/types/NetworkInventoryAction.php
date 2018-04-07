@@ -82,7 +82,7 @@ class NetworkInventoryAction{
 	/** @var int */
 	public $windowId = ContainerIds::NONE;
 	/** @var int */
-	public $unknown = 0;
+	public $sourceFlags = 0;
 	/** @var int */
 	public $inventorySlot;
 	/** @var Item */
@@ -102,7 +102,7 @@ class NetworkInventoryAction{
 				$this->windowId = $packet->getVarInt();
 				break;
 			case self::SOURCE_WORLD:
-				$this->unknown = $packet->getUnsignedVarInt();
+				$this->sourceFlags = $packet->getUnsignedVarInt();
 				break;
 			case self::SOURCE_CREATIVE:
 				break;
@@ -137,7 +137,7 @@ class NetworkInventoryAction{
 				$packet->putVarInt($this->windowId);
 				break;
 			case self::SOURCE_WORLD:
-				$packet->putUnsignedVarInt($this->unknown);
+				$packet->putUnsignedVarInt($this->sourceFlags);
 				break;
 			case self::SOURCE_CREATIVE:
 				break;
