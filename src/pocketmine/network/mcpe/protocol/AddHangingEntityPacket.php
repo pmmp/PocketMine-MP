@@ -30,8 +30,8 @@ use pocketmine\network\mcpe\NetworkSession;
 class AddHangingEntityPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::ADD_HANGING_ENTITY_PACKET;
 
-	/** @var int */
-	public $entityUniqueId;
+	/** @var int|null */
+	public $entityUniqueId = null;
 	/** @var int */
 	public $entityRuntimeId;
 	/** @var int */
@@ -41,20 +41,20 @@ class AddHangingEntityPacket extends DataPacket{
 	/** @var int */
 	public $z;
 	/** @var int */
-	public $unknown; //TODO (rotation?)
+	public $direction;
 
 	protected function decodePayload(){
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->getBlockPosition($this->x, $this->y, $this->z);
-		$this->unknown = $this->getVarInt();
+		$this->direction = $this->getVarInt();
 	}
 
 	protected function encodePayload(){
-		$this->putEntityUniqueId($this->entityUniqueId);
+		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putBlockPosition($this->x, $this->y, $this->z);
-		$this->putVarInt($this->unknown);
+		$this->putVarInt($this->direction);
 	}
 
 	public function handle(NetworkSession $session) : bool{
