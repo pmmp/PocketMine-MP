@@ -73,7 +73,7 @@ class PlayerListPacket extends DataPacket{
 					$geometryData
 				);
 				$entry->xboxUserId = $this->getString();
-				$this->getString(); //unknown
+				$entry->platformChatId = $this->getString();
 			}else{
 				$entry->uuid = $this->getUUID();
 			}
@@ -98,7 +98,7 @@ class PlayerListPacket extends DataPacket{
 				$this->putString($entry->skin->getGeometryName());
 				$this->putString($entry->skin->getGeometryData());
 				$this->putString($entry->xboxUserId);
-				$this->putString("");
+				$this->putString($entry->platformChatId);
 			}else{
 				$this->putUUID($entry->uuid);
 			}

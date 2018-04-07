@@ -38,12 +38,12 @@ class PlayerListEntry{
 	public $thirdPartyName = "";
 	/** @var int */
 	public $platform = 0;
-	/** @var string */
-	public $platformChatId = "";
 	/** @var Skin */
 	public $skin;
 	/** @var string */
 	public $xboxUserId;
+	/** @var string */
+	public $platformChatId = "";
 
 	public static function createRemovalEntry(UUID $uuid) : PlayerListEntry{
 		$entry = new PlayerListEntry();
@@ -52,7 +52,7 @@ class PlayerListEntry{
 		return $entry;
 	}
 
-	public static function createAdditionEntry(UUID $uuid, int $entityUniqueId, string $username, string $thirdPartyName, int $platform, Skin $skin, string $xboxUserId = "") : PlayerListEntry{
+	public static function createAdditionEntry(UUID $uuid, int $entityUniqueId, string $username, string $thirdPartyName, int $platform, Skin $skin, string $xboxUserId = "", string $platformChatId = "") : PlayerListEntry{
 		$entry = new PlayerListEntry();
 		$entry->uuid = $uuid;
 		$entry->entityUniqueId = $entityUniqueId;
@@ -61,6 +61,7 @@ class PlayerListEntry{
 		$entry->platform = $platform;
 		$entry->skin = $skin;
 		$entry->xboxUserId = $xboxUserId;
+		$entry->platformChatId = $platformChatId;
 
 		return $entry;
 	}
