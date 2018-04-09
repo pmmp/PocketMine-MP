@@ -44,6 +44,12 @@ class Painting extends Entity{
 	/** @var float */
 	protected $drag = 1.0;
 
+	//these aren't accurate, but it doesn't matter since they aren't used (vanilla PC does something similar)
+	/** @var float */
+	public $height = 0.5;
+	/** @var float */
+	public $width = 0.5;
+
 	/** @var Vector3 */
 	protected $blockIn;
 	/** @var int */
