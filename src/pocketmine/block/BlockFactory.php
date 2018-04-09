@@ -439,6 +439,11 @@ class BlockFactory{
 	 * @return int
 	 */
 	public static function toStaticRuntimeId(int $id, int $meta = 0) : int{
+		if($id === Block::AIR){
+			//TODO: HACK! (weird air blocks with non-zero damage values shouldn't turn into update! blocks)
+			$meta = 0;
+		}
+
 		$index = ($id << 4) | $meta;
 		if(!isset(self::$staticRuntimeIdMap[$index])){
 			self::registerMapping($rtId = ++self::$lastRuntimeId, $id, $meta);
