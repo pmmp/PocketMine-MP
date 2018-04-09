@@ -54,6 +54,15 @@ interface PluginLoader{
 	public function getPluginFilters() : string;
 
 	/**
+	 * Returns whether this PluginLoader can load the plugin in the given path.
+	 *
+	 * @param string $path
+	 *
+	 * @return bool
+	 */
+	public function canLoadPlugin(string $path) : bool;
+
+	/**
 	 * @param Plugin $plugin
 	 *
 	 * @return void

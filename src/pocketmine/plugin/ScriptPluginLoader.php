@@ -124,6 +124,11 @@ class ScriptPluginLoader implements PluginLoader{
 		return "/\\.php$/i";
 	}
 
+	public function canLoadPlugin(string $path) : bool{
+		$ext = ".php";
+		return is_file($path) and substr($path, -strlen($ext)) === $ext;
+	}
+
 	/**
 	 * @param PluginBase        $plugin
 	 * @param PluginDescription $description
