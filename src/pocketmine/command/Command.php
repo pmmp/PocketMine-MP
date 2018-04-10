@@ -36,8 +36,6 @@ abstract class Command{
 
 	/** @var string */
 	private $name;
-	/** @var array */
-	protected $commandData = null;
 
 	/** @var string */
 	private $nextLabel;
