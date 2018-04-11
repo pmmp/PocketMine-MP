@@ -153,7 +153,7 @@ class StartGamePacket extends DataPacket{
 		$this->xboxLiveBroadcastMode = $this->getVarInt();
 		$this->serverChunkTickRadius = $this->getLInt();
 		$this->hasPlatformBroadcast = $this->getBool();
-		$this->platformBroadcastMode = $this->getUnsignedVarInt();
+		$this->platformBroadcastMode = $this->getVarInt();
 		$this->xboxLiveBroadcastIntent = $this->getBool();
 
 		$this->levelId = $this->getString();
@@ -200,7 +200,7 @@ class StartGamePacket extends DataPacket{
 		$this->putVarInt($this->xboxLiveBroadcastMode);
 		$this->putLInt($this->serverChunkTickRadius);
 		$this->putBool($this->hasPlatformBroadcast);
-		$this->putUnsignedVarInt($this->platformBroadcastMode);
+		$this->putVarInt($this->platformBroadcastMode);
 		$this->putBool($this->xboxLiveBroadcastIntent);
 
 		$this->putString($this->levelId);
