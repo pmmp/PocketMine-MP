@@ -65,7 +65,7 @@ class NetworkBinaryStream extends BinaryStream{
 
 	public function getSlot() : Item{
 		$id = $this->getVarInt();
-		if($id <= 0){
+		if($id === 0){
 			return ItemFactory::get(0, 0, 0);
 		}
 
