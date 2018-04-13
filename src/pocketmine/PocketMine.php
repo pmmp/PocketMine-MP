@@ -202,8 +202,8 @@ namespace pocketmine {
 	if(!class_exists(RakLib::class)){
 		composer_error_die("Unable to find the RakLib library.");
 	}
-	if(version_compare(RakLib::VERSION, "0.9.0") < 0){ //TODO: remove this check (it's managed by Composer now)
-		composer_error_die("RakLib version 0.9.0 is required, while you have version " . RakLib::VERSION . ".");
+	if(version_compare(RakLib::VERSION, "0.11.0") < 0){ //TODO: remove this check (it's managed by Composer now)
+		composer_error_die("RakLib version 0.11.0 is required, while you have version " . RakLib::VERSION . ".");
 	}
 	if(!class_exists(\BaseClassLoader::class)){
 		composer_error_die("Unable to find the PocketMine-SPL library.");
