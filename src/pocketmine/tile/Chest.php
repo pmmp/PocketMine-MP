@@ -29,9 +29,7 @@ use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\Player;
 
 class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
@@ -192,8 +190,6 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	}
 
 	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
-		$nbt->setTag(new ListTag("Items", [], NBT::TAG_Compound));
-
 		if($item !== null and $item->hasCustomName()){
 			$nbt->setString("CustomName", $item->getCustomName());
 		}
