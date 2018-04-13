@@ -26,11 +26,9 @@ namespace pocketmine\tile;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
-use pocketmine\Player;
 
 class ItemFrame extends Spawnable{
 	public const TAG_ITEM_ROTATION = "ItemRotation";
@@ -96,10 +94,5 @@ class ItemFrame extends Spawnable{
 		if($this->hasItem()){
 			$nbt->setTag($this->namedtag->getTag(self::TAG_ITEM));
 		}
-	}
-
-	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
-		$nbt->setFloat(self::TAG_ITEM_DROP_CHANCE, 1.0);
-		$nbt->setByte(self::TAG_ITEM_ROTATION, 0);
 	}
 }

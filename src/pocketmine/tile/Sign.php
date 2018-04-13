@@ -171,13 +171,8 @@ class Sign extends Spawnable{
 	}
 
 	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
-		for($i = 1; $i <= 4; ++$i){
-			$nbt->setString(sprintf(self::TAG_TEXT_LINE, $i), "");
-		}
-
 		if($player !== null){
 			$nbt->setString(self::TAG_CREATOR, $player->getRawUniqueId());
 		}
 	}
-
 }

@@ -26,11 +26,9 @@ namespace pocketmine\tile;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ShortTag;
-use pocketmine\Player;
 
 class FlowerPot extends Spawnable{
 	public const TAG_ITEM = "item";
@@ -91,10 +89,5 @@ class FlowerPot extends Spawnable{
 	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->setTag($this->namedtag->getTag(self::TAG_ITEM));
 		$nbt->setTag($this->namedtag->getTag(self::TAG_ITEM_DATA));
-	}
-
-	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
-		$nbt->setShort(self::TAG_ITEM, 0);
-		$nbt->setInt(self::TAG_ITEM_DATA, 0);
 	}
 }
