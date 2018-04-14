@@ -79,7 +79,7 @@ abstract class Event{
 	 * @param bool $value
 	 */
 	public function setFinallyCancelled(bool $value = true) : void{
-		if(!$this->isCancellable()){
+		if(!($this instanceof Cancellable)){
 			throw new \BadMethodCallException("Event is not Cancellable");
 		}
 
@@ -90,7 +90,7 @@ abstract class Event{
 	 * @return bool
 	 */
 	public function isFinallyCancelled() : bool{
-		if(!$this->isCancellable()){
+		if(!($this instanceof Cancellable)){
 			throw new \BadMethodCallException("Event is not Cancellable");
 		}
 
