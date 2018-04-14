@@ -20,6 +20,7 @@
 declare(strict_types=1);
 namespace pocketmine\command\defaults;
 
+use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
@@ -30,7 +31,7 @@ class XPCommand extends VanillaCommand{
 	        parent::__construct(
 		        $name,
 		        "%pocketmine.command.xp.description",
-		        "%pocketmine.commands.xp.usage"
+		        "%pocketmine.command.xp.usage"
 		);
 	$this->setPermission("pocketmine.command.xp");
 	}
@@ -54,7 +55,10 @@ class XPCommand extends VanillaCommand{
                 if(strtolower(preg_replace("/[^a-zA-Z]/", "",$args[0])) == "l"){
                         $xp = intval(preg_replace("/[^0-9]+/", "", $args[0]), 10);
                         $player->addXpLevels($xp);
-                        $sender->sendMessage(new TranslationContainer("command.xp.success"));
+                        Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.xp.success", [
+                                $args[0],
+                                $player->getName()
+                        ]));
                         return true;
                         
                 }elseif(!is_numeric($args[0])){
@@ -64,7 +68,10 @@ class XPCommand extends VanillaCommand{
                 
                 $player->addXp(intval($args[0]));
                 
-                $sender->sendMessage(new TranslationContainer("command.xp.success"));
+                Command::broadcastCommandMessage($sender, new TranslationContainer("commands.xp.success", [
+                        $args[0],
+                        $player->getName()
+                ]));
         }
 }
 
