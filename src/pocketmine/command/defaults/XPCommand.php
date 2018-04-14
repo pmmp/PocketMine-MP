@@ -22,47 +22,49 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\entity\utils\ExperienceUtils;
-use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\utils\TextFormat;
-use pocketmine\Player;
 
 class XPCommand extends VanillaCommand{
-    public function __construct(string $name){
-	parent::__construct(
-		$name,
-		"%pocketmine.command.xp.description",
-		"%commands.xp.usage"
+        public function __construct(string $name){
+	        parent::__construct(
+		        $name,
+		        "%pocketmine.command.xp.description",
+		        "%pocketmine.commands.xp.usage"
 		);
 	$this->setPermission("pocketmine.command.xp");
 	}
-    public function execute(CommandSender $sender, string $commandLabel, array $args){
-	if(!$this->testPermission($sender)){
-		return true;
-	}
-        if(count($args) < 2){
-	    throw new InvalidCommandSyntaxException();
-	}
-        $player = $sender->getServer()->getPlayer($args[1]);
-        if($player === null){
-	    $sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
-	    return true;
-        }
-        if(strtolower(preg_replace('/[^a-zA-Z]/', '',$args[0])) == "l"){
-            $xp = intval(preg_replace('/[^0-9]+/', '', $args[0]), 10);
-            $player->setXpLevel(intval($player->getXpLevel()) + $xp);
-            $sender->sendMessage(new TranslationContainer("command.xp.success"));
-            return true;
-        }
-        elseif(!is_numeric($args[0])){
-            $sender->sendMessage(TextFormat::RED. "Please write in numbers");
-            return true;
-        } 
-        $player->addXp(intval($args[0]));
-        $sender->sendMessage(new TranslationContainer("command.xp.success"));
-            
+        
+        public function execute(CommandSender $sender, string $commandLabel, array $args){
+	        if(!$this->testPermission($sender)){
+		        return true;
+	        }
+                
+                if(count($args) < 2){
+	                throw new InvalidCommandSyntaxException();
+	        }
+                
+                $player = $sender->getServer()->getPlayer($args[1]);
+                
+                if($player === null){
+	                $sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
+	                return true;
+                }
+                
+                if(strtolower(preg_replace("/[^a-zA-Z]/", "",$args[0])) == "l"){
+                        $xp = intval(preg_replace("/[^0-9]+/", "", $args[0]), 10);
+                        $player->addXpLevels($xp);
+                        $sender->sendMessage(new TranslationContainer("command.xp.success"));
+                        return true;
+                        
+                }elseif(!is_numeric($args[0])){
+                        $sender->sendMessage(TextFormat::RED. "Please write in numbers");
+                        return true;
+                } 
+                
+                $player->addXp(intval($args[0]));
+                
+                $sender->sendMessage(new TranslationContainer("command.xp.success"));
     }
-
 }
 
