@@ -2041,7 +2041,7 @@ class Server{
 				$this->scheduler->mainThreadHeartbeat(PHP_INT_MAX);
 			}
 
-			if($this->properties->hasChanged()){
+			if($this->properties !== null and $this->properties->hasChanged()){
 				$this->getLogger()->debug("Saving properties");
 				$this->properties->save();
 			}
