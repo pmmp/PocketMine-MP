@@ -45,37 +45,46 @@ class XPCommand extends VanillaCommand{
 		        return true;
 	        }
                 
-                if(count($args) < 2){
+                if(count($args) < 1){
 	                throw new InvalidCommandSyntaxException();
 	        }
                 
-                $player = $sender->getServer()->getPlayer($args[1]);
-                
-                if($player === null){
-	                $sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
-	                return true;
+                if(isset($args[1])){
+                        $player = $sender->getServer()->getPlayer($args[1]);
+                        if($player === null){
+	                        $sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
+	                        return true;
+                        }
                 }
                 
                 if(strtolower(preg_replace("/[^a-zA-Z]/", "",$args[0])) == "l"){
                         $xp = intval(preg_replace("/[^0-9]+/", "", $args[0]), 10);
-                        $player->addXpLevels($xp);
-                        Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.xp.success", [
-                                $args[0],
-                                $player->getName()
-                        ]));
+                        if(isset($args[1])){
+                                $player->addXpLevels($xp);
+                                Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.xp.success", [
+                                        $xp,
+                                        $player->getName()
+                                ]));
                         return true;
+                        }else{
+                                $sender->getServer()->getPlayer($sender->getName())->addXpLevels($xp);
+                                Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.xp.success.self",[$xp]));
+                                return true;
+                        }
                         
                 }elseif(!is_numeric($args[0])){
                         $sender->sendMessage(TextFormat::RED. "Please write in numbers");
                         return true;
                 } 
-                
-                $player->addXp(intval($args[0]));
-                
-                Command::broadcastCommandMessage($sender, new TranslationContainer("commands.xp.success", [
-                        $args[0],
-                        $player->getName()
-                ]));
+                if(isset($args[1])){
+                        $player->addXp(intval($args[0]));
+                        Command::broadcastCommandMessage($sender, new TranslationContainer("commands.xp.success", [
+                                intval($args[0]),
+                                $player->getName()
+                        ]));
+                }else{
+                        $sender->getServer()->getPlayer($sender->getName())->addXp(intval($args[0]));
+                        Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.xp.success.self",[intval($args[0])]));
+                }
         }
 }
-
