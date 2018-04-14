@@ -1,4 +1,5 @@
 <?php
+
 /*
  *
  *  ____            _        _   __  __ _                  __  __ ____
@@ -17,8 +18,11 @@
  *
  *
 */
+
 declare(strict_types=1);
+
 namespace pocketmine\command;
+
 use pocketmine\command\defaults\BanCommand;
 use pocketmine\command\defaults\BanIpCommand;
 use pocketmine\command\defaults\BanListCommand;
@@ -65,17 +69,22 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
+
 class SimpleCommandMap implements CommandMap{
+
 	/**
 	 * @var Command[]
 	 */
 	protected $knownCommands = [];
+
 	/** @var Server */
 	private $server;
+
 	public function __construct(Server $server){
 		$this->server = $server;
 		$this->setDefaultCommands();
 	}
+
 	private function setDefaultCommands(){
 		$this->registerAll("pocketmine", [
 			new BanCommand("ban"),
@@ -117,6 +126,7 @@ class SimpleCommandMap implements CommandMap{
 			new WhitelistCommand("whitelist"),
                         new XPCommand("xp")
 		]);
+
 		if($this->server->getProperty("debug.commands", false)){
 			$this->registerAll("pocketmine", [
 				new StatusCommand("status"),
@@ -125,11 +135,14 @@ class SimpleCommandMap implements CommandMap{
 			]);
 		}
 	}
+
+
 	public function registerAll(string $fallbackPrefix, array $commands){
 		foreach($commands as $command){
 			$this->register($fallbackPrefix, $command);
 		}
 	}
+
 	/**
 	 * @param string      $fallbackPrefix
 	 * @param Command     $command
@@ -143,7 +156,9 @@ class SimpleCommandMap implements CommandMap{
 		}
 		$label = trim($label);
 		$fallbackPrefix = strtolower(trim($fallbackPrefix));
+
 		$registered = $this->registerAlias($command, false, $fallbackPrefix, $label);
+
 		$aliases = $command->getAliases();
 		foreach($aliases as $index => $alias){
 			if(!$this->registerAlias($command, true, $fallbackPrefix, $alias)){
@@ -151,12 +166,16 @@ class SimpleCommandMap implements CommandMap{
 			}
 		}
 		$command->setAliases($aliases);
+
 		if(!$registered){
 			$command->setLabel($fallbackPrefix . ":" . $label);
 		}
+
 		$command->register($this);
+
 		return $registered;
 	}
+
 	/**
 	 * @param Command $command
 	 *
@@ -168,9 +187,12 @@ class SimpleCommandMap implements CommandMap{
 				unset($this->knownCommands[$lbl]);
 			}
 		}
+
 		$command->unregister($this);
+
 		return true;
 	}
+
 	/**
 	 * @param Command $command
 	 * @param bool $isAlias
@@ -184,15 +206,20 @@ class SimpleCommandMap implements CommandMap{
 		if(($command instanceof VanillaCommand or $isAlias) and isset($this->knownCommands[$label])){
 			return false;
 		}
+
 		if(isset($this->knownCommands[$label]) and $this->knownCommands[$label]->getLabel() !== null and $this->knownCommands[$label]->getLabel() === $label){
 			return false;
 		}
+
 		if(!$isAlias){
 			$command->setLabel($label);
 		}
+
 		$this->knownCommands[$label] = $command;
+
 		return true;
 	}
+
 	/**
 	 * Returns a command to match the specified command line, or null if no matching command was found.
 	 * This method is intended to provide capability for handling commands with spaces in their name.
@@ -205,23 +232,30 @@ class SimpleCommandMap implements CommandMap{
 	 */
 	public function matchCommand(string &$commandName, array &$args){
 		$count = min(count($args), 255);
+
 		for($i = 0; $i < $count; ++$i){
 			$commandName .= array_shift($args);
 			if(($command = $this->getCommand($commandName)) instanceof Command){
 				return $command;
 			}
+
 			$commandName .= " ";
 		}
+
 		return null;
 	}
+
 	public function dispatch(CommandSender $sender, string $commandLine) : bool{
 		$args = array_map("stripslashes", str_getcsv($commandLine, " "));
 		$sentCommandLabel = "";
 		$target = $this->matchCommand($sentCommandLabel, $args);
+
 		if($target === null){
 			return false;
 		}
+
 		$target->timings->startTiming();
+
 		try{
 			$target->execute($sender, $sentCommandLabel, $args);
 		}catch(InvalidCommandSyntaxException $e){
@@ -231,9 +265,12 @@ class SimpleCommandMap implements CommandMap{
 			$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.command.exception", [$commandLine, (string) $target, $e->getMessage()]));
 			$sender->getServer()->getLogger()->logException($e);
 		}
+
 		$target->timings->stopTiming();
+
 		return true;
 	}
+
 	public function clearCommands(){
 		foreach($this->knownCommands as $command){
 			$command->unregister($this);
@@ -241,32 +278,41 @@ class SimpleCommandMap implements CommandMap{
 		$this->knownCommands = [];
 		$this->setDefaultCommands();
 	}
+
 	public function getCommand(string $name){
 		return $this->knownCommands[$name] ?? null;
 	}
+
 	/**
 	 * @return Command[]
 	 */
 	public function getCommands() : array{
 		return $this->knownCommands;
 	}
+
+
 	/**
 	 * @return void
 	 */
 	public function registerServerAliases(){
 		$values = $this->server->getCommandAliases();
+
 		foreach($values as $alias => $commandStrings){
 			if(strpos($alias, ":") !== false){
 				$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.command.alias.illegal", [$alias]));
 				continue;
 			}
+
 			$targets = [];
+
 			$bad = "";
 			$recursive = "";
 			foreach($commandStrings as $commandString){
 				$args = explode(" ", $commandString);
 				$commandName = "";
 				$command = $this->matchCommand($commandName, $args);
+
+
 				if($command === null){
 					if(strlen($bad) > 0){
 						$bad .= ", ";
@@ -281,20 +327,26 @@ class SimpleCommandMap implements CommandMap{
 					$targets[] = $commandString;
 				}
 			}
+
 			if($recursive !== ""){
 				$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.command.alias.recursive", [$alias, $recursive]));
 				continue;
 			}
+
 			if(strlen($bad) > 0){
 				$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.command.alias.notFound", [$alias, $bad]));
 				continue;
 			}
+
 			//These registered commands have absolute priority
 			if(count($targets) > 0){
 				$this->knownCommands[strtolower($alias)] = new FormattedCommandAlias(strtolower($alias), $targets);
 			}else{
 				unset($this->knownCommands[strtolower($alias)]);
 			}
+
 		}
 	}
+
+
 }
