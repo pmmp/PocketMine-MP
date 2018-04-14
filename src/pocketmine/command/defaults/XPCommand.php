@@ -30,6 +30,7 @@ use pocketmine\lang\TranslationContainer;
 use pocketmine\utils\TextFormat;
 
 class XPCommand extends VanillaCommand{
+	
         public function __construct(string $name){
 	        parent::__construct(
 		        $name,
