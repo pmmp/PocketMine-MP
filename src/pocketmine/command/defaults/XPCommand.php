@@ -65,6 +65,6 @@ class XPCommand extends VanillaCommand{
                 $player->addXp(intval($args[0]));
                 
                 $sender->sendMessage(new TranslationContainer("command.xp.success"));
-    }
+        }
 }
 
