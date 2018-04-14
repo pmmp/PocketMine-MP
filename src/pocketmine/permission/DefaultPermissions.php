@@ -1,5 +1,4 @@
 <?php
-
 /*
  *
  *  ____            _        _   __  __ _                  __  __ ____
@@ -18,16 +17,11 @@
  *
  *
 */
-
 declare(strict_types=1);
-
 namespace pocketmine\permission;
-
 use pocketmine\Server;
-
 abstract class DefaultPermissions{
 	public const ROOT = "pocketmine";
-
 	/**
 	 * @param Permission $perm
 	 * @param Permission $parent
@@ -37,27 +31,20 @@ abstract class DefaultPermissions{
 	public static function registerPermission(Permission $perm, Permission $parent = null) : Permission{
 		if($parent instanceof Permission){
 			$parent->getChildren()[$perm->getName()] = true;
-
 			return self::registerPermission($perm);
 		}
 		Server::getInstance()->getPluginManager()->addPermission($perm);
-
 		return Server::getInstance()->getPluginManager()->getPermission($perm->getName());
 	}
-
 	public static function registerCorePermissions(){
 		$parent = self::registerPermission(new Permission(self::ROOT, "Allows using all PocketMine commands and utilities"));
-
 		$broadcasts = self::registerPermission(new Permission(self::ROOT . ".broadcast", "Allows the user to receive all broadcast messages"), $parent);
 		self::registerPermission(new Permission(self::ROOT . ".broadcast.admin", "Allows the user to receive administrative broadcasts", Permission::DEFAULT_OP), $broadcasts);
 		self::registerPermission(new Permission(self::ROOT . ".broadcast.user", "Allows the user to receive user broadcasts", Permission::DEFAULT_TRUE), $broadcasts);
 		$broadcasts->recalculatePermissibles();
-
 		$spawnprotect = self::registerPermission(new Permission(self::ROOT . ".spawnprotect.bypass", "Allows the user to edit blocks within the protected spawn radius", Permission::DEFAULT_OP), $parent);
 		$spawnprotect->recalculatePermissibles();
-
 		$commands = self::registerPermission(new Permission(self::ROOT . ".command", "Allows using all PocketMine commands"), $parent);
-
 		$whitelist = self::registerPermission(new Permission(self::ROOT . ".command.whitelist", "Allows the user to modify the server whitelist", Permission::DEFAULT_OP), $commands);
 		self::registerPermission(new Permission(self::ROOT . ".command.whitelist.add", "Allows the user to add a player to the server whitelist"), $whitelist);
 		self::registerPermission(new Permission(self::ROOT . ".command.whitelist.remove", "Allows the user to remove a player to the server whitelist"), $whitelist);
@@ -66,28 +53,23 @@ abstract class DefaultPermissions{
 		self::registerPermission(new Permission(self::ROOT . ".command.whitelist.disable", "Allows the user to disable the server whitelist"), $whitelist);
 		self::registerPermission(new Permission(self::ROOT . ".command.whitelist.list", "Allows the user to list all the players on the server whitelist"), $whitelist);
 		$whitelist->recalculatePermissibles();
-
 		$ban = self::registerPermission(new Permission(self::ROOT . ".command.ban", "Allows the user to ban people", Permission::DEFAULT_OP), $commands);
 		self::registerPermission(new Permission(self::ROOT . ".command.ban.player", "Allows the user to ban players"), $ban);
 		self::registerPermission(new Permission(self::ROOT . ".command.ban.ip", "Allows the user to ban IP addresses"), $ban);
 		$ban->recalculatePermissibles();
-
 		$unban = self::registerPermission(new Permission(self::ROOT . ".command.unban", "Allows the user to unban people", Permission::DEFAULT_OP), $commands);
 		self::registerPermission(new Permission(self::ROOT . ".command.unban.player", "Allows the user to unban players"), $unban);
 		self::registerPermission(new Permission(self::ROOT . ".command.unban.ip", "Allows the user to unban IP addresses"), $unban);
 		$unban->recalculatePermissibles();
-
 		$op = self::registerPermission(new Permission(self::ROOT . ".command.op", "Allows the user to change operators", Permission::DEFAULT_OP), $commands);
 		self::registerPermission(new Permission(self::ROOT . ".command.op.give", "Allows the user to give a player operator status"), $op);
 		self::registerPermission(new Permission(self::ROOT . ".command.op.take", "Allows the user to take a players operator status"), $op);
 		$op->recalculatePermissibles();
-
 		$save = self::registerPermission(new Permission(self::ROOT . ".command.save", "Allows the user to save the worlds", Permission::DEFAULT_OP), $commands);
 		self::registerPermission(new Permission(self::ROOT . ".command.save.enable", "Allows the user to enable automatic saving"), $save);
 		self::registerPermission(new Permission(self::ROOT . ".command.save.disable", "Allows the user to disable automatic saving"), $save);
 		self::registerPermission(new Permission(self::ROOT . ".command.save.perform", "Allows the user to perform a manual save"), $save);
 		$save->recalculatePermissibles();
-
 		$time = self::registerPermission(new Permission(self::ROOT . ".command.time", "Allows the user to alter the time", Permission::DEFAULT_OP), $commands);
 		self::registerPermission(new Permission(self::ROOT . ".command.time.add", "Allows the user to fast-forward time"), $time);
 		self::registerPermission(new Permission(self::ROOT . ".command.time.set", "Allows the user to change the time"), $time);
@@ -95,12 +77,10 @@ abstract class DefaultPermissions{
 		self::registerPermission(new Permission(self::ROOT . ".command.time.stop", "Allows the user to stop the time"), $time);
 		self::registerPermission(new Permission(self::ROOT . ".command.time.query", "Allows the user query the time"), $time);
 		$time->recalculatePermissibles();
-
 		$kill = self::registerPermission(new Permission(self::ROOT . ".command.kill", "Allows the user to kill players", Permission::DEFAULT_OP), $commands);
 		self::registerPermission(new Permission(self::ROOT . ".command.kill.self", "Allows the user to commit suicide", Permission::DEFAULT_TRUE), $kill);
 		self::registerPermission(new Permission(self::ROOT . ".command.kill.other", "Allows the user to kill other players"), $kill);
 		$kill->recalculatePermissibles();
-
 		self::registerPermission(new Permission(self::ROOT . ".command.me", "Allows the user to perform a chat action", Permission::DEFAULT_TRUE), $commands);
 		self::registerPermission(new Permission(self::ROOT . ".command.tell", "Allows the user to privately message another player", Permission::DEFAULT_TRUE), $commands);
 		self::registerPermission(new Permission(self::ROOT . ".command.say", "Allows the user to talk as the console", Permission::DEFAULT_OP), $commands);
@@ -127,9 +107,8 @@ abstract class DefaultPermissions{
 		self::registerPermission(new Permission(self::ROOT . ".command.setworldspawn", "Allows the user to change the world spawn", Permission::DEFAULT_OP), $commands);
 		self::registerPermission(new Permission(self::ROOT . ".command.transferserver", "Allows the user to transfer self to another server", Permission::DEFAULT_OP), $commands);
 		self::registerPermission(new Permission(self::ROOT . ".command.title", "Allows the user to send a title to the specified player", Permission::DEFAULT_OP), $commands);
-
+                self::registerPermission(new Permission(self::ROOT . ".command.xp", "Allows the user to give/take experience to/from players", Permission::DEFAULT_OP), $commands);
 		$commands->recalculatePermissibles();
-
 		$parent->recalculatePermissibles();
 	}
 }
