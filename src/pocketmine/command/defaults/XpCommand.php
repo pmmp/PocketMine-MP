@@ -58,7 +58,7 @@ class XpCommand extends VanillaCommand{
                 }
             }
                 
-            if(strcasecmp(substr($args[0], -1), "l") == 0){
+            if(strtolower(substr($args[0], -1)) == "l"){
                 $lxp = $this->getInteger($sender, substr($args[0], 0, -1));
                 if(isset($args[1])){
                     $player->addXpLevels($lxp);
