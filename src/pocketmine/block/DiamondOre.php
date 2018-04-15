@@ -56,4 +56,8 @@ class DiamondOre extends Solid{
 			ItemFactory::get(Item::DIAMOND)
 		];
 	}
+
+	protected function getXpDropAmount() : int{
+		return mt_rand(3, 7);
+	}
 }

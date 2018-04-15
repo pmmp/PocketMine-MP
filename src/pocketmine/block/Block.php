@@ -472,6 +472,30 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Returns how much XP will be dropped by breaking this block with the given item.
+	 *
+	 * @param Item $item
+	 *
+	 * @return int
+	 */
+	public function getXpDropForTool(Item $item) : int{
+		if($item->hasEnchantment(Enchantment::SILK_TOUCH) or !$this->isCompatibleWithTool($item)){
+			return 0;
+		}
+
+		return $this->getXpDropAmount();
+	}
+
+	/**
+	 * Returns how much XP this block will drop when broken with an appropriate tool.
+	 *
+	 * @return int
+	 */
+	protected function getXpDropAmount() : int{
+		return 0;
+	}
+
+	/**
 	 * Returns whether Silk Touch enchanted tools will cause this block to drop as itself. Since most blocks drop
 	 * themselves anyway, this is implicitly true.
 	 *
