@@ -4,24 +4,25 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "401dbada37e501304f05b0f1fa818953",
+    "content-hash": "0a9989451e8593a15cde64bf52466e4b",
     "packages": [
         {
             "name": "pocketmine/binaryutils",
-            "version": "0.0.1",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BinaryUtils.git",
-                "reference": "03e6851f814aba96487ec64181a6ae948edd9f7a"
+                "reference": "c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/03e6851f814aba96487ec64181a6ae948edd9f7a",
-                "reference": "03e6851f814aba96487ec64181a6ae948edd9f7a",
+                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595",
+                "reference": "c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.2"
+                "php": ">=7.2",
+                "php-64bit": "*"
             },
             "type": "library",
             "autoload": {
@@ -37,24 +38,25 @@
                 "source": "https://github.com/pmmp/BinaryUtils/tree/master",
                 "issues": "https://github.com/pmmp/BinaryUtils/issues"
             },
-            "time": "2018-03-17T11:57:06+00:00"
+            "time": "2018-04-16T09:05:08+00:00"
         },
         {
             "name": "pocketmine/math",
-            "version": "0.1.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "1df74f0352309a9c1e6728fa416a3f0493d07b16"
+                "reference": "bd78ce8ad1c0a583de6655eee46a82ccaade1302"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/1df74f0352309a9c1e6728fa416a3f0493d07b16",
-                "reference": "1df74f0352309a9c1e6728fa416a3f0493d07b16",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/bd78ce8ad1c0a583de6655eee46a82ccaade1302",
+                "reference": "bd78ce8ad1c0a583de6655eee46a82ccaade1302",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.2.0"
+                "php": ">=7.2.0",
+                "php-64bit": "*"
             },
             "type": "library",
             "autoload": {
@@ -70,25 +72,26 @@
                 "source": "https://github.com/pmmp/Math/tree/master",
                 "issues": "https://github.com/pmmp/Math/issues"
             },
-            "time": "2018-03-18T18:01:56+00:00"
+            "time": "2018-04-16T09:14:46+00:00"
         },
         {
             "name": "pocketmine/nbt",
-            "version": "0.1.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "d79f8615442887bb45cfacdb52e1e6eb47c38fd7"
+                "reference": "09809564c7e58c322dcefc6905ab333313e05d1f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/d79f8615442887bb45cfacdb52e1e6eb47c38fd7",
-                "reference": "d79f8615442887bb45cfacdb52e1e6eb47c38fd7",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/09809564c7e58c322dcefc6905ab333313e05d1f",
+                "reference": "09809564c7e58c322dcefc6905ab333313e05d1f",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.2.0",
-                "pocketmine/binaryutils": "0.0.1"
+                "php-64bit": "*",
+                "pocketmine/binaryutils": "dev-master#c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595"
             },
             "type": "library",
             "autoload": {
@@ -106,23 +109,23 @@
             ],
             "description": "PHP library for working with Named Binary Tags",
             "support": {
-                "source": "https://github.com/pmmp/NBT/tree/0.1.0",
+                "source": "https://github.com/pmmp/NBT/tree/master",
                 "issues": "https://github.com/pmmp/NBT/issues"
             },
-            "time": "2018-04-13T18:43:03+00:00"
+            "time": "2018-04-16T09:13:27+00:00"
         },
         {
             "name": "pocketmine/raklib",
-            "version": "0.11.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "1da1b4c6cc6bd5337ce5e468d22bbb013ae02b43"
+                "reference": "5de9f0dc4b076c454efdb075450737fe312d60ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/1da1b4c6cc6bd5337ce5e468d22bbb013ae02b43",
-                "reference": "1da1b4c6cc6bd5337ce5e468d22bbb013ae02b43",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/5de9f0dc4b076c454efdb075450737fe312d60ce",
+                "reference": "5de9f0dc4b076c454efdb075450737fe312d60ce",
                 "shasum": ""
             },
             "require": {
@@ -130,7 +133,9 @@
                 "ext-pthreads": ">=3.1.7dev",
                 "ext-sockets": "*",
                 "php": ">=7.2.0RC3",
-                "pocketmine/binaryutils": "0.0.1",
+                "php-64bit": "*",
+                "php-ipv6": "*",
+                "pocketmine/binaryutils": "dev-master#c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595",
                 "pocketmine/spl": "0.3.0"
             },
             "type": "library",
@@ -144,10 +149,10 @@
             ],
             "description": "A RakNet server implementation written in PHP",
             "support": {
-                "source": "https://github.com/pmmp/RakLib/tree/0.11.0",
+                "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2018-04-13T19:05:24+00:00"
+            "time": "2018-04-16T09:12:34+00:00"
         },
         {
             "name": "pocketmine/spl",
@@ -186,12 +191,17 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "ext-pthreads": 20
+        "ext-pthreads": 20,
+        "pocketmine/raklib": 20,
+        "pocketmine/binaryutils": 20,
+        "pocketmine/nbt": 20,
+        "pocketmine/math": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=7.2.0",
+        "php-64bit": "*",
         "ext-bcmath": "*",
         "ext-curl": "*",
         "ext-hash": "*",

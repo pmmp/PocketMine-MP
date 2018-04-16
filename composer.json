@@ -6,6 +6,7 @@
    "license": "LGPL-3.0",
    "require": {
       "php": ">=7.2.0",
+      "php-64bit": "*",
       "ext-bcmath": "*",
       "ext-curl": "*",
       "ext-hash": "*",
@@ -21,11 +22,11 @@
       "ext-yaml": ">=2.0.0",
       "ext-zip": "*",
       "ext-zlib": ">=1.2.11",
-      "pocketmine/raklib": "0.11.0",
+      "pocketmine/raklib": "dev-master#5de9f0dc4b076c454efdb075450737fe312d60ce",
       "pocketmine/spl": "0.3.0",
-      "pocketmine/binaryutils": "0.0.1",
-      "pocketmine/nbt": "0.1.0",
-      "pocketmine/math": "0.1.0"
+      "pocketmine/binaryutils": "dev-master#c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595",
+      "pocketmine/nbt": "dev-master#09809564c7e58c322dcefc6905ab333313e05d1f",
+      "pocketmine/math": "dev-master#bd78ce8ad1c0a583de6655eee46a82ccaade1302"
    },
    "autoload": {
       "psr-4": {
