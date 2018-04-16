@@ -21,34 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\level\generator\normal\biome;
+namespace pocketmine\level\biome;
 
-use pocketmine\level\generator\populator\TallGrass;
-use pocketmine\level\generator\populator\Tree;
+use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 
-class MountainsBiome extends GrassyBiome{
+abstract class SandyBiome extends NormalBiome{
 
 	public function __construct(){
-		parent::__construct();
-
-		$trees = new Tree();
-		$trees->setBaseAmount(1);
-		$this->addPopulator($trees);
-
-		$tallGrass = new TallGrass();
-		$tallGrass->setBaseAmount(1);
-
-		$this->addPopulator($tallGrass);
-
-		//TODO: add emerald
-
-		$this->setElevation(63, 127);
-
-		$this->temperature = 0.4;
-		$this->rainfall = 0.5;
-	}
-
-	public function getName() : string{
-		return "Mountains";
+		$this->setGroundCover([
+			BlockFactory::get(Block::SAND, 0),
+			BlockFactory::get(Block::SAND, 0),
+			BlockFactory::get(Block::SANDSTONE, 0),
+			BlockFactory::get(Block::SANDSTONE, 0),
+			BlockFactory::get(Block::SANDSTONE, 0)
+		]);
 	}
 }

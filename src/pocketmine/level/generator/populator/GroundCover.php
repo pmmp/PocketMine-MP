@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\level\generator\populator;
 
 use pocketmine\block\BlockFactory;
+use pocketmine\level\biome\Biome;
 use pocketmine\level\ChunkManager;
-use pocketmine\level\generator\biome\Biome;
 use pocketmine\utils\Random;
 
 class GroundCover extends Populator{

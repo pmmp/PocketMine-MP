@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\level\generator\normal\biome;
+namespace pocketmine\level\biome;
 
 use pocketmine\block\Sapling;
 use pocketmine\level\generator\populator\TallGrass;

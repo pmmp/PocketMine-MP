@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\level\generator\biome;
 
+use pocketmine\level\biome\Biome;
 use pocketmine\level\generator\noise\Simplex;
 use pocketmine\utils\Random;
 

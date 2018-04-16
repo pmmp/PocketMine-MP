@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\level\generator;
 
 use pocketmine\block\BlockFactory;
-use pocketmine\level\generator\biome\Biome;
+use pocketmine\level\biome\Biome;
 use pocketmine\level\Level;
 use pocketmine\level\SimpleChunkManager;
 use pocketmine\scheduler\AsyncTask;

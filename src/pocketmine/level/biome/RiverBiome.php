@@ -21,20 +21,27 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\level\generator\normal\biome;
+namespace pocketmine\level\biome;
 
+use pocketmine\level\generator\populator\TallGrass;
 
-class DesertBiome extends SandyBiome{
+class RiverBiome extends GrassyBiome{
 
 	public function __construct(){
 		parent::__construct();
-		$this->setElevation(63, 74);
 
-		$this->temperature = 2;
-		$this->rainfall = 0;
+		$tallGrass = new TallGrass();
+		$tallGrass->setBaseAmount(5);
+
+		$this->addPopulator($tallGrass);
+
+		$this->setElevation(58, 62);
+
+		$this->temperature = 0.5;
+		$this->rainfall = 0.7;
 	}
 
 	public function getName() : string{
-		return "Desert";
+		return "River";
 	}
 }

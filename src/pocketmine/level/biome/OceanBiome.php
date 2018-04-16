@@ -21,20 +21,27 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\level\generator\normal\biome;
+namespace pocketmine\level\biome;
 
-use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
+use pocketmine\level\generator\populator\TallGrass;
 
-abstract class SnowyBiome extends NormalBiome{
+class OceanBiome extends GrassyBiome{
 
 	public function __construct(){
-		$this->setGroundCover([
-			BlockFactory::get(Block::SNOW_LAYER, 0),
-			BlockFactory::get(Block::GRASS, 0),
-			BlockFactory::get(Block::DIRT, 0),
-			BlockFactory::get(Block::DIRT, 0),
-			BlockFactory::get(Block::DIRT, 0)
-		]);
+		parent::__construct();
+
+		$tallGrass = new TallGrass();
+		$tallGrass->setBaseAmount(5);
+
+		$this->addPopulator($tallGrass);
+
+		$this->setElevation(46, 58);
+
+		$this->temperature = 0.5;
+		$this->rainfall = 0.5;
+	}
+
+	public function getName() : string{
+		return "Ocean";
 	}
 }

@@ -21,13 +21,27 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\level\generator\hell;
+namespace pocketmine\level\biome;
 
-use pocketmine\level\generator\biome\Biome;
+use pocketmine\level\generator\populator\TallGrass;
 
-class HellBiome extends Biome{
+class IcePlainsBiome extends SnowyBiome{
+
+	public function __construct(){
+		parent::__construct();
+
+		$tallGrass = new TallGrass();
+		$tallGrass->setBaseAmount(5);
+
+		$this->addPopulator($tallGrass);
+
+		$this->setElevation(63, 74);
+
+		$this->temperature = 0.05;
+		$this->rainfall = 0.8;
+	}
 
 	public function getName() : string{
-		return "Hell";
+		return "Ice Plains";
 	}
 }
