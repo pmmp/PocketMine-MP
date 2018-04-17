@@ -50,43 +50,43 @@ class XpCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-               $player = $sender;
+		$player = $sender;
 		if(isset($args[1])){
-			$player = $sender->getServer()->getPlayer($args[1]);
+		    $player = $sender->getServer()->getPlayer($args[1]);
 			if($player === null){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
-				return true;
+			    $sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
+			    return true;
 			}
 		}
 
 		if(strtolower(substr($args[0], -1)) === "l"){
-                        if(!($player instanceof Player)){
-				throw new InvalidCommandSyntaxException();
-			}
-                        
-                        $lxp = (int) substr($args[0], 0, -1);
-			if($player !== $sender){
-				$player->addXpLevels($lxp);
-				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.xp.success.other", [$lxp, $player->getName()]));
-			}else{				
-				$sender->addXpLevels($lxp);
-				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.xp.success.self",[$lxp]));
-			}
+		    if(!($player instanceof Player)){
+		        throw new InvalidCommandSyntaxException();
+		    }
+
+		    $lxp = (int) substr($args[0], 0, -1);
+		    if($player !== $sender){
+		        $player->addXpLevels($lxp);
+		        Command::broadcastCommandMessage($sender, new TranslationContainer("commands.xp.success.other", [$lxp, $player->getName()]));
+		    }else{
+		        $sender->addXpLevels($lxp);
+		        Command::broadcastCommandMessage($sender, new TranslationContainer("commands.xp.success.self",[$lxp]));
+		    }
 		}elseif(is_numeric($args[0])){
-                        if(!($player instanceof Player)){
-				throw new InvalidCommandSyntaxException();
-			}
-                        
-			$xp = (int) $args[0];
-			if($player !== $sender){
-				$player->addXp($xp);
-				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.xp.success.other", [$xp, $player->getName()]));
-			}else{				
-				$player->addXp($xp);
-				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.xp.success.self",[$xp]));
-			}
+		    if(!($player instanceof Player)){
+		        throw new InvalidCommandSyntaxException();
+		    }
+
+		    $xp = (int) $args[0];
+		    if($player !== $sender){
+		        $player->addXp($xp);
+		        Command::broadcastCommandMessage($sender, new TranslationContainer("commands.xp.success.other", [$xp, $player->getName()]));
+		    }else{
+		        $player->addXp($xp);
+		        Command::broadcastCommandMessage($sender, new TranslationContainer("commands.xp.success.self",[$xp]));
+		    }
 		}else{
-			throw new InvalidCommandSyntaxException();
+		    throw new InvalidCommandSyntaxException();
 		}
 	}
 }
