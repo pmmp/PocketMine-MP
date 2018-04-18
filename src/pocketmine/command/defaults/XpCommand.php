@@ -54,8 +54,8 @@ class XpCommand extends VanillaCommand{
 		if(isset($args[1])){
 			$player = $sender->getServer()->getPlayer($args[1]);
 			if($player === null){
-			    $sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
-			    return true;
+				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
+				return true;
 			}
 		}
 
