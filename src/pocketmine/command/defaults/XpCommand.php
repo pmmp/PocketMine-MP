@@ -65,11 +65,10 @@ class XpCommand extends VanillaCommand{
 			}
 			
 			$lxp = (int) substr($args[0], 0, -1);
+			$player->addXpLevels($lxp);
 			if($player !== $sender){
-				$player->addXpLevels($lxp);
 				Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.xp.success.other", [$lxp, $player->getName()]));
 			}else{
-				$sender->addXpLevels($lxp);
 				Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.xp.success.self",[$lxp]));
 			}
 		}elseif(is_numeric($args[0])){
@@ -78,11 +77,10 @@ class XpCommand extends VanillaCommand{
 			}
 			
 			$xp = (int) $args[0];
+			$player->addXp($xp);
 			if($player !== $sender){
-				$player->addXp($xp);
 				Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.xp.success.other", [$xp, $player->getName()]));
 			}else{
-				$player->addXp($xp);
 				Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.xp.success.self",[$xp]));
 			}
 		}else{
