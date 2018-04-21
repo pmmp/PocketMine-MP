@@ -68,13 +68,34 @@ class XpCommand extends VanillaCommand{
 				throw new InvalidCommandSyntaxException();
 			}else{
 				$level = (int) $check;
-				$player->addXpLevels($level);
-				Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.xp.success.level", [$level, $player->getName()]));
+				if($level < 0){
+					if($player->getXpLevel() + $level < 0){
+						$sender->sendMessage(TextFormat::RED. "Players cannot have negative levels");
+						return true;
+					}
+					
+					$player->subtractXpLevels(-$level);
+					Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.xp.success.takelevel", [-$level, $player->getName()]));
+				}else{
+					$player->addXpLevels($level);
+					Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.xp.success.level", [$level, $player->getName()]));
+				}
 			}
-		}elseif(is_numeric($args[0])){			
+	
+		}elseif(is_numeric($args[0])){
 			$xp = (int) $args[0];
-			$player->addXp($xp);
-			Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.xp.success", [$xp, $player->getName()]));
+			if($xp < 0){
+				if(($player->getCurrentTotalXp() + $xp) < 0){
+					$sender->sendMessage(TextFormat::RED. "Players cannot have negative experience");
+					return true;
+				}
+				
+				$player->subtractXp(-$xp);
+				Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.xp.success.take", [-$xp, $player->getName()]));
+			}else{
+				$player->addXp($xp);
+				Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.xp.success", [$xp, $player->getName()]));
+			}			
 		}else{
 			throw new InvalidCommandSyntaxException();
 		}
