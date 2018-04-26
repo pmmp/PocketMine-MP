@@ -66,6 +66,15 @@ class SetupWizard{
 				$lang = null;
 			}
 		}while($lang === null);
+		
+		if(!file_exists(\pocketmine\RESOURCE_PATH . "pocketmine.yml")){
+			$this->error("Couldn't find the resources files");
+			return false;
+		}
+		
+		$contents = @file_get_contents(\pocketmine\RESOURCE_PATH . "pocketmine.yml");
+		$contents = str_replace("language: \"eng\"", "language: \"{$lang}\"", $contents);
+		@file_put_contents(\pocketmine\RESOURCE_PATH . "pocketmine.yml", $contents);
 
 		$this->lang = new BaseLang($lang);
 
