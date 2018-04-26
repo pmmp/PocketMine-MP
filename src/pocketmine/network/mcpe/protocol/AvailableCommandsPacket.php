@@ -35,7 +35,7 @@ class AvailableCommandsPacket extends DataPacket{
 
 
 	/**
-	 * This flag is set on all types EXCEPT the TEMPLATE type. Not completely sure what this is for, but it is required
+	 * This flag is set on all types EXCEPT the POSTFIX type. Not completely sure what this is for, but it is required
 	 * for the argtype to work correctly. VALID seems as good a name as any.
 	 */
 	public const ARG_FLAG_VALID = 0x100000;
@@ -44,21 +44,23 @@ class AvailableCommandsPacket extends DataPacket{
 	 * Basic parameter types. These must be combined with the ARG_FLAG_VALID constant.
 	 * ARG_FLAG_VALID | (type const)
 	 */
-	public const ARG_TYPE_INT      = 0x01;
-	public const ARG_TYPE_FLOAT    = 0x02;
-	public const ARG_TYPE_VALUE    = 0x03;
-	public const ARG_TYPE_TARGET   = 0x04;
+	public const ARG_TYPE_INT             = 0x01;
+	public const ARG_TYPE_FLOAT           = 0x02;
+	public const ARG_TYPE_VALUE           = 0x03;
+	public const ARG_TYPE_WILDCARD_INT    = 0x04;
+	public const ARG_TYPE_TARGET          = 0x05;
+	public const ARG_TYPE_WILDCARD_TARGET = 0x06;
 
-	public const ARG_TYPE_STRING   = 0x0d;
-	public const ARG_TYPE_POSITION = 0x0e;
+	public const ARG_TYPE_STRING   = 0x0f;
+	public const ARG_TYPE_POSITION = 0x10;
 
-	public const ARG_TYPE_RAWTEXT  = 0x11;
+	public const ARG_TYPE_MESSAGE  = 0x13;
 
-	public const ARG_TYPE_TEXT     = 0x13;
+	public const ARG_TYPE_RAWTEXT  = 0x15;
 
-	public const ARG_TYPE_JSON     = 0x16;
+	public const ARG_TYPE_JSON     = 0x18;
 
-	public const ARG_TYPE_COMMAND  = 0x1d;
+	public const ARG_TYPE_COMMAND  = 0x1f;
 
 	/**
 	 * Enums are a little different: they are composed as follows:
@@ -67,7 +69,7 @@ class AvailableCommandsPacket extends DataPacket{
 	public const ARG_FLAG_ENUM = 0x200000;
 
 	/**
-	 * This is used for /xp <level: int>L.
+	 * This is used for /xp <level: int>L. It can only be applied to integer parameters.
 	 */
 	public const ARG_FLAG_POSTFIX = 0x1000000;
 
@@ -255,9 +257,9 @@ class AvailableCommandsPacket extends DataPacket{
 					return "string";
 				case self::ARG_TYPE_POSITION:
 					return "xyz";
+				case self::ARG_TYPE_MESSAGE:
+					return "message";
 				case self::ARG_TYPE_RAWTEXT:
-					return "rawtext";
-				case self::ARG_TYPE_TEXT:
 					return "text";
 				case self::ARG_TYPE_JSON:
 					return "json";
