@@ -70,6 +70,8 @@ class StartGamePacket extends DataPacket{
 	public $time = -1;
 	/** @var bool */
 	public $eduMode = false;
+	/** @var bool */
+	public $hasEduFeaturesEnabled = false;
 	/** @var float */
 	public $rainLevel;
 	/** @var float */
@@ -104,6 +106,12 @@ class StartGamePacket extends DataPacket{
 	public $platformBroadcastMode = 0;
 	/** @var bool */
 	public $xboxLiveBroadcastIntent = false;
+	/** @var bool */
+	public $hasLockedBehaviorPack = false;
+	/** @var bool */
+	public $hasLockedResourcePack = false;
+	/** @var bool */
+	public $isFromLockedWorldTemplate = false;
 
 	/** @var string */
 	public $levelId = ""; //base64 string, usually the same as world folder name in vanilla
@@ -138,6 +146,7 @@ class StartGamePacket extends DataPacket{
 		$this->hasAchievementsDisabled = $this->getBool();
 		$this->time = $this->getVarInt();
 		$this->eduMode = $this->getBool();
+		$this->hasEduFeaturesEnabled = $this->getBool();
 		$this->rainLevel = $this->getLFloat();
 		$this->lightningLevel = $this->getLFloat();
 		$this->isMultiplayerGame = $this->getBool();
@@ -155,6 +164,9 @@ class StartGamePacket extends DataPacket{
 		$this->hasPlatformBroadcast = $this->getBool();
 		$this->platformBroadcastMode = $this->getVarInt();
 		$this->xboxLiveBroadcastIntent = $this->getBool();
+		$this->hasLockedBehaviorPack = $this->getBool();
+		$this->hasLockedResourcePack = $this->getBool();
+		$this->isFromLockedWorldTemplate = $this->getBool();
 
 		$this->levelId = $this->getString();
 		$this->worldName = $this->getString();
@@ -185,6 +197,7 @@ class StartGamePacket extends DataPacket{
 		$this->putBool($this->hasAchievementsDisabled);
 		$this->putVarInt($this->time);
 		$this->putBool($this->eduMode);
+		$this->putBool($this->hasEduFeaturesEnabled);
 		$this->putLFloat($this->rainLevel);
 		$this->putLFloat($this->lightningLevel);
 		$this->putBool($this->isMultiplayerGame);
@@ -202,6 +215,9 @@ class StartGamePacket extends DataPacket{
 		$this->putBool($this->hasPlatformBroadcast);
 		$this->putVarInt($this->platformBroadcastMode);
 		$this->putBool($this->xboxLiveBroadcastIntent);
+		$this->putBool($this->hasLockedBehaviorPack);
+		$this->putBool($this->hasLockedResourcePack);
+		$this->putBool($this->isFromLockedWorldTemplate);
 
 		$this->putString($this->levelId);
 		$this->putString($this->worldName);
