@@ -134,9 +134,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_URL_TAG = 41; //string
 	public const DATA_MAX_AIR = 42; //short
 	public const DATA_MARK_VARIANT = 43; //int
-	/* 44 (byte) container stuff
-	 * 45 (int) container stuff
-	 * 46 (int) container stuff */
+	public const DATA_CONTAINER_TYPE = 44; //byte (ContainerComponent)
+	public const DATA_CONTAINER_BASE_SIZE = 45; //int (ContainerComponent)
+	public const DATA_CONTAINER_EXTRA_SLOTS_PER_STRENGTH = 46; //int (used for llamas, inventory size is baseSize + thisProp * strength)
 	public const DATA_BLOCK_TARGET = 47; //block coords (ender crystal)
 	public const DATA_WITHER_INVULNERABLE_TICKS = 48; //int
 	public const DATA_WITHER_TARGET_1 = 49; //long
@@ -171,6 +171,11 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_ARMOR_STAND_POSE_INDEX = 78; //int
 	public const DATA_ENDER_CRYSTAL_TIME_OFFSET = 79; //int
 	/* 80 (byte) something to do with nametag visibility? */
+	public const DATA_COLOR_2 = 81; //byte
+	/* 82 (unknown) */
+	public const DATA_SCORE_TAG = 83; //string
+	public const DATA_BALLOON_ATTACHED_ENTITY = 84; //int64, entity unique ID of owner
+	public const DATA_PUFFERFISH_SIZE = 85; //byte
 
 
 	public const DATA_FLAG_ONFIRE = 0;
@@ -224,6 +229,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_FLAG_FIRE_IMMUNE = 48;
 	public const DATA_FLAG_DANCING = 49;
 	public const DATA_FLAG_ENCHANTED = 50;
+	//51 is something to do with tridents
+	public const DATA_FLAG_CONTAINER_PRIVATE = 52; //inventory is private, doesn't drop contents when killed if true
+	//53 TransformationComponent
+	public const DATA_FLAG_SPIN_ATTACK = 54;
+	public const DATA_FLAG_SWIMMING = 55;
+	public const DATA_FLAG_BRIBED = 56; //dolphins have this set when they go to find treasure for the player
 
 	public static $entityCount = 1;
 	/** @var Entity[] */
