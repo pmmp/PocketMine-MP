@@ -81,9 +81,6 @@ class Chunk{
 	/** @var string */
 	protected $biomeIds;
 
-	/** @var int[] */
-	protected $extraData = [];
-
 	/** @var CompoundTag[] */
 	protected $NBTtiles = [];
 
@@ -98,9 +95,8 @@ class Chunk{
 	 * @param CompoundTag[]       $tiles
 	 * @param string              $biomeIds
 	 * @param int[]               $heightMap
-	 * @param int[]               $extraData @deprecated
 	 */
-	public function __construct(int $chunkX, int $chunkZ, array $subChunks = [], array $entities = [], array $tiles = [], string $biomeIds = "", array $heightMap = [], array $extraData = []){
+	public function __construct(int $chunkX, int $chunkZ, array $subChunks = [], array $entities = [], array $tiles = [], string $biomeIds = "", array $heightMap = []){
 		$this->x = $chunkX;
 		$this->z = $chunkZ;
 
@@ -127,8 +123,6 @@ class Chunk{
 			assert($biomeIds === "", "Wrong BiomeIds value count, expected 256, got " . strlen($biomeIds));
 			$this->biomeIds = str_repeat("\x00", 256);
 		}
-
-		$this->extraData = $extraData;
 
 		$this->NBTtiles = $tiles;
 		$this->NBTentities = $entities;
@@ -252,37 +246,6 @@ class Chunk{
 		if($this->getSubChunk($y >> 4, true)->setBlockData($x, $y & 0x0f, $z, $data)){
 			$this->hasChanged = true;
 		}
-	}
-
-	/**
-	 * @deprecated This functionality no longer produces any visible effects and will be removed in a future release
-	 *
-	 * @param int $x 0-15
-	 * @param int $y
-	 * @param int $z 0-15
-	 *
-	 * @return int bitmap, (meta << 8) | id
-	 */
-	public function getBlockExtraData(int $x, int $y, int $z) : int{
-		return $this->extraData[Chunk::chunkBlockHash($x, $y, $z)] ?? 0;
-	}
-
-	/**
-	 * @deprecated This functionality no longer produces any visible effects and will be removed in a future release
-	 *
-	 * @param int $x 0-15
-	 * @param int $y
-	 * @param int $z 0-15
-	 * @param int $data bitmap, (meta << 8) | id
-	 */
-	public function setBlockExtraData(int $x, int $y, int $z, int $data){
-		if($data === 0){
-			unset($this->extraData[Chunk::chunkBlockHash($x, $y, $z)]);
-		}else{
-			$this->extraData[Chunk::chunkBlockHash($x, $y, $z)] = $data;
-		}
-
-		$this->hasChanged = true;
 	}
 
 	/**
@@ -780,14 +743,6 @@ class Chunk{
 	}
 
 	/**
-	 * @deprecated
-	 * @return int[]
-	 */
-	public function getBlockExtraDataArray() : array{
-		return $this->extraData;
-	}
-
-	/**
 	 * @return bool
 	 */
 	public function hasChanged() : bool{
@@ -970,21 +925,4 @@ class Chunk{
 		$chunk->terrainGenerated = (bool) ($flags & 1);
 		return $chunk;
 	}
-
-	/**
-	 * @deprecated This will be removed in a future release
-	 *
-	 * Creates a block hash from chunk block coordinates. Used for extra data keys in chunk packets.
-	 * @internal
-	 *
-	 * @param int $x 0-15
-	 * @param int $y 0-255
-	 * @param int $z 0-15
-	 *
-	 * @return int
-	 */
-	public static function chunkBlockHash(int $x, int $y, int $z) : int{
-		return ($x << 12) | ($z << 8) | $y;
-	}
-
 }

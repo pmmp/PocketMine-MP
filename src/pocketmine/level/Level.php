@@ -847,25 +847,6 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * @deprecated
-	 *
-	 * @param int           $x
-	 * @param int           $y
-	 * @param int           $z
-	 * @param int           $id
-	 * @param int           $data
-	 * @param Player[]|null $targets
-	 */
-	public function sendBlockExtraData(int $x, int $y, int $z, int $id, int $data, array $targets = null){
-		$pk = new LevelEventPacket;
-		$pk->evid = LevelEventPacket::EVENT_SET_DATA;
-		$pk->position = new Vector3($x, $y, $z);
-		$pk->data = ($data << 8) | $id;
-
-		$this->server->broadcastPacket($targets ?? $this->getChunkPlayers($x >> 4, $z >> 4), $pk);
-	}
-
-	/**
 	 * @param Player[] $target
 	 * @param Block[]  $blocks
 	 * @param int      $flags
@@ -2134,37 +2115,6 @@ class Level implements ChunkManager, Metadatable{
 		foreach($this->getChunkLoaders($x >> 4, $z >> 4) as $loader){
 			$loader->onBlockChanged($v);
 		}
-	}
-
-	/**
-	 * @deprecated This functionality no longer produces any effect and will be removed in a future release
-	 *
-	 * Gets the raw block extra data
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 *
-	 * @return int 16-bit
-	 */
-	public function getBlockExtraDataAt(int $x, int $y, int $z) : int{
-		return $this->getChunk($x >> 4, $z >> 4, true)->getBlockExtraData($x & 0x0f, $y, $z & 0x0f);
-	}
-
-	/**
-	 * @deprecated This functionality no longer produces any effect and will be removed in a future release
-	 * Sets the raw block metadata.
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 * @param int $id
-	 * @param int $data
-	 */
-	public function setBlockExtraDataAt(int $x, int $y, int $z, int $id, int $data){
-		$this->getChunk($x >> 4, $z >> 4, true)->setBlockExtraData($x & 0x0f, $y, $z & 0x0f, ($data << 8) | $id);
-
-		$this->sendBlockExtraData($x, $y, $z, $id, $data);
 	}
 
 	/**
