@@ -674,7 +674,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			$data = new CommandData();
 			$data->commandName = $command->getName();
-			$data->commandDescription = $this->server->getLanguage()->translateString($command->getDescription());
+			$data->commandDescription = $this->server->getLanguage()->translateString($command->getDescriptionFor($this));
 			$data->flags = 0;
 			$data->permission = 0;
 
