@@ -76,6 +76,7 @@ use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Consumable;
+use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\WritableBook;
 use pocketmine\item\WrittenBook;
@@ -2511,7 +2512,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						$target->attack($ev);
 
 						if($ev->isCancelled()){
-							if($heldItem->isTool() and $this->isSurvival()){
+							if($heldItem instanceof Durable and $this->isSurvival()){
 								$this->inventory->sendContents($this);
 							}
 							return true;
