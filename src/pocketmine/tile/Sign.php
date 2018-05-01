@@ -79,7 +79,7 @@ class Sign extends Spawnable{
 	 * @param null|string $line3
 	 * @param null|string $line4
 	 */
-	public function setText($line1 = "", $line2 = "", $line3 = "", $line4 = ""){
+	public function setText(?string $line1 = "", ?string $line2 = "", ?string $line3 = "", ?string $line4 = "") : void{
 		if($line1 !== null){
 			$this->text[0] = $line1;
 		}
@@ -101,7 +101,7 @@ class Sign extends Spawnable{
 	 * @param string $line
 	 * @param bool   $update
 	 */
-	public function setLine(int $index, string $line, bool $update = true){
+	public function setLine(int $index, string $line, bool $update = true) : void{
 		if($index < 0 or $index > 3){
 			throw new \InvalidArgumentException("Index must be in the range 0-3!");
 		}
