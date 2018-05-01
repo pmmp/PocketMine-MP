@@ -64,10 +64,6 @@ abstract class Tool extends Durable{
 		return true;
 	}
 
-	public function isTool(){
-		return true;
-	}
-
 	public function getMiningEfficiency(Block $block) : float{
 		$efficiency = 1;
 		if(($block->getToolType() & $this->getBlockToolType()) !== 0){

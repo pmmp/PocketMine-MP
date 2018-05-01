@@ -725,13 +725,6 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * @return bool
-	 */
-	public function isTool(){
-		return false;
-	}
-
-	/**
 	 * Returns what type of block-breaking tool this is. Blocks requiring the same tool type as the item will break
 	 * faster (except for blocks requiring no tool, which break at the same speed regardless of the tool used)
 	 *
