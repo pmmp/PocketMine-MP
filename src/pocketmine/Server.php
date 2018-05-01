@@ -2479,10 +2479,10 @@ class Server{
 	/**
 	 * Tries to execute a server tick
 	 */
-	private function tick() : bool{
+	private function tick() : void{
 		$tickTime = microtime(true);
 		if(($tickTime - $this->nextTick) < -0.025){ //Allow half a tick of diff
-			return false;
+			return;
 		}
 
 		Timings::$serverTickTimer->startTiming();
@@ -2576,8 +2576,6 @@ class Server{
 		}else{
 			$this->nextTick += 0.05;
 		}
-
-		return true;
 	}
 
 	/**
