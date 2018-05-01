@@ -1775,11 +1775,11 @@ class Server{
 	}
 
 	/**
-	 * @param string $title
-	 * @param string $subtitle
-	 * @param int    $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
-	 * @param int    $stay Duration in ticks to stay on screen for
-	 * @param int    $fadeOut Duration in ticks for fade-out.
+	 * @param string        $title
+	 * @param string        $subtitle
+	 * @param int           $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
+	 * @param int           $stay Duration in ticks to stay on screen for
+	 * @param int           $fadeOut Duration in ticks for fade-out.
 	 * @param Player[]|null $recipients
 	 *
 	 * @return int
