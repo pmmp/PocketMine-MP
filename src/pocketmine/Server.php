@@ -1000,16 +1000,16 @@ class Server{
 
 		$path = $this->getDataPath() . "worlds/" . $name . "/";
 
-		$provider = LevelProviderManager::getProvider($path);
+		$providerClass = LevelProviderManager::getProvider($path);
 
-		if($provider === null){
+		if($providerClass === null){
 			$this->logger->error($this->getLanguage()->translateString("pocketmine.level.loadError", [$name, "Cannot identify format of world"]));
 
 			return false;
 		}
 
 		try{
-			$level = new Level($this, $name, $path, $provider);
+			$level = new Level($this, $name, new $providerClass($path));
 		}catch(\Throwable $e){
 
 			$this->logger->error($this->getLanguage()->translateString("pocketmine.level.loadError", [$name, $e->getMessage()]));
@@ -1053,16 +1053,16 @@ class Server{
 			$generator = Generator::getGenerator($this->getLevelType());
 		}
 
-		if(($provider = LevelProviderManager::getProviderByName($this->getProperty("level-settings.default-format", "pmanvil"))) === null){
-			$provider = LevelProviderManager::getProviderByName("pmanvil");
+		if(($providerClass = LevelProviderManager::getProviderByName($this->getProperty("level-settings.default-format", "pmanvil"))) === null){
+			$providerClass = LevelProviderManager::getProviderByName("pmanvil");
 		}
 
 		try{
 			$path = $this->getDataPath() . "worlds/" . $name . "/";
-			/** @var LevelProvider $provider */
-			$provider::generate($path, $name, $seed, $generator, $options);
+			/** @var LevelProvider $providerClass */
+			$providerClass::generate($path, $name, $seed, $generator, $options);
 
-			$level = new Level($this, $name, $path, (string) $provider);
+			$level = new Level($this, $name, new $providerClass($path));
 			$this->levels[$level->getId()] = $level;
 
 			$level->initLevel();
