@@ -857,6 +857,16 @@ class Level implements ChunkManager, Metadatable{
 		$this->sleepTicks = $ticks;
 	}
 
+	/**
+	 * @deprecated
+	 *
+	 * @param int           $x
+	 * @param int           $y
+	 * @param int           $z
+	 * @param int           $id
+	 * @param int           $data
+	 * @param Player[]|null $targets
+	 */
 	public function sendBlockExtraData(int $x, int $y, int $z, int $id, int $data, array $targets = null){
 		$pk = new LevelEventPacket;
 		$pk->evid = LevelEventPacket::EVENT_SET_DATA;
@@ -2128,6 +2138,8 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
+	 * @deprecated This functionality no longer produces any effect and will be removed in a future release
+	 *
 	 * Gets the raw block extra data
 	 *
 	 * @param int $x
@@ -2141,6 +2153,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
+	 * @deprecated This functionality no longer produces any effect and will be removed in a future release
 	 * Sets the raw block metadata.
 	 *
 	 * @param int $x
