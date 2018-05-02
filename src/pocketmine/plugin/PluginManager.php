@@ -36,7 +36,6 @@ use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\MainLogger;
-use pocketmine\utils\TextFormat;
 
 /**
  * Manages all the plugins, Permissions and Permissibles
