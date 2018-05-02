@@ -30,6 +30,7 @@ use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerExperienceChangeEvent;
 use pocketmine\inventory\EnderChestInventory;
+use pocketmine\inventory\EntityInventoryEventProcessor;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\Consumable;
@@ -567,6 +568,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 		$inventoryTag = $this->namedtag->getListTag("Inventory");
 		if($inventoryTag !== null){
+			$armorListener = $this->armorInventory->getEventProcessor();
+			$this->armorInventory->setEventProcessor(null);
+
 			/** @var CompoundTag $item */
 			foreach($inventoryTag as $i => $item){
 				$slot = $item->getByte("Slot");
@@ -578,6 +582,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 					$this->inventory->setItem($slot - 9, Item::nbtDeserialize($item));
 				}
 			}
+
+			$this->armorInventory->setEventProcessor($armorListener);
 		}
 
 		$enderChestInventoryTag = $this->namedtag->getListTag("EnderChestInventory");
@@ -590,6 +596,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 		$this->inventory->setHeldItemIndex($this->namedtag->getInt("SelectedInventorySlot", 0), false);
 
+		$this->inventory->setEventProcessor(new EntityInventoryEventProcessor($this));
 
 		$this->setFood((float) $this->namedtag->getInt("foodLevel", (int) $this->getFood(), true));
 		$this->setExhaustion($this->namedtag->getFloat("foodExhaustionLevel", $this->getExhaustion(), true));

@@ -90,15 +90,6 @@ class ArmorInventory extends BaseInventory{
 		return $this->setItem(self::SLOT_FEET, $boots);
 	}
 
-	protected function doSetItemEvents(int $index, Item $newItem) : ?Item{
-		Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $this->getItem($index), $newItem, $index));
-		if($ev->isCancelled()){
-			return null;
-		}
-
-		return $ev->getNewItem();
-	}
-
 	public function sendSlot(int $index, $target) : void{
 		if($target instanceof Player){
 			$target = [$target];
