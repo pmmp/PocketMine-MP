@@ -27,11 +27,12 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
 class GenericParticle extends Particle{
-
+	/** @var int */
 	protected $id;
+	/** @var int */
 	protected $data;
 
-	public function __construct(Vector3 $pos, $id, $data = 0){
+	public function __construct(Vector3 $pos, int $id, int $data = 0){
 		parent::__construct($pos->x, $pos->y, $pos->z);
 		$this->id = $id & 0xFFF;
 		$this->data = $data;
