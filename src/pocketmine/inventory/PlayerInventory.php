@@ -43,7 +43,8 @@ class PlayerInventory extends BaseInventory{
 	 * @param Human $player
 	 */
 	public function __construct(Human $player){
-		parent::__construct($player);
+		$this->holder = $player;
+		parent::__construct();
 	}
 
 	public function getName() : string{
