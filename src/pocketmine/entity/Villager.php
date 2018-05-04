@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use pocketmine\inventory\TradeRecipe;
+use pocketmine\nbt\tag\ListTag;
+
 class Villager extends Creature implements NPC, Ageable{
 	public const PROFESSION_FARMER = 0;
 	public const PROFESSION_LIBRARIAN = 1;
@@ -34,6 +37,13 @@ class Villager extends Creature implements NPC, Ageable{
 
 	public $width = 0.6;
 	public $height = 1.8;
+
+	/** @var bool */
+	protected $canTrading;
+	/** @var string */
+	protected $traderName;
+	/** @var ListTag */
+	protected $recipes;
 
 	public function getName() : string{
 		return "Villager";
@@ -50,11 +60,17 @@ class Villager extends Creature implements NPC, Ageable{
 		}
 
 		$this->setProfession($profession);
+		$this->setTraderName($this->namedtag->getString("TraderName", ""));
+		$this->setCanTrading((bool) $this->namedtag->getByte("CanTrading", 0));
+		$this->setRecipes($this->namedtag->getListTag(TradeRecipe::TAG_RECIPES) ?? new ListTag(TradeRecipe::TAG_RECIPES, []));
 	}
 
 	public function saveNBT() : void{
 		parent::saveNBT();
 		$this->namedtag->setInt("Profession", $this->getProfession());
+		$this->namedtag->setByte("CanTrading", (int) $this->isCanTrading());
+		$this->namedtag->setString("TraderName", $this->getTraderName());
+		$this->namedtag->setTag(new ListTag(TradeRecipe::TAG_RECIPES, $this->getRecipes()));
 	}
 
 	/**
@@ -72,5 +88,37 @@ class Villager extends Creature implements NPC, Ageable{
 
 	public function isBaby() : bool{
 		return $this->getGenericFlag(self::DATA_FLAG_BABY);
+	}
+
+	public function setCanTrading(bool $value = true) : void{
+		$this->canTrading = $value;
+	}
+
+	public function isCanTrading() : bool{
+		return $this->canTrading;
+	}
+
+	public function setPlayerEntityRuntimeId(int $entityRuntimeId) : void{
+		$this->propertyManager->setLong(self::DATA_TRADING_PLAYER_EID, $entityRuntimeId);
+	}
+
+	public function removePlayerEntityRuntimeId() : void{
+		$this->propertyManager->removeProperty(self::DATA_TRADING_PLAYER_EID);
+	}
+
+	public function setTraderName(string $traderName) : void{
+		$this->traderName = $traderName;
+	}
+
+	public function getTraderName() : string{
+		return $this->traderName;
+	}
+
+	public function getRecipes() : ListTag{
+		return $this->recipes;
+	}
+
+	public function setRecipes(ListTag $recipes) : void{
+		$this->recipes = $recipes;
 	}
 }

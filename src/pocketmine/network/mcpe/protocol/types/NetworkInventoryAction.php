@@ -23,10 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
+use pocketmine\inventory\TradeInventory;
 use pocketmine\inventory\transaction\action\CreativeInventoryAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
+use pocketmine\inventory\transaction\action\TradeAction;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\Player;
@@ -206,6 +208,18 @@ class NetworkInventoryAction{
 							throw new \InvalidStateException("Fake container " . get_class($window) . " for " . $player->getName() . " does not contain $this->oldItem");
 						}
 						return new SlotChangeAction($window, $inventorySlot, $this->oldItem, $this->newItem);
+					case self::SOURCE_TYPE_TRADING_INPUT_1:
+					case self::SOURCE_TYPE_TRADING_INPUT_2:
+						if(($inventory = $player->searchInventory(TradeInventory::class)) !== null){
+							return new SlotChangeAction($inventory, $this->inventorySlot, $this->oldItem, $this->newItem);
+						}
+						break;
+					case self::SOURCE_TYPE_TRADING_USE_INPUTS:
+					case self::SOURCE_TYPE_TRADING_OUTPUT:
+						if(($inventory = $player->searchInventory(TradeInventory::class)) !== null){
+							return new TradeAction($this->oldItem, $this->newItem);
+						}
+						break;
 				}
 
 				//TODO: more stuff
