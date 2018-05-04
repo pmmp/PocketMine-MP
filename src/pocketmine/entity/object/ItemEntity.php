@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\entity\object;
 
 use pocketmine\entity\Entity;
-use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
@@ -75,18 +74,6 @@ class ItemEntity extends Entity{
 
 
 		$this->server->getPluginManager()->callEvent(new ItemSpawnEvent($this));
-	}
-
-	public function attack(EntityDamageEvent $source){
-		if(
-			$source->getCause() === EntityDamageEvent::CAUSE_VOID or
-			$source->getCause() === EntityDamageEvent::CAUSE_FIRE_TICK or
-			$source->getCause() === EntityDamageEvent::CAUSE_LAVA or
-			$source->getCause() === EntityDamageEvent::CAUSE_ENTITY_EXPLOSION or
-			$source->getCause() === EntityDamageEvent::CAUSE_BLOCK_EXPLOSION
-		){
-			parent::attack($source);
-		}
 	}
 
 	public function entityBaseTick(int $tickDiff = 1) : bool{
