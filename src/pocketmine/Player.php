@@ -36,6 +36,7 @@ use pocketmine\entity\Living;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Skin;
+use pocketmine\entity\Villager;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -71,6 +72,7 @@ use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCursorInventory;
+use pocketmine\inventory\TradeInventory;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
@@ -2477,6 +2479,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 				switch($type){
 					case InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_INTERACT:
+						if($target instanceof Villager && $target->isCanTrading()){
+							$this->addWindow(new TradeInventory($target));
+						}
 						break; //TODO
 					case InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_ATTACK:
 						if(!$target->isAlive()){
@@ -3820,6 +3825,19 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	public function getWindowId(Inventory $inventory) : int{
 		return $this->windows[spl_object_hash($inventory)] ?? ContainerIds::NONE;
+	}
+
+	/**
+	 * @param string $expectedClass
+	 * @return null|Inventory
+	 */
+	public function searchInventory(string $expectedClass) : ?Inventory{
+		foreach($this->windowIndex as $inventory){
+			if($inventory instanceof $expectedClass){
+				return $inventory;
+			}
+		}
+		return null;
 	}
 
 	/**
