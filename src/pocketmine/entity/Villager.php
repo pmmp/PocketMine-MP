@@ -39,7 +39,7 @@ class Villager extends Creature implements NPC, Ageable{
 	public $height = 1.8;
 
 	/** @var bool */
-	protected $canTrading;
+	protected $canTrade;
 	/** @var string */
 	protected $traderName;
 	/** @var ListTag */
@@ -60,15 +60,15 @@ class Villager extends Creature implements NPC, Ageable{
 		}
 
 		$this->setProfession($profession);
-		$this->setTraderName($this->namedtag->getString("TraderName", ""));
-		$this->setCanTrading((bool) $this->namedtag->getByte("CanTrading", 0));
-		$this->setRecipes($this->namedtag->getListTag(TradeRecipe::TAG_RECIPES) ?? new ListTag(TradeRecipe::TAG_RECIPES, []));
+		$this->setCanTrade((bool) $this->namedtag->getByte("CanTrade", 0));
+		$this->setTraderName($this->namedtag->getString("TraderName", $this->getNameTag()));
+		$this->recipes = $this->namedtag->getListTag($name = TradeRecipe::TAG_RECIPES) ?? new ListTag($name, []);
 	}
 
 	public function saveNBT() : void{
 		parent::saveNBT();
 		$this->namedtag->setInt("Profession", $this->getProfession());
-		$this->namedtag->setByte("CanTrading", (int) $this->isCanTrading());
+		$this->namedtag->setByte("CanTrade", (int) $this->isCanTrade());
 		$this->namedtag->setString("TraderName", $this->getTraderName());
 		$this->namedtag->setTag(new ListTag(TradeRecipe::TAG_RECIPES, $this->getRecipes()));
 	}
@@ -90,12 +90,12 @@ class Villager extends Creature implements NPC, Ageable{
 		return $this->getGenericFlag(self::DATA_FLAG_BABY);
 	}
 
-	public function setCanTrading(bool $value = true) : void{
-		$this->canTrading = $value;
+	public function setCanTrade(bool $value = true) : void{
+		$this->canTrade = $value;
 	}
 
-	public function isCanTrading() : bool{
-		return $this->canTrading;
+	public function isCanTrade() : bool{
+		return $this->canTrade;
 	}
 
 	public function setPlayerEntityRuntimeId(int $entityRuntimeId) : void{
@@ -118,7 +118,11 @@ class Villager extends Creature implements NPC, Ageable{
 		return $this->recipes;
 	}
 
-	public function setRecipes(ListTag $recipes) : void{
-		$this->recipes = $recipes;
+	public function setRecipes(TradeRecipe ...$recipes) : void{
+		$list = new ListTag(TradeRecipe::TAG_RECIPES);
+		foreach($recipes as $recipe){
+			$list->push($recipe->toNBT());
+		}
+		$this->recipes = $list;
 	}
 }

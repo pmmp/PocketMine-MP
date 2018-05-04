@@ -27,7 +27,6 @@ use pocketmine\item\Item;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ListTag;
 
 class TradeRecipe{
 	public const TAG_BUY_A = "buyA";
@@ -78,17 +77,5 @@ class TradeRecipe{
 	 */
 	public function putItem(CompoundTag $tag, string $tagName, Item $item) : void{
 		$tag->setTag($item->nbtSerialize(-1, $tagName));
-	}
-
-	/**
-	 * @param TradeRecipe ...$recipes
-	 * @return ListTag
-	 */
-	public static function createRecipes(TradeRecipe ...$recipes) : ListTag{
-		$list = new ListTag(self::TAG_RECIPES);
-		foreach($recipes as $recipe){
-			$list->push($recipe->toNBT());
-		}
-		return $list;
 	}
 }
