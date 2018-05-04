@@ -744,6 +744,9 @@ class PluginManager{
 		foreach($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method){
 			if(!$method->isStatic()){
 				$tags = self::parseDocComment((string) $method->getDocComment());
+				if(isset($tags["notHandler"])){
+					continue;
+				}
 
 				try{
 					$priority = isset($tags["priority"]) ? EventPriority::fromString($tags["priority"]) : EventPriority::NORMAL;
