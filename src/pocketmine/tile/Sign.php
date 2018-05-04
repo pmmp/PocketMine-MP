@@ -42,7 +42,7 @@ class Sign extends Spawnable{
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		if($nbt->hasTag(self::TAG_TEXT_BLOB, StringTag::class)){ //MCPE 1.2 save format
-			$this->text = explode("\n", $nbt->getString(self::TAG_TEXT_BLOB));
+			$this->text = array_pad(explode("\n", $nbt->getString(self::TAG_TEXT_BLOB)), 4, "");
 			assert(count($this->text) === 4, "Too many lines!");
 			$nbt->removeTag(self::TAG_TEXT_BLOB);
 		}else{
