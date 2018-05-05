@@ -68,17 +68,28 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	/** @var ServerHandler */
 	private $interface;
 
+	/** @var RakLibServerNotifier */
+	private $sleeper;
+
 	public function __construct(Server $server){
 		$this->server = $server;
+
+		$this->sleeper = new RakLibServerNotifier();
+		$server->getTickSleeper()->addNotifier($this->sleeper);
 
 		$this->rakLib = new RakLibServer(
 			$this->server->getLogger(),
 			\pocketmine\COMPOSER_AUTOLOADER_PATH,
 			new InternetAddress($this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp(), $this->server->getPort(), 4),
 			(int) $this->server->getProperty("network.max-mtu-size", 1492),
-			self::MCPE_RAKNET_PROTOCOL_VERSION
+			self::MCPE_RAKNET_PROTOCOL_VERSION,
+			$this->sleeper
 		);
 		$this->interface = new ServerHandler($this->rakLib, $this);
+	}
+
+	public function getSleeper() : RakLibServerNotifier{
+		return $this->sleeper;
 	}
 
 	public function start(){
@@ -124,10 +135,12 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	}
 
 	public function shutdown(){
+		$this->server->getTickSleeper()->removeNotifier($this->sleeper);
 		$this->interface->shutdown();
 	}
 
 	public function emergencyShutdown(){
+		$this->server->getTickSleeper()->removeNotifier($this->sleeper);
 		$this->interface->emergencyShutdown();
 	}
 
