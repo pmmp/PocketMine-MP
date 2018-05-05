@@ -45,8 +45,10 @@ class TickSleeper{
 		return $this->threadedSleeper;
 	}
 
-	public function wait(int $microseconds) : bool{
-		return $this->threadedSleeper->wait($microseconds);
+	public function wait(int $microseconds) : void{
+		$this->threadedSleeper->synchronized(function(int $microseconds) : void{
+			$this->threadedSleeper->wait($microseconds);
+		}, $microseconds);
 	}
 
 	public function addNotifier(SleeperNotifier $notifier) : void{
