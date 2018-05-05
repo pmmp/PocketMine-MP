@@ -47,13 +47,12 @@ abstract class SleeperNotifier extends \Threaded{
 	 */
 	final protected function notifyServer() : void{
 		assert($this->threadedSleeper !== null);
-		$this->synchronized(function(){
-			if(!$this->notification){
-				$this->notification = true;
 
-				$this->threadedSleeper->notify();
-			}
-		});
+		if(!$this->notification){
+			$this->notification = true;
+
+			$this->threadedSleeper->notify();
+		}
 	}
 
 	final public function hasNotification() : bool{
