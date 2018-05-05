@@ -1945,7 +1945,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$xuid = "";
 		}
 
-		if($xuid === ""){
+		if($xuid === "" or !is_string($xuid)){
 			if($signedByMojang){
 				$this->server->getLogger()->error($this->getName() . " should have an XUID, but none found");
 			}
