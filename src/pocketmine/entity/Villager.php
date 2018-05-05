@@ -33,6 +33,25 @@ class Villager extends Creature implements NPC, Ageable{
 	public const PROFESSION_BLACKSMITH = 3;
 	public const PROFESSION_BUTCHER = 4;
 
+	/**
+	 * Can be used in @see $traderName
+	 * Automatically translated on the client side
+	 */
+	public const DEFAULT_NAME = "entity.villager.name";
+	public const ARMORER = "entity.villager.armor";
+	public const BUTCHER = "entity.villager.butcher";
+	public const CARTOGRAPHER = "entity.villager.cartographer";
+	public const CLERIC = "entity.villager.cleric";
+	public const FARMER = "entity.villager.farmer";
+	public const FISHERMAN = "entity.villager.fisherman";
+	public const FLETCHER = "entity.villager.fletcher";
+	public const LEATHERWORKER = "entity.villager.leather";
+	public const LIBRARIAN = "entity.villager.librarian";
+	public const VILLAGER = "entity.villager.name";
+	public const SHEPHERD = "entity.villager.shepherd";
+	public const TOOL_SMITH = "entity.villager.tool";
+	public const WEAPON_SMITH = "entity.villager.weapon";
+
 	public const NETWORK_ID = self::VILLAGER;
 
 	public $width = 0.6;
