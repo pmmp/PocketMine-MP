@@ -57,7 +57,7 @@ class TickSleeper{
 
 	/**
 	 * Removes a notifier from the sleeper. Note that this does not prevent the notifier waking the sleeper up - it just
-	 * stops the sleeper getting actions processed from the main thread.
+	 * stops the notifier getting actions processed from the main thread.
 	 *
 	 * @param SleeperNotifier $notifier
 	 */
