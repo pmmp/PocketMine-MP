@@ -116,6 +116,9 @@ class Server{
 	/** @var \Threaded */
 	private static $sleeper = null;
 
+	/** @var TickSleeper */
+	private $tickSleeper;
+
 	/** @var BanList */
 	private $banByName = null;
 
@@ -1404,6 +1407,7 @@ class Server{
 		}
 		self::$instance = $this;
 		self::$sleeper = new \Threaded;
+		$this->tickSleeper = new TickSleeper();
 		$this->autoloader = $autoloader;
 		$this->logger = $logger;
 
@@ -2237,16 +2241,23 @@ class Server{
 		return [];
 	}
 
+	public function getTickSleeper() : TickSleeper{
+		return $this->tickSleeper;
+	}
+
 	private function tickProcessor(){
 		$this->nextTick = microtime(true);
 		while($this->isRunning){
 			$this->tick();
-			$next = $this->nextTick - 0.0001;
-			if($next > microtime(true)){
-				try{
-					@time_sleep_until($next);
-				}catch(\Throwable $e){
-					//Sometimes $next is less than the current time. High load?
+
+			while(($sleepTime = (int) (($this->nextTick - microtime(true)) * 1000000)) > 1000){ //wait conditions don't guarantee accuracy on timeouts, allow some diff
+				$this->tickSleeper->wait($sleepTime);
+
+				foreach($this->tickSleeper->getNotifiers() as $notifier){
+					if($notifier->hasNotification()){
+						$notifier->onServerNotify($this);
+						$notifier->clearNotification();
+					}
 				}
 			}
 		}
