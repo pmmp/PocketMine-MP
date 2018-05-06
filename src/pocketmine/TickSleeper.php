@@ -28,7 +28,7 @@ namespace pocketmine;
  * server up during a tick sleep.
  */
 class TickSleeper{
-	/** @var \Threaded */
+	/** @var ThreadedSleeper */
 	private $threadedSleeper;
 
 	/** @var SleeperNotifier[] */
@@ -38,17 +38,11 @@ class TickSleeper{
 	private $nextSleeperId = 0;
 
 	public function __construct(){
-		$this->threadedSleeper = new \Threaded();
+		$this->threadedSleeper = new ThreadedSleeper();
 	}
 
-	public function getThreadedSleeper() : \Threaded{
+	public function getThreadedSleeper() : ThreadedSleeper{
 		return $this->threadedSleeper;
-	}
-
-	public function wait(int $microseconds) : void{
-		$this->threadedSleeper->synchronized(function(int $microseconds) : void{
-			$this->threadedSleeper->wait($microseconds);
-		}, $microseconds);
 	}
 
 	public function addNotifier(SleeperNotifier $notifier) : void{

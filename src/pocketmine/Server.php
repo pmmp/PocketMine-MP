@@ -2247,16 +2247,23 @@ class Server{
 
 	private function tickProcessor(){
 		$this->nextTick = microtime(true);
+
+		$sleeper = $this->tickSleeper->getThreadedSleeper();
+
 		while($this->isRunning){
 			$this->tick();
 
 			while(($sleepTime = (int) (($this->nextTick - microtime(true)) * 1000000)) > 1000){ //wait conditions don't guarantee accuracy on timeouts, allow some diff
-				$this->tickSleeper->wait($sleepTime);
+				$sleeper->sleep($sleepTime);
 
-				foreach($this->tickSleeper->getNotifiers() as $notifier){
-					if($notifier->hasNotification()){
-						$notifier->onServerNotify($this);
-						$notifier->clearNotification();
+				while($sleeper->hasNotifications()){
+					foreach($this->tickSleeper->getNotifiers() as $notifier){
+						if($notifier->hasNotification()){
+							$sleeper->clearOneNotification();
+
+							$notifier->clearNotification();
+							$notifier->onServerNotify($this);
+						}
 					}
 				}
 			}

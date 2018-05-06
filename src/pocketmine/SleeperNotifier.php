@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine;
 
 abstract class SleeperNotifier extends \Threaded{
-	/** @var \Threaded */
+	/** @var ThreadedSleeper */
 	private $threadedSleeper;
 
 	/** @var int */
@@ -51,7 +51,7 @@ abstract class SleeperNotifier extends \Threaded{
 		if(!$this->notification){
 			$this->notification = true;
 
-			$this->threadedSleeper->notify();
+			$this->threadedSleeper->wakeup();
 		}
 	}
 
