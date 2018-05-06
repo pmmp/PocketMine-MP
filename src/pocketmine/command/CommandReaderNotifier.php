@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\command;
 
 /**
- * Classes extending Threaded can implement this interface in order to be attached to a CommandReader interface and
+ * Classes extending Threaded can implement this interface in order to be attached to a CommandReader and
  * receive notifications when a console command is received.
  */
 interface CommandReaderNotifier{
