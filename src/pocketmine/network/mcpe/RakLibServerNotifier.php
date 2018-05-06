@@ -33,7 +33,7 @@ use raklib\IRakLibNotifier;
 class RakLibServerNotifier extends SleeperNotifier implements IRakLibNotifier{
 
 	public function sendRakLibNotification() : void{
-		$this->notifyServer();
+		$this->wakeupSleeper();
 	}
 
 	public function onServerNotify(Server $server) : void{

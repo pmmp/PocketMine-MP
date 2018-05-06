@@ -43,9 +43,9 @@ abstract class SleeperNotifier extends \Threaded{
 	}
 
 	/**
-	 * Subclasses should call this method to wake up the main server thread.
+	 * Call this method from other threads to wake up the main server thread.
 	 */
-	final protected function notifyServer() : void{
+	final public function wakeupSleeper() : void{
 		assert($this->threadedSleeper !== null);
 
 		if(!$this->notification){
