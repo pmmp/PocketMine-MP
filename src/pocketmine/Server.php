@@ -29,6 +29,7 @@ namespace pocketmine;
 
 use pocketmine\block\BlockFactory;
 use pocketmine\command\CommandReader;
+use pocketmine\command\CommandReaderNotifier;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\command\PluginIdentifiableCommand;
@@ -1427,7 +1428,17 @@ class Server{
 			$this->dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
 			$this->pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
 
-			$this->console = new CommandReader();
+			$consoleNotifier = new class extends SleeperNotifier implements CommandReaderNotifier{
+				public function notifyCommand() : void{
+					$this->wakeupSleeper();
+				}
+
+				public function onServerNotify(Server $server) : void{
+					$server->checkConsole();
+				}
+			};
+			$this->console = new CommandReader($consoleNotifier);
+			$this->tickSleeper->addNotifier($consoleNotifier);
 
 			$version = new VersionString($this->getPocketMineVersion());
 
@@ -1929,7 +1940,7 @@ class Server{
 
 	public function checkConsole(){
 		Timings::$serverCommandTimer->startTiming();
-		if(($line = $this->console->getLine()) !== null){
+		while(($line = $this->console->getLine()) !== null){
 			$this->pluginManager->callEvent($ev = new ServerCommandEvent($this->consoleSender, $line));
 			if(!$ev->isCancelled()){
 				$this->dispatchCommand($ev->getSender(), $ev->getCommand());
@@ -2506,8 +2517,6 @@ class Server{
 		Timings::$serverTickTimer->startTiming();
 
 		++$this->tickCounter;
-
-		$this->checkConsole();
 
 		Timings::$connectionTimer->startTiming();
 		$this->network->processInterfaces();
