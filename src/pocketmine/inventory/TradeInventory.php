@@ -52,14 +52,14 @@ class TradeInventory extends BaseInventory{
 
 		$this->holder->setPlayerEntityRuntimeId($playerEid = $who->getId());
 
-		$pk = new UpdateTradePacket;
+		$pk = new UpdateTradePacket();
 		$pk->windowId = $who->getWindowId($this);
 		$pk->varint1 = $pk->varint2 = 0;
 		$pk->isWilling = true;
 		$pk->traderEid = $this->holder->getId();
 		$pk->playerEid = $playerEid;
 		$pk->displayName = $this->holder->getTraderName();
-		$pk->offers = (new NetworkLittleEndianNBTStream)->write(new CompoundTag("", [
+		$pk->offers = (new NetworkLittleEndianNBTStream())->write(new CompoundTag("", [
 			$this->holder->getRecipes()
 		]));
 		$who->dataPacket($pk);
