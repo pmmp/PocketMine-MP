@@ -2264,9 +2264,7 @@ class Server{
 		while($this->isRunning){
 			$this->tick();
 
-			while(($sleepTime = (int) (($this->nextTick - microtime(true)) * 1000000)) > 1000){ //wait conditions don't guarantee accuracy on timeouts, allow some diff
-				$sleeper->sleep($sleepTime);
-
+			while(true){
 				while($sleeper->hasNotifications()){
 					foreach($this->tickSleeper->getNotifiers() as $notifier){
 						if($notifier->hasNotification()){
@@ -2276,6 +2274,16 @@ class Server{
 							$notifier->onServerNotify($this);
 						}
 					}
+				}
+
+				$sleepTime = (int) (($this->nextTick - microtime(true)) * 1000000);
+				if($sleepTime > 1000){
+					//wait conditions don't guarantee accuracy on timeouts, allow some diff
+					//this won't get out of sync because sleeps are self-correcting - if we undersleep 1ms on this tick
+					//we'll sleep an extra ms on the next tick
+					$sleeper->sleep($sleepTime);
+				}else{
+					break;
 				}
 			}
 		}
