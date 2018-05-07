@@ -80,7 +80,7 @@ class RCONInstance extends Thread{
 		return socket_write($client, Binary::writeLInt(strlen($pk)) . $pk);
 	}
 
-	private function readPacket($client, &$size, &$requestID, &$packetType, &$payload){
+	private function readPacket($client, &$requestID, &$packetType, &$payload){
 		socket_set_nonblock($client);
 		$d = socket_read($client, 4);
 		if($this->stop){
@@ -142,7 +142,7 @@ class RCONInstance extends Thread{
 							$this->{"status" . $n} = self::STATUS_DISCONNECTED;
 							continue;
 						}
-						$p = $this->readPacket($client, $size, $requestID, $packetType, $payload);
+						$p = $this->readPacket($client, $requestID, $packetType, $payload);
 						if($p === false){
 							$this->{"status" . $n} = self::STATUS_DISCONNECTED;
 							continue;
