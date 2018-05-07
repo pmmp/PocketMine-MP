@@ -154,7 +154,7 @@ class RCONInstance extends Thread{
 							case 3: //Login
 								if($this->{"status" . $n} !== self::STATUS_AUTHENTICATING){
 									$this->{"status" . $n} = self::STATUS_DISCONNECTED;
-									continue;
+									break;
 								}
 								if($payload === $this->password){
 									socket_getpeername($client, $addr, $port);
@@ -170,13 +170,12 @@ class RCONInstance extends Thread{
 								}else{
 									$this->{"status" . $n} = self::STATUS_DISCONNECTED;
 									$this->writePacket($client, -1, 2, "");
-									continue;
 								}
 								break;
 							case 2: //Command
 								if($this->{"status" . $n} !== self::STATUS_CONNECTED){
 									$this->{"status" . $n} = self::STATUS_DISCONNECTED;
-									continue;
+									break;
 								}
 								if(strlen($payload) > 0){
 									$this->cmd = ltrim($payload);
