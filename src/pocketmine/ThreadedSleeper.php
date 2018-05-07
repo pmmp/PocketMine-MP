@@ -53,11 +53,12 @@ class ThreadedSleeper extends \Threaded{
 	}
 
 	/**
-	 * Called from the main thread to decrement notification count.
+	 * Decreases pending notification count by the given number.
+	 *
+	 * @param int $notifCount
 	 */
-	public function clearOneNotification() : void{
-		//don't need to synchronize here, pthreads automatically locks/unlocks
-		--$this->notifCount;
+	public function clearNotifications(int $notifCount) : void{
+		$this->notifCount -= $notifCount;
 	}
 
 	public function hasNotifications() : bool{
