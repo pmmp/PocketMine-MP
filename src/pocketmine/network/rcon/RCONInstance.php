@@ -31,13 +31,20 @@ class RCONInstance extends Thread{
 	private const STATUS_AUTHENTICATING = 0;
 	private const STATUS_CONNECTED = 1;
 
-	public $stop;
+	/** @var string */
 	public $cmd;
+	/** @var string */
 	public $response;
+
+	/** @var bool */
+	private $stop;
 	/** @var resource */
 	private $socket;
+	/** @var string */
 	private $password;
+	/** @var int */
 	private $maxClients;
+	/** @var bool */
 	private $waiting;
 
 	public function isWaiting(){
