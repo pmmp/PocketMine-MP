@@ -33,6 +33,11 @@ class TickSleeper{
 
 	/** @var SleeperNotifier[] */
 	private $notifiers = [];
+	/**
+	 * @var callable[]
+	 * this is stored separately from notifiers otherwise pthreads would break closures referencing variables
+	 */
+	private $handlers = [];
 
 	/** @var int */
 	private $nextSleeperId = 0;
@@ -45,10 +50,15 @@ class TickSleeper{
 		return $this->threadedSleeper;
 	}
 
-	public function addNotifier(SleeperNotifier $notifier) : void{
+	/**
+	 * @param SleeperNotifier $notifier
+	 * @param callable        $handler Called when the notifier wakes the server up, of the signature `function() : void`
+	 */
+	public function addNotifier(SleeperNotifier $notifier, callable $handler) : void{
 		$id = $this->nextSleeperId++;
 		$notifier->attachSleeper($this->threadedSleeper, $id);
 		$this->notifiers[$id] = $notifier;
+		$this->handlers[$id] = $handler;
 	}
 
 	/**
@@ -58,15 +68,27 @@ class TickSleeper{
 	 * @param SleeperNotifier $notifier
 	 */
 	public function removeNotifier(SleeperNotifier $notifier) : void{
-		unset($this->notifiers[$notifier->getSleeperId()]);
+		unset($this->notifiers[$notifier->getSleeperId()], $this->handlers[$notifier->getSleeperId()]);
 	}
 
 	/**
 	 * @return \Generator|SleeperNotifier[]
 	 */
 	public function getNotifiers() : \Generator{
-		foreach($this->notifiers as $v){
-			yield $v;
+		foreach($this->notifiers as $id => $v){
+			yield $id => $v;
 		}
+	}
+
+	/**
+	 * @param int $id
+	 *
+	 * @return callable
+	 */
+	public function getHandler(int $id) : callable{
+		if(!isset($this->handlers[$id])){
+			throw new \InvalidArgumentException("No such handler for notifier $id");
+		}
+		return $this->handlers[$id];
 	}
 }

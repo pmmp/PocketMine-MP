@@ -62,11 +62,4 @@ abstract class SleeperNotifier extends \Threaded{
 	final public function clearNotification() : void{
 		$this->notification = false;
 	}
-
-	/**
-	 * Override this to perform actions when the notifier woke the server up from another thread.
-	 *
-	 * @param Server $server
-	 */
-	abstract public function onServerNotify(Server $server) : void;
 }

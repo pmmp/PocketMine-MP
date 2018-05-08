@@ -1432,13 +1432,11 @@ class Server{
 				public function notifyCommand() : void{
 					$this->wakeupSleeper();
 				}
-
-				public function onServerNotify(Server $server) : void{
-					$server->checkConsole();
-				}
 			};
 			$this->console = new CommandReader($consoleNotifier);
-			$this->tickSleeper->addNotifier($consoleNotifier);
+			$this->tickSleeper->addNotifier($consoleNotifier, function() : void{
+				$this->checkConsole();
+			});
 
 			$version = new VersionString($this->getPocketMineVersion());
 
@@ -2267,12 +2265,12 @@ class Server{
 			while(true){
 				while($sleeper->hasNotifications()){
 					$processed = 0;
-					foreach($this->tickSleeper->getNotifiers() as $notifier){
+					foreach($this->tickSleeper->getNotifiers() as $id => $notifier){
 						if($notifier->hasNotification()){
 							++$processed;
 
 							$notifier->clearNotification();
-							$notifier->onServerNotify($this);
+							$this->tickSleeper->getHandler($id)();
 						}
 					}
 
