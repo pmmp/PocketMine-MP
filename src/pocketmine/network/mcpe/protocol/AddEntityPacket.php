@@ -44,9 +44,11 @@ class AddEntityPacket extends DataPacket{
 	/** @var Vector3|null */
 	public $motion;
 	/** @var float */
+	public $pitch = 0.0;
+	/** @var float */
 	public $yaw = 0.0;
 	/** @var float */
-	public $pitch = 0.0;
+	public $headYaw = 0.0;
 
 	/** @var Attribute[] */
 	public $attributes = [];
@@ -63,6 +65,7 @@ class AddEntityPacket extends DataPacket{
 		$this->motion = $this->getVector3();
 		$this->pitch = $this->getLFloat();
 		$this->yaw = $this->getLFloat();
+		$this->headYaw = $this->getLFloat();
 
 		$attrCount = $this->getUnsignedVarInt();
 		for($i = 0; $i < $attrCount; ++$i){
@@ -97,6 +100,7 @@ class AddEntityPacket extends DataPacket{
 		$this->putVector3Nullable($this->motion);
 		$this->putLFloat($this->pitch);
 		$this->putLFloat($this->yaw);
+		$this->putLFloat($this->headYaw);
 
 		$this->putUnsignedVarInt(count($this->attributes));
 		foreach($this->attributes as $attribute){
