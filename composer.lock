@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "0a9989451e8593a15cde64bf52466e4b",
+    "content-hash": "0f24757ea6a3627535e61e9bded163be",
     "packages": [
         {
             "name": "pocketmine/binaryutils",
@@ -120,12 +120,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "5de9f0dc4b076c454efdb075450737fe312d60ce"
+                "reference": "8a892d1b48142d091179ccd8abe64d11c6eede99"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/5de9f0dc4b076c454efdb075450737fe312d60ce",
-                "reference": "5de9f0dc4b076c454efdb075450737fe312d60ce",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/8a892d1b48142d091179ccd8abe64d11c6eede99",
+                "reference": "8a892d1b48142d091179ccd8abe64d11c6eede99",
                 "shasum": ""
             },
             "require": {
@@ -136,6 +136,7 @@
                 "php-64bit": "*",
                 "php-ipv6": "*",
                 "pocketmine/binaryutils": "dev-master#c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595",
+                "pocketmine/snooze": "dev-master#96c740826df04024d2b685aa5ba8b8d0bdc69439",
                 "pocketmine/spl": "0.3.0"
             },
             "type": "library",
@@ -152,7 +153,41 @@
                 "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2018-04-16T09:12:34+00:00"
+            "time": "2018-05-09T12:41:15+00:00"
+        },
+        {
+            "name": "pocketmine/snooze",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/Snooze.git",
+                "reference": "96c740826df04024d2b685aa5ba8b8d0bdc69439"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/96c740826df04024d2b685aa5ba8b8d0bdc69439",
+                "reference": "96c740826df04024d2b685aa5ba8b8d0bdc69439",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pthreads": ">=3.1.7dev",
+                "php-64bit": ">=7.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "pocketmine\\snooze\\": "src/"
+                }
+            },
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Thread notification management library for code using the pthreads extension",
+            "support": {
+                "source": "https://github.com/pmmp/Snooze/tree/master",
+                "issues": "https://github.com/pmmp/Snooze/issues"
+            },
+            "time": "2018-05-09T12:39:21+00:00"
         },
         {
             "name": "pocketmine/spl",
@@ -195,7 +230,8 @@
         "pocketmine/raklib": 20,
         "pocketmine/binaryutils": 20,
         "pocketmine/nbt": 20,
-        "pocketmine/math": 20
+        "pocketmine/math": 20,
+        "pocketmine/snooze": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

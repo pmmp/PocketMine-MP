@@ -32,6 +32,7 @@ use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\Network;
 use pocketmine\Player;
 use pocketmine\Server;
+use pocketmine\snooze\SleeperNotifier;
 use raklib\protocol\EncapsulatedPacket;
 use raklib\protocol\PacketReliability;
 use raklib\RakLib;
@@ -68,15 +69,24 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	/** @var ServerHandler */
 	private $interface;
 
+	/** @var SleeperNotifier */
+	private $sleeper;
+
 	public function __construct(Server $server){
 		$this->server = $server;
+
+		$this->sleeper = new SleeperNotifier();
+		$server->getTickSleeper()->addNotifier($this->sleeper, function() : void{
+			$this->server->getNetwork()->processInterface($this);
+		});
 
 		$this->rakLib = new RakLibServer(
 			$this->server->getLogger(),
 			\pocketmine\COMPOSER_AUTOLOADER_PATH,
 			new InternetAddress($this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp(), $this->server->getPort(), 4),
 			(int) $this->server->getProperty("network.max-mtu-size", 1492),
-			self::MCPE_RAKNET_PROTOCOL_VERSION
+			self::MCPE_RAKNET_PROTOCOL_VERSION,
+			$this->sleeper
 		);
 		$this->interface = new ServerHandler($this->rakLib, $this);
 	}
@@ -117,10 +127,12 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	}
 
 	public function shutdown(){
+		$this->server->getTickSleeper()->removeNotifier($this->sleeper);
 		$this->interface->shutdown();
 	}
 
 	public function emergencyShutdown(){
+		$this->server->getTickSleeper()->removeNotifier($this->sleeper);
 		$this->interface->emergencyShutdown();
 	}
 

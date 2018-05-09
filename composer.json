@@ -22,11 +22,12 @@
       "ext-yaml": ">=2.0.0",
       "ext-zip": "*",
       "ext-zlib": ">=1.2.11",
-      "pocketmine/raklib": "dev-master#5de9f0dc4b076c454efdb075450737fe312d60ce",
+      "pocketmine/raklib": "dev-master#8a892d1b48142d091179ccd8abe64d11c6eede99",
       "pocketmine/spl": "0.3.0",
       "pocketmine/binaryutils": "dev-master#c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595",
       "pocketmine/nbt": "dev-master#09809564c7e58c322dcefc6905ab333313e05d1f",
-      "pocketmine/math": "dev-master#bd78ce8ad1c0a583de6655eee46a82ccaade1302"
+      "pocketmine/math": "dev-master#bd78ce8ad1c0a583de6655eee46a82ccaade1302",
+      "pocketmine/snooze": "dev-master#96c740826df04024d2b685aa5ba8b8d0bdc69439"
    },
    "autoload": {
       "psr-4": {
@@ -53,6 +54,10 @@
       {
          "type": "vcs",
          "url": "https://github.com/pmmp/Math"
+      },
+      {
+         "type": "vcs",
+         "url": "https://github.com/pmmp/Snooze"
       }
    ]
 }
