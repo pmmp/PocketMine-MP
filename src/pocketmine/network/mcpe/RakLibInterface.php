@@ -92,7 +92,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	}
 
 	public function start(){
-		$this->rakLib->start();
+		$this->rakLib->start(PTHREADS_INHERIT_NONE);
 	}
 
 	public function setNetwork(Network $network){
