@@ -214,13 +214,13 @@ class MainLogger extends \AttachableThreadedLogger{
 			$threadName = (new \ReflectionClass($thread))->getShortName() . " thread";
 		}
 
-		$message = Terminal::toANSI(TextFormat::AQUA . "[" . date("H:i:s", $now) . "] " . TextFormat::RESET . $color . "[" . $threadName . "/" . $prefix . "]:" . " " . $message . TextFormat::RESET);
+		$message = TextFormat::AQUA . "[" . date("H:i:s", $now) . "] " . TextFormat::RESET . $color . "[" . $threadName . "/" . $prefix . "]:" . " " . $message . TextFormat::RESET;
 		$cleanMessage = TextFormat::clean($message);
 
-		if(!Terminal::hasFormattingCodes()){
-			echo $cleanMessage . PHP_EOL;
+		if(Terminal::hasFormattingCodes()){
+			echo Terminal::toANSI($message) . PHP_EOL;
 		}else{
-			echo $message . PHP_EOL;
+			echo $cleanMessage . PHP_EOL;
 		}
 
 		foreach($this->attachments as $attachment){
