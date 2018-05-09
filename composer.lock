@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "ba6e0330f9f5c4d71fe155bf13e4496c",
+    "content-hash": "89edbb59aa1bf1192d7329f0a6b015e1",
     "packages": [
         {
             "name": "pocketmine/binaryutils",
@@ -155,6 +155,40 @@
             "time": "2018-05-05T11:51:46+00:00"
         },
         {
+            "name": "pocketmine/snooze",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/Snooze.git",
+                "reference": "ec30627dadcf338e97cf69644c519cc5eef750d0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/ec30627dadcf338e97cf69644c519cc5eef750d0",
+                "reference": "ec30627dadcf338e97cf69644c519cc5eef750d0",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pthreads": ">=3.1.7dev",
+                "php-64bit": ">=7.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "pocketmine\\snooze\\": "src/"
+                }
+            },
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Thread notification management library for code using the pthreads extension",
+            "support": {
+                "source": "https://github.com/pmmp/Snooze/tree/master",
+                "issues": "https://github.com/pmmp/Snooze/issues"
+            },
+            "time": "2018-05-09T11:46:34+00:00"
+        },
+        {
             "name": "pocketmine/spl",
             "version": "0.3.0",
             "source": {
@@ -195,7 +229,8 @@
         "pocketmine/raklib": 20,
         "pocketmine/binaryutils": 20,
         "pocketmine/nbt": 20,
-        "pocketmine/math": 20
+        "pocketmine/math": 20,
+        "pocketmine/snooze": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

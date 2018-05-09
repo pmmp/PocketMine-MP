@@ -29,7 +29,6 @@ namespace pocketmine;
 
 use pocketmine\block\BlockFactory;
 use pocketmine\command\CommandReader;
-use pocketmine\command\CommandReaderNotifier;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\command\PluginIdentifiableCommand;
@@ -91,6 +90,8 @@ use pocketmine\resourcepacks\ResourcePackManager;
 use pocketmine\scheduler\FileWriteTask;
 use pocketmine\scheduler\SendUsageTask;
 use pocketmine\scheduler\ServerScheduler;
+use pocketmine\snooze\SleeperHandler;
+use pocketmine\snooze\SleeperNotifier;
 use pocketmine\tile\Tile;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
@@ -117,7 +118,7 @@ class Server{
 	/** @var \Threaded */
 	private static $sleeper = null;
 
-	/** @var TickSleeper */
+	/** @var SleeperHandler */
 	private $tickSleeper;
 
 	/** @var BanList */
@@ -1408,7 +1409,7 @@ class Server{
 		}
 		self::$instance = $this;
 		self::$sleeper = new \Threaded;
-		$this->tickSleeper = new TickSleeper();
+		$this->tickSleeper = new SleeperHandler();
 		$this->autoloader = $autoloader;
 		$this->logger = $logger;
 
@@ -1428,11 +1429,7 @@ class Server{
 			$this->dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
 			$this->pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
 
-			$consoleNotifier = new class extends SleeperNotifier implements CommandReaderNotifier{
-				public function notifyCommand() : void{
-					$this->wakeupSleeper();
-				}
-			};
+			$consoleNotifier = new SleeperNotifier();
 			$this->console = new CommandReader($consoleNotifier);
 			$this->tickSleeper->addNotifier($consoleNotifier, function() : void{
 				$this->checkConsole();
@@ -2250,7 +2247,7 @@ class Server{
 		return [];
 	}
 
-	public function getTickSleeper() : TickSleeper{
+	public function getTickSleeper() : SleeperHandler{
 		return $this->tickSleeper;
 	}
 

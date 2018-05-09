@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\command;
 
+use pocketmine\snooze\SleeperNotifier;
 use pocketmine\Thread;
 
 class CommandReader extends Thread{
@@ -36,10 +37,10 @@ class CommandReader extends Thread{
 	private $shutdown = false;
 	private $type = self::TYPE_STREAM;
 
-	/** @var CommandReaderNotifier */
+	/** @var SleeperNotifier|null */
 	private $notifier;
 
-	public function __construct(?CommandReaderNotifier $notifier = null){
+	public function __construct(?SleeperNotifier $notifier = null){
 		$this->buffer = new \Threaded;
 		$this->notifier = $notifier;
 
@@ -148,7 +149,7 @@ class CommandReader extends Thread{
 		if($line !== ""){
 			$this->buffer[] = preg_replace("#\\x1b\\x5b([^\\x1b]*\\x7e|[\\x40-\\x50])#", "", $line);
 			if($this->notifier !== null){
-				$this->notifier->notifyCommand();
+				$this->notifier->wakeupSleeper();
 			}
 		}
 
