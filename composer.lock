@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "0f24757ea6a3627535e61e9bded163be",
+    "content-hash": "269dbe816d586bd8e0233d9c27b50933",
     "packages": [
         {
             "name": "pocketmine/binaryutils",
@@ -120,19 +120,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "8a892d1b48142d091179ccd8abe64d11c6eede99"
+                "reference": "bfee6ba312a380a5451a2d8e85b46c2c57acac15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/8a892d1b48142d091179ccd8abe64d11c6eede99",
-                "reference": "8a892d1b48142d091179ccd8abe64d11c6eede99",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/bfee6ba312a380a5451a2d8e85b46c2c57acac15",
+                "reference": "bfee6ba312a380a5451a2d8e85b46c2c57acac15",
                 "shasum": ""
             },
             "require": {
                 "ext-bcmath": "*",
                 "ext-pthreads": ">=3.1.7dev",
                 "ext-sockets": "*",
-                "php": ">=7.2.0RC3",
+                "php": ">=7.2.0",
                 "php-64bit": "*",
                 "php-ipv6": "*",
                 "pocketmine/binaryutils": "dev-master#c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595",
@@ -153,7 +153,7 @@
                 "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2018-05-09T12:41:15+00:00"
+            "time": "2018-05-09T19:16:48+00:00"
         },
         {
             "name": "pocketmine/snooze",
