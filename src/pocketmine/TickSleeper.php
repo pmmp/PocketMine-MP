@@ -72,23 +72,21 @@ class TickSleeper{
 	}
 
 	/**
-	 * @return \Generator|SleeperNotifier[]
+	 * Processes any notifications from notifiers and calls handlers for received notifications.
 	 */
-	public function getNotifiers() : \Generator{
-		foreach($this->notifiers as $id => $v){
-			yield $id => $v;
-		}
-	}
+	public function processNotifications() : void{
+		while($this->threadedSleeper->hasNotifications()){
+			$processed = 0;
+			foreach($this->notifiers as $id => $notifier){
+				if($notifier->hasNotification()){
+					++$processed;
 
-	/**
-	 * @param int $id
-	 *
-	 * @return callable
-	 */
-	public function getHandler(int $id) : callable{
-		if(!isset($this->handlers[$id])){
-			throw new \InvalidArgumentException("No such handler for notifier $id");
+					$notifier->clearNotification();
+					$this->handlers[$id]();
+				}
+			}
+
+			$this->threadedSleeper->clearNotifications($processed);
 		}
-		return $this->handlers[$id];
 	}
 }

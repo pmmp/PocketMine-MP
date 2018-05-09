@@ -2263,19 +2263,7 @@ class Server{
 			$this->tick();
 
 			while(true){
-				while($sleeper->hasNotifications()){
-					$processed = 0;
-					foreach($this->tickSleeper->getNotifiers() as $id => $notifier){
-						if($notifier->hasNotification()){
-							++$processed;
-
-							$notifier->clearNotification();
-							$this->tickSleeper->getHandler($id)();
-						}
-					}
-
-					$sleeper->clearNotifications($processed);
-				}
+				$this->tickSleeper->processNotifications();
 
 				$sleepTime = (int) (($this->nextTick - microtime(true)) * 1000000);
 				if($sleepTime > 1000){
