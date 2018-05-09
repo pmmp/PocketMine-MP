@@ -2257,24 +2257,11 @@ class Server{
 	private function tickProcessor(){
 		$this->nextTick = microtime(true);
 
-		$sleeper = $this->tickSleeper->getThreadedSleeper();
-
 		while($this->isRunning){
 			$this->tick();
 
-			while(true){
-				$this->tickSleeper->processNotifications();
-
-				$sleepTime = (int) (($this->nextTick - microtime(true)) * 1000000);
-				if($sleepTime > 1000){
-					//wait conditions don't guarantee accuracy on timeouts, allow some diff
-					//this won't get out of sync because sleeps are self-correcting - if we undersleep 1ms on this tick
-					//we'll sleep an extra ms on the next tick
-					$sleeper->sleep($sleepTime);
-				}else{
-					break;
-				}
-			}
+			//sleeps are self-correcting - if we undersleep 1ms on this tick, we'll sleep an extra ms on the next tick
+			$this->tickSleeper->sleepUntil($this->nextTick);
 		}
 	}
 

@@ -72,6 +72,25 @@ class TickSleeper{
 	}
 
 	/**
+	 * Sleeps until the given timestamp. Sleep may be interrupted by notifications, which will be processed before going
+	 * back to sleep.
+	 *
+	 * @param float $unixTime
+	 */
+	public function sleepUntil(float $unixTime) : void{
+		while(true){
+			$this->processNotifications();
+
+			$sleepTime = (int) (($unixTime - microtime(true)) * 1000000);
+			if($sleepTime > 1000){ //wait conditions don't guarantee accuracy on timeouts, allow some diff
+				$this->threadedSleeper->sleep($sleepTime);
+			}else{
+				break;
+			}
+		}
+	}
+
+	/**
 	 * Processes any notifications from notifiers and calls handlers for received notifications.
 	 */
 	public function processNotifications() : void{
