@@ -183,4 +183,13 @@ class AsyncPool{
 
 		Timings::$schedulerAsyncTimer->stopTiming();
 	}
+
+	public function shutdown() : void{
+		$this->collectTasks();
+		$this->removeTasks();
+		foreach($this->workers as $worker){
+			$worker->quit();
+		}
+		$this->workers = [];
+	}
 }

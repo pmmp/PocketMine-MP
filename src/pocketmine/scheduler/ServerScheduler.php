@@ -310,6 +310,11 @@ class ServerScheduler{
 		return $handler;
 	}
 
+	public function shutdown() : void{
+		$this->cancelAllTasks();
+		$this->asyncPool->shutdown();
+	}
+
 	/**
 	 * @param int $currentTick
 	 */
