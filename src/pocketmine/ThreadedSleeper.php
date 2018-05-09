@@ -32,9 +32,9 @@ class ThreadedSleeper extends \Threaded{
 	/**
 	 * Called from the main thread to wait for notifications, or until timeout.
 	 *
-	 * @param int $timeout
+	 * @param int $timeout defaults to 0 (no timeout, wait indefinitely)
 	 */
-	public function sleep(int $timeout) : void{
+	public function sleep(int $timeout = 0) : void{
 		$this->synchronized(function(int $timeout) : void{
 			if($this->notifCount === 0){
 				$this->wait($timeout);

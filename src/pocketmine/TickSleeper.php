@@ -91,6 +91,15 @@ class TickSleeper{
 	}
 
 	/**
+	 * Blocks until notifications are received, then processes notifications. Will not sleep if notifications are
+	 * already waiting.
+	 */
+	public function sleepUntilNotification() : void{
+		$this->threadedSleeper->sleep(0);
+		$this->processNotifications();
+	}
+
+	/**
 	 * Processes any notifications from notifiers and calls handlers for received notifications.
 	 */
 	public function processNotifications() : void{
