@@ -33,7 +33,7 @@ abstract class SleeperNotifier extends \Threaded{
 	/** @var bool */
 	private $notification = false;
 
-	final public function attachSleeper(\Threaded $sleeper, int $id) : void{
+	final public function attachSleeper(ThreadedSleeper $sleeper, int $id) : void{
 		$this->threadedSleeper = $sleeper;
 		$this->sleeperId = $id;
 	}
