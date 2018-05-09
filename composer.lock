@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "3cb7e8920f59df6362517bf55ca649cb",
+    "content-hash": "0f24757ea6a3627535e61e9bded163be",
     "packages": [
         {
             "name": "pocketmine/binaryutils",
@@ -120,12 +120,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "df4095feee68944ae3eb447c960ecf24bf8d7901"
+                "reference": "8a892d1b48142d091179ccd8abe64d11c6eede99"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/df4095feee68944ae3eb447c960ecf24bf8d7901",
-                "reference": "df4095feee68944ae3eb447c960ecf24bf8d7901",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/8a892d1b48142d091179ccd8abe64d11c6eede99",
+                "reference": "8a892d1b48142d091179ccd8abe64d11c6eede99",
                 "shasum": ""
             },
             "require": {
@@ -136,7 +136,7 @@
                 "php-64bit": "*",
                 "php-ipv6": "*",
                 "pocketmine/binaryutils": "dev-master#c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595",
-                "pocketmine/snooze": "dev-master#ec30627dadcf338e97cf69644c519cc5eef750d0",
+                "pocketmine/snooze": "dev-master#96c740826df04024d2b685aa5ba8b8d0bdc69439",
                 "pocketmine/spl": "0.3.0"
             },
             "type": "library",
@@ -153,7 +153,7 @@
                 "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2018-05-09T12:20:46+00:00"
+            "time": "2018-05-09T12:41:15+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -161,12 +161,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Snooze.git",
-                "reference": "ec30627dadcf338e97cf69644c519cc5eef750d0"
+                "reference": "96c740826df04024d2b685aa5ba8b8d0bdc69439"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/ec30627dadcf338e97cf69644c519cc5eef750d0",
-                "reference": "ec30627dadcf338e97cf69644c519cc5eef750d0",
+                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/96c740826df04024d2b685aa5ba8b8d0bdc69439",
+                "reference": "96c740826df04024d2b685aa5ba8b8d0bdc69439",
                 "shasum": ""
             },
             "require": {
@@ -187,7 +187,7 @@
                 "source": "https://github.com/pmmp/Snooze/tree/master",
                 "issues": "https://github.com/pmmp/Snooze/issues"
             },
-            "time": "2018-05-09T11:46:34+00:00"
+            "time": "2018-05-09T12:39:21+00:00"
         },
         {
             "name": "pocketmine/spl",
