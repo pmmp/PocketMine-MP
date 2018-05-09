@@ -1434,7 +1434,7 @@ class Server{
 			$this->tickSleeper->addNotifier($consoleNotifier, function() : void{
 				$this->checkConsole();
 			});
-			$this->console->start();
+			$this->console->start(PTHREADS_INHERIT_NONE);
 
 			$version = new VersionString($this->getPocketMineVersion());
 
