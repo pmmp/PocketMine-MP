@@ -92,7 +92,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	}
 
 	public function start(){
-		$this->rakLib->start(PTHREADS_INHERIT_NONE);
+		$this->rakLib->start(PTHREADS_INHERIT_CONSTANTS); //HACK: constants needed for cleanPath() in case of exception logging on MainLogger
 	}
 
 	public function setNetwork(Network $network){
