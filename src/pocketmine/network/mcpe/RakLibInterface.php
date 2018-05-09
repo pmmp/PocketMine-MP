@@ -33,7 +33,6 @@ use pocketmine\network\Network;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
-use raklib\IRakLibNotifier;
 use raklib\protocol\EncapsulatedPacket;
 use raklib\protocol\PacketReliability;
 use raklib\RakLib;
