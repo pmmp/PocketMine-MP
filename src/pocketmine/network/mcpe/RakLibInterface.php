@@ -70,17 +70,13 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	/** @var ServerHandler */
 	private $interface;
 
-	/** @var SleeperNotifier|IRakLibNotifier */
+	/** @var SleeperNotifier */
 	private $sleeper;
 
 	public function __construct(Server $server){
 		$this->server = $server;
 
-		$this->sleeper = new class extends SleeperNotifier implements IRakLibNotifier{
-			public function sendRakLibNotification() : void{
-				$this->wakeupSleeper();
-			}
-		};
+		$this->sleeper = new SleeperNotifier();
 		$server->getTickSleeper()->addNotifier($this->sleeper, function() : void{
 			$this->server->getNetwork()->processInterface($this);
 		});
