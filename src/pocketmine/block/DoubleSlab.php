@@ -35,7 +35,7 @@ abstract class DoubleSlab extends Solid{
 	abstract public function getSlabId() : int;
 
 	public function getName() : string{
-		return "Double " . BlockFactory::get($this->getSlabId(), $this->getVariant())->getName() . " Slab";
+		return "Double " . BlockFactory::get($this->getSlabId(), $this->getVariant())->getName();
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
