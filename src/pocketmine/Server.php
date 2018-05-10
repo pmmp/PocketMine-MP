@@ -1541,7 +1541,7 @@ class Server{
 						$this->getIp(),
 						$this->getConfigInt("rcon.max-clients", 50)
 					);
-				}catch(\Throwable $e){
+				}catch(\Exception $e){
 					$this->getLogger()->critical("RCON can't be started: " . $e->getMessage());
 				}
 			}
@@ -2108,7 +2108,7 @@ class Server{
 			$this->logger->info("[UPnP] Trying to port forward...");
 			try{
 				UPnP::PortForward($this->getPort());
-			}catch(\Throwable $e){
+			}catch(\Exception $e){
 				$this->logger->alert("UPnP portforward failed: " . $e->getMessage());
 			}
 		}
