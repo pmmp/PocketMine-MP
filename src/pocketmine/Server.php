@@ -390,7 +390,8 @@ class Server{
 	 * @return string
 	 */
 	public function getIp() : string{
-		return $this->getConfigString("server-ip", "0.0.0.0");
+		$str = $this->getConfigString("server-ip");
+		return $str !== "" ? $str : "0.0.0.0";
 	}
 
 	/**
@@ -1537,7 +1538,7 @@ class Server{
 						$this,
 						$this->getConfigString("rcon.password", ""),
 						$this->getConfigInt("rcon.port", $this->getPort()),
-						($ip = $this->getIp()) != "" ? $ip : "0.0.0.0",
+						$this->getIp(),
 						$this->getConfigInt("rcon.threads", 1),
 						$this->getConfigInt("rcon.clients-per-thread", 50)
 					);
@@ -1583,7 +1584,7 @@ class Server{
 				@cli_set_process_title($this->getName() . " " . $this->getPocketMineVersion());
 			}
 
-			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.networkStart", [$this->getIp() === "" ? "*" : $this->getIp(), $this->getPort()]));
+			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.networkStart", [$this->getIp(), $this->getPort()]));
 			define("BOOTUP_RANDOM", random_bytes(16));
 			$this->serverID = Utils::getMachineUniqueId($this->getIp() . $this->getPort());
 
