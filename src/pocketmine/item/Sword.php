@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockToolType;
+use pocketmine\entity\Entity;
 
 class Sword extends TieredTool{
 
@@ -50,5 +51,16 @@ class Sword extends TieredTool{
 
 	protected function getBaseMiningEfficiency() : float{
 		return 10;
+	}
+
+	public function onDestroyBlock(Block $block) : bool{
+		if($block->getHardness() > 0){
+			return $this->applyDamage(2);
+		}
+		return false;
+	}
+
+	public function onAttackEntity(Entity $victim) : bool{
+		return $this->applyDamage(1);
 	}
 }

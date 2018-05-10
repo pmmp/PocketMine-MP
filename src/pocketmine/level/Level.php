@@ -1718,7 +1718,7 @@ class Level implements ChunkManager, Metadatable{
 			$this->destroyBlockInternal($t, $item, $player, $createParticles);
 		}
 
-		$item->useOn($target);
+		$item->onDestroyBlock($target);
 
 		if(!empty($drops)){
 			$dropPos = $target->add(0.5, 0.5, 0.5);

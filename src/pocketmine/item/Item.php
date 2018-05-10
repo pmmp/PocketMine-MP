@@ -716,15 +716,6 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * @param Entity|Block $object
-	 *
-	 * @return bool
-	 */
-	public function useOn($object){
-		return false;
-	}
-
-	/**
 	 * Returns what type of block-breaking tool this is. Blocks requiring the same tool type as the item will break
 	 * faster (except for blocks requiring no tool, which break at the same speed regardless of the tool used)
 	 *
@@ -811,6 +802,28 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return bool
 	 */
 	public function onReleaseUsing(Player $player) : bool{
+		return false;
+	}
+
+	/**
+	 * Called when this item is used to destroy a block. Usually used to update durability.
+	 *
+	 * @param Block $block
+	 *
+	 * @return bool
+	 */
+	public function onDestroyBlock(Block $block) : bool{
+		return false;
+	}
+
+	/**
+	 * Called when this item is used to attack an entity. Usually used to update durability.
+	 *
+	 * @param Entity $victim
+	 *
+	 * @return bool
+	 */
+	public function onAttackEntity(Entity $victim) : bool{
 		return false;
 	}
 
