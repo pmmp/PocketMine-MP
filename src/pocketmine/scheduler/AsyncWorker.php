@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
-use pocketmine\utils\MainLogger;
 use pocketmine\Worker;
 
 class AsyncWorker extends Worker{
