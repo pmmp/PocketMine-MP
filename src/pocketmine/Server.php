@@ -1539,8 +1539,7 @@ class Server{
 						$this->getConfigString("rcon.password", ""),
 						$this->getConfigInt("rcon.port", $this->getPort()),
 						$this->getIp(),
-						$this->getConfigInt("rcon.threads", 1),
-						$this->getConfigInt("rcon.clients-per-thread", 50)
+						$this->getConfigInt("rcon.max-clients", 50)
 					);
 				}catch(\Throwable $e){
 					$this->getLogger()->critical("RCON can't be started: " . $e->getMessage());
@@ -2499,11 +2498,6 @@ class Server{
 
 		Timings::$connectionTimer->startTiming();
 		$this->network->processInterfaces();
-
-		if($this->rcon !== null){
-			$this->rcon->check();
-		}
-
 		Timings::$connectionTimer->stopTiming();
 
 		Timings::$schedulerTimer->startTiming();
