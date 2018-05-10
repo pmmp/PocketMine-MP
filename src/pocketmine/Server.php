@@ -2235,9 +2235,6 @@ class Server{
 			}catch(\Throwable $e){}
 		}
 
-		//$this->checkMemory();
-		//$dump .= "Memory Usage Tracking: \r\n" . chunk_split(base64_encode(gzdeflate(implode(";", $this->memoryStats), 9))) . "\r\n";
-
 		$this->forceShutdown();
 		$this->isRunning = false;
 		@Utils::kill(getmypid());
