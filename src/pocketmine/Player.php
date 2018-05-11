@@ -2143,8 +2143,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->sendPotionEffects($this);
 		$this->sendData($this);
 
-		$this->inventory->sendContents($this);
-		$this->armorInventory->sendContents($this);
+		$this->sendAllInventories();
 		$this->inventory->sendCreativeContents();
 		$this->inventory->sendHeldItem($this);
 		$this->dataPacket($this->server->getCraftingManager()->getCraftingDataPacket());
@@ -3670,8 +3669,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->sendData($this->getViewers());
 
 		$this->sendSettings();
-		$this->inventory->sendContents($this);
-		$this->armorInventory->sendContents($this);
+		$this->sendAllInventories();
 
 		$this->spawnToAll();
 		$this->scheduleUpdate();
