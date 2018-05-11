@@ -29,10 +29,6 @@ use pocketmine\entity\Entity;
 
 class Axe extends TieredTool{
 
-	public function isAxe(){
-		return $this->tier;
-	}
-
 	public function getBlockToolType() : int{
 		return BlockToolType::TYPE_AXE;
 	}

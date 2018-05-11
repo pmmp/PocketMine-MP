@@ -35,10 +35,6 @@ class Shears extends Tool{
 		return 239;
 	}
 
-	public function isShears(){
-		return true;
-	}
-
 	public function getBlockToolType() : int{
 		return BlockToolType::TYPE_SHEARS;
 	}

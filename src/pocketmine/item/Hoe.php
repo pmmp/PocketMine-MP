@@ -27,10 +27,6 @@ use pocketmine\entity\Entity;
 
 class Hoe extends TieredTool{
 
-	public function isHoe(){
-		return $this->tier;
-	}
-
 	public function onAttackEntity(Entity $victim) : bool{
 		return $this->applyDamage(1);
 	}

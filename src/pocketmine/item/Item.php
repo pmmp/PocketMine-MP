@@ -738,30 +738,6 @@ class Item implements ItemIds, \JsonSerializable{
 		return 0;
 	}
 
-	public function isPickaxe(){
-		return false;
-	}
-
-	public function isAxe(){
-		return false;
-	}
-
-	public function isSword(){
-		return false;
-	}
-
-	public function isShovel(){
-		return false;
-	}
-
-	public function isHoe(){
-		return false;
-	}
-
-	public function isShears(){
-		return false;
-	}
-
 	public function getMiningEfficiency(Block $block) : float{
 		return 1;
 	}

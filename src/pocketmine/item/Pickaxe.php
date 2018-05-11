@@ -29,10 +29,6 @@ use pocketmine\entity\Entity;
 
 class Pickaxe extends TieredTool{
 
-	public function isPickaxe(){
-		return $this->tier;
-	}
-
 	public function getBlockToolType() : int{
 		return BlockToolType::TYPE_PICKAXE;
 	}

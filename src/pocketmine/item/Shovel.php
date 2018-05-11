@@ -29,10 +29,6 @@ use pocketmine\entity\Entity;
 
 class Shovel extends TieredTool{
 
-	public function isShovel(){
-		return $this->tier;
-	}
-
 	public function getBlockToolType() : int{
 		return BlockToolType::TYPE_SHOVEL;
 	}
