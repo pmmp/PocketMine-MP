@@ -383,7 +383,7 @@ class PluginManager{
 			return true;
 		}
 
-		return false;
+		return true;
 	}
 
 	/**
