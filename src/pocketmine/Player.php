@@ -1525,7 +1525,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$revert = false;
 
-		if(($distanceSquared / ($tickDiff ** 2)) > 100){
+		//if(($distanceSquared / ($tickDiff ** 2)) > 100){
 			/* !!! BEWARE YE WHO ENTER HERE !!!
 			 *
 			 * This is NOT an anti-cheat check. It is a safety check.
@@ -1536,10 +1536,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			 * If you must tamper with this code, be aware that this can cause very nasty results. Do not waste our time
 			 * asking for help if you suffer the consequences of messing with this.
 			 */
-			$this->server->getLogger()->warning($this->getName() . " moved too fast, reverting movement");
+			/*$this->server->getLogger()->warning($this->getName() . " moved too fast, reverting movement");
 			$this->server->getLogger()->debug("Old position: " . $this->asVector3() . ", new position: " . $this->newPosition);
 			$revert = true;
-		}else{
+		}else{*/
 			$chunkX = $newPos->getFloorX() >> 4;
 			$chunkZ = $newPos->getFloorZ() >> 4;
 
@@ -1547,7 +1547,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$revert = true;
 				$this->nextChunkOrderRun = 0;
 			}
-		}
+		//}
 
 		if(!$revert and $distanceSquared != 0){
 			$dx = $newPos->x - $this->x;
@@ -1558,7 +1558,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			$diff = $this->distanceSquared($newPos) / $tickDiff ** 2;
 
-			if($this->isSurvival() and !$revert and $diff > 0.0625){
+			/*if($this->isSurvival() and !$revert and $diff > 0.0625){
 				$ev = new PlayerIllegalMoveEvent($this, $newPos, new Vector3($this->lastX, $this->lastY, $this->lastZ));
 				$ev->setCancelled($this->allowMovementCheats);
 
@@ -1568,7 +1568,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					$revert = true;
 					$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidMove", [$this->getName()]));
 					$this->server->getLogger()->debug("Old position: " . $this->asVector3() . ", new position: " . $this->newPosition);
-				}
+				}*/
 			}
 
 			if($diff > 0 and !$revert){
@@ -1615,7 +1615,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->speed = new Vector3(0, 0, 0);
 		}
 
-		if($revert){
+		/*if($revert){
 
 			$this->lastX = $from->x;
 			$this->lastY = $from->y;
@@ -1626,11 +1626,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			$this->setPosition($from);
 			$this->sendPosition($from, $from->yaw, $from->pitch, MovePlayerPacket::MODE_RESET);
-		}else{
+		}else{*/
 			if($distanceSquared != 0 and $this->nextChunkOrderRun > 20){
 				$this->nextChunkOrderRun = 20;
 			}
-		}
+		//}
 
 		$this->newPosition = null;
 	}
