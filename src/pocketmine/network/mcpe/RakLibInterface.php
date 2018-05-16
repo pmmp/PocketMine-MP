@@ -81,10 +81,10 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		});
 
 		$this->rakLib = new RakLibServer(
-			$this->server->getLogger(),
+			$server->getLogger(),
 			\pocketmine\COMPOSER_AUTOLOADER_PATH,
-			new InternetAddress($this->server->getIp(), $this->server->getPort(), 4),
-			(int) $this->server->getProperty("network.max-mtu-size", 1492),
+			new InternetAddress($server->getIp(), $server->getPort(), 4),
+			(int) $server->getProperty("network.max-mtu-size", 1492),
 			self::MCPE_RAKNET_PROTOCOL_VERSION,
 			$this->sleeper
 		);
