@@ -55,3 +55,9 @@ Yes you can! Contributions are welcomed provided that they comply with our [Cont
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 pmmp/PocketMine are not affiliated with Mojang. All brands and trademarks belong to their respective owners. PocketMine-MP is not a Mojang-approved software, nor is it associated with Mojang.
+
+## Donation it
+Donate to help share minecraft to frends . Minimum amounts : $33
+PayPal : mrpopples@gmail.com
+bitcoin : 1HH5jhHi3VJSTqYQ6uM78yunKMeK9dNS2H
+litecoin : LSL7ygrXfjzT8yj1heTQMgfTTsUnFQxzEp
