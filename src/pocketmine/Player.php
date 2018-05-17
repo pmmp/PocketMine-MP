@@ -653,7 +653,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
 		}
 
-		$this->sendCommandData();
+		if($this->spawned){
+			$this->sendCommandData();
+		}
 	}
 
 	/**
