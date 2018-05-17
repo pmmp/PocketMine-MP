@@ -25,52 +25,41 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\ScorePacketEntry;
 
-class PlayStatusPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::PLAY_STATUS_PACKET;
+class SetScorePacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::SET_SCORE_PACKET;
 
-	public const LOGIN_SUCCESS = 0;
-	public const LOGIN_FAILED_CLIENT = 1;
-	public const LOGIN_FAILED_SERVER = 2;
-	public const PLAYER_SPAWN = 3;
-	public const LOGIN_FAILED_INVALID_TENANT = 4;
-	public const LOGIN_FAILED_VANILLA_EDU = 5;
-	public const LOGIN_FAILED_EDU_VANILLA = 6;
-	public const LOGIN_FAILED_SERVER_FULL = 7;
+	public const TYPE_MODIFY_SCORE = 0;
+	public const TYPE_RESET_SCORE = 1;
 
 	/** @var int */
-	public $status;
-
-	/**
-	 * @var int
-	 * Used to determine how to write the packet when we disconnect incompatible clients.
-	 */
-	public $protocol;
+	public $type;
+	/** @var ScorePacketEntry[] */
+	public $entries = [];
 
 	protected function decodePayload(){
-		$this->status = $this->getInt();
-	}
-
-	public function canBeSentBeforeLogin() : bool{
-		return true;
-	}
-
-	protected function encodeHeader(){
-		if($this->protocol < 130){ //MCPE <= 1.1
-			$this->putByte(static::NETWORK_ID);
-		}else{
-			parent::encodeHeader();
+		$this->type = $this->getByte();
+		for($i = 0, $i2 = $this->getUnsignedVarInt(); $i < $i2; ++$i){
+			$entry = new ScorePacketEntry();
+			$entry->uuid = $this->getUUID();
+			$entry->objectiveName = $this->getString();
+			$entry->score = $this->getLInt();
 		}
 	}
 
 	protected function encodePayload(){
-		$this->putInt($this->status);
+		$this->putByte($this->type);
+		$this->putUnsignedVarInt(count($this->entries));
+		foreach($this->entries as $entry){
+			$this->putUUID($entry->uuid);
+			$this->putString($entry->objectiveName);
+			$this->putLInt($entry->score);
+		}
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handlePlayStatus($this);
+		return $session->handleSetScore($this);
 	}
-
 }

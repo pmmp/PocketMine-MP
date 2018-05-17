@@ -42,6 +42,8 @@ class CraftingDataPacket extends DataPacket{
 	public const ENTRY_FURNACE_DATA = 3;
 	public const ENTRY_MULTI = 4; //TODO
 	public const ENTRY_SHULKER_BOX = 5; //TODO
+	public const ENTRY_SHAPELESS_CHEMISTRY = 6; //TODO
+	public const ENTRY_SHAPED_CHEMISTRY = 7; //TODO
 
 	/** @var object[] */
 	public $entries = [];
@@ -66,6 +68,7 @@ class CraftingDataPacket extends DataPacket{
 			switch($recipeType){
 				case self::ENTRY_SHAPELESS:
 				case self::ENTRY_SHULKER_BOX:
+				case self::ENTRY_SHAPELESS_CHEMISTRY:
 					$ingredientCount = $this->getUnsignedVarInt();
 					/** @var Item */
 					$entry["input"] = [];
@@ -81,6 +84,7 @@ class CraftingDataPacket extends DataPacket{
 
 					break;
 				case self::ENTRY_SHAPED:
+				case self::ENTRY_SHAPED_CHEMISTRY:
 					$entry["width"] = $this->getVarInt();
 					$entry["height"] = $this->getVarInt();
 					$count = $entry["width"] * $entry["height"];
