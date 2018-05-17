@@ -98,7 +98,7 @@ class Chunk{
 	 * @param CompoundTag[]       $tiles
 	 * @param string              $biomeIds
 	 * @param int[]               $heightMap
-	 * @param int[]               $extraData
+	 * @param int[]               $extraData @deprecated
 	 */
 	public function __construct(int $chunkX, int $chunkZ, array $subChunks = [], array $entities = [], array $tiles = [], string $biomeIds = "", array $heightMap = [], array $extraData = []){
 		$this->x = $chunkX;
@@ -255,7 +255,7 @@ class Chunk{
 	}
 
 	/**
-	 * Returns the raw block extra data value at the specified chunk block coordinates, or 0 if no data exists
+	 * @deprecated This functionality no longer produces any visible effects and will be removed in a future release
 	 *
 	 * @param int $x 0-15
 	 * @param int $y
@@ -268,7 +268,7 @@ class Chunk{
 	}
 
 	/**
-	 * Sets the raw block extra data value at the specified chunk block coordinates
+	 * @deprecated This functionality no longer produces any visible effects and will be removed in a future release
 	 *
 	 * @param int $x 0-15
 	 * @param int $y
@@ -780,6 +780,7 @@ class Chunk{
 	}
 
 	/**
+	 * @deprecated
 	 * @return int[]
 	 */
 	public function getBlockExtraDataArray() : array{
@@ -906,14 +907,6 @@ class Chunk{
 		        .  chr(0); //border block array count
 		//Border block entry format: 1 byte (4 bits X, 4 bits Z). These are however useless since they crash the regular client.
 
-		$extraData = new BinaryStream();
-		$extraData->putVarInt(count($this->extraData)); //WHY, Mojang, WHY
-		foreach($this->extraData as $key => $value){
-			$extraData->putVarInt($key);
-			$extraData->putLShort($value);
-		}
-		$result .= $extraData->getBuffer();
-
 		foreach($this->tiles as $tile){
 			if($tile instanceof Spawnable){
 				$result .= $tile->getSerializedSpawnCompound();
@@ -979,6 +972,8 @@ class Chunk{
 	}
 
 	/**
+	 * @deprecated This will be removed in a future release
+	 *
 	 * Creates a block hash from chunk block coordinates. Used for extra data keys in chunk packets.
 	 * @internal
 	 *

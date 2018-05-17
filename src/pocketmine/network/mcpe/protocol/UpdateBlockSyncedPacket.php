@@ -25,52 +25,29 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\NetworkSession;
 
-class PlayStatusPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::PLAY_STATUS_PACKET;
-
-	public const LOGIN_SUCCESS = 0;
-	public const LOGIN_FAILED_CLIENT = 1;
-	public const LOGIN_FAILED_SERVER = 2;
-	public const PLAYER_SPAWN = 3;
-	public const LOGIN_FAILED_INVALID_TENANT = 4;
-	public const LOGIN_FAILED_VANILLA_EDU = 5;
-	public const LOGIN_FAILED_EDU_VANILLA = 6;
-	public const LOGIN_FAILED_SERVER_FULL = 7;
+class UpdateBlockSyncedPacket extends UpdateBlockPacket{
+	public const NETWORK_ID = ProtocolInfo::UPDATE_BLOCK_SYNCED_PACKET;
 
 	/** @var int */
-	public $status;
-
-	/**
-	 * @var int
-	 * Used to determine how to write the packet when we disconnect incompatible clients.
-	 */
-	public $protocol;
+	protected $uvarint64_1 = 0;
+	/** @var int */
+	protected $uvarint64_2 = 0;
 
 	protected function decodePayload(){
-		$this->status = $this->getInt();
-	}
-
-	public function canBeSentBeforeLogin() : bool{
-		return true;
-	}
-
-	protected function encodeHeader(){
-		if($this->protocol < 130){ //MCPE <= 1.1
-			$this->putByte(static::NETWORK_ID);
-		}else{
-			parent::encodeHeader();
-		}
+		parent::decodePayload();
+		$this->uvarint64_1 = $this->getUnsignedVarLong();
+		$this->uvarint64_2 = $this->getUnsignedVarLong();
 	}
 
 	protected function encodePayload(){
-		$this->putInt($this->status);
+		parent::encodePayload();
+		$this->putUnsignedVarLong($this->uvarint64_1);
+		$this->putUnsignedVarLong($this->uvarint64_2);
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handlePlayStatus($this);
+		return $session->handleUpdateBlockSynced($this);
 	}
-
 }

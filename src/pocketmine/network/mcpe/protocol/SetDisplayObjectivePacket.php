@@ -25,52 +25,39 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\NetworkSession;
 
-class PlayStatusPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::PLAY_STATUS_PACKET;
+class SetDisplayObjectivePacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::SET_DISPLAY_OBJECTIVE_PACKET;
 
-	public const LOGIN_SUCCESS = 0;
-	public const LOGIN_FAILED_CLIENT = 1;
-	public const LOGIN_FAILED_SERVER = 2;
-	public const PLAYER_SPAWN = 3;
-	public const LOGIN_FAILED_INVALID_TENANT = 4;
-	public const LOGIN_FAILED_VANILLA_EDU = 5;
-	public const LOGIN_FAILED_EDU_VANILLA = 6;
-	public const LOGIN_FAILED_SERVER_FULL = 7;
-
+	/** @var string */
+	public $displaySlot;
+	/** @var string */
+	public $objectiveName;
+	/** @var string */
+	public $displayName;
+	/** @var string */
+	public $criteriaName;
 	/** @var int */
-	public $status;
-
-	/**
-	 * @var int
-	 * Used to determine how to write the packet when we disconnect incompatible clients.
-	 */
-	public $protocol;
+	public $sortOrder;
 
 	protected function decodePayload(){
-		$this->status = $this->getInt();
-	}
-
-	public function canBeSentBeforeLogin() : bool{
-		return true;
-	}
-
-	protected function encodeHeader(){
-		if($this->protocol < 130){ //MCPE <= 1.1
-			$this->putByte(static::NETWORK_ID);
-		}else{
-			parent::encodeHeader();
-		}
+		$this->displaySlot = $this->getString();
+		$this->objectiveName = $this->getString();
+		$this->displayName = $this->getString();
+		$this->criteriaName = $this->getString();
+		$this->sortOrder = $this->getVarInt();
 	}
 
 	protected function encodePayload(){
-		$this->putInt($this->status);
+		$this->putString($this->displaySlot);
+		$this->putString($this->objectiveName);
+		$this->putString($this->displayName);
+		$this->putString($this->criteriaName);
+		$this->putVarInt($this->sortOrder);
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handlePlayStatus($this);
+		return $session->handleSetDisplayObjective($this);
 	}
-
 }
