@@ -1318,7 +1318,7 @@ class Level implements ChunkManager, Metadatable{
 		return $this->getChunk($x >> 4, $z >> 4, false)->getFullBlock($x & 0x0f, $y, $z & 0x0f);
 	}
 
-	public function isInWorld(float $x, float $y, float $z) : bool{
+	public function isInWorld(int $x, int $y, int $z) : bool{
 		return (
 			$x <= INT32_MAX and $x >= INT32_MIN and
 			$y < $this->worldHeight and $y >= 0 and
