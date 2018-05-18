@@ -50,7 +50,7 @@ class PopulationTask extends AsyncTask{
 		$this->levelId = $level->getId();
 		$this->chunk = $chunk->fastSerialize();
 
-		foreach($level->getAdjacentChunks($chunk->getX(), $chunk->getZ()) as $i => $c){
+		foreach($level->getAdjacentChunks($chunk->getX(), $chunk->getZ(), true) as $i => $c){ //Load chunks to avoid cut trees when overlapping into already-generated but unloaded terrain
 			$this->{"chunk$i"} = $c !== null ? $c->fastSerialize() : null;
 		}
 	}

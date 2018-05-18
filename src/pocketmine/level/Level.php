@@ -2330,18 +2330,23 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * Returns the chunks adjacent to the specified chunk.
 	 *
-	 * @param int $x
-	 * @param int $z
+	 * @param int  $x
+	 * @param int  $z
+	 *
+	 * @param bool $load
 	 *
 	 * @return Chunk[]
 	 */
-	public function getAdjacentChunks(int $x, int $z) : array{
+	public function getAdjacentChunks(int $x, int $z, bool $load = false) : array{
 		$result = [];
 		for($xx = 0; $xx <= 2; ++$xx){
 			for($zz = 0; $zz <= 2; ++$zz){
 				$i = $zz * 3 + $xx;
 				if($i === 4){
 					continue; //center chunk
+				}
+				if($load){
+					$this->loadChunk($x + $xx - 1, $z + $zz - 1);
 				}
 				$result[$i] = $this->getChunk($x + $xx - 1, $z + $zz - 1);
 			}
