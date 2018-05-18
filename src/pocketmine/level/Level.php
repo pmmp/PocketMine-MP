@@ -1119,13 +1119,12 @@ class Level implements ChunkManager, Metadatable{
 	 * @return Block[]
 	 */
 	public function getCollisionBlocks(AxisAlignedBB $bb, bool $targetFirst = false) : array{
-		$bbPlusOne = $bb->grow(1, 1, 1);
-		$minX = Math::floorFloat($bbPlusOne->minX);
-		$minY = Math::floorFloat($bbPlusOne->minY);
-		$minZ = Math::floorFloat($bbPlusOne->minZ);
-		$maxX = Math::ceilFloat($bbPlusOne->maxX);
-		$maxY = Math::ceilFloat($bbPlusOne->maxY);
-		$maxZ = Math::ceilFloat($bbPlusOne->maxZ);
+		$minX = Math::floorFloat($bb->minX - 1);
+		$minY = Math::floorFloat($bb->minY - 1);
+		$minZ = Math::floorFloat($bb->minZ - 1);
+		$maxX = Math::ceilFloat($bb->maxX + 1);
+		$maxY = Math::ceilFloat($bb->maxY + 1);
+		$maxZ = Math::ceilFloat($bb->maxZ + 1);
 
 		$collides = [];
 
@@ -1183,13 +1182,12 @@ class Level implements ChunkManager, Metadatable{
 	 * @return AxisAlignedBB[]
 	 */
 	public function getCollisionCubes(Entity $entity, AxisAlignedBB $bb, bool $entities = true) : array{
-		$bbPlusOne = $bb->grow(1, 1, 1);
-		$minX = Math::floorFloat($bbPlusOne->minX);
-		$minY = Math::floorFloat($bbPlusOne->minY);
-		$minZ = Math::floorFloat($bbPlusOne->minZ);
-		$maxX = Math::ceilFloat($bbPlusOne->maxX);
-		$maxY = Math::ceilFloat($bbPlusOne->maxY);
-		$maxZ = Math::ceilFloat($bbPlusOne->maxZ);
+		$minX = Math::floorFloat($bb->minX - 1);
+		$minY = Math::floorFloat($bb->minY - 1);
+		$minZ = Math::floorFloat($bb->minZ - 1);
+		$maxX = Math::ceilFloat($bb->maxX + 1);
+		$maxY = Math::ceilFloat($bb->maxY + 1);
+		$maxZ = Math::ceilFloat($bb->maxZ + 1);
 
 		$collides = [];
 
