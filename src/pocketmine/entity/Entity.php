@@ -1455,16 +1455,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	}
 
-	public function handleLavaMovement(){ //TODO
-
-	}
-
 	public function getEyeHeight() : float{
 		return $this->eyeHeight;
-	}
-
-	public function moveFlying(){ //TODO
-
 	}
 
 	public function onCollideWithPlayer(Player $player){
