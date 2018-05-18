@@ -999,7 +999,7 @@ class Level implements ChunkManager, Metadatable{
 		foreach($this->chunkTickList as $index => $loaders){
 			Level::getXZ($index, $chunkX, $chunkZ);
 
-			if(($chunk = $this->chunks[$index]) === null){
+			if(($chunk = $this->chunks[$index] ?? null) === null){
 				unset($this->chunkTickList[$index]);
 				continue;
 			}elseif($loaders <= 0){
