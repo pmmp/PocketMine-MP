@@ -33,7 +33,7 @@ class EnderChestInventory extends ChestInventory{
 	/** @var Position */
 	protected $holder;
 
-	public function __construct(Human $owner){
+	public function __construct(){
 		ContainerInventory::__construct(new Position());
 	}
 

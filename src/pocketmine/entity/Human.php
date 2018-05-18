@@ -562,7 +562,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->propertyManager->setBlockPos(self::DATA_PLAYER_BED_POSITION, null);
 
 		$this->inventory = new PlayerInventory($this);
-		$this->enderChestInventory = new EnderChestInventory($this);
+		$this->enderChestInventory = new EnderChestInventory();
 		$this->initHumanData();
 
 		$inventoryTag = $this->namedtag->getListTag("Inventory");
