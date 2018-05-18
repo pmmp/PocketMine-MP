@@ -157,13 +157,10 @@ abstract class Tile extends Position{
 
 		$this->namedtag = $nbt;
 		$this->server = $level->getServer();
-		$this->setLevel($level);
-
 		$this->name = "";
 		$this->id = Tile::$tileCount++;
-		$this->x = $this->namedtag->getInt(self::TAG_X);
-		$this->y = $this->namedtag->getInt(self::TAG_Y);
-		$this->z = $this->namedtag->getInt(self::TAG_Z);
+
+		parent::__construct($this->namedtag->getInt(self::TAG_X), $this->namedtag->getInt(self::TAG_Y), $this->namedtag->getInt(self::TAG_Z), $level);
 
 		$this->getLevel()->addTile($this);
 	}
