@@ -96,7 +96,7 @@ class CommandReader extends Thread{
 	 * @return bool
 	 */
 	private function isPipe($stream) : bool{
-		return is_resource($stream) and ((function_exists("posix_isatty") and !posix_isatty($stream)) or ((fstat($stream)["mode"] & 0170000) === 0010000));
+		return is_resource($stream) and (!stream_isatty($stream) or ((fstat($stream)["mode"] & 0170000) === 0010000));
 	}
 
 	/**
