@@ -111,7 +111,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	/**
 	 * @return UUID|null
 	 */
-	public function getUniqueId(){
+	public function getUniqueId() : ?UUID{
 		return $this->uuid;
 	}
 
@@ -151,14 +151,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 *
 	 * @param Player[]|null $targets
 	 */
-	public function sendSkin(array $targets = null) : void{
+	public function sendSkin(?array $targets = null) : void{
 		$pk = new PlayerSkinPacket();
 		$pk->uuid = $this->getUniqueId();
 		$pk->skin = $this->skin;
 		$this->server->broadcastPacket($targets ?? $this->hasSpawned, $pk);
 	}
 
-	public function jump(){
+	public function jump() : void{
 		parent::jump();
 		if($this->isSprinting()){
 			$this->exhaust(0.8, PlayerExhaustEvent::CAUSE_SPRINT_JUMPING);
@@ -179,7 +179,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function setFood(float $new){
+	public function setFood(float $new) : void{
 		$attr = $this->attributeMap->getAttribute(Attribute::HUNGER);
 		$old = $attr->getValue();
 		$attr->setValue($new);
@@ -202,7 +202,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return $this->attributeMap->getAttribute(Attribute::HUNGER)->getMaxValue();
 	}
 
-	public function addFood(float $amount){
+	public function addFood(float $amount) : void{
 		$attr = $this->attributeMap->getAttribute(Attribute::HUNGER);
 		$amount += $attr->getValue();
 		$amount = max(min($amount, $attr->getMaxValue()), $attr->getMinValue());
@@ -230,11 +230,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function setSaturation(float $saturation){
+	public function setSaturation(float $saturation) : void{
 		$this->attributeMap->getAttribute(Attribute::SATURATION)->setValue($saturation);
 	}
 
-	public function addSaturation(float $amount){
+	public function addSaturation(float $amount) : void{
 		$attr = $this->attributeMap->getAttribute(Attribute::SATURATION);
 		$attr->setValue($attr->getValue() + $amount, true);
 	}
@@ -249,7 +249,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 *
 	 * @param float $exhaustion
 	 */
-	public function setExhaustion(float $exhaustion){
+	public function setExhaustion(float $exhaustion) : void{
 		$this->attributeMap->getAttribute(Attribute::EXHAUSTION)->setValue($exhaustion);
 	}
 
@@ -529,14 +529,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return $this->inventory;
 	}
 
-	public function getEnderChestInventory(){
+	public function getEnderChestInventory() : EnderChestInventory{
 		return $this->enderChestInventory;
 	}
 
 	/**
 	 * For Human entities which are not players, sets their properties such as nametag, skin and UUID from NBT.
 	 */
-	protected function initHumanData(){
+	protected function initHumanData() : void{
 		if($this->namedtag->hasTag("NameTag", StringTag::class)){
 			$this->setNameTag($this->namedtag->getString("NameTag"));
 		}
@@ -555,7 +555,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->uuid = UUID::fromData((string) $this->getId(), $this->skin->getSkinData(), $this->getNameTag());
 	}
 
-	protected function initEntity(){
+	protected function initEntity() : void{
 		parent::initEntity();
 
 		$this->setPlayerFlag(self::DATA_PLAYER_FLAG_SLEEP, false);
@@ -607,7 +607,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		}
 	}
 
-	protected function addAttributes(){
+	protected function addAttributes() : void{
 		parent::addAttributes();
 
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::SATURATION));
@@ -629,7 +629,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return $hasUpdate;
 	}
 
-	public function doFoodTick(int $tickDiff = 1){
+	public function doFoodTick(int $tickDiff = 1) : void{
 		if($this->isAlive()){
 			$food = $this->getFood();
 			$health = $this->getHealth();
@@ -681,7 +681,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		);
 	}
 
-	public function saveNBT(){
+	public function saveNBT() : void{
 		parent::saveNBT();
 
 		$this->namedtag->setInt("foodLevel", (int) $this->getFood(), true);
@@ -743,7 +743,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		}
 	}
 
-	public function spawnTo(Player $player){
+	public function spawnTo(Player $player) : void{
 		if($player !== $this){
 			parent::spawnTo($player);
 		}
@@ -776,7 +776,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		}
 	}
 
-	public function close(){
+	public function close() : void{
 		if(!$this->closed){
 			if($this->inventory !== null){
 				$this->inventory->removeAllViewers(true);
@@ -806,7 +806,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * @param int  $flagId
 	 * @param bool $value
 	 */
-	public function setPlayerFlag(int $flagId, bool $value = true){
+	public function setPlayerFlag(int $flagId, bool $value = true) : void{
 		$this->setDataFlag(self::DATA_PLAYER_FLAGS, $flagId, $value, self::DATA_TYPE_BYTE);
 	}
 }

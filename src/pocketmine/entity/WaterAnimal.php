@@ -35,7 +35,7 @@ abstract class WaterAnimal extends Creature implements Ageable{
 		return $this->isInsideOfWater();
 	}
 
-	public function onAirExpired(){
+	public function onAirExpired() : void{
 		$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 2);
 		$this->attack($ev);
 	}

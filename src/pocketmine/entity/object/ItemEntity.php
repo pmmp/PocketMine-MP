@@ -53,7 +53,7 @@ class ItemEntity extends Entity{
 
 	public $canCollide = false;
 
-	protected function initEntity(){
+	protected function initEntity() : void{
 		parent::initEntity();
 
 		$this->setMaxHealth(5);
@@ -106,7 +106,7 @@ class ItemEntity extends Entity{
 		return $hasUpdate;
 	}
 
-	protected function tryChangeMovement(){
+	protected function tryChangeMovement() : void{
 		$this->checkObstruction($this->x, $this->y, $this->z);
 		parent::tryChangeMovement();
 	}
@@ -115,7 +115,7 @@ class ItemEntity extends Entity{
 		return true;
 	}
 
-	public function saveNBT(){
+	public function saveNBT() : void{
 		parent::saveNBT();
 		$this->namedtag->setTag($this->item->nbtSerialize(-1, "Item"));
 		$this->namedtag->setShort("Health", (int) $this->getHealth());
@@ -154,7 +154,7 @@ class ItemEntity extends Entity{
 	/**
 	 * @param int $delay
 	 */
-	public function setPickupDelay(int $delay){
+	public function setPickupDelay(int $delay) : void{
 		$this->pickupDelay = $delay;
 	}
 
@@ -168,7 +168,7 @@ class ItemEntity extends Entity{
 	/**
 	 * @param string $owner
 	 */
-	public function setOwner(string $owner){
+	public function setOwner(string $owner) : void{
 		$this->owner = $owner;
 	}
 
@@ -182,7 +182,7 @@ class ItemEntity extends Entity{
 	/**
 	 * @param string $thrower
 	 */
-	public function setThrower(string $thrower){
+	public function setThrower(string $thrower) : void{
 		$this->thrower = $thrower;
 	}
 
@@ -197,7 +197,7 @@ class ItemEntity extends Entity{
 		$player->dataPacket($pk);
 	}
 
-	public function onCollideWithPlayer(Player $player){
+	public function onCollideWithPlayer(Player $player) : void{
 		if($this->getPickupDelay() > 0){
 			return;
 		}
