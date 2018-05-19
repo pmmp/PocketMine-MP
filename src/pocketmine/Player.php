@@ -65,7 +65,6 @@ use pocketmine\event\player\PlayerPreLoginEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\player\PlayerRespawnEvent;
 use pocketmine\event\player\PlayerToggleFlightEvent;
-use pocketmine\event\player\PlayerToggleGlideEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\event\player\PlayerToggleSprintEvent;
 use pocketmine\event\player\PlayerToggleSwimEvent;
@@ -2795,7 +2794,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 				$ev = new PlayerToggleSwimEvent($this, true);
 				$this->server->getPluginManager()->callEvent($ev);
-				if(!$block instanceof Water or $ev->isCancelled()){
+				if(!($block instanceof Water)){
+					$ev->setCancelled();
+				}
+				if($ev->isCancelled()){
 					$this->sendData($this);
 				}else{
 					$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_HEIGHT, $this->width);
