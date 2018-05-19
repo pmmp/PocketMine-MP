@@ -686,7 +686,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @return bool
 	 */
 	public function canBreathe() : bool{
-		return $this->hasEffect(Effect::WATER_BREATHING) or !$this->isInsideOfWater();
+		return $this->hasEffect(Effect::WATER_BREATHING) or !$this->isUnderwater();
 	}
 
 	/**

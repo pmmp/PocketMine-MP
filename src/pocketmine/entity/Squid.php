@@ -93,7 +93,7 @@ class Squid extends WaterAnimal{
 				$this->swimDirection->y = -0.5;
 			}
 
-			$inWater = $this->isInsideOfWater();
+			$inWater = $this->isUnderwater();
 			if(!$inWater){
 				$this->swimDirection = null;
 			}elseif($this->swimDirection !== null){
@@ -116,7 +116,7 @@ class Squid extends WaterAnimal{
 	}
 
 	protected function applyGravity() : void{
-		if(!$this->isInsideOfWater()){
+		if(!$this->isUnderwater()){
 			parent::applyGravity();
 		}
 	}
