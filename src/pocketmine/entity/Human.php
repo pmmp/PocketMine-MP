@@ -629,7 +629,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return $hasUpdate;
 	}
 
-	public function doFoodTick(int $tickDiff = 1) : void{
+	protected function doFoodTick(int $tickDiff = 1) : void{
 		if($this->isAlive()){
 			$food = $this->getFood();
 			$health = $this->getHealth();

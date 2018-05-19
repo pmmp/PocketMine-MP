@@ -1744,7 +1744,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return true;
 	}
 
-	public function doFoodTick(int $tickDiff = 1) : void{
+	protected function doFoodTick(int $tickDiff = 1) : void{
 		if($this->isSurvival()){
 			parent::doFoodTick($tickDiff);
 		}
