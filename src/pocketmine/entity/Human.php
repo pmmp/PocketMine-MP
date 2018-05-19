@@ -641,7 +641,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			}
 
 			if($difficulty === Level::DIFFICULTY_PEACEFUL and $this->foodTickTimer % 10 === 0){
-				if($food < 20){
+				if($food < $this->getMaxFood()){
 					$this->addFood(1.0);
 					$food = $this->getFood();
 				}
