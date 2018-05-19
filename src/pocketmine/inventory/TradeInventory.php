@@ -50,7 +50,7 @@ class TradeInventory extends BaseInventory{
 	public function onOpen(Player $who) : void{
 		parent::onOpen($who);
 
-		$this->holder->setPlayerEntityRuntimeId($playerEid = $who->getId());
+		$this->holder->setTradingPlayer($playerEid = $who->getId());
 
 		$pk = new UpdateTradePacket();
 		$pk->windowId = $who->getWindowId($this);
@@ -66,7 +66,7 @@ class TradeInventory extends BaseInventory{
 	}
 
 	public function onClose(Player $who) : void{
-		$this->holder->removePlayerEntityRuntimeId();
+		$this->holder->setTradingPlayer(0);
 		parent::onClose($who);
 	}
 }

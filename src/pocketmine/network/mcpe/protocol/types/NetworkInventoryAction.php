@@ -211,12 +211,8 @@ class NetworkInventoryAction{
 					case self::SOURCE_TYPE_TRADING_INPUT_1:
 					case self::SOURCE_TYPE_TRADING_INPUT_2:
 					case self::SOURCE_TYPE_TRADING_USE_INPUTS:
-						if(($inventory = $player->searchInventory(TradeInventory::class)) !== null){
-							return new SlotChangeAction($inventory, $this->inventorySlot, $this->oldItem, $this->newItem);
-						}
-						break;
 					case self::SOURCE_TYPE_TRADING_OUTPUT:
-						if(($inventory = $player->searchInventory(TradeInventory::class)) !== null){
+						if(($player->searchInventory(TradeInventory::class)) !== null){
 							return new TradeAction($this->oldItem, $this->newItem);
 						}
 						break;

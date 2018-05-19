@@ -27,6 +27,7 @@ use pocketmine\item\Item;
 use pocketmine\Player;
 
 class TradeAction extends InventoryAction{
+
 	public function __construct(Item $sourceItem, Item $targetItem){
 		parent::__construct($sourceItem, $targetItem);
 	}

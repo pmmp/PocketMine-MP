@@ -47,7 +47,6 @@ class Villager extends Creature implements NPC, Ageable{
 	public const FLETCHER = "entity.villager.fletcher";
 	public const LEATHERWORKER = "entity.villager.leather";
 	public const LIBRARIAN = "entity.villager.librarian";
-	public const VILLAGER = "entity.villager.name";
 	public const SHEPHERD = "entity.villager.shepherd";
 	public const TOOL_SMITH = "entity.villager.tool";
 	public const WEAPON_SMITH = "entity.villager.weapon";
@@ -87,7 +86,7 @@ class Villager extends Creature implements NPC, Ageable{
 	public function saveNBT() : void{
 		parent::saveNBT();
 		$this->namedtag->setInt("Profession", $this->getProfession());
-		$this->namedtag->setByte("CanTrade", (int) $this->isCanTrade());
+		$this->namedtag->setByte("CanTrade", (int) $this->canTrade());
 		$this->namedtag->setString("TraderName", $this->getTraderName());
 		$this->namedtag->setTag($this->getRecipes());
 	}
@@ -113,16 +112,12 @@ class Villager extends Creature implements NPC, Ageable{
 		$this->canTrade = $value;
 	}
 
-	public function isCanTrade() : bool{
+	public function canTrade() : bool{
 		return $this->canTrade;
 	}
 
-	public function setPlayerEntityRuntimeId(int $entityRuntimeId) : void{
+	public function setTradingPlayer(int $entityRuntimeId) : void{
 		$this->propertyManager->setLong(self::DATA_TRADING_PLAYER_EID, $entityRuntimeId);
-	}
-
-	public function removePlayerEntityRuntimeId() : void{
-		$this->propertyManager->removeProperty(self::DATA_TRADING_PLAYER_EID);
 	}
 
 	public function setTraderName(string $traderName) : void{

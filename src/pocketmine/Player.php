@@ -2479,7 +2479,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 				switch($type){
 					case InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_INTERACT:
-						if($target instanceof Villager && $target->isCanTrade()){
+						if($target instanceof Villager and $target->canTrade()){
 							$this->addWindow(new TradeInventory($target));
 						}
 						break; //TODO
