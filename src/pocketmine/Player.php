@@ -26,6 +26,7 @@ namespace pocketmine;
 use pocketmine\block\Bed;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\Water;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\Effect;
@@ -2782,34 +2783,22 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				}
 				return true;
 			case PlayerActionPacket::ACTION_START_GLIDE:
-				$ev = new PlayerToggleGlideEvent($this, true);
-				$this->server->getPluginManager()->callEvent($ev);
-				if($ev->isCancelled()){
-					$this->sendData($this);
-				}else{
-					$this->setGliding(true);
-				}
-				return true;
 			case PlayerActionPacket::ACTION_STOP_GLIDE:
-				$ev = new PlayerToggleGlideEvent($this, false);
-				$this->server->getPluginManager()->callEvent($ev);
-				if($ev->isCancelled()){
-					$this->sendData($this);
-				}else{
-					$this->setGliding(false);
-				}
-				return true;
+				break; //TODO
 			case PlayerActionPacket::ACTION_CONTINUE_BREAK:
 				$block = $this->level->getBlock($pos);
 				$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, BlockFactory::toStaticRuntimeId($block->getId(), $block->getDamage()) | ($packet->face << 24));
 				//TODO: destroy-progress level event
 				break;
 			case PlayerActionPacket::ACTION_START_SWIMMING:
+				$block = $this->level->getBlock($this);
+
 				$ev = new PlayerToggleSwimEvent($this, true);
 				$this->server->getPluginManager()->callEvent($ev);
-				if($ev->isCancelled()){
+				if(!$block instanceof Water or $ev->isCancelled()){
 					$this->sendData($this);
 				}else{
+					$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_HEIGHT, $this->width);
 					$this->setSwimming(true);
 				}
 				return true;
@@ -2819,6 +2808,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				if($ev->isCancelled()){
 					$this->sendData($this);
 				}else{
+					$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_HEIGHT, $this->height);
 					$this->setSwimming(false);
 				}
 				return true;
@@ -3690,7 +3680,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->setSprinting(false);
 		$this->setSneaking(false);
-		$this->setGliding(false);
 		$this->setSwimming(false);
 
 		$this->extinguish();
