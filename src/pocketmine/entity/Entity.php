@@ -672,6 +672,22 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		}
 	}
 
+	public function isGliding() : bool{
+		return $this->getGenericFlag(self::DATA_FLAG_GLIDING);
+	}
+
+	public function setGliding(bool $value = true) : void{
+		$this->setGenericFlag(self::DATA_FLAG_GLIDING, $value);
+	}
+
+	public function isSwimming() : bool{
+		return $this->getGenericFlag(self::DATA_FLAG_SWIMMING);
+	}
+
+	public function setSwimming(bool $value = true) : void{
+		$this->setGenericFlag(self::DATA_FLAG_SWIMMING, $value);
+	}
+
 	public function isImmobile() : bool{
 		return $this->getGenericFlag(self::DATA_FLAG_IMMOBILE);
 	}
