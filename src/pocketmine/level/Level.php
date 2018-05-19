@@ -2763,49 +2763,46 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * @param Vector3 $spawn default null
 	 *
-	 * @return bool|Position
+	 * @return Position
 	 */
-	public function getSafeSpawn($spawn = null){
+	public function getSafeSpawn(?Vector3 $spawn = null) : Position{
 		if(!($spawn instanceof Vector3) or $spawn->y < 1){
 			$spawn = $this->getSpawnLocation();
 		}
-		if($spawn instanceof Vector3){
-			$max = $this->worldHeight;
-			$v = $spawn->floor();
-			$chunk = $this->getChunk($v->x >> 4, $v->z >> 4, false);
-			$x = (int) $v->x;
-			$z = (int) $v->z;
-			if($chunk !== null){
-				$y = (int) min($max - 2, $v->y);
-				$wasAir = ($chunk->getBlockId($x & 0x0f, $y - 1, $z & 0x0f) === 0);
-				for(; $y > 0; --$y){
-					if($this->isFullBlock($this->getBlockAt($x, $y, $z))){
-						if($wasAir){
-							$y++;
-							break;
-						}
-					}else{
-						$wasAir = true;
-					}
-				}
 
-				for(; $y >= 0 and $y < $max; ++$y){
-					if(!$this->isFullBlock($this->getBlockAt($x, $y + 1, $z))){
-						if(!$this->isFullBlock($this->getBlockAt($x, $y, $z))){
-							return new Position($spawn->x, $y === (int) $spawn->y ? $spawn->y : $y, $spawn->z, $this);
-						}
-					}else{
-						++$y;
+		$max = $this->worldHeight;
+		$v = $spawn->floor();
+		$chunk = $this->getChunk($v->x >> 4, $v->z >> 4, false);
+		$x = (int) $v->x;
+		$z = (int) $v->z;
+		if($chunk !== null){
+			$y = (int) min($max - 2, $v->y);
+			$wasAir = ($chunk->getBlockId($x & 0x0f, $y - 1, $z & 0x0f) === 0);
+			for(; $y > 0; --$y){
+				if($this->isFullBlock($this->getBlockAt($x, $y, $z))){
+					if($wasAir){
+						$y++;
+						break;
 					}
+				}else{
+					$wasAir = true;
 				}
-
-				$v->y = $y;
 			}
 
-			return new Position($spawn->x, $v->y, $spawn->z, $this);
+			for(; $y >= 0 and $y < $max; ++$y){
+				if(!$this->isFullBlock($this->getBlockAt($x, $y + 1, $z))){
+					if(!$this->isFullBlock($this->getBlockAt($x, $y, $z))){
+						return new Position($spawn->x, $y === (int) $spawn->y ? $spawn->y : $y, $spawn->z, $this);
+					}
+				}else{
+					++$y;
+				}
+			}
+
+			$v->y = $y;
 		}
 
-		return false;
+		return new Position($spawn->x, $v->y, $spawn->z, $this);
 	}
 
 	/**
