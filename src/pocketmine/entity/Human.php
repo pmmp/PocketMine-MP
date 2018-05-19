@@ -656,7 +656,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 						$this->exhaust(3.0, PlayerExhaustEvent::CAUSE_HEALTH_REGEN);
 					}
 				}elseif($food <= 0){
-					if(($difficulty === 1 and $health > 10) or ($difficulty === 2 and $health > 1) or $difficulty === 3){
+					if(($difficulty === Level::DIFFICULTY_EASY and $health > 10) or ($difficulty === Level::DIFFICULTY_NORMAL and $health > 1) or $difficulty === Level::DIFFICULTY_HARD){
 						$this->attack(new EntityDamageEvent($this, EntityDamageEvent::CAUSE_STARVATION, 1));
 					}
 				}
