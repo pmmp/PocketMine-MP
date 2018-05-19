@@ -2509,6 +2509,25 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
+	 * @param Entity $entity
+	 *
+	 * @throws LevelException
+	 */
+	public function addEntity(Entity $entity){
+		if($entity->isClosed()){
+			throw new \InvalidArgumentException("Attempted to add a garbage closed Entity to Level");
+		}
+		if($entity->getLevel() !== $this){
+			throw new LevelException("Invalid Entity level");
+		}
+
+		if($entity instanceof Player){
+			$this->players[$entity->getId()] = $entity;
+		}
+		$this->entities[$entity->getId()] = $entity;
+	}
+
+	/**
 	 * Removes the entity from the level index
 	 *
 	 * @param Entity $entity
@@ -2527,25 +2546,6 @@ class Level implements ChunkManager, Metadatable{
 
 		unset($this->entities[$entity->getId()]);
 		unset($this->updateEntities[$entity->getId()]);
-	}
-
-	/**
-	 * @param Entity $entity
-	 *
-	 * @throws LevelException
-	 */
-	public function addEntity(Entity $entity){
-		if($entity->isClosed()){
-			throw new \InvalidArgumentException("Attempted to add a garbage closed Entity to Level");
-		}
-		if($entity->getLevel() !== $this){
-			throw new LevelException("Invalid Entity level");
-		}
-
-		if($entity instanceof Player){
-			$this->players[$entity->getId()] = $entity;
-		}
-		$this->entities[$entity->getId()] = $entity;
 	}
 
 	/**
