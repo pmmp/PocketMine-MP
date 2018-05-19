@@ -2761,7 +2761,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * @param Vector3 $spawn default null
+	 * @param Vector3|null $spawn
 	 *
 	 * @return Position
 	 */
