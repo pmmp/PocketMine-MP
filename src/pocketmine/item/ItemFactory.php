@@ -228,7 +228,7 @@ class ItemFactory{
 		self::registerItem(new Item(Item::SHULKER_SHELL, 0, "Shulker Shell"));
 		self::registerItem(new Banner());
 
-		//TODO: TOTEM
+		self::registerItem(new Totem());
 
 		self::registerItem(new Item(Item::IRON_NUGGET, 0, "Iron Nugget"));
 

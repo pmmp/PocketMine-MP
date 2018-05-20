@@ -217,6 +217,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public function isHungry() : bool{
 		return $this->getFood() < $this->getMaxFood();
 	}
+	public function hasTotemInHand() : bool{
+		return $this->inventory->getItemInHand()->equals(Item::get(Item::TOTEM));
+	}
 
 	public function getSaturation() : float{
 		return $this->attributeMap->getAttribute(Attribute::SATURATION)->getValue();

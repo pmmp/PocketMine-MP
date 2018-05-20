@@ -930,6 +930,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	protected function onDeathUpdate(int $tickDiff) : bool{
 		return true;
 	}
+	
+	protected function onTotem() : void{
+
+	}
 
 	public function isAlive() : bool{
 		return $this->health > 0;
@@ -954,6 +958,15 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		if($amount <= 0){
 			if($this->isAlive()){
+				if($this instanceof Player and $this->spawned === true and $this->hasTotemInHand()){
+					$cause = $this->getLastDamageCause()->getCause();
+					if($cause !== EntityDamageEvent::CAUSE_SUICIDE and $cause !== EntityDamageEvent::CAUSE_VOID){
+					    $this->health = 1;
+						$this->onTotem();
+						return;
+					}
+				}
+
 				$this->health = 0;
 				$this->kill();
 			}

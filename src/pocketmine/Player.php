@@ -3647,6 +3647,24 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return false; //never flag players for despawn
 	}
 
+	protected function onTotem() : void{
+		$this->server->getPluginManager()->callEvent($ev = new PlayerTotemEvent($this));
+		if($ev->isCancelled()){
+			$this->kill();
+			return;
+		}
+
+		$this->inventory->setItemInHand(Item::get(Item::AIR));
+
+		$this->broadcastEntityEvent(EntityEventPacket::CONSUME_TOTEM, null, [$this]);
+		$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_TOTEM);
+
+		$this->removeAllEffects();
+		$this->addEffect(new EffectInstance(Effect::getEffect(Effect::REGENERATION), 800, 1));
+		$this->addEffect(new EffectInstance(Effect::getEffect(Effect::FIRE_RESISTANCE), 800, 1));
+		$this->addEffect(new EffectInstance(Effect::getEffect(Effect::ABSORPTION), 100, 1));
+	}
+
 	protected function respawn() : void{
 		if($this->server->isHardcore()){
 			$this->setBanned(true);
