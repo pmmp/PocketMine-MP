@@ -27,7 +27,7 @@
       "pocketmine/binaryutils": "dev-master#c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595",
       "pocketmine/nbt": "dev-master#09809564c7e58c322dcefc6905ab333313e05d1f",
       "pocketmine/math": "dev-master#bd78ce8ad1c0a583de6655eee46a82ccaade1302",
-      "pocketmine/snooze": "dev-master#96c740826df04024d2b685aa5ba8b8d0bdc69439"
+      "pocketmine/snooze": "dev-master#b39f869b9f94de94eafc4f14aa650bd5b8cde436"
    },
    "autoload": {
       "psr-4": {
