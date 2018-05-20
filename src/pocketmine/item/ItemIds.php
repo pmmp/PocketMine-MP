@@ -105,7 +105,7 @@ interface ItemIds extends BlockIds{
 	public const SNOWBALL = 332;
 	public const BOAT = 333;
 	public const LEATHER = 334;
-
+	public const KELP = 335;
 	public const BRICK = 336;
 	public const CLAY = 337, CLAY_BALL = 337;
 	public const REEDS = 338, SUGARCANE = 338;
@@ -219,6 +219,8 @@ interface ItemIds extends BlockIds{
 
 	public const IRON_NUGGET = 452;
 
+	public const TRIDENT = 455;
+
 	public const BEETROOT = 457;
 	public const BEETROOT_SEEDS = 458;
 	public const BEETROOT_SOUP = 459;
@@ -226,8 +228,10 @@ interface ItemIds extends BlockIds{
 	public const CLOWNFISH = 461;
 	public const PUFFERFISH = 462;
 	public const COOKED_SALMON = 463;
-
+	public const DRIED_KELP = 464;
+	public const NAUTILUS_SHELL = 465;
 	public const APPLEENCHANTED = 466, APPLE_ENCHANTED = 466, ENCHANTED_GOLDEN_APPLE = 466;
+	public const HEART_OF_THE_SEA = 467, SEA_HEART = 467;
 
 	public const RECORD_13 = 500;
 	public const RECORD_CAT = 501;
