@@ -23,12 +23,20 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
+use pocketmine\entity\Human;
 use pocketmine\event\Cancellable;
-use pocketmine\Player;
 
+/**
+ * Called when a player uses a Totem
+ */
 class PlayerConsumeTotemEvent extends PlayerEvent implements Cancellable{
 
-	public function __construct(Player $player){
-		$this->player = $player;
+	/**
+	 * PlayerConsumeTotemEvent constructor.
+	 *
+	 * @param Human $entity
+	 */
+	public function __construct(Human $entity){
+		$this->player = $entity;
 	}
 }

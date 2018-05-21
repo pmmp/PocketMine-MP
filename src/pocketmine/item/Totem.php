@@ -22,7 +22,6 @@
 declare(strict_types=1);
 
 namespace pocketmine\item;
-use pocketmine\item\Item;
 
 class Totem extends Item{
 
@@ -34,4 +33,3 @@ class Totem extends Item{
 		return 1;
 	}
 }
-
