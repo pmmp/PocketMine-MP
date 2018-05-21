@@ -229,7 +229,9 @@ abstract class PluginBase implements Plugin{
 		$resources = [];
 		if(is_dir($this->file . "resources/")){
 			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->file . "resources/")) as $resource){
-				$resources[] = $resource;
+				if($resource->isFile()){
+					$resources[] = $resource;
+				}
 			}
 		}
 
