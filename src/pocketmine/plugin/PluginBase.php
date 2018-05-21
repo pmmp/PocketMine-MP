@@ -223,7 +223,7 @@ abstract class PluginBase implements Plugin{
 	/**
 	 * Returns all the resources packaged with the plugin
 	 *
-	 * @return string[]
+	 * @return \SplFileInfo[]
 	 */
 	public function getResources() : array{
 		$resources = [];

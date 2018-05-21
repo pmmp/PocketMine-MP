@@ -98,7 +98,7 @@ interface Plugin extends CommandExecutor{
 	/**
 	 * Returns all the resources packaged with the plugin
 	 *
-	 * @return string[]
+	 * @return \SplFileInfo[]
 	 */
 	public function getResources() : array;
 
