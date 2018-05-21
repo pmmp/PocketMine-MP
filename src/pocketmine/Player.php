@@ -66,7 +66,7 @@ use pocketmine\event\player\PlayerRespawnEvent;
 use pocketmine\event\player\PlayerToggleFlightEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\event\player\PlayerToggleSprintEvent;
-use pocketmine\event\player\PlayerTotemEvent;
+use pocketmine\event\player\PlayerConsumeTotemEvent;
 use pocketmine\event\player\PlayerTransferEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\inventory\CraftingGrid;
@@ -3648,8 +3648,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return false; //never flag players for despawn
 	}
 
-	protected function onTotem() : void{
-		$this->server->getPluginManager()->callEvent($ev = new PlayerTotemEvent($this));
+	protected function consumeTotem() : void{
+		$this->server->getPluginManager()->callEvent($ev = new PlayerConsumeTotemEvent($this));
 		if($ev->isCancelled()){
 			$this->kill();
 			return;

@@ -931,7 +931,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		return true;
 	}
 	
-	protected function onTotem() : void{
+	protected function consumeTotem() : void{
 
 	}
 
@@ -958,11 +958,11 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		if($amount <= 0){
 			if($this->isAlive()){
-				if($this instanceof Player and $this->spawned === true and $this->hasTotemInHand()){
+				if($this instanceof Player and $this->spawned and $this->hasTotemInHand()){
 					$cause = $this->getLastDamageCause()->getCause();
 					if($cause !== EntityDamageEvent::CAUSE_SUICIDE and $cause !== EntityDamageEvent::CAUSE_VOID){
 					    $this->health = 1;
-						$this->onTotem();
+						$this->consumeTotem();
 						return;
 					}
 				}
