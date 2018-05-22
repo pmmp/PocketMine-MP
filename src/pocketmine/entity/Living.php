@@ -440,12 +440,12 @@ abstract class Living extends Entity implements Damageable{
 	public function applyDamageModifiers(EntityDamageEvent $source) : void{
 		if($source->canBeReducedByArmor()){
 			//MCPE uses the same system as PC did pre-1.9
-			$source->setDamage(-$source->getFinalDamage() * $this->getArmorPoints() * 0.04, EntityDamageEvent::MODIFIER_ARMOR);
+			$source->setModifier(-$source->getFinalDamage() * $this->getArmorPoints() * 0.04, EntityDamageEvent::MODIFIER_ARMOR);
 		}
 
 		$cause = $source->getCause();
 		if($this->hasEffect(Effect::DAMAGE_RESISTANCE) and $cause !== EntityDamageEvent::CAUSE_VOID and $cause !== EntityDamageEvent::CAUSE_SUICIDE){
-			$source->setDamage(-$source->getFinalDamage() * min(1, 0.2 * $this->getEffect(Effect::DAMAGE_RESISTANCE)->getEffectLevel()), EntityDamageEvent::MODIFIER_RESISTANCE);
+			$source->setModifier(-$source->getFinalDamage() * min(1, 0.2 * $this->getEffect(Effect::DAMAGE_RESISTANCE)->getEffectLevel()), EntityDamageEvent::MODIFIER_RESISTANCE);
 		}
 
 		$totalEpf = 0;
@@ -454,9 +454,9 @@ abstract class Living extends Entity implements Damageable{
 				$totalEpf += $item->getEnchantmentProtectionFactor($source);
 			}
 		}
-		$source->setDamage(-$source->getFinalDamage() * min(ceil(min($totalEpf, 25) * (mt_rand(50, 100) / 100)), 20) * 0.04, EntityDamageEvent::MODIFIER_ARMOR_ENCHANTMENTS);
+		$source->setModifier(-$source->getFinalDamage() * min(ceil(min($totalEpf, 25) * (mt_rand(50, 100) / 100)), 20) * 0.04, EntityDamageEvent::MODIFIER_ARMOR_ENCHANTMENTS);
 
-		$source->setDamage(-min($this->getAbsorption(), $source->getFinalDamage()), EntityDamageEvent::MODIFIER_ABSORPTION);
+		$source->setModifier(-min($this->getAbsorption(), $source->getFinalDamage()), EntityDamageEvent::MODIFIER_ABSORPTION);
 	}
 
 	/**
@@ -466,8 +466,8 @@ abstract class Living extends Entity implements Damageable{
 	 * @param EntityDamageEvent $source
 	 */
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
-		$this->setAbsorption(max(0, $this->getAbsorption() + $source->getDamage(EntityDamageEvent::MODIFIER_ABSORPTION)));
-		$this->damageArmor($source->getDamage(EntityDamageEvent::MODIFIER_BASE));
+		$this->setAbsorption(max(0, $this->getAbsorption() + $source->getModifier(EntityDamageEvent::MODIFIER_ABSORPTION)));
+		$this->damageArmor($source->getBaseDamage());
 	}
 
 	/**
@@ -495,7 +495,7 @@ abstract class Living extends Entity implements Damageable{
 	public function attack(EntityDamageEvent $source) : void{
 		if($this->attackTime > 0 or $this->noDamageTicks > 0){
 			$lastCause = $this->getLastDamageCause();
-			if($lastCause !== null and $lastCause->getDamage() >= $source->getDamage()){
+			if($lastCause !== null and $lastCause->getBaseDamage() >= $source->getBaseDamage()){
 				$source->setCancelled();
 			}
 		}
@@ -540,7 +540,7 @@ abstract class Living extends Entity implements Damageable{
 
 				$deltaX = $this->x - $e->x;
 				$deltaZ = $this->z - $e->z;
-				$this->knockBack($e, $source->getDamage(), $deltaX, $deltaZ, $source->getKnockBack());
+				$this->knockBack($e, $source->getBaseDamage(), $deltaX, $deltaZ, $source->getKnockBack());
 			}
 		}
 

@@ -30,7 +30,6 @@ use pocketmine\event\Cancellable;
  * Called when an entity takes damage.
  */
 class EntityDamageEvent extends EntityEvent implements Cancellable{
-	public const MODIFIER_BASE = 0;
 	public const MODIFIER_ARMOR = 1;
 	public const MODIFIER_STRENGTH = 2;
 	public const MODIFIER_WEAKNESS = 3;
@@ -58,6 +57,11 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 
 	/** @var int */
 	private $cause;
+	/** @var float */
+	private $baseDamage;
+	/** @var float */
+	private $originalBase;
+
 	/** @var float[] */
 	private $modifiers;
 	/** @var float[] */
@@ -67,24 +71,16 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	/**
 	 * @param Entity        $entity
 	 * @param int           $cause
-	 * @param float|float[] $damage
+	 * @param float         $damage
+	 * @param float|float[] $modifiers
 	 */
-	public function __construct(Entity $entity, int $cause, $damage){
+	public function __construct(Entity $entity, int $cause, float $damage, array $modifiers = []){
 		$this->entity = $entity;
 		$this->cause = $cause;
-		if(is_array($damage)){
-			$this->modifiers = $damage;
-		}else{
-			$this->modifiers = [
-				self::MODIFIER_BASE => $damage
-			];
-		}
+		$this->baseDamage = $this->originalBase = $damage;
 
+		$this->modifiers = $modifiers;
 		$this->originals = $this->modifiers;
-
-		if(!isset($this->modifiers[self::MODIFIER_BASE])){
-			throw new \InvalidArgumentException("BASE Damage modifier missing");
-		}
 	}
 
 	/**
@@ -95,12 +91,39 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	}
 
 	/**
-	 * @param int $type
+	 * Returns the base amount of damage applied, before modifiers.
 	 *
 	 * @return float
 	 */
-	public function getOriginalDamage(int $type = self::MODIFIER_BASE) : float{
-		return $this->originals[$type] ?? 0.0;
+	public function getBaseDamage() : float{
+		return $this->baseDamage;
+	}
+
+	/**
+	 * Sets the base amount of damage applied, optionally recalculating modifiers.
+	 *
+	 * TODO: add ability to recalculate modifiers when this is set
+	 *
+	 * @param float $damage
+	 */
+	public function setBaseDamage(float $damage) : void{
+		$this->baseDamage = $damage;
+	}
+
+	/**
+	 * Returns the original base amount of damage applied, before alterations by plugins.
+	 *
+	 * @return float
+	 */
+	public function getOriginalBaseDamage() : float{
+		return $this->originalBase;
+	}
+
+	/**
+	 * @return float[]
+	 */
+	public function getOriginalModifiers() : array{
+		return $this->originals;
 	}
 
 	/**
@@ -108,7 +131,23 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	 *
 	 * @return float
 	 */
-	public function getDamage(int $type = self::MODIFIER_BASE) : float{
+	public function getOriginalModifier(int $type) : float{
+		return $this->originals[$type] ?? 0.0;
+	}
+
+	/**
+	 * @return float[]
+	 */
+	public function getModifiers() : array{
+		return $this->modifiers;
+	}
+
+	/**
+	 * @param int $type
+	 *
+	 * @return float
+	 */
+	public function getModifier(int $type) : float{
 		return $this->modifiers[$type] ?? 0.0;
 	}
 
@@ -116,7 +155,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	 * @param float $damage
 	 * @param int   $type
 	 */
-	public function setDamage(float $damage, int $type = self::MODIFIER_BASE){
+	public function setModifier(float $damage, int $type){
 		$this->modifiers[$type] = $damage;
 	}
 
@@ -133,7 +172,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	 * @return float
 	 */
 	public function getFinalDamage() : float{
-		return array_sum($this->modifiers);
+		return $this->baseDamage + array_sum($this->modifiers);
 	}
 
 	/**
