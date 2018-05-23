@@ -33,6 +33,7 @@ use pocketmine\inventory\EnderChestInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\Consumable;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item;
 use pocketmine\item\Totem;
@@ -711,10 +712,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	public function getDrops() : array{
-		return array_merge(
+		return array_filter(array_merge(
 			$this->inventory !== null ? array_values($this->inventory->getContents()) : [],
 			$this->armorInventory !== null ? array_values($this->armorInventory->getContents()) : []
-		);
+		), function(Item $item) : bool{ return !$item->hasEnchantment(Enchantment::VANISHING); });
 	}
 
 	public function saveNBT() : void{
