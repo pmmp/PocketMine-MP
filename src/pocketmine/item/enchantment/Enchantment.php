@@ -70,7 +70,7 @@ class Enchantment{
 	public const RARITY_MYTHIC = 1;
 
 	public const SLOT_NONE = 0x0;
-	public const SLOT_ALL = 0x7fff;
+	public const SLOT_ALL = 0xffff;
 	public const SLOT_ARMOR = self::SLOT_HEAD | self::SLOT_TORSO | self::SLOT_LEGS | self::SLOT_FEET;
 	public const SLOT_HEAD = 0x1;
 	public const SLOT_TORSO = 0x2;
@@ -89,6 +89,7 @@ class Enchantment{
 	public const SLOT_FISHING_ROD = 0x1000;
 	public const SLOT_CARROT_STICK = 0x2000;
 	public const SLOT_ELYTRA = 0x4000;
+	public const SLOT_TRIDENT = 0x8000;
 
 	/** @var Enchantment[] */
 	protected static $enchantments;
