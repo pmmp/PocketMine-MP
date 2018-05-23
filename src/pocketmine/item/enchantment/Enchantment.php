@@ -93,7 +93,7 @@ class Enchantment{
 	/** @var Enchantment[] */
 	protected static $enchantments;
 
-	public static function init(){
+	public static function init() : void{
 		self::$enchantments = new \SplFixedArray(256);
 
 		self::registerEnchantment(new ProtectionEnchantment(self::PROTECTION, "%enchantment.protect.all", self::RARITY_COMMON, self::SLOT_ARMOR, self::SLOT_NONE, 4, 0.75, null));
@@ -137,7 +137,7 @@ class Enchantment{
 	 *
 	 * @return Enchantment|null
 	 */
-	public static function getEnchantment(int $id){
+	public static function getEnchantment(int $id) : ?Enchantment{
 		return self::$enchantments[$id] ?? null;
 	}
 
@@ -146,7 +146,7 @@ class Enchantment{
 	 *
 	 * @return Enchantment|null
 	 */
-	public static function getEnchantmentByName(string $name){
+	public static function getEnchantmentByName(string $name) : ?Enchantment{
 		$const = Enchantment::class . "::" . strtoupper($name);
 		if(defined($const)){
 			return self::getEnchantment(constant($const));
