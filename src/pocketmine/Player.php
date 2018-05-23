@@ -3706,11 +3706,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		parent::attack($source);
 	}
 
-	protected function doHitAnimation() : void{
-		parent::doHitAnimation();
-		if($this->spawned){
-			$this->broadcastEntityEvent(EntityEventPacket::HURT_ANIMATION, null, [$this]);
+	public function broadcastEntityEvent(int $eventId, ?int $eventData = null, ?array $players = null) : void{
+		if($this->spawned and $players === null){
+			$players = $this->getViewers();
+			$players[] = $this;
 		}
+		parent::broadcastEntityEvent($eventId, $eventData, $players);
 	}
 
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{
