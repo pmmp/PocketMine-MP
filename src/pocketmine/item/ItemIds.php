@@ -105,7 +105,7 @@ interface ItemIds extends BlockIds{
 	public const SNOWBALL = 332;
 	public const BOAT = 333;
 	public const LEATHER = 334;
-
+	public const KELP = 335;
 	public const BRICK = 336;
 	public const CLAY = 337, CLAY_BALL = 337;
 	public const REEDS = 338, SUGARCANE = 338;
@@ -209,15 +209,20 @@ interface ItemIds extends BlockIds{
 	public const SPLASH_POTION = 438;
 
 	public const LINGERING_POTION = 441;
-
+	public const SPARKLER = 442;
 	public const COMMAND_BLOCK_MINECART = 443, MINECART_WITH_COMMAND_BLOCK = 443;
 	public const ELYTRA = 444;
 	public const SHULKER_SHELL = 445;
 	public const BANNER = 446;
-
+	public const MEDICINE = 447;
+	public const BALLOON = 448;
+	public const RAPID_FERTILIZER = 449;
 	public const TOTEM = 450;
-
+	public const BLEACH = 451;
 	public const IRON_NUGGET = 452;
+	public const ICE_BOMB = 453;
+
+	public const TRIDENT = 455;
 
 	public const BEETROOT = 457;
 	public const BEETROOT_SEEDS = 458;
@@ -226,9 +231,12 @@ interface ItemIds extends BlockIds{
 	public const CLOWNFISH = 461;
 	public const PUFFERFISH = 462;
 	public const COOKED_SALMON = 463;
-
+	public const DRIED_KELP = 464;
+	public const NAUTILUS_SHELL = 465;
 	public const APPLEENCHANTED = 466, APPLE_ENCHANTED = 466, ENCHANTED_GOLDEN_APPLE = 466;
+	public const HEART_OF_THE_SEA = 467;
 
+	public const COMPOUND = 499;
 	public const RECORD_13 = 500;
 	public const RECORD_CAT = 501;
 	public const RECORD_BLOCKS = 502;
