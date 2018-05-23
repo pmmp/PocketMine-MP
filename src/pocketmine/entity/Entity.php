@@ -429,7 +429,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	protected $baseOffset = 0.0;
 
 	/** @var float */
-	private $health = 20.0;
+	protected $health = 20.0;
 	private $maxHealth = 20;
 
 	/** @var float */
@@ -954,8 +954,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		if($amount <= 0){
 			if($this->isAlive()){
-				$this->health = 0;
-				$this->kill();
+				if($this instanceof Human){
+					$this->playerFinalDamageDestiny();
+				}else{
+					$this->health = 0;
+					$this->kill();
+				}
 			}
 		}elseif($amount <= $this->getMaxHealth() or $amount < $this->health){
 			$this->health = $amount;

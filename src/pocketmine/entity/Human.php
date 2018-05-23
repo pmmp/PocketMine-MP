@@ -27,6 +27,7 @@ use pocketmine\entity\projectile\ProjectileSource;
 use pocketmine\entity\utils\ExperienceUtils;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
+use pocketmine\event\player\PlayerConsumeTotemEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerExperienceChangeEvent;
 use pocketmine\inventory\EnderChestInventory;
@@ -43,6 +44,7 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
+use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
@@ -165,6 +167,26 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		}else{
 			$this->exhaust(0.2, PlayerExhaustEvent::CAUSE_JUMPING);
 		}
+	}
+
+	protected function consumeTotem() : void{
+		$this->server->getPluginManager()->callEvent($ev = new PlayerConsumeTotemEvent($this));
+		if($ev->isCancelled()){
+			$this->kill();
+			return;
+		}
+
+		$this->inventory->clear($this->inventory->getHeldItemIndex());
+
+		$this->health = 1;
+
+		$this->broadcastEntityEvent(EntityEventPacket::CONSUME_TOTEM, null, [$this]);
+		$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_TOTEM);
+
+		$this->removeAllEffects();
+		$this->addEffect(new EffectInstance(Effect::getEffect(Effect::REGENERATION), 800, 1));
+		$this->addEffect(new EffectInstance(Effect::getEffect(Effect::FIRE_RESISTANCE), 800, 1));
+		$this->addEffect(new EffectInstance(Effect::getEffect(Effect::ABSORPTION), 100, 1));
 	}
 
 	public function getFood() : float{
@@ -531,6 +553,21 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	public function getEnderChestInventory() : EnderChestInventory{
 		return $this->enderChestInventory;
+	}
+
+	public function playerFinalDamageDestiny() : void{
+		if($this instanceof Player and $this->spawned){
+			if($this->inventory->getItemInHand()->equals(Item::get(Item::TOTEM))){
+				$cause = $this->getLastDamageCause()->getCause();
+				if($cause !== EntityDamageEvent::CAUSE_SUICIDE and $cause !== EntityDamageEvent::CAUSE_VOID){
+					$this->consumeTotem();
+					return;
+				}
+			}
+
+			$this->health = 0;
+			$this->kill();
+		}
 	}
 
 	/**
