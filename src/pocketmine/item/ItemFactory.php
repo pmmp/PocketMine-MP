@@ -229,7 +229,7 @@ class ItemFactory{
 		//TODO: BALLOON
 		//TODO: RAPID_FERTILIZER
 		self::registerItem(new Totem());
-		//TODO: BLEACH
+		self::registerItem(new Item(Item::BLEACH, 0, "Bleach")); //EDU
 		self::registerItem(new Item(Item::IRON_NUGGET, 0, "Iron Nugget"));
 		//TODO: ICE_BOMB
 
@@ -242,10 +242,10 @@ class ItemFactory{
 		self::registerItem(new Clownfish());
 		self::registerItem(new Pufferfish());
 		self::registerItem(new CookedSalmon());
-		//TODO: DRIED_KELP
-		//TODO: NAUTILUS_SHELL
+		self::registerItem(new DriedKelp());
+		self::registerItem(new Item(Item::NAUTILUS_SHELL, 0, "Nautilus Shell"));
 		self::registerItem(new GoldenAppleEnchanted());
-		//TODO: HEART_OF_THE_SEA
+		self::registerItem(new Item(Item::HEART_OF_THE_SEA, 0, "Heart of the Sea"));
 
 		//TODO: COMPOUND
 		//TODO: RECORD_13
