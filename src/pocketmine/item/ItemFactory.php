@@ -116,7 +116,7 @@ class ItemFactory{
 		self::registerItem(new Snowball());
 		self::registerItem(new Boat());
 		self::registerItem(new Item(Item::LEATHER, 0, "Leather"));
-
+		//TODO: KELP
 		self::registerItem(new Item(Item::BRICK, 0, "Brick"));
 		self::registerItem(new Item(Item::CLAY_BALL, 0, "Clay"));
 		self::registerItem(new ItemBlock(Block::SUGARCANE_BLOCK, 0, Item::SUGARCANE));
@@ -220,15 +220,20 @@ class ItemFactory{
 		self::registerItem(new SplashPotion());
 
 		//TODO: LINGERING_POTION
-
+		//TODO: SPARKLER
 		//TODO: COMMAND_BLOCK_MINECART
 		//TODO: ELYTRA
 		self::registerItem(new Item(Item::SHULKER_SHELL, 0, "Shulker Shell"));
 		self::registerItem(new Banner());
-
+		//TODO: MEDICINE
+		//TODO: BALLOON
+		//TODO: RAPID_FERTILIZER
 		self::registerItem(new Totem());
-
+		//TODO: BLEACH
 		self::registerItem(new Item(Item::IRON_NUGGET, 0, "Iron Nugget"));
+		//TODO: ICE_BOMB
+
+		//TODO: TRIDENT
 
 		self::registerItem(new Beetroot());
 		self::registerItem(new BeetrootSeeds());
@@ -237,9 +242,12 @@ class ItemFactory{
 		self::registerItem(new Clownfish());
 		self::registerItem(new Pufferfish());
 		self::registerItem(new CookedSalmon());
-
+		//TODO: DRIED_KELP
+		//TODO: NAUTILUS_SHELL
 		self::registerItem(new GoldenAppleEnchanted());
+		//TODO: HEART_OF_THE_SEA
 
+		//TODO: COMPOUND
 		//TODO: RECORD_13
 		//TODO: RECORD_CAT
 		//TODO: RECORD_BLOCKS
