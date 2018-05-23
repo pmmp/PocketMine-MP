@@ -57,6 +57,12 @@ class Enchantment{
 	public const LURE = 24;
 	public const FROST_WALKER = 25;
 	public const MENDING = 26;
+	public const BINDING = 27;
+	public const VANISHING = 28;
+	public const IMPALING = 29;
+	public const RIPTIDE = 30;
+	public const LOYALTY = 31;
+	public const CHANNELING = 32;
 
 	public const RARITY_COMMON = 10;
 	public const RARITY_UNCOMMON = 5;
