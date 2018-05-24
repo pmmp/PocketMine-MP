@@ -46,7 +46,7 @@ interface EntityIds{
 	public const POLAR_BEAR = 28;
 	public const LLAMA = 29;
 	public const PARROT = 30;
-
+	public const DOLPHIN = 31;
 	public const ZOMBIE = 32;
 	public const CREEPER = 33;
 	public const SKELETON = 34;
@@ -86,6 +86,7 @@ interface EntityIds{
 	public const EYE_OF_ENDER_SIGNAL = 70;
 	public const ENDER_CRYSTAL = 71;
 	public const FIREWORKS_ROCKET = 72;
+	public const TRIDENT = 73;
 
 	public const SHULKER_BULLET = 76;
 	public const FISHING_HOOK = 77;
@@ -116,4 +117,11 @@ interface EntityIds{
 	public const EVOCATION_FANG = 103;
 	public const EVOCATION_ILLAGER = 104;
 	public const VEX = 105;
+	public const ICE_BOMB = 106;
+	public const BALLOON = 107;
+	public const PUFFERFISH = 108;
+	public const SALMON = 109;
+	public const DROWNED = 110;
+	public const TROPICAL_FISH = 111;
+	public const FISH = 112;
 }
