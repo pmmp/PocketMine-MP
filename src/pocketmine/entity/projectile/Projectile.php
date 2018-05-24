@@ -117,7 +117,7 @@ abstract class Projectile extends Entity{
 	 * @return int
 	 */
 	public function getResultDamage() : int{
-		return (int) ceil(sqrt($this->motionX ** 2 + $this->motionY ** 2 + $this->motionZ ** 2) * $this->damage);
+		return (int) ceil($this->motion->length() * $this->damage);
 	}
 
 	public function saveNBT() : void{
@@ -159,7 +159,7 @@ abstract class Projectile extends Entity{
 		Timings::$entityMoveTimer->startTiming();
 
 		$start = $this->asVector3();
-		$end = $start->add($this->motionX, $this->motionY, $this->motionZ);
+		$end = $start->add($this->motion);
 
 		$blockHit = null;
 		$entityHit = null;
@@ -230,15 +230,15 @@ abstract class Projectile extends Entity{
 			}
 
 			$this->isCollided = $this->onGround = true;
-			$this->motionX = $this->motionY = $this->motionZ = 0;
+			$this->motion->x = $this->motion->y = $this->motion->z = 0;
 		}else{
 			$this->isCollided = $this->onGround = false;
 			$this->blockHit = $this->blockHitId = $this->blockHitData = null;
 
 			//recompute angles...
-			$f = sqrt(($this->motionX ** 2) + ($this->motionZ ** 2));
-			$this->yaw = (atan2($this->motionX, $this->motionZ) * 180 / M_PI);
-			$this->pitch = (atan2($this->motionY, $f) * 180 / M_PI);
+			$f = sqrt(($this->motion->x ** 2) + ($this->motion->z ** 2));
+			$this->yaw = (atan2($this->motion->x, $this->motion->z) * 180 / M_PI);
+			$this->pitch = (atan2($this->motion->y, $f) * 180 / M_PI);
 		}
 
 		$this->checkChunks();

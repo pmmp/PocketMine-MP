@@ -388,22 +388,16 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	/** @var float|null */
 	public $lastZ = null;
 
-	/** @var float */
-	public $motionX = 0.0;
-	/** @var float */
-	public $motionY = 0.0;
-	/** @var float */
-	public $motionZ = 0.0;
 	/** @var Vector3 */
-	public $temporalVector;
-	/** @var float */
-	public $lastMotionX;
-	/** @var float */
-	public $lastMotionY;
-	/** @var float */
-	public $lastMotionZ;
+	protected $motion;
+	/** @var Vector3 */
+	protected $lastMotion;
 	/** @var bool */
 	protected $forceMovementUpdate = false;
+
+	/** @var Vector3 */
+	public $temporalVector;
+
 
 	/** @var float */
 	public $lastYaw;
@@ -851,9 +845,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		]));
 
 		$this->namedtag->setTag(new ListTag("Motion", [
-			new DoubleTag("", $this->motionX),
-			new DoubleTag("", $this->motionY),
-			new DoubleTag("", $this->motionZ)
+			new DoubleTag("", $this->motion->x),
+			new DoubleTag("", $this->motion->y),
+			new DoubleTag("", $this->motion->z)
 		]));
 
 		$this->namedtag->setTag(new ListTag("Rotation", [
@@ -1114,7 +1108,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$diffPosition = ($this->x - $this->lastX) ** 2 + ($this->y - $this->lastY) ** 2 + ($this->z - $this->lastZ) ** 2;
 		$diffRotation = ($this->yaw - $this->lastYaw) ** 2 + ($this->pitch - $this->lastPitch) ** 2;
 
-		$diffMotion = ($this->motionX - $this->lastMotionX) ** 2 + ($this->motionY - $this->lastMotionY) ** 2 + ($this->motionZ - $this->lastMotionZ) ** 2;
+		$diffMotion = $this->motion->subtract($this->lastMotion)->lengthSquared();
 
 		if($teleport or $diffPosition > 0.0001 or $diffRotation > 1.0){
 			$this->lastX = $this->x;
@@ -1128,9 +1122,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		}
 
 		if($diffMotion > 0.0025 or ($diffMotion > 0.0001 and $this->getMotion()->lengthSquared() <= 0.0001)){ //0.05 ** 2
-			$this->lastMotionX = $this->motionX;
-			$this->lastMotionY = $this->motionY;
-			$this->lastMotionZ = $this->motionZ;
+			$this->lastMotion = clone $this->motion;
 
 			$this->broadcastMotion();
 		}
@@ -1169,28 +1161,28 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function applyGravity() : void{
-		$this->motionY -= $this->gravity;
+		$this->motion->y -= $this->gravity;
 	}
 
 	protected function tryChangeMovement() : void{
 		$friction = 1 - $this->drag;
 
 		if($this->applyDragBeforeGravity()){
-			$this->motionY *= $friction;
+			$this->motion->y *= $friction;
 		}
 
 		$this->applyGravity();
 
 		if(!$this->applyDragBeforeGravity()){
-			$this->motionY *= $friction;
+			$this->motion->y *= $friction;
 		}
 
 		if($this->onGround){
 			$friction *= $this->level->getBlockAt(Math::floorFloat($this->x), Math::floorFloat($this->y) - 1, Math::floorFloat($this->z))->getFrictionFactor();
 		}
 
-		$this->motionX *= $friction;
-		$this->motionZ *= $friction;
+		$this->motion->x *= $friction;
+		$this->motion->z *= $friction;
 	}
 
 	protected function checkObstruction(float $x, float $y, float $z) : bool{
@@ -1249,37 +1241,37 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$force = lcg_value() * 0.2 + 0.1;
 
 			if($direction === Vector3::SIDE_WEST){
-				$this->motionX = -$force;
+				$this->motion->x = -$force;
 
 				return true;
 			}
 
 			if($direction === Vector3::SIDE_EAST){
-				$this->motionX = $force;
+				$this->motion->x = $force;
 
 				return true;
 			}
 
 			if($direction === Vector3::SIDE_DOWN){
-				$this->motionY = -$force;
+				$this->motion->y = -$force;
 
 				return true;
 			}
 
 			if($direction === Vector3::SIDE_UP){
-				$this->motionY = $force;
+				$this->motion->y = $force;
 
 				return true;
 			}
 
 			if($direction === Vector3::SIDE_NORTH){
-				$this->motionZ = -$force;
+				$this->motion->z = -$force;
 
 				return true;
 			}
 
 			if($direction === Vector3::SIDE_SOUTH){
-				$this->motionZ = $force;
+				$this->motion->z = $force;
 
 				return true;
 			}
@@ -1359,16 +1351,16 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		if($this->hasMovementUpdate()){
 			$this->tryChangeMovement();
-			$this->move($this->motionX, $this->motionY, $this->motionZ);
+			$this->move($this->motion->x, $this->motion->y, $this->motion->z);
 
-			if(abs($this->motionX) <= self::MOTION_THRESHOLD){
-				$this->motionX = 0;
+			if(abs($this->motion->x) <= self::MOTION_THRESHOLD){
+				$this->motion->x = 0;
 			}
-			if(abs($this->motionY) <= self::MOTION_THRESHOLD){
-				$this->motionY = 0;
+			if(abs($this->motion->y) <= self::MOTION_THRESHOLD){
+				$this->motion->y = 0;
 			}
-			if(abs($this->motionZ) <= self::MOTION_THRESHOLD){
-				$this->motionZ = 0;
+			if(abs($this->motion->z) <= self::MOTION_THRESHOLD){
+				$this->motion->z = 0;
 			}
 
 			$this->forceMovementUpdate = false;
@@ -1417,9 +1409,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public function hasMovementUpdate() : bool{
 		return (
 			$this->forceMovementUpdate or
-			$this->motionX != 0 or
-			$this->motionY != 0 or
-			$this->motionZ != 0 or
+			$this->motion->x != 0 or
+			$this->motion->y != 0 or
+			$this->motion->z != 0 or
 			!$this->onGround
 		);
 	}
@@ -1654,15 +1646,15 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->updateFallState($dy, $this->onGround);
 
 		if($movX != $dx){
-			$this->motionX = 0;
+			$this->motion->x = 0;
 		}
 
 		if($movY != $dy){
-			$this->motionY = 0;
+			$this->motion->y = 0;
 		}
 
 		if($movZ != $dz){
-			$this->motionZ = 0;
+			$this->motion->z = 0;
 		}
 
 		//TODO: vehicle collision events (first we need to spawn them!)
@@ -1728,9 +1720,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		if($vector->lengthSquared() > 0){
 			$vector = $vector->normalize();
 			$d = 0.014;
-			$this->motionX += $vector->x * $d;
-			$this->motionY += $vector->y * $d;
-			$this->motionZ += $vector->z * $d;
+			$this->motion->x += $vector->x * $d;
+			$this->motion->y += $vector->y * $d;
+			$this->motion->z += $vector->z * $d;
 		}
 	}
 
@@ -1816,11 +1808,11 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	protected function resetLastMovements() : void{
 		list($this->lastX, $this->lastY, $this->lastZ) = [$this->x, $this->y, $this->z];
 		list($this->lastYaw, $this->lastPitch) = [$this->yaw, $this->pitch];
-		list($this->lastMotionX, $this->lastMotionY, $this->lastMotionZ) = [$this->motionX, $this->motionY, $this->motionZ];
+		$this->lastMotion = clone $this->motion;
 	}
 
 	public function getMotion() : Vector3{
-		return new Vector3($this->motionX, $this->motionY, $this->motionZ);
+		return $this->motion;
 	}
 
 	public function setMotion(Vector3 $motion) : bool{
@@ -1831,9 +1823,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			}
 		}
 
-		$this->motionX = $motion->x;
-		$this->motionY = $motion->y;
-		$this->motionZ = $motion->z;
+		$this->motion = clone $motion;
 
 		if(!$this->justCreated){
 			$this->updateMovement();
