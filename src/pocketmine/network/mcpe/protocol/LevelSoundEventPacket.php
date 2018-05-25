@@ -144,7 +144,7 @@ class LevelSoundEventPacket extends DataPacket{
 	public const SOUND_RECORD_WARD = 110;
 	public const SOUND_RECORD_11 = 111;
 	public const SOUND_RECORD_WAIT = 112;
-
+	public const SOUND_STOP_RECORD = 113; //Not really a sound
 	public const SOUND_FLOP = 114;
 	public const SOUND_ELDERGUARDIAN_CURSE = 115;
 	public const SOUND_MOB_WARNING = 116;
