@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "28d95be15fae9cf775b025d2944dd799",
+    "content-hash": "4d0df34f03ca881cfff1dea123a06755",
     "packages": [
         {
             "name": "pocketmine/binaryutils",
@@ -161,12 +161,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Snooze.git",
-                "reference": "b39f869b9f94de94eafc4f14aa650bd5b8cde436"
+                "reference": "541f0f038f401e9117ae60c8dbc167a46569282d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/b39f869b9f94de94eafc4f14aa650bd5b8cde436",
-                "reference": "b39f869b9f94de94eafc4f14aa650bd5b8cde436",
+                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/541f0f038f401e9117ae60c8dbc167a46569282d",
+                "reference": "541f0f038f401e9117ae60c8dbc167a46569282d",
                 "shasum": ""
             },
             "require": {
@@ -187,7 +187,7 @@
                 "source": "https://github.com/pmmp/Snooze/tree/master",
                 "issues": "https://github.com/pmmp/Snooze/issues"
             },
-            "time": "2018-05-20T11:03:22+00:00"
+            "time": "2018-05-20T17:47:37+00:00"
         },
         {
             "name": "pocketmine/spl",
