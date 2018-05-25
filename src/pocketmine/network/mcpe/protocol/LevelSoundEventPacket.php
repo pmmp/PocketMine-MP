@@ -144,7 +144,8 @@ class LevelSoundEventPacket extends DataPacket{
 	public const SOUND_RECORD_WARD = 110;
 	public const SOUND_RECORD_11 = 111;
 	public const SOUND_RECORD_WAIT = 112;
-	public const SOUND_GUARDIAN_FLOP = 114;
+
+	public const SOUND_FLOP = 114;
 	public const SOUND_ELDERGUARDIAN_CURSE = 115;
 	public const SOUND_MOB_WARNING = 116;
 	public const SOUND_MOB_WARNING_BABY = 117;
@@ -181,6 +182,7 @@ class LevelSoundEventPacket extends DataPacket{
 	public const SOUND_IMITATE_ELDER_GUARDIAN = 148;
 	public const SOUND_IMITATE_ENDER_DRAGON = 149;
 	public const SOUND_IMITATE_ENDERMAN = 150;
+
 	public const SOUND_IMITATE_EVOCATION_ILLAGER = 152;
 	public const SOUND_IMITATE_GHAST = 153;
 	public const SOUND_IMITATE_HUSK = 154;
@@ -207,8 +209,40 @@ class LevelSoundEventPacket extends DataPacket{
 	public const SOUND_RANDOM_ANVIL_USE = 175;
 	public const SOUND_BOTTLE_DRAGONBREATH = 176;
 	public const SOUND_PORTAL_TRAVEL = 177;
-	public const SOUND_DEFAULT = 178;
-	public const SOUND_UNDEFINED = 179;
+	public const SOUND_ITEM_TRIDENT_HIT = 178;
+	public const SOUND_ITEM_TRIDENT_RETURN = 179;
+	public const SOUND_ITEM_TRIDENT_RIPTIDE_1 = 180;
+	public const SOUND_ITEM_TRIDENT_RIPTIDE_2 = 181;
+	public const SOUND_ITEM_TRIDENT_RIPTIDE_3 = 182;
+	public const SOUND_ITEM_TRIDENT_THROW = 183;
+	public const SOUND_ITEM_TRIDENT_THUNDER = 184;
+	public const SOUND_ITEM_TRIDENT_HIT_GROUND = 185;
+	public const SOUND_DEFAULT = 186;
+
+	public const SOUND_ELEMCONSTRUCT_OPEN = 188;
+	public const SOUND_ICEBOMB_HIT = 189;
+	public const SOUND_BALLOONPOP = 190;
+	public const SOUND_LT_REACTION_ICEBOMB = 191;
+	public const SOUND_LT_REACTION_BLEACH = 192;
+	public const SOUND_LT_REACTION_EPASTE = 193;
+	public const SOUND_LT_REACTION_EPASTE2 = 194;
+
+	public const SOUND_LT_REACTION_FERTILIZER = 199;
+	public const SOUND_LT_REACTION_FIREBALL = 200;
+	public const SOUND_LT_REACTION_MGSALT = 201;
+	public const SOUND_LT_REACTION_MISCFIRE = 202;
+	public const SOUND_LT_REACTION_FIRE = 203;
+	public const SOUND_LT_REACTION_MISCEXPLOSION = 204;
+	public const SOUND_LT_REACTION_MISCMYSTICAL = 205;
+	public const SOUND_LT_REACTION_MISCMYSTICAL2 = 206;
+	public const SOUND_LT_REACTION_PRODUCT = 207;
+	public const SOUND_SPARKLER_USE = 208;
+	public const SOUND_GLOWSTICK_USE = 209;
+	public const SOUND_SPARKLER_ACTIVE = 210;
+	public const SOUND_CONVERT_TO_DROWNED = 211;
+	public const SOUND_BUCKET_FILL_FISH = 212;
+	public const SOUND_BUCKET_EMPTY_FISH = 213;
+	public const SOUND_UNDEFINED = 214;
 
 	/** @var int */
 	public $sound;
