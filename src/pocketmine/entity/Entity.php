@@ -1121,7 +1121,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$this->broadcastMovement($teleport);
 		}
 
-		if($diffMotion > 0.0025 or ($diffMotion > 0.0001 and $this->getMotion()->lengthSquared() <= 0.0001)){ //0.05 ** 2
+		if($diffMotion > 0.0025 or ($diffMotion > 0.0001 and $this->motion->lengthSquared() <= 0.0001)){ //0.05 ** 2
 			$this->lastMotion = clone $this->motion;
 
 			$this->broadcastMotion();
@@ -1812,7 +1812,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function getMotion() : Vector3{
-		return $this->motion;
+		return clone $this->motion;
 	}
 
 	public function setMotion(Vector3 $motion) : bool{
