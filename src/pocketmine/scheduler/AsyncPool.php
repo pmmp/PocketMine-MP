@@ -165,7 +165,7 @@ class AsyncPool{
 							$this->server->getLogger()->notice("AsyncTask " . get_class($task) . " stored local complex data but did not remove them after completion");
 						}
 					}catch(\Throwable $e){
-						$this->server->getLogger()->critical("Could not execute completion of asychronous task " . (new \ReflectionClass($task))->getShortName() . ": " . $e->getMessage());
+						$this->server->getLogger()->critical("Could not execute completion of asynchronous task " . (new \ReflectionClass($task))->getShortName() . ": " . $e->getMessage());
 						$this->server->getLogger()->logException($e);
 
 						$this->server->getScheduler()->removeLocalComplex($task); //silent
