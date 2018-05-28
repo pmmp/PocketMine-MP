@@ -49,18 +49,7 @@ class Trident extends Tool {
 			($player->yaw > 180 ? 360 : 0) - $player->yaw,
 			-$player->pitch
 		);
-		$asNBT = $this->nbtSerialize();
-		$asNBT->setName(self::TAG_TRIDENT);
-		$nbt->setTag($asNBT);
-		if($player->isSurvival()){
-			$this->applyDamage(1);
-		}
-		$entity = Entity::createEntity("Thrown Trident", $player->getLevel(), $nbt, $player, $this);
-		$entity->spawnToAll();
-		return true;
-		if($player->isSurvival()){
-			$player->getInventory()->removeItem(clone $this);
-		}
+	 }
 
 		return true;
 	}
