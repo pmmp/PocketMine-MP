@@ -2286,7 +2286,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				if($action !== null){
 					$actions[] = $action;
 				}
-			}catch(\Throwable $e){
+			}catch(\Exception $e){
 				$this->server->getLogger()->debug("Unhandled inventory action from " . $this->getName() . ": " . $e->getMessage());
 				$this->sendAllInventories();
 				return false;
