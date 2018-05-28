@@ -26,6 +26,7 @@ namespace pocketmine;
 use pocketmine\block\Bed;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\Water;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\Effect;
@@ -66,6 +67,7 @@ use pocketmine\event\player\PlayerRespawnEvent;
 use pocketmine\event\player\PlayerToggleFlightEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\event\player\PlayerToggleSprintEvent;
+use pocketmine\event\player\PlayerToggleSwimEvent;
 use pocketmine\event\player\PlayerTransferEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\inventory\CraftingGrid;
@@ -1646,8 +1648,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if(parent::setMotion($motion)){
 			$this->broadcastMotion();
 
-			if($this->motion->y > 0){
-				$this->startAirTicks = (-log($this->gravity / ($this->gravity + $this->drag * $this->motion->y)) / $this->drag) * 2 + 5;
+			if($this->motionY > 0){
+				$this->startAirTicks = (-log($this->gravity / ($this->gravity + $this->drag * $this->motionY)) / $this->drag) * 2 + 5;
 			}
 
 			return true;
@@ -1702,7 +1704,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		if($this->spawned){
 			$this->processMovement($tickDiff);
-			$this->motion->x = $this->motion->y = $this->motion->z = 0; //TODO: HACK! (Fixes player knockback being messed up)
+			$this->motionX = $this->motionY = $this->motionZ = 0; //TODO: HACK! (Fixes player knockback being messed up)
 
 			Timings::$timerEntityBaseTick->startTiming();
 			$this->entityBaseTick($tickDiff);
@@ -1744,7 +1746,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return true;
 	}
 
-	protected function doFoodTick(int $tickDiff = 1) : void{
+	public function doFoodTick(int $tickDiff = 1) : void{
 		if($this->isSurvival()){
 			parent::doFoodTick($tickDiff);
 		}
@@ -1955,7 +1957,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				return;
 			}
 
-			$this->server->getLogger()->debug($this->getName() . " is NOT logged into Xbox Live");
+			$this->server->getLogger()->debug($this->getName() . " is NOT logged into to Xbox Live");
 		}else{
 			$this->server->getLogger()->debug($this->getName() . " is logged into Xbox Live");
 			$this->xuid = $xuid;
@@ -1994,7 +1996,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if(($level = $this->server->getLevelByName($this->namedtag->getString("Level", "", true))) === null){
 			$this->setLevel($this->server->getDefaultLevel());
 			$this->namedtag->setString("Level", $this->level->getFolderName());
-			$spawnLocation = $this->level->getSafeSpawn();
+			$spawnLocation = $this->level->getSpawnLocation();
 			$this->namedtag->setTag(new ListTag("Pos", [
 				new DoubleTag("", $spawnLocation->x),
 				new DoubleTag("", $spawnLocation->y),
@@ -2505,8 +2507,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							$ev->setCancelled();
 						}
 
-						if(!$this->isSprinting() and !$this->isFlying() and $this->fallDistance > 0 and !$this->hasEffect(Effect::BLINDNESS) and !$this->isUnderwater()){
-							$ev->setModifier($ev->getFinalDamage() / 2, EntityDamageEvent::MODIFIER_CRITICAL);
+						if(!$this->isSprinting() and !$this->isFlying() and $this->fallDistance > 0 and !$this->hasEffect(Effect::BLINDNESS) and !$this->isInsideOfWater()){
+							$ev->setDamage($ev->getFinalDamage() / 2, EntityDamageEvent::MODIFIER_CRITICAL);
 						}
 
 						$target->attack($ev);
@@ -2518,7 +2520,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							return true;
 						}
 
-						if($ev->getModifier(EntityDamageEvent::MODIFIER_CRITICAL) > 0){
+						if($ev->getDamage(EntityDamageEvent::MODIFIER_CRITICAL) > 0){
 							$pk = new AnimatePacket();
 							$pk->action = AnimatePacket::ACTION_CRITICAL_HIT;
 							$pk->entityRuntimeId = $target->getId();
@@ -2788,10 +2790,30 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				//TODO: destroy-progress level event
 				break;
 			case PlayerActionPacket::ACTION_START_SWIMMING:
-				break; //TODO
+				$block = $this->level->getBlock($this);
+
+				$ev = new PlayerToggleSwimEvent($this, true);
+				$this->server->getPluginManager()->callEvent($ev);
+				if(!($block instanceof Water)){
+					$ev->setCancelled();
+				}
+				if($ev->isCancelled()){
+					$this->sendData($this);
+				}else{
+					$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_HEIGHT, $this->width);
+					$this->setSwimming(true);
+				}
+				return true;
 			case PlayerActionPacket::ACTION_STOP_SWIMMING:
-				//TODO: handle this when it doesn't spam every damn tick (yet another spam bug!!)
-				break;
+				$ev = new PlayerToggleSwimEvent($this, false);
+				$this->server->getPluginManager()->callEvent($ev);
+				if($ev->isCancelled()){
+					$this->sendData($this);
+				}else{
+					$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_HEIGHT, $this->height);
+					$this->setSwimming(false);
+				}
+				return true;
 			default:
 				$this->server->getLogger()->debug("Unhandled/unknown player action type " . $packet->action . " from " . $this->getName());
 				return false;
@@ -3660,6 +3682,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->setSprinting(false);
 		$this->setSneaking(false);
+		$this->setSwimming(false);
 
 		$this->extinguish();
 		$this->setAirSupplyTicks($this->getMaxAirSupplyTicks());
@@ -3706,12 +3729,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		parent::attack($source);
 	}
 
-	public function broadcastEntityEvent(int $eventId, ?int $eventData = null, ?array $players = null) : void{
-		if($this->spawned and $players === null){
-			$players = $this->getViewers();
-			$players[] = $this;
+	protected function doHitAnimation() : void{
+		parent::doHitAnimation();
+		if($this->spawned){
+			$this->broadcastEntityEvent(EntityEventPacket::HURT_ANIMATION, null, [$this]);
 		}
-		parent::broadcastEntityEvent($eventId, $eventData, $players);
 	}
 
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{
