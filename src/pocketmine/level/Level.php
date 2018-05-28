@@ -1102,9 +1102,9 @@ class Level implements ChunkManager, Metadatable{
 		$minX = Math::floorFloat($bb->minX - 1);
 		$minY = Math::floorFloat($bb->minY - 1);
 		$minZ = Math::floorFloat($bb->minZ - 1);
-		$maxX = Math::ceilFloat($bb->maxX + 1);
-		$maxY = Math::ceilFloat($bb->maxY + 1);
-		$maxZ = Math::ceilFloat($bb->maxZ + 1);
+		$maxX = Math::floorFloat($bb->maxX + 1);
+		$maxY = Math::floorFloat($bb->maxY + 1);
+		$maxZ = Math::floorFloat($bb->maxZ + 1);
 
 		$collides = [];
 
@@ -1165,9 +1165,9 @@ class Level implements ChunkManager, Metadatable{
 		$minX = Math::floorFloat($bb->minX - 1);
 		$minY = Math::floorFloat($bb->minY - 1);
 		$minZ = Math::floorFloat($bb->minZ - 1);
-		$maxX = Math::ceilFloat($bb->maxX + 1);
-		$maxY = Math::ceilFloat($bb->maxY + 1);
-		$maxZ = Math::ceilFloat($bb->maxZ + 1);
+		$maxX = Math::floorFloat($bb->maxX + 1);
+		$maxY = Math::floorFloat($bb->maxY + 1);
+		$maxZ = Math::floorFloat($bb->maxZ + 1);
 
 		$collides = [];
 
