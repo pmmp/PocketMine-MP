@@ -200,8 +200,12 @@ abstract class Living extends Entity implements Damageable{
 	public function removeEffect(int $effectId) : void{
 		if(isset($this->effects[$effectId])){
 			$effect = $this->effects[$effectId];
+			$hasExpired = $effect->hasExpired();
 			$this->server->getPluginManager()->callEvent($ev = new EntityEffectRemoveEvent($this, $effect));
 			if($ev->isCancelled()){
+				if($hasExpired and !$ev->getEffect()->hasExpired()){ //altered duration of an expired effect to make it not get removed
+					$this->sendEffectAdd($ev->getEffect(), true);
+				}
 				return;
 			}
 
