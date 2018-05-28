@@ -1113,7 +1113,7 @@ class Level implements ChunkManager, Metadatable{
 				for($x = $minX; $x <= $maxX; ++$x){
 					for($y = $minY; $y <= $maxY; ++$y){
 						$block = $this->getBlockAt($x, $y, $z);
-						if($block->getId() !== 0 and $block->collidesWithBB($bb)){
+						if(!$block->canPassThrough() and $block->collidesWithBB($bb)){
 							return [$block];
 						}
 					}
@@ -1124,7 +1124,7 @@ class Level implements ChunkManager, Metadatable{
 				for($x = $minX; $x <= $maxX; ++$x){
 					for($y = $minY; $y <= $maxY; ++$y){
 						$block = $this->getBlockAt($x, $y, $z);
-						if($block->getId() !== 0 and $block->collidesWithBB($bb)){
+						if(!$block->canPassThrough() and $block->collidesWithBB($bb)){
 							$collides[] = $block;
 						}
 					}
