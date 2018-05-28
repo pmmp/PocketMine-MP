@@ -1901,10 +1901,10 @@ class Level implements ChunkManager, Metadatable{
 		$nearby = [];
 
 		if($entity === null or $entity->canCollide){
-			$minX = Math::floorFloat(($bb->minX - 2) / 16);
-			$maxX = Math::floorFloat(($bb->maxX + 2) / 16);
-			$minZ = Math::floorFloat(($bb->minZ - 2) / 16);
-			$maxZ = Math::floorFloat(($bb->maxZ + 2) / 16);
+			$minX = Math::floorFloat($bb->minX - 2) >> 4;
+			$maxX = Math::floorFloat($bb->maxX + 2) >> 4;
+			$minZ = Math::floorFloat($bb->minZ - 2) >> 4;
+			$maxZ = Math::floorFloat($bb->maxZ + 2) >> 4;
 
 			for($x = $minX; $x <= $maxX; ++$x){
 				for($z = $minZ; $z <= $maxZ; ++$z){
@@ -1932,10 +1932,10 @@ class Level implements ChunkManager, Metadatable{
 	public function getNearbyEntities(AxisAlignedBB $bb, Entity $entity = null) : array{
 		$nearby = [];
 
-		$minX = Math::floorFloat(($bb->minX - 2) / 16);
-		$maxX = Math::floorFloat(($bb->maxX + 2) / 16);
-		$minZ = Math::floorFloat(($bb->minZ - 2) / 16);
-		$maxZ = Math::floorFloat(($bb->maxZ + 2) / 16);
+		$minX = Math::floorFloat($bb->minX - 2) >> 4;
+		$maxX = Math::floorFloat($bb->maxX + 2) >> 4;
+		$minZ = Math::floorFloat($bb->minZ - 2) >> 4;
+		$maxZ = Math::floorFloat($bb->maxZ + 2) >> 4;
 
 		for($x = $minX; $x <= $maxX; ++$x){
 			for($z = $minZ; $z <= $maxZ; ++$z){
@@ -1963,10 +1963,10 @@ class Level implements ChunkManager, Metadatable{
 	public function getNearestEntity(Vector3 $pos, float $maxDistance, string $entityType = Entity::class, bool $includeDead = false) : ?Entity{
 		assert(is_a($entityType, Entity::class, true));
 
-		$minX = Math::floorFloat(($pos->x - $maxDistance) / 16);
-		$maxX = Math::floorFloat(($pos->x + $maxDistance) / 16);
-		$minZ = Math::floorFloat(($pos->z - $maxDistance) / 16);
-		$maxZ = Math::floorFloat(($pos->z + $maxDistance) / 16);
+		$minX = Math::floorFloat($pos->x - $maxDistance) >> 4;
+		$maxX = Math::floorFloat($pos->x + $maxDistance) >> 4;
+		$minZ = Math::floorFloat($pos->z - $maxDistance) >> 4;
+		$maxZ = Math::floorFloat($pos->z + $maxDistance) >> 4;
 
 		$currentTargetDistSq = $maxDistance ** 2;
 
