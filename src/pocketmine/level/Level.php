@@ -1099,12 +1099,12 @@ class Level implements ChunkManager, Metadatable{
 	 * @return Block[]
 	 */
 	public function getCollisionBlocks(AxisAlignedBB $bb, bool $targetFirst = false) : array{
-		$minX = Math::floorFloat($bb->minX - 1);
-		$minY = Math::floorFloat($bb->minY - 1);
-		$minZ = Math::floorFloat($bb->minZ - 1);
-		$maxX = Math::floorFloat($bb->maxX + 1);
-		$maxY = Math::floorFloat($bb->maxY + 1);
-		$maxZ = Math::floorFloat($bb->maxZ + 1);
+		$minX = (int) floor($bb->minX - 1);
+		$minY = (int) floor($bb->minY - 1);
+		$minZ = (int) floor($bb->minZ - 1);
+		$maxX = (int) floor($bb->maxX + 1);
+		$maxY = (int) floor($bb->maxY + 1);
+		$maxZ = (int) floor($bb->maxZ + 1);
 
 		$collides = [];
 
@@ -1162,12 +1162,12 @@ class Level implements ChunkManager, Metadatable{
 	 * @return AxisAlignedBB[]
 	 */
 	public function getCollisionCubes(Entity $entity, AxisAlignedBB $bb, bool $entities = true) : array{
-		$minX = Math::floorFloat($bb->minX - 1);
-		$minY = Math::floorFloat($bb->minY - 1);
-		$minZ = Math::floorFloat($bb->minZ - 1);
-		$maxX = Math::floorFloat($bb->maxX + 1);
-		$maxY = Math::floorFloat($bb->maxY + 1);
-		$maxZ = Math::floorFloat($bb->maxZ + 1);
+		$minX = (int) floor($bb->minX - 1);
+		$minY = (int) floor($bb->minY - 1);
+		$minZ = (int) floor($bb->minZ - 1);
+		$maxX = (int) floor($bb->maxX + 1);
+		$maxY = (int) floor($bb->maxY + 1);
+		$maxZ = (int) floor($bb->maxZ + 1);
 
 		$collides = [];
 
@@ -1903,10 +1903,10 @@ class Level implements ChunkManager, Metadatable{
 		$nearby = [];
 
 		if($entity === null or $entity->canCollide){
-			$minX = Math::floorFloat($bb->minX - 2) >> 4;
-			$maxX = Math::floorFloat($bb->maxX + 2) >> 4;
-			$minZ = Math::floorFloat($bb->minZ - 2) >> 4;
-			$maxZ = Math::floorFloat($bb->maxZ + 2) >> 4;
+			$minX = ((int) floor($bb->minX - 2)) >> 4;
+			$maxX = ((int) floor($bb->maxX + 2)) >> 4;
+			$minZ = ((int) floor($bb->minZ - 2)) >> 4;
+			$maxZ = ((int) floor($bb->maxZ + 2)) >> 4;
 
 			for($x = $minX; $x <= $maxX; ++$x){
 				for($z = $minZ; $z <= $maxZ; ++$z){
@@ -1934,10 +1934,10 @@ class Level implements ChunkManager, Metadatable{
 	public function getNearbyEntities(AxisAlignedBB $bb, Entity $entity = null) : array{
 		$nearby = [];
 
-		$minX = Math::floorFloat($bb->minX - 2) >> 4;
-		$maxX = Math::floorFloat($bb->maxX + 2) >> 4;
-		$minZ = Math::floorFloat($bb->minZ - 2) >> 4;
-		$maxZ = Math::floorFloat($bb->maxZ + 2) >> 4;
+		$minX = ((int) floor($bb->minX - 2)) >> 4;
+		$maxX = ((int) floor($bb->maxX + 2)) >> 4;
+		$minZ = ((int) floor($bb->minZ - 2)) >> 4;
+		$maxZ = ((int) floor($bb->maxZ + 2)) >> 4;
 
 		for($x = $minX; $x <= $maxX; ++$x){
 			for($z = $minZ; $z <= $maxZ; ++$z){
@@ -1965,10 +1965,10 @@ class Level implements ChunkManager, Metadatable{
 	public function getNearestEntity(Vector3 $pos, float $maxDistance, string $entityType = Entity::class, bool $includeDead = false) : ?Entity{
 		assert(is_a($entityType, Entity::class, true));
 
-		$minX = Math::floorFloat($pos->x - $maxDistance) >> 4;
-		$maxX = Math::floorFloat($pos->x + $maxDistance) >> 4;
-		$minZ = Math::floorFloat($pos->z - $maxDistance) >> 4;
-		$maxZ = Math::floorFloat($pos->z + $maxDistance) >> 4;
+		$minX = ((int) floor($pos->x - $maxDistance)) >> 4;
+		$maxX = ((int) floor($pos->x + $maxDistance)) >> 4;
+		$minZ = ((int) floor($pos->z - $maxDistance)) >> 4;
+		$maxZ = ((int) floor($pos->z + $maxDistance)) >> 4;
 
 		$currentTargetDistSq = $maxDistance ** 2;
 
