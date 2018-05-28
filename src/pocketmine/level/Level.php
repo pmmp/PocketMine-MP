@@ -1902,9 +1902,9 @@ class Level implements ChunkManager, Metadatable{
 
 		if($entity === null or $entity->canCollide){
 			$minX = Math::floorFloat(($bb->minX - 2) / 16);
-			$maxX = Math::ceilFloat(($bb->maxX + 2) / 16);
+			$maxX = Math::floorFloat(($bb->maxX + 2) / 16);
 			$minZ = Math::floorFloat(($bb->minZ - 2) / 16);
-			$maxZ = Math::ceilFloat(($bb->maxZ + 2) / 16);
+			$maxZ = Math::floorFloat(($bb->maxZ + 2) / 16);
 
 			for($x = $minX; $x <= $maxX; ++$x){
 				for($z = $minZ; $z <= $maxZ; ++$z){
@@ -1933,9 +1933,9 @@ class Level implements ChunkManager, Metadatable{
 		$nearby = [];
 
 		$minX = Math::floorFloat(($bb->minX - 2) / 16);
-		$maxX = Math::ceilFloat(($bb->maxX + 2) / 16);
+		$maxX = Math::floorFloat(($bb->maxX + 2) / 16);
 		$minZ = Math::floorFloat(($bb->minZ - 2) / 16);
-		$maxZ = Math::ceilFloat(($bb->maxZ + 2) / 16);
+		$maxZ = Math::floorFloat(($bb->maxZ + 2) / 16);
 
 		for($x = $minX; $x <= $maxX; ++$x){
 			for($z = $minZ; $z <= $maxZ; ++$z){
@@ -1964,9 +1964,9 @@ class Level implements ChunkManager, Metadatable{
 		assert(is_a($entityType, Entity::class, true));
 
 		$minX = Math::floorFloat(($pos->x - $maxDistance) / 16);
-		$maxX = Math::ceilFloat(($pos->x + $maxDistance) / 16);
+		$maxX = Math::floorFloat(($pos->x + $maxDistance) / 16);
 		$minZ = Math::floorFloat(($pos->z - $maxDistance) / 16);
-		$maxZ = Math::ceilFloat(($pos->z + $maxDistance) / 16);
+		$maxZ = Math::floorFloat(($pos->z + $maxDistance) / 16);
 
 		$currentTargetDistSq = $maxDistance ** 2;
 
