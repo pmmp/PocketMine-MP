@@ -87,7 +87,6 @@ interface EntityIds{
 	public const ENDER_CRYSTAL = 71;
 	public const FIREWORKS_ROCKET = 72;
 	public const TRIDENT = 73;
-
 	public const SHULKER_BULLET = 76;
 	public const FISHING_HOOK = 77;
 	public const CHALKBOARD = 78;
@@ -118,10 +117,10 @@ interface EntityIds{
 	public const EVOCATION_ILLAGER = 104;
 	public const VEX = 105;
 	public const ICE_BOMB = 106;
-	public const BALLOON = 107;
-	public const PUFFERFISH = 108;
-	public const SALMON = 109;
-	public const DROWNED = 110;
-	public const TROPICAL_FISH = 111;
-	public const FISH = 112;
+ 	public const BALLOON = 107;
+ 	public const PUFFERFISH = 108;
+ 	public const SALMON = 109;
+ 	public const DROWNED = 110;
+ 	public const TROPICALFISH = 111;
+ 	public const COD = 112;
 }
