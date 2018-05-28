@@ -71,6 +71,8 @@ abstract class Timings{
 	/** @var TimingsHandler */
 	public static $entityMoveTimer;
 	/** @var TimingsHandler */
+	public static $playerCheckNearEntitiesTimer;
+	/** @var TimingsHandler */
 	public static $tickEntityTimer;
 	/** @var TimingsHandler */
 	public static $tickTileEntityTimer;
@@ -126,6 +128,7 @@ abstract class Timings{
 		self::$permissionDefaultTimer = new TimingsHandler("Default Permission Calculation");
 
 		self::$entityMoveTimer = new TimingsHandler("** entityMove");
+		self::$playerCheckNearEntitiesTimer = new TimingsHandler("** checkNearEntities");
 		self::$tickEntityTimer = new TimingsHandler("** tickEntity");
 		self::$tickTileEntityTimer = new TimingsHandler("** tickTileEntity");
 

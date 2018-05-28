@@ -1709,7 +1709,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			Timings::$timerEntityBaseTick->stopTiming();
 
 			if(!$this->isSpectator() and $this->isAlive()){
+				Timings::$playerCheckNearEntitiesTimer->startTiming();
 				$this->checkNearEntities($tickDiff);
+				Timings::$playerCheckNearEntitiesTimer->stopTiming();
 
 				if($this->speed !== null){
 					if($this->onGround){
