@@ -38,6 +38,8 @@ class ItemFactory{
 	public static function init(){
 		self::$list = new \SplFixedArray(65536);
 
+		self::registerItem(new Anvil(), true);
+
 		self::registerItem(new Shovel(Item::IRON_SHOVEL, 0, "Iron Shovel", TieredTool::TIER_IRON));
 		self::registerItem(new Pickaxe(Item::IRON_PICKAXE, 0, "Iron Pickaxe", TieredTool::TIER_IRON));
 		self::registerItem(new Axe(Item::IRON_AXE, 0, "Iron Axe", TieredTool::TIER_IRON));
@@ -116,7 +118,7 @@ class ItemFactory{
 		self::registerItem(new Snowball());
 		self::registerItem(new Boat());
 		self::registerItem(new Item(Item::LEATHER, 0, "Leather"));
-		//TODO: KELP
+
 		self::registerItem(new Item(Item::BRICK, 0, "Brick"));
 		self::registerItem(new Item(Item::CLAY_BALL, 0, "Clay"));
 		self::registerItem(new ItemBlock(Block::SUGARCANE_BLOCK, 0, Item::SUGARCANE));
@@ -206,8 +208,8 @@ class ItemFactory{
 		self::registerItem(new Item(Item::PRISMARINE_CRYSTALS, 0, "Prismarine Crystals"));
 		self::registerItem(new RawMutton());
 		self::registerItem(new CookedMutton());
-		//TODO: ARMOR_STAND
-		//TODO: END_CRYSTAL
+		self::registerItem(new Trident());
+		//self::registerItem(new END_CRYSTAL());
 		self::registerItem(new ItemBlock(Block::SPRUCE_DOOR_BLOCK, 0, Item::SPRUCE_DOOR));
 		self::registerItem(new ItemBlock(Block::BIRCH_DOOR_BLOCK, 0, Item::BIRCH_DOOR));
 		self::registerItem(new ItemBlock(Block::JUNGLE_DOOR_BLOCK, 0, Item::JUNGLE_DOOR));
@@ -220,20 +222,15 @@ class ItemFactory{
 		self::registerItem(new SplashPotion());
 
 		//TODO: LINGERING_POTION
-		//TODO: SPARKLER
+
 		//TODO: COMMAND_BLOCK_MINECART
-		//TODO: ELYTRA
+		self::registerItem(new Item(Item::ELYTRA, 0, "Elytra"));
 		self::registerItem(new Item(Item::SHULKER_SHELL, 0, "Shulker Shell"));
 		self::registerItem(new Banner());
-		//TODO: MEDICINE
-		//TODO: BALLOON
-		//TODO: RAPID_FERTILIZER
-		self::registerItem(new Totem());
-		self::registerItem(new Item(Item::BLEACH, 0, "Bleach")); //EDU
-		self::registerItem(new Item(Item::IRON_NUGGET, 0, "Iron Nugget"));
-		//TODO: ICE_BOMB
 
-		//TODO: TRIDENT
+		//TODO: TOTEM
+
+		self::registerItem(new Item(Item::IRON_NUGGET, 0, "Iron Nugget"));
 
 		self::registerItem(new Beetroot());
 		self::registerItem(new BeetrootSeeds());
@@ -242,12 +239,9 @@ class ItemFactory{
 		self::registerItem(new Clownfish());
 		self::registerItem(new Pufferfish());
 		self::registerItem(new CookedSalmon());
-		self::registerItem(new DriedKelp());
-		self::registerItem(new Item(Item::NAUTILUS_SHELL, 0, "Nautilus Shell"));
-		self::registerItem(new GoldenAppleEnchanted());
-		self::registerItem(new Item(Item::HEART_OF_THE_SEA, 0, "Heart of the Sea"));
 
-		//TODO: COMPOUND
+		self::registerItem(new GoldenAppleEnchanted());
+
 		//TODO: RECORD_13
 		//TODO: RECORD_CAT
 		//TODO: RECORD_BLOCKS
