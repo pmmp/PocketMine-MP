@@ -64,5 +64,4 @@ class Trident extends Tool {
 
 	public function getAttackPoints(): int{
 		return 8;
-	}
 }
