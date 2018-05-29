@@ -43,6 +43,7 @@ use pocketmine\event\level\SpawnChangeEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\level\biome\Biome;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\EmptySubChunk;
@@ -2212,6 +2213,16 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function getBiomeId(int $x, int $z) : int{
 		return $this->getChunk($x >> 4, $z >> 4, true)->getBiomeId($x & 0x0f, $z & 0x0f);
+	}
+
+	/**
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @return Biome
+	 */
+	public function getBiome(int $x, int $z) : Biome{
+		return Biome::getBiome($this->getBiomeId($x, $z));
 	}
 
 	/**
