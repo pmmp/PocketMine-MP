@@ -161,14 +161,14 @@ class AsyncPool{
 				if(!$task->hasCancelledRun()){
 					try{
 						$task->onCompletion($this->server);
-						if(!$this->server->getScheduler()->removeLocalComplex($task)){
+						if($task->removeDanglingStoredObjects()){
 							$this->server->getLogger()->notice("AsyncTask " . get_class($task) . " stored local complex data but did not remove them after completion");
 						}
 					}catch(\Throwable $e){
 						$this->server->getLogger()->critical("Could not execute completion of asynchronous task " . (new \ReflectionClass($task))->getShortName() . ": " . $e->getMessage());
 						$this->server->getLogger()->logException($e);
 
-						$this->server->getScheduler()->removeLocalComplex($task); //silent
+						$task->removeDanglingStoredObjects(); //silent
 					}
 				}
 

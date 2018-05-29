@@ -114,7 +114,7 @@ class TimingsCommand extends VanillaCommand{
 					]]
 				], $sender) extends BulkCurlTask{
 					public function onCompletion(Server $server){
-						$sender = $this->fetchLocal($server);
+						$sender = $this->fetchLocal();
 						if($sender instanceof Player and !$sender->isOnline()){ // TODO replace with a more generic API method for checking availability of CommandSender
 							return;
 						}

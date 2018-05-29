@@ -44,6 +44,11 @@ use pocketmine\Server;
  * WARNING: Do not call PocketMine-MP API methods from other Threads!!
  */
 abstract class AsyncTask extends Collectable{
+	/**
+	 * @var \SplObjectStorage|null
+	 * Used to store objects on the main thread which should not be serialized.
+	 */
+	private static $localObjectStorage;
 
 	/** @var AsyncWorker $worker */
 	public $worker = null;
@@ -201,9 +206,9 @@ abstract class AsyncTask extends Collectable{
 	}
 
 	/**
-	 * Saves mixed data in ServerScheduler's object storage on the main thread. You may use this to retain references to
-	 * objects or arrays which you need to access in {@link AsyncTask#onCompletion} which cannot be stored as a
-	 * property of your task.
+	 * Saves mixed data in thread-local storage on the parent thread. You may use this to retain references to objects
+	 * or arrays which you need to access in {@link AsyncTask#onCompletion} which cannot be stored as a property of
+	 * your task (due to them becoming serialized).
 	 *
 	 * Scalar types can be stored directly in class properties instead of using this storage.
 	 *
@@ -224,16 +229,22 @@ abstract class AsyncTask extends Collectable{
 	 * @throws \BadMethodCallException if called from any thread except the main thread
 	 */
 	protected function storeLocal($complexData){
-		$server = Server::getInstance();
-		if($server === null){
-			throw new \BadMethodCallException("Objects can only be stored from the main thread!");
+		if($this->worker !== null and $this->worker === \Thread::getCurrentThread()){
+			throw new \BadMethodCallException("Objects can only be stored from the parent thread");
 		}
 
-		$server->getScheduler()->storeLocalComplex($this, $complexData);
+		if(self::$localObjectStorage === null){
+			self::$localObjectStorage = new \SplObjectStorage(); //lazy init
+		}
+
+		if(isset(self::$localObjectStorage[$this])){
+			throw new \InvalidStateException("Already storing complex data for this async task");
+		}
+		self::$localObjectStorage[$this] = $complexData;
 	}
 
 	/**
-	 * Returns mixed data stored in the ServerScheduler's object store and clears it. Call this method from
+	 * Returns and removes mixed data in thread-local storage on the parent thread. Call this method from
 	 * {@link AsyncTask#onCompletion} to fetch the data stored in the object store, if any.
 	 *
 	 * If no data was stored in the local store, or if the data was already retrieved by a previous call to fetchLocal,
@@ -245,50 +256,59 @@ abstract class AsyncTask extends Collectable{
 	 *
 	 * WARNING: THIS METHOD SHOULD ONLY BE CALLED FROM THE MAIN THREAD!
 	 *
-	 * @param Server|null $server
-	 *
 	 * @return mixed
 	 *
 	 * @throws \RuntimeException if no data were stored by this AsyncTask instance.
 	 * @throws \BadMethodCallException if called from any thread except the main thread
 	 */
-	protected function fetchLocal(Server $server = null){
-		if($server === null){
-			$server = Server::getInstance();
-			if($server === null){
-				throw new \BadMethodCallException("Stored objects can only be retrieved from the main thread");
+	protected function fetchLocal(){
+		try{
+			return $this->peekLocal();
+		}finally{
+			if(self::$localObjectStorage !== null){
+				unset(self::$localObjectStorage[$this]);
 			}
 		}
-
-		return $server->getScheduler()->fetchLocalComplex($this);
 	}
 
 	/**
-	 * Returns mixed data stored in the ServerScheduler's object store **without clearing** it. Call this method from
+	 * Returns mixed data in thread-local storage on the parent thread **without clearing** it. Call this method from
 	 * {@link AsyncTask#onProgressUpdate} to fetch the data stored if you need to be able to access the data later on,
 	 * such as in another progress update.
 	 *
-	 * Use {@link AsyncTask#peekLocal} instead from {@link AsyncTask#onCompletion}, because this method does not delete
+	 * Use {@link AsyncTask#fetchLocal} instead from {@link AsyncTask#onCompletion}, because this method does not delete
 	 * the data, and not clearing the data will result in a warning for memory leak after {@link AsyncTask#onCompletion}
 	 * finished executing.
 	 *
 	 * WARNING: THIS METHOD SHOULD ONLY BE CALLED FROM THE MAIN THREAD!
-	 *
-	 * @param Server|null $server
 	 *
 	 * @return mixed
 	 *
 	 * @throws \RuntimeException if no data were stored by this AsyncTask instance
 	 * @throws \BadMethodCallException if called from any thread except the main thread
 	 */
-	protected function peekLocal(Server $server = null){
-		if($server === null){
-			$server = Server::getInstance();
-			if($server === null){
-				throw new \BadMethodCallException("Stored objects can only be peeked from the main thread");
-			}
+	protected function peekLocal(){
+		if($this->worker !== null and $this->worker === \Thread::getCurrentThread()){
+			throw new \BadMethodCallException("Objects can only be retrieved from the parent thread");
 		}
 
-		return $server->getScheduler()->peekLocalComplex($this);
+		if(self::$localObjectStorage === null or !isset(self::$localObjectStorage[$this])){
+			throw new \InvalidStateException("No complex data stored for this async task");
+		}
+
+		return self::$localObjectStorage[$this];
+	}
+
+	/**
+	 * @internal Called by the AsyncPool to destroy any leftover stored objects that this task failed to retrieve.
+	 * @return bool
+	 */
+	public function removeDanglingStoredObjects() : bool{
+		if(self::$localObjectStorage !== null and isset(self::$localObjectStorage[$this])){
+			unset(self::$localObjectStorage[$this]);
+			return true;
+		}
+
+		return false;
 	}
 }
