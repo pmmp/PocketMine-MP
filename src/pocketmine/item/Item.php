@@ -597,19 +597,21 @@ class Item implements ItemIds, \JsonSerializable{
 
 	/**
 	 * Pops an item from the stack and returns it, decreasing the stack count of this item stack by one.
-	 * @return Item
 	 *
-	 * @throws \InvalidStateException if the count is less than or equal to zero, or if the stack is air.
+	 * @param int $count
+	 *
+	 * @return Item
+	 * @throws \InvalidArgumentException if trying to pop more items than are on the stack
 	 */
-	public function pop() : Item{
-		if($this->isNull()){
-			throw new \InvalidStateException("Cannot pop an item from a null stack");
+	public function pop(int $count = 1) : Item{
+		if($count > $this->count){
+			throw new \InvalidArgumentException("Cannot pop $count items from a stack of $this->count");
 		}
 
 		$item = clone $this;
-		$item->setCount(1);
+		$item->count = $count;
 
-		$this->count--;
+		$this->count -= $count;
 
 		return $item;
 	}
