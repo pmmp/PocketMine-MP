@@ -37,7 +37,6 @@ use pocketmine\item\ItemFactory;
 use pocketmine\level\particle\HugeExplodeSeedParticle;
 use pocketmine\level\utils\SubChunkIteratorManager;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Math;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\ExplodePacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;

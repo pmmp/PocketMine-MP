@@ -61,7 +61,6 @@ use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\level\particle\Particle;
 use pocketmine\level\sound\Sound;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Math;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\BlockMetadataStore;
