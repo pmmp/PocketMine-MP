@@ -106,14 +106,19 @@ class TaskScheduler{
 	 */
 	public function cancelTask(int $taskId){
 		if($taskId !== null and isset($this->tasks[$taskId])){
-			$this->tasks[$taskId]->cancel();
+			try{
+				$this->tasks[$taskId]->cancel();
+			}catch(\Throwable $e){
+				$this->logger->critical("Task " . $this->tasks[$taskId]->getTaskName() . " threw an exception when trying to cancel: " . $e->getMessage());
+				$this->logger->logException($e);
+			}
 			unset($this->tasks[$taskId]);
 		}
 	}
 
 	public function cancelAllTasks(){
-		foreach($this->tasks as $task){
-			$task->cancel();
+		foreach($this->tasks as $id => $task){
+			$this->cancelTask($id);
 		}
 		$this->tasks = [];
 		while(!$this->queue->isEmpty()){

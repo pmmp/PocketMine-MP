@@ -25,7 +25,6 @@ namespace pocketmine\scheduler;
 
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
-use pocketmine\utils\MainLogger;
 
 class TaskHandler{
 
@@ -145,8 +144,6 @@ class TaskHandler{
 			if(!$this->isCancelled()){
 				$this->task->onCancel();
 			}
-		}catch(\Throwable $e){
-			MainLogger::getLogger()->logException($e);
 		}finally{
 			$this->remove();
 		}
