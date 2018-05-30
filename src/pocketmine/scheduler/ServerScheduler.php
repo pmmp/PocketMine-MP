@@ -29,10 +29,12 @@ namespace pocketmine\scheduler;
 
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginException;
-use pocketmine\Server;
 use pocketmine\utils\ReversePriorityQueue;
 
 class ServerScheduler{
+	/** @var \Logger */
+	private $logger;
+
 	/**
 	 * @var ReversePriorityQueue<Task>
 	 */
@@ -49,7 +51,8 @@ class ServerScheduler{
 	/** @var int */
 	protected $currentTick = 0;
 
-	public function __construct(){
+	public function __construct(\Logger $logger){
+		$this->logger = $logger;
 		$this->queue = new ReversePriorityQueue();
 	}
 
@@ -197,8 +200,8 @@ class ServerScheduler{
 				try{
 					$task->run($this->currentTick);
 				}catch(\Throwable $e){
-					Server::getInstance()->getLogger()->critical("Could not execute task " . $task->getTaskName() . ": " . $e->getMessage());
-					Server::getInstance()->getLogger()->logException($e);
+					$this->logger->critical("Could not execute task " . $task->getTaskName() . ": " . $e->getMessage());
+					$this->logger->logException($e);
 				}
 				$task->timings->stopTiming();
 			}

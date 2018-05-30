@@ -1525,7 +1525,7 @@ class Server{
 
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.start", [TextFormat::AQUA . $this->getVersion() . TextFormat::RESET]));
 
-			$this->scheduler = new ServerScheduler();
+			$this->scheduler = new ServerScheduler($this->logger);
 
 			if(($poolSize = $this->getProperty("settings.async-workers", "auto")) === "auto"){
 				$poolSize = 2;
