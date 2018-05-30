@@ -27,7 +27,6 @@ use pocketmine\entity\Entity;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\Player;
 use pocketmine\plugin\PluginManager;
-use pocketmine\scheduler\PluginTask;
 use pocketmine\scheduler\TaskHandler;
 use pocketmine\tile\Tile;
 
@@ -149,19 +148,8 @@ abstract class Timings{
 	 *
 	 * @return TimingsHandler
 	 */
-	public static function getPluginTaskTimings(TaskHandler $task, int $period) : TimingsHandler{
-		$ftask = $task->getTask();
-		if($ftask instanceof PluginTask and $ftask->getOwner() !== null){
-			$plugin = $ftask->getOwner()->getDescription()->getFullName();
-		}elseif($task->timingName !== null){
-			$plugin = "Scheduler";
-		}else{
-			$plugin = "Unknown";
-		}
-
-		$taskname = $task->getTaskName();
-
-		$name = "Task: " . $plugin . " Runnable: " . $taskname;
+	public static function getScheduledTaskTimings(TaskHandler $task, int $period) : TimingsHandler{
+		$name = "Task: " . ($task->getOwnerName() ?? "Unknown") . " Runnable: " . $task->getTaskName();
 
 		if($period > 0){
 			$name .= "(interval:" . $period . ")";

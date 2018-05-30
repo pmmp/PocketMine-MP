@@ -26,6 +26,7 @@ namespace pocketmine\plugin;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\PluginIdentifiableCommand;
+use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
 use pocketmine\utils\Config;
 
@@ -57,6 +58,9 @@ abstract class PluginBase implements Plugin{
 
 	/** @var PluginLogger */
 	private $logger;
+
+	/** @var TaskScheduler */
+	private $scheduler;
 
 	/**
 	 * Called when the plugin is loaded, before calling onEnable()
@@ -119,6 +123,7 @@ abstract class PluginBase implements Plugin{
 			$this->file = rtrim($file, "\\/") . "/";
 			$this->configFile = $this->dataFolder . "config.yml";
 			$this->logger = new PluginLogger($this);
+			$this->scheduler = new TaskScheduler($this->logger);
 		}
 	}
 
@@ -305,4 +310,10 @@ abstract class PluginBase implements Plugin{
 		return $this->loader;
 	}
 
+	/**
+	 * @return TaskScheduler
+	 */
+	public function getScheduler() : TaskScheduler{
+		return $this->scheduler;
+	}
 }

@@ -27,13 +27,16 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
-use pocketmine\plugin\Plugin;
-use pocketmine\plugin\PluginException;
 use pocketmine\utils\ReversePriorityQueue;
 
-class ServerScheduler{
+class TaskScheduler{
 	/** @var \Logger */
 	private $logger;
+	/** @var string|null */
+	private $owner;
+
+	/** @var bool */
+	private $shutdown = false;
 
 	/**
 	 * @var ReversePriorityQueue<Task>
@@ -51,8 +54,10 @@ class ServerScheduler{
 	/** @var int */
 	protected $currentTick = 0;
 
-	public function __construct(\Logger $logger){
+
+	public function __construct(\Logger $logger, ?string $owner = null){
 		$this->logger = $logger;
+		$this->owner = $owner;
 		$this->queue = new ReversePriorityQueue();
 	}
 
@@ -106,19 +111,6 @@ class ServerScheduler{
 		}
 	}
 
-	/**
-	 * @param Plugin $plugin
-	 */
-	public function cancelTasks(Plugin $plugin){
-		foreach($this->tasks as $taskId => $task){
-			$ptask = $task->getTask();
-			if($ptask instanceof PluginTask and $ptask->getOwner() === $plugin){
-				$task->cancel();
-				unset($this->tasks[$taskId]);
-			}
-		}
-	}
-
 	public function cancelAllTasks(){
 		foreach($this->tasks as $task){
 			$task->cancel();
@@ -146,11 +138,11 @@ class ServerScheduler{
 	 *
 	 * @return null|TaskHandler
 	 *
-	 * @throws PluginException
+	 * @throws \InvalidStateException
 	 */
 	private function addTask(Task $task, int $delay, int $period){
-		if($task instanceof PluginTask and !$task->getOwner()->isEnabled()){
-			throw new PluginException("Plugin '" . $task->getOwner()->getName() . "' attempted to register a task while disabled");
+		if($this->shutdown){
+			throw new \InvalidStateException("Tried to schedule task after scheduler shutdown");
 		}
 
 		if($delay <= 0){
@@ -163,7 +155,7 @@ class ServerScheduler{
 			$period = 1;
 		}
 
-		return $this->handle(new TaskHandler(get_class($task), $task, $this->nextId(), $delay, $period));
+		return $this->handle(new TaskHandler($task, $this->nextId(), $delay, $period, $this->owner));
 	}
 
 	private function handle(TaskHandler $handler) : TaskHandler{
@@ -181,6 +173,7 @@ class ServerScheduler{
 	}
 
 	public function shutdown() : void{
+		$this->shutdown = true;
 		$this->cancelAllTasks();
 	}
 
@@ -225,5 +218,4 @@ class ServerScheduler{
 	private function nextId() : int{
 		return $this->ids++;
 	}
-
 }

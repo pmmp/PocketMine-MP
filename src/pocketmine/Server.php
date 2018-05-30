@@ -90,7 +90,6 @@ use pocketmine\resourcepacks\ResourcePackManager;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\scheduler\FileWriteTask;
 use pocketmine\scheduler\SendUsageTask;
-use pocketmine\scheduler\ServerScheduler;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\tile\Tile;
@@ -149,8 +148,6 @@ class Server{
 	/** @var AutoUpdater */
 	private $updater = null;
 
-	/** @var ServerScheduler */
-	private $scheduler = null;
 	/** @var AsyncPool */
 	private $asyncPool;
 
@@ -651,13 +648,6 @@ class Server{
 	 */
 	public function getResourcePackManager() : ResourcePackManager{
 		return $this->resourceManager;
-	}
-
-	/**
-	 * @return ServerScheduler
-	 */
-	public function getScheduler(){
-		return $this->scheduler;
 	}
 
 	public function getAsyncPool() : AsyncPool{
@@ -1525,8 +1515,6 @@ class Server{
 
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.start", [TextFormat::AQUA . $this->getVersion() . TextFormat::RESET]));
 
-			$this->scheduler = new ServerScheduler($this->logger);
-
 			if(($poolSize = $this->getProperty("settings.async-workers", "auto")) === "auto"){
 				$poolSize = 2;
 				$processors = Utils::getCoreCount() - 2;
@@ -2075,10 +2063,6 @@ class Server{
 			$this->getLogger()->debug("Removing event handlers");
 			HandlerList::unregisterAll();
 
-			if($this->scheduler instanceof ServerScheduler){
-				$this->getLogger()->debug("Stopping all tasks");
-				$this->scheduler->cancelAllTasks();
-			}
 			if($this->asyncPool instanceof AsyncPool){
 				$this->getLogger()->debug("Shutting down async task worker pool");
 				$this->asyncPool->shutdown();
@@ -2534,7 +2518,7 @@ class Server{
 		Timings::$connectionTimer->stopTiming();
 
 		Timings::$schedulerTimer->startTiming();
-		$this->scheduler->mainThreadHeartbeat($this->tickCounter);
+		$this->pluginManager->tickSchedulers($this->tickCounter);
 		Timings::$schedulerTimer->stopTiming();
 
 		Timings::$schedulerAsyncTimer->startTiming();

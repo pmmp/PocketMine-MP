@@ -50,22 +50,26 @@ class TaskHandler{
 	/** @var TimingsHandler */
 	public $timings;
 
-	public $timingName = null;
+	/** @var string */
+	private $taskName;
+	/** @var string */
+	private $ownerName;
 
 	/**
-	 * @param string $timingName
-	 * @param Task   $task
-	 * @param int    $taskId
-	 * @param int    $delay
-	 * @param int    $period
+	 * @param Task        $task
+	 * @param int         $taskId
+	 * @param int         $delay
+	 * @param int         $period
+	 * @param string|null $ownerName
 	 */
-	public function __construct(string $timingName, Task $task, int $taskId, int $delay = -1, int $period = -1){
+	public function __construct(Task $task, int $taskId, int $delay = -1, int $period = -1, ?string $ownerName = null){
 		$this->task = $task;
 		$this->taskId = $taskId;
 		$this->delay = $delay;
 		$this->period = $period;
-		$this->timingName = $timingName ?? "Unknown";
-		$this->timings = Timings::getPluginTaskTimings($this, $period);
+		$this->taskName = get_class($task);
+		$this->ownerName = $ownerName ?? "Unknown";
+		$this->timings = Timings::getScheduledTaskTimings($this, $period);
 		$this->task->setHandler($this);
 	}
 
@@ -164,10 +168,10 @@ class TaskHandler{
 	 * @return string
 	 */
 	public function getTaskName() : string{
-		if($this->timingName !== null){
-			return $this->timingName;
-		}
+		return $this->taskName;
+	}
 
-		return get_class($this->task);
+	public function getOwnerName() : string{
+		return $this->ownerName;
 	}
 }
