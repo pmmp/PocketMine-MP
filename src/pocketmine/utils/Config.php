@@ -217,7 +217,7 @@ class Config{
 				}
 
 				if($async){
-					Server::getInstance()->getScheduler()->scheduleAsyncTask(new FileWriteTask($this->file, $content));
+					Server::getInstance()->getAsyncPool()->submitTask(new FileWriteTask($this->file, $content));
 				}else{
 					file_put_contents($this->file, $content);
 				}

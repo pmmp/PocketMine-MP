@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\scheduler;
 
 use pocketmine\Server;
-use pocketmine\timings\Timings;
 
 class AsyncPool{
 
@@ -37,6 +36,8 @@ class AsyncPool{
 	private $tasks = [];
 	/** @var int[] */
 	private $taskWorkers = [];
+	/** @var int */
+	private $nextTaskId = 1;
 
 	/** @var AsyncWorker[] */
 	private $workers = [];
@@ -77,13 +78,15 @@ class AsyncPool{
 	}
 
 	public function submitTaskToWorker(AsyncTask $task, int $worker){
-		if(isset($this->tasks[$task->getTaskId()]) or $task->isGarbage()){
-			return;
-		}
-
 		if($worker < 0 or $worker >= $this->size){
 			throw new \InvalidArgumentException("Invalid worker $worker");
 		}
+		if($task->getTaskId() !== null){
+			throw new \InvalidArgumentException("Cannot submit the same AsyncTask instance more than once");
+		}
+
+		$task->progressUpdates = new \Threaded;
+		$task->setTaskId($this->nextTaskId++);
 
 		$this->tasks[$task->getTaskId()] = $task;
 
@@ -93,8 +96,8 @@ class AsyncPool{
 	}
 
 	public function submitTask(AsyncTask $task) : int{
-		if(isset($this->tasks[$task->getTaskId()]) or $task->isGarbage()){
-			return -1;
+		if($task->getTaskId() !== null){
+			throw new \InvalidArgumentException("Cannot submit the same AsyncTask instance more than once");
 		}
 
 		$selectedWorker = mt_rand(0, $this->size - 1);
@@ -160,8 +163,6 @@ class AsyncPool{
 	}
 
 	public function collectTasks(){
-		Timings::$schedulerAsyncTimer->startTiming();
-
 		foreach($this->tasks as $task){
 			if(!$task->isGarbage()){
 				$task->checkProgressUpdates($this->server);
@@ -189,8 +190,6 @@ class AsyncPool{
 		}
 
 		$this->collectWorkers();
-
-		Timings::$schedulerAsyncTimer->stopTiming();
 	}
 
 	public function shutdown() : void{

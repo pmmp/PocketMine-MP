@@ -33,7 +33,6 @@ use pocketmine\Server;
 use pocketmine\utils\ReversePriorityQueue;
 
 class ServerScheduler{
-	public static $WORKERS = 2;
 	/**
 	 * @var ReversePriorityQueue<Task>
 	 */
@@ -44,9 +43,6 @@ class ServerScheduler{
 	 */
 	protected $tasks = [];
 
-	/** @var AsyncPool */
-	protected $asyncPool;
-
 	/** @var int */
 	private $ids = 1;
 
@@ -55,7 +51,6 @@ class ServerScheduler{
 
 	public function __construct(){
 		$this->queue = new ReversePriorityQueue();
-		$this->asyncPool = new AsyncPool(Server::getInstance(), self::$WORKERS);
 	}
 
 	/**
@@ -65,49 +60,6 @@ class ServerScheduler{
 	 */
 	public function scheduleTask(Task $task){
 		return $this->addTask($task, -1, -1);
-	}
-
-	/**
-	 * Submits an asynchronous task to the Worker Pool
-	 *
-	 * @param AsyncTask $task
-	 *
-	 * @return int
-	 */
-	public function scheduleAsyncTask(AsyncTask $task) : int{
-		if($task->getTaskId() !== null){
-			throw new \UnexpectedValueException("Attempt to schedule the same AsyncTask instance twice");
-		}
-		$id = $this->nextId();
-		$task->setTaskId($id);
-		$task->progressUpdates = new \Threaded;
-		return $this->asyncPool->submitTask($task);
-	}
-
-	/**
-	 * Submits an asynchronous task to a specific Worker in the Pool
-	 *
-	 * @param AsyncTask $task
-	 * @param int       $worker
-	 *
-	 * @return void
-	 */
-	public function scheduleAsyncTaskToWorker(AsyncTask $task, int $worker){
-		if($task->getTaskId() !== null){
-			throw new \UnexpectedValueException("Attempt to schedule the same AsyncTask instance twice");
-		}
-		$id = $this->nextId();
-		$task->setTaskId($id);
-		$task->progressUpdates = new \Threaded;
-		$this->asyncPool->submitTaskToWorker($task, $worker);
-	}
-
-	public function getAsyncTaskPoolSize() : int{
-		return $this->asyncPool->getSize();
-	}
-
-	public function increaseAsyncTaskPoolSize(int $newSize){
-		$this->asyncPool->increaseSize($newSize);
 	}
 
 	/**
@@ -169,7 +121,6 @@ class ServerScheduler{
 			$task->cancel();
 		}
 		$this->tasks = [];
-		$this->asyncPool->removeTasks();
 		while(!$this->queue->isEmpty()){
 			$this->queue->extract();
 		}
@@ -228,7 +179,6 @@ class ServerScheduler{
 
 	public function shutdown() : void{
 		$this->cancelAllTasks();
-		$this->asyncPool->shutdown();
 	}
 
 	/**
@@ -260,8 +210,6 @@ class ServerScheduler{
 				unset($this->tasks[$task->getTaskId()]);
 			}
 		}
-
-		$this->asyncPool->collectTasks();
 	}
 
 	private function isReady(int $currentTicks) : bool{

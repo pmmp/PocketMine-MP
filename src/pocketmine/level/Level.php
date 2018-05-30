@@ -387,16 +387,16 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function registerGenerator(){
-		$size = $this->server->getScheduler()->getAsyncTaskPoolSize();
-		for($i = 0; $i < $size; ++$i){
-			$this->server->getScheduler()->scheduleAsyncTaskToWorker(new GeneratorRegisterTask($this, $this->generatorInstance), $i);
+		$pool = $this->server->getAsyncPool();
+		for($i = 0, $size = $pool->getSize(); $i < $size; ++$i){
+			$pool->submitTaskToWorker(new GeneratorRegisterTask($this, $this->generatorInstance), $i);
 		}
 	}
 
 	public function unregisterGenerator(){
-		$size = $this->server->getScheduler()->getAsyncTaskPoolSize();
-		for($i = 0; $i < $size; ++$i){
-			$this->server->getScheduler()->scheduleAsyncTaskToWorker(new GeneratorUnregisterTask($this), $i);
+		$pool = $this->server->getAsyncPool();
+		for($i = 0, $size = $pool->getSize(); $i < $size; ++$i){
+			$pool->submitTaskToWorker(new GeneratorUnregisterTask($this), $i);
 		}
 	}
 
@@ -2486,7 +2486,7 @@ class Level implements ChunkManager, Metadatable{
 					throw new ChunkException("Invalid Chunk sent");
 				}
 
-				$this->server->getScheduler()->scheduleAsyncTask(new ChunkRequestTask($this, $chunk));
+				$this->server->getAsyncPool()->submitTask(new ChunkRequestTask($this, $chunk));
 
 				$this->timings->syncChunkSendPrepareTimer->stopTiming();
 			}
@@ -2668,7 +2668,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->server->getPluginManager()->callEvent(new ChunkLoadEvent($this, $chunk, !$chunk->isGenerated()));
 
 		if(!$chunk->isLightPopulated() and $chunk->isPopulated() and $this->getServer()->getProperty("chunk-ticking.light-updates", false)){
-			$this->getServer()->getScheduler()->scheduleAsyncTask(new LightPopulationTask($this, $chunk));
+			$this->getServer()->getAsyncPool()->submitTask(new LightPopulationTask($this, $chunk));
 		}
 
 		if($this->isChunkInUse($x, $z)){
@@ -2951,7 +2951,7 @@ class Level implements ChunkManager, Metadatable{
 						}
 					}
 					$task = new PopulationTask($this, $chunk);
-					$this->server->getScheduler()->scheduleAsyncTask($task);
+					$this->server->getAsyncPool()->submitTask($task);
 				}
 			}
 
