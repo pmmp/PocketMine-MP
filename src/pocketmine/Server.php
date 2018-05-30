@@ -1426,7 +1426,7 @@ class Server{
 		$this->performance++;
 	}
 	
-	public function getPerformance(){
+	public function getPerformance() : int{
 		return $this->performance;
 	}
 
