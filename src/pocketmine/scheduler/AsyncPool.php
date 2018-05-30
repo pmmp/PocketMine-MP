@@ -123,6 +123,15 @@ class AsyncPool{
 	}
 
 	public function removeTasks(){
+		foreach($this->workers as $worker){
+			/** @var AsyncTask $task */
+			while(($task = $worker->unstack()) !== null){
+				//cancelRun() is not strictly necessary here, but it might be used to inform plugins of the task state
+				//(i.e. it never executed).
+				$task->cancelRun();
+				$this->removeTask($task, true);
+			}
+		}
 		do{
 			foreach($this->tasks as $task){
 				$task->cancelRun();
