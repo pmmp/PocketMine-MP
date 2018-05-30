@@ -211,8 +211,8 @@ class TaskScheduler{
 		}
 	}
 
-	private function isReady(int $currentTicks) : bool{
-		return count($this->tasks) > 0 and $this->queue->current()->getNextRun() <= $currentTicks;
+	private function isReady(int $currentTick) : bool{
+		return count($this->tasks) > 0 and $this->queue->current()->getNextRun() <= $currentTick;
 	}
 
 	/**
