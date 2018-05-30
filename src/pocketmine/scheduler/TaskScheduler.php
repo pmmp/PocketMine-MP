@@ -189,14 +189,12 @@ class TaskScheduler{
 				unset($this->tasks[$task->getTaskId()]);
 				continue;
 			}else{
-				$task->timings->startTiming();
 				try{
 					$task->run($this->currentTick);
 				}catch(\Throwable $e){
 					$this->logger->critical("Could not execute task " . $task->getTaskName() . ": " . $e->getMessage());
 					$this->logger->logException($e);
 				}
-				$task->timings->stopTiming();
 			}
 			if($task->isRepeating()){
 				$task->setNextRun($this->currentTick + $task->getPeriod());

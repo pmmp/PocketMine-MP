@@ -48,7 +48,7 @@ class TaskHandler{
 	protected $cancelled = false;
 
 	/** @var TimingsHandler */
-	public $timings;
+	private $timings;
 
 	/** @var string */
 	private $taskName;
@@ -161,7 +161,12 @@ class TaskHandler{
 	 * @param int $currentTick
 	 */
 	public function run(int $currentTick){
-		$this->task->onRun($currentTick);
+		$this->timings->startTiming();
+		try{
+			$this->task->onRun($currentTick);
+		}finally{
+			$this->timings->stopTiming();
+		}
 	}
 
 	/**
