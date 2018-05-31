@@ -197,13 +197,12 @@ class TaskScheduler{
 			if($task->isCancelled()){
 				unset($this->tasks[$task->getTaskId()]);
 				continue;
-			}else{
-				try{
-					$task->run($this->currentTick);
-				}catch(\Throwable $e){
-					$this->logger->critical("Could not execute task " . $task->getTaskName() . ": " . $e->getMessage());
-					$this->logger->logException($e);
-				}
+			}
+			try{
+				$task->run($this->currentTick);
+			}catch(\Throwable $e){
+				$this->logger->critical("Could not execute task " . $task->getTaskName() . ": " . $e->getMessage());
+				$this->logger->logException($e);
 			}
 			if($task->isRepeating()){
 				$task->setNextRun($this->currentTick + $task->getPeriod());
