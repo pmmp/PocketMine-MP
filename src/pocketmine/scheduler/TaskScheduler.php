@@ -36,7 +36,7 @@ class TaskScheduler{
 	private $owner;
 
 	/** @var bool */
-	private $shutdown = false;
+	private $enabled = true;
 
 	/**
 	 * @var ReversePriorityQueue<Task>
@@ -146,7 +146,7 @@ class TaskScheduler{
 	 * @throws \InvalidStateException
 	 */
 	private function addTask(Task $task, int $delay, int $period){
-		if($this->shutdown){
+		if(!$this->enabled){
 			throw new \InvalidStateException("Tried to schedule task after scheduler shutdown");
 		}
 
@@ -178,8 +178,12 @@ class TaskScheduler{
 	}
 
 	public function shutdown() : void{
-		$this->shutdown = true;
+		$this->enabled = false;
 		$this->cancelAllTasks();
+	}
+
+	public function setEnabled(bool $enabled) : void{
+		$this->enabled = $enabled;
 	}
 
 	/**

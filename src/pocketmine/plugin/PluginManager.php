@@ -575,6 +575,7 @@ class PluginManager{
 				foreach($plugin->getDescription()->getPermissions() as $perm){
 					$this->addPermission($perm);
 				}
+				$plugin->getScheduler()->setEnabled(true);
 				$plugin->getPluginLoader()->enablePlugin($plugin);
 			}catch(\Throwable $e){
 				$this->server->getLogger()->logException($e);
