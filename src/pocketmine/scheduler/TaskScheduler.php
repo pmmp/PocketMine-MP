@@ -147,7 +147,7 @@ class TaskScheduler{
 	 */
 	private function addTask(Task $task, int $delay, int $period){
 		if(!$this->enabled){
-			throw new \InvalidStateException("Tried to schedule task after scheduler shutdown");
+			throw new \InvalidStateException("Tried to schedule task to disabled scheduler");
 		}
 
 		if($delay <= 0){
