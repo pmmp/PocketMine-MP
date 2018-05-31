@@ -3974,6 +3974,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function getDeviceOS() : int{
-	    return $this->deviceOS;
-    }
+		return $this->deviceOS;
+	}
 }
