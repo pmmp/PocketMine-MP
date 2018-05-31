@@ -105,7 +105,7 @@ class TaskScheduler{
 	 * @param int $taskId
 	 */
 	public function cancelTask(int $taskId){
-		if($taskId !== null and isset($this->tasks[$taskId])){
+		if(isset($this->tasks[$taskId])){
 			try{
 				$this->tasks[$taskId]->cancel();
 			}catch(\Throwable $e){
