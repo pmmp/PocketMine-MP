@@ -121,7 +121,7 @@ class LevelDB extends BaseLevelProvider{
 			if($this->levelData->hasTag("Generator", IntTag::class)){
 				switch($this->levelData->getInt("Generator")){ //Detect correct generator from MCPE data
 					case self::GENERATOR_FLAT:
-						$this->levelData->setString("generatorName", (string) Generator::getGenerator("FLAT"));
+						$this->levelData->setString("generatorName", Generator::getGenerator("FLAT"));
 						if(($layers = $db->get(self::ENTRY_FLAT_WORLD_LAYERS)) !== false){ //Detect existing custom flat layers
 							$layers = trim($layers, "[]");
 						}else{
@@ -131,7 +131,7 @@ class LevelDB extends BaseLevelProvider{
 						break;
 					case self::GENERATOR_INFINITE:
 						//TODO: add a null generator which does not generate missing chunks (to allow importing back to MCPE and generating more normal terrain without PocketMine messing things up)
-						$this->levelData->setString("generatorName", (string) Generator::getGenerator("DEFAULT"));
+						$this->levelData->setString("generatorName", Generator::getGenerator("DEFAULT"));
 						$this->levelData->setString("generatorOptions", "");
 						break;
 					case self::GENERATOR_LIMITED:
@@ -140,7 +140,7 @@ class LevelDB extends BaseLevelProvider{
 						throw new LevelException("Unknown LevelDB world format type, this level cannot be loaded");
 				}
 			}else{
-				$this->levelData->setString("generatorName", (string) Generator::getGenerator("DEFAULT"));
+				$this->levelData->setString("generatorName", Generator::getGenerator("DEFAULT"));
 			}
 		}
 

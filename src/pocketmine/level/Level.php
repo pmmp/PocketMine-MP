@@ -239,10 +239,8 @@ class Level implements ChunkManager, Metadatable{
 	/** @var int */
 	public $tickRateCounter = 0;
 
-	/** @var Generator */
+	/** @var string|Generator */
 	private $generator;
-	/** @var Generator */
-	private $generatorInstance;
 
 	/** @var bool */
 	private $closed = false;
@@ -379,17 +377,13 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function initLevel(){
-		$generator = $this->generator;
-		$this->generatorInstance = new $generator($this->provider->getGeneratorOptions());
-		$this->generatorInstance->init($this, new Random($this->getSeed()));
-
 		$this->registerGenerator();
 	}
 
 	public function registerGenerator(){
 		$size = $this->server->getScheduler()->getAsyncTaskPoolSize();
 		for($i = 0; $i < $size; ++$i){
-			$this->server->getScheduler()->scheduleAsyncTaskToWorker(new GeneratorRegisterTask($this, $this->generatorInstance), $i);
+			$this->server->getScheduler()->scheduleAsyncTaskToWorker(new GeneratorRegisterTask($this, $this->generator, $this->provider->getGeneratorOptions()), $i);
 		}
 	}
 
