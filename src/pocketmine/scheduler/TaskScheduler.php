@@ -198,19 +198,26 @@ class TaskScheduler{
 				unset($this->tasks[$task->getTaskId()]);
 				continue;
 			}
+			$crashed = false;
 			try{
 				$task->run($this->currentTick);
 			}catch(\Throwable $e){
+				$crashed = true;
 				$this->logger->critical("Could not execute task " . $task->getTaskName() . ": " . $e->getMessage());
 				$this->logger->logException($e);
 			}
 			if($task->isRepeating()){
-				$task->setNextRun($this->currentTick + $task->getPeriod());
-				$this->queue->insert($task, $this->currentTick + $task->getPeriod());
-			}else{
-				$task->remove();
-				unset($this->tasks[$task->getTaskId()]);
+				if($crashed){
+					$this->logger->debug("Dropping repeating task " . $task->getTaskName() . " due to exceptions thrown while running");
+				}else{
+					$task->setNextRun($this->currentTick + $task->getPeriod());
+					$this->queue->insert($task, $this->currentTick + $task->getPeriod());
+					continue;
+				}
 			}
+
+			$task->remove();
+			unset($this->tasks[$task->getTaskId()]);
 		}
 	}
 
