@@ -69,33 +69,31 @@ class ResourcePackManager{
 		foreach($resourcePacksConfig->get("resource_stack", []) as $pos => $pack){
 			try{
 				$packPath = $this->path . DIRECTORY_SEPARATOR . $pack;
-				if(file_exists($packPath)){
-					$newPack = null;
-					//Detect the type of resource pack.
-					if(is_dir($packPath)){
-						$logger->warning("Skipped resource entry $pack due to directory resource packs currently unsupported");
-					}else{
-						$info = new \SplFileInfo($packPath);
-						switch($info->getExtension()){
-							case "zip":
-							case "mcpack":
-								$newPack = new ZippedResourcePack($packPath);
-								break;
-							default:
-								$logger->warning("Skipped resource entry $pack due to format not recognized");
-								break;
-						}
-					}
-
-					if($newPack instanceof ResourcePack){
-						$this->resourcePacks[] = $newPack;
-						$this->uuidList[strtolower($newPack->getPackId())] = $newPack;
-					}
-				}else{
-					$logger->warning("Skipped resource entry $pack due to file or directory not found");
+				if(!file_exists($packPath)){
+					throw new ResourcePackException("File or directory not found");
 				}
-			}catch(\Throwable $e){
-				$logger->logException($e);
+				if(is_dir($packPath)){
+					throw new ResourcePackException("Directory resource packs are unsupported");
+				}
+
+				$newPack = null;
+				//Detect the type of resource pack.
+				$info = new \SplFileInfo($packPath);
+				switch($info->getExtension()){
+					case "zip":
+					case "mcpack":
+						$newPack = new ZippedResourcePack($packPath);
+						break;
+				}
+
+				if($newPack instanceof ResourcePack){
+					$this->resourcePacks[] = $newPack;
+					$this->uuidList[strtolower($newPack->getPackId())] = $newPack;
+				}else{
+					throw new ResourcePackException("Format not recognized");
+				}
+			}catch(ResourcePackException $e){
+				$logger->critical("Could not load resource pack \"$pack\": " . $e->getMessage());
 			}
 		}
 
