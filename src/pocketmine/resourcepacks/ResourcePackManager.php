@@ -66,8 +66,20 @@ class ResourcePackManager{
 
 		$logger->info("Loading resource packs...");
 
-		foreach($resourcePacksConfig->get("resource_stack", []) as $pos => $pack){
+		$resourceStack = $resourcePacksConfig->get("resource_stack", []);
+		if(!is_array($resourceStack)){
+			throw new \InvalidArgumentException("\"resource_stack\" key should contain a list of pack names");
+		}
+
+		foreach($resourceStack as $pos => $pack){
 			try{
+				$pack = (string) $pack;
+			}catch(\ErrorException $e){
+				$logger->critical("Found invalid entry in resource pack list at offset $pos of type " . gettype($pack));
+				continue;
+			}
+			try{
+				/** @var string $pack */
 				$packPath = $this->path . DIRECTORY_SEPARATOR . $pack;
 				if(!file_exists($packPath)){
 					throw new ResourcePackException("File or directory not found");
