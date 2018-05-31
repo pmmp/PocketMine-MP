@@ -234,6 +234,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var string */
 	protected $xuid = "";
 
+	/** @var int */
+	protected $deviceOS;
+
 	protected $windowCnt = 2;
 	/** @var int[] */
 	protected $windows = [];
@@ -1880,6 +1883,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->uuid = UUID::fromString($packet->clientUUID);
 		$this->rawUUID = $this->uuid->toBinary();
+
+		$this->deviceOS = $packet->clientData["DeviceOS"];
 
 		$skin = new Skin(
 			$packet->clientData["SkinId"],
@@ -3960,4 +3965,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function isLoaderActive() : bool{
 		return $this->isConnected();
 	}
+
+	public function getDeviceOS() : int{
+	    return $this->deviceOS;
+    }
 }
