@@ -166,6 +166,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public const ADVENTURE = 2;
 	public const SPECTATOR = 3;
 	public const VIEW = Player::SPECTATOR;
+	public const OS_ANDROID = 1;
+	public const OS_IOS = 2;
+	public const OS_MAC = 3;
+	public const OS_FIRE = 4;
+	public const OS_GEARVR = 5;
+	public const OS_HOLOLENS = 6;
+	public const OS_WINDOWS = 7;
 
 	/**
 	 * Checks a supplied username and checks it is valid.
