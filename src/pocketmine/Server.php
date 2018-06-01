@@ -1633,6 +1633,7 @@ class Server{
 			Entity::init();
 			Tile::init();
 			BlockFactory::init();
+			BlockFactory::registerStaticRuntimeIdMappings();
 			Enchantment::init();
 			ItemFactory::init();
 			Item::initCreativeItems();

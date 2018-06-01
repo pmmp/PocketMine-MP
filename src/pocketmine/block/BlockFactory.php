@@ -323,12 +323,6 @@ class BlockFactory{
 		//TODO: STRUCTURE_BLOCK
 
 		//TODO: RESERVED6
-
-		/** @var mixed[] $runtimeIdMap */
-		$runtimeIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "runtimeid_table.json"), true);
-		foreach($runtimeIdMap as $obj){
-			self::registerMapping($obj["runtimeID"], $obj["id"], $obj["data"]);
-		}
 	}
 
 	/**
@@ -417,6 +411,14 @@ class BlockFactory{
 	public static function isRegistered(int $id) : bool{
 		$b = self::$fullList[$id << 4];
 		return $b !== null and !($b instanceof UnknownBlock);
+	}
+
+	public static function registerStaticRuntimeIdMappings() : void{
+		/** @var mixed[] $runtimeIdMap */
+		$runtimeIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "runtimeid_table.json"), true);
+		foreach($runtimeIdMap as $obj){
+			self::registerMapping($obj["runtimeID"], $obj["id"], $obj["data"]);
+		}
 	}
 
 	/**
