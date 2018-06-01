@@ -233,7 +233,7 @@ class ItemFactory{
 		self::registerItem(new Item(Item::IRON_NUGGET, 0, "Iron Nugget"));
 		//TODO: ICE_BOMB
 
-		//TODO: TRIDENT
+		self::registerItem(new Trident());
 
 		self::registerItem(new Beetroot());
 		self::registerItem(new BeetrootSeeds());
