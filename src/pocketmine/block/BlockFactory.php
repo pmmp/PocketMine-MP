@@ -323,6 +323,12 @@ class BlockFactory{
 		//TODO: STRUCTURE_BLOCK
 
 		//TODO: RESERVED6
+
+		for($id = 0, $size = self::$fullList->getSize() >> 4; $id < $size; ++$id){
+			if(self::$fullList[$id << 4] === null){
+				self::registerBlock(new UnknownBlock($id));
+			}
+		}
 	}
 
 	/**
@@ -375,8 +381,8 @@ class BlockFactory{
 		}
 
 		try{
-			if(self::$fullList !== null and self::$fullList[$idx = ($id << 4) | $meta] !== null){
-				$block = clone self::$fullList[$idx];
+			if(self::$fullList !== null){
+				$block = clone self::$fullList[($id << 4) | $meta];
 			}else{
 				$block = new UnknownBlock($id, $meta);
 			}
