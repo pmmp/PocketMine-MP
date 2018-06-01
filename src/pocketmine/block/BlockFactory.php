@@ -32,8 +32,6 @@ use pocketmine\utils\MainLogger;
  */
 class BlockFactory{
 	/** @var \SplFixedArray<Block> */
-	private static $list = null;
-	/** @var \SplFixedArray<Block> */
 	private static $fullList = null;
 
 	/** @var \SplFixedArray<bool> */
@@ -65,7 +63,6 @@ class BlockFactory{
 	 * this if you need to reset the block factory back to its original defaults for whatever reason.
 	 */
 	public static function init() : void{
-		self::$list = new \SplFixedArray(256);
 		self::$fullList = new \SplFixedArray(4096);
 
 		self::$light = new \SplFixedArray(256);
@@ -327,12 +324,6 @@ class BlockFactory{
 
 		//TODO: RESERVED6
 
-		foreach(self::$list as $id => $block){
-			if($block === null){
-				self::registerBlock(new UnknownBlock($id));
-			}
-		}
-
 		/** @var mixed[] $runtimeIdMap */
 		$runtimeIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "runtimeid_table.json"), true);
 		foreach($runtimeIdMap as $obj){
@@ -359,8 +350,6 @@ class BlockFactory{
 		if(!$override and self::isRegistered($id)){
 			throw new \RuntimeException("Trying to overwrite an already registered block");
 		}
-
-		self::$list[$id] = clone $block;
 
 		for($meta = 0; $meta < 16; ++$meta){
 			$variant = clone $block;
@@ -392,8 +381,8 @@ class BlockFactory{
 		}
 
 		try{
-			if(self::$fullList !== null){
-				$block = clone self::$fullList[($id << 4) | $meta];
+			if(self::$fullList !== null and self::$fullList[$idx = ($id << 4) | $meta] !== null){
+				$block = clone self::$fullList[$idx];
 			}else{
 				$block = new UnknownBlock($id, $meta);
 			}
@@ -426,7 +415,7 @@ class BlockFactory{
 	 * @return bool
 	 */
 	public static function isRegistered(int $id) : bool{
-		$b = self::$list[$id];
+		$b = self::$fullList[$id << 4];
 		return $b !== null and !($b instanceof UnknownBlock);
 	}
 
