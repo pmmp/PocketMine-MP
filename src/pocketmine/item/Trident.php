@@ -37,6 +37,5 @@ class Trident extends Tool {
 
 	public function getMaxDurability(): int{
 		return 251;
-		}
 	}
 }
