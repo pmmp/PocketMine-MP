@@ -1,12 +1,16 @@
 #!/bin/bash
 
 PHP_BINARY="php"
+PM_WORKERS="auto"
 
-while getopts "p:" OPTION 2> /dev/null; do
+while getopts "p:t:" OPTION 2> /dev/null; do
 	case ${OPTION} in
 		p)
 			PHP_BINARY="$OPTARG"
 			;;
+		t)
+		    PM_WORKERS="$OPTARG"
+		    ;;
 	esac
 done
 
@@ -39,7 +43,7 @@ mkdir "$DATA_DIR"
 mkdir "$PLUGINS_DIR"
 mv DevTools.phar "$PLUGINS_DIR"
 cp -r tests/plugins/PocketMine-TesterPlugin "$PLUGINS_DIR"
-echo -e "stop\n" | "$PHP_BINARY" PocketMine-MP.phar --no-wizard --disable-ansi --disable-readline --debug.level=2 --data="$DATA_DIR" --plugins="$PLUGINS_DIR" --anonymous-statistics.enabled=0
+echo -e "stop\n" | "$PHP_BINARY" PocketMine-MP.phar --no-wizard --disable-ansi --disable-readline --debug.level=2 --data="$DATA_DIR" --plugins="$PLUGINS_DIR" --anonymous-statistics.enabled=0 --settings.async-workers="$PM_WORKERS"
 
 output=$(grep '\[TesterPlugin\]' "$DATA_DIR/server.log")
 if [ "$output" == "" ]; then

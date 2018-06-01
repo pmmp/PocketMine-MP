@@ -18,7 +18,7 @@ before_script:
  - composer install
 
 script:
- - ./tests/travis.sh
+ - ./tests/travis.sh -t4
 
 notifications:
  email: false
