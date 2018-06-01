@@ -41,10 +41,6 @@ class LightPopulationTask extends AsyncTask{
 	public function onRun(){
 		/** @var Chunk $chunk */
 		$chunk = Chunk::fastDeserialize($this->chunk);
-		if($chunk === null){
-			//TODO error
-			return;
-		}
 
 		$chunk->recalculateHeightMap();
 		$chunk->populateSkyLight();
@@ -58,10 +54,6 @@ class LightPopulationTask extends AsyncTask{
 		if($level !== null){
 			/** @var Chunk $chunk */
 			$chunk = Chunk::fastDeserialize($this->chunk);
-			if($chunk === null){
-				//TODO error
-				return;
-			}
 			$level->generateChunkCallback($chunk->getX(), $chunk->getZ(), $chunk);
 		}
 	}
