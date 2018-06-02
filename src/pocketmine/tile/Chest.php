@@ -26,14 +26,14 @@ namespace pocketmine\tile;
 use pocketmine\inventory\ChestInventory;
 use pocketmine\inventory\DoubleChestInventory;
 use pocketmine\inventory\InventoryHolder;
-use pocketmine\item\Item;
 use pocketmine\level\Level;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\Player;
 
 class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
-	use NameableTrait, ContainerTrait;
+	use NameableTrait {
+		addAdditionalSpawnData as addNameSpawnData;
+	}
+	use ContainerTrait;
 
 	public const TAG_PAIRX = "pairx";
 	public const TAG_PAIRZ = "pairz";
@@ -184,14 +184,6 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 			$nbt->setTag($this->namedtag->getTag(self::TAG_PAIRZ));
 		}
 
-		if($this->hasName()){
-			$nbt->setTag($this->namedtag->getTag("CustomName"));
-		}
-	}
-
-	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
-		if($item !== null and $item->hasCustomName()){
-			$nbt->setString("CustomName", $item->getCustomName());
-		}
+		$this->addNameSpawnData($nbt);
 	}
 }

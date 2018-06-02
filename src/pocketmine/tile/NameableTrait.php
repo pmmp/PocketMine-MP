@@ -23,7 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
+use pocketmine\item\Item;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\Player;
 
 /**
  * This trait implements most methods in the {@link Nameable} interface. It should only be used by Tiles.
@@ -45,7 +48,7 @@ trait NameableTrait{
 	 */
 	public function getName() : string{
 		$nbt = $this->getNBT();
-		return $nbt->getString("CustomName") ?? $this->getDefaultName();
+		return $nbt->getString(Nameable::TAG_CUSTOM_NAME) ?? $this->getDefaultName();
 	}
 
 	/**
@@ -54,17 +57,30 @@ trait NameableTrait{
 	public function setName(string $name) : void{
 		$nbt = $this->getNBT();
 		if($name === ""){
-			$nbt->removeTag("CustomName");
+			$nbt->removeTag(Nameable::TAG_CUSTOM_NAME);
+
 			return;
 		}
 
-		$nbt->setString("CustomName", $name);
+		$nbt->setString(Nameable::TAG_CUSTOM_NAME, $name);
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function hasName() : bool{
-		return $this->getNBT()->hasTag("CustomName");
+		return $this->getNBT()->hasTag(Nameable::TAG_CUSTOM_NAME);
+	}
+
+	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
+		if($item !== null and $item->hasCustomName()){
+			$nbt->setString(Nameable::TAG_CUSTOM_NAME, $item->getCustomName());
+		}
+	}
+
+	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
+		if($this->hasName()){
+			$nbt->setString(Nameable::TAG_CUSTOM_NAME, $this->getName());
+		}
 	}
 }

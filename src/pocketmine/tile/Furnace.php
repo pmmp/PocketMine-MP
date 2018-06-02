@@ -33,13 +33,14 @@ use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
-use pocketmine\Player;
 
 class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
-	use NameableTrait, ContainerTrait;
+	use NameableTrait {
+		addAdditionalSpawnData as addNameSpawnData;
+	}
+	use ContainerTrait;
 
 	public const TAG_BURN_TIME = "BurnTime";
 	public const TAG_COOK_TIME = "CookTime";
@@ -230,14 +231,6 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		$nbt->setShort(self::TAG_BURN_TIME, $this->burnTime);
 		$nbt->setShort(self::TAG_COOK_TIME, $this->cookTime);
 
-		if($this->hasName()){
-			$nbt->setTag($this->namedtag->getTag("CustomName"));
-		}
-	}
-
-	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
-		if($item !== null and $item->hasCustomName()){
-			$nbt->setString("CustomName", $item->getCustomName());
-		}
+		$this->addNameSpawnData($nbt);
 	}
 }

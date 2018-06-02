@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 interface Nameable{
+	public const TAG_CUSTOM_NAME = "CustomName";
 
 	/**
 	 * @return string
