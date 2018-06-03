@@ -23,8 +23,21 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
+use pocketmine\level\Level;
+use pocketmine\nbt\tag\CompoundTag;
+
 class EnchantTable extends Spawnable implements Nameable{
 	use NameableTrait;
+
+	public function __construct(Level $level, CompoundTag $nbt){
+		$this->loadName($nbt);
+		parent::__construct($level, $nbt);
+	}
+
+	public function saveNBT() : void{
+		parent::saveNBT();
+		$this->saveName($this->namedtag);
+	}
 
 	/**
 	 * @return string

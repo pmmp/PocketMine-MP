@@ -37,16 +37,14 @@ trait ContainerTrait{
 	/** @var string|null */
 	private $lock;
 
-	abstract public function getNBT() : CompoundTag;
-
 	/**
 	 * @return Inventory
 	 */
 	abstract public function getRealInventory();
 
-	protected function loadItems() : void{
-		if($this->getNBT()->hasTag(Container::TAG_ITEMS, ListTag::class)){
-			$inventoryTag = $this->getNBT()->getListTag(Container::TAG_ITEMS);
+	protected function loadItems(CompoundTag $tag) : void{
+		if($tag->hasTag(Container::TAG_ITEMS, ListTag::class)){
+			$inventoryTag = $tag->getListTag(Container::TAG_ITEMS);
 
 			$inventory = $this->getRealInventory();
 			/** @var CompoundTag $itemNBT */
@@ -55,21 +53,21 @@ trait ContainerTrait{
 			}
 		}
 
-		if($this->getNBT()->hasTag(Container::TAG_LOCK, StringTag::class)){
-			$this->lock = $this->getNBT()->getString(Container::TAG_LOCK);
+		if($tag->hasTag(Container::TAG_LOCK, StringTag::class)){
+			$this->lock = $tag->getString(Container::TAG_LOCK);
 		}
 	}
 
-	protected function saveItems() : void{
+	protected function saveItems(CompoundTag $tag) : void{
 		$items = [];
 		foreach($this->getRealInventory()->getContents() as $slot => $item){
 			$items[] = $item->nbtSerialize($slot);
 		}
 
-		$this->getNBT()->setTag(new ListTag(Container::TAG_ITEMS, $items, NBT::TAG_Compound));
+		$tag->setTag(new ListTag(Container::TAG_ITEMS, $items, NBT::TAG_Compound));
 
 		if($this->lock !== null){
-			$this->getNBT()->setString(Container::TAG_LOCK, $this->lock);
+			$tag->setString(Container::TAG_LOCK, $this->lock);
 		}
 	}
 

@@ -70,7 +70,8 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 
 		parent::__construct($level, $nbt);
 		$this->inventory = new FurnaceInventory($this);
-		$this->loadItems();
+		$this->loadItems($this->namedtag);
+		$this->loadName($this->namedtag);
 
 		if($this->burnTime > 0){
 			$this->scheduleUpdate();
@@ -99,7 +100,8 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		$this->namedtag->setShort(self::TAG_COOK_TIME, $this->cookTime);
 		$this->namedtag->setShort(self::TAG_MAX_TIME, $this->maxTime);
 
-		$this->saveItems();
+		$this->saveItems($this->namedtag);
+		$this->saveName($this->namedtag);
 	}
 
 	/**

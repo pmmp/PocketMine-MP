@@ -111,6 +111,7 @@ class Banner extends Spawnable implements Nameable{
 		$this->baseColor = $nbt->getInt(self::TAG_BASE, self::COLOR_BLACK, true);
 		$this->patterns = $nbt->getListTag(self::TAG_PATTERNS) ?? new ListTag(self::TAG_PATTERNS);
 		$nbt->removeTag(self::TAG_BASE, self::TAG_PATTERNS);
+		$this->loadName($nbt);
 		parent::__construct($level, $nbt);
 	}
 
@@ -118,6 +119,7 @@ class Banner extends Spawnable implements Nameable{
 		parent::saveNBT();
 		$this->namedtag->setInt(self::TAG_BASE, $this->baseColor);
 		$this->namedtag->setTag($this->patterns);
+		$this->saveName($this->namedtag);
 	}
 
 	public function addAdditionalSpawnData(CompoundTag $nbt) : void{

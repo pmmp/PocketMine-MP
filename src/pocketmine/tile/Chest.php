@@ -59,7 +59,8 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 		parent::__construct($level, $nbt);
 
 		$this->inventory = new ChestInventory($this);
-		$this->loadItems();
+		$this->loadItems($this->namedtag);
+		$this->loadName($this->namedtag);
 	}
 
 	public function close() : void{
@@ -86,7 +87,8 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 		}else{
 			$this->namedtag->removeTag(self::TAG_PAIRX, self::TAG_PAIRZ);
 		}
-		$this->saveItems();
+		$this->saveItems($this->namedtag);
+		$this->saveName($this->namedtag);
 	}
 
 	/**

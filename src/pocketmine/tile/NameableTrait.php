@@ -26,12 +26,15 @@ namespace pocketmine\tile;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 
 /**
  * This trait implements most methods in the {@link Nameable} interface. It should only be used by Tiles.
  */
 trait NameableTrait{
+	/** @var string|null */
+	private $customName;
 
 	/**
 	 * @return string
@@ -39,37 +42,28 @@ trait NameableTrait{
 	abstract public function getDefaultName() : string;
 
 	/**
-	 * @return CompoundTag
-	 */
-	abstract public function getNBT() : CompoundTag;
-
-	/**
 	 * @return string
 	 */
 	public function getName() : string{
-		$nbt = $this->getNBT();
-		return $nbt->getString(Nameable::TAG_CUSTOM_NAME) ?? $this->getDefaultName();
+		return $this->customName ?? $this->getDefaultName();
 	}
 
 	/**
 	 * @param string $name
 	 */
 	public function setName(string $name) : void{
-		$nbt = $this->getNBT();
 		if($name === ""){
-			$nbt->removeTag(Nameable::TAG_CUSTOM_NAME);
-
-			return;
+			$this->customName = null;
+		}else{
+			$this->customName = $name;
 		}
-
-		$nbt->setString(Nameable::TAG_CUSTOM_NAME, $name);
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function hasName() : bool{
-		return $this->getNBT()->hasTag(Nameable::TAG_CUSTOM_NAME);
+		return $this->customName !== null;
 	}
 
 	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
@@ -79,8 +73,20 @@ trait NameableTrait{
 	}
 
 	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		if($this->hasName()){
-			$nbt->setString(Nameable::TAG_CUSTOM_NAME, $this->getName());
+		if($this->customName !== null){
+			$nbt->setString(Nameable::TAG_CUSTOM_NAME, $this->customName);
+		}
+	}
+
+	protected function loadName(CompoundTag $tag) : void{
+		if($tag->hasTag(Nameable::TAG_CUSTOM_NAME, StringTag::class)){
+			$this->customName = $tag->getString(Nameable::TAG_CUSTOM_NAME);
+		}
+	}
+
+	protected function saveName(CompoundTag $tag) : void{
+		if($this->customName !== null){
+			$tag->setString(Nameable::TAG_CUSTOM_NAME, $this->customName);
 		}
 	}
 }
