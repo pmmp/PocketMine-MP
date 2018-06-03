@@ -64,8 +64,6 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 		if($this->isPaired()){
 			$nbt->setInt(self::TAG_PAIRX, $this->pairX);
 			$nbt->setInt(self::TAG_PAIRZ, $this->pairZ);
-		}else{
-			$nbt->removeTag(self::TAG_PAIRX, self::TAG_PAIRZ);
 		}
 		$this->saveName($nbt);
 		$this->saveItems($nbt);

@@ -40,13 +40,11 @@ class Sign extends Spawnable{
 		if($nbt->hasTag(self::TAG_TEXT_BLOB, StringTag::class)){ //MCPE 1.2 save format
 			$this->text = array_pad(explode("\n", $nbt->getString(self::TAG_TEXT_BLOB)), 4, "");
 			assert(count($this->text) === 4, "Too many lines!");
-			$nbt->removeTag(self::TAG_TEXT_BLOB);
 		}else{
 			for($i = 1; $i <= 4; ++$i){
 				$textKey = sprintf(self::TAG_TEXT_LINE, $i);
 				if($nbt->hasTag($textKey, StringTag::class)){
 					$this->text[$i - 1] = $nbt->getString($textKey);
-					$nbt->removeTag($textKey);
 				}
 			}
 		}
