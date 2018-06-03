@@ -192,7 +192,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 		return true;
 	}
 
-	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
+	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		if($this->isPaired()){
 			$nbt->setInt(self::TAG_PAIRX, $this->pairX);
 			$nbt->setInt(self::TAG_PAIRZ, $this->pairZ);

@@ -230,7 +230,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		return $ret;
 	}
 
-	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
+	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->setShort(self::TAG_BURN_TIME, $this->burnTime);
 		$nbt->setShort(self::TAG_COOK_TIME, $this->cookTime);
 

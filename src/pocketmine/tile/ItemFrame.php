@@ -90,7 +90,7 @@ class ItemFrame extends Spawnable{
 		$this->onChanged();
 	}
 
-	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
+	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->setFloat(self::TAG_ITEM_DROP_CHANCE, $this->itemDropChance);
 		$nbt->setByte(self::TAG_ITEM_ROTATION, $this->itemRotation);
 		$nbt->setTag($this->item->nbtSerialize(-1, self::TAG_ITEM));

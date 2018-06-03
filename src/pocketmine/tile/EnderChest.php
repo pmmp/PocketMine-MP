@@ -35,7 +35,7 @@ class EnderChest extends Spawnable{
 
 	}
 
-	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
+	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 
 	}
 

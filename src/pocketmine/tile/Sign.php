@@ -120,7 +120,7 @@ class Sign extends Spawnable{
 		return $this->text;
 	}
 
-	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
+	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->setString(self::TAG_TEXT_BLOB, implode("\n", $this->text));
 	}
 

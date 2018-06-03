@@ -120,7 +120,7 @@ abstract class Spawnable extends Tile{
 	 *
 	 * @param CompoundTag $nbt
 	 */
-	abstract public function addAdditionalSpawnData(CompoundTag $nbt) : void;
+	abstract protected function addAdditionalSpawnData(CompoundTag $nbt) : void;
 
 	/**
 	 * Called when a player updates a block entity's NBT data

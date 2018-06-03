@@ -51,7 +51,7 @@ class Bed extends Spawnable{
 		$nbt->setByte(self::TAG_COLOR, $this->color);
 	}
 
-	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
+	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->setByte(self::TAG_COLOR, $this->color);
 	}
 

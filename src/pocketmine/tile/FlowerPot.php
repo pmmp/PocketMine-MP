@@ -83,7 +83,7 @@ class FlowerPot extends Spawnable{
 		return $this->getItem()->isNull();
 	}
 
-	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
+	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->setShort(self::TAG_ITEM, $this->item->getId());
 		$nbt->setInt(self::TAG_ITEM_DATA, $this->item->getDamage());
 	}
