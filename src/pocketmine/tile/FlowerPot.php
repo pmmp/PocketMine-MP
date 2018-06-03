@@ -27,22 +27,25 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ShortTag;
 
 class FlowerPot extends Spawnable{
 	public const TAG_ITEM = "item";
 	public const TAG_ITEM_DATA = "mData";
 
+	/** @var Item */
+	private $item;
+
 	public function __construct(Level $level, CompoundTag $nbt){
 		//TODO: check PC format
-		if(!$nbt->hasTag(self::TAG_ITEM, ShortTag::class)){
-			$nbt->setShort(self::TAG_ITEM, 0, true);
-		}
-		if(!$nbt->hasTag(self::TAG_ITEM_DATA, IntTag::class)){
-			$nbt->setInt(self::TAG_ITEM_DATA, 0, true);
-		}
+		$this->item = ItemFactory::get($nbt->getShort(self::TAG_ITEM, 0, true), $nbt->getInt(self::TAG_ITEM_DATA, 0, true), 1);
+		$nbt->removeTag(self::TAG_ITEM, self::TAG_ITEM_DATA);
+
 		parent::__construct($level, $nbt);
+	}
+
+	public function saveNBT() : void{
+		$this->namedtag->setShort(self::TAG_ITEM, $this->item->getId());
+		$this->namedtag->setInt(self::TAG_ITEM_DATA, $this->item->getDamage());
 	}
 
 	public function canAddItem(Item $item) : bool{
@@ -69,12 +72,11 @@ class FlowerPot extends Spawnable{
 	}
 
 	public function getItem() : Item{
-		return ItemFactory::get($this->namedtag->getShort(self::TAG_ITEM), $this->namedtag->getInt(self::TAG_ITEM_DATA), 1);
+		return clone $this->item;
 	}
 
 	public function setItem(Item $item){
-		$this->namedtag->setShort(self::TAG_ITEM, $item->getId());
-		$this->namedtag->setInt(self::TAG_ITEM_DATA, $item->getDamage());
+		$this->item = clone $item;
 		$this->onChanged();
 	}
 
@@ -87,7 +89,7 @@ class FlowerPot extends Spawnable{
 	}
 
 	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		$nbt->setTag($this->namedtag->getTag(self::TAG_ITEM));
-		$nbt->setTag($this->namedtag->getTag(self::TAG_ITEM_DATA));
+		$nbt->setShort(self::TAG_ITEM, $this->item->getId());
+		$nbt->setInt(self::TAG_ITEM_DATA, $this->item->getDamage());
 	}
 }

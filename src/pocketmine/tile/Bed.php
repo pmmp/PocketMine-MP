@@ -27,34 +27,42 @@ namespace pocketmine\tile;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 
 class Bed extends Spawnable{
 	public const TAG_COLOR = "color";
+	/** @var int */
+	private $color = 14; //default to old red
 
 	public function __construct(Level $level, CompoundTag $nbt){
-		if(!$nbt->hasTag(self::TAG_COLOR, ByteTag::class)){ //TODO: check PC format
-			$nbt->setByte(self::TAG_COLOR, 14, true); //default to old red
-		}
+		$this->color = $nbt->getByte(self::TAG_COLOR, 14, true);
+		$nbt->removeTag(self::TAG_COLOR);
+
 		parent::__construct($level, $nbt);
 	}
 
 	public function getColor() : int{
-		return $this->namedtag->getByte(self::TAG_COLOR);
+		return $this->color;
 	}
 
 	public function setColor(int $color){
-		$this->namedtag->setByte(self::TAG_COLOR, $color & 0x0f);
+		$this->color = $color & 0xf;
 		$this->onChanged();
 	}
 
 	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		$nbt->setTag($this->namedtag->getTag(self::TAG_COLOR));
+		$nbt->setByte(self::TAG_COLOR, $this->color);
+	}
+
+	public function saveNBT() : void{
+		parent::saveNBT();
+		$this->namedtag->setByte(self::TAG_COLOR, $this->color);
 	}
 
 	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
-		$nbt->setByte(self::TAG_COLOR, $item !== null ? $item->getDamage() : 14); //default red
+		if($item !== null){
+			$nbt->setByte(self::TAG_COLOR, $item->getDamage());
+		}
 	}
 }
