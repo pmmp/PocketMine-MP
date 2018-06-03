@@ -28,11 +28,14 @@ use pocketmine\item\Item;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\StringTag;
 
 /**
  * This trait implements most methods in the {@link Container} interface. It should only be used by Tiles.
  */
 trait ContainerTrait{
+	/** @var string|null */
+	private $lock;
 
 	abstract public function getNBT() : CompoundTag;
 
@@ -51,6 +54,10 @@ trait ContainerTrait{
 				$inventory->setItem($itemNBT->getByte("Slot"), Item::nbtDeserialize($itemNBT));
 			}
 		}
+
+		if($this->getNBT()->hasTag(Container::TAG_LOCK, StringTag::class)){
+			$this->lock = $this->getNBT()->getString(Container::TAG_LOCK);
+		}
 	}
 
 	protected function saveItems() : void{
@@ -60,5 +67,20 @@ trait ContainerTrait{
 		}
 
 		$this->getNBT()->setTag(new ListTag(Container::TAG_ITEMS, $items, NBT::TAG_Compound));
+
+		if($this->lock !== null){
+			$this->getNBT()->setString(Container::TAG_LOCK, $this->lock);
+		}
+	}
+
+	/**
+	 * @see Container::canOpenWith()
+	 *
+	 * @param string $key
+	 *
+	 * @return bool
+	 */
+	public function canOpenWith(string $key) : bool{
+		return $this->lock === null or $this->lock === $key;
 	}
 }
