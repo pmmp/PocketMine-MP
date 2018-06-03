@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use pocketmine\item\Item;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
@@ -47,17 +46,14 @@ class Skull extends Spawnable{
 	/** @var int */
 	private $skullRotation;
 
-	public function __construct(Level $level, CompoundTag $nbt){
+	protected function readSaveData(CompoundTag $nbt) : void{
 		$this->skullType = $nbt->getByte(self::TAG_SKULL_TYPE, self::TYPE_SKELETON, true);
 		$this->skullRotation = $nbt->getByte(self::TAG_ROT, 0, true);
-		$nbt->removeTag(self::TAG_SKULL_TYPE, self::TAG_ROT);
-		parent::__construct($level, $nbt);
 	}
 
-	public function saveNBT() : void{
-		parent::saveNBT();
-		$this->namedtag->setByte(self::TAG_SKULL_TYPE, $this->skullType);
-		$this->namedtag->setByte(self::TAG_ROT, $this->skullRotation);
+	protected function writeSaveData(CompoundTag $nbt) : void{
+		$nbt->setByte(self::TAG_SKULL_TYPE, $this->skullType);
+		$nbt->setByte(self::TAG_ROT, $this->skullRotation);
 	}
 
 	public function setType(int $type){

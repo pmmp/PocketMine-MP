@@ -74,8 +74,6 @@ abstract class Tile extends Position{
 	public $id;
 	/** @var bool */
 	public $closed = false;
-	/** @var CompoundTag */
-	public $namedtag;
 	/** @var Server */
 	protected $server;
 	/** @var TimingsHandler */
@@ -155,12 +153,12 @@ abstract class Tile extends Position{
 	public function __construct(Level $level, CompoundTag $nbt){
 		$this->timings = Timings::getTileEntityTimings($this);
 
-		$this->namedtag = $nbt;
 		$this->server = $level->getServer();
 		$this->name = "";
 		$this->id = Tile::$tileCount++;
 
-		parent::__construct($this->namedtag->getInt(self::TAG_X), $this->namedtag->getInt(self::TAG_Y), $this->namedtag->getInt(self::TAG_Z), $level);
+		parent::__construct($nbt->getInt(self::TAG_X), $nbt->getInt(self::TAG_Y), $nbt->getInt(self::TAG_Z), $level);
+		$this->readSaveData($nbt);
 
 		$this->getLevel()->addTile($this);
 	}
@@ -169,26 +167,31 @@ abstract class Tile extends Position{
 		return $this->id;
 	}
 
-	public function saveNBT() : void{
-		$this->namedtag->setString(self::TAG_ID, static::getSaveId());
-		$this->namedtag->setInt(self::TAG_X, $this->x);
-		$this->namedtag->setInt(self::TAG_Y, $this->y);
-		$this->namedtag->setInt(self::TAG_Z, $this->z);
-	}
+	/**
+	 * Reads additional data from the CompoundTag on tile creation.
+	 *
+	 * @param CompoundTag $nbt
+	 */
+	abstract protected function readSaveData(CompoundTag $nbt) : void;
 
-	public function getNBT() : CompoundTag{
-		return $this->namedtag;
+	/**
+	 * Writes additional save data to a CompoundTag, not including generic things like ID and coordinates.
+	 *
+	 * @param CompoundTag $nbt
+	 */
+	abstract protected function writeSaveData(CompoundTag $nbt) : void;
+
+	public function saveNBT(CompoundTag $nbt) : void{
+		$nbt->setString(self::TAG_ID, static::getSaveId());
+		$nbt->setInt(self::TAG_X, $this->x);
+		$nbt->setInt(self::TAG_Y, $this->y);
+		$nbt->setInt(self::TAG_Z, $this->z);
+		$this->writeSaveData($nbt);
 	}
 
 	public function getCleanedNBT() : ?CompoundTag{
-		$this->saveNBT();
-		$tag = clone $this->namedtag;
-		$tag->removeTag(self::TAG_X, self::TAG_Y, self::TAG_Z, self::TAG_ID);
-		if($tag->getCount() > 0){
-			return $tag;
-		}else{
-			return null;
-		}
+		$this->writeSaveData($tag = new CompoundTag());
+		return $tag->getCount() > 0 ? $tag : null;
 	}
 
 	/**
@@ -270,8 +273,6 @@ abstract class Tile extends Position{
 				$this->level->removeTile($this);
 				$this->setLevel(null);
 			}
-
-			$this->namedtag = null;
 		}
 	}
 

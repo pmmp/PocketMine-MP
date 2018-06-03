@@ -25,7 +25,6 @@ namespace pocketmine\tile;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 
 class ItemFrame extends Spawnable{
@@ -40,7 +39,7 @@ class ItemFrame extends Spawnable{
 	/** @var float */
 	private $itemDropChance;
 
-	public function __construct(Level $level, CompoundTag $nbt){
+	protected function readSaveData(CompoundTag $nbt) : void{
 		if(($itemTag = $nbt->getCompoundTag(self::TAG_ITEM)) !== null){
 			$this->item = Item::nbtDeserialize($itemTag);
 		}else{
@@ -48,16 +47,12 @@ class ItemFrame extends Spawnable{
 		}
 		$this->itemRotation = $nbt->getByte(self::TAG_ITEM_ROTATION, 0, true);
 		$this->itemDropChance = $nbt->getFloat(self::TAG_ITEM_DROP_CHANCE, 1.0, true);
-		$nbt->removeTag(self::TAG_ITEM, self::TAG_ITEM_ROTATION, self::TAG_ITEM_DROP_CHANCE);
-
-		parent::__construct($level, $nbt);
 	}
 
-	public function saveNBT() : void{
-		parent::saveNBT();
-		$this->namedtag->setFloat(self::TAG_ITEM_DROP_CHANCE, $this->itemDropChance);
-		$this->namedtag->setByte(self::TAG_ITEM_ROTATION, $this->itemRotation);
-		$this->namedtag->setTag($this->item->nbtSerialize(-1, self::TAG_ITEM));
+	protected function writeSaveData(CompoundTag $nbt) : void{
+		$nbt->setFloat(self::TAG_ITEM_DROP_CHANCE, $this->itemDropChance);
+		$nbt->setByte(self::TAG_ITEM_ROTATION, $this->itemRotation);
+		$nbt->setTag($this->item->nbtSerialize(-1, self::TAG_ITEM));
 	}
 
 	public function hasItem() : bool{

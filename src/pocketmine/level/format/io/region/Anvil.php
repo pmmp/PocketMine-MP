@@ -75,8 +75,8 @@ class Anvil extends McRegion{
 
 		$tiles = [];
 		foreach($chunk->getTiles() as $tile){
-			$tile->saveNBT();
-			$tiles[] = $tile->namedtag;
+			$tile->saveNBT($tileTag = new CompoundTag());
+			$tiles[] = $tileTag;
 		}
 
 		$nbt->setTag(new ListTag("TileEntities", $tiles, NBT::TAG_Compound));

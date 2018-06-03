@@ -26,7 +26,6 @@ namespace pocketmine\tile;
 use pocketmine\inventory\ChestInventory;
 use pocketmine\inventory\DoubleChestInventory;
 use pocketmine\inventory\InventoryHolder;
-use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 
@@ -50,19 +49,26 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	/** @var int|null */
 	private $pairZ;
 
-	public function __construct(Level $level, CompoundTag $nbt){
+	protected function readSaveData(CompoundTag $nbt) : void{
 		if($nbt->hasTag(self::TAG_PAIRX, IntTag::class) and $nbt->hasTag(self::TAG_PAIRZ, IntTag::class)){
 			$this->pairX = $nbt->getInt(self::TAG_PAIRX);
 			$this->pairZ = $nbt->getInt(self::TAG_PAIRZ);
 		}
-		$nbt->removeTag(self::TAG_PAIRX, self::TAG_PAIRZ);
 		$this->loadName($nbt);
 
-		parent::__construct($level, $nbt);
-
 		$this->inventory = new ChestInventory($this);
-		$this->loadItems($this->namedtag);
+		$this->loadItems($nbt);
+	}
 
+	protected function writeSaveData(CompoundTag $nbt) : void{
+		if($this->isPaired()){
+			$nbt->setInt(self::TAG_PAIRX, $this->pairX);
+			$nbt->setInt(self::TAG_PAIRZ, $this->pairZ);
+		}else{
+			$nbt->removeTag(self::TAG_PAIRX, self::TAG_PAIRZ);
+		}
+		$this->saveName($nbt);
+		$this->saveItems($nbt);
 	}
 
 	public function close() : void{
@@ -79,18 +85,6 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 
 			parent::close();
 		}
-	}
-
-	public function saveNBT() : void{
-		parent::saveNBT();
-		if($this->isPaired()){
-			$this->namedtag->setInt(self::TAG_PAIRX, $this->pairX);
-			$this->namedtag->setInt(self::TAG_PAIRZ, $this->pairZ);
-		}else{
-			$this->namedtag->removeTag(self::TAG_PAIRX, self::TAG_PAIRZ);
-		}
-		$this->saveItems($this->namedtag);
-		$this->saveName($this->namedtag);
 	}
 
 	/**

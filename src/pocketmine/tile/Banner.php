@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use pocketmine\item\Item;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -107,19 +106,16 @@ class Banner extends Spawnable implements Nameable{
 	 */
 	private $patterns;
 
-	public function __construct(Level $level, CompoundTag $nbt){
+	protected function readSaveData(CompoundTag $nbt) : void{
 		$this->baseColor = $nbt->getInt(self::TAG_BASE, self::COLOR_BLACK, true);
 		$this->patterns = $nbt->getListTag(self::TAG_PATTERNS) ?? new ListTag(self::TAG_PATTERNS);
-		$nbt->removeTag(self::TAG_BASE, self::TAG_PATTERNS);
 		$this->loadName($nbt);
-		parent::__construct($level, $nbt);
 	}
 
-	public function saveNBT() : void{
-		parent::saveNBT();
-		$this->namedtag->setInt(self::TAG_BASE, $this->baseColor);
-		$this->namedtag->setTag($this->patterns);
-		$this->saveName($this->namedtag);
+	protected function writeSaveData(CompoundTag $nbt) : void{
+		$nbt->setInt(self::TAG_BASE, $this->baseColor);
+		$nbt->setTag($this->patterns);
+		$this->saveName($nbt);
 	}
 
 	public function addAdditionalSpawnData(CompoundTag $nbt) : void{

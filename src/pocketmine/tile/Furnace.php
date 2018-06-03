@@ -56,6 +56,13 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	private $maxTime;
 
 	public function __construct(Level $level, CompoundTag $nbt){
+		parent::__construct($level, $nbt);
+		if($this->burnTime > 0){
+			$this->scheduleUpdate();
+		}
+	}
+
+	protected function readSaveData(CompoundTag $nbt) : void{
 		$this->burnTime = max(0, $nbt->getShort(self::TAG_BURN_TIME, 0, true));
 
 		$this->cookTime = $nbt->getShort(self::TAG_COOK_TIME, 0, true);
@@ -70,14 +77,16 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 
 		$this->loadName($nbt);
 
-		parent::__construct($level, $nbt);
 		$this->inventory = new FurnaceInventory($this);
-		$this->loadItems($this->namedtag);
+		$this->loadItems($nbt);
+	}
 
-
-		if($this->burnTime > 0){
-			$this->scheduleUpdate();
-		}
+	protected function writeSaveData(CompoundTag $nbt) : void{
+		$nbt->setShort(self::TAG_BURN_TIME, $this->burnTime);
+		$nbt->setShort(self::TAG_COOK_TIME, $this->cookTime);
+		$nbt->setShort(self::TAG_MAX_TIME, $this->maxTime);
+		$this->saveName($nbt);
+		$this->saveItems($nbt);
 	}
 
 	/**
@@ -94,16 +103,6 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 
 			parent::close();
 		}
-	}
-
-	public function saveNBT() : void{
-		parent::saveNBT();
-		$this->namedtag->setShort(self::TAG_BURN_TIME, $this->burnTime);
-		$this->namedtag->setShort(self::TAG_COOK_TIME, $this->cookTime);
-		$this->namedtag->setShort(self::TAG_MAX_TIME, $this->maxTime);
-
-		$this->saveItems($this->namedtag);
-		$this->saveName($this->namedtag);
 	}
 
 	/**

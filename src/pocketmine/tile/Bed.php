@@ -25,7 +25,6 @@ namespace pocketmine\tile;
 
 
 use pocketmine\item\Item;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
@@ -34,13 +33,6 @@ class Bed extends Spawnable{
 	public const TAG_COLOR = "color";
 	/** @var int */
 	private $color = 14; //default to old red
-
-	public function __construct(Level $level, CompoundTag $nbt){
-		$this->color = $nbt->getByte(self::TAG_COLOR, 14, true);
-		$nbt->removeTag(self::TAG_COLOR);
-
-		parent::__construct($level, $nbt);
-	}
 
 	public function getColor() : int{
 		return $this->color;
@@ -51,13 +43,16 @@ class Bed extends Spawnable{
 		$this->onChanged();
 	}
 
-	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
+	protected function readSaveData(CompoundTag $nbt) : void{
+		$this->color = $nbt->getByte(self::TAG_COLOR, 14, true);
+	}
+
+	protected function writeSaveData(CompoundTag $nbt) : void{
 		$nbt->setByte(self::TAG_COLOR, $this->color);
 	}
 
-	public function saveNBT() : void{
-		parent::saveNBT();
-		$this->namedtag->setByte(self::TAG_COLOR, $this->color);
+	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
+		$nbt->setByte(self::TAG_COLOR, $this->color);
 	}
 
 	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{

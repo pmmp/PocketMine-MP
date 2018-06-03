@@ -25,7 +25,6 @@ namespace pocketmine\tile;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 
 class FlowerPot extends Spawnable{
@@ -35,17 +34,13 @@ class FlowerPot extends Spawnable{
 	/** @var Item */
 	private $item;
 
-	public function __construct(Level $level, CompoundTag $nbt){
-		//TODO: check PC format
+	protected function readSaveData(CompoundTag $nbt) : void{
 		$this->item = ItemFactory::get($nbt->getShort(self::TAG_ITEM, 0, true), $nbt->getInt(self::TAG_ITEM_DATA, 0, true), 1);
-		$nbt->removeTag(self::TAG_ITEM, self::TAG_ITEM_DATA);
-
-		parent::__construct($level, $nbt);
 	}
 
-	public function saveNBT() : void{
-		$this->namedtag->setShort(self::TAG_ITEM, $this->item->getId());
-		$this->namedtag->setInt(self::TAG_ITEM_DATA, $this->item->getDamage());
+	protected function writeSaveData(CompoundTag $nbt) : void{
+		$nbt->setShort(self::TAG_ITEM, $this->item->getId());
+		$nbt->setInt(self::TAG_ITEM_DATA, $this->item->getDamage());
 	}
 
 	public function canAddItem(Item $item) : bool{
