@@ -24,9 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use pocketmine\event\block\SignChangeEvent;
-use pocketmine\item\Item;
 use pocketmine\level\Level;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
@@ -35,7 +33,6 @@ use pocketmine\utils\TextFormat;
 class Sign extends Spawnable{
 	public const TAG_TEXT_BLOB = "Text";
 	public const TAG_TEXT_LINE = "Text%d"; //sprintf()able
-	public const TAG_CREATOR = "Creator";
 
 	/** @var string[] */
 	protected $text = ["", "", "", ""];
@@ -66,8 +63,6 @@ class Sign extends Spawnable{
 			$textKey = sprintf(self::TAG_TEXT_LINE, $i);
 			$this->namedtag->setString($textKey, $this->getLine($i - 1));
 		}
-
-		$this->namedtag->removeTag(self::TAG_CREATOR);
 	}
 
 	/**
@@ -154,11 +149,6 @@ class Sign extends Spawnable{
 		$removeFormat = $player->getRemoveFormat();
 
 		$ev = new SignChangeEvent($this->getBlock(), $player, array_map(function(string $line) use ($removeFormat){ return TextFormat::clean($line, $removeFormat); }, $lines));
-
-		if($this->namedtag->hasTag(self::TAG_CREATOR, StringTag::class) and $this->namedtag->getString(self::TAG_CREATOR) !== $player->getRawUniqueId()){
-			$ev->setCancelled();
-		}
-
 		$this->level->getServer()->getPluginManager()->callEvent($ev);
 
 		if(!$ev->isCancelled()){
@@ -167,12 +157,6 @@ class Sign extends Spawnable{
 			return true;
 		}else{
 			return false;
-		}
-	}
-
-	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
-		if($player !== null){
-			$nbt->setString(self::TAG_CREATOR, $player->getRawUniqueId());
 		}
 	}
 }
