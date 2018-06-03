@@ -56,11 +56,13 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 			$this->pairZ = $nbt->getInt(self::TAG_PAIRZ);
 		}
 		$nbt->removeTag(self::TAG_PAIRX, self::TAG_PAIRZ);
+		$this->loadName($nbt);
+
 		parent::__construct($level, $nbt);
 
 		$this->inventory = new ChestInventory($this);
 		$this->loadItems($this->namedtag);
-		$this->loadName($this->namedtag);
+
 	}
 
 	public function close() : void{
