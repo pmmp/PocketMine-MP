@@ -35,7 +35,6 @@ use pocketmine\permission\Permission;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
-use pocketmine\utils\MainLogger;
 use pocketmine\utils\Utils;
 
 /**
@@ -759,7 +758,7 @@ class PluginManager{
 					$isHandler = count($parameters) === 1 && $parameters[0]->getClass() instanceof \ReflectionClass && is_subclass_of($parameters[0]->getClass()->getName(), Event::class);
 				}catch(\ReflectionException $e){
 					if(isset($tags["softDepend"]) && !isset($this->plugins[$tags["softDepend"]])){
-						MainLogger::getLogger()->debug("Not registering @softDepend listener " . get_class($listener) . "::" . $method->getName() . "(" . $parameters[0]->getType()->getName() . ") because plugin \"" . $tags["softDepend"] . "\" not found");
+						$this->server->getLogger()->debug("Not registering @softDepend listener " . get_class($listener) . "::" . $method->getName() . "(" . $parameters[0]->getType()->getName() . ") because plugin \"" . $tags["softDepend"] . "\" not found");
 						continue;
 					}
 

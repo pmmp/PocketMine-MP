@@ -25,7 +25,6 @@ declare(strict_types=1);
 namespace pocketmine\resourcepacks;
 
 use pocketmine\utils\Config;
-use pocketmine\utils\MainLogger;
 
 class ResourcePackManager{
 
@@ -42,12 +41,11 @@ class ResourcePackManager{
 	private $uuidList = [];
 
 	/**
-	 * @param string $path Path to resource-packs directory.
+	 * @param string  $path Path to resource-packs directory.
+	 * @param \Logger $logger
 	 */
-	public function __construct(string $path){
+	public function __construct(string $path, \Logger $logger){
 		$this->path = $path;
-
-		$logger = MainLogger::getLogger();
 
 		if(!file_exists($this->path)){
 			$logger->debug("Resource packs path $path does not exist, creating directory");
