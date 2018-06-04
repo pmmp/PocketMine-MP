@@ -1916,7 +1916,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		if(!$packet->skipVerification){
-			$this->server->getScheduler()->scheduleAsyncTask(new VerifyLoginTask($this, $packet));
+			$this->server->getAsyncPool()->submitTask(new VerifyLoginTask($this, $packet));
 		}else{
 			$this->onVerifyCompleted($packet, null, true);
 		}

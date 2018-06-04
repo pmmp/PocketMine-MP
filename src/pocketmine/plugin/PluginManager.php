@@ -575,6 +575,7 @@ class PluginManager{
 				foreach($plugin->getDescription()->getPermissions() as $perm){
 					$this->addPermission($perm);
 				}
+				$plugin->getScheduler()->setEnabled(true);
 				$plugin->getPluginLoader()->enablePlugin($plugin);
 			}catch(\Throwable $e){
 				$this->server->getLogger()->logException($e);
@@ -657,10 +658,18 @@ class PluginManager{
 				$this->server->getLogger()->logException($e);
 			}
 
-			$this->server->getScheduler()->cancelTasks($plugin);
+			$plugin->getScheduler()->shutdown();
 			HandlerList::unregisterAll($plugin);
 			foreach($plugin->getDescription()->getPermissions() as $perm){
 				$this->removePermission($perm);
+			}
+		}
+	}
+
+	public function tickSchedulers(int $currentTick) : void{
+		foreach($this->plugins as $p){
+			if($p->isEnabled()){
+				$p->getScheduler()->mainThreadHeartbeat($currentTick);
 			}
 		}
 	}

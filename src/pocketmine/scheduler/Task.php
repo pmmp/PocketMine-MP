@@ -23,9 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
-/**
- * WARNING! Tasks created by plugins MUST extend PluginTask
- */
 abstract class Task{
 
 	/** @var TaskHandler */

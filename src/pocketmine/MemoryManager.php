@@ -243,9 +243,9 @@ class MemoryManager{
 		Timings::$garbageCollectorTimer->startTiming();
 
 		if($this->garbageCollectionAsync){
-			$size = $this->server->getScheduler()->getAsyncTaskPoolSize();
-			for($i = 0; $i < $size; ++$i){
-				$this->server->getScheduler()->scheduleAsyncTaskToWorker(new GarbageCollectionTask(), $i);
+			$pool = $this->server->getAsyncPool();
+			for($i = 0, $size = $pool->getSize(); $i < $size; ++$i){
+				$pool->submitTaskToWorker(new GarbageCollectionTask(), $i);
 			}
 		}
 
@@ -268,9 +268,9 @@ class MemoryManager{
 		self::dumpMemory($this->server, $outputFolder, $maxNesting, $maxStringSize);
 
 		if($this->dumpWorkers){
-			$scheduler = $this->server->getScheduler();
-			for($i = 0, $size = $scheduler->getAsyncTaskPoolSize(); $i < $size; ++$i){
-				$scheduler->scheduleAsyncTaskToWorker(new DumpWorkerMemoryTask($outputFolder, $maxNesting, $maxStringSize), $i);
+			$pool = $this->server->getAsyncPool();
+			for($i = 0, $size = $pool->getSize(); $i < $size; ++$i){
+				$pool->submitTaskToWorker(new DumpWorkerMemoryTask($outputFolder, $maxNesting, $maxStringSize), $i);
 			}
 		}
 	}

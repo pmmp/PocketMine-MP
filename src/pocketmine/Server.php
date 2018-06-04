@@ -87,9 +87,9 @@ use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
 use pocketmine\plugin\ScriptPluginLoader;
 use pocketmine\resourcepacks\ResourcePackManager;
+use pocketmine\scheduler\AsyncPool;
 use pocketmine\scheduler\FileWriteTask;
 use pocketmine\scheduler\SendUsageTask;
-use pocketmine\scheduler\ServerScheduler;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\tile\Tile;
@@ -148,8 +148,8 @@ class Server{
 	/** @var AutoUpdater */
 	private $updater = null;
 
-	/** @var ServerScheduler */
-	private $scheduler = null;
+	/** @var AsyncPool */
+	private $asyncPool;
 
 	/**
 	 * Counts the ticks since the server start
@@ -650,11 +650,8 @@ class Server{
 		return $this->resourceManager;
 	}
 
-	/**
-	 * @return ServerScheduler
-	 */
-	public function getScheduler(){
-		return $this->scheduler;
+	public function getAsyncPool() : AsyncPool{
+		return $this->asyncPool;
 	}
 
 	/**
@@ -824,7 +821,7 @@ class Server{
 			$nbt = new BigEndianNBTStream();
 			try{
 				if($async){
-					$this->getScheduler()->scheduleAsyncTask(new FileWriteTask($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed($ev->getSaveData())));
+					$this->asyncPool->submitTask(new FileWriteTask($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed($ev->getSaveData())));
 				}else{
 					file_put_contents($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed($ev->getSaveData()));
 				}
@@ -1519,7 +1516,7 @@ class Server{
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.start", [TextFormat::AQUA . $this->getVersion() . TextFormat::RESET]));
 
 			if(($poolSize = $this->getProperty("settings.async-workers", "auto")) === "auto"){
-				$poolSize = ServerScheduler::$WORKERS;
+				$poolSize = 2;
 				$processors = Utils::getCoreCount() - 2;
 
 				if($processors > 0){
@@ -1529,7 +1526,7 @@ class Server{
 				$poolSize = (int) $poolSize;
 			}
 
-			ServerScheduler::$WORKERS = $poolSize;
+			$this->asyncPool = new AsyncPool($this, $poolSize);
 
 			if($this->getProperty("network.batch-threshold", 256) >= 0){
 				Network::$BATCH_THRESHOLD = (int) $this->getProperty("network.batch-threshold", 256);
@@ -1551,7 +1548,6 @@ class Server{
 
 			$this->doTitleTick = ((bool) $this->getProperty("console.title-tick", true)) && Terminal::hasFormattingCodes();
 
-			$this->scheduler = new ServerScheduler();
 
 			if($this->getConfigBool("enable-rcon", false)){
 				try{
@@ -1904,7 +1900,7 @@ class Server{
 
 			if(!$forceSync and !$immediate and $this->networkCompressionAsync){
 				$task = new CompressBatchedTask($pk, $targets);
-				$this->getScheduler()->scheduleAsyncTask($task);
+				$this->asyncPool->submitTask($task);
 			}else{
 				$this->broadcastPacketsCallback($pk, $targets, $immediate);
 			}
@@ -2068,9 +2064,9 @@ class Server{
 			$this->getLogger()->debug("Removing event handlers");
 			HandlerList::unregisterAll();
 
-			if($this->scheduler instanceof ServerScheduler){
-				$this->getLogger()->debug("Shutting down task scheduler");
-				$this->scheduler->shutdown();
+			if($this->asyncPool instanceof AsyncPool){
+				$this->getLogger()->debug("Shutting down async task worker pool");
+				$this->asyncPool->shutdown();
 			}
 
 			if($this->properties !== null and $this->properties->hasChanged()){
@@ -2428,7 +2424,7 @@ class Server{
 
 	public function sendUsage($type = SendUsageTask::TYPE_STATUS){
 		if((bool) $this->getProperty("anonymous-statistics.enabled", true)){
-			$this->scheduler->scheduleAsyncTask(new SendUsageTask($this, $type, $this->uniquePlayers));
+			$this->asyncPool->submitTask(new SendUsageTask($this, $type, $this->uniquePlayers));
 		}
 		$this->uniquePlayers = [];
 	}
@@ -2523,8 +2519,12 @@ class Server{
 		Timings::$connectionTimer->stopTiming();
 
 		Timings::$schedulerTimer->startTiming();
-		$this->scheduler->mainThreadHeartbeat($this->tickCounter);
+		$this->pluginManager->tickSchedulers($this->tickCounter);
 		Timings::$schedulerTimer->stopTiming();
+
+		Timings::$schedulerAsyncTimer->startTiming();
+		$this->asyncPool->collectTasks();
+		Timings::$schedulerAsyncTimer->stopTiming();
 
 		$this->checkTickUpdates($this->tickCounter, $tickTime);
 

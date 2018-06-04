@@ -27,13 +27,17 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
-use pocketmine\plugin\Plugin;
-use pocketmine\plugin\PluginException;
-use pocketmine\Server;
 use pocketmine\utils\ReversePriorityQueue;
 
-class ServerScheduler{
-	public static $WORKERS = 2;
+class TaskScheduler{
+	/** @var \Logger */
+	private $logger;
+	/** @var string|null */
+	private $owner;
+
+	/** @var bool */
+	private $enabled = true;
+
 	/**
 	 * @var ReversePriorityQueue<Task>
 	 */
@@ -44,18 +48,17 @@ class ServerScheduler{
 	 */
 	protected $tasks = [];
 
-	/** @var AsyncPool */
-	protected $asyncPool;
-
 	/** @var int */
 	private $ids = 1;
 
 	/** @var int */
 	protected $currentTick = 0;
 
-	public function __construct(){
+
+	public function __construct(\Logger $logger, ?string $owner = null){
+		$this->logger = $logger;
+		$this->owner = $owner;
 		$this->queue = new ReversePriorityQueue();
-		$this->asyncPool = new AsyncPool(Server::getInstance(), self::$WORKERS);
 	}
 
 	/**
@@ -65,49 +68,6 @@ class ServerScheduler{
 	 */
 	public function scheduleTask(Task $task){
 		return $this->addTask($task, -1, -1);
-	}
-
-	/**
-	 * Submits an asynchronous task to the Worker Pool
-	 *
-	 * @param AsyncTask $task
-	 *
-	 * @return int
-	 */
-	public function scheduleAsyncTask(AsyncTask $task) : int{
-		if($task->getTaskId() !== null){
-			throw new \UnexpectedValueException("Attempt to schedule the same AsyncTask instance twice");
-		}
-		$id = $this->nextId();
-		$task->setTaskId($id);
-		$task->progressUpdates = new \Threaded;
-		return $this->asyncPool->submitTask($task);
-	}
-
-	/**
-	 * Submits an asynchronous task to a specific Worker in the Pool
-	 *
-	 * @param AsyncTask $task
-	 * @param int       $worker
-	 *
-	 * @return void
-	 */
-	public function scheduleAsyncTaskToWorker(AsyncTask $task, int $worker){
-		if($task->getTaskId() !== null){
-			throw new \UnexpectedValueException("Attempt to schedule the same AsyncTask instance twice");
-		}
-		$id = $this->nextId();
-		$task->setTaskId($id);
-		$task->progressUpdates = new \Threaded;
-		$this->asyncPool->submitTaskToWorker($task, $worker);
-	}
-
-	public function getAsyncTaskPoolSize() : int{
-		return $this->asyncPool->getSize();
-	}
-
-	public function increaseAsyncTaskPoolSize(int $newSize){
-		$this->asyncPool->increaseSize($newSize);
 	}
 
 	/**
@@ -145,31 +105,22 @@ class ServerScheduler{
 	 * @param int $taskId
 	 */
 	public function cancelTask(int $taskId){
-		if($taskId !== null and isset($this->tasks[$taskId])){
-			$this->tasks[$taskId]->cancel();
+		if(isset($this->tasks[$taskId])){
+			try{
+				$this->tasks[$taskId]->cancel();
+			}catch(\Throwable $e){
+				$this->logger->critical("Task " . $this->tasks[$taskId]->getTaskName() . " threw an exception when trying to cancel: " . $e->getMessage());
+				$this->logger->logException($e);
+			}
 			unset($this->tasks[$taskId]);
 		}
 	}
 
-	/**
-	 * @param Plugin $plugin
-	 */
-	public function cancelTasks(Plugin $plugin){
-		foreach($this->tasks as $taskId => $task){
-			$ptask = $task->getTask();
-			if($ptask instanceof PluginTask and $ptask->getOwner() === $plugin){
-				$task->cancel();
-				unset($this->tasks[$taskId]);
-			}
-		}
-	}
-
 	public function cancelAllTasks(){
-		foreach($this->tasks as $task){
-			$task->cancel();
+		foreach($this->tasks as $id => $task){
+			$this->cancelTask($id);
 		}
 		$this->tasks = [];
-		$this->asyncPool->removeTasks();
 		while(!$this->queue->isEmpty()){
 			$this->queue->extract();
 		}
@@ -192,11 +143,11 @@ class ServerScheduler{
 	 *
 	 * @return null|TaskHandler
 	 *
-	 * @throws PluginException
+	 * @throws \InvalidStateException
 	 */
 	private function addTask(Task $task, int $delay, int $period){
-		if($task instanceof PluginTask and !$task->getOwner()->isEnabled()){
-			throw new PluginException("Plugin '" . $task->getOwner()->getName() . "' attempted to register a task while disabled");
+		if(!$this->enabled){
+			throw new \InvalidStateException("Tried to schedule task to disabled scheduler");
 		}
 
 		if($delay <= 0){
@@ -209,7 +160,7 @@ class ServerScheduler{
 			$period = 1;
 		}
 
-		return $this->handle(new TaskHandler(get_class($task), $task, $this->nextId(), $delay, $period));
+		return $this->handle(new TaskHandler($task, $this->nextId(), $delay, $period, $this->owner));
 	}
 
 	private function handle(TaskHandler $handler) : TaskHandler{
@@ -227,8 +178,12 @@ class ServerScheduler{
 	}
 
 	public function shutdown() : void{
+		$this->enabled = false;
 		$this->cancelAllTasks();
-		$this->asyncPool->shutdown();
+	}
+
+	public function setEnabled(bool $enabled) : void{
+		$this->enabled = $enabled;
 	}
 
 	/**
@@ -242,30 +197,32 @@ class ServerScheduler{
 			if($task->isCancelled()){
 				unset($this->tasks[$task->getTaskId()]);
 				continue;
-			}else{
-				$task->timings->startTiming();
-				try{
-					$task->run($this->currentTick);
-				}catch(\Throwable $e){
-					Server::getInstance()->getLogger()->critical("Could not execute task " . $task->getTaskName() . ": " . $e->getMessage());
-					Server::getInstance()->getLogger()->logException($e);
-				}
-				$task->timings->stopTiming();
+			}
+			$crashed = false;
+			try{
+				$task->run($this->currentTick);
+			}catch(\Throwable $e){
+				$crashed = true;
+				$this->logger->critical("Could not execute task " . $task->getTaskName() . ": " . $e->getMessage());
+				$this->logger->logException($e);
 			}
 			if($task->isRepeating()){
-				$task->setNextRun($this->currentTick + $task->getPeriod());
-				$this->queue->insert($task, $this->currentTick + $task->getPeriod());
-			}else{
-				$task->remove();
-				unset($this->tasks[$task->getTaskId()]);
+				if($crashed){
+					$this->logger->debug("Dropping repeating task " . $task->getTaskName() . " due to exceptions thrown while running");
+				}else{
+					$task->setNextRun($this->currentTick + $task->getPeriod());
+					$this->queue->insert($task, $this->currentTick + $task->getPeriod());
+					continue;
+				}
 			}
-		}
 
-		$this->asyncPool->collectTasks();
+			$task->remove();
+			unset($this->tasks[$task->getTaskId()]);
+		}
 	}
 
-	private function isReady(int $currentTicks) : bool{
-		return count($this->tasks) > 0 and $this->queue->current()->getNextRun() <= $currentTicks;
+	private function isReady(int $currentTick) : bool{
+		return count($this->tasks) > 0 and $this->queue->current()->getNextRun() <= $currentTick;
 	}
 
 	/**
@@ -274,5 +231,4 @@ class ServerScheduler{
 	private function nextId() : int{
 		return $this->ids++;
 	}
-
 }

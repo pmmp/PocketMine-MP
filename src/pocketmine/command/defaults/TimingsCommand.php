@@ -104,7 +104,7 @@ class TimingsCommand extends VanillaCommand{
 				];
 				fclose($fileTimings);
 
-				$sender->getServer()->getScheduler()->scheduleAsyncTask(new class([
+				$sender->getServer()->getAsyncPool()->submitTask(new class([
 					["page" => "http://paste.ubuntu.com", "extraOpts" => [
 						CURLOPT_HTTPHEADER => ["User-Agent: " . $sender->getServer()->getName() . " " . $sender->getServer()->getPocketMineVersion()],
 						CURLOPT_POST => 1,

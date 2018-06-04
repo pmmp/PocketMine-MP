@@ -149,7 +149,7 @@ class AutoUpdater{
 	 * Schedules an AsyncTask to check for an update.
 	 */
 	public function doCheck(){
-		$this->server->getScheduler()->scheduleAsyncTask(new UpdateCheckTask($this->endpoint, $this->getChannel()));
+		$this->server->getAsyncPool()->submitTask(new UpdateCheckTask($this->endpoint, $this->getChannel()));
 	}
 
 	/**
