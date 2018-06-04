@@ -103,7 +103,7 @@ class Chunk{
 		$this->height = Chunk::MAX_SUBCHUNKS; //TODO: add a way of changing this
 
 		$this->subChunks = new \SplFixedArray($this->height);
-		$this->emptySubChunk = new EmptySubChunk();
+		$this->emptySubChunk = EmptySubChunk::getInstance();
 
 		foreach($this->subChunks as $y => $null){
 			$this->subChunks[$y] = $subChunks[$y] ?? $this->emptySubChunk;
