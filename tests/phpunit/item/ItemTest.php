@@ -1,0 +1,54 @@
+<?php
+
+/*
+ *
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
+ *
+ *
+*/
+
+declare(strict_types=1);
+
+namespace pocketmine\item;
+
+use PHPUnit\Framework\TestCase;
+use pocketmine\block\BlockFactory;
+
+class ItemTest extends TestCase{
+
+	public function setUp() : void{
+		BlockFactory::init();
+		ItemFactory::init();
+	}
+
+	/**
+	 * Test for issue #1145 (items aren't considered equal after NBT serializing and deserializing
+	 */
+	public function testItemEquals() : void{
+		$item = ItemFactory::get(Item::STONE)->setCustomName("HI");
+		$item2 = Item::nbtDeserialize($item->nbtSerialize());
+		self::assertTrue($item2->equals($item));
+		self::assertTrue($item->equals($item2));
+	}
+
+	/**
+	 * Tests that blocks are considered to be valid registered items
+	 */
+	public function testItemBlockRegistered() : void{
+		for($id = 0; $id < 256; ++$id){
+			self::assertEquals(BlockFactory::isRegistered($id), ItemFactory::isRegistered($id));
+		}
+	}
+}

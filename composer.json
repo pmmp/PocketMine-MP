@@ -34,6 +34,11 @@
          "": ["src"]
       }
    },
+   "autoload-dev": {
+      "psr-4": {
+         "pocketmine\\": "tests/phpunit/"
+      }
+   },
    "repositories": [
       {
          "type": "vcs",

@@ -21,6 +21,11 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
+#Run PHPUnit tests
+curl https://phar.phpunit.de/phpunit-7.phar --silent --location -o phpunit.phar
+"$PHP_BINARY" phpunit.phar --bootstrap vendor/autoload.php tests/phpunit
+
+#Run-the-server tests
 DATA_DIR="test_data"
 PLUGINS_DIR="$DATA_DIR/plugins"
 
