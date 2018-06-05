@@ -12,7 +12,7 @@ If you don't find what you're looking for there, [talk to a human](#discussion).
 - [Forums](https://forums.pmmp.io/)
 
 ### Plugins
-There are a very wide range of already-written plugins available which you can use to customise your server. Check out [Poggit](https://poggit.pmmp.io), or just search GitHub.
+There are a very wide range of already-written plugins available which you can use to customise your server. Check out [Poggit](https://poggit.pmmp.io), or just search on GitHub.
 
 ### For developers
  * [Latest API documentation](https://jenkins.pmmp.io/job/PocketMine-MP-doc/doxygen/) - Doxygen documentation generated from development
