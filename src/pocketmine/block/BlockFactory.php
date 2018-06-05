@@ -361,7 +361,7 @@ class BlockFactory{
 		self::$transparent[$id] = $block->isTransparent();
 		self::$hardness[$id] = $block->getHardness();
 		self::$light[$id] = $block->getLightLevel();
-		self::$lightFilter[$id] = $block->getLightFilter() + 1; //opacity plus 1 standard light filter
+		self::$lightFilter[$id] = min(15, $block->getLightFilter() + 1); //opacity plus 1 standard light filter
 		self::$diffusesSkyLight[$id] = $block->diffusesSkyLight();
 		self::$blastResistance[$id] = $block->getBlastResistance();
 	}
