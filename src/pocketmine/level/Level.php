@@ -82,7 +82,6 @@ use pocketmine\tile\Chest;
 use pocketmine\tile\Container;
 use pocketmine\tile\Tile;
 use pocketmine\timings\Timings;
-use pocketmine\utils\Random;
 use pocketmine\utils\ReversePriorityQueue;
 
 #include <rules/Level.h>
