@@ -166,13 +166,13 @@ class BanList{
 	}
 
 	/**
-	 * @param bool $flag
+	 * @param bool $writeHeader
 	 */
-	public function save(bool $flag = true){
+	public function save(bool $writeHeader = true){
 		$this->removeExpired();
 		$fp = @fopen($this->file, "w");
 		if(is_resource($fp)){
-			if($flag){
+			if($writeHeader){
 				fwrite($fp, "# Updated " . strftime("%x %H:%M", time()) . " by " . Server::getInstance()->getName() . " " . Server::getInstance()->getPocketMineVersion() . "\n");
 				fwrite($fp, "# victim name | ban date | banned by | banned until | reason\n\n");
 			}
