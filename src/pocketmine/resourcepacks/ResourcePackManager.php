@@ -25,7 +25,6 @@ declare(strict_types=1);
 namespace pocketmine\resourcepacks;
 
 use pocketmine\utils\Config;
-use pocketmine\utils\MainLogger;
 
 class ResourcePackManager{
 
@@ -42,12 +41,11 @@ class ResourcePackManager{
 	private $uuidList = [];
 
 	/**
-	 * @param string $path Path to resource-packs directory.
+	 * @param string  $path Path to resource-packs directory.
+	 * @param \Logger $logger
 	 */
-	public function __construct(string $path){
+	public function __construct(string $path, \Logger $logger){
 		$this->path = $path;
-
-		$logger = MainLogger::getLogger();
 
 		if(!file_exists($this->path)){
 			$logger->debug("Resource packs path $path does not exist, creating directory");
@@ -66,36 +64,46 @@ class ResourcePackManager{
 
 		$logger->info("Loading resource packs...");
 
-		foreach($resourcePacksConfig->get("resource_stack", []) as $pos => $pack){
-			try{
-				$packPath = $this->path . DIRECTORY_SEPARATOR . $pack;
-				if(file_exists($packPath)){
-					$newPack = null;
-					//Detect the type of resource pack.
-					if(is_dir($packPath)){
-						$logger->warning("Skipped resource entry $pack due to directory resource packs currently unsupported");
-					}else{
-						$info = new \SplFileInfo($packPath);
-						switch($info->getExtension()){
-							case "zip":
-							case "mcpack":
-								$newPack = new ZippedResourcePack($packPath);
-								break;
-							default:
-								$logger->warning("Skipped resource entry $pack due to format not recognized");
-								break;
-						}
-					}
+		$resourceStack = $resourcePacksConfig->get("resource_stack", []);
+		if(!is_array($resourceStack)){
+			throw new \InvalidArgumentException("\"resource_stack\" key should contain a list of pack names");
+		}
 
-					if($newPack instanceof ResourcePack){
-						$this->resourcePacks[] = $newPack;
-						$this->uuidList[strtolower($newPack->getPackId())] = $newPack;
-					}
-				}else{
-					$logger->warning("Skipped resource entry $pack due to file or directory not found");
+		foreach($resourceStack as $pos => $pack){
+			try{
+				$pack = (string) $pack;
+			}catch(\ErrorException $e){
+				$logger->critical("Found invalid entry in resource pack list at offset $pos of type " . gettype($pack));
+				continue;
+			}
+			try{
+				/** @var string $pack */
+				$packPath = $this->path . DIRECTORY_SEPARATOR . $pack;
+				if(!file_exists($packPath)){
+					throw new ResourcePackException("File or directory not found");
 				}
-			}catch(\Throwable $e){
-				$logger->logException($e);
+				if(is_dir($packPath)){
+					throw new ResourcePackException("Directory resource packs are unsupported");
+				}
+
+				$newPack = null;
+				//Detect the type of resource pack.
+				$info = new \SplFileInfo($packPath);
+				switch($info->getExtension()){
+					case "zip":
+					case "mcpack":
+						$newPack = new ZippedResourcePack($packPath);
+						break;
+				}
+
+				if($newPack instanceof ResourcePack){
+					$this->resourcePacks[] = $newPack;
+					$this->uuidList[strtolower($newPack->getPackId())] = $newPack;
+				}else{
+					throw new ResourcePackException("Format not recognized");
+				}
+			}catch(ResourcePackException $e){
+				$logger->critical("Could not load resource pack \"$pack\": " . $e->getMessage());
 			}
 		}
 

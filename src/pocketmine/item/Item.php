@@ -597,19 +597,21 @@ class Item implements ItemIds, \JsonSerializable{
 
 	/**
 	 * Pops an item from the stack and returns it, decreasing the stack count of this item stack by one.
-	 * @return Item
 	 *
-	 * @throws \InvalidStateException if the count is less than or equal to zero, or if the stack is air.
+	 * @param int $count
+	 *
+	 * @return Item
+	 * @throws \InvalidArgumentException if trying to pop more items than are on the stack
 	 */
-	public function pop() : Item{
-		if($this->isNull()){
-			throw new \InvalidStateException("Cannot pop an item from a null stack");
+	public function pop(int $count = 1) : Item{
+		if($count > $this->count){
+			throw new \InvalidArgumentException("Cannot pop $count items from a stack of $this->count");
 		}
 
 		$item = clone $this;
-		$item->setCount(1);
+		$item->count = $count;
 
-		$this->count--;
+		$this->count -= $count;
 
 		return $item;
 	}
@@ -716,15 +718,6 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * @param Entity|Block $object
-	 *
-	 * @return bool
-	 */
-	public function useOn($object){
-		return false;
-	}
-
-	/**
 	 * Returns what type of block-breaking tool this is. Blocks requiring the same tool type as the item will break
 	 * faster (except for blocks requiring no tool, which break at the same speed regardless of the tool used)
 	 *
@@ -745,30 +738,6 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	public function getBlockToolHarvestLevel() : int{
 		return 0;
-	}
-
-	public function isPickaxe(){
-		return false;
-	}
-
-	public function isAxe(){
-		return false;
-	}
-
-	public function isSword(){
-		return false;
-	}
-
-	public function isShovel(){
-		return false;
-	}
-
-	public function isHoe(){
-		return false;
-	}
-
-	public function isShears(){
-		return false;
 	}
 
 	public function getMiningEfficiency(Block $block) : float{
@@ -811,6 +780,28 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return bool
 	 */
 	public function onReleaseUsing(Player $player) : bool{
+		return false;
+	}
+
+	/**
+	 * Called when this item is used to destroy a block. Usually used to update durability.
+	 *
+	 * @param Block $block
+	 *
+	 * @return bool
+	 */
+	public function onDestroyBlock(Block $block) : bool{
+		return false;
+	}
+
+	/**
+	 * Called when this item is used to attack an entity. Usually used to update durability.
+	 *
+	 * @param Entity $victim
+	 *
+	 * @return bool
+	 */
+	public function onAttackEntity(Entity $victim) : bool{
 		return false;
 	}
 

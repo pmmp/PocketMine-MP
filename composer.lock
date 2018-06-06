@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "0a9989451e8593a15cde64bf52466e4b",
+    "content-hash": "9993493665deb27b5b984de2c596cdc5",
     "packages": [
         {
             "name": "pocketmine/binaryutils",
@@ -46,12 +46,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "bd78ce8ad1c0a583de6655eee46a82ccaade1302"
+                "reference": "f88790f343b72563bf69658d6f14630fba580905"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/bd78ce8ad1c0a583de6655eee46a82ccaade1302",
-                "reference": "bd78ce8ad1c0a583de6655eee46a82ccaade1302",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/f88790f343b72563bf69658d6f14630fba580905",
+                "reference": "f88790f343b72563bf69658d6f14630fba580905",
                 "shasum": ""
             },
             "require": {
@@ -72,7 +72,7 @@
                 "source": "https://github.com/pmmp/Math/tree/master",
                 "issues": "https://github.com/pmmp/Math/issues"
             },
-            "time": "2018-04-16T09:14:46+00:00"
+            "time": "2018-05-28T12:55:13+00:00"
         },
         {
             "name": "pocketmine/nbt",
@@ -120,22 +120,23 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "5de9f0dc4b076c454efdb075450737fe312d60ce"
+                "reference": "bfee6ba312a380a5451a2d8e85b46c2c57acac15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/5de9f0dc4b076c454efdb075450737fe312d60ce",
-                "reference": "5de9f0dc4b076c454efdb075450737fe312d60ce",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/bfee6ba312a380a5451a2d8e85b46c2c57acac15",
+                "reference": "bfee6ba312a380a5451a2d8e85b46c2c57acac15",
                 "shasum": ""
             },
             "require": {
                 "ext-bcmath": "*",
                 "ext-pthreads": ">=3.1.7dev",
                 "ext-sockets": "*",
-                "php": ">=7.2.0RC3",
+                "php": ">=7.2.0",
                 "php-64bit": "*",
                 "php-ipv6": "*",
                 "pocketmine/binaryutils": "dev-master#c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595",
+                "pocketmine/snooze": "dev-master#96c740826df04024d2b685aa5ba8b8d0bdc69439",
                 "pocketmine/spl": "0.3.0"
             },
             "type": "library",
@@ -152,7 +153,41 @@
                 "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2018-04-16T09:12:34+00:00"
+            "time": "2018-05-09T19:16:48+00:00"
+        },
+        {
+            "name": "pocketmine/snooze",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/Snooze.git",
+                "reference": "541f0f038f401e9117ae60c8dbc167a46569282d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/541f0f038f401e9117ae60c8dbc167a46569282d",
+                "reference": "541f0f038f401e9117ae60c8dbc167a46569282d",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pthreads": ">=3.1.7dev",
+                "php-64bit": ">=7.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "pocketmine\\snooze\\": "src/"
+                }
+            },
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Thread notification management library for code using the pthreads extension",
+            "support": {
+                "source": "https://github.com/pmmp/Snooze/tree/master",
+                "issues": "https://github.com/pmmp/Snooze/issues"
+            },
+            "time": "2018-05-20T17:47:37+00:00"
         },
         {
             "name": "pocketmine/spl",
@@ -195,7 +230,8 @@
         "pocketmine/raklib": 20,
         "pocketmine/binaryutils": 20,
         "pocketmine/nbt": 20,
-        "pocketmine/math": 20
+        "pocketmine/math": 20,
+        "pocketmine/snooze": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

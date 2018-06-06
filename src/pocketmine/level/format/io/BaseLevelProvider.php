@@ -60,7 +60,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 
 	protected function fixLevelData() : void{
 		if(!$this->levelData->hasTag("generatorName", StringTag::class)){
-			$this->levelData->setString("generatorName", (string) Generator::getGenerator("DEFAULT"), true);
+			$this->levelData->setString("generatorName", Generator::getGenerator("DEFAULT"), true);
 		}
 
 		if(!$this->levelData->hasTag("generatorOptions", StringTag::class)){

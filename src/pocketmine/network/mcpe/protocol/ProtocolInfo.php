@@ -39,15 +39,15 @@ interface ProtocolInfo{
 	/**
 	 * Actual Minecraft: PE protocol version
 	 */
-	public const CURRENT_PROTOCOL = 223;
+	public const CURRENT_PROTOCOL = 261;
 	/**
 	 * Current Minecraft PE version reported by the server. This is usually the earliest currently supported version.
 	 */
-	public const MINECRAFT_VERSION = 'v1.2.13';
+	public const MINECRAFT_VERSION = 'v1.4.0';
 	/**
 	 * Version number sent to clients in ping responses.
 	 */
-	public const MINECRAFT_VERSION_NETWORK = '1.2.13';
+	public const MINECRAFT_VERSION_NETWORK = '1.4.0';
 
 	public const LOGIN_PACKET = 0x01;
 	public const PLAY_STATUS_PACKET = 0x02;
@@ -154,5 +154,10 @@ interface ProtocolInfo{
 	public const SERVER_SETTINGS_RESPONSE_PACKET = 0x67;
 	public const SHOW_PROFILE_PACKET = 0x68;
 	public const SET_DEFAULT_GAME_TYPE_PACKET = 0x69;
+	public const REMOVE_OBJECTIVE_PACKET = 0x6a;
+	public const SET_DISPLAY_OBJECTIVE_PACKET = 0x6b;
+	public const SET_SCORE_PACKET = 0x6c;
+	public const LAB_TABLE_PACKET = 0x6d;
+	public const UPDATE_BLOCK_SYNCED_PACKET = 0x6e;
 
 }

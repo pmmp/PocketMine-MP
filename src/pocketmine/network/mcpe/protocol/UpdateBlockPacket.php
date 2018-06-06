@@ -40,6 +40,9 @@ class UpdateBlockPacket extends DataPacket{
 	public const FLAG_ALL = self::FLAG_NEIGHBORS | self::FLAG_NETWORK;
 	public const FLAG_ALL_PRIORITY = self::FLAG_ALL | self::FLAG_PRIORITY;
 
+	public const DATA_LAYER_NORMAL = 0;
+	public const DATA_LAYER_LIQUID = 1;
+
 	/** @var int */
 	public $x;
 	/** @var int */
@@ -50,17 +53,21 @@ class UpdateBlockPacket extends DataPacket{
 	public $blockRuntimeId;
 	/** @var int */
 	public $flags;
+	/** @var int */
+	public $dataLayerId = self::DATA_LAYER_NORMAL;
 
 	protected function decodePayload(){
 		$this->getBlockPosition($this->x, $this->y, $this->z);
 		$this->blockRuntimeId = $this->getUnsignedVarInt();
 		$this->flags = $this->getUnsignedVarInt();
+		$this->dataLayerId = $this->getUnsignedVarInt();
 	}
 
 	protected function encodePayload(){
 		$this->putBlockPosition($this->x, $this->y, $this->z);
 		$this->putUnsignedVarInt($this->blockRuntimeId);
 		$this->putUnsignedVarInt($this->flags);
+		$this->putUnsignedVarInt($this->dataLayerId);
 	}
 
 	public function handle(NetworkSession $session) : bool{

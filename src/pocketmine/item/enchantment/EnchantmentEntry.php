@@ -28,29 +28,31 @@ class EnchantmentEntry{
 
 	/** @var Enchantment[] */
 	private $enchantments;
+	/** @var int */
 	private $cost;
+	/** @var string */
 	private $randomName;
 
 	/**
 	 * @param Enchantment[] $enchantments
-	 * @param number        $cost
+	 * @param int           $cost
 	 * @param string        $randomName
 	 */
-	public function __construct(array $enchantments, $cost, $randomName){
+	public function __construct(array $enchantments, int $cost, string $randomName){
 		$this->enchantments = $enchantments;
-		$this->cost = (int) $cost;
+		$this->cost = $cost;
 		$this->randomName = $randomName;
 	}
 
-	public function getEnchantments(){
+	public function getEnchantments() : array{
 		return $this->enchantments;
 	}
 
-	public function getCost(){
+	public function getCost() : int{
 		return $this->cost;
 	}
 
-	public function getRandomName(){
+	public function getRandomName() : string{
 		return $this->randomName;
 	}
 

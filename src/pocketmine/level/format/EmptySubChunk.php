@@ -24,6 +24,16 @@ declare(strict_types=1);
 namespace pocketmine\level\format;
 
 class EmptySubChunk implements SubChunkInterface{
+	/** @var EmptySubChunk */
+	private static $instance;
+
+	public static function getInstance() : self{
+		if(self::$instance === null){
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
 
 	public function isEmpty(bool $checkLight = true) : bool{
 		return true;

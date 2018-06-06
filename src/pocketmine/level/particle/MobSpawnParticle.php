@@ -27,11 +27,12 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
 class MobSpawnParticle extends Particle{
-
+	/** @var int */
 	protected $width;
+	/** @var int */
 	protected $height;
 
-	public function __construct(Vector3 $pos, $width = 0, $height = 0){
+	public function __construct(Vector3 $pos, int $width = 0, int $height = 0){
 		parent::__construct($pos->x, $pos->y, $pos->z);
 		$this->width = $width;
 		$this->height = $height;

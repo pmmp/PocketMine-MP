@@ -48,7 +48,7 @@ class Arrow extends Projectile{
 
 	protected $damage = 2;
 
-	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null, bool $critical = false){
+	public function __construct(Level $level, CompoundTag $nbt, ?Entity $shootingEntity = null, bool $critical = false){
 		parent::__construct($level, $nbt, $shootingEntity);
 		$this->setCritical($critical);
 	}
@@ -57,7 +57,7 @@ class Arrow extends Projectile{
 		return $this->getGenericFlag(self::DATA_FLAG_CRITICAL);
 	}
 
-	public function setCritical(bool $value = true){
+	public function setCritical(bool $value = true) : void{
 		$this->setGenericFlag(self::DATA_FLAG_CRITICAL, $value);
 	}
 
@@ -95,7 +95,7 @@ class Arrow extends Projectile{
 		$this->broadcastEntityEvent(EntityEventPacket::ARROW_SHAKE, 7); //7 ticks
 	}
 
-	public function onCollideWithPlayer(Player $player){
+	public function onCollideWithPlayer(Player $player) : void{
 		if($this->blockHit === null){
 			return;
 		}

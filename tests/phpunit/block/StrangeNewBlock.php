@@ -21,18 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\block;
 
-use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
-
-class Anvil extends ItemBlock{
-
-	public function __construct(int $meta = 0){
-		parent::__construct(Item::ANVIL, $meta);
-	}
-
-	public function getBlock() : Block{
-		return BlockFactory::get(Block::ANVIL, $this->meta << 2);
+class StrangeNewBlock extends Solid{
+	public function getName() : string{
+		return "Strange New Block";
 	}
 }

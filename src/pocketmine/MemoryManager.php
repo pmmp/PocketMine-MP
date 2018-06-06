@@ -27,7 +27,6 @@ use pocketmine\event\server\LowMemoryEvent;
 use pocketmine\scheduler\DumpWorkerMemoryTask;
 use pocketmine\scheduler\GarbageCollectionTask;
 use pocketmine\timings\Timings;
-use pocketmine\utils\MainLogger;
 use pocketmine\utils\Utils;
 
 class MemoryManager{
@@ -243,9 +242,9 @@ class MemoryManager{
 		Timings::$garbageCollectorTimer->startTiming();
 
 		if($this->garbageCollectionAsync){
-			$size = $this->server->getScheduler()->getAsyncTaskPoolSize();
-			for($i = 0; $i < $size; ++$i){
-				$this->server->getScheduler()->scheduleAsyncTaskToWorker(new GarbageCollectionTask(), $i);
+			$pool = $this->server->getAsyncPool();
+			for($i = 0, $size = $pool->getSize(); $i < $size; ++$i){
+				$pool->submitTaskToWorker(new GarbageCollectionTask(), $i);
 			}
 		}
 
@@ -264,13 +263,13 @@ class MemoryManager{
 	 * @param int    $maxStringSize
 	 */
 	public function dumpServerMemory(string $outputFolder, int $maxNesting, int $maxStringSize){
-		MainLogger::getLogger()->notice("[Dump] After the memory dump is done, the server might crash");
-		self::dumpMemory($this->server, $outputFolder, $maxNesting, $maxStringSize);
+		$this->server->getLogger()->notice("[Dump] After the memory dump is done, the server might crash");
+		self::dumpMemory($this->server, $outputFolder, $maxNesting, $maxStringSize, $this->server->getLogger());
 
 		if($this->dumpWorkers){
-			$scheduler = $this->server->getScheduler();
-			for($i = 0, $size = $scheduler->getAsyncTaskPoolSize(); $i < $size; ++$i){
-				$scheduler->scheduleAsyncTaskToWorker(new DumpWorkerMemoryTask($outputFolder, $maxNesting, $maxStringSize), $i);
+			$pool = $this->server->getAsyncPool();
+			for($i = 0, $size = $pool->getSize(); $i < $size; ++$i){
+				$pool->submitTaskToWorker(new DumpWorkerMemoryTask($outputFolder, $maxNesting, $maxStringSize), $i);
 			}
 		}
 	}
@@ -278,14 +277,15 @@ class MemoryManager{
 	/**
 	 * Static memory dumper accessible from any thread.
 	 *
-	 * @param mixed  $startingObject
-	 * @param string $outputFolder
-	 * @param int    $maxNesting
-	 * @param int    $maxStringSize
+	 * @param mixed   $startingObject
+	 * @param string  $outputFolder
+	 * @param int     $maxNesting
+	 * @param int     $maxStringSize
+	 * @param \Logger $logger
 	 *
 	 * @throws \ReflectionException
 	 */
-	public static function dumpMemory($startingObject, string $outputFolder, int $maxNesting, int $maxStringSize){
+	public static function dumpMemory($startingObject, string $outputFolder, int $maxNesting, int $maxStringSize, \Logger $logger){
 		$hardLimit = ini_get('memory_limit');
 		ini_set('memory_limit', '-1');
 		gc_disable();
@@ -329,7 +329,7 @@ class MemoryManager{
 		}
 
 		file_put_contents($outputFolder . "/staticProperties.js", json_encode($staticProperties, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-		MainLogger::getLogger()->info("[Dump] Wrote $staticCount static properties");
+		$logger->info("[Dump] Wrote $staticCount static properties");
 
 		if(isset($GLOBALS)){ //This might be null if we're on a different thread
 			$globalVariables = [];
@@ -357,7 +357,7 @@ class MemoryManager{
 			}
 
 			file_put_contents($outputFolder . "/globalVariables.js", json_encode($globalVariables, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-			MainLogger::getLogger()->info("[Dump] Wrote $globalCount global variables");
+			$logger->info("[Dump] Wrote $globalCount global variables");
 		}
 
 		self::continueDump($startingObject, $data, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
@@ -411,7 +411,7 @@ class MemoryManager{
 
 		}while($continue);
 
-		MainLogger::getLogger()->info("[Dump] Wrote " . count($objects) . " objects");
+		$logger->info("[Dump] Wrote " . count($objects) . " objects");
 
 		fclose($obData);
 
@@ -421,7 +421,7 @@ class MemoryManager{
 		arsort($instanceCounts, SORT_NUMERIC);
 		file_put_contents($outputFolder . "/instanceCounts.js", json_encode($instanceCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
-		MainLogger::getLogger()->info("[Dump] Finished!");
+		$logger->info("[Dump] Finished!");
 
 		ini_set('memory_limit', $hardLimit);
 		gc_enable();

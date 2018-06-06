@@ -72,7 +72,7 @@ class FloatingTextParticle extends Particle{
 		return $this->invisible;
 	}
 
-	public function setInvisible(bool $value = true){
+	public function setInvisible(bool $value = true) : void{
 		$this->invisible = $value;
 	}
 

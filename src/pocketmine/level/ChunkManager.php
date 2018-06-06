@@ -142,11 +142,11 @@ interface ChunkManager{
 	 * Returns whether the specified coordinates are within the valid world boundaries, taking world format limitations
 	 * into account.
 	 *
-	 * @param float $x
-	 * @param float $y
-	 * @param float $z
+	 * @param int $x
+	 * @param int $y
+	 * @param int $z
 	 *
 	 * @return bool
 	 */
-	public function isInWorld(float $x, float $y, float $z) : bool;
+	public function isInWorld(int $x, int $y, int $z) : bool;
 }

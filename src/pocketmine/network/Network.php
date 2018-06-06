@@ -85,20 +85,24 @@ class Network{
 
 	public function processInterfaces(){
 		foreach($this->interfaces as $interface){
-			try{
-				$interface->process();
-			}catch(\Throwable $e){
-				$logger = $this->server->getLogger();
-				if(\pocketmine\DEBUG > 1){
-					$logger->logException($e);
-				}
+			$this->processInterface($interface);
+		}
+	}
 
-				$this->server->getPluginManager()->callEvent(new NetworkInterfaceCrashEvent($interface, $e));
-
-				$interface->emergencyShutdown();
-				$this->unregisterInterface($interface);
-				$logger->critical($this->server->getLanguage()->translateString("pocketmine.server.networkError", [get_class($interface), $e->getMessage()]));
+	public function processInterface(SourceInterface $interface) : void{
+		try{
+			$interface->process();
+		}catch(\Throwable $e){
+			$logger = $this->server->getLogger();
+			if(\pocketmine\DEBUG > 1){
+				$logger->logException($e);
 			}
+
+			$this->server->getPluginManager()->callEvent(new NetworkInterfaceCrashEvent($interface, $e));
+
+			$interface->emergencyShutdown();
+			$this->unregisterInterface($interface);
+			$logger->critical($this->server->getLanguage()->translateString("pocketmine.server.networkError", [get_class($interface), $e->getMessage()]));
 		}
 	}
 

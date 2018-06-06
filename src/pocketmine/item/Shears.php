@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\Block;
 use pocketmine\block\BlockToolType;
 
 class Shears extends Tool{
@@ -32,10 +33,6 @@ class Shears extends Tool{
 
 	public function getMaxDurability() : int{
 		return 239;
-	}
-
-	public function isShears(){
-		return true;
 	}
 
 	public function getBlockToolType() : int{
@@ -48,5 +45,12 @@ class Shears extends Tool{
 
 	protected function getBaseMiningEfficiency() : float{
 		return 15;
+	}
+
+	public function onDestroyBlock(Block $block) : bool{
+		if($block->getHardness() === 0 or $block->isCompatibleWithTool($this)){
+			return $this->applyDamage(1);
+		}
+		return false;
 	}
 }

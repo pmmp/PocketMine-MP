@@ -64,7 +64,7 @@ abstract class Generator{
 	/**
 	 * @param $name
 	 *
-	 * @return Generator
+	 * @return string|Generator Name of class that extends Generator (not an actual Generator object)
 	 */
 	public static function getGenerator($name){
 		if(isset(Generator::$list[$name = strtolower($name)])){
