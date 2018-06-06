@@ -95,10 +95,6 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 				return $newItem;
 			}
 		});
-
-		if($this->burnTime > 0){
-			$this->scheduleUpdate();
-		}
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
