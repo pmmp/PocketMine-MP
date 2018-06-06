@@ -40,7 +40,7 @@ memory:
  #AsyncWorker threads' hard memory limit in megabytes. Set to 0 to disable
  #This will crash the task currently executing on the worker if the task exceeds the limit
  #NOTE: THIS LIMIT APPLIES PER WORKER, NOT TO THE WHOLE PROCESS.
- async-worker-hard-limit: 1024
+ async-worker-hard-limit: 256
 
  #Period in ticks to check memory (default 1 second)
  check-rate: 20
