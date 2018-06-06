@@ -31,6 +31,8 @@ class AsyncPool{
 	private $server;
 
 	protected $size;
+	/** @var int */
+	private $workerMemoryLimit;
 
 	/** @var AsyncTask[] */
 	private $tasks = [];
@@ -44,15 +46,14 @@ class AsyncPool{
 	/** @var int[] */
 	private $workerUsage = [];
 
-	public function __construct(Server $server, int $size){
+	public function __construct(Server $server, int $size, int $workerMemoryLimit){
 		$this->server = $server;
 		$this->size = $size;
-
-		$memoryLimit = (int) max(-1, (int) $this->server->getProperty("memory.async-worker-hard-limit", 1024));
+		$this->workerMemoryLimit = $workerMemoryLimit;
 
 		for($i = 0; $i < $this->size; ++$i){
 			$this->workerUsage[$i] = 0;
-			$this->workers[$i] = new AsyncWorker($this->server->getLogger(), $i + 1, $memoryLimit);
+			$this->workers[$i] = new AsyncWorker($this->server->getLogger(), $i + 1, $this->workerMemoryLimit);
 			$this->workers[$i]->setClassLoader($this->server->getLoader());
 			$this->workers[$i]->start();
 		}
@@ -64,12 +65,9 @@ class AsyncPool{
 
 	public function increaseSize(int $newSize){
 		if($newSize > $this->size){
-
-			$memoryLimit = (int) max(-1, (int) $this->server->getProperty("memory.async-worker-hard-limit", 1024));
-
 			for($i = $this->size; $i < $newSize; ++$i){
 				$this->workerUsage[$i] = 0;
-				$this->workers[$i] = new AsyncWorker($this->server->getLogger(), $i + 1, $memoryLimit);
+				$this->workers[$i] = new AsyncWorker($this->server->getLogger(), $i + 1, $this->workerMemoryLimit);
 				$this->workers[$i]->setClassLoader($this->server->getLoader());
 				$this->workers[$i]->start();
 			}
