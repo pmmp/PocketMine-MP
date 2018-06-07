@@ -1975,6 +1975,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 */
 	public function flagForDespawn() : void{
 		$this->needsDespawn = true;
+		$this->scheduleUpdate();
 	}
 
 	public function isFlaggedForDespawn() : bool{
