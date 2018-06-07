@@ -26,7 +26,6 @@ namespace pocketmine\level\generator\hell;
 use pocketmine\block\Block;
 use pocketmine\level\biome\Biome;
 use pocketmine\level\ChunkManager;
-use pocketmine\level\generator\biome\BiomeSelector;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\noise\Simplex;
 use pocketmine\level\generator\populator\Populator;
@@ -53,33 +52,8 @@ class Nether extends Generator{
 	/** @var Simplex */
 	private $noiseBase;
 
-	/** @var BiomeSelector */
-	private $selector;
-
-	private static $GAUSSIAN_KERNEL = null;
-	private static $SMOOTH_SIZE = 2;
-
 	public function __construct(array $options = []){
-		if(self::$GAUSSIAN_KERNEL === null){
-			self::generateKernel();
-		}
-	}
 
-	private static function generateKernel(){
-		self::$GAUSSIAN_KERNEL = [];
-
-		$bellSize = 1 / self::$SMOOTH_SIZE;
-		$bellHeight = 2 * self::$SMOOTH_SIZE;
-
-		for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx){
-			self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE] = [];
-
-			for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz){
-				$bx = $bellSize * $sx;
-				$bz = $bellSize * $sz;
-				self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE] = $bellHeight * exp(-($bx * $bx + $bz * $bz) / 2);
-			}
-		}
 	}
 
 	public function getName() : string{
