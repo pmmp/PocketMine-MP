@@ -92,6 +92,9 @@ class PluginManager{
 	/** @var int */
 	private $eventCallDepth = 0;
 
+	/** @var Event[] */
+	protected $pausedEvents = [];
+
 	/** @var TimingsHandler */
 	public static $pluginParentTimer;
 
@@ -682,6 +685,14 @@ class PluginManager{
 		$this->defaultPermsOp = [];
 	}
 
+	public function checkEvents(int $currentTick) : void{
+		foreach($this->pausedEvents as $hash => $event){
+			if($event->asyncCheck($currentTick)){
+				unset($this->pausedEvents[$hash]);
+			}
+		}
+	}
+
 	/**
 	 * Calls an event
 	 *
@@ -723,6 +734,28 @@ class PluginManager{
 			}
 		}
 		--$this->eventCallDepth;
+	}
+
+	public function callAsyncEvent(Event $event, callable $onCompletion) : void{
+		$queue = [];
+		foreach(EventPriority::ALL as $priority){
+			for($handlerList = HandlerList::getHandlerListFor(get_class($event)); $handlerList !== null; $handlerList = $handlerList->getParent()){
+				foreach($handlerList->getListenersByPriority($priority) as $registration){
+					if($registration->getPlugin()->isEnabled()){
+						$queue[] = $registration;
+					}
+				}
+			}
+		}
+		if($event->isAsync() && $event->isAsyncComplete()){
+			throw new \InvalidStateException("Attempt to call an async event that is still executing");
+		}
+		$event->setAsyncQueue($queue, $onCompletion);
+		$event->startAsyncQueue($this->server->getTick());
+		if($event->isAsync()){ // returns false if the event execution has completed
+			assert(!isset($this->pausedEvents[spl_object_hash($event)]));
+			$this->pausedEvents[spl_object_hash($event)] = $event; // we do not allow duplicate events
+		}
 	}
 
 	/**
