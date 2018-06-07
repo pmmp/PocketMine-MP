@@ -140,7 +140,6 @@ class PopulationTask extends AsyncTask{
 		if($level !== null){
 			if(!$this->state){
 				$level->registerGenerator();
-				return;
 			}
 
 			$chunk = Chunk::fastDeserialize($this->chunk);
