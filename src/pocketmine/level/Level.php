@@ -745,6 +745,9 @@ class Level implements ChunkManager, Metadatable{
 			if($entity->isClosed() or !$entity->onUpdate($currentTick)){
 				unset($this->updateEntities[$id]);
 			}
+			if($entity->isFlaggedForDespawn()){
+				$entity->close();
+			}
 		}
 		Timings::$tickEntityTimer->stopTiming();
 		$this->timings->entityTick->stopTiming();

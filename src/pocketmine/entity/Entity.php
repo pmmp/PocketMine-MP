@@ -1333,11 +1333,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		$this->lastUpdate = $currentTick;
 
-		if($this->needsDespawn){
-			$this->close();
-			return false;
-		}
-
 		if(!$this->isAlive()){
 			if($this->onDeathUpdate($tickDiff)){
 				$this->flagForDespawn();
