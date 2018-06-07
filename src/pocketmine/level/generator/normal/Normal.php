@@ -87,7 +87,7 @@ class Normal extends Generator{
 		return [];
 	}
 
-	public function pickBiome(int $x, int $z){
+	private function pickBiome(int $x, int $z){
 		$hash = $x * 2345803 ^ $z * 9236449 ^ $this->level->getSeed();
 		$hash *= $hash + 223;
 		$xNoise = $hash >> 20 & 3;
