@@ -98,4 +98,13 @@ class AsyncWorker extends Worker{
 	public function getFromThreadStore(string $identifier){
 		return self::$store[$identifier] ?? null;
 	}
+
+	/**
+	 * Removes previously-stored mixed data from the worker's thread-local object store.
+	 *
+	 * @param string $identifier
+	 */
+	public function removeFromThreadStore(string $identifier) : void{
+		unset(self::$store[$identifier]);
+	}
 }

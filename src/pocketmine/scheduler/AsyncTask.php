@@ -152,6 +152,18 @@ abstract class AsyncTask extends Collectable{
 	}
 
 	/**
+	 * @see AsyncWorker::removeFromThreadStore()
+	 *
+	 * @param string $identifier
+	 */
+	public function removeFromThreadStore(string $identifier) : void{
+		if($this->worker === null or $this->isGarbage()){
+			throw new \BadMethodCallException("Objects can only be removed from AsyncWorker thread-local storage during task execution");
+		}
+		$this->worker->removeFromThreadStore($identifier);
+	}
+
+	/**
 	 * Actions to execute when run
 	 *
 	 * @return void
