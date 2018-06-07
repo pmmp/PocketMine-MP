@@ -52,10 +52,18 @@ abstract class Generator{
 		return $convertedSeed;
 	}
 
+	/** @var ChunkManager */
+	protected $level;
+	/** @var Random */
+	protected $random;
+
 	abstract public function __construct(array $settings = []);
 
 
-	abstract public function init(ChunkManager $level, Random $random);
+	public function init(ChunkManager $level, Random $random){
+		$this->level = $level;
+		$this->random = $random;
+	}
 
 	abstract public function generateChunk(int $chunkX, int $chunkZ);
 

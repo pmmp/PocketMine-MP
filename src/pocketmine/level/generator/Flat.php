@@ -35,12 +35,8 @@ use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
 
 class Flat extends Generator{
-	/** @var ChunkManager */
-	private $level;
 	/** @var Chunk */
 	private $chunk;
-	/** @var Random */
-	private $random;
 	/** @var Populator[] */
 	private $populators = [];
 	private $structure, $chunks, $options, $floorLevel, $preset;
@@ -148,8 +144,7 @@ class Flat extends Generator{
 	}
 
 	public function init(ChunkManager $level, Random $random){
-		$this->level = $level;
-		$this->random = $random;
+		parent::init($level, $random);
 
 		/*
 		  // Commented out : We want to delay this

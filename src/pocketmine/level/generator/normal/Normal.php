@@ -42,10 +42,6 @@ class Normal extends Generator{
 
 	/** @var Populator[] */
 	private $populators = [];
-	/** @var ChunkManager */
-	private $level;
-	/** @var Random */
-	private $random;
 	/** @var int */
 	private $waterHeight = 62;
 	/** @var int */
@@ -109,8 +105,7 @@ class Normal extends Generator{
 	}
 
 	public function init(ChunkManager $level, Random $random){
-		$this->level = $level;
-		$this->random = $random;
+		parent::init($level, $random);
 		$this->random->setSeed($this->level->getSeed());
 		$this->noiseBase = new Simplex($this->random, 4, 1 / 4, 1 / 32);
 		$this->random->setSeed($this->level->getSeed());
