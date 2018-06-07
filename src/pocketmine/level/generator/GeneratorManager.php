@@ -44,17 +44,18 @@ final class GeneratorManager{
 	/**
 	 * @param string $class Fully qualified name of class that extends \pocketmine\level\generator\Generator
 	 * @param string $name Alias for this generator type that can be written in configs
-	 *
-	 * @return bool
+	 * @param bool   $overwrite Whether to force overwriting any existing registered generator with the same name
 	 */
-	public static function addGenerator(string $class, string $name) : bool{
-		if(is_subclass_of($class, Generator::class) and !isset(self::$list[$name = strtolower($name)])){
-			self::$list[$name] = $class;
-
-			return true;
+	public static function addGenerator(string $class, string $name, bool $overwrite = false) : void{
+		if(!is_subclass_of($class, Generator::class)){
+			throw new \InvalidArgumentException("Class $class does not extend " . Generator::class);
 		}
 
-		return false;
+		if(!$overwrite and isset(self::$list[$name = strtolower($name)])){
+			throw new \InvalidArgumentException("Alias \"$name\" is already assigned");
+		}
+
+		self::$list[$name] = $class;
 	}
 
 	/**
