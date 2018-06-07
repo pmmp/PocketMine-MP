@@ -545,9 +545,8 @@ class Utils{
 	}
 
 	public static function kill($pid) : void{
-		global $logger;
-		if($logger instanceof MainLogger){
-			$logger->syncFlushBuffer();
+		if(MainLogger::isRegisteredStatic()){
+			MainLogger::getLogger()->syncFlushBuffer();
 		}
 		switch(Utils::getOS()){
 			case "win":

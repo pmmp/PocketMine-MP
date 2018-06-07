@@ -71,6 +71,14 @@ class MainLogger extends \AttachableThreadedLogger{
 	}
 
 	/**
+	 * Returns whether a MainLogger instance is statically registered on this thread.
+	 * @return bool
+	 */
+	public static function isRegisteredStatic() : bool{
+		return static::$logger !== null;
+	}
+
+	/**
 	 * Assigns the MainLogger instance to the {@link MainLogger#logger} static property.
 	 *
 	 * WARNING: Because static properties are thread-local, this MUST be called from the body of every Thread if you
