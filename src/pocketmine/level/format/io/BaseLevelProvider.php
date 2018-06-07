@@ -89,6 +89,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 	 * @return null|string Name of the correct generator to replace the broken value
 	 */
 	protected static function hackyFixForGeneratorClasspathInLevelDat(string $className) : ?string{
+		//THESE ARE DELIBERATELY HARDCODED, DO NOT CHANGE!
 		switch($className){
 			case 'pocketmine\level\generator\normal\Normal':
 				return "normal";
