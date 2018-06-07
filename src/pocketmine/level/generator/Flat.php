@@ -141,7 +141,7 @@ class Flat extends Generator{
 		}
 	}
 
-	public function generateChunk(int $chunkX, int $chunkZ){
+	public function generateChunk(int $chunkX, int $chunkZ) : void{
 		if($this->chunk === null){
 			if(isset($this->options["preset"]) and $this->options["preset"] != ""){
 				$this->generateBaseChunk($this->options["preset"]);
@@ -155,7 +155,7 @@ class Flat extends Generator{
 		$this->level->setChunk($chunkX, $chunkZ, $chunk);
 	}
 
-	public function populateChunk(int $chunkX, int $chunkZ){
+	public function populateChunk(int $chunkX, int $chunkZ) : void{
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 		foreach($this->populators as $populator){
 			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);

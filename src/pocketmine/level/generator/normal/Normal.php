@@ -62,7 +62,7 @@ class Normal extends Generator{
 		}
 	}
 
-	private static function generateKernel(){
+	private static function generateKernel() : void{
 		self::$GAUSSIAN_KERNEL = [];
 
 		$bellSize = 1 / self::$SMOOTH_SIZE;
@@ -87,7 +87,7 @@ class Normal extends Generator{
 		return [];
 	}
 
-	private function pickBiome(int $x, int $z){
+	private function pickBiome(int $x, int $z) : Biome{
 		$hash = $x * 2345803 ^ $z * 9236449 ^ $this->level->getSeed();
 		$hash *= $hash + 223;
 		$xNoise = $hash >> 20 & 3;
@@ -102,7 +102,7 @@ class Normal extends Generator{
 		return $this->selector->pickBiome($x + $xNoise - 1, $z + $zNoise - 1);
 	}
 
-	public function init(ChunkManager $level, Random $random){
+	public function init(ChunkManager $level, Random $random) : void{
 		parent::init($level, $random);
 		$this->random->setSeed($this->level->getSeed());
 		$this->noiseBase = new Simplex($this->random, 4, 1 / 4, 1 / 32);
@@ -177,7 +177,7 @@ class Normal extends Generator{
 		$this->populators[] = $ores;
 	}
 
-	public function generateChunk(int $chunkX, int $chunkZ){
+	public function generateChunk(int $chunkX, int $chunkZ) : void{
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 
 		$noise = $this->noiseBase->getFastNoise3D(16, 128, 16, 4, 8, 4, $chunkX * 16, 0, $chunkZ * 16);
@@ -244,7 +244,7 @@ class Normal extends Generator{
 		}
 	}
 
-	public function populateChunk(int $chunkX, int $chunkZ){
+	public function populateChunk(int $chunkX, int $chunkZ) : void{
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 		foreach($this->populators as $populator){
 			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);

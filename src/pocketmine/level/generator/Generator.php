@@ -60,14 +60,14 @@ abstract class Generator{
 	abstract public function __construct(array $settings = []);
 
 
-	public function init(ChunkManager $level, Random $random){
+	public function init(ChunkManager $level, Random $random) : void{
 		$this->level = $level;
 		$this->random = $random;
 	}
 
-	abstract public function generateChunk(int $chunkX, int $chunkZ);
+	abstract public function generateChunk(int $chunkX, int $chunkZ) : void;
 
-	abstract public function populateChunk(int $chunkX, int $chunkZ);
+	abstract public function populateChunk(int $chunkX, int $chunkZ) : void;
 
 	abstract public function getSettings() : array;
 
