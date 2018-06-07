@@ -27,9 +27,12 @@ use pocketmine\level\generator\hell\Nether;
 use pocketmine\level\generator\normal\Normal;
 
 final class GeneratorManager{
-
+	/** @var string[] name => classname mapping */
 	private static $list = [];
 
+	/**
+	 * Registers the default known generators.
+	 */
 	public static function registerDefaultGenerators() : void{
 		self::addGenerator(Flat::class, "flat");
 		self::addGenerator(Normal::class, "normal");
@@ -38,9 +41,15 @@ final class GeneratorManager{
 		self::addGenerator(Nether::class, "nether");
 	}
 
-	public static function addGenerator(string $object, string $name) : bool{
-		if(is_subclass_of($object, Generator::class) and !isset(self::$list[$name = strtolower($name)])){
-			self::$list[$name] = $object;
+	/**
+	 * @param string $class Fully qualified name of class that extends \pocketmine\level\generator\Generator
+	 * @param string $name Alias for this generator type that can be written in configs
+	 *
+	 * @return bool
+	 */
+	public static function addGenerator(string $class, string $name) : bool{
+		if(is_subclass_of($class, Generator::class) and !isset(self::$list[$name = strtolower($name)])){
+			self::$list[$name] = $class;
 
 			return true;
 		}
@@ -49,6 +58,8 @@ final class GeneratorManager{
 	}
 
 	/**
+	 * Returns a list of names for registered generators.
+	 *
 	 * @return string[]
 	 */
 	public static function getGeneratorList() : array{
@@ -56,6 +67,8 @@ final class GeneratorManager{
 	}
 
 	/**
+	 * Returns a class name of a registered Generator matching the given name.
+	 *
 	 * @param string $name
 	 *
 	 * @return string|Generator Name of class that extends Generator (not an actual Generator object)
@@ -68,6 +81,13 @@ final class GeneratorManager{
 		return Normal::class;
 	}
 
+	/**
+	 * Returns the registered name of the given Generator class.
+	 *
+	 * @param string $class Fully qualified name of class that extends \pocketmine\level\generator\Generator
+	 *
+	 * @return string
+	 */
 	public static function getGeneratorName(string $class) : string{
 		foreach(self::$list as $name => $c){
 			if($c === $class){
