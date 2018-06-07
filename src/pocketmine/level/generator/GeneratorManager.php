@@ -38,7 +38,7 @@ final class GeneratorManager{
 		self::addGenerator(Nether::class, "nether");
 	}
 
-	public static function addGenerator($object, $name) : bool{
+	public static function addGenerator(string $object, string $name) : bool{
 		if(is_subclass_of($object, Generator::class) and !isset(self::$list[$name = strtolower($name)])){
 			self::$list[$name] = $object;
 
@@ -56,11 +56,11 @@ final class GeneratorManager{
 	}
 
 	/**
-	 * @param $name
+	 * @param string $name
 	 *
 	 * @return string|Generator Name of class that extends Generator (not an actual Generator object)
 	 */
-	public static function getGenerator($name){
+	public static function getGenerator(string $name){
 		if(isset(self::$list[$name = strtolower($name)])){
 			return self::$list[$name];
 		}
@@ -68,7 +68,7 @@ final class GeneratorManager{
 		return Normal::class;
 	}
 
-	public static function getGeneratorName($class){
+	public static function getGeneratorName(string $class) : string{
 		foreach(self::$list as $name => $c){
 			if($c === $class){
 				return $name;
