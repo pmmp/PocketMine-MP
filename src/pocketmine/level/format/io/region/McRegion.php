@@ -28,7 +28,7 @@ use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\ChunkUtils;
 use pocketmine\level\format\SubChunk;
-use pocketmine\level\generator\Generator;
+use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
 use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\NBT;
@@ -242,7 +242,7 @@ class McRegion extends BaseLevelProvider{
 			new LongTag("RandomSeed", $seed),
 			new LongTag("SizeOnDisk", 0),
 			new LongTag("Time", 0),
-			new StringTag("generatorName", Generator::getGeneratorName($generator)),
+			new StringTag("generatorName", GeneratorManager::getGeneratorName($generator)),
 			new StringTag("generatorOptions", $options["preset"] ?? ""),
 			new StringTag("LevelName", $name),
 			new CompoundTag("GameRules", [])

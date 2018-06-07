@@ -29,7 +29,7 @@ use pocketmine\level\format\io\ChunkUtils;
 use pocketmine\level\format\io\exception\UnsupportedChunkFormatException;
 use pocketmine\level\format\SubChunk;
 use pocketmine\level\generator\Flat;
-use pocketmine\level\generator\Generator;
+use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
 use pocketmine\level\LevelException;
 use pocketmine\nbt\LittleEndianNBTStream;
@@ -212,7 +212,7 @@ class LevelDB extends BaseLevelProvider{
 			//Additional PocketMine-MP fields
 			new CompoundTag("GameRules", []),
 			new ByteTag("hardcore", ($options["hardcore"] ?? false) === true ? 1 : 0),
-			new StringTag("generatorName", Generator::getGeneratorName($generator)),
+			new StringTag("generatorName", GeneratorManager::getGeneratorName($generator)),
 			new StringTag("generatorOptions", $options["preset"] ?? "")
 		]);
 

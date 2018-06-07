@@ -51,6 +51,7 @@ use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\ChunkRequestTask;
 use pocketmine\level\format\io\LevelProvider;
 use pocketmine\level\generator\Generator;
+use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\generator\GeneratorRegisterTask;
 use pocketmine\level\generator\GeneratorUnregisterTask;
 use pocketmine\level\generator\PopulationTask;
@@ -331,7 +332,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->worldHeight = $this->provider->getWorldHeight();
 
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.preparing", [$this->displayName]));
-		$this->generator = Generator::getGenerator($this->provider->getGenerator());
+		$this->generator = GeneratorManager::getGenerator($this->provider->getGenerator());
 
 		$this->folderName = $name;
 

@@ -27,61 +27,10 @@ declare(strict_types=1);
 namespace pocketmine\level\generator;
 
 use pocketmine\level\ChunkManager;
-use pocketmine\level\generator\hell\Nether;
-use pocketmine\level\generator\normal\Normal;
 use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
 
 abstract class Generator{
-	private static $list = [];
-
-	public static function registerDefaultGenerators() : void{
-		self::addGenerator(Flat::class, "flat");
-		self::addGenerator(Normal::class, "normal");
-		self::addGenerator(Normal::class, "default");
-		self::addGenerator(Nether::class, "hell");
-		self::addGenerator(Nether::class, "nether");
-	}
-
-	public static function addGenerator($object, $name) : bool{
-		if(is_subclass_of($object, Generator::class) and !isset(Generator::$list[$name = strtolower($name)])){
-			Generator::$list[$name] = $object;
-
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * @return string[]
-	 */
-	public static function getGeneratorList() : array{
-		return array_keys(Generator::$list);
-	}
-
-	/**
-	 * @param $name
-	 *
-	 * @return string|Generator Name of class that extends Generator (not an actual Generator object)
-	 */
-	public static function getGenerator($name){
-		if(isset(Generator::$list[$name = strtolower($name)])){
-			return Generator::$list[$name];
-		}
-
-		return Normal::class;
-	}
-
-	public static function getGeneratorName($class){
-		foreach(Generator::$list as $name => $c){
-			if($c === $class){
-				return $name;
-			}
-		}
-
-		return "unknown";
-	}
 
 	abstract public function __construct(array $settings = []);
 

@@ -51,6 +51,7 @@ use pocketmine\level\biome\Biome;
 use pocketmine\level\format\io\LevelProvider;
 use pocketmine\level\format\io\LevelProviderManager;
 use pocketmine\level\generator\Generator;
+use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
 use pocketmine\level\LevelException;
 use pocketmine\metadata\EntityMetadataStore;
@@ -1074,7 +1075,7 @@ class Server{
 		}
 
 		if(!($generator !== null and class_exists($generator, true) and is_subclass_of($generator, Generator::class))){
-			$generator = Generator::getGenerator($this->getLevelType());
+			$generator = GeneratorManager::getGenerator($this->getLevelType());
 		}
 
 		if(($providerClass = LevelProviderManager::getProviderByName($this->getProperty("level-settings.default-format", "pmanvil"))) === null){
@@ -1662,7 +1663,7 @@ class Server{
 				$this->logger->debug($this->getLanguage()->translateString("pocketmine.debug.enable"));
 			}
 
-			Generator::registerDefaultGenerators();
+			GeneratorManager::registerDefaultGenerators();
 
 			foreach((array) $this->getProperty("worlds", []) as $name => $options){
 				if(!is_array($options)){
@@ -1678,12 +1679,12 @@ class Server{
 
 					if(isset($options["generator"])){
 						$generatorOptions = explode(":", $options["generator"]);
-						$generator = Generator::getGenerator(array_shift($generatorOptions));
+						$generator = GeneratorManager::getGenerator(array_shift($generatorOptions));
 						if(count($options) > 0){
 							$options["preset"] = implode(":", $generatorOptions);
 						}
 					}else{
-						$generator = Generator::getGenerator("default");
+						$generator = GeneratorManager::getGenerator("default");
 					}
 
 					$this->generateLevel($name, $seed, $generator, $options);
