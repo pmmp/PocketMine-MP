@@ -142,6 +142,8 @@ class LevelDB extends BaseLevelProvider{
 			}else{
 				$this->levelData->setString("generatorName", "default");
 			}
+		}elseif(($generatorName = self::hackyFixForGeneratorClasspathInLevelDat($this->levelData->getString("generatorName"))) !== null){
+			$this->levelData->setString("generatorName", $generatorName);
 		}
 
 		if(!$this->levelData->hasTag("generatorOptions", StringTag::class)){
