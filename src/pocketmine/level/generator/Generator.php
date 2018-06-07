@@ -29,10 +29,31 @@ namespace pocketmine\level\generator;
 use pocketmine\level\ChunkManager;
 use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
+use pocketmine\utils\Utils;
 
 abstract class Generator{
 
+	/**
+	 * Converts a string level seed into an integer for use by the generator.
+	 *
+	 * @param string $seed
+	 *
+	 * @return int|null
+	 */
+	public static function convertSeed(string $seed) : ?int{
+		if($seed === ""){ //empty seed should cause a random seed to be selected - can't use 0 here because 0 is a valid seed
+			$convertedSeed = null;
+		}elseif(ctype_digit($seed)){ //this avoids treating seeds like "404.4" as integer seeds
+			$convertedSeed = (int) $seed;
+		}else{
+			$convertedSeed = Utils::javaStringHash($seed);
+		}
+
+		return $convertedSeed;
+	}
+
 	abstract public function __construct(array $settings = []);
+
 
 	abstract public function init(ChunkManager $level, Random $random);
 

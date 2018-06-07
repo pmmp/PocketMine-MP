@@ -1670,13 +1670,6 @@ class Server{
 					continue;
 				}
 				if(!$this->loadLevel($name)){
-					$seed = $options["seed"] ?? time();
-					if(is_string($seed) and !is_numeric($seed)){
-						$seed = Utils::javaStringHash($seed);
-					}elseif(!is_int($seed)){
-						$seed = (int) $seed;
-					}
-
 					if(isset($options["generator"])){
 						$generatorOptions = explode(":", $options["generator"]);
 						$generator = GeneratorManager::getGenerator(array_shift($generatorOptions));
@@ -1687,7 +1680,7 @@ class Server{
 						$generator = GeneratorManager::getGenerator("default");
 					}
 
-					$this->generateLevel($name, $seed, $generator, $options);
+					$this->generateLevel($name, Generator::convertSeed((string) ($options["seed"] ?? "")), $generator, $options);
 				}
 			}
 
@@ -1699,13 +1692,7 @@ class Server{
 					$this->setConfigString("level-name", "world");
 				}
 				if(!$this->loadLevel($default)){
-					$seed = $this->getConfigString("level-seed", (string) time());
-					if(!is_numeric($seed) or bccomp($seed, "9223372036854775807") > 0){
-						$seed = Utils::javaStringHash($seed);
-					}else{
-						$seed = (int) $seed;
-					}
-					$this->generateLevel($default, $seed === 0 ? time() : $seed);
+					$this->generateLevel($default, Generator::convertSeed($this->getConfigString("level-seed")));
 				}
 
 				$this->setDefaultLevel($this->getLevelByName($default));
