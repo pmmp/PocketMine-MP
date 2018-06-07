@@ -1699,10 +1699,10 @@ class Server{
 					$this->setConfigString("level-name", "world");
 				}
 				if(!$this->loadLevel($default)){
-					$seed = getopt("", ["level-seed::"])["level-seed"] ?? $this->properties->get("level-seed", time());
+					$seed = $this->getConfigString("level-seed", (string) time());
 					if(!is_numeric($seed) or bccomp($seed, "9223372036854775807") > 0){
 						$seed = Utils::javaStringHash($seed);
-					}elseif(PHP_INT_SIZE === 8){
+					}else{
 						$seed = (int) $seed;
 					}
 					$this->generateLevel($default, $seed === 0 ? time() : $seed);
