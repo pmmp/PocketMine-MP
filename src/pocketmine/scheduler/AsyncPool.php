@@ -30,6 +30,11 @@ class AsyncPool{
 	/** @var Server */
 	private $server;
 
+	/** @var \ClassLoader */
+	private $classLoader;
+	/** @var \ThreadedLogger */
+	private $logger;
+
 	protected $size;
 	/** @var int */
 	private $workerMemoryLimit;
@@ -46,15 +51,17 @@ class AsyncPool{
 	/** @var int[] */
 	private $workerUsage = [];
 
-	public function __construct(Server $server, int $size, int $workerMemoryLimit){
+	public function __construct(Server $server, int $size, int $workerMemoryLimit, \ClassLoader $classLoader, \ThreadedLogger $logger){
 		$this->server = $server;
 		$this->size = $size;
 		$this->workerMemoryLimit = $workerMemoryLimit;
+		$this->classLoader = $classLoader;
+		$this->logger = $logger;
 
 		for($i = 0; $i < $this->size; ++$i){
 			$this->workerUsage[$i] = 0;
-			$this->workers[$i] = new AsyncWorker($this->server->getLogger(), $i + 1, $this->workerMemoryLimit);
-			$this->workers[$i]->setClassLoader($this->server->getLoader());
+			$this->workers[$i] = new AsyncWorker($this->logger, $i + 1, $this->workerMemoryLimit);
+			$this->workers[$i]->setClassLoader($this->classLoader);
 			$this->workers[$i]->start();
 		}
 	}
@@ -67,8 +74,8 @@ class AsyncPool{
 		if($newSize > $this->size){
 			for($i = $this->size; $i < $newSize; ++$i){
 				$this->workerUsage[$i] = 0;
-				$this->workers[$i] = new AsyncWorker($this->server->getLogger(), $i + 1, $this->workerMemoryLimit);
-				$this->workers[$i]->setClassLoader($this->server->getLoader());
+				$this->workers[$i] = new AsyncWorker($this->logger, $i + 1, $this->workerMemoryLimit);
+				$this->workers[$i]->setClassLoader($this->classLoader);
 				$this->workers[$i]->start();
 			}
 			$this->size = $newSize;
@@ -170,11 +177,11 @@ class AsyncPool{
 					try{
 						$task->onCompletion($this->server);
 						if($task->removeDanglingStoredObjects()){
-							$this->server->getLogger()->notice("AsyncTask " . get_class($task) . " stored local complex data but did not remove them after completion");
+							$this->logger->notice("AsyncTask " . get_class($task) . " stored local complex data but did not remove them after completion");
 						}
 					}catch(\Throwable $e){
-						$this->server->getLogger()->critical("Could not execute completion of asynchronous task " . (new \ReflectionClass($task))->getShortName() . ": " . $e->getMessage());
-						$this->server->getLogger()->logException($e);
+						$this->logger->critical("Could not execute completion of asynchronous task " . (new \ReflectionClass($task))->getShortName() . ": " . $e->getMessage());
+						$this->logger->logException($e);
 
 						$task->removeDanglingStoredObjects(); //silent
 					}
@@ -182,7 +189,7 @@ class AsyncPool{
 
 				$this->removeTask($task);
 			}elseif($task->isTerminated() or $task->isCrashed()){
-				$this->server->getLogger()->critical("Could not execute asynchronous task " . (new \ReflectionClass($task))->getShortName() . ": Task crashed");
+				$this->logger->critical("Could not execute asynchronous task " . (new \ReflectionClass($task))->getShortName() . ": Task crashed");
 				$this->removeTask($task, true);
 			}
 		}
