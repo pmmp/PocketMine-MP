@@ -107,56 +107,46 @@ class Normal extends Generator{
 		$this->random->setSeed($this->level->getSeed());
 		$this->noiseBase = new Simplex($this->random, 4, 1 / 4, 1 / 32);
 		$this->random->setSeed($this->level->getSeed());
-		$this->selector = new BiomeSelector($this->random, function($temperature, $rainfall){
-			if($rainfall < 0.25){
-				if($temperature < 0.7){
-					return Biome::OCEAN;
-				}elseif($temperature < 0.85){
-					return Biome::RIVER;
-				}else{
-					return Biome::SWAMP;
-				}
-			}elseif($rainfall < 0.60){
-				if($temperature < 0.25){
-					return Biome::ICE_PLAINS;
-				}elseif($temperature < 0.75){
-					return Biome::PLAINS;
-				}else{
-					return Biome::DESERT;
-				}
-			}elseif($rainfall < 0.80){
-				if($temperature < 0.25){
-					return Biome::TAIGA;
-				}elseif($temperature < 0.75){
-					return Biome::FOREST;
-				}else{
-					return Biome::BIRCH_FOREST;
-				}
-			}else{
-				//FIXME: This will always cause River to be used since the rainfall is always greater than 0.8 if we
-				//reached this branch. However I don't think that substituting temperature for rainfall is correct given
-				//that mountain biomes are supposed to be pretty cold.
+		$this->selector = new class($this->random) extends BiomeSelector{
+			protected function lookup(float $temperature, float $rainfall) : int{
 				if($rainfall < 0.25){
-					return Biome::MOUNTAINS;
-				}elseif($rainfall < 0.70){
-					return Biome::SMALL_MOUNTAINS;
+					if($temperature < 0.7){
+						return Biome::OCEAN;
+					}elseif($temperature < 0.85){
+						return Biome::RIVER;
+					}else{
+						return Biome::SWAMP;
+					}
+				}elseif($rainfall < 0.60){
+					if($temperature < 0.25){
+						return Biome::ICE_PLAINS;
+					}elseif($temperature < 0.75){
+						return Biome::PLAINS;
+					}else{
+						return Biome::DESERT;
+					}
+				}elseif($rainfall < 0.80){
+					if($temperature < 0.25){
+						return Biome::TAIGA;
+					}elseif($temperature < 0.75){
+						return Biome::FOREST;
+					}else{
+						return Biome::BIRCH_FOREST;
+					}
 				}else{
-					return Biome::RIVER;
+					//FIXME: This will always cause River to be used since the rainfall is always greater than 0.8 if we
+					//reached this branch. However I don't think that substituting temperature for rainfall is correct given
+					//that mountain biomes are supposed to be pretty cold.
+					if($rainfall < 0.25){
+						return Biome::MOUNTAINS;
+					}elseif($rainfall < 0.70){
+						return Biome::SMALL_MOUNTAINS;
+					}else{
+						return Biome::RIVER;
+					}
 				}
 			}
-		}, Biome::getBiome(Biome::OCEAN));
-
-		$this->selector->addBiome(Biome::getBiome(Biome::OCEAN));
-		$this->selector->addBiome(Biome::getBiome(Biome::PLAINS));
-		$this->selector->addBiome(Biome::getBiome(Biome::DESERT));
-		$this->selector->addBiome(Biome::getBiome(Biome::MOUNTAINS));
-		$this->selector->addBiome(Biome::getBiome(Biome::FOREST));
-		$this->selector->addBiome(Biome::getBiome(Biome::TAIGA));
-		$this->selector->addBiome(Biome::getBiome(Biome::SWAMP));
-		$this->selector->addBiome(Biome::getBiome(Biome::RIVER));
-		$this->selector->addBiome(Biome::getBiome(Biome::ICE_PLAINS));
-		$this->selector->addBiome(Biome::getBiome(Biome::SMALL_MOUNTAINS));
-		$this->selector->addBiome(Biome::getBiome(Biome::BIRCH_FOREST));
+		};
 
 		$this->selector->recalculate();
 
