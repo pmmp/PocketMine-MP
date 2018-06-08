@@ -52,8 +52,8 @@ abstract class Biome{
 
 	public const MAX_BIOMES = 256;
 
-	/** @var Biome[] */
-	private static $biomes = [];
+	/** @var Biome[]|\SplFixedArray */
+	private static $biomes;
 
 	/** @var int */
 	private $id;
@@ -82,6 +82,8 @@ abstract class Biome{
 	}
 
 	public static function init(){
+		self::$biomes = new \SplFixedArray(self::MAX_BIOMES);
+
 		self::register(self::OCEAN, new OceanBiome());
 		self::register(self::PLAINS, new PlainBiome());
 		self::register(self::DESERT, new DesertBiome());
