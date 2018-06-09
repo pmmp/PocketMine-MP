@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "43d1b7cd0a341ec946218a7664720fd0",
+    "content-hash": "8111ee9bb368344e158ad520e0fe6f64",
     "packages": [
         {
             "name": "pocketmine/binaryutils",
@@ -120,12 +120,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "bfee6ba312a380a5451a2d8e85b46c2c57acac15"
+                "reference": "2625848df23efb7177c19f1d652a86fb82f4245b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/bfee6ba312a380a5451a2d8e85b46c2c57acac15",
-                "reference": "bfee6ba312a380a5451a2d8e85b46c2c57acac15",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/2625848df23efb7177c19f1d652a86fb82f4245b",
+                "reference": "2625848df23efb7177c19f1d652a86fb82f4245b",
                 "shasum": ""
             },
             "require": {
@@ -137,7 +137,7 @@
                 "php-ipv6": "*",
                 "pocketmine/binaryutils": "dev-master#c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595",
                 "pocketmine/snooze": "dev-master#96c740826df04024d2b685aa5ba8b8d0bdc69439",
-                "pocketmine/spl": "0.3.0"
+                "pocketmine/spl": "^0.3"
             },
             "type": "library",
             "autoload": {
@@ -153,7 +153,7 @@
                 "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2018-05-09T19:16:48+00:00"
+            "time": "2018-06-09T19:09:47+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -191,16 +191,16 @@
         },
         {
             "name": "pocketmine/spl",
-            "version": "0.3.0",
+            "version": "0.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/SPL.git",
-                "reference": "ee32424c100fd11ae7f7b8df7604623fd475f0ec"
+                "reference": "ca3912099543ddc4b4b14f40e258d84ca547dfa5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/SPL/zipball/ee32424c100fd11ae7f7b8df7604623fd475f0ec",
-                "reference": "ee32424c100fd11ae7f7b8df7604623fd475f0ec",
+                "url": "https://api.github.com/repos/pmmp/SPL/zipball/ca3912099543ddc4b4b14f40e258d84ca547dfa5",
+                "reference": "ca3912099543ddc4b4b14f40e258d84ca547dfa5",
                 "shasum": ""
             },
             "type": "library",
@@ -219,7 +219,7 @@
             "support": {
                 "source": "https://github.com/pmmp/SPL/tree/master"
             },
-            "time": "2018-03-17T11:56:20+00:00"
+            "time": "2018-06-09T17:30:36+00:00"
         }
     ],
     "packages-dev": [],
