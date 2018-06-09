@@ -82,7 +82,7 @@ class InventoryTransaction{
 	 */
 	public function addAction(InventoryAction $action) : void{
 		if(!isset($this->actions[$hash = spl_object_hash($action)])){
-			$this->actions[spl_object_hash($action)] = $action;
+			$this->actions[$hash] = $action;
 			$action->onAddToTransaction($this);
 		}else{
 			throw new \InvalidArgumentException("Tried to add the same action to a transaction twice");
