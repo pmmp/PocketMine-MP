@@ -185,7 +185,7 @@ abstract class Projectile extends Entity{
 				continue;
 			}
 
-			$entityBB = $entity->boundingBox->grow(0.3, 0.3, 0.3);
+			$entityBB = $entity->boundingBox->expandedCopy(0.3, 0.3, 0.3);
 			$entityHitResult = $entityBB->calculateIntercept($start, $end);
 
 			if($entityHitResult === null){

@@ -1185,7 +1185,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if($entities){
-			foreach($this->getCollidingEntities($bb->grow(0.25, 0.25, 0.25), $entity) as $ent){
+			foreach($this->getCollidingEntities($bb->expandedCopy(0.25, 0.25, 0.25), $entity) as $ent){
 				$collides[] = clone $ent->boundingBox;
 			}
 		}
@@ -1818,7 +1818,7 @@ class Level implements ChunkManager, Metadatable{
 
 				if($player !== null){
 					if(($diff = $player->getNextPosition()->subtract($player->getPosition())) and $diff->lengthSquared() > 0.00001){
-						$bb = $player->getBoundingBox()->getOffsetBoundingBox($diff->x, $diff->y, $diff->z);
+						$bb = $player->getBoundingBox()->offsetCopy($diff->x, $diff->y, $diff->z);
 						if($collisionBox->intersectsWith($bb)){
 							return false; //Inside player BB
 						}

@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9993493665deb27b5b984de2c596cdc5",
+    "content-hash": "43d1b7cd0a341ec946218a7664720fd0",
     "packages": [
         {
             "name": "pocketmine/binaryutils",
@@ -46,12 +46,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "f88790f343b72563bf69658d6f14630fba580905"
+                "reference": "95ae5600328ed2add44c0bc830a68d3660e9e0ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/f88790f343b72563bf69658d6f14630fba580905",
-                "reference": "f88790f343b72563bf69658d6f14630fba580905",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/95ae5600328ed2add44c0bc830a68d3660e9e0ef",
+                "reference": "95ae5600328ed2add44c0bc830a68d3660e9e0ef",
                 "shasum": ""
             },
             "require": {
@@ -72,7 +72,7 @@
                 "source": "https://github.com/pmmp/Math/tree/master",
                 "issues": "https://github.com/pmmp/Math/issues"
             },
-            "time": "2018-05-28T12:55:13+00:00"
+            "time": "2018-06-09T09:26:30+00:00"
         },
         {
             "name": "pocketmine/nbt",
