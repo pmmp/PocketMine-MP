@@ -923,9 +923,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected function switchLevel(Level $targetLevel) : bool{
 		$oldLevel = $this->level;
 		if(parent::switchLevel($targetLevel)){
-			foreach($this->usedChunks as $index => $d){
-				Level::getXZ($index, $X, $Z);
-				$this->unloadChunk($X, $Z, $oldLevel);
+			if($oldLevel !== null){
+				foreach($this->usedChunks as $index => $d){
+					Level::getXZ($index, $X, $Z);
+					$this->unloadChunk($X, $Z, $oldLevel);
+				}
 			}
 
 			$this->usedChunks = [];
