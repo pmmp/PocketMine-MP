@@ -553,10 +553,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->setGenericFlag(self::DATA_FLAG_AFFECTED_BY_GRAVITY, true);
 		$this->setGenericFlag(self::DATA_FLAG_HAS_COLLISION, true);
 
-		$this->chunk->addEntity($this);
-		$this->level->addEntity($this);
 		$this->initEntity();
 		$this->propertyManager->clearDirtyProperties(); //Prevents resending properties that were set during construction
+
+		$this->chunk->addEntity($this);
+		$this->level->addEntity($this);
+
 		$this->lastUpdate = $this->server->getTick();
 		$this->server->getPluginManager()->callEvent(new EntitySpawnEvent($this));
 
