@@ -31,6 +31,7 @@ use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\event\entity\EntityEffectAddEvent;
 use pocketmine\event\entity\EntityEffectRemoveEvent;
 use pocketmine\inventory\ArmorInventory;
+use pocketmine\inventory\ArmorInventoryEventProcessor;
 use pocketmine\item\Armor;
 use pocketmine\item\Consumable;
 use pocketmine\item\enchantment\Enchantment;
@@ -76,6 +77,8 @@ abstract class Living extends Entity implements Damageable{
 		parent::initEntity();
 
 		$this->armorInventory = new ArmorInventory($this);
+		//TODO: load/save armor inventory contents
+		$this->armorInventory->setEventProcessor(new ArmorInventoryEventProcessor($this));
 
 		$health = $this->getMaxHealth();
 
