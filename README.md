@@ -2,7 +2,10 @@
 
 __A highly customisable, open source server software for Minecraft: Bedrock Edition written in PHP__
 
-[![Build Status](https://travis-ci.org/pmmp/PocketMine-MP.svg?branch=master)](https://travis-ci.org/pmmp/PocketMine-MP)
+__travis ci:
+[![travis-ci](https://travis-ci.org/pmmp/PocketMine-MP.svg?branch=master)](https://travis-ci.org/pmmp/PocketMine-MP)
+jenkins:
+[![jenkins](https://jenkins.pmmp.io/buildStatus/icon?job=PocketMine-MP&build=1136)](https://jenkins.pmmp.io/job/PocketMine-MP/1136/)__
 
 ### Setup, help & support, FAQs
 Head over to the [documentation site](http://pmmp.readthedocs.org/).
