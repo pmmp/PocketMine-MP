@@ -45,6 +45,9 @@ class MainLogger extends \AttachableThreadedLogger{
 	/** @var string */
 	private $format = TextFormat::AQUA . "[%s] " . TextFormat::RESET . "%s[%s/%s]: %s" . TextFormat::RESET;
 
+	/** @var bool */
+	private $mainThreadHasFormattingCodes = false;
+
 	/**
 	 * @param string $logFile
 	 * @param bool $logDebug
@@ -60,6 +63,10 @@ class MainLogger extends \AttachableThreadedLogger{
 		$this->logFile = $logFile;
 		$this->logDebug = $logDebug;
 		$this->logStream = new \Threaded;
+
+		//Child threads may not inherit command line arguments, so if there's an override it needs to be recorded here
+		$this->mainThreadHasFormattingCodes = Terminal::hasFormattingCodes();
+
 		$this->start(PTHREADS_INHERIT_NONE);
 	}
 
@@ -228,7 +235,7 @@ class MainLogger extends \AttachableThreadedLogger{
 		$message = sprintf($this->format, date("H:i:s", $now), $color, $threadName, $prefix, $message);
 		$cleanMessage = TextFormat::clean($message);
 
-		if(Terminal::hasFormattingCodes()){
+		if($this->mainThreadHasFormattingCodes and Terminal::hasFormattingCodes()){ //hasFormattingCodes() lazy-inits colour codes because we don't know if they've been registered on this thread
 			echo Terminal::toANSI($message) . PHP_EOL;
 		}else{
 			echo $cleanMessage . PHP_EOL;
