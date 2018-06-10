@@ -97,6 +97,32 @@ class MainLogger extends \AttachableThreadedLogger{
 		}
 	}
 
+	/**
+	 * Returns the current logger format used for console output.
+	 *
+	 * @return string
+	 */
+	public function getFormat() : string{
+		return $this->format;
+	}
+
+	/**
+	 * Sets the logger format to use for outputting text to the console.
+	 * It should be an sprintf()able string accepting 5 string arguments:
+	 * - time
+	 * - color
+	 * - thread name
+	 * - prefix (debug, info etc)
+	 * - message
+	 *
+	 * @see http://php.net/manual/en/function.sprintf.php
+	 *
+	 * @param string $format
+	 */
+	public function setFormat(string $format) : void{
+		$this->format = $format;
+	}
+
 	public function emergency($message){
 		$this->send($message, \LogLevel::EMERGENCY, "EMERGENCY", TextFormat::RED);
 	}
