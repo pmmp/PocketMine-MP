@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
+use pocketmine\utils\MainLogger;
+use pocketmine\utils\Utils;
 use pocketmine\Worker;
 
 class AsyncWorker extends Worker{
@@ -43,9 +45,16 @@ class AsyncWorker extends Worker{
 
 	public function run(){
 		error_reporting(-1);
-		set_error_handler('\pocketmine\error_handler');
 
 		$this->registerClassLoader();
+
+		//set this after the autoloader is registered
+		set_error_handler([Utils::class, 'errorExceptionHandler']);
+
+		if($this->logger instanceof MainLogger){
+			$this->logger->registerStatic();
+		}
+
 		gc_enable();
 
 		if($this->memoryLimit > 0){

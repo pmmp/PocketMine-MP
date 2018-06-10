@@ -26,6 +26,7 @@ namespace pocketmine\scheduler;
 use pocketmine\Server;
 
 class AsyncPool{
+	private const WORKER_START_OPTIONS = PTHREADS_INHERIT_INI | PTHREADS_INHERIT_CONSTANTS;
 
 	/** @var Server */
 	private $server;
@@ -62,7 +63,7 @@ class AsyncPool{
 			$this->workerUsage[$i] = 0;
 			$this->workers[$i] = new AsyncWorker($this->logger, $i + 1, $this->workerMemoryLimit);
 			$this->workers[$i]->setClassLoader($this->classLoader);
-			$this->workers[$i]->start();
+			$this->workers[$i]->start(self::WORKER_START_OPTIONS);
 		}
 	}
 
@@ -76,7 +77,7 @@ class AsyncPool{
 				$this->workerUsage[$i] = 0;
 				$this->workers[$i] = new AsyncWorker($this->logger, $i + 1, $this->workerMemoryLimit);
 				$this->workers[$i]->setClassLoader($this->classLoader);
-				$this->workers[$i]->start();
+				$this->workers[$i]->start(self::WORKER_START_OPTIONS);
 			}
 			$this->size = $newSize;
 		}

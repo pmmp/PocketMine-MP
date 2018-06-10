@@ -168,16 +168,6 @@ namespace pocketmine {
 
 	error_reporting(-1);
 
-	function error_handler($severity, $message, $file, $line){
-		if(error_reporting() & $severity){
-			throw new \ErrorException($message, 0, $severity, $file, $line);
-		}else{ //stfu operator
-			return true;
-		}
-	}
-
-	set_error_handler('\pocketmine\error_handler');
-
 	if(\Phar::running(true) !== ""){
 		define('pocketmine\PATH', \Phar::running(true) . "/");
 	}else{
@@ -197,6 +187,8 @@ namespace pocketmine {
 	}else{
 		composer_error_die("Composer autoloader not found.");
 	}
+
+	set_error_handler([Utils::class, 'errorExceptionHandler']);
 
 	/*
 	 * We now use the Composer autoloader, but this autoloader is still for loading plugins.
