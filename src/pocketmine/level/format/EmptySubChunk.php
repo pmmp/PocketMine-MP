@@ -59,7 +59,7 @@ class EmptySubChunk implements SubChunkInterface{
 		return 0;
 	}
 
-	public function setBlock(int $x, int $y, int $z, $id = null, $data = null) : bool{
+	public function setBlock(int $x, int $y, int $z, ?int $id = null, ?int $data = null) : bool{
 		return false;
 	}
 

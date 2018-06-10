@@ -70,7 +70,7 @@ class QueryHandler{
 		$this->token = random_bytes(16);
 	}
 
-	public static function getTokenString($token, $salt){
+	public static function getTokenString(string $token, string $salt) : int{
 		return Binary::readInt(substr(hash("sha512", $salt . ":" . $token, true), 7, 4));
 	}
 

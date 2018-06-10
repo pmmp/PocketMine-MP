@@ -569,7 +569,7 @@ class Utils{
 	 *
 	 * @return int
 	 */
-	public static function getReferenceCount($value, $includeCurrent = true){
+	public static function getReferenceCount($value, bool $includeCurrent = true){
 		ob_start();
 		debug_zval_dump($value);
 		$ret = explode("\n", ob_get_contents());

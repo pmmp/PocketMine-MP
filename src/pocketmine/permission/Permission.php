@@ -178,7 +178,7 @@ class Permission{
 	 *
 	 * @return Permission|null Permission if $name is a string, null if it's a Permission
 	 */
-	public function addParent($name, $value){
+	public function addParent($name, bool $value){
 		if($name instanceof Permission){
 			$name->getChildren()[$this->getName()] = $value;
 			$name->recalculatePermissibles();

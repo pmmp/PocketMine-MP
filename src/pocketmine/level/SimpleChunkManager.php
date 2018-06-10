@@ -39,7 +39,7 @@ class SimpleChunkManager implements ChunkManager{
 	 * @param int $seed
 	 * @param int $worldHeight
 	 */
-	public function __construct($seed, int $worldHeight = Level::Y_MAX){
+	public function __construct(int $seed, int $worldHeight = Level::Y_MAX){
 		$this->seed = $seed;
 		$this->worldHeight = $worldHeight;
 	}

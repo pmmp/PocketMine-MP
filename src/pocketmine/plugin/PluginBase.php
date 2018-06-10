@@ -113,7 +113,7 @@ abstract class PluginBase implements Plugin{
 		return $this->description;
 	}
 
-	final public function init(PluginLoader $loader, Server $server, PluginDescription $description, $dataFolder, $file){
+	final public function init(PluginLoader $loader, Server $server, PluginDescription $description, string $dataFolder, string $file){
 		if(!$this->initialized){
 			$this->initialized = true;
 			$this->loader = $loader;

@@ -71,15 +71,15 @@ class RCONInstance extends Thread{
 		$this->start(PTHREADS_INHERIT_NONE);
 	}
 
-	private function writePacket($client, $requestID, $packetType, $payload){
-		$pk = Binary::writeLInt((int) $requestID)
-			. Binary::writeLInt((int) $packetType)
+	private function writePacket($client, int $requestID, int $packetType, string $payload){
+		$pk = Binary::writeLInt($requestID)
+			. Binary::writeLInt($packetType)
 			. $payload
 			. "\x00\x00"; //Terminate payload and packet
 		return socket_write($client, Binary::writeLInt(strlen($pk)) . $pk);
 	}
 
-	private function readPacket($client, &$requestID, &$packetType, &$payload){
+	private function readPacket($client, ?int &$requestID, ?int &$packetType, ?string &$payload){
 		$d = socket_read($client, 4);
 		if($this->stop){
 			return false;
