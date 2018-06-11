@@ -1501,7 +1501,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return false; //currently has no server-side movement
 	}
 
-	protected function checkNearEntities(int $tickDiff){
+	protected function checkNearEntities(){
 		foreach($this->level->getNearbyEntities($this->boundingBox->expandedCopy(1, 0.5, 1), $this) as $entity){
 			$entity->scheduleUpdate();
 
@@ -1709,7 +1709,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			if(!$this->isSpectator() and $this->isAlive()){
 				Timings::$playerCheckNearEntitiesTimer->startTiming();
-				$this->checkNearEntities($tickDiff);
+				$this->checkNearEntities();
 				Timings::$playerCheckNearEntitiesTimer->stopTiming();
 
 				if($this->speed !== null){
