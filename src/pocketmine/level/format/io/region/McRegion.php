@@ -107,9 +107,9 @@ class McRegion extends BaseLevelProvider{
 	/**
 	 * @param string $data
 	 *
-	 * @return Chunk|null
+	 * @return Chunk
 	 */
-	protected function nbtDeserialize(string $data){
+	protected function nbtDeserialize(string $data) : Chunk{
 		$nbt = new BigEndianNBTStream();
 		$chunk = $nbt->readCompressed($data);
 		if(!($chunk instanceof CompoundTag) or !$chunk->hasTag("Level")){

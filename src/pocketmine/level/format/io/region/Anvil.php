@@ -96,7 +96,7 @@ class Anvil extends McRegion{
 		]);
 	}
 
-	protected function nbtDeserialize(string $data){
+	protected function nbtDeserialize(string $data) : Chunk{
 		$nbt = new BigEndianNBTStream();
 		$chunk = $nbt->readCompressed($data);
 		if(!($chunk instanceof CompoundTag) or !$chunk->hasTag("Level")){
