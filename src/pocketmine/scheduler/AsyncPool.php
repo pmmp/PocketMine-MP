@@ -81,7 +81,7 @@ class AsyncPool{
 	 *
 	 * @param int $newSize
 	 */
-	public function increaseSize(int $newSize){
+	public function increaseSize(int $newSize) : void{
 		if($newSize > $this->size){
 			$this->size = $newSize;
 		}
@@ -149,7 +149,7 @@ class AsyncPool{
 	 * @param AsyncTask $task
 	 * @param int       $worker
 	 */
-	public function submitTaskToWorker(AsyncTask $task, int $worker){
+	public function submitTaskToWorker(AsyncTask $task, int $worker) : void{
 		if($worker < 0 or $worker >= $this->size){
 			throw new \InvalidArgumentException("Invalid worker $worker");
 		}
@@ -213,7 +213,7 @@ class AsyncPool{
 	 * @param AsyncTask $task
 	 * @param bool      $force
 	 */
-	private function removeTask(AsyncTask $task, bool $force = false){
+	private function removeTask(AsyncTask $task, bool $force = false) : void{
 		if(isset($this->taskWorkers[$task->getTaskId()])){
 			if(!$force and ($task->isRunning() or !$task->isGarbage())){
 				return;
@@ -229,7 +229,7 @@ class AsyncPool{
 	 * Removes all tasks from the pool, cancelling where possible. This will block until all tasks have been
 	 * successfully deleted.
 	 */
-	public function removeTasks(){
+	public function removeTasks() : void{
 		foreach($this->workers as $worker){
 			/** @var AsyncTask $task */
 			while(($task = $worker->unstack()) !== null){
@@ -263,7 +263,7 @@ class AsyncPool{
 	/**
 	 * Collects garbage from running workers.
 	 */
-	private function collectWorkers(){
+	private function collectWorkers() : void{
 		foreach($this->workers as $worker){
 			$worker->collect();
 		}
@@ -274,7 +274,7 @@ class AsyncPool{
 	 *
 	 * @throws \ReflectionException
 	 */
-	public function collectTasks(){
+	public function collectTasks() : void{
 		foreach($this->tasks as $task){
 			if(!$task->isGarbage()){
 				$task->checkProgressUpdates($this->server);
