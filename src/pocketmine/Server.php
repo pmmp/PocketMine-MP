@@ -2003,7 +2003,7 @@ class Server{
 	}
 
 	/**
-	 * Shutdowns the server correctly
+	 * Shuts the server down correctly
 	 */
 	public function shutdown(){
 		$this->isRunning = false;
