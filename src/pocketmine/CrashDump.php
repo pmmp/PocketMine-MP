@@ -258,5 +258,4 @@ class CrashDump{
 	public function add($str){
 		fwrite($this->fp, $str);
 	}
-
 }

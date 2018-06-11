@@ -90,5 +90,4 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	public function setYield(float $yield){
 		$this->yield = $yield;
 	}
-
 }

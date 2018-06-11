@@ -55,5 +55,4 @@ class EntityBlockChangeEvent extends EntityEvent implements Cancellable{
 	public function getTo() : Block{
 		return $this->to;
 	}
-
 }

@@ -72,5 +72,4 @@ class PlayerChangeSkinEvent extends PlayerEvent implements Cancellable{
 
 		$this->newSkin = $skin;
 	}
-
 }

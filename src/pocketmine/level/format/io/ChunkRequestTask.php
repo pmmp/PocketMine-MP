@@ -93,5 +93,4 @@ class ChunkRequestTask extends AsyncTask{
 			$server->getLogger()->debug("Dropped chunk task due to level not loaded");
 		}
 	}
-
 }

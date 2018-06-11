@@ -99,5 +99,4 @@ class HelpCommand extends VanillaCommand{
 			return true;
 		}
 	}
-
 }

@@ -110,5 +110,4 @@ class QueryHandler{
 				break;
 		}
 	}
-
 }

@@ -90,5 +90,4 @@ class CobblestoneWall extends Transparent{
 	public function canConnect(Block $block){
 		return $block instanceof static or $block instanceof FenceGate or ($block->isSolid() and !$block->isTransparent());
 	}
-
 }

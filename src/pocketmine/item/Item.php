@@ -965,5 +965,4 @@ class Item implements ItemIds, \JsonSerializable{
 	public function __clone(){
 		$this->cachedNBT = null;
 	}
-
 }

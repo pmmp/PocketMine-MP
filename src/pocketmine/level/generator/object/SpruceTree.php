@@ -79,6 +79,4 @@ class SpruceTree extends Tree{
 			}
 		}
 	}
-
-
 }

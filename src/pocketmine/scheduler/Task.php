@@ -70,5 +70,4 @@ abstract class Task{
 	public function onCancel(){
 
 	}
-
 }

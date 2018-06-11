@@ -119,5 +119,4 @@ class BatchPacket extends DataPacket{
 
 		return true;
 	}
-
 }

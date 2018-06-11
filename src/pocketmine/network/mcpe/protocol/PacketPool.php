@@ -170,5 +170,4 @@ class PacketPool{
 
 		return $pk;
 	}
-
 }

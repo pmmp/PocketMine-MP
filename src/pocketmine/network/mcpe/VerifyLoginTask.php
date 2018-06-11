@@ -151,5 +151,4 @@ class VerifyLoginTask extends AsyncTask{
 			$player->onVerifyCompleted($this->packet, $this->error, $this->authenticated);
 		}
 	}
-
 }

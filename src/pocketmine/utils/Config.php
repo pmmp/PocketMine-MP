@@ -572,5 +572,4 @@ class Config{
 			}
 		}
 	}
-
 }

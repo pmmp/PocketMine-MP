@@ -55,5 +55,4 @@ class EnchantmentEntry{
 	public function getRandomName() : string{
 		return $this->randomName;
 	}
-
 }

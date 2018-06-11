@@ -69,5 +69,4 @@ class MobEffectPacket extends DataPacket{
 	public function handle(NetworkSession $session) : bool{
 		return $session->handleMobEffect($this);
 	}
-
 }

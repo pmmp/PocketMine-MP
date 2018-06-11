@@ -214,5 +214,4 @@ class NetworkInventoryAction{
 				throw new \UnexpectedValueException("Unknown inventory source type $this->sourceType");
 		}
 	}
-
 }

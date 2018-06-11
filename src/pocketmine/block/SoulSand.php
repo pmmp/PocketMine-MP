@@ -56,5 +56,4 @@ class SoulSand extends Solid{
 			$this->z + 1
 		);
 	}
-
 }

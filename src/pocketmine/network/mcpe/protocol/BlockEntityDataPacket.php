@@ -53,5 +53,4 @@ class BlockEntityDataPacket extends DataPacket{
 	public function handle(NetworkSession $session) : bool{
 		return $session->handleBlockEntityData($this);
 	}
-
 }

@@ -59,5 +59,4 @@ class EntityDeathEvent extends EntityEvent{
 	public function setDrops(array $drops){
 		$this->drops = $drops;
 	}
-
 }

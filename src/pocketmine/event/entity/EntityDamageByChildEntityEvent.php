@@ -53,6 +53,4 @@ class EntityDamageByChildEntityEvent extends EntityDamageByEntityEvent{
 	public function getChild(){
 		return $this->getEntity()->getLevel()->getServer()->findEntity($this->childEntityEid, $this->getEntity()->getLevel());
 	}
-
-
 }

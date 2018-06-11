@@ -65,5 +65,4 @@ class EntityEffectAddEvent extends EntityEffectEvent{
 	public function getOldEffect(){
 		return $this->oldEffect;
 	}
-
 }

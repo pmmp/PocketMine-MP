@@ -35,5 +35,4 @@ class Coal extends Item{
 	public function getFuelTime() : int{
 		return 1600;
 	}
-
 }

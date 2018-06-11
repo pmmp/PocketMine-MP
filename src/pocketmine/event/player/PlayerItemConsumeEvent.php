@@ -49,5 +49,4 @@ class PlayerItemConsumeEvent extends PlayerEvent implements Cancellable{
 	public function getItem() : Item{
 		return clone $this->item;
 	}
-
 }

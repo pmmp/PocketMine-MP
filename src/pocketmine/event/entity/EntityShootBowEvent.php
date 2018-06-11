@@ -100,6 +100,4 @@ class EntityShootBowEvent extends EntityEvent implements Cancellable{
 	public function setForce(float $force){
 		$this->force = $force;
 	}
-
-
 }

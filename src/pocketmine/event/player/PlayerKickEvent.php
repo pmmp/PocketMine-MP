@@ -67,5 +67,4 @@ class PlayerKickEvent extends PlayerEvent implements Cancellable{
 	public function getQuitMessage(){
 		return $this->quitMessage;
 	}
-
 }

@@ -71,5 +71,4 @@ class EntityRegainHealthEvent extends EntityEvent implements Cancellable{
 	public function getRegainReason() : int{
 		return $this->reason;
 	}
-
 }

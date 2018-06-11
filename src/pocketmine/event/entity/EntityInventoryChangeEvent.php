@@ -75,6 +75,4 @@ class EntityInventoryChangeEvent extends EntityEvent implements Cancellable{
 	public function getOldItem() : Item{
 		return $this->oldItem;
 	}
-
-
 }

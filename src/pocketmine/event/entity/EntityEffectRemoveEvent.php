@@ -33,5 +33,4 @@ class EntityEffectRemoveEvent extends EntityEffectEvent{
 		}
 		parent::setCancelled($value);
 	}
-
 }

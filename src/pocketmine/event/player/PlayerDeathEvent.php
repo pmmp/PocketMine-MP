@@ -81,5 +81,4 @@ class PlayerDeathEvent extends EntityDeathEvent{
 	public function setKeepInventory(bool $keepInventory){
 		$this->keepInventory = $keepInventory;
 	}
-
 }

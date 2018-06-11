@@ -53,5 +53,4 @@ class EnchantmentList{
 	public function getSize() : int{
 		return $this->enchantments->getSize();
 	}
-
 }

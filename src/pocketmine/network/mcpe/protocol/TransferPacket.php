@@ -48,5 +48,4 @@ class TransferPacket extends DataPacket{
 	public function handle(NetworkSession $session) : bool{
 		return $session->handleTransfer($this);
 	}
-
 }

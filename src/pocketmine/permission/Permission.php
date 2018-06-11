@@ -255,6 +255,4 @@ class Permission{
 		return new Permission($name, $desc, $default, $children);
 
 	}
-
-
 }

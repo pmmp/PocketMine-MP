@@ -253,5 +253,4 @@ abstract class Terminal{
 
 		return $newString;
 	}
-
 }

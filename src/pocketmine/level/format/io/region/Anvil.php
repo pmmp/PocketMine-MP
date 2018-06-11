@@ -155,5 +155,4 @@ class Anvil extends McRegion{
 		//TODO: add world height options
 		return 256;
 	}
-
 }
