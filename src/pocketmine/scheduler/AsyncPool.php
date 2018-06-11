@@ -52,19 +52,15 @@ class AsyncPool{
 	/** @var int[] */
 	private $workerUsage = [];
 
+	/** @var \Closure[] */
+	private $workerStartHooks = [];
+
 	public function __construct(Server $server, int $size, int $workerMemoryLimit, \ClassLoader $classLoader, \ThreadedLogger $logger){
 		$this->server = $server;
 		$this->size = $size;
 		$this->workerMemoryLimit = $workerMemoryLimit;
 		$this->classLoader = $classLoader;
 		$this->logger = $logger;
-
-		for($i = 0; $i < $this->size; ++$i){
-			$this->workerUsage[$i] = 0;
-			$this->workers[$i] = new AsyncWorker($this->logger, $i + 1, $this->workerMemoryLimit);
-			$this->workers[$i]->setClassLoader($this->classLoader);
-			$this->workers[$i]->start(self::WORKER_START_OPTIONS);
-		}
 	}
 
 	public function getSize() : int{
@@ -73,14 +69,64 @@ class AsyncPool{
 
 	public function increaseSize(int $newSize){
 		if($newSize > $this->size){
-			for($i = $this->size; $i < $newSize; ++$i){
-				$this->workerUsage[$i] = 0;
-				$this->workers[$i] = new AsyncWorker($this->logger, $i + 1, $this->workerMemoryLimit);
-				$this->workers[$i]->setClassLoader($this->classLoader);
-				$this->workers[$i]->start(self::WORKER_START_OPTIONS);
-			}
 			$this->size = $newSize;
 		}
+	}
+
+	/**
+	 * Registers a Closure callback to be fired whenever a new worker is started by the pool.
+	 * The signature should be `function(int $worker) : void`
+	 *
+	 * This function will call the hook for every already-running worker.
+	 *
+	 * @param \Closure $hook
+	 */
+	public function addWorkerStartHook(\Closure $hook) : void{
+		$this->workerStartHooks[spl_object_hash($hook)] = $hook;
+		foreach($this->workers as $i => $worker){
+			$hook($i);
+		}
+	}
+
+	/**
+	 * Removes a previously-registered callback listening for workers being started.
+	 *
+	 * @param \Closure $hook
+	 */
+	public function removeWorkerStartHook(\Closure $hook) : void{
+		unset($this->workerStartHooks[spl_object_hash($hook)]);
+	}
+
+	/**
+	 * Returns an array of IDs of currently running workers.
+	 *
+	 * @return int[]
+	 */
+	public function getRunningWorkers() : array{
+		return array_keys($this->workers);
+	}
+
+	/**
+	 * Fetches the worker with the specified ID, starting it if it does not exist, and firing any registered worker
+	 * start hooks.
+	 *
+	 * @param int $worker
+	 *
+	 * @return AsyncWorker
+	 */
+	private function getWorker(int $worker) : AsyncWorker{
+		if(!isset($this->workers[$worker])){
+			$this->workerUsage[$worker] = 0;
+			$this->workers[$worker] = new AsyncWorker($this->logger, $worker + 1, $this->workerMemoryLimit);
+			$this->workers[$worker]->setClassLoader($this->classLoader);
+			$this->workers[$worker]->start(self::WORKER_START_OPTIONS);
+
+			foreach($this->workerStartHooks as $hook){
+				$hook($worker);
+			}
+		}
+
+		return $this->workers[$worker];
 	}
 
 	public function submitTaskToWorker(AsyncTask $task, int $worker){
@@ -96,7 +142,7 @@ class AsyncPool{
 
 		$this->tasks[$task->getTaskId()] = $task;
 
-		$this->workers[$worker]->stack($task);
+		$this->getWorker($worker)->stack($task);
 		$this->workerUsage[$worker]++;
 		$this->taskWorkers[$task->getTaskId()] = $worker;
 	}
@@ -106,17 +152,31 @@ class AsyncPool{
 			throw new \InvalidArgumentException("Cannot submit the same AsyncTask instance more than once");
 		}
 
-		$selectedWorker = mt_rand(0, $this->size - 1);
-		$selectedTasks = $this->workerUsage[$selectedWorker];
-		for($i = 0; $i < $this->size; ++$i){
-			if($this->workerUsage[$i] < $selectedTasks){
-				$selectedWorker = $i;
-				$selectedTasks = $this->workerUsage[$i];
+		$worker = null;
+		$minUsage = PHP_INT_MAX;
+		foreach($this->workerUsage as $i => $usage){
+			if($usage < $minUsage){
+				$worker = $i;
+				$minUsage = $usage;
+				if($usage === 0){
+					break;
+				}
+			}
+		}
+		if($worker === null or ($minUsage > 0 and count($this->workers) < $this->size)){
+			//select a worker to start on the fly
+			for($i = 0; $i < $this->size; ++$i){
+				if(!isset($this->workers[$i])){
+					$worker = $i;
+					break;
+				}
 			}
 		}
 
-		$this->submitTaskToWorker($task, $selectedWorker);
-		return $selectedWorker;
+		assert($worker !== null);
+
+		$this->submitTaskToWorker($task, $worker);
+		return $worker;
 	}
 
 	private function removeTask(AsyncTask $task, bool $force = false){

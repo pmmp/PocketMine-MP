@@ -1044,8 +1044,6 @@ class Server{
 
 		$this->levels[$level->getId()] = $level;
 
-		$level->initLevel();
-
 		$this->getPluginManager()->callEvent(new LevelLoadEvent($level));
 
 		$level->setTickRate($this->baseTickRate);
@@ -1089,8 +1087,6 @@ class Server{
 
 			$level = new Level($this, $name, new $providerClass($path));
 			$this->levels[$level->getId()] = $level;
-
-			$level->initLevel();
 
 			$level->setTickRate($this->baseTickRate);
 		}catch(\Throwable $e){

@@ -243,7 +243,7 @@ class MemoryManager{
 
 		if($this->garbageCollectionAsync){
 			$pool = $this->server->getAsyncPool();
-			for($i = 0, $size = $pool->getSize(); $i < $size; ++$i){
+			foreach($pool->getRunningWorkers() as $i){
 				$pool->submitTaskToWorker(new GarbageCollectionTask(), $i);
 			}
 		}
@@ -268,7 +268,7 @@ class MemoryManager{
 
 		if($this->dumpWorkers){
 			$pool = $this->server->getAsyncPool();
-			for($i = 0, $size = $pool->getSize(); $i < $size; ++$i){
+			foreach($pool->getRunningWorkers() as $i){
 				$pool->submitTaskToWorker(new DumpWorkerMemoryTask($outputFolder, $maxNesting, $maxStringSize), $i);
 			}
 		}
