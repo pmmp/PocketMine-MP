@@ -39,7 +39,7 @@ class AsyncPool{
 	private $classLoader;
 	/** @var \ThreadedLogger */
 	private $logger;
-
+	/** @var int */
 	protected $size;
 	/** @var int */
 	private $workerMemoryLimit;
