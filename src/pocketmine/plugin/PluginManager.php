@@ -391,11 +391,7 @@ class PluginManager{
 	 * @return null|Permission
 	 */
 	public function getPermission(string $name){
-		if(isset($this->permissions[$name])){
-			return $this->permissions[$name];
-		}
-
-		return null;
+		return $this->permissions[$name] ?? null;
 	}
 
 	/**
