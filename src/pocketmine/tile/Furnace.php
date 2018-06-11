@@ -81,7 +81,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 
 		$this->inventory = new FurnaceInventory($this);
 		$this->loadItems($nbt);
-	
+
 		$this->inventory->setEventProcessor(new class($this) implements InventoryEventProcessor{
 			/** @var Furnace */
 			private $furnace;
