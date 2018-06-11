@@ -27,7 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\level\generator\populator\TallGrass;
 
-class OceanBiome extends NormalBiome{
+class OceanBiome extends Biome{
 
 	public function __construct(){
 		$this->setGroundCover([
