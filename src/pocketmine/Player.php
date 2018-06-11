@@ -1062,9 +1062,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->dataPacket($pk);
 	}
 
-	protected function orderChunks(){
+	protected function orderChunks() : void{
 		if(!$this->isConnected() or $this->viewDistance === -1){
-			return false;
+			return;
 		}
 
 		Timings::$playerChunkOrderTimer->startTiming();
@@ -1149,8 +1149,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->loadQueue = $newOrder;
 
 		Timings::$playerChunkOrderTimer->stopTiming();
-
-		return true;
 	}
 
 	/**
