@@ -226,7 +226,7 @@ abstract class PluginBase implements Plugin{
 	}
 
 	/**
-	 * Returns all the resources packaged with the plugin
+	 * Returns all the resources packaged with the plugin in the form ["path/in/resources" => SplFileInfo]
 	 *
 	 * @return \SplFileInfo[]
 	 */
@@ -235,7 +235,8 @@ abstract class PluginBase implements Plugin{
 		if(is_dir($this->file . "resources/")){
 			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->file . "resources/")) as $resource){
 				if($resource->isFile()){
-					$resources[] = $resource;
+					$path = str_replace(DIRECTORY_SEPARATOR, "/", substr((string) $resource, strlen($this->file . "resources/")));
+					$resources[$path] = $resource;
 				}
 			}
 		}
