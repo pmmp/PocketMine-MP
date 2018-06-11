@@ -41,9 +41,6 @@ abstract class PluginBase implements Plugin{
 	/** @var bool */
 	private $isEnabled = false;
 
-	/** @var bool */
-	private $initialized = false;
-
 	/** @var PluginDescription */
 	private $description;
 
@@ -61,6 +58,17 @@ abstract class PluginBase implements Plugin{
 
 	/** @var TaskScheduler */
 	private $scheduler;
+
+	public function __construct(PluginLoader $loader, Server $server, PluginDescription $description, string $dataFolder, string $file){
+		$this->loader = $loader;
+		$this->server = $server;
+		$this->description = $description;
+		$this->dataFolder = rtrim($dataFolder, "\\/") . "/";
+		$this->file = rtrim($file, "\\/") . "/";
+		$this->configFile = $this->dataFolder . "config.yml";
+		$this->logger = new PluginLogger($this);
+		$this->scheduler = new TaskScheduler($this->logger);
+	}
 
 	/**
 	 * Called when the plugin is loaded, before calling onEnable()
@@ -85,11 +93,11 @@ abstract class PluginBase implements Plugin{
 	}
 
 	/**
-	 * @param bool $boolean
+	 * @param bool $enabled
 	 */
-	final public function setEnabled(bool $boolean = true){
-		if($this->isEnabled !== $boolean){
-			$this->isEnabled = $boolean;
+	final public function setEnabled(bool $enabled = true) : void{
+		if($this->isEnabled !== $enabled){
+			$this->isEnabled = $enabled;
 			if($this->isEnabled){
 				$this->onEnable();
 			}else{
@@ -113,32 +121,11 @@ abstract class PluginBase implements Plugin{
 		return $this->description;
 	}
 
-	final public function init(PluginLoader $loader, Server $server, PluginDescription $description, string $dataFolder, string $file){
-		if(!$this->initialized){
-			$this->initialized = true;
-			$this->loader = $loader;
-			$this->server = $server;
-			$this->description = $description;
-			$this->dataFolder = rtrim($dataFolder, "\\/") . "/";
-			$this->file = rtrim($file, "\\/") . "/";
-			$this->configFile = $this->dataFolder . "config.yml";
-			$this->logger = new PluginLogger($this);
-			$this->scheduler = new TaskScheduler($this->logger);
-		}
-	}
-
 	/**
 	 * @return PluginLogger
 	 */
 	public function getLogger() : PluginLogger{
 		return $this->logger;
-	}
-
-	/**
-	 * @return bool
-	 */
-	final public function isInitialized() : bool{
-		return $this->initialized;
 	}
 
 	/**

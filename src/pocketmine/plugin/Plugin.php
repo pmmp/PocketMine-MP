@@ -34,9 +34,10 @@ use pocketmine\utils\Config;
 
 /**
  * It is recommended to use PluginBase for the actual plugin
- *
  */
 interface Plugin extends CommandExecutor{
+
+	public function __construct(PluginLoader $loader, Server $server, PluginDescription $description, string $dataFolder, string $file);
 
 	/**
 	 * Called when the plugin is loaded, before calling onEnable()
@@ -52,6 +53,11 @@ interface Plugin extends CommandExecutor{
 	 * @return bool
 	 */
 	public function isEnabled() : bool;
+
+	/**
+	 * @param bool $enabled
+	 */
+	public function setEnabled(bool $enabled = true) : void;
 
 	/**
 	 * Called when the plugin is disabled
