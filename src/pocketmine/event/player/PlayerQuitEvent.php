@@ -50,7 +50,7 @@ class PlayerQuitEvent extends PlayerEvent{
 	/**
 	 * @param TranslationContainer|string $quitMessage
 	 */
-	public function setQuitMessage($quitMessage){
+	public function setQuitMessage($quitMessage) : void{
 		$this->quitMessage = $quitMessage;
 	}
 

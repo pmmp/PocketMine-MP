@@ -46,7 +46,7 @@ class EntityCombustEvent extends EntityEvent implements Cancellable{
 		return $this->duration;
 	}
 
-	public function setDuration(int $duration){
+	public function setDuration(int $duration) : void{
 		$this->duration = $duration;
 	}
 }

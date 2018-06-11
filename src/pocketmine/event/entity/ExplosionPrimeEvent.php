@@ -52,7 +52,7 @@ class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 		return $this->force;
 	}
 
-	public function setForce(float $force){
+	public function setForce(float $force) : void{
 		$this->force = $force;
 	}
 
@@ -66,7 +66,7 @@ class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 	/**
 	 * @param bool $affectsBlocks
 	 */
-	public function setBlockBreaking(bool $affectsBlocks){
+	public function setBlockBreaking(bool $affectsBlocks) : void{
 		$this->blockBreaking = $affectsBlocks;
 	}
 }

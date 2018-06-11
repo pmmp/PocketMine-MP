@@ -47,7 +47,7 @@ class PlayerJoinEvent extends PlayerEvent{
 	/**
 	 * @param string|TextContainer $joinMessage
 	 */
-	public function setJoinMessage($joinMessage){
+	public function setJoinMessage($joinMessage) : void{
 		$this->joinMessage = $joinMessage;
 	}
 

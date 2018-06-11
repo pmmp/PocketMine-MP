@@ -70,7 +70,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 	/**
 	 * @param TextContainer|string $deathMessage
 	 */
-	public function setDeathMessage($deathMessage){
+	public function setDeathMessage($deathMessage) : void{
 		$this->deathMessage = $deathMessage;
 	}
 
@@ -78,7 +78,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 		return $this->keepInventory;
 	}
 
-	public function setKeepInventory(bool $keepInventory){
+	public function setKeepInventory(bool $keepInventory) : void{
 		$this->keepInventory = $keepInventory;
 	}
 }

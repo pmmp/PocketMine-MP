@@ -73,7 +73,7 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	/**
 	 * @param Block[] $blocks
 	 */
-	public function setBlockList(array $blocks){
+	public function setBlockList(array $blocks) : void{
 		$this->blocks = $blocks;
 	}
 
@@ -87,7 +87,7 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	/**
 	 * @param float $yield
 	 */
-	public function setYield(float $yield){
+	public function setYield(float $yield) : void{
 		$this->yield = $yield;
 	}
 }

@@ -51,7 +51,7 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 		$this->addAttackerModifiers($damager);
 	}
 
-	protected function addAttackerModifiers(Entity $damager){
+	protected function addAttackerModifiers(Entity $damager) : void{
 		if($damager instanceof Living){ //TODO: move this to entity classes
 			if($damager->hasEffect(Effect::STRENGTH)){
 				$this->setModifier($this->getBaseDamage() * 0.3 * $damager->getEffect(Effect::STRENGTH)->getEffectLevel(), self::MODIFIER_STRENGTH);
@@ -68,7 +68,7 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	 *
 	 * @return Entity|null
 	 */
-	public function getDamager(){
+	public function getDamager() : ?Entity{
 		return $this->getEntity()->getLevel()->getServer()->findEntity($this->damagerEntityId, $this->getEntity()->getLevel());
 	}
 
@@ -82,7 +82,7 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	/**
 	 * @param float $knockBack
 	 */
-	public function setKnockBack(float $knockBack){
+	public function setKnockBack(float $knockBack) : void{
 		$this->knockBack = $knockBack;
 	}
 }

@@ -67,7 +67,7 @@ class ServerCommandEvent extends ServerEvent implements Cancellable{
 	/**
 	 * @param string $command
 	 */
-	public function setCommand(string $command){
+	public function setCommand(string $command) : void{
 		$this->command = $command;
 	}
 }

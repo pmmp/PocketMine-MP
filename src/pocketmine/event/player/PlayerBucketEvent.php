@@ -77,7 +77,7 @@ abstract class PlayerBucketEvent extends PlayerEvent implements Cancellable{
 	/**
 	 * @param Item $item
 	 */
-	public function setItem(Item $item){
+	public function setItem(Item $item) : void{
 		$this->item = $item;
 	}
 

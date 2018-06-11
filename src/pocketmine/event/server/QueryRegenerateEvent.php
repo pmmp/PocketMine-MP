@@ -105,7 +105,7 @@ class QueryRegenerateEvent extends ServerEvent{
 	/**
 	 * @param int $timeout
 	 */
-	public function setTimeout(int $timeout){
+	public function setTimeout(int $timeout) : void{
 		$this->timeout = $timeout;
 	}
 
@@ -119,7 +119,7 @@ class QueryRegenerateEvent extends ServerEvent{
 	/**
 	 * @param string $serverName
 	 */
-	public function setServerName(string $serverName){
+	public function setServerName(string $serverName) : void{
 		$this->serverName = $serverName;
 	}
 
@@ -133,7 +133,7 @@ class QueryRegenerateEvent extends ServerEvent{
 	/**
 	 * @param bool $value
 	 */
-	public function setListPlugins(bool $value){
+	public function setListPlugins(bool $value) : void{
 		$this->listPlugins = $value;
 	}
 
@@ -147,7 +147,7 @@ class QueryRegenerateEvent extends ServerEvent{
 	/**
 	 * @param Plugin[] $plugins
 	 */
-	public function setPlugins(array $plugins){
+	public function setPlugins(array $plugins) : void{
 		$this->plugins = $plugins;
 	}
 
@@ -161,7 +161,7 @@ class QueryRegenerateEvent extends ServerEvent{
 	/**
 	 * @param Player[] $players
 	 */
-	public function setPlayerList(array $players){
+	public function setPlayerList(array $players) : void{
 		$this->players = $players;
 	}
 
@@ -175,7 +175,7 @@ class QueryRegenerateEvent extends ServerEvent{
 	/**
 	 * @param int $count
 	 */
-	public function setPlayerCount(int $count){
+	public function setPlayerCount(int $count) : void{
 		$this->numPlayers = $count;
 	}
 
@@ -189,7 +189,7 @@ class QueryRegenerateEvent extends ServerEvent{
 	/**
 	 * @param int $count
 	 */
-	public function setMaxPlayerCount(int $count){
+	public function setMaxPlayerCount(int $count) : void{
 		$this->maxPlayers = $count;
 	}
 
@@ -203,7 +203,7 @@ class QueryRegenerateEvent extends ServerEvent{
 	/**
 	 * @param string $world
 	 */
-	public function setWorld(string $world){
+	public function setWorld(string $world) : void{
 		$this->map = $world;
 	}
 
@@ -219,7 +219,7 @@ class QueryRegenerateEvent extends ServerEvent{
 	/**
 	 * @param array $extraData
 	 */
-	public function setExtraData(array $extraData){
+	public function setExtraData(array $extraData) : void{
 		$this->extraData = $extraData;
 	}
 

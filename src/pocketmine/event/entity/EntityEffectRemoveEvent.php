@@ -27,7 +27,7 @@ namespace pocketmine\event\entity;
  * Called when an effect is removed from an entity.
  */
 class EntityEffectRemoveEvent extends EntityEffectEvent{
-	public function setCancelled(bool $value = true){
+	public function setCancelled(bool $value = true) : void{
 		if($this->getEffect()->getDuration() <= 0){
 			throw new \InvalidStateException("Removal of expired effects cannot be cancelled");
 		}

@@ -62,7 +62,7 @@ class EntityEffectAddEvent extends EntityEffectEvent{
 	/**
 	 * @return EffectInstance|null
 	 */
-	public function getOldEffect(){
+	public function getOldEffect() : ?EffectInstance{
 		return $this->oldEffect;
 	}
 }
