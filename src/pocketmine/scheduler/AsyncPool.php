@@ -131,7 +131,7 @@ class AsyncPool{
 	private function getWorker(int $worker) : AsyncWorker{
 		if(!isset($this->workers[$worker])){
 			$this->workerUsage[$worker] = 0;
-			$this->workers[$worker] = new AsyncWorker($this->logger, $worker + 1, $this->workerMemoryLimit);
+			$this->workers[$worker] = new AsyncWorker($this->logger, $worker, $this->workerMemoryLimit);
 			$this->workers[$worker]->setClassLoader($this->classLoader);
 			$this->workers[$worker]->start(self::WORKER_START_OPTIONS);
 

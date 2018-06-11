@@ -139,7 +139,7 @@ class PopulationTask extends AsyncTask{
 		$level = $server->getLevel($this->levelId);
 		if($level !== null){
 			if(!$this->state){
-				$level->registerGeneratorToWorker($this->worker->getAsyncWorkerId() - 1);
+				$level->registerGeneratorToWorker($this->worker->getAsyncWorkerId());
 			}
 
 			$chunk = Chunk::fastDeserialize($this->chunk);
