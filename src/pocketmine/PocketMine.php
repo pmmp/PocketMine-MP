@@ -38,6 +38,7 @@ namespace pocketmine {
 	const NAME = "PocketMine-MP";
 	const VERSION = "1.7dev";
 	const API_VERSION = "3.0.0";
+	const IS_DEVELOPMENT_BUILD = true;
 
 	const MIN_PHP_VERSION = "7.2.0";
 
