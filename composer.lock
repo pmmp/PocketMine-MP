@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8111ee9bb368344e158ad520e0fe6f64",
+    "content-hash": "0d82c9261d3146db66bc7ded18088c89",
     "packages": [
         {
             "name": "pocketmine/binaryutils",
@@ -240,6 +240,8 @@
         "php-64bit": "*",
         "ext-bcmath": "*",
         "ext-curl": "*",
+        "ext-ctype": "*",
+        "ext-date": "*",
         "ext-hash": "*",
         "ext-json": "*",
         "ext-mbstring": "*",

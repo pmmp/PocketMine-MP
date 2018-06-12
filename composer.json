@@ -9,6 +9,8 @@
       "php-64bit": "*",
       "ext-bcmath": "*",
       "ext-curl": "*",
+      "ext-ctype": "*",
+      "ext-date": "*",
       "ext-hash": "*",
       "ext-json": "*",
       "ext-mbstring": "*",
