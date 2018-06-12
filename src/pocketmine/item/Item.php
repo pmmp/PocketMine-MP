@@ -876,7 +876,7 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		if($this->hasCompoundTag()){
-			$data["nbt_hex"] = bin2hex($this->getCompoundTag());
+			$data["nbt_b64"] = base64_encode($this->getCompoundTag());
 		}
 
 		return $data;
@@ -889,11 +889,21 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return Item
 	 */
 	final public static function jsonDeserialize(array $data) : Item{
+		$nbt = "";
+
+		//Backwards compatibility
+		if(isset($data["nbt"])){
+			$nbt = $data["nbt"];
+		}elseif(isset($data["nbt_hex"])){
+			$nbt = hex2bin($data["nbt_hex"]);
+		}elseif(isset($data["nbt_b64"])){
+			$nbt = base64_decode($data["nbt_b64"], true);
+		}
 		return ItemFactory::get(
 			(int) $data["id"],
 			(int) ($data["damage"] ?? 0),
 			(int) ($data["count"] ?? 1),
-			(string) ($data["nbt"] ?? (isset($data["nbt_hex"]) ? hex2bin($data["nbt_hex"]) : "")) //`nbt` key might contain old raw data
+			(string) $nbt
 		);
 	}
 
