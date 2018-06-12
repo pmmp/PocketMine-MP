@@ -47,7 +47,7 @@ class CraftingManager{
 	}
 
 	public function init() : void{
-		$recipes = new Config(\pocketmine\RESOURCE_PATH . "recipes.json", Config::JSON, []);
+		$recipes = new Config(\pocketmine\RESOURCE_PATH . "vanilla" . DIRECTORY_SEPARATOR . "recipes.json", Config::JSON, []);
 
 		foreach($recipes->getAll() as $recipe){
 			switch($recipe["type"]){

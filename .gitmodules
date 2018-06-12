@@ -10,3 +10,6 @@
 [submodule "tests/plugins/PocketMine-TesterPlugin"]
 	path = tests/plugins/PocketMine-TesterPlugin
 	url = https://github.com/pmmp/PocketMine-TesterPlugin.git
+[submodule "src/pocketmine/resources/vanilla"]
+	path = src/pocketmine/resources/vanilla
+	url = https://github.com/pmmp/BedrockData.git
