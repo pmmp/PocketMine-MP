@@ -94,16 +94,28 @@ class PluginManager{
 	/** @var int */
 	private $eventCallDepth = 0;
 
+	/** @var string|null */
+	private $pluginDataDirectory;
+
 	/** @var TimingsHandler */
 	public static $pluginParentTimer;
 
 	/**
 	 * @param Server           $server
 	 * @param SimpleCommandMap $commandMap
+	 * @param null|string      $pluginDataDirectory
 	 */
-	public function __construct(Server $server, SimpleCommandMap $commandMap){
+	public function __construct(Server $server, SimpleCommandMap $commandMap, ?string $pluginDataDirectory){
 		$this->server = $server;
 		$this->commandMap = $commandMap;
+		$this->pluginDataDirectory = $pluginDataDirectory;
+		if($this->pluginDataDirectory !== null){
+			if(!file_exists($this->pluginDataDirectory)){
+				@mkdir($this->pluginDataDirectory, 0777, true);
+			}elseif(!is_dir($this->pluginDataDirectory)){
+				throw new \RuntimeException("Plugin data path $this->pluginDataDirectory exists and is not a directory");
+			}
+		}
 	}
 
 	/**
@@ -133,6 +145,13 @@ class PluginManager{
 		return $this->plugins;
 	}
 
+	private function getDataDirectory(string $pluginPath, string $pluginName) : string{
+		if($this->pluginDataDirectory !== null){
+			return $this->pluginDataDirectory . $pluginName;
+		}
+		return dirname($pluginPath) . DIRECTORY_SEPARATOR . $pluginName;
+	}
+
 	/**
 	 * @param string         $path
 	 * @param PluginLoader[] $loaders
@@ -152,7 +171,7 @@ class PluginManager{
 						return null;
 					}
 
-					$dataFolder = dirname($path) . DIRECTORY_SEPARATOR . $description->getName();
+					$dataFolder = $this->getDataDirectory($path, $description->getName());
 					if(file_exists($dataFolder) and !is_dir($dataFolder)){
 						$this->server->getLogger()->error("Projected dataFolder '" . $dataFolder . "' for " . $description->getName() . " exists and is not a directory");
 						return null;
