@@ -23,6 +23,9 @@ settings:
  #Set this approximately to your number of cores.
  #If set to auto, it'll try to detect the number of cores (or use 2)
  async-workers: auto
+ #Whether to allow running development builds. Dev builds might crash, break your plugins, corrupt your world and more.
+ #It is recommended to avoid using development builds where possible.
+ enable-dev-builds: false
 
 memory:
  #Global soft memory limit in megabytes. Set to 0 to disable
