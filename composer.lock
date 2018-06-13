@@ -4,11 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0d82c9261d3146db66bc7ded18088c89",
+    "content-hash": "2670b9e2a730ff758909be8b9e9d609a",
     "packages": [
         {
             "name": "pocketmine/binaryutils",
-            "version": "dev-master",
+            "version": "0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BinaryUtils.git",
@@ -42,7 +42,7 @@
         },
         {
             "name": "pocketmine/math",
-            "version": "dev-master",
+            "version": "0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
@@ -76,22 +76,22 @@
         },
         {
             "name": "pocketmine/nbt",
-            "version": "dev-master",
+            "version": "0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "09809564c7e58c322dcefc6905ab333313e05d1f"
+                "reference": "da19487ff92f6f7a16b5ce8894132bb1d1e9ea0c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/09809564c7e58c322dcefc6905ab333313e05d1f",
-                "reference": "09809564c7e58c322dcefc6905ab333313e05d1f",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/da19487ff92f6f7a16b5ce8894132bb1d1e9ea0c",
+                "reference": "da19487ff92f6f7a16b5ce8894132bb1d1e9ea0c",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.2.0",
                 "php-64bit": "*",
-                "pocketmine/binaryutils": "dev-master#c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595"
+                "pocketmine/binaryutils": "^0.1.0"
             },
             "type": "library",
             "autoload": {
@@ -109,23 +109,23 @@
             ],
             "description": "PHP library for working with Named Binary Tags",
             "support": {
-                "source": "https://github.com/pmmp/NBT/tree/master",
+                "source": "https://github.com/pmmp/NBT/tree/0.2.0",
                 "issues": "https://github.com/pmmp/NBT/issues"
             },
-            "time": "2018-04-16T09:13:27+00:00"
+            "time": "2018-06-13T09:56:00+00:00"
         },
         {
             "name": "pocketmine/raklib",
-            "version": "dev-master",
+            "version": "0.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "2625848df23efb7177c19f1d652a86fb82f4245b"
+                "reference": "922da28efd828e2af6c19db1676ea9b6a267071c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/2625848df23efb7177c19f1d652a86fb82f4245b",
-                "reference": "2625848df23efb7177c19f1d652a86fb82f4245b",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/922da28efd828e2af6c19db1676ea9b6a267071c",
+                "reference": "922da28efd828e2af6c19db1676ea9b6a267071c",
                 "shasum": ""
             },
             "require": {
@@ -135,38 +135,38 @@
                 "php": ">=7.2.0",
                 "php-64bit": "*",
                 "php-ipv6": "*",
-                "pocketmine/binaryutils": "dev-master#c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595",
-                "pocketmine/snooze": "dev-master#96c740826df04024d2b685aa5ba8b8d0bdc69439",
-                "pocketmine/spl": "^0.3"
+                "pocketmine/binaryutils": "^0.1.0",
+                "pocketmine/snooze": "^0.1.0",
+                "pocketmine/spl": "^0.3.0"
             },
             "type": "library",
             "autoload": {
-                "classmap": [
-                    "./"
-                ]
+                "psr-4": {
+                    "raklib\\": "src/"
+                }
             },
             "license": [
                 "GPL-3.0"
             ],
             "description": "A RakNet server implementation written in PHP",
             "support": {
-                "source": "https://github.com/pmmp/RakLib/tree/master",
+                "source": "https://github.com/pmmp/RakLib/tree/0.12.0",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2018-06-09T19:09:47+00:00"
+            "time": "2018-06-13T10:06:14+00:00"
         },
         {
             "name": "pocketmine/snooze",
-            "version": "dev-master",
+            "version": "0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Snooze.git",
-                "reference": "541f0f038f401e9117ae60c8dbc167a46569282d"
+                "reference": "3cc9d0164230889acb08e22cc126133809e9d346"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/541f0f038f401e9117ae60c8dbc167a46569282d",
-                "reference": "541f0f038f401e9117ae60c8dbc167a46569282d",
+                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/3cc9d0164230889acb08e22cc126133809e9d346",
+                "reference": "3cc9d0164230889acb08e22cc126133809e9d346",
                 "shasum": ""
             },
             "require": {
@@ -184,10 +184,10 @@
             ],
             "description": "Thread notification management library for code using the pthreads extension",
             "support": {
-                "source": "https://github.com/pmmp/Snooze/tree/master",
+                "source": "https://github.com/pmmp/Snooze/tree/0.1.0",
                 "issues": "https://github.com/pmmp/Snooze/issues"
             },
-            "time": "2018-05-20T17:47:37+00:00"
+            "time": "2018-06-13T09:36:11+00:00"
         },
         {
             "name": "pocketmine/spl",
@@ -226,12 +226,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "ext-pthreads": 20,
-        "pocketmine/raklib": 20,
-        "pocketmine/binaryutils": 20,
-        "pocketmine/nbt": 20,
-        "pocketmine/math": 20,
-        "pocketmine/snooze": 20
+        "ext-pthreads": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

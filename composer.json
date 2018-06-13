@@ -24,12 +24,12 @@
       "ext-yaml": ">=2.0.0",
       "ext-zip": "*",
       "ext-zlib": ">=1.2.11",
-      "pocketmine/raklib": "dev-master#2625848df23efb7177c19f1d652a86fb82f4245b",
-      "pocketmine/spl": "^0.3",
-      "pocketmine/binaryutils": "dev-master#c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595",
-      "pocketmine/nbt": "dev-master#09809564c7e58c322dcefc6905ab333313e05d1f",
-      "pocketmine/math": "dev-master#95ae5600328ed2add44c0bc830a68d3660e9e0ef",
-      "pocketmine/snooze": "dev-master#541f0f038f401e9117ae60c8dbc167a46569282d"
+      "pocketmine/raklib": "^0.12.0",
+      "pocketmine/spl": "^0.3.0",
+      "pocketmine/binaryutils": "^0.1.0",
+      "pocketmine/nbt": "^0.2.0",
+      "pocketmine/math": "^0.2.0",
+      "pocketmine/snooze": "^0.1.0"
    },
    "autoload": {
       "psr-4": {
