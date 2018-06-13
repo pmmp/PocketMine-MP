@@ -50,7 +50,7 @@ class PharPluginLoader implements PluginLoader{
 	 * @param string $file
 	 */
 	public function loadPlugin(string $file) : void{
-		$this->loader->addPath("phar://$file/src");
+		$this->loader->addPath("$file/src");
 	}
 
 	/**
@@ -70,5 +70,9 @@ class PharPluginLoader implements PluginLoader{
 		}
 
 		return null;
+	}
+
+	public function getAccessProtocol() : string{
+		return "phar://";
 	}
 }

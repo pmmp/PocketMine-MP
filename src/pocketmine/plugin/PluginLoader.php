@@ -52,4 +52,11 @@ interface PluginLoader{
 	 * @return null|PluginDescription
 	 */
 	public function getPluginDescription(string $file) : ?PluginDescription;
+
+	/**
+	 * Returns the protocol prefix used to access files in this plugin, e.g. file://, phar://
+	 *
+	 * @return string
+	 */
+	public function getAccessProtocol() : string;
 }
