@@ -57,6 +57,11 @@ class PluginManager{
 	protected $plugins = [];
 
 	/**
+	 * @var Plugin[]
+	 */
+	protected $enabledPlugins = [];
+
+	/**
 	 * @var Permission[]
 	 */
 	protected $permissions = [];
@@ -610,6 +615,8 @@ class PluginManager{
 				$plugin->getScheduler()->setEnabled(true);
 				$plugin->setEnabled(true);
 
+				$this->enabledPlugins[$plugin->getDescription()->getName()] = $plugin;
+
 				$this->server->getPluginManager()->callEvent(new PluginEnableEvent($plugin));
 			}catch(\Throwable $e){
 				$this->server->getLogger()->logException($e);
@@ -689,6 +696,8 @@ class PluginManager{
 			$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.disable", [$plugin->getDescription()->getFullName()]));
 			$this->callEvent(new PluginDisableEvent($plugin));
 
+			unset($this->enabledPlugins[$plugin->getDescription()->getName()]);
+
 			try{
 				$plugin->setEnabled(false);
 			}catch(\Throwable $e){
@@ -703,16 +712,15 @@ class PluginManager{
 	}
 
 	public function tickSchedulers(int $currentTick) : void{
-		foreach($this->plugins as $p){
-			if($p->isEnabled()){
-				$p->getScheduler()->mainThreadHeartbeat($currentTick);
-			}
+		foreach($this->enabledPlugins as $p){
+			$p->getScheduler()->mainThreadHeartbeat($currentTick);
 		}
 	}
 
 	public function clearPlugins(){
 		$this->disablePlugins();
 		$this->plugins = [];
+		$this->enabledPlugins = [];
 		$this->fileAssociations = [];
 		$this->permissions = [];
 		$this->defaultPerms = [];
