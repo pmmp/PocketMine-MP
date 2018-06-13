@@ -92,7 +92,7 @@ class AutoUpdater{
 		$newVersion = new VersionString($this->updateInfo["version"]);
 
 		$messages = [
-			"Your version of " . $this->server->getName() . " is out of date. Version " . $newVersion->get(false) . " (build #" . $newVersion->getBuild() . ") was released on " . date("D M j h:i:s Y", $this->updateInfo["date"])
+			"Your version of " . $this->server->getName() . " is out of date. Version " . $newVersion->get(false) . " (build #" . $this->updateInfo["build"] . ") was released on " . date("D M j h:i:s Y", $this->updateInfo["date"])
 		];
 		if($this->updateInfo["details_url"] !== null){
 			$messages[] = "Details: " . $this->updateInfo["details_url"];
