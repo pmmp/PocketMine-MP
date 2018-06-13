@@ -1515,7 +1515,7 @@ class Server{
 					$poolSize = max(1, $processors);
 				}
 			}else{
-				$poolSize = (int) $poolSize;
+				$poolSize = max(1, (int) $poolSize);
 			}
 
 			$this->asyncPool = new AsyncPool($this, $poolSize, (int) max(-1, (int) $this->getProperty("memory.async-worker-hard-limit", 256)), $this->autoloader, $this->logger);
