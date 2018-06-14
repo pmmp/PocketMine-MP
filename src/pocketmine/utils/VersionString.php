@@ -118,6 +118,8 @@ class VersionString{
 			return -1; //Target is older
 		}elseif($number < $tNumber){
 			return 1; //Target is newer
+		}elseif($target->isDev() and !$this->isDev()){
+			return -1; //Dev builds of the same version are always considered older than a release
 		}elseif($target->getBuild() > $this->getBuild()){
 			return 1;
 		}elseif($target->getBuild() < $this->getBuild()){
