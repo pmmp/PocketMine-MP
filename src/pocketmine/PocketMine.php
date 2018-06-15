@@ -54,13 +54,14 @@ namespace pocketmine {
 
 	if(version_compare(MIN_PHP_VERSION, PHP_VERSION) > 0){
 		critical_error(\pocketmine\NAME . " requires PHP >= " . MIN_PHP_VERSION . ", but you have PHP " . PHP_VERSION . ".");
-		critical_error("Please use the installer provided on the homepage, or update to a newer PHP version.");
+		critical_error("Please refer to the installation instructions at http://pmmp.rtfd.io/en/rtfd/installation.html.");
 		exit(1);
 	}
 
 	if(PHP_INT_SIZE < 8){
 		critical_error("Running " . \pocketmine\NAME . " with 32-bit systems/PHP is no longer supported.");
 		critical_error("Please upgrade to a 64-bit system, or use a 64-bit PHP binary if this is a 64-bit system.");
+		critical_error("Please refer to the installation instructions at http://pmmp.rtfd.io/en/rtfd/installation.html.");
 		exit(1);
 	}
 
@@ -125,7 +126,7 @@ namespace pocketmine {
 	}
 
 	if($errors > 0){
-		critical_error("Please use the installer provided on the homepage, or recompile PHP again.");
+		critical_error("Please recompile PHP with the needed configuration, or refer to the installation instructions at http://pmmp.rtfd.io/en/rtfd/installation.html.");
 		exit(1);
 	}
 
