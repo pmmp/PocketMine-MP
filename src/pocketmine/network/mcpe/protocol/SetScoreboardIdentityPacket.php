@@ -25,37 +25,45 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\ScoreboardIdentityPacketEntry;
 
-class PlayStatusPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::PLAY_STATUS_PACKET;
+class SetScoreboardIdentityPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::SET_SCOREBOARD_IDENTITY_PACKET;
 
-	public const LOGIN_SUCCESS = 0;
-	public const LOGIN_FAILED_CLIENT = 1;
-	public const LOGIN_FAILED_SERVER = 2;
-	public const PLAYER_SPAWN = 3;
-	public const LOGIN_FAILED_INVALID_TENANT = 4;
-	public const LOGIN_FAILED_VANILLA_EDU = 5;
-	public const LOGIN_FAILED_EDU_VANILLA = 6;
-	public const LOGIN_FAILED_SERVER_FULL = 7;
+	public const TYPE_REGISTER_IDENTITY = 0;
+	public const TYPE_CLEAR_IDENTITY = 1;
 
 	/** @var int */
-	public $status;
+	public $type;
+	/** @var ScoreboardIdentityPacketEntry[] */
+	public $entries = [];
 
 	protected function decodePayload(){
-		$this->status = $this->getInt();
-	}
+		$this->type = $this->getByte();
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$entry = new ScoreboardIdentityPacketEntry();
+			$entry->scoreboardId = $this->getVarLong();
+			if($this->type === self::TYPE_REGISTER_IDENTITY){
+				$entry->uuid = $this->getUUID();
+			}
 
-	public function canBeSentBeforeLogin() : bool{
-		return true;
+			$this->entries[] = $entry;
+		}
 	}
 
 	protected function encodePayload(){
-		$this->putInt($this->status);
+		$this->putByte($this->type);
+		$this->putUnsignedVarInt(count($this->entries));
+		foreach($this->entries as $entry){
+			$this->putVarLong($entry->scoreboardId);
+			if($this->type === self::TYPE_REGISTER_IDENTITY){
+				$this->putUUID($entry->uuid);
+			}
+		}
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handlePlayStatus($this);
+		return $session->handleSetScoreboardIdentity($this);
 	}
 }

@@ -74,10 +74,6 @@ abstract class DataPacket extends NetworkBinaryStream{
 	protected function decodeHeader(){
 		$pid = $this->getUnsignedVarInt();
 		assert($pid === static::NETWORK_ID);
-
-		$this->senderSubId = $this->getByte();
-		$this->recipientSubId = $this->getByte();
-		assert($this->senderSubId === 0 and $this->recipientSubId === 0, "Got unexpected non-zero split-screen bytes (byte1: $this->senderSubId, byte2: $this->recipientSubId");
 	}
 
 	/**
@@ -96,9 +92,6 @@ abstract class DataPacket extends NetworkBinaryStream{
 
 	protected function encodeHeader(){
 		$this->putUnsignedVarInt(static::NETWORK_ID);
-
-		$this->putByte($this->senderSubId);
-		$this->putByte($this->recipientSubId);
 	}
 
 	/**
