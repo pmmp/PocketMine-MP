@@ -94,8 +94,7 @@ class McRegion extends BaseLevelProvider{
 
 		$tiles = [];
 		foreach($chunk->getTiles() as $tile){
-			$tile->saveNBT($tileTag = new CompoundTag());
-			$tiles[] = $tileTag;
+			$tiles[] = $tile->saveNBT();
 		}
 
 		$nbt->setTag(new ListTag("TileEntities", $tiles, NBT::TAG_Compound));
