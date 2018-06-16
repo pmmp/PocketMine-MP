@@ -2793,14 +2793,16 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$block = $this->level->getBlock($this);
 
 				$ev = new PlayerToggleSwimEvent($this, true);
-				$this->server->getPluginManager()->callEvent($ev);
 				if(!($block instanceof Water)){
 					$ev->setCancelled();
 				}
+				$this->server->getPluginManager()->callEvent($ev);
 				if($ev->isCancelled()){
 					$this->sendData($this);
 				}else{
 					$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_HEIGHT, $this->width);
+					$this->height = $this->width;
+					$this->recalculateBoundingBox();
 					$this->setSwimming(true);
 				}
 				return true;
@@ -2810,7 +2812,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				if($ev->isCancelled()){
 					$this->sendData($this);
 				}else{
+					$heightHuman = 1.8;
+					$this->height = $heightHuman * $this->getScale();
 					$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_HEIGHT, $this->height);
+					$this->recalculateBoundingBox();
 					$this->setSwimming(false);
 				}
 				return true;
