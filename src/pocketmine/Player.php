@@ -2793,10 +2793,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$block = $this->level->getBlock($this);
 
 				$ev = new PlayerToggleSwimEvent($this, true);
-				$this->server->getPluginManager()->callEvent($ev);
 				if(!($block instanceof Water)){
 					$ev->setCancelled();
 				}
+				$this->server->getPluginManager()->callEvent($ev);
 				if($ev->isCancelled()){
 					$this->sendData($this);
 				}else{
