@@ -2801,6 +2801,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					$this->sendData($this);
 				}else{
 					$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_HEIGHT, $this->width);
+					$this->height = $this->width;
+					$this->recalculateBoundingBox();
 					$this->setSwimming(true);
 				}
 				return true;
@@ -2811,6 +2813,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					$this->sendData($this);
 				}else{
 					$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_HEIGHT, $this->height);
+					$this->height = 1.8;
+					$this->recalculateBoundingBox();
 					$this->setSwimming(false);
 				}
 				return true;
