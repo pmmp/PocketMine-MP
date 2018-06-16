@@ -2812,9 +2812,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				if($ev->isCancelled()){
 					$this->sendData($this);
 				}else{
-					$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_HEIGHT, $this->height);
 					$heightHuman = 1.8;
 					$this->height = $heightHuman * $this->getScale();
+					$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_HEIGHT, $this->height);
 					$this->recalculateBoundingBox();
 					$this->setSwimming(false);
 				}
