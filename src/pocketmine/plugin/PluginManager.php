@@ -392,19 +392,21 @@ class PluginManager{
 	 * @return bool
 	 */
 	public function isCompatibleApi(string ...$versions) : bool{
+		$serverString = $this->server->getApiVersion();
+		$serverApi = array_pad(explode("-", $serverString), 2, "");
+		$serverNumbers = array_map("intval", explode(".", $serverApi[0]));
+
 		foreach($versions as $version){
 			//Format: majorVersion.minorVersion.patch (3.0.0)
 			//    or: majorVersion.minorVersion.patch-devBuild (3.0.0-alpha1)
-			if($version !== $this->server->getApiVersion()){
+			if($version !== $serverString){
 				$pluginApi = array_pad(explode("-", $version), 2, ""); //0 = version, 1 = suffix (optional)
-				$serverApi = array_pad(explode("-", $this->server->getApiVersion()), 2, "");
 
 				if(strtoupper($pluginApi[1]) !== strtoupper($serverApi[1])){ //Different release phase (alpha vs. beta) or phase build (alpha.1 vs alpha.2)
 					continue;
 				}
 
 				$pluginNumbers = array_map("intval", array_pad(explode(".", $pluginApi[0]), 3, "0")); //plugins might specify API like "3.0" or "3"
-				$serverNumbers = array_map("intval", explode(".", $serverApi[0]));
 
 				if($pluginNumbers[0] !== $serverNumbers[0]){ //Completely different API version
 					continue;
