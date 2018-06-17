@@ -55,7 +55,7 @@ class SendUsageTask extends AsyncTask{
 			case self::TYPE_OPEN:
 				$data["event"] = "open";
 
-				$version = new VersionString();
+				$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
 
 				$data["server"] = [
 					"port" => $server->getPort(),
