@@ -320,7 +320,7 @@ class Server{
 	 * @return string
 	 */
 	public function getApiVersion() : string{
-		return \pocketmine\API_VERSION;
+		return \pocketmine\BASE_VERSION;
 	}
 
 	/**
@@ -1438,12 +1438,10 @@ class Server{
 			$this->dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
 			$this->pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
 
-			$version = new VersionString($this->getPocketMineVersion());
-
 			$this->logger->info("Loading pocketmine.yml...");
 			if(!file_exists($this->dataPath . "pocketmine.yml")){
 				$content = file_get_contents(\pocketmine\RESOURCE_PATH . "pocketmine.yml");
-				if($version->isDev()){
+				if(\pocketmine\IS_DEVELOPMENT_BUILD){
 					$content = str_replace("preferred-channel: stable", "preferred-channel: beta", $content);
 				}
 				@file_put_contents($this->dataPath . "pocketmine.yml", $content);
@@ -1611,8 +1609,7 @@ class Server{
 
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.info", [
 				$this->getName(),
-				($version->isDev() ? TextFormat::YELLOW : "") . $version->get(true) . TextFormat::RESET,
-				$this->getApiVersion()
+				(\pocketmine\IS_DEVELOPMENT_BUILD ? TextFormat::YELLOW : "") . $this->getPocketMineVersion() . TextFormat::RESET
 			]));
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.license", [$this->getName()]));
 

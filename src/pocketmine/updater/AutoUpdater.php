@@ -35,10 +35,10 @@ class AutoUpdater{
 	protected $server;
 	/** @var string */
 	protected $endpoint;
-	/** @var bool */
-	protected $hasUpdate = false;
 	/** @var array|null */
 	protected $updateInfo = null;
+	/** @var VersionString|null */
+	protected $newVersion;
 
 	/**
 	 * @param Server $server
@@ -67,10 +67,9 @@ class AutoUpdater{
 				$this->showConsoleUpdate();
 			}
 		}elseif($this->server->getProperty("auto-updater.preferred-channel", true)){
-			$version = new VersionString();
-			if(!$version->isDev() and $this->getChannel() !== "stable"){
+			if(!\pocketmine\IS_DEVELOPMENT_BUILD and $this->getChannel() !== "stable"){
 				$this->showChannelSuggestionStable();
-			}elseif($version->isDev() and $this->getChannel() === "stable"){
+			}elseif(\pocketmine\IS_DEVELOPMENT_BUILD and $this->getChannel() === "stable"){
 				$this->showChannelSuggestionBeta();
 			}
 		}
@@ -82,17 +81,15 @@ class AutoUpdater{
 	 * @return bool
 	 */
 	public function hasUpdate() : bool{
-		return $this->hasUpdate;
+		return $this->newVersion !== null;
 	}
 
 	/**
 	 * Posts a warning to the console to tell the user there is an update available
 	 */
 	public function showConsoleUpdate(){
-		$newVersion = new VersionString($this->updateInfo["version"]);
-
 		$messages = [
-			"Your version of " . $this->server->getName() . " is out of date. Version " . $newVersion->get(false) . " (build #" . $this->updateInfo["build"] . ") was released on " . date("D M j h:i:s Y", $this->updateInfo["date"])
+			"Your version of " . $this->server->getName() . " is out of date. Version " . $this->newVersion->getFullVersion(true) . " was released on " . date("D M j h:i:s Y", $this->updateInfo["date"])
 		];
 		if($this->updateInfo["details_url"] !== null){
 			$messages[] = "Details: " . $this->updateInfo["details_url"];
@@ -159,15 +156,18 @@ class AutoUpdater{
 		if($this->updateInfo === null){
 			return;
 		}
-		$currentVersion = new VersionString($this->server->getPocketMineVersion());
-		$newVersion = new VersionString($this->updateInfo["version"]);
-
-		if($currentVersion->compare($newVersion) > 0 and ($currentVersion->get() !== $newVersion->get() or $currentVersion->getBuild() > 0)){
-			$this->hasUpdate = true;
-		}else{
-			$this->hasUpdate = false;
+		$currentVersion = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
+		try{
+			$newVersion = new VersionString($this->updateInfo["base_version"], $this->updateInfo["is_dev"], $this->updateInfo["build"]);
+		}catch(\InvalidArgumentException $e){
+			//Invalid version returned from API, assume there's no update
+			$this->server->getLogger()->debug("[AutoUpdater] Assuming no update because \"" . $e->getMessage() . "\"");
+			return;
 		}
 
+		if($currentVersion->compare($newVersion) > 0 and ($currentVersion->getFullVersion() !== $newVersion->getFullVersion() or $currentVersion->getBuild() > 0)){
+			$this->newVersion = $newVersion;
+		}
 	}
 
 	/**

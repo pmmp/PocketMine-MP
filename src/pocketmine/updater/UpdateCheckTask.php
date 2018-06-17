@@ -52,8 +52,8 @@ class UpdateCheckTask extends AsyncTask{
 			$response = json_decode($response, true);
 			if(is_array($response)){
 				if(
-					isset($response["version"]) and
-					isset($response["api_version"]) and
+					isset($response["base_version"]) and
+					isset($response["is_dev"]) and
 					isset($response["build"]) and
 					isset($response["date"]) and
 					isset($response["download_url"])

@@ -33,12 +33,13 @@ namespace pocketmine {
 	use pocketmine\utils\Terminal;
 	use pocketmine\utils\Timezone;
 	use pocketmine\utils\Utils;
+	use pocketmine\utils\VersionString;
 	use pocketmine\wizard\SetupWizard;
 
 	const NAME = "PocketMine-MP";
-	const VERSION = "1.7dev";
-	const API_VERSION = "3.0.0";
+	const BASE_VERSION = "3.0.0";
 	const IS_DEVELOPMENT_BUILD = true;
+	const BUILD_NUMBER = 0;
 
 	const MIN_PHP_VERSION = "7.2.0";
 
@@ -204,6 +205,9 @@ namespace pocketmine {
 	if(\Phar::running(true) === ""){
 		$logger->warning("Non-packaged " . \pocketmine\NAME . " installation detected. Consider using a phar in production for better performance.");
 	}
+
+	$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
+	define('pocketmine\VERSION', $version->getFullVersion(true));
 
 	$gitHash = str_repeat("00", 20);
 
