@@ -23,10 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
-use pocketmine\event\plugin\PluginDisableEvent;
-use pocketmine\event\plugin\PluginEnableEvent;
-use pocketmine\Server;
-
 /**
  * Simple script loader, not for plugin development
  * For an example see https://gist.github.com/shoghicp/516105d470cf7d140757

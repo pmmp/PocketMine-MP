@@ -23,10 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
-use pocketmine\event\plugin\PluginDisableEvent;
-use pocketmine\event\plugin\PluginEnableEvent;
-use pocketmine\Server;
-
 /**
  * Handles different types of plugins
  */
