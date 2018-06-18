@@ -169,7 +169,7 @@ namespace pocketmine {
 
 	define('pocketmine\RESOURCE_PATH', \pocketmine\PATH . 'src' . DIRECTORY_SEPARATOR . 'pocketmine' . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR);
 
-	$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-profiler"]);
+	$opts = getopt("", ["data:", "plugins:", "no-wizard"]);
 
 	define('pocketmine\DATA', isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : realpath(getcwd()) . DIRECTORY_SEPARATOR);
 	define('pocketmine\PLUGIN_PATH', isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : realpath(getcwd()) . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);
@@ -188,15 +188,6 @@ namespace pocketmine {
 		$logger->warning($e);
 	}
 	unset($tzError);
-
-	if(isset($opts["enable-profiler"])){
-		if(function_exists("profiler_enable")){
-			\profiler_enable();
-			$logger->notice("Execution is being profiled");
-		}else{
-			$logger->notice("No profiler found. Please install https://github.com/krakjoe/profiler");
-		}
-	}
 
 	if(extension_loaded("xdebug")){
 		$logger->warning(PHP_EOL . PHP_EOL . PHP_EOL . "\tYou are running " . \pocketmine\NAME . " with xdebug enabled. This has a major impact on performance." . PHP_EOL . PHP_EOL);
