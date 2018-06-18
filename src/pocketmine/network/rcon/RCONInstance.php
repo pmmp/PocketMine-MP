@@ -68,7 +68,7 @@ class RCONInstance extends Thread{
 		$this->ipcSocket = $ipcSocket;
 		$this->notifier = $notifier;
 
-		$this->start(PTHREADS_INHERIT_NONE);
+		$this->start(PTHREADS_INHERIT_INI); //HACK: need INI for timezone (logger)
 	}
 
 	private function writePacket($client, int $requestID, int $packetType, string $payload){
