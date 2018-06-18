@@ -7,7 +7,8 @@ $sami = new Sami\Sami($iterator, [
 	'remote_repository' => new \Sami\RemoteRepository\GitHubRemoteRepository('pmmp/PocketMine-MP', __DIR__),
 	'build_dir' => __DIR__ . '/docs',
 	'cache_dir' => __DIR__ . '/docs-cache',
-	'theme' => 'pocketmine'
+	'theme' => 'pocketmine',
+	'include_parent_data' => false
 ]);
 
 $templates = $sami['template_dirs'];
