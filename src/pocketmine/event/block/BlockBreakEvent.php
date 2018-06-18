@@ -32,8 +32,6 @@ use pocketmine\Player;
  * Called when a player destroys a block somewhere in the world.
  */
 class BlockBreakEvent extends BlockEvent implements Cancellable{
-	public static $handlerList = null;
-
 	/** @var Player */
 	protected $player;
 
@@ -44,6 +42,8 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 	protected $instaBreak = false;
 	/** @var Item[] */
 	protected $blockDrops = [];
+	/** @var int */
+	protected $xpDrops;
 
 	/**
 	 * @param Player $player
@@ -51,14 +51,16 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 	 * @param Item   $item
 	 * @param bool   $instaBreak
 	 * @param Item[] $drops
+	 * @param int    $xpDrops
 	 */
-	public function __construct(Player $player, Block $block, Item $item, bool $instaBreak = false, array $drops){
+	public function __construct(Player $player, Block $block, Item $item, bool $instaBreak = false, array $drops, int $xpDrops = 0){
 		parent::__construct($block);
 		$this->item = $item;
 		$this->player = $player;
 
 		$this->instaBreak = $instaBreak;
 		$this->setDrops($drops);
+		$this->xpDrops = $xpDrops;
 	}
 
 	/**
@@ -90,7 +92,7 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 	/**
 	 * @param bool $instaBreak
 	 */
-	public function setInstaBreak(bool $instaBreak){
+	public function setInstaBreak(bool $instaBreak) : void{
 		$this->instaBreak = $instaBreak;
 	}
 
@@ -105,16 +107,37 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 	/**
 	 * @param Item[] $drops
 	 */
-	public function setDrops(array $drops){
+	public function setDrops(array $drops) : void{
 		$this->setDropsVariadic(...$drops);
 	}
 
 	/**
 	 * Variadic hack for easy array member type enforcement.
 	 *
-	 * @param Item[] ...$drops
+	 * @param Item ...$drops
 	 */
-	public function setDropsVariadic(Item ...$drops){
+	public function setDropsVariadic(Item ...$drops) : void{
 		$this->blockDrops = $drops;
+	}
+
+	/**
+	 * Returns how much XP will be dropped by breaking this block.
+	 *
+	 * @return int
+	 */
+	public function getXpDropAmount() : int{
+		return $this->xpDrops;
+	}
+
+	/**
+	 * Sets how much XP will be dropped by breaking this block.
+	 *
+	 * @param int $amount
+	 */
+	public function setXpDropAmount(int $amount) : void{
+		if($amount < 0){
+			throw new \InvalidArgumentException("Amount must be at least zero");
+		}
+		$this->xpDrops = $amount;
 	}
 }

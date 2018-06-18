@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -74,26 +73,20 @@ class Lever extends Flowable{
 		return $this->level->setBlock($blockReplace, $this, true, true);
 	}
 
-	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			$faces = [
-				0 => Vector3::SIDE_UP,
-				1 => Vector3::SIDE_WEST,
-				2 => Vector3::SIDE_EAST,
-				3 => Vector3::SIDE_NORTH,
-				4 => Vector3::SIDE_SOUTH,
-				5 => Vector3::SIDE_DOWN,
-				6 => Vector3::SIDE_DOWN,
-				7 => Vector3::SIDE_UP
-			];
-			if(!$this->getSide($faces[$this->meta & 0x07])->isSolid()){
-				$this->level->useBreakOn($this);
-
-				return $type;
-			}
+	public function onNearbyBlockChange() : void{
+		$faces = [
+			0 => Vector3::SIDE_UP,
+			1 => Vector3::SIDE_WEST,
+			2 => Vector3::SIDE_EAST,
+			3 => Vector3::SIDE_NORTH,
+			4 => Vector3::SIDE_SOUTH,
+			5 => Vector3::SIDE_DOWN,
+			6 => Vector3::SIDE_DOWN,
+			7 => Vector3::SIDE_UP
+		];
+		if(!$this->getSide($faces[$this->meta & 0x07])->isSolid()){
+			$this->level->useBreakOn($this);
 		}
-
-		return false;
 	}
 
 	//TODO

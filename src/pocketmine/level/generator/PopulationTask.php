@@ -84,11 +84,6 @@ class PopulationTask extends AsyncTask{
 			}
 		}
 
-		if($chunk === null){
-			//TODO error
-			return;
-		}
-
 		$manager->setChunk($chunk->getX(), $chunk->getZ(), $chunk);
 		if(!$chunk->isGenerated()){
 			$generator->generateChunk($chunk->getX(), $chunk->getZ());
@@ -143,17 +138,11 @@ class PopulationTask extends AsyncTask{
 	public function onCompletion(Server $server){
 		$level = $server->getLevel($this->levelId);
 		if($level !== null){
-			if($this->state === false){
-				$level->registerGenerator();
-				return;
+			if(!$this->state){
+				$level->registerGeneratorToWorker($this->worker->getAsyncWorkerId());
 			}
 
 			$chunk = Chunk::fastDeserialize($this->chunk);
-
-			if($chunk === null){
-				//TODO error
-				return;
-			}
 
 			for($i = 0; $i < 9; ++$i){
 				if($i === 4){
@@ -162,11 +151,11 @@ class PopulationTask extends AsyncTask{
 				$c = $this->{"chunk$i"};
 				if($c !== null){
 					$c = Chunk::fastDeserialize($c);
-					$level->generateChunkCallback($c->getX(), $c->getZ(), $c);
+					$level->generateChunkCallback($c->getX(), $c->getZ(), $this->state ? $c : null);
 				}
 			}
 
-			$level->generateChunkCallback($chunk->getX(), $chunk->getZ(), $chunk);
+			$level->generateChunkCallback($chunk->getX(), $chunk->getZ(), $this->state ? $chunk : null);
 		}
 	}
 }

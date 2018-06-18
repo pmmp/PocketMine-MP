@@ -28,8 +28,6 @@ use pocketmine\event\Cancellable;
 use pocketmine\math\Vector3;
 
 class EntityMotionEvent extends EntityEvent implements Cancellable{
-	public static $handlerList = null;
-
 	/** @var Vector3 */
 	private $mot;
 
@@ -44,6 +42,4 @@ class EntityMotionEvent extends EntityEvent implements Cancellable{
 	public function getVector() : Vector3{
 		return $this->mot;
 	}
-
-
 }

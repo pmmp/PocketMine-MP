@@ -26,6 +26,8 @@ namespace pocketmine\plugin;
 use pocketmine\permission\Permission;
 
 class PluginDescription{
+	private $map;
+
 	private $name;
 	private $main;
 	private $api;
@@ -57,7 +59,7 @@ class PluginDescription{
 	 * @param string|array $yamlString
 	 */
 	public function __construct($yamlString){
-		$this->loadMap(!is_array($yamlString) ? \yaml_parse($yamlString) : $yamlString);
+		$this->loadMap(!is_array($yamlString) ? yaml_parse($yamlString) : $yamlString);
 	}
 
 	/**
@@ -66,6 +68,8 @@ class PluginDescription{
 	 * @throws PluginException
 	 */
 	private function loadMap(array $plugin){
+		$this->map = $plugin;
+
 		$this->name = $plugin["name"];
 		if(preg_match('/^[A-Za-z0-9 _.-]+$/', $this->name) === 0){
 			throw new PluginException("Invalid PluginDescription name");
@@ -77,7 +81,7 @@ class PluginDescription{
 			throw new PluginException("Invalid PluginDescription main, cannot start within the PocketMine namespace");
 		}
 
-		$this->api = array_map("strval", (array) $plugin["api"] ?? []);
+		$this->api = array_map("strval", (array) ($plugin["api"] ?? []));
 		$this->compatibleMcpeProtocols = array_map("intval", (array) ($plugin["mcpe-protocol"] ?? []));
 
 		if(isset($plugin["commands"]) and is_array($plugin["commands"])){
@@ -286,5 +290,9 @@ class PluginDescription{
 	 */
 	public function getWebsite() : string{
 		return $this->website;
+	}
+
+	public function getMap() : array{
+		return $this->map;
 	}
 }

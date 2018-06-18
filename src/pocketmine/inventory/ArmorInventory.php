@@ -24,12 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\entity\Living;
-use pocketmine\event\entity\EntityArmorChangeEvent;
 use pocketmine\item\Item;
+use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\Player;
-use pocketmine\Server;
 
 class ArmorInventory extends BaseInventory{
 	public const SLOT_HEAD = 0;
@@ -89,15 +88,6 @@ class ArmorInventory extends BaseInventory{
 		return $this->setItem(self::SLOT_FEET, $boots);
 	}
 
-	protected function doSetItemEvents(int $index, Item $newItem) : ?Item{
-		Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $this->getItem($index), $newItem, $index));
-		if($ev->isCancelled()){
-			return null;
-		}
-
-		return $ev->getNewItem();
-	}
-
 	public function sendSlot(int $index, $target) : void{
 		if($target instanceof Player){
 			$target = [$target];
@@ -116,7 +106,7 @@ class ArmorInventory extends BaseInventory{
 
 				$pk2 = new InventorySlotPacket();
 				$pk2->windowId = $player->getWindowId($this);
-				$pk2->inventorySlot = $index - $this->getSize();
+				$pk2->inventorySlot = $index;
 				$pk2->item = $this->getItem($index);
 				$player->dataPacket($pk2);
 			}else{
@@ -138,7 +128,14 @@ class ArmorInventory extends BaseInventory{
 		$pk->encode();
 
 		foreach($target as $player){
-			$player->dataPacket($pk);
+			if($player === $this->getHolder()){
+				$pk2 = new InventoryContentPacket();
+				$pk2->windowId = $player->getWindowId($this);
+				$pk2->items = $armor;
+				$player->dataPacket($pk2);
+			}else{
+				$player->dataPacket($pk);
+			}
 		}
 	}
 

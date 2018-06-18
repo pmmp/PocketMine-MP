@@ -31,8 +31,6 @@ use pocketmine\item\Item;
  * Called before a slot in an entity's inventory changes.
  */
 class EntityInventoryChangeEvent extends EntityEvent implements Cancellable{
-	public static $handlerList = null;
-
 	/** @var Item */
 	private $oldItem;
 	/** @var Item */
@@ -66,7 +64,7 @@ class EntityInventoryChangeEvent extends EntityEvent implements Cancellable{
 	/**
 	 * @param Item $item
 	 */
-	public function setNewItem(Item $item){
+	public function setNewItem(Item $item) : void{
 		$this->newItem = $item;
 	}
 
@@ -77,6 +75,4 @@ class EntityInventoryChangeEvent extends EntityEvent implements Cancellable{
 	public function getOldItem() : Item{
 		return $this->oldItem;
 	}
-
-
 }

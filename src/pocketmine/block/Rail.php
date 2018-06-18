@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -63,17 +62,12 @@ class Rail extends Flowable{
 		return false;
 	}
 
-	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(Vector3::SIDE_DOWN)->isTransparent()){
-				$this->getLevel()->useBreakOn($this);
-				return $type;
-			}else{
-				//TODO: Update rail connectivity
-			}
+	public function onNearbyBlockChange() : void{
+		if($this->getSide(Vector3::SIDE_DOWN)->isTransparent()){
+			$this->getLevel()->useBreakOn($this);
+		}else{
+			//TODO: Update rail connectivity
 		}
-
-		return false;
 	}
 
 	public function getVariantBitmask() : int{

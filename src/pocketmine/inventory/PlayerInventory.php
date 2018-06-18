@@ -31,7 +31,7 @@ use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\Player;
 
-class PlayerInventory extends EntityInventory{
+class PlayerInventory extends BaseInventory{
 
 	/** @var Human */
 	protected $holder;
@@ -43,7 +43,8 @@ class PlayerInventory extends EntityInventory{
 	 * @param Human $player
 	 */
 	public function __construct(Human $player){
-		parent::__construct($player);
+		$this->holder = $player;
+		parent::__construct();
 	}
 
 	public function getName() : string{
@@ -105,14 +106,6 @@ class PlayerInventory extends EntityInventory{
 	public function getHotbarSlotItem(int $hotbarSlot) : Item{
 		$this->throwIfNotHotbarSlot($hotbarSlot);
 		return $this->getItem($hotbarSlot);
-	}
-
-	/**
-	 * @deprecated
-	 * @return int
-	 */
-	public function getHeldItemSlot() : int{
-		return $this->getHeldItemIndex();
 	}
 
 	/**
@@ -218,5 +211,4 @@ class PlayerInventory extends EntityInventory{
 	public function getHolder(){
 		return $this->holder;
 	}
-
 }

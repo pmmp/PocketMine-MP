@@ -28,8 +28,6 @@ use pocketmine\event\Cancellable;
 use pocketmine\inventory\Inventory;
 
 class InventoryPickupArrowEvent extends InventoryEvent implements Cancellable{
-	public static $handlerList = null;
-
 	/** @var Arrow */
 	private $arrow;
 
@@ -48,5 +46,4 @@ class InventoryPickupArrowEvent extends InventoryEvent implements Cancellable{
 	public function getArrow() : Arrow{
 		return $this->arrow;
 	}
-
 }

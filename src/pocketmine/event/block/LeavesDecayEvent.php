@@ -29,6 +29,5 @@ use pocketmine\event\Cancellable;
  * Called when leaves decay due to not being attached to wood.
  */
 class LeavesDecayEvent extends BlockEvent implements Cancellable{
-	public static $handlerList = null;
 
 }

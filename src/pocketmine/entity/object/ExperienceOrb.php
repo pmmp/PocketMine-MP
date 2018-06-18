@@ -100,7 +100,7 @@ class ExperienceOrb extends Entity{
 	 */
 	protected $targetPlayerRuntimeId = null;
 
-	protected function initEntity(){
+	protected function initEntity() : void{
 		parent::initEntity();
 
 		$this->age = $this->namedtag->getShort("Age", 0);
@@ -115,7 +115,7 @@ class ExperienceOrb extends Entity{
 		$this->setXpValue($value);
 	}
 
-	public function saveNBT(){
+	public function saveNBT() : void{
 		parent::saveNBT();
 
 		$this->namedtag->setShort("Age", $this->age);
@@ -165,16 +165,16 @@ class ExperienceOrb extends Entity{
 		}
 
 		$currentTarget = $this->getTargetPlayer();
+		if($currentTarget !== null and $currentTarget->distanceSquared($this) > self::MAX_TARGET_DISTANCE ** 2){
+			$currentTarget = null;
+		}
 
 		if($this->lookForTargetTime >= 20){
-			if($currentTarget === null or $currentTarget->distanceSquared($this) > self::MAX_TARGET_DISTANCE ** 2){
-				$this->setTargetPlayer(null);
-
+			if($currentTarget === null){
 				$newTarget = $this->level->getNearestEntity($this, self::MAX_TARGET_DISTANCE, Human::class);
 
 				if($newTarget instanceof Human and !($newTarget instanceof Player and $newTarget->isSpectator())){
 					$currentTarget = $newTarget;
-					$this->setTargetPlayer($currentTarget);
 				}
 			}
 
@@ -183,6 +183,8 @@ class ExperienceOrb extends Entity{
 			$this->lookForTargetTime += $tickDiff;
 		}
 
+		$this->setTargetPlayer($currentTarget);
+
 		if($currentTarget !== null){
 			$vector = $currentTarget->subtract($this)->add(0, $currentTarget->getEyeHeight() / 2, 0)->divide(self::MAX_TARGET_DISTANCE);
 
@@ -190,9 +192,9 @@ class ExperienceOrb extends Entity{
 			$oneMinusDistance = (1 - $distance) ** 2;
 
 			if($oneMinusDistance > 0){
-				$this->motionX += $vector->x / $distance * $oneMinusDistance * 0.2;
-				$this->motionY += $vector->y / $distance * $oneMinusDistance * 0.2;
-				$this->motionZ += $vector->z / $distance * $oneMinusDistance * 0.2;
+				$this->motion->x += $vector->x / $distance * $oneMinusDistance * 0.2;
+				$this->motion->y += $vector->y / $distance * $oneMinusDistance * 0.2;
+				$this->motion->z += $vector->z / $distance * $oneMinusDistance * 0.2;
 			}
 
 			if($currentTarget->canPickupXp() and $this->boundingBox->intersectsWith($currentTarget->getBoundingBox())){
@@ -206,5 +208,14 @@ class ExperienceOrb extends Entity{
 		}
 
 		return $hasUpdate;
+	}
+
+	protected function tryChangeMovement() : void{
+		$this->checkObstruction($this->x, $this->y, $this->z);
+		parent::tryChangeMovement();
+	}
+
+	public function canBeCollidedWith() : bool{
+		return false;
 	}
 }

@@ -106,5 +106,4 @@ class EnderChest extends Chest{
 	public function getFuelTime() : int{
 		return 0;
 	}
-
 }

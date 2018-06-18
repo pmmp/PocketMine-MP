@@ -31,8 +31,6 @@ use pocketmine\utils\Utils;
  * Plugins should free caches or other non-essential data.
  */
 class LowMemoryEvent extends ServerEvent{
-	public static $handlerList = null;
-
 	/** @var int */
 	private $memory;
 	/** @var int */
@@ -91,5 +89,4 @@ class LowMemoryEvent extends ServerEvent{
 	public function getMemoryFreed() : int{
 		return $this->getMemory() - ($this->isGlobal() ? Utils::getMemoryUsage(true)[1] : Utils::getMemoryUsage(true)[0]);
 	}
-
 }

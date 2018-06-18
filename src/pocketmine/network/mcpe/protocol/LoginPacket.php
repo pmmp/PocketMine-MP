@@ -95,7 +95,7 @@ class LoginPacket extends DataPacket{
 
 			$logger = MainLogger::getLogger();
 			$logger->debug(get_class($e)  . " was thrown while decoding connection request in login (protocol version " . ($this->protocol ?? "unknown") . "): " . $e->getMessage());
-			foreach(\pocketmine\getTrace(0, $e->getTrace()) as $line){
+			foreach(Utils::getTrace(0, $e->getTrace()) as $line){
 				$logger->debug($line);
 			}
 		}

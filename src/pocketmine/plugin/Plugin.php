@@ -27,15 +27,17 @@ declare(strict_types=1);
 namespace pocketmine\plugin;
 
 use pocketmine\command\CommandExecutor;
+use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
 use pocketmine\utils\Config;
 
 
 /**
  * It is recommended to use PluginBase for the actual plugin
- *
  */
 interface Plugin extends CommandExecutor{
+
+	public function __construct(PluginLoader $loader, Server $server, PluginDescription $description, string $dataFolder, string $file);
 
 	/**
 	 * Called when the plugin is loaded, before calling onEnable()
@@ -51,6 +53,11 @@ interface Plugin extends CommandExecutor{
 	 * @return bool
 	 */
 	public function isEnabled() : bool;
+
+	/**
+	 * @param bool $enabled
+	 */
+	public function setEnabled(bool $enabled = true) : void;
 
 	/**
 	 * Called when the plugin is disabled
@@ -98,7 +105,7 @@ interface Plugin extends CommandExecutor{
 	/**
 	 * Returns all the resources packaged with the plugin
 	 *
-	 * @return string[]
+	 * @return \SplFileInfo[]
 	 */
 	public function getResources() : array;
 
@@ -135,5 +142,10 @@ interface Plugin extends CommandExecutor{
 	 * @return PluginLoader
 	 */
 	public function getPluginLoader();
+
+	/**
+	 * @return TaskScheduler
+	 */
+	public function getScheduler() : TaskScheduler;
 
 }

@@ -66,4 +66,8 @@ class Magma extends Solid{
 			$entity->attack($ev);
 		}
 	}
+
+	public function burnsForever() : bool{
+		return true;
+	}
 }

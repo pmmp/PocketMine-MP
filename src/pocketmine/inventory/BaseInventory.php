@@ -41,10 +41,12 @@ abstract class BaseInventory implements Inventory{
 	protected $name;
 	/** @var string */
 	protected $title;
-	/** @var \SplFixedArray<Item> */
+	/** @var \SplFixedArray|Item[] */
 	protected $slots = [];
 	/** @var Player[] */
 	protected $viewers = [];
+	/** @var InventoryEventProcessor */
+	protected $eventProcessor;
 
 	/**
 	 * @param Item[] $items
@@ -99,10 +101,13 @@ abstract class BaseInventory implements Inventory{
 	 */
 	public function getContents(bool $includeEmpty = false) : array{
 		$contents = [];
-		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
-			$item = $this->getItem($i);
-			if($includeEmpty or !$item->isNull()){
-				$contents[$i] = $item;
+		$air = null;
+
+		foreach($this->slots as $i => $slot){
+			if($slot !== null){
+				$contents[$i] = clone $slot;
+			}elseif($includeEmpty){
+				$contents[$i] = $air ?? ($air = ItemFactory::get(Item::AIR, 0, 0));
 			}
 		}
 
@@ -150,10 +155,6 @@ abstract class BaseInventory implements Inventory{
 		$this->clearAll();
 	}
 
-	protected function doSetItemEvents(int $index, Item $newItem) : ?Item{
-		return $newItem;
-	}
-
 	public function setItem(int $index, Item $item, bool $send = true) : bool{
 		if($item->isNull()){
 			$item = ItemFactory::get(Item::AIR, 0, 0);
@@ -161,14 +162,18 @@ abstract class BaseInventory implements Inventory{
 			$item = clone $item;
 		}
 
-		$newItem = $this->doSetItemEvents($index, $item);
-		if($newItem === null){
-			return false;
+		$oldItem = $this->getItem($index);
+		if($this->eventProcessor !== null){
+			$newItem = $this->eventProcessor->onSlotChange($this, $index, $oldItem, $item);
+			if($newItem === null){
+				return false;
+			}
+		}else{
+			$newItem = $item;
 		}
 
-		$old = $this->getItem($index);
 		$this->slots[$index] = $newItem->isNull() ? null : $newItem;
-		$this->onSlotChange($index, $old, $send);
+		$this->onSlotChange($index, $oldItem, $send);
 
 		return true;
 	}
@@ -235,6 +240,10 @@ abstract class BaseInventory implements Inventory{
 		}
 
 		return -1;
+	}
+
+	public function isSlotEmpty(int $index) : bool{
+		return $this->slots[$index] === null or $this->slots[$index]->isNull();
 	}
 
 	public function canAddItem(Item $item) : bool{
@@ -463,5 +472,13 @@ abstract class BaseInventory implements Inventory{
 
 	public function slotExists(int $slot) : bool{
 		return $slot >= 0 and $slot < $this->slots->getSize();
+	}
+
+	public function getEventProcessor() : ?InventoryEventProcessor{
+		return $this->eventProcessor;
+	}
+
+	public function setEventProcessor(?InventoryEventProcessor $eventProcessor) : void{
+		$this->eventProcessor = $eventProcessor;
 	}
 }

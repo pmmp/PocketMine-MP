@@ -32,4 +32,8 @@ class LeatherBoots extends Armor{
 	public function getDefensePoints() : int{
 		return 1;
 	}
+
+	public function getMaxDurability() : int{
+		return 66;
+	}
 }

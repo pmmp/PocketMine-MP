@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\level\Level;
-
 class WallSign extends SignPost{
 
 	protected $id = self::WALL_SIGN;
@@ -33,13 +31,9 @@ class WallSign extends SignPost{
 		return "Wall Sign";
 	}
 
-	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide($this->meta ^ 0x01)->getId() === self::AIR){
-				$this->getLevel()->useBreakOn($this);
-			}
-			return Level::BLOCK_UPDATE_NORMAL;
+	public function onNearbyBlockChange() : void{
+		if($this->getSide($this->meta ^ 0x01)->getId() === self::AIR){
+			$this->getLevel()->useBreakOn($this);
 		}
-		return false;
 	}
 }

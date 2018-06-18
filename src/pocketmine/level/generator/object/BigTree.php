@@ -82,6 +82,4 @@ class BigTree extends Tree{
 		}
 		*/
 	}
-
-
 }

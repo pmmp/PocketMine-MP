@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
-use pocketmine\event\TranslationContainer;
+use pocketmine\lang\TranslationContainer;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\plugin\Plugin;
 use pocketmine\utils\TextFormat;
@@ -50,8 +50,6 @@ class VersionCommand extends VanillaCommand{
 			$sender->sendMessage(new TranslationContainer("pocketmine.server.info.extended", [
 				$sender->getServer()->getName(),
 				$sender->getServer()->getPocketMineVersion(),
-				$sender->getServer()->getCodename(),
-				$sender->getServer()->getApiVersion(),
 				$sender->getServer()->getVersion(),
 				ProtocolInfo::CURRENT_PROTOCOL
 			]));

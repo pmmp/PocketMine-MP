@@ -34,7 +34,7 @@ class DisconnectPacket extends DataPacket{
 	/** @var bool */
 	public $hideDisconnectionScreen = false;
 	/** @var string */
-	public $message;
+	public $message = "";
 
 	public function canBeSentBeforeLogin() : bool{
 		return true;
@@ -42,7 +42,9 @@ class DisconnectPacket extends DataPacket{
 
 	protected function decodePayload(){
 		$this->hideDisconnectionScreen = $this->getBool();
-		$this->message = $this->getString();
+		if(!$this->hideDisconnectionScreen){
+			$this->message = $this->getString();
+		}
 	}
 
 	protected function encodePayload(){
@@ -55,5 +57,4 @@ class DisconnectPacket extends DataPacket{
 	public function handle(NetworkSession $session) : bool{
 		return $session->handleDisconnect($this);
 	}
-
 }

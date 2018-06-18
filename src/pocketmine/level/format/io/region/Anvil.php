@@ -33,13 +33,12 @@ use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\utils\MainLogger;
 
 class Anvil extends McRegion{
 
 	public const REGION_FILE_EXTENSION = "mca";
 
-	public function nbtSerialize(Chunk $chunk) : string{
+	protected function nbtSerialize(Chunk $chunk) : string{
 		$nbt = new CompoundTag("Level", []);
 		$nbt->setInt("xPos", $chunk->getX());
 		$nbt->setInt("zPos", $chunk->getZ());
@@ -76,8 +75,7 @@ class Anvil extends McRegion{
 
 		$tiles = [];
 		foreach($chunk->getTiles() as $tile){
-			$tile->saveNBT();
-			$tiles[] = $tile->namedtag;
+			$tiles[] = $tile->saveNBT();
 		}
 
 		$nbt->setTag(new ListTag("TileEntities", $tiles, NBT::TAG_Compound));
@@ -85,10 +83,7 @@ class Anvil extends McRegion{
 		//TODO: TileTicks
 
 		$writer = new BigEndianNBTStream();
-		$nbt->setName("Level");
-		$writer->setData(new CompoundTag("", [$nbt]));
-
-		return $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
+		return $writer->writeCompressed(new CompoundTag("", [$nbt]), ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
 	}
 
 	protected function serializeSubChunk(SubChunk $subChunk) : CompoundTag{
@@ -100,48 +95,42 @@ class Anvil extends McRegion{
 		]);
 	}
 
-	public function nbtDeserialize(string $data){
+	protected function nbtDeserialize(string $data) : Chunk{
 		$nbt = new BigEndianNBTStream();
-		try{
-			$nbt->readCompressed($data);
-
-			$chunk = $nbt->getData()->getCompoundTag("Level");
-
-			if($chunk === null){
-				throw new ChunkException("Invalid NBT format");
-			}
-
-			$subChunks = [];
-			$subChunksTag = $chunk->getListTag("Sections") ?? [];
-			foreach($subChunksTag as $subChunk){
-				if($subChunk instanceof CompoundTag){
-					$subChunks[$subChunk->getByte("Y")] = $this->deserializeSubChunk($subChunk);
-				}
-			}
-
-			if($chunk->hasTag("BiomeColors", IntArrayTag::class)){
-				$biomeIds = ChunkUtils::convertBiomeColors($chunk->getIntArray("BiomeColors")); //Convert back to original format
-			}else{
-				$biomeIds = $chunk->getByteArray("Biomes", "", true);
-			}
-
-			$result = new Chunk(
-				$chunk->getInt("xPos"),
-				$chunk->getInt("zPos"),
-				$subChunks,
-				$chunk->hasTag("Entities", ListTag::class) ? $chunk->getListTag("Entities")->getValue() : [],
-				$chunk->hasTag("TileEntities", ListTag::class) ? $chunk->getListTag("TileEntities")->getValue() : [],
-				$biomeIds,
-				$chunk->getIntArray("HeightMap", [])
-			);
-			$result->setLightPopulated($chunk->getByte("LightPopulated", 0) !== 0);
-			$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
-			$result->setGenerated();
-			return $result;
-		}catch(\Throwable $e){
-			MainLogger::getLogger()->logException($e);
-			return null;
+		$chunk = $nbt->readCompressed($data);
+		if(!($chunk instanceof CompoundTag) or !$chunk->hasTag("Level")){
+			throw new ChunkException("Invalid NBT format");
 		}
+
+		$chunk = $chunk->getCompoundTag("Level");
+
+		$subChunks = [];
+		$subChunksTag = $chunk->getListTag("Sections") ?? [];
+		foreach($subChunksTag as $subChunk){
+			if($subChunk instanceof CompoundTag){
+				$subChunks[$subChunk->getByte("Y")] = $this->deserializeSubChunk($subChunk);
+			}
+		}
+
+		if($chunk->hasTag("BiomeColors", IntArrayTag::class)){
+			$biomeIds = ChunkUtils::convertBiomeColors($chunk->getIntArray("BiomeColors")); //Convert back to original format
+		}else{
+			$biomeIds = $chunk->getByteArray("Biomes", "", true);
+		}
+
+		$result = new Chunk(
+			$chunk->getInt("xPos"),
+			$chunk->getInt("zPos"),
+			$subChunks,
+			$chunk->hasTag("Entities", ListTag::class) ? $chunk->getListTag("Entities")->getValue() : [],
+			$chunk->hasTag("TileEntities", ListTag::class) ? $chunk->getListTag("TileEntities")->getValue() : [],
+			$biomeIds,
+			$chunk->getIntArray("HeightMap", [])
+		);
+		$result->setLightPopulated($chunk->getByte("LightPopulated", 0) !== 0);
+		$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
+		$result->setGenerated();
+		return $result;
 	}
 
 	protected function deserializeSubChunk(CompoundTag $subChunk) : SubChunk{
@@ -165,5 +154,4 @@ class Anvil extends McRegion{
 		//TODO: add world height options
 		return 256;
 	}
-
 }

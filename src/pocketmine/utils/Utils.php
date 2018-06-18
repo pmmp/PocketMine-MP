@@ -130,9 +130,9 @@ class Utils{
 	 * @return string|bool
 	 */
 	public static function getIP(bool $force = false){
-		if(Utils::$online === false){
+		if(!Utils::$online){
 			return false;
-		}elseif(Utils::$ip !== false and $force !== true){
+		}elseif(Utils::$ip !== false and !$force){
 			return Utils::$ip;
 		}
 
@@ -438,7 +438,7 @@ class Utils{
 	 * @throws \RuntimeException if a cURL error occurs
 	 */
 	public static function simpleCurl(string $page, $timeout = 10, array $extraHeaders = [], array $extraOpts = [], callable $onSuccess = null){
-		if(Utils::$online === false){
+		if(!Utils::$online){
 			throw new \RuntimeException("Server is offline");
 		}
 
@@ -542,5 +542,113 @@ class Utils{
 		list($headB64, $payloadB64, $sigB64) = explode(".", $token);
 
 		return json_decode(base64_decode(strtr($payloadB64, '-_', '+/'), true), true);
+	}
+
+	public static function kill($pid) : void{
+		if(MainLogger::isRegisteredStatic()){
+			MainLogger::getLogger()->syncFlushBuffer();
+		}
+		switch(Utils::getOS()){
+			case "win":
+				exec("taskkill.exe /F /PID " . ((int) $pid) . " > NUL");
+				break;
+			case "mac":
+			case "linux":
+			default:
+				if(function_exists("posix_kill")){
+					posix_kill($pid, 9); //SIGKILL
+				}else{
+					exec("kill -9 " . ((int) $pid) . " > /dev/null 2>&1");
+				}
+		}
+	}
+
+	/**
+	 * @param object $value
+	 * @param bool   $includeCurrent
+	 *
+	 * @return int
+	 */
+	public static function getReferenceCount($value, bool $includeCurrent = true){
+		ob_start();
+		debug_zval_dump($value);
+		$ret = explode("\n", ob_get_contents());
+		ob_end_clean();
+
+		if(count($ret) >= 1 and preg_match('/^.* refcount\\(([0-9]+)\\)\\{$/', trim($ret[0]), $m) > 0){
+			return ((int) $m[1]) - ($includeCurrent ? 3 : 4); //$value + zval call + extra call
+		}
+		return -1;
+	}
+
+	/**
+	 * @param int        $start
+	 * @param array|null $trace
+	 *
+	 * @return array
+	 */
+	public static function getTrace($start = 0, $trace = null){
+		if($trace === null){
+			if(function_exists("xdebug_get_function_stack")){
+				$trace = array_reverse(xdebug_get_function_stack());
+			}else{
+				$e = new \Exception();
+				$trace = $e->getTrace();
+			}
+		}
+
+		$messages = [];
+		$j = 0;
+		for($i = (int) $start; isset($trace[$i]); ++$i, ++$j){
+			$params = "";
+			if(isset($trace[$i]["args"]) or isset($trace[$i]["params"])){
+				if(isset($trace[$i]["args"])){
+					$args = $trace[$i]["args"];
+				}else{
+					$args = $trace[$i]["params"];
+				}
+
+				$params = implode(", ", array_map(function($value){
+					return (is_object($value) ? get_class($value) . " object" : gettype($value) . " " . (is_array($value) ? "Array()" : Utils::printable(@strval($value))));
+				}, $args));
+			}
+			$messages[] = "#$j " . (isset($trace[$i]["file"]) ? self::cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" or $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
+		}
+
+		return $messages;
+	}
+
+	public static function cleanPath($path){
+		return str_replace(["\\", ".php", "phar://", str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PATH), str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PLUGIN_PATH)], ["/", "", "", "", ""], $path);
+	}
+
+	/**
+	 * Extracts one-line tags from the doc-comment
+	 *
+	 * @param string $docComment
+	 *
+	 * @return string[] an array of tagName => tag value. If the tag has no value, an empty string is used as the value.
+	 */
+	public static function parseDocComment(string $docComment) : array{
+		preg_match_all('/^[\t ]*\* @([a-zA-Z]+)(?:[\t ]+(.+))?[\t ]*$/m', $docComment, $matches);
+
+		return array_combine($matches[1], array_map("trim", $matches[2]));
+	}
+
+	/**
+	 * @param int $severity
+	 * @param string $message
+	 * @param string $file
+	 * @param int $line
+	 *
+	 * @return bool
+	 * @throws \ErrorException
+	 */
+	public static function errorExceptionHandler(int $severity, string $message, string $file, int $line) : bool{
+		if(error_reporting() & $severity){
+			throw new \ErrorException($message, 0, $severity, $file, $line);
+		}
+
+		return true; //stfu operator
 	}
 }

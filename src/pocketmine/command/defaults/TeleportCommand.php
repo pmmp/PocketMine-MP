@@ -26,7 +26,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\event\TranslationContainer;
+use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
@@ -37,7 +37,8 @@ class TeleportCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"%pocketmine.command.tp.description",
-			"%commands.tp.usage"
+			"%commands.tp.usage",
+			["teleport"]
 		);
 		$this->setPermission("pocketmine.command.teleport");
 	}
@@ -96,7 +97,7 @@ class TeleportCommand extends VanillaCommand{
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.tp.success", [$origin->getName(), $target->getName()]));
 
 			return true;
-		}elseif($target->getLevel() !== null){
+		}elseif($target->isValid()){
 			if(count($args) === 4 or count($args) === 6){
 				$pos = 1;
 			}else{

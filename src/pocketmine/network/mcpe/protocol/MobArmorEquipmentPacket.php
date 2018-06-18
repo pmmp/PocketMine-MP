@@ -54,5 +54,4 @@ class MobArmorEquipmentPacket extends DataPacket{
 	public function handle(NetworkSession $session) : bool{
 		return $session->handleMobArmorEquipment($this);
 	}
-
 }

@@ -28,8 +28,6 @@ use pocketmine\item\Item;
 use pocketmine\Player;
 
 class PlayerItemHeldEvent extends PlayerEvent implements Cancellable{
-	public static $handlerList = null;
-
 	/** @var Item */
 	private $item;
 	/** @var int */
@@ -53,20 +51,6 @@ class PlayerItemHeldEvent extends PlayerEvent implements Cancellable{
 	 */
 	public function getSlot() : int{
 		return $this->hotbarSlot;
-	}
-
-	/**
-	 * @deprecated This is currently an alias of {@link getSlot}
-	 *
-	 * Some background for confused future readers: Before MCPE 1.2, hotbar slots and inventory slots were not the same
-	 * thing - a hotbar slot was a link to a certain slot in the inventory.
-	 * As of 1.2, hotbar slots are now always linked to their respective slots in the inventory, meaning that the two
-	 * are now synonymous, rendering the separate methods obsolete.
-	 *
-	 * @return int
-	 */
-	public function getInventorySlot() : int{
-		return $this->getSlot();
 	}
 
 	/**

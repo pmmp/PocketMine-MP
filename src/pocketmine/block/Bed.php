@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\event\TranslationContainer;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\lang\TranslationContainer;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
@@ -85,7 +85,7 @@ class Bed extends Transparent{
 
 		$this->getLevel()->setBlock($this, $this, false, false);
 
-		if(($other = $this->getOtherHalf()) !== null and !$other->isOccupied()){
+		if(($other = $this->getOtherHalf()) !== null and $other->isOccupied() !== $occupied){
 			$other->setOccupied($occupied);
 		}
 	}
@@ -176,7 +176,7 @@ class Bed extends Transparent{
 		if(!$down->isTransparent()){
 			$meta = (($player instanceof Player ? $player->getDirection() : 0) - 1) & 0x03;
 			$next = $this->getSide(self::getOtherHalfSide($meta));
-			if($next->canBeReplaced() === true and !$next->getSide(Vector3::SIDE_DOWN)->isTransparent()){
+			if($next->canBeReplaced() and !$next->getSide(Vector3::SIDE_DOWN)->isTransparent()){
 				$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->id, $meta), true, true);
 				$this->getLevel()->setBlock($next, BlockFactory::get($this->id, $meta | self::BITFLAG_HEAD), true, true);
 

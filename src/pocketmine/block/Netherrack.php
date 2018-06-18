@@ -48,4 +48,8 @@ class Netherrack extends Solid{
 	public function getToolHarvestLevel() : int{
 		return TieredTool::TIER_WOODEN;
 	}
+
+	public function burnsForever() : bool{
+		return true;
+	}
 }

@@ -32,7 +32,6 @@ use pocketmine\Player;
  * Called when a player attempts to perform movement cheats such as clipping through blocks.
  */
 class PlayerIllegalMoveEvent extends PlayerCheatEvent implements Cancellable{
-	public static $handlerList = null;
 
 	/** @var Vector3 */
 	private $attemptedPosition;

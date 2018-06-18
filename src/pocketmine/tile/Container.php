@@ -24,28 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use pocketmine\inventory\Inventory;
-use pocketmine\item\Item;
 
 interface Container{
 	public const TAG_ITEMS = "Items";
-
-	/**
-	 * @param int $index
-	 *
-	 * @return Item
-	 */
-	public function getItem(int $index) : Item;
-
-	/**
-	 * @param int  $index
-	 * @param Item $item
-	 */
-	public function setItem(int $index, Item $item);
-
-	/**
-	 * @return int
-	 */
-	public function getSize() : int;
+	public const TAG_LOCK = "Lock";
 
 	/**
 	 * @return Inventory
@@ -56,4 +38,13 @@ interface Container{
 	 * @return Inventory
 	 */
 	public function getRealInventory();
+
+	/**
+	 * Returns whether this container can be opened by an item with the given custom name.
+	 *
+	 * @param string $key
+	 *
+	 * @return bool
+	 */
+	public function canOpenWith(string $key) : bool;
 }

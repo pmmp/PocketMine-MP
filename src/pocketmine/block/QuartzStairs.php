@@ -48,5 +48,4 @@ class QuartzStairs extends Stair{
 	public function getName() : string{
 		return "Quartz Stairs";
 	}
-
 }

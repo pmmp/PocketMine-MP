@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\command;
 
+use pocketmine\snooze\SleeperNotifier;
 use pocketmine\Thread;
 
 class CommandReader extends Thread{
@@ -31,20 +32,26 @@ class CommandReader extends Thread{
 	public const TYPE_STREAM = 1;
 	public const TYPE_PIPED = 2;
 
+	/** @var resource */
+	private static $stdin;
+
 	/** @var \Threaded */
 	protected $buffer;
 	private $shutdown = false;
 	private $type = self::TYPE_STREAM;
 
-	public function __construct(){
+	/** @var SleeperNotifier|null */
+	private $notifier;
+
+	public function __construct(?SleeperNotifier $notifier = null){
 		$this->buffer = new \Threaded;
+		$this->notifier = $notifier;
+
 		$opts = getopt("", ["disable-readline"]);
 
 		if(extension_loaded("readline") and !isset($opts["disable-readline"]) and !$this->isPipe(STDIN)){
 			$this->type = self::TYPE_READLINE;
 		}
-
-		$this->start();
 	}
 
 	public function shutdown(){
@@ -71,14 +78,12 @@ class CommandReader extends Thread{
 	}
 
 	private function initStdin(){
-		global $stdin;
-
-		if(is_resource($stdin)){
-			fclose($stdin);
+		if(is_resource(self::$stdin)){
+			fclose(self::$stdin);
 		}
 
-		$stdin = fopen("php://stdin", "r");
-		if($this->isPipe($stdin)){
+		self::$stdin = fopen("php://stdin", "r");
+		if($this->isPipe(self::$stdin)){
 			$this->type = self::TYPE_PIPED;
 		}else{
 			$this->type = self::TYPE_STREAM;
@@ -92,7 +97,7 @@ class CommandReader extends Thread{
 	 * @return bool
 	 */
 	private function isPipe($stream) : bool{
-		return is_resource($stream) and ((function_exists("posix_isatty") and !posix_isatty($stream)) or ((fstat($stream)["mode"] & 0170000) === 0010000));
+		return is_resource($stream) and (!stream_isatty($stream) or ((fstat($stream)["mode"] & 0170000) === 0010000));
 	}
 
 	/**
@@ -109,9 +114,7 @@ class CommandReader extends Thread{
 				return true;
 			}
 		}else{
-			global $stdin;
-
-			if(!is_resource($stdin)){
+			if(!is_resource(self::$stdin)){
 				$this->initStdin();
 			}
 
@@ -119,7 +122,7 @@ class CommandReader extends Thread{
 				/** @noinspection PhpMissingBreakStatementInspection */
 				case self::TYPE_STREAM:
 					//stream_select doesn't work on piped streams for some reason
-					$r = [$stdin];
+					$r = [self::$stdin];
 					if(($count = stream_select($r, $w, $e, 0, 200000)) === 0){ //nothing changed in 200000 microseconds
 						return true;
 					}elseif($count === false){ //stream error
@@ -127,7 +130,7 @@ class CommandReader extends Thread{
 					}
 
 				case self::TYPE_PIPED:
-					if(($raw = fgets($stdin)) === false){ //broken pipe or EOF
+					if(($raw = fgets(self::$stdin)) === false){ //broken pipe or EOF
 						$this->initStdin();
 						$this->synchronized(function(){
 							$this->wait(200000);
@@ -142,6 +145,9 @@ class CommandReader extends Thread{
 
 		if($line !== ""){
 			$this->buffer[] = preg_replace("#\\x1b\\x5b([^\\x1b]*\\x7e|[\\x40-\\x50])#", "", $line);
+			if($this->notifier !== null){
+				$this->notifier->wakeupSleeper();
+			}
 		}
 
 		return true;
@@ -161,6 +167,8 @@ class CommandReader extends Thread{
 	}
 
 	public function run(){
+		$this->registerClassLoader();
+
 		if($this->type !== self::TYPE_READLINE){
 			$this->initStdin();
 		}
@@ -168,8 +176,7 @@ class CommandReader extends Thread{
 		while(!$this->shutdown and $this->readLine());
 
 		if($this->type !== self::TYPE_READLINE){
-			global $stdin;
-			fclose($stdin);
+			fclose(self::$stdin);
 		}
 
 	}

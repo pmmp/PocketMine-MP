@@ -30,14 +30,11 @@ use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
 use pocketmine\Player;
 use pocketmine\Server;
-use pocketmine\utils\MainLogger;
 
 /**
  * This InventoryTransaction only allows doing Transaction between one / two inventories
  */
 class InventoryTransaction{
-	/** @var float */
-	private $creationTime;
 	protected $hasExecuted = false;
 	/** @var Player */
 	protected $source;
@@ -53,7 +50,6 @@ class InventoryTransaction{
 	 * @param InventoryAction[] $actions
 	 */
 	public function __construct(Player $source, array $actions = []){
-		$this->creationTime = microtime(true);
 		$this->source = $source;
 		foreach($actions as $action){
 			$this->addAction($action);
@@ -65,10 +61,6 @@ class InventoryTransaction{
 	 */
 	public function getSource() : Player{
 		return $this->source;
-	}
-
-	public function getCreationTime() : float{
-		return $this->creationTime;
 	}
 
 	/**
@@ -90,7 +82,7 @@ class InventoryTransaction{
 	 */
 	public function addAction(InventoryAction $action) : void{
 		if(!isset($this->actions[$hash = spl_object_hash($action)])){
-			$this->actions[spl_object_hash($action)] = $action;
+			$this->actions[$hash] = $action;
 			$action->onAddToTransaction($this);
 		}else{
 			throw new \InvalidArgumentException("Tried to add the same action to a transaction twice");
@@ -113,16 +105,16 @@ class InventoryTransaction{
 	 * @param Item[] $needItems
 	 * @param Item[] $haveItems
 	 *
-	 * @return bool
+	 * @throws TransactionValidationException
 	 */
-	protected function matchItems(array &$needItems, array &$haveItems) : bool{
+	protected function matchItems(array &$needItems, array &$haveItems) : void{
 		foreach($this->actions as $key => $action){
 			if(!$action->getTargetItem()->isNull()){
 				$needItems[] = $action->getTargetItem();
 			}
 
 			if(!$action->isValid($this->source)){
-				return false;
+				throw new TransactionValidationException("Action " . get_class($action) . " is not valid in the current transaction");
 			}
 
 			if(!$action->getSourceItem()->isNull()){
@@ -146,8 +138,6 @@ class InventoryTransaction{
 				}
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -159,80 +149,95 @@ class InventoryTransaction{
 	 * multiple slot changes referring to the same slot in a single transaction. These multiples are not even guaranteed
 	 * to be in the correct order (slot splitting in the crafting grid for example, causes the actions to be sent in the
 	 * wrong order), so this method also tries to chain them into order.
-	 *
-	 * @return bool
 	 */
-	protected function squashDuplicateSlotChanges() : bool{
+	protected function squashDuplicateSlotChanges() : void{
 		/** @var SlotChangeAction[][] $slotChanges */
 		$slotChanges = [];
+		/** @var Inventory[] $inventories */
+		$inventories = [];
+		/** @var int[] $slots */
+		$slots = [];
+
 		foreach($this->actions as $key => $action){
 			if($action instanceof SlotChangeAction){
-				$slotChanges[spl_object_hash($action->getInventory()) . "@" . $action->getSlot()][] = $action;
+				$slotChanges[$h = (spl_object_hash($action->getInventory()) . "@" . $action->getSlot())][] = $action;
+				$inventories[$h] = $action->getInventory();
+				$slots[$h] = $action->getSlot();
 			}
 		}
 
 		foreach($slotChanges as $hash => $list){
 			if(count($list) === 1){ //No need to compact slot changes if there is only one on this slot
-				unset($slotChanges[$hash]);
 				continue;
 			}
 
-			$originalList = $list;
+			$inventory = $inventories[$hash];
+			$slot = $slots[$hash];
+			$sourceItem = $inventory->getItem($slot);
 
-			/** @var SlotChangeAction|null $originalAction */
-			$originalAction = null;
-			/** @var Item|null $lastTargetItem */
-			$lastTargetItem = null;
-
-			foreach($list as $i => $action){
-				if($action->isValid($this->source)){
-					$originalAction = $action;
-					$lastTargetItem = $action->getTargetItem();
-					unset($list[$i]);
-					break;
-				}
+			$targetItem = $this->findResultItem($sourceItem, $list);
+			if($targetItem === null){
+				throw new TransactionValidationException("Failed to compact " . count($list) . " duplicate actions");
 			}
 
-			if($originalAction === null){
-				return false; //Couldn't find any actions that had a source-item matching the current inventory slot
-			}
-
-			do{
-				$sortedThisLoop = 0;
-				foreach($list as $i => $action){
-					$actionSource = $action->getSourceItem();
-					if($actionSource->equalsExact($lastTargetItem)){
-						$lastTargetItem = $action->getTargetItem();
-						unset($list[$i]);
-						$sortedThisLoop++;
-					}
-				}
-			}while($sortedThisLoop > 0);
-
-			if(count($list) > 0){ //couldn't chain all the actions together
-				MainLogger::getLogger()->debug("Failed to compact " . count($originalList) . " actions for " . $this->source->getName());
-				return false;
-			}
-
-			foreach($originalList as $action){
+			foreach($list as $action){
 				unset($this->actions[spl_object_hash($action)]);
 			}
 
-			$this->addAction(new SlotChangeAction($originalAction->getInventory(), $originalAction->getSlot(), $originalAction->getSourceItem(), $lastTargetItem));
+			if(!$targetItem->equalsExact($sourceItem)){
+				//sometimes we get actions on the crafting grid whose source and target items are the same, so dump them
+				$this->addAction(new SlotChangeAction($inventory, $slot, $sourceItem, $targetItem));
+			}
 		}
-
-		return true;
 	}
 
 	/**
-	 * @return bool
+	 * @param Item               $needOrigin
+	 * @param SlotChangeAction[] $possibleActions
+	 *
+	 * @return null|Item
 	 */
-	public function canExecute() : bool{
+	protected function findResultItem(Item $needOrigin, array $possibleActions) : ?Item{
+		assert(!empty($possibleActions));
+
+		foreach($possibleActions as $i => $action){
+			if($action->getSourceItem()->equalsExact($needOrigin)){
+				$newList = $possibleActions;
+				unset($newList[$i]);
+				if(empty($newList)){
+					return $action->getTargetItem();
+				}
+				$result = $this->findResultItem($action->getTargetItem(), $newList);
+				if($result !== null){
+					return $result;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Verifies that the transaction can execute.
+	 *
+	 * @throws TransactionValidationException
+	 */
+	public function validate() : void{
 		$this->squashDuplicateSlotChanges();
 
 		$haveItems = [];
 		$needItems = [];
-		return $this->matchItems($needItems, $haveItems) and count($this->actions) > 0 and count($haveItems) === 0 and count($needItems) === 0;
+		$this->matchItems($needItems, $haveItems);
+		if(count($this->actions) === 0){
+			throw new TransactionValidationException("Inventory transaction must have at least one action to be executable");
+		}
+
+		if(count($haveItems) > 0){
+			throw new TransactionValidationException("Transaction does not balance (tried to destroy some items)");
+		}
+		if(count($needItems) > 0){
+			throw new TransactionValidationException("Transaction does not balance (tried to create some items)");
+		}
 	}
 
 	protected function sendInventories() : void{
@@ -249,12 +254,16 @@ class InventoryTransaction{
 	/**
 	 * Executes the group of actions, returning whether the transaction executed successfully or not.
 	 * @return bool
+	 *
+	 * @throws TransactionValidationException
 	 */
 	public function execute() : bool{
-		if($this->hasExecuted() or !$this->canExecute()){
+		if($this->hasExecuted()){
 			$this->sendInventories();
 			return false;
 		}
+
+		$this->validate();
 
 		if(!$this->callExecuteEvent()){
 			$this->sendInventories();

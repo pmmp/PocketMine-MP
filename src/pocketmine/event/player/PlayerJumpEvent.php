@@ -29,7 +29,6 @@ use pocketmine\Player;
  * Called when a player jumps
  */
 class PlayerJumpEvent extends PlayerEvent{
-	public static $handlerList = null;
 
 	/**
 	 * PlayerJumpEvent constructor.
@@ -39,5 +38,4 @@ class PlayerJumpEvent extends PlayerEvent{
 	public function __construct(Player $player){
 		$this->player = $player;
 	}
-
 }

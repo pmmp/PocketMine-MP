@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
-use pocketmine\event\Timings;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginException;
 use pocketmine\Server;
+use pocketmine\timings\Timings;
 
 class PermissibleBase implements Permissible{
 	/** @var ServerOperator */
@@ -53,11 +53,6 @@ class PermissibleBase implements Permissible{
 		if($opable instanceof Permissible){
 			$this->parent = $opable;
 		}
-	}
-
-	public function __destruct(){
-		$this->parent = null;
-		$this->opable = null;
 	}
 
 	/**
@@ -192,11 +187,11 @@ class PermissibleBase implements Permissible{
 	}
 
 	/**
-	 * @param bool[]               $children
-	 * @param bool                 $invert
-	 * @param PermissionAttachment $attachment
+	 * @param bool[]                    $children
+	 * @param bool                      $invert
+	 * @param PermissionAttachment|null $attachment
 	 */
-	private function calculateChildPermissions(array $children, $invert, $attachment){
+	private function calculateChildPermissions(array $children, bool $invert, ?PermissionAttachment $attachment){
 		foreach($children as $name => $v){
 			$perm = Server::getInstance()->getPluginManager()->getPermission($name);
 			$value = ($v xor $invert);

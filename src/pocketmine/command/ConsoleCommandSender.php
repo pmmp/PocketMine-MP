@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\command;
 
-use pocketmine\event\TextContainer;
+use pocketmine\lang\TextContainer;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\Permission;
 use pocketmine\permission\PermissionAttachment;
@@ -93,13 +93,6 @@ class ConsoleCommandSender implements CommandSender{
 	}
 
 	/**
-	 * @return bool
-	 */
-	public function isPlayer() : bool{
-		return false;
-	}
-
-	/**
 	 * @return Server
 	 */
 	public function getServer(){
@@ -152,5 +145,4 @@ class ConsoleCommandSender implements CommandSender{
 		}
 		$this->lineHeight = $height;
 	}
-
 }

@@ -62,5 +62,4 @@ class AnimatePacket extends DataPacket{
 	public function handle(NetworkSession $session) : bool{
 		return $session->handleAnimate($this);
 	}
-
 }

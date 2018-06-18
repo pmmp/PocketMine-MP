@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\entity\Human;
 use pocketmine\level\Position;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\tile\EnderChest;
@@ -33,7 +32,7 @@ class EnderChestInventory extends ChestInventory{
 	/** @var Position */
 	protected $holder;
 
-	public function __construct(Human $owner){
+	public function __construct(){
 		ContainerInventory::__construct(new Position());
 	}
 
@@ -55,7 +54,7 @@ class EnderChestInventory extends ChestInventory{
 	 * @param EnderChest $enderChest
 	 */
 	public function setHolderPosition(EnderChest $enderChest){
-		$this->holder->setComponents($enderChest->getX(), $enderChest->getY(), $enderChest->getZ());
+		$this->holder->setComponents($enderChest->getFloorX(), $enderChest->getFloorY(), $enderChest->getFloorZ());
 		$this->holder->setLevel($enderChest->getLevel());
 	}
 
@@ -66,5 +65,4 @@ class EnderChestInventory extends ChestInventory{
 	public function getHolder(){
 		return $this->holder;
 	}
-
 }

@@ -48,7 +48,7 @@ class BanList{
 	 * @return bool
 	 */
 	public function isEnabled() : bool{
-		return $this->enabled === true;
+		return $this->enabled;
 	}
 
 	/**
@@ -147,9 +147,15 @@ class BanList{
 		if(is_resource($fp)){
 			while(($line = fgets($fp)) !== false){
 				if($line{0} !== "#"){
-					$entry = BanEntry::fromString($line);
-					if($entry instanceof BanEntry){
-						$this->list[$entry->getName()] = $entry;
+					try{
+						$entry = BanEntry::fromString($line);
+						if($entry instanceof BanEntry){
+							$this->list[$entry->getName()] = $entry;
+						}
+					}catch(\Throwable $e){
+						$logger = MainLogger::getLogger();
+						$logger->critical("Failed to parse ban entry from string \"$line\": " . $e->getMessage());
+						$logger->logException($e);
 					}
 				}
 			}
@@ -160,13 +166,13 @@ class BanList{
 	}
 
 	/**
-	 * @param bool $flag
+	 * @param bool $writeHeader
 	 */
-	public function save(bool $flag = true){
+	public function save(bool $writeHeader = true){
 		$this->removeExpired();
 		$fp = @fopen($this->file, "w");
 		if(is_resource($fp)){
-			if($flag === true){
+			if($writeHeader){
 				fwrite($fp, "# Updated " . strftime("%x %H:%M", time()) . " by " . Server::getInstance()->getName() . " " . Server::getInstance()->getPocketMineVersion() . "\n");
 				fwrite($fp, "# victim name | ban date | banned by | banned until | reason\n\n");
 			}
@@ -179,5 +185,4 @@ class BanList{
 			MainLogger::getLogger()->error("Could not save ban list");
 		}
 	}
-
 }

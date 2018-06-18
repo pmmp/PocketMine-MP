@@ -27,8 +27,6 @@ use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
 class PlayerTransferEvent extends PlayerEvent implements Cancellable{
-	public static $handlerList = null;
-
 	/** @var string */
 	protected $address;
 	/** @var int */
@@ -59,7 +57,7 @@ class PlayerTransferEvent extends PlayerEvent implements Cancellable{
 	/**
 	 * @param string $address
 	 */
-	public function setAddress(string $address){
+	public function setAddress(string $address) : void{
 		$this->address = $address;
 	}
 
@@ -73,7 +71,7 @@ class PlayerTransferEvent extends PlayerEvent implements Cancellable{
 	/**
 	 * @param int $port
 	 */
-	public function setPort(int $port){
+	public function setPort(int $port) : void{
 		$this->port = $port;
 	}
 
@@ -87,7 +85,7 @@ class PlayerTransferEvent extends PlayerEvent implements Cancellable{
 	/**
 	 * @param string $message
 	 */
-	public function setMessage(string $message){
+	public function setMessage(string $message) : void{
 		$this->message = $message;
 	}
 }

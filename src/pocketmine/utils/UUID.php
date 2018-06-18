@@ -73,7 +73,7 @@ class UUID{
 	/**
 	 * Creates an UUIDv3 from binary data or list of binary data
 	 *
-	 * @param string[] ...$data
+	 * @param string ...$data
 	 * @return UUID
 	 */
 	public static function fromData(string ...$data) : UUID{

@@ -31,8 +31,6 @@ use pocketmine\Player;
  * Called when a sign is changed by a player.
  */
 class SignChangeEvent extends BlockEvent implements Cancellable{
-	public static $handlerList = null;
-
 	/** @var Player */
 	private $player;
 	/** @var string[] */
@@ -83,7 +81,7 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 	 *
 	 * @throws \InvalidArgumentException if there are more or less than 4 lines in the passed array
 	 */
-	public function setLines(array $lines){
+	public function setLines(array $lines) : void{
 		if(count($lines) !== 4){
 			throw new \InvalidArgumentException("Array size must be 4!");
 		}
@@ -96,7 +94,7 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 	 *
 	 * @throws \InvalidArgumentException if the index is out of bounds
 	 */
-	public function setLine(int $index, string $line){
+	public function setLine(int $index, string $line) : void{
 		if($index < 0 or $index > 3){
 			throw new \InvalidArgumentException("Index must be in the range 0-3!");
 		}

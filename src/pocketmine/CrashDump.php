@@ -64,6 +64,8 @@ class CrashDump{
 		$this->extraData();
 
 		$this->encodeData();
+
+		fclose($this->fp);
 	}
 
 	public function getPath() : string{
@@ -115,10 +117,10 @@ class CrashDump{
 	}
 
 	private function extraData(){
-		global $arguments;
+		global $argv;
 
 		if($this->server->getProperty("auto-report.send-settings", true) !== false){
-			$this->data["parameters"] = (array) $arguments;
+			$this->data["parameters"] = (array) $argv;
 			$this->data["server.properties"] = @file_get_contents($this->server->getDataPath() . "server.properties");
 			$this->data["server.properties"] = preg_replace("#^rcon\\.password=(.*)$#m", "rcon.password=******", $this->data["server.properties"]);
 			$this->data["pocketmine.yml"] = @file_get_contents($this->server->getDataPath() . "pocketmine.yml");
@@ -148,7 +150,7 @@ class CrashDump{
 			$error = $lastExceptionError;
 		}else{
 			$error = (array) error_get_last();
-			$error["trace"] = getTrace(4); //Skipping CrashDump->baseCrash, CrashDump->construct, Server->crashDump
+			$error["trace"] = Utils::getTrace(4); //Skipping CrashDump->baseCrash, CrashDump->construct, Server->crashDump
 			$errorConversion = [
 				E_ERROR => "E_ERROR",
 				E_WARNING => "E_WARNING",
@@ -167,7 +169,7 @@ class CrashDump{
 				E_USER_DEPRECATED => "E_USER_DEPRECATED"
 			];
 			$error["fullFile"] = $error["file"];
-			$error["file"] = cleanPath($error["file"]);
+			$error["file"] = Utils::cleanPath($error["file"]);
 			$error["type"] = $errorConversion[$error["type"]] ?? $error["type"];
 			if(($pos = strpos($error["message"], "\n")) !== false){
 				$error["message"] = substr($error["message"], 0, $pos);
@@ -195,7 +197,7 @@ class CrashDump{
 			$file = $reflection->getProperty("file");
 			$file->setAccessible(true);
 			foreach($this->server->getPluginManager()->getPlugins() as $plugin){
-				$filePath = \pocketmine\cleanPath($file->getValue($plugin));
+				$filePath = Utils::cleanPath($file->getValue($plugin));
 				if(strpos($error["file"], $filePath) === 0){
 					$this->data["plugin"] = $plugin->getName();
 					$this->addLine("BAD PLUGIN: " . $plugin->getDescription()->getFullName());
@@ -227,13 +229,13 @@ class CrashDump{
 	}
 
 	private function generalData(){
-		$version = new VersionString();
+		$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
 		$this->data["general"] = [];
 		$this->data["general"]["name"] = $this->server->getName();
-		$this->data["general"]["version"] = $version->get(false);
+		$this->data["general"]["version"] = $version->getFullVersion(false);
 		$this->data["general"]["build"] = $version->getBuild();
 		$this->data["general"]["protocol"] = ProtocolInfo::CURRENT_PROTOCOL;
-		$this->data["general"]["api"] = \pocketmine\API_VERSION;
+		$this->data["general"]["api"] = \pocketmine\BASE_VERSION;
 		$this->data["general"]["git"] = \pocketmine\GIT_COMMIT;
 		$this->data["general"]["raklib"] = RakLib::VERSION;
 		$this->data["general"]["uname"] = php_uname("a");
@@ -241,7 +243,7 @@ class CrashDump{
 		$this->data["general"]["zend"] = zend_version();
 		$this->data["general"]["php_os"] = PHP_OS;
 		$this->data["general"]["os"] = Utils::getOS();
-		$this->addLine($this->server->getName() . " version: " . $version->get(false) . " #" . $version->getBuild() . " [Protocol " . ProtocolInfo::CURRENT_PROTOCOL . "; API " . API_VERSION . "]");
+		$this->addLine($this->server->getName() . " version: " . $version->getFullVersion(true) . " [Protocol " . ProtocolInfo::CURRENT_PROTOCOL . "]");
 		$this->addLine("Git commit: " . GIT_COMMIT);
 		$this->addLine("uname -a: " . php_uname("a"));
 		$this->addLine("PHP Version: " . phpversion());
@@ -256,5 +258,4 @@ class CrashDump{
 	public function add($str){
 		fwrite($this->fp, $str);
 	}
-
 }

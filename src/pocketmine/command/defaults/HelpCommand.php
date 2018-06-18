@@ -25,7 +25,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\event\TranslationContainer;
+use pocketmine\lang\TranslationContainer;
 use pocketmine\utils\TextFormat;
 
 class HelpCommand extends VanillaCommand{
@@ -99,5 +99,4 @@ class HelpCommand extends VanillaCommand{
 			return true;
 		}
 	}
-
 }

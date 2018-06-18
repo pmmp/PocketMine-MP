@@ -26,6 +26,8 @@ namespace pocketmine\tile;
 use pocketmine\level\Level;
 use pocketmine\nbt\NetworkLittleEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\Player;
 
@@ -66,7 +68,7 @@ abstract class Spawnable extends Tile{
 		}
 
 		$pk = $this->createSpawnPacket();
-		$this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
+		$this->level->addChunkPacket($this->getFloorX() >> 4, $this->getFloorZ() >> 4, $pk);
 	}
 
 	/**
@@ -77,10 +79,7 @@ abstract class Spawnable extends Tile{
 		$this->spawnCompoundCache = null;
 		$this->spawnToAll();
 
-		if($this->chunk !== null){
-			$this->chunk->setChanged();
-			$this->level->clearChunkCache($this->chunk->getX(), $this->chunk->getZ());
-		}
+		$this->level->clearChunkCache($this->getFloorX() >> 4, $this->getFloorZ() >> 4);
 	}
 
 	/**
@@ -95,8 +94,7 @@ abstract class Spawnable extends Tile{
 				self::$nbtWriter = new NetworkLittleEndianNBTStream();
 			}
 
-			self::$nbtWriter->setData($this->getSpawnCompound());
-			$this->spawnCompoundCache = self::$nbtWriter->write();
+			$this->spawnCompoundCache = self::$nbtWriter->write($this->getSpawnCompound());
 		}
 
 		return $this->spawnCompoundCache;
@@ -107,10 +105,10 @@ abstract class Spawnable extends Tile{
 	 */
 	final public function getSpawnCompound() : CompoundTag{
 		$nbt = new CompoundTag("", [
-			$this->namedtag->getTag(self::TAG_ID),
-			$this->namedtag->getTag(self::TAG_X),
-			$this->namedtag->getTag(self::TAG_Y),
-			$this->namedtag->getTag(self::TAG_Z)
+			new StringTag(self::TAG_ID, static::getSaveId()),
+			new IntTag(self::TAG_X, $this->x),
+			new IntTag(self::TAG_Y, $this->y),
+			new IntTag(self::TAG_Z, $this->z)
 		]);
 		$this->addAdditionalSpawnData($nbt);
 		return $nbt;
@@ -122,7 +120,7 @@ abstract class Spawnable extends Tile{
 	 *
 	 * @param CompoundTag $nbt
 	 */
-	abstract public function addAdditionalSpawnData(CompoundTag $nbt) : void;
+	abstract protected function addAdditionalSpawnData(CompoundTag $nbt) : void;
 
 	/**
 	 * Called when a player updates a block entity's NBT data

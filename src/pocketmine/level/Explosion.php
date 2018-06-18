@@ -37,7 +37,6 @@ use pocketmine\item\ItemFactory;
 use pocketmine\level\particle\HugeExplodeSeedParticle;
 use pocketmine\level\utils\SubChunkIteratorManager;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Math;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\ExplodePacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
@@ -46,15 +45,18 @@ use pocketmine\tile\Container;
 use pocketmine\tile\Tile;
 
 class Explosion{
-
-	private $rays = 16; //Rays
+	/** @var int */
+	private $rays = 16;
+	/** @var Level */
 	public $level;
+	/** @var Position */
 	public $source;
+	/** @var float */
 	public $size;
-	/**
-	 * @var Block[]
-	 */
+
+	/** @var Block[] */
 	public $affectedBlocks = [];
+	/** @var float */
 	public $stepLen = 0.3;
 	/** @var Entity|Block */
 	private $what;
@@ -62,12 +64,24 @@ class Explosion{
 	/** @var SubChunkIteratorManager */
 	private $subChunkHandler;
 
-	public function __construct(Position $center, $size, $what = null){
-		$this->level = $center->getLevel();
+	/**
+	 * @param Position     $center
+	 * @param float        $size
+	 * @param Entity|Block $what
+	 */
+	public function __construct(Position $center, float $size, $what = null){
+		if(!$center->isValid()){
+			throw new \InvalidArgumentException("Position does not have a valid level");
+		}
 		$this->source = $center;
-		$this->size = max($size, 0);
-		$this->what = $what;
+		$this->level = $center->getLevel();
 
+		if($size <= 0){
+			throw new \InvalidArgumentException("Explosion radius must be greater than 0, got $size");
+		}
+		$this->size = $size;
+
+		$this->what = $what;
 		$this->subChunkHandler = new SubChunkIteratorManager($this->level, false);
 	}
 
@@ -149,12 +163,12 @@ class Explosion{
 		}
 
 		$explosionSize = $this->size * 2;
-		$minX = Math::floorFloat($this->source->x - $explosionSize - 1);
-		$maxX = Math::ceilFloat($this->source->x + $explosionSize + 1);
-		$minY = Math::floorFloat($this->source->y - $explosionSize - 1);
-		$maxY = Math::ceilFloat($this->source->y + $explosionSize + 1);
-		$minZ = Math::floorFloat($this->source->z - $explosionSize - 1);
-		$maxZ = Math::ceilFloat($this->source->z + $explosionSize + 1);
+		$minX = (int) floor($this->source->x - $explosionSize - 1);
+		$maxX = (int) ceil($this->source->x + $explosionSize + 1);
+		$minY = (int) floor($this->source->y - $explosionSize - 1);
+		$maxY = (int) ceil($this->source->y + $explosionSize + 1);
+		$minZ = (int) floor($this->source->z - $explosionSize - 1);
+		$maxZ = (int) ceil($this->source->z + $explosionSize + 1);
 
 		$explosionBB = new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
 
@@ -197,6 +211,7 @@ class Explosion{
 			}
 
 			$this->level->setBlockIdAt($block->x, $block->y, $block->z, 0);
+			$this->level->setBlockDataAt($block->x, $block->y, $block->z, 0);
 
 			$t = $this->level->getTileAt($block->x, $block->y, $block->z);
 			if($t instanceof Tile){
@@ -221,7 +236,7 @@ class Explosion{
 				if(!isset($this->affectedBlocks[$index = Level::blockHash($sideBlock->x, $sideBlock->y, $sideBlock->z)]) and !isset($updateBlocks[$index])){
 					$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->level->getBlockAt($sideBlock->x, $sideBlock->y, $sideBlock->z)));
 					if(!$ev->isCancelled()){
-						$ev->getBlock()->onUpdate(Level::BLOCK_UPDATE_NORMAL);
+						$ev->getBlock()->onNearbyBlockChange();
 					}
 					$updateBlocks[$index] = true;
 				}
@@ -233,7 +248,7 @@ class Explosion{
 		$pk->position = $this->source->asVector3();
 		$pk->radius = $this->size;
 		$pk->records = $send;
-		$this->level->addChunkPacket($source->x >> 4, $source->z >> 4, $pk);
+		$this->level->addChunkPacket($source->getFloorX() >> 4, $source->getFloorZ() >> 4, $pk);
 
 		$this->level->addParticle(new HugeExplodeSeedParticle($source));
 		$this->level->broadcastLevelSoundEvent($source, LevelSoundEventPacket::SOUND_EXPLODE);

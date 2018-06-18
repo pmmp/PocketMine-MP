@@ -32,4 +32,8 @@ class IronChestplate extends Armor{
 	public function getDefensePoints() : int{
 		return 6;
 	}
+
+	public function getMaxDurability() : int{
+		return 241;
+	}
 }

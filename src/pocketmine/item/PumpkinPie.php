@@ -36,4 +36,3 @@ class PumpkinPie extends Food{
 		return 4.8;
 	}
 }
-

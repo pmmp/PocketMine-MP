@@ -39,7 +39,7 @@ class SimpleChunkManager implements ChunkManager{
 	 * @param int $seed
 	 * @param int $worldHeight
 	 */
-	public function __construct($seed, int $worldHeight = Level::Y_MAX){
+	public function __construct(int $seed, int $worldHeight = Level::Y_MAX){
 		$this->seed = $seed;
 		$this->worldHeight = $worldHeight;
 	}
@@ -172,7 +172,7 @@ class SimpleChunkManager implements ChunkManager{
 		return $this->worldHeight;
 	}
 
-	public function isInWorld(float $x, float $y, float $z) : bool{
+	public function isInWorld(int $x, int $y, int $z) : bool{
 		return (
 			$x <= INT32_MAX and $x >= INT32_MIN and
 			$y < $this->worldHeight and $y >= 0 and

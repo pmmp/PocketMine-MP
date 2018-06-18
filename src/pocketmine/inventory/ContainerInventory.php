@@ -32,7 +32,7 @@ use pocketmine\Player;
 abstract class ContainerInventory extends BaseInventory{
 	/** @var Vector3 */
 	protected $holder;
-	
+
 	public function __construct(Vector3 $holder, array $items = [], int $size = null, string $title = null){
 		$this->holder = $holder;
 		parent::__construct($items, $size, $title);
@@ -51,9 +51,9 @@ abstract class ContainerInventory extends BaseInventory{
 		if($holder instanceof Entity){
 			$pk->entityUniqueId = $holder->getId();
 		}elseif($holder instanceof Vector3){
-			$pk->x = (int) $holder->getX();
-			$pk->y = (int) $holder->getY();
-			$pk->z = (int) $holder->getZ();
+			$pk->x = $holder->getFloorX();
+			$pk->y = $holder->getFloorY();
+			$pk->z = $holder->getFloorZ();
 		}
 
 		$who->dataPacket($pk);

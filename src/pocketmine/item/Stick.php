@@ -32,5 +32,4 @@ class Stick extends Item{
 	public function getFuelTime() : int{
 		return 100;
 	}
-
 }

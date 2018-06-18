@@ -25,11 +25,11 @@ namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Arrow;
+use pocketmine\event\block\BlockBurnEvent;
 use pocketmine\event\entity\EntityCombustByBlockEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Server;
 
@@ -61,10 +61,6 @@ class Fire extends Flowable{
 		return true;
 	}
 
-	public function ticksRandomly() : bool{
-		return true;
-	}
-
 	public function onEntityCollide(Entity $entity) : void{
 		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1);
 		$entity->attack($ev);
@@ -83,35 +79,90 @@ class Fire extends Flowable{
 		return [];
 	}
 
-	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			for($s = 0; $s <= 5; ++$s){
-				$side = $this->getSide($s);
-				if($side->getId() !== self::AIR and !($side instanceof Liquid)){
-					return false;
-				}
-			}
+	public function onNearbyBlockChange() : void{
+		if(!$this->getSide(Vector3::SIDE_DOWN)->isSolid() and !$this->hasAdjacentFlammableBlocks()){
 			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true);
+		}else{
+			$this->level->scheduleDelayedBlockUpdate($this, mt_rand(30, 40));
+		}
+	}
 
-			return Level::BLOCK_UPDATE_NORMAL;
-		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
-			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::NETHERRACK){
-				if(mt_rand(0, 2) === 0){
-					if($this->meta === 0x0F){
-						$this->level->setBlock($this, BlockFactory::get(Block::AIR));
-					}else{
-						$this->meta++;
-						$this->level->setBlock($this, $this);
-					}
+	public function ticksRandomly() : bool{
+		return true;
+	}
 
-					return Level::BLOCK_UPDATE_NORMAL;
+	public function onRandomTick() : void{
+		$down = $this->getSide(Vector3::SIDE_DOWN);
+
+		$result = null;
+		if($this->meta < 15 and mt_rand(0, 2) === 0){
+			$this->meta++;
+			$result = $this;
+		}
+		$canSpread = true;
+
+		if(!$down->burnsForever()){
+			//TODO: check rain
+			if($this->meta === 15){
+				if(!$down->isFlammable() and mt_rand(0, 3) === 3){ //1/4 chance to extinguish
+					$canSpread = false;
+					$result = BlockFactory::get(Block::AIR);
+				}
+			}elseif(!$this->hasAdjacentFlammableBlocks()){
+				$canSpread = false;
+				if(!$down->isSolid() or $this->meta > 3){ //fire older than 3, or without a solid block below
+					$result = BlockFactory::get(Block::AIR);
 				}
 			}
+		}
+
+		if($result !== null){
+			$this->level->setBlock($this, $result);
+		}
+
+		$this->level->scheduleDelayedBlockUpdate($this, mt_rand(30, 40));
+
+		if($canSpread){
+			//TODO: raise upper bound for chance in humid biomes
+
+			foreach($this->getHorizontalSides() as $side){
+				$this->burnBlock($side, 300);
+			}
+
+			//vanilla uses a 250 upper bound here, but I don't think they intended to increase the chance of incineration
+			$this->burnBlock($this->getSide(Vector3::SIDE_UP), 350);
+			$this->burnBlock($this->getSide(Vector3::SIDE_DOWN), 350);
 
 			//TODO: fire spread
+		}
+	}
+
+	public function onScheduledUpdate() : void{
+		$this->onRandomTick();
+	}
+
+	private function hasAdjacentFlammableBlocks() : bool{
+		for($i = 0; $i <= 5; ++$i){
+			if($this->getSide($i)->isFlammable()){
+				return true;
+			}
 		}
 
 		return false;
 	}
 
+	private function burnBlock(Block $block, int $chanceBound) : void{
+		if(mt_rand(0, $chanceBound) < $block->getFlammability()){
+			$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockBurnEvent($block, $this));
+			if(!$ev->isCancelled()){
+				$block->onIncinerate();
+
+				if(mt_rand(0, $this->meta + 9) < 5){ //TODO: check rain
+					$this->level->setBlock($block, BlockFactory::get(Block::FIRE, min(15, $this->meta + (mt_rand(0, 4) >> 2))));
+				}else{
+					$this->level->setBlock($block, BlockFactory::get(Block::AIR));
+				}
+			}
+		}
+	}
 }

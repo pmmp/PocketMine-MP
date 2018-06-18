@@ -57,4 +57,8 @@ class MonsterSpawner extends Transparent{
 	public function isAffectedBySilkTouch() : bool{
 		return false;
 	}
+
+	protected function getXpDropAmount() : int{
+		return mt_rand(15, 43);
+	}
 }

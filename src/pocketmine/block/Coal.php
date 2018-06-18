@@ -52,4 +52,12 @@ class Coal extends Solid{
 	public function getFuelTime() : int{
 		return 16000;
 	}
+
+	public function getFlameEncouragement() : int{
+		return 5;
+	}
+
+	public function getFlammability() : int{
+		return 5;
+	}
 }

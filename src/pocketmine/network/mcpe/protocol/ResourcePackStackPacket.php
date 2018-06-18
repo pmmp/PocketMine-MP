@@ -29,7 +29,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\resourcepacks\ResourcePack;
-use pocketmine\resourcepacks\ResourcePackInfoEntry;
 
 class ResourcePackStackPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_STACK_PACKET;
@@ -66,14 +65,14 @@ class ResourcePackStackPacket extends DataPacket{
 		foreach($this->behaviorPackStack as $entry){
 			$this->putString($entry->getPackId());
 			$this->putString($entry->getPackVersion());
-			$this->putString(""); //TODO
+			$this->putString(""); //TODO: subpack name
 		}
 
 		$this->putUnsignedVarInt(count($this->resourcePackStack));
 		foreach($this->resourcePackStack as $entry){
 			$this->putString($entry->getPackId());
 			$this->putString($entry->getPackVersion());
-			$this->putString(""); //TODO
+			$this->putString(""); //TODO: subpack name
 		}
 	}
 

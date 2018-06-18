@@ -45,5 +45,4 @@ class SetHealthPacket extends DataPacket{
 	public function handle(NetworkSession $session) : bool{
 		return $session->handleSetHealth($this);
 	}
-
 }

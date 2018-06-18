@@ -93,16 +93,17 @@ interface LevelProvider{
 	public function saveChunk(Chunk $chunk) : void;
 
 	/**
-	 * Loads a chunk (usually from disk storage) and returns it. If the chunk does not exist, null is returned, or an
-	 * empty Chunk if $create is specified.
+	 * Loads a chunk (usually from disk storage) and returns it. If the chunk does not exist, null is returned.
 	 *
-	 * @param int  $chunkX
-	 * @param int  $chunkZ
-	 * @param bool $create
+	 * @param int $chunkX
+	 * @param int $chunkZ
 	 *
 	 * @return null|Chunk
+	 *
+	 * @throws \Exception any of a range of exceptions that could be thrown while reading chunks. See individual
+	 * implementations for details.
 	 */
-	public function loadChunk(int $chunkX, int $chunkZ, bool $create = false) : ?Chunk;
+	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk;
 
 	/**
 	 * @return string

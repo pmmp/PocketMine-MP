@@ -29,7 +29,6 @@ use pocketmine\command\CommandSender;
  * This event is called when a command is received over RCON.
  */
 class RemoteServerCommandEvent extends ServerCommandEvent{
-	public static $handlerList = null;
 
 	/**
 	 * @param CommandSender $sender
@@ -38,5 +37,4 @@ class RemoteServerCommandEvent extends ServerCommandEvent{
 	public function __construct(CommandSender $sender, string $command){
 		parent::__construct($sender, $command);
 	}
-
 }

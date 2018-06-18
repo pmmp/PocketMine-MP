@@ -23,11 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\entity\Effect;
+use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Living;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item;
-use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -73,16 +72,10 @@ class Cake extends Transparent implements FoodSource{
 		return false;
 	}
 
-	public function onUpdate(int $type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(Vector3::SIDE_DOWN)->getId() === self::AIR){ //Replace with common break method
-				$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true);
-
-				return Level::BLOCK_UPDATE_NORMAL;
-			}
+	public function onNearbyBlockChange() : void{
+		if($this->getSide(Vector3::SIDE_DOWN)->getId() === self::AIR){ //Replace with common break method
+			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true);
 		}
-
-		return false;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
@@ -127,7 +120,7 @@ class Cake extends Transparent implements FoodSource{
 	}
 
 	/**
-	 * @return Effect[]
+	 * @return EffectInstance[]
 	 */
 	public function getAdditionalEffects() : array{
 		return [];

@@ -24,8 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\level\generator\populator;
 
 use pocketmine\block\BlockFactory;
+use pocketmine\block\Liquid;
+use pocketmine\level\biome\Biome;
 use pocketmine\level\ChunkManager;
-use pocketmine\level\generator\biome\Biome;
 use pocketmine\utils\Random;
 
 class GroundCover extends Populator{
@@ -54,6 +55,9 @@ class GroundCover extends Populator{
 						$b = $cover[$startY - $y];
 						if($column{$y} === "\x00" and $b->isSolid()){
 							break;
+						}
+						if($b->canBeFlowedInto() and BlockFactory::get(ord($column{$y})) instanceof Liquid){
+							continue;
 						}
 						if($b->getDamage() === 0){
 							$chunk->setBlockId($x, $y, $z, $b->getId());

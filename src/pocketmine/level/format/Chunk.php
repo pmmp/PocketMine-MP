@@ -81,9 +81,6 @@ class Chunk{
 	/** @var string */
 	protected $biomeIds;
 
-	/** @var int[] */
-	protected $extraData = [];
-
 	/** @var CompoundTag[] */
 	protected $NBTtiles = [];
 
@@ -98,16 +95,15 @@ class Chunk{
 	 * @param CompoundTag[]       $tiles
 	 * @param string              $biomeIds
 	 * @param int[]               $heightMap
-	 * @param int[]               $extraData
 	 */
-	public function __construct(int $chunkX, int $chunkZ, array $subChunks = [], array $entities = [], array $tiles = [], string $biomeIds = "", array $heightMap = [], array $extraData = []){
+	public function __construct(int $chunkX, int $chunkZ, array $subChunks = [], array $entities = [], array $tiles = [], string $biomeIds = "", array $heightMap = []){
 		$this->x = $chunkX;
 		$this->z = $chunkZ;
 
 		$this->height = Chunk::MAX_SUBCHUNKS; //TODO: add a way of changing this
 
 		$this->subChunks = new \SplFixedArray($this->height);
-		$this->emptySubChunk = new EmptySubChunk();
+		$this->emptySubChunk = EmptySubChunk::getInstance();
 
 		foreach($this->subChunks as $y => $null){
 			$this->subChunks[$y] = $subChunks[$y] ?? $this->emptySubChunk;
@@ -127,8 +123,6 @@ class Chunk{
 			assert($biomeIds === "", "Wrong BiomeIds value count, expected 256, got " . strlen($biomeIds));
 			$this->biomeIds = str_repeat("\x00", 256);
 		}
-
-		$this->extraData = $extraData;
 
 		$this->NBTtiles = $tiles;
 		$this->NBTentities = $entities;
@@ -192,7 +186,7 @@ class Chunk{
 	 *
 	 * @return bool
 	 */
-	public function setBlock(int $x, int $y, int $z, $blockId = null, $meta = null) : bool{
+	public function setBlock(int $x, int $y, int $z, ?int $blockId = null, ?int $meta = null) : bool{
 		if($this->getSubChunk($y >> 4, true)->setBlock($x, $y & 0x0f, $z, $blockId !== null ? ($blockId & 0xff) : null, $meta !== null ? ($meta & 0x0f) : null)){
 			$this->hasChanged = true;
 			return true;
@@ -252,37 +246,6 @@ class Chunk{
 		if($this->getSubChunk($y >> 4, true)->setBlockData($x, $y & 0x0f, $z, $data)){
 			$this->hasChanged = true;
 		}
-	}
-
-	/**
-	 * Returns the raw block extra data value at the specified chunk block coordinates, or 0 if no data exists
-	 *
-	 * @param int $x 0-15
-	 * @param int $y
-	 * @param int $z 0-15
-	 *
-	 * @return int bitmap, (meta << 8) | id
-	 */
-	public function getBlockExtraData(int $x, int $y, int $z) : int{
-		return $this->extraData[Chunk::chunkBlockHash($x, $y, $z)] ?? 0;
-	}
-
-	/**
-	 * Sets the raw block extra data value at the specified chunk block coordinates
-	 *
-	 * @param int $x 0-15
-	 * @param int $y
-	 * @param int $z 0-15
-	 * @param int $data bitmap, (meta << 8) | id
-	 */
-	public function setBlockExtraData(int $x, int $y, int $z, int $data){
-		if($data === 0){
-			unset($this->extraData[Chunk::chunkBlockHash($x, $y, $z)]);
-		}else{
-			$this->extraData[Chunk::chunkBlockHash($x, $y, $z)] = $data;
-		}
-
-		$this->hasChanged = true;
 	}
 
 	/**
@@ -723,11 +686,6 @@ class Chunk{
 							continue;
 						}
 
-						if(($nbt["Pos"][0] >> 4) !== $this->x or ($nbt["Pos"][2] >> 4) !== $this->z){
-							$changed = true;
-							continue; //Fixes entities allocated in wrong chunks.
-						}
-
 						try{
 							$entity = Entity::createEntity($nbt->getTag("id")->getValue(), $level, $nbt);
 							if(!($entity instanceof Entity)){
@@ -749,11 +707,6 @@ class Chunk{
 						if(!$nbt->hasTag(Tile::TAG_ID, StringTag::class)){
 							$changed = true;
 							continue;
-						}
-
-						if(($nbt->getInt(Tile::TAG_X) >> 4) !== $this->x or ($nbt->getInt(Tile::TAG_Z) >> 4) !== $this->z){
-							$changed = true;
-							continue; //Fixes tiles allocated in wrong chunks.
 						}
 
 						if(Tile::createTile($nbt->getString(Tile::TAG_ID), $level, $nbt) === null){
@@ -787,13 +740,6 @@ class Chunk{
 	 */
 	public function getHeightMapArray() : array{
 		return $this->heightMap;
-	}
-
-	/**
-	 * @return int[]
-	 */
-	public function getBlockExtraDataArray() : array{
-		return $this->extraData;
 	}
 
 	/**
@@ -916,14 +862,6 @@ class Chunk{
 		        .  chr(0); //border block array count
 		//Border block entry format: 1 byte (4 bits X, 4 bits Z). These are however useless since they crash the regular client.
 
-		$extraData = new BinaryStream();
-		$extraData->putVarInt(count($this->extraData)); //WHY, Mojang, WHY
-		foreach($this->extraData as $key => $value){
-			$extraData->putVarInt($key);
-			$extraData->putLShort($value);
-		}
-		$result .= $extraData->getBuffer();
-
 		foreach($this->tiles as $tile){
 			if($tile instanceof Spawnable){
 				$result .= $tile->getSerializedSpawnCompound();
@@ -987,19 +925,4 @@ class Chunk{
 		$chunk->terrainGenerated = (bool) ($flags & 1);
 		return $chunk;
 	}
-
-	/**
-	 * Creates a block hash from chunk block coordinates. Used for extra data keys in chunk packets.
-	 * @internal
-	 *
-	 * @param int $x 0-15
-	 * @param int $y 0-255
-	 * @param int $z 0-15
-	 *
-	 * @return int
-	 */
-	public static function chunkBlockHash(int $x, int $y, int $z) : int{
-		return ($x << 12) | ($z << 8) | $y;
-	}
-
 }

@@ -27,8 +27,6 @@ use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 
 class EntityCombustEvent extends EntityEvent implements Cancellable{
-	public static $handlerList = null;
-
 	protected $duration;
 
 	/**
@@ -48,8 +46,7 @@ class EntityCombustEvent extends EntityEvent implements Cancellable{
 		return $this->duration;
 	}
 
-	public function setDuration(int $duration){
+	public function setDuration(int $duration) : void{
 		$this->duration = $duration;
 	}
-
 }

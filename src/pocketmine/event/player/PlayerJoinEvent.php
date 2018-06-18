@@ -23,15 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\event\TextContainer;
+use pocketmine\lang\TextContainer;
 use pocketmine\Player;
 
 /**
  * Called when a player joins the server, after sending all the spawn packets
  */
 class PlayerJoinEvent extends PlayerEvent{
-	public static $handlerList = null;
-
 	/** @var string|TextContainer */
 	protected $joinMessage;
 
@@ -49,7 +47,7 @@ class PlayerJoinEvent extends PlayerEvent{
 	/**
 	 * @param string|TextContainer $joinMessage
 	 */
-	public function setJoinMessage($joinMessage){
+	public function setJoinMessage($joinMessage) : void{
 		$this->joinMessage = $joinMessage;
 	}
 
@@ -59,5 +57,4 @@ class PlayerJoinEvent extends PlayerEvent{
 	public function getJoinMessage(){
 		return $this->joinMessage;
 	}
-
 }

@@ -26,7 +26,7 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\Creature;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
-use pocketmine\entity\Item;
+use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\entity\Vehicle;
 
@@ -34,8 +34,6 @@ use pocketmine\entity\Vehicle;
  * Called when a entity is despawned
  */
 class EntityDespawnEvent extends EntityEvent{
-	public static $handlerList = null;
-
 	/** @var int */
 	private $entityType;
 
@@ -86,7 +84,6 @@ class EntityDespawnEvent extends EntityEvent{
 	 * @return bool
 	 */
 	public function isItem() : bool{
-		return $this->entity instanceof Item;
+		return $this->entity instanceof ItemEntity;
 	}
-
 }

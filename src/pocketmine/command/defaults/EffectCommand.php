@@ -26,7 +26,8 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\entity\Effect;
-use pocketmine\event\TranslationContainer;
+use pocketmine\entity\EffectInstance;
+use pocketmine\lang\TranslationContainer;
 use pocketmine\utils\TextFormat;
 
 class EffectCommand extends VanillaCommand{
@@ -79,26 +80,26 @@ class EffectCommand extends VanillaCommand{
 		$amplification = 0;
 
 		if(count($args) >= 3){
-			$duration = ((int) $args[2]) * 20; //ticks
+			if(($d = $this->getBoundedInt($sender, $args[2], 0, INT32_MAX)) === null){
+				return false;
+			}
+			$duration = $d * 20; //ticks
 		}else{
-			$duration = $effect->getDefaultDuration();
+			$duration = null;
 		}
 
 		if(count($args) >= 4){
-			$amplification = (int) $args[3];
-			if($amplification > 255){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.num.tooBig", [(string) $args[3], "255"]));
-				return true;
-			}elseif($amplification < 0){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.num.tooSmall", [(string) $args[3], "0"]));
-				return true;
+			$amplification = $this->getBoundedInt($sender, $args[3], 0, 255);
+			if($amplification === null){
+				return false;
 			}
 		}
 
+		$visible = true;
 		if(count($args) >= 5){
 			$v = strtolower($args[4]);
 			if($v === "on" or $v === "true" or $v === "t" or $v === "1"){
-				$effect->setVisible(false);
+				$visible = false;
 			}
 		}
 
@@ -115,10 +116,9 @@ class EffectCommand extends VanillaCommand{
 			$player->removeEffect($effect->getId());
 			$sender->sendMessage(new TranslationContainer("commands.effect.success.removed", [$effect->getName(), $player->getDisplayName()]));
 		}else{
-			$effect->setDuration($duration)->setAmplifier($amplification);
-
-			$player->addEffect($effect);
-			self::broadcastCommandMessage($sender, new TranslationContainer("%commands.effect.success", [$effect->getName(), $effect->getAmplifier(), $player->getDisplayName(), $effect->getDuration() / 20, $effect->getId()]));
+			$instance = new EffectInstance($effect, $duration, $amplification, $visible);
+			$player->addEffect($instance);
+			self::broadcastCommandMessage($sender, new TranslationContainer("%commands.effect.success", [$effect->getName(), $instance->getAmplifier(), $player->getDisplayName(), $instance->getDuration() / 20, $effect->getId()]));
 		}
 
 

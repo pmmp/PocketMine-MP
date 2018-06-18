@@ -45,5 +45,4 @@ class HurtArmorPacket extends DataPacket{
 	public function handle(NetworkSession $session) : bool{
 		return $session->handleHurtArmor($this);
 	}
-
 }

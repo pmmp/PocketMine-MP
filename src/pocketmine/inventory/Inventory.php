@@ -82,7 +82,7 @@ interface Inventory{
 	 *
 	 * Returns the Items that did not fit.
 	 *
-	 * @param Item[] ...$slots
+	 * @param Item ...$slots
 	 *
 	 * @return Item[]
 	 */
@@ -101,7 +101,7 @@ interface Inventory{
 	 * Removes the given Item from the inventory.
 	 * It will return the Items that couldn't be removed.
 	 *
-	 * @param Item[] ...$slots
+	 * @param Item ...$slots
 	 *
 	 * @return Item[]
 	 */
@@ -172,6 +172,15 @@ interface Inventory{
 	public function firstEmpty() : int;
 
 	/**
+	 * Returns whether the given slot is empty.
+	 *
+	 * @param int $index
+	 *
+	 * @return bool
+	 */
+	public function isSlotEmpty(int $index) : bool;
+
+	/**
 	 * Will remove all the Items that has the same id and metadata (if not null)
 	 *
 	 * @param Item $item
@@ -238,4 +247,14 @@ interface Inventory{
 	 * @return bool
 	 */
 	public function slotExists(int $slot) : bool;
+
+	/**
+	 * @return null|InventoryEventProcessor
+	 */
+	public function getEventProcessor() : ?InventoryEventProcessor;
+
+	/**
+	 * @param null|InventoryEventProcessor $eventProcessor
+	 */
+	public function setEventProcessor(?InventoryEventProcessor $eventProcessor) : void;
 }

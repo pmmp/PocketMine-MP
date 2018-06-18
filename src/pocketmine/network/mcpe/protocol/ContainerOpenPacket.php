@@ -61,5 +61,4 @@ class ContainerOpenPacket extends DataPacket{
 	public function handle(NetworkSession $session) : bool{
 		return $session->handleContainerOpen($this);
 	}
-
 }

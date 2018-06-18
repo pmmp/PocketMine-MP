@@ -25,111 +25,60 @@ namespace pocketmine\tile;
 
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\StringTag;
 
 /**
  * This trait implements most methods in the {@link Container} interface. It should only be used by Tiles.
  */
 trait ContainerTrait{
-
-	/**
-	 * @return int
-	 */
-	abstract public function getSize() : int;
-
-	abstract public function getNBT() : CompoundTag;
+	/** @var string|null */
+	private $lock;
 
 	/**
 	 * @return Inventory
 	 */
 	abstract public function getRealInventory();
 
-	/**
-	 * @param $index
-	 *
-	 * @return int
-	 */
-	protected function getSlotIndex(int $index) : int{
-		foreach($this->getNBT()->getListTag(Container::TAG_ITEMS) as $i => $slot){
-			/** @var CompoundTag $slot */
-			if($slot->getByte("Slot") === $index){
-				return (int) $i;
+	protected function loadItems(CompoundTag $tag) : void{
+		if($tag->hasTag(Container::TAG_ITEMS, ListTag::class)){
+			$inventoryTag = $tag->getListTag(Container::TAG_ITEMS);
+
+			$inventory = $this->getRealInventory();
+			/** @var CompoundTag $itemNBT */
+			foreach($inventoryTag as $itemNBT){
+				$inventory->setItem($itemNBT->getByte("Slot"), Item::nbtDeserialize($itemNBT));
 			}
 		}
 
-		return -1;
+		if($tag->hasTag(Container::TAG_LOCK, StringTag::class)){
+			$this->lock = $tag->getString(Container::TAG_LOCK);
+		}
+	}
+
+	protected function saveItems(CompoundTag $tag) : void{
+		$items = [];
+		foreach($this->getRealInventory()->getContents() as $slot => $item){
+			$items[] = $item->nbtSerialize($slot);
+		}
+
+		$tag->setTag(new ListTag(Container::TAG_ITEMS, $items, NBT::TAG_Compound));
+
+		if($this->lock !== null){
+			$tag->setString(Container::TAG_LOCK, $this->lock);
+		}
 	}
 
 	/**
-	 * This method should not be used by plugins, use the Inventory
+	 * @see Container::canOpenWith()
 	 *
-	 * @param int $index
+	 * @param string $key
 	 *
-	 * @return Item
+	 * @return bool
 	 */
-	public function getItem(int $index) : Item{
-		$i = $this->getSlotIndex($index);
-		/** @var CompoundTag|null $itemTag */
-		$itemTag = $this->getNBT()->getListTag(Container::TAG_ITEMS)[$i] ?? null;
-		if($itemTag !== null){
-			return Item::nbtDeserialize($itemTag);
-		}
-
-		return ItemFactory::get(Item::AIR, 0, 0);
-	}
-
-	/**
-	 * This method should not be used by plugins, use the Inventory
-	 *
-	 * @param int  $index
-	 * @param Item $item
-	 */
-	public function setItem(int $index, Item $item) : void{
-		$i = $this->getSlotIndex($index);
-
-		$d = $item->nbtSerialize($index);
-
-		$items = $this->getNBT()->getListTag(Container::TAG_ITEMS);
-		assert($items instanceof ListTag);
-
-		if($item->isNull()){
-			if($i >= 0){
-				unset($items[$i]);
-			}
-		}elseif($i < 0){
-			for($i = 0; $i <= $this->getSize(); ++$i){
-				if(!isset($items[$i])){
-					break;
-				}
-			}
-			$items[$i] = $d;
-		}else{
-			$items[$i] = $d;
-		}
-
-		$this->getNBT()->setTag($items);
-	}
-
-	protected function loadItems() : void{
-		if(!$this->getNBT()->hasTag(Container::TAG_ITEMS, ListTag::class)){
-			$this->getNBT()->setTag(new ListTag(Container::TAG_ITEMS, [], NBT::TAG_Compound));
-		}
-
-		$inventory = $this->getRealInventory();
-		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
-			$inventory->setItem($i, $this->getItem($i));
-		}
-	}
-
-	protected function saveItems() : void{
-		$this->getNBT()->setTag(new ListTag(Container::TAG_ITEMS, [], NBT::TAG_Compound));
-
-		$inventory = $this->getRealInventory();
-		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
-			$this->setItem($i, $inventory->getItem($i));
-		}
+	public function canOpenWith(string $key) : bool{
+		return $this->lock === null or $this->lock === $key;
 	}
 }

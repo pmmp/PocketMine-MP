@@ -28,8 +28,6 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\entity\EntityEvent;
 
 class PlayerExhaustEvent extends EntityEvent implements Cancellable{
-	public static $handlerList = null;
-
 	public const CAUSE_ATTACK = 1;
 	public const CAUSE_DAMAGE = 2;
 	public const CAUSE_MINING = 3;
@@ -68,7 +66,7 @@ class PlayerExhaustEvent extends EntityEvent implements Cancellable{
 		return $this->amount;
 	}
 
-	public function setAmount(float $amount){
+	public function setAmount(float $amount) : void{
 		$this->amount = $amount;
 	}
 

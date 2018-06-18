@@ -70,6 +70,8 @@ class StartGamePacket extends DataPacket{
 	public $time = -1;
 	/** @var bool */
 	public $eduMode = false;
+	/** @var bool */
+	public $hasEduFeaturesEnabled = false;
 	/** @var float */
 	public $rainLevel;
 	/** @var float */
@@ -96,6 +98,20 @@ class StartGamePacket extends DataPacket{
 	public $defaultPlayerPermission = PlayerPermissions::MEMBER; //TODO
 	/** @var int */
 	public $xboxLiveBroadcastMode = 0; //TODO: find values
+	/** @var int */
+	public $serverChunkTickRadius = 4; //TODO (leave as default for now)
+	/** @var bool */
+	public $hasPlatformBroadcast = false;
+	/** @var int */
+	public $platformBroadcastMode = 0;
+	/** @var bool */
+	public $xboxLiveBroadcastIntent = false;
+	/** @var bool */
+	public $hasLockedBehaviorPack = false;
+	/** @var bool */
+	public $hasLockedResourcePack = false;
+	/** @var bool */
+	public $isFromLockedWorldTemplate = false;
 
 	/** @var string */
 	public $levelId = ""; //base64 string, usually the same as world folder name in vanilla
@@ -104,9 +120,9 @@ class StartGamePacket extends DataPacket{
 	/** @var string */
 	public $premiumWorldTemplateId = "";
 	/** @var bool */
-	public $unknownBool = false;
+	public $isTrial = false;
 	/** @var int */
-	public $currentTick = 0;
+	public $currentTick = 0; //only used if isTrial is true
 	/** @var int */
 	public $enchantmentSeed = 0;
 
@@ -130,6 +146,7 @@ class StartGamePacket extends DataPacket{
 		$this->hasAchievementsDisabled = $this->getBool();
 		$this->time = $this->getVarInt();
 		$this->eduMode = $this->getBool();
+		$this->hasEduFeaturesEnabled = $this->getBool();
 		$this->rainLevel = $this->getLFloat();
 		$this->lightningLevel = $this->getLFloat();
 		$this->isMultiplayerGame = $this->getBool();
@@ -143,11 +160,18 @@ class StartGamePacket extends DataPacket{
 		$this->hasTrustPlayersEnabled = $this->getBool();
 		$this->defaultPlayerPermission = $this->getVarInt();
 		$this->xboxLiveBroadcastMode = $this->getVarInt();
+		$this->serverChunkTickRadius = $this->getLInt();
+		$this->hasPlatformBroadcast = $this->getBool();
+		$this->platformBroadcastMode = $this->getVarInt();
+		$this->xboxLiveBroadcastIntent = $this->getBool();
+		$this->hasLockedBehaviorPack = $this->getBool();
+		$this->hasLockedResourcePack = $this->getBool();
+		$this->isFromLockedWorldTemplate = $this->getBool();
 
 		$this->levelId = $this->getString();
 		$this->worldName = $this->getString();
 		$this->premiumWorldTemplateId = $this->getString();
-		$this->unknownBool = $this->getBool();
+		$this->isTrial = $this->getBool();
 		$this->currentTick = $this->getLLong();
 
 		$this->enchantmentSeed = $this->getVarInt();
@@ -173,6 +197,7 @@ class StartGamePacket extends DataPacket{
 		$this->putBool($this->hasAchievementsDisabled);
 		$this->putVarInt($this->time);
 		$this->putBool($this->eduMode);
+		$this->putBool($this->hasEduFeaturesEnabled);
 		$this->putLFloat($this->rainLevel);
 		$this->putLFloat($this->lightningLevel);
 		$this->putBool($this->isMultiplayerGame);
@@ -186,11 +211,18 @@ class StartGamePacket extends DataPacket{
 		$this->putBool($this->hasTrustPlayersEnabled);
 		$this->putVarInt($this->defaultPlayerPermission);
 		$this->putVarInt($this->xboxLiveBroadcastMode);
+		$this->putLInt($this->serverChunkTickRadius);
+		$this->putBool($this->hasPlatformBroadcast);
+		$this->putVarInt($this->platformBroadcastMode);
+		$this->putBool($this->xboxLiveBroadcastIntent);
+		$this->putBool($this->hasLockedBehaviorPack);
+		$this->putBool($this->hasLockedResourcePack);
+		$this->putBool($this->isFromLockedWorldTemplate);
 
 		$this->putString($this->levelId);
 		$this->putString($this->worldName);
 		$this->putString($this->premiumWorldTemplateId);
-		$this->putBool($this->unknownBool);
+		$this->putBool($this->isTrial);
 		$this->putLLong($this->currentTick);
 
 		$this->putVarInt($this->enchantmentSeed);
@@ -199,5 +231,4 @@ class StartGamePacket extends DataPacket{
 	public function handle(NetworkSession $session) : bool{
 		return $session->handleStartGame($this);
 	}
-
 }

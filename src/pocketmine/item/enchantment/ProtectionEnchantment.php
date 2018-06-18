@@ -37,13 +37,14 @@ class ProtectionEnchantment extends Enchantment{
 	 * @param int        $id
 	 * @param string     $name
 	 * @param int        $rarity
-	 * @param int        $slot
+	 * @param int        $primaryItemFlags
+	 * @param int        $secondaryItemFlags
 	 * @param int        $maxLevel
 	 * @param float      $typeModifier
 	 * @param int[]|null $applicableDamageTypes EntityDamageEvent::CAUSE_* constants which this enchantment type applies to, or null if it applies to all types of damage.
 	 */
-	public function __construct(int $id, string $name, int $rarity, int $slot, int $maxLevel, float $typeModifier, ?array $applicableDamageTypes){
-		parent::__construct($id, $name, $rarity, $slot, $maxLevel);
+	public function __construct(int $id, string $name, int $rarity, int $primaryItemFlags, int $secondaryItemFlags, int $maxLevel, float $typeModifier, ?array $applicableDamageTypes){
+		parent::__construct($id, $name, $rarity, $primaryItemFlags, $secondaryItemFlags, $maxLevel);
 
 		$this->typeModifier = $typeModifier;
 		if($applicableDamageTypes !== null){

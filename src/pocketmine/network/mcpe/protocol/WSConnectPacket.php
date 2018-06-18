@@ -31,14 +31,14 @@ class WSConnectPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::W_S_CONNECT_PACKET;
 
 	/** @var string */
-	public $string1;
+	public $serverUri;
 
 	protected function decodePayload(){
-		$this->string1 = $this->getString();
+		$this->serverUri = $this->getString();
 	}
 
 	protected function encodePayload(){
-		$this->putString($this->string1);
+		$this->putString($this->serverUri);
 	}
 
 	public function handle(NetworkSession $session) : bool{

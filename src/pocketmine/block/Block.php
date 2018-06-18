@@ -30,7 +30,6 @@ use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\RayTraceResult;
@@ -278,6 +277,12 @@ class Block extends Position implements BlockIds, Metadatable{
 		return $base;
 	}
 
+	/**
+	 * Called when this block or a block immediately adjacent to it changes state.
+	 */
+	public function onNearbyBlockChange() : void{
+
+	}
 
 	/**
 	 * Returns whether random block updates will be done on this block.
@@ -289,14 +294,18 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * Fires a block update on the Block
-	 *
-	 * @param int $type
-	 *
-	 * @return bool|int
+	 * Called when this block is randomly updated due to chunk ticking.
+	 * WARNING: This will not be called if ticksRandomly() does not return true!
 	 */
-	public function onUpdate(int $type){
-		return false;
+	public function onRandomTick() : void{
+
+	}
+
+	/**
+	 * Called when this block is updated by the delayed blockupdate scheduler in the level.
+	 */
+	public function onScheduledUpdate() : void{
+
 	}
 
 	/**
@@ -317,14 +326,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getHardness() : float{
 		return 10;
-	}
-
-	/**
-	 * @deprecated
-	 * @return float
-	 */
-	public function getResistance() : float{
-		return $this->getBlastResistance();
 	}
 
 	/**
@@ -471,6 +472,30 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Returns how much XP will be dropped by breaking this block with the given item.
+	 *
+	 * @param Item $item
+	 *
+	 * @return int
+	 */
+	public function getXpDropForTool(Item $item) : int{
+		if($item->hasEnchantment(Enchantment::SILK_TOUCH) or !$this->isCompatibleWithTool($item)){
+			return 0;
+		}
+
+		return $this->getXpDropAmount();
+	}
+
+	/**
+	 * Returns how much XP this block will drop when broken with an appropriate tool.
+	 *
+	 * @return int
+	 */
+	protected function getXpDropAmount() : int{
+		return 0;
+	}
+
+	/**
 	 * Returns whether Silk Touch enchanted tools will cause this block to drop as itself. Since most blocks drop
 	 * themselves anyway, this is implicitly true.
 	 *
@@ -497,6 +522,50 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Returns the chance that the block will catch fire from nearby fire sources. Higher values lead to faster catching
+	 * fire.
+	 *
+	 * @return int
+	 */
+	public function getFlameEncouragement() : int{
+		return 0;
+	}
+
+	/**
+	 * Returns the base flammability of this block. Higher values lead to the block burning away more quickly.
+	 *
+	 * @return int
+	 */
+	public function getFlammability() : int{
+		return 0;
+	}
+
+	/**
+	 * Returns whether fire lit on this block will burn indefinitely.
+	 *
+	 * @return bool
+	 */
+	public function burnsForever() : bool{
+		return false;
+	}
+
+	/**
+	 * Returns whether this block can catch fire.
+	 *
+	 * @return bool
+	 */
+	public function isFlammable() : bool{
+		return $this->getFlammability() > 0;
+	}
+
+	/**
+	 * Called when this block is burned away by being on fire.
+	 */
+	public function onIncinerate() : void{
+
+	}
+
+	/**
 	 * Returns the Block on the side $side, works like Vector3::getSide()
 	 *
 	 * @param int $side
@@ -504,7 +573,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return Block
 	 */
-	public function getSide($side, $step = 1){
+	public function getSide(int $side, int $step = 1){
 		if($this->isValid()){
 			return $this->getLevel()->getBlock(Vector3::getSide($side, $step));
 		}
@@ -566,9 +635,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return bool
 	 */
 	public function collidesWithBB(AxisAlignedBB $bb) : bool{
-		$bbs = $this->getCollisionBoxes();
-
-		foreach($bbs as $bb2){
+		foreach($this->getCollisionBoxes() as $bb2){
 			if($bb->intersectsWith($bb2)){
 				return true;
 			}
@@ -673,30 +740,30 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue){
-		if($this->getLevel() instanceof Level){
-			$this->getLevel()->getBlockMetadata()->setMetadata($this, $metadataKey, $newMetadataValue);
+		if($this->isValid()){
+			$this->level->getBlockMetadata()->setMetadata($this, $metadataKey, $newMetadataValue);
 		}
 	}
 
 	public function getMetadata(string $metadataKey){
-		if($this->getLevel() instanceof Level){
-			return $this->getLevel()->getBlockMetadata()->getMetadata($this, $metadataKey);
+		if($this->isValid()){
+			return $this->level->getBlockMetadata()->getMetadata($this, $metadataKey);
 		}
 
 		return null;
 	}
 
 	public function hasMetadata(string $metadataKey) : bool{
-		if($this->getLevel() instanceof Level){
-			return $this->getLevel()->getBlockMetadata()->hasMetadata($this, $metadataKey);
+		if($this->isValid()){
+			return $this->level->getBlockMetadata()->hasMetadata($this, $metadataKey);
 		}
 
 		return false;
 	}
 
 	public function removeMetadata(string $metadataKey, Plugin $owningPlugin){
-		if($this->getLevel() instanceof Level){
-			$this->getLevel()->getBlockMetadata()->removeMetadata($this, $metadataKey, $owningPlugin);
+		if($this->isValid()){
+			$this->level->getBlockMetadata()->removeMetadata($this, $metadataKey, $owningPlugin);
 		}
 	}
 }

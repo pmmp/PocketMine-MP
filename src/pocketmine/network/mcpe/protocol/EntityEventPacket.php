@@ -66,6 +66,7 @@ class EntityEventPacket extends DataPacket{
 	public const AGENT_ARM_SWING = 36;
 	public const ENDER_DRAGON_DEATH = 37;
 	public const DUST_PARTICLES = 38; //not sure what this is
+	public const ARROW_SHAKE = 39;
 
 	public const EATING_ITEM = 57;
 
@@ -104,5 +105,4 @@ class EntityEventPacket extends DataPacket{
 	public function handle(NetworkSession $session) : bool{
 		return $session->handleEntityEvent($this);
 	}
-
 }

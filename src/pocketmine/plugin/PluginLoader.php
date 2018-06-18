@@ -29,13 +29,20 @@ namespace pocketmine\plugin;
 interface PluginLoader{
 
 	/**
+	 * Returns whether this PluginLoader can load the plugin in the given path.
+	 *
+	 * @param string $path
+	 *
+	 * @return bool
+	 */
+	public function canLoadPlugin(string $path) : bool;
+
+	/**
 	 * Loads the plugin contained in $file
 	 *
 	 * @param string $file
-	 *
-	 * @return Plugin|null
 	 */
-	public function loadPlugin(string $file);
+	public function loadPlugin(string $file) : void;
 
 	/**
 	 * Gets the PluginDescription from the file
@@ -44,28 +51,12 @@ interface PluginLoader{
 	 *
 	 * @return null|PluginDescription
 	 */
-	public function getPluginDescription(string $file);
+	public function getPluginDescription(string $file) : ?PluginDescription;
 
 	/**
-	 * Returns the filename regex patterns that this loader accepts
+	 * Returns the protocol prefix used to access files in this plugin, e.g. file://, phar://
 	 *
 	 * @return string
 	 */
-	public function getPluginFilters() : string;
-
-	/**
-	 * @param Plugin $plugin
-	 *
-	 * @return void
-	 */
-	public function enablePlugin(Plugin $plugin);
-
-	/**
-	 * @param Plugin $plugin
-	 *
-	 * @return void
-	 */
-	public function disablePlugin(Plugin $plugin);
-
-
+	public function getAccessProtocol() : string;
 }

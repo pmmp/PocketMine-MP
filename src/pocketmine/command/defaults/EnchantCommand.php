@@ -25,9 +25,9 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\event\TranslationContainer;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\lang\TranslationContainer;
 use pocketmine\utils\TextFormat;
 
 class EnchantCommand extends VanillaCommand{
@@ -59,7 +59,7 @@ class EnchantCommand extends VanillaCommand{
 
 		$item = $player->getInventory()->getItemInHand();
 
-		if($item->getId() <= 0){
+		if($item->isNull()){
 			$sender->sendMessage(new TranslationContainer("commands.enchant.noItem"));
 			return true;
 		}

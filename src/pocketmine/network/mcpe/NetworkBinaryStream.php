@@ -65,7 +65,7 @@ class NetworkBinaryStream extends BinaryStream{
 
 	public function getSlot() : Item{
 		$id = $this->getVarInt();
-		if($id <= 0){
+		if($id === 0){
 			return ItemFactory::get(0, 0, 0);
 		}
 
@@ -84,19 +84,13 @@ class NetworkBinaryStream extends BinaryStream{
 		}
 
 		//TODO
-		$canPlaceOn = $this->getVarInt();
-		if($canPlaceOn > 0){
-			for($i = 0; $i < $canPlaceOn; ++$i){
-				$this->getString();
-			}
+		for($i = 0, $canPlaceOn = $this->getVarInt(); $i < $canPlaceOn; ++$i){
+			$this->getString();
 		}
 
 		//TODO
-		$canDestroy = $this->getVarInt();
-		if($canDestroy > 0){
-			for($i = 0; $i < $canDestroy; ++$i){
-				$this->getString();
-			}
+		for($i = 0, $canDestroy = $this->getVarInt(); $i < $canDestroy; ++$i){
+			$this->getString();
 		}
 
 		return ItemFactory::get($id, $data, $cnt, $nbt);
@@ -166,9 +160,9 @@ class NetworkBinaryStream extends BinaryStream{
 					$value = $this->getVector3();
 					break;
 				default:
-					$value = [];
+					throw new \UnexpectedValueException("Invalid data type " . $type);
 			}
-			if($types === true){
+			if($types){
 				$data[$key] = [$type, $value];
 			}else{
 				$data[$key] = $value;
@@ -220,6 +214,9 @@ class NetworkBinaryStream extends BinaryStream{
 					break;
 				case Entity::DATA_TYPE_VECTOR3F:
 					$this->putVector3Nullable($d[1]);
+					break;
+				default:
+					throw new \UnexpectedValueException("Invalid data type " . $d[0]);
 			}
 		}
 	}
@@ -260,7 +257,7 @@ class NetworkBinaryStream extends BinaryStream{
 	/**
 	 * Writes a list of Attributes to the packet buffer using the standard format.
 	 *
-	 * @param Attribute[] ...$attributes
+	 * @param Attribute ...$attributes
 	 */
 	public function putAttributeList(Attribute ...$attributes) : void{
 		$this->putUnsignedVarInt(count($attributes));
@@ -415,7 +412,7 @@ class NetworkBinaryStream extends BinaryStream{
 	 * Reads gamerules
 	 * TODO: implement this properly
 	 *
-	 * @return array
+	 * @return array, members are in the structure [name => [type, value]]
 	 */
 	public function getGameRules() : array{
 		$count = $this->getUnsignedVarInt();
@@ -443,7 +440,7 @@ class NetworkBinaryStream extends BinaryStream{
 	}
 
 	/**
-	 * Writes a gamerule array
+	 * Writes a gamerule array, members should be in the structure [name => [type, value]]
 	 * TODO: implement this properly
 	 *
 	 * @param array $rules
@@ -476,7 +473,7 @@ class NetworkBinaryStream extends BinaryStream{
 		$link->fromEntityUniqueId = $this->getEntityUniqueId();
 		$link->toEntityUniqueId = $this->getEntityUniqueId();
 		$link->type = $this->getByte();
-		$link->bool1 = $this->getBool();
+		$link->immediate = $this->getBool();
 
 		return $link;
 	}
@@ -488,7 +485,7 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putEntityUniqueId($link->fromEntityUniqueId);
 		$this->putEntityUniqueId($link->toEntityUniqueId);
 		$this->putByte($link->type);
-		$this->putBool($link->bool1);
+		$this->putBool($link->immediate);
 	}
 
 	protected function getCommandOriginData() : CommandOriginData{

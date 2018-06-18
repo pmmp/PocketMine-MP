@@ -26,8 +26,9 @@ namespace pocketmine\item;
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\ProjectileLaunchEvent;
-use pocketmine\level\sound\LaunchSound;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 
 abstract class ProjectileItem extends Item{
@@ -36,8 +37,18 @@ abstract class ProjectileItem extends Item{
 
 	abstract public function getThrowForce() : float;
 
+	/**
+	 * Helper function to apply extra NBT tags to pass to the created projectile.
+	 *
+	 * @param CompoundTag $tag
+	 */
+	protected function addExtraTags(CompoundTag $tag) : void{
+
+	}
+
 	public function onClickAir(Player $player, Vector3 $directionVector) : bool{
 		$nbt = Entity::createBaseNBT($player->add(0, $player->getEyeHeight(), 0), $directionVector, $player->yaw, $player->pitch);
+		$this->addExtraTags($nbt);
 
 		$projectile = Entity::createEntity($this->getProjectileEntityType(), $player->getLevel(), $nbt, $player);
 		if($projectile !== null){
@@ -52,10 +63,15 @@ abstract class ProjectileItem extends Item{
 				$projectile->flagForDespawn();
 			}else{
 				$projectile->spawnToAll();
-				$player->getLevel()->addSound(new LaunchSound($player), $player->getViewers());
+
+				//319 is the Player's entity type ID in MCPE, with all its flags (which we don't know)
+				//without this, it doesn't work at all.
+				$player->getLevel()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_THROW, 319);
 			}
-		}else{
+		}elseif($projectile !== null){
 			$projectile->spawnToAll();
+		}else{
+			return false;
 		}
 
 		return true;
