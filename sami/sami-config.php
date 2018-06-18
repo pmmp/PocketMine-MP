@@ -1,6 +1,7 @@
 <?php
 
-$sami = new Sami\Sami(dirname(__DIR__) . '/src/', [
+$iterator = \Symfony\Component\Finder\Finder::create()->files()->name("*.php")->exclude(["tests", "composer", "stubs"])->in([dirname(__DIR__) . '/src/', dirname(__DIR__) . '/vendor/']);
+$sami = new Sami\Sami($iterator, [
 	'title' => 'PocketMine-MP',
 	'default_opened_level' => 1,
 	'remote_repository' => new \Sami\RemoteRepository\GitHubRemoteRepository('pmmp/PocketMine-MP', __DIR__),
