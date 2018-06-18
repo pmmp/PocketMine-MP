@@ -686,7 +686,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			$aliases = $command->getAliases();
 			if(!empty($aliases)){
-				if(!\in_array($data->commandName, $aliases, true)){
+				if(!in_array($data->commandName, $aliases, true)){
 					//work around a client bug which makes the original name not show when aliases are used
 					$aliases[] = $data->commandName;
 				}

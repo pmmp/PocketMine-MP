@@ -111,8 +111,8 @@ class Effect{
 	 */
 	public static function getEffectByName(string $name) : ?Effect{
 		$const = self::class . "::" . strtoupper($name);
-		if(\defined($const)){
-			return self::getEffect(\constant($const));
+		if(defined($const)){
+			return self::getEffect(constant($const));
 		}
 		return null;
 	}

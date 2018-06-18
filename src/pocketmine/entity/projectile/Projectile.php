@@ -215,7 +215,7 @@ abstract class Projectile extends Entity{
 			}elseif($blockHit !== null){
 				$ev = new ProjectileHitBlockEvent($this, $hitResult, $blockHit);
 			}else{
-				\assert(false, "unknown hit type");
+				assert(false, "unknown hit type");
 			}
 
 			if($ev !== null){

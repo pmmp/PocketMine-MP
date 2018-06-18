@@ -796,7 +796,7 @@ class PluginManager{
 				try{
 					$priority = isset($tags["priority"]) ? EventPriority::fromString($tags["priority"]) : EventPriority::NORMAL;
 				}catch(\InvalidArgumentException $e){
-					throw new PluginException("Event handler " . \get_class($listener) . "->" . $method->getName() . "() declares invalid/unknown priority \"" . $tags["priority"] . "\"");
+					throw new PluginException("Event handler " . get_class($listener) . "->" . $method->getName() . "() declares invalid/unknown priority \"" . $tags["priority"] . "\"");
 				}
 				$ignoreCancelled = isset($tags["ignoreCancelled"]) && strtolower($tags["ignoreCancelled"]) === "true";
 
