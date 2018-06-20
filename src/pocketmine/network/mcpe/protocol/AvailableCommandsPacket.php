@@ -217,13 +217,17 @@ class AvailableCommandsPacket extends DataPacket{
 				if($parameter->paramType & self::ARG_FLAG_ENUM){
 					$index = ($parameter->paramType & 0xffff);
 					$parameter->enum = $this->enums[$index] ?? null;
-
-					assert($parameter->enum !== null, "expected enum at $index, but got none");
-				}elseif(($parameter->paramType & self::ARG_FLAG_VALID) === 0){ //postfix (guessing)
+					if($parameter->enum === null){
+						throw new \UnexpectedValueException("expected enum at $index, but got none");
+					}
+				}elseif($parameter->paramType & self::ARG_FLAG_POSTFIX){
 					$index = ($parameter->paramType & 0xffff);
 					$parameter->postfix = $this->postfixes[$index] ?? null;
-
-					assert($parameter->postfix !== null, "expected postfix at $index, but got none");
+					if($parameter->postfix === null){
+						throw new \UnexpectedValueException("expected postfix at $index, but got none");
+					}
+				}elseif(($parameter->paramType & self::ARG_FLAG_VALID) === 0){
+					throw new \UnexpectedValueException("Invalid parameter type 0x" . dechex($parameter->paramType));
 				}
 
 				$retval->overloads[$overloadIndex][$paramIndex] = $parameter;
@@ -259,7 +263,7 @@ class AvailableCommandsPacket extends DataPacket{
 					if($key === false){
 						throw new \InvalidStateException("Postfix '$parameter->postfix' not in postfixes array");
 					}
-					$type = $parameter->paramType << 24 | $key;
+					$type = self::ARG_FLAG_POSTFIX | $key;
 				}else{
 					$type = $parameter->paramType;
 				}
@@ -298,13 +302,12 @@ class AvailableCommandsPacket extends DataPacket{
 				case self::ARG_TYPE_COMMAND:
 					return "command";
 			}
-		}elseif($argtype !== 0){
-			//guessed
-			$baseType = $argtype >> 24;
-			$typeName = $this->argTypeToString(self::ARG_FLAG_VALID | $baseType);
+		}elseif($argtype & self::ARG_FLAG_POSTFIX){
 			$postfix = $this->postfixes[$argtype & 0xffff];
 
-			return $typeName . " (postfix $postfix)";
+			return "int (postfix $postfix)";
+		}else{
+			throw new \UnexpectedValueException("Unknown arg type 0x" . dechex($argtype));
 		}
 
 		return "unknown ($argtype)";
