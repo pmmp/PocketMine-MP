@@ -79,12 +79,12 @@ class Ladder extends Transparent{
 		}
 
 		return new AxisAlignedBB(
-			$this->x + $minX,
-			$this->y,
-			$this->z + $minZ,
-			$this->x + $maxX,
-			$this->y + 1,
-			$this->z + $maxZ
+			$minX,
+			0,
+			$minZ,
+			$maxX,
+			1,
+			$maxZ
 		);
 	}
 

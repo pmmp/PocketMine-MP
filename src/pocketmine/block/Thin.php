@@ -32,12 +32,12 @@ abstract class Thin extends Transparent{
 		$width = 0.5 - 0.125 / 2;
 
 		return new AxisAlignedBB(
-			$this->x + ($this->canConnect($this->getSide(Vector3::SIDE_WEST)) ? 0 : $width),
-			$this->y,
-			$this->z + ($this->canConnect($this->getSide(Vector3::SIDE_NORTH)) ? 0 : $width),
-			$this->x + 1 - ($this->canConnect($this->getSide(Vector3::SIDE_EAST)) ? 0 : $width),
-			$this->y + 1,
-			$this->z + 1 - ($this->canConnect($this->getSide(Vector3::SIDE_SOUTH)) ? 0 : $width)
+			($this->canConnect($this->getSide(Vector3::SIDE_WEST)) ? 0 : $width),
+			0,
+			($this->canConnect($this->getSide(Vector3::SIDE_NORTH)) ? 0 : $width),
+			1 - ($this->canConnect($this->getSide(Vector3::SIDE_EAST)) ? 0 : $width),
+			1,
+			1 - ($this->canConnect($this->getSide(Vector3::SIDE_SOUTH)) ? 0 : $width)
 		);
 	}
 
@@ -53,12 +53,12 @@ abstract class Thin extends Transparent{
 		if($connectWest or $connectEast){
 			//X axis (west/east)
 			$bbs[] = new AxisAlignedBB(
-				$this->x + ($connectWest ? 0 : $inset),
-				$this->y,
-				$this->z + $inset,
-				$this->x + 1 - ($connectEast ? 0 : $inset),
-				$this->y + 1,
-				$this->z + 1 - $inset
+				($connectWest ? 0 : $inset),
+				0,
+				$inset,
+				1 - ($connectEast ? 0 : $inset),
+				1,
+				1 - $inset
 			);
 		}
 
@@ -68,12 +68,12 @@ abstract class Thin extends Transparent{
 		if($connectNorth or $connectSouth){
 			//Z axis (north/south)
 			$bbs[] = new AxisAlignedBB(
-				$this->x + $inset,
-				$this->y,
-				$this->z + ($connectNorth ? 0 : $inset),
-				$this->x + 1 - $inset,
-				$this->y + 1,
-				$this->z + 1 - ($connectSouth ? 0 : $inset)
+				$inset,
+				0,
+				($connectNorth ? 0 : $inset),
+				1 - $inset,
+				1,
+				1 - ($connectSouth ? 0 : $inset)
 			);
 		}
 
@@ -81,12 +81,12 @@ abstract class Thin extends Transparent{
 			//centre post AABB (only needed if not connected on any axis - other BBs overlapping will do this if any connections are made)
 			return [
 				new AxisAlignedBB(
-					$this->x + $inset,
-					$this->y,
-					$this->z + $inset,
-					$this->x + 1 - $inset,
-					$this->y + 1,
-					$this->z + 1 - $inset
+					$inset,
+					0,
+					$inset,
+					1 - $inset,
+					1,
+					1 - $inset
 				)
 			];
 		}

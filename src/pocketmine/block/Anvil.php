@@ -76,23 +76,9 @@ class Anvil extends Fallable{
 		$inset = 0.125;
 
 		if($this->meta & 0x01){ //east/west
-			return new AxisAlignedBB(
-				$this->x,
-				$this->y,
-				$this->z + $inset,
-				$this->x + 1,
-				$this->y + 1,
-				$this->z + 1 - $inset
-			);
+			return new AxisAlignedBB(0, 0, $inset, 1, 1, 1 - $inset);
 		}else{
-			return new AxisAlignedBB(
-				$this->x + $inset,
-				$this->y,
-				$this->z,
-				$this->x + 1 - $inset,
-				$this->y + 1,
-				$this->z + 1
-			);
+			return new AxisAlignedBB($inset, 0, 0, 1 - $inset, 1, 1);
 		}
 	}
 
