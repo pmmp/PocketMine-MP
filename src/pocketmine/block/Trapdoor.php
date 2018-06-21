@@ -65,15 +65,14 @@ class Trapdoor extends Transparent{
 		}
 
 		if(($damage & self::MASK_OPENED) > 0){
-			if(($damage & 0x03) === self::MASK_SIDE_NORTH){
+			$side = $damage & 0x03;
+			if($side === self::MASK_SIDE_NORTH){
 				$bb->setBounds(0, 0, 1 - $f, 1, 1, 1);
-			}elseif(($damage & 0x03) === self::MASK_SIDE_SOUTH){
+			}elseif($side === self::MASK_SIDE_SOUTH){
 				$bb->setBounds(0, 0, 0, 1, 1, $f);
-			}
-			if(($damage & 0x03) === self::MASK_SIDE_WEST){
+			}elseif($side === self::MASK_SIDE_WEST){
 				$bb->setBounds(1 - $f, 0, 0, 1, 1, 1);
-			}
-			if(($damage & 0x03) === self::MASK_SIDE_EAST){
+			}elseif($side === self::MASK_SIDE_EAST){
 				$bb->setBounds(0, 0, 0, $f, 1, 1);
 			}
 		}
