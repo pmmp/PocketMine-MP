@@ -67,7 +67,7 @@ abstract class PluginBase implements Plugin{
 		$this->file = rtrim($file, "\\/") . "/";
 		$this->configFile = $this->dataFolder . "config.yml";
 		$this->logger = new PluginLogger($this);
-		$this->scheduler = new TaskScheduler($this->logger);
+		$this->scheduler = new TaskScheduler($this->logger, $this->getFullName());
 	}
 
 	/**
