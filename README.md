@@ -16,7 +16,8 @@ There are a very wide range of already-written plugins available which you can u
 
 ### For developers
  * [Latest API documentation](https://jenkins.pmmp.io/job/PocketMine-MP-doc/doxygen/) - Doxygen documentation generated from development
- * [DevTools](https://github.com/pmmp/PocketMine-DevTools/) - A development tools plugin for creating plugins.
+ * [DevTools](https://github.com/pmmp/PocketMine-DevTools/) - Development tools plugin for creating plugins
+ * [ExamplePlugin](https://github.com/pmmp/ExamplePlugin/) - Example plugin demonstrating some basic API features
 
 ### Can I contribute?
 Yes you can! Contributions are welcomed provided that they comply with our [Contributing Guidelines](CONTRIBUTING.md). Please ensure you read the relevant sections of the guidelines carefully before making a Pull Request or opening an Issue.
