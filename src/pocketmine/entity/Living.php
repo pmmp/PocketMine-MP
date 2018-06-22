@@ -469,6 +469,7 @@ abstract class Living extends Entity implements Damageable{
 	/**
 	 * Called after EntityDamageEvent execution to apply post-hurt effects, such as reducing absorption or modifying
 	 * armour durability.
+	 * This will not be called by damage sources causing death.
 	 *
 	 * @param EntityDamageEvent $source
 	 */
@@ -551,9 +552,9 @@ abstract class Living extends Entity implements Damageable{
 			}
 		}
 
-		$this->applyPostDamageEffects($source);
 
 		if($this->isAlive()){
+			$this->applyPostDamageEffects($source);
 			$this->doHitAnimation();
 		}else{
 			$this->startDeathAnimation();
