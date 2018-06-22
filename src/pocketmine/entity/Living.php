@@ -478,12 +478,13 @@ abstract class Living extends Entity implements Damageable{
 		$this->setAbsorption(max(0, $this->getAbsorption() + $source->getModifier(EntityDamageEvent::MODIFIER_ABSORPTION)));
 		$this->damageArmor($source->getBaseDamage());
 
+		$damage = 0;
 		if($source instanceof EntityDamageByEntityEvent){
 			foreach($this->armorInventory->getContents() as $k => $item){
 				if($item instanceof Armor and ($thornsLevel = $item->getEnchantmentLevel(Enchantment::THORNS)) > 0){
 					if(mt_rand(0, 99) < $thornsLevel * 15){
 						$this->damageItem($item, 3);
-						$source->getDamager()->attack(new EntityDamageByEntityEvent($this, $source->getDamager(), EntityDamageEvent::CAUSE_MAGIC, $thornsLevel > 10 ? $thornsLevel - 10 : 1 + mt_rand(0, 3)));
+						$damage += ($thornsLevel > 10 ? $thornsLevel - 10 : 1 + mt_rand(0, 3));
 					}else{
 						$this->damageItem($item, 1); //thorns causes an extra +1 durability loss even if it didn't activate
 					}
@@ -491,6 +492,10 @@ abstract class Living extends Entity implements Damageable{
 					$this->armorInventory->setItem($k, $item);
 				}
 			}
+		}
+
+		if($damage > 0){
+			$source->getDamager()->attack(new EntityDamageByEntityEvent($this, $source->getDamager(), EntityDamageEvent::CAUSE_MAGIC, $damage));
 		}
 	}
 
