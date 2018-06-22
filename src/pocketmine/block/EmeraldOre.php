@@ -56,4 +56,8 @@ class EmeraldOre extends Solid{
 			ItemFactory::get(Item::EMERALD)
 		];
 	}
+
+	protected function getXpDropAmount() : int{
+		return mt_rand(3, 7);
+	}
 }
