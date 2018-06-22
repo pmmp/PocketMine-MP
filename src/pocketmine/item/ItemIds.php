@@ -193,7 +193,7 @@ interface ItemIds extends BlockIds{
 	public const LEAD = 420;
 	public const NAMETAG = 421, NAME_TAG = 421;
 	public const PRISMARINE_CRYSTALS = 422;
-	public const MUTTONRAW = 423, MUTTON_RAW = 423, RAW_MUTTON = 423;
+	public const MUTTON = 423, MUTTONRAW = 423, MUTTON_RAW = 423, RAW_MUTTON = 423;
 	public const COOKED_MUTTON = 424, MUTTONCOOKED = 424, MUTTON_COOKED = 424;
 	public const ARMOR_STAND = 425;
 	public const END_CRYSTAL = 426;
