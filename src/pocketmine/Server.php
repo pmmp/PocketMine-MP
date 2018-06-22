@@ -1453,13 +1453,22 @@ class Server{
 			$this->baseLang = new BaseLang($this->getProperty("settings.language", BaseLang::FALLBACK_LANGUAGE));
 			$this->logger->info($this->getLanguage()->translateString("language.selected", [$this->getLanguage()->getName(), $this->getLanguage()->getLang()]));
 
-			if(\pocketmine\IS_DEVELOPMENT_BUILD and !((bool) $this->getProperty("settings.enable-dev-builds", false))){
-				$this->logger->emergency($this->baseLang->translateString("pocketmine.server.devBuild.error1", [\pocketmine\NAME]));
-				$this->logger->emergency($this->baseLang->translateString("pocketmine.server.devBuild.error2"));
-				$this->logger->emergency($this->baseLang->translateString("pocketmine.server.devBuild.error3"));
-				$this->logger->emergency($this->baseLang->translateString("pocketmine.server.devBuild.error4", ["settings.enable-dev-builds"]));
-				$this->forceShutdown();
-				return;
+			if(\pocketmine\IS_DEVELOPMENT_BUILD){
+				if(!((bool) $this->getProperty("settings.enable-dev-builds", false))){
+					$this->logger->emergency($this->baseLang->translateString("pocketmine.server.devBuild.error1", [\pocketmine\NAME]));
+					$this->logger->emergency($this->baseLang->translateString("pocketmine.server.devBuild.error2"));
+					$this->logger->emergency($this->baseLang->translateString("pocketmine.server.devBuild.error3"));
+					$this->logger->emergency($this->baseLang->translateString("pocketmine.server.devBuild.error4", ["settings.enable-dev-builds"]));
+					$this->forceShutdown();
+
+					return;
+				}
+
+				$this->logger->warning(str_repeat("-", 40));
+				$this->logger->warning($this->baseLang->translateString("pocketmine.server.devBuild.warning1", [\pocketmine\NAME]));
+				$this->logger->warning($this->baseLang->translateString("pocketmine.server.devBuild.warning2"));
+				$this->logger->warning($this->baseLang->translateString("pocketmine.server.devBuild.warning3"));
+				$this->logger->warning(str_repeat("-", 40));
 			}
 
 			if(((int) ini_get('zend.assertions')) > 0 and ((bool) $this->getProperty("debug.assertions.warn-if-enabled", true)) !== false){
