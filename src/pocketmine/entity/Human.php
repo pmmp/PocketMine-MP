@@ -34,6 +34,7 @@ use pocketmine\inventory\EntityInventoryEventProcessor;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\Consumable;
+use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item;
@@ -514,6 +515,47 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 */
 	public function canPickupXp() : bool{
 		return $this->xpCooldown === 0;
+	}
+
+	public function onPickupXp(int $xpValue) : void{
+		//TODO: replace this with a more generic equipment getting/setting interface (this is ugly)
+		/** @var Durable[] $equipment */
+		$equipment = [];
+
+		/** @var Durable|null $item */
+		$mainHand = null;
+		/** @var Durable[] $armor */
+		$armor = [];
+
+		if(($item = $this->inventory->getItemInHand()) instanceof Durable and $item->hasEnchantment(Enchantment::MENDING)){
+			$equipment[] = $item;
+			$mainHand = $item;
+		}
+		//TODO: check offhand
+		foreach($this->armorInventory->getContents() as $k => $item){
+			if($item instanceof Durable and $item->hasEnchantment(Enchantment::MENDING)){
+				$equipment[] = $item;
+				$armor[$k] = $item;
+			}
+		}
+
+		if(!empty($equipment)){
+			$repairItem = $equipment[array_rand($equipment)];
+			if($repairItem->getDamage() > 0){
+				$repairAmount = min($repairItem->getDamage(), $xpValue * 2);
+				$repairItem->setDamage($repairItem->getDamage() - $repairAmount);
+				$xpValue -= (int) ceil($repairAmount / 2);
+
+				if($repairItem === $mainHand){
+					$this->inventory->setItemInHand($repairItem);
+				}elseif(($k = array_search($repairItem, $armor, true)) !== false){
+					$this->armorInventory->setItem($k, $repairItem);
+				}
+			}
+		}
+
+		$this->addXp($xpValue); //this will still get fired even if the value is 0 due to mending, to play sounds
+		$this->resetXpCooldown();
 	}
 
 	/**
