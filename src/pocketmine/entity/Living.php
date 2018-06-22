@@ -535,6 +535,8 @@ abstract class Living extends Entity implements Damageable{
 			return;
 		}
 
+		$this->attackTime = 10; //0.5 seconds cooldown
+
 		if($source instanceof EntityDamageByEntityEvent){
 			$e = $source->getDamager();
 			if($source instanceof EntityDamageByChildEntityEvent){
@@ -552,15 +554,12 @@ abstract class Living extends Entity implements Damageable{
 			}
 		}
 
-
 		if($this->isAlive()){
 			$this->applyPostDamageEffects($source);
 			$this->doHitAnimation();
 		}else{
 			$this->startDeathAnimation();
 		}
-
-		$this->attackTime = 10; //0.5 seconds cooldown
 	}
 
 	protected function doHitAnimation() : void{
