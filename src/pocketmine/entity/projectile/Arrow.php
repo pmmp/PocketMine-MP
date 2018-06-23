@@ -31,6 +31,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\math\RayTraceResult;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
@@ -57,6 +58,9 @@ class Arrow extends Projectile{
 
 	/** @var int */
 	protected $pickupMode = self::PICKUP_ANY;
+
+	/** @var float */
+	protected $punchKnockback = 0.0;
 
 	public function __construct(Level $level, CompoundTag $nbt, ?Entity $shootingEntity = null, bool $critical = false){
 		parent::__construct($level, $nbt, $shootingEntity);
@@ -92,6 +96,20 @@ class Arrow extends Projectile{
 		}
 	}
 
+	/**
+	 * @return float
+	 */
+	public function getPunchKnockback() : float{
+		return $this->punchKnockback;
+	}
+
+	/**
+	 * @param float $punchKnockback
+	 */
+	public function setPunchKnockback(float $punchKnockback) : void{
+		$this->punchKnockback = $punchKnockback;
+	}
+
 	public function entityBaseTick(int $tickDiff = 1) : bool{
 		if($this->closed){
 			return false;
@@ -115,6 +133,16 @@ class Arrow extends Projectile{
 	protected function onHitBlock(Block $blockHit, RayTraceResult $hitResult) : void{
 		parent::onHitBlock($blockHit, $hitResult);
 		$this->broadcastEntityEvent(EntityEventPacket::ARROW_SHAKE, 7); //7 ticks
+	}
+
+	protected function onHitEntity(Entity $entityHit, RayTraceResult $hitResult) : void{
+		parent::onHitEntity($entityHit, $hitResult);
+		if($this->punchKnockback > 0){
+			$mot = $entityHit->getMotion();
+			$multiplier = $this->punchKnockback * 0.6 / $mot->length();
+
+			$entityHit->setMotion($mot->add($mot->x * $multiplier, 0.1, $mot->z * $multiplier));
+		}
 	}
 
 	/**
