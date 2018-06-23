@@ -52,7 +52,8 @@ class Arrow extends Projectile{
 	protected $gravity = 0.05;
 	protected $drag = 0.01;
 
-	protected $damage = 2;
+	/** @var float */
+	protected $damage = 2.0;
 
 	/** @var int */
 	protected $pickupMode = self::PICKUP_ANY;
