@@ -162,17 +162,19 @@ abstract class Projectile extends Entity{
 		return true;
 	}
 
-	public function hasMovementUpdate() : bool{
-		$parent = parent::hasMovementUpdate();
-		if($parent and $this->blockHit !== null){
+	public function onNearbyBlockChange() : void{
+		if($this->blockHit !== null){
 			$blockIn = $this->level->getBlockAt($this->blockHit->x, $this->blockHit->y, $this->blockHit->z);
-
-			if($blockIn->getId() === $this->blockHitId and $blockIn->getDamage() === $this->blockHitData){
-				return false;
+			if($blockIn->getId() !== $this->blockHitId or $blockIn->getDamage() !== $this->blockHitData){
+				$this->blockHit = $this->blockHitId = $this->blockHitData = null;
 			}
 		}
 
-		return $parent;
+		parent::onNearbyBlockChange();
+	}
+
+	public function hasMovementUpdate() : bool{
+		return $this->blockHit === null and parent::hasMovementUpdate();
 	}
 
 	public function move(float $dx, float $dy, float $dz) : void{
