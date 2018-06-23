@@ -64,7 +64,7 @@ class EntityInventoryChangeEvent extends EntityEvent implements Cancellable{
 	/**
 	 * @param Item $item
 	 */
-	public function setNewItem(Item $item){
+	public function setNewItem(Item $item) : void{
 		$this->newItem = $item;
 	}
 
@@ -75,6 +75,4 @@ class EntityInventoryChangeEvent extends EntityEvent implements Cancellable{
 	public function getOldItem() : Item{
 		return $this->oldItem;
 	}
-
-
 }

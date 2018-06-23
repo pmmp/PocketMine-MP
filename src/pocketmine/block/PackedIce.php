@@ -46,5 +46,4 @@ class PackedIce extends Solid{
 	public function getToolType() : int{
 		return BlockToolType::TYPE_PICKAXE;
 	}
-
 }

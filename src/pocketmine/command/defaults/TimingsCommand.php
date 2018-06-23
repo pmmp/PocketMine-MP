@@ -104,7 +104,7 @@ class TimingsCommand extends VanillaCommand{
 				];
 				fclose($fileTimings);
 
-				$sender->getServer()->getScheduler()->scheduleAsyncTask(new class([
+				$sender->getServer()->getAsyncPool()->submitTask(new class([
 					["page" => "http://paste.ubuntu.com", "extraOpts" => [
 						CURLOPT_HTTPHEADER => ["User-Agent: " . $sender->getServer()->getName() . " " . $sender->getServer()->getPocketMineVersion()],
 						CURLOPT_POST => 1,
@@ -114,7 +114,7 @@ class TimingsCommand extends VanillaCommand{
 					]]
 				], $sender) extends BulkCurlTask{
 					public function onCompletion(Server $server){
-						$sender = $this->fetchLocal($server);
+						$sender = $this->fetchLocal();
 						if($sender instanceof Player and !$sender->isOnline()){ // TODO replace with a more generic API method for checking availability of CommandSender
 							return;
 						}

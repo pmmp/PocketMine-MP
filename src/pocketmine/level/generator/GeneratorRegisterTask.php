@@ -32,15 +32,15 @@ use pocketmine\utils\Random;
 
 class GeneratorRegisterTask extends AsyncTask{
 
-	public $generator;
+	public $generatorClass;
 	public $settings;
 	public $seed;
 	public $levelId;
 	public $worldHeight = Level::Y_MAX;
 
-	public function __construct(Level $level, Generator $generator){
-		$this->generator = get_class($generator);
-		$this->settings = serialize($generator->getSettings());
+	public function __construct(Level $level, string $generatorClass, array $generatorSettings = []){
+		$this->generatorClass = $generatorClass;
+		$this->settings = serialize($generatorSettings);
 		$this->seed = $level->getSeed();
 		$this->levelId = $level->getId();
 		$this->worldHeight = $level->getWorldHeight();
@@ -51,9 +51,9 @@ class GeneratorRegisterTask extends AsyncTask{
 		Biome::init();
 		$manager = new SimpleChunkManager($this->seed, $this->worldHeight);
 		$this->saveToThreadStore("generation.level{$this->levelId}.manager", $manager);
+
 		/** @var Generator $generator */
-		$generator = $this->generator;
-		$generator = new $generator(unserialize($this->settings));
+		$generator = new $this->generatorClass(unserialize($this->settings));
 		$generator->init($manager, new Random($manager->getSeed()));
 		$this->saveToThreadStore("generation.level{$this->levelId}.generator", $generator);
 	}

@@ -48,5 +48,4 @@ class PlayerAnimationEvent extends PlayerEvent implements Cancellable{
 	public function getAnimationType() : int{
 		return $this->animationType;
 	}
-
 }

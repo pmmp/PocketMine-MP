@@ -147,6 +147,4 @@ abstract class Achievement{
 
 		return false;
 	}
-
-
 }

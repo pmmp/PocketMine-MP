@@ -257,6 +257,4 @@ LICENSE;
 
 		return $input === "" ? $default : $input;
 	}
-
-
 }

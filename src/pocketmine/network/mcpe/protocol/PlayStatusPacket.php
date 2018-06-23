@@ -72,5 +72,4 @@ class PlayStatusPacket extends DataPacket{
 	public function handle(NetworkSession $session) : bool{
 		return $session->handlePlayStatus($this);
 	}
-
 }

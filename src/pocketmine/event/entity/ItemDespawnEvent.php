@@ -42,5 +42,4 @@ class ItemDespawnEvent extends EntityEvent implements Cancellable{
 	public function getEntity(){
 		return $this->entity;
 	}
-
 }

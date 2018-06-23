@@ -28,7 +28,7 @@ use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\ChunkUtils;
 use pocketmine\level\format\SubChunk;
-use pocketmine\level\generator\Generator;
+use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
 use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\NBT;
@@ -94,8 +94,7 @@ class McRegion extends BaseLevelProvider{
 
 		$tiles = [];
 		foreach($chunk->getTiles() as $tile){
-			$tile->saveNBT();
-			$tiles[] = $tile->namedtag;
+			$tiles[] = $tile->saveNBT();
 		}
 
 		$nbt->setTag(new ListTag("TileEntities", $tiles, NBT::TAG_Compound));
@@ -107,9 +106,9 @@ class McRegion extends BaseLevelProvider{
 	/**
 	 * @param string $data
 	 *
-	 * @return Chunk|null
+	 * @return Chunk
 	 */
-	protected function nbtDeserialize(string $data){
+	protected function nbtDeserialize(string $data) : Chunk{
 		$nbt = new BigEndianNBTStream();
 		$chunk = $nbt->readCompressed($data);
 		if(!($chunk instanceof CompoundTag) or !$chunk->hasTag("Level")){
@@ -242,7 +241,7 @@ class McRegion extends BaseLevelProvider{
 			new LongTag("RandomSeed", $seed),
 			new LongTag("SizeOnDisk", 0),
 			new LongTag("Time", 0),
-			new StringTag("generatorName", Generator::getGeneratorName($generator)),
+			new StringTag("generatorName", GeneratorManager::getGeneratorName($generator)),
 			new StringTag("generatorOptions", $options["preset"] ?? ""),
 			new StringTag("LevelName", $name),
 			new CompoundTag("GameRules", [])

@@ -32,8 +32,6 @@ use pocketmine\utils\MainLogger;
  */
 class BlockFactory{
 	/** @var \SplFixedArray<Block> */
-	private static $list = null;
-	/** @var \SplFixedArray<Block> */
 	private static $fullList = null;
 
 	/** @var \SplFixedArray<bool> */
@@ -65,7 +63,6 @@ class BlockFactory{
 	 * this if you need to reset the block factory back to its original defaults for whatever reason.
 	 */
 	public static function init() : void{
-		self::$list = new \SplFixedArray(256);
 		self::$fullList = new \SplFixedArray(4096);
 
 		self::$light = new \SplFixedArray(256);
@@ -327,16 +324,10 @@ class BlockFactory{
 
 		//TODO: RESERVED6
 
-		foreach(self::$list as $id => $block){
-			if($block === null){
+		for($id = 0, $size = self::$fullList->getSize() >> 4; $id < $size; ++$id){
+			if(self::$fullList[$id << 4] === null){
 				self::registerBlock(new UnknownBlock($id));
 			}
-		}
-
-		/** @var mixed[] $runtimeIdMap */
-		$runtimeIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "runtimeid_table.json"), true);
-		foreach($runtimeIdMap as $obj){
-			self::registerMapping($obj["runtimeID"], $obj["id"], $obj["data"]);
 		}
 	}
 
@@ -360,8 +351,6 @@ class BlockFactory{
 			throw new \RuntimeException("Trying to overwrite an already registered block");
 		}
 
-		self::$list[$id] = clone $block;
-
 		for($meta = 0; $meta < 16; ++$meta){
 			$variant = clone $block;
 			$variant->setDamage($meta);
@@ -372,7 +361,7 @@ class BlockFactory{
 		self::$transparent[$id] = $block->isTransparent();
 		self::$hardness[$id] = $block->getHardness();
 		self::$light[$id] = $block->getLightLevel();
-		self::$lightFilter[$id] = $block->getLightFilter() + 1; //opacity plus 1 standard light filter
+		self::$lightFilter[$id] = min(15, $block->getLightFilter() + 1); //opacity plus 1 standard light filter
 		self::$diffusesSkyLight[$id] = $block->diffusesSkyLight();
 		self::$blastResistance[$id] = $block->getBlastResistance();
 	}
@@ -426,8 +415,16 @@ class BlockFactory{
 	 * @return bool
 	 */
 	public static function isRegistered(int $id) : bool{
-		$b = self::$list[$id];
+		$b = self::$fullList[$id << 4];
 		return $b !== null and !($b instanceof UnknownBlock);
+	}
+
+	public static function registerStaticRuntimeIdMappings() : void{
+		/** @var mixed[] $runtimeIdMap */
+		$runtimeIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "runtimeid_table.json"), true);
+		foreach($runtimeIdMap as $obj){
+			self::registerMapping($obj["runtimeID"], $obj["id"], $obj["data"]);
+		}
 	}
 
 	/**

@@ -24,47 +24,46 @@ declare(strict_types=1);
 namespace pocketmine\level\generator\biome;
 
 use pocketmine\level\biome\Biome;
+use pocketmine\level\biome\UnknownBiome;
 use pocketmine\level\generator\noise\Simplex;
 use pocketmine\utils\Random;
 
-class BiomeSelector{
-
-	/** @var Biome */
-	private $fallback;
-
+abstract class BiomeSelector{
 	/** @var Simplex */
 	private $temperature;
 	/** @var Simplex */
 	private $rainfall;
 
-	/** @var Biome[] */
-	private $biomes = [];
-
-	/** @var \SplFixedArray */
+	/** @var Biome[]|\SplFixedArray */
 	private $map = null;
 
-	/** @var callable */
-	private $lookup;
-
-	public function __construct(Random $random, callable $lookup, Biome $fallback){
-		$this->fallback = $fallback;
-		$this->lookup = $lookup;
+	public function __construct(Random $random){
 		$this->temperature = new Simplex($random, 2, 1 / 16, 1 / 512);
 		$this->rainfall = new Simplex($random, 2, 1 / 16, 1 / 512);
 	}
+
+	/**
+	 * Lookup function called by recalculate() to determine the biome to use for this temperature and rainfall.
+	 *
+	 * @param float $temperature
+	 * @param float $rainfall
+	 *
+	 * @return int biome ID 0-255
+	 */
+	abstract protected function lookup(float $temperature, float $rainfall) : int;
 
 	public function recalculate(){
 		$this->map = new \SplFixedArray(64 * 64);
 
 		for($i = 0; $i < 64; ++$i){
 			for($j = 0; $j < 64; ++$j){
-				$this->map[$i + ($j << 6)] = call_user_func($this->lookup, $i / 63, $j / 63);
+				$biome = Biome::getBiome($this->lookup($i / 63, $j / 63));
+				if($biome instanceof UnknownBiome){
+					throw new \RuntimeException("Unknown biome returned by selector with ID " . $biome->getId());
+				}
+				$this->map[$i + ($j << 6)] = $biome;
 			}
 		}
-	}
-
-	public function addBiome(Biome $biome){
-		$this->biomes[$biome->getId()] = $biome;
 	}
 
 	public function getTemperature($x, $z){
@@ -85,7 +84,6 @@ class BiomeSelector{
 		$temperature = (int) ($this->getTemperature($x, $z) * 63);
 		$rainfall = (int) ($this->getRainfall($x, $z) * 63);
 
-		$biomeId = $this->map[$temperature + ($rainfall << 6)];
-		return $this->biomes[$biomeId] ?? $this->fallback;
+		return $this->map[$temperature + ($rainfall << 6)];
 	}
 }

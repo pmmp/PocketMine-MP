@@ -127,5 +127,4 @@ class TextPacket extends DataPacket{
 	public function handle(NetworkSession $session) : bool{
 		return $session->handleText($this);
 	}
-
 }

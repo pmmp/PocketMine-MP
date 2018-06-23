@@ -45,6 +45,9 @@ class MainLogger extends \AttachableThreadedLogger{
 	/** @var string */
 	private $format = TextFormat::AQUA . "[%s] " . TextFormat::RESET . "%s[%s/%s]: %s" . TextFormat::RESET;
 
+	/** @var bool */
+	private $mainThreadHasFormattingCodes = false;
+
 	/**
 	 * @param string $logFile
 	 * @param bool $logDebug
@@ -60,6 +63,10 @@ class MainLogger extends \AttachableThreadedLogger{
 		$this->logFile = $logFile;
 		$this->logDebug = $logDebug;
 		$this->logStream = new \Threaded;
+
+		//Child threads may not inherit command line arguments, so if there's an override it needs to be recorded here
+		$this->mainThreadHasFormattingCodes = Terminal::hasFormattingCodes();
+
 		$this->start(PTHREADS_INHERIT_NONE);
 	}
 
@@ -68,6 +75,14 @@ class MainLogger extends \AttachableThreadedLogger{
 	 */
 	public static function getLogger() : MainLogger{
 		return static::$logger;
+	}
+
+	/**
+	 * Returns whether a MainLogger instance is statically registered on this thread.
+	 * @return bool
+	 */
+	public static function isRegisteredStatic() : bool{
+		return static::$logger !== null;
 	}
 
 	/**
@@ -80,6 +95,32 @@ class MainLogger extends \AttachableThreadedLogger{
 		if(static::$logger === null){
 			static::$logger = $this;
 		}
+	}
+
+	/**
+	 * Returns the current logger format used for console output.
+	 *
+	 * @return string
+	 */
+	public function getFormat() : string{
+		return $this->format;
+	}
+
+	/**
+	 * Sets the logger format to use for outputting text to the console.
+	 * It should be an sprintf()able string accepting 5 string arguments:
+	 * - time
+	 * - color
+	 * - thread name
+	 * - prefix (debug, info etc)
+	 * - message
+	 *
+	 * @see http://php.net/manual/en/function.sprintf.php
+	 *
+	 * @param string $format
+	 */
+	public function setFormat(string $format) : void{
+		$this->format = $format;
 	}
 
 	public function emergency($message){
@@ -220,7 +261,7 @@ class MainLogger extends \AttachableThreadedLogger{
 		$message = sprintf($this->format, date("H:i:s", $now), $color, $threadName, $prefix, $message);
 		$cleanMessage = TextFormat::clean($message);
 
-		if(Terminal::hasFormattingCodes()){
+		if($this->mainThreadHasFormattingCodes and Terminal::hasFormattingCodes()){ //hasFormattingCodes() lazy-inits colour codes because we don't know if they've been registered on this thread
 			echo Terminal::toANSI($message) . PHP_EOL;
 		}else{
 			echo $cleanMessage . PHP_EOL;

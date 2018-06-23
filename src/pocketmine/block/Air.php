@@ -81,5 +81,4 @@ class Air extends Transparent{
 	public function getBlastResistance() : float{
 		return 0;
 	}
-
 }

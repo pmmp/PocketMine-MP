@@ -93,7 +93,7 @@ class SubChunk implements SubChunkInterface{
 		}
 	}
 
-	public function setBlock(int $x, int $y, int $z, $id = null, $data = null) : bool{
+	public function setBlock(int $x, int $y, int $z, ?int $id = null, ?int $data = null) : bool{
 		$i = ($x << 8) | ($z << 4) | $y;
 		$changed = false;
 		if($id !== null){

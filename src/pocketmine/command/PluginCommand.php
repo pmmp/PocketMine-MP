@@ -38,7 +38,7 @@ class PluginCommand extends Command implements PluginIdentifiableCommand{
 	 * @param string $name
 	 * @param Plugin $owner
 	 */
-	public function __construct($name, Plugin $owner){
+	public function __construct(string $name, Plugin $owner){
 		parent::__construct($name);
 		$this->owningPlugin = $owner;
 		$this->executor = $owner;

@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\Chest as TileChest;
 use pocketmine\tile\Tile;
@@ -53,14 +52,7 @@ class Chest extends Transparent{
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		//these are slightly bigger than in PC
-		return new AxisAlignedBB(
-			$this->x + 0.025,
-			$this->y,
-			$this->z + 0.025,
-			$this->x + 0.975,
-			$this->y + 0.95,
-			$this->z + 0.975
-		);
+		return new AxisAlignedBB(0.025, 0, 0.025, 0.975, 0.95, 0.975);
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
@@ -115,7 +107,7 @@ class Chest extends Transparent{
 			if(
 				!$this->getSide(Vector3::SIDE_UP)->isTransparent() or
 				($chest->isPaired() and !$chest->getPair()->getBlock()->getSide(Vector3::SIDE_UP)->isTransparent()) or
-				($chest->namedtag->hasTag("Lock", StringTag::class) and $chest->namedtag->getString("Lock") !== $item->getCustomName())
+				!$chest->canOpenWith($item->getCustomName())
 			){
 				return true;
 			}

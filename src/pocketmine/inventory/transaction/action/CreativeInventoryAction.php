@@ -81,5 +81,4 @@ class CreativeInventoryAction extends InventoryAction{
 	public function onExecuteFail(Player $source) : void{
 
 	}
-
 }

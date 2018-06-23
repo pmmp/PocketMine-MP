@@ -97,19 +97,17 @@ class Squid extends WaterAnimal{
 			if(!$inWater){
 				$this->swimDirection = null;
 			}elseif($this->swimDirection !== null){
-				if($this->motionX ** 2 + $this->motionY ** 2 + $this->motionZ ** 2 <= $this->swimDirection->lengthSquared()){
-					$this->motionX = $this->swimDirection->x * $this->swimSpeed;
-					$this->motionY = $this->swimDirection->y * $this->swimSpeed;
-					$this->motionZ = $this->swimDirection->z * $this->swimSpeed;
+				if($this->motion->lengthSquared() <= $this->swimDirection->lengthSquared()){
+					$this->motion = $this->swimDirection->multiply($this->swimSpeed);
 				}
 			}else{
 				$this->swimDirection = $this->generateRandomDirection();
 				$this->swimSpeed = mt_rand(50, 100) / 2000;
 			}
 
-			$f = sqrt(($this->motionX ** 2) + ($this->motionZ ** 2));
-			$this->yaw = (-atan2($this->motionX, $this->motionZ) * 180 / M_PI);
-			$this->pitch = (-atan2($f, $this->motionY) * 180 / M_PI);
+			$f = sqrt(($this->motion->x ** 2) + ($this->motion->z ** 2));
+			$this->yaw = (-atan2($this->motion->x, $this->motion->z) * 180 / M_PI);
+			$this->pitch = (-atan2($f, $this->motion->y) * 180 / M_PI);
 		}
 
 		return $hasUpdate;

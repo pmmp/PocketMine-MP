@@ -24,9 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\projectile\Arrow as ArrowEntity;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\EntityShootBowEvent;
 use pocketmine\event\entity\ProjectileLaunchEvent;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
@@ -64,6 +66,13 @@ class Bow extends Tool{
 
 		$entity = Entity::createEntity("Arrow", $player->getLevel(), $nbt, $player, $force == 2);
 		if($entity instanceof Projectile){
+			$infinity = $this->hasEnchantment(Enchantment::INFINITY);
+			if($infinity and $entity instanceof ArrowEntity){
+				$entity->setPickupMode(ArrowEntity::PICKUP_CREATIVE);
+			}
+			if(($powerLevel = $this->getEnchantmentLevel(Enchantment::POWER)) > 0){
+				$entity->setBaseDamage($entity->getBaseDamage() + (($powerLevel + 1) / 2));
+			}
 			$ev = new EntityShootBowEvent($player, $this, $entity, $force);
 
 			if($force < 0.1 or $diff < 5){
@@ -80,7 +89,9 @@ class Bow extends Tool{
 			}else{
 				$entity->setMotion($entity->getMotion()->multiply($ev->getForce()));
 				if($player->isSurvival()){
-					$player->getInventory()->removeItem(ItemFactory::get(Item::ARROW, 0, 1));
+					if(!$infinity){ //TODO: tipped arrows are still consumed when Infinity is applied
+						$player->getInventory()->removeItem(ItemFactory::get(Item::ARROW, 0, 1));
+					}
 					$this->applyDamage(1);
 				}
 

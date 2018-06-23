@@ -339,5 +339,4 @@ class AvailableCommandsPacket extends DataPacket{
 	public function handle(NetworkSession $session) : bool{
 		return $session->handleAvailableCommands($this);
 	}
-
 }

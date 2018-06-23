@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\inventory\AnvilInventory;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\item\TieredTool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
@@ -55,13 +54,17 @@ class Anvil extends Fallable{
 		return 6000;
 	}
 
+	public function getVariantBitmask() : int{
+		return 0x0c;
+	}
+
 	public function getName() : string{
 		static $names = [
 			self::TYPE_NORMAL => "Anvil",
 			self::TYPE_SLIGHTLY_DAMAGED => "Slightly Damaged Anvil",
 			self::TYPE_VERY_DAMAGED => "Very Damaged Anvil"
 		];
-		return $names[$this->meta & 0x0c] ?? "Anvil";
+		return $names[$this->getVariant()] ?? "Anvil";
 	}
 
 	public function getToolType() : int{
@@ -76,23 +79,9 @@ class Anvil extends Fallable{
 		$inset = 0.125;
 
 		if($this->meta & 0x01){ //east/west
-			return new AxisAlignedBB(
-				$this->x,
-				$this->y,
-				$this->z + $inset,
-				$this->x + 1,
-				$this->y + 1,
-				$this->z + 1 - $inset
-			);
+			return new AxisAlignedBB(0, 0, $inset, 1, 1, 1 - $inset);
 		}else{
-			return new AxisAlignedBB(
-				$this->x + $inset,
-				$this->y,
-				$this->z,
-				$this->x + 1 - $inset,
-				$this->y + 1,
-				$this->z + 1
-			);
+			return new AxisAlignedBB($inset, 0, 0, 1 - $inset, 1, 1);
 		}
 	}
 
@@ -106,13 +95,7 @@ class Anvil extends Fallable{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$direction = ($player !== null ? $player->getDirection() : 0) & 0x03;
-		$this->meta = ($this->meta & 0x0c) | $direction;
+		$this->meta = $this->getVariant() | $direction;
 		return $this->getLevel()->setBlock($blockReplace, $this, true, true);
-	}
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			ItemFactory::get($this->getItemId(), $this->getDamage() >> 2)
-		];
 	}
 }

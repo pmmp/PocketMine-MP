@@ -63,5 +63,4 @@ class ContainerSetDataPacket extends DataPacket{
 	public function handle(NetworkSession $session) : bool{
 		return $session->handleContainerSetData($this);
 	}
-
 }

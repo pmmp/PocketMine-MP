@@ -56,12 +56,12 @@ class TallGrass extends Populator{
 		}
 	}
 
-	private function canTallGrassStay($x, $y, $z){
+	private function canTallGrassStay(int $x, int $y, int $z) : bool{
 		$b = $this->level->getBlockIdAt($x, $y, $z);
 		return ($b === Block::AIR or $b === Block::SNOW_LAYER) and $this->level->getBlockIdAt($x, $y - 1, $z) === Block::GRASS;
 	}
 
-	private function getHighestWorkableBlock($x, $z){
+	private function getHighestWorkableBlock(int $x, int $z) : int{
 		for($y = 127; $y >= 0; --$y){
 			$b = $this->level->getBlockIdAt($x, $y, $z);
 			if($b !== Block::AIR and $b !== Block::LEAVES and $b !== Block::LEAVES2 and $b !== Block::SNOW_LAYER){

@@ -64,8 +64,7 @@ class FallingBlock extends Entity{
 		}
 
 		if($blockId === 0){
-			$this->close();
-			return;
+			throw new \UnexpectedValueException("Invalid " . get_class($this) . " entity: block ID is 0 or missing");
 		}
 
 		$damage = $this->namedtag->getByte("Data", 0);

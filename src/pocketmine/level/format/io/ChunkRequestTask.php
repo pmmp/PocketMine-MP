@@ -43,13 +43,13 @@ class ChunkRequestTask extends AsyncTask{
 
 	protected $compressionLevel;
 
-	public function __construct(Level $level, Chunk $chunk){
+	public function __construct(Level $level, int $chunkX, int $chunkZ, Chunk $chunk){
 		$this->levelId = $level->getId();
 		$this->compressionLevel = $level->getServer()->networkCompressionLevel;
 
 		$this->chunk = $chunk->fastSerialize();
-		$this->chunkX = $chunk->getX();
-		$this->chunkZ = $chunk->getZ();
+		$this->chunkX = $chunkX;
+		$this->chunkZ = $chunkZ;
 
 		//TODO: serialize tiles with chunks
 		$tiles = "";
@@ -93,5 +93,4 @@ class ChunkRequestTask extends AsyncTask{
 			$server->getLogger()->debug("Dropped chunk task due to level not loaded");
 		}
 	}
-
 }
