@@ -48,5 +48,4 @@ class CobblestoneStairs extends Stair{
 	public function getName() : string{
 		return "Cobblestone Stairs";
 	}
-
 }

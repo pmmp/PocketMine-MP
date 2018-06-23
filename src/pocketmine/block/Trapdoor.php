@@ -59,64 +59,21 @@ class Trapdoor extends Transparent{
 		$f = 0.1875;
 
 		if(($damage & self::MASK_UPPER) > 0){
-			$bb = new AxisAlignedBB(
-				$this->x,
-				$this->y + 1 - $f,
-				$this->z,
-				$this->x + 1,
-				$this->y + 1,
-				$this->z + 1
-			);
+			$bb = new AxisAlignedBB(0, 1 - $f, 0, 1, 1, 1);
 		}else{
-			$bb = new AxisAlignedBB(
-				$this->x,
-				$this->y,
-				$this->z,
-				$this->x + 1,
-				$this->y + $f,
-				$this->z + 1
-			);
+			$bb = new AxisAlignedBB(0, 0, 0, 1, $f, 1);
 		}
 
 		if(($damage & self::MASK_OPENED) > 0){
-			if(($damage & 0x03) === self::MASK_SIDE_NORTH){
-				$bb->setBounds(
-					$this->x,
-					$this->y,
-					$this->z + 1 - $f,
-					$this->x + 1,
-					$this->y + 1,
-					$this->z + 1
-				);
-			}elseif(($damage & 0x03) === self::MASK_SIDE_SOUTH){
-				$bb->setBounds(
-					$this->x,
-					$this->y,
-					$this->z,
-					$this->x + 1,
-					$this->y + 1,
-					$this->z + $f
-				);
-			}
-			if(($damage & 0x03) === self::MASK_SIDE_WEST){
-				$bb->setBounds(
-					$this->x + 1 - $f,
-					$this->y,
-					$this->z,
-					$this->x + 1,
-					$this->y + 1,
-					$this->z + 1
-				);
-			}
-			if(($damage & 0x03) === self::MASK_SIDE_EAST){
-				$bb->setBounds(
-					$this->x,
-					$this->y,
-					$this->z,
-					$this->x + $f,
-					$this->y + 1,
-					$this->z + 1
-				);
+			$side = $damage & 0x03;
+			if($side === self::MASK_SIDE_NORTH){
+				$bb->setBounds(0, 0, 1 - $f, 1, 1, 1);
+			}elseif($side === self::MASK_SIDE_SOUTH){
+				$bb->setBounds(0, 0, 0, 1, 1, $f);
+			}elseif($side === self::MASK_SIDE_WEST){
+				$bb->setBounds(1 - $f, 0, 0, 1, 1, 1);
+			}elseif($side === self::MASK_SIDE_EAST){
+				$bb->setBounds(0, 0, 0, $f, 1, 1);
 			}
 		}
 

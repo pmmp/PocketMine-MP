@@ -43,5 +43,4 @@ class BlockSpreadEvent extends BlockFormEvent{
 	public function getSource() : Block{
 		return $this->source;
 	}
-
 }

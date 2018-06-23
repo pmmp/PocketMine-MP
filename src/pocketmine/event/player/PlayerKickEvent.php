@@ -57,7 +57,7 @@ class PlayerKickEvent extends PlayerEvent implements Cancellable{
 	/**
 	 * @param TextContainer|string $quitMessage
 	 */
-	public function setQuitMessage($quitMessage){
+	public function setQuitMessage($quitMessage) : void{
 		$this->quitMessage = $quitMessage;
 	}
 
@@ -67,5 +67,4 @@ class PlayerKickEvent extends PlayerEvent implements Cancellable{
 	public function getQuitMessage(){
 		return $this->quitMessage;
 	}
-
 }

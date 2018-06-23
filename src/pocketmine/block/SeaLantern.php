@@ -51,5 +51,4 @@ class SeaLantern extends Transparent{
 			ItemFactory::get(Item::PRISMARINE_CRYSTALS, 0, 3)
 		];
 	}
-
 }

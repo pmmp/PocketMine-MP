@@ -108,5 +108,4 @@ class RCON{
 			$thread->notify();
 		}, $this->instance);
 	}
-
 }

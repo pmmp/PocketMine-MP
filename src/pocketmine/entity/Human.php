@@ -30,11 +30,14 @@ use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerExperienceChangeEvent;
 use pocketmine\inventory\EnderChestInventory;
+use pocketmine\inventory\EntityInventoryEventProcessor;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\Consumable;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item;
+use pocketmine\item\Totem;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteArrayTag;
@@ -43,6 +46,7 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
+use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
@@ -567,6 +571,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 		$inventoryTag = $this->namedtag->getListTag("Inventory");
 		if($inventoryTag !== null){
+			$armorListener = $this->armorInventory->getEventProcessor();
+			$this->armorInventory->setEventProcessor(null);
+
 			/** @var CompoundTag $item */
 			foreach($inventoryTag as $i => $item){
 				$slot = $item->getByte("Slot");
@@ -578,6 +585,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 					$this->inventory->setItem($slot - 9, Item::nbtDeserialize($item));
 				}
 			}
+
+			$this->armorInventory->setEventProcessor($armorListener);
 		}
 
 		$enderChestInventoryTag = $this->namedtag->getListTag("EnderChestInventory");
@@ -590,6 +599,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 		$this->inventory->setHeldItemIndex($this->namedtag->getInt("SelectedInventorySlot", 0), false);
 
+		$this->inventory->setEventProcessor(new EntityInventoryEventProcessor($this));
 
 		$this->setFood((float) $this->namedtag->getInt("foodLevel", (int) $this->getFood(), true));
 		$this->setExhaustion($this->namedtag->getFloat("foodExhaustionLevel", $this->getExhaustion(), true));
@@ -629,7 +639,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return $hasUpdate;
 	}
 
-	public function doFoodTick(int $tickDiff = 1) : void{
+	protected function doFoodTick(int $tickDiff = 1) : void{
 		if($this->isAlive()){
 			$food = $this->getFood();
 			$health = $this->getHealth();
@@ -641,8 +651,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			}
 
 			if($difficulty === Level::DIFFICULTY_PEACEFUL and $this->foodTickTimer % 10 === 0){
-				if($food < 20){
+				if($food < $this->getMaxFood()){
 					$this->addFood(1.0);
+					$food = $this->getFood();
 				}
 				if($this->foodTickTimer % 20 === 0 and $health < $this->getMaxHealth()){
 					$this->heal(new EntityRegainHealthEvent($this, 1, EntityRegainHealthEvent::CAUSE_SATURATION));
@@ -656,16 +667,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 						$this->exhaust(3.0, PlayerExhaustEvent::CAUSE_HEALTH_REGEN);
 					}
 				}elseif($food <= 0){
-					if(($difficulty === 1 and $health > 10) or ($difficulty === 2 and $health > 1) or $difficulty === 3){
+					if(($difficulty === Level::DIFFICULTY_EASY and $health > 10) or ($difficulty === Level::DIFFICULTY_NORMAL and $health > 1) or $difficulty === Level::DIFFICULTY_HARD){
 						$this->attack(new EntityDamageEvent($this, EntityDamageEvent::CAUSE_STARVATION, 1));
 					}
 				}
 			}
 
 			if($food <= 6){
-				if($this->isSprinting()){
-					$this->setSprinting(false);
-				}
+				$this->setSprinting(false);
 			}
 		}
 	}
@@ -674,11 +683,46 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return $this->getNameTag();
 	}
 
+	public function applyDamageModifiers(EntityDamageEvent $source) : void{
+		parent::applyDamageModifiers($source);
+
+		$type = $source->getCause();
+		if($type !== EntityDamageEvent::CAUSE_SUICIDE and $type !== EntityDamageEvent::CAUSE_VOID
+			and $this->inventory->getItemInHand() instanceof Totem){ //TODO: check offhand as well (when it's implemented)
+
+			$compensation = $this->getHealth() - $source->getFinalDamage() - 1;
+			if($compensation < 0){
+				$source->setModifier($compensation, EntityDamageEvent::MODIFIER_TOTEM);
+			}
+		}
+	}
+
+	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
+		parent::applyPostDamageEffects($source);
+		$totemModifier = $source->getModifier(EntityDamageEvent::MODIFIER_TOTEM);
+		if($totemModifier < 0){ //Totem prevented death
+			$this->removeAllEffects();
+
+			$this->addEffect(new EffectInstance(Effect::getEffect(Effect::REGENERATION), 40 * 20, 1));
+			$this->addEffect(new EffectInstance(Effect::getEffect(Effect::FIRE_RESISTANCE), 40 * 20, 1));
+			$this->addEffect(new EffectInstance(Effect::getEffect(Effect::ABSORPTION), 5 * 20, 1));
+
+			$this->broadcastEntityEvent(EntityEventPacket::CONSUME_TOTEM);
+			$this->level->broadcastLevelEvent($this->add(0, $this->eyeHeight, 0), LevelEventPacket::EVENT_SOUND_TOTEM);
+
+			$hand = $this->inventory->getItemInHand();
+			if($hand instanceof Totem){
+				$hand->pop(); //Plugins could alter max stack size
+				$this->inventory->setItemInHand($hand);
+			}
+		}
+	}
+
 	public function getDrops() : array{
-		return array_merge(
+		return array_filter(array_merge(
 			$this->inventory !== null ? array_values($this->inventory->getContents()) : [],
 			$this->armorInventory !== null ? array_values($this->armorInventory->getContents()) : []
-		);
+		), function(Item $item) : bool{ return !$item->hasEnchantment(Enchantment::VANISHING); });
 	}
 
 	public function saveNBT() : void{

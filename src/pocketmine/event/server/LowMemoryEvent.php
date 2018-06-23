@@ -89,5 +89,4 @@ class LowMemoryEvent extends ServerEvent{
 	public function getMemoryFreed() : int{
 		return $this->getMemory() - ($this->isGlobal() ? Utils::getMemoryUsage(true)[1] : Utils::getMemoryUsage(true)[0]);
 	}
-
 }

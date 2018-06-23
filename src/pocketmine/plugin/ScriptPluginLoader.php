@@ -23,56 +23,24 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
-use pocketmine\event\plugin\PluginDisableEvent;
-use pocketmine\event\plugin\PluginEnableEvent;
-use pocketmine\Server;
-
 /**
  * Simple script loader, not for plugin development
  * For an example see https://gist.github.com/shoghicp/516105d470cf7d140757
  */
 class ScriptPluginLoader implements PluginLoader{
 
-	/** @var Server */
-	private $server;
-
-	/**
-	 * @param Server $server
-	 */
-	public function __construct(Server $server){
-		$this->server = $server;
+	public function canLoadPlugin(string $path) : bool{
+		$ext = ".php";
+		return is_file($path) and substr($path, -strlen($ext)) === $ext;
 	}
 
 	/**
 	 * Loads the plugin contained in $file
 	 *
 	 * @param string $file
-	 *
-	 * @return Plugin|null
 	 */
-	public function loadPlugin(string $file){
-		if(($description = $this->getPluginDescription($file)) instanceof PluginDescription){
-			$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.load", [$description->getFullName()]));
-			$dataFolder = dirname($file) . DIRECTORY_SEPARATOR . $description->getName();
-			if(file_exists($dataFolder) and !is_dir($dataFolder)){
-				throw new \InvalidStateException("Projected dataFolder '" . $dataFolder . "' for " . $description->getName() . " exists and is not a directory");
-			}
-
-			include_once($file);
-
-			$className = $description->getMain();
-
-			if(class_exists($className, true)){
-				$plugin = new $className();
-				$this->initPlugin($plugin, $description, $dataFolder, $file);
-
-				return $plugin;
-			}else{
-				throw new PluginException("Couldn't load plugin " . $description->getName() . ": main class not found");
-			}
-		}
-
-		return null;
+	public function loadPlugin(string $file) : void{
+		include_once $file;
 	}
 
 	/**
@@ -82,7 +50,7 @@ class ScriptPluginLoader implements PluginLoader{
 	 *
 	 * @return null|PluginDescription
 	 */
-	public function getPluginDescription(string $file){
+	public function getPluginDescription(string $file) : ?PluginDescription{
 		$content = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
 		$data = [];
@@ -115,54 +83,7 @@ class ScriptPluginLoader implements PluginLoader{
 		return null;
 	}
 
-	/**
-	 * Returns the filename patterns that this loader accepts
-	 *
-	 * @return string
-	 */
-	public function getPluginFilters() : string{
-		return "/\\.php$/i";
-	}
-
-	public function canLoadPlugin(string $path) : bool{
-		$ext = ".php";
-		return is_file($path) and substr($path, -strlen($ext)) === $ext;
-	}
-
-	/**
-	 * @param PluginBase        $plugin
-	 * @param PluginDescription $description
-	 * @param string            $dataFolder
-	 * @param string            $file
-	 */
-	private function initPlugin(PluginBase $plugin, PluginDescription $description, string $dataFolder, string $file){
-		$plugin->init($this, $this->server, $description, $dataFolder, $file);
-		$plugin->onLoad();
-	}
-
-	/**
-	 * @param Plugin $plugin
-	 */
-	public function enablePlugin(Plugin $plugin){
-		if($plugin instanceof PluginBase and !$plugin->isEnabled()){
-			$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.enable", [$plugin->getDescription()->getFullName()]));
-
-			$plugin->setEnabled(true);
-
-			$this->server->getPluginManager()->callEvent(new PluginEnableEvent($plugin));
-		}
-	}
-
-	/**
-	 * @param Plugin $plugin
-	 */
-	public function disablePlugin(Plugin $plugin){
-		if($plugin instanceof PluginBase and $plugin->isEnabled()){
-			$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.disable", [$plugin->getDescription()->getFullName()]));
-
-			$this->server->getPluginManager()->callEvent(new PluginDisableEvent($plugin));
-
-			$plugin->setEnabled(false);
-		}
+	public function getAccessProtocol() : string{
+		return "";
 	}
 }

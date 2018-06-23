@@ -23,16 +23,32 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\block\Block;
+use PHPUnit\Framework\TestCase;
 use pocketmine\block\BlockFactory;
 
-class Anvil extends ItemBlock{
+class ItemTest extends TestCase{
 
-	public function __construct(int $meta = 0){
-		parent::__construct(Item::ANVIL, $meta);
+	public function setUp() : void{
+		BlockFactory::init();
+		ItemFactory::init();
 	}
 
-	public function getBlock() : Block{
-		return BlockFactory::get(Block::ANVIL, $this->meta << 2);
+	/**
+	 * Test for issue #1145 (items aren't considered equal after NBT serializing and deserializing
+	 */
+	public function testItemEquals() : void{
+		$item = ItemFactory::get(Item::STONE)->setCustomName("HI");
+		$item2 = Item::nbtDeserialize($item->nbtSerialize());
+		self::assertTrue($item2->equals($item));
+		self::assertTrue($item->equals($item2));
+	}
+
+	/**
+	 * Tests that blocks are considered to be valid registered items
+	 */
+	public function testItemBlockRegistered() : void{
+		for($id = 0; $id < 256; ++$id){
+			self::assertEquals(BlockFactory::isRegistered($id), ItemFactory::isRegistered($id));
+		}
 	}
 }

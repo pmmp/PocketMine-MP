@@ -29,17 +29,20 @@ use pocketmine\event\inventory\FurnaceBurnEvent;
 use pocketmine\event\inventory\FurnaceSmeltEvent;
 use pocketmine\inventory\FurnaceInventory;
 use pocketmine\inventory\FurnaceRecipe;
+use pocketmine\inventory\Inventory;
+use pocketmine\inventory\InventoryEventProcessor;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
-use pocketmine\Player;
 
 class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
-	use NameableTrait, ContainerTrait;
+	use NameableTrait {
+		addAdditionalSpawnData as addNameSpawnData;
+	}
+	use ContainerTrait;
 
 	public const TAG_BURN_TIME = "BurnTime";
 	public const TAG_COOK_TIME = "CookTime";
@@ -55,6 +58,13 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	private $maxTime;
 
 	public function __construct(Level $level, CompoundTag $nbt){
+		parent::__construct($level, $nbt);
+		if($this->burnTime > 0){
+			$this->scheduleUpdate();
+		}
+	}
+
+	protected function readSaveData(CompoundTag $nbt) : void{
 		$this->burnTime = max(0, $nbt->getShort(self::TAG_BURN_TIME, 0, true));
 
 		$this->cookTime = $nbt->getShort(self::TAG_COOK_TIME, 0, true);
@@ -67,13 +77,32 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 			$this->maxTime = $this->burnTime;
 		}
 
-		parent::__construct($level, $nbt);
-		$this->inventory = new FurnaceInventory($this);
-		$this->loadItems();
+		$this->loadName($nbt);
 
-		if($this->burnTime > 0){
-			$this->scheduleUpdate();
-		}
+		$this->inventory = new FurnaceInventory($this);
+		$this->loadItems($nbt);
+
+		$this->inventory->setEventProcessor(new class($this) implements InventoryEventProcessor{
+			/** @var Furnace */
+			private $furnace;
+
+			public function __construct(Furnace $furnace){
+				$this->furnace = $furnace;
+			}
+
+			public function onSlotChange(Inventory $inventory, int $slot, Item $oldItem, Item $newItem) : ?Item{
+				$this->furnace->scheduleUpdate();
+				return $newItem;
+			}
+		});
+	}
+
+	protected function writeSaveData(CompoundTag $nbt) : void{
+		$nbt->setShort(self::TAG_BURN_TIME, $this->burnTime);
+		$nbt->setShort(self::TAG_COOK_TIME, $this->cookTime);
+		$nbt->setShort(self::TAG_MAX_TIME, $this->maxTime);
+		$this->saveName($nbt);
+		$this->saveItems($nbt);
 	}
 
 	/**
@@ -90,15 +119,6 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 
 			parent::close();
 		}
-	}
-
-	public function saveNBT() : void{
-		parent::saveNBT();
-		$this->namedtag->setShort(self::TAG_BURN_TIME, $this->burnTime);
-		$this->namedtag->setShort(self::TAG_COOK_TIME, $this->cookTime);
-		$this->namedtag->setShort(self::TAG_MAX_TIME, $this->maxTime);
-
-		$this->saveItems();
 	}
 
 	/**
@@ -226,18 +246,10 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		return $ret;
 	}
 
-	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
+	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->setShort(self::TAG_BURN_TIME, $this->burnTime);
 		$nbt->setShort(self::TAG_COOK_TIME, $this->cookTime);
 
-		if($this->hasName()){
-			$nbt->setTag($this->namedtag->getTag("CustomName"));
-		}
-	}
-
-	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
-		if($item !== null and $item->hasCustomName()){
-			$nbt->setString("CustomName", $item->getCustomName());
-		}
+		$this->addNameSpawnData($nbt);
 	}
 }

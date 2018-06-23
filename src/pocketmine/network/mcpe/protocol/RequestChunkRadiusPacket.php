@@ -45,5 +45,4 @@ class RequestChunkRadiusPacket extends DataPacket{
 	public function handle(NetworkSession $session) : bool{
 		return $session->handleRequestChunkRadius($this);
 	}
-
 }

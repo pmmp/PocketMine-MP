@@ -49,14 +49,8 @@ class Skull extends Flowable{
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		//TODO: different bounds depending on attached face (meta)
-		return new AxisAlignedBB(
-			$this->x + 0.25,
-			$this->y,
-			$this->z + 0.25,
-			$this->x + 0.75,
-			$this->y + 0.5,
-			$this->z + 0.75
-		);
+		static $f = 0.25;
+		return new AxisAlignedBB($f, 0, $f, 1 - $f, 0.5, 1 - $f);
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{

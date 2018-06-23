@@ -74,5 +74,4 @@ class InteractPacket extends DataPacket{
 	public function handle(NetworkSession $session) : bool{
 		return $session->handleInteract($this);
 	}
-
 }

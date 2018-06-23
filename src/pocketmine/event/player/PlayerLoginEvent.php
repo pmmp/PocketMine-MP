@@ -45,7 +45,7 @@ class PlayerLoginEvent extends PlayerEvent implements Cancellable{
 	/**
 	 * @param string $kickMessage
 	 */
-	public function setKickMessage(string $kickMessage){
+	public function setKickMessage(string $kickMessage) : void{
 		$this->kickMessage = $kickMessage;
 	}
 
@@ -55,5 +55,4 @@ class PlayerLoginEvent extends PlayerEvent implements Cancellable{
 	public function getKickMessage() : string{
 		return $this->kickMessage;
 	}
-
 }

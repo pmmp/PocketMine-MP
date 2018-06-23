@@ -82,7 +82,7 @@ class InventoryTransaction{
 	 */
 	public function addAction(InventoryAction $action) : void{
 		if(!isset($this->actions[$hash = spl_object_hash($action)])){
-			$this->actions[spl_object_hash($action)] = $action;
+			$this->actions[$hash] = $action;
 			$action->onAddToTransaction($this);
 		}else{
 			throw new \InvalidArgumentException("Tried to add the same action to a transaction twice");
@@ -173,6 +173,9 @@ class InventoryTransaction{
 
 			$inventory = $inventories[$hash];
 			$slot = $slots[$hash];
+			if(!$inventory->slotExists($slot)){ //this can get hit for crafting tables because the validation happens after this compaction
+				throw new TransactionValidationException("Slot $slot does not exist in inventory " . get_class($inventory));
+			}
 			$sourceItem = $inventory->getItem($slot);
 
 			$targetItem = $this->findResultItem($sourceItem, $list);

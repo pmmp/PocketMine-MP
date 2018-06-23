@@ -31,6 +31,7 @@ use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\event\entity\EntityEffectAddEvent;
 use pocketmine\event\entity\EntityEffectRemoveEvent;
 use pocketmine\inventory\ArmorInventory;
+use pocketmine\inventory\ArmorInventoryEventProcessor;
 use pocketmine\item\Armor;
 use pocketmine\item\Consumable;
 use pocketmine\item\enchantment\Enchantment;
@@ -76,6 +77,8 @@ abstract class Living extends Entity implements Damageable{
 		parent::initEntity();
 
 		$this->armorInventory = new ArmorInventory($this);
+		//TODO: load/save armor inventory contents
+		$this->armorInventory->setEventProcessor(new ArmorInventoryEventProcessor($this));
 
 		$health = $this->getMaxHealth();
 
@@ -200,8 +203,12 @@ abstract class Living extends Entity implements Damageable{
 	public function removeEffect(int $effectId) : void{
 		if(isset($this->effects[$effectId])){
 			$effect = $this->effects[$effectId];
+			$hasExpired = $effect->hasExpired();
 			$this->server->getPluginManager()->callEvent($ev = new EntityEffectRemoveEvent($this, $effect));
 			if($ev->isCancelled()){
+				if($hasExpired and !$ev->getEffect()->hasExpired()){ //altered duration of an expired effect to make it not get removed
+					$this->sendEffectAdd($ev->getEffect(), true);
+				}
 				return;
 			}
 
@@ -376,7 +383,7 @@ abstract class Living extends Entity implements Damageable{
 	 */
 	public function jump() : void{
 		if($this->onGround){
-			$this->motionY = $this->getJumpVelocity(); //Y motion should already be 0 if we're jumping from the ground.
+			$this->motion->y = $this->getJumpVelocity(); //Y motion should already be 0 if we're jumping from the ground.
 		}
 	}
 
@@ -440,12 +447,12 @@ abstract class Living extends Entity implements Damageable{
 	public function applyDamageModifiers(EntityDamageEvent $source) : void{
 		if($source->canBeReducedByArmor()){
 			//MCPE uses the same system as PC did pre-1.9
-			$source->setDamage(-$source->getFinalDamage() * $this->getArmorPoints() * 0.04, EntityDamageEvent::MODIFIER_ARMOR);
+			$source->setModifier(-$source->getFinalDamage() * $this->getArmorPoints() * 0.04, EntityDamageEvent::MODIFIER_ARMOR);
 		}
 
 		$cause = $source->getCause();
 		if($this->hasEffect(Effect::DAMAGE_RESISTANCE) and $cause !== EntityDamageEvent::CAUSE_VOID and $cause !== EntityDamageEvent::CAUSE_SUICIDE){
-			$source->setDamage(-$source->getFinalDamage() * min(1, 0.2 * $this->getEffect(Effect::DAMAGE_RESISTANCE)->getEffectLevel()), EntityDamageEvent::MODIFIER_RESISTANCE);
+			$source->setModifier(-$source->getFinalDamage() * min(1, 0.2 * $this->getEffect(Effect::DAMAGE_RESISTANCE)->getEffectLevel()), EntityDamageEvent::MODIFIER_RESISTANCE);
 		}
 
 		$totalEpf = 0;
@@ -454,20 +461,21 @@ abstract class Living extends Entity implements Damageable{
 				$totalEpf += $item->getEnchantmentProtectionFactor($source);
 			}
 		}
-		$source->setDamage(-$source->getFinalDamage() * min(ceil(min($totalEpf, 25) * (mt_rand(50, 100) / 100)), 20) * 0.04, EntityDamageEvent::MODIFIER_ARMOR_ENCHANTMENTS);
+		$source->setModifier(-$source->getFinalDamage() * min(ceil(min($totalEpf, 25) * (mt_rand(50, 100) / 100)), 20) * 0.04, EntityDamageEvent::MODIFIER_ARMOR_ENCHANTMENTS);
 
-		$source->setDamage(-min($this->getAbsorption(), $source->getFinalDamage()), EntityDamageEvent::MODIFIER_ABSORPTION);
+		$source->setModifier(-min($this->getAbsorption(), $source->getFinalDamage()), EntityDamageEvent::MODIFIER_ABSORPTION);
 	}
 
 	/**
 	 * Called after EntityDamageEvent execution to apply post-hurt effects, such as reducing absorption or modifying
 	 * armour durability.
+	 * This will not be called by damage sources causing death.
 	 *
 	 * @param EntityDamageEvent $source
 	 */
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
-		$this->setAbsorption(max(0, $this->getAbsorption() + $source->getDamage(EntityDamageEvent::MODIFIER_ABSORPTION)));
-		$this->damageArmor($source->getDamage(EntityDamageEvent::MODIFIER_BASE));
+		$this->setAbsorption(max(0, $this->getAbsorption() + $source->getModifier(EntityDamageEvent::MODIFIER_ABSORPTION)));
+		$this->damageArmor($source->getBaseDamage());
 	}
 
 	/**
@@ -495,7 +503,7 @@ abstract class Living extends Entity implements Damageable{
 	public function attack(EntityDamageEvent $source) : void{
 		if($this->attackTime > 0 or $this->noDamageTicks > 0){
 			$lastCause = $this->getLastDamageCause();
-			if($lastCause !== null and $lastCause->getDamage() >= $source->getDamage()){
+			if($lastCause !== null and $lastCause->getBaseDamage() >= $source->getBaseDamage()){
 				$source->setCancelled();
 			}
 		}
@@ -527,6 +535,8 @@ abstract class Living extends Entity implements Damageable{
 			return;
 		}
 
+		$this->attackTime = 10; //0.5 seconds cooldown
+
 		if($source instanceof EntityDamageByEntityEvent){
 			$e = $source->getDamager();
 			if($source instanceof EntityDamageByChildEntityEvent){
@@ -540,19 +550,16 @@ abstract class Living extends Entity implements Damageable{
 
 				$deltaX = $this->x - $e->x;
 				$deltaZ = $this->z - $e->z;
-				$this->knockBack($e, $source->getDamage(), $deltaX, $deltaZ, $source->getKnockBack());
+				$this->knockBack($e, $source->getBaseDamage(), $deltaX, $deltaZ, $source->getKnockBack());
 			}
 		}
 
-		$this->applyPostDamageEffects($source);
-
 		if($this->isAlive()){
+			$this->applyPostDamageEffects($source);
 			$this->doHitAnimation();
 		}else{
 			$this->startDeathAnimation();
 		}
-
-		$this->attackTime = 10; //0.5 seconds cooldown
 	}
 
 	protected function doHitAnimation() : void{
@@ -564,23 +571,24 @@ abstract class Living extends Entity implements Damageable{
 		if($f <= 0){
 			return;
 		}
+		if(mt_rand() / mt_getrandmax() > $this->getAttributeMap()->getAttribute(Attribute::KNOCKBACK_RESISTANCE)->getValue()){
+			$f = 1 / $f;
 
-		$f = 1 / $f;
+			$motion = clone $this->motion;
 
-		$motion = new Vector3($this->motionX, $this->motionY, $this->motionZ);
+			$motion->x /= 2;
+			$motion->y /= 2;
+			$motion->z /= 2;
+			$motion->x += $x * $f * $base;
+			$motion->y += $base;
+			$motion->z += $z * $f * $base;
 
-		$motion->x /= 2;
-		$motion->y /= 2;
-		$motion->z /= 2;
-		$motion->x += $x * $f * $base;
-		$motion->y += $base;
-		$motion->z += $z * $f * $base;
+			if($motion->y > $base){
+				$motion->y = $base;
+			}
 
-		if($motion->y > $base){
-			$motion->y = $base;
+			$this->setMotion($motion);
 		}
-
-		$this->setMotion($motion);
 	}
 
 	public function kill() : void{
@@ -686,7 +694,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @return bool
 	 */
 	public function canBreathe() : bool{
-		return $this->hasEffect(Effect::WATER_BREATHING) or !$this->isInsideOfWater();
+		return $this->hasEffect(Effect::WATER_BREATHING) or !$this->isUnderwater();
 	}
 
 	/**

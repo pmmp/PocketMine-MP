@@ -48,16 +48,15 @@ class Cake extends Transparent implements FoodSource{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-
 		$f = $this->getDamage() * 0.125; //1 slice width
 
 		return new AxisAlignedBB(
-			$this->x + 0.0625 + $f,
-			$this->y,
-			$this->z + 0.0625,
-			$this->x + 1 - 0.0625,
-			$this->y + 0.5,
-			$this->z + 1 - 0.0625
+			0.0625 + $f,
+			0,
+			0.0625,
+			1 - 0.0625,
+			0.5,
+			1 - 0.0625
 		);
 	}
 

@@ -78,17 +78,16 @@ class CobblestoneWall extends Transparent{
 		}
 
 		return new AxisAlignedBB(
-			$this->x + ($west ? 0 : $inset),
-			$this->y,
-			$this->z + ($north ? 0 : $inset),
-			$this->x + 1 - ($east ? 0 : $inset),
-			$this->y + 1.5,
-			$this->z + 1 - ($south ? 0 : $inset)
+			($west ? 0 : $inset),
+			0,
+			($north ? 0 : $inset),
+			1 - ($east ? 0 : $inset),
+			1.5,
+			1 - ($south ? 0 : $inset)
 		);
 	}
 
 	public function canConnect(Block $block){
 		return $block instanceof static or $block instanceof FenceGate or ($block->isSolid() and !$block->isTransparent());
 	}
-
 }

@@ -144,12 +144,11 @@ class VerifyLoginTask extends AsyncTask{
 
 	public function onCompletion(Server $server){
 		/** @var Player $player */
-		$player = $this->fetchLocal($server);
+		$player = $this->fetchLocal();
 		if($player->isClosed()){
 			$server->getLogger()->error("Player " . $player->getName() . " was disconnected before their login could be verified");
 		}else{
 			$player->onVerifyCompleted($this->packet, $this->error, $this->authenticated);
 		}
 	}
-
 }

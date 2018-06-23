@@ -119,5 +119,4 @@ class AdventureSettingsPacket extends DataPacket{
 	public function handle(NetworkSession $session) : bool{
 		return $session->handleAdventureSettings($this);
 	}
-
 }

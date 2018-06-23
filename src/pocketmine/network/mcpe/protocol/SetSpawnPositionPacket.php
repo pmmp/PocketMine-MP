@@ -60,5 +60,4 @@ class SetSpawnPositionPacket extends DataPacket{
 	public function handle(NetworkSession $session) : bool{
 		return $session->handleSetSpawnPosition($this);
 	}
-
 }

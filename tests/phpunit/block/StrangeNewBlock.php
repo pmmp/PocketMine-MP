@@ -21,8 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\level\biome;
+namespace pocketmine\block;
 
-abstract class NormalBiome extends Biome{
-
+class StrangeNewBlock extends Solid{
+	public function getName() : string{
+		return "Strange New Block";
+	}
 }

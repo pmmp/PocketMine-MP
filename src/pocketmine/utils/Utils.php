@@ -545,9 +545,8 @@ class Utils{
 	}
 
 	public static function kill($pid) : void{
-		global $logger;
-		if($logger instanceof MainLogger){
-			$logger->syncFlushBuffer();
+		if(MainLogger::isRegisteredStatic()){
+			MainLogger::getLogger()->syncFlushBuffer();
 		}
 		switch(Utils::getOS()){
 			case "win":
@@ -570,7 +569,7 @@ class Utils{
 	 *
 	 * @return int
 	 */
-	public static function getReferenceCount($value, $includeCurrent = true){
+	public static function getReferenceCount($value, bool $includeCurrent = true){
 		ob_start();
 		debug_zval_dump($value);
 		$ret = explode("\n", ob_get_contents());
@@ -634,5 +633,22 @@ class Utils{
 		preg_match_all('/^[\t ]*\* @([a-zA-Z]+)(?:[\t ]+(.+))?[\t ]*$/m', $docComment, $matches);
 
 		return array_combine($matches[1], array_map("trim", $matches[2]));
+	}
+
+	/**
+	 * @param int $severity
+	 * @param string $message
+	 * @param string $file
+	 * @param int $line
+	 *
+	 * @return bool
+	 * @throws \ErrorException
+	 */
+	public static function errorExceptionHandler(int $severity, string $message, string $file, int $line) : bool{
+		if(error_reporting() & $severity){
+			throw new \ErrorException($message, 0, $severity, $file, $line);
+		}
+
+		return true; //stfu operator
 	}
 }

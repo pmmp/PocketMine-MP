@@ -48,16 +48,8 @@ class Farmland extends Transparent{
 		return BlockToolType::TYPE_SHOVEL;
 	}
 
-
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return new AxisAlignedBB(
-			$this->x,
-			$this->y,
-			$this->z,
-			$this->x + 1,
-			$this->y + 1, //TODO: this should be 0.9375, but MCPE currently treats them as a full block (https://bugs.mojang.com/browse/MCPE-12109)
-			$this->z + 1
-		);
+		return new AxisAlignedBB(0, 0, 0, 1, 1, 1); //TODO: y max should be 0.9375, but MCPE currently treats them as a full block (https://bugs.mojang.com/browse/MCPE-12109)
 	}
 
 	public function onNearbyBlockChange() : void{

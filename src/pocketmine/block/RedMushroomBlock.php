@@ -50,5 +50,4 @@ class RedMushroomBlock extends Solid{
 			Item::get(Item::RED_MUSHROOM, 0, mt_rand(0, 2))
 		];
 	}
-
 }

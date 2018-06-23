@@ -76,5 +76,4 @@ class Stone extends Solid{
 
 		return parent::getDropsForCompatibleTool($item);
 	}
-
 }

@@ -578,5 +578,4 @@ abstract class NetworkSession{
 	public function handleUpdateBlockSynced(UpdateBlockSyncedPacket $packet) : bool{
 		return false;
 	}
-
 }

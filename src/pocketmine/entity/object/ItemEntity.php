@@ -66,8 +66,7 @@ class ItemEntity extends Entity{
 
 		$itemTag = $this->namedtag->getCompoundTag("Item");
 		if($itemTag === null){
-			$this->close();
-			return;
+			throw new \UnexpectedValueException("Invalid " . get_class($this) . " entity: expected \"Item\" NBT tag not found");
 		}
 
 		$this->item = Item::nbtDeserialize($itemTag);

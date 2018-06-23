@@ -21,30 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\scheduler;
-
-use pocketmine\plugin\Plugin;
+namespace pocketmine\level\biome;
 
 /**
- * Base class for plugin tasks. Allows the Server to delete them easily when needed
+ * Polyfill class for biomes that are unknown to PocketMine-MP
  */
-abstract class PluginTask extends Task{
+class UnknownBiome extends Biome{
 
-	/** @var Plugin */
-	protected $owner;
-
-	/**
-	 * @param Plugin $owner
-	 */
-	public function __construct(Plugin $owner){
-		$this->owner = $owner;
+	public function getName() : string{
+		return "Unknown";
 	}
-
-	/**
-	 * @return Plugin
-	 */
-	final public function getOwner() : Plugin{
-		return $this->owner;
-	}
-
 }

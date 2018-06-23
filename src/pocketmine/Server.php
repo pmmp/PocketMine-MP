@@ -51,6 +51,7 @@ use pocketmine\level\biome\Biome;
 use pocketmine\level\format\io\LevelProvider;
 use pocketmine\level\format\io\LevelProviderManager;
 use pocketmine\level\generator\Generator;
+use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
 use pocketmine\level\LevelException;
 use pocketmine\metadata\EntityMetadataStore;
@@ -87,9 +88,9 @@ use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
 use pocketmine\plugin\ScriptPluginLoader;
 use pocketmine\resourcepacks\ResourcePackManager;
+use pocketmine\scheduler\AsyncPool;
 use pocketmine\scheduler\FileWriteTask;
 use pocketmine\scheduler\SendUsageTask;
-use pocketmine\scheduler\ServerScheduler;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\tile\Tile;
@@ -103,7 +104,6 @@ use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\utils\UUID;
-use pocketmine\utils\VersionString;
 
 /**
  * The class that manages everything
@@ -148,8 +148,8 @@ class Server{
 	/** @var AutoUpdater */
 	private $updater = null;
 
-	/** @var ServerScheduler */
-	private $scheduler = null;
+	/** @var AsyncPool */
+	private $asyncPool;
 
 	/**
 	 * Counts the ticks since the server start
@@ -311,13 +311,6 @@ class Server{
 	/**
 	 * @return string
 	 */
-	public function getCodename() : string{
-		return \pocketmine\CODENAME;
-	}
-
-	/**
-	 * @return string
-	 */
 	public function getVersion() : string{
 		return ProtocolInfo::MINECRAFT_VERSION;
 	}
@@ -326,7 +319,7 @@ class Server{
 	 * @return string
 	 */
 	public function getApiVersion() : string{
-		return \pocketmine\API_VERSION;
+		return \pocketmine\BASE_VERSION;
 	}
 
 	/**
@@ -650,11 +643,8 @@ class Server{
 		return $this->resourceManager;
 	}
 
-	/**
-	 * @return ServerScheduler
-	 */
-	public function getScheduler(){
-		return $this->scheduler;
+	public function getAsyncPool() : AsyncPool{
+		return $this->asyncPool;
 	}
 
 	/**
@@ -824,7 +814,7 @@ class Server{
 			$nbt = new BigEndianNBTStream();
 			try{
 				if($async){
-					$this->getScheduler()->scheduleAsyncTask(new FileWriteTask($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed($ev->getSaveData())));
+					$this->asyncPool->submitTask(new FileWriteTask($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed($ev->getSaveData())));
 				}else{
 					file_put_contents($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed($ev->getSaveData()));
 				}
@@ -1046,8 +1036,6 @@ class Server{
 
 		$this->levels[$level->getId()] = $level;
 
-		$level->initLevel();
-
 		$this->getPluginManager()->callEvent(new LevelLoadEvent($level));
 
 		$level->setTickRate($this->baseTickRate);
@@ -1077,7 +1065,7 @@ class Server{
 		}
 
 		if(!($generator !== null and class_exists($generator, true) and is_subclass_of($generator, Generator::class))){
-			$generator = Generator::getGenerator($this->getLevelType());
+			$generator = GeneratorManager::getGenerator($this->getLevelType());
 		}
 
 		if(($providerClass = LevelProviderManager::getProviderByName($this->getProperty("level-settings.default-format", "pmanvil"))) === null){
@@ -1091,8 +1079,6 @@ class Server{
 
 			$level = new Level($this, $name, new $providerClass($path));
 			$this->levels[$level->getId()] = $level;
-
-			$level->initLevel();
 
 			$level->setTickRate($this->baseTickRate);
 		}catch(\Throwable $e){
@@ -1451,19 +1437,10 @@ class Server{
 			$this->dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
 			$this->pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
 
-			$consoleNotifier = new SleeperNotifier();
-			$this->console = new CommandReader($consoleNotifier);
-			$this->tickSleeper->addNotifier($consoleNotifier, function() : void{
-				$this->checkConsole();
-			});
-			$this->console->start(PTHREADS_INHERIT_NONE);
-
-			$version = new VersionString($this->getPocketMineVersion());
-
 			$this->logger->info("Loading pocketmine.yml...");
 			if(!file_exists($this->dataPath . "pocketmine.yml")){
 				$content = file_get_contents(\pocketmine\RESOURCE_PATH . "pocketmine.yml");
-				if($version->isDev()){
+				if(\pocketmine\IS_DEVELOPMENT_BUILD){
 					$content = str_replace("preferred-channel: stable", "preferred-channel: beta", $content);
 				}
 				@file_put_contents($this->dataPath . "pocketmine.yml", $content);
@@ -1471,6 +1448,28 @@ class Server{
 			$this->config = new Config($this->dataPath . "pocketmine.yml", Config::YAML, []);
 
 			define('pocketmine\DEBUG', (int) $this->getProperty("debug.level", 1));
+
+			$this->forceLanguage = (bool) $this->getProperty("settings.force-language", false);
+			$this->baseLang = new BaseLang($this->getProperty("settings.language", BaseLang::FALLBACK_LANGUAGE));
+			$this->logger->info($this->getLanguage()->translateString("language.selected", [$this->getLanguage()->getName(), $this->getLanguage()->getLang()]));
+
+			if(\pocketmine\IS_DEVELOPMENT_BUILD){
+				if(!((bool) $this->getProperty("settings.enable-dev-builds", false))){
+					$this->logger->emergency($this->baseLang->translateString("pocketmine.server.devBuild.error1", [\pocketmine\NAME]));
+					$this->logger->emergency($this->baseLang->translateString("pocketmine.server.devBuild.error2"));
+					$this->logger->emergency($this->baseLang->translateString("pocketmine.server.devBuild.error3"));
+					$this->logger->emergency($this->baseLang->translateString("pocketmine.server.devBuild.error4", ["settings.enable-dev-builds"]));
+					$this->forceShutdown();
+
+					return;
+				}
+
+				$this->logger->warning(str_repeat("-", 40));
+				$this->logger->warning($this->baseLang->translateString("pocketmine.server.devBuild.warning1", [\pocketmine\NAME]));
+				$this->logger->warning($this->baseLang->translateString("pocketmine.server.devBuild.warning2"));
+				$this->logger->warning($this->baseLang->translateString("pocketmine.server.devBuild.warning3"));
+				$this->logger->warning(str_repeat("-", 40));
+			}
 
 			if(((int) ini_get('zend.assertions')) > 0 and ((bool) $this->getProperty("debug.assertions.warn-if-enabled", true)) !== false){
 				$this->logger->warning("Debugging assertions are enabled, this may impact on performance. To disable them, set `zend.assertions = -1` in php.ini.");
@@ -1510,26 +1509,22 @@ class Server{
 				"xbox-auth" => true
 			]);
 
-			$this->forceLanguage = (bool) $this->getProperty("settings.force-language", false);
-			$this->baseLang = new BaseLang($this->getProperty("settings.language", BaseLang::FALLBACK_LANGUAGE));
-			$this->logger->info($this->getLanguage()->translateString("language.selected", [$this->getLanguage()->getName(), $this->getLanguage()->getLang()]));
-
 			$this->memoryManager = new MemoryManager($this);
 
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.start", [TextFormat::AQUA . $this->getVersion() . TextFormat::RESET]));
 
 			if(($poolSize = $this->getProperty("settings.async-workers", "auto")) === "auto"){
-				$poolSize = ServerScheduler::$WORKERS;
+				$poolSize = 2;
 				$processors = Utils::getCoreCount() - 2;
 
 				if($processors > 0){
 					$poolSize = max(1, $processors);
 				}
 			}else{
-				$poolSize = (int) $poolSize;
+				$poolSize = max(1, (int) $poolSize);
 			}
 
-			ServerScheduler::$WORKERS = $poolSize;
+			$this->asyncPool = new AsyncPool($this, $poolSize, (int) max(-1, (int) $this->getProperty("memory.async-worker-hard-limit", 256)), $this->autoloader, $this->logger);
 
 			if($this->getProperty("network.batch-threshold", 256) >= 0){
 				Network::$BATCH_THRESHOLD = (int) $this->getProperty("network.batch-threshold", 256);
@@ -1551,7 +1546,12 @@ class Server{
 
 			$this->doTitleTick = ((bool) $this->getProperty("console.title-tick", true)) && Terminal::hasFormattingCodes();
 
-			$this->scheduler = new ServerScheduler();
+			$consoleNotifier = new SleeperNotifier();
+			$this->console = new CommandReader($consoleNotifier);
+			$this->tickSleeper->addNotifier($consoleNotifier, function() : void{
+				$this->checkConsole();
+			});
+			$this->console->start(PTHREADS_INHERIT_NONE);
 
 			if($this->getConfigBool("enable-rcon", false)){
 				try{
@@ -1617,9 +1617,7 @@ class Server{
 
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.info", [
 				$this->getName(),
-				($version->isDev() ? TextFormat::YELLOW : "") . $version->get(true) . TextFormat::RESET,
-				$this->getCodename(),
-				$this->getApiVersion()
+				(\pocketmine\IS_DEVELOPMENT_BUILD ? TextFormat::YELLOW : "") . $this->getPocketMineVersion() . TextFormat::RESET
 			]));
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.license", [$this->getName()]));
 
@@ -1633,6 +1631,7 @@ class Server{
 			Entity::init();
 			Tile::init();
 			BlockFactory::init();
+			BlockFactory::registerStaticRuntimeIdMappings();
 			Enchantment::init();
 			ItemFactory::init();
 			Item::initCreativeItems();
@@ -1640,13 +1639,13 @@ class Server{
 
 			$this->craftingManager = new CraftingManager();
 
-			$this->resourceManager = new ResourcePackManager($this->getDataPath() . "resource_packs" . DIRECTORY_SEPARATOR);
+			$this->resourceManager = new ResourcePackManager($this->getDataPath() . "resource_packs" . DIRECTORY_SEPARATOR, $this->logger);
 
-			$this->pluginManager = new PluginManager($this, $this->commandMap);
+			$this->pluginManager = new PluginManager($this, $this->commandMap, ((bool) $this->getProperty("plugins.legacy-data-dir", true)) ? null : $this->getDataPath() . "plugin_data" . DIRECTORY_SEPARATOR);
 			$this->pluginManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
 			$this->profilingTickRate = (float) $this->getProperty("settings.profile-report-trigger", 20);
-			$this->pluginManager->registerInterface(PharPluginLoader::class);
-			$this->pluginManager->registerInterface(ScriptPluginLoader::class);
+			$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
+			$this->pluginManager->registerInterface(new ScriptPluginLoader());
 
 			register_shutdown_function([$this, "crashDump"]);
 
@@ -1665,31 +1664,24 @@ class Server{
 				$this->logger->debug($this->getLanguage()->translateString("pocketmine.debug.enable"));
 			}
 
-			Generator::registerDefaultGenerators();
+			GeneratorManager::registerDefaultGenerators();
 
 			foreach((array) $this->getProperty("worlds", []) as $name => $options){
 				if(!is_array($options)){
 					continue;
 				}
 				if(!$this->loadLevel($name)){
-					$seed = $options["seed"] ?? time();
-					if(is_string($seed) and !is_numeric($seed)){
-						$seed = Utils::javaStringHash($seed);
-					}elseif(!is_int($seed)){
-						$seed = (int) $seed;
-					}
-
 					if(isset($options["generator"])){
 						$generatorOptions = explode(":", $options["generator"]);
-						$generator = Generator::getGenerator(array_shift($generatorOptions));
+						$generator = GeneratorManager::getGenerator(array_shift($generatorOptions));
 						if(count($options) > 0){
 							$options["preset"] = implode(":", $generatorOptions);
 						}
 					}else{
-						$generator = Generator::getGenerator("default");
+						$generator = GeneratorManager::getGenerator("default");
 					}
 
-					$this->generateLevel($name, $seed, $generator, $options);
+					$this->generateLevel($name, Generator::convertSeed((string) ($options["seed"] ?? "")), $generator, $options);
 				}
 			}
 
@@ -1701,13 +1693,7 @@ class Server{
 					$this->setConfigString("level-name", "world");
 				}
 				if(!$this->loadLevel($default)){
-					$seed = getopt("", ["level-seed::"])["level-seed"] ?? $this->properties->get("level-seed", time());
-					if(!is_numeric($seed) or bccomp($seed, "9223372036854775807") > 0){
-						$seed = Utils::javaStringHash($seed);
-					}elseif(PHP_INT_SIZE === 8){
-						$seed = (int) $seed;
-					}
-					$this->generateLevel($default, $seed === 0 ? time() : $seed);
+					$this->generateLevel($default, Generator::convertSeed($this->getConfigString("level-seed")));
 				}
 
 				$this->setDefaultLevel($this->getLevelByName($default));
@@ -1903,7 +1889,7 @@ class Server{
 
 			if(!$forceSync and !$immediate and $this->networkCompressionAsync){
 				$task = new CompressBatchedTask($pk, $targets);
-				$this->getScheduler()->scheduleAsyncTask($task);
+				$this->asyncPool->submitTask($task);
 			}else{
 				$this->broadcastPacketsCallback($pk, $targets, $immediate);
 			}
@@ -2013,8 +1999,8 @@ class Server{
 			$this->getNetwork()->blockAddress($entry->getName(), -1);
 		}
 
-		$this->pluginManager->registerInterface(PharPluginLoader::class);
-		$this->pluginManager->registerInterface(ScriptPluginLoader::class);
+		$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
+		$this->pluginManager->registerInterface(new ScriptPluginLoader());
 		$this->pluginManager->loadPlugins($this->pluginPath);
 		$this->enablePlugins(PluginLoadOrder::STARTUP);
 		$this->enablePlugins(PluginLoadOrder::POSTWORLD);
@@ -2022,7 +2008,7 @@ class Server{
 	}
 
 	/**
-	 * Shutdowns the server correctly
+	 * Shuts the server down correctly
 	 */
 	public function shutdown(){
 		$this->isRunning = false;
@@ -2067,9 +2053,9 @@ class Server{
 			$this->getLogger()->debug("Removing event handlers");
 			HandlerList::unregisterAll();
 
-			if($this->scheduler instanceof ServerScheduler){
-				$this->getLogger()->debug("Shutting down task scheduler");
-				$this->scheduler->shutdown();
+			if($this->asyncPool instanceof AsyncPool){
+				$this->getLogger()->debug("Shutting down async task worker pool");
+				$this->asyncPool->shutdown();
 			}
 
 			if($this->properties !== null and $this->properties->hasChanged()){
@@ -2077,9 +2063,11 @@ class Server{
 				$this->properties->save();
 			}
 
-			$this->getLogger()->debug("Closing console");
-			$this->console->shutdown();
-			$this->console->notify();
+			if($this->console instanceof CommandReader){
+				$this->getLogger()->debug("Closing console");
+				$this->console->shutdown();
+				$this->console->notify();
+			}
 
 			if($this->network instanceof Network){
 				$this->getLogger()->debug("Stopping network interfaces");
@@ -2183,7 +2171,7 @@ class Server{
 		$this->logger->logException($e, $trace);
 
 		$lastError = [
-			"type" => \get_class($e),
+			"type" => get_class($e),
 			"message" => $errstr,
 			"fullFile" => $e->getFile(),
 			"file" => $errfile,
@@ -2358,7 +2346,7 @@ class Server{
 		$p->dataPacket($pk);
 	}
 
-	private function checkTickUpdates($currentTick, $tickTime){
+	private function checkTickUpdates(int $currentTick, float $tickTime) : void{
 		foreach($this->players as $p){
 			if(!$p->loggedIn and ($tickTime - $p->creationTime) >= 10){
 				$p->close("", "Login timeout");
@@ -2427,7 +2415,7 @@ class Server{
 
 	public function sendUsage($type = SendUsageTask::TYPE_STATUS){
 		if((bool) $this->getProperty("anonymous-statistics.enabled", true)){
-			$this->scheduler->scheduleAsyncTask(new SendUsageTask($this, $type, $this->uniquePlayers));
+			$this->asyncPool->submitTask(new SendUsageTask($this, $type, $this->uniquePlayers));
 		}
 		$this->uniquePlayers = [];
 	}
@@ -2522,8 +2510,12 @@ class Server{
 		Timings::$connectionTimer->stopTiming();
 
 		Timings::$schedulerTimer->startTiming();
-		$this->scheduler->mainThreadHeartbeat($this->tickCounter);
+		$this->pluginManager->tickSchedulers($this->tickCounter);
 		Timings::$schedulerTimer->stopTiming();
+
+		Timings::$schedulerAsyncTimer->startTiming();
+		$this->asyncPool->collectTasks();
+		Timings::$schedulerAsyncTimer->stopTiming();
 
 		$this->checkTickUpdates($this->tickCounter, $tickTime);
 

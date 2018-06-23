@@ -46,5 +46,4 @@ class InventoryOpenEvent extends InventoryEvent implements Cancellable{
 	public function getPlayer() : Player{
 		return $this->who;
 	}
-
 }

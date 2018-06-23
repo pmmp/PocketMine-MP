@@ -32,7 +32,7 @@ abstract class WaterAnimal extends Creature implements Ageable{
 	}
 
 	public function canBreathe() : bool{
-		return $this->isInsideOfWater();
+		return $this->isUnderwater();
 	}
 
 	public function onAirExpired() : void{

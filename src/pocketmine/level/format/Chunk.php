@@ -103,7 +103,7 @@ class Chunk{
 		$this->height = Chunk::MAX_SUBCHUNKS; //TODO: add a way of changing this
 
 		$this->subChunks = new \SplFixedArray($this->height);
-		$this->emptySubChunk = new EmptySubChunk();
+		$this->emptySubChunk = EmptySubChunk::getInstance();
 
 		foreach($this->subChunks as $y => $null){
 			$this->subChunks[$y] = $subChunks[$y] ?? $this->emptySubChunk;
@@ -186,7 +186,7 @@ class Chunk{
 	 *
 	 * @return bool
 	 */
-	public function setBlock(int $x, int $y, int $z, $blockId = null, $meta = null) : bool{
+	public function setBlock(int $x, int $y, int $z, ?int $blockId = null, ?int $meta = null) : bool{
 		if($this->getSubChunk($y >> 4, true)->setBlock($x, $y & 0x0f, $z, $blockId !== null ? ($blockId & 0xff) : null, $meta !== null ? ($meta & 0x0f) : null)){
 			$this->hasChanged = true;
 			return true;

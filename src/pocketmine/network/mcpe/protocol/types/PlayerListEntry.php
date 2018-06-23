@@ -65,5 +65,4 @@ class PlayerListEntry{
 
 		return $entry;
 	}
-
 }

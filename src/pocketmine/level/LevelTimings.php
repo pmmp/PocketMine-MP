@@ -87,5 +87,4 @@ class LevelTimings{
 
 		$this->doTick = new TimingsHandler($name . "doTick");
 	}
-
 }
