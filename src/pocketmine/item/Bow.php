@@ -27,6 +27,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\EntityShootBowEvent;
 use pocketmine\event\entity\ProjectileLaunchEvent;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
@@ -64,6 +65,9 @@ class Bow extends Tool{
 
 		$entity = Entity::createEntity("Arrow", $player->getLevel(), $nbt, $player, $force == 2);
 		if($entity instanceof Projectile){
+			if(($powerLevel = $this->getEnchantmentLevel(Enchantment::POWER)) > 0){
+				$entity->setBaseDamage($entity->getBaseDamage() + (($powerLevel + 1) / 2));
+			}
 			$ev = new EntityShootBowEvent($player, $this, $entity, $force);
 
 			if($force < 0.1 or $diff < 5){
