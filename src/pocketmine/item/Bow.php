@@ -73,6 +73,9 @@ class Bow extends Tool{
 			if(($powerLevel = $this->getEnchantmentLevel(Enchantment::POWER)) > 0){
 				$entity->setBaseDamage($entity->getBaseDamage() + (($powerLevel + 1) / 2));
 			}
+			if($this->hasEnchantment(Enchantment::FLAME)){
+				$entity->setOnFire($entity->getFireTicks() * 20 + 100);
+			}
 			$ev = new EntityShootBowEvent($player, $this, $entity, $force);
 
 			if($force < 0.1 or $diff < 5){
