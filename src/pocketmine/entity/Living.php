@@ -478,7 +478,6 @@ abstract class Living extends Entity implements Damageable{
 		$this->setAbsorption(max(0, $this->getAbsorption() + $source->getModifier(EntityDamageEvent::MODIFIER_ABSORPTION)));
 		$this->damageArmor($source->getBaseDamage());
 
-
 		if($source instanceof EntityDamageByEntityEvent){
 			$damage = 0;
 			foreach($this->armorInventory->getContents() as $k => $item){
