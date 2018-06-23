@@ -2529,11 +2529,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							}
 						}
 
-						if($heldItem->onAttackEntity($target) and $this->isSurvival()){ //always fire the hook, even if we are survival
-							$this->inventory->setItemInHand($heldItem);
-						}
+						if($this->isAlive()){
+							//reactive damage like thorns might cause us to be killed by attacking another mob, which
+							//would mean we'd already have dropped the inventory by the time we reached here
+							if($heldItem->onAttackEntity($target) and $this->isSurvival()){ //always fire the hook, even if we are survival
+								$this->inventory->setItemInHand($heldItem);
+							}
 
-						$this->exhaust(0.3, PlayerExhaustEvent::CAUSE_ATTACK);
+							$this->exhaust(0.3, PlayerExhaustEvent::CAUSE_ATTACK);
+						}
 
 						return true;
 					default:
