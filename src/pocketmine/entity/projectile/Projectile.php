@@ -46,7 +46,8 @@ abstract class Projectile extends Entity{
 
 	public const DATA_SHOOTER_ID = 17;
 
-	protected $damage = 0;
+	/** @var float */
+	protected $damage = 0.0;
 
 	/** @var Vector3|null */
 	protected $blockHit;
@@ -110,6 +111,25 @@ abstract class Projectile extends Entity{
 
 	public function canBeCollidedWith() : bool{
 		return false;
+	}
+
+	/**
+	 * Returns the base damage applied on collision. This is multiplied by the projectile's speed to give a result
+	 * damage.
+	 *
+	 * @return float
+	 */
+	public function getBaseDamage() : float{
+		return $this->damage;
+	}
+
+	/**
+	 * Sets the base amount of damage applied by the projectile.
+	 *
+	 * @param float $damage
+	 */
+	public function setBaseDamage(float $damage) : void{
+		$this->damage = $damage;
 	}
 
 	/**
