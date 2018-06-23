@@ -45,5 +45,4 @@ class PlayerToggleSwimEvent extends PlayerEvent implements Cancellable{
 	public function isSwimming() : bool{
 		return $this->isSwimming;
 	}
-
 }
