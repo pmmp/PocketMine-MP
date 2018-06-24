@@ -77,6 +77,8 @@ use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Consumable;
 use pocketmine\item\Durable;
+use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
 use pocketmine\item\WritableBook;
 use pocketmine\item\WrittenBook;
@@ -2502,6 +2504,19 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						}
 
 						$ev = new EntityDamageByEntityEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $heldItem->getAttackPoints());
+
+						$meleeEnchantmentDamage = 0;
+						/** @var EnchantmentInstance[] $meleeEnchantments */
+						$meleeEnchantments = [];
+						foreach($heldItem->getEnchantments() as $enchantment){
+							$type = $enchantment->getType();
+							if($type instanceof MeleeWeaponEnchantment and $type->isApplicableTo($target)){
+								$meleeEnchantmentDamage += $type->getDamageBonus($enchantment->getLevel());
+								$meleeEnchantments[] = $enchantment;
+							}
+						}
+						$ev->setModifier($meleeEnchantmentDamage, EntityDamageEvent::MODIFIER_WEAPON_ENCHANTMENTS);
+
 						if($cancelled){
 							$ev->setCancelled();
 						}
@@ -2527,6 +2542,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							if($target instanceof Player){
 								$target->dataPacket($pk);
 							}
+						}
+
+						foreach($meleeEnchantments as $enchantment){
+							$type = $enchantment->getType();
+							assert($type instanceof MeleeWeaponEnchantment);
+							$type->onPostAttack($this, $target, $enchantment->getLevel());
 						}
 
 						if($this->isAlive()){
