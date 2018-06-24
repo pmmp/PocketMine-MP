@@ -34,6 +34,7 @@ use pocketmine\inventory\ArmorInventory;
 use pocketmine\inventory\ArmorInventoryEventProcessor;
 use pocketmine\item\Armor;
 use pocketmine\item\Consumable;
+use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
@@ -476,6 +477,26 @@ abstract class Living extends Entity implements Damageable{
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
 		$this->setAbsorption(max(0, $this->getAbsorption() + $source->getModifier(EntityDamageEvent::MODIFIER_ABSORPTION)));
 		$this->damageArmor($source->getBaseDamage());
+
+		if($source instanceof EntityDamageByEntityEvent){
+			$damage = 0;
+			foreach($this->armorInventory->getContents() as $k => $item){
+				if($item instanceof Armor and ($thornsLevel = $item->getEnchantmentLevel(Enchantment::THORNS)) > 0){
+					if(mt_rand(0, 99) < $thornsLevel * 15){
+						$this->damageItem($item, 3);
+						$damage += ($thornsLevel > 10 ? $thornsLevel - 10 : 1 + mt_rand(0, 3));
+					}else{
+						$this->damageItem($item, 1); //thorns causes an extra +1 durability loss even if it didn't activate
+					}
+
+					$this->armorInventory->setItem($k, $item);
+				}
+			}
+
+			if($damage > 0){
+				$source->getDamager()->attack(new EntityDamageByEntityEvent($this, $source->getDamager(), EntityDamageEvent::CAUSE_MAGIC, $damage));
+			}
+		}
 	}
 
 	/**
@@ -490,14 +511,18 @@ abstract class Living extends Entity implements Damageable{
 		$armor = $this->armorInventory->getContents(true);
 		foreach($armor as $item){
 			if($item instanceof Armor){
-				$item->applyDamage($durabilityRemoved);
-				if($item->isBroken()){
-					$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BREAK);
-				}
+				$this->damageItem($item, $durabilityRemoved);
 			}
 		}
 
 		$this->armorInventory->setContents($armor);
+	}
+
+	private function damageItem(Durable $item, int $durabilityRemoved) : void{
+		$item->applyDamage($durabilityRemoved);
+		if($item->isBroken()){
+			$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BREAK);
+		}
 	}
 
 	public function attack(EntityDamageEvent $source) : void{
@@ -577,14 +602,17 @@ abstract class Living extends Entity implements Damageable{
 			$motion = clone $this->motion;
 
 			$motion->x /= 2;
-			$motion->y /= 2;
 			$motion->z /= 2;
 			$motion->x += $x * $f * $base;
-			$motion->y += $base;
 			$motion->z += $z * $f * $base;
 
-			if($motion->y > $base){
-				$motion->y = $base;
+			if($this->onGround){
+				$motion->y /= 2;
+				$motion->y += $base;
+
+				if($motion->y > 0.4){ //this is hardcoded in vanilla
+					$motion->y = 0.4;
+				}
 			}
 
 			$this->setMotion($motion);

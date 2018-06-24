@@ -67,11 +67,19 @@ class Bow extends Tool{
 		$entity = Entity::createEntity("Arrow", $player->getLevel(), $nbt, $player, $force == 2);
 		if($entity instanceof Projectile){
 			$infinity = $this->hasEnchantment(Enchantment::INFINITY);
-			if($infinity and $entity instanceof ArrowEntity){
-				$entity->setPickupMode(ArrowEntity::PICKUP_CREATIVE);
+			if($entity instanceof ArrowEntity){
+				if($infinity){
+					$entity->setPickupMode(ArrowEntity::PICKUP_CREATIVE);
+				}
+				if(($punchLevel = $this->getEnchantmentLevel(Enchantment::PUNCH)) > 0){
+					$entity->setPunchKnockback($punchLevel);
+				}
 			}
 			if(($powerLevel = $this->getEnchantmentLevel(Enchantment::POWER)) > 0){
 				$entity->setBaseDamage($entity->getBaseDamage() + (($powerLevel + 1) / 2));
+			}
+			if($this->hasEnchantment(Enchantment::FLAME)){
+				$entity->setOnFire($entity->getFireTicks() * 20 + 100);
 			}
 			$ev = new EntityShootBowEvent($player, $this, $entity, $force);
 
