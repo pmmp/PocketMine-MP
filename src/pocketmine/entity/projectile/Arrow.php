@@ -31,6 +31,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\math\RayTraceResult;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
@@ -40,17 +41,42 @@ use pocketmine\Player;
 class Arrow extends Projectile{
 	public const NETWORK_ID = self::ARROW;
 
+	public const PICKUP_NONE = 0;
+	public const PICKUP_ANY = 1;
+	public const PICKUP_CREATIVE = 2;
+
+	private const TAG_PICKUP = "pickup"; //TAG_Byte
+
 	public $width = 0.25;
 	public $height = 0.25;
 
 	protected $gravity = 0.05;
 	protected $drag = 0.01;
 
-	protected $damage = 2;
+	/** @var float */
+	protected $damage = 2.0;
+
+	/** @var int */
+	protected $pickupMode = self::PICKUP_ANY;
+
+	/** @var float */
+	protected $punchKnockback = 0.0;
 
 	public function __construct(Level $level, CompoundTag $nbt, ?Entity $shootingEntity = null, bool $critical = false){
 		parent::__construct($level, $nbt, $shootingEntity);
 		$this->setCritical($critical);
+	}
+
+	protected function initEntity() : void{
+		parent::initEntity();
+
+		$this->pickupMode = $this->namedtag->getByte(self::TAG_PICKUP, self::PICKUP_ANY, true);
+	}
+
+	public function saveNBT() : void{
+		parent::saveNBT();
+
+		$this->namedtag->setByte(self::TAG_PICKUP, $this->pickupMode, true);
 	}
 
 	public function isCritical() : bool{
@@ -68,6 +94,20 @@ class Arrow extends Projectile{
 		}else{
 			return $base;
 		}
+	}
+
+	/**
+	 * @return float
+	 */
+	public function getPunchKnockback() : float{
+		return $this->punchKnockback;
+	}
+
+	/**
+	 * @param float $punchKnockback
+	 */
+	public function setPunchKnockback(float $punchKnockback) : void{
+		$this->punchKnockback = $punchKnockback;
 	}
 
 	public function entityBaseTick(int $tickDiff = 1) : bool{
@@ -95,6 +135,31 @@ class Arrow extends Projectile{
 		$this->broadcastEntityEvent(EntityEventPacket::ARROW_SHAKE, 7); //7 ticks
 	}
 
+	protected function onHitEntity(Entity $entityHit, RayTraceResult $hitResult) : void{
+		parent::onHitEntity($entityHit, $hitResult);
+		if($this->punchKnockback > 0){
+			$horizontalSpeed = sqrt($this->motion->x ** 2 + $this->motion->z ** 2);
+			if($horizontalSpeed > 0){
+				$multiplier = $this->punchKnockback * 0.6 / $horizontalSpeed;
+				$entityHit->setMotion($entityHit->getMotion()->add($this->motion->x * $multiplier, 0.1, $this->motion->z * $multiplier));
+			}
+		}
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getPickupMode() : int{
+		return $this->pickupMode;
+	}
+
+	/**
+	 * @param int $pickupMode
+	 */
+	public function setPickupMode(int $pickupMode) : void{
+		$this->pickupMode = $pickupMode;
+	}
+
 	public function onCollideWithPlayer(Player $player) : void{
 		if($this->blockHit === null){
 			return;
@@ -107,7 +172,12 @@ class Arrow extends Projectile{
 			return;
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new InventoryPickupArrowEvent($playerInventory, $this));
+		$ev = new InventoryPickupArrowEvent($playerInventory, $this);
+		if($this->pickupMode === self::PICKUP_NONE or ($this->pickupMode === self::PICKUP_CREATIVE and !$player->isCreative())){
+			$ev->setCancelled();
+		}
+
+		$this->server->getPluginManager()->callEvent($ev);
 		if($ev->isCancelled()){
 			return;
 		}
