@@ -66,32 +66,6 @@ interface Plugin extends CommandExecutor{
 	public function getDescription() : PluginDescription;
 
 	/**
-	 * Gets an embedded resource in the plugin file.
-	 *
-	 * @param string $filename
-	 *
-	 * @return null|resource Resource data, or null
-	 */
-	public function getResource(string $filename);
-
-	/**
-	 * Saves an embedded resource to its relative location in the data folder
-	 *
-	 * @param string $filename
-	 * @param bool $replace
-	 *
-	 * @return bool
-	 */
-	public function saveResource(string $filename, bool $replace = false) : bool;
-
-	/**
-	 * Returns all the resources packaged with the plugin
-	 *
-	 * @return \SplFileInfo[]
-	 */
-	public function getResources() : array;
-
-	/**
 	 * @return Server
 	 */
 	public function getServer() : Server;

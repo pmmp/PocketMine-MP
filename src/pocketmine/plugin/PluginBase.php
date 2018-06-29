@@ -182,7 +182,7 @@ abstract class PluginBase implements Plugin{
 	 *
 	 * @return null|resource Resource data, or null
 	 */
-	public function getResource(string $filename){
+	protected function getResource(string $filename){
 		$filename = rtrim(str_replace("\\", "/", $filename), "/");
 		if(file_exists($this->file . "resources/" . $filename)){
 			return fopen($this->file . "resources/" . $filename, "rb");
@@ -192,12 +192,14 @@ abstract class PluginBase implements Plugin{
 	}
 
 	/**
+	 * Saves an embedded resource to its relative location in the data folder
+	 *
 	 * @param string $filename
 	 * @param bool $replace
 	 *
 	 * @return bool
 	 */
-	public function saveResource(string $filename, bool $replace = false) : bool{
+	protected function saveResource(string $filename, bool $replace = false) : bool{
 		if(trim($filename) === ""){
 			return false;
 		}
@@ -226,7 +228,7 @@ abstract class PluginBase implements Plugin{
 	 *
 	 * @return \SplFileInfo[]
 	 */
-	public function getResources() : array{
+	protected function getResources() : array{
 		$resources = [];
 		if(is_dir($this->file . "resources/")){
 			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->file . "resources/")) as $resource){
