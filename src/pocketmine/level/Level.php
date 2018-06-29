@@ -2346,21 +2346,20 @@ class Level implements ChunkManager, Metadatable{
 
 		$chunkHash = Level::chunkHash($chunkX, $chunkZ);
 		$oldChunk = $this->getChunk($chunkX, $chunkZ, false);
-		if($unload and $oldChunk !== null){
-			$this->unloadChunk($chunkX, $chunkZ, false, false);
-		}else{
-			$oldEntities = $oldChunk !== null ? $oldChunk->getEntities() : [];
-			$oldTiles = $oldChunk !== null ? $oldChunk->getTiles() : [];
+		if($oldChunk !== null){
+			if($unload){
+				$this->unloadChunk($chunkX, $chunkZ, false, false);
+			}else{
+				foreach($oldChunk->getEntities() as $entity){
+					$chunk->addEntity($entity);
+					$oldChunk->removeEntity($entity);
+					$entity->chunk = $chunk;
+				}
 
-			foreach($oldEntities as $entity){
-				$chunk->addEntity($entity);
-				$oldChunk->removeEntity($entity);
-				$entity->chunk = $chunk;
-			}
-
-			foreach($oldTiles as $tile){
-				$chunk->addTile($tile);
-				$oldChunk->removeTile($tile);
+				foreach($oldChunk->getTiles() as $tile){
+					$chunk->addTile($tile);
+					$oldChunk->removeTile($tile);
+				}
 			}
 		}
 
