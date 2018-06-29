@@ -535,7 +535,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function canBeCollidedWith() : bool{
-		return !$this->isSpectator();
+		return !$this->isSpectator() and parent::canBeCollidedWith();
 	}
 
 	public function resetFallDistance() : void{
