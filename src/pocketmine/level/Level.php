@@ -769,6 +769,9 @@ class Level implements ChunkManager, Metadatable{
 		if(count($this->changedBlocks) > 0){
 			if(count($this->players) > 0){
 				foreach($this->changedBlocks as $index => $blocks){
+					if(empty($blocks)){ //blocks can be set normally and then later re-set with direct send
+						continue;
+					}
 					unset($this->chunkCache[$index]);
 					Level::getXZ($index, $chunkX, $chunkZ);
 					if(count($blocks) > 512){
@@ -776,7 +779,7 @@ class Level implements ChunkManager, Metadatable{
 						foreach($this->getChunkPlayers($chunkX, $chunkZ) as $p){
 							$p->onChunkChanged($chunk);
 						}
-					}elseif(!empty($blocks)){
+					}else{
 						$this->sendBlocks($this->getChunkPlayers($chunkX, $chunkZ), $blocks, UpdateBlockPacket::FLAG_ALL);
 					}
 				}
