@@ -769,6 +769,9 @@ class Level implements ChunkManager, Metadatable{
 		if(count($this->changedBlocks) > 0){
 			if(count($this->players) > 0){
 				foreach($this->changedBlocks as $index => $blocks){
+					if(empty($blocks)){ //blocks can be set normally and then later re-set with direct send
+						continue;
+					}
 					unset($this->chunkCache[$index]);
 					Level::getXZ($index, $chunkX, $chunkZ);
 					if(count($blocks) > 512){
@@ -776,7 +779,7 @@ class Level implements ChunkManager, Metadatable{
 						foreach($this->getChunkPlayers($chunkX, $chunkZ) as $p){
 							$p->onChunkChanged($chunk);
 						}
-					}elseif(!empty($blocks)){
+					}else{
 						$this->sendBlocks($this->getChunkPlayers($chunkX, $chunkZ), $blocks, UpdateBlockPacket::FLAG_ALL);
 					}
 				}
@@ -2346,21 +2349,20 @@ class Level implements ChunkManager, Metadatable{
 
 		$chunkHash = Level::chunkHash($chunkX, $chunkZ);
 		$oldChunk = $this->getChunk($chunkX, $chunkZ, false);
-		if($unload and $oldChunk !== null){
-			$this->unloadChunk($chunkX, $chunkZ, false, false);
-		}else{
-			$oldEntities = $oldChunk !== null ? $oldChunk->getEntities() : [];
-			$oldTiles = $oldChunk !== null ? $oldChunk->getTiles() : [];
+		if($oldChunk !== null){
+			if($unload){
+				$this->unloadChunk($chunkX, $chunkZ, false, false);
+			}else{
+				foreach($oldChunk->getEntities() as $entity){
+					$chunk->addEntity($entity);
+					$oldChunk->removeEntity($entity);
+					$entity->chunk = $chunk;
+				}
 
-			foreach($oldEntities as $entity){
-				$chunk->addEntity($entity);
-				$oldChunk->removeEntity($entity);
-				$entity->chunk = $chunk;
-			}
-
-			foreach($oldTiles as $tile){
-				$chunk->addTile($tile);
-				$oldChunk->removeTile($tile);
+				foreach($oldChunk->getTiles() as $tile){
+					$chunk->addTile($tile);
+					$oldChunk->removeTile($tile);
+				}
 			}
 		}
 
@@ -2368,6 +2370,7 @@ class Level implements ChunkManager, Metadatable{
 
 		unset($this->blockCache[$chunkHash]);
 		unset($this->chunkCache[$chunkHash]);
+		unset($this->changedBlocks[$chunkHash]);
 		$chunk->setChanged();
 
 		if(!$this->isChunkInUse($chunkX, $chunkZ)){
