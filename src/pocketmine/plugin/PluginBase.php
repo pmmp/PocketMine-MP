@@ -182,7 +182,7 @@ abstract class PluginBase implements Plugin{
 	 *
 	 * @return null|resource Resource data, or null
 	 */
-	protected function getResource(string $filename){
+	public function getResource(string $filename){
 		$filename = rtrim(str_replace("\\", "/", $filename), "/");
 		if(file_exists($this->file . "resources/" . $filename)){
 			return fopen($this->file . "resources/" . $filename, "rb");
@@ -199,7 +199,7 @@ abstract class PluginBase implements Plugin{
 	 *
 	 * @return bool
 	 */
-	protected function saveResource(string $filename, bool $replace = false) : bool{
+	public function saveResource(string $filename, bool $replace = false) : bool{
 		if(trim($filename) === ""){
 			return false;
 		}
@@ -228,7 +228,7 @@ abstract class PluginBase implements Plugin{
 	 *
 	 * @return \SplFileInfo[]
 	 */
-	protected function getResources() : array{
+	public function getResources() : array{
 		$resources = [];
 		if(is_dir($this->file . "resources/")){
 			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->file . "resources/")) as $resource){
@@ -245,7 +245,7 @@ abstract class PluginBase implements Plugin{
 	/**
 	 * @return Config
 	 */
-	protected function getConfig() : Config{
+	public function getConfig() : Config{
 		if($this->config === null){
 			$this->reloadConfig();
 		}
@@ -253,20 +253,20 @@ abstract class PluginBase implements Plugin{
 		return $this->config;
 	}
 
-	protected function saveConfig(){
+	public function saveConfig(){
 		if(!$this->getConfig()->save()){
 			$this->getLogger()->critical("Could not save config to " . $this->configFile);
 		}
 	}
 
-	protected function saveDefaultConfig() : bool{
+	public function saveDefaultConfig() : bool{
 		if(!file_exists($this->configFile)){
 			return $this->saveResource("config.yml", false);
 		}
 		return false;
 	}
 
-	protected function reloadConfig(){
+	public function reloadConfig(){
 		$this->config = new Config($this->configFile);
 		if(($configStream = $this->getResource("config.yml")) !== null){
 			$this->config->setDefaults(yaml_parse(Config::fixYAMLIndexes(stream_get_contents($configStream))));
