@@ -40,16 +40,6 @@ interface Plugin extends CommandExecutor{
 	public function __construct(PluginLoader $loader, Server $server, PluginDescription $description, string $dataFolder, string $file);
 
 	/**
-	 * Called when the plugin is loaded, before calling onEnable()
-	 */
-	public function onLoad();
-
-	/**
-	 * Called when the plugin is enabled
-	 */
-	public function onEnable();
-
-	/**
 	 * @return bool
 	 */
 	public function isEnabled() : bool;
@@ -58,12 +48,6 @@ interface Plugin extends CommandExecutor{
 	 * @param bool $enabled
 	 */
 	public function setEnabled(bool $enabled = true) : void;
-
-	/**
-	 * Called when the plugin is disabled
-	 * Use this to free open things and finish actions
-	 */
-	public function onDisable();
 
 	/**
 	 * @return bool
