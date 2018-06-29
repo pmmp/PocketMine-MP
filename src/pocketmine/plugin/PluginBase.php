@@ -243,7 +243,7 @@ abstract class PluginBase implements Plugin{
 	/**
 	 * @return Config
 	 */
-	public function getConfig() : Config{
+	protected function getConfig() : Config{
 		if($this->config === null){
 			$this->reloadConfig();
 		}
@@ -251,20 +251,20 @@ abstract class PluginBase implements Plugin{
 		return $this->config;
 	}
 
-	public function saveConfig(){
+	protected function saveConfig(){
 		if(!$this->getConfig()->save()){
 			$this->getLogger()->critical("Could not save config to " . $this->configFile);
 		}
 	}
 
-	public function saveDefaultConfig() : bool{
+	protected function saveDefaultConfig() : bool{
 		if(!file_exists($this->configFile)){
 			return $this->saveResource("config.yml", false);
 		}
 		return false;
 	}
 
-	public function reloadConfig(){
+	protected function reloadConfig(){
 		$this->config = new Config($this->configFile);
 		if(($configStream = $this->getResource("config.yml")) !== null){
 			$this->config->setDefaults(yaml_parse(Config::fixYAMLIndexes(stream_get_contents($configStream))));

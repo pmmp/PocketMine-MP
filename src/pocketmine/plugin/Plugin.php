@@ -29,8 +29,6 @@ namespace pocketmine\plugin;
 use pocketmine\command\CommandExecutor;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
-use pocketmine\utils\Config;
-
 
 /**
  * It is recommended to use PluginBase for the actual plugin
@@ -92,20 +90,6 @@ interface Plugin extends CommandExecutor{
 	 * @return \SplFileInfo[]
 	 */
 	public function getResources() : array;
-
-	/**
-	 * @return Config
-	 */
-	public function getConfig() : Config;
-
-	public function saveConfig();
-
-	/**
-	 * @return bool
-	 */
-	public function saveDefaultConfig() : bool;
-
-	public function reloadConfig();
 
 	/**
 	 * @return Server
