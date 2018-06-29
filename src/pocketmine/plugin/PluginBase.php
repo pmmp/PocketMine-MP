@@ -68,20 +68,29 @@ abstract class PluginBase implements Plugin{
 		$this->configFile = $this->dataFolder . "config.yml";
 		$this->logger = new PluginLogger($this);
 		$this->scheduler = new TaskScheduler($this->logger, $this->getFullName());
+
+		$this->onLoad();
 	}
 
 	/**
 	 * Called when the plugin is loaded, before calling onEnable()
 	 */
-	public function onLoad(){
+	protected function onLoad()/* : void /* TODO: uncomment this for next major version */{
 
 	}
 
-	public function onEnable(){
+	/**
+	 * Called when the plugin is enabled
+	 */
+	protected function onEnable()/* : void /* TODO: uncomment this for next major version */{
 
 	}
 
-	public function onDisable(){
+	/**
+	 * Called when the plugin is disabled
+	 * Use this to free open things and finish actions
+	 */
+	protected function onDisable()/* : void /* TODO: uncomment this for next major version */{
 
 	}
 
@@ -183,6 +192,8 @@ abstract class PluginBase implements Plugin{
 	}
 
 	/**
+	 * Saves an embedded resource to its relative location in the data folder
+	 *
 	 * @param string $filename
 	 * @param bool $replace
 	 *

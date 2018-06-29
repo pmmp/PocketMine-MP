@@ -201,7 +201,6 @@ class PluginManager{
 						 * @see Plugin::__construct()
 						 */
 						$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $prefixed);
-						$plugin->onLoad();
 						$this->plugins[$plugin->getDescription()->getName()] = $plugin;
 
 						$pluginCommands = $this->parseYamlCommands($plugin);
