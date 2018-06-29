@@ -557,8 +557,6 @@ abstract class Living extends Entity implements Damageable{
 		if($this->isAlive()){
 			$this->applyPostDamageEffects($source);
 			$this->doHitAnimation();
-		}else{
-			$this->startDeathAnimation();
 		}
 	}
 
@@ -597,6 +595,7 @@ abstract class Living extends Entity implements Damageable{
 	public function kill() : void{
 		parent::kill();
 		$this->onDeath();
+		$this->startDeathAnimation();
 	}
 
 	protected function onDeath() : void{
