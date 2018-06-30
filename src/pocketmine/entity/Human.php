@@ -518,37 +518,32 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	public function onPickupXp(int $xpValue) : void{
-		//TODO: replace this with a more generic equipment getting/setting interface (this is ugly)
+		static $mainHandIndex = -1;
+
+		//TODO: replace this with a more generic equipment getting/setting interface
 		/** @var Durable[] $equipment */
 		$equipment = [];
 
-		/** @var Durable|null $item */
-		$mainHand = null;
-		/** @var Durable[] $armor */
-		$armor = [];
-
 		if(($item = $this->inventory->getItemInHand()) instanceof Durable and $item->hasEnchantment(Enchantment::MENDING)){
-			$equipment[] = $item;
-			$mainHand = $item;
+			$equipment[$mainHandIndex] = $item;
 		}
 		//TODO: check offhand
 		foreach($this->armorInventory->getContents() as $k => $item){
 			if($item instanceof Durable and $item->hasEnchantment(Enchantment::MENDING)){
-				$equipment[] = $item;
-				$armor[$k] = $item;
+				$equipment[$k] = $item;
 			}
 		}
 
 		if(!empty($equipment)){
-			$repairItem = $equipment[array_rand($equipment)];
+			$repairItem = $equipment[$k = array_rand($equipment)];
 			if($repairItem->getDamage() > 0){
 				$repairAmount = min($repairItem->getDamage(), $xpValue * 2);
 				$repairItem->setDamage($repairItem->getDamage() - $repairAmount);
 				$xpValue -= (int) ceil($repairAmount / 2);
 
-				if($repairItem === $mainHand){
+				if($k === $mainHandIndex){
 					$this->inventory->setItemInHand($repairItem);
-				}elseif(($k = array_search($repairItem, $armor, true)) !== false){
+				}else{
 					$this->armorInventory->setItem($k, $repairItem);
 				}
 			}
