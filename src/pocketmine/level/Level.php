@@ -846,18 +846,18 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * @param Player[] $target
-	 * @param Block[]  $blocks
-	 * @param int      $flags
-	 * @param bool     $optimizeRebuilds
+	 * @param Player[]  $target
+	 * @param Vector3[] $blocks
+	 * @param int       $flags
+	 * @param bool      $optimizeRebuilds
 	 */
 	public function sendBlocks(array $target, array $blocks, int $flags = UpdateBlockPacket::FLAG_NONE, bool $optimizeRebuilds = false){
 		$packets = [];
 		if($optimizeRebuilds){
 			$chunks = [];
 			foreach($blocks as $b){
-				if($b === null){
-					continue;
+				if(!($b instanceof Vector3)){
+					throw new \TypeError("Expected Vector3 in blocks array, got " . (is_object($b) ? get_class($b) : gettype($b)));
 				}
 				$pk = new UpdateBlockPacket();
 
@@ -888,8 +888,8 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}else{
 			foreach($blocks as $b){
-				if($b === null){
-					continue;
+				if(!($b instanceof Vector3)){
+					throw new \TypeError("Expected Vector3 in blocks array, got " . (is_object($b) ? get_class($b) : gettype($b)));
 				}
 				$pk = new UpdateBlockPacket();
 
