@@ -1101,7 +1101,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function canBeCollidedWith() : bool{
-		return true;
+		return $this->isAlive();
 	}
 
 	protected function updateMovement(bool $teleport = false) : void{
