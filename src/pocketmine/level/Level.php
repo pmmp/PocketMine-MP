@@ -856,8 +856,8 @@ class Level implements ChunkManager, Metadatable{
 		if($optimizeRebuilds){
 			$chunks = [];
 			foreach($blocks as $b){
-				if($b === null){
-					continue;
+				if(!($b instanceof Vector3)){
+					throw new \TypeError("Expected Vector3 in blocks array, got " . (is_object($b) ? get_class($b) : gettype($b)));
 				}
 				$pk = new UpdateBlockPacket();
 
@@ -888,8 +888,8 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}else{
 			foreach($blocks as $b){
-				if($b === null){
-					continue;
+				if(!($b instanceof Vector3)){
+					throw new \TypeError("Expected Vector3 in blocks array, got " . (is_object($b) ? get_class($b) : gettype($b)));
 				}
 				$pk = new UpdateBlockPacket();
 
