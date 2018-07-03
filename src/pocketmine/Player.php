@@ -3633,6 +3633,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			if($this->armorInventory !== null){
 				$this->armorInventory->clearAll();
 			}
+			if($this->cursorInventory !== null){
+				$this->cursorInventory->clearAll();
+			}
 		}
 
 		if($ev->getDeathMessage() != ""){
