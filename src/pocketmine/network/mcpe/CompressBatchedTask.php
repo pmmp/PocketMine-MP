@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network;
+namespace pocketmine\network\mcpe;
 
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\Player;
