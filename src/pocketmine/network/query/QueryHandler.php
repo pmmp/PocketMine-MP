@@ -58,14 +58,14 @@ class QueryHandler{
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.server.query.running", [$addr, $port]));
 	}
 
-	public function regenerateInfo(){
+	public function regenerateInfo() : void{
 		$ev = $this->server->getQueryInformation();
 		$this->longData = $ev->getLongQuery();
 		$this->shortData = $ev->getShortQuery();
 		$this->timeout = microtime(true) + $ev->getTimeout();
 	}
 
-	public function regenerateToken(){
+	public function regenerateToken() : void{
 		$this->lastToken = $this->token;
 		$this->token = random_bytes(16);
 	}
@@ -74,7 +74,7 @@ class QueryHandler{
 		return Binary::readInt(substr(hash("sha512", $salt . ":" . $token, true), 7, 4));
 	}
 
-	public function handle(AdvancedSourceInterface $interface, string $address, int $port, string $packet){
+	public function handle(AdvancedSourceInterface $interface, string $address, int $port, string $packet) : void{
 		$offset = 2;
 		$packetType = ord($packet{$offset++});
 		$sessionID = Binary::readInt(substr($packet, $offset, 4));

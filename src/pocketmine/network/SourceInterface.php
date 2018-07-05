@@ -37,7 +37,7 @@ interface SourceInterface{
 	/**
 	 * Performs actions needed to start the interface after it is registered.
 	 */
-	public function start();
+	public function start() : void;
 
 	/**
 	 * Sends a DataPacket to the interface, returns an unique identifier for the packet if $needACK is true
@@ -49,7 +49,7 @@ interface SourceInterface{
 	 *
 	 * @return int|null
 	 */
-	public function putPacket(Player $player, DataPacket $packet, bool $needACK = false, bool $immediate = true);
+	public function putPacket(Player $player, DataPacket $packet, bool $needACK = false, bool $immediate = true) : ?int;
 
 	/**
 	 * Terminates the connection
@@ -57,20 +57,20 @@ interface SourceInterface{
 	 * @param Player $player
 	 * @param string $reason
 	 */
-	public function close(Player $player, string $reason = "unknown reason");
+	public function close(Player $player, string $reason = "unknown reason") : void;
 
 	/**
 	 * @param string $name
 	 */
-	public function setName(string $name);
+	public function setName(string $name) : void;
 
 	/**
 	 * Called every tick to process events on the interface.
 	 */
 	public function process() : void;
 
-	public function shutdown();
+	public function shutdown() : void;
 
-	public function emergencyShutdown();
+	public function emergencyShutdown() : void;
 
 }

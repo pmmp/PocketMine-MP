@@ -32,23 +32,23 @@ interface AdvancedSourceInterface extends SourceInterface{
 	 * @param string $address
 	 * @param int    $timeout Seconds
 	 */
-	public function blockAddress(string $address, int $timeout = 300);
+	public function blockAddress(string $address, int $timeout = 300) : void;
 
 	/**
 	 * @param string $address
 	 */
-	public function unblockAddress(string $address);
+	public function unblockAddress(string $address) : void;
 
 	/**
 	 * @param Network $network
 	 */
-	public function setNetwork(Network $network);
+	public function setNetwork(Network $network) : void;
 
 	/**
 	 * @param string $address
 	 * @param int    $port
 	 * @param string $payload
 	 */
-	public function sendRawPacket(string $address, int $port, string $payload);
+	public function sendRawPacket(string $address, int $port, string $payload) : void;
 
 }

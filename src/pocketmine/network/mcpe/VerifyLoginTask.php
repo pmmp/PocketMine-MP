@@ -55,7 +55,7 @@ class VerifyLoginTask extends AsyncTask{
 		$this->packet = $packet;
 	}
 
-	public function onRun(){
+	public function onRun() : void{
 		$packet = $this->packet; //Get it in a local variable to make sure it stays unserialized
 
 		try{
@@ -142,7 +142,7 @@ class VerifyLoginTask extends AsyncTask{
 		$currentPublicKey = $claims["identityPublicKey"] ?? null; //if there are further links, the next link should be signed with this
 	}
 
-	public function onCompletion(Server $server){
+	public function onCompletion(Server $server) : void{
 		/** @var Player $player */
 		$player = $this->fetchLocal();
 		if($player->isClosed()){

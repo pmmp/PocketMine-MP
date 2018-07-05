@@ -82,7 +82,7 @@ class RCON{
 		$this->server->getLogger()->info("RCON running on $addr:$port");
 	}
 
-	public function stop(){
+	public function stop() : void{
 		$this->instance->close();
 		socket_write($this->ipcMainSocket, "\x00"); //make select() return
 		Server::microSleep(50000);
@@ -93,7 +93,7 @@ class RCON{
 		@socket_close($this->ipcThreadSocket);
 	}
 
-	public function check(){
+	public function check() : void{
 		$response = new RemoteConsoleCommandSender();
 		$command = $this->instance->cmd;
 

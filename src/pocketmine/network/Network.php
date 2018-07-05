@@ -58,20 +58,20 @@ class Network{
 
 	}
 
-	public function addStatistics($upload, $download){
+	public function addStatistics(float $upload, float $download) : void{
 		$this->upload += $upload;
 		$this->download += $download;
 	}
 
-	public function getUpload(){
+	public function getUpload() : float{
 		return $this->upload;
 	}
 
-	public function getDownload(){
+	public function getDownload() : float{
 		return $this->download;
 	}
 
-	public function resetStatistics(){
+	public function resetStatistics() : void{
 		$this->upload = 0;
 		$this->download = 0;
 	}
@@ -83,7 +83,7 @@ class Network{
 		return $this->interfaces;
 	}
 
-	public function processInterfaces(){
+	public function processInterfaces() : void{
 		foreach($this->interfaces as $interface){
 			$this->processInterface($interface);
 		}
@@ -109,7 +109,7 @@ class Network{
 	/**
 	 * @param SourceInterface $interface
 	 */
-	public function registerInterface(SourceInterface $interface){
+	public function registerInterface(SourceInterface $interface) : void{
 		$this->server->getPluginManager()->callEvent($ev = new NetworkInterfaceRegisterEvent($interface));
 		if(!$ev->isCancelled()){
 			$interface->start();
@@ -125,7 +125,7 @@ class Network{
 	/**
 	 * @param SourceInterface $interface
 	 */
-	public function unregisterInterface(SourceInterface $interface){
+	public function unregisterInterface(SourceInterface $interface) : void{
 		$this->server->getPluginManager()->callEvent(new NetworkInterfaceUnregisterEvent($interface));
 		unset($this->interfaces[$hash = spl_object_hash($interface)], $this->advancedInterfaces[$hash]);
 	}
@@ -135,7 +135,7 @@ class Network{
 	 *
 	 * @param string $name
 	 */
-	public function setName(string $name){
+	public function setName(string $name) : void{
 		$this->name = $name;
 		foreach($this->interfaces as $interface){
 			$interface->setName($this->name);
@@ -149,7 +149,7 @@ class Network{
 		return $this->name;
 	}
 
-	public function updateName(){
+	public function updateName() : void{
 		foreach($this->interfaces as $interface){
 			$interface->setName($this->name);
 		}
@@ -167,7 +167,7 @@ class Network{
 	 * @param int    $port
 	 * @param string $payload
 	 */
-	public function sendPacket(string $address, int $port, string $payload){
+	public function sendPacket(string $address, int $port, string $payload) : void{
 		foreach($this->advancedInterfaces as $interface){
 			$interface->sendRawPacket($address, $port, $payload);
 		}
@@ -179,13 +179,13 @@ class Network{
 	 * @param string $address
 	 * @param int    $timeout
 	 */
-	public function blockAddress(string $address, int $timeout = 300){
+	public function blockAddress(string $address, int $timeout = 300) : void{
 		foreach($this->advancedInterfaces as $interface){
 			$interface->blockAddress($address, $timeout);
 		}
 	}
 
-	public function unblockAddress(string $address){
+	public function unblockAddress(string $address) : void{
 		foreach($this->advancedInterfaces as $interface){
 			$interface->unblockAddress($address);
 		}
