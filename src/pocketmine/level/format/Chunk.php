@@ -75,8 +75,8 @@ class Chunk{
 	/** @var Entity[] */
 	protected $entities = [];
 
-	/** @var int[] */
-	protected $heightMap = [];
+	/** @var \SplFixedArray|int[] */
+	protected $heightMap;
 
 	/** @var string */
 	protected $biomeIds;
@@ -110,11 +110,11 @@ class Chunk{
 		}
 
 		if(count($heightMap) === 256){
-			$this->heightMap = $heightMap;
+			$this->heightMap = \SplFixedArray::fromArray($heightMap);
 		}else{
 			assert(count($heightMap) === 0, "Wrong HeightMap value count, expected 256, got " . count($heightMap));
 			$val = ($this->height * 16);
-			$this->heightMap = array_fill(0, 256, $val);
+			$this->heightMap = \SplFixedArray::fromArray(array_fill(0, 256, $val));
 		}
 
 		if(strlen($biomeIds) === 256){
@@ -739,7 +739,7 @@ class Chunk{
 	 * @return int[]
 	 */
 	public function getHeightMapArray() : array{
-		return $this->heightMap;
+		return $this->heightMap->toArray();
 	}
 
 	/**
