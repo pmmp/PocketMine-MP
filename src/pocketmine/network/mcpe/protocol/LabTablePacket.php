@@ -43,13 +43,13 @@ class LabTablePacket extends DataPacket{
 	/** @var int */
 	public $reactionType;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->uselessByte = $this->getByte();
 		$this->getSignedBlockPosition($this->x, $this->y, $this->z);
 		$this->reactionType = $this->getByte();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putByte($this->uselessByte);
 		$this->putSignedBlockPosition($this->x, $this->y, $this->z);
 		$this->putByte($this->reactionType);

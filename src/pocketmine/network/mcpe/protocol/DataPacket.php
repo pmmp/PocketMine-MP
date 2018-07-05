@@ -41,7 +41,7 @@ abstract class DataPacket extends NetworkBinaryStream{
 	/** @var int */
 	public $recipientSubId = 0;
 
-	public function pid(){
+	public function pid() : int{
 		return $this::NETWORK_ID;
 	}
 
@@ -65,13 +65,13 @@ abstract class DataPacket extends NetworkBinaryStream{
 		return false;
 	}
 
-	public function decode(){
+	public function decode() : void{
 		$this->offset = 0;
 		$this->decodeHeader();
 		$this->decodePayload();
 	}
 
-	protected function decodeHeader(){
+	protected function decodeHeader() : void{
 		$pid = $this->getUnsignedVarInt();
 		assert($pid === static::NETWORK_ID);
 
@@ -83,18 +83,18 @@ abstract class DataPacket extends NetworkBinaryStream{
 	/**
 	 * Note for plugin developers: If you're adding your own packets, you should perform decoding in here.
 	 */
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 
 	}
 
-	public function encode(){
+	public function encode() : void{
 		$this->reset();
 		$this->encodeHeader();
 		$this->encodePayload();
 		$this->isEncoded = true;
 	}
 
-	protected function encodeHeader(){
+	protected function encodeHeader() : void{
 		$this->putUnsignedVarInt(static::NETWORK_ID);
 
 		$this->putByte($this->senderSubId);
@@ -104,7 +104,7 @@ abstract class DataPacket extends NetworkBinaryStream{
 	/**
 	 * Note for plugin developers: If you're adding your own packets, you should perform encoding in here.
 	 */
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 
 	}
 

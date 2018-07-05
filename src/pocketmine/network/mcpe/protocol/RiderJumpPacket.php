@@ -35,11 +35,11 @@ class RiderJumpPacket extends DataPacket{
 	/** @var int */
 	public $jumpStrength; //percentage
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->jumpStrength = $this->getVarInt();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putVarInt($this->jumpStrength);
 	}
 

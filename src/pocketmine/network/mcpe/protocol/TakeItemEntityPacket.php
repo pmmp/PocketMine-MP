@@ -36,11 +36,11 @@ class TakeItemEntityPacket extends DataPacket{
 	/** @var int */
 	public $eid;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putEntityRuntimeId($this->target);
 		$this->putEntityRuntimeId($this->eid);
 	}

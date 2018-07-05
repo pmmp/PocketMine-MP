@@ -76,7 +76,7 @@ class LoginPacket extends DataPacket{
 		return $this->protocol !== null and $this->protocol !== ProtocolInfo::CURRENT_PROTOCOL;
 	}
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->protocol = $this->getInt();
 
 		if($this->protocol !== ProtocolInfo::CURRENT_PROTOCOL){
@@ -133,7 +133,7 @@ class LoginPacket extends DataPacket{
 		$this->locale = $this->clientData["LanguageCode"] ?? null;
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		//TODO
 	}
 

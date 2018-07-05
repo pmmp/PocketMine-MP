@@ -48,12 +48,12 @@ class BatchPacket extends DataPacket{
 		return true;
 	}
 
-	protected function decodeHeader(){
+	protected function decodeHeader() : void{
 		$pid = $this->getByte();
 		assert($pid === static::NETWORK_ID);
 	}
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$data = $this->getRemaining();
 		try{
 			$this->payload = zlib_decode($data, 1024 * 1024 * 64); //Max 64MB
@@ -62,18 +62,18 @@ class BatchPacket extends DataPacket{
 		}
 	}
 
-	protected function encodeHeader(){
+	protected function encodeHeader() : void{
 		$this->putByte(static::NETWORK_ID);
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->put(zlib_encode($this->payload, ZLIB_ENCODING_DEFLATE, $this->compressionLevel));
 	}
 
 	/**
 	 * @param DataPacket $packet
 	 */
-	public function addPacket(DataPacket $packet){
+	public function addPacket(DataPacket $packet) : void{
 		if(!$packet->canBeBatched()){
 			throw new \InvalidArgumentException(get_class($packet) . " cannot be put inside a BatchPacket");
 		}
@@ -87,7 +87,7 @@ class BatchPacket extends DataPacket{
 	/**
 	 * @return \Generator
 	 */
-	public function getPackets(){
+	public function getPackets() : \Generator{
 		$stream = new NetworkBinaryStream($this->payload);
 		while(!$stream->feof()){
 			yield $stream->getString();
@@ -98,7 +98,7 @@ class BatchPacket extends DataPacket{
 		return $this->compressionLevel;
 	}
 
-	public function setCompressionLevel(int $level){
+	public function setCompressionLevel(int $level) : void{
 		$this->compressionLevel = $level;
 	}
 

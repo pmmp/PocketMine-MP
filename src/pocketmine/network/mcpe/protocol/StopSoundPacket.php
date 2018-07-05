@@ -37,12 +37,12 @@ class StopSoundPacket extends DataPacket{
 	/** @var bool */
 	public $stopAll;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->soundName = $this->getString();
 		$this->stopAll = $this->getBool();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putString($this->soundName);
 		$this->putBool($this->stopAll);
 	}

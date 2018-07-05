@@ -75,7 +75,7 @@ class AddPlayerPacket extends DataPacket{
 	/** @var EntityLink[] */
 	public $links = [];
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->uuid = $this->getUUID();
 		$this->username = $this->getString();
 		$this->thirdPartyName = $this->getString();
@@ -105,7 +105,7 @@ class AddPlayerPacket extends DataPacket{
 		}
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putUUID($this->uuid);
 		$this->putString($this->username);
 		$this->putString($this->thirdPartyName);

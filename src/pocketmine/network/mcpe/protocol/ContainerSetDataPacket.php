@@ -48,13 +48,13 @@ class ContainerSetDataPacket extends DataPacket{
 	/** @var int */
 	public $value;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->windowId = $this->getByte();
 		$this->property = $this->getVarInt();
 		$this->value = $this->getVarInt();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putByte($this->windowId);
 		$this->putVarInt($this->property);
 		$this->putVarInt($this->value);

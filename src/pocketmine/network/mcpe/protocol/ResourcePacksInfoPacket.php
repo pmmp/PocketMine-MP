@@ -39,7 +39,7 @@ class ResourcePacksInfoPacket extends DataPacket{
 	/** @var ResourcePack[] */
 	public $resourcePackEntries = [];
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		/*$this->mustAccept = $this->getBool();
 		$behaviorPackCount = $this->getLShort();
 		while($behaviorPackCount-- > 0){
@@ -60,7 +60,7 @@ class ResourcePacksInfoPacket extends DataPacket{
 		}*/
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 
 		$this->putBool($this->mustAccept);
 		$this->putLShort(count($this->behaviorPackEntries));

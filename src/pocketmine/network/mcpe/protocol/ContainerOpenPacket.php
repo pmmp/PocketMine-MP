@@ -44,14 +44,14 @@ class ContainerOpenPacket extends DataPacket{
 	/** @var int */
 	public $entityUniqueId = -1;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->windowId = $this->getByte();
 		$this->type = $this->getByte();
 		$this->getBlockPosition($this->x, $this->y, $this->z);
 		$this->entityUniqueId = $this->getEntityUniqueId();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putByte($this->windowId);
 		$this->putByte($this->type);
 		$this->putBlockPosition($this->x, $this->y, $this->z);

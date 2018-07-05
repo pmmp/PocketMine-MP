@@ -35,11 +35,11 @@ class ClientToServerHandshakePacket extends DataPacket{
 		return true;
 	}
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		//No payload
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		//No payload
 	}
 

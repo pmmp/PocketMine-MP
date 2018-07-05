@@ -35,12 +35,12 @@ class ShowStoreOfferPacket extends DataPacket{
 	/** @var bool */
 	public $showAll;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->offerId = $this->getString();
 		$this->showAll = $this->getBool();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putString($this->offerId);
 		$this->putBool($this->showAll);
 	}

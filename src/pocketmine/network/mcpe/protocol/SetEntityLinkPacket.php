@@ -35,11 +35,11 @@ class SetEntityLinkPacket extends DataPacket{
 	/** @var EntityLink */
 	public $link;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->link = $this->getEntityLink();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putEntityLink($this->link);
 	}
 

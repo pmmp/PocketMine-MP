@@ -49,7 +49,7 @@ class PlayStatusPacket extends DataPacket{
 	 */
 	public $protocol;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->status = $this->getInt();
 	}
 
@@ -57,7 +57,7 @@ class PlayStatusPacket extends DataPacket{
 		return true;
 	}
 
-	protected function encodeHeader(){
+	protected function encodeHeader() : void{
 		if($this->protocol < 130){ //MCPE <= 1.1
 			$this->putByte(static::NETWORK_ID);
 		}else{
@@ -65,7 +65,7 @@ class PlayStatusPacket extends DataPacket{
 		}
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putInt($this->status);
 	}
 

@@ -34,12 +34,12 @@ class AddPaintingPacket extends AddHangingEntityPacket{
 	/** @var string */
 	public $title;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		parent::decodePayload();
 		$this->title = $this->getString();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		parent::encodePayload();
 		$this->putString($this->title);
 	}

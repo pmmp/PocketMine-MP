@@ -33,11 +33,11 @@ class GameRulesChangedPacket extends DataPacket{
 	/** @var array */
 	public $gameRules = [];
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->gameRules = $this->getGameRules();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putGameRules($this->gameRules);
 	}
 

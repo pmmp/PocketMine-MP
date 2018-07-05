@@ -41,13 +41,13 @@ class PlayerHotbarPacket extends DataPacket{
 	/** @var bool */
 	public $selectHotbarSlot = true;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->selectedHotbarSlot = $this->getUnsignedVarInt();
 		$this->windowId = $this->getByte();
 		$this->selectHotbarSlot = $this->getBool();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putUnsignedVarInt($this->selectedHotbarSlot);
 		$this->putByte($this->windowId);
 		$this->putBool($this->selectHotbarSlot);

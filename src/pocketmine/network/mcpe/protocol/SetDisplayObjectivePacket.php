@@ -41,7 +41,7 @@ class SetDisplayObjectivePacket extends DataPacket{
 	/** @var int */
 	public $sortOrder;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->displaySlot = $this->getString();
 		$this->objectiveName = $this->getString();
 		$this->displayName = $this->getString();
@@ -49,7 +49,7 @@ class SetDisplayObjectivePacket extends DataPacket{
 		$this->sortOrder = $this->getVarInt();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putString($this->displaySlot);
 		$this->putString($this->objectiveName);
 		$this->putString($this->displayName);

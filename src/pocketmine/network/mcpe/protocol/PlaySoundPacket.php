@@ -45,7 +45,7 @@ class PlaySoundPacket extends DataPacket{
 	/** @var float */
 	public $pitch;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->soundName = $this->getString();
 		$this->getBlockPosition($this->x, $this->y, $this->z);
 		$this->x /= 8;
@@ -55,7 +55,7 @@ class PlaySoundPacket extends DataPacket{
 		$this->pitch = $this->getLFloat();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putString($this->soundName);
 		$this->putBlockPosition((int) ($this->x * 8), (int) ($this->y * 8), (int) ($this->z * 8));
 		$this->putLFloat($this->volume);

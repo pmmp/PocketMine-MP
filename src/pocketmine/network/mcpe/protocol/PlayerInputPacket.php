@@ -40,14 +40,14 @@ class PlayerInputPacket extends DataPacket{
 	/** @var bool */
 	public $sneaking;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->motionX = $this->getLFloat();
 		$this->motionY = $this->getLFloat();
 		$this->jumping = $this->getBool();
 		$this->sneaking = $this->getBool();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putLFloat($this->motionX);
 		$this->putLFloat($this->motionY);
 		$this->putBool($this->jumping);

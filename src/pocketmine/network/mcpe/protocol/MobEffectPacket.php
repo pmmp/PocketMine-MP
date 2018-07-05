@@ -48,7 +48,7 @@ class MobEffectPacket extends DataPacket{
 	/** @var int */
 	public $duration = 0;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->eventId = $this->getByte();
 		$this->effectId = $this->getVarInt();
@@ -57,7 +57,7 @@ class MobEffectPacket extends DataPacket{
 		$this->duration = $this->getVarInt();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putByte($this->eventId);
 		$this->putVarInt($this->effectId);

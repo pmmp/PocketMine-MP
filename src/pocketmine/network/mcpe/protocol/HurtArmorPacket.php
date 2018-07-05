@@ -34,11 +34,11 @@ class HurtArmorPacket extends DataPacket{
 	/** @var int */
 	public $health;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->health = $this->getVarInt();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putVarInt($this->health);
 	}
 
