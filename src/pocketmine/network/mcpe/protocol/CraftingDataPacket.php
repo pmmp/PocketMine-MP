@@ -118,7 +118,7 @@ class CraftingDataPacket extends DataPacket{
 		$this->getBool(); //cleanRecipes
 	}
 
-	private static function writeEntry($entry, NetworkBinaryStream $stream){
+	private static function writeEntry($entry, NetworkBinaryStream $stream) : int{
 		if($entry instanceof ShapelessRecipe){
 			return self::writeShapelessRecipe($entry, $stream);
 		}elseif($entry instanceof ShapedRecipe){
