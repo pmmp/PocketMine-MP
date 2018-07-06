@@ -239,6 +239,8 @@ abstract class Command{
 	}
 
 	/**
+	 * Returns the generic description message of this command.
+	 *
 	 * @return string
 	 */
 	public function getDescription() : string{
@@ -246,10 +248,32 @@ abstract class Command{
 	}
 
 	/**
+	 * Returns the specific description message of this command for the CommandSender at this moment.
+	 *
+	 * @param CommandSender $sender
+	 * @return string
+	 */
+	public function getDescriptionFor(CommandSender $sender) : string{
+		return $this->getDescription();
+	}
+
+	/**
+	 * Returns the generic usage message of this command.
+	 *
 	 * @return string
 	 */
 	public function getUsage() : string{
 		return $this->usageMessage;
+	}
+
+	/**
+	 * Returns the specific usage message of this command for the CommandSender at this moment.
+	 *
+	 * @param CommandSender $sender
+	 * @return string
+	 */
+	public function getUsageFor(CommandSender $sender) : string{
+		return $this->getUsage();
 	}
 
 	/**
