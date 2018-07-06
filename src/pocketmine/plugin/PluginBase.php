@@ -256,7 +256,9 @@ abstract class PluginBase implements Plugin{
 	}
 
 	public function reloadConfig(){
-		$this->saveDefaultConfig();
+		if(!$this->saveDefaultConfig()){
+			@mkdir($this->dataFolder);
+		}
 		$this->config = new Config($this->configFile);
 		if(($configStream = $this->getResource("config.yml")) !== null){
 			$this->config->setDefaults(yaml_parse(Config::fixYAMLIndexes(stream_get_contents($configStream))));
