@@ -1472,7 +1472,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function getDrops() : array{
 		if(!$this->isCreative()){
-			return parent::getDrops();
+			return array_merge(
+				parent::getDrops(),
+				array_filter(
+					$this->cursorInventory !== null ? array_values($this->cursorInventory->getContents()) : [], 
+					function(Item $item) : bool{ return !$item->hasEnchantment(Enchantment::VANISHING); }));
 		}
 
 		return [];
