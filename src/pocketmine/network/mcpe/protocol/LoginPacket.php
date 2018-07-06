@@ -105,9 +105,15 @@ class LoginPacket extends DataPacket{
 		$buffer = new BinaryStream($this->getString());
 
 		$this->chainData = json_decode($buffer->get($buffer->getLInt()), true);
+
+		$hasExtraData = false;
 		foreach($this->chainData["chain"] as $chain){
 			$webtoken = Utils::decodeJWT($chain);
 			if(isset($webtoken["extraData"])){
+				if($hasExtraData){
+					throw new \RuntimeException("Found 'extraData' multiple times in key chain");
+				}
+				$hasExtraData = true;
 				if(isset($webtoken["extraData"]["displayName"])){
 					$this->username = $webtoken["extraData"]["displayName"];
 				}
