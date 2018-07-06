@@ -200,10 +200,7 @@ class ExperienceOrb extends Entity{
 			if($currentTarget->canPickupXp() and $this->boundingBox->intersectsWith($currentTarget->getBoundingBox())){
 				$this->flagForDespawn();
 
-				$currentTarget->addXp($this->getXpValue());
-				$currentTarget->resetXpCooldown();
-
-				//TODO: check Mending enchantment
+				$currentTarget->onPickupXp($this->getXpValue());
 			}
 		}
 
