@@ -32,15 +32,17 @@ use pocketmine\Server;
 use pocketmine\tile\Spawnable;
 
 class ChunkRequestTask extends AsyncTask{
-
+	/** @var int */
 	protected $levelId;
-
+	/** @var string */
 	protected $chunk;
+	/** @var int */
 	protected $chunkX;
+	/** @var int */
 	protected $chunkZ;
-
+	/** @var string */
 	protected $tiles;
-
+	/** @var int */
 	protected $compressionLevel;
 
 	public function __construct(Level $level, int $chunkX, int $chunkZ, Chunk $chunk){
@@ -62,7 +64,7 @@ class ChunkRequestTask extends AsyncTask{
 		$this->tiles = $tiles;
 	}
 
-	public function onRun(){
+	public function onRun() : void{
 		$chunk = Chunk::fastDeserialize($this->chunk);
 
 		$pk = new FullChunkDataPacket();
@@ -78,7 +80,7 @@ class ChunkRequestTask extends AsyncTask{
 		$this->setResult($batch->buffer, false);
 	}
 
-	public function onCompletion(Server $server){
+	public function onCompletion(Server $server) : void{
 		$level = $server->getLevel($this->levelId);
 		if($level instanceof Level){
 			if($this->hasResult()){
