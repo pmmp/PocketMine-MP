@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\level\format\io;
+namespace pocketmine\network\mcpe;
 
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
