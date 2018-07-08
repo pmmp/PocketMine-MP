@@ -596,11 +596,7 @@ class PluginManager{
 	 * @return bool
 	 */
 	public function isPluginEnabled(Plugin $plugin) : bool{
-		if($plugin instanceof Plugin and isset($this->plugins[$plugin->getDescription()->getName()])){
-			return $plugin->isEnabled();
-		}else{
-			return false;
-		}
+		return isset($this->plugins[$plugin->getDescription()->getName()]) and $plugin->isEnabled();
 	}
 
 	/**
