@@ -3171,11 +3171,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 *
 	 * @param string $reason
 	 * @param bool   $isAdmin
+	 * @param TextContainer|string $quitMessage
 	 *
 	 * @return bool
 	 */
-	public function kick(string $reason = "", bool $isAdmin = true) : bool{
-		$this->server->getPluginManager()->callEvent($ev = new PlayerKickEvent($this, $reason, $this->getLeaveMessage()));
+	public function kick(string $reason = "", bool $isAdmin = true, $quitMessage = null) : bool{
+		$quitMessage = $quitMessage ?? $this->getLeaveMessage();
+		$this->server->getPluginManager()->callEvent($ev = new PlayerKickEvent($this, $reason, $quitMessage));
 		if(!$ev->isCancelled()){
 			$message = $reason;
 			if($isAdmin){
