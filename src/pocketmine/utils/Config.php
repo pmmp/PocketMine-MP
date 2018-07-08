@@ -550,7 +550,7 @@ class Config{
 	 * @param string $content
 	 */
 	private function parseProperties(string $content){
-		if(preg_match_all('/([a-zA-Z0-9\-_\.]*)=([^\r\n]*)/u', $content, $matches) > 0){ //false or 0 matches
+		if(preg_match_all('/([a-zA-Z0-9\-_\.]+)=([^\r\n]*)/u', $content, $matches) > 0){ //false or 0 matches
 			foreach($matches[1] as $i => $k){
 				$v = trim($matches[2][$i]);
 				switch(strtolower($v)){
