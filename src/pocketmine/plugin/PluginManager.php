@@ -665,7 +665,7 @@ class PluginManager{
 					}elseif(is_string($data["permission"])){
 						$newCmd->setPermission($data["permission"]);
 					}else{
-						throw new \InvalidArgumentException("Permission must be a string or boolean, " . gettype($data["permission"] . " given"));
+						throw new \InvalidArgumentException("Permission must be a string or boolean, " . gettype($data["permission"]) . " given");
 					}
 				}
 
