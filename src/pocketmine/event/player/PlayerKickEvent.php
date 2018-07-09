@@ -50,6 +50,13 @@ class PlayerKickEvent extends PlayerEvent implements Cancellable{
 		$this->reason = $reason;
 	}
 
+	/**
+	 * @param string $reason
+	 */
+	public function setReason(string $reason) : void{
+		$this->reason = $reason;
+	}
+
 	public function getReason() : string{
 		return $this->reason;
 	}
