@@ -29,14 +29,15 @@ use pocketmine\plugin\PluginManager;
  * Classes implementing this interface can be registered to receive called Events when something happens.
  * @see PluginManager::registerEvents()
  *
- * Event handlers do not have to have any particular name - they are detected using reflection.
- *
  * A function in a Listener class must meet the following criteria to be registered as an event handler:
  * - MUST be public
  * - MUST NOT be static
  * - MUST accept EXACTLY ONE class parameter which:
  *   - MUST be a VALID class extending Event
  *   - MUST NOT be abstract, UNLESS it has an @allowHandle annotation
+ *
+ * Event handlers do not have to have any particular name - they are detected using reflection.
+ * They SHOULD NOT return any values (but this is not currently enforced).
  *
  * Functions which meet the criteria can have the following annotations in their doc comments:
  *
