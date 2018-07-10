@@ -26,7 +26,7 @@ namespace pocketmine\event;
 use pocketmine\plugin\PluginManager;
 
 /**
- * Classes implementing this interface can be registered to receive called Events when something happens.
+ * Classes implementing this interface can be registered to receive called Events.
  * @see PluginManager::registerEvents()
  *
  * A function in a Listener class must meet the following criteria to be registered as an event handler:
