@@ -794,7 +794,21 @@ class PluginManager{
 				}catch(\InvalidArgumentException $e){
 					throw new PluginException("Event handler " . get_class($listener) . "->" . $method->getName() . "() declares invalid/unknown priority \"" . $tags["priority"] . "\"");
 				}
-				$ignoreCancelled = isset($tags["ignoreCancelled"]) && strtolower($tags["ignoreCancelled"]) === "true";
+
+				$ignoreCancelled = false;
+				if(isset($tags["ignoreCancelled"])){
+					switch(strtolower($tags["ignoreCancelled"])){
+						case "true":
+						case "":
+							$ignoreCancelled = true;
+							break;
+						case "false":
+							$ignoreCancelled = false;
+							break;
+						default:
+							throw new PluginException("Event handler " . get_class($listener) . "->" . $method->getName() . "() declares invalid @ignoreCancelled value \"" . $tags["ignoreCancelled"] . "\"");
+					}
+				}
 
 				$parameters = $method->getParameters();
 				try{
