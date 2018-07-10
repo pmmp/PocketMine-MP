@@ -23,8 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\event;
 
+use pocketmine\plugin\PluginManager;
+
 /**
  * Classes implementing this interface can be registered to receive called Events when something happens.
+ * @see PluginManager::registerEvents()
  *
  * Event handlers do not have to have any particular name - they are detected using reflection.
  *
