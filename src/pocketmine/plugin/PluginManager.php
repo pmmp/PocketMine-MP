@@ -783,7 +783,7 @@ class PluginManager{
 
 		$reflection = new \ReflectionClass(get_class($listener));
 		foreach($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method){
-			if(!$method->isStatic()){
+			if(!$method->isStatic() and $method->getDeclaringClass()->implementsInterface(Listener::class)){
 				$tags = Utils::parseDocComment((string) $method->getDocComment());
 				if(isset($tags["notHandler"])){
 					continue;
