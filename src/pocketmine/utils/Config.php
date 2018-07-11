@@ -217,7 +217,7 @@ class Config{
 				}
 
 				if($async){
-					Server::getInstance()->getAsyncPool()->submitTask(new FileWriteTask($this->file, $content));
+					Server::getInstance()->getAsyncPool()->submitTask(new FileWriteTask($this->file, $content, LOCK_EX));
 				}else{
 					file_put_contents($this->file, $content);
 				}
