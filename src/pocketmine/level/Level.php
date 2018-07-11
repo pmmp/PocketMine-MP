@@ -2791,7 +2791,7 @@ class Level implements ChunkManager, Metadatable{
 		$chunk = $this->getChunk($v->x >> 4, $v->z >> 4, false);
 		$x = (int) $v->x;
 		$z = (int) $v->z;
-		if($chunk !== null){
+		if($chunk !== null and $chunk->isGenerated()){
 			$y = (int) min($max - 2, $v->y);
 			$wasAir = ($chunk->getBlockId($x & 0x0f, $y - 1, $z & 0x0f) === 0);
 			for(; $y > 0; --$y){
