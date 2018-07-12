@@ -21,43 +21,24 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\item\enchantment;
 
-use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\item\TieredTool;
+use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 
-class EmeraldOre extends Solid{
+class KnockbackEnchantment extends MeleeWeaponEnchantment{
 
-	protected $id = self::EMERALD_ORE;
-
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	public function isApplicableTo(Entity $victim) : bool{
+		return $victim instanceof Living;
 	}
 
-	public function getName() : string{
-		return "Emerald Ore";
+	public function getDamageBonus(int $enchantmentLevel) : float{
+		return 0;
 	}
 
-	public function getToolType() : int{
-		return BlockToolType::TYPE_PICKAXE;
-	}
-
-	public function getToolHarvestLevel() : int{
-		return TieredTool::TIER_IRON;
-	}
-
-	public function getHardness() : float{
-		return 3;
-	}
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			ItemFactory::get(Item::EMERALD)
-		];
-	}
-
-	protected function getXpDropAmount() : int{
-		return mt_rand(3, 7);
+	public function onPostAttack(Entity $attacker, Entity $victim, int $enchantmentLevel) : void{
+		if($victim instanceof Living){
+			$victim->knockBack($attacker, 0, $victim->x - $attacker->x, $victim->z - $attacker->z, $enchantmentLevel * 0.5);
+		}
 	}
 }

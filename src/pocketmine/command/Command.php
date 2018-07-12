@@ -127,7 +127,7 @@ abstract class Command{
 		if($this->permissionMessage === null){
 			$target->sendMessage($target->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
 		}elseif($this->permissionMessage !== ""){
-			$target->sendMessage(str_replace("<permission>", $this->getPermission(), $this->permissionMessage));
+			$target->sendMessage(str_replace("<permission>", $this->permission, $this->permissionMessage));
 		}
 
 		return false;
@@ -139,11 +139,11 @@ abstract class Command{
 	 * @return bool
 	 */
 	public function testPermissionSilent(CommandSender $target) : bool{
-		if(($perm = $this->getPermission()) === null or $perm === ""){
+		if($this->permission === null or $this->permission === ""){
 			return true;
 		}
 
-		foreach(explode(";", $perm) as $permission){
+		foreach(explode(";", $this->permission) as $permission){
 			if($target->hasPermission($permission)){
 				return true;
 			}

@@ -173,6 +173,9 @@ class InventoryTransaction{
 
 			$inventory = $inventories[$hash];
 			$slot = $slots[$hash];
+			if(!$inventory->slotExists($slot)){ //this can get hit for crafting tables because the validation happens after this compaction
+				throw new TransactionValidationException("Slot $slot does not exist in inventory " . get_class($inventory));
+			}
 			$sourceItem = $inventory->getItem($slot);
 
 			$targetItem = $this->findResultItem($sourceItem, $list);

@@ -80,10 +80,13 @@ class RCONInstance extends Thread{
 	}
 
 	private function readPacket($client, ?int &$requestID, ?int &$packetType, ?string &$payload){
-		$d = socket_read($client, 4);
+		$d = @socket_read($client, 4);
 		if($this->stop){
 			return false;
 		}elseif($d === false){
+			if(socket_last_error($client) === SOCKET_ECONNRESET){ //client crashed, terminate connection
+				return false;
+			}
 			return null;
 		}elseif($d === "" or strlen($d) < 4){
 			return false;

@@ -394,15 +394,22 @@ class MemoryManager{
 					$info["implements"] = implode(", ", $reflection->getInterfaceNames());
 				}
 
-				foreach($reflection->getProperties() as $property){
-					if($property->isStatic()){
-						continue;
-					}
+				for($original = $reflection; $reflection !== false; $reflection = $reflection->getParentClass()){
+					foreach($reflection->getProperties() as $property){
+						if($property->isStatic()){
+							continue;
+						}
 
-					if(!$property->isPublic()){
-						$property->setAccessible(true);
+						$name = $property->getName();
+						if($reflection !== $original and !$property->isPublic()){
+							$name = $reflection->getName() . ":" . $name;
+						}
+						if(!$property->isPublic()){
+							$property->setAccessible(true);
+						}
+
+						self::continueDump($property->getValue($object), $info["properties"][$name], $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 					}
-					self::continueDump($property->getValue($object), $info["properties"][$property->getName()], $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 				}
 
 				fwrite($obData, "$hash@$className: " . json_encode($info, JSON_UNESCAPED_SLASHES) . "\n");

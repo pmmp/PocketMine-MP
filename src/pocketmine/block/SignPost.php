@@ -61,7 +61,7 @@ class SignPost extends Transparent{
 		if($face !== Vector3::SIDE_DOWN){
 
 			if($face === Vector3::SIDE_UP){
-				$this->meta = floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0f;
+				$this->meta = $player !== null ? (floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0f) : 0;
 				$this->getLevel()->setBlock($blockReplace, $this, true);
 			}else{
 				$this->meta = $face;

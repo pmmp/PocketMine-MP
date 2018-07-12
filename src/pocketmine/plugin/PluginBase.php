@@ -67,7 +67,7 @@ abstract class PluginBase implements Plugin{
 		$this->file = rtrim($file, "\\/") . "/";
 		$this->configFile = $this->dataFolder . "config.yml";
 		$this->logger = new PluginLogger($this);
-		$this->scheduler = new TaskScheduler($this->logger);
+		$this->scheduler = new TaskScheduler($this->logger, $this->getFullName());
 	}
 
 	/**
@@ -256,6 +256,7 @@ abstract class PluginBase implements Plugin{
 	}
 
 	public function reloadConfig(){
+		@mkdir($this->dataFolder);
 		$this->config = new Config($this->configFile);
 		if(($configStream = $this->getResource("config.yml")) !== null){
 			$this->config->setDefaults(yaml_parse(Config::fixYAMLIndexes(stream_get_contents($configStream))));

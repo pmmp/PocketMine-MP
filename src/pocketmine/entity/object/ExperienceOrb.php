@@ -165,7 +165,7 @@ class ExperienceOrb extends Entity{
 		}
 
 		$currentTarget = $this->getTargetPlayer();
-		if($currentTarget !== null and $currentTarget->distanceSquared($this) > self::MAX_TARGET_DISTANCE ** 2){
+		if($currentTarget !== null and (!$currentTarget->isAlive() or $currentTarget->distanceSquared($this) > self::MAX_TARGET_DISTANCE ** 2)){
 			$currentTarget = null;
 		}
 
@@ -200,10 +200,7 @@ class ExperienceOrb extends Entity{
 			if($currentTarget->canPickupXp() and $this->boundingBox->intersectsWith($currentTarget->getBoundingBox())){
 				$this->flagForDespawn();
 
-				$currentTarget->addXp($this->getXpValue());
-				$currentTarget->resetXpCooldown();
-
-				//TODO: check Mending enchantment
+				$currentTarget->onPickupXp($this->getXpValue());
 			}
 		}
 

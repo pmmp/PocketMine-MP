@@ -77,6 +77,8 @@ use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Consumable;
 use pocketmine\item\Durable;
+use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
 use pocketmine\item\WritableBook;
 use pocketmine\item\WrittenBook;
@@ -535,7 +537,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function canBeCollidedWith() : bool{
-		return !$this->isSpectator();
+		return !$this->isSpectator() and parent::canBeCollidedWith();
 	}
 
 	public function resetFallDistance() : void{
@@ -2168,7 +2170,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return false;
 		}
 
-		$this->resetCraftingGridType();
+		$this->doCloseInventory();
 
 		$message = TextFormat::clean($message, $this->removeFormat);
 		foreach(explode("\n", $message) as $messagePart){
@@ -2243,7 +2245,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if(!$this->spawned or !$this->isAlive()){
 			return true;
 		}
-		$this->resetCraftingGridType();
+		$this->doCloseInventory();
 
 		switch($packet->event){
 			case EntityEventPacket::EATING_ITEM:
@@ -2394,7 +2396,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 						return true;
 					case InventoryTransactionPacket::USE_ITEM_ACTION_BREAK_BLOCK:
-						$this->resetCraftingGridType();
+						$this->doCloseInventory();
 
 						$item = $this->inventory->getItemInHand();
 						$oldItem = clone $item;
@@ -2502,6 +2504,19 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						}
 
 						$ev = new EntityDamageByEntityEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $heldItem->getAttackPoints());
+
+						$meleeEnchantmentDamage = 0;
+						/** @var EnchantmentInstance[] $meleeEnchantments */
+						$meleeEnchantments = [];
+						foreach($heldItem->getEnchantments() as $enchantment){
+							$type = $enchantment->getType();
+							if($type instanceof MeleeWeaponEnchantment and $type->isApplicableTo($target)){
+								$meleeEnchantmentDamage += $type->getDamageBonus($enchantment->getLevel());
+								$meleeEnchantments[] = $enchantment;
+							}
+						}
+						$ev->setModifier($meleeEnchantmentDamage, EntityDamageEvent::MODIFIER_WEAPON_ENCHANTMENTS);
+
 						if($cancelled){
 							$ev->setCancelled();
 						}
@@ -2529,11 +2544,21 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							}
 						}
 
-						if($heldItem->onAttackEntity($target) and $this->isSurvival()){ //always fire the hook, even if we are survival
-							$this->inventory->setItemInHand($heldItem);
+						foreach($meleeEnchantments as $enchantment){
+							$type = $enchantment->getType();
+							assert($type instanceof MeleeWeaponEnchantment);
+							$type->onPostAttack($this, $target, $enchantment->getLevel());
 						}
 
-						$this->exhaust(0.3, PlayerExhaustEvent::CAUSE_ATTACK);
+						if($this->isAlive()){
+							//reactive damage like thorns might cause us to be killed by attacking another mob, which
+							//would mean we'd already have dropped the inventory by the time we reached here
+							if($heldItem->onAttackEntity($target) and $this->isSurvival()){ //always fire the hook, even if we are survival
+								$this->inventory->setItemInHand($heldItem);
+							}
+
+							$this->exhaust(0.3, PlayerExhaustEvent::CAUSE_ATTACK);
+						}
 
 						return true;
 					default:
@@ -2631,7 +2656,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
-		$this->resetCraftingGridType();
+		$this->doCloseInventory();
 
 		$target = $this->level->getEntity($packet->target);
 		if($target === null){
@@ -2845,7 +2870,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
-		$this->resetCraftingGridType();
+		$this->doCloseInventory();
 
 		if(isset($this->windowIndex[$packet->windowId])){
 			$this->server->getPluginManager()->callEvent(new InventoryCloseEvent($this->windowIndex[$packet->windowId], $this));
@@ -2895,7 +2920,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if(!$this->spawned or !$this->isAlive()){
 			return true;
 		}
-		$this->resetCraftingGridType();
+		$this->doCloseInventory();
 
 		$pos = new Vector3($packet->x, $packet->y, $packet->z);
 		if($pos->distanceSquared($this) > 10000 or $this->level->checkSpawnProtection($this, $pos)){
@@ -3146,12 +3171,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 *
 	 * @param string $reason
 	 * @param bool   $isAdmin
+	 * @param TextContainer|string $quitMessage
 	 *
 	 * @return bool
 	 */
-	public function kick(string $reason = "", bool $isAdmin = true) : bool{
-		$this->server->getPluginManager()->callEvent($ev = new PlayerKickEvent($this, $reason, $this->getLeaveMessage()));
+	public function kick(string $reason = "", bool $isAdmin = true, $quitMessage = null) : bool{
+		$this->server->getPluginManager()->callEvent($ev = new PlayerKickEvent($this, $reason, $quitMessage ?? $this->getLeaveMessage()));
 		if(!$ev->isCancelled()){
+			$reason = $ev->getReason();
 			$message = $reason;
 			if($isAdmin){
 				if(!$this->isBanned()){
@@ -3613,7 +3640,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		//Crafting grid must always be evacuated even if keep-inventory is true. This dumps the contents into the
 		//main inventory and drops the rest on the ground.
-		$this->resetCraftingGridType();
+		$this->doCloseInventory();
 
 		$this->server->getPluginManager()->callEvent($ev = new PlayerDeathEvent($this, $this->getDrops(), new TranslationContainer($message, $params)));
 
@@ -3796,15 +3823,19 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->craftingGrid = $grid;
 	}
 
-	public function resetCraftingGridType() : void{
-		$contents = $this->craftingGrid->getContents();
-		if(count($contents) > 0){
-			$drops = $this->inventory->addItem(...$contents);
-			foreach($drops as $drop){
-				$this->dropItem($drop);
-			}
+	public function doCloseInventory() : void{
+		/** @var Inventory[] $inventories */
+		$inventories = [$this->craftingGrid, $this->cursorInventory];
+		foreach($inventories as $inventory){
+			$contents = $inventory->getContents();
+			if(count($contents) > 0){
+				$drops = $this->inventory->addItem(...$contents);
+				foreach($drops as $drop){
+					$this->dropItem($drop);
+				}
 
-			$this->craftingGrid->clearAll();
+				$inventory->clearAll();
+			}
 		}
 
 		if($this->craftingGrid->getGridWidth() > CraftingGrid::SIZE_SMALL){
