@@ -1627,7 +1627,7 @@ class Level implements ChunkManager, Metadatable{
 
 			$spawnLocation = $this->getSpawnLocation();
 			$s = new Vector2($spawnLocation->x, $spawnLocation->z);
-			if(count($this->server->getOps()->getAll()) > 0 and $t->distance($s) <= $distance){
+			if($t->distance($s) <= $distance){
 				return true;
 			}
 		}
