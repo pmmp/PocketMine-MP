@@ -77,6 +77,7 @@ use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Consumable;
 use pocketmine\item\Durable;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\item\WritableBook;
 use pocketmine\item\WrittenBook;
@@ -1472,7 +1473,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function getDrops() : array{
 		if(!$this->isCreative()){
-			return parent::getDrops();
+			return array_merge(
+				parent::getDrops(),
+				array_filter(
+					$this->cursorInventory !== null ? array_values($this->cursorInventory->getContents()) : [], 
+					function(Item $item) : bool{ return !$item->hasEnchantment(Enchantment::VANISHING); }));
 		}
 
 		return [];
@@ -3632,6 +3637,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}
 			if($this->armorInventory !== null){
 				$this->armorInventory->clearAll();
+			}
+			if($this->cursorInventory !== null){
+				$this->cursorInventory->clearAll();
 			}
 		}
 
