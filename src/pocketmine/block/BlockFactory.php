@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\level\Position;
-use pocketmine\utils\MainLogger;
 
 /**
  * Manages block registration and instance creation
@@ -436,19 +435,12 @@ class BlockFactory{
 	 * @return int
 	 */
 	public static function toStaticRuntimeId(int $id, int $meta = 0) : int{
-		if($id === Block::AIR){
-			//TODO: HACK! (weird air blocks with non-zero damage values shouldn't turn into update! blocks)
-			$meta = 0;
-		}
-
-		$index = ($id << 4) | $meta;
-		if(!isset(self::$staticRuntimeIdMap[$index])){
-			self::registerMapping($rtId = ++self::$lastRuntimeId, $id, $meta);
-			MainLogger::getLogger()->error("ID $id meta $meta does not have a corresponding block static runtime ID, added a new unknown runtime ID ($rtId)");
-			return $rtId;
-		}
-
-		return self::$staticRuntimeIdMap[$index];
+		/*
+		 * try id+meta first
+		 * if not found, try id+0 (strip meta)
+		 * if still not found, return update! block
+		 */
+		return self::$staticRuntimeIdMap[($id << 4) | $meta] ?? self::$staticRuntimeIdMap[$id << 4] ?? self::$staticRuntimeIdMap[BlockIds::INFO_UPDATE << 4];
 	}
 
 	/**
