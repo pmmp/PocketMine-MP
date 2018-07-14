@@ -243,6 +243,9 @@ class MemoryManager{
 
 		if($this->garbageCollectionAsync){
 			$pool = $this->server->getAsyncPool();
+			if(($w = $pool->shutdownUnusedWorkers()) > 0){
+				$this->server->getLogger()->debug("Shut down $w idle async pool workers");
+			}
 			foreach($pool->getRunningWorkers() as $i){
 				$pool->submitTaskToWorker(new GarbageCollectionTask(), $i);
 			}
