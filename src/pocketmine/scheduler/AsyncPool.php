@@ -317,6 +317,19 @@ class AsyncPool{
 		$this->collectWorkers();
 	}
 
+	public function shutdownUnusedWorkers() : int{
+		$ret = 0;
+		foreach($this->workerUsage as $i => $usage){
+			if($usage === 0){
+				$this->workers[$i]->quit();
+				unset($this->workers[$i], $this->workerUsage[$i]);
+				$ret++;
+			}
+		}
+
+		return $ret;
+	}
+
 	/**
 	 * Cancels all pending tasks and shuts down all the workers in the pool.
 	 */
