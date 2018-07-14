@@ -168,18 +168,15 @@ class AsyncPool{
 	}
 
 	/**
-	 * Submits an AsyncTask to the worker with the least load. If all workers are busy and the pool is not full, a new
-	 * worker may be started.
+	 * Selects a worker ID to run a task.
 	 *
-	 * @param AsyncTask $task
+	 * - if an idle worker is found, it will be selected
+	 * - else, if the worker pool is not full, a new worker will be selected
+	 * - else, the worker with the smallest backlog is chosen.
 	 *
 	 * @return int
 	 */
-	public function submitTask(AsyncTask $task) : int{
-		if($task->getTaskId() !== null){
-			throw new \InvalidArgumentException("Cannot submit the same AsyncTask instance more than once");
-		}
-
+	public function selectWorker() : int{
 		$worker = null;
 		$minUsage = PHP_INT_MAX;
 		foreach($this->workerUsage as $i => $usage){
@@ -202,7 +199,23 @@ class AsyncPool{
 		}
 
 		assert($worker !== null);
+		return $worker;
+	}
 
+	/**
+	 * Submits an AsyncTask to the worker with the least load. If all workers are busy and the pool is not full, a new
+	 * worker may be started.
+	 *
+	 * @param AsyncTask $task
+	 *
+	 * @return int
+	 */
+	public function submitTask(AsyncTask $task) : int{
+		if($task->getTaskId() !== null){
+			throw new \InvalidArgumentException("Cannot submit the same AsyncTask instance more than once");
+		}
+
+		$worker = $this->selectWorker();
 		$this->submitTaskToWorker($task, $worker);
 		return $worker;
 	}
