@@ -169,7 +169,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_LIMITED_LIFE = 77;
 	public const DATA_ARMOR_STAND_POSE_INDEX = 78; //int
 	public const DATA_ENDER_CRYSTAL_TIME_OFFSET = 79; //int
-	/* 80 (byte) something to do with nametag visibility? */
+	public const DATA_ALWAYS_SHOW_NAMETAG = 80; //byte: -1 = default, 0 = only when looked at, 1 = always
 	public const DATA_COLOR_2 = 81; //byte
 	/* 82 (unknown) */
 	public const DATA_SCORE_TAG = 83; //string
@@ -606,7 +606,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @param bool $value
 	 */
 	public function setNameTagAlwaysVisible(bool $value = true) : void{
-		$this->setGenericFlag(self::DATA_FLAG_ALWAYS_SHOW_NAMETAG, $value);
+		$this->propertyManager->setByte(self::DATA_ALWAYS_SHOW_NAMETAG, $value ? 1 : 0);
 	}
 
 	/**
