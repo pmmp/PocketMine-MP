@@ -200,6 +200,8 @@ class Level implements ChunkManager, Metadatable{
 	private $chunkPopulationLock = [];
 	/** @var int */
 	private $chunkPopulationQueueSize = 2;
+	/** @var bool[] */
+	private $generatorRegisteredWorkers = [];
 
 	/** @var bool */
 	private $autoSave = true;
@@ -244,9 +246,6 @@ class Level implements ChunkManager, Metadatable{
 
 	/** @var bool */
 	private $closed = false;
-
-	/** @var \Closure */
-	private $asyncPoolStartHook;
 
 	public static function chunkHash(int $x, int $z) : int{
 		return (($x & 0xFFFFFFFF) << 32) | ($z & 0xFFFFFFFF);
@@ -363,10 +362,6 @@ class Level implements ChunkManager, Metadatable{
 		$this->temporalPosition = new Position(0, 0, 0, $this);
 		$this->temporalVector = new Vector3(0, 0, 0);
 		$this->tickRate = 1;
-
-		$this->server->getAsyncPool()->addWorkerStartHook($this->asyncPoolStartHook = function(int $worker) : void{
-			$this->registerGeneratorToWorker($worker);
-		});
 	}
 
 	public function getTickRate() : int{
@@ -382,15 +377,16 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function registerGeneratorToWorker(int $worker) : void{
+		$this->generatorRegisteredWorkers[$worker] = true;
 		$this->server->getAsyncPool()->submitTaskToWorker(new GeneratorRegisterTask($this, $this->generator, $this->provider->getGeneratorOptions()), $worker);
 	}
 
 	public function unregisterGenerator(){
 		$pool = $this->server->getAsyncPool();
-		$pool->removeWorkerStartHook($this->asyncPoolStartHook);
-		foreach($pool->getRunningWorkers() as $i){
+		foreach($this->generatorRegisteredWorkers as $i => $bool){
 			$pool->submitTaskToWorker(new GeneratorUnregisterTask($this), $i);
 		}
+		$this->generatorRegisteredWorkers = [];
 	}
 
 	public function getBlockMetadata() : BlockMetadataStore{
@@ -2955,7 +2951,11 @@ class Level implements ChunkManager, Metadatable{
 						}
 					}
 					$task = new PopulationTask($this, $chunk);
-					$this->server->getAsyncPool()->submitTask($task);
+					$workerId = $this->server->getAsyncPool()->selectWorker();
+					if(!isset($this->generatorRegisteredWorkers[$workerId])){
+						$this->registerGeneratorToWorker($workerId);
+					}
+					$this->server->getAsyncPool()->submitTaskToWorker($task, $workerId);
 				}
 			}
 
