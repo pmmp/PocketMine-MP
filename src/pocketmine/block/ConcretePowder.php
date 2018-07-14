@@ -66,7 +66,7 @@ class ConcretePowder extends Fallable{
 	private function checkAdjacentWater() : ?Block{
 		for($i = 1; $i < 6; ++$i){ //Do not check underneath
 			if($this->getSide($i) instanceof Water){
-				return Block::get(Block::CONCRETE, $this->meta);
+				return BlockFactory::get(Block::CONCRETE, $this->meta);
 			}
 		}
 
