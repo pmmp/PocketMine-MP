@@ -310,6 +310,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $allowFlight = false;
 	/** @var bool */
 	protected $flying = false;
+	/** @var bool */
+	protected $muted = false;
 
 	/** @var PermissibleBase */
 	private $perm = null;
@@ -439,6 +441,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function isFlying() : bool{
 		return $this->flying;
+	}
+
+	public function setMuted(bool $value) : void{
+		$this->muted = $value;
+		$this->sendSettings();
+	}
+
+	public function isMuted() : bool{
+		return $this->muted;
 	}
 
 	public function setAutoJump(bool $value){
@@ -593,6 +604,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}else{
 			$this->server->removeOp($this->getName());
 		}
+		$this->setRemoveFormat(!$value);
 
 		$this->sendSettings();
 	}
@@ -1405,6 +1417,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->setFlag(AdventureSettingsPacket::ALLOW_FLIGHT, $this->allowFlight);
 		$pk->setFlag(AdventureSettingsPacket::NO_CLIP, $this->isSpectator());
 		$pk->setFlag(AdventureSettingsPacket::FLYING, $this->flying);
+		$pk->setFlag(AdventureSettingsPacket::MUTED, $this->muted);
 
 		$pk->commandPermission = ($this->isOp() ? AdventureSettingsPacket::PERMISSION_OPERATOR : AdventureSettingsPacket::PERMISSION_NORMAL);
 		$pk->playerPermission = ($this->isOp() ? PlayerPermissions::OPERATOR : PlayerPermissions::MEMBER);
