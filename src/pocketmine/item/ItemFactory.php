@@ -281,7 +281,7 @@ class ItemFactory{
 			throw new \RuntimeException("Trying to overwrite an already registered item");
 		}
 
-		self::$list[$id] = clone $item;
+		self::$list[self::getListOffset($id)] = clone $item;
 	}
 
 	/**
@@ -302,10 +302,10 @@ class ItemFactory{
 
 		try{
 			/** @var Item|null $listed */
-			$listed = self::$list[$id];
+			$listed = self::$list[self::getListOffset($id)];
 			if($listed !== null){
 				$item = clone $listed;
-			}elseif($id < 256){
+			}elseif($id < 256){ //intentionally includes negatives, for extended block IDs
 				/* Blocks must have a damage value 0-15, but items can have damage value -1 to indicate that they are
 				 * crafting ingredients with any-damage. */
 				$item = new ItemBlock($id, $meta);
@@ -353,13 +353,13 @@ class ItemFactory{
 			if(!isset($b[1])){
 				$meta = 0;
 			}elseif(is_numeric($b[1])){
-				$meta = $b[1] & 0xFFFF;
+				$meta = $b[1];
 			}else{
 				throw new \InvalidArgumentException("Unable to parse \"" . $b[1] . "\" from \"" . $str . "\" as a valid meta value");
 			}
 
 			if(is_numeric($b[0])){
-				$item = self::get(((int) $b[0]) & 0xFFFF, $meta);
+				$item = self::get((int) $b[0], $meta);
 			}elseif(defined(ItemIds::class . "::" . strtoupper($b[0]))){
 				$item = self::get(constant(ItemIds::class . "::" . strtoupper($b[0])), $meta);
 			}else{
@@ -380,6 +380,13 @@ class ItemFactory{
 		if($id < 256){
 			return BlockFactory::isRegistered($id);
 		}
-		return self::$list[$id] !== null;
+		return self::$list[self::getListOffset($id)] !== null;
+	}
+
+	private static function getListOffset(int $id) : int{
+		if($id < -0x8000 or $id > 0x7fff){
+			throw new \InvalidArgumentException("ID must be in range " . -0x8000 . " - " . 0x7fff);
+		}
+		return $id & 0xffff;
 	}
 }
