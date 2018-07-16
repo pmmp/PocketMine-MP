@@ -70,7 +70,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	private $originals;
 	
 	/** @var int */
-	private $attackTick = 0;
+	private $attackTick = 10;
 
 
 	/**
