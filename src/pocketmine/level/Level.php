@@ -2947,16 +2947,14 @@ class Level implements ChunkManager, Metadatable{
 			}
 
 			if($populate){
-				if(!isset($this->chunkPopulationQueue[$index])){
-					$this->chunkPopulationQueue[$index] = true;
-					for($xx = -1; $xx <= 1; ++$xx){
-						for($zz = -1; $zz <= 1; ++$zz){
-							$this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)] = true;
-						}
+				$this->chunkPopulationQueue[$index] = true;
+				for($xx = -1; $xx <= 1; ++$xx){
+					for($zz = -1; $zz <= 1; ++$zz){
+						$this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)] = true;
 					}
-					$task = new PopulationTask($this, $chunk);
-					$this->server->getAsyncPool()->submitTask($task);
 				}
+				$task = new PopulationTask($this, $chunk);
+				$this->server->getAsyncPool()->submitTask($task);
 			}
 
 			Timings::$populationTimer->stopTiming();
