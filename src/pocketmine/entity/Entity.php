@@ -1346,7 +1346,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		if($this->hasMovementUpdate()){
 			$this->tryChangeMovement();
-			$this->move($this->motion->x, $this->motion->y, $this->motion->z);
 
 			if(abs($this->motion->x) <= self::MOTION_THRESHOLD){
 				$this->motion->x = 0;
@@ -1356,6 +1355,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			}
 			if(abs($this->motion->z) <= self::MOTION_THRESHOLD){
 				$this->motion->z = 0;
+			}
+
+			if($this->motion->x != 0 or $this->motion->y != 0 or $this->motion->z != 0){
+				$this->move($this->motion->x, $this->motion->y, $this->motion->z);
 			}
 
 			$this->forceMovementUpdate = false;
