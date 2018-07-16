@@ -68,6 +68,9 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	private $modifiers;
 	/** @var float[] */
 	private $originals;
+	
+	/** @var int */
+	private $attackTick = 0;
 
 
 	/**
@@ -196,5 +199,19 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 		}
 
 		return true;
+	}
+	
+	/**
+	 * @return int
+	 */
+	public function getAttackTick() : int{
+		return $this->attackTick;
+	}
+	
+	/**
+	 * @param int $attackTick
+	 */
+	public function setAttackTick(int $attackTick) {
+		$this->attackTick = $attackTick;
 	}
 }
