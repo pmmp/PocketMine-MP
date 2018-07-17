@@ -51,4 +51,29 @@ class ItemTest extends TestCase{
 			self::assertEquals(BlockFactory::isRegistered($id), ItemFactory::isRegistered($id));
 		}
 	}
+
+	public function itemFromStringProvider() : array{
+		return [
+			["dye:4", ItemIds::DYE, 4],
+			["351", ItemIds::DYE, 0],
+			["351:4", ItemIds::DYE, 4],
+			["stone:3", ItemIds::STONE, 3],
+			["minecraft:string", ItemIds::STRING, 0],
+			["diamond_pickaxe", ItemIds::DIAMOND_PICKAXE, 0],
+			["diamond_pickaxe:5", ItemIds::DIAMOND_PICKAXE, 5]
+		];
+	}
+
+	/**
+	 * @dataProvider itemFromStringProvider
+	 * @param string $string
+	 * @param int    $id
+	 * @param int    $meta
+	 */
+	public function testFromStringSingle(string $string, int $id, int $meta) : void{
+		$item = ItemFactory::fromString($string);
+
+		self::assertEquals($id, $item->getId());
+		self::assertEquals($meta, $item->getDamage());
+	}
 }
