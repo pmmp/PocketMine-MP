@@ -1025,14 +1025,7 @@ class Server{
 			return false;
 		}
 
-		try{
-			$level = new Level($this, $name, new $providerClass($path));
-		}catch(\Throwable $e){
-
-			$this->logger->error($this->getLanguage()->translateString("pocketmine.level.loadError", [$name, $e->getMessage()]));
-			$this->logger->logException($e);
-			return false;
-		}
+		$level = new Level($this, $name, new $providerClass($path));
 
 		$this->levels[$level->getId()] = $level;
 
@@ -1070,22 +1063,19 @@ class Server{
 
 		if(($providerClass = LevelProviderManager::getProviderByName($this->getProperty("level-settings.default-format", "pmanvil"))) === null){
 			$providerClass = LevelProviderManager::getProviderByName("pmanvil");
+			if($providerClass === null){
+				throw new \InvalidStateException("Default level provider has not been registered");
+			}
 		}
 
-		try{
-			$path = $this->getDataPath() . "worlds/" . $name . "/";
-			/** @var LevelProvider $providerClass */
-			$providerClass::generate($path, $name, $seed, $generator, $options);
+		$path = $this->getDataPath() . "worlds/" . $name . "/";
+		/** @var LevelProvider $providerClass */
+		$providerClass::generate($path, $name, $seed, $generator, $options);
 
-			$level = new Level($this, $name, new $providerClass($path));
-			$this->levels[$level->getId()] = $level;
+		$level = new Level($this, $name, new $providerClass($path));
+		$this->levels[$level->getId()] = $level;
 
-			$level->setTickRate($this->baseTickRate);
-		}catch(\Throwable $e){
-			$this->logger->error($this->getLanguage()->translateString("pocketmine.level.generationError", [$name, $e->getMessage()]));
-			$this->logger->logException($e);
-			return false;
-		}
+		$level->setTickRate($this->baseTickRate);
 
 		$this->getPluginManager()->callEvent(new LevelInitEvent($level));
 
