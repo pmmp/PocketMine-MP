@@ -29,45 +29,44 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 
-class MoveEntityPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::MOVE_ENTITY_PACKET;
+class MoveEntityAbsolutePacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::MOVE_ENTITY_ABSOLUTE_PACKET;
+
+	public const FLAG_GROUND = 0x01;
+	public const FLAG_TELEPORT = 0x02;
 
 	/** @var int */
 	public $entityRuntimeId;
+	/** @var int */
+	public $flags = 0;
 	/** @var Vector3 */
 	public $position;
 	/** @var float */
-	public $yaw;
+	public $xRot;
 	/** @var float */
-	public $headYaw;
+	public $yRot;
 	/** @var float */
-	public $pitch;
-	/** @var bool */
-	public $onGround = false;
-	/** @var bool */
-	public $teleported = false;
+	public $zRot;
 
 	protected function decodePayload() : void{
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
+		$this->flags = $this->getByte();
 		$this->position = $this->getVector3();
-		$this->pitch = $this->getByteRotation();
-		$this->headYaw = $this->getByteRotation();
-		$this->yaw = $this->getByteRotation();
-		$this->onGround = $this->getBool();
-		$this->teleported = $this->getBool();
+		$this->xRot = $this->getByteRotation();
+		$this->yRot = $this->getByteRotation();
+		$this->zRot = $this->getByteRotation();
 	}
 
 	protected function encodePayload() : void{
 		$this->putEntityRuntimeId($this->entityRuntimeId);
+		$this->putByte($this->flags);
 		$this->putVector3($this->position);
-		$this->putByteRotation($this->pitch);
-		$this->putByteRotation($this->headYaw);
-		$this->putByteRotation($this->yaw);
-		$this->putBool($this->onGround);
-		$this->putBool($this->teleported);
+		$this->putByteRotation($this->xRot);
+		$this->putByteRotation($this->yRot);
+		$this->putByteRotation($this->zRot);
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleMoveEntity($this);
+		return $session->handleMoveEntityAbsolute($this);
 	}
 }
