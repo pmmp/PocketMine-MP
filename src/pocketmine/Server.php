@@ -1070,6 +1070,9 @@ class Server{
 
 		if(($providerClass = LevelProviderManager::getProviderByName($this->getProperty("level-settings.default-format", "pmanvil"))) === null){
 			$providerClass = LevelProviderManager::getProviderByName("pmanvil");
+			if($providerClass === null){
+				throw new \InvalidStateException("Default level provider has not been registered");
+			}
 		}
 
 		try{
