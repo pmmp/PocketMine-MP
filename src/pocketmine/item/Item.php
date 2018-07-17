@@ -196,7 +196,10 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @param string $name
 	 */
 	public function __construct(int $id, int $meta = 0, string $name = "Unknown"){
-		$this->id = $id & 0xffff;
+		if($id < -0x8000 or $id > 0x7fff){ //signed short range
+			throw new \InvalidArgumentException("ID must be in range " . -0x8000 . " - " . 0x7fff);
+		}
+		$this->id = $id;
 		$this->setDamage($meta);
 		$this->name = $name;
 	}
@@ -916,7 +919,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	public function nbtSerialize(int $slot = -1, string $tagName = "") : CompoundTag{
 		$result = new CompoundTag($tagName, [
-			new ShortTag("id", Binary::signShort($this->id)),
+			new ShortTag("id", $this->id),
 			new ByteTag("Count", Binary::signByte($this->count)),
 			new ShortTag("Damage", $this->meta)
 		]);
@@ -951,7 +954,7 @@ class Item implements ItemIds, \JsonSerializable{
 
 		$idTag = $tag->getTag("id");
 		if($idTag instanceof ShortTag){
-			$item = ItemFactory::get(Binary::unsignShort($idTag->getValue()), $meta, $count);
+			$item = ItemFactory::get($idTag->getValue(), $meta, $count);
 		}elseif($idTag instanceof StringTag){ //PC item save format
 			$item = ItemFactory::fromString($idTag->getValue());
 			$item->setDamage($meta);

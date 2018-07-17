@@ -2537,13 +2537,9 @@ class Server{
 		}
 
 		if(($this->tickCounter & 0b111111111) === 0){
-			try{
-				$this->getPluginManager()->callEvent($this->queryRegenerateTask = new QueryRegenerateEvent($this, 5));
-				if($this->queryHandler !== null){
-					$this->queryHandler->regenerateInfo();
-				}
-			}catch(\Throwable $e){
-				$this->logger->logException($e);
+			$this->getPluginManager()->callEvent($this->queryRegenerateTask = new QueryRegenerateEvent($this, 5));
+			if($this->queryHandler !== null){
+				$this->queryHandler->regenerateInfo();
 			}
 		}
 
