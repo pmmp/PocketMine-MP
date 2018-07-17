@@ -27,7 +27,6 @@ use pocketmine\level\format\io\leveldb\LevelDB;
 use pocketmine\level\format\io\region\Anvil;
 use pocketmine\level\format\io\region\McRegion;
 use pocketmine\level\format\io\region\PMAnvil;
-use pocketmine\level\LevelException;
 
 abstract class LevelProviderManager{
 	protected static $providers = [];
@@ -42,12 +41,21 @@ abstract class LevelProviderManager{
 	/**
 	 * @param string $class
 	 *
-	 * @throws LevelException
+	 * @throws \InvalidArgumentException
 	 */
 	public static function addProvider(string $class){
-		if(!is_subclass_of($class, LevelProvider::class)){
-			throw new LevelException("Class is not a subclass of LevelProvider");
+		try{
+			$reflection = new \ReflectionClass($class);
+		}catch(\ReflectionException $e){
+			throw new \InvalidArgumentException("Class $class does not exist");
 		}
+		if(!$reflection->implementsInterface(LevelProvider::class)){
+			throw new \InvalidArgumentException("Class $class does not implement " . LevelProvider::class);
+		}
+		if(!$reflection->isInstantiable()){
+			throw new \InvalidArgumentException("Class $class cannot be constructed");
+		}
+
 		/** @var LevelProvider $class */
 		self::$providers[strtolower($class::getProviderName())] = $class;
 	}
