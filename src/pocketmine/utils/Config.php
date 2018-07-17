@@ -143,7 +143,6 @@ class Config{
 				$content = file_get_contents($this->file);
 				switch($this->type){
 					case Config::PROPERTIES:
-					case Config::CNF:
 						$this->parseProperties($content);
 						break;
 					case Config::JSON:
@@ -194,7 +193,6 @@ class Config{
 				$content = null;
 				switch($this->type){
 					case Config::PROPERTIES:
-					case Config::CNF:
 						$content = $this->writeProperties();
 						break;
 					case Config::JSON:
