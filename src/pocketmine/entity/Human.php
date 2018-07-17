@@ -49,7 +49,9 @@ use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
+use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\Player;
 use pocketmine\utils\UUID;
 
@@ -798,6 +800,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
 		}
 
+		if(!($this instanceof Player)){
+			/* we don't use Server->updatePlayerListData() because that uses batches, which could cause race conditions in async compression mode */
+			$pk = new PlayerListPacket();
+			$pk->type = PlayerListPacket::TYPE_ADD;
+			$pk->entries = [PlayerListEntry::createAdditionEntry($this->uuid, $this->id, $this->getName(), $this->getName(), 0, $this->skin)];
+			$player->dataPacket($pk);
+		}
+
 		$pk = new AddPlayerPacket();
 		$pk->uuid = $this->getUniqueId();
 		$pk->username = $this->getName();
@@ -816,7 +826,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->armorInventory->sendContents($player);
 
 		if(!($this instanceof Player)){
-			$this->sendSkin([$player]);
+			$pk = new PlayerListPacket();
+			$pk->type = PlayerListPacket::TYPE_REMOVE;
+			$pk->entries = [PlayerListEntry::createRemovalEntry($this->uuid)];
+			$player->dataPacket($pk);
 		}
 	}
 
