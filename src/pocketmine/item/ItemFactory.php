@@ -353,7 +353,7 @@ class ItemFactory{
 			if(!isset($b[1])){
 				$meta = 0;
 			}elseif(is_numeric($b[1])){
-				$meta = $b[1];
+				$meta = (int) $b[1];
 			}else{
 				throw new \InvalidArgumentException("Unable to parse \"" . $b[1] . "\" from \"" . $str . "\" as a valid meta value");
 			}
