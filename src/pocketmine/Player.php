@@ -144,7 +144,7 @@ use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\VerifyLoginTask;
-use pocketmine\network\SourceInterface;
+use pocketmine\network\NetworkInterface;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
 use pocketmine\permission\PermissionAttachmentInfo;
@@ -186,7 +186,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 
-	/** @var SourceInterface */
+	/** @var NetworkInterface */
 	protected $interface;
 
 	/**
@@ -705,11 +705,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * @param SourceInterface $interface
-	 * @param string          $ip
-	 * @param int             $port
+	 * @param NetworkInterface $interface
+	 * @param string           $ip
+	 * @param int              $port
 	 */
-	public function __construct(SourceInterface $interface, string $ip, int $port){
+	public function __construct(NetworkInterface $interface, string $ip, int $port){
 		$this->interface = $interface;
 		$this->perm = new PermissibleBase($this);
 		$this->namedtag = new CompoundTag();

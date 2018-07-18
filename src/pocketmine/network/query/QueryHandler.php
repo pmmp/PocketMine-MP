@@ -27,7 +27,7 @@ declare(strict_types=1);
  */
 namespace pocketmine\network\query;
 
-use pocketmine\network\AdvancedSourceInterface;
+use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\Server;
 use pocketmine\utils\Binary;
 
@@ -79,7 +79,7 @@ class QueryHandler{
 		return Binary::readInt(substr(hash("sha512", $salt . ":" . $token, true), 7, 4));
 	}
 
-	public function handle(AdvancedSourceInterface $interface, string $address, int $port, string $packet) : void{
+	public function handle(AdvancedNetworkInterface $interface, string $address, int $port, string $packet) : void{
 		$offset = 2;
 		$packetType = ord($packet{$offset++});
 		$sessionID = Binary::readInt(substr($packet, $offset, 4));

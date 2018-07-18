@@ -32,7 +32,7 @@ use pocketmine\Player;
 /**
  * Network interfaces are transport layers which can be used to transmit packets between the server and clients.
  */
-interface SourceInterface{
+interface NetworkInterface{
 
 	/**
 	 * Performs actions needed to start the interface after it is registered.

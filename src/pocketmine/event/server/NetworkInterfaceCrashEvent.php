@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\event\server;
 
-use pocketmine\network\SourceInterface;
+use pocketmine\network\NetworkInterface;
 
 /**
  * Called when a network interface crashes, with relevant crash information.
@@ -34,7 +34,7 @@ class NetworkInterfaceCrashEvent extends NetworkInterfaceEvent{
 	 */
 	private $exception;
 
-	public function __construct(SourceInterface $interface, \Throwable $throwable){
+	public function __construct(NetworkInterface $interface, \Throwable $throwable){
 		parent::__construct($interface);
 		$this->exception = $throwable;
 	}
