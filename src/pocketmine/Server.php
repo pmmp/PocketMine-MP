@@ -2511,10 +2511,6 @@ class Server{
 
 		$this->checkTickUpdates($this->tickCounter, $tickTime);
 
-		foreach($this->players as $player){
-			$player->checkNetwork();
-		}
-
 		if(($this->tickCounter % 20) === 0){
 			if($this->doTitleTick){
 				$this->titleTick();
