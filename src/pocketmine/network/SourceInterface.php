@@ -30,7 +30,7 @@ use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\Player;
 
 /**
- * Classes that implement this interface will be able to be attached to players
+ * Network interfaces are transport layers which can be used to transmit packets between the server and clients.
  */
 interface SourceInterface{
 
@@ -69,8 +69,14 @@ interface SourceInterface{
 	 */
 	public function process() : void;
 
+	/**
+	 * Gracefully shuts down the network interface.
+	 */
 	public function shutdown() : void;
 
+	/**
+	 * Shuts down the network interface in an emergency situation, such as due to a crash.
+	 */
 	public function emergencyShutdown() : void;
 
 }
