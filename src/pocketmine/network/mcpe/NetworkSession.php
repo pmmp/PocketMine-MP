@@ -152,11 +152,32 @@ class NetworkSession{
 	private $player;
 	/** @var NetworkInterface */
 	private $interface;
+	/** @var string */
+	private $ip;
+	/** @var int */
+	private $port;
 
-	public function __construct(Server $server, Player $player, NetworkInterface $interface){
+	public function __construct(Server $server, Player $player, NetworkInterface $interface, string $ip, int $port){
 		$this->server = $server;
 		$this->player = $player;
 		$this->interface = $interface;
+
+		$this->ip = $ip;
+		$this->port = $port;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getIp() : string{
+		return $this->ip;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getPort() : int{
+		return $this->port;
 	}
 
 	public function handleDataPacket(DataPacket $packet) : void{

@@ -189,11 +189,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var int */
 	protected $protocol = -1;
 
-	/** @var string */
-	protected $ip;
-	/** @var int */
-	protected $port;
-
 	/**
 	 * @var int
 	 * Last measurement of player's latency in milliseconds.
@@ -698,8 +693,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->perm = new PermissibleBase($this);
 		$this->namedtag = new CompoundTag();
 		$this->server = Server::getInstance();
-		$this->ip = $ip;
-		$this->port = $port;
 		$this->loaderId = Level::generateChunkLoaderId($this);
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
 		$this->spawnThreshold = (int) (($this->server->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
@@ -711,7 +704,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->allowMovementCheats = (bool) $this->server->getProperty("player.anti-cheat.allow-movement-cheats", false);
 
-		$this->networkSession = new NetworkSession($this->server, $this, $interface);
+		$this->networkSession = new NetworkSession($this->server, $this, $interface, $ip, $port);
 	}
 
 	/**
@@ -806,14 +799,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return string
 	 */
 	public function getAddress() : string{
-		return $this->ip;
+		return $this->networkSession->getIp();
 	}
 
 	/**
 	 * @return int
 	 */
 	public function getPort() : int{
-		return $this->port;
+		return $this->networkSession->getPort();
 	}
 
 	/**
@@ -2106,8 +2099,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logIn", [
 			TextFormat::AQUA . $this->username . TextFormat::WHITE,
-			$this->ip,
-			$this->port,
+			$this->networkSession->getIp(),
+			$this->networkSession->getPort(),
 			$this->id,
 			$this->level->getName(),
 			round($this->x, 4),
@@ -3301,6 +3294,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($this->isConnected() and !$this->closed){
 
 			try{
+				$ip = $this->networkSession->getIp();
+				$port = $this->networkSession->getPort();
 				$this->networkSession->serverDisconnect($reason, $notify);
 				$this->networkSession = null;
 
@@ -3364,8 +3359,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 				$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logOut", [
 					TextFormat::AQUA . $this->getName() . TextFormat::WHITE,
-					$this->ip,
-					$this->port,
+					$ip,
+					$port,
 					$this->getServer()->getLanguage()->translateString($reason)
 				]));
 
