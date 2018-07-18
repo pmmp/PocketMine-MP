@@ -1476,14 +1476,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	protected function checkGroundState(float $movX, float $movY, float $movZ, float $dx, float $dy, float $dz) : void{
-		if(!$this->onGround or $movY != 0){
-			$bb = clone $this->boundingBox;
-			$bb->minY = $this->y - 0.2;
-			$bb->maxY = $this->y + 0.2;
+		$bb = clone $this->boundingBox;
+		$bb->minY = $this->y - 0.2;
+		$bb->maxY = $this->y + 0.2;
 
-			$this->onGround = count($this->level->getCollisionBlocks($bb, true)) > 0;
-		}
-		$this->isCollided = $this->onGround;
+		$this->onGround = $this->isCollided = count($this->level->getCollisionBlocks($bb, true)) > 0;
 	}
 
 	public function canBeMovedByCurrents() : bool{
