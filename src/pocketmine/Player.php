@@ -67,7 +67,6 @@ use pocketmine\event\player\PlayerToggleFlightEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\event\player\PlayerToggleSprintEvent;
 use pocketmine\event\player\PlayerTransferEvent;
-use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCursorInventory;
@@ -108,7 +107,6 @@ use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
-use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
@@ -185,10 +183,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return $lname !== "rcon" and $lname !== "console" and $len >= 1 and $len <= 16 and preg_match("/[^A-Za-z0-9_ ]/", $name) === 0;
 	}
 
-
-	/** @var NetworkInterface */
-	protected $interface;
-
 	/**
 	 * @var PlayerNetworkSessionAdapter
 	 * TODO: remove this once player and network are divorced properly
@@ -202,12 +196,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $ip;
 	/** @var int */
 	protected $port;
-
-	/** @var bool[] */
-	private $needACK = [];
-
-	/** @var DataPacket[] */
-	private $batchedPackets = [];
 
 	/**
 	 * @var int
@@ -710,7 +698,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @param int              $port
 	 */
 	public function __construct(NetworkInterface $interface, string $ip, int $port){
-		$this->interface = $interface;
 		$this->perm = new PermissibleBase($this);
 		$this->namedtag = new CompoundTag();
 		$this->server = Server::getInstance();
@@ -727,7 +714,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->allowMovementCheats = (bool) $this->server->getProperty("player.anti-cheat.allow-movement-cheats", false);
 
-		$this->sessionAdapter = new PlayerNetworkSessionAdapter($this->server, $this);
+		$this->sessionAdapter = new PlayerNetworkSessionAdapter($this->server, $this, $interface);
 	}
 
 	/**
@@ -1801,11 +1788,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		if(count($this->loadQueue) > 0){
 			$this->sendNextChunk();
-		}
-
-		if(count($this->batchedPackets) > 0){
-			$this->server->batchPackets([$this], $this->batchedPackets, false);
-			$this->batchedPackets = [];
 		}
 	}
 
@@ -3059,31 +3041,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * Batch a Data packet into the channel list to send at the end of the tick
-	 *
-	 * @param DataPacket $packet
-	 *
-	 * @return bool
-	 */
-	public function batchDataPacket(DataPacket $packet) : bool{
-		if(!$this->isConnected()){
-			return false;
-		}
-
-		$timings = Timings::getSendDataPacketTimings($packet);
-		$timings->startTiming();
-		$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
-		if($ev->isCancelled()){
-			$timings->stopTiming();
-			return false;
-		}
-
-		$this->batchedPackets[] = clone $packet;
-		$timings->stopTiming();
-		return true;
-	}
-
-	/**
 	 * @param DataPacket $packet
 	 * @param bool       $needACK
 	 * @param bool       $immediate
@@ -3100,25 +3057,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			throw new \InvalidArgumentException("Attempted to send " . get_class($packet) . " to " . $this->getName() . " too early");
 		}
 
-		$timings = Timings::getSendDataPacketTimings($packet);
-		$timings->startTiming();
-		try{
-			$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
-			if($ev->isCancelled()){
-				return false;
-			}
-
-			$identifier = $this->interface->putPacket($this, $packet, $needACK, $immediate);
-
-			if($needACK and $identifier !== null){
-				$this->needACK[$identifier] = false;
-				return $identifier;
-			}
-
-			return true;
-		}finally{
-			$timings->stopTiming();
-		}
+		return $this->sessionAdapter->sendDataPacket($packet, $immediate);
 	}
 
 	/**
@@ -3368,12 +3307,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($this->isConnected() and !$this->closed){
 
 			try{
-				if($notify and strlen($reason) > 0){
-					$pk = new DisconnectPacket();
-					$pk->message = $reason;
-					$this->directDataPacket($pk);
-				}
-				$this->interface->close($this, $notify ? $reason : "");
+				$this->sessionAdapter->serverDisconnect($reason, $notify);
 				$this->sessionAdapter = null;
 
 				$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);

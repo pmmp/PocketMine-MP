@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe;
 
 
 use pocketmine\event\server\DataPacketReceiveEvent;
+use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
@@ -37,6 +38,7 @@ use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
+use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\EntityFallPacket;
 use pocketmine\network\mcpe\protocol\EntityPickRequestPacket;
@@ -62,6 +64,7 @@ use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
+use pocketmine\network\NetworkInterface;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -72,10 +75,13 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	private $server;
 	/** @var Player */
 	private $player;
+	/** @var NetworkInterface */
+	private $interface;
 
-	public function __construct(Server $server, Player $player){
+	public function __construct(Server $server, Player $player, NetworkInterface $interface){
 		$this->server = $server;
 		$this->player = $player;
+		$this->interface = $interface;
 	}
 
 	public function handleDataPacket(DataPacket $packet) : void{
@@ -94,6 +100,33 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		}
 
 		$timings->stopTiming();
+	}
+
+	public function sendDataPacket(DataPacket $packet, bool $immediate = false) : bool{
+		$timings = Timings::getSendDataPacketTimings($packet);
+		$timings->startTiming();
+		try{
+			$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this->player, $packet));
+			if($ev->isCancelled()){
+				return false;
+			}
+
+			$this->interface->putPacket($this->player, $packet, false, $immediate);
+
+			return true;
+		}finally{
+			$timings->stopTiming();
+		}
+	}
+
+	public function serverDisconnect(string $reason, bool $notify = true) : void{
+		if($notify){
+			$pk = new DisconnectPacket();
+			$pk->message = $reason;
+			$pk->hideDisconnectionScreen = $reason === "";
+			$this->sendDataPacket($pk, true);
+		}
+		$this->interface->close($this->player, $notify ? $reason : "");
 	}
 
 	public function handleLogin(LoginPacket $packet) : bool{
