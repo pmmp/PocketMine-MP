@@ -96,7 +96,7 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\network\mcpe\PlayerNetworkSessionAdapter;
+use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
@@ -183,11 +183,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return $lname !== "rcon" and $lname !== "console" and $len >= 1 and $len <= 16 and preg_match("/[^A-Za-z0-9_ ]/", $name) === 0;
 	}
 
-	/**
-	 * @var PlayerNetworkSessionAdapter
-	 * TODO: remove this once player and network are divorced properly
-	 */
-	protected $sessionAdapter;
+	/** @var NetworkSession */
+	protected $networkSession;
 
 	/** @var int */
 	protected $protocol = -1;
@@ -714,14 +711,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->allowMovementCheats = (bool) $this->server->getProperty("player.anti-cheat.allow-movement-cheats", false);
 
-		$this->sessionAdapter = new PlayerNetworkSessionAdapter($this->server, $this, $interface);
+		$this->networkSession = new NetworkSession($this->server, $this, $interface);
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isConnected() : bool{
-		return $this->sessionAdapter !== null;
+		return $this->networkSession !== null;
 	}
 
 	/**
@@ -3032,8 +3029,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @param DataPacket $packet
 	 */
 	public function handleDataPacket(DataPacket $packet){
-		if($this->sessionAdapter !== null){
-			$this->sessionAdapter->handleDataPacket($packet);
+		if($this->networkSession !== null){
+			$this->networkSession->handleDataPacket($packet);
 		}
 	}
 
@@ -3054,7 +3051,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			throw new \InvalidArgumentException("Attempted to send " . get_class($packet) . " to " . $this->getName() . " too early");
 		}
 
-		return $this->sessionAdapter->sendDataPacket($packet, $immediate);
+		return $this->networkSession->sendDataPacket($packet, $immediate);
 	}
 
 	/**
@@ -3304,8 +3301,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($this->isConnected() and !$this->closed){
 
 			try{
-				$this->sessionAdapter->serverDisconnect($reason, $notify);
-				$this->sessionAdapter = null;
+				$this->networkSession->serverDisconnect($reason, $notify);
+				$this->networkSession = null;
 
 				$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
 				$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
