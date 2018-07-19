@@ -100,7 +100,6 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
-use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
 use pocketmine\network\mcpe\protocol\BookEditPacket;
@@ -715,6 +714,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
+	 * @return NetworkSession
+	 */
+	public function getNetworkSession() : NetworkSession{
+		return $this->networkSession;
+	}
+
+	/**
 	 * Gets the username
 	 * @return string
 	 */
@@ -934,7 +940,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		unset($this->loadQueue[$index]);
 	}
 
-	public function sendChunk(int $x, int $z, BatchPacket $payload){
+	public function sendChunk(int $x, int $z, string $payload){
 		if(!$this->isConnected()){
 			return;
 		}
@@ -942,7 +948,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->usedChunks[Level::chunkHash($x, $z)] = true;
 		$this->chunkLoadCount++;
 
-		$this->dataPacket($payload);
+		$this->networkSession->getInterface()->putPacket($this, $payload);
 
 		if($this->spawned){
 			foreach($this->level->getChunkEntities($x, $z) as $entity){
@@ -2120,7 +2126,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->sendAllInventories();
 		$this->inventory->sendCreativeContents();
 		$this->inventory->sendHeldItem($this);
-		$this->dataPacket($this->server->getCraftingManager()->getCraftingDataPacket());
+		$this->networkSession->getInterface()->putPacket($this, $this->server->getCraftingManager()->getCraftingDataPacket());
 
 		$this->server->addOnlinePlayer($this);
 		$this->server->sendFullPlayerListData($this);

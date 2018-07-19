@@ -25,9 +25,6 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\network\AdvancedNetworkInterface;
-use pocketmine\network\mcpe\protocol\BatchPacket;
-use pocketmine\network\mcpe\protocol\DataPacket;
-use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\Network;
 use pocketmine\Player;
@@ -47,6 +44,8 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	 * communicate. It's important that we check this to avoid catastrophes.
 	 */
 	private const MCPE_RAKNET_PROTOCOL_VERSION = 8;
+
+	private const MCPE_RAKNET_PACKET_ID = "\xfe";
 
 	/** @var Server */
 	private $server;
@@ -153,13 +152,12 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 			//get this now for blocking in case the player was closed before the exception was raised
 			$address = $this->players[$identifier]->getAddress();
 			try{
-				if($packet->buffer !== ""){
-					$pk = PacketPool::getPacket($packet->buffer);
-					$this->players[$identifier]->handleDataPacket($pk);
+				if($packet->buffer !== "" and $packet->buffer{0} === self::MCPE_RAKNET_PACKET_ID){ //Batch
+					$this->players[$identifier]->getNetworkSession()->handleEncoded(substr($packet->buffer, 1));
 				}
 			}catch(\Throwable $e){
 				$logger = $this->server->getLogger();
-				$logger->debug("Packet " . (isset($pk) ? get_class($pk) : "unknown") . " 0x" . bin2hex($packet->buffer));
+				$logger->debug("EncapsulatedPacket 0x" . bin2hex($packet->buffer));
 				$logger->logException($e);
 
 				$this->interface->blockAddress($address, 5);
@@ -216,37 +214,18 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 		}
 	}
 
-	public function putPacket(Player $player, DataPacket $packet, bool $needACK = false, bool $immediate = true) : ?int{
+	public function putPacket(Player $player, string $payload, bool $needACK = false, bool $immediate = true) : ?int{
 		if(isset($this->identifiers[$h = spl_object_hash($player)])){
 			$identifier = $this->identifiers[$h];
-			if(!$packet->isEncoded){
-				$packet->encode();
-			}
 
-			if($packet instanceof BatchPacket){
-				if($needACK){
-					$pk = new EncapsulatedPacket();
-					$pk->identifierACK = $this->identifiersACK[$identifier]++;
-					$pk->buffer = $packet->buffer;
-					$pk->reliability = PacketReliability::RELIABLE_ORDERED;
-					$pk->orderChannel = 0;
-				}else{
-					if(!isset($packet->__encapsulatedPacket)){
-						$packet->__encapsulatedPacket = new CachedEncapsulatedPacket;
-						$packet->__encapsulatedPacket->identifierACK = null;
-						$packet->__encapsulatedPacket->buffer = $packet->buffer;
-						$packet->__encapsulatedPacket->reliability = PacketReliability::RELIABLE_ORDERED;
-						$packet->__encapsulatedPacket->orderChannel = 0;
-					}
-					$pk = $packet->__encapsulatedPacket;
-				}
+			$pk = new EncapsulatedPacket();
+			$pk->identifierACK = $this->identifiersACK[$identifier]++;
+			$pk->buffer = self::MCPE_RAKNET_PACKET_ID . $payload;
+			$pk->reliability = PacketReliability::RELIABLE_ORDERED;
+			$pk->orderChannel = 0;
 
-				$this->interface->sendEncapsulated($identifier, $pk, ($needACK ? RakLib::FLAG_NEED_ACK : 0) | ($immediate ? RakLib::PRIORITY_IMMEDIATE : RakLib::PRIORITY_NORMAL));
-				return $pk->identifierACK;
-			}else{
-				$this->server->batchPackets([$player], [$packet], true, $immediate);
-				return null;
-			}
+			$this->interface->sendEncapsulated($identifier, $pk, ($needACK ? RakLib::FLAG_NEED_ACK : 0) | ($immediate ? RakLib::PRIORITY_IMMEDIATE : RakLib::PRIORITY_NORMAL));
+			return $pk->identifierACK;
 		}
 
 		return null;

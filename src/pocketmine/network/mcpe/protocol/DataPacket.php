@@ -49,10 +49,6 @@ abstract class DataPacket extends NetworkBinaryStream{
 		return (new \ReflectionClass($this))->getShortName();
 	}
 
-	public function canBeBatched() : bool{
-		return true;
-	}
-
 	public function canBeSentBeforeLogin() : bool{
 		return false;
 	}

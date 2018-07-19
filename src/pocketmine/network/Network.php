@@ -33,9 +33,6 @@ use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\Server;
 
 class Network{
-
-	public static $BATCH_THRESHOLD = 512;
-
 	/** @var Server */
 	private $server;
 

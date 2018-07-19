@@ -23,34 +23,25 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use pocketmine\Player;
-use pocketmine\scheduler\AsyncTask;
-use pocketmine\Server;
+final class NetworkCompression{
+	public static $LEVEL = 7;
+	public static $THRESHOLD = 256;
 
-class CompressBatchedTask extends AsyncTask{
+	private function __construct(){
 
-	private $level;
-	private $data;
+	}
+
+	public static function decompress(string $payload) : string{
+		return zlib_decode($payload, 1024 * 1024 * 64); //Max 64MB
+	}
 
 	/**
-	 * @param PacketStream $stream
-	 * @param string[]     $targets
-	 * @param int          $compressionLevel
+	 * @param string $payload
+	 * @param int    $compressionLevel
+	 *
+	 * @return string
 	 */
-	public function __construct(PacketStream $stream, array $targets, int $compressionLevel){
-		$this->data = $stream->buffer;
-		$this->level = $compressionLevel;
-		$this->storeLocal($targets);
-	}
-
-	public function onRun() : void{
-		$this->setResult(NetworkCompression::compress($this->data, $this->level), false);
-	}
-
-	public function onCompletion(Server $server) : void{
-		/** @var Player[] $targets */
-		$targets = $this->fetchLocal();
-
-		$server->broadcastPacketsCallback($this->getResult(), $targets);
+	public static function compress(string $payload, ?int $compressionLevel = null) : string{
+		return zlib_encode($payload, ZLIB_ENCODING_DEFLATE, $compressionLevel ?? self::$LEVEL);
 	}
 }
