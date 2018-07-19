@@ -32,7 +32,6 @@ class PacketPool{
 	public static function init() : void{
 		static::$pool = new \SplFixedArray(256);
 
-		//Normal packets
 		static::registerPacket(new LoginPacket());
 		static::registerPacket(new PlayStatusPacket());
 		static::registerPacket(new ServerToClientHandshakePacket());
