@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class BlockEventPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::BLOCK_EVENT_PACKET;
@@ -54,7 +54,7 @@ class BlockEventPacket extends DataPacket{
 		$this->putVarInt($this->eventData);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleBlockEvent($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleBlockEvent($this);
 	}
 }

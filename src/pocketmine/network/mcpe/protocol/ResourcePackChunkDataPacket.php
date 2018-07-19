@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class ResourcePackChunkDataPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_CHUNK_DATA_PACKET;
@@ -56,7 +56,7 @@ class ResourcePackChunkDataPacket extends DataPacket{
 		$this->put($this->data);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleResourcePackChunkData($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleResourcePackChunkData($this);
 	}
 }

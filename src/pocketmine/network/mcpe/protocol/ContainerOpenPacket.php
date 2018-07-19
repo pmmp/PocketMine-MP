@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class ContainerOpenPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::CONTAINER_OPEN_PACKET;
@@ -58,7 +58,7 @@ class ContainerOpenPacket extends DataPacket{
 		$this->putEntityUniqueId($this->entityUniqueId);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleContainerOpen($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleContainerOpen($this);
 	}
 }

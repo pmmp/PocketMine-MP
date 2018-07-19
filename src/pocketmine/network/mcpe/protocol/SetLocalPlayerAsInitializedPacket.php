@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class SetLocalPlayerAsInitializedPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET;
@@ -41,7 +41,7 @@ class SetLocalPlayerAsInitializedPacket extends DataPacket{
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleSetLocalPlayerAsInitialized($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleSetLocalPlayerAsInitialized($this);
 	}
 }

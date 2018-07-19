@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\NetworkBinaryStream;
-use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\utils\Utils;
 
 abstract class DataPacket extends NetworkBinaryStream{
@@ -105,16 +105,20 @@ abstract class DataPacket extends NetworkBinaryStream{
 	}
 
 	/**
-	 * Performs handling for this packet. Usually you'll want an appropriately named method in the NetworkSession for this.
+	 * Performs handling for this packet. Usually you'll want an appropriately named method in the session handler for
+	 * this.
 	 *
-	 * This method returns a bool to indicate whether the packet was handled or not. If the packet was unhandled, a debug message will be logged with a hexdump of the packet.
-	 * Typically this method returns the return value of the handler in the supplied NetworkSession. See other packets for examples how to implement this.
+	 * This method returns a bool to indicate whether the packet was handled or not. If the packet was unhandled, a
+	 * debug message will be logged with a hexdump of the packet.
 	 *
-	 * @param NetworkSession $session
+	 * Typically this method returns the return value of the handler in the supplied SessionHandler. See other packets
+	 * for examples how to implement this.
+	 *
+	 * @param SessionHandler $handler
 	 *
 	 * @return bool true if the packet was handled successfully, false if not.
 	 */
-	abstract public function handle(NetworkSession $session) : bool;
+	abstract public function handle(SessionHandler $handler) : bool;
 
 	public function clean(){
 		$this->buffer = null;

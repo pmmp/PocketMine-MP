@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class PlayerInputPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::PLAYER_INPUT_PACKET;
@@ -54,7 +54,7 @@ class PlayerInputPacket extends DataPacket{
 		$this->putBool($this->sneaking);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handlePlayerInput($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handlePlayerInput($this);
 	}
 }

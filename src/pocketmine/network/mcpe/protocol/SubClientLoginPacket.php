@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class SubClientLoginPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::SUB_CLIENT_LOGIN_PACKET;
@@ -41,7 +41,7 @@ class SubClientLoginPacket extends DataPacket{
 		$this->putString($this->connectionRequestData);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleSubClientLogin($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleSubClientLogin($this);
 	}
 }

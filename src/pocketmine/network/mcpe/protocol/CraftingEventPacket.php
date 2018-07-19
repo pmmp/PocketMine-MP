@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\utils\UUID;
 
 class CraftingEventPacket extends DataPacket{
@@ -81,7 +81,7 @@ class CraftingEventPacket extends DataPacket{
 		}
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleCraftingEvent($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleCraftingEvent($this);
 	}
 }

@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class HurtArmorPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::HURT_ARMOR_PACKET;
@@ -42,7 +42,7 @@ class HurtArmorPacket extends DataPacket{
 		$this->putVarInt($this->health);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleHurtArmor($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleHurtArmor($this);
 	}
 }

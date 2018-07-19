@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class GuiDataPickItemPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::GUI_DATA_PICK_ITEM_PACKET;
@@ -41,7 +41,7 @@ class GuiDataPickItemPacket extends DataPacket{
 		$this->putLInt($this->hotbarSlot);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleGuiDataPickItem($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleGuiDataPickItem($this);
 	}
 }

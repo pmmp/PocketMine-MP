@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class ClientToServerHandshakePacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::CLIENT_TO_SERVER_HANDSHAKE_PACKET;
@@ -43,7 +43,7 @@ class ClientToServerHandshakePacket extends DataPacket{
 		//No payload
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleClientToServerHandshake($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleClientToServerHandshake($this);
 	}
 }

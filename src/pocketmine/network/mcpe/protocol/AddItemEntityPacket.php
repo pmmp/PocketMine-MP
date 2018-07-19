@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class AddItemEntityPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::ADD_ITEM_ENTITY_PACKET;
@@ -67,7 +67,7 @@ class AddItemEntityPacket extends DataPacket{
 		$this->putBool($this->isFromFishing);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleAddItemEntity($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleAddItemEntity($this);
 	}
 }
