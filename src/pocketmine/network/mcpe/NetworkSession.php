@@ -60,7 +60,7 @@ class NetworkSession{
 		$this->ip = $ip;
 		$this->port = $port;
 
-		$this->handler = new SimpleSessionHandler($player);
+		$this->setHandler(new SimpleSessionHandler($player));
 	}
 
 	public function getInterface() : NetworkInterface{
@@ -79,6 +79,15 @@ class NetworkSession{
 	 */
 	public function getPort() : int{
 		return $this->port;
+	}
+
+	public function getHandler() : SessionHandler{
+		return $this->handler;
+	}
+
+	public function setHandler(SessionHandler $handler) : void{
+		$this->handler = $handler;
+		$this->handler->setUp();
 	}
 
 	public function handleEncoded(string $payload) : void{
