@@ -113,8 +113,6 @@ use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
-use pocketmine\network\mcpe\protocol\PlayerActionPacket;
-use pocketmine\network\mcpe\protocol\RespawnPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
 use pocketmine\network\mcpe\protocol\SetTitlePacket;
@@ -1019,13 +1017,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 	}
 
-	protected function sendRespawnPacket(Vector3 $pos){
-		$pk = new RespawnPacket();
-		$pk->position = $pos->add(0, $this->baseOffset, 0);
-
-		$this->dataPacket($pk);
-	}
-
 	protected function orderChunks() : void{
 		if(!$this->isConnected() or $this->viewDistance === -1){
 			return;
@@ -1489,7 +1480,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	protected function processMovement(int $tickDiff){
-		if(!$this->isAlive() or !$this->spawned or $this->newPosition === null or $this->isSleeping()){
+		if($this->newPosition === null or $this->isSleeping()){
 			return;
 		}
 
@@ -1971,10 +1962,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return bool
 	 */
 	public function chat(string $message) : bool{
-		if(!$this->isAlive()){
-			return false;
-		}
-
 		$this->doCloseInventory();
 
 		$message = TextFormat::clean($message, $this->removeFormat);
@@ -2015,9 +2002,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
 			$this->server->getLogger()->debug("Got outdated pre-teleport movement from " . $this->getName() . ", received " . $newPos . ", expected " . $this->asVector3());
 			//Still getting movements from before teleport, ignore them
-		}elseif((!$this->isAlive()) and $newPos->distanceSquared($this) > 0.01){
-			$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
-			$this->server->getLogger()->debug("Reverted movement of " . $this->getName() . " due to not alive or not spawned, received " . $newPos . ", locked at " . $this->asVector3());
 		}else{
 			// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
 			if($this->isTeleporting){
@@ -2047,9 +2031,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleEntityEvent(EntityEventPacket $packet) : bool{
-		if(!$this->isAlive()){
-			return true;
-		}
 		$this->doCloseInventory();
 
 		switch($packet->event){
@@ -2075,10 +2056,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return bool
 	 */
 	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
-		if(!$this->isAlive()){
-			return false;
-		}
-
 		if($this->isSpectator()){
 			$this->sendAllInventories();
 			return true;
@@ -2437,10 +2414,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleMobEquipment(MobEquipmentPacket $packet) : bool{
-		if(!$this->isAlive()){
-			return true;
-		}
-
 		$item = $this->inventory->getItem($packet->hotbarSlot);
 
 		if(!$item->equals($packet->item)){
@@ -2484,73 +2457,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		return true;
 
-	}
-
-	public function handlePlayerAction(PlayerActionPacket $packet) : bool{
-		if(!$this->isAlive() and $packet->action !== PlayerActionPacket::ACTION_RESPAWN and $packet->action !== PlayerActionPacket::ACTION_DIMENSION_CHANGE_REQUEST){
-			return true;
-		}
-
-		$packet->entityRuntimeId = $this->id;
-		$pos = new Vector3($packet->x, $packet->y, $packet->z);
-
-		switch($packet->action){
-			case PlayerActionPacket::ACTION_START_BREAK:
-				$this->startBreakBlock($pos, $packet->face);
-
-				break;
-
-			case PlayerActionPacket::ACTION_ABORT_BREAK:
-			case PlayerActionPacket::ACTION_STOP_BREAK:
-				$this->stopBreakBlock($pos);
-				break;
-			case PlayerActionPacket::ACTION_START_SLEEPING:
-				//unused
-				break;
-			case PlayerActionPacket::ACTION_STOP_SLEEPING:
-				$this->stopSleep();
-				break;
-			case PlayerActionPacket::ACTION_RESPAWN:
-				if($this->isAlive() or !$this->isOnline()){
-					break;
-				}
-
-				$this->respawn();
-				break;
-			case PlayerActionPacket::ACTION_JUMP:
-				$this->jump();
-				return true;
-			case PlayerActionPacket::ACTION_START_SPRINT:
-				$this->toggleSprint(true);
-				return true;
-			case PlayerActionPacket::ACTION_STOP_SPRINT:
-				$this->toggleSprint(false);
-				return true;
-			case PlayerActionPacket::ACTION_START_SNEAK:
-				$this->toggleSneak(true);
-				return true;
-			case PlayerActionPacket::ACTION_STOP_SNEAK:
-				$this->toggleSneak(false);
-				return true;
-			case PlayerActionPacket::ACTION_START_GLIDE:
-			case PlayerActionPacket::ACTION_STOP_GLIDE:
-				break; //TODO
-			case PlayerActionPacket::ACTION_CONTINUE_BREAK:
-				$this->continueBreakBlock($pos, $packet->face);
-				break;
-			case PlayerActionPacket::ACTION_START_SWIMMING:
-				break; //TODO
-			case PlayerActionPacket::ACTION_STOP_SWIMMING:
-				//TODO: handle this when it doesn't spam every damn tick (yet another spam bug!!)
-				break;
-			default:
-				$this->server->getLogger()->debug("Unhandled/unknown player action type " . $packet->action . " from " . $this->getName());
-				return false;
-		}
-
-		$this->setUsingItem(false);
-
-		return true;
 	}
 
 	public function startBreakBlock(Vector3 $pos, int $face) : bool{
@@ -2624,10 +2530,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleAnimate(AnimatePacket $packet) : bool{
-		if(!$this->isAlive()){
-			return true;
-		}
-
 		$this->server->getPluginManager()->callEvent($ev = new PlayerAnimationEvent($this, $packet->action));
 		if($ev->isCancelled()){
 			return true;
@@ -2648,10 +2550,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return bool if the item was dropped or if the item was null
 	 */
 	public function dropItem(Item $item) : bool{
-		if(!$this->isAlive()){
-			return false;
-		}
-
 		if($item->isNull()){
 			$this->server->getLogger()->debug($this->getName() . " attempted to drop a null item (" . $item . ")");
 			return true;
@@ -2697,9 +2595,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleBlockEntityData(BlockEntityDataPacket $packet) : bool{
-		if(!$this->isAlive()){
-			return true;
-		}
 		$this->doCloseInventory();
 
 		$pos = new Vector3($packet->x, $packet->y, $packet->z);
@@ -2733,10 +2628,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleItemFrameDropItem(ItemFrameDropItemPacket $packet) : bool{
-		if(!$this->isAlive()){
-			return true;
-		}
-
 		$tile = $this->level->getTileAt($packet->x, $packet->y, $packet->z);
 		if($tile instanceof ItemFrame){
 			$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $tile->getBlock(), null, 5 - $tile->getBlock()->getDamage(), PlayerInteractEvent::LEFT_CLICK_BLOCK);
@@ -3223,7 +3114,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		parent::kill();
 
-		$this->sendRespawnPacket($this->getSpawn());
+		$this->networkSession->onDeath();
 	}
 
 	protected function onDeath() : void{
@@ -3372,7 +3263,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return false; //never flag players for despawn
 	}
 
-	protected function respawn() : void{
+	public function respawn() : void{
 		if($this->server->isHardcore()){
 			$this->setBanned(true);
 			return;
@@ -3406,6 +3297,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->spawnToAll();
 		$this->scheduleUpdate();
+
+		$this->networkSession->onRespawn();
 	}
 
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{

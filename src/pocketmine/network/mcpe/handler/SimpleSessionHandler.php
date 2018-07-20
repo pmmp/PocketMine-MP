@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
@@ -123,7 +124,58 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handlePlayerAction(PlayerActionPacket $packet) : bool{
-		return $this->player->handlePlayerAction($packet);
+		$pos = new Vector3($packet->x, $packet->y, $packet->z);
+
+		switch($packet->action){
+			case PlayerActionPacket::ACTION_START_BREAK:
+				$this->player->startBreakBlock($pos, $packet->face);
+
+				break;
+
+			case PlayerActionPacket::ACTION_ABORT_BREAK:
+			case PlayerActionPacket::ACTION_STOP_BREAK:
+				$this->player->stopBreakBlock($pos);
+				break;
+			case PlayerActionPacket::ACTION_START_SLEEPING:
+				//unused
+				break;
+			case PlayerActionPacket::ACTION_STOP_SLEEPING:
+				$this->player->stopSleep();
+				break;
+			case PlayerActionPacket::ACTION_JUMP:
+				$this->player->jump();
+				return true;
+			case PlayerActionPacket::ACTION_START_SPRINT:
+				$this->player->toggleSprint(true);
+				return true;
+			case PlayerActionPacket::ACTION_STOP_SPRINT:
+				$this->player->toggleSprint(false);
+				return true;
+			case PlayerActionPacket::ACTION_START_SNEAK:
+				$this->player->toggleSneak(true);
+				return true;
+			case PlayerActionPacket::ACTION_STOP_SNEAK:
+				$this->player->toggleSneak(false);
+				return true;
+			case PlayerActionPacket::ACTION_START_GLIDE:
+			case PlayerActionPacket::ACTION_STOP_GLIDE:
+				break; //TODO
+			case PlayerActionPacket::ACTION_CONTINUE_BREAK:
+				$this->player->continueBreakBlock($pos, $packet->face);
+				break;
+			case PlayerActionPacket::ACTION_START_SWIMMING:
+				break; //TODO
+			case PlayerActionPacket::ACTION_STOP_SWIMMING:
+				//TODO: handle this when it doesn't spam every damn tick (yet another spam bug!!)
+				break;
+			default:
+				$this->player->getServer()->getLogger()->debug("Unhandled/unknown player action type " . $packet->action . " from " . $this->player->getName());
+				return false;
+		}
+
+		$this->player->setUsingItem(false);
+
+		return true;
 	}
 
 	public function handleEntityFall(EntityFallPacket $packet) : bool{

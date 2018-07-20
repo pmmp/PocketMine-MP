@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
+use pocketmine\network\mcpe\handler\DeathSessionHandler;
 use pocketmine\network\mcpe\handler\LoginSessionHandler;
 use pocketmine\network\mcpe\handler\PreSpawnSessionHandler;
 use pocketmine\network\mcpe\handler\ResourcePacksSessionHandler;
@@ -171,6 +172,14 @@ class NetworkSession{
 		$this->sendDataPacket($pk);
 
 		//TODO: split this up even further
+		$this->setHandler(new SimpleSessionHandler($this->player));
+	}
+
+	public function onDeath() : void{
+		$this->setHandler(new DeathSessionHandler($this->player, $this));
+	}
+
+	public function onRespawn() : void{
 		$this->setHandler(new SimpleSessionHandler($this->player));
 	}
 }
