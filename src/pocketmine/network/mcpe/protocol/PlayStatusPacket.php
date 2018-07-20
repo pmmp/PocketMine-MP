@@ -47,7 +47,7 @@ class PlayStatusPacket extends DataPacket{
 	 * @var int
 	 * Used to determine how to write the packet when we disconnect incompatible clients.
 	 */
-	public $protocol;
+	public $protocol = ProtocolInfo::CURRENT_PROTOCOL;
 
 	protected function decodePayload(){
 		$this->status = $this->getInt();
