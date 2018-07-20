@@ -62,9 +62,6 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	/** @var string[] */
 	private $identifiers = [];
 
-	/** @var int[] */
-	private $identifiersACK = [];
-
 	/** @var ServerHandler */
 	private $interface;
 
@@ -111,7 +108,6 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 			$player = $this->players[$identifier];
 			unset($this->identifiers[spl_object_hash($player)]);
 			unset($this->players[$identifier]);
-			unset($this->identifiersACK[$identifier]);
 			$player->close($player->getLeaveMessage(), $reason);
 		}
 	}
@@ -119,7 +115,6 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	public function close(Player $player, string $reason = "unknown reason") : void{
 		if(isset($this->identifiers[$h = spl_object_hash($player)])){
 			unset($this->players[$this->identifiers[$h]]);
-			unset($this->identifiersACK[$this->identifiers[$h]]);
 			$this->interface->closeSession($this->identifiers[$h], $reason);
 			unset($this->identifiers[$h]);
 		}
@@ -142,7 +137,6 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 
 		$player = new $class($this, $ev->getAddress(), $ev->getPort());
 		$this->players[$identifier] = $player;
-		$this->identifiersACK[$identifier] = 0;
 		$this->identifiers[spl_object_hash($player)] = $identifier;
 		$this->server->addPlayer($player);
 	}
@@ -214,21 +208,17 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 		}
 	}
 
-	public function putPacket(Player $player, string $payload, bool $needACK = false, bool $immediate = true) : ?int{
+	public function putPacket(Player $player, string $payload, bool $immediate = true) : void{
 		if(isset($this->identifiers[$h = spl_object_hash($player)])){
 			$identifier = $this->identifiers[$h];
 
 			$pk = new EncapsulatedPacket();
-			$pk->identifierACK = $this->identifiersACK[$identifier]++;
 			$pk->buffer = self::MCPE_RAKNET_PACKET_ID . $payload;
 			$pk->reliability = PacketReliability::RELIABLE_ORDERED;
 			$pk->orderChannel = 0;
 
-			$this->interface->sendEncapsulated($identifier, $pk, ($needACK ? RakLib::FLAG_NEED_ACK : 0) | ($immediate ? RakLib::PRIORITY_IMMEDIATE : RakLib::PRIORITY_NORMAL));
-			return $pk->identifierACK;
+			$this->interface->sendEncapsulated($identifier, $pk, ($immediate ? RakLib::PRIORITY_IMMEDIATE : RakLib::PRIORITY_NORMAL));
 		}
-
-		return null;
 	}
 
 	public function updatePing(string $identifier, int $pingMS) : void{

@@ -1902,7 +1902,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk = new PlayStatusPacket();
 		$pk->status = $status;
 		$pk->protocol = $this->protocol;
-		$this->sendDataPacket($pk, false, $immediate);
+		$this->sendDataPacket($pk, $immediate);
 	}
 
 	public function onVerifyCompleted(LoginPacket $packet, ?string $error, bool $signedByMojang) : void{
@@ -2997,12 +2997,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	/**
 	 * @param DataPacket $packet
-	 * @param bool       $needACK
 	 * @param bool       $immediate
 	 *
-	 * @return bool|int
+	 * @return bool
 	 */
-	public function sendDataPacket(DataPacket $packet, bool $needACK = false, bool $immediate = false){
+	public function sendDataPacket(DataPacket $packet, bool $immediate = false) : bool{
 		if(!$this->isConnected()){
 			return false;
 		}
@@ -3017,22 +3016,20 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	/**
 	 * @param DataPacket $packet
-	 * @param bool       $needACK
 	 *
-	 * @return bool|int
+	 * @return bool
 	 */
-	public function dataPacket(DataPacket $packet, bool $needACK = false){
-		return $this->sendDataPacket($packet, $needACK, false);
+	public function dataPacket(DataPacket $packet) : bool{
+		return $this->sendDataPacket($packet, false);
 	}
 
 	/**
 	 * @param DataPacket $packet
-	 * @param bool       $needACK
 	 *
-	 * @return bool|int
+	 * @return bool
 	 */
-	public function directDataPacket(DataPacket $packet, bool $needACK = false){
-		return $this->sendDataPacket($packet, $needACK, true);
+	public function directDataPacket(DataPacket $packet) : bool{
+		return $this->sendDataPacket($packet, true);
 	}
 
 	/**

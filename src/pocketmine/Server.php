@@ -1893,7 +1893,7 @@ class Server{
 	 */
 	public function broadcastPacketsCallback(string $payload, array $players, bool $immediate = false){
 		foreach($players as $i){
-			$i->getNetworkSession()->getInterface()->putPacket($i, $payload, false, $immediate);
+			$i->getNetworkSession()->getInterface()->putPacket($i, $payload, $immediate);
 		}
 	}
 

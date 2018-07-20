@@ -43,12 +43,9 @@ interface NetworkInterface{
 	 *
 	 * @param Player $player
 	 * @param string $payload
-	 * @param bool   $needACK
 	 * @param bool   $immediate
-	 *
-	 * @return int|null
 	 */
-	public function putPacket(Player $player, string $payload, bool $needACK = false, bool $immediate = true) : ?int;
+	public function putPacket(Player $player, string $payload, bool $immediate = true) : void;
 
 	/**
 	 * Terminates the connection
