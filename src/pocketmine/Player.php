@@ -1803,15 +1803,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return ($targetDot - $eyeDot) >= -$maxDiff;
 	}
 
-	protected function initHumanData() : void{
-		$this->setNameTag($this->username);
-	}
-
-	protected function initEntity() : void{
-		parent::initEntity();
-		$this->addDefaultWindows();
-	}
-
 	public function handleLogin(LoginPacket $packet) : bool{
 		if($this->loggedIn){
 			return false;
@@ -1939,10 +1930,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		//TODO: encryption
 
-		$this->processLogin();
-	}
-
-	protected function processLogin(){
 		foreach($this->server->getLoggedInPlayers() as $p){
 			if($p !== $this and ($p->iusername === $this->iusername or $this->getUniqueId()->equals($p->getUniqueId()))){
 				if(!$p->kick("logged in from another location")){
@@ -1951,41 +1938,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					return;
 				}
 			}
-		}
-
-		$this->namedtag = $this->server->getOfflinePlayerData($this->username);
-
-		$this->playedBefore = ($this->getLastPlayed() - $this->getFirstPlayed()) > 1; // microtime(true) - microtime(true) may have less than one millisecond difference
-		$this->namedtag->setString("NameTag", $this->username);
-
-		$this->gamemode = $this->namedtag->getInt("playerGameType", self::SURVIVAL) & 0x03;
-		if($this->server->getForceGamemode()){
-			$this->gamemode = $this->server->getGamemode();
-			$this->namedtag->setInt("playerGameType", $this->gamemode);
-		}
-
-		$this->allowFlight = $this->isCreative();
-		$this->keepMovement = $this->isSpectator() || $this->allowMovementCheats();
-
-		if(($level = $this->server->getLevelByName($this->namedtag->getString("Level", "", true))) === null){
-			$this->setLevel($this->server->getDefaultLevel());
-			$this->namedtag->setString("Level", $this->level->getFolderName());
-			$spawnLocation = $this->level->getSafeSpawn();
-			$this->namedtag->setTag(new ListTag("Pos", [
-				new DoubleTag("", $spawnLocation->x),
-				new DoubleTag("", $spawnLocation->y),
-				new DoubleTag("", $spawnLocation->z)
-			]));
-		}else{
-			$this->setLevel($level);
-		}
-
-		$this->achievements = [];
-
-		$achievements = $this->namedtag->getCompoundTag("Achievements") ?? [];
-		/** @var ByteTag $achievement */
-		foreach($achievements as $achievement){
-			$this->achievements[$achievement->getName()] = $achievement->getValue() !== 0;
 		}
 
 		$this->sendPlayStatus(PlayStatusPacket::LOGIN_SUCCESS);
@@ -2036,7 +1988,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->dataPacket($pk);
 				break;
 			case ResourcePackClientResponsePacket::STATUS_COMPLETED:
-				$this->completeLoginSequence();
+				$this->_actuallyConstruct();
 				break;
 			default:
 				return false;
@@ -2045,25 +1997,33 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return true;
 	}
 
-	protected function completeLoginSequence(){
-		/** @var float[] $pos */
-		$pos = $this->namedtag->getListTag("Pos")->getAllValues();
-		$this->level->registerChunkLoader($this, ((int) floor($pos[0])) >> 4, ((int) floor($pos[2])) >> 4, true);
+	protected function _actuallyConstruct(){
+		$namedtag = $this->server->getOfflinePlayerData($this->username); //TODO: make this async
 
-		parent::__construct($this->level, $this->namedtag);
+		if(($level = $this->server->getLevelByName($namedtag->getString("Level", "", true))) === null){
+			/** @var Level $level */
+			$level = $this->server->getDefaultLevel(); //TODO: default level may be null
+
+			$namedtag->setString("Level", $level->getFolderName());
+			$spawnLocation = $level->getSafeSpawn();
+			$namedtag->setTag(new ListTag("Pos", [
+				new DoubleTag("", $spawnLocation->x),
+				new DoubleTag("", $spawnLocation->y),
+				new DoubleTag("", $spawnLocation->z)
+			]));
+		}
+
+		/** @var float[] $pos */
+		$pos = $namedtag->getListTag("Pos")->getAllValues();
+		$level->registerChunkLoader($this, ((int) floor($pos[0])) >> 4, ((int) floor($pos[2])) >> 4, true);
+
+		parent::__construct($level, $namedtag);
+
 		$this->server->getPluginManager()->callEvent($ev = new PlayerLoginEvent($this, "Plugin reason"));
 		if($ev->isCancelled()){
 			$this->close($this->getLeaveMessage(), $ev->getKickMessage());
 
 			return;
-		}
-
-		if(!$this->hasValidSpawnPosition()){
-			if(($level = $this->server->getLevelByName($this->namedtag->getString("SpawnLevel", ""))) instanceof Level){
-				$this->spawnPosition = new Position($this->namedtag->getInt("SpawnX"), $this->namedtag->getInt("SpawnY"), $this->namedtag->getInt("SpawnZ"), $level);
-			}else{
-				$this->spawnPosition = $this->level->getSafeSpawn();
-			}
 		}
 
 		$spawnPosition = $this->getSpawn();
@@ -2097,25 +2057,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->level->sendTime($this);
 
 		$this->sendAttributes(true);
-		$this->setNameTagVisible();
-		$this->setNameTagAlwaysVisible();
-		$this->setCanClimb();
-
-		$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logIn", [
-			TextFormat::AQUA . $this->username . TextFormat::WHITE,
-			$this->networkSession->getIp(),
-			$this->networkSession->getPort(),
-			$this->id,
-			$this->level->getName(),
-			round($this->x, 4),
-			round($this->y, 4),
-			round($this->z, 4)
-		]));
-
-		if($this->isOp()){
-			$this->setRemoveFormat(false);
-		}
-
 		$this->sendCommandData();
 		$this->sendSettings();
 		$this->sendPotionEffects($this);
@@ -2128,6 +2069,59 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->server->addOnlinePlayer($this);
 		$this->server->sendFullPlayerListData($this);
+
+		$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logIn", [
+			TextFormat::AQUA . $this->username . TextFormat::WHITE,
+			$this->networkSession->getIp(),
+			$this->networkSession->getPort(),
+			$this->id,
+			$this->level->getName(),
+			round($this->x, 4),
+			round($this->y, 4),
+			round($this->z, 4)
+		]));
+	}
+
+	protected function initHumanData() : void{
+		$this->setNameTag($this->username);
+	}
+
+	protected function initEntity() : void{
+		parent::initEntity();
+		$this->addDefaultWindows();
+
+		$this->playedBefore = ($this->getLastPlayed() - $this->getFirstPlayed()) > 1; // microtime(true) - microtime(true) may have less than one millisecond difference
+
+		$this->gamemode = $this->namedtag->getInt("playerGameType", self::SURVIVAL) & 0x03;
+		if($this->server->getForceGamemode()){
+			$this->gamemode = $this->server->getGamemode();
+			$this->namedtag->setInt("playerGameType", $this->gamemode);
+		}
+
+		$this->setAllowFlight($this->isCreative());
+		$this->keepMovement = $this->isSpectator() || $this->allowMovementCheats();
+		if($this->isOp()){
+			$this->setRemoveFormat(false);
+		}
+
+		$this->setNameTagVisible();
+		$this->setNameTagAlwaysVisible();
+		$this->setCanClimb();
+
+		$this->achievements = [];
+		$achievements = $this->namedtag->getCompoundTag("Achievements") ?? [];
+		/** @var ByteTag $achievement */
+		foreach($achievements as $achievement){
+			$this->achievements[$achievement->getName()] = $achievement->getValue() !== 0;
+		}
+
+		if(!$this->hasValidSpawnPosition()){
+			if(($level = $this->server->getLevelByName($this->namedtag->getString("SpawnLevel", ""))) instanceof Level){
+				$this->spawnPosition = new Position($this->namedtag->getInt("SpawnX"), $this->namedtag->getInt("SpawnY"), $this->namedtag->getInt("SpawnZ"), $level);
+			}else{
+				$this->spawnPosition = $this->level->getSafeSpawn();
+			}
+		}
 	}
 
 	/**
