@@ -88,7 +88,6 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\level\Location;
 use pocketmine\level\Position;
-use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\NetworkLittleEndianNBTStream;
@@ -688,14 +687,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	public function __construct(NetworkInterface $interface, string $ip, int $port){
 		$this->perm = new PermissibleBase($this);
-		$this->namedtag = new CompoundTag();
 		$this->server = Server::getInstance();
 		$this->loaderId = Level::generateChunkLoaderId($this);
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
 		$this->spawnThreshold = (int) (($this->server->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
-		$this->gamemode = $this->server->getGamemode();
-		$this->setLevel($this->server->getDefaultLevel());
-		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 
 		$this->creationTime = microtime(true);
 
