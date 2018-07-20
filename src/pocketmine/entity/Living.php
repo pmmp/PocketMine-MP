@@ -575,17 +575,14 @@ abstract class Living extends Entity implements Damageable{
 			$motion = clone $this->motion;
 
 			$motion->x /= 2;
+			$motion->y /= 2;
 			$motion->z /= 2;
 			$motion->x += $x * $f * $base;
+			$motion->y += $base;
 			$motion->z += $z * $f * $base;
 
-			if($this->onGround){
-				$motion->y /= 2;
-				$motion->y += $base;
-
-				if($motion->y > 0.4){ //this is hardcoded in vanilla
-					$motion->y = 0.4;
-				}
+			if($motion->y > $base){
+				$motion->y = $base;
 			}
 
 			$this->setMotion($motion);
