@@ -1846,10 +1846,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->locale = $packet->locale;
 		}
 
-		if(count($this->server->getOnlinePlayers()) >= $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)){
-			return true;
-		}
-
 		$this->randomClientId = $packet->clientId;
 
 		$this->uuid = UUID::fromString($packet->clientUUID);
@@ -1875,6 +1871,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($ev->isCancelled()){
 			$this->close("", $ev->getKickMessage());
 
+			return true;
+		}
+
+		if(count($this->server->getOnlinePlayers()) >= $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)){
 			return true;
 		}
 
