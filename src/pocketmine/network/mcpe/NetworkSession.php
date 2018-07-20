@@ -25,11 +25,15 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
+use pocketmine\network\mcpe\handler\LoginSessionHandler;
+use pocketmine\network\mcpe\handler\PreSpawnSessionHandler;
+use pocketmine\network\mcpe\handler\ResourcePacksSessionHandler;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\handler\SimpleSessionHandler;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\PacketPool;
+use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\NetworkInterface;
 use pocketmine\Player;
 use pocketmine\Server;
@@ -60,7 +64,7 @@ class NetworkSession{
 		$this->ip = $ip;
 		$this->port = $port;
 
-		$this->setHandler(new SimpleSessionHandler($player));
+		$this->setHandler(new LoginSessionHandler($player, $this));
 	}
 
 	public function getInterface() : NetworkInterface{
@@ -143,5 +147,30 @@ class NetworkSession{
 			$this->sendDataPacket($pk, true);
 		}
 		$this->interface->close($this->player, $notify ? $reason : "");
+	}
+
+	//TODO: onEnableEncryption() step
+
+	public function onLoginSuccess() : void{
+		$pk = new PlayStatusPacket();
+		$pk->status = PlayStatusPacket::LOGIN_SUCCESS;
+		$this->sendDataPacket($pk);
+
+		$this->setHandler(new ResourcePacksSessionHandler($this->server, $this->player, $this));
+	}
+
+	public function onResourcePacksDone() : void{
+		$this->player->_actuallyConstruct();
+
+		$this->setHandler(new PreSpawnSessionHandler($this->server, $this->player, $this));
+	}
+
+	public function onSpawn() : void{
+		$pk = new PlayStatusPacket();
+		$pk->status = PlayStatusPacket::PLAYER_SPAWN;
+		$this->sendDataPacket($pk);
+
+		//TODO: split this up even further
+		$this->setHandler(new SimpleSessionHandler($this->player));
 	}
 }

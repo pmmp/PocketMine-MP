@@ -42,7 +42,6 @@ use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LabTablePacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
-use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
@@ -53,8 +52,6 @@ use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
-use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
-use pocketmine\network\mcpe\protocol\ResourcePackClientResponsePacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\SetLocalPlayerAsInitializedPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
@@ -77,16 +74,8 @@ class SimpleSessionHandler extends SessionHandler{
 		$this->player = $player;
 	}
 
-	public function handleLogin(LoginPacket $packet) : bool{
-		return $this->player->handleLogin($packet);
-	}
-
 	public function handleClientToServerHandshake(ClientToServerHandshakePacket $packet) : bool{
 		return false; //TODO
-	}
-
-	public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet) : bool{
-		return $this->player->handleResourcePackClientResponse($packet);
 	}
 
 	public function handleText(TextPacket $packet) : bool{
@@ -205,10 +194,6 @@ class SimpleSessionHandler extends SessionHandler{
 
 	public function handleCommandBlockUpdate(CommandBlockUpdatePacket $packet) : bool{
 		return false; //TODO
-	}
-
-	public function handleResourcePackChunkRequest(ResourcePackChunkRequestPacket $packet) : bool{
-		return $this->player->handleResourcePackChunkRequest($packet);
 	}
 
 	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
