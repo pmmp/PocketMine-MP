@@ -146,7 +146,7 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleContainerClose(ContainerClosePacket $packet) : bool{
-		return $this->player->handleContainerClose($packet);
+		return $this->player->doCloseWindow($packet->windowId);
 	}
 
 	public function handlePlayerHotbar(PlayerHotbarPacket $packet) : bool{

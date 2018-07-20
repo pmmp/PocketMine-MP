@@ -104,7 +104,6 @@ use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
 use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
-use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
@@ -2840,25 +2839,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return true;
 	}
 
-	public function handleContainerClose(ContainerClosePacket $packet) : bool{
-		if(!$this->spawned or $packet->windowId === 0){
-			return true;
-		}
-
-		$this->doCloseInventory();
-
-		if(isset($this->windowIndex[$packet->windowId])){
-			$this->server->getPluginManager()->callEvent(new InventoryCloseEvent($this->windowIndex[$packet->windowId], $this));
-			$this->removeWindow($this->windowIndex[$packet->windowId]);
-			return true;
-		}elseif($packet->windowId === 255){
-			//Closed a fake window
-			return true;
-		}
-
-		return false;
-	}
-
 	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
 		if($packet->entityUniqueId !== $this->getId()){
 			return false; //TODO
@@ -3752,6 +3732,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->craftingGrid = $grid;
 	}
 
+	/**
+	 * @internal Called to clean up crafting grid and cursor inventory when it is detected that the player closed their
+	 * inventory.
+	 */
 	public function doCloseInventory() : void{
 		/** @var Inventory[] $inventories */
 		$inventories = [$this->craftingGrid, $this->cursorInventory];
@@ -3770,6 +3754,33 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($this->craftingGrid->getGridWidth() > CraftingGrid::SIZE_SMALL){
 			$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
 		}
+	}
+
+	/**
+	 * @internal Called by the network session when a player closes a window.
+	 *
+	 * @param int $windowId
+	 *
+	 * @return bool
+	 */
+	public function doCloseWindow(int $windowId) : bool{
+		if(!$this->spawned or $windowId === 0){
+			return false;
+		}
+
+		$this->doCloseInventory();
+
+		if(isset($this->windowIndex[$windowId])){
+			$this->server->getPluginManager()->callEvent(new InventoryCloseEvent($this->windowIndex[$windowId], $this));
+			$this->removeWindow($this->windowIndex[$windowId]);
+			return true;
+		}
+		if($windowId === 255){
+			//Closed a fake window
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
