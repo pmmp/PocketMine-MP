@@ -104,7 +104,7 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleMobEquipment(MobEquipmentPacket $packet) : bool{
-		return $this->player->handleMobEquipment($packet);
+		return $this->player->equipItem($packet->hotbarSlot);
 	}
 
 	public function handleMobArmorEquipment(MobArmorEquipmentPacket $packet) : bool{
@@ -116,7 +116,7 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleBlockPickRequest(BlockPickRequestPacket $packet) : bool{
-		return $this->player->handleBlockPickRequest($packet);
+		return $this->player->pickBlock(new Vector3($packet->blockX, $packet->blockY, $packet->blockZ), $packet->addUserData);
 	}
 
 	public function handleEntityPickRequest(EntityPickRequestPacket $packet) : bool{
@@ -183,7 +183,7 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleAnimate(AnimatePacket $packet) : bool{
-		return $this->player->handleAnimate($packet);
+		return $this->player->animate($packet->action);
 	}
 
 	public function handleContainerClose(ContainerClosePacket $packet) : bool{
@@ -211,7 +211,12 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
-		return $this->player->handleSetPlayerGameType($packet);
+		if($packet->gamemode !== $this->player->getGamemode()){
+			//Set this back to default. TODO: handle this properly
+			$this->player->sendGamemode();
+			$this->player->sendSettings();
+		}
+		return true;
 	}
 
 	public function handleSpawnExperienceOrb(SpawnExperienceOrbPacket $packet) : bool{

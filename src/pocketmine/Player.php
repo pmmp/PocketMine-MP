@@ -55,6 +55,7 @@ use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerGameModeChangeEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerItemConsumeEvent;
+use pocketmine\event\player\PlayerItemHeldEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerJumpEvent;
 use pocketmine\event\player\PlayerKickEvent;
@@ -100,7 +101,6 @@ use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
-use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
 use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
@@ -111,7 +111,6 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
-use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
@@ -2413,27 +2412,29 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return false; //TODO
 	}
 
-	public function handleMobEquipment(MobEquipmentPacket $packet) : bool{
-		$item = $this->inventory->getItem($packet->hotbarSlot);
-
-		if(!$item->equals($packet->item)){
-			$this->server->getLogger()->debug("Tried to equip " . $packet->item . " but have " . $item . " in target slot");
+	public function equipItem(int $hotbarSlot) : bool{
+		if(!$this->inventory->isHotbarSlot($hotbarSlot)){
 			$this->inventory->sendContents($this);
 			return false;
 		}
 
-		$this->inventory->equipItem($packet->hotbarSlot);
+		$this->server->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this, $this->inventory->getItem($hotbarSlot), $hotbarSlot));
+		if($ev->isCancelled()){
+			$this->inventory->sendHeldItem($this);
+			return false;
+		}
 
+		$this->inventory->setHeldItemIndex($hotbarSlot, false);
 		$this->setUsingItem(false);
 
 		return true;
 	}
 
-	public function handleBlockPickRequest(BlockPickRequestPacket $packet) : bool{
-		$block = $this->level->getBlockAt($packet->blockX, $packet->blockY, $packet->blockZ);
+	public function pickBlock(Vector3 $pos, bool $addTileNBT) : bool{
+		$block = $this->level->getBlock($pos);
 
 		$item = $block->getPickedItem();
-		if($packet->addUserData){
+		if($addTileNBT){
 			$tile = $this->getLevel()->getTile($block);
 			if($tile instanceof Tile){
 				$nbt = $tile->getCleanedNBT();
@@ -2456,7 +2457,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		return true;
-
 	}
 
 	public function startBreakBlock(Vector3 $pos, int $face) : bool{
@@ -2529,8 +2529,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 	}
 
-	public function handleAnimate(AnimatePacket $packet) : bool{
-		$this->server->getPluginManager()->callEvent($ev = new PlayerAnimationEvent($this, $packet->action));
+	public function animate(int $action) : bool{
+		$this->server->getPluginManager()->callEvent($ev = new PlayerAnimationEvent($this, $action));
 		if($ev->isCancelled()){
 			return true;
 		}
@@ -2615,15 +2615,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}
 		}
 
-		return true;
-	}
-
-	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
-		if($packet->gamemode !== $this->gamemode){
-			//Set this back to default. TODO: handle this properly
-			$this->sendGamemode();
-			$this->sendSettings();
-		}
 		return true;
 	}
 
