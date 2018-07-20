@@ -157,7 +157,7 @@ class NetworkSession{
 		$pk->status = PlayStatusPacket::LOGIN_SUCCESS;
 		$this->sendDataPacket($pk);
 
-		$this->setHandler(new ResourcePacksSessionHandler($this->server, $this->player, $this));
+		$this->setHandler(new ResourcePacksSessionHandler($this->player, $this, $this->server->getResourcePackManager()));
 	}
 
 	public function onResourcePacksDone() : void{

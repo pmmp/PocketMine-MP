@@ -32,7 +32,7 @@ use pocketmine\network\mcpe\protocol\ResourcePacksInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackStackPacket;
 use pocketmine\Player;
 use pocketmine\resourcepacks\ResourcePack;
-use pocketmine\Server;
+use pocketmine\resourcepacks\ResourcePackManager;
 
 /**
  * Handler used for the resource packs sequence phase of the session. This handler takes care of downloading resource
@@ -40,24 +40,23 @@ use pocketmine\Server;
  */
 class ResourcePacksSessionHandler extends SessionHandler{
 
-	/** @var Server */
-	private $server;
 	/** @var Player */
 	private $player;
 	/** @var NetworkSession */
 	private $session;
+	/** @var ResourcePackManager */
+	private $resourcePackManager;
 
-	public function __construct(Server $server, Player $player, NetworkSession $session){
-		$this->server = $server;
+	public function __construct(Player $player, NetworkSession $session, ResourcePackManager $resourcePackManager){
 		$this->player = $player;
 		$this->session = $session;
+		$this->resourcePackManager = $resourcePackManager;
 	}
 
 	public function setUp() : void{
 		$pk = new ResourcePacksInfoPacket();
-		$manager = $this->server->getResourcePackManager();
-		$pk->resourcePackEntries = $manager->getResourceStack();
-		$pk->mustAccept = $manager->resourcePacksRequired();
+		$pk->resourcePackEntries = $this->resourcePackManager->getResourceStack();
+		$pk->mustAccept = $this->resourcePackManager->resourcePacksRequired();
 		$this->session->sendDataPacket($pk);
 	}
 
@@ -68,13 +67,12 @@ class ResourcePacksSessionHandler extends SessionHandler{
 				$this->player->close("", "You must accept resource packs to join this server.", true);
 				break;
 			case ResourcePackClientResponsePacket::STATUS_SEND_PACKS:
-				$manager = $this->server->getResourcePackManager();
 				foreach($packet->packIds as $uuid){
-					$pack = $manager->getPackById($uuid);
+					$pack = $this->resourcePackManager->getPackById($uuid);
 					if(!($pack instanceof ResourcePack)){
 						//Client requested a resource pack but we don't have it available on the server
 						$this->player->close("", "disconnectionScreen.resourcePack", true);
-						$this->server->getLogger()->debug("Got a resource pack request for unknown pack with UUID " . $uuid . ", available packs: " . implode(", ", $manager->getPackIdList()));
+						$this->player->getServer()->getLogger()->debug("Got a resource pack request for unknown pack with UUID " . $uuid . ", available packs: " . implode(", ", $this->resourcePackManager->getPackIdList()));
 
 						return false;
 					}
@@ -91,9 +89,8 @@ class ResourcePacksSessionHandler extends SessionHandler{
 				break;
 			case ResourcePackClientResponsePacket::STATUS_HAVE_ALL_PACKS:
 				$pk = new ResourcePackStackPacket();
-				$manager = $this->server->getResourcePackManager();
-				$pk->resourcePackStack = $manager->getResourceStack();
-				$pk->mustAccept = $manager->resourcePacksRequired();
+				$pk->resourcePackStack = $this->resourcePackManager->getResourceStack();
+				$pk->mustAccept = $this->resourcePackManager->resourcePacksRequired();
 				$this->session->sendDataPacket($pk);
 				break;
 			case ResourcePackClientResponsePacket::STATUS_COMPLETED:
@@ -107,11 +104,10 @@ class ResourcePacksSessionHandler extends SessionHandler{
 	}
 
 	public function handleResourcePackChunkRequest(ResourcePackChunkRequestPacket $packet) : bool{
-		$manager = $this->server->getResourcePackManager();
-		$pack = $manager->getPackById($packet->packId);
+		$pack = $this->resourcePackManager->getPackById($packet->packId);
 		if(!($pack instanceof ResourcePack)){
 			$this->player->close("", "disconnectionScreen.resourcePack", true);
-			$this->server->getLogger()->debug("Got a resource pack chunk request for unknown pack with UUID " . $packet->packId . ", available packs: " . implode(", ", $manager->getPackIdList()));
+			$this->player->getServer()->getLogger()->debug("Got a resource pack chunk request for unknown pack with UUID " . $packet->packId . ", available packs: " . implode(", ", $this->resourcePackManager->getPackIdList()));
 
 			return false;
 		}
