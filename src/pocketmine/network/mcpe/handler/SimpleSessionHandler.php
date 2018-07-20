@@ -122,7 +122,7 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleInteract(InteractPacket $packet) : bool{
-		return $this->player->handleInteract($packet);
+		return false; //TODO
 	}
 
 	public function handleBlockPickRequest(BlockPickRequestPacket $packet) : bool{

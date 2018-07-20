@@ -106,7 +106,6 @@ use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
-use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
@@ -2621,31 +2620,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->inventory->equipItem($packet->hotbarSlot);
 
 		$this->setUsingItem(false);
-
-		return true;
-	}
-
-	public function handleInteract(InteractPacket $packet) : bool{
-		if(!$this->spawned or !$this->isAlive()){
-			return true;
-		}
-
-		$this->doCloseInventory();
-
-		$target = $this->level->getEntity($packet->target);
-		if($target === null){
-			return false;
-		}
-
-		switch($packet->action){
-			case InteractPacket::ACTION_LEAVE_VEHICLE:
-			case InteractPacket::ACTION_MOUSEOVER:
-				break; //TODO: handle these
-			default:
-				$this->server->getLogger()->debug("Unhandled/unknown interaction type " . $packet->action . "received from " . $this->getName());
-
-				return false;
-		}
 
 		return true;
 	}
