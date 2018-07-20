@@ -2977,17 +2977,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * Called when a packet is received from the client. This method will call DataPacketReceiveEvent.
-	 *
-	 * @param DataPacket $packet
-	 */
-	public function handleDataPacket(DataPacket $packet){
-		if($this->networkSession !== null){
-			$this->networkSession->handleDataPacket($packet);
-		}
-	}
-
-	/**
 	 * @param DataPacket $packet
 	 * @param bool       $needACK
 	 * @param bool       $immediate
