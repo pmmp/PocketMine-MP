@@ -168,13 +168,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var NetworkSession */
 	protected $networkSession;
 
-	/**
-	 * @var int
-	 * Last measurement of player's latency in milliseconds.
-	 */
-	protected $lastPingMeasure = 1;
-
-
 	/** @var float */
 	public $creationTime = 0;
 
@@ -798,18 +791,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return int
 	 */
 	public function getPing() : int{
-		return $this->lastPingMeasure;
-	}
-
-	/**
-	 * Updates the player's last ping measurement.
-	 *
-	 * @internal Plugins should not use this method.
-	 *
-	 * @param int $pingMS
-	 */
-	public function updatePing(int $pingMS){
-		$this->lastPingMeasure = $pingMS;
+		return $this->networkSession->getPing();
 	}
 
 	/**

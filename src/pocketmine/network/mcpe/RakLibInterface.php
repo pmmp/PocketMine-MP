@@ -223,7 +223,7 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 
 	public function updatePing(string $identifier, int $pingMS) : void{
 		if(isset($this->players[$identifier])){
-			$this->players[$identifier]->updatePing($pingMS);
+			$this->players[$identifier]->getNetworkSession()->updatePing($pingMS);
 		}
 	}
 }

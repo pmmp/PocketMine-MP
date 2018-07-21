@@ -53,6 +53,8 @@ class NetworkSession{
 	private $ip;
 	/** @var int */
 	private $port;
+	/** @var int */
+	private $ping;
 
 	/** @var SessionHandler */
 	private $handler;
@@ -84,6 +86,24 @@ class NetworkSession{
 	 */
 	public function getPort() : int{
 		return $this->port;
+	}
+
+	/**
+	 * Returns the last recorded ping measurement for this session, in milliseconds.
+	 *
+	 * @return int
+	 */
+	public function getPing() : int{
+		return $this->ping;
+	}
+
+	/**
+	 * @internal Called by the network interface to update last recorded ping measurements.
+	 *
+	 * @param int $ping
+	 */
+	public function updatePing(int $ping) : void{
+		$this->ping = $ping;
 	}
 
 	public function getHandler() : SessionHandler{
