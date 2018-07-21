@@ -39,33 +39,19 @@ class PlayerCreationEvent extends Event{
 	private $port;
 
 	/** @var Player::class */
-	private $baseClass;
+	private $baseClass = Player::class;
 	/** @var Player::class */
-	private $playerClass;
+	private $playerClass = Player::class;
 
 	/**
 	 * @param NetworkInterface $interface
-	 * @param Player::class    $baseClass
-	 * @param Player::class    $playerClass
 	 * @param string           $address
 	 * @param int              $port
 	 */
-	public function __construct(NetworkInterface $interface, $baseClass, $playerClass, string $address, int $port){
+	public function __construct(NetworkInterface $interface, string $address, int $port){
 		$this->interface = $interface;
 		$this->address = $address;
 		$this->port = $port;
-
-		if(!is_a($baseClass, Player::class, true)){
-			throw new \RuntimeException("Base class $baseClass must extend " . Player::class);
-		}
-
-		$this->baseClass = $baseClass;
-
-		if(!is_a($playerClass, Player::class, true)){
-			throw new \RuntimeException("Class $playerClass must extend " . Player::class);
-		}
-
-		$this->playerClass = $playerClass;
 	}
 
 	/**
