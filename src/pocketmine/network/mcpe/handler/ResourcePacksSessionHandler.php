@@ -117,7 +117,7 @@ class ResourcePacksSessionHandler extends SessionHandler{
 		$pk->packId = $pack->getPackId();
 		$pk->chunkIndex = $packet->chunkIndex;
 		$pk->data = $pack->getPackChunk(self::PACK_CHUNK_SIZE * $packet->chunkIndex, self::PACK_CHUNK_SIZE);
-		$pk->progress = (self::PACK_CHUNK_SIZE * $packet->chunkIndex);
+		$pk->progress = self::PACK_CHUNK_SIZE * $packet->chunkIndex;
 		$this->session->sendDataPacket($pk);
 
 		return true;
