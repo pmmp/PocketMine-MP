@@ -34,7 +34,7 @@ class CompressBatchedTask extends AsyncTask{
 
 	/**
 	 * @param PacketStream $stream
-	 * @param string[]     $targets
+	 * @param Player[]     $targets
 	 * @param int          $compressionLevel
 	 */
 	public function __construct(PacketStream $stream, array $targets, int $compressionLevel){
