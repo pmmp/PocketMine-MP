@@ -181,6 +181,9 @@ class PluginManager{
 						$this->server->getLogger()->error("Projected dataFolder '" . $dataFolder . "' for " . $description->getName() . " exists and is not a directory");
 						return null;
 					}
+					if(!file_exists($dataFolder)){
+						mkdir($dataFolder, 0777, true);
+					}
 
 					$prefixed = $loader->getAccessProtocol() . $path;
 					$loader->loadPlugin($prefixed);
