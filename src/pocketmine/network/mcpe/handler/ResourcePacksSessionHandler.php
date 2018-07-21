@@ -66,7 +66,7 @@ class ResourcePacksSessionHandler extends SessionHandler{
 
 	private function disconnectWithError(string $error) : void{
 		$this->player->getServer()->getLogger()->error("Error while downloading resource packs for " . $this->player->getName() . ": " . $error);
-		$this->player->close("", "%disconnectionScreen.resourcePack", true);
+		$this->player->close("", "disconnectionScreen.resourcePack", true);
 	}
 
 	public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet) : bool{
