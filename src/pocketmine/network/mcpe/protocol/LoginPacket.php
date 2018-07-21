@@ -26,7 +26,8 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\entity\Skin;
+use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\Utils;
@@ -52,6 +53,8 @@ class LoginPacket extends DataPacket{
 	public $serverAddress;
 	/** @var string */
 	public $locale;
+	/** @var Skin|null */
+	public $skin;
 
 	/** @var array (the "chain" index contains one or more JWTs) */
 	public $chainData = [];
@@ -136,14 +139,22 @@ class LoginPacket extends DataPacket{
 		$this->clientId = $this->clientData["ClientRandomId"] ?? null;
 		$this->serverAddress = $this->clientData["ServerAddress"] ?? null;
 
-		$this->locale = $this->clientData["LanguageCode"] ?? null;
+		$this->locale = $this->clientData["LanguageCode"] ?? "en_US";
+
+		$this->skin = new Skin(
+			$this->clientData["SkinId"] ?? "",
+			base64_decode($this->clientData["SkinData"] ?? ""),
+			base64_decode($this->clientData["CapeData"] ?? ""),
+			$this->clientData["SkinGeometryName"] ?? "",
+			base64_decode($this->clientData["SkinGeometry"] ?? "")
+		);
 	}
 
 	protected function encodePayload() : void{
 		//TODO
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleLogin($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleLogin($this);
 	}
 }

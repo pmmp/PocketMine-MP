@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class RespawnPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::RESPAWN_PACKET;
@@ -43,7 +43,7 @@ class RespawnPacket extends DataPacket{
 		$this->putVector3($this->position);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleRespawn($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleRespawn($this);
 	}
 }

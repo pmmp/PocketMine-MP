@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
 
+use pocketmine\utils\Binary;
+
 class PacketPool{
 	/** @var \SplFixedArray<DataPacket> */
 	protected static $pool = null;
@@ -30,7 +32,6 @@ class PacketPool{
 	public static function init() : void{
 		static::$pool = new \SplFixedArray(256);
 
-		//Normal packets
 		static::registerPacket(new LoginPacket());
 		static::registerPacket(new PlayStatusPacket());
 		static::registerPacket(new ServerToClientHandshakePacket());
@@ -143,8 +144,6 @@ class PacketPool{
 		static::registerPacket(new UpdateBlockSyncedPacket());
 		static::registerPacket(new MoveEntityDeltaPacket());
 		static::registerPacket(new SetLocalPlayerAsInitializedPacket());
-
-		static::registerPacket(new BatchPacket());
 	}
 
 	/**
@@ -167,8 +166,9 @@ class PacketPool{
 	 * @return DataPacket
 	 */
 	public static function getPacket(string $buffer) : DataPacket{
-		$pk = static::getPacketById(ord($buffer{0}));
-		$pk->setBuffer($buffer);
+		$offset = 0;
+		$pk = static::getPacketById(Binary::readUnsignedVarInt($buffer, $offset));
+		$pk->setBuffer($buffer, $offset);
 
 		return $pk;
 	}

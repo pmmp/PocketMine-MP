@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class MoveEntityAbsolutePacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::MOVE_ENTITY_ABSOLUTE_PACKET;
@@ -66,7 +66,7 @@ class MoveEntityAbsolutePacket extends DataPacket{
 		$this->putByteRotation($this->zRot);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleMoveEntityAbsolute($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleMoveEntityAbsolute($this);
 	}
 }

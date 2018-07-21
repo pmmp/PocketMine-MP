@@ -26,7 +26,6 @@ declare(strict_types=1);
  */
 namespace pocketmine\network;
 
-use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\Player;
 
 /**
@@ -42,14 +41,11 @@ interface NetworkInterface{
 	/**
 	 * Sends a DataPacket to the interface, returns an unique identifier for the packet if $needACK is true
 	 *
-	 * @param Player     $player
-	 * @param DataPacket $packet
-	 * @param bool       $needACK
-	 * @param bool       $immediate
-	 *
-	 * @return int|null
+	 * @param Player $player
+	 * @param string $payload
+	 * @param bool   $immediate
 	 */
-	public function putPacket(Player $player, DataPacket $packet, bool $needACK = false, bool $immediate = true) : ?int;
+	public function putPacket(Player $player, string $payload, bool $immediate = true) : void;
 
 	/**
 	 * Terminates the connection

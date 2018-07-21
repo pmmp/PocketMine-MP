@@ -23,44 +23,34 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\Player;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 
 class CompressBatchedTask extends AsyncTask{
 
-	public $level = 7;
-	public $data;
+	private $level;
+	private $data;
 
 	/**
-	 * @param BatchPacket $batch
-	 * @param string[]    $targets
+	 * @param PacketStream $stream
+	 * @param string[]     $targets
+	 * @param int          $compressionLevel
 	 */
-	public function __construct(BatchPacket $batch, array $targets){
-		$this->data = $batch->payload;
-		$this->level = $batch->getCompressionLevel();
+	public function __construct(PacketStream $stream, array $targets, int $compressionLevel){
+		$this->data = $stream->buffer;
+		$this->level = $compressionLevel;
 		$this->storeLocal($targets);
 	}
 
 	public function onRun() : void{
-		$batch = new BatchPacket();
-		$batch->payload = $this->data;
-		$this->data = null;
-
-		$batch->setCompressionLevel($this->level);
-		$batch->encode();
-
-		$this->setResult($batch->buffer, false);
+		$this->setResult(NetworkCompression::compress($this->data, $this->level), false);
 	}
 
 	public function onCompletion(Server $server) : void{
-		$pk = new BatchPacket($this->getResult());
-		$pk->isEncoded = true;
-
 		/** @var Player[] $targets */
 		$targets = $this->fetchLocal();
 
-		$server->broadcastPacketsCallback($pk, $targets);
+		$server->broadcastPacketsCallback($this->getResult(), $targets);
 	}
 }

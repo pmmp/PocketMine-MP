@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class DisconnectPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::DISCONNECT_PACKET;
@@ -54,7 +54,7 @@ class DisconnectPacket extends DataPacket{
 		}
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleDisconnect($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleDisconnect($this);
 	}
 }

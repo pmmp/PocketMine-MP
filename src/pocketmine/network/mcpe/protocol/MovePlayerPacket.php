@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class MovePlayerPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::MOVE_PLAYER_PACKET;
@@ -88,7 +88,7 @@ class MovePlayerPacket extends DataPacket{
 		}
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleMovePlayer($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleMovePlayer($this);
 	}
 }

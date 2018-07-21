@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class MobArmorEquipmentPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::MOB_ARMOR_EQUIPMENT_PACKET;
@@ -51,7 +51,7 @@ class MobArmorEquipmentPacket extends DataPacket{
 		}
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleMobArmorEquipment($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleMobArmorEquipment($this);
 	}
 }

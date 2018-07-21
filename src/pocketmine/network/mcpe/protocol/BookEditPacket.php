@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class BookEditPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::BOOK_EDIT_PACKET;
@@ -113,7 +113,7 @@ class BookEditPacket extends DataPacket{
 		}
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleBookEdit($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleBookEdit($this);
 	}
 }

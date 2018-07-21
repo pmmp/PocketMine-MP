@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\protocol\types\CommandData;
 use pocketmine\network\mcpe\protocol\types\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\CommandParameter;
@@ -336,7 +336,7 @@ class AvailableCommandsPacket extends DataPacket{
 		}
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleAvailableCommands($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleAvailableCommands($this);
 	}
 }

@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class ShowStoreOfferPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::SHOW_STORE_OFFER_PACKET;
@@ -45,7 +45,7 @@ class ShowStoreOfferPacket extends DataPacket{
 		$this->putBool($this->showAll);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleShowStoreOffer($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleShowStoreOffer($this);
 	}
 }

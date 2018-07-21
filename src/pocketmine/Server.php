@@ -70,7 +70,8 @@ use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\mcpe\CompressBatchedTask;
-use pocketmine\network\mcpe\protocol\BatchPacket;
+use pocketmine\network\mcpe\NetworkCompression;
+use pocketmine\network\mcpe\PacketStream;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
@@ -223,8 +224,6 @@ class Server{
 	private $network;
 	/** @var bool */
 	private $networkCompressionAsync = true;
-	/** @var int */
-	public $networkCompressionLevel = 7;
 
 	/** @var bool */
 	private $autoTickRate = true;
@@ -1517,15 +1516,15 @@ class Server{
 			$this->asyncPool = new AsyncPool($this, $poolSize, (int) max(-1, (int) $this->getProperty("memory.async-worker-hard-limit", 256)), $this->autoloader, $this->logger);
 
 			if($this->getProperty("network.batch-threshold", 256) >= 0){
-				Network::$BATCH_THRESHOLD = (int) $this->getProperty("network.batch-threshold", 256);
+				NetworkCompression::$THRESHOLD = (int) $this->getProperty("network.batch-threshold", 256);
 			}else{
-				Network::$BATCH_THRESHOLD = -1;
+				NetworkCompression::$THRESHOLD = -1;
 			}
 
-			$this->networkCompressionLevel = $this->getProperty("network.compression-level", 7);
-			if($this->networkCompressionLevel < 1 or $this->networkCompressionLevel > 9){
-				$this->logger->warning("Invalid network compression level $this->networkCompressionLevel set, setting to default 7");
-				$this->networkCompressionLevel = 7;
+			NetworkCompression::$LEVEL = $this->getProperty("network.compression-level", 7);
+			if(NetworkCompression::$LEVEL < 1 or NetworkCompression::$LEVEL > 9){
+				$this->logger->warning("Invalid network compression level " . NetworkCompression::$LEVEL . " set, setting to default 7");
+				NetworkCompression::$LEVEL = 7;
 			}
 			$this->networkCompressionAsync = (bool) $this->getProperty("network.async-compression", true);
 
@@ -1864,24 +1863,23 @@ class Server{
 		$targets = array_filter($players, function(Player $player) : bool{ return $player->isConnected(); });
 
 		if(!empty($targets)){
-			$pk = new BatchPacket();
+			$stream = new PacketStream();
 
 			foreach($packets as $p){
-				$pk->addPacket($p);
+				$stream->putPacket($p);
 			}
 
-			if(Network::$BATCH_THRESHOLD >= 0 and strlen($pk->payload) >= Network::$BATCH_THRESHOLD){
-				$pk->setCompressionLevel($this->networkCompressionLevel);
-			}else{
-				$pk->setCompressionLevel(0); //Do not compress packets under the threshold
+			$compressionLevel = NetworkCompression::$LEVEL;
+			if(NetworkCompression::$THRESHOLD < 0 or strlen($stream->buffer) < NetworkCompression::$THRESHOLD){
+				$compressionLevel = 0; //Do not compress packets under the threshold
 				$forceSync = true;
 			}
 
 			if(!$forceSync and !$immediate and $this->networkCompressionAsync){
-				$task = new CompressBatchedTask($pk, $targets);
+				$task = new CompressBatchedTask($stream, $targets, $compressionLevel);
 				$this->asyncPool->submitTask($task);
 			}else{
-				$this->broadcastPacketsCallback($pk, $targets, $immediate);
+				$this->broadcastPacketsCallback(NetworkCompression::compress($stream->buffer), $targets, $immediate);
 			}
 		}
 
@@ -1889,17 +1887,13 @@ class Server{
 	}
 
 	/**
-	 * @param BatchPacket $pk
-	 * @param Player[]    $players
-	 * @param bool        $immediate
+	 * @param string   $payload
+	 * @param Player[] $players
+	 * @param bool     $immediate
 	 */
-	public function broadcastPacketsCallback(BatchPacket $pk, array $players, bool $immediate = false){
-		if(!$pk->isEncoded){
-			$pk->encode();
-		}
-
+	public function broadcastPacketsCallback(string $payload, array $players, bool $immediate = false){
 		foreach($players as $i){
-			$i->sendDataPacket($pk, false, $immediate);
+			$i->getNetworkSession()->getInterface()->putPacket($i, $payload, $immediate);
 		}
 	}
 

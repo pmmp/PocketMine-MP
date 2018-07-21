@@ -23,13 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use raklib\protocol\EncapsulatedPacket;
+use pocketmine\network\mcpe\protocol\DataPacket;
+use pocketmine\network\mcpe\protocol\PacketPool;
 
-class CachedEncapsulatedPacket extends EncapsulatedPacket{
-	/** @var string|null */
-	private $internalData = null;
+class PacketStream extends NetworkBinaryStream{
 
-	public function toInternalBinary() : string{
-		return $this->internalData ?? ($this->internalData = parent::toInternalBinary());
+	public function putPacket(DataPacket $packet) : void{
+		if(!$packet->isEncoded){
+			$packet->encode();
+		}
+		$this->putString($packet->buffer);
+	}
+
+	public function getPacket() : DataPacket{
+		return PacketPool::getPacket($this->getString());
 	}
 }

@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class PhotoTransferPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::PHOTO_TRANSFER_PACKET;
@@ -49,7 +49,7 @@ class PhotoTransferPacket extends DataPacket{
 		$this->putString($this->bookId);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handlePhotoTransfer($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handlePhotoTransfer($this);
 	}
 }

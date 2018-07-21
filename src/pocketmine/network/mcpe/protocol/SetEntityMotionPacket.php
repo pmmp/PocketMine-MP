@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class SetEntityMotionPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_ENTITY_MOTION_PACKET;
@@ -47,7 +47,7 @@ class SetEntityMotionPacket extends DataPacket{
 		$this->putVector3($this->motion);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleSetEntityMotion($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleSetEntityMotion($this);
 	}
 }

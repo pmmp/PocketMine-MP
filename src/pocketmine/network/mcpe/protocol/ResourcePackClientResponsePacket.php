@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class ResourcePackClientResponsePacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_CLIENT_RESPONSE_PACKET;
@@ -57,7 +57,7 @@ class ResourcePackClientResponsePacket extends DataPacket{
 		}
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleResourcePackClientResponse($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleResourcePackClientResponse($this);
 	}
 }
