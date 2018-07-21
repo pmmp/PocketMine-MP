@@ -48,6 +48,9 @@ class ResourcePacksSessionHandler extends SessionHandler{
 	/** @var ResourcePackManager */
 	private $resourcePackManager;
 
+	/** @var bool[][] uuid => [chunk index => hasSent] */
+	private $downloadedChunks = [];
+
 	public function __construct(Player $player, NetworkSession $session, ResourcePackManager $resourcePackManager){
 		$this->player = $player;
 		$this->session = $session;
@@ -113,6 +116,15 @@ class ResourcePacksSessionHandler extends SessionHandler{
 			return false;
 		}
 
+		$packId = $pack->getPackId(); //use this because case may be different
+
+		if(isset($this->downloadedChunks[$packId][$packet->chunkIndex])){
+			$this->player->close("", "disconnectionScreen.resourcePack", true);
+			$this->player->getServer()->getLogger()->debug("Got a duplicate resource pack chunk request for pack " . $packet->packId . " chunk $packet->chunkIndex");
+
+			return false;
+		}
+
 		$offset = $packet->chunkIndex * self::PACK_CHUNK_SIZE;
 		if($offset < 0 or $offset >= $pack->getPackSize()){
 			$this->player->close("", "disconnectionScreen.resourcePack", true);
@@ -121,8 +133,14 @@ class ResourcePacksSessionHandler extends SessionHandler{
 			return false;
 		}
 
+		if(!isset($this->downloadedChunks[$packId])){
+			$this->downloadedChunks[$packId] = [$packet->chunkIndex => true];
+		}else{
+			$this->downloadedChunks[$packId][$packet->chunkIndex] = true;
+		}
+
 		$pk = new ResourcePackChunkDataPacket();
-		$pk->packId = $pack->getPackId();
+		$pk->packId = $packId;
 		$pk->chunkIndex = $packet->chunkIndex;
 		$pk->data = $pack->getPackChunk($offset, self::PACK_CHUNK_SIZE);
 		$pk->progress = $offset;
