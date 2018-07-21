@@ -86,7 +86,7 @@ class PreSpawnSessionHandler extends SessionHandler{
 		$this->player->sendAllInventories();
 		$this->player->getInventory()->sendCreativeContents();
 		$this->player->getInventory()->sendHeldItem($this->player);
-		$this->session->getInterface()->putPacket($this->player, $this->server->getCraftingManager()->getCraftingDataPacket());
+		$this->session->getInterface()->putPacket($this->session, $this->server->getCraftingManager()->getCraftingDataPacket());
 
 		$this->server->sendFullPlayerListData($this->player);
 	}

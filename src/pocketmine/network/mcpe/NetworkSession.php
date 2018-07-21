@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
+use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\network\mcpe\handler\DeathSessionHandler;
@@ -59,15 +60,36 @@ class NetworkSession{
 	/** @var SessionHandler */
 	private $handler;
 
-	public function __construct(Server $server, Player $player, NetworkInterface $interface, string $ip, int $port){
-		$this->server = $server;
-		$this->player = $player;
-		$this->interface = $interface;
+	/** @var bool */
+	private $connected = true;
 
+	public function __construct(Server $server, NetworkInterface $interface, string $ip, int $port){
+		$this->server = $server;
+		$this->interface = $interface;
 		$this->ip = $ip;
 		$this->port = $port;
 
-		$this->setHandler(new LoginSessionHandler($player, $this));
+		//TODO: this should happen later in the login sequence
+		$this->createPlayer();
+
+		$this->setHandler(new LoginSessionHandler($this->player, $this));
+	}
+
+	protected function createPlayer() : void{
+		$this->server->getPluginManager()->callEvent($ev = new PlayerCreationEvent($this));
+		$class = $ev->getPlayerClass();
+
+		/**
+		 * @var Player $player
+		 * @see Player::__construct()
+		 */
+		$this->player = new $class($this->server, $this);
+
+		$this->server->addPlayer($this->player);
+	}
+
+	public function isConnected() : bool{
+		return $this->connected;
 	}
 
 	public function getInterface() : NetworkInterface{
@@ -116,10 +138,14 @@ class NetworkSession{
 	}
 
 	public function handleEncoded(string $payload) : void{
+		if(!$this->connected){
+			return;
+		}
+
 		//TODO: decryption if enabled
 
 		$stream = new PacketStream(NetworkCompression::decompress($payload));
-		while(!$stream->feof() and $this->player->isConnected()){
+		while(!$stream->feof() and $this->connected){
 			$this->handleDataPacket(PacketPool::getPacket($stream->getString()));
 		}
 	}
@@ -160,14 +186,61 @@ class NetworkSession{
 		}
 	}
 
-	public function serverDisconnect(string $reason, bool $notify = true) : void{
+	/**
+	 * Disconnects the session, destroying the associated player (if it exists).
+	 *
+	 * @param string $reason
+	 * @param bool   $notify
+	 */
+	public function disconnect(string $reason, bool $notify = true) : void{
+		if($this->connected){
+			$this->connected = false;
+			$this->player->close($this->player->getLeaveMessage(), $reason);
+			$this->doServerDisconnect($reason, $notify);
+		}
+	}
+
+	/**
+	 * Called by the Player when it is closed (for example due to getting kicked).
+	 *
+	 * @param string $reason
+	 * @param bool   $notify
+	 */
+	public function onPlayerDestroyed(string $reason, bool $notify = true) : void{
+		if($this->connected){
+			$this->connected = false;
+			$this->doServerDisconnect($reason, $notify);
+		}
+	}
+
+	/**
+	 * Internal helper function used to handle server disconnections.
+	 *
+	 * @param string $reason
+	 * @param bool   $notify
+	 */
+	private function doServerDisconnect(string $reason, bool $notify = true) : void{
 		if($notify){
 			$pk = new DisconnectPacket();
 			$pk->message = $reason;
 			$pk->hideDisconnectionScreen = $reason === "";
 			$this->sendDataPacket($pk, true);
 		}
-		$this->interface->close($this->player, $notify ? $reason : "");
+
+		$this->interface->close($this, $notify ? $reason : "");
+	}
+
+	/**
+	 * Called by the network interface to close the session when the client disconnects without server input, for
+	 * example in a timeout condition or voluntary client disconnect.
+	 *
+	 * @param string $reason
+	 */
+	public function onClientDisconnect(string $reason) : void{
+		if($this->connected){
+			$this->connected = false;
+			$this->player->close($this->player->getLeaveMessage(), $reason);
+		}
 	}
 
 	//TODO: onEnableEncryption() step

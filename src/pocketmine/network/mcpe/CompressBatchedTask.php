@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use pocketmine\Player;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 
@@ -33,9 +32,9 @@ class CompressBatchedTask extends AsyncTask{
 	private $data;
 
 	/**
-	 * @param PacketStream $stream
-	 * @param Player[]     $targets
-	 * @param int          $compressionLevel
+	 * @param PacketStream     $stream
+	 * @param NetworkSession[] $targets
+	 * @param int              $compressionLevel
 	 */
 	public function __construct(PacketStream $stream, array $targets, int $compressionLevel){
 		$this->data = $stream->buffer;
@@ -48,7 +47,7 @@ class CompressBatchedTask extends AsyncTask{
 	}
 
 	public function onCompletion(Server $server) : void{
-		/** @var Player[] $targets */
+		/** @var NetworkSession[] $targets */
 		$targets = $this->fetchLocal();
 
 		$server->broadcastPacketsCallback($this->getResult(), $targets);

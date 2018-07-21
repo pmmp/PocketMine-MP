@@ -53,8 +53,7 @@ class LoginSessionHandler extends SessionHandler{
 			$this->session->sendDataPacket($pk, true);
 
 			//This pocketmine disconnect message will only be seen by the console (PlayStatusPacket causes the messages to be shown for the client)
-			$this->player->close(
-				"",
+			$this->session->disconnect(
 				$this->player->getServer()->getLanguage()->translateString("pocketmine.disconnect.incompatibleProtocol", [$packet->protocol]),
 				false
 			);
@@ -63,13 +62,13 @@ class LoginSessionHandler extends SessionHandler{
 		}
 
 		if(!Player::isValidUserName($packet->username)){
-			$this->player->close("", "disconnectionScreen.invalidName");
+			$this->session->disconnect("disconnectionScreen.invalidName");
 
 			return true;
 		}
 
 		if($packet->skin === null or !$packet->skin->isValid()){
-			$this->player->close("", "disconnectionScreen.invalidSkin");
+			$this->session->disconnect("disconnectionScreen.invalidSkin");
 
 			return true;
 		}

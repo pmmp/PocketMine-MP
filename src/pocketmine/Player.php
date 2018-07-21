@@ -125,7 +125,6 @@ use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\VerifyLoginTask;
-use pocketmine\network\NetworkInterface;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
 use pocketmine\permission\PermissionAttachmentInfo;
@@ -657,13 +656,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * @param NetworkInterface $interface
-	 * @param string           $ip
-	 * @param int              $port
+	 * @param Server         $server
+	 * @param NetworkSession $session
 	 */
-	public function __construct(NetworkInterface $interface, string $ip, int $port){
+	public function __construct(Server $server, NetworkSession $session){
+		$this->server = $server;
+		$this->networkSession = $session;
+
 		$this->perm = new PermissibleBase($this);
-		$this->server = Server::getInstance();
 		$this->loaderId = Level::generateChunkLoaderId($this);
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
 		$this->spawnThreshold = (int) (($this->server->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
@@ -671,8 +671,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->creationTime = microtime(true);
 
 		$this->allowMovementCheats = (bool) $this->server->getProperty("player.anti-cheat.allow-movement-cheats", false);
-
-		$this->networkSession = new NetworkSession($this->server, $this, $interface, $ip, $port);
 	}
 
 	/**
@@ -906,7 +904,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->usedChunks[Level::chunkHash($x, $z)] = true;
 		$this->chunkLoadCount++;
 
-		$this->networkSession->getInterface()->putPacket($this, $payload);
+		$this->networkSession->getInterface()->putPacket($this->networkSession, $payload);
 
 		if($this->spawned){
 			foreach($this->level->getChunkEntities($x, $z) as $entity){
@@ -2938,7 +2936,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			try{
 				$ip = $this->networkSession->getIp();
 				$port = $this->networkSession->getPort();
-				$this->networkSession->serverDisconnect($reason, $notify);
+				$this->networkSession->onPlayerDestroyed($reason, $notify);
 				$this->networkSession = null;
 
 				$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);

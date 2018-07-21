@@ -66,14 +66,14 @@ class ResourcePacksSessionHandler extends SessionHandler{
 
 	private function disconnectWithError(string $error) : void{
 		$this->player->getServer()->getLogger()->error("Error while downloading resource packs for " . $this->player->getName() . ": " . $error);
-		$this->player->close("", "disconnectionScreen.resourcePack", true);
+		$this->session->disconnect("disconnectionScreen.resourcePack");
 	}
 
 	public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet) : bool{
 		switch($packet->status){
 			case ResourcePackClientResponsePacket::STATUS_REFUSED:
 				//TODO: add lang strings for this
-				$this->player->close("", "You must accept resource packs to join this server.", true);
+				$this->session->disconnect("You must accept resource packs to join this server.", true);
 				break;
 			case ResourcePackClientResponsePacket::STATUS_SEND_PACKS:
 				foreach($packet->packIds as $uuid){

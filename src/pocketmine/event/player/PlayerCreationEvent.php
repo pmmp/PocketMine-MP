@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\event\player;
 
 use pocketmine\event\Event;
+use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\NetworkInterface;
 use pocketmine\Player;
 
@@ -31,48 +32,49 @@ use pocketmine\Player;
  * Allows the creation of players overriding the base Player class
  */
 class PlayerCreationEvent extends Event{
-	/** @var NetworkInterface */
-	private $interface;
-	/** @var string */
-	private $address;
-	/** @var int */
-	private $port;
+
+	/** @var NetworkSession */
+	private $session;
 
 	/** @var Player::class */
 	private $baseClass = Player::class;
 	/** @var Player::class */
 	private $playerClass = Player::class;
 
+
 	/**
-	 * @param NetworkInterface $interface
-	 * @param string           $address
-	 * @param int              $port
+	 * @param NetworkSession $session
 	 */
-	public function __construct(NetworkInterface $interface, string $address, int $port){
-		$this->interface = $interface;
-		$this->address = $address;
-		$this->port = $port;
+	public function __construct(NetworkSession $session){
+		$this->session = $session;
 	}
 
 	/**
 	 * @return NetworkInterface
 	 */
 	public function getInterface() : NetworkInterface{
-		return $this->interface;
+		return $this->session->getInterface();
+	}
+
+	/**
+	 * @return NetworkSession
+	 */
+	public function getNetworkSession() : NetworkSession{
+		return $this->session;
 	}
 
 	/**
 	 * @return string
 	 */
 	public function getAddress() : string{
-		return $this->address;
+		return $this->session->getIp();
 	}
 
 	/**
 	 * @return int
 	 */
 	public function getPort() : int{
-		return $this->port;
+		return $this->session->getPort();
 	}
 
 	/**

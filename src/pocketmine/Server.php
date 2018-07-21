@@ -71,6 +71,7 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\mcpe\CompressBatchedTask;
 use pocketmine\network\mcpe\NetworkCompression;
+use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketStream;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
@@ -1860,7 +1861,13 @@ class Server{
 		}
 		Timings::$playerNetworkTimer->startTiming();
 
-		$targets = array_filter($players, function(Player $player) : bool{ return $player->isConnected(); });
+		/** @var NetworkSession[] $targets */
+		$targets = [];
+		foreach($players as $player){
+			if($player->isConnected()){
+				$targets[] = $player->getNetworkSession();
+			}
+		}
 
 		if(!empty($targets)){
 			$stream = new PacketStream();
@@ -1887,13 +1894,14 @@ class Server{
 	}
 
 	/**
-	 * @param string   $payload
-	 * @param Player[] $players
-	 * @param bool     $immediate
+	 * @param string           $payload
+	 * @param NetworkSession[] $sessions
+	 * @param bool             $immediate
 	 */
-	public function broadcastPacketsCallback(string $payload, array $players, bool $immediate = false){
-		foreach($players as $i){
-			$i->getNetworkSession()->getInterface()->putPacket($i, $payload, $immediate);
+	public function broadcastPacketsCallback(string $payload, array $sessions, bool $immediate = false){
+		/** @var NetworkSession $session */
+		foreach($sessions as $session){
+			$session->getInterface()->putPacket($session, $payload, $immediate);
 		}
 	}
 

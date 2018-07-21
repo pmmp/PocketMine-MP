@@ -23,11 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\Network;
-use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
 use raklib\protocol\EncapsulatedPacket;
@@ -56,8 +54,8 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	/** @var RakLibServer */
 	private $rakLib;
 
-	/** @var Player[] */
-	private $players = [];
+	/** @var NetworkSession[] */
+	private $sessions = [];
 
 	/** @var string[] */
 	private $identifiers = [];
@@ -104,17 +102,17 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	}
 
 	public function closeSession(string $identifier, string $reason) : void{
-		if(isset($this->players[$identifier])){
-			$player = $this->players[$identifier];
-			unset($this->identifiers[spl_object_hash($player)]);
-			unset($this->players[$identifier]);
-			$player->close($player->getLeaveMessage(), $reason);
+		if(isset($this->sessions[$identifier])){
+			$session = $this->sessions[$identifier];
+			unset($this->identifiers[spl_object_hash($session)]);
+			unset($this->sessions[$identifier]);
+			$session->onClientDisconnect($reason);
 		}
 	}
 
-	public function close(Player $player, string $reason = "unknown reason") : void{
-		if(isset($this->identifiers[$h = spl_object_hash($player)])){
-			unset($this->players[$this->identifiers[$h]]);
+	public function close(NetworkSession $session, string $reason = "unknown reason") : void{
+		if(isset($this->identifiers[$h = spl_object_hash($session)])){
+			unset($this->sessions[$this->identifiers[$h]]);
 			$this->interface->closeSession($this->identifiers[$h], $reason);
 			unset($this->identifiers[$h]);
 		}
@@ -131,23 +129,18 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	}
 
 	public function openSession(string $identifier, string $address, int $port, int $clientID) : void{
-		$ev = new PlayerCreationEvent($this, $address, $port);
-		$this->server->getPluginManager()->callEvent($ev);
-		$class = $ev->getPlayerClass();
-
-		$player = new $class($this, $ev->getAddress(), $ev->getPort());
-		$this->players[$identifier] = $player;
-		$this->identifiers[spl_object_hash($player)] = $identifier;
-		$this->server->addPlayer($player);
+		$session = new NetworkSession($this->server, $this, $address, $port);
+		$this->sessions[$identifier] = $session;
+		$this->identifiers[spl_object_hash($session)] = $identifier;
 	}
 
 	public function handleEncapsulated(string $identifier, EncapsulatedPacket $packet, int $flags) : void{
-		if(isset($this->players[$identifier])){
+		if(isset($this->sessions[$identifier])){
 			//get this now for blocking in case the player was closed before the exception was raised
-			$address = $this->players[$identifier]->getNetworkSession()->getIp();
+			$address = $this->sessions[$identifier]->getIp();
 			try{
 				if($packet->buffer !== "" and $packet->buffer{0} === self::MCPE_RAKNET_PACKET_ID){ //Batch
-					$this->players[$identifier]->getNetworkSession()->handleEncoded(substr($packet->buffer, 1));
+					$this->sessions[$identifier]->handleEncoded(substr($packet->buffer, 1));
 				}
 			}catch(\Throwable $e){
 				$logger = $this->server->getLogger();
@@ -208,8 +201,8 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 		}
 	}
 
-	public function putPacket(Player $player, string $payload, bool $immediate = true) : void{
-		if(isset($this->identifiers[$h = spl_object_hash($player)])){
+	public function putPacket(NetworkSession $session, string $payload, bool $immediate = true) : void{
+		if(isset($this->identifiers[$h = spl_object_hash($session)])){
 			$identifier = $this->identifiers[$h];
 
 			$pk = new EncapsulatedPacket();
@@ -222,8 +215,8 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	}
 
 	public function updatePing(string $identifier, int $pingMS) : void{
-		if(isset($this->players[$identifier])){
-			$this->players[$identifier]->getNetworkSession()->updatePing($pingMS);
+		if(isset($this->sessions[$identifier])){
+			$this->sessions[$identifier]->updatePing($pingMS);
 		}
 	}
 }
