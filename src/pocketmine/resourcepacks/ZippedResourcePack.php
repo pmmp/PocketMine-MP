@@ -86,8 +86,11 @@ class ZippedResourcePack implements ResourcePack{
 		$archive->close();
 
 		$manifest = json_decode($manifestData);
-		if($manifest === null or !self::verifyManifest($manifest)){
-			throw new ResourcePackException("manifest.json is invalid or incomplete");
+		if($manifest === null){
+			throw new ResourcePackException("Failed to parse manifest.json: " . json_last_error_msg());
+		}
+		if(!self::verifyManifest($manifest)){
+			throw new ResourcePackException("manifest.json is missing required fields");
 		}
 
 		$this->manifest = $manifest;
