@@ -64,6 +64,11 @@ class ResourcePacksSessionHandler extends SessionHandler{
 		$this->session->sendDataPacket($pk);
 	}
 
+	private function disconnectWithError(string $error) : void{
+		$this->player->getServer()->getLogger()->error("Error while downloading resource packs for " . $this->player->getName() . ": " . $error);
+		$this->player->close("", "%disconnectionScreen.resourcePack", true);
+	}
+
 	public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet) : bool{
 		switch($packet->status){
 			case ResourcePackClientResponsePacket::STATUS_REFUSED:
@@ -75,9 +80,7 @@ class ResourcePacksSessionHandler extends SessionHandler{
 					$pack = $this->resourcePackManager->getPackById($uuid);
 					if(!($pack instanceof ResourcePack)){
 						//Client requested a resource pack but we don't have it available on the server
-						$this->player->close("", "disconnectionScreen.resourcePack", true);
-						$this->player->getServer()->getLogger()->debug("Got a resource pack request for unknown pack with UUID " . $uuid . ", available packs: " . implode(", ", $this->resourcePackManager->getPackIdList()));
-
+						$this->disconnectWithError("Unknown pack $uuid requested, available packs: " . implode(", ", $this->resourcePackManager->getPackIdList()));
 						return false;
 					}
 
@@ -110,26 +113,20 @@ class ResourcePacksSessionHandler extends SessionHandler{
 	public function handleResourcePackChunkRequest(ResourcePackChunkRequestPacket $packet) : bool{
 		$pack = $this->resourcePackManager->getPackById($packet->packId);
 		if(!($pack instanceof ResourcePack)){
-			$this->player->close("", "disconnectionScreen.resourcePack", true);
-			$this->player->getServer()->getLogger()->debug("Got a resource pack chunk request for unknown pack with UUID " . $packet->packId . ", available packs: " . implode(", ", $this->resourcePackManager->getPackIdList()));
-
+			$this->disconnectWithError("Invalid request for chunk $packet->chunkIndex of unknown pack $packet->packId, available packs: " . implode(", ", $this->resourcePackManager->getPackIdList()));
 			return false;
 		}
 
 		$packId = $pack->getPackId(); //use this because case may be different
 
 		if(isset($this->downloadedChunks[$packId][$packet->chunkIndex])){
-			$this->player->close("", "disconnectionScreen.resourcePack", true);
-			$this->player->getServer()->getLogger()->debug("Got a duplicate resource pack chunk request for pack " . $packet->packId . " chunk $packet->chunkIndex");
-
+			$this->disconnectWithError("Duplicate request for chunk $packet->chunkIndex of pack $packet->packId");
 			return false;
 		}
 
 		$offset = $packet->chunkIndex * self::PACK_CHUNK_SIZE;
 		if($offset < 0 or $offset >= $pack->getPackSize()){
-			$this->player->close("", "disconnectionScreen.resourcePack", true);
-			$this->player->getServer()->getLogger()->debug("Got a resource pack chunk request with invalid start offset $offset, file size is " . $pack->getPackSize());
-
+			$this->disconnectWithError("Invalid out-of-bounds request for chunk $packet->chunkIndex of $packet->packId: offset $offset, file size " . $pack->getPackSize());
 			return false;
 		}
 
