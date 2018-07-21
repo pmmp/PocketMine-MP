@@ -70,7 +70,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	private $originals;
 	
 	/** @var int */
-	private $attackTick = 10;
+	private $attackCooldown = 10;
 
 
 	/**
@@ -204,14 +204,14 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	/**
 	 * @return int
 	 */
-	public function getAttackTick() : int{
+	public function getAttackCooldown() : int{
 		return $this->attackTick;
 	}
 	
 	/**
 	 * @param int $attackTick
 	 */
-	public function setAttackTick(int $attackTick) {
+	public function setAttackCooldown(int $attackTick) : void{
 		$this->attackTick = $attackTick;
 	}
 }
