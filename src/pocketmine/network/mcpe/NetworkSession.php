@@ -99,7 +99,7 @@ class NetworkSession{
 		//TODO: decryption if enabled
 
 		$stream = new PacketStream(NetworkCompression::decompress($payload));
-		while(!$stream->feof()){
+		while(!$stream->feof() and $this->player->isConnected()){
 			$this->handleDataPacket(PacketPool::getPacket($stream->getString()));
 		}
 	}
