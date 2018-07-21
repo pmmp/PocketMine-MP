@@ -39,6 +39,7 @@ use pocketmine\resourcepacks\ResourcePackManager;
  * packs to the client.
  */
 class ResourcePacksSessionHandler extends SessionHandler{
+	private const PACK_CHUNK_SIZE = 1048576; //1MB
 
 	/** @var Player */
 	private $player;
@@ -79,8 +80,8 @@ class ResourcePacksSessionHandler extends SessionHandler{
 
 					$pk = new ResourcePackDataInfoPacket();
 					$pk->packId = $pack->getPackId();
-					$pk->maxChunkSize = 1048576; //1MB
-					$pk->chunkCount = (int) ceil($pack->getPackSize() / $pk->maxChunkSize);
+					$pk->maxChunkSize = self::PACK_CHUNK_SIZE; //1MB
+					$pk->chunkCount = (int) ceil($pack->getPackSize() / self::PACK_CHUNK_SIZE);
 					$pk->compressedPackSize = $pack->getPackSize();
 					$pk->sha256 = $pack->getSha256();
 					$this->session->sendDataPacket($pk);
@@ -115,8 +116,8 @@ class ResourcePacksSessionHandler extends SessionHandler{
 		$pk = new ResourcePackChunkDataPacket();
 		$pk->packId = $pack->getPackId();
 		$pk->chunkIndex = $packet->chunkIndex;
-		$pk->data = $pack->getPackChunk(1048576 * $packet->chunkIndex, 1048576);
-		$pk->progress = (1048576 * $packet->chunkIndex);
+		$pk->data = $pack->getPackChunk(self::PACK_CHUNK_SIZE * $packet->chunkIndex, self::PACK_CHUNK_SIZE);
+		$pk->progress = (self::PACK_CHUNK_SIZE * $packet->chunkIndex);
 		$this->session->sendDataPacket($pk);
 
 		return true;
