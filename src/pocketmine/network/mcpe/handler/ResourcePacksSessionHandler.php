@@ -113,11 +113,19 @@ class ResourcePacksSessionHandler extends SessionHandler{
 			return false;
 		}
 
+		$offset = $packet->chunkIndex * self::PACK_CHUNK_SIZE;
+		if($offset < 0 or $offset >= $pack->getPackSize()){
+			$this->player->close("", "disconnectionScreen.resourcePack", true);
+			$this->player->getServer()->getLogger()->debug("Got a resource pack chunk request with invalid start offset $offset, file size is " . $pack->getPackSize());
+
+			return false;
+		}
+
 		$pk = new ResourcePackChunkDataPacket();
 		$pk->packId = $pack->getPackId();
 		$pk->chunkIndex = $packet->chunkIndex;
-		$pk->data = $pack->getPackChunk(self::PACK_CHUNK_SIZE * $packet->chunkIndex, self::PACK_CHUNK_SIZE);
-		$pk->progress = self::PACK_CHUNK_SIZE * $packet->chunkIndex;
+		$pk->data = $pack->getPackChunk($offset, self::PACK_CHUNK_SIZE);
+		$pk->progress = $offset;
 		$this->session->sendDataPacket($pk);
 
 		return true;
