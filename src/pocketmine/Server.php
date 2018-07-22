@@ -2269,8 +2269,10 @@ class Server{
 	}
 
 	public function onPlayerDisconnect(Player $player) : void{
-		$this->removeOnlinePlayer($player);
-		unset($this->loggedInPlayers[$player->getRawUniqueId()]);
+		if($player->loggedIn){ //TODO: remove this hack once incomplete players are dealt with
+			$this->removeOnlinePlayer($player);
+			unset($this->loggedInPlayers[$player->getRawUniqueId()]);
+		}
 		$this->removePlayer($player);
 	}
 
