@@ -144,7 +144,7 @@ class PlayerInventory extends BaseInventory{
 		$pk->windowId = ContainerIds::INVENTORY;
 
 		if(!is_array($target)){
-			$target->dataPacket($pk);
+			$target->sendDataPacket($pk);
 			if($target === $this->getHolder()){
 				$this->sendSlot($this->getHeldItemIndex(), $target);
 			}
@@ -174,7 +174,7 @@ class PlayerInventory extends BaseInventory{
 			}
 		}
 
-		$this->getHolder()->dataPacket($pk);
+		$this->getHolder()->sendDataPacket($pk);
 	}
 
 	/**

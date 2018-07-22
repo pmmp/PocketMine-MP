@@ -1930,7 +1930,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$pk->attributes = $this->attributeMap->getAll();
 		$pk->metadata = $this->propertyManager->getAll();
 
-		$player->dataPacket($pk);
+		$player->sendDataPacket($pk);
 	}
 
 	/**
@@ -1971,7 +1971,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			if($send){
 				$pk = new RemoveEntityPacket();
 				$pk->entityUniqueId = $this->id;
-				$player->dataPacket($pk);
+				$player->sendDataPacket($pk);
 			}
 			unset($this->hasSpawned[$player->getLoaderId()]);
 		}
@@ -2092,11 +2092,11 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			if($p === $this){
 				continue;
 			}
-			$p->dataPacket(clone $pk);
+			$p->sendDataPacket(clone $pk);
 		}
 
 		if($this instanceof Player){
-			$this->dataPacket($pk);
+			$this->sendDataPacket($pk);
 		}
 	}
 

@@ -193,7 +193,7 @@ class ItemEntity extends Entity{
 		$pk->item = $this->getItem();
 		$pk->metadata = $this->propertyManager->getAll();
 
-		$player->dataPacket($pk);
+		$player->sendDataPacket($pk);
 	}
 
 	public function onCollideWithPlayer(Player $player) : void{

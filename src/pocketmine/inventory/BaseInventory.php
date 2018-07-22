@@ -443,7 +443,7 @@ abstract class BaseInventory implements Inventory{
 				continue;
 			}
 			$pk->windowId = $id;
-			$player->dataPacket($pk);
+			$player->sendDataPacket($pk);
 		}
 	}
 
@@ -466,7 +466,7 @@ abstract class BaseInventory implements Inventory{
 				continue;
 			}
 			$pk->windowId = $id;
-			$player->dataPacket($pk);
+			$player->sendDataPacket($pk);
 		}
 	}
 

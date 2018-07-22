@@ -2335,7 +2335,7 @@ class Server{
 			$pk->entries[] = PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), "", 0, $player->getSkin(), $player->getXuid());
 		}
 
-		$p->dataPacket($pk);
+		$p->sendDataPacket($pk);
 	}
 
 	private function checkTickUpdates(int $currentTick, float $tickTime) : void{

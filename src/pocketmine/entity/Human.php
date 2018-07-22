@@ -842,7 +842,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$pk = new PlayerListPacket();
 			$pk->type = PlayerListPacket::TYPE_ADD;
 			$pk->entries = [PlayerListEntry::createAdditionEntry($this->uuid, $this->id, $this->getName(), $this->getName(), 0, $this->skin)];
-			$player->dataPacket($pk);
+			$player->sendDataPacket($pk);
 		}
 
 		$pk = new AddPlayerPacket();
@@ -855,7 +855,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$pk->pitch = $this->pitch;
 		$pk->item = $this->getInventory()->getItemInHand();
 		$pk->metadata = $this->propertyManager->getAll();
-		$player->dataPacket($pk);
+		$player->sendDataPacket($pk);
 
 		//TODO: Hack for MCPE 1.2.13: DATA_NAMETAG is useless in AddPlayerPacket, so it has to be sent separately
 		$this->sendData($player, [self::DATA_NAMETAG => [self::DATA_TYPE_STRING, $this->getNameTag()]]);
@@ -866,7 +866,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$pk = new PlayerListPacket();
 			$pk->type = PlayerListPacket::TYPE_REMOVE;
 			$pk->entries = [PlayerListEntry::createRemovalEntry($this->uuid)];
-			$player->dataPacket($pk);
+			$player->sendDataPacket($pk);
 		}
 	}
 

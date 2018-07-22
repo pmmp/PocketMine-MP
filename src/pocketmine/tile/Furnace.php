@@ -235,7 +235,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 				if($windowId > 0){
 					foreach($packets as $pk){
 						$pk->windowId = $windowId;
-						$player->dataPacket(clone $pk);
+						$player->sendDataPacket(clone $pk);
 					}
 				}
 			}

@@ -52,7 +52,7 @@ abstract class Spawnable extends Tile{
 			return false;
 		}
 
-		$player->dataPacket($this->createSpawnPacket());
+		$player->sendDataPacket($this->createSpawnPacket());
 
 		return true;
 	}

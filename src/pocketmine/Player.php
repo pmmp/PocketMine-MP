@@ -512,7 +512,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$pk = new ChunkRadiusUpdatedPacket();
 		$pk->radius = $this->viewDistance;
-		$this->dataPacket($pk);
+		$this->sendDataPacket($pk);
 
 		$this->server->getLogger()->debug("Setting view distance for " . $this->getName() . " to " . $this->viewDistance . " (requested " . $distance . ")");
 	}
@@ -651,7 +651,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$pk->commandData[$command->getName()] = $data;
 		}
 
-		$this->dataPacket($pk);
+		$this->sendDataPacket($pk);
 
 	}
 
@@ -1138,7 +1138,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->z = $this->spawnPosition->getFloorZ();
 		$pk->spawnType = SetSpawnPositionPacket::TYPE_PLAYER_SPAWN;
 		$pk->spawnForced = false;
-		$this->dataPacket($pk);
+		$this->sendDataPacket($pk);
 	}
 
 	/**
@@ -1199,7 +1199,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$pk = new AnimatePacket();
 			$pk->entityRuntimeId = $this->id;
 			$pk->action = AnimatePacket::ACTION_STOP_SLEEP;
-			$this->dataPacket($pk);
+			$this->sendDataPacket($pk);
 		}
 	}
 
@@ -1336,7 +1336,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function sendGamemode(){
 		$pk = new SetPlayerGameTypePacket();
 		$pk->gamemode = Player::getClientFriendlyGamemode($this->gamemode);
-		$this->dataPacket($pk);
+		$this->sendDataPacket($pk);
 	}
 
 	/**
@@ -1356,7 +1356,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->playerPermission = ($this->isOp() ? PlayerPermissions::OPERATOR : PlayerPermissions::MEMBER);
 		$pk->entityUniqueId = $this->getId();
 
-		$this->dataPacket($pk);
+		$this->sendDataPacket($pk);
 	}
 
 	/**
@@ -1613,7 +1613,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$pk = new UpdateAttributesPacket();
 			$pk->entityRuntimeId = $this->id;
 			$pk->entries = $entries;
-			$this->dataPacket($pk);
+			$this->sendDataPacket($pk);
 			foreach($entries as $entry){
 				$entry->markSynchronized();
 			}
@@ -1721,7 +1721,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->particles = $effect->isVisible();
 		$pk->duration = $effect->getDuration();
 
-		$this->dataPacket($pk);
+		$this->sendDataPacket($pk);
 	}
 
 	protected function sendEffectRemove(EffectInstance $effect) : void{
@@ -1730,7 +1730,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->eventId = MobEffectPacket::EVENT_REMOVE;
 		$pk->effectId = $effect->getId();
 
-		$this->dataPacket($pk);
+		$this->sendDataPacket($pk);
 	}
 
 	/**
@@ -2018,7 +2018,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					return false;
 				}
 
-				$this->dataPacket($packet);
+				$this->sendDataPacket($packet);
 				$this->server->broadcastPacket($this->getViewers(), $packet);
 				break;
 			default:
@@ -2301,7 +2301,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							$pk->entityRuntimeId = $target->getId();
 							$this->server->broadcastPacket($target->getViewers(), $pk);
 							if($target instanceof Player){
-								$target->dataPacket($pk);
+								$target->sendDataPacket($pk);
 							}
 						}
 
@@ -2690,24 +2690,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * @param DataPacket $packet
-	 *
-	 * @return bool
-	 */
-	public function dataPacket(DataPacket $packet) : bool{
-		return $this->sendDataPacket($packet, false);
-	}
-
-	/**
-	 * @param DataPacket $packet
-	 *
-	 * @return bool
-	 */
-	public function directDataPacket(DataPacket $packet) : bool{
-		return $this->sendDataPacket($packet, true);
-	}
-
-	/**
 	 * Transfers a player to another server.
 	 *
 	 * @param string $address The IP address or hostname of the destination server
@@ -2723,7 +2705,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$pk = new TransferPacket();
 			$pk->address = $ev->getAddress();
 			$pk->port = $ev->getPort();
-			$this->directDataPacket($pk);
+			$this->sendDataPacket($pk, true);
 			$this->close("", $ev->getMessage(), false);
 
 			return true;
@@ -2804,7 +2786,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function removeTitles(){
 		$pk = new SetTitlePacket();
 		$pk->type = SetTitlePacket::TYPE_CLEAR_TITLE;
-		$this->dataPacket($pk);
+		$this->sendDataPacket($pk);
 	}
 
 	/**
@@ -2813,7 +2795,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function resetTitles(){
 		$pk = new SetTitlePacket();
 		$pk->type = SetTitlePacket::TYPE_RESET_TITLE;
-		$this->dataPacket($pk);
+		$this->sendDataPacket($pk);
 	}
 
 	/**
@@ -2830,7 +2812,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$pk->fadeInTime = $fadeIn;
 			$pk->stayTime = $stay;
 			$pk->fadeOutTime = $fadeOut;
-			$this->dataPacket($pk);
+			$this->sendDataPacket($pk);
 		}
 	}
 
@@ -2844,7 +2826,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk = new SetTitlePacket();
 		$pk->type = $type;
 		$pk->text = $title;
-		$this->dataPacket($pk);
+		$this->sendDataPacket($pk);
 	}
 
 	/**
@@ -2864,7 +2846,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk = new TextPacket();
 		$pk->type = TextPacket::TYPE_RAW;
 		$pk->message = $this->server->getLanguage()->translateString($message);
-		$this->dataPacket($pk);
+		$this->sendDataPacket($pk);
 	}
 
 	/**
@@ -2885,7 +2867,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$pk->type = TextPacket::TYPE_RAW;
 			$pk->message = $this->server->getLanguage()->translateString($message, $parameters);
 		}
-		$this->dataPacket($pk);
+		$this->sendDataPacket($pk);
 	}
 
 	/**
@@ -2900,14 +2882,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk = new TextPacket();
 		$pk->type = TextPacket::TYPE_POPUP;
 		$pk->message = $message;
-		$this->dataPacket($pk);
+		$this->sendDataPacket($pk);
 	}
 
 	public function sendTip(string $message){
 		$pk = new TextPacket();
 		$pk->type = TextPacket::TYPE_TIP;
 		$pk->message = $message;
-		$this->dataPacket($pk);
+		$this->sendDataPacket($pk);
 	}
 
 	/**
@@ -2919,7 +2901,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->type = TextPacket::TYPE_WHISPER;
 		$pk->sourceName = $sender;
 		$pk->message = $message;
-		$this->dataPacket($pk);
+		$this->sendDataPacket($pk);
 	}
 
 	/**
@@ -3324,7 +3306,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($targets !== null){
 			$this->server->broadcastPacket($targets, $pk);
 		}else{
-			$this->dataPacket($pk);
+			$this->sendDataPacket($pk);
 		}
 
 		$this->newPosition = null;

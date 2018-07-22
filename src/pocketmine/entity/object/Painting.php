@@ -155,7 +155,7 @@ class Painting extends Entity{
 		$pk->direction = $this->direction;
 		$pk->title = $this->motive;
 
-		$player->dataPacket($pk);
+		$player->sendDataPacket($pk);
 	}
 
 	/**
