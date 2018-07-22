@@ -2999,6 +2999,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		]));
 	}
 
+	/**
+	 * @internal
+	 */
 	public function close() : void{
 		if(!$this->closed){
 			$this->cursorInventory = null;
