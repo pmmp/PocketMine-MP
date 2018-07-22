@@ -2690,6 +2690,18 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
+	 * @deprecated This is a proxy for sendDataPacket() and will be removed in the next major release.
+	 * @see Player::sendDataPacket()
+	 *
+	 * @param DataPacket $packet
+	 *
+	 * @return bool
+	 */
+	public function dataPacket(DataPacket $packet) : bool{
+		return $this->sendDataPacket($packet, false);
+	}
+
+	/**
 	 * Transfers a player to another server.
 	 *
 	 * @param string $address The IP address or hostname of the destination server
