@@ -195,7 +195,7 @@ class NetworkSession{
 	public function disconnect(string $reason, bool $notify = true) : void{
 		if($this->connected){
 			$this->connected = false;
-			$this->player->close($this->player->getLeaveMessage(), $reason);
+			$this->player->disconnect($this->player->getLeaveMessage(), $reason);
 			$this->doServerDisconnect($reason, $notify);
 		}
 	}
@@ -206,7 +206,7 @@ class NetworkSession{
 	 * @param string $reason
 	 * @param bool   $notify
 	 */
-	public function onPlayerDestroyed(string $reason, bool $notify = true) : void{
+	public function onPlayerDisconnect(string $reason, bool $notify = true) : void{
 		if($this->connected){
 			$this->connected = false;
 			$this->doServerDisconnect($reason, $notify);
@@ -240,7 +240,7 @@ class NetworkSession{
 	public function onClientDisconnect(string $reason) : void{
 		if($this->connected){
 			$this->connected = false;
-			$this->player->close($this->player->getLeaveMessage(), $reason);
+			$this->player->disconnect($this->player->getLeaveMessage(), $reason);
 			$this->disconnectCleanup();
 		}
 	}

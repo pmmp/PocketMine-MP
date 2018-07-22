@@ -2034,7 +2034,7 @@ class Server{
 			}
 
 			foreach($this->players as $player){
-				$player->close($player->getLeaveMessage(), $this->getProperty("settings.shutdown-message", "Server closed"));
+				$player->disconnect($player->getLeaveMessage(), $this->getProperty("settings.shutdown-message", "Server closed"));
 			}
 
 			$this->getLogger()->debug("Unloading all levels");
@@ -2268,8 +2268,10 @@ class Server{
 		$this->loggedInPlayers[$player->getRawUniqueId()] = $player;
 	}
 
-	public function onPlayerLogout(Player $player){
+	public function onPlayerDisconnect(Player $player) : void{
+		$this->removeOnlinePlayer($player);
 		unset($this->loggedInPlayers[$player->getRawUniqueId()]);
+		$this->removePlayer($player);
 	}
 
 	public function addPlayer(Player $player){
@@ -2341,7 +2343,7 @@ class Server{
 	private function checkTickUpdates(int $currentTick, float $tickTime) : void{
 		foreach($this->players as $p){
 			if(!$p->loggedIn and ($tickTime - $p->creationTime) >= 10){
-				$p->close("", "Login timeout");
+				$p->disconnect("", "Login timeout");
 			}elseif($this->alwaysTickPlayers and $p->spawned){
 				$p->onUpdate($currentTick);
 			}
