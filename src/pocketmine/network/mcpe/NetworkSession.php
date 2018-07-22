@@ -228,6 +228,7 @@ class NetworkSession{
 		}
 
 		$this->interface->close($this, $notify ? $reason : "");
+		$this->disconnectCleanup();
 	}
 
 	/**
@@ -240,7 +241,14 @@ class NetworkSession{
 		if($this->connected){
 			$this->connected = false;
 			$this->player->close($this->player->getLeaveMessage(), $reason);
+			$this->disconnectCleanup();
 		}
+	}
+
+	private function disconnectCleanup() : void{
+		$this->handler = null;
+		$this->interface = null;
+		$this->player = null;
 	}
 
 	//TODO: onEnableEncryption() step
