@@ -2013,6 +2013,10 @@ class Server{
 			return;
 		}
 
+		if($this->doTitleTick){
+			echo "\x1b]0;\x07";
+		}
+
 		try{
 			if(!$this->isRunning()){
 				$this->sendUsage(SendUsageTask::TYPE_CLOSE);
