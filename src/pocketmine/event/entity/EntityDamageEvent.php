@@ -209,9 +209,9 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	}
 	
 	/**
-	 * @param int $attackTick
+	 * @param int $attackCooldown
 	 */
-	public function setAttackCooldown(int $attackTick) : void{
-		$this->attackTick = $attackCooldown;
+	public function setAttackCooldown(int $attackCooldown) : void{
+		$this->attackCooldown = $attackCooldown;
 	}
 }
