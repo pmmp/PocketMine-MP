@@ -144,7 +144,13 @@ class NetworkSession{
 
 		//TODO: decryption if enabled
 
-		$stream = new PacketStream(NetworkCompression::decompress($payload));
+		try{
+			$stream = new PacketStream(NetworkCompression::decompress($payload));
+		}catch(\ErrorException $e){
+			$this->server->getLogger()->debug("Failed to decompress packet from " . $this->ip . " " . $this->port . ": " . bin2hex($payload));
+			$this->disconnect("Compressed packet batch decode error (incompatible game version?)", false);
+			return;
+		}
 		while(!$stream->feof() and $this->connected){
 			$this->handleDataPacket(PacketPool::getPacket($stream->getString()));
 		}
