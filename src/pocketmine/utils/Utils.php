@@ -136,42 +136,32 @@ class Utils{
 			return Utils::$ip;
 		}
 
-		do{
-			$ip = Utils::getURL("http://api.ipify.org/");
-			if($ip !== false){
-				Utils::$ip = $ip;
-				break;
-			}
+		$ip = Utils::getURL("http://api.ipify.org/");
+		if($ip !== false){
+			return Utils::$ip = $ip;
+		}
 
-			$ip = Utils::getURL("http://checkip.dyndns.org/");
-			if($ip !== false and preg_match('#Current IP Address\: ([0-9a-fA-F\:\.]*)#', trim(strip_tags($ip)), $matches) > 0){
-				Utils::$ip = $matches[1];
-				break;
-			}
+		$ip = Utils::getURL("http://checkip.dyndns.org/");
+		if($ip !== false and preg_match('#Current IP Address\: ([0-9a-fA-F\:\.]*)#', trim(strip_tags($ip)), $matches) > 0){
+			return Utils::$ip = $matches[1];
+		}
 
-			$ip = Utils::getURL("http://www.checkip.org/");
-			if($ip !== false and preg_match('#">([0-9a-fA-F\:\.]*)</span>#', $ip, $matches) > 0){
-				Utils::$ip = $matches[1];
-				break;
-			}
+		$ip = Utils::getURL("http://www.checkip.org/");
+		if($ip !== false and preg_match('#">([0-9a-fA-F\:\.]*)</span>#', $ip, $matches) > 0){
+			return Utils::$ip = $matches[1];
+		}
 
-			$ip = Utils::getURL("http://checkmyip.org/");
-			if($ip !== false and preg_match('#Your IP address is ([0-9a-fA-F\:\.]*)#', $ip, $matches) > 0){
-				Utils::$ip = $matches[1];
-				break;
-			}
+		$ip = Utils::getURL("http://checkmyip.org/");
+		if($ip !== false and preg_match('#Your IP address is ([0-9a-fA-F\:\.]*)#', $ip, $matches) > 0){
+			return Utils::$ip = $matches[1];
+		}
 
-			$ip = Utils::getURL("http://ifconfig.me/ip");
-			if($ip !== false and trim($ip) != ""){
-				Utils::$ip = trim($ip);
-				break;
-			}
+		$ip = Utils::getURL("http://ifconfig.me/ip");
+		if($ip !== false and trim($ip) != ""){
+			return Utils::$ip = trim($ip);
+		}
 
-			return false;
-
-		}while(false);
-
-		return Utils::$ip;
+		return false;
 	}
 
 	/**
