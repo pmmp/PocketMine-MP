@@ -228,7 +228,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_FLAG_FIRE_IMMUNE = 48;
 	public const DATA_FLAG_DANCING = 49;
 	public const DATA_FLAG_ENCHANTED = 50;
-	//51 is something to do with tridents
+	public const DATA_FLAG_SHOW_TRIDENT_ROPE = 51; // tridents show an animated rope when enchanted with loyalty after they are thrown and return to their owner. To be combined with DATA_OWNER_EID
 	public const DATA_FLAG_CONTAINER_PRIVATE = 52; //inventory is private, doesn't drop contents when killed if true
 	//53 TransformationComponent
 	public const DATA_FLAG_SPIN_ATTACK = 54;
