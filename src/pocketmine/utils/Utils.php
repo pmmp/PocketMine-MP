@@ -33,8 +33,6 @@ use pocketmine\ThreadManager;
  * Big collection of functions
  */
 class Utils{
-	public static $online = true;
-	public static $ip = false;
 	public static $os;
 	/** @var UUID|null */
 	private static $serverUniqueId = null;
@@ -123,45 +121,15 @@ class Utils{
 	}
 
 	/**
-	 * Gets the External IP using an external service, it is cached
+	 * @deprecated
+	 * @see Internet::getIP()
 	 *
 	 * @param bool $force default false, force IP check even when cached
 	 *
 	 * @return string|bool
 	 */
 	public static function getIP(bool $force = false){
-		if(!Utils::$online){
-			return false;
-		}elseif(Utils::$ip !== false and !$force){
-			return Utils::$ip;
-		}
-
-		$ip = Utils::getURL("http://api.ipify.org/");
-		if($ip !== false){
-			return Utils::$ip = $ip;
-		}
-
-		$ip = Utils::getURL("http://checkip.dyndns.org/");
-		if($ip !== false and preg_match('#Current IP Address\: ([0-9a-fA-F\:\.]*)#', trim(strip_tags($ip)), $matches) > 0){
-			return Utils::$ip = $matches[1];
-		}
-
-		$ip = Utils::getURL("http://www.checkip.org/");
-		if($ip !== false and preg_match('#">([0-9a-fA-F\:\.]*)</span>#', $ip, $matches) > 0){
-			return Utils::$ip = $matches[1];
-		}
-
-		$ip = Utils::getURL("http://checkmyip.org/");
-		if($ip !== false and preg_match('#Your IP address is ([0-9a-fA-F\:\.]*)#', $ip, $matches) > 0){
-			return Utils::$ip = $matches[1];
-		}
-
-		$ip = Utils::getURL("http://ifconfig.me/ip");
-		if($ip !== false and trim($ip) != ""){
-			return Utils::$ip = trim($ip);
-		}
-
-		return false;
+		return Internet::getIP($force);
 	}
 
 	/**
@@ -363,8 +331,8 @@ class Utils{
 	}*/
 
 	/**
-	 * GETs an URL using cURL
-	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
+	 * @deprecated
+	 * @see Internet::getURL()
 	 *
 	 * @param string  $page
 	 * @param int     $timeout default 10
@@ -376,18 +344,12 @@ class Utils{
 	 * @return bool|mixed false if an error occurred, mixed data if successful.
 	 */
 	public static function getURL(string $page, int $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
-		try{
-			list($ret, $headers, $httpCode) = self::simpleCurl($page, $timeout, $extraHeaders);
-			return $ret;
-		}catch(\RuntimeException $ex){
-			$err = $ex->getMessage();
-			return false;
-		}
+		return Internet::getURL($page, $timeout, $extraHeaders, $err, $headers, $httpCode);
 	}
 
 	/**
-	 * POSTs data to an URL
-	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
+	 * @deprecated
+	 * @see Internet::postURL()
 	 *
 	 * @param string       $page
 	 * @param array|string $args
@@ -400,22 +362,12 @@ class Utils{
 	 * @return bool|mixed false if an error occurred, mixed data if successful.
 	 */
 	public static function postURL(string $page, $args, int $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
-		try{
-			list($ret, $headers, $httpCode) = self::simpleCurl($page, $timeout, $extraHeaders, [
-				CURLOPT_POST => 1,
-				CURLOPT_POSTFIELDS => $args
-			]);
-			return $ret;
-		}catch(\RuntimeException $ex){
-			$err = $ex->getMessage();
-			return false;
-		}
-
+		return Internet::postURL($page, $args, $timeout, $extraHeaders, $err, $headers, $httpCode);
 	}
 
 	/**
-	 * General cURL shorthand function.
-	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
+	 * @deprecated
+	 * @see Internet::simpleCurl()
 	 *
 	 * @param string        $page
 	 * @param float|int     $timeout      The maximum connect timeout and timeout in seconds, correct to ms.
@@ -428,53 +380,7 @@ class Utils{
 	 * @throws \RuntimeException if a cURL error occurs
 	 */
 	public static function simpleCurl(string $page, $timeout = 10, array $extraHeaders = [], array $extraOpts = [], callable $onSuccess = null){
-		if(!Utils::$online){
-			throw new \RuntimeException("Server is offline");
-		}
-
-		$ch = curl_init($page);
-
-		curl_setopt_array($ch, $extraOpts + [
-			CURLOPT_SSL_VERIFYPEER => false,
-			CURLOPT_SSL_VERIFYHOST => 2,
-			CURLOPT_FORBID_REUSE => 1,
-			CURLOPT_FRESH_CONNECT => 1,
-			CURLOPT_AUTOREFERER => true,
-			CURLOPT_FOLLOWLOCATION => true,
-			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_CONNECTTIMEOUT_MS => (int) ($timeout * 1000),
-			CURLOPT_TIMEOUT_MS => (int) ($timeout * 1000),
-			CURLOPT_HTTPHEADER => array_merge(["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 " . \pocketmine\NAME], $extraHeaders),
-			CURLOPT_HEADER => true
-		]);
-		try{
-			$raw = curl_exec($ch);
-			$error = curl_error($ch);
-			if($error !== ""){
-				throw new \RuntimeException($error);
-			}
-			$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-			$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-			$rawHeaders = substr($raw, 0, $headerSize);
-			$body = substr($raw, $headerSize);
-			$headers = [];
-			foreach(explode("\r\n\r\n", $rawHeaders) as $rawHeaderGroup){
-				$headerGroup = [];
-				foreach(explode("\r\n", $rawHeaderGroup) as $line){
-					$nameValue = explode(":", $line, 2);
-					if(isset($nameValue[1])){
-						$headerGroup[trim(strtolower($nameValue[0]))] = trim($nameValue[1]);
-					}
-				}
-				$headers[] = $headerGroup;
-			}
-			if($onSuccess !== null){
-				$onSuccess($ch);
-			}
-			return [$body, $headers, $httpCode];
-		}finally{
-			curl_close($ch);
-		}
+		return Internet::simpleCurl($page, $timeout, $extraHeaders, $extraOpts, $onSuccess);
 	}
 
 	public static function javaStringHash(string $string) : int{

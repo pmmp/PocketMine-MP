@@ -25,6 +25,7 @@ namespace pocketmine\scheduler;
 
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\Server;
+use pocketmine\utils\Internet;
 use pocketmine\utils\Utils;
 use pocketmine\utils\UUID;
 use pocketmine\utils\VersionString;
@@ -147,7 +148,7 @@ class SendUsageTask extends AsyncTask{
 
 	public function onRun(){
 		try{
-			Utils::postURL($this->endpoint, $this->data, 5, [
+			Internet::postURL($this->endpoint, $this->data, 5, [
 				"Content-Type: application/json",
 				"Content-Length: " . strlen($this->data)
 			]);

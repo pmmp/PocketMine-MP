@@ -29,7 +29,7 @@ namespace pocketmine\wizard;
 
 use pocketmine\lang\BaseLang;
 use pocketmine\utils\Config;
-use pocketmine\utils\Utils;
+use pocketmine\utils\Internet;
 
 class SetupWizard{
 	public const DEFAULT_NAME = \pocketmine\NAME . " Server";
@@ -205,7 +205,7 @@ LICENSE;
 
 		$this->message($this->lang->get("ip_get"));
 
-		$externalIP = Utils::getIP();
+		$externalIP = Internet::getIP();
 		if($externalIP === false){
 			$externalIP = "unknown (server offline)";
 		}

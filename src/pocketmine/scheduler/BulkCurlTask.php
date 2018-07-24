@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
-use pocketmine\utils\Utils;
+use pocketmine\utils\Internet;
 
 /**
  * Executes a consecutive list of cURL operations.
@@ -55,7 +55,7 @@ class BulkCurlTask extends AsyncTask{
 		$results = [];
 		foreach($operations as $op){
 			try{
-				$results[] = Utils::simpleCurl($op["page"], $op["timeout"] ?? 10, $op["extraHeaders"] ?? [], $op["extraOpts"] ?? []);
+				$results[] = Internet::simpleCurl($op["page"], $op["timeout"] ?? 10, $op["extraHeaders"] ?? [], $op["extraOpts"] ?? []);
 			}catch(\RuntimeException $e){
 				$results[] = $e;
 			}
