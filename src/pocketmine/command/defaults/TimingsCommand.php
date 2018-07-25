@@ -135,7 +135,7 @@ class TimingsCommand extends VanillaCommand{
 							$server->getLogger()->logException($result);
 							return;
 						}
-						if(isset($result[0]) && is_array($response = json_decode($result[0], true))){
+						if(isset($result[0]) && is_array($response = json_decode($result[0], true)) && isset($response["id"])){
 							$pasteId = $response["id"];
 						}
 						if(isset($pasteId)){
