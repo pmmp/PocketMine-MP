@@ -135,8 +135,8 @@ class TimingsCommand extends VanillaCommand{
 							$server->getLogger()->logException($result);
 							return;
 						}
-						if(isset($result[0])){
-							$pasteId = json_decode($result[0])->id ?? 0;
+						if(isset($result[0]) && is_array($response = json_decode($result[0], true))){
+							$pasteId = $response["id"];
 						}
 						if(isset($pasteId)){
 							$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsRead",
