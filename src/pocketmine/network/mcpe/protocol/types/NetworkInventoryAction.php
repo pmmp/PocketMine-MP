@@ -225,6 +225,9 @@ class NetworkInventoryAction{
                         return new SlotChangeAction($window, 1, $this->oldItem, $this->newItem);
                     case self::SOURCE_TYPE_ANVIL_RESULT:
                         $window = $player->getWindowByType(AnvilInventory::class);
+                        //TODO: Fix Hack (item count / 2)
+                        $window->clear(0);
+                        $window->clear(1);
                         $window->setItem(2, $this->oldItem, false);
                         return new SlotChangeAction($window, 2, $this->oldItem, $this->newItem);
                     case self::SOURCE_TYPE_ANVIL_OUTPUT:
