@@ -31,7 +31,6 @@ use pocketmine\event\entity\EntityEvent;
  * Called when a player gains or loses XP levels and/or progress.
  */
 class PlayerExperienceChangeEvent extends EntityEvent implements Cancellable{
-	public static $handlerList = null;
 	/** @var Human */
 	protected $entity;
 	/** @var int */
