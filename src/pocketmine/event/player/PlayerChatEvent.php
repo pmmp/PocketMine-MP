@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
+use pocketmine\permission\PermissionManager;
 use pocketmine\Player;
 use pocketmine\Server;
 
@@ -55,7 +56,7 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 		$this->format = $format;
 
 		if($recipients === null){
-			$this->recipients = Server::getInstance()->getPluginManager()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_USERS);
+			$this->recipients = PermissionManager::getInstance()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_USERS);
 		}else{
 			$this->recipients = $recipients;
 		}

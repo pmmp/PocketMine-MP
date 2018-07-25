@@ -27,8 +27,6 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
-use pocketmine\Server;
-
 /**
  * Represents a permission
  */
@@ -217,13 +215,13 @@ class Permission{
 	 * @return Permissible[]
 	 */
 	public function getPermissibles() : array{
-		return Server::getInstance()->getPluginManager()->getPermissionSubscriptions($this->name);
+		return PermissionManager::getInstance()->getPermissionSubscriptions($this->name);
 	}
 
 	public function recalculatePermissibles(){
 		$perms = $this->getPermissibles();
 
-		Server::getInstance()->getPluginManager()->recalculatePermissionDefaults($this);
+		PermissionManager::getInstance()->recalculatePermissionDefaults($this);
 
 		foreach($perms as $p){
 			$p->recalculatePermissions();
@@ -243,10 +241,10 @@ class Permission{
 			$name->recalculatePermissibles();
 			return null;
 		}else{
-			$perm = Server::getInstance()->getPluginManager()->getPermission($name);
+			$perm = PermissionManager::getInstance()->getPermission($name);
 			if($perm === null){
 				$perm = new Permission($name);
-				Server::getInstance()->getPluginManager()->addPermission($perm);
+				PermissionManager::getInstance()->addPermission($perm);
 			}
 
 			$this->addParent($perm, $value);
