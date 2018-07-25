@@ -382,8 +382,10 @@ class Level implements ChunkManager, Metadatable{
 
 	public function unregisterGenerator(){
 		$pool = $this->server->getAsyncPool();
-		foreach($this->generatorRegisteredWorkers as $i => $bool){
-			$pool->submitTaskToWorker(new GeneratorUnregisterTask($this), $i);
+		foreach($pool->getRunningWorkers() as $i){
+			if(isset($this->generatorRegisteredWorkers[$i])){
+				$pool->submitTaskToWorker(new GeneratorUnregisterTask($this), $i);
+			}
 		}
 		$this->generatorRegisteredWorkers = [];
 	}
