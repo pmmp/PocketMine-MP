@@ -121,8 +121,10 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
+use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\MoveEntityAbsolutePacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
+use pocketmine\network\mcpe\protocol\ServerSettingsResponsePacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
 use pocketmine\network\mcpe\protocol\SetTitlePacket;
@@ -3133,6 +3135,71 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
         $pk->sourceName = $sender;
         $pk->message = $message;
 		$this->sendDataPacket($pk);
+    }
+
+    /**
+     * Sends a Form to the player, or queue to send it if a form is already open.
+     *
+     * @param Form     $form
+     * @param int|null $id
+     */
+    public function sendForm(Form $form, ?int $id = null) : void{
+        $form->setInUse();
+
+        $id = $id ?? $this->formIdCounter++;
+        $this->formQueue[$id] = $form;
+        $this->sendFormRequestPacket($form, $id);
+    }
+
+    /**
+     * @param int   $formId
+     * @param mixed $responseData
+     *
+     * @return bool
+     */
+    public function onFormSubmit(int $formId, $responseData) : bool{
+        if(isset($this->formQueue[$formId])){
+            /** @var Form $form */
+            $form = $this->formQueue[$formId];
+
+            try{
+                $form = $form->handleResponse($this, $responseData);
+            }catch(\Throwable $e){
+                $this->server->getLogger()->logException($e);
+            }
+
+            if($form !== null){
+                $this->sendForm($form);
+            }
+        }else{
+            $this->server->getLogger()->debug("Form with id $formId not found");
+            return false;
+        }
+
+        return true;
+    }
+
+    private function sendFormRequestPacket(Form $form, int $id) : void{
+        $pk = new ModalFormRequestPacket();
+        $pk->formId = $id;
+        $pk->formData = json_encode($form);
+        $this->sendDataPacket($pk);
+    }
+
+    public function sendServerSettings(ServerSettingsForm $form){
+        $id = $this->formIdCounter++;
+        $pk = new ServerSettingsResponsePacket();
+        $pk->formId = $id;
+        $pk->formData = json_encode($form);
+        $this->sendDataPacket($pk);
+    }
+
+    public function getServerSettingsForm() : ?ServerSettingsForm{
+        return $this->serverSettingsForm;
+    }
+
+    public function setServerSettingsForm(ServerSettingsForm $form) : void{
+        $this->serverSettingsForm = $form;
     }
 
     /**

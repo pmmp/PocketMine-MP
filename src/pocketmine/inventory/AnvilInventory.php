@@ -45,7 +45,7 @@ class AnvilInventory extends ContainerInventory{
 	}
 
 	public function getDefaultSize() : int{
-		return 2; //1 input, 1 material
+		return 3; //1 input, 1 material, 1 result
 	}
 
 	/**
