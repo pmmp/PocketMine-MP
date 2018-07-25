@@ -40,4 +40,5 @@ class MultiRecipe{
 	public function __construct(UUID $uuid){
 		$this->uuid = $uuid;
 	}
+
 }

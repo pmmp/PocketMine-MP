@@ -33,46 +33,46 @@ use pocketmine\network\mcpe\NetworkSession;
  */
 interface NetworkInterface{
 
-	/**
-	 * Performs actions needed to start the interface after it is registered.
-	 */
-	public function start() : void;
+    /**
+     * Performs actions needed to start the interface after it is registered.
+     */
+    public function start() : void;
 
-	/**
-	 * Sends a DataPacket to the interface, returns an unique identifier for the packet if $needACK is true
-	 *
+    /**
+     * Sends a DataPacket to the interface, returns an unique identifier for the packet if $needACK is true
+     *
 	 * @param NetworkSession $session
-	 * @param string         $payload
-	 * @param bool           $immediate
-	 */
+     * @param string $payload
+     * @param bool   $immediate
+     */
 	public function putPacket(NetworkSession $session, string $payload, bool $immediate = true) : void;
 
-	/**
-	 * Terminates the connection
-	 *
+    /**
+     * Terminates the connection
+     *
 	 * @param NetworkSession $session
-	 * @param string         $reason
-	 */
+     * @param string $reason
+     */
 	public function close(NetworkSession $session, string $reason = "unknown reason") : void;
 
-	/**
-	 * @param string $name
-	 */
-	public function setName(string $name) : void;
+    /**
+     * @param string $name
+     */
+    public function setName(string $name) : void;
 
-	/**
-	 * Called every tick to process events on the interface.
-	 */
-	public function process() : void;
+    /**
+     * Called every tick to process events on the interface.
+     */
+    public function process() : void;
 
-	/**
-	 * Gracefully shuts down the network interface.
-	 */
-	public function shutdown() : void;
+    /**
+     * Gracefully shuts down the network interface.
+     */
+    public function shutdown() : void;
 
-	/**
-	 * Shuts down the network interface in an emergency situation, such as due to a crash.
-	 */
-	public function emergencyShutdown() : void;
+    /**
+     * Shuts down the network interface in an emergency situation, such as due to a crash.
+     */
+    public function emergencyShutdown() : void;
 
 }

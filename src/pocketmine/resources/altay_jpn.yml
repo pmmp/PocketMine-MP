@@ -1,0 +1,40 @@
+#             _ _
+#       /\   | | |
+#      /  \  | | |_ __ _ _   _
+#     / /\ \ | | __/ _` | | | |
+#    / ____ \| | || (_| | |_| |
+#   /_/    \_|_|\__\__,_|\__, |
+#                         __/ |
+#                        |___/
+
+player:
+  # 有効にするとプレイヤーが死亡してもインベントリ(プレイヤーの持っている、ブロックやアイテム)を維持します
+  keep-inventory: false
+  # 有効にするとプレイヤーが死亡しても経験値を維持します
+  keep-experience: false
+
+dimensions:
+  # 有効にするとネザーワールドが自動的に生成され、ポータルを用いて移動できます
+  nether:
+    active: false
+    level-name: "nether"
+  # 有効にするとエンドワールドが自動的に生成され、ポータルを用いて移動できます
+  end:
+    active: false
+    level-name: "end"
+
+developer:
+  # 有効にするとソースディレクトリからプラグインを読み込みます
+  folder-plugin-loader: true
+  # 有効にすると開発者向けのコマンドを有効にします
+  commands: true
+  # 有効にすると互換性のないAPIのプラグインを読み込みます
+  load-incompatible-api: true
+
+terminal:
+  # コンソールに色文字を使用します。無効にする場合は"false"に設定してください。
+  read-line: true
+
+server:
+  # 有効にするとサーバーの情報を設定画面に表示します
+  allow-server-settings-form: true

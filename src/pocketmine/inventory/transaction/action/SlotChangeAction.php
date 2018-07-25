@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory\transaction\action;
 
-use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\InventoryTransaction;
+use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\Player;
 

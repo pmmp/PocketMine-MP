@@ -27,6 +27,7 @@ use pocketmine\Server;
 
 abstract class DefaultPermissions{
 	public const ROOT = "pocketmine";
+	public const ALTAY = "altay";
 
 	/**
 	 * @param Permission $perm
@@ -57,6 +58,11 @@ abstract class DefaultPermissions{
 		$spawnprotect->recalculatePermissibles();
 
 		$commands = self::registerPermission(new Permission(self::ROOT . ".command", "Allows using all PocketMine commands"), $parent);
+
+		$clear = self::registerPermission(new Permission(self::ALTAY . ".command.clear", "Allows the user to clear inventory players", Permission::DEFAULT_OP), $commands);
+		self::registerPermission(new Permission(self::ALTAY . ".command.clear.self", "Allows the user to clear inventory", Permission::DEFAULT_TRUE), $clear);
+		self::registerPermission(new Permission(self::ALTAY . ".command.clear.other", "Allows the user to clear inventory other players"), $clear);
+		$clear->recalculatePermissibles();
 
 		$whitelist = self::registerPermission(new Permission(self::ROOT . ".command.whitelist", "Allows the user to modify the server whitelist", Permission::DEFAULT_OP), $commands);
 		self::registerPermission(new Permission(self::ROOT . ".command.whitelist.add", "Allows the user to add a player to the server whitelist"), $whitelist);
@@ -96,10 +102,15 @@ abstract class DefaultPermissions{
 		self::registerPermission(new Permission(self::ROOT . ".command.time.query", "Allows the user query the time"), $time);
 		$time->recalculatePermissibles();
 
-		$kill = self::registerPermission(new Permission(self::ROOT . ".command.kill", "Allows the user to kill players", Permission::DEFAULT_OP), $commands);
-		self::registerPermission(new Permission(self::ROOT . ".command.kill.self", "Allows the user to commit suicide", Permission::DEFAULT_TRUE), $kill);
-		self::registerPermission(new Permission(self::ROOT . ".command.kill.other", "Allows the user to kill other players"), $kill);
+		$kill = self::registerPermission(new Permission(self::ALTAY . ".command.kill", "Allows the user to kill players", Permission::DEFAULT_OP), $commands);
+		self::registerPermission(new Permission(self::ALTAY . ".command.kill.self", "Allows the user to commit suicide", Permission::DEFAULT_TRUE), $kill);
+		self::registerPermission(new Permission(self::ALTAY . ".command.kill.other", "Allows the user to kill other players"), $kill);
 		$kill->recalculatePermissibles();
+
+        $clear = self::registerPermission(new Permission(self::ALTAY . ".command.clear", "Allows the user to clear player's inventory", Permission::DEFAULT_OP), $commands);
+        self::registerPermission(new Permission(self::ALTAY . ".command.clear.self", "Allows the user to clear inventory", Permission::DEFAULT_TRUE), $clear);
+        self::registerPermission(new Permission(self::ALTAY . ".command.clear.other", "Allows the user to clear other player's inventory"), $clear);
+        $clear->recalculatePermissibles();
 
 		self::registerPermission(new Permission(self::ROOT . ".command.me", "Allows the user to perform a chat action", Permission::DEFAULT_TRUE), $commands);
 		self::registerPermission(new Permission(self::ROOT . ".command.tell", "Allows the user to privately message another player", Permission::DEFAULT_TRUE), $commands);

@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\level\Explosion;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
@@ -136,6 +137,12 @@ class Bed extends Transparent{
 				return true;
 			}elseif($player->distanceSquared($this) > 4 and $player->distanceSquared($other) > 4){
 				$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%tile.bed.tooFar"));
+				return true;
+			}
+
+			$dimension = $this->level->getDimension();
+			if($dimension != Level::DIMENSION_OVERWORLD){
+				(new Explosion($this, 5, true))->explode();
 				return true;
 			}
 

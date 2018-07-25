@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item\enchantment;
 
-
 class EnchantmentEntry{
 
 	/** @var Enchantment[] */
@@ -55,4 +54,5 @@ class EnchantmentEntry{
 	public function getRandomName() : string{
 		return $this->randomName;
 	}
+
 }

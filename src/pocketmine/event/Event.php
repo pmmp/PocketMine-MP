@@ -27,7 +27,6 @@ declare(strict_types=1);
 namespace pocketmine\event;
 
 abstract class Event{
-
 	/** @var string|null */
 	protected $eventName = null;
 	/** @var bool */
@@ -67,4 +66,5 @@ abstract class Event{
 		/** @var Event $this */
 		$this->isCancelled = $value;
 	}
+
 }

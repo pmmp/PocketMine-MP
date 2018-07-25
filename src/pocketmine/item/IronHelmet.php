@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-
 class IronHelmet extends Armor{
 	public function __construct(int $meta = 0){
 		parent::__construct(self::IRON_HELMET, $meta, "Iron Helmet");
@@ -33,7 +32,15 @@ class IronHelmet extends Armor{
 		return 2;
 	}
 
-	public function getMaxDurability() : int{
-		return 166;
+    public function getArmorSlot() : int{
+        return Armor::SLOT_HELMET;
+    }
+
+    public function getMaxDurability() : int{
+        return 166;
+    }
+
+	public function getEnchantability() : int{
+		return 9;
 	}
 }

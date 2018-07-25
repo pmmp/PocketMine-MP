@@ -32,6 +32,7 @@ class StringItem extends Item{
 	}
 
 	public function getBlock() : Block{
-		return BlockFactory::get(Block::TRIPWIRE);
-	}
+        return BlockFactory::get(Block::TRIPWIRE);
+    }
 }
+

@@ -38,8 +38,8 @@ abstract class Biome{
 	public const TAIGA = 5;
 	public const SWAMP = 6;
 	public const RIVER = 7;
-
 	public const HELL = 8;
+	public const END = 9, SKY = 9;
 
 	public const ICE_PLAINS = 12;
 
