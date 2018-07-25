@@ -26,12 +26,13 @@ declare(strict_types=1);
  */
 namespace pocketmine\network\upnp;
 
+use pocketmine\utils\Internet;
 use pocketmine\utils\Utils;
 
 abstract class UPnP{
 
 	public static function PortForward(int $port) : void{
-		if(!Utils::$online){
+		if(!Internet::$online){
 			throw new \RuntimeException("Server is offline");
 		}
 		if(Utils::getOS() !== "win"){
@@ -55,7 +56,7 @@ abstract class UPnP{
 	}
 
 	public static function RemovePortForward(int $port) : bool{
-		if(!Utils::$online){
+		if(!Internet::$online){
 			return false;
 		}
 		if(Utils::getOS() != "win" or !class_exists("COM")){

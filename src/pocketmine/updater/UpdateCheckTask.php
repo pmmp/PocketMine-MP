@@ -27,7 +27,7 @@ namespace pocketmine\updater;
 
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
-use pocketmine\utils\Utils;
+use pocketmine\utils\Internet;
 
 class UpdateCheckTask extends AsyncTask{
 
@@ -45,7 +45,7 @@ class UpdateCheckTask extends AsyncTask{
 
 	public function onRun(){
 		$error = "";
-		$response = Utils::getURL($this->endpoint . "?channel=" . $this->channel, 4, [], $error);
+		$response = Internet::getURL($this->endpoint . "?channel=" . $this->channel, 4, [], $error);
 		$this->error = $error;
 
 		if($response !== false){
