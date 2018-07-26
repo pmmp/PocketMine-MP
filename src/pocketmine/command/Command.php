@@ -32,6 +32,7 @@ use pocketmine\lang\TranslationContainer;
 use pocketmine\network\mcpe\protocol\types\CommandData;
 use pocketmine\network\mcpe\protocol\types\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\CommandParameter;
+use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\TextFormat;
@@ -308,18 +309,18 @@ abstract class Command{
             $m = clone $message;
             $result = "[" . $source->getName() . ": " . ($source->getServer()->getLanguage()->get($m->getText()) !== $m->getText() ? "%" : "") . $m->getText() . "]";
 
-            $users = $source->getServer()->getPluginManager()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
-            $colored = TextFormat::GRAY . TextFormat::ITALIC . $result;
+			$users = PermissionManager::getInstance()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
+			$colored = TextFormat::GRAY . TextFormat::ITALIC . $result;
 
-            $m->setText($result);
-            $result = clone $m;
-            $m->setText($colored);
-            $colored = clone $m;
-        }else{
-            $users = $source->getServer()->getPluginManager()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
-            $result = new TranslationContainer("chat.type.admin", [$source->getName(), $message]);
-            $colored = new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . "%chat.type.admin", [$source->getName(), $message]);
-        }
+			$m->setText($result);
+			$result = clone $m;
+			$m->setText($colored);
+			$colored = clone $m;
+		}else{
+			$users = PermissionManager::getInstance()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
+			$result = new TranslationContainer("chat.type.admin", [$source->getName(), $message]);
+			$colored = new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . "%chat.type.admin", [$source->getName(), $message]);
+		}
 
         if($sendToSource and !($source instanceof ConsoleCommandSender)){
             $source->sendMessage($message);
