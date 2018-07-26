@@ -142,6 +142,7 @@ use pocketmine\network\mcpe\VerifyLoginTask;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
 use pocketmine\permission\PermissionAttachmentInfo;
+use pocketmine\permission\PermissionManager;
 use pocketmine\plugin\Plugin;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
@@ -650,9 +651,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
         $this->perm->removeAttachment($attachment);
     }
 
-    public function recalculatePermissions(){
-        $this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
-        $this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
+	public function recalculatePermissions(){
+		$permManager = PermissionManager::getInstance();
+		$permManager->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
+		$permManager->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
 
         if($this->perm === null){
             return;
@@ -661,10 +663,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
         $this->perm->recalculatePermissions();
 
         if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
-            $this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
+            $permManager->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
         }
         if($this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)){
-            $this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
+            $permManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
         }
 
         if($this->spawned){
@@ -1022,12 +1024,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
         $this->networkSession->onSpawn();
 
-        if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
-            $this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
-        }
-        if($this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)){
-            $this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
-        }
+		if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
+			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
+		}
+		if($this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)){
+			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
+		}
 
         $this->server->getPluginManager()->callEvent($ev = new PlayerJoinEvent($this,
             new TranslationContainer(TextFormat::YELLOW . "%multiplayer.player.joined", [
@@ -3219,8 +3221,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->networkSession->onPlayerDestroyed($reason, $notify);
                 $this->networkSession = null;
 
-                $this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
-                $this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
+				PermissionManager::getInstance()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
+				PermissionManager::getInstance()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
 
                 $this->stopSleep();
 

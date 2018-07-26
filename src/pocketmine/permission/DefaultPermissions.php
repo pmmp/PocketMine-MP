@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
-use pocketmine\Server;
-
 abstract class DefaultPermissions{
 	public const ROOT = "pocketmine";
 	public const ALTAY = "altay";
@@ -41,9 +39,9 @@ abstract class DefaultPermissions{
 
 			return self::registerPermission($perm);
 		}
-		Server::getInstance()->getPluginManager()->addPermission($perm);
+		PermissionManager::getInstance()->addPermission($perm);
 
-		return Server::getInstance()->getPluginManager()->getPermission($perm->getName());
+		return PermissionManager::getInstance()->getPermission($perm->getName());
 	}
 
 	public static function registerCorePermissions(){

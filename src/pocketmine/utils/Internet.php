@@ -131,11 +131,11 @@ class Internet{
 	 *
 	 * @return array a plain array of three [result body : string, headers : array[], HTTP response code : int]. Headers are grouped by requests with strtolower(header name) as keys and header value as values
 	 *
-	 * @throws \RuntimeException if a cURL error occurs
+	 * @throws InternetException if a cURL error occurs
 	 */
 	public static function simpleCurl(string $page, $timeout = 10, array $extraHeaders = [], array $extraOpts = [], callable $onSuccess = null){
 		if(!self::$online){
-			throw new \RuntimeException("Cannot execute web request while offline");
+			throw new InternetException("Cannot execute web request while offline");
 		}
 
 		$ch = curl_init($page);
@@ -157,7 +157,7 @@ class Internet{
 			$raw = curl_exec($ch);
 			$error = curl_error($ch);
 			if($error !== ""){
-				throw new \RuntimeException($error);
+				throw new InternetException($error);
 			}
 			$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 			$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);

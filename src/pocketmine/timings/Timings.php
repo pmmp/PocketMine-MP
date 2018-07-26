@@ -26,7 +26,6 @@ namespace pocketmine\timings;
 use pocketmine\entity\Entity;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\Player;
-use pocketmine\plugin\PluginManager;
 use pocketmine\scheduler\TaskHandler;
 use pocketmine\tile\Tile;
 
@@ -134,7 +133,7 @@ abstract class Timings{
 		self::$timerEntityBaseTick = new TimingsHandler("** entityBaseTick");
 		self::$timerLivingEntityBaseTick = new TimingsHandler("** livingEntityBaseTick");
 
-		self::$schedulerSyncTimer = new TimingsHandler("** Scheduler - Sync Tasks", PluginManager::$pluginParentTimer);
+		self::$schedulerSyncTimer = new TimingsHandler("** Scheduler - Sync Tasks");
 		self::$schedulerAsyncTimer = new TimingsHandler("** Scheduler - Async Tasks");
 
 		self::$playerCommandTimer = new TimingsHandler("** playerCommand");
