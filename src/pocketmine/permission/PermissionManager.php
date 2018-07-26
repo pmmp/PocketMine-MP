@@ -212,4 +212,10 @@ class PermissionManager{
 	public function getPermissions() : array{
 		return $this->permissions;
 	}
+
+	public function clearPermissions() : void{
+		$this->permissions = [];
+		$this->defaultPerms = [];
+		$this->defaultPermsOp = [];
+	}
 }
