@@ -44,8 +44,6 @@ class Config{
 
 	/** @var string */
 	private $file;
-	/** @var bool */
-	private $correct = false;
 	/** @var int */
 	private $type = Config::DETECT;
 	/** @var int */
