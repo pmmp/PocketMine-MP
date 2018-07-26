@@ -114,9 +114,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
     public const DATA_PADDLE_TIME_LEFT = 13; //float
     public const DATA_PADDLE_TIME_RIGHT = 14; //float
     public const DATA_EXPERIENCE_VALUE = 15; //int (xp orb)
-	public const DATA_MINECART_DISPLAY_BLOCK = 16, DATA_DISPLAY_ITEM = 16; //int (id | (data << 16))
-	public const DATA_MINECART_DISPLAY_OFFSET = 17; //int
-	public const DATA_MINECART_HAS_DISPLAY = 18; //byte (must be 1 for minecart to show block inside)
+    public const DATA_MINECART_DISPLAY_BLOCK = 16, DATA_DISPLAY_ITEM = 16; //int (id | (data << 16))
+    public const DATA_MINECART_DISPLAY_OFFSET = 17, DATA_DISPLAY_OFFSET = 17; //int
+    public const DATA_MINECART_HAS_DISPLAY = 18, DATA_HAS_DISPLAY = 18; //byte (must be 1 for minecart to show block inside)
 
     //TODO: add more properties
 
