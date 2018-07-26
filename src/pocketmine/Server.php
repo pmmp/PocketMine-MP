@@ -1712,7 +1712,7 @@ class Server{
 			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
 			$this->profilingTickRate = (float) $this->getProperty("settings.profile-report-trigger", 20);
 			$this->pluginManager->registerInterface(new FolderPluginLoader($this->autoloader));
-            $this->pluginManager->registerInterface(newPharPluginLoader($this->autoloader));
+            $this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
 			$this->pluginManager->registerInterface(new ScriptPluginLoader());
 
             register_shutdown_function([$this, "crashDump"]);
