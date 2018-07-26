@@ -72,9 +72,6 @@ class PluginManager{
 	/** @var string|null */
 	private $pluginDataDirectory;
 
-	/** @var TimingsHandler */
-	public static $pluginParentTimer;
-
 	/**
 	 * @param Server           $server
 	 * @param SimpleCommandMap $commandMap
@@ -804,7 +801,7 @@ class PluginManager{
 			throw new PluginException("Plugin attempted to register " . $event . " while not enabled");
 		}
 
-		$timings = new TimingsHandler("Plugin: " . $plugin->getDescription()->getFullName() . " Event: " . get_class($listener) . "::" . ($executor instanceof MethodEventExecutor ? $executor->getMethod() : "???") . "(" . (new \ReflectionClass($event))->getShortName() . ")", self::$pluginParentTimer);
+		$timings = new TimingsHandler("Plugin: " . $plugin->getDescription()->getFullName() . " Event: " . get_class($listener) . "::" . ($executor instanceof MethodEventExecutor ? $executor->getMethod() : "???") . "(" . (new \ReflectionClass($event))->getShortName() . ")");
 
 		$this->getEventListeners($event)->register(new RegisteredListener($listener, $executor, $priority, $plugin, $ignoreCancelled, $timings));
 	}
