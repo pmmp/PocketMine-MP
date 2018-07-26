@@ -44,11 +44,6 @@ class XpCommand extends VanillaCommand{
                     new CommandParameter("amount", CommandParameter::ARG_TYPE_INT, false),
                     new CommandParameter("player", CommandParameter::ARG_TYPE_TARGET)
                 ]
-                /* NOT WORK
-                [
-                    new CommandParameter("amount", CommandParameter::ARG_TYPE_INT, false, "L"),
-                    new CommandParameter("player", CommandParameter::ARG_TYPE_TARGET)
-                ]*/
             ]
         );
 
