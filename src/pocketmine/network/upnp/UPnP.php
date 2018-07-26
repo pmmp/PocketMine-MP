@@ -47,8 +47,9 @@ abstract class UPnP{
 		/** @noinspection PhpUndefinedClassInspection */
 		$com = new \COM("HNetCfg.NATUPnP");
 		/** @noinspection PhpUndefinedFieldInspection */
+
 		if($com === false or !is_object($com->StaticPortMappingCollection)){
-			throw new \RuntimeException("Failed to portforward (unsupported?)");
+			throw new \RuntimeException("Failed to portforward using UPnP. Ensure that network discovery is enabled in Control Panel.");
 		}
 
 		/** @noinspection PhpUndefinedFieldInspection */
