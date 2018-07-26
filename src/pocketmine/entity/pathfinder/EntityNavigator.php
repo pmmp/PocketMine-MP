@@ -36,10 +36,6 @@ use pocketmine\block\Block;
 
 class EntityNavigator{
 
-    public const NAVIGATE_TYPE_GROUND = 0;
-    public const NAVIGATE_TYPE_AIR = 1;
-    public const NAVIGATE_TYPE_LIQUID = 2;
-
     /** @var Mob */
     protected $mob;
 
@@ -141,11 +137,13 @@ class EntityNavigator{
 
     public function getPathableY() : int{
         $last = floor($this->mob->y);
-        for($i = 1; $i < 3; $i++){
-            if($this->mob->level->getBlock($this->mob->add(0,-$i,0))->isSolid()){
-                break;
+        if($this->mob->isSwimmer()) {
+            for ($i = 1; $i < 6; $i++) {
+                if ($this->mob->level->getBlock($this->mob->add(0, -$i, 0))->isSolid()) {
+                    break;
+                }
+                $last--;
             }
-            $last--;
         }
         return (int) $last;
     }
@@ -206,7 +204,7 @@ class EntityNavigator{
 
             $coord = new Vector3((int)$item->x, $block->y, (int)$item->y);
             if ($this->mob->level->getBlock($coord)->isSolid()) {
-                if ($this->mob->canClimb()) {
+                if ($this->mob->canClimb() or $this->mob->isSwimmer()) {
                     $blockUp = $this->mob->level->getBlock($coord->getSide(Vector3::SIDE_UP));
                     $canMove = false;
                     for ($i = 0; $i < 10; $i++) {
@@ -235,7 +233,7 @@ class EntityNavigator{
                 }
             } else {
                 $blockDown = $this->mob->level->getBlock($coord->add(0, -1, 0));
-                if (!$blockDown->isSolid()) {
+                if (!$blockDown->isSolid() and !$this->mob->isSwimmer()) {
                     if ($this->mob->canClimb()) {
                         $canClimb = false;
                         $blockDown = $this->mob->level->getBlock($blockDown->getSide(Vector3::SIDE_DOWN));
@@ -300,7 +298,7 @@ class EntityNavigator{
 
     public function isBlocked(Vector3 $coord) : bool{
         $block = $this->mob->level->getBlock($coord);
-        return $block->isSolid() and !$this->avoidsWater and !($block instanceof Water);
+        return $block->isSolid();
     }
 
     public function removeSunnyPath() : void{

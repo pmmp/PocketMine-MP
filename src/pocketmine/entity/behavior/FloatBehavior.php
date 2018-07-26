@@ -42,12 +42,12 @@ class FloatBehavior extends Behavior
 
     public function onStart(): void
     {
-        $this->mob->setGenericFlag(Mob::DATA_FLAG_SWIMMER, true);
+        $this->mob->setSwimmer(true);
     }
 
     public function onEnd(): void
     {
-        $this->mob->setGenericFlag(Mob::DATA_FLAG_SWIMMER, false);
+        $this->mob->setSwimmer(false);
     }
 
     public function onTick(): void
