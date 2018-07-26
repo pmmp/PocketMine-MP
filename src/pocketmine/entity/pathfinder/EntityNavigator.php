@@ -233,7 +233,7 @@ class EntityNavigator{
                 }
             } else {
                 $blockDown = $this->mob->level->getBlock($coord->add(0, -1, 0));
-                if (!$blockDown->isSolid() and !$this->mob->isSwimmer()) {
+                if (!$blockDown->isSolid() and !$this->mob->isSwimmer() and !$this->avoidsWater) {
                     if ($this->mob->canClimb()) {
                         $canClimb = false;
                         $blockDown = $this->mob->level->getBlock($blockDown->getSide(Vector3::SIDE_DOWN));
@@ -265,7 +265,7 @@ class EntityNavigator{
                         $cache[$item->getHashCode()] = $blockDown;
                     }
                 } else {
-                    if ($this->isObstructed($coord)) continue;
+                    if ($this->isObstructed($coord) or (!$this->mob->isSwimmer() and $this->avoidsWater and $this->mob->level->getBlock($coord) instanceof Liquid)) continue;
 
                     $cache[$item->getHashCode()] = $this->mob->level->getBlock($coord);
                 }
