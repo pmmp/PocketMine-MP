@@ -54,34 +54,14 @@ class CommandParameter{
 	/** @var string|null */
 	public $postfix;
 
-    /**
-     * CommandParameter constructor.
-     * @param string       $name
-     * @param int          $type
-     * @param bool         $optional
-     * @param string|array $extraData
-     * @param int|null     $flag
-     */
-    public function __construct(string $name, int $type, bool $optional = true, $extraData = null, int $flag = null){
-        $this->flag = $flag;
-        if($extraData != null){
-            if($extraData instanceof CommandEnum){
-                $flag = AvailableCommandsPacket::ARG_FLAG_ENUM;
-                $this->enum = $extraData;
-            }elseif(is_string($extraData)){
-                $flag = AvailableCommandsPacket::ARG_FLAG_POSTFIX;
-                $this->postfix = $extraData;
-            }else{
-                throw new \InvalidArgumentException("Extra data is not valid");
-            }
-        }else{
-            $flag = AvailableCommandsPacket::ARG_FLAG_VALID;
-        }
-        $this->flag = $this->flag ?? $flag;
-
+    public function __construct(string $name, int $type, bool $optional = true, $extraData = null){
         $this->paramName = $name;
         $this->paramType = $type;
-        $this->flag = $flag;
         $this->isOptional = $optional;
+        if($extraData instanceof CommandEnum){
+            $this->enum = $extraData;
+        }elseif(is_string($extraData)){
+            $this->postfix = $extraData;
+        }
     }
 }

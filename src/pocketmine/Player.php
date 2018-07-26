@@ -130,6 +130,7 @@ use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
 use pocketmine\network\mcpe\protocol\SetTitlePacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
+use pocketmine\network\mcpe\protocol\types\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
@@ -682,12 +683,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
     public function sendCommandData(){
         $pk = new AvailableCommandsPacket();
         foreach($this->server->getCommandMap()->getCommands() as $command){
-            if(!$command->testPermissionSilent($this) or isset($pk->commandData[$command->getName()])){
+            if(!$command->testPermissionSilent($this) or isset($pk->commandData[$command->getName()]) or $command->getName() === "help"){
                 continue;
             }
 
             $data = $command->getData();
-            if($data->aliases !== null){
+            if($data->aliases instanceof CommandEnum){
                 //work around a client bug which makes the original name not show when aliases are used
                 $data->aliases->enumValues[] = $data->commandName;
             }
