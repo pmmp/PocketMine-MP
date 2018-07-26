@@ -73,6 +73,7 @@ use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\utils\Utils;
 
 abstract class Entity extends Location implements Metadatable, EntityIds{
 
@@ -304,27 +305,16 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @throws \InvalidArgumentException
 	 */
 	public static function registerEntity(string $className, bool $force = false, array $saveNames = []) : void{
+		Utils::testValidInstance($className, Entity::class);
+
 		/** @var Entity $className */
-
-		try{
-			$class = new \ReflectionClass($className);
-		}catch(\ReflectionException $e){
-			throw new \InvalidArgumentException("Class $className does not exist");
-		}
-		if(!$class->isSubclassOf(Entity::class)){
-			throw new \InvalidArgumentException("Class $className does not extend " . Entity::class);
-		}
-		if(!$class->isInstantiable()){
-			throw new \InvalidArgumentException("Class $className cannot be constructed");
-		}
-
 		if($className::NETWORK_ID !== -1){
 			self::$knownEntities[$className::NETWORK_ID] = $className;
 		}elseif(!$force){
 			throw new \InvalidArgumentException("Class $className does not declare a valid NETWORK_ID and not force-registering");
 		}
 
-		$shortName = $class->getShortName();
+		$shortName = (new \ReflectionClass($className))->getShortName();
 		if(!in_array($shortName, $saveNames, true)){
 			$saveNames[] = $shortName;
 		}

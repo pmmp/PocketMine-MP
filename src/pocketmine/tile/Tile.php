@@ -39,6 +39,7 @@ use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\utils\Utils;
 
 abstract class Tile extends Position{
 
@@ -114,19 +115,9 @@ abstract class Tile extends Position{
 	 * @param string[] $saveNames
 	 */
 	public static function registerTile(string $className, array $saveNames = []) : void{
-		try{
-			$class = new \ReflectionClass($className);
-		}catch(\ReflectionException $e){
-			throw new \InvalidArgumentException("Class $className does not exist");
-		}
-		if(!$class->isSubclassOf(Tile::class)){
-			throw new \InvalidArgumentException("Class $className does not extend " . Tile::class);
-		}
-		if(!$class->isInstantiable()){
-			throw new \InvalidArgumentException("Class $className cannot be constructed");
-		}
+		Utils::testValidInstance($className, Tile::class);
 
-		$shortName = $class->getShortName();
+		$shortName = (new \ReflectionClass($className))->getShortName();
 		if(!in_array($shortName, $saveNames, true)){
 			$saveNames[] = $shortName;
 		}

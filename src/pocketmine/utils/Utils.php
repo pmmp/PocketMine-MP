@@ -547,4 +547,25 @@ class Utils{
 
 		return true; //stfu operator
 	}
+
+	public static function testValidInstance(string $className, string $baseName) : void{
+		try{
+			$base = new \ReflectionClass($baseName);
+		}catch(\ReflectionException $e){
+			throw new \InvalidArgumentException("Base class $baseName does not exist");
+		}
+
+		try{
+			$class = new \ReflectionClass($className);
+		}catch(\ReflectionException $e){
+			throw new \InvalidArgumentException("Class $className does not exist");
+		}
+
+		if(!$class->isSubclassOf($baseName)){
+			throw new \InvalidArgumentException("Class $className does not " . ($base->isInterface() ? "implement" : "extend") . " " . $baseName);
+		}
+		if(!$class->isInstantiable()){
+			throw new \InvalidArgumentException("Class $className cannot be constructed");
+		}
+	}
 }
