@@ -83,12 +83,9 @@ abstract class Thread extends \Thread{
 	public function quit(){
 		$this->isKilled = true;
 
-		$this->notify();
-
 		if(!$this->isJoined()){
-			if(!$this->isTerminated()){
-				$this->join();
-			}
+			$this->notify();
+			$this->join();
 		}
 
 		ThreadManager::getInstance()->remove($this);
