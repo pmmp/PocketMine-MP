@@ -151,4 +151,7 @@ class Random{
 		return $this->nextInt() % $bound;
 	}
 
+    public function nextMinMax(int $min, int $max) : int{
+	    return (int) ($min + $this->nextInt()) % $max;
+	}
 }

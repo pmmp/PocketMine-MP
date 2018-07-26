@@ -321,6 +321,8 @@ class Server{
     public $allowNether = true;
     /** @var bool */
     public $allowEnd = true;
+    /** @var bool */
+    public $mobAiEnabled = true;
 
     public function loadAltayConfig(){
         self::$readLine = $this->getAltayProperty("terminal.read-line", true);
@@ -331,6 +333,7 @@ class Server{
         $this->allowNether = $this->getAltayProperty("dimensions.nether.active", true);
         $this->allowEnd = $this->getAltayProperty("dimensions.end.active", true);
         $this->folderPluginLoader = $this->getAltayProperty("developer.folder-plugin-loader", true);
+        $this->mobAiEnabled = $this->getAltayProperty("level.enable-mob-ai", false);
     }
 
     /**

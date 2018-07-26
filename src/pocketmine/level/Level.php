@@ -3095,6 +3095,15 @@ class Level implements ChunkManager, Metadatable{
         }
     }
 
+    public function canSeeSky(Vector3 $pos) : bool{
+        return $pos->y >= $this->getHighestBlockAt($pos->x, $pos->z);
+    }
+
+    public function isDayTime() : bool{
+        $degree = $this->getSunAngleDegrees();
+        return $degree > 0 and $degree < 180;
+    }
+
     public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue){
         $this->server->getLevelMetadata()->setMetadata($this, $metadataKey, $newMetadataValue);
     }

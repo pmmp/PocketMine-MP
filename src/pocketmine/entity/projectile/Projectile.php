@@ -255,7 +255,7 @@ abstract class Projectile extends Entity{
 			}
 
 			$this->isCollided = $this->onGround = true;
-			$this->motion->x = $this->motion->y = $this->motion->z = 0;
+			$this->resetMotion();
 		}else{
 			$this->isCollided = $this->onGround = false;
 			$this->blockHit = $this->blockHitId = $this->blockHitData = null;

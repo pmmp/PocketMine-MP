@@ -36,3 +36,8 @@ terminal:
 
 server:
   allow-server-settings-form: true
+
+level:
+  # If enabled, mobs can move around
+  # Note: this feature can be cause lag in your server when lots of mob are spawned
+  enable-mob-ai: true

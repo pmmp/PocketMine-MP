@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Mob;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -40,10 +41,14 @@ class SpawnEgg extends Item{
 			$nbt->setString("CustomName", $this->getCustomName());
 		}
 
+		/** @var Mob $entity */
 		$entity = Entity::createEntity($this->meta, $player->getLevel(), $nbt);
 
 		if($entity instanceof Entity){
 			--$this->count;
+			if($entity instanceof Mob) {
+                $entity->setAiEnabled($player->getServer()->mobAiEnabled);
+            }
 			$entity->spawnToAll();
 			return true;
 		}

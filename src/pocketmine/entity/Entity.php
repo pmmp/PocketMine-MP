@@ -37,6 +37,8 @@ use pocketmine\entity\object\FireworksRocket;
 use pocketmine\entity\object\Painting;
 use pocketmine\entity\object\PrimedTNT;
 use pocketmine\entity\object\ItemEntity;
+use pocketmine\entity\passive\Cow;
+use pocketmine\entity\passive\Wolf;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\projectile\Egg;
 use pocketmine\entity\projectile\EnderPearl;
@@ -53,6 +55,7 @@ use pocketmine\event\entity\EntityMotionEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
+use pocketmine\entity\hostile\Zombie;
 use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
@@ -69,6 +72,7 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
+use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\MoveEntityAbsolutePacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
@@ -76,6 +80,8 @@ use pocketmine\network\mcpe\protocol\SetEntityDataPacket;
 use pocketmine\network\mcpe\protocol\SetEntityLinkPacket;
 use pocketmine\network\mcpe\protocol\SetEntityMotionPacket;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
+use pocketmine\entity\passive\Squid;
+use pocketmine\entity\passive\Villager;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
@@ -256,23 +262,25 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
         //define legacy save IDs first - use them for saving for maximum compatibility with Minecraft PC
         //TODO: index them by version to allow proper multi-save compatibility
 
-        Entity::registerEntity(ArmorStand::class, false, ['ArmorStand', 'minecraft:armor_stand']);
-        Entity::registerEntity(Arrow::class, false, ['Arrow', 'minecraft:arrow']);
-        Entity::registerEntity(Boat::class, false, ['Boat', 'minecraft:boat']);
-        Entity::registerEntity(Egg::class, false, ['Egg', 'minecraft:egg']);
-        Entity::registerEntity(EnderPearl::class, false, ['EnderPearl', 'ThrownEnderpearl', 'minecraft:ender_pearl']);
-        Entity::registerEntity(ExperienceBottle::class, false, ['ThrownExpBottle', 'minecraft:xp_bottle']);
-        Entity::registerEntity(ExperienceOrb::class, false, ['XPOrb', 'minecraft:xp_orb']);
-        Entity::registerEntity(FallingBlock::class, false, ['FallingSand', 'minecraft:falling_block']);
-        Entity::registerEntity(FireworksRocket::class, false, ['FireworkRocket', 'FireworksRocket', 'minecraft:fireworks_rocket']);
-        Entity::registerEntity(ItemEntity::class, false, ['Item', 'minecraft:item']);
-        Entity::registerEntity(Painting::class, false, ['Painting', 'minecraft:painting']);
-        Entity::registerEntity(PrimedTNT::class, false, ['PrimedTnt', 'PrimedTNT', 'minecraft:tnt']);
-        Entity::registerEntity(SplashPotion::class, false, ['ThrownPotion', 'minecraft:potion', 'thrownpotion']);
-        Entity::registerEntity(Snowball::class, false, ['Snowball', 'minecraft:snowball']);
-        Entity::registerEntity(Squid::class, false, ['Squid', 'minecraft:squid']);
-        Entity::registerEntity(Villager::class, false, ['Villager',	'minecraft:villager']);
-        Entity::registerEntity(Zombie::class, false, ['Zombie',	'minecraft:zombie']);
+		Entity::registerEntity(ArmorStand::class, false, ['ArmorStand', 'minecraft:armor_stand']);
+		Entity::registerEntity(Arrow::class, false, ['Arrow', 'minecraft:arrow']);
+		Entity::registerEntity(Boat::class, false, ['Boat', 'minecraft:boat']);
+		Entity::registerEntity(Egg::class, false, ['Egg', 'minecraft:egg']);
+		Entity::registerEntity(EnderPearl::class, false, ['EnderPearl', 'ThrownEnderpearl', 'minecraft:ender_pearl']);
+		Entity::registerEntity(ExperienceBottle::class, false, ['ThrownExpBottle', 'minecraft:xp_bottle']);
+		Entity::registerEntity(ExperienceOrb::class, false, ['XPOrb', 'minecraft:xp_orb']);
+		Entity::registerEntity(FallingBlock::class, false, ['FallingSand', 'minecraft:falling_block']);
+		Entity::registerEntity(FireworksRocket::class, false, ['FireworkRocket', 'FireworksRocket', 'minecraft:fireworks_rocket']);
+		Entity::registerEntity(ItemEntity::class, false, ['Item', 'minecraft:item']);
+		Entity::registerEntity(Painting::class, false, ['Painting', 'minecraft:painting']);
+		Entity::registerEntity(PrimedTNT::class, false, ['PrimedTnt', 'PrimedTNT', 'minecraft:tnt']);
+		Entity::registerEntity(SplashPotion::class, false, ['ThrownPotion', 'minecraft:potion', 'thrownpotion']);
+		Entity::registerEntity(Snowball::class, false, ['Snowball', 'minecraft:snowball']);
+		Entity::registerEntity(Squid::class, false, ['Squid', 'minecraft:squid']);
+		Entity::registerEntity(Villager::class, false, ['Villager',	'minecraft:villager']);
+		Entity::registerEntity(Wolf::class, false, ['Wolf', 'minecraft:wolf']);
+		Entity::registerEntity(Zombie::class, false, ['Zombie',	'minecraft:zombie']);
+		Entity::registerEntity(Cow::class, false, ['Cow', 'minecraft:cow']);
 
         Entity::registerEntity(Human::class, true);
 
@@ -408,10 +416,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
     /** @var Vector3 */
     public $temporalVector;
 
-    /** @var float */
-    public $lastYaw;
-    /** @var float */
-    public $lastPitch;
+	/** @var float */
+	public $lastHeadYaw;
+	/** @var float */
+	public $lastYaw;
+	/** @var float */
+	public $lastPitch;
 
     /** @var AxisAlignedBB */
     public $boundingBox;
@@ -653,9 +663,17 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
         $this->propertyManager->setFloat(self::DATA_SCALE, $value);
     }
 
-    public function isRiding() : bool{
-        return $this->getDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_RIDING);
-    }
+	public function isInLove() : bool{
+		return $this->getDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_RIDING);
+	}
+
+	public function setInLove(bool $value) : void{
+		$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INLOVE, $value);
+	}
+
+	public function isRiding() : bool{
+		return $this->getDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_RIDING);
+	}
 
     public function setRiding(bool $value) : void{
         $this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_RIDING, $value);
@@ -675,6 +693,15 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
     public function setRiddenByEntity(?Entity $riddenByEntity = null): void{
         $this->riddenByEntity = $riddenByEntity;
+    }
+
+    public function isBaby() : bool{
+        return $this->getGenericFlag(self::DATA_FLAG_BABY);
+    }
+
+    public function setBaby(bool $value = true) : void{
+        $this->setGenericFlag(self::DATA_FLAG_BABY, $value);
+        $this->setScale($value ? 0.5 : 1.0);
     }
 
     public function getBoundingBox() : AxisAlignedBB{
@@ -1048,12 +1075,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
         $this->maxHealth = $amount;
     }
 
-    /**
-     * @param EntityDamageEvent $type
-     */
-    public function setLastDamageCause(EntityDamageEvent $type) : void{
-        $this->lastDamageCause = $type;
-    }
+	/**
+	 * @param EntityDamageEvent|null $type
+	 */
+	public function setLastDamageCause(?EntityDamageEvent $type) : void{
+		$this->lastDamageCause = $type;
+	}
 
     /**
      * @return EntityDamageEvent|null
@@ -1073,6 +1100,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
     public function entityBaseTick(int $tickDiff = 1) : bool{
         if($this->ridingEntity instanceof Entity and !$this->ridingEntity->isAlive()){
             $this->ridingEntity = null;
+            $this->setRiding(false);
+        }
+
+        if($this->riddenByEntity instanceof Entity and !$this->riddenByEntity->isAlive()){
+            $this->riddenByEntity = null;
+            $this->setGenericFlag(Entity::DATA_FLAG_WASD_CONTROLLED, false);
         }
 
         $this->justCreated = false;
@@ -1223,11 +1256,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
             //for arrows this is actually x/y/z rotation
             //for mobs x and z are used for pitch and yaw, and y is used for headyaw
             $pk->xRot = $this->pitch;
-            $pk->yRot = $this->yaw; //TODO: head yaw
+            $pk->yRot = $this->headYaw ?? $this->yaw;
             $pk->zRot = $this->yaw;
 
             if($teleport){
                 $pk->flags |= MoveEntityAbsolutePacket::FLAG_TELEPORT;
+            }
+            if($this->onGround){
+                $pk->flags |= MoveEntityAbsolutePacket::FLAG_GROUND;
             }
 
             $this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
@@ -1244,15 +1280,15 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
         }
     }
 
-    /**
-     * @param Entity $entity
-     */
-    protected function applyEntityCollision(Entity $entity) : void{
-        if(!$this->isRiding() and !$entity->isRiding()){
-            if(!($entity instanceof Player and $entity->isSpectator()) and !($this instanceof Player and $this->isSpectator())){
-                $d0 = $entity->x - $this->x;
-                $d1 = $entity->z - $this->z;
-                $d2 = abs(max($d0, $d1));
+	/**
+	 * @param Entity $entity
+	 */
+	protected function applyEntityCollision(Entity $entity) : void{
+		if($entity->canBePushed() and !$this->isRiding() and !$entity->isRiding()){
+			if(!($entity instanceof Player and $entity->isSpectator()) and !($this instanceof Player and $this->isSpectator())){
+				$d0 = $entity->x - $this->x;
+				$d1 = $entity->z - $this->z;
+				$d2 = abs(max($d0, $d1));
 
                 if($d2 >= 0.009999999776482582){
                     $d2 = sqrt($d2);
@@ -1489,9 +1525,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
         $hasUpdate = $this->entityBaseTick($tickDiff);
         Timings::$timerEntityBaseTick->stopTiming();
 
-
-
-        $this->timings->stopTiming();
+		$this->timings->stopTiming();
 
         //if($this->isStatic())
         return ($hasUpdate or $this->hasMovementUpdate());
@@ -1536,9 +1570,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
         );
     }
 
-    public function hasEntityCollisionUpdate() : bool{
-        return false;
-    }
+	public function canBePushed() : bool{
+		return false;
+	}
 
     public function canTriggerWalking() : bool{
         return true;
@@ -1568,16 +1602,27 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
         }
     }
 
-    public function mountEntity(Entity $entity, int $type = EntityLink::TYPE_RIDER, bool $send = true) : void{
-        if($this->ridingEntity == null and $entity !== $this){
-            $this->setRidingEntity($entity);
-            $entity->setRiddenByEntity($this);
+	public function handleWaterMovement() : void{
+	    if($this->isUnderwater()){
+	        $this->motion->x *= 0.5;
+	        $this->motion->z *= 0.5;
+        }
+    }
+
+	public function mountEntity(Entity $entity, int $type = EntityLink::TYPE_RIDER, bool $send = true) : void{
+		if($this->ridingEntity == null and $entity !== $this){
+		    if($entity instanceof Rideable){
+		        $entity->onRiderMount($this);
+            }
+			$this->setRidingEntity($entity);
+			$entity->setRiddenByEntity($this);
 
             if($send){
                 $this->propertyManager->setVector3(self::DATA_RIDER_SEAT_POSITION, $this->getRiderSeatPosition());
-                $this->propertyManager->setByte(self::DATA_RIDER_ROTATION_LOCKED, 1);
-                $this->propertyManager->setFloat(self::DATA_RIDER_MAX_ROTATION, 90);
-                $this->propertyManager->setFloat(self::DATA_RIDER_MIN_ROTATION, -90);
+                $this->propertyManager->setByte(self::DATA_CONTROLLING_RIDER_SEAT_NUMBER, 0);
+                $this->propertyManager->setByte(self::DATA_RIDER_ROTATION_LOCKED, 0);
+                $this->propertyManager->setFloat(self::DATA_RIDER_MAX_ROTATION, 360);
+                $this->propertyManager->setFloat(self::DATA_RIDER_MIN_ROTATION, 0);
 
                 $this->setRiding(true);
                 $this->ridingEntity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_WASD_CONTROLLED, true);
@@ -1595,6 +1640,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
     public function dismountEntity(bool $send = true) : void{
         if($this->ridingEntity !== null){
+            if($this->ridingEntity instanceof Rideable){
+                $this->ridingEntity->onRiderLeave($this);
+            }
             $this->ridingEntity->setRiddenByEntity(null);
 
             if($send){
@@ -1631,10 +1679,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
     public function updateRidden() : void{
         if($this->ridingEntity === null) return;
 
-        if(!$this->ridingEntity->isAlive()){
-            $this->ridingEntity = null;
-        }else{
-            $this->motion->x = $this->motion->y = $this->motion->z = 0;
+		if(!$this->ridingEntity->isAlive()){
+			$this->ridingEntity = null;
+		}else{
+			$this->resetMotion();
 
             $this->ridingEntity->updateRiderPosition();
             $this->entityRiderYawDelta += $this->ridingEntity->yaw -  $this->ridingEntity->lastYaw;
@@ -1707,7 +1755,11 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
     public function onCollideWithPlayer(Player $player) : void{
 
-    }
+	}
+
+	public function onCollideWithEntity(Entity $entity) : void{
+	    $entity->applyEntityCollision($this);
+	}
 
     public function isUnderwater() : bool{
         $block = $this->level->getBlockAt((int) floor($this->x), (int) floor($y = ($this->y + $this->getEyeHeight())), (int) floor($this->z));
@@ -1985,13 +2037,13 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
         }
     }
 
-    protected function checkEntityCollision() : void{
-        if($this->hasEntityCollisionUpdate()){
-            foreach($this->level->getCollidingEntities($this->getBoundingBox()->expandedCopy(0.3,0.3,0.3), $this) as $e){
-                $this->applyEntityCollision($e);
-            }
-        }
-    }
+	protected function checkEntityCollision() : void{
+	    if($this->canBePushed()){
+	        foreach($this->level->getCollidingEntities($this->getBoundingBox()->expandedCopy(0.2,0,0.2), $this) as $e){
+	            $this->onCollideWithEntity($e);
+		       }
+		   }
+	}
 
     public function getPosition() : Position{
         return $this->asPosition();
@@ -2025,11 +2077,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
         return true;
     }
 
-    public function setRotation(float $yaw, float $pitch) : void{
-        $this->yaw = $yaw;
-        $this->pitch = $pitch;
-        $this->scheduleUpdate();
-    }
+	public function setRotation(float $yaw, float $pitch, ?float $headYaw = null) : void{
+		$this->yaw = $yaw;
+		$this->headYaw = $headYaw ?? $yaw;
+		$this->pitch = $pitch;
+		$this->scheduleUpdate();
+	}
 
     public function setPositionAndRotation(Vector3 $pos, float $yaw, float $pitch) : bool{
         if($this->setPosition($pos)){
@@ -2099,9 +2152,13 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
         return true;
     }
 
-    public function isOnGround() : bool{
-        return $this->onGround;
-    }
+	public function resetMotion() : void{
+		$this->motion->setComponents(0, 0, 0);
+	}
+
+	public function isOnGround() : bool{
+		return $this->onGround;
+	}
 
     /**
      * @param Vector3|Position|Location $pos
@@ -2378,6 +2435,19 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
      * @return void
      */
     public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : void{
+
+    }
+
+    /**
+     * Called when riding by a player
+     *
+     * @param Player $player
+     * @param int $motX
+     * @param int $motY
+     * @param bool $jumping
+     * @param bool $sneaking
+     */
+    public function onRidingUpdate(Player $player, float $motX, float $motY, bool $jumping = false, bool $sneaking = false) : void{
 
     }
 
