@@ -110,31 +110,32 @@ abstract class Tile extends Position{
 	}
 
 	/**
-	 * @param string $className
-	 * @param array  $saveNames
-	 *
-	 * @return bool
-	 * @throws \ReflectionException
+	 * @param string   $className
+	 * @param string[] $saveNames
 	 */
-	public static function registerTile(string $className, array $saveNames = []) : bool{
-		$class = new \ReflectionClass($className);
-		if(is_a($className, Tile::class, true) and !$class->isAbstract()){
-			$shortName = $class->getShortName();
-			if(!in_array($shortName, $saveNames, true)){
-				$saveNames[] = $shortName;
-			}
-
-			foreach($saveNames as $name){
-				self::$knownTiles[$name] = $className;
-			}
-
-			self::$saveNames[$className] = $saveNames;
-
-
-			return true;
+	public static function registerTile(string $className, array $saveNames = []) : void{
+		try{
+			$class = new \ReflectionClass($className);
+		}catch(\ReflectionException $e){
+			throw new \InvalidArgumentException("Class $className does not exist");
+		}
+		if(!$class->isSubclassOf(Tile::class)){
+			throw new \InvalidArgumentException("Class $className does not extend " . Tile::class);
+		}
+		if(!$class->isInstantiable()){
+			throw new \InvalidArgumentException("Class $className cannot be constructed");
 		}
 
-		return false;
+		$shortName = $class->getShortName();
+		if(!in_array($shortName, $saveNames, true)){
+			$saveNames[] = $shortName;
+		}
+
+		foreach($saveNames as $name){
+			self::$knownTiles[$name] = $className;
+		}
+
+		self::$saveNames[$className] = $saveNames;
 	}
 
 	/**

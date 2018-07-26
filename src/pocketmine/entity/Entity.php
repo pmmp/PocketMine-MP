@@ -301,34 +301,39 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * NOTE: The first save name in the $saveNames array will be used when saving the entity to disk. The reflection
 	 * name of the class will be appended to the end and only used if no other save names are specified.
 	 *
-	 * @return bool
+	 * @throws \InvalidArgumentException
 	 */
-	public static function registerEntity(string $className, bool $force = false, array $saveNames = []) : bool{
+	public static function registerEntity(string $className, bool $force = false, array $saveNames = []) : void{
 		/** @var Entity $className */
 
-		$class = new \ReflectionClass($className);
-		if(is_a($className, Entity::class, true) and !$class->isAbstract()){
-			if($className::NETWORK_ID !== -1){
-				self::$knownEntities[$className::NETWORK_ID] = $className;
-			}elseif(!$force){
-				return false;
-			}
-
-			$shortName = $class->getShortName();
-			if(!in_array($shortName, $saveNames, true)){
-				$saveNames[] = $shortName;
-			}
-
-			foreach($saveNames as $name){
-				self::$knownEntities[$name] = $className;
-			}
-
-			self::$saveNames[$className] = $saveNames;
-
-			return true;
+		try{
+			$class = new \ReflectionClass($className);
+		}catch(\ReflectionException $e){
+			throw new \InvalidArgumentException("Class $className does not exist");
+		}
+		if(!$class->isSubclassOf(Entity::class)){
+			throw new \InvalidArgumentException("Class $className does not extend " . Entity::class);
+		}
+		if(!$class->isInstantiable()){
+			throw new \InvalidArgumentException("Class $className cannot be constructed");
 		}
 
-		return false;
+		if($className::NETWORK_ID !== -1){
+			self::$knownEntities[$className::NETWORK_ID] = $className;
+		}elseif(!$force){
+			throw new \InvalidArgumentException("Class $className does not declare a valid NETWORK_ID and not force-registering");
+		}
+
+		$shortName = $class->getShortName();
+		if(!in_array($shortName, $saveNames, true)){
+			$saveNames[] = $shortName;
+		}
+
+		foreach($saveNames as $name){
+			self::$knownEntities[$name] = $className;
+		}
+
+		self::$saveNames[$className] = $saveNames;
 	}
 
 	/**
