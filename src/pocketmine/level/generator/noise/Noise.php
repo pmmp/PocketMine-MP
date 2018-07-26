@@ -57,10 +57,10 @@ abstract class Noise{
 		$dx2 = (($x - $x1) / ($x2 - $x1));
 
 		return (($y2 - $y) / ($y2 - $y1)) * (
-			$dx1 * $q00 + $dx2 * $q10
-		) + (($y - $y1) / ($y2 - $y1)) * (
-			$dx1 * $q01 + $dx2 * $q11
-		);
+				$dx1 * $q00 + $dx2 * $q10
+			) + (($y - $y1) / ($y2 - $y1)) * (
+				$dx1 * $q01 + $dx2 * $q11
+			);
 	}
 
 	public static function trilinearLerp($x, $y, $z, $q000, $q001, $q010, $q011, $q100, $q101, $q110, $q111, $x1, $x2, $y1, $y2, $z1, $z2){
@@ -70,18 +70,18 @@ abstract class Noise{
 		$dy2 = (($y - $y1) / ($y2 - $y1));
 
 		return (($z2 - $z) / ($z2 - $z1)) * (
-			$dy1 * (
-				$dx1 * $q000 + $dx2 * $q100
-			) + $dy2 * (
-				$dx1 * $q001 + $dx2 * $q101
-			)
-		) + (($z - $z1) / ($z2 - $z1)) * (
-			$dy1 * (
-				$dx1 * $q010 + $dx2 * $q110
-			) + $dy2 * (
-				$dx1 * $q011 + $dx2 * $q111
-			)
-		);
+				$dy1 * (
+					$dx1 * $q000 + $dx2 * $q100
+				) + $dy2 * (
+					$dx1 * $q001 + $dx2 * $q101
+				)
+			) + (($z - $z1) / ($z2 - $z1)) * (
+				$dy1 * (
+					$dx1 * $q010 + $dx2 * $q110
+				) + $dy2 * (
+					$dx1 * $q011 + $dx2 * $q111
+				)
+			);
 	}
 
 	public static function grad($hash, $x, $y, $z){

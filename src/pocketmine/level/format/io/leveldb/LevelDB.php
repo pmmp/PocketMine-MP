@@ -34,7 +34,7 @@ use pocketmine\level\Level;
 use pocketmine\level\LevelException;
 use pocketmine\nbt\LittleEndianNBTStream;
 use pocketmine\nbt\tag\{
-	ByteTag, CompoundTag, FloatTag, IntTag, LongTag, StringTag
+    ByteTag, CompoundTag, FloatTag, LongTag, StringTag, IntTag
 };
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\utils\Binary;

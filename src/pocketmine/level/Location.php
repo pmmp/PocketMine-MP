@@ -28,6 +28,8 @@ use pocketmine\math\Vector3;
 class Location extends Position{
 
 	/** @var float */
+	public $headYaw;
+	/** @var float */
 	public $yaw;
 	/** @var float */
 	public $pitch;
@@ -41,6 +43,7 @@ class Location extends Position{
 	 * @param Level $level
 	 */
 	public function __construct($x = 0, $y = 0, $z = 0, $yaw = 0.0, $pitch = 0.0, Level $level = null){
+		$this->headYaw = $yaw;
 		$this->yaw = $yaw;
 		$this->pitch = $pitch;
 		parent::__construct($x, $y, $z, $level);
@@ -65,6 +68,10 @@ class Location extends Position{
 	 */
 	public function asLocation() : Location{
 		return new Location($this->x, $this->y, $this->z, $this->yaw, $this->pitch, $this->level);
+	}
+
+	public function getHeadYaw() : float{
+		return $this->headYaw;
 	}
 
 	public function getYaw(){

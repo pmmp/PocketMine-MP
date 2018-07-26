@@ -59,12 +59,12 @@ abstract class Terminal{
 			}else{
 				$stdout = fopen("php://stdout", "w");
 				self::$formattingCodes = (isset($opts["enable-ansi"]) or ( //user explicitly told us to enable ANSI
-					stream_isatty($stdout) and //STDOUT isn't being piped
-					(
-						getenv('TERM') !== false or //Console says it supports colours
-						(function_exists('sapi_windows_vt100_support') and sapi_windows_vt100_support($stdout)) //we're on windows and have vt100 support
-					)
-				));
+						stream_isatty($stdout) and //STDOUT isn't being piped
+						(
+							getenv('TERM') !== false or //Console says it supports colours
+							(function_exists('sapi_windows_vt100_support') and sapi_windows_vt100_support($stdout)) //we're on windows and have vt100 support
+						)
+					));
 				fclose($stdout);
 			}
 
@@ -253,4 +253,5 @@ abstract class Terminal{
 
 		return $newString;
 	}
+
 }

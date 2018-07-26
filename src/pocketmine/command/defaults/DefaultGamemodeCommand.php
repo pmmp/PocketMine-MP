@@ -23,21 +23,32 @@ declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
 
+use pocketmine\command\CommandEnumValues;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\Server;
 
 class DefaultGamemodeCommand extends VanillaCommand{
 
-	public function __construct(string $name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.defaultgamemode.description",
-			"%commands.defaultgamemode.usage"
-		);
-		$this->setPermission("pocketmine.command.defaultgamemode");
-	}
+    public function __construct(string $name){
+        parent::__construct(
+            $name,
+            "%pocketmine.command.defaultgamemode.description",
+            "%commands.defaultgamemode.usage",
+            [],
+            [
+                [
+                    new CommandParameter("gameMode", CommandParameter::ARG_TYPE_STRING, false, CommandEnumValues::getGameMode()),
+                ],
+                [
+                    new CommandParameter("gameMode", CommandParameter::ARG_TYPE_INT, false),
+                ]
+            ]
+        );
+        $this->setPermission("pocketmine.command.defaultgamemode");
+    }
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
 		if(!$this->testPermission($sender)){

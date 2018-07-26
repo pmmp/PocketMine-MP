@@ -1,0 +1,38 @@
+#             _ _
+#       /\   | | |
+#      /  \  | | |_ __ _ _   _
+#     / /\ \ | | __/ _` | | | |
+#    / ____ \| | || (_| | |_| |
+#   /_/    \_|_|\__\__,_|\__, |
+#                         __/ |
+#                        |___/
+
+player:
+  # Garder l'inventaire du joueur même après sa mort
+  keep-inventory: false
+  # Garder l'éxperience du joueur même après sa mort
+  keep-experience: false
+
+dimensions:
+  # Choisissez si le nether est activé. Le nether sera automatiquement généré
+  nether:
+    active: true
+    level-name: "nether"
+  end:
+    active: true
+    level-name: "end"
+
+developer:
+  #  ce paramètre autorise le serveur à charger des plugins sans qu'il ne sois en .phar
+  folder-plugin-loader: true
+  # Ce paramètre active les commands de développeur(extractplugin,makephar etc..)
+  commands: true
+  # Ce paramètre permet le chargement de plugin possédant une api inférieure.
+  load-incompatible-api: true
+
+terminal:
+  # Si les couleurs dans la console sont désactivé régler ce paramètre en false
+  read-line: true
+
+server:
+  allow-server-settings-form: true

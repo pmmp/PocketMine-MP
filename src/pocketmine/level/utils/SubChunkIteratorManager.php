@@ -79,4 +79,5 @@ class SubChunkIteratorManager{
 		$this->currentChunk = null;
 		$this->currentSubChunk = null;
 	}
+
 }

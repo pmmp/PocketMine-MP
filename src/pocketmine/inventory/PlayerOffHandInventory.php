@@ -21,45 +21,36 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\inventory;
 
-use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\Player;
 
-class Zombie extends Monster{
-	public const NETWORK_ID = self::ZOMBIE;
+class PlayerOffHandInventory extends BaseInventory{
+	/** @var Player */
+	protected $holder;
 
-	public $width = 0.6;
-	public $height = 1.8;
+	public function __construct(Player $holder){
+		$this->holder = $holder;
+		parent::__construct();
+	}
 
 	public function getName() : string{
-		return "Zombie";
+		return "OffHand";
 	}
 
-	public function getDrops() : array{
-		$drops = [
-			ItemFactory::get(Item::ROTTEN_FLESH, 0, mt_rand(0, 2))
-		];
-
-		if(mt_rand(0, 199) < 5){
-			switch(mt_rand(0, 2)){
-				case 0:
-					$drops[] = ItemFactory::get(Item::IRON_INGOT, 0, 1);
-					break;
-				case 1:
-					$drops[] = ItemFactory::get(Item::CARROT, 0, 1);
-					break;
-				case 2:
-					$drops[] = ItemFactory::get(Item::POTATO, 0, 1);
-					break;
-			}
-		}
-
-		return $drops;
+	public function getDefaultSize() : int{
+		return 1;
 	}
 
-	public function getXpDropAmount() : int{
-		//TODO: check for equipment and whether it's a baby
-		return 5;
+	public function setSize(int $size){
+		throw new \BadMethodCallException("Cursor can only carry one item at a time");
+	}
+
+	/**
+	 * This override is here for documentation and code completion purposes only.
+	 * @return Player
+	 */
+	public function getHolder(){
+		return $this->holder;
 	}
 }

@@ -1,23 +1,24 @@
 <?php
 
 /*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *               _ _
+ *         /\   | | |
+ *        /  \  | | |_ __ _ _   _
+ *       / /\ \ | | __/ _` | | | |
+ *      / ____ \| | || (_| | |_| |
+ *     /_/    \_|_|\__\__,_|\__, |
+ *                           __/ |
+ *                          |___/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Altay
  *
- *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -35,65 +36,65 @@ use pocketmine\Server;
  */
 class PreSpawnSessionHandler extends SessionHandler{
 
-	/** @var Server */
-	private $server;
-	/** @var Player */
-	private $player;
-	/** @var NetworkSession */
-	private $session;
+    /** @var Server */
+    private $server;
+    /** @var Player */
+    private $player;
+    /** @var NetworkSession */
+    private $session;
 
-	public function __construct(Server $server, Player $player, NetworkSession $session){
-		$this->player = $player;
-		$this->server = $server;
-		$this->session = $session;
-	}
+    public function __construct(Server $server, Player $player, NetworkSession $session){
+        $this->player = $player;
+        $this->server = $server;
+        $this->session = $session;
+    }
 
-	public function setUp() : void{
-		$spawnPosition = $this->player->getSpawn();
+    public function setUp() : void{
+        $spawnPosition = $this->player->getSpawn();
 
-		$pk = new StartGamePacket();
-		$pk->entityUniqueId = $this->player->getId();
-		$pk->entityRuntimeId = $this->player->getId();
-		$pk->playerGamemode = Player::getClientFriendlyGamemode($this->player->getGamemode());
-		$pk->playerPosition = $this->player->getOffsetPosition($this->player);
-		$pk->pitch = $this->player->pitch;
-		$pk->yaw = $this->player->yaw;
-		$pk->seed = -1;
-		$pk->dimension = DimensionIds::OVERWORLD; //TODO: implement this properly
-		$pk->worldGamemode = Player::getClientFriendlyGamemode($this->server->getGamemode());
-		$pk->difficulty = $this->player->getLevel()->getDifficulty();
-		$pk->spawnX = $spawnPosition->getFloorX();
-		$pk->spawnY = $spawnPosition->getFloorY();
-		$pk->spawnZ = $spawnPosition->getFloorZ();
-		$pk->hasAchievementsDisabled = true;
-		$pk->time = $this->player->getLevel()->getTime();
-		$pk->eduMode = false;
-		$pk->rainLevel = 0; //TODO: implement these properly
-		$pk->lightningLevel = 0;
-		$pk->commandsEnabled = true;
-		$pk->levelId = "";
-		$pk->worldName = $this->server->getMotd();
-		$this->session->sendDataPacket($pk);
+        $pk = new StartGamePacket();
+        $pk->entityUniqueId = $this->player->getId();
+        $pk->entityRuntimeId = $this->player->getId();
+        $pk->playerGamemode = Player::getClientFriendlyGamemode($this->player->getGamemode());
+        $pk->playerPosition = $this->player->getOffsetPosition($this->player);
+        $pk->pitch = $this->player->pitch;
+        $pk->yaw = $this->player->yaw;
+        $pk->seed = -1;
+        $pk->dimension = DimensionIds::OVERWORLD; //TODO: implement this properly
+        $pk->worldGamemode = Player::getClientFriendlyGamemode($this->server->getGamemode());
+        $pk->difficulty = $this->player->getLevel()->getDifficulty();
+        $pk->spawnX = $spawnPosition->getFloorX();
+        $pk->spawnY = $spawnPosition->getFloorY();
+        $pk->spawnZ = $spawnPosition->getFloorZ();
+        $pk->hasAchievementsDisabled = true;
+        $pk->time = $this->player->getLevel()->getTime();
+        $pk->eduMode = false;
+        $pk->rainLevel = 0; //TODO: implement these properly
+        $pk->lightningLevel = 0;
+        $pk->commandsEnabled = true;
+        $pk->levelId = "";
+        $pk->worldName = $this->server->getMotd();
+        $this->session->sendDataPacket($pk);
 
-		$this->player->getLevel()->sendTime($this->player);
+        $this->player->getLevel()->sendTime($this->player);
 
-		$this->player->sendAttributes(true);
-		$this->player->sendCommandData();
-		$this->player->sendSettings();
-		$this->player->sendPotionEffects($this->player);
-		$this->player->sendData($this->player);
+        $this->player->sendAttributes(true);
+        $this->player->sendCommandData();
+        $this->player->sendSettings();
+        $this->player->sendPotionEffects($this->player);
+        $this->player->sendData($this->player);
 
-		$this->player->sendAllInventories();
-		$this->player->getInventory()->sendCreativeContents();
-		$this->player->getInventory()->sendHeldItem($this->player);
+        $this->player->sendAllInventories();
+        $this->player->getInventory()->sendCreativeContents();
+        $this->player->getInventory()->sendHeldItem($this->player);
 		$this->session->getInterface()->putPacket($this->session, $this->server->getCraftingManager()->getCraftingDataPacket());
 
-		$this->server->sendFullPlayerListData($this->player);
-	}
+        $this->server->sendFullPlayerListData($this->player);
+    }
 
-	public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet) : bool{
-		$this->player->setViewDistance($packet->radius);
+    public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet) : bool{
+        $this->player->setViewDistance($packet->radius);
 
-		return true;
-	}
+        return true;
+    }
 }

@@ -28,5 +28,9 @@ class FishingRod extends Item{
 		parent::__construct(self::FISHING_ROD, $meta, "Fishing Rod");
 	}
 
+	public function getEnchantability() : int{
+		return 1;
+	}
+
 	//TODO
 }

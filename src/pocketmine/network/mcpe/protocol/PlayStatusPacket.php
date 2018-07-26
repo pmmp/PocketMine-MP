@@ -29,47 +29,47 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class PlayStatusPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::PLAY_STATUS_PACKET;
+    public const NETWORK_ID = ProtocolInfo::PLAY_STATUS_PACKET;
 
-	public const LOGIN_SUCCESS = 0;
-	public const LOGIN_FAILED_CLIENT = 1;
-	public const LOGIN_FAILED_SERVER = 2;
-	public const PLAYER_SPAWN = 3;
-	public const LOGIN_FAILED_INVALID_TENANT = 4;
-	public const LOGIN_FAILED_VANILLA_EDU = 5;
-	public const LOGIN_FAILED_EDU_VANILLA = 6;
-	public const LOGIN_FAILED_SERVER_FULL = 7;
+    public const LOGIN_SUCCESS = 0;
+    public const LOGIN_FAILED_CLIENT = 1;
+    public const LOGIN_FAILED_SERVER = 2;
+    public const PLAYER_SPAWN = 3;
+    public const LOGIN_FAILED_INVALID_TENANT = 4;
+    public const LOGIN_FAILED_VANILLA_EDU = 5;
+    public const LOGIN_FAILED_EDU_VANILLA = 6;
+    public const LOGIN_FAILED_SERVER_FULL = 7;
 
-	/** @var int */
-	public $status;
+    /** @var int */
+    public $status;
 
-	/**
-	 * @var int
-	 * Used to determine how to write the packet when we disconnect incompatible clients.
-	 */
-	public $protocol = ProtocolInfo::CURRENT_PROTOCOL;
+    /**
+     * @var int
+     * Used to determine how to write the packet when we disconnect incompatible clients.
+     */
+    public $protocol = ProtocolInfo::CURRENT_PROTOCOL;
 
-	protected function decodePayload() : void{
-		$this->status = $this->getInt();
-	}
+    protected function decodePayload() : void{
+        $this->status = $this->getInt();
+    }
 
-	public function canBeSentBeforeLogin() : bool{
-		return true;
-	}
+    public function canBeSentBeforeLogin() : bool{
+        return true;
+    }
 
-	protected function encodeHeader() : void{
-		if($this->protocol < 130){ //MCPE <= 1.1
-			$this->putByte(static::NETWORK_ID);
-		}else{
-			parent::encodeHeader();
-		}
-	}
+    protected function encodeHeader() : void{
+        if($this->protocol < 130){ //MCPE <= 1.1
+            $this->putByte(static::NETWORK_ID);
+        }else{
+            parent::encodeHeader();
+        }
+    }
 
-	protected function encodePayload() : void{
-		$this->putInt($this->status);
-	}
+    protected function encodePayload() : void{
+        $this->putInt($this->status);
+    }
 
-	public function handle(SessionHandler $handler) : bool{
-		return $handler->handlePlayStatus($this);
-	}
+    public function handle(SessionHandler $handler) : bool{
+        return $handler->handlePlayStatus($this);
+    }
 }

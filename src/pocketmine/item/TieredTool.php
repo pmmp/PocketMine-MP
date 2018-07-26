@@ -105,4 +105,21 @@ abstract class TieredTool extends Tool{
 
 		return 0;
 	}
+
+	public function getEnchantability() : int{
+		switch($this->tier){
+			case self::TIER_WOODEN:
+				return 15;
+			case self::TIER_STONE:
+				return 5;
+			case self::TIER_IRON:
+				return 14;
+			case self::TIER_DIAMOND:
+				return 10;
+			case self::TIER_GOLD:
+				return 22;
+		}
+
+		return 0;
+	}
 }

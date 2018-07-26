@@ -1,37 +1,40 @@
 <?php
 
 /*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *               _ _
+ *         /\   | | |
+ *        /  \  | | |_ __ _ _   _
+ *       / /\ \ | | __/ _` | | | |
+ *      / ____ \| | || (_| | |_| |
+ *     /_/    \_|_|\__\__,_|\__, |
+ *                           __/ |
+ *                          |___/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Altay
  *
- *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\command;
 
 use pocketmine\command\defaults\BanCommand;
-use pocketmine\command\defaults\BanIpCommand;
 use pocketmine\command\defaults\BanListCommand;
+use pocketmine\command\defaults\BanIpCommand;
+use pocketmine\command\defaults\ClearCommand;
 use pocketmine\command\defaults\DefaultGamemodeCommand;
 use pocketmine\command\defaults\DeopCommand;
 use pocketmine\command\defaults\DifficultyCommand;
 use pocketmine\command\defaults\DumpMemoryCommand;
 use pocketmine\command\defaults\EffectCommand;
 use pocketmine\command\defaults\EnchantCommand;
+use pocketmine\command\defaults\ExtractPluginCommand;
 use pocketmine\command\defaults\GamemodeCommand;
 use pocketmine\command\defaults\GarbageCollectorCommand;
 use pocketmine\command\defaults\GiveCommand;
@@ -39,11 +42,15 @@ use pocketmine\command\defaults\HelpCommand;
 use pocketmine\command\defaults\KickCommand;
 use pocketmine\command\defaults\KillCommand;
 use pocketmine\command\defaults\ListCommand;
+use pocketmine\command\defaults\MakePluginCommand;
+use pocketmine\command\defaults\MakeServerCommand;
 use pocketmine\command\defaults\MeCommand;
 use pocketmine\command\defaults\OpCommand;
 use pocketmine\command\defaults\PardonCommand;
 use pocketmine\command\defaults\PardonIpCommand;
 use pocketmine\command\defaults\ParticleCommand;
+use pocketmine\command\defaults\PingCommand;
+use pocketmine\command\defaults\PlaySoundCommand;
 use pocketmine\command\defaults\PluginsCommand;
 use pocketmine\command\defaults\ReloadCommand;
 use pocketmine\command\defaults\SaveCommand;
@@ -51,10 +58,12 @@ use pocketmine\command\defaults\SaveOffCommand;
 use pocketmine\command\defaults\SaveOnCommand;
 use pocketmine\command\defaults\SayCommand;
 use pocketmine\command\defaults\SeedCommand;
+use pocketmine\command\defaults\SetBlockCommand;
 use pocketmine\command\defaults\SetWorldSpawnCommand;
 use pocketmine\command\defaults\SpawnpointCommand;
 use pocketmine\command\defaults\StatusCommand;
 use pocketmine\command\defaults\StopCommand;
+use pocketmine\command\defaults\StopSoundCommand;
 use pocketmine\command\defaults\TeleportCommand;
 use pocketmine\command\defaults\TellCommand;
 use pocketmine\command\defaults\TimeCommand;
@@ -64,6 +73,8 @@ use pocketmine\command\defaults\TransferServerCommand;
 use pocketmine\command\defaults\VanillaCommand;
 use pocketmine\command\defaults\VersionCommand;
 use pocketmine\command\defaults\WhitelistCommand;
+use pocketmine\command\defaults\XpCommand;
+use pocketmine\command\utils\NoSelectorMatchException;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\Server;
@@ -89,6 +100,7 @@ class SimpleCommandMap implements CommandMap{
 			new BanCommand("ban"),
 			new BanIpCommand("ban-ip"),
 			new BanListCommand("banlist"),
+			new ClearCommand("clear"),
 			new DefaultGamemodeCommand("defaultgamemode"),
 			new DeopCommand("deop"),
 			new DifficultyCommand("difficulty"),
@@ -102,9 +114,12 @@ class SimpleCommandMap implements CommandMap{
 			new ListCommand("list"),
 			new MeCommand("me"),
 			new OpCommand("op"),
+			new PlaySoundCommand("playsound"),
+			new StopSoundCommand("stopsound"),
 			new PardonCommand("pardon"),
 			new PardonIpCommand("pardon-ip"),
 			new ParticleCommand("particle"),
+			new PingCommand("ping"),
 			new PluginsCommand("plugins"),
 			new ReloadCommand("reload"),
 			new SaveCommand("save-all"),
@@ -112,6 +127,7 @@ class SimpleCommandMap implements CommandMap{
 			new SaveOnCommand("save-on"),
 			new SayCommand("say"),
 			new SeedCommand("seed"),
+			new SetBlockCommand("setblock"),
 			new SetWorldSpawnCommand("setworldspawn"),
 			new SpawnpointCommand("spawnpoint"),
 			new StopCommand("stop"),
@@ -122,8 +138,17 @@ class SimpleCommandMap implements CommandMap{
 			new TitleCommand("title"),
 			new TransferServerCommand("transferserver"),
 			new VersionCommand("version"),
-			new WhitelistCommand("whitelist")
+			new WhitelistCommand("whitelist"),
+			new XpCommand("xp")
 		]);
+
+		if($this->server->getAltayProperty("developer.commands", true)){
+			$this->registerAll("altay", [
+				new ExtractPluginCommand("extractplugin"),
+				new MakePluginCommand("makeplugin"),
+				new MakeServerCommand("makeserver")
+			]);
+		}
 
 		if($this->server->getProperty("debug.commands", false)){
 			$this->registerAll("pocketmine", [
@@ -258,6 +283,8 @@ class SimpleCommandMap implements CommandMap{
 			$target->execute($sender, $sentCommandLabel, $args);
 		}catch(InvalidCommandSyntaxException $e){
 			$sender->sendMessage($this->server->getLanguage()->translateString("commands.generic.usage", [$target->getUsage()]));
+		}catch(NoSelectorMatchException $e){
+			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%".$e->getMessage()));
 		}catch(\Throwable $e){
 			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.exception"));
 			$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.command.exception", [$commandLine, (string) $target, $e->getMessage()]));
@@ -287,7 +314,6 @@ class SimpleCommandMap implements CommandMap{
 	public function getCommands() : array{
 		return $this->knownCommands;
 	}
-
 
 	/**
 	 * @return void
@@ -345,4 +371,6 @@ class SimpleCommandMap implements CommandMap{
 
 		}
 	}
+
+
 }

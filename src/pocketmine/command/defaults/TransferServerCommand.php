@@ -27,30 +27,35 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\Player;
 
 class TransferServerCommand extends VanillaCommand{
 
-	public function __construct(string $name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.transferserver.description",
-			"%pocketmine.command.transferserver.usage"
-		);
-		$this->setPermission("pocketmine.command.transferserver");
-	}
+    public function __construct(string $name){
+        parent::__construct(
+            $name,
+            "%pocketmine.command.transferserver.description",
+            "%pocketmine.command.transferserver.usage",
+            [], [[
+                new CommandParameter("ip", CommandParameter::ARG_TYPE_VALUE, false),
+                new CommandParameter("port", CommandParameter::ARG_TYPE_INT)
+            ]]
+        );
+        $this->setPermission("pocketmine.command.transferserver");
+    }
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(count($args) < 1){
-			throw new InvalidCommandSyntaxException();
-		}elseif(!($sender instanceof Player)){
-			$sender->sendMessage("This command must be executed as a player");
+    public function execute(CommandSender $sender, string $commandLabel, array $args){
+        if(count($args) < 1){
+            throw new InvalidCommandSyntaxException();
+        }elseif(!($sender instanceof Player)){
+            $sender->sendMessage("This command must be executed as a player");
 
-			return false;
-		}
+            return false;
+        }
 
-		$sender->transfer($args[0], (int) ($args[1] ?? 19132));
+        $sender->transfer($args[0], (int) ($args[1] ?? 19132));
 
-		return true;
-	}
+        return true;
+    }
 }

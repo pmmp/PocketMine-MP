@@ -29,63 +29,63 @@ use pocketmine\level\format\io\region\McRegion;
 use pocketmine\level\format\io\region\PMAnvil;
 
 abstract class LevelProviderManager{
-	protected static $providers = [];
+    protected static $providers = [];
 
-	public static function init() : void{
-		self::addProvider(Anvil::class);
-		self::addProvider(McRegion::class);
-		self::addProvider(PMAnvil::class);
-		self::addProvider(LevelDB::class);
-	}
+    public static function init() : void{
+        self::addProvider(Anvil::class);
+        self::addProvider(McRegion::class);
+        self::addProvider(PMAnvil::class);
+        self::addProvider(LevelDB::class);
+    }
 
-	/**
-	 * @param string $class
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	public static function addProvider(string $class){
-		try{
-			$reflection = new \ReflectionClass($class);
-		}catch(\ReflectionException $e){
-			throw new \InvalidArgumentException("Class $class does not exist");
-		}
-		if(!$reflection->implementsInterface(LevelProvider::class)){
-			throw new \InvalidArgumentException("Class $class does not implement " . LevelProvider::class);
-		}
-		if(!$reflection->isInstantiable()){
-			throw new \InvalidArgumentException("Class $class cannot be constructed");
-		}
+    /**
+     * @param string $class
+     *
+     * @throws \InvalidArgumentException
+     */
+    public static function addProvider(string $class){
+        try{
+            $reflection = new \ReflectionClass($class);
+        }catch(\ReflectionException $e){
+            throw new \InvalidArgumentException("Class $class does not exist");
+        }
+        if(!$reflection->implementsInterface(LevelProvider::class)){
+            throw new \InvalidArgumentException("Class $class does not implement " . LevelProvider::class);
+        }
+        if(!$reflection->isInstantiable()){
+            throw new \InvalidArgumentException("Class $class cannot be constructed");
+        }
 
-		/** @var LevelProvider $class */
-		self::$providers[strtolower($class::getProviderName())] = $class;
-	}
+        /** @var LevelProvider $class */
+        self::$providers[strtolower($class::getProviderName())] = $class;
+    }
 
-	/**
-	 * Returns a LevelProvider class for this path, or null
-	 *
-	 * @param string $path
-	 *
-	 * @return string|null
-	 */
-	public static function getProvider(string $path){
-		foreach(self::$providers as $provider){
-			/** @var $provider LevelProvider */
-			if($provider::isValid($path)){
-				return $provider;
-			}
-		}
+    /**
+     * Returns a LevelProvider class for this path, or null
+     *
+     * @param string $path
+     *
+     * @return string|null
+     */
+    public static function getProvider(string $path){
+        foreach(self::$providers as $provider){
+            /** @var $provider LevelProvider */
+            if($provider::isValid($path)){
+                return $provider;
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Returns a LevelProvider by name, or null if not found
-	 *
-	 * @param string $name
-	 *
-	 * @return string|null
-	 */
-	public static function getProviderByName(string $name){
-		return self::$providers[trim(strtolower($name))] ?? null;
-	}
+    /**
+     * Returns a LevelProvider by name, or null if not found
+     *
+     * @param string $name
+     *
+     * @return string|null
+     */
+    public static function getProviderByName(string $name){
+        return self::$providers[trim(strtolower($name))] ?? null;
+    }
 }

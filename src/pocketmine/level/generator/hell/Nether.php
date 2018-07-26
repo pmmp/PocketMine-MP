@@ -24,10 +24,16 @@ declare(strict_types=1);
 namespace pocketmine\level\generator\hell;
 
 use pocketmine\block\Block;
+use pocketmine\block\Gravel;
+use pocketmine\block\Lava;
+use pocketmine\block\Quartz;
+use pocketmine\block\SoulSand;
 use pocketmine\level\biome\Biome;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\noise\Simplex;
+use pocketmine\level\generator\object\OreType;
+use pocketmine\level\generator\populator\Ore;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
@@ -68,18 +74,14 @@ class Nether extends Generator{
 		$this->noiseBase = new Simplex($this->random, 4, 1 / 4, 1 / 64);
 		$this->random->setSeed($this->level->getSeed());
 
-		/*$ores = new Ore();
+		$ores = new Ore();
 		$ores->setOreTypes([
-			new OreType(new CoalOre(), 20, 16, 0, 128),
-			new OreType(New IronOre(), 20, 8, 0, 64),
-			new OreType(new RedstoneOre(), 8, 7, 0, 16),
-			new OreType(new LapisOre(), 1, 6, 0, 32),
-			new OreType(new GoldOre(), 2, 8, 0, 32),
-			new OreType(new DiamondOre(), 1, 7, 0, 16),
-			new OreType(new Dirt(), 20, 32, 0, 128),
-			new OreType(new Gravel(), 10, 16, 0, 128)
+			new OreType(new Quartz(), 20, 16, 0, 128),
+			new OreType(new SoulSand(), 5, 64, 0, 128),
+			new OreType(new Gravel(), 5, 64, 0, 128),
+			new OreType(new Lava(), 1, 16, 0, $this->waterHeight)
 		]);
-		$this->populators[] = $ores;*/
+		$this->populators[] = $ores;
 	}
 
 	public function generateChunk(int $chunkX, int $chunkZ) : void{
@@ -131,4 +133,5 @@ class Nether extends Generator{
 	public function getSpawn() : Vector3{
 		return new Vector3(127.5, 128, 127.5);
 	}
+
 }

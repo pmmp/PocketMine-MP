@@ -32,6 +32,6 @@ class BeetrootSeeds extends Item{
 	}
 
 	public function getBlock() : Block{
-		return BlockFactory::get(Block::BEETROOT_BLOCK);
-	}
+        return BlockFactory::get(Block::BEETROOT_BLOCK);
+    }
 }

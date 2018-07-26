@@ -1,0 +1,43 @@
+#             _ _
+#       /\   | | |
+#      /  \  | | |_ __ _ _   _
+#     / /\ \ | | __/ _` | | | |
+#    / ____ \| | || (_| | |_| |
+#   /_/    \_|_|\__\__,_|\__, |
+#                         __/ |
+#                        |___/
+
+player:
+  # Keep player's inventory if they die
+  keep-inventory: false
+  # Keep player's experience if they die
+  keep-experience: false
+
+dimensions:
+  # Choose if the nether is allowed. The level of nether will generate automatically
+  nether:
+    active: true
+    level-name: "nether"
+  end:
+    active: true
+    level-name: "end"
+
+developer:
+  # This setting allows the server to load plugins through the source directory over a .phar file
+  folder-plugin-loader: true
+  # This setting allows developer commands (extractplugin, makeserver... etc)
+  commands: true
+  # This setting allows the server to load plugins with Incompatible API
+  load-incompatible-api: true
+
+terminal:
+  # If console colors are disabled, set it to "false".
+  read-line: true
+
+server:
+  allow-server-settings-form: true
+
+level:
+  # If enabled, mobs can move around
+  # Note: this feature can be cause lag in your server when lots of mob are spawned
+  enable-mob-ai: true
