@@ -48,6 +48,13 @@ class MainLogger extends \AttachableThreadedLogger{
 	/** @var bool */
 	private $mainThreadHasFormattingCodes = false;
 
+	/** @var string */
+	private $lastDupeMessage = "";
+	/** @var string|null */
+	private $lastDupeLevel = null;
+	/** @var int */
+	private $dupeCounter = 0;
+
 	/**
 	 * @param string $logFile
 	 * @param bool $logDebug
@@ -259,19 +266,36 @@ class MainLogger extends \AttachableThreadedLogger{
 		}
 
 		$message = sprintf($this->format, date("H:i:s", $now), $color, $threadName, $prefix, $message);
-		$cleanMessage = TextFormat::clean($message);
 
-		if($this->mainThreadHasFormattingCodes and Terminal::hasFormattingCodes()){ //hasFormattingCodes() lazy-inits colour codes because we don't know if they've been registered on this thread
-			echo Terminal::toANSI($message) . PHP_EOL;
-		}else{
-			echo $cleanMessage . PHP_EOL;
-		}
+		$this->synchronized(function() use($now, $level, $message) : void{
+			if($message === $this->lastDupeMessage){
+				$this->dupeCounter++;
+				return;
+			}
 
-		foreach($this->attachments as $attachment){
-			$attachment->call($level, $message);
-		}
+			if($this->dupeCounter > 0){
+				//avoid recursion for log message
+				$dupes = $this->dupeCounter;
+				$this->dupeCounter = 0;
+				$this->log($this->lastDupeLevel, "Previous message was repeated $dupes times");
+			}
+			$this->lastDupeMessage = $message;
+			$this->lastDupeLevel = $level;
 
-		$this->logStream[] = date("Y-m-d", $now) . " " . $cleanMessage . PHP_EOL;
+			$cleanMessage = TextFormat::clean($message);
+
+			if($this->mainThreadHasFormattingCodes and Terminal::hasFormattingCodes()){ //hasFormattingCodes() lazy-inits colour codes because we don't know if they've been registered on this thread
+				echo Terminal::toANSI($message) . PHP_EOL;
+			}else{
+				echo $cleanMessage . PHP_EOL;
+			}
+
+			foreach($this->attachments as $attachment){
+				$attachment->call($level, $message);
+			}
+
+			$this->logStream[] = date("Y-m-d", $now) . " " . $cleanMessage . PHP_EOL;
+		});
 	}
 
 	public function syncFlushBuffer(){
