@@ -25,7 +25,6 @@ namespace pocketmine\permission;
 
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginException;
-use pocketmine\Server;
 use pocketmine\timings\Timings;
 
 class PermissibleBase implements Permissible{
@@ -92,7 +91,7 @@ class PermissibleBase implements Permissible{
 			return $this->permissions[$name]->getValue();
 		}
 
-		if(($perm = Server::getInstance()->getPluginManager()->getPermission($name)) !== null){
+		if(($perm = PermissionManager::getInstance()->getPermission($name)) !== null){
 			$perm = $perm->getDefault();
 
 			return $perm === Permission::DEFAULT_TRUE or ($this->isOp() and $perm === Permission::DEFAULT_OP) or (!$this->isOp() and $perm === Permission::DEFAULT_NOT_OP);
@@ -147,13 +146,14 @@ class PermissibleBase implements Permissible{
 		Timings::$permissibleCalculationTimer->startTiming();
 
 		$this->clearPermissions();
-		$defaults = Server::getInstance()->getPluginManager()->getDefaultPermissions($this->isOp());
-		Server::getInstance()->getPluginManager()->subscribeToDefaultPerms($this->isOp(), $this->parent ?? $this);
+		$permManager = PermissionManager::getInstance();
+		$defaults = $permManager->getDefaultPermissions($this->isOp());
+		$permManager->subscribeToDefaultPerms($this->isOp(), $this->parent ?? $this);
 
 		foreach($defaults as $perm){
 			$name = $perm->getName();
 			$this->permissions[$name] = new PermissionAttachmentInfo($this->parent ?? $this, $name, null, true);
-			Server::getInstance()->getPluginManager()->subscribeToPermission($name, $this->parent ?? $this);
+			$permManager->subscribeToPermission($name, $this->parent ?? $this);
 			$this->calculateChildPermissions($perm->getChildren(), false, null);
 		}
 
@@ -165,13 +165,13 @@ class PermissibleBase implements Permissible{
 	}
 
 	public function clearPermissions(){
-		$pluginManager = Server::getInstance()->getPluginManager();
+		$permManager = PermissionManager::getInstance();
 		foreach(array_keys($this->permissions) as $name){
-			$pluginManager->unsubscribeFromPermission($name, $this->parent ?? $this);
+			$permManager->unsubscribeFromPermission($name, $this->parent ?? $this);
 		}
 
-		$pluginManager->unsubscribeFromDefaultPerms(false, $this->parent ?? $this);
-		$pluginManager->unsubscribeFromDefaultPerms(true, $this->parent ?? $this);
+		$permManager->unsubscribeFromDefaultPerms(false, $this->parent ?? $this);
+		$permManager->unsubscribeFromDefaultPerms(true, $this->parent ?? $this);
 
 		$this->permissions = [];
 	}
@@ -182,11 +182,12 @@ class PermissibleBase implements Permissible{
 	 * @param PermissionAttachment|null $attachment
 	 */
 	private function calculateChildPermissions(array $children, bool $invert, ?PermissionAttachment $attachment){
+		$permManager = PermissionManager::getInstance();
 		foreach($children as $name => $v){
-			$perm = Server::getInstance()->getPluginManager()->getPermission($name);
+			$perm = $permManager->getPermission($name);
 			$value = ($v xor $invert);
 			$this->permissions[$name] = new PermissionAttachmentInfo($this->parent ?? $this, $name, $attachment, $value);
-			Server::getInstance()->getPluginManager()->subscribeToPermission($name, $this->parent ?? $this);
+			$permManager->subscribeToPermission($name, $this->parent ?? $this);
 
 			if($perm instanceof Permission){
 				$this->calculateChildPermissions($perm->getChildren(), !$value, $attachment);
