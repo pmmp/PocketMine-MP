@@ -146,13 +146,14 @@ class PermissibleBase implements Permissible{
 		Timings::$permissibleCalculationTimer->startTiming();
 
 		$this->clearPermissions();
-		$defaults = PermissionManager::getInstance()->getDefaultPermissions($this->isOp());
-		PermissionManager::getInstance()->subscribeToDefaultPerms($this->isOp(), $this->parent ?? $this);
+		$permManager = PermissionManager::getInstance();
+		$defaults = $permManager->getDefaultPermissions($this->isOp());
+		$permManager->subscribeToDefaultPerms($this->isOp(), $this->parent ?? $this);
 
 		foreach($defaults as $perm){
 			$name = $perm->getName();
 			$this->permissions[$name] = new PermissionAttachmentInfo($this->parent ?? $this, $name, null, true);
-			PermissionManager::getInstance()->subscribeToPermission($name, $this->parent ?? $this);
+			$permManager->subscribeToPermission($name, $this->parent ?? $this);
 			$this->calculateChildPermissions($perm->getChildren(), false, null);
 		}
 
@@ -181,11 +182,12 @@ class PermissibleBase implements Permissible{
 	 * @param PermissionAttachment|null $attachment
 	 */
 	private function calculateChildPermissions(array $children, bool $invert, ?PermissionAttachment $attachment){
+		$permManager = PermissionManager::getInstance();
 		foreach($children as $name => $v){
-			$perm = PermissionManager::getInstance()->getPermission($name);
+			$perm = $permManager->getPermission($name);
 			$value = ($v xor $invert);
 			$this->permissions[$name] = new PermissionAttachmentInfo($this->parent ?? $this, $name, $attachment, $value);
-			PermissionManager::getInstance()->subscribeToPermission($name, $this->parent ?? $this);
+			$permManager->subscribeToPermission($name, $this->parent ?? $this);
 
 			if($perm instanceof Permission){
 				$this->calculateChildPermissions($perm->getChildren(), !$value, $attachment);
