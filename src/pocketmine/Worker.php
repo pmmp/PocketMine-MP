@@ -67,14 +67,10 @@ abstract class Worker extends \Worker{
 	public function start(?int $options = \PTHREADS_INHERIT_ALL){
 		ThreadManager::getInstance()->add($this);
 
-		if(!$this->isRunning() and !$this->isJoined() and !$this->isTerminated()){
-			if($this->getClassLoader() === null){
-				$this->setClassLoader();
-			}
-			return parent::start($options);
+		if($this->getClassLoader() === null){
+			$this->setClassLoader();
 		}
-
-		return false;
+		return parent::start($options);
 	}
 
 	/**
@@ -83,16 +79,10 @@ abstract class Worker extends \Worker{
 	public function quit(){
 		$this->isKilled = true;
 
-		$this->notify();
-
 		if($this->isRunning()){
-			$this->shutdown();
+			while($this->unstack() !== null);
 			$this->notify();
-			$this->unstack();
-		}elseif(!$this->isJoined()){
-			if(!$this->isTerminated()){
-				$this->join();
-			}
+			$this->shutdown();
 		}
 
 		ThreadManager::getInstance()->remove($this);
