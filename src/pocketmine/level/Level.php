@@ -540,8 +540,11 @@ class Level implements ChunkManager, Metadatable{
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.unloading", [$this->getName()]));
 		$defaultLevel = $this->server->getDefaultLevel();
 		foreach($this->getPlayers() as $player){
-			if($this === $defaultLevel or $defaultLevel === null){
-				$player->close($player->getLeaveMessage(), "Forced default level unload");
+			if(!$player->isConnected()){
+				$player->close(); //this would normally get called on the next tick, but it won't if the level is unloaded
+			}elseif($this === $defaultLevel or $defaultLevel === null){
+				$player->disconnect($player->getLeaveMessage(), "Forced default level unload");
+				$player->close(); //same as above
 			}elseif($defaultLevel instanceof Level){
 				$player->teleport($this->server->getDefaultLevel()->getSafeSpawn());
 			}
