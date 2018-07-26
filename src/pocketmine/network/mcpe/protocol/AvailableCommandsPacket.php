@@ -183,12 +183,12 @@ class AvailableCommandsPacket extends DataPacket{
                     $this->getBool()
                 );
 
-                if($parameter->flag === self::ARG_FLAG_ENUM){
+                if($parameter->paramType & self::ARG_FLAG_ENUM){
                     $index = ($parameter->paramType & 0xffff);
                     $parameter->enum = $this->enums[$index] ?? null;
 
                     assert($parameter->enum !== null, "expected enum at $index, but got none");
-                }elseif($parameter->flag === self::ARG_FLAG_POSTFIX){ //postfix (guessing)
+                }elseif(($parameter->paramType & self::ARG_FLAG_VALID) === 0){
                     $index = ($parameter->paramType & 0xffff);
                     $parameter->postfix = $this->postfixes[$index] ?? null;
 
@@ -228,9 +228,9 @@ class AvailableCommandsPacket extends DataPacket{
                     if($key === false){
                         throw new \InvalidStateException("Postfix '$parameter->postfix' not in postfixes array");
                     }
-                    $type = ($parameter->flag | $parameter->paramType) << 24 | $key;
+                    $type = (self::ARG_FLAG_POSTFIX | $parameter->paramType) << 24 | $key;
                 }else{
-                    $type = $parameter->flag | $parameter->paramType;
+                    $type = self::ARG_FLAG_VALID | $parameter->paramType;
                 }
 
                 $this->putLInt($type);
