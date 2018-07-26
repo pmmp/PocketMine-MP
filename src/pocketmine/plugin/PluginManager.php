@@ -40,7 +40,7 @@ use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\Utils;
 
 /**
- * Manages all the plugins, Permissions and Permissibles
+ * Manages all the plugins
  */
 class PluginManager{
 	private const MAX_EVENT_CALL_DEPTH = 50;
