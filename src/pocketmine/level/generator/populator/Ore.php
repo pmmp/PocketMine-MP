@@ -32,7 +32,7 @@ class Ore extends Populator{
 	/** @var OreType[] */
 	private $oreTypes = [];
 
-	public function populate(ChunkManager $level, int $chunkX, int $chunkZ, Random $random){
+	public function populate(ChunkManager $level, int $chunkX, int $chunkZ, Random $random) : void{
 		foreach($this->oreTypes as $type){
 			$ore = new ObjectOre($random, $type);
 			for($i = 0; $i < $ore->type->clusterCount; ++$i){
@@ -49,7 +49,7 @@ class Ore extends Populator{
 	/**
 	 * @param OreType[] $types
 	 */
-	public function setOreTypes(array $types){
+	public function setOreTypes(array $types) : void{
 		$this->oreTypes = $types;
 	}
 }
