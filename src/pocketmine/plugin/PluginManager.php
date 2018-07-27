@@ -413,7 +413,7 @@ class PluginManager{
 					continue;
 				}
 
-				if($pluginNumbers[2] > $serverNumbers[2] and $pluginNumbers[1] >= $serverNumbers[1]){ //If the plugin requires bug fixes in patches, being backwards compatible
+				if($pluginNumbers[2] > $serverNumbers[2] and $pluginNumbers[1] === $serverNumbers[1]){ //If the plugin requires bug fixes in patches, being backwards compatible
 					continue;
 				}
 			}
