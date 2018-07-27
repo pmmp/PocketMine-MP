@@ -4,6 +4,9 @@ THIS ISSUE TRACKER IS FOR BUG REPORTING, NOT FOR HELP & SUPPORT. If you need hel
 - http://pmmp.readthedocs.io/en/rtfd/ - Documentation
 - https://forums.pmmp.io - PMMP Forums
 
+PLEASE DO NOT REPORT ATTACK VECTORS ON THIS ISSUE TRACKER.
+Send an email to team@pmmp.io if you have a vulnerability to report.
+
 Any issues requesting updates to new versions of MCPE will be treated as spam.
 Please do not create issues for missing/un-implemented gameplay features - they will be closed.
 -->
