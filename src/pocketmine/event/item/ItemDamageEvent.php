@@ -57,7 +57,7 @@ class ItemDamageEvent extends ItemEvent implements Cancellable{
      *
      * @return int
      */
-    public function getDamage() : int{
+    public function getAppliedDamage() : int{
         return $this->damage;
     }
 
@@ -66,7 +66,7 @@ class ItemDamageEvent extends ItemEvent implements Cancellable{
      *
      * @param int $damage
      */
-    public function setDamage(int $damage) : void{
+    public function setAppliedDamage(int $damage) : void{
         $this->damage = $damage;
     }
 }
