@@ -187,6 +187,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $randomClientId;
 	/** @var string */
 	protected $xuid = "";
+	/** @var bool */
+	protected $authenticated = false;
 
 	protected $windowCnt = 2;
 	/** @var int[] */
@@ -325,7 +327,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function isAuthenticated() : bool{
-		return $this->xuid !== "";
+		return $this->authenticated;
 	}
 
 	/**
@@ -1765,6 +1767,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->uuid = UUID::fromString($packet->clientUUID);
 		$this->rawUUID = $this->uuid->toBinary();
+		$this->xuid = $packet->xuid;
 
 		$this->setSkin($packet->skin);
 
@@ -1794,15 +1797,19 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if(!$packet->skipVerification){
 			$this->server->getAsyncPool()->submitTask(new VerifyLoginTask($this, $packet));
 		}else{
-			$this->onVerifyCompleted($packet, null, true);
+			$this->onVerifyCompleted(true, null);
 		}
 
 		return true;
 	}
 
-	public function onVerifyCompleted(LoginPacket $packet, ?string $error, bool $signedByMojang) : void{
+	public function onVerifyCompleted(bool $authenticated, ?string $error) : void{
 		if($this->closed){
 			return;
+		}
+
+		if($authenticated and $this->xuid === ""){
+			$error = "Expected XUID but none found";
 		}
 
 		if($error !== null){
@@ -1810,26 +1817,20 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return;
 		}
 
-		$xuid = $packet->xuid;
+		$this->authenticated = $authenticated;
 
-		if(!$signedByMojang and $xuid !== ""){
-			$this->server->getLogger()->warning($this->getName() . " has an XUID, but their login keychain is not signed by Mojang");
-			$xuid = "";
-		}
-
-		if($xuid === "" or !is_string($xuid)){
-			if($signedByMojang){
-				$this->server->getLogger()->error($this->getName() . " should have an XUID, but none found");
-			}
-
+		if(!$this->authenticated){
 			if($this->server->requiresAuthentication() and $this->kick("disconnectionScreen.notAuthenticated", false)){ //use kick to allow plugins to cancel this
 				return;
 			}
 
 			$this->server->getLogger()->debug($this->getName() . " is NOT logged into Xbox Live");
+			if($this->xuid !== ""){
+				$this->server->getLogger()->warning($this->getName() . " has an XUID, but their login keychain is not signed by Mojang");
+				$this->xuid = "";
+			}
 		}else{
 			$this->server->getLogger()->debug($this->getName() . " is logged into Xbox Live");
-			$this->xuid = $xuid;
 		}
 
 		//TODO: encryption
