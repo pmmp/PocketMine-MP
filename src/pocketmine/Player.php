@@ -224,6 +224,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
     protected $randomClientId;
     /** @var string */
     protected $xuid = "";
+	/** @var bool */
+	protected $authenticated = false;
 
     /** @var string */
     protected $deviceModel;
@@ -387,7 +389,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
     }
 
     public function isAuthenticated() : bool{
-        return $this->xuid !== "";
+        return $this->authenticated;
     }
 
     /**
@@ -971,7 +973,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
         $this->usedChunks[Level::chunkHash($x, $z)] = true;
         $this->chunkLoadCount++;
 
-		$this->networkSession->getInterface()->putPacket($this->networkSession, $payload);
+		$this->networkSession->sendEncoded($payload);
 
         if($this->spawned){
             foreach($this->level->getChunkEntities($x, $z) as $entity){
@@ -1831,6 +1833,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
         $this->uuid = UUID::fromString($packet->clientUUID);
         $this->rawUUID = $this->uuid->toBinary();
+		$this->xuid = $packet->xuid;
 
         $this->deviceModel = $packet->clientData["DeviceModel"];
         $this->deviceOS = $packet->clientData["DeviceOS"];
@@ -1862,43 +1865,41 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
         if(!$packet->skipVerification){
             $this->server->getAsyncPool()->submitTask(new VerifyLoginTask($this, $packet));
         }else{
-            $this->onVerifyCompleted($packet, null, true);
+            $this->onVerifyCompleted(true, null);
         }
 
         return true;
     }
 
-    public function onVerifyCompleted(LoginPacket $packet, ?string $error, bool $signedByMojang) : void{
+    public function onVerifyCompleted(bool $authenticated, ?string $error) : void{
         if($this->closed){
             return;
         }
 
-        if($error !== null){
-            $this->close("", $this->server->getLanguage()->translateString("pocketmine.disconnect.invalidSession", [$error]));
-            return;
-        }
+		if($authenticated and $this->xuid === ""){
+			$error = "Expected XUID but none found";
+		}if($error !== null){
+			$this->close("", $this->server->getLanguage()->translateString("pocketmine.disconnect.invalidSession", [$error]));
+			return;
+		}
 
-        $xuid = $packet->xuid;
+		$this->authenticated = $authenticated;
 
-        if(!$signedByMojang and $xuid !== ""){
-            $this->server->getLogger()->warning($this->getName() . " has an XUID, but their login keychain is not signed by Mojang");
-            $xuid = "";
-        }
+		if(!
+				$this->authenticated){
 
-        if($xuid === "" or !is_string($xuid)){
-            if($signedByMojang){
-                $this->server->getLogger()->error($this->getName() . " should have an XUID, but none found");
-            }
+			if($this->server->requiresAuthentication() and $this->kick("disconnectionScreen.notAuthenticated", false)){ //use kick to allow plugins to cancel this
+				return;
+			}
 
-            if($this->server->requiresAuthentication() and $this->kick("disconnectionScreen.notAuthenticated", false)){ //use kick to allow plugins to cancel this
-                return;
-            }
+			$this->server->getLogger()->debug($this->getName() . " is NOT logged into Xbox Live");
+		if($this->xuid !== ""){
+				$this->server->getLogger()->warning($this->getName() . " has an XUID, but their login keychain is not signed by Mojang");
+				$this->xuid = "";
+			}}else{
+			$this->server->getLogger()->debug($this->getName() . " is logged into Xbox Live");
 
-            $this->server->getLogger()->debug($this->getName() . " is NOT logged into Xbox Live");
-        }else{
-            $this->server->getLogger()->debug($this->getName() . " is logged into Xbox Live");
-            $this->xuid = $xuid;
-        }
+		}
 
         //TODO: encryption
 

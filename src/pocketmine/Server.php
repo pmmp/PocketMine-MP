@@ -2032,7 +2032,7 @@ class Server{
 	public function broadcastPacketsCallback(string $payload, array $sessions, bool $immediate = false){
 		/** @var NetworkSession $session */
 		foreach($sessions as $session){
-			$session->getInterface()->putPacket($session, $payload, $immediate);
+			$session->sendEncoded($payload, $immediate);
         }
     }
 

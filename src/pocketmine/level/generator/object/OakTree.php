@@ -36,7 +36,7 @@ class OakTree extends Tree{
 		$this->type = Wood::OAK;
 	}
 
-	public function placeObject(ChunkManager $level, int $x, int $y, int $z, Random $random){
+	public function placeObject(ChunkManager $level, int $x, int $y, int $z, Random $random) : void{
 		$this->treeHeight = $random->nextBoundedInt(3) + 4;
 		parent::placeObject($level, $x, $y, $z, $random);
 	}

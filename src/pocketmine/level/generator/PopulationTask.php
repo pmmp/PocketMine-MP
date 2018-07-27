@@ -55,7 +55,7 @@ class PopulationTask extends AsyncTask{
 		}
 	}
 
-	public function onRun(){
+	public function onRun() : void{
 		/** @var SimpleChunkManager $manager */
 		$manager = $this->getFromThreadStore("generation.level{$this->levelId}.manager");
 		/** @var Generator $generator */
@@ -135,7 +135,7 @@ class PopulationTask extends AsyncTask{
 		}
 	}
 
-	public function onCompletion(Server $server){
+	public function onCompletion(Server $server) : void{
 		$level = $server->getLevel($this->levelId);
 		if($level !== null){
 			if(!$this->state){
