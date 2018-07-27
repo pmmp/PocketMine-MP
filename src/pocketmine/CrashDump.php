@@ -61,7 +61,7 @@ class CrashDump{
         $this->generalData();
         $this->pluginsData();
 
-		$this->extraData();
+        $this->extraData();
 
         $this->encodeData();
 
@@ -100,48 +100,48 @@ class CrashDump{
             foreach($this->server->getPluginManager()->getPlugins() as $p){
                 $d = $p->getDescription();
                 $this->data["plugins"][$d->getName()] = [
-                    "name" => $d->getName(),
-                    "version" => $d->getVersion(),
-                    "authors" => $d->getAuthors(),
-                    "api" => $d->getCompatibleApis(),
-                    "enabled" => $p->isEnabled(),
-                    "depends" => $d->getDepend(),
+                    "name"        => $d->getName(),
+                    "version"     => $d->getVersion(),
+                    "authors"     => $d->getAuthors(),
+                    "api"         => $d->getCompatibleApis(),
+                    "enabled"     => $p->isEnabled(),
+                    "depends"     => $d->getDepend(),
                     "softDepends" => $d->getSoftDepend(),
-                    "main" => $d->getMain(),
-                    "load" => $d->getOrder() === PluginLoadOrder::POSTWORLD ? "POSTWORLD" : "STARTUP",
-                    "website" => $d->getWebsite()
+                    "main"        => $d->getMain(),
+                    "load"        => $d->getOrder() === PluginLoadOrder::POSTWORLD ? "POSTWORLD" : "STARTUP",
+                    "website"     => $d->getWebsite()
                 ];
                 $this->addLine($d->getName() . " " . $d->getVersion() . " by " . implode(", ", $d->getAuthors()) . " for API(s) " . implode(", ", $d->getCompatibleApis()));
             }
         }
     }
 
-	private function extraData(){
-		global $argv;
+    private function extraData(){
+        global $argv;
 
-		if($this->server->getProperty("auto-report.send-settings", true) !== false){
-			$this->data["parameters"] = (array) $argv;
-			$this->data["server.properties"] = @file_get_contents($this->server->getDataPath() . "server.properties");
-			$this->data["server.properties"] = preg_replace("#^rcon\\.password=(.*)$#m", "rcon.password=******", $this->data["server.properties"]);
-			$this->data["pocketmine.yml"] = @file_get_contents($this->server->getDataPath() . "pocketmine.yml");
-		}else{
-			$this->data["pocketmine.yml"] = "";
-			$this->data["server.properties"] = "";
-			$this->data["parameters"] = [];
-		}
-		$extensions = [];
-		foreach(get_loaded_extensions() as $ext){
-			$extensions[$ext] = phpversion($ext);
-		}
-		$this->data["extensions"] = $extensions;
+        if($this->server->getProperty("auto-report.send-settings", true) !== false){
+            $this->data["parameters"] = (array) $argv;
+            $this->data["server.properties"] = @file_get_contents($this->server->getDataPath() . "server.properties");
+            $this->data["server.properties"] = preg_replace("#^rcon\\.password=(.*)$#m", "rcon.password=******", $this->data["server.properties"]);
+            $this->data["pocketmine.yml"] = @file_get_contents($this->server->getDataPath() . "pocketmine.yml");
+        }else{
+            $this->data["pocketmine.yml"] = "";
+            $this->data["server.properties"] = "";
+            $this->data["parameters"] = [];
+        }
+        $extensions = [];
+        foreach(get_loaded_extensions() as $ext){
+            $extensions[$ext] = phpversion($ext);
+        }
+        $this->data["extensions"] = $extensions;
 
-		if($this->server->getProperty("auto-report.send-phpinfo", true) !== false){
-			ob_start();
-			phpinfo();
-			$this->data["phpinfo"] = ob_get_contents();
-			ob_end_clean();
-		}
-	}
+        if($this->server->getProperty("auto-report.send-phpinfo", true) !== false){
+            ob_start();
+            phpinfo();
+            $this->data["phpinfo"] = ob_get_contents();
+            ob_end_clean();
+        }
+    }
 
     private function baseCrash(){
         global $lastExceptionError, $lastError;
@@ -152,21 +152,21 @@ class CrashDump{
             $error = (array) error_get_last();
             $error["trace"] = Utils::getTrace(4); //Skipping CrashDump->baseCrash, CrashDump->construct, Server->crashDump
             $errorConversion = [
-                E_ERROR => "E_ERROR",
-                E_WARNING => "E_WARNING",
-                E_PARSE => "E_PARSE",
-                E_NOTICE => "E_NOTICE",
-                E_CORE_ERROR => "E_CORE_ERROR",
-                E_CORE_WARNING => "E_CORE_WARNING",
-                E_COMPILE_ERROR => "E_COMPILE_ERROR",
-                E_COMPILE_WARNING => "E_COMPILE_WARNING",
-                E_USER_ERROR => "E_USER_ERROR",
-                E_USER_WARNING => "E_USER_WARNING",
-                E_USER_NOTICE => "E_USER_NOTICE",
-                E_STRICT => "E_STRICT",
+                E_ERROR             => "E_ERROR",
+                E_WARNING           => "E_WARNING",
+                E_PARSE             => "E_PARSE",
+                E_NOTICE            => "E_NOTICE",
+                E_CORE_ERROR        => "E_CORE_ERROR",
+                E_CORE_WARNING      => "E_CORE_WARNING",
+                E_COMPILE_ERROR     => "E_COMPILE_ERROR",
+                E_COMPILE_WARNING   => "E_COMPILE_WARNING",
+                E_USER_ERROR        => "E_USER_ERROR",
+                E_USER_WARNING      => "E_USER_WARNING",
+                E_USER_NOTICE       => "E_USER_NOTICE",
+                E_STRICT            => "E_STRICT",
                 E_RECOVERABLE_ERROR => "E_RECOVERABLE_ERROR",
-                E_DEPRECATED => "E_DEPRECATED",
-                E_USER_DEPRECATED => "E_USER_DEPRECATED"
+                E_DEPRECATED        => "E_DEPRECATED",
+                E_USER_DEPRECATED   => "E_USER_DEPRECATED"
             ];
             $error["fullFile"] = $error["file"];
             $error["file"] = Utils::cleanPath($error["file"]);
@@ -212,13 +212,13 @@ class CrashDump{
         $this->addLine("Code:");
         $this->data["code"] = [];
 
-		if($this->server->getProperty("auto-report.send-code", true) !== false){
-			$file = @file($error["fullFile"], FILE_IGNORE_NEW_LINES);
-			for($l = max(0, $error["line"] - 10); $l < $error["line"] + 10; ++$l){
-				$this->addLine("[" . ($l + 1) . "] " . @$file[$l]);
-				$this->data["code"][$l + 1] = @$file[$l];
-			}
-		}
+        if($this->server->getProperty("auto-report.send-code", true) !== false){
+            $file = @file($error["fullFile"], FILE_IGNORE_NEW_LINES);
+            for($l = max(0, $error["line"] - 10); $l < $error["line"] + 10; ++$l){
+                $this->addLine("[" . ($l + 1) . "] " . @$file[$l]);
+                $this->data["code"][$l + 1] = @$file[$l];
+            }
+        }
 
         $this->addLine();
         $this->addLine("Backtrace:");

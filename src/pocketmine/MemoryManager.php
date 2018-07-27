@@ -164,14 +164,13 @@ class MemoryManager{
     /**
      * Triggers garbage collection and cache cleanup to try and free memory.
      *
-     * @param int  $memory
-     * @param int  $limit
+     * @param int $memory
+     * @param int $limit
      * @param bool $global
-     * @param int  $triggerCount
+     * @param int $triggerCount
      */
     public function trigger(int $memory, int $limit, bool $global = false, int $triggerCount = 0){
-        $this->server->getLogger()->debug(sprintf("[Memory Manager] %sLow memory triggered, limit %gMB, using %gMB",
-            $global ? "Global " : "", round(($limit / 1024) / 1024, 2), round(($memory / 1024) / 1024, 2)));
+        $this->server->getLogger()->debug(sprintf("[Memory Manager] %sLow memory triggered, limit %gMB, using %gMB", $global ? "Global " : "", round(($limit / 1024) / 1024, 2), round(($memory / 1024) / 1024, 2)));
         if($this->lowMemClearWorldCache){
             foreach($this->server->getLevels() as $level){
                 $level->clearCache(true);
@@ -262,8 +261,8 @@ class MemoryManager{
      * Dumps the server memory into the specified output folder.
      *
      * @param string $outputFolder
-     * @param int    $maxNesting
-     * @param int    $maxStringSize
+     * @param int $maxNesting
+     * @param int $maxStringSize
      */
     public function dumpServerMemory(string $outputFolder, int $maxNesting, int $maxStringSize){
         $this->server->getLogger()->notice("[Dump] After the memory dump is done, the server might crash");
@@ -280,10 +279,10 @@ class MemoryManager{
     /**
      * Static memory dumper accessible from any thread.
      *
-     * @param mixed   $startingObject
-     * @param string  $outputFolder
-     * @param int     $maxNesting
-     * @param int     $maxStringSize
+     * @param mixed $startingObject
+     * @param string $outputFolder
+     * @param int $maxNesting
+     * @param int $maxStringSize
      * @param \Logger $logger
      *
      * @throws \ReflectionException
@@ -339,14 +338,14 @@ class MemoryManager{
             $globalCount = 0;
 
             $ignoredGlobals = [
-                'GLOBALS' => true,
-                '_SERVER' => true,
+                'GLOBALS'  => true,
+                '_SERVER'  => true,
                 '_REQUEST' => true,
-                '_POST' => true,
-                '_GET' => true,
-                '_FILES' => true,
-                '_ENV' => true,
-                '_COOKIE' => true,
+                '_POST'    => true,
+                '_GET'     => true,
+                '_FILES'   => true,
+                '_ENV'     => true,
+                '_COOKIE'  => true,
                 '_SESSION' => true
             ];
 
@@ -386,7 +385,7 @@ class MemoryManager{
 
                 $info = [
                     "information" => "$hash@$className",
-                    "properties" => []
+                    "properties"  => []
                 ];
 
                 if($reflection->getParentClass()){
@@ -438,13 +437,13 @@ class MemoryManager{
     }
 
     /**
-     * @param mixed    $from
-     * @param mixed    &$data
+     * @param mixed $from
+     * @param mixed &$data
      * @param object[] &$objects
-     * @param int[]    &$refCounts
-     * @param int      $recursion
-     * @param int      $maxNesting
-     * @param int      $maxStringSize
+     * @param int[] &$refCounts
+     * @param int $recursion
+     * @param int $maxNesting
+     * @param int $maxStringSize
      */
     private static function continueDump($from, &$data, array &$objects, array &$refCounts, int $recursion, int $maxNesting, int $maxStringSize){
         if($maxNesting <= 0){
@@ -473,7 +472,7 @@ class MemoryManager{
                 self::continueDump($value, $data[$key], $objects, $refCounts, $recursion + 1, $maxNesting, $maxStringSize);
             }
         }elseif(is_string($from)){
-            $data = "(string) len(". strlen($from) .") " . substr(Utils::printable($from), 0, $maxStringSize);
+            $data = "(string) len(" . strlen($from) . ") " . substr(Utils::printable($from), 0, $maxStringSize);
         }elseif(is_resource($from)){
             $data = "(resource) " . print_r($from, true);
         }else{

@@ -68,28 +68,25 @@ abstract class Worker extends \Worker{
         ThreadManager::getInstance()->add($this);
 
 
-			if($this->getClassLoader() === null){
-				$this->setClassLoader();
-			}
-			return parent::start($options);
-		}
+        if($this->getClassLoader() === null){
+            $this->setClassLoader();
+        }
+        return parent::start($options);
+    }
 
 
-
-	/**
-	 * Stops the thread using the best way possible. Try to stop it yourself before calling this.
-	 */
-	public function quit(){
-		$this->isKilled = true;
-
+    /**
+     * Stops the thread using the best way possible. Try to stop it yourself before calling this.
+     */
+    public function quit(){
+        $this->isKilled = true;
 
 
-		if($this->isRunning()){
-			while(
-			$this->unstack()!== null);
-			$this->notify();
-				$this->shutdown();
-		}
+        if($this->isRunning()){
+            while($this->unstack() !== null) ;
+            $this->notify();
+            $this->shutdown();
+        }
 
         ThreadManager::getInstance()->remove($this);
     }
