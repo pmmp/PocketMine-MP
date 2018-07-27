@@ -2025,7 +2025,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			case ResourcePackClientResponsePacket::STATUS_SEND_PACKS:
 				$manager = $this->server->getResourcePackManager();
 				foreach($packet->packIds as $uuid){
-					$pack = $manager->getPackById($uuid);
+					$pack = $manager->getPackById(substr($uuid, 0, strpos($uuid, "_"))); //dirty hack for mojang's dirty hack for versions
 					if(!($pack instanceof ResourcePack)){
 						//Client requested a resource pack but we don't have it available on the server
 						$this->close("", "disconnectionScreen.resourcePack", true);
