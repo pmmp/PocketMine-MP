@@ -605,12 +605,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	/**
-	 * @return null|string
- 	 */
+	 * @return string|null
+	 */
 	public function getScoreTag() : ?string{
 		return $this->propertyManager->getString(self::DATA_SCORE_TAG);
 	}
-	
+
 	/**
 	 * @param string $score
 	 */
