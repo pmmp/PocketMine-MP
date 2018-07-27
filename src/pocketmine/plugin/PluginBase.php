@@ -253,11 +253,10 @@ abstract class PluginBase implements Plugin{
         return $this->config;
     }
 
-    public function saveConfig(){
-        if(!$this->getConfig()->save()){
-            $this->getLogger()->critical("Could not save config to " . $this->configFile);
-        }
-    }
+	public function saveConfig(){
+		$this->getConfig()->save();
+
+	}
 
     public function saveDefaultConfig() : bool{
         if(!file_exists($this->configFile)){

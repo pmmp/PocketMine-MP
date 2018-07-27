@@ -67,29 +67,28 @@ abstract class Thread extends \Thread{
     public function start(?int $options = \PTHREADS_INHERIT_ALL){
         ThreadManager::getInstance()->add($this);
 
-        if(!$this->isRunning() and !$this->isJoined() and !$this->isTerminated()){
-            if($this->getClassLoader() === null){
-                $this->setClassLoader();
-            }
-            return parent::start($options);
-        }
 
-        return false;
-    }
+			if($this->getClassLoader() === null){
+				$this->setClassLoader();
+			}
+			return parent::start($options);
+		}
 
-    /**
-     * Stops the thread using the best way possible. Try to stop it yourself before calling this.
-     */
-    public function quit(){
-        $this->isKilled = true;
 
-        $this->notify();
 
-        if(!$this->isJoined()){
-            if(!$this->isTerminated()){
-                $this->join();
-            }
-        }
+	/**
+	 * Stops the thread using the best way possible. Try to stop it yourself before calling this.
+	 */
+	public function quit(){
+		$this->isKilled = true;
+
+
+
+		if(!$this->isJoined()){
+			$this->notify();
+				$this->join();
+			}
+
 
         ThreadManager::getInstance()->remove($this);
     }

@@ -42,14 +42,12 @@ class Config{
 
     private $nestedCache = [];
 
-    /** @var string */
-    private $file;
-    /** @var bool */
-    private $correct = false;
-    /** @var int */
-    private $type = Config::DETECT;
-    /** @var int */
-    private $jsonOptions = JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING;
+	/** @var string */
+	private $file;
+	/** @var  int */
+	private $type = Config::DETECT;
+	/** @var int */
+	private $jsonOptions = JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING;
 
     /** @var bool */
     private $changed = false;

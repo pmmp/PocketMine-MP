@@ -47,7 +47,7 @@ class Ore{
 		return $level->getBlockIdAt($x, $y, $z) === Block::STONE;
 	}
 
-	public function placeObject(ChunkManager $level, int $x, int $y, int $z){
+	public function placeObject(ChunkManager $level, int $x, int $y, int $z) : void{
 		$clusterSize = $this->type->clusterSize;
 		$angle = $this->random->nextFloat() * M_PI;
 		$offset = VectorMath::getDirection2D($angle)->multiply($clusterSize / 8);

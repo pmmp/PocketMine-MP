@@ -37,19 +37,19 @@ class Tree extends Populator{
 
 	private $type;
 
-	public function __construct($type = Sapling::OAK){
+	public function __construct(int $type = Sapling::OAK){
 		$this->type = $type;
 	}
 
-	public function setRandomAmount($amount){
+	public function setRandomAmount(int $amount) : void{
 		$this->randomAmount = $amount;
 	}
 
-	public function setBaseAmount($amount){
+	public function setBaseAmount(int $amount) : void{
 		$this->baseAmount = $amount;
 	}
 
-	public function populate(ChunkManager $level, int $chunkX, int $chunkZ, Random $random){
+	public function populate(ChunkManager $level, int $chunkX, int $chunkZ, Random $random) : void{
 		$this->level = $level;
 		$amount = $random->nextRange(0, $this->randomAmount + 1) + $this->baseAmount;
 		for($i = 0; $i < $amount; ++$i){

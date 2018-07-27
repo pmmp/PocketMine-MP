@@ -87,6 +87,7 @@ use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\utils\Utils;
 
 abstract class Entity extends Location implements Metadatable, EntityIds{
 
@@ -310,45 +311,42 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
         return null;
     }
 
-    /**
-     * Registers an entity type into the index.
-     *
-     * @param string   $className Class that extends Entity
-     * @param bool     $force Force registration even if the entity does not have a valid network ID
-     * @param string[] $saveNames An array of save names which this entity might be saved under. Defaults to the short name of the class itself if empty.
-     *
-     * NOTE: The first save name in the $saveNames array will be used when saving the entity to disk. The reflection
-     * name of the class will be appended to the end and only used if no other save names are specified.
-     *
-     * @return bool
-     */
-    public static function registerEntity(string $className, bool $force = false, array $saveNames = []) : bool{
-        /** @var Entity $className */
+	/**
+	 * Registers an entity type into the index.
+	 *
+	 * @param string   $className Class that extends Entity
+	 * @param bool     $force Force registration even if the entity does not have a valid network ID
+	 * @param string[] $saveNames An array of save names which this entity might be saved under. Defaults to the short name of the class itself if empty.
+	 *
+	 * NOTE: The first save name in the $saveNames array will be used when saving the entity to disk. The reflection
+	 * name of the class will be appended to the end and only used if no other save names are specified.
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public static function registerEntity(string $className, bool $force = false, array $saveNames = []) : void{
+		Utils::testValidInstance($className, Entity ::class);
 
-        $class = new \ReflectionClass($className);
-        if(is_a($className, Entity::class, true) and !$class->isAbstract()){
-            if($className::NETWORK_ID !== -1){
-                self::$knownEntities[$className::NETWORK_ID] = $className;
-            }elseif(!$force){
-                return false;
-            }
+		/** @var Entity$className*/
 
-            $shortName = $class->getShortName();
-            if(!in_array($shortName, $saveNames, true)){
-                $saveNames[] = $shortName;
-            }
+			if($className::NETWORK_ID !== -1){
+				self::$knownEntities[$className::NETWORK_ID] = $className;
+			}elseif(!$force){
+				throw new \InvalidArgumentException("Class $className does not declare a valid NETWORK_ID and not force-registering");
+			}
 
-            foreach($saveNames as $name){
-                self::$knownEntities[$name] = $className;
-            }
+			$shortName = (new \ReflectionClass($className))->getShortName();
+			if(!in_array($shortName, $saveNames, true)){
+				$saveNames[] = $shortName;
+			}
 
-            self::$saveNames[$className] = $saveNames;
+			foreach($saveNames as $name){
+				self::$knownEntities[$name] = $className;
+			}
 
-            return true;
-        }
+			self::$saveNames[$className] = $saveNames;
 
-        return false;
-    }
+
+	}
 
     /**
      * Helper function which creates minimal NBT needed to spawn an entity.
@@ -2412,11 +2410,34 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
         $pk->entityRuntimeId = $this->getId();
         $pk->metadata = $data ?? $this->propertyManager->getAll();
 
+        // Temporary fix for player custom name tags visible
+        $includeNametag = isset($data[self::DATA_NAMETAG]);
+        if(($isPlayer = $this instanceof Player) and $includeNametag){
+            $remove = new RemoveEntityPacket();
+            $remove->entityUniqueId = $this->getId();
+            $add = new AddPlayerPacket();
+            $add->uuid = $this->getUniqueId();
+            $add->username = $this->getNameTag();
+            $add->entityRuntimeId = $this->getId();
+            $add->position = $this->asVector3();
+            $add->motion = $this->getMotion();
+            $add->yaw = $this->yaw;
+            $add->pitch = $this->pitch;
+            $add->item = $this->getInventory()->getItemInHand();
+            $add->metadata = $this->propertyManager->getAll();
+        }
+
         foreach($player as $p){
             if($p === $this){
                 continue;
             }
 			$p->sendDataPacket(clone $pk);
+
+            // will remove soon
+            if($isPlayer and $includeNametag){
+                $p->sendDataPacket(clone $remove);
+                $p->sendDataPacket(clone $add);
+            }
         }
 
         if($this instanceof Player){
