@@ -119,7 +119,7 @@ class VerifyLoginTask extends AsyncTask{
 		//0x30 = Sequence ASN.1 tag
 		$derSignature = "\x30" . chr(strlen($sequence)) . $sequence;
 
-		$v = openssl_verify("$headB64.$payloadB64", $derSignature, "-----BEGIN PUBLIC KEY-----\n" . wordwrap($currentPublicKey, 64, "\n", true) . "\n-----END PUBLIC KEY-----\n", OPENSSL_ALGO_SHA384);
+		$v = openssl_verify("$headB64.$payloadB64", $derSignature, "-----BEGIN PUBLIC KEY-----\n" . $currentPublicKey . "\n-----END PUBLIC KEY-----\n", OPENSSL_ALGO_SHA384);
 		if($v !== 1){
 			throw new VerifyLoginException("%pocketmine.disconnect.invalidSession.badSignature");
 		}
