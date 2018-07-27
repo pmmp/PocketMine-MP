@@ -192,6 +192,11 @@ class NetworkSession{
 		}
 	}
 
+	public function sendEncoded(string $payload, bool $immediate = false) : void{
+		//TODO: encryption
+		$this->interface->putPacket($this, $payload, $immediate);
+	}
+
 	/**
 	 * Disconnects the session, destroying the associated player (if it exists).
 	 *
