@@ -604,19 +604,19 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->propertyManager->setByte(self::DATA_ALWAYS_SHOW_NAMETAG, $value ? 1 : 0);
 	}
 
-    /**
-     * @return null|string
-     */
-    public function getScoreTag() : ?string{
-	    return $this->propertyManager->getString(self::DATA_SCORE_TAG);
-    }
-
-    /**
-     * @param string $score
-     */
-    public function setScoreTag(string $score) : void{
-	    $this->propertyManager->setString(self::DATA_SCORE_TAG, $score);
-    }
+	/**
+	 * @return null|string
+ 	 */
+	public function getScoreTag() : ?string{
+		return $this->propertyManager->getString(self::DATA_SCORE_TAG);
+	}
+	
+	/**
+	 * @param string $score
+	 */
+	public function setScoreTag(string $score) : void{
+		$this->propertyManager->setString(self::DATA_SCORE_TAG, $score);
+	}
 
 	/**
 	 * @return float
