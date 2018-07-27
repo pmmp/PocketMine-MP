@@ -2087,7 +2087,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	public function setRotation(float $yaw, float $pitch, ?float $headYaw = null) : void{
 		$this->yaw = $yaw;
-		$this->headYaw = $headYaw ?? $yaw;
+		$this->headYaw = $headYaw;
 		$this->pitch = $pitch;
 		$this->scheduleUpdate();
 	}

@@ -43,7 +43,6 @@ class Location extends Position{
 	 * @param Level $level
 	 */
 	public function __construct($x = 0, $y = 0, $z = 0, $yaw = 0.0, $pitch = 0.0, Level $level = null){
-		$this->headYaw = $yaw;
 		$this->yaw = $yaw;
 		$this->pitch = $pitch;
 		parent::__construct($x, $y, $z, $level);
