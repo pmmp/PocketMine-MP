@@ -1495,7 +1495,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
     }
 
     public function getXpDropAmount() : int{
-        if(!$this->server->keepExperience && !$this->isCreative() and !$this->keepExperience){
+        if(!$this->server->keepExperience and !$this->isCreative() and !$this->keepExperience){
             return parent::getXpDropAmount();
         }
 
@@ -3547,8 +3547,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
         $this->removeAllEffects();
         $this->setHealth($this->getMaxHealth());
 
+        $xp = $this->getCurrentTotalXp();
+
         foreach($this->attributeMap->getAll() as $attr){
             $attr->resetToDefault();
+        }
+
+        if($this->keepExperience){
+            $this->setCurrentTotalXp($xp);
+            $this->keepExperience = false;
         }
 
         $this->sendData($this);
