@@ -356,6 +356,25 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	/**
+	 * Creates the base NBT for the specified type of entity.
+	 *
+	 * @param int|string   $type
+	 * @param Vector3      $pos
+	 * @param null|Vector3 $motion
+	 * @param float        $yaw
+	 * @param float        $pitch
+	 * @return Entity|null
+	 */
+	public static function createBaseNBTForEntity($type, Vector3 $pos, ?Vector3 $motion = null , float $yaw = 0.0, float $pitch = 0.0) : ?CompoundTag{
+		if(isset(self::$knownEntities[$type])){
+			$class = self::$knownEntities[$type];
+			return $class::createBaseNBT($pos, $motion, $yaw, $pitch);
+		}
+
+		return null;
+	}
+
+	/**
 	 * @var Player[]
 	 */
 	protected $hasSpawned = [];
