@@ -24,7 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\entity\Villager;
+use pocketmine\entity\passive\Villager;
 use pocketmine\nbt\NetworkLittleEndianNBTStream;
 use pocketmine\network\mcpe\protocol\UpdateTradePacket;
 use pocketmine\Player;

@@ -22,8 +22,25 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\behavior;
 
-abstract class Monster extends Mob{
+class PanicBehavior extends WanderBehavior
+{
 
+    public function canStart(): bool
+    {
+        if($this->mob->getLastAttacker() !== null or $this->mob->isOnFire()){
+            $this->targetPos = $this->findRandomTargetBlock($this->mob, 5, 4);
+            $this->followRange = $this->mob->distanceSquared($this->targetPos) + 2;
+
+            return true;
+        }
+        return false;
+    }
+
+    public function onEnd(): void
+    {
+        $this->mob->setLastAttacker(null);
+        parent::onEnd();
+    }
 }

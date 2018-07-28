@@ -22,8 +22,13 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\passive;
 
+use pocketmine\entity\Ageable;
+use pocketmine\entity\Creature;
+use pocketmine\entity\Effect;
+use pocketmine\entity\EffectInstance;
+use pocketmine\entity\NPC;
 use pocketmine\inventory\TradeInventory;
 use pocketmine\inventory\TradeItems;
 use pocketmine\item\Item;
@@ -163,11 +168,6 @@ class Villager extends Creature implements NPC, Ageable{
 		$this->namedtag->setTag($this->offers, true);
 	}
 
-	/**
-	 * Sets the villager profession
-	 *
-	 * @param int $profession
-	 */
 	public function setProfession(int $profession) : void{
 		$this->propertyManager->setInt(self::DATA_VARIANT, $profession);
 	}

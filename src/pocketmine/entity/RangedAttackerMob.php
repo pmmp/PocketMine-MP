@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
-abstract class Monster extends Mob{
+interface RangedAttackerMob{
 
+    public function onRangedAttackToTarget(Entity $target, float $power) : void;
 }

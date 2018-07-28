@@ -218,7 +218,13 @@ class SimpleSessionHandler extends SessionHandler{
     }
 
     public function handlePlayerInput(PlayerInputPacket $packet) : bool{
-		return false; //TODO
+        if($this->player->isRiding()){
+            $entity = $this->player->getRidingEntity();
+            if($entity !== null and $entity->isAlive()){
+                $entity->onRidingUpdate($this->player, $packet->motionX, $packet->motionY, $packet->jumping, $packet->sneaking);
+            }
+        }
+        return true;
     }
 
     public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
