@@ -36,3 +36,8 @@ terminal:
 
 server:
   allow-server-settings-form: true
+
+level:
+  #Si activé, les foules peuvent se déplacer
+  # Note: cette fonctionnalité peut causer des retards dans votre serveur quand beaucoup de mob sont engendrés
+  enable-mob-ai: false
