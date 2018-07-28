@@ -26,10 +26,12 @@ namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
+use pocketmine\event\block\BlockFormEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
+use pocketmine\Server;
 
 class Farmland extends Transparent{
 
@@ -110,8 +112,11 @@ class Farmland extends Transparent{
 	public function onEntityFallenUpon(Entity $entity, float $fallDistance) : void{
 		if($entity instanceof Living){
 			if($this->level->random->nextFloat() < ($fallDistance - 0.5)){
-				//TODO: Add MobGrifeing game rule check
-				$this->level->setBlock($this, BlockFactory::get(Block::DIRT), true);
+                Server::getInstance()->getPluginManager()->callEvent($ev = new BlockFormEvent($this, BlockFactory::get(Block::DIRT)));
+                //TODO: check game rule
+                if(!$ev->isCancelled()){
+                    $this->level->setBlock($this, BlockFactory::get(Block::DIRT), true);
+                }
 			}
 		}
 	}
