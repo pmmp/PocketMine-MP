@@ -49,7 +49,7 @@ class JumpAttackBehavior extends Behavior{
     }
 
     public function canContinue() : bool{
-        return $this->mob->isOnGround();
+        return $this->mob->isOnGround() and $this->mob->getTargetEntityId() !== null;
     }
 
     public function onTick() : void{
