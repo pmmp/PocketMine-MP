@@ -115,7 +115,7 @@ class Farmland extends Transparent{
                 Server::getInstance()->getPluginManager()->callEvent($ev = new BlockFormEvent($this, BlockFactory::get(Block::DIRT)));
                 //TODO: check game rule
                 if(!$ev->isCancelled()){
-                    $this->level->setBlock($this, BlockFactory::get(Block::DIRT), true);
+                    $this->level->setBlock($this, $ev->getNewState(), true);
                 }
 			}
 		}
