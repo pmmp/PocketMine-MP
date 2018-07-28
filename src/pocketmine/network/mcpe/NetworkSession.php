@@ -129,7 +129,7 @@ class NetworkSession{
 		$this->ping = $ping;
 	}
 
-    public function getHandler() : SessionHandler{
+    public function getHandler() : ?SessionHandler{
         return $this->handler;
     }
 
@@ -168,7 +168,7 @@ class NetworkSession{
         }
 
         $this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this->player, $packet));
-        if(!$ev->isCancelled() and !$packet->handle($this->handler)){
+        if(!$ev->isCancelled() and $this->handler !== null and !$packet->handle($this->handler)){
             $this->server->getLogger()->debug("Unhandled " . $packet->getName() . " received from " . $this->player->getName() . ": 0x" . bin2hex($packet->buffer));
         }
 
