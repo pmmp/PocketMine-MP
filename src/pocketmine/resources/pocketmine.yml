@@ -97,6 +97,9 @@ network:
  #Maximum size in bytes of packets sent over the network (default 1492 bytes). Packets larger than this will be
  #fragmented or split into smaller parts. Clients can request MTU sizes up to but not more than this number.
  max-mtu-size: 1492
+ #Enable encryption of Minecraft network traffic. This has an impact on performance, but prevents hackers from stealing sessions and pretending to be other players.
+ #DO NOT DISABLE THIS unless you understand the risks involved.
+ enable-encryption: true
 
 debug:
  #To enable assertion execution, set zend.assertions in your php.ini to 1

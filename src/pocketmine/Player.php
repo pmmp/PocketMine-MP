@@ -124,7 +124,7 @@ use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
-use pocketmine\network\mcpe\VerifyLoginTask;
+use pocketmine\network\mcpe\ProcessLoginTask;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
 use pocketmine\permission\PermissionAttachmentInfo;
@@ -1795,17 +1795,18 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		if(!$packet->skipVerification){
-			$this->server->getAsyncPool()->submitTask(new VerifyLoginTask($this, $packet));
+			$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($this, $packet));
 		}else{
-			$this->onVerifyCompleted(true, null);
+			$this->setAuthenticationStatus(true, null);
+			$this->networkSession->onLoginSuccess();
 		}
 
 		return true;
 	}
 
-	public function onVerifyCompleted(bool $authenticated, ?string $error) : void{
+	public function setAuthenticationStatus(bool $authenticated, ?string $error) : bool{
 		if($this->closed){
-			return;
+			return false;
 		}
 
 		if($authenticated and $this->xuid === ""){
@@ -1814,14 +1815,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		if($error !== null){
 			$this->close("", $this->server->getLanguage()->translateString("pocketmine.disconnect.invalidSession", [$error]));
-			return;
+
+			return false;
 		}
 
 		$this->authenticated = $authenticated;
 
 		if(!$this->authenticated){
 			if($this->server->requiresAuthentication() and $this->kick("disconnectionScreen.notAuthenticated", false)){ //use kick to allow plugins to cancel this
-				return;
+				return false;
 			}
 
 			$this->server->getLogger()->debug($this->getName() . " is NOT logged into Xbox Live");
@@ -1833,21 +1835,22 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->server->getLogger()->debug($this->getName() . " is logged into Xbox Live");
 		}
 
-		//TODO: encryption
-
 		foreach($this->server->getLoggedInPlayers() as $p){
 			if($p !== $this and ($p->iusername === $this->iusername or $this->getUniqueId()->equals($p->getUniqueId()))){
 				if(!$p->kick("logged in from another location")){
 					$this->close($this->getLeaveMessage(), "Logged in from another location");
 
-					return;
+					return false;
 				}
 			}
 		}
 
+		return true;
+	}
+
+	public function onLoginSuccess() : void{
 		$this->loggedIn = true;
 		$this->server->onPlayerLogin($this);
-		$this->networkSession->onLoginSuccess();
 	}
 
 	public function _actuallyConstruct(){
