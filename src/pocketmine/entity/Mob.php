@@ -197,7 +197,7 @@ abstract class Mob extends Living{
                 return true;
             }elseif(!$blockUp->isSolid() and !($this->height > 1 and $blockUpUp->isSolid())){
                 $this->motion->y = $this->getJumpVelocity();
-                $this->jumpCooldown = 10;
+                $this->jumpCooldown = 20;
                 return true;
             }else{
                 $this->motion->x = $this->motion->z = 0;
