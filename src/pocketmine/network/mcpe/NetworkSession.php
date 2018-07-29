@@ -284,6 +284,7 @@ class NetworkSession{
 		$this->cipher = new NetworkCipher($encryptionKey);
 
 		$this->setHandler(new HandshakeSessionHandler($this));
+		$this->server->getLogger()->debug("Enabled encryption for $this->ip $this->port");
 	}
 
 	public function onLoginSuccess() : void{
