@@ -211,7 +211,7 @@ abstract class Mob extends Living{
     }
 
     public function canBePushed(): bool{
-        return true;
+        return $this->aiEnabled;
     }
 
     public function setDefaultMovementSpeed(float $value) : void{
