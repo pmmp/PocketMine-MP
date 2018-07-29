@@ -360,7 +360,7 @@ class Effect{
 				$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
 				$attr->setValue($attr->getDefaultValue());
 				if($entity->hasEffect(Effect::SPEED)) {
-					$attr->setValue($entity->getEffect(Effect::SPEED)->getEffectLevel() * (1 + 0.2 * $instance->getEffectLevel()));
+					$attr->setValue($attr->getValue() * (1 + 0.2 * $entity->getEffect(Effect::SPEED)->getEffectLevel()));
 				}
 				break;
 			case Effect::HEALTH_BOOST:
