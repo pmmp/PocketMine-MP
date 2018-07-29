@@ -358,7 +358,7 @@ class Effect{
 				break;
 			case Effect::SLOWNESS:
 				$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
-				$attr->setValue($attr->getValue() / (1 - 0.15 * $instance->getEffectLevel()));
+				$attr->setValue(max($attr->getMinValue(),$attr->getValue() / (1 - 0.15 * $instance->getEffectLevel())));
 				break;
 			case Effect::HEALTH_BOOST:
 				$entity->setMaxHealth($entity->getMaxHealth() - 4 * $instance->getEffectLevel());
