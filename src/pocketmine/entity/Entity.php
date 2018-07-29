@@ -1610,8 +1610,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	public function handleWaterMovement() : void{
 	    if($this->isUnderwater()){
-	        $this->motion->x *= 0.5;
-	        $this->motion->z *= 0.5;
+	        $this->motion->x *= 0.2;
+	        $this->motion->z *= 0.2;
         }
     }
 

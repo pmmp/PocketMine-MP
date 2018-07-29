@@ -45,6 +45,7 @@ abstract class Mob extends Living{
 
     protected $seenEntities = [];
     protected $unseenEntities = [];
+    protected $jumpCooldown = 0;
 
     /** @var bool */
     protected $aiEnabled = false;
@@ -88,23 +89,19 @@ abstract class Mob extends Living{
         $this->namedtag->setByte("aiEnabled", intval($this->aiEnabled));
     }
 
-    public function onUpdate(int $tick) : bool{
-        if($this->closed) return false;
-
-        if($this->isAlive() and $this->aiEnabled) {
-            $this->onBehaviorUpdate($tick);
+    public function entityBaseTick(int $diff = 1) : bool{
+        if($this->aiEnabled) {
+            $this->onBehaviorUpdate();
         }
 
-        $hasUpdate = parent::onUpdate($tick);
-
-        return $hasUpdate;
+        return parent::entityBaseTick($diff);
     }
 
-    protected function onBehaviorUpdate(int $tick) : void{
-        $this->targetBehaviorPool->onUpdate($tick);
-        $this->behaviorPool->onUpdate($tick);
+    protected function onBehaviorUpdate() : void{
+        $this->targetBehaviorPool->onUpdate();
+        $this->behaviorPool->onUpdate();
 
-        $this->navigator->onNavigateUpdate($tick);
+        $this->navigator->onNavigateUpdate();
 
         if($this->getLookPosition() !== null){
             $this->lookAt($this->getLookPosition(), true);
@@ -171,6 +168,8 @@ abstract class Mob extends Living{
     }
 
     public function moveForward(float $spm) : bool{
+        if($this->jumpCooldown > 0) $this->jumpCooldown--;
+
         $sf = $this->getMovementSpeed() * $spm * 0.7;
         $dir = $this->getDirectionVector();
         $dir->y = 0;
@@ -184,15 +183,13 @@ abstract class Mob extends Living{
         $collide = $block->isSolid() || ($this->height >= 1 and $blockUp->isSolid());
 
         if(!$collide){
-            $blockDown = $block->getSide(Vector3::SIDE_DOWN);
-            if (!$this->onGround && !$blockDown->isSolid()) return false;
+            if (!$this->onGround and $this->jumpCooldown === 0) return true;
 
             $velocity = $dir->multiply($sf);
             $entityVelocity = $this->getMotion();
             $entityVelocity->y = 0;
 
-            $m = $entityVelocity->length() < $velocity->length() ? $this->getMotion()->add($velocity->subtract($this->getMotion())) : $this->getMotion();
-            $this->setMotion($m);
+            $this->motion = $this->getMotion()->add($velocity->subtract($entityVelocity));
             return true;
         }else{
             if($this->canClimb()){
@@ -200,6 +197,7 @@ abstract class Mob extends Living{
                 return true;
             }elseif(!$blockUp->isSolid() and !($this->height > 1 and $blockUpUp->isSolid())){
                 $this->motion->y = $this->getJumpVelocity();
+                $this->jumpCooldown = 10;
                 return true;
             }else{
                 $this->motion->x = $this->motion->z = 0;

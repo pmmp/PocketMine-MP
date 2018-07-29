@@ -137,14 +137,14 @@ class EntityNavigator{
 
     public function getPathableY() : int{
         $last = floor($this->mob->y);
-        if($this->mob->isSwimmer()) {
+        /*if($this->mob->isSwimmer()) {
             for ($i = 1; $i < 6; $i++) {
                 if ($this->mob->level->getBlock($this->mob->add(0, -$i, 0))->isSolid()) {
                     break;
                 }
                 $last--;
             }
-        }
+        }*/
         return (int) $last;
     }
 
@@ -233,7 +233,7 @@ class EntityNavigator{
                 }
             } else {
                 $blockDown = $this->mob->level->getBlock($coord->add(0, -1, 0));
-                if (!$blockDown->isSolid() and !$this->mob->isSwimmer() and !$this->avoidsWater) {
+                if (!$blockDown->isSolid() and !$this->mob->isSwimmer() and !($blockDown instanceof Water and $this->avoidsWater)) {
                     if ($this->mob->canClimb()) {
                         $canClimb = false;
                         $blockDown = $this->mob->level->getBlock($blockDown->getSide(Vector3::SIDE_DOWN));
@@ -428,7 +428,7 @@ class EntityNavigator{
         return new Path($this->navigate(new PathPoint(floor($this->mob->x), floor($this->mob->z)), new PathPoint(floor($pos->x), floor($pos->z)), $followRange));
     }
 
-    public function onNavigateUpdate(int $tick) : void{
+    public function onNavigateUpdate() : void{
         if($this->currentPath !== null){
             if($this->havePath()){
                 $this->pathFollow();

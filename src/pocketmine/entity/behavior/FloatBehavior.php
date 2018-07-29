@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\behavior;
 
 use pocketmine\entity\Mob;
+use pocketmine\math\Vector3;
 
 class FloatBehavior extends Behavior
 {
@@ -54,7 +55,7 @@ class FloatBehavior extends Behavior
     {
         if ($this->mob->isUnderWater()) {
             if ($this->random->nextFloat() < 0.8) {
-                $this->mob->jump();
+                $this->mob->setMotion(new Vector3(0, 0.39,0));
             }
         }
     }

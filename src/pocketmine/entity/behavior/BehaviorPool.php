@@ -24,6 +24,8 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\behavior;
 
+use pocketmine\Server;
+
 class BehaviorPool
 {
 
@@ -51,11 +53,10 @@ class BehaviorPool
 
     /**
      * Updates behaviors
-     * @param int $tick
      */
-    public function onUpdate(int $tick): void
+    public function onUpdate(): void
     {
-        if ($tick % $this->tickRate === 0) {
+        if (Server::getInstance()->getTick() % $this->tickRate === 0) {
             foreach ($this->workingBehaviors as $hash => $bh) {
                 if (isset($this->behaviors[$hash])) {
                     if (!$this->canUse($this->behaviors[$hash])) {
