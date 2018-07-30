@@ -145,13 +145,7 @@ class Language{
 	 * @return string|null
 	 */
 	protected function internalGet(string $id){
-		if(isset($this->lang[$id])){
-			return $this->lang[$id];
-		}elseif(isset($this->fallbackLang[$id])){
-			return $this->fallbackLang[$id];
-		}
-
-		return null;
+		return $this->lang[$id] ?? $this->fallbackLang[$id] ?? null;
 	}
 
 	/**
@@ -160,13 +154,7 @@ class Language{
 	 * @return string
 	 */
 	public function get(string $id) : string{
-		if(isset($this->lang[$id])){
-			return $this->lang[$id];
-		}elseif(isset($this->fallbackLang[$id])){
-			return $this->fallbackLang[$id];
-		}
-
-		return $id;
+		return $this->internalGet($id) ?? $id;
 	}
 
 	/**
