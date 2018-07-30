@@ -105,23 +105,23 @@ class TimingsCommand extends VanillaCommand{
 
 				$host = $sender->getServer()->getProperty("timings.host", "timings.pmmp.io");
 
-				$sender->getServer()->getAsyncPool()->submitTask(new class([
-					["page" => "https://$host?upload=true", "extraOpts" => [
-						CURLOPT_HTTPHEADER => [
-							"User-Agent: $agent",
-							"Content-Type: application/x-www-form-urlencoded"
-						],
-						CURLOPT_POST => true,
-						CURLOPT_POSTFIELDS => http_build_query($data),
-						CURLOPT_AUTOREFERER => false,
-						CURLOPT_FOLLOWLOCATION => false
-					]]
-				], $sender, $host) extends BulkCurlTask{
+				$sender->getServer()->getAsyncPool()->submitTask(new class($sender, $host, $agent, $data) extends BulkCurlTask{
 					/** @var string */
 					private $host;
 
-					public function __construct(array $operations, $complexData = null, string $host){
-						parent::__construct($operations, $complexData);
+					public function __construct(CommandSender $sender, string $host, string $agent, array $data){
+						parent::__construct([
+							["page" => "https://$host?upload=true", "extraOpts" => [
+								CURLOPT_HTTPHEADER => [
+									"User-Agent: $agent",
+									"Content-Type: application/x-www-form-urlencoded"
+								],
+								CURLOPT_POST => true,
+								CURLOPT_POSTFIELDS => http_build_query($data),
+								CURLOPT_AUTOREFERER => false,
+								CURLOPT_FOLLOWLOCATION => false
+							]]
+						], $sender);
 						$this->host = $host;
 					}
 
@@ -136,17 +136,13 @@ class TimingsCommand extends VanillaCommand{
 							return;
 						}
 						if(isset($result[0]) && is_array($response = json_decode($result[0], true)) && isset($response["id"])){
-							$pasteId = $response["id"];
-						}
-						if(isset($pasteId)){
 							$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsRead",
-								["https://" . $this->host . "/?id=" . $pasteId]));
+								["https://" . $this->host . "/?id=" . $response["id"]]));
 						}else{
 							$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.pasteError"));
 						}
 					}
 				});
-
 			}else{
 				fclose($fileTimings);
 				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsWrite", [$timings]));
