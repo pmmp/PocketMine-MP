@@ -27,6 +27,8 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\Player;
 
 class BanCommand extends VanillaCommand{
@@ -37,6 +39,10 @@ class BanCommand extends VanillaCommand{
 			"%pocketmine.command.ban.player.description",
 			"%commands.ban.usage"
 		);
+		$this->setOverloads([[
+			new CommandParameter("player", AvailableCommandsPacket::ARG_FLAG_VALID | AvailableCommandsPacket::ARG_TYPE_TARGET, false),
+			new CommandParameter("reason", AvailableCommandsPacket::ARG_FLAG_VALID | AvailableCommandsPacket::ARG_TYPE_RAWTEXT),
+		]]);
 		$this->setPermission("pocketmine.command.ban.player");
 	}
 

@@ -28,6 +28,11 @@ namespace pocketmine\command;
 
 use pocketmine\lang\TextContainer;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\network\mcpe\protocol\types\CommandData;
+use pocketmine\network\mcpe\protocol\types\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
 use pocketmine\timings\TimingsHandler;
@@ -36,27 +41,16 @@ use pocketmine\utils\TextFormat;
 abstract class Command{
 
 	/** @var string */
-	private $name;
-
-	/** @var string */
 	private $nextLabel;
 
 	/** @var string */
 	private $label;
 
 	/** @var string[] */
-	private $aliases = [];
-
-	/**
-	 * @var string[]
-	 */
-	private $activeAliases = [];
+	private $aliases = [], $activeAliases = [];
 
 	/** @var CommandMap */
 	private $commandMap = null;
-
-	/** @var string */
-	protected $description = "";
 
 	/** @var string */
 	protected $usageMessage;
@@ -67,21 +61,24 @@ abstract class Command{
 	/** @var string */
 	private $permissionMessage = null;
 
+	/** @var CommandData */
+	private $commandData;
+
 	/** @var TimingsHandler */
 	public $timings;
 
 	/**
-	 * @param string   $name
-	 * @param string   $description
-	 * @param string   $usageMessage
+	 * @param string $name
+	 * @param string $description
+	 * @param string $usageMessage
 	 * @param string[] $aliases
+	 * @param array|null $overloads
 	 */
-	public function __construct(string $name, string $description = "", string $usageMessage = null, array $aliases = []){
-		$this->name = $name;
-		$this->setLabel($name);
-		$this->setDescription($description);
-		$this->usageMessage = $usageMessage ?? ("/" . $name);
+	public function __construct(string $name, string $description = "", string $usageMessage = null, array $aliases = [], array $overloads = null){
+		$this->commandData = new CommandData($name, Server::getInstance()->getLanguage()->translateString($description), 0, AdventureSettingsPacket::PERMISSION_NORMAL, null, $overloads ?? [[new CommandParameter("args", AvailableCommandsPacket::ARG_FLAG_VALID | AvailableCommandsPacket::ARG_TYPE_RAWTEXT)]]);
 		$this->setAliases($aliases);
+		$this->setLabel($name);
+		$this->usageMessage = $usageMessage ?? ("/" . $name);
 	}
 
 	/**
@@ -94,10 +91,21 @@ abstract class Command{
 	abstract public function execute(CommandSender $sender, string $commandLabel, array $args);
 
 	/**
+	 * @return CommandData
+	 */
+	public function getData() : CommandData{
+		if(!empty($this->activeAliases)){
+			$this->commandData->aliases = new CommandEnum(ucfirst($this->getName()) . "Aliases", array_values($this->activeAliases));
+		}
+
+		return $this->commandData;
+	}
+
+	/**
 	 * @return string
 	 */
 	public function getName() : string{
-		return $this->name;
+		return $this->commandData->getCommandName();
 	}
 
 	/**
@@ -243,7 +251,7 @@ abstract class Command{
 	 * @return string
 	 */
 	public function getDescription() : string{
-		return $this->description;
+		return $this->commandData->commandDescription;
 	}
 
 	/**
@@ -267,7 +275,7 @@ abstract class Command{
 	 * @param string $description
 	 */
 	public function setDescription(string $description){
-		$this->description = $description;
+		$this->commandData->commandDescription = $description;
 	}
 
 	/**
@@ -282,6 +290,91 @@ abstract class Command{
 	 */
 	public function setUsage(string $usage){
 		$this->usageMessage = $usage;
+	}
+
+	/**
+	 * Adds parameter to overload
+	 *
+	 * @param CommandParameter $parameter
+	 * @param int              $overloadIndex
+	 */
+	public function addParameter(CommandParameter $parameter, int $overloadIndex = 0) : void{
+		$this->commandData->overloads[$overloadIndex][] = $parameter;
+	}
+
+	/**
+	 * Sets parameter to overload
+	 *
+	 * @param CommandParameter $parameter
+	 * @param int              $parameterIndex
+	 * @param int              $overloadIndex
+	 */
+	public function setParameter(CommandParameter $parameter, int $parameterIndex, int $overloadIndex = 0) : void{
+		$this->commandData->overloads[$overloadIndex][$parameterIndex] = $parameter;
+	}
+
+	/**
+	 * Sets parameters to overload
+	 *
+	 * @param CommandParameter[] $parameters
+	 * @param int                $overloadIndex
+	 */
+	public function setParameters(array $parameters, int $overloadIndex = 0) : void{
+		$this->commandData->overloads[$overloadIndex] = array_values($parameters);
+	}
+
+	/**
+	 * Removes parameter from overload
+	 *
+	 * @param int $parameterIndex
+	 * @param int $overloadIndex
+	 */
+	public function removeParameter(int $parameterIndex, int $overloadIndex = 0) : void{
+		unset($this->commandData->overloads[$overloadIndex][$parameterIndex]);
+	}
+
+	/**
+	 * Remove all overloads
+	 */
+	public function removeAllParameters() : void{
+		$this->commandData->overloads = [];
+	}
+
+	/**
+	 * Removes overload and includes.
+	 *
+	 * @param int $overloadIndex
+	 */
+	public function removeOverload(int $overloadIndex) : void{
+		unset($this->commandData->overloads[$overloadIndex]);
+	}
+
+	/**
+	 * Returns overload
+	 *
+	 * @param int $index
+	 * @return CommandParameter[]|null
+	 */
+	public function getOverload(int $index) : ?array{
+		return $this->commandData->overloads[$index] ?? null;
+	}
+
+	/**
+	 * Returns all overloads
+	 *
+	 * @return CommandParameter[][]
+	 */
+	public function getOverloads() : array{
+		return $this->commandData->overloads;
+	}
+
+	/**
+	 * Set all overloads
+	 *
+	 * @param CommandParameter[][] $overloads
+	 */
+	public function setOverloads(array $overloads) : void{
+		$this->commandData->overloads = $overloads;
 	}
 
 	/**
@@ -326,6 +419,6 @@ abstract class Command{
 	 * @return string
 	 */
 	public function __toString() : string{
-		return $this->name;
+		return $this->getName();
 	}
 }

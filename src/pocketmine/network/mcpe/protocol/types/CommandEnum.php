@@ -29,4 +29,8 @@ class CommandEnum{
 	/** @var string[] */
 	public $enumValues = [];
 
+	public function __construct(string $name, array $values = []){
+		$this->enumName = $name;
+		$this->enumValues = $values;
+	}
 }
