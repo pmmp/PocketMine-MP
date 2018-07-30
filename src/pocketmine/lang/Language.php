@@ -144,7 +144,7 @@ class Language{
 	 *
 	 * @return string|null
 	 */
-	public function internalGet(string $id){
+	protected function internalGet(string $id){
 		if(isset($this->lang[$id])){
 			return $this->lang[$id];
 		}elseif(isset($this->fallbackLang[$id])){
