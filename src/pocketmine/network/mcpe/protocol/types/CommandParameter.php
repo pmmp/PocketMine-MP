@@ -35,7 +35,7 @@ class CommandParameter{
 	/** @var string|null */
 	public $postfix;
 
-	public function __construct(string $name, int $type, bool $optional = true, string $postFix = "", ?CommandEnum $enum = null){
+	public function __construct(string $name, int $type, bool $optional = true, ?string $postFix = null, ?CommandEnum $enum = null){
 		$this->paramName = $name;
 		$this->paramType = $type;
 		$this->isOptional = $optional;

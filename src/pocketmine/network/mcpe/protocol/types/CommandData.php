@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol\types;
 
 class CommandData{
 	/** @var string */
-	public $commandName;
+	private $commandName;
 	/** @var string */
 	public $commandDescription;
 	/** @var int */
@@ -36,5 +36,30 @@ class CommandData{
 	public $aliases;
 	/** @var CommandParameter[][] */
 	public $overloads = [];
+
+	/**
+	 * CommandData constructor.
+	 * @param string               $name
+	 * @param string               $description
+	 * @param int                  $flags
+	 * @param int                  $permission
+	 * @param null|CommandEnum     $aliases
+	 * @param CommandParameter[][] $overloads
+	 */
+	public function __construct(string $name, string $description, int $flags, int $permission, ?CommandEnum $aliases = null, array $overloads = []){
+		$this->commandName = $name;
+		$this->commandDescription = $description;
+		$this->flags = $flags;
+		$this->permission = $permission;
+		$this->aliases = $aliases;
+		$this->overloads = $overloads;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getCommandName() : string{
+		return $this->commandName;
+	}
 
 }

@@ -625,36 +625,20 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function sendCommandData(){
 		$pk = new AvailableCommandsPacket();
 		foreach($this->server->getCommandMap()->getCommands() as $name => $command){
-			if(isset($pk->commandData[$command->getName()]) or $command->getName() === "help"){
+			if(isset($pk->commandData[$command->getName()]) or !$command->testPermissionSilent($this) or $command->getName() === "help"){
 				continue;
 			}
 
-			$data = new CommandData();
-			$data->commandName = $command->getName();
-			$data->commandDescription = $this->server->getLanguage()->translateString($command->getDescription());
-			$data->flags = 0;
-			$data->permission = 0;
-
-			$parameter = new CommandParameter();
-			$parameter->paramName = "args";
-			$parameter->paramType = AvailableCommandsPacket::ARG_FLAG_VALID | AvailableCommandsPacket::ARG_TYPE_RAWTEXT;
-			$parameter->isOptional = true;
-			$data->overloads[0][0] = $parameter;
-
-			$aliases = $command->getAliases();
-			if(!empty($aliases)){
-				if(!in_array($data->commandName, $aliases, true)){
-					//work around a client bug which makes the original name not show when aliases are used
-					$aliases[] = $data->commandName;
-				}
-				$data->aliases = new CommandEnum(ucfirst($command->getName()) . "Aliases", $aliases);
+			$data = clone $command->getData(); // for bug
+			if($data->aliases !== null){
+				//work around a client bug which makes the original name not show when aliases are used
+				$data->aliases->enumValues[] = $data->getCommandName();
 			}
 
-			$pk->commandData[$command->getName()] = $data;
+			$pk->commandData[$data->getCommandName()] = $data;
 		}
 
 		$this->sendDataPacket($pk);
-
 	}
 
 	/**

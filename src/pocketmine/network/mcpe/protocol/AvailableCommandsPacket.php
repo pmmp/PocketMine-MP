@@ -167,19 +167,12 @@ class AvailableCommandsPacket extends DataPacket{
 	}
 
 	protected function getCommandData() : CommandData{
-		$retval = new CommandData();
-		$retval->commandName = $this->getString();
-		$retval->commandDescription = $this->getString();
-		$retval->flags = $this->getByte();
-		$retval->permission = $this->getByte();
+		$retval = new CommandData($this->getString(), $this->getString(), $this->getByte(), $this->getByte());
 		$retval->aliases = $this->enums[$this->getLInt()] ?? null;
 
 		for($overloadIndex = 0, $overloadCount = $this->getUnsignedVarInt(); $overloadIndex < $overloadCount; ++$overloadIndex){
 			for($paramIndex = 0, $paramCount = $this->getUnsignedVarInt(); $paramIndex < $paramCount; ++$paramIndex){
-				$parameter = new CommandParameter();
-				$parameter->paramName = $this->getString();
-				$parameter->paramType = $this->getLInt();
-				$parameter->isOptional = $this->getBool();
+				$parameter = new CommandParameter($this->getString(), $this->getLInt(), $this->getBool());
 
 				if($parameter->paramType & self::ARG_FLAG_ENUM){
 					$index = ($parameter->paramType & 0xffff);
@@ -201,7 +194,7 @@ class AvailableCommandsPacket extends DataPacket{
 	}
 
 	protected function putCommandData(CommandData $data) : void{
-		$this->putString($data->commandName);
+		$this->putString($data->getCommandName());
 		$this->putString($data->commandDescription);
 		$this->putByte($data->flags);
 		$this->putByte($data->permission);
