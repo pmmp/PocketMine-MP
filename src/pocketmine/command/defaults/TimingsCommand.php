@@ -98,21 +98,33 @@ class TimingsCommand extends VanillaCommand{
 			if($paste){
 				fseek($fileTimings, 0);
 				$data = [
-					"syntax" => "text",
-					"poster" => $sender->getServer()->getName(),
-					"content" => stream_get_contents($fileTimings)
+					"browser" => $agent = $sender->getServer()->getName() . " " . $sender->getServer()->getPocketMineVersion(),
+					"data" => $content = stream_get_contents($fileTimings)
 				];
 				fclose($fileTimings);
 
-				$sender->getServer()->getAsyncPool()->submitTask(new class([
-					["page" => "http://paste.ubuntu.com", "extraOpts" => [
-						CURLOPT_HTTPHEADER => ["User-Agent: " . $sender->getServer()->getName() . " " . $sender->getServer()->getPocketMineVersion()],
-						CURLOPT_POST => 1,
-						CURLOPT_POSTFIELDS => $data,
-						CURLOPT_AUTOREFERER => false,
-						CURLOPT_FOLLOWLOCATION => false
-					]]
-				], $sender) extends BulkCurlTask{
+				$host = $sender->getServer()->getProperty("timings.host", "timings.pmmp.io");
+
+				$sender->getServer()->getAsyncPool()->submitTask(new class($sender, $host, $agent, $data) extends BulkCurlTask{
+					/** @var string */
+					private $host;
+
+					public function __construct(CommandSender $sender, string $host, string $agent, array $data){
+						parent::__construct([
+							["page" => "https://$host?upload=true", "extraOpts" => [
+								CURLOPT_HTTPHEADER => [
+									"User-Agent: $agent",
+									"Content-Type: application/x-www-form-urlencoded"
+								],
+								CURLOPT_POST => true,
+								CURLOPT_POSTFIELDS => http_build_query($data),
+								CURLOPT_AUTOREFERER => false,
+								CURLOPT_FOLLOWLOCATION => false
+							]]
+						], $sender);
+						$this->host = $host;
+					}
+
 					public function onCompletion(Server $server){
 						$sender = $this->fetchLocal();
 						if($sender instanceof Player and !$sender->isOnline()){ // TODO replace with a more generic API method for checking availability of CommandSender
@@ -123,23 +135,14 @@ class TimingsCommand extends VanillaCommand{
 							$server->getLogger()->logException($result);
 							return;
 						}
-						list(, $headers) = $result;
-						foreach($headers as $headerGroup){
-							if(isset($headerGroup["location"]) and preg_match('#^http://paste\\.ubuntu\\.com/([A-Za-z0-9+\/=]+)/#', trim($headerGroup["location"]), $match)){
-								$pasteId = $match[1];
-								break;
-							}
-						}
-						if(isset($pasteId)){
-							$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsUpload", ["http://paste.ubuntu.com/" . $pasteId . "/"]));
+						if(isset($result[0]) && is_array($response = json_decode($result[0], true)) && isset($response["id"])){
 							$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsRead",
-								["http://" . $sender->getServer()->getProperty("timings.host", "timings.pmmp.io") . "/?url=" . urlencode($pasteId)]));
+								["https://" . $this->host . "/?id=" . $response["id"]]));
 						}else{
 							$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.pasteError"));
 						}
 					}
 				});
-
 			}else{
 				fclose($fileTimings);
 				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsWrite", [$timings]));
