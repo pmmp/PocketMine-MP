@@ -3100,8 +3100,7 @@ class Level implements ChunkManager, Metadatable{
     }
 
     public function isDayTime() : bool{
-        $degree = $this->getSunAngleDegrees();
-        return $degree > 0 and $degree < 180;
+        return $this->getSunAngleDegrees() > 180;
     }
 
     public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue){

@@ -60,7 +60,7 @@ class EntityNavigator{
     protected $lastPoint = null;
     protected $stuckTick = 0;
     /** @var Vector3 */
-    protected $movePos;
+    protected $movePoint;
 
     public function __construct(Mob $mob){
         $this->mob = $mob;
@@ -137,14 +137,14 @@ class EntityNavigator{
 
     public function getPathableY() : int{
         $last = floor($this->mob->y);
-        /*if($this->mob->isSwimmer()) {
+        if($this->mob->isSwimmer()) {
             for ($i = 1; $i < 6; $i++) {
                 if ($this->mob->level->getBlock($this->mob->add(0, -$i, 0))->isSolid()) {
                     break;
                 }
                 $last--;
             }
-        }*/
+        }
         return (int) $last;
     }
 
@@ -233,7 +233,7 @@ class EntityNavigator{
                 }
             } else {
                 $blockDown = $this->mob->level->getBlock($coord->add(0, -1, 0));
-                if (!$blockDown->isSolid() and !$this->mob->isSwimmer() and !($blockDown instanceof Water and $this->avoidsWater)) {
+                if (!$blockDown->isSolid() and !$this->mob->isSwimmer() and !($blockDown instanceof Liquid)) { // TODO: bug?
                     if ($this->mob->canClimb()) {
                         $canClimb = false;
                         $blockDown = $this->mob->level->getBlock($blockDown->getSide(Vector3::SIDE_DOWN));
@@ -265,7 +265,8 @@ class EntityNavigator{
                         $cache[$item->getHashCode()] = $blockDown;
                     }
                 } else {
-                    if ($this->isObstructed($coord) or (!$this->mob->isSwimmer() and $this->avoidsWater and $this->mob->level->getBlock($coord) instanceof Liquid)) continue;
+                    if ($this->isObstructed($coord) or (!$this->mob->isSwimmer() and $this->avoidsWater and $this->mob->level->getBlock($coord->getSide(Vector3::SIDE_DOWN)) instanceof Liquid)) continue;
+
 
                     $cache[$item->getHashCode()] = $this->mob->level->getBlock($coord);
                 }
@@ -319,17 +320,17 @@ class EntityNavigator{
 
             for ($i = $this->currentPath->getCurrentIndex(); $i < count($this->currentPath->getPoints()); ++$i){
                 if($this->currentPath->getPointByIndex($i)->height != (int) floor($this->mob->y)){
-                    $length = $i + 1;
+                    $length = $i;
                     break;
                 }
             }
 			
 			$currentPoint = $this->currentPath->getPointByIndex($this->currentPath->getCurrentIndex());
-			if(floor($this->mob->x) === $currentPoint->x and floor($this->mob->z) === $currentPoint->y){
+			if(floor($this->mob->x) == $currentPoint->x and floor($this->mob->z) == $currentPoint->y){
 				$this->currentPath->setCurrentIndex($this->currentPath->getCurrentIndex() + 1);
 			}
 
-            for ($a = $length - 1; $a >= $this->currentPath->getCurrentIndex(); --$a){
+            for ($a = $length; $a >= $this->currentPath->getCurrentIndex(); --$a){
                 $vec = $this->currentPath->getVectorByIndex($a);
                 $vec->y = floor($this->mob->y);
                 if($this->isClearBetweenPoints($this->mob->floor(), $vec)){
@@ -368,7 +369,7 @@ class EntityNavigator{
             return false;
         }else{
             $block = $this->mob->level->getBlockAt($pos->x, $pos->y - 1, $pos->z);
-            if(($block instanceof Water and !$this->mob->isUnderwater()) or $block instanceof Lava or !$block->isSolid()){
+            if(($block instanceof Water and !$this->mob->isSwimmer() and $this->avoidsWater) or $block instanceof Lava){ // TODO: Implement this for ZombiePigman and LavaSlime
                 return false;
             }else{
                 return true;
@@ -434,7 +435,7 @@ class EntityNavigator{
                 $this->pathFollow();
                 $next = $this->currentPath->getPointByIndex($this->currentPath->getCurrentIndex());
                 if($next !== null) {
-                    $this->movePos = new Vector3($next->x, $this->mob->y, $next->y);
+                    $this->movePoint = $next;
                 }else{
                     $this->clearPath();
                 }
@@ -443,19 +444,18 @@ class EntityNavigator{
             }
         }
 
-        if($this->movePos !== null){
-            $this->mob->lookAt($this->movePos->add(0.5, 0, 0.5));
-            $moved = $this->mob->moveForward($this->speedMultiplier);
-            if (!$moved) {
+        if($this->movePoint !== null){
+            $this->mob->lookAt(new Vector3($this->movePoint->x + 0.5, $this->mob->y, $this->movePoint->y + 0.5));
+            if (!$this->mob->moveForward($this->speedMultiplier)) {
                 $this->clearPath();
-                $this->movePos = null;
+                $this->movePoint = null;
                 return;
             }
 
             $currentPos = $this->mob->floor();
 
-            if($currentPos->equals($this->movePos)){
-                $this->movePos = null;
+            if($currentPos->x == $this->movePoint->x and $currentPos->z == $this->movePoint->y){
+                $this->movePoint = null;
             }
 
             if ($currentPos == $this->lastPoint) {

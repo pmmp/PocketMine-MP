@@ -183,7 +183,7 @@ abstract class Mob extends Living{
         $collide = $block->isSolid() || ($this->height >= 1 and $blockUp->isSolid());
 
         if(!$collide){
-            if (!$this->onGround and $this->jumpCooldown === 0) return true;
+            if (!$this->onGround and $this->jumpCooldown === 0 and !$this->isSwimmer()) return true;
 
             $velocity = $dir->multiply($sf);
             $entityVelocity = $this->getMotion();
@@ -195,7 +195,7 @@ abstract class Mob extends Living{
             if($this->canClimb()){
                 $this->setMotion($this->getMotion()->setComponents(0, 0.2, 0));
                 return true;
-            }elseif(!$blockUp->isSolid() and !($this->height > 1 and $blockUpUp->isSolid())){
+            }elseif((!$blockUp->isSolid() and !($this->height > 1 and $blockUpUp->isSolid())) or $this->isSwimmer()){
                 $this->motion->y = $this->getJumpVelocity();
                 $this->jumpCooldown = 20;
                 return true;
