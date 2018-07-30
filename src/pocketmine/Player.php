@@ -647,9 +647,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					//work around a client bug which makes the original name not show when aliases are used
 					$aliases[] = $data->commandName;
 				}
-				$data->aliases = new CommandEnum();
-				$data->aliases->enumName = ucfirst($command->getName()) . "Aliases";
-				$data->aliases->enumValues = $aliases;
+				$data->aliases = new CommandEnum(ucfirst($command->getName()) . "Aliases", $aliases);
 			}
 
 			$pk->commandData[$command->getName()] = $data;
