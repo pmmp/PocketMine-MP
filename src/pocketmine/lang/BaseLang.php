@@ -23,12 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\lang;
 
-use pocketmine\utils\MainLogger;
-
 class BaseLang{
 
 	public const FALLBACK_LANGUAGE = "eng";
 
+	/**
+	 * @param string $path
+	 *
+	 * @return array
+	 * @throws LanguageNotFoundException
+	 */
 	public static function getLanguageList(string $path = "") : array{
 		if($path === ""){
 			$path = \pocketmine\PATH . "src/pocketmine/lang/locale/";
@@ -45,10 +49,10 @@ class BaseLang{
 				$result = [];
 
 				foreach($files as $file){
-					$strings = [];
-					self::loadLang($path . $file, $strings);
+					$code = explode(".", $file)[0];
+					$strings = self::loadLang($path, $code);
 					if(isset($strings["language.name"])){
-						$result[substr($file, 0, -4)] = $strings["language.name"];
+						$result[$code] = $strings["language.name"];
 					}
 				}
 
@@ -56,7 +60,7 @@ class BaseLang{
 			}
 		}
 
-		return [];
+		throw new LanguageNotFoundException("Language directory $path does not exist or is not a directory");
 	}
 
 	/** @var string */
@@ -67,20 +71,22 @@ class BaseLang{
 	/** @var string[] */
 	protected $fallbackLang = [];
 
+	/**
+	 * @param string      $lang
+	 * @param string|null $path
+	 * @param string      $fallback
+	 *
+	 * @throws LanguageNotFoundException
+	 */
 	public function __construct(string $lang, string $path = null, string $fallback = self::FALLBACK_LANGUAGE){
-
 		$this->langName = strtolower($lang);
 
 		if($path === null){
 			$path = \pocketmine\PATH . "src/pocketmine/lang/locale/";
 		}
 
-		if(!self::loadLang($file = $path . $this->langName . ".ini", $this->lang)){
-			MainLogger::getLogger()->error("Missing required language file $file");
-		}
-		if(!self::loadLang($file = $path . $fallback . ".ini", $this->fallbackLang)){
-			MainLogger::getLogger()->error("Missing required language file $file");
-		}
+		$this->lang = self::loadLang($path, $this->langName);
+		$this->fallbackLang = self::loadLang($path, $fallback);
 	}
 
 	public function getName() : string{
@@ -91,13 +97,13 @@ class BaseLang{
 		return $this->langName;
 	}
 
-	protected static function loadLang(string $path, array &$d){
-		if(file_exists($path)){
-			$d = array_map('stripcslashes', parse_ini_file($path, false, INI_SCANNER_RAW));
-			return true;
-		}else{
-			return false;
+	protected static function loadLang(string $path, string $languageCode) : array{
+		$file = $path . $languageCode . ".ini";
+		if(file_exists($file)){
+			return array_map('stripcslashes', parse_ini_file($file, false, INI_SCANNER_RAW));
 		}
+
+		throw new LanguageNotFoundException("Language \"$languageCode\" not found");
 	}
 
 	/**
