@@ -27,7 +27,7 @@ declare(strict_types=1);
  */
 namespace pocketmine\wizard;
 
-use pocketmine\lang\BaseLang;
+use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\utils\Config;
 use pocketmine\utils\Internet;
@@ -38,7 +38,7 @@ class SetupWizard{
 	public const DEFAULT_PLAYERS = 20;
 	public const DEFAULT_GAMEMODE = 0;
 
-	/** @var BaseLang */
+	/** @var Language */
 	private $lang;
 
 	public function __construct(){
@@ -49,7 +49,7 @@ class SetupWizard{
 		$this->message(\pocketmine\NAME . " set-up wizard");
 
 		try{
-			$langs = BaseLang::getLanguageList();
+			$langs = Language::getLanguageList();
 		}catch(LanguageNotFoundException $e){
 			$this->error("No language files found, please use provided builds or clone the repository recursively.");
 			return false;
@@ -68,7 +68,7 @@ class SetupWizard{
 			}
 		}while($lang === null);
 
-		$this->lang = new BaseLang($lang);
+		$this->lang = new Language($lang);
 
 		$this->message($this->lang->get("language_has_been_selected"));
 

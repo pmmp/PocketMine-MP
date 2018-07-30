@@ -45,7 +45,7 @@ use pocketmine\inventory\CraftingManager;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\lang\BaseLang;
+use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\lang\TextContainer;
 use pocketmine\level\biome\Biome;
@@ -243,8 +243,8 @@ class Server{
 	/** @var int */
 	private $autoSaveTicks = 6000;
 
-	/** @var BaseLang */
-	private $baseLang;
+	/** @var Language */
+	private $language;
 	/** @var bool */
 	private $forceLanguage = false;
 
@@ -1443,15 +1443,15 @@ class Server{
 			define('pocketmine\DEBUG', (int) $this->getProperty("debug.level", 1));
 
 			$this->forceLanguage = (bool) $this->getProperty("settings.force-language", false);
-			$selectedLang = $this->getProperty("settings.language", BaseLang::FALLBACK_LANGUAGE);
+			$selectedLang = $this->getProperty("settings.language", Language::FALLBACK_LANGUAGE);
 			try{
-				$this->baseLang = new BaseLang($selectedLang);
+				$this->language = new Language($selectedLang);
 			}catch(LanguageNotFoundException $e){
 				$this->logger->error($e->getMessage());
 				try{
-					$this->baseLang = new BaseLang(BaseLang::FALLBACK_LANGUAGE);
+					$this->language = new Language(Language::FALLBACK_LANGUAGE);
 				}catch(LanguageNotFoundException $e){
-					$this->logger->emergency("Fallback language \"" . BaseLang::FALLBACK_LANGUAGE . "\" not found");
+					$this->logger->emergency("Fallback language \"" . Language::FALLBACK_LANGUAGE . "\" not found");
 					return;
 				}
 			}
@@ -1460,19 +1460,19 @@ class Server{
 
 			if(\pocketmine\IS_DEVELOPMENT_BUILD){
 				if(!((bool) $this->getProperty("settings.enable-dev-builds", false))){
-					$this->logger->emergency($this->baseLang->translateString("pocketmine.server.devBuild.error1", [\pocketmine\NAME]));
-					$this->logger->emergency($this->baseLang->translateString("pocketmine.server.devBuild.error2"));
-					$this->logger->emergency($this->baseLang->translateString("pocketmine.server.devBuild.error3"));
-					$this->logger->emergency($this->baseLang->translateString("pocketmine.server.devBuild.error4", ["settings.enable-dev-builds"]));
+					$this->logger->emergency($this->language->translateString("pocketmine.server.devBuild.error1", [\pocketmine\NAME]));
+					$this->logger->emergency($this->language->translateString("pocketmine.server.devBuild.error2"));
+					$this->logger->emergency($this->language->translateString("pocketmine.server.devBuild.error3"));
+					$this->logger->emergency($this->language->translateString("pocketmine.server.devBuild.error4", ["settings.enable-dev-builds"]));
 					$this->forceShutdown();
 
 					return;
 				}
 
 				$this->logger->warning(str_repeat("-", 40));
-				$this->logger->warning($this->baseLang->translateString("pocketmine.server.devBuild.warning1", [\pocketmine\NAME]));
-				$this->logger->warning($this->baseLang->translateString("pocketmine.server.devBuild.warning2"));
-				$this->logger->warning($this->baseLang->translateString("pocketmine.server.devBuild.warning3"));
+				$this->logger->warning($this->language->translateString("pocketmine.server.devBuild.warning1", [\pocketmine\NAME]));
+				$this->logger->warning($this->language->translateString("pocketmine.server.devBuild.warning2"));
+				$this->logger->warning($this->language->translateString("pocketmine.server.devBuild.warning3"));
 				$this->logger->warning(str_repeat("-", 40));
 			}
 
@@ -2430,10 +2430,10 @@ class Server{
 
 
 	/**
-	 * @return BaseLang
+	 * @return Language
 	 */
 	public function getLanguage(){
-		return $this->baseLang;
+		return $this->language;
 	}
 
 	/**

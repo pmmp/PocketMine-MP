@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\lang;
 
-class BaseLang{
+class Language{
 
 	public const FALLBACK_LANGUAGE = "eng";
 
