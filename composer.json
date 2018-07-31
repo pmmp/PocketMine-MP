@@ -12,6 +12,7 @@
       "ext-crypto": "^0.3.1",
       "ext-ctype": "*",
       "ext-date": "*",
+      "ext-gmp": "*",
       "ext-hash": "*",
       "ext-json": "*",
       "ext-mbstring": "*",
