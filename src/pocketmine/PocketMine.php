@@ -80,6 +80,7 @@ namespace pocketmine {
 			"crypto" => "php-crypto",
 			"ctype" => "ctype",
 			"date" => "Date",
+			"gmp" => "GMP",
 			"hash" => "Hash",
 			"json" => "JSON",
 			"mbstring" => "Multibyte String",
