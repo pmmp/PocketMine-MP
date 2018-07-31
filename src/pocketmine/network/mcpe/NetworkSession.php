@@ -146,21 +146,27 @@ class NetworkSession{
 		}
 
 		if($this->cipher !== null){
+			Timings::$playerNetworkReceiveDecryptTimer->startTiming();
 			try{
 				$payload = $this->cipher->decrypt($payload);
 			}catch(\InvalidArgumentException $e){
 				$this->server->getLogger()->debug("Encrypted packet from " . $this->ip . " " . $this->port . ": " . bin2hex($payload));
 				$this->disconnect("Packet decryption error: " . $e->getMessage());
 				return;
+			}finally{
+				Timings::$playerNetworkReceiveDecryptTimer->stopTiming();
 			}
 		}
 
+		Timings::$playerNetworkReceiveDecompressTimer->startTiming();
 		try{
 			$stream = new PacketStream(NetworkCompression::decompress($payload));
 		}catch(\ErrorException $e){
 			$this->server->getLogger()->debug("Failed to decompress packet from " . $this->ip . " " . $this->port . ": " . bin2hex($payload));
 			$this->disconnect("Compressed packet batch decode error (incompatible game version?)", false);
 			return;
+		}finally{
+			Timings::$playerNetworkReceiveDecompressTimer->stopTiming();
 		}
 
 		while(!$stream->feof() and $this->connected){
@@ -206,7 +212,9 @@ class NetworkSession{
 
 	public function sendEncoded(string $payload, bool $immediate = false) : void{
 		if($this->cipher !== null){
+			Timings::$playerNetworkSendEncryptTimer->startTiming();
 			$payload = $this->cipher->encrypt($payload);
+			Timings::$playerNetworkSendEncryptTimer->stopTiming();
 		}
 		$this->interface->putPacket($this, $payload, $immediate);
 	}

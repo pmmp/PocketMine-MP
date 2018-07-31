@@ -1877,7 +1877,7 @@ class Server{
 		if(empty($packets)){
 			throw new \InvalidArgumentException("Cannot send empty batch");
 		}
-		Timings::$playerNetworkTimer->startTiming();
+		Timings::$playerNetworkSendCompressTimer->startTiming();
 
 		/** @var NetworkSession[] $targets */
 		$targets = [];
@@ -1908,7 +1908,7 @@ class Server{
 			}
 		}
 
-		Timings::$playerNetworkTimer->stopTiming();
+		Timings::$playerNetworkSendCompressTimer->stopTiming();
 	}
 
 	/**
