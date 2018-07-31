@@ -74,7 +74,7 @@ class LoginSessionHandler extends SessionHandler{
 		}
 
 		if($this->player->handleLogin($packet)){
-			if($this->session->getHandler() === $this){ //when login verification is disabled, the handler will already have been replaced
+			if($this->session->isConnected() and $this->session->getHandler() === $this){ //when login verification is disabled, the handler will already have been replaced
 				$this->session->setHandler(new NullSessionHandler()); //drop packets received during login verification
 			}
 			return true;
