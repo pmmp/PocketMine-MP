@@ -71,6 +71,7 @@ use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\mcpe\CompressBatchedTask;
+use pocketmine\network\mcpe\NetworkCipher;
 use pocketmine\network\mcpe\NetworkCompression;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketStream;
@@ -1543,6 +1544,8 @@ class Server{
 				NetworkCompression::$LEVEL = 7;
 			}
 			$this->networkCompressionAsync = (bool) $this->getProperty("network.async-compression", true);
+
+			NetworkCipher::$ENABLED = (bool) $this->getProperty("network.enable-encryption", true);
 
 			$this->autoTickRate = (bool) $this->getProperty("level-settings.auto-tick-rate", true);
 			$this->autoTickRateLimit = (int) $this->getProperty("level-settings.auto-tick-rate-limit", 20);
