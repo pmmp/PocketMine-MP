@@ -206,11 +206,14 @@ class ProcessLoginTask extends AsyncTask{
 	}
 
 	private static function b64UrlDecode(string $str) : string{
+		if(($len = strlen($str) % 4) !== 0){
+			$str .= str_repeat('=', 4 - $len);
+		}
 		return base64_decode(strtr($str, '-_', '+/'), true);
 	}
 
 	private static function b64UrlEncode(string $str) : string{
-		return strtr(base64_encode($str), '+/', '-_');
+		return rtrim(strtr(base64_encode($str), '+/', '-_'), '=');
 	}
 
 	public function onCompletion(Server $server) : void{
