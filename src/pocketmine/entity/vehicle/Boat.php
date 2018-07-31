@@ -29,6 +29,7 @@ use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
+use pocketmine\Server;
 
 class Boat extends Vehicle{
 	public const NETWORK_ID = self::BOAT;
@@ -51,8 +52,8 @@ class Boat extends Vehicle{
 		parent::initEntity();
 	}
 
-	public function getRiderSeatPosition() : Vector3{
-		return new Vector3(0, -0.2, 0);
+	public function getRiderSeatPosition(int $seatNumber = 0) : Vector3{
+		return new Vector3($seatNumber * 0.8, -0.2, 0);
 	}
 
 	public function getBoatType() : int{
@@ -75,17 +76,17 @@ class Boat extends Vehicle{
 		];
 	}
 
-	public function onUpdate(int $currentTick) : bool{
-		if($this->closed){
-			return false;
-		}
-
-		$this->onGround = $this->isOnGround() and !$this->isUnderwater();
-
-		if($this->getHealth() < $this->getMaxHealth() and $currentTick % 10 == 0 /* because of invincible normal 0/10 per tick*/){
+	public function entityBaseTick(int $diff = 1) : bool{
+		if($this->getHealth() < $this->getMaxHealth() and Server::getInstance()->getTick() % 10 === 0){
 			$this->heal(new EntityRegainHealthEvent($this, 1, EntityRegainHealthEvent::CAUSE_REGEN));
 		}
 
-		return parent::onUpdate($currentTick);
+		return parent::entityBaseTick($diff);
 	}
+
+	protected function applyGravity() : void{
+	    if(!$this->isUnderwater()){
+            parent::applyGravity();
+        }
+    }
 }
