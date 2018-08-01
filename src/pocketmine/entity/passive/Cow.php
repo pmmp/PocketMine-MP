@@ -32,12 +32,15 @@ use pocketmine\entity\behavior\RandomLookAroundBehavior;
 use pocketmine\entity\behavior\TemptedBehavior;
 use pocketmine\entity\behavior\WanderBehavior;
 use pocketmine\entity\Tamable;
+use pocketmine\event\entity\EntityCombustEvent;
 use pocketmine\item\Bucket;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Cow extends Tamable{
+
     public const NETWORK_ID = self::COW;
 
     public $width = 0.9;
@@ -71,5 +74,16 @@ class Cow extends Tamable{
             $milk->setDamage(1);
             $player->getInventory()->setItemInHand($milk);
         }
+    }
+
+    public function getXpDropAmount() : int{
+        return rand(1, ($this->isInLove() ? 7 : 3));
+    }
+
+    public function getDrops() : array{
+        return [
+            ItemFactory::get(Item::LEATHER, 0, rand(0,2)),
+            ($this->getLastDamageCause() instanceof EntityCombustEvent ? ItemFactory::get(Item::STEAK, 0, rand(1,3)) : ItemFactory::get(Item::RAW_BEEF, 0, rand(1,3)))
+        ];
     }
 }

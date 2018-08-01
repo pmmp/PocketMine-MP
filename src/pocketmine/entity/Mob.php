@@ -90,11 +90,13 @@ abstract class Mob extends Living{
     }
 
     public function entityBaseTick(int $diff = 1) : bool{
+        $hasUpdate = parent::entityBaseTick($diff);
+
         if($this->aiEnabled) {
             $this->onBehaviorUpdate();
         }
 
-        return parent::entityBaseTick($diff);
+        return $hasUpdate;
     }
 
     protected function onBehaviorUpdate() : void{

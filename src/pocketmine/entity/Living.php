@@ -780,15 +780,6 @@ abstract class Living extends Entity implements Damageable
         return $hasUpdate;
     }
 
-    public function onUpdate(int $currentTick): bool
-    {
-        if($this->closed) return false;
-
-
-
-        return parent::onUpdate($currentTick);
-    }
-
     protected function doEffectsTick(int $tickDiff = 1): void
     {
         foreach ($this->effects as $instance) {
