@@ -105,6 +105,7 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\network\mcpe\NetworkCipher;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
@@ -138,7 +139,7 @@ use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
-use pocketmine\network\mcpe\VerifyLoginTask;
+use pocketmine\network\mcpe\ProcessLoginTask;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
 use pocketmine\permission\PermissionAttachmentInfo;
@@ -1857,17 +1858,18 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
         }
 
         if(!$packet->skipVerification){
-            $this->server->getAsyncPool()->submitTask(new VerifyLoginTask($this, $packet));
+            $this->server->getAsyncPool()->submitTask(new ProcessLoginTask($this, $packet, NetworkCipher::$ENABLED));
         }else{
-            $this->onVerifyCompleted(true, null);
-        }
+            $this->setAuthenticationStatus(true, null);
+        $this->networkSession->onLoginSuccess();
+		}
 
         return true;
     }
 
-    public function onVerifyCompleted(bool $authenticated, ?string $error) : void{
-        if($this->closed){
-            return;
+    public function setAuthenticationStatus(bool $authenticated, ?string $error) : bool{
+        if($this->networkSession === null){
+            return false;
         }
 
         if($authenticated and $this->xuid === ""){
@@ -1875,7 +1877,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
         }
         if($error !== null){
             $this->close("", $this->server->getLanguage()->translateString("pocketmine.disconnect.invalidSession", [$error]));
-            return;
+            returnfalse;
         }
 
         $this->authenticated = $authenticated;
@@ -1883,7 +1885,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
         if(!$this->authenticated){
 
             if($this->server->requiresAuthentication() and $this->kick("disconnectionScreen.notAuthenticated", false)){ //use kick to allow plugins to cancel this
-                return;
+                return false;
             }
 
             $this->server->getLogger()->debug($this->getName() . " is NOT logged into Xbox Live");
@@ -1896,21 +1898,23 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
         }
 
-        //TODO: encryption
+
 
         foreach($this->server->getLoggedInPlayers() as $p){
             if($p !== $this and ($p->iusername === $this->iusername or $this->getUniqueId()->equals($p->getUniqueId()))){
                 if(!$p->kick("logged in from another location")){
                     $this->close($this->getLeaveMessage(), "Logged in from another location");
 
-                    return;
+                    returnfalse;
+				}
                 }
             }
-        }
+        return true;
+	}
 
-        $this->loggedIn = true;
+        public function onLoginSuccess() : void{$this->loggedIn = true;
         $this->server->onPlayerLogin($this);
-        $this->networkSession->onLoginSuccess();
+
     }
 
     public function _actuallyConstruct(){
@@ -3269,7 +3273,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
                 if($this->constructed){
                     parent::close();
-                }
+                }else{
+					$this->closed = true;
+				}
                 $this->spawned = false;
 
                 if($this->loggedIn){

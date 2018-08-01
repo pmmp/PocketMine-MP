@@ -73,6 +73,7 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\mcpe\CompressBatchedTask;
+use pocketmine\network\mcpe\NetworkCipher;
 use pocketmine\network\mcpe\NetworkCompression;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketStream;
@@ -1619,6 +1620,8 @@ class Server{
             }
             $this->networkCompressionAsync = (bool) $this->getProperty("network.async-compression", true);
 
+            NetworkCipher::$ENABLED = (bool) $this->getProperty("network.enable-encryption", true);
+
             $this->autoTickRate = (bool) $this->getProperty("level-settings.auto-tick-rate", true);
             $this->autoTickRateLimit = (int) $this->getProperty("level-settings.auto-tick-rate-limit", 20);
             $this->alwaysTickPlayers = (bool) $this->getProperty("level-settings.always-tick-players", false);
@@ -2006,7 +2009,7 @@ class Server{
         if(empty($packets)){
             throw new \InvalidArgumentException("Cannot send empty batch");
         }
-        Timings::$playerNetworkTimer->startTiming();
+        Timings::$playerNetworkSendCompressTimer->startTiming();
 
 		/** @var NetworkSession[] $targets */
 		$targets = [];
@@ -2037,7 +2040,7 @@ class Server{
             }
         }
 
-        Timings::$playerNetworkTimer->stopTiming();
+        Timings::$playerNetworkSendCompressTimer->stopTiming();
     }
 
     /**

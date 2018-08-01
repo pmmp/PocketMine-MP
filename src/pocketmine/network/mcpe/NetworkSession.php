@@ -27,6 +27,7 @@ use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\network\mcpe\handler\DeathSessionHandler;
+use pocketmine\network\mcpe\handler\HandshakeSessionHandler;
 use pocketmine\network\mcpe\handler\LoginSessionHandler;
 use pocketmine\network\mcpe\handler\PreSpawnSessionHandler;
 use pocketmine\network\mcpe\handler\ResourcePacksSessionHandler;
@@ -36,6 +37,7 @@ use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
+use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
 use pocketmine\network\NetworkInterface;
 use pocketmine\Player;
 use pocketmine\Server;
@@ -62,6 +64,9 @@ class NetworkSession{
 
 	/** @var bool */
 	private $connected = true;
+
+	/** @var NetworkCipher */
+	private $cipher;
 
 	public function __construct(Server $server, NetworkInterface $interface, string $ip, int $port){
         $this->server = $server;
@@ -143,15 +148,30 @@ class NetworkSession{
 			return;
 		}
 
-        //TODO: decryption if enabled
+        if($this->cipher !== null){
+			Timings::$playerNetworkReceiveDecryptTimer->startTiming();
+			try{
+				$payload = $this->cipher->decrypt($payload);
+			}catch(\InvalidArgumentException $e){
+				$this->server->getLogger()->debug("Encrypted packet from " . $this->ip . " " . $this->port . ": " . bin2hex($payload));
+				$this->disconnect("Packet decryption error: " . $e->getMessage());
+				return;
+			}finally{
+				Timings::$playerNetworkReceiveDecryptTimer->stopTiming();
+			}
+		}
 
+		Timings::$playerNetworkReceiveDecompressTimer->startTiming();
 		try{
 		    $stream = new PacketStream(NetworkCompression::decompress($payload));
 		}catch(\ErrorException $e){
 			$this->server->getLogger()->debug("Failed to decompress packet from " . $this->ip . " " . $this->port . ": " . bin2hex($payload));
 			$this->disconnect("Compressed packet batch decode error (incompatible game version?)", false);
 			return;
+		}finally{
+			Timings::$playerNetworkReceiveDecompressTimer->stopTiming();
 		}
+
 		while(!$stream->feof() and $this->connected){
             $this->handleDataPacket(PacketPool::getPacket($stream->getString()));
         }
@@ -194,7 +214,11 @@ class NetworkSession{
     }
 
 	public function sendEncoded(string $payload, bool $immediate = false) : void{
-		//TODO: encryption
+		if($this->cipher !== null){
+			Timings::$playerNetworkSendEncryptTimer->startTiming();
+			$payload = $this->cipher->encrypt($payload);
+			Timings::$playerNetworkSendEncryptTimer->stopTiming();
+		}
 		$this->interface->putPacket($this, $payload, $immediate);
 	}
 
@@ -263,14 +287,24 @@ class NetworkSession{
 		$this->player = null;
     }
 
-    //TODO: onEnableEncryption() step
+    public function enableEncryption(string $encryptionKey, string $handshakeJwt) : void{
+		$pk = new ServerToClientHandshakePacket();
+		$pk->jwt = $handshakeJwt;
+		$this->sendDataPacket($pk, true); //make sure this gets sent before encryption is enabled
+
+		$this->cipher = new NetworkCipher($encryptionKey);
+
+		$this->setHandler(new HandshakeSessionHandler($this));
+		$this->server->getLogger()->debug("Enabled encryption for $this->ip $this->port");
+	}
 
     public function onLoginSuccess() : void{
         $pk = new PlayStatusPacket();
         $pk->status = PlayStatusPacket::LOGIN_SUCCESS;
         $this->sendDataPacket($pk);
 
-        $this->setHandler(new ResourcePacksSessionHandler($this->player, $this, $this->server->getResourcePackManager()));
+        $this->player->onLoginSuccess();
+		$this->setHandler(new ResourcePacksSessionHandler($this->player, $this, $this->server->getResourcePackManager()));
     }
 
     public function onResourcePacksDone() : void{

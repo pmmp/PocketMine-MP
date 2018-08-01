@@ -121,55 +121,43 @@ class Utils{
         return $uuid;
     }
 
-    /**
-	 * @deprecated
-	 * @see Internet::getIP()
-     *
-     * @param bool $force default false, force IP check even when cached
-     *
-     * @return string|bool
-     */
-    public static function getIP(bool $force = false){
-		return Internet::getIP($force);
-    }
-
-    /**
-     * Returns the current Operating System
-     * Windows => win
-     * MacOS => mac
-     * iOS => ios
-     * Android => android
-     * Linux => Linux
-     * BSD => bsd
-     * Other => other
-     *
-     * @param bool $recalculate
-     *
-     * @return string
-     */
-    public static function getOS(bool $recalculate = false) : string{
-        if(self::$os === null or $recalculate){
-            $uname = php_uname("s");
-            if(stripos($uname, "Darwin") !== false){
-                if(strpos(php_uname("m"), "iP") === 0){
-                    self::$os = "ios";
-                }else{
-                    self::$os = "mac";
-                }
-            }elseif(stripos($uname, "Win") !== false or $uname === "Msys"){
-                self::$os = "win";
-            }elseif(stripos($uname, "Linux") !== false){
-                if(@file_exists("/system/build.prop")){
-                    self::$os = "android";
-                }else{
-                    self::$os = "linux";
-                }
-            }elseif(stripos($uname, "BSD") !== false or $uname === "DragonFly"){
-                self::$os = "bsd";
-            }else{
-                self::$os = "other";
-            }
-        }
+	/**
+	 * Returns the current Operating System
+	 * Windows => win
+	 * MacOS => mac
+	 * iOS => ios
+	 * Android => android
+	 * Linux => Linux
+	 * BSD => bsd
+	 * Other => other
+	 *
+	 * @param bool $recalculate
+	 *
+	 * @return string
+	 */
+	public static function getOS(bool $recalculate = false) : string{
+		if(self::$os === null or $recalculate){
+			$uname = php_uname("s");
+			if(stripos($uname, "Darwin") !== false){
+				if(strpos(php_uname("m"), "iP") === 0){
+					self::$os = "ios";
+				}else{
+					self::$os = "mac";
+				}
+			}elseif(stripos($uname, "Win") !== false or $uname === "Msys"){
+				self::$os = "win";
+			}elseif(stripos($uname, "Linux") !== false){
+				if(@file_exists("/system/build.prop")){
+					self::$os = "android";
+				}else{
+					self::$os = "linux";
+				}
+			}elseif(stripos($uname, "BSD") !== false or $uname === "DragonFly"){
+				self::$os = "bsd";
+			}else{
+				self::$os = "other";
+			}
+		}
 
         return self::$os;
     }
@@ -331,77 +319,24 @@ class Utils{
         return array("yaw" => $hAngle, "pitch" => $vAngle);
     }*/
 
-    /**
-	 * @deprecated
-	 * @see Internet::getURL()
-     *
-     * @param string  $page
-     * @param int     $timeout default 10
-     * @param array   $extraHeaders
-     * @param string  &$err    Will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
-     * @param array[] &$headers
-     * @param int     &$httpCode
-     *
-     * @return bool|mixed false if an error occurred, mixed data if successful.
-     */
-    public static function getURL(string $page, int $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
-		return Internet::getURL($page, $timeout, $extraHeaders, $err, $headers, $httpCode);
-    }
-
-    /**
-	 * @deprecated
-	 * @see Internet::postURL()
-     *
-     * @param string       $page
-     * @param array|string $args
-     * @param int          $timeout
-     * @param array        $extraHeaders
-     * @param string       &$err Will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
-     * @param array[]      &$headers
-     * @param int          &$httpCode
-     *
-     * @return bool|mixed false if an error occurred, mixed data if successful.
-     */
-    public static function postURL(string $page, $args, int $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
-		return Internet::postURL($page, $args, $timeout, $extraHeaders, $err, $headers, $httpCode);
-    }
-
-    /**
-	 * @deprecated
-	 * @see Internet::simpleCurl()
-     *
-     * @param string        $page
-     * @param float|int     $timeout      The maximum connect timeout and timeout in seconds, correct to ms.
-     * @param string[]      $extraHeaders extra headers to send as a plain string array
-     * @param array         $extraOpts    extra CURLOPT_* to set as an [opt => value] map
-     * @param callable|null $onSuccess    function to be called if there is no error. Accepts a resource argument as the cURL handle.
-     *
-     * @return array a plain array of three [result body : string, headers : array[], HTTP response code : int]. Headers are grouped by requests with strtolower(header name) as keys and header value as values
-     *
-     * @throws \RuntimeException if a cURL error occurs
-     */
-    public static function simpleCurl(string $page, $timeout = 10, array $extraHeaders = [], array $extraOpts = [], callable $onSuccess = null){
-		return Internet::simpleCurl($page, $timeout, $extraHeaders, $extraOpts, $onSuccess);
-    }
-
-    public static function javaStringHash(string $string) : int{
-        $hash = 0;
-        for($i = 0, $len = strlen($string); $i < $len; $i++){
-            $ord = ord($string{$i});
-            if($ord & 0x80){
-                $ord -= 0x100;
-            }
-            $hash = 31 * $hash + $ord;
-            while($hash > 0x7FFFFFFF){
-                $hash -= 0x100000000;
-            }
-            while($hash < -0x80000000){
-                $hash += 0x100000000;
-            }
-            $hash &= 0xFFFFFFFF;
-        }
-        return $hash;
-    }
+	public static function javaStringHash(string $string) : int{
+		$hash = 0;
+		for($i = 0, $len = strlen($string); $i < $len; $i++){
+			$ord = ord($string{$i});
+			if($ord & 0x80){
+				$ord -= 0x100;
+			}
+			$hash = 31 * $hash + $ord;
+			while($hash > 0x7FFFFFFF){
+				$hash -= 0x100000000;
+			}
+			while($hash < -0x80000000){
+				$hash += 0x100000000;
+			}
+			$hash &= 0xFFFFFFFF;
+		}
+		return $hash;
+	}
 
 
     /**

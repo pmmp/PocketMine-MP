@@ -31,7 +31,6 @@ use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
 use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\BossEventPacket;
-use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
@@ -74,10 +73,6 @@ class SimpleSessionHandler extends SessionHandler{
 
     public function __construct(Player $player){
         $this->player = $player;
-    }
-
-    public function handleClientToServerHandshake(ClientToServerHandshakePacket $packet) : bool{
-        return false; //TODO
     }
 
     public function handleText(TextPacket $packet) : bool{
