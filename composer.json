@@ -1,5 +1,5 @@
 {
-	"name": "TuranicTeam/PocketMine-MP",
+	"name": "TuranicTeam/Altay",
 	"description": "A server software for Minecraft: Pocket Edition written in PHP",
 	"type": "project",
 	"license": "LGPL-3.0",
@@ -29,7 +29,7 @@
 		"pocketmine/raklib": "^0.12.0",
 		"pocketmine/spl": "^0.3.0",
 		"pocketmine/nbt": "^0.2.0",
-		"turanicteam/math": "dev-master#0e7b252627e2a6439276ecdfabc0f687256a254a",
+		"pocketmine/math": "^0.2.0",
 		"pocketmine/snooze": "^0.1.0"
 	},
 	"autoload": {
@@ -56,7 +56,7 @@
 		},
 		{
 			"type": "vcs",
-			"url": "https://github.com/TuranicTeam/Math"
+			"url": "https://github.com/pmmp/Math"
 		},
 		{
 			"type": "vcs",

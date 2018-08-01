@@ -34,4 +34,8 @@ class PathPoint extends Vector2{
 	public function getHashCode() : int{
 		return ($this->x * 397) ^ $this->y;
 	}
+
+	public function equals(Vector2 $v) : bool{
+        return $this->x == $v->x and $this->y == $v->y;
+    }
 }
