@@ -2990,6 +2990,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 				if($this->constructed){
 					parent::close();
+				}else{
+					$this->closed = true;
 				}
 				$this->spawned = false;
 
