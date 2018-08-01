@@ -1806,7 +1806,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function setAuthenticationStatus(bool $authenticated, ?string $error) : bool{
-		if($this->closed){
+		if($this->networkSession === null){
 			return false;
 		}
 
