@@ -304,7 +304,8 @@ class NetworkSession{
         $this->sendDataPacket($pk);
 
         $this->player->onLoginSuccess();
-		$this->setHandler(new ResourcePacksSessionHandler($this->player, $this, $this->server->getResourcePackManager()));
+
+        $this->setHandler(new ResourcePacksSessionHandler($this->player, $this, $this->server->getResourcePackManager()));
     }
 
     public function onResourcePacksDone() : void{

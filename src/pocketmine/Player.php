@@ -1035,8 +1035,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
         }
 
         $this->server->getPluginManager()->callEvent($ev = new PlayerJoinEvent($this, new TranslationContainer(TextFormat::YELLOW . "%multiplayer.player.joined", [
-                $this->getDisplayName()
-            ])));
+            $this->getDisplayName()
+        ])));
         if(strlen(trim((string) $ev->getJoinMessage())) > 0){
             $this->server->broadcastMessage($ev->getJoinMessage());
         }
@@ -1861,8 +1861,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
             $this->server->getAsyncPool()->submitTask(new ProcessLoginTask($this, $packet, NetworkCipher::$ENABLED));
         }else{
             $this->setAuthenticationStatus(true, null);
-        $this->networkSession->onLoginSuccess();
-		}
+            $this->networkSession->onLoginSuccess();
+        }
 
         return true;
     }
@@ -1877,7 +1877,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
         }
         if($error !== null){
             $this->close("", $this->server->getLanguage()->translateString("pocketmine.disconnect.invalidSession", [$error]));
-            returnfalse;
+            return false;
         }
 
         $this->authenticated = $authenticated;
@@ -1898,23 +1898,21 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
         }
 
-
-
         foreach($this->server->getLoggedInPlayers() as $p){
             if($p !== $this and ($p->iusername === $this->iusername or $this->getUniqueId()->equals($p->getUniqueId()))){
                 if(!$p->kick("logged in from another location")){
                     $this->close($this->getLeaveMessage(), "Logged in from another location");
 
-                    returnfalse;
-				}
+                    return false;
                 }
             }
+        }
         return true;
-	}
+    }
 
-        public function onLoginSuccess() : void{$this->loggedIn = true;
+    public function onLoginSuccess() : void{
+        $this->loggedIn = true;
         $this->server->onPlayerLogin($this);
-
     }
 
     public function _actuallyConstruct(){
@@ -3274,8 +3272,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
                 if($this->constructed){
                     parent::close();
                 }else{
-					$this->closed = true;
-				}
+                    $this->closed = true;
+                }
                 $this->spawned = false;
 
                 if($this->loggedIn){
@@ -3930,8 +3928,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
         return $this->isTeleporting;
     }
 
-    public function canBePushed(): bool
-    {
+    public function canBePushed() : bool{
         return true;
     }
 }
