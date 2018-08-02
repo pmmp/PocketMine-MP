@@ -62,6 +62,8 @@ class NetworkSession{
 
 	/** @var bool */
 	private $connected = true;
+	/** @var int */
+	private $connectTime;
 
 	/** @var NetworkCipher */
 	private $cipher;
@@ -71,6 +73,9 @@ class NetworkSession{
 		$this->interface = $interface;
 		$this->ip = $ip;
 		$this->port = $port;
+
+		$this->connectTime = time();
+		$this->server->getNetwork()->scheduleSessionTick($this);
 
 		//TODO: this should happen later in the login sequence
 		$this->createPlayer();
@@ -327,5 +332,19 @@ class NetworkSession{
 
 	public function onRespawn() : void{
 		$this->setHandler(new SimpleSessionHandler($this->player));
+	}
+
+	public function tick() : bool{
+		if($this->handler instanceof LoginSessionHandler){
+			if(time() >= $this->connectTime + 10){
+				$this->disconnect("Login timeout");
+				return false;
+			}
+
+			return true; //keep ticking until timeout
+		}
+
+		//TODO: more stuff on tick
+		return false;
 	}
 }

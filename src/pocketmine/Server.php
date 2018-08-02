@@ -2375,12 +2375,12 @@ class Server{
 		$p->sendDataPacket($pk);
 	}
 
-	private function checkTickUpdates(int $currentTick, float $tickTime) : void{
-		foreach($this->players as $p){
-			if(!$p->loggedIn and ($tickTime - $p->creationTime) >= 10){
-				$p->close("", "Login timeout");
-			}elseif($this->alwaysTickPlayers and $p->spawned){
-				$p->onUpdate($currentTick);
+	private function checkTickUpdates(int $currentTick) : void{
+		if($this->alwaysTickPlayers){
+			foreach($this->players as $p){
+				if($p->spawned){
+					$p->onUpdate($currentTick);
+				}
 			}
 		}
 
@@ -2537,7 +2537,7 @@ class Server{
 		++$this->tickCounter;
 
 		Timings::$connectionTimer->startTiming();
-		$this->network->tickInterfaces();
+		$this->network->tick();
 		Timings::$connectionTimer->stopTiming();
 
 		Timings::$schedulerTimer->startTiming();
@@ -2548,7 +2548,7 @@ class Server{
 		$this->asyncPool->collectTasks();
 		Timings::$schedulerAsyncTimer->stopTiming();
 
-		$this->checkTickUpdates($this->tickCounter, $tickTime);
+		$this->checkTickUpdates($this->tickCounter);
 
 		if(($this->tickCounter % 20) === 0){
 			if($this->doTitleTick){

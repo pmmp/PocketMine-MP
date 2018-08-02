@@ -29,6 +29,7 @@ namespace pocketmine\network;
 use pocketmine\event\server\NetworkInterfaceCrashEvent;
 use pocketmine\event\server\NetworkInterfaceRegisterEvent;
 use pocketmine\event\server\NetworkInterfaceUnregisterEvent;
+use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\Server;
 
@@ -47,6 +48,9 @@ class Network{
 
 	/** @var string */
 	private $name;
+
+	/** @var NetworkSession[] */
+	private $updateSessions = [];
 
 	public function __construct(Server $server){
 		PacketPool::init();
@@ -80,7 +84,7 @@ class Network{
 		return $this->interfaces;
 	}
 
-	public function tickInterfaces() : void{
+	public function tick() : void{
 		foreach($this->interfaces as $interface){
 			try{
 				$interface->tick();
@@ -95,6 +99,12 @@ class Network{
 				$interface->emergencyShutdown();
 				$this->unregisterInterface($interface);
 				$logger->critical($this->server->getLanguage()->translateString("pocketmine.server.networkError", [get_class($interface), $e->getMessage()]));
+			}
+		}
+
+		foreach($this->updateSessions as $k => $session){
+			if(!$session->isConnected() or !$session->tick()){
+				unset($this->updateSessions[$k]);
 			}
 		}
 	}
@@ -182,5 +192,9 @@ class Network{
 		foreach($this->advancedInterfaces as $interface){
 			$interface->unblockAddress($address);
 		}
+	}
+
+	public function scheduleSessionTick(NetworkSession $session) : void{
+		$this->updateSessions[spl_object_hash($session)] = $session;
 	}
 }
