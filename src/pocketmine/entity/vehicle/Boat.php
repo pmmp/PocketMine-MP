@@ -36,8 +36,8 @@ class Boat extends Vehicle{
 
 	public const TAG_VARIANT = "Variant";
 
-	public $height = 0.455;
-	public $width = 1;
+	public $height = 0.5;
+	public $width = 1.0;
 
 	protected $gravity = 0.9;
 	protected $drag = 0.1;
@@ -88,5 +88,9 @@ class Boat extends Vehicle{
 	    if(!$this->isUnderwater()){
             parent::applyGravity();
         }
+    }
+
+    public function getSeatCount() : int{
+        return 2;
     }
 }
