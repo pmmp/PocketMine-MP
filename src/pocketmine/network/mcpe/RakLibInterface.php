@@ -71,7 +71,8 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 
 		$this->sleeper = new SleeperNotifier();
 		$server->getTickSleeper()->addNotifier($this->sleeper, function() : void{
-			$this->server->getNetwork()->processInterface($this);
+			//this should not throw any exception. If it does, this should crash the server since it's a fault condition.
+			while($this->interface->handlePacket());
 		});
 
 		$this->rakLib = new RakLibServer(
@@ -93,9 +94,7 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 		$this->network = $network;
 	}
 
-	public function process() : void{
-		while($this->interface->handlePacket()){}
-
+	public function tick() : void{
 		if(!$this->rakLib->isRunning() and !$this->rakLib->isShutdown()){
 			throw new \Exception("RakLib Thread crashed");
 		}

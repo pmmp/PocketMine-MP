@@ -63,7 +63,7 @@ interface NetworkInterface{
 	/**
 	 * Called every tick to process events on the interface.
 	 */
-	public function process() : void;
+	public function tick() : void;
 
 	/**
 	 * Gracefully shuts down the network interface.
