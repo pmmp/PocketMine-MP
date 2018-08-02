@@ -2161,10 +2161,6 @@ class Server{
 	 * @param array|null $trace
 	 */
 	public function exceptionHandler(\Throwable $e, $trace = null){
-		if($e === null){
-			return;
-		}
-
 		global $lastError;
 
 		if($trace === null){
@@ -2222,7 +2218,7 @@ class Server{
 					}
 				}
 
-				if($dump->getData()["error"]["type"] === "E_PARSE" or $dump->getData()["error"]["type"] === "E_COMPILE_ERROR"){
+				if($dump->getData()["error"]["type"] === \ParseError::class){
 					$report = false;
 				}
 
