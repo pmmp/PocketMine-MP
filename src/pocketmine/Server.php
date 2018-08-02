@@ -2144,10 +2144,6 @@ class Server{
 	 * @param array|null $trace
 	 */
 	public function exceptionHandler(\Throwable $e, $trace = null){
-		if($e === null){
-			return;
-		}
-
 		global $lastError;
 
 		if($trace === null){
