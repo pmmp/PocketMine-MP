@@ -25,6 +25,7 @@ namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\network\mcpe\CompressBatchPromise;
 use pocketmine\network\mcpe\NetworkCompression;
 use pocketmine\network\mcpe\PacketStream;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
@@ -38,7 +39,7 @@ class CraftingManager{
 	/** @var FurnaceRecipe[] */
 	protected $furnaceRecipes = [];
 
-	/** @var string */
+	/** @var CompressBatchPromise */
 	private $craftingDataCache;
 
 	public function __construct(){
@@ -105,16 +106,18 @@ class CraftingManager{
 		$batch = new PacketStream();
 		$batch->putPacket($pk);
 
-		$this->craftingDataCache = NetworkCompression::compress($batch->buffer);
+		$this->craftingDataCache = new CompressBatchPromise();
+		$this->craftingDataCache->resolve(NetworkCompression::compress($batch->buffer));
+
 		Timings::$craftingDataCacheRebuildTimer->stopTiming();
 	}
 
 	/**
 	 * Returns a pre-compressed CraftingDataPacket for sending to players. Rebuilds the cache if it is not found.
 	 *
-	 * @return string
+	 * @return CompressBatchPromise
 	 */
-	public function getCraftingDataPacket() : string{
+	public function getCraftingDataPacket() : CompressBatchPromise{
 		if($this->craftingDataCache === null){
 			$this->buildCraftingDataCache();
 		}

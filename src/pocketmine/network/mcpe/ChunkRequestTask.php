@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe;
 
 use pocketmine\level\format\Chunk;
-use pocketmine\level\Level;
 use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
@@ -42,8 +41,7 @@ class ChunkRequestTask extends AsyncTask{
 	/** @var int */
 	protected $compressionLevel;
 
-	public function __construct(Level $level, int $chunkX, int $chunkZ, Chunk $chunk){
-		$this->storeLocal($level);
+	public function __construct(int $chunkX, int $chunkZ, Chunk $chunk, CompressBatchPromise $promise){
 		$this->compressionLevel = NetworkCompression::$LEVEL;
 
 		$this->chunk = $chunk->fastSerialize();
@@ -59,6 +57,8 @@ class ChunkRequestTask extends AsyncTask{
 		}
 
 		$this->tiles = $tiles;
+
+		$this->storeLocal($promise);
 	}
 
 	public function onRun() : void{
@@ -76,14 +76,8 @@ class ChunkRequestTask extends AsyncTask{
 	}
 
 	public function onCompletion(Server $server) : void{
-		/** @var Level $level */
-		$level = $this->fetchLocal();
-		if(!$level->isClosed()){
-			if($this->hasResult()){
-				$level->chunkRequestCallback($this->chunkX, $this->chunkZ, $this->getResult());
-			}else{
-				$level->getServer()->getLogger()->error("Chunk request for level " . $level->getName() . ", x=" . $this->chunkX . ", z=" . $this->chunkZ . " doesn't have any result data");
-			}
-		}
+		/** @var CompressBatchPromise $promise */
+		$promise = $this->fetchLocal();
+		$promise->resolve($this->getResult());
 	}
 }

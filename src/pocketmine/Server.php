@@ -71,7 +71,8 @@ use pocketmine\nbt\tag\LongTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\AdvancedNetworkInterface;
-use pocketmine\network\mcpe\CompressBatchedTask;
+use pocketmine\network\mcpe\CompressBatchPromise;
+use pocketmine\network\mcpe\CompressBatchTask;
 use pocketmine\network\mcpe\NetworkCipher;
 use pocketmine\network\mcpe\NetworkCompression;
 use pocketmine\network\mcpe\NetworkSession;
@@ -1899,52 +1900,53 @@ class Server{
 			$stream->putPacket($packet);
 		}
 
-		//TODO: if under the compression threshold, add to session buffers instead of batching (first we need to implement buffering!)
-		$this->batchPackets($targets, $stream);
+		if(NetworkCompression::$THRESHOLD < 0 or strlen($stream->buffer) < NetworkCompression::$THRESHOLD){
+			foreach($targets as $target){
+				foreach($ev->getPackets() as $pk){
+					$target->addToSendBuffer($pk);
+				}
+			}
+		}else{
+			$promise = $this->prepareBatch($stream);
+			foreach($targets as $target){
+				$target->queueCompressed($promise);
+			}
+		}
+
 		return true;
 	}
 
 	/**
 	 * Broadcasts a list of packets in a batch to a list of players
 	 *
-	 * @param NetworkSession[] $targets
-	 * @param PacketStream     $stream
-	 * @param bool             $forceSync
-	 * @param bool             $immediate
+	 * @param PacketStream $stream
+	 * @param bool         $forceSync
+	 *
+	 * @return CompressBatchPromise
 	 */
-	public function batchPackets(array $targets, PacketStream $stream, bool $forceSync = false, bool $immediate = false){
-		Timings::$playerNetworkSendCompressTimer->startTiming();
+	public function prepareBatch(PacketStream $stream, bool $forceSync = false) : CompressBatchPromise{
+		try{
+			Timings::$playerNetworkSendCompressTimer->startTiming();
 
-		if(!empty($targets)){
 			$compressionLevel = NetworkCompression::$LEVEL;
 			if(NetworkCompression::$THRESHOLD < 0 or strlen($stream->buffer) < NetworkCompression::$THRESHOLD){
 				$compressionLevel = 0; //Do not compress packets under the threshold
 				$forceSync = true;
 			}
 
-			if(!$forceSync and !$immediate and $this->networkCompressionAsync){
-				$task = new CompressBatchedTask($stream, $targets, $compressionLevel);
+			$promise = new CompressBatchPromise();
+			if(!$forceSync and $this->networkCompressionAsync){
+				$task = new CompressBatchTask($stream, $compressionLevel, $promise);
 				$this->asyncPool->submitTask($task);
 			}else{
-				$this->broadcastPacketsCallback(NetworkCompression::compress($stream->buffer), $targets, $immediate);
+				$promise->resolve(NetworkCompression::compress($stream->buffer));
 			}
-		}
 
-		Timings::$playerNetworkSendCompressTimer->stopTiming();
-	}
-
-	/**
-	 * @param string           $payload
-	 * @param NetworkSession[] $sessions
-	 * @param bool             $immediate
-	 */
-	public function broadcastPacketsCallback(string $payload, array $sessions, bool $immediate = false){
-		/** @var NetworkSession $session */
-		foreach($sessions as $session){
-			$session->sendEncoded($payload, $immediate);
+			return $promise;
+		}finally{
+			Timings::$playerNetworkSendCompressTimer->stopTiming();
 		}
 	}
-
 
 	/**
 	 * @param int $type
