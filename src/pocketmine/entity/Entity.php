@@ -1720,6 +1720,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
                 $this->ridingEntity->onRiderLeave($this);
             }
 
+            unset($this->ridingEntity->seats[array_search($this, $this->ridingEntity->seats)]);
+
             if($this->isRiding()){
                 $this->ridingEntity->setRiddenByEntity(null);
             }
@@ -1760,15 +1762,15 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
     public function updateRidden() : void{
         if($this->ridingEntity === null) return;
 
-        if(!$this->ridingEntity->isAlive()){
+        if($this->ridingEntity->isClosed()){
             $this->ridingEntity = null;
         }else{
             $this->resetMotion();
 
             $this->ridingEntity->updateRiderPosition();
-            $this->entityRiderYawDelta += $this->ridingEntity->yaw - $this->ridingEntity->lastYaw;
+            $this->entityRiderYawDelta += $this->yaw - $this->lastYaw;
 
-            for($this->entityRiderPitchDelta += $this->ridingEntity->pitch - $this->ridingEntity->lastPitch; $this->entityRiderYawDelta >= 180; $this->entityRiderYawDelta -= 360){
+            for($this->entityRiderPitchDelta += $this->pitch - $this->lastPitch; $this->entityRiderYawDelta >= 180; $this->entityRiderYawDelta -= 360){
                 //empty
             }
 
