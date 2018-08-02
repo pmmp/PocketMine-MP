@@ -202,7 +202,9 @@ class NetworkSession{
 			}
 
 			//TODO: implement buffering (this is just a quick fix)
-			$this->server->batchPackets([$this->player], [$packet], true, $immediate);
+			$stream = new PacketStream();
+			$stream->putPacket($packet);
+			$this->server->batchPackets([$this], $stream, true, $immediate);
 
 			return true;
 		}finally{

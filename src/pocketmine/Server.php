@@ -39,6 +39,7 @@ use pocketmine\event\HandlerList;
 use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\level\LevelLoadEvent;
 use pocketmine\event\player\PlayerDataSaveEvent;
+use pocketmine\event\server\DataPacketBroadcastEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\event\server\ServerCommandEvent;
 use pocketmine\inventory\CraftingManager;
@@ -1859,41 +1860,62 @@ class Server{
 	 *
 	 * @param Player[]   $players
 	 * @param DataPacket $packet
+	 *
+	 * @return bool
 	 */
-	public function broadcastPacket(array $players, DataPacket $packet){
-		$packet->encode();
-		$this->batchPackets($players, [$packet], false);
+	public function broadcastPacket(array $players, DataPacket $packet) : bool{
+		return $this->broadcastPackets($players, [$packet]);
+	}
+
+	/**
+	 * @param Player[]     $players
+	 * @param DataPacket[] $packets
+	 *
+	 * @return bool
+	 */
+	public function broadcastPackets(array $players, array $packets) : bool{
+		if(empty($packets)){
+			throw new \InvalidArgumentException("Cannot broadcast empty list of packets");
+		}
+
+		$this->pluginManager->callEvent($ev = new DataPacketBroadcastEvent($players, $packets));
+		if($ev->isCancelled()){
+			return false;
+		}
+
+		/** @var NetworkSession[] $targets */
+		$targets = [];
+		foreach($ev->getPlayers() as $player){
+			if($player->isConnected()){
+				$targets[] = $player->getNetworkSession();
+			}
+		}
+		if(empty($targets)){
+			return false;
+		}
+
+		$stream = new PacketStream();
+		foreach($ev->getPackets() as $packet){
+			$stream->putPacket($packet);
+		}
+
+		//TODO: if under the compression threshold, add to session buffers instead of batching (first we need to implement buffering!)
+		$this->batchPackets($targets, $stream);
+		return true;
 	}
 
 	/**
 	 * Broadcasts a list of packets in a batch to a list of players
 	 *
-	 * @param Player[]     $players
-	 * @param DataPacket[] $packets
-	 * @param bool         $forceSync
-	 * @param bool         $immediate
+	 * @param NetworkSession[] $targets
+	 * @param PacketStream     $stream
+	 * @param bool             $forceSync
+	 * @param bool             $immediate
 	 */
-	public function batchPackets(array $players, array $packets, bool $forceSync = false, bool $immediate = false){
-		if(empty($packets)){
-			throw new \InvalidArgumentException("Cannot send empty batch");
-		}
+	public function batchPackets(array $targets, PacketStream $stream, bool $forceSync = false, bool $immediate = false){
 		Timings::$playerNetworkSendCompressTimer->startTiming();
 
-		/** @var NetworkSession[] $targets */
-		$targets = [];
-		foreach($players as $player){
-			if($player->isConnected()){
-				$targets[] = $player->getNetworkSession();
-			}
-		}
-
 		if(!empty($targets)){
-			$stream = new PacketStream();
-
-			foreach($packets as $p){
-				$stream->putPacket($p);
-			}
-
 			$compressionLevel = NetworkCompression::$LEVEL;
 			if(NetworkCompression::$THRESHOLD < 0 or strlen($stream->buffer) < NetworkCompression::$THRESHOLD){
 				$compressionLevel = 0; //Do not compress packets under the threshold
