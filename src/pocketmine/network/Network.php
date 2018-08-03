@@ -29,6 +29,7 @@ namespace pocketmine\network;
 use pocketmine\event\server\NetworkInterfaceCrashEvent;
 use pocketmine\event\server\NetworkInterfaceRegisterEvent;
 use pocketmine\event\server\NetworkInterfaceUnregisterEvent;
+use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\Server;
 
@@ -48,8 +49,11 @@ class Network{
     /** @var string */
     private $name;
 
-    public function __construct(Server $server){
-        PacketPool::init();
+	/** @var NetworkSession[] */
+	private $updateSessions = [];
+
+	public function __construct(Server $server){
+		PacketPool::init();
 
         $this->server = $server;
 
@@ -80,44 +84,46 @@ class Network{
         return $this->interfaces;
     }
 
-    public function processInterfaces() : void{
-        foreach($this->interfaces as $interface){
-            $this->processInterface($interface);
-        }
-    }
+	public function tick() : void{
+		foreach($this->interfaces as $interface){
+			try{
+				$interface->tick();
+			}catch(\Exception $e){
+				$logger = $this->server->getLogger();
+				if(\pocketmine\DEBUG > 1){
+					$logger->logException($e);
+				}
 
-    public function processInterface(NetworkInterface $interface) : void{
-        try{
-            $interface->process();
-        }catch(\Throwable $e){
-            $logger = $this->server->getLogger();
-            if(\pocketmine\DEBUG > 1){
-                $logger->logException($e);
-            }
+				$this->server->getPluginManager()->callEvent(new NetworkInterfaceCrashEvent($interface, $e));
 
-            $this->server->getPluginManager()->callEvent(new NetworkInterfaceCrashEvent($interface, $e));
+				$interface->emergencyShutdown();
+				$this->unregisterInterface($interface);
+				$logger->critical($this->server->getLanguage()->translateString("pocketmine.server.networkError", [get_class($interface), $e->getMessage()]));
+			}
+		}
 
-            $interface->emergencyShutdown();
-            $this->unregisterInterface($interface);
-            $logger->critical($this->server->getLanguage()->translateString("pocketmine.server.networkError", [get_class($interface), $e->getMessage()]));
-        }
-    }
+		foreach($this->updateSessions as $k => $session){
+			if(!$session->isConnected() or !$session->tick()){
+				unset($this->updateSessions[$k]);
+			}
+		}
+	}
 
-    /**
-     * @param NetworkInterface $interface
-     */
-    public function registerInterface(NetworkInterface $interface) : void{
-        $this->server->getPluginManager()->callEvent($ev = new NetworkInterfaceRegisterEvent($interface));
-        if(!$ev->isCancelled()){
-            $interface->start();
-            $this->interfaces[$hash = spl_object_hash($interface)] = $interface;
-            if($interface instanceof AdvancedNetworkInterface){
-                $this->advancedInterfaces[$hash] = $interface;
-                $interface->setNetwork($this);
-            }
-            $interface->setName($this->name);
-        }
-    }
+	/**
+	 * @param NetworkInterface $interface
+	 */
+	public function registerInterface(NetworkInterface $interface) : void{
+		$this->server->getPluginManager()->callEvent($ev = new NetworkInterfaceRegisterEvent($interface));
+		if(!$ev->isCancelled()){
+			$interface->start();
+			$this->interfaces[$hash = spl_object_hash($interface)] = $interface;
+			if($interface instanceof AdvancedNetworkInterface){
+				$this->advancedInterfaces[$hash] = $interface;
+				$interface->setNetwork($this);
+			}
+			$interface->setName($this->name);
+		}
+	}
 
     /**
      * @param NetworkInterface $interface
@@ -182,9 +188,13 @@ class Network{
         }
     }
 
-    public function unblockAddress(string $address) : void{
-        foreach($this->advancedInterfaces as $interface){
-            $interface->unblockAddress($address);
-        }
-    }
+	public function unblockAddress(string $address) : void{
+		foreach($this->advancedInterfaces as $interface){
+			$interface->unblockAddress($address);
+		}
+	}
+
+	public function scheduleSessionTick(NetworkSession $session) : void{
+		$this->updateSessions[spl_object_hash($session)] = $session;
+	}
 }

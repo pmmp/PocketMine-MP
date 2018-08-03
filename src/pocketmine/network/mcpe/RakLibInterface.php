@@ -37,186 +37,185 @@ use raklib\server\ServerInstance;
 use raklib\utils\InternetAddress;
 
 class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
-    /**
-     * Sometimes this gets changed when the MCPE-layer protocol gets broken to the point where old and new can't
-     * communicate. It's important that we check this to avoid catastrophes.
-     */
-    private const MCPE_RAKNET_PROTOCOL_VERSION = 8;
+	/**
+	 * Sometimes this gets changed when the MCPE-layer protocol gets broken to the point where old and new can't
+	 * communicate. It's important that we check this to avoid catastrophes.
+	 */
+	private const MCPE_RAKNET_PROTOCOL_VERSION = 8;
 
-    private const MCPE_RAKNET_PACKET_ID = "\xfe";
+	private const MCPE_RAKNET_PACKET_ID = "\xfe";
 
-    /** @var Server */
-    private $server;
+	/** @var Server */
+	private $server;
 
-    /** @var Network */
-    private $network;
+	/** @var Network */
+	private $network;
 
-    /** @var RakLibServer */
-    private $rakLib;
+	/** @var RakLibServer */
+	private $rakLib;
 
 	/** @var NetworkSession[] */
 	private $sessions = [];
 
-    /** @var string[] */
-    private $identifiers = [];
+	/** @var string[] */
+	private $identifiers = [];
 
-    /** @var ServerHandler */
-    private $interface;
+	/** @var ServerHandler */
+	private $interface;
 
-    /** @var SleeperNotifier */
-    private $sleeper;
+	/** @var SleeperNotifier */
+	private $sleeper;
 
-    public function __construct(Server $server){
-        $this->server = $server;
+	public function __construct(Server $server){
+		$this->server = $server;
 
-        $this->sleeper = new SleeperNotifier();
-        $server->getTickSleeper()->addNotifier($this->sleeper, function() : void{
-            $this->server->getNetwork()->processInterface($this);
-        });
+		$this->sleeper = new SleeperNotifier();
+		$server->getTickSleeper()->addNotifier($this->sleeper, function() : void{
+			//this should not throw any exception. If it does, this should crash the server since it's a fault condition.
+			while($this->interface->handlePacket());
+		});
 
-        $this->rakLib = new RakLibServer(
-            $this->server->getLogger(),
-            \pocketmine\COMPOSER_AUTOLOADER_PATH,
-            new InternetAddress($this->server->getIp(), $this->server->getPort(), 4),
-            (int) $this->server->getProperty("network.max-mtu-size", 1492),
-            self::MCPE_RAKNET_PROTOCOL_VERSION,
-            $this->sleeper
-        );
-        $this->interface = new ServerHandler($this->rakLib, $this);
-    }
+		$this->rakLib = new RakLibServer(
+			$this->server->getLogger(),
+			\pocketmine\COMPOSER_AUTOLOADER_PATH,
+			new InternetAddress($this->server->getIp(), $this->server->getPort(), 4),
+			(int) $this->server->getProperty("network.max-mtu-size", 1492),
+			self::MCPE_RAKNET_PROTOCOL_VERSION,
+			$this->sleeper
+		);
+		$this->interface = new ServerHandler($this->rakLib, $this);
+	}
 
-    public function start() : void{
-        $this->rakLib->start(PTHREADS_INHERIT_CONSTANTS | PTHREADS_INHERIT_INI); //HACK: MainLogger needs INI and constants
-    }
+	public function start() : void{
+		$this->rakLib->start(PTHREADS_INHERIT_CONSTANTS | PTHREADS_INHERIT_INI); //HACK: MainLogger needs INI and constants
+	}
 
-    public function setNetwork(Network $network) : void{
-        $this->network = $network;
-    }
+	public function setNetwork(Network $network) : void{
+		$this->network = $network;
+	}
 
-    public function process() : void{
-        while($this->interface->handlePacket()){}
+	public function tick() : void{
+		if(!$this->rakLib->isRunning() and !$this->rakLib->isShutdown()){
+			throw new \Exception("RakLib Thread crashed");
+		}
+	}
 
-        if(!$this->rakLib->isRunning() and !$this->rakLib->isShutdown()){
-            throw new \Exception("RakLib Thread crashed");
-        }
-    }
-
-    public function closeSession(string $identifier, string $reason) : void{
+	public function closeSession(string $identifier, string $reason) : void{
 		if(isset($this->sessions[$identifier])){
 			$session = $this->sessions[$identifier];
 			unset($this->identifiers[spl_object_hash($session)]);
 			unset($this->sessions[$identifier]);
 			$session->onClientDisconnect($reason);
-        }
-    }
+		}
+	}
 
 	public function close(NetworkSession $session, string $reason = "unknown reason") : void{
 		if(isset($this->identifiers[$h = spl_object_hash($session)])){
 			unset($this->sessions[$this->identifiers[$h]]);
-            $this->interface->closeSession($this->identifiers[$h], $reason);
-            unset($this->identifiers[$h]);
-        }
-    }
+			$this->interface->closeSession($this->identifiers[$h], $reason);
+			unset($this->identifiers[$h]);
+		}
+	}
 
-    public function shutdown() : void{
-        $this->server->getTickSleeper()->removeNotifier($this->sleeper);
-        $this->interface->shutdown();
-    }
+	public function shutdown() : void{
+		$this->server->getTickSleeper()->removeNotifier($this->sleeper);
+		$this->interface->shutdown();
+	}
 
-    public function emergencyShutdown() : void{
-        $this->server->getTickSleeper()->removeNotifier($this->sleeper);
-        $this->interface->emergencyShutdown();
-    }
+	public function emergencyShutdown() : void{
+		$this->server->getTickSleeper()->removeNotifier($this->sleeper);
+		$this->interface->emergencyShutdown();
+	}
 
-    public function openSession(string $identifier, string $address, int $port, int $clientID) : void{
+	public function openSession(string $identifier, string $address, int $port, int $clientID) : void{
 		$session = new NetworkSession($this->server, $this, $address, $port);
 		$this->sessions[$identifier] = $session;
 		$this->identifiers[spl_object_hash($session)] = $identifier;
-    }
+	}
 
-    public function handleEncapsulated(string $identifier, EncapsulatedPacket $packet, int $flags) : void{
+	public function handleEncapsulated(string $identifier, EncapsulatedPacket $packet, int $flags) : void{
 		if(isset($this->sessions[$identifier])){
-            //get this now for blocking in case the player was closed before the exception was raised
+			//get this now for blocking in case the player was closed before the exception was raised
 			$address = $this->sessions[$identifier]->getIp();
-            try{
-                if($packet->buffer !== "" and $packet->buffer{0} === self::MCPE_RAKNET_PACKET_ID){ //Batch
+			try{
+				if($packet->buffer !== "" and $packet->buffer{0} === self::MCPE_RAKNET_PACKET_ID){ //Batch
 					$this->sessions[$identifier]->handleEncoded(substr($packet->buffer, 1));
-                }
-            }catch(\Throwable $e){
-                $logger = $this->server->getLogger();
-                $logger->debug("EncapsulatedPacket 0x" . bin2hex($packet->buffer));
-                $logger->logException($e);
+				}
+			}catch(\Throwable $e){
+				$logger = $this->server->getLogger();
+				$logger->debug("EncapsulatedPacket 0x" . bin2hex($packet->buffer));
+				$logger->logException($e);
 
-                $this->interface->blockAddress($address, 5);
-            }
-        }
-    }
+				$this->interface->blockAddress($address, 5);
+			}
+		}
+	}
 
-    public function blockAddress(string $address, int $timeout = 300) : void{
-        $this->interface->blockAddress($address, $timeout);
-    }
+	public function blockAddress(string $address, int $timeout = 300) : void{
+		$this->interface->blockAddress($address, $timeout);
+	}
 
-    public function unblockAddress(string $address) : void{
-        $this->interface->unblockAddress($address);
-    }
+	public function unblockAddress(string $address) : void{
+		$this->interface->unblockAddress($address);
+	}
 
-    public function handleRaw(string $address, int $port, string $payload) : void{
-        $this->server->handlePacket($this, $address, $port, $payload);
-    }
+	public function handleRaw(string $address, int $port, string $payload) : void{
+		$this->server->handlePacket($this, $address, $port, $payload);
+	}
 
-    public function sendRawPacket(string $address, int $port, string $payload) : void{
-        $this->interface->sendRaw($address, $port, $payload);
-    }
+	public function sendRawPacket(string $address, int $port, string $payload) : void{
+		$this->interface->sendRaw($address, $port, $payload);
+	}
 
-    public function notifyACK(string $identifier, int $identifierACK) : void{
+	public function notifyACK(string $identifier, int $identifierACK) : void{
 
-    }
+	}
 
-    public function setName(string $name) : void{
-        $info = $this->server->getQueryInformation();
+	public function setName(string $name) : void{
+		$info = $this->server->getQueryInformation();
 
-        $this->interface->sendOption("name", implode(";",
-                [
-                    "MCPE",
-                    rtrim(addcslashes($name, ";"), '\\'),
-                    ProtocolInfo::CURRENT_PROTOCOL,
-                    ProtocolInfo::MINECRAFT_VERSION_NETWORK,
-                    $info->getPlayerCount(),
-                    $info->getMaxPlayerCount(),
-                    $this->rakLib->getServerId(),
-                    $this->server->getName(),
-                    Server::getGamemodeName($this->server->getGamemode())
-                ]) . ";"
-        );
-    }
+		$this->interface->sendOption("name", implode(";",
+			[
+				"MCPE",
+				rtrim(addcslashes($name, ";"), '\\'),
+				ProtocolInfo::CURRENT_PROTOCOL,
+				ProtocolInfo::MINECRAFT_VERSION_NETWORK,
+				$info->getPlayerCount(),
+				$info->getMaxPlayerCount(),
+				$this->rakLib->getServerId(),
+				$this->server->getName(),
+				Server::getGamemodeName($this->server->getGamemode())
+			]) . ";"
+		);
+	}
 
-    public function setPortCheck(bool $name) : void{
-        $this->interface->sendOption("portChecking", $name);
-    }
+	public function setPortCheck(bool $name) : void{
+		$this->interface->sendOption("portChecking", $name);
+	}
 
-    public function handleOption(string $option, string $value) : void{
-        if($option === "bandwidth"){
-            $v = unserialize($value);
-            $this->network->addStatistics($v["up"], $v["down"]);
-        }
-    }
+	public function handleOption(string $option, string $value) : void{
+		if($option === "bandwidth"){
+			$v = unserialize($value);
+			$this->network->addStatistics($v["up"], $v["down"]);
+		}
+	}
 
 	public function putPacket(NetworkSession $session, string $payload, bool $immediate = true) : void{
 		if(isset($this->identifiers[$h = spl_object_hash($session)])){
-            $identifier = $this->identifiers[$h];
+			$identifier = $this->identifiers[$h];
 
-            $pk = new EncapsulatedPacket();
-            $pk->buffer = self::MCPE_RAKNET_PACKET_ID . $payload;
-            $pk->reliability = PacketReliability::RELIABLE_ORDERED;
-            $pk->orderChannel = 0;
+			$pk = new EncapsulatedPacket();
+			$pk->buffer = self::MCPE_RAKNET_PACKET_ID . $payload;
+			$pk->reliability = PacketReliability::RELIABLE_ORDERED;
+			$pk->orderChannel = 0;
 
-            $this->interface->sendEncapsulated($identifier, $pk, ($immediate ? RakLib::PRIORITY_IMMEDIATE : RakLib::PRIORITY_NORMAL));
-        }
-    }
+			$this->interface->sendEncapsulated($identifier, $pk, ($immediate ? RakLib::PRIORITY_IMMEDIATE : RakLib::PRIORITY_NORMAL));
+		}
+	}
 
-    public function updatePing(string $identifier, int $pingMS) : void{
+	public function updatePing(string $identifier, int $pingMS) : void{
 		if(isset($this->sessions[$identifier])){
 			$this->sessions[$identifier]->updatePing($pingMS);
-        }
-    }
+		}
+	}
 }

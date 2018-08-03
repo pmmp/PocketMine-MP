@@ -43,37 +43,39 @@ use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 
-
 class NetworkSession{
-
-    /** @var Server */
-    private $server;
-    /** @var Player */
-    private $player;
-    /** @var NetworkInterface */
-    private $interface;
-    /** @var string */
-    private $ip;
-    /** @var int */
-    private $port;
+	/** @var Server */
+	private $server;
+	/** @var Player */
+	private $player;
+	/** @var NetworkInterface */
+	private $interface;
+	/** @var string */
+	private $ip;
+	/** @var int */
+	private $port;
 	/** @var int */
 	private $ping;
 
-    /** @var SessionHandler */
-    private $handler;
+	/** @var SessionHandler */
+	private $handler;
 
 	/** @var bool */
 	private $connected = true;
+	/** @var int */
+	private $connectTime;
 
 	/** @var NetworkCipher */
 	private $cipher;
 
 	public function __construct(Server $server, NetworkInterface $interface, string $ip, int $port){
-        $this->server = $server;
-        $this->interface = $interface;
+		$this->server = $server;
+		$this->interface = $interface;
+		$this->ip = $ip;
+		$this->port = $port;
 
-        $this->ip = $ip;
-        $this->port = $port;
+		$this->connectTime = time();
+		$this->server->getNetwork()->scheduleSessionTick($this);
 
 		//TODO: this should happen later in the login sequence
 		$this->createPlayer();
@@ -96,25 +98,25 @@ class NetworkSession{
 
 	public function isConnected() : bool{
 		return $this->connected;
-    }
+	}
 
-    public function getInterface() : NetworkInterface{
-        return $this->interface;
-    }
+	public function getInterface() : NetworkInterface{
+		return $this->interface;
+	}
 
-    /**
-     * @return string
-     */
-    public function getIp() : string{
-        return $this->ip;
-    }
+	/**
+	 * @return string
+	 */
+	public function getIp() : string{
+		return $this->ip;
+	}
 
-    /**
-     * @return int
-     */
-    public function getPort() : int{
-        return $this->port;
-    }
+	/**
+	 * @return int
+	 */
+	public function getPort() : int{
+		return $this->port;
+	}
 
 	/**
 	 * Returns the last recorded ping measurement for this session, in milliseconds.
@@ -134,21 +136,21 @@ class NetworkSession{
 		$this->ping = $ping;
 	}
 
-    public function getHandler() : ?SessionHandler{
-        return $this->handler;
-    }
+	public function getHandler() : SessionHandler{
+		return $this->handler;
+	}
 
-    public function setHandler(SessionHandler $handler) : void{
-        $this->handler = $handler;
-        $this->handler->setUp();
-    }
+	public function setHandler(SessionHandler $handler) : void{
+		$this->handler = $handler;
+		$this->handler->setUp();
+	}
 
-    public function handleEncoded(string $payload) : void{
+	public function handleEncoded(string $payload) : void{
 		if(!$this->connected){
 			return;
 		}
 
-        if($this->cipher !== null){
+		if($this->cipher !== null){
 			Timings::$playerNetworkReceiveDecryptTimer->startTiming();
 			try{
 				$payload = $this->cipher->decrypt($payload);
@@ -163,7 +165,7 @@ class NetworkSession{
 
 		Timings::$playerNetworkReceiveDecompressTimer->startTiming();
 		try{
-		    $stream = new PacketStream(NetworkCompression::decompress($payload));
+			$stream = new PacketStream(NetworkCompression::decompress($payload));
 		}catch(\ErrorException $e){
 			$this->server->getLogger()->debug("Failed to decompress packet from " . $this->ip . " " . $this->port . ": " . bin2hex($payload));
 			$this->disconnect("Compressed packet batch decode error (incompatible game version?)", false);
@@ -173,45 +175,47 @@ class NetworkSession{
 		}
 
 		while(!$stream->feof() and $this->connected){
-            $this->handleDataPacket(PacketPool::getPacket($stream->getString()));
-        }
-    }
+			$this->handleDataPacket(PacketPool::getPacket($stream->getString()));
+		}
+	}
 
-    public function handleDataPacket(DataPacket $packet) : void{
-        $timings = Timings::getReceiveDataPacketTimings($packet);
-        $timings->startTiming();
+	public function handleDataPacket(DataPacket $packet) : void{
+		$timings = Timings::getReceiveDataPacketTimings($packet);
+		$timings->startTiming();
 
-        $packet->decode();
-        if(!$packet->feof() and !$packet->mayHaveUnreadBytes()){
-            $remains = substr($packet->buffer, $packet->offset);
-            $this->server->getLogger()->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": 0x" . bin2hex($remains));
-        }
+		$packet->decode();
+		if(!$packet->feof() and !$packet->mayHaveUnreadBytes()){
+			$remains = substr($packet->buffer, $packet->offset);
+			$this->server->getLogger()->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": 0x" . bin2hex($remains));
+		}
 
-        $this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this->player, $packet));
-        if(!$ev->isCancelled() and $this->handler !== null and !$packet->handle($this->handler)){
-            $this->server->getLogger()->debug("Unhandled " . $packet->getName() . " received from " . $this->player->getName() . ": 0x" . bin2hex($packet->buffer));
-        }
+		$this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this->player, $packet));
+		if(!$ev->isCancelled() and !$packet->handle($this->handler)){
+			$this->server->getLogger()->debug("Unhandled " . $packet->getName() . " received from " . $this->player->getName() . ": 0x" . bin2hex($packet->buffer));
+		}
 
-        $timings->stopTiming();
-    }
+		$timings->stopTiming();
+	}
 
-    public function sendDataPacket(DataPacket $packet, bool $immediate = false) : bool{
-        $timings = Timings::getSendDataPacketTimings($packet);
-        $timings->startTiming();
-        try{
-            $this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this->player, $packet));
-            if($ev->isCancelled()){
-                return false;
-            }
+	public function sendDataPacket(DataPacket $packet, bool $immediate = false) : bool{
+		$timings = Timings::getSendDataPacketTimings($packet);
+		$timings->startTiming();
+		try{
+			$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this->player, $packet));
+			if($ev->isCancelled()){
+				return false;
+			}
 
-            //TODO: implement buffering (this is just a quick fix)
-            $this->server->batchPackets([$this->player], [$packet], true, $immediate);
+			//TODO: implement buffering (this is just a quick fix)
+			$stream = new PacketStream();
+			$stream->putPacket($packet);
+			$this->server->batchPackets([$this], $stream, true, $immediate);
 
-            return true;
-        }finally{
-            $timings->stopTiming();
-        }
-    }
+			return true;
+		}finally{
+			$timings->stopTiming();
+		}
+	}
 
 	public function sendEncoded(string $payload, bool $immediate = false) : void{
 		if($this->cipher !== null){
@@ -256,12 +260,12 @@ class NetworkSession{
 	 * @param bool   $notify
 	 */
 	private function doServerDisconnect(string $reason, bool $notify = true) : void{
-        if($notify){
-            $pk = new DisconnectPacket();
-            $pk->message = $reason;
-            $pk->hideDisconnectionScreen = $reason === "";
-            $this->sendDataPacket($pk, true);
-        }
+		if($notify){
+			$pk = new DisconnectPacket();
+			$pk->message = $reason;
+			$pk->hideDisconnectionScreen = $reason === "";
+			$this->sendDataPacket($pk, true);
+		}
 
 		$this->interface->close($this, $notify ? $reason : "");
 		$this->disconnectCleanup();
@@ -285,9 +289,9 @@ class NetworkSession{
 		$this->handler = null;
 		$this->interface = null;
 		$this->player = null;
-    }
+	}
 
-    public function enableEncryption(string $encryptionKey, string $handshakeJwt) : void{
+	public function enableEncryption(string $encryptionKey, string $handshakeJwt) : void{
 		$pk = new ServerToClientHandshakePacket();
 		$pk->jwt = $handshakeJwt;
 		$this->sendDataPacket($pk, true); //make sure this gets sent before encryption is enabled
@@ -298,36 +302,49 @@ class NetworkSession{
 		$this->server->getLogger()->debug("Enabled encryption for $this->ip $this->port");
 	}
 
-    public function onLoginSuccess() : void{
-        $pk = new PlayStatusPacket();
-        $pk->status = PlayStatusPacket::LOGIN_SUCCESS;
-        $this->sendDataPacket($pk);
+	public function onLoginSuccess() : void{
+		$pk = new PlayStatusPacket();
+		$pk->status = PlayStatusPacket::LOGIN_SUCCESS;
+		$this->sendDataPacket($pk);
 
-        $this->player->onLoginSuccess();
+		$this->player->onLoginSuccess();
+		$this->setHandler(new ResourcePacksSessionHandler($this->player, $this, $this->server->getResourcePackManager()));
+	}
 
-        $this->setHandler(new ResourcePacksSessionHandler($this->player, $this, $this->server->getResourcePackManager()));
-    }
+	public function onResourcePacksDone() : void{
+		$this->player->_actuallyConstruct();
 
-    public function onResourcePacksDone() : void{
-        $this->player->_actuallyConstruct();
+		$this->setHandler(new PreSpawnSessionHandler($this->server, $this->player, $this));
+	}
 
-        $this->setHandler(new PreSpawnSessionHandler($this->server, $this->player, $this));
-    }
+	public function onSpawn() : void{
+		$pk = new PlayStatusPacket();
+		$pk->status = PlayStatusPacket::PLAYER_SPAWN;
+		$this->sendDataPacket($pk);
 
-    public function onSpawn() : void{
-        $pk = new PlayStatusPacket();
-        $pk->status = PlayStatusPacket::PLAYER_SPAWN;
-        $this->sendDataPacket($pk);
+		//TODO: split this up even further
+		$this->setHandler(new SimpleSessionHandler($this->player));
+	}
 
-        //TODO: split this up even further
-        $this->setHandler(new SimpleSessionHandler($this->player));
-    }
+	public function onDeath() : void{
+		$this->setHandler(new DeathSessionHandler($this->player, $this));
+	}
 
-    public function onDeath() : void{
-        $this->setHandler(new DeathSessionHandler($this->player, $this));
-    }
+	public function onRespawn() : void{
+		$this->setHandler(new SimpleSessionHandler($this->player));
+	}
 
-    public function onRespawn() : void{
-        $this->setHandler(new SimpleSessionHandler($this->player));
-    }
+	public function tick() : bool{
+		if($this->handler instanceof LoginSessionHandler){
+			if(time() >= $this->connectTime + 10){
+				$this->disconnect("Login timeout");
+				return false;
+			}
+
+			return true; //keep ticking until timeout
+		}
+
+		//TODO: more stuff on tick
+		return false;
+	}
 }

@@ -41,6 +41,7 @@ use pocketmine\event\HandlerList;
 use pocketmine\event\level\LevelLoadEvent;
 use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\player\PlayerDataSaveEvent;
+use pocketmine\event\server\DataPacketBroadcastEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\event\server\ServerCommandEvent;
 use pocketmine\inventory\CraftingManager;
@@ -134,8 +135,8 @@ class Server{
     /** @var BanList */
     private $banByName = null;
 
-    /** @var BanList */
-    private $banByIP = null;
+	/** @var BanList */
+	private $banByIP = null;
 
     /** @var Config */
     private $operators = null;
@@ -1991,42 +1992,62 @@ class Server{
      *
      * @param Player[]   $players
      * @param DataPacket $packet
-     */
-    public function broadcastPacket(array $players, DataPacket $packet){
-        $packet->encode();
-        $this->batchPackets($players, [$packet], false);
+     *
+    * @return bool
+	 */
+	public function broadcastPacket(array $players, DataPacket $packet) : bool{
+        return $this->broadcastPackets($players, [$packet]);
     }
 
     /**
-     * Broadcasts a list of packets in a batch to a list of players
-     *
+
      * @param Player[]     $players
      * @param DataPacket[] $packets
-     * @param bool         $forceSync
-     * @param bool         $immediate
+     *
+     * @return bool
      */
-    public function batchPackets(array $players, array $packets, bool $forceSync = false, bool $immediate = false){
+    public function broadcastPackets(array $players, array $packets) : bool{
         if(empty($packets)){
-            throw new \InvalidArgumentException("Cannot send empty batch");
+            throw new \InvalidArgumentException("Cannot broadcast empty list of packets");
         }
-        Timings::$playerNetworkSendCompressTimer->startTiming();
+        $this->pluginManager->callEvent($ev = new DataPacketBroadcastEvent($players, $packets));
+		if($ev->isCancelled()){
+			return false;
+		}
 
 		/** @var NetworkSession[] $targets */
 		$targets = [];
-		foreach($players as $player){
+		foreach($ev->getPlayers() as $player){
 			if($player->isConnected()){
 				$targets[] = $player->getNetworkSession();
 			}
 		}
+		if(empty($targets)){
+			return false;
+		}
 
-        if(!empty($targets)){
-            $stream = new PacketStream();
 
-            foreach($packets as $p){
-                $stream->putPacket($p);
+            $stream = new PacketStream();foreach($ev->getPackets() as $packet){
+			$stream->putPacket($packet);
+		}
+
+            //TODO: if under the compression threshold, add to session buffers instead of batching (first we need to implement buffering!)
+                $this->batchPackets($targets, $stream);
+		return true;
             }
 
-            $compressionLevel = NetworkCompression::$LEVEL;
+            /**
+	 * Broadcasts a list of packets in a batch to a list of players
+	 *
+	 * @param NetworkSession[] $targets
+	 * @param PacketStream     $stream
+	 * @param bool             $forceSync
+	 * @param bool             $immediate
+	 */
+	public function batchPackets(array $targets, PacketStream $stream, bool $forceSync = false, bool $immediate = false){
+		Timings::$playerNetworkSendCompressTimer->startTiming();
+
+		if(!empty($targets)){$compressionLevel = NetworkCompression::$LEVEL;
             if(NetworkCompression::$THRESHOLD < 0 or strlen($stream->buffer) < NetworkCompression::$THRESHOLD){
                 $compressionLevel = 0; //Do not compress packets under the threshold
                 $forceSync = true;
@@ -2293,9 +2314,7 @@ class Server{
      * @param array|null $trace
      */
     public function exceptionHandler(\Throwable $e, $trace = null){
-        if($e === null){
-            return;
-        }
+
 
         global $lastError;
 
@@ -2354,7 +2373,7 @@ class Server{
 					}
 				}
 
-				if($dump->getData()["error"]["type"] === "E_PARSE" or $dump->getData()["error"]["type"] === "E_COMPILE_ERROR"){
+				if($dump->getData()["error"]["type"] === \ParseError::class){
 					$report = false;
 				}
 
@@ -2489,14 +2508,13 @@ class Server{
 		$p->sendDataPacket($pk);
     }
 
-	private function checkTickUpdates(int $currentTick, float $tickTime) : void{
+	private function checkTickUpdates(int $currentTick) : void{
+		if($this->alwaysTickPlayers){
         foreach($this->players as $p){
-            if(!$p->loggedIn and ($tickTime - $p->creationTime) >= 10){
-                $p->close("", "Login timeout");
-            }elseif($this->alwaysTickPlayers and $p->spawned){
+            if( $p->spawned){
                 $p->onUpdate($currentTick);
             }
-        }
+        }}
 
         //Do level ticks
         foreach($this->getLevels() as $level){
@@ -2650,7 +2668,7 @@ class Server{
         ++$this->tickCounter;
 
         Timings::$connectionTimer->startTiming();
-        $this->network->processInterfaces();
+        $this->network->tick();
         Timings::$connectionTimer->stopTiming();
 
         Timings::$schedulerTimer->startTiming();
@@ -2661,7 +2679,7 @@ class Server{
         $this->asyncPool->collectTasks();
         Timings::$schedulerAsyncTimer->stopTiming();
 
-        $this->checkTickUpdates($this->tickCounter, $tickTime);
+        $this->checkTickUpdates($this->tickCounter);
 
         if(($this->tickCounter % 20) === 0){
             if($this->doTitleTick){
