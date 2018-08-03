@@ -191,7 +191,7 @@ class Level implements ChunkManager, Metadatable{
 
 	/** @var Player[][] */
 	private $chunkSendQueue = [];
-	/** @var bool[] */
+	/** @var ChunkRequestTask[] */
 	private $chunkSendTasks = [];
 
 	/** @var bool[] */
@@ -2454,7 +2454,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	private function sendChunkFromCache(int $x, int $z){
-		if(isset($this->chunkSendTasks[$index = Level::chunkHash($x, $z)])){
+		if(isset($this->chunkSendQueue[$index = Level::chunkHash($x, $z)])){
 			foreach($this->chunkSendQueue[$index] as $player){
 				/** @var Player $player */
 				if($player->isConnected() and isset($player->usedChunks[$index])){
@@ -2462,7 +2462,6 @@ class Level implements ChunkManager, Metadatable{
 				}
 			}
 			unset($this->chunkSendQueue[$index]);
-			unset($this->chunkSendTasks[$index]);
 		}
 	}
 
@@ -2471,11 +2470,17 @@ class Level implements ChunkManager, Metadatable{
 			$this->timings->syncChunkSendTimer->startTiming();
 
 			foreach($this->chunkSendQueue as $index => $players){
-				if(isset($this->chunkSendTasks[$index])){
-					continue;
-				}
 				Level::getXZ($index, $x, $z);
-				$this->chunkSendTasks[$index] = true;
+
+				if(isset($this->chunkSendTasks[$index])){
+					if($this->chunkSendTasks[$index]->isCrashed()){
+						unset($this->chunkSendTasks[$index]);
+						$this->server->getLogger()->error("Failed to prepare chunk $x $z for sending, retrying");
+					}else{
+						//Not ready for sending yet
+						continue;
+					}
+				}
 				if(isset($this->chunkCache[$index])){
 					$this->sendChunkFromCache($x, $z);
 					continue;
@@ -2488,7 +2493,8 @@ class Level implements ChunkManager, Metadatable{
 				}
 				assert($chunk->getX() === $x and $chunk->getZ() === $z, "Chunk coordinate mismatch: expected $x $z, but chunk has coordinates " . $chunk->getX() . " " . $chunk->getZ() . ", did you forget to clone a chunk before setting?");
 
-				$this->server->getAsyncPool()->submitTask(new ChunkRequestTask($this, $x, $z, $chunk));
+				$this->server->getAsyncPool()->submitTask($task = new ChunkRequestTask($this, $x, $z, $chunk));
+				$this->chunkSendTasks[$index] = $task;
 
 				$this->timings->syncChunkSendPrepareTimer->stopTiming();
 			}
@@ -2501,24 +2507,14 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->syncChunkSendTimer->startTiming();
 
 		$index = Level::chunkHash($x, $z);
+		unset($this->chunkSendTasks[$index]);
 
-		if(!isset($this->chunkCache[$index]) and $this->server->getMemoryManager()->canUseChunkCache()){
-			$this->chunkCache[$index] = $payload;
-			$this->sendChunkFromCache($x, $z);
-			$this->timings->syncChunkSendTimer->stopTiming();
-			return;
+		$this->chunkCache[$index] = $payload;
+		$this->sendChunkFromCache($x, $z);
+		if(!$this->server->getMemoryManager()->canUseChunkCache()){
+			unset($this->chunkCache[$index]);
 		}
 
-		if(isset($this->chunkSendTasks[$index])){
-			foreach($this->chunkSendQueue[$index] as $player){
-				/** @var Player $player */
-				if($player->isConnected() and isset($player->usedChunks[$index])){
-					$player->sendChunk($x, $z, $payload);
-				}
-			}
-			unset($this->chunkSendQueue[$index]);
-			unset($this->chunkSendTasks[$index]);
-		}
 		$this->timings->syncChunkSendTimer->stopTiming();
 	}
 
@@ -2752,6 +2748,8 @@ class Level implements ChunkManager, Metadatable{
 		unset($this->chunkCache[$chunkHash]);
 		unset($this->blockCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);
+		unset($this->chunkSendQueue[$chunkHash]);
+		unset($this->chunkSendTasks[$chunkHash]);
 
 		$this->timings->doChunkUnload->stopTiming();
 
