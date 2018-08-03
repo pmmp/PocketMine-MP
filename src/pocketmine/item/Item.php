@@ -783,8 +783,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @param Vector3 $clickPos
 	 * @return bool
 	 */
-	public function onClickEntity(Player $player, Entity $target, Vector3 $clickPos)
-	{
+	public function onClickEntity(Player $player, Entity $target, Vector3 $clickPos) : bool{
 		return false;
 	}
 
