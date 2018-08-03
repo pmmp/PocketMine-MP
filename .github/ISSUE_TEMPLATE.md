@@ -8,6 +8,8 @@ PLEASE DO NOT REPORT ATTACK VECTORS ON THIS ISSUE TRACKER.
 Send an email to team@pmmp.io if you have a vulnerability to report.
 
 Any issues requesting updates to new versions of MCPE will be treated as spam.
+
+Missing gameplay features are to be expected.
 Please do not create issues for missing/un-implemented gameplay features - they will be closed.
 -->
 
