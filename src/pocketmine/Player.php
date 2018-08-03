@@ -53,6 +53,7 @@ use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerEditBookEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerGameModeChangeEvent;
+use pocketmine\event\player\PlayerInteractEntityEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerItemConsumeEvent;
 use pocketmine\event\player\PlayerItemHeldEvent;
@@ -2248,7 +2249,32 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 				switch($type){
 					case InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_INTERACT:
-						break; //TODO
+						if(!$target->isAlive()){
+							return true;
+						}
+
+						$heldItem = $this->inventory->getItemInHand();
+
+						$ev = new PlayerInteractEntityEvent($this, $target, $heldItem, $packet->trData->clickPos);
+
+						if(!$this->canInteract($target, 8)){
+							$ev->setCancelled();
+						}
+
+						$this->server->getPluginManager()->callEvent($ev);
+
+						if(!$ev->isCancelled()){
+							$oldItem = clone $heldItem;
+
+							if($heldItem->onClickEntity($this, $target, $packet->trData->clickPos) || $target->onPlayerInteract($this, $heldItem, $packet->trData->clickPos)){
+								if(!$heldItem->equalsExact($oldItem)){
+									$this->inventory->setItemInHand($heldItem);
+									$this->inventory->sendHeldItem($this->hasSpawned);
+								}
+							}
+						}
+
+						return true;
 					case InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_ATTACK:
 						if(!$target->isAlive()){
 							return true;
