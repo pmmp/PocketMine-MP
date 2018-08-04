@@ -29,6 +29,7 @@ Yes, you can.
  	- [x] Anvil
  	- [x] Enchantment Table
  - [x] Commands
+    - [x] /world
  	- [x] /clear
  	- [x] /playsound
  	- [x] /setblock
