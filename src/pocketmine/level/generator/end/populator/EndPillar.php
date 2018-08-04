@@ -48,7 +48,7 @@ class EndPillar extends Populator{
 		$this->baseAmount = $amount;
 	}
 
-	public function populate(ChunkManager $level, $chunkX, $chunkZ, Random $random){
+	public function populate(ChunkManager $level, $chunkX, $chunkZ, Random $random) : void{
 		if(mt_rand(0, 99) < 10){
 			$this->level = $level;
 			$amount = $random->nextRange(0, $this->randomAmount + 1) + $this->baseAmount;
