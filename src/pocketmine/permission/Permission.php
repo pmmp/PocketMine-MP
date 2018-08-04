@@ -92,16 +92,24 @@ class Permission{
 	}
 
 	/**
-	 * @param string $name
-	 * @param array  $data
-	 * @param string $default
-	 * @param array  $output
-	 *
+	 * @param string      $name
+	 * @param array       $data
+	 * @param string      $default
+	 * @param array       $output
+	 * @param null|string $parentName
 	 * @return Permission
 	 *
 	 * @throws \Exception
 	 */
-	public static function loadPermission(string $name, array $data, string $default = self::DEFAULT_OP, array &$output = []) : Permission{
+	public static function loadPermission(string $name, array $data, string $default = self::DEFAULT_OP, array &$output = [], ?string $parentName = null) : Permission{
+		if($name{0} === "."){
+			if($parentName === null){
+				throw new \InvalidStateException("Permission names must not start with a dot");
+			}
+
+			$name = $parentName . $name;
+		}
+
 		$desc = null;
 		$children = [];
 		if(isset($data["default"])){
@@ -117,7 +125,7 @@ class Permission{
 			if(is_array($data["children"])){
 				foreach($data["children"] as $k => $v){
 					if(is_array($v)){
-						if(($perm = self::loadPermission($k, $v, $default, $output)) !== null){
+						if(($perm = self::loadPermission($k, $v, $default, $output, $name)) !== null){
 							$output[] = $perm;
 						}
 					}
