@@ -121,8 +121,9 @@ class TimingsCommand extends VanillaCommand{
 								CURLOPT_AUTOREFERER => false,
 								CURLOPT_FOLLOWLOCATION => false
 							]]
-						], $sender);
+						]);
 						$this->host = $host;
+						$this->storeLocal($sender);
 					}
 
 					public function onCompletion(Server $server){
