@@ -30,11 +30,10 @@ use pocketmine\Server;
 
 class LightPopulationTask extends AsyncTask{
 
-	public $levelId;
 	public $chunk;
 
 	public function __construct(Level $level, Chunk $chunk){
-		$this->levelId = $level->getId();
+		$this->storeLocal($level);
 		$this->chunk = $chunk->fastSerialize();
 	}
 
@@ -50,8 +49,9 @@ class LightPopulationTask extends AsyncTask{
 	}
 
 	public function onCompletion(Server $server){
-		$level = $server->getLevel($this->levelId);
-		if($level !== null){
+		/** @var Level $level */
+		$level = $this->fetchLocal();
+		if(!$level->isClosed()){
 			/** @var Chunk $chunk */
 			$chunk = Chunk::fastDeserialize($this->chunk);
 			$level->generateChunkCallback($chunk->getX(), $chunk->getZ(), $chunk);

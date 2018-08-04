@@ -38,7 +38,8 @@ class UpdateCheckTask extends AsyncTask{
 	/** @var string */
 	private $error = "Unknown error";
 
-	public function __construct(string $endpoint, string $channel){
+	public function __construct(AutoUpdater $updater, string $endpoint, string $channel){
+		$this->storeLocal($updater);
 		$this->endpoint = $endpoint;
 		$this->channel = $channel;
 	}
@@ -72,16 +73,12 @@ class UpdateCheckTask extends AsyncTask{
 	}
 
 	public function onCompletion(Server $server){
-		if($this->error !== ""){
-			$server->getLogger()->debug("[AutoUpdater] Async update check failed due to \"$this->error\"");
+		/** @var AutoUpdater $updater */
+		$updater = $this->fetchLocal();
+		if($this->hasResult()){
+			$updater->checkUpdateCallback($this->getResult());
 		}else{
-			$updateInfo = $this->getResult();
-			if(is_array($updateInfo)){
-				$server->getUpdater()->checkUpdateCallback($updateInfo);
-			}else{
-				$server->getLogger()->debug("[AutoUpdater] Update info error");
-			}
-
+			$updater->checkUpdateError($this->error);
 		}
 	}
 }

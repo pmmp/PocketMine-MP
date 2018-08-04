@@ -133,7 +133,7 @@ class TimingsCommand extends VanillaCommand{
 						}
 						$result = $this->getResult()[0];
 						if($result instanceof \RuntimeException){
-							$server->getLogger()->logException($result);
+							$sender->getServer()->getLogger()->logException($result);
 							return;
 						}
 						if(isset($result[0]) && is_array($response = json_decode($result[0], true)) && isset($response["id"])){

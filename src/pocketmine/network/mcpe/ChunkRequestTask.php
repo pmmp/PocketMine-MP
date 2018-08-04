@@ -31,8 +31,6 @@ use pocketmine\Server;
 use pocketmine\tile\Spawnable;
 
 class ChunkRequestTask extends AsyncTask{
-	/** @var int */
-	protected $levelId;
 	/** @var string */
 	protected $chunk;
 	/** @var int */
@@ -45,7 +43,7 @@ class ChunkRequestTask extends AsyncTask{
 	protected $compressionLevel;
 
 	public function __construct(Level $level, int $chunkX, int $chunkZ, Chunk $chunk){
-		$this->levelId = $level->getId();
+		$this->storeLocal($level);
 		$this->compressionLevel = NetworkCompression::$LEVEL;
 
 		$this->chunk = $chunk->fastSerialize();
@@ -78,15 +76,14 @@ class ChunkRequestTask extends AsyncTask{
 	}
 
 	public function onCompletion(Server $server) : void{
-		$level = $server->getLevel($this->levelId);
-		if($level instanceof Level){
+		/** @var Level $level */
+		$level = $this->fetchLocal();
+		if(!$level->isClosed()){
 			if($this->hasResult()){
 				$level->chunkRequestCallback($this->chunkX, $this->chunkZ, $this->getResult());
 			}else{
-				$server->getLogger()->error("Chunk request for level #" . $this->levelId . ", x=" . $this->chunkX . ", z=" . $this->chunkZ . " doesn't have any result data");
+				$level->getServer()->getLogger()->error("Chunk request for level " . $level->getName() . ", x=" . $this->chunkX . ", z=" . $this->chunkZ . " doesn't have any result data");
 			}
-		}else{
-			$server->getLogger()->debug("Dropped chunk task due to level not loaded");
 		}
 	}
 }
