@@ -133,6 +133,7 @@ use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\types\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
+use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
@@ -3373,6 +3374,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
     }
 
     protected function onDeath() : void{
+    	if($this->getLevel()->getDimension() !== DimensionIds::OVERWORLD){ // A temporary fix
+    		$this->switchLevel($this->getServer()->getDefaultLevel());
+    	}
+
         $message = "death.attack.generic";
 
         $params = [
