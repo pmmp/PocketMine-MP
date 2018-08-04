@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
+use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\Player;
 
 class PlayerOffHandInventory extends BaseInventory{
@@ -52,5 +54,21 @@ class PlayerOffHandInventory extends BaseInventory{
 	 */
 	public function getHolder(){
 		return $this->holder;
+	}
+
+	public function sendSlot(int $index, $target) : void{
+		$pk = new MobEquipmentPacket();
+		$pk->entityRuntimeId = $this->getHolder()->getId();
+		$pk->item = $this->getItem(0);
+		$pk->inventorySlot = $pk->hotbarSlot = 0;
+		$pk->windowId = ContainerIds::OFFHAND;
+
+		if(!is_array($target)){
+			$target->sendDataPacket($pk);
+		}else{
+			$this->getHolder()->getLevel()->getServer()->broadcastPacket($target, $pk);
+		}
+
+		parent::sendSlot($index, $target);
 	}
 }
