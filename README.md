@@ -7,7 +7,7 @@ Fast server software for Minecraft: Bedrock/W10 Edition. Altay is a fork of [pmm
 
 | Forum | Jenkins | TravisCI | Discord | Twitter |
 | :---: | :---: | :---: | :---: | :---: |
-| [![Forums](https://img.shields.io/badge/Forum-Altay-red.svg?style=flat-square)](https://www.turanic.net/) | [![Jenkins](https://img.shields.io/jenkins/s/http/jenkins.turanic.net/job/Altay.svg?style=flat-square&colorB=1C6BA0)](https://jenkins.turanic.net) | [![Travis branch](https://img.shields.io/travis/TuranicTeam/Altay/master.svg?style=flat-square)](https://travis-ci.org/TuranicTeam/Altay) | [![Discord](https://img.shields.io/discord/427472879072968714.svg?style=flat-square&label=discord&colorB=7289da)](https://discord.gg/UsuhCFj) | [![Twitter Follow](https://img.shields.io/twitter/follow/TuranicTeam.svg?style=flat-square&logo=twitter&label=Follow)](https://twitter.com/TuranicTeam) |
+| [![Forums](https://img.shields.io/badge/Forum-Altay-red.svg?style=flat-square)](https://www.turanic.net/) | [![Jenkins](https://img.shields.io/jenkins/s/http/jenkins.turanic.net/job/Altay.svg?style=flat-square&colorB=1C6BA0)](http://entengames.net:8081) | [![Travis branch](https://img.shields.io/travis/TuranicTeam/Altay/master.svg?style=flat-square)](https://travis-ci.org/TuranicTeam/Altay) | [![Discord](https://img.shields.io/discord/427472879072968714.svg?style=flat-square&label=discord&colorB=7289da)](https://discord.gg/UsuhCFj) | [![Twitter Follow](https://img.shields.io/twitter/follow/TuranicTeam.svg?style=flat-square&logo=twitter&label=Follow)](https://twitter.com/TuranicTeam) |
 
 -------------
 Can I test this before I download it?
