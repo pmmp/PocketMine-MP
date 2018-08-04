@@ -30,8 +30,7 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-class PlayerInteractEntityEvent extends PlayerEvent implements Cancellable
-{
+class PlayerInteractEntityEvent extends PlayerEvent implements Cancellable{
 	/** @var Entity */
 	protected $entity;
 

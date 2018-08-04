@@ -917,7 +917,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @param Vector3 $clickPos
 	 * @return bool
 	 */
-	public function onPlayerInteract(Player $player, Item $heldItem, Vector3 $clickPos) : bool {
+	public function onPlayerInteract(Player $player, Item $heldItem, Vector3 $clickPos) : bool{
 		return false;
 	}
 
