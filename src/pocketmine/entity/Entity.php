@@ -48,6 +48,7 @@ use pocketmine\event\entity\EntityMotionEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
+use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\level\Location;
@@ -905,6 +906,19 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->setLastDamageCause($source);
 
 		$this->setHealth($this->getHealth() - $source->getFinalDamage());
+	}
+
+	/**
+	 * Called when a player uses the item on an entity, for example shearing a sheep.
+	 * Returns whether the item was changed, for example count decrease or durability change.
+	 *
+	 * @param Player  $player
+	 * @param Item    $heldItem
+	 * @param Vector3 $clickPos
+	 * @return bool
+	 */
+	public function onPlayerInteract(Player $player, Item $heldItem, Vector3 $clickPos) : bool{
+		return false;
 	}
 
 	/**

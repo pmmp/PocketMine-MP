@@ -775,6 +775,19 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
+	 * Called when a player uses the item on an entity, for example shearing a sheep.
+	 * Returns whether the item was changed, for example count decrease or durability change.
+	 *
+	 * @param Player  $player
+	 * @param Entity  $target
+	 * @param Vector3 $clickPos
+	 * @return bool
+	 */
+	public function onClickEntity(Player $player, Entity $target, Vector3 $clickPos) : bool{
+		return false;
+	}
+
+	/**
 	 * Called when a player is using this item and releases it. Used to handle bow shoot actions.
 	 * Returns whether the item was changed, for example count decrease or durability change.
 	 *
