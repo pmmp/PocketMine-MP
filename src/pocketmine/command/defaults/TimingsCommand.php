@@ -30,6 +30,7 @@ use pocketmine\Player;
 use pocketmine\scheduler\BulkCurlTask;
 use pocketmine\Server;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\utils\InternetException;
 
 class TimingsCommand extends VanillaCommand{
 
@@ -132,7 +133,7 @@ class TimingsCommand extends VanillaCommand{
 							return;
 						}
 						$result = $this->getResult()[0];
-						if($result instanceof \RuntimeException){
+						if($result instanceof InternetException){
 							$sender->getServer()->getLogger()->logException($result);
 							return;
 						}
