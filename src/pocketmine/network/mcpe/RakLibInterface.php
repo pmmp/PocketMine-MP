@@ -72,17 +72,10 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 		$this->sleeper = new SleeperNotifier();
 		$server->getTickSleeper()->addNotifier($this->sleeper, function() : void{
 			//this should not throw any exception. If it does, this should crash the server since it's a fault condition.
-			while($this->interface->handlePacket());
+			while($this->interface->handlePacket()) ;
 		});
 
-		$this->rakLib = new RakLibServer(
-			$this->server->getLogger(),
-			\pocketmine\COMPOSER_AUTOLOADER_PATH,
-			new InternetAddress($this->server->getIp(), $this->server->getPort(), 4),
-			(int) $this->server->getProperty("network.max-mtu-size", 1492),
-			self::MCPE_RAKNET_PROTOCOL_VERSION,
-			$this->sleeper
-		);
+		$this->rakLib = new RakLibServer($this->server->getLogger(), \pocketmine\COMPOSER_AUTOLOADER_PATH, new InternetAddress($this->server->getIp(), $this->server->getPort(), 4), (int) $this->server->getProperty("network.max-mtu-size", 1492), self::MCPE_RAKNET_PROTOCOL_VERSION, $this->sleeper);
 		$this->interface = new ServerHandler($this->rakLib, $this);
 	}
 
@@ -174,8 +167,7 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	public function setName(string $name) : void{
 		$info = $this->server->getQueryInformation();
 
-		$this->interface->sendOption("name", implode(";",
-			[
+		$this->interface->sendOption("name", implode(";", [
 				"MCPE",
 				rtrim(addcslashes($name, ";"), '\\'),
 				ProtocolInfo::CURRENT_PROTOCOL,
@@ -185,8 +177,7 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 				$this->rakLib->getServerId(),
 				$this->server->getName(),
 				Server::getGamemodeName($this->server->getGamemode())
-			]) . ";"
-		);
+			]) . ";");
 	}
 
 	public function setPortCheck(bool $name) : void{

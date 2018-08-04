@@ -472,7 +472,7 @@ class Level implements ChunkManager, Metadatable{
                 $this->addChunkPacket($sound->getFloorX() >> 4, $sound->getFloorZ() >> 4, $e);
             }
         }else{
-            $this->server->broadcastPackets($players, $pk);
+	        $this->server->broadcastPackets($players, $pk);
         }
     }
 
@@ -487,7 +487,7 @@ class Level implements ChunkManager, Metadatable{
                 $this->addChunkPacket($particle->getFloorX() >> 4, $particle->getFloorZ() >> 4, $e);
             }
         }else{
-            $this->server->broadcastPackets($players, $pk);
+	        $this->server->broadcastPackets($players, $pk);
         }
     }
 
@@ -701,11 +701,12 @@ class Level implements ChunkManager, Metadatable{
         $pk = new SetTimePacket();
         $pk->time = $this->time;
 
-        if(empty($targets)){
-			$this->addGlobalPacket($pk);
-		}else{
-			$this->server->broadcastPacket($targets, $pk);
-    }}
+	    if(empty($targets)){
+		    $this->addGlobalPacket($pk);
+	    }else{
+		    $this->server->broadcastPacket($targets, $pk);
+	    }
+    }
 
     /**
      * WARNING: Do not use this, it's only for internal use.
@@ -827,7 +828,7 @@ class Level implements ChunkManager, Metadatable{
         }
 
         if(!empty($this->players) and !empty($this->globalPackets)){
-            $this->server->broadcastPackets($this->players, $this->globalPackets);
+	        $this->server->broadcastPackets($this->players, $this->globalPackets);
             $this->globalPackets = [];
         }
 
@@ -835,7 +836,7 @@ class Level implements ChunkManager, Metadatable{
             Level::getXZ($index, $chunkX, $chunkZ);
             $chunkPlayers = $this->getChunkPlayers($chunkX, $chunkZ);
             if(count($chunkPlayers) > 0){
-                $this->server->broadcastPackets($chunkPlayers, $entries);
+	            $this->server->broadcastPackets($chunkPlayers, $entries);
             }
         }
 
@@ -943,7 +944,7 @@ class Level implements ChunkManager, Metadatable{
             }
         }
 
-        $this->server->broadcastPackets($target, $packets);
+	    $this->server->broadcastPackets($target, $packets);
     }
 
     public function clearCache(bool $force = false){
@@ -3010,11 +3011,13 @@ class Level implements ChunkManager, Metadatable{
 
 
         $pk = new SetDifficultyPacket();
-        $pk->difficulty = $this->getDifficulty();if(empty($targets)){
-			$this->addGlobalPacket($pk);
-		}else{
+	    $pk->difficulty = $this->getDifficulty();
+	    if(empty($targets)){
+		    $this->addGlobalPacket($pk);
+	    }else{
         $this->server->broadcastPacket($targets, $pk);
-    }}
+	    }
+    }
 
     public function populateChunk(int $x, int $z, bool $force = false) : bool{
         if(isset($this->chunkPopulationQueue[$index = Level::chunkHash($x, $z)]) or (count($this->chunkPopulationQueue) >= $this->chunkPopulationQueueSize and !$force)){

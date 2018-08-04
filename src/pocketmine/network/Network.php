@@ -98,7 +98,10 @@ class Network{
 
 				$interface->emergencyShutdown();
 				$this->unregisterInterface($interface);
-				$logger->critical($this->server->getLanguage()->translateString("pocketmine.server.networkError", [get_class($interface), $e->getMessage()]));
+				$logger->critical($this->server->getLanguage()->translateString("pocketmine.server.networkError", [
+					get_class($interface),
+					$e->getMessage()
+				]));
 			}
 		}
 
