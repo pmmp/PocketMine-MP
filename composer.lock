@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6ddf24cc47010f312086d2337943566c",
+  "content-hash": "6ddf24cc47010f312086d2337943566c",
     "packages": [
         {
             "name": "fgrosse/phpasn1",
@@ -176,7 +176,7 @@
             ],
             "description": "Classes and methods for conveniently handling binary data",
             "support": {
-                "source": "https://github.com/pmmp/BinaryUtils/tree/0.1.0",
+              "source": "https://github.com/pmmp/BinaryUtils/tree/0.1.0",
                 "issues": "https://github.com/pmmp/BinaryUtils/issues"
             },
             "time": "2018-04-16T09:05:08+00:00"
@@ -210,7 +210,7 @@
             ],
             "description": "PHP library containing math related code used in PocketMine-MP",
             "support": {
-                "source": "https://github.com/pmmp/Math/tree/0.2.0",
+              "source": "https://github.com/pmmp/Math/tree/0.2.0",
                 "issues": "https://github.com/pmmp/Math/issues"
             },
             "time": "2018-06-09T09:26:30+00:00"
@@ -358,7 +358,7 @@
             ],
             "description": "Standard library files required by PocketMine-MP and related projects",
             "support": {
-                "source": "https://github.com/pmmp/SPL/tree/0.3.1"
+              "source": "https://github.com/pmmp/SPL/tree/0.3.1"
             },
             "time": "2018-06-09T17:30:36+00:00"
         }
