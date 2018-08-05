@@ -155,13 +155,14 @@ abstract class Command{
             return true;
         }
 
-        foreach(explode(";", $this->permission) as $permission){
+        $accepted = 0;
+        foreach($perms = explode(";", $this->permission) as $permission){
             if($target->hasPermission($permission)){
-                return true;
+                $accepted++;
             }
         }
 
-        return false;
+        return count($perms) === $accepted;
     }
 
     /**
