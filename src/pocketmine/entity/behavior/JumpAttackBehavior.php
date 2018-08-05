@@ -58,8 +58,8 @@ class JumpAttackBehavior extends Behavior{
         $distance = $this->mob->distance($target);
 
         $velocity = $this->mob->getMotion();
-        $x = $direction->x / $distance * 0.5 * 0.8 + $velocity->x * 0.2;
-        $z = $direction->z / $distance * 0.5 * 0.8 + $velocity->z * 0.2;
+        $x = ($direction->x > 0 ? $direction->x / $distance : 0) * 0.5 * 0.8 + $velocity->x * 0.2;
+        $z = ($direction->z > 0 ? $direction->z / $distance : 0) * 0.5 * 0.8 + $velocity->z * 0.2;
         $y = $this->leapHeight;
         $velocity->add($x, $y, $z);
 
