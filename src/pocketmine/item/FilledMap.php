@@ -24,9 +24,20 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\level\utils\MapManager;
+use pocketmine\network\mcpe\protocol\ClientboundMapItemDataPacket;
+
 class FilledMap extends Item{
 
 	public function __construct(int $meta = 0){
 		parent::__construct(self::FILLED_MAP, $meta, "Filled Map");
+	}
+
+	public function createMapDataPacket() : ?ClientboundMapItemDataPacket{
+		return null; // TODO
+	}
+
+	public function onCreateMap() : void{
+		MapManager::registerMap(MapManager::getNextId(), $this);
 	}
 }

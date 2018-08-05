@@ -28,6 +28,8 @@ use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\inventory\transaction\InventoryTransaction;
+use pocketmine\item\FilledMap;
+use pocketmine\level\utils\MapManager;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
@@ -35,6 +37,7 @@ use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
 use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\BossEventPacket;
+use pocketmine\network\mcpe\protocol\ClientboundMapItemDataPacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
@@ -367,7 +370,16 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleMapInfoRequest(MapInfoRequestPacket $packet) : bool{
-		return false; //TODO
+		$map = MapManager::getMapById($packet->mapId);
+		if($map instanceof FilledMap){
+			$data = $map->createMapDataPacket();
+
+			if($data instanceof ClientboundMapItemDataPacket){
+				$this->player->sendDataPacket($data);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet) : bool{

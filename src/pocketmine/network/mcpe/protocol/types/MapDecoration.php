@@ -24,31 +24,21 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-class MapTrackedObject{
+use pocketmine\utils\Color;
 
-	public const TYPE_PLAYER = 0;
-	public const TYPE_FRAME = 1;
-	public const TYPE_RED_MARKER = 2;
-	public const TYPE_BLUE_MARKER = 3;
-	public const TYPE_TARGET_X = 4;
-	public const TYPE_TARGET_POINT = 5;
-	public const TYPE_PLAYER_OFF_MAP = 6;
-	public const TYPE_PLAYER_OFF_LIMITS = 7;
-	public const TYPE_MANSION = 8;
-	public const TYPE_MONUMENT = 9;
-	public const TYPE_RED_X = 26;
+class MapDecoration{
 
 	/** @var int */
-	public $type;
-
-	/** @var int Only set if is TYPE_PLAYER */
-	public $entityUniqueId;
-
+	public $img;
 	/** @var int */
-	public $x;
+	public $rot;
 	/** @var int */
-	public $y;
+	public $xOffset;
 	/** @var int */
-	public $z;
+	public $yOffset;
+	/** @var string */
+	public $label;
+	/** @var Color */
+	public $color;
 
 }

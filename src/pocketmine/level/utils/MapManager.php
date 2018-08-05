@@ -22,33 +22,27 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\level\utils;
 
-class MapTrackedObject{
+use pocketmine\item\FilledMap;
 
-	public const TYPE_PLAYER = 0;
-	public const TYPE_FRAME = 1;
-	public const TYPE_RED_MARKER = 2;
-	public const TYPE_BLUE_MARKER = 3;
-	public const TYPE_TARGET_X = 4;
-	public const TYPE_TARGET_POINT = 5;
-	public const TYPE_PLAYER_OFF_MAP = 6;
-	public const TYPE_PLAYER_OFF_LIMITS = 7;
-	public const TYPE_MANSION = 8;
-	public const TYPE_MONUMENT = 9;
-	public const TYPE_RED_X = 26;
+class MapManager{
 
+	/** @var FilledMap[] */
+	protected static $maps = [];
 	/** @var int */
-	public $type;
+	protected static $mapIdCounter = 0;
 
-	/** @var int Only set if is TYPE_PLAYER */
-	public $entityUniqueId;
+	public static function registerMap(int $mapId, FilledMap $map) : void{
+		self::$maps[$mapId] = $map;
+	}
 
-	/** @var int */
-	public $x;
-	/** @var int */
-	public $y;
-	/** @var int */
-	public $z;
+	public static function getMapById(int $id) : ?FilledMap{
+		return self::$maps[$id] ?? null;
+	}
+
+	public static function getNextId() : int{
+		return self::$mapIdCounter++;
+	}
 
 }
