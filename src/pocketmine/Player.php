@@ -1190,10 +1190,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			$this->level->setSleepTicks(0);
 
-			$pk = new AnimatePacket();
-			$pk->entityRuntimeId = $this->id;
-			$pk->action = AnimatePacket::ACTION_STOP_SLEEP;
-			$this->sendDataPacket($pk);
+			$this->broadcastAnimation([$this], AnimatePacket::ACTION_STOP_SLEEP);
 		}
 	}
 
@@ -2349,13 +2346,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		if($ev->getModifier(EntityDamageEvent::MODIFIER_CRITICAL) > 0){
-			$pk = new AnimatePacket();
-			$pk->action = AnimatePacket::ACTION_CRITICAL_HIT;
-			$pk->entityRuntimeId = $entity->getId();
-			$this->server->broadcastPacket($entity->getViewers(), $pk);
-			if($entity instanceof Player){
-				$entity->sendDataPacket($pk);
-			}
+			$entity->broadcastAnimation(null, AnimatePacket::ACTION_CRITICAL_HIT);
 		}
 
 		foreach($meleeEnchantments as $enchantment){
@@ -2416,11 +2407,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
-		$pk = new AnimatePacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->action = $ev->getAnimationType();
-		$this->server->broadcastPacket($this->getViewers(), $pk);
-
+		$this->broadcastAnimation($this->getViewers(), $ev->getAnimationType());
 		return true;
 	}
 
@@ -3086,6 +3073,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$players[] = $this;
 		}
 		parent::broadcastEntityEvent($eventId, $eventData, $players);
+	}
+
+	public function broadcastAnimation(?array $players, int $animationId) : void{
+		if($this->spawned and $players === null){
+			$players = $this->getViewers();
+			$players[] = $this;
+		}
+		parent::broadcastAnimation($players, $animationId);
 	}
 
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{

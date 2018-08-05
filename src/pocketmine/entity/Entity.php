@@ -63,6 +63,7 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
+use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\MoveEntityAbsolutePacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
@@ -2115,6 +2116,13 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$pk->event = $eventId;
 		$pk->data = $eventData ?? 0;
 
+		$this->server->broadcastPacket($players ?? $this->getViewers(), $pk);
+	}
+
+	public function broadcastAnimation(?array $players, int $animationId) : void{
+		$pk = new AnimatePacket();
+		$pk->entityRuntimeId = $this->id;
+		$pk->action = $animationId;
 		$this->server->broadcastPacket($players ?? $this->getViewers(), $pk);
 	}
 
