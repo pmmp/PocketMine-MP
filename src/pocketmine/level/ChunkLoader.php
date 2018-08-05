@@ -48,18 +48,6 @@ interface ChunkLoader{
 	public function getLoaderId() : int;
 
 	/**
-	 * Returns if the chunk loader is currently active
-	 *
-	 * @return bool
-	 */
-	public function isLoaderActive() : bool;
-
-	/**
-	 * @return Position
-	 */
-	public function getPosition();
-
-	/**
 	 * @return float
 	 */
 	public function getX();
@@ -68,11 +56,6 @@ interface ChunkLoader{
 	 * @return float
 	 */
 	public function getZ();
-
-	/**
-	 * @return Level
-	 */
-	public function getLevel();
 
 	/**
 	 * This method will be called when a Chunk is replaced by a new one
