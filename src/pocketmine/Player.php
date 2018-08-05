@@ -910,10 +910,19 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					$entity->spawnTo($this);
 				}
 			}
-		}
+		}elseif($this->chunkLoadCount >= $this->spawnThreshold){
+			$this->spawned = true;
 
-		if($this->chunkLoadCount >= $this->spawnThreshold and !$this->spawned){
-			$this->doFirstSpawn();
+			foreach($this->usedChunks as $index => $c){
+				Level::getXZ($index, $chunkX, $chunkZ);
+				foreach($this->level->getChunkEntities($chunkX, $chunkZ) as $entity){
+					if($entity !== $this and !$entity->isClosed() and $entity->isAlive() and !$entity->isFlaggedForDespawn()){
+						$entity->spawnTo($this);
+					}
+				}
+			}
+
+			$this->networkSession->onTerrainReady();
 		}
 	}
 
@@ -951,9 +960,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		Timings::$playerChunkSendTimer->stopTiming();
 	}
 
-	protected function doFirstSpawn(){
-		$this->spawned = true;
-
+	public function doFirstSpawn(){
 		$this->networkSession->onSpawn();
 
 		if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
@@ -973,15 +980,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$this->noDamageTicks = 60;
-
-		foreach($this->usedChunks as $index => $c){
-			Level::getXZ($index, $chunkX, $chunkZ);
-			foreach($this->level->getChunkEntities($chunkX, $chunkZ) as $entity){
-				if($entity !== $this and !$entity->isClosed() and $entity->isAlive() and !$entity->isFlaggedForDespawn()){
-					$entity->spawnTo($this);
-				}
-			}
-		}
 
 		$this->spawnToAll();
 

@@ -317,12 +317,13 @@ class NetworkSession{
 		$this->setHandler(new PreSpawnSessionHandler($this->server, $this->player, $this));
 	}
 
-	public function onSpawn() : void{
+	public function onTerrainReady() : void{
 		$pk = new PlayStatusPacket();
 		$pk->status = PlayStatusPacket::PLAYER_SPAWN;
 		$this->sendDataPacket($pk);
+	}
 
-		//TODO: split this up even further
+	public function onSpawn() : void{
 		$this->setHandler(new SimpleSessionHandler($this->player));
 	}
 
