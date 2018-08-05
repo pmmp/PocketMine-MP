@@ -32,11 +32,9 @@ use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
-use pocketmine\entity\Living;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Skin;
-use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
@@ -3525,123 +3523,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	protected function onDeath() : void{
-		$message = "death.attack.generic";
-
-		$params = [
-			$this->getDisplayName()
-		];
-
-		$cause = $this->getLastDamageCause();
-
-		switch($cause === null ? EntityDamageEvent::CAUSE_CUSTOM : $cause->getCause()){
-			case EntityDamageEvent::CAUSE_ENTITY_ATTACK:
-				if($cause instanceof EntityDamageByEntityEvent){
-					$e = $cause->getDamager();
-					if($e instanceof Player){
-						$message = "death.attack.player";
-						$params[] = $e->getDisplayName();
-						break;
-					}elseif($e instanceof Living){
-						$message = "death.attack.mob";
-						$params[] = $e->getNameTag() !== "" ? $e->getNameTag() : $e->getName();
-						break;
-					}else{
-						$params[] = "Unknown";
-					}
-				}
-				break;
-			case EntityDamageEvent::CAUSE_PROJECTILE:
-				if($cause instanceof EntityDamageByEntityEvent){
-					$e = $cause->getDamager();
-					if($e instanceof Player){
-						$message = "death.attack.arrow";
-						$params[] = $e->getDisplayName();
-					}elseif($e instanceof Living){
-						$message = "death.attack.arrow";
-						$params[] = $e->getNameTag() !== "" ? $e->getNameTag() : $e->getName();
-						break;
-					}else{
-						$params[] = "Unknown";
-					}
-				}
-				break;
-			case EntityDamageEvent::CAUSE_SUICIDE:
-				$message = "death.attack.generic";
-				break;
-			case EntityDamageEvent::CAUSE_VOID:
-				$message = "death.attack.outOfWorld";
-				break;
-			case EntityDamageEvent::CAUSE_FALL:
-				if($cause instanceof EntityDamageEvent){
-					if($cause->getFinalDamage() > 2){
-						$message = "death.fell.accident.generic";
-						break;
-					}
-				}
-				$message = "death.attack.fall";
-				break;
-
-			case EntityDamageEvent::CAUSE_SUFFOCATION:
-				$message = "death.attack.inWall";
-				break;
-
-			case EntityDamageEvent::CAUSE_LAVA:
-				$message = "death.attack.lava";
-				break;
-
-			case EntityDamageEvent::CAUSE_FIRE:
-				$message = "death.attack.onFire";
-				break;
-
-			case EntityDamageEvent::CAUSE_FIRE_TICK:
-				$message = "death.attack.inFire";
-				break;
-
-			case EntityDamageEvent::CAUSE_DROWNING:
-				$message = "death.attack.drown";
-				break;
-
-			case EntityDamageEvent::CAUSE_CONTACT:
-				if($cause instanceof EntityDamageByBlockEvent){
-					if($cause->getDamager()->getId() === Block::CACTUS){
-						$message = "death.attack.cactus";
-					}
-				}
-				break;
-
-			case EntityDamageEvent::CAUSE_BLOCK_EXPLOSION:
-			case EntityDamageEvent::CAUSE_ENTITY_EXPLOSION:
-				if($cause instanceof EntityDamageByEntityEvent){
-					$e = $cause->getDamager();
-					if($e instanceof Player){
-						$message = "death.attack.explosion.player";
-						$params[] = $e->getDisplayName();
-					}elseif($e instanceof Living){
-						$message = "death.attack.explosion.player";
-						$params[] = $e->getNameTag() !== "" ? $e->getNameTag() : $e->getName();
-						break;
-					}
-				}else{
-					$message = "death.attack.explosion";
-				}
-				break;
-
-			case EntityDamageEvent::CAUSE_MAGIC:
-				$message = "death.attack.magic";
-				break;
-
-			case EntityDamageEvent::CAUSE_CUSTOM:
-				break;
-
-			default:
-				break;
-		}
-
 		//Crafting grid must always be evacuated even if keep-inventory is true. This dumps the contents into the
 		//main inventory and drops the rest on the ground.
 		$this->doCloseInventory();
 
-		$this->server->getPluginManager()->callEvent($ev = new PlayerDeathEvent($this, $this->getDrops(), new TranslationContainer($message, $params)));
+		$this->server->getPluginManager()->callEvent($ev = new PlayerDeathEvent($this, $this->getDrops()));
 
 		if(!$ev->getKeepInventory()){
 			foreach($ev->getDrops() as $item){
