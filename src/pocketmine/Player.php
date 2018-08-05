@@ -2418,11 +2418,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return bool if the item was dropped or if the item was null
 	 */
 	public function dropItem(Item $item) : bool{
-		if($item->isNull()){
-			$this->server->getLogger()->debug($this->getName() . " attempted to drop a null item (" . $item . ")");
-			return true;
-		}
-
 		$motion = $this->getDirectionVector()->multiply(0.4);
 
 		$this->level->dropItem($this->add(0, 1.3, 0), $item, $motion, 40);
