@@ -57,7 +57,8 @@ class DropItemAction extends InventoryAction{
 	 * @return bool
 	 */
 	public function execute(Player $source) : bool{
-		return $source->dropItem($this->targetItem);
+		$source->dropItem($this->targetItem);
+		return true;
 	}
 
 	public function onExecuteSuccess(Player $source) : void{

@@ -2412,17 +2412,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * Drops an item on the ground in front of the player. Returns if the item drop was successful.
+	 * Drops an item on the ground in front of the player.
 	 *
 	 * @param Item $item
-	 * @return bool if the item was dropped or if the item was null
 	 */
-	public function dropItem(Item $item) : bool{
-		$motion = $this->getDirectionVector()->multiply(0.4);
-
-		$this->level->dropItem($this->add(0, 1.3, 0), $item, $motion, 40);
-
-		return true;
+	public function dropItem(Item $item) : void{
+		$this->level->dropItem($this->add(0, 1.3, 0), $item, $this->getDirectionVector()->multiply(0.4), 40);
 	}
 
 	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
