@@ -2155,7 +2155,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->server->getPluginManager()->callEvent($ev);
 		if(!$ev->isCancelled()){
-			$this->inventory->setItemInHand($ev->getResultItem());
+			$this->inventory->setItemInHand($item);
 		}
 
 		return true;
