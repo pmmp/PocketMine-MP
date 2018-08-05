@@ -26,8 +26,8 @@ namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
-use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionValidationException;
+use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;

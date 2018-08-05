@@ -79,10 +79,6 @@ use pocketmine\inventory\ContainerInventory;
 use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\PlayerOffHandInventory;
-use pocketmine\inventory\transaction\action\InventoryAction;
-use pocketmine\inventory\transaction\CraftingTransaction;
-use pocketmine\inventory\transaction\TransactionValidationException;
-use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Consumable;
 use pocketmine\item\Durable;
@@ -139,8 +135,6 @@ use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
-use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
-use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\ProcessLoginTask;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
@@ -2503,8 +2497,17 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return bool
 	 */
 	public function interactEntity(Entity $entity, Vector3 $clickPos) : bool{
-		//TODO
-		return false;
+		if(!$entity->isAlive()){
+			return false;
+		}
+
+		$this->server->getPluginManager()->callEvent($ev = new PlayerInteractEntityEvent($this, $entity, $this->inventory->getItemInHand(), $clickPos, $this->inventory->getHeldItemIndex()));
+
+		if(!$ev->isCancelled()){
+			$entity->onInteract($this, $ev->getItem(), $ev->getClickPosition(), $ev->getSlot());
+		}
+
+		return true;
 	}
 
 	public function toggleSprint(bool $sprint) : void{

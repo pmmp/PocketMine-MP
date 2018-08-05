@@ -190,7 +190,7 @@ class NetworkSession{
 		}
 
 		$this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this->player, $packet));
-		if(!$ev->isCancelled() and !$packet->handle($this->handler)){
+		if($this->handler !== null and !$ev->isCancelled() and !$packet->handle($this->handler)){
 			$this->server->getLogger()->debug("Unhandled " . $packet->getName() . " received from " . $this->player->getName() . ": 0x" . bin2hex($packet->buffer));
 		}
 

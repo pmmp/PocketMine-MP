@@ -39,17 +39,17 @@ class TimingsCommand extends VanillaCommand{
 
 	public function __construct(string $name){
 		parent::__construct($name, "%pocketmine.command.timings.description", "%pocketmine.command.timings.usage", [], [
-				[
-					new CommandParameter("args", CommandParameter::ARG_TYPE_STRING, false, new CommandEnum("args", [
-						"on",
-						"off",
-						"paste",
-						"reset",
-						"merged",
-						"report"
-					]))
-				]
-			]);
+			[
+				new CommandParameter("args", CommandParameter::ARG_TYPE_STRING, false, new CommandEnum("args", [
+					"on",
+					"off",
+					"paste",
+					"reset",
+					"merged",
+					"report"
+				]))
+			]
+		]);
 		$this->setPermission("pocketmine.command.timings");
 	}
 
