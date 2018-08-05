@@ -53,6 +53,10 @@ class AutoUpdater{
 		}
 	}
 
+	public function checkUpdateError(string $error) : void{
+		$this->server->getLogger()->debug("[AutoUpdater] Async update check failed due to \"$error\"");
+	}
+
 	/**
 	 * Callback used at the end of the update checking task
 	 *
@@ -146,7 +150,7 @@ class AutoUpdater{
 	 * Schedules an AsyncTask to check for an update.
 	 */
 	public function doCheck(){
-		$this->server->getAsyncPool()->submitTask(new UpdateCheckTask($this->endpoint, $this->getChannel()));
+		$this->server->getAsyncPool()->submitTask(new UpdateCheckTask($this, $this->endpoint, $this->getChannel()));
 	}
 
 	/**

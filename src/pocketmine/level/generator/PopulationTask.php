@@ -53,6 +53,8 @@ class PopulationTask extends AsyncTask{
 		foreach($level->getAdjacentChunks($chunk->getX(), $chunk->getZ()) as $i => $c){
 			$this->{"chunk$i"} = $c !== null ? $c->fastSerialize() : null;
 		}
+
+		$this->storeLocal($level);
 	}
 
 	public function onRun() : void{
@@ -136,8 +138,9 @@ class PopulationTask extends AsyncTask{
 	}
 
 	public function onCompletion(Server $server) : void{
-		$level = $server->getLevel($this->levelId);
-		if($level !== null){
+		/** @var Level $level */
+		$level = $this->fetchLocal();
+		if(!$level->isClosed()){
 			if(!$this->state){
 				$level->registerGeneratorToWorker($this->worker->getAsyncWorkerId());
 			}

@@ -80,7 +80,7 @@ abstract class AsyncTask extends Collectable{
 	}
 
 	public function isCrashed() : bool{
-		return $this->crashed;
+		return $this->crashed or $this->isTerminated();
 	}
 
 	/**

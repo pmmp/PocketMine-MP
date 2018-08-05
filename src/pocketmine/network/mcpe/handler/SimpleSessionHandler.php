@@ -24,6 +24,10 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\inventory\transaction\action\InventoryAction;
+use pocketmine\inventory\transaction\CraftingTransaction;
+use pocketmine\inventory\transaction\InventoryTransaction;
+use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
@@ -68,233 +72,360 @@ use pocketmine\Player;
  */
 class SimpleSessionHandler extends SessionHandler{
 
-    /** @var Player */
-    private $player;
+	/** @var Player */
+	private $player;
 
-    public function __construct(Player $player){
-        $this->player = $player;
-    }
+	/** @var CraftingTransaction|null */
+	protected $craftingTransaction = null;
 
-    public function handleText(TextPacket $packet) : bool{
-        if($packet->type === TextPacket::TYPE_CHAT){
-            return $this->player->chat($packet->message);
-        }
+	public function __construct(Player $player){
+		$this->player = $player;
+	}
 
-        return false;
-    }
+	public function handleText(TextPacket $packet) : bool{
+		if($packet->type === TextPacket::TYPE_CHAT){
+			return $this->player->chat($packet->message);
+		}
 
-    public function handleMovePlayer(MovePlayerPacket $packet) : bool{
-        return $this->player->handleMovePlayer($packet);
-    }
+		return false;
+	}
 
-    public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
-        return $this->player->handleLevelSoundEvent($packet);
-    }
+	public function handleMovePlayer(MovePlayerPacket $packet) : bool{
+		return $this->player->handleMovePlayer($packet);
+	}
 
-    public function handleEntityEvent(EntityEventPacket $packet) : bool{
-        return $this->player->handleEntityEvent($packet);
-    }
+	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
+		return $this->player->handleLevelSoundEvent($packet);
+	}
 
-    public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
-        return $this->player->handleInventoryTransaction($packet);
-    }
+	public function handleEntityEvent(EntityEventPacket $packet) : bool{
+		return $this->player->handleEntityEvent($packet);
+	}
 
-    public function handleMobEquipment(MobEquipmentPacket $packet) : bool{
-        return $this->player->equipItem($packet->hotbarSlot);
-    }
+	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
+		if($this->player->isSpectator()){
+			$this->player->sendAllInventories();
+			return true;
+		}
 
-    public function handleMobArmorEquipment(MobArmorEquipmentPacket $packet) : bool{
-        return true; //Not used
-    }
+		/** @var InventoryAction[] $actions */
+		$actions = [];
+		foreach($packet->actions as $networkInventoryAction){
+			try{
+				$action = $networkInventoryAction->createInventoryAction($this->player);
+				if($action !== null){
+					$actions[] = $action;
+				}
+			}catch(\Exception $e){
+				$this->player->getServer()->getLogger()->debug("Unhandled inventory action from " . $this->player->getName() . ": " . $e->getMessage());
+				$this->player->sendAllInventories();
+				return false;
+			}
+		}
 
-    public function handleInteract(InteractPacket $packet) : bool{
-        return $this->player->handleInteract($packet);
-    }
+		if($packet->isCraftingPart){
+			if($this->craftingTransaction === null){
+				$this->craftingTransaction = new CraftingTransaction($this->player, $actions);
+			}else{
+				foreach($actions as $action){
+					$this->craftingTransaction->addAction($action);
+				}
+			}
 
-    public function handleBlockPickRequest(BlockPickRequestPacket $packet) : bool{
-        return $this->player->pickBlock(new Vector3($packet->blockX, $packet->blockY, $packet->blockZ), $packet->addUserData);
-    }
+			if($packet->isFinalCraftingPart){
+				//we get the actions for this in several packets, so we need to wait until we have all the pieces before
+				//trying to execute it
 
-    public function handleEntityPickRequest(EntityPickRequestPacket $packet) : bool{
-        return false; //TODO
-    }
+				$ret = true;
+				try{
+					$this->craftingTransaction->execute();
+				}catch(TransactionValidationException $e){
+					$this->player->getServer()->getLogger()->debug("Failed to execute crafting transaction for " . $this->player->getName() . ": " . $e->getMessage());
+					$ret = false;
+				}
 
-    public function handlePlayerAction(PlayerActionPacket $packet) : bool{
-        $pos = new Vector3($packet->x, $packet->y, $packet->z);
+				$this->craftingTransaction = null;
+				return $ret;
+			}
 
-        switch($packet->action){
-            case PlayerActionPacket::ACTION_START_BREAK:
-                $this->player->startBreakBlock($pos, $packet->face);
+			return true;
+		}
+		if($this->craftingTransaction !== null){
+			$this->player->getServer()->getLogger()->debug("Got unexpected normal inventory action with incomplete crafting transaction from " . $this->player->getName() . ", refusing to execute crafting");
+			$this->craftingTransaction = null;
+		}
 
-                break;
+		switch($packet->transactionType){
+			case InventoryTransactionPacket::TYPE_NORMAL:
+				$transaction = new InventoryTransaction($this->player, $actions);
 
-            case PlayerActionPacket::ACTION_ABORT_BREAK:
-            case PlayerActionPacket::ACTION_STOP_BREAK:
-                $this->player->stopBreakBlock($pos);
-                break;
-            case PlayerActionPacket::ACTION_START_SLEEPING:
-                //unused
-                break;
-            case PlayerActionPacket::ACTION_STOP_SLEEPING:
-                $this->player->stopSleep();
-                break;
-            case PlayerActionPacket::ACTION_JUMP:
-                $this->player->jump();
-                return true;
-            case PlayerActionPacket::ACTION_START_SPRINT:
-                $this->player->toggleSprint(true);
-                return true;
-            case PlayerActionPacket::ACTION_STOP_SPRINT:
-                $this->player->toggleSprint(false);
-                return true;
-            case PlayerActionPacket::ACTION_START_SNEAK:
-                $this->player->toggleSneak(true);
-                return true;
-            case PlayerActionPacket::ACTION_STOP_SNEAK:
-                $this->player->toggleSneak(false);
-                return true;
-            case PlayerActionPacket::ACTION_START_GLIDE:
-                $this->player->toggleGlide(true);
-                break;
-            case PlayerActionPacket::ACTION_STOP_GLIDE:
-                $this->player->toggleGlide(false);
-                break;
-            case PlayerActionPacket::ACTION_CONTINUE_BREAK:
-                $this->player->continueBreakBlock($pos, $packet->face);
-                break;
-            case PlayerActionPacket::ACTION_SET_ENCHANTMENT_SEED:
-                break; // TODO
-            case PlayerActionPacket::ACTION_START_SWIMMING:
-                if(!$this->player->isSwimming()){
-                    $this->player->toggleSwim(true);
-                }
-                break;
-            case PlayerActionPacket::ACTION_STOP_SWIMMING:
-                if($this->player->isSwimming()){ // for spam issue
-                    $this->player->toggleSwim(false);
-                }
-                break;
-            default:
-                $this->player->getServer()->getLogger()->debug("Unhandled/unknown player action type " . $packet->action . " from " . $this->player->getName());
-                return false;
-        }
+				try{
+					$transaction->execute();
+				}catch(TransactionValidationException $e){
+					$this->player->getServer()->getLogger()->debug("Failed to execute inventory transaction from " . $this->player->getName() . ": " . $e->getMessage());
+					$this->player->getServer()->getLogger()->debug("Actions: " . json_encode($packet->actions));
 
-        $this->player->setUsingItem(false);
+					return false;
+				}
 
-        return true;
-    }
+				//TODO: fix achievement for getting iron from furnace
 
-    public function handleEntityFall(EntityFallPacket $packet) : bool{
-        return true; //Not used
-    }
+				return true;
+			case InventoryTransactionPacket::TYPE_MISMATCH:
+				if(count($packet->actions) > 0){
+					$this->player->getServer()->getLogger()->debug("Expected 0 actions for mismatch, got " . count($packet->actions) . ", " . json_encode($packet->actions));
+				}
+				$this->player->sendAllInventories();
 
-    public function handleAnimate(AnimatePacket $packet) : bool{
-        return $this->player->animate($packet->action);
-    }
+				return true;
+			case InventoryTransactionPacket::TYPE_USE_ITEM:
+				$blockVector = new Vector3($packet->trData->x, $packet->trData->y, $packet->trData->z);
+				$face = $packet->trData->face;
 
-    public function handleContainerClose(ContainerClosePacket $packet) : bool{
-        return $this->player->doCloseWindow($packet->windowId);
-    }
+				$type = $packet->trData->actionType;
+				switch($type){
+					case InventoryTransactionPacket::USE_ITEM_ACTION_CLICK_BLOCK:
+						$this->player->interactBlock($blockVector, $face, $packet->trData->clickPos);
+						return true;
+					case InventoryTransactionPacket::USE_ITEM_ACTION_BREAK_BLOCK:
+						$this->player->breakBlock($blockVector);
+						return true;
+					case InventoryTransactionPacket::USE_ITEM_ACTION_CLICK_AIR:
+						$this->player->useHeldItem();
+						return true;
+				}
+				break;
+			case InventoryTransactionPacket::TYPE_USE_ITEM_ON_ENTITY:
+				$target = $this->player->getLevel()->getEntity($packet->trData->entityRuntimeId);
+				if($target === null){
+					return false;
+				}
 
-    public function handlePlayerHotbar(PlayerHotbarPacket $packet) : bool{
-        return true; //this packet is useless
-    }
+				switch($packet->trData->actionType){
+					case InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_INTERACT:
+						$this->player->interactEntity($target, $packet->trData->clickPos);
+						return true;
+					case InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_ATTACK:
+						$this->player->attackEntity($target);
+						return true;
+				}
 
-    public function handleCraftingEvent(CraftingEventPacket $packet) : bool{
-        return true; //this is a broken useless packet, so we don't use it
-    }
+				break;
+			case InventoryTransactionPacket::TYPE_RELEASE_ITEM:
+				switch($packet->trData->actionType){
+					case InventoryTransactionPacket::RELEASE_ITEM_ACTION_RELEASE:
+						$this->player->releaseHeldItem();
+						return true;
+					case InventoryTransactionPacket::RELEASE_ITEM_ACTION_CONSUME:
+						$this->player->consumeHeldItem();
+						return true;
+				}
+				break;
+			default:
+				break;
 
-    public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
-        return $this->player->handleAdventureSettings($packet);
-    }
+		}
 
-    public function handleBlockEntityData(BlockEntityDataPacket $packet) : bool{
-        return $this->player->handleBlockEntityData($packet);
-    }
+		$this->player->sendAllInventories();
+		return false;
+	}
 
-    public function handlePlayerInput(PlayerInputPacket $packet) : bool{
-        if($this->player->isRiding()){
-            $entity = $this->player->getRidingEntity();
-            if($entity !== null and $entity->isAlive()){
-                $entity->onRidingUpdate($this->player, $packet->motionX, $packet->motionY, $packet->jumping, $packet->sneaking);
-            }
-        }
-        return true;
-    }
+	public function handleMobEquipment(MobEquipmentPacket $packet) : bool{
+		return $this->player->equipItem($packet->hotbarSlot);
+	}
 
-    public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
-        if($packet->gamemode !== $this->player->getGamemode()){
-            //Set this back to default. TODO: handle this properly
-            $this->player->sendGamemode();
-            $this->player->sendSettings();
-        }
-        return true;
-    }
+	public function handleMobArmorEquipment(MobArmorEquipmentPacket $packet) : bool{
+		return true; //Not used
+	}
 
-    public function handleSpawnExperienceOrb(SpawnExperienceOrbPacket $packet) : bool{
-        return false; //TODO
-    }
+	public function handleInteract(InteractPacket $packet) : bool{
+		return $this->player->handleInteract($packet);
+	}
 
-    public function handleMapInfoRequest(MapInfoRequestPacket $packet) : bool{
-        return false; //TODO
-    }
+	public function handleBlockPickRequest(BlockPickRequestPacket $packet) : bool{
+		return $this->player->pickBlock(new Vector3($packet->blockX, $packet->blockY, $packet->blockZ), $packet->addUserData);
+	}
 
-    public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet) : bool{
-        $this->player->setViewDistance($packet->radius);
+	public function handleEntityPickRequest(EntityPickRequestPacket $packet) : bool{
+		return false; //TODO
+	}
 
-        return true;
-    }
+	public function handlePlayerAction(PlayerActionPacket $packet) : bool{
+		$pos = new Vector3($packet->x, $packet->y, $packet->z);
 
-    public function handleItemFrameDropItem(ItemFrameDropItemPacket $packet) : bool{
-        return $this->player->handleItemFrameDropItem($packet);
-    }
+		switch($packet->action){
+			case PlayerActionPacket::ACTION_START_BREAK:
+				$this->player->startBreakBlock($pos, $packet->face);
 
-    public function handleBossEvent(BossEventPacket $packet) : bool{
-        return false; //TODO
-    }
+				break;
 
-    public function handleShowCredits(ShowCreditsPacket $packet) : bool{
-        return false; //TODO: handle resume
-    }
+			case PlayerActionPacket::ACTION_ABORT_BREAK:
+			case PlayerActionPacket::ACTION_STOP_BREAK:
+				$this->player->stopBreakBlock($pos);
+				break;
+			case PlayerActionPacket::ACTION_START_SLEEPING:
+				//unused
+				break;
+			case PlayerActionPacket::ACTION_STOP_SLEEPING:
+				$this->player->stopSleep();
+				break;
+			case PlayerActionPacket::ACTION_JUMP:
+				$this->player->jump();
+				return true;
+			case PlayerActionPacket::ACTION_START_SPRINT:
+				$this->player->toggleSprint(true);
+				return true;
+			case PlayerActionPacket::ACTION_STOP_SPRINT:
+				$this->player->toggleSprint(false);
+				return true;
+			case PlayerActionPacket::ACTION_START_SNEAK:
+				$this->player->toggleSneak(true);
+				return true;
+			case PlayerActionPacket::ACTION_STOP_SNEAK:
+				$this->player->toggleSneak(false);
+				return true;
+			case PlayerActionPacket::ACTION_START_GLIDE:
+				$this->player->toggleGlide(true);
+				break;
+			case PlayerActionPacket::ACTION_STOP_GLIDE:
+				$this->player->toggleGlide(false);
+				break;
+			case PlayerActionPacket::ACTION_CONTINUE_BREAK:
+				$this->player->continueBreakBlock($pos, $packet->face);
+				break;
+			case PlayerActionPacket::ACTION_SET_ENCHANTMENT_SEED:
+				break; // TODO
+			case PlayerActionPacket::ACTION_START_SWIMMING:
+				if(!$this->player->isSwimming()){
+					$this->player->toggleSwim(true);
+				}
+				break;
+			case PlayerActionPacket::ACTION_STOP_SWIMMING:
+				if($this->player->isSwimming()){ // for spam issue
+					$this->player->toggleSwim(false);
+				}
+				break;
+			default:
+				$this->player->getServer()->getLogger()->debug("Unhandled/unknown player action type " . $packet->action . " from " . $this->player->getName());
+				return false;
+		}
 
-    public function handleCommandRequest(CommandRequestPacket $packet) : bool{
-        return $this->player->handleCommandRequest($packet);
-    }
+		$this->player->setUsingItem(false);
 
-    public function handleCommandBlockUpdate(CommandBlockUpdatePacket $packet) : bool{
-        return false; //TODO
-    }
+		return true;
+	}
 
-    public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
-        return $this->player->changeSkin($packet->skin, $packet->newSkinName, $packet->oldSkinName);
-    }
+	public function handleEntityFall(EntityFallPacket $packet) : bool{
+		return true; //Not used
+	}
 
-    public function handleSubClientLogin(SubClientLoginPacket $packet) : bool{
-        return false; //TODO
-    }
+	public function handleAnimate(AnimatePacket $packet) : bool{
+		return $this->player->animate($packet->action);
+	}
 
-    public function handleBookEdit(BookEditPacket $packet) : bool{
-        return $this->player->handleBookEdit($packet);
-    }
+	public function handleContainerClose(ContainerClosePacket $packet) : bool{
+		return $this->player->doCloseWindow($packet->windowId);
+	}
 
-    public function handleModalFormResponse(ModalFormResponsePacket $packet) : bool{
-        return $this->player->onFormSubmit($packet->formId, json_decode($packet->formData, true));
-    }
+	public function handlePlayerHotbar(PlayerHotbarPacket $packet) : bool{
+		return true; //this packet is useless
+	}
 
-    public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
-        $setting = $this->player->getServerSettingsForm();
-        if($setting !== null){
-            $this->player->sendServerSettings($setting);
-        }
+	public function handleCraftingEvent(CraftingEventPacket $packet) : bool{
+		return true; //this is a broken useless packet, so we don't use it
+	}
 
-        return true;
-    }
+	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
+		return $this->player->handleAdventureSettings($packet);
+	}
 
-    public function handleLabTable(LabTablePacket $packet) : bool{
-        return false; //TODO
-    }
+	public function handleBlockEntityData(BlockEntityDataPacket $packet) : bool{
+		return $this->player->handleBlockEntityData($packet);
+	}
 
-    public function handleSetLocalPlayerAsInitialized(SetLocalPlayerAsInitializedPacket $packet) : bool{
-        return false; //TODO
-    }
+	public function handlePlayerInput(PlayerInputPacket $packet) : bool{
+		if($this->player->isRiding()){
+			$entity = $this->player->getRidingEntity();
+			if($entity !== null and $entity->isAlive()){
+				$entity->onRidingUpdate($this->player, $packet->motionX, $packet->motionY, $packet->jumping, $packet->sneaking);
+			}
+		}
+		return true;
+	}
+
+	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
+		if($packet->gamemode !== $this->player->getGamemode()){
+			//Set this back to default. TODO: handle this properly
+			$this->player->sendGamemode();
+			$this->player->sendSettings();
+		}
+		return true;
+	}
+
+	public function handleSpawnExperienceOrb(SpawnExperienceOrbPacket $packet) : bool{
+		return false; //TODO
+	}
+
+	public function handleMapInfoRequest(MapInfoRequestPacket $packet) : bool{
+		return false; //TODO
+	}
+
+	public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet) : bool{
+		$this->player->setViewDistance($packet->radius);
+
+		return true;
+	}
+
+	public function handleItemFrameDropItem(ItemFrameDropItemPacket $packet) : bool{
+		return $this->player->handleItemFrameDropItem($packet);
+	}
+
+	public function handleBossEvent(BossEventPacket $packet) : bool{
+		return false; //TODO
+	}
+
+	public function handleShowCredits(ShowCreditsPacket $packet) : bool{
+		return false; //TODO: handle resume
+	}
+
+	public function handleCommandRequest(CommandRequestPacket $packet) : bool{
+		return $this->player->handleCommandRequest($packet);
+	}
+
+	public function handleCommandBlockUpdate(CommandBlockUpdatePacket $packet) : bool{
+		return false; //TODO
+	}
+
+	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
+		return $this->player->changeSkin($packet->skin, $packet->newSkinName, $packet->oldSkinName);
+	}
+
+	public function handleSubClientLogin(SubClientLoginPacket $packet) : bool{
+		return false; //TODO
+	}
+
+	public function handleBookEdit(BookEditPacket $packet) : bool{
+		return $this->player->handleBookEdit($packet);
+	}
+
+	public function handleModalFormResponse(ModalFormResponsePacket $packet) : bool{
+		return $this->player->onFormSubmit($packet->formId, json_decode($packet->formData, true));
+	}
+
+	public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
+		$setting = $this->player->getServerSettingsForm();
+		if($setting !== null){
+			$this->player->sendServerSettings($setting);
+		}
+
+		return true;
+	}
+
+	public function handleLabTable(LabTablePacket $packet) : bool{
+		return false; //TODO
+	}
+
+	public function handleSetLocalPlayerAsInitialized(SetLocalPlayerAsInitializedPacket $packet) : bool{
+		return false; //TODO
+	}
 }

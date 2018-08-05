@@ -86,7 +86,7 @@ class Internet{
 		try{
 			list($ret, $headers, $httpCode) = self::simpleCurl($page, $timeout, $extraHeaders);
 			return $ret;
-		}catch(\RuntimeException $ex){
+		}catch(InternetException $ex){
 			$err = $ex->getMessage();
 			return false;
 		}
@@ -113,7 +113,7 @@ class Internet{
 				CURLOPT_POSTFIELDS => $args
 			]);
 			return $ret;
-		}catch(\RuntimeException $ex){
+		}catch(InternetException $ex){
 			$err = $ex->getMessage();
 			return false;
 		}
