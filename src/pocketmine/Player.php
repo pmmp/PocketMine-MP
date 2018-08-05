@@ -2227,7 +2227,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				if($this->isSurvival()){
 					if(!$item->equalsExact($this->inventory->getItemInHand())){
 						$this->inventory->setItemInHand($item);
-						$this->inventory->sendHeldItem($this->hasSpawned);
 					}
 					$this->exhaust(0.025, PlayerExhaustEvent::CAUSE_MINING);
 				}
@@ -2272,7 +2271,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			if($this->level->useItemOn($pos, $item, $face, $clickOffset, $this, true)){
 				if($this->isSurvival() and !$item->equalsExact($this->inventory->getItemInHand())){
 					$this->inventory->setItemInHand($item);
-					$this->inventory->sendHeldItem($this->hasSpawned);
 				}
 				return true;
 			}

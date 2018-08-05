@@ -127,7 +127,12 @@ class PlayerInventory extends BaseInventory{
 	 * @return bool
 	 */
 	public function setItemInHand(Item $item) : bool{
-		return $this->setItem($this->getHeldItemIndex(), $item);
+		if($this->setItem($this->getHeldItemIndex(), $item)){
+			$this->sendHeldItem($this->holder->getViewers());
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
