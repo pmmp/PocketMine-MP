@@ -38,7 +38,7 @@ class DropItemAction extends InventoryAction{
 	}
 
 	public function isValid(Player $source) : bool{
-		return true;
+		return !$this->targetItem->isNull();
 	}
 
 	public function onPreExecute(Player $source) : bool{
