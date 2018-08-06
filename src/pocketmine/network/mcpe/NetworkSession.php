@@ -260,6 +260,9 @@ class NetworkSession{
 			$this->compressedQueue->enqueue($payload);
 			$payload->onResolve(function(CompressBatchPromise $payload) : void{
 				if($this->connected and $this->compressedQueue->bottom() === $payload){
+					$this->compressedQueue->dequeue(); //result unused
+					$this->sendEncoded($payload->getResult());
+
 					while(!$this->compressedQueue->isEmpty()){
 						/** @var CompressBatchPromise $current */
 						$current = $this->compressedQueue->bottom();
