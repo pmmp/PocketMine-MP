@@ -757,17 +757,6 @@ class Level implements ChunkManager, Metadatable{
 
 	/**
 	 * @internal
-	 */
-	public function checkTime(){
-		if($this->stopTime){
-			return;
-		}else{
-			++$this->time;
-		}
-	}
-
-	/**
-	 * @internal
 	 *
 	 * @param Player ...$targets If empty, will send to all players in the level.
 	 */
@@ -800,7 +789,9 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	protected function actuallyDoTick(int $currentTick) : void{
-		$this->checkTime();
+		if(!$this->stopTime){
+			$this->time++;
+		}
 
 		$this->sunAnglePercentage = $this->computeSunAnglePercentage(); //Sun angle depends on the current time
 		$this->skyLightReduction = $this->computeSkyLightReduction(); //Sky light reduction depends on the sun angle
