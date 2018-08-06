@@ -656,18 +656,6 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * WARNING: Do not use this, it's only for internal use.
 	 * Changes to this function won't be recorded on the version.
-	 */
-	public function checkTime(){
-		if($this->stopTime){
-			return;
-		}else{
-			++$this->time;
-		}
-	}
-
-	/**
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
 	 *
 	 * @param Player ...$targets If empty, will send to all players in the level.
 	 */
@@ -696,7 +684,9 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->timings->doTick->startTiming();
 
-		$this->checkTime();
+		if(!$this->stopTime){
+			$this->time++;
+		}
 
 		$this->sunAnglePercentage = $this->computeSunAnglePercentage(); //Sun angle depends on the current time
 		$this->skyLightReduction = $this->computeSkyLightReduction(); //Sky light reduction depends on the sun angle
