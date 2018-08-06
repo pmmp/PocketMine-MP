@@ -1710,6 +1710,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->timings->startTiming();
 
 		if($this->spawned){
+			if($this->getInventory() !== null){
+				$this->getInventory()->getItemInHand()->onUpdate($this); // update map items
+			}
 			$this->processMovement($tickDiff);
 			$this->resetMotion();
 

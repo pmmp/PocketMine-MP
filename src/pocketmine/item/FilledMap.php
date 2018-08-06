@@ -25,19 +25,36 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\level\utils\MapManager;
+use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\network\mcpe\protocol\ClientboundMapItemDataPacket;
+use pocketmine\Player;
 
 class FilledMap extends Item{
+
+	public const TAG_COLORS = "colors";
+	public const TAG_SCALE = "scale";
+	public const TAG_DIMENSION = "dimension";
 
 	public function __construct(int $meta = 0){
 		parent::__construct(self::FILLED_MAP, $meta, "Filled Map");
 	}
 
 	public function createMapDataPacket() : ?ClientboundMapItemDataPacket{
-		return null; // TODO
+		$pk = new ClientboundMapItemDataPacket();
+		$pk->mapId = $this->getNamedTag()->getInt("mapId", 0);
+		$pk->height = $pk->width = 128;
+		$pk->scale = 0;
+
+		return $pk;
+	}
+
+	public function onUpdate(Player $player) : void{
+		//TODO
 	}
 
 	public function onCreateMap() : void{
-		MapManager::registerMap(MapManager::getNextId(), $this);
+		MapManager::registerMap($id = MapManager::getNextId(), $this);
+		$nbt = $this->getNamedTag();
+		$nbt->setInt("mapId", $id);
 	}
 }

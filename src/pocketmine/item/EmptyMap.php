@@ -47,5 +47,7 @@ class EmptyMap extends Item{
 		}else{
 			$player->dropItem($map);
 		}
+
+		return true;
 	}
 }
