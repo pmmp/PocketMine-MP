@@ -217,5 +217,3 @@ class PlayerDeathEvent extends EntityDeathEvent{
 		return new TranslationContainer($message, $params);
 	}
 }
-
-}
