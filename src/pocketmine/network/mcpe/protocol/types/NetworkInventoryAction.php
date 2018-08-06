@@ -28,6 +28,7 @@ use pocketmine\inventory\AnvilInventory;
 use pocketmine\inventory\BeaconInventory;
 use pocketmine\inventory\EnchantInventory;
 use pocketmine\inventory\TradeInventory;
+use pocketmine\inventory\transaction\action\AnvilAction;
 use pocketmine\inventory\transaction\action\CreativeInventoryAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\action\EnchantAction;
@@ -219,19 +220,15 @@ class NetworkInventoryAction{
 
                     case self::SOURCE_TYPE_ANVIL_INPUT:
                         $window = $player->getWindowByType(AnvilInventory::class);
-                        return new SlotChangeAction($window, 0, $this->oldItem, $this->newItem);
+                        return new AnvilAction($window, 0, $this->oldItem, $this->newItem);
                     case self::SOURCE_TYPE_ANVIL_MATERIAL:
                         $window = $player->getWindowByType(AnvilInventory::class);
-                        return new SlotChangeAction($window, 1, $this->oldItem, $this->newItem);
+                        return new AnvilAction($window, 1, $this->oldItem, $this->newItem);
                     case self::SOURCE_TYPE_ANVIL_RESULT:
                         $window = $player->getWindowByType(AnvilInventory::class);
-                        //TODO: Fix Hack (item count / 2)
-                        $window->clear(0);
-                        $window->clear(1);
-                        $window->setItem(2, $this->oldItem, false);
-                        return new SlotChangeAction($window, 2, $this->oldItem, $this->newItem);
+                        return new AnvilAction($window, 2, $this->oldItem, $this->newItem);
                     case self::SOURCE_TYPE_ANVIL_OUTPUT:
-                        break;
+                    	throw new \RuntimeException("what do you do?");
                     case self::SOURCE_TYPE_ENCHANT_INPUT:
                         $window = $player->getWindowByType(EnchantInventory::class);
                         return new EnchantAction($window, 0, $this->oldItem, $this->newItem);
