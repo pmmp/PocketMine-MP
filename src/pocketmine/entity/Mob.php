@@ -42,10 +42,13 @@ abstract class Mob extends Living{
     protected $navigator;
     /** @var Vector3 */
     protected $lookPosition;
-
+    /** @var Entity[] */
     protected $seenEntities = [];
+	/** @var Entity[] */
     protected $unseenEntities = [];
     protected $jumpCooldown = 0;
+    /** @var Vector3 */
+    protected $homePosition;
 
     /** @var bool */
     protected $aiEnabled = false;
@@ -71,7 +74,21 @@ abstract class Mob extends Living{
         $this->aiEnabled = $aiEnabled;
     }
 
-    protected function initEntity() : void{
+	/**
+	 * @return Vector3
+	 */
+	public function getHomePosition() : Vector3{
+		return $this->homePosition;
+	}
+
+	/**
+	 * @param Vector3 $homePosition
+	 */
+	public function setHomePosition(Vector3 $homePosition) : void{
+		$this->homePosition = $homePosition;
+	}
+
+	protected function initEntity() : void{
         parent::initEntity();
 
         $this->targetBehaviorPool = new BehaviorPool();
