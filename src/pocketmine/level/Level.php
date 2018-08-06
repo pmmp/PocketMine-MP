@@ -795,8 +795,10 @@ class Level implements ChunkManager, Metadatable{
 			$this->checkSleep();
 		}
 
-		if(!empty($this->players) and !empty($this->globalPackets)){
-			$this->server->batchPackets($this->players, $this->globalPackets);
+		if(!empty($this->globalPackets)){
+			if(!empty($this->players)){
+				$this->server->batchPackets($this->players, $this->globalPackets);
+			}
 			$this->globalPackets = [];
 		}
 
