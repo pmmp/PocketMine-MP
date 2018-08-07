@@ -134,6 +134,7 @@ class FallingBlock extends Entity{
 	}
 
 	public function saveNBT() : void{
+		parent::saveNBT();
 		$this->namedtag->setInt("TileID", $this->block->getId(), true);
 		$this->namedtag->setByte("Data", $this->block->getDamage());
 	}
