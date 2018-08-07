@@ -211,7 +211,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	}
 
 	/**
-	 * Returns the cooldown in ticks before the target entity can be attacked again.
+	 * Sets the cooldown in ticks before the target entity can be attacked again.
 	 *
 	 * NOTE: This value is not used in non-Living entities
 	 *
