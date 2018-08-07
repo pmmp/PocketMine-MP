@@ -74,8 +74,8 @@ abstract class Living extends Entity implements Damageable{
 
 	abstract public function getName() : string;
 
-	protected function initEntity() : void{
-		parent::initEntity();
+	protected function initEntity(CompoundTag $nbt) : void{
+		parent::initEntity($nbt);
 
 		$this->armorInventory = new ArmorInventory($this);
 		//TODO: load/save armor inventory contents
@@ -83,21 +83,21 @@ abstract class Living extends Entity implements Damageable{
 
 		$health = $this->getMaxHealth();
 
-		if($this->namedtag->hasTag("HealF", FloatTag::class)){
-			$health = $this->namedtag->getFloat("HealF");
-			$this->namedtag->removeTag("HealF");
-		}elseif($this->namedtag->hasTag("Health")){
-			$healthTag = $this->namedtag->getTag("Health");
+		if($nbt->hasTag("HealF", FloatTag::class)){
+			$health = $nbt->getFloat("HealF");
+			$nbt->removeTag("HealF");
+		}elseif($nbt->hasTag("Health")){
+			$healthTag = $nbt->getTag("Health");
 			$health = (float) $healthTag->getValue(); //Older versions of PocketMine-MP incorrectly saved this as a short instead of a float
 			if(!($healthTag instanceof FloatTag)){
-				$this->namedtag->removeTag("Health");
+				$nbt->removeTag("Health");
 			}
 		}
 
 		$this->setHealth($health);
 
 		/** @var CompoundTag[]|ListTag $activeEffectsTag */
-		$activeEffectsTag = $this->namedtag->getListTag("ActiveEffects");
+		$activeEffectsTag = $nbt->getListTag("ActiveEffects");
 		if($activeEffectsTag !== null){
 			foreach($activeEffectsTag as $e){
 				$effect = Effect::getEffect($e->getByte("Id"));
@@ -150,9 +150,9 @@ abstract class Living extends Entity implements Damageable{
 		$this->attributeMap->getAttribute(Attribute::ABSORPTION)->setValue($absorption);
 	}
 
-	public function saveNBT() : void{
-		parent::saveNBT();
-		$this->namedtag->setFloat("Health", $this->getHealth(), true);
+	public function saveNBT() : CompoundTag{
+		$nbt = parent::saveNBT();
+		$nbt->setFloat("Health", $this->getHealth(), true);
 
 		if(count($this->effects) > 0){
 			$effects = [];
@@ -166,10 +166,12 @@ abstract class Living extends Entity implements Damageable{
 				]);
 			}
 
-			$this->namedtag->setTag(new ListTag("ActiveEffects", $effects));
+			$nbt->setTag(new ListTag("ActiveEffects", $effects));
 		}else{
-			$this->namedtag->removeTag("ActiveEffects");
+			$nbt->removeTag("ActiveEffects");
 		}
+
+		return $nbt;
 	}
 
 

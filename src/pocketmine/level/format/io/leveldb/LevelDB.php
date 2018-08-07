@@ -464,8 +464,7 @@ class LevelDB extends BaseLevelProvider{
 		/** @var CompoundTag[] $entities */
 		$entities = [];
 		foreach($chunk->getSavableEntities() as $entity){
-			$entity->saveNBT();
-			$entities[] = $entity->namedtag;
+			$entities[] = $entity->saveNBT();
 		}
 		$this->writeTags($entities, $index . self::TAG_ENTITY);
 

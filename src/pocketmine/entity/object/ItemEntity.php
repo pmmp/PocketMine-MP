@@ -28,6 +28,7 @@ use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\item\Item;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddItemEntityPacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\Player;
@@ -53,18 +54,18 @@ class ItemEntity extends Entity{
 
 	public $canCollide = false;
 
-	protected function initEntity() : void{
-		parent::initEntity();
+	protected function initEntity(CompoundTag $nbt) : void{
+		parent::initEntity($nbt);
 
 		$this->setMaxHealth(5);
-		$this->setHealth($this->namedtag->getShort("Health", (int) $this->getHealth()));
-		$this->age = $this->namedtag->getShort("Age", $this->age);
-		$this->pickupDelay = $this->namedtag->getShort("PickupDelay", $this->pickupDelay);
-		$this->owner = $this->namedtag->getString("Owner", $this->owner);
-		$this->thrower = $this->namedtag->getString("Thrower", $this->thrower);
+		$this->setHealth($nbt->getShort("Health", (int) $this->getHealth()));
+		$this->age = $nbt->getShort("Age", $this->age);
+		$this->pickupDelay = $nbt->getShort("PickupDelay", $this->pickupDelay);
+		$this->owner = $nbt->getString("Owner", $this->owner);
+		$this->thrower = $nbt->getString("Thrower", $this->thrower);
 
 
-		$itemTag = $this->namedtag->getCompoundTag("Item");
+		$itemTag = $nbt->getCompoundTag("Item");
 		if($itemTag === null){
 			throw new \UnexpectedValueException("Invalid " . get_class($this) . " entity: expected \"Item\" NBT tag not found");
 		}
@@ -114,18 +115,20 @@ class ItemEntity extends Entity{
 		return true;
 	}
 
-	public function saveNBT() : void{
-		parent::saveNBT();
-		$this->namedtag->setTag($this->item->nbtSerialize(-1, "Item"));
-		$this->namedtag->setShort("Health", (int) $this->getHealth());
-		$this->namedtag->setShort("Age", $this->age);
-		$this->namedtag->setShort("PickupDelay", $this->pickupDelay);
+	public function saveNBT() : CompoundTag{
+		$nbt = parent::saveNBT();
+		$nbt->setTag($this->item->nbtSerialize(-1, "Item"));
+		$nbt->setShort("Health", (int) $this->getHealth());
+		$nbt->setShort("Age", $this->age);
+		$nbt->setShort("PickupDelay", $this->pickupDelay);
 		if($this->owner !== null){
-			$this->namedtag->setString("Owner", $this->owner);
+			$nbt->setString("Owner", $this->owner);
 		}
 		if($this->thrower !== null){
-			$this->namedtag->setString("Thrower", $this->thrower);
+			$nbt->setString("Thrower", $this->thrower);
 		}
+
+		return $nbt;
 	}
 
 	/**
