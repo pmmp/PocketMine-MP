@@ -32,12 +32,12 @@ if [ "$PHP_BINARY" == "" ]; then
 fi
 
 if [ "$POCKETMINE_FILE" == "" ]; then
-	if [ -f ./PocketMine-MP.phar ]; then
-		POCKETMINE_FILE="./PocketMine-MP.phar"
+	if [ -f ./Altay.phar ]; then
+		POCKETMINE_FILE="./Altay.phar"
 	elif [ -f ./src/pocketmine/PocketMine.php ]; then
 		POCKETMINE_FILE="./src/pocketmine/PocketMine.php"
 	else
-		echo "Couldn't find a valid PocketMine-MP installation"
+		echo "Couldn't find a valid Altay installation"
 		exit 1
 	fi
 fi

@@ -916,7 +916,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->dimension = $dimension;
 		$pk->position = $position ?? $this;
 		$pk->respawn = $respawn;
-		$this->dataPacket($pk);
+		$this->sendDataPacket($pk);
 	}
 
 	protected function switchLevel(Level $targetLevel) : bool{
