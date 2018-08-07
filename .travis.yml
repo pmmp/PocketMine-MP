@@ -1,0 +1,29 @@
+sudo: true
+language: php
+
+php:
+ - 7.2
+
+before_script:
+ - echo | pecl install channel://pecl.php.net/yaml-2.0.2
+ - pecl install channel://pecl.php.net/crypto-0.3.1
+ - git clone https://github.com/pmmp/pthreads.git
+ - cd pthreads
+ - git checkout c8cfacda84f21032d6014b53e72bf345ac901dac
+ - phpize
+ - ./configure
+ - make
+ - make install
+ - cd ..
+ - echo "extension=pthreads.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+ - composer install
+
+script:
+ - bash ci/travis.sh -t4
+
+notifications:
+ email: false
+
+before_deploy:
+- mv plugins/Altay/Altay*.phar plugins/Altay/Altay.phar
+- chmod +x *
