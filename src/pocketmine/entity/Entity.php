@@ -963,10 +963,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @throws \InvalidArgumentException if the target entity is not valid
 	 */
 	public function setTargetEntity(?Entity $target) : void{
-		if($target === null){
+		if($target === null or $target->isClosed()){
 			$this->propertyManager->removeProperty(self::DATA_TARGET_EID);
-		}elseif($target->closed){
-			throw new \InvalidArgumentException("Supplied target entity is garbage and cannot be used");
 		}else{
 			$this->propertyManager->setLong(self::DATA_TARGET_EID, $target->getId());
 		}
