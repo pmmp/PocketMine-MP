@@ -2122,7 +2122,9 @@ class Server{
 			$this->logger->emergency("Crashed while crashing, killing process");
 			@Utils::kill(getmypid());
 		}
-
+		if($this->doTitleTick){
+				echo "\x1b]0; \x07";
+		}
 	}
 
 	/**
