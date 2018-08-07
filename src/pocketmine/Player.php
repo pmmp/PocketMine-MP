@@ -2982,7 +2982,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		if($ev->getDeathMessage() != ""){
-			$this->server->broadcast($ev->getDeathMessage(), Server::BROADCAST_CHANNEL_USERS);
+			$this->server->broadcastMessage($ev->getDeathMessage());
 		}
 	}
 
