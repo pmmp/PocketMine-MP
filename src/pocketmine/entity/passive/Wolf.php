@@ -82,6 +82,7 @@ class Wolf extends Tamable{
         if($this->isTamed()){
             if($this->getOwningEntityId() == $player->id){
                 $this->setSitting(!$this->isSitting());
+                $this->setTargetEntity(null);
             }
         }else{
             if($item->getId() == Item::BONE){
