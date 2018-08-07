@@ -11,7 +11,7 @@ Fast server software for Minecraft: Bedrock/W10 Edition. Altay is a fork of [pmm
 
 ------------
 
-## Why Altay?
+## Why i should prefer Altay?
 
 Because altay has more features and improvements than PocketMine-MP
 
