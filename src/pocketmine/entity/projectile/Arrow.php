@@ -75,7 +75,7 @@ class Arrow extends Projectile{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setByte(self::TAG_PICKUP, $this->pickupMode, true);
+		$nbt->setByte(self::TAG_PICKUP, $this->pickupMode);
 		return $nbt;
 	}
 

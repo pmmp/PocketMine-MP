@@ -85,13 +85,9 @@ abstract class Living extends Entity implements Damageable{
 
 		if($nbt->hasTag("HealF", FloatTag::class)){
 			$health = $nbt->getFloat("HealF");
-			$nbt->removeTag("HealF");
 		}elseif($nbt->hasTag("Health")){
 			$healthTag = $nbt->getTag("Health");
 			$health = (float) $healthTag->getValue(); //Older versions of PocketMine-MP incorrectly saved this as a short instead of a float
-			if(!($healthTag instanceof FloatTag)){
-				$nbt->removeTag("Health");
-			}
 		}
 
 		$this->setHealth($health);
@@ -167,8 +163,6 @@ abstract class Living extends Entity implements Damageable{
 			}
 
 			$nbt->setTag(new ListTag("ActiveEffects", $effects));
-		}else{
-			$nbt->removeTag("ActiveEffects");
 		}
 
 		return $nbt;

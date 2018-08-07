@@ -843,8 +843,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			if($this->getNameTag() !== ""){
 				$nbt->setString("CustomName", $this->getNameTag());
 				$nbt->setByte("CustomNameVisible", $this->isNameTagVisible() ? 1 : 0);
-			}else{
-				$nbt->removeTag("CustomName", "CustomNameVisible");
 			}
 		}
 
@@ -881,7 +879,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			if($nbt->hasTag("CustomNameVisible", StringTag::class)){
 				//Older versions incorrectly saved this as a string (see 890f72dbf23a77f294169b79590770470041adc4)
 				$this->setNameTagVisible($nbt->getString("CustomNameVisible") !== "");
-				$nbt->removeTag("CustomNameVisible"); //TODO: remove this once entity runtime NBT is gone
 			}else{
 				$this->setNameTagVisible($nbt->getByte("CustomNameVisible", 1) !== 0);
 			}
