@@ -560,7 +560,7 @@ abstract class Living extends Entity implements Damageable{
 			return;
 		}
 
-		$this->attackTime = 10; //0.5 seconds cooldown
+		$this->attackTime = $source->getAttackCooldown();
 
 		if($source instanceof EntityDamageByEntityEvent){
 			$e = $source->getDamager();

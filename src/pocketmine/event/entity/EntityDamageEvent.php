@@ -69,6 +69,9 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	/** @var float[] */
 	private $originals;
 
+	/** @var int */
+	private $attackCooldown = 10;
+
 
 	/**
 	 * @param Entity        $entity
@@ -196,5 +199,25 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 		}
 
 		return true;
+	}
+
+	/**
+	 * Returns the cooldown in ticks before the target entity can be attacked again.
+	 *
+	 * @return int
+	 */
+	public function getAttackCooldown() : int{
+		return $this->attackCooldown;
+	}
+
+	/**
+	 * Returns the cooldown in ticks before the target entity can be attacked again.
+	 *
+	 * NOTE: This value is not used in non-Living entities
+	 *
+	 * @param int $attackCooldown
+	 */
+	public function setAttackCooldown(int $attackCooldown) : void{
+		$this->attackCooldown = $attackCooldown;
 	}
 }
