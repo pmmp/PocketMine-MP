@@ -32,12 +32,12 @@ class NoteBlock extends Spawnable{
 
 	/** @var int */
 	protected $note = 0;
-	/** @var int */
-	protected $powered = 0;
+	/** @var bool */
+	protected $powered = false;
 
 	protected function readSaveData(CompoundTag $nbt) : void{
-		$this->note = $nbt->getInt(self::TAG_NOTE, 0);
-		$this->powered = $nbt->getByte(self::TAG_POWERED, 0);
+		$this->note = $nbt->getInt(self::TAG_NOTE, 0, true);
+		$this->powered = boolval($nbt->getByte(self::TAG_POWERED, 0));
 	}
 
 	public function setNote(int $note) : void{
@@ -49,11 +49,11 @@ class NoteBlock extends Spawnable{
 	}
 
 	public function setPowered(bool $value) : void{
-		$this->powered = (int) $value;
+		$this->powered = $value;
 	}
 
 	public function isPowered() : bool{
-		return (bool) $this->powered;
+		return $this->powered;
 	}
 
 	public function getDefaultName() : string{
@@ -61,12 +61,12 @@ class NoteBlock extends Spawnable{
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
-		$nbt->setInt(self::TAG_NOTE, $this->note);
-		$nbt->setByte(self::TAG_POWERED, $this->powered);
+		$nbt->setInt(self::TAG_NOTE, $this->note, true);
+		$nbt->setByte(self::TAG_POWERED, intval($this->powered));
 	}
 
 	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		$nbt->setInt(self::TAG_NOTE, $this->note);
-		$nbt->setByte(self::TAG_POWERED, $this->powered);
+		$nbt->setInt(self::TAG_NOTE, $this->note, true);
+		$nbt->setByte(self::TAG_POWERED, intval($this->powered));
 	}
 }
