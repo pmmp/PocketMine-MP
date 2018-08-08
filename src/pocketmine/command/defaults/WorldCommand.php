@@ -46,7 +46,7 @@ class WorldCommand extends VanillaCommand{
 			return true;
 		}
 
-		if(count($args) === 0 or count($args) > 2){
+		if(count($args) === 0 || count($args) > 2){
 			throw new InvalidCommandSyntaxException();
 		}
 
