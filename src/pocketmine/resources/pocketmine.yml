@@ -92,6 +92,9 @@ network:
  compression-level: 7
  #Use AsyncTasks for compression. Adds half/one tick delay, less CPU load on main thread
  async-compression: false
+ #Compress chunks using ZOPFLI instead of ZLIB (if available). 10-20% bandwidth savings for significant extra CPU cost.
+ #This works best for static maps which are immutable and get a lot of players (to ensure high cache hit rate)
+ zopfli-chunk-compression: false
  #Experimental, only for Windows. Tries to use UPnP to automatically port forward
  upnp-forwarding: false
  #Maximum size in bytes of packets sent over the network (default 1492 bytes). Packets larger than this will be

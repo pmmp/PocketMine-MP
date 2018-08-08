@@ -31,6 +31,12 @@ use pocketmine\Server;
 use pocketmine\tile\Spawnable;
 
 class ChunkRequestTask extends AsyncTask{
+	/**
+	 * Whether to use ZOPFLI for chunk compression. Extremely good but extremely slow ZLIB-compatible compression.
+	 * @var bool
+	 */
+	public static $ZOPFLI_COMPRESSION = false;
+
 	/** @var string */
 	protected $chunk;
 	/** @var int */
@@ -41,10 +47,13 @@ class ChunkRequestTask extends AsyncTask{
 	protected $tiles;
 	/** @var int */
 	protected $compressionLevel;
+	/** @var bool */
+	protected $useZopfli = false;
 
 	public function __construct(Level $level, int $chunkX, int $chunkZ, Chunk $chunk){
 		$this->storeLocal($level);
 		$this->compressionLevel = NetworkCompression::$LEVEL;
+		$this->useZopfli = self::$ZOPFLI_COMPRESSION; //the worker thread may not inherit static properties
 
 		$this->chunk = $chunk->fastSerialize();
 		$this->chunkX = $chunkX;
@@ -72,7 +81,11 @@ class ChunkRequestTask extends AsyncTask{
 		$stream = new PacketStream();
 		$stream->putPacket($pk);
 
-		$this->setResult(NetworkCompression::compress($stream->buffer, $this->compressionLevel), false);
+		$this->setResult(
+			$this->useZopfli ?
+				NetworkCompression::zopfliCompress($stream->buffer) : NetworkCompression::compress($stream->buffer, $this->compressionLevel),
+			false
+		);
 	}
 
 	public function onCompletion(Server $server) : void{

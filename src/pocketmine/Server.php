@@ -71,6 +71,7 @@ use pocketmine\nbt\tag\LongTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\AdvancedNetworkInterface;
+use pocketmine\network\mcpe\ChunkRequestTask;
 use pocketmine\network\mcpe\CompressBatchedTask;
 use pocketmine\network\mcpe\NetworkCipher;
 use pocketmine\network\mcpe\NetworkCompression;
@@ -1546,6 +1547,15 @@ class Server{
 			}
 			$this->networkCompressionAsync = (bool) $this->getProperty("network.async-compression", true);
 
+			ChunkRequestTask::$ZOPFLI_COMPRESSION = (bool) $this->getProperty("network.zopfli-chunk-compression", false);
+			if(ChunkRequestTask::$ZOPFLI_COMPRESSION){
+				if(!extension_loaded('zopfli')){
+					$this->logger->error("Zopfli chunk compression requires the zopfli extension");
+					ChunkRequestTask::$ZOPFLI_COMPRESSION = false;
+				}else{
+					$this->logger->debug("Zopfli chunk compression enabled");
+				}
+			}
 			NetworkCipher::$ENABLED = (bool) $this->getProperty("network.enable-encryption", true);
 
 			$this->autoTickRate = (bool) $this->getProperty("level-settings.auto-tick-rate", true);

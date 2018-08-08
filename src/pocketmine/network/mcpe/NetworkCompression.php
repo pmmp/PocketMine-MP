@@ -44,4 +44,16 @@ final class NetworkCompression{
 	public static function compress(string $payload, ?int $compressionLevel = null) : string{
 		return zlib_encode($payload, ZLIB_ENCODING_DEFLATE, $compressionLevel ?? self::$LEVEL);
 	}
+
+	/**
+	 * Extremely slow but good ZLIB-compatible compression using ZOPFLI (if available)
+	 *
+	 * @param string $payload
+	 * @param int    $iterations Higher = better compression but more CPU cost
+	 *
+	 * @return string
+	 */
+	public static function zopfliCompress(string $payload, int $iterations = 1) : string{
+		return zopfli_compress($payload, $iterations);
+	}
 }
