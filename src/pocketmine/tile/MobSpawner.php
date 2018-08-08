@@ -1,0 +1,276 @@
+<?php
+
+/*
+ *               _ _
+ *         /\   | | |
+ *        /  \  | | |_ __ _ _   _
+ *       / /\ \ | | __/ _` | | | |
+ *      / ____ \| | || (_| | |_| |
+ *     /_/    \_|_|\__\__,_|\__, |
+ *                           __/ |
+ *                          |___/
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Altay
+ *
+ */
+
+declare(strict_types=1);
+
+namespace pocketmine\tile;
+
+use pocketmine\entity\Entity;
+use pocketmine\entity\Mob;
+use pocketmine\level\Level;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\Player;
+
+class MobSpawner extends Spawnable{
+
+	// TODO: Use more nbt tags for more customization
+	public const TAG_IS_MOVABLE = "isMovable";
+	public const TAG_DELAY = "Delay";
+	public const TAG_MAX_NEARBY_ENTITIES = "MaxNearbyEntities";
+	public const TAG_MAX_SPAWN_DELAY = "MaxSpawnDelay";
+	public const TAG_MIN_SPAWN_DELAY = "MinSawnDelay";
+	public const TAG_REQUIRED_PLAYER_RANGE = "RequiredPlayerRange";
+	public const TAG_SPAWN_COUNT = "SpawnCount";
+	public const TAG_SPAWN_RANGE = "SpawnRange";
+	public const TAG_ENTITY_ID = "EntityId";
+	public const TAG_DISPLAY_ENTITY_HEIGHT = "DisplayEntityHeight";
+	public const TAG_DISPLAY_ENTITY_SCALE = "DisplayEntityScale";
+	public const TAG_DISPLAY_ENTITY_WIDTH = "DisplayEntityWidth";
+	public const TAG_SPAWN_DATA = "SpawnData"; // TODO
+
+	/** @var int */
+	protected $entityId = -1;
+	/** @var int */
+	protected $spawnRange = 4;
+	/** @var int */
+	protected $maxNearbyEntities = 6;
+	/** @var int */
+	protected $requiredPlayerRange = 16;
+	/** @var int */
+	protected $delay = 0;
+	/** @var int */
+	protected $minSpawnDelay = 200;
+	/** @var int */
+	protected $maxSpawnDelay = 800;
+	/** @var int */
+	protected $spawnCount = 1;
+	/** @var bool */
+	protected $isMovable = true;
+
+	public function __construct(Level $level, CompoundTag $nbt){
+		parent::__construct($level, $nbt);
+
+		$this->scheduleUpdate();
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getEntityId() : int{
+		return $this->entityId;
+	}
+
+	/**
+	 * @param int $entityId
+	 */
+	public function setEntityId(int $entityId) : void{
+		$this->entityId = $entityId;
+		$this->onChanged();
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getSpawnRange() : int{
+		return $this->spawnRange;
+	}
+
+	/**
+	 * @param int $spawnRange
+	 */
+	public function setSpawnRange(int $spawnRange) : void{
+		$this->spawnRange = $spawnRange;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getMaxNearbyEntities() : int{
+		return $this->maxNearbyEntities;
+	}
+
+	/**
+	 * @param int $maxNearbyEntities
+	 */
+	public function setMaxNearbyEntities(int $maxNearbyEntities) : void{
+		$this->maxNearbyEntities = $maxNearbyEntities;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getRequiredPlayerRange() : int{
+		return $this->requiredPlayerRange;
+	}
+
+	/**
+	 * @param int $requiredPlayerRange
+	 */
+	public function setRequiredPlayerRange(int $requiredPlayerRange) : void{
+		$this->requiredPlayerRange = $requiredPlayerRange;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getDelay() : int{
+		return $this->delay;
+	}
+
+	/**
+	 * @param int $delay
+	 */
+	public function setDelay(int $delay) : void{
+		$this->delay = $delay;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getMinSpawnDelay() : int{
+		return $this->minSpawnDelay;
+	}
+
+	/**
+	 * @param int $minSpawnDelay
+	 */
+	public function setMinSpawnDelay(int $minSpawnDelay) : void{
+		$this->minSpawnDelay = $minSpawnDelay;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getMaxSpawnDelay() : int{
+		return $this->maxSpawnDelay;
+	}
+
+	/**
+	 * @param int $maxSpawnDelay
+	 */
+	public function setMaxSpawnDelay(int $maxSpawnDelay) : void{
+		$this->maxSpawnDelay = $maxSpawnDelay;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getSpawnCount() : int{
+		return $this->spawnCount;
+	}
+
+	/**
+	 * @param int $spawnCount
+	 */
+	public function setSpawnCount(int $spawnCount) : void{
+		$this->spawnCount = $spawnCount;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isMovable() : bool{
+		return $this->isMovable;
+	}
+
+	/**
+	 * @param bool $isMovable
+	 */
+	public function setMovable(bool $isMovable) : void{
+		$this->isMovable = $isMovable;
+	}
+
+	protected function readSaveData(CompoundTag $nbt) : void{
+		$this->delay = $nbt->getShort(self::TAG_DELAY, 0);
+		$this->maxNearbyEntities = $nbt->getShort(self::TAG_MAX_NEARBY_ENTITIES, 6);
+		$this->maxSpawnDelay = $nbt->getShort(self::TAG_MAX_SPAWN_DELAY, 800);
+		$this->minSpawnDelay = $nbt->getShort(self::TAG_MIN_SPAWN_DELAY, 200);
+		$this->requiredPlayerRange = $nbt->getShort(self::TAG_REQUIRED_PLAYER_RANGE, 16);
+		$this->spawnCount = $nbt->getShort(self::TAG_SPAWN_COUNT, 1);
+		$this->spawnRange = $nbt->getShort(self::TAG_SPAWN_RANGE, 4);
+		$this->entityId = $nbt->getInt(self::TAG_ENTITY_ID, -1);
+	}
+
+	public function getDefaultName() : string{
+		return "MobSpawner";
+	}
+
+	protected function writeSaveData(CompoundTag $nbt) : void{
+		$nbt->setByte(self::TAG_IS_MOVABLE, intval($this->isMovable));
+		$nbt->setShort(self::TAG_DELAY, $this->delay);
+		$nbt->setShort(self::TAG_MAX_NEARBY_ENTITIES, $this->maxNearbyEntities);
+		$nbt->setShort(self::TAG_MAX_SPAWN_DELAY, $this->maxSpawnDelay);
+		$nbt->setShort(self::TAG_MIN_SPAWN_DELAY, $this->minSpawnDelay);
+		$nbt->setShort(self::TAG_REQUIRED_PLAYER_RANGE, $this->requiredPlayerRange);
+		$nbt->setShort(self::TAG_SPAWN_COUNT, $this->spawnCount);
+		$nbt->setShort(self::TAG_SPAWN_RANGE, $this->spawnRange);
+		$nbt->setInt(self::TAG_ENTITY_ID, $this->entityId);
+	}
+
+	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
+		$nbt->setByte(self::TAG_IS_MOVABLE, intval($this->isMovable));
+		$nbt->setShort(self::TAG_DELAY, $this->delay);
+		$nbt->setShort(self::TAG_MAX_NEARBY_ENTITIES, $this->maxNearbyEntities);
+		$nbt->setShort(self::TAG_MAX_SPAWN_DELAY, $this->maxSpawnDelay);
+		$nbt->setShort(self::TAG_MIN_SPAWN_DELAY, $this->minSpawnDelay);
+		$nbt->setShort(self::TAG_REQUIRED_PLAYER_RANGE, $this->requiredPlayerRange);
+		$nbt->setShort(self::TAG_SPAWN_COUNT, $this->spawnCount);
+		$nbt->setShort(self::TAG_SPAWN_RANGE, $this->spawnRange);
+		$nbt->setInt(self::TAG_ENTITY_ID, $this->entityId);
+	}
+
+	public function onUpdate() : bool{
+		if($this->entityId !== -1){
+			if($this->delay++ >= rand($this->minSpawnDelay, $this->maxSpawnDelay)){
+				$nearEntityCount = 0;
+				$canSpawnMob = false;
+
+				foreach($this->level->getEntities() as $entity){
+					if($entity->distance($this) <= $this->requiredPlayerRange){
+						if($entity instanceof Player){
+							$canSpawnMob = true;
+						}else{
+							$nearEntityCount++;
+						}
+					}
+				}
+
+				if($canSpawnMob and $nearEntityCount <= $this->maxNearbyEntities){
+					for($i = 0; $i < $this->spawnCount; $i++){
+						$mob = Entity::createEntity($this->entityId, $this->level, Entity::createBaseNBT($this->add(rand(-$this->spawnRange, $this->spawnRange), rand(0, 1), rand(-$this->spawnRange, $this->spawnRange))));
+						if($mob instanceof Entity){
+							if($mob instanceof Mob){
+								if($this->server->mobAiEnabled){
+									$mob->setAiEnabled(true);
+								}
+							}
+							$mob->spawnToAll();
+						}
+					}
+				}
+
+				$this->delay = 0;
+			}
+		}
+		return true;
+	}
+}

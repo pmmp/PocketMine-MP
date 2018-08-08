@@ -32,6 +32,7 @@ Because altay has more features and improvements than PocketMine-MP
 - More Biomes
 - Villager Trading
 - More Inventory(PlayerOffHandInventory)
+- MobSpawner
 
 And more...
 
