@@ -226,9 +226,10 @@ class NetworkInventoryAction{
                         return new AnvilAction($window, 1, $this->oldItem, $this->newItem);
                     case self::SOURCE_TYPE_ANVIL_RESULT:
                         $window = $player->getWindowByType(AnvilInventory::class);
+						$window->clearAll();
                         return new AnvilAction($window, 2, $this->oldItem, $this->newItem);
                     case self::SOURCE_TYPE_ANVIL_OUTPUT:
-                    	throw new \RuntimeException("what do you do?");
+                    	break;
                     case self::SOURCE_TYPE_ENCHANT_INPUT:
                         $window = $player->getWindowByType(EnchantInventory::class);
                         return new EnchantAction($window, 0, $this->oldItem, $this->newItem);
