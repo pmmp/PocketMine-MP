@@ -39,7 +39,7 @@ And more...
 
 Yes, you can.
 
-- **soteserver.net:19132**
+- **entengames.net:19132**
 - **play.oyungg.net:19132**
 
 #### Do you need help about Altay?
