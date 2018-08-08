@@ -33,56 +33,48 @@ use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 
-class EatBlockBehavior extends Behavior
-{
+class EatBlockBehavior extends Behavior{
 
-    /** @var int */
-    protected $duration;
+	/** @var int */
+	protected $duration;
 
-    public function __construct(Mob $mob)
-    {
-        parent::__construct($mob);
-        $this->mutexBits = 7;
-    }
+	public function __construct(Mob $mob){
+		parent::__construct($mob);
+		$this->mutexBits = 7;
+	}
 
-    public function canStart(): bool
-    {
-        if ($this->random->nextBoundedInt(1000) != 0) return false;
+	public function canStart() : bool{
+		if($this->random->nextBoundedInt(1000) != 0) return false;
 
-        $coordinates = $this->mob->asVector3();
-        $direction = $this->mob->getDirectionVector()->normalize();
-        $coord = $coordinates->add($direction->x, 0, $direction->z);
+		$direction = $this->mob->getDirectionVector()->normalize();
+		$coordinates = $this->mob->add($direction->x, 0, $direction->z);
 
-        $shouldStart = $this->mob->level->getBlock($coord->getSide(Vector3::SIDE_DOWN)) instanceof Grass || $this->mob->level->getBlock($coord) instanceof TallGrass;
-        if (!$shouldStart) return false;
+		$shouldStart = $this->mob->level->getBlock($coordinates->getSide(Vector3::SIDE_DOWN)) instanceof Grass || $this->mob->level->getBlock($coordinates) instanceof TallGrass;
+		if(!$shouldStart) return false;
 
-        $this->duration = 40;
+		$this->duration = 40;
 
-        $this->mob->setMotion($this->mob->getMotion()->multiply(0, 1.0, 0.0));
-        $this->mob->broadcastEntityEvent(EntityEventPacket::EAT_GRASS_ANIMATION);
+		$this->mob->resetMotion();
+		$this->mob->broadcastEntityEvent(EntityEventPacket::EAT_GRASS_ANIMATION);
 
-        return true;
-    }
+		return true;
+	}
 
-    public function canContinue(): bool
-    {
-        return $this->duration-- > 0;
-    }
+	public function canContinue() : bool{
+		return $this->duration-- > 0;
+	}
 
-    public function onEnd(): void
-    {
-        $coordinates = $this->mob->asVector3();
-        $direction = $this->mob->getDirectionVector()->normalize();
+	public function onEnd() : void{
+		$direction = $this->mob->getDirectionVector()->normalize();
 
-        $coord = $coordinates->add($direction->x, 0, $direction->z);
+		$coordinates = $this->mob->add($direction->x, 0, $direction->z);
 
-        $broken = $this->mob->level->getBlock($coord);
-        if ($broken instanceof TallGrass) {
-            $this->mob->level->setBlock($coord, BlockFactory::get(Block::AIR));
-        } else {
-            $this->mob->level->setBlock($coord->getSide(Vector3::SIDE_DOWN), BlockFactory::get(Block::DIRT));
-        }
-        $particle = new DestroyBlockParticle($this->mob, $broken);
-        $this->mob->level->addParticle($particle);
-    }
+		$broken = $this->mob->level->getBlock($coordinates);
+		if($broken instanceof TallGrass){
+			$this->mob->level->setBlock($coordinates, BlockFactory::get(Block::AIR));
+		}else{
+			$this->mob->level->setBlock($coordinates->getSide(Vector3::SIDE_DOWN), BlockFactory::get(Block::DIRT));
+		}
+		$this->mob->level->addParticle(new DestroyBlockParticle($this->mob, $broken));
+	}
 }
