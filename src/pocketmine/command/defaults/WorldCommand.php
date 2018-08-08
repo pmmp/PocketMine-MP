@@ -26,18 +26,20 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\level\Level;
 use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\Player;
+use pocketmine\Server;
 
 class WorldCommand extends VanillaCommand{
 
 	public function __construct(string $name){
 		parent::__construct($name, "%pocketmine.command.world.description", "%commands.world.usage", [], [
-				[
-					new CommandParameter("world", CommandParameter::ARG_TYPE_RAWTEXT, false),
-					new CommandParameter("player", CommandParameter::ARG_TYPE_TARGET, true)
-				]
-			]);
+			[
+				new CommandParameter("world", CommandParameter::ARG_TYPE_RAWTEXT, false),
+				new CommandParameter("player", CommandParameter::ARG_TYPE_TARGET, true)
+			]
+		]);
 		$this->setPermission("pocketmine.command.world");
 	}
 
@@ -46,45 +48,48 @@ class WorldCommand extends VanillaCommand{
 			return true;
 		}
 
-		if(count($args) === 0 || count($args) > 2){
+		$countArgs = count($args);
+		if($countArgs <= 0 or $countArgs > 2){
 			throw new InvalidCommandSyntaxException();
 		}
 
-		if(count($args) === 1){
+		$level = $this->getLevelByName($sender->getServer(), $args[0]);
+		if($countArgs === 1){
 			if($sender instanceof Player){
-				$sender->getServer()->loadLevel($args[0]);
-				if(($level = $sender->getServer()->getLevelByName($args[0])) !== null){
+				if($level !== null){
 					$sender->teleport($level->getSpawnLocation());
 					$sender->sendMessage(new TranslationContainer("commands.world.teleport.self", [$level->getFolderName()]));
-
-					return true;
 				}else{
 					$sender->sendMessage(new TranslationContainer("commands.world.level.notFound"));
-
-					return false;
 				}
 			}
 		}elseif(count($args) === 2){
 			if(($target = $sender->getServer()->getPlayer($args[1])) instanceof Player){
-				$sender->getServer()->loadLevel($args[0]);
-				if(($level = $sender->getServer()->getLevelByName($args[0])) !== null){
+				if($level !== null){
 					$target->teleport($level->getSpawnLocation());
 					$target->sendMessage(new TranslationContainer("commands.world.teleport.self", [$level->getFolderName()]));
 					$sender->sendMessage(new TranslationContainer("commands.word.teleport.other", [$level->getFolderName()]));
-
-					return true;
 				}else{
 					$sender->sendMessage(new TranslationContainer("commands.world.level.notFound"));
-
-					return false;
 				}
 			}else{
 				$sender->sendMessage(new TranslationContainer("commands.generic.player.notFound"));
-
-				return false;
 			}
 		}
 
 		return true;
+	}
+
+	private function getLevelByName(Server $server, string $name) : ?Level{
+		if($server->isLevelGenerated($name)){
+			if(($level = $server->getLevelByName($name)) !== null){
+				return $level;
+			}else{
+				$server->loadLevel($name);
+				return $server->getLevelByName($name);
+			}
+		}
+
+		return null;
 	}
 }
