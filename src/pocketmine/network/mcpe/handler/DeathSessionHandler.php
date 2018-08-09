@@ -50,12 +50,9 @@ class DeathSessionHandler extends SessionHandler{
     public function handlePlayerAction(PlayerActionPacket $packet) : bool{
         switch($packet->action){
             case PlayerActionPacket::ACTION_RESPAWN:
+	        case PlayerActionPacket::ACTION_DIMENSION_CHANGE_REQUEST:
                 $this->player->respawn();
                 return true;
-            case PlayerActionPacket::ACTION_DIMENSION_CHANGE_REQUEST:
-                $this->player->teleport($this->player->getServer()->getDefaultLevel()->getSpawnLocation());
-				$this->player->respawn();
-				return true;
         }
 
         return false;

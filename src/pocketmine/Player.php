@@ -3249,10 +3249,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	protected function onDeath() : void{
-		if($this->getLevel()->getDimension() !== DimensionIds::OVERWORLD){ // A temporary fix
-			$this->switchLevel($this->getServer()->getDefaultLevel());
-		}
-
 		//Crafting grid must always be evacuated even if keep-inventory is true. This dumps the contents into the
 		//main inventory and drops the rest on the ground.
 		$this->doCloseInventory();
