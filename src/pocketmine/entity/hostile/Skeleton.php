@@ -24,72 +24,87 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\hostile;
 
-use pocketmine\entity\Ageable;
 use pocketmine\entity\behavior\FindAttackableTargetBehavior;
 use pocketmine\entity\behavior\FloatBehavior;
 use pocketmine\entity\behavior\LookAtPlayerBehavior;
 use pocketmine\entity\behavior\MeleeAttackBehavior;
 use pocketmine\entity\behavior\RandomLookAroundBehavior;
+use pocketmine\entity\behavior\RangedAttackBehavior;
+use pocketmine\entity\behavior\RestrictSunBehavior;
 use pocketmine\entity\behavior\WanderBehavior;
+use pocketmine\entity\Entity;
 use pocketmine\entity\Monster;
+use pocketmine\entity\projectile\Arrow;
+use pocketmine\entity\RangedAttackerMob;
+use pocketmine\inventory\AltayEntityEquipment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\entity\passive\Villager;
 use pocketmine\Player;
 
-class Zombie extends Monster implements Ageable{
-	public const NETWORK_ID = self::ZOMBIE;
+class Skeleton extends Monster implements RangedAttackerMob{
+
+	public const NETWORK_ID = self::SKELETON;
 
 	public $width = 0.6;
-	public $height = 1.95;
+	public $height = 1.99;
+
+	/** @var AltayEntityEquipment */
+	protected $equipment;
 
 	protected function initEntity() : void{
-		$this->setMovementSpeed($this->isBaby() ? 0.345 : 0.23);
+		$this->setMovementSpeed(0.25);
 		$this->setFollowRange(35);
-		$this->setAttackDamage(3);
+		$this->setAttackDamage(2);
+
+		$this->equipment = new AltayEntityEquipment($this);
+		$loot = $this->level->random->nextBoundedInt(100);
+		$bow = ItemFactory::get(Item::BOW);
+		if($loot <= 89){
+			$this->equipment->setItemInHand($bow);
+		}else{
+			$this->equipment->setOffhandItem($bow);
+		}
+
+		// TODO: Armors
 
 		parent::initEntity();
 	}
 
 	public function getName() : string{
-		return "Zombie";
+		return "Skeleton";
 	}
 
 	public function getDrops() : array{
-		$drops = [
-			ItemFactory::get(Item::ROTTEN_FLESH, 0, mt_rand(0, 2))
+		return [
+			ItemFactory::get(Item::BONE, 0, rand(0,2)),
+			ItemFactory::get(Item::ARROW, 0, rand(0,2))
 		];
-
-		if(mt_rand(0, 199) < 5){
-			switch(mt_rand(0, 2)){
-				case 0:
-					$drops[] = ItemFactory::get(Item::IRON_INGOT, 0, 1);
-					break;
-				case 1:
-					$drops[] = ItemFactory::get(Item::CARROT, 0, 1);
-					break;
-				case 2:
-					$drops[] = ItemFactory::get(Item::POTATO, 0, 1);
-					break;
-			}
-		}
-
-		return $drops;
 	}
 
 	public function getXpDropAmount() : int{
-		//TODO: check for equipment
-		return $this->isBaby() ? 12 : 5;
+		return 5;
 	}
 
 	protected function addBehaviors() : void{
 		$this->behaviorPool->setBehavior(0, new FloatBehavior($this));
+		$this->behaviorPool->setBehavior(1, new RestrictSunBehavior($this));
 		$this->behaviorPool->setBehavior(1, new MeleeAttackBehavior($this, 1.0));
 		$this->behaviorPool->setBehavior(2, new WanderBehavior($this, 1.0));
+		$this->behaviorPool->setBehavior(4, new RangedAttackBehavior($this, 1.0, 20, 60, 15.0));
 		$this->behaviorPool->setBehavior(3, new LookAtPlayerBehavior($this, 8.0));
 		$this->behaviorPool->setBehavior(4, new RandomLookAroundBehavior($this));
 
-		$this->targetBehaviorPool->setBehavior(1, new FindAttackableTargetBehavior($this, Player::class));
-		$this->targetBehaviorPool->setBehavior(2, new FindAttackableTargetBehavior($this, Villager::class));
+		$this->targetBehaviorPool->setBehavior(0, new FindAttackableTargetBehavior($this, Player::class));
+		//$this->targetBehaviorPool->setBehavior(2, new FindAttackableTargetBehavior($this, IronGolem::class));
+	}
+
+	public function onRangedAttackToTarget(Entity $target, float $power) : void{
+		$dir = $this->getDirectionVector();
+		/** @var Arrow $arrow */
+		$arrow = Entity::createEntity("Arrow", $this->level, Entity::createBaseNBT($this->add($dir)));
+		// TODO: Enchants
+		$arrow->setMotion($dir->multiply(3));
+		$arrow->setBaseDamage(4);
+		$arrow->spawnToAll();
 	}
 }

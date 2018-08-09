@@ -31,6 +31,8 @@ namespace pocketmine\entity;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\Water;
+use pocketmine\entity\hostile\Skeleton;
+use pocketmine\entity\hostile\Stray;
 use pocketmine\entity\object\ArmorStand;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\FallingBlock;
@@ -359,6 +361,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		Entity::registerEntity(Pig::class, false, [
 			'Pig',
 			'minecraft:pig'
+		]);
+		Entity::registerEntity(Skeleton::class, false, [
+			'Skeleton',
+			'minecraft:skeleton'
+		]);
+		Entity::registerEntity(Stray::class, false, [
+			'Stray',
+			'minecraft:stray'
 		]);
 
 		Entity::registerEntity(Human::class, true);
