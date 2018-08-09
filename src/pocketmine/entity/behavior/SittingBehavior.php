@@ -28,9 +28,6 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Tamable;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 
-/**
- * @property Tamable $mob
- */
 class SittingBehavior extends Behavior{
 
 	public function __construct(Tamable $mob){
@@ -38,7 +35,7 @@ class SittingBehavior extends Behavior{
 		$this->mutexBits = 1;
 	}
 
-	public function canStart(): bool{
+	public function canStart() : bool{
 		if(!$this->mob->isTamed() or !$this->mob->isBreathing()) return false;
 
 		$owner = $this->mob->getOwningEntity();

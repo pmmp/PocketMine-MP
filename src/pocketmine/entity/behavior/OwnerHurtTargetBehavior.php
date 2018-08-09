@@ -24,25 +24,22 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\behavior;
 
-class OwnerHurtTargetBehavior extends Behavior
-{
+class OwnerHurtTargetBehavior extends Behavior{
 
-    protected $mutexBits = 1;
+	protected $mutexBits = 1;
 
-    public function canStart(): bool
-    {
-        $owner = $this->mob->getOwningEntity();
+	public function canStart() : bool{
+		$owner = $this->mob->getOwningEntity();
 
-        if ($owner !== null) {
-            $this->mob->setTargetEntity($owner->getTargetEntity());
-            return true;
-        }
+		if($owner !== null){
+			$this->mob->setTargetEntity($owner->getTargetEntity());
+			return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    public function canContinue(): bool
-    {
-        return false;
-    }
+	public function canContinue() : bool{
+		return false;
+	}
 }

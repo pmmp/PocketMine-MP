@@ -24,23 +24,20 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\behavior;
 
-class PanicBehavior extends WanderBehavior
-{
+class PanicBehavior extends WanderBehavior{
 
-    public function canStart(): bool
-    {
-        if($this->mob->getLastAttacker() !== null or $this->mob->isOnFire()){
-            $this->targetPos = $this->findRandomTargetBlock($this->mob, 5, 4);
-            $this->followRange = $this->mob->distanceSquared($this->targetPos) + 2;
+	public function canStart() : bool{
+		if($this->mob->getLastAttacker() !== null or $this->mob->isOnFire()){
+			$this->targetPos = $this->findRandomTargetBlock($this->mob, 5, 4);
+			$this->followRange = $this->mob->distanceSquared($this->targetPos) + 2;
 
-            return true;
-        }
-        return false;
-    }
+			return true;
+		}
+		return false;
+	}
 
-    public function onEnd(): void
-    {
-        $this->mob->setLastAttacker(null);
-        parent::onEnd();
-    }
+	public function onEnd() : void{
+		$this->mob->setLastAttacker(null);
+		parent::onEnd();
+	}
 }

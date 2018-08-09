@@ -26,8 +26,7 @@ namespace pocketmine\entity\behavior;
 
 use pocketmine\Server;
 
-class BehaviorPool
-{
+class BehaviorPool{
 
 	/** @var Behavior[][] */
 	protected $behaviors = [];
@@ -36,45 +35,44 @@ class BehaviorPool
 	/** @var int */
 	protected $tickRate = 3;
 
-	public function __construct(array $behaviors = [])
-	{
+	public function __construct(array $behaviors = []){
 		$this->behaviors = $behaviors;
 	}
 
-	public function setBehavior(int $priority, Behavior $behavior): void
-	{
-		$this->behaviors[spl_object_hash($behavior)] = [$priority, $behavior];
+	public function setBehavior(int $priority, Behavior $behavior) : void{
+		$this->behaviors[spl_object_hash($behavior)] = [
+			$priority,
+			$behavior
+		];
 	}
 
-	public function removeBehavior(Behavior $behavior): void
-	{
+	public function removeBehavior(Behavior $behavior) : void{
 		unset($this->behaviors[spl_object_hash($behavior)]);
 	}
 
 	/**
 	 * Updates behaviors
 	 */
-	public function onUpdate(): void
-	{
-		if (Server::getInstance()->getTick() % $this->tickRate === 0) {
-			foreach ($this->workingBehaviors as $hash => $bh) {
-				if (isset($this->behaviors[$hash])) {
-					if (!$this->canUse($this->behaviors[$hash])) {
+	public function onUpdate() : void{
+		if(Server::getInstance()->getTick() % $this->tickRate === 0){
+			foreach($this->workingBehaviors as $hash => $bh){
+				if(isset($this->behaviors[$hash])){
+					if(!$this->canUse($this->behaviors[$hash])){
 						$bh->onEnd();
 						unset($this->workingBehaviors[$hash]);
 					}
 				}
 			}
 			/** @var \pocketmine\entity\behavior\Behavior[] $data */
-			foreach ($this->behaviors as $i => $data) {
-				if (!isset($this->workingBehaviors[$i]) and $data[1]->canStart() and $this->canUse($data)) {
+			foreach($this->behaviors as $i => $data){
+				if(!isset($this->workingBehaviors[$i]) and $data[1]->canStart() and $this->canUse($data)){
 					$this->workingBehaviors[$i] = $data[1];
 					$data[1]->onStart();
 				}
 			}
-		} else {
-			foreach ($this->workingBehaviors as $hash => $b) {
-				if (!$b->canContinue()) {
+		}else{
+			foreach($this->workingBehaviors as $hash => $b){
+				if(!$b->canContinue()){
 					$b->onEnd();
 					unset($this->workingBehaviors[$hash]);
 				}

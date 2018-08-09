@@ -36,6 +36,6 @@ class PathPoint extends Vector2{
 	}
 
 	public function equals(Vector2 $v) : bool{
-        return $this->x == $v->x and $this->y == $v->y;
-    }
+		return $this->x == $v->x and $this->y == $v->y;
+	}
 }

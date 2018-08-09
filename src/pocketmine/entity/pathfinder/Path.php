@@ -44,45 +44,42 @@ class Path{
 	}
 
 	public function getVectorByIndex(int $index) : ?Vector3{
-	    $point = $this->getPointByIndex($index);
-	    if($point === null) return null;
+		$point = $this->getPointByIndex($index);
+		if($point === null) return null;
 
-	    return new Vector3($point->x, $point->height, $point->y);
+		return new Vector3($point->x, $point->height, $point->y);
 	}
 
 	public function getPointByIndex(int $index) : ?PathPoint{
-	    return $this->points[$index] ?? null;
-    }
+		return $this->points[$index] ?? null;
+	}
 
-    public function removePoint(int $index) : void{
-	    unset($this->points[$index]);
-    }
+	public function removePoint(int $index) : void{
+		unset($this->points[$index]);
+	}
 
-    /**
-     * @return PathPoint[]
-     */
-    public function getPoints(): array
-    {
-        return $this->points;
-    }
+	/**
+	 * @return PathPoint[]
+	 */
+	public function getPoints() : array{
+		return $this->points;
+	}
 
-    /**
-     * @return int
-     */
-    public function getCurrentIndex(): int
-    {
-        return $this->currentIndex;
-    }
+	/**
+	 * @return int
+	 */
+	public function getCurrentIndex() : int{
+		return $this->currentIndex;
+	}
 
-    /**
-     * @param int $currentIndex
-     */
-    public function setCurrentIndex(int $currentIndex): void
-    {
-        $this->currentIndex = $currentIndex;
-    }
+	/**
+	 * @param int $currentIndex
+	 */
+	public function setCurrentIndex(int $currentIndex) : void{
+		$this->currentIndex = $currentIndex;
+	}
 
-    public function limitPath(int $maxLength) : void{
-        $this->points = array_slice($this->points, 0, $maxLength + 1);
-    }
+	public function limitPath(int $maxLength) : void{
+		$this->points = array_slice($this->points, 0, $maxLength + 1);
+	}
 }

@@ -27,57 +27,48 @@ namespace pocketmine\entity\behavior;
 use pocketmine\entity\Mob;
 use pocketmine\utils\Random;
 
-abstract class Behavior
-{
+abstract class Behavior{
 
-    /** @var Mob */
-    protected $mob;
-    /** @var Random */
-    protected $random;
-    /** @var int */
-    protected $mutexBits = 0;
+	/** @var Mob */
+	protected $mob;
+	/** @var Random */
+	protected $random;
+	/** @var int */
+	protected $mutexBits = 0;
 
-    public function getName(): string
-    {
-        return (new \ReflectionClass($this))->getShortName();
-    }
+	public function getName() : string{
+		return (new \ReflectionClass($this))->getShortName();
+	}
 
-    public function __construct(Mob $mob)
-    {
-        $this->mob = $mob;
-        $this->random = $mob->level->random;
-    }
+	public function __construct(Mob $mob){
+		$this->mob = $mob;
+		$this->random = $mob->level->random;
+	}
 
-    public abstract function canStart(): bool;
+	public abstract function canStart() : bool;
 
-    public function onStart(): void
-    {
-    }
+	public function onStart() : void{
+	}
 
-    public function canContinue(): bool
-    {
-        return $this->canStart();
-    }
+	public function canContinue() : bool{
+		return $this->canStart();
+	}
 
-    public function onTick(): void
-    {
-    }
+	public function onTick() : void{
+	}
 
-    public function onEnd(): void
-    {
-    }
+	public function onEnd() : void{
+	}
 
-    public function setMutexBits(int $bit): void
-    {
-        $this->mutexBits = $bit;
-    }
+	public function setMutexBits(int $bit) : void{
+		$this->mutexBits = $bit;
+	}
 
-    public function getMutexBits(): int
-    {
-        return $this->mutexBits;
-    }
+	public function getMutexBits() : int{
+		return $this->mutexBits;
+	}
 
-    public function isMutable() : bool{
-        return true;
-    }
+	public function isMutable() : bool{
+		return true;
+	}
 }

@@ -110,9 +110,9 @@ class Villager extends Creature implements NPC, Ageable{
 	}
 
 	public function updateTradeItems() : void{
-	    $this->offers = new CompoundTag("Offers", [
-	        new ListTag("Recipes", TradeItems::getItemsForVillager($this))
-        ]);
+		$this->offers = new CompoundTag("Offers", [
+			new ListTag("Recipes", TradeItems::getItemsForVillager($this))
+		]);
 	}
 
 	public function updateTradeTier() : void{
@@ -120,7 +120,8 @@ class Villager extends Creature implements NPC, Ageable{
 		try{
 			$this->setTradeTier($tradeTier);
 			$this->addEffect(new EffectInstance(Effect::getEffect(Effect::REGENERATION), mt_rand(2, 5) * 20));
-		}catch(\InvalidArgumentException $exception){}
+		}catch(\InvalidArgumentException $exception){
+		}
 	}
 
 	public function setTradeTier(int $tradeTier) : void{

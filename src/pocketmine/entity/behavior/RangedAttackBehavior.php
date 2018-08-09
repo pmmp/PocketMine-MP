@@ -25,11 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\behavior;
 
 use pocketmine\entity\Mob;
-use pocketmine\entity\RangedAttackerMob;
 
-/**
- * @property Mob|RangedAttackerMob $mob
- */
 class RangedAttackBehavior extends Behavior{
 
 	/** @var float */

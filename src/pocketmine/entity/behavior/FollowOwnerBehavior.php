@@ -27,10 +27,6 @@ namespace pocketmine\entity\behavior;
 use pocketmine\entity\Tamable;
 use pocketmine\Player;
 
-/**
- * Override necessary
- * @property Tamable $mob
- */
 class FollowOwnerBehavior extends Behavior
 {
 

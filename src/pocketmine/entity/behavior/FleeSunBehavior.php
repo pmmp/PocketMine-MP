@@ -64,12 +64,12 @@ class FleeSunBehavior extends Behavior{
 		return $this->mob->getNavigator()->havePath();
 	}
 
-	public function onEnd(): void{
+	public function onEnd() : void{
 		$this->mob->resetMotion();
 		$this->mob->getNavigator()->clearPath();
 	}
 
-	public function findPossibleShelter(Entity $entity): ?Block{
+	public function findPossibleShelter(Entity $entity) : ?Block{
 		for($i = 0; $i < 10; $i++){
 			$block = $this->mob->level->getBlock($this->mob->add($this->random->nextBoundedInt(20) - 10, $this->random->nextBoundedInt(6) - 3, $this->random->nextBoundedInt(20) - 10));
 			$canSeeSky = $entity->level->getHighestBlockAt($block->x, $block->z) <= $block->y;
@@ -84,7 +84,11 @@ class FleeSunBehavior extends Behavior{
 	public function calculateBlockWeight(Entity $entity, Block $block, Block $blockDown) : int{
 		if($block instanceof Water) return -1;
 
-		$vec = [$block->getX(), $block->getY(), $block->getZ()];
+		$vec = [
+			$block->getX(),
+			$block->getY(),
+			$block->getZ()
+		];
 		$max = max($entity->level->getBlockLightAt(...$vec), $entity->level->getBlockSkyLightAt(...$vec));
 		return $entity instanceof Animal ? ($blockDown instanceof Grass ? 20 : (int) ($max - 0.5)) : (int) (0.5 - $max);
 	}
