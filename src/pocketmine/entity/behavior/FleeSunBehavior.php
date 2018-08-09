@@ -47,7 +47,7 @@ class FleeSunBehavior extends Behavior{
 	}
 
 	public function canStart() : bool{
-		if($this->mob->isOnFire() and $this->mob->level->canSeeSky($this->mob->floor()) and $this->mob->level->isDayTime()){
+		if($this->mob->isOnFire() and $this->mob->level->isDayTime() and $this->mob->level->canSeeSky($this->mob->floor())){
 			$this->shelter = $this->findPossibleShelter($this->mob);
 
 			return $this->shelter !== null;
@@ -72,24 +72,12 @@ class FleeSunBehavior extends Behavior{
 	public function findPossibleShelter(Entity $entity) : ?Block{
 		for($i = 0; $i < 10; $i++){
 			$block = $this->mob->level->getBlock($this->mob->add($this->random->nextBoundedInt(20) - 10, $this->random->nextBoundedInt(6) - 3, $this->random->nextBoundedInt(20) - 10));
-			$canSeeSky = $entity->level->getHighestBlockAt($block->x, $block->z) <= $block->y;
+			$canSeeSky = $this->mob->level->canSeeSky($block);
 			if(!$block->isSolid() and ($block instanceof Water or !$canSeeSky)){
 				return $block;
 			}
 		}
 
 		return null;
-	}
-
-	public function calculateBlockWeight(Entity $entity, Block $block, Block $blockDown) : int{
-		if($block instanceof Water) return -1;
-
-		$vec = [
-			$block->getX(),
-			$block->getY(),
-			$block->getZ()
-		];
-		$max = max($entity->level->getBlockLightAt(...$vec), $entity->level->getBlockSkyLightAt(...$vec));
-		return $entity instanceof Animal ? ($blockDown instanceof Grass ? 20 : (int) ($max - 0.5)) : (int) (0.5 - $max);
 	}
 }

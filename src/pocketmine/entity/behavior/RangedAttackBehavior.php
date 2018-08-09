@@ -25,6 +25,9 @@ declare(strict_types=1);
 namespace pocketmine\entity\behavior;
 
 use pocketmine\entity\Mob;
+use pocketmine\entity\RangedAttackerMob;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\event\entity\EntityDamageEvent;
 
 class RangedAttackBehavior extends Behavior{
 
@@ -79,10 +82,11 @@ class RangedAttackBehavior extends Behavior{
 		if($dist <= $this->maxAttackDistance and $this->targetSeenTicks >= 20){
 			$this->mob->getNavigator()->clearPath();
 		}else{
-			$this->mob->getNavigator()->tryMoveTo($this->mob->getTargetEntity(), $this->speedMultiplier);
+			$this->mob->getNavigator()->tryMoveTo($targetEntity, $this->speedMultiplier);
 		}
 
-		$this->mob->setLookPosition($this->mob->getTargetEntity());
+		$this->mob->setLookPosition($targetEntity);
+		$this->mob->lookAt($targetEntity);
 
 		if(--$this->rangedAttackTime <= 0){
 			if($dist > $this->maxAttackDistance or !$flag){
@@ -93,7 +97,14 @@ class RangedAttackBehavior extends Behavior{
 			if($f > 1) $f = 1;
 			if($f < 0.1) $f = 0.1;
 
-			$this->mob->onRangedAttackToTarget($this->mob->getTargetEntity(), $f);
+			if($this->mob instanceof RangedAttackerMob){
+				$this->mob->onRangedAttackToTarget($this->mob->getTargetEntity(), $f);
+			}
+
+			if($dist < 1){
+				$targetEntity->attack(new EntityDamageByEntityEvent($this->mob, $targetEntity, EntityDamageEvent::CAUSE_CUSTOM, $this->mob->getAttackDamage()));
+			}
+
 			$this->rangedAttackTime = floor($f * ($this->maxAttackTime - $this->minAttackTime) + $this->minAttackTime);
 		}
 	}

@@ -56,6 +56,8 @@ class Skeleton extends Monster implements RangedAttackerMob{
 		$this->setFollowRange(35);
 		$this->setAttackDamage(2);
 
+		parent::initEntity();
+
 		$this->equipment = new AltayEntityEquipment($this);
 		$loot = $this->level->random->nextBoundedInt(100);
 		$bow = ItemFactory::get(Item::BOW);
@@ -66,8 +68,6 @@ class Skeleton extends Monster implements RangedAttackerMob{
 		}
 
 		// TODO: Armors
-
-		parent::initEntity();
 	}
 
 	public function getName() : string{
@@ -88,9 +88,8 @@ class Skeleton extends Monster implements RangedAttackerMob{
 	protected function addBehaviors() : void{
 		$this->behaviorPool->setBehavior(0, new FloatBehavior($this));
 		$this->behaviorPool->setBehavior(1, new RestrictSunBehavior($this));
-		$this->behaviorPool->setBehavior(1, new MeleeAttackBehavior($this, 1.0));
 		$this->behaviorPool->setBehavior(2, new WanderBehavior($this, 1.0));
-		$this->behaviorPool->setBehavior(4, new RangedAttackBehavior($this, 1.0, 20, 60, 15.0));
+		$this->behaviorPool->setBehavior(2, new RangedAttackBehavior($this, 1.0, 20, 60, 15.0));
 		$this->behaviorPool->setBehavior(3, new LookAtPlayerBehavior($this, 8.0));
 		$this->behaviorPool->setBehavior(4, new RandomLookAroundBehavior($this));
 
@@ -101,10 +100,25 @@ class Skeleton extends Monster implements RangedAttackerMob{
 	public function onRangedAttackToTarget(Entity $target, float $power) : void{
 		$dir = $this->getDirectionVector();
 		/** @var Arrow $arrow */
-		$arrow = Entity::createEntity("Arrow", $this->level, Entity::createBaseNBT($this->add($dir)));
+		$arrow = Entity::createEntity("Arrow", $this->level, Entity::createBaseNBT($this->add($dir->add(0, $this->getEyeHeight(), 0))));
 		// TODO: Enchants
-		$arrow->setMotion($dir->multiply(3));
-		$arrow->setBaseDamage(4);
+		$arrow->setMotion($dir->multiply(3)->add($this->level->random->nextFloat() * 0.02, $this->level->random->nextFloat() * 0.01 , $this->level->random->nextFloat() * 0.02));
+		$arrow->setBaseDamage(2);
 		$arrow->spawnToAll();
+	}
+
+	public function entityBaseTick(int $diff = 1) : bool{
+		if(!$this->isOnFire() and $this->level->isDayTime()){
+			if($this->level->canSeeSky($this)){
+				$this->setOnFire(5);
+			}
+		}
+		return parent::entityBaseTick($diff);
+	}
+
+	public function sendSpawnPacket(Player $player) : void{
+		parent::sendSpawnPacket($player);
+
+		$this->equipment->sendContents([$player]);
 	}
 }

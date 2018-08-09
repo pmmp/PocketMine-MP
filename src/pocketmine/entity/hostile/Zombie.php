@@ -92,4 +92,13 @@ class Zombie extends Monster implements Ageable{
 		$this->targetBehaviorPool->setBehavior(1, new FindAttackableTargetBehavior($this, Player::class));
 		$this->targetBehaviorPool->setBehavior(2, new FindAttackableTargetBehavior($this, Villager::class));
 	}
+
+	public function entityBaseTick(int $diff = 1) : bool{
+		if(!$this->isOnFire() and $this->level->isDayTime()){
+			if($this->level->canSeeSky($this)){
+				$this->setOnFire(5);
+			}
+		}
+		return parent::entityBaseTick($diff);
+	}
 }
