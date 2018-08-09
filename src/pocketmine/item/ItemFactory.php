@@ -111,7 +111,7 @@ class ItemFactory{
         self::registerItem(new Bucket());
 
         self::registerItem(new Minecart());
-        //TODO: SADDLE
+        self::registerItem(new Saddle());
         self::registerItem(new ItemBlock(Block::IRON_DOOR_BLOCK, 0, Item::IRON_DOOR));
         self::registerItem(new Redstone());
         self::registerItem(new Snowball());

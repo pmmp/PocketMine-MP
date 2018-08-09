@@ -98,7 +98,7 @@ class Sheep extends Tamable{
     public function getDrops() : array{
         return [
             ItemFactory::get(Item::WOOL, intval($this->propertyManager->getByte(self::DATA_COLOR)), $this->isSheared() ? 0 : 1),
-            ($this->getLastDamageCause() instanceof EntityCombustEvent ? ItemFactory::get(Item::STEAK, 0, rand(1,3)) : ItemFactory::get(Item::RAW_BEEF, 0, rand(1,3)))
+            ($this->getLastDamageCause() instanceof EntityCombustEvent ? ItemFactory::get(Item::COOKED_MUTTON, 0, rand(1,3)) : ItemFactory::get(Item::RAW_MUTTON, 0, rand(1,3)))
         ];
     }
 

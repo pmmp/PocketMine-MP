@@ -39,6 +39,8 @@ use pocketmine\entity\object\Painting;
 use pocketmine\entity\object\PrimedTNT;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\passive\Cow;
+use pocketmine\entity\passive\Mooshroom;
+use pocketmine\entity\passive\Pig;
 use pocketmine\entity\passive\Sheep;
 use pocketmine\entity\passive\Wolf;
 use pocketmine\entity\projectile\Arrow;
@@ -349,6 +351,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		Entity::registerEntity(Sheep::class, false, [
 			'Sheep',
 			'minecraft:sheep'
+		]);
+		Entity::registerEntity(Mooshroom::class, false, [
+			'Mooshroom',
+			'minecraft:mooshroom'
+		]);
+		Entity::registerEntity(Pig::class, false, [
+			'Pig',
+			'minecraft:pig'
 		]);
 
 		Entity::registerEntity(Human::class, true);
