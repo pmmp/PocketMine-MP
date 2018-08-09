@@ -27,6 +27,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\Player;
 
 class BanIpCommand extends VanillaCommand{
@@ -35,7 +36,11 @@ class BanIpCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"%pocketmine.command.ban.ip.description",
-			"%commands.banip.usage"
+			"%commands.banip.usage",
+            [], [[
+                new CommandParameter("ip", CommandParameter::ARG_TYPE_VALUE, false),
+                new CommandParameter("reason", CommandParameter::ARG_TYPE_RAWTEXT, false)
+            ]]
 		);
 		$this->setPermission("pocketmine.command.ban.ip");
 	}

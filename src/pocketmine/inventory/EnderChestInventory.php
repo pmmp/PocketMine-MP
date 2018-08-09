@@ -65,4 +65,5 @@ class EnderChestInventory extends ChestInventory{
 	public function getHolder(){
 		return $this->holder;
 	}
+
 }

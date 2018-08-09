@@ -27,6 +27,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
 class MobSpawnParticle extends Particle{
+
 	/** @var int */
 	protected $width;
 	/** @var int */

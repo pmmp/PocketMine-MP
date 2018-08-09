@@ -1,0 +1,141 @@
+{
+    "speed": {
+        "id": 1,
+        "color": "#FF7CAFC6",
+        "name": "moveSpeed"
+    },
+    "slowness": {
+        "id": 2,
+        "color": "#FF5A6C81",
+        "name": "moveSlowdown",
+        "isBad": true
+    },
+    "haste": {
+        "id": 3,
+        "color": "#FFD9C043",
+        "name": "digSpeed"
+    },
+    "mining_fatigue": {
+        "id": 4,
+        "color": "#FF4A4217",
+        "name": "digSlowDown",
+        "isBad": true
+    },
+    "strength": {
+        "id": 5,
+        "color": "#FF932423",
+        "name": "damageBoost"
+    },
+    "instant_health": {
+        "id": 6,
+        "color": "#FFF82423",
+        "name": "heal",
+        "default_duration": 1,
+        "has_bubbles": false
+    },
+    "instant_damage": {
+        "id": 7,
+        "color": "#FF430A09",
+        "name": "harm",
+        "isBad": true,
+        "default_duration": 1,
+        "has_bubbles": false
+    },
+    "jump_boost": {
+        "id": 8,
+        "color": "#FF22FF4C",
+        "name": "jump"
+    },
+    "nausea": {
+        "id": 9,
+        "color": "#FF551D4A",
+        "name": "confusion",
+        "isBad": true
+    },
+    "regeneration": {
+        "id": 10,
+        "color": "#FFCD5CAB",
+        "name": "regeneration"
+    },
+    "resistance": {
+        "id": 11,
+        "color": "#FF99453A",
+        "name": "resistance"
+    },
+    "fire_resistance": {
+        "id": 12,
+        "color": "#FFE49A3A",
+        "name": "fireResistance"
+    },
+    "water_breathing": {
+        "id": 13,
+        "color": "#FF2E5299",
+        "name": "waterBreathing"
+    },
+    "invisibility": {
+        "id": 14,
+        "color": "#FF7F8392",
+        "name": "invisibility"
+    },
+    "blindness": {
+        "id": 15,
+        "color": "#FF1F1F23",
+        "name": "blindness",
+        "isBad": true
+    },
+    "night_vision": {
+        "id": 16,
+        "color": "#FF1F1FA1",
+        "name": "nightVision"
+    },
+    "hunger": {
+        "id": 17,
+        "color": "#FF587653",
+        "name": "hunger",
+        "isBad": true
+    },
+    "weakness": {
+        "id": 18,
+        "color": "#FF484D48",
+        "name": "weakness",
+        "isBad": true
+    },
+    "poison": {
+        "id": 19,
+        "color": "#FF4E9331",
+        "name": "poison",
+        "isBad": true
+    },
+    "wither": {
+        "id": 20,
+        "color": "#FF352A27",
+        "name": "wither",
+        "isBad": true
+    },
+    "health_boost": {
+        "id": 21,
+        "color": "#FFF87D23",
+        "name": "healthBoost"
+    },
+    "absorption": {
+        "id": 22,
+        "color": "#FF2552A5",
+        "name": "absorption"
+    },
+    "saturation": {
+        "id": 23,
+        "color": "#FFF82423",
+        "name": "saturation"
+    },
+    "levitation": {
+        "id": 24,
+        "color": "#FFCEFFFF",
+        "name": "levitation"
+    },
+    "fatal_poison": {
+        "id": 25,
+        "color": "#FF4E9331",
+        "name": "poison",
+        "isBad": true
+    }
+}

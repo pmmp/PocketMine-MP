@@ -27,54 +27,54 @@ use pocketmine\permission\ServerOperator;
 
 interface IPlayer extends ServerOperator{
 
-	/**
-	 * @return bool
-	 */
-	public function isOnline() : bool;
+    /**
+     * @return bool
+     */
+    public function isOnline() : bool;
 
-	/**
-	 * @return string
-	 */
-	public function getName() : string;
+    /**
+     * @return string
+     */
+    public function getName() : string;
 
-	/**
-	 * @return bool
-	 */
-	public function isBanned() : bool;
+    /**
+     * @return bool
+     */
+    public function isBanned() : bool;
 
-	/**
-	 * @param bool $banned
-	 */
-	public function setBanned(bool $banned);
+    /**
+     * @param bool $banned
+     */
+    public function setBanned(bool $banned);
 
-	/**
-	 * @return bool
-	 */
-	public function isWhitelisted() : bool;
+    /**
+     * @return bool
+     */
+    public function isWhitelisted() : bool;
 
-	/**
-	 * @param bool $value
-	 */
-	public function setWhitelisted(bool $value);
+    /**
+     * @param bool $value
+     */
+    public function setWhitelisted(bool $value);
 
-	/**
-	 * @return Player|null
-	 */
-	public function getPlayer();
+    /**
+     * @return Player|null
+     */
+    public function getPlayer();
 
-	/**
-	 * @return int|null
-	 */
-	public function getFirstPlayed();
+    /**
+     * @return int|null
+     */
+    public function getFirstPlayed();
 
-	/**
-	 * @return int|null
-	 */
-	public function getLastPlayed();
+    /**
+     * @return int|null
+     */
+    public function getLastPlayed();
 
-	/**
-	 * @return bool
-	 */
-	public function hasPlayedBefore() : bool;
+    /**
+     * @return bool
+     */
+    public function hasPlayedBefore() : bool;
 
 }

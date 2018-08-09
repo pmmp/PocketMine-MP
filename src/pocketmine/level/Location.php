@@ -28,6 +28,8 @@ use pocketmine\math\Vector3;
 class Location extends Position{
 
 	/** @var float */
+	public $headYaw;
+	/** @var float */
 	public $yaw;
 	/** @var float */
 	public $pitch;
@@ -65,6 +67,10 @@ class Location extends Position{
 	 */
 	public function asLocation() : Location{
 		return new Location($this->x, $this->y, $this->z, $this->yaw, $this->pitch, $this->level);
+	}
+
+	public function getHeadYaw() : float{
+		return $this->headYaw;
 	}
 
 	public function getYaw(){

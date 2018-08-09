@@ -24,7 +24,6 @@ declare(strict_types=1);
 /**
  * Permission related classes
  */
-
 namespace pocketmine\permission;
 
 /**
@@ -152,9 +151,9 @@ class Permission{
 	/**
 	 * Creates a new Permission object to be attached to Permissible objects
 	 *
-	 * @param string $name
-	 * @param string $description
-	 * @param string $defaultValue
+	 * @param string       $name
+	 * @param string       $description
+	 * @param string       $defaultValue
 	 * @param bool[] $children
 	 */
 	public function __construct(string $name, string $description = null, string $defaultValue = null, array $children = []){

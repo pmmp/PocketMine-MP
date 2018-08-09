@@ -32,10 +32,10 @@ class Potato extends Food{
 	}
 
 	public function getBlock() : Block{
-		return BlockFactory::get(Block::POTATO_BLOCK);
-	}
+        return BlockFactory::get(Block::POTATO_BLOCK);
+    }
 
-	public function getFoodRestore() : int{
+    public function getFoodRestore() : int{
 		return 1;
 	}
 

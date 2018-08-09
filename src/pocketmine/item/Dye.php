@@ -30,3 +30,4 @@ class Dye extends Item{
 
 	//TODO: names
 }
+

@@ -36,3 +36,4 @@ class Cookie extends Food{
 		return 0.4;
 	}
 }
+

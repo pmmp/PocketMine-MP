@@ -1,23 +1,24 @@
 <?php
 
 /*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *               _ _
+ *         /\   | | |
+ *        /  \  | | |_ __ _ _   _
+ *       / /\ \ | | __/ _` | | | |
+ *      / ____ \| | || (_| | |_| |
+ *     /_/    \_|_|\__\__,_|\__, |
+ *                           __/ |
+ *                          |___/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Altay
  *
- *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -33,8 +34,8 @@ use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -49,6 +50,7 @@ abstract class Tile extends Position{
 	public const TAG_Z = "z";
 
 	public const BANNER = "Banner";
+	public const BEACON = "Beacon";
 	public const BED = "Bed";
 	public const BREWING_STAND = "BrewingStand";
 	public const CHEST = "Chest";
@@ -56,10 +58,14 @@ abstract class Tile extends Position{
 	public const ENDER_CHEST = "EnderChest";
 	public const FLOWER_POT = "FlowerPot";
 	public const FURNACE = "Furnace";
+	public const HOPPER = "Hopper";
 	public const ITEM_FRAME = "ItemFrame";
+	public const JUKEBOX = "Jukebox";
 	public const MOB_SPAWNER = "MobSpawner";
+	public const NOTEBLOCK = "noteblock";
 	public const SIGN = "Sign";
 	public const SKULL = "Skull";
+	public const SHULKER_BOX = "ShulkerBox";
 
 	/** @var int */
 	public static $tileCount = 1;
@@ -82,15 +88,22 @@ abstract class Tile extends Position{
 
 	public static function init(){
 		self::registerTile(Banner::class, [self::BANNER, "minecraft:banner"]);
+		self::registerTile(Beacon::class, [self::BEACON, "minecraft:beacon"]);
 		self::registerTile(Bed::class, [self::BED, "minecraft:bed"]);
 		self::registerTile(Chest::class, [self::CHEST, "minecraft:chest"]);
 		self::registerTile(EnchantTable::class, [self::ENCHANT_TABLE, "minecraft:enchanting_table"]);
 		self::registerTile(EnderChest::class, [self::ENDER_CHEST, "minecraft:ender_chest"]);
 		self::registerTile(FlowerPot::class, [self::FLOWER_POT, "minecraft:flower_pot"]);
 		self::registerTile(Furnace::class, [self::FURNACE, "minecraft:furnace"]);
+		self::registerTile(Hopper::class, [self::HOPPER, "minecraft:hopper"]);
 		self::registerTile(ItemFrame::class, [self::ITEM_FRAME]); //this is an entity in PC
+		self::registerTile(Jukebox::class, [self::JUKEBOX, "minecraft:jukebox"]);
+		self::registerTile(NoteBlock::class, [self::NOTEBLOCK, "minecraft:noteblock"]);
 		self::registerTile(Sign::class, [self::SIGN, "minecraft:sign"]);
 		self::registerTile(Skull::class, [self::SKULL, "minecraft:skull"]);
+		self::registerTile(ShulkerBox::class, [self::SHULKER_BOX, "minecraft:shulker_box"]);
+		self::registerTile(MobSpawner::class, [self::MOB_SPAWNER, "minecraft:mob_spawner"]);
+
 	}
 
 	/**
@@ -277,4 +290,5 @@ abstract class Tile extends Position{
 	public function getName() : string{
 		return $this->name;
 	}
+
 }

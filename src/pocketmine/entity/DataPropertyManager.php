@@ -148,9 +148,9 @@ class DataPropertyManager{
 	}
 
 	/**
-	 * @param int  $key
+	 * @param int                   $key
 	 * @param Item $value
-	 * @param bool $force
+	 * @param bool                  $force
 	 */
 	public function setItem(int $key, Item $value, bool $force = false) : void{
 		$this->setPropertyValue($key, Entity::DATA_TYPE_SLOT, $value, $force);

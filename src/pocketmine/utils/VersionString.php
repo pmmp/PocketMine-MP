@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
-
 /**
  * Manages PocketMine-MP version strings, and compares them
  */
