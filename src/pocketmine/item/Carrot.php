@@ -32,10 +32,10 @@ class Carrot extends Food{
 	}
 
 	public function getBlock() : Block{
-		return BlockFactory::get(Block::CARROT_BLOCK);
-	}
+        return BlockFactory::get(Block::CARROT_BLOCK);
+    }
 
-	public function getFoodRestore() : int{
+    public function getFoodRestore() : int{
 		return 3;
 	}
 

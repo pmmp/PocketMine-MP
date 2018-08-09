@@ -27,6 +27,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
 class GenericParticle extends Particle{
+
 	/** @var int */
 	protected $id;
 	/** @var int */

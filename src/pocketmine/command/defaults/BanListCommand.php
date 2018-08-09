@@ -26,18 +26,25 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\network\mcpe\protocol\types\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\permission\BanEntry;
 
 class BanListCommand extends VanillaCommand{
 
-	public function __construct(string $name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.banlist.description",
-			"%commands.banlist.usage"
-		);
-		$this->setPermission("pocketmine.command.ban.list");
-	}
+    public function __construct(string $name){
+        parent::__construct(
+            $name,
+            "%pocketmine.command.banlist.description",
+            "%commands.banlist.usage",
+            [], [[
+                new CommandParameter("args", CommandParameter::ARG_TYPE_STRING, false, new CommandEnum("banlist", [
+                    "ip", "players"
+                ]))
+            ]]
+        );
+        $this->setPermission("pocketmine.command.ban.list");
+    }
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
 		if(!$this->testPermission($sender)){

@@ -31,5 +31,9 @@ class ActivatorRail extends Rail{
 		return "Activator Rail";
 	}
 
+	public function isPowered() : bool{
+		return false;
+	}
+
 	//TODO
 }

@@ -30,14 +30,14 @@ use pocketmine\level\format\io\region\PMAnvil;
 use pocketmine\utils\Utils;
 
 abstract class LevelProviderManager{
-	protected static $providers = [];
+    protected static $providers = [];
 
-	public static function init() : void{
-		self::addProvider(Anvil::class);
-		self::addProvider(McRegion::class);
-		self::addProvider(PMAnvil::class);
-		self::addProvider(LevelDB::class);
-	}
+    public static function init() : void{
+        self::addProvider(Anvil::class);
+        self::addProvider(McRegion::class);
+        self::addProvider(PMAnvil::class);
+        self::addProvider(LevelDB::class);
+    }
 
 	/**
 	 * @param string $class
@@ -45,38 +45,38 @@ abstract class LevelProviderManager{
 	 * @throws \InvalidArgumentException
 	 */
 	public static function addProvider(string $class){
-		Utils::testValidInstance($class, LevelProvider::class);
+		Utils::testValidInstance( $class ,LevelProvider::class);
 
-		/** @var LevelProvider $class */
-		self::$providers[strtolower($class::getProviderName())] = $class;
-	}
+        /** @var LevelProvider $class */
+        self::$providers[strtolower($class::getProviderName())] = $class;
+    }
 
-	/**
-	 * Returns a LevelProvider class for this path, or null
-	 *
-	 * @param string $path
-	 *
-	 * @return string|null
-	 */
-	public static function getProvider(string $path){
-		foreach(self::$providers as $provider){
-			/** @var $provider LevelProvider */
-			if($provider::isValid($path)){
-				return $provider;
-			}
-		}
+    /**
+     * Returns a LevelProvider class for this path, or null
+     *
+     * @param string $path
+     *
+     * @return string|null
+     */
+    public static function getProvider(string $path){
+        foreach(self::$providers as $provider){
+            /** @var $provider LevelProvider */
+            if($provider::isValid($path)){
+                return $provider;
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Returns a LevelProvider by name, or null if not found
-	 *
-	 * @param string $name
-	 *
-	 * @return string|null
-	 */
-	public static function getProviderByName(string $name){
-		return self::$providers[trim(strtolower($name))] ?? null;
-	}
+    /**
+     * Returns a LevelProvider by name, or null if not found
+     *
+     * @param string $name
+     *
+     * @return string|null
+     */
+    public static function getProviderByName(string $name){
+        return self::$providers[trim(strtolower($name))] ?? null;
+    }
 }

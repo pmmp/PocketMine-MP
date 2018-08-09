@@ -27,19 +27,24 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
 class KickCommand extends VanillaCommand{
 
-	public function __construct(string $name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.kick.description",
-			"%commands.kick.usage"
-		);
-		$this->setPermission("pocketmine.command.kick");
-	}
+    public function __construct(string $name){
+        parent::__construct(
+            $name,
+            "%pocketmine.command.kick.description",
+            "%commands.kick.usage",
+            [], [[
+                new CommandParameter("player", CommandParameter::ARG_TYPE_TARGET, false),
+                new CommandParameter("reason", CommandParameter::ARG_TYPE_RAWTEXT)
+            ]]
+        );
+        $this->setPermission("pocketmine.command.kick");
+    }
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
 		if(!$this->testPermission($sender)){

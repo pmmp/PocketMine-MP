@@ -28,14 +28,14 @@ use pocketmine\network\mcpe\protocol\PacketPool;
 
 class PacketStream extends NetworkBinaryStream{
 
-	public function putPacket(DataPacket $packet) : void{
-		if(!$packet->isEncoded){
-			$packet->encode();
-		}
-		$this->putString($packet->buffer);
-	}
+    public function putPacket(DataPacket $packet) : void{
+        if(!$packet->isEncoded){
+            $packet->encode();
+        }
+        $this->putString($packet->buffer);
+    }
 
-	public function getPacket() : DataPacket{
-		return PacketPool::getPacket($this->getString());
-	}
+    public function getPacket() : DataPacket{
+        return PacketPool::getPacket($this->getString());
+    }
 }

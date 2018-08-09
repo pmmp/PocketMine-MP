@@ -28,28 +28,28 @@ use pocketmine\Server;
 
 class CompressBatchedTask extends AsyncTask{
 
-	private $level;
-	private $data;
+    private $level;
+    private $data;
 
-	/**
-	 * @param PacketStream     $stream
+    /**
+     * @param PacketStream $stream
 	 * @param NetworkSession[] $targets
-	 * @param int              $compressionLevel
-	 */
-	public function __construct(PacketStream $stream, array $targets, int $compressionLevel){
-		$this->data = $stream->buffer;
-		$this->level = $compressionLevel;
-		$this->storeLocal($targets);
-	}
+     * @param int          $compressionLevel
+     */
+    public function __construct(PacketStream $stream, array $targets, int $compressionLevel){
+        $this->data = $stream->buffer;
+        $this->level = $compressionLevel;
+        $this->storeLocal($targets);
+    }
 
-	public function onRun() : void{
-		$this->setResult(NetworkCompression::compress($this->data, $this->level), false);
-	}
+    public function onRun() : void{
+        $this->setResult(NetworkCompression::compress($this->data, $this->level), false);
+    }
 
-	public function onCompletion(Server $server) : void{
+    public function onCompletion(Server $server) : void{
 		/** @var NetworkSession[] $targets */
-		$targets = $this->fetchLocal();
+        $targets = $this->fetchLocal();
 
-		$server->broadcastPacketsCallback($this->getResult(), $targets);
-	}
+        $server->broadcastPacketsCallback($this->getResult(), $targets);
+    }
 }

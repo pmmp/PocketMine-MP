@@ -36,3 +36,4 @@ class Steak extends Food{
 		return 12.8;
 	}
 }
+

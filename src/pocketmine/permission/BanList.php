@@ -185,4 +185,5 @@ class BanList{
 			MainLogger::getLogger()->error("Could not save ban list");
 		}
 	}
+
 }

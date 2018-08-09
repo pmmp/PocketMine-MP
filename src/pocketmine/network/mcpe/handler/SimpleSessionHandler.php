@@ -1,23 +1,24 @@
 <?php
 
 /*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *               _ _
+ *         /\   | | |
+ *        /  \  | | |_ __ _ _   _
+ *       / /\ \ | | __/ _` | | | |
+ *      / ____ \| | || (_| | |_| |
+ *     /_/    \_|_|\__\__,_|\__, |
+ *                           __/ |
+ *                          |___/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Altay
  *
- *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,8 +26,8 @@ namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
-use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionValidationException;
+use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
@@ -41,9 +42,6 @@ use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\EntityFallPacket;
 use pocketmine\network\mcpe\protocol\EntityPickRequestPacket;
-use pocketmine\network\mcpe\protocol\InteractPacket;
-use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
-use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LabTablePacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
@@ -53,8 +51,8 @@ use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
-use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
+use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
@@ -62,6 +60,9 @@ use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\network\mcpe\protocol\SubClientLoginPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
+use pocketmine\network\mcpe\protocol\InteractPacket;
+use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
+use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\Player;
 
 /**
@@ -237,7 +238,7 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleInteract(InteractPacket $packet) : bool{
-		return false; //TODO
+		return $this->player->handleInteract($packet);
 	}
 
 	public function handleBlockPickRequest(BlockPickRequestPacket $packet) : bool{
@@ -283,15 +284,25 @@ class SimpleSessionHandler extends SessionHandler{
 				$this->player->toggleSneak(false);
 				return true;
 			case PlayerActionPacket::ACTION_START_GLIDE:
+				$this->player->toggleGlide(true);
+				break;
 			case PlayerActionPacket::ACTION_STOP_GLIDE:
-				break; //TODO
+				$this->player->toggleGlide(false);
+				break;
 			case PlayerActionPacket::ACTION_CONTINUE_BREAK:
 				$this->player->continueBreakBlock($pos, $packet->face);
 				break;
+			case PlayerActionPacket::ACTION_SET_ENCHANTMENT_SEED:
+				break; // TODO
 			case PlayerActionPacket::ACTION_START_SWIMMING:
-				break; //TODO
+				if(!$this->player->isSwimming()){
+					$this->player->toggleSwim(true);
+				}
+				break;
 			case PlayerActionPacket::ACTION_STOP_SWIMMING:
-				//TODO: handle this when it doesn't spam every damn tick (yet another spam bug!!)
+				if($this->player->isSwimming()){ // for spam issue
+					$this->player->toggleSwim(false);
+				}
 				break;
 			default:
 				$this->player->getServer()->getLogger()->debug("Unhandled/unknown player action type " . $packet->action . " from " . $this->player->getName());
@@ -332,7 +343,13 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handlePlayerInput(PlayerInputPacket $packet) : bool{
-		return false; //TODO
+		if($this->player->isRiding()){
+			$entity = $this->player->getRidingEntity();
+			if($entity !== null and $entity->isAlive()){
+				$entity->onRidingUpdate($this->player, $packet->motionX, $packet->motionY, $packet->jumping, $packet->sneaking);
+			}
+		}
+		return true;
 	}
 
 	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
@@ -371,7 +388,7 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleCommandRequest(CommandRequestPacket $packet) : bool{
-		return $this->player->chat($packet->command);
+		return $this->player->handleCommandRequest($packet);
 	}
 
 	public function handleCommandBlockUpdate(CommandBlockUpdatePacket $packet) : bool{
@@ -391,11 +408,16 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleModalFormResponse(ModalFormResponsePacket $packet) : bool{
-		return false; //TODO: GUI stuff
+		return $this->player->onFormSubmit($packet->formId, json_decode($packet->formData, true));
 	}
 
 	public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
-		return false; //TODO: GUI stuff
+		$setting = $this->player->getServerSettingsForm();
+		if($setting !== null){
+			$this->player->sendServerSettings($setting);
+		}
+
+		return true;
 	}
 
 	public function handleLabTable(LabTablePacket $packet) : bool{

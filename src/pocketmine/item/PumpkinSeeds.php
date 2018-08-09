@@ -32,6 +32,6 @@ class PumpkinSeeds extends Item{
 	}
 
 	public function getBlock() : Block{
-		return BlockFactory::get(Block::PUMPKIN_STEM);
-	}
+        return BlockFactory::get(Block::PUMPKIN_STEM);
+    }
 }

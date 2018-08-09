@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item\enchantment;
 
-
 class EnchantmentList{
 
 	/** @var \SplFixedArray|EnchantmentEntry[] */
@@ -53,4 +52,5 @@ class EnchantmentList{
 	public function getSize() : int{
 		return $this->enchantments->getSize();
 	}
+
 }

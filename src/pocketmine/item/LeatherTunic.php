@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-
 class LeatherTunic extends Armor{
 	public function __construct(int $meta = 0){
 		parent::__construct(self::LEATHER_TUNIC, $meta, "Leather Tunic");
@@ -33,7 +32,15 @@ class LeatherTunic extends Armor{
 		return 3;
 	}
 
-	public function getMaxDurability() : int{
-		return 81;
+    public function getArmorSlot() : int{
+        return Armor::SLOT_CHESTPLATE;
+    }
+
+    public function getMaxDurability() : int{
+        return 81;
+    }
+
+    public function getEnchantability() : int{
+		return 15;
 	}
 }

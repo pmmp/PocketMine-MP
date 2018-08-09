@@ -32,10 +32,10 @@ class Sign extends Item{
 	}
 
 	public function getBlock() : Block{
-		return BlockFactory::get(Block::SIGN_POST);
-	}
+        return BlockFactory::get(Block::SIGN_POST);
+    }
 
-	public function getMaxStackSize() : int{
+    public function getMaxStackSize() : int{
 		return 16;
 	}
 }

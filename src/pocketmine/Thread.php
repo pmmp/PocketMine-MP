@@ -28,66 +28,70 @@ namespace pocketmine;
  */
 abstract class Thread extends \Thread{
 
-	/** @var \ClassLoader */
-	protected $classLoader;
-	/** @var string|null */
-	protected $composerAutoloaderPath;
+    /** @var \ClassLoader */
+    protected $classLoader;
+    /** @var string|null */
+    protected $composerAutoloaderPath;
 
-	protected $isKilled = false;
+    protected $isKilled = false;
 
-	public function getClassLoader(){
-		return $this->classLoader;
-	}
+    public function getClassLoader(){
+        return $this->classLoader;
+    }
 
-	public function setClassLoader(\ClassLoader $loader = null){
-		$this->composerAutoloaderPath = \pocketmine\COMPOSER_AUTOLOADER_PATH;
+    public function setClassLoader(\ClassLoader $loader = null){
+        $this->composerAutoloaderPath = \pocketmine\COMPOSER_AUTOLOADER_PATH;
 
-		if($loader === null){
-			$loader = Server::getInstance()->getLoader();
-		}
-		$this->classLoader = $loader;
-	}
+        if($loader === null){
+            $loader = Server::getInstance()->getLoader();
+        }
+        $this->classLoader = $loader;
+    }
 
-	/**
-	 * Registers the class loader for this thread.
-	 *
-	 * WARNING: This method MUST be called from any descendent threads' run() method to make autoloading usable.
-	 * If you do not do this, you will not be able to use new classes that were not loaded when the thread was started
-	 * (unless you are using a custom autoloader).
-	 */
-	public function registerClassLoader(){
-		if($this->composerAutoloaderPath !== null){
-			require $this->composerAutoloaderPath;
-		}
-		if($this->classLoader !== null){
-			$this->classLoader->register(false);
-		}
-	}
+    /**
+     * Registers the class loader for this thread.
+     *
+     * WARNING: This method MUST be called from any descendent threads' run() method to make autoloading usable.
+     * If you do not do this, you will not be able to use new classes that were not loaded when the thread was started
+     * (unless you are using a custom autoloader).
+     */
+    public function registerClassLoader(){
+        if($this->composerAutoloaderPath !== null){
+            require $this->composerAutoloaderPath;
+        }
+        if($this->classLoader !== null){
+            $this->classLoader->register(false);
+        }
+    }
 
-	public function start(?int $options = \PTHREADS_INHERIT_ALL){
-		ThreadManager::getInstance()->add($this);
+    public function start(?int $options = \PTHREADS_INHERIT_ALL){
+        ThreadManager::getInstance()->add($this);
 
-		if($this->getClassLoader() === null){
-			$this->setClassLoader();
-		}
-		return parent::start($options);
-	}
 
-	/**
-	 * Stops the thread using the best way possible. Try to stop it yourself before calling this.
-	 */
-	public function quit(){
-		$this->isKilled = true;
+        if($this->getClassLoader() === null){
+            $this->setClassLoader();
+        }
+        return parent::start($options);
+    }
 
-		if(!$this->isJoined()){
-			$this->notify();
-			$this->join();
-		}
 
-		ThreadManager::getInstance()->remove($this);
-	}
+    /**
+     * Stops the thread using the best way possible. Try to stop it yourself before calling this.
+     */
+    public function quit(){
+        $this->isKilled = true;
 
-	public function getThreadName() : string{
-		return (new \ReflectionClass($this))->getShortName();
-	}
+
+        if(!$this->isJoined()){
+            $this->notify();
+            $this->join();
+        }
+
+
+        ThreadManager::getInstance()->remove($this);
+    }
+
+    public function getThreadName() : string{
+        return (new \ReflectionClass($this))->getShortName();
+    }
 }

@@ -33,7 +33,7 @@ use pocketmine\level\Level;
 use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\{
-	ByteArrayTag, ByteTag, CompoundTag, IntArrayTag, IntTag, ListTag, LongTag, StringTag
+    ByteArrayTag, ByteTag, CompoundTag, ListTag, LongTag, StringTag, IntArrayTag, IntTag
 };
 use pocketmine\utils\MainLogger;
 

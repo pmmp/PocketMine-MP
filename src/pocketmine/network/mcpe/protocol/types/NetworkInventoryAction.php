@@ -1,32 +1,40 @@
 <?php
 
 /*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *               _ _
+ *         /\   | | |
+ *        /  \  | | |_ __ _ _   _
+ *       / /\ \ | | __/ _` | | | |
+ *      / ____ \| | || (_| | |_| |
+ *     /_/    \_|_|\__\__,_|\__, |
+ *                           __/ |
+ *                          |___/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Altay
  *
- *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
+use pocketmine\inventory\AnvilInventory;
+use pocketmine\inventory\BeaconInventory;
+use pocketmine\inventory\EnchantInventory;
+use pocketmine\inventory\TradeInventory;
+use pocketmine\inventory\transaction\action\AnvilAction;
 use pocketmine\inventory\transaction\action\CreativeInventoryAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
-use pocketmine\inventory\transaction\action\InventoryAction;
+use pocketmine\inventory\transaction\action\EnchantAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
+use pocketmine\inventory\transaction\action\TradeAction;
+use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\Player;
@@ -197,8 +205,11 @@ class NetworkInventoryAction{
 						return null;
 
 					case self::SOURCE_TYPE_CONTAINER_DROP_CONTENTS:
-						//TODO: this type applies to all fake windows, not just crafting
-						$window = $player->getCraftingGrid();
+						$window = $player->getLastOpenContainerInventory();
+
+						if($window === null){
+							$window = $player->getCraftingGrid();
+						}
 
 						//DROP_CONTENTS doesn't bother telling us what slot the item is in, so we find it ourselves
 						$inventorySlot = $window->first($this->oldItem, true);
@@ -206,6 +217,39 @@ class NetworkInventoryAction{
 							throw new \InvalidStateException("Fake container " . get_class($window) . " for " . $player->getName() . " does not contain $this->oldItem");
 						}
 						return new SlotChangeAction($window, $inventorySlot, $this->oldItem, $this->newItem);
+
+					case self::SOURCE_TYPE_ANVIL_INPUT:
+						$window = $player->getWindowByType(AnvilInventory::class);
+						return new AnvilAction($window, 0, $this->oldItem, $this->newItem);
+					case self::SOURCE_TYPE_ANVIL_MATERIAL:
+						$window = $player->getWindowByType(AnvilInventory::class);
+						return new AnvilAction($window, 1, $this->oldItem, $this->newItem);
+					case self::SOURCE_TYPE_ANVIL_RESULT:
+						$window = $player->getWindowByType(AnvilInventory::class);
+						$window->clearAll();
+						return new AnvilAction($window, 2, $this->oldItem, $this->newItem);
+					case self::SOURCE_TYPE_ANVIL_OUTPUT:
+						break;
+					case self::SOURCE_TYPE_ENCHANT_INPUT:
+						$window = $player->getWindowByType(EnchantInventory::class);
+						return new EnchantAction($window, 0, $this->oldItem, $this->newItem);
+					case self::SOURCE_TYPE_ENCHANT_MATERIAL:
+						$window = $player->getWindowByType(EnchantInventory::class);
+						return new EnchantAction($window, 1, $this->oldItem, $this->newItem);
+					case self::SOURCE_TYPE_ENCHANT_OUTPUT:
+						$window = $player->getWindowByType(EnchantInventory::class);
+						return new EnchantAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
+					case self::SOURCE_TYPE_TRADING_INPUT_1:
+					case self::SOURCE_TYPE_TRADING_INPUT_2:
+						$window = $player->getWindowByType(TradeInventory::class);
+						return new SlotChangeAction($window, abs($this->windowId) - 20, $this->oldItem, $this->newItem);
+					case self::SOURCE_TYPE_TRADING_USE_INPUTS:
+					case self::SOURCE_TYPE_TRADING_OUTPUT:
+						/** @var TradeInventory $window */
+						$window = $player->getWindowByType(TradeInventory::class);
+						return new TradeAction($this->oldItem, $this->newItem, $window, (abs($this->windowId) - 23) === 0);
+					case self::SOURCE_TYPE_BEACON:
+						return new SlotChangeAction($player->getWindowByType(BeaconInventory::class), 0, $this->oldItem, $this->newItem);
 				}
 
 				//TODO: more stuff
@@ -214,4 +258,5 @@ class NetworkInventoryAction{
 				throw new \UnexpectedValueException("Unknown inventory source type $this->sourceType");
 		}
 	}
+
 }

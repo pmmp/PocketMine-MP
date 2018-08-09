@@ -30,4 +30,5 @@ class Hoe extends TieredTool{
 	public function onAttackEntity(Entity $victim) : bool{
 		return $this->applyDamage(1);
 	}
+
 }

@@ -32,6 +32,7 @@ class Redstone extends Item{
 	}
 
 	public function getBlock() : Block{
-		return BlockFactory::get(Block::REDSTONE_WIRE);
-	}
+        return BlockFactory::get(Block::REDSTONE_WIRE);
+    }
 }
+
