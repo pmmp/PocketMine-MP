@@ -99,7 +99,8 @@ class CommandEnumValues{
 		"luck_of_the_sea",
 		"lure",
 		"frost_walker",
-		"mending"
+        "mending",
+        "conduit_power"
 	];
 
 	private static $gameMode = [
