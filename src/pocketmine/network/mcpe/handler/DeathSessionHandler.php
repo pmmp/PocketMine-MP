@@ -31,30 +31,30 @@ use pocketmine\Player;
 
 class DeathSessionHandler extends SessionHandler{
 
-    /** @var Player */
-    private $player;
-    /** @var NetworkSession */
-    private $session;
+	/** @var Player */
+	private $player;
+	/** @var NetworkSession */
+	private $session;
 
-    public function __construct(Player $player, NetworkSession $session){
-        $this->player = $player;
-        $this->session = $session;
-    }
+	public function __construct(Player $player, NetworkSession $session){
+		$this->player = $player;
+		$this->session = $session;
+	}
 
-    public function setUp() : void{
-        $pk = new RespawnPacket();
-        $pk->position = $this->player->getOffsetPosition($this->player->getSpawn());
-        $this->session->sendDataPacket($pk);
-    }
+	public function setUp() : void{
+		$pk = new RespawnPacket();
+		$pk->position = $this->player->getOffsetPosition($this->player->getSpawn());
+		$this->session->sendDataPacket($pk);
+	}
 
-    public function handlePlayerAction(PlayerActionPacket $packet) : bool{
-        switch($packet->action){
-            case PlayerActionPacket::ACTION_RESPAWN:
-	        case PlayerActionPacket::ACTION_DIMENSION_CHANGE_REQUEST:
-                $this->player->respawn();
-                return true;
-        }
+	public function handlePlayerAction(PlayerActionPacket $packet) : bool{
+		switch($packet->action){
+			case PlayerActionPacket::ACTION_RESPAWN:
+			case PlayerActionPacket::ACTION_DIMENSION_CHANGE_REQUEST:
+				$this->player->respawn();
+				return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 }
