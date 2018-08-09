@@ -56,6 +56,7 @@ class Mooshroom extends Cow{
 			$cow->setRotation($this->yaw, $this->pitch);
 			$cow->setHealth($this->getHealth());
 			$cow->setNameTag($this->getNameTag());
+			$cow->setAiEnabled($this->server->mobAiEnabled);
 
 			$item->applyDamage(1);
 
