@@ -53,8 +53,9 @@ class DeathSessionHandler extends SessionHandler{
                 $this->player->respawn();
                 return true;
             case PlayerActionPacket::ACTION_DIMENSION_CHANGE_REQUEST:
-                //TODO: players send this when they die in another dimension
-                break;
+                $this->player->teleport($this->player->getServer()->getDefaultLevel()->getSpawnLocation());
+				$this->player->respawn();
+				return true;
         }
 
         return false;
