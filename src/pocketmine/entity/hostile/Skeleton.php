@@ -27,7 +27,6 @@ namespace pocketmine\entity\hostile;
 use pocketmine\entity\behavior\FindAttackableTargetBehavior;
 use pocketmine\entity\behavior\FloatBehavior;
 use pocketmine\entity\behavior\LookAtPlayerBehavior;
-use pocketmine\entity\behavior\MeleeAttackBehavior;
 use pocketmine\entity\behavior\RandomLookAroundBehavior;
 use pocketmine\entity\behavior\RangedAttackBehavior;
 use pocketmine\entity\behavior\RestrictSunBehavior;
@@ -39,6 +38,7 @@ use pocketmine\entity\RangedAttackerMob;
 use pocketmine\inventory\AltayEntityEquipment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
 class Skeleton extends Monster implements RangedAttackerMob{
@@ -102,13 +102,15 @@ class Skeleton extends Monster implements RangedAttackerMob{
 		/** @var Arrow $arrow */
 		$arrow = Entity::createEntity("Arrow", $this->level, Entity::createBaseNBT($this->add($dir->add(0, $this->getEyeHeight(), 0))));
 		// TODO: Enchants
-		$arrow->setMotion($dir->multiply(3)->add($this->level->random->nextFloat() * 0.02, $this->level->random->nextFloat() * 0.01 , $this->level->random->nextFloat() * 0.02));
+		$arrow->setMotion($dir->multiply($power * 2.5)->add($this->level->random->nextFloat() * 0.02, $this->level->random->nextFloat() * 0.01 , $this->level->random->nextFloat() * 0.02));
 		$arrow->setBaseDamage(2);
+
+		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BOW);
 		$arrow->spawnToAll();
 	}
 
 	public function entityBaseTick(int $diff = 1) : bool{
-		if(!$this->isOnFire() and $this->level->isDayTime()){
+		if(!$this->isOnFire() and $this->level->isDayTime() and $this->aiEnabled){
 			if($this->level->canSeeSky($this)){
 				$this->setOnFire(5);
 			}

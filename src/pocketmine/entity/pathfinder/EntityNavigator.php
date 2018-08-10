@@ -24,15 +24,13 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\pathfinder;
 
-use pocketmine\block\Air;
+use pocketmine\block\Block;
 use pocketmine\block\Lava;
 use pocketmine\block\Liquid;
 use pocketmine\block\Water;
 use pocketmine\entity\Mob;
-use pocketmine\level\particle\RedstoneParticle;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
-use pocketmine\block\Block;
 
 class EntityNavigator{
 
@@ -94,6 +92,9 @@ class EntityNavigator{
 		if($followRange === null){
 			$followRange = $this->mob->getFollowRange();
 		}
+		if($followRange <= 0){
+			$followRange = 20; //base
+		}
 		$blockCache = [];
 		$ticks = 0;
 		$from->fScore = $this->calculateGridDistance($from, $to);
@@ -121,7 +122,7 @@ class EntityNavigator{
 			if($current->equals($to)){
 				return $this->initPath($path, $current);
 			}
-			if($ticks++ > 100){
+			if($ticks++ > $followRange * 2){
 				return $this->initPath($path, $highScore);
 			}
 

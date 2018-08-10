@@ -34,8 +34,7 @@ use pocketmine\entity\behavior\RandomLookAroundBehavior;
 use pocketmine\entity\behavior\TemptedBehavior;
 use pocketmine\entity\behavior\WanderBehavior;
 use pocketmine\entity\Tamable;
-use pocketmine\event\entity\EntityCombustEvent;
-use pocketmine\item\Bucket;
+use pocketmine\item\Dye;
 use pocketmine\item\Shears;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -76,19 +75,31 @@ class Sheep extends Tamable{
     }
 
     public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : void{
-        if($item instanceof Shears and !$this->isSheared()){
-        	$this->setSheared(true);
-        	$item->applyDamage(1);
+    	if($this->aiEnabled){
+		    if($item instanceof Shears and !$this->isSheared()){
+			    $this->setSheared(true);
+			    $item->applyDamage(1);
 
-        	$i = 1 + $this->level->random->nextBoundedInt(3);
-        	for($a = 0; $a < $i; $a++){
-		        $this->level->dropItem($this, ItemFactory::get(Item::WOOL, intval($this->propertyManager->getByte(self::DATA_COLOR)), 1));
+			    $i = 1 + $this->level->random->nextBoundedInt(3);
+			    for($a = 0; $a < $i; $a++){
+				    $this->level->dropItem($this, ItemFactory::get(Item::WOOL, intval($this->propertyManager->getByte(self::DATA_COLOR)), 1));
 
-        		$this->motion->y += $this->level->random->nextFloat() * 0.05;
-        		$this->motion->x += ($this->level->random->nextFloat() - $this->level->random->nextFloat()) * 0.1;
-		        $this->motion->z += ($this->level->random->nextFloat() - $this->level->random->nextFloat()) * 0.1;
-	        }
-        }
+				    $this->motion->y += $this->level->random->nextFloat() * 0.05;
+				    $this->motion->x += ($this->level->random->nextFloat() - $this->level->random->nextFloat()) * 0.1;
+				    $this->motion->z += ($this->level->random->nextFloat() - $this->level->random->nextFloat()) * 0.1;
+			    }
+		    }
+
+		    if($item instanceof Dye){
+		    	if($player->isSurvival()){
+				    $item->pop();
+				    $player->getInventory()->setItemInHand($item);
+			    }
+
+			    $this->propertyManager->setByte(self::DATA_COLOR, $item->getDamage());
+		    }
+	    }
+	    parent::onInteract($player, $item, $clickPos, $slot);
     }
 
     public function getXpDropAmount() : int{
@@ -98,7 +109,7 @@ class Sheep extends Tamable{
     public function getDrops() : array{
         return [
             ItemFactory::get(Item::WOOL, intval($this->propertyManager->getByte(self::DATA_COLOR)), $this->isSheared() ? 0 : 1),
-            ($this->getLastDamageCause() instanceof EntityCombustEvent ? ItemFactory::get(Item::COOKED_MUTTON, 0, rand(1,3)) : ItemFactory::get(Item::RAW_MUTTON, 0, rand(1,3)))
+            ($this->isOnFire() ? ItemFactory::get(Item::COOKED_MUTTON, 0, rand(1,3)) : ItemFactory::get(Item::RAW_MUTTON, 0, rand(1,3)))
         ];
     }
 

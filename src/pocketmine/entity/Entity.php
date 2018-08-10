@@ -31,8 +31,11 @@ namespace pocketmine\entity;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\Water;
+use pocketmine\entity\hostile\Husk;
 use pocketmine\entity\hostile\Skeleton;
+use pocketmine\entity\hostile\Spider;
 use pocketmine\entity\hostile\Stray;
+use pocketmine\entity\hostile\Zombie;
 use pocketmine\entity\object\ArmorStand;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\FallingBlock;
@@ -40,10 +43,13 @@ use pocketmine\entity\object\FireworksRocket;
 use pocketmine\entity\object\Painting;
 use pocketmine\entity\object\PrimedTNT;
 use pocketmine\entity\object\ItemEntity;
+use pocketmine\entity\passive\Chicken;
 use pocketmine\entity\passive\Cow;
 use pocketmine\entity\passive\Mooshroom;
 use pocketmine\entity\passive\Pig;
 use pocketmine\entity\passive\Sheep;
+use pocketmine\entity\passive\Squid;
+use pocketmine\entity\passive\Villager;
 use pocketmine\entity\passive\Wolf;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\projectile\Egg;
@@ -61,7 +67,6 @@ use pocketmine\event\entity\EntityMotionEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
-use pocketmine\entity\hostile\Zombie;
 use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
@@ -87,8 +92,6 @@ use pocketmine\network\mcpe\protocol\SetEntityDataPacket;
 use pocketmine\network\mcpe\protocol\SetEntityLinkPacket;
 use pocketmine\network\mcpe\protocol\SetEntityMotionPacket;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
-use pocketmine\entity\passive\Squid;
-use pocketmine\entity\passive\Villager;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
@@ -369,6 +372,18 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		Entity::registerEntity(Stray::class, false, [
 			'Stray',
 			'minecraft:stray'
+		]);
+		Entity::registerEntity(Husk::class, false, [
+			'Husk',
+			'minecraft:husk'
+		]);
+		Entity::registerEntity(Chicken::class, false, [
+			'Chicken',
+			'minecraft:chicken'
+		]);
+		Entity::registerEntity(Spider::class, false, [
+			'Spider',
+			'minecraft:spider'
 		]);
 
 		Entity::registerEntity(Human::class, true);

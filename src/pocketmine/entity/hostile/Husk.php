@@ -24,32 +24,34 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\hostile;
 
+use pocketmine\entity\Ageable;
 use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
-use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\entity\Monster;
 
-class Stray extends Skeleton{
+class Husk extends Zombie implements Ageable{
 
-	public const NETWORK_ID = self::STRAY;
+	public const NETWORK_ID = self::HUSK;
 
 	public function getName() : string{
-		return "Stray";
+		return "Husk";
 	}
 
-	public function getDrops() : array{
-		$drops = parent::getDrops();
-		$drops[] = ItemFactory::get(Item::ARROW, 18);
-		return $drops;
+	public function entityBaseTick(int $diff = 1) : bool{
+		return Monster::entityBaseTick($diff);
+	}
+
+	public function getArmorPoints() : int{
+		return 2;
 	}
 
 	public function onCollideWithEntity(Entity $entity) : void{
 		parent::onCollideWithEntity($entity);
 
 		if($this->getTargetEntityId() === $entity->getId() and $entity instanceof Living){
-			$entity->addEffect(new EffectInstance(Effect::getEffect(Effect::WITHER), 7 * 20, 1));
+			$entity->addEffect(new EffectInstance(Effect::getEffect(Effect::HUNGER), 7 * 20, 1));
 		}
 	}
 }

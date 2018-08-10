@@ -79,28 +79,32 @@ class Wolf extends Tamable{
 	}
 
 	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : void{
-		if($this->isTamed()){
-			if($this->getOwningEntityId() == $player->id){
-				$this->setSitting(!$this->isSitting());
-				$this->setTargetEntity(null);
-			}
-		}else{
-			if($item->getId() == Item::BONE){
-				$player->getInventory()->removeItem($item->pop());
+		if($this->aiEnabled){
+			if($this->isTamed()){
+				if($this->getOwningEntityId() == $player->id){
+					$this->setSitting(!$this->isSitting());
+					$this->setTargetEntity(null);
+				}
+			}else{
+				if($item->getId() == Item::BONE){
+					$player->getInventory()->removeItem($item->pop());
 
-				if(mt_rand(0, 2) == 0){
-					$this->setOwningEntity($player);
-					$this->setTamed();
-					$this->setSitting();
-					$this->setAngry(false);
-					$this->setAttackDamage(4);
+					if(mt_rand(0, 2) == 0){
+						$this->setOwningEntity($player);
+						$this->setTamed();
+						$this->setSitting();
+						$this->setAngry(false);
+						$this->setAttackDamage(4);
 
-					$this->broadcastEntityEvent(EntityEventPacket::TAME_SUCCESS);
-				}else{
-					$this->broadcastEntityEvent(EntityEventPacket::TAME_FAIL);
+						$this->broadcastEntityEvent(EntityEventPacket::TAME_SUCCESS);
+					}else{
+						$this->broadcastEntityEvent(EntityEventPacket::TAME_FAIL);
+					}
 				}
 			}
 		}
+
+		parent::onInteract($player, $item, $clickPos, $slot);
 	}
 
 	public function setTargetEntity(?Entity $target) : void{

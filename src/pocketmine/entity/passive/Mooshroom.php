@@ -42,32 +42,36 @@ class Mooshroom extends Cow{
 	}
 
 	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : void{
-		if($item instanceof Bowl and !$this->isBaby()){
-			$new = ItemFactory::get(Item::MUSHROOM_STEW);
-			$item->pop();
+		if($this->aiEnabled){
+			if($item instanceof Bowl and !$this->isBaby()){
+				$new = ItemFactory::get(Item::MUSHROOM_STEW);
+				if($player->isSurvival()){
+					$item->pop();
+				}
 
-			if($player->getInventory()->canAddItem($new)){
-				$player->getInventory()->addItem($new);
+				if($player->getInventory()->canAddItem($new)){
+					$player->getInventory()->addItem($new);
+				}else{
+					$player->dropItem($new);
+				}
+			}elseif($item instanceof Shears and !$this->isBaby()){
+				$cow = new Cow($this->level, Entity::createBaseNBT($this));
+				$cow->setRotation($this->yaw, $this->pitch);
+				$cow->setHealth($this->getHealth());
+				$cow->setNameTag($this->getNameTag());
+				$cow->setAiEnabled($this->server->mobAiEnabled);
+
+				$item->applyDamage(1);
+
+				for($i = 0; $i < 5; $i++){
+					$player->dropItem(ItemFactory::get(Block::RED_MUSHROOM));
+				}
+
+				$this->kill();
+				$cow->spawnToAll();
 			}else{
-				$player->dropItem($new);
+				parent::onInteract($player, $item, $clickPos, $slot);
 			}
-		}elseif($item instanceof Shears and !$this->isBaby()){
-			$cow = new Cow($this->level, Entity::createBaseNBT($this));
-			$cow->setRotation($this->yaw, $this->pitch);
-			$cow->setHealth($this->getHealth());
-			$cow->setNameTag($this->getNameTag());
-			$cow->setAiEnabled($this->server->mobAiEnabled);
-
-			$item->applyDamage(1);
-
-			for($i = 0; $i < 5; $i++){
-				$player->dropItem(ItemFactory::get(Block::RED_MUSHROOM));
-			}
-
-			$this->kill();
-			$cow->spawnToAll();
-		}else{
-			parent::onInteract($player, $item, $clickPos, $slot);
 		}
 	}
 }

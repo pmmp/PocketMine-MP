@@ -24,14 +24,14 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\behavior;
 
-use pocketmine\entity\passive\Wolf;
+use pocketmine\entity\Mob;
 
 class JumpAttackBehavior extends Behavior{
 
 	/** @var float */
 	protected $leapHeight;
 
-	public function __construct(Wolf $mob, float $leapHeight){
+	public function __construct(Mob $mob, float $leapHeight){
 		parent::__construct($mob);
 
 		$this->leapHeight = $leapHeight;
@@ -49,11 +49,13 @@ class JumpAttackBehavior extends Behavior{
 	}
 
 	public function canContinue() : bool{
-		return $this->mob->isOnGround() and $this->mob->getTargetEntity() !== null;
+		return !$this->mob->isOnGround() and $this->mob->getTargetEntityId() !== null;
 	}
 
 	public function onTick() : void{
 		$target = $this->mob->getTargetEntity();
+		if($target == null) return;
+
 		$direction = $target->subtract($this->mob);
 		$distance = $this->mob->distance($target);
 

@@ -33,7 +33,6 @@ use pocketmine\entity\behavior\RandomLookAroundBehavior;
 use pocketmine\entity\behavior\TemptedBehavior;
 use pocketmine\entity\behavior\WanderBehavior;
 use pocketmine\entity\Tamable;
-use pocketmine\event\entity\EntityCombustEvent;
 use pocketmine\item\Bucket;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -71,11 +70,15 @@ class Cow extends Tamable{
 	}
 
 	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : void{
-		if($item instanceof Bucket and $item->getDamage() === 0){
-			$milk = clone $item;
-			$milk->setDamage(1);
-			$player->getInventory()->setItemInHand($milk);
+		if($this->aiEnabled){
+			if($item instanceof Bucket and $item->getDamage() === 0){
+				$milk = clone $item;
+				$milk->setDamage(1);
+				$player->getInventory()->setItemInHand($milk);
+			}
 		}
+
+		parent::onInteract($player, $item, $clickPos, $slot);
 	}
 
 	public function getXpDropAmount() : int{
@@ -85,7 +88,7 @@ class Cow extends Tamable{
 	public function getDrops() : array{
 		return [
 			ItemFactory::get(Item::LEATHER, 0, rand(0, 2)),
-			($this->getLastDamageCause() instanceof EntityCombustEvent ? ItemFactory::get(Item::STEAK, 0, rand(1, 3)) : ItemFactory::get(Item::RAW_BEEF, 0, rand(1, 3)))
+			($this->isOnFire() ? ItemFactory::get(Item::STEAK, 0, rand(1, 3)) : ItemFactory::get(Item::RAW_BEEF, 0, rand(1, 3)))
 		];
 	}
 }

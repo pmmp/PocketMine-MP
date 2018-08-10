@@ -32,9 +32,9 @@ use pocketmine\entity\behavior\MeleeAttackBehavior;
 use pocketmine\entity\behavior\RandomLookAroundBehavior;
 use pocketmine\entity\behavior\WanderBehavior;
 use pocketmine\entity\Monster;
+use pocketmine\entity\passive\Villager;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\entity\passive\Villager;
 use pocketmine\Player;
 
 class Zombie extends Monster implements Ageable{
@@ -94,7 +94,7 @@ class Zombie extends Monster implements Ageable{
 	}
 
 	public function entityBaseTick(int $diff = 1) : bool{
-		if(!$this->isOnFire() and $this->level->isDayTime()){
+		if(!$this->isOnFire() and $this->level->isDayTime() and $this->aiEnabled){
 			if($this->level->canSeeSky($this)){
 				$this->setOnFire(5);
 			}

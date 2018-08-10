@@ -26,11 +26,11 @@ namespace pocketmine\entity;
 
 
 use pocketmine\entity\behavior\BehaviorPool;
+use pocketmine\entity\pathfinder\EntityNavigator;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\entity\pathfinder\EntityNavigator;
 
 abstract class Mob extends Living{
 
@@ -209,7 +209,8 @@ abstract class Mob extends Living{
 			return true;
 		}else{
 			if($this->canClimb()){
-				$this->setMotion($this->getMotion()->setComponents(0, 0.2, 0));
+				$this->motion->y = 0.2;
+				$this->jumpCooldown = 20;
 				return true;
 			}elseif((!$blockUp->isSolid() and !($this->height > 1 and $blockUpUp->isSolid())) or $this->isSwimmer()){
 				$this->motion->y = $this->getJumpVelocity();
