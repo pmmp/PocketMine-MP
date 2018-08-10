@@ -1,6 +1,6 @@
 [submodule "src/pocketmine/lang/locale"]
 	path = src/pocketmine/lang/locale
-	url = https://github.com/TuranicTeam/PocketMine-Language.git
+	url = https://github.com/pmmp/PocketMine-Language.git
 [submodule "tests/preprocessor"]
 	path = tests/preprocessor
 	url = https://github.com/pmmp/preprocessor.git
