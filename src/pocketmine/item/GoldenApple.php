@@ -46,7 +46,7 @@ class GoldenApple extends Food{
 
 	public function getAdditionalEffects() : array{
 		return [
-            new EffectInstance(Effect::getEffect(Effect::REGENERATION), 100, 1),
+            new EffectInstance(Effect::getEffect(Effect::REGENERATION), 100, 3),
             new EffectInstance(Effect::getEffect(Effect::ABSORPTION), 2400)
 		];
 	}
