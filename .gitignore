@@ -1,0 +1,41 @@
+players/*
+worlds/*
+plugin_data/*
+plugins/*
+bin*/*
+timings/*
+crashdumps/*
+*.log
+*.txt
+*.phar
+server.properties
+/pocketmine.yml
+memory_dumps/*
+resource_packs/
+
+# Common IDEs
+.idea/
+nbproject/*
+
+# Windows image file caches
+Thumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Mac crap
+.DS_Store
+/nbproject/private/
+
+# Sphinx-doc
+/docs/build/
+!/docs/requirements.txt
+
+# Composer
+vendor/*
+
+# Travis files
+test_data/*
+
+# Doxygen
+Documentation/*
