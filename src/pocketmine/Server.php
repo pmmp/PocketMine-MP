@@ -1941,7 +1941,9 @@ class Server{
 	public function broadcastPacketsCallback(string $payload, array $sessions, bool $immediate = false){
 		/** @var NetworkSession $session */
 		foreach($sessions as $session){
-			$session->sendEncoded($payload, $immediate);
+			if($session->isConnected()){
+				$session->sendEncoded($payload, $immediate);
+			}
 		}
 	}
 
