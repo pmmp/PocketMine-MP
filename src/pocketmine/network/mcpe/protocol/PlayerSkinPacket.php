@@ -40,7 +40,8 @@ class PlayerSkinPacket extends DataPacket{
 	public $newSkinName = "";
 	/** @var Skin */
 	public $skin;
-
+	/** @var bool */
+	public $premiumSkin = false;
 
 	protected function decodePayload(){
 		$this->uuid = $this->getUUID();
@@ -54,6 +55,8 @@ class PlayerSkinPacket extends DataPacket{
 		$geometryData = $this->getString();
 
 		$this->skin = new Skin($skinId, $skinData, $capeData, $geometryModel, $geometryData);
+
+		$this->premiumSkin = $this->getBool();
 	}
 
 	protected function encodePayload(){
@@ -66,6 +69,8 @@ class PlayerSkinPacket extends DataPacket{
 		$this->putString($this->skin->getCapeData());
 		$this->putString($this->skin->getGeometryName());
 		$this->putString($this->skin->getGeometryData());
+
+		$this->putBool($this->premiumSkin);
 	}
 
 	public function handle(NetworkSession $session) : bool{
