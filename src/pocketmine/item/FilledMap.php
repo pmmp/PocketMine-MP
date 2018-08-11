@@ -28,7 +28,7 @@ use pocketmine\level\Level;
 use pocketmine\maps\MapData;
 use pocketmine\maps\MapManager;
 use pocketmine\nbt\tag\ByteTag;
-use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\tag\LongTag;
 use pocketmine\Player;
 use pocketmine\utils\Color;
 
@@ -101,13 +101,13 @@ class FilledMap extends Item{
 	 * @param int $mapId
 	 */
 	public function setMapId(int $mapId) : void{
-		$this->setNamedTagEntry(new StringTag(self::TAG_MAP_UUID, strval($mapId)));
+		$this->setNamedTagEntry(new LongTag(self::TAG_MAP_UUID, $mapId));
 	}
 
 	/**
 	 * @return int
 	 */
 	public function getMapId() : int{
-		return intval($this->getNamedTag()->getString(self::TAG_MAP_UUID, "0"));
+		return $this->getNamedTag()->getLong(self::TAG_MAP_UUID, 0, false);
 	}
 }
