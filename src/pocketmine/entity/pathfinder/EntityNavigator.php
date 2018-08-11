@@ -432,10 +432,11 @@ class EntityNavigator{
 		return $this->currentPath !== null and $this->currentPath->havePath();
 	}
 
-	public function clearPath() : void{
+	public function clearPath(bool $all = true) : void{
 		$this->currentPath = null;
 		$this->lastPoint = null;
 		$this->stuckTick = 0;
+		if($all) $this->movePoint = null;
 	}
 
 	public function setAvoidsWater(bool $value) : void{
@@ -479,10 +480,10 @@ class EntityNavigator{
 				if($next !== null){
 					$this->movePoint = $next;
 				}else{
-					$this->clearPath();
+					$this->clearPath(false);
 				}
 			}else{
-				$this->clearPath();
+				$this->clearPath(false);
 			}
 		}
 
@@ -490,7 +491,6 @@ class EntityNavigator{
 			$this->mob->lookAt(new Vector3($this->movePoint->x + 0.5, $this->mob->y, $this->movePoint->y + 0.5));
 			if(!$this->mob->moveForward($this->speedMultiplier)){
 				$this->clearPath();
-				$this->movePoint = null;
 				return;
 			}
 
