@@ -99,7 +99,7 @@ class ClientboundMapItemDataPacket extends DataPacket{
 
             for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
             	$decoration = new MapDecoration();
-                $decoration->img = $this->getByte();
+                $decoration->icon = $this->getByte();
                 $decoration->rot = $this->getByte();
                 $decoration->xOffset = $this->getByte();
                 $decoration->yOffset = $this->getByte();
@@ -171,7 +171,7 @@ class ClientboundMapItemDataPacket extends DataPacket{
 
             $this->putUnsignedVarInt($decorationCount);
             foreach($this->decorations as $decoration){
-                $this->putByte($decoration->img);
+                $this->putByte($decoration->icon);
                 $this->putByte($decoration->rot);
                 $this->putByte($decoration->xOffset);
                 $this->putByte($decoration->yOffset);

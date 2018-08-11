@@ -28,7 +28,8 @@ use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\inventory\transaction\InventoryTransaction;
-use pocketmine\item\FilledMap;
+use pocketmine\maps\MapData;
+use pocketmine\maps\MapManager;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
@@ -36,7 +37,6 @@ use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
 use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\BossEventPacket;
-use pocketmine\network\mcpe\protocol\ClientboundMapItemDataPacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
@@ -368,17 +368,10 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleMapInfoRequest(MapInfoRequestPacket $packet) : bool{
-		$map = $this->player->getInventory()->getItemInHand();
-		var_dump("xxx");
-		if($map instanceof FilledMap){
-			var_dump("aaa");
-			$data = $map->createMapDataPacket($packet->mapId);
-
-			if($data instanceof ClientboundMapItemDataPacket){
-				var_dump("bbbb");
-				$this->player->sendDataPacket($data);
-				return true;
-			}
+		$data = MapManager::getMapDataById($packet->mapId);
+		if($data instanceof MapData){
+			$this->player->sendDataPacket($data->getDataPacket());
+			return true;
 		}
 		return false;
 	}

@@ -24,7 +24,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\block\Block;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -34,10 +33,16 @@ class EmptyMap extends Item{
 		parent::__construct(self::EMPTY_MAP, $meta, "Empty Map");
 	}
 
-	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
+	/**
+	 * @param Player  $player
+	 * @param Vector3 $directionVector
+	 *
+	 * @return bool
+	 */
+	public function onClickAir(Player $player, Vector3 $directionVector) : bool{
 		$map = new FilledMap();
 		// TODO: Create world map
-		$map->onCreateMap();
+		$map->onCreateMap($player->level, 0);
 
 		if($player->getInventory()->canAddItem($map)){
 			$player->getInventory()->addItem($map);
@@ -45,9 +50,15 @@ class EmptyMap extends Item{
 			$player->dropItem($map);
 		}
 
-		$this->count--;
-		$player->getInventory()->setItemInHand($this);
+		$this->pop();
 
 		return true;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getMaxStackSize() : int{
+		return 1;
 	}
 }

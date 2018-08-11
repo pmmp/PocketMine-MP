@@ -59,7 +59,7 @@ use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
 use pocketmine\level\LevelException;
-use pocketmine\level\utils\MapManager;
+use pocketmine\maps\MapManager;
 use pocketmine\metadata\EntityMetadataStore;
 use pocketmine\metadata\LevelMetadataStore;
 use pocketmine\metadata\PlayerMetadataStore;
@@ -80,7 +80,6 @@ use pocketmine\network\mcpe\NetworkCipher;
 use pocketmine\network\mcpe\NetworkCompression;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketStream;
-use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
@@ -2278,6 +2277,9 @@ class Server{
 			foreach($this->getLevels() as $level){
 				$this->unloadLevel($level, true);
 			}
+
+			$this->getLogger()->debug("Saving all maps");
+			MapManager::saveMaps();
 
 			$this->getLogger()->debug("Removing event handlers");
 			HandlerList::unregisterAll();
