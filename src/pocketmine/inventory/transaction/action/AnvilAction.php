@@ -22,22 +22,13 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity\behavior;
+namespace pocketmine\inventory\transaction\action;
 
-class PanicBehavior extends WanderBehavior{
+use pocketmine\Player;
 
-	public function canStart() : bool{
-		if($this->mob->getLastAttacker() !== null or $this->mob->isOnFire()){
-			$this->targetPos = $this->findRandomTargetBlock($this->mob, 5, 4);
-			$this->followRange = $this->mob->distanceSquared($this->targetPos) + 2;
+class AnvilAction extends SlotChangeAction{
 
-			return true;
-		}
-		return false;
-	}
-
-	public function onEnd() : void{
-		$this->mob->setLastAttacker(null);
-		parent::onEnd();
+	public function isValid(Player $source): bool{
+		return true; // client-side
 	}
 }

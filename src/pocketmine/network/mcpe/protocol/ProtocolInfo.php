@@ -49,7 +49,7 @@ interface ProtocolInfo{
     /**
      * Version number sent to clients in ping responses.
      */
-    public const MINECRAFT_VERSION_NETWORK = '1.5.0';
+    public const MINECRAFT_VERSION_NETWORK = '1.5.3';
 
     public const LOGIN_PACKET = 0x01;
     public const PLAY_STATUS_PACKET = 0x02;

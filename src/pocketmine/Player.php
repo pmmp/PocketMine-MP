@@ -33,12 +33,10 @@ use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
-use pocketmine\entity\Living;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Skin;
 use pocketmine\entity\utils\Bossbar;
-use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
@@ -251,8 +249,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	/** @var bool[] name of achievement => bool */
 	protected $achievements = [];
-	/** @var bool */
-	protected $playedBefore;
+	/** @var int */
+	protected $firstPlayed;
+	/** @var int */
+	protected $lastPlayed;
 	/** @var int */
 	protected $gamemode;
 
@@ -424,15 +424,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function getFirstPlayed(){
-		return $this->namedtag instanceof CompoundTag ? $this->namedtag->getLong("firstPlayed", 0, true) : null;
+		return $this->firstPlayed;
 	}
 
 	public function getLastPlayed(){
-		return $this->namedtag instanceof CompoundTag ? $this->namedtag->getLong("lastPlayed", 0, true) : null;
+		return $this->lastPlayed;
 	}
 
 	public function hasPlayedBefore() : bool{
-		return $this->playedBefore;
+		return $this->lastPlayed - $this->firstPlayed > 1; // microtime(true) - microtime(true) may have less than one millisecond difference
 	}
 
 	public function setAllowFlight(bool $value){
@@ -917,7 +917,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->dimension = $dimension;
 		$pk->position = $position ?? $this;
 		$pk->respawn = $respawn;
-		$this->dataPacket($pk);
+		$this->sendDataPacket($pk);
 	}
 
 	protected function switchLevel(Level $targetLevel) : bool{
@@ -977,10 +977,19 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					$entity->spawnTo($this);
 				}
 			}
-		}
+		}elseif($this->chunkLoadCount >= $this->spawnThreshold){
+			$this->spawned = true;
 
-		if($this->chunkLoadCount >= $this->spawnThreshold and !$this->spawned){
-			$this->doFirstSpawn();
+			foreach($this->usedChunks as $index => $c){
+				Level::getXZ($index, $chunkX, $chunkZ);
+				foreach($this->level->getChunkEntities($chunkX, $chunkZ) as $entity){
+					if($entity !== $this and !$entity->isClosed() and $entity->isAlive() and !$entity->isFlaggedForDespawn()){
+						$entity->spawnTo($this);
+					}
+				}
+			}
+
+			$this->networkSession->onTerrainReady();
 		}
 	}
 
@@ -1018,9 +1027,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		Timings::$playerChunkSendTimer->stopTiming();
 	}
 
-	protected function doFirstSpawn(){
-		$this->spawned = true;
-
+	public function doFirstSpawn(){
 		$this->networkSession->onSpawn();
 
 		if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
@@ -1038,15 +1045,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$this->noDamageTicks = 60;
-
-		foreach($this->usedChunks as $index => $c){
-			Level::getXZ($index, $chunkX, $chunkZ);
-			foreach($this->level->getChunkEntities($chunkX, $chunkZ) as $entity){
-				if($entity !== $this and !$entity->isClosed() and $entity->isAlive() and !$entity->isFlaggedForDespawn()){
-					$entity->spawnTo($this);
-				}
-			}
-		}
 
 		$this->spawnToAll();
 
@@ -1259,10 +1257,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			$this->level->setSleepTicks(0);
 
-			$pk = new AnimatePacket();
-			$pk->entityRuntimeId = $this->id;
-			$pk->action = AnimatePacket::ACTION_STOP_SLEEP;
-			$this->sendDataPacket($pk);
+			$this->broadcastAnimation([$this], AnimatePacket::ACTION_STOP_SLEEP);
 		}
 	}
 
@@ -1380,7 +1375,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->resetFallDistance();
 
-		$this->namedtag->setInt("playerGameType", $this->gamemode);
 		if(!$client){ //Gamemode changed by server, do not send for client changes
 			$this->sendGamemode();
 		}else{
@@ -1569,7 +1563,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			$diff = $this->distanceSquared($newPos) / $tickDiff ** 2;
 
-			if($this->isSurvival() and !$revert and $diff > 0.0625){
+			if($this->isSurvival() and !$revert and $diff > 0.0625 and !$this->isRiding()){
 				$ev = new PlayerIllegalMoveEvent($this, $newPos, new Vector3($this->lastX, $this->lastY, $this->lastZ));
 				$ev->setCancelled($this->allowMovementCheats);
 
@@ -1612,11 +1606,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					$this->broadcastMovement();
 
 					$distance = $from->distance($to);
-					//TODO: check swimming (adds 0.015 exhaustion in MCPE)
+
 					if($this->isSprinting()){
-						$this->exhaust(0.1 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
+						$this->exhaust(0.025 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
+					}else if ($this->isSwimming()){
+						$this->exhaust(0.015 * $distance, PlayerExhaustEvent::CAUSE_SWIMMING);
 					}else{
-						$this->exhaust(0.01 * $distance, PlayerExhaustEvent::CAUSE_WALKING);
+						$this->exhaust(0.0025 * $distance, PlayerExhaustEvent::CAUSE_WALKING);
 					}
 				}
 			}
@@ -1966,12 +1962,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		parent::initEntity();
 		$this->addDefaultWindows();
 
-		$this->playedBefore = ($this->getLastPlayed() - $this->getFirstPlayed()) > 1; // microtime(true) - microtime(true) may have less than one millisecond difference
+		$this->firstPlayed = $this->namedtag->getLong("firstPlayed", $now = (int) (microtime(true) * 1000));
+		$this->lastPlayed = $this->namedtag->getLong("lastPlayed", $now);
 
 		$this->gamemode = $this->namedtag->getInt("playerGameType", self::SURVIVAL) & 0x03;
 		if($this->server->getForceGamemode()){
 			$this->gamemode = $this->server->getGamemode();
-			$this->namedtag->setInt("playerGameType", $this->gamemode);
 		}
 
 		$this->setAllowFlight($this->isCreative());
@@ -2276,7 +2272,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->server->getPluginManager()->callEvent($ev);
 		if(!$ev->isCancelled()){
-			$this->inventory->setItemInHand($ev->getResultItem());
+			$this->inventory->setItemInHand($item);
 		}
 
 		return true;
@@ -2344,7 +2340,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				if($this->isSurvival()){
 					if(!$item->equalsExact($this->inventory->getItemInHand())){
 						$this->inventory->setItemInHand($item);
-						$this->inventory->sendHeldItem($this->hasSpawned);
 					}
 					$this->exhaust(0.025, PlayerExhaustEvent::CAUSE_MINING);
 				}
@@ -2389,7 +2384,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			if($this->level->useItemOn($pos, $item, $face, $clickOffset, $this, true)){
 				if($this->isSurvival() and !$item->equalsExact($this->inventory->getItemInHand())){
 					$this->inventory->setItemInHand($item);
-					$this->inventory->sendHeldItem($this->hasSpawned);
 				}
 				return true;
 			}
@@ -2463,13 +2457,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		if($ev->getModifier(EntityDamageEvent::MODIFIER_CRITICAL) > 0){
-			$pk = new AnimatePacket();
-			$pk->action = AnimatePacket::ACTION_CRITICAL_HIT;
-			$pk->entityRuntimeId = $entity->getId();
-			$this->server->broadcastPacket($entity->getViewers(), $pk);
-			if($entity instanceof Player){
-				$entity->sendDataPacket($pk);
-			}
+			$entity->broadcastAnimation(null, AnimatePacket::ACTION_CRITICAL_HIT);
 		}
 
 		foreach($meleeEnchantments as $enchantment){
@@ -2559,32 +2547,17 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
-		$pk = new AnimatePacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->action = $ev->getAnimationType();
-		$this->server->broadcastPacket($this->getViewers(), $pk);
-
+		$this->broadcastAnimation($this->getViewers(), $ev->getAnimationType());
 		return true;
 	}
 
 	/**
-	 * Drops an item on the ground in front of the player. Returns if the item drop was successful.
+	 * Drops an item on the ground in front of the player.
 	 *
 	 * @param Item $item
-	 *
-	 * @return bool if the item was dropped or if the item was null
 	 */
-	public function dropItem(Item $item) : bool{
-		if($item->isNull()){
-			$this->server->getLogger()->debug($this->getName() . " attempted to drop a null item (" . $item . ")");
-			return true;
-		}
-
-		$motion = $this->getDirectionVector()->multiply(0.4);
-
-		$this->level->dropItem($this->add(0, 1.3, 0), $item, $motion, 40);
-
-		return true;
+	public function dropItem(Item $item) : void{
+		$this->level->dropItem($this->add(0, 1.3, 0), $item, $this->getDirectionVector()->multiply(0.4), 40);
 	}
 
 	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
@@ -3262,11 +3235,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->namedtag->setTag($achievements);
 
 		$this->namedtag->setInt("playerGameType", $this->gamemode);
+		$this->namedtag->setLong("firstPlayed", $this->firstPlayed);
 		$this->namedtag->setLong("lastPlayed", (int) floor(microtime(true) * 1000));
 
-		if($this->username != "" and $this->namedtag instanceof CompoundTag){
-			$this->server->saveOfflinePlayerData($this->username, $this->namedtag, $async);
-		}
+		$this->server->saveOfflinePlayerData($this->username, $this->namedtag, $async);
 	}
 
 	public function kill() : void{
@@ -3280,127 +3252,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	protected function onDeath() : void{
-		if($this->getLevel()->getDimension() !== DimensionIds::OVERWORLD){ // A temporary fix
-			$this->switchLevel($this->getServer()->getDefaultLevel());
-		}
-
-		$message = "death.attack.generic";
-
-		$params = [
-			$this->getDisplayName()
-		];
-
-		$cause = $this->getLastDamageCause();
-
-		switch($cause === null ? EntityDamageEvent::CAUSE_CUSTOM : $cause->getCause()){
-			case EntityDamageEvent::CAUSE_ENTITY_ATTACK:
-				if($cause instanceof EntityDamageByEntityEvent){
-					$e = $cause->getDamager();
-					if($e instanceof Player){
-						$message = "death.attack.player";
-						$params[] = $e->getDisplayName();
-						break;
-					}elseif($e instanceof Living){
-						$message = "death.attack.mob";
-						$params[] = $e->getNameTag() !== "" ? $e->getNameTag() : $e->getName();
-						break;
-					}else{
-						$params[] = "Unknown";
-					}
-				}
-				break;
-			case EntityDamageEvent::CAUSE_PROJECTILE:
-				if($cause instanceof EntityDamageByEntityEvent){
-					$e = $cause->getDamager();
-					if($e instanceof Player){
-						$message = "death.attack.arrow";
-						$params[] = $e->getDisplayName();
-					}elseif($e instanceof Living){
-						$message = "death.attack.arrow";
-						$params[] = $e->getNameTag() !== "" ? $e->getNameTag() : $e->getName();
-						break;
-					}else{
-						$params[] = "Unknown";
-					}
-				}
-				break;
-			case EntityDamageEvent::CAUSE_SUICIDE:
-				$message = "death.attack.generic";
-				break;
-			case EntityDamageEvent::CAUSE_VOID:
-				$message = "death.attack.outOfWorld";
-				break;
-			case EntityDamageEvent::CAUSE_FALL:
-				if($cause instanceof EntityDamageEvent){
-					if($cause->getFinalDamage() > 2){
-						$message = "death.fell.accident.generic";
-						break;
-					}
-				}
-				$message = "death.attack.fall";
-				break;
-
-			case EntityDamageEvent::CAUSE_SUFFOCATION:
-				$message = "death.attack.inWall";
-				break;
-
-			case EntityDamageEvent::CAUSE_LAVA:
-				$message = "death.attack.lava";
-				break;
-
-			case EntityDamageEvent::CAUSE_FIRE:
-				$message = "death.attack.onFire";
-				break;
-
-			case EntityDamageEvent::CAUSE_FIRE_TICK:
-				$message = "death.attack.inFire";
-				break;
-
-			case EntityDamageEvent::CAUSE_DROWNING:
-				$message = "death.attack.drown";
-				break;
-
-			case EntityDamageEvent::CAUSE_CONTACT:
-				if($cause instanceof EntityDamageByBlockEvent){
-					if($cause->getDamager()->getId() === Block::CACTUS){
-						$message = "death.attack.cactus";
-					}
-				}
-				break;
-
-			case EntityDamageEvent::CAUSE_BLOCK_EXPLOSION:
-			case EntityDamageEvent::CAUSE_ENTITY_EXPLOSION:
-				if($cause instanceof EntityDamageByEntityEvent){
-					$e = $cause->getDamager();
-					if($e instanceof Player){
-						$message = "death.attack.explosion.player";
-						$params[] = $e->getDisplayName();
-					}elseif($e instanceof Living){
-						$message = "death.attack.explosion.player";
-						$params[] = $e->getNameTag() !== "" ? $e->getNameTag() : $e->getName();
-						break;
-					}
-				}else{
-					$message = "death.attack.explosion";
-				}
-				break;
-
-			case EntityDamageEvent::CAUSE_MAGIC:
-				$message = "death.attack.magic";
-				break;
-
-			case EntityDamageEvent::CAUSE_CUSTOM:
-				break;
-
-			default:
-				break;
-		}
-
 		//Crafting grid must always be evacuated even if keep-inventory is true. This dumps the contents into the
 		//main inventory and drops the rest on the ground.
 		$this->doCloseInventory();
 
-		$ev = new PlayerDeathEvent($this, $this->getDrops(), new TranslationContainer($message, $params));
+		$ev = new PlayerDeathEvent($this, $this->getDrops());
 		$ev->setKeepInventory($this->server->keepInventory);
 		$ev->setKeepExperience($this->server->keepExperience);
 		$this->server->getPluginManager()->callEvent($ev);
@@ -3425,7 +3281,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		if($ev->getDeathMessage() != ""){
-			$this->server->broadcast($ev->getDeathMessage(), Server::BROADCAST_CHANNEL_USERS);
+			$this->server->broadcastMessage($ev->getDeathMessage());
 		}
 	}
 
@@ -3508,6 +3364,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$players[] = $this;
 		}
 		parent::broadcastEntityEvent($eventId, $eventData, $players);
+	}
+
+	public function broadcastAnimation(?array $players, int $animationId) : void{
+		if($this->spawned and $players === null){
+			$players = $this->getViewers();
+			$players[] = $this;
+		}
+		parent::broadcastAnimation($players, $animationId);
 	}
 
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{
@@ -3822,10 +3686,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function getLoaderId() : int{
 		return $this->loaderId;
-	}
-
-	public function isLoaderActive() : bool{
-		return $this->isConnected();
 	}
 
 	public function getDeviceModel() : string{

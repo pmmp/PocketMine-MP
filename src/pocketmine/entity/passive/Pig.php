@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\passive;
 
+use pocketmine\entity\Animal;
 use pocketmine\entity\behavior\FloatBehavior;
 use pocketmine\entity\behavior\FollowParentBehavior;
 use pocketmine\entity\behavior\LookAtPlayerBehavior;
@@ -32,26 +33,26 @@ use pocketmine\entity\behavior\PanicBehavior;
 use pocketmine\entity\behavior\RandomLookAroundBehavior;
 use pocketmine\entity\behavior\TemptedBehavior;
 use pocketmine\entity\behavior\WanderBehavior;
-use pocketmine\entity\Tamable;
-use pocketmine\item\Bucket;
+use pocketmine\item\Saddle;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-class Cow extends Tamable{
+class Pig extends Animal{
 
-	public const NETWORK_ID = self::COW;
+	public const NETWORK_ID = self::PIG;
 
 	public $width = 0.9;
-	public $height = 1.3;
+	public $height = 0.9;
 
 	protected function addBehaviors() : void{
 		$this->behaviorPool->setBehavior(0, new FloatBehavior($this));
-		$this->behaviorPool->setBehavior(1, new PanicBehavior($this, 2.0));
+		$this->behaviorPool->setBehavior(1, new PanicBehavior($this, 1.25));
 		$this->behaviorPool->setBehavior(2, new MateBehavior($this, 1.0));
-		$this->behaviorPool->setBehavior(3, new TemptedBehavior($this, [Item::WHEAT], 1.25));
-		$this->behaviorPool->setBehavior(4, new FollowParentBehavior($this, 1.25));
+		$this->behaviorPool->setBehavior(3, new TemptedBehavior($this, [Item::WHEAT], 1.2));
+		// TODO: Add ControlledByPlayerBehavior
+		$this->behaviorPool->setBehavior(4, new FollowParentBehavior($this, 1.1));
 		$this->behaviorPool->setBehavior(5, new WanderBehavior($this, 1.0));
 		$this->behaviorPool->setBehavior(6, new LookAtPlayerBehavior($this, 6.0));
 		$this->behaviorPool->setBehavior(7, new RandomLookAroundBehavior($this));
@@ -59,25 +60,31 @@ class Cow extends Tamable{
 
 	protected function initEntity() : void{
 		$this->setMaxHealth(10);
-		$this->setMovementSpeed(0.2);
+		$this->setMovementSpeed(0.25);
 		$this->setFollowRange(10);
+		$this->setSaddled(boolval($this->namedtag->getByte("Saddle", 0)));
 
 		parent::initEntity();
 	}
 
 	public function getName() : string{
-		return "Cow";
+		return "Pig";
 	}
 
 	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : void{
 		if($this->aiEnabled){
-			if($item instanceof Bucket and $item->getDamage() === 0){
-				$milk = clone $item;
-				$milk->setDamage(1);
-				$player->getInventory()->setItemInHand($milk);
+			if($item instanceof Saddle){
+				if(!$this->isSaddled()){
+					$this->setSaddled(true);
+					if($player->isSurvival()){
+						$item->pop();
+						$player->getInventory()->setItemInHand($item);
+					}
+				}
+			}elseif($this->isSaddled() and $this->riddenByEntity === null){
+				$player->mountEntity($this);
 			}
 		}
-
 		parent::onInteract($player, $item, $clickPos, $slot);
 	}
 
@@ -87,8 +94,25 @@ class Cow extends Tamable{
 
 	public function getDrops() : array{
 		return [
-			ItemFactory::get(Item::LEATHER, 0, rand(0, 2)),
-			($this->isOnFire() ? ItemFactory::get(Item::STEAK, 0, rand(1, 3)) : ItemFactory::get(Item::RAW_BEEF, 0, rand(1, 3)))
+			($this->isOnFire() ? ItemFactory::get(Item::COOKED_PORKCHOP, 0, rand(1, 3)) : ItemFactory::get(Item::RAW_PORKCHOP, 0, rand(1, 3)))
 		];
+	}
+
+	public function isSaddled() : bool{
+		return $this->getGenericFlag(self::DATA_FLAG_SADDLED);
+	}
+
+	public function setSaddled(bool $value = true) : void{
+		$this->setGenericFlag(self::DATA_FLAG_SADDLED, $value);
+	}
+
+	public function saveNBT() : void{
+		parent::saveNBT();
+
+		$this->namedtag->setByte("Saddle", intval($this->isSaddled()));
+	}
+
+	public function getRiderSeatPosition(int $seatNumber = 0) : Vector3{
+		return new Vector3(0, 1, 0);
 	}
 }

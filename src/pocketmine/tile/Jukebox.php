@@ -65,7 +65,7 @@ class Jukebox extends Spawnable{
 			$pk->needsTranslation = true;
 			$pk->message = "record.nowPlaying";
 			$pk->parameters = [ucwords(str_ireplace(["record", "."], ["", ""], $this->getRecordItem()->getSoundId()))];
-			$player->dataPacket($pk);
+			$player->sendDataPacket($pk);
 			
 			$this->scheduleUpdate();
 		}

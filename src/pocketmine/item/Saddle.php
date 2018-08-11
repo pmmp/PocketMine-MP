@@ -22,22 +22,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity\behavior;
+namespace pocketmine\item;
 
-class PanicBehavior extends WanderBehavior{
-
-	public function canStart() : bool{
-		if($this->mob->getLastAttacker() !== null or $this->mob->isOnFire()){
-			$this->targetPos = $this->findRandomTargetBlock($this->mob, 5, 4);
-			$this->followRange = $this->mob->distanceSquared($this->targetPos) + 2;
-
-			return true;
-		}
-		return false;
+class Saddle extends Item{
+	public function __construct(int $meta = 0){
+		parent::__construct(self::SADDLE, $meta, "Saddle");
 	}
 
-	public function onEnd() : void{
-		$this->mob->setLastAttacker(null);
-		parent::onEnd();
+	public function getMaxStackSize() : int{
+		return 1;
 	}
 }
+

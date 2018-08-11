@@ -25,9 +25,9 @@ declare(strict_types=1);
 namespace pocketmine\entity\passive;
 
 use pocketmine\entity\Ageable;
-use pocketmine\entity\Creature;
 use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
+use pocketmine\entity\Mob;
 use pocketmine\entity\NPC;
 use pocketmine\inventory\TradeInventory;
 use pocketmine\inventory\TradeItems;
@@ -37,7 +37,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\Player;
 
-class Villager extends Creature implements NPC, Ageable{
+class Villager extends Mob implements NPC, Ageable{
 	public const NETWORK_ID = self::VILLAGER;
 
 	public static $names = [
@@ -110,9 +110,9 @@ class Villager extends Creature implements NPC, Ageable{
 	}
 
 	public function updateTradeItems() : void{
-	    $this->offers = new CompoundTag("Offers", [
-	        new ListTag("Recipes", TradeItems::getItemsForVillager($this))
-        ]);
+		$this->offers = new CompoundTag("Offers", [
+			new ListTag("Recipes", TradeItems::getItemsForVillager($this))
+		]);
 	}
 
 	public function updateTradeTier() : void{
@@ -120,7 +120,8 @@ class Villager extends Creature implements NPC, Ageable{
 		try{
 			$this->setTradeTier($tradeTier);
 			$this->addEffect(new EffectInstance(Effect::getEffect(Effect::REGENERATION), mt_rand(2, 5) * 20));
-		}catch(\InvalidArgumentException $exception){}
+		}catch(\InvalidArgumentException $exception){
+		}
 	}
 
 	public function setTradeTier(int $tradeTier) : void{
@@ -181,7 +182,7 @@ class Villager extends Creature implements NPC, Ageable{
 	}
 
 	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : void{
-		if(!$this->isBaby() and $this->offers instanceof CompoundTag){
+		if(!$this->isBaby() and $this->offers instanceof CompoundTag and $this->aiEnabled){
 			$player->addWindow($this->getInventory());
 		}
 	}

@@ -27,36 +27,30 @@ namespace pocketmine\entity\behavior;
 use pocketmine\entity\Mob;
 use pocketmine\math\Vector3;
 
-class FloatBehavior extends Behavior
-{
+class FloatBehavior extends Behavior{
 
-    public function __construct(Mob $mob)
-    {
-        parent::__construct($mob);
-        $this->mutexBits = 4;
-    }
+	public function __construct(Mob $mob){
+		parent::__construct($mob);
+		$this->mutexBits = 4;
+	}
 
-    public function canStart(): bool
-    {
-        return $this->mob->isUnderWater();
-    }
+	public function canStart() : bool{
+		return $this->mob->isUnderWater();
+	}
 
-    public function onStart(): void
-    {
-        $this->mob->setSwimmer(true);
-    }
+	public function onStart() : void{
+		$this->mob->setSwimmer(true);
+	}
 
-    public function onEnd(): void
-    {
-        $this->mob->setSwimmer(false);
-    }
+	public function onEnd() : void{
+		$this->mob->setSwimmer(false);
+	}
 
-    public function onTick(): void
-    {
-        if ($this->mob->isUnderWater()) {
-            if ($this->random->nextFloat() < 0.8) {
-                $this->mob->setMotion(new Vector3(0, 0.39,0));
-            }
-        }
-    }
+	public function onTick() : void{
+		if($this->mob->isUnderWater()){
+			if($this->random->nextFloat() < 0.8){
+				$this->mob->setMotion(new Vector3(0, 0.39, 0));
+			}
+		}
+	}
 }

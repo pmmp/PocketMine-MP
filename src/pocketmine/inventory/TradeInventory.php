@@ -63,13 +63,8 @@ class TradeInventory extends BaseInventory{
 			$pk->traderEid = $this->holder->getId();
 			$pk->playerEid = $who->getId();
 			$pk->displayName = $this->holder->getDisplayName();
-
-			try{
-				$nbtWriter = new NetworkLittleEndianNBTStream();
-				$pk->offers = $nbtWriter->write($tag);
-			}catch(\Exception $exception){}
-
-			$who->dataPacket($pk);
+			$pk->offers = (new NetworkLittleEndianNBTStream())->write($tag);
+			$who->sendDataPacket($pk);
 		}else{
 			parent::onClose($who);
 		}
@@ -89,12 +84,12 @@ class TradeInventory extends BaseInventory{
 	}
 
 
-    /**
-     * For trade tier update
-     *
-     * @param bool $value
-     */
-    public function setTraded(bool $value) : void{
+	/**
+	 * For trade tier update
+	 *
+	 * @param bool $value
+	 */
+	public function setTraded(bool $value) : void{
 		$this->isTraded = $value;
 	}
 }

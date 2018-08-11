@@ -684,18 +684,6 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * WARNING: Do not use this, it's only for internal use.
 	 * Changes to this function won't be recorded on the version.
-	 */
-	public function checkTime(){
-		if($this->stopTime){
-			return;
-		}else{
-			++$this->time;
-		}
-	}
-
-	/**
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
 	 *
 	 * @param Player ...$targets If empty, will send to all players in the level.
 	 */
@@ -724,7 +712,9 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->timings->doTick->startTiming();
 
-		$this->checkTime();
+		if(!$this->stopTime){
+			$this->time++;
+		}
 
 		$this->sunAnglePercentage = $this->computeSunAnglePercentage(); //Sun angle depends on the current time
 		$this->skyLightReduction = $this->computeSkyLightReduction(); //Sky light reduction depends on the sun angle
@@ -829,8 +819,10 @@ class Level implements ChunkManager, Metadatable{
 			$this->checkSleep();
 		}
 
-		if(!empty($this->players) and !empty($this->globalPackets)){
-			$this->server->broadcastPackets($this->players, $this->globalPackets);
+		if(!empty($this->globalPackets)){
+			if(!empty($this->players)){
+				$this->server->broadcastPackets($this->players, $this->globalPackets);
+			}
 			$this->globalPackets = [];
 		}
 
@@ -3058,11 +3050,11 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function canSeeSky(Vector3 $pos) : bool{
-		return $pos->y >= $this->getHighestBlockAt($pos->x, $pos->z);
+		return $pos->y >= $this->getHighestBlockAt((int) floor($pos->x), (int) floor($pos->z));
 	}
 
 	public function isDayTime() : bool{
-		return $this->getSunAngleDegrees() > 180;
+		return $this->getSunAngleDegrees() < 90 or $this->getSunAngleDegrees() > 270;
 	}
 
 	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue){

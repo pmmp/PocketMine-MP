@@ -69,7 +69,8 @@ class CommandEnumValues{
 		"absorption",
 		"saturation",
 		"levitation",
-		"fatal_poison"
+		"fatal_poison",
+        "conduit_power"
 	];
 
 	private static $enchant = [
@@ -99,7 +100,7 @@ class CommandEnumValues{
 		"luck_of_the_sea",
 		"lure",
 		"frost_walker",
-		"mending"
+        "mending"
 	];
 
 	private static $gameMode = [

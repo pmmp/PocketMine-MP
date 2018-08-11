@@ -43,80 +43,85 @@ use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\Player;
 
 class Wolf extends Tamable{
-    public const NETWORK_ID = self::WOLF;
+	public const NETWORK_ID = self::WOLF;
 
-    public $width = 0.6;
-    public $height = 0.8;
+	public $width = 0.6;
+	public $height = 0.8;
 
-    protected function addBehaviors() : void{
-        $this->behaviorPool->setBehavior(0, new FloatBehavior($this));
-        $this->behaviorPool->setBehavior(1, new SittingBehavior($this));
-        $this->behaviorPool->setBehavior(2, new JumpAttackBehavior($this, 1.0));
-        $this->behaviorPool->setBehavior(3, new MeleeAttackBehavior($this, 2.0));
-        $this->behaviorPool->setBehavior(4, new FollowOwnerBehavior($this, 2.0));
-        $this->behaviorPool->setBehavior(5, new WanderBehavior($this, 1.0));
-        $this->behaviorPool->setBehavior(6, new LookAtPlayerBehavior($this, 8.0));
-        $this->behaviorPool->setBehavior(7, new RandomLookAroundBehavior($this));
+	protected function addBehaviors() : void{
+		$this->behaviorPool->setBehavior(0, new FloatBehavior($this));
+		$this->behaviorPool->setBehavior(1, new SittingBehavior($this));
+		$this->behaviorPool->setBehavior(2, new JumpAttackBehavior($this, 1.0));
+		$this->behaviorPool->setBehavior(3, new MeleeAttackBehavior($this, 2.0));
+		$this->behaviorPool->setBehavior(4, new FollowOwnerBehavior($this, 2.0));
+		$this->behaviorPool->setBehavior(5, new WanderBehavior($this, 1.0));
+		$this->behaviorPool->setBehavior(6, new LookAtPlayerBehavior($this, 8.0));
+		$this->behaviorPool->setBehavior(7, new RandomLookAroundBehavior($this));
 
-        $this->targetBehaviorPool->setBehavior(0, new HurtByTargetBehavior($this));
-        $this->targetBehaviorPool->setBehavior(1, new OwnerHurtByTargetBehavior($this));
-        $this->targetBehaviorPool->setBehavior(2, new OwnerHurtTargetBehavior($this));
-    }
+		$this->targetBehaviorPool->setBehavior(0, new HurtByTargetBehavior($this));
+		$this->targetBehaviorPool->setBehavior(1, new OwnerHurtByTargetBehavior($this));
+		$this->targetBehaviorPool->setBehavior(2, new OwnerHurtTargetBehavior($this));
+	}
 
-    protected function initEntity() : void{
-        $this->setMaxHealth(8);
-        $this->setMovementSpeed(0.3);
-        $this->setAttackDamage(3);
-        $this->setFollowRange(16);
+	protected function initEntity() : void{
+		$this->setMaxHealth(8);
+		$this->setMovementSpeed(0.3);
+		$this->setAttackDamage(3);
+		$this->setFollowRange(16);
 
-        $this->propertyManager->setInt(self::DATA_COLOR, 14); // collar color
+		$this->propertyManager->setInt(self::DATA_COLOR, 14); // collar color
 
-        parent::initEntity();
-    }
+		parent::initEntity();
+	}
 
-    public function getName() : string{
-        return "Wolf";
-    }
+	public function getName() : string{
+		return "Wolf";
+	}
 
-    public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : void{
-        if($this->isTamed()){
-            if($this->getOwningEntityId() == $player->id){
-                $this->setSitting(!$this->isSitting());
-            }
-        }else{
-            if($item->getId() == Item::BONE){
-                $player->getInventory()->removeItem($item->pop());
+	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : void{
+		if($this->aiEnabled){
+			if($this->isTamed()){
+				if($this->getOwningEntityId() == $player->id){
+					$this->setSitting(!$this->isSitting());
+					$this->setTargetEntity(null);
+				}
+			}else{
+				if($item->getId() == Item::BONE){
+					$player->getInventory()->removeItem($item->pop());
 
-                if(mt_rand(0, 2) == 0){
-                    $this->setOwningEntity($player);
-                    $this->setTamed();
-                    $this->setSitting();
-                    $this->setAngry(false);
-                    $this->setAttackDamage(4);
+					if(mt_rand(0, 2) == 0){
+						$this->setOwningEntity($player);
+						$this->setTamed();
+						$this->setSitting();
+						$this->setAngry(false);
+						$this->setAttackDamage(4);
 
-                    $this->broadcastEntityEvent(EntityEventPacket::TAME_SUCCESS);
-                }else{
-                    $this->broadcastEntityEvent(EntityEventPacket::TAME_FAIL);
-                }
-            }
-        }
-    }
+						$this->broadcastEntityEvent(EntityEventPacket::TAME_SUCCESS);
+					}else{
+						$this->broadcastEntityEvent(EntityEventPacket::TAME_FAIL);
+					}
+				}
+			}
+		}
 
-    public function setTargetEntity(?Entity $target) : void{
-        parent::setTargetEntity($target);
-        if($target == null){
-            $this->setAngry(false);
-        }elseif(!$this->isTamed()){
-            $this->setAngry();
-        }
-    }
+		parent::onInteract($player, $item, $clickPos, $slot);
+	}
 
-    public function isAngry() : bool{
-        return $this->getGenericFlag(self::DATA_FLAG_ANGRY);
-    }
+	public function setTargetEntity(?Entity $target) : void{
+		parent::setTargetEntity($target);
+		if($target == null){
+			$this->setAngry(false);
+		}elseif(!$this->isTamed()){
+			$this->setAngry();
+		}
+	}
 
-    public function setAngry(bool $angry = true) : void{
-        $this->setGenericFlag(self::DATA_FLAG_ANGRY, $angry);
-    }
+	public function isAngry() : bool{
+		return $this->getGenericFlag(self::DATA_FLAG_ANGRY);
+	}
+
+	public function setAngry(bool $angry = true) : void{
+		$this->setGenericFlag(self::DATA_FLAG_ANGRY, $angry);
+	}
 
 }

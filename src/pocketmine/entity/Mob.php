@@ -26,197 +26,212 @@ namespace pocketmine\entity;
 
 
 use pocketmine\entity\behavior\BehaviorPool;
+use pocketmine\entity\pathfinder\EntityNavigator;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\entity\pathfinder\EntityNavigator;
 
 abstract class Mob extends Living{
 
-    /** @var BehaviorPool */
-    protected $behaviorPool;
-    /** @var BehaviorPool */
-    protected $targetBehaviorPool;
-    /** @var EntityNavigator */
-    protected $navigator;
-    /** @var Vector3 */
-    protected $lookPosition;
+	/** @var BehaviorPool */
+	protected $behaviorPool;
+	/** @var BehaviorPool */
+	protected $targetBehaviorPool;
+	/** @var EntityNavigator */
+	protected $navigator;
+	/** @var Vector3 */
+	protected $lookPosition;
+	/** @var Entity[] */
+	protected $seenEntities = [];
+	/** @var Entity[] */
+	protected $unseenEntities = [];
+	protected $jumpCooldown = 0;
+	/** @var Vector3 */
+	protected $homePosition;
 
-    protected $seenEntities = [];
-    protected $unseenEntities = [];
-    protected $jumpCooldown = 0;
+	/** @var bool */
+	protected $aiEnabled = false;
 
-    /** @var bool */
-    protected $aiEnabled = false;
+	public function __construct(Level $level, CompoundTag $nbt){
+		parent::__construct($level, $nbt);
+		$this->setImmobile(true);
+	}
 
-    public function __construct(Level $level, CompoundTag $nbt){
-        parent::__construct($level, $nbt);
-        $this->setImmobile(true);
-    }
+	/**
+	 * @return bool
+	 */
+	public function isAiEnabled() : bool{
+		return $this->aiEnabled;
+	}
 
-    /**
-     * @return bool
-     */
-    public function isAiEnabled(): bool
-    {
-        return $this->aiEnabled;
-    }
+	/**
+	 * @param bool $aiEnabled
+	 */
+	public function setAiEnabled(bool $aiEnabled) : void{
+		$this->aiEnabled = $aiEnabled;
+	}
 
-    /**
-     * @param bool $aiEnabled
-     */
-    public function setAiEnabled(bool $aiEnabled): void
-    {
-        $this->aiEnabled = $aiEnabled;
-    }
+	/**
+	 * @return Vector3
+	 */
+	public function getHomePosition() : Vector3{
+		return $this->homePosition;
+	}
 
-    protected function initEntity() : void{
-        parent::initEntity();
+	/**
+	 * @param Vector3 $homePosition
+	 */
+	public function setHomePosition(Vector3 $homePosition) : void{
+		$this->homePosition = $homePosition;
+	}
 
-        $this->targetBehaviorPool = new BehaviorPool();
-        $this->behaviorPool = new BehaviorPool();
-        $this->navigator = new EntityNavigator($this);
+	protected function initEntity() : void{
+		parent::initEntity();
 
-        $this->addBehaviors();
+		$this->targetBehaviorPool = new BehaviorPool();
+		$this->behaviorPool = new BehaviorPool();
+		$this->navigator = new EntityNavigator($this);
 
-        $this->aiEnabled = boolval($this->namedtag->getByte("aiEnabled", 0));
-    }
+		$this->addBehaviors();
 
-    public function saveNBT(): void
-    {
-        parent::saveNBT();
-        $this->namedtag->setByte("aiEnabled", intval($this->aiEnabled));
-    }
+		$this->aiEnabled = boolval($this->namedtag->getByte("aiEnabled", 0));
+	}
 
-    public function entityBaseTick(int $diff = 1) : bool{
-        $hasUpdate = parent::entityBaseTick($diff);
+	public function saveNBT() : void{
+		parent::saveNBT();
+		$this->namedtag->setByte("aiEnabled", intval($this->aiEnabled));
+	}
 
-        if($this->aiEnabled) {
-            $this->onBehaviorUpdate();
-        }
+	public function entityBaseTick(int $diff = 1) : bool{
+		$hasUpdate = parent::entityBaseTick($diff);
 
-        return $hasUpdate;
-    }
+		if($this->aiEnabled){
+			$this->onBehaviorUpdate();
+		}
 
-    protected function onBehaviorUpdate() : void{
-        $this->targetBehaviorPool->onUpdate();
-        $this->behaviorPool->onUpdate();
+		return $hasUpdate;
+	}
 
-        $this->navigator->onNavigateUpdate();
+	protected function onBehaviorUpdate() : void{
+		$this->targetBehaviorPool->onUpdate();
+		$this->behaviorPool->onUpdate();
 
-        if($this->getLookPosition() !== null){
-            $this->lookAt($this->getLookPosition(), true);
-            $this->lookPosition = null;
-        }
+		$this->navigator->onNavigateUpdate();
 
-        $this->handleWaterMovement();
+		if($this->getLookPosition() !== null){
+			$this->lookAt($this->getLookPosition(), true);
+			$this->lookPosition = null;
+		}
 
-        $this->clearSightCache();
-    }
+		$this->handleWaterMovement();
 
-    public function canSeeEntity(Entity $target) : bool{
-        if(in_array($target->getId(), $this->unseenEntities)){
-            return false;
-        }elseif(in_array($target->getId(), $this->seenEntities)){
-            return true;
-        }else{
-            $sourcePos = $this->floor();
-            $targetPos = $target->floor();
-            if($sourcePos->equals($targetPos)){
-                return true;
-            }
-            $vecs = VoxelRayTrace::betweenPoints($sourcePos, $targetPos);
-            $canSee = true;
-            foreach ($vecs as $vec) {
-                if($this->level->getBlockAt($vec->x, $vec->y, $vec->z)->isSolid()){
-                    $canSee = false;
-                    break;
-                }
-            }
-            if($canSee){
-                $this->seenEntities[] = $target->getId();
-            }else{
-                $this->unseenEntities[] = $target->getId();
-            }
+		$this->clearSightCache();
+	}
 
-            return $canSee;
-        }
-    }
+	public function canSeeEntity(Entity $target) : bool{
+		if(in_array($target->getId(), $this->unseenEntities)){
+			return false;
+		}elseif(in_array($target->getId(), $this->seenEntities)){
+			return true;
+		}else{
+			$sourcePos = $this->floor();
+			$targetPos = $target->floor();
+			if($sourcePos->equals($targetPos)){
+				return true;
+			}
+			$vecs = VoxelRayTrace::betweenPoints($sourcePos, $targetPos);
+			$canSee = true;
+			foreach($vecs as $vec){
+				if($this->level->getBlockAt($vec->x, $vec->y, $vec->z)->isSolid()){
+					$canSee = false;
+					break;
+				}
+			}
+			if($canSee){
+				$this->seenEntities[] = $target->getId();
+			}else{
+				$this->unseenEntities[] = $target->getId();
+			}
 
-    public function clearSightCache() : void{
-        $this->seenEntities = [];
-        $this->unseenEntities = [];
-    }
+			return $canSee;
+		}
+	}
 
-    public function getLookPosition() : ?Vector3{
-        return $this->lookPosition;
-    }
+	public function clearSightCache() : void{
+		$this->seenEntities = [];
+		$this->unseenEntities = [];
+	}
 
-    public function setLookPosition(?Vector3 $pos) : void{
-        $this->lookPosition = $pos;
-    }
+	public function getLookPosition() : ?Vector3{
+		return $this->lookPosition;
+	}
 
-    protected function addBehaviors() : void{
+	public function setLookPosition(?Vector3 $pos) : void{
+		$this->lookPosition = $pos;
+	}
 
-    }
+	protected function addBehaviors() : void{
 
-    public function getBehaviorPool() : BehaviorPool{
-        return $this->behaviorPool;
-    }
+	}
 
-    public function getTargetBehaviorPool() : BehaviorPool{
-        return $this->targetBehaviorPool;
-    }
+	public function getBehaviorPool() : BehaviorPool{
+		return $this->behaviorPool;
+	}
 
-    public function moveForward(float $spm) : bool{
-        if($this->jumpCooldown > 0) $this->jumpCooldown--;
+	public function getTargetBehaviorPool() : BehaviorPool{
+		return $this->targetBehaviorPool;
+	}
 
-        $sf = $this->getMovementSpeed() * $spm * 0.7;
-        $dir = $this->getDirectionVector();
-        $dir->y = 0;
+	public function moveForward(float $spm) : bool{
+		if($this->jumpCooldown > 0) $this->jumpCooldown--;
 
-        $coord = $this->add($dir->multiply($sf)->add($dir->multiply($this->width * 0.5)));
+		$sf = $this->getMovementSpeed() * $spm * 0.7;
+		$dir = $this->getDirectionVector();
+		$dir->y = 0;
 
-        $block = $this->level->getBlock($coord);
-        $blockUp = $block->getSide(Vector3::SIDE_UP);
-        $blockUpUp = $block->getSide(Vector3::SIDE_UP, 2);
+		$coord = $this->add($dir->multiply($sf)->add($dir->multiply($this->width * 0.5)));
 
-        $collide = $block->isSolid() || ($this->height >= 1 and $blockUp->isSolid());
+		$block = $this->level->getBlock($coord);
+		$blockUp = $block->getSide(Vector3::SIDE_UP);
+		$blockUpUp = $block->getSide(Vector3::SIDE_UP, 2);
 
-        if(!$collide){
-            if (!$this->onGround and $this->jumpCooldown === 0 and !$this->isSwimmer()) return true;
+		$collide = $block->isSolid() || ($this->height >= 1 and $blockUp->isSolid());
 
-            $velocity = $dir->multiply($sf);
-            $entityVelocity = $this->getMotion();
-            $entityVelocity->y = 0;
+		if(!$collide){
+			if(!$this->onGround and $this->jumpCooldown === 0 and !$this->isSwimmer()) return true;
 
-            $this->motion = $this->getMotion()->add($velocity->subtract($entityVelocity));
-            return true;
-        }else{
-            if($this->canClimb()){
-                $this->setMotion($this->getMotion()->setComponents(0, 0.2, 0));
-                return true;
-            }elseif((!$blockUp->isSolid() and !($this->height > 1 and $blockUpUp->isSolid())) or $this->isSwimmer()){
-                $this->motion->y = $this->getJumpVelocity();
-                $this->jumpCooldown = 20;
-                return true;
-            }else{
-                $this->motion->x = $this->motion->z = 0;
-            }
-        }
-        return false;
-    }
+			$velocity = $dir->multiply($sf);
+			$entityVelocity = $this->getMotion();
+			$entityVelocity->y = 0;
 
-    public function getNavigator() : EntityNavigator{
-        return $this->navigator;
-    }
+			$this->motion = $this->getMotion()->add($velocity->subtract($entityVelocity));
+			return true;
+		}else{
+			if($this->canClimb()){
+				$this->motion->y = 0.2;
+				$this->jumpCooldown = 20;
+				return true;
+			}elseif((!$blockUp->isSolid() and !($this->height > 1 and $blockUpUp->isSolid())) or $this->isSwimmer()){
+				$this->motion->y = $this->getJumpVelocity();
+				$this->jumpCooldown = 20;
+				return true;
+			}else{
+				$this->motion->x = $this->motion->z = 0;
+			}
+		}
+		return false;
+	}
 
-    public function canBePushed(): bool{
-        return $this->aiEnabled;
-    }
+	public function getNavigator() : EntityNavigator{
+		return $this->navigator;
+	}
 
-    public function setDefaultMovementSpeed(float $value) : void{
-        $this->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED)->setDefaultValue($value);
-    }
+	public function canBePushed() : bool{
+		return $this->aiEnabled;
+	}
+
+	public function setDefaultMovementSpeed(float $value) : void{
+		$this->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED)->setDefaultValue($value);
+	}
 }

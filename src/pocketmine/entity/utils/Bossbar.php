@@ -34,8 +34,8 @@ use pocketmine\network\mcpe\protocol\{
 use pocketmine\Player;
 
 /*
- * This a Helper class for create a simple Bossbar
- * Note: This not a entity
+ * This is a Helper class to create a simple Bossbar
+ * Note: This is not an entity
  */
 class Bossbar extends Vector3{
 
@@ -109,8 +109,8 @@ class Bossbar extends Vector3{
 		$pk->metadata = $this->metadata;
 		$pk->position = $this;
 
-		$player->dataPacket($pk);
-		$player->dataPacket($this->getHealthPacket());
+		$player->sendDataPacket($pk);
+		$player->sendDataPacket($this->getHealthPacket());
 
 		$pk2 = new BossEventPacket();
 		$pk2->bossEid = $this->entityId;
@@ -121,7 +121,7 @@ class Bossbar extends Vector3{
 		$pk2->overlay = 0;
 		$pk2->unknownShort = 0;
 
-		$player->dataPacket($pk2);
+		$player->sendDataPacket($pk2);
 
 		if($isViewer){
 			$this->viewers[$player->getLoaderId()] = $player;
@@ -133,12 +133,12 @@ class Bossbar extends Vector3{
 		$pk->bossEid = $this->entityId;
 		$pk->eventType = BossEventPacket::TYPE_HIDE;
 
-		$player->dataPacket($pk);
+		$player->sendDataPacket($pk);
 
 		$pk2 = new RemoveEntityPacket();
 		$pk2->entityUniqueId = $this->entityId;
 
-		$player->dataPacket($pk2);
+		$player->sendDataPacket($pk2);
 
 		if(isset($this->viewers[$player->getLoaderId()])){
 			unset($this->viewers[$player->getLoaderId()]);
@@ -155,15 +155,15 @@ class Bossbar extends Vector3{
 		$pk2 = clone $pk;
 		$pk2->eventType = BossEventPacket::TYPE_HEALTH_PERCENT;
 
-		$player->dataPacket($pk);
-		$player->dataPacket($pk2);
-		$player->dataPacket($this->getHealthPacket());
+		$player->sendDataPacket($pk);
+		$player->sendDataPacket($pk2);
+		$player->sendDataPacket($this->getHealthPacket());
 
 		$mpk = new SetEntityDataPacket();
 		$mpk->entityRuntimeId = $this->entityId;
 		$mpk->metadata = $this->metadata;
 
-		$player->dataPacket($mpk);
+		$player->sendDataPacket($mpk);
 	}
 
 	public function updateForAll() : void{
