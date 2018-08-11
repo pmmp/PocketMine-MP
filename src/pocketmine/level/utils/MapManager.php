@@ -25,6 +25,8 @@ declare(strict_types=1);
 namespace pocketmine\level\utils;
 
 use pocketmine\item\FilledMap;
+use pocketmine\nbt\LittleEndianNBTStream;
+use pocketmine\Server;
 
 class MapManager{
 
@@ -43,6 +45,18 @@ class MapManager{
 
 	public static function getNextId() : int{
 		return self::$mapIdCounter++;
+	}
+
+	public static function initMaps() : void{
+		@mkdir($path = Server::getInstance()->getDataPath() . "maps/");
+
+		if(is_file($path . "idcounts.dat")){
+			$stream = new LittleEndianNBTStream();
+			/** @var \pocketmine\nbt\tag\CompoundTag $data */
+			$data = $stream->read(file_get_contents($path . "idcounts.dat"));
+
+			self::$mapIdCounter = $data->getInt("map", 0);
+		}
 	}
 
 }

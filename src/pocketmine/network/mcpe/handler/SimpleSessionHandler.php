@@ -29,7 +29,6 @@ use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\FilledMap;
-use pocketmine\level\utils\MapManager;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
@@ -370,11 +369,14 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleMapInfoRequest(MapInfoRequestPacket $packet) : bool{
-		$map = MapManager::getMapById($packet->mapId);
+		$map = $this->player->getInventory()->getItemInHand();
+		var_dump("xxx");
 		if($map instanceof FilledMap){
-			$data = $map->createMapDataPacket();
+			var_dump("aaa");
+			$data = $map->createMapDataPacket($packet->mapId);
 
 			if($data instanceof ClientboundMapItemDataPacket){
+				var_dump("bbbb");
 				$this->player->sendDataPacket($data);
 				return true;
 			}

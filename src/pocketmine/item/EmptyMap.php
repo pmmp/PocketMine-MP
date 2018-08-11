@@ -35,9 +35,6 @@ class EmptyMap extends Item{
 	}
 
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
-		$this->count--;
-		$player->getInventory()->setItemInHand($this);
-
 		$map = new FilledMap();
 		// TODO: Create world map
 		$map->onCreateMap();
@@ -47,6 +44,9 @@ class EmptyMap extends Item{
 		}else{
 			$player->dropItem($map);
 		}
+
+		$this->count--;
+		$player->getInventory()->setItemInHand($this);
 
 		return true;
 	}

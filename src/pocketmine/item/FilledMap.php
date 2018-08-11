@@ -25,25 +25,34 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\level\utils\MapManager;
-use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\network\mcpe\protocol\ClientboundMapItemDataPacket;
 use pocketmine\Player;
+use pocketmine\utils\Color;
 
 class FilledMap extends Item{
 
-	public const TAG_COLORS = "colors";
-	public const TAG_SCALE = "scale";
-	public const TAG_DIMENSION = "dimension";
+	public const TAG_MAP_UUID = "map_uuid";
+	public const TAG_ZOOM = "zoom";
 
 	public function __construct(int $meta = 0){
 		parent::__construct(self::FILLED_MAP, $meta, "Filled Map");
 	}
 
-	public function createMapDataPacket() : ?ClientboundMapItemDataPacket{
+	public function createMapDataPacket(int $mapId) : ?ClientboundMapItemDataPacket{
+		var_dump($mapId);
 		$pk = new ClientboundMapItemDataPacket();
-		$pk->mapId = $this->getNamedTag()->getInt("mapId", 0);
+		$pk->mapId = $mapId;
 		$pk->height = $pk->width = 128;
 		$pk->scale = 0;
+
+		for($y = 0; $y < 128; $y++){
+			for($x = 0; $x < 128; $x++){
+				if(!isset($pk->colors[$y])){
+					$pk->colors[$y] = [];
+				}
+				$pk->colors[$y][$x] = new Color(127, 178, 56);
+			}
+		}
 
 		return $pk;
 	}
@@ -55,6 +64,6 @@ class FilledMap extends Item{
 	public function onCreateMap() : void{
 		MapManager::registerMap($id = MapManager::getNextId(), $this);
 		$nbt = $this->getNamedTag();
-		$nbt->setInt("mapId", $id);
+		$nbt->setString("map_uuid", strval($id));
 	}
 }
