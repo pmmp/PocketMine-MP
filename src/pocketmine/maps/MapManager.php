@@ -62,7 +62,6 @@ class MapManager{
 		}
 
 		$stream = new BigEndianNBTStream();
-		var_dump("aa");
 		for($i = self::$mapIdCounter; $i >= 0; $i--){
 			$item = $path . "map_" . strval($i) . ".dat";
 			if(is_file($item)){
@@ -70,7 +69,6 @@ class MapManager{
 				$map = new MapData($i);
 				$map->readSaveData($data);
 				self::registerMapData($map);
-				var_dump($i);
 			}
 		}
 	}
