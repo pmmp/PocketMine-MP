@@ -63,6 +63,8 @@ class Bucket extends Item implements Consumable{
 				if(!$ev->isCancelled()){
 					$player->getLevel()->setBlock($blockClicked, BlockFactory::get(Block::AIR), true, true);
 					$player->getLevel()->broadcastLevelSoundEvent($blockClicked->add(0.5, 0.5, 0.5), $blockClicked->getBucketFillSound());
+                    $player->getInventory()->removeItem(Item::get(Item::BUCKET, 0, 1));
+
 					if($player->isSurvival()){
 						if($stack->getCount() === 0){
 							$player->getInventory()->setItemInHand($ev->getItem());
@@ -86,6 +88,8 @@ class Bucket extends Item implements Consumable{
 			if(!$ev->isCancelled()){
 				$player->getLevel()->setBlock($blockReplace, $resultBlock->getFlowingForm(), true, true);
 				$player->getLevel()->broadcastLevelSoundEvent($blockClicked->add(0.5, 0.5, 0.5), $resultBlock->getBucketEmptySound());
+                $player->getInventory()->removeItem(Item::get($player->getInventory()->getItemInHand()->getID() , $player->getInventory()->getItemInHand()->getDamage() , 1));
+                $player->getInventory()->addItem(Item::get(Item::BUCKET, 0, 1));
 
 				if($player->isSurvival()){
 					$player->getInventory()->setItemInHand($ev->getItem());
