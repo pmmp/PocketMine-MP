@@ -87,7 +87,9 @@ class Wolf extends Tamable{
 				}
 			}else{
 				if($item->getId() == Item::BONE){
-					$player->getInventory()->removeItem($item->pop());
+					if($player->isSurvival()){
+						$item->pop();
+					}
 
 					if(mt_rand(0, 2) == 0){
 						$this->setOwningEntity($player);

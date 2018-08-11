@@ -93,7 +93,6 @@ class Sheep extends Tamable{
 		    if($item instanceof Dye){
 		    	if($player->isSurvival()){
 				    $item->pop();
-				    $player->getInventory()->setItemInHand($item);
 			    }
 
 			    $this->propertyManager->setByte(self::DATA_COLOR, $item->getDamage());

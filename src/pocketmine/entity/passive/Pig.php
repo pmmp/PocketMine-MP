@@ -78,7 +78,6 @@ class Pig extends Animal{
 					$this->setSaddled(true);
 					if($player->isSurvival()){
 						$item->pop();
-						$player->getInventory()->setItemInHand($item);
 					}
 				}
 			}elseif($this->isSaddled() and $this->riddenByEntity === null){

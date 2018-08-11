@@ -72,9 +72,7 @@ class Cow extends Tamable{
 	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : void{
 		if($this->aiEnabled){
 			if($item instanceof Bucket and $item->getDamage() === 0){
-				$milk = clone $item;
-				$milk->setDamage(1);
-				$player->getInventory()->setItemInHand($milk);
+				$item->setDamage(1);
 			}
 		}
 
