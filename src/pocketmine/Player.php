@@ -774,6 +774,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
+	 * Sets player locale, e.g. en_US
+	 * @param string $locale
+	 */
+	public function setLocale(string $locale) : void{
+		$this->locale = $locale;
+	}
+
+	/**
 	 * Called when a player changes their skin.
 	 * Plugin developers should not use this, use setSkin() and sendSkin() instead.
 	 *
