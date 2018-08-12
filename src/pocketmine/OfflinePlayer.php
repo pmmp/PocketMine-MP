@@ -44,7 +44,7 @@ class OfflinePlayer implements IPlayer, Metadatable{
 	public function __construct(Server $server, string $name){
 		$this->server = $server;
 		$this->name = $name;
-		if(file_exists($this->server->getDataPath() . "players/" . strtolower($this->getName()) . ".dat")){
+		if(file_exists($this->server->getDataPath() . "players/" . $this->name . ".dat")){
 			$this->namedtag = $this->server->getOfflinePlayerData($this->name);
 		}else{
 			$this->namedtag = null;
@@ -64,7 +64,7 @@ class OfflinePlayer implements IPlayer, Metadatable{
 	}
 
 	public function isOp() : bool{
-		return $this->server->isOp(strtolower($this->getName()));
+		return $this->server->isOp($this->name);
 	}
 
 	public function setOp(bool $value){
@@ -73,14 +73,14 @@ class OfflinePlayer implements IPlayer, Metadatable{
 		}
 
 		if($value){
-			$this->server->addOp(strtolower($this->getName()));
+			$this->server->addOp($this->name);
 		}else{
-			$this->server->removeOp(strtolower($this->getName()));
+			$this->server->removeOp($this->name);
 		}
 	}
 
 	public function isBanned() : bool{
-		return $this->server->getNameBans()->isBanned(strtolower($this->getName()));
+		return $this->server->getNameBans()->isBanned($this->name);
 	}
 
 	public function setBanned(bool $value){
@@ -92,14 +92,14 @@ class OfflinePlayer implements IPlayer, Metadatable{
 	}
 
 	public function isWhitelisted() : bool{
-		return $this->server->isWhitelisted(strtolower($this->getName()));
+		return $this->server->isWhitelisted($this->name);
 	}
 
 	public function setWhitelisted(bool $value){
 		if($value){
-			$this->server->addWhitelist(strtolower($this->getName()));
+			$this->server->addWhitelist($this->name);
 		}else{
-			$this->server->removeWhitelist(strtolower($this->getName()));
+			$this->server->removeWhitelist($this->name);
 		}
 	}
 
