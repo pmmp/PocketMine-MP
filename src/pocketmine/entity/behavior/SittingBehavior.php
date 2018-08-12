@@ -24,11 +24,12 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\behavior;
 
-use pocketmine\entity\Entity;
 use pocketmine\entity\Tamable;
-use pocketmine\event\entity\EntityDamageByEntityEvent;
 
 class SittingBehavior extends Behavior{
+
+	/** @var Tamable */
+	protected $mob;
 
 	public function __construct(Tamable $mob){
 		parent::__construct($mob);
@@ -40,7 +41,7 @@ class SittingBehavior extends Behavior{
 
 		$owner = $this->mob->getOwningEntity();
 
-		$shouldStart = $owner == null || ((!($this->mob->distance($owner) < 144.0) || $this->getLastAttackSource() == null) && $this->mob->isSitting());
+		$shouldStart = $owner == null || ((!($this->mob->distance($owner) < 144.0) || $this->mob->getLastAttacker() == null) && $this->mob->isSitting());
 		if(!$shouldStart) return false;
 
 		$this->mob->resetMotion();
@@ -54,10 +55,5 @@ class SittingBehavior extends Behavior{
 
 	public function onEnd() : void{
 		$this->mob->setSitting(false);
-	}
-
-	public function getLastAttackSource() : ?Entity{
-		$cause = $this->mob->getLastDamageCause();
-		return $cause instanceof EntityDamageByEntityEvent ? $cause->getDamager() : null;
 	}
 }

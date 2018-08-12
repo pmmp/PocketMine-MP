@@ -110,7 +110,7 @@ class TemptedBehavior extends Behavior{
 		}
 
 		$deltaDistance = $this->lastPlayerPos->distanceSquared($this->temptingPlayer);
-		if(!$this->mob->getNavigator()->havePath() || $deltaDistance > 1){
+		if(!$this->mob->getNavigator()->isBusy() || $deltaDistance > 1){
 			$this->mob->getNavigator()->tryMoveTo($this->temptingPlayer, $this->speedMultiplier);
 			$this->lastPlayerPos = $this->temptingPlayer->asVector3();
 		}

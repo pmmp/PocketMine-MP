@@ -59,7 +59,7 @@ class RangedAttackBehavior extends Behavior{
 	}
 
 	public function canContinue() : bool{
-		return $this->canStart() or $this->mob->getNavigator()->havePath();
+		return $this->canStart() or $this->mob->getNavigator()->isBusy();
 	}
 
 	public function onEnd() : void{

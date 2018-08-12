@@ -36,10 +36,6 @@ abstract class Behavior{
 	/** @var int */
 	protected $mutexBits = 0;
 
-	public function getName() : string{
-		return (new \ReflectionClass($this))->getShortName();
-	}
-
 	public function __construct(Mob $mob){
 		$this->mob = $mob;
 		$this->random = $mob->level->random;

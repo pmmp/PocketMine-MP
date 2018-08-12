@@ -61,7 +61,7 @@ class FleeSunBehavior extends Behavior{
 	}
 
 	public function canContinue() : bool{
-		return $this->mob->getNavigator()->havePath();
+		return $this->mob->getNavigator()->isBusy();
 	}
 
 	public function onEnd() : void{

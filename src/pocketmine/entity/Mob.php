@@ -100,6 +100,7 @@ abstract class Mob extends Living{
 
 	public function saveNBT() : void{
 		parent::saveNBT();
+
 		$this->namedtag->setByte("aiEnabled", intval($this->aiEnabled));
 	}
 
@@ -135,19 +136,9 @@ abstract class Mob extends Living{
 		}elseif(in_array($target->getId(), $this->seenEntities)){
 			return true;
 		}else{
-			$sourcePos = $this->floor();
-			$targetPos = $target->floor();
-			if($sourcePos->equals($targetPos)){
-				return true;
-			}
-			$vecs = VoxelRayTrace::betweenPoints($sourcePos, $targetPos);
-			$canSee = true;
-			foreach($vecs as $vec){
-				if($this->level->getBlockAt($vec->x, $vec->y, $vec->z)->isSolid()){
-					$canSee = false;
-					break;
-				}
-			}
+			// TODO: Fix seen from corners
+			$canSee = $this->getNavigator()->isClearBetweenPoints($this, $target);
+
 			if($canSee){
 				$this->seenEntities[] = $target->getId();
 			}else{

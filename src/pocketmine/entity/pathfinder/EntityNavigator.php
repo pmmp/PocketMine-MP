@@ -383,7 +383,7 @@ class EntityNavigator{
 		}
 	}
 
-	public function isClearBetweenPoints(Vector3 $from, Vector3 $to) : bool{
+	public function isClearBetweenPoints(Vector3 $from, Vector3 $to, bool $onlySee = false) : bool{
 		$entityPos = $from;
 		$targetPos = $to;
 		$distance = $entityPos->distance($targetPos);
@@ -395,7 +395,7 @@ class EntityNavigator{
 		}
 
 		do{
-			if(!$this->isSafeToStandAt($rayPos->floor())){
+			if(!$this->isSafeToStandAt($rayPos->floor(), $onlySee)){
 				return false;
 			}
 			$rayPos = $rayPos->add($direction);
@@ -404,12 +404,12 @@ class EntityNavigator{
 		return true;
 	}
 
-	public function isSafeToStandAt(Vector3 $pos) : bool{
-		if($this->isObstructed($pos)){
+	public function isSafeToStandAt(Vector3 $pos, bool $onlySee = false) : bool{
+		if($this->isObstructed($pos) and !$onlySee){
 			return false;
 		}elseif($this->isBlocked($pos)){
 			return false;
-		}else{
+		}elseif(!$onlySee){
 			$block = $this->mob->level->getBlockAt($pos->x, $pos->y - 1, $pos->z);
 			if(($block instanceof Water and !$this->mob->isSwimmer() and $this->avoidsWater) or $block instanceof Lava){ // TODO: Implement this for ZombiePigman and LavaSlime
 				return false;
@@ -417,6 +417,7 @@ class EntityNavigator{
 				return true;
 			}
 		}
+		return true;
 	}
 
 	public function setPath(Path $path) : void{
@@ -429,7 +430,11 @@ class EntityNavigator{
 	}
 
 	public function havePath() : bool{
-		return ($this->currentPath !== null and $this->currentPath->havePath()) or $this->movePoint !== null;
+		return $this->currentPath !== null and $this->currentPath->havePath();
+	}
+
+	public function isBusy() : bool{
+		return $this->havePath() or $this->movePoint !== null;
 	}
 
 	public function clearPath(bool $all = true) : void{
