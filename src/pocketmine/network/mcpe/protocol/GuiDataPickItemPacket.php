@@ -28,20 +28,28 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class GuiDataPickItemPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::GUI_DATA_PICK_ITEM_PACKET;
+	public const NETWORK_ID = ProtocolInfo::GUI_DATA_PICK_ITEM_PACKET;
 
-    /** @var int */
-    public $hotbarSlot;
+	/** @var string */
+	public $itemDescription;
+	/** @var string */
+	public $itemEffects;
+	/** @var int */
+	public $hotbarSlot;
 
-    protected function decodePayload() : void{
-        $this->hotbarSlot = $this->getLInt();
-    }
+	protected function decodePayload() : void{
+		$this->itemDescription = $this->getString();
+		$this->itemEffects = $this->getString();
+		$this->hotbarSlot = $this->getLInt();
+	}
 
-    protected function encodePayload() : void{
-        $this->putLInt($this->hotbarSlot);
-    }
+	protected function encodePayload() : void{
+		$this->putString($this->itemDescription);
+		$this->putString($this->itemEffects);
+		$this->putLInt($this->hotbarSlot);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleGuiDataPickItem($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleGuiDataPickItem($this);
+	}
 }
