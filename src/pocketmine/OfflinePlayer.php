@@ -32,6 +32,8 @@ class OfflinePlayer implements IPlayer, Metadatable{
 
 	/** @var string */
 	private $name;
+	/** @var string */
+	private $iusername;
 	/** @var Server */
 	private $server;
 	/** @var CompoundTag|null */
@@ -44,7 +46,8 @@ class OfflinePlayer implements IPlayer, Metadatable{
 	public function __construct(Server $server, string $name){
 		$this->server = $server;
 		$this->name = $name;
-		if(file_exists($this->server->getDataPath() . "players/" . strtolower($this->getName()) . ".dat")){
+		$this->iusername = strtolower($name);
+		if(file_exists($this->server->getDataPath() . "players/" . $this->iusername . ".dat")){
 			$this->namedtag = $this->server->getOfflinePlayerData($this->name);
 		}else{
 			$this->namedtag = null;
@@ -59,12 +62,16 @@ class OfflinePlayer implements IPlayer, Metadatable{
 		return $this->name;
 	}
 
+	public function getLowerCaseName() : string{
+		return $this->iusername;
+	}
+
 	public function getServer(){
 		return $this->server;
 	}
 
 	public function isOp() : bool{
-		return $this->server->isOp(strtolower($this->getName()));
+		return $this->server->isOp($this->iusername);
 	}
 
 	public function setOp(bool $value){
@@ -73,14 +80,14 @@ class OfflinePlayer implements IPlayer, Metadatable{
 		}
 
 		if($value){
-			$this->server->addOp(strtolower($this->getName()));
+			$this->server->addOp($this->iusername);
 		}else{
-			$this->server->removeOp(strtolower($this->getName()));
+			$this->server->removeOp($this->iusername);
 		}
 	}
 
 	public function isBanned() : bool{
-		return $this->server->getNameBans()->isBanned(strtolower($this->getName()));
+		return $this->server->getNameBans()->isBanned($this->iusername);
 	}
 
 	public function setBanned(bool $value){
@@ -92,14 +99,14 @@ class OfflinePlayer implements IPlayer, Metadatable{
 	}
 
 	public function isWhitelisted() : bool{
-		return $this->server->isWhitelisted(strtolower($this->getName()));
+		return $this->server->isWhitelisted($this->iusername);
 	}
 
 	public function setWhitelisted(bool $value){
 		if($value){
-			$this->server->addWhitelist(strtolower($this->getName()));
+			$this->server->addWhitelist($this->iusername);
 		}else{
-			$this->server->removeWhitelist(strtolower($this->getName()));
+			$this->server->removeWhitelist($this->iusername);
 		}
 	}
 
