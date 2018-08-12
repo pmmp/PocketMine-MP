@@ -38,6 +38,11 @@ interface IPlayer extends ServerOperator{
 	public function getName() : string;
 
 	/**
+	 * @return string
+	 */
+	public function getLowerCaseName() : string;
+
+	/**
 	 * @return bool
 	 */
 	public function isBanned() : bool;
