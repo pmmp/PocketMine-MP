@@ -61,8 +61,8 @@ class Fireworks extends Item{
 	/** @var float */
 	public $spread = 5.0;
 
-	public function __construct($meta = 0){
-		parent::__construct(self::FIREWORKS, $meta, "Fireworks");
+	public function __construct(){
+		parent::__construct(self::FIREWORKS, 0, "Fireworks");
 	}
 
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
@@ -75,16 +75,11 @@ class Fireworks extends Item{
 		}
 
 		$rocket = new FireworksRocket($player->level, $nbt, $player, $this, $random);
-		$player->level->addEntity($rocket);
-
-		if($rocket instanceof Entity){
-			if($player->isSurvival()){
-				--$this->count;
-			}
-			$rocket->spawnToAll();
-			return true;
+		if($player->isSurvival()){
+			--$this->count;
 		}
-		return false;
+		$rocket->spawnToAll();
+		return true;
 	}
 
 	public static function createNBT(FireworksData $fireworksData) : CompoundTag{
