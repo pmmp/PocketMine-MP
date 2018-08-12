@@ -429,7 +429,7 @@ class EntityNavigator{
 	}
 
 	public function havePath() : bool{
-		return $this->currentPath !== null and $this->currentPath->havePath();
+		return ($this->currentPath !== null and $this->currentPath->havePath()) or $this->movePoint !== null;
 	}
 
 	public function clearPath(bool $all = true) : void{
