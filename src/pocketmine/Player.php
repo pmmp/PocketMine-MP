@@ -204,8 +204,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	/** @var bool[] name of achievement => bool */
 	protected $achievements = [];
-	/** @var bool */
-	protected $playedBefore;
+	/** @var int */
+	protected $firstPlayed;
+	/** @var int */
+	protected $lastPlayed;
 	/** @var int */
 	protected $gamemode;
 
@@ -359,15 +361,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function getFirstPlayed(){
-		return $this->namedtag instanceof CompoundTag ? $this->namedtag->getLong("firstPlayed", 0, true) : null;
+		return $this->firstPlayed;
 	}
 
 	public function getLastPlayed(){
-		return $this->namedtag instanceof CompoundTag ? $this->namedtag->getLong("lastPlayed", 0, true) : null;
+		return $this->lastPlayed;
 	}
 
 	public function hasPlayedBefore() : bool{
-		return $this->playedBefore;
+		return $this->lastPlayed - $this->firstPlayed > 1; // microtime(true) - microtime(true) may have less than one millisecond difference
 	}
 
 	public function setAllowFlight(bool $value){
@@ -1308,7 +1310,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->resetFallDistance();
 
-		$this->namedtag->setInt("playerGameType", $this->gamemode);
 		if(!$client){ //Gamemode changed by server, do not send for client changes
 			$this->sendGamemode();
 		}else{
@@ -1892,12 +1893,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		parent::initEntity();
 		$this->addDefaultWindows();
 
-		$this->playedBefore = ($this->getLastPlayed() - $this->getFirstPlayed()) > 1; // microtime(true) - microtime(true) may have less than one millisecond difference
+		$this->firstPlayed = $this->namedtag->getLong("firstPlayed", $now = (int) (microtime(true) * 1000));
+		$this->lastPlayed = $this->namedtag->getLong("lastPlayed", $now);
 
 		$this->gamemode = $this->namedtag->getInt("playerGameType", self::SURVIVAL) & 0x03;
 		if($this->server->getForceGamemode()){
 			$this->gamemode = $this->server->getGamemode();
-			$this->namedtag->setInt("playerGameType", $this->gamemode);
 		}
 
 		$this->setAllowFlight($this->isCreative());
@@ -2944,11 +2945,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->namedtag->setTag($achievements);
 
 		$this->namedtag->setInt("playerGameType", $this->gamemode);
+		$this->namedtag->setLong("firstPlayed", $this->firstPlayed);
 		$this->namedtag->setLong("lastPlayed", (int) floor(microtime(true) * 1000));
 
-		if($this->username != "" and $this->namedtag instanceof CompoundTag){
-			$this->server->saveOfflinePlayerData($this->username, $this->namedtag, $async);
-		}
+		$this->server->saveOfflinePlayerData($this->username, $this->namedtag, $async);
 	}
 
 	public function kill() : void{
@@ -2983,7 +2983,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		if($ev->getDeathMessage() != ""){
-			$this->server->broadcast($ev->getDeathMessage(), Server::BROADCAST_CHANNEL_USERS);
+			$this->server->broadcastMessage($ev->getDeathMessage());
 		}
 	}
 
