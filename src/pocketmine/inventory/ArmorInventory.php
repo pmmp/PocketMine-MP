@@ -100,16 +100,15 @@ class ArmorInventory extends BaseInventory{
 		$pk->slots = $armor;
 
 		foreach($target as $player){
+			/** @var Player $player */
 			if($player === $this->getHolder()){
-				/** @var Player $player */
-
 				$pk2 = new InventorySlotPacket();
 				$pk2->windowId = $player->getWindowId($this);
 				$pk2->inventorySlot = $index;
 				$pk2->item = $this->getItem($index);
 				$player->sendDataPacket($pk2);
 			}else{
-				$player->dataPacket($pk);
+				$player->sendDataPacket($pk);
 			}
 		}
 	}
@@ -126,13 +125,14 @@ class ArmorInventory extends BaseInventory{
 		$pk->slots = $armor;
 
 		foreach($target as $player){
+			/** @var Player $player */
 			if($player === $this->getHolder()){
 				$pk2 = new InventoryContentPacket();
 				$pk2->windowId = $player->getWindowId($this);
 				$pk2->items = $armor;
-				$player->dataPacket($pk2);
+				$player->sendDataPacket($pk2);
 			}else{
-				$player->dataPacket($pk);
+				$player->sendDataPacket($pk);
 			}
 		}
 	}
