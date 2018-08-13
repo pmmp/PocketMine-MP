@@ -81,7 +81,7 @@ class FireworksRocket extends Projectile{
 	}
 
 	public function despawnFromAll() : void{
-		$this->broadcastEntityEvent(EntityEventPacket::FIREWORK_PARTICLES, 0);
+		$this->broadcastEntityEvent(EntityEventPacket::FIREWORK_PARTICLES);
 		parent::despawnFromAll();
 		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BLAST);
 	}
