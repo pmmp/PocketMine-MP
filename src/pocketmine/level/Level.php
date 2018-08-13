@@ -69,6 +69,7 @@ use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\ChunkRequestTask;
+use pocketmine\network\mcpe\CompressBatchPromise;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
@@ -122,7 +123,7 @@ class Level implements ChunkManager, Metadatable{
 	/** @var Block[][] */
 	private $blockCache = [];
 
-	/** @var string[] */
+	/** @var CompressBatchPromise[] */
 	private $chunkCache = [];
 
 	/** @var int */
@@ -2451,7 +2452,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->chunkSendQueue[$index][$player->getLoaderId()] = $player;
 	}
 
-	private function sendChunkFromCache(int $x, int $z){
+	private function sendCachedChunk(int $x, int $z){
 		if(isset($this->chunkSendQueue[$index = Level::chunkHash($x, $z)])){
 			foreach($this->chunkSendQueue[$index] as $player){
 				/** @var Player $player */
@@ -2479,10 +2480,12 @@ class Level implements ChunkManager, Metadatable{
 						continue;
 					}
 				}
+
 				if(isset($this->chunkCache[$index])){
-					$this->sendChunkFromCache($x, $z);
+					$this->sendCachedChunk($x, $z);
 					continue;
 				}
+
 				$this->timings->syncChunkSendPrepareTimer->startTiming();
 
 				$chunk = $this->chunks[$index] ?? null;
@@ -2491,7 +2494,30 @@ class Level implements ChunkManager, Metadatable{
 				}
 				assert($chunk->getX() === $x and $chunk->getZ() === $z, "Chunk coordinate mismatch: expected $x $z, but chunk has coordinates " . $chunk->getX() . " " . $chunk->getZ() . ", did you forget to clone a chunk before setting?");
 
-				$this->server->getAsyncPool()->submitTask($task = new ChunkRequestTask($this, $x, $z, $chunk));
+				/*
+				 * we don't send promises directly to the players here because unresolved promises of chunk sending
+				 * would slow down the sending of other packets, especially if a chunk takes a long time to prepare.
+				 */
+
+				$promise = new CompressBatchPromise();
+				$promise->onResolve(function(CompressBatchPromise $promise) use ($x, $z, $index): void{
+					if(!$this->closed){
+						$this->timings->syncChunkSendTimer->startTiming();
+
+						unset($this->chunkSendTasks[$index]);
+
+						$this->chunkCache[$index] = $promise;
+						$this->sendCachedChunk($x, $z);
+						if(!$this->server->getMemoryManager()->canUseChunkCache()){
+							unset($this->chunkCache[$index]);
+						}
+
+						$this->timings->syncChunkSendTimer->stopTiming();
+					}else{
+						$this->server->getLogger()->debug("Dropped prepared chunk $x $z due to level not loaded");
+					}
+				});
+				$this->server->getAsyncPool()->submitTask($task = new ChunkRequestTask($x, $z, $chunk, $promise));
 				$this->chunkSendTasks[$index] = $task;
 
 				$this->timings->syncChunkSendPrepareTimer->stopTiming();
@@ -2499,21 +2525,6 @@ class Level implements ChunkManager, Metadatable{
 
 			$this->timings->syncChunkSendTimer->stopTiming();
 		}
-	}
-
-	public function chunkRequestCallback(int $x, int $z, string $payload){
-		$this->timings->syncChunkSendTimer->startTiming();
-
-		$index = Level::chunkHash($x, $z);
-		unset($this->chunkSendTasks[$index]);
-
-		$this->chunkCache[$index] = $payload;
-		$this->sendChunkFromCache($x, $z);
-		if(!$this->server->getMemoryManager()->canUseChunkCache()){
-			unset($this->chunkCache[$index]);
-		}
-
-		$this->timings->syncChunkSendTimer->stopTiming();
 	}
 
 	/**

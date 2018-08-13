@@ -90,6 +90,7 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\network\mcpe\CompressBatchPromise;
 use pocketmine\network\mcpe\NetworkCipher;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
@@ -894,7 +895,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		unset($this->loadQueue[$index]);
 	}
 
-	public function sendChunk(int $x, int $z, string $payload){
+	public function sendChunk(int $x, int $z, CompressBatchPromise $promise){
 		if(!$this->isConnected()){
 			return;
 		}
@@ -902,7 +903,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->usedChunks[Level::chunkHash($x, $z)] = true;
 		$this->chunkLoadCount++;
 
-		$this->networkSession->sendEncoded($payload);
+		$this->networkSession->queueCompressed($promise);
 
 		if($this->spawned){
 			foreach($this->level->getChunkEntities($x, $z) as $entity){
