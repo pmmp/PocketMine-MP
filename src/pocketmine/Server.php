@@ -75,7 +75,8 @@ use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\AdvancedNetworkInterface;
-use pocketmine\network\mcpe\CompressBatchedTask;
+use pocketmine\network\mcpe\CompressBatchPromise;
+use pocketmine\network\mcpe\CompressBatchTask;
 use pocketmine\network\mcpe\NetworkCipher;
 use pocketmine\network\mcpe\NetworkCompression;
 use pocketmine\network\mcpe\NetworkSession;
@@ -899,9 +900,9 @@ class Server{
 	}
 
 	/**
-	 * @param string $name
+	 * @param string      $name
 	 * @param CompoundTag $nbtTag
-	 * @param bool $async
+	 * @param bool        $async
 	 */
 	public function saveOfflinePlayerData(string $name, CompoundTag $nbtTag, bool $async = false){
 		$ev = new PlayerDataSaveEvent($nbtTag, $name);
@@ -1082,7 +1083,7 @@ class Server{
 
 	/**
 	 * @param Level $level
-	 * @param bool $forceUnload
+	 * @param bool  $forceUnload
 	 *
 	 * @return bool
 	 *
@@ -1153,10 +1154,10 @@ class Server{
 	/**
 	 * Generates a new level if it does not exist
 	 *
-	 * @param string $name
-	 * @param int|null $seed
+	 * @param string      $name
+	 * @param int|null    $seed
 	 * @param string|null $generator Class name that extends pocketmine\level\generator\Generator
-	 * @param array $options
+	 * @param array       $options
 	 *
 	 * @return bool
 	 */
@@ -1246,7 +1247,7 @@ class Server{
 	 * Searches all levels for the entity with the specified ID.
 	 * Useful for tracking entities across multiple worlds without needing strong references.
 	 *
-	 * @param int $entityId
+	 * @param int        $entityId
 	 * @param Level|null $expectedLevel Level to look in first for the target
 	 *
 	 * @return Entity|null
@@ -1269,7 +1270,7 @@ class Server{
 
 	/**
 	 * @param string $variable
-	 * @param mixed $defaultValue
+	 * @param mixed  $defaultValue
 	 *
 	 * @return mixed
 	 */
@@ -1319,7 +1320,7 @@ class Server{
 
 	/**
 	 * @param string $variable
-	 * @param int $defaultValue
+	 * @param int    $defaultValue
 	 *
 	 * @return int
 	 */
@@ -1334,7 +1335,7 @@ class Server{
 
 	/**
 	 * @param string $variable
-	 * @param int $value
+	 * @param int    $value
 	 */
 	public function setConfigInt(string $variable, int $value){
 		$this->properties->set($variable, $value);
@@ -1342,7 +1343,7 @@ class Server{
 
 	/**
 	 * @param string $variable
-	 * @param bool $defaultValue
+	 * @param bool   $defaultValue
 	 *
 	 * @return bool
 	 */
@@ -1370,7 +1371,7 @@ class Server{
 
 	/**
 	 * @param string $variable
-	 * @param bool $value
+	 * @param bool   $value
 	 */
 	public function setConfigBool(string $variable, bool $value){
 		$this->properties->set($variable, $value ? "1" : "0");
@@ -1515,10 +1516,10 @@ class Server{
 	}
 
 	/**
-	 * @param \ClassLoader $autoloader
+	 * @param \ClassLoader              $autoloader
 	 * @param \AttachableThreadedLogger $logger
-	 * @param string $dataPath
-	 * @param string $pluginPath
+	 * @param string                    $dataPath
+	 * @param string                    $pluginPath
 	 */
 	public function __construct(\ClassLoader $autoloader, \AttachableThreadedLogger $logger, string $dataPath, string $pluginPath){
 		if(self::$instance !== null){
@@ -1892,7 +1893,7 @@ class Server{
 
 	/**
 	 * @param TextContainer|string $message
-	 * @param Player[] $recipients
+	 * @param Player[]             $recipients
 	 *
 	 * @return int
 	 */
@@ -1910,7 +1911,7 @@ class Server{
 	}
 
 	/**
-	 * @param Bossbar $bossbar
+	 * @param Bossbar  $bossbar
 	 * @param int|null $id
 	 * @param Player[] $recipients
 	 *
@@ -1941,7 +1942,7 @@ class Server{
 	}
 
 	/**
-	 * @param string $tip
+	 * @param string   $tip
 	 * @param Player[] $recipients
 	 *
 	 * @return int
@@ -1966,7 +1967,7 @@ class Server{
 	}
 
 	/**
-	 * @param string $popup
+	 * @param string   $popup
 	 * @param Player[] $recipients
 	 *
 	 * @return int
@@ -1992,11 +1993,11 @@ class Server{
 	}
 
 	/**
-	 * @param string $title
-	 * @param string $subtitle
-	 * @param int $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
-	 * @param int $stay Duration in ticks to stay on screen for
-	 * @param int $fadeOut Duration in ticks for fade-out.
+	 * @param string        $title
+	 * @param string        $subtitle
+	 * @param int           $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
+	 * @param int           $stay Duration in ticks to stay on screen for
+	 * @param int           $fadeOut Duration in ticks for fade-out.
 	 * @param Player[]|null $recipients
 	 *
 	 * @return int
@@ -2023,7 +2024,7 @@ class Server{
 
 	/**
 	 * @param TextContainer|string $message
-	 * @param string $permissions
+	 * @param string               $permissions
 	 *
 	 * @return int
 	 */
@@ -2048,7 +2049,7 @@ class Server{
 	/**
 	 * Broadcasts a Minecraft packet to a list of players
 	 *
-	 * @param Player[] $players
+	 * @param Player[]   $players
 	 * @param DataPacket $packet
 	 *
 	 * @return bool
@@ -2058,7 +2059,7 @@ class Server{
 	}
 
 	/**
-	 * @param Player[] $players
+	 * @param Player[]     $players
 	 * @param DataPacket[] $packets
 	 *
 	 * @return bool
@@ -2089,54 +2090,52 @@ class Server{
 			$stream->putPacket($packet);
 		}
 
-		//TODO: if under the compression threshold, add to session buffers instead of batching (first we need to implement buffering!)
-		$this->batchPackets($targets, $stream);
+		if(NetworkCompression::$THRESHOLD < 0 or strlen($stream->buffer) < NetworkCompression::$THRESHOLD){
+			foreach($targets as $target){
+				foreach($ev->getPackets() as $pk){
+					$target->addToSendBuffer($pk);
+				}
+			}
+		}else{
+			$promise = $this->prepareBatch($stream);
+			foreach($targets as $target){
+				$target->queueCompressed($promise);
+			}
+		}
+
 		return true;
 	}
 
 	/**
 	 * Broadcasts a list of packets in a batch to a list of players
 	 *
-	 * @param NetworkSession[] $targets
 	 * @param PacketStream $stream
-	 * @param bool $forceSync
-	 * @param bool $immediate
+	 * @param bool         $forceSync
+	 * * @return CompressBatchPromise
 	 */
-	public function batchPackets(array $targets, PacketStream $stream, bool $forceSync = false, bool $immediate = false){
-		Timings::$playerNetworkSendCompressTimer->startTiming();
+	public function prepareBatch(PacketStream $stream, bool $forceSync = false) : CompressBatchPromise{
+		try{
+			Timings::$playerNetworkSendCompressTimer->startTiming();
 
-		if(!empty($targets)){
 			$compressionLevel = NetworkCompression::$LEVEL;
 			if(NetworkCompression::$THRESHOLD < 0 or strlen($stream->buffer) < NetworkCompression::$THRESHOLD){
 				$compressionLevel = 0; //Do not compress packets under the threshold
 				$forceSync = true;
 			}
 
-			if(!$forceSync and !$immediate and $this->networkCompressionAsync){
-				$task = new CompressBatchedTask($stream, $targets, $compressionLevel);
+			$promise = new CompressBatchPromise();
+			if(!$forceSync and $this->networkCompressionAsync){
+				$task = new CompressBatchTask($stream, $compressionLevel, $promise);
 				$this->asyncPool->submitTask($task);
 			}else{
-				$this->broadcastPacketsCallback(NetworkCompression::compress($stream->buffer), $targets, $immediate);
+				$promise->resolve(NetworkCompression::compress($stream->buffer));
 			}
-		}
 
-		Timings::$playerNetworkSendCompressTimer->stopTiming();
-	}
-
-	/**
-	 * @param string $payload
-	 * @param NetworkSession[] $sessions
-	 * @param bool $immediate
-	 */
-	public function broadcastPacketsCallback(string $payload, array $sessions, bool $immediate = false){
-		/** @var NetworkSession $session */
-		foreach($sessions as $session){
-			if($session->isConnected()){
-				$session->sendEncoded($payload, $immediate);
-			}
+			return $promise;
+		}finally{
+			Timings::$playerNetworkSendCompressTimer->stopTiming();
 		}
 	}
-
 
 	/**
 	 * @param int $type
@@ -2180,7 +2179,7 @@ class Server{
 	 * Executes a command from a CommandSender
 	 *
 	 * @param CommandSender $sender
-	 * @param string $commandLine
+	 * @param string        $commandLine
 	 *
 	 * @return bool
 	 */
@@ -2550,11 +2549,11 @@ class Server{
 	}
 
 	/**
-	 * @param UUID $uuid
-	 * @param int $entityId
-	 * @param string $name
-	 * @param Skin $skin
-	 * @param string $xboxUserId
+	 * @param UUID          $uuid
+	 * @param int           $entityId
+	 * @param string        $name
+	 * @param Skin          $skin
+	 * @param string        $xboxUserId
 	 * @param Player[]|null $players
 	 */
 	public function updatePlayerListData(UUID $uuid, int $entityId, string $name, Skin $skin, string $xboxUserId = "", array $players = null){
@@ -2567,7 +2566,7 @@ class Server{
 	}
 
 	/**
-	 * @param UUID $uuid
+	 * @param UUID          $uuid
 	 * @param Player[]|null $players
 	 */
 	public function removePlayerListData(UUID $uuid, array $players = null){
@@ -2710,9 +2709,9 @@ class Server{
 
 	/**
 	 * @param AdvancedNetworkInterface $interface
-	 * @param string $address
-	 * @param int $port
-	 * @param string $payload
+	 * @param string                   $address
+	 * @param int                      $port
+	 * @param string                   $payload
 	 *
 	 * TODO: move this to Network
 	 */
@@ -2746,10 +2745,6 @@ class Server{
 
 		++$this->tickCounter;
 
-		Timings::$connectionTimer->startTiming();
-		$this->network->tick();
-		Timings::$connectionTimer->stopTiming();
-
 		Timings::$schedulerTimer->startTiming();
 		$this->pluginManager->tickSchedulers($this->tickCounter);
 		Timings::$schedulerTimer->stopTiming();
@@ -2759,6 +2754,10 @@ class Server{
 		Timings::$schedulerAsyncTimer->stopTiming();
 
 		$this->checkTickUpdates($this->tickCounter);
+
+		Timings::$connectionTimer->startTiming();
+		$this->network->tick();
+		Timings::$connectionTimer->stopTiming();
 
 		if(($this->tickCounter % 20) === 0){
 			if($this->doTitleTick){

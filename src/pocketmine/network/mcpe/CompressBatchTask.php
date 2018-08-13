@@ -26,30 +26,29 @@ namespace pocketmine\network\mcpe;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 
-class CompressBatchedTask extends AsyncTask{
+class CompressBatchTask extends AsyncTask{
 
-    private $level;
-    private $data;
+	private $level;
+	private $data;
 
-    /**
-     * @param PacketStream $stream
-	 * @param NetworkSession[] $targets
-     * @param int          $compressionLevel
-     */
-    public function __construct(PacketStream $stream, array $targets, int $compressionLevel){
-        $this->data = $stream->buffer;
-        $this->level = $compressionLevel;
-        $this->storeLocal($targets);
-    }
+	/**
+	 * @param PacketStream $stream
+	 * @param  int         $compressionLevel * @param CompressBatchPromise $promise
+	 */
+	public function __construct(PacketStream $stream, int $compressionLevel, CompressBatchPromise $promise){
+		$this->data = $stream->buffer;
+		$this->level = $compressionLevel;
+		$this->storeLocal($promise);
+	}
 
-    public function onRun() : void{
-        $this->setResult(NetworkCompression::compress($this->data, $this->level), false);
-    }
+	public function onRun() : void{
+		$this->setResult(NetworkCompression::compress($this->data, $this->level), false);
+	}
 
-    public function onCompletion(Server $server) : void{
-		/** @var NetworkSession[] $targets */
-        $targets = $this->fetchLocal();
+	public function onCompletion(Server $server) : void{
+		/** @var CompressBatchPromise $promise */
+		$promise = $this->fetchLocal();
 
-        $server->broadcastPacketsCallback($this->getResult(), $targets);
-    }
+		$promise->resolve($this->getResult());
+	}
 }
