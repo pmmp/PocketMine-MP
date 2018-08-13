@@ -64,7 +64,7 @@ class OfflinePlayer implements IPlayer, Metadatable{
 	}
 
 	public function isOp() : bool{
-		return $this->server->isOp(strtolower($this->getName()));
+		return $this->server->isOp($this->getName());
 	}
 
 	public function setOp(bool $value){
@@ -73,14 +73,14 @@ class OfflinePlayer implements IPlayer, Metadatable{
 		}
 
 		if($value){
-			$this->server->addOp(strtolower($this->getName()));
+			$this->server->addOp($this->getName());
 		}else{
-			$this->server->removeOp(strtolower($this->getName()));
+			$this->server->removeOp($this->getName());
 		}
 	}
 
 	public function isBanned() : bool{
-		return $this->server->getNameBans()->isBanned(strtolower($this->getName()));
+		return $this->server->getNameBans()->isBanned($this->getName());
 	}
 
 	public function setBanned(bool $value){
@@ -92,14 +92,14 @@ class OfflinePlayer implements IPlayer, Metadatable{
 	}
 
 	public function isWhitelisted() : bool{
-		return $this->server->isWhitelisted(strtolower($this->getName()));
+		return $this->server->isWhitelisted($this->getName());
 	}
 
 	public function setWhitelisted(bool $value){
 		if($value){
-			$this->server->addWhitelist(strtolower($this->getName()));
+			$this->server->addWhitelist($this->getName());
 		}else{
-			$this->server->removeWhitelist(strtolower($this->getName()));
+			$this->server->removeWhitelist($this->getName());
 		}
 	}
 
