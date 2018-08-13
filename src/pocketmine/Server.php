@@ -2538,10 +2538,6 @@ class Server{
 
 		++$this->tickCounter;
 
-		Timings::$connectionTimer->startTiming();
-		$this->network->tick();
-		Timings::$connectionTimer->stopTiming();
-
 		Timings::$schedulerTimer->startTiming();
 		$this->pluginManager->tickSchedulers($this->tickCounter);
 		Timings::$schedulerTimer->stopTiming();
@@ -2551,6 +2547,10 @@ class Server{
 		Timings::$schedulerAsyncTimer->stopTiming();
 
 		$this->checkTickUpdates($this->tickCounter);
+
+		Timings::$connectionTimer->startTiming();
+		$this->network->tick();
+		Timings::$connectionTimer->stopTiming();
 
 		if(($this->tickCounter % 20) === 0){
 			if($this->doTitleTick){
