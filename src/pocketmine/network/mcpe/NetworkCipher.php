@@ -78,6 +78,6 @@ class NetworkCipher{
 	}
 
 	private function calculateChecksum(int $counter, string $payload) : string{
-		return substr(hash(self::CHECKSUM_ALGO, Binary::writeLLong($counter) . $payload . $this->key, true), 0, 8);
+		return substr(openssl_digest(Binary::writeLLong($counter) . $payload . $this->key, self::CHECKSUM_ALGO, true), 0, 8);
 	}
 }
