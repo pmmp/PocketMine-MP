@@ -93,23 +93,21 @@ class ArmorInventory extends BaseInventory{
 			$target = [$target];
 		}
 
-		$armor = $this->getContents(true);
+		/** @var Player[] $target */
 
-		$pk = new MobArmorEquipmentPacket();
-		$pk->entityRuntimeId = $this->getHolder()->getId();
-		$pk->slots = $armor;
-
-		foreach($target as $player){
-			/** @var Player $player */
-			if($player === $this->getHolder()){
-				$pk2 = new InventorySlotPacket();
-				$pk2->windowId = $player->getWindowId($this);
-				$pk2->inventorySlot = $index;
-				$pk2->item = $this->getItem($index);
-				$player->sendDataPacket($pk2);
-			}else{
-				$player->sendDataPacket($pk);
-			}
+		if(($k = array_search($this->holder, $target, true)) !== false){
+			$pk = new InventorySlotPacket();
+			$pk->windowId = $target[$k]->getWindowId($this);
+			$pk->inventorySlot = $index;
+			$pk->item = $this->getItem($index);
+			$target[$k]->sendDataPacket($pk);
+			unset($target[$k]);
+		}
+		if(!empty($target)){
+			$pk = new MobArmorEquipmentPacket();
+			$pk->entityRuntimeId = $this->getHolder()->getId();
+			$pk->slots = $this->getContents(true);
+			$this->holder->getLevel()->getServer()->broadcastPacket($target, $pk);
 		}
 	}
 
@@ -120,20 +118,18 @@ class ArmorInventory extends BaseInventory{
 
 		$armor = $this->getContents(true);
 
-		$pk = new MobArmorEquipmentPacket();
-		$pk->entityRuntimeId = $this->getHolder()->getId();
-		$pk->slots = $armor;
-
-		foreach($target as $player){
-			/** @var Player $player */
-			if($player === $this->getHolder()){
-				$pk2 = new InventoryContentPacket();
-				$pk2->windowId = $player->getWindowId($this);
-				$pk2->items = $armor;
-				$player->sendDataPacket($pk2);
-			}else{
-				$player->sendDataPacket($pk);
-			}
+		if(($k = array_search($this->holder, $target, true)) !== false){
+			$pk = new InventoryContentPacket();
+			$pk->windowId = $target[$k]->getWindowId($this);
+			$pk->items = $armor;
+			$target[$k]->sendDataPacket($pk);
+			unset($target[$k]);
+		}
+		if(!empty($target)){
+			$pk = new MobArmorEquipmentPacket();
+			$pk->entityRuntimeId = $this->getHolder()->getId();
+			$pk->slots = $armor;
+			$this->holder->getLevel()->getServer()->broadcastPacket($target, $pk);
 		}
 	}
 
