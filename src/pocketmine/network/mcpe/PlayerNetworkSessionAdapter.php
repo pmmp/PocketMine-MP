@@ -239,7 +239,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handleModalFormResponse(ModalFormResponsePacket $packet) : bool{
-		return false; //TODO: GUI stuff
+		return $this->player->onFormSubmit($packet->formId, json_decode($packet->formData, true));
 	}
 
 	public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
