@@ -100,7 +100,9 @@ class Villager extends Creature implements NPC, Ageable{
 	}
 
 	public function onInteract(Player $player, Item $item, Vector3 $clickPos) : bool{
-		$player->addWindow(new TradeInventory($this));
+		if($this->hasNotTradingPlayer()){
+			$player->addWindow(new TradeInventory($this));
+		}
 		return false;
 	}
 
@@ -131,6 +133,10 @@ class Villager extends Creature implements NPC, Ageable{
 
 	public function setTradingPlayer(int $entityRuntimeId = 0) : void{
 		$this->propertyManager->setLong(self::DATA_TRADING_PLAYER_EID, $entityRuntimeId);
+	}
+
+	public function hasNotTradingPlayer() : bool{
+		return $this->propertyManager->getLong(self::DATA_TRADING_PLAYER_EID) === 0;
 	}
 
 	public function setTraderName(string $traderName) : void{

@@ -65,7 +65,6 @@ class TradeInventory extends FakeWindow{
 	}
 
 	public function onClose(Player $who) : void{
-		var_dump(__METHOD__);
 		$this->holder->setTradingPlayer();
 		parent::onClose($who);
 	}
