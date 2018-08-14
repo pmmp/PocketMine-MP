@@ -71,9 +71,10 @@ use pocketmine\event\player\PlayerInteractEntityEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerItemConsumeEvent;
 use pocketmine\event\player\PlayerItemHeldEvent;
-use pocketmine\form\Form;
 use pocketmine\form\ServerSettingsForm;
 use pocketmine\inventory\ContainerInventory;
+use pocketmine\form\Form;
+use pocketmine\form\FormValidationException;
 use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\PlayerOffHandInventory;
@@ -318,10 +319,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var int[] ID => ticks map */
 	protected $usedItemsCooldown = [];
 
-	/** @var int */
-	protected $formIdCounter = 0;
-	/** @var Form[] */
-	protected $formQueue = [];
 	/** @var ServerSettingsForm */
 	protected $serverSettingsForm = null;
 
@@ -335,6 +332,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	/** @var bool */
 	protected $keepExperience = false;
+
+	/** @var int */
+	protected $formIdCounter = 0;
+	/** @var Form[] */
+	protected $forms = [];
 
 	/**
 	 * @return TranslationContainer|string
@@ -776,6 +778,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	/**
 	 * Sets player locale, e.g. en_US
+	 *
 	 * @param string $locale
 	 */
 	public function setLocale(string $locale) : void{
@@ -1617,7 +1620,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 					if($this->isSprinting()){
 						$this->exhaust(0.025 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
-					}else if ($this->isSwimming()){
+					}elseif($this->isSwimming()){
 						$this->exhaust(0.015 * $distance, PlayerExhaustEvent::CAUSE_SWIMMING);
 					}else{
 						$this->exhaust(0.0025 * $distance, PlayerExhaustEvent::CAUSE_WALKING);
@@ -1965,18 +1968,18 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->server->addOnlinePlayer($this);
 	}
 
-	protected function initHumanData() : void{
+	protected function initHumanData(CompoundTag $nbt) : void{
 		$this->setNameTag($this->username);
 	}
 
-	protected function initEntity() : void{
-		parent::initEntity();
+	protected function initEntity(CompoundTag $nbt) : void{
+		parent::initEntity($nbt);
 		$this->addDefaultWindows();
 
-		$this->firstPlayed = $this->namedtag->getLong("firstPlayed", $now = (int) (microtime(true) * 1000));
-		$this->lastPlayed = $this->namedtag->getLong("lastPlayed", $now);
+		$this->firstPlayed = $nbt->getLong("firstPlayed", $now = (int) (microtime(true) * 1000));
+		$this->lastPlayed = $nbt->getLong("lastPlayed", $now);
 
-		$this->gamemode = $this->namedtag->getInt("playerGameType", self::SURVIVAL) & 0x03;
+		$this->gamemode = $nbt->getInt("playerGameType", self::SURVIVAL) & 0x03;
 		if($this->server->getForceGamemode()){
 			$this->gamemode = $this->server->getGamemode();
 		}
@@ -1992,15 +1995,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->setCanClimb();
 
 		$this->achievements = [];
-		$achievements = $this->namedtag->getCompoundTag("Achievements") ?? [];
+		$achievements = $nbt->getCompoundTag("Achievements") ?? [];
 		/** @var ByteTag $achievement */
 		foreach($achievements as $achievement){
 			$this->achievements[$achievement->getName()] = $achievement->getValue() !== 0;
 		}
 
 		if(!$this->hasValidSpawnPosition()){
-			if(($level = $this->server->getLevelByName($this->namedtag->getString("SpawnLevel", ""))) instanceof Level){
-				$this->spawnPosition = new Position($this->namedtag->getInt("SpawnX"), $this->namedtag->getInt("SpawnY"), $this->namedtag->getInt("SpawnZ"), $level);
+			if(($level = $this->server->getLevelByName($nbt->getString("SpawnLevel", ""))) instanceof Level){
+				$this->spawnPosition = new Position($nbt->getInt("SpawnX"), $nbt->getInt("SpawnY"), $nbt->getInt("SpawnZ"), $level);
 			}else{
 				$this->spawnPosition = $this->level->getSafeSpawn();
 			}
@@ -2347,9 +2350,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? 13 : 7) and !$this->isSpectator()){
 			$item = $this->inventory->getItemInHand();
+			$oldItem = clone $item;
 			if($this->level->useBreakOn($pos, $item, $this, true)){
 				if($this->isSurvival()){
-					if(!$item->equalsExact($this->inventory->getItemInHand())){
+					if(!$item->equalsExact($oldItem)){
 						$this->inventory->setItemInHand($item);
 					}
 					$this->exhaust(0.025, PlayerExhaustEvent::CAUSE_MINING);
@@ -3039,15 +3043,16 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/**
 	 * Sends a Form to the player, or queue to send it if a form is already open.
 	 *
-	 * @param Form     $form
-	 * @param int|null $id
+	 * @param Form $form
 	 */
-	public function sendForm(Form $form, ?int $id = null) : void{
-		$form->setInUse();
-
-		$id = $id ?? $this->formIdCounter++;
-		$this->formQueue[$id] = $form;
-		$this->sendFormRequestPacket($form, $id);
+	public function sendForm(Form $form) : void{
+		$id = $this->formIdCounter++;
+		$pk = new ModalFormRequestPacket();
+		$pk->formId = $id;
+		$pk->formData = json_encode($form);
+		if($this->sendDataPacket($pk)){
+			$this->forms[$id] = $form;
+		}
 	}
 
 	/**
@@ -3057,32 +3062,24 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return bool
 	 */
 	public function onFormSubmit(int $formId, $responseData) : bool{
-		if(isset($this->formQueue[$formId])){
-			/** @var Form $form */
-			$form = $this->formQueue[$formId];
-
-			try{
-				$form = $form->handleResponse($this, $responseData);
-			}catch(\Throwable $e){
-				$this->server->getLogger()->logException($e);
-			}
-
-			if($form !== null){
-				$this->sendForm($form);
-			}
-		}else{
-			$this->server->getLogger()->debug("Form with id $formId not found");
+		if(!isset($this->forms[$formId])){
+			$this->server->getLogger()->debug("Got unexpected response for form $formId");
 			return false;
 		}
 
-		return true;
-	}
+		try{
+			$next = $this->forms[$formId]->handleResponse($this, $responseData);
+			if($next !== null){
+				$this->sendForm($next);
+			}
+		}catch(FormValidationException $e){
+			$this->server->getLogger()->critical("Failed to validate form " . get_class($this->forms[$formId]) . ": " . $e->getMessage());
+			$this->server->getLogger()->logException($e);
+		}finally{
+			unset($this->forms[$formId]);
+		}
 
-	private function sendFormRequestPacket(Form $form, int $id) : void{
-		$pk = new ModalFormRequestPacket();
-		$pk->formId = $id;
-		$pk->formData = json_encode($form);
-		$this->sendDataPacket($pk);
+		return true;
 	}
 
 	public function sendServerSettings(ServerSettingsForm $form){
@@ -3223,21 +3220,21 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			throw new \InvalidStateException("Tried to save closed player");
 		}
 
-		parent::saveNBT();
+		$nbt = $this->saveNBT();
 
 		if($this->isValid()){
-			$this->namedtag->setString("Level", $this->level->getFolderName());
+			$nbt->setString("Level", $this->level->getFolderName());
 		}
 
 		if($this->hasValidSpawnPosition()){
-			$this->namedtag->setString("SpawnLevel", $this->spawnPosition->getLevel()->getFolderName());
-			$this->namedtag->setInt("SpawnX", $this->spawnPosition->getFloorX());
-			$this->namedtag->setInt("SpawnY", $this->spawnPosition->getFloorY());
-			$this->namedtag->setInt("SpawnZ", $this->spawnPosition->getFloorZ());
+			$nbt->setString("SpawnLevel", $this->spawnPosition->getLevel()->getFolderName());
+			$nbt->setInt("SpawnX", $this->spawnPosition->getFloorX());
+			$nbt->setInt("SpawnY", $this->spawnPosition->getFloorY());
+			$nbt->setInt("SpawnZ", $this->spawnPosition->getFloorZ());
 
 			if(!$this->isAlive()){
 				//hack for respawn after quit
-				$this->namedtag->setTag(new ListTag("Pos", [
+				$nbt->setTag(new ListTag("Pos", [
 					new DoubleTag("", $this->spawnPosition->x),
 					new DoubleTag("", $this->spawnPosition->y),
 					new DoubleTag("", $this->spawnPosition->z)
@@ -3249,13 +3246,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		foreach($this->achievements as $achievement => $status){
 			$achievements->setByte($achievement, $status ? 1 : 0);
 		}
-		$this->namedtag->setTag($achievements);
+		$nbt->setTag($achievements);
 
-		$this->namedtag->setInt("playerGameType", $this->gamemode);
-		$this->namedtag->setLong("firstPlayed", $this->firstPlayed);
-		$this->namedtag->setLong("lastPlayed", (int) floor(microtime(true) * 1000));
+		$nbt->setInt("playerGameType", $this->gamemode);
+		$nbt->setLong("firstPlayed", $this->firstPlayed);
+		$nbt->setLong("lastPlayed", (int) floor(microtime(true) * 1000));
 
-		$this->server->saveOfflinePlayerData($this->username, $this->namedtag, $async);
+		$this->server->saveOfflinePlayerData($this->username, $nbt, $async);
 	}
 
 	public function kill() : void{

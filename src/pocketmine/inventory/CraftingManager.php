@@ -103,8 +103,6 @@ class CraftingManager{
 			$pk->addFurnaceRecipe($recipe);
 		}
 
-		$pk->encode();
-
 		$batch = new PacketStream();
 		$batch->putPacket($pk);
 
