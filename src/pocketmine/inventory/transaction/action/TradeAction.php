@@ -37,7 +37,7 @@ class TradeAction extends InventoryAction{
 	}
 
 	public function execute(Player $source) : bool{
-		return true;
+		return $source->getInventory()->contains($this->sourceItem);
 	}
 
 	public function onExecuteSuccess(Player $source) : void{

@@ -70,6 +70,7 @@ use pocketmine\event\player\PlayerTransferEvent;
 use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
 use pocketmine\inventory\CraftingGrid;
+use pocketmine\inventory\FakeWindow;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\item\Consumable;
@@ -3271,6 +3272,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 		if($windowId === 255){
+			foreach($this->windowIndex as $inventory){
+				if($inventory instanceof FakeWindow){
+					$this->removeWindow($inventory);
+				}
+			}
 			//Closed a fake window
 			return true;
 		}

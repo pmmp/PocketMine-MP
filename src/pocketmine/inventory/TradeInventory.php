@@ -29,8 +29,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\UpdateTradePacket;
 use pocketmine\Player;
 
-class TradeInventory extends BaseInventory{
-
+class TradeInventory extends FakeWindow{
 	/** @var Villager */
 	protected $holder;
 
@@ -66,6 +65,7 @@ class TradeInventory extends BaseInventory{
 	}
 
 	public function onClose(Player $who) : void{
+		var_dump(__METHOD__);
 		$this->holder->setTradingPlayer();
 		parent::onClose($who);
 	}
