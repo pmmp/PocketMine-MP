@@ -102,6 +102,8 @@ abstract class Mob extends Living{
 		$nbt = parent::saveNBT();
 
 		$nbt->setByte("aiEnabled", intval($this->aiEnabled));
+
+		return $nbt;
 	}
 
 	public function entityBaseTick(int $diff = 1) : bool{

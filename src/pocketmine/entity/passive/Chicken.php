@@ -104,6 +104,8 @@ class Chicken extends Animal{
 		$nbt = parent::saveNBT();
 
 		$nbt->setByte("isChickenJockey", intval($this->isChickenJockey()));
+
+		return $nbt;
 	}
 
 	public function getRiderSeatPosition(int $seatNumber = 0) : Vector3{

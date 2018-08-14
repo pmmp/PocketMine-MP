@@ -126,5 +126,7 @@ class Sheep extends Tamable{
 
 		$nbt->setByte("Sheared", intval($this->isSheared()));
 		$nbt->setByte("Color", intval($this->propertyManager->getByte(self::DATA_COLOR)));
+
+		return $nbt;
 	}
 }

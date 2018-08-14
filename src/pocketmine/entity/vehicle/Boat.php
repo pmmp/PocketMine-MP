@@ -69,6 +69,8 @@ class Boat extends Vehicle{
 		$nbt = parent::saveNBT();
 
 		$nbt->setInt(self::TAG_VARIANT, $this->getBoatType());
+
+		return $nbt;
 	}
 
 	public function getDrops() : array{

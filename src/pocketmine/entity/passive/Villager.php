@@ -167,6 +167,8 @@ class Villager extends Mob implements NPC, Ageable{
 		$nbt->setInt("TradeTier", $this->tradeTier);
 		$this->updateTradeItems();
 		$nbt->setTag($this->offers, true);
+
+		return $nbt;
 	}
 
 	public function setProfession(int $profession) : void{

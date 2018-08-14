@@ -230,6 +230,8 @@ class ArmorStand extends Living{
 		$poseTag = $nbt->getTag(self::TAG_POSE);
 		$poseTag->setInt(self::TAG_POSE_INDEX, $this->getPose());
 		$nbt->setTag($poseTag);
+
+		return $nbt;
 	}
 
 	public function getDrops() : array{

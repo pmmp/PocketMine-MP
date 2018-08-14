@@ -110,6 +110,8 @@ class Pig extends Animal{
 		$nbt = parent::saveNBT();
 
 		$nbt->setByte("Saddle", intval($this->isSaddled()));
+
+		return $nbt;
 	}
 
 	public function getRiderSeatPosition(int $seatNumber = 0) : Vector3{
