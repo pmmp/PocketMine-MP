@@ -11,27 +11,27 @@ Fast server software for Minecraft: Bedrock/W10 Edition. Altay is a fork of [pmm
 
 ------------
 
-## Why i should prefer Altay?
+## Why should I prefer Altay?
 
-Because altay has more features and improvements than PocketMine-MP
+Because Altay has more features and improvements than PocketMine-MP
 
 - More Items, Blocks
-- More methods
+- More Methods
 - Best MobAI, More mobs
 - Entity Riding
 - Best FormAPI
 - Best BossBarAPI
 - More Technical Fixes
-- Working fake inventories(Anvil, EnchantmentTable, Beacon)
-- More Tiles(Jukebox, ShulkerBox, NoteBlock, Hopper)
+- Working fake inventories (Anvil, EnchantmentTable, Beacon)
+- More Tiles (Jukebox, ShulkerBox, NoteBlock, Hopper)
 - Best Command Parameter API ever
-- More Event Hanling(Dimension changing, Swimming)
-- More Generators(End, Nether, Void)
+- More Event Handling (Dimension changing, Swimming)
+- More Generators (End, Nether, Void)
 - More Utils
 - More Particles and Sounds
 - More Biomes
 - Villager Trading
-- More Inventory(PlayerOffHandInventory)
+- More Inventory (PlayerOffHandInventory)
 - MobSpawner
 
 And more...
@@ -45,4 +45,4 @@ Yes, you can.
 
 #### Do you need help about Altay?
 
-Join our discord group and contact with we!
+Join our Discord group and contact us!
