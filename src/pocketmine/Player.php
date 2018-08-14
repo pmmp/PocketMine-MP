@@ -2392,9 +2392,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		if($this->canInteract($pos->add(0.5, 0.5, 0.5), 13) and !$this->isSpectator()){
 			$item = $this->inventory->getItemInHand(); //this is a copy of the real item
+			$oldItem = clone $item;
 			if($this->level->useItemOn($pos, $item, $face, $clickOffset, $this, true)){
-				if($this->isSurvival() and !$item->equalsExact($this->inventory->getItemInHand())){
-					$this->inventory->sendHeldItem($this);
+				if($this->isSurvival() and !$item->equalsExact($oldItem)){
+					$this->inventory->setItemInHand($item);
 				}
 				return true;
 			}
