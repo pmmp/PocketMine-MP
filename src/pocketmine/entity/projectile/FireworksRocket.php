@@ -57,8 +57,8 @@ class FireworksRocket extends Projectile{
 		parent::__construct($level, $nbt, $shootingEntity);
 	}
 
-	protected function initEntity() : void{
-		parent::initEntity();
+	protected function initEntity(CompoundTag $nbt) : void{
+		parent::initEntity($nbt);
 		$random = $this->random ?? new Random;
 
 		$this->setGenericFlag(self::DATA_FLAG_HAS_COLLISION, true);
@@ -67,8 +67,8 @@ class FireworksRocket extends Projectile{
 
 		$flyTime = 1;
 
-		if($this->namedtag->hasTag("Fireworks")){
-			$flyTime = $this->namedtag->getCompoundTag("Fireworks")->getByte("Flight", 1);
+		if($nbt->hasTag("Fireworks")){
+			$flyTime = $nbt->getCompoundTag("Fireworks")->getByte("Flight", 1);
 		}
 
 		$this->lifeTime = 20 * $flyTime + $random->nextBoundedInt(5) + $random->nextBoundedInt(7);
