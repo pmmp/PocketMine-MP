@@ -26,8 +26,6 @@ declare(strict_types=1);
  */
 namespace pocketmine\form;
 
-use pocketmine\Player;
-
 /**
  * Base class for a custom form. Forms are serialized to JSON data to be sent to clients.
  */
@@ -47,18 +45,6 @@ abstract class BaseForm implements Form{
 	public function getTitle() : string{
 		return $this->title;
 	}
-
-	/**
-	 * @inheritdoc
-	 * Plugins should not override this method. Override the appropriate onSubmit for each form implementation instead.
-	 *
-	 * @param Player $player
-	 * @param mixed  $data
-	 *
-	 * @return Form|null a form which will be opened immediately (before queued forms) as a response to this form, or null if not applicable.
-	 * @throws FormValidationException
-	 */
-	abstract public function handleResponse(Player $player, $data) : ?Form;
 
 	/**
 	 * Serializes the form to JSON for sending to clients.

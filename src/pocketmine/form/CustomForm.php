@@ -97,7 +97,7 @@ abstract class CustomForm extends BaseForm{
 		return null;
 	}
 
-	public function handleResponse(Player $player, $data) : ?Form{
+	final public function handleResponse(Player $player, $data) : ?Form{
 		if($data === null){
 			return $this->onClose($player);
 		}
