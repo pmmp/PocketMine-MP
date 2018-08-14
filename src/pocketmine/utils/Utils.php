@@ -547,4 +547,13 @@ class Utils{
 
 		return true; //stfu operator
 	}
+
+	public static function validateObjectArray(array $array, string $class) : bool{
+		foreach($array as $key => $item){
+			if(!($item instanceof $class)){
+				throw new \TypeError("Element \"$key\" is not an instance of $class");
+			}
+		}
+		return true;
+	}
 }
