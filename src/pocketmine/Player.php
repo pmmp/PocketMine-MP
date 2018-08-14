@@ -1885,18 +1885,18 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->server->addOnlinePlayer($this);
 	}
 
-	protected function initHumanData() : void{
+	protected function initHumanData(CompoundTag $nbt) : void{
 		$this->setNameTag($this->username);
 	}
 
-	protected function initEntity() : void{
-		parent::initEntity();
+	protected function initEntity(CompoundTag $nbt) : void{
+		parent::initEntity($nbt);
 		$this->addDefaultWindows();
 
-		$this->firstPlayed = $this->namedtag->getLong("firstPlayed", $now = (int) (microtime(true) * 1000));
-		$this->lastPlayed = $this->namedtag->getLong("lastPlayed", $now);
+		$this->firstPlayed = $nbt->getLong("firstPlayed", $now = (int) (microtime(true) * 1000));
+		$this->lastPlayed = $nbt->getLong("lastPlayed", $now);
 
-		$this->gamemode = $this->namedtag->getInt("playerGameType", self::SURVIVAL) & 0x03;
+		$this->gamemode = $nbt->getInt("playerGameType", self::SURVIVAL) & 0x03;
 		if($this->server->getForceGamemode()){
 			$this->gamemode = $this->server->getGamemode();
 		}
@@ -1912,15 +1912,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->setCanClimb();
 
 		$this->achievements = [];
-		$achievements = $this->namedtag->getCompoundTag("Achievements") ?? [];
+		$achievements = $nbt->getCompoundTag("Achievements") ?? [];
 		/** @var ByteTag $achievement */
 		foreach($achievements as $achievement){
 			$this->achievements[$achievement->getName()] = $achievement->getValue() !== 0;
 		}
 
 		if(!$this->hasValidSpawnPosition()){
-			if(($level = $this->server->getLevelByName($this->namedtag->getString("SpawnLevel", ""))) instanceof Level){
-				$this->spawnPosition = new Position($this->namedtag->getInt("SpawnX"), $this->namedtag->getInt("SpawnY"), $this->namedtag->getInt("SpawnZ"), $level);
+			if(($level = $this->server->getLevelByName($nbt->getString("SpawnLevel", ""))) instanceof Level){
+				$this->spawnPosition = new Position($nbt->getInt("SpawnX"), $nbt->getInt("SpawnY"), $nbt->getInt("SpawnZ"), $level);
 			}else{
 				$this->spawnPosition = $this->level->getSafeSpawn();
 			}
@@ -2916,21 +2916,21 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			throw new \InvalidStateException("Tried to save closed player");
 		}
 
-		parent::saveNBT();
+		$nbt = $this->saveNBT();
 
 		if($this->isValid()){
-			$this->namedtag->setString("Level", $this->level->getFolderName());
+			$nbt->setString("Level", $this->level->getFolderName());
 		}
 
 		if($this->hasValidSpawnPosition()){
-			$this->namedtag->setString("SpawnLevel", $this->spawnPosition->getLevel()->getFolderName());
-			$this->namedtag->setInt("SpawnX", $this->spawnPosition->getFloorX());
-			$this->namedtag->setInt("SpawnY", $this->spawnPosition->getFloorY());
-			$this->namedtag->setInt("SpawnZ", $this->spawnPosition->getFloorZ());
+			$nbt->setString("SpawnLevel", $this->spawnPosition->getLevel()->getFolderName());
+			$nbt->setInt("SpawnX", $this->spawnPosition->getFloorX());
+			$nbt->setInt("SpawnY", $this->spawnPosition->getFloorY());
+			$nbt->setInt("SpawnZ", $this->spawnPosition->getFloorZ());
 
 			if(!$this->isAlive()){
 				//hack for respawn after quit
-				$this->namedtag->setTag(new ListTag("Pos", [
+				$nbt->setTag(new ListTag("Pos", [
 					new DoubleTag("", $this->spawnPosition->x),
 					new DoubleTag("", $this->spawnPosition->y),
 					new DoubleTag("", $this->spawnPosition->z)
@@ -2942,13 +2942,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		foreach($this->achievements as $achievement => $status){
 			$achievements->setByte($achievement, $status ? 1 : 0);
 		}
-		$this->namedtag->setTag($achievements);
+		$nbt->setTag($achievements);
 
-		$this->namedtag->setInt("playerGameType", $this->gamemode);
-		$this->namedtag->setLong("firstPlayed", $this->firstPlayed);
-		$this->namedtag->setLong("lastPlayed", (int) floor(microtime(true) * 1000));
+		$nbt->setInt("playerGameType", $this->gamemode);
+		$nbt->setLong("firstPlayed", $this->firstPlayed);
+		$nbt->setLong("lastPlayed", (int) floor(microtime(true) * 1000));
 
-		$this->server->saveOfflinePlayerData($this->username, $this->namedtag, $async);
+		$this->server->saveOfflinePlayerData($this->username, $nbt, $async);
 	}
 
 	public function kill() : void{

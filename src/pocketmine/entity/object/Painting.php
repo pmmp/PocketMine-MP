@@ -70,20 +70,22 @@ class Painting extends Entity{
 		parent::__construct($level, $nbt);
 	}
 
-	protected function initEntity() : void{
+	protected function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(1);
 		$this->setHealth(1);
-		parent::initEntity();
+		parent::initEntity($nbt);
 	}
 
-	public function saveNBT() : void{
-		parent::saveNBT();
-		$this->namedtag->setInt("TileX", (int) $this->blockIn->x);
-		$this->namedtag->setInt("TileY", (int) $this->blockIn->y);
-		$this->namedtag->setInt("TileZ", (int) $this->blockIn->z);
+	public function saveNBT() : CompoundTag{
+		$nbt = parent::saveNBT();
+		$nbt->setInt("TileX", (int) $this->blockIn->x);
+		$nbt->setInt("TileY", (int) $this->blockIn->y);
+		$nbt->setInt("TileZ", (int) $this->blockIn->z);
 
-		$this->namedtag->setByte("Facing", (int) $this->direction);
-		$this->namedtag->setByte("Direction", (int) $this->direction); //Save both for full compatibility
+		$nbt->setByte("Facing", (int) $this->direction);
+		$nbt->setByte("Direction", (int) $this->direction); //Save both for full compatibility
+
+		return $nbt;
 	}
 
 	public function kill() : void{
