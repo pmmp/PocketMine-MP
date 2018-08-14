@@ -2233,9 +2233,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? 13 : 7) and !$this->isSpectator()){
 			$item = $this->inventory->getItemInHand();
+			$oldItem = clone $item;
 			if($this->level->useBreakOn($pos, $item, $this, true)){
 				if($this->isSurvival()){
-					if(!$item->equalsExact($this->inventory->getItemInHand())){
+					if(!$item->equalsExact($oldItem)){
 						$this->inventory->setItemInHand($item);
 					}
 					$this->exhaust(0.025, PlayerExhaustEvent::CAUSE_MINING);
@@ -2278,8 +2279,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		if($this->canInteract($pos->add(0.5, 0.5, 0.5), 13) and !$this->isSpectator()){
 			$item = $this->inventory->getItemInHand(); //this is a copy of the real item
+			$oldItem = clone $item;
 			if($this->level->useItemOn($pos, $item, $face, $clickOffset, $this, true)){
-				if($this->isSurvival() and !$item->equalsExact($this->inventory->getItemInHand())){
+				if($this->isSurvival() and !$item->equalsExact($oldItem)){
 					$this->inventory->setItemInHand($item);
 				}
 				return true;
