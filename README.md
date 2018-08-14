@@ -22,16 +22,16 @@ Because Altay has more features and improvements than PocketMine-MP
 - Best FormAPI
 - Best BossBarAPI
 - More Technical Fixes
-- Working fake inventories(Anvil, Enchantment Table, Beacon)
-- More Tiles(Jukebox, ShulkerBox, NoteBlock, Hopper)
+- Working fake inventories (Anvil, EnchantmentTable, Beacon)
+- More Tiles (Jukebox, ShulkerBox, NoteBlock, Hopper)
 - Best Command Parameter API ever
-- More Event Handling(Dimension changing, Swimming)
-- More Generators(End, Nether, Void)
+- More Event Handling (Dimension changing, Swimming)
+- More Generators (End, Nether, Void)
 - More Utils
 - More Particles and Sounds
 - More Biomes
 - Villager Trading
-- More Inventory(PlayerOffHandInventory)
+- More Inventory (PlayerOffHandInventory)
 - MobSpawner
 
 And more...
