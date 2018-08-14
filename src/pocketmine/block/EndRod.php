@@ -68,30 +68,30 @@ class EndRod extends Flowable{
 		switch($m){
 			case 0x00: //up/down
 				return new AxisAlignedBB(
-					$this->x + $width,
-					$this->y,
-					$this->z + $width,
-					$this->x + 1 - $width,
-					$this->y + 1,
-					$this->z + 1 - $width
+					$width,
+					0,
+					$width,
+					1 - $width,
+					1,
+					1 - $width
 				);
 			case 0x02: //north/south
 				return new AxisAlignedBB(
-					$this->x,
-					$this->y + $width,
-					$this->z + $width,
-					$this->x + 1,
-					$this->y + 1 - $width,
-					$this->z + 1 - $width
+					0,
+					$width,
+					$width,
+					1,
+					1 - $width,
+					1 - $width
 				);
 			case 0x04: //east/west
 				return new AxisAlignedBB(
-					$this->x + $width,
-					$this->y + $width,
-					$this->z,
-					$this->x + 1 - $width,
-					$this->y + 1 - $width,
-					$this->z + 1
+					$width,
+					$width,
+					0,
+					1 - $width,
+					1 - $width,
+					1
 				);
 		}
 

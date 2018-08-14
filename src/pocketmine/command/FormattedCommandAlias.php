@@ -154,5 +154,4 @@ class FormattedCommandAlias extends Command{
 	private static function inRange(int $i, int $j, int $k) : bool{
 		return $i >= $j and $i <= $k;
 	}
-
 }

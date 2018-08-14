@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\NetworkBinaryStream;
-use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\utils\Utils;
 
 abstract class DataPacket extends NetworkBinaryStream{
@@ -41,16 +41,12 @@ abstract class DataPacket extends NetworkBinaryStream{
 	/** @var int */
 	public $recipientSubId = 0;
 
-	public function pid(){
+	public function pid() : int{
 		return $this::NETWORK_ID;
 	}
 
 	public function getName() : string{
 		return (new \ReflectionClass($this))->getShortName();
-	}
-
-	public function canBeBatched() : bool{
-		return true;
 	}
 
 	public function canBeSentBeforeLogin() : bool{
@@ -65,13 +61,13 @@ abstract class DataPacket extends NetworkBinaryStream{
 		return false;
 	}
 
-	public function decode(){
+	public function decode() : void{
 		$this->offset = 0;
 		$this->decodeHeader();
 		$this->decodePayload();
 	}
 
-	protected function decodeHeader(){
+	protected function decodeHeader() : void{
 		$pid = $this->getUnsignedVarInt();
 		assert($pid === static::NETWORK_ID);
 
@@ -83,18 +79,18 @@ abstract class DataPacket extends NetworkBinaryStream{
 	/**
 	 * Note for plugin developers: If you're adding your own packets, you should perform decoding in here.
 	 */
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 
 	}
 
-	public function encode(){
+	public function encode() : void{
 		$this->reset();
 		$this->encodeHeader();
 		$this->encodePayload();
 		$this->isEncoded = true;
 	}
 
-	protected function encodeHeader(){
+	protected function encodeHeader() : void{
 		$this->putUnsignedVarInt(static::NETWORK_ID);
 
 		$this->putByte($this->senderSubId);
@@ -104,21 +100,25 @@ abstract class DataPacket extends NetworkBinaryStream{
 	/**
 	 * Note for plugin developers: If you're adding your own packets, you should perform encoding in here.
 	 */
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 
 	}
 
 	/**
-	 * Performs handling for this packet. Usually you'll want an appropriately named method in the NetworkSession for this.
+	 * Performs handling for this packet. Usually you'll want an appropriately named method in the session handler for
+	 * this.
 	 *
-	 * This method returns a bool to indicate whether the packet was handled or not. If the packet was unhandled, a debug message will be logged with a hexdump of the packet.
-	 * Typically this method returns the return value of the handler in the supplied NetworkSession. See other packets for examples how to implement this.
+	 * This method returns a bool to indicate whether the packet was handled or not. If the packet was unhandled, a
+	 * debug message will be logged with a hexdump of the packet.
 	 *
-	 * @param NetworkSession $session
+	 * Typically this method returns the return value of the handler in the supplied SessionHandler. See other packets
+	 * for examples how to implement this.
+	 *
+	 * @param SessionHandler $handler
 	 *
 	 * @return bool true if the packet was handled successfully, false if not.
 	 */
-	abstract public function handle(NetworkSession $session) : bool;
+	abstract public function handle(SessionHandler $handler) : bool;
 
 	public function clean(){
 		$this->buffer = null;

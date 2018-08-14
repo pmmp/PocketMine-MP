@@ -54,7 +54,7 @@ class PlayerDataSaveEvent extends Event implements Cancellable{
 	/**
 	 * @param CompoundTag $data
 	 */
-	public function setSaveData(CompoundTag $data){
+	public function setSaveData(CompoundTag $data) : void{
 		$this->data = $data;
 	}
 

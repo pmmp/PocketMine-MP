@@ -24,14 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\entity\Human;
-use pocketmine\event\player\PlayerItemHeldEvent;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\Player;
 
-class PlayerInventory extends EntityInventory{
+class PlayerInventory extends BaseInventory{
 
 	/** @var Human */
 	protected $holder;
@@ -43,7 +42,8 @@ class PlayerInventory extends EntityInventory{
 	 * @param Human $player
 	 */
 	public function __construct(Human $player){
-		parent::__construct($player);
+		$this->holder = $player;
+		parent::__construct();
 	}
 
 	public function getName() : string{
@@ -54,33 +54,7 @@ class PlayerInventory extends EntityInventory{
 		return 36;
 	}
 
-	/**
-	 * Called when a client equips a hotbar slot. This method should not be used by plugins.
-	 * This method will call PlayerItemHeldEvent.
-	 *
-	 * @param int $hotbarSlot Number of the hotbar slot to equip.
-	 *
-	 * @return bool if the equipment change was successful, false if not.
-	 */
-	public function equipItem(int $hotbarSlot) : bool{
-		if(!$this->isHotbarSlot($hotbarSlot)){
-			$this->sendContents($this->getHolder());
-			return false;
-		}
-
-		$this->getHolder()->getLevel()->getServer()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $this->getItem($hotbarSlot), $hotbarSlot));
-
-		if($ev->isCancelled()){
-			$this->sendHeldItem($this->getHolder());
-			return false;
-		}
-
-		$this->setHeldItemIndex($hotbarSlot, false);
-
-		return true;
-	}
-
-	private function isHotbarSlot(int $slot) : bool{
+	public function isHotbarSlot(int $slot) : bool{
 		return $slot >= 0 and $slot <= $this->getHotbarSize();
 	}
 
@@ -153,7 +127,12 @@ class PlayerInventory extends EntityInventory{
 	 * @return bool
 	 */
 	public function setItemInHand(Item $item) : bool{
-		return $this->setItem($this->getHeldItemIndex(), $item);
+		if($this->setItem($this->getHeldItemIndex(), $item)){
+			$this->sendHeldItem($this->holder->getViewers());
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -170,7 +149,7 @@ class PlayerInventory extends EntityInventory{
 		$pk->windowId = ContainerIds::INVENTORY;
 
 		if(!is_array($target)){
-			$target->dataPacket($pk);
+			$target->sendDataPacket($pk);
 			if($target === $this->getHolder()){
 				$this->sendSlot($this->getHeldItemIndex(), $target);
 			}
@@ -200,7 +179,7 @@ class PlayerInventory extends EntityInventory{
 			}
 		}
 
-		$this->getHolder()->dataPacket($pk);
+		$this->getHolder()->sendDataPacket($pk);
 	}
 
 	/**
@@ -210,5 +189,4 @@ class PlayerInventory extends EntityInventory{
 	public function getHolder(){
 		return $this->holder;
 	}
-
 }

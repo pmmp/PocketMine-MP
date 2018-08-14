@@ -56,5 +56,4 @@ class Snow extends Solid{
 			ItemFactory::get(Item::SNOWBALL, 0, 4)
 		];
 	}
-
 }

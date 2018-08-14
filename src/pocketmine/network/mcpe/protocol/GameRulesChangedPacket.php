@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class GameRulesChangedPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::GAME_RULES_CHANGED_PACKET;
@@ -33,16 +33,15 @@ class GameRulesChangedPacket extends DataPacket{
 	/** @var array */
 	public $gameRules = [];
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->gameRules = $this->getGameRules();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putGameRules($this->gameRules);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleGameRulesChanged($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleGameRulesChanged($this);
 	}
-
 }

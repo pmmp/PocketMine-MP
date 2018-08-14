@@ -30,5 +30,4 @@ class StillLava extends Lava{
 	public function getName() : string{
 		return "Still Lava";
 	}
-
 }

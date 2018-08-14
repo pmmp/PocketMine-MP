@@ -79,7 +79,7 @@ class Bucket extends Item implements Consumable{
 					$player->getInventory()->sendContents($player);
 				}
 			}
-		}elseif($resultBlock instanceof Liquid){
+		}elseif($resultBlock instanceof Liquid and $blockReplace->canBeReplaced()){
 			$resultItem = clone $this;
 			$resultItem->setDamage(0);
 			$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketEmptyEvent($player, $blockReplace, $face, $this, $resultItem));

@@ -25,29 +25,29 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class UpdateBlockSyncedPacket extends UpdateBlockPacket{
 	public const NETWORK_ID = ProtocolInfo::UPDATE_BLOCK_SYNCED_PACKET;
 
 	/** @var int */
-	protected $uvarint64_1 = 0;
+	public $entityUniqueId = 0;
 	/** @var int */
-	protected $uvarint64_2 = 0;
+	public $uvarint64_2 = 0;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		parent::decodePayload();
-		$this->uvarint64_1 = $this->getUnsignedVarLong();
+		$this->entityUniqueId = $this->getUnsignedVarLong();
 		$this->uvarint64_2 = $this->getUnsignedVarLong();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		parent::encodePayload();
-		$this->putUnsignedVarLong($this->uvarint64_1);
+		$this->putUnsignedVarLong($this->entityUniqueId);
 		$this->putUnsignedVarLong($this->uvarint64_2);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleUpdateBlockSynced($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleUpdateBlockSynced($this);
 	}
 }

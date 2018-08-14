@@ -45,5 +45,4 @@ class EntityCombustByEntityEvent extends EntityCombustEvent{
 	public function getCombuster() : Entity{
 		return $this->combuster;
 	}
-
 }

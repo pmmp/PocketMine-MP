@@ -247,4 +247,14 @@ interface Inventory{
 	 * @return bool
 	 */
 	public function slotExists(int $slot) : bool;
+
+	/**
+	 * @return null|InventoryEventProcessor
+	 */
+	public function getEventProcessor() : ?InventoryEventProcessor;
+
+	/**
+	 * @param null|InventoryEventProcessor $eventProcessor
+	 */
+	public function setEventProcessor(?InventoryEventProcessor $eventProcessor) : void;
 }

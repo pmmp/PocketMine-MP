@@ -25,20 +25,20 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class ServerSettingsRequestPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::SERVER_SETTINGS_REQUEST_PACKET;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		//No payload
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		//No payload
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleServerSettingsRequest($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleServerSettingsRequest($this);
 	}
 }

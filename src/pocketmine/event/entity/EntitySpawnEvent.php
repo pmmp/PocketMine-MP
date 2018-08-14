@@ -94,5 +94,4 @@ class EntitySpawnEvent extends EntityEvent{
 	public function isItem() : bool{
 		return $this->entity instanceof ItemEntity;
 	}
-
 }

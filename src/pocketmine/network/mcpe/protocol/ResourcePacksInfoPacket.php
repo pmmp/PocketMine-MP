@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\resourcepacks\ResourcePack;
 
 class ResourcePacksInfoPacket extends DataPacket{
@@ -39,7 +39,7 @@ class ResourcePacksInfoPacket extends DataPacket{
 	/** @var ResourcePack[] */
 	public $resourcePackEntries = [];
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		/*$this->mustAccept = $this->getBool();
 		$behaviorPackCount = $this->getLShort();
 		while($behaviorPackCount-- > 0){
@@ -60,7 +60,7 @@ class ResourcePacksInfoPacket extends DataPacket{
 		}*/
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 
 		$this->putBool($this->mustAccept);
 		$this->putLShort(count($this->behaviorPackEntries));
@@ -81,7 +81,7 @@ class ResourcePacksInfoPacket extends DataPacket{
 		}
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleResourcePacksInfo($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleResourcePacksInfo($this);
 	}
 }

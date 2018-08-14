@@ -31,6 +31,7 @@ use pocketmine\event\entity\ProjectileHitEntityEvent;
 use pocketmine\event\entity\ProjectileHitBlockEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\Potion;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\utils\Color;
@@ -42,15 +43,17 @@ class SplashPotion extends Throwable{
 	protected $gravity = 0.05;
 	protected $drag = 0.01;
 
-	protected function initEntity() : void{
-		parent::initEntity();
+	protected function initEntity(CompoundTag $nbt) : void{
+		parent::initEntity($nbt);
 
-		$this->setPotionId($this->namedtag->getShort("PotionId", 0));
+		$this->setPotionId($nbt->getShort("PotionId", 0));
 	}
 
-	public function saveNBT() : void{
-		parent::saveNBT();
-		$this->namedtag->setShort("PotionId", $this->getPotionId());
+	public function saveNBT() : CompoundTag{
+		$nbt = parent::saveNBT();
+		$nbt->setShort("PotionId", $this->getPotionId());
+
+		return $nbt;
 	}
 
 	public function getResultDamage() : int{
@@ -81,8 +84,8 @@ class SplashPotion extends Throwable{
 
 		if($hasEffects){
 			if(!$this->willLinger()){
-				foreach($this->level->getNearbyEntities($this->boundingBox->grow(4.125, 2.125, 4.125), $this) as $entity){
-					if($entity instanceof Living){
+				foreach($this->level->getNearbyEntities($this->boundingBox->expandedCopy(4.125, 2.125, 4.125), $this) as $entity){
+					if($entity instanceof Living and $entity->isAlive()){
 						$distanceSquared = $entity->distanceSquared($this);
 						if($distanceSquared > 16){ //4 blocks
 							continue;

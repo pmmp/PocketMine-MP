@@ -41,5 +41,4 @@ class PlayerBedLeaveEvent extends PlayerEvent{
 	public function getBed() : Block{
 		return $this->bed;
 	}
-
 }

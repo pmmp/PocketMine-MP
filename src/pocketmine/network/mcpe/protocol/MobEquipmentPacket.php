@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class MobEquipmentPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::MOB_EQUIPMENT_PACKET;
@@ -43,7 +43,7 @@ class MobEquipmentPacket extends DataPacket{
 	/** @var int */
 	public $windowId = 0;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->item = $this->getSlot();
 		$this->inventorySlot = $this->getByte();
@@ -51,7 +51,7 @@ class MobEquipmentPacket extends DataPacket{
 		$this->windowId = $this->getByte();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putSlot($this->item);
 		$this->putByte($this->inventorySlot);
@@ -59,8 +59,7 @@ class MobEquipmentPacket extends DataPacket{
 		$this->putByte($this->windowId);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleMobEquipment($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleMobEquipment($this);
 	}
-
 }

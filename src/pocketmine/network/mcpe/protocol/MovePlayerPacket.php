@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class MovePlayerPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::MOVE_PLAYER_PACKET;
@@ -58,7 +58,7 @@ class MovePlayerPacket extends DataPacket{
 	/** @var int */
 	public $teleportItem = 0;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->position = $this->getVector3();
 		$this->pitch = $this->getLFloat();
@@ -73,7 +73,7 @@ class MovePlayerPacket extends DataPacket{
 		}
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putVector3($this->position);
 		$this->putLFloat($this->pitch);
@@ -88,8 +88,7 @@ class MovePlayerPacket extends DataPacket{
 		}
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleMovePlayer($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleMovePlayer($this);
 	}
-
 }

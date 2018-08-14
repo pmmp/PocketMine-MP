@@ -46,5 +46,4 @@ class Sand extends Fallable{
 
 		return "Sand";
 	}
-
 }

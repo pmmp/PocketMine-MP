@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 
 class StartGamePacket extends DataPacket{
@@ -126,7 +126,7 @@ class StartGamePacket extends DataPacket{
 	/** @var int */
 	public $enchantmentSeed = 0;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->playerGamemode = $this->getVarInt();
@@ -177,7 +177,7 @@ class StartGamePacket extends DataPacket{
 		$this->enchantmentSeed = $this->getVarInt();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putEntityUniqueId($this->entityUniqueId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putVarInt($this->playerGamemode);
@@ -228,8 +228,7 @@ class StartGamePacket extends DataPacket{
 		$this->putVarInt($this->enchantmentSeed);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleStartGame($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleStartGame($this);
 	}
-
 }

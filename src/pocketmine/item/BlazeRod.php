@@ -32,5 +32,4 @@ class BlazeRod extends Item{
 	public function getFuelTime() : int{
 		return 2400;
 	}
-
 }

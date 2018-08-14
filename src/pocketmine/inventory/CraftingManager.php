@@ -25,11 +25,11 @@ namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\network\mcpe\protocol\BatchPacket;
+use pocketmine\network\mcpe\CompressBatchPromise;
+use pocketmine\network\mcpe\NetworkCompression;
+use pocketmine\network\mcpe\PacketStream;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
-use pocketmine\Server;
 use pocketmine\timings\Timings;
-use pocketmine\utils\Config;
 
 class CraftingManager{
 	/** @var ShapedRecipe[][] */
@@ -39,7 +39,7 @@ class CraftingManager{
 	/** @var FurnaceRecipe[] */
 	protected $furnaceRecipes = [];
 
-	/** @var BatchPacket */
+	/** @var CompressBatchPromise */
 	private $craftingDataCache;
 
 	public function __construct(){
@@ -47,9 +47,9 @@ class CraftingManager{
 	}
 
 	public function init() : void{
-		$recipes = new Config(\pocketmine\RESOURCE_PATH . "recipes.json", Config::JSON, []);
+		$recipes = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla" . DIRECTORY_SEPARATOR . "recipes.json"), true);
 
-		foreach($recipes->getAll() as $recipe){
+		foreach($recipes as $recipe){
 			switch($recipe["type"]){
 				case 0:
 					$this->registerRecipe(new ShapelessRecipe(
@@ -101,23 +101,21 @@ class CraftingManager{
 			$pk->addFurnaceRecipe($recipe);
 		}
 
-		$pk->encode();
+		$batch = new PacketStream();
+		$batch->putPacket($pk);
 
-		$batch = new BatchPacket();
-		$batch->addPacket($pk);
-		$batch->setCompressionLevel(Server::getInstance()->networkCompressionLevel);
-		$batch->encode();
+		$this->craftingDataCache = new CompressBatchPromise();
+		$this->craftingDataCache->resolve(NetworkCompression::compress($batch->buffer));
 
-		$this->craftingDataCache = $batch;
 		Timings::$craftingDataCacheRebuildTimer->stopTiming();
 	}
 
 	/**
 	 * Returns a pre-compressed CraftingDataPacket for sending to players. Rebuilds the cache if it is not found.
 	 *
-	 * @return BatchPacket
+	 * @return CompressBatchPromise
 	 */
-	public function getCraftingDataPacket() : BatchPacket{
+	public function getCraftingDataPacket() : CompressBatchPromise{
 		if($this->craftingDataCache === null){
 			$this->buildCraftingDataCache();
 		}
@@ -291,5 +289,4 @@ class CraftingManager{
 	public function registerRecipe(Recipe $recipe) : void{
 		$recipe->registerToCraftingManager($this);
 	}
-
 }

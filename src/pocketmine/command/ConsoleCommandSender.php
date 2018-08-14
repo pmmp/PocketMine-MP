@@ -145,5 +145,4 @@ class ConsoleCommandSender implements CommandSender{
 		}
 		$this->lineHeight = $height;
 	}
-
 }

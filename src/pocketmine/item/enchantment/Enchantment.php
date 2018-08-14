@@ -57,6 +57,12 @@ class Enchantment{
 	public const LURE = 24;
 	public const FROST_WALKER = 25;
 	public const MENDING = 26;
+	public const BINDING = 27;
+	public const VANISHING = 28;
+	public const IMPALING = 29;
+	public const RIPTIDE = 30;
+	public const LOYALTY = 31;
+	public const CHANNELING = 32;
 
 	public const RARITY_COMMON = 10;
 	public const RARITY_UNCOMMON = 5;
@@ -64,7 +70,7 @@ class Enchantment{
 	public const RARITY_MYTHIC = 1;
 
 	public const SLOT_NONE = 0x0;
-	public const SLOT_ALL = 0x7fff;
+	public const SLOT_ALL = 0xffff;
 	public const SLOT_ARMOR = self::SLOT_HEAD | self::SLOT_TORSO | self::SLOT_LEGS | self::SLOT_FEET;
 	public const SLOT_HEAD = 0x1;
 	public const SLOT_TORSO = 0x2;
@@ -83,11 +89,12 @@ class Enchantment{
 	public const SLOT_FISHING_ROD = 0x1000;
 	public const SLOT_CARROT_STICK = 0x2000;
 	public const SLOT_ELYTRA = 0x4000;
+	public const SLOT_TRIDENT = 0x8000;
 
 	/** @var Enchantment[] */
 	protected static $enchantments;
 
-	public static function init(){
+	public static function init() : void{
 		self::$enchantments = new \SplFixedArray(256);
 
 		self::registerEnchantment(new ProtectionEnchantment(self::PROTECTION, "%enchantment.protect.all", self::RARITY_COMMON, self::SLOT_ARMOR, self::SLOT_NONE, 4, 0.75, null));
@@ -107,12 +114,27 @@ class Enchantment{
 		self::registerEnchantment(new ProtectionEnchantment(self::PROJECTILE_PROTECTION, "%enchantment.protect.projectile", self::RARITY_UNCOMMON, self::SLOT_ARMOR, self::SLOT_NONE, 4, 1.5, [
 			EntityDamageEvent::CAUSE_PROJECTILE
 		]));
-
+		self::registerEnchantment(new Enchantment(self::THORNS, "%enchantment.thorns", self::RARITY_MYTHIC, self::SLOT_TORSO, self::SLOT_HEAD | self::SLOT_LEGS | self::SLOT_FEET, 3));
 		self::registerEnchantment(new Enchantment(self::RESPIRATION, "%enchantment.oxygen", self::RARITY_RARE, self::SLOT_HEAD, self::SLOT_NONE, 3));
+
+		self::registerEnchantment(new SharpnessEnchantment(self::SHARPNESS, "%enchantment.damage.all", self::RARITY_COMMON, self::SLOT_SWORD, self::SLOT_AXE, 5));
+		//TODO: smite, bane of arthropods (these don't make sense now because their applicable mobs don't exist yet)
+
+		self::registerEnchantment(new KnockbackEnchantment(self::KNOCKBACK, "%enchantment.knockback", self::RARITY_UNCOMMON, self::SLOT_SWORD, self::SLOT_NONE, 2));
+		self::registerEnchantment(new FireAspectEnchantment(self::FIRE_ASPECT, "%enchantment.fire", self::RARITY_RARE, self::SLOT_SWORD, self::SLOT_NONE, 2));
 
 		self::registerEnchantment(new Enchantment(self::EFFICIENCY, "%enchantment.digging", self::RARITY_COMMON, self::SLOT_DIG, self::SLOT_SHEARS, 5));
 		self::registerEnchantment(new Enchantment(self::SILK_TOUCH, "%enchantment.untouching", self::RARITY_MYTHIC, self::SLOT_DIG, self::SLOT_SHEARS, 1));
 		self::registerEnchantment(new Enchantment(self::UNBREAKING, "%enchantment.durability", self::RARITY_UNCOMMON, self::SLOT_DIG | self::SLOT_ARMOR | self::SLOT_FISHING_ROD | self::SLOT_BOW, self::SLOT_TOOL | self::SLOT_CARROT_STICK | self::SLOT_ELYTRA, 3));
+
+		self::registerEnchantment(new Enchantment(self::POWER, "%enchantment.arrowDamage", self::RARITY_COMMON, self::SLOT_BOW, self::SLOT_NONE, 5));
+		self::registerEnchantment(new Enchantment(self::PUNCH, "%enchantment.arrowKnockback", self::RARITY_RARE, self::SLOT_BOW, self::SLOT_NONE, 2));
+		self::registerEnchantment(new Enchantment(self::FLAME, "%enchantment.arrowFire", self::RARITY_RARE, self::SLOT_BOW, self::SLOT_NONE, 1));
+		self::registerEnchantment(new Enchantment(self::INFINITY, "%enchantment.arrowInfinite", self::RARITY_MYTHIC, self::SLOT_BOW, self::SLOT_NONE, 1));
+
+		self::registerEnchantment(new Enchantment(self::MENDING, "%enchantment.mending", self::RARITY_RARE, self::SLOT_NONE, self::SLOT_ALL, 1));
+
+		self::registerEnchantment(new Enchantment(self::VANISHING, "%enchantment.curse.vanishing", self::RARITY_MYTHIC, self::SLOT_NONE, self::SLOT_ALL, 1));
 	}
 
 	/**
@@ -129,7 +151,7 @@ class Enchantment{
 	 *
 	 * @return Enchantment|null
 	 */
-	public static function getEnchantment(int $id){
+	public static function getEnchantment(int $id) : ?Enchantment{
 		return self::$enchantments[$id] ?? null;
 	}
 
@@ -138,7 +160,7 @@ class Enchantment{
 	 *
 	 * @return Enchantment|null
 	 */
-	public static function getEnchantmentByName(string $name){
+	public static function getEnchantmentByName(string $name) : ?Enchantment{
 		$const = Enchantment::class . "::" . strtoupper($name);
 		if(defined($const)){
 			return self::getEnchantment(constant($const));

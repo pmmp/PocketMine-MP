@@ -38,5 +38,4 @@ class PlayerJumpEvent extends PlayerEvent{
 	public function __construct(Player $player){
 		$this->player = $player;
 	}
-
 }

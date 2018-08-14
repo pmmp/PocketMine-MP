@@ -30,5 +30,4 @@ class RedSandstoneStairs extends SandstoneStairs{
 	public function getName() : string{
 		return "Red " . parent::getName();
 	}
-
 }

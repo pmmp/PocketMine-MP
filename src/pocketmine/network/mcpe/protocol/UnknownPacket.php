@@ -25,7 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol;
 
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class UnknownPacket extends DataPacket{
 	public const NETWORK_ID = -1; //Invalid, do not try to write this
@@ -33,7 +33,7 @@ class UnknownPacket extends DataPacket{
 	/** @var string */
 	public $payload;
 
-	public function pid(){
+	public function pid() : int{
 		if(strlen($this->payload ?? "") > 0){
 			return ord($this->payload{0});
 		}
@@ -44,16 +44,16 @@ class UnknownPacket extends DataPacket{
 		return "unknown packet";
 	}
 
-	public function decode(){
+	public function decode() : void{
 		$this->payload = $this->getRemaining();
 	}
 
-	public function encode(){
+	public function encode() : void{
 		//Do not reset the buffer, this class does not have a valid NETWORK_ID constant.
 		$this->put($this->payload);
 	}
 
-	public function handle(NetworkSession $session) : bool{
+	public function handle(SessionHandler $handler) : bool{
 		return false;
 	}
 }

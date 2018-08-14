@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class PurchaseReceiptPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::PURCHASE_RECEIPT_PACKET;
@@ -33,21 +33,21 @@ class PurchaseReceiptPacket extends DataPacket{
 	/** @var string[] */
 	public $entries = [];
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$count = $this->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
 			$this->entries[] = $this->getString();
 		}
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putUnsignedVarInt(count($this->entries));
 		foreach($this->entries as $entry){
 			$this->putString($entry);
 		}
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handlePurchaseReceipt($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handlePurchaseReceipt($this);
 	}
 }

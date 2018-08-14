@@ -27,25 +27,15 @@ declare(strict_types=1);
 namespace pocketmine\plugin;
 
 use pocketmine\command\CommandExecutor;
+use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
-use pocketmine\utils\Config;
-
 
 /**
  * It is recommended to use PluginBase for the actual plugin
- *
  */
 interface Plugin extends CommandExecutor{
 
-	/**
-	 * Called when the plugin is loaded, before calling onEnable()
-	 */
-	public function onLoad();
-
-	/**
-	 * Called when the plugin is enabled
-	 */
-	public function onEnable();
+	public function __construct(PluginLoader $loader, Server $server, PluginDescription $description, string $dataFolder, string $file);
 
 	/**
 	 * @return bool
@@ -53,10 +43,9 @@ interface Plugin extends CommandExecutor{
 	public function isEnabled() : bool;
 
 	/**
-	 * Called when the plugin is disabled
-	 * Use this to free open things and finish actions
+	 * @param bool $enabled
 	 */
-	public function onDisable();
+	public function setEnabled(bool $enabled = true) : void;
 
 	/**
 	 * @return bool
@@ -77,46 +66,6 @@ interface Plugin extends CommandExecutor{
 	public function getDescription() : PluginDescription;
 
 	/**
-	 * Gets an embedded resource in the plugin file.
-	 *
-	 * @param string $filename
-	 *
-	 * @return null|resource Resource data, or null
-	 */
-	public function getResource(string $filename);
-
-	/**
-	 * Saves an embedded resource to its relative location in the data folder
-	 *
-	 * @param string $filename
-	 * @param bool $replace
-	 *
-	 * @return bool
-	 */
-	public function saveResource(string $filename, bool $replace = false) : bool;
-
-	/**
-	 * Returns all the resources packaged with the plugin
-	 *
-	 * @return string[]
-	 */
-	public function getResources() : array;
-
-	/**
-	 * @return Config
-	 */
-	public function getConfig() : Config;
-
-	public function saveConfig();
-
-	/**
-	 * @return bool
-	 */
-	public function saveDefaultConfig() : bool;
-
-	public function reloadConfig();
-
-	/**
 	 * @return Server
 	 */
 	public function getServer() : Server;
@@ -135,5 +84,10 @@ interface Plugin extends CommandExecutor{
 	 * @return PluginLoader
 	 */
 	public function getPluginLoader();
+
+	/**
+	 * @return TaskScheduler
+	 */
+	public function getScheduler() : TaskScheduler;
 
 }

@@ -102,10 +102,4 @@ class FurnaceInventory extends ContainerInventory{
 	public function setSmelting(Item $item) : bool{
 		return $this->setItem(0, $item);
 	}
-
-	public function onSlotChange(int $index, Item $before, bool $send) : void{
-		parent::onSlotChange($index, $before, $send);
-
-		$this->getHolder()->scheduleUpdate();
-	}
 }

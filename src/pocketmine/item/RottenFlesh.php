@@ -49,5 +49,4 @@ class RottenFlesh extends Food{
 
 		return [];
 	}
-
 }

@@ -99,5 +99,4 @@ class Skin{
 			$this->geometryData = (string) json_encode(json_decode($this->geometryData));
 		}
 	}
-
 }

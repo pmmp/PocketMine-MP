@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class ChangeDimensionPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::CHANGE_DIMENSION_PACKET;
@@ -39,20 +39,19 @@ class ChangeDimensionPacket extends DataPacket{
 	/** @var bool */
 	public $respawn = false;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->dimension = $this->getVarInt();
 		$this->position = $this->getVector3();
 		$this->respawn = $this->getBool();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putVarInt($this->dimension);
 		$this->putVector3($this->position);
 		$this->putBool($this->respawn);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleChangeDimension($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleChangeDimension($this);
 	}
-
 }

@@ -2,8 +2,6 @@
 DIR="$(cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 cd "$DIR"
 
-DO_LOOP="no"
-
 while getopts "p:f:l" OPTION 2> /dev/null; do
 	case ${OPTION} in
 		p)
@@ -47,19 +45,18 @@ fi
 LOOPS=0
 
 set +e
-while [ "$LOOPS" -eq 0 ] || [ "$DO_LOOP" == "yes" ]; do
-	if [ "$DO_LOOP" == "yes" ]; then
-		"$PHP_BINARY" "$POCKETMINE_FILE" $@
-	else
-		exec "$PHP_BINARY" "$POCKETMINE_FILE" $@
-	fi
-	if [ "$DO_LOOP" == "yes" ]; then
+
+if [ "$DO_LOOP" == "yes" ]; then
+	while true; do
 		if [ ${LOOPS} -gt 0 ]; then
 			echo "Restarted $LOOPS times"
 		fi
+		"$PHP_BINARY" "$POCKETMINE_FILE" $@
 		echo "To escape the loop, press CTRL+C now. Otherwise, wait 5 seconds for the server to restart."
 		echo ""
 		sleep 5
 		((LOOPS++))
-	fi
-done
+	done
+else
+	exec "$PHP_BINARY" "$POCKETMINE_FILE" $@
+fi

@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\protocol\types\ScorePacketEntry;
 
 class SetScorePacket extends DataPacket{
@@ -39,7 +39,7 @@ class SetScorePacket extends DataPacket{
 	/** @var ScorePacketEntry[] */
 	public $entries = [];
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->type = $this->getByte();
 		for($i = 0, $i2 = $this->getUnsignedVarInt(); $i < $i2; ++$i){
 			$entry = new ScorePacketEntry();
@@ -49,7 +49,7 @@ class SetScorePacket extends DataPacket{
 		}
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putByte($this->type);
 		$this->putUnsignedVarInt(count($this->entries));
 		foreach($this->entries as $entry){
@@ -59,7 +59,7 @@ class SetScorePacket extends DataPacket{
 		}
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleSetScore($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleSetScore($this);
 	}
 }

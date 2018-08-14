@@ -45,5 +45,4 @@ class InventoryCloseEvent extends InventoryEvent{
 	public function getPlayer() : Player{
 		return $this->who;
 	}
-
 }

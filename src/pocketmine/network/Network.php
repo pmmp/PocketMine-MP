@@ -29,20 +29,18 @@ namespace pocketmine\network;
 use pocketmine\event\server\NetworkInterfaceCrashEvent;
 use pocketmine\event\server\NetworkInterfaceRegisterEvent;
 use pocketmine\event\server\NetworkInterfaceUnregisterEvent;
+use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\Server;
 
 class Network{
-
-	public static $BATCH_THRESHOLD = 512;
-
 	/** @var Server */
 	private $server;
 
-	/** @var SourceInterface[] */
+	/** @var NetworkInterface[] */
 	private $interfaces = [];
 
-	/** @var AdvancedSourceInterface[] */
+	/** @var AdvancedNetworkInterface[] */
 	private $advancedInterfaces = [];
 
 	private $upload = 0;
@@ -51,6 +49,9 @@ class Network{
 	/** @var string */
 	private $name;
 
+	/** @var NetworkSession[] */
+	private $updateSessions = [];
+
 	public function __construct(Server $server){
 		PacketPool::init();
 
@@ -58,63 +59,65 @@ class Network{
 
 	}
 
-	public function addStatistics($upload, $download){
+	public function addStatistics(float $upload, float $download) : void{
 		$this->upload += $upload;
 		$this->download += $download;
 	}
 
-	public function getUpload(){
+	public function getUpload() : float{
 		return $this->upload;
 	}
 
-	public function getDownload(){
+	public function getDownload() : float{
 		return $this->download;
 	}
 
-	public function resetStatistics(){
+	public function resetStatistics() : void{
 		$this->upload = 0;
 		$this->download = 0;
 	}
 
 	/**
-	 * @return SourceInterface[]
+	 * @return NetworkInterface[]
 	 */
 	public function getInterfaces() : array{
 		return $this->interfaces;
 	}
 
-	public function processInterfaces(){
+	public function tick() : void{
 		foreach($this->interfaces as $interface){
-			$this->processInterface($interface);
-		}
-	}
+			try{
+				$interface->tick();
+			}catch(\Exception $e){
+				$logger = $this->server->getLogger();
+				if(\pocketmine\DEBUG > 1){
+					$logger->logException($e);
+				}
 
-	public function processInterface(SourceInterface $interface) : void{
-		try{
-			$interface->process();
-		}catch(\Throwable $e){
-			$logger = $this->server->getLogger();
-			if(\pocketmine\DEBUG > 1){
-				$logger->logException($e);
+				$this->server->getPluginManager()->callEvent(new NetworkInterfaceCrashEvent($interface, $e));
+
+				$interface->emergencyShutdown();
+				$this->unregisterInterface($interface);
+				$logger->critical($this->server->getLanguage()->translateString("pocketmine.server.networkError", [get_class($interface), $e->getMessage()]));
 			}
+		}
 
-			$this->server->getPluginManager()->callEvent(new NetworkInterfaceCrashEvent($interface, $e));
-
-			$interface->emergencyShutdown();
-			$this->unregisterInterface($interface);
-			$logger->critical($this->server->getLanguage()->translateString("pocketmine.server.networkError", [get_class($interface), $e->getMessage()]));
+		foreach($this->updateSessions as $k => $session){
+			if(!$session->isConnected() or !$session->tick()){
+				unset($this->updateSessions[$k]);
+			}
 		}
 	}
 
 	/**
-	 * @param SourceInterface $interface
+	 * @param NetworkInterface $interface
 	 */
-	public function registerInterface(SourceInterface $interface){
+	public function registerInterface(NetworkInterface $interface) : void{
 		$this->server->getPluginManager()->callEvent($ev = new NetworkInterfaceRegisterEvent($interface));
 		if(!$ev->isCancelled()){
 			$interface->start();
 			$this->interfaces[$hash = spl_object_hash($interface)] = $interface;
-			if($interface instanceof AdvancedSourceInterface){
+			if($interface instanceof AdvancedNetworkInterface){
 				$this->advancedInterfaces[$hash] = $interface;
 				$interface->setNetwork($this);
 			}
@@ -123,9 +126,9 @@ class Network{
 	}
 
 	/**
-	 * @param SourceInterface $interface
+	 * @param NetworkInterface $interface
 	 */
-	public function unregisterInterface(SourceInterface $interface){
+	public function unregisterInterface(NetworkInterface $interface) : void{
 		$this->server->getPluginManager()->callEvent(new NetworkInterfaceUnregisterEvent($interface));
 		unset($this->interfaces[$hash = spl_object_hash($interface)], $this->advancedInterfaces[$hash]);
 	}
@@ -135,7 +138,7 @@ class Network{
 	 *
 	 * @param string $name
 	 */
-	public function setName(string $name){
+	public function setName(string $name) : void{
 		$this->name = $name;
 		foreach($this->interfaces as $interface){
 			$interface->setName($this->name);
@@ -149,7 +152,7 @@ class Network{
 		return $this->name;
 	}
 
-	public function updateName(){
+	public function updateName() : void{
 		foreach($this->interfaces as $interface){
 			$interface->setName($this->name);
 		}
@@ -167,7 +170,7 @@ class Network{
 	 * @param int    $port
 	 * @param string $payload
 	 */
-	public function sendPacket(string $address, int $port, string $payload){
+	public function sendPacket(string $address, int $port, string $payload) : void{
 		foreach($this->advancedInterfaces as $interface){
 			$interface->sendRawPacket($address, $port, $payload);
 		}
@@ -179,15 +182,19 @@ class Network{
 	 * @param string $address
 	 * @param int    $timeout
 	 */
-	public function blockAddress(string $address, int $timeout = 300){
+	public function blockAddress(string $address, int $timeout = 300) : void{
 		foreach($this->advancedInterfaces as $interface){
 			$interface->blockAddress($address, $timeout);
 		}
 	}
 
-	public function unblockAddress(string $address){
+	public function unblockAddress(string $address) : void{
 		foreach($this->advancedInterfaces as $interface){
 			$interface->unblockAddress($address);
 		}
+	}
+
+	public function scheduleSessionTick(NetworkSession $session) : void{
+		$this->updateSessions[spl_object_hash($session)] = $session;
 	}
 }

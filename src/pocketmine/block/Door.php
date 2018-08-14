@@ -54,18 +54,10 @@ abstract class Door extends Transparent{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-
 		$f = 0.1875;
 		$damage = $this->getFullDamage();
 
-		$bb = new AxisAlignedBB(
-			$this->x,
-			$this->y,
-			$this->z,
-			$this->x + 1,
-			$this->y + 2,
-			$this->z + 1
-		);
+		$bb = new AxisAlignedBB(0, 0, 0, 1, 2, 1);
 
 		$j = $damage & 0x03;
 		$isOpen = (($damage & 0x04) > 0);
@@ -74,126 +66,42 @@ abstract class Door extends Transparent{
 		if($j === 0){
 			if($isOpen){
 				if(!$isRight){
-					$bb->setBounds(
-						$this->x,
-						$this->y,
-						$this->z,
-						$this->x + 1,
-						$this->y + 1,
-						$this->z + $f
-					);
+					$bb->setBounds(0, 0, 0, 1, 1, $f);
 				}else{
-					$bb->setBounds(
-						$this->x,
-						$this->y,
-						$this->z + 1 - $f,
-						$this->x + 1,
-						$this->y + 1,
-						$this->z + 1
-					);
+					$bb->setBounds(0, 0, 1 - $f, 1, 1, 1);
 				}
 			}else{
-				$bb->setBounds(
-					$this->x,
-					$this->y,
-					$this->z,
-					$this->x + $f,
-					$this->y + 1,
-					$this->z + 1
-				);
+				$bb->setBounds(0, 0, 0, $f, 1, 1);
 			}
 		}elseif($j === 1){
 			if($isOpen){
 				if(!$isRight){
-					$bb->setBounds(
-						$this->x + 1 - $f,
-						$this->y,
-						$this->z,
-						$this->x + 1,
-						$this->y + 1,
-						$this->z + 1
-					);
+					$bb->setBounds(1 - $f, 0, 0, 1, 1, 1);
 				}else{
-					$bb->setBounds(
-						$this->x,
-						$this->y,
-						$this->z,
-						$this->x + $f,
-						$this->y + 1,
-						$this->z + 1
-					);
+					$bb->setBounds(0, 0, 0, $f, 1, 1);
 				}
 			}else{
-				$bb->setBounds(
-					$this->x,
-					$this->y,
-					$this->z,
-					$this->x + 1,
-					$this->y + 1,
-					$this->z + $f
-				);
+				$bb->setBounds(0, 0, 0, 1, 1, $f);
 			}
 		}elseif($j === 2){
 			if($isOpen){
 				if(!$isRight){
-					$bb->setBounds(
-						$this->x,
-						$this->y,
-						$this->z + 1 - $f,
-						$this->x + 1,
-						$this->y + 1,
-						$this->z + 1
-					);
+					$bb->setBounds(0, 0, 1 - $f, 1, 1, 1);
 				}else{
-					$bb->setBounds(
-						$this->x,
-						$this->y,
-						$this->z,
-						$this->x + 1,
-						$this->y + 1,
-						$this->z + $f
-					);
+					$bb->setBounds(0, 0, 0, 1, 1, $f);
 				}
 			}else{
-				$bb->setBounds(
-					$this->x + 1 - $f,
-					$this->y,
-					$this->z,
-					$this->x + 1,
-					$this->y + 1,
-					$this->z + 1
-				);
+				$bb->setBounds(1 - $f, 0, 0, 1, 1, 1);
 			}
 		}elseif($j === 3){
 			if($isOpen){
 				if(!$isRight){
-					$bb->setBounds(
-						$this->x,
-						$this->y,
-						$this->z,
-						$this->x + $f,
-						$this->y + 1,
-						$this->z + 1
-					);
+					$bb->setBounds(0, 0, 0, $f, 1, 1);
 				}else{
-					$bb->setBounds(
-						$this->x + 1 - $f,
-						$this->y,
-						$this->z,
-						$this->x + 1,
-						$this->y + 1,
-						$this->z + 1
-					);
+					$bb->setBounds(1 - $f, 0, 0, 1, 1, 1);
 				}
 			}else{
-				$bb->setBounds(
-					$this->x,
-					$this->y,
-					$this->z + 1 - $f,
-					$this->x + 1,
-					$this->y + 1,
-					$this->z + 1
-				);
+				$bb->setBounds(0, 0, 1 - $f, 1, 1, 1);
 			}
 		}
 

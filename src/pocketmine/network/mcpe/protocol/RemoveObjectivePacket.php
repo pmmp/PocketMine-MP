@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class RemoveObjectivePacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::REMOVE_OBJECTIVE_PACKET;
@@ -33,15 +33,15 @@ class RemoveObjectivePacket extends DataPacket{
 	/** @var string */
 	public $objectiveName;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->objectiveName = $this->getString();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putString($this->objectiveName);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleRemoveObjective($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleRemoveObjective($this);
 	}
 }

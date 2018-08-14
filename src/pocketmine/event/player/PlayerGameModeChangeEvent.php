@@ -41,5 +41,4 @@ class PlayerGameModeChangeEvent extends PlayerEvent implements Cancellable{
 	public function getNewGamemode() : int{
 		return $this->gamemode;
 	}
-
 }

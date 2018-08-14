@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class PlayStatusPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::PLAY_STATUS_PACKET;
@@ -47,9 +47,9 @@ class PlayStatusPacket extends DataPacket{
 	 * @var int
 	 * Used to determine how to write the packet when we disconnect incompatible clients.
 	 */
-	public $protocol;
+	public $protocol = ProtocolInfo::CURRENT_PROTOCOL;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->status = $this->getInt();
 	}
 
@@ -57,7 +57,7 @@ class PlayStatusPacket extends DataPacket{
 		return true;
 	}
 
-	protected function encodeHeader(){
+	protected function encodeHeader() : void{
 		if($this->protocol < 130){ //MCPE <= 1.1
 			$this->putByte(static::NETWORK_ID);
 		}else{
@@ -65,12 +65,11 @@ class PlayStatusPacket extends DataPacket{
 		}
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putInt($this->status);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handlePlayStatus($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handlePlayStatus($this);
 	}
-
 }

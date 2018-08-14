@@ -96,7 +96,7 @@ class NetworkInventoryAction{
 	 * @param InventoryTransactionPacket $packet
 	 * @return $this
 	 */
-	public function read(InventoryTransactionPacket $packet){
+	public function read(InventoryTransactionPacket $packet) : NetworkInventoryAction{
 		$this->sourceType = $packet->getUnsignedVarInt();
 
 		switch($this->sourceType){
@@ -131,7 +131,7 @@ class NetworkInventoryAction{
 	/**
 	 * @param InventoryTransactionPacket $packet
 	 */
-	public function write(InventoryTransactionPacket $packet){
+	public function write(InventoryTransactionPacket $packet) : void{
 		$packet->putUnsignedVarInt($this->sourceType);
 
 		switch($this->sourceType){
@@ -158,7 +158,7 @@ class NetworkInventoryAction{
 	 *
 	 * @return InventoryAction|null
 	 */
-	public function createInventoryAction(Player $player){
+	public function createInventoryAction(Player $player) : ?InventoryAction{
 		switch($this->sourceType){
 			case self::SOURCE_CONTAINER:
 				$window = $player->getWindow($this->windowId);
@@ -224,5 +224,4 @@ class NetworkInventoryAction{
 				throw new \UnexpectedValueException("Unknown inventory source type $this->sourceType");
 		}
 	}
-
 }

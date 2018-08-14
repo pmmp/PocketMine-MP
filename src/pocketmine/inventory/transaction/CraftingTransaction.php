@@ -149,7 +149,7 @@ class CraftingTransaction extends InventoryTransaction{
 		 */
 		$pk = new ContainerClosePacket();
 		$pk->windowId = ContainerIds::NONE;
-		$this->source->dataPacket($pk);
+		$this->source->sendDataPacket($pk);
 	}
 
 	public function execute() : bool{

@@ -55,14 +55,7 @@ class Bed extends Transparent{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return new AxisAlignedBB(
-			$this->x,
-			$this->y,
-			$this->z,
-			$this->x + 1,
-			$this->y + 0.5625,
-			$this->z + 1
-		);
+		return new AxisAlignedBB(0, 0, 0, 1, 0.5625, 1);
 	}
 
 	public function isHeadPart() : bool{
@@ -85,7 +78,7 @@ class Bed extends Transparent{
 
 		$this->getLevel()->setBlock($this, $this, false, false);
 
-		if(($other = $this->getOtherHalf()) !== null and !$other->isOccupied()){
+		if(($other = $this->getOtherHalf()) !== null and $other->isOccupied() !== $occupied){
 			$other->setOccupied($occupied);
 		}
 	}

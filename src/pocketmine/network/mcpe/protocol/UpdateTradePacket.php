@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 
 class UpdateTradePacket extends DataPacket{
@@ -54,7 +54,7 @@ class UpdateTradePacket extends DataPacket{
 	/** @var string */
 	public $offers;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->windowId = $this->getByte();
 		$this->windowType = $this->getByte();
 		$this->varint1 = $this->getVarInt();
@@ -66,7 +66,7 @@ class UpdateTradePacket extends DataPacket{
 		$this->offers = $this->getRemaining();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putByte($this->windowId);
 		$this->putByte($this->windowType);
 		$this->putVarInt($this->varint1);
@@ -78,7 +78,7 @@ class UpdateTradePacket extends DataPacket{
 		$this->put($this->offers);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleUpdateTrade($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleUpdateTrade($this);
 	}
 }

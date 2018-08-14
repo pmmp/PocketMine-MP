@@ -657,6 +657,9 @@ class Block extends Position implements BlockIds, Metadatable{
 	public function getCollisionBoxes() : array{
 		if($this->collisionBoxes === null){
 			$this->collisionBoxes = $this->recalculateCollisionBoxes();
+			foreach($this->collisionBoxes as $bb){
+				$bb->offset($this->x, $this->y, $this->z);
+			}
 		}
 
 		return $this->collisionBoxes;
@@ -679,6 +682,9 @@ class Block extends Position implements BlockIds, Metadatable{
 	public function getBoundingBox() : ?AxisAlignedBB{
 		if($this->boundingBox === null){
 			$this->boundingBox = $this->recalculateBoundingBox();
+			if($this->boundingBox !== null){
+				$this->boundingBox->offset($this->x, $this->y, $this->z);
+			}
 		}
 		return $this->boundingBox;
 	}
@@ -687,14 +693,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return AxisAlignedBB|null
 	 */
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return new AxisAlignedBB(
-			$this->x,
-			$this->y,
-			$this->z,
-			$this->x + 1,
-			$this->y + 1,
-			$this->z + 1
-		);
+		return new AxisAlignedBB(0, 0, 0, 1, 1, 1);
 	}
 
 	/**

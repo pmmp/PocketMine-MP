@@ -54,5 +54,4 @@ class ItemBlock extends Item{
 	public function getFuelTime() : int{
 		return $this->getBlock()->getFuelTime();
 	}
-
 }

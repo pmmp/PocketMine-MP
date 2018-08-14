@@ -41,5 +41,4 @@ class ItemSpawnEvent extends EntityEvent{
 	public function getEntity(){
 		return $this->entity;
 	}
-
 }

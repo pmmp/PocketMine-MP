@@ -55,5 +55,4 @@ class Gravel extends Fallable{
 
 		return parent::getDropsForCompatibleTool($item);
 	}
-
 }

@@ -52,7 +52,7 @@ class PlayerRespawnEvent extends PlayerEvent{
 	/**
 	 * @param Position $position
 	 */
-	public function setRespawnPosition(Position $position){
+	public function setRespawnPosition(Position $position) : void{
 		$this->position = $position;
 	}
 }

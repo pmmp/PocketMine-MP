@@ -62,15 +62,7 @@ class KillCommand extends VanillaCommand{
 			$player = $sender->getServer()->getPlayer($args[0]);
 
 			if($player instanceof Player){
-				$sender->getServer()->getPluginManager()->callEvent($ev = new EntityDamageEvent($player, EntityDamageEvent::CAUSE_SUICIDE, 1000));
-
-				if($ev->isCancelled()){
-					return true;
-				}
-
-				$player->setLastDamageCause($ev);
-				$player->setHealth(0);
-
+				$player->attack(new EntityDamageEvent($player, EntityDamageEvent::CAUSE_SUICIDE, 1000));
 				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.kill.successful", [$player->getName()]));
 			}else{
 				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
@@ -86,14 +78,7 @@ class KillCommand extends VanillaCommand{
 				return true;
 			}
 
-			$sender->getServer()->getPluginManager()->callEvent($ev = new EntityDamageEvent($sender, EntityDamageEvent::CAUSE_SUICIDE, 1000));
-
-			if($ev->isCancelled()){
-				return true;
-			}
-
-			$sender->setLastDamageCause($ev);
-			$sender->setHealth(0);
+			$sender->attack(new EntityDamageEvent($sender, EntityDamageEvent::CAUSE_SUICIDE, 1000));
 			$sender->sendMessage(new TranslationContainer("commands.kill.successful", [$sender->getName()]));
 		}else{
 			throw new InvalidCommandSyntaxException();

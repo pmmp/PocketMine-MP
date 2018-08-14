@@ -27,5 +27,4 @@ class Compass extends Item{
 	public function __construct(int $meta = 0){
 		parent::__construct(self::COMPASS, $meta, "Compass");
 	}
-
 }

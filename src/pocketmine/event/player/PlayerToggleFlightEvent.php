@@ -45,5 +45,4 @@ class PlayerToggleFlightEvent extends PlayerEvent implements Cancellable{
 	public function isFlying() : bool{
 		return $this->isFlying;
 	}
-
 }

@@ -70,7 +70,6 @@ class Vine extends Flowable{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-
 		$minX = 1;
 		$minY = 1;
 		$minZ = 1;
@@ -121,14 +120,7 @@ class Vine extends Flowable{
 			$maxZ = 1;
 		}
 
-		return new AxisAlignedBB(
-			$this->x + $minX,
-			$this->y + $minY,
-			$this->z + $minZ,
-			$this->x + $maxX,
-			$this->y + $maxY,
-			$this->z + $maxZ
-		);
+		return new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{

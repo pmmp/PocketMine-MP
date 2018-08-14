@@ -47,6 +47,4 @@ class RemoteConsoleCommandSender extends ConsoleCommandSender{
 	public function getName() : string{
 		return "Rcon";
 	}
-
-
 }

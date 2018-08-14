@@ -39,15 +39,15 @@ interface ProtocolInfo{
 	/**
 	 * Actual Minecraft: PE protocol version
 	 */
-	public const CURRENT_PROTOCOL = 261;
+	public const CURRENT_PROTOCOL = 274;
 	/**
 	 * Current Minecraft PE version reported by the server. This is usually the earliest currently supported version.
 	 */
-	public const MINECRAFT_VERSION = 'v1.4.0';
+	public const MINECRAFT_VERSION = 'v1.5.0';
 	/**
 	 * Version number sent to clients in ping responses.
 	 */
-	public const MINECRAFT_VERSION_NETWORK = '1.4.0';
+	public const MINECRAFT_VERSION_NETWORK = '1.5.0';
 
 	public const LOGIN_PACKET = 0x01;
 	public const PLAY_STATUS_PACKET = 0x02;
@@ -66,7 +66,7 @@ interface ProtocolInfo{
 	public const ADD_ITEM_ENTITY_PACKET = 0x0f;
 	public const ADD_HANGING_ENTITY_PACKET = 0x10;
 	public const TAKE_ITEM_ENTITY_PACKET = 0x11;
-	public const MOVE_ENTITY_PACKET = 0x12;
+	public const MOVE_ENTITY_ABSOLUTE_PACKET = 0x12;
 	public const MOVE_PLAYER_PACKET = 0x13;
 	public const RIDER_JUMP_PACKET = 0x14;
 	public const UPDATE_BLOCK_PACKET = 0x15;
@@ -159,5 +159,7 @@ interface ProtocolInfo{
 	public const SET_SCORE_PACKET = 0x6c;
 	public const LAB_TABLE_PACKET = 0x6d;
 	public const UPDATE_BLOCK_SYNCED_PACKET = 0x6e;
+	public const MOVE_ENTITY_DELTA_PACKET = 0x6f;
+	public const SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET = 0x70;
 
 }

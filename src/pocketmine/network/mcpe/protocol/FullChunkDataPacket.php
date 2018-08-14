@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class FullChunkDataPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::FULL_CHUNK_DATA_PACKET;
@@ -38,20 +38,19 @@ class FullChunkDataPacket extends DataPacket{
 	/** @var string */
 	public $data;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->chunkX = $this->getVarInt();
 		$this->chunkZ = $this->getVarInt();
 		$this->data = $this->getString();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putVarInt($this->chunkX);
 		$this->putVarInt($this->chunkZ);
 		$this->putString($this->data);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleFullChunkData($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleFullChunkData($this);
 	}
-
 }

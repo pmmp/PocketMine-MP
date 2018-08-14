@@ -345,6 +345,4 @@ class SimpleCommandMap implements CommandMap{
 
 		}
 	}
-
-
 }

@@ -160,7 +160,7 @@ class NetworkBinaryStream extends BinaryStream{
 					$value = $this->getVector3();
 					break;
 				default:
-					$value = [];
+					throw new \UnexpectedValueException("Invalid data type " . $type);
 			}
 			if($types){
 				$data[$key] = [$type, $value];
@@ -214,6 +214,9 @@ class NetworkBinaryStream extends BinaryStream{
 					break;
 				case Entity::DATA_TYPE_VECTOR3F:
 					$this->putVector3Nullable($d[1]);
+					break;
+				default:
+					throw new \UnexpectedValueException("Invalid data type " . $d[0]);
 			}
 		}
 	}

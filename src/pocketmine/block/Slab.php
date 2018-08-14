@@ -107,23 +107,9 @@ abstract class Slab extends Transparent{
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 
 		if(($this->meta & 0x08) > 0){
-			return new AxisAlignedBB(
-				$this->x,
-				$this->y + 0.5,
-				$this->z,
-				$this->x + 1,
-				$this->y + 1,
-				$this->z + 1
-			);
+			return new AxisAlignedBB(0, 0.5, 0, 1, 1, 1);
 		}else{
-			return new AxisAlignedBB(
-				$this->x,
-				$this->y,
-				$this->z,
-				$this->x + 1,
-				$this->y + 0.5,
-				$this->z + 1
-			);
+			return new AxisAlignedBB(0, 0, 0, 1, 0.5, 1);
 		}
 	}
 }

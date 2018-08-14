@@ -68,22 +68,25 @@ class RCONInstance extends Thread{
 		$this->ipcSocket = $ipcSocket;
 		$this->notifier = $notifier;
 
-		$this->start(PTHREADS_INHERIT_NONE);
+		$this->start(PTHREADS_INHERIT_INI); //HACK: need INI for timezone (logger)
 	}
 
-	private function writePacket($client, $requestID, $packetType, $payload){
-		$pk = Binary::writeLInt((int) $requestID)
-			. Binary::writeLInt((int) $packetType)
+	private function writePacket($client, int $requestID, int $packetType, string $payload){
+		$pk = Binary::writeLInt($requestID)
+			. Binary::writeLInt($packetType)
 			. $payload
 			. "\x00\x00"; //Terminate payload and packet
 		return socket_write($client, Binary::writeLInt(strlen($pk)) . $pk);
 	}
 
-	private function readPacket($client, &$requestID, &$packetType, &$payload){
-		$d = socket_read($client, 4);
+	private function readPacket($client, ?int &$requestID, ?int &$packetType, ?string &$payload){
+		$d = @socket_read($client, 4);
 		if($this->stop){
 			return false;
 		}elseif($d === false){
+			if(socket_last_error($client) === SOCKET_ECONNRESET){ //client crashed, terminate connection
+				return false;
+			}
 			return null;
 		}elseif($d === "" or strlen($d) < 4){
 			return false;
@@ -99,11 +102,11 @@ class RCONInstance extends Thread{
 		return true;
 	}
 
-	public function close(){
+	public function close() : void{
 		$this->stop = true;
 	}
 
-	public function run(){
+	public function run() : void{
 		$this->registerClassLoader();
 
 		/** @var resource[] $clients */

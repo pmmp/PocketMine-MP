@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class InteractPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::INTERACT_PACKET;
@@ -48,7 +48,7 @@ class InteractPacket extends DataPacket{
 	/** @var float */
 	public $z;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->action = $this->getByte();
 		$this->target = $this->getEntityRuntimeId();
 
@@ -60,7 +60,7 @@ class InteractPacket extends DataPacket{
 		}
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putByte($this->action);
 		$this->putEntityRuntimeId($this->target);
 
@@ -71,8 +71,7 @@ class InteractPacket extends DataPacket{
 		}
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleInteract($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleInteract($this);
 	}
-
 }

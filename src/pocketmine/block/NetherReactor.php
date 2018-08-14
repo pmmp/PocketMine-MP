@@ -61,5 +61,4 @@ class NetherReactor extends Solid{
 			ItemFactory::get(Item::DIAMOND, 0, 3)
 		];
 	}
-
 }

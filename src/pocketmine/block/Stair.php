@@ -37,14 +37,7 @@ abstract class Stair extends Transparent{
 		$maxYSlab = $minYSlab + 0.5;
 
 		$bbs = [
-			new AxisAlignedBB(
-				$this->x,
-				$this->y + $minYSlab,
-				$this->z,
-				$this->x + 1,
-				$this->y + $maxYSlab,
-				$this->z + 1
-			)
+			new AxisAlignedBB(0, $minYSlab, 0, 1, $maxYSlab, 1)
 		];
 
 		$minY = ($this->meta & 0x04) === 0 ? 0.5 : 0;
@@ -70,14 +63,7 @@ abstract class Stair extends Transparent{
 				break;
 		}
 
-		$bbs[] = new AxisAlignedBB(
-			$this->x + $minX,
-			$this->y + $minY,
-			$this->z + $minZ,
-			$this->x + $maxX,
-			$this->y + $maxY,
-			$this->z + $maxZ
-		);
+		$bbs[] = new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
 
 		return $bbs;
 	}

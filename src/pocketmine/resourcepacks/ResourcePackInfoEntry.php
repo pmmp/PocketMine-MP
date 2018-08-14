@@ -45,5 +45,4 @@ class ResourcePackInfoEntry{
 	public function getPackSize() : int{
 		return $this->packSize;
 	}
-
 }

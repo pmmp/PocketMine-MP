@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class ShowCreditsPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::SHOW_CREDITS_PACKET;
@@ -40,17 +40,17 @@ class ShowCreditsPacket extends DataPacket{
 	/** @var int */
 	public $status;
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->playerEid = $this->getEntityRuntimeId();
 		$this->status = $this->getVarInt();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putEntityRuntimeId($this->playerEid);
 		$this->putVarInt($this->status);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleShowCredits($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleShowCredits($this);
 	}
 }

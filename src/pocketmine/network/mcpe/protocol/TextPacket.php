@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class TextPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::TEXT_PACKET;
@@ -60,7 +60,7 @@ class TextPacket extends DataPacket{
 	/** @var string */
 	public $platformChatId = "";
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->type = $this->getByte();
 		$this->needsTranslation = $this->getBool();
 		switch($this->type){
@@ -92,7 +92,7 @@ class TextPacket extends DataPacket{
 		$this->platformChatId = $this->getString();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putByte($this->type);
 		$this->putBool($this->needsTranslation);
 		switch($this->type){
@@ -124,8 +124,7 @@ class TextPacket extends DataPacket{
 		$this->putString($this->platformChatId);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleText($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleText($this);
 	}
-
 }

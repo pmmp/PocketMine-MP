@@ -67,16 +67,14 @@ class Anvil extends McRegion{
 		$entities = [];
 
 		foreach($chunk->getSavableEntities() as $entity){
-			$entity->saveNBT();
-			$entities[] = $entity->namedtag;
+			$entities[] = $entity->saveNBT();
 		}
 
 		$nbt->setTag(new ListTag("Entities", $entities, NBT::TAG_Compound));
 
 		$tiles = [];
 		foreach($chunk->getTiles() as $tile){
-			$tile->saveNBT();
-			$tiles[] = $tile->namedtag;
+			$tiles[] = $tile->saveNBT();
 		}
 
 		$nbt->setTag(new ListTag("TileEntities", $tiles, NBT::TAG_Compound));
@@ -96,7 +94,7 @@ class Anvil extends McRegion{
 		]);
 	}
 
-	protected function nbtDeserialize(string $data){
+	protected function nbtDeserialize(string $data) : Chunk{
 		$nbt = new BigEndianNBTStream();
 		$chunk = $nbt->readCompressed($data);
 		if(!($chunk instanceof CompoundTag) or !$chunk->hasTag("Level")){
@@ -155,5 +153,4 @@ class Anvil extends McRegion{
 		//TODO: add world height options
 		return 256;
 	}
-
 }

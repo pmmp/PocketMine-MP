@@ -23,14 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
 
+use pocketmine\utils\Binary;
+
 class PacketPool{
 	/** @var \SplFixedArray<DataPacket> */
 	protected static $pool = null;
 
-	public static function init(){
+	public static function init() : void{
 		static::$pool = new \SplFixedArray(256);
 
-		//Normal packets
 		static::registerPacket(new LoginPacket());
 		static::registerPacket(new PlayStatusPacket());
 		static::registerPacket(new ServerToClientHandshakePacket());
@@ -48,7 +49,7 @@ class PacketPool{
 		static::registerPacket(new AddItemEntityPacket());
 		static::registerPacket(new AddHangingEntityPacket());
 		static::registerPacket(new TakeItemEntityPacket());
-		static::registerPacket(new MoveEntityPacket());
+		static::registerPacket(new MoveEntityAbsolutePacket());
 		static::registerPacket(new MovePlayerPacket());
 		static::registerPacket(new RiderJumpPacket());
 		static::registerPacket(new UpdateBlockPacket());
@@ -141,14 +142,14 @@ class PacketPool{
 		static::registerPacket(new SetScorePacket());
 		static::registerPacket(new LabTablePacket());
 		static::registerPacket(new UpdateBlockSyncedPacket());
-
-		static::registerPacket(new BatchPacket());
+		static::registerPacket(new MoveEntityDeltaPacket());
+		static::registerPacket(new SetLocalPlayerAsInitializedPacket());
 	}
 
 	/**
 	 * @param DataPacket $packet
 	 */
-	public static function registerPacket(DataPacket $packet){
+	public static function registerPacket(DataPacket $packet) : void{
 		static::$pool[$packet->pid()] = clone $packet;
 	}
 
@@ -165,10 +166,10 @@ class PacketPool{
 	 * @return DataPacket
 	 */
 	public static function getPacket(string $buffer) : DataPacket{
-		$pk = static::getPacketById(ord($buffer{0}));
-		$pk->setBuffer($buffer);
+		$offset = 0;
+		$pk = static::getPacketById(Binary::readUnsignedVarInt($buffer, $offset));
+		$pk->setBuffer($buffer, $offset);
 
 		return $pk;
 	}
-
 }

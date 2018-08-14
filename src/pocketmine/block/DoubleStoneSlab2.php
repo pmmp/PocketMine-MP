@@ -30,5 +30,4 @@ class DoubleStoneSlab2 extends DoubleStoneSlab{
 	public function getSlabId() : int{
 		return self::STONE_SLAB2;
 	}
-
 }

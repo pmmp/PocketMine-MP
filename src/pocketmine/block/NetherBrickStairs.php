@@ -48,5 +48,4 @@ class NetherBrickStairs extends Stair{
 	public function getToolHarvestLevel() : int{
 		return TieredTool::TIER_WOODEN;
 	}
-
 }

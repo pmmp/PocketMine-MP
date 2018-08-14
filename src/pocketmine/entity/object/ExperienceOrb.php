@@ -25,6 +25,7 @@ namespace pocketmine\entity\object;
 
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\Player;
@@ -100,28 +101,30 @@ class ExperienceOrb extends Entity{
 	 */
 	protected $targetPlayerRuntimeId = null;
 
-	protected function initEntity() : void{
-		parent::initEntity();
+	protected function initEntity(CompoundTag $nbt) : void{
+		parent::initEntity($nbt);
 
-		$this->age = $this->namedtag->getShort("Age", 0);
+		$this->age = $nbt->getShort("Age", 0);
 
 		$value = 0;
-		if($this->namedtag->hasTag(self::TAG_VALUE_PC, ShortTag::class)){ //PC
-			$value = $this->namedtag->getShort(self::TAG_VALUE_PC);
-		}elseif($this->namedtag->hasTag(self::TAG_VALUE_PE, IntTag::class)){ //PE save format
-			$value = $this->namedtag->getInt(self::TAG_VALUE_PE);
+		if($nbt->hasTag(self::TAG_VALUE_PC, ShortTag::class)){ //PC
+			$value = $nbt->getShort(self::TAG_VALUE_PC);
+		}elseif($nbt->hasTag(self::TAG_VALUE_PE, IntTag::class)){ //PE save format
+			$value = $nbt->getInt(self::TAG_VALUE_PE);
 		}
 
 		$this->setXpValue($value);
 	}
 
-	public function saveNBT() : void{
-		parent::saveNBT();
+	public function saveNBT() : CompoundTag{
+		$nbt = parent::saveNBT();
 
-		$this->namedtag->setShort("Age", $this->age);
+		$nbt->setShort("Age", $this->age);
 
-		$this->namedtag->setShort(self::TAG_VALUE_PC, $this->getXpValue());
-		$this->namedtag->setInt(self::TAG_VALUE_PE, $this->getXpValue());
+		$nbt->setShort(self::TAG_VALUE_PC, $this->getXpValue());
+		$nbt->setInt(self::TAG_VALUE_PE, $this->getXpValue());
+
+		return $nbt;
 	}
 
 	public function getXpValue() : int{
@@ -165,7 +168,7 @@ class ExperienceOrb extends Entity{
 		}
 
 		$currentTarget = $this->getTargetPlayer();
-		if($currentTarget !== null and $currentTarget->distanceSquared($this) > self::MAX_TARGET_DISTANCE ** 2){
+		if($currentTarget !== null and (!$currentTarget->isAlive() or $currentTarget->distanceSquared($this) > self::MAX_TARGET_DISTANCE ** 2)){
 			$currentTarget = null;
 		}
 
@@ -192,18 +195,15 @@ class ExperienceOrb extends Entity{
 			$oneMinusDistance = (1 - $distance) ** 2;
 
 			if($oneMinusDistance > 0){
-				$this->motionX += $vector->x / $distance * $oneMinusDistance * 0.2;
-				$this->motionY += $vector->y / $distance * $oneMinusDistance * 0.2;
-				$this->motionZ += $vector->z / $distance * $oneMinusDistance * 0.2;
+				$this->motion->x += $vector->x / $distance * $oneMinusDistance * 0.2;
+				$this->motion->y += $vector->y / $distance * $oneMinusDistance * 0.2;
+				$this->motion->z += $vector->z / $distance * $oneMinusDistance * 0.2;
 			}
 
 			if($currentTarget->canPickupXp() and $this->boundingBox->intersectsWith($currentTarget->getBoundingBox())){
 				$this->flagForDespawn();
 
-				$currentTarget->addXp($this->getXpValue());
-				$currentTarget->resetXpCooldown();
-
-				//TODO: check Mending enchantment
+				$currentTarget->onPickupXp($this->getXpValue());
 			}
 		}
 

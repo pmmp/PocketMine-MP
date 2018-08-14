@@ -42,5 +42,4 @@ class PlayerBedEnterEvent extends PlayerEvent implements Cancellable{
 	public function getBed() : Block{
 		return $this->bed;
 	}
-
 }

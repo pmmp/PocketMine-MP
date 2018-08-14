@@ -56,8 +56,7 @@ class EntityDeathEvent extends EntityEvent{
 	/**
 	 * @param Item[] $drops
 	 */
-	public function setDrops(array $drops){
+	public function setDrops(array $drops) : void{
 		$this->drops = $drops;
 	}
-
 }

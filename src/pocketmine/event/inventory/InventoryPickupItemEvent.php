@@ -46,5 +46,4 @@ class InventoryPickupItemEvent extends InventoryEvent implements Cancellable{
 	public function getItem() : ItemEntity{
 		return $this->item;
 	}
-
 }

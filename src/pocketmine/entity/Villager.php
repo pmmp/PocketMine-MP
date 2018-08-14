@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\inventory\TradeRecipe;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 
 class Villager extends Creature implements NPC, Ageable{
@@ -67,11 +68,11 @@ class Villager extends Creature implements NPC, Ageable{
 		return "Villager";
 	}
 
-	protected function initEntity() : void{
-		parent::initEntity();
+	protected function initEntity(CompoundTag $nbt) : void{
+		parent::initEntity($nbt);
 
 		/** @var int $profession */
-		$profession = $this->namedtag->getInt("Profession", self::PROFESSION_FARMER);
+		$profession = $nbt->getInt("Profession", self::PROFESSION_FARMER);
 
 		if($profession > 4 or $profession < 0){
 			$profession = self::PROFESSION_FARMER;
@@ -82,13 +83,15 @@ class Villager extends Creature implements NPC, Ageable{
 		$this->setTraderName($this->namedtag->getString("TraderName", $this->getNameTag()));
 		$this->recipes = $this->namedtag->getListTag($name = TradeRecipe::TAG_RECIPES) ?? new ListTag($name, []);
 	}
+  
+	public function saveNBT() : CompoundTag{
+		$nbt = parent::saveNBT();
+		$nbt->setInt("Profession", $this->getProfession());
+		$nbt->setByte("CanTrade", (int) $this->canTrade());
+		$nbt->setString("TraderName", $this->getTraderName());
+		$nbt->setTag($this->getRecipes());
 
-	public function saveNBT() : void{
-		parent::saveNBT();
-		$this->namedtag->setInt("Profession", $this->getProfession());
-		$this->namedtag->setByte("CanTrade", (int) $this->canTrade());
-		$this->namedtag->setString("TraderName", $this->getTraderName());
-		$this->namedtag->setTag($this->getRecipes());
+		return $nbt;
 	}
 
 	/**

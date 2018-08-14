@@ -50,9 +50,7 @@ class TellCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$name = strtolower(array_shift($args));
-
-		$player = $sender->getServer()->getPlayer($name);
+		$player = $sender->getServer()->getPlayer(array_shift($args));
 
 		if($player === $sender){
 			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.message.sameTarget"));

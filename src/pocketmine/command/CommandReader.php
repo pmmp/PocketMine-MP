@@ -32,6 +32,9 @@ class CommandReader extends Thread{
 	public const TYPE_STREAM = 1;
 	public const TYPE_PIPED = 2;
 
+	/** @var resource */
+	private static $stdin;
+
 	/** @var \Threaded */
 	protected $buffer;
 	private $shutdown = false;
@@ -75,14 +78,12 @@ class CommandReader extends Thread{
 	}
 
 	private function initStdin(){
-		global $stdin;
-
-		if(is_resource($stdin)){
-			fclose($stdin);
+		if(is_resource(self::$stdin)){
+			fclose(self::$stdin);
 		}
 
-		$stdin = fopen("php://stdin", "r");
-		if($this->isPipe($stdin)){
+		self::$stdin = fopen("php://stdin", "r");
+		if($this->isPipe(self::$stdin)){
 			$this->type = self::TYPE_PIPED;
 		}else{
 			$this->type = self::TYPE_STREAM;
@@ -113,9 +114,7 @@ class CommandReader extends Thread{
 				return true;
 			}
 		}else{
-			global $stdin;
-
-			if(!is_resource($stdin)){
+			if(!is_resource(self::$stdin)){
 				$this->initStdin();
 			}
 
@@ -123,7 +122,7 @@ class CommandReader extends Thread{
 				/** @noinspection PhpMissingBreakStatementInspection */
 				case self::TYPE_STREAM:
 					//stream_select doesn't work on piped streams for some reason
-					$r = [$stdin];
+					$r = [self::$stdin];
 					if(($count = stream_select($r, $w, $e, 0, 200000)) === 0){ //nothing changed in 200000 microseconds
 						return true;
 					}elseif($count === false){ //stream error
@@ -131,7 +130,7 @@ class CommandReader extends Thread{
 					}
 
 				case self::TYPE_PIPED:
-					if(($raw = fgets($stdin)) === false){ //broken pipe or EOF
+					if(($raw = fgets(self::$stdin)) === false){ //broken pipe or EOF
 						$this->initStdin();
 						$this->synchronized(function(){
 							$this->wait(200000);
@@ -177,8 +176,7 @@ class CommandReader extends Thread{
 		while(!$this->shutdown and $this->readLine());
 
 		if($this->type !== self::TYPE_READLINE){
-			global $stdin;
-			fclose($stdin);
+			fclose(self::$stdin);
 		}
 
 	}

@@ -26,7 +26,8 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\entity\Skin;
+use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\Utils;
@@ -52,6 +53,8 @@ class LoginPacket extends DataPacket{
 	public $serverAddress;
 	/** @var string */
 	public $locale;
+	/** @var Skin|null */
+	public $skin;
 
 	/** @var array (the "chain" index contains one or more JWTs) */
 	public $chainData = [];
@@ -76,7 +79,7 @@ class LoginPacket extends DataPacket{
 		return $this->protocol !== null and $this->protocol !== ProtocolInfo::CURRENT_PROTOCOL;
 	}
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->protocol = $this->getInt();
 
 		if($this->protocol !== ProtocolInfo::CURRENT_PROTOCOL){
@@ -105,9 +108,15 @@ class LoginPacket extends DataPacket{
 		$buffer = new BinaryStream($this->getString());
 
 		$this->chainData = json_decode($buffer->get($buffer->getLInt()), true);
+
+		$hasExtraData = false;
 		foreach($this->chainData["chain"] as $chain){
 			$webtoken = Utils::decodeJWT($chain);
 			if(isset($webtoken["extraData"])){
+				if($hasExtraData){
+					throw new \RuntimeException("Found 'extraData' multiple times in key chain");
+				}
+				$hasExtraData = true;
 				if(isset($webtoken["extraData"]["displayName"])){
 					$this->username = $webtoken["extraData"]["displayName"];
 				}
@@ -130,14 +139,22 @@ class LoginPacket extends DataPacket{
 		$this->clientId = $this->clientData["ClientRandomId"] ?? null;
 		$this->serverAddress = $this->clientData["ServerAddress"] ?? null;
 
-		$this->locale = $this->clientData["LanguageCode"] ?? null;
+		$this->locale = $this->clientData["LanguageCode"] ?? "en_US";
+
+		$this->skin = new Skin(
+			$this->clientData["SkinId"] ?? "",
+			base64_decode($this->clientData["SkinData"] ?? ""),
+			base64_decode($this->clientData["CapeData"] ?? ""),
+			$this->clientData["SkinGeometryName"] ?? "",
+			base64_decode($this->clientData["SkinGeometry"] ?? "")
+		);
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		//TODO
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleLogin($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleLogin($this);
 	}
 }

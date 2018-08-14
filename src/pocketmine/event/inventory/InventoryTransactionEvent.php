@@ -48,5 +48,4 @@ class InventoryTransactionEvent extends Event implements Cancellable{
 	public function getTransaction() : InventoryTransaction{
 		return $this->transaction;
 	}
-
 }

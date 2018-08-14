@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
 class ModalFormResponsePacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::MODAL_FORM_RESPONSE_PACKET;
@@ -35,17 +35,17 @@ class ModalFormResponsePacket extends DataPacket{
 	/** @var string */
 	public $formData; //json
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->formId = $this->getUnsignedVarInt();
 		$this->formData = $this->getString();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putUnsignedVarInt($this->formId);
 		$this->putString($this->formData);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleModalFormResponse($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleModalFormResponse($this);
 	}
 }

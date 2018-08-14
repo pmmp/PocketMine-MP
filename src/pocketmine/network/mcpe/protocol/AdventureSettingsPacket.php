@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 
 class AdventureSettingsPacket extends DataPacket{
@@ -76,7 +76,7 @@ class AdventureSettingsPacket extends DataPacket{
 	/** @var int */
 	public $entityUniqueId; //This is a little-endian long, NOT a var-long. (WTF Mojang)
 
-	protected function decodePayload(){
+	protected function decodePayload() : void{
 		$this->flags = $this->getUnsignedVarInt();
 		$this->commandPermission = $this->getUnsignedVarInt();
 		$this->flags2 = $this->getUnsignedVarInt();
@@ -85,7 +85,7 @@ class AdventureSettingsPacket extends DataPacket{
 		$this->entityUniqueId = $this->getLLong();
 	}
 
-	protected function encodePayload(){
+	protected function encodePayload() : void{
 		$this->putUnsignedVarInt($this->flags);
 		$this->putUnsignedVarInt($this->commandPermission);
 		$this->putUnsignedVarInt($this->flags2);
@@ -102,7 +102,7 @@ class AdventureSettingsPacket extends DataPacket{
 		return ($this->flags & $flag) !== 0;
 	}
 
-	public function setFlag(int $flag, bool $value){
+	public function setFlag(int $flag, bool $value) : void{
 		if($flag & self::BITFLAG_SECOND_SET){
 			$flagSet =& $this->flags2;
 		}else{
@@ -116,8 +116,7 @@ class AdventureSettingsPacket extends DataPacket{
 		}
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleAdventureSettings($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleAdventureSettings($this);
 	}
-
 }

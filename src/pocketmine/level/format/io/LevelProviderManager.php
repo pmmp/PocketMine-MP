@@ -27,7 +27,7 @@ use pocketmine\level\format\io\leveldb\LevelDB;
 use pocketmine\level\format\io\region\Anvil;
 use pocketmine\level\format\io\region\McRegion;
 use pocketmine\level\format\io\region\PMAnvil;
-use pocketmine\level\LevelException;
+use pocketmine\utils\Utils;
 
 abstract class LevelProviderManager{
 	protected static $providers = [];
@@ -42,12 +42,11 @@ abstract class LevelProviderManager{
 	/**
 	 * @param string $class
 	 *
-	 * @throws LevelException
+	 * @throws \InvalidArgumentException
 	 */
 	public static function addProvider(string $class){
-		if(!is_subclass_of($class, LevelProvider::class)){
-			throw new LevelException("Class is not a subclass of LevelProvider");
-		}
+		Utils::testValidInstance($class, LevelProvider::class);
+
 		/** @var LevelProvider $class */
 		self::$providers[strtolower($class::getProviderName())] = $class;
 	}
