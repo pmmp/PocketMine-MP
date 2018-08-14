@@ -88,7 +88,7 @@ class Bucket extends Item implements Consumable{
 				$player->getLevel()->broadcastLevelSoundEvent($blockClicked->add(0.5, 0.5, 0.5), $resultBlock->getBucketEmptySound());
 
 				if($player->isSurvival()){
-					$player->getInventory()->setItemInHand($ev->getItem());
+					$this->setDamage($ev->getItem()->getDamage());
 				}
 				return true;
 			}else{
