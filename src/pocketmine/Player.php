@@ -66,6 +66,8 @@ use pocketmine\event\player\PlayerToggleFlightEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\event\player\PlayerToggleSprintEvent;
 use pocketmine\event\player\PlayerTransferEvent;
+use pocketmine\form\Form;
+use pocketmine\form\FormValidationException;
 use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCursorInventory;
@@ -106,6 +108,7 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
+use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
@@ -272,6 +275,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $startAction = -1;
 	/** @var int[] ID => ticks map */
 	protected $usedItemsCooldown = [];
+
+	/** @var int */
+	protected $formIdCounter = 0;
+	/** @var Form[] */
+	protected $forms = [];
 
 	/**
 	 * @return TranslationContainer|string
@@ -2792,6 +2800,48 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->sourceName = $sender;
 		$pk->message = $message;
 		$this->sendDataPacket($pk);
+	}
+
+	/**
+	 * Sends a Form to the player, or queue to send it if a form is already open.
+	 *
+	 * @param Form $form
+	 */
+	public function sendForm(Form $form) : void{
+		$id = $this->formIdCounter++;
+		$pk = new ModalFormRequestPacket();
+		$pk->formId = $id;
+		$pk->formData = json_encode($form);
+		if($this->sendDataPacket($pk)){
+			$this->forms[$id] = $form;
+		}
+	}
+
+	/**
+	 * @param int   $formId
+	 * @param mixed $responseData
+	 *
+	 * @return bool
+	 */
+	public function onFormSubmit(int $formId, $responseData) : bool{
+		if(!isset($this->forms[$formId])){
+			$this->server->getLogger()->debug("Got unexpected response for form $formId");
+			return false;
+		}
+
+		try{
+			$next = $this->forms[$formId]->handleResponse($this, $responseData);
+			if($next !== null){
+				$this->sendForm($next);
+			}
+		}catch(FormValidationException $e){
+			$this->server->getLogger()->critical("Failed to validate form " . get_class($this->forms[$formId]) . ": " . $e->getMessage());
+			$this->server->getLogger()->logException($e);
+		}finally{
+			unset($this->forms[$formId]);
+		}
+
+		return true;
 	}
 
 	/**
