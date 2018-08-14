@@ -62,11 +62,11 @@ class TradeInventory extends BaseInventory{
 		$pk->offers = (new NetworkLittleEndianNBTStream())->write(new CompoundTag("", [
 			$this->holder->getRecipes()
 		]));
-		$who->dataPacket($pk);
+		$who->sendDataPacket($pk);
 	}
 
 	public function onClose(Player $who) : void{
-		$this->holder->setTradingPlayer(0);
+		$this->holder->setTradingPlayer();
 		parent::onClose($who);
 	}
 }

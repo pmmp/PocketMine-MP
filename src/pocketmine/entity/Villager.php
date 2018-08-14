@@ -23,9 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use pocketmine\inventory\TradeInventory;
 use pocketmine\inventory\TradeRecipe;
+use pocketmine\item\Item;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\Player;
 
 class Villager extends Creature implements NPC, Ageable{
 	public const PROFESSION_FARMER = 0;
@@ -79,11 +83,12 @@ class Villager extends Creature implements NPC, Ageable{
 		}
 
 		$this->setProfession($profession);
-		$this->setCanTrade((bool) $this->namedtag->getByte("CanTrade", 0));
-		$this->setTraderName($this->namedtag->getString("TraderName", $this->getNameTag()));
-		$this->recipes = $this->namedtag->getListTag($name = TradeRecipe::TAG_RECIPES) ?? new ListTag($name, []);
+		$this->setCanTrade((bool) $nbt->getByte("CanTrade", 0));
+		$this->setTraderName($nbt->getString("TraderName", $this->getNameTag()));
+		$this->setTradingPlayer();
+		$this->recipes = $nbt->getListTag($name = TradeRecipe::TAG_RECIPES) ?? new ListTag($name, []);
 	}
-  
+
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
 		$nbt->setInt("Profession", $this->getProfession());
@@ -92,6 +97,11 @@ class Villager extends Creature implements NPC, Ageable{
 		$nbt->setTag($this->getRecipes());
 
 		return $nbt;
+	}
+
+	public function onInteract(Player $player, Item $item, Vector3 $clickPos) : bool{
+		$player->addWindow(new TradeInventory($this));
+		return false;
 	}
 
 	/**
@@ -119,7 +129,7 @@ class Villager extends Creature implements NPC, Ageable{
 		return $this->canTrade;
 	}
 
-	public function setTradingPlayer(int $entityRuntimeId) : void{
+	public function setTradingPlayer(int $entityRuntimeId = 0) : void{
 		$this->propertyManager->setLong(self::DATA_TRADING_PLAYER_EID, $entityRuntimeId);
 	}
 

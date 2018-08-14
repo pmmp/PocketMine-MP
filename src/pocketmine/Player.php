@@ -51,6 +51,7 @@ use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerEditBookEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerGameModeChangeEvent;
+use pocketmine\event\player\PlayerInteractEntityEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerItemConsumeEvent;
 use pocketmine\event\player\PlayerItemHeldEvent;
@@ -2387,8 +2388,25 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return bool
 	 */
 	public function interactEntity(Entity $entity, Vector3 $clickPos) : bool{
-		//TODO
-		return false;
+		if(!$entity->isAlive()){
+			return false;
+		}
+
+		$item = $this->getInventory()->getItemInHand();
+
+		$ev = new PlayerInteractEntityEvent($this, $entity, $item, $clickPos);
+		if(!$this->canInteract($entity, 8)){
+			$ev->setCancelled();
+		}
+		if(!$ev->isCancelled()){
+			$oldItem = clone $item;
+			if($entity->onInteract($this, $item, $clickPos)){
+				if($this->isSurvival() and !$item->equalsExact($oldItem)){
+					$this->inventory->setItemInHand($item);
+				}
+			}
+		}
+		return true;
 	}
 
 	public function toggleSprint(bool $sprint) : void{
