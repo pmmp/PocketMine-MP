@@ -28,6 +28,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 
 class Squid extends WaterAnimal{
@@ -42,9 +43,9 @@ class Squid extends WaterAnimal{
 
 	private $switchDirectionTicker = 0;
 
-	public function initEntity() : void{
+	public function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(10);
-		parent::initEntity();
+		parent::initEntity($nbt);
 	}
 
 	public function getName() : string{

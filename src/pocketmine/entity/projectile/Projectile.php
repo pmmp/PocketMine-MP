@@ -69,33 +69,33 @@ abstract class Projectile extends Entity{
 		}
 	}
 
-	protected function initEntity() : void{
-		parent::initEntity();
+	protected function initEntity(CompoundTag $nbt) : void{
+		parent::initEntity($nbt);
 
 		$this->setMaxHealth(1);
 		$this->setHealth(1);
-		$this->age = $this->namedtag->getShort("Age", $this->age);
-		$this->damage = $this->namedtag->getDouble("damage", $this->damage);
+		$this->age = $nbt->getShort("Age", $this->age);
+		$this->damage = $nbt->getDouble("damage", $this->damage);
 
 		do{
 			$blockHit = null;
 			$blockId = null;
 			$blockData = null;
 
-			if($this->namedtag->hasTag("tileX", IntTag::class) and $this->namedtag->hasTag("tileY", IntTag::class) and $this->namedtag->hasTag("tileZ", IntTag::class)){
-				$blockHit = new Vector3($this->namedtag->getInt("tileX"), $this->namedtag->getInt("tileY"), $this->namedtag->getInt("tileZ"));
+			if($nbt->hasTag("tileX", IntTag::class) and $nbt->hasTag("tileY", IntTag::class) and $nbt->hasTag("tileZ", IntTag::class)){
+				$blockHit = new Vector3($nbt->getInt("tileX"), $nbt->getInt("tileY"), $nbt->getInt("tileZ"));
 			}else{
 				break;
 			}
 
-			if($this->namedtag->hasTag("blockId", IntTag::class)){
-				$blockId = $this->namedtag->getInt("blockId");
+			if($nbt->hasTag("blockId", IntTag::class)){
+				$blockId = $nbt->getInt("blockId");
 			}else{
 				break;
 			}
 
-			if($this->namedtag->hasTag("blockData", ByteTag::class)){
-				$blockData = $this->namedtag->getByte("blockData");
+			if($nbt->hasTag("blockData", ByteTag::class)){
+				$blockData = $nbt->getByte("blockData");
 			}else{
 				break;
 			}
@@ -141,21 +141,23 @@ abstract class Projectile extends Entity{
 		return (int) ceil($this->motion->length() * $this->damage);
 	}
 
-	public function saveNBT() : void{
-		parent::saveNBT();
+	public function saveNBT() : CompoundTag{
+		$nbt = parent::saveNBT();
 
-		$this->namedtag->setShort("Age", $this->age);
-		$this->namedtag->setDouble("damage", $this->damage);
+		$nbt->setShort("Age", $this->age);
+		$nbt->setDouble("damage", $this->damage);
 
 		if($this->blockHit !== null){
-			$this->namedtag->setInt("tileX", $this->blockHit->x);
-			$this->namedtag->setInt("tileY", $this->blockHit->y);
-			$this->namedtag->setInt("tileZ", $this->blockHit->z);
+			$nbt->setInt("tileX", $this->blockHit->x);
+			$nbt->setInt("tileY", $this->blockHit->y);
+			$nbt->setInt("tileZ", $this->blockHit->z);
 
 			//we intentionally use different ones to PC because we don't have stringy IDs
-			$this->namedtag->setInt("blockId", $this->blockHitId);
-			$this->namedtag->setByte("blockData", $this->blockHitData);
+			$nbt->setInt("blockId", $this->blockHitId);
+			$nbt->setByte("blockData", $this->blockHitData);
 		}
+
+		return $nbt;
 	}
 
 	protected function applyDragBeforeGravity() : bool{

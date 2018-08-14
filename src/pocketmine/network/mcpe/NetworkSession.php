@@ -68,11 +68,19 @@ class NetworkSession{
 	/** @var NetworkCipher */
 	private $cipher;
 
+	/** @var PacketStream|null */
+	private $sendBuffer;
+
+	/** @var \SplQueue|CompressBatchPromise[] */
+	private $compressedQueue;
+
 	public function __construct(Server $server, NetworkInterface $interface, string $ip, int $port){
 		$this->server = $server;
 		$this->interface = $interface;
 		$this->ip = $ip;
 		$this->port = $port;
+
+		$this->compressedQueue = new \SplQueue();
 
 		$this->connectTime = time();
 		$this->server->getNetwork()->scheduleSessionTick($this);
@@ -206,10 +214,10 @@ class NetworkSession{
 				return false;
 			}
 
-			//TODO: implement buffering (this is just a quick fix)
-			$stream = new PacketStream();
-			$stream->putPacket($packet);
-			$this->server->batchPackets([$this], $stream, true, $immediate);
+			$this->addToSendBuffer($packet);
+			if($immediate){
+				$this->flushSendBuffer(true);
+			}
 
 			return true;
 		}finally{
@@ -217,7 +225,62 @@ class NetworkSession{
 		}
 	}
 
-	public function sendEncoded(string $payload, bool $immediate = false) : void{
+	/**
+	 * @internal
+	 * @param DataPacket $packet
+	 */
+	public function addToSendBuffer(DataPacket $packet) : void{
+		$timings = Timings::getSendDataPacketTimings($packet);
+		$timings->startTiming();
+		try{
+			if($this->sendBuffer === null){
+				$this->sendBuffer = new PacketStream();
+			}
+			$this->sendBuffer->putPacket($packet);
+			$this->server->getNetwork()->scheduleSessionTick($this);
+		}finally{
+			$timings->stopTiming();
+		}
+	}
+
+	private function flushSendBuffer(bool $immediate = false) : void{
+		if($this->sendBuffer !== null){
+			$promise = $this->server->prepareBatch($this->sendBuffer, $immediate);
+			$this->sendBuffer = null;
+			$this->queueCompressed($promise, $immediate);
+		}
+	}
+
+	public function queueCompressed(CompressBatchPromise $payload, bool $immediate = false) : void{
+		$this->flushSendBuffer($immediate); //Maintain ordering if possible
+		if($immediate){
+			//Skips all queues
+			$this->sendEncoded($payload->getResult(), true);
+		}else{
+			$this->compressedQueue->enqueue($payload);
+			$payload->onResolve(function(CompressBatchPromise $payload) : void{
+				if($this->connected and $this->compressedQueue->bottom() === $payload){
+					$this->compressedQueue->dequeue(); //result unused
+					$this->sendEncoded($payload->getResult());
+
+					while(!$this->compressedQueue->isEmpty()){
+						/** @var CompressBatchPromise $current */
+						$current = $this->compressedQueue->bottom();
+						if($current->hasResult()){
+							$this->compressedQueue->dequeue();
+
+							$this->sendEncoded($current->getResult());
+						}else{
+							//can't send any more queued until this one is ready
+							break;
+						}
+					}
+				}
+			});
+		}
+	}
+
+	private function sendEncoded(string $payload, bool $immediate = false) : void{
 		if($this->cipher !== null){
 			Timings::$playerNetworkSendEncryptTimer->startTiming();
 			$payload = $this->cipher->encrypt($payload);
@@ -289,6 +352,8 @@ class NetworkSession{
 		$this->handler = null;
 		$this->interface = null;
 		$this->player = null;
+		$this->sendBuffer = null;
+		$this->compressedQueue = null;
 	}
 
 	public function enableEncryption(string $encryptionKey, string $handshakeJwt) : void{
@@ -345,7 +410,10 @@ class NetworkSession{
 			return true; //keep ticking until timeout
 		}
 
-		//TODO: more stuff on tick
+		if($this->sendBuffer !== null){
+			$this->flushSendBuffer();
+		}
+
 		return false;
 	}
 }

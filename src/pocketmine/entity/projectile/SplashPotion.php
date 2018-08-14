@@ -31,6 +31,7 @@ use pocketmine\event\entity\ProjectileHitEntityEvent;
 use pocketmine\event\entity\ProjectileHitBlockEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\Potion;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\utils\Color;
@@ -42,15 +43,17 @@ class SplashPotion extends Throwable{
 	protected $gravity = 0.05;
 	protected $drag = 0.01;
 
-	protected function initEntity() : void{
-		parent::initEntity();
+	protected function initEntity(CompoundTag $nbt) : void{
+		parent::initEntity($nbt);
 
-		$this->setPotionId($this->namedtag->getShort("PotionId", 0));
+		$this->setPotionId($nbt->getShort("PotionId", 0));
 	}
 
-	public function saveNBT() : void{
-		parent::saveNBT();
-		$this->namedtag->setShort("PotionId", $this->getPotionId());
+	public function saveNBT() : CompoundTag{
+		$nbt = parent::saveNBT();
+		$nbt->setShort("PotionId", $this->getPotionId());
+
+		return $nbt;
 	}
 
 	public function getResultDamage() : int{

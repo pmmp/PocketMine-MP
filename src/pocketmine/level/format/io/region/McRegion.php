@@ -86,8 +86,7 @@ class McRegion extends BaseLevelProvider{
 		$entities = [];
 
 		foreach($chunk->getSavableEntities() as $entity){
-			$entity->saveNBT();
-			$entities[] = $entity->namedtag;
+			$entities[] = $entity->saveNBT();
 		}
 
 		$nbt->setTag(new ListTag("Entities", $entities, NBT::TAG_Compound));

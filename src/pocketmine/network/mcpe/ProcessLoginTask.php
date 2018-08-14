@@ -101,7 +101,7 @@ class ProcessLoginTask extends AsyncTask{
 			$salt = random_bytes(16);
 			$sharedSecret = $serverPriv->createExchange($clientPub)->calculateSharedKey();
 
-			$this->aesKey = hash('sha256', $salt . hex2bin(str_pad(gmp_strval($sharedSecret, 16), 96, "0", STR_PAD_LEFT)), true);
+			$this->aesKey = openssl_digest($salt . hex2bin(str_pad(gmp_strval($sharedSecret, 16), 96, "0", STR_PAD_LEFT)), 'sha256', true);
 			$this->handshakeJwt = $this->generateServerHandshakeJwt($serverPriv, $salt);
 		}
 
@@ -219,7 +219,7 @@ class ProcessLoginTask extends AsyncTask{
 	public function onCompletion(Server $server) : void{
 		/** @var Player $player */
 		$player = $this->fetchLocal();
-		if($player->isClosed()){
+		if(!$player->isConnected()){
 			$server->getLogger()->error("Player " . $player->getName() . " was disconnected before their login could be verified");
 		}elseif($player->setAuthenticationStatus($this->authenticated, $this->error)){
 			if(!$this->useEncryption){

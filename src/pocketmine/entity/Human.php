@@ -578,13 +578,15 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * For Human entities which are not players, sets their properties such as nametag, skin and UUID from NBT.
+	 *
+	 * @param CompoundTag $nbt
 	 */
-	protected function initHumanData() : void{
-		if($this->namedtag->hasTag("NameTag", StringTag::class)){
-			$this->setNameTag($this->namedtag->getString("NameTag"));
+	protected function initHumanData(CompoundTag $nbt) : void{
+		if($nbt->hasTag("NameTag", StringTag::class)){
+			$this->setNameTag($nbt->getString("NameTag"));
 		}
 
-		$skin = $this->namedtag->getCompoundTag("Skin");
+		$skin = $nbt->getCompoundTag("Skin");
 		if($skin !== null){
 			$this->setSkin(new Skin(
 				$skin->getString("Name"),
@@ -598,17 +600,17 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->uuid = UUID::fromData((string) $this->getId(), $this->skin->getSkinData(), $this->getNameTag());
 	}
 
-	protected function initEntity() : void{
-		parent::initEntity();
+	protected function initEntity(CompoundTag $nbt) : void{
+		parent::initEntity($nbt);
 
 		$this->setPlayerFlag(self::DATA_PLAYER_FLAG_SLEEP, false);
 		$this->propertyManager->setBlockPos(self::DATA_PLAYER_BED_POSITION, null);
 
 		$this->inventory = new PlayerInventory($this);
 		$this->enderChestInventory = new EnderChestInventory();
-		$this->initHumanData();
+		$this->initHumanData($nbt);
 
-		$inventoryTag = $this->namedtag->getListTag("Inventory");
+		$inventoryTag = $nbt->getListTag("Inventory");
 		if($inventoryTag !== null){
 			$armorListener = $this->armorInventory->getEventProcessor();
 			$this->armorInventory->setEventProcessor(null);
@@ -628,7 +630,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$this->armorInventory->setEventProcessor($armorListener);
 		}
 
-		$enderChestInventoryTag = $this->namedtag->getListTag("EnderChestInventory");
+		$enderChestInventoryTag = $nbt->getListTag("EnderChestInventory");
 		if($enderChestInventoryTag !== null){
 			/** @var CompoundTag $item */
 			foreach($enderChestInventoryTag as $i => $item){
@@ -636,21 +638,21 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			}
 		}
 
-		$this->inventory->setHeldItemIndex($this->namedtag->getInt("SelectedInventorySlot", 0), false);
+		$this->inventory->setHeldItemIndex($nbt->getInt("SelectedInventorySlot", 0), false);
 
 		$this->inventory->setEventProcessor(new EntityInventoryEventProcessor($this));
 
-		$this->setFood((float) $this->namedtag->getInt("foodLevel", (int) $this->getFood(), true));
-		$this->setExhaustion($this->namedtag->getFloat("foodExhaustionLevel", $this->getExhaustion(), true));
-		$this->setSaturation($this->namedtag->getFloat("foodSaturationLevel", $this->getSaturation(), true));
-		$this->foodTickTimer = $this->namedtag->getInt("foodTickTimer", $this->foodTickTimer, true);
+		$this->setFood((float) $nbt->getInt("foodLevel", (int) $this->getFood(), true));
+		$this->setExhaustion($nbt->getFloat("foodExhaustionLevel", $this->getExhaustion(), true));
+		$this->setSaturation($nbt->getFloat("foodSaturationLevel", $this->getSaturation(), true));
+		$this->foodTickTimer = $nbt->getInt("foodTickTimer", $this->foodTickTimer, true);
 
-		$this->setXpLevel($this->namedtag->getInt("XpLevel", $this->getXpLevel(), true));
-		$this->setXpProgress($this->namedtag->getFloat("XpP", $this->getXpProgress(), true));
-		$this->totalXp = $this->namedtag->getInt("XpTotal", $this->totalXp, true);
+		$this->setXpLevel($nbt->getInt("XpLevel", $this->getXpLevel(), true));
+		$this->setXpProgress($nbt->getFloat("XpP", $this->getXpProgress(), true));
+		$this->totalXp = $nbt->getInt("XpTotal", $this->totalXp, true);
 
-		if($this->namedtag->hasTag("XpSeed", IntTag::class)){
-			$this->xpSeed = $this->namedtag->getInt("XpSeed");
+		if($nbt->hasTag("XpSeed", IntTag::class)){
+			$this->xpSeed = $nbt->getInt("XpSeed");
 		}else{
 			$this->xpSeed = random_int(INT32_MIN, INT32_MAX);
 		}
@@ -764,21 +766,21 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		), function(Item $item) : bool{ return !$item->hasEnchantment(Enchantment::VANISHING); });
 	}
 
-	public function saveNBT() : void{
-		parent::saveNBT();
+	public function saveNBT() : CompoundTag{
+		$nbt = parent::saveNBT();
 
-		$this->namedtag->setInt("foodLevel", (int) $this->getFood(), true);
-		$this->namedtag->setFloat("foodExhaustionLevel", $this->getExhaustion(), true);
-		$this->namedtag->setFloat("foodSaturationLevel", $this->getSaturation(), true);
-		$this->namedtag->setInt("foodTickTimer", $this->foodTickTimer);
+		$nbt->setInt("foodLevel", (int) $this->getFood(), true);
+		$nbt->setFloat("foodExhaustionLevel", $this->getExhaustion(), true);
+		$nbt->setFloat("foodSaturationLevel", $this->getSaturation(), true);
+		$nbt->setInt("foodTickTimer", $this->foodTickTimer);
 
-		$this->namedtag->setInt("XpLevel", $this->getXpLevel());
-		$this->namedtag->setFloat("XpP", $this->getXpProgress());
-		$this->namedtag->setInt("XpTotal", $this->totalXp);
-		$this->namedtag->setInt("XpSeed", $this->xpSeed);
+		$nbt->setInt("XpLevel", $this->getXpLevel());
+		$nbt->setFloat("XpP", $this->getXpProgress());
+		$nbt->setInt("XpTotal", $this->totalXp);
+		$nbt->setInt("XpSeed", $this->xpSeed);
 
 		$inventoryTag = new ListTag("Inventory", [], NBT::TAG_Compound);
-		$this->namedtag->setTag($inventoryTag);
+		$nbt->setTag($inventoryTag);
 		if($this->inventory !== null){
 			//Normal inventory
 			$slotCount = $this->inventory->getSize() + $this->inventory->getHotbarSize();
@@ -797,7 +799,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				}
 			}
 
-			$this->namedtag->setInt("SelectedInventorySlot", $this->inventory->getHeldItemIndex());
+			$nbt->setInt("SelectedInventorySlot", $this->inventory->getHeldItemIndex());
 		}
 
 		if($this->enderChestInventory !== null){
@@ -812,11 +814,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				}
 			}
 
-			$this->namedtag->setTag(new ListTag("EnderChestInventory", $items, NBT::TAG_Compound));
+			$nbt->setTag(new ListTag("EnderChestInventory", $items, NBT::TAG_Compound));
 		}
 
 		if($this->skin !== null){
-			$this->namedtag->setTag(new CompoundTag("Skin", [
+			$nbt->setTag(new CompoundTag("Skin", [
 				new StringTag("Name", $this->skin->getSkinId()),
 				new ByteArrayTag("Data", $this->skin->getSkinData()),
 				new ByteArrayTag("CapeData", $this->skin->getCapeData()),
@@ -824,6 +826,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				new ByteArrayTag("GeometryData", $this->skin->getGeometryData())
 			]));
 		}
+
+		return $nbt;
 	}
 
 	public function spawnTo(Player $player) : void{
