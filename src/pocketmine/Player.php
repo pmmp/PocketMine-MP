@@ -2411,6 +2411,16 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 	}
 
+	public function toggleFlight(bool $fly) : void{
+		$ev = new PlayerToggleFlightEvent($this, $fly);
+		$this->server->getPluginManager()->callEvent($ev);
+		if($ev->isCancelled()){
+			$this->sendSettings();
+		}else{
+			$this->setFlying($fly);
+		}
+	}
+
 	public function animate(int $action) : bool{
 		$this->server->getPluginManager()->callEvent($ev = new PlayerAnimationEvent($this, $action));
 		if($ev->isCancelled()){
@@ -2442,13 +2452,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->kick($this->server->getLanguage()->translateString("kick.reason.cheat", ["%ability.flight"]));
 			return true;
 		}elseif($isFlying !== $this->isFlying()){
-			$this->server->getPluginManager()->callEvent($ev = new PlayerToggleFlightEvent($this, $isFlying));
-			if($ev->isCancelled()){
-				$this->sendSettings();
-			}else{
-				$this->flying = $ev->isFlying();
-			}
-
+			$this->toggleFlight($isFlying);
 			$handled = true;
 		}
 
