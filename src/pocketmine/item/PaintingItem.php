@@ -27,7 +27,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\entity\object\Painting;
-use pocketmine\entity\utils\PaintingMotive;
+use pocketmine\entity\object\PaintingMotive;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\Player;

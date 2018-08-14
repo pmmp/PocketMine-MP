@@ -86,8 +86,8 @@ abstract class Mob extends Living{
 		$this->homePosition = $homePosition;
 	}
 
-	protected function initEntity() : void{
-		parent::initEntity();
+	protected function initEntity(CompoundTag $nbt) : void{
+		parent::initEntity($nbt);
 
 		$this->targetBehaviorPool = new BehaviorPool();
 		$this->behaviorPool = new BehaviorPool();
@@ -95,13 +95,13 @@ abstract class Mob extends Living{
 
 		$this->addBehaviors();
 
-		$this->aiEnabled = boolval($this->namedtag->getByte("aiEnabled", 0));
+		$this->aiEnabled = boolval($nbt->getByte("aiEnabled", 0));
 	}
 
-	public function saveNBT() : void{
-		parent::saveNBT();
+	public function saveNBT() : CompoundTag{
+		$nbt = parent::saveNBT();
 
-		$this->namedtag->setByte("aiEnabled", intval($this->aiEnabled));
+		$nbt->setByte("aiEnabled", intval($this->aiEnabled));
 	}
 
 	public function entityBaseTick(int $diff = 1) : bool{

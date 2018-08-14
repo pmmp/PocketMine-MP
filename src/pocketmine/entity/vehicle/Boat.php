@@ -29,6 +29,7 @@ use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Server;
 
 class Boat extends Vehicle{
@@ -42,14 +43,14 @@ class Boat extends Vehicle{
 	protected $gravity = 0.9;
 	protected $drag = 0.1;
 
-	protected function initEntity() : void{
+	protected function initEntity(CompoundTag $nbt) : void{
 		$this->setHealth(4);
 		$this->setGenericFlag(self::DATA_FLAG_STACKABLE);
 		$this->setImmobile(false);
 
-		$this->setBoatType($this->namedtag->getInt(self::TAG_VARIANT, 0));
+		$this->setBoatType($nbt->getInt(self::TAG_VARIANT, 0));
 
-		parent::initEntity();
+		parent::initEntity($nbt);
 	}
 
 	public function getRiderSeatPosition(int $seatNumber = 0) : Vector3{
@@ -64,10 +65,10 @@ class Boat extends Vehicle{
 		$this->propertyManager->setInt(self::DATA_VARIANT, $boatType);
 	}
 
-	public function saveNBT() : void{
-		parent::saveNBT();
+	public function saveNBT() : CompoundTag{
+		$nbt = parent::saveNBT();
 
-		$this->namedtag->setInt(self::TAG_VARIANT, $this->getBoatType());
+		$nbt->setInt(self::TAG_VARIANT, $this->getBoatType());
 	}
 
 	public function getDrops() : array{

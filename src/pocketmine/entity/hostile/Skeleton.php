@@ -38,6 +38,7 @@ use pocketmine\entity\RangedAttackerMob;
 use pocketmine\inventory\AltayEntityEquipment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
@@ -51,12 +52,12 @@ class Skeleton extends Monster implements RangedAttackerMob{
 	/** @var AltayEntityEquipment */
 	protected $equipment;
 
-	protected function initEntity() : void{
+	protected function initEntity(CompoundTag $nbt) : void{
 		$this->setMovementSpeed(0.25);
 		$this->setFollowRange(35);
 		$this->setAttackDamage(2);
 
-		parent::initEntity();
+		parent::initEntity($nbt);
 
 		$this->equipment = new AltayEntityEquipment($this);
 		$loot = $this->level->random->nextBoundedInt(100);

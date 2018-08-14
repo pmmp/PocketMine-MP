@@ -94,24 +94,24 @@ class ArmorStand extends Living{
 		parent::__construct($level, $nbt);
 	}
 
-	protected function initEntity() : void{
+	protected function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(6);
-		parent::initEntity();
+		parent::initEntity($nbt);
 
 		$this->equipment = new AltayEntityEquipment($this);
 
 		/** @var ListTag $armor */
-		$armor = $this->namedtag->getTag(self::TAG_ARMOR);
+		$armor = $nbt->getTag(self::TAG_ARMOR);
 		/** @var ListTag $mainhand */
-		$mainhand = $this->namedtag->getTag(self::TAG_MAINHAND);
+		$mainhand = $nbt->getTag(self::TAG_MAINHAND);
 		/** @var ListTag $offhand */
-		$offhand = $this->namedtag->getTag(self::TAG_OFFHAND);
+		$offhand = $nbt->getTag(self::TAG_OFFHAND);
 
 		$contents = array_merge(array_map(function(CompoundTag $tag) : Item{ return Item::nbtDeserialize($tag); }, $armor->getAllValues()), [Item::nbtDeserialize($offhand->offsetGet(0))], [Item::nbtDeserialize($mainhand->offsetGet(0))]);
 		$this->equipment->setContents($contents);
 
 		/** @var CompoundTag $pose */
-		$pose = $this->namedtag->getTag(self::TAG_POSE);
+		$pose = $nbt->getTag(self::TAG_POSE);
 		$pose = $pose->getInt(self::TAG_POSE_INDEX, 0);
 		$this->setPose($pose);
 	}
@@ -217,19 +217,19 @@ class ArmorStand extends Living{
 		$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_ARMOR_STAND_FALL);
 	}
 
-	public function saveNBT() : void{
-		parent::saveNBT();
+	public function saveNBT() : CompoundTag{
+		$nbt = parent::saveNBT();
 
-		$this->namedtag->setTag(new ListTag(self::TAG_MAINHAND, [$this->equipment->getItemInHand()->nbtSerialize()], NBT::TAG_Compound));
-		$this->namedtag->setTag(new ListTag(self::TAG_OFFHAND, [$this->equipment->getOffhandItem()->nbtSerialize()], NBT::TAG_Compound));
+		$nbt->setTag(new ListTag(self::TAG_MAINHAND, [$this->equipment->getItemInHand()->nbtSerialize()], NBT::TAG_Compound));
+		$nbt->setTag(new ListTag(self::TAG_OFFHAND, [$this->equipment->getOffhandItem()->nbtSerialize()], NBT::TAG_Compound));
 
 		$armorNBT = array_map(function(Item $item) : CompoundTag{ return $item->nbtSerialize(); }, $this->getArmorInventory()->getContents());
-		$this->namedtag->setTag(new ListTag(self::TAG_ARMOR, $armorNBT, NBT::TAG_Compound));
+		$nbt->setTag(new ListTag(self::TAG_ARMOR, $armorNBT, NBT::TAG_Compound));
 
 		/** @var CompoundTag $poseTag */
-		$poseTag = $this->namedtag->getTag(self::TAG_POSE);
+		$poseTag = $nbt->getTag(self::TAG_POSE);
 		$poseTag->setInt(self::TAG_POSE_INDEX, $this->getPose());
-		$this->namedtag->setTag($poseTag);
+		$nbt->setTag($poseTag);
 	}
 
 	public function getDrops() : array{

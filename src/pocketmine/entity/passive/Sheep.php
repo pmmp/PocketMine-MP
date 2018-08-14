@@ -39,6 +39,7 @@ use pocketmine\item\Shears;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 
 class Sheep extends Tamable{
@@ -60,14 +61,14 @@ class Sheep extends Tamable{
         $this->behaviorPool->setBehavior(8, new RandomLookAroundBehavior($this));
     }
 
-    protected function initEntity() : void{
+    protected function initEntity(CompoundTag $nbt) : void{
         $this->setMaxHealth(8);
         $this->setMovementSpeed(0.23000000417232513);
         $this->setFollowRange(10);
-        $this->propertyManager->setByte(self::DATA_COLOR, $this->namedtag->getByte("Color", 0));
-        $this->setSheared(boolval($this->namedtag->getByte("Sheared", 0)));
+        $this->propertyManager->setByte(self::DATA_COLOR, $nbt->getByte("Color", 0));
+        $this->setSheared(boolval($nbt->getByte("Sheared", 0)));
 
-        parent::initEntity();
+        parent::initEntity($nbt);
     }
 
     public function getName() : string{
@@ -120,10 +121,10 @@ class Sheep extends Tamable{
 		$this->setGenericFlag(self::DATA_FLAG_SHEARED, $value);
 	}
 
-	public function saveNBT() : void{
-		parent::saveNBT();
+	public function saveNBT() : CompoundTag{
+		$nbt = parent::saveNBT();
 
-		$this->namedtag->setByte("Sheared", intval($this->isSheared()));
-		$this->namedtag->setByte("Color", intval($this->propertyManager->getByte(self::DATA_COLOR)));
+		$nbt->setByte("Sheared", intval($this->isSheared()));
+		$nbt->setByte("Color", intval($this->propertyManager->getByte(self::DATA_COLOR)));
 	}
 }

@@ -57,7 +57,7 @@ use pocketmine\entity\projectile\EnderPearl;
 use pocketmine\entity\projectile\ExperienceBottle;
 use pocketmine\entity\projectile\Snowball;
 use pocketmine\entity\projectile\SplashPotion;
-use pocketmine\entity\utils\PaintingMotive;
+use pocketmine\entity\object\PaintingMotive;
 use pocketmine\entity\vehicle\Boat;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;

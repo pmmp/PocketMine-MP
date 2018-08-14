@@ -37,6 +37,7 @@ use pocketmine\item\Saddle;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 
 class Pig extends Animal{
@@ -58,13 +59,13 @@ class Pig extends Animal{
 		$this->behaviorPool->setBehavior(7, new RandomLookAroundBehavior($this));
 	}
 
-	protected function initEntity() : void{
+	protected function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(10);
 		$this->setMovementSpeed(0.25);
 		$this->setFollowRange(10);
-		$this->setSaddled(boolval($this->namedtag->getByte("Saddle", 0)));
+		$this->setSaddled(boolval($nbt->getByte("Saddle", 0)));
 
-		parent::initEntity();
+		parent::initEntity($nbt);
 	}
 
 	public function getName() : string{
@@ -105,10 +106,10 @@ class Pig extends Animal{
 		$this->setGenericFlag(self::DATA_FLAG_SADDLED, $value);
 	}
 
-	public function saveNBT() : void{
-		parent::saveNBT();
+	public function saveNBT() : CompoundTag{
+		$nbt = parent::saveNBT();
 
-		$this->namedtag->setByte("Saddle", intval($this->isSaddled()));
+		$nbt->setByte("Saddle", intval($this->isSaddled()));
 	}
 
 	public function getRiderSeatPosition(int $seatNumber = 0) : Vector3{

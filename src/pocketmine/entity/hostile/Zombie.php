@@ -35,6 +35,7 @@ use pocketmine\entity\Monster;
 use pocketmine\entity\passive\Villager;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 
 class Zombie extends Monster implements Ageable{
@@ -43,12 +44,12 @@ class Zombie extends Monster implements Ageable{
 	public $width = 0.6;
 	public $height = 1.95;
 
-	protected function initEntity() : void{
+	protected function initEntity(CompoundTag $nbt) : void{
 		$this->setMovementSpeed($this->isBaby() ? 0.345 : 0.23);
 		$this->setFollowRange(35);
 		$this->setAttackDamage(3);
 
-		parent::initEntity();
+		parent::initEntity($nbt);
 	}
 
 	public function getName() : string{

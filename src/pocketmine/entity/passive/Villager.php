@@ -92,11 +92,11 @@ class Villager extends Mob implements NPC, Ageable{
 		return "Villager";
 	}
 
-	protected function initEntity() : void{
-		parent::initEntity();
+	protected function initEntity(CompoundTag $nbt) : void{
+		parent::initEntity($nbt);
 
 		/** @var int $profession */
-		$profession = $this->namedtag->getInt("Profession", self::PROFESSION_FARMER);
+		$profession = $nbt->getInt("Profession", self::PROFESSION_FARMER);
 
 		if($profession > 4 or $profession < 0){
 			$profession = self::PROFESSION_FARMER;
@@ -104,8 +104,8 @@ class Villager extends Mob implements NPC, Ageable{
 
 		$this->setProfession($profession);
 
-		$this->career = $this->namedtag->getInt("Career", array_rand(self::$names[$this->getProfession()])); // custom
-		$this->tradeTier = $this->namedtag->getInt("TradeTier", 0);
+		$this->career = $nbt->getInt("Career", array_rand(self::$names[$this->getProfession()])); // custom
+		$this->tradeTier = $nbt->getInt("TradeTier", 0);
 		$this->updateTradeItems();
 	}
 
@@ -159,14 +159,14 @@ class Villager extends Mob implements NPC, Ageable{
 		return $this->offers;
 	}
 
-	public function saveNBT() : void{
-		parent::saveNBT();
+	public function saveNBT() : CompoundTag{
+		$nbt = parent::saveNBT();
 
-		$this->namedtag->setInt("Profession", $this->getProfession());
-		$this->namedtag->setInt("Career", $this->career);
-		$this->namedtag->setInt("TradeTier", $this->tradeTier);
+		$nbt->setInt("Profession", $this->getProfession());
+		$nbt->setInt("Career", $this->career);
+		$nbt->setInt("TradeTier", $this->tradeTier);
 		$this->updateTradeItems();
-		$this->namedtag->setTag($this->offers, true);
+		$nbt->setTag($this->offers, true);
 	}
 
 	public function setProfession(int $profession) : void{

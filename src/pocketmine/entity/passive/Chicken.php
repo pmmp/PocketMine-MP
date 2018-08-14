@@ -36,6 +36,7 @@ use pocketmine\entity\behavior\WanderBehavior;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 class Chicken extends Animal{
@@ -73,15 +74,15 @@ class Chicken extends Animal{
 		$this->behaviorPool->setBehavior(7, new RandomLookAroundBehavior($this));
 	}
 
-	protected function initEntity() : void{
+	protected function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(4);
 		$this->setMovementSpeed(0.25);
 		$this->setFollowRange(10);
 
-		$this->setChickenJockey(boolval($this->namedtag->getByte("isChickenJockey", 0)));
+		$this->setChickenJockey(boolval($nbt->getByte("isChickenJockey", 0)));
 		$this->timeUntilNextEgg = $this->level->random->nextBoundedInt(6000) + 6000;
 
-		parent::initEntity();
+		parent::initEntity($nbt);
 	}
 
 	public function getName() : string{
@@ -99,10 +100,10 @@ class Chicken extends Animal{
 		];
 	}
 
-	public function saveNBT() : void{
-		parent::saveNBT();
+	public function saveNBT() : CompoundTag{
+		$nbt = parent::saveNBT();
 
-		$this->namedtag->setByte("isChickenJockey", intval($this->isChickenJockey()));
+		$nbt->setByte("isChickenJockey", intval($this->isChickenJockey()));
 	}
 
 	public function getRiderSeatPosition(int $seatNumber = 0) : Vector3{

@@ -37,6 +37,7 @@ use pocketmine\item\Bucket;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 
 class Cow extends Tamable{
@@ -57,12 +58,12 @@ class Cow extends Tamable{
 		$this->behaviorPool->setBehavior(7, new RandomLookAroundBehavior($this));
 	}
 
-	protected function initEntity() : void{
+	protected function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(10);
 		$this->setMovementSpeed(0.2);
 		$this->setFollowRange(10);
 
-		parent::initEntity();
+		parent::initEntity($nbt);
 	}
 
 	public function getName() : string{

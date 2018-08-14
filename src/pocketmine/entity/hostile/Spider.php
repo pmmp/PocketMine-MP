@@ -35,6 +35,7 @@ use pocketmine\entity\behavior\WanderBehavior;
 use pocketmine\entity\Monster;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 
 class Spider extends Monster implements Ageable{
@@ -44,7 +45,7 @@ class Spider extends Monster implements Ageable{
 	public $width = 1.4;
 	public $height = 0.9;
 
-	protected function initEntity() : void{
+	protected function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(16);
 		$this->setMovementSpeed(0.30000001192092896);
 		$this->setFollowRange(35);
@@ -52,7 +53,7 @@ class Spider extends Monster implements Ageable{
 		$this->setCanClimb(true);
 		$this->setCanClimbWalls(true);
 
-		parent::initEntity();
+		parent::initEntity($nbt);
 	}
 
 	public function getName() : string{
