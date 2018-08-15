@@ -57,7 +57,7 @@ class CoalOre extends Solid{
 		];
 	}
 
-	public function getXpDropForTool(Item $item) : int{
+	protected function getXpDropAmount() : int{
 		return mt_rand(0, 2);
 	}
 }
