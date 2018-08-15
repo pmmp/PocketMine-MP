@@ -139,7 +139,7 @@ class Creeper extends Monster implements Ageable{
 	public function explode() : void{
 		if($this->isValid()){
 			$f = $this->isPowered() ? 2 : 1;
-			$exp = new Explosion($this, $this->explosionRadius * $f);
+			$exp = new Explosion($this, $this->explosionRadius * $f, $this);
 			$this->flagForDespawn();
 			$exp->explode();
 		}

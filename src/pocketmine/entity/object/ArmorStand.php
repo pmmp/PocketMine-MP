@@ -44,6 +44,7 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\Player;
 
 class ArmorStand extends Living{
+
 	public const NETWORK_ID = EntityIds::ARMOR_STAND;
 
 	public const TAG_ARMOR = "Armor";
@@ -77,10 +78,14 @@ class ArmorStand extends Living{
 
 		if(!$nbt->hasTag(self::TAG_ARMOR, ListTag::class)){
 			$nbt->setTag(new ListTag(self::TAG_ARMOR, [
-				$air, // helmet
-				$air, // chestplate
-				$air, // legging
-				$air  // boots
+				$air,
+				// helmet
+				$air,
+				// chestplate
+				$air,
+				// legging
+				$air
+				// boots
 			], NBT::TAG_Compound));
 		}
 
@@ -107,7 +112,9 @@ class ArmorStand extends Living{
 		/** @var ListTag $offhand */
 		$offhand = $nbt->getTag(self::TAG_OFFHAND);
 
-		$contents = array_merge(array_map(function(CompoundTag $tag) : Item{ return Item::nbtDeserialize($tag); }, $armor->getAllValues()), [Item::nbtDeserialize($offhand->offsetGet(0))], [Item::nbtDeserialize($mainhand->offsetGet(0))]);
+		$contents = array_merge(array_map(function(CompoundTag $tag) : Item{
+			return Item::nbtDeserialize($tag);
+		}, $armor->getAllValues()), [Item::nbtDeserialize($offhand->offsetGet(0))], [Item::nbtDeserialize($mainhand->offsetGet(0))]);
 		$this->equipment->setContents($contents);
 
 		/** @var CompoundTag $pose */
@@ -223,7 +230,9 @@ class ArmorStand extends Living{
 		$nbt->setTag(new ListTag(self::TAG_MAINHAND, [$this->equipment->getItemInHand()->nbtSerialize()], NBT::TAG_Compound));
 		$nbt->setTag(new ListTag(self::TAG_OFFHAND, [$this->equipment->getOffhandItem()->nbtSerialize()], NBT::TAG_Compound));
 
-		$armorNBT = array_map(function(Item $item) : CompoundTag{ return $item->nbtSerialize(); }, $this->getArmorInventory()->getContents());
+		$armorNBT = array_map(function(Item $item) : CompoundTag{
+			return $item->nbtSerialize();
+		}, $this->getArmorInventory()->getContents());
 		$nbt->setTag(new ListTag(self::TAG_ARMOR, $armorNBT, NBT::TAG_Compound));
 
 		/** @var CompoundTag $poseTag */
@@ -252,17 +261,18 @@ class ArmorStand extends Living{
 			}
 		}
 		if($source->getCause() != EntityDamageEvent::CAUSE_CONTACT){ // cactus
-			Entity::attack($source);
+			$source->setCancelled(true);
 		}
+		parent::attack($source);
 	}
 
-	protected function sendSpawnPacket(Player $player): void{
+	protected function sendSpawnPacket(Player $player) : void{
 		parent::sendSpawnPacket($player);
 
 		$this->equipment->sendContents($player);
 	}
 
-	public function getName(): string{
+	public function getName() : string{
 		return "Armor Stand";
 	}
 
