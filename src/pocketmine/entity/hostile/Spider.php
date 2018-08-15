@@ -73,12 +73,12 @@ class Spider extends Monster implements Ageable{
 	}
 
 	public function getXpDropAmount() : int{
-		return 5;
+		return $this->getLastAttacker() instanceof Player ? 5 : 0;
 	}
 
 	public function getDrops() : array{
 		$drops = [ItemFactory::get(Item::STRING, 0, rand(0, 2))];
-		if($this->getLastAttacker() instanceof Player){
+		if($this->getLastAttacker() instanceof Player and $this->level->random->nextBoundedInt(3) === 0){
 			$drops[] = ItemFactory::get(Item::SPIDER_EYE);
 		}
 		return $drops;

@@ -24,27 +24,29 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\behavior;
 
-use pocketmine\entity\Entity;
-use pocketmine\entity\Mob;
+use pocketmine\entity\hostile\Creeper;
 
 class CreeperSwellBehavior extends Behavior{
 
-	public function __construct(Mob $mob){
+	/** @var Creeper */
+	protected $mob;
+
+	public function __construct(Creeper $mob){
 		parent::__construct($mob);
 		$this->mutexBits = 1;
 	}
 
 	public function canStart() : bool{
 		$target = $this->mob->getTargetEntity();
-		return $target === null ? false : ($this->mob->getGenericFlag(Entity::DATA_FLAG_IGNITED) || $this->mob->distance($target) < 3);
+		return $target === null ? false : ($this->mob->isIgnited() || $this->mob->distance($target) < 3);
 	}
 
 	public function onTick() : void{
 		$target = $this->mob->getTargetEntity();
 		if($target == null or $this->mob->distance($target) > 7 or !$this->mob->canSeeEntity($target)){
-			$this->mob->prime(false);
+			$this->mob->setIgnited(false);
 		}else{
-			$this->mob->prime(true);
+			$this->mob->setIgnited(true);
 		}
 	}
 

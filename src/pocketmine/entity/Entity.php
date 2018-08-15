@@ -31,6 +31,8 @@ namespace pocketmine\entity;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\Water;
+use pocketmine\entity\hostile\CaveSpider;
+use pocketmine\entity\hostile\Creeper;
 use pocketmine\entity\hostile\Husk;
 use pocketmine\entity\hostile\Skeleton;
 use pocketmine\entity\hostile\Spider;
@@ -384,6 +386,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		Entity::registerEntity(Spider::class, false, [
 			'Spider',
 			'minecraft:spider'
+		]);
+		Entity::registerEntity(CaveSpider::class, false, [
+			'CaveSpider',
+			'minecraft:cave_spider'
+		]);
+		Entity::registerEntity(Creeper::class, false, [
+			'Creeper',
+			'minecraft:creeper'
 		]);
 
 		Entity::registerEntity(Human::class, true);
