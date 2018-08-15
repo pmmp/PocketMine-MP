@@ -24,7 +24,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\object;
 
-use pocketmine\entity\Entity;
 use pocketmine\entity\EntityIds;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -34,12 +33,8 @@ use pocketmine\inventory\utils\EquipmentSlot;
 use pocketmine\item\Armor;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\Player;
 
@@ -47,11 +42,8 @@ class ArmorStand extends Living{
 
 	public const NETWORK_ID = EntityIds::ARMOR_STAND;
 
-	public const TAG_ARMOR = "Armor";
 	public const TAG_MAINHAND = "Mainhand";
 	public const TAG_OFFHAND = "Offhand";
-	public const TAG_POSE = "Pose";
-	public const TAG_LAST_SIGNAL = "LastSignal";
 	public const TAG_POSE_INDEX = "PoseIndex";
 
 	/** @var AltayEntityEquipment */
@@ -62,65 +54,21 @@ class ArmorStand extends Living{
 
 	protected $gravity = 0.04;
 
-	public function __construct(Level $level, CompoundTag $nbt){
-		$air = Item::get(Item::AIR)->nbtSerialize();
-		if(!$nbt->hasTag(self::TAG_MAINHAND, ListTag::class)){
-			$nbt->setTag(new ListTag(self::TAG_MAINHAND, [
-				$air
-			], NBT::TAG_Compound));
-		}
-
-		if(!$nbt->hasTag(self::TAG_OFFHAND, ListTag::class)){
-			$nbt->setTag(new ListTag(self::TAG_OFFHAND, [
-				$air
-			], NBT::TAG_Compound));
-		}
-
-		if(!$nbt->hasTag(self::TAG_ARMOR, ListTag::class)){
-			$nbt->setTag(new ListTag(self::TAG_ARMOR, [
-				$air,
-				// helmet
-				$air,
-				// chestplate
-				$air,
-				// legging
-				$air
-				// boots
-			], NBT::TAG_Compound));
-		}
-
-		if(!$nbt->hasTag(self::TAG_POSE, CompoundTag::class)){
-			$nbt->setTag(new CompoundTag(self::TAG_POSE, [
-				new IntTag(self::TAG_LAST_SIGNAL, 0),
-				new IntTag(self::TAG_POSE_INDEX, 0)
-			]));
-		}
-
-		parent::__construct($level, $nbt);
-	}
-
 	protected function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(6);
-		parent::initEntity($nbt);
 
 		$this->equipment = new AltayEntityEquipment($this);
 
-		/** @var ListTag $armor */
-		$armor = $nbt->getTag(self::TAG_ARMOR);
-		/** @var ListTag $mainhand */
-		$mainhand = $nbt->getTag(self::TAG_MAINHAND);
-		/** @var ListTag $offhand */
-		$offhand = $nbt->getTag(self::TAG_OFFHAND);
+		if($nbt->hasTag(self::TAG_MAINHAND, CompoundTag::class)){
+			$this->equipment->setItemInHand(Item::nbtDeserialize($nbt->getCompoundTag(self::TAG_MAINHAND)));
+		}
+		if($nbt->hasTag(self::TAG_OFFHAND, CompoundTag::class)){
+			$this->equipment->setItemInHand(Item::nbtDeserialize($nbt->getCompoundTag(self::TAG_OFFHAND)));
+		}
 
-		$contents = array_merge(array_map(function(CompoundTag $tag) : Item{
-			return Item::nbtDeserialize($tag);
-		}, $armor->getAllValues()), [Item::nbtDeserialize($offhand->offsetGet(0))], [Item::nbtDeserialize($mainhand->offsetGet(0))]);
-		$this->equipment->setContents($contents);
+		$this->setPose($nbt->getInt(self::TAG_POSE_INDEX, 0));
 
-		/** @var CompoundTag $pose */
-		$pose = $nbt->getTag(self::TAG_POSE);
-		$pose = $pose->getInt(self::TAG_POSE_INDEX, 0);
-		$this->setPose($pose);
+		parent::initEntity($nbt);
 	}
 
 	public function getEquipmentSlot(Item $item) : int{
@@ -134,7 +82,7 @@ class ArmorStand extends Living{
 					return EquipmentSlot::HEAD;
 			}
 
-			return -1; // mainhand
+			return -1;
 		}
 	}
 
@@ -174,23 +122,25 @@ class ArmorStand extends Living{
 					break;
 			}
 
+			$changed = false;
+
 			if($item->isNull()){
 				if($clicked == EquipmentSlot::CHEST){
 					if($this->equipment->getItemInHand()->isNull()){
 						$ASchestplate = clone $this->armorInventory->getChestplate();
 						$this->armorInventory->setChestplate($item);
-						$item->pop();
+						$changed = true;
 						$playerInv->addItem($ASchestplate);
 					}else{
 						$ASiteminhand = clone $this->equipment->getItemInHand();
 						$this->equipment->setItemInHand($item);
-						$item->pop();
+						$changed = true;
 						$playerInv->addItem($ASiteminhand);
 					}
 				}else{
 					$old = clone $this->armorInventory->getItem($clicked);
 					$this->armorInventory->setItem($clicked, $item);
-					$item->pop();
+					$changed = true;
 					$playerInv->addItem($old);
 				}
 			}else{
@@ -202,40 +152,39 @@ class ArmorStand extends Living{
 						$playerInv->addItem(clone $this->equipment->getItemInHand());
 
 						$this->equipment->setItemInHand(clone $item);
-						$item->pop();
+						$changed = true;
 					}
 				}else{
 					$old = clone $this->armorInventory->getItem($type);
 					$this->armorInventory->setItem($type, $item);
-					$playerInv->setItemInHand(Item::get(Item::AIR));
+					$changed = true;
 					$playerInv->addItem($old);
 				}
+			}
+
+			if($player->isSurvival() and $changed){
+				$item->pop();
 			}
 
 			$this->equipment->sendContents($this->getViewers());
 		}
 	}
 
-	protected function applyGravity() : void{
-		parent::applyGravity();
+	public function fall(float $fallDistance) : void{
+		parent::fall($fallDistance);
+
 		$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_ARMOR_STAND_FALL);
 	}
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
 
-		$nbt->setTag(new ListTag(self::TAG_MAINHAND, [$this->equipment->getItemInHand()->nbtSerialize()], NBT::TAG_Compound));
-		$nbt->setTag(new ListTag(self::TAG_OFFHAND, [$this->equipment->getOffhandItem()->nbtSerialize()], NBT::TAG_Compound));
+		if($this->equipment instanceof AltayEntityEquipment){
+			$nbt->setTag($this->equipment->getItemInHand()->nbtSerialize(-1, self::TAG_MAINHAND));
+			$nbt->setTag($this->equipment->getOffhandItem()->nbtSerialize(-1, self::TAG_OFFHAND));
+		}
 
-		$armorNBT = array_map(function(Item $item) : CompoundTag{
-			return $item->nbtSerialize();
-		}, $this->getArmorInventory()->getContents());
-		$nbt->setTag(new ListTag(self::TAG_ARMOR, $armorNBT, NBT::TAG_Compound));
-
-		/** @var CompoundTag $poseTag */
-		$poseTag = $nbt->getTag(self::TAG_POSE);
-		$poseTag->setInt(self::TAG_POSE_INDEX, $this->getPose());
-		$nbt->setTag($poseTag);
+		$nbt->setInt(self::TAG_POSE_INDEX, $this->getPose());
 
 		return $nbt;
 	}
@@ -270,10 +219,10 @@ class ArmorStand extends Living{
 	}
 
 	public function getName() : string{
-		return "Armor Stand";
+		return "ArmorStand";
 	}
 
-	public function hasEntityColissionUpdate() : bool{
+	public function canBePushed() : bool{
 		return false;
 	}
 }

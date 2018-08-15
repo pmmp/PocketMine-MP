@@ -35,13 +35,9 @@ class AltayEntityEquipment extends BaseInventory{
 
 	/** @var Living */
 	protected $holder;
-	/** @var ArmorInventory */
-	protected $armorInventory;
 
 	public function __construct(Living $entity){
 		$this->holder = $entity;
-		$this->armorInventory = $entity->getArmorInventory();
-
 		parent::__construct();
 	}
 
@@ -50,10 +46,10 @@ class AltayEntityEquipment extends BaseInventory{
 	}
 
 	public function getDefaultSize() : int{
-		return 2; // equipment slots (1 mainhand 1 offhand) [Armors handle on ArmorInventory]
+		return 2; // equipment slots (1 mainhand, 1 offhand)
 	}
 
-	public function getHolder() : Entity{
+	public function getHolder() : Living{
 		return $this->holder;
 	}
 
@@ -72,21 +68,8 @@ class AltayEntityEquipment extends BaseInventory{
 		}
 
 		foreach($target as $player){
-			$player->dataPacket($pk);
+			$player->sendDataPacket($pk);
 		}
-	}
-
-	public function sendContents($target) : void{
-		$this->sendSlot(EquipmentSlot::MAINHAND, $target);
-		$this->sendSlot(EquipmentSlot::OFFHAND, $target);
-		$this->armorInventory->sendContents($target);
-	}
-
-	public function setContents(array $items, bool $send = true) : void{
-		$content = [array_shift($items), array_shift($items)];
-		$armor = $items;
-		$this->armorInventory->setContents($armor);
-		parent::setContents($content, $send);
 	}
 
 	public function getViewers() : array{
