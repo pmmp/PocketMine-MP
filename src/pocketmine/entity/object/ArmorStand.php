@@ -147,8 +147,6 @@ class ArmorStand extends Living{
 	}
 
 	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : void{
-		$player->getInventory()->sendContents($player);
-
 		if($player->isSneaking()){
 			$pose = $this->getPose();
 			if(++$pose >= 13){
@@ -181,18 +179,18 @@ class ArmorStand extends Living{
 					if($this->equipment->getItemInHand()->isNull()){
 						$ASchestplate = clone $this->armorInventory->getChestplate();
 						$this->armorInventory->setChestplate($item);
-						$playerInv->setItemInHand(Item::get(Item::AIR));
+						$item->pop();
 						$playerInv->addItem($ASchestplate);
 					}else{
 						$ASiteminhand = clone $this->equipment->getItemInHand();
 						$this->equipment->setItemInHand($item);
-						$playerInv->setItemInHand(Item::get(Item::AIR));
+						$item->pop();
 						$playerInv->addItem($ASiteminhand);
 					}
 				}else{
 					$old = clone $this->armorInventory->getItem($clicked);
 					$this->armorInventory->setItem($clicked, $item);
-					$playerInv->setItemInHand(Item::get(Item::AIR));
+					$item->pop();
 					$playerInv->addItem($old);
 				}
 			}else{
@@ -203,9 +201,8 @@ class ArmorStand extends Living{
 					}else{
 						$playerInv->addItem(clone $this->equipment->getItemInHand());
 
-						$ic = clone $item;
-						$this->equipment->setItemInHand($ic->pop());
-						$playerInv->setItemInHand($ic);
+						$this->equipment->setItemInHand(clone $item);
+						$item->pop();
 					}
 				}else{
 					$old = clone $this->armorInventory->getItem($type);
