@@ -505,7 +505,7 @@ class EntityNavigator{
 				$this->movePoint = null;
 			}
 
-			if($currentPos == $this->lastPoint){
+			if($currentPos === $this->lastPoint){
 				$this->stuckTick++;
 
 				if($this->stuckTick > 100){
