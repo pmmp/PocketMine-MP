@@ -1857,7 +1857,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			/** @var Level $level */
 			$level = $this->server->getDefaultLevel(); //TODO: default level may be null
 
-			$namedtag->setString("Level", $level->getFolderName());
 			$spawnLocation = $level->getSafeSpawn();
 			$namedtag->setTag(new ListTag("Pos", [
 				new DoubleTag("", $spawnLocation->x),
