@@ -769,9 +769,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
 
-		$nbt->setInt("foodLevel", (int) $this->getFood(), true);
-		$nbt->setFloat("foodExhaustionLevel", $this->getExhaustion(), true);
-		$nbt->setFloat("foodSaturationLevel", $this->getSaturation(), true);
+		$nbt->setInt("foodLevel", (int) $this->getFood());
+		$nbt->setFloat("foodExhaustionLevel", $this->getExhaustion());
+		$nbt->setFloat("foodSaturationLevel", $this->getSaturation());
 		$nbt->setInt("foodTickTimer", $this->foodTickTimer);
 
 		$nbt->setInt("XpLevel", $this->getXpLevel());

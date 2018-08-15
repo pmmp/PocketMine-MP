@@ -76,7 +76,7 @@ class PrimedTNT extends Entity implements Explosive{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setShort("Fuse", $this->fuse, true); //older versions incorrectly saved this as a byte
+		$nbt->setShort("Fuse", $this->fuse);
 
 		return $nbt;
 	}
