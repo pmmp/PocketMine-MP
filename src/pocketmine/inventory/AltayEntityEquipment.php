@@ -92,4 +92,10 @@ class AltayEntityEquipment extends BaseInventory{
 		return $this->setItem(EquipmentSlot::OFFHAND, $item, $send);
 	}
 
+	public function setItem(int $index, Item $item, bool $send = true) : bool{
+		$ritem = clone $item;
+		$ritem->setCount(1);
+		return parent::setItem($index, $ritem, $send);
+	}
+
 }

@@ -152,7 +152,6 @@ class ArmorStand extends Living{
 						$playerInv->addItem(clone $this->equipment->getItemInHand());
 
 						$this->equipment->setItemInHand(clone $item);
-						$changed = true;
 					}
 				}else{
 					$old = clone $this->armorInventory->getItem($type);
