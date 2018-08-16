@@ -43,7 +43,7 @@ class FollowParentBehavior extends Behavior{
 
 	public function canStart() : bool{
 		if($this->mob->isBaby()){
-			$dist = PHP_INT_MAX;
+			$dist = 9;
 			$animal = null;
 			foreach($this->mob->level->getEntities() as $entity){
 				if($entity !== $this->mob){

@@ -97,5 +97,4 @@ class AltayEntityEquipment extends BaseInventory{
 		$ritem->setCount(1);
 		return parent::setItem($index, $ritem, $send);
 	}
-
 }

@@ -76,12 +76,12 @@ class MateBehavior extends Behavior{
 	}
 
 	public function getNearbyMate() : ?Animal{
-		$list = $this->mob->level->getNearbyEntities($this->mob->getBoundingBox()->expandedCopy(8, 8, 8), $this->mob);
-		$dist = PHP_INT_MAX;
+		$list = $this->mob->level->getEntities();
+		$dist = 8;
 		$animal = null;
 
 		foreach($list as $entity){
-			if($entity instanceof Animal and $entity->isInLove() and $entity->distance($this->mob) < $dist and $entity->getSaveId() === $this->mob->getSaveId()){
+			if($entity instanceof Animal and $entity->isInLove() and $entity->distance($this->mob) < $dist and $entity instanceof $this->mob){
 				$dist = $entity->distance($this->mob);
 				$animal = $entity;
 			}

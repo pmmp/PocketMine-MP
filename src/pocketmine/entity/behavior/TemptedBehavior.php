@@ -65,7 +65,7 @@ class TemptedBehavior extends Behavior{
 		}
 
 		/** @var Player|null $player */
-		$player = $this->mob->level->getNearestEntity($this->mob, $this->mob->getFollowRange(), Player::class);
+		$player = $this->mob->level->getNearestEntity($this->mob, $this->mob->getFollowRange(), Player::class, false, true);
 		if($player === null) return false;
 		$player = $this->containsTempItems($player) ? $player : null;
 
