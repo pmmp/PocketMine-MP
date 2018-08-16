@@ -183,7 +183,7 @@ abstract class Living extends Entity implements Damageable{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setFloat("Health", $this->getHealth(), true);
+		$nbt->setFloat("Health", $this->getHealth());
 
 		if(count($this->effects) > 0){
 			$effects = [];
