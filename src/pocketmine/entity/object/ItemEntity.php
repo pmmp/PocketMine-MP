@@ -200,7 +200,8 @@ class ItemEntity extends Entity{
 	}
 
 	public function onCollideWithPlayer(Player $player) : void{
-		if($this->getPickupDelay() > 0){
+		$delay = $this->getPickupDelay();
+		if($delay > 0 or $delay < 0){
 			return;
 		}
 
