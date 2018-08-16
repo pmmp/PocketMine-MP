@@ -248,6 +248,14 @@ class PluginManager{
 								continue;
 							}
 
+							if(!empty($redundant = self::findRedundantApis(...$description->getCompatibleApis()))){
+								$messages = [];
+								foreach($redundant as $base => $duplicates){
+									$messages[] = implode(", ", $duplicates) . " (already included with $base)";
+								}
+								$this->server->getLogger()->warning($description->getName() . " declares unnecessary API versions: " . implode(", ", $messages));
+							}
+
 							if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
 								$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
 								if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
@@ -362,39 +370,80 @@ class PluginManager{
 	 * @return bool
 	 */
 	public function isCompatibleApi(string ...$versions) : bool{
-		$serverString = $this->server->getApiVersion();
-		$serverApi = array_pad(explode("-", $serverString), 2, "");
-		$serverNumbers = array_map("intval", explode(".", $serverApi[0]));
+		$required = $this->server->getApiVersion();
 
 		foreach($versions as $version){
-			//Format: majorVersion.minorVersion.patch (3.0.0)
-			//    or: majorVersion.minorVersion.patch-devBuild (3.0.0-alpha1)
-			if($version !== $serverString){
-				$pluginApi = array_pad(explode("-", $version), 2, ""); //0 = version, 1 = suffix (optional)
-
-				if(strtoupper($pluginApi[1]) !== strtoupper($serverApi[1])){ //Different release phase (alpha vs. beta) or phase build (alpha.1 vs alpha.2)
-					continue;
-				}
-
-				$pluginNumbers = array_map("intval", array_pad(explode(".", $pluginApi[0]), 3, "0")); //plugins might specify API like "3.0" or "3"
-
-				if($pluginNumbers[0] !== $serverNumbers[0]){ //Completely different API version
-					continue;
-				}
-
-				if($pluginNumbers[1] > $serverNumbers[1]){ //If the plugin requires new API features, being backwards compatible
-					continue;
-				}
-
-				if($pluginNumbers[1] === $serverNumbers[1] and $pluginNumbers[2] > $serverNumbers[2]){ //If the plugin requires bug fixes in patches, being backwards compatible
-					continue;
-				}
+			if(self::compareApi($required, $version)){
+				return true;
 			}
-
-			return true;
 		}
 
 		return false;
+	}
+
+	/**
+	 * Returns whether a given API version is compatible with the required version.
+	 *
+	 * @param string $haveVersion
+	 * @param string $needVersion
+	 *
+	 * @return bool
+	 */
+	public static function compareApi(string $haveVersion, string $needVersion) : bool{
+		//Format: majorVersion.minorVersion.patch (3.0.0)
+		//    or: majorVersion.minorVersion.patch-devBuild (3.0.0-alpha1)
+		if($needVersion !== $haveVersion){
+			$have = array_pad(explode("-", $haveVersion), 2, "");
+			$need = array_pad(explode("-", $needVersion), 2, ""); //0 = version, 1 = suffix (optional)
+
+			if(strtoupper($need[1]) !== strtoupper($have[1])){ //Different release phase (alpha vs. beta) or phase build (alpha.1 vs alpha.2)
+				return false;
+			}
+
+			$haveNumbers = array_map("intval", explode(".", $have[0]));
+			$needNumbers = array_map("intval", array_pad(explode(".", $need[0]), 3, "0")); //plugins might specify API like "3.0" or "3"
+
+			if($needNumbers[0] !== $haveNumbers[0]){ //Completely different API version
+				return false;
+			}
+
+			if($needNumbers[1] > $haveNumbers[1]){ //If the plugin requires new API features, being backwards compatible
+				return false;
+			}
+
+			if($needNumbers[1] === $haveNumbers[1] and $needNumbers[2] > $haveNumbers[2]){ //If the plugin requires bug fixes in patches, being backwards compatible
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Searches the given list of API versions and filters out unnecessary ones.
+	 *
+	 * @param string ...$versions
+	 *
+	 * @return string[][] base version (string) => unnecessary extra versions (string[])
+	 */
+	public static function findRedundantApis(string ...$versions) : array{
+		$redundant = [];
+		usort($versions, 'version_compare');
+		while(!empty($versions)){
+			$lowest = array_shift($versions);
+			foreach($versions as $k => $higher){
+				if(self::compareApi($higher, $lowest)){
+					if(!isset($redundant[$lowest])){
+						$redundant[$lowest] = [$higher];
+					}else{
+						$redundant[$lowest][] = $higher;
+					}
+					unset($versions[$k]);
+				}
+			}
+		}
+
+		return $redundant;
 	}
 
 	/**
