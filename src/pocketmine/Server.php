@@ -2128,7 +2128,7 @@ class Server{
 				$task = new CompressBatchTask($stream, $compressionLevel, $promise);
 				$this->asyncPool->submitTask($task);
 			}else{
-				$promise->resolve(NetworkCompression::compress($stream->buffer));
+				$promise->resolve(NetworkCompression::compress($stream->buffer, $compressionLevel));
 			}
 
 			return $promise;
