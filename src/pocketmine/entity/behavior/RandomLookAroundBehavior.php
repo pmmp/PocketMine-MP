@@ -58,6 +58,6 @@ class RandomLookAroundBehavior extends Behavior{
 
 	public function onTick() : void{
 		$this->idleTime--;
-		$this->mob->setLookPosition(new Vector3($this->mob->x + $this->lookX, $this->mob->y + $this->mob->getEyeHeight(), $this->mob->z + $this->lookZ));
+		$this->mob->lookAt(new Vector3($this->mob->x + $this->lookX, $this->mob->y, $this->mob->z + $this->lookZ));
 	}
 }

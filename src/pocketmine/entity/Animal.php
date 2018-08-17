@@ -58,12 +58,18 @@ abstract class Animal extends Mob implements Ageable{
 
 	public function entityBaseTick(int $diff = 1) : bool{
 		if($this->isInLove()){
-			if($this->inLove-- <= 0){
+			if($this->inLove-- > 0 and $this->inLove % 10 === 0){
 				$this->broadcastEntityEvent(EntityEventPacket::LOVE_PARTICLES);
-				$this->inLove = 10;
 			}
 		}
 		return parent::entityBaseTick($diff);
+	}
+
+	public function setInLove(bool $value) : void{
+		parent::setInLove($value);
+		if($value){
+			$this->inLove = 10;
+		}
 	}
 
 	public function eatItem(Item $item) : void{
