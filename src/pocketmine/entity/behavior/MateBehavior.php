@@ -26,6 +26,7 @@ namespace pocketmine\entity\behavior;
 
 use pocketmine\entity\Animal;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Mob;
 
 class MateBehavior extends Behavior{
 	/** @var float */
@@ -56,6 +57,8 @@ class MateBehavior extends Behavior{
 	}
 
 	public function onTick() : void{
+		if($this->spawnBabyDelay > 60) return;
+
 		$this->mob->getNavigator()->tryMoveTo($this->targetMate, $this->speedMultiplier);
 
 		$this->spawnBabyDelay++;
@@ -72,7 +75,6 @@ class MateBehavior extends Behavior{
 		$this->mob->setInLove(false);
 		$this->targetMate = null;
 		$this->spawnBabyDelay = 0;
-
 	}
 
 	public function getNearbyMate() : ?Animal{
@@ -81,7 +83,7 @@ class MateBehavior extends Behavior{
 		$animal = null;
 
 		foreach($list as $entity){
-			if($entity instanceof Animal and $entity->isInLove() and $entity->distance($this->mob) < $dist and $entity instanceof $this->mob){
+			if($entity !== $this->mob and $entity instanceof Animal and $entity->isInLove() and !$entity->isBaby() and $entity->distance($this->mob) < $dist and $entity::NETWORK_ID === $this->mob::NETWORK_ID){
 				$dist = $entity->distance($this->mob);
 				$animal = $entity;
 			}
@@ -91,8 +93,10 @@ class MateBehavior extends Behavior{
 	}
 
 	private function spawnBaby() : void{
+		/** @var Mob $baby */
 		$baby = Entity::createEntity($this->mob::NETWORK_ID, $this->mob->level, Entity::createBaseNBT($this->mob));
 		$baby->setBaby(true);
+		$baby->setAiEnabled(true);
 		$baby->spawnToAll();
 	}
 }

@@ -25,13 +25,16 @@ declare(strict_types=1);
 namespace pocketmine\entity\behavior;
 
 use pocketmine\entity\Mob;
+use pocketmine\math\Vector3;
 
 class RandomLookAroundBehavior extends Behavior{
 
 	/** @var int */
-	protected $rotation = 0;
+	protected $lookX = 0;
 	/** @var int */
-	protected $duration = 0;
+	protected $lookZ = 0;
+	/** @var int */
+	protected $idleTime = 0;
 
 	public function __construct(Mob $mob){
 		parent::__construct($mob);
@@ -39,29 +42,22 @@ class RandomLookAroundBehavior extends Behavior{
 	}
 
 	public function canStart() : bool{
-		if($this->random->nextFloat() < 0.02){
-			$this->rotation = $this->random->nextRange(-180, 180);
-			$this->duration = 20 + $this->random->nextBoundedInt(20);
+		return $this->random->nextFloat() < 0.02;
+	}
 
-			return true;
-		}
-		return false;
+	public function onStart() : void{
+		$d0 = (pi() * 2) * $this->random->nextFloat();
+        $this->lookX = cos($d0);
+        $this->lookZ = sin($d0);
+        $this->idleTime = 20 + $this->random->nextBoundedInt(20);
 	}
 
 	public function canContinue() : bool{
-		return $this->duration-- > 0 and abs($this->rotation) > 0;
+		return $this->idleTime > 0;
 	}
 
 	public function onTick() : void{
-		$this->mob->yaw += $this->signRotation($this->rotation) * 10;
-		$this->mob->headYaw = $this->mob->yaw;
-		$this->rotation -= 10;
-	}
-
-	public function signRotation(int $value){
-		if($value > 0) return 1;
-		if($value < 0) return -1;
-
-		return 0;
+		$this->idleTime--;
+		$this->mob->setLookPosition(new Vector3($this->mob->x + $this->lookX, $this->mob->y + $this->mob->getEyeHeight(), $this->mob->z + $this->lookZ));
 	}
 }

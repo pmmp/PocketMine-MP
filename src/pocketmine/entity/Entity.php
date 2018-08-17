@@ -99,6 +99,7 @@ use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\utils\Random;
 use pocketmine\utils\Utils;
 
 abstract class Entity extends Location implements Metadatable, EntityIds{
@@ -629,9 +630,11 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	protected $entityRiderYawDelta = 0;
 	/** @var Entity[] */
 	public $seats = [];
-
+	/** @var Random */
+	public $random;
 
 	public function __construct(Level $level, CompoundTag $nbt){
+		$this->random = new Random();
 		$this->constructed = true;
 		$this->timings = Timings::getEntityTimings($this);
 
@@ -788,7 +791,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function isInLove() : bool{
-		return $this->getDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_RIDING);
+		return $this->getDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INLOVE);
 	}
 
 	public function setInLove(bool $value) : void{
@@ -1741,8 +1744,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$this->propertyManager->setVector3(self::DATA_RIDER_SEAT_POSITION, $this->getRiderSeatPosition($seatNumber));
 			$this->propertyManager->setByte(self::DATA_CONTROLLING_RIDER_SEAT_NUMBER, $seatNumber);
 			$this->propertyManager->setByte(self::DATA_RIDER_ROTATION_LOCKED, 0);
-			$this->propertyManager->setFloat(self::DATA_RIDER_MAX_ROTATION, 360);
-			$this->propertyManager->setFloat(self::DATA_RIDER_MIN_ROTATION, 0);
+			/*$this->propertyManager->setFloat(self::DATA_RIDER_MAX_ROTATION, 360);
+			$this->propertyManager->setFloat(self::DATA_RIDER_MIN_ROTATION, 0);*/
 
 			if($seatNumber === 0){
 				$this->setRiding(true);
@@ -1750,7 +1753,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			}
 
 			$pk = new SetEntityLinkPacket();
-			$pk->link = new EntityLink($this->ridingEntity->getId(), $this->id, $seatNumber === 0 ? EntityLink::TYPE_RIDER : EntityLink::TYPE_RIDER);
+			$pk->link = new EntityLink($this->ridingEntity->getId(), $this->id, $seatNumber === 0 ? 2 : EntityLink::TYPE_RIDER);
 			$this->server->broadcastPacket($this->getViewers(), $pk);
 
 			$entity->seats[$seatNumber] = $this;
