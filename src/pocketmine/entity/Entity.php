@@ -1744,8 +1744,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$this->propertyManager->setVector3(self::DATA_RIDER_SEAT_POSITION, $this->getRiderSeatPosition($seatNumber));
 			$this->propertyManager->setByte(self::DATA_CONTROLLING_RIDER_SEAT_NUMBER, $seatNumber);
 			$this->propertyManager->setByte(self::DATA_RIDER_ROTATION_LOCKED, 0);
-			/*$this->propertyManager->setFloat(self::DATA_RIDER_MAX_ROTATION, 360);
-			$this->propertyManager->setFloat(self::DATA_RIDER_MIN_ROTATION, 0);*/
+			$this->propertyManager->setFloat(self::DATA_RIDER_MAX_ROTATION, 360);
+			$this->propertyManager->setFloat(self::DATA_RIDER_MIN_ROTATION, 0);
 
 			if($seatNumber === 0){
 				$this->setRiding(true);
@@ -1753,7 +1753,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			}
 
 			$pk = new SetEntityLinkPacket();
-			$pk->link = new EntityLink($this->ridingEntity->getId(), $this->id, $seatNumber === 0 ? 2 : EntityLink::TYPE_RIDER);
+			$pk->link = new EntityLink($this->ridingEntity->getId(), $this->id, $seatNumber === 0 ? EntityLink::TYPE_RIDER : EntityLink::TYPE_PASSENGER);
 			$this->server->broadcastPacket($this->getViewers(), $pk);
 
 			$entity->seats[$seatNumber] = $this;
