@@ -122,47 +122,32 @@ class ArmorStand extends Living{
 					break;
 			}
 
-			$changed = false;
-
 			if($item->isNull()){
 				if($clicked == EquipmentSlot::CHEST){
 					if($this->equipment->getItemInHand()->isNull()){
-						$ASchestplate = clone $this->armorInventory->getChestplate();
+						$playerInv->setItemInHand($this->armorInventory->getChestplate());
 						$this->armorInventory->setChestplate($item);
-						$changed = true;
-						$playerInv->addItem($ASchestplate);
 					}else{
-						$ASiteminhand = clone $this->equipment->getItemInHand();
+						$playerInv->setItemInHand($this->equipment->getItemInHand());
 						$this->equipment->setItemInHand($item);
-						$changed = true;
-						$playerInv->addItem($ASiteminhand);
 					}
 				}else{
-					$old = clone $this->armorInventory->getItem($clicked);
+					$playerInv->setItemInHand($this->armorInventory->getItem($clicked));
 					$this->armorInventory->setItem($clicked, $item);
-					$changed = true;
-					$playerInv->addItem($old);
 				}
 			}else{
 				if($type == -1){
 					if($this->equipment->getItemInHand()->equals($item)){
-						$playerInv->addItem(clone $this->equipment->getItemInHand());
-						$this->equipment->setItemInHand(Item::get(Item::AIR));
+						$playerInv->addItem($this->equipment->getItemInHand());
+						$this->equipment->clear(EquipmentSlot::MAINHAND);
 					}else{
-						$playerInv->addItem(clone $this->equipment->getItemInHand());
-
+						$playerInv->setItemInHand($this->equipment->getItemInHand());
 						$this->equipment->setItemInHand(clone $item);
 					}
 				}else{
-					$old = clone $this->armorInventory->getItem($type);
+					$playerInv->setItemInHand($this->armorInventory->getItem($type));
 					$this->armorInventory->setItem($type, $item);
-					$changed = true;
-					$playerInv->addItem($old);
 				}
-			}
-
-			if($player->isSurvival() and $changed){
-				$item->pop();
 			}
 
 			$this->equipment->sendContents($this->getViewers());
