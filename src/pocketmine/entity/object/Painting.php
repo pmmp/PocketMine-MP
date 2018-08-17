@@ -85,6 +85,8 @@ class Painting extends Entity{
 		$nbt->setByte("Facing", (int) $this->direction);
 		$nbt->setByte("Direction", (int) $this->direction); //Save both for full compatibility
 
+		$nbt->setString("Motive", $this->motive);
+
 		return $nbt;
 	}
 
