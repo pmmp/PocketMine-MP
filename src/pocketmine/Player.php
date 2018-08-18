@@ -1250,6 +1250,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->setSpawn($pos);
 
 		$this->level->setSleepTicks(60);
+		$this->height = $this->width = 0.2;
+		$this->recalculateBoundingBox();
 
 		return true;
 	}
@@ -1263,6 +1265,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->server->getPluginManager()->callEvent($ev = new PlayerBedLeaveEvent($this, $b));
 
 			$this->sleeping = null;
+			$this->resetHeight();
 			$this->propertyManager->setBlockPos(self::DATA_PLAYER_BED_POSITION, null);
 			$this->setPlayerFlag(self::DATA_PLAYER_FLAG_SLEEP, false);
 
@@ -1270,6 +1273,46 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			$this->broadcastAnimation([$this], AnimatePacket::ACTION_STOP_SLEEP);
 		}
+	}
+
+	public function setSneaking(bool $value = true) : void{
+		parent::setSneaking($value);
+
+		if($value){
+			$this->height = 1.65;
+			$this->recalculateBoundingBox();
+		}else{
+			$this->resetHeight();
+		}
+	}
+
+	public function setGliding(bool $value = true) : void{
+		parent::setGliding($value);
+
+		if($value){
+			$this->height = $this->width = 0.6;
+			$this->recalculateBoundingBox();
+		}else{
+			$this->resetHeight();
+		}
+	}
+
+	public function setSwimming(bool $value = true) : void{
+		parent::setSwimming($value);
+
+		if($value){
+			$this->height = $this->width = 0.6;
+			$this->recalculateBoundingBox();
+		}else{
+			$this->resetHeight();
+		}
+	}
+
+	/** Reset player height to default */
+	public function resetHeight() : void{
+		$this->height = 1.8;
+		$this->width = 0.6;
+		$this->recalculateBoundingBox();
 	}
 
 	/**
