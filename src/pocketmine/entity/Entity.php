@@ -1751,7 +1751,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 			if($seatNumber === 0){
 				$this->setRiding(true);
-				$entity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_WASD_CONTROLLED, true);
+				$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_WASD_CONTROLLED, true);
 			}
 
 			$pk = new SetEntityLinkPacket();
