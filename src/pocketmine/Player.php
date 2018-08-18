@@ -305,7 +305,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function isBanned() : bool{
-		return $this->server->getNameBans()->isBanned($this->iusername);
+		return $this->server->getNameBans()->isBanned($this->username);
 	}
 
 	public function setBanned(bool $value){
@@ -318,14 +318,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function isWhitelisted() : bool{
-		return $this->server->isWhitelisted($this->iusername);
+		return $this->server->isWhitelisted($this->username);
 	}
 
 	public function setWhitelisted(bool $value){
 		if($value){
-			$this->server->addWhitelist($this->iusername);
+			$this->server->addWhitelist($this->username);
 		}else{
-			$this->server->removeWhitelist($this->iusername);
+			$this->server->removeWhitelist($this->username);
 		}
 	}
 
@@ -1769,7 +1769,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
-		if(!$this->server->isWhitelisted($this->iusername) and $this->kick("Server is white-listed", false)){
+		if(!$this->server->isWhitelisted($this->username) and $this->kick("Server is white-listed", false)){
 			return true;
 		}
 
