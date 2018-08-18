@@ -28,6 +28,7 @@ use pocketmine\block\Block;
 use pocketmine\block\Lava;
 use pocketmine\block\Liquid;
 use pocketmine\block\Water;
+use pocketmine\entity\Attribute;
 use pocketmine\entity\Mob;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
@@ -441,7 +442,10 @@ class EntityNavigator{
 		$this->currentPath = null;
 		$this->lastPoint = null;
 		$this->stuckTick = 0;
-		if($all) $this->movePoint = null;
+		if($all){
+			$this->movePoint = null;
+			$this->mob->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED)->resetToDefault();
+		}
 	}
 
 	public function setAvoidsWater(bool $value) : void{
@@ -466,7 +470,7 @@ class EntityNavigator{
 
 	public function tryMoveTo(Vector3 $pos, float $speed, ?float $followRange = null) : bool{
 		if(!$this->isSameDestination($pos->floor())){
-			$this->speedMultiplier = $speed;
+			$this->setSpeedMultiplier($speed);
 			$this->setPath($this->findPath($pos, $followRange));
 			return true;
 		}
@@ -530,6 +534,7 @@ class EntityNavigator{
 	 */
 	public function setSpeedMultiplier(float $speedMultiplier) : void{
 		$this->speedMultiplier = $speedMultiplier;
+		$this->mob->setMovementSpeed($this->mob->getDefaultMovementSpeed() * $this->speedMultiplier);
 	}
 
 }

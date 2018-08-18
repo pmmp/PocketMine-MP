@@ -95,6 +95,8 @@ abstract class Mob extends Living{
 
 		$this->addBehaviors();
 
+		$this->setDefaultMovementSpeed($this->getMovementSpeed());
+
 		$this->aiEnabled = boolval($nbt->getByte("aiEnabled", 0));
 	}
 
@@ -226,5 +228,9 @@ abstract class Mob extends Living{
 
 	public function setDefaultMovementSpeed(float $value) : void{
 		$this->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED)->setDefaultValue($value);
+	}
+
+	public function getDefaultMovementSpeed() : float{
+		return $this->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED)->getDefaultValue();
 	}
 }
