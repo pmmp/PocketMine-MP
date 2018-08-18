@@ -376,13 +376,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	/** @var Block[] */
 	protected $blocksAround = [];
 
-	/** @var float|null */
-	public $lastX = null;
-	/** @var float|null */
-	public $lastY = null;
-	/** @var float|null */
-	public $lastZ = null;
-
+	/** @var Location */
+	protected $lastLocation;
 	/** @var Vector3 */
 	protected $motion;
 	/** @var Vector3 */
@@ -392,12 +387,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	/** @var Vector3 */
 	public $temporalVector;
-
-
-	/** @var float */
-	public $lastYaw;
-	/** @var float */
-	public $lastPitch;
 
 	/** @var AxisAlignedBB */
 	public $boundingBox;
@@ -1110,18 +1099,13 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function updateMovement(bool $teleport = false) : void{
-		$diffPosition = ($this->x - $this->lastX) ** 2 + ($this->y - $this->lastY) ** 2 + ($this->z - $this->lastZ) ** 2;
-		$diffRotation = ($this->yaw - $this->lastYaw) ** 2 + ($this->pitch - $this->lastPitch) ** 2;
+		$diffPosition = $this->distanceSquared($this->lastLocation);
+		$diffRotation = ($this->yaw - $this->lastLocation->yaw) ** 2 + ($this->pitch - $this->lastLocation->pitch) ** 2;
 
 		$diffMotion = $this->motion->subtract($this->lastMotion)->lengthSquared();
 
 		if($teleport or $diffPosition > 0.0001 or $diffRotation > 1.0){
-			$this->lastX = $this->x;
-			$this->lastY = $this->y;
-			$this->lastZ = $this->z;
-
-			$this->lastYaw = $this->yaw;
-			$this->lastPitch = $this->pitch;
+			$this->lastLocation = $this->asLocation();
 
 			$this->broadcastMovement($teleport);
 		}
@@ -1819,8 +1803,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function resetLastMovements() : void{
-		list($this->lastX, $this->lastY, $this->lastZ) = [$this->x, $this->y, $this->z];
-		list($this->lastYaw, $this->lastPitch) = [$this->yaw, $this->pitch];
+		$this->lastLocation = $this->asLocation();
 		$this->lastMotion = clone $this->motion;
 	}
 
