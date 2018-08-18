@@ -362,7 +362,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function isBanned() : bool{
-		return $this->server->getNameBans()->isBanned($this->iusername);
+		return $this->server->getNameBans()->isBanned($this->username);
 	}
 
 	public function setBanned(bool $value){
@@ -375,14 +375,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function isWhitelisted() : bool{
-		return $this->server->isWhitelisted($this->iusername);
+		return $this->server->isWhitelisted($this->username);
 	}
 
 	public function setWhitelisted(bool $value){
 		if($value){
-			$this->server->addWhitelist($this->iusername);
+			$this->server->addWhitelist($this->username);
 		}else{
-			$this->server->removeWhitelist($this->iusername);
+			$this->server->removeWhitelist($this->username);
 		}
 	}
 
@@ -1628,7 +1628,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$diff = $this->distanceSquared($newPos) / $tickDiff ** 2;
 
 			if($this->isSurvival() and !$revert and $diff > 0.0625 and !$this->isRiding()){
-				$ev = new PlayerIllegalMoveEvent($this, $newPos, new Vector3($this->lastX, $this->lastY, $this->lastZ));
+				$ev = new PlayerIllegalMoveEvent($this, $newPos, $this->lastLocation->asVector3());
 				$ev->setCancelled($this->allowMovementCheats);
 
 				$this->server->getPluginManager()->callEvent($ev);
@@ -1645,19 +1645,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}
 		}
 
-		$from = new Location($this->lastX, $this->lastY, $this->lastZ, $this->lastYaw, $this->lastPitch, $this->level);
-		$to = $this->getLocation();
+		$from = clone $this->lastLocation;
+		$to = $this->asLocation();
 
-		$delta = (($this->lastX - $to->x) ** 2) + (($this->lastY - $to->y) ** 2) + (($this->lastZ - $to->z) ** 2);
-		$deltaAngle = abs($this->lastYaw - $to->yaw) + abs($this->lastPitch - $to->pitch);
+		$delta = $to->distanceSquared($from);
+		$deltaAngle = abs($this->lastLocation->yaw - $to->yaw) + abs($this->lastLocation->pitch - $to->pitch);
 
 		if(!$revert and ($delta > 0.0001 or $deltaAngle > 1.0)){
-			$this->lastX = $to->x;
-			$this->lastY = $to->y;
-			$this->lastZ = $to->z;
-
-			$this->lastYaw = $to->yaw;
-			$this->lastPitch = $to->pitch;
+			$this->lastLocation = clone $to; //avoid PlayerMoveEvent modifying this
 
 			$ev = new PlayerMoveEvent($this, $from, $to);
 
@@ -1687,13 +1682,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		if($revert){
-
-			$this->lastX = $from->x;
-			$this->lastY = $from->y;
-			$this->lastZ = $from->z;
-
-			$this->lastYaw = $from->yaw;
-			$this->lastPitch = $from->pitch;
+			$this->lastLocation = $from;
 
 			$this->setPosition($from);
 			$this->sendPosition($from, $from->yaw, $from->pitch, MovePlayerPacket::MODE_RESET);
@@ -1912,7 +1901,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
-		if(!$this->server->isWhitelisted($this->iusername) and $this->kick("Server is white-listed", false)){
+		if(!$this->server->isWhitelisted($this->username) and $this->kick("Server is white-listed", false)){
 			return true;
 		}
 
