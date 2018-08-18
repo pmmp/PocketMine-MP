@@ -1741,15 +1741,17 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 				$entity->setRiddenByEntity($this);
 			}
 
-			$this->propertyManager->setVector3(self::DATA_RIDER_SEAT_POSITION, $this->getRiderSeatPosition($seatNumber));
+			$this->propertyManager->setVector3(self::DATA_RIDER_SEAT_POSITION, $entity->getRiderSeatPosition($seatNumber)->add(0, $this->getMountedYOffset(), 0));
 			$this->propertyManager->setByte(self::DATA_CONTROLLING_RIDER_SEAT_NUMBER, $seatNumber);
 			$this->propertyManager->setByte(self::DATA_RIDER_ROTATION_LOCKED, 0);
 			$this->propertyManager->setFloat(self::DATA_RIDER_MAX_ROTATION, 360);
 			$this->propertyManager->setFloat(self::DATA_RIDER_MIN_ROTATION, 0);
 
+			$this->sendData([$this]);
+
 			if($seatNumber === 0){
 				$this->setRiding(true);
-				$this->ridingEntity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_WASD_CONTROLLED, true);
+				$entity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_WASD_CONTROLLED, true);
 			}
 
 			$pk = new SetEntityLinkPacket();
@@ -1762,6 +1764,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 				$this->sendDataPacket($pk);
 			}
 		}
+	}
+
+	public function getMountedYOffset() : float{
+		return $this->height * 0.65;
 	}
 
 	public function dismountEntity() : void{
