@@ -103,6 +103,7 @@ abstract class Tile extends Position{
 	public static function createTile($type, Level $level, CompoundTag $nbt, ...$args) : ?Tile{
 		if(isset(self::$knownTiles[$type])){
 			$class = self::$knownTiles[$type];
+			/** @see Tile::__construct() */
 			return new $class($level, $nbt, ...$args);
 		}
 
