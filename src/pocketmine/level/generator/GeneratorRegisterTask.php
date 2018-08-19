@@ -52,7 +52,10 @@ class GeneratorRegisterTask extends AsyncTask{
 		$manager = new SimpleChunkManager($this->seed, $this->worldHeight);
 		$this->saveToThreadStore("generation.level{$this->levelId}.manager", $manager);
 
-		/** @var Generator $generator */
+		/**
+		 * @var Generator $generator
+		 * @see Generator::__construct()
+		 */
 		$generator = new $this->generatorClass(unserialize($this->settings));
 		$generator->init($manager, new Random($manager->getSeed()));
 		$this->saveToThreadStore("generation.level{$this->levelId}.generator", $generator);

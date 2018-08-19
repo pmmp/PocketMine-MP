@@ -141,6 +141,10 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		$this->server->getPluginManager()->callEvent($ev);
 		$class = $ev->getPlayerClass();
 
+		/**
+		 * @var Player $player
+		 * @see Player::__construct()
+		 */
 		$player = new $class($this, $ev->getAddress(), $ev->getPort());
 		$this->players[$identifier] = $player;
 		$this->identifiersACK[$identifier] = 0;
