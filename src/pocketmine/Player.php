@@ -3389,10 +3389,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		try{
-			$next = $this->forms[$formId]->handleResponse($this, $responseData);
-			if($next !== null){
-				$this->sendForm($next);
-			}
+			$this->forms[$formId]->handleResponse($this, $responseData);
 		}catch(FormValidationException $e){
 			$this->server->getLogger()->critical("Failed to validate form " . get_class($this->forms[$formId]) . ": " . $e->getMessage());
 			$this->server->getLogger()->logException($e);

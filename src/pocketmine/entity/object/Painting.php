@@ -84,6 +84,8 @@ class Painting extends Entity{
 
 		$this->namedtag->setByte("Facing", (int) $this->direction);
 		$this->namedtag->setByte("Direction", (int) $this->direction); //Save both for full compatibility
+
+		$this->namedtag->setString("Motive", $this->motive);
 	}
 
 	public function kill() : void{
