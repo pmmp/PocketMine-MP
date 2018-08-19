@@ -70,7 +70,7 @@ class Cactus extends Transparent{
 		}else{
 			for($side = 2; $side <= 5; ++$side){
 				$b = $this->getSide($side);
-				if(!$b->canBeFlowedInto()){
+				if($b->isSolid()){
 					$this->getLevel()->useBreakOn($this);
 					break;
 				}
@@ -110,7 +110,7 @@ class Cactus extends Transparent{
 			$block1 = $this->getSide(Vector3::SIDE_SOUTH);
 			$block2 = $this->getSide(Vector3::SIDE_WEST);
 			$block3 = $this->getSide(Vector3::SIDE_EAST);
-			if($block0->isTransparent() and $block1->isTransparent() and $block2->isTransparent() and $block3->isTransparent()){
+			if(!$block0->isSolid() and !$block1->isSolid() and !$block2->isSolid() and !$block3->isSolid()){
 				$this->getLevel()->setBlock($this, $this, true);
 
 				return true;
