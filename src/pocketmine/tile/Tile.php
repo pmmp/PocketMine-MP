@@ -124,8 +124,10 @@ abstract class Tile extends Position{
 	}
 
 	/**
-	 * @param string   $className
-	 * @param string[] $saveNames
+	 * @param string $className
+	 * @param string[]  $saveNames
+	 *
+	 * @throws \ReflectionException
 	 */
 	public static function registerTile(string $className, array $saveNames = []) : void{
 		Utils::testValidInstance($className, Tile::class);
