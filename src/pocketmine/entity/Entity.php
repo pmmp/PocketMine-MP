@@ -287,6 +287,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public static function createEntity($type, Level $level, CompoundTag $nbt, ...$args) : ?Entity{
 		if(isset(self::$knownEntities[$type])){
 			$class = self::$knownEntities[$type];
+			/** @see Entity::__construct() */
 			return new $class($level, $nbt, ...$args);
 		}
 
