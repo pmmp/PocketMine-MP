@@ -27,16 +27,14 @@ use pocketmine\command\CommandSender;
 use pocketmine\event\Cancellable;
 
 /**
- * Called when the console runs a command, early in the process
+ * Called when any CommandSender runs a command, early in the process
  *
  * You don't want to use this except for a few cases like logging commands,
  * blocking commands on certain places, or applying modifiers.
  *
  * The message DOES NOT contain a slash at the start
- *
- * @deprecated Use CommandEvent instead.
  */
-class ServerCommandEvent extends ServerEvent implements Cancellable{
+class CommandEvent extends ServerEvent implements Cancellable{
 	/** @var string */
 	protected $command;
 

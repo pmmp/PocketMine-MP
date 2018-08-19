@@ -27,6 +27,8 @@ use pocketmine\command\CommandSender;
 
 /**
  * This event is called when a command is received over RCON.
+ *
+ * @deprecated Use CommandEvent instead.
  */
 class RemoteServerCommandEvent extends ServerCommandEvent{
 
