@@ -209,6 +209,9 @@ abstract class Tile extends Position{
 	 * @return CompoundTag
 	 */
 	public static function createNBT(Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : CompoundTag{
+		if(static::class === self::class){
+			throw new \BadMethodCallException(__METHOD__ . " must be called from the scope of a child class");
+		}
 		$nbt = new CompoundTag("", [
 			new StringTag(self::TAG_ID, static::getSaveId()),
 			new IntTag(self::TAG_X, (int) $pos->x),
