@@ -31,21 +31,41 @@ class ConfigTest extends TestCase{
 	 * @return \Generator
 	 */
 	public function fixYamlIndexesProvider() : \Generator{
-		yield ["x: 1\ny: 2\nz: 3\n", ["y"]];
-		yield [" x : 1\n y : 2\n z : 3\n", ["y"]];
+		yield ["x: 1\ny: 2\nz: 3\n", [
+			"x" => 1,
+			"y" => 2,
+			"z" => 3
+		]];
+		yield [" x : 1\n y : 2\n z : 3\n", [
+			"x" => 1,
+			"y" => 2,
+			"z" => 3
+		]];
+		yield ["parent:\n x: 1\n y: 2\n z: 3\n", [
+			"parent" => [
+				"x" => 1,
+				"y" => 2,
+				"z" => 3
+			]
+		]];
+		yield ["yes: notransform", [
+			"yes" => "notransform"
+		]];
+		yield ["on: 1\nyes: true", [ //this would previously have resulted in a key collision
+			"on" => 1,
+			"yes" => true
+		]];
 	}
 
 	/**
 	 * @dataProvider fixYamlIndexesProvider
 	 *
 	 * @param string $test
-	 * @param array  $expectedKeys
+	 * @param array  $expected
 	 */
-	public function testFixYamlIndexes(string $test, array $expectedKeys) : void{
+	public function testFixYamlIndexes(string $test, array $expected) : void{
 		$fixed = Config::fixYAMLIndexes($test);
 		$decoded = yaml_parse($fixed);
-		foreach($expectedKeys as $k){
-			self::assertArrayHasKey($k, $decoded);
-		}
+		self::assertEquals($expected, $decoded);
 	}
 }
