@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pmmp\TesterPlugin;
 
 use pocketmine\event\Listener;
-use pocketmine\event\server\ServerCommandEvent;
+use pocketmine\event\server\CommandEvent;
 use pocketmine\plugin\PluginBase;
 
 class Main extends PluginBase implements Listener{
@@ -48,7 +48,7 @@ class Main extends PluginBase implements Listener{
 		];
 	}
 
-	public function onServerCommand(ServerCommandEvent $event){
+	public function onServerCommand(CommandEvent $event){
 		//The CI will send this command as a failsafe to prevent the build from hanging if the tester plugin failed to
 		//run. However, if the plugin loaded successfully we don't want to allow this to stop the server as there may
 		//be asynchronous tests running. Instead we cancel this and stop the server of our own accord once all tests
