@@ -746,9 +746,9 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->tileEntityTick->startTiming();
 		Timings::$tickTileEntityTimer->startTiming();
 		//Update tiles that need update
-		foreach($this->updateTiles as $id => $tile){
+		foreach($this->updateTiles as $blockHash => $tile){
 			if(!$tile->onUpdate()){
-				unset($this->updateTiles[$id]);
+				unset($this->updateTiles[$blockHash]);
 			}
 		}
 		Timings::$tickTileEntityTimer->stopTiming();
@@ -2000,15 +2000,6 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * @param $tileId
-	 *
-	 * @return Tile|null
-	 */
-	public function getTileById(int $tileId){
-		return $this->tiles[$tileId] ?? null;
-	}
-
-	/**
 	 * Returns a list of the players in this level
 	 *
 	 * @return Player[]
@@ -2048,13 +2039,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return Tile|null
 	 */
 	public function getTileAt(int $x, int $y, int $z) : ?Tile{
-		$chunk = $this->getChunk($x >> 4, $z >> 4);
-
-		if($chunk !== null){
-			return $chunk->getTile($x & 0x0f, $y, $z & 0x0f);
-		}
-
-		return null;
+		return $this->tiles[Level::blockHash($x, $y, $z)] ?? null;
 	}
 
 	/**
@@ -2589,7 +2574,7 @@ class Level implements ChunkManager, Metadatable{
 			throw new \InvalidStateException("Attempted to create tile " . get_class($tile) . " in unloaded chunk $chunkX $chunkZ");
 		}
 
-		$this->tiles[$tile->getId()] = $tile;
+		$this->tiles[Level::blockHash($tile->x, $tile->y, $tile->z)] = $tile;
 		$this->clearChunkCache($chunkX, $chunkZ);
 	}
 
@@ -2603,7 +2588,7 @@ class Level implements ChunkManager, Metadatable{
 			throw new LevelException("Invalid Tile level");
 		}
 
-		unset($this->tiles[$tile->getId()], $this->updateTiles[$tile->getId()]);
+		unset($this->tiles[$blockHash = Level::blockHash($tile->x, $tile->y, $tile->z)], $this->updateTiles[$blockHash]);
 
 		$chunkX = $tile->getFloorX() >> 4;
 		$chunkZ = $tile->getFloorZ() >> 4;

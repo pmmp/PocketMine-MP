@@ -61,9 +61,6 @@ abstract class Tile extends Position{
 	public const SIGN = "Sign";
 	public const SKULL = "Skull";
 
-	/** @var int */
-	public static $tileCount = 1;
-
 	/** @var string[] classes that extend Tile */
 	private static $knownTiles = [];
 	/** @var string[][] */
@@ -71,8 +68,6 @@ abstract class Tile extends Position{
 
 	/** @var string */
 	public $name;
-	/** @var int */
-	public $id;
 	/** @var bool */
 	public $closed = false;
 	/** @var Server */
@@ -148,16 +143,11 @@ abstract class Tile extends Position{
 
 		$this->server = $level->getServer();
 		$this->name = "";
-		$this->id = Tile::$tileCount++;
 
 		parent::__construct($nbt->getInt(self::TAG_X), $nbt->getInt(self::TAG_Y), $nbt->getInt(self::TAG_Z), $level);
 		$this->readSaveData($nbt);
 
 		$this->getLevel()->addTile($this);
-	}
-
-	public function getId() : int{
-		return $this->id;
 	}
 
 	/**
@@ -253,7 +243,7 @@ abstract class Tile extends Position{
 		if($this->closed){
 			throw new \InvalidStateException("Cannot schedule update on garbage tile " . get_class($this));
 		}
-		$this->level->updateTiles[$this->id] = $this;
+		$this->level->updateTiles[Level::blockHash($this->x, $this->y, $this->z)] = $this;
 	}
 
 	public function isClosed() : bool{

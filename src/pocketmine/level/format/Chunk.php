@@ -69,8 +69,6 @@ class Chunk{
 
 	/** @var Tile[] */
 	protected $tiles = [];
-	/** @var Tile[] */
-	protected $tileList = [];
 
 	/** @var Entity[] */
 	protected $entities = [];
@@ -595,11 +593,11 @@ class Chunk{
 		if($tile->isClosed()){
 			throw new \InvalidArgumentException("Attempted to add a garbage closed Tile to a chunk");
 		}
-		$this->tiles[$tile->getId()] = $tile;
-		if(isset($this->tileList[$index = (($tile->x & 0x0f) << 12) | (($tile->z & 0x0f) << 8) | ($tile->y & 0xff)]) and $this->tileList[$index] !== $tile){
-			$this->tileList[$index]->close();
+
+		if(isset($this->tiles[$index = (($tile->x & 0x0f) << 12) | (($tile->z & 0x0f) << 8) | ($tile->y & 0xff)]) and $this->tiles[$index] !== $tile){
+			$this->tiles[$index]->close();
 		}
-		$this->tileList[$index] = $tile;
+		$this->tiles[$index] = $tile;
 		if($this->isInit){
 			$this->hasChanged = true;
 		}
@@ -609,8 +607,7 @@ class Chunk{
 	 * @param Tile $tile
 	 */
 	public function removeTile(Tile $tile){
-		unset($this->tiles[$tile->getId()]);
-		unset($this->tileList[(($tile->x & 0x0f) << 12) | (($tile->z & 0x0f) << 8) | ($tile->y & 0xff)]);
+		unset($this->tiles[(($tile->x & 0x0f) << 12) | (($tile->z & 0x0f) << 8) | ($tile->y & 0xff)]);
 		if($this->isInit){
 			$this->hasChanged = true;
 		}
@@ -650,7 +647,7 @@ class Chunk{
 	 */
 	public function getTile(int $x, int $y, int $z){
 		$index = ($x << 12) | ($z << 8) | $y;
-		return $this->tileList[$index] ?? null;
+		return $this->tiles[$index] ?? null;
 	}
 
 	/**
