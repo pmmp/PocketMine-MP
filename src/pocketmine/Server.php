@@ -1028,6 +1028,7 @@ class Server{
 			return false;
 		}
 
+		/** @see LevelProvider::__construct() */
 		$level = new Level($this, $name, new $providerClass($path));
 
 		$this->levels[$level->getId()] = $level;
@@ -1075,6 +1076,7 @@ class Server{
 		/** @var LevelProvider $providerClass */
 		$providerClass::generate($path, $name, $seed, $generator, $options);
 
+		/** @see LevelProvider::__construct() */
 		$level = new Level($this, $name, new $providerClass($path));
 		$this->levels[$level->getId()] = $level;
 
