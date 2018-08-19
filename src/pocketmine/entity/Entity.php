@@ -1809,9 +1809,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			if(!($this instanceof Player)){
 				$this->ridingEntity->updateRiderPosition();
 			}
-			$this->entityRiderYawDelta += $this->yaw - $this->lastYaw;
+			$this->entityRiderYawDelta += $this->yaw - $this->lastLocation->yaw;
 
-			for($this->entityRiderPitchDelta += $this->pitch - $this->lastPitch; $this->entityRiderYawDelta >= 180; $this->entityRiderYawDelta -= 360){
+			for($this->entityRiderPitchDelta += $this->pitch - $this->lastLocation->pitch; $this->entityRiderYawDelta >= 180; $this->entityRiderYawDelta -= 360){
 				//empty
 			}
 

@@ -87,22 +87,67 @@ abstract class Tile extends Position{
 	protected $timings;
 
 	public static function init(){
-		self::registerTile(Banner::class, [self::BANNER, "minecraft:banner"]);
-		self::registerTile(Beacon::class, [self::BEACON, "minecraft:beacon"]);
-		self::registerTile(Bed::class, [self::BED, "minecraft:bed"]);
-		self::registerTile(Chest::class, [self::CHEST, "minecraft:chest"]);
-		self::registerTile(EnchantTable::class, [self::ENCHANT_TABLE, "minecraft:enchanting_table"]);
-		self::registerTile(EnderChest::class, [self::ENDER_CHEST, "minecraft:ender_chest"]);
-		self::registerTile(FlowerPot::class, [self::FLOWER_POT, "minecraft:flower_pot"]);
-		self::registerTile(Furnace::class, [self::FURNACE, "minecraft:furnace"]);
-		self::registerTile(Hopper::class, [self::HOPPER, "minecraft:hopper"]);
+		self::registerTile(Banner::class, [
+			self::BANNER,
+			"minecraft:banner"
+		]);
+		self::registerTile(Beacon::class, [
+			self::BEACON,
+			"minecraft:beacon"
+		]);
+		self::registerTile(Bed::class, [
+			self::BED,
+			"minecraft:bed"
+		]);
+		self::registerTile(Chest::class, [
+			self::CHEST,
+			"minecraft:chest"
+		]);
+		self::registerTile(EnchantTable::class, [
+			self::ENCHANT_TABLE,
+			"minecraft:enchanting_table"
+		]);
+		self::registerTile(EnderChest::class, [
+			self::ENDER_CHEST,
+			"minecraft:ender_chest"
+		]);
+		self::registerTile(FlowerPot::class, [
+			self::FLOWER_POT,
+			"minecraft:flower_pot"
+		]);
+		self::registerTile(Furnace::class, [
+			self::FURNACE,
+			"minecraft:furnace"
+		]);
+		self::registerTile(Hopper::class, [
+			self::HOPPER,
+			"minecraft:hopper"
+		]);
 		self::registerTile(ItemFrame::class, [self::ITEM_FRAME]); //this is an entity in PC
-		self::registerTile(Jukebox::class, [self::JUKEBOX, "minecraft:jukebox"]);
-		self::registerTile(NoteBlock::class, [self::NOTEBLOCK, "minecraft:noteblock"]);
-		self::registerTile(Sign::class, [self::SIGN, "minecraft:sign"]);
-		self::registerTile(Skull::class, [self::SKULL, "minecraft:skull"]);
-		self::registerTile(ShulkerBox::class, [self::SHULKER_BOX, "minecraft:shulker_box"]);
-		self::registerTile(MobSpawner::class, [self::MOB_SPAWNER, "minecraft:mob_spawner"]);
+		self::registerTile(Jukebox::class, [
+			self::JUKEBOX,
+			"minecraft:jukebox"
+		]);
+		self::registerTile(NoteBlock::class, [
+			self::NOTEBLOCK,
+			"minecraft:noteblock"
+		]);
+		self::registerTile(Sign::class, [
+			self::SIGN,
+			"minecraft:sign"
+		]);
+		self::registerTile(Skull::class, [
+			self::SKULL,
+			"minecraft:skull"
+		]);
+		self::registerTile(ShulkerBox::class, [
+			self::SHULKER_BOX,
+			"minecraft:shulker_box"
+		]);
+		self::registerTile(MobSpawner::class, [
+			self::MOB_SPAWNER,
+			"minecraft:mob_spawner"
+		]);
 
 	}
 
@@ -124,8 +169,8 @@ abstract class Tile extends Position{
 	}
 
 	/**
-	 * @param string $className
-	 * @param string[]  $saveNames
+	 * @param string   $className
+	 * @param string[] $saveNames
 	 *
 	 * @throws \ReflectionException
 	 */
