@@ -57,37 +57,31 @@ abstract class MenuForm extends BaseForm{
 	/**
 	 * @param Player $player Player submitting this form.
 	 * @param int    $selectedOption Selected option, can be used with getOption().
-	 *
-	 * @return null|Form A form to show to the player after this one, or null.
 	 */
-	public function onSubmit(Player $player, int $selectedOption) : ?Form{
-		return null;
+	public function onSubmit(Player $player, int $selectedOption) : void{
+
 	}
 
 	/**
 	 * Called when a player clicks the close button on this form without selecting an option.
 	 *
 	 * @param Player $player
-	 *
-	 * @return Form|null a form which will be opened immediately (before queued forms) as a response to this form, or null if not applicable.
 	 */
-	public function onClose(Player $player) : ?Form{
-		return null;
+	public function onClose(Player $player) : void{
+
 	}
 
-	final public function handleResponse(Player $player, $data) : ?Form{
+	final public function handleResponse(Player $player, $data) : void{
 		if($data === null){
-			return $this->onClose($player);
-		}
-
-		if(is_int($data)){
+			$this->onClose($player);
+		}elseif(is_int($data)){
 			if(!isset($this->options[$data])){
 				throw new FormValidationException("Option $data does not exist");
 			}
-			return $this->onSubmit($player, $data);
+			$this->onSubmit($player, $data);
+		}else{
+			throw new FormValidationException("Expected int or null, got " . gettype($data));
 		}
-
-		throw new FormValidationException("Expected int or null, got " . gettype($data));
 	}
 
 	protected function getType() : string{

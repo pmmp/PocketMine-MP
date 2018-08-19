@@ -79,30 +79,24 @@ abstract class CustomForm extends BaseForm{
 	/**
 	 * @param Player             $player
 	 * @param CustomFormResponse $data
-	 *
-	 * @return null|Form
 	 */
-	public function onSubmit(Player $player, CustomFormResponse $data) : ?Form{
-		return null;
+	public function onSubmit(Player $player, CustomFormResponse $data) : void{
+
 	}
 
 	/**
 	 * Called when a player closes the form without submitting it.
 	 *
 	 * @param Player $player
-	 *
-	 * @return Form|null a form which will be opened immediately (before queued forms) as a response to this form, or null if not applicable.
 	 */
-	public function onClose(Player $player) : ?Form{
-		return null;
+	public function onClose(Player $player) : void{
+
 	}
 
-	final public function handleResponse(Player $player, $data) : ?Form{
+	final public function handleResponse(Player $player, $data) : void{
 		if($data === null){
-			return $this->onClose($player);
-		}
-
-		if(is_array($data)){
+			$this->onClose($player);
+		}elseif(is_array($data)){
 			if(($actual = count($data)) !== ($expected = count($this->elements))){
 				throw new FormValidationException("Expected $expected result data, got $actual");
 			}
@@ -123,10 +117,10 @@ abstract class CustomForm extends BaseForm{
 				$values[$element->getName()] = $value;
 			}
 
-			return $this->onSubmit($player, new CustomFormResponse($values));
+			$this->onSubmit($player, new CustomFormResponse($values));
+		}else{
+			throw new FormValidationException("Expected array or null, got " . gettype($data));
 		}
-
-		throw new FormValidationException("Expected array or null, got " . gettype($data));
 	}
 
 	/**

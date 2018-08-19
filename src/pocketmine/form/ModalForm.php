@@ -61,19 +61,17 @@ abstract class ModalForm extends BaseForm{
 	/**
 	 * @param Player $player Player submitting this form
 	 * @param bool   $choice Selected option. True for yes button, false for no button.
-	 *
-	 * @return null|Form A form to show to the player after this one, or null.
 	 */
-	public function onSubmit(Player $player, bool $choice) : ?Form{
-		return null;
+	public function onSubmit(Player $player, bool $choice) : void{
+
 	}
 
-	final public function handleResponse(Player $player, $data) : ?Form{
+	final public function handleResponse(Player $player, $data) : void{
 		if(!is_bool($data)){
 			throw new FormValidationException("Expected bool, got " . gettype($data));
 		}
 
-		return $this->onSubmit($player, $data);
+		$this->onSubmit($player, $data);
 	}
 
 	protected function getType() : string{
