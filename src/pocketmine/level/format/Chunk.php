@@ -594,7 +594,7 @@ class Chunk{
 			throw new \InvalidArgumentException("Attempted to add a garbage closed Tile to a chunk");
 		}
 
-		if(isset($this->tiles[$index = (($tile->x & 0x0f) << 12) | (($tile->z & 0x0f) << 8) | ($tile->y & 0xff)]) and $this->tiles[$index] !== $tile){
+		if(isset($this->tiles[$index = Chunk::blockHash($tile->x, $tile->y, $tile->z)]) and $this->tiles[$index] !== $tile){
 			$this->tiles[$index]->close();
 		}
 		$this->tiles[$index] = $tile;
@@ -607,7 +607,7 @@ class Chunk{
 	 * @param Tile $tile
 	 */
 	public function removeTile(Tile $tile){
-		unset($this->tiles[(($tile->x & 0x0f) << 12) | (($tile->z & 0x0f) << 8) | ($tile->y & 0xff)]);
+		unset($this->tiles[Chunk::blockHash($tile->x, $tile->y, $tile->z)]);
 		if($this->isInit){
 			$this->hasChanged = true;
 		}
@@ -646,8 +646,7 @@ class Chunk{
 	 * @return Tile|null
 	 */
 	public function getTile(int $x, int $y, int $z){
-		$index = ($x << 12) | ($z << 8) | $y;
-		return $this->tiles[$index] ?? null;
+		return $this->tiles[Chunk::blockHash($x, $y, $z)] ?? null;
 	}
 
 	/**
@@ -921,5 +920,18 @@ class Chunk{
 		$chunk->terrainPopulated = (bool) ($flags & 2);
 		$chunk->terrainGenerated = (bool) ($flags & 1);
 		return $chunk;
+	}
+
+	/**
+	 * Hashes the given chunk block coordinates into a single integer.
+	 *
+	 * @param int $x 0-15
+	 * @param int $y
+	 * @param int $z 0-15
+	 *
+	 * @return int
+	 */
+	public static function blockHash(int $x, int $y, int $z) : int{
+		return ($y << 8) | (($z & 0x0f) << 4) | ($x & 0x0f);
 	}
 }
