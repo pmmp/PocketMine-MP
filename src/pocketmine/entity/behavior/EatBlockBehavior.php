@@ -54,10 +54,11 @@ class EatBlockBehavior extends Behavior{
 
 		$this->duration = 40;
 
-		$this->mob->resetMotion();
-		$this->mob->broadcastEntityEvent(EntityEventPacket::EAT_GRASS_ANIMATION);
-
 		return true;
+	}
+
+	public function onStart() : void{
+		$this->mob->broadcastEntityEvent(EntityEventPacket::EAT_GRASS_ANIMATION);
 	}
 
 	public function canContinue() : bool{

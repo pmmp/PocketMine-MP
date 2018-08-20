@@ -1976,47 +1976,37 @@ class Level implements ChunkManager, Metadatable{
 	 * @param float   $maxDistance
 	 * @param string  $entityType Class of entity to use for instanceof
 	 * @param bool    $includeDead Whether to include entitites which are dead
-	 * @param bool    $calculateFromArray Fast calculate method
 	 *
 	 * @return Entity|null an entity of type $entityType, or null if not found
 	 */
-	public function getNearestEntity(Vector3 $pos, float $maxDistance, string $entityType = Entity::class, bool $includeDead = false, bool $calculateFromArray = false) : ?Entity{
+	public function getNearestEntity(Vector3 $pos, float $maxDistance, string $entityType = Entity::class, bool $includeDead = false, callable $filter = null) : ?Entity{
 		assert(is_a($entityType, Entity::class, true));
+
+		$minX = ((int) floor($pos->x - $maxDistance)) >> 4;
+		$maxX = ((int) floor($pos->x + $maxDistance)) >> 4;
+		$minZ = ((int) floor($pos->z - $maxDistance)) >> 4;
+		$maxZ = ((int) floor($pos->z + $maxDistance)) >> 4;
 
 		/** @var Entity|null $currentTarget */
 		$currentTarget = null;
 		$currentTargetDistSq = $maxDistance ** 2;
 
-		if(!$calculateFromArray){
-			$minX = ((int) floor($pos->x - $maxDistance)) >> 4;
-			$maxX = ((int) floor($pos->x + $maxDistance)) >> 4;
-			$minZ = ((int) floor($pos->z - $maxDistance)) >> 4;
-			$maxZ = ((int) floor($pos->z + $maxDistance)) >> 4;
-
-			for($x = $minX; $x <= $maxX; ++$x){
-				for($z = $minZ; $z <= $maxZ; ++$z){
-					foreach($this->getChunkEntities($x, $z) as $entity){
-						if(!($entity instanceof $entityType) or $entity->isClosed() or $entity->isFlaggedForDespawn() or (!$includeDead and !$entity->isAlive())){
+		for($x = $minX; $x <= $maxX; ++$x){
+			for($z = $minZ; $z <= $maxZ; ++$z){
+				foreach($this->getChunkEntities($x, $z) as $entity){
+					if(!($entity instanceof $entityType) or $entity->isClosed() or $entity->isFlaggedForDespawn() or (!$includeDead and !$entity->isAlive())){
+						continue;
+					}
+					if($filter !== null){
+						if(!$filter($entity)){
 							continue;
 						}
-						$distSq = $entity->distanceSquared($pos);
-						if($distSq < $currentTargetDistSq){
-							$currentTargetDistSq = $distSq;
-							$currentTarget = $entity;
-						}
 					}
-				}
-			}
-		}else{
-			$entities = array_filter($this->getEntities(), function(Entity $e) use ($entityType, $includeDead){
-				return $e instanceof $entityType and !$e->isClosed() and !$e->isFlaggedForDespawn() and ($includeDead or $e->isAlive());
-			});
-
-			foreach($entities as $entity){
-				$dist = $pos->distanceSquared($entity);
-				if($dist < $currentTargetDistSq){
-					$currentTargetDistSq = $dist;
-					$currentTarget = $entity;
+					$distSq = $entity->distanceSquared($pos);
+					if($distSq < $currentTargetDistSq){
+						$currentTargetDistSq = $distSq;
+						$currentTarget = $entity;
+					}
 				}
 			}
 		}
