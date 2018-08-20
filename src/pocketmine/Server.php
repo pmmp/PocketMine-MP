@@ -42,9 +42,9 @@ use pocketmine\event\HandlerList;
 use pocketmine\event\level\LevelLoadEvent;
 use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\player\PlayerDataSaveEvent;
+use pocketmine\event\server\CommandEvent;
 use pocketmine\event\server\DataPacketBroadcastEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
-use pocketmine\event\server\ServerCommandEvent;
 use pocketmine\inventory\CraftingManager;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
@@ -1140,6 +1140,7 @@ class Server{
 			return false;
 		}
 
+		/** @see LevelProvider::__construct() */
 		$level = new Level($this, $name, new $providerClass($path));
 
 		$this->levels[$level->getId()] = $level;
@@ -1187,6 +1188,7 @@ class Server{
 		/** @var LevelProvider $providerClass */
 		$providerClass::generate($path, $name, $seed, $generator, $options);
 
+		/** @see LevelProvider::__construct() */
 		$level = new Level($this, $name, new $providerClass($path));
 		$this->levels[$level->getId()] = $level;
 
@@ -2167,10 +2169,7 @@ class Server{
 	public function checkConsole(){
 		Timings::$serverCommandTimer->startTiming();
 		while(($line = $this->console->getLine()) !== null){
-			$this->pluginManager->callEvent($ev = new ServerCommandEvent($this->consoleSender, $line));
-			if(!$ev->isCancelled()){
-				$this->dispatchCommand($ev->getSender(), $ev->getCommand());
-			}
+			$this->dispatchCommand($this->consoleSender, $line);
 		}
 		Timings::$serverCommandTimer->stopTiming();
 	}
@@ -2180,10 +2179,20 @@ class Server{
 	 *
 	 * @param CommandSender $sender
 	 * @param string        $commandLine
+	 * @param bool          $internal
 	 *
 	 * @return bool
 	 */
-	public function dispatchCommand(CommandSender $sender, string $commandLine) : bool{
+	public function dispatchCommand(CommandSender $sender, string $commandLine, bool $internal = false) : bool{
+		if(!$internal){
+			$this->pluginManager->callEvent($ev = new CommandEvent($sender, $commandLine));
+			if($ev->isCancelled()){
+				return false;
+			}
+
+			$commandLine = $ev->getCommand();
+		}
+
 		if($this->commandMap->dispatch($sender, $commandLine)){
 			return true;
 		}
