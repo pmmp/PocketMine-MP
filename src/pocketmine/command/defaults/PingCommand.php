@@ -26,6 +26,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\lang\TranslationContainer;
 use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
@@ -63,6 +64,11 @@ class PingCommand extends VanillaCommand{
 			}else{
 				throw new InvalidCommandSyntaxException();
 			}
+		}
+
+		if($target === null){
+			$sender->sendMessage(new TranslationContainer("command.generic.player.notFound"));
+			return true;
 		}
 
 		$ping = $target->getPing();
