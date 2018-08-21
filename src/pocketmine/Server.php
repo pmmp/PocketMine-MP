@@ -2216,6 +2216,7 @@ class Server{
 		$this->commandMap->clearCommands();
 
 		$this->logger->info("Reloading properties...");
+		$this->loadAltayConfig();
 		$this->properties->reload();
 		$this->maxPlayers = $this->getConfigInt("max-players", 20);
 
