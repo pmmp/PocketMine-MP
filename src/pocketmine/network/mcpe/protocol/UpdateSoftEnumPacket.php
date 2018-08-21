@@ -25,37 +25,40 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\SessionHandler;
 
-class PlayStatusPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::PLAY_STATUS_PACKET;
+class UpdateSoftEnumPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::UPDATE_SOFT_ENUM_PACKET;
 
-	public const LOGIN_SUCCESS = 0;
-	public const LOGIN_FAILED_CLIENT = 1;
-	public const LOGIN_FAILED_SERVER = 2;
-	public const PLAYER_SPAWN = 3;
-	public const LOGIN_FAILED_INVALID_TENANT = 4;
-	public const LOGIN_FAILED_VANILLA_EDU = 5;
-	public const LOGIN_FAILED_EDU_VANILLA = 6;
-	public const LOGIN_FAILED_SERVER_FULL = 7;
+	public const TYPE_ADD = 0;
+	public const TYPE_REMOVE = 1;
+	public const TYPE_SET = 2;
 
+	/** @var string */
+	public $enumName;
+	/** @var string[] */
+	public $values = [];
 	/** @var int */
-	public $status;
+	public $type;
 
 	protected function decodePayload() : void{
-		$this->status = $this->getInt();
-	}
-
-	public function canBeSentBeforeLogin() : bool{
-		return true;
+		$this->enumName = $this->getString();
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$this->values[] = $this->getString();
+		}
+		$this->type = $this->getByte();
 	}
 
 	protected function encodePayload() : void{
-		$this->putInt($this->status);
+		$this->putString($this->enumName);
+		$this->putUnsignedVarInt(count($this->values));
+		foreach($this->values as $v){
+			$this->putString($v);
+		}
+		$this->putByte($this->type);
 	}
 
-	public function handle(SessionHandler $handler) : bool{
-		return $handler->handlePlayStatus($this);
+	public function handle(SessionHandler $session) : bool{
+		return $session->handleUpdateSoftEnum($this);
 	}
 }
