@@ -41,3 +41,4 @@ test_data/*
 
 # Doxygen
 Documentation/*
+tests/plugins/PocketMine-TesterPlugin/
