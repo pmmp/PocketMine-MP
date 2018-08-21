@@ -10,8 +10,10 @@ crashdumps/*
 *.phar
 server.properties
 /pocketmine.yml
+/altay.yml
 memory_dumps/*
 resource_packs/
+maps/*
 
 # Common IDEs
 .idea/
