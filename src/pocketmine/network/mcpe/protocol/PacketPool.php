@@ -167,7 +167,12 @@ class PacketPool{
 	 */
 	public static function getPacket(string $buffer) : DataPacket{
 		$offset = 0;
-		$pk = static::getPacketById(Binary::readUnsignedVarInt($buffer, $offset));
+		if(strlen($buffer) > 0){
+			$pid = Binary::readUnsignedVarInt($buffer, $offset);
+		}else{
+			$pid = -1;
+		}
+		$pk = static::getPacketById($pid);
 		$pk->setBuffer($buffer, $offset);
 
 		return $pk;
