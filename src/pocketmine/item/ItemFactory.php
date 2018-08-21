@@ -246,6 +246,8 @@ class ItemFactory{
 		self::registerItem(new Item(Item::NAUTILUS_SHELL, 0, "Nautilus Shell"));
 		self::registerItem(new GoldenAppleEnchanted());
 		self::registerItem(new Item(Item::HEART_OF_THE_SEA, 0, "Heart of the Sea"));
+		self::registerItem(new Item(Item::TURTLE_SHELL_PIECE, 0, "Scute"));
+		//TODO: TURTLE_HELMET
 
 		//TODO: COMPOUND
 		//TODO: RECORD_13

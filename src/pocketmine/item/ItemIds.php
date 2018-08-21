@@ -235,6 +235,8 @@ interface ItemIds extends BlockIds{
 	public const NAUTILUS_SHELL = 465;
 	public const APPLEENCHANTED = 466, APPLE_ENCHANTED = 466, ENCHANTED_GOLDEN_APPLE = 466;
 	public const HEART_OF_THE_SEA = 467;
+	public const TURTLE_SHELL_PIECE = 468;
+	public const TURTLE_HELMET = 469;
 
 	public const COMPOUND = 499;
 	public const RECORD_13 = 500;
