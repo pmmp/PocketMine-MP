@@ -650,7 +650,9 @@ abstract class Living extends Entity implements Damageable{
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		$this->doEffectsTick($tickDiff);
+		if($this->doEffectsTick($tickDiff)){
+			$hasUpdate = true;
+		}
 
 		if($this->isAlive()){
 			if($this->isInsideOfSolid()){
@@ -662,6 +664,7 @@ abstract class Living extends Entity implements Damageable{
 			if(!$this->canBreathe()){
 				$this->setBreathing(false);
 				$this->doAirSupplyTick($tickDiff);
+				$hasUpdate = true;
 			}elseif(!$this->isBreathing()){
 				$this->setBreathing(true);
 				$this->setAirSupplyTicks($this->getMaxAirSupplyTicks());
@@ -677,7 +680,7 @@ abstract class Living extends Entity implements Damageable{
 		return $hasUpdate;
 	}
 
-	protected function doEffectsTick(int $tickDiff = 1) : void{
+	protected function doEffectsTick(int $tickDiff = 1) : bool{
 		foreach($this->effects as $instance){
 			$type = $instance->getType();
 			if($type->canTick($instance)){
@@ -688,6 +691,8 @@ abstract class Living extends Entity implements Damageable{
 				$this->removeEffect($instance->getId());
 			}
 		}
+
+		return !empty($this->effects);
 	}
 
 	/**
