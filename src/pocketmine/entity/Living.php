@@ -695,7 +695,7 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	/**
-	 * Ticks the entity's air supply when it cannot breathe.
+	 * Ticks the entity's air supply, consuming it when underwater and regenerating it when out of water.
 	 *
 	 * @param int $tickDiff
 	 *
