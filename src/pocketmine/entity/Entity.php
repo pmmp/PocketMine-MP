@@ -1030,8 +1030,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$hasUpdate = true;
 		}
 
-		if($this->isOnFire()){
-			$hasUpdate = ($hasUpdate || $this->doOnFireTick($tickDiff));
+		if($this->isOnFire() and $this->doOnFireTick($tickDiff)){
+			$hasUpdate = true;
 		}
 
 		if($this->noDamageTicks > 0){
