@@ -190,7 +190,7 @@ class EntityNavigator{
 				}
 
 				return $y;
-			case self::PROCESSOR_TYPE_SWIM:
+			default:
 				return $this->mob->getFloorY();
 		}
 	}
