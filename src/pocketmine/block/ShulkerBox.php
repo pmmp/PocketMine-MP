@@ -93,10 +93,19 @@ class ShulkerBox extends Transparent{
 			$itemNBT = new CompoundTag();
 			$t->writeSaveData($itemNBT);
 			$item->setCustomBlockData($itemNBT);
+
 			return [$item];
 		}
 
 		return [];
+	}
+
+	public function onBreak(Item $item, Player $player = null) : bool{
+		$tile = $this->level->getTile($this);
+		if($tile instanceof TileShulkerBox){
+			$tile->getInventory()->clearAll(false);
+		}
+		return parent::onBreak($item, $player);
 	}
 
 	public function getVariantBitmask(): int{

@@ -229,7 +229,7 @@ class ArmorStand extends Living{
 	}
 
 	public function startDeathAnimation() : void{
-		$this->level->addParticle(new DestroyBlockParticle($this, BlockFactory::get(Block::WOOD2)));
+		$this->level->addParticle(new DestroyBlockParticle($this, BlockFactory::get(Block::WOODEN_PLANKS)));
 	}
 
 	protected function onDeathUpdate(int $tickDiff) : bool{
