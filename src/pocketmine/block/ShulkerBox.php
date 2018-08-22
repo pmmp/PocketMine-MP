@@ -93,7 +93,6 @@ class ShulkerBox extends Transparent{
 			$itemNBT = new CompoundTag();
 			$t->writeSaveData($itemNBT);
 			$item->setCustomBlockData($itemNBT);
-			$t->getInventory()->clearAll(false);
 			return [$item];
 		}
 
