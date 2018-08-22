@@ -24,7 +24,6 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\inventory\utils\EquipmentSlot;
 use pocketmine\item\Item;

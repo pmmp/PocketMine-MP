@@ -24,6 +24,9 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\object;
 
+use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
+use pocketmine\entity\Entity;
 use pocketmine\entity\EntityIds;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -33,8 +36,12 @@ use pocketmine\inventory\utils\EquipmentSlot;
 use pocketmine\item\Armor;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\level\particle\DestroyBlockParticle;
+use pocketmine\level\particle\ItemBreakParticle;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\Player;
 
@@ -54,10 +61,25 @@ class ArmorStand extends Living{
 
 	protected $gravity = 0.04;
 
+	protected $vibrateTimer = 0;
+
 	protected function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(6);
 
+		parent::initEntity($nbt);
+
 		$this->equipment = new AltayEntityEquipment($this);
+
+		if($nbt->hasTag("armorInv", ListTag::class)){
+			$armors = $nbt->getListTag("armorInv");
+
+			/** @var CompoundTag $armor */
+			foreach($armors as $armor){
+				$slot = $armor->getByte("Slot", 0);
+
+				$this->armorInventory->setItem($slot, Item::nbtDeserialize($armor));
+			}
+		}
 
 		if($nbt->hasTag(self::TAG_MAINHAND, CompoundTag::class)){
 			$this->equipment->setItemInHand(Item::nbtDeserialize($nbt->getCompoundTag(self::TAG_MAINHAND)));
@@ -67,8 +89,6 @@ class ArmorStand extends Living{
 		}
 
 		$this->setPose($nbt->getInt(self::TAG_POSE_INDEX, 0));
-
-		parent::initEntity($nbt);
 	}
 
 	public function getEquipmentSlot(Item $item) : int{
@@ -157,7 +177,7 @@ class ArmorStand extends Living{
 	public function fall(float $fallDistance) : void{
 		parent::fall($fallDistance);
 
-		$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_ARMOR_STAND_FALL);
+		$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_ARMOR_STAND_FALL, $this->getId());
 	}
 
 	public function saveNBT() : CompoundTag{
@@ -166,6 +186,16 @@ class ArmorStand extends Living{
 		if($this->equipment instanceof AltayEntityEquipment){
 			$nbt->setTag($this->equipment->getItemInHand()->nbtSerialize(-1, self::TAG_MAINHAND));
 			$nbt->setTag($this->equipment->getOffhandItem()->nbtSerialize(-1, self::TAG_OFFHAND));
+		}
+
+		if($this->armorInventory !== null){
+			$armorTag = new ListTag("armorInv", [], NBT::TAG_Compound);
+
+			for($i = 0; $i < 4; $i++){
+				$armorTag->push($this->armorInventory->getItem($i)->nbtSerialize($i));
+			}
+
+			$nbt->setTag($armorTag);
 		}
 
 		$nbt->setInt(self::TAG_POSE_INDEX, $this->getPose());
@@ -182,18 +212,28 @@ class ArmorStand extends Living{
 			$damager = $source->getDamager();
 			if($damager instanceof Player){
 				if($damager->isCreative()){
-					$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_ARMOR_STAND_BREAK);
-					$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_PARTICLE_DESTROY, 5);
-					$this->flagForDespawn();
-				}else{
-					$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_ARMOR_STAND_HIT);
+					$this->kill();
 				}
 			}
 		}
 		if($source->getCause() === EntityDamageEvent::CAUSE_CONTACT){ // cactus
 			$source->setCancelled(true);
 		}
-		parent::attack($source);
+
+		Entity::attack($source);
+
+		if(!$source->isCancelled()){
+			$this->setGenericFlag(self::DATA_FLAG_VIBRATING, true);
+			$this->vibrateTimer = 20;
+		}
+	}
+
+	public function startDeathAnimation() : void{
+		$this->level->addParticle(new DestroyBlockParticle($this, BlockFactory::get(Block::WOOD2)));
+	}
+
+	protected function onDeathUpdate(int $tickDiff) : bool{
+		return true;
 	}
 
 	protected function sendSpawnPacket(Player $player) : void{
@@ -208,5 +248,15 @@ class ArmorStand extends Living{
 
 	public function canBePushed() : bool{
 		return false;
+	}
+
+	public function entityBaseTick(int $tickDiff = 1) : bool{
+		$hasUpdate = parent::entityBaseTick($tickDiff);
+
+		if($this->getGenericFlag(self::DATA_FLAG_VIBRATING) and $this->vibrateTimer-- <= 0){
+			$this->setGenericFlag(self::DATA_FLAG_VIBRATING, false);
+		}
+
+		return $hasUpdate;
 	}
 }
