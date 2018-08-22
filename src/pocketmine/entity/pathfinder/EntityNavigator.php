@@ -35,6 +35,9 @@ use pocketmine\math\Vector3;
 
 class EntityNavigator{
 
+	public const PROCESSOR_TYPE_SWIM = 0;
+	public const PROCESSOR_TYPE_WALK = 1;
+
 	/** @var Mob */
 	protected $mob;
 
@@ -84,11 +87,20 @@ class EntityNavigator{
 	protected $stuckTick = 0;
 	/** @var Vector3 */
 	protected $movePoint;
+	/** @var int */
+	protected $processorType = self::PROCESSOR_TYPE_WALK;
 
 	public function __construct(Mob $mob){
 		$this->mob = $mob;
 	}
 
+	/**
+	 * @param PathPoint  $from
+	 * @param PathPoint  $to
+	 * @param float|null $followRange
+	 *
+	 * @return array
+	 */
 	public function navigate(PathPoint $from, PathPoint $to, ?float $followRange = null) : array{
 		if($followRange === null){
 			$followRange = $this->mob->getFollowRange();
@@ -102,7 +114,7 @@ class EntityNavigator{
 		$last = $from;
 		$path = [];
 		$open = [$from->getHashCode() => $from];
-		$currentY = $this->getPathableY();
+		$currentY = $this->getUsableYCoordinate();
 		$closed = [];
 		$highScore = $from;
 
@@ -161,19 +173,34 @@ class EntityNavigator{
 		return [];
 	}
 
-	public function getPathableY() : int{
-		$last = floor($this->mob->y);
-		if($this->mob->isSwimmer()){
-			for($i = 1; $i < 6; $i++){
-				if($this->mob->level->getBlock($this->mob->add(0, -$i, 0))->isSolid()){
-					break;
+	/**
+	 * @return int
+	 */
+	public function getUsableYCoordinate() : int{
+		switch($this->processorType){
+			case self::PROCESSOR_TYPE_WALK:
+				$y = $this->mob->getFloorY();
+
+				if($this->mob->isSwimmer()){
+					$currentBlock = $this->mob->level->getBlock($this->mob);
+					while($currentBlock instanceof Water){
+						$currentBlock = $currentBlock->getSide(Vector3::SIDE_UP);
+						$y++;
+					}
 				}
-				$last--;
-			}
+
+				return $y;
+			case self::PROCESSOR_TYPE_SWIM:
+				return $this->mob->getFloorY();
 		}
-		return (int) $last;
 	}
 
+	/**
+	 * @param array     $path
+	 * @param PathPoint $current
+	 *
+	 * @return array
+	 */
 	public function initPath(array $path, PathPoint $current){
 		$totalPath = [$current];
 		while(isset($path[$current->getHashCode()])){
@@ -184,10 +211,23 @@ class EntityNavigator{
 		return array_values($totalPath);
 	}
 
+	/**
+	 * @param PathPoint $from
+	 * @param PathPoint $to
+	 *
+	 * @return float
+	 */
 	public function calculateGridDistance(PathPoint $from, PathPoint $to) : float{
 		return abs($from->x - $to->x) + abs($from->y - $to->y);
 	}
 
+	/**
+	 * @param PathPoint $from
+	 * @param PathPoint $to
+	 * @param array     $cache
+	 *
+	 * @return float
+	 */
 	public function calculateBlockDistance(PathPoint $from, PathPoint $to, array $cache) : float{
 		$block1 = $this->getBlockByPoint($from, $cache);
 		$block2 = $this->getBlockByPoint($to, $cache);
@@ -206,6 +246,12 @@ class EntityNavigator{
 		return $block1->distanceSquared($block2);
 	}
 
+	/**
+	 * @param PathPoint $tile
+	 * @param array     $cache
+	 *
+	 * @return null|Block
+	 */
 	public function getBlockByPoint(PathPoint $tile, array $cache) : ?Block{
 		return $cache[$tile->getHashCode()] ?? null;
 	}
@@ -305,6 +351,9 @@ class EntityNavigator{
 		return $list;
 	}
 
+	/**
+	 * @param array $list
+	 */
 	public function checkDiagonals(array &$list) : void{
 		$checkDiagonals = [
 			0 => [
@@ -334,17 +383,30 @@ class EntityNavigator{
 		}
 	}
 
+	/**
+	 * @param Vector3 $coord
+	 *
+	 * @return bool
+	 */
 	public function isObstructed(Vector3 $coord) : bool{
 		for($i = 1; $i < $this->mob->height; $i++) if($this->isBlocked($coord->add(0, $i, 0))) return true;
 
 		return false;
 	}
 
+	/**
+	 * @param Vector3 $coord
+	 *
+	 * @return bool
+	 */
 	public function isBlocked(Vector3 $coord) : bool{
 		$block = $this->mob->level->getBlock($coord);
 		return $block->isSolid();
 	}
 
+	/**
+	 * Removes sunny path from current path
+	 */
 	public function removeSunnyPath() : void{
 		if($this->avoidsSun and $this->mob->level->isDayTime()){
 			$temp = new Vector3();
@@ -357,6 +419,9 @@ class EntityNavigator{
 		}
 	}
 
+	/**
+	 * Follows current path by index
+	 */
 	public function pathFollow() : void{
 		if($this->currentPath !== null){
 			$length = count($this->currentPath->getPoints()) - 1;
@@ -384,6 +449,13 @@ class EntityNavigator{
 		}
 	}
 
+	/**
+	 * @param Vector3 $from
+	 * @param Vector3 $to
+	 * @param bool    $onlySee
+	 *
+	 * @return bool
+	 */
 	public function isClearBetweenPoints(Vector3 $from, Vector3 $to, bool $onlySee = false) : bool{
 		$entityPos = $from;
 		$targetPos = $to;
@@ -405,6 +477,12 @@ class EntityNavigator{
 		return true;
 	}
 
+	/**
+	 * @param Vector3 $pos
+	 * @param bool    $onlySee
+	 *
+	 * @return bool
+	 */
 	public function isSafeToStandAt(Vector3 $pos, bool $onlySee = false) : bool{
 		if($this->isObstructed($pos) and !$onlySee){
 			return false;
@@ -421,23 +499,38 @@ class EntityNavigator{
 		return true;
 	}
 
+	/**
+	 * @param Path $path
+	 */
 	public function setPath(Path $path) : void{
 		$this->currentPath = $path;
 		$this->removeSunnyPath();
 	}
 
+	/**
+	 * @return null|Path
+	 */
 	public function getPath() : ?Path{
 		return $this->currentPath;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function havePath() : bool{
 		return $this->currentPath !== null and $this->currentPath->havePath();
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function isBusy() : bool{
 		return $this->havePath() or $this->movePoint !== null;
 	}
 
+	/**
+	 * @param bool $all
+	 */
 	public function clearPath(bool $all = true) : void{
 		$this->currentPath = null;
 		$this->lastPoint = null;
@@ -448,26 +541,50 @@ class EntityNavigator{
 		}
 	}
 
+	/**
+	 * @param bool $value
+	 */
 	public function setAvoidsWater(bool $value) : void{
 		$this->avoidsWater = $value;
 	}
 
+	/**
+	 * @param bool $value
+	 */
 	public function setAvoidsSun(bool $value) : void{
 		$this->avoidsSun = $value;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function getAvoidsWater() : bool{
 		return $this->avoidsWater;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function getAvoidsSun() : bool{
 		return $this->avoidsSun;
 	}
 
+	/**
+	 * @param Vector3 $point
+	 *
+	 * @return bool
+	 */
 	public function isSameDestination(Vector3 $point) : bool{
 		return !$this->havePath() ? false : $this->currentPath->getVectorByIndex(count($this->currentPath->getPoints()) - 1)->equals($point);
 	}
 
+	/**
+	 * @param Vector3    $pos
+	 * @param float      $speed
+	 * @param float|null $followRange
+	 *
+	 * @return bool
+	 */
 	public function tryMoveTo(Vector3 $pos, float $speed, ?float $followRange = null) : bool{
 		if(!$this->isSameDestination($pos->floor())){
 			$this->setSpeedMultiplier($speed);
@@ -477,10 +594,19 @@ class EntityNavigator{
 		return false;
 	}
 
+	/**
+	 * @param Vector3    $pos
+	 * @param float|null $followRange
+	 *
+	 * @return Path
+	 */
 	public function findPath(Vector3 $pos, ?float $followRange = null) : Path{
 		return new Path($this->navigate(new PathPoint(floor($this->mob->x), floor($this->mob->z)), new PathPoint(floor($pos->x), floor($pos->z)), $followRange));
 	}
 
+	/**
+	 * Update for navigation movement
+	 */
 	public function onNavigateUpdate() : void{
 		if($this->currentPath !== null){
 			if($this->havePath()){
@@ -535,6 +661,20 @@ class EntityNavigator{
 	public function setSpeedMultiplier(float $speedMultiplier) : void{
 		$this->speedMultiplier = $speedMultiplier;
 		$this->mob->setMovementSpeed($this->mob->getDefaultMovementSpeed() * $this->speedMultiplier);
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getProcessorType() : int{
+		return $this->processorType;
+	}
+
+	/**
+	 * @param int $processorType
+	 */
+	public function setProcessorType(int $processorType) : void{
+		$this->processorType = $processorType;
 	}
 
 }
