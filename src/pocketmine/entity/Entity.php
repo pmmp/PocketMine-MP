@@ -1725,7 +1725,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 				$entity->setRiddenByEntity($this);
 			}
 
-			$entity->setRotation($this->yaw, $this->pitch, $this->yaw);
+			$this->setRotation($entity->yaw, $entity->pitch);
 
 			$this->propertyManager->setVector3(self::DATA_RIDER_SEAT_POSITION, $entity->getRiderSeatPosition($seatNumber)->add(0, $this->getMountedYOffset(), 0));
 			$this->propertyManager->setByte(self::DATA_CONTROLLING_RIDER_SEAT_NUMBER, $seatNumber);
