@@ -190,7 +190,7 @@ class ArmorStand extends Living{
 				}
 			}
 		}
-		if($source->getCause() != EntityDamageEvent::CAUSE_CONTACT){ // cactus
+		if($source->getCause() === EntityDamageEvent::CAUSE_CONTACT){ // cactus
 			$source->setCancelled(true);
 		}
 		parent::attack($source);
