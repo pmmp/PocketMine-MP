@@ -1716,9 +1716,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	public function mountEntity(Entity $entity, int $seatNumber = 0) : void{
 		if($this->ridingEntity == null and $entity !== $this and count($entity->seats) < $entity->getSeatCount()){
-			if($entity instanceof Rideable){
-				$entity->onRiderMount($this);
-			}
 			$this->setRidingEntity($entity);
 
 			if($seatNumber === 0){
@@ -1749,6 +1746,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			if($this instanceof Player){
 				$this->sendDataPacket($pk);
 			}
+
+			if($entity instanceof Rideable){
+				$entity->onRiderMount($this);
+			}
 		}
 	}
 
@@ -1758,10 +1759,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	public function dismountEntity() : void{
 		if($this->ridingEntity !== null){
-			if($this->ridingEntity instanceof Rideable){
-				$this->ridingEntity->onRiderLeave($this);
-			}
-
 			unset($this->ridingEntity->seats[array_search($this, $this->ridingEntity->seats)]);
 
 			if($this->isRiding()){
@@ -1785,9 +1782,13 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			if($this instanceof Player){
 				$this->sendDataPacket($pk);
 			}
-		}
 
-		$this->setRidingEntity(null);
+			$this->setRidingEntity(null);
+
+			if($this->ridingEntity instanceof Rideable){
+				$this->ridingEntity->onRiderLeave($this);
+			}
+		}
 	}
 
 	public function getRiderSeatPosition(int $seatNumber = 0) : Vector3{
