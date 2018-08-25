@@ -49,7 +49,7 @@ class TeleportCommand extends VanillaCommand{
 		}
 
 		$args = array_values(array_filter($args, function($arg){
-			return strlen($arg) > 0;
+			return $arg !== "";
 		}));
 		if(count($args) < 1 or count($args) > 6){
 			throw new InvalidCommandSyntaxException();
