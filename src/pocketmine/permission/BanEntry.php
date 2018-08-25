@@ -168,7 +168,7 @@ class BanEntry{
 				}
 
 				$expire = trim(array_shift($str));
-				if(strtolower($expire) !== "forever" and strlen($expire) > 0){
+				if($expire !== "" and strtolower($expire) !== "forever"){
 					$entry->setExpires(self::parseDate($expire));
 				}
 				if(empty($str)){
