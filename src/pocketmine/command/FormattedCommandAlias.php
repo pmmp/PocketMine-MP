@@ -42,7 +42,7 @@ class FormattedCommandAlias extends Command{
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
 
 		$commands = [];
-		$result = false;
+		$result = true;
 
 		foreach($this->formatStrings as $formatString){
 			try{
@@ -59,7 +59,7 @@ class FormattedCommandAlias extends Command{
 		}
 
 		foreach($commands as $command){
-			$result |= Server::getInstance()->dispatchCommand($sender, $command, true);
+			$result &= Server::getInstance()->dispatchCommand($sender, $command, true);
 		}
 
 		return (bool) $result;
