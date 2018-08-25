@@ -177,7 +177,7 @@ class RCONInstance extends Thread{
 									$disconnect[$id] = $sock;
 									break;
 								}
-								if(strlen($payload) > 0){
+								if($payload !== ""){
 									$this->cmd = ltrim($payload);
 									$this->synchronized(function(){
 										$this->notifier->wakeupSleeper();
