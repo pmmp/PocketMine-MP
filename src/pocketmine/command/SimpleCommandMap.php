@@ -312,7 +312,7 @@ class SimpleCommandMap implements CommandMap{
 
 
 				if($command === null){
-					if(strlen($bad) > 0){
+					if($bad !== ""){
 						$bad .= ", ";
 					}
 					$bad .= $commandString;
@@ -331,7 +331,7 @@ class SimpleCommandMap implements CommandMap{
 				continue;
 			}
 
-			if(strlen($bad) > 0){
+			if($bad !== ""){
 				$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.command.alias.notFound", [$alias, $bad]));
 				continue;
 			}
