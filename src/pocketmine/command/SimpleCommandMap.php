@@ -302,9 +302,9 @@ class SimpleCommandMap implements CommandMap{
 			}
 
 			$targets = [];
+			$bad = [];
+			$recursive = [];
 
-			$bad = "";
-			$recursive = "";
 			foreach($commandStrings as $commandString){
 				$args = explode(" ", $commandString);
 				$commandName = "";
@@ -312,27 +312,21 @@ class SimpleCommandMap implements CommandMap{
 
 
 				if($command === null){
-					if(strlen($bad) > 0){
-						$bad .= ", ";
-					}
-					$bad .= $commandString;
+					$bad[] = $commandString;
 				}elseif($commandName === $alias){
-					if($recursive !== ""){
-						$recursive .= ", ";
-					}
-					$recursive .= $commandString;
+					$recursive[] = $commandString;
 				}else{
 					$targets[] = $commandString;
 				}
 			}
 
-			if($recursive !== ""){
-				$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.command.alias.recursive", [$alias, $recursive]));
+			if(!empty($recursive)){
+				$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.command.alias.recursive", [$alias, implode(", ", $recursive)]));
 				continue;
 			}
 
-			if(strlen($bad) > 0){
-				$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.command.alias.notFound", [$alias, $bad]));
+			if(!empty($bad)){
+				$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.command.alias.notFound", [$alias, implode(", ", $bad)]));
 				continue;
 			}
 
