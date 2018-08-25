@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ *  ____			_		_   __  __ _				  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___	  |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|	 |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -72,24 +72,24 @@ class FormattedCommandAlias extends Command{
 	 * @return string
 	 */
 	private function buildCommand(string $formatString, array $args) : string{
-        $placeholders = [];
-        preg_match_all('/\s(\$\d+)(?!\S)/', $formatString, $placeholders);
+		$placeholders = [];
+		preg_match_all('/\s(\$\d+)(?!\S)/', $formatString, $placeholders);
 
-        // Remove duplicates since we replace every instance anyways
-        $placeholders = array_unique($placeholders[1]);
+		// Remove duplicates since we replace every instance anyways
+		$placeholders = array_unique($placeholders[1]);
 
-        foreach($placeholders as $placeholder){
-            $index = substr($placeholder, 1);
-            var_dump($index);
-            if(!isset($args[$index])){
-                throw new \InvalidArgumentException('Not enough arguments provided!');
-            }
+		foreach($placeholders as $placeholder){
+			$index = substr($placeholder, 1);
+			// -1 because $1 is index 0
+			if(!isset($args[$index - 1])){
+				throw new \InvalidArgumentException("Not enough arguments provided!");
+			}
 
-            // Only match those that are words by themselves and add space to replacement
-            // because this will match the space before the $
-            $formatString = preg_replace('/\s\$'.$index.'(?!\S)/', " $args[$index]", $formatString);
-        }
+			// Only match those that are words by themselves and add space to replacement
+			// because this will match the space before the $
+			$formatString = preg_replace('/\s\$'.$index.'(?!\S)/', " {$args[$index - 1]}", $formatString);
+		}
 
-        return $formatString;
-    }
+		return $formatString;
+	}
 }
