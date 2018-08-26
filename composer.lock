@@ -149,16 +149,16 @@
         },
         {
             "name": "pocketmine/binaryutils",
-            "version": "0.1.0",
+            "version": "0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BinaryUtils.git",
-                "reference": "c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595"
+                "reference": "54efeb978be0ff9335022729fe63c1e2077bf1be"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595",
-                "reference": "c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595",
+                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/54efeb978be0ff9335022729fe63c1e2077bf1be",
+                "reference": "54efeb978be0ff9335022729fe63c1e2077bf1be",
                 "shasum": ""
             },
             "require": {
@@ -179,20 +179,20 @@
                 "source": "https://github.com/pmmp/BinaryUtils/tree/master",
                 "issues": "https://github.com/pmmp/BinaryUtils/issues"
             },
-            "time": "2018-04-16T09:05:08+00:00"
+            "time": "2018-08-26T18:11:05+00:00"
         },
         {
             "name": "pocketmine/math",
-            "version": "0.2.0",
+            "version": "0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "95ae5600328ed2add44c0bc830a68d3660e9e0ef"
+                "reference": "ee299f5c9c444ca526c9c691b920f321458cf0b6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/95ae5600328ed2add44c0bc830a68d3660e9e0ef",
-                "reference": "95ae5600328ed2add44c0bc830a68d3660e9e0ef",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/ee299f5c9c444ca526c9c691b920f321458cf0b6",
+                "reference": "ee299f5c9c444ca526c9c691b920f321458cf0b6",
                 "shasum": ""
             },
             "require": {
@@ -210,10 +210,10 @@
             ],
             "description": "PHP library containing math related code used in PocketMine-MP",
             "support": {
-                "source": "https://github.com/pmmp/Math/tree/master",
+                "source": "https://github.com/pmmp/Math/tree/0.2.1",
                 "issues": "https://github.com/pmmp/Math/issues"
             },
-            "time": "2018-06-09T09:26:30+00:00"
+            "time": "2018-08-15T15:43:27+00:00"
         },
         {
             "name": "pocketmine/nbt",
