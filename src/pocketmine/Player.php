@@ -2042,7 +2042,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->gamemode = $this->server->getGamemode();
 		}
 
-		$this->setAllowFlight($this->isCreative());
+		$this->allowFlight = $this->isCreative();
 		$this->keepMovement = $this->isSpectator() || $this->allowMovementCheats();
 		if($this->isOp()){
 			$this->setRemoveFormat(false);

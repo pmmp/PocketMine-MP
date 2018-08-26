@@ -684,7 +684,9 @@ abstract class Living extends Entity implements Damageable{
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		$this->doEffectsTick($tickDiff);
+		if($this->doEffectsTick($tickDiff)){
+			$hasUpdate = true;
+		}
 
 		if($this->isAlive()){
 			if($this->isInsideOfSolid()){
@@ -693,12 +695,8 @@ abstract class Living extends Entity implements Damageable{
 				$this->attack($ev);
 			}
 
-			if(!$this->canBreathe()){
-				$this->setBreathing(false);
-				$this->doAirSupplyTick($tickDiff);
-			}elseif(!$this->isBreathing()){
-				$this->setBreathing(true);
-				$this->setAirSupplyTicks($this->getMaxAirSupplyTicks());
+			if($this->doAirSupplyTick($tickDiff)){
+				$hasUpdate = true;
 			}
 		}
 
@@ -711,7 +709,7 @@ abstract class Living extends Entity implements Damageable{
 		return $hasUpdate;
 	}
 
-	protected function doEffectsTick(int $tickDiff = 1) : void{
+	protected function doEffectsTick(int $tickDiff = 1) : bool{
 		foreach($this->effects as $instance){
 			$type = $instance->getType();
 			if($type->canTick($instance)){
@@ -722,24 +720,44 @@ abstract class Living extends Entity implements Damageable{
 				$this->removeEffect($instance->getId());
 			}
 		}
+
+		return !empty($this->effects);
 	}
 
 	/**
-	 * Ticks the entity's air supply when it cannot breathe.
+	 * Ticks the entity's air supply, consuming it when underwater and regenerating it when out of water.
 	 *
 	 * @param int $tickDiff
+	 *
+	 * @return bool
 	 */
-	protected function doAirSupplyTick(int $tickDiff) : void{
-		if(($respirationLevel = $this->armorInventory->getHelmet()->getEnchantmentLevel(Enchantment::RESPIRATION)) <= 0 or lcg_value() <= (1 / ($respirationLevel + 1))){
-			$ticks = $this->getAirSupplyTicks() - $tickDiff;
-
-			if($ticks <= -20){
-				$this->setAirSupplyTicks(0);
-				$this->onAirExpired();
-			}else{
-				$this->setAirSupplyTicks($ticks);
+	protected function doAirSupplyTick(int $tickDiff) : bool{
+		$ticks = $this->getAirSupplyTicks();
+		$oldTicks = $ticks;
+		if(!$this->canBreathe()){
+			$this->setBreathing(false);
+			if(($respirationLevel = $this->armorInventory->getHelmet()->getEnchantmentLevel(Enchantment::RESPIRATION)) <= 0 or lcg_value() <= (1 / ($respirationLevel + 1))){
+				$ticks -= $tickDiff;
+				if($ticks <= -20){
+					$ticks = 0;
+					$this->onAirExpired();
+				}
+			}
+		}elseif(!$this->isBreathing()){
+			if($ticks < ($max = $this->getMaxAirSupplyTicks())){
+				$ticks += $tickDiff * 5;
+			}
+			if($ticks >= $max){
+				$ticks = $max;
+				$this->setBreathing(true);
 			}
 		}
+
+		if($ticks !== $oldTicks){
+			$this->setAirSupplyTicks($ticks);
+		}
+
+		return $ticks !== $oldTicks;
 	}
 
 	/**
