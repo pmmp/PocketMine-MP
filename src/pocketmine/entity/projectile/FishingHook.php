@@ -5,6 +5,7 @@ namespace pocketmine\entity\projectile;
 use pocketmine\block\Water;
 use pocketmine\entity\Entity;
 use pocketmine\entity\object\ItemEntity;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\FishingRod;
 use pocketmine\item\Item;
@@ -39,7 +40,9 @@ class FishingHook extends Projectile{
 	protected $fishApproachAngle = 0;
 
 	public function attack(EntityDamageEvent $source) : void{
-		$source->setCancelled();
+		if($source instanceof EntityDamageByEntityEvent){
+			$source->setCancelled();
+		}
 		parent::attack($source);
 	}
 
