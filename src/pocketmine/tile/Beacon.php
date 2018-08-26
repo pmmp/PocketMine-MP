@@ -31,6 +31,7 @@ use pocketmine\inventory\BeaconInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
 class Beacon extends Spawnable implements Nameable, InventoryHolder{
@@ -60,7 +61,7 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder{
 		$this->scheduleUpdate();
 	}
 
-	protected function readSaveData(CompoundTag $nbt): void{
+	protected function readSaveData(CompoundTag $nbt) : void{
 		$this->primary = $nbt->getInt(self::TAG_PRIMARY, 0);
 		$this->secondary = $nbt->getInt(self::TAG_SECONDARY, 0);
 
@@ -70,7 +71,7 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder{
 		$this->loadItems($nbt);
 	}
 
-	protected function writeSaveData(CompoundTag $nbt): void{
+	protected function writeSaveData(CompoundTag $nbt) : void{
 		$nbt->setInt(self::TAG_PRIMARY, $this->primary);
 		$nbt->setInt(self::TAG_SECONDARY, $this->secondary);
 
@@ -120,15 +121,17 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder{
 	public function onUpdate() : bool{
 		$pyramidLevels = $this->getPyramidLevels();
 
-		$duration = 180 + $pyramidLevels*40;
-		$range = 10 + $pyramidLevels*10;
+		$duration = 180 + $pyramidLevels * 40;
+		$range = 10 + $pyramidLevels * 10;
 
 		$effectPrim = Effect::getEffect($this->primary);
 
 		if($effectPrim != null && $pyramidLevels > 0){
 			$effectPrim = new EffectInstance($effectPrim, $duration, $pyramidLevels == 4 && $this->primary == $this->secondary ? 1 : 0);
 
-			$players = array_filter($this->level->getPlayers(), function(Player $player) use($range) : bool{ return $player->spawned && $player->distance($this) <= $range; });
+			$players = array_filter($this->level->getPlayers(), function(Player $player) use ($range) : bool{
+				return $player->spawned and $player->distance($this) <= $range;
+			});
 			/** @var Player $player */
 			foreach($players as $player){
 				$player->addEffect($effectPrim);
@@ -143,7 +146,7 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder{
 		return true;
 	}
 
-	private function getPyramidLevels() : int{
+	protected function getPyramidLevels() : int{
 		$allMineral = true;
 		for($i = 1; $i < 5; $i++){
 			for($x = -$i; $x < $i + 1; $x++){

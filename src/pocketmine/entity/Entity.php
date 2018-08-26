@@ -57,6 +57,7 @@ use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\projectile\Egg;
 use pocketmine\entity\projectile\EnderPearl;
 use pocketmine\entity\projectile\ExperienceBottle;
+use pocketmine\entity\projectile\FishingHook;
 use pocketmine\entity\projectile\Snowball;
 use pocketmine\entity\projectile\SplashPotion;
 use pocketmine\entity\object\PaintingMotive;
@@ -395,6 +396,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		Entity::registerEntity(Creeper::class, false, [
 			'Creeper',
 			'minecraft:creeper'
+		]);
+		Entity::registerEntity(FishingHook::class, false, [
+			'FishingHook',
+			'minecraft:fishing_hook'
 		]);
 
 		Entity::registerEntity(Human::class, true);

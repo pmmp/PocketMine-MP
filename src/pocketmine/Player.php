@@ -35,6 +35,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\projectile\Arrow;
+use pocketmine\entity\projectile\FishingHook;
 use pocketmine\entity\Skin;
 use pocketmine\entity\utils\Bossbar;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -337,6 +338,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $formIdCounter = 0;
 	/** @var Form[] */
 	protected $forms = [];
+	/** @var null|FishingHook */
+	protected $fishingHook = null;
 
 	/**
 	 * @return TranslationContainer|string
@@ -462,6 +465,20 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function hasAutoJump() : bool{
 		return $this->autoJump;
+	}
+
+	/**
+	 * @return null|FishingHook
+	 */
+	public function getFishingHook() : ?FishingHook{
+		return $this->fishingHook;
+	}
+
+	/**
+	 * @param null|FishingHook $fishingHook
+	 */
+	public function setFishingHook(?FishingHook $fishingHook) : void{
+		$this->fishingHook = $fishingHook;
 	}
 
 	public function allowMovementCheats() : bool{
