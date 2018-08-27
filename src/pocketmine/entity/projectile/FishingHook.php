@@ -1,5 +1,27 @@
 <?php
 
+/*
+ *               _ _
+ *         /\   | | |
+ *        /  \  | | |_ __ _ _   _
+ *       / /\ \ | | __/ _` | | | |
+ *      / ____ \| | || (_| | |_| |
+ *     /_/    \_|_|\__\__,_|\__, |
+ *                           __/ |
+ *                          |___/
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Altay
+ *
+ */
+
+declare(strict_types=1);
+
 namespace pocketmine\entity\projectile;
 
 use pocketmine\block\Water;
@@ -13,7 +35,6 @@ use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\level\particle\GenericParticle;
 use pocketmine\level\particle\Particle;
-use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -204,7 +225,9 @@ class FishingHook extends Projectile{
 		return $hasUpdate;
 	}
 
-	public function onDeath() : void{
+	public function flagForDespawn() : void{
+		parent::flagForDespawn();
+
 		$owner = $this->getOwningEntity();
 		if($owner instanceof Player){
 			$owner->setFishingHook(null);
@@ -221,9 +244,7 @@ class FishingHook extends Projectile{
 				$d4 = $angler->z - $this->z;
 				$d6 = (int) sqrt($d0 * $d0 + $d2 * $d2 + $d4 * $d4);
 				$d8 = 0.1;
-				$this->ridingEntity->motion->x = $d0 * $d8;
-				$this->ridingEntity->motion->y = $d2 * $d8 + (int) sqrt($d6) * 0.08;
-				$this->ridingEntity->motion->z = $d4 * $d8;
+				$this->ridingEntity->setMotion(new Vector3($d0 * $d8, $d2 * $d8 + (int) sqrt($d6) * 0.08, $d4 * $d8));
 			}elseif($this->ticksCatchable > 0){
 				// TODO: Random weighted items
 				$items = [Item::RAW_FISH, Item::PUFFERFISH, Item::RAW_SALMON, Item::CLOWNFISH];
@@ -237,9 +258,7 @@ class FishingHook extends Projectile{
 				$d4 = $angler->z - $this->z;
 				$d6 = (int) sqrt($d0 * $d0 + $d2 * $d2 + $d4 * $d4);
 				$d8 = 0.1;
-				$entityitem->motion->x += $d0 * $d8;
-				$entityitem->motion->y += $d2 * $d8 + (int) sqrt($d6) * 0.08;
-				$entityitem->motion->z += $d4 * $d8;
+				$entityitem->setMotion(new Vector3($d0 * $d8, $d2 * $d8 + (int) sqrt($d6) * 0.08, $d4 * $d8));
 				$entityitem->spawnToAll();
 				$this->level->dropExperience($angler, $this->random->nextBoundedInt(6) + 1);
 			}
