@@ -1764,35 +1764,37 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	public function dismountEntity() : void{
 		if($this->ridingEntity !== null){
-			unset($this->ridingEntity->seats[array_search($this, $this->ridingEntity->seats)]);
+			$entity = $this->ridingEntity;
+
+			unset($entity->seats[array_search($this, $entity->seats)]);
 
 			if($this->isRiding()){
-				$this->ridingEntity->setRiddenByEntity(null);
+				$entity->setRiddenByEntity(null);
 			}
 
 			$this->entityRiderYawDelta = 0;
 			$this->entityRiderPitchDelta = 0;
 
 			$this->setRiding(false);
-			$this->ridingEntity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_WASD_CONTROLLED, false);
+			$entity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_WASD_CONTROLLED, false);
 			$this->propertyManager->removeProperty(self::DATA_RIDER_SEAT_POSITION);
 			$this->propertyManager->removeProperty(self::DATA_RIDER_ROTATION_LOCKED);
 			$this->propertyManager->removeProperty(self::DATA_RIDER_MAX_ROTATION);
 			$this->propertyManager->removeProperty(self::DATA_RIDER_MIN_ROTATION);
 
 			$pk = new SetEntityLinkPacket();
-			$pk->link = new EntityLink($this->ridingEntity->getId(), $this->id, EntityLink::TYPE_REMOVE);
+			$pk->link = new EntityLink($entity->getId(), $this->id, EntityLink::TYPE_REMOVE);
 			$this->server->broadcastPacket($this->getViewers(), $pk);
 
 			if($this instanceof Player){
 				$this->sendDataPacket($pk);
 			}
 
-			if($this->ridingEntity instanceof Rideable){
-				$this->ridingEntity->onRiderLeave($this);
-			}
-
 			$this->setRidingEntity(null);
+
+			if($entity instanceof Rideable){
+				$entity->onRiderLeave($this);
+			}
 		}
 	}
 
