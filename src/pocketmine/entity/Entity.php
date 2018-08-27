@@ -1788,11 +1788,11 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 				$this->sendDataPacket($pk);
 			}
 
-			$this->setRidingEntity(null);
-
 			if($this->ridingEntity instanceof Rideable){
 				$this->ridingEntity->onRiderLeave($this);
 			}
+
+			$this->setRidingEntity(null);
 		}
 	}
 
