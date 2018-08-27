@@ -1219,12 +1219,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function entityBaseTick(int $tickDiff = 1) : bool{
-		if($this->ridingEntity instanceof Entity and !$this->ridingEntity->isAlive()){
+		if($this->ridingEntity instanceof Entity and $this->ridingEntity->isClosed()){
 			$this->ridingEntity = null;
 			$this->setRiding(false);
 		}
 
-		if($this->riddenByEntity instanceof Entity and !$this->riddenByEntity->isAlive()){
+		if($this->riddenByEntity instanceof Entity and $this->riddenByEntity->isClosed()){
 			$this->riddenByEntity = null;
 			$this->setGenericFlag(Entity::DATA_FLAG_WASD_CONTROLLED, false);
 		}
@@ -1799,7 +1799,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function getRiderSeatPosition(int $seatNumber = 0) : Vector3{
-		return new Vector3(0, $this->height * 0.75, 0);
+		return new Vector3(0, 0, 0);
 	}
 
 	public function getSeatCount() : int{
