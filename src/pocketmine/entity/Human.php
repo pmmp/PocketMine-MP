@@ -41,6 +41,7 @@ use pocketmine\item\FoodSource;
 use pocketmine\item\Totem;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
@@ -917,5 +918,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if(!($entity instanceof Player)){
 			parent::onCollideWithEntity($entity);
 		}
+	}
+
+	public function getRiderSeatPosition(int $seatNumber = 0) : Vector3{
+		return new Vector3(-0.4, -0.15, 0.04);
 	}
 }
