@@ -2942,6 +2942,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		return $id;
 	}
+	
+	/**
+	 * Get the current bossbar ID
+	 *
+	 * @return int
+	 */
+	public function getBossbarIdCount() : int{
+		return $this->bossbarIdCounter;
+	}
 
 	/**
 	 * Adds a title text to the user's screen, with an optional subtitle.
