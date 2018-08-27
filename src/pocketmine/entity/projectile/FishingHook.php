@@ -108,7 +108,7 @@ class FishingHook extends Projectile{
 
 		if($owner instanceof Player){
 			if(!($owner->getInventory()->getItemInHand() instanceof FishingRod) or !$owner->isAlive() or $owner->isClosed() or $owner->distanceSquared($this) > 1024){
-				$this->kill();
+				$this->flagForDespawn();
 			}
 
 			if($this->isUnderwater()){
@@ -219,14 +219,14 @@ class FishingHook extends Projectile{
 				}
 			}
 		}else{
-			$this->kill();
+			$this->flagForDespawn();
 		}
 
 		return $hasUpdate;
 	}
 
-	public function flagForDespawn() : void{
-		parent::flagForDespawn();
+	public function close() : void{
+		parent::close();
 
 		$owner = $this->getOwningEntity();
 		if($owner instanceof Player){
@@ -263,7 +263,7 @@ class FishingHook extends Projectile{
 				$this->level->dropExperience($angler, $this->random->nextBoundedInt(6) + 1);
 			}
 
-			$this->kill();
+			$this->flagForDespawn();
 		}
 	}
 
