@@ -1004,7 +1004,6 @@ class Level implements ChunkManager, Metadatable{
 		foreach($this->chunkTickList as $index => $loaders){
 			Level::getXZ($index, $chunkX, $chunkZ);
 
-
 			if(($chunk = $this->chunks[$index] ?? null) === null){
 				unset($this->chunkTickList[$index]);
 				continue;
@@ -1015,7 +1014,6 @@ class Level implements ChunkManager, Metadatable{
 			foreach($chunk->getEntities() as $entity){
 				$entity->scheduleUpdate();
 			}
-
 
 			foreach($chunk->getSubChunks() as $Y => $subChunk){
 				if(!($subChunk instanceof EmptySubChunk)){

@@ -825,6 +825,20 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->setScale($value ? 0.5 : 1.0);
 	}
 
+	/**
+	 * @return bool
+	 */
+	public function isStatic() : bool{
+		return $this->isStatic;
+	}
+
+	/**
+	 * @param bool $static
+	 */
+	public function setStatic(bool $static) : void{
+		$this->isStatic = $static;
+	}
+
 	public function getBoundingBox() : AxisAlignedBB{
 		return $this->boundingBox;
 	}
@@ -1643,9 +1657,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		$this->timings->stopTiming();
 
-		//if($this->isStatic())
-		return ($hasUpdate or $this->hasMovementUpdate());
-		//return !($this instanceof Player);
+		return ($hasUpdate or $this->hasMovementUpdate()) or $this->isStatic();
 	}
 
 	final public function scheduleUpdate() : void{
