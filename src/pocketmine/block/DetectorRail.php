@@ -31,5 +31,9 @@ class DetectorRail extends Rail{
 		return "Detector Rail";
 	}
 
+	public function canCurve() : bool{
+		return false;
+	}
+
 	//TODO
 }

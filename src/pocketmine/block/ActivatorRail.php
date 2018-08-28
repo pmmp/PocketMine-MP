@@ -31,5 +31,9 @@ class ActivatorRail extends Rail{
 		return "Activator Rail";
 	}
 
+	public function canCurve() : bool{
+		return false;
+	}
+
 	//TODO
 }
