@@ -32,12 +32,12 @@ use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\inventory\AltayEntityEquipment;
+use pocketmine\inventory\ArmorInventory;
 use pocketmine\inventory\utils\EquipmentSlot;
 use pocketmine\item\Armor;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\particle\DestroyBlockParticle;
-use pocketmine\level\particle\ItemBreakParticle;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
@@ -52,6 +52,7 @@ class ArmorStand extends Living{
 	public const TAG_MAINHAND = "Mainhand";
 	public const TAG_OFFHAND = "Offhand";
 	public const TAG_POSE_INDEX = "PoseIndex";
+	public const TAG_ARMOR = "Armor";
 
 	/** @var AltayEntityEquipment */
 	protected $equipment;
@@ -65,13 +66,14 @@ class ArmorStand extends Living{
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(6);
+		$this->setImmobile(true);
 
 		parent::initEntity($nbt);
 
 		$this->equipment = new AltayEntityEquipment($this);
 
-		if($nbt->hasTag("armorInv", ListTag::class)){
-			$armors = $nbt->getListTag("armorInv");
+		if($nbt->hasTag(self::TAG_ARMOR, ListTag::class)){
+			$armors = $nbt->getListTag(self::TAG_ARMOR);
 
 			/** @var CompoundTag $armor */
 			foreach($armors as $armor){
@@ -89,21 +91,7 @@ class ArmorStand extends Living{
 		}
 
 		$this->setPose($nbt->getInt(self::TAG_POSE_INDEX, 0));
-	}
-
-	public function getEquipmentSlot(Item $item) : int{
-		if($item instanceof Armor){
-			return $item->getArmorSlot();
-		}else{
-			switch($item->getId()){
-				case Item::SKULL:
-				case Item::SKULL_BLOCK:
-				case Item::PUMPKIN:
-					return EquipmentSlot::HEAD;
-			}
-
-			return -1;
-		}
+		$this->propertyManager->setString(self::DATA_INTERACTIVE_TAG, "armorstand.change.pose");
 	}
 
 	public function setPose(int $pose) : void{
@@ -114,63 +102,93 @@ class ArmorStand extends Living{
 		return $this->propertyManager->getInt(self::DATA_ARMOR_STAND_POSE_INDEX);
 	}
 
-	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : void{
+	public function onInteract(Player $player, Item $itemstack, Vector3 $clickPos, int $slot) : bool{
 		if($player->isSneaking()){
-			$pose = $this->getPose();
-			if(++$pose >= 13){
-				$pose = 0;
+			$this->setPose($this->getPose() + 1);
+
+			if($this->getPose() > 14){
+				$this->setPose(0);
+			}
+			return true;
+		}
+		if($this->isValid() and !$player->isSpectator()){
+			$i = 0;
+			$flag = !$itemstack->isNull();
+
+			$isArmorSlot = false;
+
+			if($flag and $itemstack instanceof Armor){
+				$i = $itemstack->getArmorSlot();
+				$isArmorSlot = true;
 			}
 
-			$this->setPose($pose);
-		}else{
-			$diff = $clickPos->getY() - $this->getY();
-			$type = $this->getEquipmentSlot($item);
-			$playerInv = $player->getInventory();
+			if($flag and ($itemstack->getId() === Item::SKULL or $itemstack->getId() === Item::PUMPKIN)){
+				$i = 0;
+			}
+			$j = 0;
+			$d3 = $clickPos->y - $this->y;
+			$flag2 = false;
 
-			switch(true){ // yes order matter here.
-				case ($diff < 0.5):
-					$clicked = EquipmentSlot::FEET;
-					break;
-				case ($diff < 1):
-					$clicked = EquipmentSlot::LEGS;
-					break;
-				case ($diff < 1.5):
-					$clicked = EquipmentSlot::CHEST;
-					break;
-				default: // armor stands are only 2-ish blocks tall :shrug:
-					$clicked = EquipmentSlot::HEAD;
-					break;
+			if($d3 >= 0.1 and $d3 < 0.55 and !$this->armorInventory->getItem(ArmorInventory::SLOT_FEET)->isNull()){
+				$j = 3;
+				$flag2 = $isArmorSlot = true;
+			}elseif($d3 >= 0.9 and $d3 < 1.6 and !$this->armorInventory->getItem(ArmorInventory::SLOT_LEGS)->isNull()){
+				$j = 2;
+				$flag2 = $isArmorSlot = true;
+			}elseif($d3 >= 0.4 and $d3 < 1.2 and !$this->armorInventory->getItem(ArmorInventory::SLOT_CHEST)->isNull()){
+				$j = 1;
+				$flag2 = $isArmorSlot = true;
+			}elseif($d3 >= 1.6 and !$this->armorInventory->getItem(ArmorInventory::SLOT_HEAD)->isNull()){
+				$j = 0;
+				$flag2 = $isArmorSlot = true;
+			}elseif(!$this->equipment->getItem($j)->isNull()){
+				$flag2 = true;
 			}
 
-			if($item->isNull()){
-				if($clicked == EquipmentSlot::CHEST){
-					if($this->equipment->getItemInHand()->isNull()){
-						$playerInv->setItemInHand($this->armorInventory->getChestplate());
-						$this->armorInventory->setChestplate($item);
-					}else{
-						$playerInv->setItemInHand($this->equipment->getItemInHand());
-						$this->equipment->setItemInHand($item);
-					}
-				}else{
-					$playerInv->setItemInHand($this->armorInventory->getItem($clicked));
-					$this->armorInventory->setItem($clicked, $item);
-				}
+			if($flag){
+				$this->tryChangeEquipment($player, $itemstack, $i, $isArmorSlot);
+			}elseif($flag2){
+				$this->tryChangeEquipment($player, $itemstack, $j, $isArmorSlot);
+			}
+
+			$this->equipment->sendContents($player);
+			$this->armorInventory->sendContents($player);
+
+			return $flag or $flag2;
+		}
+		return false;
+	}
+
+	protected function tryChangeEquipment(Player $player, Item $handItem, int $slot, bool $isArmorSlot = false) : void{
+		$itemstack = $isArmorSlot ? $this->armorInventory->getItem($slot) : $this->equipment->getItem($slot);
+
+		if($player->isCreative() and $itemstack->isNull() and !$handItem->isNull()){
+			$itemstack3 = clone $handItem;
+			$itemstack3->setCount(1);
+			if($isArmorSlot){
+				$this->armorInventory->setItem($slot, $itemstack3);
 			}else{
-				if($type == -1){
-					if($this->equipment->getItemInHand()->equals($item)){
-						$playerInv->addItem($this->equipment->getItemInHand());
-						$this->equipment->clear(EquipmentSlot::MAINHAND);
-					}else{
-						$playerInv->setItemInHand($this->equipment->getItemInHand());
-						$this->equipment->setItemInHand(clone $item);
-					}
-				}else{
-					$playerInv->setItemInHand($this->armorInventory->getItem($type));
-					$this->armorInventory->setItem($type, $item);
-				}
+				$this->equipment->setItem($slot, $itemstack3);
 			}
-
-			$this->equipment->sendContents($this->getViewers());
+		}elseif(!$handItem->isNull() and $handItem->getCount() > 1){
+			if($itemstack->isNull()){
+				$itemstack2 = clone $handItem;
+				$itemstack2->setCount(1);
+				if($isArmorSlot){
+					$this->armorInventory->setItem($slot, $itemstack2);
+				}else{
+					$this->equipment->setItem($slot, $itemstack2);
+				}
+				$handItem->pop();
+			}
+		}else{
+			if($isArmorSlot){
+				$this->armorInventory->setItem($slot, $handItem);
+			}else{
+				$this->equipment->setItem($slot, $handItem);
+			}
+			$player->getInventory()->clear($player->getInventory()->getHeldItemIndex());
+			$player->getInventory()->addItem($itemstack);
 		}
 	}
 
@@ -184,21 +202,21 @@ class ArmorStand extends Living{
 		$nbt = parent::saveNBT();
 
 		if($this->equipment instanceof AltayEntityEquipment){
-			$nbt->setTag($this->equipment->getItemInHand()->nbtSerialize(-1, self::TAG_MAINHAND));
-			$nbt->setTag($this->equipment->getOffhandItem()->nbtSerialize(-1, self::TAG_OFFHAND));
+			$nbt->setTag($this->equipment->getItemInHand()->nbtSerialize(-1, self::TAG_MAINHAND), true);
+			$nbt->setTag($this->equipment->getOffhandItem()->nbtSerialize(-1, self::TAG_OFFHAND), true);
 		}
 
 		if($this->armorInventory !== null){
-			$armorTag = new ListTag("armorInv", [], NBT::TAG_Compound);
+			$armorTag = new ListTag(self::TAG_ARMOR, [], NBT::TAG_Compound);
 
 			for($i = 0; $i < 4; $i++){
 				$armorTag->push($this->armorInventory->getItem($i)->nbtSerialize($i));
 			}
 
-			$nbt->setTag($armorTag);
+			$nbt->setTag($armorTag, true);
 		}
 
-		$nbt->setInt(self::TAG_POSE_INDEX, $this->getPose());
+		$nbt->setInt(self::TAG_POSE_INDEX, $this->getPose(), true);
 
 		return $nbt;
 	}

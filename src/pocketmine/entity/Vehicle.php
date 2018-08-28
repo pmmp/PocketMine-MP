@@ -38,7 +38,8 @@ abstract class Vehicle extends Entity implements Rideable{
 
 	}
 
-	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : void{
+	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : bool{
 		$player->mountEntity($this);
+		return true;
 	}
 }

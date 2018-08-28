@@ -75,7 +75,7 @@ class Sheep extends Tamable{
         return "Sheep";
     }
 
-    public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : void{
+    public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : bool{
     	if($this->aiEnabled){
 		    if($item instanceof Shears and !$this->isSheared()){
 			    $this->setSheared(true);
@@ -89,6 +89,8 @@ class Sheep extends Tamable{
 				    $this->motion->x += ($this->level->random->nextFloat() - $this->level->random->nextFloat()) * 0.1;
 				    $this->motion->z += ($this->level->random->nextFloat() - $this->level->random->nextFloat()) * 0.1;
 			    }
+
+			    return true;
 		    }
 
 		    if($item instanceof Dye){
@@ -97,9 +99,10 @@ class Sheep extends Tamable{
 			    }
 
 			    $this->propertyManager->setByte(self::DATA_COLOR, $item->getDamage());
+		    	return true;
 		    }
 	    }
-	    parent::onInteract($player, $item, $clickPos, $slot);
+	    return parent::onInteract($player, $item, $clickPos, $slot);
     }
 
     public function getXpDropAmount() : int{

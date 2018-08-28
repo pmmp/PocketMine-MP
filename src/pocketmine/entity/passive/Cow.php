@@ -70,14 +70,15 @@ class Cow extends Tamable{
 		return "Cow";
 	}
 
-	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : void{
+	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : bool{
 		if($this->aiEnabled){
 			if($item instanceof Bucket and $item->getDamage() === 0){
 				$item->setDamage(1);
+				return true;
 			}
 		}
 
-		parent::onInteract($player, $item, $clickPos, $slot);
+		return parent::onInteract($player, $item, $clickPos, $slot);
 	}
 
 	public function getXpDropAmount() : int{

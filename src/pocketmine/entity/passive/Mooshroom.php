@@ -41,7 +41,7 @@ class Mooshroom extends Cow{
 		return "Mooshroom";
 	}
 
-	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : void{
+	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : bool{
 		if($this->aiEnabled){
 			if($item instanceof Bowl and !$this->isBaby()){
 				$new = ItemFactory::get(Item::MUSHROOM_STEW);
@@ -54,6 +54,8 @@ class Mooshroom extends Cow{
 				}else{
 					$player->dropItem($new);
 				}
+
+				return true;
 			}elseif($item instanceof Shears and !$this->isBaby()){
 				$cow = new Cow($this->level, Entity::createBaseNBT($this));
 				$cow->setRotation($this->yaw, $this->pitch);
@@ -69,8 +71,10 @@ class Mooshroom extends Cow{
 
 				$this->kill();
 				$cow->spawnToAll();
+
+				return true;
 			}else{
-				parent::onInteract($player, $item, $clickPos, $slot);
+				return parent::onInteract($player, $item, $clickPos, $slot);
 			}
 		}
 	}
