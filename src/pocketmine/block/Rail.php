@@ -24,8 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\level\particle\BubbleParticle;
-use pocketmine\level\particle\FlameParticle;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -209,8 +207,6 @@ class Rail extends Flowable{
 			}
 		}
 
-		$this->level->addParticle(new BubbleParticle($this->add(0.5, 0.5, 0.5)));
-
 		$blacklist = [];
 		foreach($this->getPossibleConnectionDirections() as $thisSide => $_){
 			if(isset($blacklist[$thisSide]) or (!$canSlope and ($thisSide & self::FLAG_ASCEND) !== 0)){
@@ -237,9 +233,6 @@ class Rail extends Flowable{
 				}
 			}
 
-			$this->level->addParticle(new FlameParticle($other->add(0.5, 0.5, 0.5)));
-			$this->level->addParticle(new FlameParticle($other->add(0.5, 1.5, 0.5)));
-			$this->level->addParticle(new FlameParticle($other->add(0.5, -0.5, 0.5)));
 			/** @var Rail $other */
 
 			if(count($otherConnections = $other->getConnectedDirections()) >= 2){
