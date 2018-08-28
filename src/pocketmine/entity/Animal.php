@@ -40,7 +40,7 @@ abstract class Animal extends Mob implements Ageable{
 		return $item->getId() === Item::WHEAT;
 	}
 
-	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : void{
+	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : bool{
 		if($this->isBreedingItem($item) and $this->aiEnabled){
 			if(!$this->isBaby() and !$this->isInLove()){
 				$this->setInLove(true);
@@ -48,12 +48,15 @@ abstract class Animal extends Mob implements Ageable{
 				if($player->isSurvival()){
 					$item->pop();
 				}
+				return true;
 			}elseif($this->isBaby()){
 				if($player->isSurvival()){
 					$item->pop();
 				}
+				return true;
 			}
 		}
+		return false;
 	}
 
 	public function entityBaseTick(int $diff = 1) : bool{

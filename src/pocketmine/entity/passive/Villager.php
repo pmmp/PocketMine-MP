@@ -183,10 +183,12 @@ class Villager extends Mob implements NPC, Ageable{
 		return $this->getGenericFlag(self::DATA_FLAG_BABY);
 	}
 
-	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : void{
+	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : bool{
 		if(!$this->isBaby() and $this->offers instanceof CompoundTag and $this->aiEnabled){
 			$player->addWindow($this->getInventory());
+			return true;
 		}
+		return false;
 	}
 
 	public function getInventory() : TradeInventory{
