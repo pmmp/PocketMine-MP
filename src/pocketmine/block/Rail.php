@@ -134,14 +134,20 @@ class Rail extends Flowable{
 
 		/** @var int $connection */
 		foreach(self::CONNECTIONS[$this->meta] as $connection){
-			$block = $this->getSide($connection & ~self::FLAG_ASCEND);
+			$other = $this->getSide($connection & ~self::FLAG_ASCEND);
+			$otherConnection = Vector3::getOppositeSide($connection & ~self::FLAG_ASCEND);
+
 			if(($connection & self::FLAG_ASCEND) !== 0){
-				$block = $block->getSide(Vector3::SIDE_UP);
+				$other = $other->getSide(Vector3::SIDE_UP);
+
+			}elseif(!($other instanceof Rail)){ //check for rail sloping up to meet this one
+				$other = $other->getSide(Vector3::SIDE_DOWN);
+				$otherConnection |= self::FLAG_ASCEND;
 			}
-			//TODO: check for connected sloped rail below the target, otherwise sloped rails can have their connections stolen
+
 			if(
-				$block instanceof Rail and
-				in_array(Vector3::getOppositeSide($connection & ~self::FLAG_ASCEND), self::CONNECTIONS[$block->meta], true)
+				$other instanceof Rail and
+				in_array($otherConnection, self::CONNECTIONS[$other->meta], true)
 			){
 				$connections[] = $connection;
 			}
@@ -205,24 +211,14 @@ class Rail extends Flowable{
 
 				if(($thisSide & self::FLAG_ASCEND) !== 0){
 					$other = $other->getSide(Vector3::SIDE_UP);
+
+				}elseif(!($other instanceof Rail)){ //check if other rails can slope up to meet this one
+					$other = $other->getSide(Vector3::SIDE_DOWN);
+					$otherSide |= self::FLAG_ASCEND;
 				}
 
-				if(!($other instanceof Rail)){
-					if(($other2 = $this->getSide($thisSide & ~self::FLAG_ASCEND)->getSide(Vector3::SIDE_DOWN)) instanceof Rail){
-						$other = $other2;
-
-						//this makes the other rail ascend to meet this one instead of vice versa
-						$otherSide |= self::FLAG_ASCEND;
-						$thisSide &= ~self::FLAG_ASCEND;
-					}else{
-						continue;
-					}
-				}
-
-				/** @var Rail $other */
-
-				if(count($otherConnections = $other->getConnectedDirections()) >= 2){
-					//we can only connect to a rail that also has less than 2 connections
+				if(!($other instanceof Rail) or count($otherConnections = $other->getConnectedDirections()) >= 2){
+					//we can only connect to a rail that has less than 2 connections
 					continue;
 				}
 
