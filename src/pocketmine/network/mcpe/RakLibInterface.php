@@ -46,7 +46,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	 * Sometimes this gets changed when the MCPE-layer protocol gets broken to the point where old and new can't
 	 * communicate. It's important that we check this to avoid catastrophes.
 	 */
-	private const MCPE_RAKNET_PROTOCOL_VERSION = 8;
+	private const MCPE_RAKNET_PROTOCOL_VERSION = 9;
 
 	/** @var Server */
 	private $server;
