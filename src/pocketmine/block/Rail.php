@@ -112,8 +112,9 @@ class Rail extends Flowable{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if(!$blockReplace->getSide(Vector3::SIDE_DOWN)->isTransparent()){
-			return $this->getLevel()->setBlock($blockReplace, $this, true, true);
+		if(!$blockReplace->getSide(Vector3::SIDE_DOWN)->isTransparent() and $this->getLevel()->setBlock($blockReplace, $this, true, true)){
+			$this->tryReconnect();
+			return true;
 		}
 
 		return false;
@@ -157,6 +158,9 @@ class Rail extends Flowable{
 	}
 
 	private function getPossibleConnectionDirections(array $constraints) : array{
+		if(count($constraints) >= 2){
+			return [];
+		}
 		$possible = [
 			Vector3::SIDE_NORTH => true,
 			Vector3::SIDE_SOUTH => true,
@@ -265,8 +269,6 @@ class Rail extends Flowable{
 			$this->getSide(self::ASCENDING_SIDES[$this->meta])->isTransparent()
 		)){
 			$this->getLevel()->useBreakOn($this);
-		}elseif(count($connections = $this->getConnectedDirections()) < 2){
-			$this->tryReconnect();
 		}
 	}
 
