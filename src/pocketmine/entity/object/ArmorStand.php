@@ -132,11 +132,11 @@ class ArmorStand extends Living{
 			if($d3 >= 0.1 and $d3 < 0.55 and !$this->armorInventory->getItem(ArmorInventory::SLOT_FEET)->isNull()){
 				$j = 3;
 				$flag2 = $isArmorSlot = true;
-			}elseif($d3 >= 0.9 and $d3 < 1.6 and !$this->armorInventory->getItem(ArmorInventory::SLOT_LEGS)->isNull()){
-				$j = 2;
-				$flag2 = $isArmorSlot = true;
-			}elseif($d3 >= 0.4 and $d3 < 1.2 and !$this->armorInventory->getItem(ArmorInventory::SLOT_CHEST)->isNull()){
+			}elseif($d3 >= 0.9 and $d3 < 1.6 and !$this->armorInventory->getItem(ArmorInventory::SLOT_CHEST)->isNull()){
 				$j = 1;
+				$flag2 = $isArmorSlot = true;
+			}elseif($d3 >= 0.4 and $d3 < 1.2 and !$this->armorInventory->getItem(ArmorInventory::SLOT_LEGS)->isNull()){
+				$j = 2;
 				$flag2 = $isArmorSlot = true;
 			}elseif($d3 >= 1.6 and !$this->armorInventory->getItem(ArmorInventory::SLOT_HEAD)->isNull()){
 				$j = 0;
