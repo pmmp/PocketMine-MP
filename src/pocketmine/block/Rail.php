@@ -194,21 +194,11 @@ class Rail extends Flowable{
 		$thisConnections = $this->getConnectedDirections();
 		$changed = false;
 
-		$canSlope = true;
-		foreach($thisConnections as $connection){
-			if(($connection & self::FLAG_ASCEND) !== 0){
-				$canSlope = false;
-				break;
-			}
-		}
+		do{
+			$possible = $this->getPossibleConnectionDirections($thisConnections);
+			$continue = false;
 
-		//we use a while loop here to keep recalculating possible states because using one of these connections may invalidate others
-		while(!empty($possible = $this->getPossibleConnectionDirections($thisConnections))){
 			foreach($possible as $thisSide => $_){
-				if(!$canSlope and ($thisSide & self::FLAG_ASCEND) !== 0){
-					continue;
-				}
-
 				$otherSide = Vector3::getOppositeSide($thisSide & ~self::FLAG_ASCEND);
 
 				$other = $this->getSide($thisSide & ~self::FLAG_ASCEND);
@@ -244,21 +234,13 @@ class Rail extends Flowable{
 
 					$changed = true;
 					$thisConnections[] = $thisSide;
+					$continue = count($thisConnections) < 2;
 
-					if(($thisSide & self::FLAG_ASCEND) !== 0){
-						$canSlope = false;
-					}
-
-					if(count($thisConnections) >= 2){
-						break 2; //break for and while
-					}
-
-					break; //break for only to force recomputing possible directions
+					break; //force recomputing possible directions, since this connection could invalidate others
 				}
 			}
+		}while($continue);
 
-			break; //all possibilities exhausted
-		}
 		if($changed){
 			$this->updateState($thisConnections);
 		}
