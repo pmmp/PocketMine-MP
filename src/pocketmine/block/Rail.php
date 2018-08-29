@@ -150,12 +150,7 @@ class Rail extends Flowable{
 		return $connections;
 	}
 
-	private function getPossibleConnectionDirections() : array{
-		$constraints = $this->getConnectedDirections();
-		if(count($constraints) >= 2){
-			return []; //fully connected, don't do anything else
-		}
-
+	private function getPossibleConnectionDirections(array $constraints) : array{
 		$possible = [
 			Vector3::SIDE_NORTH => true,
 			Vector3::SIDE_SOUTH => true,
@@ -207,58 +202,62 @@ class Rail extends Flowable{
 			}
 		}
 
-		$blacklist = [];
-		foreach($this->getPossibleConnectionDirections() as $thisSide => $_){
-			if(isset($blacklist[$thisSide]) or (!$canSlope and ($thisSide & self::FLAG_ASCEND) !== 0)){
-				continue;
-			}
-
-			$otherSide = Vector3::getOppositeSide($thisSide & ~self::FLAG_ASCEND);
-
-			$other = $this->getSide($thisSide & ~self::FLAG_ASCEND);
-
-			if(($thisSide & self::FLAG_ASCEND) !== 0){
-				$other = $other->getSide(Vector3::SIDE_UP);
-			}
-
-			if(!($other instanceof Rail)){
-				if(($other2 = $this->getSide($thisSide & ~self::FLAG_ASCEND)->getSide(Vector3::SIDE_DOWN)) instanceof Rail){
-					$other = $other2;
-
-					//this makes the other rail ascend to meet this one instead of vice versa
-					$otherSide |= self::FLAG_ASCEND;
-					$thisSide &= ~self::FLAG_ASCEND;
-				}else{
+		//we use a while loop here to keep recalculating possible states because using one of these connections may invalidate others
+		while(!empty($possible = $this->getPossibleConnectionDirections($thisConnections))){
+			foreach($possible as $thisSide => $_){
+				if(!$canSlope and ($thisSide & self::FLAG_ASCEND) !== 0){
 					continue;
 				}
-			}
 
-			/** @var Rail $other */
+				$otherSide = Vector3::getOppositeSide($thisSide & ~self::FLAG_ASCEND);
 
-			if(count($otherConnections = $other->getConnectedDirections()) >= 2){
-				//we can only connect to a rail that also has less than 2 connections
-				continue;
-			}
-
-			$otherPossible = $other->getPossibleConnectionDirections();
-
-			if(isset($otherPossible[$otherSide])){
-				$otherConnections[] = $otherSide;
-				$other->updateState($otherConnections);
-
-				$changed = true;
-				$thisConnections[] = $thisSide;
+				$other = $this->getSide($thisSide & ~self::FLAG_ASCEND);
 
 				if(($thisSide & self::FLAG_ASCEND) !== 0){
-					$canSlope = false;
+					$other = $other->getSide(Vector3::SIDE_UP);
 				}
-				$blacklist[$thisSide] = true;
-				$blacklist[$thisSide | self::FLAG_ASCEND] = true;
 
-				if(count($thisConnections) >= 2){
-					break;
+				if(!($other instanceof Rail)){
+					if(($other2 = $this->getSide($thisSide & ~self::FLAG_ASCEND)->getSide(Vector3::SIDE_DOWN)) instanceof Rail){
+						$other = $other2;
+
+						//this makes the other rail ascend to meet this one instead of vice versa
+						$otherSide |= self::FLAG_ASCEND;
+						$thisSide &= ~self::FLAG_ASCEND;
+					}else{
+						continue;
+					}
+				}
+
+				/** @var Rail $other */
+
+				if(count($otherConnections = $other->getConnectedDirections()) >= 2){
+					//we can only connect to a rail that also has less than 2 connections
+					continue;
+				}
+
+				$otherPossible = $other->getPossibleConnectionDirections($otherConnections);
+
+				if(isset($otherPossible[$otherSide])){
+					$otherConnections[] = $otherSide;
+					$other->updateState($otherConnections);
+
+					$changed = true;
+					$thisConnections[] = $thisSide;
+
+					if(($thisSide & self::FLAG_ASCEND) !== 0){
+						$canSlope = false;
+					}
+
+					if(count($thisConnections) >= 2){
+						break 2; //break for and while
+					}
+
+					break; //break for only to force recomputing possible directions
 				}
 			}
+
+			break; //all possibilities exhausted
 		}
 		if($changed){
 			$this->updateState($thisConnections);
