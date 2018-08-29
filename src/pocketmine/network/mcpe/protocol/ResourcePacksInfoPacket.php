@@ -70,6 +70,7 @@ class ResourcePacksInfoPacket extends DataPacket{
 			$this->putLLong($entry->getPackSize());
 			$this->putString(""); //TODO: encryption key
 			$this->putString(""); //TODO: subpack name
+			$this->putString(""); //TODO: content identity
 		}
 		$this->putLShort(count($this->resourcePackEntries));
 		foreach($this->resourcePackEntries as $entry){
@@ -78,6 +79,7 @@ class ResourcePacksInfoPacket extends DataPacket{
 			$this->putLLong($entry->getPackSize());
 			$this->putString(""); //TODO: encryption key
 			$this->putString(""); //TODO: subpack name
+			$this->putString(""); //TODO: content identity
 		}
 	}
 
