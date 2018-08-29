@@ -31,114 +31,107 @@ use pocketmine\utils\Utils;
 
 abstract class DataPacket extends NetworkBinaryStream{
 
-    public const NETWORK_ID = 0;
+	public const NETWORK_ID = 0;
 
-    /** @var bool */
-    public $isEncoded = false;
+	/** @var bool */
+	public $isEncoded = false;
 
-    /** @var int */
-    public $senderSubId = 0;
-    /** @var int */
-    public $recipientSubId = 0;
+	/** @var int */
+	public $senderSubId = 0;
+	/** @var int */
+	public $recipientSubId = 0;
 
-    public function pid() : int{
-        return $this::NETWORK_ID;
-    }
+	public function pid() : int{
+		return $this::NETWORK_ID;
+	}
 
-    public function getName() : string{
-        return (new \ReflectionClass($this))->getShortName();
-    }
+	public function getName() : string{
+		return (new \ReflectionClass($this))->getShortName();
+	}
 
-    public function canBeSentBeforeLogin() : bool{
-        return false;
-    }
+	public function canBeSentBeforeLogin() : bool{
+		return false;
+	}
 
-    /**
-     * Returns whether the packet may legally have unread bytes left in the buffer.
-     * @return bool
-     */
-    public function mayHaveUnreadBytes() : bool{
-        return false;
-    }
+	/**
+	 * Returns whether the packet may legally have unread bytes left in the buffer.
+	 * @return bool
+	 */
+	public function mayHaveUnreadBytes() : bool{
+		return false;
+	}
 
-    public function decode() : void{
-        $this->offset = 0;
-        $this->decodeHeader();
-        $this->decodePayload();
-    }
+	public function decode() : void{
+		$this->offset = 0;
+		$this->decodeHeader();
+		$this->decodePayload();
+	}
 
-    protected function decodeHeader() : void{
-        $pid = $this->getUnsignedVarInt();
-        assert($pid === static::NETWORK_ID);
+	protected function decodeHeader() : void{
+		$pid = $this->getUnsignedVarInt();
+		assert($pid === static::NETWORK_ID);
+	}
 
-        $this->senderSubId = $this->getByte();
-        $this->recipientSubId = $this->getByte();
-        assert($this->senderSubId === 0 and $this->recipientSubId === 0, "Got unexpected non-zero split-screen bytes (byte1: $this->senderSubId, byte2: $this->recipientSubId");
-    }
+	/**
+	 * Note for plugin developers: If you're adding your own packets, you should perform decoding in here.
+	 */
+	protected function decodePayload() : void{
 
-    /**
-     * Note for plugin developers: If you're adding your own packets, you should perform decoding in here.
-     */
-    protected function decodePayload() : void{
+	}
 
-    }
+	public function encode() : void{
+		$this->reset();
+		$this->encodeHeader();
+		$this->encodePayload();
+		$this->isEncoded = true;
+	}
 
-    public function encode() : void{
-        $this->reset();
-        $this->encodeHeader();
-        $this->encodePayload();
-        $this->isEncoded = true;
-    }
+	protected function encodeHeader() : void{
+		$this->putUnsignedVarInt(static::NETWORK_ID);
+	}
 
-    protected function encodeHeader() : void{
-        $this->putUnsignedVarInt(static::NETWORK_ID);
+	/**
+	 * Note for plugin developers: If you're adding your own packets, you should perform encoding in here.
+	 */
+	protected function encodePayload() : void{
 
-        $this->putByte($this->senderSubId);
-        $this->putByte($this->recipientSubId);
-    }
+	}
 
-    /**
-     * Note for plugin developers: If you're adding your own packets, you should perform encoding in here.
-     */
-    protected function encodePayload() : void{
+	/**
+	 * Performs handling for this packet. Usually you'll want an appropriately named method in the session handler for
+	 * this.
+	 *
+	 * This method returns a bool to indicate whether the packet was handled or not. If the packet was unhandled, a
+	 * debug message will be logged with a hexdump of the packet.
+	 *
+	 * Typically this method returns the return value of the handler in the supplied SessionHandler. See other packets
+	 * for examples how to implement this.
+	 *
+	 * @param SessionHandler $handler
+	 *
+	 * @return bool true if the packet was handled successfully, false if not.
+	 */
+	abstract public function handle(SessionHandler $handler) : bool;
 
-    }
+	public function clean(){
+		$this->buffer = null;
+		$this->isEncoded = false;
+		$this->offset = 0;
+		return $this;
+	}
 
-    /**
-     * Performs handling for this packet. Usually you'll want an appropriately named method in the session handler for
-     * this.
-     *
-     * This method returns a bool to indicate whether the packet was handled or not. If the packet was unhandled, a
-     * debug message will be logged with a hexdump of the packet.
-     *
-     * Typically this method returns the return value of the handler in the supplied SessionHandler. See other packets
-     * for examples how to implement this.
-     *
-     * @param SessionHandler $handler
-     *
-     * @return bool true if the packet was handled successfully, false if not.
-     */
-    abstract public function handle(SessionHandler $handler) : bool;
+	public function __debugInfo(){
+		$data = [];
+		foreach($this as $k => $v){
+			if($k === "buffer" and is_string($v)){
+				$data[$k] = bin2hex($v);
+			}elseif(is_string($v) or (is_object($v) and method_exists($v, "__toString"))){
+				$data[$k] = Utils::printable((string) $v);
+			}else{
+				$data[$k] = $v;
+			}
+		}
 
-    public function clean(){
-        $this->buffer = null;
-        $this->isEncoded = false;
-        $this->offset = 0;
-        return $this;
-    }
-
-    public function __debugInfo(){
-        $data = [];
-        foreach($this as $k => $v){
-            if($k === "buffer" and is_string($v)){
-                $data[$k] = bin2hex($v);
-            }elseif(is_string($v) or (is_object($v) and method_exists($v, "__toString"))){
-                $data[$k] = Utils::printable((string) $v);
-            }else{
-                $data[$k] = $v;
-            }
-        }
-
-        return $data;
-    }
+		return $data;
+	}
 }

@@ -25,62 +25,65 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+
 use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\resourcepacks\ResourcePack;
 
 class ResourcePacksInfoPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::RESOURCE_PACKS_INFO_PACKET;
+	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACKS_INFO_PACKET;
 
-    /** @var bool */
-    public $mustAccept = false; //if true, forces client to use selected resource packs
-    /** @var ResourcePack[] */
-    public $behaviorPackEntries = [];
-    /** @var ResourcePack[] */
-    public $resourcePackEntries = [];
+	/** @var bool */
+	public $mustAccept = false; //if true, forces client to use selected resource packs
+	/** @var ResourcePack[] */
+	public $behaviorPackEntries = [];
+	/** @var ResourcePack[] */
+	public $resourcePackEntries = [];
 
-    protected function decodePayload() : void{
-        /*$this->mustAccept = $this->getBool();
-        $behaviorPackCount = $this->getLShort();
-        while($behaviorPackCount-- > 0){
-            $id = $this->getString();
-            $version = $this->getString();
-            $size = $this->getLLong();
-            $this->behaviorPackEntries[] = new ResourcePackInfoEntry($id, $version, $size);
-            $this->getString();
-        }
+	protected function decodePayload() : void{
+		/*$this->mustAccept = $this->getBool();
+		$behaviorPackCount = $this->getLShort();
+		while($behaviorPackCount-- > 0){
+			$id = $this->getString();
+			$version = $this->getString();
+			$size = $this->getLLong();
+			$this->behaviorPackEntries[] = new ResourcePackInfoEntry($id, $version, $size);
+			$this->getString();
+		}
 
-        $resourcePackCount = $this->getLShort();
-        while($resourcePackCount-- > 0){
-            $id = $this->getString();
-            $version = $this->getString();
-            $size = $this->getLLong();
-            $this->resourcePackEntries[] = new ResourcePackInfoEntry($id, $version, $size);
-            $this->getString();
-        }*/
-    }
+		$resourcePackCount = $this->getLShort();
+		while($resourcePackCount-- > 0){
+			$id = $this->getString();
+			$version = $this->getString();
+			$size = $this->getLLong();
+			$this->resourcePackEntries[] = new ResourcePackInfoEntry($id, $version, $size);
+			$this->getString();
+		}*/
+	}
 
-    protected function encodePayload() : void{
+	protected function encodePayload() : void{
 
-        $this->putBool($this->mustAccept);
-        $this->putLShort(count($this->behaviorPackEntries));
-        foreach($this->behaviorPackEntries as $entry){
-            $this->putString($entry->getPackId());
-            $this->putString($entry->getPackVersion());
-            $this->putLLong($entry->getPackSize());
-            $this->putString(""); //TODO: encryption key
-            $this->putString(""); //TODO: subpack name
-        }
-        $this->putLShort(count($this->resourcePackEntries));
-        foreach($this->resourcePackEntries as $entry){
-            $this->putString($entry->getPackId());
-            $this->putString($entry->getPackVersion());
-            $this->putLLong($entry->getPackSize());
-            $this->putString(""); //TODO: encryption key
-            $this->putString(""); //TODO: subpack name
-        }
-    }
+		$this->putBool($this->mustAccept);
+		$this->putLShort(count($this->behaviorPackEntries));
+		foreach($this->behaviorPackEntries as $entry){
+			$this->putString($entry->getPackId());
+			$this->putString($entry->getPackVersion());
+			$this->putLLong($entry->getPackSize());
+			$this->putString(""); //TODO: encryption key
+			$this->putString(""); //TODO: subpack name
+			$this->putString(""); //TODO: content identity
+		}
+		$this->putLShort(count($this->resourcePackEntries));
+		foreach($this->resourcePackEntries as $entry){
+			$this->putString($entry->getPackId());
+			$this->putString($entry->getPackVersion());
+			$this->putLLong($entry->getPackSize());
+			$this->putString(""); //TODO: encryption key
+			$this->putString(""); //TODO: subpack name
+			$this->putString(""); //TODO: content identity
+		}
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleResourcePacksInfo($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleResourcePacksInfo($this);
+	}
 }

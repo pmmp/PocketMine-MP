@@ -41,7 +41,7 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	 * Sometimes this gets changed when the MCPE-layer protocol gets broken to the point where old and new can't
 	 * communicate. It's important that we check this to avoid catastrophes.
 	 */
-	private const MCPE_RAKNET_PROTOCOL_VERSION = 8;
+	private const MCPE_RAKNET_PROTOCOL_VERSION = 9;
 
 	private const MCPE_RAKNET_PACKET_ID = "\xfe";
 

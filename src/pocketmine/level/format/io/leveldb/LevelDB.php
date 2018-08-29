@@ -266,6 +266,38 @@ class LevelDB extends BaseLevelProvider{
 		$this->levelData->setInt("Difficulty", $difficulty); //yes, this is intended! (in PE: int, PC: byte)
 	}
 
+	public function getRainTime() : int{
+		return $this->levelData->getInt("rainTime", 0);
+	}
+
+	public function setRainTime(int $ticks) : void{
+		$this->levelData->setInt("rainTime", $ticks);
+	}
+
+	public function getRainLevel() : float{
+		return $this->levelData->getFloat("rainLevel", 0.0);
+	}
+
+	public function setRainLevel(float $level) : void{
+		$this->levelData->setFloat("rainLevel", $level);
+	}
+
+	public function getLightningTime() : int{
+		return $this->levelData->getInt("lightningTime", 0);
+	}
+
+	public function setLightningTime(int $ticks) : void{
+		$this->levelData->setInt("lightningTime", $ticks);
+	}
+
+	public function getLightningLevel() : float{
+		return $this->levelData->getFloat("lightningLevel", 0.0);
+	}
+
+	public function setLightningLevel(float $level) : void{
+		$this->levelData->setFloat("lightningLevel", $level);
+	}
+
 	/**
 	 * @param int $chunkX
 	 * @param int $chunkZ

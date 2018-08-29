@@ -31,313 +31,341 @@ use pocketmine\network\mcpe\protocol\types\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\CommandParameter;
 
 class AvailableCommandsPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::AVAILABLE_COMMANDS_PACKET;
+	public const NETWORK_ID = ProtocolInfo::AVAILABLE_COMMANDS_PACKET;
 
 
-    /**
-     * This flag is set on all types EXCEPT the POSTFIX type. Not completely sure what this is for, but it is required
-     * for the argtype to work correctly. VALID seems as good a name as any.
-     */
-    public const ARG_FLAG_VALID = 0x100000;
+	/**
+	 * This flag is set on all types EXCEPT the POSTFIX type. Not completely sure what this is for, but it is required
+	 * for the argtype to work correctly. VALID seems as good a name as any.
+	 */
+	public const ARG_FLAG_VALID = 0x100000;
 
-    /**
-     * Basic parameter types. These must be combined with the ARG_FLAG_VALID constant.
-     * ARG_FLAG_VALID | (type const)
-     */
-    public const ARG_TYPE_INT             = 0x01;
-    public const ARG_TYPE_FLOAT           = 0x02;
-    public const ARG_TYPE_VALUE           = 0x03;
-    public const ARG_TYPE_WILDCARD_INT    = 0x04;
-    public const ARG_TYPE_TARGET          = 0x05;
-    public const ARG_TYPE_WILDCARD_TARGET = 0x06;
+	/**
+	 * Basic parameter types. These must be combined with the ARG_FLAG_VALID constant.
+	 * ARG_FLAG_VALID | (type const)
+	 */
+	public const ARG_TYPE_INT = 0x01;
+	public const ARG_TYPE_FLOAT = 0x02;
+	public const ARG_TYPE_VALUE = 0x03;
+	public const ARG_TYPE_WILDCARD_INT = 0x04;
+	public const ARG_TYPE_TARGET = 0x05;
+	public const ARG_TYPE_WILDCARD_TARGET = 0x06;
 
-    public const ARG_TYPE_STRING   = 0x0f;
-    public const ARG_TYPE_POSITION = 0x10;
+	public const ARG_TYPE_STRING = 0x0f;
+	public const ARG_TYPE_POSITION = 0x10;
 
-    public const ARG_TYPE_MESSAGE  = 0x13;
+	public const ARG_TYPE_MESSAGE = 0x13;
 
-    public const ARG_TYPE_RAWTEXT  = 0x15;
+	public const ARG_TYPE_RAWTEXT = 0x15;
 
-    public const ARG_TYPE_JSON     = 0x18;
+	public const ARG_TYPE_JSON = 0x18;
 
-    public const ARG_TYPE_COMMAND  = 0x1f;
+	public const ARG_TYPE_COMMAND = 0x1f;
 
-    /**
-     * Enums are a little different: they are composed as follows:
-     * ARG_FLAG_ENUM | ARG_FLAG_VALID | (enum index)
-     */
-    public const ARG_FLAG_ENUM = 0x200000;
+	/**
+	 * Enums are a little different: they are composed as follows:
+	 * ARG_FLAG_ENUM | ARG_FLAG_VALID | (enum index)
+	 */
+	public const ARG_FLAG_ENUM = 0x200000;
 
-    /**
-     * This is used for /xp <level: int>L. It can only be applied to integer parameters.
-     */
-    public const ARG_FLAG_POSTFIX = 0x1000000;
+	/**
+	 * This is used for /xp <level: int>L. It can only be applied to integer parameters.
+	 */
+	public const ARG_FLAG_POSTFIX = 0x1000000;
 
-    /**
-     * @var string[]
-     * A list of every single enum value for every single command in the packet, including alias names.
-     */
-    public $enumValues = [];
-    /** @var int */
-    private $enumValuesCount = 0;
+	/**
+	 * @var string[]
+	 * A list of every single enum value for every single command in the packet, including alias names.
+	 */
+	public $enumValues = [];
+	/** @var int */
+	private $enumValuesCount = 0;
 
-    /**
-     * @var string[]
-     * A list of argument postfixes. Used for the /xp command's <int>L.
-     */
-    public $postfixes = [];
+	/**
+	 * @var string[]
+	 * A list of argument postfixes. Used for the /xp command's <int>L.
+	 */
+	public $postfixes = [];
 
-    /**
-     * @var CommandEnum[]
-     * List of command enums, from command aliases to argument enums.
-     */
-    public $enums = [];
-    /**
-     * @var int[] string => int map of enum name to index
-     */
-    private $enumMap = [];
+	/**
+	 * @var CommandEnum[]
+	 * List of command enums, from command aliases to argument enums.
+	 */
+	public $enums = [];
+	/**
+	 * @var int[] string => int map of enum name to index
+	 */
+	private $enumMap = [];
 
-    /**
-     * @var CommandData[]
-     * List of command data, including name, description, alias indexes and parameters.
-     */
-    public $commandData = [];
+	/**
+	 * @var CommandData[]
+	 * List of command data, including name, description, alias indexes and parameters.
+	 */
+	public $commandData = [];
 
-    protected function decodePayload() : void{
-        for($i = 0, $this->enumValuesCount = $this->getUnsignedVarInt(); $i < $this->enumValuesCount; ++$i){
-            $this->enumValues[] = $this->getString();
-        }
+	/**
+	 * @var CommandEnum[]
+	 * List of dynamic command enums, also referred to as "soft" enums. These can by dynamically updated mid-game
+	 * without resending this packet.
+	 */
+	public $softEnums = [];
 
-        for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-            $this->postfixes[] = $this->getString();
-        }
+	protected function decodePayload() : void{
+		for($i = 0, $this->enumValuesCount = $this->getUnsignedVarInt(); $i < $this->enumValuesCount; ++$i){
+			$this->enumValues[] = $this->getString();
+		}
 
-        for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-            $this->enums[] = $this->getEnum();
-        }
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$this->postfixes[] = $this->getString();
+		}
 
-        for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-            $this->commandData[] = $this->getCommandData();
-        }
-    }
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$this->enums[] = $this->getEnum();
+		}
 
-    protected function getEnum() : CommandEnum{
-        $retval = new CommandEnum($this->getString());
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$this->commandData[] = $this->getCommandData();
+		}
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$this->softEnums[] = $this->getSoftEnum();
+		}
+	}
 
-        for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-            //Get the enum value from the initial pile of mess
-            $retval->enumValues[] = $this->enumValues[$this->getEnumValueIndex()];
-        }
+	protected function getEnum() : CommandEnum{
+		$retval = new CommandEnum($this->getString());
 
-        return $retval;
-    }
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			//Get the enum value from the initial pile of mess
+			$retval->enumValues[] = $this->enumValues[$this->getEnumValueIndex()];
+		}
 
-    protected function putEnum(CommandEnum $enum) : void{
-        $this->putString($enum->enumName);
+		return $retval;
+	}
 
-        $this->putUnsignedVarInt(count($enum->enumValues));
-        foreach($enum->enumValues as $value){
-            //Dumb bruteforce search. I hate this packet.
-            $index = array_search($value, $this->enumValues, true);
-            if($index === false){
-                throw new \InvalidStateException("Enum value '$value' not found");
-            }
-            $this->putEnumValueIndex($index);
-        }
-    }
+	protected function getSoftEnum() : CommandEnum{
+		$retval = new CommandEnum();
+		$retval->enumName = $this->getString();
 
-    protected function getEnumValueIndex() : int{
-        if($this->enumValuesCount < 256){
-            return $this->getByte();
-        }elseif($this->enumValuesCount < 65536){
-            return $this->getLShort();
-        }else{
-            return $this->getLInt();
-        }
-    }
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			//Get the enum value from the initial pile of mess
+			$retval->enumValues[] = $this->getString();
+		}
 
-    protected function putEnumValueIndex(int $index) : void{
-        if($this->enumValuesCount < 256){
-            $this->putByte($index);
-        }elseif($this->enumValuesCount < 65536){
-            $this->putLShort($index);
-        }else{
-            $this->putLInt($index);
-        }
-    }
+		return $retval;
+	}
 
-    protected function getCommandData() : CommandData{
-        $retval = new CommandData(
-            $this->getString(),
-            $this->getString(),
-            $this->getByte(),
-            $this->getByte(),
-            $this->enums[$this->getLInt()] ?? null
-        );
+	protected function putEnum(CommandEnum $enum) : void{
+		$this->putString($enum->enumName);
 
-        for($overloadIndex = 0, $overloadCount = $this->getUnsignedVarInt(); $overloadIndex < $overloadCount; ++$overloadIndex){
-            for($paramIndex = 0, $paramCount = $this->getUnsignedVarInt(); $paramIndex < $paramCount; ++$paramIndex){
-                $parameter = new CommandParameter(
-                    $this->getString(),
-                    $this->getLInt(),
-                    $this->getBool()
-                );
+		$this->putUnsignedVarInt(count($enum->enumValues));
+		foreach($enum->enumValues as $value){
+			//Dumb bruteforce search. I hate this packet.
+			$index = array_search($value, $this->enumValues, true);
+			if($index === false){
+				throw new \InvalidStateException("Enum value '$value' not found");
+			}
+			$this->putEnumValueIndex($index);
+		}
+	}
 
-                if($parameter->paramType & self::ARG_FLAG_ENUM){
-                    $index = ($parameter->paramType & 0xffff);
-                    $parameter->enum = $this->enums[$index] ?? null;
+	protected function putSoftEnum(CommandEnum $enum) : void{
+		$this->putString($enum->enumName);
 
-                    assert($parameter->enum !== null, "expected enum at $index, but got none");
-                }elseif(($parameter->paramType & self::ARG_FLAG_VALID) === 0){
-                    $index = ($parameter->paramType & 0xffff);
-                    $parameter->postfix = $this->postfixes[$index] ?? null;
+		$this->putUnsignedVarInt(count($enum->enumValues));
+		foreach($enum->enumValues as $value){
+			$this->putString($value);
+		}
+	}
 
-                    assert($parameter->postfix !== null, "expected postfix at $index, but got none");
-                }
+	protected function getEnumValueIndex() : int{
+		if($this->enumValuesCount < 256){
+			return $this->getByte();
+		}elseif($this->enumValuesCount < 65536){
+			return $this->getLShort();
+		}else{
+			return $this->getLInt();
+		}
+	}
 
-                $retval->overloads[$overloadIndex][$paramIndex] = $parameter;
-            }
-        }
+	protected function putEnumValueIndex(int $index) : void{
+		if($this->enumValuesCount < 256){
+			$this->putByte($index);
+		}elseif($this->enumValuesCount < 65536){
+			$this->putLShort($index);
+		}else{
+			$this->putLInt($index);
+		}
+	}
 
-        return $retval;
-    }
+	protected function getCommandData() : CommandData{
+		$retval = new CommandData($this->getString(), $this->getString(), $this->getByte(), $this->getByte(), $this->enums[$this->getLInt()] ?? null);
 
-    protected function putCommandData(CommandData $data) : void{
-        $this->putString($data->commandName);
-        $this->putString($data->commandDescription);
-        $this->putByte($data->flags);
-        $this->putByte($data->permission);
+		for($overloadIndex = 0, $overloadCount = $this->getUnsignedVarInt(); $overloadIndex < $overloadCount; ++$overloadIndex){
+			for($paramIndex = 0, $paramCount = $this->getUnsignedVarInt(); $paramIndex < $paramCount; ++$paramIndex){
+				$parameter = new CommandParameter($this->getString(), $this->getLInt(), $this->getBool());
 
-        if($data->aliases !== null){
-            $this->putLInt($this->enumMap[$data->aliases->enumName] ?? -1);
-        }else{
-            $this->putLInt(-1);
-        }
+				if($parameter->paramType & self::ARG_FLAG_ENUM){
+					$index = ($parameter->paramType & 0xffff);
+					$parameter->enum = $this->enums[$index] ?? null;
+					if($parameter->enum === null){
+						throw new \UnexpectedValueException("expected enum at $index, but got none");
+					}
+				}elseif($parameter->paramType & self::ARG_FLAG_POSTFIX){
+					$index = ($parameter->paramType & 0xffff);
+					$parameter->postfix = $this->postfixes[$index] ?? null;
+					if($parameter->postfix === null){
+						throw new \UnexpectedValueException("expected postfix at $index, but got none");
+					}
+				}elseif(($parameter->paramType & self::ARG_FLAG_VALID) === 0){
+					throw new \UnexpectedValueException("Invalid parameter type 0x" . dechex($parameter->paramType));
+				}
 
-        $this->putUnsignedVarInt(count($data->overloads));
-        foreach($data->overloads as $overload){
-            /** @var CommandParameter[] $overload */
-            $this->putUnsignedVarInt(count($overload));
-            foreach($overload as $parameter){
-                $this->putString($parameter->paramName);
+				$retval->overloads[$overloadIndex][$paramIndex] = $parameter;
+			}
+		}
 
-                if($parameter->enum !== null){
-                    $type = self::ARG_FLAG_ENUM | self::ARG_FLAG_VALID | ($this->enumMap[$parameter->enum->enumName] ?? -1);
-                }elseif($parameter->postfix !== null){
-                    $key = array_search($parameter->postfix, $this->postfixes, true);
-                    if($key === false){
-                        throw new \InvalidStateException("Postfix '$parameter->postfix' not in postfixes array");
-                    }
-                    $type = (self::ARG_FLAG_POSTFIX | $parameter->paramType) << 24 | $key;
-                }else{
-                    $type = self::ARG_FLAG_VALID | $parameter->paramType;
-                }
+		return $retval;
+	}
 
-                $this->putLInt($type);
-                $this->putBool($parameter->isOptional);
-            }
-        }
-    }
+	protected function putCommandData(CommandData $data) : void{
+		$this->putString($data->commandName);
+		$this->putString($data->commandDescription);
+		$this->putByte($data->flags);
+		$this->putByte($data->permission);
 
-    private function argTypeToString(int $argtype) : string{
-        if($argtype & self::ARG_FLAG_VALID){
-            if($argtype & self::ARG_FLAG_ENUM){
-                return "stringenum (" . ($argtype & 0xffff) . ")";
-            }
+		if($data->aliases !== null){
+			$this->putLInt($this->enumMap[$data->aliases->enumName] ?? -1);
+		}else{
+			$this->putLInt(-1);
+		}
 
-            switch($argtype & 0xffff){
-                case self::ARG_TYPE_INT:
-                    return "int";
-                case self::ARG_TYPE_FLOAT:
-                    return "float";
-                case self::ARG_TYPE_VALUE:
-                    return "mixed";
-                case self::ARG_TYPE_TARGET:
-                    return "target";
-                case self::ARG_TYPE_STRING:
-                    return "string";
-                case self::ARG_TYPE_POSITION:
-                    return "xyz";
-                case self::ARG_TYPE_MESSAGE:
-                    return "message";
-                case self::ARG_TYPE_RAWTEXT:
-                    return "text";
-                case self::ARG_TYPE_JSON:
-                    return "json";
-                case self::ARG_TYPE_COMMAND:
-                    return "command";
-            }
-        }elseif($argtype !== 0){
-            //guessed
-            $baseType = $argtype >> 24;
-            $typeName = $this->argTypeToString(self::ARG_FLAG_VALID | $baseType);
-            $postfix = $this->postfixes[$argtype & 0xffff];
+		$this->putUnsignedVarInt(count($data->overloads));
+		foreach($data->overloads as $overload){
+			/** @var CommandParameter[] $overload */
+			$this->putUnsignedVarInt(count($overload));
+			foreach($overload as $parameter){
+				$this->putString($parameter->paramName);
 
-            return $typeName . " (postfix $postfix)";
-        }
+				if($parameter->enum !== null){
+					$type = self::ARG_FLAG_ENUM | self::ARG_FLAG_VALID | ($this->enumMap[$parameter->enum->enumName] ?? -1);
+				}elseif($parameter->postfix !== null){
+					$key = array_search($parameter->postfix, $this->postfixes, true);
+					if($key === false){
+						throw new \InvalidStateException("Postfix '$parameter->postfix' not in postfixes array");
+					}
+					$type = self::ARG_FLAG_POSTFIX | $key;
+				}else{
+					$type = self::ARG_FLAG_VALID | $parameter->paramType;
+				}
 
-        return "unknown ($argtype)";
-    }
+				$this->putLInt($type);
+				$this->putBool($parameter->isOptional);
+			}
+		}
+	}
 
-    protected function encodePayload() : void{
-        $enumValuesMap = [];
-        $postfixesMap = [];
-        $enumMap = [];
-        foreach($this->commandData as $commandData){
-            if($commandData->aliases !== null){
-                $enumMap[$commandData->aliases->enumName] = $commandData->aliases;
+	private function argTypeToString(int $argtype) : string{
+		if($argtype & self::ARG_FLAG_VALID){
+			if($argtype & self::ARG_FLAG_ENUM){
+				return "stringenum (" . ($argtype & 0xffff) . ")";
+			}
 
-                foreach($commandData->aliases->enumValues as $str){
-                    $enumValuesMap[$str] = true;
-                }
-            }
+			switch($argtype & 0xffff){
+				case self::ARG_TYPE_INT:
+					return "int";
+				case self::ARG_TYPE_FLOAT:
+					return "float";
+				case self::ARG_TYPE_VALUE:
+					return "mixed";
+				case self::ARG_TYPE_TARGET:
+					return "target";
+				case self::ARG_TYPE_STRING:
+					return "string";
+				case self::ARG_TYPE_POSITION:
+					return "xyz";
+				case self::ARG_TYPE_MESSAGE:
+					return "message";
+				case self::ARG_TYPE_RAWTEXT:
+					return "text";
+				case self::ARG_TYPE_JSON:
+					return "json";
+				case self::ARG_TYPE_COMMAND:
+					return "command";
+			}
+		}elseif($argtype & self::ARG_FLAG_POSTFIX){
+			$postfix = $this->postfixes[$argtype & 0xffff];
 
-            foreach($commandData->overloads as $overload){
-                /**
-                 * @var CommandParameter[] $overload
-                 * @var CommandParameter $parameter
-                 */
-                foreach($overload as $parameter){
-                    if($parameter->enum !== null){
-                        $enumMap[$parameter->enum->enumName] = $parameter->enum;
-                        foreach($parameter->enum->enumValues as $str){
-                            $enumValuesMap[$str] = true;
-                        }
-                    }
+			return "int (postfix $postfix)";
+		}else{
+			throw new \UnexpectedValueException("Unknown arg type 0x" . dechex($argtype));
+		}
 
-                    if($parameter->postfix !== null){
-                        $postfixesMap[$parameter->postfix] = true;
-                    }
-                }
-            }
-        }
+		return "unknown ($argtype)";
+	}
 
-        $this->enumValues = array_map('strval', array_keys($enumValuesMap)); //stupid PHP key casting D:
-        $this->putUnsignedVarInt($this->enumValuesCount = count($this->enumValues));
-        foreach($this->enumValues as $enumValue){
-            $this->putString($enumValue);
-        }
+	protected function encodePayload() : void{
+		$enumValuesMap = [];
+		$postfixesMap = [];
+		$enumMap = [];
+		foreach($this->commandData as $commandData){
+			if($commandData->aliases !== null){
+				$enumMap[$commandData->aliases->enumName] = $commandData->aliases;
 
-        $this->postfixes = array_map('strval', array_keys($postfixesMap));
-        $this->putUnsignedVarInt(count($this->postfixes));
-        foreach($this->postfixes as $postfix){
-            $this->putString($postfix);
-        }
+				foreach($commandData->aliases->enumValues as $str){
+					$enumValuesMap[$str] = true;
+				}
+			}
 
-        $this->enums = array_values($enumMap);
-        $this->enumMap = array_flip(array_keys($enumMap));
-        $this->putUnsignedVarInt(count($this->enums));
-        foreach($this->enums as $enum){
-            $this->putEnum($enum);
-        }
+			foreach($commandData->overloads as $overload){
+				/**
+				 * @var CommandParameter[] $overload
+				 * @var CommandParameter   $parameter
+				 */
+				foreach($overload as $parameter){
+					if($parameter->enum !== null){
+						$enumMap[$parameter->enum->enumName] = $parameter->enum;
+						foreach($parameter->enum->enumValues as $str){
+							$enumValuesMap[$str] = true;
+						}
+					}
 
-        $this->putUnsignedVarInt(count($this->commandData));
-        foreach($this->commandData as $data){
-            $this->putCommandData($data);
-        }
-    }
+					if($parameter->postfix !== null){
+						$postfixesMap[$parameter->postfix] = true;
+					}
+				}
+			}
+		}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleAvailableCommands($this);
-    }
+		$this->enumValues = array_map('strval', array_keys($enumValuesMap)); //stupid PHP key casting D:
+		$this->putUnsignedVarInt($this->enumValuesCount = count($this->enumValues));
+		foreach($this->enumValues as $enumValue){
+			$this->putString($enumValue);
+		}
+
+		$this->postfixes = array_map('strval', array_keys($postfixesMap));
+		$this->putUnsignedVarInt(count($this->postfixes));
+		foreach($this->postfixes as $postfix){
+			$this->putString($postfix);
+		}
+
+		$this->enums = array_values($enumMap);
+		$this->enumMap = array_flip(array_keys($enumMap));
+		$this->putUnsignedVarInt(count($this->enums));
+		foreach($this->enums as $enum){
+			$this->putEnum($enum);
+		}
+
+		$this->putUnsignedVarInt(count($this->commandData));
+		foreach($this->commandData as $data){
+			$this->putCommandData($data);
+		}
+		$this->putUnsignedVarInt(count($this->softEnums));
+		foreach($this->softEnums as $enum){
+			$this->putSoftEnum($enum);
+		}
+	}
+
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleAvailableCommands($this);
+	}
 }

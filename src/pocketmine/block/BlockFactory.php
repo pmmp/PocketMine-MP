@@ -421,8 +421,8 @@ class BlockFactory{
 	public static function registerStaticRuntimeIdMappings() : void{
 		/** @var mixed[] $runtimeIdMap */
 		$runtimeIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "runtimeid_table.json"), true);
-		foreach($runtimeIdMap as $obj){
-			self::registerMapping($obj["runtimeID"], $obj["id"], $obj["data"]);
+		foreach($runtimeIdMap as $k => $obj){
+			self::registerMapping($k, $obj["id"], $obj["data"]);
 		}
 	}
 
