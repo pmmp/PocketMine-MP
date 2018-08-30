@@ -97,6 +97,32 @@ class Rail extends Flowable{
 		]
 	];
 
+	/**
+	 * Returns a meta value for the rail with the given connections.
+	 *
+	 * @param array $connections
+	 *
+	 * @return int
+	 *
+	 * @throws \InvalidArgumentException if no state matches the given connections
+	 */
+	private static function getMetaForState(array $connections) : int{
+		if(count($connections) !== 2){
+			throw new \InvalidArgumentException("Expected exactly 2 connections");
+		}
+
+		//TODO: restrict search by rail type
+		$meta = array_search($connections, self::CONNECTIONS, true);
+		if($meta === false){
+			$meta = array_search(array_reverse($connections), self::CONNECTIONS, true);
+		}
+		if($meta === false){
+			throw new \InvalidArgumentException("No meta value matches connections " . implode(", ", array_map('dechex', $connections)));
+		}
+
+		return $meta;
+	}
+
 	protected $id = self::RAIL;
 
 	public function __construct(int $meta = 0){
@@ -124,6 +150,11 @@ class Rail extends Flowable{
 		return true;
 	}
 
+	protected function getConnectionsForState() : array{
+		//TODO: this needs extra flags for redstone rails (they use their top bit for powered state)
+		return self::CONNECTIONS[$this->meta];
+	}
+
 	/**
 	 * Returns all the directions this rail is already connected in.
 	 *
@@ -134,7 +165,7 @@ class Rail extends Flowable{
 		$connections = [];
 
 		/** @var int $connection */
-		foreach(self::CONNECTIONS[$this->meta] as $connection){
+		foreach($this->getConnectionsForState() as $connection){
 			$other = $this->getSide($connection & ~self::FLAG_ASCEND);
 			$otherConnection = Vector3::getOppositeSide($connection & ~self::FLAG_ASCEND);
 
@@ -148,7 +179,7 @@ class Rail extends Flowable{
 
 			if(
 				$other instanceof Rail and
-				in_array($otherConnection, self::CONNECTIONS[$other->meta], true)
+				in_array($otherConnection, $other->getConnectionsForState(), true)
 			){
 				$connections[] = $connection;
 			}
@@ -247,19 +278,13 @@ class Rail extends Flowable{
 	}
 
 	private function updateState(array $connections) : void{
-		if(count($connections) < 2){
+		if(count($connections) === 1){
 			$connections[] = Vector3::getOppositeSide($connections[0] & ~self::FLAG_ASCEND);
+		}elseif(count($connections) !== 2){
+			throw new \InvalidArgumentException("Expected exactly 2 connections, got " . count($connections));
 		}
 
-		$meta = array_search($connections, self::CONNECTIONS, true);
-		if($meta === false){
-			$meta = array_search(array_reverse($connections), self::CONNECTIONS, true);
-		}
-		if($meta === false){
-			throw new \InvalidStateException("Failed to bruteforce rail state for " . implode(", ", $connections));
-		}
-
-		$this->meta = $meta;
+		$this->meta = self::getMetaForState($connections);
 		$this->level->setBlock($this, $this, false, false); //avoid recursion
 	}
 
