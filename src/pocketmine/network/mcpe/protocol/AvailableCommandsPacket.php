@@ -143,8 +143,7 @@ class AvailableCommandsPacket extends DataPacket{
 	}
 
 	protected function getSoftEnum() : CommandEnum{
-		$retval = new CommandEnum();
-		$retval->enumName = $this->getString();
+		$retval = new CommandEnum($this->getString());
 
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
 			//Get the enum value from the initial pile of mess
