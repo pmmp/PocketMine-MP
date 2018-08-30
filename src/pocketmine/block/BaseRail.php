@@ -43,7 +43,7 @@ abstract class BaseRail extends Flowable{
 		self::ASCENDING_WEST => Vector3::SIDE_WEST
 	];
 
-	private const FLAG_ASCEND = 1 << 24; //used to indicate direction-up
+	protected const FLAG_ASCEND = 1 << 24; //used to indicate direction-up
 
 	protected const CONNECTIONS = [
 		//straights

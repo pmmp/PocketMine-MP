@@ -80,9 +80,11 @@ class Rail extends BaseRail{
 
 		$possible = parent::getPossibleConnectionDirectionsOneConstraint($constraint);
 
-		foreach($horizontal as $d){
-			if($constraint !== $d){
-				$possible[$d] = true;
+		if(($constraint & self::FLAG_ASCEND) === 0){
+			foreach($horizontal as $d){
+				if($constraint !== $d){
+					$possible[$d] = true;
+				}
 			}
 		}
 
