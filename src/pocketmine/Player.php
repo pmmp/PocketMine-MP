@@ -3801,6 +3801,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @param bool      $isPermanent Prevents the window being removed if true.
 	 *
 	 * @return int
+	 *
+	 * @throws \InvalidArgumentException if a forceID which is already in use is specified
+	 * @throws \InvalidStateException if trying to add a window without forceID when no slots are free
 	 */
 	public function addWindow(Inventory $inventory, int $forceId = null, bool $isPermanent = false) : int{
 		if(($id = $this->getWindowId($inventory)) !== ContainerIds::NONE){
@@ -3808,10 +3811,21 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		if($forceId === null){
-			$this->windowCnt = $cnt = max(ContainerIds::FIRST, ++$this->windowCnt % ContainerIds::LAST);
+			$cnt = $this->windowCnt;
+			do{
+				$cnt = max(ContainerIds::FIRST, ($cnt + 1) % ContainerIds::LAST);
+				if($cnt === $this->windowCnt){ //wraparound, no free slots
+					throw new \InvalidStateException("No free window IDs found");
+				}
+			}while(isset($this->windowIndex[$cnt]));
+			$this->windowCnt = $cnt;
 		}else{
 			$cnt = $forceId;
+			if(isset($this->windowIndex[$cnt])){
+				throw new \InvalidArgumentException("Requested force ID $forceId already in use");
+			}
 		}
+
 		$this->windowIndex[$cnt] = $inventory;
 		$this->windows[spl_object_hash($inventory)] = $cnt;
 		if($inventory->open($this)){
