@@ -239,7 +239,6 @@ class BlockFactory{
 		self::registerBlock(new WoodenStairs(Block::ACACIA_STAIRS, 0, "Acacia Stairs"));
 		self::registerBlock(new WoodenStairs(Block::DARK_OAK_STAIRS, 0, "Dark Oak Stairs"));
         self::registerBlock(new SlimeBlock());
-        self::registerBlock(new Barrier());
 		self::registerBlock(new IronTrapdoor());
 		self::registerBlock(new Prismarine());
 		self::registerBlock(new SeaLantern());

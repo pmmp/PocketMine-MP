@@ -284,7 +284,4 @@ interface BlockIds{
 	public const STRIPPED_ACACIA_LOG = 263;
 	public const STRIPPED_DARK_OAK_LOG = 264;
 	public const STRIPPED_OAK_LOG = 265;
-
-	public const BARRIER = 416;
-
 }
