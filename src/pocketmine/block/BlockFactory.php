@@ -157,20 +157,20 @@ class BlockFactory{
 		self::registerBlock(new Cactus());
 		self::registerBlock(new Clay());
 		self::registerBlock(new Sugarcane());
-        self::registerBlock(new Jukebox());
+		self::registerBlock(new Jukebox());
 		self::registerBlock(new WoodenFence());
 		self::registerBlock(new Pumpkin());
 		self::registerBlock(new Netherrack());
 		self::registerBlock(new SoulSand());
 		self::registerBlock(new Glowstone());
-        self::registerBlock(new NetherPortal());
+		self::registerBlock(new NetherPortal());
 		self::registerBlock(new LitPumpkin());
 		self::registerBlock(new Cake());
 		//TODO: REPEATER_BLOCK
 		//TODO: POWERED_REPEATER
-        self::registerBlock(new InvisibleBedrock());
+		self::registerBlock(new InvisibleBedrock());
 		self::registerBlock(new Trapdoor());
-        self::registerBlock(new MonsterEggBlock());
+		self::registerBlock(new MonsterEggBlock());
 		self::registerBlock(new StoneBricks());
 		self::registerBlock(new BrownMushroomBlock());
 		self::registerBlock(new RedMushroomBlock());
@@ -192,10 +192,10 @@ class BlockFactory{
 		self::registerBlock(new EnchantingTable());
 		self::registerBlock(new BrewingStand());
 		//TODO: CAULDRON_BLOCK
-        self::registerBlock(new EndPortal());
+		self::registerBlock(new EndPortal());
 		self::registerBlock(new EndPortalFrame());
 		self::registerBlock(new EndStone());
-        self::registerBlock(new DragonEgg());
+		self::registerBlock(new DragonEgg());
 		self::registerBlock(new RedstoneLamp());
 		self::registerBlock(new LitRedstoneLamp());
 		//TODO: DROPPER
@@ -211,7 +211,7 @@ class BlockFactory{
 		self::registerBlock(new WoodenStairs(Block::BIRCH_STAIRS, 0, "Birch Stairs"));
 		self::registerBlock(new WoodenStairs(Block::JUNGLE_STAIRS, 0, "Jungle Stairs"));
 		//TODO: COMMAND_BLOCK
-        self::registerBlock(new Beacon());
+		self::registerBlock(new Beacon());
 		self::registerBlock(new CobblestoneWall());
 		self::registerBlock(new FlowerPot());
 		self::registerBlock(new Carrot());
@@ -227,7 +227,7 @@ class BlockFactory{
 		self::registerBlock(new DaylightSensor());
 		self::registerBlock(new Redstone());
 		self::registerBlock(new NetherQuartzOre());
-        self::registerBlock(new Hopper());
+		self::registerBlock(new Hopper());
 		self::registerBlock(new Quartz());
 		self::registerBlock(new QuartzStairs());
 		self::registerBlock(new DoubleWoodenSlab());
@@ -238,7 +238,7 @@ class BlockFactory{
 		self::registerBlock(new Wood2());
 		self::registerBlock(new WoodenStairs(Block::ACACIA_STAIRS, 0, "Acacia Stairs"));
 		self::registerBlock(new WoodenStairs(Block::DARK_OAK_STAIRS, 0, "Dark Oak Stairs"));
-        self::registerBlock(new SlimeBlock());
+		self::registerBlock(new SlimeBlock());
 		self::registerBlock(new IronTrapdoor());
 		self::registerBlock(new Prismarine());
 		self::registerBlock(new SeaLantern());
@@ -275,7 +275,7 @@ class BlockFactory{
 
 		self::registerBlock(new PurpurStairs());
 
-        self::registerBlock(new UndyedShulkerBox());
+		self::registerBlock(new UndyedShulkerBox());
 		self::registerBlock(new EndStoneBricks());
 		//TODO: FROSTED_ICE
 		self::registerBlock(new EndRod());
@@ -285,7 +285,7 @@ class BlockFactory{
 		self::registerBlock(new NetherBrick(Block::RED_NETHER_BRICK, 0, "Red Nether Bricks"));
 		self::registerBlock(new BoneBlock());
 
-        self::registerBlock(new ShulkerBox());
+		self::registerBlock(new ShulkerBox());
 		self::registerBlock(new GlazedTerracotta(Block::PURPLE_GLAZED_TERRACOTTA, 0, "Purple Glazed Terracotta"));
 		self::registerBlock(new GlazedTerracotta(Block::WHITE_GLAZED_TERRACOTTA, 0, "White Glazed Terracotta"));
 		self::registerBlock(new GlazedTerracotta(Block::ORANGE_GLAZED_TERRACOTTA, 0, "Orange Glazed Terracotta"));
@@ -367,8 +367,8 @@ class BlockFactory{
 	/**
 	 * Returns a new Block instance with the specified ID, meta and position.
 	 *
-	 * @param int      $id
-	 * @param int      $meta
+	 * @param int $id
+	 * @param int $meta
 	 * @param Position $pos
 	 *
 	 * @return Block
@@ -410,6 +410,7 @@ class BlockFactory{
 	 * Returns whether a specified block ID is already registered in the block factory.
 	 *
 	 * @param int $id
+	 *
 	 * @return bool
 	 */
 	public static function isRegistered(int $id) : bool{
@@ -451,7 +452,10 @@ class BlockFactory{
 	 */
 	public static function fromStaticRuntimeId(int $runtimeId) : array{
 		$v = self::$legacyIdMap[$runtimeId];
-		return [$v >> 4, $v & 0xf];
+		return [
+			$v >> 4,
+			$v & 0xf
+		];
 	}
 
 	private static function registerMapping(int $staticRuntimeId, int $legacyId, int $legacyMeta) : void{
