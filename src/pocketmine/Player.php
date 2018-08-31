@@ -171,7 +171,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public const SPECTATOR = 3;
 	public const VIEW = Player::SPECTATOR;
 
-	/**
+    /**
 	 * Checks a supplied username and checks it is valid.
 	 *
 	 * @param string $name
@@ -228,6 +228,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $deviceModel;
 	/** @var int */
 	protected $deviceOS;
+	/** @var string */
+	protected $deviceId;
 
 	protected $windowCnt = 2;
 	/** @var int[] */
@@ -1904,6 +1906,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->deviceModel = $packet->clientData["DeviceModel"];
 		$this->deviceOS = $packet->clientData["DeviceOS"];
+		$this->deviceId = $packet->clientData["DeviceId"];
 
 		$this->setSkin($packet->skin);
 
@@ -3788,6 +3791,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function getDeviceOS() : int{
 		return $this->deviceOS;
 	}
+
+	public function getDeviceId() : string{
+	    return $this->deviceId;
+    }
 
 	public function isTeleporting() : bool{
 		return $this->isTeleporting;
