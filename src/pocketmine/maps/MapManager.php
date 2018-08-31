@@ -74,7 +74,7 @@ class MapManager{
 	}
 
 	public static function saveMaps() : void{
-		@mkdir($path = Server::getInstance()->getDataPath() . "maps/");
+		@mkdir($path = Server::getInstance()->getDataPath() . "maps/", 0777);
 
 		$stream = new LittleEndianNBTStream();
 		$idcounts = new CompoundTag();
