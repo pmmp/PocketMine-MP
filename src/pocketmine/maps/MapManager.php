@@ -50,7 +50,7 @@ class MapManager{
 	}
 
 	public static function initMaps() : void{
-		@mkdir($path = Server::getInstance()->getDataPath() . "maps/");
+		@mkdir($path = Server::getInstance()->getDataPath() . "maps/", 0777);
 
 		$stream = new LittleEndianNBTStream();
 
