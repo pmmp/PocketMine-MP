@@ -191,7 +191,6 @@ interface BlockIds{
 	public const ACACIA_STAIRS = 163;
 	public const DARK_OAK_STAIRS = 164;
 	public const SLIME = 165, SLIME_BLOCK = 165;
-	public const BARRIER = 166;
 	public const IRON_TRAPDOOR = 167;
 	public const PRISMARINE = 168;
 	public const SEALANTERN = 169, SEA_LANTERN = 169;
@@ -285,5 +284,7 @@ interface BlockIds{
 	public const STRIPPED_ACACIA_LOG = 263;
 	public const STRIPPED_DARK_OAK_LOG = 264;
 	public const STRIPPED_OAK_LOG = 265;
+
+	public const BARRIER = 416;
 
 }
