@@ -81,7 +81,7 @@ class ResourcePacksSessionHandler extends SessionHandler{
 					if(!($pack instanceof ResourcePack)){
 						//Client requested a resource pack but we don't have it available on the server
 						$this->disconnectWithError("Unknown pack $uuid requested, available packs: " . implode(", ", $this->resourcePackManager->getPackIdList()));
-						return false;
+						return true;
 					}
 
 					$pk = new ResourcePackDataInfoPacket();
@@ -114,20 +114,20 @@ class ResourcePacksSessionHandler extends SessionHandler{
 		$pack = $this->resourcePackManager->getPackById($packet->packId);
 		if(!($pack instanceof ResourcePack)){
 			$this->disconnectWithError("Invalid request for chunk $packet->chunkIndex of unknown pack $packet->packId, available packs: " . implode(", ", $this->resourcePackManager->getPackIdList()));
-			return false;
+			return true;
 		}
 
 		$packId = $pack->getPackId(); //use this because case may be different
 
 		if(isset($this->downloadedChunks[$packId][$packet->chunkIndex])){
 			$this->disconnectWithError("Duplicate request for chunk $packet->chunkIndex of pack $packet->packId");
-			return false;
+			return true;
 		}
 
 		$offset = $packet->chunkIndex * self::PACK_CHUNK_SIZE;
 		if($offset < 0 or $offset >= $pack->getPackSize()){
 			$this->disconnectWithError("Invalid out-of-bounds request for chunk $packet->chunkIndex of $packet->packId: offset $offset, file size " . $pack->getPackSize());
-			return false;
+			return true;
 		}
 
 		if(!isset($this->downloadedChunks[$packId])){
