@@ -401,6 +401,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			'FishingHook',
 			'minecraft:fishing_hook'
 		]);
+		Entity::registerEntity(FishingHook::class, false, [
+			'LeashKnot',
+			'minecraft:leash_knot'
+		]);
 
 		Entity::registerEntity(Human::class, true);
 
