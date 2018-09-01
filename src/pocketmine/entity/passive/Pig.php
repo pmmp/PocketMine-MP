@@ -119,4 +119,8 @@ class Pig extends Animal{
 	public function getRiderSeatPosition(int $seatNumber = 0) : Vector3{
 		return new Vector3(0, 0.63, 0);
 	}
+
+	public function getLivingSound() : ?string{
+		return "mob.pig.say";
+	}
 }

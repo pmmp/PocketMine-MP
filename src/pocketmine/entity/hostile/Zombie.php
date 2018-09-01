@@ -102,4 +102,8 @@ class Zombie extends Monster implements Ageable{
 		}
 		return parent::entityBaseTick($diff);
 	}
+
+	public function getLivingSound() : ?string{
+		return "mob.zombie.say";
+	}
 }

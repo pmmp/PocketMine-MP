@@ -69,7 +69,7 @@ class Mooshroom extends Cow{
 					$player->dropItem(ItemFactory::get(Block::RED_MUSHROOM));
 				}
 
-				$this->kill();
+				$this->flagForDespawn();
 				$cow->spawnToAll();
 
 				return true;

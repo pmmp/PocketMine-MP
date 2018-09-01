@@ -31,6 +31,9 @@ use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\PlaySoundPacket;
 
 abstract class Mob extends Living{
 
@@ -52,6 +55,8 @@ abstract class Mob extends Living{
 
 	/** @var bool */
 	protected $aiEnabled = false;
+	/** @var int */
+	protected $livingSoundTime = 0;
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		parent::__construct($level, $nbt);
@@ -77,6 +82,15 @@ abstract class Mob extends Living{
 	 */
 	public function getHomePosition() : Vector3{
 		return $this->homePosition;
+	}
+
+	/**
+	 * Get number of ticks, at least during which the living entity will be silent.
+	 *
+	 * @return int
+	 */
+	public function getTalkInterval() : int{
+		return 80;
 	}
 
 	/**
@@ -113,9 +127,37 @@ abstract class Mob extends Living{
 
 		if($this->aiEnabled){
 			$this->onBehaviorUpdate();
+
+			if($this->isAlive() and $this->random->nextBoundedInt(1000) < $this->livingSoundTime++){
+				$this->livingSoundTime -= $this->getTalkInterval();
+				$this->playLivingSound();
+			}
 		}
 
 		return $hasUpdate;
+	}
+
+	/**
+	 * @return null|string
+	 */
+	public function getLivingSound() : ?string{
+		return null;
+	}
+
+	public function playLivingSound() : void{
+		$sound = $this->getLivingSound();
+
+		if($sound !== null and $this->chunk !== null){
+			$pk = new PlaySoundPacket();
+			$pk->x = $this->x;
+			$pk->y = $this->y;
+			$pk->z = $this->z;
+			$pk->pitch = $this->isBaby() ? 2 : 1;
+			$pk->volume = 1.0;
+			$pk->soundName = $sound;
+
+			$this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
+		}
 	}
 
 	protected function onBehaviorUpdate() : void{

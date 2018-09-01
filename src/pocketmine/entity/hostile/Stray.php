@@ -52,4 +52,8 @@ class Stray extends Skeleton{
 			$entity->addEffect(new EffectInstance(Effect::getEffect(Effect::WITHER), 7 * 20, 1));
 		}
 	}
+
+	public function getLivingSound() : ?string{
+		return "mob.stray.idle";
+	}
 }

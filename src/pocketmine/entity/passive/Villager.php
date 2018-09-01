@@ -206,4 +206,8 @@ class Villager extends Mob implements NPC, Ageable{
 	public function setWilling(bool $isWilling) : void{
 		$this->isWilling = $isWilling;
 	}
+
+	public function getLivingSound() : ?string{
+		return $this->isWilling() ? "mob.villager.haggle" : "mob.villager.idle";
+	}
 }

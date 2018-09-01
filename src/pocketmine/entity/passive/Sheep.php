@@ -132,4 +132,8 @@ class Sheep extends Tamable{
 
 		return $nbt;
 	}
+
+	public function getLivingSound() : ?string{
+		return "mob.sheep.say";
+	}
 }

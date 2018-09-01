@@ -128,4 +128,8 @@ class Chicken extends Animal{
 	public function fall(float $fallDistance) : void{
 		// chickens do not get damage when fall
 	}
+
+	public function getLivingSound() : ?string{
+		return "mob.chicken.say";
+	}
 }

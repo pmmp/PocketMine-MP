@@ -91,4 +91,8 @@ class Cow extends Tamable{
 			($this->isOnFire() ? ItemFactory::get(Item::STEAK, 0, rand(1, 3)) : ItemFactory::get(Item::RAW_BEEF, 0, rand(1, 3)))
 		];
 	}
+
+	public function getLivingSound() : ?string{
+		return "mob.cow.say";
+	}
 }

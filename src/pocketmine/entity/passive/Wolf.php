@@ -129,4 +129,7 @@ class Wolf extends Tamable{
 		$this->setGenericFlag(self::DATA_FLAG_ANGRY, $angry);
 	}
 
+	public function getLivingSound() : ?string{
+		return $this->isAngry() ? "mob.wolf.growl" : "mob.wolf.bark";
+	}
 }
