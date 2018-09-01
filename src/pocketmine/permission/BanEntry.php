@@ -119,6 +119,7 @@ class BanEntry{
 	 * @link https://bugs.php.net/bug.php?id=75992
 	 *
 	 * @param \DateTime $dateTime
+	 *
 	 * @throws \RuntimeException if the argument can't be parsed from a formatted date string
 	 */
 	private static function validateDate(\DateTime $dateTime) : void{

@@ -32,9 +32,8 @@ class CompressBatchTask extends AsyncTask{
 	private $data;
 
 	/**
-	 * @param PacketStream         $stream
-	 * @param int                  $compressionLevel
-	 * @param CompressBatchPromise $promise
+	 * @param PacketStream $stream
+	 * @param  int         $compressionLevel * @param CompressBatchPromise $promise
 	 */
 	public function __construct(PacketStream $stream, int $compressionLevel, CompressBatchPromise $promise){
 		$this->data = $stream->buffer;
@@ -49,6 +48,7 @@ class CompressBatchTask extends AsyncTask{
 	public function onCompletion(Server $server) : void{
 		/** @var CompressBatchPromise $promise */
 		$promise = $this->fetchLocal();
+
 		$promise->resolve($this->getResult());
 	}
 }

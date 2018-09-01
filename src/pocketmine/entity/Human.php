@@ -1,23 +1,24 @@
 <?php
 
 /*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *               _ _
+ *         /\   | | |
+ *        /  \  | | |_ __ _ _   _
+ *       / /\ \ | | __/ _` | | | |
+ *      / ____ \| | || (_| | |_| |
+ *     /_/    \_|_|\__\__,_|\__, |
+ *                           __/ |
+ *                          |___/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Altay
  *
- *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,21 +32,22 @@ use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerExperienceChangeEvent;
 use pocketmine\inventory\EnderChestInventory;
 use pocketmine\inventory\EntityInventoryEventProcessor;
-use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
+use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Consumable;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\FoodSource;
-use pocketmine\item\Item;
 use pocketmine\item\Totem;
+use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
@@ -85,7 +87,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	protected $foodTickTimer = 0;
 
 	protected $totalXp = 0;
-	protected $xpSeed;
+	protected $xpSeed = 0;
 	protected $xpCooldown = 0;
 
 	protected $baseOffset = 1.62;
@@ -93,10 +95,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public function __construct(Level $level, CompoundTag $nbt){
 		if($this->skin === null){
 			$skinTag = $nbt->getCompoundTag("Skin");
-			if($skinTag === null or !self::isValidSkin($skinTag->hasTag("Data", ByteArrayTag::class) ?
-				$skinTag->getByteArray("Data") :
-				$skinTag->getString("Data", "")
-			)){
+			if($skinTag === null or !self::isValidSkin($skinTag->hasTag("Data", ByteArrayTag::class) ? $skinTag->getByteArray("Data") : $skinTag->getString("Data", ""))){
 				throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
 			}
 		}
@@ -112,7 +111,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * @return bool
 	 */
 	public static function isValidSkin(string $skin) : bool{
-		return strlen($skin) === 64 * 64 * 4 or strlen($skin) === 64 * 32 * 4 or strlen($skin) === 128 * 128 * 4;
+		$len = strlen($skin);
+		return $len === 64 * 64 * 4 or $len === 64 * 32 * 4 or $len === 128 * 128 * 4;
 	}
 
 	/**
@@ -193,7 +193,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 		$reset = false;
 		// ranges: 18-20 (regen), 7-17 (none), 1-6 (no sprint), 0 (health depletion)
-		foreach([17, 6, 0] as $bound){
+		foreach([
+			        17,
+			        6,
+			        0
+		        ] as $bound){
 			if(($old > $bound) !== ($new > $bound)){
 				$reset = true;
 				break;
@@ -588,13 +592,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 		$skin = $nbt->getCompoundTag("Skin");
 		if($skin !== null){
-			$this->setSkin(new Skin(
-				$skin->getString("Name"),
-				$skin->hasTag("Data", StringTag::class) ? $skin->getString("Data") : $skin->getByteArray("Data"), //old data (this used to be saved as a StringTag in older versions of PM)
-				$skin->getByteArray("CapeData", ""),
-				$skin->getString("GeometryName", ""),
-				$skin->getByteArray("GeometryData", "")
-			));
+			$this->setSkin(new Skin($skin->getString("Name"), $skin->hasTag("Data", StringTag::class) ? $skin->getString("Data") : $skin->getByteArray("Data"), //old data (this used to be saved as a StringTag in older versions of PM)
+				$skin->hasTag("CapeData", ByteArrayTag::class) ? $skin->getByteArray("CapeData", "") : $skin->getString("CapeData", ""), $skin->getString("GeometryName", ""), $skin->hasTag("GeometryData", ByteArrayTag::class) ? $skin->getByteArray("GeometryData", "") : $skin->getString("GeometryData", "")));
 		}
 
 		$this->uuid = UUID::fromData((string) $this->getId(), $this->skin->getSkinData(), $this->getNameTag());
@@ -728,8 +727,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		parent::applyDamageModifiers($source);
 
 		$type = $source->getCause();
-		if($type !== EntityDamageEvent::CAUSE_SUICIDE and $type !== EntityDamageEvent::CAUSE_VOID
-			and $this->inventory->getItemInHand() instanceof Totem){ //TODO: check offhand as well (when it's implemented)
+		if($type !== EntityDamageEvent::CAUSE_SUICIDE and $type !== EntityDamageEvent::CAUSE_VOID and $this->inventory->getItemInHand() instanceof Totem){ //TODO: check offhand as well (when it's implemented)
 
 			$compensation = $this->getHealth() - $source->getFinalDamage() - 1;
 			if($compensation < 0){
@@ -760,10 +758,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	public function getDrops() : array{
-		return array_filter(array_merge(
-			$this->inventory !== null ? array_values($this->inventory->getContents()) : [],
-			$this->armorInventory !== null ? array_values($this->armorInventory->getContents()) : []
-		), function(Item $item) : bool{ return !$item->hasEnchantment(Enchantment::VANISHING); });
+		return array_filter(array_merge($this->inventory !== null ? array_values($this->inventory->getContents()) : [], $this->armorInventory !== null ? array_values($this->armorInventory->getContents()) : []), function(Item $item) : bool{
+			return !$item->hasEnchantment(Enchantment::VANISHING);
+		});
 	}
 
 	public function saveNBT() : CompoundTag{
@@ -862,7 +859,12 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$player->sendDataPacket($pk);
 
 		//TODO: Hack for MCPE 1.2.13: DATA_NAMETAG is useless in AddPlayerPacket, so it has to be sent separately
-		$this->sendData($player, [self::DATA_NAMETAG => [self::DATA_TYPE_STRING, $this->getNameTag()]]);
+		$this->sendData($player, [
+			self::DATA_NAMETAG => [
+				self::DATA_TYPE_STRING,
+				$this->getNameTag()
+			]
+		]);
 
 		$this->armorInventory->sendContents($player);
 
@@ -892,6 +894,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * Wrapper around {@link Entity#getDataFlag} for player-specific data flag reading.
 	 *
 	 * @param int $flagId
+	 *
 	 * @return bool
 	 */
 	public function getPlayerFlag(int $flagId) : bool{
@@ -906,5 +909,18 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 */
 	public function setPlayerFlag(int $flagId, bool $value = true) : void{
 		$this->setDataFlag(self::DATA_PLAYER_FLAGS, $flagId, $value, self::DATA_TYPE_BYTE);
+	}
+
+	/**
+	 * @param Entity $entity
+	 */
+	public function onCollideWithEntity(Entity $entity) : void{
+		if(!($entity instanceof Player)){
+			parent::onCollideWithEntity($entity);
+		}
+	}
+
+	public function getRiderSeatPosition(int $seatNumber = 0) : Vector3{
+		return new Vector3(-0.4, -0.15, 0.04);
 	}
 }

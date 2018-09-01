@@ -36,3 +36,4 @@ class Melon extends Food{
 		return 1.2;
 	}
 }
+

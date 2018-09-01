@@ -72,10 +72,7 @@ class RCONInstance extends Thread{
 	}
 
 	private function writePacket($client, int $requestID, int $packetType, string $payload){
-		$pk = Binary::writeLInt($requestID)
-			. Binary::writeLInt($packetType)
-			. $payload
-			. "\x00\x00"; //Terminate payload and packet
+		$pk = Binary::writeLInt($requestID) . Binary::writeLInt($packetType) . $payload . "\x00\x00"; //Terminate payload and packet
 		return socket_write($client, Binary::writeLInt(strlen($pk)) . $pk);
 	}
 
@@ -211,7 +208,10 @@ class RCONInstance extends Thread{
 	}
 
 	private function disconnectClient($client) : void{
-		@socket_set_option($client, SOL_SOCKET, SO_LINGER, ["l_onoff" => 1, "l_linger" => 1]);
+		@socket_set_option($client, SOL_SOCKET, SO_LINGER, [
+			"l_onoff" => 1,
+			"l_linger" => 1
+		]);
 		@socket_shutdown($client, 2);
 		@socket_set_block($client);
 		@socket_read($client, 1);

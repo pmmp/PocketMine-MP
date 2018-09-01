@@ -51,7 +51,7 @@ class Chunk{
 	/** @var bool */
 	protected $isInit = false;
 
-	/** @var bool*/
+	/** @var bool */
 	protected $lightPopulated = false;
 	/** @var bool */
 	protected $terrainGenerated = false;
@@ -325,8 +325,8 @@ class Chunk{
 	/**
 	 * Returns the Y coordinate of the highest non-air block at the specified X/Z chunk block coordinates
 	 *
-	 * @param int  $x 0-15
-	 * @param int  $z 0-15
+	 * @param int $x 0-15
+	 * @param int $z 0-15
 	 *
 	 * @return int 0-255, or -1 if there are no blocks in the column
 	 */
@@ -364,6 +364,7 @@ class Chunk{
 
 	/**
 	 * Returns the heightmap value at the specified X/Z chunk block coordinates
+	 *
 	 * @param int $x 0-15
 	 * @param int $z 0-15
 	 * @param int $value
@@ -463,6 +464,7 @@ class Chunk{
 
 	/**
 	 * Returns a column of block IDs from bottom to top at the specified X/Z chunk block coordinates.
+	 *
 	 * @param int $x 0-15
 	 * @param int $z 0-15
 	 *
@@ -478,6 +480,7 @@ class Chunk{
 
 	/**
 	 * Returns a column of block meta values from bottom to top at the specified X/Z chunk block coordinates.
+	 *
 	 * @param int $x 0-15
 	 * @param int $z 0-15
 	 *
@@ -493,6 +496,7 @@ class Chunk{
 
 	/**
 	 * Returns a column of sky light values from bottom to top at the specified X/Z chunk block coordinates.
+	 *
 	 * @param int $x 0-15
 	 * @param int $z 0-15
 	 *
@@ -508,6 +512,7 @@ class Chunk{
 
 	/**
 	 * Returns a column of block light values from bottom to top at the specified X/Z chunk block coordinates.
+	 *
 	 * @param int $x 0-15
 	 * @param int $z 0-15
 	 *
@@ -626,7 +631,9 @@ class Chunk{
 	 * @return Entity[]
 	 */
 	public function getSavableEntities() : array{
-		return array_filter($this->entities, function(Entity $entity) : bool{ return $entity->canSaveWithChunk() and !$entity->isClosed(); });
+		return array_filter($this->entities, function(Entity $entity) : bool{
+			return $entity->canSaveWithChunk() and !$entity->isClosed();
+		});
 	}
 
 	/**
@@ -646,6 +653,7 @@ class Chunk{
 	 * @return Tile|null
 	 */
 	public function getTile(int $x, int $y, int $z){
+
 		return $this->tiles[Chunk::blockHash($x, $y, $z)] ?? null;
 	}
 
@@ -853,9 +861,7 @@ class Chunk{
 		for($y = 0; $y < $subChunkCount; ++$y){
 			$result .= $this->subChunks[$y]->networkSerialize();
 		}
-		$result .= pack("v*", ...$this->heightMap)
-		        .  $this->biomeIds
-		        .  chr(0); //border block array count
+		$result .= pack("v*", ...$this->heightMap) . $this->biomeIds . chr(0); //border block array count
 		//Border block entry format: 1 byte (4 bits X, 4 bits Z). These are however useless since they crash the regular client.
 
 		foreach($this->tiles as $tile){
@@ -888,9 +894,7 @@ class Chunk{
 		}
 		$stream->putByte($count);
 		$stream->put($subChunks);
-		$stream->put(pack("v*", ...$this->heightMap) .
-			$this->biomeIds .
-			chr(($this->lightPopulated ? 4 : 0) | ($this->terrainPopulated ? 2 : 0) | ($this->terrainGenerated ? 1 : 0)));
+		$stream->put(pack("v*", ...$this->heightMap) . $this->biomeIds . chr(($this->lightPopulated ? 4 : 0) | ($this->terrainPopulated ? 2 : 0) | ($this->terrainGenerated ? 1 : 0)));
 		return $stream->getBuffer();
 	}
 

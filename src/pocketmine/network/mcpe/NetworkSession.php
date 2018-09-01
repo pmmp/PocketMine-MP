@@ -38,6 +38,7 @@ use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
+use pocketmine\network\mcpe\protocol\UnknownPacket;
 use pocketmine\network\NetworkInterface;
 use pocketmine\Player;
 use pocketmine\Server;
@@ -197,8 +198,12 @@ class NetworkSession{
 			$this->server->getLogger()->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": 0x" . bin2hex($remains));
 		}
 
+		if($packet instanceof UnknownPacket){
+			$this->server->getLogger()->warning($this->player->getName() . " sent a unknown or empty packet so this player maybe hacker.");
+		}
+
 		$this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this->player, $packet));
-		if(!$ev->isCancelled() and !$packet->handle($this->handler)){
+		if($this->handler !== null and !$ev->isCancelled() and !$packet->handle($this->handler)){
 			$this->server->getLogger()->debug("Unhandled " . $packet->getName() . " received from " . $this->player->getName() . ": 0x" . bin2hex($packet->buffer));
 		}
 

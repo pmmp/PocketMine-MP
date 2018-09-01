@@ -1,23 +1,24 @@
 <?php
 
 /*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *               _ _
+ *         /\   | | |
+ *        /  \  | | |_ __ _ _   _
+ *       / /\ \ | | __/ _` | | | |
+ *      / ____ \| | || (_| | |_| |
+ *     /_/    \_|_|\__\__,_|\__, |
+ *                           __/ |
+ *                          |___/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Altay
  *
- *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -44,7 +45,19 @@ class ExperienceOrb extends Entity{
 	/**
 	 * Split sizes used for dropping experience orbs.
 	 */
-	public const ORB_SPLIT_SIZES = [2477, 1237, 617, 307, 149, 73, 37, 17, 7, 3, 1]; //This is indexed biggest to smallest so that we can return as soon as we found the biggest value.
+	public const ORB_SPLIT_SIZES = [
+		2477,
+		1237,
+		617,
+		307,
+		149,
+		73,
+		37,
+		17,
+		7,
+		3,
+		1
+	]; //This is indexed biggest to smallest so that we can return as soon as we found the biggest value.
 
 	/**
 	 * Returns the largest size of normal XP orb that will be spawned for the specified amount of XP. Used to split XP
@@ -123,7 +136,6 @@ class ExperienceOrb extends Entity{
 
 		$nbt->setShort(self::TAG_VALUE_PC, $this->getXpValue());
 		$nbt->setInt(self::TAG_VALUE_PE, $this->getXpValue());
-
 		return $nbt;
 	}
 

@@ -1,47 +1,64 @@
 <?php
 
 /*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *               _ _
+ *         /\   | | |
+ *        /  \  | | |_ __ _ _   _
+ *       / /\ \ | | __/ _` | | | |
+ *      / ____ \| | || (_| | |_| |
+ *     /_/    \_|_|\__\__,_|\__, |
+ *                           __/ |
+ *                          |___/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Altay
  *
- *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
+use pocketmine\command\CommandEnumValues;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\ItemFactory;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\nbt\JsonNbtParser;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\utils\TextFormat;
 
 class GiveCommand extends VanillaCommand{
 
-	public function __construct(string $name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.give.description",
-			"%pocketmine.command.give.usage"
-		);
-		$this->setPermission("pocketmine.command.give");
-	}
+    public function __construct(string $name){
+        parent::__construct(
+            $name,
+            "%pocketmine.command.give.description",
+            "%pocketmine.command.give.usage"
+        );
+        $this->setPermission("pocketmine.command.give");
+
+        $itemName = [
+            new CommandParameter("player", CommandParameter::ARG_TYPE_TARGET, false),
+            new CommandParameter("itemName", CommandParameter::ARG_TYPE_STRING, false, CommandEnumValues::getItem()),
+            new CommandParameter("amount", CommandParameter::ARG_TYPE_INT),
+            //new CommandParameter("data", CommandParameter::ARG_TYPE_INT), not in Altay
+            new CommandParameter("components", CommandParameter::ARG_TYPE_JSON),
+        ];
+        // FOR ALTAY NOT IN VANILLA
+        $itemId = $itemName;
+        $itemId[1] = new CommandParameter("itemId", CommandParameter::ARG_TYPE_INT, false);
+
+        $this->setParameters($itemName, 0);
+        $this->setParameters($itemId, 1);
+    }
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
 		if(!$this->testPermission($sender)){

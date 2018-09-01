@@ -32,6 +32,6 @@ class WheatSeeds extends Item{
 	}
 
 	public function getBlock() : Block{
-		return BlockFactory::get(Block::WHEAT_BLOCK);
-	}
+        return BlockFactory::get(Block::WHEAT_BLOCK);
+    }
 }

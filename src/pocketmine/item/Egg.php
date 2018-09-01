@@ -40,3 +40,4 @@ class Egg extends ProjectileItem{
 		return 1.5;
 	}
 }
+

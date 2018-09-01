@@ -32,6 +32,6 @@ class MelonSeeds extends Item{
 	}
 
 	public function getBlock() : Block{
-		return BlockFactory::get(Block::MELON_STEM);
-	}
+        return BlockFactory::get(Block::MELON_STEM);
+    }
 }

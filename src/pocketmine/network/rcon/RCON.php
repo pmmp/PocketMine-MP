@@ -25,6 +25,7 @@ declare(strict_types=1);
  * Implementation of the Source RCON Protocol to allow remote console commands
  * Source: https://developer.valvesoftware.com/wiki/Source_RCON_Protocol
  */
+
 namespace pocketmine\network\rcon;
 
 use pocketmine\command\RemoteConsoleCommandSender;
@@ -69,7 +70,10 @@ class RCON{
 			}
 		}
 
-		[$this->ipcMainSocket, $this->ipcThreadSocket] = $ipc;
+		[
+			$this->ipcMainSocket,
+			$this->ipcThreadSocket
+		] = $ipc;
 
 		$notifier = new SleeperNotifier();
 		$this->server->getTickSleeper()->addNotifier($notifier, function() : void{

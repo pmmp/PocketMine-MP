@@ -32,10 +32,10 @@ class Bed extends Item{
 	}
 
 	public function getBlock() : Block{
-		return BlockFactory::get(Block::BED_BLOCK);
-	}
+        return BlockFactory::get(Block::BED_BLOCK);
+    }
 
-	public function getMaxStackSize() : int{
+    public function getMaxStackSize() : int{
 		return 1;
 	}
 }

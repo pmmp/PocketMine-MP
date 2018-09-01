@@ -44,7 +44,7 @@ class Config{
 
 	/** @var string */
 	private $file;
-	/** @var int */
+	/** @var  int */
 	private $type = Config::DETECT;
 	/** @var int */
 	private $jsonOptions = JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING;
@@ -197,6 +197,7 @@ class Config{
 	 * Sets the options for the JSON encoding when saving
 	 *
 	 * @param int $options
+	 *
 	 * @return Config $this
 	 * @throws \RuntimeException if the Config is not in JSON
 	 * @see json_encode
@@ -215,6 +216,7 @@ class Config{
 	 * Enables the given option in addition to the currently set JSON options
 	 *
 	 * @param int $option
+	 *
 	 * @return Config $this
 	 * @throws \RuntimeException if the Config is not in JSON
 	 * @see json_encode
@@ -233,6 +235,7 @@ class Config{
 	 * Disables the given option for the JSON encoding when saving
 	 *
 	 * @param int $option
+	 *
 	 * @return Config $this
 	 * @throws \RuntimeException if the Config is not in JSON
 	 * @see json_encode

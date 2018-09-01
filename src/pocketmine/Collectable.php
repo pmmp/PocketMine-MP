@@ -25,13 +25,13 @@ namespace pocketmine;
 
 abstract class Collectable extends \Threaded{
 
-	private $isGarbage = false;
+    private $isGarbage = false;
 
-	public function isGarbage() : bool{
-		return $this->isGarbage;
-	}
+    public function isGarbage() : bool{
+        return $this->isGarbage;
+    }
 
-	public function setGarbage(){
-		$this->isGarbage = true;
-	}
+    public function setGarbage(){
+        $this->isGarbage = true;
+    }
 }

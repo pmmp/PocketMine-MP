@@ -95,7 +95,7 @@ class Bow extends Tool{
 				$entity->flagForDespawn();
 				$player->getInventory()->sendContents($player);
 			}else{
-				$entity->setMotion($entity->getMotion()->multiply($ev->getForce()));
+				$entity->setMotion($entity->getMotion()->multiply($ev->getForce() * 2));
 				if($player->isSurvival()){
 					if(!$infinity){ //TODO: tipped arrows are still consumed when Infinity is applied
 						$player->getInventory()->removeItem(ItemFactory::get(Item::ARROW, 0, 1));

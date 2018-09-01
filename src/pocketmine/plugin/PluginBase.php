@@ -195,7 +195,7 @@ abstract class PluginBase implements Plugin{
 	 * Saves an embedded resource to its relative location in the data folder
 	 *
 	 * @param string $filename
-	 * @param bool $replace
+	 * @param bool   $replace
 	 *
 	 * @return bool
 	 */
@@ -255,6 +255,7 @@ abstract class PluginBase implements Plugin{
 
 	public function saveConfig(){
 		$this->getConfig()->save();
+
 	}
 
 	public function saveDefaultConfig() : bool{
@@ -267,6 +268,7 @@ abstract class PluginBase implements Plugin{
 	public function reloadConfig(){
 		$this->saveDefaultConfig();
 		$this->config = new Config($this->configFile);
+
 	}
 
 	/**

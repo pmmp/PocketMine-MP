@@ -21,17 +21,23 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\item;
 
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\ProtectionEnchantment;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\Player;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Color;
 
 abstract class Armor extends Durable{
+
+    public const SLOT_HELMET = 0;
+    public const SLOT_CHESTPLATE = 1;
+    public const SLOT_LEGGINGS = 2;
+    public const SLOT_BOOTS = 3;
 
 	public const TAG_CUSTOM_COLOR = "customColor"; //TAG_Int
 
@@ -80,20 +86,35 @@ abstract class Armor extends Durable{
 		return $epf;
 	}
 
-	protected function getUnbreakingDamageReduction(int $amount) : int{
-		if(($unbreakingLevel = $this->getEnchantmentLevel(Enchantment::UNBREAKING)) > 0){
-			$negated = 0;
+	public function onClickAir(Player $player, Vector3 $directionVector): bool{
+	    $slot = $this->getArmorSlot();
+	    if($player->getArmorInventory()->getItem($slot)->isNull()){
+            $player->getArmorInventory()->setItem($slot, $this);
 
-			$chance = 1 / ($unbreakingLevel + 1);
-			for($i = 0; $i < $amount; ++$i){
-				if(mt_rand(1, 100) > 60 and lcg_value() > $chance){ //unbreaking only applies to armor 40% of the time at best
-					$negated++;
-				}
-			}
+            $this->count--;
 
-			return $negated;
-		}
+            return true;
+        }
 
-		return 0;
-	}
+        return false;
+    }
+
+    protected function getUnbreakingDamageReduction(int $amount) : int{
+        if(($unbreakingLevel = $this->getEnchantmentLevel(Enchantment::UNBREAKING)) > 0){
+            $negated = 0;
+
+            $chance = 1 / ($unbreakingLevel + 1);
+            for($i = 0; $i < $amount; ++$i){
+                if(mt_rand(1, 100) > 60 and lcg_value() > $chance){ //unbreaking only applies to armor 40% of the time at best
+                    $negated++;
+                }
+            }
+
+            return $negated;
+        }
+
+        return 0;
+    }
+
+    abstract public function getArmorSlot() : int;
 }

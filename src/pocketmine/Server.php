@@ -1,30 +1,32 @@
 <?php
 
 /*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *               _ _
+ *         /\   | | |
+ *        /  \  | | |_ __ _ _   _
+ *       / /\ \ | | __/ _` | | | |
+ *      / ____ \| | || (_| | |_| |
+ *     /_/    \_|_|\__\__,_|\__, |
+ *                           __/ |
+ *                          |___/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Altay
  *
- *
-*/
+ */
 
 declare(strict_types=1);
 
 /**
- * PocketMine-MP is the Minecraft: PE multiplayer server software
- * Homepage: http://www.pocketmine.net/
+ * Altay is the Minecraft: BE multiplayer server software
+ * Homepage: https://github.com/TuranicTeam/Altay
  */
+
 namespace pocketmine;
 
 use pocketmine\block\BlockFactory;
@@ -35,9 +37,10 @@ use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\command\SimpleCommandMap;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Skin;
+use pocketmine\entity\utils\Bossbar;
 use pocketmine\event\HandlerList;
-use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\level\LevelLoadEvent;
+use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\server\CommandEvent;
 use pocketmine\event\server\DataPacketBroadcastEvent;
@@ -56,6 +59,7 @@ use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
 use pocketmine\level\LevelException;
+use pocketmine\maps\MapManager;
 use pocketmine\metadata\EntityMetadataStore;
 use pocketmine\metadata\LevelMetadataStore;
 use pocketmine\metadata\PlayerMetadataStore;
@@ -65,11 +69,11 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\LongTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\mcpe\CompressBatchPromise;
 use pocketmine\network\mcpe\CompressBatchTask;
@@ -89,6 +93,7 @@ use pocketmine\network\upnp\UPnP;
 use pocketmine\permission\BanList;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissionManager;
+use pocketmine\plugin\FolderPluginLoader;
 use pocketmine\plugin\PharPluginLoader;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginLoadOrder;
@@ -106,12 +111,12 @@ use pocketmine\timings\TimingsHandler;
 use pocketmine\updater\AutoUpdater;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Config;
-use pocketmine\utils\Internet;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\utils\UUID;
+use pocketmine\utils\Internet;
 
 /**
  * The class that manages everything
@@ -168,9 +173,51 @@ class Server{
 	/** @var int */
 	private $nextTick = 0;
 	/** @var float[] */
-	private $tickAverage = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20];
+	private $tickAverage = [
+		20,
+		20,
+		20,
+		20,
+		20,
+		20,
+		20,
+		20,
+		20,
+		20,
+		20,
+		20,
+		20,
+		20,
+		20,
+		20,
+		20,
+		20,
+		20,
+		20
+	];
 	/** @var float[] */
-	private $useAverage = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+	private $useAverage = [
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0
+	];
 	/** @var float */
 	private $currentTPS = 20;
 	/** @var float */
@@ -272,11 +319,18 @@ class Server{
 
 	/** @var Config */
 	private $properties;
+
 	/** @var mixed[] */
 	private $propertyCache = [];
 
+	/** @var mixed[] */
+	private $altayPropertyCache = [];
+
 	/** @var Config */
 	private $config;
+
+	/** @var Config */
+	private $altayConfig;
 
 	/** @var Player[] */
 	private $players = [];
@@ -292,6 +346,43 @@ class Server{
 
 	/** @var Level */
 	private $levelDefault = null;
+	/** @var Level */
+	private $netherLevel = null;
+	/** @var Level */
+	private $endLevel = null;
+
+	/** ALTAY CONFIG */
+
+	/** @var bool */
+	public static $readLine = false;
+	/** @var bool */
+	public $loadIncompatibleApi = true;
+	/** @var bool */
+	public $allowServerSettingsForm = true;
+	/** @var bool */
+	public $keepInventory = false;
+	/** @var bool */
+	public $keepExperience = false;
+	/** @var bool */
+	public $folderPluginLoader = true;
+	/** @var bool */
+	public $allowNether = true;
+	/** @var bool */
+	public $allowEnd = true;
+	/** @var bool */
+	public $mobAiEnabled = true;
+
+	public function loadAltayConfig(){
+		self::$readLine = $this->getAltayProperty("terminal.read-line", true);
+		$this->loadIncompatibleApi = $this->getAltayProperty("developer.load-incompatible-api", true);
+		$this->allowServerSettingsForm = $this->getAltayProperty("server.allow-server-settings-form", true);
+		$this->keepInventory = $this->getAltayProperty("player.keep-inventory", false);
+		$this->keepExperience = $this->getAltayProperty("player.keep-experience", false);
+		$this->allowNether = $this->getAltayProperty("dimensions.nether.active", true);
+		$this->allowEnd = $this->getAltayProperty("dimensions.end.active", true);
+		$this->folderPluginLoader = $this->getAltayProperty("developer.folder-plugin-loader", true);
+		$this->mobAiEnabled = $this->getAltayProperty("level.enable-mob-ai", false);
+	}
 
 	/**
 	 * @return string
@@ -649,6 +740,9 @@ class Server{
 		return $this->resourceManager;
 	}
 
+	/**
+	 * @return AsyncPool
+	 */
 	public function getAsyncPool() : AsyncPool{
 		return $this->asyncPool;
 	}
@@ -825,7 +919,10 @@ class Server{
 					file_put_contents($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed($ev->getSaveData()));
 				}
 			}catch(\Throwable $e){
-				$this->logger->critical($this->getLanguage()->translateString("pocketmine.data.saveError", [$name, $e->getMessage()]));
+				$this->logger->critical($this->getLanguage()->translateString("pocketmine.data.saveError", [
+					$name,
+					$e->getMessage()
+				]));
 				$this->logger->logException($e);
 			}
 		}
@@ -928,6 +1025,14 @@ class Server{
 		return $this->levelDefault;
 	}
 
+	public function getNetherLevel() : ?Level{
+		return $this->netherLevel;
+	}
+
+	public function getEndLevel() : ?Level{
+		return $this->endLevel;
+	}
+
 	/**
 	 * Sets the default level to a different level
 	 * This won't change the level-name property,
@@ -994,6 +1099,7 @@ class Server{
 
 	/**
 	 * @internal
+	 *
 	 * @param Level $level
 	 */
 	public function removeLevel(Level $level) : void{
@@ -1026,7 +1132,10 @@ class Server{
 		$providerClass = LevelProviderManager::getProvider($path);
 
 		if($providerClass === null){
-			$this->logger->error($this->getLanguage()->translateString("pocketmine.level.loadError", [$name, "Cannot identify format of world"]));
+			$this->logger->error($this->getLanguage()->translateString("pocketmine.level.loadError", [
+				$name,
+				"Cannot identify format of world"
+			]));
 
 			return false;
 		}
@@ -1129,8 +1238,8 @@ class Server{
 		$path = $this->getDataPath() . "worlds/" . $name . "/";
 		if(!($this->getLevelByName($name) instanceof Level)){
 			return is_dir($path) and !empty(array_filter(scandir($path, SCANDIR_SORT_NONE), function($v){
-				return $v !== ".." and $v !== ".";
-			}));
+					return $v !== ".." and $v !== ".";
+				}));
 		}
 
 		return true;
@@ -1172,6 +1281,14 @@ class Server{
 		}
 
 		return $this->propertyCache[$variable] ?? $defaultValue;
+	}
+
+	public function getAltayProperty(string $variable, $defaultValue = null){
+		if(!array_key_exists($variable, $this->altayPropertyCache)){
+			$this->altayPropertyCache[$variable] = $this->altayConfig->getNested($variable);
+		}
+
+		return $this->altayPropertyCache[$variable] ?? $defaultValue;
 	}
 
 	/**
@@ -1261,12 +1378,9 @@ class Server{
 	 *
 	 * @return PluginIdentifiableCommand|null
 	 */
-	public function getPluginCommand(string $name){
-		if(($command = $this->commandMap->getCommand($name)) instanceof PluginIdentifiableCommand){
-			return $command;
-		}else{
-			return null;
-		}
+	public function getPluginCommand(string $name) : ?PluginIdentifiableCommand{
+		$command = $this->commandMap->getCommand($name);
+		return $command instanceof PluginIdentifiableCommand ? $command : null;
 	}
 
 	/**
@@ -1426,6 +1540,10 @@ class Server{
 				mkdir($pluginPath, 0777);
 			}
 
+			if(!file_exists($pluginPath . "Altay/")){
+				mkdir($pluginPath . "Altay/", 0777);
+			}
+
 			$this->dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
 			$this->pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
 
@@ -1455,7 +1573,21 @@ class Server{
 				}
 			}
 
-			$this->logger->info($this->getLanguage()->translateString("language.selected", [$this->getLanguage()->getName(), $this->getLanguage()->getLang()]));
+			$this->logger->info($this->getLanguage()->translateString("language.selected", [
+				$this->getLanguage()->getName(),
+				$lang = $this->getLanguage()->getLang()
+			]));
+
+			if(file_exists(\pocketmine\RESOURCE_PATH . "altay_$lang.yml")){
+				$content = file_get_contents(\pocketmine\RESOURCE_PATH . "altay_$lang.yml");
+			}else{
+				$content = file_get_contents(\pocketmine\RESOURCE_PATH . "altay_eng.yml");
+			}
+			if(!file_exists($this->dataPath . "altay.yml")){
+				@file_put_contents($this->dataPath . "altay.yml", $content);
+			}
+			$this->altayConfig = new Config($this->dataPath . "altay.yml", Config::YAML, []);
+			$this->loadAltayConfig();
 
 			if(\pocketmine\IS_DEVELOPMENT_BUILD){
 				if(!((bool) $this->getProperty("settings.enable-dev-builds", false))){
@@ -1561,13 +1693,7 @@ class Server{
 
 			if($this->getConfigBool("enable-rcon", false)){
 				try{
-					$this->rcon = new RCON(
-						$this,
-						$this->getConfigString("rcon.password", ""),
-						$this->getConfigInt("rcon.port", $this->getPort()),
-						$this->getIp(),
-						$this->getConfigInt("rcon.max-clients", 50)
-					);
+					$this->rcon = new RCON($this, $this->getConfigString("rcon.password", ""), $this->getConfigInt("rcon.port", $this->getPort()), $this->getIp(), $this->getConfigInt("rcon.max-clients", 50));
 				}catch(\Exception $e){
 					$this->getLogger()->critical("RCON can't be started: " . $e->getMessage());
 				}
@@ -1610,7 +1736,10 @@ class Server{
 				@cli_set_process_title($this->getName() . " " . $this->getPocketMineVersion());
 			}
 
-			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.networkStart", [$this->getIp(), $this->getPort()]));
+			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.networkStart", [
+				$this->getIp(),
+				$this->getPort()
+			]));
 			define("BOOTUP_RANDOM", random_bytes(16));
 			$this->serverID = Utils::getMachineUniqueId($this->getIp() . $this->getPort());
 
@@ -1642,6 +1771,7 @@ class Server{
 			ItemFactory::init();
 			Item::initCreativeItems();
 			Biome::init();
+			MapManager::initMaps();
 
 			$this->craftingManager = new CraftingManager();
 
@@ -1650,10 +1780,14 @@ class Server{
 			$this->pluginManager = new PluginManager($this, $this->commandMap, ((bool) $this->getProperty("plugins.legacy-data-dir", true)) ? null : $this->getDataPath() . "plugin_data" . DIRECTORY_SEPARATOR);
 			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
 			$this->profilingTickRate = (float) $this->getProperty("settings.profile-report-trigger", 20);
+			$this->pluginManager->registerInterface(new FolderPluginLoader($this->autoloader));
 			$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
 			$this->pluginManager->registerInterface(new ScriptPluginLoader());
 
-			register_shutdown_function([$this, "crashDump"]);
+			register_shutdown_function([
+				$this,
+				"crashDump"
+			]);
 
 			$this->queryRegenerateTask = new QueryRegenerateEvent($this, 5);
 
@@ -1705,6 +1839,31 @@ class Server{
 				$this->setDefaultLevel($this->getLevelByName($default));
 			}
 
+			if($this->allowNether and $this->getNetherLevel() === null){
+				/** @var string $netherLevelName */
+				$netherLevelName = $this->getAltayProperty("dimensions.nether.level-name", "nether");
+				if(trim($netherLevelName) == ""){
+					$netherLevelName = "nether";
+				}
+				if(!$this->loadLevel($netherLevelName)){
+					$this->generateLevel($netherLevelName, time(), GeneratorManager::getGenerator("hell"));
+				}
+
+				$this->netherLevel = $this->getLevelByName($netherLevelName);
+			}
+
+			if($this->allowEnd and $this->endLevel === null){
+				$endLevel = $this->getAltayProperty("dimensions.end.level-name", "end");
+				if(trim($endLevel) == ""){
+					$endLevel = "end";
+				}
+				if(!$this->loadLevel($endLevel)){
+					$this->generateLevel($endLevel, time(), GeneratorManager::getGenerator("end"));
+				}
+
+				$this->endLevel = $this->getLevelByName($endLevel);
+			}
+
 			if($this->properties->hasChanged()){
 				$this->properties->save();
 			}
@@ -1742,6 +1901,37 @@ class Server{
 		/** @var Player[] $recipients */
 		foreach($recipients as $recipient){
 			$recipient->sendMessage($message);
+		}
+
+		return count($recipients);
+	}
+
+	/**
+	 * @param Bossbar  $bossbar
+	 * @param int|null $id
+	 * @param Player[] $recipients
+	 *
+	 * @return int
+	 */
+	public function broadcastBossbar(Bossbar $bossbar, ?int $id = null, array $recipients = null) : int{
+		if(!is_array($recipients)){
+			/** @var Player[] $recipients */
+			$recipients = [];
+
+			foreach(PermissionManager::getInstance()->getPermissionSubscriptions(self::BROADCAST_CHANNEL_USERS) as $permissible){
+				if($permissible instanceof Player and $permissible->hasPermission(self::BROADCAST_CHANNEL_USERS)){
+					$recipients[spl_object_hash($permissible)] = $permissible; // do not send messages directly, or some might be repeated
+				}
+			}
+		}
+
+		/** @var Player[] $recipients */
+		foreach($recipients as $recipient){
+			if($id == null){
+				$recipient->addBossbar($bossbar);
+			}else{
+				$recipient->addBossbar($bossbar, $id);
+			}
 		}
 
 		return count($recipients);
@@ -1874,7 +2064,6 @@ class Server{
 		if(empty($packets)){
 			throw new \InvalidArgumentException("Cannot broadcast empty list of packets");
 		}
-
 		$this->pluginManager->callEvent($ev = new DataPacketBroadcastEvent($players, $packets));
 		if($ev->isCancelled()){
 			return false;
@@ -1890,6 +2079,7 @@ class Server{
 		if(empty($targets)){
 			return false;
 		}
+
 
 		$stream = new PacketStream();
 		foreach($ev->getPackets() as $packet){
@@ -1917,8 +2107,7 @@ class Server{
 	 *
 	 * @param PacketStream $stream
 	 * @param bool         $forceSync
-	 *
-	 * @return CompressBatchPromise
+	 * * @return CompressBatchPromise
 	 */
 	public function prepareBatch(PacketStream $stream, bool $forceSync = false) : CompressBatchPromise{
 		try{
@@ -2021,6 +2210,7 @@ class Server{
 		$this->commandMap->clearCommands();
 
 		$this->logger->info("Reloading properties...");
+		$this->loadAltayConfig();
 		$this->properties->reload();
 		$this->maxPlayers = $this->getConfigInt("max-players", 20);
 
@@ -2037,6 +2227,7 @@ class Server{
 			$this->getNetwork()->blockAddress($entry->getName(), -1);
 		}
 
+		$this->pluginManager->registerInterface(new FolderPluginLoader($this->autoloader));
 		$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
 		$this->pluginManager->registerInterface(new ScriptPluginLoader());
 		$this->pluginManager->loadPlugins($this->pluginPath);
@@ -2091,6 +2282,9 @@ class Server{
 			foreach($this->getLevels() as $level){
 				$this->unloadLevel($level, true);
 			}
+
+			$this->getLogger()->debug("Saving all maps");
+			MapManager::saveMaps();
 
 			$this->getLogger()->debug("Removing event handlers");
 			HandlerList::unregisterAll();
@@ -2167,9 +2361,18 @@ class Server{
 		$this->tickCounter = 0;
 
 		if(function_exists("pcntl_signal")){
-			pcntl_signal(SIGTERM, [$this, "handleSignal"]);
-			pcntl_signal(SIGINT, [$this, "handleSignal"]);
-			pcntl_signal(SIGHUP, [$this, "handleSignal"]);
+			pcntl_signal(SIGTERM, [
+				$this,
+				"handleSignal"
+			]);
+			pcntl_signal(SIGINT, [
+				$this,
+				"handleSignal"
+			]);
+			pcntl_signal(SIGHUP, [
+				$this,
+				"handleSignal"
+			]);
 			$this->dispatchSignals = true;
 		}
 
@@ -2192,6 +2395,8 @@ class Server{
 	 * @param array|null $trace
 	 */
 	public function exceptionHandler(\Throwable $e, $trace = null){
+
+
 		global $lastError;
 
 		if($trace === null){
@@ -2270,7 +2475,10 @@ class Server{
 					if($reply !== false and ($data = json_decode($reply)) !== null and isset($data->crashId) and isset($data->crashUrl)){
 						$reportId = $data->crashId;
 						$reportUrl = $data->crashUrl;
-						$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.archive", [$reportUrl, $reportId]));
+						$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.archive", [
+							$reportUrl,
+							$reportId
+						]));
 					}
 				}
 			}
@@ -2278,7 +2486,8 @@ class Server{
 			$this->logger->logException($e);
 			try{
 				$this->logger->critical($this->getLanguage()->translateString("pocketmine.crash.error", [$e->getMessage()]));
-			}catch(\Throwable $e){}
+			}catch(\Throwable $e){
+			}
 		}
 
 		$this->forceShutdown();
@@ -2424,7 +2633,10 @@ class Server{
 				}
 			}catch(\Throwable $e){
 				if(!$level->isClosed()){
-					$this->logger->critical($this->getLanguage()->translateString("pocketmine.level.tickError", [$level->getName(), $e->getMessage()]));
+					$this->logger->critical($this->getLanguage()->translateString("pocketmine.level.tickError", [
+						$level->getName(),
+						$e->getMessage()
+					]));
 				}else{
 					$this->logger->critical($this->getLanguage()->translateString("pocketmine.level.tickUnloadError", [$level->getName()]));
 				}
@@ -2494,14 +2706,7 @@ class Server{
 		$u = Utils::getMemoryUsage(true);
 		$usage = sprintf("%g/%g/%g/%g MB @ %d threads", round(($u[0] / 1024) / 1024, 2), round(($d[0] / 1024) / 1024, 2), round(($u[1] / 1024) / 1024, 2), round(($u[2] / 1024) / 1024, 2), Utils::getThreadCount());
 
-		echo "\x1b]0;" . $this->getName() . " " .
-			$this->getPocketMineVersion() .
-			" | Online " . count($this->players) . "/" . $this->getMaxPlayers() .
-			" | Memory " . $usage .
-			" | U " . round($this->network->getUpload() / 1024, 2) .
-			" D " . round($this->network->getDownload() / 1024, 2) .
-			" kB/s | TPS " . $this->getTicksPerSecondAverage() .
-			" | Load " . $this->getTickUsageAverage() . "%\x07";
+		echo "\x1b]0;" . $this->getName() . " " . $this->getPocketMineVersion() . " | Online " . count($this->players) . "/" . $this->getMaxPlayers() . " | Memory " . $usage . " | U " . round($this->network->getUpload() / 1024, 2) . " D " . round($this->network->getDownload() / 1024, 2) . " kB/s | TPS " . $this->getTicksPerSecondAverage() . " | Load " . $this->getTickUsageAverage() . "%\x07";
 
 		Timings::$titleTickTimer->stopTiming();
 	}
@@ -2530,7 +2735,6 @@ class Server{
 		}
 		//TODO: add raw packet events
 	}
-
 
 	/**
 	 * Tries to execute a server tick

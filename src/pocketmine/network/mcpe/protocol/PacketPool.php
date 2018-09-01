@@ -158,6 +158,7 @@ class PacketPool{
 
 	/**
 	 * @param int $pid
+	 *
 	 * @return DataPacket
 	 */
 	public static function getPacketById(int $pid) : DataPacket{
@@ -166,11 +167,17 @@ class PacketPool{
 
 	/**
 	 * @param string $buffer
+	 *
 	 * @return DataPacket
 	 */
 	public static function getPacket(string $buffer) : DataPacket{
 		$offset = 0;
-		$pk = static::getPacketById(Binary::readUnsignedVarInt($buffer, $offset));
+		if(strlen($buffer) > 0){
+			$pid = Binary::readUnsignedVarInt($buffer, $offset);
+		}else{
+			$pid = -1;
+		}
+		$pk = static::getPacketById($pid);
 		$pk->setBuffer($buffer, $offset);
 
 		return $pk;

@@ -48,4 +48,5 @@ class Bedrock extends Solid{
 	public function isBreakable(Item $item) : bool{
 		return false;
 	}
+
 }

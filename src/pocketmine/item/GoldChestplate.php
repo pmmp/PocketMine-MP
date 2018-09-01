@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-
 class GoldChestplate extends Armor{
 	public function __construct(int $meta = 0){
 		parent::__construct(self::GOLD_CHESTPLATE, $meta, "Gold Chestplate");
@@ -33,7 +32,15 @@ class GoldChestplate extends Armor{
 		return 5;
 	}
 
-	public function getMaxDurability() : int{
-		return 113;
+    public function getArmorSlot() : int{
+        return Armor::SLOT_CHESTPLATE;
+    }
+
+    public function getMaxDurability(): int{
+        return 113;
+    }
+
+    public function getEnchantability() : int{
+		return 25;
 	}
 }

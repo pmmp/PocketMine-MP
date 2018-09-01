@@ -10,8 +10,10 @@ crashdumps/*
 *.phar
 server.properties
 /pocketmine.yml
+/altay.yml
 memory_dumps/*
 resource_packs/
+maps/*
 
 # Common IDEs
 .idea/
@@ -39,3 +41,4 @@ test_data/*
 
 # Doxygen
 Documentation/*
+tests/plugins/PocketMine-TesterPlugin/

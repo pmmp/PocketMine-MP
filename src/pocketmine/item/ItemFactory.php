@@ -1,23 +1,24 @@
 <?php
 
 /*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *               _ _
+ *         /\   | | |
+ *        /  \  | | |_ __ _ _   _
+ *       / /\ \ | | __/ _` | | | |
+ *      / ____ \| | || (_| | |_| |
+ *     /_/    \_|_|\__\__,_|\__, |
+ *                           __/ |
+ *                          |___/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Altay
  *
- *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -110,12 +111,13 @@ class ItemFactory{
 		self::registerItem(new Bucket());
 
 		self::registerItem(new Minecart());
-		//TODO: SADDLE
+		self::registerItem(new Saddle());
 		self::registerItem(new ItemBlock(Block::IRON_DOOR_BLOCK, 0, Item::IRON_DOOR));
 		self::registerItem(new Redstone());
 		self::registerItem(new Snowball());
 		self::registerItem(new Boat());
 		self::registerItem(new Item(Item::LEATHER, 0, "Leather"));
+
 		//TODO: KELP
 		self::registerItem(new Item(Item::BRICK, 0, "Brick"));
 		self::registerItem(new Item(Item::CLAY_BALL, 0, "Clay"));
@@ -139,7 +141,7 @@ class ItemFactory{
 		self::registerItem(new Bed());
 		self::registerItem(new ItemBlock(Block::REPEATER_BLOCK, 0, Item::REPEATER));
 		self::registerItem(new Cookie());
-		//TODO: FILLED_MAP
+		self::registerItem(new FilledMap());
 		self::registerItem(new Shears());
 		self::registerItem(new Melon());
 		self::registerItem(new PumpkinSeeds());
@@ -176,15 +178,15 @@ class ItemFactory{
 		self::registerItem(new Potato());
 		self::registerItem(new BakedPotato());
 		self::registerItem(new PoisonousPotato());
-		//TODO: EMPTYMAP
+		self::registerItem(new EmptyMap());
 		self::registerItem(new GoldenCarrot());
 		self::registerItem(new ItemBlock(Block::SKULL_BLOCK, 0, Item::SKULL));
 		//TODO: CARROTONASTICK
 		self::registerItem(new Item(Item::NETHER_STAR, 0, "Nether Star"));
 		self::registerItem(new PumpkinPie());
-		//TODO: FIREWORKS
-		//TODO: FIREWORKSCHARGE
-		//TODO: ENCHANTED_BOOK
+		self::registerItem(new Fireworks());
+		self::registerItem(new Item(Item::FIREWORKSCHARGE, 0, "Firework Star"));
+		self::registerItem(new EnchantedBook());
 		self::registerItem(new ItemBlock(Block::COMPARATOR_BLOCK, 0, Item::COMPARATOR));
 		self::registerItem(new Item(Item::NETHER_BRICK, 0, "Nether Brick"));
 		self::registerItem(new Item(Item::NETHER_QUARTZ, 0, "Nether Quartz"));
@@ -206,7 +208,7 @@ class ItemFactory{
 		self::registerItem(new Item(Item::PRISMARINE_CRYSTALS, 0, "Prismarine Crystals"));
 		self::registerItem(new RawMutton());
 		self::registerItem(new CookedMutton());
-		//TODO: ARMOR_STAND
+		self::registerItem(new ArmorStand());
 		//TODO: END_CRYSTAL
 		self::registerItem(new ItemBlock(Block::SPRUCE_DOOR_BLOCK, 0, Item::SPRUCE_DOOR));
 		self::registerItem(new ItemBlock(Block::BIRCH_DOOR_BLOCK, 0, Item::BIRCH_DOOR));
@@ -220,15 +222,18 @@ class ItemFactory{
 		self::registerItem(new SplashPotion());
 
 		//TODO: LINGERING_POTION
+
 		//TODO: SPARKLER
 		//TODO: COMMAND_BLOCK_MINECART
-		//TODO: ELYTRA
+		self::registerItem(new Elytra());
 		self::registerItem(new Item(Item::SHULKER_SHELL, 0, "Shulker Shell"));
 		self::registerItem(new Banner());
+
 		//TODO: MEDICINE
 		//TODO: BALLOON
 		//TODO: RAPID_FERTILIZER
 		self::registerItem(new Totem());
+
 		self::registerItem(new Item(Item::BLEACH, 0, "Bleach")); //EDU
 		self::registerItem(new Item(Item::IRON_NUGGET, 0, "Iron Nugget"));
 		//TODO: ICE_BOMB
@@ -242,6 +247,7 @@ class ItemFactory{
 		self::registerItem(new Clownfish());
 		self::registerItem(new Pufferfish());
 		self::registerItem(new CookedSalmon());
+
 		self::registerItem(new DriedKelp());
 		self::registerItem(new Item(Item::NAUTILUS_SHELL, 0, "Nautilus Shell"));
 		self::registerItem(new GoldenAppleEnchanted());
@@ -250,18 +256,18 @@ class ItemFactory{
 		//TODO: TURTLE_HELMET
 
 		//TODO: COMPOUND
-		//TODO: RECORD_13
-		//TODO: RECORD_CAT
-		//TODO: RECORD_BLOCKS
-		//TODO: RECORD_CHIRP
-		//TODO: RECORD_FAR
-		//TODO: RECORD_MALL
-		//TODO: RECORD_MELLOHI
-		//TODO: RECORD_STAL
-		//TODO: RECORD_STRAD
-		//TODO: RECORD_WARD
-		//TODO: RECORD_11
-		//TODO: RECORD_WAIT
+		self::registerItem(new Record13());
+		self::registerItem(new RecordCat());
+		self::registerItem(new RecordBlocks());
+		self::registerItem(new RecordChirp());
+		self::registerItem(new RecordFar());
+		self::registerItem(new RecordMall());
+		self::registerItem(new RecordMellohi());
+		self::registerItem(new RecordStal());
+		self::registerItem(new RecordStrad());
+		self::registerItem(new RecordWard());
+		self::registerItem(new Record11());
+		self::registerItem(new RecordWait());
 	}
 
 	/**
@@ -289,9 +295,9 @@ class ItemFactory{
 	/**
 	 * Returns an instance of the Item with the specified id, meta, count and NBT.
 	 *
-	 * @param int                $id
-	 * @param int                $meta
-	 * @param int                $count
+	 * @param int $id
+	 * @param int $meta
+	 * @param int $count
 	 * @param CompoundTag|string $tags
 	 *
 	 * @return Item
@@ -351,7 +357,13 @@ class ItemFactory{
 
 			return $blocks;
 		}else{
-			$b = explode(":", str_replace([" ", "minecraft:"], ["_", ""], trim($str)));
+			$b = explode(":", str_replace([
+				" ",
+				"minecraft:"
+			], [
+				"_",
+				""
+			], trim($str)));
 			if(!isset($b[1])){
 				$meta = 0;
 			}elseif(is_numeric($b[1])){
@@ -376,6 +388,7 @@ class ItemFactory{
 	 * Returns whether the specified item ID is already registered in the item factory.
 	 *
 	 * @param int $id
+	 *
 	 * @return bool
 	 */
 	public static function isRegistered(int $id) : bool{

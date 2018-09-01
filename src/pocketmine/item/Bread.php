@@ -36,3 +36,4 @@ class Bread extends Food{
 		return 6;
 	}
 }
+
