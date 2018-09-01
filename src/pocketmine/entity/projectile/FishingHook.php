@@ -29,6 +29,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\player\PlayerFishingEvent;
 use pocketmine\item\FishingRod;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -45,9 +46,9 @@ class FishingHook extends Projectile{
 
 	public const NETWORK_ID = self::FISHING_HOOK;
 
+	/** @var float */
 	public $height = 0.25;
 	public $width = 0.25;
-
 	protected $gravity = 0.1;
 	protected $drag = 0.05;
 
@@ -57,7 +58,7 @@ class FishingHook extends Projectile{
 	protected $ticksCatchable = 0;
 	protected $ticksCaughtDelay = 0;
 	protected $ticksCatchableDelay = 0;
-
+	/** @var int */
 	protected $fishApproachAngle = 0;
 
 	public function attack(EntityDamageEvent $source) : void{
@@ -67,6 +68,13 @@ class FishingHook extends Projectile{
 		parent::attack($source);
 	}
 
+	/**
+	 * FishingHook constructor.
+	 *
+	 * @param Level       $level
+	 * @param CompoundTag $nbt
+	 * @param null|Entity $owner
+	 */
 	public function __construct(Level $level, CompoundTag $nbt, ?Entity $owner = null){
 		parent::__construct($level, $nbt, $owner);
 		if($owner instanceof Player){
@@ -77,14 +85,28 @@ class FishingHook extends Projectile{
 		}
 	}
 
+	/**
+	 * @param Entity         $entityHit
+	 * @param RayTraceResult $hitResult
+	 */
 	public function onHitEntity(Entity $entityHit, RayTraceResult $hitResult) : void{
 		$this->mountEntity($entityHit);
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function canBePushed() : bool{
 		return false;
 	}
 
+	/**
+	 * @param float $x
+	 * @param float $y
+	 * @param float $z
+	 * @param float $f1
+	 * @param float $f2
+	 */
 	public function handleHookCasting(float $x, float $y, float $z, float $f1, float $f2){
 		$f = sqrt($x * $x + $y * $y + $z * $z);
 		$x = $x / (float) $f;
@@ -101,6 +123,11 @@ class FishingHook extends Projectile{
 		$this->motion->z += $z;
 	}
 
+	/**
+	 * @param int $tickDiff
+	 *
+	 * @return bool
+	 */
 	public function entityBaseTick(int $tickDiff = 1) : bool{
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
@@ -247,20 +274,29 @@ class FishingHook extends Projectile{
 				$this->ridingEntity->setMotion(new Vector3($d0 * $d8, $d2 * $d8 + (int) sqrt($d6) * 0.08, $d4 * $d8));
 			}elseif($this->ticksCatchable > 0){
 				// TODO: Random weighted items
-				$items = [Item::RAW_FISH, Item::PUFFERFISH, Item::RAW_SALMON, Item::CLOWNFISH];
+				$items = [
+					Item::RAW_FISH,
+					Item::PUFFERFISH,
+					Item::RAW_SALMON,
+					Item::CLOWNFISH
+				];
 				$randomFish = $items[mt_rand(0, count($items) - 1)];
-				
-				$nbt = Entity::createBaseNBT($this);
-				$nbt->setTag((ItemFactory::get($randomFish))->nbtSerialize(-1, "Item"));
-				$entityitem = new ItemEntity($this->level, $nbt);
-				$d0 = $angler->x - $this->x;
-				$d2 = $angler->y - $this->y;
-				$d4 = $angler->z - $this->z;
-				$d6 = (int) sqrt($d0 * $d0 + $d2 * $d2 + $d4 * $d4);
-				$d8 = 0.1;
-				$entityitem->setMotion(new Vector3($d0 * $d8, $d2 * $d8 + (int) sqrt($d6) * 0.08, $d4 * $d8));
-				$entityitem->spawnToAll();
-				$this->level->dropExperience($angler, $this->random->nextBoundedInt(6) + 1);
+
+				$this->server->getPluginManager()->callEvent($ev = new PlayerFishingEvent($angler, $this, ItemFactory::get($randomFish), $this->random->nextBoundedInt(6) + 1));
+
+				if(!$ev->isCancelled()){
+					$nbt = Entity::createBaseNBT($this);
+					$nbt->setTag($ev->getResultItem()->nbtSerialize(-1, "Item"));
+					$entityitem = new ItemEntity($this->level, $nbt);
+					$d0 = $angler->x - $this->x;
+					$d2 = $angler->y - $this->y;
+					$d4 = $angler->z - $this->z;
+					$d6 = (int) sqrt($d0 * $d0 + $d2 * $d2 + $d4 * $d4);
+					$d8 = 0.1;
+					$entityitem->setMotion(new Vector3($d0 * $d8, $d2 * $d8 + (int) sqrt($d6) * 0.08, $d4 * $d8));
+					$entityitem->spawnToAll();
+					$this->level->dropExperience($angler, $ev->getXpDropAmount());
+				}
 			}
 
 			$this->flagForDespawn();
