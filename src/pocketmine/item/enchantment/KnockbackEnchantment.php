@@ -39,7 +39,7 @@ class KnockbackEnchantment extends MeleeWeaponEnchantment{
 
 	public function onPostAttack(Entity $attacker, Entity $victim, int $enchantmentLevel) : void{
 		if($victim instanceof Living){
-			$victim->knockBack($attacker, 0, $victim->x - $attacker->x, $victim->z - $attacker->z, $enchantmentLevel * 0.5);
+			$victim->knockBack($victim->x - $attacker->x, $victim->z - $attacker->z, $enchantmentLevel * 0.5);
 		}
 	}
 }
