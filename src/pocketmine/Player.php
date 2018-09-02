@@ -847,7 +847,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return string
 	 */
 	public function getAddress() : string{
-		return $this->networkSession->getIp();
+		return $this->networkSession->getAddress();
 	}
 
 	/**
