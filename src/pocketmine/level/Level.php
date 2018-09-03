@@ -1768,12 +1768,13 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		if($blockClicked->getId() === Block::AIR){
-			return false;
-		}
-
 		if($player !== null){
 			$ev = new PlayerInteractEvent($player, $item, $blockClicked, $clickVector, $face, PlayerInteractEvent::RIGHT_CLICK_BLOCK);
+			
+			if($blockClicked->getId() === Block::AIR){
+				$ev->setCancelled(); //set it to cancelled so plugins can bypass this
+			}
+			
 			if($this->checkSpawnProtection($player, $blockClicked)){
 				$ev->setCancelled(); //set it to cancelled so plugins can bypass this
 			}
