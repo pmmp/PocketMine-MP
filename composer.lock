@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "85fe0f9aca77848b0f753dbc28815c79",
+    "content-hash": "9ff16274822f181c2ed533797d2e22f7",
     "packages": [
         {
             "name": "fgrosse/phpasn1",
@@ -217,16 +217,16 @@
         },
         {
             "name": "pocketmine/nbt",
-            "version": "0.2.0",
+            "version": "0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "da19487ff92f6f7a16b5ce8894132bb1d1e9ea0c"
+                "reference": "a4ee39f313c6870153fb7c7e513b211217f7daf8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/da19487ff92f6f7a16b5ce8894132bb1d1e9ea0c",
-                "reference": "da19487ff92f6f7a16b5ce8894132bb1d1e9ea0c",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/a4ee39f313c6870153fb7c7e513b211217f7daf8",
+                "reference": "a4ee39f313c6870153fb7c7e513b211217f7daf8",
                 "shasum": ""
             },
             "require": {
@@ -250,10 +250,10 @@
             ],
             "description": "PHP library for working with Named Binary Tags",
             "support": {
-                "source": "https://github.com/pmmp/NBT/tree/0.2.0",
+                "source": "https://github.com/pmmp/NBT/tree/0.2.1",
                 "issues": "https://github.com/pmmp/NBT/issues"
             },
-            "time": "2018-06-13T09:56:00+00:00"
+            "time": "2018-09-04T10:36:02+00:00"
         },
         {
             "name": "pocketmine/raklib",
