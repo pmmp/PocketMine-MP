@@ -48,6 +48,9 @@ class MainLogger extends \AttachableThreadedLogger{
 	/** @var bool */
 	private $mainThreadHasFormattingCodes = false;
 
+	/** @var string */
+	private $timezone;
+
 	/**
 	 * @param string $logFile
 	 * @param bool $logDebug
@@ -66,6 +69,7 @@ class MainLogger extends \AttachableThreadedLogger{
 
 		//Child threads may not inherit command line arguments, so if there's an override it needs to be recorded here
 		$this->mainThreadHasFormattingCodes = Terminal::hasFormattingCodes();
+		$this->timezone = Timezone::get();
 
 		$this->start(PTHREADS_INHERIT_NONE);
 	}
@@ -253,7 +257,12 @@ class MainLogger extends \AttachableThreadedLogger{
 	}
 
 	protected function send($message, $level, $prefix, $color){
-		$now = time();
+		/** @var \DateTime|null $time */
+		static $time = null;
+		if($time === null){ //thread-local
+			$time = new \DateTime('now', new \DateTimeZone($this->timezone));
+		}
+		$time->setTimestamp(time());
 
 		$thread = \Thread::getCurrentThread();
 		if($thread === null){
@@ -264,9 +273,9 @@ class MainLogger extends \AttachableThreadedLogger{
 			$threadName = (new \ReflectionClass($thread))->getShortName() . " thread";
 		}
 
-		$message = sprintf($this->format, date("H:i:s", $now), $color, $threadName, $prefix, $message);
+		$message = sprintf($this->format, $time->format("H:i:s"), $color, $threadName, $prefix, $message);
 
-		$this->synchronized(function() use ($message, $level, $now) : void{
+		$this->synchronized(function() use ($message, $level, $time) : void{
 			$cleanMessage = TextFormat::clean($message);
 
 			if($this->mainThreadHasFormattingCodes and Terminal::hasFormattingCodes()){ //hasFormattingCodes() lazy-inits colour codes because we don't know if they've been registered on this thread
@@ -279,7 +288,7 @@ class MainLogger extends \AttachableThreadedLogger{
 				$attachment->call($level, $message);
 			}
 
-			$this->logStream[] = date("Y-m-d", $now) . " " . $cleanMessage . PHP_EOL;
+			$this->logStream[] = $time->format("Y-m-d") . " " . $cleanMessage . PHP_EOL;
 		});
 	}
 
