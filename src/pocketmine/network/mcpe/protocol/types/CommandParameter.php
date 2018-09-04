@@ -28,18 +28,20 @@ use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 
 class CommandParameter{
 
-	public const ARG_TYPE_INT             = AvailableCommandsPacket::ARG_TYPE_INT;
-	public const ARG_TYPE_FLOAT           = AvailableCommandsPacket::ARG_TYPE_FLOAT;
-	public const ARG_TYPE_VALUE           = AvailableCommandsPacket::ARG_TYPE_VALUE;
-	public const ARG_TYPE_WILDCARD_INT    = AvailableCommandsPacket::ARG_TYPE_WILDCARD_INT;
-	public const ARG_TYPE_TARGET          = AvailableCommandsPacket::ARG_TYPE_TARGET;
+	// TODO: Remove these
+	public const ARG_TYPE_INT = AvailableCommandsPacket::ARG_TYPE_INT;
+	public const ARG_TYPE_FLOAT = AvailableCommandsPacket::ARG_TYPE_FLOAT;
+	public const ARG_TYPE_VALUE = AvailableCommandsPacket::ARG_TYPE_VALUE;
+	public const ARG_TYPE_WILDCARD_INT = AvailableCommandsPacket::ARG_TYPE_WILDCARD_INT;
+	public const ARG_TYPE_TARGET = AvailableCommandsPacket::ARG_TYPE_TARGET;
+	public const ARG_TYPE_OPERATOR = AvailableCommandsPacket::ARG_TYPE_OPERATOR;
 	public const ARG_TYPE_WILDCARD_TARGET = AvailableCommandsPacket::ARG_TYPE_WILDCARD_TARGET;
-	public const ARG_TYPE_STRING          = AvailableCommandsPacket::ARG_TYPE_STRING;
-	public const ARG_TYPE_POSITION        = AvailableCommandsPacket::ARG_TYPE_POSITION;
-	public const ARG_TYPE_MESSAGE         = AvailableCommandsPacket::ARG_TYPE_MESSAGE;
-	public const ARG_TYPE_RAWTEXT         = AvailableCommandsPacket::ARG_TYPE_RAWTEXT;
-	public const ARG_TYPE_JSON            = AvailableCommandsPacket::ARG_TYPE_JSON;
-	public const ARG_TYPE_COMMAND         = AvailableCommandsPacket::ARG_TYPE_COMMAND;
+	public const ARG_TYPE_STRING = AvailableCommandsPacket::ARG_TYPE_STRING;
+	public const ARG_TYPE_POSITION = AvailableCommandsPacket::ARG_TYPE_POSITION;
+	public const ARG_TYPE_MESSAGE = AvailableCommandsPacket::ARG_TYPE_MESSAGE;
+	public const ARG_TYPE_RAWTEXT = AvailableCommandsPacket::ARG_TYPE_RAWTEXT;
+	public const ARG_TYPE_JSON = AvailableCommandsPacket::ARG_TYPE_JSON;
+	public const ARG_TYPE_COMMAND = AvailableCommandsPacket::ARG_TYPE_COMMAND;
 
 	/** @var string */
 	public $paramName;
@@ -54,14 +56,14 @@ class CommandParameter{
 	/** @var string|null */
 	public $postfix;
 
-    public function __construct(string $name, int $type, bool $optional = true, $extraData = null){
-        $this->paramName = $name;
-        $this->paramType = $type;
-        $this->isOptional = $optional;
-        if($extraData instanceof CommandEnum){
-            $this->enum = $extraData;
-        }elseif(is_string($extraData)){
-            $this->postfix = $extraData;
-        }
-    }
+	public function __construct(string $name, int $type, bool $optional = true, $extraData = null){
+		$this->paramName = $name;
+		$this->paramType = $type;
+		$this->isOptional = $optional;
+		if($extraData instanceof CommandEnum){
+			$this->enum = $extraData;
+		}elseif(is_string($extraData)){
+			$this->postfix = $extraData;
+		}
+	}
 }
