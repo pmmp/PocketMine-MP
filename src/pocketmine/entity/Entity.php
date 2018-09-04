@@ -1141,6 +1141,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	public function kill() : void{
 		$this->health = 0;
+		$this->dismountEntity();
 		$this->scheduleUpdate();
 		$this->onDeath();
 	}
@@ -1240,6 +1241,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		if($this->riddenByEntity instanceof Entity and $this->riddenByEntity->isClosed()){
 			$this->riddenByEntity = null;
+			unset($this->seats[array_search($this->riddenByEntity, $this->seats)]);
 			$this->setGenericFlag(Entity::DATA_FLAG_WASD_CONTROLLED, false);
 		}
 
@@ -2395,6 +2397,13 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$pk->pitch = $this->pitch;
 		$pk->attributes = $this->attributeMap->getAll();
 		$pk->metadata = $this->propertyManager->getAll();
+
+		if(!empty($this->seats)){
+			$id = $this->getId();
+			$pk->links = array_walk($this->seats, function(Entity $entity, int $seat) use ($id) {
+				return new EntityLink($id, $entity->getId(), $seat === 0 ? EntityLink::TYPE_RIDER : EntityLink::TYPE_PASSENGER);
+			});
+		}
 
 		$player->sendDataPacket($pk);
 	}
