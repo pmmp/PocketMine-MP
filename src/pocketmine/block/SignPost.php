@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Sign as TileSign;
@@ -58,9 +59,9 @@ class SignPost extends Transparent{
 
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if($face !== Vector3::SIDE_DOWN){
+		if($face !== Facing::DOWN){
 
-			if($face === Vector3::SIDE_UP){
+			if($face === Facing::UP){
 				$this->meta = $player !== null ? (floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0f) : 0;
 				$this->getLevel()->setBlock($blockReplace, $this, true);
 			}else{
@@ -77,7 +78,7 @@ class SignPost extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Vector3::SIDE_DOWN)->getId() === self::AIR){
+		if($this->getSide(Facing::DOWN)->getId() === self::AIR){
 			$this->getLevel()->useBreakOn($this);
 		}
 	}

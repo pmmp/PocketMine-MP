@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -44,32 +45,32 @@ class Torch extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$below = $this->getSide(Vector3::SIDE_DOWN);
+		$below = $this->getSide(Facing::DOWN);
 		$side = $this->getDamage();
-		$faces = [
-			0 => Vector3::SIDE_DOWN,
-			1 => Vector3::SIDE_WEST,
-			2 => Vector3::SIDE_EAST,
-			3 => Vector3::SIDE_NORTH,
-			4 => Vector3::SIDE_SOUTH,
-			5 => Vector3::SIDE_DOWN
+		static $faces = [
+			0 => Facing::DOWN,
+			1 => Facing::WEST,
+			2 => Facing::EAST,
+			3 => Facing::NORTH,
+			4 => Facing::SOUTH,
+			5 => Facing::DOWN
 		];
 
-		if($this->getSide($faces[$side])->isTransparent() and !($side === Vector3::SIDE_DOWN and ($below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL))){
+		if($this->getSide($faces[$side])->isTransparent() and !($side === Facing::DOWN and ($below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL))){
 			$this->getLevel()->useBreakOn($this);
 		}
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$below = $this->getSide(Vector3::SIDE_DOWN);
+		$below = $this->getSide(Facing::DOWN);
 
-		if(!$blockClicked->isTransparent() and $face !== Vector3::SIDE_DOWN){
-			$faces = [
-				Vector3::SIDE_UP => 5,
-				Vector3::SIDE_NORTH => 4,
-				Vector3::SIDE_SOUTH => 3,
-				Vector3::SIDE_WEST => 2,
-				Vector3::SIDE_EAST => 1
+		if(!$blockClicked->isTransparent() and $face !== Facing::DOWN){
+			static $faces = [
+				Facing::UP => 5,
+				Facing::NORTH => 4,
+				Facing::SOUTH => 3,
+				Facing::WEST => 2,
+				Facing::EAST => 1
 			];
 			$this->meta = $faces[$face];
 			$this->getLevel()->setBlock($blockReplace, $this, true, true);

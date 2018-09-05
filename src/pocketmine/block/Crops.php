@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\Server;
@@ -32,7 +33,7 @@ use pocketmine\Server;
 abstract class Crops extends Flowable{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if($blockReplace->getSide(Vector3::SIDE_DOWN)->getId() === Block::FARMLAND){
+		if($blockReplace->getSide(Facing::DOWN)->getId() === Block::FARMLAND){
 			$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
 			return true;
@@ -65,7 +66,7 @@ abstract class Crops extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Vector3::SIDE_DOWN)->getId() !== Block::FARMLAND){
+		if($this->getSide(Facing::DOWN)->getId() !== Block::FARMLAND){
 			$this->getLevel()->useBreakOn($this);
 		}
 	}

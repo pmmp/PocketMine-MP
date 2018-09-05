@@ -27,6 +27,7 @@ namespace pocketmine\block;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -44,7 +45,7 @@ class NetherWartPlant extends Flowable{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$down = $this->getSide(Vector3::SIDE_DOWN);
+		$down = $this->getSide(Facing::DOWN);
 		if($down->getId() === Block::SOUL_SAND){
 			$this->getLevel()->setBlock($blockReplace, $this, false, true);
 
@@ -55,7 +56,7 @@ class NetherWartPlant extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Vector3::SIDE_DOWN)->getId() !== Block::SOUL_SAND){
+		if($this->getSide(Facing::DOWN)->getId() !== Block::SOUL_SAND){
 			$this->getLevel()->useBreakOn($this);
 		}
 	}

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9ff16274822f181c2ed533797d2e22f7",
+    "content-hash": "cef68cbc2596130f6b20e6f2ecdfd58d",
     "packages": [
         {
             "name": "fgrosse/phpasn1",
@@ -183,16 +183,16 @@
         },
         {
             "name": "pocketmine/math",
-            "version": "0.2.1",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "ee299f5c9c444ca526c9c691b920f321458cf0b6"
+                "reference": "ec66eaa959b86ec3d3d22084a534ae466910aabe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/ee299f5c9c444ca526c9c691b920f321458cf0b6",
-                "reference": "ee299f5c9c444ca526c9c691b920f321458cf0b6",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/ec66eaa959b86ec3d3d22084a534ae466910aabe",
+                "reference": "ec66eaa959b86ec3d3d22084a534ae466910aabe",
                 "shasum": ""
             },
             "require": {
@@ -210,10 +210,10 @@
             ],
             "description": "PHP library containing math related code used in PocketMine-MP",
             "support": {
-                "source": "https://github.com/pmmp/Math/tree/0.2.1",
+                "source": "https://github.com/pmmp/Math/tree/master",
                 "issues": "https://github.com/pmmp/Math/issues"
             },
-            "time": "2018-08-15T15:43:27+00:00"
+            "time": "2018-09-05T18:50:26+00:00"
         },
         {
             "name": "pocketmine/nbt",
@@ -367,7 +367,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "ext-pthreads": 20
+        "ext-pthreads": 20,
+        "pocketmine/math": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

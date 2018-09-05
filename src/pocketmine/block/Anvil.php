@@ -27,6 +27,7 @@ use pocketmine\inventory\AnvilInventory;
 use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Bearing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -94,7 +95,7 @@ class Anvil extends Fallable{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$direction = ($player !== null ? $player->getDirection() : 0) & 0x03;
+		$direction = $player !== null ? Bearing::rotate($player->getDirection(), -1) : 0;
 		$this->meta = $this->getVariant() | $direction;
 		return $this->getLevel()->setBlock($blockReplace, $this, true, true);
 	}

@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\entity\object\Painting;
 use pocketmine\entity\object\PaintingMotive;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\Player;
@@ -71,10 +72,10 @@ class PaintingItem extends Item{
 			$motive = $motives[array_rand($motives)];
 
 			static $directions = [
-				Vector3::SIDE_SOUTH => 0,
-				Vector3::SIDE_WEST => 1,
-				Vector3::SIDE_NORTH => 2,
-				Vector3::SIDE_EAST => 3
+				Facing::SOUTH => 0,
+				Facing::WEST => 1,
+				Facing::NORTH => 2,
+				Facing::EAST => 3
 			];
 
 			$direction = $directions[$face] ?? -1;
