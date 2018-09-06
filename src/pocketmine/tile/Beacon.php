@@ -47,7 +47,9 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder{
 	private $inventory;
 	/** @var int */
 	private $primary, $secondary;
-
+	/** @var int */
+	protected $currentTick = 0;
+	/** @var array */
 	protected $minerals = [
 		Block::IRON_BLOCK,
 		Block::GOLD_BLOCK,
@@ -119,6 +121,9 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder{
 	}
 
 	public function onUpdate() : bool{
+		if(($this->currentTick++ % 80) !== 0){
+			return true;
+		}
 		$pyramidLevels = $this->getPyramidLevels();
 
 		$duration = 180 + $pyramidLevels * 40;
