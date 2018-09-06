@@ -24,8 +24,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
+use pocketmine\item\TieredTool;
+use pocketmine\math\Bearing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -45,15 +46,8 @@ class GlazedTerracotta extends Solid{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if($player !== null){
-			$faces = [
-				0 => 4,
-				1 => 3,
-				2 => 5,
-				3 => 2
-			];
-			$this->meta = $faces[(~($player->getDirection() - 1)) & 0x03];
+			$this->meta = Bearing::toFacing($player->getDirection());
 		}
-
 		return $this->getLevel()->setBlock($blockReplace, $this, true, true);
 	}
 

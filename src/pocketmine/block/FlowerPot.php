@@ -26,6 +26,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\FlowerPot as TileFlowerPot;
@@ -53,7 +54,7 @@ class FlowerPot extends Flowable{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if($this->getSide(Vector3::SIDE_DOWN)->isTransparent()){
+		if($this->getSide(Facing::DOWN)->isTransparent()){
 			return false;
 		}
 
@@ -63,7 +64,7 @@ class FlowerPot extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Vector3::SIDE_DOWN)->isTransparent()){
+		if($this->getSide(Facing::DOWN)->isTransparent()){
 			$this->getLevel()->useBreakOn($this);
 		}
 	}

@@ -27,6 +27,7 @@ namespace pocketmine\block;
 use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -77,7 +78,7 @@ class Leaves extends Transparent{
 			return true;
 		}elseif($pos->getId() === $this->id and $distance < 3){
 			$visited[$index] = true;
-			$down = $pos->getSide(Vector3::SIDE_DOWN)->getId();
+			$down = $pos->getSide(Facing::DOWN)->getId();
 			if($down === $this->woodType){
 				return true;
 			}
@@ -90,38 +91,38 @@ class Leaves extends Transparent{
 			}else{ //No more loops
 				switch($fromSide){
 					case 2:
-						if($this->findLog($pos->getSide(Vector3::SIDE_NORTH), $visited, $distance + 1, $fromSide)){
+						if($this->findLog($pos->getSide(Facing::NORTH), $visited, $distance + 1, $fromSide)){
 							return true;
-						}elseif($this->findLog($pos->getSide(Vector3::SIDE_WEST), $visited, $distance + 1, $fromSide)){
+						}elseif($this->findLog($pos->getSide(Facing::WEST), $visited, $distance + 1, $fromSide)){
 							return true;
-						}elseif($this->findLog($pos->getSide(Vector3::SIDE_EAST), $visited, $distance + 1, $fromSide)){
+						}elseif($this->findLog($pos->getSide(Facing::EAST), $visited, $distance + 1, $fromSide)){
 							return true;
 						}
 						break;
 					case 3:
-						if($this->findLog($pos->getSide(Vector3::SIDE_SOUTH), $visited, $distance + 1, $fromSide)){
+						if($this->findLog($pos->getSide(Facing::SOUTH), $visited, $distance + 1, $fromSide)){
 							return true;
-						}elseif($this->findLog($pos->getSide(Vector3::SIDE_WEST), $visited, $distance + 1, $fromSide)){
+						}elseif($this->findLog($pos->getSide(Facing::WEST), $visited, $distance + 1, $fromSide)){
 							return true;
-						}elseif($this->findLog($pos->getSide(Vector3::SIDE_EAST), $visited, $distance + 1, $fromSide)){
+						}elseif($this->findLog($pos->getSide(Facing::EAST), $visited, $distance + 1, $fromSide)){
 							return true;
 						}
 						break;
 					case 4:
-						if($this->findLog($pos->getSide(Vector3::SIDE_NORTH), $visited, $distance + 1, $fromSide)){
+						if($this->findLog($pos->getSide(Facing::NORTH), $visited, $distance + 1, $fromSide)){
 							return true;
-						}elseif($this->findLog($pos->getSide(Vector3::SIDE_SOUTH), $visited, $distance + 1, $fromSide)){
+						}elseif($this->findLog($pos->getSide(Facing::SOUTH), $visited, $distance + 1, $fromSide)){
 							return true;
-						}elseif($this->findLog($pos->getSide(Vector3::SIDE_WEST), $visited, $distance + 1, $fromSide)){
+						}elseif($this->findLog($pos->getSide(Facing::WEST), $visited, $distance + 1, $fromSide)){
 							return true;
 						}
 						break;
 					case 5:
-						if($this->findLog($pos->getSide(Vector3::SIDE_NORTH), $visited, $distance + 1, $fromSide)){
+						if($this->findLog($pos->getSide(Facing::NORTH), $visited, $distance + 1, $fromSide)){
 							return true;
-						}elseif($this->findLog($pos->getSide(Vector3::SIDE_SOUTH), $visited, $distance + 1, $fromSide)){
+						}elseif($this->findLog($pos->getSide(Facing::SOUTH), $visited, $distance + 1, $fromSide)){
 							return true;
-						}elseif($this->findLog($pos->getSide(Vector3::SIDE_EAST), $visited, $distance + 1, $fromSide)){
+						}elseif($this->findLog($pos->getSide(Facing::EAST), $visited, $distance + 1, $fromSide)){
 							return true;
 						}
 						break;

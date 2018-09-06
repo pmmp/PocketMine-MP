@@ -26,6 +26,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -55,10 +56,10 @@ class DoublePlant extends Flowable{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$id = $blockReplace->getSide(Vector3::SIDE_DOWN)->getId();
-		if(($id === Block::GRASS or $id === Block::DIRT) and $blockReplace->getSide(Vector3::SIDE_UP)->canBeReplaced()){
+		$id = $blockReplace->getSide(Facing::DOWN)->getId();
+		if(($id === Block::GRASS or $id === Block::DIRT) and $blockReplace->getSide(Facing::UP)->canBeReplaced()){
 			$this->getLevel()->setBlock($blockReplace, $this, false, false);
-			$this->getLevel()->setBlock($blockReplace->getSide(Vector3::SIDE_UP), BlockFactory::get($this->id, $this->meta | self::BITFLAG_TOP), false, false);
+			$this->getLevel()->setBlock($blockReplace->getSide(Facing::UP), BlockFactory::get($this->id, $this->meta | self::BITFLAG_TOP), false, false);
 
 			return true;
 		}
@@ -72,9 +73,9 @@ class DoublePlant extends Flowable{
 	 */
 	public function isValidHalfPlant() : bool{
 		if($this->meta & self::BITFLAG_TOP){
-			$other = $this->getSide(Vector3::SIDE_DOWN);
+			$other = $this->getSide(Facing::DOWN);
 		}else{
-			$other = $this->getSide(Vector3::SIDE_UP);
+			$other = $this->getSide(Facing::UP);
 		}
 
 		return (
@@ -85,7 +86,7 @@ class DoublePlant extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->isValidHalfPlant() or (($this->meta & self::BITFLAG_TOP) === 0 and $this->getSide(Vector3::SIDE_DOWN)->isTransparent())){
+		if(!$this->isValidHalfPlant() or (($this->meta & self::BITFLAG_TOP) === 0 and $this->getSide(Facing::DOWN)->isTransparent())){
 			$this->getLevel()->useBreakOn($this);
 		}
 	}
@@ -120,7 +121,7 @@ class DoublePlant extends Flowable{
 
 	public function getAffectedBlocks() : array{
 		if($this->isValidHalfPlant()){
-			return [$this, $this->getSide(($this->meta & self::BITFLAG_TOP) !== 0 ? Vector3::SIDE_DOWN : Vector3::SIDE_UP)];
+			return [$this, $this->getSide(($this->meta & self::BITFLAG_TOP) !== 0 ? Facing::DOWN : Facing::UP)];
 		}
 
 		return parent::getAffectedBlocks();

@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -53,6 +54,7 @@ class Rail extends Flowable{
 
 	/**
 	 * @param Rail $block
+	 *
 	 * @return bool|array
 	 */
 	public function canConnect(Rail $block){
@@ -87,7 +89,7 @@ class Rail extends Flowable{
 			switch(count($connected)){
 				case  1:
 					$v3 = $connected[0]->subtract($this);
-					$this->meta = (int)((($v3->y != 1) ? ($v3->x == 0 ? 0 : 1) : ($v3->z == 0 ? ($v3->x / -2) + 2.5 : ($v3->z / 2) + 4.5)));
+					$this->meta = (int) ((($v3->y != 1) ? ($v3->x == 0 ? 0 : 1) : ($v3->z == 0 ? ($v3->x / -2) + 2.5 : ($v3->z / 2) + 4.5)));
 					break;
 				case 2:
 					$subtract = [];
@@ -96,12 +98,12 @@ class Rail extends Flowable{
 					}
 					if(abs($subtract[0]->x) == abs($subtract[1]->z) and abs($subtract[1]->x) == abs($subtract[0]->z)){
 						$v3 = $connected[0]->subtract($this)->add($connected[1]->subtract($this));
-						$this->meta = (int)($v3->x == 1 ? ($v3->z == 1 ? 6 : 9) : ($v3->z == 1 ? 7 : 8));
+						$this->meta = (int) ($v3->x == 1 ? ($v3->z == 1 ? 6 : 9) : ($v3->z == 1 ? 7 : 8));
 					}elseif($subtract[0]->y == 1 or $subtract[1]->y == 1){
 						$v3 = $subtract[0]->y == 1 ? $subtract[0] : $subtract[1];
-						$this->meta = (int)($v3->x == 0 ? ($v3->z == -1 ? 4 : 5) : ($v3->x == 1 ? 2 : 3));
+						$this->meta = (int) ($v3->x == 0 ? ($v3->z == -1 ? 4 : 5) : ($v3->x == 1 ? 2 : 3));
 					}else{
-						$this->meta = (int)($subtract[0]->x == 0 ? 0 : 1);
+						$this->meta = (int) ($subtract[0]->x == 0 ? 0 : 1);
 					}
 					break;
 				default:
@@ -113,14 +115,35 @@ class Rail extends Flowable{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$downBlock = $this->getSide(Vector3::SIDE_DOWN);
+		$downBlock = $this->getSide(Facing::DOWN);
 
 		if($downBlock instanceof Rail or !$this->isBlock($downBlock)){
 			return false;
 		}
 
-		$arrayXZ = [[1, 0], [0, 1], [-1, 0], [0, -1]];
-		$arrayY = [0, 1, -1];
+		$arrayXZ = [
+			[
+				1,
+				0
+			],
+			[
+				0,
+				1
+			],
+			[
+				-1,
+				0
+			],
+			[
+				0,
+				-1
+			]
+		];
+		$arrayY = [
+			0,
+			1,
+			-1
+		];
 
 		/** @var Vector3 [] $connected */
 		$connected = [];
@@ -144,7 +167,7 @@ class Rail extends Flowable{
 		switch(count($connected)){
 			case  1:
 				$v3 = $connected[0]->subtract($this);
-				$this->meta = (int)((($v3->y != 1) ? ($v3->x == 0 ? 0 : 1) : ($v3->z == 0 ? ($v3->x / -2) + 2.5 : ($v3->z / 2) + 4.5)));
+				$this->meta = (int) ((($v3->y != 1) ? ($v3->x == 0 ? 0 : 1) : ($v3->z == 0 ? ($v3->x / -2) + 2.5 : ($v3->z / 2) + 4.5)));
 				break;
 			case 2:
 				$subtract = [];
@@ -153,12 +176,12 @@ class Rail extends Flowable{
 				}
 				if(abs($subtract[0]->x) == abs($subtract[1]->z) and abs($subtract[1]->x) == abs($subtract[0]->z)){
 					$v3 = $connected[0]->subtract($this)->add($connected[1]->subtract($this));
-					$this->meta = (int)($v3->x == 1 ? ($v3->z == 1 ? 6 : 9) : ($v3->z == 1 ? 7 : 8));
+					$this->meta = (int) ($v3->x == 1 ? ($v3->z == 1 ? 6 : 9) : ($v3->z == 1 ? 7 : 8));
 				}elseif($subtract[0]->y == 1 or $subtract[1]->y == 1){
 					$v3 = $subtract[0]->y == 1 ? $subtract[0] : $subtract[1];
-					$this->meta = (int)($v3->x == 0 ? ($v3->z == -1 ? 4 : 5) : ($v3->x == 1 ? 2 : 3));
+					$this->meta = (int) ($v3->x == 0 ? ($v3->z == -1 ? 4 : 5) : ($v3->x == 1 ? 2 : 3));
 				}else{
-					$this->meta = (int)($subtract[0]->x == 0 ? 0 : 1);
+					$this->meta = (int) ($subtract[0]->x == 0 ? 0 : 1);
 				}
 				break;
 			default:
@@ -170,29 +193,132 @@ class Rail extends Flowable{
 
 	/**
 	 * @param Rail $rail
+	 *
 	 * @return array
 	 */
 	public static function check(Rail $rail){
 		$array = [
-			[[0, 1], [0, -1]],
-			[[1, 0], [-1, 0]],
-			[[1, 0], [-1, 0]],
-			[[1, 0], [-1, 0]],
-			[[0, 1], [0, -1]],
-			[[0, 1], [0, -1]],
-			[[1, 0], [0, 1]],
-			[[0, 1], [-1, 0]],
-			[[-1, 0], [0, -1]],
-			[[0, -1], [1, 0]]
+			[
+				[
+					0,
+					1
+				],
+				[
+					0,
+					-1
+				]
+			],
+			[
+				[
+					1,
+					0
+				],
+				[
+					-1,
+					0
+				]
+			],
+			[
+				[
+					1,
+					0
+				],
+				[
+					-1,
+					0
+				]
+			],
+			[
+				[
+					1,
+					0
+				],
+				[
+					-1,
+					0
+				]
+			],
+			[
+				[
+					0,
+					1
+				],
+				[
+					0,
+					-1
+				]
+			],
+			[
+				[
+					0,
+					1
+				],
+				[
+					0,
+					-1
+				]
+			],
+			[
+				[
+					1,
+					0
+				],
+				[
+					0,
+					1
+				]
+			],
+			[
+				[
+					0,
+					1
+				],
+				[
+					-1,
+					0
+				]
+			],
+			[
+				[
+					-1,
+					0
+				],
+				[
+					0,
+					-1
+				]
+			],
+			[
+				[
+					0,
+					-1
+				],
+				[
+					1,
+					0
+				]
+			]
 		];
-		$arrayY = [0, 1, -1];
+		$arrayY = [
+			0,
+			1,
+			-1
+		];
 		$blocks = $array[$rail->getDamage()];
 		$connected = [];
 		foreach($arrayY as $y){
 			$v3 = new Vector3($rail->x + $blocks[0][0], $rail->y + $y, $rail->z + $blocks[0][1]);
 			$id = $rail->getLevel()->getBlockIdAt($v3->x, $v3->y, $v3->z);
-			$meta = (int)($rail->getLevel()->getBlockDataAt($v3->x, $v3->y, $v3->z));
-			if(in_array($id, [self::RAIL, self::ACTIVATOR_RAIL, self::DETECTOR_RAIL, self::POWERED_RAIL]) and in_array([$rail->x - $v3->x, $rail->z - $v3->z], $array[$meta])){
+			$meta = (int) ($rail->getLevel()->getBlockDataAt($v3->x, $v3->y, $v3->z));
+			if(in_array($id, [
+					self::RAIL,
+					self::ACTIVATOR_RAIL,
+					self::DETECTOR_RAIL,
+					self::POWERED_RAIL
+				]) and in_array([
+					$rail->x - $v3->x,
+					$rail->z - $v3->z
+				], $array[$meta])){
 				$connected[] = $v3;
 				break;
 			}
@@ -200,8 +326,16 @@ class Rail extends Flowable{
 		foreach($arrayY as $y){
 			$v3 = new Vector3($rail->x + $blocks[1][0], $rail->y + $y, $rail->z + $blocks[1][1]);
 			$id = $rail->getLevel()->getBlockIdAt($v3->x, $v3->y, $v3->z);
-			$meta = (int)($rail->getLevel()->getBlockDataAt($v3->x, $v3->y, $v3->z));
-			if(in_array($id, [self::RAIL, self::ACTIVATOR_RAIL, self::DETECTOR_RAIL, self::POWERED_RAIL]) and in_array([$rail->x - $v3->x, $rail->z - $v3->z], $array[$meta])){
+			$meta = (int) ($rail->getLevel()->getBlockDataAt($v3->x, $v3->y, $v3->z));
+			if(in_array($id, [
+					self::RAIL,
+					self::ACTIVATOR_RAIL,
+					self::DETECTOR_RAIL,
+					self::POWERED_RAIL
+				]) and in_array([
+					$rail->x - $v3->x,
+					$rail->z - $v3->z
+				], $array[$meta])){
 				$connected[] = $v3;
 				break;
 			}
@@ -223,7 +357,7 @@ class Rail extends Flowable{
 
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Vector3::SIDE_DOWN)->isTransparent()){
+		if($this->getSide(Facing::DOWN)->isTransparent()){
 			$this->getLevel()->useBreakOn($this);
 		}else{
 			self::check($this);

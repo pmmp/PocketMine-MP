@@ -26,6 +26,7 @@ namespace pocketmine\block;
 
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\Server;
@@ -46,7 +47,7 @@ class Sugarcane extends Flowable{
 
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
-			if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::SUGARCANE_BLOCK){
+			if($this->getSide(Facing::DOWN)->getId() !== self::SUGARCANE_BLOCK){
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->getLevel()->getBlockAt($this->x, $this->y + $y, $this->z);
 					if($b->getId() === self::AIR){
@@ -70,7 +71,7 @@ class Sugarcane extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$down = $this->getSide(Vector3::SIDE_DOWN);
+		$down = $this->getSide(Facing::DOWN);
 		if($down->isTransparent() and $down->getId() !== self::SUGARCANE_BLOCK){
 			$this->getLevel()->useBreakOn($this);
 		}
@@ -81,7 +82,7 @@ class Sugarcane extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::SUGARCANE_BLOCK){
+		if($this->getSide(Facing::DOWN)->getId() !== self::SUGARCANE_BLOCK){
 			if($this->meta === 0x0F){
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->getLevel()->getBlockAt($this->x, $this->y + $y, $this->z);
@@ -100,16 +101,16 @@ class Sugarcane extends Flowable{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$down = $this->getSide(Vector3::SIDE_DOWN);
+		$down = $this->getSide(Facing::DOWN);
 		if($down->getId() === self::SUGARCANE_BLOCK){
 			$this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::SUGARCANE_BLOCK), true);
 
 			return true;
 		}elseif($down->getId() === self::GRASS or $down->getId() === self::DIRT or $down->getId() === self::SAND){
-			$block0 = $down->getSide(Vector3::SIDE_NORTH);
-			$block1 = $down->getSide(Vector3::SIDE_SOUTH);
-			$block2 = $down->getSide(Vector3::SIDE_WEST);
-			$block3 = $down->getSide(Vector3::SIDE_EAST);
+			$block0 = $down->getSide(Facing::NORTH);
+			$block1 = $down->getSide(Facing::SOUTH);
+			$block2 = $down->getSide(Facing::WEST);
+			$block3 = $down->getSide(Facing::EAST);
 			if(($block0 instanceof Water) or ($block1 instanceof Water) or ($block2 instanceof Water) or ($block3 instanceof Water)){
 				$this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::SUGARCANE_BLOCK), true);
 

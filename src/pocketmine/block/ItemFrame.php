@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Tile;
@@ -60,10 +61,10 @@ class ItemFrame extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		$sides = [
-			0 => Vector3::SIDE_WEST,
-			1 => Vector3::SIDE_EAST,
-			2 => Vector3::SIDE_NORTH,
-			3 => Vector3::SIDE_SOUTH
+			0 => Facing::WEST,
+			1 => Facing::EAST,
+			2 => Facing::NORTH,
+			3 => Facing::SOUTH
 		];
 		if(!$this->getSide($sides[$this->meta])->isSolid()){
 			$this->level->useBreakOn($this);
@@ -71,15 +72,15 @@ class ItemFrame extends Flowable{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if($face === Vector3::SIDE_DOWN or $face === Vector3::SIDE_UP or !$blockClicked->isSolid()){
+		if($face === Facing::DOWN or $face === Facing::UP or !$blockClicked->isSolid()){
 			return false;
 		}
 
 		$faces = [
-			Vector3::SIDE_NORTH => 3,
-			Vector3::SIDE_SOUTH => 2,
-			Vector3::SIDE_WEST => 1,
-			Vector3::SIDE_EAST => 0
+			Facing::NORTH => 3,
+			Facing::SOUTH => 2,
+			Facing::WEST => 1,
+			Facing::EAST => 0
 		];
 
 		$this->meta = $faces[$face];

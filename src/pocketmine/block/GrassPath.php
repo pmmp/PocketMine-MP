@@ -27,7 +27,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Vector3;
+use pocketmine\math\Facing;
 
 class GrassPath extends Transparent{
 
@@ -54,7 +54,7 @@ class GrassPath extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Vector3::SIDE_UP)->isSolid()){
+		if($this->getSide(Facing::UP)->isSolid()){
 			$this->level->setBlock($this, BlockFactory::get(Block::DIRT), true);
 		}
 	}

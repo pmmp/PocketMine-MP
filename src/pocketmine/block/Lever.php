@@ -25,6 +25,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\math\Bearing;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -53,19 +55,20 @@ class Lever extends Flowable{
 			return false;
 		}
 
-		if($face === Vector3::SIDE_DOWN){
+		if($face === Facing::DOWN){
 			$this->meta = 0;
 		}else{
 			$this->meta = 6 - $face;
 		}
 
 		if($player !== null){
-			if(($player->getDirection() & 0x01) === 0){
-				if($face === Vector3::SIDE_UP){
+			$bearing = $player->getDirection();
+			if($bearing === Bearing::EAST or $bearing === Bearing::WEST){
+				if($face === Facing::UP){
 					$this->meta = 6;
 				}
 			}else{
-				if($face === Vector3::SIDE_DOWN){
+				if($face === Facing::DOWN){
 					$this->meta = 7;
 				}
 			}
@@ -75,15 +78,15 @@ class Lever extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$faces = [
-			0 => Vector3::SIDE_UP,
-			1 => Vector3::SIDE_WEST,
-			2 => Vector3::SIDE_EAST,
-			3 => Vector3::SIDE_NORTH,
-			4 => Vector3::SIDE_SOUTH,
-			5 => Vector3::SIDE_DOWN,
-			6 => Vector3::SIDE_DOWN,
-			7 => Vector3::SIDE_UP
+		static $faces = [
+			0 => Facing::UP,
+			1 => Facing::WEST,
+			2 => Facing::EAST,
+			3 => Facing::NORTH,
+			4 => Facing::SOUTH,
+			5 => Facing::DOWN,
+			6 => Facing::DOWN,
+			7 => Facing::UP
 		];
 		if(!$this->getSide($faces[$this->meta & 0x07])->isSolid()){
 			$this->level->useBreakOn($this);

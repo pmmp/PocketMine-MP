@@ -30,7 +30,7 @@ use pocketmine\event\block\BlockFormEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Vector3;
+use pocketmine\math\Facing;
 use pocketmine\Server;
 
 class Farmland extends Transparent{
@@ -58,7 +58,7 @@ class Farmland extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Vector3::SIDE_UP)->isSolid()){
+		if($this->getSide(Facing::UP)->isSolid()){
 			$this->level->setBlock($this, BlockFactory::get(Block::DIRT), true);
 		}
 	}
