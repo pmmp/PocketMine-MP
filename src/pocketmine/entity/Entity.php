@@ -2160,7 +2160,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$block->addVelocityToEntity($this, $vector);
 		}
 
-		$down = $this->level->getBlock($this->getSide(Vector3::SIDE_DOWN));
+		$down = $this->level->getBlock($this->getSide(Facing::DOWN));
 		if($down->hasEntityCollision()){
 			$down->onEntityCollideUpon($this);
 		}

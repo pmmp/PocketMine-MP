@@ -28,6 +28,7 @@ namespace pocketmine\entity;
 use pocketmine\entity\behavior\BehaviorPool;
 use pocketmine\entity\pathfinder\EntityNavigator;
 use pocketmine\level\Level;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\CompoundTag;
@@ -230,8 +231,8 @@ abstract class Mob extends Living{
 		$coord = $this->add($dir->multiply($sf)->add($dir->multiply($this->width * 0.5)));
 
 		$block = $this->level->getBlock($coord);
-		$blockUp = $block->getSide(Vector3::SIDE_UP);
-		$blockUpUp = $block->getSide(Vector3::SIDE_UP, 2);
+		$blockUp = $block->getSide(Facing::UP);
+		$blockUpUp = $block->getSide(Facing::UP, 2);
 
 		$collide = $block->isSolid() || ($this->height >= 1 and $blockUp->isSolid());
 

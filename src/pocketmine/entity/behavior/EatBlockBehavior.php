@@ -30,6 +30,7 @@ use pocketmine\block\Grass;
 use pocketmine\block\TallGrass;
 use pocketmine\entity\Mob;
 use pocketmine\level\particle\DestroyBlockParticle;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 
@@ -49,7 +50,7 @@ class EatBlockBehavior extends Behavior{
 		$direction = $this->mob->getDirectionVector()->normalize();
 		$coordinates = $this->mob->add($direction->x, 0, $direction->z);
 
-		$shouldStart = $this->mob->level->getBlock($coordinates->getSide(Vector3::SIDE_DOWN)) instanceof Grass || $this->mob->level->getBlock($coordinates) instanceof TallGrass;
+		$shouldStart = $this->mob->level->getBlock($coordinates->getSide(Facing::DOWN)) instanceof Grass || $this->mob->level->getBlock($coordinates) instanceof TallGrass;
 		if(!$shouldStart) return false;
 
 		$this->duration = 40;

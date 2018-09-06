@@ -26,6 +26,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\ColorBlockMetaHelper;
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
@@ -70,7 +71,7 @@ class ShulkerBox extends Transparent{
 			}
 
 			if(
-				!($this->getSide(Vector3::SIDE_UP)->isTransparent()) or
+				!($this->getSide(Facing::UP)->isTransparent()) or
 				!$sb->canOpenWith($item->getCustomName())
 			){
 				return true;
