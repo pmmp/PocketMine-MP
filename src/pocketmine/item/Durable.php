@@ -23,8 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\event\item\ItemDamageEvent;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\nbt\tag\ByteTag;
+use pocketmine\Server;
 
 abstract class Durable extends Item{
 
@@ -57,10 +59,14 @@ abstract class Durable extends Item{
 
 		$amount -= $this->getUnbreakingDamageReduction($amount);
 
-		$this->meta = min($this->meta + $amount, $this->getMaxDurability());
-		if($this->isBroken()){
-			$this->onBroken();
-		}
+        Server::getInstance()->getPluginManager()->callEvent($ev = new ItemDamageEvent($this, $amount));
+
+        if(!$ev->isCancelled()){
+            $this->meta = min($this->meta + $ev->getDamage(), $this->getMaxDurability());
+            if($this->isBroken()){
+                $this->onBroken();
+            }
+        }
 
 		return true;
 	}
