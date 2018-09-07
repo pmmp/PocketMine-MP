@@ -64,7 +64,7 @@ abstract class Terminal{
 						getenv('TERM') !== false or //Console says it supports colours
 						(function_exists('sapi_windows_vt100_support') and sapi_windows_vt100_support($stdout)) //we're on windows and have vt100 support
 					)
-				));
+				) or getenv('MSYSTEM') !== false);
 				fclose($stdout);
 			}
 
