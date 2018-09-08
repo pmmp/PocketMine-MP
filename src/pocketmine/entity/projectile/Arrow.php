@@ -48,9 +48,22 @@ class Arrow extends Projectile{
 
 	protected $damage = 2;
 
+	/** @var int */
+	protected $collideTicks = 0;
+
 	public function __construct(Level $level, CompoundTag $nbt, ?Entity $shootingEntity = null, bool $critical = false){
 		parent::__construct($level, $nbt, $shootingEntity);
 		$this->setCritical($critical);
+	}
+
+	protected function initEntity() : void{
+		parent::initEntity();
+		$this->collideTicks = $this->namedtag->getShort("life", $this->collideTicks);
+	}
+
+	public function saveNBT() : void{
+		parent::saveNBT();
+		$this->namedtag->setShort("life", $this->collideTicks);
 	}
 
 	public function isCritical() : bool{
@@ -77,9 +90,14 @@ class Arrow extends Projectile{
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		if($this->age > 1200){
-			$this->flagForDespawn();
-			$hasUpdate = true;
+		if($this->isCollided){
+			$this->collideTicks += $tickDiff;
+			if($this->collideTicks > 1200){
+				$this->flagForDespawn();
+				$hasUpdate = true;
+			}
+		}else{
+			$this->collideTicks = 0;
 		}
 
 		return $hasUpdate;

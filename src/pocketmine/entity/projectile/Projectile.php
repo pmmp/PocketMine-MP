@@ -73,7 +73,6 @@ abstract class Projectile extends Entity{
 
 		$this->setMaxHealth(1);
 		$this->setHealth(1);
-		$this->age = $this->namedtag->getShort("Age", $this->age);
 
 		do{
 			$blockHit = null;
@@ -122,8 +121,6 @@ abstract class Projectile extends Entity{
 
 	public function saveNBT() : void{
 		parent::saveNBT();
-
-		$this->namedtag->setShort("Age", $this->age);
 
 		if($this->blockHit !== null){
 			$this->namedtag->setInt("tileX", $this->blockHit->x);

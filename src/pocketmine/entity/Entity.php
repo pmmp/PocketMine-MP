@@ -408,8 +408,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public $boundingBox;
 	/** @var bool */
 	public $onGround;
-	/** @var int */
-	protected $age = 0;
 
 	/** @var float */
 	public $eyeHeight = null;
@@ -1027,7 +1025,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			}
 		}
 
-		$this->age += $tickDiff;
 		$this->ticksLived += $tickDiff;
 
 		return $hasUpdate;
