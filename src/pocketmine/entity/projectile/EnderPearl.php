@@ -66,7 +66,5 @@ class EnderPearl extends Throwable{
 
 			$owner->attack(new EntityDamageEvent($owner, EntityDamageEvent::CAUSE_FALL, 5));
 		}
-
-		$this->flagForDespawn();
 	}
 }

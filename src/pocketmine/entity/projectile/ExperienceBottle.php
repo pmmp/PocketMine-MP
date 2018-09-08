@@ -42,7 +42,5 @@ class ExperienceBottle extends Throwable{
 		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_GLASS);
 
 		$this->level->dropExperience($this, mt_rand(3, 11));
-
-		$this->flagForDespawn();
 	}
 }
