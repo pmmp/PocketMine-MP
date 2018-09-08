@@ -61,6 +61,9 @@ class Arrow extends Projectile{
 	/** @var float */
 	protected $punchKnockback = 0.0;
 
+	/** @var int */
+	protected $collideTicks = 0;
+
 	public function __construct(Level $level, CompoundTag $nbt, ?Entity $shootingEntity = null, bool $critical = false){
 		parent::__construct($level, $nbt, $shootingEntity);
 		$this->setCritical($critical);
@@ -70,11 +73,13 @@ class Arrow extends Projectile{
 		parent::initEntity($nbt);
 
 		$this->pickupMode = $nbt->getByte(self::TAG_PICKUP, self::PICKUP_ANY, true);
+		$this->collideTicks = $nbt->getShort("life", $this->collideTicks);
 	}
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
 		$nbt->setByte(self::TAG_PICKUP, $this->pickupMode);
+		$nbt->setShort("life", $this->collideTicks);
 		return $nbt;
 	}
 
@@ -116,9 +121,14 @@ class Arrow extends Projectile{
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		if($this->age > 1200){
-			$this->flagForDespawn();
-			$hasUpdate = true;
+		if($this->isCollided){
+			$this->collideTicks += $tickDiff;
+			if($this->collideTicks > 1200){
+				$this->flagForDespawn();
+				$hasUpdate = true;
+			}
+		}else{
+			$this->collideTicks = 0;
 		}
 
 		return $hasUpdate;

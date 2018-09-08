@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\projectile;
 
+use pocketmine\block\Block;
+use pocketmine\math\RayTraceResult;
+
 abstract class Throwable extends Projectile{
 
 	public $width = 0.25;
@@ -31,18 +34,8 @@ abstract class Throwable extends Projectile{
 	protected $gravity = 0.03;
 	protected $drag = 0.01;
 
-	public function entityBaseTick(int $tickDiff = 1) : bool{
-		if($this->closed){
-			return false;
-		}
-
-		$hasUpdate = parent::entityBaseTick($tickDiff);
-
-		if($this->age > 1200 or $this->isCollided){
-			$this->flagForDespawn();
-			$hasUpdate = true;
-		}
-
-		return $hasUpdate;
+	protected function onHitBlock(Block $blockHit, RayTraceResult $hitResult) : void{
+		parent::onHitBlock($blockHit, $hitResult);
+		$this->flagForDespawn();
 	}
 }
