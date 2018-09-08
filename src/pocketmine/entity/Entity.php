@@ -535,8 +535,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public $boundingBox;
 	/** @var bool */
 	public $onGround;
-	/** @var int */
-	protected $age = 0;
 
 	/** @var float */
 	public $eyeHeight = null;
@@ -1279,7 +1277,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		if($this->isGliding()) $this->resetFallDistance();
 
-		$this->age += $tickDiff;
 		$this->ticksLived += $tickDiff;
 
 		return $hasUpdate;
@@ -2385,7 +2382,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		if(!empty($this->seats)){
 			$id = $this->getId();
-			$pk->links = array_walk($this->seats, function(Entity $entity, int $seat) use ($id) {
+			$pk->links = array_walk($this->seats, function(Entity $entity, int $seat) use ($id){
 				return new EntityLink($id, $entity->getId(), $seat === 0 ? EntityLink::TYPE_RIDER : EntityLink::TYPE_PASSENGER);
 			});
 		}
@@ -2617,8 +2614,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * Called when riding by a player
 	 *
 	 * @param Player $player
-	 * @param float    $motX
-	 * @param float    $motY
+	 * @param float  $motX
+	 * @param float  $motY
 	 * @param bool   $jumping
 	 * @param bool   $sneaking
 	 */
