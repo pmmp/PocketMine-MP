@@ -89,7 +89,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
      * @return ChestInventory|DoubleChestInventory
      */
     public function getInventory(){
-        if($this->isPaired() and $this->doubleInventory === null){
+        if($this->isPaired()){
             $this->checkPairing();
         }
         return $this->doubleInventory instanceof DoubleChestInventory ? $this->doubleInventory : $this->inventory;
