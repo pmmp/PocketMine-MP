@@ -26,6 +26,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Hopper as TileHopper;
@@ -82,12 +83,12 @@ class Hopper extends Transparent{
 
     public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null): bool{
         $faces = [
-            0 => Vector3::SIDE_DOWN,
-            1 => Vector3::SIDE_DOWN, // Not used
-            2 => Vector3::SIDE_SOUTH,
-            3 => Vector3::SIDE_NORTH,
-            4 => Vector3::SIDE_EAST,
-            5 => Vector3::SIDE_WEST
+            0 => Facing::DOWN,
+            1 => Facing::DOWN, // Not used
+            2 => Facing::SOUTH,
+            3 => Facing::NORTH,
+            4 => Facing::EAST,
+            5 => Facing::WEST
         ];
         $this->meta = $faces[$face];
 
