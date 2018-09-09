@@ -75,7 +75,7 @@ class EatBlockBehavior extends Behavior{
 		if($broken instanceof TallGrass){
 			$this->mob->level->setBlock($coordinates, BlockFactory::get(Block::AIR));
 		}else{
-			$this->mob->level->setBlock($coordinates->getSide(Vector3::SIDE_DOWN), BlockFactory::get(Block::DIRT));
+			$this->mob->level->setBlock($coordinates->getSide(Facing::DOWN), BlockFactory::get(Block::DIRT));
 		}
 		$this->mob->level->addParticle(new DestroyBlockParticle($this->mob, $broken));
 	}
