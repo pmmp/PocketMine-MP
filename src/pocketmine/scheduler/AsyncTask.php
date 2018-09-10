@@ -63,7 +63,7 @@ abstract class AsyncTask extends Collectable{
 
 	private $crashed = false;
 
-	public function run(){
+	public function run() : void{
 		$this->result = null;
 
 		if(!$this->cancelRun){
@@ -89,7 +89,7 @@ abstract class AsyncTask extends Collectable{
 		return $this->serialized ? unserialize($this->result) : $this->result;
 	}
 
-	public function cancelRun(){
+	public function cancelRun() : void{
 		$this->cancelRun = true;
 	}
 
@@ -108,19 +108,19 @@ abstract class AsyncTask extends Collectable{
 	 * @param mixed $result
 	 * @param bool  $serialize
 	 */
-	public function setResult($result, bool $serialize = true){
+	public function setResult($result, bool $serialize = true) : void{
 		$this->result = $serialize ? serialize($result) : $result;
 		$this->serialized = $serialize;
 	}
 
-	public function setTaskId(int $taskId){
+	public function setTaskId(int $taskId) : void{
 		$this->taskId = $taskId;
 	}
 
 	/**
 	 * @return int|null
 	 */
-	public function getTaskId(){
+	public function getTaskId() : ?int{
 		return $this->taskId;
 	}
 
@@ -143,7 +143,7 @@ abstract class AsyncTask extends Collectable{
 	 * @param string $identifier
 	 * @param mixed  $value
 	 */
-	public function saveToThreadStore(string $identifier, $value){
+	public function saveToThreadStore(string $identifier, $value) : void{
 		if($this->worker === null or $this->isGarbage()){
 			throw new \BadMethodCallException("Objects can only be added to AsyncWorker thread-local storage during task execution");
 		}
@@ -164,18 +164,14 @@ abstract class AsyncTask extends Collectable{
 
 	/**
 	 * Actions to execute when run
-	 *
-	 * @return void
 	 */
-	abstract public function onRun();
+	abstract public function onRun() : void;
 
 	/**
 	 * Actions to execute when completed (on main thread)
 	 * Implement this if you want to handle the data in your AsyncTask after it has been processed
-	 *
-	 * @return void
 	 */
-	public function onCompletion(){
+	public function onCompletion() : void{
 
 	}
 
@@ -192,7 +188,7 @@ abstract class AsyncTask extends Collectable{
 	/**
 	 * @internal Only call from AsyncPool.php on the main thread
 	 */
-	public function checkProgressUpdates(){
+	public function checkProgressUpdates() : void{
 		while($this->progressUpdates->count() !== 0){
 			$progress = $this->progressUpdates->shift();
 			$this->onProgressUpdate(unserialize($progress));
@@ -207,7 +203,7 @@ abstract class AsyncTask extends Collectable{
 	 * @param mixed $progress The parameter passed to {@link AsyncTask#publishProgress}. It is serialize()'ed
 	 *                         and then unserialize()'ed, as if it has been cloned.
 	 */
-	public function onProgressUpdate($progress){
+	public function onProgressUpdate($progress) : void{
 
 	}
 
@@ -232,9 +228,8 @@ abstract class AsyncTask extends Collectable{
 	 *
 	 * @param mixed $complexData the data to store
 	 *
-	 * @throws \BadMethodCallException if called from any thread except the main thread
 	 */
-	protected function storeLocal($complexData){
+	protected function storeLocal($complexData) : void{
 		if($this->worker !== null and $this->worker === \Thread::getCurrentThread()){
 			throw new \BadMethodCallException("Objects can only be stored from the parent thread");
 		}

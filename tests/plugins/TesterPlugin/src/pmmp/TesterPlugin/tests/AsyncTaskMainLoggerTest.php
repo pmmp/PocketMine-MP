@@ -39,7 +39,7 @@ class AsyncTaskMainLoggerTest extends Test{
 				$this->storeLocal($testObject);
 			}
 
-			public function onRun(){
+			public function onRun() : void{
 				ob_start();
 				MainLogger::getLogger()->info("Testing");
 				if(strpos(ob_get_contents(), "Testing") !== false){
@@ -48,7 +48,7 @@ class AsyncTaskMainLoggerTest extends Test{
 				ob_end_flush();
 			}
 
-			public function onCompletion(){
+			public function onCompletion() : void{
 				/** @var AsyncTaskMainLoggerTest $test */
 				$test = $this->fetchLocal();
 				$test->setResult($this->success ? Test::RESULT_OK : Test::RESULT_FAILED);
