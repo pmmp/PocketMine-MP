@@ -30,7 +30,6 @@ use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\noise\Simplex;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\math\Vector3;
-use pocketmine\utils\Random;
 
 class Nether extends Generator{
 

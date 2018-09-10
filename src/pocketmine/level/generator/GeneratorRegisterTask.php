@@ -28,7 +28,6 @@ use pocketmine\level\biome\Biome;
 use pocketmine\level\Level;
 use pocketmine\level\SimpleChunkManager;
 use pocketmine\scheduler\AsyncTask;
-use pocketmine\utils\Random;
 
 class GeneratorRegisterTask extends AsyncTask{
 
