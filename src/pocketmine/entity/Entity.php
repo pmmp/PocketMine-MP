@@ -1743,7 +1743,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		if($this->ridingEntity == null and $entity !== $this and count($entity->passengers) < $entity->getSeatCount()){
 			if(!isset($entity->passengers[$seatNumber])){
 				if($seatNumber === 0){
-					$entity->setRiddenByEntity($entity);
+					$entity->setRiddenByEntity($this);
 
 					$this->setRiding(true);
 					$this->setGenericFlag(self::DATA_FLAG_WASD_CONTROLLED, true);
@@ -2368,7 +2368,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 				return false;
 			}
 
-			$this->dismountEntity();
+			$this->dismountEntity(true);
 
 			$this->level->removeEntity($this);
 			if($this->chunk !== null){
