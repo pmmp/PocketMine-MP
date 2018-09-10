@@ -50,28 +50,16 @@ class Nether extends Generator{
 	/** @var Simplex */
 	private $noiseBase;
 
-	public function __construct(array $options = []){
+	public function __construct(ChunkManager $level, int $seed, array $options = []){
+		parent::__construct($level, $seed, $options);
 
-	}
-
-	public function getName() : string{
-		return "nether";
-	}
-
-	public function getSettings() : array{
-		return [];
-	}
-
-	public function init(ChunkManager $level, Random $random) : void{
-		parent::init($level, $random);
-		$this->random->setSeed($this->level->getSeed());
 		$this->noiseBase = new Simplex($this->random, 4, 1 / 4, 1 / 64);
-		$this->random->setSeed($this->level->getSeed());
+		$this->random->setSeed($this->seed);
 
 		/*$ores = new Ore();
 		$ores->setOreTypes([
 			new OreType(new CoalOre(), 20, 16, 0, 128),
-			new OreType(New IronOre(), 20, 8, 0, 64),
+			new OreType(new IronOre(), 20, 8, 0, 64),
 			new OreType(new RedstoneOre(), 8, 7, 0, 16),
 			new OreType(new LapisOre(), 1, 6, 0, 32),
 			new OreType(new GoldOre(), 2, 8, 0, 32),
@@ -82,8 +70,12 @@ class Nether extends Generator{
 		$this->populators[] = $ores;*/
 	}
 
+	public function getName() : string{
+		return "nether";
+	}
+
 	public function generateChunk(int $chunkX, int $chunkZ) : void{
-		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
+		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->seed);
 
 		$noise = $this->noiseBase->getFastNoise3D(16, 128, 16, 4, 8, 4, $chunkX * 16, 0, $chunkZ * 16);
 
@@ -118,7 +110,7 @@ class Nether extends Generator{
 	}
 
 	public function populateChunk(int $chunkX, int $chunkZ) : void{
-		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
+		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->seed);
 		foreach($this->populators as $populator){
 			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);
 		}
