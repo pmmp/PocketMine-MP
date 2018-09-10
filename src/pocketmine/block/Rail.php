@@ -23,54 +23,71 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
 
-class Rail extends Flowable{
+class Rail extends BaseRail{
 
-	public const STRAIGHT_NORTH_SOUTH = 0;
-	public const STRAIGHT_EAST_WEST = 1;
-	public const ASCENDING_EAST = 2;
-	public const ASCENDING_WEST = 3;
-	public const ASCENDING_NORTH = 4;
-	public const ASCENDING_SOUTH = 5;
+	/* extended meta values for regular rails, to allow curving */
 	public const CURVE_SOUTHEAST = 6;
 	public const CURVE_SOUTHWEST = 7;
 	public const CURVE_NORTHWEST = 8;
 	public const CURVE_NORTHEAST = 9;
 
-	protected $id = self::RAIL;
+	private const CURVE_CONNECTIONS = [
+		self::CURVE_SOUTHEAST => [
+			Vector3::SIDE_SOUTH,
+			Vector3::SIDE_EAST
+		],
+		self::CURVE_SOUTHWEST => [
+			Vector3::SIDE_SOUTH,
+			Vector3::SIDE_WEST
+		],
+		self::CURVE_NORTHWEST => [
+			Vector3::SIDE_NORTH,
+			Vector3::SIDE_WEST
+		],
+		self::CURVE_NORTHEAST => [
+			Vector3::SIDE_NORTH,
+			Vector3::SIDE_EAST
+		]
+	];
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
-	}
+	protected $id = self::RAIL;
 
 	public function getName() : string{
 		return "Rail";
 	}
 
-	public function getHardness() : float{
-		return 0.7;
-	}
-
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if(!$blockReplace->getSide(Vector3::SIDE_DOWN)->isTransparent()){
-			return $this->getLevel()->setBlock($blockReplace, $this, true, true);
-		}
-
-		return false;
-	}
-
-	public function onNearbyBlockChange() : void{
-		if($this->getSide(Vector3::SIDE_DOWN)->isTransparent()){
-			$this->getLevel()->useBreakOn($this);
-		}else{
-			//TODO: Update rail connectivity
+	protected function getMetaForState(array $connections) : int{
+		try{
+			return self::searchState($connections, self::CURVE_CONNECTIONS);
+		}catch(\InvalidArgumentException $e){
+			return parent::getMetaForState($connections);
 		}
 	}
 
-	public function getVariantBitmask() : int{
-		return 0;
+	protected function getConnectionsForState() : array{
+		return self::CURVE_CONNECTIONS[$this->meta] ?? self::CONNECTIONS[$this->meta];
+	}
+
+	protected function getPossibleConnectionDirectionsOneConstraint(int $constraint) : array{
+		static $horizontal = [
+			Vector3::SIDE_NORTH,
+			Vector3::SIDE_SOUTH,
+			Vector3::SIDE_WEST,
+			Vector3::SIDE_EAST
+		];
+
+		$possible = parent::getPossibleConnectionDirectionsOneConstraint($constraint);
+
+		if(($constraint & self::FLAG_ASCEND) === 0){
+			foreach($horizontal as $d){
+				if($constraint !== $d){
+					$possible[$d] = true;
+				}
+			}
+		}
+
+		return $possible;
 	}
 }
