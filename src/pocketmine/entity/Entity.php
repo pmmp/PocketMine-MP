@@ -104,6 +104,7 @@ use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\Random;
 use pocketmine\utils\Utils;
+use pocketmine\utils\UUID;
 
 abstract class Entity extends Location implements Metadatable, EntityIds{
 
@@ -626,6 +627,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public $passengers = [];
 	/** @var Random */
 	public $random;
+	/** @var UUID|null */
+	protected $uuid;
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		$this->random = new Random();
@@ -1068,6 +1071,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 				$nbt->setString("CustomName", $this->getNameTag());
 				$nbt->setByte("CustomNameVisible", $this->isNameTagVisible() ? 1 : 0);
 			}
+
+			if($this->uuid !== null){
+				$nbt->setString("UUID", $this->uuid->toString());
+			}
 		}
 
 		$nbt->setTag(new ListTag("Pos", [
@@ -1093,6 +1100,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$nbt->setByte("OnGround", $this->onGround ? 1 : 0);
 		$nbt->setByte("Invulnerable", $this->invulnerable ? 1 : 0);
 
+		// TODO: Save passengers
+
 		return $nbt;
 	}
 
@@ -1107,6 +1116,21 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 				$this->setNameTagVisible($nbt->getByte("CustomNameVisible", 1) !== 0);
 			}
 		}
+
+		if($this->uuid === null){
+			if($nbt->hasTag("UUID", StringTag::class)){
+				$this->uuid = UUID::fromString($nbt->getString("UUID"));
+			}else{
+				$this->uuid = UUID::fromRandom();
+			}
+		}
+	}
+
+	/**
+	 * @return null|UUID
+	 */
+	public function getUniqueId() : ?UUID{
+		return $this->uuid;
 	}
 
 	protected function addAttributes() : void{
@@ -1731,7 +1755,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 				$entity->passengers[$seatNumber] = $this;
 
 				$this->propertyManager->setVector3(self::DATA_RIDER_SEAT_POSITION, $entity->getRiderSeatPosition($seatNumber)->add(0, $this->getMountedYOffset(), 0));
-				$this->propertyManager->setInt(self::DATA_CONTROLLING_RIDER_SEAT_NUMBER, $seatNumber);
+				$this->propertyManager->setByte(self::DATA_CONTROLLING_RIDER_SEAT_NUMBER, $seatNumber);
 
 				$entity->sendLink($entity->getViewers(), $this, EntityLink::TYPE_RIDER);
 
