@@ -234,7 +234,7 @@ abstract class Mob extends Living{
 		$blockUp = $block->getSide(Facing::UP);
 		$blockUpUp = $block->getSide(Facing::UP, 2);
 
-		$collide = $block->isSolid() || ($this->height >= 1 and $blockUp->isSolid());
+		$collide = ($block->isSolid() and $block->getBoundingBox() !== null and $block->getBoundingBox()->maxY >= $this->y + $this->getJumpVelocity()) or ($this->height >= 1 and $blockUp->isSolid());
 
 		if(!$collide){
 			if(!$this->onGround and $this->jumpCooldown === 0 and !$this->isSwimmer()) return true;
@@ -244,6 +244,10 @@ abstract class Mob extends Living{
 			$entityVelocity->y = 0;
 
 			$this->motion = $this->getMotion()->add($velocity->subtract($entityVelocity));
+
+			if($block->isSolid() and $block->getBoundingBox() !== null){
+				$this->motion->y += ($this->y - $block->getBoundingBox()->maxY) + 0.1;
+			}
 			return true;
 		}else{
 			if($this->canClimb()){

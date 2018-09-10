@@ -623,7 +623,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	/** @var float */
 	protected $entityRiderYawDelta = 0;
 	/** @var Entity[] */
-	public $seats = [];
+	public $passengers = [];
 	/** @var Random */
 	public $random;
 
@@ -1141,7 +1141,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	public function kill() : void{
 		$this->health = 0;
-		$this->dismountEntity();
+		$this->dismountEntity(true);
 		$this->scheduleUpdate();
 		$this->onDeath();
 	}
@@ -1716,81 +1716,85 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function mountEntity(Entity $entity, int $seatNumber = 0) : void{
-		if($this->ridingEntity == null and $entity !== $this and count($entity->seats) < $entity->getSeatCount()){
-			$this->setRidingEntity($entity);
+		if($this->ridingEntity == null and $entity !== $this and count($entity->passengers) < $entity->getSeatCount()){
+			if(!isset($entity->passengers[$seatNumber])){
+				if($seatNumber === 0){
+					$entity->setRiddenByEntity($entity);
 
-			if($seatNumber === 0){
-				$entity->setRiddenByEntity($this);
-			}
+					$this->setRiding(true);
+					$this->setGenericFlag(self::DATA_FLAG_WASD_CONTROLLED, true);
+				}
 
-			$this->setRotation($entity->yaw, $entity->pitch);
+				$this->setRotation($entity->yaw, $entity->pitch);
+				$this->setRidingEntity($entity);
 
-			$this->propertyManager->setVector3(self::DATA_RIDER_SEAT_POSITION, $entity->getRiderSeatPosition($seatNumber)->add(0, $this->getMountedYOffset(), 0));
-			$this->propertyManager->setByte(self::DATA_CONTROLLING_RIDER_SEAT_NUMBER, $seatNumber);
-			$this->propertyManager->setByte(self::DATA_RIDER_ROTATION_LOCKED, 0);
-			$this->propertyManager->setFloat(self::DATA_RIDER_MAX_ROTATION, 360);
-			$this->propertyManager->setFloat(self::DATA_RIDER_MIN_ROTATION, 0);
+				$entity->passengers[$seatNumber] = $this;
 
-			$this->sendData([$this]);
+				$this->propertyManager->setVector3(self::DATA_RIDER_SEAT_POSITION, $entity->getRiderSeatPosition($seatNumber)->add(0, $this->getMountedYOffset(), 0));
+				$this->propertyManager->setInt(self::DATA_CONTROLLING_RIDER_SEAT_NUMBER, $seatNumber);
 
-			if($seatNumber === 0){
-				$this->setRiding(true);
-				$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_WASD_CONTROLLED, true);
-			}
+				$entity->sendLink($entity->getViewers(), $this, EntityLink::TYPE_RIDER);
 
-			$pk = new SetEntityLinkPacket();
-			$pk->link = new EntityLink($this->ridingEntity->getId(), $this->id, $seatNumber === 0 ? EntityLink::TYPE_RIDER : EntityLink::TYPE_PASSENGER);
-			$this->server->broadcastPacket($this->getViewers(), $pk);
-
-			$entity->seats[$seatNumber] = $this;
-
-			if($this instanceof Player){
-				$this->sendDataPacket($pk);
-			}
-
-			if($entity instanceof Rideable){
 				$entity->onRiderMount($this);
 			}
 		}
+	}
+
+	/**
+	 * @param Entity $entity
+	 */
+	public function onRiderMount(Entity $entity) : void{
+
+	}
+
+	/**
+	 * @param Entity $entity
+	 */
+	public function onRiderLeave(Entity $entity) : void{
+
+	}
+
+	/**
+	 * @param Player[]  $targets
+	 * @param Entity $entity
+	 * @param int    $type
+	 * @param bool   $immediate
+	 */
+	public function sendLink(array $targets, Entity $entity, int $type = EntityLink::TYPE_RIDER, bool $immediate = false) : void{
+		$pk = new SetEntityLinkPacket();
+		$pk->link = new EntityLink($this->id, $entity->getId(), $type, $immediate);
+
+		$this->server->broadcastPacket($targets, $pk);
 	}
 
 	public function getMountedYOffset() : float{
 		return $this->height * 0.65;
 	}
 
-	public function dismountEntity() : void{
+	public function dismountEntity(bool $immediate = false) : void{
 		if($this->ridingEntity !== null){
 			$entity = $this->ridingEntity;
 
-			unset($entity->seats[array_search($this, $entity->seats)]);
+			unset($entity->passengers[array_search($this, $entity->passengers)]);
 
 			if($this->isRiding()){
 				$entity->setRiddenByEntity(null);
+
+				$this->entityRiderYawDelta = 0;
+				$this->entityRiderPitchDelta = 0;
+
+				$this->setRiding(false);
+				$entity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_WASD_CONTROLLED, false);
 			}
 
-			$this->entityRiderYawDelta = 0;
-			$this->entityRiderPitchDelta = 0;
-
-			$this->setRiding(false);
-			$entity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_WASD_CONTROLLED, false);
 			$this->propertyManager->removeProperty(self::DATA_RIDER_SEAT_POSITION);
-			$this->propertyManager->removeProperty(self::DATA_RIDER_ROTATION_LOCKED);
-			$this->propertyManager->removeProperty(self::DATA_RIDER_MAX_ROTATION);
-			$this->propertyManager->removeProperty(self::DATA_RIDER_MIN_ROTATION);
-
-			$pk = new SetEntityLinkPacket();
-			$pk->link = new EntityLink($entity->getId(), $this->id, EntityLink::TYPE_REMOVE);
-			$this->server->broadcastPacket($this->getViewers(), $pk);
-
-			if($this instanceof Player){
-				$this->sendDataPacket($pk);
-			}
+			$this->propertyManager->removeProperty(self::DATA_CONTROLLING_RIDER_SEAT_NUMBER);
 
 			$this->setRidingEntity(null);
 
-			if($entity instanceof Rideable){
-				$entity->onRiderLeave($this);
-			}
+			$entity->sendLink($entity->getViewers(), $this, EntityLink::TYPE_REMOVE, $immediate);
+
+			$entity->onRiderLeave($this);
 		}
 	}
 
@@ -2315,6 +2319,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$pos = $ev->getTo();
 
 		$this->setMotion($this->temporalVector->setComponents(0, 0, 0));
+		$this->dismountEntity(true);
+
 		if($this->setPositionAndRotation($pos, $yaw ?? $this->yaw, $pitch ?? $this->pitch)){
 			$this->resetFallDistance();
 			$this->onGround = true;
@@ -2337,6 +2343,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			if($ev->isCancelled()){
 				return false;
 			}
+
+			$this->dismountEntity();
 
 			$this->level->removeEntity($this);
 			if($this->chunk !== null){
@@ -2382,8 +2390,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		if(!empty($this->seats)){
 			$id = $this->getId();
-			$pk->links = array_walk($this->seats, function(Entity $entity, int $seat) use ($id){
-				return new EntityLink($id, $entity->getId(), $seat === 0 ? EntityLink::TYPE_RIDER : EntityLink::TYPE_PASSENGER);
+			$pk->links = array_walk($this->passengers, function(Entity $entity, int $seat) use ($id){
+				return new EntityLink($id, $entity->getId(), EntityLink::TYPE_RIDER);
 			});
 		}
 
