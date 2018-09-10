@@ -25,7 +25,6 @@ namespace pmmp\TesterPlugin\tests;
 
 use pmmp\TesterPlugin\Test;
 use pocketmine\scheduler\AsyncTask;
-use pocketmine\Server;
 use pocketmine\utils\MainLogger;
 
 class AsyncTaskMainLoggerTest extends Test{
@@ -49,7 +48,7 @@ class AsyncTaskMainLoggerTest extends Test{
 				ob_end_flush();
 			}
 
-			public function onCompletion(Server $server){
+			public function onCompletion(){
 				/** @var AsyncTaskMainLoggerTest $test */
 				$test = $this->fetchLocal();
 				$test->setResult($this->success ? Test::RESULT_OK : Test::RESULT_FAILED);

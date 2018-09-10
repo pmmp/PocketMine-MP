@@ -26,7 +26,6 @@ namespace pocketmine\level\light;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\scheduler\AsyncTask;
-use pocketmine\Server;
 
 class LightPopulationTask extends AsyncTask{
 
@@ -48,7 +47,7 @@ class LightPopulationTask extends AsyncTask{
 		$this->chunk = $chunk->fastSerialize();
 	}
 
-	public function onCompletion(Server $server){
+	public function onCompletion() : void{
 		/** @var Level $level */
 		$level = $this->fetchLocal();
 		if(!$level->isClosed()){

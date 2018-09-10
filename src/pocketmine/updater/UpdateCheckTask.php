@@ -24,9 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\updater;
 
-
 use pocketmine\scheduler\AsyncTask;
-use pocketmine\Server;
 use pocketmine\utils\Internet;
 
 class UpdateCheckTask extends AsyncTask{
@@ -72,7 +70,7 @@ class UpdateCheckTask extends AsyncTask{
 		}
 	}
 
-	public function onCompletion(Server $server){
+	public function onCompletion(){
 		/** @var AutoUpdater $updater */
 		$updater = $this->fetchLocal();
 		if($this->hasResult()){

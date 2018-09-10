@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\scheduler;
 
 use pocketmine\Collectable;
-use pocketmine\Server;
 
 /**
  * Class used to run async tasks in other threads.
@@ -174,11 +173,9 @@ abstract class AsyncTask extends Collectable{
 	 * Actions to execute when completed (on main thread)
 	 * Implement this if you want to handle the data in your AsyncTask after it has been processed
 	 *
-	 * @param Server $server
-	 *
 	 * @return void
 	 */
-	public function onCompletion(Server $server){
+	public function onCompletion(){
 
 	}
 
@@ -194,13 +191,11 @@ abstract class AsyncTask extends Collectable{
 
 	/**
 	 * @internal Only call from AsyncPool.php on the main thread
-	 *
-	 * @param Server $server
 	 */
-	public function checkProgressUpdates(Server $server){
+	public function checkProgressUpdates(){
 		while($this->progressUpdates->count() !== 0){
 			$progress = $this->progressUpdates->shift();
-			$this->onProgressUpdate($server, unserialize($progress));
+			$this->onProgressUpdate(unserialize($progress));
 		}
 	}
 
@@ -209,11 +204,10 @@ abstract class AsyncTask extends Collectable{
 	 * All {@link AsyncTask#publishProgress} calls should result in {@link AsyncTask#onProgressUpdate} calls before
 	 * {@link AsyncTask#onCompletion} is called.
 	 *
-	 * @param Server $server
-	 * @param mixed  $progress The parameter passed to {@link AsyncTask#publishProgress}. It is serialize()'ed
+	 * @param mixed $progress The parameter passed to {@link AsyncTask#publishProgress}. It is serialize()'ed
 	 *                         and then unserialize()'ed, as if it has been cloned.
 	 */
-	public function onProgressUpdate(Server $server, $progress){
+	public function onProgressUpdate($progress){
 
 	}
 
