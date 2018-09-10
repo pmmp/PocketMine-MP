@@ -556,10 +556,11 @@ class Server{
 	}
 
 	/**
+	 * @deprecated
 	 * @return bool
 	 */
 	public function getAllowFlight() : bool{
-		return $this->getConfigBool("allow-flight", false);
+		return true;
 	}
 
 	/**
@@ -1470,7 +1471,6 @@ class Server{
 				"announce-player-achievements" => true,
 				"spawn-protection" => 16,
 				"max-players" => 20,
-				"allow-flight" => false,
 				"spawn-animals" => true,
 				"spawn-mobs" => true,
 				"gamemode" => 0,
