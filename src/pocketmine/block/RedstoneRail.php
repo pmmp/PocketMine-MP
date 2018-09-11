@@ -23,14 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class PoweredRail extends RedstoneRail{
-	protected $id = self::POWERED_RAIL;
+class RedstoneRail extends BaseRail{
+	protected const FLAG_POWERED = 0x08;
 
-	public function getName() : string{
-		return "Powered Rail";
-	}
-
-	public function isPowered() : bool{
-		return true;
+	protected function getConnectionsForState() : array{
+		return self::CONNECTIONS[$this->meta & ~self::FLAG_POWERED];
 	}
 }

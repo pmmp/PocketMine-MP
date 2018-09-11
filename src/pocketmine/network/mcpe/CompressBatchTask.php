@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe;
 
 use pocketmine\scheduler\AsyncTask;
-use pocketmine\Server;
 
 class CompressBatchTask extends AsyncTask{
 
@@ -45,7 +44,7 @@ class CompressBatchTask extends AsyncTask{
 		$this->setResult(NetworkCompression::compress($this->data, $this->level), false);
 	}
 
-	public function onCompletion(Server $server) : void{
+	public function onCompletion() : void{
 		/** @var CompressBatchPromise $promise */
 		$promise = $this->fetchLocal();
 

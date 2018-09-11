@@ -31,7 +31,6 @@ use pocketmine\network\mcpe\protocol\types\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\Player;
 use pocketmine\scheduler\BulkCurlTask;
-use pocketmine\Server;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\InternetException;
 
@@ -140,7 +139,7 @@ class TimingsCommand extends VanillaCommand{
 						$this->storeLocal($sender);
 					}
 
-					public function onCompletion(Server $server){
+					public function onCompletion() : void{
 						$sender = $this->fetchLocal();
 						if($sender instanceof Player and !$sender->isOnline()){ // TODO replace with a more generic API method for checking availability of CommandSender
 							return;

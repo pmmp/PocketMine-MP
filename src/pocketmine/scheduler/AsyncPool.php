@@ -23,17 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
-use pocketmine\Server;
-
 /**
  * Manages general-purpose worker threads used for processing asynchronous tasks, and the tasks submitted to those
  * workers.
  */
 class AsyncPool{
 	private const WORKER_START_OPTIONS = PTHREADS_INHERIT_INI | PTHREADS_INHERIT_CONSTANTS;
-
-	/** @var Server */
-	private $server;
 
 	/** @var \ClassLoader */
 	private $classLoader;
@@ -59,8 +54,7 @@ class AsyncPool{
 	/** @var \Closure[] */
 	private $workerStartHooks = [];
 
-	public function __construct(Server $server, int $size, int $workerMemoryLimit, \ClassLoader $classLoader, \ThreadedLogger $logger){
-		$this->server = $server;
+	public function __construct(int $size, int $workerMemoryLimit, \ClassLoader $classLoader, \ThreadedLogger $logger){
 		$this->size = $size;
 		$this->workerMemoryLimit = $workerMemoryLimit;
 		$this->classLoader = $classLoader;
@@ -259,7 +253,7 @@ class AsyncPool{
 			}
 
 			if(count($this->tasks) > 0){
-				Server::microSleep(25000);
+				usleep(25000);
 			}
 		}while(count($this->tasks) > 0);
 
@@ -290,12 +284,12 @@ class AsyncPool{
 	public function collectTasks() : void{
 		foreach($this->tasks as $task){
 			if(!$task->isGarbage()){
-				$task->checkProgressUpdates($this->server);
+				$task->checkProgressUpdates();
 			}
 			if($task->isGarbage() and !$task->isRunning() and !$task->isCrashed()){
 				if(!$task->hasCancelledRun()){
 					try{
-						$task->onCompletion($this->server);
+						$task->onCompletion();
 						if($task->removeDanglingStoredObjects()){
 							$this->logger->notice("AsyncTask " . get_class($task) . " stored local complex data but did not remove them after completion");
 						}
