@@ -277,7 +277,8 @@ class EntityNavigator{
 			// Check for too high steps
 
 			$coord = new Vector3((int) $item->x, $block->y, (int) $item->y);
-			if($this->mob->level->getBlock($coord)->isSolid()){
+			$tb = $this->mob->level->getBlock($coord);
+			if($tb->isSolid()){
 				if($this->mob->canClimb() or $this->mob->isSwimmer()){
 					$blockUp = $this->mob->level->getBlock($coord->getSide(Facing::UP));
 					$canMove = false;
