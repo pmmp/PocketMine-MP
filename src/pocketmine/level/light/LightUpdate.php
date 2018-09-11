@@ -34,6 +34,9 @@ abstract class LightUpdate{
 	/** @var ChunkManager */
 	protected $level;
 
+	/** @var int[] blockhash => new light level */
+	protected $updateNodes = [];
+
 	/** @var \SplQueue */
 	protected $spreadQueue;
 	/** @var bool[] */
@@ -67,31 +70,31 @@ abstract class LightUpdate{
 	abstract protected function setLight(int $x, int $y, int $z, int $level);
 
 	public function setAndUpdateLight(int $x, int $y, int $z, int $newLevel){
-		if(!$this->level->isInWorld($x, $y, $z)){
-			throw new \InvalidArgumentException("Coordinates x=$x, y=$y, z=$z are out of range");
-		}
+		$this->updateNodes[Level::blockHash($x, $y, $z)] = [$x, $y, $z, $newLevel];
+	}
 
-		if(isset($this->spreadVisited[$index = Level::blockHash($x, $y, $z)]) or isset($this->removalVisited[$index])){
-			throw new \InvalidArgumentException("Already have a visit ready for this block");
-		}
+	private function prepareNodes() : void{
+		foreach($this->updateNodes as $blockHash => [$x, $y, $z, $newLevel]){
+			if($this->subChunkHandler->moveTo($x, $y, $z)){
+				$oldLevel = $this->getLight($x, $y, $z);
 
-		if($this->subChunkHandler->moveTo($x, $y, $z)){
-			$oldLevel = $this->getLight($x, $y, $z);
-
-			if($oldLevel !== $newLevel){
-				$this->setLight($x, $y, $z, $newLevel);
-				if($oldLevel < $newLevel){ //light increased
-					$this->spreadVisited[$index] = true;
-					$this->spreadQueue->enqueue([$x, $y, $z]);
-				}else{ //light removed
-					$this->removalVisited[$index] = true;
-					$this->removalQueue->enqueue([$x, $y, $z, $oldLevel]);
+				if($oldLevel !== $newLevel){
+					$this->setLight($x, $y, $z, $newLevel);
+					if($oldLevel < $newLevel){ //light increased
+						$this->spreadVisited[$blockHash] = true;
+						$this->spreadQueue->enqueue([$x, $y, $z]);
+					}else{ //light removed
+						$this->removalVisited[$blockHash] = true;
+						$this->removalQueue->enqueue([$x, $y, $z, $oldLevel]);
+					}
 				}
 			}
 		}
 	}
 
 	public function execute(){
+		$this->prepareNodes();
+
 		while(!$this->removalQueue->isEmpty()){
 			list($x, $y, $z, $oldAdjacentLight) = $this->removalQueue->dequeue();
 
