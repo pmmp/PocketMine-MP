@@ -2172,15 +2172,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->sendDataPacket($packet);
 				$this->server->broadcastPacket($this->getViewers(), $packet);
 				break;
-			case EntityEventPacket::PLAYER_ADD_XP_LEVELS:
-				if($packet->data == 0){
-					return false;
-				}
-
-				if($this->isSurvival()){
-					$this->addXpLevels($packet->data);
-				}
-				break;
 			case EntityEventPacket::COMPLETE_TRADE:
 				// TODO
 				break;
