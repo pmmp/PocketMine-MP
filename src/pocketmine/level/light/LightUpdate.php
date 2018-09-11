@@ -54,14 +54,6 @@ abstract class LightUpdate{
 		$this->subChunkHandler = new SubChunkIteratorManager($this->level);
 	}
 
-	public function addSpreadNode(int $x, int $y, int $z){
-		$this->spreadQueue->enqueue([$x, $y, $z]);
-	}
-
-	public function addRemoveNode(int $x, int $y, int $z, int $oldLight){
-		$this->spreadQueue->enqueue([$x, $y, $z, $oldLight]);
-	}
-
 	abstract protected function getLight(int $x, int $y, int $z) : int;
 
 	abstract protected function setLight(int $x, int $y, int $z, int $level);
