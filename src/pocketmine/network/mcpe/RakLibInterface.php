@@ -76,10 +76,6 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		$this->server = $server;
 
 		$this->sleeper = new SleeperNotifier();
-		$server->getTickSleeper()->addNotifier($this->sleeper, function() : void{
-			$this->server->getNetwork()->processInterface($this);
-		});
-
 		$this->rakLib = new RakLibServer(
 			$this->server->getLogger(),
 			\pocketmine\COMPOSER_AUTOLOADER_PATH,
@@ -92,6 +88,9 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	}
 
 	public function start(){
+		$this->server->getTickSleeper()->addNotifier($this->sleeper, function() : void{
+			$this->server->getNetwork()->processInterface($this);
+		});
 		$this->rakLib->start(PTHREADS_INHERIT_CONSTANTS); //HACK: MainLogger needs constants for exception logging
 	}
 
