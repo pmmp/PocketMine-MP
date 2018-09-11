@@ -203,7 +203,6 @@ class NetworkInventoryAction{
 					case self::SOURCE_TYPE_CRAFTING_RESULT:
 					case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
 						return null;
-
 					case self::SOURCE_TYPE_CONTAINER_DROP_CONTENTS:
 						$window = $player->getLastOpenContainerInventory();
 
@@ -217,19 +216,6 @@ class NetworkInventoryAction{
 							throw new \InvalidStateException("Fake container " . get_class($window) . " for " . $player->getName() . " does not contain $this->oldItem");
 						}
 						return new SlotChangeAction($window, $inventorySlot, $this->oldItem, $this->newItem);
-
-					case self::SOURCE_TYPE_ANVIL_INPUT:
-						$window = $player->getWindowByType(AnvilInventory::class);
-						return new AnvilAction($window, 0, $this->oldItem, $this->newItem);
-					case self::SOURCE_TYPE_ANVIL_MATERIAL:
-						$window = $player->getWindowByType(AnvilInventory::class);
-						return new AnvilAction($window, 1, $this->oldItem, $this->newItem);
-					case self::SOURCE_TYPE_ANVIL_RESULT:
-						$window = $player->getWindowByType(AnvilInventory::class);
-						$window->clearAll();
-						return new AnvilAction($window, 2, $this->oldItem, $this->newItem);
-					case self::SOURCE_TYPE_ANVIL_OUTPUT:
-						break;
 					case self::SOURCE_TYPE_ENCHANT_INPUT:
 						$window = $player->getWindowByType(EnchantInventory::class);
 						return new EnchantAction($window, 0, $this->oldItem, $this->newItem);
