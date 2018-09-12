@@ -420,7 +420,8 @@ class Server{
 	}
 
 	public function getIpv6() : string{
-		return $this->getConfigString("server-ipv6", "::");
+		$str = $this->getConfigString("server-ipv6", "::");
+		return $str !== "" ? $str : "::";
 	}
 
 	/**
