@@ -114,6 +114,7 @@ class Fireworks extends Item{
 				new ByteTag("FireworkType", (int) $explosion->getType())
 			]));
 		}
+		$this->setExplosionsTag($explosionsTag);
 	}
 
 	public function getFlight() : int{
