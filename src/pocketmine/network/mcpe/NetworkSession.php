@@ -104,6 +104,10 @@ class NetworkSession{
 		$this->server->addPlayer($this->player);
 	}
 
+	public function getPlayer() : ?Player{
+		return $this->player;
+	}
+
 	public function isConnected() : bool{
 		return $this->connected;
 	}
