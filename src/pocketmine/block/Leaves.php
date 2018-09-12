@@ -160,7 +160,7 @@ class Leaves extends Transparent{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$this->meta |= 0x04;
-		return $this->getLevel()->setBlock($this, $this, true);
+		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function getVariantBitmask() : int{

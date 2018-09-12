@@ -63,15 +63,16 @@ class SignPost extends Transparent{
 
 			if($face === Facing::UP){
 				$this->meta = $player !== null ? (floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0f) : 0;
-				$this->getLevel()->setBlock($blockReplace, $this, true);
+				$ret = parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 			}else{
 				$this->meta = $face;
-				$this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::WALL_SIGN, $this->meta), true);
+				$ret = $this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::WALL_SIGN, $this->meta), true);
 			}
 
-			Tile::createTile(Tile::SIGN, $this->getLevel(), TileSign::createNBT($this, $face, $item, $player));
-
-			return true;
+			if($ret){
+				Tile::createTile(Tile::SIGN, $this->getLevel(), TileSign::createNBT($this, $face, $item, $player));
+				return true;
+			}
 		}
 
 		return false;

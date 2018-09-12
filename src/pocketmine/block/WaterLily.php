@@ -54,8 +54,7 @@ class WaterLily extends Flowable{
 		if($blockClicked instanceof Water){
 			$up = $blockClicked->getSide(Facing::UP);
 			if($up->getId() === Block::AIR){
-				$this->getLevel()->setBlock($up, $this, true, true);
-				return true;
+				return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 			}
 		}
 

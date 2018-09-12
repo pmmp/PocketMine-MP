@@ -48,7 +48,8 @@ class GlazedTerracotta extends Solid{
 		if($player !== null){
 			$this->meta = Bearing::toFacing($player->getDirection());
 		}
-		return $this->getLevel()->setBlock($blockReplace, $this, true, true);
+
+		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function getVariantBitmask() : int{

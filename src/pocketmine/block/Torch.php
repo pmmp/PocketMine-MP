@@ -73,14 +73,11 @@ class Torch extends Flowable{
 				Facing::EAST => 1
 			];
 			$this->meta = $faces[$face];
-			$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
-			return true;
+			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}elseif(!$below->isTransparent() or $below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL){
 			$this->meta = 0;
-			$this->getLevel()->setBlock($blockReplace, $this, true, true);
-
-			return true;
+			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
 		return false;

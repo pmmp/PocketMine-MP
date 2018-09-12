@@ -65,11 +65,12 @@ class BurningFurnace extends Solid{
 		if($player !== null){
 			$this->meta = Bearing::toFacing($player->getDirection());
 		}
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
+		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
+			Tile::createTile(Tile::FURNACE, $this->getLevel(), TileFurnace::createNBT($this, $face, $item, $player));
+			return true;
+		}
 
-		Tile::createTile(Tile::FURNACE, $this->getLevel(), TileFurnace::createNBT($this, $face, $item, $player));
-
-		return true;
+		return false;
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{

@@ -47,9 +47,7 @@ class NetherWartPlant extends Flowable{
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->getId() === Block::SOUL_SAND){
-			$this->getLevel()->setBlock($blockReplace, $this, false, true);
-
-			return true;
+			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
 		return false;

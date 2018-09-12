@@ -141,8 +141,7 @@ class Vine extends Flowable{
 			$this->meta |= $blockReplace->meta;
 		}
 
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
-		return true;
+		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onNearbyBlockChange() : void{

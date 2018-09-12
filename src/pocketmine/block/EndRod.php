@@ -51,7 +51,7 @@ class EndRod extends Flowable{
 			$this->meta ^= 0x01;
 		}
 
-		return $this->level->setBlock($blockReplace, $this, true, true);
+		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function isSolid() : bool{

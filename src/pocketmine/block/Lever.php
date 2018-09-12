@@ -73,7 +73,7 @@ class Lever extends Flowable{
 			}
 		}
 
-		return $this->level->setBlock($blockReplace, $this, true, true);
+		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onNearbyBlockChange() : void{
