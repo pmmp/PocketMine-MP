@@ -237,14 +237,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	/** @var Vector3|null */
 	protected $newPosition;
-	/** @var Vector3|null */
-	public $speed = null;
 	/** @var bool */
 	protected $isTeleporting = false;
 	/** @var int */
 	protected $inAirTicks = 0;
-	/** @var int */
-	protected $startAirTicks = 5;
 	/** @var float */
 	protected $stepHeight = 0.6;
 	/** @var bool */
@@ -499,9 +495,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function resetFallDistance() : void{
 		parent::resetFallDistance();
-		if($this->inAirTicks !== 0){
-			$this->startAirTicks = 5;
-		}
 		$this->inAirTicks = 0;
 	}
 
@@ -1551,10 +1544,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					}
 				}
 			}
-
-			$this->speed = $to->subtract($from)->divide($tickDiff);
-		}elseif($distanceSquared == 0){
-			$this->speed = new Vector3(0, 0, 0);
 		}
 
 		if($revert){
@@ -1579,10 +1568,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function setMotion(Vector3 $motion) : bool{
 		if(parent::setMotion($motion)){
 			$this->broadcastMotion();
-
-			if($this->motion->y > 0){
-				$this->startAirTicks = (-log($this->gravity / ($this->gravity + $this->drag * $this->motion->y)) / $this->drag) * 2 + 5;
-			}
 
 			return true;
 		}
@@ -1637,6 +1622,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($this->spawned){
 			$this->processMovement($tickDiff);
 			$this->motion->x = $this->motion->y = $this->motion->z = 0; //TODO: HACK! (Fixes player knockback being messed up)
+			if($this->onGround){
+				$this->inAirTicks = 0;
+			}else{
+				$this->inAirTicks += $tickDiff;
+			}
 
 			Timings::$timerEntityBaseTick->startTiming();
 			$this->entityBaseTick($tickDiff);
@@ -1646,32 +1636,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				Timings::$playerCheckNearEntitiesTimer->startTiming();
 				$this->checkNearEntities();
 				Timings::$playerCheckNearEntitiesTimer->stopTiming();
-
-				if($this->speed !== null){
-					if($this->onGround){
-						if($this->inAirTicks !== 0){
-							$this->startAirTicks = 5;
-						}
-						$this->inAirTicks = 0;
-					}else{
-						if(!$this->allowFlight and $this->inAirTicks > 10 and !$this->isSleeping() and !$this->isImmobile()){
-							$expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - $this->startAirTicks));
-							$diff = ($this->speed->y - $expectedVelocity) ** 2;
-
-							if(!$this->hasEffect(Effect::JUMP) and !$this->hasEffect(Effect::LEVITATION) and $diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()){
-								if($this->inAirTicks < 100){
-									$this->setMotion(new Vector3(0, $expectedVelocity, 0));
-								}elseif($this->kick($this->server->getLanguage()->translateString("kick.reason.cheat", ["%ability.flight"]))){
-									$this->timings->stopTiming();
-
-									return false;
-								}
-							}
-						}
-
-						$this->inAirTicks += $tickDiff;
-					}
-				}
 			}
 		}
 
@@ -2436,7 +2400,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$handled = false;
 
 		$isFlying = $packet->getFlag(AdventureSettingsPacket::FLYING);
-		if($isFlying and !$this->allowFlight and !$this->server->getAllowFlight()){
+		if($isFlying and !$this->allowFlight){
 			$this->kick($this->server->getLanguage()->translateString("kick.reason.cheat", ["%ability.flight"]));
 			return true;
 		}elseif($isFlying !== $this->isFlying()){
