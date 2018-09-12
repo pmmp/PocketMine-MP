@@ -102,7 +102,7 @@ class Config{
 	 * @return string
 	 */
 	public static function fixYAMLIndexes(string $str) : string{
-		return preg_replace("#^([ ]*)([a-zA-Z_]{1}[ ]*)\\:$#m", "$1\"$2\":", $str);
+		return preg_replace("#^( *)(y|Y|yes|Yes|YES|n|N|no|No|NO|true|True|TRUE|false|False|FALSE|on|On|ON|off|Off|OFF)( *)\:#m", "$1\"$2\"$3:", $str);
 	}
 
 	/**

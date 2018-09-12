@@ -21,20 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event\server;
+namespace pocketmine\network\mcpe\protocol\types;
 
-use pocketmine\command\CommandSender;
+use pocketmine\utils\UUID;
 
-/**
- * This event is called when a command is received over RCON.
- */
-class RemoteServerCommandEvent extends ServerCommandEvent{
+class ScoreboardIdentityPacketEntry{
+	/** @var int */
+	public $scoreboardId;
+	/** @var UUID|null */
+	public $uuid;
 
-	/**
-	 * @param CommandSender $sender
-	 * @param string        $command
-	 */
-	public function __construct(CommandSender $sender, string $command){
-		parent::__construct($sender, $command);
-	}
 }

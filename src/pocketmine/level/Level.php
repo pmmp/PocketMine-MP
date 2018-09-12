@@ -247,6 +247,11 @@ class Level implements ChunkManager, Metadatable{
 	/** @var bool */
 	private $closed = false;
 
+	/** @var BlockLightUpdate|null */
+	private $blockLightUpdate = null;
+	/** @var SkyLightUpdate|null */
+	private $skyLightUpdate = null;
+
 	public static function chunkHash(int $x, int $z) : int{
 		return (($x & 0xFFFFFFFF) << 32) | ($z & 0xFFFFFFFF);
 	}
@@ -746,9 +751,9 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->tileEntityTick->startTiming();
 		Timings::$tickTileEntityTimer->startTiming();
 		//Update tiles that need update
-		foreach($this->updateTiles as $id => $tile){
+		foreach($this->updateTiles as $blockHash => $tile){
 			if(!$tile->onUpdate()){
-				unset($this->updateTiles[$id]);
+				unset($this->updateTiles[$blockHash]);
 			}
 		}
 		Timings::$tickTileEntityTimer->stopTiming();
@@ -757,6 +762,8 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->doTickTiles->startTiming();
 		$this->tickChunks();
 		$this->timings->doTickTiles->stopTiming();
+
+		$this->executeQueuedLightUpdates();
 
 		if(count($this->changedBlocks) > 0){
 			if(count($this->players) > 0){
@@ -1414,21 +1421,20 @@ class Level implements ChunkManager, Metadatable{
 			$newHeightMap = $oldHeightMap;
 		}
 
-		$update = new SkyLightUpdate($this);
-
+		if($this->skyLightUpdate === null){
+			$this->skyLightUpdate = new SkyLightUpdate($this);
+		}
 		if($newHeightMap > $oldHeightMap){ //Heightmap increase, block placed, remove sky light
 			for($i = $y; $i >= $oldHeightMap; --$i){
-				$update->setAndUpdateLight($x, $i, $z, 0); //Remove all light beneath, adjacent recalculation will handle the rest.
+				$this->skyLightUpdate->setAndUpdateLight($x, $i, $z, 0); //Remove all light beneath, adjacent recalculation will handle the rest.
 			}
 		}elseif($newHeightMap < $oldHeightMap){ //Heightmap decrease, block changed or removed, add sky light
 			for($i = $y; $i >= $newHeightMap; --$i){
-				$update->setAndUpdateLight($x, $i, $z, 15);
+				$this->skyLightUpdate->setAndUpdateLight($x, $i, $z, 15);
 			}
 		}else{ //No heightmap change, block changed "underground"
-			$update->setAndUpdateLight($x, $y, $z, max(0, $this->getHighestAdjacentBlockSkyLight($x, $y, $z) - BlockFactory::$lightFilter[$sourceId]));
+			$this->skyLightUpdate->setAndUpdateLight($x, $y, $z, max(0, $this->getHighestAdjacentBlockSkyLight($x, $y, $z) - BlockFactory::$lightFilter[$sourceId]));
 		}
-
-		$update->execute();
 
 		$this->timings->doBlockSkyLightUpdates->stopTiming();
 	}
@@ -1459,11 +1465,28 @@ class Level implements ChunkManager, Metadatable{
 		$id = $this->getBlockIdAt($x, $y, $z);
 		$newLevel = max(BlockFactory::$light[$id], $this->getHighestAdjacentBlockLight($x, $y, $z) - BlockFactory::$lightFilter[$id]);
 
-		$update = new BlockLightUpdate($this);
-		$update->setAndUpdateLight($x, $y, $z, $newLevel);
-		$update->execute();
+		if($this->blockLightUpdate === null){
+			$this->blockLightUpdate = new BlockLightUpdate($this);
+		}
+		$this->blockLightUpdate->setAndUpdateLight($x, $y, $z, $newLevel);
 
 		$this->timings->doBlockLightUpdates->stopTiming();
+	}
+
+	public function executeQueuedLightUpdates() : void{
+		if($this->blockLightUpdate !== null){
+			$this->timings->doBlockLightUpdates->startTiming();
+			$this->blockLightUpdate->execute();
+			$this->blockLightUpdate = null;
+			$this->timings->doBlockLightUpdates->stopTiming();
+		}
+
+		if($this->skyLightUpdate !== null){
+			$this->timings->doBlockSkyLightUpdates->startTiming();
+			$this->skyLightUpdate->execute();
+			$this->skyLightUpdate = null;
+			$this->timings->doBlockSkyLightUpdates->stopTiming();
+		}
 	}
 
 	/**
@@ -1773,7 +1796,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if($player !== null){
-			$ev = new PlayerInteractEvent($player, $item, $blockClicked, $clickVector, $face, $blockClicked->getId() === 0 ? PlayerInteractEvent::RIGHT_CLICK_AIR : PlayerInteractEvent::RIGHT_CLICK_BLOCK);
+			$ev = new PlayerInteractEvent($player, $item, $blockClicked, $clickVector, $face, PlayerInteractEvent::RIGHT_CLICK_BLOCK);
 			if($this->checkSpawnProtection($player, $blockClicked)){
 				$ev->setCancelled(); //set it to cancelled so plugins can bypass this
 			}
@@ -2000,15 +2023,6 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * @param $tileId
-	 *
-	 * @return Tile|null
-	 */
-	public function getTileById(int $tileId){
-		return $this->tiles[$tileId] ?? null;
-	}
-
-	/**
 	 * Returns a list of the players in this level
 	 *
 	 * @return Player[]
@@ -2048,13 +2062,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return Tile|null
 	 */
 	public function getTileAt(int $x, int $y, int $z) : ?Tile{
-		$chunk = $this->getChunk($x >> 4, $z >> 4);
-
-		if($chunk !== null){
-			return $chunk->getTile($x & 0x0f, $y, $z & 0x0f);
-		}
-
-		return null;
+		return ($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null ? $chunk->getTile($x & 0x0f, $y, $z & 0x0f) : null;
 	}
 
 	/**
@@ -2589,7 +2597,7 @@ class Level implements ChunkManager, Metadatable{
 			throw new \InvalidStateException("Attempted to create tile " . get_class($tile) . " in unloaded chunk $chunkX $chunkZ");
 		}
 
-		$this->tiles[$tile->getId()] = $tile;
+		$this->tiles[Level::blockHash($tile->x, $tile->y, $tile->z)] = $tile;
 		$this->clearChunkCache($chunkX, $chunkZ);
 	}
 
@@ -2603,7 +2611,7 @@ class Level implements ChunkManager, Metadatable{
 			throw new LevelException("Invalid Tile level");
 		}
 
-		unset($this->tiles[$tile->getId()], $this->updateTiles[$tile->getId()]);
+		unset($this->tiles[$blockHash = Level::blockHash($tile->x, $tile->y, $tile->z)], $this->updateTiles[$blockHash]);
 
 		$chunkX = $tile->getFloorX() >> 4;
 		$chunkZ = $tile->getFloorZ() >> 4;

@@ -26,7 +26,7 @@ namespace pocketmine\block;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\math\Vector3;
+use pocketmine\math\Facing;
 use pocketmine\Server;
 
 class PumpkinStem extends Crops{
@@ -58,7 +58,7 @@ class PumpkinStem extends Crops{
 					}
 				}
 				$side = $this->getSide(mt_rand(2, 5));
-				$d = $side->getSide(Vector3::SIDE_DOWN);
+				$d = $side->getSide(Facing::DOWN);
 				if($side->getId() === self::AIR and ($d->getId() === self::FARMLAND or $d->getId() === self::GRASS or $d->getId() === self::DIRT)){
 					Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($side, BlockFactory::get(Block::PUMPKIN)));
 					if(!$ev->isCancelled()){

@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\TieredTool;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -58,7 +59,7 @@ class SnowLayer extends Flowable{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if($blockReplace->getSide(Vector3::SIDE_DOWN)->isSolid()){
+		if($blockReplace->getSide(Facing::DOWN)->isSolid()){
 			//TODO: fix placement
 			$this->getLevel()->setBlock($blockReplace, $this, true);
 
@@ -69,7 +70,7 @@ class SnowLayer extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->getSide(Vector3::SIDE_DOWN)->isSolid()){
+		if(!$this->getSide(Facing::DOWN)->isSolid()){
 			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), false, false);
 		}
 	}

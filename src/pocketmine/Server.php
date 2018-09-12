@@ -39,9 +39,9 @@ use pocketmine\event\HandlerList;
 use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\level\LevelLoadEvent;
 use pocketmine\event\player\PlayerDataSaveEvent;
+use pocketmine\event\server\CommandEvent;
 use pocketmine\event\server\DataPacketBroadcastEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
-use pocketmine\event\server\ServerCommandEvent;
 use pocketmine\inventory\CraftingManager;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
@@ -559,10 +559,11 @@ class Server{
 	}
 
 	/**
+	 * @deprecated
 	 * @return bool
 	 */
 	public function getAllowFlight() : bool{
-		return $this->getConfigBool("allow-flight", false);
+		return true;
 	}
 
 	/**
@@ -1031,6 +1032,7 @@ class Server{
 			return false;
 		}
 
+		/** @see LevelProvider::__construct() */
 		$level = new Level($this, $name, new $providerClass($path));
 
 		$this->levels[$level->getId()] = $level;
@@ -1078,6 +1080,7 @@ class Server{
 		/** @var LevelProvider $providerClass */
 		$providerClass::generate($path, $name, $seed, $generator, $options);
 
+		/** @see LevelProvider::__construct() */
 		$level = new Level($this, $name, new $providerClass($path));
 		$this->levels[$level->getId()] = $level;
 
@@ -1138,18 +1141,12 @@ class Server{
 	 * Searches all levels for the entity with the specified ID.
 	 * Useful for tracking entities across multiple worlds without needing strong references.
 	 *
-	 * @param int        $entityId
-	 * @param Level|null $expectedLevel Level to look in first for the target
+	 * @param int $entityId
 	 *
 	 * @return Entity|null
 	 */
-	public function findEntity(int $entityId, Level $expectedLevel = null){
-		$levels = $this->levels;
-		if($expectedLevel !== null){
-			array_unshift($levels, $expectedLevel);
-		}
-
-		foreach($levels as $level){
+	public function findEntity(int $entityId){
+		foreach($this->levels as $level){
 			assert(!$level->isClosed());
 			if(($entity = $level->getEntity($entityId)) instanceof Entity){
 				return $entity;
@@ -1497,7 +1494,6 @@ class Server{
 				"announce-player-achievements" => true,
 				"spawn-protection" => 16,
 				"max-players" => 20,
-				"allow-flight" => false,
 				"spawn-animals" => true,
 				"spawn-mobs" => true,
 				"gamemode" => 0,
@@ -1532,7 +1528,7 @@ class Server{
 				$poolSize = max(1, (int) $poolSize);
 			}
 
-			$this->asyncPool = new AsyncPool($this, $poolSize, (int) max(-1, (int) $this->getProperty("memory.async-worker-hard-limit", 256)), $this->autoloader, $this->logger);
+			$this->asyncPool = new AsyncPool($poolSize, (int) max(-1, (int) $this->getProperty("memory.async-worker-hard-limit", 256)), $this->autoloader, $this->logger);
 
 			if($this->getProperty("network.batch-threshold", 256) >= 0){
 				NetworkCompression::$THRESHOLD = (int) $this->getProperty("network.batch-threshold", 256);
@@ -1939,7 +1935,7 @@ class Server{
 				$task = new CompressBatchTask($stream, $compressionLevel, $promise);
 				$this->asyncPool->submitTask($task);
 			}else{
-				$promise->resolve(NetworkCompression::compress($stream->buffer));
+				$promise->resolve(NetworkCompression::compress($stream->buffer, $compressionLevel));
 			}
 
 			return $promise;
@@ -1978,10 +1974,7 @@ class Server{
 	public function checkConsole(){
 		Timings::$serverCommandTimer->startTiming();
 		while(($line = $this->console->getLine()) !== null){
-			$this->pluginManager->callEvent($ev = new ServerCommandEvent($this->consoleSender, $line));
-			if(!$ev->isCancelled()){
-				$this->dispatchCommand($ev->getSender(), $ev->getCommand());
-			}
+			$this->dispatchCommand($this->consoleSender, $line);
 		}
 		Timings::$serverCommandTimer->stopTiming();
 	}
@@ -1991,10 +1984,20 @@ class Server{
 	 *
 	 * @param CommandSender $sender
 	 * @param string        $commandLine
+	 * @param bool          $internal
 	 *
 	 * @return bool
 	 */
-	public function dispatchCommand(CommandSender $sender, string $commandLine) : bool{
+	public function dispatchCommand(CommandSender $sender, string $commandLine, bool $internal = false) : bool{
+		if(!$internal){
+			$this->pluginManager->callEvent($ev = new CommandEvent($sender, $commandLine));
+			if($ev->isCancelled()){
+				return false;
+			}
+
+			$commandLine = $ev->getCommand();
+		}
+
 		if($this->commandMap->dispatch($sender, $commandLine)){
 			return true;
 		}
@@ -2395,37 +2398,29 @@ class Server{
 			if($level->getTickRate() > $this->baseTickRate and --$level->tickRateCounter > 0){
 				continue;
 			}
-			try{
-				$levelTime = microtime(true);
-				$level->doTick($currentTick);
-				$tickMs = (microtime(true) - $levelTime) * 1000;
-				$level->tickRateTime = $tickMs;
 
-				if($this->autoTickRate){
-					if($tickMs < 50 and $level->getTickRate() > $this->baseTickRate){
-						$level->setTickRate($r = $level->getTickRate() - 1);
-						if($r > $this->baseTickRate){
-							$level->tickRateCounter = $level->getTickRate();
-						}
-						$this->getLogger()->debug("Raising level \"{$level->getName()}\" tick rate to {$level->getTickRate()} ticks");
-					}elseif($tickMs >= 50){
-						if($level->getTickRate() === $this->baseTickRate){
-							$level->setTickRate(max($this->baseTickRate + 1, min($this->autoTickRateLimit, (int) floor($tickMs / 50))));
-							$this->getLogger()->debug(sprintf("Level \"%s\" took %gms, setting tick rate to %d ticks", $level->getName(), (int) round($tickMs, 2), $level->getTickRate()));
-						}elseif(($tickMs / $level->getTickRate()) >= 50 and $level->getTickRate() < $this->autoTickRateLimit){
-							$level->setTickRate($level->getTickRate() + 1);
-							$this->getLogger()->debug(sprintf("Level \"%s\" took %gms, setting tick rate to %d ticks", $level->getName(), (int) round($tickMs, 2), $level->getTickRate()));
-						}
+			$levelTime = microtime(true);
+			$level->doTick($currentTick);
+			$tickMs = (microtime(true) - $levelTime) * 1000;
+			$level->tickRateTime = $tickMs;
+
+			if($this->autoTickRate){
+				if($tickMs < 50 and $level->getTickRate() > $this->baseTickRate){
+					$level->setTickRate($r = $level->getTickRate() - 1);
+					if($r > $this->baseTickRate){
 						$level->tickRateCounter = $level->getTickRate();
 					}
+					$this->getLogger()->debug("Raising level \"{$level->getName()}\" tick rate to {$level->getTickRate()} ticks");
+				}elseif($tickMs >= 50){
+					if($level->getTickRate() === $this->baseTickRate){
+						$level->setTickRate(max($this->baseTickRate + 1, min($this->autoTickRateLimit, (int) floor($tickMs / 50))));
+						$this->getLogger()->debug(sprintf("Level \"%s\" took %gms, setting tick rate to %d ticks", $level->getName(), (int) round($tickMs, 2), $level->getTickRate()));
+					}elseif(($tickMs / $level->getTickRate()) >= 50 and $level->getTickRate() < $this->autoTickRateLimit){
+						$level->setTickRate($level->getTickRate() + 1);
+						$this->getLogger()->debug(sprintf("Level \"%s\" took %gms, setting tick rate to %d ticks", $level->getName(), (int) round($tickMs, 2), $level->getTickRate()));
+					}
+					$level->tickRateCounter = $level->getTickRate();
 				}
-			}catch(\Throwable $e){
-				if(!$level->isClosed()){
-					$this->logger->critical($this->getLanguage()->translateString("pocketmine.level.tickError", [$level->getName(), $e->getMessage()]));
-				}else{
-					$this->logger->critical($this->getLanguage()->translateString("pocketmine.level.tickUnloadError", [$level->getName()]));
-				}
-				$this->logger->logException($e);
 			}
 		}
 	}

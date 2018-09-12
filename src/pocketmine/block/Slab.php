@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -43,9 +44,9 @@ abstract class Slab extends Transparent{
 
 		if($blockReplace->getId() === $this->getId() and $blockReplace->getVariant() === $this->getVariant()){
 			if(($blockReplace->getDamage() & 0x08) !== 0){ //Trying to combine with top slab
-				return $clickVector->y <= 0.5 or (!$isClickedBlock and $face === Vector3::SIDE_UP);
+				return $clickVector->y <= 0.5 or (!$isClickedBlock and $face === Facing::UP);
 			}else{
-				return $clickVector->y >= 0.5 or (!$isClickedBlock and $face === Vector3::SIDE_DOWN);
+				return $clickVector->y >= 0.5 or (!$isClickedBlock and $face === Facing::DOWN);
 			}
 		}
 
@@ -54,7 +55,7 @@ abstract class Slab extends Transparent{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$this->meta &= 0x07;
-		if($face === Vector3::SIDE_DOWN){
+		if($face === Facing::DOWN){
 			if($blockClicked->getId() === $this->id and ($blockClicked->getDamage() & 0x08) === 0x08 and $blockClicked->getVariant() === $this->getVariant()){
 				$this->getLevel()->setBlock($blockClicked, BlockFactory::get($this->getDoubleSlabId(), $this->getVariant()), true);
 
@@ -66,7 +67,7 @@ abstract class Slab extends Transparent{
 			}else{
 				$this->meta |= 0x08;
 			}
-		}elseif($face === Vector3::SIDE_UP){
+		}elseif($face === Facing::UP){
 			if($blockClicked->getId() === $this->id and ($blockClicked->getDamage() & 0x08) === 0 and $blockClicked->getVariant() === $this->getVariant()){
 				$this->getLevel()->setBlock($blockClicked, BlockFactory::get($this->getDoubleSlabId(), $this->getVariant()), true);
 

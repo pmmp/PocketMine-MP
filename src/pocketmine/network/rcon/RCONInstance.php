@@ -68,7 +68,7 @@ class RCONInstance extends Thread{
 		$this->ipcSocket = $ipcSocket;
 		$this->notifier = $notifier;
 
-		$this->start(PTHREADS_INHERIT_INI); //HACK: need INI for timezone (logger)
+		$this->start(PTHREADS_INHERIT_NONE);
 	}
 
 	private function writePacket($client, int $requestID, int $packetType, string $payload){
@@ -177,7 +177,7 @@ class RCONInstance extends Thread{
 									$disconnect[$id] = $sock;
 									break;
 								}
-								if(strlen($payload) > 0){
+								if($payload !== ""){
 									$this->cmd = ltrim($payload);
 									$this->synchronized(function(){
 										$this->notifier->wakeupSleeper();

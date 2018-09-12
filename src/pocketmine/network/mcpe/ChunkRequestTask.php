@@ -26,7 +26,6 @@ namespace pocketmine\network\mcpe;
 use pocketmine\level\format\Chunk;
 use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
 use pocketmine\scheduler\AsyncTask;
-use pocketmine\Server;
 use pocketmine\tile\Spawnable;
 
 class ChunkRequestTask extends AsyncTask{
@@ -75,7 +74,7 @@ class ChunkRequestTask extends AsyncTask{
 		$this->setResult(NetworkCompression::compress($stream->buffer, $this->compressionLevel), false);
 	}
 
-	public function onCompletion(Server $server) : void{
+	public function onCompletion() : void{
 		/** @var CompressBatchPromise $promise */
 		$promise = $this->fetchLocal();
 		$promise->resolve($this->getResult());

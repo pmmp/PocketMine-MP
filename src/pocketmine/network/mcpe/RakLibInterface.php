@@ -41,7 +41,7 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	 * Sometimes this gets changed when the MCPE-layer protocol gets broken to the point where old and new can't
 	 * communicate. It's important that we check this to avoid catastrophes.
 	 */
-	private const MCPE_RAKNET_PROTOCOL_VERSION = 8;
+	private const MCPE_RAKNET_PROTOCOL_VERSION = 9;
 
 	private const MCPE_RAKNET_PACKET_ID = "\xfe";
 
@@ -70,10 +70,6 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 		$this->server = $server;
 
 		$this->sleeper = new SleeperNotifier();
-		$server->getTickSleeper()->addNotifier($this->sleeper, function() : void{
-			//this should not throw any exception. If it does, this should crash the server since it's a fault condition.
-			while($this->interface->handlePacket());
-		});
 
 		$this->rakLib = new RakLibServer(
 			$this->server->getLogger(),
@@ -87,7 +83,11 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	}
 
 	public function start() : void{
-		$this->rakLib->start(PTHREADS_INHERIT_CONSTANTS | PTHREADS_INHERIT_INI); //HACK: MainLogger needs INI and constants
+		$this->server->getTickSleeper()->addNotifier($this->sleeper, function() : void{
+			//this should not throw any exception. If it does, this should crash the server since it's a fault condition.
+			while($this->interface->handlePacket());
+		});
+		$this->rakLib->start(PTHREADS_INHERIT_CONSTANTS); //HACK: MainLogger needs constants for exception logging
 	}
 
 	public function setNetwork(Network $network) : void{

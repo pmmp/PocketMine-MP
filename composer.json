@@ -30,8 +30,8 @@
       "pocketmine/raklib": "^0.12.0",
       "pocketmine/spl": "^0.3.0",
       "pocketmine/binaryutils": "^0.1.0",
-      "pocketmine/nbt": "^0.2.0",
-      "pocketmine/math": "^0.2.0",
+      "pocketmine/nbt": "^0.2.1",
+      "pocketmine/math": "dev-master",
       "pocketmine/snooze": "^0.1.0"
    },
    "autoload": {

@@ -54,6 +54,8 @@ use pocketmine\level\Level;
 use pocketmine\level\Location;
 use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Bearing;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\Metadatable;
@@ -289,6 +291,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public static function createEntity($type, Level $level, CompoundTag $nbt, ...$args) : ?Entity{
 		if(isset(self::$knownEntities[$type])){
 			$class = self::$knownEntities[$type];
+			/** @see Entity::__construct() */
 			return new $class($level, $nbt, ...$args);
 		}
 
@@ -378,13 +381,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	/** @var Block[] */
 	protected $blocksAround = [];
 
-	/** @var float|null */
-	public $lastX = null;
-	/** @var float|null */
-	public $lastY = null;
-	/** @var float|null */
-	public $lastZ = null;
-
+	/** @var Location */
+	protected $lastLocation;
 	/** @var Vector3 */
 	protected $motion;
 	/** @var Vector3 */
@@ -395,18 +393,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	/** @var Vector3 */
 	public $temporalVector;
 
-
-	/** @var float */
-	public $lastYaw;
-	/** @var float */
-	public $lastPitch;
-
 	/** @var AxisAlignedBB */
 	public $boundingBox;
 	/** @var bool */
 	public $onGround;
-	/** @var int */
-	protected $age = 0;
 
 	/** @var float */
 	public $eyeHeight = null;
@@ -743,7 +733,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public function getOwningEntity() : ?Entity{
 		$eid = $this->getOwningEntityId();
 		if($eid !== null){
-			return $this->server->findEntity($eid, $this->level);
+			return $this->server->findEntity($eid);
 		}
 
 		return null;
@@ -783,7 +773,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public function getTargetEntity() : ?Entity{
 		$eid = $this->getTargetEntityId();
 		if($eid !== null){
-			return $this->server->findEntity($eid, $this->level);
+			return $this->server->findEntity($eid);
 		}
 
 		return null;
@@ -840,7 +830,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public function saveNBT() : CompoundTag{
 		$nbt = new CompoundTag();
 		if(!($this instanceof Player)){
-			$nbt->setString("id", $this->getSaveId(), true);
+			$nbt->setString("id", $this->getSaveId());
 
 			if($this->getNameTag() !== ""){
 				$nbt->setString("CustomName", $this->getNameTag());
@@ -1022,8 +1012,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$hasUpdate = true;
 		}
 
-		if($this->isOnFire()){
-			$hasUpdate = ($hasUpdate || $this->doOnFireTick($tickDiff));
+		if($this->isOnFire() and $this->doOnFireTick($tickDiff)){
+			$hasUpdate = true;
 		}
 
 		if($this->noDamageTicks > 0){
@@ -1033,7 +1023,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			}
 		}
 
-		$this->age += $tickDiff;
 		$this->ticksLived += $tickDiff;
 
 		return $hasUpdate;
@@ -1112,18 +1101,13 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function updateMovement(bool $teleport = false) : void{
-		$diffPosition = ($this->x - $this->lastX) ** 2 + ($this->y - $this->lastY) ** 2 + ($this->z - $this->lastZ) ** 2;
-		$diffRotation = ($this->yaw - $this->lastYaw) ** 2 + ($this->pitch - $this->lastPitch) ** 2;
+		$diffPosition = $this->distanceSquared($this->lastLocation);
+		$diffRotation = ($this->yaw - $this->lastLocation->yaw) ** 2 + ($this->pitch - $this->lastLocation->pitch) ** 2;
 
 		$diffMotion = $this->motion->subtract($this->lastMotion)->lengthSquared();
 
 		if($teleport or $diffPosition > 0.0001 or $diffRotation > 1.0){
-			$this->lastX = $this->x;
-			$this->lastY = $this->y;
-			$this->lastZ = $this->z;
-
-			$this->lastYaw = $this->yaw;
-			$this->lastPitch = $this->pitch;
+			$this->lastLocation = $this->asLocation();
 
 			$this->broadcastMovement($teleport);
 		}
@@ -1225,66 +1209,66 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 			if($westNonSolid){
 				$limit = $diffX;
-				$direction = Vector3::SIDE_WEST;
+				$direction = Facing::WEST;
 			}
 
 			if($eastNonSolid and 1 - $diffX < $limit){
 				$limit = 1 - $diffX;
-				$direction = Vector3::SIDE_EAST;
+				$direction = Facing::EAST;
 			}
 
 			if($downNonSolid and $diffY < $limit){
 				$limit = $diffY;
-				$direction = Vector3::SIDE_DOWN;
+				$direction = Facing::DOWN;
 			}
 
 			if($upNonSolid and 1 - $diffY < $limit){
 				$limit = 1 - $diffY;
-				$direction = Vector3::SIDE_UP;
+				$direction = Facing::UP;
 			}
 
 			if($northNonSolid and $diffZ < $limit){
 				$limit = $diffZ;
-				$direction = Vector3::SIDE_NORTH;
+				$direction = Facing::NORTH;
 			}
 
 			if($southNonSolid and 1 - $diffZ < $limit){
-				$direction = Vector3::SIDE_SOUTH;
+				$direction = Facing::SOUTH;
 			}
 
 			$force = lcg_value() * 0.2 + 0.1;
 
-			if($direction === Vector3::SIDE_WEST){
+			if($direction === Facing::WEST){
 				$this->motion->x = -$force;
 
 				return true;
 			}
 
-			if($direction === Vector3::SIDE_EAST){
+			if($direction === Facing::EAST){
 				$this->motion->x = $force;
 
 				return true;
 			}
 
-			if($direction === Vector3::SIDE_DOWN){
+			if($direction === Facing::DOWN){
 				$this->motion->y = -$force;
 
 				return true;
 			}
 
-			if($direction === Vector3::SIDE_UP){
+			if($direction === Facing::UP){
 				$this->motion->y = $force;
 
 				return true;
 			}
 
-			if($direction === Vector3::SIDE_NORTH){
+			if($direction === Facing::NORTH){
 				$this->motion->z = -$force;
 
 				return true;
 			}
 
-			if($direction === Vector3::SIDE_SOUTH){
+			if($direction === Facing::SOUTH){
 				$this->motion->z = $force;
 
 				return true;
@@ -1294,25 +1278,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		return false;
 	}
 
-	/**
-	 * @return int|null
-	 */
-	public function getDirection() : ?int{
-		$rotation = ($this->yaw - 90) % 360;
-		if($rotation < 0){
-			$rotation += 360.0;
-		}
-		if((0 <= $rotation and $rotation < 45) or (315 <= $rotation and $rotation < 360)){
-			return 2; //North
-		}elseif(45 <= $rotation and $rotation < 135){
-			return 3; //East
-		}elseif(135 <= $rotation and $rotation < 225){
-			return 0; //South
-		}elseif(225 <= $rotation and $rotation < 315){
-			return 1; //West
-		}else{
-			return null;
-		}
+	public function getDirection() : int{
+		return Bearing::fromAngle($this->yaw);
 	}
 
 	/**
@@ -1821,8 +1788,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function resetLastMovements() : void{
-		list($this->lastX, $this->lastY, $this->lastZ) = [$this->x, $this->y, $this->z];
-		list($this->lastYaw, $this->lastPitch) = [$this->yaw, $this->pitch];
+		$this->lastLocation = $this->asLocation();
 		$this->lastMotion = clone $this->motion;
 	}
 

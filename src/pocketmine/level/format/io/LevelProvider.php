@@ -153,6 +153,50 @@ interface LevelProvider{
 	public function setDifficulty(int $difficulty);
 
 	/**
+	 * Returns the time in ticks to the next rain level change.
+	 * @return int
+	 */
+	public function getRainTime() : int;
+
+	/**
+	 * Sets the time in ticks to the next rain level change.
+	 * @param int $ticks
+	 */
+	public function setRainTime(int $ticks) : void;
+
+	/**
+	 * @return float 0.0 - 1.0
+	 */
+	public function getRainLevel() : float;
+
+	/**
+	 * @param float $level 0.0 - 1.0
+	 */
+	public function setRainLevel(float $level) : void;
+
+	/**
+	 * Returns the time in ticks to the next lightning level change.
+	 * @return int
+	 */
+	public function getLightningTime() : int;
+
+	/**
+	 * Sets the time in ticks to the next lightning level change.
+	 * @param int $ticks
+	 */
+	public function setLightningTime(int $ticks) : void;
+
+	/**
+	 * @return float 0.0 - 1.0
+	 */
+	public function getLightningLevel() : float;
+
+	/**
+	 * @param float $level 0.0 - 1.0
+	 */
+	public function setLightningLevel(float $level) : void;
+
+	/**
 	 * Performs garbage collection in the level provider, such as cleaning up regions in Region-based worlds.
 	 */
 	public function doGarbageCollection();

@@ -32,7 +32,6 @@ use pocketmine\level\generator\object\OreType;
 use pocketmine\level\generator\populator\Ore;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\math\Vector3;
-use pocketmine\utils\Random;
 
 class Flat extends Generator{
 	/** @var Chunk */
@@ -45,21 +44,16 @@ class Flat extends Generator{
 	private $floorLevel;
 	/** @var int */
 	private $biome;
-	/** @var mixed[] */
-	private $options;
 	/** @var string */
 	private $preset;
-
-	public function getSettings() : array{
-		return $this->options;
-	}
 
 	public function getName() : string{
 		return "flat";
 	}
 
-	public function __construct(array $options = []){
-		$this->options = $options;
+	public function __construct(ChunkManager $level, int $seed, array $options = []){
+		parent::__construct($level, $seed, $options);
+
 		if(isset($this->options["preset"]) and $this->options["preset"] != ""){
 			$this->preset = $this->options["preset"];
 		}else{
@@ -83,6 +77,8 @@ class Flat extends Generator{
 			]);
 			$this->populators[] = $ores;
 		}
+
+		$this->generateBaseChunk();
 	}
 
 	public static function parseLayers(string $layers) : array{
@@ -151,11 +147,6 @@ class Flat extends Generator{
 		}
 	}
 
-	public function init(ChunkManager $level, Random $random) : void{
-		parent::init($level, $random);
-		$this->generateBaseChunk();
-	}
-
 	public function generateChunk(int $chunkX, int $chunkZ) : void{
 		$chunk = clone $this->chunk;
 		$chunk->setX($chunkX);
@@ -164,7 +155,7 @@ class Flat extends Generator{
 	}
 
 	public function populateChunk(int $chunkX, int $chunkZ) : void{
-		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
+		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->seed);
 		foreach($this->populators as $populator){
 			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);
 		}

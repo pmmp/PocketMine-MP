@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "85fe0f9aca77848b0f753dbc28815c79",
+    "content-hash": "cef68cbc2596130f6b20e6f2ecdfd58d",
     "packages": [
         {
             "name": "fgrosse/phpasn1",
@@ -149,16 +149,16 @@
         },
         {
             "name": "pocketmine/binaryutils",
-            "version": "0.1.0",
+            "version": "0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BinaryUtils.git",
-                "reference": "c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595"
+                "reference": "54efeb978be0ff9335022729fe63c1e2077bf1be"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595",
-                "reference": "c824ac67eeeb6899c2a9ec91a769eb9ed6e3f595",
+                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/54efeb978be0ff9335022729fe63c1e2077bf1be",
+                "reference": "54efeb978be0ff9335022729fe63c1e2077bf1be",
                 "shasum": ""
             },
             "require": {
@@ -179,20 +179,20 @@
                 "source": "https://github.com/pmmp/BinaryUtils/tree/master",
                 "issues": "https://github.com/pmmp/BinaryUtils/issues"
             },
-            "time": "2018-04-16T09:05:08+00:00"
+            "time": "2018-08-26T18:11:05+00:00"
         },
         {
             "name": "pocketmine/math",
-            "version": "0.2.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "95ae5600328ed2add44c0bc830a68d3660e9e0ef"
+                "reference": "ec66eaa959b86ec3d3d22084a534ae466910aabe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/95ae5600328ed2add44c0bc830a68d3660e9e0ef",
-                "reference": "95ae5600328ed2add44c0bc830a68d3660e9e0ef",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/ec66eaa959b86ec3d3d22084a534ae466910aabe",
+                "reference": "ec66eaa959b86ec3d3d22084a534ae466910aabe",
                 "shasum": ""
             },
             "require": {
@@ -213,20 +213,20 @@
                 "source": "https://github.com/pmmp/Math/tree/master",
                 "issues": "https://github.com/pmmp/Math/issues"
             },
-            "time": "2018-06-09T09:26:30+00:00"
+            "time": "2018-09-05T18:50:26+00:00"
         },
         {
             "name": "pocketmine/nbt",
-            "version": "0.2.0",
+            "version": "0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "da19487ff92f6f7a16b5ce8894132bb1d1e9ea0c"
+                "reference": "a4ee39f313c6870153fb7c7e513b211217f7daf8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/da19487ff92f6f7a16b5ce8894132bb1d1e9ea0c",
-                "reference": "da19487ff92f6f7a16b5ce8894132bb1d1e9ea0c",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/a4ee39f313c6870153fb7c7e513b211217f7daf8",
+                "reference": "a4ee39f313c6870153fb7c7e513b211217f7daf8",
                 "shasum": ""
             },
             "require": {
@@ -250,10 +250,10 @@
             ],
             "description": "PHP library for working with Named Binary Tags",
             "support": {
-                "source": "https://github.com/pmmp/NBT/tree/0.2.0",
+                "source": "https://github.com/pmmp/NBT/tree/0.2.1",
                 "issues": "https://github.com/pmmp/NBT/issues"
             },
-            "time": "2018-06-13T09:56:00+00:00"
+            "time": "2018-09-04T10:36:02+00:00"
         },
         {
             "name": "pocketmine/raklib",
@@ -367,7 +367,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "ext-pthreads": 20
+        "ext-pthreads": 20,
+        "pocketmine/math": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

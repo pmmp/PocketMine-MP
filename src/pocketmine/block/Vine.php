@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -111,7 +112,7 @@ class Vine extends Flowable{
 
 		//TODO: Missing NORTH check
 
-		if(!$flag and $this->getSide(Vector3::SIDE_UP)->isSolid()){
+		if(!$flag and $this->getSide(Facing::UP)->isSolid()){
 			$minY = min($minY, 0.9375);
 			$maxY = 1;
 			$minX = 0;
@@ -124,15 +125,15 @@ class Vine extends Flowable{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if(!$blockClicked->isSolid() or $face === Vector3::SIDE_UP or $face === Vector3::SIDE_DOWN){
+		if(!$blockClicked->isSolid() or $face === Facing::UP or $face === Facing::DOWN){
 			return false;
 		}
 
-		$faces = [
-			Vector3::SIDE_NORTH => self::FLAG_SOUTH,
-			Vector3::SIDE_SOUTH => self::FLAG_NORTH,
-			Vector3::SIDE_WEST => self::FLAG_EAST,
-			Vector3::SIDE_EAST => self::FLAG_WEST
+		static $faces = [
+			Facing::NORTH => self::FLAG_SOUTH,
+			Facing::SOUTH => self::FLAG_NORTH,
+			Facing::WEST => self::FLAG_EAST,
+			Facing::EAST => self::FLAG_WEST
 		];
 
 		$this->meta = $faces[$face] ?? 0;
@@ -145,11 +146,11 @@ class Vine extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$sides = [
-			self::FLAG_SOUTH => Vector3::SIDE_SOUTH,
-			self::FLAG_WEST => Vector3::SIDE_WEST,
-			self::FLAG_NORTH => Vector3::SIDE_NORTH,
-			self::FLAG_EAST => Vector3::SIDE_EAST
+		static $sides = [
+			self::FLAG_SOUTH => Facing::SOUTH,
+			self::FLAG_WEST => Facing::WEST,
+			self::FLAG_NORTH => Facing::NORTH,
+			self::FLAG_EAST => Facing::EAST
 		];
 
 		$meta = $this->meta;

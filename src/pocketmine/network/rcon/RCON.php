@@ -28,7 +28,6 @@ declare(strict_types=1);
 namespace pocketmine\network\rcon;
 
 use pocketmine\command\RemoteConsoleCommandSender;
-use pocketmine\event\server\RemoteServerCommandEvent;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\utils\TextFormat;
@@ -95,13 +94,7 @@ class RCON{
 
 	public function check() : void{
 		$response = new RemoteConsoleCommandSender();
-		$command = $this->instance->cmd;
-
-		$this->server->getPluginManager()->callEvent($ev = new RemoteServerCommandEvent($response, $command));
-
-		if(!$ev->isCancelled()){
-			$this->server->dispatchCommand($ev->getSender(), $ev->getCommand());
-		}
+		$this->server->dispatchCommand($response, $this->instance->cmd);
 
 		$this->instance->response = TextFormat::clean($response->getMessage());
 		$this->instance->synchronized(function(RCONInstance $thread){

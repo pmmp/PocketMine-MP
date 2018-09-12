@@ -61,9 +61,6 @@ abstract class Tile extends Position{
 	public const SIGN = "Sign";
 	public const SKULL = "Skull";
 
-	/** @var int */
-	public static $tileCount = 1;
-
 	/** @var string[] classes that extend Tile */
 	private static $knownTiles = [];
 	/** @var string[][] */
@@ -71,8 +68,6 @@ abstract class Tile extends Position{
 
 	/** @var string */
 	public $name;
-	/** @var int */
-	public $id;
 	/** @var bool */
 	public $closed = false;
 	/** @var Server */
@@ -104,6 +99,7 @@ abstract class Tile extends Position{
 	public static function createTile($type, Level $level, CompoundTag $nbt, ...$args) : ?Tile{
 		if(isset(self::$knownTiles[$type])){
 			$class = self::$knownTiles[$type];
+			/** @see Tile::__construct() */
 			return new $class($level, $nbt, ...$args);
 		}
 
@@ -147,16 +143,11 @@ abstract class Tile extends Position{
 
 		$this->server = $level->getServer();
 		$this->name = "";
-		$this->id = Tile::$tileCount++;
 
 		parent::__construct($nbt->getInt(self::TAG_X), $nbt->getInt(self::TAG_Y), $nbt->getInt(self::TAG_Z), $level);
 		$this->readSaveData($nbt);
 
 		$this->getLevel()->addTile($this);
-	}
-
-	public function getId() : int{
-		return $this->id;
 	}
 
 	/**
@@ -200,6 +191,9 @@ abstract class Tile extends Position{
 	 * @return CompoundTag
 	 */
 	public static function createNBT(Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : CompoundTag{
+		if(static::class === self::class){
+			throw new \BadMethodCallException(__METHOD__ . " must be called from the scope of a child class");
+		}
 		$nbt = new CompoundTag("", [
 			new StringTag(self::TAG_ID, static::getSaveId()),
 			new IntTag(self::TAG_X, (int) $pos->x),
@@ -252,7 +246,7 @@ abstract class Tile extends Position{
 		if($this->closed){
 			throw new \InvalidStateException("Cannot schedule update on garbage tile " . get_class($this));
 		}
-		$this->level->updateTiles[$this->id] = $this;
+		$this->level->updateTiles[Level::blockHash($this->x, $this->y, $this->z)] = $this;
 	}
 
 	public function isClosed() : bool{

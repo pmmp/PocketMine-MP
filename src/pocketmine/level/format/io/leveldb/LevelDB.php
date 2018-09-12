@@ -266,6 +266,38 @@ class LevelDB extends BaseLevelProvider{
 		$this->levelData->setInt("Difficulty", $difficulty); //yes, this is intended! (in PE: int, PC: byte)
 	}
 
+	public function getRainTime() : int{
+		return $this->levelData->getInt("rainTime", 0);
+	}
+
+	public function setRainTime(int $ticks) : void{
+		$this->levelData->setInt("rainTime", $ticks);
+	}
+
+	public function getRainLevel() : float{
+		return $this->levelData->getFloat("rainLevel", 0.0);
+	}
+
+	public function setRainLevel(float $level) : void{
+		$this->levelData->setFloat("rainLevel", $level);
+	}
+
+	public function getLightningTime() : int{
+		return $this->levelData->getInt("lightningTime", 0);
+	}
+
+	public function setLightningTime(int $ticks) : void{
+		$this->levelData->setInt("lightningTime", $ticks);
+	}
+
+	public function getLightningLevel() : float{
+		return $this->levelData->getFloat("lightningLevel", 0.0);
+	}
+
+	public function setLightningLevel(float $level) : void{
+		$this->levelData->setFloat("lightningLevel", $level);
+	}
+
 	/**
 	 * @param int $chunkX
 	 * @param int $chunkZ
@@ -377,7 +409,7 @@ class LevelDB extends BaseLevelProvider{
 
 		/** @var CompoundTag[] $entities */
 		$entities = [];
-		if(($entityData = $this->db->get($index . self::TAG_ENTITY)) !== false and strlen($entityData) > 0){
+		if(($entityData = $this->db->get($index . self::TAG_ENTITY)) !== false and $entityData !== ""){
 			$entities = $nbt->read($entityData, true);
 			if(!is_array($entities)){
 				$entities = [$entities];
@@ -392,7 +424,7 @@ class LevelDB extends BaseLevelProvider{
 		}
 
 		$tiles = [];
-		if(($tileData = $this->db->get($index . self::TAG_BLOCK_ENTITY)) !== false and strlen($tileData) > 0){
+		if(($tileData = $this->db->get($index . self::TAG_BLOCK_ENTITY)) !== false and $tileData !== ""){
 			$tiles = $nbt->read($tileData, true);
 			if(!is_array($tiles)){
 				$tiles = [$tiles];
@@ -402,7 +434,7 @@ class LevelDB extends BaseLevelProvider{
 		//TODO: extra data should be converted into blockstorage layers (first they need to be implemented!)
 		/*
 		$extraData = [];
-		if(($extraRawData = $this->db->get($index . self::TAG_BLOCK_EXTRA_DATA)) !== false and strlen($extraRawData) > 0){
+		if(($extraRawData = $this->db->get($index . self::TAG_BLOCK_EXTRA_DATA)) !== false and $extraRawData !== ""){
 			$binaryStream->setBuffer($extraRawData, 0);
 			$count = $binaryStream->getLInt();
 			for($i = 0; $i < $count; ++$i){

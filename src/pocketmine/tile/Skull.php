@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
@@ -74,7 +75,7 @@ class Skull extends Spawnable{
 		$nbt->setByte(self::TAG_SKULL_TYPE, $item !== null ? $item->getDamage() : self::TYPE_SKELETON);
 
 		$rot = 0;
-		if($face === Vector3::SIDE_UP and $player !== null){
+		if($face === Facing::UP and $player !== null){
 			$rot = floor(($player->yaw * 16 / 360) + 0.5) & 0x0F;
 		}
 		$nbt->setByte(self::TAG_ROT, $rot);
