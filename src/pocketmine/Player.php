@@ -58,6 +58,7 @@ use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerJumpEvent;
 use pocketmine\event\player\PlayerKickEvent;
 use pocketmine\event\player\PlayerLoginEvent;
+use pocketmine\event\player\PlayerDuplicateLoginEvent;
 use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\player\PlayerPreLoginEvent;
 use pocketmine\event\player\PlayerQuitEvent;
@@ -1787,11 +1788,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		foreach($this->server->getLoggedInPlayers() as $p){
 			if($p !== $this and ($p->iusername === $this->iusername or $this->getUniqueId()->equals($p->getUniqueId()))){
-				if(!$p->kick("logged in from another location")){
-					$this->close($this->getLeaveMessage(), "Logged in from another location");
-
+				$this->server->getPluginManager()->callEvent($ev = new PlayerDuplicateLoginEvent($this->networkSession, $p->networkSession));
+				if($ev->isCancelled()){
+					$this->networkSession->disconnect($ev->getDisconnectMessage());
 					return false;
 				}
+
+				$p->networkSession->disconnect($ev->getDisconnectMessage());
 			}
 		}
 
