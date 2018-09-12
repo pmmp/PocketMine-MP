@@ -52,31 +52,31 @@ class FireworksExplosion{
 	}
 
 	/**
-	 * @return string
+	 * @return int|null
 	 */
-	public function getColor() : string{
-		return $this->color !== null ? chr($this->color) : "";
+	public function getColor() : ?int{
+		return $this->color;
 	}
 
 	/**
-	 * @return string
+	 * @return int|null
 	 */
-	public function getFade() : string{
-		return $this->fade !== null ? chr($this->fade) : "";
+	public function getFade() : ?int{
+		return $this->fade;
 	}
 
 	/**
-	 * @return int
+	 * @return bool
 	 */
-	public function isFlickering() : int{
-		return (int) $this->flicker;
+	public function isFlickering() : bool{
+		return $this->flicker;
 	}
 
 	/**
-	 * @return int
+	 * @return bool
 	 */
-	public function hasTrail() : int{
-		return (int) $this->trail;
+	public function hasTrail() : bool{
+		return $this->trail;
 	}
 
 	/**

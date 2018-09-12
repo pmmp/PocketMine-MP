@@ -183,7 +183,7 @@ class ItemFactory{
 		self::registerItem(new Item(Item::NETHER_STAR, 0, "Nether Star"));
 		self::registerItem(new PumpkinPie());
 		self::registerItem(new Fireworks());
-		//TODO: FIREWORKSCHARGE
+		self::registerItem(new Item(Item::FIREWORKSCHARGE, 0, "Firework Star"));
 		//TODO: ENCHANTED_BOOK
 		self::registerItem(new ItemBlock(Block::COMPARATOR_BLOCK, 0, Item::COMPARATOR));
 		self::registerItem(new Item(Item::NETHER_BRICK, 0, "Nether Brick"));

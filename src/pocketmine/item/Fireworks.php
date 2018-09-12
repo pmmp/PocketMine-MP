@@ -24,10 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\FireworksRocket;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
@@ -58,6 +58,10 @@ class Fireworks extends Item{
 	public const TYPE_CREEPER_SHAPED = 3;
 	public const TYPE_BURST = 4;
 
+	protected const TAG_FIREWORKS = "Fireworks";
+	protected const TAG_EXPLOSIONS = "Explosions";
+	protected const TAG_FLIGHT = "Flight";
+
 	/** @var float */
 	public $spread = 5.0;
 
@@ -66,13 +70,13 @@ class Fireworks extends Item{
 	}
 
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
-		$random = new Random;
+		$random = new Random();
+
 		$yaw = $random->nextBoundedInt(360);
 		$pitch = -1 * (float) (90 + ($random->nextFloat() * $this->spread - $this->spread / 2));
-		$nbt = Entity::createBaseNBT($blockReplace->add(0.5, 0, 0.5), null, $yaw, $pitch);
-		if(($tags = $this->getNamedTagEntry("Fireworks")) !== null){
-			$nbt->setTag($tags);
-		}
+
+		$nbt = FireworksRocket::createBaseNBT($blockReplace->add(0.5, 0, 0.5), null, $yaw, $pitch);
+		$nbt->setTag($this->getFireworksTag());
 
 		$rocket = new FireworksRocket($player->level, $nbt, $player, $this, $random);
 		if($player->isSurvival()){
@@ -82,23 +86,43 @@ class Fireworks extends Item{
 		return true;
 	}
 
-	public static function createNBT(FireworksData $fireworksData) : CompoundTag{
-		$list = [];
-		$compound = new CompoundTag;
-		foreach($fireworksData->getExplosions() as $explosion){
-			$tag = new CompoundTag;
-			$tag->setByteArray("FireworkColor", $explosion->getColor());
-			$tag->setByteArray("FireworkFade", $explosion->getFade());
-			$tag->setByte("FireworkFlicker", $explosion->isFlickering());
-			$tag->setByte("FireworkTrail", $explosion->hasTrail());
-			$tag->setByte("FireworkType", $explosion->getType());
-			$list[] = $tag;
+	protected function getFireworksTag() : CompoundTag{
+		return $this->getNamedTag()->getCompoundTag(self::TAG_FIREWORKS) ?? new CompoundTag(self::TAG_FIREWORKS, [
+				new ListTag(self::TAG_EXPLOSIONS, [], NBT::TAG_Compound),
+				new ByteTag(self::TAG_FLIGHT, 1)
+			]);
+	}
+
+	protected function getExplosionsTag() : ListTag{
+		return $this->getFireworksTag()->getListTag(self::TAG_EXPLOSIONS);
+	}
+
+	protected function setExplosionsTag(ListTag $explosionsTag) : void{
+		$fireworksTag = $this->getFireworksTag();
+		$fireworksTag->setTag($explosionsTag);
+		$this->setNamedTagEntry($fireworksTag);
+	}
+
+	public function appendExplosions(FireworksExplosion ...$explosions){
+		$explosionsTag = $this->getExplosionsTag();
+		foreach($explosions as $explosion){
+			$explosionsTag->push(new CompoundTag("", [
+				new ByteArrayTag("FireworkColor", chr($explosion->getColor())),
+				new ByteArrayTag("FireworkFade", chr($explosion->getFade())),
+				new ByteTag("FireworkFlicker", (int) $explosion->isFlickering()),
+				new ByteTag("FireworkTrail", (int) $explosion->hasTrail()),
+				new ByteTag("FireworkType", (int) $explosion->getType())
+			]));
 		}
-		$compound->setTag(new CompoundTag("Fireworks", [
-				new ListTag("Explosions", $list, NBT::TAG_Compound),
-				new ByteTag("Flight", $fireworksData->getFlight())
-			])
-		);
-		return $compound;
+	}
+
+	public function getFlight() : int{
+		return $this->getFireworksTag()->getByte(self::TAG_FLIGHT);
+	}
+
+	public function setFlight(int $value) : void{
+		$fireworksTag = $this->getFireworksTag();
+		$fireworksTag->setByte(self::TAG_FLIGHT, $value);
+		$this->setNamedTagEntry($fireworksTag);
 	}
 }

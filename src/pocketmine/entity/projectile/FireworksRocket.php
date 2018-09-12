@@ -59,11 +59,9 @@ class FireworksRocket extends Projectile{
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
-		$random = $this->random ?? new Random;
+		$random = $this->random ?? new Random();
 
-		$this->setGenericFlag(self::DATA_FLAG_HAS_COLLISION, true);
-		$this->setGenericFlag(self::DATA_FLAG_AFFECTED_BY_GRAVITY, true);
-		$this->getDataPropertyManager()->setItem(self::DATA_MINECART_DISPLAY_BLOCK, $this->item);
+		$this->propertyManager->setItem(self::DATA_MINECART_DISPLAY_BLOCK, $this->item);
 
 		$flyTime = 1;
 
