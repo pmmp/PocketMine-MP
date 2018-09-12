@@ -80,7 +80,7 @@ class BanIpCommand extends VanillaCommand{
 		$sender->getServer()->getIPBans()->addBan($ip, $reason, null, $sender->getName());
 
 		foreach($sender->getServer()->getOnlinePlayers() as $player){
-			if($player->getAddress() === $ip){
+			if($player->isConnected() and $player->getAddress() === $ip){
 				$player->kick($reason !== "" ? $reason : "IP banned.");
 			}
 		}
