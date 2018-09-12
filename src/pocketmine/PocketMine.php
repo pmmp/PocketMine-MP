@@ -121,6 +121,10 @@ namespace pocketmine {
 			$messages[] = "The native PocketMine extension is no longer supported.";
 		}
 
+		if(!defined('AF_INET6')){
+			$messages[] = "IPv6 support is required.";
+		}
+
 		return $messages;
 	}
 
