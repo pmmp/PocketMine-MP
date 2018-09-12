@@ -31,7 +31,7 @@ use pocketmine\network\mcpe\NetworkSession;
  * Called when a player connects with a username or UUID that is already used by another player on the server.
  * If cancelled, the newly connecting session will be disconnected; otherwise, the existing player will be disconnected.
  */
-class PlayerLoginOtherLocationEvent extends Event implements Cancellable{
+class PlayerDuplicateLoginEvent extends Event implements Cancellable{
 
 	/** @var NetworkSession */
 	private $connectingSession;
