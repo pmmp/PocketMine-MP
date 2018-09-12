@@ -390,7 +390,7 @@ class Server{
 	 * @return int
 	 */
 	public function getPortv6() : int{
-		return $this->getConfigInt("server-portv6", $this->getPort());
+		return $this->getConfigInt("server-portv6", 19133);
 	}
 
 	/**
@@ -1491,6 +1491,7 @@ class Server{
 			$this->properties = new Config($this->dataPath . "server.properties", Config::PROPERTIES, [
 				"motd" => \pocketmine\NAME . " Server",
 				"server-port" => 19132,
+				"server-portv6" => 19133,
 				"white-list" => false,
 				"announce-player-achievements" => true,
 				"spawn-protection" => 16,
