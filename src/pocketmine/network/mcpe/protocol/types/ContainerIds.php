@@ -35,5 +35,6 @@ interface ContainerIds{
 	public const HOTBAR = 122;
 	public const FIXED_INVENTORY = 123;
 	public const CURSOR = 124;
+	public const FAKE_CONTAINER = 255;
 
 }

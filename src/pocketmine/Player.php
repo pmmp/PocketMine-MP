@@ -29,6 +29,7 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\entity\Attribute;
 use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Entity;
@@ -147,6 +148,7 @@ use pocketmine\tile\ItemFrame;
 use pocketmine\timings\Timings;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
+use pocketmine\inventory\FakeContainer;
 
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
@@ -2164,6 +2166,20 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->doCloseInventory();
 
 		switch($packet->event){
+			case EntityEventPacket::PLAYER_ADD_XP_LEVELS:
+				if($packet->data === 0){
+					return false;
+				}
+
+				$nextXpLevel = $this->getXpLevel() + $packet->data;
+				$attribute = $this->getAttributeMap()->getAttribute(Attribute::EXPERIENCE_LEVEL);
+				if($nextXpLevel < $attribute->getMinValue() or $nextXpLevel > $attribute->getMaxValue()){
+					return false;
+				}else{
+					$this->addXpLevels($packet->data);
+				}
+
+				break;
 			case EntityEventPacket::EATING_ITEM:
 				if($packet->data === 0){
 					return false;
@@ -3641,30 +3657,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * Returns the opened inventory type that is opened, or null if no window is opened.
-	 *
-	 * @param string $class
-	 *
-	 * @return null|Inventory
-	 */
-	public function getWindowByType(string $class) : ?Inventory{
-		foreach($this->windowIndex as $inventory){
-			if($inventory instanceof $class){
-				return $inventory;
-			}
-		}
-
-		return null;
-	}
-
-	public function getLastOpenContainerInventory() : ?ContainerInventory{
-		$windows = array_filter($this->windowIndex, function($inv) : bool{
-			return $inv instanceof ContainerInventory;
-		});
-		return !empty($windows) ? max($windows) : null;
-	}
-
-	/**
 	 * Opens an inventory window to the player. Returns the ID of the created window, or the existing window ID if the
 	 * player is already viewing the specified inventory.
 	 *
@@ -3680,6 +3672,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function addWindow(Inventory $inventory, int $forceId = null, bool $isPermanent = false) : int{
 		if(($id = $this->getWindowId($inventory)) !== ContainerIds::NONE){
 			return $id;
+		}
+
+		if($inventory instanceof FakeContainer){
+			$forceId = 255; // fake container id
 		}
 
 		if($forceId === null){
