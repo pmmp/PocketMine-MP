@@ -33,6 +33,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\Metadatable;
@@ -96,7 +97,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @return int
 	 */
-	final public function getId() : int{
+	public function getId() : int{
 		return $this->id;
 	}
 
@@ -113,14 +114,14 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @return int
 	 */
-	final public function getDamage() : int{
+	public function getDamage() : int{
 		return $this->meta;
 	}
 
 	/**
 	 * @param int $meta
 	 */
-	final public function setDamage(int $meta) : void{
+	public function setDamage(int $meta) : void{
 		if($meta < 0 or $meta > 0xf){
 			throw new \InvalidArgumentException("Block damage values must be 0-15, not $meta");
 		}
@@ -181,7 +182,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return bool
 	 */
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		return $this->getLevel()->setBlock($this, $this, true, true);
+		return $this->getLevel()->setBlock($blockReplace, $this, true, true);
 	}
 
 	/**
@@ -589,10 +590,10 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getHorizontalSides() : array{
 		return [
-			$this->getSide(Vector3::SIDE_NORTH),
-			$this->getSide(Vector3::SIDE_SOUTH),
-			$this->getSide(Vector3::SIDE_WEST),
-			$this->getSide(Vector3::SIDE_EAST)
+			$this->getSide(Facing::NORTH),
+			$this->getSide(Facing::SOUTH),
+			$this->getSide(Facing::WEST),
+			$this->getSide(Facing::EAST)
 		];
 	}
 
@@ -604,8 +605,8 @@ class Block extends Position implements BlockIds, Metadatable{
 	public function getAllSides() : array{
 		return array_merge(
 			[
-				$this->getSide(Vector3::SIDE_DOWN),
-				$this->getSide(Vector3::SIDE_UP)
+				$this->getSide(Facing::DOWN),
+				$this->getSide(Facing::UP)
 			],
 			$this->getHorizontalSides()
 		);

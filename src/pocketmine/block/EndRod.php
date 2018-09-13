@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -41,7 +42,7 @@ class EndRod extends Flowable{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if($face === Vector3::SIDE_UP or $face === Vector3::SIDE_DOWN){
+		if(Facing::axis($face) === Facing::AXIS_Y){
 			$this->meta = $face;
 		}else{
 			$this->meta = $face ^ 0x01;
@@ -50,7 +51,7 @@ class EndRod extends Flowable{
 			$this->meta ^= 0x01;
 		}
 
-		return $this->level->setBlock($blockReplace, $this, true, true);
+		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function isSolid() : bool{
@@ -62,11 +63,11 @@ class EndRod extends Flowable{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		$m = $this->meta & ~0x01;
+		$m = $this->meta >> 1; //everything except up/down are inverted, but we can still use this for axis
 		$width = 0.375;
 
 		switch($m){
-			case 0x00: //up/down
+			case Facing::AXIS_Y:
 				return new AxisAlignedBB(
 					$width,
 					0,
@@ -75,7 +76,7 @@ class EndRod extends Flowable{
 					1,
 					1 - $width
 				);
-			case 0x02: //north/south
+			case Facing::AXIS_Z:
 				return new AxisAlignedBB(
 					0,
 					$width,
@@ -84,7 +85,7 @@ class EndRod extends Flowable{
 					1 - $width,
 					1 - $width
 				);
-			case 0x04: //east/west
+			case Facing::AXIS_X:
 				return new AxisAlignedBB(
 					$width,
 					$width,

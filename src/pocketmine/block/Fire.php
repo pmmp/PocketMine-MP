@@ -30,7 +30,7 @@ use pocketmine\event\entity\EntityCombustByBlockEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
-use pocketmine\math\Vector3;
+use pocketmine\math\Facing;
 use pocketmine\Server;
 
 class Fire extends Flowable{
@@ -80,7 +80,7 @@ class Fire extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->getSide(Vector3::SIDE_DOWN)->isSolid() and !$this->hasAdjacentFlammableBlocks()){
+		if(!$this->getSide(Facing::DOWN)->isSolid() and !$this->hasAdjacentFlammableBlocks()){
 			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true);
 		}else{
 			$this->level->scheduleDelayedBlockUpdate($this, mt_rand(30, 40));
@@ -92,7 +92,7 @@ class Fire extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		$down = $this->getSide(Vector3::SIDE_DOWN);
+		$down = $this->getSide(Facing::DOWN);
 
 		$result = null;
 		if($this->meta < 15 and mt_rand(0, 2) === 0){
@@ -130,8 +130,8 @@ class Fire extends Flowable{
 			}
 
 			//vanilla uses a 250 upper bound here, but I don't think they intended to increase the chance of incineration
-			$this->burnBlock($this->getSide(Vector3::SIDE_UP), 350);
-			$this->burnBlock($this->getSide(Vector3::SIDE_DOWN), 350);
+			$this->burnBlock($this->getSide(Facing::UP), 350);
+			$this->burnBlock($this->getSide(Facing::DOWN), 350);
 
 			//TODO: fire spread
 		}

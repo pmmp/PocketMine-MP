@@ -35,7 +35,6 @@ use Mdanter\Ecc\Serializer\Signature\DerSignatureSerializer;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\Player;
 use pocketmine\scheduler\AsyncTask;
-use pocketmine\Server;
 
 class ProcessLoginTask extends AsyncTask{
 
@@ -216,11 +215,11 @@ class ProcessLoginTask extends AsyncTask{
 		return rtrim(strtr(base64_encode($str), '+/', '-_'), '=');
 	}
 
-	public function onCompletion(Server $server) : void{
+	public function onCompletion() : void{
 		/** @var Player $player */
 		$player = $this->fetchLocal();
 		if(!$player->isConnected()){
-			$server->getLogger()->error("Player " . $player->getName() . " was disconnected before their login could be verified");
+			$this->worker->getLogger()->error("Player " . $player->getName() . " was disconnected before their login could be verified");
 		}elseif($player->setAuthenticationStatus($this->authenticated, $this->error)){
 			if(!$this->useEncryption){
 				$player->getNetworkSession()->onLoginSuccess();

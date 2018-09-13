@@ -27,6 +27,8 @@ namespace pocketmine\block;
 use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\level\Level;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -68,63 +70,21 @@ class Leaves extends Transparent{
 	}
 
 
-	protected function findLog(Block $pos, array $visited, int $distance, ?int $fromSide = null) : bool{
-		$index = $pos->x . "." . $pos->y . "." . $pos->z;
+	protected function findLog(Block $pos, array &$visited = [], int $distance = 0) : bool{
+		$index = Level::blockHash($pos->x, $pos->y, $pos->z);
 		if(isset($visited[$index])){
 			return false;
 		}
+		$visited[$index] = true;
+
 		if($pos->getId() === $this->woodType){
 			return true;
-		}elseif($pos->getId() === $this->id and $distance < 3){
-			$visited[$index] = true;
-			$down = $pos->getSide(Vector3::SIDE_DOWN)->getId();
-			if($down === $this->woodType){
-				return true;
-			}
-			if($fromSide === null){
-				for($side = 2; $side <= 5; ++$side){
-					if($this->findLog($pos->getSide($side), $visited, $distance + 1, $side)){
-						return true;
-					}
-				}
-			}else{ //No more loops
-				switch($fromSide){
-					case 2:
-						if($this->findLog($pos->getSide(Vector3::SIDE_NORTH), $visited, $distance + 1, $fromSide)){
-							return true;
-						}elseif($this->findLog($pos->getSide(Vector3::SIDE_WEST), $visited, $distance + 1, $fromSide)){
-							return true;
-						}elseif($this->findLog($pos->getSide(Vector3::SIDE_EAST), $visited, $distance + 1, $fromSide)){
-							return true;
-						}
-						break;
-					case 3:
-						if($this->findLog($pos->getSide(Vector3::SIDE_SOUTH), $visited, $distance + 1, $fromSide)){
-							return true;
-						}elseif($this->findLog($pos->getSide(Vector3::SIDE_WEST), $visited, $distance + 1, $fromSide)){
-							return true;
-						}elseif($this->findLog($pos->getSide(Vector3::SIDE_EAST), $visited, $distance + 1, $fromSide)){
-							return true;
-						}
-						break;
-					case 4:
-						if($this->findLog($pos->getSide(Vector3::SIDE_NORTH), $visited, $distance + 1, $fromSide)){
-							return true;
-						}elseif($this->findLog($pos->getSide(Vector3::SIDE_SOUTH), $visited, $distance + 1, $fromSide)){
-							return true;
-						}elseif($this->findLog($pos->getSide(Vector3::SIDE_WEST), $visited, $distance + 1, $fromSide)){
-							return true;
-						}
-						break;
-					case 5:
-						if($this->findLog($pos->getSide(Vector3::SIDE_NORTH), $visited, $distance + 1, $fromSide)){
-							return true;
-						}elseif($this->findLog($pos->getSide(Vector3::SIDE_SOUTH), $visited, $distance + 1, $fromSide)){
-							return true;
-						}elseif($this->findLog($pos->getSide(Vector3::SIDE_EAST), $visited, $distance + 1, $fromSide)){
-							return true;
-						}
-						break;
+		}
+
+		if($pos->getId() === $this->id and $distance <= 4){
+			foreach(Facing::ALL as $side){
+				if($this->findLog($pos->getSide($side), $visited, $distance + 1)){
+					return true;
 				}
 			}
 		}
@@ -146,11 +106,10 @@ class Leaves extends Transparent{
 	public function onRandomTick() : void{
 		if(($this->meta & 0b00001100) === 0x08){
 			$this->meta &= 0x03;
-			$visited = [];
 
 			$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new LeavesDecayEvent($this));
 
-			if($ev->isCancelled() or $this->findLog($this, $visited, 0)){
+			if($ev->isCancelled() or $this->findLog($this)){
 				$this->getLevel()->setBlock($this, $this, false, false);
 			}else{
 				$this->getLevel()->useBreakOn($this);
@@ -160,7 +119,7 @@ class Leaves extends Transparent{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$this->meta |= 0x04;
-		return $this->getLevel()->setBlock($this, $this, true);
+		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function getVariantBitmask() : int{

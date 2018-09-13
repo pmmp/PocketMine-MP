@@ -73,6 +73,8 @@ abstract class Particle extends Vector3{
     public const TYPE_SPIT = 42;
     public const TYPE_TOTEM = 43;
     public const TYPE_FOOD = 44;
+    public const TYPE_FIREWORK_SPARK = 46;
+    public const TYPE_FLASH = 47;
 
     /**
      * @return DataPacket|DataPacket[]

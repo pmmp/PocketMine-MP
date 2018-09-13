@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\TieredTool;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Vector3;
+use pocketmine\math\Facing;
 
 class CobblestoneWall extends Transparent{
 	public const NONE_MOSSY_WALL = 0;
@@ -60,14 +60,14 @@ class CobblestoneWall extends Transparent{
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		//walls don't have any special collision boxes like fences do
 
-		$north = $this->canConnect($this->getSide(Vector3::SIDE_NORTH));
-		$south = $this->canConnect($this->getSide(Vector3::SIDE_SOUTH));
-		$west = $this->canConnect($this->getSide(Vector3::SIDE_WEST));
-		$east = $this->canConnect($this->getSide(Vector3::SIDE_EAST));
+		$north = $this->canConnect($this->getSide(Facing::NORTH));
+		$south = $this->canConnect($this->getSide(Facing::SOUTH));
+		$west = $this->canConnect($this->getSide(Facing::WEST));
+		$east = $this->canConnect($this->getSide(Facing::EAST));
 
 		$inset = 0.25;
 		if(
-			$this->getSide(Vector3::SIDE_UP)->getId() === Block::AIR and //if there is a block on top, it stays as a post
+			$this->getSide(Facing::UP)->getId() === Block::AIR and //if there is a block on top, it stays as a post
 			(
 				($north and $south and !$west and !$east) or
 				(!$north and !$south and $west and $east)

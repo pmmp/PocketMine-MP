@@ -27,6 +27,8 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\level\sound\DoorSound;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Bearing;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -42,11 +44,11 @@ abstract class Door extends Transparent{
 		$isUp = ($damage & 0x08) > 0;
 
 		if($isUp){
-			$down = $this->getSide(Vector3::SIDE_DOWN)->getDamage();
+			$down = $this->getSide(Facing::DOWN)->getDamage();
 			$up = $damage;
 		}else{
 			$down = $damage;
-			$up = $this->getSide(Vector3::SIDE_UP)->getDamage();
+			$up = $this->getSide(Facing::UP)->getDamage();
 		}
 
 		$isRight = ($up & 0x01) > 0;
@@ -110,37 +112,34 @@ abstract class Door extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Vector3::SIDE_DOWN)->getId() === self::AIR){ //Replace with common break method
+		if($this->getSide(Facing::DOWN)->getId() === self::AIR){ //Replace with common break method
 			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), false);
-			if($this->getSide(Vector3::SIDE_UP) instanceof Door){
-				$this->getLevel()->setBlock($this->getSide(Vector3::SIDE_UP), BlockFactory::get(Block::AIR), false);
+			if($this->getSide(Facing::UP) instanceof Door){
+				$this->getLevel()->setBlock($this->getSide(Facing::UP), BlockFactory::get(Block::AIR), false);
 			}
 		}
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if($face === Vector3::SIDE_UP){
-			$blockUp = $this->getSide(Vector3::SIDE_UP);
-			$blockDown = $this->getSide(Vector3::SIDE_DOWN);
+		if($face === Facing::UP){
+			$blockUp = $this->getSide(Facing::UP);
+			$blockDown = $this->getSide(Facing::DOWN);
 			if(!$blockUp->canBeReplaced() or $blockDown->isTransparent()){
 				return false;
 			}
-			$direction = $player instanceof Player ? $player->getDirection() : 0;
-			$faces = [
-				0 => 3,
-				1 => 4,
-				2 => 2,
-				3 => 5
-			];
-			$next = $this->getSide($faces[($direction + 2) % 4]);
-			$next2 = $this->getSide($faces[$direction]);
+
+			$ccw = Bearing::toFacing($player instanceof Player ? Bearing::rotate($player->getDirection(), -1) : Facing::EAST);
+
+			$next = $this->getSide(Facing::opposite($ccw));
+			$next2 = $this->getSide($ccw);
+
 			$metaUp = 0x08;
 			if($next->getId() === $this->getId() or (!$next2->isTransparent() and $next->isTransparent())){ //Door hinge
 				$metaUp |= 0x01;
 			}
 
-			$this->setDamage($player->getDirection() & 0x03);
-			$this->getLevel()->setBlock($blockReplace, $this, true, true); //Bottom
+			$this->setDamage(Bearing::rotate($player->getDirection(), -1));
+			parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 			$this->getLevel()->setBlock($blockUp, BlockFactory::get($this->getId(), $metaUp), true); //Top
 			return true;
 		}
@@ -150,7 +149,7 @@ abstract class Door extends Transparent{
 
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if(($this->getDamage() & 0x08) === 0x08){ //Top
-			$down = $this->getSide(Vector3::SIDE_DOWN);
+			$down = $this->getSide(Facing::DOWN);
 			if($down->getId() === $this->getId()){
 				$meta = $down->getDamage() ^ 0x04;
 				$this->level->setBlock($down, BlockFactory::get($this->getId(), $meta), true);
@@ -186,12 +185,12 @@ abstract class Door extends Transparent{
 
 	public function getAffectedBlocks() : array{
 		if(($this->getDamage() & 0x08) === 0x08){
-			$down = $this->getSide(Vector3::SIDE_DOWN);
+			$down = $this->getSide(Facing::DOWN);
 			if($down->getId() === $this->getId()){
 				return [$this, $down];
 			}
 		}else{
-			$up = $this->getSide(Vector3::SIDE_UP);
+			$up = $this->getSide(Facing::UP);
 			if($up->getId() === $this->getId()){
 				return [$this, $up];
 			}

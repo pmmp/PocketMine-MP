@@ -30,6 +30,7 @@ use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\Server;
@@ -65,7 +66,7 @@ class Cactus extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$down = $this->getSide(Vector3::SIDE_DOWN);
+		$down = $this->getSide(Facing::DOWN);
 		if($down->getId() !== self::SAND and $down->getId() !== self::CACTUS){
 			$this->getLevel()->useBreakOn($this);
 		}else{
@@ -84,7 +85,7 @@ class Cactus extends Transparent{
 	}
 
 	public function onRandomTick() : void{
-		if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::CACTUS){
+		if($this->getSide(Facing::DOWN)->getId() !== self::CACTUS){
 			if($this->meta === 0x0f){
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->getLevel()->getBlockAt($this->x, $this->y + $y, $this->z);
@@ -105,16 +106,14 @@ class Cactus extends Transparent{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$down = $this->getSide(Vector3::SIDE_DOWN);
+		$down = $this->getSide(Facing::DOWN);
 		if($down->getId() === self::SAND or $down->getId() === self::CACTUS){
-			$block0 = $this->getSide(Vector3::SIDE_NORTH);
-			$block1 = $this->getSide(Vector3::SIDE_SOUTH);
-			$block2 = $this->getSide(Vector3::SIDE_WEST);
-			$block3 = $this->getSide(Vector3::SIDE_EAST);
+			$block0 = $this->getSide(Facing::NORTH);
+			$block1 = $this->getSide(Facing::SOUTH);
+			$block2 = $this->getSide(Facing::WEST);
+			$block3 = $this->getSide(Facing::EAST);
 			if(!$block0->isSolid() and !$block1->isSolid() and !$block2->isSolid() and !$block3->isSolid()){
-				$this->getLevel()->setBlock($this, $this, true);
-
-				return true;
+				return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 			}
 		}
 

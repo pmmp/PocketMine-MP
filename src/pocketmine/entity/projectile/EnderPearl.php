@@ -36,46 +36,37 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
 class EnderPearl extends Throwable{
 
-    public const NETWORK_ID = EntityIds::ENDER_PEARL;
+	public const NETWORK_ID = EntityIds::ENDER_PEARL;
 
-    public $width = 0.25;
-    public $height = 0.25;
+	public $width = 0.25;
+	public $height = 0.25;
 
-    protected $gravity = 0.03;
-    protected $drag = 0.01;
+	protected $gravity = 0.03;
+	protected $drag = 0.01;
 
-    protected function calculateInterceptWithBlock(Block $block, Vector3 $start, Vector3 $end) : ?RayTraceResult{
-        if($block->getId() !== Block::AIR and empty($block->getCollisionBoxes())){
-            //TODO: remove this once block collision boxes are fixed properly
-            $bb = new AxisAlignedBB(
-                $block->x,
-                $block->y,
-                $block->z,
-                $block->x + 1,
-                $block->y + 1,
-                $block->z + 1
-            );
+	protected function calculateInterceptWithBlock(Block $block, Vector3 $start, Vector3 $end) : ?RayTraceResult{
+		if($block->getId() !== Block::AIR and empty($block->getCollisionBoxes())){
+			//TODO: remove this once block collision boxes are fixed properly
+			$bb = new AxisAlignedBB($block->x, $block->y, $block->z, $block->x + 1, $block->y + 1, $block->z + 1);
 
-            return $bb->calculateIntercept($start, $end);
-        }
+			return $bb->calculateIntercept($start, $end);
+		}
 
-        return parent::calculateInterceptWithBlock($block, $start, $end);
-    }
+		return parent::calculateInterceptWithBlock($block, $start, $end);
+	}
 
-    protected function onHit(ProjectileHitEvent $event) : void{
-        $owner = $this->getOwningEntity();
-        if($owner !== null){
-            //TODO: check end gateways (when they are added)
-            //TODO: spawn endermites at origin
+	protected function onHit(ProjectileHitEvent $event) : void{
+		$owner = $this->getOwningEntity();
+		if($owner !== null){
+			//TODO: check end gateways (when they are added)
+			//TODO: spawn endermites at origin
 
-            $this->level->broadcastLevelEvent($owner, LevelEventPacket::EVENT_PARTICLE_ENDERMAN_TELEPORT);
-            $this->level->addSound(new EndermanTeleportSound($owner));
-            $owner->teleport($event->getRayTraceResult()->getHitVector());
-            $this->level->addSound(new EndermanTeleportSound($owner));
+			$this->level->broadcastLevelEvent($owner, LevelEventPacket::EVENT_PARTICLE_ENDERMAN_TELEPORT);
+			$this->level->addSound(new EndermanTeleportSound($owner));
+			$owner->teleport($event->getRayTraceResult()->getHitVector());
+			$this->level->addSound(new EndermanTeleportSound($owner));
 
-            $owner->attack(new EntityDamageEvent($owner, EntityDamageEvent::CAUSE_FALL, 5));
-        }
-
-        $this->flagForDespawn();
-    }
+			$owner->attack(new EntityDamageEvent($owner, EntityDamageEvent::CAUSE_FALL, 5));
+		}
+	}
 }

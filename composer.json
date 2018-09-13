@@ -1,66 +1,73 @@
 {
-	"name": "TuranicTeam/Altay",
-	"description": "A server software for Minecraft: Pocket Edition written in PHP",
-	"type": "project",
-	"license": "LGPL-3.0",
-	"require": {
-		"php": ">=7.2.0",
-		"php-64bit": "*",
-		"ext-bcmath": "*",
-		"ext-curl": "*",
-		"ext-crypto": "^0.3.1",
-        "ext-ctype": "*",
-		"ext-date": "*",
-        "ext-gmp": "*",
-		"ext-hash": "*",
-		"ext-json": "*",
-		"ext-mbstring": "*",
-		"ext-openssl": "*",
-		"ext-pcre": "*",
-		"ext-phar": "*",
-		"ext-pthreads": ">=3.1.7dev",
-		"ext-reflection": "*",
-		"ext-sockets": "*",
-		"ext-spl": "*",
-		"ext-yaml": ">=2.0.0",
-		"ext-zip": "*",
-		"ext-zlib": ">=1.2.11",
-        "mdanter/ecc": "^0.5.0",
-		"pocketmine/raklib": "^0.12.0",
-		"pocketmine/spl": "^0.3.0",
-		"pocketmine/nbt": "^0.2.0",
-		"pocketmine/math": "^0.2.0",
-		"pocketmine/snooze": "^0.1.0"
-	},
-	"autoload": {
-		"psr-4": {
-			"": ["src"]
-		}
-	},
-	"repositories": [
-		{
-			"type": "vcs",
-			"url": "https://github.com/pmmp/RakLib"
-		},
-		{
-			"type": "vcs",
-			"url": "https://github.com/pmmp/SPL"
-		},
-		{
-			"type": "vcs",
-			"url": "https://github.com/pmmp/BinaryUtils"
-		},
-		{
-			"type": "vcs",
-			"url": "https://github.com/pmmp/NBT"
-		},
-		{
-			"type": "vcs",
-			"url": "https://github.com/pmmp/Math"
-		},
-		{
-			"type": "vcs",
-			"url": "https://github.com/pmmp/Snooze"
-		}
-	]
+   "name": "pocketmine/pocketmine-mp",
+   "description": "A server software for Minecraft: Pocket Edition written in PHP",
+   "type": "project",
+   "homepage": "https://pmmp.io",
+   "license": "LGPL-3.0",
+   "require": {
+      "php": ">=7.2.0",
+      "php-64bit": "*",
+      "ext-bcmath": "*",
+      "ext-curl": "*",
+      "ext-crypto": "^0.3.1",
+      "ext-ctype": "*",
+      "ext-date": "*",
+      "ext-gmp": "*",
+      "ext-hash": "*",
+      "ext-json": "*",
+      "ext-mbstring": "*",
+      "ext-openssl": "*",
+      "ext-pcre": "*",
+      "ext-phar": "*",
+      "ext-pthreads": ">=3.1.7dev",
+      "ext-reflection": "*",
+      "ext-sockets": "*",
+      "ext-spl": "*",
+      "ext-yaml": ">=2.0.0",
+      "ext-zip": "*",
+      "ext-zlib": ">=1.2.11",
+      "mdanter/ecc": "^0.5.0",
+      "pocketmine/raklib": "^0.12.0",
+      "pocketmine/spl": "^0.3.0",
+      "pocketmine/binaryutils": "^0.1.0",
+      "pocketmine/nbt": "^0.2.1",
+      "pocketmine/math": "dev-master",
+      "pocketmine/snooze": "^0.1.0"
+   },
+   "autoload": {
+      "psr-4": {
+         "": ["src"]
+      }
+   },
+   "autoload-dev": {
+      "psr-4": {
+         "pocketmine\\": "tests/phpunit/"
+      }
+   },
+   "repositories": [
+      {
+         "type": "vcs",
+         "url": "https://github.com/pmmp/RakLib"
+      },
+      {
+         "type": "vcs",
+         "url": "https://github.com/pmmp/SPL"
+      },
+      {
+         "type": "vcs",
+         "url": "https://github.com/pmmp/BinaryUtils"
+      },
+      {
+         "type": "vcs",
+         "url": "https://github.com/pmmp/NBT"
+      },
+      {
+         "type": "vcs",
+         "url": "https://github.com/pmmp/Math"
+      },
+      {
+         "type": "vcs",
+         "url": "https://github.com/pmmp/Snooze"
+      }
+   ]
 }

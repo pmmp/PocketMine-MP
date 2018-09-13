@@ -23,17 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
-use pocketmine\Server;
-
 /**
  * Manages general-purpose worker threads used for processing asynchronous tasks, and the tasks submitted to those
  * workers.
  */
 class AsyncPool{
 	private const WORKER_START_OPTIONS = PTHREADS_INHERIT_INI | PTHREADS_INHERIT_CONSTANTS;
-
-	/** @var Server */
-	private $server;
 
 	/** @var \ClassLoader */
 	private $classLoader;
@@ -59,8 +54,7 @@ class AsyncPool{
 	/** @var \Closure[] */
 	private $workerStartHooks = [];
 
-	public function __construct(Server $server, int $size, int $workerMemoryLimit, \ClassLoader $classLoader, \ThreadedLogger $logger){
-		$this->server = $server;
+	public function __construct(int $size, int $workerMemoryLimit, \ClassLoader $classLoader, \ThreadedLogger $logger){
 		$this->size = $size;
 		$this->workerMemoryLimit = $workerMemoryLimit;
 		$this->classLoader = $classLoader;
@@ -239,41 +233,6 @@ class AsyncPool{
 	}
 
 	/**
-	 * Removes all tasks from the pool, cancelling where possible. This will block until all tasks have been
-	 * successfully deleted.
-	 */
-	public function removeTasks() : void{
-		foreach($this->workers as $worker){
-			/** @var AsyncTask $task */
-			while(($task = $worker->unstack()) !== null){
-				//cancelRun() is not strictly necessary here, but it might be used to inform plugins of the task state
-				//(i.e. it never executed).
-				$task->cancelRun();
-				$this->removeTask($task, true);
-			}
-		}
-		do{
-			foreach($this->tasks as $task){
-				$task->cancelRun();
-				$this->removeTask($task);
-			}
-
-			if(count($this->tasks) > 0){
-				Server::microSleep(25000);
-			}
-		}while(count($this->tasks) > 0);
-
-		for($i = 0; $i < $this->size; ++$i){
-			$this->workerUsage[$i] = 0;
-		}
-
-		$this->taskWorkers = [];
-		$this->tasks = [];
-
-		$this->collectWorkers();
-	}
-
-	/**
 	 * Collects garbage from running workers.
 	 */
 	private function collectWorkers() : void{
@@ -290,12 +249,12 @@ class AsyncPool{
 	public function collectTasks() : void{
 		foreach($this->tasks as $task){
 			if(!$task->isGarbage()){
-				$task->checkProgressUpdates($this->server);
+				$task->checkProgressUpdates();
 			}
 			if($task->isGarbage() and !$task->isRunning() and !$task->isCrashed()){
 				if(!$task->hasCancelledRun()){
 					try{
-						$task->onCompletion($this->server);
+						$task->onCompletion();
 						if($task->removeDanglingStoredObjects()){
 							$this->logger->notice("AsyncTask " . get_class($task) . " stored local complex data but did not remove them after completion");
 						}
@@ -335,10 +294,28 @@ class AsyncPool{
 	 */
 	public function shutdown() : void{
 		$this->collectTasks();
-		$this->removeTasks();
+
+		foreach($this->workers as $worker){
+			/** @var AsyncTask $task */
+			while(($task = $worker->unstack()) !== null){
+				//cancelRun() is not strictly necessary here, but it might be used to inform plugins of the task state
+				//(i.e. it never executed).
+				$task->cancelRun();
+				$this->removeTask($task, true);
+			}
+		}
+		foreach($this->tasks as $task){
+			$task->cancelRun();
+			$this->removeTask($task, true);
+		}
+
+		$this->taskWorkers = [];
+		$this->tasks = [];
+
 		foreach($this->workers as $worker){
 			$worker->quit();
 		}
 		$this->workers = [];
+		$this->workerUsage = [];
 	}
 }

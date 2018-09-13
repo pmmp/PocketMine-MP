@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Vector3;
+use pocketmine\math\Facing;
 
 abstract class Thin extends Transparent{
 
@@ -32,12 +32,12 @@ abstract class Thin extends Transparent{
 		$width = 0.5 - 0.125 / 2;
 
 		return new AxisAlignedBB(
-			($this->canConnect($this->getSide(Vector3::SIDE_WEST)) ? 0 : $width),
+			($this->canConnect($this->getSide(Facing::WEST)) ? 0 : $width),
 			0,
-			($this->canConnect($this->getSide(Vector3::SIDE_NORTH)) ? 0 : $width),
-			1 - ($this->canConnect($this->getSide(Vector3::SIDE_EAST)) ? 0 : $width),
+			($this->canConnect($this->getSide(Facing::NORTH)) ? 0 : $width),
+			1 - ($this->canConnect($this->getSide(Facing::EAST)) ? 0 : $width),
 			1,
-			1 - ($this->canConnect($this->getSide(Vector3::SIDE_SOUTH)) ? 0 : $width)
+			1 - ($this->canConnect($this->getSide(Facing::SOUTH)) ? 0 : $width)
 		);
 	}
 
@@ -47,8 +47,8 @@ abstract class Thin extends Transparent{
 		/** @var AxisAlignedBB[] $bbs */
 		$bbs = [];
 
-		$connectWest = $this->canConnect($this->getSide(Vector3::SIDE_WEST));
-		$connectEast = $this->canConnect($this->getSide(Vector3::SIDE_EAST));
+		$connectWest = $this->canConnect($this->getSide(Facing::WEST));
+		$connectEast = $this->canConnect($this->getSide(Facing::EAST));
 
 		if($connectWest or $connectEast){
 			//X axis (west/east)
@@ -62,8 +62,8 @@ abstract class Thin extends Transparent{
 			);
 		}
 
-		$connectNorth = $this->canConnect($this->getSide(Vector3::SIDE_NORTH));
-		$connectSouth = $this->canConnect($this->getSide(Vector3::SIDE_SOUTH));
+		$connectNorth = $this->canConnect($this->getSide(Facing::NORTH));
+		$connectSouth = $this->canConnect($this->getSide(Facing::SOUTH));
 
 		if($connectNorth or $connectSouth){
 			//Z axis (north/south)

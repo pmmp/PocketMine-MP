@@ -22,13 +22,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\inventory\transaction\action;
+namespace pocketmine\inventory;
 
-use pocketmine\Player;
+interface FakeContainer{
 
-class AnvilAction extends SlotChangeAction{
-
-	public function isValid(Player $source): bool{
-		return true; // client-side
-	}
 }

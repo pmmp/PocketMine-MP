@@ -26,6 +26,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\level\sound\NoteblockSound;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\NoteBlock as TileNoteBlock;
@@ -70,7 +71,7 @@ class Noteblock extends Solid{
 	 * @return int
 	 */
 	public function getInstrument(){
-		$below = $this->getSide(Vector3::SIDE_DOWN);
+		$below = $this->getSide(Facing::DOWN);
 		switch($below->getId()){
 			case Block::WOOD:
 			case Block::WOOD2:
@@ -151,8 +152,8 @@ class Noteblock extends Solid{
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{
-		$up = $this->getSide(Vector3::SIDE_UP);
-		if($up->getId() == 0){
+		$up = $this->getSide(Facing::UP);
+		if($up->getId() == Block::AIR){
 			$this->getLevel()->addSound(new NoteblockSound($this, $this->getInstrument(), $this->calculateNote()));
 			return true;
 		}else{

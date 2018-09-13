@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
+use pocketmine\math\Bearing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Furnace as TileFurnace;
@@ -61,18 +62,15 @@ class BurningFurnace extends Solid{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$faces = [
-			0 => 4,
-			1 => 2,
-			2 => 5,
-			3 => 3
-		];
-		$this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0];
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
+		if($player !== null){
+			$this->meta = Bearing::toFacing($player->getDirection());
+		}
+		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
+			Tile::createTile(Tile::FURNACE, $this->getLevel(), TileFurnace::createNBT($this, $face, $item, $player));
+			return true;
+		}
 
-		Tile::createTile(Tile::FURNACE, $this->getLevel(), TileFurnace::createNBT($this, $face, $item, $player));
-
-		return true;
+		return false;
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{

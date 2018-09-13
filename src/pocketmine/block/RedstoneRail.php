@@ -23,27 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class Pumpkin extends Solid{
+class RedstoneRail extends BaseRail{
+	protected const FLAG_POWERED = 0x08;
 
-	protected $id = self::PUMPKIN;
-
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
-	}
-
-	public function getHardness() : float{
-		return 1;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_AXE;
-	}
-
-	public function getName() : string{
-		return "Pumpkin";
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
+	protected function getConnectionsForState() : array{
+		return self::CONNECTIONS[$this->meta & ~self::FLAG_POWERED];
 	}
 }

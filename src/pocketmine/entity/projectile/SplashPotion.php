@@ -128,8 +128,6 @@ class SplashPotion extends Throwable{
 				}
 			}
 		}
-
-		$this->flagForDespawn();
 	}
 
 	/**

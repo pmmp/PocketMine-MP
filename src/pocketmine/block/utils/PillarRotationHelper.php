@@ -23,17 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\math\Vector3;
+use pocketmine\math\Facing;
 
 class PillarRotationHelper{
 
 	public static function getMetaFromFace(int $meta, int $face) : int{
-		$faces = [
-			Vector3::SIDE_DOWN => 0,
-			Vector3::SIDE_NORTH => 0x08,
-			Vector3::SIDE_WEST => 0x04
+		static $bits = [
+			Facing::AXIS_Y => 0,
+			Facing::AXIS_Z => 0x08,
+			Facing::AXIS_X => 0x04
 		];
 
-		return ($meta & 0x03) | $faces[$face & ~0x01];
+		return ($meta & 0x03) | $bits[Facing::axis($face)];
 	}
 }

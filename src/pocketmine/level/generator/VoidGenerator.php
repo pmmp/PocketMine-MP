@@ -31,11 +31,8 @@ use pocketmine\math\Vector3;
 class VoidGenerator extends Generator {
     /** @var Chunk */
     private $chunk;
-    /** @var array */
-    private $options;
     /** @var Chunk */
     private $emptyChunk = null;
-
 
     public function getSettings() : array{
         return [];
@@ -43,10 +40,6 @@ class VoidGenerator extends Generator {
 
     public function getName() : string{
         return "Void";
-    }
-
-    public function __construct(array $settings = []){
-        $this->options = $settings;
     }
 
     public function generateChunk(int $chunkX, int $chunkZ) : void{

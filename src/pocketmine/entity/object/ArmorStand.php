@@ -90,7 +90,7 @@ class ArmorStand extends Living{
 			$this->equipment->setItemInHand(Item::nbtDeserialize($nbt->getCompoundTag(self::TAG_OFFHAND)));
 		}
 
-		$this->setPose($nbt->getInt(self::TAG_POSE_INDEX, 0));
+		$this->setPose(min($nbt->getInt(self::TAG_POSE_INDEX, 0), 12));
 		$this->propertyManager->setString(self::DATA_INTERACTIVE_TAG, "armorstand.change.pose");
 	}
 
@@ -104,10 +104,10 @@ class ArmorStand extends Living{
 
 	public function onInteract(Player $player, Item $itemstack, Vector3 $clickPos, int $slot) : bool{
 		if($player->isSneaking()){
-			$this->setPose($this->getPose() + 1);
-
-			if($this->getPose() > 14){
+			if($this->getPose() >= 12){
 				$this->setPose(0);
+			}else{
+				$this->setPose($this->getPose() + 1);
 			}
 			return true;
 		}

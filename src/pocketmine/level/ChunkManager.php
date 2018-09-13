@@ -126,13 +126,6 @@ interface ChunkManager{
 	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk = null);
 
 	/**
-	 * Gets the level seed
-	 *
-	 * @return int
-	 */
-	public function getSeed() : int;
-
-	/**
 	 * Returns the height of the world
 	 * @return int
 	 */

@@ -30,20 +30,18 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\utils\Color;
 
 class ExperienceBottle extends Throwable{
-    public const NETWORK_ID = self::XP_BOTTLE;
+	public const NETWORK_ID = self::XP_BOTTLE;
 
-    protected $gravity = 0.07;
+	protected $gravity = 0.07;
 
-    public function getResultDamage() : int{
-        return -1;
-    }
+	public function getResultDamage() : int{
+		return -1;
+	}
 
-    public function onHit(ProjectileHitEvent $event) : void{
-        $this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_PARTICLE_SPLASH, (new Color(0x38, 0x5d, 0xc6))->toARGB());
-        $this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_GLASS);
+	public function onHit(ProjectileHitEvent $event) : void{
+		$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_PARTICLE_SPLASH, (new Color(0x38, 0x5d, 0xc6))->toARGB());
+		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_GLASS);
 
-        $this->level->dropExperience($this, mt_rand(3, 11));
-
-        $this->flagForDespawn();
-    }
+		$this->level->dropExperience($this, mt_rand(3, 11));
+	}
 }

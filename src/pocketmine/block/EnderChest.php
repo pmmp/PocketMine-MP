@@ -23,9 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\item\TieredTool;
+use pocketmine\math\Bearing;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\EnderChest as TileEnderChest;
@@ -60,19 +62,16 @@ class EnderChest extends Chest{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$faces = [
-			0 => 4,
-			1 => 2,
-			2 => 5,
-			3 => 3
-		];
+		if($player !== null){
+			$this->meta = Bearing::toFacing($player->getDirection());
+		}
 
-		$this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0];
+		if(Block::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
+			Tile::createTile(Tile::ENDER_CHEST, $this->getLevel(), TileEnderChest::createNBT($this, $face, $item, $player));
+			return true;
+		}
 
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
-		Tile::createTile(Tile::ENDER_CHEST, $this->getLevel(), TileEnderChest::createNBT($this, $face, $item, $player));
-
-		return true;
+		return false;
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{
@@ -86,7 +85,7 @@ class EnderChest extends Chest{
 				$enderChest = Tile::createTile(Tile::ENDER_CHEST, $this->getLevel(), TileEnderChest::createNBT($this));
 			}
 
-			if(!$this->getSide(Vector3::SIDE_UP)->isTransparent()){
+			if(!$this->getSide(Facing::UP)->isTransparent()){
 				return true;
 			}
 

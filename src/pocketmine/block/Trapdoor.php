@@ -26,6 +26,8 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\level\sound\DoorSound;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Bearing;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -81,20 +83,20 @@ class Trapdoor extends Transparent{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$directions = [
-			0 => 1,
-			1 => 3,
-			2 => 0,
-			3 => 2
+		static $directions = [
+			Bearing::SOUTH => 2,
+			Bearing::WEST => 1,
+			Bearing::NORTH => 3,
+			Bearing::EAST => 0
 		];
 		if($player !== null){
-			$this->meta = $directions[$player->getDirection() & 0x03];
+			$this->meta = $directions[$player->getDirection()];
 		}
-		if(($clickVector->y > 0.5 and $face !== self::SIDE_UP) or $face === self::SIDE_DOWN){
+		if(($clickVector->y > 0.5 and $face !== Facing::UP) or $face === Facing::DOWN){
 			$this->meta |= self::MASK_UPPER; //top half of block
 		}
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
-		return true;
+
+		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function getVariantBitmask() : int{

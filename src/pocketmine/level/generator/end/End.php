@@ -55,10 +55,15 @@ class End extends Generator{
 	private static $GAUSSIAN_KERNEL = null;
 	private static $SMOOTH_SIZE = 2;
 
-	public function __construct(array $options = []){
+	public function __construct(ChunkManager $level, int $seed, array $options = []){
+		parent::__construct($level, $seed, $options);
 		if(self::$GAUSSIAN_KERNEL === null){
 			self::generateKernel();
 		}
+
+		$this->random->setSeed($this->seed);
+		$this->noiseBase = new Simplex($this->random, 4, 1 / 4, 1 / 64);
+		$this->populators[] = new EndPillar();
 	}
 
 	private static function generateKernel(){
@@ -90,16 +95,8 @@ class End extends Generator{
 		return [];
 	}
 
-	public function init(ChunkManager $level, Random $random) : void{
-		parent::init($level, $random);
-		$this->random->setSeed($this->level->getSeed());
-		$this->noiseBase = new Simplex($this->random, 4, 1 / 4, 1 / 64);
-		$this->random->setSeed($this->level->getSeed());
-		$this->populators[] = new EndPillar();
-	}
-
 	public function generateChunk(int $chunkX, int $chunkZ) : void{
-		$this->random->setSeed(0xa6fe78dc ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
+		$this->random->setSeed(0xa6fe78dc ^ ($chunkX << 8) ^ $chunkZ ^ $this->seed);
 
 		$noise = $this->noiseBase->getFastNoise3D(16, 128, 16, 4, 8, 4, $chunkX * 16, 0, $chunkZ * 16);
 
@@ -142,7 +139,7 @@ class End extends Generator{
 	}
 
 	public function populateChunk(int $chunkX, int $chunkZ) : void{
-		$this->random->setSeed(0xa6fe78dc ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
+		$this->random->setSeed(0xa6fe78dc ^ ($chunkX << 8) ^ $chunkZ ^ $this->seed);
 		foreach($this->populators as $populator){
 			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);
 		}

@@ -55,22 +55,28 @@ abstract class Generator{
 
 	/** @var ChunkManager */
 	protected $level;
+	/** @var int */
+	protected $seed;
+	/** @var array */
+	protected $options;
+
 	/** @var Random */
 	protected $random;
 
-	abstract public function __construct(array $settings = []);
-
-
-	public function init(ChunkManager $level, Random $random) : void{
+	public function __construct(ChunkManager $level, int $seed, array $options = []){
 		$this->level = $level;
-		$this->random = $random;
+		$this->seed = $seed;
+		$this->options = $options;
+		$this->random = new Random($seed);
 	}
 
 	abstract public function generateChunk(int $chunkX, int $chunkZ) : void;
 
 	abstract public function populateChunk(int $chunkX, int $chunkZ) : void;
 
-	abstract public function getSettings() : array;
+	public function getSettings() : array{
+		return $this->options;
+	}
 
 	abstract public function getName() : string;
 

@@ -25,6 +25,8 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Bearing;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -69,19 +71,20 @@ abstract class Stair extends Transparent{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$faces = [
-			0 => 0,
-			1 => 2,
-			2 => 1,
-			3 => 3
+		static $faces = [
+			Bearing::SOUTH => 3, //north
+			Bearing::WEST => 0, //east
+			Bearing::NORTH => 2, //south
+			Bearing::EAST => 1 //west
 		];
-		$this->meta = $faces[$player->getDirection()] & 0x03;
-		if(($clickVector->y > 0.5 and $face !== Vector3::SIDE_UP) or $face === Vector3::SIDE_DOWN){
+		if($player !== null){
+			$this->meta = $faces[$player->getDirection()];
+		}
+		if(($clickVector->y > 0.5 and $face !== Facing::UP) or $face === Facing::DOWN){
 			$this->meta |= 0x04; //Upside-down stairs
 		}
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
-		return true;
+		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function getVariantBitmask() : int{

@@ -256,6 +256,11 @@ class Level implements ChunkManager, Metadatable{
 	/** @var bool */
 	private $closed = false;
 
+	/** @var BlockLightUpdate|null */
+	private $blockLightUpdate = null;
+	/** @var SkyLightUpdate|null */
+	private $skyLightUpdate = null;
+
 	/** @var Random */
 	public $random;
 
@@ -785,6 +790,8 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->doTickTiles->startTiming();
 		$this->tickChunks();
 		$this->timings->doTickTiles->stopTiming();
+
+		$this->executeQueuedLightUpdates();
 
 		if(count($this->changedBlocks) > 0){
 			if(count($this->players) > 0){
@@ -1434,21 +1441,20 @@ class Level implements ChunkManager, Metadatable{
 			$newHeightMap = $oldHeightMap;
 		}
 
-		$update = new SkyLightUpdate($this);
-
+		if($this->skyLightUpdate === null){
+			$this->skyLightUpdate = new SkyLightUpdate($this);
+		}
 		if($newHeightMap > $oldHeightMap){ //Heightmap increase, block placed, remove sky light
 			for($i = $y; $i >= $oldHeightMap; --$i){
-				$update->setAndUpdateLight($x, $i, $z, 0); //Remove all light beneath, adjacent recalculation will handle the rest.
+				$this->skyLightUpdate->setAndUpdateLight($x, $i, $z, 0); //Remove all light beneath, adjacent recalculation will handle the rest.
 			}
 		}elseif($newHeightMap < $oldHeightMap){ //Heightmap decrease, block changed or removed, add sky light
 			for($i = $y; $i >= $newHeightMap; --$i){
-				$update->setAndUpdateLight($x, $i, $z, 15);
+				$this->skyLightUpdate->setAndUpdateLight($x, $i, $z, 15);
 			}
 		}else{ //No heightmap change, block changed "underground"
-			$update->setAndUpdateLight($x, $y, $z, max(0, $this->getHighestAdjacentBlockSkyLight($x, $y, $z) - BlockFactory::$lightFilter[$sourceId]));
+			$this->skyLightUpdate->setAndUpdateLight($x, $y, $z, max(0, $this->getHighestAdjacentBlockSkyLight($x, $y, $z) - BlockFactory::$lightFilter[$sourceId]));
 		}
-
-		$update->execute();
 
 		$this->timings->doBlockSkyLightUpdates->stopTiming();
 	}
@@ -1479,11 +1485,28 @@ class Level implements ChunkManager, Metadatable{
 		$id = $this->getBlockIdAt($x, $y, $z);
 		$newLevel = max(BlockFactory::$light[$id], $this->getHighestAdjacentBlockLight($x, $y, $z) - BlockFactory::$lightFilter[$id]);
 
-		$update = new BlockLightUpdate($this);
-		$update->setAndUpdateLight($x, $y, $z, $newLevel);
-		$update->execute();
+		if($this->blockLightUpdate === null){
+			$this->blockLightUpdate = new BlockLightUpdate($this);
+		}
+		$this->blockLightUpdate->setAndUpdateLight($x, $y, $z, $newLevel);
 
 		$this->timings->doBlockLightUpdates->stopTiming();
+	}
+
+	public function executeQueuedLightUpdates() : void{
+		if($this->blockLightUpdate !== null){
+			$this->timings->doBlockLightUpdates->startTiming();
+			$this->blockLightUpdate->execute();
+			$this->blockLightUpdate = null;
+			$this->timings->doBlockLightUpdates->stopTiming();
+		}
+
+		if($this->skyLightUpdate !== null){
+			$this->timings->doBlockSkyLightUpdates->startTiming();
+			$this->skyLightUpdate->execute();
+			$this->skyLightUpdate = null;
+			$this->timings->doBlockSkyLightUpdates->stopTiming();
+		}
 	}
 
 	/**

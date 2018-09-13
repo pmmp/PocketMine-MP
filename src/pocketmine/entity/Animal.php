@@ -36,6 +36,10 @@ abstract class Animal extends Mob implements Ageable{
 		return $this->getGenericFlag(self::DATA_FLAG_BABY);
 	}
 
+	public function getTalkInterval() : int{
+		return 120;
+	}
+
 	public function isBreedingItem(Item $item) : bool{ // TODO: Apply this to all animals
 		return $item->getId() === Item::WHEAT;
 	}

@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Beacon as TileBeacon;
@@ -65,7 +66,7 @@ class Beacon extends Transparent{
 
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
-			$top = $this->getSide(Vector3::SIDE_UP);
+			$top = $this->getSide(Facing::UP);
 			if($top->isTransparent() !== true){
 				return true;
 			}

@@ -27,10 +27,7 @@ use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityCombustByBlockEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
-use pocketmine\Player;
 use pocketmine\Server;
 
 class Lava extends Liquid{
@@ -113,12 +110,5 @@ class Lava extends Liquid{
 		}
 
 		$entity->resetFallDistance();
-	}
-
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$ret = $this->getLevel()->setBlock($this, $this, true, false);
-		$this->getLevel()->scheduleDelayedBlockUpdate($this, $this->tickRate());
-
-		return $ret;
 	}
 }

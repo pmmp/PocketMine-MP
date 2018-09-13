@@ -28,6 +28,7 @@ use pocketmine\block\Block;
 use pocketmine\inventory\ShulkerBoxInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
@@ -43,7 +44,7 @@ class ShulkerBox extends Spawnable implements InventoryHolder, Container, Nameab
 	public const TAG_UNDYED = "isUndyed";
 
 	/** @var int */
-	protected $facing = Vector3::SIDE_UP;
+	protected $facing = Facing::UP;
 	/** @var bool */
 	protected $isUndyed = true;
 
@@ -98,7 +99,7 @@ class ShulkerBox extends Spawnable implements InventoryHolder, Container, Nameab
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
-		$this->facing = $nbt->getByte(self::TAG_FACING, Vector3::SIDE_UP);
+		$this->facing = $nbt->getByte(self::TAG_FACING, Facing::UP);
 		$this->isUndyed = $nbt->getByte(self::TAG_UNDYED, 1) == 1;
 
 		$this->loadName($nbt);
@@ -123,7 +124,7 @@ class ShulkerBox extends Spawnable implements InventoryHolder, Container, Nameab
 	}
 
 	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
-		$nbt->setByte(self::TAG_FACING, $face ?? Vector3::SIDE_UP);
+		$nbt->setByte(self::TAG_FACING, $face ?? Facing::UP);
 		if($item !== null){
 			$nbt->setByte(self::TAG_UNDYED, $item->getId() == Block::UNDYED_SHULKER_BOX ? 1 : 0);
 		}

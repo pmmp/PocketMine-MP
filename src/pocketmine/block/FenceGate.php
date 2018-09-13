@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\level\sound\DoorSound;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Bearing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -68,10 +69,11 @@ class FenceGate extends Transparent{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$this->meta = ($player instanceof Player ? ($player->getDirection() - 1) & 0x03 : 0);
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
+		if($player !== null){
+			$this->meta = Bearing::rotate($player->getDirection(), 2);
+		}
 
-		return true;
+		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function getVariantBitmask() : int{
@@ -82,7 +84,7 @@ class FenceGate extends Transparent{
 		$this->meta = (($this->meta ^ 0x04) & ~0x02);
 
 		if($player !== null){
-			$this->meta |= (($player->getDirection() - 1) & 0x02);
+			$this->meta |= (Bearing::rotate($player->getDirection(), 2) & 0x02); //open towards the player, retaining axis
 		}
 
 		$this->getLevel()->setBlock($this, $this, true);
