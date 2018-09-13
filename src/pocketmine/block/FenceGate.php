@@ -70,7 +70,7 @@ class FenceGate extends Transparent{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if($player !== null){
-			$this->meta = Bearing::rotate($player->getDirection(), 2);
+			$this->meta = Bearing::opposite($player->getDirection());
 		}
 
 		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
@@ -84,7 +84,7 @@ class FenceGate extends Transparent{
 		$this->meta = (($this->meta ^ 0x04) & ~0x02);
 
 		if($player !== null){
-			$this->meta |= (Bearing::rotate($player->getDirection(), 2) & 0x02); //open towards the player, retaining axis
+			$this->meta |= (Bearing::opposite($player->getDirection()) & 0x02); //open towards the player, retaining axis
 		}
 
 		$this->getLevel()->setBlock($this, $this, true);
