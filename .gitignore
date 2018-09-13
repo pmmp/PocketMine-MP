@@ -39,3 +39,6 @@ test_data/*
 
 # Doxygen
 Documentation/*
+
+# Docusaurus 
+website/node_modules
