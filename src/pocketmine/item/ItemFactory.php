@@ -203,7 +203,7 @@ class ItemFactory{
 		//TODO: HORSEARMORIRON
 		//TODO: GOLD_HORSE_ARMOR
 		//TODO: DIAMOND_HORSE_ARMOR
-		//TODO: LEAD
+		self::registerItem(new Lead());
 		//TODO: NAMETAG
 		self::registerItem(new Item(Item::PRISMARINE_CRYSTALS, 0, "Prismarine Crystals"));
 		self::registerItem(new RawMutton());

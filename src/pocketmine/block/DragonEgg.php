@@ -63,9 +63,9 @@ class DragonEgg extends Fallable{
 		$attempts = 0;
 		$level = $player->getLevel();
 		while(true){
-			$x = $this->getX() + rand(-15,15);
-			$y = $this->getY() + rand(-7,7);
-			$z = $this->getZ() + rand(-15,15);
+			$x = $this->getX() + rand(-15, 15);
+			$y = $this->getY() + rand(-7, 7);
+			$z = $this->getZ() + rand(-15, 15);
 			if($y < Level::Y_MAX && $level->getBlockIdAt($x, $y, $z) == 0){
 				$oldPos = $this->asVector3();
 				$level->setBlock($this, BlockFactory::get(Block::AIR), true, true);

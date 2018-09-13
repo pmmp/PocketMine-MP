@@ -27,6 +27,8 @@ namespace pocketmine\entity;
 
 use pocketmine\entity\behavior\BehaviorPool;
 use pocketmine\entity\pathfinder\EntityNavigator;
+use pocketmine\item\Lead;
+use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -35,6 +37,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\PlaySoundPacket;
+use pocketmine\Player;
 
 abstract class Mob extends Living{
 
@@ -53,16 +56,10 @@ abstract class Mob extends Living{
 	protected $jumpCooldown = 0;
 	/** @var Vector3 */
 	protected $homePosition;
-
 	/** @var bool */
 	protected $aiEnabled = false;
 	/** @var int */
 	protected $livingSoundTime = 0;
-
-	public function __construct(Level $level, CompoundTag $nbt){
-		parent::__construct($level, $nbt);
-		$this->setImmobile(true);
-	}
 
 	/**
 	 * @return bool
@@ -104,6 +101,8 @@ abstract class Mob extends Living{
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
+		$this->setImmobile(true);
+
 		$this->targetBehaviorPool = new BehaviorPool();
 		$this->behaviorPool = new BehaviorPool();
 		$this->navigator = new EntityNavigator($this);
@@ -113,14 +112,6 @@ abstract class Mob extends Living{
 		$this->setDefaultMovementSpeed($this->getMovementSpeed());
 
 		$this->aiEnabled = boolval($nbt->getByte("aiEnabled", 0));
-	}
-
-	public function saveNBT() : CompoundTag{
-		$nbt = parent::saveNBT();
-
-		$nbt->setByte("aiEnabled", intval($this->aiEnabled));
-
-		return $nbt;
 	}
 
 	public function entityBaseTick(int $diff = 1) : bool{
@@ -275,5 +266,38 @@ abstract class Mob extends Living{
 
 	public function getDefaultMovementSpeed() : float{
 		return $this->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED)->getDefaultValue();
+	}
+
+	public function updateLeashedState() : void{
+		parent::updateLeashedState();
+
+		if($this->isLeashed() and $this->leashedToEntity !== null and $this->leashedToEntity->level === $this->level){
+			$entity = $this->leashedToEntity;
+			$f = $this->distance($entity);
+
+			if($this instanceof Tamable and $this->isSitting()){
+				if($f > 10){
+					$this->clearLeashed(true, true);
+				}
+				return;
+			}
+
+			if($f > 4){
+				$this->navigator->tryMoveTo($entity, 1.0);
+			}
+
+			if($f > 6){
+				$d0 = ($entity->x - $this->x) / (int) $f;
+				$d1 = ($entity->y - $this->y) / (int) $f;
+				$d2 = ($entity->z - $this->z) / (int) $f;
+				$this->motion->x += $d0 * abs($d0) * 0.4;
+				$this->motion->y += $d1 * abs($d1) * 0.4;
+				$this->motion->z += $d2 * abs($d2) * 0.4;
+			}
+
+			if($f > 10){
+				$this->clearLeashed(true, true);
+			}
+		}
 	}
 }

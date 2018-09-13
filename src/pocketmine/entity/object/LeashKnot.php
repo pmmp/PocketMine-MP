@@ -27,6 +27,9 @@ namespace pocketmine\entity\object;
 use pocketmine\block\Fence;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
+use pocketmine\level\Level;
+use pocketmine\level\Position;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AddHangingEntityPacket;
 use pocketmine\Player;
@@ -78,6 +81,7 @@ class LeashKnot extends Entity{
 	 */
 	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : bool{
 		$this->kill();
+		// TODO
 		return true;
 	}
 
@@ -93,5 +97,30 @@ class LeashKnot extends Entity{
 		$pk->direction = 0;
 
 		$player->sendDataPacket($pk);
+	}
+
+	/**
+	 * @return Position
+	 */
+	public function getHangingPosition() : Position{
+		return new Position($this->getFloorX(), $this->getFloorY(), $this->getFloorZ(), $this->level);
+	}
+
+	/**
+	 * @param Level   $level
+	 * @param Vector3 $pos
+	 *
+	 * @return null|LeashKnot
+	 */
+	public static function getKnotFromPosition(Level $level, Vector3 $pos) : ?LeashKnot{
+		foreach($level->getCollidingEntities(new AxisAlignedBB($pos->x - 1, $pos->y - 1, $pos->z - 1, $pos->x + 1, $pos->y + 1, $pos->z + 1)) as $entity){
+			if($entity instanceof LeashKnot){
+				if($entity->getHangingPosition()->equals($pos)){
+					return $entity;
+				}
+			}
+		}
+
+		return null;
 	}
 }

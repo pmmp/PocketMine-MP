@@ -60,7 +60,7 @@ abstract class Animal extends Mob implements Ageable{
 				return true;
 			}
 		}
-		return false;
+		return parent::onInteract($player, $item, $clickPos, $slot);
 	}
 
 	public function entityBaseTick(int $diff = 1) : bool{
@@ -81,5 +81,9 @@ abstract class Animal extends Mob implements Ageable{
 
 	public function eatItem(Item $item) : void{
 		$this->broadcastEntityEvent(EntityEventPacket::EATING_ITEM, $item->getId());
+	}
+
+	public function allowLeashing() : bool{
+		return !$this->isLeashed() and $this->aiEnabled;
 	}
 }

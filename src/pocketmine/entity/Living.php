@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
+use pocketmine\entity\object\LeashKnot;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\entity\projectile\ProjectileSource;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
@@ -37,12 +38,16 @@ use pocketmine\item\Armor;
 use pocketmine\item\Consumable;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\Lead;
+use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
@@ -51,6 +56,7 @@ use pocketmine\Player;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Color;
+use pocketmine\utils\UUID;
 
 abstract class Living extends Entity implements Damageable{
 
@@ -75,6 +81,15 @@ abstract class Living extends Entity implements Damageable{
 	/** @var Entity|null */
 	protected $lastAttacker = null;
 
+	/** @var bool */
+	protected $leashed = false;
+
+	/** @var CompoundTag */
+	protected $leashNbt;
+
+	/** @var Entity|null */
+	protected $leashedToEntity;
+
 	abstract public function getName() : string;
 
 	/**
@@ -89,6 +104,33 @@ abstract class Living extends Entity implements Damageable{
 	 */
 	public function setLastAttacker(?Entity $lastAttacker) : void{
 		$this->lastAttacker = $lastAttacker;
+	}
+
+	/**
+	 * @return null|Entity
+	 */
+	public function getLeashedToEntity() : ?Entity{
+		return $this->leashedToEntity;
+	}
+
+	/**
+	 * @param Entity $leashedToEntity
+	 * @param bool   $send
+	 */
+	public function setLeashedToEntity(Entity $leashedToEntity, bool $send = true) : void{
+		$this->leashed = true;
+		$this->leashedToEntity = $leashedToEntity;
+
+		if($send){
+			$this->propertyManager->setLong(self::DATA_LEAD_HOLDER_EID, $leashedToEntity->getId());
+		}
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isLeashed() : bool{
+		return $this->leashed;
 	}
 
 	protected function initEntity(CompoundTag $nbt) : void{
@@ -120,6 +162,12 @@ abstract class Living extends Entity implements Damageable{
 
 				$this->addEffect(new EffectInstance($effect, $e->getInt("Duration"), Binary::unsignByte($e->getByte("Amplifier")), $e->getByte("ShowParticles", 1) !== 0, $e->getByte("Ambient", 0) !== 0));
 			}
+		}
+
+		$this->leashed = boolval($nbt->getByte("Leashed", 0));
+
+		if($this->isLeashed() and $nbt->hasTag("Leash",  CompoundTag::class)){
+			$this->leashNbt = $nbt->getCompoundTag("Leash");
 		}
 	}
 
@@ -198,6 +246,22 @@ abstract class Living extends Entity implements Damageable{
 			}
 
 			$nbt->setTag(new ListTag("ActiveEffects", $effects));
+		}
+
+		$nbt->setByte("Leashed", intval($this->leashed));
+		if($this->leashedToEntity !== null){
+			$leashNbt = new CompoundTag("Leash");
+
+			if($this->leashedToEntity instanceof Living){
+				$leashNbt->setString("UUID", $this->leashedToEntity->getUniqueId()->toString());
+			}elseif($this->leashedToEntity instanceof LeashKnot){
+				$pos = $this->leashedToEntity->getHangingPosition();
+				$leashNbt->setInt("X", $pos->x);
+				$leashNbt->setInt("Y", $pos->y);
+				$leashNbt->setInt("Z", $pos->z);
+			}
+
+			$nbt->setTag($leashNbt);
 		}
 
 		return $nbt;
@@ -669,6 +733,12 @@ abstract class Living extends Entity implements Damageable{
 		//TODO
 	}
 
+	public function onUpdate(int $currentTick) : bool{
+		$this->updateLeashedState();
+
+		return parent::onUpdate($currentTick);
+	}
+
 	public function entityBaseTick(int $tickDiff = 1) : bool{
 		Timings::$timerLivingEntityBaseTick->startTiming();
 
@@ -938,5 +1008,98 @@ abstract class Living extends Entity implements Damageable{
 			}
 			parent::close();
 		}
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function allowLeashing() : bool{
+		return false;
+	}
+
+	/**
+	 * @param bool $send
+	 * @param bool $dropLead
+	 */
+	public function clearLeashed(bool $send, bool $dropLead) : void{
+		if($this->isLeashed()){
+			$this->leashed = false;
+			$this->leashedToEntity = null;
+
+			if($dropLead){
+				$this->level->dropItem($this, ItemFactory::get(Item::LEAD));
+			}
+
+			if($send){
+				$this->propertyManager->removeProperty(self::DATA_LEAD_HOLDER_EID);
+			}
+		}
+	}
+
+	public function recreateLeash() : void{
+		if($this->isLeashed() and $this->leashNbt !== null){
+			if($this->leashNbt->hasTag("UUID", StringTag::class)){
+				$uuid = UUID::fromString($this->leashNbt->getString("UUID"));
+
+				foreach($this->level->getCollidingEntities($this->getBoundingBox()->expandedCopy(10, 10, 10)) as $entity){
+					if($entity instanceof Living){
+						if($entity->getUniqueId()->equals($uuid)){
+							$this->leashedToEntity = $entity;
+							break;
+						}
+					}
+				}
+			}elseif($this->leashNbt->hasTag("X", IntTag::class) and $this->leashNbt->hasTag("Y", IntTag::class) and $this->leashNbt->hasTag("Z", IntTag::class)){
+				$pos = new Vector3($this->leashNbt->getInt("X"), $this->leashNbt->getInt("Y"), $this->leashNbt->getInt("Z"));
+				$knot = LeashKnot::getKnotFromPosition($this->level, $pos);
+
+				if($knot === null){
+					$knot = new LeashKnot($this->level, Entity::createBaseNBT($pos));
+					$knot->spawnToAll();
+				}
+
+				$this->leashedToEntity = $knot;
+			}else{
+				$this->clearLeashed(false, true);
+			}
+		}
+
+		$this->leashNbt = null;
+	}
+
+	public function updateLeashedState() : void{
+		if($this->leashNbt !== null){
+			$this->recreateLeash();
+		}
+
+		if($this->isLeashed()){
+			if(!$this->isAlive()){
+				$this->clearLeashed(true, true);
+			}
+
+			if($this->leashedToEntity === null or $this->leashedToEntity->isClosed()){
+				$this->clearLeashed(true, true);
+			}
+		}
+	}
+
+	/**
+	 * @param Player  $player
+	 * @param Item    $item
+	 * @param Vector3 $clickPos
+	 * @param int     $slot
+	 *
+	 * @return bool
+	 */
+	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : bool{
+		if($this->isLeashed() and $this->leashedToEntity === $player){
+			$this->clearLeashed(true, !$player->isCreative());
+		}else{
+			if($item instanceof Lead and $this->allowLeashing()){
+				$this->setLeashedToEntity($player);
+				$item->pop();
+			}
+		}
+		return parent::onInteract($player, $item, $clickPos, $slot);
 	}
 }
