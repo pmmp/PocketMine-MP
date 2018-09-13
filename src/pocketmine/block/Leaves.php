@@ -81,50 +81,15 @@ class Leaves extends Transparent{
 			if($down === $this->woodType){
 				return true;
 			}
-			if($fromSide === null){
-				for($side = 2; $side <= 5; ++$side){
-					if($this->findLog($pos->getSide($side), $visited, $distance + 1, $side)){
-						return true;
-					}
-				}
-			}else{ //No more loops
-				switch($fromSide){
-					case 2:
-						if($this->findLog($pos->getSide(Facing::NORTH), $visited, $distance + 1, $fromSide)){
-							return true;
-						}elseif($this->findLog($pos->getSide(Facing::WEST), $visited, $distance + 1, $fromSide)){
-							return true;
-						}elseif($this->findLog($pos->getSide(Facing::EAST), $visited, $distance + 1, $fromSide)){
-							return true;
-						}
-						break;
-					case 3:
-						if($this->findLog($pos->getSide(Facing::SOUTH), $visited, $distance + 1, $fromSide)){
-							return true;
-						}elseif($this->findLog($pos->getSide(Facing::WEST), $visited, $distance + 1, $fromSide)){
-							return true;
-						}elseif($this->findLog($pos->getSide(Facing::EAST), $visited, $distance + 1, $fromSide)){
-							return true;
-						}
-						break;
-					case 4:
-						if($this->findLog($pos->getSide(Facing::NORTH), $visited, $distance + 1, $fromSide)){
-							return true;
-						}elseif($this->findLog($pos->getSide(Facing::SOUTH), $visited, $distance + 1, $fromSide)){
-							return true;
-						}elseif($this->findLog($pos->getSide(Facing::WEST), $visited, $distance + 1, $fromSide)){
-							return true;
-						}
-						break;
-					case 5:
-						if($this->findLog($pos->getSide(Facing::NORTH), $visited, $distance + 1, $fromSide)){
-							return true;
-						}elseif($this->findLog($pos->getSide(Facing::SOUTH), $visited, $distance + 1, $fromSide)){
-							return true;
-						}elseif($this->findLog($pos->getSide(Facing::EAST), $visited, $distance + 1, $fromSide)){
-							return true;
-						}
-						break;
+
+			foreach([
+				Facing::NORTH,
+				Facing::SOUTH,
+				Facing::WEST,
+				Facing::EAST
+			] as $side){
+				if($side !== $fromSide and $this->findLog($pos->getSide($side), $visited, $distance + 1, Facing::opposite($side))){
+					return true;
 				}
 			}
 		}
