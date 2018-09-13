@@ -1265,7 +1265,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		if($this->riddenByEntity instanceof Entity and $this->riddenByEntity->isClosed()){
 			$this->riddenByEntity = null;
-			unset($this->seats[array_search($this->riddenByEntity, $this->seats)]);
+			unset($this->passengers[array_search($this->riddenByEntity, $this->passengers, true)]);
 			$this->setGenericFlag(Entity::DATA_FLAG_WASD_CONTROLLED, false);
 		}
 
@@ -1799,7 +1799,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		if($this->ridingEntity !== null){
 			$entity = $this->ridingEntity;
 
-			unset($entity->passengers[array_search($this, $entity->passengers)]);
+			unset($entity->passengers[array_search($this, $entity->passengers, true)]);
 
 			if($this->isRiding()){
 				$entity->setRiddenByEntity(null);

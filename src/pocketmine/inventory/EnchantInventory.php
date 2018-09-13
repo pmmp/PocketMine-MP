@@ -27,7 +27,7 @@ use pocketmine\level\Position;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
 
-class EnchantInventory extends ContainerInventory{
+class EnchantInventory extends ContainerInventory implements FakeContainer{
 
 	/** @var Position */
 	protected $holder;

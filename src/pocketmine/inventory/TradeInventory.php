@@ -29,7 +29,7 @@ use pocketmine\nbt\NetworkLittleEndianNBTStream;
 use pocketmine\network\mcpe\protocol\UpdateTradePacket;
 use pocketmine\Player;
 
-class TradeInventory extends BaseInventory{
+class TradeInventory extends BaseInventory implements FakeContainer{
 
 	/** @var Villager */
 	protected $holder;

@@ -143,4 +143,11 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
         $this->left = null;
         $this->right = null;
     }
+
+	/**
+	 * @return bool
+	 */
+	public function isValid() : bool{
+    	return $this->left !== null and $this->right !== null;
+    }
 }

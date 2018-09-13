@@ -20,26 +20,10 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\inventory;
 
-use pocketmine\network\mcpe\protocol\types\WindowTypes;
-use pocketmine\tile\Beacon;
+interface FakeContainer{
 
-class BeaconInventory extends ContainerInventory implements FakeContainer{
-
-    public function __construct(Beacon $tile){
-        parent::__construct($tile);
-    }
-
-    public function getName() : string{
-        return "Beacon";
-    }
-
-    public function getDefaultSize() : int{
-        return 1;
-    }
-
-    public function getNetworkType() : int{
-        return WindowTypes::BEACON;
-    }
 }
