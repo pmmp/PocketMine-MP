@@ -68,7 +68,7 @@ class Leaves extends Transparent{
 	}
 
 
-	protected function findLog(Block $pos, array $visited, int $distance, ?int $fromSide = null) : bool{
+	protected function findLog(Block $pos, array $visited = [], int $distance = 0, ?int $fromSide = null) : bool{
 		$index = $pos->x . "." . $pos->y . "." . $pos->z;
 		if(isset($visited[$index])){
 			return false;
@@ -111,11 +111,10 @@ class Leaves extends Transparent{
 	public function onRandomTick() : void{
 		if(($this->meta & 0b00001100) === 0x08){
 			$this->meta &= 0x03;
-			$visited = [];
 
 			$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new LeavesDecayEvent($this));
 
-			if($ev->isCancelled() or $this->findLog($this, $visited, 0)){
+			if($ev->isCancelled() or $this->findLog($this)){
 				$this->getLevel()->setBlock($this, $this, false, false);
 			}else{
 				$this->getLevel()->useBreakOn($this);
