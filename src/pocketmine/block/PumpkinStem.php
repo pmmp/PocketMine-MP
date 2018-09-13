@@ -51,13 +51,13 @@ class PumpkinStem extends Crops{
 					$this->getLevel()->setBlock($this, $ev->getNewState(), true);
 				}
 			}else{
-				for($side = 2; $side <= 5; ++$side){
+				foreach(Facing::HORIZONTAL as $side){
 					$b = $this->getSide($side);
 					if($b->getId() === self::PUMPKIN){
 						return;
 					}
 				}
-				$side = $this->getSide(mt_rand(2, 5));
+				$side = $this->getSide(Facing::HORIZONTAL[array_rand(Facing::HORIZONTAL)]);
 				$d = $side->getSide(Facing::DOWN);
 				if($side->getId() === self::AIR and ($d->getId() === self::FARMLAND or $d->getId() === self::GRASS or $d->getId() === self::DIRT)){
 					Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($side, BlockFactory::get(Block::PUMPKIN)));

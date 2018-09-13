@@ -142,8 +142,8 @@ class Fire extends Flowable{
 	}
 
 	private function hasAdjacentFlammableBlocks() : bool{
-		for($i = 0; $i <= 5; ++$i){
-			if($this->getSide($i)->isFlammable()){
+		foreach(Facing::ALL as $face){
+			if($this->getSide($face)->isFlammable()){
 				return true;
 			}
 		}
