@@ -58,9 +58,12 @@ class FlowerPot extends Flowable{
 			return false;
 		}
 
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
-		Tile::createTile(Tile::FLOWER_POT, $this->getLevel(), TileFlowerPot::createNBT($this, $face, $item, $player));
-		return true;
+		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
+			Tile::createTile(Tile::FLOWER_POT, $this->getLevel(), TileFlowerPot::createNBT($this, $face, $item, $player));
+			return true;
+		}
+
+		return false;
 	}
 
 	public function onNearbyBlockChange() : void{

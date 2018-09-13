@@ -159,11 +159,11 @@ class Bed extends Transparent{
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
 		if(!$down->isTransparent()){
-			$meta = $player instanceof Player ? Bearing::rotate($player->getDirection(), 2) : 0; //rotate 180 degrees
-			$next = $this->getSide(self::getOtherHalfSide($meta));
+			$this->meta = $player instanceof Player ? Bearing::rotate($player->getDirection(), 2) : 0; //rotate 180 degrees
+			$next = $this->getSide(self::getOtherHalfSide($this->meta));
 			if($next->canBeReplaced() and !$next->getSide(Facing::DOWN)->isTransparent()){
-				$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->id, $meta), true, true);
-				$this->getLevel()->setBlock($next, BlockFactory::get($this->id, $meta | self::BITFLAG_HEAD), true, true);
+				parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+				$this->getLevel()->setBlock($next, BlockFactory::get($this->id, $this->meta | self::BITFLAG_HEAD), true, true);
 
 				Tile::createTile(Tile::BED, $this->getLevel(), TileBed::createNBT($this, $face, $item, $player));
 				Tile::createTile(Tile::BED, $this->getLevel(), TileBed::createNBT($next, $face, $item, $player));

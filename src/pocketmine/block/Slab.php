@@ -96,9 +96,8 @@ abstract class Slab extends Transparent{
 		if($blockReplace->getId() === $this->id and $blockClicked->getVariant() !== $this->getVariant()){
 			return false;
 		}
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
-		return true;
+		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function getVariantBitmask() : int{

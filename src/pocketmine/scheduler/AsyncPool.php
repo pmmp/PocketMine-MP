@@ -233,41 +233,6 @@ class AsyncPool{
 	}
 
 	/**
-	 * Removes all tasks from the pool, cancelling where possible. This will block until all tasks have been
-	 * successfully deleted.
-	 */
-	public function removeTasks() : void{
-		foreach($this->workers as $worker){
-			/** @var AsyncTask $task */
-			while(($task = $worker->unstack()) !== null){
-				//cancelRun() is not strictly necessary here, but it might be used to inform plugins of the task state
-				//(i.e. it never executed).
-				$task->cancelRun();
-				$this->removeTask($task, true);
-			}
-		}
-		do{
-			foreach($this->tasks as $task){
-				$task->cancelRun();
-				$this->removeTask($task);
-			}
-
-			if(count($this->tasks) > 0){
-				usleep(25000);
-			}
-		}while(count($this->tasks) > 0);
-
-		for($i = 0; $i < $this->size; ++$i){
-			$this->workerUsage[$i] = 0;
-		}
-
-		$this->taskWorkers = [];
-		$this->tasks = [];
-
-		$this->collectWorkers();
-	}
-
-	/**
 	 * Collects garbage from running workers.
 	 */
 	private function collectWorkers() : void{
@@ -329,10 +294,28 @@ class AsyncPool{
 	 */
 	public function shutdown() : void{
 		$this->collectTasks();
-		$this->removeTasks();
+
+		foreach($this->workers as $worker){
+			/** @var AsyncTask $task */
+			while(($task = $worker->unstack()) !== null){
+				//cancelRun() is not strictly necessary here, but it might be used to inform plugins of the task state
+				//(i.e. it never executed).
+				$task->cancelRun();
+				$this->removeTask($task, true);
+			}
+		}
+		foreach($this->tasks as $task){
+			$task->cancelRun();
+			$this->removeTask($task, true);
+		}
+
+		$this->taskWorkers = [];
+		$this->tasks = [];
+
 		foreach($this->workers as $worker){
 			$worker->quit();
 		}
 		$this->workers = [];
+		$this->workerUsage = [];
 	}
 }

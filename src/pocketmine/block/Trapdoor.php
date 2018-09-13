@@ -95,8 +95,8 @@ class Trapdoor extends Transparent{
 		if(($clickVector->y > 0.5 and $face !== Facing::UP) or $face === Facing::DOWN){
 			$this->meta |= self::MASK_UPPER; //top half of block
 		}
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
-		return true;
+
+		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function getVariantBitmask() : int{

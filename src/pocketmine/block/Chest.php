@@ -77,15 +77,18 @@ class Chest extends Transparent{
 			}
 		}
 
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
-		$tile = Tile::createTile(Tile::CHEST, $this->getLevel(), TileChest::createNBT($this, $face, $item, $player));
+		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
+			$tile = Tile::createTile(Tile::CHEST, $this->getLevel(), TileChest::createNBT($this, $face, $item, $player));
 
-		if($chest instanceof TileChest and $tile instanceof TileChest){
-			$chest->pairWith($tile);
-			$tile->pairWith($chest);
+			if($chest instanceof TileChest and $tile instanceof TileChest){
+				$chest->pairWith($tile);
+				$tile->pairWith($chest);
+			}
+
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{

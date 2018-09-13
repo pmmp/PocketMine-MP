@@ -97,7 +97,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @return int
 	 */
-	final public function getId() : int{
+	public function getId() : int{
 		return $this->id;
 	}
 
@@ -114,14 +114,14 @@ class Block extends Position implements BlockIds, Metadatable{
 	/**
 	 * @return int
 	 */
-	final public function getDamage() : int{
+	public function getDamage() : int{
 		return $this->meta;
 	}
 
 	/**
 	 * @param int $meta
 	 */
-	final public function setDamage(int $meta) : void{
+	public function setDamage(int $meta) : void{
 		if($meta < 0 or $meta > 0xf){
 			throw new \InvalidArgumentException("Block damage values must be 0-15, not $meta");
 		}
@@ -182,7 +182,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return bool
 	 */
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		return $this->getLevel()->setBlock($this, $this, true, true);
+		return $this->getLevel()->setBlock($blockReplace, $this, true, true);
 	}
 
 	/**

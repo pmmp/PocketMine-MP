@@ -27,6 +27,7 @@ namespace pocketmine\block;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -91,19 +92,9 @@ class Ladder extends Transparent{
 
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if(!$blockClicked->isTransparent()){
-			$faces = [
-				2 => 2,
-				3 => 3,
-				4 => 4,
-				5 => 5
-			];
-			if(isset($faces[$face])){
-				$this->meta = $faces[$face];
-				$this->getLevel()->setBlock($blockReplace, $this, true, true);
-
-				return true;
-			}
+		if(!$blockClicked->isTransparent() and Facing::axis($face) !== Facing::AXIS_Y){
+			$this->meta = $face;
+			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
 		return false;

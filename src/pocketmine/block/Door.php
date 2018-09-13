@@ -139,7 +139,7 @@ abstract class Door extends Transparent{
 			}
 
 			$this->setDamage(Bearing::rotate($player->getDirection(), -1));
-			$this->getLevel()->setBlock($blockReplace, $this, true, true); //Bottom
+			parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 			$this->getLevel()->setBlock($blockUp, BlockFactory::get($this->getId(), $metaUp), true); //Top
 			return true;
 		}

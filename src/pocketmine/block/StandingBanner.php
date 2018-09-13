@@ -63,14 +63,16 @@ class StandingBanner extends Transparent{
 		if($face !== Facing::DOWN){
 			if($face === Facing::UP and $player !== null){
 				$this->meta = floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0f;
-				$this->getLevel()->setBlock($blockReplace, $this, true);
+				$ret = parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 			}else{
 				$this->meta = $face;
-				$this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::WALL_BANNER, $this->meta), true);
+				$ret = $this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::WALL_BANNER, $this->meta), true);
 			}
 
-			Tile::createTile(Tile::BANNER, $this->getLevel(), TileBanner::createNBT($this, $face, $item, $player));
-			return true;
+			if($ret){
+				Tile::createTile(Tile::BANNER, $this->getLevel(), TileBanner::createNBT($this, $face, $item, $player));
+				return true;
+			}
 		}
 
 		return false;

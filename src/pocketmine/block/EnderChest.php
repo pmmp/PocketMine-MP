@@ -66,10 +66,12 @@ class EnderChest extends Chest{
 			$this->meta = Bearing::toFacing($player->getDirection());
 		}
 
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
-		Tile::createTile(Tile::ENDER_CHEST, $this->getLevel(), TileEnderChest::createNBT($this, $face, $item, $player));
+		if(Block::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
+			Tile::createTile(Tile::ENDER_CHEST, $this->getLevel(), TileEnderChest::createNBT($this, $face, $item, $player));
+			return true;
+		}
 
-		return true;
+		return false;
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{

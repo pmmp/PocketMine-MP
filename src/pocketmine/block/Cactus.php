@@ -113,9 +113,7 @@ class Cactus extends Transparent{
 			$block2 = $this->getSide(Facing::WEST);
 			$block3 = $this->getSide(Facing::EAST);
 			if(!$block0->isSolid() and !$block1->isSolid() and !$block2->isSolid() and !$block3->isSolid()){
-				$this->getLevel()->setBlock($this, $this, true);
-
-				return true;
+				return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 			}
 		}
 

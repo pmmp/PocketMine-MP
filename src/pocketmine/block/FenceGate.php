@@ -72,9 +72,8 @@ class FenceGate extends Transparent{
 		if($player !== null){
 			$this->meta = Bearing::rotate($player->getDirection(), 2);
 		}
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
-		return true;
+		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function getVariantBitmask() : int{
