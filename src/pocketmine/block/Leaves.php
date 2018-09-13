@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\level\Level;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -68,27 +69,20 @@ class Leaves extends Transparent{
 	}
 
 
-	protected function findLog(Block $pos, array $visited = [], int $distance = 0, ?int $fromSide = null) : bool{
-		$index = $pos->x . "." . $pos->y . "." . $pos->z;
+	protected function findLog(Block $pos, array &$visited = [], int $distance = 0) : bool{
+		$index = Level::blockHash($pos->x, $pos->y, $pos->z);
 		if(isset($visited[$index])){
 			return false;
 		}
+		$visited[$index] = true;
+
 		if($pos->getId() === $this->woodType){
 			return true;
-		}elseif($pos->getId() === $this->id and $distance < 3){
-			$visited[$index] = true;
-			$down = $pos->getSide(Facing::DOWN)->getId();
-			if($down === $this->woodType){
-				return true;
-			}
+		}
 
-			foreach([
-				Facing::NORTH,
-				Facing::SOUTH,
-				Facing::WEST,
-				Facing::EAST
-			] as $side){
-				if($side !== $fromSide and $this->findLog($pos->getSide($side), $visited, $distance + 1, Facing::opposite($side))){
+		if($pos->getId() === $this->id and $distance <= 4){
+			foreach(Facing::ALL as $side){
+				if($this->findLog($pos->getSide($side), $visited, $distance + 1)){
 					return true;
 				}
 			}
