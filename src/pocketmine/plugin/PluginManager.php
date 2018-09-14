@@ -477,6 +477,16 @@ class PluginManager{
 
 	/**
 	 * @deprecated
+	 * @see PermissionManager::unsubscribeFromAllPermissions()
+	 *
+	 * @param Permissible $permissible
+	 */
+	public function unsubscribeFromAllPermissions(Permissible $permissible) : void{
+		PermissionManager::getInstance()->unsubscribeFromAllPermissions($permissible);
+	}
+
+	/**
+	 * @deprecated
 	 * @see PermissionManager::getPermissionSubscriptions()
 	 *
 	 * @param string $permission
