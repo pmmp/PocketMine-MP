@@ -1037,7 +1037,9 @@ abstract class Living extends Entity implements Damageable{
 
 			if($send){
 				$this->setGenericFlag(self::DATA_FLAG_LEASHED, false);
-				$this->propertyManager->setLong(self::DATA_LEAD_HOLDER_EID, 0);
+				$this->propertyManager->setLong(self::DATA_LEAD_HOLDER_EID, -1);
+
+				$this->respawnToAll(); // fix for removing lead
 			}
 		}
 	}

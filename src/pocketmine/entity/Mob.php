@@ -294,9 +294,10 @@ abstract class Mob extends Living{
 			}
 
 			if($f > 6){
-				$d0 = ($entity->x - $this->x) / (int) $f;
-				$d1 = ($entity->y - $this->y) / (int) $f;
-				$d2 = ($entity->z - $this->z) / (int) $f;
+				$d0 = ($entity->x - $this->x) / $f;
+				$d1 = ($entity->y - $this->y) / $f;
+				$d2 = ($entity->z - $this->z) / $f;
+
 				$this->motion->x += $d0 * abs($d0) * 0.4;
 				$this->motion->y += $d1 * abs($d1) * 0.4;
 				$this->motion->z += $d2 * abs($d2) * 0.4;
