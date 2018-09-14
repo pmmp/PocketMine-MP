@@ -54,6 +54,7 @@ use pocketmine\event\player\PlayerGameModeChangeEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerItemConsumeEvent;
 use pocketmine\event\player\PlayerItemHeldEvent;
+use pocketmine\event\player\PlayerItemUseEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerJumpEvent;
 use pocketmine\event\player\PlayerKickEvent;
@@ -2013,7 +2014,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$directionVector = $this->getDirectionVector();
 		$item = $this->inventory->getItemInHand();
 
-		$ev = new PlayerInteractEvent($this, $item, null, $directionVector, 0, PlayerInteractEvent::RIGHT_CLICK_AIR);
+		$ev = new PlayerItemUseEvent($this, $item, $directionVector);
 		if($this->hasItemCooldown($item)){
 			$ev->setCancelled();
 		}

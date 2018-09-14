@@ -37,9 +37,6 @@ use pocketmine\Player;
 class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 	public const LEFT_CLICK_BLOCK = 0;
 	public const RIGHT_CLICK_BLOCK = 1;
-	public const LEFT_CLICK_AIR = 2;
-	public const RIGHT_CLICK_AIR = 3;
-	public const PHYSICAL = 4;
 
 	/** @var Block */
 	protected $blockTouched;
