@@ -17,6 +17,7 @@ Because Altay has more features and improvements than PocketMine-MP
 
 - Map Items (API only)
 - Fishing
+- Leashing Mobs
 - Best MobAI, More mobs
 - More Items, Blocks
 - More Methods
