@@ -2394,7 +2394,11 @@ class Server{
 		}
 
 		//Do level ticks
-		foreach($this->getLevels() as $level){
+		foreach($this->levels as $k => $level){
+			if(!isset($this->levels[$k])){
+				// Level unloaded during the tick of a level earlier in this loop, perhaps by plugin
+				continue;
+			}
 			if($level->getTickRate() > $this->baseTickRate and --$level->tickRateCounter > 0){
 				continue;
 			}
