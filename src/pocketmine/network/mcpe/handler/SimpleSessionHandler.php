@@ -120,6 +120,7 @@ class SimpleSessionHandler extends SessionHandler{
 				}
 			}catch(\Exception $e){
 				$this->player->getServer()->getLogger()->debug("Unhandled inventory action from " . $this->player->getName() . ": " . $e->getMessage());
+				$this->player->getServer()->getLogger()->debug($e->getMessage());
 				$this->player->sendAllInventories();
 				return false;
 			}
