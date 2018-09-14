@@ -535,6 +535,18 @@ class PluginManager{
 	}
 
 	/**
+	 * @param Permissible $permissible
+	 */
+	public function unsubscribeFromAllPermissions(Permissible $permissible) : void{
+		foreach($this->permSubs as $permission => &$subs){
+			unset($subs[spl_object_hash($permissible)]);
+			if(empty($subs)){
+				unset($this->permSubs[$permission]);
+			}
+		}
+	}
+
+	/**
 	 * @param string $permission
 	 *
 	 * @return array|Permissible[]
