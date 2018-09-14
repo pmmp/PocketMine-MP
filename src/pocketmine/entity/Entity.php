@@ -42,6 +42,7 @@ use pocketmine\entity\object\ArmorStand;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\FallingBlock;
 use pocketmine\entity\object\FireworksRocket;
+use pocketmine\entity\object\LeashKnot;
 use pocketmine\entity\object\Painting;
 use pocketmine\entity\object\PrimedTNT;
 use pocketmine\entity\object\ItemEntity;
@@ -404,7 +405,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			'FishingHook',
 			'minecraft:fishing_hook'
 		]);
-		Entity::registerEntity(FishingHook::class, false, [
+		Entity::registerEntity(LeashKnot::class, false, [
 			'LeashKnot',
 			'minecraft:leash_knot'
 		]);

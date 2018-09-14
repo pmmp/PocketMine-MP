@@ -114,6 +114,13 @@ abstract class Mob extends Living{
 		$this->aiEnabled = boolval($nbt->getByte("aiEnabled", 0));
 	}
 
+	public function saveNBT() : CompoundTag{
+		$nbt = parent::saveNBT();
+		$nbt->setByte("aiEnabled", intval($this->aiEnabled));
+
+		return $nbt;
+	}
+
 	public function entityBaseTick(int $diff = 1) : bool{
 		$hasUpdate = parent::entityBaseTick($diff);
 
@@ -271,7 +278,7 @@ abstract class Mob extends Living{
 	public function updateLeashedState() : void{
 		parent::updateLeashedState();
 
-		if($this->isLeashed() and $this->leashedToEntity !== null and $this->leashedToEntity->level === $this->level){
+		if($this->isLeashed() and $this->leashedToEntity !== null){
 			$entity = $this->leashedToEntity;
 			$f = $this->distance($entity);
 

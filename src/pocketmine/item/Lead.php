@@ -31,6 +31,7 @@ use pocketmine\entity\Living;
 use pocketmine\entity\object\LeashKnot;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
 class Lead extends Item{
@@ -43,6 +44,7 @@ class Lead extends Item{
 		if($blockClicked instanceof Fence){
 			$knot = LeashKnot::getKnotFromPosition($player->level, $blockClicked);
 			$f = 7.0;
+			$flag = false;
 
 			foreach($player->level->getCollidingEntities(new AxisAlignedBB($blockClicked->x - $f, $blockClicked->y - $f, $blockClicked->z - $f, $blockClicked->x + $f, $blockClicked->y + $f, $blockClicked->z + $f)) as $entity){
 				if($entity instanceof Living){
@@ -53,8 +55,13 @@ class Lead extends Item{
 						}
 
 						$entity->setLeashedToEntity($knot, true);
+						$flag = true;
 					}
 				}
+			}
+
+			if($flag){
+				$player->level->broadcastLevelSoundEvent($blockClicked, LevelSoundEventPacket::SOUND_LEASHKNOT_PLACE);
 			}
 
 			return true;

@@ -34,14 +34,6 @@ abstract class Tamable extends Animal{
         $this->setGenericFlag(self::DATA_FLAG_TAMED, $tamed);
     }
 
-    public function isLeashed() : bool{
-        return $this->getGenericFlag(self::DATA_FLAG_LEASHED);
-    }
-
-    public function setLeashed(bool $leashed = true) : void{
-        $this->setGenericFlag(self::DATA_FLAG_LEASHED, $leashed);
-    }
-
     public function isSitting() : bool{
         return $this->getGenericFlag(self::DATA_FLAG_SITTING);
     }

@@ -122,6 +122,7 @@ abstract class Living extends Entity implements Damageable{
 		$this->leashedToEntity = $leashedToEntity;
 
 		if($send){
+			$this->setGenericFlag(self::DATA_FLAG_LEASHED, true);
 			$this->propertyManager->setLong(self::DATA_LEAD_HOLDER_EID, $leashedToEntity->getId());
 		}
 	}
@@ -169,6 +170,8 @@ abstract class Living extends Entity implements Damageable{
 		if($this->isLeashed() and $nbt->hasTag("Leash",  CompoundTag::class)){
 			$this->leashNbt = $nbt->getCompoundTag("Leash");
 		}
+
+		$this->setGenericFlag(self::DATA_FLAG_LEASHED, $this->leashed);
 	}
 
 	protected function addAttributes() : void{
@@ -734,6 +737,8 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	public function onUpdate(int $currentTick) : bool{
+		if($this->closed) return false;
+
 		$this->updateLeashedState();
 
 		return parent::onUpdate($currentTick);
@@ -1031,7 +1036,8 @@ abstract class Living extends Entity implements Damageable{
 			}
 
 			if($send){
-				$this->propertyManager->removeProperty(self::DATA_LEAD_HOLDER_EID);
+				$this->setGenericFlag(self::DATA_FLAG_LEASHED, false);
+				$this->propertyManager->setLong(self::DATA_LEAD_HOLDER_EID, 0);
 			}
 		}
 	}
@@ -1044,7 +1050,7 @@ abstract class Living extends Entity implements Damageable{
 				foreach($this->level->getCollidingEntities($this->getBoundingBox()->expandedCopy(10, 10, 10)) as $entity){
 					if($entity instanceof Living){
 						if($entity->getUniqueId()->equals($uuid)){
-							$this->leashedToEntity = $entity;
+							$this->setLeashedToEntity($entity);
 							break;
 						}
 					}
@@ -1058,7 +1064,7 @@ abstract class Living extends Entity implements Damageable{
 					$knot->spawnToAll();
 				}
 
-				$this->leashedToEntity = $knot;
+				$this->setLeashedToEntity($knot);
 			}else{
 				$this->clearLeashed(false, true);
 			}

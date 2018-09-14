@@ -26,12 +26,18 @@ namespace pocketmine\entity\object;
 
 use pocketmine\block\Fence;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
+use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\item\Lead;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\AddHangingEntityPacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
 class LeashKnot extends Entity{
@@ -43,17 +49,59 @@ class LeashKnot extends Entity{
 	/** @var float */
 	protected $drag = 0.0;
 	/** @var float */
-	public $height = 0.25;
+	public $height = 0.33;
 	/** @var float */
-	public $width = 0.25;
+	public $width = 0.1875;
 	/** @var int */
 	public $dropCounter = 0;
+
+	/**
+	 * LeashKnot constructor.
+	 *
+	 * @param Level       $level
+	 * @param CompoundTag $nbt
+	 */
+	public function __construct(Level $level, CompoundTag $nbt){
+		parent::__construct($level, $nbt);
+
+		$this->setPosition($this->getHangingPosition()->add(0.5, 0.25, 0.5));
+		$this->boundingBox = new AxisAlignedBB($this->x - 0.1875, $this->y - 0.25 + 0.125, $this->z - 0.1875, $this->x + 0.1875, $this->y + 0.25 + 0.125, $this->z + 0.1875);
+	}
+
+	/**
+	 * @param CompoundTag $nbt
+	 */
+	public function initEntity(CompoundTag $nbt) : void{
+		$this->setMaxHealth(1);
+		parent::initEntity($nbt);
+	}
 
 	/**
 	 * @return bool
 	 */
 	public function isSurfaceValid() : bool{
 		return $this->level->getBlock($this) instanceof Fence;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function hasMovementUpdate() : bool{
+		return false;
+	}
+
+	/**
+	 * @param bool $teleport
+	 */
+	protected function updateMovement(bool $teleport = false) : void{
+
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function canBeCollidedWith() : bool{
+		return false;
 	}
 
 	/**
@@ -80,23 +128,55 @@ class LeashKnot extends Entity{
 	 * @return bool
 	 */
 	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : bool{
-		$this->kill();
-		// TODO
+		$flag = false;
+
+		if($item instanceof Lead){
+			$f = 7.0;
+
+			foreach($player->level->getCollidingEntities(new AxisAlignedBB($this->x - $f, $this->y - $f, $this->z - $f, $this->x + $f, $this->y + $f, $this->z + $f)) as $entity){
+				if($entity instanceof Living){
+					if($entity->isLeashed() and $entity->getLeashedToEntity() === $player){
+						$entity->setLeashedToEntity($this, true);
+						$flag = true;
+					}
+				}
+			}
+		}
+
+		if(!$flag){
+			$this->kill();
+
+			if($player->isCreative()){
+				$f = 7.0;
+
+				foreach($player->level->getCollidingEntities(new AxisAlignedBB($this->x - $f, $this->y - $f, $this->z - $f, $this->x + $f, $this->y + $f, $this->z + $f)) as $entity){
+					if($entity instanceof Living){
+						if($entity->isLeashed() and $entity->getLeashedToEntity() === $this){
+							$entity->clearLeashed(true, false);
+						}
+					}
+				}
+			}
+		}
+
 		return true;
 	}
 
 	/**
-	 * @param Player $player
+	 * @param EntityDamageEvent $source
 	 */
-	public function sendSpawnPacket(Player $player) : void{
-		$pk = new AddHangingEntityPacket();
-		$pk->entityUniqueId = $pk->entityRuntimeId = $this->id;
-		$pk->x = $this->getFloorX();
-		$pk->y = $this->getFloorY();
-		$pk->z = $this->getFloorZ();
-		$pk->direction = 0;
+	public function attack(EntityDamageEvent $source) : void{
+		parent::attack($source);
 
-		$player->sendDataPacket($pk);
+		if(!$source->isCancelled()){
+			$this->kill();
+		}
+	}
+
+	public function onDeath() : void{
+		parent::onDeath();
+
+		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_LEASHKNOT_BREAK);
 	}
 
 	/**
