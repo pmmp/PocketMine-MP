@@ -110,7 +110,15 @@ class Vine extends Flowable{
 			$flag = true;
 		}
 
-		//TODO: Missing NORTH check
+		if(($this->meta & self::FLAG_NORTH) > 0){
+			$maxZ = max($maxZ, 0.0625);
+			$minZ = 0;
+			$minX = 0;
+			$maxX = 1;
+			$minY = 0;
+			$maxY = 1;
+			$flag = true;
+		}
 
 		if(!$flag and $this->getSide(Facing::UP)->isSolid()){
 			$minY = min($minY, 0.9375);
