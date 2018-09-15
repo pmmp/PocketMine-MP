@@ -26,65 +26,53 @@ namespace pocketmine\inventory\transaction;
 
 use pocketmine\inventory\AnvilInventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
-use pocketmine\inventory\transaction\action\InventoryAction;
-use pocketmine\item\Item;
-use pocketmine\Player;
+use pocketmine\inventory\Inventory;
 
 class AnvilTransaction extends InventoryTransaction{
 
-	/** @var Item */
-	protected $material; // useless
-	/** @var Item */
-	protected $input; // useless
-
-	public function __construct(Player $source, $actions = []){
-		$this->source = $source;
-		$this->fixWrongActions($actions);
-	}
-
-	/**
-	 * Because of very shitty anvil transaction we need to fix these
-	 *
-	 * @param InventoryAction[] $actions
-	 */
-	public function fixWrongActions(array $actions) : void{
-		foreach($actions as $action){
-			if($action instanceof SlotChangeAction){
-				if($action->getInventory() instanceof AnvilInventory){ // anvil action
-					switch($action->getSlot()){
-						default:
-							$this->addAction($action);
-							break;
-						case 1:
-							if($this->material === null){
-								$this->material = $action->getTargetItem();
-
-								$originItem = $action->getInventory()->getItem(1);
-								$o2 = clone $originItem;
-								$o2->pop($this->material->getCount());
-								$this->addAction(new SlotChangeAction($action->getInventory(), 1, $originItem, $o2));
-							}
-							break;
-						case 0:
-							if($this->input === null){
-								$this->input = $action->getSourceItem();
-
-								$this->addAction($action);
-							}
-							break;
-					}
-				}else{
-					$this->addAction($action);
-				}
-			}else{
-				$this->addAction($action);
-			}
-		}
-	}
-
 	public function validate() : void{
+		$this->squashSlot(0, true);
+		$this->squashSlot(1, false);
 		$this->squashDuplicateSlotChanges();
 
 		// Anvil transaction may change or delete some items from inventory so we don't check items
+	}
+
+	public function squashSlot(int $targetSlot, bool $turnDown) : void{
+		/** @var SlotChangeAction[][] $slotChanges */
+		$slotChanges = [];
+		/** @var Inventory[] $inventories */
+		$inventories = [];
+		/** @var int[] $slots */
+		$slots = [];
+
+		foreach($this->actions as $key => $action){
+			if($action instanceof SlotChangeAction){
+				$slotChanges[$h = (spl_object_hash($action->getInventory()) . "@" . $action->getSlot())][$key] = $action;
+				$inventories[$h] = $action->getInventory();
+				$slots[$h] = $action->getSlot();
+			}
+		}
+
+		foreach($slotChanges as $h => $list){
+			if(count($list) === 1){
+				continue;
+			}
+
+			$inventory = $inventories[$h];
+
+			if($inventory instanceof AnvilInventory){
+				if($turnDown){
+					$list = array_reverse($list);
+				}
+
+				foreach($list as $k => $action){
+					if($action->getSlot() === $targetSlot){
+						unset($this->actions[$k]);
+						break;
+					}
+				}
+			}
+		}
 	}
 }
