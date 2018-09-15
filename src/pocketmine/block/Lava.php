@@ -27,6 +27,7 @@ use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityCombustByBlockEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\math\Facing;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Server;
 
@@ -72,7 +73,10 @@ class Lava extends Liquid{
 
 	protected function checkForHarden(){
 		$colliding = null;
-		for($side = 1; $side <= 5; ++$side){ //don't check downwards side
+		foreach(Facing::ALL as $side){
+			if($side === Facing::DOWN){
+				continue;
+			}
 			$blockSide = $this->getSide($side);
 			if($blockSide instanceof Water){
 				$colliding = $blockSide;

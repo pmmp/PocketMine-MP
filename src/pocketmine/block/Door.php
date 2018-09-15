@@ -128,7 +128,7 @@ abstract class Door extends Transparent{
 				return false;
 			}
 
-			$ccw = Bearing::toFacing($player instanceof Player ? Bearing::rotate($player->getDirection(), -1) : Facing::EAST);
+			$ccw = Bearing::toFacing($player instanceof Player ? Bearing::rotate($player->getDirection(), -1) : Bearing::EAST);
 
 			$next = $this->getSide(Facing::opposite($ccw));
 			$next2 = $this->getSide($ccw);

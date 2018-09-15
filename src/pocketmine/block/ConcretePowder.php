@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\ColorBlockMetaHelper;
+use pocketmine\math\Facing;
 
 class ConcretePowder extends Fallable{
 
@@ -65,7 +66,10 @@ class ConcretePowder extends Fallable{
 	 * @return null|Block
 	 */
 	private function checkAdjacentWater() : ?Block{
-		for($i = 1; $i < 6; ++$i){ //Do not check underneath
+		foreach(Facing::ALL as $i){
+			if($i === Facing::DOWN){
+				continue;
+			}
 			if($this->getSide($i) instanceof Water){
 				return BlockFactory::get(Block::CONCRETE, $this->meta);
 			}

@@ -70,7 +70,7 @@ class Cactus extends Transparent{
 		if($down->getId() !== self::SAND and $down->getId() !== self::CACTUS){
 			$this->getLevel()->useBreakOn($this);
 		}else{
-			for($side = 2; $side <= 5; ++$side){
+			foreach(Facing::HORIZONTAL as $side){
 				$b = $this->getSide($side);
 				if($b->isSolid()){
 					$this->getLevel()->useBreakOn($this);
@@ -108,13 +108,13 @@ class Cactus extends Transparent{
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->getId() === self::SAND or $down->getId() === self::CACTUS){
-			$block0 = $this->getSide(Facing::NORTH);
-			$block1 = $this->getSide(Facing::SOUTH);
-			$block2 = $this->getSide(Facing::WEST);
-			$block3 = $this->getSide(Facing::EAST);
-			if(!$block0->isSolid() and !$block1->isSolid() and !$block2->isSolid() and !$block3->isSolid()){
-				return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+			foreach(Facing::HORIZONTAL as $side){
+				if($this->getSide($side)->isSolid()){
+					return false;
+				}
 			}
+
+			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
 		return false;

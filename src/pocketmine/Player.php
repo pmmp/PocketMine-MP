@@ -55,6 +55,10 @@ use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerEditBookEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerGameModeChangeEvent;
+use pocketmine\event\player\PlayerInteractEvent;
+use pocketmine\event\player\PlayerItemConsumeEvent;
+use pocketmine\event\player\PlayerItemHeldEvent;
+use pocketmine\event\player\PlayerItemUseEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerJumpEvent;
 use pocketmine\event\player\PlayerKickEvent;
@@ -71,11 +75,7 @@ use pocketmine\event\player\PlayerToggleSprintEvent;
 use pocketmine\event\player\PlayerToggleSwimEvent;
 use pocketmine\event\player\PlayerTransferEvent;
 use pocketmine\event\player\PlayerInteractEntityEvent;
-use pocketmine\event\player\PlayerInteractEvent;
-use pocketmine\event\player\PlayerItemConsumeEvent;
-use pocketmine\event\player\PlayerItemHeldEvent;
 use pocketmine\form\ServerSettingsForm;
-use pocketmine\inventory\ContainerInventory;
 use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
 use pocketmine\inventory\CraftingGrid;
@@ -2198,7 +2198,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$item = $this->inventory->getItemInHand();
 
 
-		$ev = new PlayerInteractEvent($this, $item, null, $directionVector, 0, PlayerInteractEvent::RIGHT_CLICK_AIR);
+		$ev = new PlayerItemUseEvent($this, $item, $directionVector);
 		if($this->hasItemCooldown($item)){
 			$ev->setCancelled();
 		}
@@ -2346,7 +2346,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$target = $this->level->getBlock($pos);
 
-		$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $target, null, $face, $target->getId() === 0 ? PlayerInteractEvent::LEFT_CLICK_AIR : PlayerInteractEvent::LEFT_CLICK_BLOCK);
+		$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $target, null, $face, PlayerInteractEvent::LEFT_CLICK_BLOCK);
 		if($this->level->checkSpawnProtection($this, $target)){
 			$ev->setCancelled();
 		}

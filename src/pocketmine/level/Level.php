@@ -62,6 +62,7 @@ use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\level\particle\Particle;
 use pocketmine\level\sound\Sound;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\BlockMetadataStore;
@@ -1111,8 +1112,8 @@ class Level implements ChunkManager, Metadatable{
 	public function scheduleNeighbourBlockUpdates(Vector3 $pos){
 		$pos = $pos->floor();
 
-		for($i = 0; $i <= 5; ++$i){
-			$side = $pos->getSide($i);
+		foreach(Facing::ALL as $face){
+			$side = $pos->getSide($face);
 			if($this->isInWorld($side->x, $side->y, $side->z)){
 				$this->neighbourBlockUpdateQueue->enqueue(Level::blockHash($side->x, $side->y, $side->z));
 			}
