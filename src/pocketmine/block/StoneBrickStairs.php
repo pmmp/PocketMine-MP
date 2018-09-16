@@ -30,7 +30,7 @@ class StoneBrickStairs extends Stair{
 	protected $id = self::STONE_BRICK_STAIRS;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getToolType() : int{

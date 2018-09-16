@@ -32,7 +32,7 @@ use pocketmine\Player;
 abstract class Slab extends Transparent{
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	abstract public function getDoubleSlabId() : int;

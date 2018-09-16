@@ -38,7 +38,7 @@ class Grass extends Solid{
 	protected $id = self::GRASS;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getName() : string{

@@ -40,7 +40,7 @@ class Anvil extends Fallable{
 	protected $id = self::ANVIL;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function isTransparent() : bool{

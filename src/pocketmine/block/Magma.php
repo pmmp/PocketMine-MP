@@ -33,7 +33,7 @@ class Magma extends Solid{
 	protected $id = Block::MAGMA;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getName() : string{

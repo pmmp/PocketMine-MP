@@ -32,7 +32,7 @@ class NetherQuartzOre extends Solid{
 	protected $id = Block::NETHER_QUARTZ_ORE;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getName() : string{

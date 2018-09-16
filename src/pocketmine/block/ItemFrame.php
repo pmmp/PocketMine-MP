@@ -36,7 +36,7 @@ class ItemFrame extends Flowable{
 	protected $itemId = Item::ITEM_FRAME;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getName() : string{

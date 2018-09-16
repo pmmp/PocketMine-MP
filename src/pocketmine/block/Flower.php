@@ -42,7 +42,7 @@ class Flower extends Flowable{
 	protected $id = self::RED_FLOWER;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getName() : string{

@@ -28,7 +28,7 @@ class RedstoneLamp extends Solid{
 	protected $id = self::REDSTONE_LAMP;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getName() : string{

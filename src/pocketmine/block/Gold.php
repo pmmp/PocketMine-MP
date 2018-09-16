@@ -30,7 +30,7 @@ class Gold extends Solid{
 	protected $id = self::GOLD_BLOCK;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getName() : string{

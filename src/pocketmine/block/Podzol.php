@@ -28,7 +28,7 @@ class Podzol extends Solid{
 	protected $id = self::PODZOL;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getToolType() : int{

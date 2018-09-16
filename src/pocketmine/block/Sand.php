@@ -28,7 +28,7 @@ class Sand extends Fallable{
 	protected $id = self::SAND;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getHardness() : float{

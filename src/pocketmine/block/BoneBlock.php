@@ -34,7 +34,7 @@ class BoneBlock extends Solid{
 	protected $id = Block::BONE_BLOCK;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getName() : string{

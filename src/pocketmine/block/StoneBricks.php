@@ -34,7 +34,7 @@ class StoneBricks extends Solid{
 	protected $id = self::STONE_BRICKS;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getHardness() : float{

@@ -39,7 +39,7 @@ class StandingBanner extends Transparent{
 	protected $itemId = Item::BANNER;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getHardness() : float{

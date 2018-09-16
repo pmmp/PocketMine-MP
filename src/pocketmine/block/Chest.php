@@ -37,7 +37,7 @@ class Chest extends Transparent{
 	protected $id = self::CHEST;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getHardness() : float{

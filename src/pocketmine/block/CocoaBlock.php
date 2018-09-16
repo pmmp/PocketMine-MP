@@ -28,7 +28,7 @@ class CocoaBlock extends Transparent{
 	protected $id = self::COCOA_BLOCK;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getName() : string{

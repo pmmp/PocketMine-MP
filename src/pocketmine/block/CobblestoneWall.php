@@ -34,7 +34,7 @@ class CobblestoneWall extends Transparent{
 	protected $id = self::COBBLESTONE_WALL;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getToolType() : int{

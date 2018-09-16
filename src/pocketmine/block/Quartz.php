@@ -38,7 +38,7 @@ class Quartz extends Solid{
 	protected $id = self::QUARTZ_BLOCK;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getHardness() : float{

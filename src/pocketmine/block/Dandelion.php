@@ -33,7 +33,7 @@ class Dandelion extends Flowable{
 	protected $id = self::DANDELION;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getName() : string{

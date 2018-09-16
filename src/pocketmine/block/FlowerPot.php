@@ -40,7 +40,7 @@ class FlowerPot extends Flowable{
 	protected $itemId = Item::FLOWER_POT;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getName() : string{

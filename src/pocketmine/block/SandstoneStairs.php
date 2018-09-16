@@ -30,7 +30,7 @@ class SandstoneStairs extends Stair{
 	protected $id = self::SANDSTONE_STAIRS;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getHardness() : float{

@@ -34,7 +34,7 @@ class Sandstone extends Solid{
 	protected $id = self::SANDSTONE;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getHardness() : float{

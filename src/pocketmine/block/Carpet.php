@@ -35,7 +35,7 @@ class Carpet extends Flowable{
 	protected $id = self::CARPET;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getHardness() : float{

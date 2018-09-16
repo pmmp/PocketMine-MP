@@ -32,7 +32,7 @@ class DiamondOre extends Solid{
 	protected $id = self::DIAMOND_ORE;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getHardness() : float{

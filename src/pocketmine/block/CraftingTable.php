@@ -32,7 +32,7 @@ class CraftingTable extends Solid{
 	protected $id = self::CRAFTING_TABLE;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getHardness() : float{

@@ -32,7 +32,7 @@ class CoalOre extends Solid{
 	protected $id = self::COAL_ORE;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getHardness() : float{

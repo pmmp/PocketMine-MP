@@ -33,7 +33,7 @@ class Farmland extends Transparent{
 	protected $id = self::FARMLAND;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getName() : string{

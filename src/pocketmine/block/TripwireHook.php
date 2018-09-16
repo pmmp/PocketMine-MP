@@ -28,7 +28,7 @@ class TripwireHook extends Flowable{
 	protected $id = self::TRIPWIRE_HOOK;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getName() : string{

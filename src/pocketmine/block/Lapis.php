@@ -30,7 +30,7 @@ class Lapis extends Solid{
 	protected $id = self::LAPIS_BLOCK;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getName() : string{

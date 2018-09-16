@@ -34,7 +34,7 @@ class WaterLily extends Flowable{
 	protected $id = self::WATER_LILY;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getName() : string{

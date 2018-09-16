@@ -31,7 +31,7 @@ class GlowingObsidian extends Solid{
 	protected $id = self::GLOWING_OBSIDIAN;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getName() : string{

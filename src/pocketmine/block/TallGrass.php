@@ -34,7 +34,7 @@ class TallGrass extends Flowable{
 	protected $id = self::TALL_GRASS;
 
 	public function __construct(int $meta = 1){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function canBeReplaced() : bool{

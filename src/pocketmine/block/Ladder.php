@@ -35,7 +35,7 @@ class Ladder extends Transparent{
 	protected $id = self::LADDER;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getName() : string{

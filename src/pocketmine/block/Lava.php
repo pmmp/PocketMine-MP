@@ -36,7 +36,7 @@ class Lava extends Liquid{
 	protected $id = self::FLOWING_LAVA;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getLightLevel() : int{

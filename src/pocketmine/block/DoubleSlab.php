@@ -29,7 +29,7 @@ use pocketmine\item\ItemFactory;
 abstract class DoubleSlab extends Solid{
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	abstract public function getSlabId() : int;

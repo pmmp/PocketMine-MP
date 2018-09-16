@@ -33,7 +33,7 @@ class GrassPath extends Transparent{
 	protected $id = self::GRASS_PATH;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getName() : string{

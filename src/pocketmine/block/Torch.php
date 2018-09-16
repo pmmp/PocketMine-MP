@@ -33,7 +33,7 @@ class Torch extends Flowable{
 	protected $id = self::TORCH;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getLightLevel() : int{

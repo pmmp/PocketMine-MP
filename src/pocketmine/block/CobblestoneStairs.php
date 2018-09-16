@@ -30,7 +30,7 @@ class CobblestoneStairs extends Stair{
 	protected $id = self::COBBLESTONE_STAIRS;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getHardness() : float{

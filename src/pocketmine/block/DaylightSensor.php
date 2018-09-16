@@ -28,7 +28,7 @@ class DaylightSensor extends Transparent{
 	protected $id = self::DAYLIGHT_SENSOR;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getName() : string{

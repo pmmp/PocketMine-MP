@@ -32,7 +32,7 @@ class Dirt extends Solid{
 	protected $id = self::DIRT;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getHardness() : float{

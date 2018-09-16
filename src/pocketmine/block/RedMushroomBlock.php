@@ -30,7 +30,7 @@ class RedMushroomBlock extends Solid{
 	protected $id = Block::RED_MUSHROOM_BLOCK;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getName() : string{

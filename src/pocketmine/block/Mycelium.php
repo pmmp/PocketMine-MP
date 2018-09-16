@@ -34,7 +34,7 @@ class Mycelium extends Solid{
 	protected $id = self::MYCELIUM;
 
 	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+		$this->setDamage($meta);
 	}
 
 	public function getName() : string{
