@@ -72,32 +72,27 @@ class Vine extends Flowable{
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		$minX = 1;
-		$minY = 1;
 		$minZ = 1;
 		$maxX = 0;
-		$maxY = 0;
 		$maxZ = 0;
 
-		$flag = $this->meta > 0;
+		$minY = 0;
+		$hasSide = false;
 
 		if(($this->meta & self::FLAG_WEST) > 0){
 			$maxX = max($maxX, 0.0625);
 			$minX = 0;
-			$minY = 0;
-			$maxY = 1;
 			$minZ = 0;
 			$maxZ = 1;
-			$flag = true;
+			$hasSide = true;
 		}
 
 		if(($this->meta & self::FLAG_EAST) > 0){
 			$minX = min($minX, 0.9375);
 			$maxX = 1;
-			$minY = 0;
-			$maxY = 1;
 			$minZ = 0;
 			$maxZ = 1;
-			$flag = true;
+			$hasSide = true;
 		}
 
 		if(($this->meta & self::FLAG_SOUTH) > 0){
@@ -105,9 +100,7 @@ class Vine extends Flowable{
 			$maxZ = 1;
 			$minX = 0;
 			$maxX = 1;
-			$minY = 0;
-			$maxY = 1;
-			$flag = true;
+			$hasSide = true;
 		}
 
 		if(($this->meta & self::FLAG_NORTH) > 0){
@@ -115,21 +108,18 @@ class Vine extends Flowable{
 			$minZ = 0;
 			$minX = 0;
 			$maxX = 1;
-			$minY = 0;
-			$maxY = 1;
-			$flag = true;
+			$hasSide = true;
 		}
 
-		if(!$flag and $this->getSide(Facing::UP)->isSolid()){
-			$minY = min($minY, 0.9375);
-			$maxY = 1;
+		if(!$hasSide){
+			$minY = 0.9375;
 			$minX = 0;
 			$maxX = 1;
 			$minZ = 0;
 			$maxZ = 1;
 		}
 
-		return new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
+		return new AxisAlignedBB($minX, $minY, $minZ, $maxX, 1, $maxZ);
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
