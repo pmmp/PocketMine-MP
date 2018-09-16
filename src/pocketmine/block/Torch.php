@@ -55,7 +55,7 @@ class Torch extends Flowable{
 			5 => Vector3::SIDE_DOWN
 		];
 
-		if($this->getSide($faces[$side])->isTransparent() and !($side === Vector3::SIDE_DOWN and ($below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL))){
+		if($this->getSide($faces[$side])->isTransparent() and !($faces[$side] === Vector3::SIDE_DOWN and ($below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL))){
 			$this->getLevel()->useBreakOn($this);
 		}
 	}
