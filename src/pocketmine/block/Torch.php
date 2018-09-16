@@ -46,17 +46,9 @@ class Torch extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		$below = $this->getSide(Facing::DOWN);
-		$side = $this->getDamage();
-		static $faces = [
-			0 => Facing::DOWN,
-			1 => Facing::WEST,
-			2 => Facing::EAST,
-			3 => Facing::NORTH,
-			4 => Facing::SOUTH,
-			5 => Facing::DOWN
-		];
+		$face = $this->meta === 0 ? Facing::DOWN : Facing::opposite(6 - $this->meta);
 
-		if($this->getSide($faces[$side])->isTransparent() and !($faces[$side] === Facing::DOWN and ($below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL))){
+		if($this->getSide($face)->isTransparent() and !($face === Facing::DOWN and ($below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL))){
 			$this->getLevel()->useBreakOn($this);
 		}
 	}
@@ -65,18 +57,11 @@ class Torch extends Flowable{
 		$below = $this->getSide(Facing::DOWN);
 
 		if(!$blockClicked->isTransparent() and $face !== Facing::DOWN){
-			static $faces = [
-				Facing::UP => 5,
-				Facing::NORTH => 4,
-				Facing::SOUTH => 3,
-				Facing::WEST => 2,
-				Facing::EAST => 1
-			];
-			$this->meta = $faces[$face];
+			$this->meta = 6 - $face;
 
 			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}elseif(!$below->isTransparent() or $below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL){
-			$this->meta = 0;
+			$this->meta = 5; //attached to block below
 			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
