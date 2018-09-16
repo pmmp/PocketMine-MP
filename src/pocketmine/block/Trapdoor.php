@@ -83,14 +83,9 @@ class Trapdoor extends Transparent{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		static $directions = [
-			Bearing::SOUTH => 2,
-			Bearing::WEST => 1,
-			Bearing::NORTH => 3,
-			Bearing::EAST => 0
-		];
 		if($player !== null){
-			$this->meta = $directions[$player->getDirection()];
+			//TODO: in PC the values are reversed (3 - (5 - facing))
+			$this->meta = 5 - Bearing::toFacing(Bearing::opposite($player->getDirection()));
 		}
 		if(($clickVector->y > 0.5 and $face !== Facing::UP) or $face === Facing::DOWN){
 			$this->meta |= self::MASK_UPPER; //top half of block

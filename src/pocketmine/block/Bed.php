@@ -152,7 +152,7 @@ class Bed extends Transparent{
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
 		if(!$down->isTransparent()){
-			$this->meta = $player instanceof Player ? Bearing::opposite($player->getDirection()) : 0; //rotate 180 degrees
+			$this->meta = $player instanceof Player ? $player->getDirection() : 0;
 			$next = $this->getSide(self::getOtherHalfSide($this->meta));
 			if($next->canBeReplaced() and !$next->getSide(Facing::DOWN)->isTransparent()){
 				parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);

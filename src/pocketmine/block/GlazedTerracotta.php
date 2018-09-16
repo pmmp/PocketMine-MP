@@ -46,7 +46,7 @@ class GlazedTerracotta extends Solid{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if($player !== null){
-			$this->meta = Bearing::toFacing($player->getDirection());
+			$this->meta = Bearing::toFacing(Bearing::opposite($player->getDirection()));
 		}
 
 		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);

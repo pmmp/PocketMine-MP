@@ -60,7 +60,7 @@ class Chest extends Transparent{
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$chest = null;
 		if($player !== null){
-			$this->meta = Bearing::toFacing($player->getDirection());
+			$this->meta = Bearing::toFacing(Bearing::opposite($player->getDirection()));
 		}
 
 		foreach([

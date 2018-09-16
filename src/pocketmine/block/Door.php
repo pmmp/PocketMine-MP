@@ -127,17 +127,19 @@ abstract class Door extends Transparent{
 				return false;
 			}
 
-			$ccw = Bearing::toFacing($player instanceof Player ? Bearing::rotate($player->getDirection(), -1) : Bearing::EAST);
+			//door faces this way when opened (unless it's right, in which case it's the opposite)
+			$direction = $player !== null ? Bearing::rotate($player->getDirection(), 1) : Bearing::NORTH;
 
-			$next = $this->getSide(Facing::opposite($ccw));
-			$next2 = $this->getSide($ccw);
+			$facing = Bearing::toFacing($direction);
+			$next = $this->getSide(Facing::opposite($facing));
+			$next2 = $this->getSide($facing);
 
 			$metaUp = 0x08;
 			if($next->getId() === $this->getId() or (!$next2->isTransparent() and $next->isTransparent())){ //Door hinge
 				$metaUp |= 0x01;
 			}
 
-			$this->setDamage(Bearing::rotate($player->getDirection(), -1));
+			$this->setDamage($direction);
 			parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 			$this->getLevel()->setBlock($blockUp, BlockFactory::get($this->getId(), $metaUp), true); //Top
 			return true;
