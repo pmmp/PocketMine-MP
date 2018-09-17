@@ -62,7 +62,8 @@ abstract class Tree{
 				break;
 			case Sapling::ACACIA:
 			case Sapling::DARK_OAK:
-				return; //TODO
+				$tree = new DarkOakTree();
+				break;
 			default:
 				$tree = new OakTree();
 				/*if($random->nextRange(0, 9) === 0){
