@@ -33,7 +33,8 @@ class Wood extends Solid{
 	public const SPRUCE = 1;
 	public const BIRCH = 2;
 	public const JUNGLE = 3;
-
+	public const DarkOak =4;
+	
 	protected $id = self::WOOD;
 
 	public function __construct(int $meta = 0){
@@ -50,6 +51,7 @@ class Wood extends Solid{
 			self::SPRUCE => "Spruce Wood",
 			self::BIRCH => "Birch Wood",
 			self::JUNGLE => "Jungle Wood"
+			self::DarkOak=> "Dark Oak Wood",
 		];
 		return $names[$this->getVariant()] ?? "Unknown";
 	}
