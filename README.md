@@ -29,10 +29,10 @@ Yes you can! Contributions are welcomed provided that they comply with our [Cont
 **Note: Please avoid development builds unless there is no other alternative for what you need.** Development builds are subject to changes at any time without notice, and it is likely that your server or plugins might break without warning.
 
 ### Donate
-Donations help support the development of the project and pay for our expenses.
+Donations go directly to pmmp team . 
 - Bitcoin Cash (BCH): `qz9p8dqkv0r7aahdatu5uewqfkvstrglv58f8yle07`
-- Bitcoin (BTC): `1PVAyDJ2g7kcjCxAC3C89oxpV2ZYcLad8T`
-- [Patreon](https://www.patreon.com/pocketminemp)
+- Bitcoin (BTC): `1GUrVRtguQz8gmEe3ACExQDNJvxdfwuHkq`
+- [Patreon](https://www.patreon.com/pmmpSharedDonationFoundation)
 
 ## Licensing information
 
