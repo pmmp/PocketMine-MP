@@ -33,8 +33,23 @@ class TallGrass extends Flowable{
 
 	protected $id = self::TALL_GRASS;
 
+	/** @var int */
+	protected $variant = 0;
+
 	public function __construct(int $meta = 1){
 		$this->setDamage($meta);
+	}
+
+	public function getDamage() : int{
+		return $this->variant;
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->variant = $meta;
+	}
+
+	public function getVariant() : int{
+		return $this->variant;
 	}
 
 	public function canBeReplaced() : bool{
@@ -47,7 +62,7 @@ class TallGrass extends Flowable{
 			1 => "Tall Grass",
 			2 => "Fern"
 		];
-		return $names[$this->getVariant()] ?? "Unknown";
+		return $names[$this->variant] ?? "Unknown";
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{

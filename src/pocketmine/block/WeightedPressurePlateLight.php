@@ -29,8 +29,19 @@ class WeightedPressurePlateLight extends Transparent{
 
 	protected $id = self::LIGHT_WEIGHTED_PRESSURE_PLATE;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var int */
+	protected $power = 0;
+
+	public function __construct(){
+
+	}
+
+	public function getDamage() : int{
+		return $this->power;
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->power = $meta;
 	}
 
 	public function getName() : string{
@@ -43,10 +54,6 @@ class WeightedPressurePlateLight extends Transparent{
 
 	public function getHardness() : float{
 		return 0.5;
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
 	}
 
 	public function getToolType() : int{

@@ -39,6 +39,6 @@ class StoneSlab2 extends StoneSlab{
 			self::TYPE_PURPUR => "Purpur"
 		];
 
-		return (($this->meta & 0x08) > 0 ? "Upper " : "") . ($names[$this->getVariant()] ?? "") . " Slab";
+		return ($names[$this->getVariant()] ?? "") . " Slab";
 	}
 }

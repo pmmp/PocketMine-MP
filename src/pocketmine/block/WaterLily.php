@@ -33,8 +33,8 @@ class WaterLily extends Flowable{
 
 	protected $id = self::WATER_LILY;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	public function __construct(){
+
 	}
 
 	public function getName() : string{
@@ -65,9 +65,5 @@ class WaterLily extends Flowable{
 		if(!($this->getSide(Facing::DOWN) instanceof Water)){
 			$this->getLevel()->useBreakOn($this);
 		}
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
 	}
 }

@@ -28,6 +28,7 @@ use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Bearing;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -39,8 +40,36 @@ class Anvil extends Fallable{
 
 	protected $id = self::ANVIL;
 
+	/** @var int */
+	protected $facing = Facing::NORTH;
+
+	/** @var int */
+	protected $variant = self::TYPE_NORMAL;
+
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
+	}
+
+	public function getDamage() : int{
+		return Bearing::fromFacing($this->facing) | $this->variant;
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->variant = $meta & 0x0c;
+		$this->facing = Bearing::toFacing($meta & 0x03);
+	}
+
+	public function getVariant() : int{
+		return $this->variant;
+	}
+
+	public function getName() : string{
+		static $names = [
+			self::TYPE_NORMAL => "Anvil",
+			self::TYPE_SLIGHTLY_DAMAGED => "Slightly Damaged Anvil",
+			self::TYPE_VERY_DAMAGED => "Very Damaged Anvil"
+		];
+		return $names[$this->getVariant()] ?? "Anvil";
 	}
 
 	public function isTransparent() : bool{
@@ -55,19 +84,6 @@ class Anvil extends Fallable{
 		return 6000;
 	}
 
-	public function getVariantBitmask() : int{
-		return 0x0c;
-	}
-
-	public function getName() : string{
-		static $names = [
-			self::TYPE_NORMAL => "Anvil",
-			self::TYPE_SLIGHTLY_DAMAGED => "Slightly Damaged Anvil",
-			self::TYPE_VERY_DAMAGED => "Very Damaged Anvil"
-		];
-		return $names[$this->getVariant()] ?? "Anvil";
-	}
-
 	public function getToolType() : int{
 		return BlockToolType::TYPE_PICKAXE;
 	}
@@ -79,7 +95,7 @@ class Anvil extends Fallable{
 	public function recalculateBoundingBox() : ?AxisAlignedBB{
 		$inset = 0.125;
 
-		if($this->meta & 0x01){ //east/west
+		if(Facing::axis($this->facing) === Facing::AXIS_X){
 			return new AxisAlignedBB(0, 0, $inset, 1, 1, 1 - $inset);
 		}else{
 			return new AxisAlignedBB($inset, 0, 0, 1 - $inset, 1, 1);
@@ -95,8 +111,9 @@ class Anvil extends Fallable{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$direction = $player !== null ? Bearing::rotate($player->getDirection(), 1) : 0;
-		$this->meta = $this->getVariant() | $direction;
+		if($player !== null){
+			$this->facing = Bearing::toFacing(Bearing::rotate($player->getDirection(), 1));
+		}
 		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 }

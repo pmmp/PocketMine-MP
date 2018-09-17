@@ -23,13 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\ColorBlockMetaHelper;
+use pocketmine\block\utils\ColorBlockTrait;
 
 class StainedGlass extends Glass{
+	use ColorBlockTrait;
 
 	protected $id = self::STAINED_GLASS;
 
-	public function getName() : string{
-		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Stained Glass";
+	public function __construct(int $meta = 0){
+		$this->setDamage($meta);
+	}
+
+	protected function getNameSuffix() : string{
+		return "Stained Glass";
 	}
 }

@@ -56,7 +56,7 @@ class StoneSlab extends Slab{
 			self::QUARTZ => "Quartz",
 			self::NETHER_BRICK => "Nether Brick"
 		];
-		return (($this->meta & 0x08) > 0 ? "Upper " : "") . ($names[$this->getVariant()] ?? "") . " Slab";
+		return ($names[$this->getVariant()] ?? "") . " Slab";
 	}
 
 	public function getToolType() : int{

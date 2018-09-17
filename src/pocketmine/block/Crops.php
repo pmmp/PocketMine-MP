@@ -31,6 +31,20 @@ use pocketmine\Player;
 use pocketmine\Server;
 
 abstract class Crops extends Flowable{
+	/** @var int */
+	protected $age = 0;
+
+	public function __construct(){
+
+	}
+
+	public function getDamage() : int{
+		return $this->age;
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->age = $meta;
+	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if($blockReplace->getSide(Facing::DOWN)->getId() === Block::FARMLAND){
@@ -44,9 +58,9 @@ abstract class Crops extends Flowable{
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
 			$block = clone $this;
-			$block->meta += mt_rand(2, 5);
-			if($block->meta > 7){
-				$block->meta = 7;
+			$block->age += mt_rand(2, 5);
+			if($block->age > 7){
+				$block->age = 7;
 			}
 
 			Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
@@ -75,9 +89,9 @@ abstract class Crops extends Flowable{
 
 	public function onRandomTick() : void{
 		if(mt_rand(0, 2) === 1){
-			if($this->meta < 0x07){
+			if($this->age < 7){
 				$block = clone $this;
-				++$block->meta;
+				++$block->age;
 				Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
 
 				if(!$ev->isCancelled()){

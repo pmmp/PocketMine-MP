@@ -40,8 +40,26 @@ class Sapling extends Flowable{
 
 	protected $id = self::SAPLING;
 
+	/** @var int */
+	protected $variant = self::OAK;
+	/** @var bool */
+	protected $ready = false;
+
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
+	}
+
+	public function getDamage() : int{
+		return $this->variant | ($this->ready ? 0x08 : 0);
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->variant = $meta & 0x07;
+		$this->ready = ($meta & 0x08) !== 0;
+	}
+
+	public function getVariant() : int{
+		return $this->variant;
 	}
 
 	public function getName() : string{
@@ -90,17 +108,13 @@ class Sapling extends Flowable{
 
 	public function onRandomTick() : void{
 		if($this->level->getFullLightAt($this->x, $this->y, $this->z) >= 8 and mt_rand(1, 7) === 1){
-			if(($this->meta & 0x08) === 0x08){
+			if($this->ready){
 				Tree::growTree($this->getLevel(), $this->x, $this->y, $this->z, new Random(mt_rand()), $this->getVariant());
 			}else{
-				$this->meta |= 0x08;
+				$this->ready = true;
 				$this->getLevel()->setBlock($this, $this, true);
 			}
 		}
-	}
-
-	public function getVariantBitmask() : int{
-		return 0x07;
 	}
 
 	public function getFuelTime() : int{

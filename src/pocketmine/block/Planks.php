@@ -33,8 +33,23 @@ class Planks extends Solid{
 
 	protected $id = self::WOODEN_PLANKS;
 
+	/** @var int */
+	protected $variant = self::OAK;
+
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
+	}
+
+	public function getDamage() : int{
+		return $this->variant;
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->variant = $meta;
+	}
+
+	public function getVariant() : int{
+		return $this->variant;
 	}
 
 	public function getHardness() : float{
@@ -54,7 +69,7 @@ class Planks extends Solid{
 			self::ACACIA => "Acacia Wood Planks",
 			self::DARK_OAK => "Dark Oak Wood Planks"
 		];
-		return $names[$this->getVariant()] ?? "Unknown";
+		return $names[$this->variant] ?? "Unknown";
 	}
 
 	public function getFuelTime() : int{

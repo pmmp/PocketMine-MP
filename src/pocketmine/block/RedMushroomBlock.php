@@ -29,8 +29,16 @@ class RedMushroomBlock extends Solid{
 
 	protected $id = Block::RED_MUSHROOM_BLOCK;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	public function __construct(){
+
+	}
+
+	public function getDamage() : int{
+		return parent::getDamage(); // TODO: this is impossible to serialize into 4 bits, so it will have to wait until we implement the new level format
+	}
+
+	public function setDamage(int $meta) : void{
+		parent::setDamage($meta); // TODO: see above
 	}
 
 	public function getName() : string{

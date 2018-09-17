@@ -33,19 +33,15 @@ class PumpkinStem extends Crops{
 
 	protected $id = self::PUMPKIN_STEM;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
-	}
-
 	public function getName() : string{
 		return "Pumpkin Stem";
 	}
 
 	public function onRandomTick() : void{
 		if(mt_rand(0, 2) === 1){
-			if($this->meta < 0x07){
+			if($this->age < 7){
 				$block = clone $this;
-				++$block->meta;
+				++$block->age;
 				Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
 				if(!$ev->isCancelled()){
 					$this->getLevel()->setBlock($this, $ev->getNewState(), true);

@@ -33,8 +33,19 @@ class CobblestoneWall extends Transparent{
 
 	protected $id = self::COBBLESTONE_WALL;
 
+	/** @var int */
+	protected $variant = self::NONE_MOSSY_WALL;
+
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
+	}
+
+	public function getDamage() : int{
+		return $this->variant;
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->variant = $meta;
 	}
 
 	public function getToolType() : int{
@@ -50,7 +61,7 @@ class CobblestoneWall extends Transparent{
 	}
 
 	public function getName() : string{
-		if($this->meta === 0x01){
+		if($this->variant === self::MOSSY_WALL){
 			return "Mossy Cobblestone Wall";
 		}
 

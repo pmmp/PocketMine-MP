@@ -30,11 +30,48 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Lever extends Flowable{
+	protected const BOTTOM = 0;
+	protected const SIDE = 1;
+	protected const TOP = 2;
 
 	protected $id = self::LEVER;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var int */
+	protected $position = self::BOTTOM;
+	/** @var int */
+	protected $facing = Facing::NORTH;
+	/** @var bool */
+	protected $powered = false;
+
+	public function __construct(){
+
+	}
+
+	public function getDamage() : int{
+		if($this->position === self::BOTTOM){
+			$rotationMeta = Facing::axis($this->facing) === Facing::AXIS_Z ? 7 : 0;
+		}elseif($this->position === self::TOP){
+			$rotationMeta = Facing::axis($this->facing) === Facing::AXIS_Z ? 5 : 6;
+		}else{
+			$rotationMeta = 6 - $this->facing;
+		}
+		return $rotationMeta | ($this->powered ? 0x08 : 0);
+	}
+
+	public function setDamage(int $meta) : void{
+		$rotationMeta = $meta & 0x07;
+		if($rotationMeta === 5 or $rotationMeta === 6){
+			$this->position = self::TOP;
+			$this->facing = $rotationMeta === 5 ? Facing::SOUTH : Facing::EAST;
+		}elseif($rotationMeta === 7 or $rotationMeta === 0){
+			$this->position = self::BOTTOM;
+			$this->facing = $rotationMeta === 7 ? Facing::SOUTH : Facing::EAST;
+		}else{
+			$this->position = self::SIDE;
+			$this->facing = 6 - $rotationMeta;
+		}
+
+		$this->powered = ($meta & 0x08) !== 0;
 	}
 
 	public function getName() : string{
@@ -45,49 +82,35 @@ class Lever extends Flowable{
 		return 0.5;
 	}
 
-	public function getVariantBitmask() : int{
-		return 0;
-	}
-
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if(!$blockClicked->isSolid()){
 			return false;
 		}
 
-		if($face === Facing::DOWN){
-			$this->meta = 0;
-		}else{
-			$this->meta = 6 - $face;
-		}
-
 		if($player !== null){
-			$bearing = $player->getDirection();
-			if($bearing === Bearing::EAST or $bearing === Bearing::WEST){
-				if($face === Facing::UP){
-					$this->meta = 6;
-				}
-			}else{
-				if($face === Facing::DOWN){
-					$this->meta = 7;
-				}
-			}
+			$this->facing = Bearing::toFacing(Bearing::opposite($player->getDirection()));
+		}
+		if($face === Facing::DOWN){
+			$this->position = self::BOTTOM;
+		}elseif($face === Facing::UP){
+			$this->position = self::TOP;
+		}else{
+			$this->position = self::SIDE;
 		}
 
 		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onNearbyBlockChange() : void{
-		static $faces = [
-			0 => Facing::UP,
-			1 => Facing::WEST,
-			2 => Facing::EAST,
-			3 => Facing::NORTH,
-			4 => Facing::SOUTH,
-			5 => Facing::DOWN,
-			6 => Facing::DOWN,
-			7 => Facing::UP
-		];
-		if(!$this->getSide($faces[$this->meta & 0x07])->isSolid()){
+		if($this->position === self::BOTTOM){
+			$face = Facing::UP;
+		}elseif($this->position === self::TOP){
+			$face = Facing::DOWN;
+		}else{
+			$face = Facing::opposite($this->facing);
+		}
+
+		if(!$this->getSide($face)->isSolid()){
 			$this->level->useBreakOn($this);
 		}
 	}

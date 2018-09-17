@@ -28,19 +28,29 @@ use pocketmine\item\ItemFactory;
 use pocketmine\item\TieredTool;
 
 class NetherReactor extends Solid{
+	protected const STATE_INACTIVE = 0;
+	protected const STATE_ACTIVE = 1;
+	protected const STATE_USED = 2;
+
 	protected $id = Block::NETHER_REACTOR;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var int */
+	protected $state = self::STATE_INACTIVE;
+
+	public function __construct(){
+
+	}
+
+	public function getDamage() : int{
+		return $this->state;
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->state = $meta;
 	}
 
 	public function getName() : string{
-		static $prefixes = [
-			"",
-			"Active ",
-			"Used "
-		];
-		return ($prefixes[$this->meta] ?? "") . "Nether Reactor Core";
+		return "Nether Reactor Core";
 	}
 
 	public function getToolType() : int{

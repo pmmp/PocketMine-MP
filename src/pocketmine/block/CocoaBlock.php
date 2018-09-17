@@ -23,12 +23,29 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\math\Bearing;
+use pocketmine\math\Facing;
+
 class CocoaBlock extends Transparent{
 
 	protected $id = self::COCOA_BLOCK;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var int */
+	protected $facing = Facing::NORTH;
+	/** @var int */
+	protected $age = 0;
+
+	public function __construct(){
+
+	}
+
+	public function getDamage() : int{
+		return Bearing::fromFacing(Facing::opposite($this->facing)) | ($this->age << 2);
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->facing = Facing::opposite(Bearing::toFacing($meta & 0x03));
+		$this->age = $meta >> 2;
 	}
 
 	public function getName() : string{
@@ -43,9 +60,9 @@ class CocoaBlock extends Transparent{
 		return BlockToolType::TYPE_AXE;
 	}
 
-	//TODO
-
 	public function isAffectedBySilkTouch() : bool{
 		return false;
 	}
+
+	//TODO
 }

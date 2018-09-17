@@ -36,8 +36,19 @@ class Chest extends Transparent{
 
 	protected $id = self::CHEST;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var int */
+	protected $facing = Facing::NORTH;
+
+	public function __construct(){
+
+	}
+
+	public function getDamage() : int{
+		return $this->facing;
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->facing = $meta;
 	}
 
 	public function getHardness() : float{
@@ -60,7 +71,7 @@ class Chest extends Transparent{
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$chest = null;
 		if($player !== null){
-			$this->meta = Bearing::toFacing(Bearing::opposite($player->getDirection()));
+			$this->facing = Bearing::toFacing(Bearing::opposite($player->getDirection()));
 		}
 
 		foreach([
@@ -68,7 +79,7 @@ class Chest extends Transparent{
 			Bearing::toFacing(Bearing::rotate($player->getDirection(), 1))
 		] as $side){
 			$c = $this->getSide($side);
-			if($c->getId() === $this->id and $c->getDamage() === $this->meta){
+			if($c instanceof Chest and $c->getId() === $this->id and $c->facing === $this->facing){
 				$tile = $this->getLevel()->getTile($c);
 				if($tile instanceof TileChest and !$tile->isPaired()){
 					$chest = $tile;
@@ -114,10 +125,6 @@ class Chest extends Transparent{
 		}
 
 		return true;
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
 	}
 
 	public function getFuelTime() : int{

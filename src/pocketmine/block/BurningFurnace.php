@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
 use pocketmine\math\Bearing;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Furnace as TileFurnace;
@@ -37,8 +38,19 @@ class BurningFurnace extends Solid{
 
 	protected $itemId = self::FURNACE;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var int */
+	protected $facing = Facing::NORTH;
+
+	public function __construct(){
+
+	}
+
+	public function getDamage() : int{
+		return $this->facing;
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->facing = $meta;
 	}
 
 	public function getName() : string{
@@ -63,7 +75,7 @@ class BurningFurnace extends Solid{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if($player !== null){
-			$this->meta = Bearing::toFacing(Bearing::opposite($player->getDirection()));
+			$this->facing = Bearing::toFacing(Bearing::opposite($player->getDirection()));
 		}
 		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
 			Tile::createTile(Tile::FURNACE, $this->getLevel(), TileFurnace::createNBT($this, $face, $item, $player));
@@ -88,9 +100,5 @@ class BurningFurnace extends Solid{
 		}
 
 		return true;
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
 	}
 }

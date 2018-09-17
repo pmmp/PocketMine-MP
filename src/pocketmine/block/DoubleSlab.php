@@ -27,20 +27,34 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 
 abstract class DoubleSlab extends Solid{
+	/** @var int */
+	protected $variant = 0;
 
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
 	}
 
+	public function getDamage() : int{
+		return $this->variant;
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->variant = $meta;
+	}
+
+	public function getVariant() : int{
+		return $this->variant;
+	}
+
 	abstract public function getSlabId() : int;
 
 	public function getName() : string{
-		return "Double " . BlockFactory::get($this->getSlabId(), $this->getVariant())->getName();
+		return "Double " . BlockFactory::get($this->getSlabId(), $this->variant)->getName();
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get($this->getSlabId(), $this->getVariant(), 2)
+			ItemFactory::get($this->getSlabId(), $this->variant, 2)
 		];
 	}
 

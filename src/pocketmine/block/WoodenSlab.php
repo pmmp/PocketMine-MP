@@ -44,7 +44,7 @@ class WoodenSlab extends Slab{
 			4 => "Acacia",
 			5 => "Dark Oak"
 		];
-		return (($this->meta & 0x08) === 0x08 ? "Upper " : "") . ($names[$this->getVariant()] ?? "") . " Wooden Slab";
+		return ($names[$this->getVariant()] ?? "") . " Wooden Slab";
 	}
 
 	public function getToolType() : int{

@@ -32,8 +32,25 @@ class BrewingStand extends Transparent{
 
 	protected $itemId = Item::BREWING_STAND;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var bool */
+	protected $eastSlot = false;
+	/** @var bool */
+	protected $northwestSlot = false;
+	/** @var bool */
+	protected $southwestSlot = false;
+
+	public function __construct(){
+
+	}
+
+	public function getDamage() : int{
+		return ($this->eastSlot ? 0x01 : 0) | ($this->southwestSlot ? 0x02 : 0) | ($this->northwestSlot ? 0x04 : 0);
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->eastSlot = ($meta & 0x01) !== 0;
+		$this->southwestSlot = ($meta & 0x02) !== 0;
+		$this->northwestSlot = ($meta & 0x04) !== 0;
 	}
 
 	public function getName() : string{
@@ -50,10 +67,6 @@ class BrewingStand extends Transparent{
 
 	public function getToolHarvestLevel() : int{
 		return TieredTool::TIER_WOODEN;
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
 	}
 
 	//TODO

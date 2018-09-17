@@ -24,22 +24,34 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 abstract class Button extends Flowable{
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var int */
+	protected $facing = Facing::DOWN;
+	/** @var bool */
+	protected $powered = false;
+
+	public function __construct(){
+
 	}
 
-	public function getVariantBitmask() : int{
-		return 0;
+	public function getDamage() : int{
+		return $this->facing | ($this->powered ? 0x08 : 0);
+	}
+
+	public function setDamage(int $meta) : void{
+		//TODO: in PC it's (6 - facing) for every meta except 0 (down)
+		$this->facing = $meta & 0x07;
+		$this->powered = ($meta & 0x08) !== 0;
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		//TODO: check valid target block
-		$this->meta = $face;
+		$this->facing = $face;
 		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 

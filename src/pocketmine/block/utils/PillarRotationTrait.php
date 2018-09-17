@@ -23,17 +23,46 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\block\Block;
 use pocketmine\math\Facing;
 
-class PillarRotationHelper{
+trait PillarRotationTrait{
 
-	public static function getMetaFromFace(int $meta, int $face) : int{
+	/** @var int */
+	protected $axis = Facing::AXIS_Y;
+
+	/**
+	 * @see Block::getDamage()
+	 * @return int
+	 */
+	public function getDamage() : int{
+		return $this->writeAxisToMeta();
+	}
+
+	/**
+	 * @see Block::setDamage()
+	 * @param int $meta
+	 */
+	public function setDamage(int $meta) : void{
+		$this->readAxisFromMeta($meta);
+	}
+
+	protected function readAxisFromMeta(int $meta) : void{
+		static $map = [
+			0 => Facing::AXIS_Y,
+			1 => Facing::AXIS_X,
+			2 => Facing::AXIS_Z,
+			3 => Facing::AXIS_Y //TODO: how to deal with all-bark logs?
+		];
+		$this->axis = $map[$meta >> 2];
+	}
+
+	protected function writeAxisToMeta() : int{
 		static $bits = [
 			Facing::AXIS_Y => 0,
-			Facing::AXIS_Z => 0x08,
-			Facing::AXIS_X => 0x04
+			Facing::AXIS_Z => 2,
+			Facing::AXIS_X => 1
 		];
-
-		return ($meta & 0x03) | $bits[Facing::axis($face)];
+		return $bits[$this->axis] << 2;
 	}
 }

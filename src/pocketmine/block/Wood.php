@@ -23,12 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\PillarRotationHelper;
+use pocketmine\block\utils\PillarRotationTrait;
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Wood extends Solid{
+	use PillarRotationTrait;
+
 	public const OAK = 0;
 	public const SPRUCE = 1;
 	public const BIRCH = 2;
@@ -36,8 +39,24 @@ class Wood extends Solid{
 
 	protected $id = self::WOOD;
 
+	/** @var int */
+	protected $variant = self::OAK;
+
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
+	}
+
+	public function getDamage() : int{
+		return $this->variant | $this->writeAxisToMeta();
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->variant = $meta & 0x03;
+		$this->readAxisFromMeta($meta);
+	}
+
+	public function getVariant() : int{
+		return $this->variant;
 	}
 
 	public function getHardness() : float{
@@ -55,12 +74,8 @@ class Wood extends Solid{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$this->meta = PillarRotationHelper::getMetaFromFace($this->meta, $face);
+		$this->axis = Facing::axis($face);
 		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	public function getVariantBitmask() : int{
-		return 0x03;
 	}
 
 	public function getToolType() : int{

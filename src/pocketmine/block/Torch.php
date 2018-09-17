@@ -32,8 +32,23 @@ class Torch extends Flowable{
 
 	protected $id = self::TORCH;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var int */
+	protected $facing = Facing::UP;
+
+	public function __construct(){
+
+	}
+
+	public function getDamage() : int{
+		return $this->facing === Facing::DOWN ? 0 : 6 - $this->facing;
+	}
+
+	public function setDamage(int $meta) : void{
+		if($meta === 0){
+			$this->facing = Facing::DOWN;
+		}else{
+			$this->facing = 6 - $meta;
+		}
 	}
 
 	public function getLightLevel() : int{
@@ -46,7 +61,7 @@ class Torch extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		$below = $this->getSide(Facing::DOWN);
-		$face = $this->meta === 0 ? Facing::DOWN : Facing::opposite(6 - $this->meta);
+		$face = Facing::opposite($this->facing);
 
 		if($this->getSide($face)->isTransparent() and !($face === Facing::DOWN and ($below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL))){
 			$this->getLevel()->useBreakOn($this);
@@ -57,18 +72,13 @@ class Torch extends Flowable{
 		$below = $this->getSide(Facing::DOWN);
 
 		if(!$blockClicked->isTransparent() and $face !== Facing::DOWN){
-			$this->meta = 6 - $face;
-
+			$this->facing = $face;
 			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}elseif(!$below->isTransparent() or $below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL){
-			$this->meta = 5; //attached to block below
+			$this->facing = Facing::UP;
 			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
 		return false;
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
 	}
 }

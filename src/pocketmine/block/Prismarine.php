@@ -33,8 +33,23 @@ class Prismarine extends Solid{
 
 	protected $id = self::PRISMARINE;
 
+	/** @var int */
+	protected $variant = self::NORMAL;
+
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
+	}
+
+	public function getDamage() : int{
+		return $this->variant;
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->variant = $meta;
+	}
+
+	public function getVariant() : int{
+		return $this->variant;
 	}
 
 	public function getHardness() : float{
@@ -56,9 +71,5 @@ class Prismarine extends Solid{
 
 	public function getToolHarvestLevel() : int{
 		return TieredTool::TIER_WOODEN;
-	}
-
-	public function getVariantBitmask() : int{
-		return 0x03;
 	}
 }

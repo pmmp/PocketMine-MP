@@ -29,8 +29,8 @@ class Obsidian extends Solid{
 
 	protected $id = self::OBSIDIAN;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	public function __construct(){
+
 	}
 
 	public function getName() : string{

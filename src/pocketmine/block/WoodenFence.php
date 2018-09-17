@@ -33,6 +33,25 @@ class WoodenFence extends Fence{
 
 	protected $id = self::FENCE;
 
+	/** @var int */
+	protected $variant = self::FENCE_OAK;
+
+	public function __construct(int $meta = 0){
+		$this->setDamage($meta);
+	}
+
+	public function getDamage() : int{
+		return $this->variant;
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->variant = $meta;
+	}
+
+	public function getVariant() : int{
+		return $this->variant;
+	}
+
 	public function getHardness() : float{
 		return 2;
 	}
@@ -50,7 +69,7 @@ class WoodenFence extends Fence{
 			self::FENCE_ACACIA => "Acacia Fence",
 			self::FENCE_DARKOAK => "Dark Oak Fence"
 		];
-		return $names[$this->getVariant()] ?? "Unknown";
+		return $names[$this->variant] ?? "Unknown";
 	}
 
 	public function getFuelTime() : int{

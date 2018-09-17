@@ -38,8 +38,23 @@ class Stone extends Solid{
 
 	protected $id = self::STONE;
 
+	/** @var int */
+	protected $variant = self::NORMAL;
+
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
+	}
+
+	public function getDamage() : int{
+		return $this->variant;
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->variant = $meta;
+	}
+
+	public function getVariant() : int{
+		return $this->variant;
 	}
 
 	public function getHardness() : float{
@@ -68,9 +83,9 @@ class Stone extends Solid{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if($this->getDamage() === self::NORMAL){
+		if($this->variant === self::NORMAL){
 			return [
-				ItemFactory::get(Item::COBBLESTONE, $this->getDamage())
+				ItemFactory::get(Item::COBBLESTONE)
 			];
 		}
 

@@ -41,8 +41,23 @@ class Flower extends Flowable{
 
 	protected $id = self::RED_FLOWER;
 
+	/** @var int */
+	protected $variant = self::TYPE_POPPY;
+
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
+	}
+
+	public function getDamage() : int{
+		return $this->variant;
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->variant = $meta;
+	}
+
+	public function getVariant() : int{
+		return $this->variant;
 	}
 
 	public function getName() : string{
@@ -57,7 +72,7 @@ class Flower extends Flowable{
 			self::TYPE_PINK_TULIP => "Pink Tulip",
 			self::TYPE_OXEYE_DAISY => "Oxeye Daisy"
 		];
-		return $names[$this->meta] ?? "Unknown";
+		return $names[$this->getVariant()] ?? "Unknown";
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{

@@ -23,10 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\ColorBlockMetaHelper;
+use pocketmine\block\utils\ColorBlockTrait;
 use pocketmine\item\TieredTool;
 
 class Concrete extends Solid{
+	use ColorBlockTrait;
 
 	protected $id = Block::CONCRETE;
 
@@ -34,8 +35,8 @@ class Concrete extends Solid{
 		$this->setDamage($meta);
 	}
 
-	public function getName() : string{
-		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Concrete";
+	protected function getNameSuffix() : string{
+		return "Concrete";
 	}
 
 	public function getHardness() : float{

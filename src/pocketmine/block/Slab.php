@@ -30,9 +30,26 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 abstract class Slab extends Transparent{
+	/** @var bool */
+	protected $top = false;
+	/** @var int */
+	protected $variant = 0;
 
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
+	}
+
+	public function getDamage() : int{
+		return $this->variant | ($this->top ? 0x08 : 0);
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->variant = $meta & 0x07;
+		$this->top = ($meta & 0x08) !== 0;
+	}
+
+	public function getVariant() : int{
+		return $this->variant;
 	}
 
 	abstract public function getDoubleSlabId() : int;
@@ -42,8 +59,8 @@ abstract class Slab extends Transparent{
 			return true;
 		}
 
-		if($blockReplace->getId() === $this->getId() and $blockReplace->getVariant() === $this->getVariant()){
-			if(($blockReplace->getDamage() & 0x08) !== 0){ //Trying to combine with top slab
+		if($blockReplace instanceof Slab and $blockReplace->getId() === $this->getId() and $blockReplace->getVariant() === $this->variant){
+			if($blockReplace->top){ //Trying to combine with top slab
 				return $clickVector->y <= 0.5 or (!$isClickedBlock and $face === Facing::UP);
 			}else{
 				return $clickVector->y >= 0.5 or (!$isClickedBlock and $face === Facing::DOWN);
@@ -54,33 +71,32 @@ abstract class Slab extends Transparent{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$this->meta &= 0x07;
 		if($face === Facing::DOWN){
-			if($blockClicked->getId() === $this->id and ($blockClicked->getDamage() & 0x08) === 0x08 and $blockClicked->getVariant() === $this->getVariant()){
-				$this->getLevel()->setBlock($blockClicked, BlockFactory::get($this->getDoubleSlabId(), $this->getVariant()), true);
+			if($blockClicked instanceof Slab and $blockClicked->getId() === $this->id and $blockClicked->top and $blockClicked->getVariant() === $this->variant){
+				$this->getLevel()->setBlock($blockClicked, BlockFactory::get($this->getDoubleSlabId(), $this->variant), true);
 
 				return true;
-			}elseif($blockReplace->getId() === $this->id and $blockReplace->getVariant() === $this->getVariant()){
-				$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->getDoubleSlabId(), $this->getVariant()), true);
+			}elseif($blockReplace->getId() === $this->id and $blockReplace->getVariant() === $this->variant){
+				$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->getDoubleSlabId(), $this->variant), true);
 
 				return true;
 			}else{
-				$this->meta |= 0x08;
+				$this->top = true;
 			}
 		}elseif($face === Facing::UP){
-			if($blockClicked->getId() === $this->id and ($blockClicked->getDamage() & 0x08) === 0 and $blockClicked->getVariant() === $this->getVariant()){
-				$this->getLevel()->setBlock($blockClicked, BlockFactory::get($this->getDoubleSlabId(), $this->getVariant()), true);
+			if($blockClicked instanceof Slab and $blockClicked->getId() === $this->id and !$blockClicked->top and $blockClicked->getVariant() === $this->variant){
+				$this->getLevel()->setBlock($blockClicked, BlockFactory::get($this->getDoubleSlabId(), $this->variant), true);
 
 				return true;
-			}elseif($blockReplace->getId() === $this->id and $blockReplace->getVariant() === $this->getVariant()){
-				$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->getDoubleSlabId(), $this->getVariant()), true);
+			}elseif($blockReplace->getId() === $this->id and $blockReplace->getVariant() === $this->variant){
+				$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->getDoubleSlabId(), $this->variant), true);
 
 				return true;
 			}
 		}else{ //TODO: collision
 			if($blockReplace->getId() === $this->id){
-				if($blockReplace->getVariant() === $this->meta){
-					$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->getDoubleSlabId(), $this->getVariant()), true);
+				if($blockReplace->getVariant() === $this->variant){
+					$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->getDoubleSlabId(), $this->variant), true);
 
 					return true;
 				}
@@ -88,25 +104,20 @@ abstract class Slab extends Transparent{
 				return false;
 			}else{
 				if($clickVector->y > 0.5){
-					$this->meta |= 0x08;
+					$this->top = true;
 				}
 			}
 		}
 
-		if($blockReplace->getId() === $this->id and $blockClicked->getVariant() !== $this->getVariant()){
+		if($blockReplace->getId() === $this->id and $blockClicked->getVariant() !== $this->variant){
 			return false;
 		}
 
 		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function getVariantBitmask() : int{
-		return 0x07;
-	}
-
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-
-		if(($this->meta & 0x08) > 0){
+		if($this->top){
 			return new AxisAlignedBB(0, 0.5, 0, 1, 1, 1);
 		}else{
 			return new AxisAlignedBB(0, 0, 0, 1, 0.5, 1);

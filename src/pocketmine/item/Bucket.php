@@ -54,7 +54,7 @@ class Bucket extends Item implements Consumable{
 		$resultBlock = BlockFactory::get($this->meta);
 
 		if($resultBlock instanceof Air){
-			if($blockClicked instanceof Liquid and $blockClicked->getDamage() === 0){
+			if($blockClicked instanceof Liquid and $blockClicked->isSource()){
 				$stack = clone $this;
 
 				$stack->pop();

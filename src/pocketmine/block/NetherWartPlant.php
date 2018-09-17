@@ -36,8 +36,19 @@ class NetherWartPlant extends Flowable{
 
 	protected $itemId = Item::NETHER_WART;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var int */
+	protected $age = 0;
+
+	public function __construct(){
+
+	}
+
+	public function getDamage() : int{
+		return $this->age;
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->age = $meta;
 	}
 
 	public function getName() : string{
@@ -64,9 +75,9 @@ class NetherWartPlant extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->meta < 3 and mt_rand(0, 10) === 0){ //Still growing
+		if($this->age < 3 and mt_rand(0, 10) === 0){ //Still growing
 			$block = clone $this;
-			$block->meta++;
+			$block->age++;
 			$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
 
 			if(!$ev->isCancelled()){

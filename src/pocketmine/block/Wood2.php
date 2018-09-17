@@ -31,10 +31,13 @@ class Wood2 extends Wood{
 
 	protected $id = self::WOOD2;
 
+	/** @var int */
+	protected $variant = self::ACACIA;
+
 	public function getName() : string{
 		static $names = [
-			0 => "Acacia Wood",
-			1 => "Dark Oak Wood"
+			self::ACACIA => "Acacia Wood",
+			self::DARK_OAK => "Dark Oak Wood"
 		];
 		return $names[$this->getVariant()] ?? "Unknown";
 	}

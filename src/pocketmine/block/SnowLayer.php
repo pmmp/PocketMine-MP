@@ -34,8 +34,19 @@ class SnowLayer extends Flowable{
 
 	protected $id = self::SNOW_LAYER;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var int */
+	protected $layers = 1;
+
+	public function __construct(){
+
+	}
+
+	public function getDamage() : int{
+		return $this->layers - 1;
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->layers = $meta + 1;
 	}
 
 	public function getName() : string{

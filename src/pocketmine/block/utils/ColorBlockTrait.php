@@ -23,9 +23,51 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-class ColorBlockMetaHelper{
+use pocketmine\block\Block;
 
-	public static function getColorFromMeta(int $meta) : string{
+/**
+ * Trait used by blocks which come in the usual 16 colours.
+ */
+trait ColorBlockTrait{
+
+	/** @var int */
+	protected $variant = 0;
+
+	/**
+	 * @see Block::getDamage()
+	 * @return int
+	 */
+	public function getDamage() : int{
+		return $this->variant;
+	}
+
+	/**
+	 * @see Block::setDamage()
+	 * @param int $meta
+	 */
+	public function setDamage(int $meta) : void{
+		$this->variant = $meta;
+	}
+
+	/**
+	 * @see Block::getVariant()
+	 * @return int
+	 */
+	public function getVariant() : int{
+		return $this->variant;
+	}
+
+	/**
+	 * Returns the suffix for this coloured block's name.
+	 * @return string
+	 */
+	abstract protected function getNameSuffix() : string;
+
+	/**
+	 * @see Block::getName()
+	 * @return string
+	 */
+	public function getName() : string{
 		static $names = [
 			0 => "White",
 			1 => "Orange",
@@ -45,6 +87,6 @@ class ColorBlockMetaHelper{
 			15 => "Black"
 		];
 
-		return $names[$meta] ?? "Unknown";
+		return ($names[$this->variant] ?? "Unknown") . " " . $this->getNameSuffix();
 	}
 }

@@ -42,8 +42,29 @@ class Leaves extends Transparent{
 	protected $id = self::LEAVES;
 	protected $woodType = self::WOOD;
 
+	/** @var int */
+	protected $variant = self::OAK;
+	/** @var bool */
+	protected $noDecay = false;
+	/** @var bool */
+	protected $checkDecay = false;
+
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
+	}
+
+	public function getDamage() : int{
+		return $this->variant | ($this->noDecay ? 0x04 : 0) | ($this->checkDecay ? 0x08 : 0);
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->variant = $meta & 0x03;
+		$this->noDecay = ($meta & 0x04) !== 0;
+		$this->checkDecay = ($meta & 0x08) !== 0;
+	}
+
+	public function getVariant() : int{
+		return $this->variant;
 	}
 
 	public function getHardness() : float{
@@ -92,8 +113,8 @@ class Leaves extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(($this->meta & 0b00001100) === 0){
-			$this->meta |= 0x08;
+		if(!$this->noDecay and !$this->checkDecay){
+			$this->checkDecay = true;
 			$this->getLevel()->setBlock($this, $this, true, false);
 		}
 	}
@@ -103,9 +124,7 @@ class Leaves extends Transparent{
 	}
 
 	public function onRandomTick() : void{
-		if(($this->meta & 0b00001100) === 0x08){
-			$this->meta &= 0x03;
-
+		if(!$this->noDecay and $this->checkDecay){
 			$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new LeavesDecayEvent($this));
 
 			if($ev->isCancelled() or $this->findLog($this)){
@@ -117,12 +136,8 @@ class Leaves extends Transparent{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$this->meta |= 0x04;
+		$this->noDecay = true; //artificial leaves don't decay
 		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	public function getVariantBitmask() : int{
-		return 0x03;
 	}
 
 	public function getDrops(Item $item) : array{
@@ -146,7 +161,7 @@ class Leaves extends Transparent{
 	}
 
 	public function canDropApples() : bool{
-		return $this->meta === self::OAK;
+		return $this->variant === self::OAK;
 	}
 
 	public function getFlameEncouragement() : int{

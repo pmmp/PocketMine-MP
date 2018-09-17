@@ -29,8 +29,19 @@ class StonePressurePlate extends Transparent{
 
 	protected $id = self::STONE_PRESSURE_PLATE;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var bool */
+	protected $powered = false;
+
+	public function __construct(){
+
+	}
+
+	public function getDamage() : int{
+		return $this->powered ? 1 : 0;
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->powered = $meta !== 0;
 	}
 
 	public function getName() : string{
@@ -43,10 +54,6 @@ class StonePressurePlate extends Transparent{
 
 	public function getHardness() : float{
 		return 0.5;
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
 	}
 
 	public function getToolType() : int{

@@ -30,8 +30,8 @@ class Water extends Liquid{
 
 	protected $id = self::FLOWING_WATER;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	public function __construct(){
+
 	}
 
 	public function getName() : string{
@@ -43,11 +43,11 @@ class Water extends Liquid{
 	}
 
 	public function getStillForm() : Block{
-		return BlockFactory::get(Block::STILL_WATER, $this->meta);
+		return BlockFactory::get(Block::STILL_WATER, $this->getDamage());
 	}
 
 	public function getFlowingForm() : Block{
-		return BlockFactory::get(Block::FLOWING_WATER, $this->meta);
+		return BlockFactory::get(Block::FLOWING_WATER, $this->getDamage());
 	}
 
 	public function getBucketFillSound() : int{

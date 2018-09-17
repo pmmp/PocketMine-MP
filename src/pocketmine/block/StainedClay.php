@@ -23,13 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\ColorBlockMetaHelper;
+use pocketmine\block\utils\ColorBlockTrait;
 
 class StainedClay extends HardenedClay{
+	use ColorBlockTrait;
 
 	protected $id = self::STAINED_CLAY;
 
-	public function getName() : string{
-		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Stained Clay";
+	public function __construct(int $meta = 0){
+		$this->setDamage($meta);
+	}
+
+	protected function getNameSuffix() : string{
+		return "Stained Clay";
 	}
 }

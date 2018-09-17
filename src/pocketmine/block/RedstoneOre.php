@@ -33,8 +33,8 @@ class RedstoneOre extends Solid{
 
 	protected $id = self::REDSTONE_ORE;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	public function __construct(){
+
 	}
 
 	public function getName() : string{
@@ -50,11 +50,11 @@ class RedstoneOre extends Solid{
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{
-		return $this->getLevel()->setBlock($this, BlockFactory::get(Block::GLOWING_REDSTONE_ORE, $this->meta));
+		return $this->getLevel()->setBlock($this, BlockFactory::get(Block::GLOWING_REDSTONE_ORE));
 	}
 
 	public function onNearbyBlockChange() : void{
-		$this->getLevel()->setBlock($this, BlockFactory::get(Block::GLOWING_REDSTONE_ORE, $this->meta));
+		$this->getLevel()->setBlock($this, BlockFactory::get(Block::GLOWING_REDSTONE_ORE));
 	}
 
 	public function getToolType() : int{

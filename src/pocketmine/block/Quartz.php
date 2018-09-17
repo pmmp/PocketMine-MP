@@ -23,13 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\PillarRotationHelper;
+use pocketmine\block\utils\PillarRotationTrait;
 use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Quartz extends Solid{
+	use PillarRotationTrait;
 
 	public const NORMAL = 0;
 	public const CHISELED = 1;
@@ -37,8 +39,26 @@ class Quartz extends Solid{
 
 	protected $id = self::QUARTZ_BLOCK;
 
+	/** @var int */
+	protected $variant = self::NORMAL;
+
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
+	}
+
+	public function getDamage() : int{
+		return $this->variant | ($this->variant !== self::NORMAL ? $this->writeAxisToMeta() : 0);
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->variant = $meta & 0x03;
+		if($this->variant !== self::NORMAL){
+			$this->readAxisFromMeta($meta);
+		}
+	}
+
+	public function getVariant() : int{
+		return $this->variant;
 	}
 
 	public function getHardness() : float{
@@ -55,8 +75,8 @@ class Quartz extends Solid{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if($this->meta !== self::NORMAL){
-			$this->meta = PillarRotationHelper::getMetaFromFace($this->meta, $face);
+		if($this->variant !== self::NORMAL){
+			$this->axis = Facing::axis($face);
 		}
 		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
@@ -67,9 +87,5 @@ class Quartz extends Solid{
 
 	public function getToolHarvestLevel() : int{
 		return TieredTool::TIER_WOODEN;
-	}
-
-	public function getVariantBitmask() : int{
-		return 0x03;
 	}
 }

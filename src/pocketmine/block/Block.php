@@ -61,6 +61,8 @@ class Block extends Position implements BlockIds, Metadatable{
 	protected $id;
 	/** @var int */
 	protected $meta = 0;
+	/** @var int */
+	protected $variant = 0;
 	/** @var string|null */
 	protected $fallbackName;
 	/** @var int|null */
@@ -81,7 +83,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function __construct(int $id, int $meta = 0, string $name = null, int $itemId = null){
 		$this->id = $id;
-		$this->meta = $meta;
+		$this->setDamage($meta);
 		$this->fallbackName = $name;
 		$this->itemId = $itemId;
 	}
@@ -128,26 +130,12 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * Bitmask to use to remove superfluous information from block meta when getting its item form or name.
-	 * This defaults to -1 (don't remove any data). Used to remove rotation data and bitflags from block drops.
-	 *
-	 * If your block should not have any meta value when it's dropped as an item, override this to return 0 in
-	 * descendent classes.
-	 *
-	 * @return int
-	 */
-	public function getVariantBitmask() : int{
-		return -1;
-	}
-
-	/**
 	 * Returns the block meta, stripped of non-variant flags.
 	 * @return int
 	 */
 	public function getVariant() : int{
-		return $this->meta & $this->getVariantBitmask();
+		return $this->variant;
 	}
-
 
 	/**
 	 * AKA: Block->isPlaceable

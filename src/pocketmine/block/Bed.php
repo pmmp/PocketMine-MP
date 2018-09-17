@@ -37,15 +37,34 @@ use pocketmine\tile\Tile;
 use pocketmine\utils\TextFormat;
 
 class Bed extends Transparent{
-	public const BITFLAG_OCCUPIED = 0x04;
-	public const BITFLAG_HEAD = 0x08;
+	private const BITFLAG_OCCUPIED = 0x04;
+	private const BITFLAG_HEAD = 0x08;
 
 	protected $id = self::BED_BLOCK;
 
 	protected $itemId = Item::BED;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var int */
+	protected $facing = Facing::NORTH;
+	/** @var bool */
+	protected $occupied = false;
+	/** @var bool */
+	protected $head = false;
+
+	public function __construct(){
+
+	}
+
+	public function getDamage() : int{
+		return Bearing::fromFacing($this->facing) |
+			($this->occupied ? self::BITFLAG_OCCUPIED : 0) |
+			($this->head ? self::BITFLAG_HEAD : 0);
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->facing = Bearing::toFacing($meta & 0x03);
+		$this->occupied = ($meta & self::BITFLAG_OCCUPIED) !== 0;
+		$this->head = ($meta & self::BITFLAG_HEAD) !== 0;
 	}
 
 	public function getHardness() : float{
@@ -61,51 +80,39 @@ class Bed extends Transparent{
 	}
 
 	public function isHeadPart() : bool{
-		return ($this->meta & self::BITFLAG_HEAD) !== 0;
+		return $this->head;
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isOccupied() : bool{
-		return ($this->meta & self::BITFLAG_OCCUPIED) !== 0;
+		return $this->occupied;
 	}
 
 	public function setOccupied(bool $occupied = true){
-		if($occupied){
-			$this->meta |= self::BITFLAG_OCCUPIED;
-		}else{
-			$this->meta &= ~self::BITFLAG_OCCUPIED;
-		}
+		$this->occupied = $occupied;
+		$this->level->setBlock($this, $this, false, false);
 
-		$this->getLevel()->setBlock($this, $this, false, false);
-
-		if(($other = $this->getOtherHalf()) !== null and $other->isOccupied() !== $occupied){
-			$other->setOccupied($occupied);
+		if(($other = $this->getOtherHalf()) !== null){
+			$other->occupied = $occupied;
+			$this->level->setBlock($other, $other, false, false);
 		}
 	}
 
 	/**
-	 * @param int  $meta
-	 * @param bool $isHead
-	 *
 	 * @return int
 	 */
-	public static function getOtherHalfSide(int $meta, bool $isHead = false) : int{
-		$side = Bearing::toFacing($meta & 0x03);
-		if($isHead){
-			$side = Facing::opposite($side);
-		}
-
-		return $side;
+	private function getOtherHalfSide() : int{
+		return $this->head ? Facing::opposite($this->facing) : $this->facing;
 	}
 
 	/**
 	 * @return Bed|null
 	 */
 	public function getOtherHalf() : ?Bed{
-		$other = $this->getSide(self::getOtherHalfSide($this->meta, $this->isHeadPart()));
-		if($other instanceof Bed and $other->getId() === $this->getId() and $other->isHeadPart() !== $this->isHeadPart() and (($other->getDamage() & 0x03) === ($this->getDamage() & 0x03))){
+		$other = $this->getSide($this->getOtherHalfSide());
+		if($other instanceof Bed and $other->head !== $this->head and $other->facing === $this->facing){
 			return $other;
 		}
 
@@ -152,11 +159,17 @@ class Bed extends Transparent{
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
 		if(!$down->isTransparent()){
-			$this->meta = $player instanceof Player ? $player->getDirection() : 0;
-			$next = $this->getSide(self::getOtherHalfSide($this->meta));
+			$this->facing = $player !== null ? Bearing::toFacing($player->getDirection()) : Facing::NORTH;
+
+			$next = $this->getSide($this->getOtherHalfSide());
 			if($next->canBeReplaced() and !$next->getSide(Facing::DOWN)->isTransparent()){
 				parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-				$this->getLevel()->setBlock($next, BlockFactory::get($this->id, $this->meta | self::BITFLAG_HEAD), true, true);
+
+				$nextState = BlockFactory::get($this->id, $this->getDamage());
+				if($nextState instanceof Bed){
+					$nextState->head = true;
+				}
+				$this->getLevel()->setBlock($next, $nextState, true, true);
 
 				Tile::createTile(Tile::BED, $this->getLevel(), TileBed::createNBT($this, $face, $item, $player));
 				Tile::createTile(Tile::BED, $this->getLevel(), TileBed::createNBT($next, $face, $item, $player));

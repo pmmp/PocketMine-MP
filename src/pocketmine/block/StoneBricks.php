@@ -33,8 +33,23 @@ class StoneBricks extends Solid{
 
 	protected $id = self::STONE_BRICKS;
 
+	/** @var int */
+	protected $variant = self::NORMAL;
+
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
+	}
+
+	public function getDamage() : int{
+		return $this->variant;
+	}
+
+	public function setDamage(int $meta) : void{
+		$this->variant = $meta;
+	}
+
+	public function getVariant() : int{
+		return $this->variant;
 	}
 
 	public function getHardness() : float{
@@ -56,6 +71,6 @@ class StoneBricks extends Solid{
 			self::CRACKED => "Cracked Stone Bricks",
 			self::CHISELED => "Chiseled Stone Bricks"
 		];
-		return $names[$this->getVariant()] ?? "Unknown";
+		return $names[$this->variant] ?? "Unknown";
 	}
 }
