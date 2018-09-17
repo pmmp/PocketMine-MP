@@ -685,9 +685,6 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 */
 	public function doTick(int $currentTick){
-		if($this->closed){
-			throw new \InvalidStateException("Attempted to tick a Level which has been closed");
-		}
 
 		$this->timings->doTick->startTiming();
 
