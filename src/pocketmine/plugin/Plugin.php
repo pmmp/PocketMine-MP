@@ -27,6 +27,7 @@ declare(strict_types=1);
 namespace pocketmine\plugin;
 
 use pocketmine\command\CommandExecutor;
+use pocketmine\command\PluginCommandSender;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
 
@@ -84,6 +85,11 @@ interface Plugin extends CommandExecutor{
 	 * @return PluginLoader
 	 */
 	public function getPluginLoader();
+
+	/**
+	 * @return PluginCommandSender
+	 */
+	public function getCommandSender() : PluginCommandSender;
 
 	/**
 	 * @return TaskScheduler

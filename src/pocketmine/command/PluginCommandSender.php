@@ -24,14 +24,18 @@ declare(strict_types=1);
 namespace pocketmine\command;
 
 use pocketmine\lang\TextContainer;
-use pocketmine\utils\MainLogger;
+use pocketmine\plugin\Plugin;
 
-class ConsoleCommandSender extends SuperCommandSender{
+class PluginCommandSender extends SuperCommandSender{
+	/** @var Plugin */
+	private $plugin;
+	/** @var int */
+	private $lineHeight = PHP_INT_MAX;
 
-	private $perm;
-
-	/** @var int|null */
-	protected $lineHeight = null;
+	public function __construct(Plugin $plugin){
+		parent::__construct();
+		$this->plugin = $plugin;
+	}
 
 	/**
 	 * @param TextContainer|string $message
@@ -44,7 +48,7 @@ class ConsoleCommandSender extends SuperCommandSender{
 		}
 
 		foreach(explode("\n", trim($message)) as $line){
-			MainLogger::getLogger()->info($line);
+			$this->plugin->getLogger()->info($line);
 		}
 	}
 
@@ -52,17 +56,14 @@ class ConsoleCommandSender extends SuperCommandSender{
 	 * @return string
 	 */
 	public function getName() : string{
-		return "CONSOLE";
+		return $this->plugin->getName();
 	}
 
 	public function getScreenLineHeight() : int{
-		return $this->lineHeight ?? PHP_INT_MAX;
+		return $this->lineHeight;
 	}
 
-	public function setScreenLineHeight(int $height = null){
-		if($height !== null and $height < 1){
-			throw new \InvalidArgumentException("Line height must be at least 1");
-		}
-		$this->lineHeight = $height;
+	public function setScreenLineHeight(int $height = null) : void{
+		$this->lineHeight = $height ?? PHP_INT_MAX;
 	}
 }

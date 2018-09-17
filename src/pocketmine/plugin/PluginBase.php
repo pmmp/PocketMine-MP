@@ -25,6 +25,7 @@ namespace pocketmine\plugin;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\PluginCommandSender;
 use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
@@ -55,7 +56,8 @@ abstract class PluginBase implements Plugin{
 
 	/** @var PluginLogger */
 	private $logger;
-
+	/** @var PluginCommandSender */
+	private $commandSender;
 	/** @var TaskScheduler */
 	private $scheduler;
 
@@ -67,6 +69,7 @@ abstract class PluginBase implements Plugin{
 		$this->file = rtrim($file, "\\/") . "/";
 		$this->configFile = $this->dataFolder . "config.yml";
 		$this->logger = new PluginLogger($this);
+		$this->commandSender = new PluginCommandSender($this);
 		$this->scheduler = new TaskScheduler($this->logger, $this->getFullName());
 
 		$this->onLoad();
@@ -195,7 +198,7 @@ abstract class PluginBase implements Plugin{
 	 * Saves an embedded resource to its relative location in the data folder
 	 *
 	 * @param string $filename
-	 * @param bool $replace
+	 * @param bool   $replace
 	 *
 	 * @return bool
 	 */
@@ -302,6 +305,10 @@ abstract class PluginBase implements Plugin{
 	 */
 	public function getPluginLoader(){
 		return $this->loader;
+	}
+
+	public function getCommandSender() : PluginCommandSender{
+		return $this->commandSender;
 	}
 
 	/**
