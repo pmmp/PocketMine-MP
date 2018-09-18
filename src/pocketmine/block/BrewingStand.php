@@ -23,11 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
 
 class BrewingStand extends Transparent{
 
 	protected $id = self::BREWING_STAND_BLOCK;
+
+	protected $itemId = Item::BREWING_STAND;
 
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
