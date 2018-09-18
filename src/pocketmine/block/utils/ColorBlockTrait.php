@@ -30,7 +30,10 @@ use pocketmine\block\Block;
  */
 trait ColorBlockTrait{
 
-	/** @var int */
+	/**
+	 * @var int
+	 * @see Block::$variant
+	 */
 	protected $variant = 0;
 
 	/**
