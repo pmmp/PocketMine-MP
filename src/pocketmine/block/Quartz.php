@@ -39,9 +39,6 @@ class Quartz extends Solid{
 
 	protected $id = self::QUARTZ_BLOCK;
 
-	/** @var int */
-	protected $variant = self::NORMAL;
-
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
 	}
@@ -55,10 +52,6 @@ class Quartz extends Solid{
 		if($this->variant !== self::NORMAL){
 			$this->readAxisFromMeta($meta);
 		}
-	}
-
-	public function getVariant() : int{
-		return $this->variant;
 	}
 
 	public function getHardness() : float{

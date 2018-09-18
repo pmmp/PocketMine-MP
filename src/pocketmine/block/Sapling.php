@@ -40,8 +40,6 @@ class Sapling extends Flowable{
 
 	protected $id = self::SAPLING;
 
-	/** @var int */
-	protected $variant = self::OAK;
 	/** @var bool */
 	protected $ready = false;
 
@@ -56,10 +54,6 @@ class Sapling extends Flowable{
 	public function setDamage(int $meta) : void{
 		$this->variant = $meta & 0x07;
 		$this->ready = ($meta & 0x08) !== 0;
-	}
-
-	public function getVariant() : int{
-		return $this->variant;
 	}
 
 	public function getName() : string{

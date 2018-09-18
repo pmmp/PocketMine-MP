@@ -26,8 +26,6 @@ namespace pocketmine\block;
 class Sand extends Fallable{
 
 	protected $id = self::SAND;
-	/** @var int */
-	protected $variant = 0;
 
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
@@ -39,10 +37,6 @@ class Sand extends Fallable{
 
 	public function setDamage(int $meta) : void{
 		$this->variant = $meta;
-	}
-
-	public function getVariant() : int{
-		return $this->variant;
 	}
 
 	public function getHardness() : float{

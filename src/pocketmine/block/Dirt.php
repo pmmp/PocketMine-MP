@@ -33,9 +33,6 @@ class Dirt extends Solid{
 
 	protected $id = self::DIRT;
 
-	/** @var int */
-	protected $variant = self::NORMAL;
-
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
 	}

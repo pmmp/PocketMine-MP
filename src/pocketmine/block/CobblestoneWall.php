@@ -33,9 +33,6 @@ class CobblestoneWall extends Transparent{
 
 	protected $id = self::COBBLESTONE_WALL;
 
-	/** @var int */
-	protected $variant = self::NONE_MOSSY_WALL;
-
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
 	}

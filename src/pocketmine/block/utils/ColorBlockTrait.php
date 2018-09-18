@@ -53,14 +53,6 @@ trait ColorBlockTrait{
 	}
 
 	/**
-	 * @see Block::getVariant()
-	 * @return int
-	 */
-	public function getVariant() : int{
-		return $this->variant;
-	}
-
-	/**
 	 * Returns the suffix for this coloured block's name.
 	 * @return string
 	 */

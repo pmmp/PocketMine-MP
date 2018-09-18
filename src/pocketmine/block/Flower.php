@@ -41,9 +41,6 @@ class Flower extends Flowable{
 
 	protected $id = self::RED_FLOWER;
 
-	/** @var int */
-	protected $variant = self::TYPE_POPPY;
-
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
 	}
@@ -54,10 +51,6 @@ class Flower extends Flowable{
 
 	public function setDamage(int $meta) : void{
 		$this->variant = $meta;
-	}
-
-	public function getVariant() : int{
-		return $this->variant;
 	}
 
 	public function getName() : string{

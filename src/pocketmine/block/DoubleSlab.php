@@ -27,8 +27,6 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 
 abstract class DoubleSlab extends Solid{
-	/** @var int */
-	protected $variant = 0;
 
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
@@ -40,10 +38,6 @@ abstract class DoubleSlab extends Solid{
 
 	public function setDamage(int $meta) : void{
 		$this->variant = $meta;
-	}
-
-	public function getVariant() : int{
-		return $this->variant;
 	}
 
 	abstract public function getSlabId() : int;

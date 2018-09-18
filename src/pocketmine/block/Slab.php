@@ -32,8 +32,6 @@ use pocketmine\Player;
 abstract class Slab extends Transparent{
 	/** @var bool */
 	protected $top = false;
-	/** @var int */
-	protected $variant = 0;
 
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
@@ -46,10 +44,6 @@ abstract class Slab extends Transparent{
 	public function setDamage(int $meta) : void{
 		$this->variant = $meta & 0x07;
 		$this->top = ($meta & 0x08) !== 0;
-	}
-
-	public function getVariant() : int{
-		return $this->variant;
 	}
 
 	abstract public function getDoubleSlabId() : int;

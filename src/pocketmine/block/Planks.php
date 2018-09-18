@@ -33,9 +33,6 @@ class Planks extends Solid{
 
 	protected $id = self::WOODEN_PLANKS;
 
-	/** @var int */
-	protected $variant = self::OAK;
-
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
 	}
@@ -46,10 +43,6 @@ class Planks extends Solid{
 
 	public function setDamage(int $meta) : void{
 		$this->variant = $meta;
-	}
-
-	public function getVariant() : int{
-		return $this->variant;
 	}
 
 	public function getHardness() : float{

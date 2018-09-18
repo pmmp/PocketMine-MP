@@ -33,9 +33,6 @@ class TallGrass extends Flowable{
 
 	protected $id = self::TALL_GRASS;
 
-	/** @var int */
-	protected $variant = 0;
-
 	public function __construct(int $meta = 1){
 		$this->setDamage($meta);
 	}
@@ -46,10 +43,6 @@ class TallGrass extends Flowable{
 
 	public function setDamage(int $meta) : void{
 		$this->variant = $meta;
-	}
-
-	public function getVariant() : int{
-		return $this->variant;
 	}
 
 	public function canBeReplaced() : bool{

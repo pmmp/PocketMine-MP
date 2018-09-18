@@ -43,9 +43,6 @@ class Anvil extends Fallable{
 	/** @var int */
 	protected $facing = Facing::NORTH;
 
-	/** @var int */
-	protected $variant = self::TYPE_NORMAL;
-
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
 	}
@@ -57,10 +54,6 @@ class Anvil extends Fallable{
 	public function setDamage(int $meta) : void{
 		$this->variant = $meta & 0x0c;
 		$this->facing = Bearing::toFacing($meta & 0x03);
-	}
-
-	public function getVariant() : int{
-		return $this->variant;
 	}
 
 	public function getName() : string{

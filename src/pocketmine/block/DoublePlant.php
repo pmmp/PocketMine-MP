@@ -34,8 +34,6 @@ class DoublePlant extends Flowable{
 
 	protected $id = self::DOUBLE_PLANT;
 
-	/** @var int */
-	protected $variant = 0;
 	/** @var bool */
 	protected $top = false;
 
@@ -50,10 +48,6 @@ class DoublePlant extends Flowable{
 	public function setDamage(int $meta) : void{
 		$this->variant = $meta & 0x07;
 		$this->top = ($meta & self::BITFLAG_TOP) !== 0;
-	}
-
-	public function getVariant() : int{
-		return $this->variant;
 	}
 
 	public function canBeReplaced() : bool{

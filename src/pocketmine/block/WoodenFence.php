@@ -33,9 +33,6 @@ class WoodenFence extends Fence{
 
 	protected $id = self::FENCE;
 
-	/** @var int */
-	protected $variant = self::FENCE_OAK;
-
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
 	}
@@ -46,10 +43,6 @@ class WoodenFence extends Fence{
 
 	public function setDamage(int $meta) : void{
 		$this->variant = $meta;
-	}
-
-	public function getVariant() : int{
-		return $this->variant;
 	}
 
 	public function getHardness() : float{

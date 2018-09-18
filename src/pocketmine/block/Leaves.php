@@ -42,8 +42,6 @@ class Leaves extends Transparent{
 	protected $id = self::LEAVES;
 	protected $woodType = self::WOOD;
 
-	/** @var int */
-	protected $variant = self::OAK;
 	/** @var bool */
 	protected $noDecay = false;
 	/** @var bool */
@@ -61,10 +59,6 @@ class Leaves extends Transparent{
 		$this->variant = $meta & 0x03;
 		$this->noDecay = ($meta & 0x04) !== 0;
 		$this->checkDecay = ($meta & 0x08) !== 0;
-	}
-
-	public function getVariant() : int{
-		return $this->variant;
 	}
 
 	public function getHardness() : float{
