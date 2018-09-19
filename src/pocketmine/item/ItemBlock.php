@@ -40,15 +40,12 @@ class ItemBlock extends Item{
 	 */
 	public function __construct(int $blockId, int $meta = 0, int $itemId = null){
 		$this->blockId = $blockId;
+		$this->setDamage($meta);
 		parent::__construct($itemId ?? $blockId, $meta, $this->getBlock()->getName());
 	}
 
 	public function getBlock() : Block{
 		return BlockFactory::get($this->blockId, $this->meta === -1 ? 0 : $this->meta & 0xf);
-	}
-
-	public function getVanillaName() : string{
-		return $this->getBlock()->getName();
 	}
 
 	public function getFuelTime() : int{
