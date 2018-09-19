@@ -49,11 +49,11 @@ abstract class Liquid extends Transparent{
 	/** @var int */
 	protected $decay = 0; //PC "level" property
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return $this->decay | ($this->falling ? 0x08 : 0);
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		$this->decay = $meta & 0x07;
 		$this->falling = ($meta & 0x08) !== 0;
 	}

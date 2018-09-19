@@ -43,11 +43,11 @@ class NetherWartPlant extends Flowable{
 
 	}
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return $this->age;
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		$this->age = $meta;
 	}
 

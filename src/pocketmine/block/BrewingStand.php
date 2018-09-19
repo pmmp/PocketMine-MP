@@ -43,11 +43,11 @@ class BrewingStand extends Transparent{
 
 	}
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return ($this->eastSlot ? 0x01 : 0) | ($this->southwestSlot ? 0x02 : 0) | ($this->northwestSlot ? 0x04 : 0);
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		$this->eastSlot = ($meta & 0x01) !== 0;
 		$this->southwestSlot = ($meta & 0x02) !== 0;
 		$this->northwestSlot = ($meta & 0x04) !== 0;

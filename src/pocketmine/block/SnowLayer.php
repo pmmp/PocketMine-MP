@@ -41,11 +41,11 @@ class SnowLayer extends Flowable{
 
 	}
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return $this->layers - 1;
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		$this->layers = $meta + 1;
 	}
 

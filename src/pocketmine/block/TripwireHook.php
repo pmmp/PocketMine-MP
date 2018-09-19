@@ -44,11 +44,11 @@ class TripwireHook extends Flowable{
 
 	}
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return Bearing::fromFacing($this->facing) | ($this->connected ? 0x04 : 0) | ($this->powered ? 0x08 : 0);
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		$this->facing = Bearing::toFacing($meta & 0x03);
 		$this->connected = ($meta & 0x04) !== 0;
 		$this->powered = ($meta & 0x08) !== 0;

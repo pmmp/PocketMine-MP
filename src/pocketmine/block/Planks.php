@@ -24,26 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 class Planks extends Solid{
-	public const OAK = 0;
-	public const SPRUCE = 1;
-	public const BIRCH = 2;
-	public const JUNGLE = 3;
-	public const ACACIA = 4;
-	public const DARK_OAK = 5;
-
-	protected $id = self::WOODEN_PLANKS;
-
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
-	}
-
-	public function getDamage() : int{
-		return $this->variant;
-	}
-
-	public function setDamage(int $meta) : void{
-		$this->variant = $meta;
-	}
 
 	public function getHardness() : float{
 		return 2;
@@ -51,18 +31,6 @@ class Planks extends Solid{
 
 	public function getToolType() : int{
 		return BlockToolType::TYPE_AXE;
-	}
-
-	public function getName() : string{
-		static $names = [
-			self::OAK => "Oak Wood Planks",
-			self::SPRUCE => "Spruce Wood Planks",
-			self::BIRCH => "Birch Wood Planks",
-			self::JUNGLE => "Jungle Wood Planks",
-			self::ACACIA => "Acacia Wood Planks",
-			self::DARK_OAK => "Dark Oak Wood Planks"
-		];
-		return $names[$this->variant] ?? "Unknown";
 	}
 
 	public function getFuelTime() : int{

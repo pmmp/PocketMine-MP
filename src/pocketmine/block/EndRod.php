@@ -40,14 +40,14 @@ class EndRod extends Flowable{
 
 	}
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		if(Facing::axis($this->facing) === Facing::AXIS_Y){
 			return $this->facing;
 		}
 		return $this->facing ^ 1; //TODO: in PC this is always the same as facing, just PE is stupid
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		if($meta === 0 or $meta === 1){
 			$this->facing = $meta;
 		}else{

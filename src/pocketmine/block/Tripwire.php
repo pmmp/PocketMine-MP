@@ -41,11 +41,11 @@ class Tripwire extends Flowable{
 
 	}
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return ($this->triggered ? 0x01 : 0) | ($this->connected ? 0x04 : 0) | ($this->disarmed ? 0x08 : 0);
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		$this->triggered = ($meta & 0x01) !== 0;
 		$this->connected = ($meta & 0x04) !== 0;
 		$this->disarmed = ($meta & 0x08) !== 0;

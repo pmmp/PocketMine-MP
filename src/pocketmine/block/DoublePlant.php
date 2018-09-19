@@ -32,38 +32,19 @@ use pocketmine\Player;
 class DoublePlant extends Flowable{
 	private const BITFLAG_TOP = 0x08;
 
-	protected $id = self::DOUBLE_PLANT;
-
 	/** @var bool */
 	protected $top = false;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	protected function writeStateToMeta() : int{
+		return ($this->top ? self::BITFLAG_TOP : 0);
 	}
 
-	public function getDamage() : int{
-		return $this->variant | ($this->top ? self::BITFLAG_TOP : 0);
-	}
-
-	public function setDamage(int $meta) : void{
-		$this->variant = $meta & 0x07;
+	public function readStateFromMeta(int $meta) : void{
 		$this->top = ($meta & self::BITFLAG_TOP) !== 0;
 	}
 
 	public function canBeReplaced() : bool{
 		return $this->variant === 2 or $this->variant === 3; //grass or fern
-	}
-
-	public function getName() : string{
-		static $names = [
-			0 => "Sunflower",
-			1 => "Lilac",
-			2 => "Double Tallgrass",
-			3 => "Large Fern",
-			4 => "Rose Bush",
-			5 => "Peony"
-		];
-		return $names[$this->getVariant()] ?? "";
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{

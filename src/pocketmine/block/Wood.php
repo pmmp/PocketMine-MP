@@ -37,33 +37,8 @@ class Wood extends Solid{
 	public const BIRCH = 2;
 	public const JUNGLE = 3;
 
-	protected $id = self::WOOD;
-
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
-	}
-
-	public function getDamage() : int{
-		return $this->variant | $this->writeAxisToMeta();
-	}
-
-	public function setDamage(int $meta) : void{
-		$this->variant = $meta & 0x03;
-		$this->readAxisFromMeta($meta);
-	}
-
 	public function getHardness() : float{
 		return 2;
-	}
-
-	public function getName() : string{
-		static $names = [
-			self::OAK => "Oak Wood",
-			self::SPRUCE => "Spruce Wood",
-			self::BIRCH => "Birch Wood",
-			self::JUNGLE => "Jungle Wood"
-		];
-		return $names[$this->getVariant()] ?? "Unknown";
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{

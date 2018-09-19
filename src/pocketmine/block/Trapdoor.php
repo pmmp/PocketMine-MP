@@ -53,11 +53,11 @@ class Trapdoor extends Transparent{
 
 	}
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return (5 - $this->facing) | ($this->top ? self::MASK_UPPER : 0) | ($this->open ? self::MASK_OPENED : 0);
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		//TODO: in PC the values are reversed (3 - (5 - facing))
 
 		$this->facing = 5 - ($meta & 0x03);

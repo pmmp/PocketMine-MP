@@ -29,16 +29,25 @@ class RedMushroomBlock extends Solid{
 
 	protected $id = Block::RED_MUSHROOM_BLOCK;
 
+	/**
+	 * @var int
+	 * In PC they have blockstate properties for each of the sides (pores/not pores). Unfortunately, we can't support
+	 * that because we can't serialize 2^6 combinations into a 4-bit metadata value, so this has to stick with storing
+	 * the legacy crap for now.
+	 * TODO: change this once proper blockstates are implemented
+	 */
+	protected $rotationData = 0;
+
 	public function __construct(){
 
 	}
 
-	public function getDamage() : int{
-		return parent::getDamage(); // TODO: this is impossible to serialize into 4 bits, so it will have to wait until we implement the new level format
+	protected function writeStateToMeta() : int{
+		return $this->rotationData;
 	}
 
-	public function setDamage(int $meta) : void{
-		parent::setDamage($meta); // TODO: see above
+	public function readStateFromMeta(int $meta) : void{
+		$this->rotationData = $meta;
 	}
 
 	public function getName() : string{

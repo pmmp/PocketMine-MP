@@ -26,6 +26,7 @@ namespace pocketmine\level\generator\object;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\Sapling;
+use pocketmine\block\utils\WoodType;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
 
@@ -45,23 +46,23 @@ abstract class Tree{
 	public $leafBlock = Block::LEAVES;
 	public $treeHeight = 7;
 
-	public static function growTree(ChunkManager $level, int $x, int $y, int $z, Random $random, int $type = Sapling::OAK) : void{
+	public static function growTree(ChunkManager $level, int $x, int $y, int $z, Random $random, int $type = WoodType::OAK) : void{
 		switch($type){
-			case Sapling::SPRUCE:
+			case WoodType::SPRUCE:
 				$tree = new SpruceTree();
 				break;
-			case Sapling::BIRCH:
+			case WoodType::BIRCH:
 				if($random->nextBoundedInt(39) === 0){
 					$tree = new BirchTree(true);
 				}else{
 					$tree = new BirchTree();
 				}
 				break;
-			case Sapling::JUNGLE:
+			case WoodType::JUNGLE:
 				$tree = new JungleTree();
 				break;
-			case Sapling::ACACIA:
-			case Sapling::DARK_OAK:
+			case WoodType::ACACIA:
+			case WoodType::DARK_OAK:
 				return; //TODO
 			default:
 				$tree = new OakTree();

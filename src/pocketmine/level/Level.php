@@ -216,9 +216,6 @@ class Level implements ChunkManager, Metadatable{
 	/** @var Vector3 */
 	private $temporalVector;
 
-	/** @var \SplFixedArray */
-	private $blockStates;
-
 	/** @var int */
 	private $sleepTicks = 0;
 
@@ -230,7 +227,7 @@ class Level implements ChunkManager, Metadatable{
 	private $chunksPerTick;
 	/** @var bool */
 	private $clearChunksOnTick;
-	/** @var \SplFixedArray<Block> */
+	/** @var \SplFixedArray<bool> */
 	private $randomTickBlocks = null;
 
 	/** @var LevelTimings */
@@ -327,7 +324,6 @@ class Level implements ChunkManager, Metadatable{
 	 * @param LevelProvider $provider
 	 */
 	public function __construct(Server $server, string $name, LevelProvider $provider){
-		$this->blockStates = BlockFactory::getBlockStatesArray();
 		$this->levelId = static::$levelIdCounter++;
 		$this->blockMetadata = new BlockMetadataStore($this);
 		$this->server = $server;
@@ -357,11 +353,17 @@ class Level implements ChunkManager, Metadatable{
 
 		$dontTickBlocks = array_fill_keys($this->server->getProperty("chunk-ticking.disable-block-ticking", []), true);
 
-		$this->randomTickBlocks = new \SplFixedArray(256);
-		foreach($this->randomTickBlocks as $id => $null){
-			$block = BlockFactory::get($id); //Make sure it's a copy
+		$this->randomTickBlocks = new \SplFixedArray(4096);
+		foreach($this->randomTickBlocks as $i => $null){
+			$id = $i >> 4;
+			$meta = $i & 0xf;
+			try{
+				$block = BlockFactory::get($id, $meta); //Make sure it's a copy
+			}catch(\InvalidArgumentException $e){
+				continue;
+			}
 			if(!isset($dontTickBlocks[$id]) and $block->ticksRandomly()){
-				$this->randomTickBlocks[$id] = $block;
+				$this->randomTickBlocks[($id << 4) | $meta] = true;
 			}
 		}
 
@@ -939,12 +941,16 @@ class Level implements ChunkManager, Metadatable{
 		return $this->randomTickBlocks;
 	}
 
-	public function addRandomTickedBlock(int $id){
-		$this->randomTickBlocks[$id] = BlockFactory::get($id);
+	public function addRandomTickedBlock(int $id, int $variant = 0){
+		$block = BlockFactory::get($id, $variant);
+		if($block instanceof UnknownBlock){
+			throw new \InvalidArgumentException("ID $id variant $variant is unknown, cannot do random-tick");
+		}
+		$this->randomTickBlocks[($id << 4) | $variant] = true;
 	}
 
-	public function removeRandomTickedBlock(int $id){
-		$this->randomTickBlocks[$id] = null;
+	public function removeRandomTickedBlock(int $id, int $variant = 0){
+		$this->randomTickBlocks[($id << 4) | $variant] = null;
 	}
 
 	private function tickChunks(){
@@ -998,10 +1004,15 @@ class Level implements ChunkManager, Metadatable{
 						$z = ($k >> 8) & 0x0f;
 
 						$blockId = $subChunk->getBlockId($x, $y, $z);
-						if($this->randomTickBlocks[$blockId] !== null){
+						$meta = $subChunk->getBlockData($x, $y, $z);
+						if(BlockFactory::$stateMasks[$blockId] !== null){
+							$variant = $meta & ~BlockFactory::$stateMasks[$blockId];
+						}else{
+							$variant = 0;
+						}
+						if($this->randomTickBlocks[($blockId << 4) | $variant]){
 							/** @var Block $block */
-							$block = clone $this->randomTickBlocks[$blockId];
-							$block->setDamage($subChunk->getBlockData($x, $y, $z));
+							$block = BlockFactory::get($blockId, $meta);
 
 							$block->x = $chunkX * 16 + $x;
 							$block->y = ($Y << 4) + $y;
@@ -1335,7 +1346,8 @@ class Level implements ChunkManager, Metadatable{
 	 * @return Block
 	 */
 	public function getBlockAt(int $x, int $y, int $z, bool $cached = true, bool $addToCache = true) : Block{
-		$fullState = 0;
+		$id = 0;
+		$meta = 0;
 		$blockHash = null;
 		$chunkHash = Level::chunkHash($x >> 4, $z >> 4);
 
@@ -1349,17 +1361,14 @@ class Level implements ChunkManager, Metadatable{
 			$chunk = $this->chunks[$chunkHash] ?? null;
 			if($chunk !== null){
 				$fullState = $chunk->getFullBlock($x & 0x0f, $y, $z & 0x0f);
+				$id = $fullState >> 4;
+				$meta = $fullState & 0xf;
 			}else{
 				$addToCache = false;
 			}
 		}
 
-		$block = $this->blockStates[$fullState & 0xfff];
-		if($block !== null){
-			$block = clone $block;
-		}else{
-			$block = new UnknownBlock($fullState >> 4, $fullState & 0xf);
-		}
+		$block = BlockFactory::get($id, $meta);
 
 		$block->x = $x;
 		$block->y = $y;

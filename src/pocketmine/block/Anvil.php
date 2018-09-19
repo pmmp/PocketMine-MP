@@ -38,31 +38,15 @@ class Anvil extends Fallable{
 	public const TYPE_SLIGHTLY_DAMAGED = 4;
 	public const TYPE_VERY_DAMAGED = 8;
 
-	protected $id = self::ANVIL;
-
 	/** @var int */
 	protected $facing = Facing::NORTH;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	protected function writeStateToMeta() : int{
+		return Bearing::fromFacing($this->facing);
 	}
 
-	public function getDamage() : int{
-		return Bearing::fromFacing($this->facing) | $this->variant;
-	}
-
-	public function setDamage(int $meta) : void{
-		$this->variant = $meta & 0x0c;
-		$this->facing = Bearing::toFacing($meta & 0x03);
-	}
-
-	public function getName() : string{
-		static $names = [
-			self::TYPE_NORMAL => "Anvil",
-			self::TYPE_SLIGHTLY_DAMAGED => "Slightly Damaged Anvil",
-			self::TYPE_VERY_DAMAGED => "Very Damaged Anvil"
-		];
-		return $names[$this->getVariant()] ?? "Anvil";
+	public function readStateFromMeta(int $meta) : void{
+		$this->facing = Bearing::toFacing($meta);
 	}
 
 	public function isTransparent() : bool{

@@ -39,11 +39,11 @@ abstract class Button extends Flowable{
 
 	}
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return $this->facing | ($this->powered ? 0x08 : 0);
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		//TODO: in PC it's (6 - facing) for every meta except 0 (down)
 		$this->facing = $meta & 0x07;
 		$this->powered = ($meta & 0x08) !== 0;

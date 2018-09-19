@@ -45,7 +45,7 @@ class Vine extends Flowable{
 
 	}
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return
 			(isset($this->faces[Facing::SOUTH]) ? self::FLAG_SOUTH : 0) |
 			(isset($this->faces[Facing::WEST]) ? self::FLAG_WEST : 0) |
@@ -53,7 +53,7 @@ class Vine extends Flowable{
 			(isset($this->faces[Facing::EAST]) ? self::FLAG_EAST : 0);
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		$this->setFaceFromMeta($meta, self::FLAG_SOUTH, Facing::SOUTH);
 		$this->setFaceFromMeta($meta, self::FLAG_WEST, Facing::WEST);
 		$this->setFaceFromMeta($meta, self::FLAG_NORTH, Facing::NORTH);

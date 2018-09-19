@@ -30,23 +30,28 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 abstract class Slab extends Transparent{
+	/** @var int */
+	protected $doubleId;
+
 	/** @var bool */
 	protected $top = false;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	public function __construct(int $id, int $doubleId, int $variant = 0, ?string $name = null){
+		parent::__construct($id, $variant, $name . " Slab");
+		$this->doubleId = $doubleId;
 	}
 
-	public function getDamage() : int{
-		return $this->variant | ($this->top ? 0x08 : 0);
+	protected function writeStateToMeta() : int{
+		return ($this->top ? 0x08 : 0);
 	}
 
-	public function setDamage(int $meta) : void{
-		$this->variant = $meta & 0x07;
+	public function readStateFromMeta(int $meta) : void{
 		$this->top = ($meta & 0x08) !== 0;
 	}
 
-	abstract public function getDoubleSlabId() : int;
+	public function getDoubleSlabId() : int{
+		return $this->doubleId;
+	}
 
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
 		if(parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock)){
@@ -66,11 +71,11 @@ abstract class Slab extends Transparent{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if($face === Facing::DOWN){
-			if($blockClicked instanceof Slab and $blockClicked->getId() === $this->id and $blockClicked->top and $blockClicked->getVariant() === $this->variant){
+			if($blockClicked instanceof Slab and $blockClicked->getId() === $this->getId() and $blockClicked->top and $blockClicked->getVariant() === $this->variant){
 				$this->getLevel()->setBlock($blockClicked, BlockFactory::get($this->getDoubleSlabId(), $this->variant), true);
 
 				return true;
-			}elseif($blockReplace->getId() === $this->id and $blockReplace->getVariant() === $this->variant){
+			}elseif($blockReplace->getId() === $this->getId() and $blockReplace->getVariant() === $this->variant){
 				$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->getDoubleSlabId(), $this->variant), true);
 
 				return true;
@@ -78,17 +83,17 @@ abstract class Slab extends Transparent{
 				$this->top = true;
 			}
 		}elseif($face === Facing::UP){
-			if($blockClicked instanceof Slab and $blockClicked->getId() === $this->id and !$blockClicked->top and $blockClicked->getVariant() === $this->variant){
+			if($blockClicked instanceof Slab and $blockClicked->getId() === $this->getId() and !$blockClicked->top and $blockClicked->getVariant() === $this->variant){
 				$this->getLevel()->setBlock($blockClicked, BlockFactory::get($this->getDoubleSlabId(), $this->variant), true);
 
 				return true;
-			}elseif($blockReplace->getId() === $this->id and $blockReplace->getVariant() === $this->variant){
+			}elseif($blockReplace->getId() === $this->getId() and $blockReplace->getVariant() === $this->variant){
 				$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->getDoubleSlabId(), $this->variant), true);
 
 				return true;
 			}
 		}else{ //TODO: collision
-			if($blockReplace->getId() === $this->id){
+			if($blockReplace->getId() === $this->getId()){
 				if($blockReplace->getVariant() === $this->variant){
 					$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->getDoubleSlabId(), $this->variant), true);
 
@@ -103,7 +108,7 @@ abstract class Slab extends Transparent{
 			}
 		}
 
-		if($blockReplace->getId() === $this->id and $blockClicked->getVariant() !== $this->variant){
+		if($blockReplace->getId() === $this->getId() and $blockClicked->getVariant() !== $this->variant){
 			return false;
 		}
 

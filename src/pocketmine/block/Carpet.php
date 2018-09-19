@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\ColorBlockTrait;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -31,13 +30,6 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Carpet extends Flowable{
-	use ColorBlockTrait;
-
-	protected $id = self::CARPET;
-
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
-	}
 
 	public function getHardness() : float{
 		return 0.1;
@@ -45,10 +37,6 @@ class Carpet extends Flowable{
 
 	public function isSolid() : bool{
 		return true;
-	}
-
-	protected function getNameSuffix() : string{
-		return "Carpet";
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

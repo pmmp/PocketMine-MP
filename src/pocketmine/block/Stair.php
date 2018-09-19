@@ -36,11 +36,11 @@ abstract class Stair extends Transparent{
 	/** @var bool */
 	protected $upsideDown = false;
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return (5 - $this->facing) | ($this->upsideDown ? 0x04 : 0);
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		$this->facing = 5 - ($meta & 0x03);
 		$this->upsideDown = ($meta & 0x04) !== 0;
 	}

@@ -25,13 +25,28 @@ namespace pocketmine\block;
 
 class RedstoneTorch extends Torch{
 
-	protected $id = self::LIT_REDSTONE_TORCH;
+	protected $itemId = self::REDSTONE_TORCH;
+
+	/** @var bool */
+	protected $lit = true;
+
+	public function getId() : int{
+		return $this->lit ? self::REDSTONE_TORCH : self::UNLIT_REDSTONE_TORCH;
+	}
 
 	public function getName() : string{
 		return "Redstone Torch";
 	}
 
+	public function isLit() : bool{
+		return $this->lit;
+	}
+
+	public function setLit(bool $lit = true) : void{
+		$this->lit = $lit;
+	}
+
 	public function getLightLevel() : int{
-		return 7;
+		return $this->lit ? 7 : 0;
 	}
 }

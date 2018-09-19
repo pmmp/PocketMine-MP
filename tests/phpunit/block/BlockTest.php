@@ -99,11 +99,12 @@ class BlockTest extends TestCase{
 	 */
 	public function blockGetProvider() : array{
 		return [
-			[Block::STONE, Stone::ANDESITE],
+			[Block::STONE, 5],
 			[Block::STONE, 15],
-			[Block::GOLD_BLOCK, 5],
-			[Block::WOODEN_PLANKS, Planks::DARK_OAK],
-			[Block::SAND, 0]
+			[Block::GOLD_BLOCK, 0],
+			[Block::WOODEN_PLANKS, 5],
+			[Block::SAND, 0],
+			[Block::GOLD_BLOCK, 5] //invalid
 		];
 	}
 
@@ -117,6 +118,13 @@ class BlockTest extends TestCase{
 
 		self::assertEquals($id, $block->getId());
 		self::assertEquals($meta, $block->getDamage());
+	}
+
+	public function testBlockIds() : void{
+		for($i = 0; $i < 256; ++$i){
+			$b = BlockFactory::get($i);
+			self::assertEquals($i, $b->getId());
+		}
 	}
 
 	/**

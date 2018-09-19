@@ -36,11 +36,11 @@ class StonePressurePlate extends Transparent{
 
 	}
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return $this->powered ? 1 : 0;
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		$this->powered = $meta !== 0;
 	}
 

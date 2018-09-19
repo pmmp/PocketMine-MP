@@ -39,11 +39,11 @@ class Farmland extends Transparent{
 
 	}
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return $this->wetness;
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		$this->wetness = $meta;
 	}
 

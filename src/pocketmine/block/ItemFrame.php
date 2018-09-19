@@ -42,11 +42,11 @@ class ItemFrame extends Flowable{
 
 	}
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return 5 - $this->facing;
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		$this->facing = 5 - $meta;
 	}
 

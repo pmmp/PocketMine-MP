@@ -46,7 +46,7 @@ abstract class Door extends Transparent{
 	protected $powered = false;
 
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		if($this->top){
 			return 0x08 | ($this->hingeRight ? 0x01 : 0) | ($this->powered ? 0x02 : 0);
 		}
@@ -54,7 +54,7 @@ abstract class Door extends Transparent{
 		return Bearing::rotate(Bearing::fromFacing($this->facing), 1) | ($this->open ? 0x04 : 0);
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		$this->top = $meta & 0x08;
 		if($this->top){
 			$this->hingeRight = ($meta & 0x01) !== 0;

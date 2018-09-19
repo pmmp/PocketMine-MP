@@ -43,11 +43,11 @@ class Chest extends Transparent{
 
 	}
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return $this->facing;
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		$this->facing = $meta;
 	}
 
@@ -79,7 +79,7 @@ class Chest extends Transparent{
 			Bearing::toFacing(Bearing::rotate($player->getDirection(), 1))
 		] as $side){
 			$c = $this->getSide($side);
-			if($c instanceof Chest and $c->getId() === $this->id and $c->facing === $this->facing){
+			if($c instanceof Chest and $c->getId() === $this->getId() and $c->facing === $this->facing){
 				$tile = $this->getLevel()->getTile($c);
 				if($tile instanceof TileChest and !$tile->isPaired()){
 					$chest = $tile;

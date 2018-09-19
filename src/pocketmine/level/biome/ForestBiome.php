@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\level\biome;
 
-use pocketmine\block\Sapling;
+use pocketmine\block\utils\WoodType;
 use pocketmine\level\generator\populator\TallGrass;
 use pocketmine\level\generator\populator\Tree;
 
@@ -39,7 +39,7 @@ class ForestBiome extends GrassyBiome{
 
 		$this->type = $type;
 
-		$trees = new Tree($type === self::TYPE_BIRCH ? Sapling::BIRCH : Sapling::OAK);
+		$trees = new Tree($type === self::TYPE_BIRCH ? WoodType::BIRCH : WoodType::OAK);
 		$trees->setBaseAmount(5);
 		$this->addPopulator($trees);
 

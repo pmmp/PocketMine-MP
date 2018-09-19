@@ -27,16 +27,6 @@ use pocketmine\item\Item;
 
 class Glass extends Transparent{
 
-	protected $id = self::GLASS;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Glass";
-	}
-
 	public function getHardness() : float{
 		return 0.3;
 	}

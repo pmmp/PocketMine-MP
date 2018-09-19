@@ -37,34 +37,8 @@ class Quartz extends Solid{
 	public const CHISELED = 1;
 	public const PILLAR = 2;
 
-	protected $id = self::QUARTZ_BLOCK;
-
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
-	}
-
-	public function getDamage() : int{
-		return $this->variant | ($this->variant !== self::NORMAL ? $this->writeAxisToMeta() : 0);
-	}
-
-	public function setDamage(int $meta) : void{
-		$this->variant = $meta & 0x03;
-		if($this->variant !== self::NORMAL){
-			$this->readAxisFromMeta($meta);
-		}
-	}
-
 	public function getHardness() : float{
 		return 0.8;
-	}
-
-	public function getName() : string{
-		static $names = [
-			self::NORMAL => "Quartz Block",
-			self::CHISELED => "Chiseled Quartz Block",
-			self::PILLAR => "Quartz Pillar"
-		];
-		return $names[$this->getVariant()] ?? "Unknown";
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{

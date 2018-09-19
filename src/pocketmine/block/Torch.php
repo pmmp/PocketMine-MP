@@ -39,11 +39,11 @@ class Torch extends Flowable{
 
 	}
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return $this->facing === Facing::DOWN ? 0 : 6 - $this->facing;
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		if($meta === 0){
 			$this->facing = Facing::DOWN;
 		}else{

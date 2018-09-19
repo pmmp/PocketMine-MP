@@ -76,14 +76,14 @@ abstract class BaseRail extends Flowable{
 
 	}
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		if(empty($this->connections)){
 			return self::STRAIGHT_NORTH_SOUTH;
 		}
 		return $this->getMetaForState($this->connections);
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		//on invalid states, this will return an empty array, allowing this rail to transform into any other state
 		//TODO: should this throw instead?
 		$this->connections = $this->getConnectionsFromMeta($meta);

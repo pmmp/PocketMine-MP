@@ -44,11 +44,11 @@ class CocoaBlock extends Transparent{
 
 	}
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return Bearing::fromFacing(Facing::opposite($this->facing)) | ($this->age << 2);
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		$this->facing = Facing::opposite(Bearing::toFacing($meta & 0x03));
 		$this->age = $meta >> 2;
 	}

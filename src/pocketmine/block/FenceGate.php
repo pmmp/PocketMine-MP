@@ -37,11 +37,11 @@ class FenceGate extends Transparent{
 	/** @var int */
 	protected $facing = Facing::NORTH;
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return Bearing::fromFacing($this->facing) | ($this->open ? 0x04 : 0);
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		$this->facing = Bearing::toFacing($meta & 0x03);
 		$this->open = ($meta & 0x04) !== 0;
 	}

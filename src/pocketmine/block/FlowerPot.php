@@ -43,11 +43,11 @@ class FlowerPot extends Flowable{
 
 	}
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return $this->occupied ? 1 : 0;
 	}
 
-	public function setDamage(int $meta = 0) : void{
+	public function readStateFromMeta(int $meta = 0) : void{
 		$this->occupied = $meta !== 0;
 	}
 

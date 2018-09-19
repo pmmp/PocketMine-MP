@@ -41,11 +41,11 @@ class NetherReactor extends Solid{
 
 	}
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return $this->state;
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		$this->state = $meta;
 	}
 

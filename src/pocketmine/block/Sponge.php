@@ -35,11 +35,11 @@ class Sponge extends Solid{
 
 	}
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return $this->wet ? 1 : 0;
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		$this->wet = $meta !== 0;
 	}
 

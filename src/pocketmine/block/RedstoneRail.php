@@ -29,12 +29,12 @@ class RedstoneRail extends BaseRail{
 	/** @var bool */
 	protected $powered = false;
 
-	public function getDamage() : int{
-		return parent::getDamage() | ($this->powered ? self::FLAG_POWERED : 0);
+	protected function writeStateToMeta() : int{
+		return parent::writeStateToMeta() | ($this->powered ? self::FLAG_POWERED : 0);
 	}
 
-	public function setDamage(int $meta) : void{
-		parent::setDamage($meta);
+	public function readStateFromMeta(int $meta) : void{
+		parent::readStateFromMeta($meta);
 		$this->powered = ($meta & self::FLAG_POWERED) !== 0;
 	}
 

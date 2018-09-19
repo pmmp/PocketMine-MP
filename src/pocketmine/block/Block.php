@@ -60,8 +60,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	/** @var int */
 	protected $id;
 	/** @var int */
-	protected $meta = 0;
-	/** @var int */
 	protected $variant = 0;
 	/** @var string|null */
 	protected $fallbackName;
@@ -76,14 +74,14 @@ class Block extends Position implements BlockIds, Metadatable{
 	protected $collisionBoxes = null;
 
 	/**
-	 * @param int         $id     The block type's ID, 0-255
-	 * @param int         $meta   Meta value of the block type
-	 * @param string|null $name   English name of the block type (TODO: implement translations)
-	 * @param int         $itemId The item ID of the block type, used for block picking and dropping items.
+	 * @param int         $id      The block type's ID, 0-255
+	 * @param int         $variant Meta value of the block type
+	 * @param string|null $name    English name of the block type (TODO: implement translations)
+	 * @param int         $itemId  The item ID of the block type, used for block picking and dropping items.
 	 */
-	public function __construct(int $id, int $meta = 0, string $name = null, int $itemId = null){
+	public function __construct(int $id, int $variant = 0, string $name = null, int $itemId = null){
 		$this->id = $id;
-		$this->setDamage($meta);
+		$this->setVariant($variant);
 		$this->fallbackName = $name;
 		$this->itemId = $itemId;
 	}
@@ -124,17 +122,19 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return int
 	 */
 	public function getDamage() : int{
-		return $this->meta;
+		$stateMeta = $this->writeStateToMeta();
+		assert(($stateMeta & ~$this->getNonVariantBitmask()) === 0);
+		return $this->variant | $stateMeta;
 	}
 
-	/**
-	 * @param int $meta
-	 */
-	public function setDamage(int $meta) : void{
-		if($meta < 0 or $meta > 0xf){
-			throw new \InvalidArgumentException("Block damage values must be 0-15, not $meta");
+	protected function writeStateToMeta() : int{
+		return 0;
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		if($meta !== 0){
+			throw new \InvalidArgumentException("Unexpected non-zero state meta 0x" . dechex($meta) . " for " . get_class($this));
 		}
-		$this->meta = $meta;
 	}
 
 	/**
@@ -143,6 +143,28 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getVariant() : int{
 		return $this->variant;
+	}
+
+	protected function setVariant(int $variant) : void{
+		if(($variant & $this->getNonVariantBitmask()) !== 0){
+			throw new \InvalidArgumentException("Variant 0x" . dechex($variant) . " collides with non-variant bitmask 0x" . dechex($this->getNonVariantBitmask()));
+		}
+
+		$this->variant = $variant;
+	}
+
+	/**
+	 * Returns a bitmask used to remove state bits from block metadata.
+
+	 * Only blocks that use the metadata for variant information need to declare this. This should only mask bits which
+	 * are explicitly state bits.
+	 *
+	 * WARNING: Unused bits SHOULD NOT be covered by this bitmask in case they become variant bits in the future.
+	 *
+	 * @return int
+	 */
+	protected function getNonVariantBitmask() : int{
+		return BlockFactory::$stateMasks[$this->getId()] ?? 0xf; //all bits are considered state bits by default
 	}
 
 	/**

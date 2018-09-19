@@ -25,33 +25,11 @@ namespace pocketmine\block;
 
 class Sand extends Fallable{
 
-	protected $id = self::SAND;
-
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
-	}
-
-	public function getDamage() : int{
-		return $this->variant;
-	}
-
-	public function setDamage(int $meta) : void{
-		$this->variant = $meta;
-	}
-
 	public function getHardness() : float{
 		return 0.5;
 	}
 
 	public function getToolType() : int{
 		return BlockToolType::TYPE_SHOVEL;
-	}
-
-	public function getName() : string{
-		if($this->variant === 1){
-			return "Red Sand";
-		}
-
-		return "Sand";
 	}
 }

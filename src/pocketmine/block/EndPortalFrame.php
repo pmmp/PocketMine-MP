@@ -43,11 +43,11 @@ class EndPortalFrame extends Solid{
 
 	}
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return Bearing::fromFacing($this->facing) | ($this->eye ? 0x04 : 0);
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		$this->facing = Bearing::toFacing($meta & 0x03);
 		$this->eye = ($meta & 0x04) !== 0;
 	}

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\WoodType;
 use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -32,30 +33,24 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Leaves extends Transparent{
-	public const OAK = 0;
-	public const SPRUCE = 1;
-	public const BIRCH = 2;
-	public const JUNGLE = 3;
-	public const ACACIA = 0;
-	public const DARK_OAK = 1;
-
-	protected $id = self::LEAVES;
+	/** @var int */
+	protected $woodType;
 
 	/** @var bool */
 	protected $noDecay = false;
 	/** @var bool */
 	protected $checkDecay = false;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	public function __construct(int $id, int $variant, int $woodType, ?string $name = null){
+		parent::__construct($id, $variant, $name);
+		$this->woodType = $woodType;
 	}
 
-	public function getDamage() : int{
-		return $this->variant | ($this->noDecay ? 0x04 : 0) | ($this->checkDecay ? 0x08 : 0);
+	protected function writeStateToMeta() : int{
+		return ($this->noDecay ? 0x04 : 0) | ($this->checkDecay ? 0x08 : 0);
 	}
 
-	public function setDamage(int $meta) : void{
-		$this->variant = $meta & 0x03;
+	public function readStateFromMeta(int $meta) : void{
 		$this->noDecay = ($meta & 0x04) !== 0;
 		$this->checkDecay = ($meta & 0x08) !== 0;
 	}
@@ -66,16 +61,6 @@ class Leaves extends Transparent{
 
 	public function getToolType() : int{
 		return BlockToolType::TYPE_SHEARS;
-	}
-
-	public function getName() : string{
-		static $names = [
-			self::OAK => "Oak Leaves",
-			self::SPRUCE => "Spruce Leaves",
-			self::BIRCH => "Birch Leaves",
-			self::JUNGLE => "Jungle Leaves"
-		];
-		return $names[$this->getVariant()];
 	}
 
 	public function diffusesSkyLight() : bool{
@@ -95,7 +80,7 @@ class Leaves extends Transparent{
 			return true;
 		}
 
-		if($pos->getId() === $this->id and $distance <= 4){
+		if($pos->getId() === $this->getId() and $distance <= 4){
 			foreach(Facing::ALL as $side){
 				if($this->findLog($pos->getSide($side), $visited, $distance + 1)){
 					return true;
@@ -141,21 +126,13 @@ class Leaves extends Transparent{
 
 		$drops = [];
 		if(mt_rand(1, 20) === 1){ //Saplings
-			$drops[] = $this->getSaplingItem();
+			$drops[] = ItemFactory::get(Item::SAPLING, $this->woodType);
 		}
-		if($this->canDropApples() and mt_rand(1, 200) === 1){ //Apples
+		if(($this->woodType === WoodType::OAK or $this->woodType === WoodType::DARK_OAK) and mt_rand(1, 200) === 1){ //Apples
 			$drops[] = ItemFactory::get(Item::APPLE);
 		}
 
 		return $drops;
-	}
-
-	public function getSaplingItem() : Item{
-		return ItemFactory::get(Item::SAPLING, $this->getVariant());
-	}
-
-	public function canDropApples() : bool{
-		return $this->variant === self::OAK;
 	}
 
 	public function getFlameEncouragement() : int{

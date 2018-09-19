@@ -26,29 +26,46 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 
-abstract class DoubleSlab extends Solid{
+class DoubleSlab extends Solid{
+	/** @var int */
+	protected $singleId;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	public function __construct(int $id, int $singleId, int $variant = 0){
+		parent::__construct($id, $variant);
+		$this->singleId = $singleId;
 	}
 
-	public function getDamage() : int{
-		return $this->variant;
+	protected function getSingle() : Block{
+		return BlockFactory::get($this->singleId, $this->variant);
 	}
 
-	public function setDamage(int $meta) : void{
-		$this->variant = $meta;
+	public function getHardness() : float{
+		return $this->getSingle()->getHardness();
 	}
 
-	abstract public function getSlabId() : int;
+	public function getToolType() : int{
+		return $this->getSingle()->getToolType();
+	}
+
+	public function getToolHarvestLevel() : int{
+		return $this->getSingle()->getToolHarvestLevel();
+	}
+
+	public function getFlameEncouragement() : int{
+		return $this->getSingle()->getFlameEncouragement();
+	}
+
+	public function getFlammability() : int{
+		return $this->getSingle()->getFlammability();
+	}
 
 	public function getName() : string{
-		return "Double " . BlockFactory::get($this->getSlabId(), $this->variant)->getName();
+		return "Double " . $this->getSingle()->getName();
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get($this->getSlabId(), $this->variant, 2)
+			ItemFactory::get($this->singleId, $this->variant, 2)
 		];
 	}
 

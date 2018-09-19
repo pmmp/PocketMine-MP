@@ -47,7 +47,7 @@ class Lever extends Flowable{
 
 	}
 
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		if($this->position === self::BOTTOM){
 			$rotationMeta = Facing::axis($this->facing) === Facing::AXIS_Z ? 7 : 0;
 		}elseif($this->position === self::TOP){
@@ -58,7 +58,7 @@ class Lever extends Flowable{
 		return $rotationMeta | ($this->powered ? 0x08 : 0);
 	}
 
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		$rotationMeta = $meta & 0x07;
 		if($rotationMeta === 5 or $rotationMeta === 6){
 			$this->position = self::TOP;

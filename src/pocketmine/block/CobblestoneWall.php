@@ -31,20 +31,6 @@ class CobblestoneWall extends Transparent{
 	public const NONE_MOSSY_WALL = 0;
 	public const MOSSY_WALL = 1;
 
-	protected $id = self::COBBLESTONE_WALL;
-
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
-	}
-
-	public function getDamage() : int{
-		return $this->variant;
-	}
-
-	public function setDamage(int $meta) : void{
-		$this->variant = $meta;
-	}
-
 	public function getToolType() : int{
 		return BlockToolType::TYPE_PICKAXE;
 	}
@@ -55,14 +41,6 @@ class CobblestoneWall extends Transparent{
 
 	public function getHardness() : float{
 		return 2;
-	}
-
-	public function getName() : string{
-		if($this->variant === self::MOSSY_WALL){
-			return "Mossy Cobblestone Wall";
-		}
-
-		return "Cobblestone Wall";
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

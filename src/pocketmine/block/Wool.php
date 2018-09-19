@@ -23,21 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\ColorBlockTrait;
 use pocketmine\item\Item;
 
 class Wool extends Solid{
-	use ColorBlockTrait;
-
-	protected $id = self::WOOL;
-
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
-	}
-
-	protected function getNameSuffix() : string{
-		return "Wool";
-	}
 
 	public function getHardness() : float{
 		return 0.8;

@@ -27,16 +27,6 @@ use pocketmine\item\TieredTool;
 
 class HardenedClay extends Solid{
 
-	protected $id = self::HARDENED_CLAY;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Hardened Clay";
-	}
-
 	public function getToolType() : int{
 		return BlockToolType::TYPE_PICKAXE;
 	}

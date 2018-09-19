@@ -21,27 +21,31 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\item\TieredTool;
+class WoodType{
+	public const OAK = 0;
+	public const SPRUCE = 1;
+	public const BIRCH = 2;
+	public const JUNGLE = 3;
+	public const ACACIA = 4;
+	public const DARK_OAK = 5;
 
-class DoubleStoneSlab extends DoubleSlab{
+	public const ALL = [
+		self::OAK,
+		self::SPRUCE,
+		self::BIRCH,
+		self::JUNGLE,
+		self::ACACIA,
+		self::DARK_OAK
+	];
 
-	protected $id = self::DOUBLE_STONE_SLAB;
-
-	public function getSlabId() : int{
-		return self::STONE_SLAB;
-	}
-
-	public function getHardness() : float{
-		return 2;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_PICKAXE;
-	}
-
-	public function getToolHarvestLevel() : int{
-		return TieredTool::TIER_WOODEN;
-	}
+	public const NAMES = [
+		self::OAK => "Oak",
+		self::SPRUCE => "Spruce",
+		self::BIRCH => "Birch",
+		self::JUNGLE => "Jungle",
+		self::ACACIA => "Acacia",
+		self::DARK_OAK => "Dark Oak"
+	];
 }

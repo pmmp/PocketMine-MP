@@ -25,6 +25,7 @@ namespace pocketmine\tile;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\Furnace as BlockFurnace;
 use pocketmine\event\inventory\FurnaceBurnEvent;
 use pocketmine\event\inventory\FurnaceSmeltEvent;
 use pocketmine\inventory\FurnaceInventory;
@@ -144,8 +145,10 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 
 		$this->maxTime = $this->burnTime = $ev->getBurnTime();
 
-		if($this->getBlock()->getId() === Block::FURNACE){
-			$this->getLevel()->setBlock($this, BlockFactory::get(Block::BURNING_FURNACE, $this->getBlock()->getDamage()), true);
+		$block = $this->getBlock();
+		if($block instanceof BlockFurnace and !$block->isLit()){
+			$block->setLit(true);
+			$this->getLevel()->setBlock($block, $block, true);
 		}
 
 		if($this->burnTime > 0 and $ev->isBurning()){
@@ -206,8 +209,10 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 			}
 			$ret = true;
 		}else{
-			if($this->getBlock()->getId() === Block::BURNING_FURNACE){
-				$this->getLevel()->setBlock($this, BlockFactory::get(Block::FURNACE, $this->getBlock()->getDamage()), true);
+			$block = $this->getBlock();
+			if($block instanceof BlockFurnace and $block->isLit()){
+				$block->setLit(false);
+				$this->getLevel()->setBlock($block, $block, true);
 			}
 			$this->burnTime = $this->cookTime = $this->maxTime = 0;
 		}

@@ -32,18 +32,18 @@ trait PillarRotationTrait{
 	protected $axis = Facing::AXIS_Y;
 
 	/**
-	 * @see Block::getDamage()
+	 * @see Block::writeStateToMeta()
 	 * @return int
 	 */
-	public function getDamage() : int{
+	protected function writeStateToMeta() : int{
 		return $this->writeAxisToMeta();
 	}
 
 	/**
-	 * @see Block::setDamage()
+	 * @see Block::readStateFromMeta()
 	 * @param int $meta
 	 */
-	public function setDamage(int $meta) : void{
+	public function readStateFromMeta(int $meta) : void{
 		$this->readAxisFromMeta($meta);
 	}
 
