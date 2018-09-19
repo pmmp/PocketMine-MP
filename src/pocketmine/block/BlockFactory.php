@@ -35,12 +35,6 @@ class BlockFactory{
 
 	/** @var \SplFixedArray<bool> */
 	public static $solid = null;
-	/** @var \SplFixedArray<bool> */
-	public static $transparent = null;
-	/** @var \SplFixedArray<float> */
-	public static $hardness = null;
-	/** @var \SplFixedArray<int> */
-	public static $light = null;
 	/** @var \SplFixedArray<int> */
 	public static $lightFilter = null;
 	/** @var \SplFixedArray<bool> */
@@ -64,11 +58,8 @@ class BlockFactory{
 	public static function init() : void{
 		self::$fullList = new \SplFixedArray(4096);
 
-		self::$light = new \SplFixedArray(256);
 		self::$lightFilter = new \SplFixedArray(256);
 		self::$solid = new \SplFixedArray(256);
-		self::$hardness = new \SplFixedArray(256);
-		self::$transparent = new \SplFixedArray(256);
 		self::$diffusesSkyLight = new \SplFixedArray(256);
 		self::$blastResistance = new \SplFixedArray(256);
 
@@ -357,9 +348,6 @@ class BlockFactory{
 		}
 
 		self::$solid[$id] = $block->isSolid();
-		self::$transparent[$id] = $block->isTransparent();
-		self::$hardness[$id] = $block->getHardness();
-		self::$light[$id] = $block->getLightLevel();
 		self::$lightFilter[$id] = min(15, $block->getLightFilter() + 1); //opacity plus 1 standard light filter
 		self::$diffusesSkyLight[$id] = $block->diffusesSkyLight();
 		self::$blastResistance[$id] = $block->getBlastResistance();
