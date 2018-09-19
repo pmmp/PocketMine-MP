@@ -28,6 +28,7 @@ namespace pocketmine\level;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\UnknownBlock;
 use pocketmine\entity\Entity;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\ItemEntity;
@@ -1353,7 +1354,12 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
-		$block = clone $this->blockStates[$fullState & 0xfff];
+		$block = $this->blockStates[$fullState & 0xfff];
+		if($block !== null){
+			$block = clone $block;
+		}else{
+			$block = new UnknownBlock($fullState >> 4, $fullState & 0xf);
+		}
 
 		$block->x = $x;
 		$block->y = $y;
