@@ -58,10 +58,10 @@ class BlockFactory{
 	public static function init() : void{
 		self::$fullList = new \SplFixedArray(4096);
 
-		self::$lightFilter = new \SplFixedArray(256);
-		self::$solid = new \SplFixedArray(256);
-		self::$diffusesSkyLight = new \SplFixedArray(256);
-		self::$blastResistance = new \SplFixedArray(256);
+		self::$lightFilter = \SplFixedArray::fromArray(array_fill(0, 256, 1));
+		self::$solid = \SplFixedArray::fromArray(array_fill(0, 256, false));
+		self::$diffusesSkyLight = \SplFixedArray::fromArray(array_fill(0, 256, false));
+		self::$blastResistance = \SplFixedArray::fromArray(array_fill(0, 256, 0));
 
 		self::registerBlock(new Air());
 		self::registerBlock(new Stone());
@@ -313,12 +313,6 @@ class BlockFactory{
 		//TODO: STRUCTURE_BLOCK
 
 		//TODO: RESERVED6
-
-		for($id = 0, $size = self::$fullList->getSize() >> 4; $id < $size; ++$id){
-			if(self::$fullList[$id << 4] === null){
-				self::registerBlock(new UnknownBlock($id));
-			}
-		}
 	}
 
 	/**
@@ -368,7 +362,7 @@ class BlockFactory{
 		}
 
 		try{
-			if(self::$fullList !== null){
+			if(self::$fullList[($id << 4) | $meta] !== null){
 				$block = clone self::$fullList[($id << 4) | $meta];
 			}else{
 				$block = new UnknownBlock($id, $meta);
