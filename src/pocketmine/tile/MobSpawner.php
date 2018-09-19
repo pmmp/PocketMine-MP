@@ -200,14 +200,14 @@ class MobSpawner extends Spawnable{
 	}
 
 	protected function readSaveData(CompoundTag $nbt) : void{
-		$this->delay = $nbt->getShort(self::TAG_DELAY, 0);
-		$this->maxNearbyEntities = $nbt->getShort(self::TAG_MAX_NEARBY_ENTITIES, 6);
-		$this->maxSpawnDelay = $nbt->getShort(self::TAG_MAX_SPAWN_DELAY, 800);
-		$this->minSpawnDelay = $nbt->getShort(self::TAG_MIN_SPAWN_DELAY, 200);
-		$this->requiredPlayerRange = $nbt->getShort(self::TAG_REQUIRED_PLAYER_RANGE, 16);
-		$this->spawnCount = $nbt->getShort(self::TAG_SPAWN_COUNT, 1);
-		$this->spawnRange = $nbt->getShort(self::TAG_SPAWN_RANGE, 4);
-		$this->entityId = $nbt->getInt(self::TAG_ENTITY_ID, -1);
+		$this->delay = $nbt->getShort(self::TAG_DELAY, 0, true);
+		$this->maxNearbyEntities = $nbt->getShort(self::TAG_MAX_NEARBY_ENTITIES, 6, true);
+		$this->maxSpawnDelay = $nbt->getShort(self::TAG_MAX_SPAWN_DELAY, 800, true);
+		$this->minSpawnDelay = $nbt->getShort(self::TAG_MIN_SPAWN_DELAY, 200, true);
+		$this->requiredPlayerRange = $nbt->getShort(self::TAG_REQUIRED_PLAYER_RANGE, 16, true);
+		$this->spawnCount = $nbt->getShort(self::TAG_SPAWN_COUNT, 1, true);
+		$this->spawnRange = $nbt->getShort(self::TAG_SPAWN_RANGE, 4, true);
+		$this->entityId = $nbt->getInt(self::TAG_ENTITY_ID, -1, true);
 	}
 
 	public function getDefaultName() : string{
@@ -215,15 +215,15 @@ class MobSpawner extends Spawnable{
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
-		$nbt->setByte(self::TAG_IS_MOVABLE, intval($this->isMovable));
-		$nbt->setShort(self::TAG_DELAY, $this->delay);
-		$nbt->setShort(self::TAG_MAX_NEARBY_ENTITIES, $this->maxNearbyEntities);
-		$nbt->setShort(self::TAG_MAX_SPAWN_DELAY, $this->maxSpawnDelay);
-		$nbt->setShort(self::TAG_MIN_SPAWN_DELAY, $this->minSpawnDelay);
-		$nbt->setShort(self::TAG_REQUIRED_PLAYER_RANGE, $this->requiredPlayerRange);
-		$nbt->setShort(self::TAG_SPAWN_COUNT, $this->spawnCount);
-		$nbt->setShort(self::TAG_SPAWN_RANGE, $this->spawnRange);
-		$nbt->setInt(self::TAG_ENTITY_ID, $this->entityId);
+		$nbt->setByte(self::TAG_IS_MOVABLE, intval($this->isMovable), true);
+		$nbt->setShort(self::TAG_DELAY, $this->delay, true);
+		$nbt->setShort(self::TAG_MAX_NEARBY_ENTITIES, $this->maxNearbyEntities, true);
+		$nbt->setShort(self::TAG_MAX_SPAWN_DELAY, $this->maxSpawnDelay, true);
+		$nbt->setShort(self::TAG_MIN_SPAWN_DELAY, $this->minSpawnDelay, true);
+		$nbt->setShort(self::TAG_REQUIRED_PLAYER_RANGE, $this->requiredPlayerRange, true);
+		$nbt->setShort(self::TAG_SPAWN_COUNT, $this->spawnCount, true);
+		$nbt->setShort(self::TAG_SPAWN_RANGE, $this->spawnRange, true);
+		$nbt->setInt(self::TAG_ENTITY_ID, $this->entityId, true);
 	}
 
 	public function addAdditionalSpawnData(CompoundTag $nbt) : void{
