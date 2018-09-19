@@ -36,6 +36,10 @@ class UnknownBlock extends Transparent{
 		//NOOP - we consider unknown block metadata to be immutable because we don't understand it
 	}
 
+	public function canBePlaced() : bool{
+		return false;
+	}
+
 	public function getHardness() : float{
 		return 0;
 	}
