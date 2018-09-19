@@ -70,7 +70,9 @@ class DoublePlant extends Flowable{
 		$id = $blockReplace->getSide(Facing::DOWN)->getId();
 		if(($id === Block::GRASS or $id === Block::DIRT) and $blockReplace->getSide(Facing::UP)->canBeReplaced()){
 			$this->getLevel()->setBlock($blockReplace, $this, false, false);
-			$this->getLevel()->setBlock($blockReplace->getSide(Facing::UP), BlockFactory::get($this->id, $this->getDamage() | self::BITFLAG_TOP), false, false);
+			$top = clone $this;
+			$top->top = true;
+			$this->getLevel()->setBlock($blockReplace->getSide(Facing::UP), $top, false, false);
 
 			return true;
 		}

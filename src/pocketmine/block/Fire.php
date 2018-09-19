@@ -169,7 +169,9 @@ class Fire extends Flowable{
 				$block->onIncinerate();
 
 				if(mt_rand(0, $this->age + 9) < 5){ //TODO: check rain
-					$this->level->setBlock($block, BlockFactory::get(Block::FIRE, min(15, $this->getDamage() + (mt_rand(0, 4) >> 2)))); //TODO: clean up damage hack
+					$fire = clone $this;
+					$fire->age = min(15, $fire->age + (mt_rand(0, 4) >> 2));
+					$this->level->setBlock($block, $fire);
 				}else{
 					$this->level->setBlock($block, BlockFactory::get(Block::AIR));
 				}

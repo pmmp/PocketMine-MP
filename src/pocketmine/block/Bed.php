@@ -164,11 +164,8 @@ class Bed extends Transparent{
 			$next = $this->getSide($this->getOtherHalfSide());
 			if($next->canBeReplaced() and !$next->getSide(Facing::DOWN)->isTransparent()){
 				parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-
-				$nextState = BlockFactory::get($this->id, $this->getDamage());
-				if($nextState instanceof Bed){
-					$nextState->head = true;
-				}
+				$nextState = clone $this;
+				$nextState->head = true;
 				$this->getLevel()->setBlock($next, $nextState, true, true);
 
 				Tile::createTile(Tile::BED, $this->getLevel(), TileBed::createNBT($this, $face, $item, $player));

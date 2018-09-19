@@ -88,7 +88,7 @@ class NetherWartPlant extends Flowable{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get($this->getItemId(), 0, ($this->getDamage() === 3 ? mt_rand(2, 4) : 1))
+			ItemFactory::get($this->getItemId(), 0, ($this->age === 3 ? mt_rand(2, 4) : 1))
 		];
 	}
 
