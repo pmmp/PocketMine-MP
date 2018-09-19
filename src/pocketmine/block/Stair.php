@@ -48,14 +48,14 @@ abstract class Stair extends Transparent{
 	protected function recalculateCollisionBoxes() : array{
 		//TODO: handle corners
 
-		$minYSlab = $this->upsideDown ? 0 : 0.5;
+		$minYSlab = $this->upsideDown ? 0.5 : 0;
 		$maxYSlab = $minYSlab + 0.5;
 
 		$bbs = [
 			new AxisAlignedBB(0, $minYSlab, 0, 1, $maxYSlab, 1)
 		];
 
-		$minY = $this->upsideDown ? 0.5 : 0;
+		$minY = $this->upsideDown ? 0 : 0.5;
 		$maxY = $minY + 0.5;
 
 		$rotationMeta = $this->facing;
