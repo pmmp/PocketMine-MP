@@ -25,7 +25,7 @@ namespace pocketmine\inventory;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\tile\Beacon;
 
-class BeaconInventory extends ContainerInventory implements FakeContainer{
+class BeaconInventory extends ContainerInventory{
 
     public function __construct(Beacon $tile){
         parent::__construct($tile);

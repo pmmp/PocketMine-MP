@@ -26,35 +26,48 @@ namespace pocketmine\inventory;
 
 use pocketmine\entity\passive\Villager;
 use pocketmine\nbt\NetworkLittleEndianNBTStream;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\UpdateTradePacket;
 use pocketmine\Player;
+use pocketmine\network\mcpe\protocol\types\WindowTypes;
 
-class TradeInventory extends BaseInventory implements FakeContainer{
+class TradeInventory extends ContainerInventory{
 
 	/** @var Villager */
 	protected $holder;
 	/** @var bool */
 	protected $isTraded = false;
 
-	public function __construct(Villager $villager){
-		$this->holder = $villager;
-		parent::__construct();
-	}
-
+	/**
+	 * @return string
+	 */
 	public function getName() : string{
 		return "Trading";
 	}
 
+	/**
+	 * @return int
+	 */
+	public function getNetworkType() : int{
+		return WindowTypes::TRADING;
+	}
+
+	/**
+	 * @return int
+	 */
 	public function getDefaultSize() : int{
 		return 3; //1 buyA, 1 buyB, 1 sell
 	}
 
+	/**
+	 * @param Player $who
+	 */
 	public function onOpen(Player $who) : void{
-		$tag = clone $this->holder->getOffers();
-		if($tag !== null){
+		if($this->holder->getOffers() instanceof CompoundTag){
 			parent::onOpen($who);
 
 			$this->holder->getDataPropertyManager()->setLong(Villager::DATA_TRADING_PLAYER_EID, $who->getId());
+
 			$pk = new UpdateTradePacket();
 			$pk->windowId = $who->getWindowId($this);
 			$pk->varint1 = 0;
@@ -63,22 +76,31 @@ class TradeInventory extends BaseInventory implements FakeContainer{
 			$pk->traderEid = $this->holder->getId();
 			$pk->playerEid = $who->getId();
 			$pk->displayName = $this->holder->getDisplayName();
-			$pk->offers = (new NetworkLittleEndianNBTStream())->write($tag);
+			$pk->offers = (new NetworkLittleEndianNBTStream())->write(clone $this->holder->getOffers());
+
 			$who->sendDataPacket($pk);
 		}else{
 			parent::onClose($who);
 		}
 	}
 
+	/**
+	 * @param Player $who
+	 */
 	public function onClose(Player $who) : void{
-		$this->holder->getDataPropertyManager()->removeProperty(Villager::DATA_TRADING_PLAYER_EID);
+		$this->holder->getDataPropertyManager()->setLong(Villager::DATA_TRADING_PLAYER_EID, -1);
+
 		if($this->isTraded){
 			$this->holder->updateTradeTier();
 			$this->isTraded = false;
 		}
+
 		parent::onClose($who);
 	}
 
+	/**
+	 * @return Villager
+	 */
 	public function getHolder() : Villager{
 		return $this->holder;
 	}

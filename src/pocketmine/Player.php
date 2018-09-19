@@ -78,6 +78,7 @@ use pocketmine\event\player\PlayerInteractEntityEvent;
 use pocketmine\form\ServerSettingsForm;
 use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
+use pocketmine\inventory\ContainerInventory;
 use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\PlayerOffHandInventory;
@@ -94,7 +95,6 @@ use pocketmine\lang\TranslationContainer;
 use pocketmine\level\ChunkLoader;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
-use pocketmine\level\Location;
 use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\MetadataValue;
@@ -149,7 +149,6 @@ use pocketmine\tile\ItemFrame;
 use pocketmine\timings\Timings;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
-use pocketmine\inventory\FakeContainer;
 
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
@@ -3624,6 +3623,23 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
+	 * @param int $networkType
+	 *
+	 * @return null|ContainerInventory
+	 */
+	public function getFirstContainerWindow(int $networkType = -1) : ?ContainerInventory{
+		foreach($this->windowIndex as $window){
+			if($window instanceof ContainerInventory){
+				if($networkType === -1 or $window->getNetworkType() === $networkType){
+					return $window;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
 	 * Opens an inventory window to the player. Returns the ID of the created window, or the existing window ID if the
 	 * player is already viewing the specified inventory.
 	 *
@@ -3639,10 +3655,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function addWindow(Inventory $inventory, int $forceId = null, bool $isPermanent = false) : int{
 		if(($id = $this->getWindowId($inventory)) !== ContainerIds::NONE){
 			return $id;
-		}
-
-		if($inventory instanceof FakeContainer){
-			$forceId = 255; // fake container id
 		}
 
 		if($forceId === null){

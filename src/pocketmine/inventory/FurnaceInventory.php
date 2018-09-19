@@ -27,7 +27,7 @@ use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\tile\Furnace;
 
-class FurnaceInventory extends ContainerInventory implements FakeContainer{
+class FurnaceInventory extends ContainerInventory{
 	/** @var Furnace */
 	protected $holder;
 

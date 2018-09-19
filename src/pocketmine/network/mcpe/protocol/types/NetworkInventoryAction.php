@@ -199,7 +199,7 @@ class NetworkInventoryAction{
 
 				return new CreativeInventoryAction($this->oldItem, $this->newItem, $type);
 			case self::SOURCE_TODO:
-				$window = $player->getWindow(ContainerIds::FAKE_CONTAINER);
+				$window = $player->getFirstContainerWindow();
 
 				switch($this->windowId){
 					case self::SOURCE_TYPE_CRAFTING_ADD_INGREDIENT:
