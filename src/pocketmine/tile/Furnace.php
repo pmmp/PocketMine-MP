@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
-use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
 use pocketmine\block\Furnace as BlockFurnace;
 use pocketmine\event\inventory\FurnaceBurnEvent;
 use pocketmine\event\inventory\FurnaceSmeltEvent;

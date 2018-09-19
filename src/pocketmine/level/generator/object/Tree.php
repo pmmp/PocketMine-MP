@@ -25,7 +25,6 @@ namespace pocketmine\level\generator\object;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
-use pocketmine\block\Sapling;
 use pocketmine\block\utils\WoodType;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
