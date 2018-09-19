@@ -1463,8 +1463,8 @@ class Level implements ChunkManager, Metadatable{
 	public function updateBlockLight(int $x, int $y, int $z){
 		$this->timings->doBlockLightUpdates->startTiming();
 
-		$id = $this->getBlockIdAt($x, $y, $z);
-		$newLevel = max(BlockFactory::$light[$id], $this->getHighestAdjacentBlockLight($x, $y, $z) - BlockFactory::$lightFilter[$id]);
+		$block = $this->getBlockAt($x, $y, $z);
+		$newLevel = max($block->getLightLevel(), $this->getHighestAdjacentBlockLight($x, $y, $z) - $block->getLightFilter());
 
 		if($this->blockLightUpdate === null){
 			$this->blockLightUpdate = new BlockLightUpdate($this);
