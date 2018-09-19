@@ -40,7 +40,6 @@ class Leaves extends Transparent{
 	public const DARK_OAK = 1;
 
 	protected $id = self::LEAVES;
-	protected $woodType = self::WOOD;
 
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
@@ -76,7 +75,8 @@ class Leaves extends Transparent{
 		}
 		$visited[$index] = true;
 
-		if($pos->getId() === $this->woodType){
+		$id = $pos->getId();
+		if($id === Block::WOOD or $id === Block::WOOD2){
 			return true;
 		}
 
