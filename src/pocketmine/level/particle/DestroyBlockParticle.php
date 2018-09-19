@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\level\particle;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
@@ -35,7 +34,7 @@ class DestroyBlockParticle extends Particle{
 
 	public function __construct(Vector3 $pos, Block $b){
 		parent::__construct($pos->x, $pos->y, $pos->z);
-		$this->data = BlockFactory::toStaticRuntimeId($b->getId(), $b->getDamage());
+		$this->data = $b->getRuntimeId();
 	}
 
 	public function encode(){
