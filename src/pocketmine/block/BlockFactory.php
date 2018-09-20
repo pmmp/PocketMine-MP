@@ -541,9 +541,7 @@ class BlockFactory{
 		self::$fullList[($id << 4) | $variant] = clone $block;
 		if($variant === 0){
 			//TODO: allow these to differ for different variants
-			self::$lightFilter[$id] = min(15, $block->getLightFilter() + 1); //opacity plus 1 standard light filter
-			self::$diffusesSkyLight[$id] = $block->diffusesSkyLight();
-			self::$blastResistance[$id] = $block->getBlastResistance();
+			self::fillStaticArrays($id, $block);
 		}
 	}
 
@@ -605,7 +603,18 @@ class BlockFactory{
 	}
 
 	public static function addGetInterceptor(int $id, int $variant, \Closure $interceptor) : void{
+		$block = $interceptor();
+		if(!($block instanceof Block)){
+			throw new \InvalidArgumentException("Interceptor must return an instance of " . Block::class);
+		}
 		self::$getInterceptors[($id << 4) | $variant] = $interceptor;
+		self::fillStaticArrays($id, $block);
+	}
+
+	private static function fillStaticArrays(int $id, Block $block) : void{
+		self::$lightFilter[$id] = min(15, $block->getLightFilter() + 1); //opacity plus 1 standard light filter
+		self::$diffusesSkyLight[$id] = $block->diffusesSkyLight();
+		self::$blastResistance[$id] = $block->getBlastResistance();
 	}
 
 	/**
