@@ -49,21 +49,17 @@ abstract class Stair extends Transparent{
 		//TODO: handle corners
 
 		$minYSlab = $this->upsideDown ? 0.5 : 0;
-		$maxYSlab = $minYSlab + 0.5;
 
 		$bbs = [
-			new AxisAlignedBB(0, $minYSlab, 0, 1, $maxYSlab, 1)
+			new AxisAlignedBB(0, $minYSlab, 0, 1, $minYSlab + 0.5, 1)
 		];
 
 		$minY = $this->upsideDown ? 0 : 0.5;
-		$maxY = $minY + 0.5;
-
-		$rotationMeta = $this->facing;
 
 		$minX = $minZ = 0;
 		$maxX = $maxZ = 1;
 
-		switch($rotationMeta){
+		switch($this->facing){
 			case Facing::EAST:
 				$minX = 0.5;
 				break;
@@ -78,7 +74,7 @@ abstract class Stair extends Transparent{
 				break;
 		}
 
-		$bbs[] = new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
+		$bbs[] = new AxisAlignedBB($minX, $minY, $minZ, $maxX, $minY + 0.5, $maxZ);
 
 		return $bbs;
 	}
